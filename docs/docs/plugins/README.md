@@ -15,6 +15,7 @@ Plugins add features to a Riebeckite site. Use them when you want more than plai
 | --- | --- |
 | Use Obsidian WikiLinks and embeds | [Obsidian Markdown](./obsidian-markdown.md) |
 | Show Mermaid diagrams | [Mermaid](./mermaid.md) |
+| Show static Mermaid-compatible diagrams without Chromium | [Mermaid (Pele)](./mermaid-pele.md) |
 | Add site search | [Search](./search.md) |
 | Use tags and classification pages | [Taxonomy](./taxonomy.md) |
 | Show backlinks | [Backlinks](./backlinks.md) |
@@ -78,6 +79,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | Plugin | What it does |
 | --- | --- |
 | [Mermaid](./mermaid.md) | Mermaid diagrams from code blocks |
+| [Mermaid (Pele)](./mermaid-pele.md) | Static Mermaid-compatible diagrams without Chromium |
 | [D2](./d2.md) | D2 diagrams from code blocks |
 | [Graphviz](./graphviz.md) | Graphviz DOT graphs |
 | [PlantUML](./plantuml.md) | PlantUML diagrams from code blocks |

@@ -15,6 +15,7 @@ Plugin は、Riebeckite のサイトに機能を追加する仕組みです。�
 | --- | --- |
 | Obsidian の WikiLink や埋め込みを使いたい | [Obsidian Markdown](./obsidian-markdown.ja.md) |
 | Mermaid を表示したい | [Mermaid](./mermaid.ja.md) |
+| Chromium なしで静的な Mermaid 互換図を表示したい | [Mermaid (Pele)](./mermaid-pele.ja.md) |
 | サイト内検索を追加したい | [Search](./search.ja.md) |
 | タグや分類を使いたい | [Taxonomy](./taxonomy.ja.md) |
 | Backlink を表示したい | [Backlinks](./backlinks.ja.md) |
@@ -77,6 +78,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | Plugin | できること |
 | --- | --- |
 | [Mermaid](./mermaid.ja.md) | コードブロックからの Mermaid 図 |
+| [Mermaid (Pele)](./mermaid-pele.ja.md) | Chromium を使わない静的な Mermaid 互換図 |
 | [D2](./d2.ja.md) | コードブロックからの D2 図 |
 | [Graphviz](./graphviz.ja.md) | Graphviz の DOT グラフ |
 | [PlantUML](./plantuml.ja.md) | コードブロックからの PlantUML 図 |

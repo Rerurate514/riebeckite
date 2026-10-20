@@ -38,5 +38,6 @@ allowBuilds:
   workerd: true
 minimumReleaseAgeExclude:
   - '@viz-js/viz@3.31.0'
+  - pele@1.7.0
 patchedDependencies:
   wavedrom@3.7.0: patches/wavedrom@3.7.0.patch

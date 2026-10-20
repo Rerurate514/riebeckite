@@ -38,6 +38,7 @@ export function rehypeMermaid(
   const theme = options.theme ?? DEFAULT_THEME;
 
   return async (tree: HastNode, file: unknown) => {
+    assertNoPeleRenderer(tree);
     const replacements: Promise<void>[] = [];
     visitElements(tree, (node, parent, index) => {
       if (!parent || index === undefined || !isMermaidCodeBlock(node)) return;
@@ -135,6 +136,7 @@ function buildFigure(input: {
     "figure",
     {
       className: "rr-mermaid",
+      dataRiebeckiteMermaidRenderer: "mermaid",
       dataMermaid:
         input.clientFallback && !input.staticSvg ? "pending" : undefined,
       dataMermaidSource:
@@ -142,6 +144,20 @@ function buildFigure(input: {
     },
     children,
   );
+}
+
+function assertNoPeleRenderer(tree: HastNode): void {
+  let hasPeleRenderer = false;
+  visitElements(tree, (node) => {
+    if (node.properties?.dataRiebeckiteMermaidRenderer === "pele") {
+      hasPeleRenderer = true;
+    }
+  });
+  if (hasPeleRenderer) {
+    throw new Error(
+      "@riebeckite/plugin-mermaid and @riebeckite/plugin-mermaid-pele cannot be enabled together. Enable exactly one Mermaid renderer.",
+    );
+  }
 }
 
 async function renderStaticSvg(

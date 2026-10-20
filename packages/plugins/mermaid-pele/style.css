@@ -1,0 +1,41 @@
+.rr-mermaid-pele {
+  --pele-bg: var(--rb-color-paper, #ffffff);
+  --pele-fg: var(--rb-color-ink, #1f1f1f);
+  --pele-muted: var(--rb-color-muted, #6e6e6e);
+  --pele-line: var(--rb-color-ink, #1f1f1f);
+  --pele-surface: var(--rb-color-surface, #f3f3f3);
+  --pele-surface-alt: var(--rb-color-surface-hover, #e6e6e6);
+  --pele-border: var(--rb-color-border, #8a8a8a);
+  --pele-accent: var(--rb-color-accent, #5b7bd5);
+  --pele-critical: var(--rb-color-danger, #e45756);
+  --pele-error: var(--rb-color-danger, #e45756);
+  --pele-font: var(--rb-font-body, sans-serif);
+  --pele-font-mono: var(--rb-font-mono, monospace);
+  margin-block: 2rem;
+}
+
+.rr-mermaid-pele__canvas {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.rr-mermaid-pele__canvas > svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+}
+
+.rr-mermaid-pele__error {
+  overflow-x: auto;
+  color: var(--pele-error);
+}
+
+.rr-mermaid-pele__fallback {
+  color: var(--pele-muted);
+  font-size: 0.8125rem;
+}
+
+.rr-mermaid-pele__fallback pre {
+  overflow: auto;
+}

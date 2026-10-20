@@ -52,6 +52,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/marp",
   "packages/plugins/media",
   "packages/plugins/mermaid",
+  "packages/plugins/mermaid-pele",
   "packages/plugins/navigation",
   "packages/plugins/obsidian-markdown",
   "packages/plugins/pdf",
@@ -322,6 +323,11 @@ const packagePublishingMetadata = {
   "packages/plugins/mermaid": {
     description: "Mermaid diagram rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "mermaid", "diagrams"],
+  },
+  "packages/plugins/mermaid-pele": {
+    description:
+      "Server-rendered Pele diagrams for Riebeckite Mermaid code blocks.",
+    keywords: ["riebeckite", "plugin", "mermaid", "pele", "diagrams"],
   },
   "packages/plugins/navigation": {
     description:

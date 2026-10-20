@@ -1,5 +1,6 @@
 ﻿import { rm } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
+import { buildOutputPlan, compareOutputPlan } from "@riebeckite/core";
 import { defaultExtensionMap, redirectPlugin, toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
@@ -11,6 +12,7 @@ import { collectSiteOwnedOutputPaths } from "./content_assets.js";
 import {
   CLOUDFLARE_WORKER_ASSET_LIMIT,
   type ClientBuildArtifacts,
+  collectBuildOutputPaths,
   discardClientBuildArtifacts,
   emptyBuildOutputDirectory,
   findOversizedAssets,
@@ -89,6 +91,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         outDir: string;
         publicDir: string | false | undefined;
         configFile: string | undefined;
+        outputPlanInput: {
+          inventory: SsgOutputChangeSet["affected"];
+          affectedPaths: ReadonlySet<string>;
+          removed: SsgOutputChangeSet["removed"];
+          cacheAvailable: boolean;
+          honoStaticRoutePaths: ReadonlySet<string>;
+          viteClientAssetPaths: ReadonlySet<string>;
+          sitePublicAssetPaths: ReadonlySet<string>;
+        };
       }
     | undefined;
   let clientBuildArtifacts: ClientBuildArtifacts | undefined;
@@ -148,6 +159,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         ? {}
         : undefined;
       const outDir = resolve(config.root, config.build.outDir);
+      let viteClientAssetPaths: string[] = [];
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
       const server = await measure(timingsMs, "ssgSetup", () =>
         createServer({
@@ -169,6 +181,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
 
       try {
         await restoreClientBuildArtifacts(outDir, clientBuildArtifacts);
+        viteClientAssetPaths = await collectBuildOutputPaths(outDir);
         logSsgDiagnostics(
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
@@ -204,6 +217,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "siteOwnedOutputs",
           () => collectSiteOwnedOutputPaths(config.publicDir),
         );
+        viteClientAssetPaths = [
+          ...new Set([...viteClientAssetPaths, ...Object.keys(bundle)]),
+        ]
+          .filter((outputPath) => !siteOwnedOutputPaths.has(outputPath))
+          .sort();
         const siteOutputCollisions = findBuildOutputSiteCollisions(
           Object.keys(bundle),
           siteOwnedOutputPaths,
@@ -240,6 +258,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             ? (outputChangeSet?.unchanged ?? []).map((output) => output.path)
             : [],
         );
+        const inventory = [
+          ...(outputChangeSet?.affected ?? []),
+          ...(outputChangeSet?.unchanged ?? []),
+        ];
+        const inventoryPaths = new Set(inventory.map((output) => output.path));
+        const honoStaticRoutePaths = new Set<string>();
         logSsgDiagnostics(
           this,
           `output cache ${canUseIncremental ? "hit" : `miss (${outputCacheRejectionReason})`} · ${reusablePaths.size} reusable outputs`,
@@ -287,6 +311,19 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           manifestHookCacheMiss: 0,
           manifestHookDurationMs: 0,
           manifestHookPlugins: {},
+          plannedOutputCount: 0,
+          actualOutputCount: 0,
+          matchedOutputCount: 0,
+          missingInPlanCount: 0,
+          missingInDistCount: 0,
+          unknownOutputCount: 0,
+          ownerConflictCount: 0,
+          publicationViolationCount: 0,
+          plannedGenerateOutputCount: 0,
+          plannedReuseOutputCount: 0,
+          plannedRemoveOutputCount: 0,
+          plannedUnknownOutputCount: 0,
+          outputPlanMemoryDeltaBytes: 0,
           outputCacheDecision,
           outputCacheRejectionReason: outputCacheRejectionReason ?? null,
           timingsMs: timingsMs ?? {},
@@ -306,6 +343,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   "\\",
                   "/",
                 );
+                if (!inventoryPaths.has(fileName)) {
+                  honoStaticRoutePaths.add(fileName);
+                }
                 if (siteOwnedOutputPaths.has(fileName)) {
                   shadowedOutputs.add(fileName);
                   return;
@@ -445,6 +485,17 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outDir,
           publicDir: config.publicDir,
           configFile: config.configFile,
+          outputPlanInput: {
+            inventory,
+            affectedPaths: new Set(
+              (outputChangeSet?.affected ?? []).map((output) => output.path),
+            ),
+            removed: outputChangeSet?.removed ?? [],
+            cacheAvailable: canUseIncremental,
+            honoStaticRoutePaths,
+            viteClientAssetPaths: new Set(viteClientAssetPaths),
+            sitePublicAssetPaths: siteOwnedOutputPaths,
+          },
         };
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
@@ -482,6 +533,57 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             outputCache.timingsMs,
             "outputInventory",
             () => fingerprintOutputDirectory(outputCache.outDir),
+          );
+          const finalOutputInventory = outputCache.state.finalOutputInventory;
+          const outputPlanRssBefore = process.memoryUsage().rss;
+          const outputPlan = measureSync(
+            outputCache.timingsMs,
+            "outputPlan",
+            () =>
+              buildOutputPlan({
+                ...outputCache.outputPlanInput,
+              }),
+          );
+          const outputPlanComparison = measureSync(
+            outputCache.timingsMs,
+            "outputPlanComparison",
+            () =>
+              compareOutputPlan(outputPlan, Object.keys(finalOutputInventory)),
+          );
+          outputCache.metrics.plannedOutputCount = outputPlan.entries.length;
+          outputCache.metrics.actualOutputCount =
+            Object.keys(finalOutputInventory).length;
+          outputCache.metrics.matchedOutputCount =
+            outputPlanComparison.matched.length;
+          outputCache.metrics.missingInPlanCount =
+            outputPlanComparison.missingInPlan.length;
+          outputCache.metrics.missingInDistCount =
+            outputPlanComparison.missingInDist.length;
+          outputCache.metrics.unknownOutputCount =
+            outputPlanComparison.unknown.length;
+          outputCache.metrics.ownerConflictCount =
+            outputPlanComparison.ownerConflicts.length;
+          outputCache.metrics.publicationViolationCount =
+            outputPlanComparison.publicationViolations.length;
+          outputCache.metrics.plannedGenerateOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "generate",
+            ).length;
+          outputCache.metrics.plannedReuseOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "reuse",
+            ).length;
+          outputCache.metrics.plannedRemoveOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "remove",
+            ).length;
+          outputCache.metrics.plannedUnknownOutputCount =
+            outputPlan.entries.filter(
+              (entry) => entry.action === "unknown",
+            ).length;
+          outputCache.metrics.outputPlanMemoryDeltaBytes = Math.max(
+            0,
+            process.memoryUsage().rss - outputPlanRssBefore,
           );
           const publicDir = outputCache.publicDir;
           outputCache.state.publicDirectory = publicDir

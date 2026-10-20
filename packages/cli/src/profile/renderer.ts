@@ -17,6 +17,7 @@ export function renderProfile(report: ProfileReport, failed = false): string {
   if (report.totalDurationMs !== undefined) {
     lines.push("", row("Total", formatDuration(report.totalDurationMs)));
   }
+  appendStages(lines, report);
   appendContent(lines, report);
   appendIntegrations(lines, report);
   appendPlugins(lines, report);
@@ -27,6 +28,14 @@ export function renderProfile(report: ProfileReport, failed = false): string {
   appendDiagnostics(lines, report);
   appendSlowOperations(lines, report);
   return lines.join("\n");
+}
+
+function appendStages(lines: string[], report: ProfileReport): void {
+  if (report.stages.size === 0) return;
+  lines.push("", "Stages (inclusive; overlapping spans are not additive)");
+  for (const [name, duration] of report.stages) {
+    appendSpanAggregate(lines, name, duration);
+  }
 }
 
 function appendIntegrations(lines: string[], report: ProfileReport): void {

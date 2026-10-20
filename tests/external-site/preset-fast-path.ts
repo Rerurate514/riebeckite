@@ -254,6 +254,15 @@ interface SsgMetrics {
   readonly manifestHooksExecuted?: number;
   readonly manifestHooksReused?: number;
   readonly fullRegenerationRequired?: boolean;
+  readonly missingInPlanCount?: number;
+  readonly missingInDistCount?: number;
+  readonly unknownOutputCount?: number;
+  readonly ownerConflictCount?: number;
+  readonly publicationViolationCount?: number;
+  readonly plannedGenerateOutputCount?: number;
+  readonly plannedReuseOutputCount?: number;
+  readonly plannedRemoveOutputCount?: number;
+  readonly plannedUnknownOutputCount?: number;
 }
 
 function readSsgMetrics(file: string): SsgMetrics | undefined {
@@ -521,8 +530,15 @@ async function runPreset(
       cold.record.fastPathUsed === false,
       `block=${cold.record.blockReason ?? "(none)"}`,
     );
+    checkOutputPlanCoverage(check, "cold build", cold.record.metrics);
 
     const noChange = site.build("No-change");
+    if (noChange.record.metrics)
+      checkOutputPlanCoverage(
+        check,
+        "no-change build",
+        noChange.record.metrics,
+      );
     if (capable) {
       check(
         "no-change uses the fast path",
@@ -800,6 +816,40 @@ async function runPreset(
       ok: false,
     };
   }
+}
+
+function checkOutputPlanCoverage(
+  check: (name: string, ok: boolean, detail?: string) => void,
+  label: string,
+  metrics: SsgMetrics | undefined,
+): void {
+  check(`${label} records Output Plan metrics`, metrics !== undefined);
+  if (!metrics) return;
+  check(
+    `${label} has no missing planned output`,
+    metrics.missingInPlanCount === 0,
+    `missing=${metrics.missingInPlanCount ?? "-"}`,
+  );
+  check(
+    `${label} has no missing dist output`,
+    metrics.missingInDistCount === 0,
+    `missing=${metrics.missingInDistCount ?? "-"}`,
+  );
+  check(
+    `${label} has no unknown output`,
+    metrics.unknownOutputCount === 0,
+    `unknown=${metrics.unknownOutputCount ?? "-"}`,
+  );
+  check(
+    `${label} has no owner conflict`,
+    metrics.ownerConflictCount === 0,
+    `conflicts=${metrics.ownerConflictCount ?? "-"}`,
+  );
+  check(
+    `${label} has no publication violation`,
+    metrics.publicationViolationCount === 0,
+    `violations=${metrics.publicationViolationCount ?? "-"}`,
+  );
 }
 
 function printAudit(results: readonly PresetResult[]): void {

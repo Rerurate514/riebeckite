@@ -1,14 +1,12 @@
-import {
-  type ResolvedRiebeckiteConfig,
-  serializePublicClientConfig,
-} from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { serializePublicClientConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 
 const clientModuleId = "virtual:riebeckite/client";
 const resolvedClientModuleId = `\0${clientModuleId}`;
 
 export function riebeckiteClientModule(
-  getConfig: () => ResolvedRiebeckiteConfig,
+  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins">,
 ): Plugin {
   let development = false;
   return {
@@ -28,7 +26,7 @@ export function riebeckiteClientModule(
 }
 
 function createClientModule(
-  config: ResolvedRiebeckiteConfig,
+  config: Pick<ResolvedRiebeckiteConfig, "plugins">,
   development: boolean,
 ): string {
   const imports: string[] = [];

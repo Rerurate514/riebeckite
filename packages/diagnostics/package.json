@@ -28,11 +28,29 @@
   },
   "scripts": {
     "build": "node ../../scripts/build_package.mjs",
-    "test": "node --import tsx --test \"test/*.test.ts\""
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
   },
   "publishConfig": {
     "access": "public"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/diagnostics"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Shared development diagnostics for Riebeckite CLI and integrations.",
+  "keywords": [
+    "riebeckite",
+    "diagnostics",
+    "development",
+    "validation"
+  ],
+  "sideEffects": false,
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   }

@@ -116,6 +116,11 @@ const packagePublishingMetadata = {
       "Core content pipeline, configuration, and extension APIs for Riebeckite.",
     keywords: ["riebeckite", "markdown", "obsidian", "static-site-generator"],
   },
+  "packages/diagnostics": {
+    description:
+      "Shared development diagnostics for Riebeckite CLI and integrations.",
+    keywords: ["riebeckite", "diagnostics", "development", "validation"],
+  },
   "packages/create-riebeckite": {
     description:
       "Create a new Riebeckite site from the official starter template.",
@@ -509,13 +514,25 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
-          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
+          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
         prepack: "node ../../scripts/copy_license.mjs && pnpm run build",
       },
     };
   }
 
   if (directory === "packages/core") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/diagnostics") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],

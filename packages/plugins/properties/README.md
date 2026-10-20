@@ -2,50 +2,121 @@
 
 <!-- Generated from docs/docs/plugins/properties.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Render each note's frontmatter as an Obsidian-style property panel at build
-time. No client-side JavaScript is required.
+Render a note's frontmatter as an Obsidian-style property panel. The plugin
+turns raw values into structured data; the Site decides where the panel goes.
 
 [日本語](./README_ja.md)
 
 ## Overview
 
-When the content manifest is created, `properties()` renders a
-`section.rb-properties[data-properties]` from every entry's frontmatter. The
-note HTML is left untouched and the panel is published as part of the entry's
-build-time output. The frontmatter stays the single source of truth — there is
-nothing to write in the Markdown body.
+`properties()` contributes a stylesheet, tracks wikilink dependencies, and
+reports frontmatter values that cannot be converted. It does not modify the
+rendered Markdown body.
 
-Values are rendered by type:
+The Site renders the exported component:
 
-| Value | Output |
-| ----- | ------ |
-| Array | `ul.rb-properties__list` with one item per element |
-| Tag key (`tags` / `tag`) or a value starting with `#` | `a.rb-properties__tag` linking to the site tag route |
-| Boolean | `true` / `false` with `data-boolean` |
-| Number | The number with `data-number` |
-| ISO date string or `Date` | `<time datetime>` |
-| `[wikilink](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/glossary/wikilink.md)` or URL inside a string | Resolved link (wikilinks use the content index) |
-| Nested object | A nested `<dl>` |
+```tsx
+import { Properties } from "@riebeckite/plugin-properties";
 
-Values that cannot be rendered as structured HTML are emitted as escaped text
-and reported as a `properties-unrenderable-value` warning.
+<Properties />;
+```
 
-## Usage
+With no props, `<Properties />` reads the current article from the Site
+context and merges the `properties()` PluginConfig with component options. The
+default scaffold already places it in the article layout.
+
+A custom layout can resolve the data itself and pass it to the component:
+
+```tsx
+const data = getProperties({
+  view: site.view,
+  frontmatter: post.frontmatter,
+  options: { title: "Metadata" },
+});
+
+return <Properties data={data} className="article-properties" />;
+```
+
+Precedence, from highest to lowest:
+
+1. Explicit `data` passed to `<Properties data={...} />`
+2. `<Properties options={...} />`
+3. The `properties()` PluginConfig
+4. Built-in defaults
+
+Component options are merged over PluginConfig. `fields` are merged per
+property key, so a component field config replaces the whole config for that
+key. `className` on the component is appended to the root class; it does not
+replace it.
+
+## Field configuration
+
+Declare how individual keys are displayed:
 
 ```ts
-import { defineConfig } from "@riebeckite/core";
 import { properties } from "@riebeckite/plugin-properties";
 
-export default defineConfig({
-  // ...
-  plugins: [properties()],
+properties({
+  exclude: ["publish", "permalink"],
+  fields: {
+    tags: { type: "tags", link: true, tagBase: "/tags/", variant: "chips" },
+    status: {
+      type: "badge",
+      variants: { published: "success", draft: "warning" },
+    },
+    created: { type: "date", format: "yyyy-MM-dd" },
+    related: { type: "wikilinks" },
+  },
 });
 ```
 
-`properties()` provides a `getProperties({ view, frontmatter, options? })`
-helper that returns `PropertiesData`. The Site renders `<Properties data={data} />`
-itself. `PropertiesOptions` accepts `title`, `include`, `exclude`, `order`,
-`hideEmpty`, `className`, `collapsed` (no `render` option).
+`fields` controls presentation only. Declared keys become the default display
+order, but they are not implicitly included or excluded. `include` and
+`exclude` still decide which keys appear.
+
+### Field types
+
+| Type | Value handling |
+| ---- | -------------- |
+| `text` | Render escaped text. Arrays become lists and objects become groups |
+| `link` | Render an HTTP(S) or root-relative URL as a link; unsafe URLs stay text |
+| `tags` | Render strings or arrays as tags. `link` defaults to `true`; `variant` is `text`, `links`, or `chips`. The `text` variant and `link: false` render labels without links |
+| `badge` | Render a value as a badge. `variants` maps a value to a CSS `data-variant` name |
+| `date` | Parse an ISO date or datetime and format it. Default format: `yyyy-MM-dd` |
+| `wikilinks` | Link `[wikilinks](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/wikilinks.md)`; plain URLs remain text |
+
+Unconfigured keys use a safe default:
+
+- `tags` / `tag`, or values beginning with `#`, become linked tags.
+- Arrays become lists.
+- ISO date strings and `Date` values become `<time>`.
+- Strings containing wikilinks or HTTP(S) URLs become inline links.
+- Booleans, numbers, and objects render as scalars or a nested group.
+- `null`, `""`, `[]`, and `{}` are hidden when `hideEmpty` is enabled.
+
+Invalid values never throw. They render as escaped text and produce a
+`properties-unrenderable-value` diagnostic.
+
+### Date formats
+
+Supported tokens are `yyyy`, `MM`, `dd`, `HH`, `mm`, and `ss`. They use UTC.
+Other letters are rejected by option validation.
+
+```ts
+created: { type: "date", format: "yyyy/MM/dd HH:mm" }
+```
+
+### Configuration validation
+
+The plugin validates `fields` during config loading. Paths are reported under
+`plugins[i].options`, for example:
+
+```text
+plugins[0].options.fields.status.type: Expected one of: text, link, tags, badge, date, wikilinks.
+```
+
+Unknown field options, empty tag bases, unsupported date tokens, and
+non-string badge variants are also reported.
 
 ## Options
 
@@ -54,10 +125,11 @@ itself. `PropertiesOptions` accepts `title`, `include`, `exclude`, `order`,
 | `title` | `string \| null` | `"Properties"` | Panel heading. `null` omits it |
 | `include` | `string[]` | unset | Render only these keys |
 | `exclude` | `string[]` | `["publish", "permalink", "aliases", "redirect_from"]` | Keys to hide |
-| `order` | `string[]` | unset | Display order for selected keys: listed keys first, then the rest in frontmatter order |
+| `order` | `string[]` | field declaration order | Display order: listed keys first, then the rest in frontmatter order |
 | `hideEmpty` | `boolean` | `true` | Skip `null`, `""`, `[]`, and `{}` values |
 | `className` | `string` | `"rb-properties"` | Root CSS class |
 | `collapsed` | `boolean` | `false` | Render inside a `<details>` element |
+| `fields` | `Record<string, FieldConfig>` | `{}` | Per-property display configuration |
 
 ```ts
 properties({
@@ -67,35 +139,111 @@ properties({
 });
 ```
 
-## Display
+## Structured data
 
-The plugin renders the properties panel at build time. The Site can render
-the exported component anywhere in its layout:
+`getProperties()` returns `PropertiesData`. Values are semantic objects, not
+HTML and not stringified arrays:
 
-```tsx
-import { getProperties, Properties } from "@riebeckite/plugin-properties";
-import { content } from "virtual:riebeckite/content";
-
-const manifest = await content.getManifest();
-const entry = manifest.entries[slug];
-const data = getProperties({ view, frontmatter: entry.frontmatter, options });
-
-return <Properties data={data} />;
+```ts
+type PropertiesData = {
+  title: string | null;
+  className: string;
+  collapsed: boolean;
+  items: readonly {
+    key: string;
+    value: PropertyValue;
+  }[];
+};
 ```
 
-The Site owns layout: it calls `getProperties` and renders `<Properties>` where
-it wants the panel. A plugin never owns routes or the shell.
+Common value variants:
+
+```ts
+{ kind: "text", text: "Hello" }
+{ kind: "link", text: "Note", href: "/note", external: false }
+{ kind: "tags", variant: "chips", tags: [{ tag: "web", text: "#web", href: "/tags/web" }] }
+{ kind: "badge", text: "published", variant: "success" }
+{ kind: "date", value: "2024-01-02", formatted: "2024-01-02" }
+{ kind: "inline", parts: [...] }
+{ kind: "list", items: [...] }
+{ kind: "group", entries: [{ key: "lang", value: { kind: "text", text: "ja" } }] }
+```
+
+`renderPropertiesPanel()` consumes the same model, so the panel and the
+component always agree on value semantics. Import the public types from
+`@riebeckite/plugin-properties`.
+
+### Publication Boundary
+
+Wikilinks resolve through the Site's `PublicContentView`. A draft or other
+non-routable entry therefore cannot be linked from properties and remains
+escaped text. Unlisted entries that are routable can be linked but stay
+undiscoverable elsewhere. The plugin does not bypass publication decisions.
+
+## Display and CSS
+
+The panel uses semantic markup:
+
+```html
+<section class="rb-properties" data-properties data-property-count="3">
+  <h2 class="rb-properties__title">Properties</h2>
+  <dl class="rb-properties__rows">
+    <div class="rb-properties__row" data-property-key="tags">
+      <dt class="rb-properties__key">tags</dt>
+      <dd class="rb-properties__value">
+        <ul class="rb-properties__list" data-variant="chips">
+          <li class="rb-properties__list-item">
+            <a class="rb-properties__tag" data-tag="web" href="/tags/web">#web</a>
+          </li>
+        </ul>
+      </dd>
+    </div>
+  </dl>
+</section>
+```
+
+Stable hooks:
+
+- Root: `.rb-properties[data-properties]`
+- Rows: `.rb-properties__row[data-property-key]`
+- Keys and values: `.rb-properties__key`, `.rb-properties__value`
+- Tags: `.rb-properties__tag[data-tag]`, container `[data-variant]`
+- Badges: `.rb-properties__badge[data-variant]`
+- Dates: `.rb-properties__date[datetime]`
+- Links: `.rb-properties__link`, external adds `--external`
+- Lists and groups: `.rb-properties__list`, `.rb-properties__nested`
+
+```css
+.rb-properties__row[data-property-key="tags"] {
+  grid-template-columns: 8rem 1fr;
+}
+
+.rb-properties__badge[data-variant="warning"] {
+  color: var(--site-warning);
+}
+```
+
+The plugin stylesheet owns the panel's internal defaults. Site CSS owns layout
+and may override the hooks above. Theme CSS owns color and typography tokens.
+
+External links use `rel="noopener noreferrer"` and `target="_blank"`. All text
+and attribute values are escaped. Only HTTP(S), anchor, and root-relative hrefs
+are emitted.
 
 ## Exports
 
-- `properties(options?)` / `propertiesPlugin(options?)` — plugin factory
+- `properties(options?)` and `propertiesPlugin(options?)` — plugin factory
+- `getProperties({ view, frontmatter, options? })` — structured data helper
+- `<Properties data? options? className? />` — shared renderer component
+- `renderPropertiesPanel(frontmatter, options?, context?)` — pure HTML renderer
 - `resolvePropertiesOptions(options?)` — default resolution
-- `getProperties({ view, frontmatter, options? })` — resolves properties data
-  for a given entry
-- `renderPropertiesPanel(frontmatter, options?, context?)` — pure renderer
-- `buildTagHref(tag)` — tag route builder
-- Types: `PropertiesOptions`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`, `PropertiesLinkResolver`, `PropertiesMessage`
+- `validatePropertiesOptions(options?)` — config validation
+- `buildTagHref(tag, base?)` — canonical tag route builder
+- `PropertiesData`, `PropertyValue`, `PropertiesFieldConfig`,
+  `PropertiesOptions`, `ResolvedPropertiesOptions`, `PropertiesRenderContext`,
+  `PropertiesLinkResolver`, `PropertiesMessage`
 
 ## See also
 
 - [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+- [Configuration reference](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/configuration-reference.md)

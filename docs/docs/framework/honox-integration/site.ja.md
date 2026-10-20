@@ -177,7 +177,7 @@ const backlinks = await getBacklinks({ view, slug });
 と
 
 ```tsx
-const data = await getProperties({ view, frontmatter: entry.frontmatter });
+const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 

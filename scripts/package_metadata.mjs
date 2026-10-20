@@ -4,6 +4,7 @@ import path from "node:path";
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
+  "packages/diagnostics",
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",

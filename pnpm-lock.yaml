@@ -465,6 +465,19 @@ importers:
         specifier: 'catalog:'
         version: 0.28.2
 
+  packages/diagnostics:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/integrations/analytics-cloudflare:
     dependencies:
       '@riebeckite/plugin-analytics':

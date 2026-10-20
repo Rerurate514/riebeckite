@@ -14,13 +14,12 @@ Islandでは、対話的なコンポーネント（widget、chartなど）をサ
 
 ## Siteの責任
 
-サイトのapplicationがislandの配置、routing、hydrationを担います。Pluginはbody slotに描画したHTMLの断片を渡せますが、islandのlogicはapp層にあります。
+サイトのapplicationがislandの配置、routing、hydrationを担います。Pluginはserver-rendered componentを公開できますが、islandのlogicはapp層にあります。
 
 ## 関連用語
 
 - [[plugin|Plugin]]
 - [[renderer|Renderer]]
-- [[slot|Body slot]]
 - [[page-type|Page Type]]
 
 ## さらに詳しく

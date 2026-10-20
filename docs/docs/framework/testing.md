@@ -198,7 +198,7 @@ The first argument is the content index and the second is the permalink map; emp
 
 ### Level 3: Content / lifecycle
 
-Use `ContentManager` with an in-memory `ContentSource` (the same shape shown above) to test content loading, hooks, manifests, body slots, or Page Types. `getProcessedContent()` returns the result of the pipeline plus content hooks; `getManifest()` returns the manifest including resolved plugins.
+Use `ContentManager` with an in-memory `ContentSource` (the same shape shown above) to test content loading, hooks, manifests, or Page Types. `getProcessedContent()` returns the result of the pipeline plus content hooks; `getManifest()` returns the manifest including resolved plugins.
 
 ### Level 4: Public package boundary
 

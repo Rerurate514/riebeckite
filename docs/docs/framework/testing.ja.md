@@ -226,7 +226,7 @@ assert.match(html, /<aside class="rr-tip">/);
 
 ### Level 3: Content / lifecycle
 
-Content の読み込み、hook、manifest、body slot、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で使います。`getProcessedContent()` は Pipeline と Content hook を通した結果を返します。`getManifest()` は解決済み Plugin を含む manifest を返します。
+Content の読み込み、hook、manifest、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で使います。`getProcessedContent()` は Pipeline と Content hook を通した結果を返します。`getManifest()` は解決済み Plugin を含む manifest を返します。
 
 ### Level 4: 外部パッケージ境界
 

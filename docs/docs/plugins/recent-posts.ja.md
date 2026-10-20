@@ -30,7 +30,7 @@ const posts = getRecentPosts({ manifest: await content.getManifest() });
 return <RecentPosts posts={posts} />;
 ```
 
-生成されたホームページの一覧を無効にするには、`RecentPosts` の import と `afterContent` prop を削除します。位置を変える場合は、同じ要素を既存の route または layout の目的の slot へ移動します。
+生成されたホームページの一覧を無効にするには、ホームページ route から `RecentPosts` の import と要素を削除します。位置を変える場合は、同じ要素を別の route または layout へ移動します。
 
 | オプション | 既定値 | 内容 |
 | --- | --- | --- |

@@ -69,7 +69,6 @@ clientEntries: [
 - [[endpoint|Endpoint]]
 - [[client-entry|Client entry]]
 - [[island|Island]]
-- [[slot|Body slot]]
 - [[asset|Asset]]
 - [[glossary/diagnostics|Diagnostics]]
 - [[diagnostic-code|Diagnostic code]]

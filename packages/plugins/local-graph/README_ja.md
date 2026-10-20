@@ -32,7 +32,7 @@ export default defineConfig({ plugins: [localGraphPlugin()] });
 ```tsx
 import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
 const graph = getLocalGraph({ manifest: await content.getManifest(), config, slug, resolveTitle });
-return <Article footerContent={graph && <LocalGraph graph={graph} />} />;
+return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 ```
 
 グラフのノード位置は `layoutRadialGraph()`、辺は `buildGraphEdges()` が計算します。各ノードのリンクは解決済みの `permalink` を使い、見出しは internal selection key `/explore?note=<slug>` で Explorer を開きます。

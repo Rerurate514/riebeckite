@@ -10,30 +10,18 @@ Backlink list rendering showing which published notes link to the current note, 
 
 ## Recommended placement
 
-`backlinksPlugin()` automatically appends a footer list of incoming links to the `article.footer` semantic body slot.
-
-The Site owns physical placement: it displays the list only where it renders that slot, normally once after article content.
+`backlinksPlugin()` registers the data source. Render `<Backlinks />` where the list belongs, normally once after article content. Inside `SiteProvider` and an `Article` carrying its public `entry`, the component resolves incoming links itself.
 
 Without incoming links (or when none are published), the component renders nothing.
 
 ## Advanced customization
 
-To choose a different location, prevent the automatic slot contribution with `render: false`; this does not change backlink data or its publication filtering.
-
-Resolve the data manually:
+Pass explicit data with `backlinks`; resolve it with `getBacklinks({ view, slug })`.
 
 ```tsx
-import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
-import { content } from "virtual:riebeckite/content";
-import { getArticleTitle } from "../lib/article-title";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
 
-const manifest = await content.getManifest();
-const backlinks = getPublishedBacklinks({
-  manifest,
-  config,
-  slug,
-  resolveTitle: getArticleTitle,
-});
+const backlinks = await getBacklinks({ view, slug });
 
 return (
   <aside>
@@ -45,10 +33,10 @@ return (
 ## Configuration
 
 ```ts
-plugins: [backlinksPlugin({ render: false })];
+plugins: [backlinksPlugin()];
 ```
 
-Remove the component to remove manually placed UI. Do not render both this component and `article.footer` with automatic rendering enabled, or it will appear twice.
+Enable the plugin and render the component once. Remove the element to remove the UI.
 
 ## Backlink data resolution
 The `getPublishedBacklinks()` function resolves incoming links from the content manifest. It accepts the following options:

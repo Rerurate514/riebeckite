@@ -16,7 +16,6 @@ The `seo` extension point lets plugins participate in metadata and feed behavior
 ## Related terms
 - [[plugin|Plugin]]
 - [[asset|Asset]]
-- [[slot|Body slot]]
 
 ## Learn more
 - [Plugin API](../reference/plugin-api.md)

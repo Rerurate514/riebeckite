@@ -161,13 +161,13 @@ Plugin-provided head tags continue to work through the existing `headTags` mecha
 
 Plugins contribute `headTags` and expose data helpers + JSX components. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one. Each plugin's data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model; the component is then rendered directly by the site's article layout or page template.
 
-There is no `bodySlots` field on `ContentManifestEntry`; instead, plugin UI is composed explicitly:
+Plugin UI is composed explicitly:
 
 ```tsx
 const view = createPublicContentView(manifest);
 const entry = view.findRoutableBySlug(slug);
 const backlinks = await getBacklinks({ view, slug });
-<Backlinks items={backlinks} />
+<Backlinks backlinks={backlinks} />
 ```
 
 and
@@ -177,9 +177,7 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-The Site decides layout placement — there is no accumulated `bodySlots` map or `ContentSlot` primitive. Plugin components may also export optional CSS and client entries, registered through the integration.
-
-Previously, the "Body slot handoff" section documented the now-removed slot system. That system has been completely removed in Phase 4; all UI is now composed explicitly in Site TSX using plugin data helpers and components.
+The Site decides layout placement. Plugin components may also export optional CSS and client entries, registered through the integration.
 
 ## SiteConfig Structure
 

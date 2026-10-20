@@ -6,37 +6,27 @@ sidebar:
 
 # Language Switcher
 
-The control that lets a reader move between the language versions of a page. The l10n plugin publishes it into the article metadata slot when translations exist.
+The control that lets a reader move between language versions of a page. `l10n` exports the component and its data helper.
 
 ## Where it comes from
 
-The l10n plugin contributes the switcher through the article metadata slot, so the site decides how and where to render it.
+`<LanguageSwitcher />` is a server-rendered component exported by `@riebeckite/plugin-l10n`. Render it where the site wants; with `SiteProvider` and an `Article` carrying its public `entry`, it resolves `getLocalization(manifest, slug)` itself.
 
 ## When it appears
 
-It appears only when the current page has at least one [translation](./translation.md). A page with no translated sibling shows no switcher.
+It appears only when the current page has at least one [translation](./translation.md). A page with no translated sibling shows no switcher. Only translations that actually exist are candidates; no fallback page is generated for a missing language.
 
 ## UI customization
-The l10n plugin publishes the language switcher into the article metadata slot. The site controls how and where to render it. Default UI renders a styled list of language links, but it can be completely customized or disabled.
 
-```ts
-// Disable the built-in switcher, keep metadata only
-l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+The default renders a styled list of language links; the site can replace it with its own component or pass explicit data.
 
-// Use a different slot for the switcher
-l10n({
-  defaultLang: "ja",
-  languages: ["ja", "en"],
-  ui: {
-    slot: "article.footer",
-    render: ({ localization }) => `<p>Lang: ${localization.lang}</p>`,
-  },
-});
+```tsx
+import { LanguageSwitcher, getLocalization } from "@riebeckite/plugin-l10n";
+
+const localization = getLocalization(manifest, entry.slug);
+<LanguageSwitcher localization={localization} />;
 ```
 
-Custom render functions receive a `LanguageSwitcherRenderContext` with the `localizedContent` and can return any HTML string. The slot name determines which metadata slot the switcher is inserted into. Themes can restyle the default component through the `.rr-l10n-switcher` root hook.
-
-## When it appears
-It appears only when the current page has at least one [translation](./translation.md). A page with no translated sibling shows no switcher. Only translations that actually exist are candidates; no fallback page is generated for a missing language.
+Themes restyle the default through `.rr-l10n-switcher`.
 
 ## Related terms

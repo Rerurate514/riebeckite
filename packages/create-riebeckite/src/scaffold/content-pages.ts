@@ -77,8 +77,7 @@ const PLUGIN_MARKDOWN_GUIDES: Readonly<
     ].join("\n"),
   },
   "@riebeckite/plugin-properties": {
-    summary:
-      "Renders selected frontmatter properties in the article metadata slot.",
+    summary: "Renders selected frontmatter properties in article metadata.",
     markdown: [
       "---",
       "created: 2026-09-30",

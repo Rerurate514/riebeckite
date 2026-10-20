@@ -51,8 +51,8 @@ export default defineConfig({
 | `dateFormat` | `"iso" \| "long" \| "short"` | `"iso"` | How dates are rendered |
 | `locale` | `string` | `"en"` | Locale for `"long"` / `"short"` dates |
 | `perNote` | `boolean` | `true` | Add a history section to every public note |
-| `siteWide` | `boolean` | `false` | Build and inject the site-wide changelog |
-| `siteWideSlug` | `string` | `"changelog"` | Note that receives the site-wide changelog |
+| `siteWide` | `boolean` | `false` | Build the site-wide changelog dataset |
+| `siteWideSlug` | `string` | `"changelog"` | Slug associated with the site-wide changelog |
 | `maxPerNote` | `number` | `10` | Maximum commits listed per note |
 | `maxSiteWide` | `number` | `50` | Maximum commits listed site-wide |
 | `showAuthor` | `boolean` | `true` | Show the commit author |

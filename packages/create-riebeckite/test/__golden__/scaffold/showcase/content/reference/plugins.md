@@ -152,7 +152,7 @@ Builds a table of contents from Markdown headings.
 
 Factory: `properties` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/properties/README.md)
 
-Renders selected frontmatter properties in the article metadata slot.
+Renders selected frontmatter properties in article metadata.
 
 ---
 created: 2026-09-30

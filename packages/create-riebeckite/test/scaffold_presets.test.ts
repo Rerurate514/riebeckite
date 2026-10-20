@@ -205,7 +205,6 @@ test("each preset ships a site-owned 404 surface", async () => {
       assert.doesNotMatch(notFound, /@riebeckite\/plugin-/);
       assert.doesNotMatch(notFound, /dangerouslySetInnerHTML/);
       assert.doesNotMatch(notFound, /<PageBody/);
-      assert.doesNotMatch(notFound, /ContentSlot|bodySlots/);
       assert.doesNotMatch(notFound, /virtual:riebeckite\/(?:config|content)/);
       const style = await fs.readFile(
         path.join(targetDirectory, "app/style.css"),
@@ -337,7 +336,7 @@ test("content scaffolds delegate route composition to the HonoX helpers", async 
         /PostContent|PublicContentEntry|post=|entry=/,
       );
       assert.match(article, /<ArticleBody \/>/);
-      assert.doesNotMatch(article, /Slot|bodySlots|article\./);
+      assert.doesNotMatch(article, /article\./);
       assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
       assert.doesNotMatch(article, /class="rb-article-content"/);
       if (preset !== "minimal") {
@@ -367,7 +366,7 @@ test("content scaffolds delegate route composition to the HonoX helpers", async 
           source,
           /<Breadcrumbs |<Properties |<Backlinks |<RelatedPosts /,
         );
-        assert.doesNotMatch(source, /bodySlots|asideContent/);
+        assert.doesNotMatch(source, /asideContent/);
       }
     }
   });
@@ -400,7 +399,6 @@ test("minimal scaffold exposes a readable layout with the new primitives", async
     );
     assert.match(article, /<Article class="site-article">/);
     assert.match(article, /<ArticleBody \/>/);
-    assert.doesNotMatch(article, /Slot|bodySlots/);
     assert.doesNotMatch(article, /dangerouslySetInnerHTML/);
     assert.doesNotMatch(article, /class="rb-article-content"/);
   });
@@ -427,7 +425,6 @@ test("starter scaffold renders contextual article components and Recent Posts on
     assert.match(slug, /createContentRoute/);
     assert.doesNotMatch(index, /<RecentPosts /);
     assert.doesNotMatch(slug, /<RecentPosts /);
-    assert.doesNotMatch(slug, /bodySlots/);
   });
 });
 
@@ -447,7 +444,6 @@ test("showcase scaffold renders contextual article components, daily notes, and 
     assert.match(index, /createHomeRoute/);
     assert.match(slug, /createContentRoute/);
     assert.doesNotMatch(slug, /<RecentPosts /);
-    assert.doesNotMatch(slug, /bodySlots/);
   });
 });
 

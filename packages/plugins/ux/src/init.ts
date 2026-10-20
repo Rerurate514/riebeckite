@@ -303,7 +303,7 @@ function showCopiedState(
 }
 
 function findArticle(): HTMLElement | null {
-  return document.querySelector<HTMLElement>('[data-slot="article-body"]');
+  return document.querySelector<HTMLElement>(".rb-article-body");
 }
 
 function hasElement(className: string): boolean {

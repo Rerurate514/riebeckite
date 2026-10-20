@@ -22,12 +22,11 @@ export type ChangelogOptions = {
   /** Render a per-note history section on every public note. Defaults to `true`. */
   perNote?: boolean;
   /**
-   * Build the site-wide changelog and inject it into the note at
-   * `siteWideSlug`. Defaults to `false`. The note itself is owned by the app;
-   * the plugin only fills its body slot.
+   * Build the site-wide changelog dataset. Defaults to `false`. The route is
+   * owned by the app; the plugin only produces the dataset.
    */
   siteWide?: boolean;
-  /** Slug of the note that receives the site-wide changelog. Defaults to `"changelog"`. */
+  /** Slug associated with the site-wide changelog. Defaults to `"changelog"`. */
   siteWideSlug?: string;
   /** Maximum commits listed per note. Defaults to `10`. */
   maxPerNote?: number;

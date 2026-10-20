@@ -22,7 +22,7 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 - `ArticleFooter`
 - `Sidebar`
 
-対応する `*Props` 型も公開されています。`ContentSlot` component と `hasSlot` ユーティリティは削除されました。標準 slot 名を提供する `ARTICLE_SLOT` constant も削除されました。
+対応する `*Props` 型も公開されています。
 
 ## Stable Styling Hooks
 

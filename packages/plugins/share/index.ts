@@ -49,7 +49,7 @@ export const SHARE_PLUGIN_NAME = "share";
  * Per-article share controls.
  *
  * For every entry the plugin builds absolute share URLs for the configured
- * services and contributes the controls to an article layout slot. The links
+ * services and exposes the controls for the Site to render. The links
  * are ordinary anchors, so they work without
  * JavaScript; only the copy-link action is enhanced at runtime.
  */

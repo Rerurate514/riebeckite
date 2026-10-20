@@ -298,24 +298,16 @@ translation: hello
 
 each can be treated as another language version of the same content. **Only translations that actually exist are candidates.** No fallback page is generated for a language that is missing.
 
-`l10n(...)` publishes a built-in, styled `LanguageSwitcher` in the standard `article.metadata` layout slot. A standard site renders that slot, so no l10n-specific integration is needed. The switcher is omitted on a page with fewer than two real translations.
+`l10n(...)` groups the existing translations and publishes `getLocalization(manifest, slug)` plus the `<LanguageSwitcher />` component. The Site renders the switcher where it wants; no l10n-specific integration is needed. The component renders nothing on a page with fewer than two real translations.
 
-```ts
-// Keep URLs and metadata but do not render UI.
-l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+```tsx
+import { LanguageSwitcher, getLocalization } from "@riebeckite/plugin-l10n";
 
-// Use another standard slot, or replace the component.
-l10n({
-  defaultLang: "ja",
-  languages: ["ja", "en"],
-  ui: {
-    slot: "article.footer",
-    render: ({ localization }) => `<p>${localization.lang}</p>`,
-  },
-});
+const localization = getLocalization(manifest, entry.slug);
+<LanguageSwitcher localization={localization} />;
 ```
 
-Themes can restyle the default component through its `.rr-l10n-switcher` root hook. `ui.render` is framework-neutral HTML, so a custom site can supply its own server-rendered component.
+With `SiteProvider` and an `Article` carrying its public `entry`, `<LanguageSwitcher />` resolves the current localization itself. Themes can restyle it through the `.rr-l10n-switcher` root hook.
 
 ## SEO
 
@@ -431,7 +423,6 @@ Translation relationships are stated with `translation`, and only translations t
 | `languages` | The recognized languages. Only these are treated as locales |
 | `translationKey` | Frontmatter property that holds the translation identity. Defaults to `translation` |
 | `strict` | Turn language conflicts and duplicate translations into build failures |
-| `ui` | `false` to disable the switcher, or `{ slot, render }` to customize it |
 | `detect` | Custom detection: returns `{ lang, translationId }` or `undefined` |
 
 The full option list and implementation notes are in the plugin README.

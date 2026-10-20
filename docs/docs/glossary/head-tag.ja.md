@@ -16,7 +16,6 @@ Pluginはpage typeとseo拡張を通じてhead関連のデータを追加でき�
 ## 関連用語
 - [[plugin|Plugin]]
 - [[asset|Asset]]
-- [[slot|Body slot]]
 
 ## さらに詳しく
 - [Plugin API](../reference/plugin-api.ja.md)

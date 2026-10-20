@@ -2,9 +2,10 @@
 
 <!-- Generated from docs/docs/plugins/related-posts.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-ビルド時に「関連ノート」ナビゲーションを生成するプラグインです。公開対象の
-各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べ、
-関連セクションを表示します。クライアント側 JavaScript は不要です。
+ビルド時に「関連ノート」ナビゲーションのデータを生成するプラグインです。公開対象の
+各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べます。
+Site が `<RelatedPosts />` コンポーネントを記事の後などに配置します。クライアント側
+JavaScript は不要です。
 
 [English](./README.md)
 
@@ -42,8 +43,7 @@ export default defineConfig({
 ## 高度なカスタマイズ
 
 Site のレイアウト内で任意の位置に配置できるサーバー描画の Hono JSX Component
-を公開しています。`render: false` で自動の `article.footer` Slot 追加を止め、
-既存の helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
+を公開しています。helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
 
 ```tsx
 import { buildRelatedPosts, RelatedPosts, resolveRelatedPostsOptions } from "@riebeckite/plugin-related-posts";
@@ -54,7 +54,7 @@ const entries = buildRelatedPosts({ manifest, entry, options, config });
 <nav rb-related-posts><RelatedPosts entries={entries} options={options} /></nav>;
 ```
 
-公式 Starter は `article.footer` を一度描画します。手動配置を消すにはコンポーネントを消します。自動描画を有効にしたまま同じ記事へ手動描画しないでください。
+1つの記事につき1回だけ描画してください。UI を外すにはコンポーネントを取り除きます。
 
 ## オプション
 
@@ -78,8 +78,7 @@ relatedPosts({
 
 ## 表示
 
-関連エントリは対象ページの `article.footer`  area に描画されます。この
-サイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを
+このサイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを
 表示します。
 
 ## スタイル

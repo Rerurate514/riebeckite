@@ -204,7 +204,7 @@ flowchart TD
 
 すべてを実装する必要はありません。
 
-UI や output の拡張ポイントは複数あり、優劣の順列ではなく選択肢です。Markdown / HTML 変換、renderer、Page Type、body Slot、公開する Hono JSX component、client entry があります。どれを選ぶかは [UI の提供方法](../plugins/writing-a-plugin.ja.md#ui-の提供方法) を参照してください。
+UI や output の拡張ポイントは複数あり、優劣の順列ではなく選択肢です。Markdown / HTML 変換、renderer、Page Type、公開する Hono JSX component、client entry があります。どれを選ぶかは [UI の提供方法](../plugins/writing-a-plugin.ja.md#ui-の提供方法) を参照してください。
 
 
 ## 27. 実装前の確認

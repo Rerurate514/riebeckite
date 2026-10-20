@@ -14,13 +14,12 @@ Islands allow interactive components (e.g., widgets, charts) to be rendered on t
 
 ## Site responsibility
 
-The site application owns island placement, routing, and hydration. Plugins may contribute rendered HTML fragments via body slots, but island logic resides in the app layer.
+The site application owns island placement, routing, and hydration. Plugins may expose server-rendered components, but island logic resides in the app layer.
 
 ## Related terms
 
 - [[plugin|Plugin]]
 - [[renderer|Renderer]]
-- [[slot|Body slot]]
 - [[page-type|Page Type]]
 
 ## Learn more

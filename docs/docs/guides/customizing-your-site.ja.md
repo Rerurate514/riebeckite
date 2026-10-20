@@ -201,9 +201,7 @@ Riebeckite では、Header / Footer の Navigation とは別に、plugin がペ�
 
 などです。
 
-これらは主に記事ページの中へ表示されます。
-
-Plugin が提供する UI fragment は `article.header` や `article.footer` などの **Body Slot** を通して配置できます。
+これらは主に記事ページの中へ表示されます。Plugin が component を公開し、Site が記事の header や footer など好きな場所へ描画します。
 
 つまり、
 
@@ -218,7 +216,7 @@ Plugin の Page Type
 
 Breadcrumbs・Backlinks など
         ↓
-Component / Body Slot
+Plugin Component
 ```
 
 という違いがあります。
@@ -307,15 +305,11 @@ import Backlinks from "@riebeckite/plugin-backlinks/components";
 
 `color-mode` は例外で、`ColorModeScript` と `ColorModeToggle` を package root から公開しています。
 
-### Body Slot を使う Plugin
+### Context を読む Component
 
-Plugin によっては component を直接配置するのではなく、記事ページの決められた場所へ HTML を追加するものもあります。
+Plugin Component によっては、現在のページのデータを自分で解決します。`SiteProvider` と、public な `entry` を持つ `Article` の内側では context から読み取るため、Site はデータを明示的に渡さずに描画できます。props を渡した場合は常に context より優先されます。
 
-この仕組みが **Body Slot** です。
-
-Plugin を有効にして、Site 側の `SiteArticle` が対応する slot を描画していれば、自動的に表示されます。
-
-詳しくは [Body Slots](../reference/plugin-api.ja.md#body-slots) と [UI の提供方法](../plugins/writing-a-plugin.ja.md#ui-の提供方法) を参照してください。
+詳しくは [UI Component](../reference/plugin-api.ja.md#ui-components) と [UI の提供方法](../plugins/writing-a-plugin.ja.md#ui-の提供方法) を参照してください。
 
 ## 操作できる UI を作る
 
@@ -376,7 +370,7 @@ Plugin の見た目を上書きするときは `rr-<feature>`、Riebeckite の U
 | 独自 component を作りたい | `app/components/` |
 | 操作できる UI を作りたい | `app/islands/` |
 | 色や余白を変えたい | `app/style.css` |
-| Plugin の UI を配置したい | Plugin Component / Body Slot |
+| Plugin の UI を配置したい | Plugin Component |
 
 Riebeckite が content と plugin を Site へ接続し、**最終的なページの見た目と構成は Site が決める**、というのが基本的な考え方です。
 
@@ -384,4 +378,4 @@ Riebeckite が content と plugin を Site へ接続し、**最終的なペー�
 
 - [HonoX Integration](../framework/honox-integration.ja.md)：Riebeckite と HonoX の接続や UI Primitive
 - [プラグイン作成の詳細](../framework/plugin-system.ja.md)：Plugin を作る場合の拡張ポイント
-- [Plugin API](../reference/plugin-api.ja.md)：Body Slot、Page、Asset、CSS Hook の詳細
+- [Plugin API](../reference/plugin-api.ja.md)：Plugin Component、Page、Asset、CSS Hook の詳細

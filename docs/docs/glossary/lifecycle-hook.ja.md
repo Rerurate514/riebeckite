@@ -34,7 +34,7 @@ content hook（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPost
 - `onContentLoaded`：コンテンツがソースから読み込まれた後に呼ばれる；ここではmanifestレベルの情報を再構築しないでください。
 - `onPostParsed`：Markdown/HTMLがパースされた後に呼ばれる；パースされたコンテンツの変換に適しています。
 - `onPostProcessed`：コンテンツパイプラインの最後に呼ばれる；content graphの前に生成されたHTMLを修正する最後の機会です。
-- `onManifestCreated`：manifestが作成された後に呼ばれる；フルなmanifestにアクセスでき、body slotやその他の出力に貢献できます。
+- `onManifestCreated`：manifestが作成された後に呼ばれる；フルなmanifestにアクセスでき、manifestを調整したり生成データを追加したりできます。
 
 ## hook失敗
 hookが失敗すると、`PluginHookError`（`@riebeckite/core`からインポート）がスローされ、`message`でPluginとhook名が特定され、`cause`に原エラーが保持されます。content hookの場合、`path`で故障したファイル（例：`note.md`）が特定されます。

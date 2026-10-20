@@ -634,7 +634,7 @@ const { html } = await pipeline.execute(
 
 ### Level 3: Content / lifecycle
 
-Content の読み込み、hook、manifest、body slot、Page Type などを検証する場合は `ContentManager` を使います。実際の Filesystem を用意する代わりに、小さな In-memory `ContentSource` を渡します。
+Content の読み込み、hook、manifest、Page Type などを検証する場合は `ContentManager` を使います。実際の Filesystem を用意する代わりに、小さな In-memory `ContentSource` を渡します。
 
 ```ts
 const source = {

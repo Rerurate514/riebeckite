@@ -27,7 +27,6 @@ export type PrimitiveClassProps = {
 };
 
 export type ArticleProps = PrimitiveProps & {
-  "data-slot"?: string;
   post?: PostContent;
   entry?: PublicContentEntry;
 };
@@ -46,7 +45,6 @@ export type ArticleHeaderProps =
 
 export type ArticleContentProps = PrimitiveClassProps & {
   children?: PrimitiveChildren;
-  "data-slot"?: string;
 };
 
 export type ArticleMetaProps = PrimitiveProps & {
@@ -61,10 +59,7 @@ export type ArticleFooterProps = PrimitiveProps;
 
 export function Article(props: ArticleProps) {
   const article = (
-    <article
-      class={joinClassNames("rb-article", props.class, props.className)}
-      data-slot={props["data-slot"] ?? "article"}
-    >
+    <article class={joinClassNames("rb-article", props.class, props.className)}>
       {props.children}
     </article>
   );
@@ -122,13 +117,7 @@ export function ArticleContent(props: ArticleContentProps) {
     props.class,
     props.className,
   );
-  const dataSlot = props["data-slot"] ?? "article-body";
-
-  return (
-    <div class={className} data-slot={dataSlot}>
-      {props.children}
-    </div>
-  );
+  return <div class={className}>{props.children}</div>;
 }
 
 export type ArticleBodyProps = PrimitiveClassProps & {

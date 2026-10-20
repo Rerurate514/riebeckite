@@ -282,7 +282,7 @@ Markdown blocks, and the `navigation` plugin.
 
 ## Where to look next
 
-- [Customizing your site](./customizing-your-site.md) — the Header/Footer and body-slot model
+- [Customizing your site](./customizing-your-site.md) — the Header/Footer and plugin component model
 - [Presets](../getting-started/presets.md) — which Plugins each preset registers
 - [Plugins](../plugins/README.md) — the Plugin catalog
-- [Plugin API](../reference/plugin-api.md) — Page Types, body slots, and CSS hooks
+- [Plugin API](../reference/plugin-api.md) — Page Types, plugin components, and CSS hooks

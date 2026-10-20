@@ -71,7 +71,7 @@ Each recipe defines its own factory. Put it in `extensions/` and register it ins
 | Locations | The new URL works and the old URL redirects |
 | Graph | The related note appears as a backlink and graph neighbor |
 | Page type | `/series/typescript` is generated and lists the notes |
-| Component | The site imports it and renders it in the chosen slot |
+| Component | The site imports it and renders it where it belongs |
 | CSS and client | The stylesheet loads and the button works after the page loads |
 | Endpoint | The dev server returns the expected JSON and cache header |
 | SEO | The page source, sitemap, and feeds use the new metadata |

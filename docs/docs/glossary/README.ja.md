@@ -61,7 +61,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Endpoint](./endpoint.ja.md)：Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの宣言をホストのrouterに接続します。
 - [Client entry](./client-entry.ja.md)：Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
 - [Island](./island.ja.md)：Islandはサーバー側で描画され、必要な箇所だけクライアントでhydrationされるコンポーネントです。ページ全体をhydrationせずに、対話的なUIの一部だけを動かせます。IslandコンポーネントはPluginではなくサイトのapplicationで定義します。
-- [プラグイン UI コンポーネント](./plugin-component.ja.md)：Plugin は server-rendered Hono JSX コンポーネントとデータヘルパーを提供します。CSS と選択的な client runtime も含みます。Site はどこで描画するかを決めます。以前の body-slot システムはこのパターンの代わりに削除されました。
+- [プラグイン UI コンポーネント](./plugin-component.ja.md)：Plugin は server-rendered Hono JSX コンポーネントとデータヘルパーを提供します。CSS と選択的な client runtime も含みます。Site はどこで描画するかを決めます。
 - [Asset](./asset.ja.md)：Pluginのassetはstylesheetなどの静的ファイルです。`assets`配列で宣言し、Integrationのstylesheetパイプラインを通してブラウザに届きます。`apps/web`へ直接コピーされることはありません。
 - [Head tag](./head-tag.ja.md)：ページのheadタグとメタデータはPluginシステムを通じて追加されます。Integrationとサイトのapplicationが、タイトル、description、言語属性をまとめて最終的な`<head>`を組み立てます。
 - [Diagnostics](./diagnostics.ja.md)：DiagnosticsはCoreとPluginが出す構造化された調査結果で、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを示します。Pluginは`addDiagnostics`で診断を報告し、Coreは`check`と`doctor`コマンドでまとめます。

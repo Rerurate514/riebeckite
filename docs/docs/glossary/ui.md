@@ -28,13 +28,11 @@ Stable styling hooks and structural CSS are provided by the contract. Article co
 
 Plugins expose data helpers and JSX components that the Site composes in its own TSX. Each plugin's data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model. The component is then rendered directly, giving the Site full control over placement, ordering, and conditional rendering.
 
-There is no `bodySlots` map or `ContentSlot` primitive. Instead:
+Plugin UI follows the same pattern:
 
 - A plugin exports a data helper (e.g., `getProperties`) that takes narrow inputs and returns a model
 - The plugin exports a JSX component (e.g., `<Properties />`) that accepts typed props
 - The Site imports and renders the component where needed, e.g: `<Properties data={data} />`
-
-This replaces the removed body-slot system: the Site owns all rendering decisions, and plugins provide typed data + components rather than HTML fragments accumulated in a shared map.
 
 ```tsx
 import { getProperties } from "@riebeckite/plugin-properties";

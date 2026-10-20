@@ -41,8 +41,8 @@ export default defineConfig({
 | `dateFormat` | `"iso" \| "long" \| "short"` | `"iso"` | 日付の表示形式 |
 | `locale` | `string` | `"en"` | `"long"` / `"short"` のロケール |
 | `perNote` | `boolean` | `true` | 公開ノートごとに履歴セクションを追加する |
-| `siteWide` | `boolean` | `false` | サイト全体の変更履歴を生成して注入する |
-| `siteWideSlug` | `string` | `"changelog"` | サイト全体の変更履歴を受け取るノート |
+| `siteWide` | `boolean` | `false` | サイト全体の変更履歴データセットを生成する |
+| `siteWideSlug` | `string` | `"changelog"` | サイト全体の変更履歴に対応する slug |
 | `maxPerNote` | `number` | `10` | ノートごとに表示するコミット上限 |
 | `maxSiteWide` | `number` | `50` | サイト全体で表示するコミット上限 |
 | `showAuthor` | `boolean` | `true` | コミット作成者を表示する |
@@ -59,7 +59,7 @@ export default defineConfig({
 
 ## アプリ側の接続（サイト全体の変更履歴）
 
-サイト全体の一覧はページではなくデータです。ルートはアプリが所有します。プラグインは既存ノートの `article.after-content` スロットに書き込む（`siteWide: true` と `siteWideSlug`。その slug の公開ノートが必要）か、データセットを公開してアプリ自身に描画させます。
+サイト全体の一覧はページではなくデータです。ルートはアプリが所有します。プラグインはデータセットを生成し、アプリがエクスポートされた renderer を使って描画します。
 
 ## 失敗時の挙動
 

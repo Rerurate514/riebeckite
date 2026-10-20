@@ -36,12 +36,10 @@ after article content, to display the graph output.
 
 ## Advanced customization
 
-Set `render: false` to use the public data resolver `<getLocalGraph>` in a
-Site-owned location without duplicating the automatic graph. This leaves graph
-generation and published-neighbor filtering intact.
+Resolve the graph with the public data helper and pass it to the component:
 
 ```tsx
-import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
+import { LocalGraph, getLocalGraph } from "@riebeckite/plugin-local-graph";
 import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
@@ -55,11 +53,11 @@ const graph = getLocalGraph({
 
 // ...in your route
 return (
-  <aside>{graph && <LocalGraph graph={graph} />}</aside>
+  <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>
 );
 ```
 
-Remove the component to remove manually placed UI.
+Render the component once per article. Remove the element to remove the UI.
 
 ## Configuration
 

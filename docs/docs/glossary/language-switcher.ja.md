@@ -6,32 +6,25 @@ sidebar:
 
 # Language Switcher
 
-読み手がページの言語版を行き来できるようにする操作です。l10n Pluginが、翻訳があるときにarticle metadataのslotへ公開します。
+読み手がページの言語版を行き来できるようにする操作です。`l10n`がコンポーネントとデータhelperを公開します。
 
 ## どこから来るか
 
-l10n Pluginがarticle metadataのslotを通してswitcherを提供するため、どう描画しどこに置くかはサイトが決めます。
+`<LanguageSwitcher />`は`@riebeckite/plugin-l10n`が公開するサーバー描画コンポーネントです。サイトの好きな場所へ描画します。`SiteProvider`と、publicな`entry`を持つ`Article`の内側では、`getLocalization(manifest, slug)`を自分で解決します。
 
 ## 現れる条件
 
 現在のページにtranslationが1つ以上あるときだけ現れます。翻訳版のないページにはswitcherが出ません。実際に存在する翻訳のみが候補となり、欠落している言語のためのフォールバックページは生成されません。
 
 ## UIカスタマイズ
-l10nプラグインはarticle metadataのslotにlanguage switcherを公開します。サイトがどう描画しどこに置くかを決定します。デフォルトのUIはスタイル付きの言語リンクリストを描画しますが、完全にカスタマイズしたり無効化したりすることもできます。
 
-```ts
-// 組み込みスイッチャーを無効化、メタデータのみを保持
-l10n({ defaultLang: "ja", languages: ["ja", "en"], ui: false });
+デフォルトではスタイル付きの言語リンクリストを描画します。サイト独自のコンポーネントに置き換えたり、データを明示的に渡したりできます。
 
-// 異なるslotでスイッチャーを使用
-l10n({
-  defaultLang: "ja",
-  languages: ["ja", "en"],
-  ui: {
-    slot: "article.footer",
-    render: ({ localization }) => `<p>Lang: ${localization.lang}</p>`,
-  },
-});
+```tsx
+import { LanguageSwitcher, getLocalization } from "@riebeckite/plugin-l10n";
+
+const localization = getLocalization(manifest, entry.slug);
+<LanguageSwitcher localization={localization} />;
 ```
 
-カスタムrender関数は`LanguageSwitcherRenderContext`を受け取り、`localizedContent`を含み、任意のHTML文字列を返すことができます。slot名はswitcherが挿入されるmetadata slotを決定します。テーマは`.rr-l10n-switcher` root hookを通じてデフォルトコンポーネントをスタイルできます。
+テーマは`.rr-l10n-switcher`を通じてデフォルトをスタイルできます。

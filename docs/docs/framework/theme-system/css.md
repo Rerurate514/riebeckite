@@ -61,7 +61,7 @@ stable hooks directly to give a site a visual character.
   it does not need to re-declare the structure. The baseline is layered, so a
   theme's unlayered character rules and utility classes both win over it.
 - `.rb-article-body` is the article body shell that hosts the header, metadata,
-  rendered Markdown, and plugin slots. It carries no Markdown typography itself,
+  rendered Markdown, and plugin components. It carries no Markdown typography itself,
   so plugin components keep their own headings wherever they are placed.
 - A theme may ship self-hosted webfonts (Latin subsets) in its package under
   `styles/fonts/`, reference them with relative `url()`, and include the font

@@ -356,7 +356,7 @@ Generated output の path は物理出力 path です。Generated output を Con
 
 ## UI components
 
-Plugin は factory から `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を export できます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、Slot HTML を返しません。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。これは削除された body-slot システムを置き換えます。Plugin は manifest entry の `bodySlots` map に HTML フラグメントを提供しなくなりました。
+Plugin は factory から `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` を export できます。Data helpers は `PublicContentView` のような狭い input を受け、型付き model を返します。components は readonly の型付き props を受け、rendered output を返します。Site は自分の TSX でこれらのコンポーネントを composition し、それぞれの表示有無、位置、頻度を決定します。
 
 典型的な Plugin エクスポート形態：
 
@@ -396,7 +396,7 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 
 component は内部 CSS と client entry を選択的に export することもできます、integration を通じて登録されます。既存の asset と client-entry の登録は引き続き factory の責務です。component を import しただけでは、CSS/client runtime の登録も Plugin capability の有効化も行いません。CSS の tree shaking は既存の package `sideEffects` metadata に従います。
 
-HonoX primitive として `Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody` が残ります。`ArticleFooter`、`Sidebar`、`ThemeRoot` も残ります。これらは記事の構造とレイアウト用の semantic primitive です。Slot API と配置 attribute を削除した後に保持されます。component は Plugin package に置かれ、model type と helper とともに public entry point から export されます。Site TSX は application の `app/` に置かれます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
+HonoX primitive として `Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody` が残ります。`ArticleFooter`、`Sidebar`、`ThemeRoot` も残ります。これらは記事の構造とレイアウト用の semantic primitive です。component は Plugin package に置かれ、model type と helper とともに public entry point から export されます。Site TSX は application の `app/` に置かれます。HonoX は rendering primitive だけを所有し、Plugin component を集めたり順序を決めたりしません。
 
 ```tsx
 // サイト route にある最小 UI composition

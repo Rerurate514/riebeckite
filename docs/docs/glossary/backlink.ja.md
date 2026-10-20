@@ -10,30 +10,18 @@ sidebar:
 
 ## 推奨する配置
 
-`backlinksPlugin()`は、被リンクの一覧を`article.footer`のbody slotに自動で追加します。
-
-物理的な配置はSiteが持ちます。一覧はそのslotを描画する場所にだけ表示され、通常は記事本文のあとに一度だけ出ます。
+`backlinksPlugin()`はデータソースを登録します。一覧を置きたい場所へ`<Backlinks />`を描画してください。通常は記事本文のあとに一度だけ置きます。`SiteProvider`と、publicな`entry`を持つ`Article`の内側では、コンポーネントが被リンクを自分で解決します。
 
 被リンクがない場合（または公開された被リンクがない場合）、コンポーネントは何も描画しません。
 
 ## 高度なカスタマイズ
 
-別の場所に置く場合は、`render: false`でslotへの自動追加を止めます。これはバックリンクのデータや公開の絞り込みを変えません。
-
-データを自分で解決します。
+`backlinks`でデータを明示的に渡します。`getBacklinks({ view, slug })`で解決できます。
 
 ```tsx
-import Backlinks, { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
-import { content } from "virtual:riebeckite/content";
-import { getArticleTitle } from "../lib/article-title";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
 
-const manifest = await content.getManifest();
-const backlinks = getPublishedBacklinks({
-  manifest,
-  config,
-  slug,
-  resolveTitle: getArticleTitle,
-});
+const backlinks = await getBacklinks({ view, slug });
 
 return (
   <aside>
@@ -45,10 +33,10 @@ return (
 ## 設定
 
 ```ts
-plugins: [backlinksPlugin({ render: false })];
+plugins: [backlinksPlugin()];
 ```
 
-手動で置いたUIを外すには、コンポーネントを取り除きます。このコンポーネントと、自動描画を有効にした`article.footer`の両方を描画すると、二重に表示されます。
+Pluginを有効にしてコンポーネントを一度描画します。UIを外すには要素を取り除きます。
 
 ## バックリンクデータの解決
 `getPublishedBacklinks()`関数はcontent manifestから被リンクを解決します。以下のオプションを受け入れます。

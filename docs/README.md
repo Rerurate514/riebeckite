@@ -89,7 +89,6 @@ Start from the page closest to your goal.
 | Look up configuration, CLI, or public APIs | [Reference](./docs/reference/README.md) |
 | Understand Riebeckite's internals | [Framework](./docs/framework/README.md) |
 | Develop Riebeckite itself | [Framework Development](./docs/framework/development.md) |
-| Review the planned Slot-to-component UI migration | [UI Component Migration](./architecture/ui-component-migration.md) |
 | Review CI verification contracts | [CI verification contract](./architecture/ci.md) |
 
 ## Documentation structure

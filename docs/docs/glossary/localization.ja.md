@@ -29,7 +29,6 @@ l10nプラグインは`packages/plugins/l10n/src/l10n.ts`で定義される以�
 | `defaultLang` | 接頭辞なしのURLを維持する言語。Required。`languages`に含まれている必要があります。 |
 | `languages` | 認識された言語。これだけがlocaleとして扱われます。 |
 | `strict` | 言語の競合や重複翻訳をビルド失敗にします。 |
-| `ui` | `false`でスイッチャーを無効化、または `{ slot, render }` でカスタマイズ可能。 |
 | `detect` | カスタム検出：`{ lang, translationId }` を返す、または `undefined` を返します。 |
 
 ```ts

@@ -13,9 +13,7 @@ component framework. Its complete public component surface is:
   `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter` for an article page;
 - `Sidebar` for complementary content.
 
-The corresponding `*Props` types are public. The `ContentSlot` component and
-`hasSlot` utility have been removed. The `ARTICLE_SLOT` constant providing
-standard slot names has also been removed.
+The corresponding `*Props` types are public.
 
 ## Stable styling hooks
 

@@ -18,24 +18,18 @@ import {
 
 test("Article owns the rb-article hook by default", () => {
   const html = renderToString(Article({ children: "Body" }));
-  assert.match(html, /^<article class="rb-article" data-slot="article">/);
+  assert.match(html, /^<article class="rb-article">/);
 });
 
 test("Article composes the consumer class after the rb-article hook", () => {
   const html = renderToString(Article({ class: "fixture-article" }));
-  assert.match(
-    html,
-    /^<article class="rb-article fixture-article" data-slot="article">/,
-  );
+  assert.match(html, /^<article class="rb-article fixture-article">/);
   assert.doesNotMatch(html, /rb-article rb-article/);
 });
 
 test("Article composes the React-style className prop too", () => {
   const html = renderToString(Article({ className: "fixture-article" }));
-  assert.match(
-    html,
-    /^<article class="rb-article fixture-article" data-slot="article">/,
-  );
+  assert.match(html, /^<article class="rb-article fixture-article">/);
 });
 
 test("ArticleMeta owns the rb-article-meta hook", () => {
@@ -49,7 +43,7 @@ test("ArticleLayout and ArticleContent render their children", () => {
   );
   assert.equal(
     html,
-    '<div class="rb-article-layout"><div class="rb-article-body" data-slot="article-body">Body</div></div>',
+    '<div class="rb-article-layout"><div class="rb-article-body">Body</div></div>',
   );
 });
 

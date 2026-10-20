@@ -16,7 +16,7 @@ This page describes the security contract that Plugin authors and site owners sh
 | --- | --- | --- |
 | Site configuration, Theme code, and installed Plugin code | Trusted site-owner controlled code | May produce HTML, CSS, JavaScript, endpoints, assets, client entries, and generated files. Review Plugins like application code before installing them. |
 | Local Markdown content and frontmatter | Trusted content | Markdown may contain raw HTML. Riebeckite parses and emits that HTML; it does not sanitize tags, attributes, URL schemes, inline event handlers, iframes, SVG, or scripts. |
-| Plugin-generated article HTML, slots, and standalone page bodies | Trusted generated HTML | Core and HonoX render these strings into the document. Plugins must escape untrusted text and validate context-specific URLs before creating HTML. |
+| Plugin-generated article HTML and standalone page bodies | Trusted generated HTML | Core and HonoX render these strings into the document. Plugins must escape untrusted text and validate context-specific URLs before creating HTML. |
 | External URLs and embed providers | Context-specific external input | Each Plugin owns the policy for its URL context: links, images, iframes, API endpoints, webhook sources, and diagram servers are not interchangeable. |
 | Plugin endpoint requests | Untrusted browser/network input | HonoX mounts declared endpoints and snapshots request data. Endpoint handlers must validate method-specific bodies, content type, size, query values, auth, CORS, and rate limits where needed. |
 | Browser-side data | Untrusted unless it came from trusted serialized config | Treat query strings, location, postMessage data, form input, and remote responses as untrusted in client code. |

@@ -29,13 +29,13 @@ Pluginは情報とUIの断片を提供し、どこに描画するかはサイト
 
 Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの記事レイアウトやページテンプレートで直接描画されます。
 
-`ContentManifestEntry` に `bodySlots` フィールドはありません。代わりに、Plugin UI は明示的に composition されます：
+Plugin UI は明示的に composition します：
 
 ```tsx
 const view = createPublicContentView(manifest);
 const entry = view.findRoutableBySlug(slug);
 const backlinks = await getBacklinks({ view, slug });
-<Backlinks items={backlinks} />
+<Backlinks backlinks={backlinks} />
 ```
 
 と
@@ -45,7 +45,7 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-Site はレイアウトの配置を決定します。累積された `bodySlots` map も `ContentSlot` プリミティブもありません。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+Site はレイアウトの配置を決定します。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
 
 ## SiteConfig 構造
 

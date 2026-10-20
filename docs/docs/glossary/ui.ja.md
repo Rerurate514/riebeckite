@@ -21,7 +21,7 @@ Site が独自のデザインを作りながら、Riebeckite と共通の HTML �
 - `ArticleFooter`
 - `Sidebar`
 
-対応する `*Props` 型も公開されています。`ContentSlot` は削除されました。
+対応する `*Props` 型も公開されています。
 
 ## Articleプリミティブ
 
@@ -43,13 +43,11 @@ import { Article, ArticleBody, ArticleContent, ArticleLayout } from "@riebeckite
 
 Plugin はデータヘルパーと JSX コンポーネントを公開し、Site は自分の TSX でこれらを composition します。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component は直接描画され、Site は配置、順序、コンディショナルレンダリングの全てを制御します。
 
-`bodySlots` map も `ContentSlot` プリミティブもありません。代わりに：
+Plugin UI も同じ形で組み立てます：
 
 - Plugin はデータヘルパー（例：`getProperties`）をエクスポートし、狭い input を受けて model を返します
 - Plugin は JSX コンポーネント（例：`<Properties />`）をエクスポートし、型付き props を受け入れます
 - Site は必要な箇所で import して描画します：`<Properties data={data} />`
-
-これは削除された body-slot システムを置き換えます。Site はすべての描画決定を所有し、Plugin は HTML フラグメントの累積ではなく型付きデータ + component を提供します。
 
 ```tsx
 import { getProperties } from "@riebeckite/plugin-properties";

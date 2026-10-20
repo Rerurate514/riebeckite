@@ -205,9 +205,9 @@ For example:
 - Series previous/next links
 - Local Graph
 
-These are mostly rendered inside article pages. A UI fragment a plugin provides
-can be placed through a **body slot** such as `article.header` or
-`article.footer`.
+These are mostly rendered inside article pages. A plugin exposes a component,
+and the Site renders it wherever it belongs, such as the article header or
+footer.
 
 In short:
 
@@ -222,7 +222,7 @@ plugin page types
 
 Breadcrumbs, backlinks, and so on
         ↓
-components / body slots
+plugin components
 ```
 
 ## Adding routes
@@ -313,14 +313,14 @@ import Backlinks from "@riebeckite/plugin-backlinks/components";
 `color-mode` is the exception: it exports `ColorModeScript` and
 `ColorModeToggle` from the package root.
 
-### Plugins that use body slots
+### Context-aware components
 
-Some plugins do not place a component directly; instead they add HTML to fixed
-locations on the article page. This is the **body slot** mechanism. The fragment
-appears automatically once the plugin is enabled and the site's `SiteArticle`
-renders the matching slot.
+Some plugin components resolve the current page data themselves. Inside
+`SiteProvider` and an `Article` carrying its public `entry`, they read from
+context, so the Site can render them without passing data explicitly. Explicit
+props always override the context.
 
-See [Body slots](../reference/plugin-api.md#body-slots) and
+See [UI components](../reference/plugin-api.md#ui-components) and
 [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
 
 ## Building interactive UI
@@ -376,7 +376,7 @@ If you are unsure where to make a change, this usually helps:
 | Create a custom component | `app/components/` |
 | Build interactive UI | `app/islands/` |
 | Change color or spacing | `app/style.css` |
-| Place plugin UI | plugin component / body slot |
+| Place plugin UI | plugin component |
 
 The basic idea is that Riebeckite connects content and plugins to the site, and
 **the site decides the final look and structure of each page**.
@@ -385,4 +385,4 @@ The basic idea is that Riebeckite connects content and plugins to the site, and
 
 - [HonoX Integration](../framework/honox-integration.md) — how Riebeckite connects to HonoX and the UI primitives
 - [Plugins in Depth](../framework/plugin-system.md) — extension points for building plugins
-- [Plugin API](../reference/plugin-api.md) — the contracts for body slots, pages, assets, and CSS hooks
+- [Plugin API](../reference/plugin-api.md) — the contracts for plugin components, pages, assets, and CSS hooks

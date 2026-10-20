@@ -33,7 +33,7 @@ test("articles expose the rb-article-content markdown hook instead of prose", ()
   assert.match(honoxPrimitivesTsx, /"rb-article-content"/);
 });
 
-test("markdown typography stays scoped to rendered markdown, not plugin slots", () => {
+test("markdown typography stays scoped to rendered markdown, not plugin components", () => {
   assert.doesNotMatch(markdownCss, /\.rb-article-body/);
   assert.match(markdownCss, /\.rb-article-content/);
 });

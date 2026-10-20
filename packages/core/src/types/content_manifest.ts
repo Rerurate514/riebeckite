@@ -29,13 +29,6 @@ export type ContentManifestPluginAsset = PluginAsset & {
   path: string;
 };
 
-/**
- * The standard `article.*` positions the article consumer recognizes.
- *
- * These constants are a convenience for Sites that prefer named references;
- * writing the slot string inline (for example `name="article.metadata"`) stays
- * the recommended, most readable form in TSX layouts.
- */
 /** Client entries and their explicitly public configuration. */
 export type ContentManifestPluginClientEntry = PluginClientEntry;
 

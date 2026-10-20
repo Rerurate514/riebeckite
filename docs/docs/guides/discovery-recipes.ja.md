@@ -230,7 +230,7 @@ Docs 風のサイトでは、starter に含まれる `folder-pages` を section 
 
 ## 次に読むページ
 
-- [サイトのカスタマイズ](./customizing-your-site.ja.md)：Header / Footer と Body Slot の考え方
+- [サイトのカスタマイズ](./customizing-your-site.ja.md)：Header / Footer と Plugin Component の考え方
 - [Presets](../getting-started/presets.ja.md)：各 preset が登録する Plugin
 - [Plugins](../plugins/README.ja.md)：Plugin カタログ
-- [Plugin API](../reference/plugin-api.ja.md)：Page Type、Body Slot、CSS Hook
+- [Plugin API](../reference/plugin-api.ja.md)：Page Type、Plugin Component、CSS Hook

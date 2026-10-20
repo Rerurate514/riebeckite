@@ -552,7 +552,7 @@ The first two `Pipeline` arguments are the content index and permalink maps. Emp
 
 ### Level 3: Content / lifecycle
 
-To test content loading, hooks, manifests, body slots, or Page Types, use `ContentManager` with a small in-memory `ContentSource` instead of a filesystem fixture.
+To test content loading, hooks, manifests, or Page Types, use `ContentManager` with a small in-memory `ContentSource` instead of a filesystem fixture.
 
 ```ts
 const source = {

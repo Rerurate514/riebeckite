@@ -3,11 +3,10 @@ title: Related Posts
 ---
 # Related Posts
 
-Build-time "related notes" navigation. For every published entry, the plugin
-ranks the other entries in the content manifest and contributes a related-posts
-section. The Site places the `<RelatedPosts />` component itself, normally once
-after article content, to display the navigation. No client-side JavaScript is
-required.
+Build-time related-notes navigation. For every published entry, the plugin ranks
+the other entries in the content manifest and exposes the result. The Site
+renders the `<RelatedPosts />` component itself, normally once after article
+content. No client-side JavaScript is required.
 
 [日本語](./related-posts.ja.md)
 
@@ -45,9 +44,8 @@ export default defineConfig({
 ## Advanced customization
 
 The Site can place the public server-rendered `<RelatedPosts />` component
-anywhere. Set `render: false` first to prevent the automatic `article.footer`
-contribution; ranking and publication filtering remain available through the
-public helpers.
+anywhere. Resolve entries with the public helpers and pass them explicitly, or
+let the component resolve context.
 
 ```tsx
 import {
@@ -62,9 +60,7 @@ const entries = buildRelatedPosts({ manifest, entry, options, config });
 return <nav rb-related-posts><RelatedPosts entries={entries} options={options} /></nav>;
 ```
 
-The official Starter already renders `article.footer` once. Remove the manual
-component to remove a manual placement. Do not use it alongside automatic
-rendering for the same article.
+Render the component once per article. Remove the element to remove the UI.
 
 ## Options
 
@@ -88,7 +84,6 @@ relatedPosts({
 
 ## Display
 
-Related entries are rendered in the `article.footer` area on eligible pages.
 This site renders the live navigation below the article when matching public
 entries exist.
 

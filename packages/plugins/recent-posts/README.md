@@ -49,8 +49,8 @@ return <RecentPosts posts={recentPosts} />;
 
 `getRecentPosts()` filters out the `index` note before collecting posts.
 To disable the generated homepage list, remove its `RecentPosts` import and
-`afterContent` prop. To reposition it, move that same element to the desired
-existing route or layout slot.
+element from the homepage route. To reposition it, move that same element to
+another route or layout.
 
 ## Component
 

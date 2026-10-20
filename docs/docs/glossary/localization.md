@@ -29,7 +29,6 @@ The l10n plugin accepts the following options, defined in `packages/plugins/l10n
 | `defaultLang` | The language that keeps unprefixed URLs. Required. Must appear in `languages`. |
 | `languages` | The recognized languages. Only these are treated as locales. |
 | `strict` | Turn language conflicts and duplicate translations into build failures. |
-| `ui` | `false` to disable the switcher, or `{ slot, render }` to customize it. |
 | `detect` | Custom detection: returns `{ lang, translationId }` or `undefined`. |
 
 ```ts

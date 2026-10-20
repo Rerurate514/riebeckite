@@ -1,3 +1,4 @@
+import type { OutputDescriptor } from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
 
 export type GeneratedOutputAsset = {
@@ -51,9 +52,9 @@ export type SsgModule = {
       >;
     };
     getOutputChangeSet(): Promise<{
-      affected: readonly { kind: string; path: string }[];
-      removed: readonly { kind: string; path: string }[];
-      unchanged: readonly { kind: string; path: string }[];
+      affected: readonly OutputDescriptor[];
+      removed: readonly OutputDescriptor[];
+      unchanged: readonly OutputDescriptor[];
       fullRegenerationRequired: boolean;
       candidateOutputCount: number;
       affectedOutputCount: number;
@@ -100,6 +101,15 @@ export type SsgOutputMetrics = {
   manifestHookCacheMiss: number;
   manifestHookDurationMs: number;
   manifestHookPlugins: Record<string, unknown>;
+  plannedOutputCount: number;
+  actualOutputCount: number;
+  matchedOutputCount: number;
+  missingInPlanCount: number;
+  missingInDistCount: number;
+  unknownOutputCount: number;
+  ownerConflictCount: number;
+  publicationViolationCount: number;
+  outputPlanMemoryDeltaBytes: number;
   outputCacheDecision: OutputCacheDecision;
   outputCacheRejectionReason: OutputCacheRejectionReason | null;
   timingsMs: Record<string, number>;

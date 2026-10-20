@@ -142,6 +142,20 @@ export {
   determineOutputChanges,
   htmlOutputPath,
 } from "./src/content/output_dependency.js";
+export type {
+  OutputPlan,
+  OutputPlanAction,
+  OutputPlanComparison,
+  OutputPlanConflict,
+  OutputPlanEntry,
+  OutputPlanInput,
+  OutputPlanKind,
+  OutputPlanOwner,
+} from "./src/content/output_plan.js";
+export {
+  buildOutputPlan,
+  compareOutputPlan,
+} from "./src/content/output_plan.js";
 export {
   createPublicContentView,
   type PublicContentEntry,

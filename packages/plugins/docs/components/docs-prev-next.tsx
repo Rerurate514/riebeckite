@@ -18,6 +18,7 @@ const DocsPrevNext = (async (props: Readonly<DocsPrevNextProps>) => {
     site && article?.entry && options
       ? await getDocsNavigation({
           view: site.view,
+          entries: site.manifest.discoverableEntries,
           entrySlug: article.entry.slug,
           options,
         })

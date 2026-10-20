@@ -172,6 +172,39 @@ test("excludes hidden, unpublished, and outside-root entries", async () => {
   assert.doesNotMatch(sidebarHtml, /Note/);
 });
 
+test("reads sidebar metadata through the public content view", async () => {
+  const manager = createManager({
+    "docs/index.md":
+      "---\ntitle: Home\npublish: true\nsidebar:\n  order: 0\n---\n# Home\n",
+    "docs/second.md":
+      "---\ntitle: Second\npublish: true\nsidebar:\n  label: Custom second\n  order: 2\n---\n# Second\n",
+    "docs/first.md":
+      "---\ntitle: First\npublish: true\nsidebar:\n  order: 1\n---\n# First\n",
+    "docs/hidden.md":
+      "---\ntitle: Hidden\npublish: true\nsidebar:\n  hidden: true\n---\n# Hidden\n",
+  });
+
+  const manifest = await manager.getManifest();
+  const view = createPublicContentView(manifest);
+  const navigation = await getDocsNavigation({
+    view,
+    entries: manifest.discoverableEntries,
+    entrySlug: "docs/index",
+    options: resolveDocsOptions({ root: "docs" }),
+  });
+  const sidebarHtml = renderDocsSidebar({
+    items: navigation,
+    currentPermalink: manifest.bySlug.get("docs/index")?.permalink ?? "",
+    label: "Documentation",
+  });
+
+  assert.deepEqual(
+    navigation.map((item) => item.title),
+    ["Home", "First", "Custom second"],
+  );
+  assert.doesNotMatch(sidebarHtml, /Hidden/);
+});
+
 test("uses resolved public URLs for sidebar and previous-next", async () => {
   const manager = createManager({
     "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
@@ -269,11 +302,13 @@ test("keeps localized docs navigation within the current language", async () => 
 
   const englishNavigation = await getDocsNavigation({
     view,
+    entries: manifest.discoverableEntries,
     entrySlug: "docs/index",
     options,
   });
   const japaneseNavigation = await getDocsNavigation({
     view,
+    entries: manifest.discoverableEntries,
     entrySlug: "docs/index.ja",
     options,
   });
@@ -325,10 +360,20 @@ test("localizes the previous and next labels by page language", async () => {
   const view = createPublicContentView(manifest);
   const options = resolveDocsOptions({ root: "docs" });
   const englishHistory = flattenDocsNavigation(
-    await getDocsNavigation({ view, entrySlug: "docs/index", options }),
+    await getDocsNavigation({
+      view,
+      entries: manifest.discoverableEntries,
+      entrySlug: "docs/index",
+      options,
+    }),
   );
   const japaneseHistory = flattenDocsNavigation(
-    await getDocsNavigation({ view, entrySlug: "docs/index.ja", options }),
+    await getDocsNavigation({
+      view,
+      entries: manifest.discoverableEntries,
+      entrySlug: "docs/index.ja",
+      options,
+    }),
   );
   const currentEnglish = englishHistory[Math.floor(englishHistory.length / 2)];
   const currentJapanese =

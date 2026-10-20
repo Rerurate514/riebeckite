@@ -1,4 +1,8 @@
-import type { PluginDataHelper, PublicContentView } from "@riebeckite/core";
+import type {
+  ContentManifestEntry,
+  PluginDataHelper,
+  PublicContentView,
+} from "@riebeckite/core";
 import {
   buildDocsNavigation,
   flattenDocsNavigation,
@@ -11,13 +15,19 @@ import type {
 } from "./types.js";
 
 export const getDocsNavigation: PluginDataHelper<
-  { view: PublicContentView; entrySlug: string; options: DocsOptions },
+  {
+    view: PublicContentView;
+    entries: readonly ContentManifestEntry[];
+    entrySlug: string;
+    options: DocsOptions;
+  },
   readonly DocsNavigationItem[]
-> = ({ view, entrySlug, options }) => {
+> = ({ view, entries, entrySlug, options }) => {
   const entry = view.findRoutableBySlug(entrySlug);
   if (!entry) return [];
-  const localized = view.discoverableEntries.filter(
+  const localized = entries.filter(
     (candidate) =>
+      candidate.publishing.discoverable &&
       candidate.publicLocation.language === entry.publicLocation.language,
   );
   return buildDocsNavigation(localized, resolveDocsOptions(options));

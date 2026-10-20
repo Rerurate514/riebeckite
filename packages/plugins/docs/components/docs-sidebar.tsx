@@ -19,6 +19,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
     (site && article?.entry && options
       ? await getDocsNavigation({
           view: site.view,
+          entries: site.manifest.discoverableEntries,
           entrySlug: article.entry.slug,
           options,
         })

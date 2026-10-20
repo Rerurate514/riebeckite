@@ -49,7 +49,7 @@ test("content and output failures are reported independently", async () => {
   );
 });
 
-test("plugin category is serialized with the plugin subject", () => {
+test("error diagnostics do not serialize exception details", () => {
   const diagnostic = createDiagnosticFromError(
     "plugins",
     "PLUGIN_RESOLUTION",
@@ -59,7 +59,6 @@ test("plugin category is serialized with the plugin subject", () => {
 
   assert.deepEqual(JSON.parse(JSON.stringify(diagnostic)), {
     category: "plugins",
-    cause: "missing provider",
     code: "PLUGIN_RESOLUTION",
     message: "Plugin resolution failed.",
     severity: "error",

@@ -341,7 +341,7 @@ flowchart LR
 
 Health check が失敗した場合は non-zero status で終了します。
 
-`riebeckite dev` の実行中に <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> を押すと Development Inspector を開けます。Inspector は `doctor` と同じレポートを使い、Vite の更新時に再表示されます。production の client output や endpoint には含まれません。Element の source と Component の対応付けは runtime が提供していないため、現時点では PARTIAL と表示します。
+`riebeckite dev` の実行中に、編集可能なコントロール以外で <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> を押すと Development Inspector を開けます。Inspector は `doctor` と同じレポートを使い、Vite の更新時に再表示されます。production の client output や endpoint には含まれません。Overview、Diagnostics、Dependencies、Plugins、Output のタブでは、build を実行する代わりに取得できない観測結果を明示します。
 
 ## `build`
 

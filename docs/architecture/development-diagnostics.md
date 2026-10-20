@@ -35,9 +35,15 @@ code is present in production output.
 ## Known observation limits
 
 Element-to-source mappings are not preserved through the Markdown/HTML pipeline.
-Phase 5 is therefore partial: the Inspector currently exposes the diagnostic
-summary and diagnostic locations when present. It does not expose a page,
-content, plugin, output, or dependency-data view, and does not guess an
-element's source file, line, component, or CSS owner. Adding that capability
-requires an explicit development-only source-map observation at the renderer
-boundary.
+The Inspector presents Overview, Diagnostics, Dependencies, Plugins, and
+Output tabs. It does not trigger content inspection or output planning merely
+to populate a development view: unavailable capabilities are labelled as such.
+It reports the current URL path and resolved plugins, but does not guess an
+element's source file, line, component, or CSS owner. Adding element-level
+inspection requires an explicit development-only source-map observation at the
+renderer boundary.
+
+The launcher is available only while serving. Use Ctrl+Alt+R outside editable
+controls to open or close it; Escape closes it and restores focus to the
+launcher. The report endpoint is loopback-only, responds with `no-store`, and
+is ordered before HonoX's catch-all development middleware.

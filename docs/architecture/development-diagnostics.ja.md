@@ -27,4 +27,6 @@ Riebeckite Doctor と Development Inspector は `@riebeckite/diagnostics` を共
 
 ## 観測できない情報
 
-Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。そのため Phase 5 は PARTIAL です。Inspector はページ、コンテンツ、Plugin、Output、追跡済み依存を表示しますが、要素の元ファイル・行・Component・CSS 所有者を推測しません。この機能には renderer 境界での開発専用 source-map 観測点が必要です。
+Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。Inspector には Overview、Diagnostics、Dependencies、Plugins、Output のタブがあります。開発用の表示だけを目的に Content の検査や Output Plan の作成は行わず、取得できない機能はそのように表示します。現在の URL パスと解決済み Plugin は表示しますが、要素の元ファイル・行・Component・CSS 所有者は推測しません。要素単位の検査には renderer 境界での開発専用 source-map 観測点が必要です。
+
+Launcher は serve 時だけ利用できます。編集可能なコントロール以外で Ctrl+Alt+R を押すと開閉でき、Escape を押すと閉じて Launcher にフォーカスが戻ります。レポート endpoint は loopback からのみ利用でき、`no-store` を返し、HonoX の catch-all 開発 middleware より前に登録されます。

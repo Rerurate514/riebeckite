@@ -68,6 +68,29 @@ test("the published bin wrapper starts the built CLI bundle", () => {
   assert.match(output, /Usage: riebeckite/);
 });
 
+test("doctor JSON output is machine-readable and does not expose execution details", () => {
+  const project = fs.mkdtempSync(path.join(packageRoot, "test", "doctor-"));
+  try {
+    fs.writeFileSync(
+      path.join(project, "riebeckite.config.ts"),
+      'export default { site: { title: "Doctor test" } };\n',
+    );
+    fs.writeFileSync(path.join(project, "vite.config.ts"), "export default {};\n");
+    const result = spawnSync(process.execPath, [cliBundle, "doctor", "--json"], {
+      cwd: project,
+      encoding: "utf8",
+    });
+
+    assert.equal(result.status, 1, result.stderr);
+    const report = JSON.parse(result.stdout);
+    assert.equal(report.summary.errors, 2);
+    assert.equal(result.stderr, "");
+    assert.doesNotMatch(result.stdout, /doctor-|private|secret/i);
+  } finally {
+    fs.rmSync(project, { recursive: true, force: true });
+  }
+});
+
 test("the built CLI scaffolds a project through the external create-riebeckite package", () => {
   const temporary = fs.mkdtempSync(
     path.join(os.tmpdir(), "riebeckite-cli-init-"),

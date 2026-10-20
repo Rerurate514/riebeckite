@@ -117,7 +117,7 @@ export function createDiagnosticFromError(
   category: DevelopmentDiagnosticCategory,
   code: string,
   message: string,
-  error: unknown,
+  _error: unknown,
 ): DevelopmentDiagnostic {
   return {
     code,
@@ -125,7 +125,6 @@ export function createDiagnosticFromError(
     severity: "error",
     message,
     subject: { kind: subjectKindFor(category) },
-    cause: error instanceof Error ? error.message : String(error),
   };
 }
 

@@ -42,7 +42,7 @@ README.
 | [`@riebeckite/plugin-autocardlink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md) | `autoCardLinkPlugin` | `{ className: "rb-cardlink" }` |
 | [`@riebeckite/plugin-rich-embed`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rich-embed/README.md) | `richEmbed` | `{ providers: ["youtube", "vimeo", "spotify"] }` |
 | [`@riebeckite/plugin-gallery`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/gallery/README.md) | `gallery` | `{ columns: 3, aspect: "4/3", language: "gallery" }` |
-| [`@riebeckite/plugin-mermaid`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/mermaid/README.md) | `mermaid` | `{ render: "build", theme: { light: "default", dark: "dark" }, caption: true, fallback: true }` |
+| [`@riebeckite/plugin-mermaid-pele`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/mermaid-pele/README.md) | `mermaidPele` | — |
 | [`@riebeckite/plugin-graphviz`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/graphviz/README.md) | `graphviz` | `{ render: "build", engine: "dot", caption: true, fallback: true }` |
 | [`@riebeckite/plugin-d2`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/d2/README.md) | `d2` | `{ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }` |
 | [`@riebeckite/plugin-plantuml`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/plantuml/README.md) | `plantuml` | `{ server: "https://www.plantuml.com/plantuml", format: "svg", caption: true, fallback: true }` |
@@ -441,13 +441,13 @@ items:
     href: https://riebeckite.dev/docs/themes/gruvbox
 ```
 
-### @riebeckite/plugin-mermaid
+### @riebeckite/plugin-mermaid-pele
 
-Factory: `mermaid` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/mermaid/README.md)
+Factory: `mermaidPele` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/mermaid-pele/README.md)
 
-#### Mermaid
+#### Mermaid (Pele)
 
-A `mermaid` fence becomes a rendered diagram at build time.
+A `mermaid` fence becomes a static diagram at build time without Chromium.
 
 ```mermaid
 flowchart LR

@@ -63,6 +63,6 @@ npm exec riebeckite dev
 ## 5. 次のステップ
 
 - [Plugin リファレンス](../plugins/README.ja.md) で他の Plugin を探す
-- 図表用に `@riebeckite/plugin-mermaid` を試す
+- Chromium を使わない静的な図表用に `@riebeckite/plugin-mermaid-pele` を試す
 - グラフ可視化用に `@riebeckite/plugin-graphviz` を試す
 - [自作 Plugin の書き方](../plugins/writing-a-plugin.ja.md) を学ぶ

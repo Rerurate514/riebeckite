@@ -11,7 +11,7 @@ Riebeckite の力はプラグインエコシステムにあります——50 以
 パッケージをインストール：
 
 ```sh
-npm install @riebeckite/plugin-mermaid
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 `riebeckite.config.ts` の `plugins` 配列に登録：
@@ -19,12 +19,12 @@ npm install @riebeckite/plugin-mermaid
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), l10n({ ... }), mermaid()],
+  plugins: [obsidianMarkdown(), l10n({ ... }), mermaidPele()],
 });
 ```
 

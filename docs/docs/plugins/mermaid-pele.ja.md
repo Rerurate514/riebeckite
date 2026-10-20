@@ -10,7 +10,7 @@ title: Mermaid (Pele)
 ## インストール
 
 ```sh
-npm install @riebeckite/plugin-mermaid-pele pele
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 ## 設定する

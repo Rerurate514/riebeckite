@@ -325,12 +325,7 @@ const gallery = np("@riebeckite/plugin-gallery", "gallery", {
 });
 
 /** Diagrams, charts, and knowledge tools for the heavy tiers. */
-const mermaid = np("@riebeckite/plugin-mermaid", "mermaid", {
-  render: { depth: 2, value: '"build"' },
-  theme: { depth: 2, value: '{ light: "default", dark: "dark" }' },
-  caption: { depth: 3, value: "true" },
-  fallback: { depth: 3, value: "true" },
-});
+const mermaidPele = np("@riebeckite/plugin-mermaid-pele", "mermaidPele");
 const graphviz = np("@riebeckite/plugin-graphviz", "graphviz", {
   render: { depth: 2, value: '"build"' },
   engine: { depth: 2, value: '"dot"' },
@@ -620,7 +615,7 @@ export const showcase: ScaffoldPreset = {
     autoCardLink,
     richEmbed,
     gallery,
-    mermaid,
+    mermaidPele,
     graphviz,
     d2,
     plantuml,

@@ -42,9 +42,9 @@ const greeting = "Hello from React";
 console.log("Hello from JavaScript");
 ```
 
-## Mermaid
+## Mermaid (Pele)
 
-`mermaid` フェンスはビルド時にレンダリングされた図になります。
+`mermaid` フェンスは Chromium を使わずビルド時に静的な図になります。
 
 ```mermaid
 flowchart LR

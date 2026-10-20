@@ -171,7 +171,7 @@ You can write body text as-is.
 
 ## Diagrams
 
-### Mermaid — [`mermaid`](./mermaid.md)
+### Mermaid (Pele) — [`mermaid-pele`](./mermaid-pele.md)
 
 #### Source
 

@@ -54,11 +54,11 @@ export const README_DEMOS: Readonly<Record<string, ReadmeDemo>> = {
       fence('js tab="Vanilla"', 'console.log("Hello from JavaScript");'),
     ].join("\n"),
   },
-  "@riebeckite/plugin-mermaid": {
-    title: { en: "Mermaid", ja: "Mermaid" },
+  "@riebeckite/plugin-mermaid-pele": {
+    title: { en: "Mermaid (Pele)", ja: "Mermaid (Pele)" },
     intro: {
-      en: "A `mermaid` fence becomes a rendered diagram at build time.",
-      ja: "`mermaid` フェンスはビルド時にレンダリングされた図になります。",
+      en: "A `mermaid` fence becomes a static diagram at build time without Chromium.",
+      ja: "`mermaid` フェンスは Chromium を使わずビルド時に静的な図になります。",
     },
     markdown: fence(
       "mermaid",
@@ -363,7 +363,7 @@ export const README_DEMO_ORDER = [
   "@riebeckite/plugin-obsidian-markdown/wikilinks",
   "@riebeckite/plugin-code-enhance",
   "@riebeckite/plugin-code-tabs",
-  "@riebeckite/plugin-mermaid",
+  "@riebeckite/plugin-mermaid-pele",
   "@riebeckite/plugin-d2",
   "@riebeckite/plugin-graphviz",
   "@riebeckite/plugin-chartjs",

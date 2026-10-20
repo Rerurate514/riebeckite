@@ -63,6 +63,6 @@ Save and check the page — the text between `==` is now highlighted.
 ## 5. Next Steps
 
 - Explore more plugins in the [Plugins reference](../plugins/README.md)
-- Try `@riebeckite/plugin-mermaid` for diagrams
+- Try `@riebeckite/plugin-mermaid-pele` for static diagrams without Chromium
 - Try `@riebeckite/plugin-graphviz` for graph visualizations
 - Learn to [write your own plugin](../plugins/writing-a-plugin.md)

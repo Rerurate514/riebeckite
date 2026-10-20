@@ -1299,7 +1299,7 @@ function pluginsContent(language: ScaffoldLanguage): string {
   lines.push(read(copy.intro, language), "");
   lines.push(heading(2, read(copy.installHeading, language)), "");
   lines.push(read(copy.installStep1, language), "");
-  lines.push(codeBlock("sh", "npm install @riebeckite/plugin-mermaid"));
+  lines.push(codeBlock("sh", "npm install @riebeckite/plugin-mermaid-pele"));
   lines.push(read(copy.installStep2, language), "");
   lines.push(
     codeBlock(
@@ -1307,12 +1307,12 @@ function pluginsContent(language: ScaffoldLanguage): string {
       [
         'import { defineConfig } from "@riebeckite/core";',
         'import { l10n } from "@riebeckite/plugin-l10n";',
-        'import { mermaid } from "@riebeckite/plugin-mermaid";',
+        'import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";',
         'import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";',
         "",
         "export default defineConfig({",
         "  // ...",
-        "  plugins: [obsidianMarkdown(), l10n({ ... }), mermaid()],",
+        "  plugins: [obsidianMarkdown(), l10n({ ... }), mermaidPele()],",
         "});",
       ].join("\n"),
     ),

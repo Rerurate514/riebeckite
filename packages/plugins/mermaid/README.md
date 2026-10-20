@@ -6,6 +6,8 @@ Mermaid diagram rendering for ` ```mermaid ` code blocks.
 
 [日本語](./README_ja.md)
 
+For static SVG rendering without a headless browser, see [Mermaid (Pele)](../mermaid-pele/README.md).
+
 ## Overview
 
 `mermaid()` replaces mermaid code blocks with a `<figure class="rr-mermaid">`

@@ -137,7 +137,7 @@ npm exec riebeckite build
 | Canvas | `@riebeckite/plugin-canvas` が必要 |
 | Excalidraw | `@riebeckite/plugin-excalidraw` が必要 |
 | Bases | `@riebeckite/plugin-bases` が必要 |
-| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid` が必要。未導入ならコードブロックとして扱われる |
+| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid-pele` などのレンダラーが必要。未導入ならコードブロックとして扱われる |
 | `.obsidian/` | Riebeckite には不要。自動的に無視される |
 
 ## Vault を別リポジトリで管理する

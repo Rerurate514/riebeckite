@@ -42,9 +42,9 @@ const greeting = "Hello from React";
 console.log("Hello from JavaScript");
 ```
 
-## Mermaid
+## Mermaid (Pele)
 
-A `mermaid` fence becomes a rendered diagram at build time.
+A `mermaid` fence becomes a static diagram at build time without Chromium.
 
 ```mermaid
 flowchart LR

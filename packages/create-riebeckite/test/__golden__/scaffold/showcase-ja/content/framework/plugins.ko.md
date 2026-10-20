@@ -11,7 +11,7 @@ Riebeckite의 힘은 플러그인 생태계에 있습니다 — Markdown·렌더
 패키지를 설치합니다:
 
 ```sh
-npm install @riebeckite/plugin-mermaid
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 `riebeckite.config.ts`의 `plugins` 배열에 등록합니다:
@@ -19,12 +19,12 @@ npm install @riebeckite/plugin-mermaid
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), l10n({ ... }), mermaid()],
+  plugins: [obsidianMarkdown(), l10n({ ... }), mermaidPele()],
 });
 ```
 

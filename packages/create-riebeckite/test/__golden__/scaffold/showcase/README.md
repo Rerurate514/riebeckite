@@ -6,7 +6,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 
 - **Languages**: en, ja, zh-CN, es, de, fr, ko
 - **Theme**: `@riebeckite/theme-default`
-- **Plugins** (62): `@riebeckite/plugin-obsidian-markdown`, `@riebeckite/plugin-color-mode`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-toc`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-alias`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-search`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-share`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-webmention`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-attachment`, `@riebeckite/plugin-pdf`, `@riebeckite/plugin-media`, `@riebeckite/plugin-responsive-image`, `@riebeckite/plugin-lightbox`, `@riebeckite/plugin-highlight`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-code-annotations`, `@riebeckite/plugin-shortcodes`, `@riebeckite/plugin-series`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-autocardlink`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-gallery`, `@riebeckite/plugin-mermaid`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-plantuml`, `@riebeckite/plugin-chartjs`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-map`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-qr-code`, `@riebeckite/plugin-discord-embed`, `@riebeckite/plugin-excalidraw`, `@riebeckite/plugin-excalibrain`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-kanban`, `@riebeckite/plugin-query`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-hover-preview`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-ux`, `@riebeckite/plugin-daily-notes`, `@riebeckite/plugin-rename`, `@riebeckite/plugin-text-fragment`, `@riebeckite/plugin-quality`, `@riebeckite/plugin-deploy`, `@riebeckite/plugin-diagnostics`
+- **Plugins** (62): `@riebeckite/plugin-obsidian-markdown`, `@riebeckite/plugin-color-mode`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-toc`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-alias`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-search`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-share`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-webmention`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-attachment`, `@riebeckite/plugin-pdf`, `@riebeckite/plugin-media`, `@riebeckite/plugin-responsive-image`, `@riebeckite/plugin-lightbox`, `@riebeckite/plugin-highlight`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-code-annotations`, `@riebeckite/plugin-shortcodes`, `@riebeckite/plugin-series`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-autocardlink`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-gallery`, `@riebeckite/plugin-mermaid-pele`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-plantuml`, `@riebeckite/plugin-chartjs`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-map`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-qr-code`, `@riebeckite/plugin-discord-embed`, `@riebeckite/plugin-excalidraw`, `@riebeckite/plugin-excalibrain`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-kanban`, `@riebeckite/plugin-query`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-hover-preview`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-ux`, `@riebeckite/plugin-daily-notes`, `@riebeckite/plugin-rename`, `@riebeckite/plugin-text-fragment`, `@riebeckite/plugin-quality`, `@riebeckite/plugin-deploy`, `@riebeckite/plugin-diagnostics`
 - **Content pages**: /index, /framework/plugins, /framework/themes, /guide, /examples, /reference/plugins, /reference/themes
 
 ## Configuration reference
@@ -49,7 +49,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-autocardlink` | `autoCardLinkPlugin` | `{ className: "rb-cardlink" }` |
 | `@riebeckite/plugin-rich-embed` | `richEmbed` | `{ providers: ["youtube", "vimeo", "spotify"] }` |
 | `@riebeckite/plugin-gallery` | `gallery` | `{ columns: 3, aspect: "4/3", language: "gallery" }` |
-| `@riebeckite/plugin-mermaid` | `mermaid` | `{ render: "build", theme: { light: "default", dark: "dark" }, caption: true, fallback: true }` |
+| `@riebeckite/plugin-mermaid-pele` | `mermaidPele` | — |
 | `@riebeckite/plugin-graphviz` | `graphviz` | `{ render: "build", engine: "dot", caption: true, fallback: true }` |
 | `@riebeckite/plugin-d2` | `d2` | `{ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }` |
 | `@riebeckite/plugin-plantuml` | `plantuml` | `{ server: "https://www.plantuml.com/plantuml", format: "svg", caption: true, fallback: true }` |
@@ -146,9 +146,9 @@ const greeting = "Hello from React";
 console.log("Hello from JavaScript");
 ```
 
-### Mermaid
+### Mermaid (Pele)
 
-A `mermaid` fence becomes a rendered diagram at build time.
+A `mermaid` fence becomes a static diagram at build time without Chromium.
 
 ```mermaid
 flowchart LR

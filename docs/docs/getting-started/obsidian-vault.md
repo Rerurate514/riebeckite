@@ -137,7 +137,7 @@ The output is written to `dist/`.
 | Canvas | Requires `@riebeckite/plugin-canvas` |
 | Excalidraw | Requires `@riebeckite/plugin-excalidraw` |
 | Bases | Requires `@riebeckite/plugin-bases` |
-| Mermaid | Requires `@riebeckite/plugin-mermaid` for rendered diagrams; otherwise Mermaid fences are code blocks |
+| Mermaid | Requires a renderer such as `@riebeckite/plugin-mermaid-pele` for rendered diagrams; otherwise Mermaid fences are code blocks |
 | `.obsidian/` | Not required by Riebeckite; ignored automatically |
 
 ## Keep the Vault in another repository

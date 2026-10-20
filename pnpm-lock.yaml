@@ -200,9 +200,9 @@ importers:
       '@riebeckite/plugin-media':
         specifier: workspace:*
         version: link:../../packages/plugins/media
-      '@riebeckite/plugin-mermaid':
+      '@riebeckite/plugin-mermaid-pele':
         specifier: workspace:*
-        version: link:../../packages/plugins/mermaid
+        version: link:../../packages/plugins/mermaid-pele
       '@riebeckite/plugin-navigation':
         specifier: workspace:*
         version: link:../../packages/plugins/navigation

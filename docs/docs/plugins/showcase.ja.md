@@ -171,7 +171,7 @@ const kept = true;
 
 ## 図表
 
-### Mermaid：[`mermaid`](./mermaid.ja.md)
+### Mermaid (Pele)：[`mermaid-pele`](./mermaid-pele.ja.md)
 
 #### ソース
 

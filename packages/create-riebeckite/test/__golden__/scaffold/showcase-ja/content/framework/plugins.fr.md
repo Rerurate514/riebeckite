@@ -11,7 +11,7 @@ La puissance de Riebeckite vient de son écosystème de plugins — plus de cinq
 Installez le paquet :
 
 ```sh
-npm install @riebeckite/plugin-mermaid
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 Enregistrez-le dans le tableau `plugins` de `riebeckite.config.ts` :
@@ -19,12 +19,12 @@ Enregistrez-le dans le tableau `plugins` de `riebeckite.config.ts` :
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), l10n({ ... }), mermaid()],
+  plugins: [obsidianMarkdown(), l10n({ ... }), mermaidPele()],
 });
 ```
 

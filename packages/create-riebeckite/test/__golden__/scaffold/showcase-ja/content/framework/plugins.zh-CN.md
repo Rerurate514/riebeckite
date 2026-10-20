@@ -11,7 +11,7 @@ Riebeckite 的强大来自其插件生态——五十多个扩展 Markdown、渲
 安装该包：
 
 ```sh
-npm install @riebeckite/plugin-mermaid
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 在 `riebeckite.config.ts` 的 `plugins` 数组中注册：
@@ -19,12 +19,12 @@ npm install @riebeckite/plugin-mermaid
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), l10n({ ... }), mermaid()],
+  plugins: [obsidianMarkdown(), l10n({ ... }), mermaidPele()],
 });
 ```
 

@@ -32,7 +32,7 @@ import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
 import { map } from "@riebeckite/plugin-map";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { navigation } from "@riebeckite/plugin-navigation";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -114,13 +114,7 @@ export default defineConfig({
       robots: true,
     }),
     discordEmbed(),
-    mermaid({
-      render: "build",
-      theme: {
-        light: "default",
-        dark: "dark",
-      },
-    }),
+    mermaidPele(),
     markmap(),
     map(),
     marp(),

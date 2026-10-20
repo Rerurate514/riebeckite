@@ -124,7 +124,7 @@ test("each preset generates its intended self-contained composition", async () =
             path.join(targetDirectory, "content/attachments/project-brief.pdf"),
           ),
         );
-        assert.ok(config.includes("@riebeckite/plugin-mermaid"));
+        assert.ok(config.includes("@riebeckite/plugin-mermaid-pele"));
         assert.ok(config.includes("@riebeckite/plugin-breadcrumbs"));
         assert.ok(config.includes("@riebeckite/plugin-folder-pages"));
         assert.ok(config.includes("@riebeckite/plugin-daily-notes"));

@@ -31,7 +31,7 @@ import { folderPagesPlugin } from "@riebeckite/plugin-folder-pages";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { gallery } from "@riebeckite/plugin-gallery";
-import { mermaid } from "@riebeckite/plugin-mermaid";
+import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { d2 } from "@riebeckite/plugin-d2";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -108,7 +108,7 @@ export default defineConfig({
     autoCardLinkPlugin({ className: "rb-cardlink" }),
     richEmbed({ providers: ["youtube", "vimeo", "spotify"] }),
     gallery({ columns: 3, aspect: "4/3", language: "gallery" }),
-    mermaid({ render: "build", theme: { light: "default", dark: "dark" }, caption: true, fallback: true }),
+    mermaidPele(),
     graphviz({ render: "build", engine: "dot", caption: true, fallback: true }),
     d2({ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }),
     plantuml({ server: "https://www.plantuml.com/plantuml", format: "svg", caption: true, fallback: true }),

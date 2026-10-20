@@ -9,7 +9,7 @@ Render `mermaid` code blocks to static SVG with [Pele](https://pele.run/), Obsid
 ## Install
 
 ```sh
-npm install @riebeckite/plugin-mermaid-pele pele
+npm install @riebeckite/plugin-mermaid-pele
 ```
 
 ## Configure

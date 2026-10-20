@@ -48,7 +48,7 @@
     "@riebeckite/plugin-autocardlink": "^0.0.30",
     "@riebeckite/plugin-rich-embed": "^0.0.30",
     "@riebeckite/plugin-gallery": "^0.0.30",
-    "@riebeckite/plugin-mermaid": "^0.0.30",
+    "@riebeckite/plugin-mermaid-pele": "^0.0.30",
     "@riebeckite/plugin-graphviz": "^0.0.30",
     "@riebeckite/plugin-d2": "^0.0.30",
     "@riebeckite/plugin-plantuml": "^0.0.30",

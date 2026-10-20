@@ -6,6 +6,8 @@
 
 [English](./README.md)
 
+ヘッドレスブラウザを使わずに静的 SVG を生成したい場合は [Mermaid (Pele)](../mermaid-pele/README_ja.md) を使ってください。
+
 ## 設定する
 
 ```ts

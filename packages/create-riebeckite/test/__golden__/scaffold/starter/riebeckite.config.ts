@@ -36,7 +36,7 @@ export default defineConfig({
     colorModePlugin(),
     seo({ sitemap: true, robots: true }),
     tocPlugin(),
-    properties({ include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }),
+    properties({ include: ["created", "modified", "tags", "status"], fields: { created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } } }),
     aliasPlugin({ status: 308 }),
     codeEnhance({ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true }),
     searchPlugin(),

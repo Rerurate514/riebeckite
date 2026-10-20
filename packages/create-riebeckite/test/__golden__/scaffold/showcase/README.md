@@ -22,7 +22,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-l10n` | `l10n` | `{ defaultLang: "en", languages: ["en","ja","zh-CN","es","de","fr","ko"] }` |
 | `@riebeckite/plugin-seo` | `seo` | `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }` |
 | `@riebeckite/plugin-toc` | `tocPlugin` | — |
-| `@riebeckite/plugin-properties` | `properties` | `{ include: ["created", "modified", "tags", "status"], order: ["created", "modified", "tags", "status"] }` |
+| `@riebeckite/plugin-properties` | `properties` | `{ include: ["created", "modified", "tags", "status"], fields: { created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } } }` |
 | `@riebeckite/plugin-alias` | `aliasPlugin` | `{ status: 308 }` |
 | `@riebeckite/plugin-code-enhance` | `codeEnhance` | `{ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, theme: { light: "github-light", dark: "github-dark" }, wrapToggle: true }` |
 | `@riebeckite/plugin-search` | `searchPlugin` | — |

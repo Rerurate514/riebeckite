@@ -187,7 +187,11 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
 const toc = np("@riebeckite/plugin-toc", "tocPlugin");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
-  order: { depth: 2, value: '["created", "modified", "tags", "status"]' },
+  fields: {
+    depth: 2,
+    value:
+      '{ created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } }',
+  },
 });
 const alias = np("@riebeckite/plugin-alias", "aliasPlugin", `{ status: 308 }`);
 const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {

@@ -10,22 +10,36 @@ const resolvedClientModuleId = `\0${clientModuleId}`;
 export function riebeckiteClientModule(
   getConfig: () => ResolvedRiebeckiteConfig,
 ): Plugin {
+  let development = false;
   return {
     name: "riebeckite-client-module",
+    config(_config, environment) {
+      development = environment.command === "serve";
+    },
     resolveId(id) {
       if (id === clientModuleId) return resolvedClientModuleId;
       return null;
     },
     load(id) {
       if (id !== resolvedClientModuleId) return null;
-      return createClientModule(getConfig());
+      return createClientModule(getConfig(), development);
     },
   };
 }
 
-function createClientModule(config: ResolvedRiebeckiteConfig): string {
+function createClientModule(
+  config: ResolvedRiebeckiteConfig,
+  development: boolean,
+): string {
   const imports: string[] = [];
   const initializers: string[] = [];
+
+  if (development) {
+    imports.push(
+      'import { initDevelopmentInspector } from "virtual:riebeckite/development-inspector";',
+    );
+    initializers.push("initDevelopmentInspector()");
+  }
 
   for (const [index, entry] of config.plugins
     .flatMap((plugin) => plugin.clientEntries ?? [])

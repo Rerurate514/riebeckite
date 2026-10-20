@@ -41,6 +41,8 @@ export type PluginEndpoint = {
   path: string;
   /** Defaults to `GET` when omitted. */
   method?: PluginEndpointMethod;
+  /** Defaults to `true`; set to `false` for endpoints that only use configuration. */
+  requiresManifest?: boolean;
   handler(
     context: PluginEndpointContext,
   ): PluginEndpointResponse | Promise<PluginEndpointResponse>;

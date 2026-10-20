@@ -22,6 +22,7 @@ export function createSeoEndpoints(
   if (options.robots === true) {
     endpoints.push({
       path: "/robots.txt",
+      requiresManifest: false,
       handler: ({ config }) => ({
         headers: { "content-type": "text/plain; charset=utf-8" },
         body: renderRobots(config),

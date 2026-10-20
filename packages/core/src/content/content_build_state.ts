@@ -2,7 +2,7 @@ import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 19;
+export const CONTENT_BUILD_STATE_VERSION = 20;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -40,6 +40,7 @@ export type ContentBuildState = {
 
 export type ManifestHookCacheEntry = {
   readonly pluginName: string;
+  readonly cacheVersion: string;
   readonly cacheable: boolean;
   readonly pipelineFingerprint: string | undefined;
   readonly inputFingerprint: string;

@@ -15,6 +15,9 @@ const appRoot = fileURLToPath(new URL(".", import.meta.url));
 const workspaceRoot = path.resolve(appRoot, "../..");
 
 export default defineConfig({
+  server: {
+    host: "127.0.0.1",
+  },
   build: {
     // The warning targets lazily loaded vendor chunks that cannot be split:
     // excalidraw ships its font-subsetting WebAssembly as one base64 module

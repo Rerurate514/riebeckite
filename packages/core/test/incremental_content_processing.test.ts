@@ -775,6 +775,7 @@ test("plugin config change does not reuse old processed entries", async () => {
 function manifestDecorator(marker: string) {
   return definePlugin({
     name: "manifest-decorator",
+    manifestHookCache: { version: "1" },
     onManifestCreated: ({ manifest }) => {
       for (const entry of manifest.entries) {
         entry.html = `${entry.html}\n<p>${marker}</p>`;
@@ -790,6 +791,7 @@ function manifestDecorator(marker: string) {
 function v2ManifestDecorator(marker: string) {
   return definePlugin({
     name: "manifest-decorator",
+    manifestHookCache: { version: "2" },
     onManifestCreated: ({ manifest }) => {
       for (const entry of manifest.entries) {
         entry.html = `${entry.html}\n<p>${marker}</p><hr>`;
@@ -1269,6 +1271,7 @@ test("a manifest hook writeback reaches the content route after an incremental e
 function manifestOnlyDecorator(marker: string) {
   return definePlugin({
     name: "manifest-only-decorator",
+    manifestHookCache: { version: "1" },
     processedContentCache: {
       version: "manifest-only-v1",
       dependencyMode: "none",
@@ -1616,6 +1619,7 @@ function manifestHookPlugin(
 ) {
   return definePlugin({
     name,
+    manifestHookCache: { version: "1" },
     processedContentCache: { version: `${name}-v1`, dependencyMode: "none" },
     onManifestCreated,
   });
@@ -1729,6 +1733,29 @@ test("cacheable manifest hooks persist only the entries they change", async () =
     );
     assert.equal(markerCount(entry.html, "DELTA_ALL"), 1, `${entry.slug} all`);
   }
+});
+
+test("manifest hooks without a cache contract do not persist snapshots", async () => {
+  const directory = await tempDirectory("manifest-hook-cache-disabled");
+  const config = testConfig(directory);
+  const plugin = definePlugin({
+    name: "uncached-manifest-hook",
+    onManifestCreated: ({ manifest }) => {
+      for (const entry of manifest.entries)
+        entry.html = `${entry.html}\n<p>UNCACHED</p>`;
+    },
+  });
+  const plugins = [...config.plugins, plugin];
+  const manager = new ContentManager(
+    memoryContentSource({ "a.md": "# A" }),
+    [],
+    { config: { ...config, plugins }, plugins },
+  );
+
+  await manager.build({ incremental: true });
+  await manager.dispose();
+
+  assert.deepEqual(await readManifestHookCache(directory), []);
 });
 
 test("uncacheable manifest hooks persist no snapshot and always rerun", async () => {

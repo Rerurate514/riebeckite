@@ -9,10 +9,14 @@ import {
   type ContentBuildState,
 } from "./content_build_state.js";
 
+const MAX_CONTENT_BUILD_STATE_BYTES = 64 * 1024 * 1024;
+
 export async function loadContentBuildState(
   statePath: string,
 ): Promise<ContentBuildState | undefined> {
   try {
+    const metadata = await fs.stat(statePath);
+    if (metadata.size > MAX_CONTENT_BUILD_STATE_BYTES) return undefined;
     const parsed: unknown = JSON.parse(await fs.readFile(statePath, "utf8"));
     return isContentBuildState(parsed) ? parsed : undefined;
   } catch {
@@ -168,6 +172,7 @@ function isManifestHookCache(value: unknown): boolean {
       (entry) =>
         isRecord(entry) &&
         typeof entry.pluginName === "string" &&
+        typeof entry.cacheVersion === "string" &&
         typeof entry.cacheable === "boolean" &&
         (entry.pipelineFingerprint === undefined ||
           typeof entry.pipelineFingerprint === "string") &&

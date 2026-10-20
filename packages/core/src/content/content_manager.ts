@@ -574,7 +574,7 @@ export class ContentManager {
   /** Resolves a page contributed by an enabled plugin. */
   async resolvePage(pathname: string): Promise<ResolvedPluginPage | null> {
     const [manifest, contentIndex] = await Promise.all([
-      this.getManifest(),
+      this.getManifest({ incremental: false }),
       this.getContentIndex(),
     ]);
     return await this.pluginRuntime.resolvePage(
@@ -656,7 +656,7 @@ export class ContentManager {
 
   private requestBuildStateCommit(options?: ContentBuildOptions): void {
     if (this.pipelineOptions.commitBuildState === false) return;
-    if (options?.incremental === true) this.buildStateCommitRequested = true;
+    if (options?.incremental !== false) this.buildStateCommitRequested = true;
   }
 
   private async commitBuildState(): Promise<void> {

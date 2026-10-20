@@ -81,11 +81,13 @@ export class ManifestHookRunner {
       if (plugin.buildEnd) return "plugin-build-end";
       if (plugin.planGeneratedOutputs) return "plugin-generated-output-plan";
       if (!plugin.onManifestCreated) continue;
+      if (!plugin.manifestHookCache) return "manifest-hook-cache-disabled";
 
       const cached = previousCache[cacheIndex];
       cacheIndex += 1;
       if (
         cached?.pluginName !== plugin.name ||
+        cached.cacheVersion !== plugin.manifestHookCache.version ||
         !cached.cacheable ||
         cached.pipelineFingerprint !== pipelineFingerprint
       )
@@ -109,10 +111,14 @@ export class ManifestHookRunner {
       manifest,
     };
     let cacheIndex = 0;
-    let entriesBeforeHook = serializeManifestEntries(manifest.entries);
     for (const plugin of this.options.plugins()) {
       const hook = plugin.onManifestCreated;
       if (!hook) continue;
+      const cacheVersion = plugin.manifestHookCache?.version;
+      if (!cacheVersion) {
+        await this.runManifestHook(plugin, hook, context, "cache-disabled");
+        continue;
+      }
       const inputFingerprint = fingerprintManifestHookInput(manifest);
       const cached = previousCache[cacheIndex];
       cacheIndex += 1;
@@ -127,6 +133,7 @@ export class ManifestHookRunner {
       if (
         cached !== undefined &&
         cached.pluginName === plugin.name &&
+        cached.cacheVersion === cacheVersion &&
         cached.cacheable &&
         cached.pipelineFingerprint === pipelineFingerprint &&
         cached.inputFingerprint === inputFingerprint &&
@@ -142,39 +149,22 @@ export class ManifestHookRunner {
           this.manifestHooksReused += 1;
           this.manifestHookCache.push(cached);
           this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
-          entriesBeforeHook = serializeManifestEntries(manifest.entries);
           continue;
         }
       }
       if (restored && restorePoint)
         restoreManifestHookEntries(manifest, restorePoint);
+      const entriesBeforeHook = serializeManifestEntries(manifest.entries);
       const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
       const outputCountBefore = this.options.generatedOutputCount();
       const diagnosticCountBefore = this.options.diagnosticCount();
       const manifestDiagnosticCountBefore = manifest.diagnostics.length;
-      const started = performance.now();
-      this.manifestHooksExecuted += 1;
-      try {
-        await runPluginHook(
-          plugin,
-          "onManifestCreated",
-          this.options.createPluginContext(plugin, context),
-          hook,
-        );
-      } finally {
-        const durationMs = performance.now() - started;
-        this.manifestHookDurationMs += durationMs;
-        this.recordManifestHookMetric(
-          plugin.name,
-          "executed",
-          reason,
-          durationMs,
-        );
-      }
+      await this.runManifestHook(plugin, hook, context, reason);
       const entriesAfterHook = serializeManifestEntries(manifest.entries);
       this.manifestHookCache.push(
         createManifestHookCacheEntry(
           plugin.name,
+          cacheVersion,
           plugin.resolveExternalDependencies === undefined &&
             sideEffectsBefore ===
               fingerprintManifestHookSideEffects(manifest) &&
@@ -188,7 +178,33 @@ export class ManifestHookRunner {
           entriesAfterHook,
         ),
       );
-      entriesBeforeHook = entriesAfterHook;
+    }
+  }
+
+  private async runManifestHook(
+    plugin: RiebeckitePlugin,
+    hook: NonNullable<RiebeckitePlugin["onManifestCreated"]>,
+    context: PluginContextBase & { manifest: ContentManifest },
+    reason: string,
+  ): Promise<void> {
+    const started = performance.now();
+    this.manifestHooksExecuted += 1;
+    try {
+      await runPluginHook(
+        plugin,
+        "onManifestCreated",
+        this.options.createPluginContext(plugin, context),
+        hook,
+      );
+    } finally {
+      const durationMs = performance.now() - started;
+      this.manifestHookDurationMs += durationMs;
+      this.recordManifestHookMetric(
+        plugin.name,
+        "executed",
+        reason,
+        durationMs,
+      );
     }
   }
 

@@ -26,6 +26,7 @@ export function serializeManifestEntries(
 
 export function createManifestHookCacheEntry(
   pluginName: string,
+  cacheVersion: string,
   cacheable: boolean,
   pipelineFingerprint: string | undefined,
   inputFingerprint: string,
@@ -36,12 +37,14 @@ export function createManifestHookCacheEntry(
   if (!cacheable)
     return {
       pluginName,
+      cacheVersion,
       cacheable,
       pipelineFingerprint,
       inputFingerprint,
     };
   return {
     pluginName,
+    cacheVersion,
     cacheable,
     pipelineFingerprint,
     inputFingerprint,

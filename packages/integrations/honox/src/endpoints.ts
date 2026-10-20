@@ -1,5 +1,6 @@
 import type {
   ContentManager,
+  ContentManifest,
   PluginEndpoint,
   PluginEndpointMethod,
   PluginEndpointRequest,
@@ -64,11 +65,14 @@ export function mountRiebeckiteEndpoints(
   for (const endpoint of endpoints) {
     const method: PluginEndpointMethod = endpoint.method ?? "GET";
     const handler = async (context: HonoLikeContext): Promise<unknown> => {
-      const manifest = await options.content.getManifest();
+      const manifest =
+        endpoint.requiresManifest === false
+          ? undefined
+          : await options.content.getManifest();
       const request = await toPluginEndpointRequest(context, method);
       const response = await endpoint.handler({
         config: options.config,
-        manifest,
+        manifest: manifest as ContentManifest,
         request,
       });
 

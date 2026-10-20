@@ -110,6 +110,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   ): void | Promise<void>;
   onPostParsed?(context: PluginPostContext): void | Promise<void>;
   onPostProcessed?(context: PluginPostContext): void | Promise<void>;
+  manifestHookCache?: { version: string };
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;
   extendMarkdownPipeline?(
     pipeline: MarkdownPipeline,

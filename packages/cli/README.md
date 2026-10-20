@@ -34,7 +34,7 @@ In a pnpm project, use `pnpm exec riebeckite`.
 ```text
 riebeckite dev
 riebeckite check
-riebeckite doctor
+riebeckite doctor [--explain | --json | --fix [--dry-run]]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
@@ -48,7 +48,7 @@ riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 | --- | --- | --- |
 | `dev` | Start the integration development workflow | integration-dependent |
 | `check` | Validate app configuration, plugins, and capability resolution | no |
-| `doctor` | Diagnose environment, configuration, plugins, content, diagnostics, and build state | no |
+| `doctor` | Report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
 | `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |

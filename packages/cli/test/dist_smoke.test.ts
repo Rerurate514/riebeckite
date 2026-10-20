@@ -33,6 +33,9 @@ function build(packagePath: string): void {
 
 before(() => {
   build(createRiebeckiteRoot);
+  for (const name of ["docs", "obsidian-markdown", "toc"]) {
+    build(path.resolve(packageRoot, "..", "plugins", name));
+  }
   build(packageRoot);
 });
 
@@ -210,7 +213,10 @@ async function waitFor(predicate: () => boolean): Promise<void> {
 
 async function waitForAsync(predicate: () => Promise<boolean>): Promise<void> {
   const deadline = Date.now() + 30_000;
-  while (!(await predicate())) {
+  while (true) {
+    try {
+      if (await predicate()) return;
+    } catch {}
     if (Date.now() > deadline)
       throw new Error("Theme preview server did not reload.");
     await new Promise((resolve) => setTimeout(resolve, 50));

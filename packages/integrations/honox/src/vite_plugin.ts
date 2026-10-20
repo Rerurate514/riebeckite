@@ -5,6 +5,7 @@ import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
+import { riebeckiteDevelopmentInspector } from "./development_inspector.js";
 import { riebeckiteRuntimeModules } from "./runtime_modules.js";
 import { siteRiebeckiteExternals } from "./site_externals.js";
 import { createRiebeckiteSsg } from "./ssg.js";
@@ -116,6 +117,7 @@ export function riebeckite(
       contentRoot: () => requireApplication(application).contentRoot,
       exclude: () => getConfig().content.exclude ?? [],
     }),
+    riebeckiteDevelopmentInspector(() => requireApplication(application)),
   ];
 }
 

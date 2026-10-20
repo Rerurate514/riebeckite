@@ -14,7 +14,7 @@ Diagnostics は、Riebeckite の設定やコンテンツ、プラグイン、実
 
 といった情報を、Riebeckite が扱える共通形式の診断情報（diagnostic）として表現します。
 
-これにより、Core や各プラグインが見つけた問題を `check` や `doctor` からまとめて確認できます。
+これにより、Core や各プラグインが見つけた問題を扱えます。開発診断パッケージはその結果をシリアライズ可能なレポートに変換し、`doctor` と Development Inspector で共有します。
 
 ## Diagnostics の流れ
 
@@ -43,18 +43,9 @@ Doctor では、1つの検査に失敗しても、可能な限り他の独立し
 
 問題が見つかった場合、コマンドは non-zero exit code で終了します。
 
-### Build state の検査
+観測できない項目は推測せず、利用できないことを明示します。診断のためだけに full build は実行しません。
 
-Doctor は incremental build で使用する build state も検査します。
-
-主に次の状態を確認します。
-
-- 保存されている state を正常に読み込めるか
-- 保存された fingerprint と現在のコンテンツが一致しているか
-
-前回の build 以降にコンテンツが追加・変更・削除されている場合は、変更件数と一部のサンプルを warning として報告します。
-
-これは state の破損を意味するものではありません。次回の build が完了すると、現在のコンテンツに合わせて state が更新されます。
+Development Inspector は Vite の開発サーバーからだけ利用でき、同じレポートを Shadow DOM のパネルに表示します。production の client module や endpoint には含まれません。Element の source と Component の対応付けは runtime に mapping がないため、現時点では PARTIAL です。
 
 ## コンテンツ ID の検査
 

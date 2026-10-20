@@ -12,15 +12,15 @@ Instead of printing a message to the console, a diagnostic describes:
 - how important it is
 - how to fix it
 
-Core and plugins express problems in this shared form so that `check` and `doctor` can report them together.
+Core and plugins express problems in this shared form. The development diagnostics package maps those findings into a serializable report that `doctor` and the Development Inspector share.
 
 ## Producers and consumers
 
 Plugins can provide diagnostics through `addDiagnostics`; Core and integrations combine them for commands such as `check` and `doctor`. A plugin should name the actionable condition, identify the relevant content/configuration when available, and make severity proportionate to whether output can remain correct. Prefer a diagnostic that says which setting is invalid and how to change it over one that only reports "invalid configuration".
 
-Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully.
+Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully. It reports unavailable observations explicitly and does not run a full build solely to diagnose the project.
 
-The doctor build-state check verifies that the incremental state is readable and that its stored fingerprints still match the current content source. When entries were added, changed, or removed since the last build, it reports a warning with counts and samples; the next build refreshes the state.
+The Development Inspector is available only through the Vite development server and renders the same report in a Shadow DOM panel. It is omitted from production client modules and production endpoints. Element source and component mappings are PARTIAL until runtime mappings are available.
 
 ## Content ID integrity
 

@@ -90,6 +90,7 @@ Start from the page closest to your goal.
 | Understand Riebeckite's internals | [Framework](./docs/framework/README.md) |
 | Develop Riebeckite itself | [Framework Development](./docs/framework/development.md) |
 | Review CI verification contracts | [CI verification contract](./architecture/ci.md) |
+| Review the development diagnostics design | [Development diagnostics](./architecture/development-diagnostics.md) |
 
 ## Documentation structure
 

@@ -41,6 +41,7 @@
   "dependencies": {
     "@babel/parser": "^7.29.3",
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "esbuild": "catalog:",

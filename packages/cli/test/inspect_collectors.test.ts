@@ -10,7 +10,6 @@ import {
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../src/application_root.js";
-import { checkContent } from "../src/doctor/checks/content.js";
 import {
   collectBuildInspection,
   collectContentInspection,
@@ -80,22 +79,6 @@ test("inspect content reports excluded entries and their patterns", async () => 
   assert.equal(inspection.entryCount, 1);
   assert.deepEqual(inspection.excluded, [
     { path: "drafts/hidden.md", pattern: "drafts/**" },
-  ]);
-});
-
-test("doctor content reports why entries were excluded", async () => {
-  const root = await makeContentRoot();
-  const config: ResolvedRiebeckiteConfig = {
-    ...baseConfig,
-    content: { ...baseConfig.content, directory: root },
-  };
-  const result = await checkContent(await makeProject(root), config);
-
-  assert.equal(result.status, "ok");
-  assert.match(result.message ?? "", /1 content entries scanned/);
-  assert.deepEqual(result.details, [
-    "Excluded from content: 1",
-    "drafts/hidden.md (drafts/**)",
   ]);
 });
 

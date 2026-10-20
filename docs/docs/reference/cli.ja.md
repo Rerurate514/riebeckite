@@ -22,7 +22,7 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 
 riebeckite dev
 riebeckite check
-riebeckite doctor
+riebeckite doctor [--explain | --json | --fix [--dry-run]]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
@@ -44,7 +44,7 @@ riebeckite inspect build
 | `theme preview` | ローカル Theme を隔離した HonoX 環境で確認する | 一時ファイルのみ |
 | `dev` | 開発環境を起動する | Integration に依存 |
 | `check` | 設定が正しいか検証する | 変更しない |
-| `doctor` | Project 全体の問題を診断する | 変更しない |
+| `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | 変更しない |
 | `build` | Site を Build する | 成功時のみ更新 |
 | `clean` | Riebeckite が管理する状態を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | 変更しない |
 | `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する、`domain` は Custom Domain を設定する | 変更しない |
@@ -297,19 +297,24 @@ Plugin は `validateOptions` を使って、自身の設定を検証できます
 
 ## `doctor`
 
-Project の状態を広く診断します。
+Project の状態を共通の開発診断として報告します。Site の Build や Build State の更新は行いません。
 
 ```sh id="zruccx"
 npm exec riebeckite doctor
+npm exec riebeckite doctor --explain
+npm exec riebeckite doctor --json
 ```
 
-`doctor` は、
+`--explain` は原因、詳細、修正の提案を表示します。`--json` はツール向けにシリアライズ可能なレポートだけを出力します。`--fix` は安全な自動修正だけに限定され、該当する修正がない場合は何も変更しません。`--dry-run` はファイルを変更せずにそのことを確認します。
+
+`doctor` は、観測できる範囲で次を確認します。
 
 - environment
 - config
 - Plugin
 - content
-- Build State
+- output
+- Theme
 
 などを確認します。
 
@@ -319,13 +324,15 @@ flowchart LR
     Config["Config"]
     Plugin["Plugins"]
     Content["Content"]
-    State["Build State"]
+    Output["Output"]
+    Theme["Theme"]
 
     Environment --> Doctor["doctor"]
     Config --> Doctor
     Plugin --> Doctor
     Content --> Doctor
-    State --> Doctor
+    Output --> Doctor
+    Theme --> Doctor
 
     Doctor --> Diagnostics["Diagnostics"]
 ```
@@ -333,6 +340,8 @@ flowchart LR
 1つの診断に失敗しても、安全に続行できる独立した診断は可能な限り継続します。
 
 Health check が失敗した場合は non-zero status で終了します。
+
+`riebeckite dev` の実行中に <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> を押すと Development Inspector を開けます。Inspector は `doctor` と同じレポートを使い、Vite の更新時に再表示されます。production の client output や endpoint には含まれません。Element の source と Component の対応付けは runtime が提供していないため、現時点では PARTIAL と表示します。
 
 ## `build`
 

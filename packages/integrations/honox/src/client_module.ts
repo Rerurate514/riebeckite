@@ -1,31 +1,43 @@
-import {
-  type ResolvedRiebeckiteConfig,
-  serializePublicClientConfig,
-} from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { serializePublicClientConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 
 const clientModuleId = "virtual:riebeckite/client";
 const resolvedClientModuleId = `\0${clientModuleId}`;
 
 export function riebeckiteClientModule(
-  getConfig: () => ResolvedRiebeckiteConfig,
+  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins">,
 ): Plugin {
+  let development = false;
   return {
     name: "riebeckite-client-module",
+    config(_config, environment) {
+      development = environment.command === "serve";
+    },
     resolveId(id) {
       if (id === clientModuleId) return resolvedClientModuleId;
       return null;
     },
     load(id) {
       if (id !== resolvedClientModuleId) return null;
-      return createClientModule(getConfig());
+      return createClientModule(getConfig(), development);
     },
   };
 }
 
-function createClientModule(config: ResolvedRiebeckiteConfig): string {
+function createClientModule(
+  config: Pick<ResolvedRiebeckiteConfig, "plugins">,
+  development: boolean,
+): string {
   const imports: string[] = [];
   const initializers: string[] = [];
+
+  if (development) {
+    imports.push(
+      'import { initDevelopmentInspector } from "virtual:riebeckite/development-inspector";',
+    );
+    initializers.push("initDevelopmentInspector()");
+  }
 
   for (const [index, entry] of config.plugins
     .flatMap((plugin) => plugin.clientEntries ?? [])

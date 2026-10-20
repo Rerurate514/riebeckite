@@ -226,7 +226,12 @@ export async function removeSafeTemporaryDirectory(directory, temporaryRoot) {
       `Refusing to remove a directory outside the benchmark root: ${resolvedDirectory}`,
     );
   }
-  await fs.rm(resolvedDirectory, { recursive: true, force: true });
+  await fs.rm(resolvedDirectory, {
+    recursive: true,
+    force: true,
+    maxRetries: 5,
+    retryDelay: 200,
+  });
 }
 
 export function notePath(contentDirectory, index) {

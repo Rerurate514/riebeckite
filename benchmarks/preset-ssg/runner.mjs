@@ -139,6 +139,17 @@ async function runScenario({ preset, size, scenario, runs }) {
     wallTimeMs: median(samples.map((sample) => sample.wallTimeMs)),
     peakRssMb: median(samples.map((sample) => sample.peakRssMb)),
     cleanWallTimeMs: median(samples.map((sample) => sample.cleanWallTimeMs)),
+    processStartupElapsedMs: median(
+      samples.map((sample) => sample.processStartupElapsedMs),
+    ),
+    cpuUserTimeMs: median(samples.map((sample) => sample.cpuUserTimeMs)),
+    cpuSystemTimeMs: median(samples.map((sample) => sample.cpuSystemTimeMs)),
+    filesystemReadCalls: median(
+      samples.map((sample) => sample.filesystemReadCalls),
+    ),
+    filesystemWriteCalls: median(
+      samples.map((sample) => sample.filesystemWriteCalls),
+    ),
     wallTimeRangeMs: range(samples.map((sample) => sample.wallTimeMs)),
     cleanWallTimeRangeMs: range(
       samples.map((sample) => sample.cleanWallTimeMs),
@@ -403,6 +414,8 @@ async function invokeBuild(siteRoot, label) {
 }
 
 async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
+  const processStartupElapsedMs = Math.round(performance.now());
+  const processUsageBefore = process.resourceUsage();
   const { build, defineConfig } = await import(
     pathToFileURL(appRequire.resolve("vite")).href
   );
@@ -491,11 +504,23 @@ async function buildOnce({ siteRoot, label, metricsEnabled = true }) {
     delete process.env.RIEBECKITE_SSG_METRICS_FILE;
   }
   samples.push(process.memoryUsage().rss);
+  const processUsageAfter = process.resourceUsage();
   const metrics = metricsEnabled
     ? JSON.parse(await fs.readFile(metricsPath, "utf8"))
     : {};
   return {
     wallTimeMs: Math.round(performance.now() - started),
+    processStartupElapsedMs,
+    cpuUserTimeMs: Math.round(
+      (processUsageAfter.userCPUTime - processUsageBefore.userCPUTime) / 1_000,
+    ),
+    cpuSystemTimeMs: Math.round(
+      (processUsageAfter.systemCPUTime - processUsageBefore.systemCPUTime) /
+        1_000,
+    ),
+    filesystemReadCalls: processUsageAfter.fsRead - processUsageBefore.fsRead,
+    filesystemWriteCalls:
+      processUsageAfter.fsWrite - processUsageBefore.fsWrite,
     peakRssMb: Math.round(Math.max(...samples) / 1024 / 1024),
     contentProcessed: metricNumber(metrics, "processedContentCount"),
     contentReused: metricNumber(metrics, "reusedContentCount"),

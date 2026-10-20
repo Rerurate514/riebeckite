@@ -76,6 +76,7 @@ export type ProfileFastPath = Readonly<{
 
 export type ProfileReport = Readonly<{
   totalDurationMs: number | undefined;
+  stages: ReadonlyMap<string, ProfileSpanAggregate>;
   content: ReadonlyMap<string, ProfileSpanAggregate>;
   integrations: ReadonlyMap<string, ProfileSpanAggregate>;
   plugins: readonly ProfilePlugin[];
@@ -101,6 +102,7 @@ type MutableDuration = {
 };
 
 export class ProfileTraceSink implements TraceSink {
+  private readonly stages = new Map<string, MutableDuration>();
   private readonly content = new Map<string, MutableDuration>();
   private readonly integrations = new Map<string, MutableDuration>();
   private readonly plugins = new Map<string, MutableDuration>();
@@ -122,6 +124,7 @@ export class ProfileTraceSink implements TraceSink {
 
   onSpan(span: TraceSpan): void {
     if (span.name === "build.total") this.totalDurationMs = span.durationMs;
+    addDuration(this.stages, span.name, span.durationMs);
     if (isContentSpan(span.name))
       addDuration(this.content, span.name, span.durationMs);
     if (span.name.startsWith("integration.")) {
@@ -251,6 +254,11 @@ export class ProfileTraceSink implements TraceSink {
         : undefined;
     return {
       totalDurationMs: this.totalDurationMs,
+      stages: new Map(
+        [...this.stages.entries()]
+          .sort(([left], [right]) => left.localeCompare(right))
+          .map(([name, duration]) => [name, toAggregate(duration)]),
+      ),
       content: new Map(
         [...this.content.entries()]
           .sort(([left], [right]) => left.localeCompare(right))

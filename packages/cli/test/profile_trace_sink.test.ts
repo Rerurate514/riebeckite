@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { TraceEvent } from "@riebeckite/core";
+import type { TraceEvent, TraceSpan } from "@riebeckite/core";
 import { ProfileTraceSink } from "../src/profile/profile_trace_sink.js";
 import { renderProfile } from "../src/profile/renderer.js";
 
@@ -10,6 +10,30 @@ function event(
 ): TraceEvent {
   return { name, time: 0, attributes };
 }
+
+function span(name: string, durationMs: number): TraceSpan {
+  return {
+    name,
+    startTime: 0,
+    durationMs,
+    status: "ok",
+    attributes: {},
+  };
+}
+
+test("profile retains inclusive stage durations", () => {
+  const sink = new ProfileTraceSink();
+  sink.onSpan(span("content.discovery", 12));
+  sink.onSpan(span("content.discovery", 8));
+
+  const report = sink.createReport();
+  assert.equal(report.stages.get("content.discovery")?.calls, 2);
+  assert.equal(
+    report.stages.get("content.discovery")?.cumulativeDurationMs,
+    20,
+  );
+  assert.match(renderProfile(report), /overlapping spans are not additive/);
+});
 
 test("profile separates content cache from plugin cache", () => {
   const sink = new ProfileTraceSink();

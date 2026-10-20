@@ -182,3 +182,197 @@ test("collapsed wraps the panel in a details element", () => {
   assert.match(html, /<summary class="rb-properties__summary">/);
   assert.match(html, /<\/details>$/);
 });
+
+test("fields configure tag links, tagBase, and display variants", () => {
+  const linked = renderPropertiesPanel(
+    { tags: ["JP/Web", "Tag"] },
+    {
+      fields: {
+        tags: { type: "tags", tagBase: "/topics/", variant: "chips" },
+      },
+    },
+  );
+  assert.match(linked, /data-variant="chips"/);
+  assert.match(linked, /data-tag="JP\/Web" href="\/topics\/jp\/web"/);
+  assert.match(linked, />#JP\/Web<\/a>/);
+
+  const plain = renderPropertiesPanel(
+    { tags: "Idea" },
+    { fields: { tags: { type: "tags", link: false, variant: "links" } } },
+  );
+  assert.match(plain, /data-variant="links"/);
+  assert.doesNotMatch(plain, /<a /);
+  assert.match(plain, /<span class="rb-properties__tag" data-tag="Idea">#Idea/);
+
+  const links = renderPropertiesPanel(
+    { tags: ["A"] },
+    { fields: { tags: { type: "tags", variant: "links" } } },
+  );
+  assert.match(links, /data-variant="links"/);
+  assert.match(links, /href="\/tags\/a"/);
+});
+
+test("fields render badges with configured variants", () => {
+  const html = renderPropertiesPanel(
+    { status: "published", draft: "draft" },
+    {
+      fields: {
+        status: {
+          type: "badge",
+          variants: { published: "success", draft: "warning" },
+        },
+        draft: {
+          type: "badge",
+          variants: { published: "success", draft: "warning" },
+        },
+      },
+    },
+  );
+
+  assert.match(
+    html,
+    /<span class="rb-properties__badge" data-variant="success">published<\/span>/,
+  );
+  assert.match(
+    html,
+    /<span class="rb-properties__badge" data-variant="warning">draft<\/span>/,
+  );
+});
+
+test("fields format dates and keep the source datetime", () => {
+  const html = renderPropertiesPanel(
+    { created: "2024-03-04T05:06:07Z" },
+    {
+      fields: {
+        created: { type: "date", format: "yyyy/MM/dd HH:mm" },
+      },
+    },
+  );
+
+  assert.match(
+    html,
+    /<time class="rb-properties__date" datetime="2024-03-04T05:06:07Z">2024\/03\/04 05:06<\/time>/,
+  );
+
+  const spaced = renderPropertiesPanel(
+    { created: "2024-03-04 05:06:07" },
+    { fields: { created: { type: "date" } } },
+  );
+  assert.match(spaced, /datetime="2024-03-04T05:06:07"/);
+});
+
+test("field declaration controls display order", () => {
+  const html = renderPropertiesPanel(
+    { status: "published", tags: ["A"], created: "2024-01-02" },
+    {
+      fields: {
+        tags: { type: "tags" },
+        status: { type: "badge" },
+        created: { type: "date" },
+      },
+    },
+  );
+  const keys = [...html.matchAll(/data-property-key="([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+
+  assert.deepEqual(keys, ["tags", "status", "created"]);
+});
+
+test("wikilink fields link notes but leave plain URLs as text", () => {
+  const html = renderPropertiesPanel(
+    { related: "[[Note|the note]] and https://example.com" },
+    { fields: { related: { type: "wikilinks" } } },
+    { resolveLink: (target) => (target === "Note" ? "/note" : null) },
+  );
+
+  assert.match(html, /href="\/note">the note<\/a>/);
+  assert.doesNotMatch(html, /__link--external/);
+  assert.match(html, /https:\/\/example\.com/);
+});
+
+test("unknown fields and invalid URLs fall back to safe text", () => {
+  const messages: PropertiesMessage[] = [];
+  const html = renderPropertiesPanel(
+    { unknown: "#kept", source: "javascript:alert(1)" },
+    {
+      fields: {
+        unknown: { type: "not-a-type" } as never,
+        source: { type: "link" },
+      },
+    },
+    { onMessage: (message) => messages.push(message) },
+  );
+
+  assert.match(html, /#kept/);
+  assert.match(html, />javascript:alert\(1\)<\/dd>/);
+  assert.doesNotMatch(html, /href="javascript:/);
+  assert.deepEqual(messages, []);
+});
+
+test("field values escape HTML in labels and badges", () => {
+  const html = renderPropertiesPanel(
+    {
+      "<key>": "<script>alert(1)</script>",
+      tags: ["<tag>"],
+      status: "<b>published</b>",
+    },
+    { fields: { status: { type: "badge" } } },
+  );
+
+  assert.match(html, /data-property-key="&lt;key&gt;"/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /data-tag="&lt;tag&gt;"/);
+  assert.match(html, /&lt;b&gt;published&lt;\/b&gt;/);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("invalid date fields report the property and render escaped text", () => {
+  const messages: PropertiesMessage[] = [];
+  const html = renderPropertiesPanel(
+    { created: "not a date" },
+    { fields: { created: { type: "date" } } },
+    { onMessage: (message) => messages.push(message) },
+  );
+
+  assert.match(html, />not a date<\/dd>/);
+  assert.equal(messages[0]?.propertyKey, "created");
+  assert.match(messages[0]?.reason ?? "", /invalid date/);
+
+  const calendar = renderPropertiesPanel(
+    { created: "2024-02-30" },
+    { fields: { created: { type: "date" } } },
+    { onMessage: (message) => messages.push(message) },
+  );
+  assert.match(calendar, />2024-02-30<\/dd>/);
+  assert.equal(messages[1]?.propertyKey, "created");
+  assert.match(messages[1]?.reason ?? "", /invalid date/);
+});
+
+test("text fields omit empty nested entries when hideEmpty is enabled", () => {
+  const html = renderPropertiesPanel(
+    { meta: { keep: "yes", empty: "", none: null } },
+    { fields: { meta: { type: "text" } } },
+  );
+
+  assert.match(html, /data-property-key="keep"/);
+  assert.doesNotMatch(html, /data-property-key="empty"/);
+  assert.doesNotMatch(html, /data-property-key="none"/);
+});
+
+test("empty arrays still render their type-specific container", () => {
+  const tags = renderPropertiesPanel(
+    { tags: [] },
+    { hideEmpty: false, fields: { tags: { type: "tags" } } },
+  );
+  assert.match(
+    tags,
+    /<ul class="rb-properties__list" data-variant="chips"><\/ul>/,
+  );
+
+  const badges = renderPropertiesPanel(
+    { status: [] },
+    { hideEmpty: false, fields: { status: { type: "badge" } } },
+  );
+  assert.match(badges, /<ul class="rb-properties__list"><\/ul>/);
+});

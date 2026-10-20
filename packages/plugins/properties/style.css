@@ -78,17 +78,59 @@
 
 .rb-properties__tag {
   display: inline-block;
-  padding: 0.125rem 0.5rem;
-  border: 1px solid var(--rb-properties-rule);
-  border-radius: 999px;
   font-size: 0.8125rem;
   color: var(--rb-properties-ink);
   text-decoration: none;
 }
 
+.rb-properties__list[data-variant="chips"] .rb-properties__tag {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--rb-properties-rule);
+  border-radius: 999px;
+}
+
+.rb-properties__list[data-variant="links"] .rb-properties__tag {
+  text-decoration: underline;
+  text-decoration-color: var(--rb-properties-rule);
+  text-underline-offset: 0.2em;
+}
+
 .rb-properties__tag:hover,
 .rb-properties__tag:focus-visible {
   border-color: var(--rb-properties-accent);
+}
+
+.rb-properties__list[data-variant="links"] .rb-properties__tag:hover,
+.rb-properties__list[data-variant="links"] .rb-properties__tag:focus-visible {
+  text-decoration-color: var(--rb-properties-accent);
+}
+
+.rb-properties__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--rb-properties-rule);
+  border-radius: 999px;
+  background: var(--rb-properties-surface);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.rb-properties__badge[data-variant] {
+  color: var(--rb-properties-accent);
+  border-color: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.rb-properties__badge[data-variant="success"] {
+  color: var(--rb-color-success, var(--rb-properties-accent));
+}
+
+.rb-properties__badge[data-variant="warning"] {
+  color: var(--rb-color-warning, var(--rb-properties-accent));
+}
+
+.rb-properties__badge[data-variant="danger"] {
+  color: var(--rb-color-danger, var(--rb-properties-accent));
 }
 
 .rb-properties__link {

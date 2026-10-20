@@ -2,6 +2,24 @@
  * Public option and rendering types for `@riebeckite/plugin-properties`.
  */
 
+export type PropertyTagVariant = "text" | "links" | "chips";
+
+export type PropertiesFieldConfig =
+  | { readonly type: "text" }
+  | { readonly type: "link" }
+  | {
+      readonly type: "tags";
+      readonly link?: boolean;
+      readonly tagBase?: string;
+      readonly variant?: PropertyTagVariant;
+    }
+  | {
+      readonly type: "badge";
+      readonly variants?: Readonly<Record<string, string>>;
+    }
+  | { readonly type: "date"; readonly format?: string }
+  | { readonly type: "wikilinks" };
+
 export type PropertiesOptions = {
   /**
    * Heading text. Defaults to `"Properties"`. Pass `null` to omit the heading
@@ -27,6 +45,7 @@ export type PropertiesOptions = {
   className?: string;
   /** Render the panel inside a `<details>` element. */
   collapsed?: boolean;
+  fields?: Readonly<Record<string, PropertiesFieldConfig>>;
 };
 
 export type ResolvedPropertiesOptions = {
@@ -37,6 +56,7 @@ export type ResolvedPropertiesOptions = {
   hideEmpty: boolean;
   className: string;
   collapsed: boolean;
+  fields: Readonly<Record<string, PropertiesFieldConfig>>;
 };
 
 /**
@@ -62,3 +82,75 @@ export type PropertiesRenderContext = {
    */
   onMessage?: (message: PropertiesMessage) => void;
 };
+
+export type PropertyTextPart = {
+  readonly kind: "text";
+  readonly text: string;
+};
+
+export type PropertyLinkPart = {
+  readonly kind: "link";
+  readonly text: string;
+  readonly href: string;
+  readonly external: boolean;
+};
+
+export type PropertyInlinePart = PropertyTextPart | PropertyLinkPart;
+
+export type PropertyTag = {
+  readonly tag: string;
+  readonly text: string;
+  readonly href?: string;
+};
+
+export type PropertiesData = {
+  readonly title: string | null;
+  readonly className: string;
+  readonly collapsed: boolean;
+  readonly items: readonly {
+    readonly key: string;
+    readonly value: PropertyValue;
+  }[];
+};
+
+export type PropertyValue =
+  | PropertyTextPart
+  | PropertyLinkPart
+  | {
+      readonly kind: "tags";
+      readonly tags: readonly PropertyTag[];
+      readonly variant: PropertyTagVariant;
+    }
+  | {
+      readonly kind: "badge";
+      readonly text: string;
+      readonly variant?: string;
+    }
+  | {
+      readonly kind: "date";
+      readonly value: string;
+      readonly formatted: string;
+    }
+  | {
+      readonly kind: "inline";
+      readonly parts: readonly PropertyInlinePart[];
+    }
+  | {
+      readonly kind: "list";
+      readonly items: readonly PropertyValue[];
+    }
+  | {
+      readonly kind: "group";
+      readonly entries: readonly {
+        readonly key: string;
+        readonly value: PropertyValue;
+      }[];
+    }
+  | {
+      readonly kind: "boolean";
+      readonly value: boolean;
+    }
+  | {
+      readonly kind: "number";
+      readonly value: string;
+    };

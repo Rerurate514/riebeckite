@@ -15,7 +15,9 @@ import {
   resolvePropertiesOptions,
   validatePropertiesOptions,
 } from "./src/options.js";
-import { buildTagHref, renderPropertiesPanel } from "./src/render.js";
+import { renderPropertiesPanel } from "./src/render.js";
+import { selectProperties } from "./src/selection.js";
+import { buildTagHref } from "./src/tag.js";
 import type {
   PropertiesLinkResolver,
   PropertiesMessage,
@@ -25,16 +27,23 @@ import type {
 export type { PropertiesProps } from "./components/properties.js";
 export { default as Properties } from "./components/properties.js";
 export type {
+  GetPropertiesInput,
   PropertiesData,
-  PropertiesValuePart,
 } from "./src/component-data.js";
 export { getProperties } from "./src/component-data.js";
 
 export type {
+  PropertiesFieldConfig,
   PropertiesLinkResolver,
   PropertiesMessage,
   PropertiesOptions,
   PropertiesRenderContext,
+  PropertyInlinePart,
+  PropertyLinkPart,
+  PropertyTag,
+  PropertyTagVariant,
+  PropertyTextPart,
+  PropertyValue,
   ResolvedPropertiesOptions,
 } from "./src/types.js";
 export {
@@ -117,7 +126,7 @@ function propertyOutputDependencies(
   options: ReturnType<typeof resolvePropertiesOptions>,
 ): readonly OutputDependency[] {
   const dependencies = new Map<string, OutputDependency>();
-  for (const [, value] of selectedProperties(entry.frontmatter, options)) {
+  for (const [, value] of selectProperties(entry.frontmatter, options)) {
     for (const target of wikilinkTargets(value)) {
       const slug = manifest.contentIndex.get(target.toLowerCase());
       if (!slug || !manifest.bySlug.has(slug)) return [{ type: "global" }];
@@ -125,28 +134,6 @@ function propertyOutputDependencies(
     }
   }
   return [...dependencies.values()];
-}
-
-function selectedProperties(
-  frontmatter: Readonly<Record<string, unknown>>,
-  options: ReturnType<typeof resolvePropertiesOptions>,
-): readonly (readonly [string, unknown])[] {
-  return Object.entries(frontmatter).filter(
-    ([key, value]) =>
-      value !== undefined &&
-      (options.include
-        ? options.include.includes(key)
-        : !options.exclude.includes(key)) &&
-      (!options.hideEmpty || !isEmpty(value)),
-  );
-}
-
-function isEmpty(value: unknown): boolean {
-  return (
-    value === null ||
-    value === "" ||
-    (Array.isArray(value) && value.length === 0)
-  );
 }
 
 function* wikilinkTargets(value: unknown): Generator<string> {

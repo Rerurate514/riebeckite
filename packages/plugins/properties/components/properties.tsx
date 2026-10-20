@@ -1,59 +1,47 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
-import { html } from "hono/html";
-import type { PropertiesData } from "../src/component-data.js";
+import { html, raw } from "hono/html";
 import { getProperties } from "../src/component-data.js";
-import type { PropertiesOptions } from "../src/types.js";
+import { mergePropertiesOptions } from "../src/options.js";
+import { renderPropertiesData } from "../src/render.js";
+import type { PropertiesData, PropertiesOptions } from "../src/types.js";
 
-export type PropertiesProps = { data?: PropertiesData };
+export type PropertiesProps = {
+  data?: PropertiesData;
+  options?: PropertiesOptions;
+  className?: string;
+};
 
-const Properties = (async ({
+const Properties = (({
   data: explicitData,
+  options,
+  className,
 }: Readonly<PropertiesProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
   const data =
     explicitData ??
     (site && article
-      ? await getProperties({
+      ? getProperties({
           view: site.view,
           frontmatter: article.post.frontmatter,
-          options: findPropertiesOptions(site.config.plugins),
+          options: mergePropertiesOptions(
+            findPropertiesOptions(site.config.plugins),
+            options,
+          ),
         })
       : undefined);
-  if (!data) return html``;
-  if (data.items.length === 0) return html``;
-  const cls = data.className;
-  return (
-    <section
-      class={cls}
-      data-properties
-      data-property-count={data.items.length}
-    >
-      <h2 class={`${cls}__title`}>{data.title}</h2>
-      <dl class={`${cls}__rows`}>
-        {data.items.map((item) => (
-          <div
-            class={`${cls}__row`}
-            data-property-key={item.key}
-            key={item.key}
-          >
-            <dt class={`${cls}__key`}>{item.key}</dt>
-            <dd class={`${cls}__value`}>
-              {item.value.map((part, index) =>
-                part.href ? (
-                  <a href={part.href} key={`${item.key}-${index}`}>
-                    {part.text}
-                  </a>
-                ) : (
-                  <span key={`${item.key}-${index}`}>{part.text}</span>
-                ),
-              )}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </section>
+
+  if (!data || data.items.length === 0) return html``;
+
+  const extraClass = className?.trim();
+  return raw(
+    renderPropertiesData({
+      ...data,
+      className: extraClass
+        ? `${data.className} ${extraClass}`
+        : data.className,
+    }),
   );
 }) satisfies PluginComponent<PropertiesProps>;
 

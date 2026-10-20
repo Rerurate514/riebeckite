@@ -176,7 +176,14 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       return;
     }
     if (command.name === "doctor") {
-      if (!(await runDoctorCommand(project, { github: command.github })))
+      if (
+        !(await runDoctorCommand(project, {
+          explain: command.explain,
+          json: command.json,
+          fix: command.fix,
+          dryRun: command.dryRun,
+        }))
+      )
         process.exitCode = 1;
       return;
     }
@@ -207,7 +214,13 @@ type Command =
   | { name: "deploy-setup" }
   | { name: "deploy-domain" }
   | { name: "check" }
-  | { name: "doctor"; readonly github: boolean }
+  | {
+      name: "doctor";
+      readonly explain: boolean;
+      readonly json: boolean;
+      readonly fix: boolean;
+      readonly dryRun: boolean;
+    }
   | {
       name: "init";
       directory: string;
@@ -310,10 +323,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
   if (name === "inspect") return parseInspectCommand(options);
   if (name === "doctor") {
-    if (options.length === 0) return { name, github: false };
-    if (options.length === 1 && options[0] === "--github") {
-      return { name, github: true };
-    }
+    return parseDoctorCommand(options);
   }
   if (
     name === "profile" &&
@@ -323,8 +333,35 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--github] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseDoctorCommand(options: readonly string[]): Command {
+  const values = new Set(options);
+  if (values.size !== options.length)
+    throw new CliUsageError("Duplicate doctor option.");
+  for (const option of values) {
+    if (!["--explain", "--json", "--fix", "--dry-run"].includes(option)) {
+      throw new CliUsageError(`Unknown doctor option: ${option}.`);
+    }
+  }
+  const fix = values.has("--fix");
+  const dryRun = values.has("--dry-run");
+  if (dryRun && !fix) throw new CliUsageError("--dry-run requires --fix.");
+  if (values.has("--json") && values.has("--explain")) {
+    throw new CliUsageError("--json cannot be combined with --explain.");
+  }
+  if (values.has("--json") && fix) {
+    throw new CliUsageError("--json cannot be combined with --fix.");
+  }
+  return {
+    name: "doctor",
+    explain: values.has("--explain"),
+    json: values.has("--json"),
+    fix,
+    dryRun,
+  };
 }
 
 function parseCreatePageTypeCommand(options: readonly string[]): Command {

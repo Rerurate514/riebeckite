@@ -357,6 +357,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
+      '@riebeckite/diagnostics':
+        specifier: workspace:*
+        version: link:../diagnostics
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../integrations/honox

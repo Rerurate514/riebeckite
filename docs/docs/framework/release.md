@@ -17,9 +17,7 @@ The script is designed to be **idempotent and resumable**. Re-running the same v
 
 ## Prerequisites
 
-- npm CLI 11.15.0 or newer and Node.js 22.14.0 or newer for staged publishing commands (`npm stage ...`).
 - Write access to every `@riebeckite/*` package.
-- Two-factor authentication enabled on the account: `npm stage approve` opens the npm CLI's own interactive two-factor prompt.
 
 The release script never implements its own authentication or one-time-password prompt. It delegates to the npm and pnpm CLI, so your existing npm login, security key, passkey, or OTP configuration is used as-is.
 
@@ -80,73 +78,29 @@ If a commit already exists but the tag does not (or the reverse), re-run the rel
 | --- | --- | --- |
 | Unpublished | The registry returned 404 for `name@version`. | `npm view` |
 | Published | The registry returned the version. | `npm view` |
-| Staged, pending approval | The version exists as a staged version and cannot be published directly. | `npm stage list` |
 | Unknown | The registry could not be queried reliably. | None |
 
 **Unknown is a stop state.** The script refuses to guess. If the registry state cannot be determined (network failure, timeout, unexpected response), the release stops and prints what to check instead of assuming a package is unpublished.
 
-## Staging and approval
-
-Staged publishing lets a version be reviewed before it goes live. Staged versions share the same version index as published versions, so a staged version blocks a direct publish of that version.
-
-Use the official npm CLI for every staged operation:
-
-| Command | Purpose |
-| --- | --- |
-| `npm stage list <package-name> --json` | List staged versions of a package. |
-| `npm stage view <stage-id>` | Show one staged version. |
-| `npm stage approve <stage-id>` | Approve and publish a staged version (interactive two-factor). |
-| `npm stage reject <stage-id>` | Remove a staged version (requires two-factor). |
-
-The release script inspects staged versions with `npm stage list`. If the list cannot be read, the release stops instead of publishing blindly. When a pending package already has a matching staged version whose tarball matches the current build, the script approves it (interactively) and treats it as published; if the tarball cannot be proven to match, it stops and prints the commands to inspect or reject the stage. It never stages packages itself, and it never bypasses two-factor authentication.
-
 ## Handling E409
 
-A `409 Conflict` with `Cannot publish over previously staged version "<version>".` means the version is already staged and waiting for approval. It is not a success and it is not ignored.
+A `409 Conflict` is not treated as success. The script re-checks `npm view` once the publish command has failed. If the version is confirmed published, it continues; if the registry says it is unpublished or cannot be queried reliably, it stops without retrying the conflicting publish.
 
-When the script sees E409 for a package it:
-
-1. Re-checks whether the version is published.
-2. Lists staged versions with `npm stage list <package-name> --json`.
-3. Proves that the staged tarball matches the current build.
-4. Approves the matching stage with `npm stage approve <stage-id>` when the terminal is interactive.
-5. Confirms the version is live before continuing.
-
-If npm reports an E409 before the staged package appears in `npm stage list`, the release waits for registry propagation before deciding that the stage is absent. If any step still cannot be completed automatically — including when `npm stage list` cannot be read or the staged tarball cannot be proven to match — the release stops with the exact commands to run. It never retries the same publish, so a staged conflict cannot produce an infinite loop.
-
-```mermaid
-flowchart TD
-    Conflict["E409 staged conflict"] --> Published{"Already published?"}
-    Published -->|Yes| Done["Treat as complete"]
-    Published -->|No| List["npm stage list <name> --json"]
-    List --> Found{"Matching stage?"}
-    Found -->|No| Instructions["Stop with manual instructions"]
-    Found -->|Yes| Match{"Tarball matches current build?"}
-    Match -->|No| Instructions
-    Match -->|Yes| Interactive{"Interactive terminal?"}
-    Interactive -->|No| Manual["Stop: approve manually"]
-    Interactive -->|Yes| Approve["npm stage approve <stage-id>"]
-    Approve --> Confirm{"Confirmed live?"}
-    Confirm -->|Yes| Done
-    Confirm -->|No| Stop["Stop and ask to re-run"]
-```
-
-## Checking published and pending versions
+## Checking published versions
 
 To check a single package without running a release:
 
 ```bash
 npm view @riebeckite/<package>@<version> version
-npm stage list @riebeckite/<package> --json
 ```
 
-`npm view` returning a version means it is published. `npm view` returning `E404` means it is not published. `npm stage list` shows versions that are staged and waiting for approval.
+`npm view` returning a version means it is published. `npm view` returning `E404` means it is not published.
 
 ## Resuming after an interruption
 
 1. Read the failure output. The script prints the package, the version, the classified state, and the next action.
 2. Resolve the cause:
-   - **Staged conflict:** approve or reject the staged version as described above.
+   - **Version conflict (409):** inspect the package version before choosing a new version or retrying.
    - **Permission error (403):** check organization membership, package access, and the account two-factor policy. A 403 is not treated as a simple sign-in failure.
    - **Not found (404):** verify the package name and that it can be created.
    - **Transient network error:** the script already retries a bounded number of times; re-run to continue.
@@ -156,7 +110,7 @@ npm stage list @riebeckite/<package> --json
 ## What not to do during a partial release
 
 - Do not bump the version again during the same release. Re-run the same version.
-- Do not manually run `npm publish` or `pnpm publish` for packages that the script will handle; this can create a staged conflict or a duplicate publish.
+- Do not manually run `npm publish` or `pnpm publish` for packages that the script will handle; this can create a version conflict or a duplicate publish.
 - Do not assume a 404 means the package is unpublished without checking that the registry is reachable and the name is correct.
 - Do not create the release tag manually before the script confirms every version is live.
 - Do not push the release commit or tag before the local verification succeeds.
@@ -179,6 +133,6 @@ The release behavior is covered by tests that never publish to npm:
 pnpm test:release
 ```
 
-The suite mocks the npm and pnpm calls and covers an all-unpublished run, a fully published run, partial releases, E409 staged conflicts, permission errors, E404 responses, propagation lag, network timeouts, duplicate-publish prevention, and final verification failure. It also drives the CLI entry point through a full staged-conflict resume and verifies the real `npm stage list` JSON contract against a mock registry.
+The suite mocks npm and pnpm calls and covers unpublished and published versions, partial-release resumption, authentication and permission failures, E409 version conflicts, registry failures, lost publish responses, propagation lag, bounded retries, duplicate-publish prevention, and final verification failure.
 
 See [Architecture](./architecture.md), [Testing](./testing.md), and [CLI](../reference/cli.md).

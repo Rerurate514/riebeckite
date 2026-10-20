@@ -17,9 +17,7 @@ pnpm release <version>
 
 ## 前提条件
 
-- staged publishing の command（`npm stage ...`）を使うには npm CLI 11.15.0 以降と Node.js 22.14.0 以降が必要です。
 - すべての `@riebeckite/*` package への書き込み権限が必要です。
-- account で二要素認証を有効にしておく必要があります。`npm stage approve` は npm CLI 自身の対話的な二要素 prompt を開きます。
 
 release script は独自の認証や one-time password の prompt を実装しません。npm / pnpm CLI に委譲するため、既存の npm login、security key、passkey、OTP の設定がそのまま使われます。
 
@@ -80,73 +78,29 @@ commit はあるが tag が無い（またはその逆）場合も、release を
 | --- | --- | --- |
 | 未公開 | `name@version` に対して registry が 404 を返した | `npm view` |
 | 公開済み | registry がその version を返した | `npm view` |
-| staging 済み・承認待ち | staged version として存在し、直接 publish できない | `npm stage list` |
 | 状態不明 | registry を確実に問い合わせられなかった | なし |
 
 **状態不明は停止状態です**。 script は推測しません。registry の状態を確定できない場合（network 障害、timeout、想定外の応答）、未公開と仮定せず、release を停止して確認すべき内容を表示します。
 
-## staging と承認
-
-staged publishing を使うと、version が live になる前にレビューできます。staged version は公開済み version と同じ version index を共有するため、その version の直接 publish を妨げます。
-
-staged 操作には必ず公式の npm CLI を使用してください。
-
-| Command | 用途 |
-| --- | --- |
-| `npm stage list <package-name> --json` | package の staged version を一覧表示する |
-| `npm stage view <stage-id>` | staged version を 1 件表示する |
-| `npm stage approve <stage-id>` | staged version を承認して publish する（対話的な二要素認証） |
-| `npm stage reject <stage-id>` | staged version を削除する（二要素認証が必要） |
-
-release script は `npm stage list` で staged version を確認します。一覧を取得できない場合は publish せず停止します。未公開 package に対応する staged version があり、その tarball が現行ビルドと一致すると確認できた場合のみ、対話的に承認して公開済みとして扱います。一致を確認できない場合は停止し、stage を確認・reject する command を表示します。script 自身が staging を行うことはなく、二要素認証を迂回することもありません。
-
 ## E409 への対応
 
-`Cannot publish over previously staged version "<version>".` を伴う `409 Conflict` は、その version が既に staging され承認待ちであることを意味します。成功でもなく、無視してもいけません。
+`409 Conflict` は成功として扱いません。publish command の失敗後に `npm view` を再確認し、公開済みと確認できた場合だけ続行します。未公開または registry の状態を確定できない場合は、競合した publish を retry せず停止します。
 
-script は package の E409 を検出すると次を行います。
-
-1. その version が公開済みか再確認します。
-2. `npm stage list <package-name> --json` で staged version を一覧表示します。
-3. staged された tarball が現行ビルドと一致することを確認します。
-4. terminal が対話的であれば `npm stage approve <stage-id>` で該当 stage を承認します。
-5. 続行する前に、その version が live であることを確認します。
-
-npm が E409 を返したにもかかわらず `npm stage list` に staged package がまだ表示されない場合、release は registry の反映を待ってから stage が存在しないと判断します。その後も自動で完了できない手順がある場合、release は実行すべき正確な command を表示して停止します。たとえば `npm stage list` を取得できない場合や、staged された tarball の一致を確認できない場合です。同じ publish を retry しないため、staged conflict が無限 loop になることはありません。
-
-```mermaid id="0vq8sd"
-flowchart TD
-    Conflict["E409 staged conflict"] --> Published{"公開済み？"}
-    Published -->|はい| Done["完了として扱う"]
-    Published -->|いいえ| List["npm stage list <name> --json"]
-    List --> Found{"一致する stage がある？"}
-    Found -->|いいえ| Instructions["手動手順を表示して停止"]
-    Found -->|はい| Match{"tarball が現行ビルドと一致？"}
-    Match -->|いいえ| Instructions
-    Match -->|はい| Interactive{"対話的 terminal？"}
-    Interactive -->|いいえ| Manual["停止：手動で承認"]
-    Interactive -->|はい| Approve["npm stage approve <stage-id>"]
-    Approve --> Confirm{"live を確認できた？"}
-    Confirm -->|はい| Done
-    Confirm -->|いいえ| Stop["停止して再実行を促す"]
-```
-
-## 公開済み・承認待ちの確認
+## 公開済み version の確認
 
 release を実行せずに 1 つの package を確認するには次を使います。
 
 ```bash id="8hs4lp"
 npm view @riebeckite/<package>@<version> version
-npm stage list @riebeckite/<package> --json
 ```
 
-`npm view` が version を返せば公開済みです。`npm view` が `E404` を返せば未公開です。`npm stage list` は staging され承認待ちの version を表示します。
+`npm view` が version を返せば公開済みです。`npm view` が `E404` を返せば未公開です。
 
 ## 中断後の再開
 
 1. 失敗時の出力を読んでください。script は package、version、分類した状態、次に必要な操作を表示します。
 2. 原因を解消します。
-   - **staged conflict:** 上記のとおり staged version を承認または reject します。
+   - **version conflict（409）:** 新しい version を選ぶか retry する前に package version の状態を確認します。
    - **権限エラー（403）:** 組織の membership、package の access、account の二要素 policy を確認します。403 は単純な sign-in 失敗としては扱われません。
    - **not found（404）:** package 名が正しいか、作成可能かを確認します。
    - **一時的な network エラー:** script が上限付きで retry 済みです。再実行して続行します。
@@ -156,7 +110,7 @@ npm stage list @riebeckite/<package> --json
 ## 部分公開中にしてはいけない操作
 
 - 同じリリース中に version を再度 bump しないでください。同じ version を再実行します。
-- script が処理する package に対して `npm publish` や `pnpm publish` を手動実行しないでください。staged conflict や重複 publish の原因になります。
+- script が処理する package に対して `npm publish` や `pnpm publish` を手動実行しないでください。version conflict や重複 publish の原因になります。
 - registry に到達できるか、名前が正しいかを確認せずに、404 を未公開と決めつけないでください。
 - script が全 version の公開を確認する前に、release tag を手動で作成しないでください。
 - ローカルの検証が成功する前に、release commit や tag を push しないでください。
@@ -179,6 +133,6 @@ RELEASE COMPLETE: 84/84 package versions published as <version>.
 pnpm test:release
 ```
 
-この suite は npm / pnpm の呼び出しを mock し、全 package 未公開、全 package 公開済み、部分公開、E409 の staged conflict を検証します。権限エラー、E404 応答、反映遅延、network timeout も検証します。重複 publish の防止と最終検証の失敗も検証します。さらに、CLI エントリポイント経由で staged conflict からの再開を通しで検証します。実 `npm stage list` の JSON の出力形式も mock registry に対して検証します。
+この suite は npm / pnpm の呼び出しを mock し、未公開・公開済み version、部分公開からの再開、認証・権限エラー、E409 version conflict、registry 問い合わせ失敗、publish 応答喪失、反映遅延、上限付き retry、重複 publish 防止、最終検証失敗を検証します。
 
 責務の全体像は [Architecture](./architecture.ja.md)、テスト方針は [Testing](./testing.ja.md)、CLI については [CLI](../reference/cli.ja.md) を参照してください。

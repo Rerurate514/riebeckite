@@ -14,6 +14,12 @@ import { resolveRiebeckiteProject } from "./application_root.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { type CleanScope, runClean } from "./commands/clean.js";
+import {
+  assertPluginName,
+  parseCreatePluginFeatures,
+  runCreatePlugin,
+  runInteractiveCreatePlugin,
+} from "./commands/create_plugin.js";
 import { runDeploy } from "./commands/deploy.js";
 import { runDeployDomain } from "./commands/deploy_domain.js";
 import { runDeploySetup } from "./commands/deploy_setup.js";
@@ -40,6 +46,22 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         utilities: command.utilities,
         deployment: command.deployment,
       });
+      return;
+    }
+
+    if (command.name === "create-plugin") {
+      await runCreatePlugin({
+        name: command.pluginName,
+        directory: command.directory,
+        features: command.features,
+        tests: command.tests,
+        documentation: command.documentation,
+        register: command.register,
+      });
+      return;
+    }
+    if (command.name === "create-plugin-interactive") {
+      await runInteractiveCreatePlugin();
       return;
     }
 
@@ -111,13 +133,25 @@ type Command =
       deployment: ScaffoldDeployment;
     }
   | { name: "profile"; full: boolean }
-  | { name: "inspect"; target?: InspectTarget; list: boolean };
+  | { name: "inspect"; target?: InspectTarget; list: boolean }
+  | {
+      name: "create-plugin";
+      pluginName: string;
+      directory: string;
+      features: readonly import("./plugin_generator/registry.js").PluginFeatureId[];
+      tests: boolean;
+      documentation: boolean;
+      register: boolean;
+    }
+  | { name: "create-plugin-interactive" };
 
 export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
   if (name === "dev" && options.length === 0) return { name };
   if (name === "check" && options.length === 0) return { name };
   if (name === "init") return parseInitCommand(options);
+  if (name === "create" && options[0] === "plugin")
+    return parseCreatePluginCommand(options.slice(1));
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -155,8 +189,80 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create plugin <name> [--template <id> | --features <ids>] [--directory <path>] [--no-tests] [--no-docs] [--register] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseCreatePluginCommand(options: readonly string[]): Command {
+  let pluginName: string | undefined;
+  let directory: string | undefined;
+  let featureValue: string | undefined;
+  let tests = true;
+  let documentation = true;
+  let register = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--no-tests") {
+      tests = false;
+      continue;
+    }
+    if (option === "--no-docs") {
+      documentation = false;
+      continue;
+    }
+    if (option === "--register") {
+      register = true;
+      continue;
+    }
+    if (
+      option === "--template" ||
+      option === "--features" ||
+      option === "--directory"
+    ) {
+      const value = options[index + 1];
+      if (value === undefined || value.startsWith("-"))
+        throw new CliUsageError(`${option} requires a value.`);
+      if (option === "--directory") directory = value;
+      else if (featureValue !== undefined)
+        throw new CliUsageError(
+          "Use either --template or --features, not both.",
+        );
+      else featureValue = value;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown create plugin option: ${option}`);
+    if (pluginName !== undefined)
+      throw new CliUsageError("create plugin accepts one plugin name.");
+    pluginName = option;
+  }
+  if (pluginName === undefined && options.length === 0)
+    return { name: "create-plugin-interactive" };
+  if (pluginName === undefined)
+    throw new CliUsageError(
+      "create plugin requires a plugin name outside an interactive terminal.",
+    );
+  if (featureValue === undefined)
+    throw new CliUsageError(
+      "create plugin requires --template or --features outside an interactive terminal.",
+    );
+  try {
+    assertPluginName(pluginName);
+    return {
+      name: "create-plugin",
+      pluginName,
+      directory: directory ?? `extensions/${pluginName}`,
+      features: parseCreatePluginFeatures(featureValue),
+      tests,
+      documentation,
+      register,
+    };
+  } catch (error) {
+    throw new CliUsageError(
+      error instanceof Error ? error.message : String(error),
+    );
+  }
 }
 
 const INIT_USAGE =

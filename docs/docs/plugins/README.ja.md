@@ -159,10 +159,11 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 
 ## Plugin を作りたい場合
 
-まず [Writing a Plugin](./writing-a-plugin.ja.md) を読んでください。レンダラー、コンテンツフック、ページタイプ、エンドポイント、SEO、診断、生成出力の具体例は [プラグイン機能別レシピ](./recipes/README.ja.md) にまとめています。正確な取り決めは [Plugin API](../reference/plugin-api.ja.md)、ページ生成の仕組みは [Framework / Page system](../framework/page-system.ja.md) にあります。
+まず [Writing a Plugin](./writing-a-plugin.ja.md) を読むか、[Plugin Generator](./generator.ja.md) でローカル Plugin の出発点を作成してください。レンダラー、コンテンツフック、ページタイプ、エンドポイント、SEO、診断、生成出力の具体例は [プラグイン機能別レシピ](./recipes/README.ja.md) にまとめています。正確な取り決めは [Plugin API](../reference/plugin-api.ja.md)、ページ生成の仕組みは [Framework / Page system](../framework/page-system.ja.md) にあります。
 
 ## 次に読むページ
 
 - [Plugin Showcase](./showcase.ja.md)
 - [Writing a Plugin](./writing-a-plugin.ja.md)
+- [Plugin Generator](./generator.ja.md)
 - [プラグイン機能別レシピ](./recipes/README.ja.md)

@@ -196,6 +196,41 @@ test("groups arbitrarily named translations by explicit frontmatter identity and
   );
 });
 
+test("reads the translation identity from a configured frontmatter key", async () => {
+  const content = manager(
+    {
+      "guide.ja.md":
+        "---\ntranslation: ignored\ntranslationId: guide\n---\n# ガイド",
+      "guide.en.md":
+        "---\ntranslation: also-ignored\ntranslationId: guide\n---\n# Guide",
+    },
+    { translationKey: "translationId" },
+  );
+  const manifest = await content.getManifest();
+  assert.equal(
+    manifest.bySlug.get("guide.ja")?.publicLocation.metadata?.[
+      "l10n.translationId"
+    ],
+    "guide",
+  );
+  assert.deepEqual(getLocalization(manifest, "guide.ja")?.translations, {
+    en: "/en/guide",
+    ja: "/guide",
+  });
+});
+
+test("rejects an empty translation key configuration", () => {
+  assert.throws(
+    () =>
+      l10n({
+        defaultLang: "ja",
+        languages: ["ja"],
+        translationKey: " ",
+      }),
+    /translationKey must be a non-empty string/,
+  );
+});
+
 test("does not invent missing translations and adds hreflang only for existing variants", async () => {
   const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",

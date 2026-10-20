@@ -39,6 +39,7 @@ export type L10nOptions = {
   defaultLang: string;
   languages: readonly string[];
   strict?: boolean;
+  translationKey?: string;
   detect?: (content: L10nDetectorContext) => L10nDetectorResult | undefined;
 };
 
@@ -292,6 +293,7 @@ function resolveOptions(options: L10nOptions) {
       languages.map((language) => [language.toLowerCase(), language]),
     ),
     strict: options.strict ?? false,
+    translationKey: (options.translationKey ?? "translation").trim(),
     detect: options.detect,
   };
 }
@@ -324,6 +326,13 @@ function validateOptions(options: L10nOptions): string[] {
   }
   if (options.strict !== undefined && typeof options.strict !== "boolean") {
     errors.push("l10n.strict must be a boolean.");
+  }
+  if (
+    options.translationKey !== undefined &&
+    (typeof options.translationKey !== "string" ||
+      !options.translationKey.trim())
+  ) {
+    errors.push("l10n.translationKey must be a non-empty string.");
   }
   if (options.detect !== undefined && typeof options.detect !== "function") {
     errors.push("l10n.detect must be a function.");
@@ -398,8 +407,9 @@ function detectContents(
       signals.filename ??
       options.defaultLang;
     const translationId =
-      readTranslationId(custom?.translationId ?? frontmatter.translation) ??
-      deriveTranslationId(entry.path, filenameLanguage);
+      readTranslationId(
+        custom?.translationId ?? frontmatter[options.translationKey],
+      ) ?? deriveTranslationId(entry.path, filenameLanguage);
     const content: DetectedContent = {
       path: entry.path,
       slug: entry.slug,

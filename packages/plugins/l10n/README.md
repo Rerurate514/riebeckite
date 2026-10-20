@@ -30,7 +30,7 @@ translation: getting-started
 ---
 ```
 
-Conventions may be mixed. Built-in precedence is **frontmatter > custom detector > filename > default language**. Conflicts emit `L10N_LANGUAGE_CONFLICT`; use `strict: true` to fail the build instead. A duplicate `translation + lang` emits `L10N_DUPLICATE_TRANSLATION` (and also fails in strict mode).
+Conventions may be mixed. Built-in precedence is **frontmatter > custom detector > filename > default language**. Conflicts emit `L10N_LANGUAGE_CONFLICT`; use `strict: true` to fail the build instead. A duplicate translation identity and language emits `L10N_DUPLICATE_TRANSLATION` (and also fails in strict mode).
 
 `translation` is independent of locale and filename. Use it to group files with unrelated paths or names:
 
@@ -38,6 +38,18 @@ Conventions may be mixed. Built-in precedence is **frontmatter > custom detector
 日本語/はじめに.md       lang: ja, translation: getting-started
 English/getting-started.md lang: en, translation: getting-started
 ```
+
+Set `translationKey` to read the identity from a different frontmatter property:
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  translationKey: "translationId",
+});
+```
+
+With this option, `translationId: getting-started` replaces `translation: getting-started`. The default is `translation`.
 
 ## URLs and missing translations
 

@@ -168,7 +168,17 @@ flowchart LR
     JA --> Group
 ```
 
-A duplicate `translation + lang` pair emits `L10N_DUPLICATE_TRANSLATION` (again a build failure under `strict: true`). Use `translation` when the files have unrelated paths or names.
+A duplicate translation identity and language emits `L10N_DUPLICATE_TRANSLATION` (again a build failure under `strict: true`). Use `translation` when the files have unrelated paths or names.
+
+To read the identity from a different frontmatter property, set `translationKey` in the l10n plugin options; the default is `translation`:
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  translationKey: "translationId",
+});
+```
 
 For a convention the plugin does not know, supply `detect`. Its language is considered after frontmatter and before filename, and its `translationId` is explicit:
 
@@ -419,6 +429,7 @@ Translation relationships are stated with `translation`, and only translations t
 | --- | --- |
 | `defaultLang` | The language that keeps unprefixed URLs. Required |
 | `languages` | The recognized languages. Only these are treated as locales |
+| `translationKey` | Frontmatter property that holds the translation identity. Defaults to `translation` |
 | `strict` | Turn language conflicts and duplicate translations into build failures |
 | `ui` | `false` to disable the switcher, or `{ slot, render }` to customize it |
 | `detect` | Custom detection: returns `{ lang, translationId }` or `undefined` |

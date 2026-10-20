@@ -205,6 +205,16 @@ flowchart LR
     JA --> Group
 ```
 
+翻訳グループの ID を読み取る Frontmatter プロパティは、l10n プラグインの `translationKey` で変更できます。既定値は `translation` です。
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  translationKey: "translationId",
+});
+```
+
 ## `lang` と `translation` の違い
 
 この2つは役割が異なります。

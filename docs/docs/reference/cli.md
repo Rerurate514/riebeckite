@@ -17,7 +17,7 @@ riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
-riebeckite doctor
+riebeckite doctor [--explain | --json | --fix [--dry-run]]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
@@ -34,7 +34,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
-| `doctor` | diagnose environment, project discovery, configuration, plugins, content source readability, and build state | no |
+| `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
@@ -238,13 +238,17 @@ Plugin option validation runs as part of `check`. Each plugin's `validateOptions
 
 ## `doctor`
 
-`doctor` diagnoses the project broadly.
+`doctor` reports a deterministic, shared development diagnostic report. It does not build the site or alter build state.
 
 ```sh
 npm exec riebeckite doctor
+npm exec riebeckite doctor --explain
+npm exec riebeckite doctor --json
 ```
 
-It checks the environment, config, plugins, content, and build state.
+`--explain` includes causes, details, and suggested remediations. `--json` writes only the serializable report for tooling. `--fix` is limited to safe automatic fixes; when none are available it changes nothing, and `--dry-run` confirms that without modifying files.
+
+It checks environment, configuration, plugins, content, output planning, and theme references where the observation is available. Unavailable observations are shown as skipped rather than inferred.
 
 ```mermaid
 flowchart LR
@@ -252,18 +256,22 @@ flowchart LR
     Config["Config"]
     Plugin["Plugins"]
     Content["Content"]
-    State["Build State"]
+    Output["Output"]
+    Theme["Theme"]
 
     Environment --> Doctor["doctor"]
     Config --> Doctor
     Plugin --> Doctor
     Content --> Doctor
-    State --> Doctor
+    Output --> Doctor
+    Theme --> Doctor
 
     Doctor --> Diagnostics["Diagnostics"]
 ```
 
 `doctor` continues independent checks where possible and exits unsuccessfully when health checks fail.
+
+During `riebeckite dev`, press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> to open the Development Inspector. It uses the same report as `doctor`, refreshes with Vite updates, and is not included in production client output or endpoints. Element source and component mappings are currently marked PARTIAL because the runtime does not expose those mappings.
 
 ## `build`
 

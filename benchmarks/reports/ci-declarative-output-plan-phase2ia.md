@@ -91,7 +91,7 @@ Content Inventory と削除候補は `toSSG()` 前、Vite artifact は restore �
 | `pnpm exec tsx --test packages/core/test/output_plan.test.ts packages/integrations/honox/test/ssg_plugin.test.ts` | PASS（22 / 22） |
 | `pnpm typecheck` | PASS（146 projects OK） |
 | `pnpm build:packages` | PASS（84 packages、Plan基盤修正後） |
-| `pnpm test:e2e:preset-fast-path` | 実行中（完了結果はこの時点で未確定） |
+| `pnpm test:e2e:preset-fast-path` | PASS（Empty / Minimal / Starter / Showcase） |
 | `git diff --check` | PASS |
 
 ## 12. 未実行の計測・検証
@@ -103,6 +103,18 @@ Content Inventory と削除候補は `toSSG()` 前、Vite artifact は restore �
 - Linux での検証: **UNVERIFIED**
 
 未実行のため、wall time、CPU、I/O、RSS の preset 比較値や Output Plan の実プリセット件数は報告しない。
+
+## 12.1 外部preset実測
+
+`pnpm test:e2e:preset-fast-path` は Empty、Minimal、Starter、Showcase で cold / no-change と既存の mutation matrix を実行した。通常の SSG build で Output Plan metrics を必須にし、次をすべて 0 と検証した。
+
+- Missing in Plan
+- Missing in Dist
+- Unknown
+- Owner Conflict
+- Publication Violation
+
+各 preset の incremental output は `--full` output と SHA 単位で一致した。Empty / Minimal は no-change fast path を利用し、Starter / Showcase は既存の plugin block reason により通常 build へ安全にフォールバックした。Draft は非公開、Unlisted は routable かつ sitemap 非掲載を確認した。
 
 ## 13. 次段階
 

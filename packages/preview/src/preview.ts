@@ -102,6 +102,7 @@ export function createPreview(
       try {
         if (
           runtime === undefined ||
+          pipeline === undefined ||
           activePluginId !== plugin?.id ||
           !sameJsonValue(activeOptions, validatedOptions.value)
         ) {
@@ -205,7 +206,7 @@ async function sanitizeHtml(html: string): Promise<string> {
     attributes: {
       ...defaultSchema.attributes,
       "*": [
-        ...(defaultSchema.attributes["*"] ?? []),
+        ...(defaultSchema.attributes?.["*"] ?? []),
         "dataCodeTabs",
         "dataCodeTabsLabel",
         "dataCodeTabsPanel",

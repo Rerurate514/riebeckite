@@ -125,6 +125,9 @@ importers:
       '@riebeckite/plugin-code-enhance':
         specifier: workspace:*
         version: link:../../packages/plugins/code-enhance
+      '@riebeckite/plugin-code-tabs':
+        specifier: workspace:*
+        version: link:../../packages/plugins/code-tabs
       '@riebeckite/plugin-color-mode':
         specifier: workspace:*
         version: link:../../packages/plugins/color-mode
@@ -281,6 +284,9 @@ importers:
       '@riebeckite/plugin-webmention':
         specifier: workspace:*
         version: link:../../packages/plugins/webmention
+      '@riebeckite/preview':
+        specifier: workspace:*
+        version: link:../../packages/preview
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default

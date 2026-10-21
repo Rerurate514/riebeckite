@@ -84,6 +84,25 @@ test("findViteApplicationRoot falls back to the single application under the con
   }
 });
 
+test("findViteApplicationRoot ignores generated files, tests, and templates", async () => {
+  const root = await createTemporaryDirectory();
+  try {
+    const appRoot = path.join(root, "apps", "web");
+    await writeViteConfig(appRoot);
+    await writeViteConfig(path.join(root, ".riebeckite", "preview"));
+    await writeViteConfig(
+      path.join(root, "packages", "create", "test", "golden"),
+    );
+    await writeViteConfig(
+      path.join(root, "packages", "create", "templates", "base"),
+    );
+
+    assert.equal(await resolveHonoxApplicationRoot(root, root), appRoot);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test("findViteApplicationRoot fails closed when the invocation is ambiguous", async () => {
   const root = await createTemporaryDirectory();
   try {

@@ -39,6 +39,15 @@ const viteConfigFileNames = [
   "vite.config.mjs",
 ] as const;
 
+const ignoredApplicationRootDirectoryNames = new Set([
+  ".git",
+  ".riebeckite",
+  "node_modules",
+  "test",
+  "tests",
+  "templates",
+]);
+
 export async function resolveHonoxApplicationRoot(
   configRoot: string,
   startDirectory?: string,
@@ -219,9 +228,7 @@ async function findViteApplicationRoots(
     for (const entry of entries) {
       if (
         !entry.isDirectory() ||
-        entry.name === "node_modules" ||
-        entry.name === ".git" ||
-        entry.name === "tests"
+        ignoredApplicationRootDirectoryNames.has(entry.name)
       ) {
         continue;
       }

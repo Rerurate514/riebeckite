@@ -5,7 +5,6 @@ import minimalThemeStyle from "@riebeckite/theme-minimal/style.css?inline";
 import rerurateThemeStyle from "@riebeckite/theme-rerurate/style.css?inline";
 import sakuraThemeStyle from "@riebeckite/theme-sakura/style.css?inline";
 import tokyonightThemeStyle from "@riebeckite/theme-tokyonight/style.css?inline";
-import { previewFixtureMarkdown } from "./components/plugin-preview";
 
 const styles = {
   default: defaultThemeStyle,
@@ -114,10 +113,7 @@ function initialize(root: HTMLElement): void {
     "change",
     (event) => {
       if (event.target === fixture) {
-        const value = previewFixtureMarkdown(
-          root.dataset.previewPlugin ?? "",
-          fixture.value,
-        );
+        const value = readFixtureMarkdown(root, fixture.value);
         if (value !== undefined) markdown.value = value;
       }
       void render();
@@ -132,6 +128,24 @@ function initialize(root: HTMLElement): void {
     roots.delete(root);
   });
   void render();
+}
+
+function readFixtureMarkdown(
+  root: HTMLElement,
+  fixtureId: string,
+): string | undefined {
+  const fixtures = root.dataset.previewFixtures;
+  if (!fixtures) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(fixtures);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return undefined;
+    }
+    const value = (parsed as Record<string, unknown>)[fixtureId];
+    return typeof value === "string" ? value : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 function readOptions(root: HTMLElement): Record<string, unknown> {

@@ -5,7 +5,7 @@
     "dev": "vite",
     "predev": "tsx scripts/build_images.ts",
     "prebuild": "tsx scripts/build_images.ts",
-    "build": "vite build --mode client && vite build",
+    "build": "vite build --mode client && vite build && node scripts/build_preview_worker.mjs",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "rb": "npm run prebuild && npm run build && npm run preview",

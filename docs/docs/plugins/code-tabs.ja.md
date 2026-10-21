@@ -51,15 +51,14 @@ console.log("Hello");
     <label>Theme<select data-preview-theme><option value="default">Default</option><option value="minimal">Minimal</option><option value="gruvbox">Gruvbox</option><option value="rerurate">Rerurate</option><option value="sakura">Sakura</option><option value="tokyonight">Tokyo Night</option></select></label>
     <label>Color mode<select data-preview-mode><option value="light">Light</option><option value="dark">Dark</option></select></label>
   </div>
-  <label class="plugin-preview__editor-label"><span>Markdown</span><textarea data-preview-markdown spellcheck="false">```ts tab="TypeScript"
+  <label class="plugin-preview__editor-label"><span>Markdown</span><textarea data-preview-markdown spellcheck="false">&#96;&#96;&#96;ts tab="TypeScript"
 const greeting = "Hello from TypeScript";
 console.log(greeting);
-```
-
-```js tab="JavaScript"
+&#96;&#96;&#96;
+&#96;&#96;&#96;js tab="JavaScript"
 const greeting = "Hello from JavaScript";
 console.log(greeting);
-```</textarea></label>
+&#96;&#96;&#96;</textarea></label>
   <section class="plugin-preview__output" aria-live="polite"><header><span>Preview</span><span data-preview-status>Loading</span></header><iframe data-preview-frame title="Code Tabs preview" sandbox=""></iframe><ul class="plugin-preview__diagnostics" data-preview-diagnostics></ul></section>
 </section>
 

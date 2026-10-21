@@ -37,6 +37,8 @@
     "test:e2e:fault-recovery": "node --import tsx tests/external-site/fault-recovery.ts",
     "test:e2e:fault-recovery:smoke": "node --import tsx tests/external-site/fault-recovery.ts --smoke",
     "test:browser": "pnpm --filter @riebeckite/plugin-search test:browser:required",
+    "test:web-e2e": "pnpm build:packages && pnpm --filter @riebeckite/web build && node tests/web-e2e/run-required.mjs",
+    "test:web-e2e:only": "node tests/web-e2e/run-required.mjs",
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",
     "benchmark:vault": "node --import tsx --expose-gc benchmarks/core.mjs",

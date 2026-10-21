@@ -26,6 +26,11 @@ export function PluginPreview({
       data-preview-plugin={plugin.id}
       data-preview-fixture={fixture.id}
       data-preview-options={JSON.stringify(defaultOptions(plugin))}
+      data-preview-fixtures={JSON.stringify(
+        Object.fromEntries(
+          plugin.fixtures.map((item) => [item.id, item.markdown]),
+        ),
+      )}
     >
       <header class="plugin-preview__header">
         <div>
@@ -143,11 +148,4 @@ function defaultOptions(plugin: PreviewPlugin): Record<string, unknown> {
       option.default === undefined ? [] : [[name, option.default]],
     ),
   );
-}
-
-export function previewFixtureMarkdown(
-  plugin: string,
-  fixture: string,
-): string | undefined {
-  return previewRegistry.fixture(plugin, fixture)?.markdown;
 }

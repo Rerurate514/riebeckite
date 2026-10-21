@@ -10,7 +10,7 @@ export type ClientInitializerContext<TRoot, TConfig> = {
 
 export type ClientInitializer<TRoot, TConfig> = (
   context: ClientInitializerContext<TRoot, TConfig>,
-) => void | ClientCleanup | Promise<undefined | ClientCleanup>;
+) => undefined | ClientCleanup | Promise<undefined | ClientCleanup>;
 
 export type ClientLifecycleErrorContext = {
   scope: ClientLifecycleScope;

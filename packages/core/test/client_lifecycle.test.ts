@@ -13,6 +13,7 @@ test("mounts an initializer once for the same scope, name, and root", async () =
     config: undefined,
     initialize: () => {
       calls += 1;
+      return undefined;
     },
   };
 

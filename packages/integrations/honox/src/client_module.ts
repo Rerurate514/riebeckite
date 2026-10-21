@@ -57,13 +57,14 @@ function createClientModule(
       `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
     );
     const publicConfig = entry.publicConfig;
-    const initializer =
+    const serializedConfig =
       publicConfig === undefined
-        ? `${localName}()`
-        : `${localName}(${serializePublicClientConfig(publicConfig)})`;
+        ? "undefined"
+        : serializePublicClientConfig(publicConfig);
+    const initializer = `${localName}({ ...(context.config ?? {}), root: context.root, signal: context.signal, config: context.config })`;
     const initializers = entry.scope === "app" ? appInitializers : pageInitializers;
     initializers.push(
-      `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, () => ${initializer})`,
+      `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,
     );
   }
 
@@ -72,8 +73,8 @@ function createClientModule(
 const lifecycle = new ClientLifecycle();
 let stopSpaNavigation;
 
-function mountPluginClientInitializer(scope, name, root, initialize) {
-  void lifecycle.mount({ scope, name, root, config: undefined, initialize });
+function mountPluginClientInitializer(scope, name, root, config, initialize) {
+  void lifecycle.mount({ scope, name, root, config, initialize });
 }
 
 function mountAppClientInitializers(root) {
@@ -94,8 +95,8 @@ ${
     ...${serializePublicClientConfig(config.spa)},
     onBeforePageCommit: () => lifecycle.unmount("page"),
     onPageCommit: async ({ root }) => {
-      mountPageClientInitializers(root);
       await createClient();
+      mountPageClientInitializers(root);
     },
   });`
 }

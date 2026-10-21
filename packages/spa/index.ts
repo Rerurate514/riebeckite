@@ -9,6 +9,11 @@ export type SpaPageCommit = (context: {
   signal: AbortSignal;
 }) => void | Promise<void>;
 
+export type SpaNavigationEventDetail = {
+  url: string;
+  popstate: boolean;
+};
+
 export type SpaNavigationOptions = SpaOptions & {
   onBeforePageCommit?: (signal: AbortSignal) => void | Promise<void>;
   onPageCommit?: SpaPageCommit;
@@ -30,6 +35,7 @@ class SpaNavigation {
     Pick<SpaNavigationOptions, "onBeforePageCommit" | "onPageCommit">;
   private active?: AbortController;
   private readonly cache = new Map<string, Promise<FetchedPage>>();
+  private readonly previousScrollRestoration = history.scrollRestoration;
 
   constructor(options: SpaNavigationOptions) {
     validateSpaOptions(options);
@@ -43,6 +49,7 @@ class SpaNavigation {
   }
 
   start(): () => void {
+    history.scrollRestoration = "manual";
     document.addEventListener("click", this.onClick);
     window.addEventListener("popstate", this.onPopState);
     if (this.options.prefetch === "hover") {
@@ -53,6 +60,7 @@ class SpaNavigation {
 
   private stop(): void {
     this.active?.abort();
+    history.scrollRestoration = this.previousScrollRestoration;
     document.removeEventListener("click", this.onClick);
     window.removeEventListener("popstate", this.onPopState);
     document.removeEventListener("pointerover", this.onPointerOver);
@@ -94,21 +102,19 @@ class SpaNavigation {
     this.active?.abort();
     this.active = controller;
     try {
+      this.saveScrollPosition();
       const fetched = await this.fetchPage(url, controller.signal);
       if (controller.signal.aborted) return;
       const page = new DOMParser().parseFromString(fetched.html, "text/html");
       const replacement = page.querySelector<HTMLElement>("main#main-content");
       const current = document.querySelector<HTMLElement>("main#main-content");
-      if (!replacement || !current) {
-        window.location.assign(url.href);
-        return;
-      }
+      if (!replacement || !current) throw new Error("SPA page root is missing.");
       const finalUrl = new URL(fetched.url, url.href);
       const commit = async () => {
         await this.options.onBeforePageCommit?.(controller.signal);
         if (controller.signal.aborted) return;
+        reconcileDocument(page);
         current.replaceWith(replacement);
-        document.title = page.title;
         await this.options.onPageCommit?.({ root: replacement, signal: controller.signal });
       };
       if (this.shouldUseViewTransition()) {
@@ -117,11 +123,16 @@ class SpaNavigation {
         await commit();
       }
       if (controller.signal.aborted) return;
-      if (!popstate) history.pushState(null, "", finalUrl);
+      if (!popstate) history.pushState({ scroll: [0, 0] }, "", finalUrl);
       this.restorePosition(finalUrl, popstate);
-      replacement.focus({ preventScroll: true });
+      focusPage(replacement, finalUrl);
       announceNavigation();
-    } catch (error) {
+      document.dispatchEvent(
+        new CustomEvent<SpaNavigationEventDetail>("riebeckite:navigation", {
+          detail: { url: finalUrl.href, popstate },
+        }),
+      );
+    } catch {
       if (controller.signal.aborted) return;
       window.location.assign(url.href);
     } finally {
@@ -131,7 +142,13 @@ class SpaNavigation {
 
   private async prefetch(url: URL): Promise<void> {
     if (this.cache.size >= 20 || this.cache.has(url.href)) return;
-    this.cache.set(url.href, this.fetchPage(url, new AbortController().signal));
+    const request = this.fetchPage(url, new AbortController().signal);
+    this.cache.set(url.href, request);
+    try {
+      await request;
+    } catch {
+      this.cache.delete(url.href);
+    }
   }
 
   private async fetchPage(url: URL, signal: AbortSignal): Promise<FetchedPage> {
@@ -145,10 +162,23 @@ class SpaNavigation {
     return { html: await response.text(), url: response.url };
   }
 
+  private saveScrollPosition(): void {
+    if (!this.options.scrollRestoration) return;
+    history.replaceState(
+      { ...(history.state ?? {}), scroll: [window.scrollX, window.scrollY] },
+      "",
+    );
+  }
+
   private restorePosition(url: URL, popstate: boolean): void {
     if (!this.options.scrollRestoration) return;
     if (url.hash) {
       document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();
+      return;
+    }
+    const saved = popstate ? readSavedScrollPosition(history.state) : undefined;
+    if (saved) {
+      window.scrollTo(saved[0], saved[1]);
       return;
     }
     if (!popstate) window.scrollTo(0, 0);
@@ -167,6 +197,51 @@ type FetchedPage = {
   html: string;
   url: string;
 };
+
+function reconcileDocument(page: Document): void {
+  document.title = page.title;
+  reconcilePageHead(page);
+  const language = page.documentElement.getAttribute("lang");
+  if (language) document.documentElement.lang = language;
+  else document.documentElement.removeAttribute("lang");
+  const direction = page.documentElement.getAttribute("dir");
+  if (direction) document.documentElement.dir = direction;
+  else document.documentElement.removeAttribute("dir");
+}
+
+function reconcilePageHead(page: Document): void {
+  const nodes = Array.from(document.head.children).filter(isPageHeadNode);
+  for (const node of nodes) node.remove();
+  for (const node of Array.from(page.head.children).filter(isPageHeadNode)) {
+    document.head.append(node.cloneNode(true));
+  }
+}
+
+function isPageHeadNode(node: Element): boolean {
+  if (node.matches('link[rel="canonical"], link[hreflang]')) return true;
+  if (node.matches('script[type="application/ld+json"]')) return true;
+  if (!node.matches("meta")) return false;
+  const name = node.getAttribute("name");
+  if (name && ["description", "author", "robots"].includes(name)) return true;
+  if (name?.startsWith("twitter:")) return true;
+  const property = node.getAttribute("property");
+  return property?.startsWith("og:") === true || property?.startsWith("article:") === true;
+}
+
+function focusPage(root: HTMLElement, url: URL): void {
+  if (url.hash) return;
+  if (!root.hasAttribute("tabindex")) root.tabIndex = -1;
+  root.focus({ preventScroll: true });
+}
+
+function readSavedScrollPosition(value: unknown): [number, number] | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const scroll = (value as { scroll?: unknown }).scroll;
+  if (!Array.isArray(scroll) || scroll.length !== 2) return undefined;
+  return typeof scroll[0] === "number" && typeof scroll[1] === "number"
+    ? [scroll[0], scroll[1]]
+    : undefined;
+}
 
 function validateSpaOptions(options: SpaOptions): void {
   if (options.prefetch !== undefined && options.prefetch !== false && options.prefetch !== "hover") {
@@ -189,6 +264,14 @@ function isHashOnlyNavigation(url: URL): boolean {
 }
 
 function announceNavigation(): void {
-  const announcer = document.getElementById("riebeckite-navigation-announcer");
-  if (announcer) announcer.textContent = document.title;
+  let announcer = document.getElementById("riebeckite-navigation-announcer");
+  if (!announcer) {
+    announcer = document.createElement("div");
+    announcer.id = "riebeckite-navigation-announcer";
+    announcer.setAttribute("aria-live", "polite");
+    announcer.setAttribute("aria-atomic", "true");
+    announcer.className = "riebeckite-visually-hidden";
+    document.body.append(announcer);
+  }
+  announcer.textContent = document.title;
 }

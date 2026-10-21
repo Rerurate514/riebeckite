@@ -25,6 +25,7 @@ test("client module assigns client entries to their lifecycle scope", async () =
   const plugin = riebeckiteClientModule(() => ({
     plugins: [
       {
+        name: "fixture",
         clientEntries: [
           { pluginName: "app", moduleSpecifier: "app-entry", scope: "app" },
           { pluginName: "page", moduleSpecifier: "page-entry" },
@@ -40,6 +41,7 @@ test("client module assigns client entries to their lifecycle scope", async () =
   assert.match(module as string, /mountAppClientInitializers/);
   assert.match(module as string, /mountPageClientInitializers/);
   assert.match(module as string, /remountRiebeckitePage/);
+  assert.match(module as string, /signal: context.signal/);
 });
 
 test("client module imports the SPA runtime only when configured", async () => {

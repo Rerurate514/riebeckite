@@ -18,7 +18,7 @@ test("development inspector prioritizes its endpoint and keeps failures private"
     httpServer: { address: () => ({ address: "127.0.0.1" }) },
   });
   stack.unshift({ route: "", handle() {} });
-  afterConfigure?.();
+  if (typeof afterConfigure === "function") afterConfigure();
 
   assert.equal(stack[0]?.route, "/__riebeckite/inspector/report");
 
@@ -46,7 +46,10 @@ test("development inspector prioritizes its endpoint and keeps failures private"
 
 test("development inspector client provides accessible panels and safe refreshes", () => {
   const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
-  const source = plugin.load?.("\0virtual:riebeckite/development-inspector");
+  const load = hookHandler(plugin.load);
+  const source = Reflect.apply(load, undefined, [
+    "\0virtual:riebeckite/development-inspector",
+  ]);
 
   assert.equal(typeof source, "string");
   assert.match(source as string, /AbortController/);
@@ -56,3 +59,10 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /Dependencies/);
   assert.match(source as string, /Output/);
 });
+
+function hookHandler<Handler extends (...arguments_: never[]) => unknown>(
+  hook: Handler | { readonly handler: Handler } | undefined,
+): Handler {
+  assert.ok(hook);
+  return typeof hook === "function" ? hook : hook.handler;
+}

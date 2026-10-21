@@ -32,6 +32,27 @@ codeTabs({
 | ------ | ---- | ------- | ----------- |
 | `syncTabs` | `boolean` | `false` | When enabled, selecting a label such as `TypeScript` also selects the same label in other code-tab groups on the page. |
 
+## Interactive preview
+
+<section class="plugin-preview plugin-preview--compact" data-plugin-preview data-preview-plugin="code-tabs" data-preview-fixture="basic" data-preview-options="{&quot;syncTabs&quot;:false}">
+  <header class="plugin-preview__header"><div><p>Interactive preview</p><h2>Code Tabs</h2></div><a href="/playground?plugin=code-tabs&amp;fixture=basic">Open in Playground</a></header>
+  <div class="plugin-preview__controls">
+    <label>Fixture<select data-preview-fixture-select><option value="basic" selected>Basic tabs</option><option value="separate-groups">Separate groups</option></select></label>
+    <label><input type="checkbox" data-preview-option="syncTabs"> Sync tabs</label>
+    <label>Theme<select data-preview-theme><option value="default">Default</option><option value="minimal">Minimal</option><option value="gruvbox">Gruvbox</option><option value="rerurate">Rerurate</option><option value="sakura">Sakura</option><option value="tokyonight">Tokyo Night</option></select></label>
+    <label>Color mode<select data-preview-mode><option value="light">Light</option><option value="dark">Dark</option></select></label>
+  </div>
+  <label class="plugin-preview__editor-label"><span>Markdown</span><textarea data-preview-markdown spellcheck="false">&#96;&#96;&#96;ts tab="TypeScript"
+const greeting = "Hello from TypeScript";
+console.log(greeting);
+&#96;&#96;&#96;
+&#96;&#96;&#96;js tab="JavaScript"
+const greeting = "Hello from JavaScript";
+console.log(greeting);
+&#96;&#96;&#96;</textarea></label>
+  <section class="plugin-preview__output" aria-live="polite"><header><span>Preview</span><span data-preview-status>Loading</span></header><iframe data-preview-frame title="Code Tabs preview" sandbox=""></iframe><ul class="plugin-preview__diagnostics" data-preview-diagnostics></ul></section>
+</section>
+
 ## Syntax
 
 ````md

@@ -43,6 +43,7 @@ flowchart LR
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
 | How plugins declare build dependencies | [Build dependency contract](./build-dependency.md) |
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
+| SPA navigation runtime boundaries and migration | [SPA Navigation Design](./spa-navigation.md) |
 | Diagnostics and Doctor | [Diagnostics](./diagnostics.md) |
 | Read-only inspection commands | [Inspector](./inspector.md) |
 | Logger, Tracer, and Profiler | [Observability](./observability.md) |

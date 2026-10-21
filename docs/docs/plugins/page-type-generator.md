@@ -11,7 +11,7 @@ riebeckite create page-type glossary --path /reference/glossary/ --with-tests --
 riebeckite create page-type glossary --plugin reference-pages --path /glossary/
 ```
 
-Without `--plugin`, the command creates `extensions/<name>/` with the existing Plugin Generator's `pages` template, README, and optionally tests. With `--plugin`, it creates `page_types/<name>.ts` and adds that exported PageType to a recognized `pageTypes: []` array. It preserves other hooks and refuses an unrecognized structure, duplicate ID, duplicate local path, or existing file; add the PageType manually when that happens.
+Without `--plugin`, the command creates `extensions/<name>/` with the existing Plugin Generator's `pages` template, README, and optionally tests. With `--plugin`, it creates `page_types/<name>.ts` and adds that exported PageType to a recognized `pageTypes: []` array. The interactive Existing Plugin choice lists local Plugins that have an entry point. It preserves other hooks and refuses an unrecognized structure, duplicate ID, duplicate local path, or existing file; add the PageType manually when that happens.
 
 The generated page lists `manifest.discoverableEntries`, so drafts, private entries, scheduled entries, and unlisted content do not become visible. Its path must be an absolute, normalized URL path ending in `/`; traversal and malformed paths are rejected.
 

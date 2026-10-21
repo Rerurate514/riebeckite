@@ -10,7 +10,7 @@ riebeckite create component note-card --with-tests --with-styles
 riebeckite create component note-card --target plugin --plugin notes --with-styles
 ```
 
-The site target writes `app/components/<name>.tsx`. The Plugin target writes `extensions/<plugin>/components/<name>.tsx` and re-exports its default component and props from the Plugin root. It never inserts the component into a layout; the site author imports and places it.
+The site target writes `app/components/<name>.tsx`. The Plugin target writes `extensions/<plugin>/components/<name>.tsx` and re-exports its default component and props from the Plugin root. The interactive Plugin target lists local Plugins that have an entry point, so create the Plugin first with `riebeckite create plugin`. It never inserts the component into a layout; the site author imports and places it.
 
 The optional stylesheet uses an `rr-<name>` namespace, public `--rb-*` semantic tokens, responsive spacing, and `:focus-visible`. Import the stylesheet from the site's existing CSS entry when you choose `--with-styles`; the generator does not mutate application layout or global CSS automatically.
 

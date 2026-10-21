@@ -10,6 +10,7 @@ import {
   spinner,
   text,
 } from "@clack/prompts";
+import { listLocalPlugins } from "../local_plugins.js";
 import {
   renderPageTypeModule,
   renderPageTypeTest,
@@ -90,7 +91,7 @@ export async function runInteractiveCreatePageType(): Promise<void> {
         {
           value: "existing",
           label: "Existing Plugin",
-          hint: "Add the PageType to an installed Plugin",
+          hint: "Add the PageType to a local Plugin",
         },
       ],
     }),
@@ -98,15 +99,23 @@ export async function runInteractiveCreatePageType(): Promise<void> {
   if (destination === null) return;
   let plugin: string | undefined;
   if (destination === "existing") {
+    const plugins = await listLocalPlugins();
+    if (plugins.length === 0)
+      throw new Error(
+        "No local Plugins found in extensions/. Create a Plugin first with `riebeckite create plugin`.",
+      );
     const pluginName = await resolvePrompt(
-      text({
-        message: "Plugin name",
-        placeholder: "my-plugin",
-        validate: validateInput(assertPageTypeName),
+      select<string>({
+        message: "Which Plugin should own the PageType?",
+        options: plugins.map((name) => ({
+          value: name,
+          label: name,
+          hint: `extensions/${name}`,
+        })),
       }),
     );
     if (pluginName === null) return;
-    plugin = pluginName.trim();
+    plugin = pluginName;
   }
   const pathValue = await resolvePrompt(
     text({
@@ -206,7 +215,9 @@ async function addPageTypeToPlugin(
   await assertAbsent(pagePath);
   if (options.tests) await assertAbsent(testPath);
   const source = await fs.readFile(indexPath, "utf8").catch(() => {
-    throw new Error(`Could not find Plugin entry point: ${indexPath}`);
+    throw new Error(
+      `Could not find Plugin entry point: ${indexPath}. Create the Plugin first with \`riebeckite create plugin\`.`,
+    );
   });
   if (
     source.includes(`"${options.path}"`) ||

@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { parseCommand } from "../src/cli.js";
 import { runCreateComponent } from "../src/commands/create_component.js";
 import { renderComponent } from "../src/component_generator/templates.js";
+import { listLocalPlugins } from "../src/local_plugins.js";
 
 test("parses component options", () => {
   assert.deepEqual(
@@ -136,6 +137,43 @@ test("exports a Plugin Component and rejects Theme ownership", async () => {
           styles: false,
         }),
       /Themes do not own components/,
+    );
+  } finally {
+    process.chdir(previous);
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("finds local Plugins and rejects a missing entry point", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-component-"),
+  );
+  const previous = process.cwd();
+  process.chdir(directory);
+  try {
+    await fs.mkdir("extensions/notes", { recursive: true });
+    await fs.writeFile("extensions/notes/index.ts", "export {};\n", "utf8");
+    await fs.mkdir("extensions/incomplete", { recursive: true });
+    await fs.mkdir("extensions/Invalid_Name", { recursive: true });
+    await fs.writeFile(
+      "extensions/Invalid_Name/index.ts",
+      "export {};\n",
+      "utf8",
+    );
+    assert.deepEqual(await listLocalPlugins(), ["notes"]);
+    await assert.rejects(
+      () =>
+        runCreateComponent({
+          name: "orphan-card",
+          target: "plugin",
+          plugin: "missing",
+          tests: false,
+          styles: false,
+        }),
+      /Create the Plugin first/,
+    );
+    await assert.rejects(() =>
+      fs.access("extensions/missing/components/orphan-card.tsx"),
     );
   } finally {
     process.chdir(previous);

@@ -10,7 +10,7 @@ riebeckite create component note-card --with-tests --with-styles
 riebeckite create component note-card --target plugin --plugin notes --with-styles
 ```
 
-Site Target は `app/components/<name>.tsx` を作成します。Plugin Target は `extensions/<plugin>/components/<name>.tsx` を作成し、Plugin root から default Component と Props を再 export します。Layout への自動挿入は行わず、Site author が import して配置します。
+Site Target は `app/components/<name>.tsx` を作成します。Plugin Target は `extensions/<plugin>/components/<name>.tsx` を作成し、Plugin root から default Component と Props を再 export します。対話形式の Plugin Target は entry point を持つ local Plugin を一覧から選ぶため、先に `riebeckite create plugin` で Plugin を作成してください。Layout への自動挿入は行わず、Site author が import して配置します。
 
 任意の stylesheet は `rr-<name>` namespace、公開 `--rb-*` Semantic Token、responsive な余白、`:focus-visible` を使います。`--with-styles` を選んだ場合は、Site にある CSS entry から stylesheet を import してください。Generator が application layout や global CSS を自動変更することはありません。
 

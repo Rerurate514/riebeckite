@@ -6,6 +6,7 @@ import {
   renderComponentCss,
   renderComponentTest,
 } from "../component_generator/templates.js";
+import { listLocalPlugins } from "../local_plugins.js";
 import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 import { assertPageTypeName } from "./create_page_type.js";
 
@@ -135,15 +136,23 @@ export async function runInteractiveCreateComponent(): Promise<void> {
   if (target === null) return;
   let plugin: string | undefined;
   if (target === "plugin") {
+    const plugins = await listLocalPlugins();
+    if (plugins.length === 0)
+      throw new Error(
+        "No local Plugins found in extensions/. Create a Plugin first with `riebeckite create plugin`.",
+      );
     const pluginName = await resolvePrompt(
-      text({
-        message: "Plugin name",
-        placeholder: "my-plugin",
-        validate: validateInput(assertPageTypeName),
+      select<string>({
+        message: "Which Plugin should own the component?",
+        options: plugins.map((name) => ({
+          value: name,
+          label: name,
+          hint: `extensions/${name}`,
+        })),
       }),
     );
     if (pluginName === null) return;
-    plugin = pluginName.trim();
+    plugin = pluginName;
   }
   const tests = await resolvePrompt(
     confirm({ message: "Generate tests?", initialValue: false }),
@@ -184,7 +193,9 @@ async function pluginIndexUpdate(
     "index.ts",
   );
   const source = await fs.readFile(indexPath, "utf8").catch(() => {
-    throw new Error(`Could not find Plugin entry point: ${indexPath}`);
+    throw new Error(
+      `Could not find Plugin entry point: ${indexPath}. Create the Plugin first with \`riebeckite create plugin\`.`,
+    );
   });
   const identifier = toIdentifier(name);
   if (

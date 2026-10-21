@@ -11,7 +11,7 @@ riebeckite create page-type glossary --path /reference/glossary/ --with-tests --
 riebeckite create page-type glossary --plugin reference-pages --path /glossary/
 ```
 
-`--plugin` を指定しない場合は、既存の Plugin Generator の `pages` template、README、必要に応じた test を使って `extensions/<name>/` を作成します。`--plugin` を指定した場合は `page_types/<name>.ts` を作成し、認識できる `pageTypes: []` 配列に export 済みの PageType を追加します。ほかの Hook は保持し、認識できない構造、ID または Plugin 内の Path の重複、既存ファイルがある場合は変更しません。その場合は手動で登録してください。
+`--plugin` を指定しない場合は、既存の Plugin Generator の `pages` template、README、必要に応じた test を使って `extensions/<name>/` を作成します。`--plugin` を指定した場合は `page_types/<name>.ts` を作成し、認識できる `pageTypes: []` 配列に export 済みの PageType を追加します。対話形式の Existing Plugin は entry point を持つ local Plugin を一覧から選びます。ほかの Hook は保持し、認識できない構造、ID または Plugin 内の Path の重複、既存ファイルがある場合は変更しません。その場合は手動で登録してください。
 
 生成ページは `manifest.discoverableEntries` だけを列挙するため、Draft、Private、Scheduled、Unlisted の Content は公開されません。Path は末尾が `/` の正規化済み絶対 URL Path である必要があり、Traversal や不正な Path は拒否します。
 

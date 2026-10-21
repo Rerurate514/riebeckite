@@ -16,7 +16,10 @@ const preview = createPreview({
       id: "code-tabs",
       title: "Code tabs",
       availability: "browser",
-      fixtures: [],
+      fixtures: [{ id: "basic", title: "Basic", markdown: "# Hello" }],
+      options: {
+        syncTabs: { type: "boolean", title: "Sync labels", default: false },
+      },
       create: (options) => codeTabs(options),
     }),
   ],
@@ -42,5 +45,7 @@ const result = await preview.render({
 - `createPreview(options?)`：状態を分離したプレビューセッションを作成します。
 - `createPreviewRegistry(input)`：fixture とプラグイン ID を検証します。
 - `definePluginPreview(preview)`：型付きのプラグインプレビュー定義を保持します。
+- `PreviewPlugin.options`：boolean、string、number、enum の操作項目を宣言します。
+- `validatePreviewOptions(definitions, input)`：不明または不正な値を拒否します。
 - `PreviewSession.render(input)`：サニタイズ済み HTML と診断を返します。
 - `PreviewSession.dispose()`：内部のプラグインランタイムを破棄します。

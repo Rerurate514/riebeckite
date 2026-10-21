@@ -16,7 +16,10 @@ const preview = createPreview({
       id: "code-tabs",
       title: "Code tabs",
       availability: "browser",
-      fixtures: [],
+      fixtures: [{ id: "basic", title: "Basic", markdown: "# Hello" }],
+      options: {
+        syncTabs: { type: "boolean", title: "Sync labels", default: false },
+      },
       create: (options) => codeTabs(options),
     }),
   ],
@@ -45,5 +48,7 @@ allow and isolate any interactive client behavior.
 - `createPreview(options?)` creates an isolated stateful preview session.
 - `createPreviewRegistry(input)` validates fixtures and plugin IDs.
 - `definePluginPreview(preview)` preserves a typed plugin preview descriptor.
+- `PreviewPlugin.options` declares boolean, string, number, and enum controls.
+- `validatePreviewOptions(definitions, input)` rejects unknown and invalid values.
 - `PreviewSession.render(input)` returns sanitized HTML and diagnostics.
 - `PreviewSession.dispose()` disposes the underlying plugin runtime.

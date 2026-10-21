@@ -12,6 +12,7 @@ import {
   createPreviewRegistry,
   type PreviewPlugin,
   type PreviewRegistry,
+  validatePreviewOptions,
 } from "./registry.js";
 
 const PREVIEW_SLUG = "__preview__";
@@ -39,12 +40,11 @@ export type PreviewSession = {
   dispose(): Promise<void>;
 };
 
-export function createPreview(options: CreatePreviewOptions = {}): PreviewSession {
+export function createPreview(
+  options: CreatePreviewOptions = {},
+): PreviewSession {
   const registry =
     options.registry ?? createPreviewRegistry({ plugins: options.plugins });
-  const initialFixture = options.fixture
-    ? registry.fixture(options.fixture)
-    : undefined;
   let runtime: PluginRuntime | undefined;
   let pipeline: Pipeline | undefined;
   let activePluginId: string | undefined;
@@ -55,10 +55,16 @@ export function createPreview(options: CreatePreviewOptions = {}): PreviewSessio
 
   return {
     async render(input) {
-      if (disposed) return failedResult("preview-disposed", "Preview session is disposed.");
+      if (disposed)
+        return failedResult("preview-disposed", "Preview session is disposed.");
       const pluginId = input.pluginId ?? options.pluginId;
-      const markdown = input.markdown ?? initialFixture?.markdown ?? "";
       const plugin = pluginId ? registry.plugin(pluginId) : undefined;
+      const initialFixture = options.fixture
+        ? pluginId
+          ? registry.fixture(pluginId, options.fixture)
+          : registry.fixtures.find((fixture) => fixture.id === options.fixture)
+        : undefined;
+      const markdown = input.markdown ?? initialFixture?.markdown ?? "";
 
       if (pluginId && !plugin) {
         return failedResult(
@@ -81,24 +87,41 @@ export function createPreview(options: CreatePreviewOptions = {}): PreviewSessio
           plugin?.id,
         );
       }
+      const validatedOptions = validatePreviewOptions(
+        plugin?.options,
+        input.options,
+      );
+      if (!validatedOptions.valid) {
+        return failedResult(
+          "invalid-options",
+          "The selected plugin options are invalid.",
+          plugin?.id,
+        );
+      }
 
       try {
         if (
           runtime === undefined ||
           activePluginId !== plugin?.id ||
-          !sameJsonValue(activeOptions, input.options)
+          !sameJsonValue(activeOptions, validatedOptions.value)
         ) {
           await runtime?.dispose(contentIndex);
-          const plugins = plugin ? [createPlugin(plugin, input.options)] : [];
+          const plugins = plugin
+            ? [createPlugin(plugin, validatedOptions.value)]
+            : [];
           runtime = new PluginRuntime({ plugins });
-          pipeline = new Pipeline(contentIndex, permalinks, undefined, { plugins });
+          pipeline = new Pipeline(contentIndex, permalinks, undefined, {
+            plugins,
+          });
           activePluginId = plugin?.id;
-          activeOptions = input.options;
+          activeOptions = validatedOptions.value;
         }
 
         await runtime.startBuild(contentIndex);
         await runtime.runContentLoaded(PREVIEW_SLUG, markdown, contentIndex);
-        const content = await pipeline.execute(markdown, { sourceSlug: PREVIEW_SLUG });
+        const content = await pipeline.execute(markdown, {
+          sourceSlug: PREVIEW_SLUG,
+        });
         await runtime.runPostHook(
           "onPostParsed",
           PREVIEW_SLUG,
@@ -211,7 +234,10 @@ function isJsonValue(value: unknown, seen = new Set<object>()): boolean {
   }
   if (typeof value === "number") return Number.isFinite(value);
   if (typeof value !== "object" || seen.has(value)) return false;
-  if (Object.getPrototypeOf(value) !== Object.prototype && !Array.isArray(value)) {
+  if (
+    Object.getPrototypeOf(value) !== Object.prototype &&
+    !Array.isArray(value)
+  ) {
     return false;
   }
   seen.add(value);

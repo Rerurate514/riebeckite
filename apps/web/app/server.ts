@@ -1,37 +1,34 @@
 import { config } from "virtual:riebeckite/config";
 import { content } from "virtual:riebeckite/content";
 import { mountRiebeckiteEndpoints } from "@riebeckite/honox/server";
-import { codeTabs } from "@riebeckite/plugin-code-tabs";
-import { createPreview, definePluginPreview } from "@riebeckite/preview";
+import { createPreview } from "@riebeckite/preview";
 import { showRoutes } from "hono/dev";
 import { createApp } from "honox/server";
+import {
+  isPreviewRequestSizeAllowed,
+  parsePreviewApiInput,
+} from "./preview-api";
+import { previewRegistry } from "./preview-registry";
 
 const app = createApp({
   init: (app) => {
     mountRiebeckiteEndpoints(app, { config, content });
     app.post("/api/playground", async (c) => {
+      if (!isPreviewRequestSizeAllowed(c.req.header("content-length"))) {
+        return c.json({ error: "Preview input is too large." }, 413);
+      }
       const input = await c.req.json().catch(() => undefined);
-      if (!isPreviewInput(input)) {
+      const previewInput = parsePreviewApiInput(input, previewRegistry);
+      if (!previewInput) {
         return c.json({ error: "Invalid preview input." }, 400);
       }
-      const preview = createPreview({
-        plugins: [
-          definePluginPreview({
-            id: "code-tabs",
-            title: "Code tabs",
-            availability: "browser",
-            fixtures: [],
-            create: (options: { syncTabs?: boolean } | undefined) =>
-              codeTabs(options),
-          }),
-        ],
-      });
+      const preview = createPreview({ registry: previewRegistry });
       try {
         return c.json(
           await preview.render({
-            markdown: input.markdown,
-            pluginId: input.pluginId,
-            options: input.options,
+            markdown: previewInput.markdown,
+            pluginId: previewInput.pluginId,
+            options: previewInput.options,
           }),
         );
       } finally {
@@ -40,28 +37,6 @@ const app = createApp({
     });
   },
 });
-
-function isPreviewInput(
-  input: unknown,
-): input is {
-  readonly markdown: string;
-  readonly pluginId?: string;
-  readonly options?: { readonly syncTabs: boolean };
-} {
-  if (!input || typeof input !== "object") return false;
-  const value = input as Record<string, unknown>;
-  return (
-    typeof value.markdown === "string" &&
-    value.markdown.length <= 100_000 &&
-    (value.pluginId === undefined ||
-      value.pluginId === "" ||
-      value.pluginId === "code-tabs") &&
-    (value.options === undefined ||
-      (typeof value.options === "object" &&
-        value.options !== null &&
-        typeof (value.options as Record<string, unknown>).syncTabs === "boolean"))
-  );
-}
 
 showRoutes(app);
 

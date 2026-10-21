@@ -18,6 +18,9 @@ const codeTabsPreview = definePluginPreview({
       markdown: '```ts tab="TypeScript"\nconst answer = 42;\n```',
     },
   ],
+  options: {
+    syncTabs: { type: "boolean", title: "Sync tabs", default: false },
+  },
   create: (options: { syncTabs?: boolean } | undefined) => codeTabs(options),
 });
 
@@ -46,13 +49,17 @@ test("renders markdown through the Riebeckite pipeline", async () => {
 test("uses a selected fixture and preserves explicit empty markdown", async () => {
   const preview = createPreview({
     registry: createPreviewRegistry({
-      fixtures: [{ id: "empty", title: "Empty", markdown: "# Fixture" }],
-      plugins: [codeTabsPreview],
+      plugins: [
+        {
+          ...codeTabsPreview,
+          fixtures: [{ id: "empty", title: "Empty", markdown: "# Fixture" }],
+        },
+      ],
     }),
     fixture: "empty",
   });
 
-  const fixtureResult = await preview.render({});
+  const fixtureResult = await preview.render({ pluginId: "code-tabs" });
   assert.match(fixtureResult.html, /Fixture/);
 
   const result = await preview.render({ markdown: "", pluginId: "code-tabs" });
@@ -66,10 +73,10 @@ test("sanitizes untrusted markdown HTML", async () => {
 
   const result = await preview.render({
     markdown:
-      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a>',
+      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><svg><script>alert(1)</script></svg><iframe src="https://example.com"></iframe><div style="background:url(javascript:alert(1))">x</div>',
   });
 
-  assert.doesNotMatch(result.html, /script|onerror|javascript:/i);
+  assert.doesNotMatch(result.html, /script|onerror|javascript:|iframe|style=/i);
   await preview.dispose();
 });
 
@@ -124,6 +131,25 @@ test("reports plugin option validation failures without rendering", async () => 
   });
 
   assert.equal(result.diagnostics[0]?.code, "invalid-options");
+  await preview.dispose();
+});
+
+test("rejects unknown and incorrectly typed declared options", async () => {
+  const preview = createPreview({ plugins: [codeTabsPreview] });
+
+  const unknown = await preview.render({
+    markdown: "# Test",
+    pluginId: "code-tabs",
+    options: { unknown: true },
+  });
+  const invalidType = await preview.render({
+    markdown: "# Test",
+    pluginId: "code-tabs",
+    options: { syncTabs: "true" },
+  });
+
+  assert.equal(unknown.diagnostics[0]?.code, "invalid-options");
+  assert.equal(invalidType.diagnostics[0]?.code, "invalid-options");
   await preview.dispose();
 });
 

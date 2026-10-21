@@ -76,6 +76,19 @@ async function assertNavigation(
     await page.waitForFunction(() =>
       document.body.textContent?.includes("RIEBECKITE_EXTERNAL_NOTE_MARKER"),
     );
+    if (expectsSpa) {
+      await page.goBack();
+      const island =
+        '[data-site-island-marker="RIEBECKITE_SITE_ISLAND_MARKER"]';
+      await page.waitForSelector(island);
+      await page.click(island);
+      await page.waitForFunction(
+        (selector) =>
+          document.querySelector(selector)?.textContent?.includes("1"),
+        {},
+        island,
+      );
+    }
     const marker = await page.evaluate(
       () =>
         (window as Window & { spaNavigationMarker?: string })

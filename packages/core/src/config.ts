@@ -85,6 +85,7 @@ export function resolveConfig(
       enabled: config.cache?.enabled ?? true,
       directory: config.cache?.directory ?? "",
     },
+    ...(config.spa === undefined ? {} : { spa: config.spa }),
   };
 }
 

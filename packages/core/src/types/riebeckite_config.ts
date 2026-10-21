@@ -20,4 +20,5 @@ export interface RiebeckiteConfig {
     enabled?: boolean;
     directory?: string;
   };
+  spa?: unknown;
 }

@@ -39,6 +39,14 @@ test("resolveConfig fills documented defaults", () => {
   assert.deepEqual(config.plugins, []);
 });
 
+test("resolveConfig preserves an opaque SPA runtime configuration", () => {
+  const spa = { prefetch: "hover" };
+
+  const config = resolveConfig({ site: { title: "My Site" }, spa });
+
+  assert.equal(config.spa, spa);
+});
+
 test("resolveConfig merges theme config and sanitizes theme attributes", () => {
   const config = resolveConfig({
     site: {

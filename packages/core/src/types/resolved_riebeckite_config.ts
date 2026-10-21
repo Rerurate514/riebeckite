@@ -39,4 +39,5 @@ export type ResolvedRiebeckiteConfig = {
     enabled: boolean;
     directory: string;
   };
+  spa?: unknown;
 };

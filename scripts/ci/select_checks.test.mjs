@@ -23,6 +23,7 @@ test("plugin changes select their integration contract", () => {
 
 test("core changes select cache and publication contracts", () => {
   assert.deepEqual(enabled(["packages/core/index.ts"]), [
+    "browser",
     "external",
     "fastPath",
     "faultRecovery",
@@ -33,6 +34,7 @@ test("core changes select cache and publication contracts", () => {
 
 test("HonoX changes select integration contracts", () => {
   assert.deepEqual(enabled(["packages/integrations/honox/index.ts"]), [
+    "browser",
     "external",
     "fastPath",
     "faultRecovery",
@@ -43,6 +45,7 @@ test("HonoX changes select integration contracts", () => {
 
 test("CLI changes select publication and recovery contracts", () => {
   assert.deepEqual(enabled(["packages/cli/bin/riebeckite.mjs"]), [
+    "browser",
     "external",
     "fastPath",
     "faultRecovery",

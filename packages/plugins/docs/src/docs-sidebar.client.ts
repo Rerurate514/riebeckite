@@ -5,9 +5,7 @@ type ClientContext = { root?: ParentNode };
 export function initDocsSidebar(context: ClientContext = {}) {
   const root = context.root ?? document;
   const details = Array.from(
-    root.querySelectorAll<HTMLDetailsElement>(
-      "[data-docs-sidebar-details]",
-    ),
+    root.querySelectorAll<HTMLDetailsElement>("[data-docs-sidebar-details]"),
   );
   const first = details[0];
 

@@ -70,12 +70,11 @@ export function riebeckiteDevelopmentInspector(
 }
 
 function currentPageFromRequest(url: string | undefined): string {
-  const value = new URL(url ?? endpointPath, "http://localhost").searchParams.get(
-    "path",
-  );
-  return value && value.startsWith("/") && !value.startsWith("//")
-    ? value
-    : "/";
+  const value = new URL(
+    url ?? endpointPath,
+    "http://localhost",
+  ).searchParams.get("path");
+  return value?.startsWith("/") && !value.startsWith("//") ? value : "/";
 }
 
 function prioritizeMiddleware(

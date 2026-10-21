@@ -1,5 +1,5 @@
-import type { JsonValue } from "./json_value.js";
 import type { ClientLifecycleScope } from "../client_lifecycle.js";
+import type { JsonValue } from "./json_value.js";
 
 export type PluginAssetKind = "style" | "script";
 

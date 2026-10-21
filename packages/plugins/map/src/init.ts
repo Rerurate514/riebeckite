@@ -25,7 +25,9 @@ type ClientContext = {
  * `data-rr-map-payload`, which means the page still renders its static
  * fallback when JavaScript is disabled or the CDN is unreachable.
  */
-export async function initMap(context: ClientContext = {}): Promise<void | (() => void)> {
+export async function initMap(
+  context: ClientContext = {},
+): Promise<undefined | (() => void)> {
   const options = context.config ?? {};
   const root = context.root ?? document;
   const figures = Array.from(
@@ -46,7 +48,9 @@ export async function initMap(context: ClientContext = {}): Promise<void | (() =
     const map = renderMap(runtime, figure, options);
     if (map) maps.push(map);
   }
-  return () => maps.forEach((map) => map.remove());
+  return () => {
+    for (const map of maps) map.remove();
+  };
 }
 
 function renderMap(

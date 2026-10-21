@@ -67,7 +67,8 @@ function createClientModule(
         : entry.initializerArguments === "root"
           ? `${localName}(context.root)`
           : `${localName}(context.config)`;
-    const initializers = entry.scope === "app" ? appInitializers : pageInitializers;
+    const initializers =
+      entry.scope === "app" ? appInitializers : pageInitializers;
     initializers.push(
       `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,
     );

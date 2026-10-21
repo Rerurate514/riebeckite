@@ -68,8 +68,11 @@ class SpaNavigation {
 
   private readonly onClick = (event: MouseEvent): void => {
     if (event.defaultPrevented || event.button !== 0) return;
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>("a[href]");
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
+    const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>(
+      "a[href]",
+    );
     if (!anchor || !this.shouldNavigate(anchor)) return;
     const url = new URL(anchor.href, window.location.href);
     if (isHashOnlyNavigation(url)) return;
@@ -82,7 +85,9 @@ class SpaNavigation {
   };
 
   private readonly onPointerOver = (event: PointerEvent): void => {
-    const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>("a[href]");
+    const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>(
+      "a[href]",
+    );
     if (!anchor || !this.shouldNavigate(anchor)) return;
     const url = new URL(anchor.href, window.location.href);
     if (isHashOnlyNavigation(url)) return;
@@ -94,7 +99,10 @@ class SpaNavigation {
     if (anchor.hasAttribute("download")) return false;
     if (anchor.dataset.spa === "false") return false;
     const url = new URL(anchor.href, window.location.href);
-    return url.origin === window.location.origin && url.protocol === window.location.protocol;
+    return (
+      url.origin === window.location.origin &&
+      url.protocol === window.location.protocol
+    );
   }
 
   private async navigate(url: URL, popstate: boolean): Promise<void> {
@@ -108,14 +116,18 @@ class SpaNavigation {
       const page = new DOMParser().parseFromString(fetched.html, "text/html");
       const replacement = page.querySelector<HTMLElement>("main#main-content");
       const current = document.querySelector<HTMLElement>("main#main-content");
-      if (!replacement || !current) throw new Error("SPA page root is missing.");
+      if (!replacement || !current)
+        throw new Error("SPA page root is missing.");
       const finalUrl = new URL(fetched.url, url.href);
       const commit = async () => {
         await this.options.onBeforePageCommit?.(controller.signal);
         if (controller.signal.aborted) return;
         reconcileDocument(page);
         current.replaceWith(replacement);
-        await this.options.onPageCommit?.({ root: replacement, signal: controller.signal });
+        await this.options.onPageCommit?.({
+          root: replacement,
+          signal: controller.signal,
+        });
       };
       if (this.shouldUseViewTransition()) {
         await document.startViewTransition(commit).finished;
@@ -158,7 +170,8 @@ class SpaNavigation {
       headers: { Accept: "text/html" },
       signal,
     });
-    if (!response.ok) throw new Error(`Navigation request failed: ${response.status}`);
+    if (!response.ok)
+      throw new Error(`Navigation request failed: ${response.status}`);
     return { html: await response.text(), url: response.url };
   }
 
@@ -173,7 +186,9 @@ class SpaNavigation {
   private restorePosition(url: URL, popstate: boolean): void {
     if (!this.options.scrollRestoration) return;
     if (url.hash) {
-      document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView();
+      document
+        .getElementById(decodeURIComponent(url.hash.slice(1)))
+        ?.scrollIntoView();
       return;
     }
     const saved = popstate ? readSavedScrollPosition(history.state) : undefined;
@@ -225,7 +240,10 @@ function isPageHeadNode(node: Element): boolean {
   if (name && ["description", "author", "robots"].includes(name)) return true;
   if (name?.startsWith("twitter:")) return true;
   const property = node.getAttribute("property");
-  return property?.startsWith("og:") === true || property?.startsWith("article:") === true;
+  return (
+    property?.startsWith("og:") === true ||
+    property?.startsWith("article:") === true
+  );
 }
 
 function focusPage(root: HTMLElement, url: URL): void {
@@ -244,13 +262,23 @@ function readSavedScrollPosition(value: unknown): [number, number] | undefined {
 }
 
 function validateSpaOptions(options: SpaOptions): void {
-  if (options.prefetch !== undefined && options.prefetch !== false && options.prefetch !== "hover") {
+  if (
+    options.prefetch !== undefined &&
+    options.prefetch !== false &&
+    options.prefetch !== "hover"
+  ) {
     throw new TypeError('SPA prefetch must be false or "hover".');
   }
-  if (options.scrollRestoration !== undefined && typeof options.scrollRestoration !== "boolean") {
+  if (
+    options.scrollRestoration !== undefined &&
+    typeof options.scrollRestoration !== "boolean"
+  ) {
     throw new TypeError("SPA scrollRestoration must be a boolean.");
   }
-  if (options.viewTransitions !== undefined && typeof options.viewTransitions !== "boolean") {
+  if (
+    options.viewTransitions !== undefined &&
+    typeof options.viewTransitions !== "boolean"
+  ) {
     throw new TypeError("SPA viewTransitions must be a boolean.");
   }
 }

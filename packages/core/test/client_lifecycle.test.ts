@@ -58,9 +58,10 @@ test("cleans up an initializer that completes after unmount", async () => {
     config: undefined,
     initialize: () =>
       new Promise<() => void>((resolve) => {
-        resolveInitializer = () => resolve(() => {
-          cleaned = true;
-        });
+        resolveInitializer = () =>
+          resolve(() => {
+            cleaned = true;
+          });
       }),
   });
   const unmounted = lifecycle.unmount("page");

@@ -1,22 +1,37 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import type { ViteDevServer } from "vite";
 import { riebeckiteDevelopmentInspector } from "../src/development_inspector.js";
 
+type Middleware = (
+  request: { headers: { host?: string }; url?: string },
+  response: {
+    statusCode: number;
+    setHeader(name: string, value: string): void;
+    end(value?: string): void;
+  },
+) => void | Promise<void>;
+
 test("development inspector prioritizes its endpoint and keeps failures private", async () => {
-  const stack: Array<{ route: string; handle: Function }> = [];
+  const stack: Array<{ route: string; handle: Middleware }> = [];
   const plugin = riebeckiteDevelopmentInspector(() => {
     throw new Error("C:\\private\\secret-token");
   });
-  const configure = plugin.configureServer as (server: any) => (() => void) | void;
-  const afterConfigure = configure({
+  const configure = plugin.configureServer;
+  if (typeof configure !== "function") {
+    throw new Error("Expected configureServer function hook");
+  }
+  const server: ViteDevServer = Object.create(null);
+  Object.assign(server, {
     middlewares: {
       stack,
-      use(route: string, handle: Function) {
+      use(route: string, handle: Middleware) {
         stack.push({ route, handle });
       },
     },
     httpServer: { address: () => ({ address: "127.0.0.1" }) },
   });
+  const afterConfigure = Reflect.apply(configure, undefined, [server]);
   stack.unshift({ route: "", handle() {} });
   if (typeof afterConfigure === "function") afterConfigure();
 
@@ -34,7 +49,10 @@ test("development inspector prioritizes its endpoint and keeps failures private"
     },
   };
   await stack[0]?.handle(
-    { headers: { host: "127.0.0.1:4173" }, url: "/__riebeckite/inspector/report?path=%2Fthemes" },
+    {
+      headers: { host: "127.0.0.1:4173" },
+      url: "/__riebeckite/inspector/report?path=%2Fthemes",
+    },
     response,
   );
 

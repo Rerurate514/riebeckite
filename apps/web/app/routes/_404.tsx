@@ -19,7 +19,7 @@ const handler = async (c: Context) => {
   );
 
   return c.render(
-    <div class="not-found" aria-labelledby="not-found-title">
+    <div class="not-found">
       <p class="not-found__status">404</p>
       <h1 id="not-found-title">Page not found</h1>
       <p>The page you requested is not available.</p>

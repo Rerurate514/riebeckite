@@ -75,11 +75,18 @@ test("doctor JSON output is machine-readable and does not expose execution detai
       path.join(project, "riebeckite.config.ts"),
       'export default { site: { title: "Doctor test" } };\n',
     );
-    fs.writeFileSync(path.join(project, "vite.config.ts"), "export default {};\n");
-    const result = spawnSync(process.execPath, [cliBundle, "doctor", "--json"], {
-      cwd: project,
-      encoding: "utf8",
-    });
+    fs.writeFileSync(
+      path.join(project, "vite.config.ts"),
+      "export default {};\n",
+    );
+    const result = spawnSync(
+      process.execPath,
+      [cliBundle, "doctor", "--json"],
+      {
+        cwd: project,
+        encoding: "utf8",
+      },
+    );
 
     assert.equal(result.status, 1, result.stderr);
     const report = JSON.parse(result.stdout);

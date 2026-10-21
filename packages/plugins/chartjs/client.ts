@@ -11,7 +11,7 @@ type ClientContext = { root?: ParentNode; signal?: AbortSignal };
  */
 export async function initChartJs(
   context: ClientContext = {},
-): Promise<void | (() => void)> {
+): Promise<undefined | (() => void)> {
   const root = context.root ?? document;
   const canvases = root.querySelectorAll<HTMLCanvasElement>(
     CONFIG_ATTRIBUTE_SELECTOR,

@@ -66,6 +66,8 @@ export function map(options: MapOptions = {}) {
           minZoom: resolved.minZoom,
           maxZoom: resolved.maxZoom,
         },
+        undefined,
+        "context",
       ),
     ],
   });

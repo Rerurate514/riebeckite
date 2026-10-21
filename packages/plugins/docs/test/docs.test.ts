@@ -561,6 +561,7 @@ test("registers the style asset and the collapsible sidebar client entry", () =>
       pluginName: "docs",
       moduleSpecifier: "@riebeckite/plugin-docs/client",
       exportName: "initDocsSidebar",
+      initializerArguments: "context",
     },
   ]);
 });

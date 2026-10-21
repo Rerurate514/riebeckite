@@ -1,8 +1,11 @@
 const COLLAPSIBLE_PROPERTY = "--rb-docs-sidebar-collapsible";
 
-export function initDocsSidebar() {
+type ClientContext = { root?: ParentNode };
+
+export function initDocsSidebar(context: ClientContext = {}) {
+  const root = context.root ?? document;
   const details = Array.from(
-    document.querySelectorAll<HTMLDetailsElement>(
+    root.querySelectorAll<HTMLDetailsElement>(
       "[data-docs-sidebar-details]",
     ),
   );
@@ -30,6 +33,7 @@ export function initDocsSidebar() {
   };
 
   window.addEventListener("resize", sync, { passive: true });
+  return () => window.removeEventListener("resize", sync);
 }
 
 function isCollapsible(element: HTMLDetailsElement): boolean {

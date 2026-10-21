@@ -28,6 +28,7 @@ test("tocPlugin registers the style asset and the scroll-spy client entry", () =
       pluginName: "toc",
       moduleSpecifier: "@riebeckite/plugin-toc/client",
       exportName: "initTableOfContents",
+      initializerArguments: "context",
     },
   ]);
 });

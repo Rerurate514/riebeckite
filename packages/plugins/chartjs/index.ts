@@ -40,6 +40,9 @@ export function chartjs(options: ChartJsOptions = {}) {
         "chartjs",
         "@riebeckite/plugin-chartjs/client",
         "initChartJs",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

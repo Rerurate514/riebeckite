@@ -54,6 +54,8 @@ export function analytics(options: AnalyticsOptions) {
         "@riebeckite/plugin-analytics/client",
         "initAnalytics",
         options.publicConfig,
+        "app",
+        "context",
       ),
     ],
     onManifestCreated: ({ manifest }) => {

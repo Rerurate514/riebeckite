@@ -45,6 +45,9 @@ export function docs(options: DocsOptions) {
         DOCS_PLUGIN_NAME,
         "@riebeckite/plugin-docs/client",
         "initDocsSidebar",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

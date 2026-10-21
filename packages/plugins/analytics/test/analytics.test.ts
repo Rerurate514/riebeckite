@@ -102,10 +102,14 @@ test("browser initializer sends one stable-ID page view with contextual metadata
   );
   const originalFetch = Object.getOwnPropertyDescriptor(globalThis, "fetch");
   const requests: Array<{ url: string; init: RequestInit | undefined }> = [];
+  let initialized = false;
+  let navigationListener: (() => void) | undefined;
   const documentElement = {
     lang: "ja",
-    hasAttribute: () => requests.length > 0,
-    setAttribute: () => undefined,
+    hasAttribute: () => initialized,
+    setAttribute: () => {
+      initialized = true;
+    },
   };
 
   Object.defineProperties(globalThis, {
@@ -118,6 +122,17 @@ test("browser initializer sends one stable-ID page view with contextual metadata
       value: {
         documentElement,
         querySelector: () => ({ getAttribute: () => "guide-1" }),
+        addEventListener: (
+          type: string,
+          listener: () => void,
+        ) => {
+          if (type === "riebeckite:navigation") navigationListener = listener;
+        },
+        removeEventListener: (type: string, listener: () => void) => {
+          if (type === "riebeckite:navigation" && navigationListener === listener) {
+            navigationListener = undefined;
+          }
+        },
       },
     },
     fetch: {
@@ -130,8 +145,10 @@ test("browser initializer sends one stable-ID page view with contextual metadata
   });
 
   try {
-    initAnalytics({ collectorUrl: "/analytics/events" });
-    initAnalytics({ collectorUrl: "/analytics/events" });
+    const cleanup = initAnalytics({
+      config: { collectorUrl: "/analytics/events" },
+    });
+    initAnalytics({ config: { collectorUrl: "/analytics/events" } });
     await Promise.resolve();
 
     assert.equal(requests.length, 1);
@@ -145,6 +162,13 @@ test("browser initializer sends one stable-ID page view with contextual metadata
       path: "/renamed-guide",
       lang: "ja",
     });
+    navigationListener?.();
+    await Promise.resolve();
+    assert.equal(requests.length, 2);
+    cleanup?.();
+    navigationListener?.();
+    await Promise.resolve();
+    assert.equal(requests.length, 2);
   } finally {
     restoreGlobal("window", originalWindow);
     restoreGlobal("document", originalDocument);

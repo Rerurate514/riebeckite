@@ -28,7 +28,16 @@ test("client module assigns client entries to their lifecycle scope", async () =
         name: "fixture",
         clientEntries: [
           { pluginName: "app", moduleSpecifier: "app-entry", scope: "app" },
-          { pluginName: "page", moduleSpecifier: "page-entry" },
+          {
+            pluginName: "page",
+            moduleSpecifier: "page-entry",
+            initializerArguments: "root",
+          },
+          {
+            pluginName: "context",
+            moduleSpecifier: "context-entry",
+            initializerArguments: "context",
+          },
         ],
       },
     ],
@@ -41,7 +50,9 @@ test("client module assigns client entries to their lifecycle scope", async () =
   assert.match(module as string, /mountAppClientInitializers/);
   assert.match(module as string, /mountPageClientInitializers/);
   assert.match(module as string, /remountRiebeckitePage/);
-  assert.match(module as string, /signal: context.signal/);
+  assert.match(module as string, /pluginClientInitializer0\(context.config\)/);
+  assert.match(module as string, /pluginClientInitializer1\(context.root\)/);
+  assert.match(module as string, /pluginClientInitializer2\(context\)/);
 });
 
 test("client module imports the SPA runtime only when configured", async () => {

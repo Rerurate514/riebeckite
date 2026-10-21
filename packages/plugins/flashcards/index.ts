@@ -67,6 +67,9 @@ export function flashcards(options: FlashcardsOptions = {}) {
         "flashcards",
         "@riebeckite/plugin-flashcards/client",
         "initFlashcards",
+        undefined,
+        undefined,
+        "root",
       ),
     ],
   });

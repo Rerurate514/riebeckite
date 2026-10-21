@@ -61,7 +61,12 @@ function createClientModule(
       publicConfig === undefined
         ? "undefined"
         : serializePublicClientConfig(publicConfig);
-    const initializer = `${localName}({ ...(context.config ?? {}), root: context.root, signal: context.signal, config: context.config })`;
+    const initializer =
+      entry.initializerArguments === "context"
+        ? `${localName}(context)`
+        : entry.initializerArguments === "root"
+          ? `${localName}(context.root)`
+          : `${localName}(context.config)`;
     const initializers = entry.scope === "app" ? appInitializers : pageInitializers;
     initializers.push(
       `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,

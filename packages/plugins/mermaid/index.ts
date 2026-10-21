@@ -52,6 +52,9 @@ export function mermaid(options: MermaidOptions = {}) {
         "mermaid",
         "@riebeckite/plugin-mermaid/client",
         "initMermaidDiagrams",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

@@ -14,6 +14,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   moduleSpecifier: string;
   exportName?: string;
   scope?: ClientLifecycleScope;
+  initializerArguments?: ClientInitializerArguments;
   /**
    * Configuration intentionally made available to this browser entry.
    *
@@ -23,6 +24,8 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
    */
   publicConfig?: TPublicConfig;
 };
+
+export type ClientInitializerArguments = "config" | "root" | "context";
 
 export function createStyleAsset(
   pluginName: string,
@@ -41,6 +44,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
   exportName?: string,
   publicConfig?: TPublicConfig,
   scope?: ClientLifecycleScope,
+  initializerArguments?: ClientInitializerArguments,
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
@@ -48,6 +52,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
     ...(exportName === undefined ? {} : { exportName }),
     ...(publicConfig === undefined ? {} : { publicConfig }),
     ...(scope === undefined ? {} : { scope }),
+    ...(initializerArguments === undefined ? {} : { initializerArguments }),
   };
 }
 

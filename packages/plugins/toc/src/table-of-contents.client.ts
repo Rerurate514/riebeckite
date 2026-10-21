@@ -1,6 +1,9 @@
-export function initTableOfContents() {
+type ClientContext = { root?: ParentNode };
+
+export function initTableOfContents(context: ClientContext = {}) {
+  const root = context.root ?? document;
   const tocLinks = Array.from(
-    document.querySelectorAll<HTMLAnchorElement>("[data-toc-target]"),
+    root.querySelectorAll<HTMLAnchorElement>("[data-toc-target]"),
   );
 
   if (tocLinks.length === 0) return;
@@ -18,8 +21,14 @@ export function initTableOfContents() {
     ]);
   }
 
+  const headingsById = new Map(
+    Array.from(root.querySelectorAll<HTMLElement>("[id]")).map((heading) => [
+      heading.id,
+      heading,
+    ]),
+  );
   const headings = Array.from(linksByHeadingId.keys())
-    .map((id) => document.getElementById(id))
+    .map((id) => headingsById.get(id))
     .filter((heading): heading is HTMLElement => heading !== null);
 
   const updateViewedLinks = (activeHeadingId: string) => {
@@ -67,4 +76,9 @@ export function initTableOfContents() {
   window.addEventListener("scroll", scheduleUpdate, { passive: true });
   window.addEventListener("resize", scheduleUpdate);
   updateByScrollPosition();
+  return () => {
+    window.removeEventListener("scroll", scheduleUpdate);
+    window.removeEventListener("resize", scheduleUpdate);
+    cancelAnimationFrame(animationFrameId);
+  };
 }

@@ -28,4 +28,21 @@ test("asset helpers preserve explicitly registered module specifiers", () => {
       publicConfig: { enabled: true },
     },
   );
+  assert.deepEqual(
+    createClientEntry(
+      "external",
+      "@example/riebeckite-plugin/client",
+      "initExternal",
+      undefined,
+      "page",
+      "context",
+    ),
+    {
+      pluginName: "external",
+      moduleSpecifier: "@example/riebeckite-plugin/client",
+      exportName: "initExternal",
+      scope: "page",
+      initializerArguments: "context",
+    },
+  );
 });

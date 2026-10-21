@@ -18,6 +18,9 @@ export function tocPlugin() {
         "toc",
         "@riebeckite/plugin-toc/client",
         "initTableOfContents",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

@@ -71,6 +71,9 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         PLUGIN_NAME,
         "@riebeckite/plugin-excalidraw/client",
         "initExcalidraw",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

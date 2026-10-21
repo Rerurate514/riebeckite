@@ -10,6 +10,12 @@ const DEFAULT_ATTRIBUTION =
 
 let leafletPromise: Promise<MapRuntime | null> | null = null;
 
+type ClientContext = {
+  root?: ParentNode;
+  signal?: AbortSignal;
+  config?: MapClientOptions;
+};
+
 /**
  * Upgrades every server-emitted `[data-rr-map="pending"]` figure to an
  * interactive Leaflet map.
@@ -19,28 +25,35 @@ let leafletPromise: Promise<MapRuntime | null> | null = null;
  * `data-rr-map-payload`, which means the page still renders its static
  * fallback when JavaScript is disabled or the CDN is unreachable.
  */
-export async function initMap(options: MapClientOptions = {}): Promise<void> {
+export async function initMap(context: ClientContext = {}): Promise<void | (() => void)> {
+  const options = context.config ?? {};
+  const root = context.root ?? document;
   const figures = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-rr-map="pending"]'),
+    root.querySelectorAll<HTMLElement>('[data-rr-map="pending"]'),
   );
   if (figures.length === 0) return;
 
   const runtime = options.runtime ?? (await loadLeaflet(options));
+  if (context.signal?.aborted) return;
   if (!runtime) {
     for (const figure of figures) setError(figure);
     return;
   }
 
+  const maps: Array<ReturnType<MapRuntime["map"]>> = [];
   for (const figure of figures) {
-    renderMap(runtime, figure, options);
+    if (context.signal?.aborted || !figure.isConnected) break;
+    const map = renderMap(runtime, figure, options);
+    if (map) maps.push(map);
   }
+  return () => maps.forEach((map) => map.remove());
 }
 
 function renderMap(
   runtime: MapRuntime,
   figure: HTMLElement,
   options: MapClientOptions,
-) {
+): ReturnType<MapRuntime["map"]> | undefined {
   const canvas = figure.querySelector<HTMLElement>("[data-rr-map-canvas]");
   const payload = readPayload(figure);
   if (!canvas || !payload) {
@@ -89,6 +102,7 @@ function renderMap(
     }
 
     figure.dataset.rrMap = "rendered";
+    return map;
   } catch {
     setError(figure);
   }

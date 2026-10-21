@@ -4,6 +4,7 @@ const FIGURE_SELECTOR = "[data-vega-lite]";
 const CANVAS_SELECTOR = "[data-vega-lite-canvas]";
 
 type EmbedFunction = typeof import("vega-embed").default;
+type ClientContext = { root?: ParentNode; signal?: AbortSignal };
 
 /**
  * Renders every server-emitted `[data-vega-lite]` figure in the browser.
@@ -13,9 +14,12 @@ type EmbedFunction = typeof import("vega-embed").default;
  * `<details>`) when JavaScript is disabled. A broken payload or a Vega error
  * reveals the fallback for that figure without affecting the rest of the page.
  */
-export async function initVegaLite(): Promise<void> {
+export async function initVegaLite(
+  context: ClientContext = {},
+): Promise<void | (() => void)> {
+  const root = context.root ?? document;
   const figures = Array.from(
-    document.querySelectorAll<HTMLElement>(FIGURE_SELECTOR),
+    root.querySelectorAll<HTMLElement>(FIGURE_SELECTOR),
   );
   if (figures.length === 0) return;
 
@@ -33,18 +37,29 @@ export async function initVegaLite(): Promise<void> {
     for (const figure of figures) revealFallback(figure);
     return;
   }
+  if (context.signal?.aborted) return;
 
+  const views: Array<{ finalize: () => void }> = [];
   for (const figure of figures) {
-    await renderFigure(embed, figure);
+    if (context.signal?.aborted || !figure.isConnected) return;
+    const view = await renderFigure(embed, figure, context.signal);
+    if (view) views.push(view);
   }
+  return () => {
+    for (const view of views) view.finalize();
+  };
 }
 
-async function renderFigure(embed: EmbedFunction, figure: HTMLElement) {
+async function renderFigure(
+  embed: EmbedFunction,
+  figure: HTMLElement,
+  signal?: AbortSignal,
+): Promise<{ finalize: () => void } | undefined> {
   const canvas = figure.querySelector<HTMLElement>(CANVAS_SELECTOR);
   const serialized = figure.dataset.vegaLiteSpec;
   if (!canvas || !serialized) {
     revealFallback(figure);
-    return;
+    return undefined;
   }
 
   let spec: unknown;
@@ -52,18 +67,24 @@ async function renderFigure(embed: EmbedFunction, figure: HTMLElement) {
     spec = JSON.parse(serialized);
   } catch {
     revealFallback(figure);
-    return;
+    return undefined;
   }
 
   try {
-    await embed(
+    const result = await embed(
       canvas,
       spec as Parameters<EmbedFunction>[1],
       buildEmbedOptions(figure),
     );
+    if (signal?.aborted || !figure.isConnected) {
+      result.view.finalize();
+      return undefined;
+    }
     figure.dataset.vegaLite = "rendered";
+    return result.view;
   } catch {
     revealFallback(figure);
+    return undefined;
   }
 }
 

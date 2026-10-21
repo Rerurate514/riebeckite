@@ -44,6 +44,9 @@ export function vegaLite(options: VegaLiteOptions = {}) {
         "vega-lite",
         "@riebeckite/plugin-vega-lite/client",
         "initVegaLite",
+        undefined,
+        undefined,
+        "context",
       ),
     ],
   });

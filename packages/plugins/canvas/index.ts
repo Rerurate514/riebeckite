@@ -129,6 +129,9 @@ export function canvas(options: CanvasOptions = {}) {
         PLUGIN_NAME,
         "@riebeckite/plugin-canvas/client",
         "initCanvas",
+        undefined,
+        undefined,
+        "root",
       ),
     ],
   });

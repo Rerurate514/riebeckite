@@ -8,26 +8,37 @@ const INITIALIZED_ATTRIBUTE = "data-riebeckite-analytics-initialized";
  * Sends one document-level page view. Static Riebeckite sites reload documents
  * on navigation; SPA history hooks are intentionally not installed.
  */
-export function initAnalytics(config: AnalyticsPublicConfig): void {
+type ClientContext = {
+  config: AnalyticsPublicConfig;
+};
+
+export function initAnalytics({ config }: ClientContext): void | (() => void) {
   if (typeof window === "undefined" || typeof document === "undefined") return;
   if (document.documentElement.hasAttribute(INITIALIZED_ATTRIBUTE)) return;
   document.documentElement.setAttribute(INITIALIZED_ATTRIBUTE, "");
 
-  const contentId = document
-    .querySelector(`[${ANALYTICS_CONTENT_ID_ATTRIBUTE}]`)
-    ?.getAttribute(ANALYTICS_CONTENT_ID_ATTRIBUTE);
-  if (!contentId) return;
+  const sendPageView = () => {
+    const contentId = document
+      .querySelector(`[${ANALYTICS_CONTENT_ID_ATTRIBUTE}]`)
+      ?.getAttribute(ANALYTICS_CONTENT_ID_ATTRIBUTE);
+    if (!contentId) return;
 
-  const event: AnalyticsPageViewEvent = {
-    type: "page_view",
-    contentId,
-    occurredAt: new Date().toISOString(),
-    path: window.location.pathname,
-    ...(document.documentElement.lang
-      ? { lang: document.documentElement.lang }
-      : {}),
+    const event: AnalyticsPageViewEvent = {
+      type: "page_view",
+      contentId,
+      occurredAt: new Date().toISOString(),
+      path: window.location.pathname,
+      ...(document.documentElement.lang
+        ? { lang: document.documentElement.lang }
+        : {}),
+    };
+    void sendAnalyticsEvent(config.collectorUrl, event);
   };
-  void sendAnalyticsEvent(config.collectorUrl, event);
+
+  sendPageView();
+  if (typeof document.addEventListener !== "function") return;
+  document.addEventListener("riebeckite:navigation", sendPageView);
+  return () => document.removeEventListener("riebeckite:navigation", sendPageView);
 }
 
 async function sendAnalyticsEvent(

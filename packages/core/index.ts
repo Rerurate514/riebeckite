@@ -198,6 +198,7 @@ export {
   type PluginDependencyErrorKind,
 } from "./src/plugin/plugin_dependency_error.js";
 export { PluginHookError } from "./src/plugin/plugin_lifecycle.js";
+export { PluginRuntime } from "./src/plugin/plugin_runtime.js";
 export type {
   CreatePluginMemoOptions,
   PluginMemo,

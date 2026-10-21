@@ -34,6 +34,10 @@ pnpm benchmark:presets -- --sizes 1000
 
 # Harness tests.
 pnpm test:benchmark:presets
+
+# Production SPA browser benchmark (five cold builds and five browser trials
+# per mode; packed public tarballs in an isolated temporary site).
+pnpm benchmark:spa
 ```
 
 `benchmark:vault` accepts:

@@ -42,6 +42,7 @@
     "benchmark:vault": "node --import tsx --expose-gc benchmarks/core.mjs",
     "benchmark:equivalence": "node --import tsx benchmarks/equivalence.mjs",
     "benchmark:presets": "node --import tsx benchmarks/preset-ssg/runner.mjs",
+    "benchmark:spa": "node --import tsx benchmarks/spa-performance.ts",
     "benchmark:preset-fast-path": "node --import tsx tests/external-site/preset-fast-path-benchmark.ts",
     "test:benchmark:presets": "node --import tsx --test benchmarks/preset-ssg/runner.test.mjs",
     "lint": "biome lint .",

@@ -18,6 +18,28 @@ test("client module excludes the development inspector from production builds", 
 
   assert.equal(typeof module, "string");
   assert.doesNotMatch(module as string, /development-inspector/);
+  assert.match(module as string, /ClientLifecycle/);
+});
+
+test("client module assigns client entries to their lifecycle scope", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        clientEntries: [
+          { pluginName: "app", moduleSpecifier: "app-entry", scope: "app" },
+          { pluginName: "page", moduleSpecifier: "page-entry" },
+        ],
+      },
+    ],
+  }));
+  const load = hookHandler(plugin.load);
+  const module = await Reflect.apply(load, undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /mountAppClientInitializers/);
+  assert.match(module as string, /mountPageClientInitializers/);
+  assert.match(module as string, /remountRiebeckitePage/);
 });
 
 test("client module initializes the development inspector while serving", async () => {

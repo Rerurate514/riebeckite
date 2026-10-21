@@ -1,4 +1,5 @@
 import type { JsonValue } from "./json_value.js";
+import type { ClientLifecycleScope } from "../client_lifecycle.js";
 
 export type PluginAssetKind = "style" | "script";
 
@@ -12,6 +13,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   pluginName: string;
   moduleSpecifier: string;
   exportName?: string;
+  scope?: ClientLifecycleScope;
   /**
    * Configuration intentionally made available to this browser entry.
    *
@@ -38,12 +40,14 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
   moduleSpecifier: string,
   exportName?: string,
   publicConfig?: TPublicConfig,
+  scope?: ClientLifecycleScope,
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
     moduleSpecifier,
     ...(exportName === undefined ? {} : { exportName }),
     ...(publicConfig === undefined ? {} : { publicConfig }),
+    ...(scope === undefined ? {} : { scope }),
   };
 }
 

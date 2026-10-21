@@ -30,13 +30,16 @@ function createClientModule(
   development: boolean,
 ): string {
   const imports: string[] = [];
-  const initializers: string[] = [];
+  const appInitializers: string[] = [];
+  const pageInitializers: string[] = [];
+
+  imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
 
   if (development) {
     imports.push(
       'import { initDevelopmentInspector } from "virtual:riebeckite/development-inspector";',
     );
-    initializers.push("initDevelopmentInspector()");
+    appInitializers.push("initDevelopmentInspector()");
   }
 
   for (const [index, entry] of config.plugins
@@ -54,30 +57,40 @@ function createClientModule(
       publicConfig === undefined
         ? `${localName}()`
         : `${localName}(${serializePublicClientConfig(publicConfig)})`;
+    const initializers = entry.scope === "app" ? appInitializers : pageInitializers;
     initializers.push(
-      `runPluginClientInitializer(${JSON.stringify(entry.moduleSpecifier)}, () => ${initializer})`,
+      `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, () => ${initializer})`,
     );
   }
 
   return `${imports.join("\n")}
 
-function runPluginClientInitializer(name, initialize) {
-  try {
-    const result = initialize();
-    if (result && typeof result.then === "function") {
-      result.catch((error) => reportPluginClientError(name, error));
-    }
-  } catch (error) {
-    reportPluginClientError(name, error);
-  }
+const lifecycle = new ClientLifecycle();
+
+function mountPluginClientInitializer(scope, name, root, initialize) {
+  void lifecycle.mount({ scope, name, root, config: undefined, initialize });
 }
 
-function reportPluginClientError(name, error) {
-  console.error("[riebeckite] Plugin client initializer failed: " + name, error);
+function mountAppClientInitializers(root) {
+${appInitializers.map((initializer) => `  ${initializer};`).join("\n")}
+}
+
+function mountPageClientInitializers(root) {
+${pageInitializers.map((initializer) => `  ${initializer};`).join("\n")}
 }
 
 export function initRiebeckiteClient() {
-${initializers.map((initializer) => `  ${initializer};`).join("\n")}
+  mountAppClientInitializers(document);
+  mountPageClientInitializers(document.querySelector("#main-content") ?? document);
+}
+
+export async function remountRiebeckitePage(root) {
+  await lifecycle.unmount("page");
+  mountPageClientInitializers(root);
+}
+
+export async function disposeRiebeckiteClient() {
+  await lifecycle.dispose();
 }
 `;
 }

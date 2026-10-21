@@ -33,6 +33,8 @@ export function colorModePlugin() {
         "color-mode",
         "@riebeckite/plugin-color-mode/client",
         "initColorMode",
+        undefined,
+        "app",
       ),
     ],
   });

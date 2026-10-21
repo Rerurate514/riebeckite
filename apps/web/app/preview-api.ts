@@ -7,6 +7,7 @@ import {
 const MAX_MARKDOWN_LENGTH = 100_000;
 const MAX_OPTIONS_LENGTH = 10_000;
 const MAX_ID_LENGTH = 80;
+const MAX_OPTION_COUNT = 100;
 
 export type PreviewApiInput = {
   readonly markdown: string;
@@ -70,11 +71,33 @@ function validatePluginOptions(
 function isOptionsWithinLimit(options: unknown): boolean {
   if (options === undefined) return true;
   if (!isPlainRecord(options)) return false;
+  const entries = Object.entries(options);
+  if (entries.length > MAX_OPTION_COUNT) return false;
+  if (
+    entries.some(
+      ([key, value]) => isUnsafeObjectKey(key) || !isSafeOptionValue(value),
+    )
+  ) {
+    return false;
+  }
   try {
     return JSON.stringify(options).length <= MAX_OPTIONS_LENGTH;
   } catch {
     return false;
   }
+}
+
+function isSafeOptionValue(value: unknown): boolean {
+  return (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    (typeof value === "number" && Number.isFinite(value))
+  );
+}
+
+function isUnsafeObjectKey(key: string): boolean {
+  return key === "__proto__" || key === "constructor" || key === "prototype";
 }
 
 function isOptionalId(value: unknown): value is string | undefined {

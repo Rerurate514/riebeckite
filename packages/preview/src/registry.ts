@@ -90,7 +90,7 @@ export function validatePreviewOptions(
   if (input !== undefined && !isPlainRecord(input)) return { valid: false };
   const value = input ?? {};
   const definitionsByKey = definitions ?? {};
-  if (Object.keys(value).some((key) => !(key in definitionsByKey))) {
+  if (Object.keys(value).some((key) => !Object.hasOwn(definitionsByKey, key))) {
     return { valid: false };
   }
 
@@ -140,7 +140,11 @@ function assertOptions(
 ): void {
   if (!options) return;
   for (const [key, option] of Object.entries(options)) {
-    if (key.trim() === "" || option.title.trim() === "") {
+    if (
+      key.trim() === "" ||
+      isUnsafeObjectKey(key) ||
+      option.title.trim() === ""
+    ) {
       throw new Error(
         `Preview option names and titles are required for plugin "${pluginId}".`,
       );
@@ -155,6 +159,10 @@ function assertOptions(
       throw new Error(`Preview option "${key}" has an invalid default value.`);
     }
   }
+}
+
+function isUnsafeObjectKey(key: string): boolean {
+  return key === "__proto__" || key === "constructor" || key === "prototype";
 }
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {

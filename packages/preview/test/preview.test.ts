@@ -73,10 +73,13 @@ test("sanitizes untrusted markdown HTML", async () => {
 
   const result = await preview.render({
     markdown:
-      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><svg><script>alert(1)</script></svg><iframe src="https://example.com"></iframe><div style="background:url(javascript:alert(1))">x</div>',
+      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><a href="&#x6a;avascript:alert(1)">encoded</a><svg><script>alert(1)</script></svg><math><mi>x</mi></math><iframe srcdoc="<script>alert(1)</script>"></iframe><div style="background:url(javascript:alert(1))">x</div><img src="data:text/html;base64,PHNjcmlwdD4=">',
   });
 
-  assert.doesNotMatch(result.html, /script|onerror|javascript:|iframe|style=/i);
+  assert.doesNotMatch(
+    result.html,
+    /script|onerror|javascript:|iframe|style=|srcdoc|<math|data:text\/html/i,
+  );
   await preview.dispose();
 });
 
@@ -150,7 +153,31 @@ test("rejects unknown and incorrectly typed declared options", async () => {
 
   assert.equal(unknown.diagnostics[0]?.code, "invalid-options");
   assert.equal(invalidType.diagnostics[0]?.code, "invalid-options");
+
+  const prototypeKey = await preview.render({
+    markdown: "# Test",
+    pluginId: "code-tabs",
+    options: JSON.parse('{"__proto__": true}'),
+  });
+  assert.equal(prototypeKey.diagnostics[0]?.code, "invalid-options");
   await preview.dispose();
+});
+
+test("rejects unsafe option schema keys", () => {
+  assert.throws(
+    () =>
+      createPreviewRegistry({
+        plugins: [
+          {
+            ...codeTabsPreview,
+            options: JSON.parse(
+              '{"constructor":{"type":"boolean","title":"Unsafe"}}',
+            ),
+          },
+        ],
+      }),
+    /Preview option names and titles are required/,
+  );
 });
 
 test("disposes a session once", async () => {

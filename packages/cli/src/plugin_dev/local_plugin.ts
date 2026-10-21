@@ -45,9 +45,9 @@ async function resolvePluginRoot(target: string): Promise<string> {
   if (!stats) {
     throw new Error(`Could not find a plugin at ${target}.`);
   }
-  if (stats.isDirectory()) return target;
+  if (stats.isDirectory()) return fs.realpath(target);
   if (stats.isFile() && path.basename(target) === "package.json") {
-    return path.dirname(target);
+    return fs.realpath(path.dirname(target));
   }
   throw new Error(
     `Plugin path must be a directory or a package.json file: ${target}.`,
@@ -119,7 +119,12 @@ async function resolveAliases(
       const replacement = path.resolve(root, target);
       if (!isWithin(root, replacement) || !(await isFile(replacement)))
         continue;
-      aliases.push({ find: `${name}${key.slice(1)}`, replacement });
+      const resolvedReplacement = await fs.realpath(replacement);
+      if (!isWithin(root, resolvedReplacement)) continue;
+      aliases.push({
+        find: `${name}${key.slice(1)}`,
+        replacement: resolvedReplacement,
+      });
     }
   } else {
     for (const [subpath, candidate] of [
@@ -149,7 +154,13 @@ async function assertEntry(root: string, target: string): Promise<string> {
   if (!(await isFile(entry))) {
     throw new Error(`Could not find the plugin entry point at ${entry}.`);
   }
-  return entry;
+  const resolvedEntry = await fs.realpath(entry);
+  if (!isWithin(root, resolvedEntry)) {
+    throw new Error(
+      "Plugin entry point must resolve inside the plugin directory.",
+    );
+  }
+  return resolvedEntry;
 }
 
 function rootExportTarget(value: unknown): string | undefined {

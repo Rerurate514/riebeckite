@@ -214,3 +214,28 @@ test("rejects missing, outside, and unsupported entry points", async () => {
     },
   );
 });
+
+test("rejects an entry symlink that resolves outside the plugin directory", {
+  skip: process.platform === "win32",
+}, async () => {
+  await withPlugin(
+    { name: "demo-plugin", main: "./entry.js" },
+    {},
+    async (root) => {
+      const outside = path.join(
+        os.tmpdir(),
+        `riebeckite-outside-${Date.now()}.js`,
+      );
+      try {
+        await fs.writeFile(outside, "export function demo() {}", "utf8");
+        await fs.symlink(outside, path.join(root, "entry.js"));
+        await assert.rejects(
+          loadLocalPlugin(root),
+          /resolve inside the plugin directory/,
+        );
+      } finally {
+        await fs.rm(outside, { force: true });
+      }
+    },
+  );
+});

@@ -12,7 +12,9 @@ type ClientContext = {
   config: AnalyticsPublicConfig;
 };
 
-export function initAnalytics({ config }: ClientContext): void | (() => void) {
+export function initAnalytics({
+  config,
+}: ClientContext): (() => void) | undefined {
   if (typeof window === "undefined" || typeof document === "undefined") return;
   if (document.documentElement.hasAttribute(INITIALIZED_ATTRIBUTE)) return;
   document.documentElement.setAttribute(INITIALIZED_ATTRIBUTE, "");
@@ -38,7 +40,8 @@ export function initAnalytics({ config }: ClientContext): void | (() => void) {
   sendPageView();
   if (typeof document.addEventListener !== "function") return;
   document.addEventListener("riebeckite:navigation", sendPageView);
-  return () => document.removeEventListener("riebeckite:navigation", sendPageView);
+  return () =>
+    document.removeEventListener("riebeckite:navigation", sendPageView);
 }
 
 async function sendAnalyticsEvent(

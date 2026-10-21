@@ -71,6 +71,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      puppeteer:
+        specifier: ^25.11.0
+        version: 25.11.0
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -505,6 +508,9 @@ importers:
       '@riebeckite/plugin-color-mode':
         specifier: workspace:*
         version: link:../../plugins/color-mode
+      '@riebeckite/spa':
+        specifier: workspace:*
+        version: link:../../spa
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui

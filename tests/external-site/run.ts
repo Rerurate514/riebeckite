@@ -17,6 +17,9 @@ import {
   walkFiles,
   writeFileDependencies,
 } from "@riebeckite/test/e2e";
+import * as fixture from "./fixture-spec.js";
+import { PACKAGES } from "./fixture-spec.js";
+import { assertSpaBrowserBehavior } from "./spa-browser.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..", "..");
@@ -31,9 +34,6 @@ const logger = createLogger("external-site");
 function fail(message: string): never {
   throw new Error(message);
 }
-
-import * as fixture from "./fixture-spec.js";
-import { PACKAGES } from "./fixture-spec.js";
 
 const {
   HOME_MARKER,
@@ -929,7 +929,11 @@ function assertStarterOutput(siteDir: string): void {
   }
 }
 
-function runStarterChecks(workspace: ExternalSiteWorkspace): void {
+async function runStarterChecks(
+  workspace: ExternalSiteWorkspace,
+): Promise<void> {
+  logger.step("checking SPA navigation in a production browser");
+  await assertSpaBrowserBehavior(workspace.siteDir);
   generateCreateStarterSite(workspace.tempRoot);
   const starterDir = generateStarterSite(workspace.tempRoot);
   writeFileDependencies(starterDir, workspace.packed);

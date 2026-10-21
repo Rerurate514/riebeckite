@@ -157,9 +157,7 @@ contentId
 
 ## Page View の単位
 
-現在の Riebeckite は静的な Document Navigation を使用します。
-
-そのため、
+初回のページ表示では、
 
 ```text id="bs64om"
 Page Load
@@ -171,9 +169,8 @@ page_view × 1
 
 が基本です。
 
-1回の Page Load につき1件の `page_view` を送ります。
-
-SPA の Route Transition は自動計測しません。
+初回の Page Load ごと、および成功した SPA の Route Transition ごとに1件の
+`page_view` を送ります。
 
 ## Site 側を設定する
 

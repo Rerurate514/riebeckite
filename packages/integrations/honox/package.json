@@ -43,6 +43,7 @@
     "@riebeckite/core": "workspace:*",
     "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",
+    "@riebeckite/spa": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:",

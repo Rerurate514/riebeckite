@@ -11,10 +11,8 @@ export default createRoute(async (c) => {
   const target = route?.kind === "redirect" ? route.location : "";
 
   return c.render(
-    <main>
-      <p>
-        RIEBECKITE_EXTERNAL_ALIAS_MARKER kind={kind} target={target}
-      </p>
-    </main>,
+    <p>
+      RIEBECKITE_EXTERNAL_ALIAS_MARKER kind={kind} target={target}
+    </p>,
   );
 });

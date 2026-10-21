@@ -9,6 +9,7 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/analytics-cloudflare",
   },
   { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
+  { directory: "packages/spa", name: "@riebeckite/spa" },
   { directory: "packages/themes/default", name: "@riebeckite/theme-default" },
   {
     directory: "packages/plugins/obsidian-markdown",

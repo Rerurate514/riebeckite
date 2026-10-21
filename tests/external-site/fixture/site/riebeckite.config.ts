@@ -55,6 +55,7 @@ export default defineConfig({
   content: {
     directory: "../vault",
   },
+  spa: {},
   theme: localFixtureTheme(),
   plugins: [
     analytics({

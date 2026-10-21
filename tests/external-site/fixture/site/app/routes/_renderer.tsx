@@ -23,7 +23,9 @@ export default jsxRenderer(({ children }, c) => (
       <SiteHeader />
       <ColorModeToggle />
       <SearchBar />
-      {children}
+      <main id="main-content" tabindex={-1}>
+        {children}
+      </main>
     </body>
   </ThemeRoot>
 ));

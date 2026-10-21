@@ -143,7 +143,7 @@ measured.
 
 ## Page view unit
 
-The current Riebeckite uses static document navigation, so the basic model is
+For a static navigation or an initial page load, the basic model is
 
 ```text
 Page Load
@@ -153,8 +153,8 @@ initAnalytics
 page_view × 1
 ```
 
-One `page_view` is sent per page load. SPA route transitions are not tracked
-automatically.
+One `page_view` is sent per initial page load and per successful SPA route
+transition.
 
 ## Configuring the site
 

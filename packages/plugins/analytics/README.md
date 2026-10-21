@@ -60,8 +60,8 @@ In a browser, the initializer sends exactly one event per document:
 
 `path` and `lang` are contextual metadata, not identity. Content without a
 stable ID is not tracked. The initializer is a no-op during builds/SSR and is
-idempotent in a document. Riebeckite's current static document navigation needs
-no SPA route hooks; SPA navigation is not tracked automatically.
+idempotent in a document. With SPA navigation enabled, the plugin sends another
+event after each successful route transition.
 
 Content IDs are an authoring responsibility. Duplicate `id` declarations across
 published notes are reported by

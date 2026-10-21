@@ -45,7 +45,7 @@ Core の安定コンテンツ ID（frontmatter の `id`）がある公開コン�
 }
 ```
 
-`path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。現行リポジトリは静的なドキュメント遷移のため SPA フックは追加しておらず、SPA 遷移は自動計測しません。
+`path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。SPA ナビゲーションを有効にした場合は、成功した Route Transition ごとに追加で Event を送信します。
 
 コンテンツ ID は執筆側の責務です。公開ノート間での `id` の重複は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
 

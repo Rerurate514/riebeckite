@@ -100,7 +100,8 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 ## Limitations
 
 - Client-only: without JavaScript nothing is added.
-- No SPA support; a full page load re-initializes the enhancements.
+- With SPA navigation enabled, the enhancements are re-initialized after the
+  page root is replaced.
 - The TOC scroll-spy looks for `.rr-table-of-contents` or `[data-rb-toc]` as
   the table-of-contents container.
 - Copy buttons are skipped inside `.rr-code` blocks (managed by the

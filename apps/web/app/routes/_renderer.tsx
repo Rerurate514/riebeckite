@@ -134,7 +134,9 @@ export default jsxRenderer(async ({ children }, c) => {
           <SiteHeader />
           <ColorModeToggle />
           <SearchBar />
-          {children}
+          <main id="main-content" tabindex={-1}>
+            {children}
+          </main>
           <SiteFooter />
         </body>
       </ThemeRoot>

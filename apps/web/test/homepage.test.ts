@@ -104,10 +104,12 @@ test("og locale helpers derive from hreflang alternates", () => {
 });
 
 for (const locale of locales) {
-  test(`homepage (${locale}) exposes one main landmark and a single h1`, () => {
+  test(`homepage (${locale}) renders a single h1 inside the shared main landmark`, () => {
     const html = renderToString(HomePage({ locale }));
+    const renderer = read("../app/routes/_renderer.tsx");
 
-    assert.equal((html.match(/<main\b/g) ?? []).length, 1);
+    assert.equal((html.match(/<main\b/g) ?? []).length, 0);
+    assert.match(renderer, /<main id="main-content" tabindex=\{-1\}>/);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
     assert.equal((html.match(/<h2\b/g) ?? []).length, 7);
     assert.match(html, /<h1[^>]*id="home-title"/);

@@ -37,7 +37,7 @@ export default function HomePage({ locale }: { locale: HomeLocale }) {
   const copy = getHomeCopy(locale);
 
   return (
-    <main class="rb-home">
+    <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-main">
           <p class="rb-home__eyebrow">{copy.eyebrow}</p>
@@ -245,6 +245,6 @@ export default function HomePage({ locale }: { locale: HomeLocale }) {
           ))}
         </ul>
       </section>
-    </main>
+    </div>
   );
 }

@@ -157,7 +157,7 @@ export default createRoute(async (c) => {
   c.set("headTags", []);
 
   return c.render(
-    <main class="theme-gallery">
+    <div class="theme-gallery">
       <header class="theme-gallery__header">
         <p class="theme-gallery__eyebrow">Riebeckite</p>
         <h1 class="theme-gallery__title">Theme gallery</h1>
@@ -186,7 +186,7 @@ export default createRoute(async (c) => {
           </section>
         ))}
       </div>
-    </main>,
+    </div>,
   );
 });
 

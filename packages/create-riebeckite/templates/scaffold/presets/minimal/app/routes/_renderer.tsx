@@ -25,7 +25,11 @@ export default jsxRenderer(async ({ children }, c) => {
         <head>
           <RiebeckiteHead colorModeScript={false} />
         </head>
-        <body class="riebeckite-page rb-site">{children}</body>
+        <body class="riebeckite-page rb-site">
+          <main id="main-content" tabindex={-1} class="riebeckite-main">
+            {children}
+          </main>
+        </body>
       </ThemeRoot>
     </SiteProvider>
   );

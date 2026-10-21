@@ -19,7 +19,7 @@ const handler = async (c: Context) => {
   );
 
   return c.render(
-    <main class="not-found" aria-labelledby="not-found-title">
+    <div class="not-found" aria-labelledby="not-found-title">
       <p class="not-found__status">404</p>
       <h1 id="not-found-title">Page not found</h1>
       <p>The page you requested is not available.</p>
@@ -43,7 +43,7 @@ const handler = async (c: Context) => {
         <a href={`/?search=${encodeURIComponent(query)}`}>Search the garden</a>
         <a href="/">Go home</a>
       </nav>
-    </main>,
+    </div>,
   );
 };
 

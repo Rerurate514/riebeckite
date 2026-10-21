@@ -1495,6 +1495,12 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/spa:
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/test:
     devDependencies:
       tsx:

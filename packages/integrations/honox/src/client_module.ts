@@ -6,7 +6,7 @@ const clientModuleId = "virtual:riebeckite/client";
 const resolvedClientModuleId = `\0${clientModuleId}`;
 
 export function riebeckiteClientModule(
-  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins">,
+  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
 ): Plugin {
   let development = false;
   return {
@@ -26,7 +26,7 @@ export function riebeckiteClientModule(
 }
 
 function createClientModule(
-  config: Pick<ResolvedRiebeckiteConfig, "plugins">,
+  config: Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
   development: boolean,
 ): string {
   const imports: string[] = [];
@@ -34,6 +34,10 @@ function createClientModule(
   const pageInitializers: string[] = [];
 
   imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
+  if (config.spa !== undefined) {
+    imports.push('import { createClient } from "honox/client";');
+    imports.push('import { startSpaNavigation } from "@riebeckite/spa";');
+  }
 
   if (development) {
     imports.push(
@@ -66,6 +70,7 @@ function createClientModule(
   return `${imports.join("\n")}
 
 const lifecycle = new ClientLifecycle();
+let stopSpaNavigation;
 
 function mountPluginClientInitializer(scope, name, root, initialize) {
   void lifecycle.mount({ scope, name, root, config: undefined, initialize });
@@ -82,6 +87,18 @@ ${pageInitializers.map((initializer) => `  ${initializer};`).join("\n")}
 export function initRiebeckiteClient() {
   mountAppClientInitializers(document);
   mountPageClientInitializers(document.querySelector("#main-content") ?? document);
+${
+  config.spa === undefined
+    ? ""
+    : `  stopSpaNavigation ??= startSpaNavigation({
+    ...${serializePublicClientConfig(config.spa)},
+    onBeforePageCommit: () => lifecycle.unmount("page"),
+    onPageCommit: async ({ root }) => {
+      mountPageClientInitializers(root);
+      await createClient();
+    },
+  });`
+}
 }
 
 export async function remountRiebeckitePage(root) {
@@ -90,6 +107,8 @@ export async function remountRiebeckitePage(root) {
 }
 
 export async function disposeRiebeckiteClient() {
+  stopSpaNavigation?.();
+  stopSpaNavigation = undefined;
   await lifecycle.dispose();
 }
 `;

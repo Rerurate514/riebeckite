@@ -42,6 +42,17 @@ test("client module assigns client entries to their lifecycle scope", async () =
   assert.match(module as string, /remountRiebeckitePage/);
 });
 
+test("client module imports the SPA runtime only when configured", async () => {
+  const plugin = riebeckiteClientModule(() => ({ plugins: [], spa: {} }));
+  const load = hookHandler(plugin.load);
+  const module = await Reflect.apply(load, undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /@riebeckite\/spa/);
+  assert.match(module as string, /onBeforePageCommit/);
+});
+
 test("client module initializes the development inspector while serving", async () => {
   const plugin = riebeckiteClientModule(() => config);
   const configure = hookHandler(plugin.config);

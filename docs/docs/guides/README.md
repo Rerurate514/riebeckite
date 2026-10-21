@@ -29,6 +29,7 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
 | Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
 | Build a multilingual site | [Localization](./localization.md) |
+| Try a supported Markdown plugin | [Plugin previews](./plugin-previews.md) |
 | Collect page views | [Analytics](./analytics.md) |
 | Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
@@ -41,6 +42,7 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 - [Obsidian](./obsidian.md) — using an existing Obsidian vault as Riebeckite content.
 - [Content repositories](./content-repositories.md) — managing the site application and Markdown content in separate repositories.
 - [Localization](./localization.md) — multiple languages, URLs, and language switching.
+- [Plugin previews](./plugin-previews.md) — trying supported plugins in a safe, interactive preview.
 - [Analytics](./analytics.md) — adding analytics to a Riebeckite site.
 - [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
 - [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.

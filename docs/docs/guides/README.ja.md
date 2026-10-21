@@ -55,6 +55,12 @@ Site Application と Markdown Content を別の Repository で管理する構成
 
 Riebeckite Site に Analytics を導入する方法を説明します。
 
+### プラグインを試す
+
+[Plugin Previews](./plugin-previews.ja.md)
+
+対応するプラグインを安全な対話プレビューで試す方法を説明します。
+
 ### アイコンやロゴを差し替える
 
 [サイトのアイコンとロゴ](./branding.ja.md)
@@ -120,6 +126,7 @@ Quartz、ドキュメントフレームワーク、静的サイトジェネレ�
 | Obsidian Vault を公開する | [Obsidian](./obsidian.ja.md) |
 | Content と Site を別 Repository にする | [Content Repositories](./content-repositories.ja.md) |
 | 多言語 Site にする | [Localization](./localization.ja.md) |
+| 対応するプラグインを試す | [Plugin Previews](./plugin-previews.ja.md) |
 | Analytics を導入する | [Analytics](./analytics.ja.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.ja.md) |
 | Site の UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |

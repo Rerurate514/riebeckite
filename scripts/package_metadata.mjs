@@ -5,6 +5,8 @@ export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
   "packages/diagnostics",
+  "packages/preview",
+  "packages/spa",
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
@@ -120,6 +122,14 @@ const packagePublishingMetadata = {
     description:
       "Shared development diagnostics for Riebeckite CLI and integrations.",
     keywords: ["riebeckite", "diagnostics", "development", "validation"],
+  },
+  "packages/preview": {
+    description: "Shared secure Markdown preview runtime for Riebeckite.",
+    keywords: ["riebeckite", "preview", "markdown"],
+  },
+  "packages/spa": {
+    description: "Opt-in SPA navigation runtime for Riebeckite sites.",
+    keywords: ["riebeckite", "spa", "navigation"],
   },
   "packages/create-riebeckite": {
     description:
@@ -533,6 +543,18 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory === "packages/diagnostics") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/preview" || directory === "packages/spa") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],

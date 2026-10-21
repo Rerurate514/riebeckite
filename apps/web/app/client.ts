@@ -1,5 +1,6 @@
 import { initRiebeckiteClient } from "virtual:riebeckite/client";
 import { createClient } from "honox/client";
+import { initHomeCodeCopy } from "./components/home/client";
 import { initPluginPreviews } from "./preview-client";
 
 createClient();
@@ -13,4 +14,5 @@ if (document.readyState === "loading") {
 function initPage() {
   initRiebeckiteClient();
   initPluginPreviews();
+  initHomeCodeCopy();
 }

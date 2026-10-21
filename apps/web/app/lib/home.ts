@@ -2,34 +2,21 @@ export type HomeLocale = "ja" | "en";
 
 const HOME_REPO_URL = "https://github.com/Rerurate514/riebeckite";
 
-export type HomeLink = {
-  label: string;
-  href: string;
-  external?: boolean;
-};
+export type HomeLink = { label: string; href: string; external?: boolean };
 
-type HomeFeature = {
-  title: string;
-  body: string;
-  code?: string;
-};
-
-type HomeStep = {
-  title: string;
-  body: string;
-};
+type HomeFeature = { title: string; body: string; code: string };
 
 export type HomeCopy = {
   title: string;
   description: string;
   eyebrow: string;
+  copyLabel: string;
   primaryCta: HomeLink;
   showcaseCta: HomeLink;
   githubCta: HomeLink;
   language: HomeLink & { hreflang: HomeLocale };
   hero: {
     title: string;
-    tagline: string;
     lead: string;
     command: string;
     previewLabel: string;
@@ -37,157 +24,109 @@ export type HomeCopy = {
     previewTitle: string;
     previewBody: string;
   };
-  developer: { heading: string; intro: string; features: HomeFeature[] };
-  ownership: {
+  workflow: {
     heading: string;
-    statement: string;
-    body: string;
-    code: string;
-    principles: string[];
-  };
-  notes: { heading: string; intro: string; steps: HomeStep[] };
-  start: {
-    heading: string;
-    statement: string;
     intro: string;
-    command: string;
-    terminalLabel: string;
-    terminalNote: string;
-    link: HomeLink;
-  };
-  extend: {
-    heading: string;
+    sourceLabel: string;
+    source: string;
     statement: string;
+    points: string[];
+  };
+  development: { heading: string; intro: string; features: HomeFeature[] };
+  extension: {
+    heading: string;
     intro: string;
+    statement: string;
     points: string[];
     code: string;
-    link: HomeLink;
-    themeLink: HomeLink;
+    plugins: HomeLink;
+    themes: HomeLink;
   };
-  frustration: { heading: string; statement: string; body: string };
-  closing: { heading: string; body: string; docs: HomeLink };
+  start: { heading: string; intro: string; command: string; docs: HomeLink };
 };
 
 const en: HomeCopy = {
   title: "Riebeckite — Markdown & Obsidian Website Framework",
   description:
-    "Turn Markdown and Obsidian notes into a website you own. Riebeckite is a TypeScript framework with independent plugins, themes, and content sources.",
+    "Build and publish a website from Markdown and Obsidian notes with a TypeScript framework, independent plugins, themes, and content sources.",
   eyebrow: "Open source · Apache-2.0 · TypeScript",
+  copyLabel: "Copy",
   primaryCta: { label: "Get started", href: "/docs/getting-started/" },
-  showcaseCta: { label: "Explore showcase", href: "/docs/plugins/showcase" },
+  showcaseCta: {
+    label: "See the plugin showcase →",
+    href: "/docs/plugins/showcase",
+  },
   githubCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
   language: { label: "日本語", href: "/ja/", hreflang: "ja" },
   hero: {
-    title: "Your content. Your code. Your framework.",
-    tagline: "Publish your knowledge. Build without limits.",
-    lead: "Turn your Obsidian notes and Markdown into a website you truly own. Built with TypeScript, powered by plugins, and designed around your workflow.",
+    title: "A website for your Markdown and Obsidian notes.",
+    lead: "Riebeckite is a TypeScript framework for publishing notes as a static site and shaping the result with your own routes, components, plugins, and theme.",
     command: "npx create-riebeckite",
     previewLabel: "Preview of a Riebeckite website",
     previewStatus: "published",
-    previewTitle: "A site is more than its notes.",
+    previewTitle: "Notes can become a site you maintain.",
     previewBody:
-      "Use your Markdown as a source, then shape the experience with the same web tools you already know.",
+      "Keep Markdown as the source, then use ordinary web tools for the parts around it.",
   },
-  developer: {
-    heading: "Built for developers, not against them.",
+  workflow: {
+    heading: "Write in Markdown. Publish a real website.",
     intro:
-      "Riebeckite stays close to the web platform, so your site can remain an ordinary TypeScript project instead of a framework-shaped exception.",
+      "Read content from content/ or an external Obsidian vault. The build turns it into static output for the host you choose.",
+    sourceLabel: "content/notes/ownership.md",
+    source:
+      "# Ownership\n\nA site should remain understandable after its framework changes.\n\nSee also: [[architecture]]",
+    statement:
+      "Use the notes you already write as the source for pages, links, and navigation.",
+    points: [
+      "Obsidian-flavored Markdown and WikiLinks through the official plugin",
+      "Static output written to dist/",
+      "Content may live outside the site repository",
+    ],
+  },
+  development: {
+    heading: "Use the web stack you know.",
+    intro:
+      "A generated site is an ordinary TypeScript application. Its routes and components belong to the site; framework capabilities remain package dependencies.",
     features: [
       {
-        title: "Familiar Web Development",
-        body: "Use TypeScript, Hono JSX, CSS, and the tools that already fit your team. Your app owns its routes and components.",
+        title: "Routes and components",
+        body: "Write Hono JSX components directly and decide where plugin UI appears.",
         code: "app/routes/index.tsx",
       },
       {
-        title: "Components That Feel Natural",
-        body: "Compose Hono JSX components directly. Plugins can export UI, while the site decides where that UI belongs.",
-        code: 'import { SeriesList } from "@example/plugin";',
-      },
-      {
-        title: "Content and Code, Separated",
-        body: "Point content.directory at a vault outside the site root when your notes and site implementation need independent homes.",
+        title: "Content sources",
+        body: "Keep implementation and notes separate when they need independent repositories.",
         code: 'directory: "../vault"',
       },
       {
-        title: "An Extensible Ecosystem",
-        body: "Install and version plugins and themes as packages. Add the smallest capability your site needs, then configure it in one place.",
+        title: "Dependencies",
+        body: "Install and update the framework, themes, and plugins through your package manager.",
         code: "plugins: [obsidianMarkdown()]",
       },
     ],
   },
-  ownership: {
-    heading: "Your site shouldn't be your framework.",
+  extension: {
+    heading: "Add only the capabilities your site needs.",
+    intro:
+      "Plugins transform content, provide components, add client entries, or generate pages. Themes handle presentation without taking ownership of those features.",
     statement:
-      "Keep the framework in dependencies. Keep your site in your repository.",
-    body: "A generated Riebeckite site is a normal application that depends on published @riebeckite packages. Site code, content, themes, and plugins have clear owners. Upgrades can still require migration work when changes are breaking, but they do not require carrying the framework source in your site.",
-    code: '{\n  "dependencies": {\n    "@riebeckite/core": "^0.x",\n    "@riebeckite/theme-default": "^0.x"\n  }\n}',
-    principles: [
-      "Manage dependencies with your package manager",
-      "Keep framework and site responsibilities separate",
-      "Version plugins as independent npm packages",
-      "Use a separate repository for content when it helps",
-    ],
-  },
-  notes: {
-    heading: "From notes to website.",
-    intro:
-      "The build starts with the files you write and ends with publishable static output. Add only the transformations and presentation your content calls for.",
-    steps: [
-      {
-        title: "Obsidian Vault",
-        body: "Read Markdown from content/ or an external vault. Obsidian-flavored Markdown, including WikiLinks, is supported by the official plugin.",
-      },
-      {
-        title: "Riebeckite",
-        body: "Plugins transform Markdown and HTML, extend the content graph, and add browser behavior or generated pages when needed.",
-      },
-      {
-        title: "Published Website",
-        body: "A theme controls presentation while the static-site build writes the output to dist/ for your host.",
-      },
-    ],
-  },
-  start: {
-    heading: "Start in seconds.",
-    statement:
-      "One interactive command creates the site. The next two commands run it locally.",
-    intro:
-      "Choose a project name, preset, content source, and deployment option in the generator. The local-first default leaves publishing for when you are ready.",
-    command:
-      "npx create-riebeckite\ncd my-site\nnpm install\nnpm exec riebeckite dev",
-    terminalLabel: "Commands to create and run a Riebeckite site",
-    terminalNote:
-      "Copy the commands, then open the local URL printed by the development server.",
-    link: {
-      label: "Read the Quick Start →",
-      href: "/docs/getting-started/quick-start",
-    },
-  },
-  extend: {
-    heading: "Extend everything.",
-    statement: "Features travel as plugins. Presentation travels as themes.",
-    intro:
-      "A plugin can transform Markdown and HTML, provide components, add client entries, or generate pages. A theme changes appearance without taking ownership of those features.",
+      "Configure plugins in one place, then keep site-specific decisions in your application.",
     points: [
-      "Publish reusable features as npm packages",
-      "Configure site capabilities with defineConfig()",
-      "Keep Markdown, content, and UI extension points explicit",
-      "Develop and version themes independently from plugins",
+      "Markdown and HTML transformations",
+      "Reusable UI and browser behavior",
+      "Independently versioned plugins and themes",
     ],
     code: 'import { defineConfig } from "@riebeckite/core";\nimport { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";\n\nexport default defineConfig({\n  plugins: [obsidianMarkdown()],\n});',
-    link: { label: "Browse plugins and their APIs →", href: "/docs/plugins/" },
-    themeLink: { label: "Explore themes →", href: "/docs/themes/" },
+    plugins: { label: "Browse plugins and APIs →", href: "/docs/plugins/" },
+    themes: { label: "Explore themes →", href: "/docs/themes/" },
   },
-  frustration: {
-    heading: "Built from frustration. Designed for freedom.",
-    statement:
-      "Riebeckite began with a desire for a more direct way to build on top of a knowledge base.",
-    body: "Working with Quartz 4 made the trade-offs around client UI, interactive behavior, content ownership, and framework-specific conventions clear. Riebeckite takes a different path: standard web development where possible, explicit extension points where useful, and a site architecture you can make your own. It is not a comparison scorecard; it is a framework shaped by a different set of priorities.",
-  },
-  closing: {
-    heading: "Your knowledge deserves a better home.",
-    body: "Start with Markdown. Keep the freedom to turn it into the site you have in mind.",
-    docs: { label: "View documentation", href: "/docs/" },
+  start: {
+    heading: "Start with one command.",
+    intro:
+      "The generator asks for a project name, preset, content source, and deployment option. Run the generated site locally when it is ready.",
+    command:
+      "npx create-riebeckite\ncd my-site\nnpm install\nnpm exec riebeckite dev",
+    docs: { label: "Read the documentation", href: "/docs/" },
   },
 };
 
@@ -195,134 +134,91 @@ const ja: HomeCopy = {
   ...en,
   title: "Riebeckite — Markdown と Obsidian のサイトフレームワーク",
   description:
-    "Markdown と Obsidian のノートを、自分で所有・拡張できる Web サイトへ変換する TypeScript フレームワークです。",
+    "Markdown と Obsidian のノートから、TypeScript、独立した Plugin・Theme・コンテンツソースを使った Web サイトを作成・公開するフレームワークです。",
   eyebrow: "オープンソース · Apache-2.0 · TypeScript",
+  copyLabel: "コピー",
   primaryCta: { label: "はじめる", href: "/ja/docs/getting-started/" },
   showcaseCta: {
-    label: "ショーケースを見る",
+    label: "Plugin の実例を見る →",
     href: "/ja/docs/plugins/showcase",
   },
-  githubCta: en.githubCta,
   language: { label: "English", href: "/", hreflang: "en" },
   hero: {
-    ...en.hero,
-    tagline: en.hero.tagline,
-    lead: "Obsidian のノートと Markdown を、本当に自分のものといえる Web サイトへ。TypeScript を基盤に、Plugin で拡張し、あなたのワークフローに合わせてつくれます。",
+    title: "Markdown と Obsidian のノートを、育てられる Web サイトへ。",
+    lead: "Riebeckite は、ノートを静的サイトとして公開し、ルート、コンポーネント、Plugin、Theme を自分で組み立てるための TypeScript フレームワークです。",
+    command: en.hero.command,
     previewLabel: "Riebeckite でつくったサイトのプレビュー",
     previewStatus: "公開済み",
-    previewTitle: "サイトはノートだけでは終わらない。",
+    previewTitle: "ノートは、管理できるサイトになる。",
     previewBody:
-      "Markdown を起点に、使い慣れた Web 技術で体験そのものを組み立てられます。",
+      "Markdown を起点に、周辺の体験は使い慣れた Web 技術でつくれます。",
   },
-  developer: {
-    heading: "開発者のために。開発者を縛らない。",
+  workflow: {
+    heading: "Markdown で書き、Web サイトとして公開する。",
     intro:
-      "Web プラットフォームに近い設計なので、サイトはフレームワーク専用の例外ではなく、いつもの TypeScript プロジェクトとして扱えます。",
+      "content/ または外部の Obsidian Vault からコンテンツを読み込み、選んだホスティング先に向けて静的ファイルを出力します。",
+    sourceLabel: "content/notes/ownership.md",
+    source: en.workflow.source,
+    statement:
+      "普段書いているノートを、ページ・リンク・ナビゲーションの出発点にできます。",
+    points: [
+      "公式 Plugin による Obsidian 記法と WikiLink の対応",
+      "dist/ への静的ファイル出力",
+      "サイトのリポジトリとは別にコンテンツを管理可能",
+    ],
+  },
+  development: {
+    heading: "使い慣れた Web 技術で開発する。",
+    intro:
+      "生成されるサイトは通常の TypeScript アプリケーションです。ルートとコンポーネントはサイトが持ち、フレームワークの機能はパッケージの依存関係として扱います。",
     features: [
       {
-        title: "Familiar Web Development",
-        body: "TypeScript、Hono JSX、CSS と、チームに馴染んだ道具を使えます。ルートとコンポーネントの責任はサイト側にあります。",
+        title: "ルートとコンポーネント",
+        body: "Hono JSX のコンポーネントをそのまま書き、Plugin の UI をどこに置くか決められます。",
         code: "app/routes/index.tsx",
       },
       {
-        title: "Components That Feel Natural",
-        body: "Hono JSX のコンポーネントをそのまま組み合わせられます。Plugin が UI を公開し、配置はサイト側が決めます。",
-        code: 'import { SeriesList } from "@example/plugin";',
-      },
-      {
-        title: "Content and Code, Separated",
-        body: "ノートとサイト実装を別々に管理したいときは、content.directory をサイトルートの外にある Vault へ向けられます。",
+        title: "コンテンツソース",
+        body: "実装とノートを別々のリポジトリで管理したいときにも対応できます。",
         code: 'directory: "../vault"',
       },
       {
-        title: "An Extensible Ecosystem",
-        body: "Plugin と Theme はパッケージとして導入・更新できます。必要な機能だけを選び、一箇所で設定します。",
+        title: "依存関係",
+        body: "フレームワーク、Theme、Plugin はパッケージマネージャーで導入・更新します。",
         code: "plugins: [obsidianMarkdown()]",
       },
     ],
   },
-  ownership: {
-    heading: "サイトがフレームワークを抱え込む必要はない。",
-    statement: "フレームワークは依存関係として。サイトは自分のリポジトリに。",
-    body: "生成される Riebeckite サイトは、公開済みの @riebeckite パッケージに依存する通常のアプリケーションです。サイトコード、コンテンツ、Theme、Plugin の責任を分けられます。破壊的変更では移行対応が必要になることもありますが、サイト内にフレームワークのソースを抱え続ける必要はありません。",
-    code: en.ownership.code,
-    principles: [
-      "パッケージマネージャーで依存関係を管理",
-      "フレームワークとサイトコードの責務を分離",
-      "Plugin を独立した npm パッケージとしてバージョン管理",
-      "必要に応じてコンテンツ用リポジトリを分離",
-    ],
-  },
-  notes: {
-    heading: "ノートから Web サイトへ。",
+  extension: {
+    heading: "必要な機能だけを追加する。",
     intro:
-      "書いたファイルから始まり、公開可能な静的出力で終わるビルドです。コンテンツに必要な変換と見た目だけを加えます。",
-    steps: [
-      {
-        title: "Obsidian Vault",
-        body: "content/ または外部 Vault から Markdown を読み込みます。公式 Plugin で WikiLink を含む Obsidian 記法を扱えます。",
-      },
-      {
-        title: "Riebeckite",
-        body: "Plugin は Markdown・HTML を変換し、コンテンツグラフを拡張し、必要に応じてクライアント機能やページを追加します。",
-      },
-      {
-        title: "Published Website",
-        body: "Theme が見た目を担い、静的サイトビルドがホスティング先へ配置する dist/ を出力します。",
-      },
+      "Plugin はコンテンツ変換、コンポーネント、クライアントエントリ、ページ生成を担えます。Theme は機能の責任を持たず、見た目を扱います。",
+    statement:
+      "Plugin は一箇所で設定し、サイト固有の判断はアプリケーション側に残せます。",
+    points: [
+      "Markdown・HTML の変換",
+      "再利用できる UI とブラウザ機能",
+      "独立してバージョン管理できる Plugin と Theme",
     ],
+    code: en.extension.code,
+    plugins: { label: "Plugin と API を見る →", href: "/ja/docs/plugins/" },
+    themes: { label: "Theme を見る →", href: "/ja/docs/themes/" },
   },
   start: {
-    heading: "すぐに始める。",
-    statement:
-      "対話式コマンドひとつでサイトを作成。次のコマンドでローカル起動。",
+    heading: "まずはひとつのコマンドから。",
     intro:
-      "ジェネレーターでプロジェクト名、Preset、コンテンツソース、デプロイ方法を選びます。ローカル優先の既定値なら、公開は準備が整ってからです。",
+      "ジェネレーターでプロジェクト名、Preset、コンテンツソース、デプロイ方法を選びます。作成後はローカルでサイトを起動できます。",
     command: en.start.command,
-    terminalLabel: "Riebeckite サイトを作成・起動するコマンド",
-    terminalNote:
-      "コマンドをコピーして実行し、開発サーバーが表示するローカル URL を開いてください。",
-    link: {
-      label: "Quick Start を読む →",
-      href: "/ja/docs/getting-started/quick-start",
-    },
-  },
-  extend: {
-    heading: "すべてを拡張する。",
-    statement: "機能は Plugin として。見た目は Theme として。",
-    intro:
-      "Plugin は Markdown・HTML の変換、コンポーネントの提供、クライアントエントリの追加、ページの生成を担えます。Theme は機能の責任を奪わず、見た目だけを変えます。",
-    points: [
-      "再利用する機能を npm パッケージとして配布",
-      "defineConfig() でサイトの機能を設定",
-      "Markdown・コンテンツ・UI の拡張点を明示",
-      "Theme と Plugin を独立して開発・バージョン管理",
-    ],
-    code: en.extend.code,
-    link: { label: "Plugin と API を見る →", href: "/ja/docs/plugins/" },
-    themeLink: { label: "Theme を見る →", href: "/ja/docs/themes/" },
-  },
-  frustration: {
-    heading: "不便さから生まれ、自由のために設計した。",
-    statement:
-      "Riebeckite は、知識ベースの上にもっと直接的にサイトをつくりたいという思いから始まりました。",
-    body: "Quartz 4 を使うなかで、クライアント UI、インタラクティブな振る舞い、コンテンツの所有、フレームワーク固有の書き方にはトレードオフがあると感じました。Riebeckite は別の道を選びます。可能な限り標準的な Web 開発を使い、必要な拡張点を明確にし、サイトのアーキテクチャを自分のものにすること。このページは比較表ではなく、異なる優先順位から生まれた設計思想を伝えるものです。",
-  },
-  closing: {
-    heading: en.closing.heading,
-    body: "Markdown から始めて、思い描くサイトへ育てる自由を持ち続けましょう。",
-    docs: { label: "ドキュメントを見る", href: "/ja/docs/" },
+    docs: { label: "ドキュメントを読む", href: "/ja/docs/" },
   },
 };
 
 export function getHomeCopy(locale: HomeLocale): HomeCopy {
   return locale === "ja" ? ja : en;
 }
-
 export function getHomePath(locale: HomeLocale): string {
   return locale === "en" ? "/" : "/ja/";
 }
-
 export function buildSoftwareApplicationSchema(
   locale: HomeLocale,
   url: string,

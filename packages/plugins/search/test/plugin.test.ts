@@ -65,6 +65,7 @@ test("searchPlugin registers its style, client entry, and endpoint", () => {
       pluginName: "search",
       moduleSpecifier: "@riebeckite/plugin-search/client",
       exportName: "initSearch",
+      scope: "app",
     },
   ]);
   assert.equal(plugin.endpoints?.length, 1);

@@ -301,8 +301,8 @@ Project の状態を共通の開発診断として報告します。Site の Bui
 
 ```sh id="zruccx"
 npm exec riebeckite doctor
-npm exec riebeckite doctor --explain
-npm exec riebeckite doctor --json
+npm exec -- riebeckite doctor --explain
+npm exec -- riebeckite doctor --json
 ```
 
 `--explain` は原因、詳細、修正の提案を表示します。`--json` はツール向けにシリアライズ可能なレポートだけを出力します。`--fix` は安全な自動修正だけに限定され、該当する修正がない場合は何も変更しません。`--dry-run` はファイルを変更せずにそのことを確認します。

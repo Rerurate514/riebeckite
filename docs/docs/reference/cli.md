@@ -242,8 +242,8 @@ Plugin option validation runs as part of `check`. Each plugin's `validateOptions
 
 ```sh
 npm exec riebeckite doctor
-npm exec riebeckite doctor --explain
-npm exec riebeckite doctor --json
+npm exec -- riebeckite doctor --explain
+npm exec -- riebeckite doctor --json
 ```
 
 `--explain` includes causes, details, and suggested remediations. `--json` writes only the serializable report for tooling. `--fix` is limited to safe automatic fixes; when none are available it changes nothing, and `--dry-run` confirms that without modifying files.

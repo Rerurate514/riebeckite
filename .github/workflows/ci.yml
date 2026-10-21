@@ -200,7 +200,9 @@ jobs:
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
           browsers: chrome,chrome-headless-shell
+      - run: pnpm build:packages
       - run: pnpm test:browser
+      - run: pnpm test:plugin-dev:browser
 
   production-assets:
     name: production-assets

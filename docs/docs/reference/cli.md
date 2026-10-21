@@ -15,6 +15,7 @@ npm exec riebeckite <command>
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
+riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
@@ -32,6 +33,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `init` | scaffold a self-contained site from a preset | no |
 | `create` | choose a Site, Plugin, Theme, PageType, or Component generator | generator-dependent |
 | `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
+| `plugin dev` | run an isolated HonoX preview of a local Plugin | temporary files only |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
@@ -192,6 +194,44 @@ riebeckite theme preview my-theme --port 4173 --no-open
 ```
 
 The preview serves deterministic Home, Article, Documentation, and Components fixture pages from a temporary site under `themes/`. It does not read or change the configured Vault, build output, or `riebeckite.config.ts`; the temporary site is removed when you stop it with Ctrl+C. Theme CSS is imported through the actual Theme definition and Vite updates CSS changes; editing `index.ts` restarts the dev server and reloads the open page. Use browser developer tools for responsive sizes and system color preference. A Theme is trusted local application code: its module executes while the preview configuration is loaded.
+
+## `plugin dev`
+
+Preview a local Plugin through a temporary Riebeckite site and the real HonoX/Vite development server:
+
+```sh
+riebeckite plugin dev ./extensions/my-plugin
+riebeckite plugin dev ../my-plugin --port 4321 --no-open
+```
+
+The path can point to a Plugin directory or its `package.json`. The directory must contain a valid `package.json` with a supported entry point: `exports["."]` with a `source`, `import`, `module`, or `default` condition, `main`, or a conventional `index.ts`. The CLI does not install dependencies. Install the Plugin's dependencies in its own project before starting the preview.
+
+The command creates an isolated fixture site in the system temporary directory, links the local Plugin into it, and prints the fixture path. It does not read or change the configured Vault, site configuration, or build output. The fixture contains deterministic Markdown so the Plugin can be checked without editing your content.
+
+While the preview is running:
+
+- CSS changes are applied through Vite HMR.
+- Client-script changes reload the preview.
+- Markdown fixture changes update the rendered page.
+- Plugin entry changes restart the development server.
+
+Errors from loading, compiling, or initializing the Plugin are printed in the terminal, and the command exits with a non-zero status. The temporary site is removed on Ctrl+C, normal shutdown, or startup failure. If the process is killed forcibly, remove the fixture path printed at startup.
+
+### Difference from `theme preview`
+
+`theme preview` previews a Theme with fixed content fixtures under `themes/`. `plugin dev` previews one local Plugin with a temporary site under the system temporary directory. Both use the real Riebeckite/HonoX/Vite path, but they exercise different extension points and have separate fixture lifecycles.
+
+### Security
+
+`plugin dev` is a trusted local development command. It executes the Plugin entry and its client script from the given path. Only run Plugins you trust. The public Playground API does not load local Plugins, and this command must not be exposed to untrusted users. The command never installs packages automatically.
+
+### Troubleshooting
+
+- `Could not find a plugin`: check the path; relative paths resolve from the current directory.
+- `Could not find package.json`: point at the package root or its `package.json`.
+- `Could not find the plugin entry point`: declare `exports["."]`, `main`, or add `index.ts`.
+- Compilation or initialization errors: install the Plugin's dependencies and read the terminal output.
+- The port is already in use: pass another `--port`.
 
 ## `dev`
 

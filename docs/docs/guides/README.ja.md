@@ -61,6 +61,12 @@ Riebeckite Site に Analytics を導入する方法を説明します。
 
 対応するプラグインを安全な対話プレビューで試す方法を説明します。
 
+### ローカル Plugin を開発する
+
+[Local Plugin Development](./local-plugin-development.ja.md)
+
+ローカルの Plugin を実際の HonoX/Vite Dev Server で確認する方法を説明します。
+
 ### アイコンやロゴを差し替える
 
 [サイトのアイコンとロゴ](./branding.ja.md)

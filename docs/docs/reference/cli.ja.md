@@ -19,6 +19,7 @@ CLI は current working directory から application root を解決します。
 riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
+riebeckite plugin dev <path> [--port <port>] [--no-open]
 
 riebeckite dev
 riebeckite check
@@ -42,6 +43,7 @@ riebeckite inspect build
 | `init` | 新しい Site を作る | 変更しない |
 | `create` | Site、Plugin、Theme、PageType、Component の Generator を選ぶ | Generator に依存 |
 | `theme preview` | ローカル Theme を隔離した HonoX 環境で確認する | 一時ファイルのみ |
+| `plugin dev` | ローカル Plugin を隔離した HonoX 環境で確認する | 一時ファイルのみ |
 | `dev` | 開発環境を起動する | Integration に依存 |
 | `check` | 設定が正しいか検証する | 変更しない |
 | `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | 変更しない |
@@ -116,6 +118,44 @@ riebeckite theme preview my-theme --port 4173 --no-open
 ```
 
 Preview は `themes/` 配下の一時 Site で、決定的な Home、Article、Documentation、Components の Fixture を配信します。設定済み Vault、Build Output、`riebeckite.config.ts` は読み書きせず、Ctrl+C で終了すると一時 Site を削除します。Theme CSS の変更は Vite の監視で更新され、`index.ts` の変更時は Dev Server を再起動して開いているページを再読み込みします。Responsive 表示と System の Color Preference はブラウザの開発者ツールで確認してください。Preview 時には Theme Module が実行されるため、信頼できるローカル Theme だけを実行してください。
+
+## `plugin dev`
+
+ローカル Plugin を、一時的な Riebeckite Site と実際の HonoX/Vite Dev Server で確認します。
+
+```sh
+riebeckite plugin dev ./extensions/my-plugin
+riebeckite plugin dev ../my-plugin --port 4321 --no-open
+```
+
+Path には Plugin のディレクトリ、またはその `package.json` を指定します。ディレクトリには有効な `package.json` と、対応する entry point が必要です。entry point は `exports["."]` の `source`、`import`、`module`、`default` 条件、`main`、または慣例的な `index.ts` から解決します。CLI は依存パッケージを install しません。Preview の前に、Plugin 側のプロジェクトで依存関係を install してください。
+
+コマンドは System の一時ディレクトリに隔離した Fixture Site を作成し、ローカル Plugin を link してから Fixture の path を表示します。設定済み Vault、Site 設定、Build Output は読み書きしません。Fixture には決定的な Markdown を書き込むため、Content を編集せずに Plugin を確認できます。
+
+Preview 中は次のように更新されます。
+
+- CSS の変更は Vite HMR で反映されます。
+- Client Script の変更は Preview を再読み込みします。
+- Markdown Fixture の変更は描画結果へ反映されます。
+- Plugin の entry point の変更は Dev Server を再起動します。
+
+Plugin の読み込み、コンパイル、初期化でエラーが発生した場合は Terminal に表示し、0 以外の status で終了します。Ctrl+C、通常終了、起動失敗のいずれでも一時 Site を削除します。Process を強制終了した場合は、起動時に表示された Fixture path を手動で削除してください。
+
+### `theme preview` との違い
+
+`theme preview` は `themes/` 配下の固定 Content Fixture で Theme を確認します。`plugin dev` は System の一時ディレクトリの Site で 1 つのローカル Plugin を確認します。どちらも実際の Riebeckite/HonoX/Vite の経路を使いますが、対象とする拡張点と Fixture の lifecycle は異なります。
+
+### Security
+
+`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した path の Plugin entry と Client Script を実行します。信頼できる Plugin だけを実行してください。公開 Playground API はローカル Plugin を読み込みません。このコマンドを信頼できない利用者へ公開しないでください。依存パッケージを自動で install することもありません。
+
+### トラブルシューティング
+
+- `Could not find a plugin`: path を確認してください。相対 path は current directory から解決します。
+- `Could not find package.json`: Package の root、またはその `package.json` を指定してください。
+- `Could not find the plugin entry point`: `exports["."]`、`main`、または `index.ts` を用意してください。
+- コンパイルや初期化のエラー: Plugin の依存関係を install し、Terminal の出力を確認してください。
+- Port が使用中: 別の `--port` を指定してください。
 
 ## `init`
 

@@ -28,6 +28,7 @@
     "@riebeckite/plugin-docs": "workspace:*",
     "@riebeckite/plugin-obsidian-markdown": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
+    "@riebeckite/theme-default": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "create-riebeckite": "workspace:*",
     "esbuild": "catalog:",

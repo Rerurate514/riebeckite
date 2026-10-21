@@ -39,3 +39,51 @@ test("parses theme preview options", () => {
     /between 1 and 65535/,
   );
 });
+
+test("parses plugin dev options", () => {
+  assert.deepEqual(
+    parseCommand([
+      "plugin",
+      "dev",
+      "./extensions/my-plugin",
+      "--port",
+      "4321",
+      "--no-open",
+    ]),
+    {
+      name: "plugin-dev",
+      pluginPath: "./extensions/my-plugin",
+      port: 4321,
+      open: false,
+    },
+  );
+  assert.deepEqual(parseCommand(["plugin", "dev", "extensions/my-plugin"]), {
+    name: "plugin-dev",
+    pluginPath: "extensions/my-plugin",
+    port: undefined,
+    open: true,
+  });
+  assert.throws(
+    () => parseCommand(["plugin", "dev"]),
+    /requires a local plugin path/,
+  );
+  assert.throws(
+    () =>
+      parseCommand([
+        "plugin",
+        "dev",
+        "extensions/my-plugin",
+        "--port",
+        "70000",
+      ]),
+    /between 1 and 65535/,
+  );
+  assert.throws(
+    () => parseCommand(["plugin", "dev", "one", "two"]),
+    /accepts one plugin path/,
+  );
+  assert.throws(
+    () => parseCommand(["plugin", "dev", "one", "--unknown"]),
+    /Unknown plugin dev option/,
+  );
+});

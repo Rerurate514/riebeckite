@@ -384,6 +384,9 @@ importers:
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../plugins/toc
+      '@riebeckite/theme-default':
+        specifier: workspace:*
+        version: link:../themes/default
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../ui

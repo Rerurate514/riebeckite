@@ -16,7 +16,7 @@ export type HonoxApplicationOptions = {
     open?: boolean;
     port?: number;
   };
-  onServerReady?: (urls: readonly string[]) => void;
+  onServerReady?: (urls: readonly string[]) => void | Promise<void>;
   restartOnChange?: readonly string[];
 };
 
@@ -118,12 +118,24 @@ export async function startHonoxDevServer(
       });
     }
     await server.listen(options.server?.port);
-    options.onServerReady?.([
+    const urls = [
       ...(server.resolvedUrls?.local ?? []),
       ...(server.resolvedUrls?.network ?? []),
-    ]);
-    server.printUrls();
-    await waitForShutdown(server);
+    ];
+    const shutdown = waitForShutdown(server);
+    try {
+      server.printUrls();
+      await options.onServerReady?.(urls);
+    } catch (error) {
+      shutdown.dispose();
+      if (shutdown.isClosing()) {
+        await shutdown.promise;
+        return;
+      }
+      await server.close();
+      throw error;
+    }
+    await shutdown.promise;
   });
 }
 
@@ -163,16 +175,27 @@ async function runTraced<T>(
   return tracer ? await tracer.span(name, {}, buildTask) : await buildTask();
 }
 
-async function waitForShutdown(
-  server: Awaited<ReturnType<typeof createServer>>,
-) {
-  await new Promise<void>((resolve) => {
-    const close = () => {
-      void server.close().finally(resolve);
-    };
-    process.once("SIGINT", close);
-    process.once("SIGTERM", close);
+function waitForShutdown(server: Awaited<ReturnType<typeof createServer>>) {
+  let resolve: () => void = () => {};
+  let closing = false;
+  const close = () => {
+    if (closing) return;
+    closing = true;
+    void server.close().finally(resolve);
+  };
+  const promise = new Promise<void>((resolvePromise) => {
+    resolve = resolvePromise;
   });
+  process.once("SIGINT", close);
+  process.once("SIGTERM", close);
+  return {
+    promise,
+    isClosing: () => closing,
+    dispose: () => {
+      process.removeListener("SIGINT", close);
+      process.removeListener("SIGTERM", close);
+    },
+  };
 }
 
 async function findViteApplicationRoots(

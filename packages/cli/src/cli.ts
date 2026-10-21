@@ -47,6 +47,7 @@ import { runDev } from "./commands/dev.js";
 import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { type InspectTarget, runInspect } from "./commands/inspect.js";
+import { runPluginDev } from "./commands/plugin_dev.js";
 import { runProfile } from "./commands/profile.js";
 import { runThemePreview } from "./commands/theme_preview.js";
 import { renderCliError } from "./error_renderer.js";
@@ -143,6 +144,14 @@ export async function main(arguments_: readonly string[]): Promise<void> {
     if (command.name === "theme-preview") {
       await runThemePreview({
         name: command.themeName,
+        port: command.port,
+        open: command.open,
+      });
+      return;
+    }
+    if (command.name === "plugin-dev") {
+      await runPluginDev({
+        pluginPath: command.pluginPath,
         port: command.port,
         open: command.open,
       });
@@ -268,7 +277,8 @@ type Command =
       options: import("./commands/create_component.js").CreateComponentOptions;
     }
   | { name: "create-component-interactive" }
-  | { name: "theme-preview"; themeName: string; port?: number; open: boolean };
+  | { name: "theme-preview"; themeName: string; port?: number; open: boolean }
+  | { name: "plugin-dev"; pluginPath: string; port?: number; open: boolean };
 
 export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
@@ -294,6 +304,8 @@ export function parseCommand(arguments_: readonly string[]): Command {
     return parseCreateComponentCommand(options.slice(1));
   if (name === "theme" && options[0] === "preview")
     return parseThemePreviewCommand(options.slice(1));
+  if (name === "plugin" && options[0] === "dev")
+    return parsePluginDevCommand(options.slice(1));
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -333,7 +345,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
@@ -525,6 +537,38 @@ function parseThemePreviewCommand(options: readonly string[]): Command {
     );
   }
   return { name: "theme-preview", themeName, port, open };
+}
+
+function parsePluginDevCommand(options: readonly string[]): Command {
+  let pluginPath: string | undefined;
+  let port: number | undefined;
+  let open = true;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--no-open") {
+      open = false;
+      continue;
+    }
+    if (option === "--port") {
+      const value = options[index + 1];
+      const parsed = value === undefined ? Number.NaN : Number(value);
+      if (!Number.isInteger(parsed) || parsed < 1 || parsed > 65_535)
+        throw new CliUsageError(
+          "--port requires an integer between 1 and 65535.",
+        );
+      port = parsed;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown plugin dev option: ${option}`);
+    if (pluginPath !== undefined)
+      throw new CliUsageError("plugin dev accepts one plugin path.");
+    pluginPath = option;
+  }
+  if (pluginPath === undefined)
+    throw new CliUsageError("plugin dev requires a local plugin path.");
+  return { name: "plugin-dev", pluginPath, port, open };
 }
 
 function parseCreateThemeCommand(options: readonly string[]): Command {

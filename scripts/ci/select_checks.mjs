@@ -46,6 +46,7 @@ export function selectChecks(files) {
       continue;
     if (file.startsWith("packages/core/") || file.startsWith("packages/cli/")) {
       setChecks(selection, [
+        "browser",
         "external",
         "fastPath",
         "fingerprint",
@@ -56,6 +57,7 @@ export function selectChecks(files) {
     }
     if (file.startsWith("packages/integrations/")) {
       setChecks(selection, [
+        "browser",
         "external",
         "fastPath",
         "fingerprint",

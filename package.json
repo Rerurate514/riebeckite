@@ -39,6 +39,7 @@
     "test:browser": "pnpm --filter @riebeckite/plugin-search test:browser:required",
     "test:web-e2e": "pnpm build:packages && pnpm --filter @riebeckite/web build && node tests/web-e2e/run-required.mjs",
     "test:web-e2e:only": "node tests/web-e2e/run-required.mjs",
+    "test:plugin-dev:browser": "node --import tsx --test tests/plugin-dev/browser.test.ts",
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",
     "benchmark:vault": "node --import tsx --expose-gc benchmarks/core.mjs",

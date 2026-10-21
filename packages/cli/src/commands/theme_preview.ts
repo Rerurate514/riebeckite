@@ -1,8 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { startHonoxDevServer } from "@riebeckite/honox";
-import { scaffoldRiebeckiteSite } from "create-riebeckite/scaffold";
+import {
+  linkPreviewDependencies,
+  resolveModuleSpecifier,
+  scaffoldPreviewSite,
+  writePreviewViteConfig,
+} from "../preview_site.js";
 import {
   previewApplication,
   previewContent,
@@ -28,15 +32,14 @@ export async function runThemePreview(
     `.riebeckite-preview-${process.pid}-${Date.now()}`,
   );
   try {
-    await scaffoldRiebeckiteSite({
-      targetDirectory: previewRoot,
-      preset: "minimal",
-      utilities: [],
-      deployment: { type: "none" },
-      site: { title: `${options.name} preview` },
-    });
-    await linkDependencies(previewRoot);
-    await writePreviewViteConfig(previewRoot);
+    await scaffoldPreviewSite(previewRoot, `${options.name} preview`);
+    await linkPreviewDependencies(previewRoot);
+    await writePreviewViteConfig(previewRoot, [
+      {
+        find: "@riebeckite/core",
+        replacement: await resolveModuleSpecifier("@riebeckite/core"),
+      },
+    ]);
     await linkTheme(previewRoot, themeRoot, options.name);
     await writePreviewConfig(previewRoot, themeRoot, options.name);
     await writePreviewFixtures(previewRoot);
@@ -64,48 +67,6 @@ async function linkTheme(
   const previewThemes = path.join(previewRoot, "themes");
   await fs.mkdir(previewThemes, { recursive: true });
   await fs.symlink(themeRoot, path.join(previewThemes, name), "junction");
-}
-
-async function linkDependencies(previewRoot: string): Promise<void> {
-  await Promise.all(
-    [
-      ["@hono/vite-build", "@hono/vite-build/node"],
-      ["@riebeckite/core", "@riebeckite/core"],
-      ["@riebeckite/honox", "@riebeckite/honox"],
-      ["@riebeckite/plugin-color-mode", "@riebeckite/plugin-color-mode"],
-      ["@riebeckite/plugin-docs", "@riebeckite/plugin-docs"],
-      [
-        "@riebeckite/plugin-obsidian-markdown",
-        "@riebeckite/plugin-obsidian-markdown",
-      ],
-      ["@riebeckite/plugin-toc", "@riebeckite/plugin-toc"],
-      ["@riebeckite/ui", "@riebeckite/ui"],
-      ["hono", "hono"],
-      ["honox", "honox"],
-      ["vite", "vite"],
-    ].map(async ([name, specifier]) => {
-      const packageDirectory = await findPackageDirectory(
-        await resolveModuleSpecifier(specifier),
-      );
-      const target = path.join(previewRoot, "node_modules", name);
-      await fs.mkdir(path.dirname(target), { recursive: true });
-      await fs.symlink(packageDirectory, target, "junction");
-    }),
-  );
-}
-
-async function findPackageDirectory(file: string): Promise<string> {
-  let current = path.dirname(file);
-  while (true) {
-    try {
-      await fs.access(path.join(current, "package.json"));
-      return current;
-    } catch {}
-    const parent = path.dirname(current);
-    if (parent === current)
-      throw new Error("Could not resolve preview dependencies.");
-    current = parent;
-  }
 }
 
 async function assertLocalTheme(root: string, name: string): Promise<void> {
@@ -184,33 +145,4 @@ async function writePreviewApplication(previewRoot: string): Promise<void> {
       await fs.writeFile(target, content, "utf8");
     }),
   );
-}
-
-async function writePreviewViteConfig(previewRoot: string): Promise<void> {
-  const [build, core, honoxIntegration, honox, vite] = await Promise.all([
-    resolveModuleSpecifier("@hono/vite-build/node"),
-    resolveModuleSpecifier("@riebeckite/core"),
-    resolveModuleSpecifier("@riebeckite/honox"),
-    resolveModuleSpecifier("honox/vite"),
-    resolveModuleSpecifier("vite"),
-  ]);
-  const source = `import build from ${JSON.stringify(build)};
-import { riebeckiteVite } from ${JSON.stringify(honoxIntegration)};
-import honox from ${JSON.stringify(honox)};
-import { defineConfig } from ${JSON.stringify(vite)};
-
-export default defineConfig({
-  resolve: { alias: { "@riebeckite/core": ${JSON.stringify(core)} } },
-  plugins: [
-    honox({ client: { input: ["/app/client.ts", "/app/style.css"] } }),
-    ...riebeckiteVite(),
-    build(),
-  ],
-});
-`;
-  await fs.writeFile(path.join(previewRoot, "vite.config.ts"), source, "utf8");
-}
-
-async function resolveModuleSpecifier(specifier: string): Promise<string> {
-  return fileURLToPath(await import.meta.resolve(specifier));
 }

@@ -16,7 +16,7 @@ Riebeckite のパイプラインで試せます。フィクスチャを選び、
 | Auto Card Link | リンクカード | なし | Markdown 変換、静的なカード |
 | Code Annotations | Diff 注釈 | なし | HTML 変換 |
 | Code Enhance | 行の強調 | `copyLabel` | HTML 変換、操作部は無効 |
-| Code Tabs | 基本のタブ、分離したグループ | `syncTabs` | HTML 変換、すべてのパネルを静的に表示 |
+| Code Tabs | 基本のタブ、分離したグループ | `syncTabs` | HTML 変換、初期タブ状態のみ |
 | Hard Breaks | ソフト改行 | なし | Markdown 変換 |
 | Highlight | テキストの強調 | `tag` | Markdown 変換 |
 | Lightbox | 拡張画像 | なし | HTML 変換、画像リンクのみ |

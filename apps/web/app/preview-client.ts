@@ -22,17 +22,6 @@ const styles = {
   tokyonight: tokyonightThemeStyle,
 };
 
-const staticCodeTabsStyle = `
-.rr-code-tabs__tab {
-  cursor: default;
-  pointer-events: none;
-}
-
-.rr-code-tabs__panel[hidden] {
-  display: block;
-}
-`;
-
 type PreviewResponse = {
   readonly html: string;
   readonly diagnostics: readonly {
@@ -219,7 +208,7 @@ function createPreviewDocument(
   const themeStyle = styles[theme as keyof typeof styles] ?? styles.default;
   const themeName = theme === "default" ? "riebeckite" : theme;
   const colorMode = mode === "dark" ? "dark" : "light";
-  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${themeStyle}\n${autoCardLinkStyle}\n${codeEnhanceStyle}\n${codeTabsStyle}\n${staticCodeTabsStyle}\n${highlightStyle}\n${lightboxStyle}\n${obsidianMarkdownStyle}\n${sidenotesStyle}\n${shortcodesStyle}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${html}</div></div></article></div></body></html>`;
+  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${themeStyle}\n${autoCardLinkStyle}\n${codeEnhanceStyle}\n${codeTabsStyle}\n${highlightStyle}\n${lightboxStyle}\n${obsidianMarkdownStyle}\n${sidenotesStyle}\n${shortcodesStyle}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${html}</div></div></article></div></body></html>`;
 }
 
 function requireElement(root: HTMLElement, selector: string): HTMLElement {

@@ -17,7 +17,7 @@ mode for the result.
 | Auto Card Link | Link card | None | Markdown transform; static card |
 | Code Annotations | Diff annotations | None | HTML transform |
 | Code Enhance | Highlighted lines | `copyLabel` | HTML transform; controls are inert |
-| Code Tabs | Basic tabs, separate groups | `syncTabs` | HTML transform; all panels are shown statically |
+| Code Tabs | Basic tabs, separate groups | `syncTabs` | HTML transform; initial tab state only |
 | Hard Breaks | Soft line breaks | None | Markdown transform |
 | Highlight | Marked text | `tag` | Markdown transform |
 | Lightbox | Enhanced image | None | HTML transform; image link only |

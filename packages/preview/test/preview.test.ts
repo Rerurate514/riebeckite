@@ -46,6 +46,30 @@ test("renders markdown through the Riebeckite pipeline", async () => {
   await preview.dispose();
 });
 
+test("preserves plugin classes and attributes through sanitization", async () => {
+  const preview = createPreview({ plugins: [codeTabsPreview] });
+
+  const result = await preview.render({
+    markdown: [
+      '```ts tab="TypeScript"',
+      "const answer = 42;",
+      "```",
+      "",
+      '```js tab="JavaScript"',
+      "const answer = 42;",
+      "```",
+    ].join("\n"),
+    pluginId: "code-tabs",
+  });
+
+  assert.match(result.html, /class="rr-code-tabs"/);
+  assert.match(result.html, /class="rr-code-tabs__tab"/);
+  assert.match(result.html, /role="tab"/);
+  assert.match(result.html, /aria-selected="true"/);
+  assert.match(result.html, /hidden/);
+  await preview.dispose();
+});
+
 test("uses a selected fixture and preserves explicit empty markdown", async () => {
   const preview = createPreview({
     registry: createPreviewRegistry({

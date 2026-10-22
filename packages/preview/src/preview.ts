@@ -4,6 +4,7 @@ import {
   type RiebeckitePlugin,
 } from "@riebeckite/core";
 import rehypeParse from "rehype-parse";
+import type { Options as SanitizeSchema } from "rehype-sanitize";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
 import { unified } from "unified";
@@ -201,19 +202,29 @@ function failedResult(
 }
 
 async function sanitizeHtml(html: string): Promise<string> {
-  const schema = {
+  const schema: SanitizeSchema = {
     ...defaultSchema,
+    tagNames: [...(defaultSchema.tagNames ?? []), "button"],
     attributes: {
       ...defaultSchema.attributes,
       "*": [
         ...(defaultSchema.attributes?.["*"] ?? []),
+        ["className", /^(?:rb-|rr-)/],
+        "role",
+        "ariaHidden",
+        "ariaSelected",
+        "ariaControls",
+        "hidden",
+        "dataActive",
         "dataCodeTabs",
         "dataCodeTabsLabel",
         "dataCodeTabsPanel",
         "dataCodeTabsSync",
         "dataCodeTabsTab",
-        "dataActive",
+        "dataLine",
+        "dataLineNumber",
       ],
+      button: ["type", "disabled"],
     },
   };
   const file = await unified()

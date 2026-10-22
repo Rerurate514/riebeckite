@@ -33,10 +33,15 @@ export default createRoute((c) => {
           の実際のパイプラインで処理し、出力はサニタイズ済みの隔離フレームに表示します。
         </p>
       </header>
-      <form class="playground__picker" action="/playground" method="get">
+      <form
+        class="playground__picker"
+        action="/playground"
+        method="get"
+        data-playground-picker
+      >
         <label>
           Plugin
-          <select name="plugin">
+          <select name="plugin" data-playground-plugin>
             {previewRegistry.plugins.map((item) => (
               <option value={item.id} selected={item.id === plugin?.id}>
                 {item.title}
@@ -44,13 +49,13 @@ export default createRoute((c) => {
             ))}
           </select>
         </label>
-        <button type="submit">Switch plugin</button>
       </form>
       {plugin && fixture && (
         <PluginPreview
           plugin={plugin.id}
           fixture={fixture.id}
           compact={false}
+          playgroundLink={false}
         />
       )}
       <section class="playground__details">

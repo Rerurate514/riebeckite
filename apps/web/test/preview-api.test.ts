@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { createPreview } from "@riebeckite/preview";
 import {
   isPreviewRequestSizeAllowed,
   parsePreviewApiInput,
@@ -55,6 +56,22 @@ test("rejects unregistered plugins, invalid fixtures, and unsafe options", () =>
   ]) {
     assert.equal(parsePreviewApiInput(input, previewRegistry), undefined);
   }
+});
+
+test("renders the code-annotations fixture with diff markers", async () => {
+  const preview = createPreview({
+    registry: previewRegistry,
+    fixture: "diff",
+  });
+  const result = await preview.render({
+    pluginId: "code-annotations",
+    options: {},
+  });
+
+  assert.match(result.html, /rr-code__line--add/);
+  assert.match(result.html, /rr-code__line--remove/);
+  assert.match(result.html, /rr-code__diff-marker/);
+  await preview.dispose();
 });
 
 test("returns non-cacheable generic errors for malformed worker requests", async () => {

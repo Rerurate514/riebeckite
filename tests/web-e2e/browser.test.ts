@@ -82,12 +82,17 @@ test("playground renders and responds to editing, fixtures, options, theme, mode
       html.includes('data-theme="dark"'),
     );
 
-    await page.select('select[name="plugin"]', "code-annotations");
     await Promise.all([
       page.waitForNavigation({ waitUntil: "domcontentloaded" }),
-      page.click('.playground__picker button[type="submit"]'),
+      page.select('select[name="plugin"]', "code-annotations"),
     ]);
     await waitForRendered(page);
+    await waitForFrameContains(
+      page,
+      (html) =>
+        html.includes("rr-code__line--add") &&
+        html.includes("rr-code__diff-marker"),
+    );
     assert.equal(
       await page.$eval("[data-plugin-preview]", (element) =>
         element.getAttribute("data-preview-plugin"),

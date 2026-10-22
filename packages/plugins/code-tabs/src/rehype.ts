@@ -112,6 +112,7 @@ function buildTabGroup(
             dataCodeTabsPanel: "true",
             dataCodeTabsLabel: tab.label,
             dataActive: index === 0 ? "true" : "false",
+            hidden: index !== 0,
           },
           [tab.node],
         ),

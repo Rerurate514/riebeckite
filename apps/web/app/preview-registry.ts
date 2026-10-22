@@ -60,7 +60,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
           id: "diff",
           title: "Diff annotations",
           markdown: [
-            "```diff",
+            "```diff ts",
             "-const legacy = true;",
             "+const modern = true;",
             "```",

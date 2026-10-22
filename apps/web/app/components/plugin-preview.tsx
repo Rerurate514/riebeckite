@@ -6,6 +6,7 @@ type PluginPreviewProps = {
   readonly fixture: string;
   readonly editable?: boolean;
   readonly compact?: boolean;
+  readonly playgroundLink?: boolean;
 };
 
 export function PluginPreview({
@@ -13,6 +14,7 @@ export function PluginPreview({
   fixture: fixtureId,
   editable = true,
   compact = true,
+  playgroundLink = true,
 }: PluginPreviewProps) {
   const plugin = previewRegistry.plugin(pluginId);
   const fixture = plugin && previewRegistry.fixture(plugin.id, fixtureId);
@@ -37,7 +39,7 @@ export function PluginPreview({
           <p>Interactive preview</p>
           <h2>{plugin.title}</h2>
         </div>
-        <a href={playgroundHref}>Open in Playground</a>
+        {playgroundLink && <a href={playgroundHref}>Open in Playground</a>}
       </header>
       <div class="plugin-preview__controls">
         <label>

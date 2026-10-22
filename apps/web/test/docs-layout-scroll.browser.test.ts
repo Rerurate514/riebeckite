@@ -108,16 +108,19 @@ for (const theme of ["light", "dark"] as const) {
 
       await page.evaluate(() => window.scrollTo(0, 1200));
       const sticky = await page.evaluate(() => {
+        const header = document.querySelector<HTMLElement>(".rb-site-header");
         const docs = document.querySelector<HTMLElement>(".rb-article-aside");
         const toc = document.querySelector<HTMLElement>(
           ".rr-table-of-contents--desktop",
         );
-        if (!docs || !toc) throw new Error("docs fixture is incomplete");
+        if (!header || !docs || !toc)
+          throw new Error("docs fixture is incomplete");
         docs.scrollTop = 200;
         toc.scrollTop = 200;
         return {
           docsTop: docs.getBoundingClientRect().top,
           tocTop: toc.getBoundingClientRect().top,
+          headerBottom: header.getBoundingClientRect().bottom,
           stickyTop: Number.parseFloat(getComputedStyle(docs).top),
           docsScrollTop: docs.scrollTop,
           tocScrollTop: toc.scrollTop,
@@ -125,6 +128,7 @@ for (const theme of ["light", "dark"] as const) {
       });
       assert.ok(Math.abs(sticky.docsTop - sticky.stickyTop) <= 1);
       assert.ok(Math.abs(sticky.tocTop - sticky.stickyTop) <= 1);
+      assert.ok(Math.abs(sticky.headerBottom - sticky.stickyTop) <= 1);
       assert.equal(sticky.docsScrollTop, 200);
       assert.equal(sticky.tocScrollTop, 200);
 

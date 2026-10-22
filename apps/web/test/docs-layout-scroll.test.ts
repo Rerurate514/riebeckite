@@ -16,11 +16,11 @@ test("docs layout derives header height and sticky top from one contract", () =>
   );
   assert.match(
     shellCss,
-    /--rb-docs-sticky-top:\s*calc\(\s*var\(--rb-space-8\)\s*\+\s*var\(--rb-site-header-height\)\s*\)/,
+    /--rb-docs-sticky-top:\s*var\(--rb-site-header-height\)/,
   );
   assert.match(
     shellCss,
-    /\.rb-site-header\s*\{[^}]*min-height:\s*var\(--rb-site-header-height\)/,
+    /\.rb-site-header\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*min-height:\s*var\(--rb-site-header-height\)/,
   );
 });
 

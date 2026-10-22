@@ -11,14 +11,15 @@
   @media (min-width: 88rem) {
     .riebeckite-page {
       --rb-site-header-height: calc(var(--rb-space-3) * 3);
-      --rb-docs-sticky-top: calc(
-        var(--rb-space-8) +
-        var(--rb-site-header-height)
-      );
+      --rb-docs-sticky-top: var(--rb-site-header-height);
     }
 
     .rb-site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
       min-height: var(--rb-site-header-height);
+      background: var(--rb-color-paper);
     }
   }
 

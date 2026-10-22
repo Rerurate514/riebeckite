@@ -35,7 +35,6 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 | Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
 | Upgrade Riebeckite or read migration notes | [Upgrading](./upgrading.md) |
-| Migrate an existing site from another platform | [Migration guides](./migration/README.md) |
 
 ## What each guide covers
 
@@ -50,7 +49,6 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 - [SPA Navigation](./spa-navigation.md) — enabling client-side page transitions, supported links, and the renderer contract.
 - [Discovery recipes](./discovery-recipes.md) — building a homepage and browse routes.
 - [Upgrading](./upgrading.md) — updating Riebeckite packages and reviewing changes.
-- [Migration guides](./migration/README.md) — planning a safe migration from Quartz, documentation platforms, static site generators, or static application frameworks.
 
 ## Deployment guides
 

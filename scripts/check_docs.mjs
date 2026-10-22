@@ -157,6 +157,13 @@ function isDocsDocument(relative) {
   return true;
 }
 
+function hasPrivateFrontmatter(file) {
+  const text = fs.readFileSync(file.absolute, "utf8");
+  const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!frontmatter) return false;
+  return /^private:\s*true\s*$/m.test(frontmatter[1]);
+}
+
 // Rule 2: default and translated documents must come in pairs.
 function checkTranslationParity(markdownFiles) {
   const errors = [];
@@ -217,11 +224,11 @@ function linkedMarkdownTargets(file, docsRoot, knownDocuments) {
   return targets;
 }
 
-// Rule 3: every document must be reachable from a documentation index.
+// Rule 3: every published document must be reachable from a documentation index.
 function checkReachability(markdownFiles) {
   const errors = [];
-  const docsFiles = markdownFiles.filter((file) =>
-    isDocsDocument(file.relative),
+  const docsFiles = markdownFiles.filter(
+    (file) => isDocsDocument(file.relative) && !hasPrivateFrontmatter(file),
   );
   const byRelative = new Map(
     docsFiles.map((file) => [file.relative.slice("docs/".length), file]),

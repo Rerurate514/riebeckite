@@ -12,28 +12,31 @@ const TOC_ACTIVE_CLASS = "rb-ux__toc-active";
 
 const BACK_TO_TOP_THRESHOLD = 320;
 
-let started = false;
-
 /**
  * Initializes every enabled UX enhancement. Safe to call more than once and a
  * no-op when the relevant DOM elements are absent.
  */
-export function initUx(): void {
-  if (started) return;
-  started = true;
-
-  const config = readUxConfig();
+export function initUx(): () => void {
+  let cleanup = () => {};
   const run = () => {
-    if (config.progress) setupProgress();
-    if (config.backToTop) setupBackToTop(config);
-    if (config.tocScrollSpy) setupTocScrollSpy();
+    const config = readUxConfig();
+    const cleanups = [
+      config.progress ? setupProgress() : undefined,
+      config.backToTop ? setupBackToTop(config) : undefined,
+      config.tocScrollSpy ? setupTocScrollSpy() : undefined,
+    ].filter((value): value is () => void => value !== undefined);
+    cleanup = () => {
+      for (const dispose of cleanups) dispose();
+    };
   };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", run, { once: true });
-  } else {
-    run();
+    return () => document.removeEventListener("DOMContentLoaded", run);
   }
+
+  run();
+  return () => cleanup();
 }
 
 /** Reads the injected JSON config element, falling back to defaults. */
@@ -80,9 +83,9 @@ function readString(value: unknown, fallback: string): string {
 }
 
 /** A fixed top bar that fills as the article is scrolled. */
-function setupProgress(): void {
+function setupProgress(): (() => void) | undefined {
   const article = findArticle();
-  if (!article || hasElement(PROGRESS_CLASS)) return;
+  if (!article || hasElement(PROGRESS_CLASS)) return undefined;
 
   const track = document.createElement("div");
   track.className = PROGRESS_CLASS;
@@ -102,7 +105,11 @@ function setupProgress(): void {
     track.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
   };
 
-  scheduleOnScroll(update);
+  const stop = scheduleOnScroll(update);
+  return () => {
+    stop();
+    track.remove();
+  };
 }
 
 function readingProgress(article: HTMLElement): number {
@@ -113,8 +120,8 @@ function readingProgress(article: HTMLElement): number {
 }
 
 /** A button that appears after scrolling and returns to the top. */
-function setupBackToTop(config: UxResolvedConfig): void {
-  if (hasElement(BACK_TO_TOP_CLASS)) return;
+function setupBackToTop(config: UxResolvedConfig): (() => void) | undefined {
+  if (hasElement(BACK_TO_TOP_CLASS)) return undefined;
 
   const button = document.createElement("button");
   button.type = "button";
@@ -138,20 +145,24 @@ function setupBackToTop(config: UxResolvedConfig): void {
     );
   };
 
-  scheduleOnScroll(update);
+  const stop = scheduleOnScroll(update);
+  return () => {
+    stop();
+    button.remove();
+  };
 }
 
 /** Highlights the table-of-contents link for the heading in view. */
-function setupTocScrollSpy(): void {
+function setupTocScrollSpy(): (() => void) | undefined {
   const container = document.querySelector<HTMLElement>(
     ".rr-table-of-contents, [data-rb-toc]",
   );
-  if (!container || container.dataset.rbUxToc === "true") return;
+  if (!container || container.dataset.rbUxToc === "true") return undefined;
 
   const links = Array.from(
     container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'),
   );
-  if (links.length === 0) return;
+  if (links.length === 0) return undefined;
 
   const linksById = new Map<string, HTMLAnchorElement[]>();
   for (const link of links) {
@@ -165,7 +176,7 @@ function setupTocScrollSpy(): void {
   const headings = Array.from(linksById.keys())
     .map((id) => document.getElementById(id))
     .filter((heading): heading is HTMLElement => heading !== null);
-  if (headings.length === 0) return;
+  if (headings.length === 0) return undefined;
 
   container.dataset.rbUxToc = "true";
 
@@ -206,8 +217,9 @@ function setupTocScrollSpy(): void {
     }
   };
 
+  let observer: IntersectionObserver | undefined;
   if (typeof IntersectionObserver === "function") {
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           const id = entry.target.id;
@@ -225,7 +237,12 @@ function setupTocScrollSpy(): void {
     for (const heading of headings) observer.observe(heading);
   }
 
-  scheduleOnScroll(updateActive);
+  const stop = scheduleOnScroll(updateActive);
+  return () => {
+    stop();
+    observer?.disconnect();
+    delete container.dataset.rbUxToc;
+  };
 }
 
 function findArticle(): HTMLElement | null {
@@ -259,7 +276,7 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /** Runs `update` immediately and on scroll/resize, coalesced per frame. */
-function scheduleOnScroll(update: () => void): void {
+function scheduleOnScroll(update: () => void): () => void {
   let frame = 0;
   const schedule = () => {
     if (frame) return;
@@ -272,4 +289,9 @@ function scheduleOnScroll(update: () => void): void {
   window.addEventListener("scroll", schedule, { passive: true });
   window.addEventListener("resize", schedule);
   update();
+  return () => {
+    window.removeEventListener("scroll", schedule);
+    window.removeEventListener("resize", schedule);
+    if (frame) window.cancelAnimationFrame(frame);
+  };
 }

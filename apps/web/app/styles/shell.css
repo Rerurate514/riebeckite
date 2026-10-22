@@ -52,12 +52,6 @@
     object-fit: contain;
   }
 
-  .rb-site-footer {
-    margin-top: 1rem;
-    padding-block: var(--rb-space-4);
-    border-top: 1px solid var(--rb-color-border);
-  }
-
   .not-found {
     width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
     margin-block: auto;
@@ -110,6 +104,86 @@
     .site-header__primary-navigation {
       display: none;
     }
+  }
+}
+
+.rb-site-footer {
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  margin-top: clamp(4rem, 9vw, 7rem);
+  border-top: 1px solid var(--rb-color-border-strong, var(--rb-color-border));
+}
+
+.site-footer__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(2rem, 4vw, 3.5rem);
+}
+
+.site-footer__project {
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading, inherit);
+  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.site-footer__description {
+  max-width: 30rem;
+  margin: var(--rb-space-3) 0 0;
+  color: var(--rb-color-muted);
+  line-height: 1.6;
+}
+
+.site-footer__author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: var(--rb-space-4);
+  color: var(--rb-color-muted);
+  font-size: 0.8rem;
+}
+
+.site-footer__author a {
+  color: var(--rb-color-ink);
+  text-underline-offset: 0.2em;
+}
+
+.site-footer__navigation {
+  align-self: end;
+}
+
+.site-footer__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rb-space-3);
+  padding-block: var(--rb-space-3);
+  border-top: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.site-footer__project:focus-visible,
+.site-footer__author a:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 48rem) {
+  .rb-site-footer {
+    margin-top: var(--rb-space-8);
+  }
+
+  .site-footer__main {
+    grid-template-columns: 1fr;
+    gap: var(--rb-space-6);
+  }
+
+  .site-footer__meta {
+    flex-direction: column;
   }
 }
 

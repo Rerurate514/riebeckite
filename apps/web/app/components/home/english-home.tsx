@@ -55,7 +55,7 @@ export default function EnglishHomePage({
               Keep writing in Markdown and the application in ordinary
               TypeScript files. Change either without giving up the other.
             </p>
-            <a href="/docs/guides/writing-content/">Read the source setup →</a>
+            <a href="/docs/getting-started/">Read the source setup →</a>
           </article>
         </div>
       </section>

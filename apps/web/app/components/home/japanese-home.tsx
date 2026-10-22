@@ -62,7 +62,7 @@ export default function JapaneseHomePage({
               書くものは Markdown に残し、アプリケーションは通常の TypeScript
               ファイルで管理する。片方を変えても、もう片方を手放す必要はありません。
             </p>
-            <a href="/ja/docs/guides/writing-content/">コンテンツの設定を見る →</a>
+            <a href="/ja/docs/getting-started/">コンテンツの設定を見る →</a>
           </article>
         </div>
       </section>

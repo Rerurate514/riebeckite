@@ -25,7 +25,7 @@ function SectionHeading({ id, children }: { id: string; children: string }) {
 
 function CodeWindow({ children, label }: { children: string; label: string }) {
   return (
-    <div class="rb-home__code-window">
+    <div class="rb-home__code-window rr-code">
       <pre>
         <code>{children}</code>
       </pre>

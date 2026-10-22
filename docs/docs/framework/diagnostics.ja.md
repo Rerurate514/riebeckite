@@ -45,7 +45,7 @@ Doctor では、1つの検査に失敗しても、可能な限り他の独立し
 
 観測できない項目は推測せず、利用できないことを明示します。診断のためだけに full build は実行しません。
 
-Development Inspector は Vite の開発サーバーからだけ利用でき、同じレポートを Shadow DOM のパネルに表示します。production の client module や endpoint には含まれません。Element の source と Component の対応付けは runtime に mapping がないため、現時点では PARTIAL です。
+Development Inspector は Vite の開発サーバーからだけ利用でき、同じレポートを Shadow DOM のパネルに表示します。production の client module や endpoint には含まれません。パネルはまず Diagnostics を表示し、Dependencies と Output のタブは別の endpoint から読み込みます。そのため、大きな Output Plan が他のタブの表示を遅らせません。Element の source と Component の対応付けは runtime に mapping がないため、現時点では PARTIAL です。
 
 ## コンテンツ ID の検査
 

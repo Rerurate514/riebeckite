@@ -6,13 +6,19 @@ import {
   type OutputDependency,
   type OutputDescriptor,
 } from "@riebeckite/core";
-import { collectDevelopmentDiagnostics } from "@riebeckite/diagnostics";
+import {
+  collectDevelopmentDiagnostics,
+  type DevelopmentDiagnostic,
+  diagnoseOutputPlan,
+  sortDevelopmentDiagnostics,
+} from "@riebeckite/diagnostics";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 const clientModuleId = "virtual:riebeckite/development-inspector";
 const resolvedClientModuleId = `\0${clientModuleId}`;
-const endpointPath = "/__riebeckite/inspector/report";
+const reportPath = "/__riebeckite/inspector/report";
+const outputPath = "/__riebeckite/inspector/output";
 const listedOutputLimit = 20;
 
 type ListedOutput = {
@@ -59,16 +65,19 @@ type DependencyInspection =
     }
   | { readonly status: "unavailable"; readonly reason: string };
 
-type InspectionResult = {
-  readonly report: Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>;
+type OutputResult = {
   readonly output: OutputInspection;
   readonly dependencies: DependencyInspection;
+  readonly diagnostics: readonly DevelopmentDiagnostic[];
 };
 
 type CachedInspection = {
   readonly application: ResolvedHonoxApplication;
   readonly revision: number;
-  readonly result: Promise<InspectionResult>;
+  readonly report: Promise<
+    Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>
+  >;
+  readonly output: Promise<OutputResult>;
   readonly dispose: () => Promise<void>;
 };
 
@@ -80,19 +89,21 @@ export function riebeckiteDevelopmentInspector(
   const inspectApplication = (
     application: ResolvedHonoxApplication,
     currentRevision: number,
-  ): Promise<InspectionResult> => {
+  ): CachedInspection => {
     if (
       inspection?.revision === currentRevision &&
       inspection.application === application
     ) {
-      return inspection.result;
+      return inspection;
     }
     if (inspection) {
       const previous = inspection;
       const disposePrevious = () => {
         void previous.dispose().catch(() => {});
       };
-      void previous.result.then(disposePrevious, disposePrevious);
+      void Promise.allSettled([previous.report, previous.output]).then(
+        disposePrevious,
+      );
       inspection = null;
     }
     const content = createInspectionContent(application);
@@ -102,26 +113,29 @@ export function riebeckiteDevelopmentInspector(
       disposed = true;
       await content.dispose();
     };
-    const result = (async () => {
-      const report = await collectDevelopmentDiagnostics({
-        config: application.config,
-        content,
-        revision: currentRevision,
-      });
-      return { report, ...(await inspectContentOutputs(content)) };
-    })();
+    const report = collectDevelopmentDiagnostics({
+      config: application.config,
+      content,
+      revision: currentRevision,
+      includeOutput: false,
+    });
+    const output = report.then(
+      () => inspectContentOutputs(content),
+      () => inspectContentOutputs(content),
+    );
     const entry: CachedInspection = {
       application,
       revision: currentRevision,
-      result,
+      report,
+      output,
       dispose,
     };
     inspection = entry;
-    void result.catch(() => {
+    void report.catch(() => {
       if (inspection === entry) inspection = null;
-      void dispose().catch(() => {});
+      void output.then(dispose, dispose);
     });
-    return result;
+    return entry;
   };
   return {
     name: "riebeckite-development-inspector",
@@ -134,7 +148,7 @@ export function riebeckiteDevelopmentInspector(
       return id === resolvedClientModuleId ? inspectorClientModule() : null;
     },
     configureServer(server) {
-      const middleware = async (
+      const reportMiddleware = async (
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
@@ -145,22 +159,16 @@ export function riebeckiteDevelopmentInspector(
         }
         try {
           const application = getApplication();
-          const { report, output, dependencies } = await inspectApplication(
-            application,
-            revision,
-          );
+          const report = await inspectApplication(application, revision).report;
           response.setHeader("content-type", "application/json; charset=utf-8");
           response.setHeader("cache-control", "no-store");
-          const currentPage = currentPageFromRequest(request.url);
           response.end(
             JSON.stringify({
               ...report,
               generatedAt: new Date().toISOString(),
-              currentPage,
+              currentPage: currentPageFromRequest(request.url),
               theme: application.config.theme.name,
               plugins: application.config.plugins.map((plugin) => plugin.name),
-              dependencies,
-              output,
             }),
           );
         } catch {
@@ -169,8 +177,42 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_REPORT_FAILED" }));
         }
       };
-      server.middlewares.use(endpointPath, middleware);
-      return () => prioritizeMiddleware(server, middleware);
+      const outputMiddleware = async (
+        request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        if (!isLocalRequest(request.headers.host, server)) {
+          response.statusCode = 403;
+          response.end();
+          return;
+        }
+        try {
+          const application = getApplication();
+          const entry = inspectApplication(application, revision);
+          const result = await entry.output;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.end(
+            JSON.stringify({
+              version: 1,
+              revision: entry.revision,
+              generatedAt: new Date().toISOString(),
+              ...result,
+              diagnostics: sortDevelopmentDiagnostics(result.diagnostics),
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_OUTPUT_FAILED" }));
+        }
+      };
+      server.middlewares.use(reportPath, reportMiddleware);
+      server.middlewares.use(outputPath, outputMiddleware);
+      return () => {
+        prioritizeMiddleware(server, outputMiddleware, outputPath);
+        prioritizeMiddleware(server, reportMiddleware, reportPath);
+      };
     },
     handleHotUpdate({ server }) {
       revision += 1;
@@ -191,15 +233,21 @@ function createInspectionContent(
   );
 }
 
-async function inspectContentOutputs(content: ContentManager): Promise<{
-  readonly output: OutputInspection;
-  readonly dependencies: DependencyInspection;
-}> {
+async function inspectContentOutputs(
+  content: ContentManager,
+): Promise<OutputResult> {
   try {
     const changes = await content.getOutputChangeSet();
+    const plan = buildOutputPlan({
+      inventory: [...changes.affected, ...changes.unchanged],
+      removed: changes.removed,
+      affectedPaths: new Set(changes.affected.map((output) => output.path)),
+      cacheAvailable: changes.unchanged.length > 0,
+    });
     return {
-      output: inspectOutput(changes),
+      output: inspectOutput(changes, plan),
       dependencies: inspectDependencies(changes),
+      diagnostics: diagnoseOutputPlan(plan),
     };
   } catch {
     return {
@@ -211,17 +259,15 @@ async function inspectContentOutputs(content: ContentManager): Promise<{
         status: "unavailable",
         reason: "dependency inspection failed",
       },
+      diagnostics: [],
     };
   }
 }
 
-function inspectOutput(changes: OutputChangeSet): OutputInspection {
-  const plan = buildOutputPlan({
-    inventory: [...changes.affected, ...changes.unchanged],
-    removed: changes.removed,
-    affectedPaths: new Set(changes.affected.map((output) => output.path)),
-    cacheAvailable: changes.unchanged.length > 0,
-  });
+function inspectOutput(
+  changes: OutputChangeSet,
+  plan: ReturnType<typeof buildOutputPlan>,
+): OutputInspection {
   return {
     status: "available",
     candidateOutputCount: changes.candidateOutputCount,
@@ -320,16 +366,16 @@ function dependencyLabel(dependency: OutputDependency): string {
 }
 
 function currentPageFromRequest(url: string | undefined): string {
-  const value = new URL(
-    url ?? endpointPath,
-    "http://localhost",
-  ).searchParams.get("path");
+  const value = new URL(url ?? reportPath, "http://localhost").searchParams.get(
+    "path",
+  );
   return value?.startsWith("/") && !value.startsWith("//") ? value : "/";
 }
 
 function prioritizeMiddleware(
   server: ViteDevServer,
   middleware: unknown,
+  path: string,
 ): void {
   const stack = (
     server.middlewares as unknown as {
@@ -338,7 +384,7 @@ function prioritizeMiddleware(
   ).stack;
   const index =
     stack?.findIndex(
-      (layer) => layer.handle === middleware || layer.route === endpointPath,
+      (layer) => layer.handle === middleware || layer.route === path,
     ) ?? -1;
   if (index > 0 && stack) stack.unshift(...stack.splice(index, 1));
 }
@@ -361,7 +407,8 @@ function isLocalRequest(
 
 function inspectorClientModule(): string {
   return `
-const endpoint = ${JSON.stringify(endpointPath)};
+const reportEndpoint = ${JSON.stringify(reportPath)};
+const outputEndpoint = ${JSON.stringify(outputPath)};
 const panelId = "riebeckite-development-inspector";
 
 export function initDevelopmentInspector() {
@@ -386,12 +433,13 @@ export function initDevelopmentInspector() {
     controller = new AbortController();
     const current = ++generation;
     try {
-      const response = await fetch(endpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
+      const response = await fetch(reportEndpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
       if (!response.ok) throw new Error("Inspector report is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
       report = next;
       render();
+      void loadOutput(current);
     } catch (error) {
       if (error.name === "AbortError" || current !== generation) return;
       clearInterval(loadingTimer);
@@ -403,6 +451,24 @@ export function initDevelopmentInspector() {
         pendingRefresh = false;
         void refresh();
       }
+    }
+  };
+  const loadOutput = async (current) => {
+    try {
+      const response = await fetch(outputEndpoint, { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error("Inspector output is unavailable.");
+      const next = await response.json();
+      if (current !== generation || !panel?.isConnected) return;
+      report.output = next.output;
+      report.dependencies = next.dependencies;
+      report.diagnostics = report.diagnostics.concat(next.diagnostics);
+      report.summary = summarize(report.diagnostics);
+      render();
+    } catch (error) {
+      if (error.name === "AbortError" || current !== generation) return;
+      report.output = { status: "unavailable", reason: "output inspection failed" };
+      report.dependencies = { status: "unavailable", reason: "dependency inspection failed" };
+      render();
     }
   };
   const open = () => {
@@ -456,7 +522,7 @@ export function initDevelopmentInspector() {
   function render() {
     clearInterval(loadingTimer);
     const root = panel.shadowRoot;
-    root.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-title" tabindex="-1"><header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">Inspector report updated</p></section>';
+    root.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-title" tabindex="-1"><header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">' + (report.output ? "Inspector report updated" : "Inspector report updated · loading output plan…") + '</p></section>';
     root.querySelector("[data-close]").addEventListener("click", close);
     root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); }));
     root.querySelector("[role=tablist]").addEventListener("keydown", (event) => {
@@ -477,6 +543,14 @@ export function initDevelopmentInspector() {
   }
 }
 
+function summarize(diagnostics) {
+  return {
+    errors: diagnostics.filter((diagnostic) => diagnostic.severity === "error").length,
+    warnings: diagnostics.filter((diagnostic) => diagnostic.severity === "warning").length,
+    info: diagnostics.filter((diagnostic) => diagnostic.severity === "info").length,
+  };
+}
+
 function diagnosticList(diagnostics) {
   return '<ul>' + (diagnostics.map((diagnostic) =>
     '<li data-severity="' + escapeHtml(diagnostic.severity) + '"><b>' + escapeHtml(diagnostic.code) + '</b> ' + escapeHtml(diagnostic.message) + location(diagnostic) + '</li>'
@@ -484,6 +558,7 @@ function diagnosticList(diagnostics) {
 }
 
 function outputReport(output) {
+  if (!output) return '<p class="status" aria-live="polite">Loading output plan…</p>';
   if (output.status !== "available") return unavailable("Output", output.reason);
   return '<dl>' +
     '<dt>Candidate</dt><dd>' + output.candidateOutputCount + '</dd>' +
@@ -513,6 +588,7 @@ function conflictList(conflicts) {
 }
 
 function dependencyReport(dependencies) {
+  if (!dependencies) return '<p class="status" aria-live="polite">Loading dependencies…</p>';
   if (dependencies.status !== "available") return unavailable("Dependencies", dependencies.reason);
   return '<dl>' +
     '<dt>Outputs</dt><dd>' + dependencies.outputCount + '</dd>' +

@@ -49,10 +49,22 @@ test("development inspector reports the output plan and dependencies", async () 
 
     assert.equal(response.statusCode, 200);
     const report = JSON.parse(body);
-    assert.equal(report.output.status, "available");
-    assert.equal(report.dependencies.status, "available");
-    assert.ok(report.output.affectedOutputCount >= 1);
-    assert.ok(report.dependencies.dependencyCount >= 1);
+    assert.equal(report.output, undefined);
+    assert.equal(report.dependencies, undefined);
+
+    const outputHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/output",
+    )?.handle;
+    const outputResponse = await requestReport(
+      outputHandle,
+      "/__riebeckite/inspector/output",
+    );
+    assert.equal(outputResponse.response.statusCode, 200);
+    const output = JSON.parse(outputResponse.body);
+    assert.equal(output.output.status, "available");
+    assert.equal(output.dependencies.status, "available");
+    assert.ok(output.output.affectedOutputCount >= 1);
+    assert.ok(output.dependencies.dependencyCount >= 1);
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
     );
@@ -90,9 +102,20 @@ test("development inspector shares one report across concurrent requests", async
     assert.equal(second.response.statusCode, 200);
     const firstReport = JSON.parse(first.body);
     const secondReport = JSON.parse(second.body);
-    assert.deepEqual(firstReport.output, secondReport.output);
     assert.equal(firstReport.currentPage, "/");
     assert.equal(secondReport.currentPage, "/themes");
+
+    const outputHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/output",
+    )?.handle;
+    const [firstOutput, secondOutput] = await Promise.all([
+      requestReport(outputHandle, "/__riebeckite/inspector/output"),
+      requestReport(outputHandle, "/__riebeckite/inspector/output"),
+    ]);
+    assert.deepEqual(
+      JSON.parse(firstOutput.body).output,
+      JSON.parse(secondOutput.body).output,
+    );
   });
 });
 
@@ -116,6 +139,12 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /Output/);
   assert.match(source as string, /report\.dependencies/);
   assert.match(source as string, /report\.output/);
+  assert.match(source as string, /loadOutput/);
+  assert.match(source as string, /reportEndpoint/);
+  assert.match(source as string, /outputEndpoint/);
+  assert.match(source as string, /Loading output plan/);
+  assert.match(source as string, /Loading dependencies/);
+  assert.match(source as string, /loading output plan/);
   assert.match(source as string, /fullRegenerationRequired/);
   assert.match(source as string, /dependencyCount/);
   assert.match(source as string, /dependentOutputCount/);

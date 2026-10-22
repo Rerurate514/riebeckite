@@ -49,6 +49,25 @@ test("content and output failures are reported independently", async () => {
   );
 });
 
+test("output diagnostics are optional so callers can report content first", async () => {
+  const report = await collectDevelopmentDiagnostics({
+    config: {
+      content: { directory: "content", exclude: [] },
+      plugins: [],
+      theme: { styles: [] },
+    } as never,
+    includeOutput: false,
+    content: {
+      inspect: async () => ({ diagnostics: [] }),
+      getOutputChangeSet: async () => {
+        throw new Error("output must not be inspected");
+      },
+    } as never,
+  });
+
+  assert.deepEqual(report.diagnostics, []);
+});
+
 test("error diagnostics do not serialize exception details", () => {
   const diagnostic = createDiagnosticFromError(
     "plugins",

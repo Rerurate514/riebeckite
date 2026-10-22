@@ -21,6 +21,7 @@ export type DevelopmentDiagnosticsInput = {
   readonly content?: InspectableContent;
   readonly actualOutputPaths?: Iterable<string>;
   readonly revision?: number;
+  readonly includeOutput?: boolean;
 };
 
 export async function collectDevelopmentDiagnostics(
@@ -34,11 +35,13 @@ export async function collectDevelopmentDiagnostics(
   ];
   if (input.content) {
     await collectContentDiagnostics(input.content, diagnostics);
-    await collectOutputDiagnostics(
-      input.content,
-      input.actualOutputPaths,
-      diagnostics,
-    );
+    if (input.includeOutput !== false) {
+      await collectOutputDiagnostics(
+        input.content,
+        input.actualOutputPaths,
+        diagnostics,
+      );
+    }
   } else {
     diagnostics.push(
       skipped(
@@ -47,13 +50,15 @@ export async function collectDevelopmentDiagnostics(
         "Content inspection is unavailable.",
       ),
     );
-    diagnostics.push(
-      skipped(
-        "output",
-        "OUTPUT_UNAVAILABLE",
-        "Output inspection is unavailable.",
-      ),
-    );
+    if (input.includeOutput !== false) {
+      diagnostics.push(
+        skipped(
+          "output",
+          "OUTPUT_UNAVAILABLE",
+          "Output inspection is unavailable.",
+        ),
+      );
+    }
   }
   const ordered = sortDevelopmentDiagnostics(diagnostics);
   return {
@@ -100,7 +105,7 @@ async function collectOutputDiagnostics(
       affectedPaths: new Set(changes.affected.map((output) => output.path)),
       cacheAvailable: changes.unchanged.length > 0,
     });
-    diagnostics.push(...outputDiagnostics(plan, actualOutputPaths));
+    diagnostics.push(...diagnoseOutputPlan(plan, actualOutputPaths));
   } catch (error) {
     diagnostics.push(
       createDiagnosticFromError(
@@ -229,9 +234,9 @@ function themeDiagnostics(
       ];
 }
 
-function outputDiagnostics(
+export function diagnoseOutputPlan(
   plan: ReturnType<typeof buildOutputPlan>,
-  actualOutputPaths: Iterable<string> | undefined,
+  actualOutputPaths?: Iterable<string>,
 ): readonly DevelopmentDiagnostic[] {
   const diagnostics: DevelopmentDiagnostic[] = plan.conflicts.map(
     (conflict) => ({

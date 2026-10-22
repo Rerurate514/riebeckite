@@ -20,7 +20,7 @@ Plugins can provide diagnostics through `addDiagnostics`; Core and integrations 
 
 Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully. It reports unavailable observations explicitly and does not run a full build solely to diagnose the project.
 
-The Development Inspector is available only through the Vite development server and renders the same report in a Shadow DOM panel. It is omitted from production client modules and production endpoints. Element source and component mappings are PARTIAL until runtime mappings are available.
+The Development Inspector is available only through the Vite development server and renders the same report in a Shadow DOM panel. It is omitted from production client modules and production endpoints. The panel shows diagnostics first and loads the Dependencies and Output tabs from a separate endpoint, so a large output plan does not delay the rest of the report. Element source and component mappings are PARTIAL until runtime mappings are available.
 
 ## Content ID integrity
 

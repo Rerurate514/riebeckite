@@ -36,15 +36,20 @@ code is present in production output.
 
 Element-to-source mappings are not preserved through the Markdown/HTML pipeline.
 The Inspector presents Overview, Diagnostics, Dependencies, Plugins, and
-Output tabs. The Dependencies and Output tabs use a read-only `ContentManager`
-to inspect the current content and output change set. They do not write build
-state or build the site, and they do not compare the output plan with built
-files. It reports the current URL path and resolved plugins, but does not guess
-an element's source file, line, component, or CSS owner. Adding element-level
+Output tabs. It serves diagnostics from `/__riebeckite/inspector/report` and the
+output plan and dependencies from `/__riebeckite/inspector/output`. Both
+endpoints are loopback-only, respond with `no-store`, and are ordered before
+HonoX's catch-all development middleware. The client requests diagnostics
+first and loads the output plan afterwards, reusing the same read-only
+`ContentManager` so the content index stays warm. The Dependencies and Output
+tabs use that `ContentManager` to inspect the current content and output change
+set. They do not write build state or build the site, and they do not compare
+the output plan with built files. It reports the current URL path and resolved
+plugins, but does not guess an element's source file, line, component, or CSS
+owner. Adding element-level
 inspection requires an explicit development-only source-map observation at the
 renderer boundary.
 
 The launcher is available only while serving. Use Ctrl+Alt+R outside editable
 controls to open or close it; Escape closes it and restores focus to the
-launcher. The report endpoint is loopback-only, responds with `no-store`, and
-is ordered before HonoX's catch-all development middleware.
+launcher.

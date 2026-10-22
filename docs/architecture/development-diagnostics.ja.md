@@ -27,6 +27,6 @@ Riebeckite Doctor と Development Inspector は `@riebeckite/diagnostics` を共
 
 ## 観測できない情報
 
-Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。Inspector には Overview、Diagnostics、Dependencies、Plugins、Output のタブがあります。Dependencies と Output タブは read-only の `ContentManager` で現在の Content と Output Change Set を読み取ります。build state の書き込みや site の build は行わず、Output Plan と build 済みファイルの比較も行いません。現在の URL パスと解決済み Plugin は表示しますが、要素の元ファイル・行・Component・CSS 所有者は推測しません。要素単位の検査には renderer 境界での開発専用 source-map 観測点が必要です。
+Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。Inspector には Overview、Diagnostics、Dependencies、Plugins、Output のタブがあります。診断は `/__riebeckite/inspector/report`、Output Plan と依存関係は `/__riebeckite/inspector/output` から提供します。どちらの endpoint も loopback からのみ利用でき、`no-store` を返し、HonoX の catch-all 開発 middleware より前に登録されます。client は先に診断を取得し、その後で Output Plan を読み込みます。同じ read-only の `ContentManager` を再利用するため、Content Index は温かいままです。Dependencies と Output タブはその `ContentManager` で現在の Content と Output Change Set を読み取ります。build state の書き込みや site の build は行わず、Output Plan と build 済みファイルの比較も行いません。現在の URL パスと解決済み Plugin は表示しますが、要素の元ファイル・行・Component・CSS 所有者は推測しません。要素単位の検査には renderer 境界での開発専用 source-map 観測点が必要です。
 
-Launcher は serve 時だけ利用できます。編集可能なコントロール以外で Ctrl+Alt+R を押すと開閉でき、Escape を押すと閉じて Launcher にフォーカスが戻ります。レポート endpoint は loopback からのみ利用でき、`no-store` を返し、HonoX の catch-all 開発 middleware より前に登録されます。
+Launcher は serve 時だけ利用できます。編集可能なコントロール以外で Ctrl+Alt+R を押すと開閉でき、Escape を押すと閉じて Launcher にフォーカスが戻ります。

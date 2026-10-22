@@ -84,7 +84,7 @@
     grid-row: 1;
     align-self: start;
     width: var(--rb-layout-sidebar);
-    margin-block: 2px 0;
+    margin-block: 0;
     margin-inline-start: calc(100% + var(--rb-layout-gap));
     overflow-x: hidden;
     position: sticky;
@@ -92,7 +92,7 @@
     max-height: calc(
       100dvh -
       var(--rb-docs-sticky-top, 4rem) -
-      var(--rb-space-4, 2rem)
+      var(--rb-space-8)
     );
     overflow-y: auto;
     overscroll-behavior: contain;

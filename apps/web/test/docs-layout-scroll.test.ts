@@ -39,7 +39,7 @@ test("desktop table of contents sticks at the shared docs sticky top", () => {
   assert.match(articleCss, /top:\s*var\(--rb-docs-sticky-top,\s*4rem\)/);
   assert.match(
     articleCss,
-    /max-height:\s*calc\(\s*100dvh\s*-\s*var\(--rb-docs-sticky-top,\s*4rem\)\s*-\s*var\(--rb-space-4,\s*2rem\)\s*\)/,
+    /max-height:\s*calc\(\s*100dvh\s*-\s*var\(--rb-docs-sticky-top,\s*4rem\)\s*-\s*var\(--rb-space-8\)\s*\)/,
   );
   assert.doesNotMatch(articleCss, /--rr-toc-sticky-top/);
 });

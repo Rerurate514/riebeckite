@@ -57,6 +57,14 @@ test("renders frontmatter, slugs, GFM, math, and raw HTML", async () => {
   );
 });
 
+test("wraps Markdown tables in a horizontal scroll container", async () => {
+  const { html } = await createPipeline().execute(
+    ["| Col A | Col B |", "| ----- | ----- |", "| 1     | 2     |"].join("\n"),
+  );
+
+  assert.match(html, /<div class="rb-table-scroll">\s*<table>/);
+});
+
 test("raw HTML is preserved as trusted author content", async () => {
   const { html } = await createPipeline().execute(
     [

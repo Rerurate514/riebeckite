@@ -417,7 +417,6 @@
 :is(:root, .rb-theme-root)[data-theme-name="tokyonight"]
   .rb-article-content
   table:not(:where(.rr-diff-history *)) {
-  margin: 1.5em 0;
   border: 1px solid var(--rb-color-border);
   border-collapse: collapse;
   font-size: 0.9em;

@@ -122,12 +122,16 @@
   }
 
   .rb-article-content :where(table) {
-    display: block;
     width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+  }
+
+  .rb-article-content :where(.rb-table-scroll) {
     max-width: 100%;
     margin-block: 1.5em;
     overflow-x: auto;
-    border-collapse: collapse;
   }
 
   .rb-article-content :where(figure) {

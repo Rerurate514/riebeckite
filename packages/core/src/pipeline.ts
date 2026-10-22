@@ -71,6 +71,49 @@ export interface PipelineOptions {
   contentScopeFingerprint?: string;
 }
 
+type HtmlNode = Node & {
+  children?: Node[];
+  properties?: Record<string, unknown>;
+  tagName?: string;
+};
+
+function isPluginTable(node: HtmlNode): boolean {
+  const className = node.properties?.className;
+  const names = Array.isArray(className) ? className : [className];
+  return names.some(
+    (name) =>
+      typeof name === "string" &&
+      (name.startsWith("rb-") || name.startsWith("rr-")),
+  );
+}
+
+function wrapMarkdownTables() {
+  return (tree: Node) => {
+    wrapTableChildren(tree as HtmlNode);
+  };
+}
+
+function wrapTableChildren(parent: HtmlNode): void {
+  if (!parent.children) return;
+  parent.children = parent.children.map((child) => {
+    const node = child as HtmlNode;
+    if (
+      node.type === "element" &&
+      node.tagName === "table" &&
+      !isPluginTable(node)
+    ) {
+      return {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["rb-table-scroll"] },
+        children: [child],
+      } as Node;
+    }
+    wrapTableChildren(node);
+    return child;
+  });
+}
+
 export class Pipeline {
   private pluginCaches = new Map<string, PluginCache>();
   private persistentCache: PersistentContentCache | null = null;
@@ -279,6 +322,7 @@ export class Pipeline {
       });
     }
 
+    this.use(processor, wrapMarkdownTables);
     this.use(processor, rehypeSlug);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
     this.use(processor, rehypeFormat);

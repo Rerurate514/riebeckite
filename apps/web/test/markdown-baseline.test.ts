@@ -60,6 +60,11 @@ test("markdown baseline restores list semantics removed by preflight", () => {
 
 test("markdown baseline owns table, figure, definition list, and kbd defaults", () => {
   assert.match(markdownCss, /\.rb-article-content :where\(table\)/);
+  assert.match(markdownCss, /\.rb-article-content :where\(\.rb-table-scroll\)/);
+  assert.doesNotMatch(
+    markdownCss,
+    /\.rb-article-content :where\(table\)\s*\{[^}]*display:\s*block/,
+  );
   assert.match(markdownCss, /\.rb-article-content :where\(figure\)/);
   assert.match(markdownCss, /\.rb-article-content :where\(figcaption\)/);
   assert.match(markdownCss, /\.rb-article-content :where\(kbd\)/);

@@ -313,8 +313,7 @@
   font-size: inherit;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > table {
-  margin-block: 1.75rem;
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > .rb-table-scroll > table {
   border: 1px solid var(--rb-color-border);
   border-radius: var(--rb-radius-sm);
   border-collapse: separate;
@@ -323,20 +322,20 @@
   font-size: 0.9375em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > table :is(th, td) {
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > .rb-table-scroll > table :is(th, td) {
   padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--rb-color-border);
   text-align: start;
   vertical-align: top;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > table thead th {
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > .rb-table-scroll > table thead th {
   background: var(--rb-color-surface-hover);
   color: var(--rb-color-ink);
   font-weight: 700;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > table tbody tr:last-child td {
+:is(:root, .rb-theme-root)[data-theme-name="riebeckite"] .rb-article-content > .rb-table-scroll > table tbody tr:last-child td {
   border-bottom: 0;
 }
 

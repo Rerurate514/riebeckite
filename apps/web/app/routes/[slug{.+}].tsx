@@ -31,6 +31,7 @@ import { webmentionProvider } from "../../../../webmention";
 import Article from "../components/article/article";
 import HomePage from "../components/home/home";
 import { getArticleTitle } from "../lib/article-title";
+import { renderHomeRuntime } from "../lib/home-runtime";
 import { resolveWebLocale } from "../lib/locale";
 import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 
@@ -40,7 +41,9 @@ export default createRoute(
     if (c.req.path === "/ja" || c.req.path === "/ja/") {
       c.set("htmlLanguage", "ja");
       c.set("seo", buildHomeSeo("ja"));
-      return c.render(<HomePage locale="ja" />);
+      return c.render(
+        <HomePage locale="ja" runtime={await renderHomeRuntime()} />,
+      );
     }
 
     // Archive has a dedicated route; defer to it.
@@ -69,7 +72,9 @@ export default createRoute(
     if (resolved.post.frontmatter.homepage === true) {
       const locale = resolveWebLocale(getEntryLanguage(resolved.entry));
       c.set("seo", buildHomeSeo(locale, resolved.entry.headTags));
-      return c.render(<HomePage locale={locale} />);
+      return c.render(
+        <HomePage locale={locale} runtime={await renderHomeRuntime()} />,
+      );
     }
 
     const slug = resolved.entry.slug;

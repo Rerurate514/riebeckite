@@ -59,6 +59,43 @@ test("development inspector reports the output plan and dependencies", async () 
   });
 });
 
+test("development inspector shares one report across concurrent requests", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const contentRoot = path.join(directory, "content");
+    await fs.mkdir(contentRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(contentRoot, "index.md"),
+      markdown("# Home", { title: "Home", visibility: "public" }),
+    );
+    const plugin = riebeckiteDevelopmentInspector(() => ({
+      config: resolveConfig({ site: { title: "Test", locale: "en" } }),
+      configRoot: directory,
+      configFile: path.join(directory, "riebeckite.config.ts"),
+      appRoot: directory,
+      contentRoot,
+    }));
+    const stack = inspectorStack(plugin);
+    const [first, second] = await Promise.all([
+      requestReport(
+        stack[0]?.handle,
+        "/__riebeckite/inspector/report?path=%2F",
+      ),
+      requestReport(
+        stack[0]?.handle,
+        "/__riebeckite/inspector/report?path=%2Fthemes",
+      ),
+    ]);
+
+    assert.equal(first.response.statusCode, 200);
+    assert.equal(second.response.statusCode, 200);
+    const firstReport = JSON.parse(first.body);
+    const secondReport = JSON.parse(second.body);
+    assert.deepEqual(firstReport.output, secondReport.output);
+    assert.equal(firstReport.currentPage, "/");
+    assert.equal(secondReport.currentPage, "/themes");
+  });
+});
+
 test("development inspector client provides accessible panels and safe refreshes", () => {
   const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
   const load = hookHandler(plugin.load);
@@ -71,6 +108,10 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /riebeckite:inspector/);
   assert.match(source as string, /aria-controls/);
   assert.match(source as string, /Ctrl\+Alt\+R/);
+  assert.match(source as string, /Loading inspector report/);
+  assert.match(source as string, /if \(!panel\.isConnected\)/);
+  assert.match(source as string, /pendingRefresh/);
+  assert.match(source as string, /clearInterval\(loadingTimer\)/);
   assert.match(source as string, /Dependencies/);
   assert.match(source as string, /Output/);
   assert.match(source as string, /report\.dependencies/);

@@ -59,10 +59,70 @@ type DependencyInspection =
     }
   | { readonly status: "unavailable"; readonly reason: string };
 
+type InspectionResult = {
+  readonly report: Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>;
+  readonly output: OutputInspection;
+  readonly dependencies: DependencyInspection;
+};
+
+type CachedInspection = {
+  readonly application: ResolvedHonoxApplication;
+  readonly revision: number;
+  readonly result: Promise<InspectionResult>;
+  readonly dispose: () => Promise<void>;
+};
+
 export function riebeckiteDevelopmentInspector(
   getApplication: () => ResolvedHonoxApplication,
 ): Plugin {
   let revision = 0;
+  let inspection: CachedInspection | null = null;
+  const inspectApplication = (
+    application: ResolvedHonoxApplication,
+    currentRevision: number,
+  ): Promise<InspectionResult> => {
+    if (
+      inspection?.revision === currentRevision &&
+      inspection.application === application
+    ) {
+      return inspection.result;
+    }
+    if (inspection) {
+      const previous = inspection;
+      const disposePrevious = () => {
+        void previous.dispose().catch(() => {});
+      };
+      void previous.result.then(disposePrevious, disposePrevious);
+      inspection = null;
+    }
+    const content = createInspectionContent(application);
+    let disposed = false;
+    const dispose = async () => {
+      if (disposed) return;
+      disposed = true;
+      await content.dispose();
+    };
+    const result = (async () => {
+      const report = await collectDevelopmentDiagnostics({
+        config: application.config,
+        content,
+        revision: currentRevision,
+      });
+      return { report, ...(await inspectContentOutputs(content)) };
+    })();
+    const entry: CachedInspection = {
+      application,
+      revision: currentRevision,
+      result,
+      dispose,
+    };
+    inspection = entry;
+    void result.catch(() => {
+      if (inspection === entry) inspection = null;
+      void dispose().catch(() => {});
+    });
+    return result;
+  };
   return {
     name: "riebeckite-development-inspector",
     apply: "serve",
@@ -85,37 +145,24 @@ export function riebeckiteDevelopmentInspector(
         }
         try {
           const application = getApplication();
-          const content = createInspectionContent(application);
-          try {
-            const report = await collectDevelopmentDiagnostics({
-              config: application.config,
-              content,
-              revision,
-            });
-            const { output, dependencies } =
-              await inspectContentOutputs(content);
-            response.setHeader(
-              "content-type",
-              "application/json; charset=utf-8",
-            );
-            response.setHeader("cache-control", "no-store");
-            const currentPage = currentPageFromRequest(request.url);
-            response.end(
-              JSON.stringify({
-                ...report,
-                generatedAt: new Date().toISOString(),
-                currentPage,
-                theme: application.config.theme.name,
-                plugins: application.config.plugins.map(
-                  (plugin) => plugin.name,
-                ),
-                dependencies,
-                output,
-              }),
-            );
-          } finally {
-            await content.dispose();
-          }
+          const { report, output, dependencies } = await inspectApplication(
+            application,
+            revision,
+          );
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          const currentPage = currentPageFromRequest(request.url);
+          response.end(
+            JSON.stringify({
+              ...report,
+              generatedAt: new Date().toISOString(),
+              currentPage,
+              theme: application.config.theme.name,
+              plugins: application.config.plugins.map((plugin) => plugin.name),
+              dependencies,
+              output,
+            }),
+          );
         } catch {
           response.statusCode = 500;
           response.setHeader("content-type", "application/json; charset=utf-8");
@@ -324,9 +371,17 @@ export function initDevelopmentInspector() {
   let generation = 0;
   let report;
   let activeTab = 0;
+  let refreshing = false;
+  let pendingRefresh = false;
+  let loadingTimer;
   const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output"];
   const refresh = async () => {
     if (!panel?.isConnected) return;
+    if (refreshing) {
+      pendingRefresh = true;
+      return;
+    }
+    refreshing = true;
     controller?.abort();
     controller = new AbortController();
     const current = ++generation;
@@ -339,8 +394,15 @@ export function initDevelopmentInspector() {
       render();
     } catch (error) {
       if (error.name === "AbortError" || current !== generation) return;
-       renderFailure(panel.shadowRoot, error instanceof Error ? error.message : String(error));
-       panel.shadowRoot.querySelector("[data-close]").addEventListener("click", close);
+      clearInterval(loadingTimer);
+      renderFailure(panel.shadowRoot, error instanceof Error ? error.message : String(error));
+      panel.shadowRoot.querySelector("[data-close]").addEventListener("click", close);
+    } finally {
+      refreshing = false;
+      if (pendingRefresh) {
+        pendingRefresh = false;
+        void refresh();
+      }
     }
   };
   const open = () => {
@@ -348,15 +410,29 @@ export function initDevelopmentInspector() {
       panel = document.createElement("div");
       panel.id = panelId;
       panel.attachShadow({ mode: "open" });
-      document.body.append(panel);
     }
-    refresh();
+    if (!panel.isConnected) document.body.append(panel);
+    showLoading();
+    void refresh();
   };
   const close = () => {
     generation += 1;
+    pendingRefresh = false;
     controller?.abort();
+    clearInterval(loadingTimer);
     panel?.remove();
     launcher?.focus();
+  };
+  const showLoading = () => {
+    if (!panel) return;
+    clearInterval(loadingTimer);
+    panel.shadowRoot.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-loading-title"><header><strong id="rb-loading-title">Riebeckite Inspector</strong><button type="button" data-close aria-label="Close inspector">Close</button></header><p class="status" aria-live="polite">Loading inspector report…</p></section>';
+    const status = panel.shadowRoot.querySelector(".status");
+    const started = Date.now();
+    loadingTimer = setInterval(() => {
+      if (status?.isConnected) status.textContent = 'Loading inspector report… ' + Math.round((Date.now() - started) / 1000) + 's';
+    }, 1000);
+    panel.shadowRoot.querySelector("[data-close]").addEventListener("click", close);
   };
   launcher = document.createElement("button");
   launcher.type = "button";
@@ -378,6 +454,7 @@ export function initDevelopmentInspector() {
   import.meta.hot?.on("riebeckite:inspector", refresh);
 
   function render() {
+    clearInterval(loadingTimer);
     const root = panel.shadowRoot;
     root.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-title" tabindex="-1"><header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">Inspector report updated</p></section>';
     root.querySelector("[data-close]").addEventListener("click", close);

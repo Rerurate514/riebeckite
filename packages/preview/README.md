@@ -50,5 +50,9 @@ allow and isolate any interactive client behavior.
 - `definePluginPreview(preview)` preserves a typed plugin preview descriptor.
 - `PreviewPlugin.options` declares boolean, string, number, and enum controls.
 - `validatePreviewOptions(definitions, input)` rejects unknown and invalid values.
+- `parsePreviewInput(input, registry)` validates a preview input object against a registry.
+- `parsePreviewRequest(request, registry)` reads and validates a size-bounded JSON request.
+- `createPreviewDocument(options)` creates a CSP-restricted iframe document from sanitized HTML and host styles.
+- `@riebeckite/preview/ui` exports `createPreviewUiController(options)` for request state and `initPluginPreviews(options)` for DOM updates. The latter accepts selectors, messages, and host-provided styles.
 - `PreviewSession.render(input)` returns sanitized HTML and diagnostics.
 - `PreviewSession.dispose()` disposes the underlying plugin runtime.

@@ -12,6 +12,12 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "import": "./dist/ui.js",
+      "source": "./ui.ts",
+      "default": "./dist/ui.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [

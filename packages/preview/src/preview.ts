@@ -17,6 +17,9 @@ import {
 } from "./registry.js";
 
 const PREVIEW_SLUG = "__preview__";
+type SanitizeAttribute = NonNullable<
+  SanitizeSchema["attributes"]
+>[string][number];
 
 export type PreviewResult = {
   readonly html: string;
@@ -238,13 +241,18 @@ async function sanitizeHtml(html: string): Promise<string> {
 }
 
 function withPluginClasses(
-  attributes: NonNullable<SanitizeSchema["attributes"]>[string] | undefined,
-) {
+  attributes: readonly SanitizeAttribute[] | undefined,
+): SanitizeAttribute[] {
+  const pluginClasses: SanitizeAttribute = [
+    "className",
+    /^data-footnote-backref$/,
+    /^(?:rb|rr)-[\w-]+$/,
+  ];
   return [
     ...(attributes ?? []).filter(
       (attribute) => !Array.isArray(attribute) || attribute[0] !== "className",
     ),
-    ["className", /^data-footnote-backref$/, /^(?:rb|rr)-[\w-]+$/],
+    pluginClasses,
   ];
 }
 

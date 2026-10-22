@@ -1,5 +1,9 @@
 export type { PreviewDiagnostic } from "./src/diagnostic.js";
 export {
+  createPreviewDocument,
+  type PreviewDocumentOptions,
+} from "./src/document.js";
+export {
   type CreatePreviewOptions,
   createPreview,
   type PreviewRenderInput,
@@ -17,3 +21,10 @@ export {
   type PreviewRegistry,
   validatePreviewOptions,
 } from "./src/registry.js";
+export {
+  type PreviewRequestInput,
+  type PreviewRequestLimits,
+  type PreviewRequestParseResult,
+  parsePreviewInput,
+  parsePreviewRequest,
+} from "./src/request.js";

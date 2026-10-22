@@ -1,15 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createPreview } from "@riebeckite/preview";
-import {
-  isPreviewRequestSizeAllowed,
-  parsePreviewApiInput,
-} from "../app/preview-api.js";
+import { createPreview, parsePreviewInput } from "@riebeckite/preview";
 import { previewRegistry } from "../app/preview-registry.js";
 import worker from "../app/preview-worker.js";
 
 test("accepts registered preview plugins, fixtures, and declared options", () => {
-  const input = parsePreviewApiInput(
+  const input = parsePreviewInput(
     {
       markdown: "# Preview",
       pluginId: "code-tabs",
@@ -54,7 +50,7 @@ test("rejects unregistered plugins, invalid fixtures, and unsafe options", () =>
     },
     { markdown: `# Preview${String.fromCharCode(0xd800)}` },
   ]) {
-    assert.equal(parsePreviewApiInput(input, previewRegistry), undefined);
+    assert.equal(parsePreviewInput(input, previewRegistry), undefined);
   }
 });
 
@@ -124,10 +120,4 @@ test("returns non-cacheable generic errors for malformed worker requests", async
   assert.equal(response.headers.get("cache-control"), "no-store");
   assert.equal(response.headers.get("x-content-type-options"), "nosniff");
   assert.deepEqual(await response.json(), { error: "Invalid preview input." });
-});
-
-test("enforces the request content-length boundary", () => {
-  assert.equal(isPreviewRequestSizeAllowed("10"), true);
-  assert.equal(isPreviewRequestSizeAllowed("not-a-number"), false);
-  assert.equal(isPreviewRequestSizeAllowed("999999"), false);
 });

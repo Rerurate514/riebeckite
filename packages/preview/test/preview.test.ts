@@ -3,9 +3,12 @@ import { test } from "node:test";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import {
   createPreview,
+  createPreviewDocument,
   createPreviewRegistry,
   definePluginPreview,
+  parsePreviewRequest,
 } from "../index.js";
+import { createPreviewUiController, initPluginPreviews } from "../ui.js";
 
 const codeTabsPreview = definePluginPreview({
   id: "code-tabs",
@@ -212,4 +215,99 @@ test("disposes a session once", async () => {
 
   const result = await preview.render({ markdown: "# Test" });
   assert.equal(result.diagnostics[0]?.code, "preview-disposed");
+});
+
+test("parses bounded registered preview HTTP input", async () => {
+  const registry = createPreviewRegistry({ plugins: [codeTabsPreview] });
+  const result = await parsePreviewRequest(
+    new Request("https://example.com/preview", {
+      method: "POST",
+      body: JSON.stringify({
+        markdown: "# Preview",
+        pluginId: "code-tabs",
+        fixtureId: "basic",
+        options: { syncTabs: true },
+      }),
+    }),
+    registry,
+  );
+
+  assert.deepEqual(result, {
+    kind: "ok",
+    input: {
+      markdown: "# Preview",
+      pluginId: "code-tabs",
+      fixtureId: "basic",
+      options: { syncTabs: true },
+    },
+  });
+});
+
+test("rejects malformed and oversized preview HTTP input", async () => {
+  const registry = createPreviewRegistry({ plugins: [codeTabsPreview] });
+  const malformed = await parsePreviewRequest(
+    new Request("https://example.com/preview", { method: "POST", body: "{" }),
+    registry,
+  );
+  const oversized = await parsePreviewRequest(
+    new Request("https://example.com/preview", {
+      method: "POST",
+      headers: { "content-length": "999999" },
+      body: "{}",
+    }),
+    registry,
+  );
+  const streamedOversized = await parsePreviewRequest(
+    new Request("https://example.com/preview", {
+      method: "POST",
+      body: "a".repeat(2_000),
+    }),
+    registry,
+    { maximumMarkdownLength: 1, maximumOptionsLength: 1, maximumIdLength: 1 },
+  );
+
+  assert.deepEqual(malformed, { kind: "invalid" });
+  assert.deepEqual(oversized, { kind: "too-large" });
+  assert.deepEqual(streamedOversized, { kind: "too-large" });
+});
+
+test("builds an isolated preview document", () => {
+  const document = createPreviewDocument({
+    html: "<p>Preview</p>",
+    styles: [".rb-article { color: black; }"],
+    themeName: 'theme"name',
+    colorMode: "dark",
+  });
+
+  assert.match(document, /default-src 'none'/);
+  assert.match(document, /data-theme-name="theme&quot;name"/);
+  assert.match(document, /<p>Preview<\/p>/);
+});
+
+test("exports the browser preview UI entry point", () => {
+  assert.equal(typeof initPluginPreviews, "function");
+});
+
+test("renders only the latest preview UI response", async () => {
+  const states: string[] = [];
+  const pending: ((value: { html: string; diagnostics: [] }) => void)[] = [];
+  const controller = createPreviewUiController({
+    request: () =>
+      new Promise((resolve) => {
+        pending.push(resolve);
+      }),
+    onStateChange: (state) => {
+      states.push(state.kind === "rendered" ? state.response.html : state.kind);
+    },
+  });
+
+  const first = controller.render({ markdown: "first", options: {} });
+  const second = controller.render({ markdown: "second", options: {} });
+  pending[1]?.({ html: "second", diagnostics: [] });
+  pending[0]?.({ html: "first", diagnostics: [] });
+  await Promise.all([first, second]);
+  controller.dispose();
+  await controller.render({ markdown: "ignored", options: {} });
+
+  assert.deepEqual(states, ["rendering", "rendering", "second"]);
 });

@@ -47,5 +47,9 @@ const result = await preview.render({
 - `definePluginPreview(preview)`：型付きのプラグインプレビュー定義を保持します。
 - `PreviewPlugin.options`：boolean、string、number、enum の操作項目を宣言します。
 - `validatePreviewOptions(definitions, input)`：不明または不正な値を拒否します。
+- `parsePreviewInput(input, registry)`：プレビュー入力オブジェクトをレジストリに対して検証します。
+- `parsePreviewRequest(request, registry)`：サイズを制限した JSON リクエストを読み取り、検証します。
+- `createPreviewDocument(options)`：サニタイズ済み HTML とホストのスタイルから、CSP 制限付き iframe 文書を作成します。
+- `@riebeckite/preview/ui` の `createPreviewUiController(options)` はリクエスト状態を、`initPluginPreviews(options)` は DOM 更新を担当します。後者にはセレクタ、表示文言、ホストのスタイルを渡せます。
 - `PreviewSession.render(input)`：サニタイズ済み HTML と診断を返します。
 - `PreviewSession.dispose()`：内部のプラグインランタイムを破棄します。

@@ -25,7 +25,7 @@ export default createRoute(async (c) => {
     return c.render(<PageBody html={home.page.body} />);
   }
 
-  c.set("seo", buildHomeSeo("ja", home.entry.headTags));
+  c.set("seo", buildHomeSeo("en", home.entry.headTags));
 
-  return c.render(<HomePage locale="ja" />);
+  return c.render(<HomePage locale="en" />);
 });

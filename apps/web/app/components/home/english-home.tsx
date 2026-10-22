@@ -10,18 +10,14 @@ export default function EnglishHomePage() {
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-copy">
-          <img
-            class="rb-home__logo"
-            src="/riebeckite-logo-horizontal.png"
-            alt="Riebeckite"
-            width="1983"
-            height="793"
-          />
+          <a class="rb-home__wordmark" href="/" aria-label="Riebeckite home">
+            Riebeckite
+          </a>
           <p class="rb-home__eyebrow">Open source · Apache-2.0 · TypeScript</p>
           <h1 id="home-title">Markdown is where your site begins.</h1>
           <p class="rb-home__lead">
-            Riebeckite turns Markdown and Obsidian notes into a static website,
-            then leaves the routes, components, and styling in your hands.
+            Build a static site from Markdown or an Obsidian vault, while
+            keeping routes, components, and styles in an application you own.
           </p>
           <div class="rb-home__actions">
             <a
@@ -41,7 +37,9 @@ export default function EnglishHomePage() {
           </div>
           <div class="rb-home__install">
             <p>Create a project</p>
-            <CodeWindow label="Copy">npx create-riebeckite</CodeWindow>
+            <CodeWindow label="Copy" copiedLabel="Copied">
+              npx create-riebeckite
+            </CodeWindow>
           </div>
         </div>
         <div class="rb-home__published-example">
@@ -55,7 +53,7 @@ export default function EnglishHomePage() {
               Ownership is a practical decision.
             </p>
             <p>
-              Keep the writing in Markdown. Keep the application in ordinary
+              Keep writing in Markdown and the application in ordinary
               TypeScript files. Change either without giving up the other.
             </p>
             <a href="/docs/guides/writing-content/">Read the source setup →</a>
@@ -65,24 +63,27 @@ export default function EnglishHomePage() {
 
       <section class="rb-home__statement" aria-labelledby="home-content">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">A site you can keep</p>
+          <p class="rb-home__section-label">Markdown and Obsidian</p>
           <h2 id="home-content">
             Your notes do not have to own your architecture.
           </h2>
           <p>
             Use <code>content/</code> in the project or point to an external
-            Obsidian vault. During the build, published notes become static
-            pages; the application remains a normal Hono JSX project.
+            Obsidian vault. Published notes become static pages; the application
+            remains a normal Hono JSX project.
           </p>
         </div>
         <div class="rb-home__content-example">
           <div>
             <p class="rb-home__label">content/notes/ownership.md</p>
-            <CodeWindow label="Copy">{contentSource}</CodeWindow>
+            <CodeWindow label="Copy" copiedLabel="Copied">
+              {contentSource}
+            </CodeWindow>
           </div>
           <p class="rb-home__content-note">
-            Obsidian-flavored Markdown can retain WikiLinks, embeds, callouts,
-            properties, and tags when you add the official plugin.
+            The official Obsidian plugin supports WikiLinks, embeds, callouts,
+            properties, and tags. Frontmatter keeps publication data next to the
+            writing.
           </p>
         </div>
         <a class="rb-home__text-link" href="/docs/guides/writing-content/">
@@ -92,48 +93,52 @@ export default function EnglishHomePage() {
 
       <section class="rb-home__section" aria-labelledby="home-application">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Code that remains yours</p>
+          <p class="rb-home__section-label">Application ownership</p>
           <h2 id="home-application">
             Start with a project, not a closed template.
           </h2>
           <p>
-            The generated site has an <code>app/</code> directory, a config
-            file, and npm dependencies you control. Add routes and components
-            with Hono JSX as you would in another TypeScript application.
+            The generated site has an <code>app/</code> directory, a
+            configuration file, and dependencies you control. Add pages,
+            documentation, navigation, and components with Hono JSX.
           </p>
         </div>
         <div class="rb-home__ownership-example">
           <div>
             <p class="rb-home__label">The generated project</p>
-            <CodeWindow label="Copy">{projectStructure}</CodeWindow>
+            <CodeWindow label="Copy" copiedLabel="Copied">
+              {projectStructure}
+            </CodeWindow>
           </div>
           <p>
             Riebeckite is a set of packages, not a project format that absorbs
             your site. Updating it is a dependency change, with the usual care
-            required for major versions.
+            for major versions.
           </p>
         </div>
       </section>
 
-      <section class="rb-home__configuration" aria-labelledby="home-examples">
+      <section class="rb-home__configuration" aria-labelledby="home-extensions">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Compose only what you need</p>
-          <h2 id="home-examples">
+          <p class="rb-home__section-label">Extension boundaries</p>
+          <h2 id="home-extensions">
             Plugins add capabilities. Themes handle presentation.
           </h2>
           <p>
-            Install ordinary npm packages, register them in one configuration,
-            and decide where their components belong in your routes.
+            Install npm packages and register them in one configuration. Decide
+            where their components belong in your routes.
           </p>
         </div>
         <div class="rb-home__application-example">
-          <CodeWindow label="Copy">{applicationCode}</CodeWindow>
+          <CodeWindow label="Copy" copiedLabel="Copied">
+            {applicationCode}
+          </CodeWindow>
           <div class="rb-home__application-copy">
             <p>
-              Plugins can contribute Markdown transforms, pages, components,
-              CSS, browser-side code, HTTP endpoints, and generated files. A
-              theme is a separate value, so its presentation does not decide
-              your application structure.
+              Plugins can add Markdown and HTML transforms, renderers,
+              standalone pages, browser behavior, endpoints, SEO, and
+              diagnostics. A theme supplies tokens and styles without deciding
+              application structure.
             </p>
             <div class="rb-home__resource-links">
               <a class="rb-home__text-link" href="/docs/plugins/">
@@ -147,18 +152,85 @@ export default function EnglishHomePage() {
         </div>
       </section>
 
+      <section class="rb-home__workflow" aria-labelledby="home-workflow">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">Build and inspect</p>
+          <h2 id="home-workflow">
+            Build only what changed, then inspect the result.
+          </h2>
+          <p>
+            Successful builds record reusable state and dependency
+            relationships. When a linked page or asset changes, related output
+            is regenerated; <code>--full</code> bypasses reuse when you need it.
+          </p>
+        </div>
+        <dl class="rb-home__workflow-list">
+          <div>
+            <dt>Develop</dt>
+            <dd>
+              <code>riebeckite dev</code> starts the integration workflow.
+            </dd>
+          </div>
+          <div>
+            <dt>Validate</dt>
+            <dd>
+              <code>riebeckite check</code> validates configuration, content,
+              plugin options, and capabilities.
+            </dd>
+          </div>
+          <div>
+            <dt>Inspect</dt>
+            <dd>
+              <code>riebeckite inspect</code> displays resolved configuration,
+              plugins, content, graph, or build state.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="rb-home__preview" aria-labelledby="home-preview">
+        <div>
+          <p class="rb-home__section-label">Local previews</p>
+          <h2 id="home-preview">
+            Develop extensions against a real fixture site.
+          </h2>
+        </div>
+        <div class="rb-home__preview-body">
+          <p>
+            <code>riebeckite theme preview</code> serves Home, Article,
+            Documentation, and Components fixtures.{" "}
+            <code>riebeckite plugin dev</code> links one local plugin into a
+            temporary site with deterministic Markdown.
+          </p>
+          <CodeWindow label="Copy" copiedLabel="Copied">
+            riebeckite theme preview my-theme --no-open{`\n`}riebeckite plugin
+            dev ./extensions/my-plugin --no-open
+          </CodeWindow>
+        </div>
+      </section>
+
       <section class="rb-home__continue" aria-labelledby="home-continue">
-        <h2 id="home-continue">See the implementation before you decide.</h2>
+        <h2 id="home-continue">Publish the build you reviewed.</h2>
         <p>
-          Compare Markdown with real plugin output, inspect the reference, or
-          start from the generated project.
+          Build output is written to <code>dist/</code>. The deployment guide
+          covers local Cloudflare Workers publishing, GitHub Actions, and
+          separate content repositories.
         </p>
         <div class="rb-home__resource-links">
+          <a
+            class="rb-home__cta rb-home__cta--primary"
+            href="/docs/getting-started/"
+          >
+            Getting started
+          </a>
+          <a
+            class="rb-home__text-link"
+            href="/docs/getting-started/deployment/"
+          >
+            Deployment
+          </a>
           <a class="rb-home__text-link" href="/docs/">
             Documentation
-          </a>
-          <a class="rb-home__text-link" href="/docs/plugins/showcase">
-            View plugin output
           </a>
           <a class="rb-home__language" href="/ja/" hreflang="ja" lang="ja">
             日本語

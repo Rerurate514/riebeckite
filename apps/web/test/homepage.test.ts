@@ -109,7 +109,7 @@ for (const locale of locales) {
     assert.equal((html.match(/<main\b/g) ?? []).length, 0);
     assert.match(renderer, /<main id="main-content" tabindex=\{-1\}>/);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-    assert.equal((html.match(/<h2\b/g) ?? []).length, 4);
+    assert.equal((html.match(/<h2\b/g) ?? []).length, 6);
     assert.match(html, /<h1[^>]*id="home-title"/);
 
     const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
@@ -118,7 +118,7 @@ for (const locale of locales) {
     const labelled = [...html.matchAll(/aria-labelledby="([^"]+)"/g)].map(
       (match) => match[1],
     );
-    assert.ok(labelled.length >= 5);
+    assert.ok(labelled.length >= 7);
     for (const id of labelled) {
       assert.ok(ids.includes(id), `aria-labelledby target is missing: ${id}`);
     }
@@ -147,8 +147,9 @@ for (const locale of locales) {
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
     assert.match(html, /data-home-copy/);
     assert.match(html, /data-rb-ux-copy="true"/);
-    assert.match(html, /src="\/riebeckite-logo-horizontal\.png"/);
-    assert.match(html, /alt="Riebeckite"/);
+    assert.match(html, /class="rb-home__wordmark"/);
+    assert.match(html, /riebeckite theme preview/);
+    assert.match(html, /riebeckite plugin dev/);
   });
 }
 

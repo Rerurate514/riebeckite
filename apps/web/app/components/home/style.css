@@ -8,37 +8,49 @@ body:has(.rb-home) .rb-site-header {
   width: min(100% - 2rem, 76rem);
   margin-inline: auto;
 }
-
 body:has(.rb-home) main {
   width: 100%;
   min-width: 0;
 }
-
 .rb-home h1,
 .rb-home h2,
 .rb-home__cta {
   font-family: var(--rb-font-heading);
 }
-
-.rb-home__hero {
+.rb-home__hero,
+.rb-home__statement,
+.rb-home__preview {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
-  gap: clamp(3rem, 8vw, 8rem);
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+  gap: clamp(2rem, 7vw, 7rem);
   align-items: center;
-  min-height: min(42rem, calc(100vh - 11rem));
 }
-
-.rb-home__hero-copy {
+.rb-home__hero-copy,
+.rb-home__hero > *,
+.rb-home__statement > *,
+.rb-home__content-example > *,
+.rb-home__ownership-example > *,
+.rb-home__application-example > *,
+.rb-home__preview > * {
   min-width: 0;
 }
-
-.rb-home__logo {
-  display: block;
-  width: min(100%, 12.5rem);
-  height: auto;
-  margin: 0 0 var(--rb-space-3);
+.rb-home__wordmark {
+  display: inline-block;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 1.5rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  text-decoration: none;
 }
-
+.rb-home__wordmark::before {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-right: 0.34em;
+  background: var(--rb-color-accent);
+  content: "";
+}
 .rb-home__eyebrow,
 .rb-home__label,
 .rb-home__install > p,
@@ -52,36 +64,29 @@ body:has(.rb-home) main {
   font-weight: 600;
   letter-spacing: 0.04em;
 }
-
 .rb-home__eyebrow,
 .rb-home__section-label {
-  margin: 0 0 var(--rb-space-3);
+  margin: var(--rb-space-3) 0;
 }
-
 .rb-home h1 {
   max-width: 11ch;
   margin: 0;
-  font-size: clamp(3rem, 5.2vw, 5rem);
+  font-size: clamp(2.8rem, 5vw, 4.75rem);
   font-weight: 650;
   letter-spacing: -0.055em;
-  line-height: 0.98;
+  line-height: 1;
   text-wrap: balance;
 }
-
 .rb-home__lead,
 .rb-home__section-intro > p,
-.rb-home__continue > p {
-  max-width: 39rem;
+.rb-home__continue > p,
+.rb-home__preview-body > p {
+  max-width: 41rem;
   margin: var(--rb-space-4) 0 0;
   color: var(--rb-color-muted);
   font-size: clamp(1rem, 1.1vw, 1.1rem);
   line-height: 1.75;
 }
-
-.rb-home__lead {
-  max-width: 34rem;
-}
-
 .rb-home__actions,
 .rb-home__resource-links {
   display: flex;
@@ -89,7 +94,6 @@ body:has(.rb-home) main {
   gap: 0.65rem 1rem;
   margin-top: var(--rb-space-4);
 }
-
 .rb-home__cta {
   display: inline-flex;
   align-items: center;
@@ -101,43 +105,28 @@ body:has(.rb-home) main {
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
-  transition:
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease;
 }
-
-.rb-home__cta--primary {
-  border-color: var(--rb-color-accent);
-  background: var(--rb-color-accent);
-  color: var(--rb-color-paper);
-}
-
+.rb-home__cta--primary,
 .rb-home__cta:hover,
 .rb-home__cta:focus-visible {
   border-color: var(--rb-color-accent);
   background: var(--rb-color-accent);
   color: var(--rb-color-paper);
 }
-
 .rb-home__install {
   max-width: 28rem;
   margin-top: var(--rb-space-5);
 }
-
 .rb-home__install > p,
 .rb-home__label {
   margin: 0 0 var(--rb-space-2);
 }
-
 .rb-home__published-example {
-  align-self: center;
   border: 1px solid var(--rb-color-border-strong);
   background: var(--rb-color-surface);
   box-shadow: 0.75rem 0.75rem 0
     color-mix(in oklab, var(--rb-color-accent) 20%, transparent);
 }
-
 .rb-home__example-bar {
   display: flex;
   justify-content: space-between;
@@ -148,21 +137,17 @@ body:has(.rb-home) main {
   background: var(--rb-color-code-background);
   color: var(--rb-color-code-ink);
 }
-
-.rb-home__example-bar span:last-child {
+.rb-home__example-bar span:last-child,
+.rb-home__example-kicker {
   color: var(--rb-color-accent);
 }
-
 .rb-home__example-page {
   padding: clamp(1.5rem, 4vw, 3.25rem);
   background: var(--rb-color-surface);
 }
-
 .rb-home__example-kicker {
   margin: 0;
-  color: var(--rb-color-accent);
 }
-
 .rb-home__example-title {
   max-width: 13ch;
   margin: 1.25rem 0 0;
@@ -174,7 +159,6 @@ body:has(.rb-home) main {
   line-height: 1.12;
   text-wrap: balance;
 }
-
 .rb-home__example-page
   > p:not(.rb-home__example-kicker, .rb-home__example-title) {
   margin: 1.25rem 0 0;
@@ -182,7 +166,6 @@ body:has(.rb-home) main {
   font-size: 0.96rem;
   line-height: 1.7;
 }
-
 .rb-home__example-page a {
   display: inline-block;
   margin-top: 1.75rem;
@@ -191,68 +174,68 @@ body:has(.rb-home) main {
   font-weight: 600;
   text-underline-offset: 0.25em;
 }
-
 .rb-home__code-window {
   position: relative;
   max-width: 100%;
   border: 1px solid var(--rb-color-border-strong);
   background: var(--rb-color-code-background);
-  overflow: hidden;
 }
-
 .rb-home__code-window pre {
   margin: 0;
-  padding: 1rem 4.8rem 1rem 1rem;
+  padding: 2.85rem 1rem 1rem;
   overflow-x: auto;
+  tab-size: 2;
 }
-
 .rb-home__code-window code {
+  display: block;
+  min-width: max-content;
   color: var(--rb-color-code-ink);
   font-family: var(--rb-font-mono);
   font-size: 0.8rem;
   line-height: 1.65;
   white-space: pre;
 }
-
 .rb-home__code-window button {
   position: absolute;
   top: 0.55rem;
-  right: 0.55rem;
-  padding: 0.25rem 0;
-  border: 0;
-  background: transparent;
+  right: 0.65rem;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.35rem;
+  border: 1px solid
+    color-mix(in srgb, var(--rb-color-code-ink) 36%, transparent);
+  border-radius: var(--rb-radius-sm);
+  background: var(--rb-color-code-background);
   color: var(--rb-color-code-ink);
   font-family: var(--rb-font-mono);
   font-size: 0.68rem;
   font-weight: 600;
   cursor: pointer;
 }
-
 .rb-home__code-window button:hover,
-.rb-home__code-window button:focus-visible,
-.rb-home__example-page a:hover,
-.rb-home__example-page a:focus-visible {
+.rb-home__code-window button:focus-visible {
+  border-color: var(--rb-color-accent);
   color: var(--rb-color-accent);
 }
-
 .rb-home__statement,
 .rb-home__section,
 .rb-home__configuration,
+.rb-home__workflow,
+.rb-home__preview,
 .rb-home__continue {
-  margin-top: clamp(5rem, 11vw, 10rem);
+  margin-top: clamp(4.5rem, 10vw, 8rem);
 }
-
 .rb-home__statement {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(2rem, 7vw, 7rem);
-  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-top: var(--rb-space-4);
   border-top: 1px solid var(--rb-color-border);
 }
-
+.rb-home__section {
+  max-width: 63rem;
+  margin-inline: auto;
+}
 .rb-home__section-intro h2,
-.rb-home__continue h2 {
-  max-width: 20ch;
+.rb-home__continue h2,
+.rb-home__preview h2 {
+  max-width: 22ch;
   margin: 0;
   font-size: clamp(1.7rem, 3vw, 3rem);
   font-weight: 620;
@@ -260,7 +243,6 @@ body:has(.rb-home) main {
   line-height: 1.1;
   text-wrap: balance;
 }
-
 .rb-home__content-example,
 .rb-home__application-example,
 .rb-home__ownership-example {
@@ -269,21 +251,6 @@ body:has(.rb-home) main {
   gap: clamp(1.75rem, 5vw, 5rem);
   align-items: start;
 }
-
-.rb-home__hero > *,
-.rb-home__statement > *,
-.rb-home__content-example > *,
-.rb-home__application-example > *,
-.rb-home__ownership-example > *,
-.rb-home__configuration .rb-home__section-intro > * {
-  min-width: 0;
-}
-
-.rb-home__application-example,
-.rb-home__ownership-example {
-  margin-top: var(--rb-space-5);
-}
-
 .rb-home__content-note,
 .rb-home__ownership-example > p,
 .rb-home__application-copy > p {
@@ -292,42 +259,24 @@ body:has(.rb-home) main {
   font-size: 0.95rem;
   line-height: 1.7;
 }
-
-.rb-home__section {
-  max-width: 63rem;
-  margin-inline: auto;
+.rb-home__content-example {
+  margin-top: var(--rb-space-4);
 }
-
-.rb-home__section .rb-home__section-intro {
-  max-width: 43rem;
+.rb-home__ownership-example,
+.rb-home__application-example {
+  margin-top: var(--rb-space-5);
 }
-
-.rb-home__ownership-example {
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.55fr);
-}
-
 .rb-home__configuration {
   padding: clamp(2rem, 5vw, 4rem);
-  background: var(--rb-color-surface-hover);
   border-block: 1px solid var(--rb-color-border-strong);
+  background: var(--rb-color-surface-hover);
 }
-
-.rb-home__configuration .rb-home__section-intro {
-  display: grid;
-  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1.3fr);
-  column-gap: clamp(2rem, 6vw, 6rem);
+.rb-home__application-example {
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
 }
-
-.rb-home__configuration .rb-home__section-label,
-.rb-home__configuration .rb-home__section-intro > p:last-child {
-  grid-column: 2;
+.rb-home__resource-links {
+  align-items: center;
 }
-
-.rb-home__configuration .rb-home__section-intro h2 {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-}
-
 .rb-home__text-link,
 .rb-home__language {
   color: var(--rb-color-link);
@@ -335,32 +284,58 @@ body:has(.rb-home) main {
   text-decoration: none;
   text-underline-offset: 0.25em;
 }
-
 .rb-home__text-link:hover,
 .rb-home__text-link:focus-visible,
 .rb-home__language:hover,
-.rb-home__language:focus-visible {
+.rb-home__language:focus-visible,
+.rb-home__example-page a:hover,
+.rb-home__example-page a:focus-visible {
   color: var(--rb-color-accent);
   text-decoration: underline;
 }
-
+.rb-home__workflow {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  padding-block: var(--rb-space-5);
+  border-block: 1px solid var(--rb-color-border);
+}
+.rb-home__workflow-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--rb-color-border);
+}
+.rb-home__workflow-list > div {
+  padding: var(--rb-space-3) 0;
+  border-bottom: 1px solid var(--rb-color-border);
+}
+.rb-home__workflow-list dt {
+  color: var(--rb-color-ink);
+  font-weight: 700;
+}
+.rb-home__workflow-list dd {
+  margin: 0.35rem 0 0;
+  color: var(--rb-color-muted);
+  line-height: 1.6;
+}
+.rb-home__preview {
+  align-items: start;
+}
+.rb-home__preview-body .rb-home__code-window {
+  margin-top: var(--rb-space-4);
+}
 .rb-home__continue {
-  max-width: 46rem;
+  max-width: 48rem;
   margin-inline: auto;
   text-align: center;
 }
-
 .rb-home__continue h2,
 .rb-home__continue > p {
   margin-inline: auto;
 }
-
 .rb-home__continue .rb-home__resource-links {
   justify-content: center;
-}
-
-.rb-home__language {
-  display: inline-block;
 }
 
 @media (max-width: 52rem) {
@@ -369,27 +344,12 @@ body:has(.rb-home) main {
   .rb-home__content-example,
   .rb-home__application-example,
   .rb-home__ownership-example,
-  .rb-home__configuration .rb-home__section-intro {
+  .rb-home__workflow,
+  .rb-home__preview {
     grid-template-columns: 1fr;
   }
-
-  .rb-home__hero {
-    min-height: 0;
-  }
-
   .rb-home__published-example {
     max-width: 34rem;
-  }
-
-  .rb-home__statement .rb-home__content-example {
-    margin-top: var(--rb-space-5);
-  }
-
-  .rb-home__configuration .rb-home__section-label,
-  .rb-home__configuration .rb-home__section-intro > p:last-child,
-  .rb-home__configuration .rb-home__section-intro h2 {
-    grid-column: auto;
-    grid-row: auto;
   }
 }
 
@@ -398,26 +358,16 @@ body:has(.rb-home) main {
   body:has(.rb-home) .rb-site-header {
     width: min(100% - 1.25rem, 76rem);
   }
-
   .rb-home h1 {
-    font-size: clamp(2.65rem, 13vw, 3.5rem);
+    font-size: clamp(2.55rem, 13vw, 3.4rem);
   }
-
   .rb-home__actions {
     align-items: stretch;
   }
-
   .rb-home__cta {
     flex: 1 1 auto;
   }
-
   .rb-home__configuration {
     padding: 1.25rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rb-home__cta {
-    transition: none;
   }
 }

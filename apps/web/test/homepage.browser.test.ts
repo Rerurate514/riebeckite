@@ -13,6 +13,7 @@ const styles = [
   read("../app/components/home/style.css"),
   read("../../../packages/themes/default/styles/theme.css"),
   read("../../../packages/plugins/code-enhance/style.css"),
+  read("../../../packages/plugins/color-mode/style.css"),
 ].join("\n");
 
 let browser: Browser | null = null;
@@ -39,10 +40,11 @@ async function loadHome(
 ): Promise<void> {
   await page.setViewport({ width, height: 900 });
   await page.setContent(`<!doctype html>
-    <html data-theme-name="riebeckite" data-theme="${theme}">
+    <html data-theme-name="riebeckite" data-theme="${theme}" data-rb-color-mode="ready">
       <head><style>${styles}</style></head>
       <body>
-        ${renderToString(HomePage({ locale: "en" }))}
+        <main>${renderToString(HomePage({ locale: "en" }))}</main>
+        <fieldset class="rr-color-mode"><button class="rr-color-mode__button" aria-pressed="true">Light</button><button class="rr-color-mode__button" aria-pressed="false">Dark</button></fieldset>
         <article class="rb-article"><div class="rb-article-content">
           <pre><code>const article = "code";</code></pre>
           <div class="rr-code"><div class="rr-code__body"><pre class="rr-code__pre"><code class="rr-code__code"><span style="--shiki-dark: #b8dcff">const plugin = "code";</span></code></pre></div><button class="rr-code__action">Copy</button></div>
@@ -120,7 +122,7 @@ for (const theme of ["light", "dark"] as const) {
         ) {
           throw new Error("homepage color test fixture is incomplete");
         }
-        const logo = document.querySelector<HTMLImageElement>(".rb-home__logo");
+        const logo = document.querySelector<HTMLElement>(".rb-home__wordmark");
         return {
           selectedColor: getComputedStyle(document.documentElement)
             .getPropertyValue("--rb-color-selected")
@@ -136,7 +138,10 @@ for (const theme of ["light", "dark"] as const) {
           pluginBackground: getComputedStyle(plugin).backgroundColor,
           pluginColor: getComputedStyle(pluginCode).color,
           logo: logo
-            ? { alt: logo.alt, width: logo.getBoundingClientRect().width }
+            ? {
+                color: getComputedStyle(logo).color,
+                width: logo.getBoundingClientRect().width,
+              }
             : null,
         };
       });
@@ -170,7 +175,6 @@ for (const theme of ["light", "dark"] as const) {
       assert.equal(styles.articleColor, expected.codeColor);
       assert.equal(styles.pluginBackground, expected.codeBackground);
       assert.equal(styles.pluginColor, "rgb(184, 220, 255)");
-      assert.deepEqual(styles.logo?.alt, "Riebeckite");
       assert.ok((styles.logo?.width ?? 0) > 0);
       assert.ok(
         contrastRatio(rgb(styles.codeColor), rgb(styles.codeBackground)) >= 4.5,
@@ -185,18 +189,52 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-for (const width of [1440, 390]) {
-  test(`homepage avoids horizontal overflow at ${width}px`, async (t) => {
-    if (!browser) return t.skip("puppeteer browser is unavailable");
-    const page = await browser.newPage();
-    try {
-      await loadHome(page, "light", width);
-      const scrollWidth = await page.evaluate(
-        () => document.documentElement.scrollWidth,
-      );
-      assert.ok(scrollWidth <= width);
-    } finally {
-      await page.close();
-    }
-  });
+for (const theme of ["light", "dark"] as const) {
+  for (const width of [375, 768, 1280, 1440]) {
+    test(`homepage ${theme} avoids horizontal overflow at ${width}px`, async (t) => {
+      if (!browser) return t.skip("puppeteer browser is unavailable");
+      const page = await browser.newPage();
+      try {
+        await loadHome(page, theme, width);
+        const result = await page.evaluate(() => {
+          const code = document.querySelector<HTMLElement>(
+            ".rb-home__code-window pre",
+          );
+          const button = document.querySelector<HTMLButtonElement>(
+            ".rb-home__code-window button",
+          );
+          const selected = document.querySelector<HTMLButtonElement>(
+            ".rr-color-mode__button[aria-pressed='true']",
+          );
+          const unselected = document.querySelector<HTMLButtonElement>(
+            ".rr-color-mode__button[aria-pressed='false']",
+          );
+          selected?.focus();
+          return {
+            scrollWidth: document.documentElement.scrollWidth,
+            code: Boolean(code),
+            button: Boolean(button),
+            selected: Boolean(selected),
+            selectedBackground: selected
+              ? getComputedStyle(selected).backgroundColor
+              : "",
+            unselectedBackground: unselected
+              ? getComputedStyle(unselected).backgroundColor
+              : "",
+            selectedOutline: selected
+              ? getComputedStyle(selected).outlineColor
+              : "",
+          };
+        });
+        assert.ok(result.scrollWidth <= width);
+        assert.ok(result.code);
+        assert.ok(result.button);
+        assert.ok(result.selected);
+        assert.notEqual(result.selectedBackground, result.unselectedBackground);
+        assert.notEqual(result.selectedOutline, "rgba(0, 0, 0, 0)");
+      } finally {
+        await page.close();
+      }
+    });
+  }
 }

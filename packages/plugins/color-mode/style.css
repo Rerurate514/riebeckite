@@ -4,6 +4,8 @@
     --rr-color-mode-muted: var(--rb-color-muted);
     --rr-color-mode-surface: var(--rb-color-surface);
     --rr-color-mode-surface-hover: var(--rb-color-surface-hover);
+    --rr-color-mode-selected: var(--rb-color-selected);
+    --rr-color-mode-focus: var(--rb-color-focus);
     --rr-color-mode-border: var(--rb-color-border);
     --rr-color-mode-border-radius: 999px;
 
@@ -60,8 +62,13 @@
 
   .rr-color-mode__button[aria-pressed="true"] {
     color: var(--rr-color-mode-ink);
-    background: var(--rr-color-mode-surface);
+    background: var(--rr-color-mode-selected);
     box-shadow: inset 0 0 0 1px var(--rr-color-mode-border);
+  }
+
+  .rr-color-mode__button:focus-visible {
+    outline: 2px solid var(--rr-color-mode-focus);
+    outline-offset: 2px;
   }
 
   .rr-color-mode__icon {

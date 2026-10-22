@@ -10,20 +10,20 @@ export default function JapaneseHomePage() {
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-copy">
-          <img
-            class="rb-home__logo"
-            src="/riebeckite-logo-horizontal.png"
-            alt="Riebeckite"
-            width="1983"
-            height="793"
-          />
+          <a
+            class="rb-home__wordmark"
+            href="/ja/"
+            aria-label="Riebeckite ホーム"
+          >
+            Riebeckite
+          </a>
           <p class="rb-home__eyebrow">
             オープンソース · Apache-2.0 · TypeScript
           </p>
           <h1 id="home-title">Markdown から、自分の Web をつくる。</h1>
           <p class="rb-home__lead">
             Riebeckite は Markdown と Obsidian
-            のノートを静的サイトに変換し、その先のルート、コンポーネント、見た目は自分で持てるようにする
+            のノートを静的サイトに変換し、ルート、コンポーネント、見た目は自分で管理できる
             TypeScript フレームワークです。
           </p>
           <div class="rb-home__actions">
@@ -44,7 +44,9 @@ export default function JapaneseHomePage() {
           </div>
           <div class="rb-home__install">
             <p>プロジェクトを作成する</p>
-            <CodeWindow label="コピー">npx create-riebeckite</CodeWindow>
+            <CodeWindow label="コピー" copiedLabel="コピーしました">
+              npx create-riebeckite
+            </CodeWindow>
           </div>
         </div>
         <div class="rb-home__published-example">
@@ -61,32 +63,33 @@ export default function JapaneseHomePage() {
               書くものは Markdown に残し、アプリケーションは通常の TypeScript
               ファイルで管理する。片方を変えても、もう片方を手放す必要はありません。
             </p>
-            <a href="/ja/docs/guides/writing-content/">
-              コンテンツの設定を見る →
-            </a>
+            <a href="/ja/docs/guides/writing-content/">コンテンツの設定を見る →</a>
           </article>
         </div>
       </section>
 
       <section class="rb-home__statement" aria-labelledby="home-content">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">使い続けられるサイト</p>
+          <p class="rb-home__section-label">Markdown と Obsidian</p>
           <h2 id="home-content">ノートにサイトの構造まで決めさせない。</h2>
           <p>
             プロジェクト内の <code>content/</code> も、外部の Obsidian Vault
-            もコンテンツソースにできます。公開対象のノートはビルド時に静的ページになり、アプリケーションは通常の
+            もコンテンツソースにできます。公開対象のノートは静的ページになり、アプリケーションは通常の
             Hono JSX プロジェクトとして残ります。
           </p>
         </div>
         <div class="rb-home__content-example">
           <div>
             <p class="rb-home__label">content/notes/ownership.md</p>
-            <CodeWindow label="コピー">{contentSource}</CodeWindow>
+            <CodeWindow label="コピー" copiedLabel="コピーしました">
+              {contentSource}
+            </CodeWindow>
           </div>
           <p class="rb-home__content-note">
             公式 Plugin
             を追加すると、WikiLink、埋め込み、Callout、プロパティ、タグを含む
-            Obsidian 記法も扱えます。
+            Obsidian 記法を扱えます。Frontmatter
+            は公開情報を本文と同じファイルで管理します。
           </p>
         </div>
         <a class="rb-home__text-link" href="/ja/docs/guides/writing-content/">
@@ -96,46 +99,48 @@ export default function JapaneseHomePage() {
 
       <section class="rb-home__section" aria-labelledby="home-application">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">コードも自分のもの</p>
+          <p class="rb-home__section-label">アプリケーションも自分のもの</p>
           <h2 id="home-application">
             閉じたテンプレートではなく、プロジェクトから始める。
           </h2>
           <p>
             生成されるサイトには <code>app/</code>{" "}
-            ディレクトリと設定ファイルがあり、依存関係も自分で管理します。Hono
-            JSX を使い、ほかの TypeScript
-            アプリケーションと同じようにルートやコンポーネントを書けます。
+            ディレクトリ、設定ファイル、管理できる依存関係があります。Hono JSX
+            でページ、ドキュメント、ナビゲーション、コンポーネントを書けます。
           </p>
         </div>
         <div class="rb-home__ownership-example">
           <div>
             <p class="rb-home__label">生成されるプロジェクト</p>
-            <CodeWindow label="コピー">{projectStructure}</CodeWindow>
+            <CodeWindow label="コピー" copiedLabel="コピーしました">
+              {projectStructure}
+            </CodeWindow>
           </div>
           <p>
             Riebeckite はサイトを抱え込むプロジェクト形式ではなく、npm
-            パッケージの集合です。更新は依存関係の更新として扱えます。メジャーバージョンの更新には、通常どおり注意が必要です。
+            パッケージの集合です。更新は依存関係の更新として扱えます。
           </p>
         </div>
       </section>
 
-      <section class="rb-home__configuration" aria-labelledby="home-examples">
+      <section class="rb-home__configuration" aria-labelledby="home-extensions">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">必要なものだけを組み合わせる</p>
-          <h2 id="home-examples">Plugin は機能を、Theme は見た目を担う。</h2>
+          <p class="rb-home__section-label">拡張の境界</p>
+          <h2 id="home-extensions">Plugin は機能を、Theme は見た目を担う。</h2>
           <p>
-            通常の npm
-            パッケージを導入して設定に登録し、どのルートでコンポーネントを使うかはサイト側で決めます。
+            npm
+            パッケージを導入して設定に登録し、コンポーネントをどのルートで使うかはサイト側で決めます。
           </p>
         </div>
         <div class="rb-home__application-example">
-          <CodeWindow label="コピー">{applicationCode}</CodeWindow>
+          <CodeWindow label="コピー" copiedLabel="コピーしました">
+            {applicationCode}
+          </CodeWindow>
           <div class="rb-home__application-copy">
             <p>
-              Plugin は Markdown
-              の変換、ページ、コンポーネント、CSS、ブラウザ側のコード、HTTP
-              エンドポイント、生成ファイルを追加できます。Theme
-              は別の値として渡すため、見た目がアプリケーションの構造を決めることはありません。
+              Plugin は Markdown と HTML
+              の変換、レンダラー、単独ページ、ブラウザ側の動作、エンドポイント、SEO、診断を追加できます。Theme
+              はトークンとスタイルを提供し、アプリケーションの構造は決めません。
             </p>
             <div class="rb-home__resource-links">
               <a class="rb-home__text-link" href="/ja/docs/plugins/">
@@ -149,18 +154,82 @@ export default function JapaneseHomePage() {
         </div>
       </section>
 
+      <section class="rb-home__workflow" aria-labelledby="home-workflow">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">ビルドと確認</p>
+          <h2 id="home-workflow">変更分をビルドし、結果を確認する。</h2>
+          <p>
+            成功したビルドは再利用できる状態と依存関係を記録します。リンク先のページやアセットが変われば関連する出力を生成し直し、
+            <code>--full</code> で再利用を使わないビルドもできます。
+          </p>
+        </div>
+        <dl class="rb-home__workflow-list">
+          <div>
+            <dt>開発</dt>
+            <dd>
+              <code>riebeckite dev</code> で統合開発環境を起動します。
+            </dd>
+          </div>
+          <div>
+            <dt>検証</dt>
+            <dd>
+              <code>riebeckite check</code> は設定、コンテンツ、Plugin
+              のオプション、機能解決を検証します。
+            </dd>
+          </div>
+          <div>
+            <dt>確認</dt>
+            <dd>
+              <code>riebeckite inspect</code>{" "}
+              は解決済みの設定、Plugin、コンテンツ、グラフ、ビルド状態を表示します。
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="rb-home__preview" aria-labelledby="home-preview">
+        <div>
+          <p class="rb-home__section-label">ローカルプレビュー</p>
+          <h2 id="home-preview">実際のフィクスチャサイトで拡張を開発する。</h2>
+        </div>
+        <div class="rb-home__preview-body">
+          <p>
+            <code>riebeckite theme preview</code> は
+            Home、Article、Documentation、Components
+            のフィクスチャを提供します。<code>riebeckite plugin dev</code>{" "}
+            はローカル Plugin を一時サイトにリンクし、固定の Markdown
+            で確認できます。
+          </p>
+          <CodeWindow label="コピー" copiedLabel="コピーしました">
+            riebeckite theme preview my-theme --no-open{`\n`}riebeckite plugin
+            dev ./extensions/my-plugin --no-open
+          </CodeWindow>
+        </div>
+      </section>
+
       <section class="rb-home__continue" aria-labelledby="home-continue">
-        <h2 id="home-continue">導入を決める前に、実装を確かめる。</h2>
+        <h2 id="home-continue">確認したビルドを公開する。</h2>
         <p>
-          Markdown と実際の Plugin
-          の出力を比べ、リファレンスを確認してから、生成されるプロジェクトを始められます。
+          ビルド出力は <code>dist/</code>{" "}
+          に書き出されます。デプロイガイドでは、Cloudflare Workers
+          へのローカル公開、GitHub
+          Actions、コンテンツリポジトリの分離を案内しています。
         </p>
         <div class="rb-home__resource-links">
+          <a
+            class="rb-home__cta rb-home__cta--primary"
+            href="/ja/docs/getting-started/"
+          >
+            始める
+          </a>
+          <a
+            class="rb-home__text-link"
+            href="/ja/docs/getting-started/deployment/"
+          >
+            デプロイ
+          </a>
           <a class="rb-home__text-link" href="/ja/docs/">
             ドキュメント
-          </a>
-          <a class="rb-home__text-link" href="/ja/docs/plugins/showcase">
-            Plugin の出力を見る
           </a>
           <a class="rb-home__language" href="/" hreflang="en" lang="en">
             English

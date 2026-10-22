@@ -9,6 +9,11 @@ export function initHomeCodeCopy() {
     if (!code || !navigator.clipboard) return;
     try {
       await navigator.clipboard.writeText(code);
+      const label = button.dataset.homeCopyLabel;
+      if (label) {
+        button.textContent = label;
+        button.setAttribute("aria-label", label);
+      }
     } catch {}
   });
 }

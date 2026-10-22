@@ -128,7 +128,7 @@ for (const theme of ["light", "dark"] as const) {
       });
       assert.ok(Math.abs(sticky.docsTop - sticky.stickyTop) <= 1);
       assert.ok(Math.abs(sticky.tocTop - sticky.stickyTop) <= 1);
-      assert.ok(Math.abs(sticky.headerBottom - sticky.stickyTop) <= 1);
+      assert.ok(sticky.headerBottom < 0);
       assert.equal(sticky.docsScrollTop, 200);
       assert.equal(sticky.tocScrollTop, 200);
 

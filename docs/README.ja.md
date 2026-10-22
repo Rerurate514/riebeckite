@@ -78,6 +78,7 @@ deploy
 | デプロイする | [デプロイ](./docs/getting-started/deployment.ja.md) |
 | デプロイ先ごとの手順を確認する | [デプロイガイド](./docs/guides/deployment/README.ja.md) |
 | Markdown と frontmatter の書き方を知る | [コンテンツの書き方](./docs/guides/writing-content.ja.md) |
+| Header や Footer を残したまま Page を切り替える | [SPA Navigation](./docs/guides/spa-navigation.ja.md) |
 | Obsidian Vault を公開する | [Obsidian](./docs/guides/obsidian.ja.md) |
 | コンテンツとサイトを別リポジトリにする | [コンテンツリポジトリ](./docs/guides/content-repositories.ja.md) |
 | 多言語サイトを作る | [多言語化](./docs/guides/localization.ja.md) |

@@ -46,6 +46,11 @@ export default defineConfig({
 | `theme` | Theme の設定 |
 | `plugins` | 使用する Plugin |
 | `cache` | build cache の設定 |
+| `spa` | SPA navigation の設定 |
+
+`spa` は client-side page transition を有効にします。`true`、`false`、または
+options object を指定できます。動作とオプションは
+[SPA Navigation](../guides/spa-navigation.ja.md) を参照してください。
 
 Config は Content や Plugin の処理が始まる前に Integration によって解決されます。
 

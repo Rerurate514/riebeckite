@@ -25,6 +25,7 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 | --- | --- |
 | Write and organize articles | [Writing content](./writing-content.md) |
 | Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
+| Keep the shell while navigating between pages | [SPA Navigation](./spa-navigation.md) |
 | Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
 | Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
@@ -46,6 +47,7 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 - [Analytics](./analytics.md) — adding analytics to a Riebeckite site.
 - [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
 - [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.
+- [SPA Navigation](./spa-navigation.md) — enabling client-side page transitions, supported links, and the renderer contract.
 - [Discovery recipes](./discovery-recipes.md) — building a homepage and browse routes.
 - [Upgrading](./upgrading.md) — updating Riebeckite packages and reviewing changes.
 - [Migration guides](./migration/README.md) — planning a safe migration from Quartz, documentation platforms, static site generators, or static application frameworks.

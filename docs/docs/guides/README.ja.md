@@ -55,6 +55,13 @@ Site Application と Markdown Content を別の Repository で管理する構成
 
 Riebeckite Site に Analytics を導入する方法を説明します。
 
+### SPA navigation を有効にする
+
+[SPA Navigation](./spa-navigation.ja.md)
+
+Header や Footer を残したまま Page の内容だけを切り替える方法、対象になる
+Link、Renderer の要件を説明します。
+
 ### ローカル Plugin を開発する
 
 [Local Plugin Development](./local-plugin-development.ja.md)

@@ -6,7 +6,7 @@ sidebar:
 
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, and `cache`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, `cache`, and `spa`.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -22,6 +22,10 @@ export default defineConfig({
   plugins: [],
 });
 ```
+
+`spa` enables client-side page transitions. It accepts `true`, `false`, or an
+options object; see [SPA Navigation](../guides/spa-navigation.md) for behavior
+and options.
 
 ## How this section is organized
 

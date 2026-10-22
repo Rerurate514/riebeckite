@@ -75,6 +75,7 @@ Start from the page closest to your goal.
 | Deploy | [Deployment](./docs/getting-started/deployment.md) |
 | Follow per-target deployment steps | [Deployment guides](./docs/guides/deployment/README.md) |
 | Learn how to write Markdown and frontmatter | [Writing Content](./docs/guides/writing-content.md) |
+| Keep the shell while navigating between pages | [SPA Navigation](./docs/guides/spa-navigation.md) |
 | Publish an Obsidian vault | [Obsidian](./docs/guides/obsidian.md) |
 | Keep content and site in separate repositories | [Content repositories](./docs/guides/content-repositories.md) |
 | Build a multilingual site | [Localization](./docs/guides/localization.md) |

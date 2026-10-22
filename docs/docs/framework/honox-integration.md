@@ -31,6 +31,9 @@ It mainly handles:
 
 As a result, a normal site does not have to assemble Riebeckite's internal Vite/HonoX configuration each time.
 
+The generated client module is also where the optional SPA runtime is
+connected. See [SPA Runtime Internals](./spa-runtime.md).
+
 ## How this page is organized
 
 - [UI primitives](./honox-integration/ui.md)

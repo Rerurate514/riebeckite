@@ -1,73 +1,148 @@
 ---
-title: SPA Navigation の設計
+title: SPA Navigation
 ---
 
-# SPA Navigation の設計
+# SPA Navigation
 
-これは opt-in SPA runtime の実装設計であり、利用者向け設定ガイドではありません。
+このページでは、SPA navigation を支える構造を説明します。どの Package が関与するか、
+通常の load と Page transition がどう違うか、Page ごとの動作をどう置き換えるかを
+扱います。Maintainer 向けの内容です。有効にする手順はガイドを参照してください。
 
-## 責務
+## 全体像
 
-`@riebeckite/spa` は独立した browser runtime であり、Plugin ではありません。
+Riebeckite は Server rendering を基準にします。SPA navigation は browser 側の
+拡張です。
 
-```text
-Application -> @riebeckite/honox -> Core
-Application -> @riebeckite/spa
-Plugins ------------------------> Core client lifecycle contract
+- 通常の load: browser が document を要求し、Server が Page 全体を返し、HonoX が
+  island を hydrate する。
+- SPA transition: browser が次の document を取得し、runtime が main element を
+  置き換え、HonoX が新しい island を hydrate する。Shell は残る。
+
+置き換える単位は Page root であり、document 全体ではありません。
+
+```mermaid
+flowchart LR
+    Shell["Application shell<br/>header / footer / global UI"]
+    Page["Page root<br/>main#main-content"]
+    Next["Next page root"]
+
+    Next -->|"replace"| Page
+    Shell --- Page
 ```
 
-Core は portable な client lifecycle contract を所有しますが、SPA package、HonoX、DOM 実装を import しません。`spa` 設定は boolean の switch または設定 object です。`true` は既定値で runtime を有効にし、`false` または省略は無効にし、object は明示的な設定を渡します。Core はこれを設定 object または不在へ解決し、runtime option の検証は SPA package が所有します。HonoX integration は解決済みの値がある場合だけ runtime を import します。したがって SPA を有効にしない Site の bundle と navigation は変わりません。
+## 最小例
 
-Integration は client entry を生成して HonoX へ接続します。runtime は same-origin GET navigation、history、replacement、head reconciliation、scroll/focus restoration、prefetch を所有します。form は対象外です。
+```ts
+export default defineConfig({
+  site: { title: "My site", baseUrl: "https://example.com" },
+  spa: true,
+});
+```
 
-## Island の制約と commit 順序
+Renderer の取り決めは、各 Page に安定した `main#main-content` を1つ置くことだけです。
+現在の app と scaffold では、`_renderer.tsx` で route content の周りに配置しています。
 
-Application は `initRiebeckiteClient()` より前に HonoX の `createClient()` を呼びます。HonoX 0.1.56 の `createClient()` は `data-hono-hydrated` のない root だけを選び、module を読む前に属性を付けて hydration します。再呼び出しで新しい island は hydrate できますが、古い island を unmount せず、汎用 remount API ではありません。
+## 通常の navigation と SPA navigation
 
-SPA transaction は、fetch と検証、page behavior の unmount、所有 page root と所有する script 以外の head node の置換、新しい island の hydrate、page behavior の mount、history/scroll/focus/announcement/analytics の更新の順に進めます。後続 navigation は fetch と古い async work を abort します。成功前に失敗した場合は document navigation fallback で URL/DOM の整合性を保ちます。
+通常の navigation:
 
-## Core lifecycle contract
+1. Browser が URL を要求する。
+2. Server が HTML を描画する。
+3. Browser が document を parse する。
+4. HonoX client が island を hydrate する。
+5. app と page の initializer が mount する。
 
-| Scope | Owner | Lifetime |
-| --- | --- | --- |
-| `app` | 永続する application shell | bootstrap から application dispose まで |
-| `page` | 置換される page root | 各 document page |
+SPA navigation:
 
-initializer は scope root、`AbortSignal`、public configuration を受け、同期または非同期の cleanup を返せます。unmount は先に abort し、cleanup を一度だけ呼び、error を隔離・報告し、遅い initializer を active にしません。lifecycle coordinator は lifecycle state だけを所有し、Plugin の DOM policy は所有しません。
+1. Runtime が click を intercept する。
+2. Runtime が対象 URL の HTML を取得する。
+3. Runtime が page scope を unmount する。
+4. Runtime が head metadata を reconcile する。
+5. Runtime が `main#main-content` を置き換える。
+6. HonoX の `createClient()` が新しい island を hydrate する。
+7. Runtime が新しい root に page scope を mount する。
+8. Runtime が history、scroll、focus、announcement を更新する。
+9. `riebeckite:navigation` event が発火する。
 
-## Client entry の監査
+順序が重要です。Page の cleanup は置き換えの前、Page の初期化は hydration の
+後に行います。
 
-登録済みの `createClientEntry` は 27 件ではなく 28 件です。「cleanup」は目標ではなく監査結果です。heavy renderer は page replacement 前の abort-safe な書き込みが必要です。
+## Package の責務
 
-| Entry | 移行後 scope | Async/heavy | cleanup または再実行の所見 |
+| Package | 責務 |
+| --- | --- |
+| `@riebeckite/core` | `spa` 設定の解決、`ClientLifecycle`、scope、cleanup の取り決め、plugin client entry の metadata を提供する |
+| `@riebeckite/honox` | `virtual:riebeckite/client` を生成し、SPA runtime を条件付きで import し、page の unmount/mount と island hydration を接続する |
+| `@riebeckite/spa` | Link interception、fetch、置き換え、head reconciliation、history、scroll、focus、announcement、prefetch を担当する |
+| Site application | 安定した page root と app shell を提供し、island または plugin client entry として page の動作を登録する |
+
+SPA package は HonoX や Plugin を知りません。Runtime と `createClient()`、
+`ClientLifecycle` を接続するのは HonoX integration だけです。
+
+## app scope と page scope
+
+`ClientLifecycle` は initializer を2つの scope に分けます。
+
+| Scope | Root | 寿命 | 用途 |
 | --- | --- | --- | --- |
-| analytics | page event | network | document one-shot guard があり SPA hook がない |
-| autocardlink, canvas, code-enhance, code-tabs, diff, excalibrain, flashcards, lightbox, share, sidenotes, text-fragment | page | sync | document scope。cleanup が必要 |
-| chartjs | page | async/heavy | Chart instance を破棄しない |
-| color-mode | app | sync | module guard と listener に cleanup がない |
-| d2, graphviz, markmap | page | async/heavy | abort-safe rendering が必要 |
-| docs | page | sync | resize listener に cleanup がない |
-| excalidraw | page | async/heavy | observer を disconnect しない |
-| garden-explorer | page | hydration | `hydrateRoot` entry に dispose 経路がない |
-| hover-preview | page | fetch | cleanup はあるが fetch を abort しない |
-| map | page | async/heavy | Leaflet map を remove しない |
-| mermaid | page | async/heavy | script/rendering を abort できない |
-| search | app | index fetch | global listener と pending fetch に cleanup がない |
-| toc | page | sync | scroll/resize/rAF に cleanup がない |
-| ux | app/page に分割 | sync | guard、listener、observer、timer に cleanup がない |
-| vega-lite | page | async/heavy | embed が置換後に書き込める |
-| wavedrom | page | async/heavy | global renderer state があり cleanup がない |
+| `app` | `document` | 最初の client 初期化から dispose まで | Navigation をまたいで残る shell UI |
+| `page` | `main#main-content` | 1つの page root | Content ごとの動作 |
 
-`@riebeckite/plugin-navigation` はこの revision では client entry を登録しておらず、まだ lifecycle 移行対象ではありません。既存 entry は bootstrap/`DOMContentLoaded` 後に走るか global document を検索します。page entry は渡された root から検索し、document listener は scope cleanup が所有する必要があります。
+`app` initializer は一度だけ mount します。`page` initializer は page root を
+置き換える前に unmount し、新しい root に mount し直します。
 
-## Page、head、build の所有権
+Initializer は cleanup function を返せます。Unmount は先に initializer の
+signal を abort し、その後に cleanup を待ちます。初期化と cleanup の error は
+隔離して記録するため、1つの失敗で他の initializer は止まりません。
 
-replacement には安定した一つの `<main id="main-content">` と明示的な shell ownership が必要です。生成 starter/showcase はすでにこの contract を満たしますが、`apps/web` は route-owned main のため SPA 有効化前にそろえます。Header、Footer、永続 Search、Color mode は app scope、route content は page scope です。
+Lifecycle が cleanup できるのは、initializer が返したものだけです。
+`document` に listener を追加し、cleanup を返さない page initializer は、その
+Page より長く残ります。Page の動作は渡された root を検索し、置き換わる DOM の
+外に作ったものは cleanup で解放してください。
 
-server renderer は page-owned head node を mark します。global style と bootstrap script は残します。runtime は title、metadata、canonical/OG data、JSON-LD、mark された Plugin node を ownership key で reconcile します。取得 document の任意 script を clone・実行してはいけません。
+## Island の hydration
 
-生成 virtual client module を `@riebeckite/spa` への唯一の bundle edge にします。SPA 無効時には import しないため、現在の SSG artifact preservation、output plan、dependency fingerprint、cache、asset inventory を維持します。SPA 有効時の production/SSG test でこの点を確認します。
+HonoX の `createClient()` は、まだ hydrate していない island を hydrate します。
+SPA integration は、新しい main element が document に挿入された後にこれを呼びます。
+これにより、新しい Page の island は document 全体を reload せずに動作します。
 
-## 必須の検証
+`createClient()` は汎用の unmount API ではありません。古い main element を削除すると、
+その DOM と DOM に紐づく listener は消えますが、HonoX が任意の island state を破棄
+するわけではありません。Timer、observer、network request など、明示的に解放する
+ものは page scope の cleanup で扱います。
 
-SPA off/on の初期表示、internal/external/modifier/hash link、history/scroll、404/redirect/network failure、cancellation、cleanup/remount、island、head ownership、analytics 重複防止、HMR、direct URL、JavaScript-off output、listener/observer leak、bounded prefetch の cache/cancellation を検証します。性能は実測値だけを報告します。
+## 失敗時の fallback
+
+Transition を完了できない場合、runtime は通常の document navigation に
+fallback します。例:
+
+- fetch に失敗した、または成功 status 以外が返った
+- 取得した response に `main#main-content` がない
+- 現在の Page に `main#main-content` がない
+- page commit または head の置き換えで例外が起きた
+
+新しい navigation が始まると、古い navigation は abort されます。Abort された
+navigation は fallback せず、新しい navigation が Page を引き継ぎます。
+
+View transition は任意です。Browser が API に対応していない場合や、動きの抑制が要求
+されている場合は、transition なしで commit します。
+
+## 設計上の制約
+
+- SPA navigation は progressive enhancement であり、router ではありません。
+  各 URL は Server が描画します。
+- 対象は同一 origin の GET link だけです。Form と programmatic な navigation
+  は対象外です。
+- Application shell は `main#main-content` の外側に置く必要があります。
+- Head reconciliation の対象は決まった metadata だけです。任意の Page script
+  を clone したり実行したりしません。
+- Plugin の page entry は lifecycle に合わせる必要があります。渡された root を
+  使い、cleanup を返し、abort signal を尊重してください。
+- SPA 無効時の build は SPA package を import しません。
+
+## 関連ページ
+
+- [SPA navigation を有効にする](../guides/spa-navigation.ja.md)
+- [SPA runtime の内部実装](./spa-runtime.ja.md)
+- [HonoX Integration](./honox-integration.ja.md)
+- [Page System](./page-system.ja.md)

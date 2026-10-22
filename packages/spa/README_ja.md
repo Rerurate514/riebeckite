@@ -52,6 +52,6 @@ modifier key を使う link、別の target を持つ link、`download`、
 - `startSpaNavigation(options)` — custom browser integration 向けに navigation を
   開始し、cleanup function を返します。
 
-runtime の設計と integration の制約は
-[SPA navigation documentation](../../docs/docs/framework/spa-navigation.ja.md)
+有効にする手順は [SPA navigation guide](../../docs/docs/guides/spa-navigation.ja.md)、
+実装上の制約は [SPA runtime の内部実装](../../docs/docs/framework/spa-runtime.ja.md)
 を参照してください。

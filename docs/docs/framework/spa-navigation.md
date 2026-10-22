@@ -1,73 +1,150 @@
 ---
-title: SPA Navigation Design
+title: SPA Navigation
 ---
 
-# SPA Navigation Design
+# SPA Navigation
 
-This is the implementation design for the opt-in SPA runtime, not a user configuration guide.
+This page explains the structure behind SPA navigation: which packages
+participate, how a page transition differs from a normal load, and how
+page-scoped behavior is replaced. It is for maintainers. To enable SPA
+navigation in a site, see the guide.
 
-## Ownership
+## The big picture
 
-`@riebeckite/spa` is a separate browser runtime, not a plugin.
+Riebeckite keeps server rendering as the source of truth. SPA navigation is a
+browser enhancement:
 
-```text
-Application -> @riebeckite/honox -> Core
-Application -> @riebeckite/spa
-Plugins ------------------------> Core client lifecycle contract
+- Normal load: the browser requests a document, the server returns the full
+  page, and HonoX hydrates islands.
+- SPA transition: the browser fetches the next document, the runtime replaces
+  the main element, HonoX hydrates the new islands, and the shell stays.
+
+The unit of replacement is the page root, not the whole document.
+
+```mermaid
+flowchart LR
+    Shell["Application shell<br/>header / footer / global UI"]
+    Page["Page root<br/>main#main-content"]
+    Next["Next page root"]
+
+    Next -->|"replace"| Page
+    Shell --- Page
 ```
 
-Core owns a portable client-lifecycle contract but imports neither the SPA package, HonoX, nor DOM implementation details. The `spa` config is a boolean switch or an options object: `true` enables the runtime with its defaults, `false` or omission disables it, and an object supplies explicit options. Core resolves this to either options or absence; the SPA package owns runtime option validation. The HonoX integration conditionally imports the runtime only when the resolved value is present. SPA-off sites therefore retain their current bundle and navigation.
+## Minimal example
 
-The integration generates the client entry and connects it to HonoX. The runtime owns same-origin GET navigation, history, replacement, head reconciliation, scroll/focus restoration, and prefetching. Forms are excluded.
+```ts
+export default defineConfig({
+  site: { title: "My site", baseUrl: "https://example.com" },
+  spa: true,
+});
+```
 
-## Island constraint and commit order
+The only renderer contract is one stable `main#main-content` per page. The
+current app and scaffolds place it in `_renderer.tsx` around the route content.
 
-The application calls HonoX `createClient()` before `initRiebeckiteClient()`. In HonoX 0.1.56, `createClient()` selects only roots without `data-hono-hydrated`, sets that attribute before loading their module, then hydrates them. Recalling it can hydrate newly inserted islands, but does not unmount old islands and is not a general remount API.
+## Normal navigation and SPA navigation
 
-The SPA transaction must fetch and validate first, unmount page behavior, replace the owned page root and owned non-script head nodes, hydrate new islands, mount page behavior, then update history/scroll/focus/announcement/analytics. A superseding navigation aborts its fetch and stale async work. Failure before a successful commit uses document-navigation fallback to retain URL/DOM consistency.
+Normal navigation:
 
-## Core lifecycle contract
+1. The browser requests the URL.
+2. The server renders HTML.
+3. The browser parses the document.
+4. The HonoX client hydrates islands.
+5. App and page initializers mount.
 
-| Scope | Owner | Lifetime |
-| --- | --- | --- |
-| `app` | persistent application shell | bootstrap to application disposal |
-| `page` | replaceable page root | each document page |
+SPA navigation:
 
-An initializer receives a scope root, `AbortSignal`, and public configuration and may return cleanup, synchronously or asynchronously. Unmount aborts first, calls cleanup once, isolates/reports errors, and prevents a late initializer from becoming active. The lifecycle coordinator owns only lifecycle state; plugins retain DOM policy.
+1. The runtime intercepts a click.
+2. The runtime fetches HTML for the target URL.
+3. The runtime unmounts page scope.
+4. The runtime reconciles head metadata.
+5. The runtime replaces `main#main-content`.
+6. HonoX `createClient()` hydrates the new islands.
+7. The runtime mounts page scope on the new root.
+8. The runtime updates history, scroll, focus, and announcement.
+9. The `riebeckite:navigation` event fires.
 
-## Client-entry audit
+The order matters: page cleanup happens before replacement, and page
+initialization happens after hydration.
 
-There are 28 registered `createClientEntry` calls, not 27. “Cleanup” is an audit finding, not a target state. Heavy renderers need abort-safe writes before page replacement.
+## Package responsibilities
 
-| Entry | Proposed scope | Async/heavy | Cleanup or re-entry finding |
+| Package | Responsibility |
+| --- | --- |
+| `@riebeckite/core` | Resolves `spa` config; defines `ClientLifecycle`, scopes, the cleanup contract, and plugin client-entry metadata. |
+| `@riebeckite/honox` | Generates `virtual:riebeckite/client`; conditionally imports the SPA runtime; wires page unmount/mount and island hydration. |
+| `@riebeckite/spa` | Owns link interception, fetch, replacement, head reconciliation, history, scroll, focus, announcement, and prefetch. |
+| Site application | Provides the stable page root and app shell; registers page behavior through islands or plugin client entries. |
+
+The SPA package does not know about HonoX or plugins. The HonoX integration is
+the only place that connects the runtime to `createClient()` and
+`ClientLifecycle`.
+
+## app and page scopes
+
+`ClientLifecycle` groups initializers into two scopes:
+
+| Scope | Root | Lifetime | Use for |
 | --- | --- | --- | --- |
-| analytics | page event | network | document one-shot guard; no SPA event hook |
-| autocardlink, canvas, code-enhance, code-tabs, diff, excalibrain, flashcards, lightbox, share, sidenotes, text-fragment | page | sync | document-scoped; cleanup required |
-| chartjs | page | async/heavy | Chart instances are not destroyed |
-| color-mode | app | sync | module guard and listeners lack cleanup |
-| d2, graphviz, markmap | page | async/heavy | require abort-safe rendering |
-| docs | page | sync | resize listener lacks cleanup |
-| excalidraw | page | async/heavy | observer is not disconnected |
-| garden-explorer | page | hydration | `hydrateRoot` entry has no disposal path |
-| hover-preview | page | fetch | cleanup exists; fetch is not aborted |
-| map | page | async/heavy | Leaflet maps are not removed |
-| mermaid | page | async/heavy | script/rendering is not abortable |
-| search | app | index fetch | global listeners and pending fetch lack cleanup |
-| toc | page | sync | scroll/resize/rAF lack cleanup |
-| ux | split app/page | sync | guard, listeners, observer, timers lack cleanup |
-| vega-lite | page | async/heavy | embeds can write after replacement |
-| wavedrom | page | async/heavy | global renderer state; no cleanup |
+| `app` | `document` | First client initialization until disposal | Shell UI that survives navigation |
+| `page` | `main#main-content` | One page root | Content-specific behavior |
 
-`@riebeckite/plugin-navigation` has no registered client entry in this revision and is not a lifecycle migration target yet. All existing entries run after bootstrap/`DOMContentLoaded` or query the global document. Page entries must instead query their supplied root; any document listener must be owned by scope cleanup.
+`app` initializers mount once. `page` initializers unmount before the page root
+is replaced, then mount again on the new root.
 
-## Page, head, and build ownership
+An initializer may return a cleanup function. Unmount aborts the initializer's
+signal first, then awaits cleanup. Initialization and cleanup errors are
+isolated and logged; one failing initializer does not stop the others.
 
-Replacement requires one stable `<main id="main-content">` and explicit shell ownership. Generated starter/showcase already meet this contract, while `apps/web` has route-owned mains and must be aligned before enabling SPA. Header, footer, persistent search, and color mode are app scope; route content is page scope.
+The lifecycle can only clean up what an initializer returns. A page initializer
+that attaches a listener to `document` without returning cleanup will outlive
+its page. Page behavior should query the supplied root and return cleanup for
+anything outside the replaced DOM.
 
-The server renderer must mark page-owned head nodes. Global styles and bootstrap scripts persist. The runtime reconciles title, metadata, canonical/OG data, JSON-LD, and marked plugin nodes by ownership key. It must never clone or execute arbitrary scripts from a fetched document.
+## Islands and hydration
 
-The generated virtual client module is the sole bundle edge to `@riebeckite/spa`. With SPA disabled it imports nothing, preserving current SSG artifact preservation, output plans, dependency fingerprints, caches, and asset inventory. SPA-on production and SSG tests must verify that claim.
+HonoX `createClient()` hydrates islands that have not been hydrated yet. The SPA
+integration calls it after the new main element is in the document. This is why
+islands inside the new page work without a full reload.
 
-## Required verification
+`createClient()` is not a general unmount API. Removing the old main element
+removes its DOM and DOM-bound listeners, but HonoX does not tear down arbitrary
+island state. Page-scope cleanup is the place for timers, observers, network
+requests, and other resources that must be released.
 
-Test SPA off/on initial loads; internal, external, modifier, and hash links; history and scroll; 404/redirect/network failure; cancellation; cleanup/remount; islands; head ownership; analytics de-duplication; HMR; direct URL; JavaScript-off output; listener/observer leaks; and bounded prefetch cache/cancellation. Report performance only from measurements.
+## Failure and fallback
+
+The runtime falls back to a normal document navigation when it cannot complete a
+transition, for example:
+
+- the fetch fails or returns a non-success status
+- the fetched response has no `main#main-content`
+- the current page has no `main#main-content`
+- page commit or head replacement throws
+
+A newer navigation aborts the older one. An aborted navigation does not fall
+back; the newer navigation owns the page.
+
+View transitions are optional. If the browser does not support the API, or
+reduced motion is requested, the commit runs without a transition.
+
+## Design constraints
+
+- SPA navigation is progressive enhancement, not a router. The server still
+  renders every URL.
+- Only same-origin GET links are handled; forms and programmatic navigation are
+  out of scope.
+- The application shell must stay outside `main#main-content`.
+- Head reconciliation covers a fixed metadata set; arbitrary page scripts are
+  not cloned or executed.
+- Plugin page entries must cooperate with the lifecycle: use the supplied root,
+  return cleanup, and respect the abort signal.
+- SPA-off builds do not import the SPA package.
+
+## Related
+
+- [Enable SPA navigation](../guides/spa-navigation.md)
+- [SPA runtime internals](./spa-runtime.md)
+- [HonoX integration](./honox-integration.md)
+- [Page system](./page-system.md)

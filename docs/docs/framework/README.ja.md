@@ -47,7 +47,8 @@ flowchart LR
 | Build と Incremental Build の仕組み | [Build System](./build-system.ja.md) |
 | Plugin が build dependency を宣言する仕組み | [Build Dependency の取り決め](./build-dependency.ja.md) |
 | Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.ja.md) |
-| SPA navigation runtime の責務境界と移行 | [SPA Navigation の設計](./spa-navigation.ja.md) |
+| SPA navigation が shell を残して Page を置き換える仕組み | [SPA Navigation](./spa-navigation.ja.md) |
+| SPA の transaction、cancellation、lifecycle の制約 | [SPA Runtime の内部実装](./spa-runtime.ja.md) |
 | 設定や Content の問題を調べる | [Diagnostics](./diagnostics.ja.md) |
 | 解決済みの設定や状態を確認する | [Inspector](./inspector.ja.md) |
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |

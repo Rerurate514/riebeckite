@@ -51,5 +51,6 @@ navigation.
 - `startSpaNavigation(options)` — starts navigation and returns a cleanup
   function for custom browser integrations.
 
-See the [SPA navigation documentation](../../docs/docs/framework/spa-navigation.md)
-for the runtime design and integration constraints.
+See the [SPA navigation guide](../../docs/docs/guides/spa-navigation.md) to
+enable it, and [SPA runtime internals](../../docs/docs/framework/spa-runtime.md)
+for the implementation constraints.

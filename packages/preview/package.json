@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@riebeckite/plugin-code-tabs": "workspace:*",
+    "@riebeckite/plugin-obsidian-markdown": "workspace:*",
     "tsx": "^4.22.4"
   },
   "scripts": {

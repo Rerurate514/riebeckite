@@ -34,6 +34,25 @@ const result = await preview.render({
 `createPreview` は公開済みの Riebeckite `PluginRuntime` と Markdown
 `Pipeline` を実行し、最終 HTML を公開プレビューの境界でサニタイズします。
 
+## 複数ページ fixture
+
+他のコンテンツを解決するプラグイン向けに、小さなインメモリ Markdown サイトを fixture に含められます。既定ページは `currentPageId` で指定し、別のページを表示するには `render` に `pageId` を渡します。パスは `.md` で終える必要があり、コンテンツの検索とパーマリンクの解決に使われます。
+
+```ts
+fixtures: [{
+  id: "notes",
+  title: "Notes",
+  markdown: "[[Guide]]",
+  currentPageId: "home",
+  pages: [
+    { id: "home", title: "Home", path: "notes/Home.md", markdown: "[[Guide]]" },
+    { id: "guide", title: "Guide", path: "notes/Guide.md", markdown: "# Guide" },
+  ],
+}]
+```
+
+対応するのは fixture 内のコンテンツだけです。クライアントエントリの実行、サイトのビルド、外部連携へのアクセスは行いません。
+
 ## ブラウザ対応の宣言
 
 プラグインを `browser` として登録できるのは、ファクトリとパイプラインフックがブラウザ互換のプレビューで検証済みの場合だけです。`node` と `unsupported` のプラグインは実行せず、診断を返します。
@@ -46,6 +65,7 @@ const result = await preview.render({
 - `createPreviewRegistry(input)`：fixture とプラグイン ID を検証します。
 - `definePluginPreview(preview)`：型付きのプラグインプレビュー定義を保持します。
 - `PreviewPlugin.options`：boolean、string、number、enum の操作項目を宣言します。
+- `PreviewPlugin.modes`：static、site、client、build、integration の対応モードを示します。
 - `validatePreviewOptions(definitions, input)`：不明または不正な値を拒否します。
 - `parsePreviewInput(input, registry)`：プレビュー入力オブジェクトをレジストリに対して検証します。
 - `parsePreviewRequest(request, registry)`：サイズを制限した JSON リクエストを読み取り、検証します。

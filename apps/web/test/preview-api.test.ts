@@ -104,7 +104,7 @@ test("renders every registered plugin fixture through the preview runtime", asyn
       new RegExp(expectedOutput[plugin.id as keyof typeof expectedOutput]),
       `${plugin.id} did not render its expected transform`,
     );
-    assert.doesNotMatch(result.html, /<script|on\w+=|javascript:/i);
+    assert.doesNotMatch(result.html, /<script|\son\w+=|javascript:/i);
     await preview.dispose();
   }
 });

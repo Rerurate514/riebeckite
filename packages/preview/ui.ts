@@ -20,6 +20,7 @@ export type PreviewUiSelectors = {
   readonly root: string;
   readonly markdown: string;
   readonly fixture: string;
+  readonly page: string;
   readonly frame: string;
   readonly theme: string;
   readonly mode: string;
@@ -48,6 +49,7 @@ const defaultSelectors: PreviewUiSelectors = {
   root: "[data-plugin-preview]",
   markdown: "[data-preview-markdown]",
   fixture: "[data-preview-fixture-select]",
+  page: "[data-preview-page-select]",
   frame: "[data-preview-frame]",
   theme: "[data-preview-theme]",
   mode: "[data-preview-mode]",
@@ -135,6 +137,14 @@ function initialize(
       if (event.target === fixture) {
         const value = readFixtureMarkdown(root, fixture.value);
         if (value !== undefined) markdown.value = value;
+        updatePageSelect(root, selectors.page, fixture.value);
+      }
+      if (
+        event.target instanceof HTMLSelectElement &&
+        event.target.matches(selectors.page)
+      ) {
+        const value = readPageMarkdown(root, fixture.value, event.target.value);
+        if (value !== undefined) markdown.value = value;
       }
       render();
     },
@@ -147,6 +157,16 @@ function initialize(
     roots.delete(root);
   });
   render();
+}
+
+function readPageMarkdown(
+  root: HTMLElement,
+  fixtureId: string,
+  pageId: string,
+): string | undefined {
+  return readFixturePages(root.dataset.previewPages, fixtureId)?.pages.find(
+    (page) => page.id === pageId,
+  )?.markdown;
 }
 
 type PreviewElements = {
@@ -203,23 +223,107 @@ function readInput(
     markdown: markdown.value,
     pluginId: root.dataset.previewPlugin,
     fixtureId: fixture.value,
+    pageId: readPageId(root, selectors.page),
     options: readOptions(root, selectors.option),
   };
+}
+
+function readPageId(root: HTMLElement, selector: string): string | undefined {
+  const page = root.querySelector<HTMLSelectElement>(selector);
+  return page && !page.closest("label")?.hidden
+    ? page.value || undefined
+    : undefined;
+}
+
+type FixturePages = {
+  readonly currentPageId?: string;
+  readonly pages: readonly FixturePage[];
+};
+
+type FixturePage = {
+  readonly id: string;
+  readonly title: string;
+  readonly markdown: string;
+};
+
+function updatePageSelect(
+  root: HTMLElement,
+  selector: string,
+  fixtureId: string,
+): void {
+  const select = root.querySelector<HTMLSelectElement>(selector);
+  const label = select?.closest("label");
+  if (!select || !label) return;
+  const fixture = readFixturePages(root.dataset.previewPages, fixtureId);
+  const pages = fixture?.pages ?? [];
+  label.hidden = pages.length < 2;
+  select.replaceChildren(
+    ...pages.map((page) => {
+      const option = document.createElement("option");
+      option.value = page.id;
+      option.textContent = page.title;
+      option.selected = page.id === fixture?.currentPageId;
+      return option;
+    }),
+  );
 }
 
 function readFixtureMarkdown(
   root: HTMLElement,
   fixtureId: string,
 ): string | undefined {
-  const fixtures = root.dataset.previewFixtures;
-  if (!fixtures) return undefined;
+  return readSerializedMarkdown(root.dataset.previewFixtures, fixtureId);
+}
+
+function readSerializedMarkdown(
+  serialized: string | undefined,
+  id: string,
+): string | undefined {
+  if (!serialized) return undefined;
   try {
-    const parsed: unknown = JSON.parse(fixtures);
+    const parsed: unknown = JSON.parse(serialized);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return undefined;
+    }
+    const value = (parsed as Record<string, unknown>)[id];
+    return typeof value === "string" ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readFixturePages(
+  serialized: string | undefined,
+  fixtureId: string,
+): FixturePages | undefined {
+  if (!serialized) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(serialized);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return undefined;
     }
     const value = (parsed as Record<string, unknown>)[fixtureId];
-    return typeof value === "string" ? value : undefined;
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return undefined;
+    }
+    const record = value as Record<string, unknown>;
+    if (!Array.isArray(record.pages)) return undefined;
+    const pages = record.pages.flatMap((page) => {
+      if (!page || typeof page !== "object" || Array.isArray(page)) return [];
+      const item = page as Record<string, unknown>;
+      return typeof item.id === "string" &&
+        typeof item.title === "string" &&
+        typeof item.markdown === "string"
+        ? [{ id: item.id, title: item.title, markdown: item.markdown }]
+        : [];
+    });
+    if (pages.length !== record.pages.length) return undefined;
+    return {
+      pages,
+      ...(typeof record.currentPageId === "string"
+        ? { currentPageId: record.currentPageId }
+        : {}),
+    };
   } catch {
     return undefined;
   }

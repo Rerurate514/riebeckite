@@ -34,6 +34,7 @@ export async function handlePreviewRequest(
         markdown: previewInput.markdown,
         pluginId: previewInput.pluginId,
         options: previewInput.options,
+        pageId: previewInput.pageId,
       }),
     );
   } finally {

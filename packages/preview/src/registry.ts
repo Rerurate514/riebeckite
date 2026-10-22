@@ -4,7 +4,23 @@ export type PreviewFixture = {
   readonly id: string;
   readonly title: string;
   readonly markdown: string;
+  readonly pages?: readonly PreviewFixturePage[];
+  readonly currentPageId?: string;
 };
+
+export type PreviewFixturePage = {
+  readonly id: string;
+  readonly title: string;
+  readonly path: string;
+  readonly markdown: string;
+};
+
+export type PreviewMode =
+  | "static"
+  | "site"
+  | "client"
+  | "build"
+  | "integration";
 
 export type PreviewPluginAvailability = "browser" | "node" | "unsupported";
 
@@ -37,6 +53,8 @@ export type PreviewPlugin<TOptions = unknown> = {
   readonly id: string;
   readonly title: string;
   readonly availability: PreviewPluginAvailability;
+  readonly modes?: readonly PreviewMode[];
+  readonly limitations?: readonly string[];
   readonly fixtures: readonly PreviewFixture[];
   readonly options?: PreviewOptions;
   create(options: TOptions | undefined): RiebeckitePlugin<TOptions>;
@@ -130,6 +148,28 @@ function assertFixtures(
       throw new Error(`A ${subject} title is required.`);
     if (typeof fixture.markdown !== "string") {
       throw new Error(`A ${subject} markdown value is required.`);
+    }
+    if (fixture.pages) {
+      assertUniqueIds(fixture.pages, `page in ${subject} "${fixture.id}"`);
+      const paths = new Set<string>();
+      for (const page of fixture.pages) {
+        if (
+          page.title.trim() === "" ||
+          page.path.trim() === "" ||
+          !page.path.endsWith(".md") ||
+          typeof page.markdown !== "string" ||
+          paths.has(page.path)
+        ) {
+          throw new Error(`Invalid page in ${subject} "${fixture.id}".`);
+        }
+        paths.add(page.path);
+      }
+      if (
+        fixture.currentPageId &&
+        !fixture.pages.some((page) => page.id === fixture.currentPageId)
+      ) {
+        throw new Error(`Unknown current page in ${subject} "${fixture.id}".`);
+      }
     }
   }
 }

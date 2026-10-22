@@ -26,6 +26,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "code-tabs",
       title: "Code Tabs",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         {
           id: "basic",
@@ -69,6 +70,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "code-annotations",
       title: "Code Annotations",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         {
           id: "diff",
@@ -87,6 +89,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "autocardlink",
       title: "Auto Card Link",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "card",
@@ -107,6 +110,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "code-enhance",
       title: "Code Enhance",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "highlighted-lines",
@@ -123,6 +127,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "hard-breaks",
       title: "Hard Breaks",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "paragraph",
@@ -136,6 +141,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "highlight",
       title: "Highlight",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "marked-text",
@@ -150,6 +156,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "lightbox",
       title: "Lightbox",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "image",
@@ -163,12 +170,36 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "obsidian-markdown",
       title: "Obsidian Markdown",
       availability: "browser",
+      modes: ["static", "site"],
       fixtures: [
         fixture(
           "callout",
           "Callout and tag",
           "> [!tip] Preview\n> This is an Obsidian callout.\n\n#riebeckite",
         ),
+        {
+          id: "wiki-links",
+          title: "Wiki links across pages",
+          markdown:
+            "# Architecture\n\n[[Guides/Getting Started|Read the guide]]",
+          currentPageId: "architecture",
+          pages: [
+            {
+              id: "architecture",
+              title: "Architecture",
+              path: "notes/Architecture.md",
+              markdown:
+                "---\ntags: [riebeckite, architecture]\n---\n# Architecture\n\n[[Guides/Getting Started|Read the guide]]",
+            },
+            {
+              id: "getting-started",
+              title: "Getting Started",
+              path: "Guides/Getting Started.md",
+              markdown:
+                "---\ntags: [riebeckite, guide]\n---\n# Getting Started\n\n[[Architecture]] explains the design.",
+            },
+          ],
+        },
       ],
       create: () => obsidianMarkdown(),
     }),
@@ -176,6 +207,7 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       id: "sidenotes",
       title: "Sidenotes",
       availability: "browser",
+      modes: ["static"],
       fixtures: [
         fixture(
           "note",

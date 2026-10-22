@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
   createPreview,
   createPreviewDocument,
@@ -95,6 +96,55 @@ test("uses a selected fixture and preserves explicit empty markdown", async () =
   await preview.dispose();
 });
 
+test("resolves wiki links against pages in a multi-page fixture", async () => {
+  const preview = createPreview({
+    plugins: [
+      definePluginPreview({
+        id: "multi-page",
+        title: "Multi page",
+        availability: "browser" as const,
+        fixtures: [
+          {
+            id: "notes",
+            title: "Notes",
+            markdown: "[[Guide]]",
+            currentPageId: "home",
+            pages: [
+              {
+                id: "home",
+                title: "Home",
+                path: "Home.md",
+                markdown: "[[Guide]]",
+              },
+              {
+                id: "guide",
+                title: "Guide",
+                path: "Guide.md",
+                markdown: "# Guide",
+              },
+            ],
+          },
+        ],
+        create: () => obsidianMarkdown(),
+      }),
+    ],
+    fixture: "notes",
+  });
+
+  const result = await preview.render({ pluginId: "multi-page" });
+  assert.match(
+    result.html,
+    /<a href="\/Guide\/" class="rr-obsidian-wikilink">Guide<\/a>/,
+  );
+
+  const selectedPage = await preview.render({
+    pluginId: "multi-page",
+    pageId: "guide",
+  });
+  assert.match(selectedPage.html, /<h1 id="user-content-guide">Guide<\/h1>/);
+  await preview.dispose();
+});
+
 test("sanitizes untrusted markdown HTML", async () => {
   const preview = createPreview();
 
@@ -108,7 +158,10 @@ test("sanitizes untrusted markdown HTML", async () => {
     /script|onerror|javascript:|iframe|style=|srcdoc|<math|data:text\/html/i,
   );
   assert.match(result.html, /<mark class="rb-highlight">safe<\/mark>/);
-  assert.match(result.html, /<a class="rr-link" href="https:\/\/example\.com">safe link<\/a>/);
+  assert.match(
+    result.html,
+    /<a class="rr-link" href="https:\/\/example\.com">safe link<\/a>/,
+  );
   await preview.dispose();
 });
 

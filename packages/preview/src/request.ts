@@ -10,6 +10,7 @@ export type PreviewRequestInput = {
   readonly markdown: string;
   readonly pluginId?: string;
   readonly fixtureId?: string;
+  readonly pageId?: string;
   readonly options?: Record<string, unknown>;
 };
 
@@ -61,12 +62,22 @@ export function parsePreviewInput(
     return undefined;
   if (!isOptionalId(input.fixtureId, resolvedLimits.maximumIdLength))
     return undefined;
+  if (!isOptionalId(input.pageId, resolvedLimits.maximumIdLength))
+    return undefined;
 
   const plugin = input.pluginId ? registry.plugin(input.pluginId) : undefined;
   if (input.pluginId && !plugin) return undefined;
   if (
     input.fixtureId &&
     (!plugin || !registry.fixture(plugin.id, input.fixtureId))
+  ) {
+    return undefined;
+  }
+  if (
+    input.pageId &&
+    !registry
+      .fixture(plugin?.id ?? "", input.fixtureId ?? "")
+      ?.pages?.some((page) => page.id === input.pageId)
   ) {
     return undefined;
   }
@@ -77,6 +88,7 @@ export function parsePreviewInput(
     markdown: input.markdown,
     pluginId: input.pluginId || undefined,
     fixtureId: input.fixtureId || undefined,
+    ...(input.pageId ? { pageId: input.pageId } : {}),
     options: input.options as Record<string, unknown> | undefined,
   };
 }

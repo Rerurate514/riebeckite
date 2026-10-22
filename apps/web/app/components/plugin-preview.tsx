@@ -33,6 +33,21 @@ export function PluginPreview({
           plugin.fixtures.map((item) => [item.id, item.markdown]),
         ),
       )}
+      data-preview-pages={JSON.stringify(
+        Object.fromEntries(
+          plugin.fixtures.map((item) => [
+            item.id,
+            {
+              currentPageId: item.currentPageId,
+              pages: (item.pages ?? []).map((page) => ({
+                id: page.id,
+                title: page.title,
+                markdown: page.markdown,
+              })),
+            },
+          ]),
+        ),
+      )}
     >
       <header class="plugin-preview__header">
         <div>
@@ -48,6 +63,19 @@ export function PluginPreview({
             {plugin.fixtures.map((item) => (
               <option value={item.id} selected={item.id === fixture.id}>
                 {item.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label hidden={(fixture.pages?.length ?? 0) < 2}>
+          Page
+          <select data-preview-page-select>
+            {(fixture.pages ?? []).map((page) => (
+              <option
+                value={page.id}
+                selected={page.id === fixture.currentPageId}
+              >
+                {page.title}
               </option>
             ))}
           </select>
@@ -76,12 +104,14 @@ export function PluginPreview({
         <label class="plugin-preview__editor-label">
           <span>Markdown</span>
           <textarea data-preview-markdown spellcheck={false}>
-            {fixture.markdown}
+            {fixture.pages?.find((page) => page.id === fixture.currentPageId)
+              ?.markdown ?? fixture.markdown}
           </textarea>
         </label>
       ) : (
         <textarea data-preview-markdown hidden>
-          {fixture.markdown}
+          {fixture.pages?.find((page) => page.id === fixture.currentPageId)
+            ?.markdown ?? fixture.markdown}
         </textarea>
       )}
       <section class="plugin-preview__output" aria-live="polite">

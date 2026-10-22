@@ -14,6 +14,8 @@ export {
   createPreviewRegistry,
   definePluginPreview,
   type PreviewFixture,
+  type PreviewFixturePage,
+  type PreviewMode,
   type PreviewOption,
   type PreviewOptions,
   type PreviewPlugin,

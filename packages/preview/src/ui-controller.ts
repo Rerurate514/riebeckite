@@ -2,6 +2,7 @@ export type PreviewUiInput = {
   readonly markdown: string;
   readonly pluginId?: string;
   readonly fixtureId?: string;
+  readonly pageId?: string;
   readonly options: Readonly<Record<string, unknown>>;
 };
 

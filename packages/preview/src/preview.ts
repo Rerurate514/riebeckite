@@ -1,4 +1,5 @@
 import {
+  type ContentSource,
   Pipeline,
   PluginRuntime,
   type RiebeckitePlugin,
@@ -30,6 +31,7 @@ export type PreviewRenderInput = {
   readonly markdown?: string;
   readonly pluginId?: string;
   readonly options?: unknown;
+  readonly pageId?: string;
 };
 
 export type CreatePreviewOptions = {
@@ -54,8 +56,8 @@ export function createPreview(
   let activePluginId: string | undefined;
   let activeOptions: unknown;
   let disposed = false;
-  const contentIndex = new Map([[PREVIEW_SLUG, PREVIEW_SLUG]]);
-  const permalinks = new Map([[PREVIEW_SLUG, "/preview/"]]);
+  let contentIndex = new Map([[PREVIEW_SLUG, PREVIEW_SLUG]]);
+  let permalinks = new Map([[PREVIEW_SLUG, "/preview/"]]);
 
   return {
     async render(input) {
@@ -68,7 +70,14 @@ export function createPreview(
           ? registry.fixture(pluginId, options.fixture)
           : registry.fixtures.find((fixture) => fixture.id === options.fixture)
         : undefined;
-      const markdown = input.markdown ?? initialFixture?.markdown ?? "";
+      const selectedPage = initialFixture?.pages?.find(
+        (page) => page.id === (input.pageId ?? initialFixture.currentPageId),
+      );
+      const markdown =
+        input.markdown ??
+        selectedPage?.markdown ??
+        initialFixture?.markdown ??
+        "";
 
       if (pluginId && !plugin) {
         return failedResult(
@@ -114,29 +123,48 @@ export function createPreview(
           const plugins = plugin
             ? [createPlugin(plugin, validatedOptions.value)]
             : [];
+          const fixturePages = initialFixture?.pages;
+          const source = fixturePages
+            ? createFixtureContentSource(fixturePages)
+            : undefined;
+          ({ contentIndex, permalinks } = createFixtureIndexes(
+            fixturePages,
+            selectedPage?.path,
+          ));
           runtime = new PluginRuntime({ plugins });
-          pipeline = new Pipeline(contentIndex, permalinks, undefined, {
-            plugins,
-          });
+          pipeline = new Pipeline(
+            contentIndex,
+            permalinks,
+            source
+              ? async (slug) =>
+                  source.read({ path: `${slug}.md` }) as Promise<string>
+              : undefined,
+            {
+              plugins,
+              ...(source ? { contentSource: source } : {}),
+            },
+          );
           activePluginId = plugin?.id;
           activeOptions = validatedOptions.value;
         }
 
         await runtime.startBuild(contentIndex);
-        await runtime.runContentLoaded(PREVIEW_SLUG, markdown, contentIndex);
+        const sourceSlug =
+          selectedPage?.path.replace(/\.md$/, "") ?? PREVIEW_SLUG;
+        await runtime.runContentLoaded(sourceSlug, markdown, contentIndex);
         const content = await pipeline.execute(markdown, {
-          sourceSlug: PREVIEW_SLUG,
+          sourceSlug,
         });
         await runtime.runPostHook(
           "onPostParsed",
-          PREVIEW_SLUG,
+          sourceSlug,
           markdown,
           content,
           contentIndex,
         );
         await runtime.runPostHook(
           "onPostProcessed",
-          PREVIEW_SLUG,
+          sourceSlug,
           markdown,
           content,
           contentIndex,
@@ -176,6 +204,39 @@ export function createPreview(
       runtime = undefined;
       pipeline = undefined;
     },
+  };
+}
+
+function createFixtureIndexes(
+  pages: readonly { readonly path: string }[] | undefined,
+  currentPath: string | undefined,
+): { contentIndex: Map<string, string>; permalinks: Map<string, string> } {
+  if (!pages) {
+    return {
+      contentIndex: new Map([[PREVIEW_SLUG, PREVIEW_SLUG]]),
+      permalinks: new Map([[PREVIEW_SLUG, "/preview/"]]),
+    };
+  }
+  const contentIndex = new Map<string, string>();
+  const permalinks = new Map<string, string>();
+  for (const page of pages) {
+    const slug = page.path.replace(/\.md$/, "");
+    const keys = [slug, slug.split("/").at(-1) ?? slug];
+    for (const key of keys) contentIndex.set(key.toLowerCase(), slug);
+    permalinks.set(slug, `/${slug}/`);
+  }
+  if (currentPath)
+    contentIndex.set(PREVIEW_SLUG, currentPath.replace(/\.md$/, ""));
+  return { contentIndex, permalinks };
+}
+
+function createFixtureContentSource(
+  pages: readonly { readonly path: string; readonly markdown: string }[],
+): ContentSource {
+  const files = new Map(pages.map((page) => [page.path, page.markdown]));
+  return {
+    scan: async () => [...files.keys()].map((path) => ({ path })),
+    read: async (entry) => files.get(entry.path) ?? "",
   };
 }
 

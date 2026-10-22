@@ -1,5 +1,6 @@
 .rb-home {
   width: min(100% - 2rem, 70rem);
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: clamp(3.5rem, 7vw, 5.5rem);
@@ -8,6 +9,7 @@
 
 body:has(.rb-home) .rb-site-header {
   width: min(100% - 2rem, 70rem);
+  margin-inline: auto;
 }
 
 .rb-home h1,

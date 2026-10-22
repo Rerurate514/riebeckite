@@ -37,6 +37,12 @@ import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
   ssgEnumerableHandler(async (c, next) => {
+    if (c.req.path === "/ja" || c.req.path === "/ja/") {
+      c.set("htmlLanguage", "ja");
+      c.set("seo", buildHomeSeo("ja"));
+      return c.render(<HomePage locale="ja" />);
+    }
+
     // Archive has a dedicated route; defer to it.
     if (c.req.path.startsWith("/archive/")) {
       return next();

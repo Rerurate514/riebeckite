@@ -29,7 +29,8 @@ export default {
 
 `archive` という 1 つの Page Type を登録し、plugin を有効にしている間だけ
 ルートを生成します。ルートはアプリケーションコードではなく plugin が生成
-します。
+し、サイトの catch-all content route が配信します。専用のアプリケーション
+ルートは不要です。
 
 - `archive`: `<basePath>/<yyyy>/<mm>` に月ごとの一覧ページを、ページネー
   ションがある場合は `<basePath>/<yyyy>/<mm>/page/<n>` に追加ページを生成
@@ -45,7 +46,12 @@ export default {
 スケジュール公開のノートは現れません。期間タイトルと前後ページのラベルは
 `site.locale` に従います。plugin の `locale` で上書きできます。日本語と英語
 のラベルを用意し、期間は `Intl.DateTimeFormat` で任意のロケール向けに整形し
-ます。
+ます。`en_US` のようなアンダースコア区切りのロケールは整形前に正規化しま
+す。
+
+解決したページは `description` と `language` も設定するため、サイトの
+document frame は期間を再計算せずにアーカイブの SEO メタデータと `lang` 属性
+を描画できます。
 
 ## オプション
 
@@ -63,7 +69,8 @@ export default {
 - `buildArchiveCollections`：エントリから月別 collection を組み立てます。
 - `archiveDefinitions`：plugin が使う Core collection 定義。
 - `renderArchivePage`：アーカイブ一覧ページを HTML に描画します。
-- `formatArchivePeriod`、`archivePaginationLabels`：ロケール補助関数。
+- `formatArchivePeriod`、`archivePaginationLabels`、
+  `buildArchiveDescription`：ロケール補助関数。
 - `DEFAULT_ARCHIVE_BASE_PATH`、`DEFAULT_ARCHIVE_PAGE_SIZE`、
   `DEFAULT_ARCHIVE_CLASS_NAME`、`ARCHIVE_COLLECTION_KIND`。
 

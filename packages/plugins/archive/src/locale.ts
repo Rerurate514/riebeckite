@@ -7,6 +7,23 @@ export function archivePaginationLabels(locale: string | null | undefined): {
     : { previous: "Previous", next: "Next" };
 }
 
+export function buildArchiveDescription(
+  siteTitle: string,
+  period: string,
+  locale: string | null | undefined,
+): string {
+  return isJapanese(locale)
+    ? `${siteTitle} の ${period} の記事一覧です。`
+    : `Posts from ${period} on ${siteTitle}.`;
+}
+
+export function normalizeArchiveLocale(
+  locale: string | null | undefined,
+): string {
+  const value = locale?.trim();
+  return value ? value.replace(/_/g, "-") : "en-US";
+}
+
 export function formatArchivePeriod(
   value: string,
   locale: string | null | undefined,
@@ -16,18 +33,17 @@ export function formatArchivePeriod(
 
   const year = Number(match[1]);
   const month = match[2] ? Number(match[2]) : null;
-  const tag = isJapanese(locale)
-    ? "ja-JP"
-    : locale && locale.trim() !== ""
-      ? locale
-      : "en-US";
   const options: Intl.DateTimeFormatOptions =
     month === null
       ? { year: "numeric", timeZone: "UTC" }
       : { year: "numeric", month: "long", timeZone: "UTC" };
-  return new Intl.DateTimeFormat(tag, options).format(
-    new Date(Date.UTC(year, (month ?? 1) - 1, 1)),
-  );
+  const date = new Date(Date.UTC(year, (month ?? 1) - 1, 1));
+  const tag = isJapanese(locale) ? "ja-JP" : normalizeArchiveLocale(locale);
+  try {
+    return new Intl.DateTimeFormat(tag, options).format(date);
+  } catch {
+    return new Intl.DateTimeFormat("en-US", options).format(date);
+  }
 }
 
 function isJapanese(locale: string | null | undefined): boolean {

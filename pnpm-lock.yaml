@@ -95,6 +95,9 @@ importers:
       '@riebeckite/plugin-analytics':
         specifier: workspace:*
         version: link:../../packages/plugins/analytics
+      '@riebeckite/plugin-archive':
+        specifier: workspace:*
+        version: link:../../packages/plugins/archive
       '@riebeckite/plugin-attachment':
         specifier: workspace:*
         version: link:../../packages/plugins/attachment

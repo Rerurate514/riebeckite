@@ -12,7 +12,6 @@ import {
   getHomePath,
   type HomeLocale,
 } from "./home";
-import { buildArchiveDescription } from "./locale";
 
 const seoProvider = findSeoProvider();
 
@@ -38,23 +37,6 @@ export function buildArticleSeo(
     post,
     headTags,
     language,
-  );
-}
-
-export function buildArchiveSeo(
-  period: string,
-  path: string,
-  lang: string,
-): SeoMetadata {
-  return buildWebsiteSeo(
-    {
-      title: period,
-      description: buildArchiveDescription(config.site.title, period, lang),
-      path,
-      kind: "website",
-    },
-    undefined,
-    lang,
   );
 }
 

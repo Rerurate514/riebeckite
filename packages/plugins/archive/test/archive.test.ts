@@ -11,6 +11,7 @@ import {
   archive,
   archivePaginationLabels,
   archivePlugin,
+  buildArchiveDescription,
   formatArchivePeriod,
   renderArchivePage,
   resolveArchiveOptions,
@@ -72,8 +73,11 @@ test("resolveArchiveOptions applies defaults and overrides", () => {
 
 test("formatArchivePeriod and archivePaginationLabels follow the locale", () => {
   assert.equal(formatArchivePeriod("2025-01", "en"), "January 2025");
+  assert.equal(formatArchivePeriod("2025-01", "en_US"), "January 2025");
   assert.equal(formatArchivePeriod("2025-01", "ja"), "2025年1月");
+  assert.equal(formatArchivePeriod("2025-01", "ja_JP"), "2025年1月");
   assert.equal(formatArchivePeriod("2025", "en"), "2025");
+  assert.equal(formatArchivePeriod("2025-01", "not a locale"), "January 2025");
   assert.equal(formatArchivePeriod("not-a-date", "en"), "not-a-date");
   assert.deepEqual(archivePaginationLabels("ja"), {
     previous: "前のページ",
@@ -83,6 +87,17 @@ test("formatArchivePeriod and archivePaginationLabels follow the locale", () => 
     previous: "Previous",
     next: "Next",
   });
+});
+
+test("buildArchiveDescription localizes archive copy", () => {
+  assert.equal(
+    buildArchiveDescription("Test", "2025年1月", "ja"),
+    "Test の 2025年1月 の記事一覧です。",
+  );
+  assert.equal(
+    buildArchiveDescription("Test", "January 2025", "en"),
+    "Posts from January 2025 on Test.",
+  );
 });
 
 test("renderArchivePage escapes titles, links, and pagination", () => {
@@ -133,6 +148,8 @@ test("generates monthly archive pages with pagination", async () => {
   const january = await content.resolvePage("/archive/2025/01");
   assert.equal(january?.type, "archive");
   assert.equal(january?.title, "January 2025");
+  assert.equal(january?.description, "Posts from January 2025 on Test.");
+  assert.equal(january?.language, "en");
   assert.match(january?.body ?? "", /href="\/a"/);
   assert.match(january?.body ?? "", /href="\/b"/);
   assert.match(
@@ -159,7 +176,20 @@ test("renders the archive period and pagination labels in Japanese", async () =>
 
   const january = await content.resolvePage("/archive/2025/01");
   assert.equal(january?.title, "2025年1月");
+  assert.equal(january?.description, "Test の 2025年1月 の記事一覧です。");
+  assert.equal(january?.language, "ja");
   assert.match(january?.body ?? "", />次のページ</);
+});
+
+test("archive pages normalize underscore locales", async () => {
+  const content = new ContentManager(source(monthlyFiles), [], {
+    config: archiveConfig("en_US"),
+    plugins: [archive()],
+  });
+
+  const january = await content.resolvePage("/archive/2025/01");
+  assert.equal(january?.title, "January 2025");
+  assert.equal(january?.language, "en-US");
 });
 
 test("archive pages exclude entries that are not discoverable", async () => {

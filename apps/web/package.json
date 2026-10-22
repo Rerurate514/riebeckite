@@ -17,6 +17,7 @@
     "@riebeckite/honox": "workspace:*",
     "@riebeckite/plugin-alias": "workspace:*",
     "@riebeckite/plugin-analytics": "workspace:*",
+    "@riebeckite/plugin-archive": "workspace:*",
     "@riebeckite/plugin-attachment": "workspace:*",
     "@riebeckite/plugin-autocardlink": "workspace:*",
     "@riebeckite/plugin-backlinks": "workspace:*",

@@ -37,18 +37,13 @@ import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
-  ssgEnumerableHandler(async (c, next) => {
+  ssgEnumerableHandler(async (c) => {
     if (c.req.path === "/ja" || c.req.path === "/ja/") {
       c.set("htmlLanguage", "ja");
       c.set("seo", buildHomeSeo("ja"));
       return c.render(
         <HomePage locale="ja" runtime={await renderHomeRuntime()} />,
       );
-    }
-
-    // Archive has a dedicated route; defer to it.
-    if (c.req.path.startsWith("/archive/")) {
-      return next();
     }
 
     const resolved = await resolveRiebeckiteContentRequest(c, content);
@@ -64,6 +59,7 @@ export default createRoute(
             path: resolved.page.pathname,
           },
           resolved.page.headTags,
+          resolved.page.language,
         ),
       );
       return c.render(<PageBody html={resolved.page.body} />);

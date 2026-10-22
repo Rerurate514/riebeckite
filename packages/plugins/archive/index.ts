@@ -4,6 +4,10 @@ import {
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { buildArchiveCollections } from "./src/collections.js";
+import {
+  buildArchiveDescription,
+  normalizeArchiveLocale,
+} from "./src/locale.js";
 import { resolveArchiveOptions } from "./src/options.js";
 import { renderArchivePage } from "./src/pages.js";
 import type { ArchiveOptions, ResolvedArchiveOptions } from "./src/types.js";
@@ -13,7 +17,11 @@ export {
   archiveDefinitions,
   buildArchiveCollections,
 } from "./src/collections.js";
-export { archivePaginationLabels, formatArchivePeriod } from "./src/locale.js";
+export {
+  archivePaginationLabels,
+  buildArchiveDescription,
+  formatArchivePeriod,
+} from "./src/locale.js";
 export {
   DEFAULT_ARCHIVE_BASE_PATH,
   DEFAULT_ARCHIVE_CLASS_NAME,
@@ -60,6 +68,10 @@ export function archive(options: ArchiveOptions = {}) {
             type: "archive",
             pathname: collection.path,
             title: page.title,
+            description: config
+              ? buildArchiveDescription(config.site.title, page.title, locale)
+              : undefined,
+            language: normalizeArchiveLocale(locale),
             body: page.html,
           };
         },

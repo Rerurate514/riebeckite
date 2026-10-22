@@ -192,11 +192,9 @@ body:has(.rb-home) main {
 }
 .rb-home__statement {
   padding-top: var(--rb-space-4);
-  border-top: 1px solid var(--rb-color-border);
 }
 .rb-home__conversion {
   padding-top: var(--rb-space-4);
-  border-top: 1px solid var(--rb-color-border);
 }
 .rb-home__conversion-flow {
   display: grid;
@@ -292,7 +290,6 @@ body:has(.rb-home) main {
 }
 .rb-home__configuration {
   padding: clamp(2rem, 5vw, 4rem);
-  border-block: 1px solid var(--rb-color-border-strong);
   background: var(--rb-color-surface-hover);
 }
 .rb-home__application-example {
@@ -322,7 +319,6 @@ body:has(.rb-home) main {
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: clamp(2rem, 7vw, 7rem);
   padding-block: var(--rb-space-5);
-  border-block: 1px solid var(--rb-color-border);
 }
 .rb-home__workflow-list {
   display: grid;

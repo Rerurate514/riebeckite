@@ -1,5 +1,8 @@
 .rr-code {
-  --rr-code-paper: var(--rb-color-code-background, var(--rb-color-ink, #000000));
+  --rr-code-paper: var(
+    --rb-color-code-background,
+    var(--rb-color-ink, #000000)
+  );
   --rr-code-ink: var(--rb-color-code-ink, var(--rb-color-paper, #ffffff));
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);

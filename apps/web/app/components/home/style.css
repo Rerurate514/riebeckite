@@ -191,7 +191,11 @@ body:has(.rb-home) main {
   margin-top: clamp(4.5rem, 10vw, 8rem);
 }
 .rb-home__statement {
+  display: block;
   padding-top: var(--rb-space-4);
+}
+.rb-home__statement .rb-home__section-intro {
+  max-width: 41rem;
 }
 .rb-home__conversion {
   padding-top: var(--rb-space-4);

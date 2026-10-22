@@ -1,3 +1,11 @@
+import {
+  buildOutputPlan,
+  ContentManager,
+  FileSystemContentSource,
+  type OutputChangeSet,
+  type OutputDependency,
+  type OutputDescriptor,
+} from "@riebeckite/core";
 import { collectDevelopmentDiagnostics } from "@riebeckite/diagnostics";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
@@ -5,6 +13,51 @@ import type { ResolvedHonoxApplication } from "./vite_runner.js";
 const clientModuleId = "virtual:riebeckite/development-inspector";
 const resolvedClientModuleId = `\0${clientModuleId}`;
 const endpointPath = "/__riebeckite/inspector/report";
+const listedOutputLimit = 20;
+
+type ListedOutput = {
+  readonly path: string;
+  readonly kind: string;
+  readonly producer: string;
+};
+
+type OutputInspection =
+  | {
+      readonly status: "available";
+      readonly candidateOutputCount: number;
+      readonly affectedOutputCount: number;
+      readonly unchangedOutputCount: number;
+      readonly removedOutputCount: number;
+      readonly fullRegenerationRequired: boolean;
+      readonly conflicts: readonly {
+        readonly path: string;
+        readonly owners: readonly string[];
+      }[];
+      readonly affected: readonly ListedOutput[];
+      readonly hiddenAffectedCount: number;
+      readonly removed: readonly ListedOutput[];
+      readonly hiddenRemovedCount: number;
+    }
+  | { readonly status: "unavailable"; readonly reason: string };
+
+type DependencyInspection =
+  | {
+      readonly status: "available";
+      readonly outputCount: number;
+      readonly dependentOutputCount: number;
+      readonly dependencyCount: number;
+      readonly unknownOutputCount: number;
+      readonly kinds: readonly {
+        readonly kind: string;
+        readonly count: number;
+      }[];
+      readonly outputs: readonly {
+        readonly path: string;
+        readonly dependencies: readonly string[];
+      }[];
+      readonly hiddenOutputCount: number;
+    }
+  | { readonly status: "unavailable"; readonly reason: string };
 
 export function riebeckiteDevelopmentInspector(
   getApplication: () => ResolvedHonoxApplication,
@@ -32,27 +85,37 @@ export function riebeckiteDevelopmentInspector(
         }
         try {
           const application = getApplication();
-          const report = await collectDevelopmentDiagnostics({
-            config: application.config,
-            revision,
-          });
-          response.setHeader("content-type", "application/json; charset=utf-8");
-          response.setHeader("cache-control", "no-store");
-          const currentPage = currentPageFromRequest(request.url);
-          response.end(
-            JSON.stringify({
-              ...report,
-              generatedAt: new Date().toISOString(),
-              currentPage,
-              theme: application.config.theme.name,
-              plugins: application.config.plugins.map((plugin) => plugin.name),
-              capabilities: {
-                dependencies: "unavailable",
-                output: "unavailable",
-                pageMetadata: "unavailable",
-              },
-            }),
-          );
+          const content = createInspectionContent(application);
+          try {
+            const report = await collectDevelopmentDiagnostics({
+              config: application.config,
+              content,
+              revision,
+            });
+            const { output, dependencies } =
+              await inspectContentOutputs(content);
+            response.setHeader(
+              "content-type",
+              "application/json; charset=utf-8",
+            );
+            response.setHeader("cache-control", "no-store");
+            const currentPage = currentPageFromRequest(request.url);
+            response.end(
+              JSON.stringify({
+                ...report,
+                generatedAt: new Date().toISOString(),
+                currentPage,
+                theme: application.config.theme.name,
+                plugins: application.config.plugins.map(
+                  (plugin) => plugin.name,
+                ),
+                dependencies,
+                output,
+              }),
+            );
+          } finally {
+            await content.dispose();
+          }
         } catch {
           response.statusCode = 500;
           response.setHeader("content-type", "application/json; charset=utf-8");
@@ -67,6 +130,146 @@ export function riebeckiteDevelopmentInspector(
       server.hot.send({ type: "custom", event: "riebeckite:inspector" });
     },
   };
+}
+
+function createInspectionContent(
+  application: ResolvedHonoxApplication,
+): ContentManager {
+  const { config, contentRoot } = application;
+  return new ContentManager(
+    config.content.source ??
+      new FileSystemContentSource(contentRoot, config.content.exclude),
+    config.content.exclude,
+    { config, commitBuildState: false },
+  );
+}
+
+async function inspectContentOutputs(content: ContentManager): Promise<{
+  readonly output: OutputInspection;
+  readonly dependencies: DependencyInspection;
+}> {
+  try {
+    const changes = await content.getOutputChangeSet();
+    return {
+      output: inspectOutput(changes),
+      dependencies: inspectDependencies(changes),
+    };
+  } catch {
+    return {
+      output: {
+        status: "unavailable",
+        reason: "output inspection failed",
+      },
+      dependencies: {
+        status: "unavailable",
+        reason: "dependency inspection failed",
+      },
+    };
+  }
+}
+
+function inspectOutput(changes: OutputChangeSet): OutputInspection {
+  const plan = buildOutputPlan({
+    inventory: [...changes.affected, ...changes.unchanged],
+    removed: changes.removed,
+    affectedPaths: new Set(changes.affected.map((output) => output.path)),
+    cacheAvailable: changes.unchanged.length > 0,
+  });
+  return {
+    status: "available",
+    candidateOutputCount: changes.candidateOutputCount,
+    affectedOutputCount: changes.affectedOutputCount,
+    unchangedOutputCount: changes.unchangedOutputCount,
+    removedOutputCount: changes.removedOutputCount,
+    fullRegenerationRequired: changes.fullRegenerationRequired,
+    conflicts: plan.conflicts.map((conflict) => ({
+      path: conflict.path,
+      owners: conflict.owners,
+    })),
+    affected: changes.affected.slice(0, listedOutputLimit).map(listOutput),
+    hiddenAffectedCount: Math.max(
+      0,
+      changes.affected.length - listedOutputLimit,
+    ),
+    removed: changes.removed.slice(0, listedOutputLimit).map(listOutput),
+    hiddenRemovedCount: Math.max(0, changes.removed.length - listedOutputLimit),
+  };
+}
+
+function inspectDependencies(changes: OutputChangeSet): DependencyInspection {
+  const outputs = [...changes.affected, ...changes.unchanged];
+  const kinds = new Map<string, number>();
+  const listed: { path: string; dependencies: string[] }[] = [];
+  let dependencyCount = 0;
+  let dependentOutputCount = 0;
+  let unknownOutputCount = 0;
+  let hiddenOutputCount = 0;
+  for (const output of outputs) {
+    for (const dependency of output.dependencies) {
+      dependencyCount += 1;
+      kinds.set(dependency.type, (kinds.get(dependency.type) ?? 0) + 1);
+    }
+    if (output.dependencies.some(({ type }) => type === "unknown")) {
+      unknownOutputCount += 1;
+    }
+    if (output.dependencies.length === 0) continue;
+    dependentOutputCount += 1;
+    if (listed.length < listedOutputLimit) {
+      listed.push({
+        path: output.path,
+        dependencies: output.dependencies.map(dependencyLabel),
+      });
+    } else {
+      hiddenOutputCount += 1;
+    }
+  }
+  return {
+    status: "available",
+    outputCount: outputs.length,
+    dependentOutputCount,
+    dependencyCount,
+    unknownOutputCount,
+    kinds: [...kinds.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([kind, count]) => ({ kind, count })),
+    outputs: listed,
+    hiddenOutputCount,
+  };
+}
+
+function listOutput(output: OutputDescriptor): ListedOutput {
+  return {
+    path: output.path,
+    kind: output.kind,
+    producer: output.producer,
+  };
+}
+
+function dependencyLabel(dependency: OutputDependency): string {
+  switch (dependency.type) {
+    case "content":
+      return `content:${dependency.slug}`;
+    case "tag":
+      return `tag:${dependency.tag}`;
+    case "folder":
+      return `folder:${dependency.folder}`;
+    case "file":
+      return `file:${dependency.path}`;
+    case "public-location":
+      return `public-location:${dependency.pathname}`;
+    case "projection":
+      return `projection:${dependency.projection}`;
+    case "external":
+      return `external:${dependency.id}`;
+    case "content-query":
+      return `content-query:${dependency.properties.join(",")}${
+        dependency.unknown ? "?" : ""
+      }`;
+    case "global":
+      return "global";
+    case "unknown":
+      return "unknown";
+  }
 }
 
 function currentPageFromRequest(url: string | undefined): string {
@@ -191,9 +394,9 @@ export function initDevelopmentInspector() {
   function panelContent() {
     if (activeTab === 0) return '<dl><dt>Page</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>Theme</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>Revision</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
     if (activeTab === 1) return diagnosticList(report.diagnostics);
-    if (activeTab === 2) return unavailable("Dependencies", report.capabilities.dependencies);
+    if (activeTab === 2) return dependencyReport(report.dependencies);
     if (activeTab === 3) return '<ul>' + (report.plugins.map((plugin) => '<li>' + escapeHtml(plugin) + '</li>').join("") || "<li>No plugins configured.</li>") + '</ul>';
-    return unavailable("Output", report.capabilities.output);
+    return outputReport(report.output);
   }
 }
 
@@ -203,8 +406,56 @@ function diagnosticList(diagnostics) {
   ).join("") || "<li>No diagnostic findings.</li>") + '</ul>';
 }
 
+function outputReport(output) {
+  if (output.status !== "available") return unavailable("Output", output.reason);
+  return '<dl>' +
+    '<dt>Candidate</dt><dd>' + output.candidateOutputCount + '</dd>' +
+    '<dt>Affected</dt><dd>' + output.affectedOutputCount + '</dd>' +
+    '<dt>Unchanged</dt><dd>' + output.unchangedOutputCount + '</dd>' +
+    '<dt>Removed</dt><dd>' + output.removedOutputCount + '</dd>' +
+    '<dt>Full regeneration</dt><dd>' + (output.fullRegenerationRequired ? "required" : "not required") + '</dd>' +
+    '<dt>Owner conflicts</dt><dd>' + output.conflicts.length + '</dd>' +
+    '</dl>' +
+    listedOutputs("Affected outputs", output.affected, output.hiddenAffectedCount) +
+    listedOutputs("Removed outputs", output.removed, output.hiddenRemovedCount) +
+    conflictList(output.conflicts);
+}
+
+function listedOutputs(title, outputs, hiddenCount) {
+  if (outputs.length === 0) return "";
+  return '<h3>' + escapeHtml(title) + '</h3><ul>' + outputs.map((output) =>
+    '<li><code>' + escapeHtml(output.path) + '</code> <small>' + escapeHtml(output.kind) + ' · ' + escapeHtml(output.producer) + '</small></li>'
+  ).join("") + '</ul>' + (hiddenCount > 0 ? '<p class="more">' + hiddenCount + ' more not shown.</p>' : "");
+}
+
+function conflictList(conflicts) {
+  if (conflicts.length === 0) return "";
+  return '<h3>Owner conflicts</h3><ul>' + conflicts.map((conflict) =>
+    '<li><code>' + escapeHtml(conflict.path) + '</code> <small>' + escapeHtml(conflict.owners.join(", ")) + '</small></li>'
+  ).join("") + '</ul>';
+}
+
+function dependencyReport(dependencies) {
+  if (dependencies.status !== "available") return unavailable("Dependencies", dependencies.reason);
+  return '<dl>' +
+    '<dt>Outputs</dt><dd>' + dependencies.outputCount + '</dd>' +
+    '<dt>With dependencies</dt><dd>' + dependencies.dependentOutputCount + '</dd>' +
+    '<dt>Dependencies</dt><dd>' + dependencies.dependencyCount + '</dd>' +
+    '<dt>Unknown outputs</dt><dd>' + dependencies.unknownOutputCount + '</dd>' +
+    '</dl>' +
+    (dependencies.kinds.length === 0 ? "<p>No output dependencies.</p>" :
+      '<h3>Kinds</h3><ul>' + dependencies.kinds.map((kind) =>
+        '<li>' + escapeHtml(kind.kind) + ' <small>' + kind.count + '</small></li>'
+      ).join("") + '</ul>') +
+    (dependencies.outputs.length === 0 ? "" :
+      '<h3>Outputs</h3><ul>' + dependencies.outputs.map((output) =>
+        '<li><code>' + escapeHtml(output.path) + '</code><br><small>' + escapeHtml(output.dependencies.join(", ")) + '</small></li>'
+      ).join("") + '</ul>') +
+    (dependencies.hiddenOutputCount > 0 ? '<p class="more">' + dependencies.hiddenOutputCount + ' more outputs not shown.</p>' : "");
+}
+
 function unavailable(subject, capability) {
-  return '<p class="partial">' + escapeHtml(subject) + ': ' + escapeHtml(capability) + ' in the development inspector.</p>';
+  return '<p class="partial">' + escapeHtml(subject) + ' unavailable: ' + escapeHtml(capability) + '.</p>';
 }
 
 function renderFailure(root, message) {
@@ -220,6 +471,6 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
 }
 
-const styles = ':host{all:initial}section{position:fixed;right:16px;bottom:56px;z-index:2147483647;width:min(540px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#171717;color:#f4f4f4;border:1px solid #555;padding:16px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 8px 24px #0006}header{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #555;padding-bottom:8px}header p,.status,small{color:#b8b8b8;margin:2px 0}.summary{margin:12px 0}button{border:1px solid #666;background:#242424;color:#fff;padding:6px 8px;cursor:pointer}button[aria-selected="true"]{border-color:#e2c57b;color:#ffe08a}.partial{color:#e2c57b}ul{margin:12px 0;padding-left:20px}li{margin:8px 0}li[data-severity="error"]{color:#ff9797}li[data-severity="warning"]{color:#ffe08a}dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}dt{color:#b8b8b8}.failure{color:#ff9797}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media(max-width:560px){section{right:8px;bottom:52px;width:calc(100vw - 32px);max-height:75vh}}';
+const styles = ':host{all:initial}section{position:fixed;right:16px;bottom:56px;z-index:2147483647;width:min(540px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#171717;color:#f4f4f4;border:1px solid #555;padding:16px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 8px 24px #0006}header{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #555;padding-bottom:8px}header p,.status,small{color:#b8b8b8;margin:2px 0}.summary{margin:12px 0}button{border:1px solid #666;background:#242424;color:#fff;padding:6px 8px;cursor:pointer}button[aria-selected="true"]{border-color:#e2c57b;color:#ffe08a}.partial{color:#e2c57b}.more{color:#b8b8b8;margin:4px 0}h3{color:#b8b8b8;font-size:12px;margin:12px 0 4px;text-transform:uppercase}ul{margin:12px 0;padding-left:20px}li{margin:8px 0}li[data-severity="error"]{color:#ff9797}li[data-severity="warning"]{color:#ffe08a}dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}dt{color:#b8b8b8}.failure{color:#ff9797}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media(max-width:560px){section{right:8px;bottom:52px;width:calc(100vw - 32px);max-height:75vh}}';
 `;
 }

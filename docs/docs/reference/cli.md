@@ -311,7 +311,7 @@ flowchart LR
 
 `doctor` continues independent checks where possible and exits unsuccessfully when health checks fail.
 
-During `riebeckite dev`, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> outside editable controls to open the Development Inspector. It uses the same report as `doctor`, refreshes with Vite updates, and is not included in production client output or endpoints. Its Overview, Diagnostics, Dependencies, Plugins, and Output tabs label unavailable observations instead of running a build.
+During `riebeckite dev`, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> outside editable controls to open the Development Inspector. It uses the same report as `doctor`, refreshes with Vite updates, and is not included in production client output or endpoints. Its Overview, Diagnostics, Dependencies, Plugins, and Output tabs show the same diagnostics report. The Dependencies and Output tabs read the current content and output plan without writing build state or building the site.
 
 ## `build`
 

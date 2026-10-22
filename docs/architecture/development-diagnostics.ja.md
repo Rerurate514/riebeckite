@@ -15,7 +15,7 @@ Riebeckite Doctor と Development Inspector は `@riebeckite/diagnostics` を共
 | Content Integrity と WikiLink | `ContentManager.inspect()` | Link 解析を再実装せず、既存の診断を利用します。 |
 | Plugin の順序と設定 | 解決済み設定と `resolvePlugins()` | 解決結果または解決エラーを報告します。 |
 | Output の所有権 | `buildOutputPlan()` と `compareOutputPlan()` | SSG と同じ出力分類を使います。 |
-| 増分依存関係 | `ContentManager.getOutputChangeSet()` | 追跡済みの依存だけを表示し、取得不能な情報は明示します。 |
+| 増分依存関係 | `ContentManager.getOutputChangeSet()` | 影響のある出力、未変更の出力、削除された出力を、追跡済みの依存関係とともに表示します。 |
 | Theme | 解決済み Theme 設定 | 解決済み Style を報告し、読み込み失敗は設定診断として扱います。 |
 | 開発サーバー | 既存の HonoX / Vite 統合 | serve 時だけの Vite middleware と client virtual module を追加します。 |
 
@@ -27,6 +27,6 @@ Riebeckite Doctor と Development Inspector は `@riebeckite/diagnostics` を共
 
 ## 観測できない情報
 
-Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。Inspector には Overview、Diagnostics、Dependencies、Plugins、Output のタブがあります。開発用の表示だけを目的に Content の検査や Output Plan の作成は行わず、取得できない機能はそのように表示します。現在の URL パスと解決済み Plugin は表示しますが、要素の元ファイル・行・Component・CSS 所有者は推測しません。要素単位の検査には renderer 境界での開発専用 source-map 観測点が必要です。
+Markdown / HTML pipeline では要素からソースへの対応情報を保持していません。Inspector には Overview、Diagnostics、Dependencies、Plugins、Output のタブがあります。Dependencies と Output タブは read-only の `ContentManager` で現在の Content と Output Change Set を読み取ります。build state の書き込みや site の build は行わず、Output Plan と build 済みファイルの比較も行いません。現在の URL パスと解決済み Plugin は表示しますが、要素の元ファイル・行・Component・CSS 所有者は推測しません。要素単位の検査には renderer 境界での開発専用 source-map 観測点が必要です。
 
 Launcher は serve 時だけ利用できます。編集可能なコントロール以外で Ctrl+Alt+R を押すと開閉でき、Escape を押すと閉じて Launcher にフォーカスが戻ります。レポート endpoint は loopback からのみ利用でき、`no-store` を返し、HonoX の catch-all 開発 middleware より前に登録されます。

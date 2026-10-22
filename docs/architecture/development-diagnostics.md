@@ -17,7 +17,7 @@ parsing, plugin execution, output planning, configuration resolution, or a UI.
 | Content integrity and WikiLinks | `ContentManager.inspect()` | Uses the existing diagnostics without reimplementing link analysis. |
 | Plugin ordering and configuration | resolved config and `resolvePlugins()` | Reports the resolution result or the resolution error. |
 | Output ownership | `buildOutputPlan()` and `compareOutputPlan()` | Keeps output classifications identical to the SSG. |
-| Incremental dependencies | `ContentManager.getOutputChangeSet()` | Classifies output observations and explicitly marks unavailable observations. It does not serialize a dependency graph. |
+| Incremental dependencies | `ContentManager.getOutputChangeSet()` | Displays the affected, unchanged, and removed outputs with their tracked dependencies. |
 | Themes | resolved theme configuration | Reports the resolved styles; load failures remain configuration diagnostics. |
 | Development server | the existing HonoX/Vite integration | Adds a serve-only Vite middleware and client virtual module. |
 
@@ -36,10 +36,11 @@ code is present in production output.
 
 Element-to-source mappings are not preserved through the Markdown/HTML pipeline.
 The Inspector presents Overview, Diagnostics, Dependencies, Plugins, and
-Output tabs. It does not trigger content inspection or output planning merely
-to populate a development view: unavailable capabilities are labelled as such.
-It reports the current URL path and resolved plugins, but does not guess an
-element's source file, line, component, or CSS owner. Adding element-level
+Output tabs. The Dependencies and Output tabs use a read-only `ContentManager`
+to inspect the current content and output change set. They do not write build
+state or build the site, and they do not compare the output plan with built
+files. It reports the current URL path and resolved plugins, but does not guess
+an element's source file, line, component, or CSS owner. Adding element-level
 inspection requires an explicit development-only source-map observation at the
 renderer boundary.
 

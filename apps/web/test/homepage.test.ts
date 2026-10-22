@@ -6,7 +6,7 @@ import { renderToString } from "hono/jsx/dom/server";
 import HomePage from "../app/components/home/home";
 import {
   buildSoftwareApplicationSchema,
-  getHomeCopy,
+  getHomeMetadata,
   getHomePath,
   type HomeLocale,
 } from "../app/lib/home";
@@ -19,12 +19,11 @@ const locales: HomeLocale[] = ["ja", "en"];
 
 test("homepage titles name the software and its content sources", () => {
   for (const locale of locales) {
-    const copy = getHomeCopy(locale);
-    assert.match(copy.title, /Riebeckite/);
-    assert.match(copy.title, /Markdown/);
-    assert.match(copy.title, /Obsidian/);
-    assert.ok(copy.description.length > 0);
-    assert.ok(copy.primaryCta.href.length > 0);
+    const metadata = getHomeMetadata(locale);
+    assert.match(metadata.title, /Riebeckite/);
+    assert.match(metadata.title, /Markdown/);
+    assert.match(metadata.title, /Obsidian/);
+    assert.ok(metadata.description.length > 0);
   }
 });
 
@@ -32,8 +31,7 @@ test("homepage copy avoids unsupported marketing claims", () => {
   const forbidden =
     /revolutionary|next-generation|blazing|seamless|effortless|enterprise-grade|10x|anything you can imagine|100% obsidian|\bfast\b|高速/i;
   for (const locale of locales) {
-    const copy = JSON.stringify(getHomeCopy(locale));
-    assert.doesNotMatch(copy, forbidden);
+    assert.doesNotMatch(renderToString(HomePage({ locale })), forbidden);
   }
 });
 
@@ -51,8 +49,8 @@ test("homepage canonical paths follow locale routing", () => {
 });
 
 test("homepage SEO copy is localized rather than translated verbatim", () => {
-  const ja = getHomeCopy("ja");
-  const en = getHomeCopy("en");
+  const ja = getHomeMetadata("ja");
+  const en = getHomeMetadata("en");
   assert.notEqual(ja.title, en.title);
   assert.notEqual(ja.description, en.description);
   assert.match(ja.title, /フレームワーク/);
@@ -133,11 +131,9 @@ for (const locale of locales) {
 
   test(`homepage (${locale}) links the journeys a first-time visitor needs`, () => {
     const html = renderToString(HomePage({ locale }));
-    const copy = getHomeCopy(locale);
     const docsPrefix = locale === "en" ? "" : "/ja";
 
     for (const href of [
-      copy.primaryCta.href,
       `${docsPrefix}/docs/`,
       `${docsPrefix}/docs/getting-started/`,
       `${docsPrefix}/docs/plugins/`,

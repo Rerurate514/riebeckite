@@ -8,7 +8,7 @@ import type {
 import { resolvePlugins } from "@riebeckite/core";
 import {
   buildSoftwareApplicationSchema,
-  getHomeCopy,
+  getHomeMetadata,
   getHomePath,
   type HomeLocale,
 } from "./home";
@@ -75,11 +75,11 @@ export function buildHomeSeo(
   locale: HomeLocale,
   headTags?: readonly PluginHeadTag[],
 ): SeoMetadata {
-  const copy = getHomeCopy(locale);
+  const metadata = getHomeMetadata(locale);
   const website = buildWebsiteSeo(
     {
-      title: copy.title,
-      description: copy.description,
+      title: metadata.title,
+      description: metadata.description,
       path: getHomePath(locale),
       kind: "index",
     },
@@ -91,7 +91,7 @@ export function buildHomeSeo(
   );
   jsonLd.push(buildSoftwareApplicationSchema(locale, website.canonicalUrl));
 
-  return { ...website, title: copy.title, jsonLd };
+  return { ...website, title: metadata.title, jsonLd };
 }
 
 export function buildAbsoluteUrl(pathOrUrl: string): string {

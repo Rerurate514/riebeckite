@@ -204,12 +204,12 @@ function failedResult(
 async function sanitizeHtml(html: string): Promise<string> {
   const schema: SanitizeSchema = {
     ...defaultSchema,
-    tagNames: [...(defaultSchema.tagNames ?? []), "button"],
+    tagNames: [...(defaultSchema.tagNames ?? []), "button", "mark"],
     attributes: {
       ...defaultSchema.attributes,
       "*": [
         ...(defaultSchema.attributes?.["*"] ?? []),
-        ["className", /^(?:rb-|rr-)/],
+        ["className", /^(?:rb|rr)-[\w-]+$/],
         "role",
         "ariaHidden",
         "ariaSelected",
@@ -225,6 +225,8 @@ async function sanitizeHtml(html: string): Promise<string> {
         "dataLineNumber",
       ],
       button: ["type", "disabled"],
+      a: withPluginClasses(defaultSchema.attributes?.a),
+      code: withPluginClasses(defaultSchema.attributes?.code),
     },
   };
   const file = await unified()
@@ -233,6 +235,17 @@ async function sanitizeHtml(html: string): Promise<string> {
     .use(rehypeStringify)
     .process(html);
   return String(file.value);
+}
+
+function withPluginClasses(
+  attributes: NonNullable<SanitizeSchema["attributes"]>[string] | undefined,
+) {
+  return [
+    ...(attributes ?? []).filter(
+      (attribute) => !Array.isArray(attribute) || attribute[0] !== "className",
+    ),
+    ["className", /^data-footnote-backref$/, /^(?:rb|rr)-[\w-]+$/],
+  ];
 }
 
 function isJsonValue(value: unknown, seen = new Set<object>()): boolean {

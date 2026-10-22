@@ -1,5 +1,19 @@
+import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
+import {
+  type CodeEnhanceOptions,
+  codeEnhance,
+} from "@riebeckite/plugin-code-enhance";
 import { type CodeTabsOptions, codeTabs } from "@riebeckite/plugin-code-tabs";
+import { hardBreaks } from "@riebeckite/plugin-hard-breaks";
+import { type HighlightOptions, highlight } from "@riebeckite/plugin-highlight";
+import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import {
+  type ShortcodeOptions,
+  shortcodes,
+} from "@riebeckite/plugin-shortcodes";
+import { type SidenotesOptions, sidenotes } from "@riebeckite/plugin-sidenotes";
 import {
   createPreviewRegistry,
   definePluginPreview,
@@ -69,5 +83,124 @@ export const previewRegistry: PreviewRegistry = createPreviewRegistry({
       ],
       create: () => codeAnnotations(),
     }),
+    definePluginPreview({
+      id: "autocardlink",
+      title: "Auto Card Link",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "card",
+          "Link card",
+          [
+            "```cardlink",
+            "url: https://riebeckite.dev",
+            "title: Riebeckite",
+            "description: A Markdown publishing toolkit.",
+            "host: riebeckite.dev",
+            "```",
+          ].join("\n"),
+        ),
+      ],
+      create: () => autoCardLinkPlugin(),
+    }),
+    definePluginPreview<CodeEnhanceOptions>({
+      id: "code-enhance",
+      title: "Code Enhance",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "highlighted-lines",
+          "Highlighted lines",
+          '```ts {2} title="greeting.ts"\nconst greeting = "Hello";\nconsole.log(greeting);\n```',
+        ),
+      ],
+      options: {
+        copyLabel: { type: "string", title: "Copy label", default: "Copy" },
+      },
+      create: (options) => codeEnhance(options),
+    }),
+    definePluginPreview({
+      id: "hard-breaks",
+      title: "Hard Breaks",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "paragraph",
+          "Soft line breaks",
+          "The first line\ncontinues on the second line.",
+        ),
+      ],
+      create: () => hardBreaks(),
+    }),
+    definePluginPreview<HighlightOptions>({
+      id: "highlight",
+      title: "Highlight",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "marked-text",
+          "Marked text",
+          "Use ==highlighted text== for emphasis.",
+        ),
+      ],
+      options: { tag: { type: "string", title: "HTML tag", default: "mark" } },
+      create: (options) => highlight(options),
+    }),
+    definePluginPreview({
+      id: "lightbox",
+      title: "Lightbox",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "image",
+          "Enhanced image",
+          "![A violet square](https://placehold.co/640x360/7655a6/ffffff?text=Lightbox)",
+        ),
+      ],
+      create: () => lightboxPlugin(),
+    }),
+    definePluginPreview({
+      id: "obsidian-markdown",
+      title: "Obsidian Markdown",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "callout",
+          "Callout and tag",
+          "> [!tip] Preview\n> This is an Obsidian callout.\n\n#riebeckite",
+        ),
+      ],
+      create: () => obsidianMarkdown(),
+    }),
+    definePluginPreview<SidenotesOptions>({
+      id: "sidenotes",
+      title: "Sidenotes",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "note",
+          "Footnote conversion",
+          "A claim with a note.[^note]\n\n[^note]: The generated static markup is shown; the popover needs the site client entry.",
+        ),
+      ],
+      create: (options) => sidenotes(options),
+    }),
+    definePluginPreview<ShortcodeOptions>({
+      id: "shortcodes",
+      title: "Shortcodes",
+      availability: "browser",
+      fixtures: [
+        fixture(
+          "note",
+          "Note shortcode",
+          ":::note[Preview]\nThis block is rendered by the shortcode plugin.\n:::",
+        ),
+      ],
+      create: (options) => shortcodes(options),
+    }),
   ],
 });
+
+function fixture(id: string, title: string, markdown: string) {
+  return { id, title, markdown };
+}

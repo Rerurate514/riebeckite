@@ -74,6 +74,45 @@ test("renders the code-annotations fixture with diff markers", async () => {
   await preview.dispose();
 });
 
+test("renders every registered plugin fixture through the preview runtime", async () => {
+  const expectedOutput = {
+    autocardlink: "rr-cardlink",
+    "code-annotations": "rr-code__diff-marker",
+    "code-enhance": "rr-code__body",
+    "code-tabs": "rr-code-tabs",
+    "hard-breaks": "<br>",
+    highlight: "<mark",
+    lightbox: "rr-lightbox-image",
+    "obsidian-markdown": "rr-callout",
+    sidenotes: "rr-sidenotes__body",
+    shortcodes: "rb-shortcode",
+  } as const;
+
+  for (const plugin of previewRegistry.plugins) {
+    const fixture = plugin.fixtures[0];
+    assert.ok(fixture, `${plugin.id} needs a fixture`);
+    const preview = createPreview({ registry: previewRegistry });
+    const result = await preview.render({
+      pluginId: plugin.id,
+      markdown: fixture.markdown,
+    });
+
+    assert.equal(
+      result.diagnostics.some((diagnostic) => diagnostic.severity === "error"),
+      false,
+      `${plugin.id} returned an error diagnostic`,
+    );
+    assert.notEqual(result.html.trim(), "", `${plugin.id} rendered no HTML`);
+    assert.match(
+      result.html,
+      new RegExp(expectedOutput[plugin.id as keyof typeof expectedOutput]),
+      `${plugin.id} did not render its expected transform`,
+    );
+    assert.doesNotMatch(result.html, /<script|on\w+=|javascript:/i);
+    await preview.dispose();
+  }
+});
+
 test("returns non-cacheable generic errors for malformed worker requests", async () => {
   const response = await worker.request("http://localhost/api/playground", {
     method: "POST",

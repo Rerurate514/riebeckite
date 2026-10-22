@@ -36,7 +36,7 @@ export function PluginPreview({
     >
       <header class="plugin-preview__header">
         <div>
-          <p>Interactive preview</p>
+          <p>Sandboxed preview</p>
           <h2>{plugin.title}</h2>
         </div>
         {playgroundLink && <a href={playgroundHref}>Open in Playground</a>}

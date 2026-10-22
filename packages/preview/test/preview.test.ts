@@ -97,13 +97,15 @@ test("sanitizes untrusted markdown HTML", async () => {
 
   const result = await preview.render({
     markdown:
-      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><a href="&#x6a;avascript:alert(1)">encoded</a><svg><script>alert(1)</script></svg><math><mi>x</mi></math><iframe srcdoc="<script>alert(1)</script>"></iframe><div style="background:url(javascript:alert(1))">x</div><img src="data:text/html;base64,PHNjcmlwdD4=">',
+      '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><a href="&#x6a;avascript:alert(1)">encoded</a><svg><script>alert(1)</script></svg><math><mi>x</mi></math><iframe srcdoc="<script>alert(1)</script>"></iframe><div style="background:url(javascript:alert(1))">x</div><img src="data:text/html;base64,PHNjcmlwdD4="><mark class="rb-highlight">safe</mark><a class="rr-link" href="https://example.com">safe link</a>',
   });
 
   assert.doesNotMatch(
     result.html,
     /script|onerror|javascript:|iframe|style=|srcdoc|<math|data:text\/html/i,
   );
+  assert.match(result.html, /<mark class="rb-highlight">safe<\/mark>/);
+  assert.match(result.html, /<a class="rr-link" href="https:\/\/example\.com">safe link<\/a>/);
   await preview.dispose();
 });
 

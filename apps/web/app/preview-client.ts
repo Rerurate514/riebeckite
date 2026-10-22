@@ -1,5 +1,11 @@
+import autoCardLinkStyle from "@riebeckite/plugin-autocardlink/style.css?inline";
 import codeEnhanceStyle from "@riebeckite/plugin-code-enhance/style.css?inline";
 import codeTabsStyle from "@riebeckite/plugin-code-tabs/style.css?inline";
+import highlightStyle from "@riebeckite/plugin-highlight/style.css?inline";
+import lightboxStyle from "@riebeckite/plugin-lightbox/style.css?inline";
+import obsidianMarkdownStyle from "@riebeckite/plugin-obsidian-markdown/style.css?inline";
+import shortcodesStyle from "@riebeckite/plugin-shortcodes/style.css?inline";
+import sidenotesStyle from "@riebeckite/plugin-sidenotes/style.css?inline";
 import defaultThemeStyle from "@riebeckite/theme-default/style.css?inline";
 import gruvboxThemeStyle from "@riebeckite/theme-gruvbox/style.css?inline";
 import minimalThemeStyle from "@riebeckite/theme-minimal/style.css?inline";
@@ -202,7 +208,7 @@ function createPreviewDocument(
   const themeStyle = styles[theme as keyof typeof styles] ?? styles.default;
   const themeName = theme === "default" ? "riebeckite" : theme;
   const colorMode = mode === "dark" ? "dark" : "light";
-  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${themeStyle}\n${codeEnhanceStyle}\n${codeTabsStyle}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${html}</div></div></article></div></body></html>`;
+  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${themeStyle}\n${autoCardLinkStyle}\n${codeEnhanceStyle}\n${codeTabsStyle}\n${highlightStyle}\n${lightboxStyle}\n${obsidianMarkdownStyle}\n${sidenotesStyle}\n${shortcodesStyle}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${html}</div></div></article></div></body></html>`;
 }
 
 function requireElement(root: HTMLElement, selector: string): HTMLElement {

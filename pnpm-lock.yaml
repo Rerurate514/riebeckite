@@ -176,6 +176,9 @@ importers:
       '@riebeckite/plugin-graphviz':
         specifier: workspace:*
         version: link:../../packages/plugins/graphviz
+      '@riebeckite/plugin-hard-breaks':
+        specifier: workspace:*
+        version: link:../../packages/plugins/hard-breaks
       '@riebeckite/plugin-highlight':
         specifier: workspace:*
         version: link:../../packages/plugins/highlight
@@ -212,6 +215,9 @@ importers:
       '@riebeckite/plugin-navigation':
         specifier: workspace:*
         version: link:../../packages/plugins/navigation
+      '@riebeckite/plugin-obsidian-markdown':
+        specifier: workspace:*
+        version: link:../../packages/plugins/obsidian-markdown
       '@riebeckite/plugin-pdf':
         specifier: workspace:*
         version: link:../../packages/plugins/pdf

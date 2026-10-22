@@ -131,7 +131,7 @@ export default defineConfig({
     localGraphPlugin(),
     hoverPreviewPlugin({ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }),
     gardenExplorerPlugin(),
-    uxPlugin({ progress: true, backToTop: true, tocScrollSpy: true, codeCopy: true }),
+    uxPlugin({ progress: true, backToTop: true, tocScrollSpy: true }),
     dailyNotesPlugin({ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }),
     renamePlugin({ enabled: true, status: 308, onUnexpectedRemoval: "warning" }),
     textFragmentPlugin({ prefix: "showcase-ja: " }),

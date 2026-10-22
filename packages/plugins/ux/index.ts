@@ -11,7 +11,7 @@ export type { UxOptions, UxResolvedConfig } from "./src/options.js";
 
 /**
  * Client-only progressive enhancements: a reading progress bar, a
- * back-to-top button, table-of-contents scroll-spy, and code copy buttons.
+ * back-to-top button, and table-of-contents scroll-spy.
  *
  * None of the features change the rendered article markup, so the plugin
  * only injects a JSON config element and registers a browser initializer.
@@ -54,25 +54,21 @@ function validateUxOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  for (const key of [
-    "progress",
-    "backToTop",
-    "tocScrollSpy",
-    "codeCopy",
-  ] as const) {
+  for (const key of ["progress", "backToTop", "tocScrollSpy"] as const) {
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }
   }
 
-  for (const key of ["backToTopLabel", "copyLabel", "copiedLabel"] as const) {
-    const value = options[key];
-    if (
-      value !== undefined &&
-      (typeof value !== "string" || value.trim() === "")
-    ) {
-      issues.push({ path: key, message: "Expected a non-empty string." });
-    }
+  if (
+    options.backToTopLabel !== undefined &&
+    (typeof options.backToTopLabel !== "string" ||
+      options.backToTopLabel.trim() === "")
+  ) {
+    issues.push({
+      path: "backToTopLabel",
+      message: "Expected a non-empty string.",
+    });
   }
 
   return issues;

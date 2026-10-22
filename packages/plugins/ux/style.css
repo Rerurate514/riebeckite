@@ -65,59 +65,16 @@
   font-weight: 600;
 }
 
-.rb-ux__code {
-  position: relative;
-}
-
-.rb-ux__copy {
-  position: absolute;
-  inset-block-start: 0.5rem;
-  inset-inline-end: 0.5rem;
-  z-index: 1;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid
-    var(--rb-color-border, color-mix(in srgb, currentColor 20%, transparent));
-  border-radius: 4px;
-  background: var(--rb-color-surface, var(--rb-color-paper, #ffffff));
-  color: var(--rb-color-muted, #69645c);
-  font-size: 0.75rem;
-  line-height: 1.4;
-  cursor: pointer;
-  opacity: 0.9;
-  transition:
-    opacity 120ms ease,
-    color 120ms ease,
-    border-color 120ms ease;
-}
-
-.rb-ux__copy:hover,
-.rb-ux__copy:focus-visible {
-  opacity: 1;
-  color: var(--rb-color-ink, #1c1a17);
-}
-
-.rb-ux__copy:focus-visible {
-  outline: 2px solid var(--rb-color-accent, #686868);
-  outline-offset: 2px;
-}
-
-.rb-ux__copy--copied {
-  color: var(--rb-color-accent, #686868);
-  border-color: var(--rb-color-accent, #686868);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .rb-ux__progress-bar,
-  .rb-ux__back-to-top,
-  .rb-ux__copy {
+  .rb-ux__back-to-top {
     transition: none;
   }
 }
 
 @media print {
   .rb-ux__progress,
-  .rb-ux__back-to-top,
-  .rb-ux__copy {
+  .rb-ux__back-to-top {
     display: none;
   }
 }

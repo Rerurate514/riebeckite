@@ -12,14 +12,8 @@ export type UxOptions = {
   backToTop?: boolean;
   /** Highlight the active entry in the article table of contents. Defaults to `true`. */
   tocScrollSpy?: boolean;
-  /** Add a copy button to every code block. Defaults to `true`. */
-  codeCopy?: boolean;
   /** Accessible label for the back-to-top button. */
   backToTopLabel?: string;
-  /** Label for the code copy button. */
-  copyLabel?: string;
-  /** Transient label shown after a successful copy. */
-  copiedLabel?: string;
 };
 
 /** Options after defaults have been applied. Serialized into the page. */
@@ -27,10 +21,7 @@ export type UxResolvedConfig = {
   progress: boolean;
   backToTop: boolean;
   tocScrollSpy: boolean;
-  codeCopy: boolean;
   backToTopLabel: string;
-  copyLabel: string;
-  copiedLabel: string;
 };
 
 /** Id of the JSON configuration element injected into each article. */
@@ -44,10 +35,7 @@ export const DEFAULT_UX_CONFIG: UxResolvedConfig = {
   progress: true,
   backToTop: true,
   tocScrollSpy: true,
-  codeCopy: true,
   backToTopLabel: "Back to top",
-  copyLabel: "Copy",
-  copiedLabel: "Copied",
 };
 
 /** Applies defaults to the user-provided options. */
@@ -56,15 +44,9 @@ export function resolveUxConfig(options: UxOptions = {}): UxResolvedConfig {
     progress: options.progress ?? DEFAULT_UX_CONFIG.progress,
     backToTop: options.backToTop ?? DEFAULT_UX_CONFIG.backToTop,
     tocScrollSpy: options.tocScrollSpy ?? DEFAULT_UX_CONFIG.tocScrollSpy,
-    codeCopy: options.codeCopy ?? DEFAULT_UX_CONFIG.codeCopy,
     backToTopLabel: normalizeLabel(
       options.backToTopLabel,
       DEFAULT_UX_CONFIG.backToTopLabel,
-    ),
-    copyLabel: normalizeLabel(options.copyLabel, DEFAULT_UX_CONFIG.copyLabel),
-    copiedLabel: normalizeLabel(
-      options.copiedLabel,
-      DEFAULT_UX_CONFIG.copiedLabel,
     ),
   };
 }

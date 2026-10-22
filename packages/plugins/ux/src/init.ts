@@ -9,15 +9,10 @@ const PROGRESS_BAR_CLASS = "rb-ux__progress-bar";
 const BACK_TO_TOP_CLASS = "rb-ux__back-to-top";
 const BACK_TO_TOP_VISIBLE_CLASS = "rb-ux__back-to-top--visible";
 const TOC_ACTIVE_CLASS = "rb-ux__toc-active";
-const CODE_CLASS = "rb-ux__code";
-const COPY_CLASS = "rb-ux__copy";
-const COPY_COPIED_CLASS = "rb-ux__copy--copied";
 
 const BACK_TO_TOP_THRESHOLD = 320;
-const COPIED_STATE_DURATION = 1500;
 
 let started = false;
-const copiedTimers = new WeakMap<HTMLButtonElement, number>();
 
 /**
  * Initializes every enabled UX enhancement. Safe to call more than once and a
@@ -32,7 +27,6 @@ export function initUx(): void {
     if (config.progress) setupProgress();
     if (config.backToTop) setupBackToTop(config);
     if (config.tocScrollSpy) setupTocScrollSpy();
-    if (config.codeCopy) setupCodeCopy(config);
   };
 
   if (document.readyState === "loading") {
@@ -55,13 +49,10 @@ function readUxConfig(): UxResolvedConfig {
       parsed.tocScrollSpy,
       DEFAULT_UX_CONFIG.tocScrollSpy,
     ),
-    codeCopy: readBoolean(parsed.codeCopy, DEFAULT_UX_CONFIG.codeCopy),
     backToTopLabel: readString(
       parsed.backToTopLabel,
       DEFAULT_UX_CONFIG.backToTopLabel,
     ),
-    copyLabel: readString(parsed.copyLabel, DEFAULT_UX_CONFIG.copyLabel),
-    copiedLabel: readString(parsed.copiedLabel, DEFAULT_UX_CONFIG.copiedLabel),
   };
 }
 
@@ -235,71 +226,6 @@ function setupTocScrollSpy(): void {
   }
 
   scheduleOnScroll(updateActive);
-}
-
-/** Adds a copy button to each code block that lacks one. */
-function setupCodeCopy(config: UxResolvedConfig): void {
-  const blocks = Array.from(
-    document.querySelectorAll<HTMLElement>("pre > code"),
-  );
-  for (const code of blocks) {
-    const pre = code.parentElement;
-    if (!pre || pre.dataset.rbUxCopy === "true") continue;
-    // Code blocks owned by a framework with its own copy affordance are left
-    // untouched so the two plugins do not render duplicate buttons.
-    if (pre.closest(".rr-code")) continue;
-
-    pre.dataset.rbUxCopy = "true";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = CODE_CLASS;
-    pre.replaceWith(wrapper);
-    wrapper.append(pre);
-
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = COPY_CLASS;
-    button.setAttribute("aria-label", config.copyLabel);
-    button.textContent = config.copyLabel;
-    button.addEventListener("click", () => {
-      void copyCode(button, code, config);
-    });
-    wrapper.append(button);
-  }
-}
-
-async function copyCode(
-  button: HTMLButtonElement,
-  code: HTMLElement,
-  config: UxResolvedConfig,
-): Promise<void> {
-  const text = code.textContent ?? "";
-  const clipboard = navigator.clipboard;
-  if (text.length === 0 || !clipboard) return;
-
-  try {
-    await clipboard.writeText(text);
-  } catch {
-    return;
-  }
-  showCopiedState(button, config);
-}
-
-function showCopiedState(
-  button: HTMLButtonElement,
-  config: UxResolvedConfig,
-): void {
-  const previous = copiedTimers.get(button);
-  if (previous !== undefined) window.clearTimeout(previous);
-
-  button.textContent = config.copiedLabel;
-  button.classList.add(COPY_COPIED_CLASS);
-  const timer = window.setTimeout(() => {
-    button.textContent = config.copyLabel;
-    button.classList.remove(COPY_COPIED_CLASS);
-    copiedTimers.delete(button);
-  }, COPIED_STATE_DURATION);
-  copiedTimers.set(button, timer);
 }
 
 function findArticle(): HTMLElement | null {

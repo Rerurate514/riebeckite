@@ -65,7 +65,7 @@ README.
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | `localGraphPlugin` | — |
 | [`@riebeckite/plugin-hover-preview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md) | `hoverPreviewPlugin` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | `gardenExplorerPlugin` | — |
-| [`@riebeckite/plugin-ux`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md) | `uxPlugin` | `{ progress: true, backToTop: true, tocScrollSpy: true, codeCopy: true }` |
+| [`@riebeckite/plugin-ux`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md) | `uxPlugin` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
 | [`@riebeckite/plugin-daily-notes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md) | `dailyNotesPlugin` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
 | [`@riebeckite/plugin-rename`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md) | `renamePlugin` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
 | [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragmentPlugin` | `{ prefix: "showcase: " }` |

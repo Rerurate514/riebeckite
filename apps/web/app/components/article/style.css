@@ -19,6 +19,10 @@
   }
 }
 
+.rb-article-body > .rb-breadcrumbs {
+  margin-block-start: var(--rb-space-2);
+}
+
 .rb-article-outro {
   min-width: 0;
   padding-inline: var(--rb-space-2);
@@ -80,7 +84,7 @@
     grid-row: 1;
     align-self: start;
     width: var(--rb-layout-sidebar);
-    margin-block: 0;
+    margin-block: 2px 0;
     margin-inline-start: calc(100% + var(--rb-layout-gap));
     overflow-x: hidden;
     position: sticky;

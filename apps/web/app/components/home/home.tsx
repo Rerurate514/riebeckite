@@ -42,140 +42,105 @@ export default function HomePage({ locale }: { locale: HomeLocale }) {
   return (
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
-        <div class="rb-home__hero-copy">
-          <p class="rb-home__eyebrow">{copy.eyebrow}</p>
-          <h1 id="home-title">{copy.hero.title}</h1>
-          <p class="rb-home__lead">{copy.hero.lead}</p>
-          <div class="rb-home__actions">
-            <HomeAnchor
-              class="rb-home__cta rb-home__cta--primary"
-              link={copy.primaryCta}
-            />
-            <HomeAnchor class="rb-home__cta" link={copy.githubCta} />
-          </div>
+        <p class="rb-home__eyebrow">{copy.eyebrow}</p>
+        <h1 id="home-title">{copy.hero.title}</h1>
+        <p class="rb-home__lead">{copy.hero.lead}</p>
+        <div class="rb-home__actions">
+          <HomeAnchor
+            class="rb-home__cta rb-home__cta--primary"
+            link={copy.primaryCta}
+          />
+          <HomeAnchor class="rb-home__cta" link={copy.githubCta} />
+        </div>
+        <div class="rb-home__install">
+          <p>{copy.hero.commandLabel}</p>
           <CodeWindow label={copy.copyLabel}>{copy.hero.command}</CodeWindow>
         </div>
-        <section
-          class="rb-home__site-preview"
-          aria-label={copy.hero.previewLabel}
-        >
-          <div class="rb-home__preview-bar">
-            <span class="rb-home__preview-mark" aria-hidden="true" />
-            <span>my-garden.local</span>
-            <span class="rb-home__preview-status">
-              {copy.hero.previewStatus}
-            </span>
-          </div>
-          <div class="rb-home__preview-page">
-            <p class="rb-home__preview-breadcrumb">
-              notes / design / ownership
-            </p>
-            <p class="rb-home__preview-title">{copy.hero.previewTitle}</p>
-            <p>{copy.hero.previewBody}</p>
-            <div class="rb-home__preview-links">
-              <span>[[architecture]]</span>
-              <span>[[ideas]]</span>
-            </div>
-          </div>
-          <div class="rb-home__preview-meta">
-            <span>Markdown</span>
-            <span>TypeScript</span>
-            <span>static output</span>
-          </div>
-        </section>
       </section>
 
-      <section
-        class="rb-home__section rb-home__section--workflow"
-        aria-labelledby="home-workflow"
-      >
+      <section class="rb-home__section" aria-labelledby="home-content">
         <div class="rb-home__section-intro">
-          <SectionHeading id="home-workflow">
-            {copy.workflow.heading}
+          <SectionHeading id="home-content">
+            {copy.content.heading}
           </SectionHeading>
-          <p>{copy.workflow.intro}</p>
+          <p>{copy.content.intro}</p>
         </div>
-        <div class="rb-home__workflow-grid">
-          <div class="rb-home__source-note">
-            <p class="rb-home__label">{copy.workflow.sourceLabel}</p>
+        <div class="rb-home__content-example">
+          <div>
+            <p class="rb-home__label">{copy.content.sourceLabel}</p>
             <CodeWindow label={copy.copyLabel}>
-              {copy.workflow.source}
+              {copy.content.source}
             </CodeWindow>
           </div>
-          <div class="rb-home__workflow-copy">
-            <p class="rb-home__statement">{copy.workflow.statement}</p>
-            <ul class="rb-home__plain-list">
-              {copy.workflow.points.map((point) => (
-                <li key={point}>{point}</li>
-              ))}
-            </ul>
-            <HomeAnchor class="rb-home__text-link" link={copy.showcaseCta} />
-          </div>
+          <ol class="rb-home__steps">
+            {copy.content.steps.map((step) => (
+              <li key={step.title}>
+                <strong>{step.title}</strong>
+                <span>{step.body}</span>
+              </li>
+            ))}
+          </ol>
         </div>
+        <HomeAnchor class="rb-home__text-link" link={copy.content.docs} />
       </section>
 
-      <section class="rb-home__section" aria-labelledby="home-development">
+      <section class="rb-home__section" aria-labelledby="home-application">
         <div class="rb-home__section-intro">
-          <SectionHeading id="home-development">
-            {copy.development.heading}
+          <SectionHeading id="home-application">
+            {copy.application.heading}
           </SectionHeading>
-          <p>{copy.development.intro}</p>
+          <p>{copy.application.intro}</p>
         </div>
-        <ul class="rb-home__feature-list">
-          {copy.development.features.map((feature) => (
-            <li key={feature.title}>
-              <h3>{feature.title}</h3>
-              <p>{feature.body}</p>
-              <code>{feature.code}</code>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section
-        class="rb-home__section rb-home__section--extension"
-        aria-labelledby="home-extension"
-      >
-        <div class="rb-home__section-intro">
-          <SectionHeading id="home-extension">
-            {copy.extension.heading}
-          </SectionHeading>
-          <p>{copy.extension.intro}</p>
-        </div>
-        <div class="rb-home__extension-grid">
-          <CodeWindow label={copy.copyLabel}>{copy.extension.code}</CodeWindow>
-          <div>
-            <p class="rb-home__statement">{copy.extension.statement}</p>
-            <ul class="rb-home__plain-list">
-              {copy.extension.points.map((point) => (
+        <div class="rb-home__application-example">
+          <CodeWindow label={copy.copyLabel}>
+            {copy.application.code}
+          </CodeWindow>
+          <div class="rb-home__application-copy">
+            <p>{copy.application.body}</p>
+            <ul>
+              {copy.application.points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
             </ul>
             <div class="rb-home__resource-links">
               <HomeAnchor
                 class="rb-home__text-link"
-                link={copy.extension.plugins}
+                link={copy.application.plugins}
               />
               <HomeAnchor
                 class="rb-home__text-link"
-                link={copy.extension.themes}
+                link={copy.application.themes}
               />
             </div>
           </div>
         </div>
       </section>
 
-      <section class="rb-home__start" aria-labelledby="home-start">
-        <div>
-          <SectionHeading id="home-start">{copy.start.heading}</SectionHeading>
-          <p>{copy.start.intro}</p>
-          <div class="rb-home__actions">
-            <HomeAnchor
-              class="rb-home__cta rb-home__cta--primary"
-              link={copy.primaryCta}
-            />
-            <HomeAnchor class="rb-home__cta" link={copy.start.docs} />
-          </div>
+      <section class="rb-home__section" aria-labelledby="home-examples">
+        <div class="rb-home__section-intro">
+          <SectionHeading id="home-examples">
+            {copy.examples.heading}
+          </SectionHeading>
+          <p>{copy.examples.intro}</p>
+        </div>
+        <ul class="rb-home__resource-list">
+          {copy.examples.resources.map((resource) => (
+            <li key={resource.link.href}>
+              <HomeAnchor link={resource.link} />
+              <p>{resource.body}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="rb-home__continue" aria-labelledby="home-continue">
+        <SectionHeading id="home-continue">
+          {copy.continue.heading}
+        </SectionHeading>
+        <p>{copy.continue.intro}</p>
+        <div class="rb-home__resource-links">
+          <HomeAnchor class="rb-home__text-link" link={copy.continue.docs} />
+          <HomeAnchor class="rb-home__text-link" link={copy.showcaseCta} />
           <a
             class="rb-home__language"
             href={copy.language.href}
@@ -185,7 +150,6 @@ export default function HomePage({ locale }: { locale: HomeLocale }) {
             {copy.language.label}
           </a>
         </div>
-        <CodeWindow label={copy.copyLabel}>{copy.start.command}</CodeWindow>
       </section>
     </div>
   );

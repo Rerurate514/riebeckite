@@ -4,7 +4,8 @@ const HOME_REPO_URL = "https://github.com/Rerurate514/riebeckite";
 
 export type HomeLink = { label: string; href: string; external?: boolean };
 
-type HomeFeature = { title: string; body: string; code: string };
+type HomeStep = { title: string; body: string };
+type HomeResource = { link: HomeLink; body: string };
 
 export type HomeCopy = {
   title: string;
@@ -15,34 +16,26 @@ export type HomeCopy = {
   showcaseCta: HomeLink;
   githubCta: HomeLink;
   language: HomeLink & { hreflang: HomeLocale };
-  hero: {
-    title: string;
-    lead: string;
-    command: string;
-    previewLabel: string;
-    previewStatus: string;
-    previewTitle: string;
-    previewBody: string;
-  };
-  workflow: {
+  hero: { title: string; lead: string; commandLabel: string; command: string };
+  content: {
     heading: string;
     intro: string;
     sourceLabel: string;
     source: string;
-    statement: string;
-    points: string[];
+    steps: HomeStep[];
+    docs: HomeLink;
   };
-  development: { heading: string; intro: string; features: HomeFeature[] };
-  extension: {
+  application: {
     heading: string;
     intro: string;
-    statement: string;
+    body: string;
     points: string[];
     code: string;
     plugins: HomeLink;
     themes: HomeLink;
   };
-  start: { heading: string; intro: string; command: string; docs: HomeLink };
+  examples: { heading: string; intro: string; resources: HomeResource[] };
+  continue: { heading: string; intro: string; docs: HomeLink };
 };
 
 const en: HomeCopy = {
@@ -51,82 +44,80 @@ const en: HomeCopy = {
     "Build and publish a website from Markdown and Obsidian notes with a TypeScript framework, independent plugins, themes, and content sources.",
   eyebrow: "Open source · Apache-2.0 · TypeScript",
   copyLabel: "Copy",
-  primaryCta: { label: "Get started", href: "/docs/getting-started/" },
-  showcaseCta: {
-    label: "See the plugin showcase →",
-    href: "/docs/plugins/showcase",
-  },
+  primaryCta: { label: "Read the docs", href: "/docs/getting-started/" },
+  showcaseCta: { label: "Plugin showcase", href: "/docs/plugins/showcase" },
   githubCta: { label: "GitHub", href: HOME_REPO_URL, external: true },
   language: { label: "日本語", href: "/ja/", hreflang: "ja" },
   hero: {
-    title: "A website for your Markdown and Obsidian notes.",
-    lead: "Riebeckite is a TypeScript framework for publishing notes as a static site and shaping the result with your own routes, components, plugins, and theme.",
+    title: "Build a static site from Markdown and Obsidian.",
+    lead: "Riebeckite is a TypeScript framework for turning notes into a website. Start with Markdown, then write the routes, components, plugins, and theme your site needs.",
+    commandLabel: "Create a project",
     command: "npx create-riebeckite",
-    previewLabel: "Preview of a Riebeckite website",
-    previewStatus: "published",
-    previewTitle: "Notes can become a site you maintain.",
-    previewBody:
-      "Keep Markdown as the source, then use ordinary web tools for the parts around it.",
   },
-  workflow: {
-    heading: "Write in Markdown. Publish a real website.",
+  content: {
+    heading: "Keep content in the form you write.",
     intro:
-      "Read content from content/ or an external Obsidian vault. The build turns it into static output for the host you choose.",
+      "Use content/ in the project or point the site at an external Obsidian vault. Public notes become static pages during the build.",
     sourceLabel: "content/notes/ownership.md",
     source:
-      "# Ownership\n\nA site should remain understandable after its framework changes.\n\nSee also: [[architecture]]",
-    statement:
-      "Use the notes you already write as the source for pages, links, and navigation.",
-    points: [
-      "Obsidian-flavored Markdown and WikiLinks through the official plugin",
-      "Static output written to dist/",
-      "Content may live outside the site repository",
-    ],
-  },
-  development: {
-    heading: "Use the web stack you know.",
-    intro:
-      "A generated site is an ordinary TypeScript application. Its routes and components belong to the site; framework capabilities remain package dependencies.",
-    features: [
+      "---\npublish: true\ntitle: Ownership\n---\n\nA site should remain understandable after its framework changes.\n\nSee also: [[architecture]]",
+    steps: [
       {
-        title: "Routes and components",
-        body: "Write Hono JSX components directly and decide where plugin UI appears.",
-        code: "app/routes/index.tsx",
+        title: "Write",
+        body: "Keep notes in Markdown, including Obsidian syntax when you use the official plugin.",
       },
       {
-        title: "Content sources",
-        body: "Keep implementation and notes separate when they need independent repositories.",
-        code: 'directory: "../vault"',
+        title: "Configure",
+        body: "Choose the content directory, plugins, theme, and routes in the generated TypeScript site.",
       },
       {
-        title: "Dependencies",
-        body: "Install and update the framework, themes, and plugins through your package manager.",
-        code: "plugins: [obsidianMarkdown()]",
+        title: "Build",
+        body: "Riebeckite writes the published site to dist/ for the host you choose.",
       },
     ],
+    docs: {
+      label: "Configure content sources",
+      href: "/docs/guides/writing-content/",
+    },
   },
-  extension: {
-    heading: "Add only the capabilities your site needs.",
+  application: {
+    heading: "Extend the generated application.",
     intro:
-      "Plugins transform content, provide components, add client entries, or generate pages. Themes handle presentation without taking ownership of those features.",
-    statement:
-      "Configure plugins in one place, then keep site-specific decisions in your application.",
+      "A generated site is a Hono JSX and TypeScript application. Plugins provide focused capabilities; the application decides how to use them.",
+    body: "Add a plugin in the site configuration, compose its components in your routes, and keep presentation in a theme. Each responsibility stays in the package that owns it.",
     points: [
-      "Markdown and HTML transformations",
-      "Reusable UI and browser behavior",
-      "Independently versioned plugins and themes",
+      "Use Hono JSX for site routes and components",
+      "Transform Markdown or generate pages with plugins",
+      "Install themes and plugins through the package manager",
     ],
     code: 'import { defineConfig } from "@riebeckite/core";\nimport { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";\n\nexport default defineConfig({\n  plugins: [obsidianMarkdown()],\n});',
-    plugins: { label: "Browse plugins and APIs →", href: "/docs/plugins/" },
-    themes: { label: "Explore themes →", href: "/docs/themes/" },
+    plugins: { label: "Browse plugins and APIs", href: "/docs/plugins/" },
+    themes: { label: "Explore themes", href: "/docs/themes/" },
   },
-  start: {
-    heading: "Start with one command.",
+  examples: {
+    heading: "Inspect the parts before adding them.",
     intro:
-      "The generator asks for a project name, preset, content source, and deployment option. Run the generated site locally when it is ready.",
-    command:
-      "npx create-riebeckite\ncd my-site\nnpm install\nnpm exec riebeckite dev",
-    docs: { label: "Read the documentation", href: "/docs/" },
+      "The documentation includes working examples rather than a simulated product preview.",
+    resources: [
+      {
+        link: { label: "Open Playground", href: "/playground" },
+        body: "Edit a plugin fixture and inspect the rendered result in the browser.",
+      },
+      {
+        link: { label: "View Plugin Showcase", href: "/docs/plugins/showcase" },
+        body: "Compare Markdown source with the output of the available plugins.",
+      },
+      {
+        link: { label: "Browse Theme Gallery", href: "/themes" },
+        body: "Preview the themes that are published with the framework.",
+      },
+    ],
+  },
+  continue: {
+    heading: "Continue with the documentation.",
+    intro:
+      "Set up a project, choose a preset, or read the API reference from the documentation.",
+    docs: { label: "Documentation", href: "/docs/" },
   },
 };
 
@@ -137,88 +128,95 @@ const ja: HomeCopy = {
     "Markdown と Obsidian のノートから、TypeScript、独立した Plugin・Theme・コンテンツソースを使った Web サイトを作成・公開するフレームワークです。",
   eyebrow: "オープンソース · Apache-2.0 · TypeScript",
   copyLabel: "コピー",
-  primaryCta: { label: "はじめる", href: "/ja/docs/getting-started/" },
-  showcaseCta: {
-    label: "Plugin の実例を見る →",
-    href: "/ja/docs/plugins/showcase",
+  primaryCta: {
+    label: "ドキュメントを読む",
+    href: "/ja/docs/getting-started/",
   },
+  showcaseCta: { label: "Plugin Showcase", href: "/ja/docs/plugins/showcase" },
   language: { label: "English", href: "/", hreflang: "en" },
   hero: {
-    title: "Markdown と Obsidian のノートを、育てられる Web サイトへ。",
-    lead: "Riebeckite は、ノートを静的サイトとして公開し、ルート、コンポーネント、Plugin、Theme を自分で組み立てるための TypeScript フレームワークです。",
+    title: "Markdown と Obsidian から静的サイトをつくる。",
+    lead: "Riebeckite は、ノートから Web サイトを構築する TypeScript フレームワークです。Markdown を起点に、必要なルート、コンポーネント、Plugin、Theme を実装できます。",
+    commandLabel: "プロジェクトを作成する",
     command: en.hero.command,
-    previewLabel: "Riebeckite でつくったサイトのプレビュー",
-    previewStatus: "公開済み",
-    previewTitle: "ノートは、管理できるサイトになる。",
-    previewBody:
-      "Markdown を起点に、周辺の体験は使い慣れた Web 技術でつくれます。",
   },
-  workflow: {
-    heading: "Markdown で書き、Web サイトとして公開する。",
+  content: {
+    heading: "普段書いている形式でコンテンツを管理する。",
     intro:
-      "content/ または外部の Obsidian Vault からコンテンツを読み込み、選んだホスティング先に向けて静的ファイルを出力します。",
+      "プロジェクト内の content/、または外部の Obsidian Vault をコンテンツソースにできます。公開対象のノートはビルド時に静的ページになります。",
     sourceLabel: "content/notes/ownership.md",
-    source: en.workflow.source,
-    statement:
-      "普段書いているノートを、ページ・リンク・ナビゲーションの出発点にできます。",
+    source: en.content.source,
+    steps: [
+      {
+        title: "書く",
+        body: "Markdown でノートを管理し、公式 Plugin を使う場合は Obsidian 記法もそのまま使えます。",
+      },
+      {
+        title: "設定する",
+        body: "コンテンツの場所、Plugin、Theme、ルートを生成された TypeScript サイトで選びます。",
+      },
+      {
+        title: "ビルドする",
+        body: "Riebeckite は公開用の静的ファイルを dist/ に出力します。",
+      },
+    ],
+    docs: {
+      label: "コンテンツソースを設定する",
+      href: "/ja/docs/guides/writing-content/",
+    },
+  },
+  application: {
+    heading: "生成されたアプリケーションを拡張する。",
+    intro:
+      "生成されるサイトは Hono JSX と TypeScript のアプリケーションです。Plugin は機能を提供し、アプリケーション側で使い方を決めます。",
+    body: "サイト設定に Plugin を追加し、ルート内でコンポーネントを組み合わせ、見た目は Theme で管理します。それぞれの責務をパッケージごとに分けたまま拡張できます。",
     points: [
-      "公式 Plugin による Obsidian 記法と WikiLink の対応",
-      "dist/ への静的ファイル出力",
-      "サイトのリポジトリとは別にコンテンツを管理可能",
+      "Hono JSX でサイトのルートとコンポーネントを書く",
+      "Plugin で Markdown を変換したりページを生成したりする",
+      "パッケージマネージャーで Theme と Plugin を導入する",
     ],
+    code: en.application.code,
+    plugins: { label: "Plugin と API を見る", href: "/ja/docs/plugins/" },
+    themes: { label: "Theme を見る", href: "/ja/docs/themes/" },
   },
-  development: {
-    heading: "使い慣れた Web 技術で開発する。",
+  examples: {
+    heading: "導入前に実際の動作を確認する。",
     intro:
-      "生成されるサイトは通常の TypeScript アプリケーションです。ルートとコンポーネントはサイトが持ち、フレームワークの機能はパッケージの依存関係として扱います。",
-    features: [
+      "シミュレーションではなく、公開済みの機能とドキュメントの実例を確認できます。",
+    resources: [
       {
-        title: "ルートとコンポーネント",
-        body: "Hono JSX のコンポーネントをそのまま書き、Plugin の UI をどこに置くか決められます。",
-        code: "app/routes/index.tsx",
+        link: { label: "Playground を開く", href: "/playground" },
+        body: "Plugin のフィクスチャを編集し、ブラウザで出力を確認できます。",
       },
       {
-        title: "コンテンツソース",
-        body: "実装とノートを別々のリポジトリで管理したいときにも対応できます。",
-        code: 'directory: "../vault"',
+        link: {
+          label: "Plugin Showcase を見る",
+          href: "/ja/docs/plugins/showcase",
+        },
+        body: "Markdown のソースと各 Plugin の出力を比較できます。",
       },
       {
-        title: "依存関係",
-        body: "フレームワーク、Theme、Plugin はパッケージマネージャーで導入・更新します。",
-        code: "plugins: [obsidianMarkdown()]",
+        link: { label: "Theme Gallery を見る", href: "/themes" },
+        body: "フレームワークとともに公開されている Theme を試せます。",
       },
     ],
   },
-  extension: {
-    heading: "必要な機能だけを追加する。",
+  continue: {
+    heading: "次はドキュメントへ。",
     intro:
-      "Plugin はコンテンツ変換、コンポーネント、クライアントエントリ、ページ生成を担えます。Theme は機能の責任を持たず、見た目を扱います。",
-    statement:
-      "Plugin は一箇所で設定し、サイト固有の判断はアプリケーション側に残せます。",
-    points: [
-      "Markdown・HTML の変換",
-      "再利用できる UI とブラウザ機能",
-      "独立してバージョン管理できる Plugin と Theme",
-    ],
-    code: en.extension.code,
-    plugins: { label: "Plugin と API を見る →", href: "/ja/docs/plugins/" },
-    themes: { label: "Theme を見る →", href: "/ja/docs/themes/" },
-  },
-  start: {
-    heading: "まずはひとつのコマンドから。",
-    intro:
-      "ジェネレーターでプロジェクト名、Preset、コンテンツソース、デプロイ方法を選びます。作成後はローカルでサイトを起動できます。",
-    command: en.start.command,
-    docs: { label: "ドキュメントを読む", href: "/ja/docs/" },
+      "プロジェクトの作成、Preset の選択、API リファレンスはドキュメントで確認できます。",
+    docs: { label: "ドキュメント", href: "/ja/docs/" },
   },
 };
 
 export function getHomeCopy(locale: HomeLocale): HomeCopy {
   return locale === "ja" ? ja : en;
 }
+
 export function getHomePath(locale: HomeLocale): string {
   return locale === "en" ? "/" : "/ja/";
 }
+
 export function buildSoftwareApplicationSchema(
   locale: HomeLocale,
   url: string,

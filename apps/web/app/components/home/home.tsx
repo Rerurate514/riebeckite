@@ -25,8 +25,8 @@ function SectionHeading({ id, children }: { id: string; children: string }) {
 
 function CodeWindow({ children, label }: { children: string; label: string }) {
   return (
-    <div class="rb-home__code-window rr-code">
-      <pre>
+    <div class="rb-home__code-window">
+      <pre data-rb-ux-copy="true">
         <code>{children}</code>
       </pre>
       <button type="button" data-home-copy aria-label={label}>

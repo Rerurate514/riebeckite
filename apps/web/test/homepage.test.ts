@@ -150,6 +150,7 @@ for (const locale of locales) {
     assert.ok(html.includes('hreflang="en"') || html.includes('hreflang="ja"'));
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
     assert.match(html, /data-home-copy/);
+    assert.match(html, /data-rb-ux-copy="true"/);
   });
 }
 

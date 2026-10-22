@@ -39,12 +39,42 @@ test("resolveConfig fills documented defaults", () => {
   assert.deepEqual(config.plugins, []);
 });
 
-test("resolveConfig preserves an opaque SPA runtime configuration", () => {
-  const spa = { prefetch: "hover" };
+test("resolveConfig preserves an SPA runtime configuration", () => {
+  const spa = { prefetch: "hover" } as const;
 
   const config = resolveConfig({ site: { title: "My Site" }, spa });
 
   assert.equal(config.spa, spa);
+});
+
+test("resolveConfig normalizes the SPA switch", () => {
+  assert.deepEqual(
+    resolveConfig({ site: { title: "My Site" }, spa: true }).spa,
+    {},
+  );
+  assert.equal(
+    resolveConfig({ site: { title: "My Site" }, spa: false }).spa,
+    undefined,
+  );
+  assert.equal(resolveConfig({ site: { title: "My Site" } }).spa, undefined);
+});
+
+test("resolveConfig rejects an invalid SPA value", () => {
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        spa: "yes",
+      } as unknown as RiebeckiteConfig),
+    (error: unknown) => {
+      assert.ok(error instanceof ConfigValidationError);
+      assert.deepEqual(
+        error.issues.map((issue) => issue.path),
+        ["spa"],
+      );
+      return true;
+    },
+  );
 });
 
 test("resolveConfig merges theme config and sanitizes theme attributes", () => {

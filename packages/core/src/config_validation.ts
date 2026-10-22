@@ -29,6 +29,7 @@ function validateConfigIssues(
   validateSite(value.site, issues);
   validateContent(value.content, issues);
   validateCache(value.cache, issues);
+  validateSpa(value.spa, issues);
   validateTheme(value.theme, issues);
   validatePlugins(value.plugins, issues);
   return issues;
@@ -134,6 +135,13 @@ function validateCache(value: unknown, issues: ConfigValidationIssue[]): void {
 
   validateOptionalBoolean(value.enabled, "cache.enabled", issues);
   validateOptionalString(value.directory, "cache.directory", issues);
+}
+
+function validateSpa(value: unknown, issues: ConfigValidationIssue[]): void {
+  if (value === undefined || typeof value === "boolean" || isRecord(value)) {
+    return;
+  }
+  issues.push({ path: "spa", message: "Expected a boolean or an object." });
 }
 
 function validateTheme(value: unknown, issues: ConfigValidationIssue[]): void {

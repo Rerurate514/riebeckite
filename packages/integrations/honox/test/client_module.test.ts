@@ -66,6 +66,17 @@ test("client module imports the SPA runtime only when configured", async () => {
   assert.match(module as string, /onBeforePageCommit/);
 });
 
+test("client module omits the SPA runtime when disabled", async () => {
+  const plugin = riebeckiteClientModule(() => config);
+  const load = hookHandler(plugin.load);
+  const module = await Reflect.apply(load, undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.doesNotMatch(module as string, /@riebeckite\/spa/);
+  assert.doesNotMatch(module as string, /startSpaNavigation/);
+});
+
 test("client module initializes the development inspector while serving", async () => {
   const plugin = riebeckiteClientModule(() => config);
   const configure = hookHandler(plugin.config);

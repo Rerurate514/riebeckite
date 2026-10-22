@@ -22,7 +22,16 @@ pnpm add @riebeckite/spa
 import { defineConfig } from "@riebeckite/core";
 
 export default defineConfig({
-  spa: {},
+  spa: true,
+});
+```
+
+navigation を無効にする場合は `spa: false` を指定するか、`spa` を省略します。
+runtime をカスタマイズする場合は `true` の代わりに設定 object を渡します。
+
+```ts
+export default defineConfig({
+  spa: { prefetch: "hover", viewTransitions: true },
 });
 ```
 

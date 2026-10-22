@@ -16,7 +16,7 @@ Application -> @riebeckite/spa
 Plugins ------------------------> Core client lifecycle contract
 ```
 
-Core は portable な client lifecycle contract を所有しますが、SPA package、HonoX、DOM 実装を import しません。`spa` 設定値は opaque に保持し、具体的な型は SPA package が提供します。HonoX integration は解決済みの値がある場合だけ runtime を import します。したがって SPA を有効にしない Site の bundle と navigation は変わりません。
+Core は portable な client lifecycle contract を所有しますが、SPA package、HonoX、DOM 実装を import しません。`spa` 設定は boolean の switch または設定 object です。`true` は既定値で runtime を有効にし、`false` または省略は無効にし、object は明示的な設定を渡します。Core はこれを設定 object または不在へ解決し、runtime option の検証は SPA package が所有します。HonoX integration は解決済みの値がある場合だけ runtime を import します。したがって SPA を有効にしない Site の bundle と navigation は変わりません。
 
 Integration は client entry を生成して HonoX へ接続します。runtime は same-origin GET navigation、history、replacement、head reconciliation、scroll/focus restoration、prefetch を所有します。form は対象外です。
 

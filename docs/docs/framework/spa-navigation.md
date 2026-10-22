@@ -16,7 +16,7 @@ Application -> @riebeckite/spa
 Plugins ------------------------> Core client lifecycle contract
 ```
 
-Core owns a portable client-lifecycle contract but imports neither the SPA package, HonoX, nor DOM implementation details. It preserves the `spa` config value opaquely; the SPA package provides its concrete type. The HonoX integration conditionally imports the runtime only when the resolved value is present. SPA-off sites therefore retain their current bundle and navigation.
+Core owns a portable client-lifecycle contract but imports neither the SPA package, HonoX, nor DOM implementation details. The `spa` config is a boolean switch or an options object: `true` enables the runtime with its defaults, `false` or omission disables it, and an object supplies explicit options. Core resolves this to either options or absence; the SPA package owns runtime option validation. The HonoX integration conditionally imports the runtime only when the resolved value is present. SPA-off sites therefore retain their current bundle and navigation.
 
 The integration generates the client entry and connects it to HonoX. The runtime owns same-origin GET navigation, history, replacement, head reconciliation, scroll/focus restoration, and prefetching. Forms are excluded.
 

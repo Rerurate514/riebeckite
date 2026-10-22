@@ -22,7 +22,16 @@ Enable navigation in `riebeckite.config.ts`:
 import { defineConfig } from "@riebeckite/core";
 
 export default defineConfig({
-  spa: {},
+  spa: true,
+});
+```
+
+Set `spa: false` or omit `spa` to disable navigation. Pass an options object
+instead of `true` to customize the runtime:
+
+```ts
+export default defineConfig({
+  spa: { prefetch: "hover", viewTransitions: true },
 });
 ```
 

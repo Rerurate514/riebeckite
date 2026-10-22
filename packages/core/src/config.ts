@@ -6,7 +6,7 @@ import {
 import { resolvePlugins } from "./types/plugin.js";
 import type { PostFrontmatter } from "./types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
-import type { RiebeckiteConfig } from "./types/riebeckite_config.js";
+import type { RiebeckiteConfig, SpaConfig } from "./types/riebeckite_config.js";
 import type { ThemeAttributes, ThemeStyle } from "./types/theme_config.js";
 import { isRiebeckiteTheme } from "./types/theme_config.js";
 
@@ -54,6 +54,7 @@ export function resolveConfig(
 ): ResolvedRiebeckiteConfig {
   validateConfig(config);
   const theme = resolveThemeConfig(config.theme);
+  const spa = resolveSpaConfig(config.spa);
 
   return {
     site: {
@@ -85,8 +86,13 @@ export function resolveConfig(
       enabled: config.cache?.enabled ?? true,
       directory: config.cache?.directory ?? "",
     },
-    ...(config.spa === undefined ? {} : { spa: config.spa }),
+    ...(spa === undefined ? {} : { spa }),
   };
+}
+
+function resolveSpaConfig(spa: RiebeckiteConfig["spa"]): SpaConfig | undefined {
+  if (spa === undefined || spa === false) return undefined;
+  return spa === true ? {} : spa;
 }
 
 function resolveThemeConfig(

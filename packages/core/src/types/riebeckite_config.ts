@@ -4,6 +4,12 @@ import type { PublishStrategy } from "./publish_strategy.js";
 import type { SiteConfig } from "./site_config.js";
 import type { ThemeInput } from "./theme_config.js";
 
+export type SpaConfig = {
+  prefetch?: false | "hover";
+  scrollRestoration?: boolean;
+  viewTransitions?: boolean;
+};
+
 export interface RiebeckiteConfig {
   site: SiteConfig;
   content?: {
@@ -20,5 +26,5 @@ export interface RiebeckiteConfig {
     enabled?: boolean;
     directory?: string;
   };
-  spa?: unknown;
+  spa?: boolean | SpaConfig;
 }

@@ -10,6 +10,9 @@ export type ThemeDesignTokens = {
     ink?: string;
     muted?: string;
     accent?: string;
+    link?: string;
+    focus?: string;
+    selected?: string;
     border?: string;
     borderStrong?: string;
     surface?: string;
@@ -18,6 +21,8 @@ export type ThemeDesignTokens = {
     danger?: string;
     success?: string;
     codeBackground?: string;
+    codeInk?: string;
+    codeInline?: string;
   };
   typography?: {
     bodyFont?: string;

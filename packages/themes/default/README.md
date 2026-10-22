@@ -15,14 +15,14 @@ design system as CSS custom properties (`--rb-color-*`, `--rb-font-*`,
 `@theme` block, so the tokens are usable both from plain CSS and from
 Tailwind-style utilities.
 
-It is also the reference theme in character: a restrained, editorially-clean
-default that could ship on any site. Hierarchy comes from type and hairline
-rules rather than decoration — a comfortable article measure, an h2 with a
-single 1px rule beneath it, offset accent links, a quiet left-ruled blockquote,
-chip-style inline code, flat code blocks, and hairline table and plugin chrome.
-Palette, radii, and spacing stay neutral so the theme reads as a sensible
-ground rather than a statement. The character layer is unlayered at the end of
-`styles/theme.css`, scoped to the theme root, and needs no `!important`.
+It is also the reference theme in character: a calm neutral reading surface
+with Riebeckite Blue used deliberately for actions, links, focus, selection,
+and active states. Its typography prioritizes long-form reading in Latin and
+Japanese, while code uses a deeper technical surface for clear separation.
+Article hierarchy comes from type, spacing, and restrained rules rather than
+decorative cards or effects. The stylesheet is scoped to the theme root and
+does not target plugin-internal selectors; plugins inherit the shared semantic
+tokens that they expose as their public styling contract.
 
 The theme is used automatically when `config.theme` is omitted from
 `riebeckite.config.ts`.
@@ -61,16 +61,18 @@ export default defineConfig({
 The stylesheet defines custom properties that override-driven and consumed
 throughout Riebeckite:
 
-- **Colors** — `--rb-color-paper`, `-ink`, `-muted`, `-accent`, `-border`,
-  `-border-strong`, `-surface`, `-surface-hover`, `-overlay`, `-danger`,
-  `-success`, `-code-background` in light, dark, and `prefers-color-scheme`
-  variants
+- **Colors** — `--rb-color-paper`, `-ink`, `-muted`, `-accent`, `-link`,
+  `-focus`, `-selected`, `-border`, `-border-strong`, `-surface`,
+  `-surface-hover`, `-overlay`, `-danger`, `-success`, `-code-background`,
+  `-code-ink`, and `-code-inline` in light, dark, and
+  `prefers-color-scheme` variants
 - **Typography** — `--rb-font-body`, `--rb-font-heading`, `--rb-font-mono`;
   the `serif`/`sans` presets swap body/heading fonts via
   `:root[data-typography=...]`
-- **Spacing & layout** — `--rb-space-1..8`, `--rb-rule-width`,
+- **Spacing, shape & layout** — `--rb-space-1..8`, `--rb-rule-width`,
+  `--rb-radius-sm`, `--rb-radius-md`, `--rb-control-*`, `--rb-motion-*`,
   `--rb-layout-page-max`, `--rb-layout-article-max`, `--rb-layout-sidebar`,
-  `--rb-layout-gap`
+  and `--rb-layout-gap`
 
 Set `data-theme="dark"` (or `"light"`) on the root element to force a color
 mode; leave it unset to follow the OS with `colorMode: "system"`.

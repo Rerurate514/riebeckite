@@ -4,9 +4,9 @@
 
 Riebeckite の標準テーマです。色、文字組み、余白、記事レイアウトを CSS のデザイントークンとして定義します。テーマを指定しなければ、このテーマが使われます。
 
-標準テーマは「基準になる」テーマです。装飾に頼らず、文字サイズと太さ、そして 1px の罫線で情報の階層を作ります。読みやすい本文幅、h2 の下に引く細い罫線、控えめな下線付きのリンク、左罫線だけの引用、チップ状のインラインコード、平坦なコードブロック、細い罫線のテーブルとプラグイン UI。配色・角丸・余白はニュートラルに保ち、どんなサイトにもなじみます。
+標準テーマは、落ち着いたニュートラルな読書面を基調にしつつ、Riebeckite Blue を操作、リンク、フォーカス、選択、アクティブ状態に絞って使います。日本語と英語の長文を読みやすく組み、コードには深みのある専用の面を与えます。情報の階層は、装飾的なカードや効果ではなく、文字組み、余白、控えめな罫線で作ります。
 
-キャラクター層の CSS は `styles/theme.css` の末尾にレイヤー外で置き、テーマルートにスコープしています。`!important` は使いません。
+スタイルはテーマルートにスコープし、プラグイン内部のセレクタを直接指定しません。プラグインは公開する共通セマンティックトークンを通じてテーマの外観を受け取ります。
 
 [English](./README.md)
 
@@ -46,9 +46,9 @@ export default defineConfig({
 
 テーマは `--rb-*` 形式の CSS カスタムプロパティを定義し、`@theme` ブロックにも対応する値を渡します。そのため、通常の CSS と Tailwind 系ユーティリティのどちらからも同じトークンを利用できます。
 
-- 色: `--rb-color-paper`、`--rb-color-ink`、`--rb-color-accent`、`--rb-color-border` など
+- 色: `--rb-color-paper`、`--rb-color-ink`、`--rb-color-accent`、`--rb-color-link`、`--rb-color-focus`、`--rb-color-selected`、`--rb-color-code-background`、`--rb-color-code-ink`、`--rb-color-code-inline` など
 - フォント: `--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`
-- 余白と幅: `--rb-space-1` から `--rb-space-8`、`--rb-layout-page-max`、`--rb-layout-article-max`、`--rb-layout-sidebar`
+- 余白・形状・幅: `--rb-space-1` から `--rb-space-8`、`--rb-radius-sm`、`--rb-radius-md`、`--rb-control-*`、`--rb-motion-*`、`--rb-layout-page-max`、`--rb-layout-article-max`、`--rb-layout-sidebar`
 
 独自テーマでもこれらの意味的なトークン名を保つと、アプリケーションとプラグインのスタイルを差し替えやすくなります。
 

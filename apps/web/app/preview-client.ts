@@ -1,3 +1,4 @@
+import frameworkStyle from "@riebeckite/honox/style.css?inline";
 import autoCardLinkStyle from "@riebeckite/plugin-autocardlink/style.css?inline";
 import codeEnhanceStyle from "@riebeckite/plugin-code-enhance/style.css?inline";
 import codeTabsStyle from "@riebeckite/plugin-code-tabs/style.css?inline";
@@ -13,6 +14,8 @@ import minimalThemeStyle from "@riebeckite/theme-minimal/style.css?inline";
 import rerurateThemeStyle from "@riebeckite/theme-rerurate/style.css?inline";
 import sakuraThemeStyle from "@riebeckite/theme-sakura/style.css?inline";
 import tokyonightThemeStyle from "@riebeckite/theme-tokyonight/style.css?inline";
+import articleStyle from "./components/article/style.css?inline";
+import markdownStyle from "./styles/markdown.css?inline";
 
 const themeStyles = {
   default: defaultThemeStyle,
@@ -26,6 +29,7 @@ const themeStyles = {
 export function initPluginPreviews(): void {
   initializePluginPreviews({
     themeStyles,
+    contentStyles: [frameworkStyle, articleStyle, markdownStyle],
     pluginStyles: [
       autoCardLinkStyle,
       codeEnhanceStyle,

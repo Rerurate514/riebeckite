@@ -37,6 +37,7 @@ export type PreviewUiMessages = {
 
 export type PreviewUiOptions = {
   readonly themeStyles: Readonly<Record<string, string>>;
+  readonly contentStyles?: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly endpoint?: string;
   readonly selectors?: Partial<PreviewUiSelectors>;
@@ -117,6 +118,7 @@ function initialize(
         status,
         diagnostics,
         themeStyles: options.themeStyles,
+        contentStyles: options.contentStyles ?? [],
         pluginStyles: options.pluginStyles,
         messages,
       });
@@ -154,6 +156,7 @@ type PreviewElements = {
   readonly status: HTMLElement;
   readonly diagnostics: HTMLUListElement;
   readonly themeStyles: Readonly<Record<string, string>>;
+  readonly contentStyles: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly messages: PreviewUiMessages;
 };
@@ -168,6 +171,7 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
     html: state.response.html,
     styles: [
       themeStyle ?? elements.themeStyles.default ?? "",
+      ...elements.contentStyles,
       ...elements.pluginStyles,
     ],
     themeName:

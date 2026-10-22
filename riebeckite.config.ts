@@ -55,7 +55,7 @@ import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { webmention } from "@riebeckite/plugin-webmention";
-import { rerurateTheme } from "@riebeckite/theme-rerurate";
+import { defaultTheme } from "@riebeckite/theme-default";
 import { webmentionProvider } from "./webmention";
 
 export default defineConfig({
@@ -78,10 +78,10 @@ export default defineConfig({
       publishStrategy: "selective",
     },
   },
-  theme: rerurateTheme({
+  theme: defaultTheme({
     colorMode: "system",
-    motion: true,
   }),
+  spa: { prefetch: "hover", viewTransitions: true },
   plugins: [
     obsidianMarkdown(),
     properties({

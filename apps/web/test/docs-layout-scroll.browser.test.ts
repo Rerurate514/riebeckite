@@ -50,6 +50,7 @@ async function loadDocsPage(
     <html data-article-layout="article" data-theme="${theme}">
       <head><style>:root {
         --rb-space-2: 1rem;
+        --rb-space-1: 0.5rem;
         --rb-space-3: 1.5rem;
         --rb-space-4: 2rem;
         --rb-space-8: 4rem;
@@ -91,18 +92,23 @@ for (const theme of ["light", "dark"] as const) {
         const toc = document.querySelector<HTMLElement>(
           ".rr-table-of-contents--desktop",
         );
-        if (!header || !docs || !toc)
+        const tocEyebrow = document.querySelector<HTMLElement>(
+          ".rr-table-of-contents__eyebrow",
+        );
+        if (!header || !docs || !toc || !tocEyebrow)
           throw new Error("docs fixture is incomplete");
         return {
           headerBottom: header.getBoundingClientRect().bottom,
           docsTop: docs.getBoundingClientRect().top,
           tocTop: toc.getBoundingClientRect().top,
+          tocEyebrowTop: tocEyebrow.getBoundingClientRect().top,
           docsScrollable: docs.scrollHeight > docs.clientHeight,
           tocScrollable: toc.scrollHeight > toc.clientHeight,
         };
       });
       assert.ok(Math.abs(initial.docsTop - initial.headerBottom) <= 1);
       assert.ok(Math.abs(initial.tocTop - initial.headerBottom) <= 1);
+      assert.ok(initial.tocEyebrowTop > initial.tocTop);
       assert.ok(initial.docsScrollable);
       assert.ok(initial.tocScrollable);
 

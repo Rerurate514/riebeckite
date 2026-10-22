@@ -99,7 +99,7 @@
     border-block: 0;
     border-inline-start: 1px solid
       color-mix(in oklab, currentColor 18%, transparent);
-    padding-block: 0;
+    padding-block: var(--rb-space-1) 0;
     padding-inline-start: 1rem;
   }
 

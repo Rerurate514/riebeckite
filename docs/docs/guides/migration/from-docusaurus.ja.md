@@ -1,5 +1,6 @@
 ---
 title: Docusaurus から移行する
+private: true
 sidebar:
   label: Docusaurus から
 ---

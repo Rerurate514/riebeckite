@@ -1,5 +1,6 @@
 ---
 title: 移行ガイド
+private: true
 sidebar:
   label: 移行ガイド
   order: 100

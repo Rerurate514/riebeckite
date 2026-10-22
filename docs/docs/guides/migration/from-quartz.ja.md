@@ -1,5 +1,6 @@
 ---
 title: Quartz から移行する
+private: true
 sidebar:
   label: Quartz から
 ---

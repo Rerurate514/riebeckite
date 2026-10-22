@@ -1,5 +1,6 @@
 ---
 title: Obsidian Publish から移行する
+private: true
 sidebar:
   label: Obsidian Publish から
 ---

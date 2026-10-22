@@ -1,5 +1,6 @@
 ---
 title: Next.js static export から移行する
+private: true
 sidebar:
   label: Next.js static export から
 ---

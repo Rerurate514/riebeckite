@@ -1,5 +1,6 @@
 ---
 title: Zola から移行する
+private: true
 sidebar:
   label: Zola から
 ---

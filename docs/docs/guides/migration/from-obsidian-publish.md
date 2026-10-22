@@ -1,5 +1,6 @@
 ---
 title: Migrate from Obsidian Publish
+private: true
 sidebar:
   label: From Obsidian Publish
 ---

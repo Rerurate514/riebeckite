@@ -1,5 +1,6 @@
 ---
 title: Migrate from Quartz
+private: true
 sidebar:
   label: From Quartz
 ---

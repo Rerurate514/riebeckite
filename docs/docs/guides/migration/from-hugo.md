@@ -1,5 +1,6 @@
 ---
 title: Migrate from Hugo
+private: true
 sidebar:
   label: From Hugo
 ---

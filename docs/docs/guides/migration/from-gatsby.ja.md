@@ -1,5 +1,6 @@
 ---
 title: Gatsby から移行する
+private: true
 sidebar:
   label: Gatsby から
 ---

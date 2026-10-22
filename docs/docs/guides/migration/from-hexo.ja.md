@@ -1,5 +1,6 @@
 ---
 title: Hexo から移行する
+private: true
 sidebar:
   label: Hexo から
 ---

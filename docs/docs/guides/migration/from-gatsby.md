@@ -1,5 +1,6 @@
 ---
 title: Migrate from Gatsby
+private: true
 sidebar:
   label: From Gatsby
 ---

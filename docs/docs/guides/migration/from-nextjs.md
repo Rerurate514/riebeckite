@@ -1,5 +1,6 @@
 ---
 title: Migrate from Next.js static export
+private: true
 sidebar:
   label: From Next.js static export
 ---

@@ -1,5 +1,6 @@
 ---
 title: Migrate from Hexo
+private: true
 sidebar:
   label: From Hexo
 ---

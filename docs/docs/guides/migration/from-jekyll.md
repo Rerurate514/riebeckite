@@ -1,5 +1,6 @@
 ---
 title: Migrate from Jekyll
+private: true
 sidebar:
   label: From Jekyll
 ---

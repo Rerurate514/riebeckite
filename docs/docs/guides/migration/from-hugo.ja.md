@@ -1,5 +1,6 @@
 ---
 title: Hugo から移行する
+private: true
 sidebar:
   label: Hugo から
 ---

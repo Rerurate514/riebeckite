@@ -1,5 +1,6 @@
 ---
 title: VitePress から移行する
+private: true
 sidebar:
   label: VitePress から
 ---

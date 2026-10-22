@@ -1,5 +1,6 @@
 ---
 title: Migrate from VitePress
+private: true
 sidebar:
   label: From VitePress
 ---

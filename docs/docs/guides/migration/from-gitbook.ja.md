@@ -1,5 +1,6 @@
 ---
 title: GitBook から移行する
+private: true
 sidebar:
   label: GitBook から
 ---

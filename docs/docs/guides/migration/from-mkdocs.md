@@ -1,5 +1,6 @@
 ---
 title: Migrate from MkDocs
+private: true
 sidebar:
   label: From MkDocs
 ---

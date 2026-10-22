@@ -1,5 +1,6 @@
 ---
 title: MkDocs から移行する
+private: true
 sidebar:
   label: MkDocs から
 ---

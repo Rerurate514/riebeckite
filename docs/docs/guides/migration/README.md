@@ -1,5 +1,6 @@
 ---
 title: Migration Guides
+private: true
 sidebar:
   label: Migration Guides
   order: 100

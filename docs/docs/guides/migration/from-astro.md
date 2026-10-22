@@ -1,5 +1,6 @@
 ---
 title: Migrate from Astro
+private: true
 sidebar:
   label: From Astro
 ---

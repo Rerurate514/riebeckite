@@ -1,5 +1,6 @@
 ---
 title: Astro から移行する
+private: true
 sidebar:
   label: Astro から
 ---

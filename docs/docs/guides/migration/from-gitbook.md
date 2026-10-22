@@ -1,5 +1,6 @@
 ---
 title: Migrate from GitBook
+private: true
 sidebar:
   label: From GitBook
 ---

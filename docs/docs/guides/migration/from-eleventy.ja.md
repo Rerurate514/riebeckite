@@ -1,5 +1,6 @@
 ---
 title: Eleventy (11ty) から移行する
+private: true
 sidebar:
   label: Eleventy (11ty) から
 ---

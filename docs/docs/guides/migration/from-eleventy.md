@@ -1,5 +1,6 @@
 ---
 title: Migrate from Eleventy (11ty)
+private: true
 sidebar:
   label: From Eleventy (11ty)
 ---

@@ -1,5 +1,6 @@
 ---
 title: Jekyll から移行する
+private: true
 sidebar:
   label: Jekyll から
 ---

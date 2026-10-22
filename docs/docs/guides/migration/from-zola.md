@@ -1,5 +1,6 @@
 ---
 title: Migrate from Zola
+private: true
 sidebar:
   label: From Zola
 ---

@@ -1,5 +1,6 @@
 ---
 title: Migrate from Docusaurus
+private: true
 sidebar:
   label: From Docusaurus
 ---

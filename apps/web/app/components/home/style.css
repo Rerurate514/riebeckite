@@ -115,7 +115,7 @@ body:has(.rb-home) .rb-site-header {
 
 .rb-home__code-window pre {
   margin: 0;
-  padding: 1rem 4.8rem 1rem 1rem;
+  padding: 3rem 1rem 1rem;
   overflow-x: auto;
 }
 
@@ -129,11 +129,14 @@ body:has(.rb-home) .rb-site-header {
 
 .rb-home__code-window button {
   position: absolute;
-  top: 0.55rem;
-  right: 0.55rem;
-  padding: 0.25rem 0.45rem;
-  border: 1px solid var(--rb-color-border-strong);
-  background: var(--rb-color-surface);
+  top: 0;
+  right: 0;
+  min-height: 2.35rem;
+  padding: 0 0.8rem;
+  border: 0;
+  border-left: 1px solid var(--rb-color-border);
+  border-bottom: 1px solid var(--rb-color-border);
+  background: transparent;
   color: var(--rb-color-ink);
   font-family: var(--rb-font-mono);
   font-size: 0.68rem;

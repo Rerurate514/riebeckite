@@ -1,17 +1,18 @@
-import {
-  applicationCode,
-  contentSource,
-  projectStructure,
-} from "./code-samples";
-import CodeWindow from "./code-window";
+import type { HomeRuntime } from "../../lib/home-runtime";
+import RuntimeCode from "./runtime-code";
 
-export default function EnglishHomePage() {
+export default function EnglishHomePage({
+  runtime,
+}: {
+  runtime?: HomeRuntime;
+}) {
   return (
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-copy">
           <a class="rb-home__wordmark" href="/" aria-label="Riebeckite home">
-            Riebeckite
+            <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
+            <span>Riebeckite</span>
           </a>
           <p class="rb-home__eyebrow">Open source · Apache-2.0 · TypeScript</p>
           <h1 id="home-title">Markdown is where your site begins.</h1>
@@ -37,9 +38,7 @@ export default function EnglishHomePage() {
           </div>
           <div class="rb-home__install">
             <p>Create a project</p>
-            <CodeWindow label="Copy" copiedLabel="Copied">
-              npx create-riebeckite
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.install} />}
           </div>
         </div>
         <div class="rb-home__published-example">
@@ -61,6 +60,37 @@ export default function EnglishHomePage() {
         </div>
       </section>
 
+      <section class="rb-home__conversion" aria-labelledby="home-conversion">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">Markdown → Web</p>
+          <h2 id="home-conversion">Write the note. Publish the page.</h2>
+          <p>
+            The same Riebeckite pipeline that builds a site parses frontmatter,
+            Markdown, and Obsidian WikiLinks here.
+          </p>
+        </div>
+        <div class="rb-home__conversion-flow">
+          <div class="rb-home__conversion-source">
+            <p class="rb-home__label">Markdown source</p>
+            <pre>
+              <code>{demoSource}</code>
+            </pre>
+          </div>
+          <p class="rb-home__conversion-arrow" aria-hidden="true">
+            →
+          </p>
+          <div class="rb-home__conversion-output">
+            <p class="rb-home__label">Published page</p>
+            {runtime && (
+              <article
+                class="rb-home__rendered rb-article-content"
+                dangerouslySetInnerHTML={{ __html: runtime.demoHtml }}
+              />
+            )}
+          </div>
+        </div>
+      </section>
+
       <section class="rb-home__statement" aria-labelledby="home-content">
         <div class="rb-home__section-intro">
           <p class="rb-home__section-label">Markdown and Obsidian</p>
@@ -76,9 +106,7 @@ export default function EnglishHomePage() {
         <div class="rb-home__content-example">
           <div>
             <p class="rb-home__label">content/notes/ownership.md</p>
-            <CodeWindow label="Copy" copiedLabel="Copied">
-              {contentSource}
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.content} />}
           </div>
           <p class="rb-home__content-note">
             The official Obsidian plugin supports WikiLinks, embeds, callouts,
@@ -106,9 +134,7 @@ export default function EnglishHomePage() {
         <div class="rb-home__ownership-example">
           <div>
             <p class="rb-home__label">The generated project</p>
-            <CodeWindow label="Copy" copiedLabel="Copied">
-              {projectStructure}
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.project} />}
           </div>
           <p>
             Riebeckite is a set of packages, not a project format that absorbs
@@ -130,9 +156,7 @@ export default function EnglishHomePage() {
           </p>
         </div>
         <div class="rb-home__application-example">
-          <CodeWindow label="Copy" copiedLabel="Copied">
-            {applicationCode}
-          </CodeWindow>
+          {runtime && <RuntimeCode html={runtime.codes.application} />}
           <div class="rb-home__application-copy">
             <p>
               Plugins can add Markdown and HTML transforms, renderers,
@@ -202,10 +226,7 @@ export default function EnglishHomePage() {
             <code>riebeckite plugin dev</code> links one local plugin into a
             temporary site with deterministic Markdown.
           </p>
-          <CodeWindow label="Copy" copiedLabel="Copied">
-            riebeckite theme preview my-theme --no-open{`\n`}riebeckite plugin
-            dev ./extensions/my-plugin --no-open
-          </CodeWindow>
+          {runtime && <RuntimeCode html={runtime.codes.preview} />}
         </div>
       </section>
 
@@ -240,3 +261,13 @@ export default function EnglishHomePage() {
     </div>
   );
 }
+
+const demoSource = `---
+title: Hello
+---
+
+## Hello
+
+My **first** note.
+
+[[Getting started]]`;

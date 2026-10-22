@@ -20,7 +20,8 @@ export function SiteHeader() {
   return (
     <header class="site-header rb-site-header">
       <a href="/" class="site-header__home rb-site-header__home">
-        {site?.config.site.title}
+        <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
+        <span>{site?.config.site.title}</span>
       </a>
       {hasNavigation ? (
         <>

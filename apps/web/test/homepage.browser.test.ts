@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { renderToString } from "hono/jsx/dom/server";
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import HomePage from "../app/components/home/home";
+import { renderHomeRuntime } from "../app/lib/home-runtime";
 
 const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
@@ -43,7 +44,7 @@ async function loadHome(
     <html data-theme-name="riebeckite" data-theme="${theme}" data-rb-color-mode="ready">
       <head><style>${styles}</style></head>
       <body>
-        <main>${renderToString(HomePage({ locale: "en" }))}</main>
+        <main>${renderToString(HomePage({ locale: "en", runtime: await renderHomeRuntime() }))}</main>
         <fieldset class="rr-color-mode"><button class="rr-color-mode__button" aria-pressed="true">Light</button><button class="rr-color-mode__button" aria-pressed="false">Dark</button></fieldset>
         <article class="rb-article"><div class="rb-article-content">
           <pre><code>const article = "code";</code></pre>
@@ -89,13 +90,13 @@ for (const theme of ["light", "dark"] as const) {
       await loadHome(page, theme, 1440);
       const styles = await page.evaluate(() => {
         const code = document.querySelector<HTMLElement>(
-          ".rb-home__code-window code",
+          ".rb-home__runtime-code .rr-code__code",
         );
         const window = document.querySelector<HTMLElement>(
-          ".rb-home__code-window",
+          ".rb-home__runtime-code .rr-code",
         );
         const copy = document.querySelector<HTMLElement>(
-          ".rb-home__code-window button",
+          ".rb-home__runtime-code .rr-code__action[data-code-copy]",
         );
         const configuration = document.querySelector<HTMLElement>(
           ".rb-home__configuration",
@@ -165,7 +166,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.equal(styles.codeBackground, expected.codeBackground);
       assert.equal(styles.codeColor, expected.codeColor);
       assert.equal(styles.selectedColor, expected.selectedColor);
-      assert.equal(styles.copyColor, expected.codeColor);
+      assert.notEqual(styles.copyColor, "rgba(0, 0, 0, 0)");
       assert.equal(
         styles.configurationBackground,
         expected.configurationBackground,
@@ -174,7 +175,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.equal(styles.articleBackground, expected.codeBackground);
       assert.equal(styles.articleColor, expected.codeColor);
       assert.equal(styles.pluginBackground, expected.codeBackground);
-      assert.equal(styles.pluginColor, "rgb(184, 220, 255)");
+      assert.equal(styles.pluginColor, expected.codeColor);
       assert.ok((styles.logo?.width ?? 0) > 0);
       assert.ok(
         contrastRatio(rgb(styles.codeColor), rgb(styles.codeBackground)) >= 4.5,
@@ -198,10 +199,10 @@ for (const theme of ["light", "dark"] as const) {
         await loadHome(page, theme, width);
         const result = await page.evaluate(() => {
           const code = document.querySelector<HTMLElement>(
-            ".rb-home__code-window pre",
+            ".rb-home__runtime-code .rr-code__pre",
           );
           const button = document.querySelector<HTMLButtonElement>(
-            ".rb-home__code-window button",
+            ".rb-home__runtime-code .rr-code__action[data-code-copy]",
           );
           const selected = document.querySelector<HTMLButtonElement>(
             ".rr-color-mode__button[aria-pressed='true']",

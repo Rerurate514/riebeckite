@@ -36,10 +36,20 @@
   }
 
   .rb-site-header__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-right: auto;
     color: var(--rb-color-ink);
     font-weight: 700;
     text-decoration: none;
+  }
+
+  .rb-site-header__home img {
+    width: 1.75rem;
+    height: 1.75rem;
+    flex: none;
+    object-fit: contain;
   }
 
   .rb-site-footer {

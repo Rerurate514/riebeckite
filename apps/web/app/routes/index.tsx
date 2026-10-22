@@ -3,6 +3,7 @@ import { resolveRiebeckiteHomeRequest } from "@riebeckite/honox/server";
 import { PageBody } from "@riebeckite/honox/ui";
 import { createRoute } from "honox/factory";
 import HomePage from "../components/home/home";
+import { renderHomeRuntime } from "../lib/home-runtime";
 import { buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(async (c) => {
@@ -27,5 +28,5 @@ export default createRoute(async (c) => {
 
   c.set("seo", buildHomeSeo("en", home.entry.headTags));
 
-  return c.render(<HomePage locale="en" />);
+  return c.render(<HomePage locale="en" runtime={await renderHomeRuntime()} />);
 });

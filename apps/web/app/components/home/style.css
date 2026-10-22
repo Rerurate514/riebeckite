@@ -35,21 +35,22 @@ body:has(.rb-home) main {
   min-width: 0;
 }
 .rb-home__wordmark {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--rb-color-ink);
   font-family: var(--rb-font-heading);
   font-size: 1.5rem;
   font-weight: 750;
   letter-spacing: -0.045em;
   text-decoration: none;
+  line-height: 1;
 }
-.rb-home__wordmark::before {
-  display: inline-block;
-  width: 0.6em;
-  height: 0.6em;
-  margin-right: 0.34em;
-  background: var(--rb-color-accent);
-  content: "";
+.rb-home__wordmark img {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  object-fit: contain;
 }
 .rb-home__eyebrow,
 .rb-home__label,
@@ -174,49 +175,14 @@ body:has(.rb-home) main {
   font-weight: 600;
   text-underline-offset: 0.25em;
 }
-.rb-home__code-window {
-  position: relative;
-  max-width: 100%;
-  border: 1px solid var(--rb-color-border-strong);
-  background: var(--rb-color-code-background);
+.rb-home__runtime-code {
+  min-width: 0;
 }
-.rb-home__code-window pre {
-  margin: 0;
-  padding: 2.85rem 1rem 1rem;
-  overflow-x: auto;
-  tab-size: 2;
-}
-.rb-home__code-window code {
-  display: block;
-  min-width: max-content;
-  color: var(--rb-color-code-ink);
-  font-family: var(--rb-font-mono);
-  font-size: 0.8rem;
-  line-height: 1.65;
-  white-space: pre;
-}
-.rb-home__code-window button {
-  position: absolute;
-  top: 0.55rem;
-  right: 0.65rem;
-  min-height: 1.5rem;
-  padding: 0.15rem 0.35rem;
-  border: 1px solid
-    color-mix(in srgb, var(--rb-color-code-ink) 36%, transparent);
-  border-radius: var(--rb-radius-sm);
-  background: var(--rb-color-code-background);
-  color: var(--rb-color-code-ink);
-  font-family: var(--rb-font-mono);
-  font-size: 0.68rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.rb-home__code-window button:hover,
-.rb-home__code-window button:focus-visible {
-  border-color: var(--rb-color-accent);
-  color: var(--rb-color-accent);
+.rb-home__runtime-code > :first-child {
+  margin-top: 0;
 }
 .rb-home__statement,
+.rb-home__conversion,
 .rb-home__section,
 .rb-home__configuration,
 .rb-home__workflow,
@@ -227,6 +193,64 @@ body:has(.rb-home) main {
 .rb-home__statement {
   padding-top: var(--rb-space-4);
   border-top: 1px solid var(--rb-color-border);
+}
+.rb-home__conversion {
+  padding-top: var(--rb-space-4);
+  border-top: 1px solid var(--rb-color-border);
+}
+.rb-home__conversion-flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--rb-space-3);
+  align-items: center;
+  margin-top: var(--rb-space-5);
+}
+.rb-home__conversion-source,
+.rb-home__conversion-output {
+  min-width: 0;
+}
+.rb-home__conversion-source > pre,
+.rb-home__rendered {
+  min-height: 18rem;
+  margin: 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--rb-color-border-strong);
+}
+.rb-home__conversion-source > pre {
+  overflow-x: auto;
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-code-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  tab-size: 2;
+}
+.rb-home__conversion-source > pre code {
+  white-space: pre;
+}
+.rb-home__rendered {
+  background: var(--rb-color-surface);
+}
+.rb-home__rendered :is(h1, h2) {
+  margin: 0;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.15;
+}
+.rb-home__rendered p {
+  margin: var(--rb-space-3) 0 0;
+  color: var(--rb-color-muted);
+  line-height: 1.7;
+}
+.rb-home__rendered a {
+  color: var(--rb-color-link);
+  text-underline-offset: 0.2em;
+}
+.rb-home__conversion-arrow {
+  margin: 0;
+  color: var(--rb-color-accent);
+  font-size: 1.5rem;
 }
 .rb-home__section {
   max-width: 63rem;
@@ -322,7 +346,7 @@ body:has(.rb-home) main {
 .rb-home__preview {
   align-items: start;
 }
-.rb-home__preview-body .rb-home__code-window {
+.rb-home__preview-body .rb-home__runtime-code {
   margin-top: var(--rb-space-4);
 }
 .rb-home__continue {
@@ -340,6 +364,7 @@ body:has(.rb-home) main {
 
 @media (max-width: 52rem) {
   .rb-home__hero,
+  .rb-home__conversion-flow,
   .rb-home__statement,
   .rb-home__content-example,
   .rb-home__application-example,
@@ -350,6 +375,10 @@ body:has(.rb-home) main {
   }
   .rb-home__published-example {
     max-width: 34rem;
+  }
+  .rb-home__conversion-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
   }
 }
 

@@ -10,6 +10,7 @@ import {
   getHomePath,
   type HomeLocale,
 } from "../app/lib/home";
+import { renderHomeRuntime } from "../app/lib/home-runtime";
 import { getHreflangAlternates, toOgLocale } from "../app/lib/locale";
 
 const read = (relativePath: string) =>
@@ -25,6 +26,19 @@ test("homepage titles name the software and its content sources", () => {
     assert.match(metadata.title, /Obsidian/);
     assert.ok(metadata.description.length > 0);
   }
+});
+
+test("homepage runtime renders the Markdown conversion fixture", async () => {
+  const runtime = await renderHomeRuntime();
+
+  assert.match(runtime.demoHtml, /<h2[^>]*>Hello<\/h2>/);
+  assert.match(runtime.demoHtml, /<strong>first<\/strong>/);
+  assert.match(
+    runtime.demoHtml,
+    /href="\/getting-started\/" class="rr-obsidian-wikilink"/,
+  );
+  assert.match(runtime.codes.install, /class="rr-code"/);
+  assert.match(runtime.codes.install, /data-code-copy="true"/);
 });
 
 test("homepage copy avoids unsupported marketing claims", () => {
@@ -102,14 +116,16 @@ test("og locale helpers derive from hreflang alternates", () => {
 });
 
 for (const locale of locales) {
-  test(`homepage (${locale}) renders a single h1 inside the shared main landmark`, () => {
-    const html = renderToString(HomePage({ locale }));
+  test(`homepage (${locale}) renders a single h1 inside the shared main landmark`, async () => {
+    const html = renderToString(
+      HomePage({ locale, runtime: await renderHomeRuntime() }),
+    );
     const renderer = read("../app/routes/_renderer.tsx");
 
     assert.equal((html.match(/<main\b/g) ?? []).length, 0);
     assert.match(renderer, /<main id="main-content" tabindex=\{-1\}>/);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-    assert.equal((html.match(/<h2\b/g) ?? []).length, 6);
+    assert.equal((html.match(/<h2\b/g) ?? []).length, 8);
     assert.match(html, /<h1[^>]*id="home-title"/);
 
     const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
@@ -129,8 +145,10 @@ for (const locale of locales) {
     );
   });
 
-  test(`homepage (${locale}) links the journeys a first-time visitor needs`, () => {
-    const html = renderToString(HomePage({ locale }));
+  test(`homepage (${locale}) links the journeys a first-time visitor needs`, async () => {
+    const html = renderToString(
+      HomePage({ locale, runtime: await renderHomeRuntime() }),
+    );
     const docsPrefix = locale === "en" ? "" : "/ja";
 
     for (const href of [
@@ -145,9 +163,10 @@ for (const locale of locales) {
 
     assert.ok(html.includes('hreflang="en"') || html.includes('hreflang="ja"'));
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
-    assert.match(html, /data-home-copy/);
-    assert.match(html, /data-rb-ux-copy="true"/);
+    assert.match(html, /data-code-copy="true"/);
+    assert.match(html, /rr-obsidian-wikilink/);
     assert.match(html, /class="rb-home__wordmark"/);
+    assert.match(html, /src="\/riebeckite-logo\.png"/);
     assert.match(html, /riebeckite theme preview/);
     assert.match(html, /riebeckite plugin dev/);
   });

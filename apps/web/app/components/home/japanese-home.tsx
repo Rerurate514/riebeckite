@@ -1,11 +1,11 @@
-import {
-  applicationCode,
-  contentSource,
-  projectStructure,
-} from "./code-samples";
-import CodeWindow from "./code-window";
+import type { HomeRuntime } from "../../lib/home-runtime";
+import RuntimeCode from "./runtime-code";
 
-export default function JapaneseHomePage() {
+export default function JapaneseHomePage({
+  runtime,
+}: {
+  runtime?: HomeRuntime;
+}) {
   return (
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
@@ -15,7 +15,8 @@ export default function JapaneseHomePage() {
             href="/ja/"
             aria-label="Riebeckite ホーム"
           >
-            Riebeckite
+            <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
+            <span>Riebeckite</span>
           </a>
           <p class="rb-home__eyebrow">
             オープンソース · Apache-2.0 · TypeScript
@@ -44,9 +45,7 @@ export default function JapaneseHomePage() {
           </div>
           <div class="rb-home__install">
             <p>プロジェクトを作成する</p>
-            <CodeWindow label="コピー" copiedLabel="コピーしました">
-              npx create-riebeckite
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.install} />}
           </div>
         </div>
         <div class="rb-home__published-example">
@@ -68,6 +67,38 @@ export default function JapaneseHomePage() {
         </div>
       </section>
 
+      <section class="rb-home__conversion" aria-labelledby="home-conversion">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">Markdown → Web</p>
+          <h2 id="home-conversion">ノートを書き、そのままページにする。</h2>
+          <p>
+            この表示にも、サイトをビルドするときと同じ Riebeckite Pipeline
+            を使っています。Frontmatter、Markdown、Obsidian WikiLink
+            を処理します。
+          </p>
+        </div>
+        <div class="rb-home__conversion-flow">
+          <div class="rb-home__conversion-source">
+            <p class="rb-home__label">Markdown source</p>
+            <pre>
+              <code>{demoSource}</code>
+            </pre>
+          </div>
+          <p class="rb-home__conversion-arrow" aria-hidden="true">
+            →
+          </p>
+          <div class="rb-home__conversion-output">
+            <p class="rb-home__label">Published page</p>
+            {runtime && (
+              <article
+                class="rb-home__rendered rb-article-content"
+                dangerouslySetInnerHTML={{ __html: runtime.demoHtml }}
+              />
+            )}
+          </div>
+        </div>
+      </section>
+
       <section class="rb-home__statement" aria-labelledby="home-content">
         <div class="rb-home__section-intro">
           <p class="rb-home__section-label">Markdown と Obsidian</p>
@@ -81,9 +112,7 @@ export default function JapaneseHomePage() {
         <div class="rb-home__content-example">
           <div>
             <p class="rb-home__label">content/notes/ownership.md</p>
-            <CodeWindow label="コピー" copiedLabel="コピーしました">
-              {contentSource}
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.content} />}
           </div>
           <p class="rb-home__content-note">
             公式 Plugin
@@ -112,9 +141,7 @@ export default function JapaneseHomePage() {
         <div class="rb-home__ownership-example">
           <div>
             <p class="rb-home__label">生成されるプロジェクト</p>
-            <CodeWindow label="コピー" copiedLabel="コピーしました">
-              {projectStructure}
-            </CodeWindow>
+            {runtime && <RuntimeCode html={runtime.codes.project} />}
           </div>
           <p>
             Riebeckite はサイトを抱え込むプロジェクト形式ではなく、npm
@@ -133,9 +160,7 @@ export default function JapaneseHomePage() {
           </p>
         </div>
         <div class="rb-home__application-example">
-          <CodeWindow label="コピー" copiedLabel="コピーしました">
-            {applicationCode}
-          </CodeWindow>
+          {runtime && <RuntimeCode html={runtime.codes.application} />}
           <div class="rb-home__application-copy">
             <p>
               Plugin は Markdown と HTML
@@ -200,10 +225,7 @@ export default function JapaneseHomePage() {
             はローカル Plugin を一時サイトにリンクし、固定の Markdown
             で確認できます。
           </p>
-          <CodeWindow label="コピー" copiedLabel="コピーしました">
-            riebeckite theme preview my-theme --no-open{`\n`}riebeckite plugin
-            dev ./extensions/my-plugin --no-open
-          </CodeWindow>
+          {runtime && <RuntimeCode html={runtime.codes.preview} />}
         </div>
       </section>
 
@@ -239,3 +261,13 @@ export default function JapaneseHomePage() {
     </div>
   );
 }
+
+const demoSource = `---
+title: Hello
+---
+
+## Hello
+
+My **first** note.
+
+[[Getting started]]`;

@@ -290,9 +290,6 @@ importers:
       '@riebeckite/plugin-webmention':
         specifier: workspace:*
         version: link:../../packages/plugins/webmention
-      '@riebeckite/preview':
-        specifier: workspace:*
-        version: link:../../packages/preview
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default

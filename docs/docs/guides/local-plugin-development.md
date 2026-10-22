@@ -9,9 +9,8 @@ Use `riebeckite plugin dev` to run a local Plugin package through a temporary Ri
 
 ## When to use it
 
-Choose this command when you are changing a Plugin's transform, styles, or client behavior and want to see the result in a browser. It is different from the public [Playground](/playground) and from [Plugin previews](./plugin-previews.md):
+Choose this command when you are changing a Plugin's transform, styles, or client behavior and want to see the result in a browser. It differs from `theme preview`:
 
-- The Playground loads only Plugins registered by the host and does not run Plugin client entries.
 - `plugin dev` loads one Plugin from a local path and executes its client entry.
 - `theme preview` checks a Theme with fixed content fixtures. `plugin dev` checks a Plugin with its own temporary site.
 
@@ -57,7 +56,7 @@ A missing path, invalid `package.json`, unsupported entry point, or Plugin initi
 
 ## Security
 
-`plugin dev` is a trusted local development command. It executes the Plugin entry and client code from the given path. Only run Plugins you trust, and do not expose the preview server to untrusted users. The public Playground API does not load local Plugins.
+`plugin dev` is a trusted local development command. It executes the Plugin entry and client code from the given path. Only run Plugins you trust, and do not expose the preview server to untrusted users.
 
 ## Troubleshooting
 

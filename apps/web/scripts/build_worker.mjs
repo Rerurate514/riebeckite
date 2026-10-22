@@ -8,8 +8,8 @@ const appRoot = path.resolve(
 );
 
 await build({
-  entryPoints: [path.join(appRoot, "app", "preview-worker.ts")],
-  outfile: path.join(appRoot, "dist", "preview-worker.js"),
+  entryPoints: [path.join(appRoot, "app", "worker.ts")],
+  outfile: path.join(appRoot, "dist", "worker.js"),
   bundle: true,
   format: "esm",
   platform: "neutral",

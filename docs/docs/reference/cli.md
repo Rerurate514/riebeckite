@@ -223,7 +223,7 @@ Errors from loading, compiling, or initializing the Plugin are printed in the te
 
 ### Security
 
-`plugin dev` is a trusted local development command. It executes the Plugin entry and its client script from the given path. Only run Plugins you trust. The public Playground API does not load local Plugins, and this command must not be exposed to untrusted users. The command never installs packages automatically.
+`plugin dev` is a trusted local development command. It executes the Plugin entry and its client script from the given path. Only run Plugins you trust, and do not expose this command to untrusted users. The command never installs packages automatically.
 
 ### Troubleshooting
 

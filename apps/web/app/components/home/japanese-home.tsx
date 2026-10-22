@@ -118,10 +118,6 @@ export default function JapaneseHomePage() {
         </div>
         <ul class="rb-home__resource-list">
           <li>
-            <a href="/playground">Playground を開く</a>
-            <p>Plugin のフィクスチャを編集し、ブラウザで出力を確認できます。</p>
-          </li>
-          <li>
             <a href="/ja/docs/plugins/showcase">Plugin Showcase を見る</a>
             <p>Markdown のソースと各 Plugin の出力を比較できます。</p>
           </li>

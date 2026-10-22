@@ -147,7 +147,7 @@ Plugin の読み込み、コンパイル、初期化でエラーが発生した�
 
 ### Security
 
-`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した path の Plugin entry と Client Script を実行します。信頼できる Plugin だけを実行してください。公開 Playground API はローカル Plugin を読み込みません。このコマンドを信頼できない利用者へ公開しないでください。依存パッケージを自動で install することもありません。
+`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した path の Plugin entry と Client Script を実行します。信頼できる Plugin だけを実行してください。このコマンドを信頼できない利用者へ公開しないでください。依存パッケージを自動で install することもありません。
 
 ### トラブルシューティング
 

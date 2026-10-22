@@ -9,9 +9,8 @@ title: ローカル Plugin の開発
 
 ## 使う場面
 
-Plugin の変換処理、スタイル、Client の挙動を変更し、ブラウザーで結果を確認したいときに使います。公開 [Playground](/playground) や [Plugin Previews](./plugin-previews.ja.md) とは役割が異なります。
+Plugin の変換処理、スタイル、Client の挙動を変更し、ブラウザーで結果を確認したいときに使います。`theme preview` との違いは次のとおりです。
 
-- Playground はホストが登録した Plugin だけを読み込み、Plugin の Client Entry は実行しません。
 - `plugin dev` はローカルの Path から 1 つの Plugin を読み込み、その Client Entry を実行します。
 - `theme preview` は固定の Content Fixture で Theme を確認します。`plugin dev` は Plugin 用の一時 Site を生成します。
 
@@ -57,7 +56,7 @@ Path が見つからない場合、`package.json` が不正な場合、Entry Poi
 
 ## Security
 
-`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した Path の Plugin Entry と Client Code を実行します。信頼できる Plugin だけを実行し、Preview Server を信頼できない利用者へ公開しないでください。公開 Playground API はローカル Plugin を読み込みません。
+`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した Path の Plugin Entry と Client Code を実行します。信頼できる Plugin だけを実行し、Preview Server を信頼できない利用者へ公開しないでください。
 
 ## トラブルシューティング
 

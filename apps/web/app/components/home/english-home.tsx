@@ -120,13 +120,6 @@ export default function EnglishHomePage() {
         </div>
         <ul class="rb-home__resource-list">
           <li>
-            <a href="/playground">Open Playground</a>
-            <p>
-              Edit a plugin fixture and inspect the rendered result in the
-              browser.
-            </p>
-          </li>
-          <li>
             <a href="/docs/plugins/showcase">View Plugin Showcase</a>
             <p>
               Compare Markdown source with the output of the available plugins.

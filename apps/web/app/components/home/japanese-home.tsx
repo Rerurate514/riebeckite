@@ -10,6 +10,13 @@ export default function JapaneseHomePage() {
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-copy">
+          <img
+            class="rb-home__logo"
+            src="/riebeckite-logo-horizontal.png"
+            alt="Riebeckite"
+            width="1983"
+            height="793"
+          />
           <p class="rb-home__eyebrow">
             オープンソース · Apache-2.0 · TypeScript
           </p>

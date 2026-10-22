@@ -22,7 +22,7 @@
     --rb-color-accent: #075fc9;
     --rb-color-link: #0754b2;
     --rb-color-focus: #1676df;
-    --rb-color-selected: #e5f0ff;
+    --rb-color-selected: #bfdbfe;
     --rb-color-border: #d7e0ea;
     --rb-color-border-strong: #aebdcc;
     --rb-color-danger: #b42318;
@@ -30,7 +30,7 @@
     --rb-color-info: #075fc9;
     --rb-color-warning: #9a5b08;
     --rb-color-callout-special: #6b48ad;
-    --rb-color-code-background: #10233d;
+    --rb-color-code-background: #17304d;
     --rb-color-code-ink: #e8f1ff;
     --rb-color-code-inline: #edf4fc;
     --rb-color-overlay: rgb(11 20 33 / 0.56);
@@ -75,7 +75,7 @@
     --rb-color-accent: #62aaff;
     --rb-color-link: #83bcff;
     --rb-color-focus: #9dccff;
-    --rb-color-selected: #193c68;
+    --rb-color-selected: #24558e;
     --rb-color-border: #344150;
     --rb-color-border-strong: #526273;
     --rb-color-danger: #ff8a82;

@@ -147,6 +147,8 @@ for (const locale of locales) {
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
     assert.match(html, /data-home-copy/);
     assert.match(html, /data-rb-ux-copy="true"/);
+    assert.match(html, /src="\/riebeckite-logo-horizontal\.png"/);
+    assert.match(html, /alt="Riebeckite"/);
   });
 }
 

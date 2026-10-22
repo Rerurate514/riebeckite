@@ -10,6 +10,13 @@ export default function EnglishHomePage() {
     <div class="rb-home">
       <section class="rb-home__hero" aria-labelledby="home-title">
         <div class="rb-home__hero-copy">
+          <img
+            class="rb-home__logo"
+            src="/riebeckite-logo-horizontal.png"
+            alt="Riebeckite"
+            width="1983"
+            height="793"
+          />
           <p class="rb-home__eyebrow">Open source · Apache-2.0 · TypeScript</p>
           <h1 id="home-title">Markdown is where your site begins.</h1>
           <p class="rb-home__lead">

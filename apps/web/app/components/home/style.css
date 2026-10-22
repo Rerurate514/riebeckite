@@ -32,6 +32,13 @@ body:has(.rb-home) main {
   min-width: 0;
 }
 
+.rb-home__logo {
+  display: block;
+  width: min(100%, 12.5rem);
+  height: auto;
+  margin: 0 0 var(--rb-space-3);
+}
+
 .rb-home__eyebrow,
 .rb-home__label,
 .rb-home__install > p,
@@ -103,14 +110,14 @@ body:has(.rb-home) main {
 .rb-home__cta--primary {
   border-color: var(--rb-color-accent);
   background: var(--rb-color-accent);
-  color: #171717;
+  color: var(--rb-color-paper);
 }
 
 .rb-home__cta:hover,
 .rb-home__cta:focus-visible {
   border-color: var(--rb-color-accent);
   background: var(--rb-color-accent);
-  color: #171717;
+  color: var(--rb-color-paper);
 }
 
 .rb-home__install {
@@ -126,7 +133,7 @@ body:has(.rb-home) main {
 .rb-home__published-example {
   align-self: center;
   border: 1px solid var(--rb-color-border-strong);
-  background: var(--rb-color-code-background);
+  background: var(--rb-color-surface);
   box-shadow: 0.75rem 0.75rem 0
     color-mix(in oklab, var(--rb-color-accent) 20%, transparent);
 }
@@ -136,7 +143,10 @@ body:has(.rb-home) main {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.8rem 1rem;
-  border-bottom: 1px solid var(--rb-color-border-strong);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--rb-color-code-ink) 18%, transparent);
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-code-ink);
 }
 
 .rb-home__example-bar span:last-child {
@@ -176,7 +186,7 @@ body:has(.rb-home) main {
 .rb-home__example-page a {
   display: inline-block;
   margin-top: 1.75rem;
-  color: var(--rb-color-ink);
+  color: var(--rb-color-link);
   font-size: 0.85rem;
   font-weight: 600;
   text-underline-offset: 0.25em;
@@ -197,7 +207,7 @@ body:has(.rb-home) main {
 }
 
 .rb-home__code-window code {
-  color: var(--rb-color-ink);
+  color: var(--rb-color-code-ink);
   font-family: var(--rb-font-mono);
   font-size: 0.8rem;
   line-height: 1.65;
@@ -211,7 +221,7 @@ body:has(.rb-home) main {
   padding: 0.25rem 0;
   border: 0;
   background: transparent;
-  color: var(--rb-color-ink);
+  color: var(--rb-color-code-ink);
   font-family: var(--rb-font-mono);
   font-size: 0.68rem;
   font-weight: 600;
@@ -298,7 +308,7 @@ body:has(.rb-home) main {
 
 .rb-home__configuration {
   padding: clamp(2rem, 5vw, 4rem);
-  background: var(--rb-color-code-background);
+  background: var(--rb-color-surface-hover);
   border-block: 1px solid var(--rb-color-border-strong);
 }
 
@@ -320,7 +330,7 @@ body:has(.rb-home) main {
 
 .rb-home__text-link,
 .rb-home__language {
-  color: var(--rb-color-ink);
+  color: var(--rb-color-link);
   font-weight: 600;
   text-decoration: none;
   text-underline-offset: 0.25em;

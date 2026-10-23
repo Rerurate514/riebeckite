@@ -181,7 +181,7 @@ test("RiebeckiteHead renders meta, link, and script head tags", () => {
   assert.match(html, /data-riebeckite-head="page"/);
 });
 
-test("PluginHeadTags marks every plugin tag as page-owned", () => {
+test("PluginHeadTags marks metadata as page-owned but not executable scripts", () => {
   const html = renderToString(
     PluginHeadTags({
       tags: [
@@ -192,7 +192,8 @@ test("PluginHeadTags marks every plugin tag as page-owned", () => {
     }),
   );
 
-  assert.equal(html.match(/data-riebeckite-head="page"/g)?.length, 3);
+  assert.equal(html.match(/data-riebeckite-head="page"/g)?.length, 2);
+  assert.doesNotMatch(html, /<script[^>]*data-riebeckite-head/);
 });
 
 test("RiebeckiteHead renders a script head tag without children", () => {
@@ -200,10 +201,7 @@ test("RiebeckiteHead renders a script head tag without children", () => {
     headTags: [{ tag: "script", attrs: { src: "/app/plugin.js" } }],
   });
 
-  assert.match(
-    html,
-    /<script src="\/app\/plugin.js" data-riebeckite-head="page"><\/script>/,
-  );
+  assert.match(html, /<script src="\/app\/plugin.js"><\/script>/);
 });
 
 test("RiebeckiteHead preserves multiple head tags in order", () => {

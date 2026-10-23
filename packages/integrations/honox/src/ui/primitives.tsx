@@ -252,27 +252,29 @@ function renderPluginHeadTag(tag: PluginHeadTag, index: number) {
   const key = `${tag.tag}-${index}`;
 
   if (tag.tag === "meta") {
-    return (
-      <meta {...tag.attrs} data-riebeckite-head="page" key={key} />
-    );
+    return <meta {...tag.attrs} data-riebeckite-head="page" key={key} />;
   }
 
   if (tag.tag === "link") {
-    return (
-      <link {...tag.attrs} data-riebeckite-head="page" key={key} />
-    );
+    return <link {...tag.attrs} data-riebeckite-head="page" key={key} />;
   }
 
   return (
     <script
       {...tag.attrs}
-      data-riebeckite-head="page"
+      data-riebeckite-head={isDataScript(tag) ? "page" : undefined}
       key={key}
       dangerouslySetInnerHTML={
         tag.children ? { __html: tag.children } : undefined
       }
     />
   );
+}
+
+function isDataScript(tag: PluginHeadTag): boolean {
+  if (tag.tag !== "script") return false;
+  const type = tag.attrs?.type?.trim().toLowerCase();
+  return type === "application/ld+json" || type === "application/json";
 }
 
 export type RiebeckiteHeadProps = {

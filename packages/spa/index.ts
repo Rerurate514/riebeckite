@@ -1,3 +1,4 @@
+export { startSpaNavigation } from "./navigation.js";
 export type {
   SpaNavigationEventDetail,
   SpaNavigationOptions,
@@ -5,4 +6,3 @@ export type {
   SpaPageCommit,
 } from "./options.js";
 export { spa } from "./options.js";
-export { startSpaNavigation } from "./navigation.js";

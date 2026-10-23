@@ -18,14 +18,19 @@ export class ScrollRestoration {
 
   stop(): void {
     if (!this.enabled) return;
-    if (this.timer !== undefined) window.clearTimeout(this.timer);
-    this.timer = undefined;
+    this.cancel();
     window.removeEventListener("scroll", this.onScroll);
     history.scrollRestoration = this.previous;
   }
 
+  cancel(): void {
+    if (this.timer !== undefined) window.clearTimeout(this.timer);
+    this.timer = undefined;
+  }
+
   record(): void {
     if (!this.enabled) return;
+    this.cancel();
     history.replaceState(
       {
         ...(history.state ?? {}),
@@ -36,15 +41,15 @@ export class ScrollRestoration {
   }
 
   push(url: URL): void {
+    if (this.enabled) this.cancel();
     history.pushState({ scroll: [0, 0] }, "", url);
   }
 
   restore(url: URL, popstate: boolean): void {
     if (!this.enabled) return;
+    this.cancel();
     if (url.hash) {
-      document
-        .getElementById(readHashId(url.hash))
-        ?.scrollIntoView();
+      document.getElementById(readHashId(url.hash))?.scrollIntoView();
       return;
     }
     const saved = popstate ? readSavedScrollPosition(history.state) : undefined;

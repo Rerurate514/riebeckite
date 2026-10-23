@@ -27,6 +27,7 @@ type LoadedPage = {
 
 type SkippableTransition = {
   finished: Promise<void>;
+  updateCallbackDone?: Promise<void>;
   skipTransition(): void;
 };
 
@@ -123,6 +124,7 @@ class SpaNavigation {
   private async navigate(url: URL, popstate: boolean): Promise<void> {
     const id = ++this.navigationId;
     this.cancelActive();
+    if (popstate) this.scroll.cancel();
     if (popstate && this.isSamePage(url)) {
       this.scroll.restore(url, true);
       if (url.hash) {
@@ -137,26 +139,33 @@ class SpaNavigation {
     const active: Navigation = { id, controller };
     this.active = active;
     let committed = false;
+    let commitFailure: { error: unknown } | undefined;
+    let destination = url;
 
     try {
       if (!popstate) this.scroll.record();
       const page = await this.loadPage(url, controller.signal);
       if (!this.isCurrent(id, controller)) return;
+      destination = page.url;
 
       const current = document.querySelector<HTMLElement>("main#main-content");
       if (!current) throw new Error("SPA page root is missing.");
 
       const commit = async (): Promise<void> => {
-        if (!this.isCurrent(id, controller)) return;
-        await this.options.onBeforePageCommit?.(controller.signal);
-        if (!this.isCurrent(id, controller)) return;
-        reconcileDocument(page.document);
-        current.replaceWith(page.root);
-        committed = true;
-        await this.options.onPageCommit?.({
-          root: page.root,
-          signal: controller.signal,
-        });
+        try {
+          if (!this.isCurrent(id, controller)) return;
+          await this.options.onBeforePageCommit?.(controller.signal);
+          if (!this.isCurrent(id, controller)) return;
+          reconcileDocument(page.document);
+          current.replaceWith(page.root);
+          committed = true;
+          await this.options.onPageCommit?.({
+            root: page.root,
+            signal: controller.signal,
+          });
+        } catch (error) {
+          commitFailure = { error };
+        }
       };
 
       if (this.shouldUseViewTransition()) {
@@ -166,12 +175,15 @@ class SpaNavigation {
         if (startViewTransition) {
           const transition = startViewTransition(commit);
           active.transition = transition;
-          await transition.finished;
+          await (transition.updateCallbackDone ?? transition.finished);
+          if (commitFailure) throw commitFailure.error;
         } else {
           await commit();
+          if (commitFailure) throw commitFailure.error;
         }
       } else {
         await commit();
+        if (commitFailure) throw commitFailure.error;
       }
 
       if (!this.isCurrent(id, controller)) return;
@@ -190,18 +202,14 @@ class SpaNavigation {
       if (!this.isCurrent(id, controller)) return;
       if (committed) {
         console.error("[riebeckite] SPA navigation commit failed.", error);
-        return;
       }
-      window.location.assign(url.href);
+      window.location.assign(destination.href);
     } finally {
       if (this.active === active) this.active = undefined;
     }
   }
 
-  private async loadPage(
-    url: URL,
-    signal: AbortSignal,
-  ): Promise<LoadedPage> {
+  private async loadPage(url: URL, signal: AbortSignal): Promise<LoadedPage> {
     const fetched = await this.cache.get(url, signal);
     const page = new DOMParser().parseFromString(fetched.html, "text/html");
     const root = page.querySelector<HTMLElement>("main#main-content");

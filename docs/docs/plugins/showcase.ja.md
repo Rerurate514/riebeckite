@@ -110,6 +110,28 @@ const kept = true;
 - const removed = false;
 ```
 
+### Source Files：[`source-files`](./source-files.ja.md)
+
+対象のテキストファイルをページとして公開し、ファイル全体や行範囲を埋め込めます。
+
+#### ソース
+
+````md
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+````
+
+#### 実行例
+
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+
 ## インライン表現
 
 ### Highlight

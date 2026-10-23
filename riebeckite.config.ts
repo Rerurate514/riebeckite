@@ -48,6 +48,7 @@ import { seo } from "@riebeckite/plugin-seo";
 import { share } from "@riebeckite/plugin-share";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { sidenotes } from "@riebeckite/plugin-sidenotes";
+import { sourceFiles } from "@riebeckite/plugin-source-files";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
 import { tocPlugin } from "@riebeckite/plugin-toc";
@@ -141,6 +142,7 @@ export default defineConfig({
       wrapToggle: true,
     }),
     codeTabs(),
+    sourceFiles({ include: ["assets/*.ts"] }),
     colorModePlugin(),
     codeAnnotations(),
     lightboxPlugin(),

@@ -37,6 +37,28 @@ export default defineConfig({
 
 ソースページには Vault 相対パス、検出した言語、サイズ、コピー操作、通常の添付ファイル URL を指す Raw リンクを表示します。
 
+## 実行例
+
+以下のソースは、このページ上でソースページへのリンク、ファイル全体の埋め込み、行範囲の埋め込みとして実際に描画されます。
+
+#### ソース
+
+````md
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+````
+
+#### 実行例
+
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+
 ## 安全性と公開境界
 
 `include` に一致し `exclude` に一致しないファイルだけが対象です。不正な論理パス、バイナリ、UTF-8 として読めない内容、`maxBytes` を超えるファイル、代表的な秘密ファイル名・拡張子（`.env`、鍵、証明書、credentials）は拒否します。設定済みの `ContentSource` だけを利用し、ファイルシステムのパスを直接読んだり絶対パスを表示したりしません。

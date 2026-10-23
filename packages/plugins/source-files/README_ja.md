@@ -34,7 +34,29 @@ export default defineConfig({
 - `![src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.ja.md)` は既存のコードブロック表示経路でソースを表示します。
 - `#L10` と `#L10-L20` は埋め込みの行範囲を選びます。Code Enhance を有効にすると、ソースページでも該当の行または範囲へスクロールし、強調表示します。
 
-ソースページには Vault 相対パス、検出した言語、サイズ、Copy 操作、通常の添付ファイル URL を指す Raw リンクを表示します。
+ソースページには Vault 相対パス、検出した言語、サイズ、コピー操作、通常の添付ファイル URL を指す Raw リンクを表示します。
+
+## 実行例
+
+以下のソースは、このページ上でソースページへのリンク、ファイル全体の埋め込み、行範囲の埋め込みとして実際に描画されます。
+
+#### ソース
+
+````md
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+````
+
+#### 実行例
+
+[source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md)
+
+![source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md)
+
+![source-file-example.ts#L3-L5](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md#L3-L5)
 
 ## 安全性と公開境界
 

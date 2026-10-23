@@ -37,6 +37,28 @@ export default defineConfig({
 
 Each source page includes its vault-relative path, detected language, size, a Copy action, and a Raw link to the normal attachment URL.
 
+## Live examples
+
+The following source is rendered on this page as a source-page link, a full-file embed, and a line-range embed.
+
+#### Source
+
+````md
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+````
+
+#### Rendered
+
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+
 ## Safety and publication
 
 Only files matching `include` and not matching `exclude` are eligible. The plugin rejects unsafe logical paths, binary content, invalid UTF-8, files over `maxBytes`, and common secret file names and extensions (`.env`, keys, certificates, and credentials). It uses the configured `ContentSource`; it never reads a filesystem path directly or exposes an absolute path.

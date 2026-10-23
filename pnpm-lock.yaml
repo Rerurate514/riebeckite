@@ -272,6 +272,9 @@ importers:
       '@riebeckite/plugin-sidenotes':
         specifier: workspace:*
         version: link:../../packages/plugins/sidenotes
+      '@riebeckite/plugin-source-files':
+        specifier: workspace:*
+        version: link:../../packages/plugins/source-files
       '@riebeckite/plugin-taxonomy':
         specifier: workspace:*
         version: link:../../packages/plugins/taxonomy

@@ -110,6 +110,28 @@ const kept = true;
 - const removed = false;
 ```
 
+### Source files — [`source-files`](./source-files.md)
+
+Publish selected text files as pages, embed the full file, or embed a line range.
+
+#### Source
+
+````md
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+````
+
+#### Rendered
+
+[[source-file-example.ts]]
+
+![[source-file-example.ts]]
+
+![[source-file-example.ts#L3-L5]]
+
 ## Inline
 
 ### Highlight

@@ -2,8 +2,7 @@ import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
 export const DEFAULT_SIDENOTES_ARIA_LABEL = "Sidenote";
 export const DEFAULT_SIDENOTES_OPEN_LABEL = "Footnote";
-export const DEFAULT_SIDENOTES_CLOSE_LABEL = "Close sidenote";
-export const DEFAULT_SIDENOTES_POPOVER_ALIGNMENT = "bottom";
+export const DEFAULT_SIDENOTES_PLACEMENT = "end";
 
 /**
  * Applies defaults to `SidenotesOptions`. Pure and deterministic so the
@@ -22,13 +21,9 @@ export function resolveSidenotesOptions(
       options.openLabel,
       DEFAULT_SIDENOTES_OPEN_LABEL,
     ),
-    closeLabel: normalizeNonEmpty(
-      options.closeLabel,
-      DEFAULT_SIDENOTES_CLOSE_LABEL,
-    ),
-    popoverAlignment: normalizePopoverAlignment(
-      options.popoverAlignment,
-      DEFAULT_SIDENOTES_POPOVER_ALIGNMENT,
+    placement: normalizePlacement(
+      options.placement,
+      DEFAULT_SIDENOTES_PLACEMENT,
     ),
   };
 }
@@ -42,9 +37,9 @@ function normalizeNonEmpty(
   return trimmed === "" ? fallback : trimmed;
 }
 
-function normalizePopoverAlignment(
-  value: "bottom" | "end" | undefined,
-  fallback: "bottom" | "end",
-): "bottom" | "end" {
-  return value === "end" ? "end" : value === "bottom" ? "bottom" : fallback;
+function normalizePlacement(
+  value: "end" | "margin" | undefined,
+  fallback: "end" | "margin",
+): "end" | "margin" {
+  return value === "margin" ? "margin" : value === "end" ? "end" : fallback;
 }

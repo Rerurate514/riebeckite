@@ -5,47 +5,32 @@ sidebar:
 ---
 
 # Sidenote
-脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
+既定ではGFMの脚注を記事末尾に表示し、`placement: "margin"`を指定すると参照の横にTufte風のマージンノートを表示する脚注スタイルです。
 
 ## 脚注の記法
 通常のGFMの脚注を書きます。
 
 ```md
-Riebeckite renders margin notes at the side of the text.[^1]
+Riebeckite は脚注を記事末尾に表示します。[^1]
 
-[^1]: The note text appears beside the reference on desktop and in a popover on mobile.
+[^1]: 記事の最後に注記が表示されます。
 ```
 
 ## Sidenoteの描画
-- 各脚注の参照は、`href="#fn-…"`を保つ小さな参照リンク（`[data-rr-sidenotes-ref]`）を持つ`sup`になります。
-- 各脚注の定義は、参照の隣の`.rr-sidenotes__note`のasideになります。
-- タブレット幅（`@media (min-width: 48rem)`）ではインラインノート
-- 記事のレールを置ける幅（`@media (min-width: 88rem)`）ではスティッキーなマージンノート
-- モバイル（`@media (max-width: 48rem)`）ではポップオーバー
+- 既定（`placement: "end"`）では、各参照の`sup`に`rr-sidenotes__ref`、リンクに`rr-sidenotes__toggle`が付きます。文末の`<section data-footnotes>`には`.rr-sidenotes__footnotes`が付き、画面幅にかかわらず表示されます。元の`href`、`id`、バックリンクは保持されます。
+- `placement: "margin"`では、各定義が最も近いブロックの後ろの`.rr-sidenotes__note`のasideになります。
+  - 既定では本文フロー内のインラインノート
+  - 記事のレールを置ける幅（`@media (min-width: 88rem)`）ではスティッキーなマージンノート
+  - 文末の脚注定義セクションは非表示
+- クライアントエントリはありません。参照もバックリンクも通常のアンカーで移動します。
 
-## クライアントの初期化
-小さなclient entry（`initSidenotes`）がモバイルのポップオーバーを切り替えます。タップで開閉し、`Escape`で閉じ、外側のクリックでも閉じます。
-
-$(min-width: 48rem)`に一致するページでは処理しません。デスクトップのマージンノートにJavaScriptは不要です。
+## 設定
 
 ```ts
-import { initSidenotes } from "@riebeckite/plugin-sidenotes";
-```
+import { sidenotes } from "@riebeckite/plugin-sidenotes";
 
-### クライアントオプション
-`initSidenotes`は次のオプションを受け入れます。
-
-- **selector**: リファレンスリンクのCSSセレクター。既定値は`[data-rr-sidenotes-ref]`。
-- **openLabel**: ポップオーバーが閉じているときのアクセシブルラベルのプレフィックス。既定値は`"Footnote"`。
-- **closeLabel**: ポップオーバーが開いているときのアクセシブルラベルのプレフィックス。既定値は`"Close sidenote"`。
-
-```ts
-import { initSidenotes } from "@riebeckite/plugin-sidenotes";
-initSidenotes({
-  selector: ".custom-ref",
-  openLabel: "脚注",
-  closeLabel: "閉じる",
-});
+sidenotes(); // 脚注を記事末尾に表示
+sidenotes({ placement: "margin" }); // Tufte風のマージンノート
 ```
 
 ## 関連用語

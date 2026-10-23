@@ -12,12 +12,6 @@
       "source": "./index.ts",
       "default": "./dist/index.js"
     },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.js",
-      "source": "./client.ts",
-      "default": "./dist/client.js"
-    },
     "./style.css": "./style.css"
   },
   "dependencies": {
@@ -46,7 +40,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
+  "description": "Footnote styling for Riebeckite, with optional Tufte-style margin notes",
   "keywords": [
     "riebeckite",
     "plugin",

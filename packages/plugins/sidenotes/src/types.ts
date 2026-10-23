@@ -1,32 +1,27 @@
 /** Options accepted by `sidenotes()`. */
 export type SidenotesOptions = {
   /**
-   * Extra CSS class appended to each sidenote root, on top of
-   * `rr-sidenotes__note` and the popover modifier. Defaults to none.
+   * Extra CSS class appended to each margin note root, on top of
+   * `rr-sidenotes__note`. Ignored when `placement` is `"end"`.
    */
   className?: string;
   /**
-   * Accessible name prefix for each sidenote. The rendered label is
-   * `"${ariaLabel} ${index}"`. Defaults to `"Sidenote"`.
+   * Accessible name prefix for each margin note. The rendered label is
+   * `"${ariaLabel} ${index}"`. Ignored when `placement` is `"end"`.
    */
   ariaLabel?: string;
   /**
-   * Accessible label prefix for a reference link while its mobile popover is
-   * closed. The rendered label is `"${openLabel} ${index}"`. Defaults to
-   * `"Footnote"`.
+   * Accessible label prefix for a reference link. The rendered label is
+   * `"${openLabel} ${index}"`. Defaults to `"Footnote"`.
    */
   openLabel?: string;
   /**
-   * Accessible label prefix for a reference link while its mobile popover is
-   * open. The rendered label is `"${closeLabel} ${index}"`. Defaults to
-   * `"Close sidenote"`.
+   * Where footnote definitions render. `"end"` keeps the GFM footnote list at
+   * the end of the article and only styles the references. `"margin"` moves
+   * each definition next to its reference as a margin note. Defaults to
+   * `"end"`.
    */
-  closeLabel?: string;
-  /**
-   * Where the mobile popover is anchored. Defaults to `"bottom"` (a bottom
-   * sheet); `"end"` is a right-edge panel.
-   */
-  popoverAlignment?: "bottom" | "end";
+  placement?: "end" | "margin";
 };
 
 /** `SidenotesOptions` with every default applied. */
@@ -34,8 +29,7 @@ export type ResolvedSidenotesOptions = {
   className: string;
   ariaLabel: string;
   openLabel: string;
-  closeLabel: string;
-  popoverAlignment: "bottom" | "end";
+  placement: "end" | "margin";
 };
 
 /** Minimal hast element shape the sidenotes transformer reads and emits. */

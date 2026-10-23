@@ -2,35 +2,38 @@
 
 <!-- Generated from docs/docs/plugins/sidenotes.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite 用の Tufte スタイルのサイドノート・プラグインです。執筆者は通常の
-GFM 脚注（`[^1]` と `[^1]: 本文`）をそのまま書き続けます。プラグインが生成
-された脚注マークアップを、インラインの参照リンクと、デスクトップではマージン
-ノート、モバイルではタップで開くポップオーバーとして表示されるノートに書き
-換えます。
+Riebeckite 用の脚注スタイル・プラグインです。執筆者は通常の GFM 脚注
+（`[^1]` と `[^1]: 本文`）をそのまま書き続けます。既定では脚注定義は記事末尾の
+脚注リストに残ります。`placement: "margin"` を指定すると、Tufte スタイルの
+マージンノートとして参照の横に表示します。
 
 [English](./README.md)
 
 ## 仕組み
 
 このプラグインは、`remark-gfm` の出力をコアのパイプラインが脚注マークアップ
-に変換したものを、rehype プラグインで書き換えます。
+に変換したものを、rehype プラグインで読み取ります。
 
-- 脚注参照は `[data-rr-sidenotes-ref]` を持つ小さな参照リンク付きの `sup`
-  になり、`href="#fn-…"` のリンク先は保持されます。通常のブラウザのリンク
-  遷移でも脚注に到達できます。
-- 脚注定義は参照のそばの `.rr-sidenotes__note` の aside になります。タブレット
-  幅以上（`@media (min-width: 48rem)`）では本文中のノートとして表示し、記事の
-  横に置ける幅がある場合（`@media (min-width: 88rem)`）は sticky な**マージン
-  ノート**にします。モバイル（`@media (max-width: 48rem)`）では**ポップ
-  オーバー**として表示されます。
-- 文末の脚注定義セクションは残します（モバイルではリンク先、JavaScript が
-  無効な場合のフォールバックになります）。タブレット幅以上では本文中または
-  マージンのノートが常に見えるため、非表示にします。
+既定の `placement: "end"` では:
 
-クライアントエントリ（`initSidenotes`）がモバイルのポップオーバーを切り替え
-ます。タップで開閉、`Escape` で閉じる、外側のクリックで閉じる、という動作です。
-`(min-width: 48rem)` に一致するときは動作しません。デスクトップのマージン
-ノートに JavaScript は不要です。
+- 文末の `<section data-footnotes>` に `.rr-sidenotes__footnotes` と
+  `data-rr-sidenotes-placement="end"` が付きます。
+- 各参照は `sup` に `rr-sidenotes__ref`、リンクに
+  `rr-sidenotes__toggle` が付きます。元の `href`、`id`、バックリンクはその
+  まま残るため、JavaScript なしで遷移できます。
+- セクションは画面幅にかかわらず記事末尾に表示されます。
+
+`placement: "margin"` では:
+
+- 各定義は、最初の参照を含む最も近いブロックの後ろに
+  `.rr-sidenotes__note` の aside として置かれます。記事の横に置ける幅
+  （`@media (min-width: 88rem)`）までは本文フロー内に表示し、それ以上の幅では
+  右マージンに sticky で表示します。
+- 参照のリンク先はノート（`href="#rr-sidenotes-…"`）になります。
+- 文末の脚注定義セクションは
+  `data-rr-sidenotes-placement="margin"` で非表示になります。
+
+クライアントエントリはありません。どちらの配置も JavaScript なしで動作します。
 
 ## 使い方
 
@@ -47,53 +50,73 @@ export default defineConfig({
 通常の GFM 脚注を書くだけです。
 
 ```md
-Riebeckite は本文の横にマージンノートを表示します。[^1]
+Riebeckite は脚注を記事末尾のリストに表示します。[^1]
 
-[^1]: デスクトップでは参照の横に、モバイルではポップオーバーでノートが表示されます。
+[^1]: 記事の最後に注記が表示されます。
+```
+
+マージンノートにする場合:
+
+```ts
+plugins: [sidenotes({ placement: "margin" })];
 ```
 
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
-| `className` | `string` | `""` | 各サイドノートのルートに追加する CSS クラス |
-| `ariaLabel` | `string` | `"Sidenote"` | 各ノートのアクセシブル名の接頭辞（`"Sidenote 1"` の形） |
-| `openLabel` | `string` | `"Footnote"` | 閉じた参照リンクのアクセシブル名の接頭辞（`"Footnote 1"`） |
-| `closeLabel` | `string` | `"Close sidenote"` | 開いた参照リンクのアクセシブル名の接頭辞（`"Close sidenote 1"`） |
-| `popoverAlignment` | `"bottom" \| "end"` | `"bottom"` | モバイルのポップオーバーの表示位置 |
+| `placement` | `"end" \| "margin"` | `"end"` | `"end"` は文末の脚注リスト、`"margin"` は参照の横のマージンノート |
+| `className` | `string` | `""` | 各マージンノートに追加する CSS クラス（`"end"` では無視） |
+| `ariaLabel` | `string` | `"Sidenote"` | 各マージンノートのアクセシブル名の接頭辞（`"Sidenote 1"` の形） |
+| `openLabel` | `string` | `"Footnote"` | 各参照リンクのアクセシブル名の接頭辞（`"Footnote 1"`） |
 
 ```ts
 sidenotes({
+  placement: "margin",
   ariaLabel: "注記",
-  popoverAlignment: "end",
 });
 ```
 
 ## 出力
 
+既定（`placement: "end"`）:
+
 ```html
 <p>
-  Riebeckite は本文の横にマージンノートを表示します。<sup class="rr-sidenotes__ref">
-  <a href="#user-content-fn-1" id="user-content-fnref-1" class="rr-sidenotes__toggle"
-     data-rr-sidenotes-ref aria-expanded="false" aria-controls="rr-sidenotes-1"
-     aria-label="Footnote 1">1</a></sup>
+  Riebeckite は脚注を記事末尾に表示します。<sup class="rr-sidenotes__ref">
+  <a href="#user-content-fn-1" id="user-content-fnref-1" data-footnote-ref
+     class="rr-sidenotes__toggle" aria-label="Footnote 1">1</a></sup>
 </p>
-<aside class="rr-sidenotes__note rr-sidenotes__note--popover-bottom" id="rr-sidenotes-1"
+<section data-footnotes class="footnotes rr-sidenotes__footnotes"
+         data-rr-sidenotes-placement="end">
+  <h2 class="sr-only" id="footnote-label">Footnotes</h2>
+  <ol><li id="user-content-fn-1"><p>記事の最後に注記が表示されます。</p></li></ol>
+</section>
+```
+
+`placement: "margin"`:
+
+```html
+<p>
+  Riebeckite は参照の横に注記を表示します。<sup class="rr-sidenotes__ref">
+  <a href="#rr-sidenotes-1" id="user-content-fnref-1" class="rr-sidenotes__toggle"
+     data-rr-sidenotes-ref aria-label="Footnote 1">1</a></sup>
+</p>
+<aside class="rr-sidenotes__note" id="rr-sidenotes-1"
        data-rr-sidenotes-note aria-label="Sidenote 1" tabindex="-1">
   <span class="rr-sidenotes__index" aria-hidden="true">1</span>
-  <div class="rr-sidenotes__body"><p>デスクトップでは参照の横に表示されます。</p></div>
+  <div class="rr-sidenotes__body"><p>参照の横に表示される注記です。</p></div>
 </aside>
 ```
 
 ## アクセシビリティ
 
-- 参照リンクは実際のリンク（`href="#user-content-fn-…"`）で、`aria-expanded`
-  と `aria-controls` を持ちます。クライアントは `aria-expanded` を切り替え、
-  `openLabel` と `closeLabel` の間でラベルを差し替えます。
-- ポップオーバーは `aria-label` でラベル付けされ、開いたときは
-  `tabindex="-1"` によりフォーカスを受け取ります。
-- JavaScript が無効でも、タップで通常の GFM と同じように脚注定義へジャンプ
-  します。
+- `placement: "end"` では、参照は GFM 標準の `href`、`id`、バックリンクを
+  そのまま保ち、`openLabel` から作った `aria-label` だけを追加します。
+- `placement: "margin"` では、参照はノートへリンクします。ノートは
+  `aria-label` でラベル付けされ、`tabindex="-1"` でフォーカスを受け取れます。
+- 脚注リストと参照には `scroll-margin-block-start` を指定し、sticky
+  ヘッダーに隠れないようにしています。
 
 ## スタイル
 
@@ -104,8 +127,8 @@ import "@riebeckite/plugin-sidenotes/style.css";
 ```
 
 安定フックは `rr-sidenotes` 規約に従います。`rr-sidenotes__toggle`、
-`rr-sidenotes__note`、`rr-sidenotes__index`、`rr-sidenotes__body`、
-`rr-sidenotes__footnotes`、そして `rr-sidenotes__note--open` 修飾子です。
+`rr-sidenotes__ref`、`rr-sidenotes__note`、`rr-sidenotes__index`、
+`rr-sidenotes__body`、`rr-sidenotes__footnotes` です。
 
 ## エクスポート
 
@@ -114,16 +137,14 @@ import "@riebeckite/plugin-sidenotes/style.css";
 - `rehypeSidenotes(options?)`：rehype トランスフォーマー
 - `resolveSidenotesOptions(options?)`：オプションの既定値を適用する
 - `renderSidenotesReference(input)` / `renderSidenotesNote(input)`：HTML 生成関数
-- `initSidenotes(options?)`：クライアントのポップオーバー初期化関数
-- 型: `SidenotesOptions`, `ResolvedSidenotesOptions`, `SidenotesClientOptions`
+- 型: `SidenotesOptions`, `ResolvedSidenotesOptions`
 
 ## 制約
 
-- 同じ定義を再利用した脚注は、1 つのマージンノートとポップオーバーを共有
+- `placement: "margin"` では、同じ定義を再利用した脚注は 1 つのノートを共有
   します。
-- タブレット幅以上では脚注定義セクションを非表示にします。記事の横に置けない
-  幅ではノートを本文フローに残します。テーマは `.rr-sidenotes__note` を自由に
-  再スタイルできます。
+- マージン配置では、文末の脚注定義セクションは DOM に残りますが非表示に
+  なります。テーマは `.rr-sidenotes__note` を自由に再スタイルできます。
 - テーブル内や深く入れ子になったインライン要素の中の注は、最も近いブロック
   要素の後ろに置かれるため、縦位置はおおよその位置になります。
 

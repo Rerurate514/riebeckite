@@ -6,51 +6,41 @@ sidebar:
 
 # Sidenote
 
-Tufte-style side notes that rewrite footnote markup into inline references and margin notes (desktop) or popovers (mobile), using a small client entry (`initSidenotes`) to toggle mobile popover behavior.
+Footnote styling that keeps GFM definitions at the end of the article by
+default. With `placement: "margin"`, definitions become Tufte-style margin
+notes beside their references.
 
 ## Footnote syntax
 
 Write normal GFM footnotes:
 
 ```md
-Riebeckite renders margin notes at the side of the text.[^1]
+Riebeckite keeps notes at the end of the article.[^1]
 
-[^1]: The note text appears beside the reference on desktop and in a popover on mobile.
+[^1]: The note text appears in the footnote list.
 ```
 
 ## Sidenote rendering
 
-- Each footnote reference becomes a `sup` with a small reference link (`[data-rr-sidenotes-ref]`) keeping `href="#fn-…"` target.
+- Default (`placement: "end"`): each reference gets `rr-sidenotes__ref` on its
+  `sup` and `rr-sidenotes__toggle` on the link. The trailing
+  `<section data-footnotes>` gets `.rr-sidenotes__footnotes` and stays visible
+  at every width. Native `href`, `id`, and back-links are preserved.
+- `placement: "margin"`: each definition becomes a `.rr-sidenotes__note` aside
+  after the nearest block:
+  - Inline note in the article flow by default
+  - Sticky margin note when there is room for an article rail
+    (`@media (min-width: 88rem)`)
+  - The trailing definitions section is hidden
+- There is no client entry. References and back-links use ordinary anchors.
 
-- Each footnote definition becomes a `.rr-sidenotes__note` aside next to the reference:
-  - Inline note from tablet width (`@media (min-width: 48rem)`)
-  - Sticky margin note when there is room for an article rail (`@media (min-width: 88rem)`)
-  - Popover on mobile (`@media (max-width: 48rem)`)
-
-## Client initialization
-
-A small client entry (`initSidenotes`) toggles the mobile popover: tap to open/close, `Escape` to close, and click outside to close.
-
-It ignores the page when `(min-width: 48rem)` matches — desktop margin notes need no JavaScript.
-
-```ts
-import { initSidenotes } from "@riebeckite/plugin-sidenotes";
-```
-
-### Client options
-`initSidenotes` accepts configurable options:
-
-- **selector**: CSS selector for reference links. Defaults to `[data-rr-sidenotes-ref]`.
-- **openLabel**: Accessible label prefix when the popover is closed. Defaults to `"Footnote"`.
-- **closeLabel**: Accessible label prefix when the popover is open. Defaults to `"Close sidenote"`.
+## Configuration
 
 ```ts
-import { initSidenotes } from "@riebeckite/plugin-sidenotes";
-initSidenotes({
-  selector: ".custom-ref",
-  openLabel: "脚注",
-  closeLabel: "閉じる",
-});
+import { sidenotes } from "@riebeckite/plugin-sidenotes";
+
+sidenotes(); // definitions at the end of the article
+sidenotes({ placement: "margin" }); // Tufte-style margin notes
 ```
 
 ## Related terms

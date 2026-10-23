@@ -5,7 +5,6 @@ import type { HastNode, ResolvedSidenotesOptions } from "./types.js";
 export const SIDENOTES_REF_CLASS = "rr-sidenotes__ref";
 export const SIDENOTES_TOGGLE_CLASS = "rr-sidenotes__toggle";
 export const SIDENOTES_NOTE_CLASS = "rr-sidenotes__note";
-export const SIDENOTES_POPOVER_PREFIX = "rr-sidenotes__note--popover-";
 export const SIDENOTES_INDEX_CLASS = "rr-sidenotes__index";
 export const SIDENOTES_BODY_CLASS = "rr-sidenotes__body";
 export const SIDENOTES_FOOTNOTES_CLASS = "rr-sidenotes__footnotes";
@@ -30,13 +29,13 @@ export function sidenotesKey(href: string): string | null {
   return marker === -1 ? null : href.slice(marker + "-fn-".length);
 }
 
-/** Stable id shared by a sidenote and its toggles' `aria-controls`. */
+/** Stable id shared by a sidenote and its reference links. */
 export function sidenotesNoteId(key: string): string {
   return `${SIDENOTES_NOTE_ID_PREFIX}${key}`;
 }
 
 export type SidenotesReferenceInput = {
-  /** Existing `href` of the GFM footnote reference, kept for reachability. */
+  /** Existing `href` of the GFM footnote reference, used when no key exists. */
   href: string;
   /** Existing `id` of the GFM footnote reference, kept for back-links. */
   id: string;
@@ -46,24 +45,23 @@ export type SidenotesReferenceInput = {
 };
 
 /**
- * Renders the inline reference link that replaces a GFM footnote reference.
- * The surrounding `sup` is managed by the rehype transformer so it can reuse
- * the existing wrapper when one is already present.
+ * Renders the inline reference link that replaces a GFM footnote reference in
+ * margin placement. The surrounding `sup` is managed by the rehype transformer
+ * so it can reuse the existing wrapper when one is already present.
  */
 export function renderSidenotesReference(
   input: SidenotesReferenceInput,
 ): string {
   const { href, id, index, options } = input;
-  const key = sidenotesKey(href) ?? "";
+  const key = sidenotesKey(href);
+  const target = key === null ? href : `#${sidenotesNoteId(key)}`;
   const label = `${options.openLabel} ${index}`.trim();
   return (
     "" +
-    `<a href="${escapeHtmlAttribute(href)}" ` +
+    `<a href="${escapeHtmlAttribute(target)}" ` +
     `id="${escapeHtmlAttribute(id)}" ` +
     `class="${SIDENOTES_TOGGLE_CLASS}" ` +
     `data-rr-sidenotes-ref ` +
-    `aria-expanded="false" ` +
-    `aria-controls="${escapeHtmlAttribute(sidenotesNoteId(key))}" ` +
     `aria-label="${escapeHtmlAttribute(label)}">` +
     `${escapeHtml(index)}` +
     `</a>`
@@ -78,15 +76,11 @@ export type SidenotesNoteInput = {
   options: ResolvedSidenotesOptions;
 };
 
-/**
- * Renders the sidenote: a static margin note on desktop and the popover
- * source on mobile.
- */
+/** Renders the margin note definition as an `aside` next to its reference. */
 export function renderSidenotesNote(input: SidenotesNoteInput): string {
   const { key, index, bodyHtml, options } = input;
   const className = [
     SIDENOTES_NOTE_CLASS,
-    `${SIDENOTES_POPOVER_PREFIX}${options.popoverAlignment}`,
     ...(options.className === "" ? [] : [options.className]),
   ].join(" ");
   const label = `${options.ariaLabel} ${index}`.trim();

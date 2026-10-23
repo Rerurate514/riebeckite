@@ -1,6 +1,5 @@
 import {
   type ConfigValidationIssue,
-  createClientEntry,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
@@ -8,8 +7,6 @@ import { resolveSidenotesOptions } from "./src/options.js";
 import { rehypeSidenotes } from "./src/rehype.js";
 import type { SidenotesOptions } from "./src/types.js";
 
-export type { SidenotesClientOptions } from "./src/client.js";
-export { initSidenotes } from "./src/client.js";
 export { resolveSidenotesOptions } from "./src/options.js";
 export { rehypeSidenotes } from "./src/rehype.js";
 export {
@@ -27,17 +24,17 @@ export type {
 export const SIDENOTES_PLUGIN_NAME = "sidenotes";
 
 /**
- * Tufte-style side notes. Authors keep writing GFM footnotes (`[^1]` /
- * `[^1]: text`); a rehype plugin rewrites the generated footnote markup into
- * an inline reference plus a note that renders as a margin note on desktop
- * and as a tap-open popover on mobile.
+ * Styles GFM footnotes for Riebeckite. By default the definitions stay in the
+ * trailing footnote list at the end of the article. With
+ * `placement: "margin"`, a rehype plugin rewrites the generated footnote
+ * markup into an inline reference plus a margin note.
  */
 export function sidenotes(options: SidenotesOptions = {}) {
   const resolved = resolveSidenotesOptions(options);
   return definePlugin({
     name: SIDENOTES_PLUGIN_NAME,
     processedContentCache: {
-      version: "sidenotes-v1",
+      version: "sidenotes-v2",
       dependencyMode: "none",
     },
     options,
@@ -47,17 +44,6 @@ export function sidenotes(options: SidenotesOptions = {}) {
       createStyleAsset(
         SIDENOTES_PLUGIN_NAME,
         "@riebeckite/plugin-sidenotes/style.css",
-      ),
-    ],
-    clientEntries: [
-      createClientEntry(
-        SIDENOTES_PLUGIN_NAME,
-        "@riebeckite/plugin-sidenotes/client",
-        "initSidenotes",
-        {
-          openLabel: resolved.openLabel,
-          closeLabel: resolved.closeLabel,
-        },
       ),
     ],
   });
@@ -72,12 +58,7 @@ function validateSidenotesOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  for (const key of [
-    "className",
-    "ariaLabel",
-    "openLabel",
-    "closeLabel",
-  ] as const) {
+  for (const key of ["className", "ariaLabel", "openLabel"] as const) {
     const value = options[key];
     if (
       value !== undefined &&
@@ -87,13 +68,13 @@ function validateSidenotesOptions(
     }
   }
   if (
-    options.popoverAlignment !== undefined &&
-    options.popoverAlignment !== "bottom" &&
-    options.popoverAlignment !== "end"
+    options.placement !== undefined &&
+    options.placement !== "end" &&
+    options.placement !== "margin"
   ) {
     issues.push({
-      path: "popoverAlignment",
-      message: 'Expected "bottom" or "end".',
+      path: "placement",
+      message: 'Expected "end" or "margin".',
     });
   }
   return issues;

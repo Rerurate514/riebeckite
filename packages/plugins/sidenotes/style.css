@@ -1,10 +1,11 @@
 /*
  * @riebeckite/plugin-sidenotes
  *
- * Tufte-style side notes. The same `.rr-sidenotes__note` element is a static
- * margin note on desktop (>= 48rem) and the popover source on mobile
- * (< 48rem). Plugin CSS intentionally loads before theme CSS, so a theme can
- * restyle these hooks without editing the plugin.
+ * `placement: "end"` (default) keeps the GFM footnote list at the end of the
+ * article and only styles the references. `placement: "margin"` collects the
+ * definitions into `aside` notes: inline until an article rail fits, sticky in
+ * the right margin from 88rem. Plugin CSS intentionally loads before theme
+ * CSS, so a theme can restyle these hooks without editing the plugin.
  */
 
 .rr-sidenotes__toggle {
@@ -21,6 +22,51 @@
   outline-offset: 2px;
 }
 
+.rr-sidenotes__ref {
+  scroll-margin-block-start: var(--rr-sidenotes-scroll-margin, 6rem);
+}
+
+.rr-sidenotes__footnotes {
+  --rr-sidenotes-ink: var(--rb-color-ink, #202020);
+  --rr-sidenotes-muted: var(--rb-color-muted, #6b6b6b);
+  --rr-sidenotes-rule: color-mix(
+    in srgb,
+    var(--rr-sidenotes-ink) 18%,
+    transparent
+  );
+
+  margin-block-start: var(--rb-space-6, 3rem);
+  padding-block-start: var(--rb-space-3, 1.5rem);
+  border-block-start: var(--rb-rule-width, 1px) solid var(--rr-sidenotes-rule);
+  color: var(--rr-sidenotes-ink);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.rr-sidenotes__footnotes li {
+  scroll-margin-block-start: var(--rr-sidenotes-scroll-margin, 6rem);
+}
+
+.rr-sidenotes__footnotes li::marker {
+  color: var(--rr-sidenotes-muted);
+}
+
+.rr-sidenotes__footnotes [data-footnote-backref] {
+  margin-inline-start: 0.35em;
+  color: var(--rr-sidenotes-muted);
+  text-decoration: none;
+}
+
+.rr-sidenotes__footnotes [data-footnote-backref]:hover {
+  color: var(--rr-sidenotes-ink);
+  text-decoration: underline;
+}
+
+/* The list is the link target only when notes stay in the article flow. */
+.rr-sidenotes__footnotes[data-rr-sidenotes-placement="margin"] {
+  display: none;
+}
+
 .rr-sidenotes__note {
   --rr-sidenotes-ink: var(--rb-color-ink, #202020);
   --rr-sidenotes-muted: var(--rb-color-muted, #6b6b6b);
@@ -30,6 +76,11 @@
     transparent
   );
 
+  max-inline-size: 100%;
+  margin-block: var(--rb-space-3, 1.5rem);
+  padding-inline-start: var(--rb-space-2, 1rem);
+  border-inline-start: calc(var(--rb-rule-width, 1px) * 2) solid
+    var(--rr-sidenotes-rule);
   color: var(--rr-sidenotes-ink);
   font-size: 0.8125rem;
   line-height: 1.55;
@@ -49,56 +100,6 @@
 
 .rr-sidenotes__body p:last-child {
   margin-bottom: 0;
-}
-
-.rr-sidenotes__footnotes {
-  font-size: 0.875rem;
-  color: var(--rr-sidenotes-ink);
-}
-
-/* Mobile: notes are hidden and become tap-open popovers. */
-@media (max-width: 48rem) {
-  .rr-sidenotes__note {
-    position: fixed;
-    z-index: 60;
-    bottom: var(--rb-space-2, 1rem);
-    left: var(--rb-space-2, 1rem);
-    right: var(--rb-space-2, 1rem);
-    display: none;
-    max-height: min(60vh, 24rem);
-    overflow: auto;
-    padding: var(--rb-space-3, 1.5rem);
-    background: var(--rb-color-surface, #ffffff);
-    border: var(--rb-rule-width, 1px) solid var(--rr-sidenotes-rule);
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.18);
-  }
-
-  /* Right-edge panel variant driven by `popoverAlignment: "end"`. */
-  .rr-sidenotes__note--popover-end {
-    top: 50%;
-    bottom: auto;
-    left: auto;
-    width: min(20rem, calc(100vw - 2 * var(--rb-space-2, 1rem)));
-    transform: translateY(-50%);
-  }
-
-  .rr-sidenotes__note--open {
-    display: block;
-  }
-}
-
-@media (min-width: 48rem) {
-  .rr-sidenotes__note {
-    max-inline-size: 100%;
-    margin-block: var(--rb-space-3, 1.5rem);
-    padding-inline-start: var(--rb-space-2, 1rem);
-    border-inline-start: calc(var(--rb-rule-width, 1px) * 2) solid
-      var(--rr-sidenotes-rule);
-  }
-
-  .rr-sidenotes__footnotes {
-    display: none;
-  }
 }
 
 @media (min-width: 88rem) {

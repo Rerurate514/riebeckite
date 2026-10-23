@@ -4,6 +4,8 @@ import {
   renderSidenotesNote,
   renderSidenotesReference,
   SIDENOTES_FOOTNOTES_CLASS,
+  SIDENOTES_REF_CLASS,
+  SIDENOTES_TOGGLE_CLASS,
   sidenotesKey,
 } from "./render.js";
 import type {
@@ -18,13 +20,14 @@ import type {
  * mdast-util-to-hast materializes GFM footnotes before plugin rehype plugins
  * run (the core pipeline has no `rehype-footnotes`): inline references become
  * `<sup><a data-footnote-ref href="#user-content-fn-…">` and definitions
- * become a trailing `<section data-footnotes>`. This transformer rewrites
- * those produced nodes into sidenote markup while keeping the footnote
- * targets reachable.
+ * become a trailing `<section data-footnotes>`. This transformer styles that
+ * section by default and, with `placement: "margin"`, rewrites the definitions
+ * into notes next to their references.
  */
 const FOOTNOTE_REFERENCE_ATTRIBUTE = "dataFootnoteRef";
 const FOOTNOTES_SECTION_ATTRIBUTE = "dataFootnotes";
 const FOOTNOTE_ID_PREFIX_PATTERN = /^(?:user-content-)?fn-(.+)$/;
+const PLACEMENT_ATTRIBUTE = "data-rr-sidenotes-placement";
 
 /** Element tags that can contain a footnote reference in flow content. */
 const BLOCK_TAG_NAMES = new Set([
@@ -79,8 +82,6 @@ type Insertion = {
   htmls: string[];
 };
 
-const SIDENOTES_REF_CLASS = "rr-sidenotes__ref";
-
 export function rehypeSidenotes(options: SidenotesOptions = {}) {
   const resolved = resolveSidenotesOptions(options);
   return (tree: HastNode): void => {
@@ -99,6 +100,15 @@ function transformSidenotes(
   if (notes.size === 0) return;
 
   addClassName(section, SIDENOTES_FOOTNOTES_CLASS);
+  section.properties = {
+    ...section.properties,
+    [PLACEMENT_ATTRIBUTE]: options.placement,
+  };
+
+  if (options.placement === "end") {
+    markReferences(tree, options);
+    return;
+  }
 
   const insertions: Insertion[] = [];
   walkElements(tree, [], (ref, parent, index, ancestors) => {
@@ -155,6 +165,19 @@ function transformSidenotes(
   });
 
   applyInsertions(insertions);
+}
+
+/** Adds the plugin hooks to native GFM references without changing them. */
+function markReferences(
+  tree: HastNode,
+  options: ResolvedSidenotesOptions,
+): void {
+  walkElements(tree, [], (ref, parent) => {
+    if (parent.tagName === "sup") addClassName(parent, SIDENOTES_REF_CLASS);
+    addClassName(ref, SIDENOTES_TOGGLE_CLASS);
+    const label = `${options.openLabel} ${getTextContent(ref)}`.trim();
+    ref.properties = { ...ref.properties, "aria-label": label };
+  });
 }
 
 function findFootnoteSection(node: HastNode): HastElementNode | null {

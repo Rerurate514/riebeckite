@@ -136,7 +136,7 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Tag](./tag.ja.md)：Tagは共通のラベルでコンテンツをまとめ、`/tags/<slug>`に一覧ページを生成します。あわせてRSS・Atom・JSONのフィードと、関連タグのナビゲーションを提供します。
 - [Shortcode](./shortcode.ja.md)：`remark-directive`の記法を使う汎用のショートコード機構です。インライン（`:name[label]{key=value}`）、ブロック（`::name[label]{key=value}`）のショートコードに対応します。コンテナ（`:::name[label]{key=value}`… `:::`）のショートコードに対応します。組み込みのレジストリも持ちます。
 - [Callout](./callout.ja.md)：コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`クラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
-- [Sidenote](./sidenote.ja.md)：脚注の記法を、インラインの参照と、デスクトップではマージンノート、モバイルではポップオーバーに置き換えるTufte風のサイドノートです。モバイルのポップオーバーの切り替えには、小さなclient entry（`initSidenotes`）を使います。
+- [Sidenote](./sidenote.ja.md)：既定では脚注を記事末尾に表示し、`placement: "margin"`でTufte風のマージンノートにする脚注スタイルです。
 - [Backlink](./backlink.ja.md)：どの公開ノートが現在のノートにリンクしているかを示すバックリンクの一覧です。`getPublishedBacklinks()`でcontent manifestから被リンクを解決し、公開されて一覧に載るノートだけに絞り込み、manifestの順序で並べます。
 - [Site](./site.ja.md)：サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎます。Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
 - [UI](./ui.ja.md)：`@riebeckite/honox/ui`が提供するUIプリミティブは、小さな構造の取り決めであり、コンポーネントフレームワークではありません。プリミティブには`Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`があります。`ArticleMeta`、`ArticleFooter`、`Sidebar`もあります。安定したCSS hook（`rb-article`、`rb-article-layout`など）も持ちます。

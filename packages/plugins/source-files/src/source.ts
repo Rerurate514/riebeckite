@@ -74,7 +74,7 @@ export async function resolveSourcePage(
   const source = await readSource(context.contentSource, sourcePath, options);
   if (!source) return null;
   const title = fileName(sourcePath);
-  const markdown = `\`\`\`${languageFor(sourcePath)} title="${title.replaceAll('"', "'")}"\n${source.text}\n\`\`\``;
+  const markdown = `\`\`\`${languageFor(sourcePath)} title="source-file:${title.replaceAll('"', "'")}"\n${source.text}\n\`\`\``;
   const code = await context.renderMarkdown(markdown);
   return {
     type: "source-file",

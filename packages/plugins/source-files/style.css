@@ -32,3 +32,14 @@
   display: inline-block;
   margin-bottom: 0.5rem;
 }
+
+.rr-source-file .rr-source-file__line--target {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  outline: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  outline-offset: -1px;
+}
+
+.rr-source-file .rr-source-file__line--target:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}

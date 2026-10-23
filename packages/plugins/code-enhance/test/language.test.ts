@@ -66,6 +66,17 @@ test("uses a fence title for the code header", async () => {
   assert.ok(html.includes('class="rr-code__title">hello.ts</span>'), html);
 });
 
+test("adds stable line anchors to source file fences", async () => {
+  const html = await render(
+    '```ts title="source-file:hello.ts"\nconst first = 1;\nconst second = 2;\n```',
+  );
+
+  assert.match(html, /data-source-file="true"/);
+  assert.match(html, /class="rr-code__title">hello.ts</);
+  assert.match(html, /id="L1"[^>]*tabindex="-1"/);
+  assert.match(html, /id="L2"[^>]*tabindex="-1"/);
+});
+
 test("code copy button uses an English accessible label", async () => {
   const html = await render(fenced("ts", "const hello = 1"));
 

@@ -1,4 +1,8 @@
 @layer components {
+  #main-content {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  }
+
   .riebeckite-page {
     --rb-site-header-logo-size: 1.75rem;
     display: flex;

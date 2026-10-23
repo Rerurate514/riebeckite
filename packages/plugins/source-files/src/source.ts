@@ -80,7 +80,7 @@ export async function resolveSourcePage(
     type: "source-file",
     pathname: context.pathname,
     title,
-    body: `<main class="rr-source-file" data-source-file="${escapeHtmlAttribute(sourcePath)}"><header class="rr-source-file__header"><h1>${escapeHtml(title)}</h1><dl class="rr-source-file__metadata"><div><dt>Path</dt><dd>${escapeHtml(sourcePath)}</dd></div><div><dt>Language</dt><dd>${escapeHtml(languageFor(sourcePath))}</dd></div><div><dt>Size</dt><dd>${escapeHtml(formatBytes(source.bytes))}</dd></div></dl><div class="rr-source-file__actions"><button type="button" data-source-file-copy>Copy</button><a href="${escapeHtmlAttribute(attachmentUrl(sourcePath))}">Raw</a></div></header>${code}</main>`,
+    body: `<main class="rr-source-file" data-source-file="${escapeHtmlAttribute(sourcePath)}"><header class="rr-source-file__header"><h1>${escapeHtml(title)}</h1><p class="rr-source-file__path">${escapeHtml(sourcePath)}</p><dl class="rr-source-file__metadata"><div><dt>Language</dt><dd>${escapeHtml(languageFor(sourcePath))}</dd></div><div><dt>Size</dt><dd>${escapeHtml(formatBytes(source.bytes))}</dd></div></dl><a class="rr-source-file__download" href="${escapeHtmlAttribute(attachmentUrl(sourcePath))}" download>Download</a></header>${code}</main>`,
   };
 }
 

@@ -50,7 +50,11 @@ export async function buildImages(options: BuildImagesOptions = {}) {
   const exclude = options.exclude ?? config.content.exclude;
   const images = await collectContentImages(contentDir, assetsRoot);
   const attachments = await collectContentAttachments(contentDir, assetsRoot);
-  const referencedAssets = await collectReferencedAssets(contentDir, exclude);
+  const referencedAssets = await collectReferencedAssets(
+    contentDir,
+    exclude,
+    config,
+  );
 
   let copied = 0;
   let skipped = 0;
@@ -267,10 +271,13 @@ async function removeOrphanedImages(
 async function collectReferencedAssets(
   contentDir: string,
   exclude: readonly string[],
+  config: typeof config,
 ): Promise<ReferencedAssets> {
   const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
-  const content = new ContentManager(contentDir, [...exclude]);
+  const content = new ContentManager(contentDir, [...exclude], {
+    config: { ...config, plugins: [] },
+  });
   const manifest = await content.build();
 
   for (const entry of manifest.publicEntries) {

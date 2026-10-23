@@ -13,10 +13,19 @@ test("buildImages copies only public referenced assets and removes stale outputs
   const contentDir = path.join(root, "content");
   const assetsRoot = path.join(root, "public");
 
-  await writeFixture(contentDir, "index.md", publishedNote("images/live.png"));
+  await writeFixture(
+    contentDir,
+    "index.md",
+    `${publishedNote("images/live.png")}\n[[assets/source-file-example.ts]]`,
+  );
   await writeFixture(contentDir, "images/live.png", "LIVE-V1");
   await writeFixture(contentDir, "fixtures/test-only.png", "TEST-ONLY");
   await writeFixture(contentDir, "attachments/report.pdf", "REPORT");
+  await writeFixture(
+    contentDir,
+    "assets/source-file-example.ts",
+    "export const source = true;",
+  );
   await writeFixture(assetsRoot, "images/stale.png", "STALE");
   await writeFixture(assetsRoot, "images/debug.json", "DEBUG");
   await writeFixture(assetsRoot, "logo.png", "LOGO");
@@ -31,6 +40,13 @@ test("buildImages copies only public referenced assets and removes stale outputs
   assert.equal(
     await readText(assetsRoot, "assets/attachments/attachments/report.pdf"),
     "REPORT",
+  );
+  assert.equal(
+    await readText(
+      assetsRoot,
+      "assets/attachments/assets/source-file-example.ts",
+    ),
+    "export const source = true;",
   );
 
   await writeFixture(contentDir, "images/live.png", "LIVE-V2");

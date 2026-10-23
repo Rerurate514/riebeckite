@@ -14,7 +14,7 @@ Discord の `Discordbot` は共有されたページの `<head>` メタデータ
 
 [English](./discord-embed.md)
 
-## 設定する
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -36,7 +36,7 @@ export default defineConfig({
 
 `themeColor` は `#rgb`、`#rgba`、`#rrggbb`、`#rrggbbaa` のいずれかを受け付けます。
 
-## Frontmatter
+## frontmatter
 
 | フィールド | 用途 |
 | --- | --- |
@@ -45,18 +45,18 @@ export default defineConfig({
 | `ogImageWidth` / `imageWidth` | 画像の幅 |
 | `ogImageHeight` / `imageHeight` | 画像の高さ |
 
-色の解決順は、frontmatter の上書き、なければ `themeColor` オプションです。
+色は frontmatter の上書きを優先し、なければ `themeColor` オプションを使います。
 frontmatter の色が無効な場合は診断 `discord-embed-invalid-color`（warning）を記録し、オプションの既定値へフォールバックします。
 
 ## 出力するタグ
 
-`onManifestCreated` フックで、すべてのエントリーに `entry.headTags` を設定します。Site shell はこれらを文書の head に描画するため、記事本文には表示せず Discord などのクローラーが利用します。
+`onManifestCreated` フックで、すべてのエントリーに `entry.headTags` を設定します。サイトシェルがこれらを文書の head に描画するため、記事本文には表示されません。Discord などのクローラーが利用します。
 
-## Site shell が headTags を描画する
+## headTags を描画するのはサイトシェル
 
-このプラグインは `<head>` を所有しません。プラグインが提供するのは `ContentManifestEntry.headTags` であり、描画するかどうかは Site が決めます。
-Site の route が `c.set("headTags", entry.headTags ?? [])` を設定し、`app/routes/_renderer.tsx` がそれを `<meta>` / `<link>` / `<script>` に変換します。
-詳しくは [HonoX Integration](../framework/honox-integration.ja.md) の "Site Application の拡張取り決め" を参照してください。
+このプラグインは `<head>` を所有しません。プラグインが提供するのは `ContentManifestEntry.headTags` であり、描画するかどうかはサイト側が決めます。
+サイトのルートが `c.set("headTags", entry.headTags ?? [])` を設定し、`app/routes/_renderer.tsx` がそれを `<meta>` / `<link>` / `<script>` に変換します。
+詳しくは [HonoX Integration](../framework/honox-integration.ja.md) の「責務の分担」を参照してください。
 
 ## 主なエクスポート
 

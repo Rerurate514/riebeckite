@@ -1,165 +1,169 @@
 ---
 date: 2026-10-08
-title: Guides
+title: ガイド
 sidebar:
-  label: Guides
+  label: ガイド
   order: 20
 ---
-# Guides
+# ガイド
 
-Guides は、**「Riebeckite で何をしたいか」から手順を探すための章**です。
+ガイドは、**「Riebeckite で何をしたいか」から手順を探すための章**です。
 
-設定値や API の正確な仕様を確認したい場合は [Reference](../reference/README.ja.md)、Riebeckite の内部構造を理解したい場合は [Framework](../framework/README.ja.md) を参照してください。
+設定値や API の正確な仕様を確認したい場合は [リファレンス](../reference/README.ja.md)、Riebeckite の内部構造を理解したい場合は [Framework](../framework/README.ja.md) を参照してください。
 
 ```mermaid id="d2p74f"
 flowchart TD
     Q{"何を知りたい？"}
 
-    Q -->|"具体的な作業手順"| Guides["Guides"]
-    Q -->|"設定・CLI・API"| Reference["Reference"]
+    Q -->|"具体的な作業手順"| Guides["ガイド"]
+    Q -->|"設定・CLI・API"| Reference["リファレンス"]
     Q -->|"内部の仕組み"| Framework["Framework"]
 ```
 
-初めて Riebeckite を使う場合は、Guides より先に [Getting Started](../getting-started/README.ja.md) から始めるのがおすすめです。
+初めて Riebeckite を使う場合は、ガイドより先に [はじめに](../getting-started/README.ja.md) から始めるのがおすすめです。
 
 ## コンテンツを作る
 
-### 記事を書く
+### 記事を書いて整理する
 
-[Writing Content](./writing-content.ja.md)
+[記事の書き方ガイド](./writing-content.ja.md)
 
-Markdown、Frontmatter など、Riebeckite で記事を書くための基本を説明します。
+Markdown と frontmatter を中心に、Riebeckite で記事を書くための基本を説明します。
 
 ### Obsidian Vault を公開する
 
-[Obsidian](./obsidian.ja.md)
+[Obsidian のノートをサイトにする](./obsidian.ja.md)
 
-既存の Obsidian Vault を Riebeckite の Content として利用する方法を説明します。
+既存の Obsidian Vault を Riebeckite のコンテンツとして使う方法を説明します。
 
 ## サイトを構成する
 
-### Content と Site を分ける
+### コンテンツとサイトを分ける
 
-[Content Repositories](./content-repositories.ja.md)
+[コンテンツとサイトを分ける](./content-repositories.ja.md)
 
-Site Application と Markdown Content を別の Repository で管理する構成について説明します。
+サイトのアプリケーションと Markdown のコンテンツを、別のリポジトリで管理する構成を説明します。
 
 ### 多言語サイトを作る
 
-[Localization](./localization.ja.md)
+[多言語サイト](./localization.ja.md)
 
-複数言語の Content、URL、言語切り替えなどを扱う方法を説明します。
+複数言語のコンテンツ、URL、言語の切り替えを扱う方法を説明します。
 
-### Analytics を使う
+### Analytics を導入する
 
-[Analytics](./analytics.ja.md)
+[アクセス解析](./analytics.ja.md)
 
-Riebeckite Site に Analytics を導入する方法を説明します。
+Riebeckite のサイトに Analytics を導入する方法を説明します。
 
-### SPAナビゲーションを有効にする
+### SPA ナビゲーションを有効にする
 
-[SPAナビゲーション](./spa-navigation.ja.md)
+[SPA ナビゲーション](./spa-navigation.ja.md)
 
-ヘッダーやフッターを残したままページの内容だけを切り替える方法、対象になる
-リンク、ページを描画する側の要件を説明します。
+ヘッダーやフッターを残したままページの内容だけを切り替える方法、対象になるリンク、ページを描画する側の要件を説明します。
 
-### ローカル Plugin を開発する
+### ローカルプラグインを開発する
 
-[Local Plugin Development](./local-plugin-development.ja.md)
+[ローカルプラグインの開発](./local-plugin-development.ja.md)
 
-ローカルの Plugin を実際の HonoX/Vite Dev Server で確認する方法を説明します。
+ローカルのプラグインを、実際の HonoX/Vite 開発サーバーで確認する方法を説明します。
 
 ### アイコンやロゴを差し替える
 
 [サイトのアイコンとロゴ](./branding.ja.md)
 
-Site 固有の favicon、ヘッダーのロゴ、リンクプレビュー画像を差し替える方法を説明します。
+サイト固有の favicon、ヘッダーのロゴ、リンクプレビュー画像を差し替える方法を説明します。
 
-### Site の UI をカスタマイズする
+### サイトの UI をカスタマイズする
 
 [サイトのカスタマイズ](./customizing-your-site.ja.md)
 
-通常の HonoX application として `app/` の route、component、island、CSS を編集する方法を説明します。
+通常の HonoX アプリケーションとして、`app/` のルート、コンポーネント、island、CSS を編集する方法を説明します。
 
 ## デプロイする
 
-デプロイ方法を選ぶ場合は、まず [Deployment](./deployment/README.ja.md) を参照してください。
+デプロイは、自動化を挟むと選択肢が増えるため、独立したセクションにしています。デプロイ方法を選ぶ場合は、まず [デプロイガイド](./deployment/README.ja.md) を参照してください。
 
 ```mermaid id="kb66ux"
 flowchart TD
-    Deploy["Siteを公開したい"]
+    Deploy["サイトを公開したい"]
 
-    Deploy --> Overview["Deployment"]
+    Deploy --> Overview["デプロイ"]
 
     Overview --> Workers["Cloudflare Workers"]
     Overview --> Actions["GitHub Actions"]
     Overview --> Separate["Separate Content Repository"]
 ```
 
-### Cloudflare Workers
+### Cloudflare Workers に公開する
 
-[Cloudflare Workers](./deployment/cloudflare-workers.ja.md)
+[Cloudflare Workers へのデプロイ](./deployment/cloudflare-workers.ja.md)
 
-Riebeckite Site を Cloudflare Workers へデプロイする方法を説明します。
+Riebeckite のサイトを Cloudflare Workers へデプロイする方法を説明します。
 
-### GitHub Actions
+### GitHub Actions で自動デプロイする
 
 [GitHub Actions](./deployment/github-actions.ja.md)
 
-GitHub Actions を使って Build と Deployment を自動化する方法を説明します。
+GitHub Actions を使ってビルドとデプロイを自動化する方法を説明します。
 
-### Separate Content Repository
+### コンテンツとサイトを分けた構成を自動デプロイする
 
-[Separate Content Repository](./deployment/separate-content-repository.ja.md)
+[コンテンツとサイトを分ける（詳細版）](./deployment/separate-content-repository.ja.md)
 
-Content と Site が別 Repository にある場合の自動デプロイ構成を説明します。
+コンテンツとサイトが別リポジトリにある場合の自動デプロイ構成を説明します。
 
 ## Riebeckite を更新する
 
-[Upgrading](./upgrading.ja.md)
+[Riebeckite をアップグレードする](./upgrading.ja.md)
 
-Riebeckite の Package を新しい Version へ更新するときの手順と、変更点の確認方法を説明します。
+Riebeckite のパッケージを新しいバージョンへ更新する手順と、変更点の確認方法を説明します。
 
 ## 目的から探す
 
 | やりたいこと | ページ |
 | --- | --- |
-| Markdown で記事を書く | [Writing Content](./writing-content.ja.md) |
-| Obsidian Vault を公開する | [Obsidian](./obsidian.ja.md) |
-| Content と Site を別 Repository にする | [Content Repositories](./content-repositories.ja.md) |
-| 多言語 Site にする | [Localization](./localization.ja.md) |
-| Analytics を導入する | [Analytics](./analytics.ja.md) |
+| Markdown で記事を書く | [記事の書き方ガイド](./writing-content.ja.md) |
+| Obsidian Vault を公開する | [Obsidian のノートをサイトにする](./obsidian.ja.md) |
+| コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./content-repositories.ja.md) |
+| 多言語サイトにする | [多言語サイト](./localization.ja.md) |
+| Analytics を導入する | [アクセス解析](./analytics.ja.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.ja.md) |
-| Site の UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |
-| Homepage と発見導線を作る | [発見導線のレシピ](./discovery-recipes.ja.md) |
-| デプロイ方法を選ぶ | [Deployment](./deployment/README.ja.md) |
-| Cloudflare Workers に公開する | [Cloudflare Workers](./deployment/cloudflare-workers.ja.md) |
+| サイトの UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |
+| ホームページと発見導線を作る | [発見導線のレシピ](./discovery-recipes.ja.md) |
+| デプロイ方法を選ぶ | [デプロイガイド](./deployment/README.ja.md) |
+| Cloudflare Workers に公開する | [Cloudflare Workers へのデプロイ](./deployment/cloudflare-workers.ja.md) |
 | GitHub Actions で自動デプロイする | [GitHub Actions](./deployment/github-actions.ja.md) |
-| Separate Content Repository を自動デプロイする | [Separate Content Repository](./deployment/separate-content-repository.ja.md) |
-| Riebeckite をアップグレードする | [Upgrading](./upgrading.ja.md) |
+| コンテンツとサイトを分けた構成を自動デプロイする | [コンテンツとサイトを分ける（詳細版）](./deployment/separate-content-repository.ja.md) |
+| Riebeckite をアップグレードする | [Riebeckite をアップグレードする](./upgrading.ja.md) |
 
-## Guides と他の章の違い
+## 次に参照する章
+
+- **正確な**設定フィールド、CLI コマンド、API の取り決めは [リファレンス](../reference/README.ja.md) にあります。
+- コンテンツ、プラグイン、テーマの仕組みは [Framework](../framework/README.ja.md) で説明しています。
+
+## ガイドと他の章の違い
 
 ドキュメントの役割は次のように分かれています。
 
 ```text id="3m60t7"
-初めてSiteを作る
-  → Getting Started
+初めてサイトを作る
+  → はじめに
 
 やりたい作業の手順を知る
-  → Guides
+  → ガイド
 
-Pluginを探す
-  → Plugins
+プラグインを探す
+  → プラグイン
 
-Themeを探す
-  → Themes
+テーマを探す
+  → テーマ
 
 設定・CLI・APIを調べる
-  → Reference
+  → リファレンス
 
 内部構造を理解する
   → Framework
 ```
 
-Guides では、内部実装を詳しく説明することよりも、**目的を達成するために何をすればよいか**を中心に説明します。
+ガイドでは、内部実装を詳しく説明するよりも、**目的を達成するために何をすればよいか**を中心に説明します。

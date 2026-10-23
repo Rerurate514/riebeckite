@@ -1,59 +1,61 @@
 ---
 date: 2026-10-14
-title: Build
+title: ビルド（Build）
 sidebar:
   hidden: true
 ---
 
-# Build
+# ビルド（Build）
 
-Riebeckiteがコンテンツを処理し、公開位置を解決して、manifestとcontent graphを組み立て、出力を書き出す一連の処理です。
+Riebeckiteがコンテンツを処理し、公開先を解決し、プラグインを実行して、マニフェストとコンテンツグラフを組み立て、出力を書き出す一連の処理です。
 
-## Buildの流れ
+## ビルドの流れ
 
-1. 設定とPluginを解決します。
-2. Markdownなどのコンテンツを読み込みます。
-3. Pluginによる変換を実行します。
-4. 公開するページとリンクを決めます。
-5. サイト全体の情報と必要なassetを集めます。
-6. 画像やブラウザ側のコードなどのassetを書き出します。
-7. HonoXでサイトをBuildします。
+1. 設定とプラグインを解決する
+2. Markdownなどのコンテンツを読み込む
+3. プラグインによる変換を実行する
+4. 公開するページとリンクを決める
+5. サイト全体の情報と必要なアセットを集める
+6. 画像やブラウザ側のコードなどのアセットを書き出す
+7. HonoXでサイトをビルドする
 
-## Full BuildとIncremental Build
+## フルビルドと増分ビルド
 
-`--full`を使うと、以前のBuild情報を使わずにすべてを処理します。Incremental Buildは前回の結果を再利用し、変わった部分だけを処理します。前回のBuild情報は`.riebeckite/build/content-state.json`に保存されています。
+`--full`を使うと、前回のビルド情報を使わずにすべてを処理します。
+増分ビルドは前回のビルド結果を再利用し、変更された部分だけを処理します。
+前回のビルド情報は`.riebeckite/build/content-state.json`に保存されます。
 
-## Build State
+## ビルド状態
 
-Build Stateは`.riebeckite/build/content-state.json`に保存され、アプリケーション単位で共有されます。これは最適化のための情報で、元データではありません。欠落、非互換、安全でない状態ではinitialまたはfullの経路が選ばれます。状態はBuildが成功したあとにだけ保存されるため、失敗しても以前の有効な状態は保たれます。
+ビルド状態はアプリケーション単位で`.riebeckite/build/content-state.json`に保存されます。これは最適化のための情報であり、正となるデータではありません。状態が欠落しているか、非互換か、安全でない場合は、初期化またはフルビルドの経路に入ります。状態はビルドが成功したあとにだけ保存されるため、失敗しても以前の有効な状態は残ります。
 
-## Buildの段階と出力の生成
+## パイプラインの段階と出力の生成
 
-Buildプロセスは、`packages/core/src/pipeline.ts`で定義されたパイプラインの段階を順に進み、コンテンツの読み込みからHTMLの出力までを処理します。全体は`ContentBuildCoordinator`が調整します。
+ビルドは、コンテンツの読み込みからHTMLの出力までを、`packages/core/src/pipeline.ts`で定義された一連のパイプライン段階で処理します。全体は`packages/core/src/content/content_build_coordinator.ts`の`ContentBuildCoordinator`が調整します。
 
-1. **設定とPluginの解決**：`resolveConfig`が`site`、`content`、`theme`の既定値を検証してマージします。`provides`/`requires`/`optional`のCapabilityに基づいてPluginを順序付けます。
+1. **設定とプラグインの解決**：`resolveConfig`が`site`、`content`、`theme`、`plugins`、`cache`の既定値を検証してマージします。プラグインは`provides`/`requires`/`optional`のケイパビリティに基づいて`resolvePlugins`で順序付けられます。
 
-2. **コンテンツの読み込み**：`FileSystemContentSource`などのContent Sourceが、コンテンツディレクトリからMarkdownファイルを読み込みます。
+2. **コンテンツの読み込み**：コンテンツソース（`FileSystemContentSource`など）がコンテンツディレクトリからMarkdownファイルを読み込みます。
 
-3. **Markdownの解析とPluginによる変換**：`Pipeline`クラスがunifiedプロセッサを実行します。`remark`プラグインはparse、frontmatter、GFM、math、custom remarkPluginsです。`rehype`プラグインはraw、slug、katex、format、stringify、custom rehypePluginsです。`extendMarkdownPipeline`と`extendHtmlPipeline`のhookで、Pluginごとにパイプラインを拡張できます。
+3. **Markdownの解析とプラグインによる変換**：`Pipeline`クラスがunifiedプロセッサを実行します。`remark`プラグインはparse、frontmatter、GFM、math、独自のremarkPluginsを担当し、`rehype`プラグインはraw、slug、katex、format、stringify、独自のrehypePluginsを担当します。プラグインの`extendMarkdownPipeline`と`extendHtmlPipeline`フックを使うと、プラグインごとにパイプラインを拡張できます。
 
-4. **frontmatterの抽出とコンテンツ処理**：frontmatterは`matter`や`vfile-matter`で抽出します。変換したコンテンツは、slug、source、frontmatter、パイプラインのfingerprintからなるキーでpersistent cacheに保存されることがあります。依存関係はPluginの`dependencyMode`（`none`/ `tracked`/ `global`/ `unsafe`）に従って追跡します。
+4. **frontmatterの抽出とコンテンツ処理**：frontmatterは`matter`/`vfile-matter`で抽出します。処理済みコンテンツは、slug、source、frontmatter、パイプラインのフィンガープリントからなるキーで永続コンテンツキャッシュに保存されることがあります。依存関係はプラグインの`dependencyMode`（`none`/`tracked`/`global`/`unsafe`）に従って追跡します。
 
-5. **公開判定と公開位置の解決**：`isPublishable`が公開状態を決めます。`publishStrategy`（`explicit`/ `selective`）とfrontmatterのfieldを使います。fieldは`publish`、`private`、`draft`です。permalinkはコンテンツの公開位置の解決で決まります。
+5. **公開判定と公開先の解決**：公開状態は`isPublishable`が決めます。設定された`publishStrategy`（`explicit`/`selective`）とfrontmatterの`publish`、`private`、`draft`を使います。パーマリンクはコンテンツの公開先リゾルバーが解決します。
 
-6. **manifestとgraphの構築**：`ContentManager`がmanifestのentryを構築し、リンクを解決します。さらに、`ContentGraph`にincoming / outgoingのリンク問い合わせを構築します。tag、series、archiveのcollectionは`buildContentCollections`が作ります。
+6. **マニフェストとグラフの構築**：`ContentManager`がマニフェストのエントリを構築し、リンクを解決し、被リンク・発リンクの問い合わせ用にコンテンツグラフ（`ContentGraph`）を組み立てます。タグ、シリーズ、アーカイブのコレクションは`buildContentCollections`が構築します。
 
-7. **出力の生成**：画像やClient Entryなどのassetを収集します。解決したThemeを使ってSSG（HonoX）でHTMLを出力します。`.riebeckite/build/content-state.json`の前回のBuild状態を使い、変更したコンテンツと再利用できる出力を追跡してIncremental Buildを行います。
+7. **出力の生成**：画像やクライアントエントリなどのアセットを収集します。HTMLは解決済みのテーマを使ってSSG（HonoX）で出力します。`.riebeckite/build/content-state.json`の前回のビルド状態により、変更されたコンテンツと再利用できる出力を追跡して増分ビルドを行えます。
 
-## パイプライン実行
+## パイプラインの実行
 
-`packages/core/src/pipeline.ts`の`Pipeline`クラスは`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続的content cacheをチェックします。キャッシュキーはslug、source、frontmatter、pipeline fingerprintです。cacheヒットで無効な依存がない場合は、キャッシュされたfrontmatterとHTMLが即座に返されます。cacheミスまたはバイパスの場合、RemarkとRehypeプラグインによる解析、frontmatter抽出、GFM、math、カスタム変換を経てmarkdownが処理されます。リンク解決はコンテンツ依存関係トラッカーを通じて依存を記録します。処理後、結果は将来のIncremental Build用にdependenciesとfingerprintとともにpersistent content cacheに保存されます。
+`packages/core/src/pipeline.ts`の`Pipeline`クラスは、`execute()`で各コンテンツエントリを処理します。まず`packages/core/src/content/content_persistent_cache.ts`の永続コンテンツキャッシュを、slug、source、frontmatter、パイプラインのフィンガープリントからなるキャッシュキーで確認します。キャッシュにヒットし、無効な依存関係がなければ、キャッシュ済みのfrontmatterとHTMLがすぐに返されます。キャッシュミスまたはバイパスの場合は、RemarkとRehypeのプラグインによる解析、frontmatterの抽出、GFM、math、独自の変換を経てMarkdownを処理します。リンクの解決はコンテンツ依存関係トラッカーを通じて依存関係を記録します。処理後、結果は依存関係とフィンガープリントとともに永続コンテンツキャッシュへ保存され、以降の増分ビルドで使われます。
 
-pipeline fingerprint（`computePipelineFingerprint`）は、plugin構成とcontent filterを組み込みます。compatibility versionも対象です。cache可能性は`isPersistentlyCacheable`によって決まります。各pluginの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）がチェックされます。
+パイプラインのフィンガープリント（`computePipelineFingerprint`）は、プラグインの設定、コンテンツフィルター、互換性バージョンを取り込みます。キャッシュ可能かどうかは`isPersistentlyCacheable`が決め、各プラグインの`processedContentCache`の取り決め（dependencyMode: none/tracked/global/unsafe）を確認します。
 
-## 永続的content cache統合
+## コンテンツキャッシュとの統合
 
-`.riebeckite/cache/content/v5`にエントリごとのMarkdown処理結果が保存されます。cacheキーは`computeContentCacheKey`で計算されます。入力の`CacheKeyInputs`にはslug、source、正規化されたfrontmatter、pipeline fingerprintが含まれます。`CONTENT_CACHE_SCHEMA_VERSION`（現在は5）と一致しないentryはmissとして扱われ、最初から再処理されます。cacheは後続のBuildで依存の無効化を判定するために、論理的なcontent、file、linkの依存関係（`CachedContentDependency`）を記録します。cacheデータはワークスペースパスではなく論理的slugと正規化されたsourceパスを含むため、同じOS上の異なるランナーやワークスペースにコピーできます。
+`.riebeckite/cache/content/v5`の永続コンテンツキャッシュは、エントリごとのMarkdown処理結果を保存します。キャッシュキーは、slug、source、正規化されたfrontmatter、パイプラインのフィンガープリントを含む`CacheKeyInputs`から`computeContentCacheKey`で計算します。スキーマバージョン（`CONTENT_CACHE_SCHEMA_VERSION`、現在は5）が一致しないエントリはミスとして扱われ、再処理されます。キャッシュは論理的なコンテンツ、ファイル、リンクの依存関係（`CachedContentDependency`）を記録し、以降のビルドで無効化の判定に使います。キャッシュデータはワークスペースのパスではなく論理的なslugと正規化されたソースパスを含むため、同じオペレーティングシステム上の別のランナーやワークスペースへコピーできます。
 
 ## 関連用語
 

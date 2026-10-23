@@ -1,17 +1,15 @@
 ---
 date: 2026-10-08
-title: Typography と Article Layout
+title: タイポグラフィと記事レイアウト
 sidebar:
-  label: Typography と Article Layout
+  label: タイポグラフィと記事レイアウト
   order: 20
 ---
-# Typography と Article Layout
+# タイポグラフィと記事レイアウト
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Typography と Article Layout の指定を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、タイポグラフィと記事レイアウトを扱います。
 
-## 8. Typography
-
-Theme は Typography Preset を指定できます。
+## 3-2. タイポグラフィ（typography）
 
 ```ts id="6q5em7"
 type ThemeTypographyPreset =
@@ -20,20 +18,9 @@ type ThemeTypographyPreset =
   | "sans";
 ```
 
-Preset は、
+プリセットは、本文や見出しなどのセマンティックフォントトークンに反映されます。
 
-- Body
-- Heading
-- Code
-
-などの Semantic Font Token に反映されます。
-
-Font を個々の Component に直接指定するのではなく、Semantic Token を通して Site 全体の Typography を統一します。
-
-
-## 9. Article Layout
-
-Theme は Article Layout Preset を指定できます。
+## 3-3. 記事レイアウト（articleLayout）
 
 ```ts id="l0kwo9"
 type ThemeArticleLayoutPreset =
@@ -42,15 +29,13 @@ type ThemeArticleLayoutPreset =
   | "full-width";
 ```
 
-Theme が決めるのは Layout の **Presentation** です。
-
-Route や Component Tree そのものを Theme が差し替えるわけではありません。
+テーマが定義するのは、レイアウトプリセットの見せ方です。ルートやコンポーネントツリーを置き換えるものではありません。
 
 ```mermaid id="6oqsru"
 flowchart LR
-    App["Application<br/>Component Structure"]
-    Hooks["Stable Layout Hooks"]
-    Theme["Theme<br/>Presentation"]
+    App["アプリケーション<br/>コンポーネント構造"]
+    Hooks["安定したレイアウトフック"]
+    Theme["テーマ<br/>見せ方"]
 
     App --> Hooks
     Theme --> Hooks

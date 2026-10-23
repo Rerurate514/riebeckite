@@ -1,18 +1,14 @@
 ---
 date: 2026-10-08
-title: CLI Reference
+title: CLI リファレンス
 ---
-# CLI Reference
+# CLI リファレンス
 
-Riebeckite CLI は、Site の作成、開発、検証、診断、Build、公開などを行うためのコマンドです。
-
-基本的には **Riebeckite Site の application directory で実行します**。
+コマンドはアプリケーションディレクトリで実行します。CLI はカレントワーキングディレクトリからアプリケーションルートを解決し、コマンドのエラーを安全に報告して 0 以外の終了コードで終了します。
 
 ```sh id="vgst3p"
 npm exec riebeckite <command>
 ```
-
-CLI は current working directory から application root を解決します。
 
 ## コマンド一覧
 
@@ -21,7 +17,6 @@ riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [-
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
-
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
@@ -29,73 +24,154 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
-
-riebeckite inspect config
-riebeckite inspect plugins
-riebeckite inspect content [--list]
-riebeckite inspect graph
-riebeckite inspect build
+riebeckite inspect [config | plugins | content [--list] | graph | build]
 ```
 
-それぞれの役割は次のとおりです。
+## 各コマンドの役割とビルド状態への影響
 
-| Command | 何をする？ | Build State |
+| コマンド | 目的 | ビルド状態を書き込むか |
 | --- | --- | --- |
-| `init` | 新しい Site を作る | 変更しない |
-| `create` | Site、Plugin、Theme、PageType、Component の Generator を選ぶ | Generator に依存 |
-| `theme preview` | ローカル Theme を隔離した HonoX 環境で確認する | 一時ファイルのみ |
-| `plugin dev` | ローカル Plugin を隔離した HonoX 環境で確認する | 一時ファイルのみ |
-| `dev` | 開発環境を起動する | Integration に依存 |
-| `check` | 設定が正しいか検証する | 変更しない |
-| `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | 変更しない |
-| `build` | Site を Build する | 成功時のみ更新 |
-| `clean` | Riebeckite が管理する状態を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | 変更しない |
-| `deploy` | 生成物を Cloudflare Workers へ公開する。`--dry-run` は検証のみ、`setup` は GitHub Actions の継続デプロイを準備する、`domain` は Custom Domain を設定する | 変更しない |
-| `profile` | Build の性能を調査する | Build に依存 |
-| `inspect` | 現在の解決結果を見る | 変更しない |
+| `init` | プリセットから自己完結したサイトを生成する | いいえ |
+| `create` | サイト、プラグイン、テーマ、PageType、コンポーネントのジェネレーターを選ぶ | ジェネレーターによる |
+| `theme preview` | ローカルのテーマを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `plugin dev` | ローカルのプラグインを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
+| `check` | アプリの設定、コンテンツルートの可用性、プラグインオプション、ケイパビリティの解決を検証する | いいえ |
+| `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
+| `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
+| `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
+| `deploy` | 既存のビルド出力を Wrangler 経由で Cloudflare Workers に公開する。`--dry-run` はアップロードせずに検証する。`setup` は GitHub Actions による継続的デプロイを準備する。`domain` は Cloudflare Workers の Custom Domain を追加する | いいえ |
+| `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
+| `inspect` | 解決済みの実際の状態を表示する | いいえ |
 
-## どのコマンドを使う？
+## 目的別のコマンドの選び方
 
-目的から選ぶと分かりやすくなります。
+目的から選ぶと、コマンドの違いが分かりやすくなります。
 
 ```mermaid id="ctqx7e"
 flowchart TD
-    Q{"何をしたい？"}
+    Q{"何をしたいですか？"}
 
-    Q -->|"Siteを作りたい"| Init["init"]
+    Q -->|"サイトを作りたい"| Init["init"]
     Q -->|"開発したい"| Dev["dev"]
-    Q -->|"設定が正しいか確認したい"| Check["check"]
-    Q -->|"問題の原因を調べたい"| Doctor["doctor"]
-    Q -->|"Siteを生成したい"| Build["build"]
-    Q -->|"生成物を消したい"| Clean["clean"]
+    Q -->|"設定を確認したい"| Check["check"]
+    Q -->|"問題を調べたい"| Doctor["doctor"]
+    Q -->|"サイトを生成したい"| Build["build"]
+    Q -->|"生成物を削除したい"| Clean["clean"]
     Q -->|"公開したい"| Deploy["deploy"]
-    Q -->|"Buildが遅い"| Profile["profile"]
-    Q -->|"現在の状態を見たい"| Inspect["inspect"]
+    Q -->|"ビルドが遅い"| Profile["profile"]
+    Q -->|"現在の状態を知りたい"| Inspect["inspect"]
 ```
 
-特に混同しやすいのが `check`、`doctor`、`inspect`、`build` です。
-
-簡単に分けると、
+`check`、`doctor`、`inspect`、`build` はとくに混同しやすいコマンドです。役割は次のように分かれます。
 
 ```text id="1djofm"
 check
-  → 正しい？
+  → 設定は正しいか
 
 doctor
-  → 問題はない？
+  → 問題はないか
 
 inspect
-  → 今どうなっている？
+  → 現在の状態はどうなっているか
 
 build
-  → 実際に生成する
+  → 実際に出力を生成する
 ```
 
-と考えると分かりやすいです。
+## `init`
+
+`init` は、設定、Vite/HonoX のアプリケーションシェル、ルート、スタイルシート、スターターコンテンツを含む自己完結したサイトを、対象ディレクトリに生成します。対象ディレクトリの既定値はカレントディレクトリです。生成されたサイトは、Riebeckite モノレポに依存しない自己完結したアプリケーションです。
+
+```sh id="18r7wl"
+npm exec riebeckite init
+```
+
+別の場所にサイトを作る場合は、ディレクトリを指定します。
+
+```sh id="81jmbp"
+npm exec riebeckite init my-site
+```
+
+依存関係をインストールしてから、生成したサイトで `check` と `build` を実行してください。
+
+### プリセットの選び方
+
+構成は `--preset <name>` で選びます（既定値: `starter`）。
+
+```sh id="vt7gdb"
+npm exec -- riebeckite init my-site --preset starter
+```
+
+`--list-presets` を実行すると、利用できるプリセットとその説明を確認できます。
+
+```sh id="b0n6ph"
+npm exec -- riebeckite init --list-presets
+```
+
+### プロジェクトファイルの選び方
+
+プロジェクトファイルはプリセットとは別に、`--utilities <names>` で選びます。値には `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。
+
+```sh id="pf8k21"
+npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
+```
+
+| 名前 | ファイル |
+| --- | --- |
+| `gitignore` | `.gitignore` |
+| `editorconfig` | `.editorconfig` |
+| `gitattributes` | `.gitattributes` |
+| `biome` | `biome.json` |
+| `npmrc` | `.npmrc` |
+| `vscode` | `.vscode/settings.json` |
+
+既定値は `gitignore,editorconfig,gitattributes,biome` で、`none` を指定すると何も書き込みません。対話モードでは、`Extra project files` の質問で既定のセットがあらかじめ選択されています。
+
+### 生成先にファイルがすでにある場合
+
+`init` は、生成対象のファイルがすでにあるディレクトリには、`--force` を指定しない限り書き込みません。
+
+```sh id="l5kjod"
+npm exec -- riebeckite init my-site --force
+```
+
+`--force` は既存ファイルに影響するため、使用する前に内容を確認してください。
+
+### `create-riebeckite`
+
+`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset` / `--list-presets` フラグも同じように受け付けます。
+
+```sh id="kyw0rx"
+npx create-riebeckite
+```
+
+対話モードでは、コンテンツソースを尋ねたあと、デプロイ方法を尋ねます。
+
+| 選択肢 | 生成されるもの |
+| --- | --- |
+| `Cloudflare Workers` | Wrangler の依存関係と `wrangler.jsonc`。依存関係のインストール後、`Deploy now?` を尋ねる |
+| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/deploy.yml` |
+| `Not now` | デプロイ用のファイルを生成しない |
+
+`Deploy now?` で `Yes` を選ぶと、雛形の生成直後にビルドと `riebeckite deploy` が実行されます。`Later` を選ぶとサイトの生成だけを行い、次のコマンドで公開します。
+
+```sh
+npm run build
+npm exec riebeckite deploy
+```
+
+サイトを生成したら、依存関係をインストールして設定を確認します。
+
+```sh id="gzg1my"
+npm install
+npm exec riebeckite check
+npm exec riebeckite build
+```
 
 ## `create`
 
-`create` は Generator の統一入口です。TTY では Site、Plugin、Theme、PageType、Component のいずれを作成するか選び、その後は対応する Generator に委譲します。
+`create` はジェネレーターの統一エントリポイントです。TTY では、サイト、プラグイン、テーマ、PageType、コンポーネントのどれを作成するかを尋ね、生成ロジックを重複させずに対応するジェネレーターへ処理を委譲します。
 
 ```sh
 riebeckite create
@@ -107,172 +183,56 @@ riebeckite create component note-card --target site --with-styles
 riebeckite create --help
 ```
 
-スクリプトでは対象を明示してください。`create site` は引数を `create-riebeckite` に渡し、`create plugin` と `create theme` は既存の Option と非 TTY の検証を維持します。`create page-type` は Plugin PageType を作成し、`create component` は Site、Plugin、Theme の責務境界を守ります。
+スクリプトからは対象を明示してください。`create site` は引数を `create-riebeckite` に渡します。`create plugin` と `create theme` は既存のオプションと非 TTY での検証を維持します。`create page-type` はプラグインの PageType を作成し、`create component` はサイト、プラグイン、テーマの責務境界を守ります。
 
 ## `theme preview`
 
-生成済みのローカル Theme は、通常の Site と同じ Riebeckite/HonoX/Vite の経路で確認できます。
+通常のサイトが使う Riebeckite サイトと HonoX/Vite の経路をそのまま使って、生成済みのローカルのテーマをプレビューします。
 
 ```sh
 riebeckite theme preview my-theme
 riebeckite theme preview my-theme --port 4173 --no-open
 ```
 
-Preview は `themes/` 配下の一時 Site で、決定的な Home、Article、Documentation、Components の Fixture を配信します。設定済み Vault、Build Output、`riebeckite.config.ts` は読み書きせず、Ctrl+C で終了すると一時 Site を削除します。Theme CSS の変更は Vite の監視で更新され、`index.ts` の変更時は Dev Server を再起動して開いているページを再読み込みします。Responsive 表示と System の Color Preference はブラウザの開発者ツールで確認してください。Preview 時には Theme Module が実行されるため、信頼できるローカル Theme だけを実行してください。
+プレビューは `themes/` 配下の一時サイトから、毎回同じ内容の Home、Article、Documentation、Components のフィクスチャページを配信します。設定済みの Vault、ビルド出力、`riebeckite.config.ts` は読み取りも変更もしません。Ctrl+C で停止すると、一時サイトは削除されます。テーマの CSS は実際のテーマ定義を通じて読み込まれ、CSS の変更は Vite が反映します。`index.ts` を編集すると開発サーバーが再起動し、開いているページが再読み込みされます。レスポンシブな表示サイズとシステムの配色設定は、ブラウザの開発者ツールで確認してください。テーマは信頼済みのローカルアプリケーションコードです。プレビュー設定の読み込み中に、テーマのモジュールが実行されます。
 
 ## `plugin dev`
 
-ローカル Plugin を、一時的な Riebeckite Site と実際の HonoX/Vite Dev Server で確認します。
+ローカルのプラグインを、一時的な Riebeckite サイトと実際の HonoX/Vite 開発サーバーでプレビューします。
 
 ```sh
 riebeckite plugin dev ./extensions/my-plugin
 riebeckite plugin dev ../my-plugin --port 4321 --no-open
 ```
 
-Path には Plugin のディレクトリ、またはその `package.json` を指定します。ディレクトリには有効な `package.json` と、対応する entry point が必要です。entry point は `exports["."]` の `source`、`import`、`module`、`default` 条件、`main`、または慣例的な `index.ts` から解決します。CLI は依存パッケージを install しません。Preview の前に、Plugin 側のプロジェクトで依存関係を install してください。
+パスにはプラグインのディレクトリ、またはその `package.json` を指定できます。ディレクトリには、サポートされるエントリポイントを持つ有効な `package.json` が必要です。エントリポイントとして使えるのは、`source`、`import`、`module`、`default` のいずれかの条件を持つ `exports["."]`、`main`、または慣例的な `index.ts` です。CLI は依存関係をインストールしません。プレビューを開始する前に、プラグイン側のプロジェクトで依存関係をインストールしてください。
 
-コマンドは System の一時ディレクトリに隔離した Fixture Site を作成し、ローカル Plugin を link してから Fixture の path を表示します。設定済み Vault、Site 設定、Build Output は読み書きしません。Fixture には決定的な Markdown を書き込むため、Content を編集せずに Plugin を確認できます。
+コマンドはシステムの一時ディレクトリに隔離されたフィクスチャサイトを作成し、ローカルのプラグインをそこにリンクして、フィクスチャのパスを表示します。設定済みの Vault、サイト設定、ビルド出力は読み取りも変更もしません。フィクスチャには毎回同じ内容の Markdown が含まれるため、コンテンツを編集せずにプラグインを確認できます。
 
-Preview 中は次のように更新されます。
+プレビュー中は、次のように変更が反映されます。
 
-- CSS の変更は Vite HMR で反映されます。
-- Client Script の変更は Preview を再読み込みします。
-- Markdown Fixture の変更は描画結果へ反映されます。
-- Plugin の entry point の変更は Dev Server を再起動します。
+- CSS の変更は Vite の HMR で反映されます。
+- クライアントスクリプトの変更はプレビューを再読み込みします。
+- Markdown フィクスチャの変更は描画ページに反映されます。
+- プラグインのエントリポイントの変更は開発サーバーを再起動します。
 
-Plugin の読み込み、コンパイル、初期化でエラーが発生した場合は Terminal に表示し、0 以外の status で終了します。Ctrl+C、通常終了、起動失敗のいずれでも一時 Site を削除します。Process を強制終了した場合は、起動時に表示された Fixture path を手動で削除してください。
+プラグインの読み込み、コンパイル、初期化で発生したエラーはターミナルに出力され、コマンドは 0 以外のステータスで終了します。一時サイトは Ctrl+C、正常終了、起動失敗のいずれでも削除されます。プロセスを強制終了した場合は、起動時に表示されたフィクスチャのパスを削除してください。
 
 ### `theme preview` との違い
 
-`theme preview` は `themes/` 配下の固定 Content Fixture で Theme を確認します。`plugin dev` は System の一時ディレクトリの Site で 1 つのローカル Plugin を確認します。どちらも実際の Riebeckite/HonoX/Vite の経路を使いますが、対象とする拡張点と Fixture の lifecycle は異なります。
+`theme preview` は `themes/` 配下の固定されたコンテンツフィクスチャでテーマをプレビューします。`plugin dev` はシステムの一時ディレクトリにある一時サイトで、1 つのローカルのプラグインをプレビューします。どちらも実際の Riebeckite/HonoX/Vite の経路を使いますが、対象とする拡張ポイントが異なり、フィクスチャのライフサイクルも別々です。
 
-### Security
+### セキュリティ
 
-`plugin dev` は信頼できるローカル開発向けのコマンドです。指定した path の Plugin entry と Client Script を実行します。信頼できる Plugin だけを実行してください。このコマンドを信頼できない利用者へ公開しないでください。依存パッケージを自動で install することもありません。
+`plugin dev` は信頼済みのローカル開発向けコマンドです。指定したパスのプラグインエントリとクライアントスクリプトを実行します。信頼できるプラグインだけを実行し、このコマンドを信頼できないユーザーに公開しないでください。コマンドがパッケージを自動でインストールすることはありません。
 
 ### トラブルシューティング
 
-- `Could not find a plugin`: path を確認してください。相対 path は current directory から解決します。
-- `Could not find package.json`: Package の root、またはその `package.json` を指定してください。
-- `Could not find the plugin entry point`: `exports["."]`、`main`、または `index.ts` を用意してください。
-- コンパイルや初期化のエラー: Plugin の依存関係を install し、Terminal の出力を確認してください。
-- Port が使用中: 別の `--port` を指定してください。
-
-## `init`
-
-新しい Riebeckite Site を作成します。
-
-```sh id="18r7wl"
-npm exec riebeckite init
-```
-
-別のディレクトリへ作成する場合は、
-
-```sh id="81jmbp"
-npm exec riebeckite init my-site
-```
-
-のように指定します。
-
-生成される Site には、基本的な
-
-- Riebeckite config
-- Vite / HonoX application
-- route
-- stylesheet
-- 初期 content
-
-が含まれます。
-
-生成された Site は Riebeckite monorepo に依存しない、自己完結した application です。
-
-### Preset を選ぶ
-
-```sh id="vt7gdb"
-npm exec -- riebeckite init my-site --preset starter
-```
-
-`--preset` で Site の初期構成を選択できます。
-
-既定値は `starter` です。
-
-利用できる preset は、
-
-```sh id="b0n6ph"
-npm exec -- riebeckite init --list-presets
-```
-
-で確認できます。
-
-### Project file を選ぶ
-
-preset とは別に、任意の project file を生成できます。
-
-```sh id="pf8k21"
-npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
-```
-
-`--utilities` には `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。既定では `gitignore,editorconfig,gitattributes,biome` を生成し、`npmrc` と `vscode` は生成しません。`none` を指定すると project file を生成しません。
-
-| 名前 | ファイル |
-| --- | --- |
-| `gitignore` | `.gitignore` |
-| `editorconfig` | `.editorconfig` |
-| `gitattributes` | `.gitattributes` |
-| `biome` | `biome.json` |
-| `npmrc` | `.npmrc` |
-| `vscode` | `.vscode/settings.json` |
-
-`create-riebeckite` の対話式では `Extra project files` の質問で個別に選択できます。
-
-### 既存ファイルがある場合
-
-`init` は、生成対象となるファイルがすでに存在する場合、そのまま上書きしません。
-
-意図的に上書きする場合は、
-
-```sh id="l5kjod"
-npm exec -- riebeckite init my-site --force
-```
-
-を使用します。
-
-`--force` は既存ファイルへ影響するため、内容を確認してから使用してください。
-
-### `create-riebeckite`
-
-同じ Site generator は `create-riebeckite` からも利用できます。
-
-```sh id="kyw0rx"
-npx create-riebeckite
-```
-
-`--preset` や `--list-presets` も同様に利用できます。
-
-対話式では、Content source に続いてデプロイ設定を尋ねられます。
-
-| 選択肢 | 生成されるもの |
-| --- | --- |
-| `Cloudflare Workers` | Wrangler の依存と `wrangler.jsonc`。依存関係のインストール後に `Deploy now?` を確認 |
-| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/deploy.yml` |
-| `Not now` | デプロイ設定を追加しない |
-
-`Cloudflare Workers` で `Deploy now?` に `Yes` と答えると、生成後に build と `riebeckite deploy` が続けて実行されます。`Later` の場合は生成だけを行い、次を実行して公開します。
-
-```sh
-npm run build
-npm exec riebeckite deploy
-```
-
-Site を生成した後は依存関係を install し、
-
-```sh id="gzg1my"
-npm install
-npm exec riebeckite check
-npm exec riebeckite build
-```
-
-で正常に構成されていることを確認できます。
+- `Could not find a plugin`: パスを確認してください。相対パスはカレントディレクトリから解決されます。
+- `Could not find package.json`: パッケージのルート、またはその `package.json` を指定してください。
+- `Could not find the plugin entry point`: `exports["."]` か `main` を宣言するか、`index.ts` を追加してください。
+- コンパイルや初期化のエラー: プラグインの依存関係をインストールし、ターミナルの出力を確認してください。
+- ポートがすでに使用されている: 別の `--port` を指定してください。
 
 ## `dev`
 
@@ -282,63 +242,44 @@ npm exec riebeckite build
 npm exec riebeckite dev
 ```
 
-Riebeckite Integration の development workflow を利用して Site を起動します。
-
-実際の development server や Build State の扱いは、使用している Integration に依存します。
-
-通常の HonoX Site では、開発中のページ確認にこのコマンドを使用します。
+Riebeckite の統合が提供する開発ワークフローでサイトを起動します。実際の開発サーバーとビルド状態の扱いは、使用している統合によって異なります。通常の HonoX サイトでは、開発中のページ確認にこのコマンドを使います。
 
 ## `check`
 
-Config、Plugin、Capability の設定が有効か検証します。
+`check` は、設定、プラグイン、ケイパビリティが正しく構成されているかを検証します。
 
 ```sh id="5a2lrf"
 npm exec riebeckite check
 ```
 
-たとえば、
+たとえば、次のことを確認します。
 
-- config の形式が正しいか
-- Plugin の設定が正しいか
-- 必要な capability が成立しているか
-
-などを確認します。
+- 設定の形式が有効であること
+- プラグインの設定が有効であること
+- 必要なケイパビリティが解決されていること
 
 ```mermaid id="8ewhbp"
 flowchart LR
-    Config["Config"]
-    Plugins["Plugins"]
-    Capability["Capabilities"]
+    Config["設定"]
+    Plugins["プラグイン"]
+    Capability["ケイパビリティ"]
 
     Config --> Check["check"]
     Plugins --> Check
     Capability --> Check
 
-    Check --> Result{"Valid?"}
+    Check --> Result{"有効か？"}
 ```
 
-`check` が成功したからといって、Site がすでに Build / Deploy されていることを意味するわけではありません。
+`check` が確認するのはプロジェクトの基本的な妥当性であり、出力がビルド済みか、デプロイ済みかということではありません。`check` が保証するのは、設定が有効であることです。
 
-`check` が保証するのは **Configuration が有効であること**です。
+### プラグインオプションの検証
 
-### Plugin Option Validation
-
-Plugin の option validation も `check` の一部として実行されます。
-
-Plugin は `validateOptions` を使って、自身の設定を検証できます。
-
-たとえば Analytics Plugin なら、
-
-- provider
-- collector URL
-
-などの設定を検証できます。
-
-不正な Plugin 設定は、実際の Build より前に `check` で検出できます。
+プラグインオプションの検証は `check` の一部として実行されます。各プラグインの `validateOptions` は設定の有効性に寄与します。たとえばアナリティクスプラグインは、プロバイダーとコレクター URL を検証します。そのため、プラグインの設定が不正であれば、ビルドが始まる前に `check` が失敗します。
 
 ## `doctor`
 
-Project の状態を共通の開発診断として報告します。Site の Build や Build State の更新は行いません。
+`doctor` は、毎回同じ内容になる共通の開発診断レポートを出力します。サイトをビルドしたり、ビルド状態を変更したりしません。
 
 ```sh id="zruccx"
 npm exec riebeckite doctor
@@ -346,27 +287,18 @@ npm exec -- riebeckite doctor --explain
 npm exec -- riebeckite doctor --json
 ```
 
-`--explain` は原因、詳細、修正の提案を表示します。`--json` はツール向けにシリアライズ可能なレポートだけを出力します。`--fix` は安全な自動修正だけに限定され、該当する修正がない場合は何も変更しません。`--dry-run` はファイルを変更せずにそのことを確認します。
+`--explain` は原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力します。`--fix` は安全な自動修正に限定され、該当する修正がなければ何も変更しません。`--dry-run` はファイルを変更せずにそのことを確認します。
 
-`doctor` は、観測できる範囲で次を確認します。
-
-- environment
-- config
-- Plugin
-- content
-- output
-- Theme
-
-などを確認します。
+`doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、スキップとして表示します。
 
 ```mermaid id="f8k3hz"
 flowchart LR
-    Environment["Environment"]
-    Config["Config"]
-    Plugin["Plugins"]
-    Content["Content"]
-    Output["Output"]
-    Theme["Theme"]
+    Environment["実行環境"]
+    Config["設定"]
+    Plugin["プラグイン"]
+    Content["コンテンツ"]
+    Output["出力"]
+    Theme["テーマ"]
 
     Environment --> Doctor["doctor"]
     Config --> Doctor
@@ -375,263 +307,221 @@ flowchart LR
     Output --> Doctor
     Theme --> Doctor
 
-    Doctor --> Diagnostics["Diagnostics"]
+    Doctor --> Diagnostics["診断"]
 ```
 
-1つの診断に失敗しても、安全に続行できる独立した診断は可能な限り継続します。
+`doctor` は可能な限り独立したチェックを続行し、ヘルスチェックが失敗した場合は 0 以外の終了コードで終了します。
 
-Health check が失敗した場合は non-zero status で終了します。
-
-`riebeckite dev` の実行中に、編集可能なコントロール以外で <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> を押すと Development Inspector を開けます。Inspector は `doctor` と同じレポートを使い、Vite の更新時に再表示されます。production の client output や endpoint には含まれません。Overview、Diagnostics、Plugins の各タブは診断レポートを準備でき次第表示します。Dependencies と Output タブは別途読み込み、build state を書き込んだり build を実行したりせずに、現在の Content と Output Plan を読み取ります。
+`riebeckite dev` の実行中、編集可能なコントロールの外で <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> を押すと、Development Inspector が開きます。`doctor` と同じレポートを使い、Vite の更新に合わせて更新されます。本番のクライアント出力やエンドポイントには含まれません。Overview、Diagnostics、Plugins の各タブは、診断レポートの準備ができ次第、それを表示します。Dependencies と Output タブは別に読み込まれ、ビルド状態を書き込んだりサイトをビルドしたりせずに、現在のコンテンツと出力計画を読み取ります。
 
 ## `build`
 
-Site を Build します。
+`build` はサイトをビルドします。
 
 ```sh id="iznhhd"
 npm exec riebeckite build
 ```
 
-通常は incremental state を利用して、再利用可能な処理を省略します。
+通常はインクリメンタルな状態を再利用し、再利用できる作業を省略します。
 
 ```mermaid id="l50vlh"
 flowchart TD
     Build["riebeckite build"]
-    State{"再利用可能なState?"}
+    State{"再利用できるビルド状態はある？"}
 
     Build --> State
-    State -->|Yes| Incremental["Incremental Build"]
-    State -->|No| Full["必要な処理を再実行"]
+    State -->|"はい"| Incremental["インクリメンタルビルド"]
+    State -->|"いいえ"| Full["必要な作業を再実行"]
 
-    Incremental --> Success{"成功？"}
+    Incremental --> Success{"成功した？"}
     Full --> Success
 
-    Success -->|Yes| Save["新しいStateを保存"]
-    Success -->|No| Keep["以前の有効なStateを維持"]
+    Success -->|"はい"| Save["新しい状態を保存"]
+    Success -->|"いいえ"| Keep["以前の有効な状態を維持"]
 ```
 
-Build State は **Build が成功した場合だけ**更新されます。
+ビルド状態が更新されるのは、ビルドが成功したときだけです。失敗したビルドが以前の正常な状態を壊すことはありません。
 
-失敗した Build が以前の正常な state を壊すことはありません。
+### フルビルド
 
-### Full Build
-
-incremental state の再利用を避けたい場合は、
+インクリメンタルな状態の再利用を避けるには、次のコマンドを実行します。
 
 ```sh id="wpr38p"
 npm exec -- riebeckite build --full
 ```
 
-を使用します。
-
-Build の再現確認や incremental behavior の問題を切り分ける場合に利用できます。
-
-詳しくは [Build System](../framework/build-system.ja.md) を参照してください。
+ビルドを再現するときや、インクリメンタルな動作の問題を切り分けるときに使います。詳しくは [ビルドシステム](../framework/build-system.ja.md) を参照してください。
 
 ## `clean`
 
-Riebeckite が生成・管理する再生成可能な状態を削除します。
+`clean` は、ユーザーのコンテンツではなく、Riebeckite が管理する成果物を削除します。
 
 ```sh id="cln001"
 npm exec riebeckite clean
 ```
 
-option を指定しない場合は、application directory 配下の managed state root（`.riebeckite/`）を削除します。ここには Build State、Plugin Cache、persistent content cache、SSG output cache が含まれます。
+オプションを指定しない場合は、管理対象の状態ルート（アプリケーションディレクトリ配下の `.riebeckite/`）を削除します。この中には、ビルド状態、プラグインキャッシュ、永続コンテンツキャッシュ、SSG 出力キャッシュが含まれます。
 
-Build 出力だけを削除する場合は、
+ビルド出力ディレクトリだけを削除するには、次のコマンドを実行します。
 
 ```sh id="cln002"
 npm exec -- riebeckite clean --output
 ```
 
-managed state と Build 出力の両方を削除する場合は、
+管理対象の状態とビルド出力の両方を削除するには、次のコマンドを実行します。
 
 ```sh id="cln003"
 npm exec -- riebeckite clean --all
 ```
 
-を使用します。
+出力の場所はハードコードではなくプロジェクト設定から解決されるため、統合が定義した場所もそのまま使われます。削除対象が存在しなくてもエラーにならないので、`clean` は CI やトラブルシューティング用スクリプトからの繰り返し実行にも安全です。コンテンツ、設定、テーマやプラグインのソース、`public/` のアセット、Git のメタデータを削除することはありません。アプリケーションディレクトリの外にあるものは削除しません。シンボリックリンクやジャンクションはリンクとして削除するため、リンク先が削除されることはありません。`app/.riebeckite/` 配下の生成ソースは、統合が次の `dev` または `build` で再生成するため、そのまま残します。
 
-削除対象の配置は解決済みの Configuration から取得するため、Build 出力の場所を hard-code しません。対象が存在しない場合もエラーにせず、再実行しても成功します。Content、Config、Theme / Plugin の source、`public/` の asset、Git の metadata は削除しません。application root の外を指す path は削除せず、symlink / junction は link 先を辿らずに link 自体だけを削除します。`app/.riebeckite/` の generated source は、次の `dev` や `build` で再生成されるため残します。
-
-incremental state や persistent cache、以前の Build 出力に依存せずに Site を再現したい場合は、cold build として
+インクリメンタルな状態、永続キャッシュ、以前の出力に依存せずにサイトを再現するには、コールドビルドを実行します。
 
 ```sh id="cln004"
 npm exec -- riebeckite clean --all
 npm exec riebeckite build
 ```
 
-を実行します。Build が遅い、または incremental reuse が疑わしいときの切り分けにも利用できます。既定の配置ではこれらの cache は `.riebeckite/` 配下にあります。別の場所に cache directory を設定している場合、その場所は `clean` の削除対象に含まれません。
+ビルドが遅いときや、インクリメンタルな再利用が疑わしいときにも役立ちます。既定のレイアウトでは、これらのキャッシュは `.riebeckite/` 配下にあります。別の場所にキャッシュディレクトリを設定している場合、そのディレクトリは `clean` では削除されません。
 
 ## `deploy`
 
-Build 済みの生成物を Cloudflare Workers へ公開します。
+`deploy` は、`build` が生成した `dist/` を、Wrangler を呼び出して Cloudflare Workers に公開します。`wrangler.jsonc` がない場合はサイトのフォルダー名から作成し、初回実行時には Wrangler のログインを開きます。`--dry-run` はそのまま渡され、アップロードせずに検証が行われます。
 
-```sh id="k4n8we"
-npm exec riebeckite deploy
-```
+`deploy` はコンテンツを再ビルドしないため、先に `npm exec riebeckite build` を実行してください。
 
-`deploy` は Wrangler を呼び出して `dist/` を公開します。初回は Wrangler の OAuth で Cloudflare にログインし、`wrangler.jsonc` が無い場合はプロジェクト名から生成します。公開 URL は `https://<worker-name>.<account>.workers.dev` です。`create-riebeckite` で `Cloudflare Workers` を選ぶと、このコマンドを実行できるサイトが生成されます。Wrangler の依存と `wrangler.jsonc` が含まれます。
+Cloudflare に接続せずに設定とアセットを検証するには、次のコマンドを実行します。
 
-`deploy` は Build を行いません。先に `npm exec riebeckite build` を実行してください。
-
-Cloudflare へ接続せずに設定とアセットを検証する場合は、
-
-```sh id="d9x2qb"
+```sh
 npm exec -- riebeckite deploy --dry-run
 ```
 
-を使用します。`npm exec` は `--dry-run` を自身の option として解釈する場合があるため、`--` で区切ってください。
+`npm` はオプション区切りを付けない `--dry-run` を自身のオプションとして解釈するため、`npm exec -- riebeckite deploy --dry-run` のように渡してください。`create-riebeckite` の `Cloudflare Workers` を選んで生成したサイトには、Wrangler の依存関係と `wrangler.jsonc` がすでに含まれています。
 
-push ごとに自動で deploy したい場合は GitHub Actions を利用できます。詳しくは [Deployment](../guides/deployment/README.ja.md) を参照してください。
+push のたびに自動でデプロイするには、GitHub Actions を使います。詳しくは [デプロイ](../guides/deployment/README.ja.md) を参照してください。
 
 ### `deploy setup`
 
-すでに Local-first で公開している Site に、GitHub Actions による継続デプロイを追加します。
+`deploy setup` は、すでに Git リポジトリになっており、Local-first で公開しているプロジェクトに、GitHub Actions への継続的デプロイを用意します。
 
 ```sh id="k4n8ws"
 npm exec riebeckite deploy setup
 ```
 
-`deploy setup` は、Git Repository と GitHub Remote を検出します。続いて GitHub CLI（`gh`）と Wrangler のログインを確認します。その後、`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成します。Wrangler のログイン状態から Cloudflare Account を取得し、複数ある場合は選択します。最後に `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録します。
-
-Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取ります。その後、standard input 経由で `gh secret set` へ渡します。command line の引数には載せず、ファイルにも書き込みません。
-
-GitHub Repository の作成と push は行いません。Riebeckite 以外の既存 workflow を検出した場合は、上書きせずそのまま報告し、secret の登録には進まずに停止します。再実行すると、一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
-
-`deploy setup` は Wrangler のログインを使うため、Wrangler の依存が Site に install されている必要があります。`create-riebeckite` で `Cloudflare Workers` を選んだ Site には含まれています。
+Git リポジトリと GitHub のリモートを検出し、GitHub CLI（`gh`）と Wrangler のログインを確認します。`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成し、Wrangler のログイン情報から Cloudflare アカウントを読み取ります（複数ある場合は選択を求めます）。そして、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。トークンは非表示のプロンプト、または環境変数 `CLOUDFLARE_API_TOKEN` から読み取られ、標準入力経由で `gh secret set` に渡されます。コマンドの引数として渡されたり、ディスクに書き込まれたりすることはありません。コマンドは GitHub リポジトリを作成せず、push もしません。Riebeckite 以外のワークフローが既にある場合は、その旨を報告して変更せず、シークレットを登録する前に停止します。Wrangler はサイトにインストールされている必要があります（Local-first のサイトにはすでに含まれています）。いつでも再実行できます。一致するワークフローと既存のシークレットは検出されてスキップされるため、残りの手順だけが実行されます。別のデプロイワークフローがすでにある場合は、`deploy setup` を再度実行する前に置き換えるか削除してください。
 
 ### `deploy domain`
 
-`deploy` が公開する Worker に Cloudflare Workers の Custom Domain を設定します。
+`deploy domain` は、`deploy` が公開する Worker に Cloudflare Workers の Custom Domain を設定します。
 
 ```sh id="d0main"
 npm exec riebeckite deploy domain
 ```
 
-`deploy domain` は Site の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読みます。そして、`custom_domain: true` を持つ `routes` エントリを追加します。引数は取りません。`docs.example.com` のような hostname を対話的に入力し、変更内容を表示して確認したうえで書き込みます。
-
-初回の `deploy` の後で実行してください。Wrangler 設定が無い場合や terminal が interactive でない場合は、hint を表示して停止します。`wrangler.toml` は変更しません。書き込み後は `Deploy now?` を確認し、選ばなかった場合は `npm exec riebeckite deploy` を案内します。再実行すると設定済みの domain を検出し、書き込みを省略します。
+最初の `deploy` の後に実行してください。サイト内の既存の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み取り、`custom_domain: true` を持つ宣言的な `routes` エントリを追加するためです。引数はありません。コマンドは `docs.example.com` のようなホスト名の入力を求め、変更予定の内容を表示して、書き込み前に確認を取ります。`wrangler.toml` は変更しません。Wrangler 設定が存在しない場合や、ターミナルが対話的でない場合は、ヒントを表示して停止します。書き込み後は `Deploy now?` を提示し、そうでなければ `npm exec riebeckite deploy` コマンドを表示します。再実行すると、設定済みのドメインを検出して書き込みをスキップします。
 
 ## `profile`
 
-Build のどこに時間がかかっているか調査します。
+`profile` は、ビルド時間がどこに費やされているかを調査します。
 
 ```sh id="5pvcmf"
 npm exec riebeckite profile
 ```
 
-Trace を収集し、Build phase や Plugin 処理などの performance report を表示します。
+トレースを収集し、ビルドのフェーズとプラグインの処理を対象とするパフォーマンスレポートを表示します。レポートはプラグインキャッシュの動作とコンテンツキャッシュの動作を分けて表示します。コンテンツキャッシュの部分には、ミスまたはバイパスごとの理由も含まれるため、エントリが再利用されなかった理由を確認できます。
 
-incremental reuse を避けて計測する場合は、
+インクリメンタルな再利用なしで計測するには、次のコマンドを実行します。
 
 ```sh id="mqr87f"
 npm exec -- riebeckite profile --full
 ```
 
-を使用します。
-
-`profile` は性能調査のための command であり、Configuration validity を確認するための command ではありません。
-
-report では Plugin cache と Content cache を分けて表示します。Content cache には miss / bypass の理由も含まれるため、なぜ再利用されなかったのかを確認できます。
+`profile` はパフォーマンス調査のためのコマンドであり、設定の有効性を確認する方法ではありません。
 
 ## `inspect`
 
-Riebeckite が現在認識している状態を確認します。
+`inspect` は、Riebeckite が現在認識している状態を表示します。
 
 ```sh id="enl4wg"
 npm exec riebeckite inspect plugins
 ```
 
-Inspector は **read-only** です。
+インスペクターは意図的に読み取り専用です。ビルドを開始したり、キャッシュ、アセット、状態を書き込んだり、Vite/HonoX のビルドを呼び出したり、特殊な成果物を描画したり、問題を自動修正したりしてはいけません。とくに、実行しても次のことは行いません。
 
-実行しても、
+- ビルド
+- ビルド状態の書き込み
+- プラグインキャッシュの書き込み
+- アセットの出力
+- Vite / HonoX のビルド
+- 成果物の描画
+- 設定の自動修正
 
-- Build
-- Build State の書き込み
-- Plugin Cache の書き込み
-- Asset emission
-- Vite / HonoX Build
-- Artifact render
-- Config の自動修正
-
-を行いません。
-
-### Config
+### 設定
 
 ```sh id="c3x2ak"
 npm exec riebeckite inspect config
 ```
 
-解決済みの Configuration を確認します。
+解決済みの設定を表示します。
 
-### Plugins
+### プラグイン
 
 ```sh id="wnn5fz"
 npm exec riebeckite inspect plugins
 ```
 
-現在有効な Plugin を確認します。
+現在有効なプラグインを表示します。
 
-### Content
+### コンテンツ
 
 ```sh id="qqht5s"
 npm exec -- riebeckite inspect content --list
 ```
 
-現在の Content entry と解決済みの canonical permalink などを確認します。
+現在のコンテンツエントリと、解決済みの正規パーマリンクを表示します。特定の記事がどの URL として認識されているかを確認するのに役立ちます。
 
-特定の記事がどの URL として認識されているか確認したい場合に便利です。
-
-### Graph
+### グラフ
 
 ```sh id="s8q7lx"
 npm exec riebeckite inspect graph
 ```
 
-Content Graph を確認します。
+コンテンツグラフを表示します。WikiLinks、バックリンク、グラフ拡張を調査するときに使います。
 
-WikiLink、backlink、graph extension などを調査するときに利用できます。
-
-### Build
+### ビルド
 
 ```sh id="y2uc9f"
 npm exec riebeckite inspect build
 ```
 
-現在の incremental Build State を確認します。
+現在のインクリメンタルなビルド状態を表示します。状態が存在しない場合や壊れている場合でも、新しい状態を作成せず、その状態と理由を報告します。
 
-State が存在しない場合や壊れている場合も、新しい state を生成せず、その状態と理由を表示します。
+インスペクターの設計については [インスペクター](../framework/inspector.ja.md) を参照してください。
 
-Inspector の詳しい設計については [Inspector](../framework/inspector.ja.md) を参照してください。
+## コマンドが失敗したときの表示
 
-## Error の表示
-
-CLI command が失敗した場合は、可能な範囲で構造化されたエラー情報を表示します。
-
-主に、
-
-- Error 名
-- Message
-- Error code
-- File path
-- 修正方法の hint
-
-などです。
-
-原因となった error がネストしている場合は、
+コマンドの失敗時には、エラー名とメッセージ、および存在する場合はエラーの `code`、ファイルパス、修正方法の `hint` が表示されます。ネストした原因は `Caused by:` 行として出力されます。
 
 ```text id="bf6q65"
 Caused by:
 ```
 
-として表示されます。
+単に「失敗した」と伝えるのではなく、何が失敗し、どこを確認すべきかを明確にすることを目指しています。
 
-単に「失敗した」と表示するのではなく、**何が失敗し、どこを確認すればよいか**が分かることを目標としています。
+## よく使うワークフロー
 
-## 通常の Workflow
+壊れた WikiLink、参照先が見つからないアセット、公開境界の警告など、コンテンツの整合性に関する指摘は、ビルド経路または `@riebeckite/plugin-diagnostics` などのプラグインから得られます。Riebeckite が何を読み込んだかを確認するには `inspect content --list` と `inspect graph` を使い、描画後のコンテンツに関する問題には `build` または該当するプラグインの診断を実行してください。
 
-新しく Site を作る場合は、次のような流れになります。
+```sh
+pnpm exec riebeckite check
+pnpm exec riebeckite doctor
+pnpm exec riebeckite inspect plugins
+pnpm exec riebeckite build
+pnpm exec riebeckite deploy
+```
+
+新しいサイトでは、次のような流れになります。
 
 ```mermaid id="gr7mks"
 flowchart LR
@@ -649,27 +539,19 @@ flowchart LR
     Build --> Deploy
 ```
 
-`build` の後は `npm exec riebeckite deploy` で生成物を公開できます。
+`build` の後は、`npm exec riebeckite deploy` で出力を公開します。
 
-問題が発生した場合は、目的に応じて `doctor`、`inspect`、`profile` を使います。
+問題が発生したときは、目的に応じて `doctor`、`inspect`、`profile` を使います。
 
 ```mermaid id="9g1nvs"
 flowchart TD
-    Problem{"問題がある"}
+    Problem{"何か問題がある"}
 
     Problem -->|"設定がおかしい？"| Check["check"]
     Problem -->|"原因が分からない"| Doctor["doctor"]
-    Problem -->|"解決結果を確認したい"| Inspect["inspect"]
-    Problem -->|"Buildが遅い"| Profile["profile"]
-    Problem -->|"Incrementalを疑う"| Full["build --full"]
+    Problem -->|"解決済みの状態を確認したい"| Inspect["inspect"]
+    Problem -->|"ビルドが遅い"| Profile["profile"]
+    Problem -->|"インクリメンタルな再利用を疑う"| Full["build --full"]
 ```
 
-迷った場合は、
-
-**作るなら `init`、開発するなら `dev`、検証するまで `check`、診断するまで `doctor`、見るだけなら `inspect`、生成するまで `build`、公開するまで `deploy`、速度を調べるまで `profile`、状態を消すまで `clean`** 
-
-**作るなら `init`、開発するなら `dev`、検証するなら `check`、診断するなら `doctor`、見るだけなら `inspect`、生成するなら `build`、公開するなら `deploy`、速度を調べるなら `profile`、状態を消すなら `clean`**
-
-
-
-診断結果については [Diagnostics](../framework/diagnostics.ja.md)、非推奨 API からの移行については [Upgrading](../guides/upgrading.ja.md)、Build State については [Build System](../framework/build-system.ja.md) を参照してください。
+項目単位のコンテンツ出力が必要な場合は `inspect content --list`、リンクやグラフ拡張を調査する場合は `inspect graph` を選んでください。診断結果の解釈には [診断](../framework/diagnostics.ja.md)、非推奨 API の移行については [アップグレード](../guides/upgrading.ja.md)、状態の意味については [ビルドシステム](../framework/build-system.ja.md) を参照してください。

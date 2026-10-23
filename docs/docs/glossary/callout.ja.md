@@ -1,14 +1,14 @@
 ---
 date: 2026-10-14
-title: Callout
+title: コールアウト（Callout）
 sidebar:
   hidden: true
 ---
 
-# Callout
-コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`クラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
+# コールアウト（Callout）
+コンテナショートコードの`:::callout[Title]{type=warning}`または`:::note[Title]{type=info}`で作るコールアウトボックスです。`rr-callout rr-callout--{type}`のCSSクラスを持つ`div`として描画され、組み込みの既定タイトルを持ちます。
 
-## Calloutの記法
+## コールアウトの記法
 ```md
 :::callout[Warning]{type=warning}
 More content.
@@ -20,22 +20,23 @@ More content.
 This is a note callout.
 :::
 ```
-出力は`div.rr-callout.rr-callout--note`で、`data-callout`を持ちます。タイトルは組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）にフォールバックします。
+出力は`data-callout`を持つ`div.rr-callout.rr-callout--note`です。
+タイトルを省略した場合は、組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）が使われます。
 
-## Calloutの種類
-組み込みのCalloutの種類と既定タイトルです。
+## コールアウトの種類
+組み込みのコールアウトの種類と既定タイトルです。
 
-- `note`/ `note`→ 既定タイトル"Note"
-- `tip`→ 既定タイトル"Tip"
-- `warning`→ 既定タイトル"Warning"
-- `danger`→ 既定タイトル"Danger"
-- `bug`→ 既定タイトル"Bug"
-- `quote`→ 既定タイトル"Quote"
+- `note` → 既定タイトル "Note"
+- `tip` → 既定タイトル "Tip"
+- `warning` → 既定タイトル "Warning"
+- `danger` → 既定タイトル "Danger"
+- `bug` → 既定タイトル "Bug"
+- `quote` → 既定タイトル "Quote"
 
 ## タイトルとスタイルのカスタマイズ
-ショートコードに任意のタイトルを渡せます。`:::callout[My Title]{type=warning}`と書きます。
+ショートコードに任意のタイトルを渡せます：`:::callout[My Title]{type=warning}`。
 
-Pluginの登録時に`callout.defaultTitles`オプションで既定タイトルを上書きできます。
+プラグインの登録時に`callout.defaultTitles`オプションで既定タイトルを上書きできます。
 ```ts
 callout: {
   defaultTitles: {
@@ -44,8 +45,8 @@ callout: {
 }
 ```
 
-## Obsidian MarkdownのCallout連携
-`@riebeckite/plugin-obsidian-markdown`プラグインもObsidianスタイルのコールアウトブロッククォート(`> [!NOTE]`, `> [!WARNING]`, など)を解析し、同じ`rr-callout`CSSクラスに変換します。短縮構文を使わずにObsidian Markdownで書かれたコールアウトがRiebeckiteでも同じように描画されます。
+## Obsidian Markdownのコールアウトとの統合
+`@riebeckite/plugin-obsidian-markdown`プラグインは、Obsidian形式のコールアウトブロッククォート（`> [!NOTE]`、`> [!WARNING]`など）も解析し、同じ`rr-callout`のCSSクラスに変換します。これにより、ショートコードを使わずにObsidian Markdownで書いたコールアウトも、Riebeckiteで同じように描画されます。
 
 ## 関連用語
 - [[glossary/obsidian-vault|Obsidian Vault]]

@@ -1,12 +1,12 @@
 ---
 date: 2026-10-08
-title: Page System
+title: プラグインの独立ページ
 ---
-# Page System
+# プラグインの独立ページ
 
-Page System は、Plugin が **Site の route を直接追加せずに独立したページを提供する**ための仕組みです。
+プラグインが、サイトのルートを直接追加せずに独立したページを提供するための仕組みです。
 
-たとえば Plugin が、
+たとえば、次のようなページをプラグインから追加したいときに使います。
 
 ```text id="9twdpj"
 /explore
@@ -14,19 +14,17 @@ Page System は、Plugin が **Site の route を直接追加せずに独立し�
 /tags/example
 ```
 
-のような独自ページを提供したい場合に使用します。
+この仕組みがなければ、独立ページを持つプラグインを追加するたびに、HonoX のルートをサイト側へ書き足す必要があります。プラグインとサイトの結び付きが強くなり、プラグインを配布しても、使う側が同じ変更をしないと動きません。
 
-Page System がない場合、Plugin ごとに HonoX の route を Site Application へ追加する必要があります。
-
-Page System では Plugin は「この URL に、このページを提供する」という情報だけを公開し、実際の routing や document の描画は Site が担当します。
+そこでプラグインは「このURLに、この内容を表示する」という情報だけを公開し、実際のルーティングやHTML文書の組み立てはサイトが担当します。
 
 ```mermaid id="l1m0kn"
 flowchart LR
-    Plugin["Plugin"]
-    Page["Page Type<br/>path + body"]
-    Resolver["共通 Route Resolver"]
-    Site["Site Application"]
-    Browser["Browser"]
+    Plugin["プラグイン"]
+    Page["ページ種別<br/>URLと本文"]
+    Resolver["共通のルート解決処理"]
+    Site["サイトアプリケーション"]
+    Browser["ブラウザ"]
 
     Plugin --> Page
     Page --> Resolver
@@ -34,28 +32,24 @@ flowchart LR
     Site --> Browser
 ```
 
-`pageTypes` は通常の `RiebeckitePlugin` が持つ capability の1つです。
-
-Page 専用の別種類の Plugin を作るわけではありません。
+`pageTypes` は、通常の `RiebeckitePlugin` が持つ機能の1つです。ページ専用の別種類のプラグインを作るわけではありません。
 
 ## どんなときに使うか
 
-Page Type は、Plugin が**独立した URL を持つページ**を提供するときに使用します。
+独立したURLを持つページをプラグインから提供するときに使います。
 
-たとえば、
+たとえば、次のようなページです。
 
 - Garden Explorer
-- Plugin のレポート画面
-- Plugin が生成する一覧ページ
+- プラグインのレポート画面
+- プラグインが生成する一覧ページ
 - 独自の検索・閲覧ページ
 
-などです。
-
-一方、記事本文の中へ何かを表示するだけなら Page Type は必要ありません。
+一方、記事本文の中へ何かを表示するだけなら、ページ種別は必要ありません。
 
 ```mermaid id="a1h3fe"
 flowchart TD
-    Q{"Plugin が何を表示する？"}
+    Q{"プラグインが何を表示する？"}
 
     Q -->|"独立したURLを持つページ"| Page["pageTypes"]
     Q -->|"記事本文へ埋め込む"| Renderer["renderers"]
@@ -68,31 +62,29 @@ flowchart TD
     Renderer --> R3["Excalidraw"]
 ```
 
-Canvas、Bases、Excalidraw のように記事内へ埋め込む機能は `renderers` を使用します。
+Canvas、Bases、Excalidraw のように記事本文へ埋め込む機能は `renderers` を使います。
 
-## 誰が何を担当するか
+## 役割の分担
 
-Page System では、Plugin がページ全体を所有するわけではありません。
-
-責務を次のように分離します。
+プラグインがページ全体を所有するわけではありません。役割は次のように分かれます。
 
 | 層 | 責務 |
 | --- | --- |
-| Core | Page Type の取り決め、検証、path 列挙、解決、競合検出 |
-| Plugin | Page Type ID、公開 path、framework 非依存の HTML body |
-| HonoX Integration | 共通 route resolver、SSG parameter helper |
-| Site Application | route、document frame、metadata、HTML の描画 |
-| Theme | token と stable hook による見た目 |
+| Core | ページ種別の取り決め、検証、URLの列挙、解決、競合の検出 |
+| プラグイン | ページ種別ID、公開URL、フレームワークに依存しないHTML本文 |
+| HonoX Integration | 共通ルートの解決、SSGパラメータの生成 |
+| サイトアプリケーション | ルート、HTML文書の枠組み、メタデータ、HTMLの描画 |
+| テーマ | デザイントークンと安定したCSSフックによる見た目 |
 
 全体では次のような関係になります。
 
 ```mermaid id="7jv9lo"
 flowchart LR
-    Plugin["Plugin<br/>Pageを提供"]
-    Core["Core<br/>Page contract / resolution"]
-    Integration["HonoX Integration<br/>Routing / SSG"]
-    Site["Site<br/>Document / Rendering"]
-    Theme["Theme<br/>CSS"]
+    Plugin["プラグイン<br/>ページを提供"]
+    Core["Core<br/>ページの取り決めと解決"]
+    Integration["HonoX Integration<br/>ルーティングとSSG"]
+    Site["サイト<br/>HTML文書と描画"]
+    Theme["テーマ<br/>CSS"]
 
     Plugin --> Core
     Core --> Integration
@@ -100,9 +92,7 @@ flowchart LR
     Theme --> Site
 ```
 
-**route と document frame は Site Application が所有します**。
-
-Plugin はページの内容を提供しますが、
+**ルートとHTML文書の枠組みは、サイトアプリケーションが所有します**。プラグインはページの内容を提供しますが、次のようなHTML文書全体を生成するわけではありません。
 
 ```html id="snxwcb"
 <html>
@@ -111,38 +101,34 @@ Plugin はページの内容を提供しますが、
 <body>
 ```
 
-のような document 全体を生成するわけではありません。
+## 共通のルートへまとめる
 
-## Page System が解決する問題
-
-Page System 導入前は、独立ページを持つ Plugin ごとに Site 側へ専用 route が必要でした。
+以前は、独立ページを持つプラグインごとに、サイト側へ専用のルートが必要でした。
 
 ```mermaid id="5bcyu3"
 flowchart LR
-    Request["Request"]
-    Route["Plugin専用Route"]
-    Component["Plugin専用Component"]
-    Frame["Site Document Frame"]
+    Request["リクエスト"]
+    Route["プラグイン専用ルート"]
+    Component["プラグイン専用コンポーネント"]
+    Frame["サイトのHTML文書の枠組み"]
 
     Request --> Route
     Route --> Component
     Component --> Frame
 ```
 
-この方式では Plugin を追加するだけでは動かず、Site Application の route も変更する必要があります。
+この方式では、プラグインを追加するだけでは動かず、サイトアプリケーションのルートも変更しなければなりません。プラグインとサイトが強く結び付いてしまいます。
 
-つまり Plugin と Site の結合が強くなります。
-
-Page System では、すべての Plugin Page が共通 route resolver に参加します。
+そこで、すべてのプラグインページを共通のルート解決処理へ集めます。
 
 ```mermaid id="ic50kb"
 flowchart LR
-    Request["Request"]
-    Catch["Catch-all Route"]
+    Request["リクエスト"]
+    Catch["すべてを受け取るルート"]
     Resolver["resolveRiebeckiteRoute"]
-    Page["Plugin Page"]
-    Content["Content"]
-    Redirect["Redirect"]
+    Page["プラグインページ"]
+    Content["コンテンツ"]
+    Redirect["リダイレクト"]
 
     Request --> Catch
     Catch --> Resolver
@@ -152,64 +138,62 @@ flowchart LR
     Resolver --> Redirect
 ```
 
-これにより、新しい Plugin Page を追加するたびに HonoX route を追加する必要がありません。
+新しいプラグインページを追加しても、HonoXのルートを増やす必要はありません。
 
-## Build と Request の流れ
+## ビルド時とリクエスト時の流れ
 
-Page System には、大きく2つの処理があります。
+処理は、ビルド時とリクエスト時の2つに分かれます。
 
-### Build 時
+### ビルド時
 
-Build 時には、Plugin が提供する Page Type から静的生成する URL を集めます。
+ビルド時には、プラグインが提供するページ種別から、静的に生成するURLを集めます。
 
 ```mermaid id="4b2b3j"
 flowchart LR
-    Plugin["Plugin Page Type"]
-    Paths["Public Paths"]
-    Params["SSG Parameters"]
-    Build["Static Generation"]
+    Plugin["プラグインのページ種別"]
+    Paths["公開URL"]
+    Params["SSGパラメータ"]
+    Build["静的生成"]
 
     Plugin --> Paths
     Paths --> Params
     Params --> Build
 ```
 
-たとえば Plugin が、
+たとえばプラグインが次のURLを提供していれば、そのURLをSSGの生成対象にできます。
 
 ```text id="9ifm52"
 /report
 ```
 
-を提供していれば、その path を SSG の生成対象にできます。
+### リクエスト時
 
-### Request 時
-
-Request が来ると、共通 resolver がどの種類のページかを判断します。
+リクエストが届くと、共通の解決処理がページの種類を判断します。
 
 ```mermaid id="r8vl0u"
 flowchart TD
-    Request["Request"]
+    Request["リクエスト"]
     Resolver["resolveRiebeckiteRoute"]
 
     Request --> Resolver
 
     Resolver --> Q{"何が一致した？"}
 
-    Q -->|"Plugin Page"| Page["Plugin Page"]
-    Q -->|"Content"| Content["Content"]
-    Q -->|"Redirect"| Redirect["Redirect"]
-    Q -->|"なし"| NotFound["Not Found"]
+    Q -->|"プラグインページ"| Page["プラグインページ"]
+    Q -->|"コンテンツ"| Content["コンテンツ"]
+    Q -->|"リダイレクト"| Redirect["リダイレクト"]
+    Q -->|"なし"| NotFound["404"]
 ```
 
-Plugin Page が解決された場合、その body を Site の document frame 内へ描画します。
+プラグインページが見つかった場合は、その本文をサイトのHTML文書の枠組みの中へ描画します。
 
 ```mermaid id="brt8r0"
 flowchart LR
-    Page["Plugin Page<br/>body / metadata"]
-    Frame["Site Document Frame"]
-    Theme["Theme CSS"]
-    Client["Plugin Client Entry"]
-    Browser["Final Page"]
+    Page["プラグインページ<br/>本文とメタデータ"]
+    Frame["サイトのHTML文書の枠組み"]
+    Theme["テーマCSS"]
+    Client["プラグインのクライアントコード"]
+    Browser["完成したページ"]
 
     Page --> Frame
     Theme --> Frame
@@ -217,9 +201,9 @@ flowchart LR
     Frame --> Browser
 ```
 
-## Page Type を作る
+## ページの種類を定義する
 
-Page Type は Plugin の `pageTypes` に定義します。
+ページの種類（Page Type）は、プラグインの `pageTypes` に定義します。
 
 ```ts id="1ql4hf"
 import { definePlugin } from "@riebeckite/core";
@@ -248,59 +232,45 @@ export function reportPlugin() {
 }
 ```
 
-この例では、
+この例では、プラグインが `/report` というページを提供します。ページ本文には、公開されている記事の数を表示しています。
 
-```text id="1wlj0z"
-/report
-```
+プラグインがHonoXのコンポーネントやルートファイルを作る必要はありません。
 
-というページを Plugin が提供します。
+## 公開済みコンテンツだけを参照する
 
-ページ本文には、到達可能な記事数を表示しています。
-
-Plugin が HonoX component や route file を作る必要はありません。
-
-## Manifest と公開境界
-
-Page Type の `resolve` には `PluginPageContext` が渡されます。
-
-その中の、
+ページ種別の `resolve` には `PluginPageContext` が渡されます。その中の `PluginPageContext.manifest` は、解決済みのマニフェストです。
 
 ```ts id="dw2bby"
 PluginPageContext.manifest
 ```
 
-は解決済みの Manifest です。`entries` には `draft` と `scheduled` も含まれるため、Page の出力には使いません。
+`entries` には `draft` と `scheduled` も含まれるため、ページの出力には使わないでください。
 
-到達可能な URL を網羅する場合は `publicEntries`（`public` と `unlisted`）、読者へ一覧として見せる場合は `discoverableEntries`（`public` のみ）を使います。entry ごとに分岐が必要な場合だけ、解決済みの `entry.publishing` を読みます。
+公開URLをすべて列挙する場合は `publicEntries`（`public` と `unlisted`）を、読者へ一覧として見せる場合は `discoverableEntries`（`public` のみ）を使います。記事ごとに分岐が必要な場合だけ、解決済みの `entry.publishing` を読みます。
 
 ```mermaid id="s4t3xz"
 flowchart LR
-    All["All Content"]
-    Publish["Publish Boundary"]
+    All["すべてのコンテンツ"]
+    Publish["公開境界"]
     Public["publicEntries / discoverableEntries"]
-    Page["Plugin Page"]
+    Page["プラグインページ"]
 
     All --> Publish
     Publish --> Public
     Public --> Page
 ```
 
-非公開コンテンツを Plugin Page 側で独自に探索して表示する設計にはしません。
+ページ側で非公開コンテンツを独自に探して表示するのではなく、この公開境界を通してください。通常のページと同じ公開範囲を保てます。
 
-これによって Page System も通常の Site と同じ公開境界を維持できます。
+## ページ種別の識別子
 
-## Page Type ID
-
-各 Page Type には ID が必要です。
+各ページ種別にはIDが必要です。
 
 ```ts id="0evifc"
 id: "example.report"
 ```
 
-Page Type ID は、すべての Plugin を通して一意である必要があります。
-
-たとえば、
+IDは、すべてのプラグインを通して一意でなければなりません。次のように、プラグインや用途が分かる名前空間を付けると衝突を避けやすくなります。
 
 ```text id="tvplf6"
 riebeckite.garden-explorer
@@ -308,11 +278,9 @@ example.report
 example.search
 ```
 
-のように Plugin や用途が分かる namespace を持たせると衝突を避けやすくなります。
+## 公開するURL
 
-## Path
-
-静的なページは `paths` に公開 path を指定します。
+静的なページは、`paths` に公開URLを指定します。
 
 ```ts id="7rvyz2"
 paths: ["/report"]
@@ -327,53 +295,47 @@ paths: [
 ]
 ```
 
-動的ページを静的生成する場合は、SSG path を **`manifest.publicEntries` から導出**します。
+動的ページを静的生成する場合は、SSGのURLを **`manifest.publicEntries` から導出**します。ファイルシステムを独自に走査してURLを作るのではなく、Content Systemが解決した公開状態を利用してください。
 
-filesystem を独自に scan して path を作るのではなく、Content System が解決した公開状態を利用してください。
+## 同じURLに複数のページが一致する場合
 
-## Page Type の競合
-
-複数の Page Type が同じ URL に一致する可能性があります。
-
-その場合は `priority` を使って解決します。
+複数のページ種別が同じURLに一致することがあります。その場合は `priority` で優先順位を決めます。
 
 ```mermaid id="q0v69g"
 flowchart TD
     Path["/report"]
-    A["Page Type A<br/>priority: 10"]
-    B["Page Type B<br/>priority: 20"]
+    A["ページ種別A<br/>priority: 10"]
+    B["ページ種別B<br/>priority: 20"]
 
     Path --> A
     Path --> B
 
-    A --> Compare{"priority"}
+    A --> Compare{"priorityを比較"}
     B --> Compare
 
-    Compare -->|"B が高い"| Result["Page Type B"]
+    Compare -->|"Bが高い"| Result["ページ種別B"]
 ```
 
-最も高い `priority` を持つ Page Type が選ばれます。
+最も高い `priority` を持つページ種別が選ばれます。
 
-ただし、同じ最大 priority の Page Type が複数一致した場合は、どちらかを暗黙的に選びません。
+ただし、最大の `priority` を持つページ種別が複数一致した場合は、どちらかを暗黙に選びません。
 
 ```mermaid id="19y0sc"
 flowchart TD
-    Match["複数Page Typeが一致"]
-    Priority{"最大priorityは一意？"}
+    Match["複数のページ種別が一致"]
+    Priority{"最大のpriorityは1つ？"}
 
     Match --> Priority
 
-    Priority -->|Yes| Resolve["そのPage Typeを使用"]
-    Priority -->|No| Error["Conflict Error"]
+    Priority -->|"はい"| Resolve["そのページ種別を使う"]
+    Priority -->|"いいえ"| Error["競合エラー"]
 ```
 
-競合を明示的なエラーにすることで、Plugin の登録順などによって結果が変わることを防ぎます。
+競合をエラーにすることで、プラグインの登録順などによって結果が変わることを防ぎます。
 
-## HonoX Site へ接続する
+## HonoXサイトへ接続する
 
-Plugin Page を利用する HonoX Site には、共通の catch-all route が必要です。
-
-`create-riebeckite` などで生成された Site には、必要な構成があらかじめ含まれています。
+プラグインページを利用するHonoXサイトには、すべてのパスを受け取る共通ルートが必要です。`create-riebeckite` などで生成したサイトには、必要な構成があらかじめ含まれています。
 
 概念的には次のように接続します。
 
@@ -402,15 +364,13 @@ export default createRoute(
 );
 ```
 
-通常の Site 利用者が Plugin ごとにこの route を追加する必要はありません。
+サイトを利用する人が、プラグインごとにこのルートを追加する必要はありません。共通ルートがプラグインページをまとめて解決します。ルート `/` も、同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` が解決します。
 
-共通 route が Plugin Page をまとめて解決します。root `/` も同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` が解決します。
+## ページが返せる情報
 
-## Page が返せるもの
+プラグインのページは、HTML本文に加えて、必要に応じてページのメタデータを提供できます。
 
-Plugin Page は HTML body に加えて、必要に応じてページの metadata を提供できます。
-
-たとえば、
+たとえば、次のような情報です。
 
 ```text id="m7yad8"
 body
@@ -420,13 +380,11 @@ headTags
 language
 ```
 
-などです。
-
-ただし、Plugin がそれらを**どの位置へ描画するかまで決定するわけではありません**。
+ただし、プラグインが**どこへ描画するかまで決めるわけではありません**。
 
 ```mermaid id="h81lcz"
 flowchart LR
-    Plugin["Plugin"]
+    Plugin["プラグイン"]
 
     Plugin --> Body["body"]
     Plugin --> Title["title"]
@@ -434,82 +392,68 @@ flowchart LR
     Plugin --> Head["headTags"]
     Plugin --> Language["language"]
 
-    Body --> Site["Site Application"]
+    Body --> Site["サイトアプリケーション"]
     Title --> Site
     Description --> Site
     Head --> Site
     Language --> Site
 
-    Site --> Document["Final Document"]
+    Site --> Document["完成したHTML文書"]
 ```
 
-Site Application がこれらを受け取り、既存の document frame に反映します。
+サイトアプリケーションがこれらを受け取り、既存のHTML文書の枠組みへ反映します。そのため、プラグインのページでも、サイト全体のナビゲーション、ヘッダー、フッター、テーマをそのまま利用できます。
 
-このため、Plugin Page でも Site 全体の navigation、header、footer、Theme などをそのまま利用できます。
+## HTMLの安全性
 
-## HTML の安全性
+ページ種別の `body` はHTMLとして描画されます。そのためプラグインは、**自分で安全に生成できるHTMLだけを返す**必要があります。
 
-Page Type の `body` は HTML として描画されます。
-
-そのため Plugin は、**自分自身が安全に生成できる HTML だけを返す**必要があります。
-
-たとえば request parameter をそのまま HTML に埋め込むような処理は避けます。
+たとえば、リクエストの値をそのままHTMLへ埋め込まないでください。
 
 ```ts id="8m9qrl"
-// Avoid
+// 避ける例
 body: `<p>${untrustedRequestValue}</p>`
 ```
 
-信頼できない入力を扱う場合は、適切に escape / sanitize してから使用します。
+信頼できない入力を扱う場合は、適切にエスケープまたは無害化してから使います。最終的にHTMLをどう描画するかは、サイトアプリケーション側の境界で決まります。ページ種別がサイトのHTML安全性の方針を回避できる仕組みにはしません。
 
-最終的に HTML をどのように描画するかは Site Application の boundary で決定します。
+## テーマとの関係
 
-Page Type が Site の HTML safety policy を回避する仕組みにはしません。
-
-## Page Type と Theme
-
-Theme は Page Type ID を知る必要がありません。
-
-たとえば、
+テーマはページ種別のIDを知る必要がありません。たとえば、`example.report` 専用のテーマ処理を作るのではなく、次の仕組みで見た目を変えます。
 
 ```text id="z67p3o"
 example.report
 ```
 
-専用の Theme logic を作るのではなく、
-
-- semantic token
-- stable CSS hook
-- `data-*` attribute
-- CSS cascade
-
-を利用して見た目を変更します。
+- セマンティックトークン
+- 安定したCSSフック
+- `data-*` 属性
+- CSSのカスケード
 
 ```mermaid id="r00e0g"
 flowchart LR
-    Page["Plugin Page"]
-    Site["Site Document"]
-    Hooks["Stable Hooks / Tokens"]
-    Theme["Theme CSS"]
+    Page["プラグインページ"]
+    Site["サイトのHTML文書"]
+    Hooks["安定したフックとトークン"]
+    Theme["テーマCSS"]
 
     Page --> Site
     Site --> Hooks
     Theme --> Hooks
 ```
 
-これにより、新しい Page Type が追加されても Theme と Plugin を直接結合せずに済みます。
+これにより、新しいページ種別が増えても、テーマとプラグインを直接結び付けずに済みます。
 
-## Page System の境界
+## この仕組みが定める境界
 
-Page System では、**Plugin はページを提供するが、Application を所有しない**ことが最も重要です。
+最も重要なのは、**プラグインはページを提供するが、アプリケーションを所有しない**という点です。
 
 ```mermaid id="o60md4"
 flowchart LR
-    Plugin["Plugin<br/>何を表示する？"]
-    Core["Core<br/>どう表現・解決する？"]
-    Integration["Integration<br/>どうRouteへ接続する？"]
-    Site["Site<br/>どうDocumentとして描画する？"]
-    Theme["Theme<br/>どう見せる？"]
+    Plugin["プラグイン<br/>何を表示するか"]
+    Core["Core<br/>どう表現し、解決するか"]
+    Integration["Integration<br/>どうルートへ接続するか"]
+    Site["サイト<br/>どうHTML文書として描画するか"]
+    Theme["テーマ<br/>どう見せるか"]
 
     Plugin --> Core
     Core --> Integration
@@ -517,27 +461,25 @@ flowchart LR
     Theme --> Site
 ```
 
-責務は次のとおりです。
+それぞれの責務は次のとおりです。
 
 ```text id="9w3k80"
-Plugin
-  → Page の内容と公開 path を提供する
+プラグイン
+  → ページの内容と公開URLを提供する
 
 Core
-  → Page Type の共通 contract と解決規則を提供する
+  → ページ種別の共通の取り決めと解決規則を提供する
 
 HonoX Integration
-  → Page Type を routing / SSG へ接続する
+  → ページ種別をルーティングとSSGへ接続する
 
-Site Application
-  → route、document frame、metadata、HTML safety を所有する
+サイトアプリケーション
+  → ルート、HTML文書の枠組み、メタデータ、HTMLの安全性を所有する
 
-Theme
-  → Site の見た目を変更する
+テーマ
+  → サイトの見た目を変更する
 ```
 
-という関係になります。
+この境界があるため、プラグインはHonoXや特定のサイト構造に依存せず、インストールするだけで独立ページを提供できます。
 
-この境界によって Plugin は HonoX や特定 Site の構造に依存せず、インストールするだけで独立ページを提供できます。
-
-Page Type の全フィールドと実行時検証については [Plugin API](../reference/plugin-api.ja.md#page-type)、Site との接続については [HonoX Integration](./honox-integration.ja.md) を参照してください。
+ページ種別の全フィールドと実行時検証については [プラグインAPI](../reference/plugin-api.ja.md#プラグインが提供する独立ページ)、サイトとの接続については [HonoXとの統合](./honox-integration.ja.md) を参照してください。

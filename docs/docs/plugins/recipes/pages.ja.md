@@ -7,9 +7,9 @@ sidebar:
 ---
 # 独立したページを追加する
 
-`pageTypes` は HonoX のルートを増やさずにページを追加します。`paths` は静的生成する URL の一覧、`resolve` は一致する pathname のページ本体を返します。担当外のパスでは `null` を返します。
+`pageTypes` は HonoX のルートを増やさずにページを追加します。`paths` は静的生成する URL の一覧、`resolve` は一致したパス名のページ本体を返します。担当外のパスでは `null` を返します。
 
-このレシピは、frontmatter の `series` ごとに 1 ページを作ります。ノート側は `series: typescript` と書いて参加します。
+このレシピは、frontmatter の `series` ごとに 1 ページを作ります。ノートは `series: typescript` と書くだけで参加できます。
 
 ```ts
 import {
@@ -78,7 +78,7 @@ function seriesPath(series: string): string {
 }
 ```
 
-`manifest.discoverableEntries` は公開エントリだけを含みます。unlisted もページに含めたい場合は `manifest.publicEntries` を使ってください。`manifest.entries` は下書きも含むため、公開出力には使いません。
+`manifest.discoverableEntries` は公開エントリだけを含みます。unlisted（非公開）のエントリもページに含めたい場合は `manifest.publicEntries` を使ってください。`manifest.entries` は下書きも含むため、公開出力には使いません。
 
 ページ本体はサイトの文書フレームに挿入されます。`<html>`、`<head>`、2 つ目の `<body>` は出力しないでください。
 

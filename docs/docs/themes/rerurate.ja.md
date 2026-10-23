@@ -72,7 +72,7 @@ export default defineConfig({
 - [`@riebeckite/theme-tokyonight`](./tokyonight.ja.md)
 - [`@riebeckite/theme-gruvbox`](./gruvbox.ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 Rerurate の視覚表現をもとにした Theme です。
 

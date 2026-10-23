@@ -1,26 +1,38 @@
 ---
 date: 2026-10-14
-title: Persistent Cache
+title: 永続キャッシュ（Persistent Cache）
 sidebar:
   hidden: true
 ---
 
-# Persistent Cache
+# 永続キャッシュ（Persistent Cache）
 
-`.riebeckite/cache/content/vN`に保存される、Build間で再利用する処理済みのMarkdownの結果です。cacheに当たればウォームビルドになり、外れれば再処理を強制します。
+コンテンツごとのキャッシュで、処理済みのMarkdown結果をビルド間で `.riebeckite/cache/content/vN` に保存します。キャッシュに当たればウォームビルドになり、外れれば再処理が必要です。
 
-## cache keyの構造
+## キャッシュの内容
 
-content cacheのkeyは、`CacheKeyInputs`に定義された4つの入力からSHA-256ハッシュで計算します。このkeyは、cacheしたentryをBuild間で再利用できるかどうかを決めます。
+`.riebeckite/cache/content/v5` に保存されます。
+エントリのキーには、Markdownソース、パース済みfrontmatter、キャッシュスキーマ、処理パイプラインのフィンガープリントが含まれます。
+キャッシュされたコンテンツは、ワークスペースのパスではなく論理slugと正規化したソースパスを記録するため、同じオペレーティングシステム上の別のランナーやワークスペースへコピーできます。
+
+## ヒット、ミス、バイパス
+
+ビルドログには `Persistent content cache` の行で `hits`、`misses`、`bypasses` が出ます。
+コールドビルド（キャッシュなし）はすべてを最初から処理します。ウォームビルドは互換性のあるエントリを再利用します。
+コールドビルドを強制するには `.riebeckite/cache` を削除します。
+
+## キャッシュキーの構造
+
+コンテンツキャッシュのキーは、`CacheKeyInputs` 型で定義された4つの入力から計算したSHA-256ハッシュです。このキーによって、キャッシュ済みエントリをビルド間で再利用できるかが決まります。
 
 | 入力 | 説明 |
 | --- | --- |
 | `slug` | コンテンツソースのslug（例：`"getting-started"`）。 |
-| `source` | 衝突回避用の生Markdownソーステキスト。 |
-| `frontmatter` | 解析済みfrontmatter、`Date`値はISO文字列に正規化されます。 |
-| `pipelineFingerprint` | プラグイン、contentフィルタ、pipeline設定のハッシュ。 |
+| `source` | 衝突回避に使う生のMarkdownソーステキスト。 |
+| `frontmatter` | パース済みfrontmatter。`Date` 値はISO文字列に正規化されます。 |
+| `pipelineFingerprint` | プラグイン、コンテンツフィルタ、パイプライン設定のハッシュ。 |
 
-静的関数`computeContentCacheKey`は`CacheKeyInputs`オブジェクトを受け取り16進数のダイジェストを返します：
+静的関数 `computeContentCacheKey` は `CacheKeyInputs` オブジェクトを受け取り、16進数のダイジェストを返します。
 
 ```ts
 const key = computeContentCacheKey({
@@ -31,19 +43,18 @@ const key = computeContentCacheKey({
 });
 ```
 
-このkeyはその後スキーマバージョンと結合され、`.riebeckite/cache/content/v5`下でのファイル保存用の最終的なcache keyとなります。
+このキーはさらに（スキーマバージョンとともに）ハッシュされ、`.riebeckite/cache/content/v5` 以下にファイルとして保存するための最終的なキャッシュキーになります。
 
-## content cacheのディレクトリ
+## コンテンツキャッシュのディレクトリ
 
-処理済みのcontent entriesは`.riebeckite/cache/content/v5`下に保存されます。ディレクトリ構成は次のとおりです：
+処理済みのコンテンツエントリは `.riebeckite/cache/content/v5` 以下に保存されます。ディレクトリ構成は次のとおりです。
 
 ```
 .riebeckite/cache/content/v5/
   └─ <sha256-hex-digest>.json
 ```
 
-各JSONファイルは`PersistentContentCacheEntry`として
-`.riebeckite/cache/content/v5/<hash>.json`に書き込まれます：
+各JSONファイルは `PersistentContentCacheEntry` として `.riebeckite/cache/content/v5/<hash>.json` に書き込まれます。
 
 ```json
 {
@@ -60,13 +71,11 @@ const key = computeContentCacheKey({
 }
 ```
 
-`key`フィールドは最終的なスキーマ版hashの前に計算された中間のcache keyを格納しており、lookup時の診断とkey-mismatch検知を可能にします。
+`key` フィールドは、最終的なスキーマバージョンのハッシュを加える前の中間キャッシュキーを保存しており、参照時の診断とキー不一致の検出を可能にします。
 
-## `createPluginCache`と`createUnavailablePluginCache`
+## `createPluginCache` と `createUnavailablePluginCache`
 
-per-plugin runtime cacheは、ビルド実行中（build time）は`createPluginCache`によって作成され、
-productionやテストモードで書き込み可能なcacheがなくfall backするときは
-`createUnavailablePluginCache`が使用されます。
+プラグインごとの実行時キャッシュは、ビルド実行中（ビルド時）は `createPluginCache` が作成します。書き込み可能なキャッシュがない本番環境やテストモードでは `createUnavailablePluginCache` にフォールバックします。
 
 ```ts
 // Build time: full per-plugin cache with dependency tracking
@@ -82,11 +91,7 @@ const cache = createPluginCache({
 const unavailable = createUnavailablePluginCache();
 ```
 
-`createPluginCache`は`PluginCache`インスタンスを返し、
-plugin名と`cacheVersion`でキー付けされた`get`、`set`、`invalidate`操作をサポートします。
-`createUnavailablePluginCache`は常にmissを報告するスタブを返し、
-毎のビルドで再計算を強制します。この選択は`packages/core/src/pipeline.ts`の
-`options.isBuildTime`（`cacheFor`メソッド、533–543行）で決定されます。
+`createPluginCache` は `PluginCache` インスタンスを返し、プラグイン名と `cacheVersion` をキーにした `get`、`set`、`invalidate` 操作に対応します。`createUnavailablePluginCache` は常にミスを報告するスタブを返し、ビルドのたびに再計算を強制します。どちらを使うかは `packages/core/src/pipeline.ts` の `options.isBuildTime`（`cacheFor` メソッド、533〜543行）で決まります。
 
 ## 関連用語
 

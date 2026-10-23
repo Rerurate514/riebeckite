@@ -1,43 +1,47 @@
 ---
 date: 2026-10-14
-title: Output Dependency
+title: 出力依存関係（Output Dependency）
 sidebar:
   hidden: true
 ---
 
-# Output Dependency
+# 出力依存関係（Output Dependency）
 
-出力が何に依存するかの宣言で、output inventoryを前回の状態と比べたときにどの出力を再生成するかを決めます。contentの出力は`content`型の依存を持ち、Generated Outputは任意の型を持てます。
+出力依存関係は、コンテンツの変更によってどの出力ファイルが影響を受け、再生成が必要になるかを決めます。
 
-## 依存の宣言
+## 依存関係の種類
 
-各出力は依存の型と対象を持ちます。依存を宣言しない出力は`unknown`として扱われ、すべての出力の再生成を引き起こします。
+`content { slug }` — そのコンテンツが変わった。
+`tag { tag }` — そのタグを持つコンテンツが変わった。
+`folder { folder }` — そのフォルダ内のコンテンツが変わった。
+`global` — いずれかのコンテンツが変わった。
+`unknown` — 常に出力全体の再生成を引き起こす。
 
-## 依存宣言の詳細
+## 宣言
 
-### content依存(`content { slug }`)
+プラグインページでは `pageTypes[].outputDependencies`、ルートの `outputDependencies`、または `context.output.emit(..., { dependencies })` で宣言します。依存関係は可能な限り狭くし、`unknown` は範囲を特定できない場合にだけ使います。
 
-content entryが特定の`slug`で識別されるとき、そのcontentが変わるとすべての`content`型依存を持つoutputが影響を受けます。slugはcontentのpermalinkから導かれるslugと一致します。これはspecificなページが変わったときに個別に無効化を可能にする、最も一般的な依存タイプです。
+## 宣言の詳細
 
-### tag依存(`tag { tag }`)
+### コンテンツ依存関係（`content { slug }`）
 
-特定の`tag`を持つcontentが変わると、その`tag`依存を持つすべてのoutputが影響を受けます。個々のcontent slugを追跡せずに、particular tagを持つcontentの変更時に再生成をトリガーします。
+`slug` で識別されるコンテンツエントリが変わると、そのslugへの `content` 依存を持つすべての出力が影響を受けたものとして扱われます。slugはコンテンツのpermalinkから導かれるslugと一致します。最も一般的な依存関係の種類で、特定のページが変わったときに細かく無効化できます。
 
-### folder依存(`folder { folder }`)
+### タグ依存関係（`tag { tag }`）
 
-specified`folder`内のcontentが変わると、その`folder`依存を持つすべてのoutputが影響を受けます。content slugのディレクトリ構造によってフォルダパスが決定されます（例：`blog/post.md`は`blog`フォルダに属します）。
+指定した `tag` を持つコンテンツが変わると、そのタグへの `tag` 依存を持つすべての出力が影響を受けたものとして扱われます。個々のコンテンツslugを追跡しなくても、特定のタグを持つコンテンツが変更されたときに再生成できます。
 
-### global依存(`global`)
+### フォルダー依存関係（`folder { folder }`）
 
-どのcontentも変わると、`global`依存を持つすべてのoutputが影響を受けます。specificなslug、tag、またはfolderに絞り込めないoutputがcontent変更に依存するときに使用する、最も広範な依存タイプです。
+指定した `folder` 内のコンテンツが変わると、そのフォルダへの `folder` 依存を持つすべての出力が影響を受けたものとして扱われます。フォルダのパスはコンテンツslugのディレクトリ構造で決まります（例：`blog/post.md` は `blog` フォルダに属します）。
 
-### unknown依存(`unknown`)
+### グローバル依存関係（`global`）
 
-宣言されていない依存を持つGenerated Outputは`unknown`として扱われ、常に全出力の再生成をトリガーします。inputのスコープが他のどの依存型でも表現できないときのフォールバックです。`unknown`はインクリメンタルSSGを犠牲にして正しさを優先し、全出力再生成を強制します。
+いずれかのコンテンツが変わると、`global` 依存を持つすべての出力が影響を受けたものとして扱われます。最も広い依存関係の種類で、特定のslug、タグ、フォルダに絞り込めないコンテンツ変更に出力が依存する場合に使います。
 
-## 比較
+### 不明な依存関係（`unknown`）
 
-Buildはoutput inventoryを前回の成功した状態と比べ、影響する出力、変わっていない出力、削除された出力を求めます。依存の宣言がこの比較の精度を決めます。
+依存関係を宣言しない生成物は `unknown` となり、常に出力全体の再生成を引き起こします。入力範囲を他のどの依存関係の種類でも表せないときのフォールバックです。`unknown` は増分SSGを犠牲にして出力全体を描画し、ビルド性能と引き換えに正しさを確保します。
 
 ## 関連用語
 

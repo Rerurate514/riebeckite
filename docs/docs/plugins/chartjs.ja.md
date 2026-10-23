@@ -10,9 +10,9 @@ title: Chart.js
 
 ## 概要
 
-`chartjs()` は ` ```chart ` のコードブロックを `<figure>` に置き換え、Chart.js の設定を JSON として埋め込みます。グラフそのものはブラウザ側の `initChartJs` が `chart.js/auto` を動的 import して描画します。ビルドはマークアップだけを出力します。実行順は `order: -10` です。
+`chartjs()` は ` ```chart ` のコードブロックを `<figure>` に置き換え、Chart.js の設定を JSON として埋め込みます。グラフそのものはブラウザ側の `initChartJs` が `chart.js/auto` を動的に import して描画します。ビルドはマークアップだけを出力します。実行順は `order: -10` です。
 
-## 設定する
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -109,7 +109,7 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 | --- | --- | --- | --- |
 | `responsive` | `boolean` | `true` | `options.responsive` を指定していないグラフに適用する既定値 |
 | `caption` | `boolean` | `true` | キャプションを `<figcaption>` として表示する |
-| `className` | `string` | `"rb-chartjs"` | figure に付ける基底クラス |
+| `className` | `string` | `"rb-chartjs"` | `figure` 要素に付ける基底クラス |
 
 ## 診断
 
@@ -117,9 +117,9 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 
 ## クライアント側の描画
 
-Chart.js はビルド時にはバンドルされません。サイトのクライアントバンドルは共有 Diagram クライアントライフサイクルを通じて `initChartJs` を呼びます。`[data-diagram="chartjs"]` のうち未描画の figure を処理し、`chart.js/auto` を import します。ページを離れる際には各 Chart.js instance を破棄します。失敗した figure には `error` を設定し、ソースのフォールバックを開きます。
+Chart.js はビルド時にはバンドルされません。サイトのクライアントバンドルは、図を描画するクライアントの共通ライフサイクルを通じて `initChartJs` を呼びます。`[data-diagram="chartjs"]` のうち未描画の図を処理し、`chart.js/auto` を import します。ページを離れる際には各 Chart.js インスタンスを破棄します。失敗した図には `error` を設定し、ソースのフォールバックを開きます。
 
-## 制限
+## 制限事項
 
 - E2E のビルドは出力マークアップだけを検査します。実際の描画にはブラウザが必要です
 - グラフ設定は HTML 属性に直接埋め込まれるため、データセットはあまり大きくしないでください

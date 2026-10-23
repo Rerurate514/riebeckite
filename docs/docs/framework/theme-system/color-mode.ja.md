@@ -1,17 +1,15 @@
 ---
 date: 2026-10-08
-title: Color Mode
+title: カラーモード
 sidebar:
-  label: Color Mode
+  label: カラーモード
   order: 10
 ---
-# Color Mode
+# カラーモード
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Color Mode の指定と CSS での扱いを扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、カラーモードを扱います。
 
-## 5. Color Mode
-
-Theme は3種類の Color Mode を扱えます。
+## 3-1. カラーモード（colorMode）
 
 ```ts id="9qfwqg"
 type ThemeColorMode =
@@ -20,46 +18,15 @@ type ThemeColorMode =
   | "system";
 ```
 
-| Mode | 動作 |
+| モード | 動作 |
 | --- | --- |
-| `light` | Light 配色 |
-| `dark` | Dark 配色 |
-| `system` | OS の設定に追従 |
+| `light` | ライト配色 |
+| `dark` | ダーク配色 |
+| `system` | OSの設定に追従 |
 
-Theme は `data-theme` と Semantic Token を使って配色を切り替えます。
+`"system"` はOSの設定に追従します。テーマは `data-theme` 属性とセマンティックトークンを使い、個々のコンポーネントに色を直接埋め込まないようにします。
 
-個々の Component に Light / Dark の色を直接埋め込まないでください。
-
-
-## 6. Color Mode の CSS
-
-基本となる CSS は次の形です。
-
-```css id="m87m0s"
-/* Light */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"] {
-  /* ... */
-}
-
-/* Dark */
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-theme="dark"] {
-  /* ... */
-}
-
-/* System */
-@media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)
-  [data-theme-name="<name>"]
-  :not([data-theme]) {
-    /* ... */
-  }
-}
-```
-
-Server は `colorMode` が `"system"` 以外なら `<html>` に `data-theme` を出力します。
+サーバーは、カラーモードが `"system"` でない限り `<html>` に `data-theme` を出力します。
 
 ```html id="s6hs50"
 <html
@@ -68,18 +35,36 @@ Server は `colorMode` が `"system"` 以外なら `<html>` に `data-theme` を
 >
 ```
 
-`"system"` の場合は `data-theme` を出力しません。
+`"system"` のときは、この属性をまったく出力しません。
 
 ```html id="k3dd13"
 <html data-theme-name="example">
 ```
 
-この違いは重要です。
+この違いは重要です。実行時の配色は、次の3つのCSS状態で決まります。
 
+```css id="m87m0s"
+/* Light */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+  /* ... */
+}
 
-## 7. `system` では Attribute を削除する
+/* Dark */
+:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] {
+  /* ... */
+}
 
-実行時に Color Mode を変更する場合は、
+/* System */
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) {
+    /* ... */
+  }
+}
+```
+
+`colorMode` が `"system"` のとき、サーバーはこの属性を出力せず、メディアクエリが配色を決めます。
+
+**実行時の切り替えの取り決め**：`document.documentElement.dataset.theme` に `"light"` または `"dark"` を設定するか、`"system"` にする場合は属性を削除します。
 
 ```text id="h03gwl"
 light
@@ -92,43 +77,31 @@ system
   → data-theme を削除
 ```
 
-とします。
-
-たとえば、
+ダークへ切り替えるには、次のように設定します。
 
 ```ts id="iyf9ao"
 document.documentElement.dataset.theme =
   "dark";
 ```
 
-から System へ戻す場合は、
+システムへ戻すときは、属性を削除します。
 
 ```ts id="6t0p0r"
 delete document.documentElement.dataset.theme;
 ```
 
-とします。
-
-次のように空文字へ変更してはいけません。
+`data-theme=""` のように空文字を設定してはいけません。
 
 ```ts id="o2i8bp"
 document.documentElement.dataset.theme = "";
 ```
 
-これは、
+空の属性でも `[data-theme]` に一致します。
 
 ```html id="25ohm9"
 <html data-theme="">
 ```
 
-となり、依然として `[data-theme]` Selector に一致するためです。
+そのため、`:not([data-theme])` が成立しなくなり、システム用のメディアクエリが機能しません。
 
-その結果、
-
-```css id="qfrb4j"
-:not([data-theme])
-```
-
-が成立せず、System Mode の Media Query が機能しません。
-
-`@riebeckite/plugin-color-mode` がこの取り決めの参照実装です。
+`@riebeckite/plugin-color-mode` はこの取り決めの参照実装です（パッケージのREADMEを参照）。レンダリング前に実行されるインラインスクリプト `ColorModeScript`、`ColorModeToggle` コントロール、選択内容を `localStorage` に保存する `initColorMode` クライアントエントリで構成されています。

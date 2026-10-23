@@ -1,33 +1,33 @@
 ---
 date: 2026-10-14
-title: Logical Path
+title: 論理パス（Logical Path）
 sidebar:
   hidden: true
 ---
 
-# Logical Path
+# 論理パス（Logical Path）
 
-content rootを基準に表した、コンテンツファイルの位置です。Riebeckiteはlogical pathを安定して保ち、公開パスへは別に対応させます。
+コンテンツルートを基準に表した、コンテンツファイルの位置です。Riebeckiteは論理パスを安定して保ち、公開パスへは別にマッピングします。
 
-## logical path
+## 論理パス
 
-`content/notes/hello.md`のlogical pathは`notes/hello`です。content systemが扱うのはこのlogical pathで、公開URLと同じとは限りません。
+`content/notes/hello.md` の論理パスは `notes/hello` です。コンテンツシステムが扱うのはこの論理パスであり、公開URLと同じとは限りません。
 
-## 公開パスへの対応
+## 公開パスへのマッピング
 
-公開位置の解決がlogical pathをpublic pathに対応させます。folder pageやpermalinkの規則を使えば、ファイルを移動せずに対応を変えられます。
+公開先の解決が論理パスを[公開パス](./public-path.md)へマッピングします。[フォルダーページ](./folder-page.md)やpermalinkの規則を使えば、ファイルを移動せずにマッピングを変えられます。
 
-## 公開位置の種類
+## コンテンツ位置の型
 
-解決された公開位置は`ContentPublicLocation`(`packages/core/src/types/content_manifest.ts`)で型付けされています。以下のプロパティを持ちます：
+解決された公開位置は `ContentPublicLocation`（`packages/core/src/types/content_manifest.ts`）として型付けされています。その形は次のとおりです。
 
-- **`slug`** ：コンテンツのスラッグ。logical pathに一致します
-- **`permalink`** ：ノートの正規の公開URL
-- **`language`** ：言語コード（ローカライズされたコンテンツ用のオプション）
-- **`redirects`** ：`ContentRedirect`の配列。URLリダイレクト用のオプション
-- **`metadata`** ：追加メタデータ用の`Record<string, string>`のオプション
+- **`slug`** — 内部コンテンツのslug。論理パスと一致します
+- **`permalink`** — ノートの正規の公開URL
+- **`language`** — 任意の言語コード（多言語コンテンツ用）
+- **`redirects`** — URLリダイレクト用の任意の `ContentRedirect` 配列
+- **`metadata`** — 追加メタデータ用の任意の `Record<string, string>`
 
-example `ContentPublicLocation`:
+`ContentPublicLocation` の例：
 
 ```ts
 {
@@ -39,13 +39,11 @@ example `ContentPublicLocation`:
 }
 ```
 
-logical path自体は（例：`content/notes/hello.md`から`notes/hello`）content root内の相対パスです。location resolutionを通じて公開pathにマップされます。これには以下が関与します：
+論理パスそのもの（例：`content/notes/hello.md` に対する `notes/hello`）は、コンテンツルート内の相対パスです。公開先の解決を通じて公開パスに変換されます。解決には次の要素が関与します。
 
-- デフォルトマッピング: `slug`→ `/${slug}/`
-- `resolveContentLocations`hookによるplugin調整パス
-- ローカライズされたコンテンツ用のlocale prefix挿入
-- ディレクトリインデックスを異なるURLにマッピングするfolder pageルール
+- 既定のマッピング：`slug` → `/${slug}/`
+- `resolveContentLocations` フックによるプラグインのパス調整
+- 多言語コンテンツへのロケール接頭辞の挿入
+- ディレクトリのインデックスを別のURLへ対応させるフォルダーページの規則
 
-logical pathとpublic pathを分離することで、コンテンツファイルを移動させずにURL構造を変更できます。内部コンテンツのアイデンティティを安定させたまま、locale固有のルーティングが可能になります。
-
-公開位置の解決がlogical pathをpublic pathに対応させます。folder pageやpermalinkの規則を使えば、ファイルを移動せずに対応を変えられます。
+論理パスと公開パスを分けることで、コンテンツファイルを移動せずにURL構造を変えられます。また、内部のコンテンツIDを安定させたまま、ロケール別のルーティングが可能になります。

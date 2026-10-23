@@ -1,15 +1,15 @@
 ---
 date: 2026-10-14
-title: Diagnostics
+title: 診断（Diagnostics）
 sidebar:
   hidden: true
 ---
 
-# Diagnostics
-DiagnosticsはCoreとPluginが出す構造化された調査結果で、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを示します。Pluginは`addDiagnostics`で診断を報告し、Coreは`check`と`doctor`コマンドでまとめます。
+# 診断（Diagnostics）
+診断はCoreとプラグインが出力する構造化された検出結果で、何が問題か、どこで起きるか、どれくらい重要か、どう直すかを示します。プラグインは`addDiagnostics`で診断を報告し、Coreが`check`と`doctor`コマンド用にまとめます。
 
 ## 診断の構造
-診断は、何が問題か、どこで起きるか、どれくらい重要か（severity）、どう直すかを説明します。`check`は設定とPluginの妥当性に、`doctor`はより広い健全性に使います。
+診断は、何が問題か（what）、どこで起きるか（where）、どれくらい重要か（severity）、どう直すか（how to fix）を表します。設定とプラグインの妥当性には`check`、より広い健全性には`doctor`を使います。
 
 ## 報告
 ```ts
@@ -25,10 +25,10 @@ addDiagnostics(context) {
 ```
 
 ## 診断のフィールド
-- `id`: 安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
-- `severity`: `error`、`warn`、`info`のいずれか
-- `message`: 問題の人間が読める説明
-- `cause`: 診断を引き起こした原エラー（オプション）
+- `id`：安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
+- `severity`：`error`、`warn`、`info`のいずれか
+- `message`：問題を人間が読める形で説明したもの
+- `cause`：診断の原因となった元のエラー（任意）
 
 ## 関連用語
 - [[diagnostic-code|Diagnostic code]]

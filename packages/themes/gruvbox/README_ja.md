@@ -109,7 +109,7 @@ Riebeckite theme based on the Gruvbox color scheme by Pavel Pertsev.
 - [`@riebeckite/theme-sakura`](../sakura/README_ja.md)
 - [`@riebeckite/theme-tokyonight`](../tokyonight/README_ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 Gruvbox を基調とした暖かい配色の Theme です。
 

@@ -1,30 +1,30 @@
 ---
 date: 2026-10-14
-title: WikiLink
+title: WikiLink（ノート間リンク）
 sidebar:
   hidden: true
 ---
 
-# WikiLink
+# WikiLink（ノート間リンク）
 
-ノート同士をつなぎ、content graphに関係を作る`[[link]]`記法です。Riebeckiteはcontent indexを通して解決し、解決できないリンクはdiagnosticとして残します。
+ノート同士をつなぎ、コンテンツグラフに関係を作る `[[link]]` 記法です。Riebeckiteはコンテンツインデックスを通じて解決し、解決できないリンクは診断として残します。
 
 ## 記法
 
 ```md
-[[target]]              # 名前でリンク
-[[target|label]]        # ラベル付きでリンク
-[[target#Heading]]      # 見出しへリンク
-[[glossary/theme]]      # 曖昧な名前は明示パス
+[[target]]              # link by name
+[[target|label]]        # link with a label
+[[target#Heading]]      # link to a heading
+[[glossary/theme]]      # explicit path, for ambiguous names
 ```
 
 ## 解決
 
-対象は小文字化したうえでcontent indexから引きます。一致すればgraphの辺を作り、見つからなければ壊れたリンクとして描画し、diagnosticで報告します。
+対象は小文字化したうえで[コンテンツインデックス](./content-index.md)から引きます。一致すればグラフの辺を作り、見つからなければ壊れたリンクとして描画し、診断として報告します。
 
-## エイリアスとcontent indexによる解決
+## エイリアスとコンテンツインデックスによる解決
 
-Wikilinkの解決は`ContentManifest`の`contentIndex`（`packages/core/src/types/content_manifest.ts`）を通じて行われます。indexはすべてのキーをsmall文字化して構築されます。`byAlias`に登録されたエイリアスも解決の際に参照されるため、slugやpermalinkを変えずにエイリアスからノートへリンクできます。同じエイリアスキーを複数のエントリが主張する場合、そのキーは曖昧になり、`contentIndexAmbiguities`に診断が報告されます。
+WikiLinkの解決は `ContentManifest` の `contentIndex`（`packages/core/src/types/content_manifest.ts`）を通じて行われます。インデックスは `ContentIndexBuilder` が構築し、すべてのキーを小文字化します。`byAlias` に登録されたエイリアスも参照時に解決されるため、slugやpermalinkを変えずにエイリアスからノートを指せます。複数のエントリが同じエイリアスキーを共有すると、そのキーは曖昧になり、それを使うリンクは `contentIndexAmbiguities` の診断として報告されます。
 
 ```ts
 // From packages/core/src/types/content_manifest.ts
@@ -35,4 +35,4 @@ interface ContentManifest {
 }
 ```
 
-WikiLinkの`[[Target]]`は、まず小文字化した`"target"`について`contentIndex`を検索し、一意に一致すればそのノートへリンクします。キーが曖昧な場合は解決に失敗し、diagnosticが出力されます。見つからない場合はリンクのまま残り、解決できないリンクとしてdiagnosticが出力されます。
+WikiLink `[[Target]]` は、まず小文字化した `"target"` で `contentIndex` を調べます。単一の一致として見つかれば、そのノートへ解決します。キーが曖昧なら解決に失敗し、診断が出ます。まったく見つからなければリンクはそのまま残り、未解決リンクとして報告されます。

@@ -1,23 +1,23 @@
 ---
 date: 2026-10-14
-title: Lifecycle hook
+title: ライフサイクルフック（Lifecycle hook）
 sidebar:
   hidden: true
 ---
 
-# Lifecycle hook
+# ライフサイクルフック（Lifecycle hook）
 
-Pluginのlifecycle hookは、Content Managerが1回動く間に`setup`、`buildStart`、コンテンツ処理、`buildEnd`、そして逆順の`dispose`の順で実行されます。名前付きのcontent hookは、依存関係を解決したPluginの順序で加わります。
+プラグインのライフサイクルフックは、`ContentManager` ごとに1回、`setup`、`buildStart`、コンテンツ処理、`buildEnd`、`dispose`（解決済み順序の逆順）の順で実行されます。名前付きコンテンツフックは、解決済みのプラグイン順に参加します。
 
 ## ビルドライフサイクル
 
-フレームワークは1回のContent Managerにつき`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`を実行します。`buildEnd`はdiagnosticを集めた後の完成したmanifestを受け取る最後のhookです。
+フレームワークのライフサイクルは、`ContentManager` ごとに `setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` を1回実行します。`buildEnd` は、診断の収集後に完成したマニフェストを受け取る唯一の終端フックです。
 
 ```mermaid
 flowchart LR
   Setup["setup"]
   Start["buildStart"]
-  Work["Build / Content Processing"]
+  Work["ビルド / コンテンツ処理"]
   End["buildEnd"]
   Dispose["dispose"]
   Setup --> Start
@@ -28,17 +28,17 @@ flowchart LR
 
 ## 名前付きコンテンツフック
 
-content hook（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）は、依存関係を解決したPluginの順序で実行されます。hookが失敗すると、`PluginHookError`がPlugin、hook名、原因を示して報告します。
+コンテンツフック（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）は、解決済みのプラグイン順に実行されます。フックが失敗すると `PluginHookError` がスローされ、プラグイン、フック名、原因が示されます。
 
 ## フックの一覧と目的
-- `onConfigResolved`：configが解決された後に呼ばれる；最終的な解決済みオプションを読むのに適しています。
-- `onContentLoaded`：コンテンツがソースから読み込まれた後に呼ばれる；ここではmanifestレベルの情報を再構築しないでください。
-- `onPostParsed`：Markdown/HTMLがパースされた後に呼ばれる；パースされたコンテンツの変換に適しています。
-- `onPostProcessed`：コンテンツパイプラインの最後に呼ばれる；content graphの前に生成されたHTMLを修正する最後の機会です。
-- `onManifestCreated`：manifestが作成された後に呼ばれる；フルなmanifestにアクセスでき、manifestを調整したり生成データを追加したりできます。
+- `onConfigResolved`：設定の解決後に呼ばれます。最終的に解決されたオプションを読むのに適しています。
+- `onContentLoaded`：コンテンツをソースから読み込んだ後に呼ばれます。ここでマニフェストレベルの情報を作り直すのは避けてください。
+- `onPostParsed`：Markdown/HTMLのパース後に呼ばれます。パース済みコンテンツの変換に向いています。
+- `onPostProcessed`：コンテンツパイプラインの完了後に呼ばれます。コンテンツグラフへ渡す前に生成HTMLを変更できる最後の機会です。
+- `onManifestCreated`：マニフェストの作成後に呼ばれます。マニフェスト全体にアクセスでき、調整や生成データの追加ができます。
 
-## hook失敗
-hookが失敗すると、`PluginHookError`（`@riebeckite/core`からインポート）がスローされ、`message`でPluginとhook名が特定され、`cause`に原エラーが保持されます。content hookの場合、`path`で故障したファイル（例：`note.md`）が特定されます。
+## フックの失敗
+フックが失敗すると `PluginHookError`（`@riebeckite/core` からインポート可能）がスローされます。`message` にはプラグイン名とフック名、`cause` には元のエラーが入り、コンテンツフックの場合は `path` に問題のあるファイル（例：`note.md`）が示されます。
 
 ## 関連用語
 

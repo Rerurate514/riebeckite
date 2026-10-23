@@ -48,9 +48,9 @@ const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 
 `getRecentPosts()` は既定で 5 件を返し、`manifest.discoverableEntries` を読みます。unlisted・draft・予約公開のノートと `index` ノートは対象外で、`date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合は route を編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、Site が配置する component です。
 
-## Featured
+## 注目記事
 
-「Featured」は Core の概念ではなく、frontmatter のフラグか Tag で表します。`featured: true` を付けたノートを用意します。
+「注目記事」は Core の概念ではなく、frontmatter のフラグかタグで表します。`featured: true` を付けたノートを用意します。
 
 ```yaml
 ---
@@ -141,7 +141,7 @@ excludeSelf: true
 
 平坦な一覧ではなく月ごとに見せたい場合は、後述の Archive のレシピを使います。
 
-## Tag
+## タグ
 
 `taxonomy` は `tagsBasePath`（既定 `/tags`）に Tag 一覧を、`tagsBasePath/<slug>` に各 Tag のページを生成します。`starter` ではすでに登録されています。読者がたどれるよう Navigation にリンクを追加します。
 
@@ -157,7 +157,7 @@ taxonomy({ tagsBasePath: "/topics" }),
 
 各 Tag のページには RSS、Atom、JSON の feed も一緒に出力されます。Tag だけが欲しい場合は `folders: false` を指定します。
 
-## Folder
+## フォルダー
 
 Folder の形をした導線は2つあり、併用できます。
 
@@ -172,7 +172,7 @@ navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 
 prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効です。そのため、公開対象を含む Folder ごとに landing page が作られ、Folder 内の `README.md` や `index.md` はその本文になります。taxonomy の一覧を読者に見せる場合は `/folders` を Navigation に追加します。コンテンツから組み立てる Navigation は公開済みノートと Folder owner をたどります。
 
-## Series
+## シリーズ
 
 Series は `series` frontmatter キーを共有するノートの集まりです。次のものが必要な場合は、`@riebeckite/plugin-series` を install して登録します。各パートの前後ナビ、`basePath`（既定 `/series`）の一覧、`basePath/<name>` の Series ごとの landing ページです。
 
@@ -198,7 +198,7 @@ navigation({ secondary: [{ label: "Series", href: "/series" }] })
 
 prefix は `series({ basePath: "/guides" })` で変更できます。`basePath: ""` にすると生成ページを無効にし、export されている `buildSeriesIndex()` や `renderSeriesIndex()` で自分で描画できます。
 
-## Archive
+## アーカイブ
 
 `archive` は `basePath/<yyyy>/<mm>`（既定 `/archive`）に月ごとの一覧ページを、ページネーション付きで生成します。Plugin を追加します。
 

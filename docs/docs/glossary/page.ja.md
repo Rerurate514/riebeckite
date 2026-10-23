@@ -1,29 +1,25 @@
 ---
 date: 2026-10-14
-title: Page
+title: ページ（Page）
 sidebar:
   hidden: true
 ---
 
-# Page
+# ページ（Page）
 
-サイトがURLで提供する、ルーティング可能なコンテンツです。Markdownから作られる場合と、Pluginのpage typeから作られる場合があり、Integrationがrouteを通して描画します。
+サイトがURLで提供する、ルーティング可能なコンテンツです。ページはMarkdownから作られる場合と、プラグインのページ種別から作られる場合があり、インテグレーションがルートを通じて描画します。
 
-## MarkdownのページとPluginのページ
+## Markdownページとプラグインページ
 
-ほとんどのページはMarkdownから作られます。page typeを使うと、Pluginがindexや生成した一覧など、通常のMarkdownではないページを提供できます。
-
-## 描画
-
-Integrationがページのrouteを解決し、Applicationが最終的なHTMLを組み立てます。pluginはbody HTMLを提供し、サイトの枠組みではありません。
+ほとんどのページはMarkdownから作られます。[ページ種別](./page-type.md)を使うと、プラグインはインデックスや生成された一覧など、通常のMarkdownではないページを提供できます。
 
 ## 描画の詳細
 
-Integrationは`getPagePaths`と`getPageRoutes`(`packages/core/src/plugin/plugin_runtime.ts`)を通じてページのrouteを解決し、Applicationが最終的なHTMLを組み立てます。pluginはbody HTMLを提供し、サイトの枠組みではありません。
+インテグレーションは `getPagePaths` と `getPageRoutes`（`packages/core/src/plugin/plugin_runtime.ts`）を通じてページのルートを解決し、アプリケーションが最終的なHTMLを組み立てます。プラグインが提供するのはbody HTMLであり、サイトシェルではありません。
 
-Page Typeの場合は、`PluginPageType`（`packages/core/src/types/plugin_page.ts`）が`resolve`メソッドを提供し、`PluginPageContext`を受け取って`pathname`と`body`を持つ`PluginPage`を返します。Integrationはその後、サイトのdocument frameを通じて描画します。
+プラグインのページ種別では、`PluginPageType`（`packages/core/src/types/plugin_page.ts`）の `resolve` メソッドが `PluginPageContext` を受け取り、`pathname` と `body` を持つ `PluginPage` を返します。インテグレーションはこれをサイトのドキュメントフレームを通じて描画します。
 
-Page Typeの宣言例（Plugin内）：
+プラグインでのページ種別の宣言例：
 
 ```ts
 export default definePlugin({
@@ -35,14 +31,14 @@ export default definePlugin({
       resolve: async (context) => ({
         type: "my-plugin",
         pathname: "/my-page",
-        body: "<p>PluginからのHello</p>",
+        body: "<p>Hello from plugin</p>",
       }),
     },
   ],
 });
 ```
 
-applicationでの描画例:
+アプリケーションでの描画例：
 
 ```tsx
 <Page route={page.route} data={page.data} body={page.body} />

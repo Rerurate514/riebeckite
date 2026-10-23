@@ -1,12 +1,12 @@
 ---
 date: 2026-10-14
-title: Hook context
+title: フックコンテキスト（Hook Context）
 sidebar:
   hidden: true
 ---
 
-# Hook context
-hookに渡されるplugin contextには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなSingletonではなく、フレームワークのサービスを使います。
+# フックコンテキスト（Hook Context）
+フックに渡されるプラグインのコンテキストには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなシングルトンより、フレームワークのサービスを優先してください。
 
 ## PluginContextの形
 ```ts
@@ -22,10 +22,10 @@ type PluginContext = {
 };
 ```
 
-## hookごとの追加
-hookによっては`slug`、`markdown`、`content`、`manifest`、`entries`、locationの入力などのfieldが追加されます。必要なサービスは常にcontextから受け取ります。以下の表にhookごとの追加フィールドをまとめます：
+## フックごとの追加
+フックによっては`slug`、`markdown`、`content`、`manifest`、`entries`、公開先の入力などのフィールドが追加されます。フックごとの追加は次の表のとおりです。
 
-| hook | 追加フィールド |
+| フック | 追加フィールド |
 |---|---|
 | `onConfigResolved` | `config` |
 | `onContentLoaded` | `slug`、`content` |
@@ -33,7 +33,7 @@ hookによっては`slug`、`markdown`、`content`、`manifest`、`entries`、lo
 | `onPostProcessed` | `markdown`、`slug`、`content` |
 | `onManifestCreated` | `manifest`、`entries` |
 
-必要なサービスは常にcontextから受け取ります。
+グローバルなシングルトンを作るより、常にコンテキストからフレームワークのサービスを受け取ってください。
 
 ## 関連用語
 - [[plugin|Plugin]]

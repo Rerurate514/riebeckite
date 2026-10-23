@@ -4,74 +4,41 @@ title: テスト
 ---
 # テスト
 
-Riebeckite では、変更によって既存の動作が壊れていないことを自動テストで確認します。
+Riebeckite のテストは、Node.js 組み込みのテストランナー（`node:test`）と、TypeScript を直接実行する `tsx` で動かします。Jest や Vitest のような追加のテストフレームワークは使いません。
 
-基本のテスト環境は、
+手作業での確認が難しい大きな出力には **Golden File** を使います。期待する出力そのものをファイルとして保存しておけば、変更の影響を Pull Request の差分として確認できます。
 
-- Node.js 組み込みの `node:test`
-- TypeScript を直接実行する `tsx`
+実際のサイトを生成して検証する End-to-End テストは別に用意していて、`tests/external-site` にあります。E2E を動かす再利用可能なエンジンは `@riebeckite/test/e2e` にあり、このリポジトリ固有の Fixture、テスト対象パッケージの一覧、リポジトリ固有のアサーションは `tests/external-site` に置きます。
 
-です。
+## テストの種類には何があるか
 
-Jest や Vitest などの追加のテストフレームワークは使用しません。
-
-また、HTML や JSON のように手作業では確認しづらい大きな出力には **Golden File** を使用します。期待する出力そのものをファイルとして保存することで、変更内容を Pull Request の差分として確認できます。
-
-## テストの種類
-
-Riebeckite には大きく2種類のテストがあります。
+Riebeckite のテストは大きく2種類に分かれます。
 
 ```mermaid
 flowchart TD
-    Test["Riebeckite Tests"]
+    Test["Riebeckite のテスト"]
 
-    Test --> Unit["Package Tests<br/>Unit / Integration"]
+    Test --> Unit["パッケージのテスト<br/>単体 / 統合"]
     Test --> E2E["External Site E2E"]
 
-    Unit --> Package["各 package の test/*.test.ts"]
+    Unit --> Package["各パッケージの test/*.test.ts"]
     E2E --> External["tests/external-site"]
 ```
 
-このページで主に扱うのは、**各 Package に置くテスト**です。
-
-実際の外部 Site を生成して検証する End-to-End Test は、
-
-```text
-tests/external-site
-```
-
-にあります。
+このページで主に扱うのは、**各パッケージに置くテスト**です。External Site E2E は次のコマンドで実行します。
 
 ```sh
 pnpm test:e2e:external
 ```
 
-で実行できます。
-
-External Site E2E を動かす再利用可能な Engine は、
-
-```text
-@riebeckite/test/e2e
-```
-
-にあります。
-
-一方、
-
-- Riebeckite repository 固有の Fixture
-- テスト対象 Package の一覧
-- Repository 固有の Assertion
-
-は `tests/external-site` に置きます。
-
-第三者 Plugin を外部 Package の立場で検証する Fixture は `tests/plugin-dx` にあります（独立した pnpm workspace）。
+また、第三者プラグインを外部パッケージの立場で検証する Fixture は `tests/plugin-dx` にあります（独立した pnpm workspace です）。
 
 ```sh
 pnpm test:plugin-dx            # Public API だけで書いた Plugin の Unit Test
 pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install して検証
 ```
 
-`test:plugin-dx:external` は `@riebeckite/core` と fixture Plugin を `pnpm pack` します。これを monorepo の外の隔離 Site に install し、公開 Package だけで Plugin が動作することを確認します。外部配布する Plugin の回帰検知に利用できます。
+`test:plugin-dx:external` は `@riebeckite/core` と Fixture プラグインを `pnpm pack` し、monorepo の外にある隔離サイトへインストールします。公開済みパッケージだけでプラグインが動作することを確認するテストで、外部に配布するプラグインの回帰検知に使えます。
 
 ## テストを実行する
 
@@ -79,61 +46,51 @@ pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install し�
 
 | コマンド | 内容 |
 | --- | --- |
-| `pnpm test` | `test` Script を持つすべての Package をテスト |
-| `pnpm --filter <package> test` | 特定の Package だけテスト |
-| `pnpm test:update` | すべての Golden File を現在の出力で更新 |
-| `pnpm test:e2e:external` | External Site E2E を実行 |
-| `pnpm test:plugin-dx` | 外部 Package 視点の Plugin Fixture をテスト |
-| `pnpm test:plugin-dx:external` | packed tarball を隔離 Site へ install して Plugin を検証 |
-| `pnpm test:registry` | Scaffold の install の取り決めを npm 公開 artifact に対して実行 |
+| `pnpm test` | `test` スクリプトを持つすべてのパッケージをテストする |
+| `pnpm --filter <package> test` | 特定のパッケージだけをテストする |
+| `pnpm test:update` | すべての Golden File を現在の出力で更新する |
+| `pnpm test:e2e:external` | External Site E2E を実行する |
+| `pnpm test:plugin-dx` | 外部パッケージの視点でプラグイン Fixture をテストする |
+| `pnpm test:plugin-dx:external` | packed tarball を隔離サイトへインストールしてプラグインを検証する |
+| `pnpm test:registry` | Scaffold のインストールの取り決めを npm で公開済みの artifact に対して実行する |
 
-Scaffold の install の取り決めは、既定では **workspace を `pnpm pack` した artifact** を install して検証します。そのため、新しい Package を追加した branch でも publish 前に検証できます。`pnpm test:registry` は同じ取り決めを npm からの install に切り替え、公開済み artifact が解決できることを確認します。Release 後に実行してください。
+Scaffold のインストールの取り決めは、既定では **workspace を `pnpm pack` した artifact** をインストールして検証します。そのため、新しいパッケージを追加したブランチでも公開前に検証できます。`pnpm test:registry` は同じ取り決めを npm からのインストールに切り替え、公開済みの artifact が解決できることを確認します。リリース後に実行してください。
 
-通常は、変更した範囲に近いテストから実行してください。
-
-たとえば TOC Plugin だけを変更した場合は、
+通常は、変更した範囲に近いテストから実行します。たとえば TOC プラグインだけを変更した場合は次のとおりです。
 
 ```sh
 pnpm --filter @riebeckite/plugin-toc test
 ```
 
-とします。
-
-その後、必要に応じて Repository 全体の、
+その後、変更が他のパッケージに影響しうる場合は、リポジトリ全体のテストを実行します。
 
 ```sh
 pnpm test
 ```
 
-を実行します。
+## 特定の Golden File だけを更新する
 
-## Golden File を部分的に更新する
-
-1つの Package の Golden File だけを更新したい場合は、`UPDATE_GOLDEN=1` を設定してテストします。
-
-PowerShell では、
+1つのパッケージの Golden File だけを更新したい場合は、テストの実行前に `UPDATE_GOLDEN=1` を設定します。PowerShell では次のようになります。
 
 ```powershell
 $env:UPDATE_GOLDEN=1; pnpm --filter @riebeckite/plugin-toc test
 ```
 
-です。
+Golden File の更新は、テストを通すための作業ではありません。**新しい出力が正しいことを確認してから更新してください。**
 
-Golden File の更新は単にテストを通すために行うものではありません。
+## テストはどこに置くか
 
-**新しい出力が正しいことを確認してから更新してください**。
+各パッケージのテストは `test/*.test.ts` に置き、パッケージ自身が `test` スクリプトを宣言します。
 
-## テストの置き場所
-
-各 Package のテストは、
-
-```text
-test/*.test.ts
+```json
+{
+  "scripts": {
+    "test": "node --import tsx --test \"test/*.test.ts\""
+  }
+}
 ```
 
-に置きます。
-
-たとえば、
+たとえば、次のような構成です。
 
 ```text
 packages/plugins/example/
@@ -146,39 +103,11 @@ packages/plugins/example/
 └─ index.ts
 ```
 
-のような構成です。
+`test/` ディレクトリとテストファイルは、型チェック、パッケージのビルド、公開パッケージの `files` から除外されます。そのため、テストコードが利用者へ配布されることも、利用側のビルドに影響することもありません。
 
-Package 自身が `test` Script を持ちます。
+## 共有テストユーティリティはどこにあるか
 
-```json
-{
-  "scripts": {
-    "test": "node --import tsx --test \"test/*.test.ts\""
-  }
-}
-```
-
-`test/` とテストファイルは、
-
-- Type Check
-- Package Build
-- 公開 Package の `files`
-
-から除外されます。
-
-そのため、Riebeckite の利用者へテストコードが配布されたり、利用側の Build に影響したりしません。
-
-## 共有テストユーティリティ
-
-複数 Package から利用するテスト用機能は、
-
-```text
-@riebeckite/test
-```
-
-にあります。
-
-必要な Package の `devDependencies` に追加し、
+複数のパッケージから使うテスト用の機能は、workspace パッケージ `@riebeckite/test` にあります。必要なパッケージの `devDependencies` に追加し、公開 API からインポートします。
 
 ```ts
 import {
@@ -186,13 +115,11 @@ import {
 } from "@riebeckite/test";
 ```
 
-のように Public API から利用します。
+テスト専用の共通処理を各プラグインにコピーしないでください。
 
-テスト専用の共通処理を各 Plugin にコピーしないでください。
+## プラグインはどうテストするか
 
-## Plugin のテスト
-
-Plugin のテストは、確認したい範囲に合わせて次の4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
+プラグインのテストは、確認したい範囲に合わせて4つのレベルに分けられます。すべてを行う必要はありません。変更した振る舞いを確認できる最小のレベルから始めてください。
 
 ```text
 Level 1  Pure logic            通常の test runner でよい
@@ -201,13 +128,13 @@ Level 3  Content / lifecycle   ContentManager + In-memory ContentSource
 Level 4  外部パッケージ境界     packed tarball を隔離 Site へ install
 ```
 
-### Level 1: Pure Logic
+### Level 1: 純粋なロジック
 
-Option の解決、文字列変換、AST ヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でテストします。この段階では `@riebeckite/test` も `ContentManager` も不要です。
+Option の解決、文字列変換、AST ヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常のテストランナーでテストします。このレベルでは `@riebeckite/test` も `ContentManager` も必要ありません。
 
-### Level 2: Markdown / HTML Transformation
+### Level 2: Markdown / HTML の変換
 
-Markdown / HTML の変換は、公開されている `Pipeline` に Plugin を渡して検証できます。
+Markdown / HTML の変換は、公開されている `Pipeline` にプラグインを渡して検証できます。
 
 ```ts
 import { Pipeline } from "@riebeckite/core";
@@ -221,27 +148,25 @@ const { html } = await pipeline.execute(":::tip\nSave often.\n:::");
 assert.match(html, /<aside class="rr-tip">/);
 ```
 
-`Pipeline` の第1引数は content index、第2引数は permalink の `Map` です。単一 Document の変換なら空で構いません。第3引数は embed など他 Content を参照する場合だけ必要です。
+`Pipeline` の第1引数は content index、第2引数は permalink の `Map` です。単一のドキュメントを変換するだけなら、どちらも空の `Map` で構いません。第3引数は、プラグインが embed など他のコンテンツを解決する場合にだけ必要です。プラグインのテストで最もよく使うレベルです。
 
-`ContentManager` を使わずに変換だけを確認できるため、Plugin のテストで最もよく使う段階です。
+### Level 3: コンテンツとライフサイクル
 
-### Level 3: Content / lifecycle
+コンテンツの読み込み、フック、manifest、Page Type を検証する場合は、In-memory の `ContentSource` と `ContentManager` を使います。後述の「Content System をテストする」で示す形と同じです。`getProcessedContent()` はパイプラインとコンテンツフックを通した結果を返し、`getManifest()` は解決済みのプラグインを含む manifest を返します。
 
-Content の読み込み、hook、manifest、Page Type を検証する場合は `ContentManager` を使います。後述の「Content を扱うテスト」と同じ In-memory `ContentSource` の形で使います。`getProcessedContent()` は Pipeline と Content hook を通した結果を返します。`getManifest()` は解決済み Plugin を含む manifest を返します。
+### Level 4: 公開パッケージの境界
 
-### Level 4: 外部パッケージ境界
+配布するパッケージは、`pnpm pack` した tarball を monorepo の外の隔離サイトへインストールして検証します。これにより、公開エクスポートの不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
 
-配布する Package は、`pnpm pack` した tarball を monorepo の外の隔離 Site へ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
+このリポジトリでは `tests/plugin-dx` が実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
 
-Repository の `tests/plugin-dx` がこの検証の実例です。前述のとおり、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
+### `@riebeckite/test` は何を提供するか
 
-### `@riebeckite/test` の役割
+`@riebeckite/test` は、複数のパッケージで共有するテストヘルパーを提供します。Golden File の比較（`assertGolden` / `assertGoldenJson`）などが含まれますが、必須ではありません。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部サイトを生成して検証するリポジトリ向けのエンジンで、第三者のプラグインが通常使うものではありません。
 
-`@riebeckite/test` は複数 Package で共有するテスト Helper を提供します。Golden File の比較（`assertGolden` / `assertGoldenJson`）などが含まれます。必須ではありません。Level 1〜3 のほとんどは `node:test` と公開 Core API（`Pipeline` / `ContentManager`）だけで書けます。`@riebeckite/test/e2e` は外部 Site を生成して検証する Repository 向けの Engine で、第三者 Plugin が通常使うものではありません。
+## テストはどう書くか
 
-## 基本的なテストの書き方
-
-基本は、対象 Package の処理へ入力を渡して、その結果を検証します。
+基本は、対象パッケージの公開 API へ入力を渡し、その結果をアサートします。Riebeckite のプラグインのロジックには純粋関数として切り出せる処理が多いため、すべてのテストでビルドパイプライン全体を起動する必要はありません。
 
 ```ts
 import assert from "node:assert/strict";
@@ -257,25 +182,23 @@ test("renders nothing for a single root item", () => {
 });
 ```
 
-Riebeckite の Plugin Logic には純粋関数として切り出せる処理が多いため、すべてのテストで Build Pipeline 全体を起動する必要はありません。
-
 ```mermaid
 flowchart LR
-    Input["Input"]
+    Input["入力"]
     Function["対象の処理"]
-    Output["Output"]
-    Assert["Assertion"]
+    Output["出力"]
+    Assert["アサーション"]
 
     Input --> Function
     Function --> Output
     Output --> Assert
 ```
 
-小さい処理は、可能な限りこの形で直接テストします。
+小さい処理は、可能な限りこの形で直接テストしてください。
 
-## Content を扱うテスト
+## Content System をテストする
 
-Content System の動作を確認したい場合は、実際の Filesystem を用意するより、In-memory の `ContentSource` を利用するのが基本です。
+Content System の動作を確認したい場合は、実際のファイルシステムを用意するより、In-memory の `ContentSource` を使うのが基本です。
 
 ```ts
 const source = {
@@ -308,54 +231,40 @@ const manifest =
   await manager.getManifest();
 ```
 
-これによって、
-
 ```mermaid
 flowchart LR
     Source["In-memory<br/>ContentSource"]
     Manager["ContentManager"]
     Manifest["Manifest"]
-    Assert["Assertion"]
+    Assert["アサーション"]
 
     Source --> Manager
     Manager --> Manifest
     Manifest --> Assert
 ```
 
-という小さい範囲で Content System を検証できます。
+In-memory の `ContentSource` を `ContentManager` に渡し、得られた manifest を検証します。この小さい範囲で、Content System の動作を確認できます。
 
-実際の Site や Vite Build が必要な問題でなければ、テストのためだけに Application 全体を組み立てないでください。
+実際のサイトや Vite ビルドが必要な問題でなければ、テストのためだけにアプリケーション全体を組み立てないでください。
 
-## Golden File
+## Golden File はいつ使うか
 
-HTML や大きな JSON のように、個別の Assertion を大量に書くより出力全体を確認した方が分かりやすい場合は Golden File を使用します。
+HTML や大きな JSON のように、個別のアサーションを大量に書くより出力全体を確認したほうがわかりやすい場合は、Golden File を使います。`@riebeckite/test` には2つのヘルパーがあります。
 
-`@riebeckite/test` には2つの Helper があります。
-
-| Helper | 用途 |
+| ヘルパー | 用途 |
 | --- | --- |
-| `assertGolden(actual, goldenUrl)` | HTML、Markdown、Text、Serialized JSON |
-| `assertGoldenJson(value, goldenUrl)` | Object / JSON |
+| `assertGolden(actual, goldenUrl)` | HTML、Markdown、テキスト、シリアライズした JSON |
+| `assertGoldenJson(value, goldenUrl)` | オブジェクト / JSON |
 
-`assertGoldenJson()` は比較前に、
+`assertGoldenJson()` は比較の前に、値を次の形に整形します。
 
 ```ts
 JSON.stringify(value, null, 2)
 ```
 
-で整形します。
+## Golden File はどこに置くか
 
-## Golden File の配置
-
-期待値は、
-
-```text
-test/__golden__/
-```
-
-に置きます。
-
-たとえば、
+期待値は `test/__golden__/` に置きます。たとえば、次のような構成です。
 
 ```text
 test/
@@ -363,8 +272,6 @@ test/
 └─ __golden__/
    └─ toc.html
 ```
-
-です。
 
 テストからは `import.meta.url` を基準に URL を渡します。
 
@@ -385,13 +292,11 @@ test("renders the table of contents", () => {
 });
 ```
 
-絶対 Path や Current Working Directory に依存させないことが重要です。
+絶対パスやカレントディレクトリに依存させないことが重要です。
 
-## Golden File の比較
+## Golden File はどう比較されるか
 
-既定では出力を少し正規化してから比較します。
-
-具体的には、
+既定では、出力を少し正規化してから比較します。具体的には、CRLF / CR を LF に、末尾の複数の改行を1つの改行に統一します。
 
 ```text
 CRLF / CR
@@ -403,11 +308,7 @@ LF
 1つの改行
 ```
 
-へ統一します。
-
-これによって Windows / Linux や Editor の設定による不要な差分を防ぎます。
-
-バイト単位で厳密な比較が必要な場合は、
+これにより、Windows / Linux の違いやエディタの設定による不要な差分を防げます。バイト単位で厳密に比較する必要がある場合は、`{ normalize: false }` を渡します。
 
 ```ts
 assertGolden(
@@ -419,80 +320,61 @@ assertGolden(
 );
 ```
 
-とします。
+## Golden File が一致しないときはどうするか
 
-## Golden File が一致しない場合
-
-Golden File が、
-
-- 存在しない
-- 現在の出力と一致しない
-
-場合、テストは失敗します。
-
-出力の変更が意図したものであることを確認したら、
+Golden File が存在しない場合、または現在の出力と一致しない場合、テストは失敗します。出力の変更が意図したものであることを確認したら、次のコマンドで Golden File を更新します。
 
 ```sh
 pnpm test:update
 ```
 
-で Golden File を更新します。
-
 ```mermaid
 flowchart TD
-    Test["Test"]
-    Match{"Goldenと一致？"}
+    Test["テスト"]
+    Match{"Golden File と一致するか"}
 
     Test --> Match
 
-    Match -->|Yes| Pass["Pass"]
+    Match -->|Yes| Pass["成功"]
     Match -->|No| Review["差分を確認"]
 
-    Review --> Correct{"新しい出力が正しい？"}
+    Review --> Correct{"新しい出力は正しいか"}
 
     Correct -->|No| Fix["実装を修正"]
-    Correct -->|Yes| Update["Goldenを更新"]
+    Correct -->|Yes| Update["Golden File を更新"]
 
     Fix --> Test
     Update --> Test
 ```
 
-Golden File をコミットするのは意図的です。
-
-出力の変更を、
+Golden File をコミットするのは意図的です。出力の変更を、次のような差分として Pull Request 上でレビューできるようにするためです。
 
 ```diff
 - 以前の出力
 + 新しい出力
 ```
 
-として Pull Request 上でレビューできるようにするためです。
+**Golden File の更新そのものを修正として扱わず、なぜ出力が変わったのかを必ず確認してください。**
 
-**Golden File の更新そのものを修正として扱わず、なぜ出力が変わったのかを必ず確認してください**。
+## Node.js の Snapshot を使わない理由
 
-## Node の Snapshot を使わない理由
-
-Riebeckite では Node.js 組み込みの Snapshot Assertion、
+Riebeckite では、Node.js 組み込みの Snapshot アサーションを使っていません。Node.js の Snapshot アサーションを更新するには、次のフラグを使います。
 
 ```text
 --test-update-snapshots
 ```
 
-は使用していません。
+このフラグは Node.js 22.3 以降を必要とします。Riebeckite は Node.js 20.19 以降も対象としているため、独自の Golden File ヘルパーを用意しています。
 
-これは Node.js 22.3 以降を必要とします。
+## パッケージにテストを追加する
 
-Riebeckite は Node.js 20.19 以降も対象としているため、独自の Golden File Helper を使用します。
-
-## Package にテストを追加する
-
-まだテストを持っていない Package に追加する場合は、次の順番で設定します。
+まだテストがないパッケージに追加する場合は、次の順に設定します。
 
 ### 1. `tsx` を追加する
 
-Package の `devDependencies` に `tsx` を追加します。
+パッケージの `devDependencies` に `tsx` を追加します。
 
-### 2. `test` Script を追加する
+### 2. `test` スクリプトを追加する
 
 ```json
 {
@@ -504,65 +386,45 @@ Package の `devDependencies` に `tsx` を追加します。
 
 ### 3. 必要なら `@riebeckite/test` を追加する
 
-Golden Helper などを使う場合は、
+Golden File のヘルパーなどを使う場合は、`@riebeckite/test` を `devDependencies` に追加します。
 
-```text
-@riebeckite/test
-```
+### 4. プラグインのメタデータを更新する
 
-を `devDependencies` に追加します。
+プラグインのパッケージでは、`scripts/package_metadata.mjs` の `hasTests` にパッケージのディレクトリ名を追加します。
 
-### 4. Plugin Metadata を更新する
+### 5. パッケージのメタデータを検証する
 
-Plugin Package の場合は、
-
-```text
-scripts/package_metadata.mjs
-```
-
-の `hasTests` に Package Directory 名を追加します。
-
-### 5. Package Metadata を検証する
-
-Dependency を変更したら、
+依存関係を変更したら、次の2つのコマンドを実行します。
 
 ```sh
 pnpm install
 pnpm check:packages
 ```
 
-を実行します。
+`scripts/check_packages.mjs` は、各パッケージのメタデータを `scripts/package_metadata.mjs` の定義と比較します。たとえば、次のような問題を検出します。
 
-`scripts/check_packages.mjs` は Package の Metadata と `scripts/package_metadata.mjs` の定義を比較します。
-
-たとえば、
-
-- `test` Script が必要なのに存在しない
+- `test` スクリプトが必要なのに存在しない
 - `hasTests` に追加されていない
-- 期待する Metadata と一致しない
-
-といった問題を検出します。
+- 期待するメタデータと一致しない
 
 ## 何をテストするか
 
-テストでは、**決定的で再現可能な振る舞い**を優先します。
-
-特に次のような処理はテストに向いています。
+テストでは、**決定的で再現可能な振る舞い**を優先します。特に次のような処理が向いています。
 
 - Option の解決
-- Validation
-- Default Value
-- Permalink の解決
+- 検証
+- デフォルト値の扱い
+- permalink の解決
 - TOC の構築
-- Metadata の抽出
-- HTML Rendering
-- JSON Generation
+- メタデータの抽出
+- HTML のレンダリング
+- JSON の生成
 - 空の入力
-- Frontmatter の欠落
-- Slug の重複
-- 不正な Attribute
+- frontmatter の欠落
+- slug の重複
+- 不正な属性
 
-たとえば純粋関数なら、
+たとえば純粋関数なら、次のように同じ入力から常に同じ出力が得られるため、安定したテストを書きやすくなります。
 
 ```text
 同じ入力
@@ -572,11 +434,9 @@ pnpm check:packages
 常に同じ出力
 ```
 
-になるため、安定したテストを書きやすくなります。
+## どんなテストを避けるか
 
-## 避けるべきテスト
-
-次のような外部状態へ直接依存するテストは、可能な限り避けます。
+ネットワーク、実時刻、乱数、マシン固有の絶対パス、カレントディレクトリなどに依存するテストは可能な限り避けます。こうした外部の状態や予測できない値は、テストを非決定的にします。
 
 ```text
 Network
@@ -586,15 +446,13 @@ Machine-specific Absolute Path
 Current Working Directory
 ```
 
-たとえば、
+たとえば、テスト対象のコードの内部で次のように時刻を取得すると、テストを実行する時刻によって結果が変わります。
 
 ```ts
 const now = new Date();
 ```
 
-を処理の内部で直接取得すると、テストする時刻によって結果が変化します。
-
-代わりに必要な値を注入できるようにします。
+代わりに、必要な値を外から注入できるようにします。
 
 ```ts
 function createEntry(now: Date) {
@@ -602,7 +460,7 @@ function createEntry(now: Date) {
 }
 ```
 
-テストでは固定値を渡せます。
+テストでは固定値を渡します。
 
 ```ts
 const now =
@@ -612,11 +470,9 @@ const entry =
   createEntry(now);
 ```
 
-乱数なども同様です。
+乱数も同じです。テスト側で実際の時刻や乱数を予測するのではなく、**判断に必要な値を外から渡せる設計**にしてください。
 
-テスト側で実際の時刻や乱数を予測するのではなく、**決定に必要な値を外から渡せる設計**が重要です。
-
-## どの範囲までテストするか
+## どこまでテストするか
 
 変更した処理に最も近い、小さい範囲からテストします。
 
@@ -624,43 +480,35 @@ const entry =
 flowchart TD
     Change["変更"]
 
-    Change --> Pure["純粋関数で確認できる？"]
-    Pure -->|Yes| Unit["Unit Test"]
-    Pure -->|No| Content["ContentManagerが必要？"]
+    Change --> Pure["純粋関数で確認できるか"]
+    Pure -->|Yes| Unit["単体テスト"]
+    Pure -->|No| Content["ContentManager が必要か"]
 
     Content -->|Yes| Manager["In-memory ContentSource"]
-    Content -->|No| Package["Package Integration Test"]
+    Content -->|No| Package["パッケージの統合テスト"]
 
-    Package --> Site{"実Siteが必要？"}
+    Package --> Site{"実際のサイトが必要か"}
     Site -->|Yes| E2E["External Site E2E"]
 ```
 
-単純な Renderer の修正を確認するために External Site E2E を使う必要はありません。
+単純なレンダラーの修正を確認するために External Site E2E を使う必要はありません。逆に、次のような問題は単体テストだけでは十分ではないため、External Site E2E で確認します。
 
-逆に、
-
-- Package の配布形式
-- External Consumer からの Import
-- 実際の Site Build
-- Integration をまたぐ問題
-
-などは Unit Test だけでは十分ではないため、External Site E2E で確認します。
+- パッケージの配布形式
+- 外部の利用者からのインポート
+- 実際のサイトのビルド
+- 複数の Integration にまたがる問題
 
 ## 基本方針
 
-Riebeckite のテストでは、
-
-**変更した振る舞いを確認できる最小の範囲で、決定的なテストを書く**
-
-ことを基本にします。
+Riebeckite のテストでは、**変更した振る舞いを確認できる最小の範囲で、決定的なテストを書く**ことを基本にします。
 
 ```mermaid
 flowchart LR
-    Logic["Pure Logic"]
-    Unit["Unit Test"]
-    Content["Content Behavior"]
-    Manager["ContentManager Test"]
-    Package["Package Integration"]
+    Logic["純粋なロジック"]
+    Unit["単体テスト"]
+    Content["コンテンツの振る舞い"]
+    Manager["ContentManager のテスト"]
+    Package["パッケージの統合テスト"]
     E2E["External Site E2E"]
 
     Logic --> Unit
@@ -668,8 +516,6 @@ flowchart LR
     Package --> E2E
 ```
 
-大きな Build を毎回再現するのではなく、純粋関数や In-memory `ContentSource` で確認できる処理は小さくテストします。
+大きなビルドを毎回再現するのではなく、純粋関数や In-memory の `ContentSource` で確認できる処理は小さくテストします。パッケージ境界や実際の外部利用者に関わる問題は E2E で確認します。
 
-一方、Package 境界や実際の External Consumer に関係する問題は E2E で確認します。
-
-Golden File は、複雑な出力を「テストを通すための Snapshot」ではなく、**レビュー可能な期待出力**として扱ってください。
+Golden File は、テストを通すための Snapshot ではなく、**レビュー可能な期待出力**として扱ってください。

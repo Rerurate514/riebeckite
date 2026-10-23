@@ -8,7 +8,7 @@ title: Map
 
 [English](./map.md)
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -35,7 +35,7 @@ export default defineConfig({
 
 ### コードブロック
 
-ブロック本文は小さな key/value 形式です。`markers:` の後に `-` でマーカーを並べ、`lat, lng` だけの行は暗黙のマーカーになります。
+ブロック本文は簡単なキーと値の形式です。`markers:` の後に `-` でマーカーを並べ、`lat, lng` だけの行は暗黙のマーカーになります。
 
 ````markdown
 ```map
@@ -72,7 +72,7 @@ map:
 
 `lat`/`lng` は `latitude`/`longitude`、`coordinates: [lat, lng]` または `coordinates: "lat, lng"` も受け付けます。`label` は `title`/`place`/`name` も使えます。
 
-## どのように描画されるか
+## 描画の仕組み
 
 コードブロックまたは frontmatter の地図は `figure.rr-map` になります。
 
@@ -82,7 +82,7 @@ map:
 - `div.rr-map__static`: 常に利用できるフォールバック。`p.rr-map__place`、`ul.rr-map__markers` → `a.rr-map__link`（OpenStreetMap リンク）、任意の `img.rr-map__image`、`p.rr-map__attribution` を含みます
 - `details.rr-map__fallback`: 元のブロック本文を折りたたんで表示
 
-`initMap` は `[data-rr-map="pending"]` を探し、Leaflet を遅延して読み込みます。タイルレイヤーとマーカーを描画して `data-rr-map="rendered"` にします（このとき静的フォールバックは非表示になります）。失敗した場合は `data-rr-map="error"` になり、`details` を開き、静的フォールバックは表示されたままです。
+`initMap` は `[data-rr-map="pending"]` を探し、Leaflet を遅延読み込みします。タイルレイヤーとマーカーを描画して `data-rr-map="rendered"` にします（このとき静的フォールバックは非表示になります）。失敗した場合は `data-rr-map="error"` になり、`details` を開き、静的フォールバックは表示されたままになります。
 
 座標も `center` もないブロックは置き換えず、通常のコードブロックのまま残し、`source: "@riebeckite/plugin-map"` を持つ診断を出します。
 
@@ -105,7 +105,7 @@ map:
 
 ## タイルと帰属表示
 
-既定はキー不要の [OpenStreetMap 標準タイル](https://tile.openstreetmap.org/) です。小規模なサイトには十分ですが、OpenStreetMap の[タイル利用ポリシー](https://operations.osmfoundation.org/policies/tiles/)は。識別可能な referrer を前提とし、大量アクセスを禁止しています。一定のトラフィックがあるサイトは `tileUrl` を自前のタイルサーバーや商用プロバイダに向けてください。
+既定はキー不要の [OpenStreetMap 標準タイル](https://tile.openstreetmap.org/) です。小規模なサイトには十分ですが、OpenStreetMap の[タイル利用ポリシー](https://operations.osmfoundation.org/policies/tiles/)は、識別可能なリファラーを前提とし、一括取得や高負荷な利用を禁じています。一定のトラフィックがあるサイトは `tileUrl` を自前のタイルサーバーや商用プロバイダに向けてください。
 
 帰属表示は省略できません。`attribution` は Leaflet に渡され、静的フォールバックにも（プレーンテキストで）描画されます。プロバイダが要求するクレジットを常に表示してください。
 
@@ -113,11 +113,11 @@ map:
 
 ## クライアント側の描画
 
-`[data-rr-map="pending"]` の figure が 1 つ以上あるときだけ取得します。取得元は jsDelivr で、Leaflet（`leaflet.js` と `leaflet.css`）です。ライブラリを遅延して読み込むため、地図のないページは何も負担しません。地図のあるページでも、JavaScript を無効にしていたり CDN に到達できなかったりする場合があります。その場合は静的フォールバックが表示されます。
+`[data-rr-map="pending"]` の figure が 1 つ以上あるときだけ取得します。取得元は jsDelivr の Leaflet（`leaflet.js` と `leaflet.css`）です。遅延読み込みなので、地図のないページに負担はかかりません。地図のあるページでも、JavaScript が無効だったり CDN に到達できなかったりすれば、静的フォールバックが表示されます。
 
-`initMap(options?)` が受け取るオプションは次のとおりです。`tileUrl`、`attribution`、`minZoom`、`maxZoom`、`leafletScriptUrl`、`leafletStyleUrl`。さらに、事前読み込み済みの `runtime` も指定できます（テストで偽の Leaflet を注入する用途）。
+`initMap(options?)` が受け取るオプションは次のとおりです。`tileUrl`、`attribution`、`minZoom`、`maxZoom`、`leafletScriptUrl`、`leafletStyleUrl`。さらに、事前読み込み済みの `runtime` も指定できます（テストでモックの Leaflet を注入する用途）。
 
-## 出力のフック
+## 出力フック
 
 - `figure[data-rr-map]`: 状態（`pending` / `rendered` / `error`）
 - `figure[data-rr-map-payload]`: 解決済みの地図データ JSON

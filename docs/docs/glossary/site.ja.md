@@ -1,36 +1,36 @@
 ---
 date: 2026-10-14
-title: Site
+title: サイト（Site）
 sidebar:
   hidden: true
 ---
 
-# Site
+# サイト（Site）
 
-サイトのapplicationは、route、文書の枠組み、メタデータ、HTMLの安全性を持ちます。`@riebeckite/honox`のintegrationを通じてRiebeckiteのCoreの振る舞いをHonoXとViteにつなぎ、Pluginの提供物を最終的な公開UIにどう組み立てるかを決めます。
+サイトアプリケーションは、ルート、ドキュメントフレーム、メタデータ、HTMLの安全性を所有します。`@riebeckite/honox` インテグレーションを通じてRiebeckite Coreの振る舞いをHonoXとViteにつなぎ、プラグインの提供物を最終的な公開UIにどう組み立てるかを決めます。
 
-## Applicationの構成
+## アプリケーションの構成
 
-サイトは次のソースディレクトリを持ちます（integration、Theme、Pluginには含まれません）。
+サイトは次のソースディレクトリを持ちます（インテグレーション、テーマ、プラグインには含まれません）。
 
 ```text
-app/routes/       — URL の処理、ページ構成、redirect、レスポンスのメタデータ
-app/components/ — 公開 UI プリミティブの再利用可能な表示と構成
-app/islands/      — 対話的 UI とそのクライアント側の状態
-app/style.css     — 視覚的なトークン、レイアウト、タイポグラフィ、生成された拡張スタイルの読み込み
+app/routes/       — URL handling, page composition, redirects, response metadata
+app/components/ — Reusable site presentation and composition of public UI primitives
+app/islands/      — Optional interactive UI and its client-side state
+app/style.css     — Visual tokens, layout, typography, and imports of generated extension styles
 ```
 
-## Routeの解決
+## ルートの解決
 
-routeのresolver（`resolveRiebeckiteContentRequest`）が、content、Pluginページ、redirect、not-foundを順に解決します。
+ルートリゾルバ（`resolveRiebeckiteContentRequest`）が、コンテンツ、プラグインページ、リダイレクト、not-foundを順に解決します。
 
-Pluginは情報とUIの断片を提供し、どこに描画するかはサイトが決めます。
+プラグインは情報とUIの断片を提供し、どこに描画するかはサイトが決めます。
 
-## Plugin UI 組み立て
+## プラグインUIの組み立て
 
-Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの記事レイアウトやページテンプレートで直接描画されます。
+プラグインは `headTags` を提供し、データヘルパーとJSXコンポーネントを公開します。サイトは自分のTSXでこれらのコンポーネントを組み立て、それぞれを描画するか、どこに、何回描画するかを選びます。各プラグインのデータヘルパーは `PublicContentView`（または同様のフィルタ済みファサード）を受け取り、型付きモデルを返します。そのコンポーネントをサイトの記事レイアウトやページテンプレートが直接描画します。
 
-Plugin UI は明示的に composition します：
+プラグインUIは明示的に組み立てます。
 
 ```tsx
 const view = createPublicContentView(manifest);
@@ -39,38 +39,39 @@ const backlinks = await getBacklinks({ view, slug });
 <Backlinks backlinks={backlinks} />
 ```
 
-と
+および
 
 ```tsx
 const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-Site はレイアウトの配置を決定します。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+レイアウトの配置はサイトが決めます。プラグインのコンポーネントは、インテグレーションを通じて登録される任意のCSSとクライアントエントリも公開できます。
 
-## SiteConfig 構造
+## SiteConfigの構造
 
-`packages/core/src/types/site_config.ts` から全 `SiteConfig` インターフェースはサイトのメタデータを定義します：
+`packages/core/src/types/site_config.ts` の `SiteConfig` インターフェースがサイトのメタデータを定義します。
 
-| フィールド | タイプ | 説明 |
+| フィールド | 型 | 説明 |
 | --- | --- | --- |
-| `title` | `string` | `<title>` と見出しで使用されます |
-| `description` | `string \| undefined` | site description meta tag |
-| `author` | `string \| undefined` | メタデータの著者名 |
-| `baseUrl` | `string \| undefined` | サイトの基本URL（例：`https://example.com`） |
+| `title` | `string` | サイトタイトル。`<title>` と見出しで使う |
+| `description` | `string \| undefined` | サイトの説明メタタグ |
+| `author` | `string \| undefined` | 著者名。メタデータで使う |
+| `baseUrl` | `string \| undefined` | サイトのベースURL（例：`https://example.com`） |
 | `locale` | `string \| undefined` | ロケールコード（例：`en`、`ja`） |
-| `twitterSite` | `string \| undefined` | Twitter `@` ハンドル カード帰属 |
-| `defaultOgImage` | `feed \| undefined` | RSS/Atom フィードの設定（title、description、language） |
+| `twitterSite` | `string \| undefined` | Twitterカードの帰属を示す `@` ハンドル |
+| `defaultOgImage` | `string \| undefined` | ページごとの画像がないときの既定のog:image |
+| `feed` | `{ title?: string; description?: string; language?: string } \| undefined` | RSS/Atomフィードの設定 |
 
-各フィールドは以下のように使用されます：
-- **title**: 文書 `<title>` とページ見出しでレンダリングされます
-- **description**: `<meta name="description">` タグとして追加されます
-- **author**: 著者メタデータと schema.org マークアップに追加されます
-- **baseUrl**: 正規URLとsitemapの生成に使用されます
-- **locale**: `<html>` の `lang` 属性を設定し、フォーマットに影響を与えます
-- **twitterSite**: Twitter card メタデータに追加されます
-- **defaultOgImage**: ページごとの画像が提供されない場合の `og:image` のデフォルト値として使用されます
-- **feed**: サイトの RSS/Atom フィードを生成するために使用されます
+各フィールドは次のように使われます。
+- **title**：文書の `<title>` とページ見出しに描画されます
+- **description**：`<meta name="description">` タグとして追加されます
+- **author**：著者メタデータとschema.orgマークアップに追加されます
+- **baseUrl**：正規URLとサイトマップの生成に使われます
+- **locale**：`<html>` の `lang` 属性を設定し、書式にも影響します
+- **twitterSite**：Twitterカードのメタデータに追加されます
+- **defaultOgImage**：ページごとの画像がない場合の `og:image` の既定値として使われます
+- **feed**：サイトのRSS/Atomフィードの生成に使われます
 
 ```ts
 export interface SiteConfig {
@@ -91,7 +92,7 @@ export interface SiteConfig {
 
 ## フィールドのサイト全体での使用
 
-上記のフィールドは、`@riebeckite/honox` integration (`packages/core/src/`) を通じて最終的な公開 UI を組み立てるために流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響を与えます。
+上記のフィールドは `@riebeckite/honox` インテグレーション（`packages/core/src/`）を通じて流れ、最終的な公開UIを組み立てます。`title` と `description` は `<head>` に、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` はURL生成に、`locale` は `lang` 属性に反映されます。
 
 ## 関連用語
 

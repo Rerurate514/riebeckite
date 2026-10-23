@@ -7,21 +7,17 @@ sidebar:
 ---
 # プラグインの配布と検証
 
-このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、Plugin のパッケージ化、配布、検証を扱います。
+このページは[プラグイン作成の詳細](../plugin-system.ja.md)の一部で、プラグインのパッケージ化、配布、検証を扱います。
 
-## 22. Site 内だけで使う Plugin
+## 4. 配布用にパッケージ化する
 
-Plugin は npm に公開しなくても利用できます。
-
-Site 内に、
+プラグインはnpmへ公開しなくても利用できます。サイトの中に置いて`definePlugin()`で定義することもできます。
 
 ```text id="17msvn"
 site/
 └─ extensions/
    └─ local-plugin.ts
 ```
-
-のように置いて `definePlugin()` できます。
 
 ```ts id="mqm2gv"
 // site/extensions/local-plugin.ts
@@ -40,30 +36,16 @@ return definePlugin({
 });
 ```
 
-Site-local Plugin も Published Plugin と同じ、
+サイト内のプラグインも、公開されたプラグインと同じ取り決めを利用します。対象は依存関係の解決、パイプライン、フック、診断、レンダラー、ページ種別です。
 
-- Dependency Resolution
-- Pipeline
-- Hooks
-- Diagnostics
-- Renderer
-- Page Type
+`createStyleAsset()`と`createClientEntry()`には、パッケージのサブパスを明示して渡します。サイト内のプラグインでも、任意の名前で公開するパッケージでも、ホスト側のバンドラーが解決できるサブパスを指定してください。
 
-などの取り決めを利用します。
-
-`createStyleAsset()` と `createClientEntry()` には package の subpath を明示して
-渡します。Site-local Plugin でも任意名で公開する package でも、Host Bundler が
-解決できる subpath を指定してください。
-
-
-## 23. Package として配布する
-
-Plugin を再利用可能な Package として配布する場合は、たとえば次の構成にできます。
+再利用可能なパッケージとして配布する場合は、`packages/plugins/backlinks`を雛形にできます。推奨する構成は次のとおりです。
 
 ```text id="fs7fzp"
 packages/plugins/example/
-├─ index.ts
-├─ components/       # 必要な場合のみ
+├─ index.ts          # definePluginを呼ぶファクトリ。公開する部品を再エクスポートする
+├─ components/       # コンポーネント（必要な場合）
 ├─ client.ts         # 必要な場合のみ
 ├─ src/
 │  ├─ remark.ts
@@ -76,44 +58,7 @@ packages/plugins/example/
 └─ README.md
 ```
 
-Riebeckite repository 内では `packages/plugins/backlinks` が参考になります。
-
-公開 package では Build 済み ESM と型定義を publish し、`exports` をその成果物へ
-向け、`prepack` script で build します。Repository の build script は publish
-されないため、`esbuild`（`format: "esm"`、`packages: "external"`、
-`external: ["@riebeckite/*"]`）と `tsc --emitDeclarationOnly` による小さな build を
-用意してください。最小構成の `package.json` は
-[Repository 外で Plugin を配布する](../../reference/plugin-api.ja.md#repository-外で-plugin-を配布する)
-を参照してください。
-
-ただし、すべての Plugin に `client.ts`、`style.css`、`components/` が必要なわけではありません。
-
-必要なものだけを作成してください。
-
-
-## 24. Repository 外で配布する
-
-外部 Plugin Package は Riebeckite monorepo の内部構造に依存させません。
-
-基本的には、
-
-```text id="8pn4j3"
-@riebeckite/core
-```
-
-の Public API を利用します。
-
-Plugin 自身が持つ、
-
-```text id="svimxk"
-./client
-./components
-./style.css
-```
-
-などは、自身の `package.json` の `exports` で公開します。
-
-次のような Internal Import は使用しません。
+配布するプラグインは`@riebeckite/core`だけに依存し、`./client`、`./components`、`./style.css`などのサブパスを自身の`exports`で公開します。`@riebeckite/core/src/**`のような内部パスをimportしたり、monorepo内のパスを参照したりしないでください。
 
 ```ts id="y6jy1n"
 import {
@@ -121,25 +66,13 @@ import {
 } from "@riebeckite/core/src/...";
 ```
 
-monorepo 内にしか存在しない相対 Path にも依存しないでください。
+すべてのプラグインに`client.ts`、`style.css`、`components/`が必要なわけではありません。実際に使うものだけを作成してください。
 
+公開するときは、ビルド済みのESMと型定義を公開し、`exports`をビルド成果物へ向けます。`prepack`スクリプトでビルドし、パッケージングと公開のたびに新しい成果物を含めます。リポジトリのビルドスクリプトは公開されないため、小さなビルドを用意してください。`esbuild`（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）でエントリをまとめ、`tsc --emitDeclarationOnly`で型定義を出力します。最小構成の`package.json`は[リポジトリ外へプラグインを配布する](../../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する)を参照してください。
 
-## 25. ESM
+NodeNext / ESMのパッケージでは、ビルド後もNode.jsがimportを解決できる必要があります。開発時のTypeScriptローダーが拡張子なしのimportを解決できている状態に依存しないでください。パッケージの正しさはソースコードだけでなく、**ビルド後の配布形式でも確認する**必要があります。
 
-NodeNext / ESM Package では、Build 後の JavaScript を Node.js が実際に解決できる必要があります。
-
-Development 時だけ TypeScript Loader が、
-
-```text id="5k12um"
-extensionless import
-```
-
-などを解決できている状態に依存しないでください。
-
-Package の正しさは Source Code だけではなく、**Build 後の配布形式でも確認する**必要があります。
-
-
-## 26. Plugin を検証する
+## 5. 検証する
 
 実装後は、小さい範囲から順番に確認します。
 
@@ -155,19 +88,19 @@ flowchart LR
     Inspect --> Build
 ```
 
-まず Configuration と Plugin Resolution を確認します。
+まず設定とプラグインの解決を確認します。
 
 ```sh id="bgxy4d"
 pnpm exec riebeckite check
 ```
 
-次に Project の Health を確認します。
+次にプロジェクト全体の状態を確認します。
 
 ```sh id="8bfj5k"
 pnpm exec riebeckite doctor
 ```
 
-解決された Plugin を確認します。
+解決されたプラグインを確認します。
 
 ```sh id="ad0h9x"
 pnpm exec riebeckite inspect plugins
@@ -179,12 +112,12 @@ pnpm exec riebeckite inspect plugins
 pnpm exec riebeckite build
 ```
 
-Plugin が解決されない場合は、まず `check` の出力から、
+プラグインが解決されない場合は、まず`check`の出力から次の点を確認してください。
 
-- Import Error
-- Missing Capability
-- Duplicate Provider
-- Dependency Cycle
-- Invalid Options
+- import時のエラー
+- 不足しているケイパビリティ
+- 重複した提供者
+- 依存関係の循環
+- 不正なオプション
 
-などを確認してください。
+あわせて、本当にプラグインが必要かも考えてください。設定やアプリケーション側の実装だけで足りる場合もあります。

@@ -114,13 +114,13 @@ flowchart TD
     Framework --> Development["Development<br/>本体開発"]
 ```
 
-### Getting Started
+### はじめに
 
 初めて Riebeckite を使う人向けのページです。
 
 サイトの作成から最初の記事、プリセット、デプロイまでを扱います。
 
-### Guides
+### ガイド
 
 具体的な目的を達成するための手順です。
 
@@ -260,4 +260,4 @@ Riebeckite本体を変更する
 
 です。
 
-Coding Agent 向けの短い開発ルールは [agents](./agents/README.md) に分けています。
+コーディングエージェント向けの短い開発ルールは [agents](./agents/README.md) に分けています。

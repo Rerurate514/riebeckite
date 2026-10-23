@@ -10,10 +10,10 @@ Riebeckite 向けの、ストレージや実行環境に依存しないアクセ
 
 ## 設計
 
-- `AnalyticsEvent` は型付きの `page_view` を持ち、プロバイダ固有イベントの union に拡張できます。
-- `AnalyticsProvider` は対応機能を明示し、`capture` と `query` を提供します。コンテンツ別 PV、人気コンテンツ、任意の ISO 8601 期間を扱えます。
-- 未対応クエリは `UnsupportedAnalyticsQueryError` で明示されます。テスト・ローカル用途には `MemoryAnalyticsProvider` を用意しています。
-- 認証情報・ストレージ・ランタイムバインディングはプロバイダ内部の非公開設定です。ブラウザへ渡すのは `AnalyticsPublicConfig` だけです。
+- `AnalyticsEvent` は型付きの `page_view` を持ち、プロバイダ固有のイベント型を加えた union 型へ拡張できます。
+- `AnalyticsProvider` は対応する機能（capability）を明示し、`capture` と `query` を提供します。クエリはコンテンツ別のページビューと人気コンテンツを対象にし、ISO 8601 形式の期間を任意で指定できます。
+- 未対応のクエリは `UnsupportedAnalyticsQueryError` で明示されます。テストやローカル用途には `MemoryAnalyticsProvider` を用意しています。
+- 認証情報・ストレージ・ランタイムバインディングなどのプロバイダ設定は、プロバイダの内部に留まります。ブラウザへ渡すのは `AnalyticsPublicConfig` だけです。
 
 ## 使い方
 
@@ -30,11 +30,11 @@ export default {
 };
 ```
 
-`collectorUrl` は公開してよい収集先 URL です。相対パスまたは HTTP(S) URL を指定し、JSON の `POST` を受け付ける収集側を用意します。将来のプロバイダパッケージは、非公開ランタイム設定を使ってその収集側を提供できます。
+`collectorUrl` は公開してよい収集先 URL です。相対パスまたは HTTP(S) URL を指定し、JSON の `POST` を受け付けるコレクターを用意します。将来のプロバイダパッケージは、非公開のランタイム設定を使ってこのコレクターを提供できます。
 
-## ブラウザでの動作
+## ブラウザでの計測
 
-Core の安定コンテンツ ID（frontmatter の `id`）がある公開コンテンツにだけ識別子マーカーを出力します。汎用 `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
+Core の安定コンテンツ ID（frontmatter の `id`）を持つ公開コンテンツにだけ、コンテンツ ID を示すマーカーを出力します。汎用の `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
 
 ```json
 {
@@ -46,9 +46,9 @@ Core の安定コンテンツ ID（frontmatter の `id`）がある公開コン�
 }
 ```
 
-`path` と `lang` は補助情報であり、ID ではありません。安定 ID のないコンテンツは誤って計測しません。ビルド時・SSR 時は何もせず、同じドキュメント内での初期化も冪等です。SPA ナビゲーションを有効にした場合は、成功した Route Transition ごとに追加で Event を送信します。
+`path` と `lang` は補助的なメタデータであり、ID ではありません。安定 ID を持たないコンテンツは計測しません。ビルド時と SSR 時は何もせず、同じドキュメント内での初期化も冪等です。SPA ナビゲーションを有効にすると、ルート遷移が成功するたびに追加のイベントを送信します。
 
-コンテンツ ID は執筆側の責務です。公開ノート間での `id` の重複は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
+コンテンツ ID は執筆側の責務です。公開ノート間で `id` が重複している場合は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
 
 ## プロバイダの取り決め
 
@@ -64,7 +64,7 @@ const result = await provider.query({
 
 ## 診断
 
-`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定 content ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けを `check` / `doctor` / build の診断で確認できます。
+`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定コンテンツ ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けは `check` / `doctor` / ビルドの診断で確認できます。
 
 ## 主なエクスポート
 

@@ -294,7 +294,7 @@ frontmatter の `visibility` と `publishAt` は、この設定より優先さ�
 
 これらの値は、それぞれ `--rb-*` 形式の CSS カスタムプロパティとして出力されます。
 
-詳しい対応関係は [Design tokens](./theme-api.ja.md#design-tokens) を参照してください。
+詳しい対応関係は [Design tokens](./theme-api.ja.md#デザイントークン) を参照してください。
 
 `theme.tokens` は Theme の stylesheet より後に、layer に属さない `:root { --rb-* }` として出力されます。そのため、ここで設定した値は Light、明示 Dark、System Dark のいずれでも Theme の値を上書きします。Theme の CSS をコピーするのではなく、アクセントや surface はここで調整してください。
 
@@ -392,7 +392,7 @@ cache: {
 
 キャッシュを無効化したり保存先を変更したりしても、最終的に生成されるサイトの内容は変わりません。変わるのは主にビルド時間です。
 
-詳しくは [Build cache](./configuration/cache.ja.md#build-cache) を参照してください。
+詳しくは [Build cache](./configuration/cache.ja.md#ビルドキャッシュ) を参照してください。
 
 ## Config の検証
 

@@ -8,7 +8,7 @@ title: Graphviz
 
 [English](./graphviz.md)
 
-## 設定する
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -25,6 +25,8 @@ export default defineConfig({
 });
 ```
 
+このプラグインは `order: -10` で実行されます。
+
 ````markdown
 ```dot
 // caption: リクエストの流れ
@@ -36,13 +38,13 @@ digraph {
 ```
 ````
 
-コードブロックの info 文字列は `dot` のほかに `graphviz` も受け付けます。
+コードブロックの言語指定では `dot` のほかに `graphviz` も使えます。
 
-## どのように描画されるか
+## 描画の仕組み
 
 ` ```dot ` のコードブロックは `figure.rb-graphviz` に置き換わります。内容は次のとおりです。
 
-- `figcaption.rb-graphviz__caption`：コードブロックの title、またはソース内の `// caption: ...` 行から取得
+- `figcaption.rb-graphviz__caption`：コードブロックの `title`、またはソース内の `// caption: ...` 行から取得
 - `div.rb-graphviz__canvas`：図本体（`role="img"`、キャプションがあればそれを参照）
 - `details.rb-graphviz__fallback`：元の DOT 記法を折りたたみ表示
 
@@ -50,7 +52,7 @@ digraph {
 
 不正な DOT は `invalid-diagram`、WASM・描画環境の問題は `renderer-error` として、いずれも `source: "@riebeckite/plugin-graphviz"` 付きで診断します。
 
-各 figure には安定したフックが付きます。
+各 `figure` 要素には安定したフックが付きます。
 
 - `class="rb-graphviz"`
 - `data-graphviz="rendered" | "pending" | "error"`
@@ -67,7 +69,7 @@ digraph {
 | --- | --- | --- | --- |
 | `render` | `"build" \| "client" \| "both"` | `"build"` | どのタイミングで描画するか |
 | `engine` | `"dot" \| "neato" \| "fdp" \| "sfdp" \| "circo" \| "twopi"` | `"dot"` | Graphviz のレイアウトエンジン |
-| `caption` | `boolean` | `true` | title または `// caption:` をキャプションとして表示する |
+| `caption` | `boolean` | `true` | `title` または `// caption:` をキャプションとして表示する |
 | `fallback` | `boolean` | `true` | 元の DOT 記法を `<details>` に残す |
 | `className` | `string` | `"rb-graphviz"` | `<figure>` の基底クラス（子要素は `__canvas` / `__caption` / `__fallback`） |
 
@@ -89,11 +91,11 @@ digraph {
 - `initGraphvizDiagrams`: クライアント側の描画を初期化する
 - 型: `GraphvizOptions`、`GraphvizClientOptions`、`GraphvizRenderMode`、`GraphvizEngine`
 
-## 制限
+## 制限事項
 
 - クライアント側の描画は jsDelivr の CDN から `@viz-js/viz` を読み込みます。オフラインで描画するには `renderer` を注入してください。
-- HTML ライクなラベル（`label=<...>`）は Graphviz が対応しますが、生成された SVG のサニタイズは行いません。
-- キャプションはコードブロックの title、または先頭の `// caption: ...` コメントから取得します。
+- HTML ライクなラベル（`label=<...>`）は Graphviz が対応しますが、生成された SVG はサニタイズしません。信頼できる標準的な出力だけを使ってください。
+- キャプションはコードブロックの `title`、または先頭の `// caption: ...` コメントから取得します。
 
 ## 関連資料
 

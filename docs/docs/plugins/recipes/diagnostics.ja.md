@@ -7,7 +7,7 @@ sidebar:
 ---
 # 診断を返す
 
-プラグインから直接出力を print せず、構造化された診断を返します。CLI はコードごとにまとめて表示でき、テストでもコードを検証できます。
+プラグインから直接出力する代わりに、構造化された診断を返します。CLI はコードごとにまとめて表示でき、テストでもコードを検証できます。
 
 ```ts
 import { definePlugin, type Diagnostic } from "@riebeckite/core";
@@ -41,7 +41,7 @@ export function descriptionDiagnosticsPlugin() {
 }
 ```
 
-`addDiagnostics` が受け取るのはプラグインのコンテキストで、manifest は含まれません。上の例のように `onManifestCreated` で対象を集めます。最終的な文書全体が必要なルールでは `inspectGeneratedHtml` を使います。integration が出力した HTML ファイルごとに呼び出します。
+`addDiagnostics` が受け取るのはプラグインのコンテキストで、マニフェストは含まれません。上の例のように `onManifestCreated` で対象を集めます。最終的な文書全体が必要なルールでは `inspectGeneratedHtml` を使います。インテグレーションが出力した HTML ファイルごとに呼び出します。
 
 ```ts
 inspectGeneratedHtml: ({ path, html }) => {
@@ -58,7 +58,7 @@ inspectGeneratedHtml: ({ path, html }) => {
 }
 ```
 
-`warning` は公開を止めない内容に、`error` はリリースを止めるべき問題に使います。実際にコマンドを失敗させるかは、診断を消費する integration 次第です。運用ログには診断ではなく `context.logger` を使ってください。
+`warning` は公開してよい内容に、`error` はリリースを止めるべき問題に使います。実際にコマンドを失敗させるかは、診断を消費するインテグレーション次第です。運用ログには診断ではなく `context.logger` を使ってください。
 
 ---
 

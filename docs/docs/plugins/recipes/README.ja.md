@@ -7,13 +7,13 @@ sidebar:
 ---
 # プラグイン機能別レシピ
 
-[はじめてのプラグイン作成](../writing-a-plugin.ja.md)では、空のフォルダから動くディレクティブまでを一続きで作りました。このページはその次の段階として、よく使う拡張ポイントごとの小さなレシピをまとめたものです。
+[はじめてのプラグイン作成](../writing-a-plugin.ja.md)では、空のフォルダから動くディレクティブまでを一続きで作りました。このページはその次の段階として、よく使う拡張ポイント別に小さなレシピをまとめています。
 
 各レシピは独立しています。必要なものを `extensions/` にコピーし、`riebeckite.config.ts` に登録して、ブラウザまたはビルド出力で確認してください。ここでは「何を作るか」を優先し、正確な取り決めは [Plugin API](../../reference/plugin-api.ja.md) に譲ります。
 
 プラグインは信頼されたアプリケーションコードです。HTML を組み立てるレシピでは、外部から来た値を必ずエスケープします。URL を出す場合は、その用途に合った形で検証します。Riebeckite はプラグインが生成した HTML をサニタイズしません。[セキュリティモデル](../../security.ja.md)も参照してください。
 
-## 共通の準備
+## レシピ共通の準備
 
 レシピは `create-riebeckite` で作ったサイトと、`extensions/` に置くローカルプラグインを前提にしています。ローカルプラグインに専用のパッケージは要りません。
 
@@ -40,7 +40,7 @@ export default defineConfig({
 });
 ```
 
-各レシピは独自のファクトリを定義します。`extensions/` に置き、`examplePlugin` の代わりに登録してください。`name` は有効なプラグインの中で一意にしてください。プラグインのキャッシュと生成出力の名前空間は、この `name` を所有者として扱います。
+各レシピは独自のファクトリを定義します。`extensions/` に置き、`examplePlugin` の代わりに登録してください。`name` は有効なプラグインの中で一意にしてください。プラグインのキャッシュと生成出力の名前空間は、この `name` が所有します。
 
 ## レシピ一覧
 
@@ -50,7 +50,7 @@ export default defineConfig({
 | 埋め込まれたファイルを描画する | `renderers` | [2](./renderers.ja.md) |
 | ビルド中にコンテンツを読む | `onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated` | [3](./content-hooks.ja.md) |
 | 公開 URL を変える | `resolveContentLocations`、`extendContentLocations` | [4](./urls.ja.md) |
-| グラフと backlink にリンクを追加する | `extendContentGraph` | [5](./content-graph.ja.md) |
+| グラフとバックリンクにリンクを追加する | `extendContentGraph` | [5](./content-graph.ja.md) |
 | 独立したページを追加する | `pageTypes` | [6](./pages.ja.md) |
 | UI コンポーネントを配布する | パッケージの export | [7](./components.ja.md) |
 | CSS とブラウザ動作を追加する | `assets`、`clientEntries` | [8](./assets-and-client-entries.ja.md) |
@@ -62,7 +62,7 @@ export default defineConfig({
 | 実行順を制御し、オプションを検証する | `provides`、`requires`、`optional`、`order`、`validateOptions` | [14](./dependencies-and-options.ja.md) |
 | ビルドの動作を記録する | `logger`、`tracer` | [15](./logging-and-tracing.ja.md) |
 
-## 動作確認
+## 各レシピの確認方法
 
 | レシピ | 確認すること |
 | --- | --- |
@@ -70,7 +70,7 @@ export default defineConfig({
 | レンダラー | `![[data.csv]]` でプレビューが出て、通常のリンクも動く |
 | コンテンツフック | CLI にプラグイン名付きの診断が出る |
 | 公開 URL | 新しい URL が動き、古い URL がリダイレクトする |
-| グラフ | 関連ノートが backlink とグラフの隣接ノードに出る |
+| グラフ | 関連ノートがバックリンクとグラフの隣接ノードに出る |
 | ページタイプ | `/series/typescript` が生成され、ノートが並ぶ |
 | コンポーネント | サイトが import し、指定した位置に描画する |
 | CSS とクライアント | スタイルが読み込まれ、ページ読み込み後にボタンが動く |
@@ -84,7 +84,7 @@ export default defineConfig({
 
 静的出力に影響するレシピは `npm run build` で確認します。ブラウザでの動作は `npm run dev` で確認し、コンソールとネットワークパネルを見てください。
 
-[はじめてのプラグイン作成](../writing-a-plugin.ja.md#テストの進め方) のテストの考え方は、どのレシピにも当てはまります。パッケージ開発のテスト規約は [テスト](../../framework/testing.ja.md) を参照してください。
+[はじめてのプラグイン作成](../writing-a-plugin.ja.md#プラグインをテストする) のテストの考え方は、どのレシピにも当てはまります。パッケージ開発のテスト規約は [テスト](../../framework/testing.ja.md) を参照してください。
 
 ## よくある間違い
 
@@ -95,7 +95,7 @@ export default defineConfig({
 - `processedContentCache` なしで変換を追加する。処理済みコンテンツを再利用できなくなる。
 - エンドポイントが静的ファイルになると想定する。静的出力には生成ファイルを使う。
 - 依存関係のない出力を計画する。実行時に拒否される。
-- リダイレクトなしで permalink を変える。古いリンクが壊れます。公開していた URL ならリダイレクトを追加してください。
+- リダイレクトなしでパーマリンクを変える。古いリンクが壊れるため、公開していた URL ならリダイレクトを追加してください。
 - `order` でケイパビリティの依存関係を覆そうとする。提供側は常に先に実行される。
 
 ## 関連ページ

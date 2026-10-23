@@ -1,29 +1,32 @@
 ---
 date: 2026-10-14
-title: Plugin dependency
+title: プラグイン依存関係（Plugin Dependency）
 sidebar:
   hidden: true
 ---
 
-# Plugin dependency
-Pluginは`requires`でCapabilityの要求を宣言します。依存解決は、Capabilityを提供するPluginを、それを利用するPluginより前に並べます。要求を満たせない場合は`PluginDependencyError`を報告し、`kind`と`pluginName`で原因を特定できます。
+# プラグイン依存関係（Plugin Dependency）
 
-## Capabilityのfield
-`provides`: このPluginが他へ提供するCapability。
-`requires`: 必須のCapability。このPluginを実行する前に解決されている必要があります。
-`optional`: 存在すれば使いますが、必須ではないCapability。
+プラグインは `requires` でケイパビリティの要求を宣言します。リゾルバは提供側を利用側より前に並べ、満たせないケイパビリティを `PluginDependencyError` と `kind`、`pluginName` の診断として報告します。
+
+## ケイパビリティのフィールド
+
+`provides`: このプラグインが他へ提供するケイパビリティ。
+`requires`: このプラグインの実行前に解決されていなければならない必須のケイパビリティ。
+`optional`: 存在すれば使うが、必須ではないケイパビリティ。
 
 ## 解決の順序
-依存解決はまず`order`で並べ替え、次にCapabilityの依存関係を満たします。必須のCapabilityが欠けていると`PluginDependencyError`になります。提供側の重複や依存の循環は設定エラーです。
+
+リゾルバはまず `order` でプラグインを並べ、次にケイパビリティの依存関係を満たします。必須のケイパビリティが欠けている場合は `PluginDependencyError` をスローします。提供者の重複や循環は設定エラーです。
 
 ## エラーの種類
-`PluginDependencyError`は5種類のCapability問題を報告します：
+`PluginDependencyError` は5種類のケイパビリティ問題を報告します。
 
-- `missing-capability`：プラグインが`requires`で指定したCapabilityを、他のプラグインが提供していません。利用可能なCapability一覧がエラーに含まれます。
-- `duplicate-provider`：複数のプラグインが同じCapabilityを`provides`で宣言しています。競合するプラグイン名がリストされます。
-- `self-dependency`：プラグインが`provides`で宣言したCapabilityを、`requires`でも要求しています。
-- `invalid-capability`：プラグインが`provides`、`requires`、または`optional`で空文字または空白のみのCapability名を宣言しています。
-- `cycle`：プラグインの`requires`/`provides`チェーンに循環依存が存在します。循環は`kind: "cycle"`でThrowされ、Capability名とプラグインチェーンが含まれます。
+- `missing-capability` — あるプラグインが `requires` で要求したケイパビリティを、他のどのプラグインも提供していない。エラーには他のプラグインが提供するケイパビリティの一覧が含まれる。
+- `duplicate-provider` — 複数のプラグインが同じケイパビリティを `provides` で宣言している。エラーには競合するプラグイン名が含まれる。
+- `self-dependency` — プラグインが `provides` で宣言したケイパビリティを `requires` でも要求している。
+- `invalid-capability` — プラグインが `provides`、`requires`、`optional` のいずれかで、空または空白だけのケイパビリティ名を宣言している。
+- `cycle` — プラグインの `requires`/`provides` の連鎖に循環依存がある。
 
 ## 例
 ```ts
@@ -32,14 +35,19 @@ definePlugin({
   requires: ["content.graph"],
 });
 ```
-```
-mermaid
+
+## 解決の詳細
+リゾルバはまずすべての `provides` 宣言を集め、空の名前がないことを検証し、重複を調べます。次にプラグインごとに `requires` と `optional` の依存関係を集めます。必須のケイパビリティが欠けている場合は `kind: "missing-capability"` の `PluginDependencyError` をスローします。提供者の重複は `kind: "duplicate-provider"`、自己依存は `kind: "self-dependency"`、空のケイパビリティ名は `kind: "invalid-capability"` でスローします。循環は `kind: "cycle"` でスローされ、ケイパビリティ名とプラグインの連鎖が含まれます。
+
+```mermaid
 flowchart LR
-  Provider["Provider<br/>provides: content.graph"]
-  Consumer["Consumer<br/>requires: content.graph"]
+  Provider["提供側<br/>provides: content.graph"]
+  Consumer["利用側<br/>requires: content.graph"]
   Provider --> Consumer
 ```
+
 ## 関連用語
+
 - [[plugin|Plugin]]
 - [[capability|Capability]]
 - [[lifecycle-hook|Lifecycle hook]]
@@ -47,5 +55,6 @@ flowchart LR
 - [[endpoint|Endpoint]]
 
 ## さらに詳しく
+
 - [Plugin API](../reference/plugin-api.ja.md)
 - [Plugin System](../framework/plugin-system.ja.md)

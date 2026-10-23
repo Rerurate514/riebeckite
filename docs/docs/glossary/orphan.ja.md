@@ -1,30 +1,37 @@
 ---
 date: 2026-10-14
-title: Orphan
+title: 孤立ページ（Orphan）
 sidebar:
   hidden: true
 ---
 
-# Orphan
+# 孤立ページ（Orphan）
 
-どのページからもリンクされていないコンテンツです。診断は既定でオフになっており、有効にすると孤立したentryを報告します。
+どの公開ページや他のコンテンツからも参照されていないコンテンツやアセットです。孤立は、削除したはずのコンテンツが残っていることや、整理すべきコンテンツがあることを示す場合があります。
 
 ## 検出
 
-`diagnostics`の設定で孤立したコンテンツの報告を有効にします。一覧やfeedからたどれないページを、Buildを止めずに知らせます。
+他のコンテンツからリンクされておらず、マニフェストにも載っていないコンテンツ。どのコンテンツのfrontmatterからも本文からも参照されていないアセット。
 
-## diagnosticによるorphanの検出
+## 扱い
 
-孤立したコンテンツの検出はdiagnostics設定で有効にできます。有効にすると、Buildを停止せずに孤立したentryがレポートされます。diagnosticsプラグインはcontent graphの到達可能性をチェックします。他のコンテンツからリンクされておらず、manifestにリストされていないコンテンツはorphanとしてフラグが立てられます。
+孤立はビルド失敗にはなりませんが、古いコンテンツが残っている可能性を示します。プロジェクト全体の健全性を診断するには `check` か `doctor` を使います。不要になった孤立コンテンツやアセットは削除してください。
+
+## 診断による孤立の検出
+
+孤立の検出は診断の設定で有効にします。有効にすると、ビルドを止めずに孤立したエントリが報告されます。診断プラグインはコンテンツグラフの到達可能性を調べ、他のコンテンツからリンクされておらずマニフェストにも載っていないコンテンツを孤立として記録します。
 
 ### 例
 
 ```sh
-# orphan レポートの出力例（diagnostics 有効時）
-# 孤立したnoteが3件検出されました：
-#   - note-404 (リンクなし、manifest 未記録)
-#   - note-draft (draftフォルダでのみリンク、publish 除外)
-# 到達不可能なentryを確認するには `inspect content --list` を使用してください
+# Enable orphan reporting in diagnostics
+# (configure via diagnostics plugin settings)
+
+# Orphan report output (example)
+# 3 orphan notes detected:
+#   - note-404 (no incoming links, not in manifest)
+#   - note-draft (linked only in draft folder, excluded from publish)
+# Use `inspect content --list` to see which entries are unreachable.
 ```
 ## 関連用語
 

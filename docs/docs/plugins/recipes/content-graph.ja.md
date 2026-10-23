@@ -7,9 +7,9 @@ sidebar:
 ---
 # コンテンツグラフにリンクを追加する
 
-`extendContentGraph` は、エントリとリンクが集まった後、グラフと backlink が構築される前に実行されます。Markdown の記法では表せない関係を `entry.links` に追加できます。
+`extendContentGraph` は、エントリとリンクが集まった後、グラフとバックリンクが構築される前に実行されます。Markdown の記法では表せない関係を `entry.links` に追加できます。
 
-このレシピは frontmatter の `related` を読み、ノートへのリンクを追加します。追加したリンクはグラフと backlink 一覧に反映されます。
+このレシピは frontmatter の `related` を読み、ノートへのリンクを追加します。追加したリンクはグラフとバックリンク一覧に反映されます。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";

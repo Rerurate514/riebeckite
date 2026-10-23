@@ -1,32 +1,32 @@
 ---
 date: 2026-10-14
-title: Folder Page
+title: フォルダーページ（Folder Page）
 sidebar:
   hidden: true
 ---
 
-# Folder Page
+# フォルダーページ（Folder Page）
 
-単一のファイルではなくフォルダを代表するページで、folder-pages Pluginが扱います。ディレクトリにentryと公開URLを与えつつ、配下のページはそれぞれのパスを保ちます。
+単一のファイルではなくフォルダーを表すページで、folder-pagesプラグインが扱います。ディレクトリにエントリと公開URLを与えつつ、配下のページはそれぞれのパスを保ちます。
 
 ## 何をするか
 
-indexノートを持つフォルダは、そのフォルダのURLのページになります。配下のページはそのフォルダの下で参照可能なままです。これによりディレクトリをランディングページとして使えます。
+indexノートを持つフォルダーは、そのフォルダーのURLにあるページになります。配下のページはそのフォルダーの下で引き続き参照できます。これにより、ディレクトリをランディングページとして使えます。
 
 ## URL
 
-フォルダページは自身のpermalinkを持ちます。配下のページもそれぞれのpermalinkを保つため、フォルダがツリーを平坦化することはありません。
+フォルダーページは自身のパーマリンクを持ちます。配下のページもそれぞれのパーマリンクを保つため、フォルダーがツリーを平坦化することはありません。
 
-## folder-pages Plugin
+## folder-pagesプラグイン
 
-フォルダページは`folder-pages`プラグイン（`packages/plugins/folder-pages/src/folder_pages.ts`）によって作成されます。`buildFolderPages`関数は`ContentManifest`を受け取り、`FolderPagesModel`を生成します。これには`paths`（生成されたフォルダページのURL）と`byPath`（pathnameからFolderPageへのマップ）が含まれます。
+フォルダーページは`folder-pages`プラグイン（`packages/plugins/folder-pages/src/folder_pages.ts`）が構築します。`buildFolderPages`関数は`ContentManifest`を受け取り、`FolderPagesModel`を生成します。これには`paths`（生成されたフォルダーページのURL）と`byPath`（パス名から`FolderPage`へのマップ）が含まれます。
 
 主な動作：
 
-- `index`または`README`ノートを持つフォルダは、そのフォルダのURLのページになります
-- フォルダの配下ページはそれぞれのpermalinkを保持し、フォルタ下に平坦化されません
-- `isNavigable`チェックは、ownerの有無、routable pageの有無、subfolderがlistedであるかに基づいてフォルダにページを生成するかどうかを決定します
-- 生成されたパスは`@riebeckite/core`の`resolveGeneratedFolderLocation`によって解決されます
+- `index`または`README`ノートを持つフォルダーは、そのフォルダーのURLにあるページになります
+- フォルダーの配下のページはそれぞれのパーマリンクを保ち、フォルダーページの下に平坦化されません
+- `isNavigable`のチェックが、オーナーの有無、ルーティング対象のページ、一覧に載るサブフォルダーに基づいて、フォルダーにページを生成するかを決めます
+- 生成されたパスは`@riebeckite/core`の`resolveGeneratedFolderLocation`が解決します
 
 ```ts
 // From packages/plugins/folder-pages/src/types.ts
@@ -46,4 +46,4 @@ export type FolderPage = {
 };
 ```
 
-ownerのいないフォルダ（index noteがない場合でも）、routable pageがある場合やlistedなsubfolderがある場合はページが生成されます。
+オーナーのいないフォルダー（indexノートがないフォルダー）でも、ルーティング対象のページや一覧に載るサブフォルダーがあればページが生成されます。

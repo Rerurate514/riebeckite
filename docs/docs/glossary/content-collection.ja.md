@@ -1,24 +1,24 @@
 ---
 date: 2026-10-14
-title: Content Collection
+title: コンテンツコレクション（Content Collection）
 sidebar:
   hidden: true
 ---
 
-# Content Collection
+# コンテンツコレクション（Content Collection）
 
-query用に作られるコンテンツentryのまとまりです。tag、folder、date、frontmatterのfieldなどのkindで定義し、Taxonomyページやarchive、seriesの一覧はcollectionから作られます。
+クエリ用に作られるコンテンツエントリのまとまりで、タグ、フォルダー、日付、frontmatterのフィールドなどの種類で定義します。タクソノミーページ、アーカイブ、シリーズの一覧はコレクションから作られます。
 
-## kindの種類
+## 種類
 
-collectionは1つの軸でentryを選びます。
+コレクションは1つの軸でエントリを選びます。
 
-- `tags`は同じtagを持つentryです。
-- `folder`はあるディレクトリ配下のentryです。
-- `date`は年・月・日でまとめたentryです。
-- frontmatterのfield ：同じ値を持つentry。seriesでも使います。
+- `tags` — 同じタグを持つエントリ。
+- `folder` — あるディレクトリ配下のエントリ。
+- `date` — 年、月、日でまとめたエントリ。
+- frontmatterのフィールド — 同じ値を持つエントリ。シリーズで使われる形です。
 
-## entryの選び方
+## エントリの選び方
 
 ```ts
 {
@@ -29,11 +29,11 @@ collectionは1つの軸でentryを選びます。
 }
 ```
 
-## content collectionの定義
+## コンテンツコレクションの定義
 
-`ContentCollection`は`ContentCollectionDefinition`で定義され、kindとオプションのfilter、sort、orderが指定されます。マニフェストのentryをタグ/日付/フォルダベースのリストにグループ化し、ページネーション、ソート、フィルタをサポートするのが`buildContentCollections`関数(`packages/core/src/content/content_collection.ts`)の役割です。
+`ContentCollection`は`ContentCollectionDefinition`で定義し、`kind`と任意の`filter`、`sort`、`order`を指定します。`buildContentCollections`関数（`packages/core/src/content/content_collection.ts`）がマニフェストのエントリをタクソノミー・日付・フォルダーベースの一覧にまとめ、ページネーション、並べ替え、フィルターに対応します。
 
-`ContentCollectionDefinition`の例:
+`ContentCollectionDefinition`の例：
 
 ```ts
 {
@@ -41,7 +41,7 @@ collectionは1つの軸でentryを選びます。
 }
 ```
 
-フィルタとソート付きの例:
+フィルターと並べ替えを付けた例：
 
 ```ts
 {
@@ -52,9 +52,9 @@ collectionは1つの軸でentryを選びます。
 }
 ```
 
-利用可能なkind：
+利用できる種類：
 
-- `tags`：同じtagを持つentry
-- `folder`：あるディレクトリ配下のentry
-- `date`：年・月・日でまとめたentry
-- frontmatterのfield ：同じ値を持つentry。seriesでも使います。
+- `tags` — 同じタグを持つエントリ
+- `folder` — あるディレクトリ配下のエントリ
+- `date` — 年、月、日でまとめたエントリ
+- frontmatterのフィールド — 同じ値を持つエントリ。シリーズで使われる形です。

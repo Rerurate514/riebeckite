@@ -7,7 +7,7 @@ sidebar:
 ---
 # HTTP エンドポイントを追加する
 
-`endpoints` は、ルーターをプラグインに埋め込まずに HTTP の振る舞いを宣言します。ホスト側の integration がエンドポイントをルーターへ接続します。scaffold の `app/server.ts` はすでに `mountRiebeckiteEndpoints` を呼んでいます。
+`endpoints` は、ルーターをプラグインに埋め込まずに HTTP の振る舞いを宣言します。ホスト側のインテグレーションがエンドポイントをルーターへ接続します。スキャフォールドの `app/server.ts` はすでに `mountRiebeckiteEndpoints` を呼んでいます。
 
 ```ts
 import { defineEndpoint, definePlugin } from "@riebeckite/core";
@@ -37,11 +37,11 @@ export function catalogEndpointPlugin() {
 }
 ```
 
-開発サーバーを起動し、`/catalog.json` または `/catalog.json?tag=typescript` を開きます。
+開発サーバーを起動し、`/catalog.json` または `/catalog.json?tag=typescript` にリクエストします。
 
-エンドポイントは HTTP 応答であり、静的ファイルではありません。ホストが書き出さない限り、純粋な静的エクスポートに `/catalog.json` は含まれません。ビルド出力にファイルが必要なときは [ファイルの生成](./generated-files.ja.md) を使ってください。
+エンドポイントが返すのは HTTP 応答であり、静的ファイルではありません。ホストが書き出さない限り、純粋な静的エクスポートに `/catalog.json` は含まれません。ビルド出力にファイルが必要なときは [ファイルの生成](./generated-files.ja.md) を使ってください。
 
-`cacheControl` は、応答をキャッシュしても安全な場合だけ指定します。この応答は manifest に依存するため、通常は短い max age が適切です。
+`cacheControl` は、応答をキャッシュしても安全な場合だけ指定します。この応答はマニフェストに依存するため、通常は短めの max-age が適切です。
 
 ---
 

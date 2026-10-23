@@ -49,9 +49,9 @@ export default defineConfig({
 
 記事以外には `buildWebsiteSeo()` を使えます。トップやタグ一覧向けに `WebSite` と `BreadcrumbList` の構造化データを作ります。
 
-## 公開物に含まれる記事
+## サイトマップとフィードに含まれる記事
 
-サイトマップとフィードは、公開済みで `noindex: true` ではないエントリーだけを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリーの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
+サイトマップとフィードは、公開済みで `noindex: true` ではないエントリだけを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
 
 読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
 

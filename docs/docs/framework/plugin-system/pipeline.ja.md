@@ -1,19 +1,17 @@
 ---
 date: 2026-10-08
-title: Content パイプラインと拡張ポイント
+title: コンテンツ処理のパイプラインと拡張ポイント
 sidebar:
   label: パイプラインと拡張ポイント
   order: 20
 ---
-# Content パイプラインと拡張ポイント
+# コンテンツ処理のパイプラインと拡張ポイント
 
-このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部です。Content を扱う拡張ポイント（Markdown / HTML Pipeline、Content Graph、Renderer、Page Type など）を扱います。
+このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、コンテンツの処理と拡張ポイントを扱います。Markdown / HTML パイプライン、Content Graph、レンダラー、Page Type などを取り上げます。
 
-## 10. Markdown / HTML Pipeline
+## 3-6. Markdown / HTML パイプライン
 
-Markdown や HTML の意味を変換する場合は remark / rehype を利用します。
-
-単純な Plugin なら、
+Markdown や HTML の意味を変換する場合は remark / rehype を使います。単純なプラグインなら、変換関数を配列として宣言するだけで済みます。
 
 ```ts id="twapvp"
 definePlugin({
@@ -29,9 +27,7 @@ definePlugin({
 });
 ```
 
-と宣言できます。
-
-Pipeline 自体を構成する必要がある場合は、
+パイプライン自体を構成する必要がある場合は、`extendMarkdownPipeline` と `extendHtmlPipeline` を使います。
 
 ```ts id="5fj1xn"
 definePlugin({
@@ -47,39 +43,27 @@ definePlugin({
 });
 ```
 
-を使用します。
+Markdown / HTML の意味変換はプラグイン側に置き、AST の処理をアプリケーションのコンポーネントへ持ち込まないでください。
 
-Markdown / HTML の意味変換を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
+fenced block、figure、ブラウザでのレンダリングを共有する Diagram プラグインでは、[Diagram Plugin Infrastructure](../diagram-infrastructure.ja.md) を利用できます。
 
-fenced block、figure、browser rendering を共有する Diagram Plugin では、[Diagram Plugin Infrastructure](../diagram-infrastructure.ja.md) を使えます。
+## 3-7. Content Graph と公開ロケーション
 
-
-## 11. Content Graph
-
-Content Graph を拡張する場合は `extendContentGraph` を使用します。
+Content Graph を拡張する場合は `extendContentGraph` を使います。Backlinks などグラフ系の機能を実装するためにファイルシステムを再走査せず、すでに解決済みの manifest / Content Graph を利用してください。
 
 ```mermaid id="kjw3kt"
 flowchart LR
     Manifest["Manifest"]
     Graph["Content Graph"]
     Plugin["extendContentGraph"]
-    Result["Extended Graph"]
+    Result["拡張後のグラフ"]
 
     Manifest --> Graph
     Graph --> Plugin
     Plugin --> Result
 ```
 
-Backlinks や Graph 系機能を実装するために、Plugin が Filesystem を再走査しないでください。
-
-すでに解決された Manifest / Content Graph を利用します。
-
-
-## 12. Public Location
-
-Content の公開 URL を変更する Plugin では `resolveContentLocations` を使用します。
-
-最初に Core が Default Location を解決します。
+コンテンツの公開 URL を変更するプラグインは `resolveContentLocations` を使います。Core はまず既定のリゾルバー（`resolveDefaultContentLocation`）で公開ロケーションを解決します。
 
 ```text id="dug8by"
 index
@@ -89,14 +73,14 @@ index
   → /{slug}
 ```
 
-その後、解決済み Plugin Order に従って Location Hook が実行されます。
+続いて、解決済みのプラグインの順に、各プラグインのフックが実行されます。
 
 ```mermaid id="rbm5j4"
 flowchart LR
-    Content["Content"]
-    Default["Default Resolver"]
-    PluginA["Plugin A"]
-    PluginB["Plugin B"]
+    Content["コンテンツ"]
+    Default["既定のリゾルバー"]
+    PluginA["プラグイン A"]
+    PluginB["プラグイン B"]
     Location["ContentPublicLocation"]
 
     Content --> Default
@@ -105,34 +89,17 @@ flowchart LR
     PluginB --> Location
 ```
 
-結果は `ContentPublicLocation` として、
-
-- Manifest
-- Content Graph
-- Markdown Pipeline
-
-などから利用されます。
-
-URL Strategy は Plugin が所有します。
-
-Core は特定 Plugin の URL 規則を知りません。
-
-Consumer は最終的な、
+結果は `ContentPublicLocation` として manifest、Content Graph、Markdown パイプラインから参照されます。URL の規則はプラグインが所有し、Core は特定のプラグインの URL 規則を知りません。利用側が読むのは、最終的に解決された次の値です。
 
 ```ts id="b9m3p8"
 entry.permalink
 ```
 
-を利用します。
+公開ロケーションを解決できない場合は、slug へ暗黙にフォールバックせず、明示的なエラーにします。
 
-Location を解決できない場合は、slug へ暗黙的に fallback せず明示的な Error とします。
+## 3-8. レンダラー
 
-
-## 13. Renderers
-
-`renderers` は記事本文内の特殊な Content Target を HTML へ変換します。
-
-たとえば、
+`renderers` は記事本文内の埋め込み対象をプラグイン固有の HTML に変換します。対象には次のようなものがあります。
 
 ```text id="o4apio"
 Canvas
@@ -142,9 +109,7 @@ Attachment
 Media
 ```
 
-などです。
-
-Renderer Context には、
+レンダラーのコンテキストには、次の値と通常の `PluginContext` が含まれます。
 
 ```text id="pbh0ss"
 kind
@@ -155,28 +120,21 @@ url
 embed
 ```
 
-と通常の `PluginContext` が含まれます。
-
 ```mermaid id="m5n3av"
 flowchart TD
-    Target["Content Target"]
-    Renderer{"このRendererが処理する？"}
+    Target["埋め込み対象"]
+    Renderer{"このレンダラーが処理するか"}
 
     Target --> Renderer
     Renderer -->|Yes| HTML["HTML"]
-    Renderer -->|No| Next["次のRenderer"]
+    Renderer -->|No| Next["次のレンダラー"]
 ```
 
-処理対象でなければ `null` を返します。
+自分が処理する対象でなければ `null` を返してください。ほかのレンダラーが順に試されます。
 
-これによって複数 Renderer が同じ Pipeline に参加できます。
+## 3-9. ページ種別
 
-
-## 14. Page Types
-
-独立した URL を持つ画面を Plugin が提供する場合は `pageTypes` を使用します。
-
-たとえば、
+独立した URL を持つ画面をプラグインが提供する場合は `pageTypes` を使います。たとえば、次のようなページです。
 
 ```text id="9tlwkd"
 /explore
@@ -184,20 +142,9 @@ flowchart TD
 /tags/example
 ```
 
-などです。
+Page Type は、一意な `id`、静的または manifest から導出する `paths`、任意の `priority`、`resolve` を持ちます。
 
-Page Type は、
-
-- 一意な `id`
-- SSG 用 `paths`
-- 必要に応じた `priority`
-- `resolve`
-
-を持ちます。
-
-Resolver は Framework 非依存の HTML Body または `null` を返します。
-
-必要なら、
+`resolve` はフレームワークに依存しない HTML の body か `null` を返します。必要であれば、次の値を返すこともできます。
 
 ```text id="pjgd7n"
 title
@@ -205,34 +152,29 @@ description
 headTags
 ```
 
-も返せます。
-
-ただし Document Frame は Site Application が所有します。
+Document Frame はサイトのアプリケーションが所有し、これらの値を使って描画します。
 
 ```mermaid id="dkbx6s"
 flowchart LR
-    Plugin["Plugin Page Type"]
-    Core["Core Resolver"]
-    Integration["HonoX Integration"]
-    Site["Site Document Frame"]
+    Plugin["プラグインの Page Type"]
+    Core["Core のリゾルバー"]
+    Integration["HonoX 連携"]
+    Site["サイトの Document Frame"]
 
     Plugin --> Core
     Core --> Integration
     Integration --> Site
 ```
 
-Taxonomy の一覧や Explorer のような独立画面には Page Type を使用します。
+Page Type の `id` は実行時に検証されます。複数の Page Type が同じリクエストを解決した場合は、`priority` が最も大きいものが使われ、同点はエラーになります。
 
-Canvas、Bases、Excalidraw のような記事本文への埋め込みには Renderer を使用します。
-
-Plugin が HonoX Route File や Document Frame を所有しないことが重要です。
+Taxonomy の一覧や Explorer のような独立した画面には Page Type を使い、Canvas、Bases、Excalidraw のような記事本文への埋め込みにはレンダラーを使います。プラグインが HonoX のルートファイルや Document Frame を所有しないことが重要です。
 
 Page Type の詳しい仕組みは [Page System](../page-system.ja.md) を参照してください。
 
+## 3-10. アセット
 
-## 15. Assets
-
-Plugin 固有の Stylesheet は Plugin Package 内に置き、`assets` から公開します。
+プラグイン固有のスタイルシートはプラグインのパッケージ内に置き、`assets` でモジュール指定子を宣言します。
 
 ```ts id="b4qrvi"
 assets: [
@@ -245,36 +187,33 @@ assets: [
 ]
 ```
 
-Integration がこの Module Specifier を解決して Browser へ届けます。
+連携側がこのモジュール指定子を解決し、ブラウザへ届けます。
 
 ```mermaid id="pbj8dg"
 flowchart LR
-    CSS["Plugin style.css"]
+    CSS["プラグインの style.css"]
     Asset["assets"]
-    Integration["Integration"]
-    Browser["Browser"]
+    Integration["連携"]
+    Browser["ブラウザ"]
 
     CSS --> Asset
     Asset --> Integration
     Integration --> Browser
 ```
 
-Plugin 固有 CSS を `apps/web` にコピーしたり、Browser から `/node_modules` を直接参照させたりしないでください。
+プラグイン固有の CSS を `apps/web` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
+## 3-11. CSS フック
 
-## 16. CSS Hooks
+プラグインの CSS はプラグインのパッケージに置き、`assets` を通してブラウザへ届けます。プラグインが独立した再利用可能な機能を描画する場合は、最外要素に安定したルートフックを付けてください。
 
-再利用可能な UI を Plugin が描画する場合は、最外要素に Stable Root Hook を付けます。
-
-Plugin / Feature Hook は、
+プラグイン / 機能のフックは `rr-<feature>` とします。
 
 ```text id="59lz7m"
 rr-<feature>
 ```
 
-とします。
-
-たとえば、
+たとえば、次のとおりです。
 
 ```text id="gj2f5a"
 rr-search
@@ -283,9 +222,7 @@ rr-query
 rr-code
 ```
 
-です。
-
-内部要素では BEM を利用できます。
+ルートより内側では BEM の形を使えます。
 
 ```text id="9lq6se"
 rr-search
@@ -294,34 +231,29 @@ rr-search__result
 rr-search--loading
 ```
 
-Namespace の役割は次のとおりです。
+名前空間の役割は次のとおりです。
 
-| Namespace | 用途 |
+| 名前空間 | 用途 |
 | --- | --- |
-| `rb-*` | Framework の構造 Hook |
-| `--rb-*` | Framework の Semantic Token |
-| `rr-*` | Plugin / Feature Hook |
-| `--rr-*` | Plugin 固有 Token |
+| `rb-*` | フレームワークの構造フック |
+| `--rb-*` | フレームワークのセマンティックトークン |
+| `rr-*` | プラグイン / 機能のフック |
+| `--rr-*` | プラグイン固有のトークン |
 
-Plugin の出力を `rb-*` Namespace に置かないでください。
+既存のクラスは同じ要素に残してください。`rr-` のフックは追加であり、既存のセレクタやサイト側の上書きはそのまま動作します。プラグインの出力を `rb-` 名前空間に置かないでください。プラグインの出力では、フックとして `rr-*` だけを使います。
 
-Plugin の出力には `rr-*` Hook だけを使用します。
-
-また、
+また、次のクラスは原則として内部実装です。
 
 ```text id="21g4wg"
 rr-feature__*
 rr-feature--*
 ```
 
-は原則として内部実装です。
+テーマから装飾してよい子孫クラスだけを公開フックとして文書化してください。
 
-Theme から利用してよい子孫 Class だけを Public Hook として文書化してください。
+## 3-12. クライアントエントリ
 
-
-## 17. Client Entries
-
-Browser 上で初期化処理が必要な場合だけ `clientEntries` を使用します。
+ブラウザ上での初期化処理が必要な場合にだけ `clientEntries` を使います。
 
 ```ts id="a8cjlk"
 clientEntries: [
@@ -340,58 +272,48 @@ clientEntries: [
 
 ```mermaid id="wqsskl"
 flowchart LR
-    Plugin["Plugin"]
-    Client["Client Entry"]
-    Build["Integration"]
-    Browser["Browser"]
+    Plugin["プラグイン"]
+    Client["クライアントエントリ"]
+    Build["連携"]
+    Browser["ブラウザ"]
 
     Plugin --> Client
     Client --> Build
     Build --> Browser
 ```
 
-SSR / Build-time だけで完結する Plugin に Client JavaScript を追加しないでください。
+SSR やビルド時だけで完結するプラグインにクライアント JavaScript を追加しないでください。
 
-`publicConfig` は Browser へ渡されるため、
+`publicConfig` はクライアントの初期化処理へ渡され、静的ホストから利用できるよう manifest にも記録されます。そのため、次のような値を含めてはいけません。
 
-- Token
-- Credential
-- Secret
-- Private Service URL
+- トークン
+- 認証情報
+- シークレット
+- プライベートなサービス URL
 
-などを含めてはいけません。
+プラグインの `options` が自動的にクライアントへ渡されることはありません。
 
-Plugin の `options` が自動的に Client へ渡されることもありません。
+## 3-13. エンドポイントと SEO
 
-
-## 18. Endpoints / SEO
-
-HTTP Endpoint を提供する場合は `endpoints` の取り決めを使用します。
+HTTP エンドポイントを提供する場合は `endpoints` の取り決めを使います。HonoX などのルートフレームワークの実装を、プラグイン本体へ直接組み込まないでください。エンドポイントの取り決めをホストのルーターへ接続するのは連携側の役割です。
 
 ```mermaid id="brq9cr"
 flowchart LR
-    Plugin["Plugin"]
-    Endpoint["Endpoint Contract"]
-    Integration["Integration"]
-    Router["Host Router"]
+    Plugin["プラグイン"]
+    Endpoint["エンドポイントの取り決め"]
+    Integration["連携"]
+    Router["ホストのルーター"]
 
     Plugin --> Endpoint
     Endpoint --> Integration
     Integration --> Router
 ```
 
-HonoX など特定の Route Framework を Plugin 本体へ直接組み込まないでください。
+SEO に参加する場合は `seo` を使います。プラグインはメタデータやフィードの処理に参加できます。プラグイン固有の SEO ロジックをアプリケーションのルート側で再実装しないでください。
 
-SEO へ参加する場合は `seo` を使用します。
+## 3-14. 診断
 
-たとえば Metadata や Feed に Plugin が情報を追加できます。
-
-Application Route 側へ Plugin 固有 SEO Logic を再実装しないことが重要です。
-
-
-## 19. Diagnostics
-
-Plugin 固有の問題は `addDiagnostics` から報告します。
+プラグイン固有の問題は `addDiagnostics` から報告します。
 
 ```ts id="1xq5te"
 addDiagnostics(context) {
@@ -403,51 +325,39 @@ addDiagnostics(context) {
 }
 ```
 
-診断結果は可能な限り Structured Data として返してください。
-
-Plugin が、
+診断は可能な限り構造化データとして返してください。プラグインから次のように独自の CLI 出力を作るのではなく、診断またはロガーを使ってください。
 
 ```ts id="c4x89a"
 console.log(...)
 ```
 
-で独自の CLI Output を作るのではなく、Diagnostics または Logger を使用します。
+## 3-15. プラグインのキャッシュ
 
-
-## 20. Plugin Cache
-
-`context.cache` は Plugin ごとに分離された Build-time Cache です。
-
-保存するデータには次の条件があります。
+`context.cache` はプラグインごとに分離された**ビルド時のキャッシュ**です。保存してよいのは、次の条件を満たす値だけです。
 
 - 再生成できる
-- JSON Serializable
-- Plugin Namespace 内で完結する
-- 壊れていても安全に Cache Miss として扱える
+- JSON にシリアライズできる
+- プラグインの名前空間内で完結する
+- 壊れていても安全にキャッシュミスとして扱える
 
-`cacheVersion` を使って Cache Format の互換性を管理できます。
-
-Write は Atomic に行います。
+`cacheVersion` を使うと、キャッシュ形式の互換性を切り替えられます。書き込みはアトミックに行われます。
 
 ```mermaid id="42mkl4"
 flowchart TD
-    Work["Plugin Work"]
-    Cache{"有効なCache?"}
+    Work["プラグインの処理"]
+    Cache{"有効なキャッシュか"}
 
     Work --> Cache
 
-    Cache -->|Yes| Reuse["Reuse"]
-    Cache -->|No| Generate["Regenerate"]
+    Cache -->|Yes| Reuse["再利用"]
+    Cache -->|No| Generate["再生成"]
 ```
 
-これは Runtime Database ではありません。
+これは実行環境のデータベースではありません。Cloudflare Workers などの永続ストレージとして使わないでください。
 
-Cloudflare Workers などの永続 Storage として使用しないでください。
+## 3-16. ロガーとトレーサー
 
-
-## 21. Logger / Tracer
-
-Plugin では Framework の Logger / Tracer を利用できます。
+プラグインからはフレームワークのロガーとトレーサーを利用できます。
 
 ```ts id="j7ad6k"
 context.logger.info("...");
@@ -463,6 +373,4 @@ await context.tracer.span(
 );
 ```
 
-Logger は処理内容を記録し、Tracer は処理時間などを Structured Trace として記録します。
-
-Profiler はこの Trace を利用するため、Plugin ごとに独自の Stopwatch や Profiling System を作る必要はありません。
+ロガーは処理内容を記録し、トレーサーは処理時間などを構造化トレースとして記録します。Profiler はこのトレースを利用するため、プラグインごとに独自のストップウォッチやレポートの仕組みを用意する必要はありません。

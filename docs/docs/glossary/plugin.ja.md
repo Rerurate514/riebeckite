@@ -1,17 +1,17 @@
 ---
 date: 2026-10-14
-title: Plugin
+title: プラグイン（Plugin）
 sidebar:
   hidden: true
 ---
 
-# Plugin
+# プラグイン（Plugin）
 
-RiebeckiteのPluginは、定義された取り決めを通してコンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
+Riebeckiteのプラグインは、定められた契約を通じて、コンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
 
 ## 拡張ポイント
 
-Pluginは`provides`、`requires`、`optional`でCapabilityを宣言し、依存関係を解決したパイプラインに加わります。
+プラグインは `provides`、`requires`、`optional` でケイパビリティを宣言し、依存関係を解決したパイプラインに加わります。
 
 ```ts
 definePlugin({
@@ -22,17 +22,17 @@ definePlugin({
 });
 ```
 
-Coreの拡張ポイントはremark/rehypeパイプライン、コンテンツhook、renderer、page typeです。さらにasset、client entry、endpoint、diagnosticがあります。
+Coreの拡張ポイントには、remark/rehypeパイプライン、コンテンツフック、レンダラー、ページ種別、アセット、クライアントエントリ、エンドポイント、診断があります。
 
 ## ライフサイクル
 
-hookは依存関係を解決したPluginの順序で実行されます。`setup`、`buildStart`、コンテンツ処理、`buildEnd`、そして`dispose`（逆順）です。
+フックは解決済みのプラグイン順に実行されます。`setup`、`buildStart`、コンテンツ処理、`buildEnd`、`dispose`（逆順）です。
 
-名前付きのhook（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）はコンテンツの各段階に加わります。
+名前付きフック（`onConfigResolved`、`onContentLoaded`、`onPostParsed`、`onPostProcessed`、`onManifestCreated`）はコンテンツの各段階に参加します。
 
-## Capability system (`provides`/`requires`/`optional`)
+## ケイパビリティシステム（`provides`/`requires`/`optional`）
 
-Pluginは`provides`、`requires`、`optional`でCapabilityを宣言し、依存関係を解決したパイプラインに加わります。`resolvePlugins`関数はプラグインを`order`フィールドの順序で処理し、その後、依存関係を解決してcapabilityを提供するプラグインを必要とするプラグインより前に配置します。提供者が見つからない場合、診断と共に解決に失敗します。
+プラグインは `provides`、`requires`、`optional` でケイパビリティを宣言し、依存関係を解決したパイプラインに加わります。`resolvePlugins` 関数はプラグインを `order` フィールドの順に処理し、続いて依存関係を解決して、ケイパビリティを提供するプラグインを、それを必要とするプラグインより前に並べます。必須のケイパビリティに提供者が存在しない場合、解決は診断を出して失敗します。
 
 ```ts
 definePlugin({
@@ -43,15 +43,15 @@ definePlugin({
 })
 ```
 
-- **`provides`**: パイプラインが提供する能力。能力は正確に1つの有効なプロバイダを持たなければなりません；重複するプロバイダは解決失敗となります。
-- **`requires`**: このプラグインが依存する能力。各プロバイダがこのプラグインの前に順序付けられ、提供者がない場合は診断と共に失敗します。
-- **`optional`**: 利用可能な場合に使用する能力。提供者がないことは無視され、提供者がpresentならばこのプラグインの前に順序付けられます。
+- **`provides`**：このプラグインがパイプラインに提供するケイパビリティ。ケイパビリティには有効な提供者がちょうど1つ必要で、重複する提供者は解決失敗になります。
+- **`requires`**：このプラグインが依存するケイパビリティ。解決は各提供者をこのプラグインより前に並べ、提供者がいない場合は診断を出して失敗します。
+- **`optional`**：利用可能なら使うケイパビリティ。提供者がいなくても無視され、存在する提供者はこのプラグインより前に並べられます。
 
-`getResolvedPluginMetadata`ユーティリティは、各プラグインの解決されたprovides/requires/optionalを`ResolvedPluginMetadata`として公開し、pipelineは順序決定と診断に使用します。
+`getResolvedPluginMetadata` ユーティリティは、各プラグインの解決済みのprovides/requires/optionalを `ResolvedPluginMetadata` として公開し、パイプラインが順序決定と診断に使います。
 
-## Assetとclient entry
+## アセットとクライアントエントリ
 
-CSSは`assets`、ブラウザで動くJavaScriptは`clientEntries`で宣言します。宣言するのは本当に必要な場合だけにしてください。
+CSSは `assets`、ブラウザ向けJavaScriptは `clientEntries` で宣言します。宣言するのは本当に必要な場合だけにしてください。
 
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],

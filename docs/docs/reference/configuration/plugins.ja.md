@@ -1,13 +1,13 @@
 ---
 date: 2026-10-08
-title: Plugin の設定
+title: プラグインの設定
 sidebar:
-  label: Plugin の設定
+  label: プラグインの設定
   order: 60
 ---
-# Plugin の設定
+# プラグインの設定
 
-Plugin は `plugins` に指定します。
+プラグインは `plugins` に指定します。
 
 ```ts id="93f0rv"
 plugins: [
@@ -17,9 +17,9 @@ plugins: [
 ]
 ```
 
-条件によって Plugin を切り替えることもできます。
+条件によってプラグインを切り替えることもできます。
 
-`PluginInput` では、
+`PluginInput` では、次の値を無効なプラグイン入力として扱えます。
 
 ```text id="r4h4s2"
 false
@@ -27,9 +27,7 @@ null
 undefined
 ```
 
-を無効な Plugin input として扱えます。
-
-たとえば、
+たとえば、次のような条件付きの設定が可能です。
 
 ```ts id="7tk1jx"
 plugins: [
@@ -37,8 +35,6 @@ plugins: [
 ]
 ```
 
-のような conditional configuration が可能です。
+設定の解決時に、無効な入力は除外され、有効なプラグインは安定した順序で並べられます。その後、ケイパビリティの整合性が検証されます。
 
-Config resolve 時に無効な input は除外され、有効な Plugin は安定した順序で整理されます。
-
-その後 capability の整合性が検証されます。
+設定のエラーは `ConfigValidationError` として報告されます。捕捉して隠さないでください。変更したら `riebeckite check` を実行してください。オプションの取り決めについては、[プラグインシステム](../plugin-api.ja.md)または[テーマシステム](../theme-api.ja.md)に進んでください。

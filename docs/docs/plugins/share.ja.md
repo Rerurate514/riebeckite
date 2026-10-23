@@ -4,22 +4,13 @@ title: Share
 ---
 # Share
 
-記事ごとの共有ボタンをビルド時に生成するプラグインです。公開対象の各エントリ
-について、設定したサービス向けの共有 URL を組み立て、Share controls のデータ
-を提供します。Site が `<ShareControls links={...} />` を描画する位置をlayout で
-決定します。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー
-操作だけをプログレッシブ・エンハンスメントとして追加します。
+記事ごとの共有ボタンをビルド時に生成するプラグインです。公開対象の各エントリについて、設定したサービス向けの共有 URL を組み立て、共有コントロールのデータを提供します。サイトが `<ShareControls links={...} />` を描画する位置をレイアウトで決めます。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー操作だけをプログレッシブ・エンハンスメントとして追加します。
 
 [English](./share.md)
 
 ## 仕組み
 
-`share()` は各ノートの `permalink` を絶対 URL に解決し、ノートのタイトルと URL
-からサービスごとの共有 URL を組み立て、Share control data を組み立てます。
-データは `getShareLinks({ entry, site, options? })` で利用可能で、Site が
-`<ShareControls links={...} />` で描画します。共有リンクは通常の `<a>` なので
-JavaScript なしでも動作し、コピー操作だけをプログレッシブ・エンハンスメント
-として追加します。
+`share()` は各ノートの `permalink` を絶対 URL に解決し、タイトルと URL からサービスごとの共有 URL を組み立てて、共有コントロール用のデータにまとめます。データは `getShareLinks({ entry, site, options? })` で取得でき、サイトが `<ShareControls links={...} />` で描画します。共有リンクは通常の `<a>` なので JavaScript なしでも動作し、コピー操作だけをプログレッシブ・エンハンスメントとして追加します。
 
 対応サービスは次のとおりです。
 
@@ -33,8 +24,7 @@ JavaScript なしでも動作し、コピー操作だけをプログレッシブ
 | `hatena` | `https://b.hatena.ne.jp/add?mode=confirm&url=…&title=…` |
 | `copy` | ノートの URL をコピーするボタン（リンクは JS 不要） |
 
-Mastodon はオプトインです。`services` に `"mastodon"` を追加し、
-`mastodonInstance` を設定してください。
+Mastodon はオプトインです。`services` に `"mastodon"` を追加し、`mastodonInstance` を設定してください。
 
 ## 使い方
 
@@ -60,25 +50,15 @@ export default defineConfig({
 | `copiedLabel` | `string` | `"Copied"` | コピー成功時に通知する文言 |
 | `copyFailedLabel` | `string` | `"Copy failed"` | コピー失敗時に通知する文言 |
 
-`services` に `"mastodon"` を含めたのに `mastodonInstance` が未設定の場合、
-`riebeckite check` の時点で設定エラーになります。
+`services` に `"mastodon"` を含めたのに `mastodonInstance` が未設定の場合、`riebeckite check` の時点で設定エラーになります。
 
-## 表示
+## 共有コントロールの表示位置
 
-共有コントロールは、Site が layout で `<ShareControls links={...} />` を
-描画する位置に実際に描画されます。このサイトでは、プログレッシブ・エンハンス
-メントされたリンクコピー操作を含むコントロールとして表示します。Site は
-コントロールを記事のトップやボトム、またはその他の位置に描画するかどうかを
-決定します。
+共有コントロールは、サイトがレイアウトで `<ShareControls links={...} />` を描画する位置に表示されます。このサイトでは、プログレッシブ・エンハンスメントされたリンクコピー操作を含むコントロールとして表示します。サイトはコントロールを記事の上や下、その他の位置のどこに描画するかを決めます。
 
 ## プログレッシブ・エンハンスメント
 
-共有リンクは通常の `<a>` なので、JavaScript を無効にしても動作します。コピー
-ボタンは `hidden` の状態で出力され、アプリのページ初期化時に呼ばれる
-`initShare()` が表示に切り替えます。JavaScript がない読者に、動かない操作を
-見せることはありません。コピーには `navigator.clipboard.writeText` を使い、
-失敗時は非表示の textarea と `document.execCommand("copy")` にフォールバック
-します。結果は `aria-live="polite"` のステータス領域で通知します。
+共有リンクは通常の `<a>` なので、JavaScript を無効にしても動作します。コピーボタンは `hidden` の状態で出力され、アプリのページ初期化時に呼ばれる `initShare()` が表示に切り替えます。JavaScript がない読者に、動かない操作を見せることはありません。コピーには `navigator.clipboard.writeText` を使い、失敗時は非表示の textarea と `document.execCommand("copy")` にフォールバックします。結果は `aria-live="polite"` のステータス領域で通知します。
 
 ## スタイル
 
@@ -88,11 +68,7 @@ export default defineConfig({
 import "@riebeckite/plugin-share/style.css";
 ```
 
-安定したクラスは `rr-share`（ルート）、`rr-share__list`、`rr-share__item`、
-`rr-share__link`、`rr-share__link--{service}`、`rr-share__button`、
-`rr-share__copy`、`rr-share__status` です。Theme はこれらのフックを対象に
-できます。任意の `className` はルートに追加され、これらのフックを置き換え
-ません。
+安定したクラスは `rr-share`（ルート）、`rr-share__list`、`rr-share__item`、`rr-share__link`、`rr-share__link--{service}`、`rr-share__button`、`rr-share__copy`、`rr-share__status` です。テーマはこれらのフックを対象にできます。任意の `className` はルートに追加され、これらのフックを置き換えません。
 
 ## エクスポート
 

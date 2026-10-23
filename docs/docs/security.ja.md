@@ -117,7 +117,7 @@ escapeScriptJson(...)
 
 任意のHTMLを安全なHTMLへ変換したり、URLそのものが安全かどうかを判定したりするものではありません。
 
-## Endpoint
+## エンドポイント
 
 Pluginは独自のendpointを提供できます。
 

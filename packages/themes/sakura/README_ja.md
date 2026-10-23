@@ -62,7 +62,7 @@ export default defineConfig({
 - [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md)
 - [`@riebeckite/theme-default`](../default/README_ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 桜をモチーフにした編集・読書向けの Theme です。
 

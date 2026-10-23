@@ -1,53 +1,53 @@
 ---
 date: 2026-10-14
-title: Content
+title: コンテンツ（Content）
 sidebar:
   hidden: true
 ---
 
-# Content
+# コンテンツ（Content）
 
-Markdownの解析とPluginの処理を経たコンテンツです。frontmatter、描画済みのHTML、解決済みの公開位置を持ちます。Riebeckiteは生のファイルではなく、処理を終えたこの単位を扱います。
+Markdownの解析とプラグインの処理を経たコンテンツ項目です。frontmatter、描画済みのHTML、解決済みの公開先を持つため、Riebeckiteは生のファイルではなく処理済みの項目を扱います。
 
-## ファイルではなく処理後の項目
+## ファイルではなく処理済みの項目
 
-Riebeckiteはファイルを読み取り、解析し、Pluginのパイプラインに通してから、サイト上の公開位置を解決します。以降に扱うのはcontentです。Content Entry、公開位置、関連のすべてがここに含まれます。
+Riebeckiteはファイルを読み取り、解析し、プラグインのパイプラインに通してから、サイト上の公開先を解決します。それ以降に扱うのはすべてコンテンツです。エントリ、その公開先、関係が含まれます。
 
-contentを問い合わせるコードは、ファイルシステムではなくmanifestを読みます。
+コンテンツを問い合わせるコードは、ファイルシステムではなくマニフェストを読みます。
 
-## contentがたどる流れ
+## コンテンツ項目の流れ
 
-1. Content Sourceがファイルを見つけて読み取ります。
-2. Content Managerが解析し、パイプラインを実行します。
-3. 公開位置の解決がpermalinkを割り当てます。
-4. 項目はContent Entryとしてmanifestに記録されます。
+1. コンテンツソースがファイルを見つけて読み取ります。
+2. コンテンツマネージャーが解析し、パイプラインを実行します。
+3. 公開先の解決がパーマリンクを割り当てます。
+4. 項目はコンテンツエントリとしてマニフェストに記録されます。
 
-## コンテンツ処理モジュール
+## コンテンツ処理のモジュール
 
-Riebeckiteのcontent pipelineは、それぞれ責任を持った明確なモジュールで構成されています：
+Riebeckiteのコンテンツパイプラインは、それぞれ役割を絞った複数のモジュールで構成されています。
 
-- **`content_manager.ts`** (`packages/core/src/content/content_manager.ts`) ：全体的なbuildフローをオーケストレーションします。対象はコンテンツソースのスキャン、content indexの構築、場所の解決、`Pipeline`によるpluginパイプラインの実行です。manifestとcontent graphの構築、incremental build stateのコミットも行います。plugin runtime、content index builder、build coordinatorと調整します。
+- **`content_manager.ts`**（`packages/core/src/content/content_manager.ts`）— ビルドフロー全体を調整します。コンテンツソースの走査、コンテンツインデックスの構築、公開先の解決、`Pipeline`によるプラグインパイプラインの実行、マニフェストとコンテンツグラフの構築、増分ビルド状態のコミットを行います。プラグインの実行環境、コンテンツインデックスのビルダー、ビルドコーディネーターの間を調整します。
 
-- **`content_collection.ts`** (`packages/core/src/content/content_collection.ts`) ：`ContentCollectionDefinition`、`ContentCollection`を定義し、pagination、sort、filterをサポートし、manifestエントリをタグ/日付/フォルダベースのリストにグループ化する`buildContentCollections`関数を提供します。
+- **`content_collection.ts`**（`packages/core/src/content/content_collection.ts`）— `ContentCollectionDefinition`、`ContentCollection`、およびマニフェストのエントリをタクソノミー・日付・フォルダーベースの一覧にまとめる`buildContentCollections`関数を定義します。ページネーション、並べ替え、フィルターに対応します。
 
-- **`content_graph.ts`** (`packages/core/src/content/content_graph.ts`) ：`ContentGraph`タイプとしてcontent graphを表現し、ノード、incoming/outgoingリンク、neighborsをクエリするメソッドを持ちます。manifestの`outgoingLinks`と`incomingLinks`から`runGraphHook`のदौरान構築されます。
+- **`content_graph.ts`**（`packages/core/src/content/content_graph.ts`）— コンテンツグラフを`ContentGraph`型として表し、ノード、被リンク・発リンク、隣接ノードを問い合わせるメソッドを持ちます。マニフェストの`outgoingLinks`と`incomingLinks`から、`runGraphHook`の実行中に構築されます。
 
-- **`content_index_builder.ts`** (`packages/core/src/content/content_index_builder.ts`) ：スラッグバリアント（大文字小文字無視やaliasマッピング含む）をそのcanonical slugにマップするcontent resolution indexを構築します。`resolveContentIndex`を使用して候補を単一の解決に収束させ、診断用のambiguitiesをフラグ付けします。
+- **`content_index_builder.ts`**（`packages/core/src/content/content_index_builder.ts`）— slugの異形（大文字小文字を無視した形やエイリアスの対応を含む）を正規のslugへ対応付けるコンテンツ解決インデックスを構築します。`resolveContentIndex`で候補を1つの解決にまとめ、曖昧なものは診断用に記録します。
 
-## manifestのentry
+## コンテンツマニフェストのエントリ
 
-manifestに登録される各コンテンツentryは`ContentManifestEntry`(`packages/core/src/types/content_manifest.ts`)で型付けされています。主なフィールドは以下の通りです：
+マニフェストの各コンテンツエントリは`ContentManifestEntry`（`packages/core/src/types/content_manifest.ts`）で型付けされています。主なフィールドは次のとおりです。
 
-- **`slug`** ：内部的な検索キー
-- **`permalink`** ：解決済みの正canonicalな公開URL
-- **`publicLocation`** ：slug、permalink、任意のredirects、メタデータを組み合わせたもの
-- **`contentId`** ：frontmatterに書かれた安定した著者による識別子で、slug/permalinkとは独立して生存します
-- **`frontmatter`** ：`PostFrontmatter`。`id`、`title`、`description`、`date`、`published`、`tags`ほかのメタデータを保持します
-- **`html`** ：処理後のMarkdown HTML本文
-- **`aliases`** ：ノートの別キー
-- **`tags`** および**`links`** ：タクソノミーとwikilink/MMDリンク
+- **`slug`** — 内部的な検索キー
+- **`permalink`** — 解決済みの正規の公開URL
+- **`publicLocation`** — slug、permalink、任意のリダイレクト、メタデータを組み合わせたもの
+- **`contentId`** — frontmatterに著者が書く安定した識別子で、slug/permalinkとは独立
+- **`frontmatter`** — `PostFrontmatter`。`id`、`title`、`description`、`date`、`published`、`tags`などのメタデータを含む
+- **`html`** — 処理済みのMarkdown HTML本文
+- **`aliases`** — ノートの代替の検索キー
+- **`tags`**と**`links`** — 処理中に収集したタクソノミーとWikiLink/MMDリンク
 
-例）entryの構造:
+エントリ構造の例：
 
 ```ts
 {

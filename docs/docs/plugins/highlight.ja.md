@@ -11,11 +11,11 @@ title: Highlight
 
 ## 概要
 
-`highlight()` は、Markdown のテキストノードにある `==テキスト==` を HTML に
+`highlight()` は、Markdown のテキストノードにある `==テキスト==` を、HTML へ
 変換する前に生の HTML へ置き換える remark トランスフォーマーを登録します。
-`~~打ち消し線~~` だけを扱う `remark-gfm` を補完します。
+`~~打ち消し線~~` しか扱わない `remark-gfm` を補います。
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -39,7 +39,7 @@ export default defineConfig({
 この文には <mark class="rb-highlight">ハイライトする語句</mark> が含まれます。
 ```
 
-ハイライトは非貪欲に一致し、改行をまたぎません。空、または空白だけの
+ハイライトは最短一致で、改行をまたぎません。空、または空白だけの
 ハイライトは無視します。コードブロック、インラインコード、生の HTML、
 frontmatter の内部は変更しません。
 

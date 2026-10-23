@@ -1,26 +1,34 @@
 ---
 date: 2026-10-08
-title: Stable CSS Hooks と Cascade
+title: 安定した CSS フックとカスケード
 sidebar:
-  label: CSS Hooks と Cascade
+  label: CSS フックとカスケード
   order: 50
 ---
-# Stable CSS Hooks と Cascade
+# 安定した CSS フックとカスケード
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Stable CSS Hook、Character Layer、`userCss`、CSS Cascade を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、`userCss`、安定した CSS フック、キャラクターレイヤー、CSS のカスケードを扱います。
 
-## 20. Stable CSS Hooks
+## 3-5. `userCss`
 
-Theme は Application や Plugin の内部 Markup ではなく、公開された Stable CSS Hook を対象にします。
+`userCss` は最後に読み込まれ（カスケードの最上位）、最終的な上書きになります。テーマをフォークせずに1箇所だけ調整したいサイトのためのものです。テーマのスタイルシートは `userCss` より先に読み込まれるため、`userCss` が勝ちます。テーマパッケージは、`userCss` に打ち勝つために強いセレクターや `!important` の多用に頼らないでください。
 
-Hook には大きく2つの Namespace があります。
+```ts id="mphtk3"
+theme: defaultTheme({
+  userCss: [
+    "/extensions/custom.css",
+  ],
+}),
+```
 
-| Namespace | 所有者 | 用途 |
-| --- | --- | --- |
-| `rb-*` | Framework | Site の構造 |
-| `rr-*` | Plugin / Feature | Plugin UI |
+## 5. 安定した CSS フック
 
-Framework が提供する代表的な Hook は、
+テーマは、アプリケーションやプラグインの内部マークアップではなく、文書化された安定したフックを対象にします。クラスの名前空間は2つあります。
+
+- **`rb-*`** — フレームワークが提供する構造フックとセマンティックデザイントークン。`.rb-theme-root` はテーマルートのコンテナです。
+- **`rr-*`** — プラグインまたは機能が描画する最も外側の要素に付くルートフック。
+
+`rb-*` の構造フックは次のとおりです。
 
 ```text id="etblkj"
 .rb-theme-root
@@ -35,11 +43,11 @@ Framework が提供する代表的な Hook は、
 .rb-sidebar
 ```
 
-です。
+レンダリングされた Markdown 本文は `.rb-article-content` に包まれます。Markdown のセマンティックなベースラインは、このラッパーが持ちます。対象となるのは、リストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロックです。テーマは `--rb-*` トークンとキャラクタールールを通じて、そのベースラインの見た目を整えます。構造を再宣言する必要はありません。ベースラインはレイヤー化されているため、テーマのレイヤー外のキャラクタールールとユーティリティクラスは、どちらもベースラインに勝ちます。
 
-レンダリングされた Markdown 本文は `.rb-article-content` に包まれます。Markdown のセマンティックなベースラインはこの wrapper が持ちます。対象はリストマーカーと字下げ、見出し、段落とブロックの余白、表、図、定義リスト、インラインコード、整形済みブロックです。`.rb-article-body` は header、metadata、本文、plugin component を含む article body のシェルです。ベースラインはレイヤー化されているため、テーマは構造を再宣言する必要はなく、`--rb-*` トークンとレイヤー外のキャラクター規則で見た目を表現します。
+`.rb-article-body` は、ヘッダー、メタデータ、レンダリングされた Markdown、プラグインコンポーネントを含む記事本文のシェルです。Markdown のタイポグラフィ自体は持たないため、プラグインコンポーネントはどこに置かれても独自の見出しを保ちます。
 
-Plugin は、
+`rr-*` のルートフックには、次のようなものがあります。
 
 ```text id="rt44pe"
 .rr-search
@@ -61,14 +69,7 @@ Plugin は、
 .rr-garden-explorer
 ```
 
-などの Root Hook を提供できます。
-
-Theme はこれらの Stable Hook を対象にします。
-
-
-## 21. Plugin の内部 Class
-
-Plugin は内部で、
+テーマは、これらのルートフックと、プラグインが文書化した子孫要素だけを対象にします。BEM の要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。たとえば、プラグインは内部で次のようなクラスを使う場合があります。
 
 ```text id="u7bmkr"
 .rr-search
@@ -77,15 +78,13 @@ Plugin は内部で、
 .rr-search--loading
 ```
 
-のような BEM Class を使う場合があります。
-
-基本的に Public Hook は、
+公開フックは次のクラスです。
 
 ```text id="9k6dgy"
 .rr-search
 ```
 
-です。
+次のような部分は、プラグインが公開フックとして明示的に文書化していない限り、プラグイン内部のクラスとして扱います。
 
 ```text id="1ggxg1"
 __input
@@ -93,20 +92,15 @@ __result
 --loading
 ```
 
-などは、Plugin が明示的に Public Hook として文書化していない限り内部実装として扱います。
+`.sr-only` のような汎用ヘルパークラスも、プラグインのフックではありません。プラグインの出力は `.rr-*` フックだけを使うため、テーマはそれらのフックを対象にします。
 
-`.sr-only` のような一般的な Helper Class も Plugin Hook ではありません。
+フレームワーク CSS はリセットとベースの取り決めを担当します。サイト CSS はページの構造と配置を担当し、文書化されたプラグインのルートをサイトのレイアウト内に配置できます。プラグイン CSS は内部 UI と操作を担当します。テーマ CSS は共通トークンと視覚表現を担当し、サイトのレイアウトや文書化されていないプラグイン内部を引き継ぎません。
 
-Plugin の出力は `.rr-*` hook のみを使います。Theme は `.rr-*` を利用し、旧 Class 名に依存しないでください。
+### 5-1. キャラクターレイヤー
 
-Framework CSS は Reset と Base の取り決めを担当します。Site CSS はページの構造と配置を担当し、Site レイアウト内で文書化された Plugin root を配置できます。Plugin CSS は内部 UI と操作を担当します。Theme CSS は共通 Token と視覚表現を担当し、Site レイアウトや文書化されていない Plugin 内部を引き継ぎません。
+テーマはトークンの変更に限りません。テーマの境界の内側では、安定したフックを直接スタイルして、サイトに視覚的な個性を与えられます。
 
-
-## 22. Character Layer
-
-Theme は Token を変更するだけでなく、Stable Hook を直接 Style して視覚的な個性を与えられます。
-
-たとえば、
+たとえば次のように、記事ヘッダーへ罫線を引けます。
 
 ```css id="n72uhc"
 :is(:root, .rb-theme-root)
@@ -119,27 +113,16 @@ Theme は Token を変更するだけでなく、Stable Hook を直接 Style し
 }
 ```
 
-のような変更です。
-
-対象にできるのは Stable Hook です。
-
-Theme 側で新しい、
+対象にできるのは安定したフックだけです。テーマ側で、次のような新しいクラス名を発明しないでください。
 
 ```text id="mkmfyh"
 rb-*
 rr-*
 ```
 
-Class を発明して Framework の取り決めのように扱わないでください。
+これらをフレームワークの取り決めであるかのように扱ってはいけません。
 
-Character Layer も Presentation 専用です。
-
-Content、Structure、Behavior を変更してはいけません。
-
-
-## 23. CSS Layer
-
-Token Definition は `@layer base` に置きます。
+トークンの定義は `@layer base` に置きます。
 
 ```css id="43rbsh"
 @layer base {
@@ -150,7 +133,7 @@ Token Definition は `@layer base` に置きます。
 }
 ```
 
-一方、Stable Hook に対する Character Rule は **unlayered** にします。
+安定したフックに対するキャラクタールールは **レイヤー外（unlayered）** にします。
 
 ```css id="s2xwqm"
 :is(:root, .rb-theme-root)
@@ -163,18 +146,9 @@ Token Definition は `@layer base` に置きます。
 }
 ```
 
-Application の Structural CSS と Plugin CSS も unlayered です。
+アプリケーションの構造 CSS とプラグイン CSS もレイヤー外です。テーマ CSS はそれらより後に読み込まれるため、通常は `!important` を使わなくても上書きできます。`!important` は使わないでください。
 
-Theme CSS はそれらより後に読み込まれるため、通常は `!important` を使わなくても上書きできます。
-
-`!important` に依存しないでください。
-
-
-## 24. Web Font
-
-Theme Package は Self-hosted Web Font を含めることができます。
-
-たとえば、
+テーマパッケージには、セルフホストの Web フォントを含められます。フォントは次のように配置します。
 
 ```text id="8g43c5"
 styles/
@@ -182,8 +156,6 @@ styles/
 └─ fonts/
    └─ example-serif-latin.woff2
 ```
-
-のように配置します。
 
 CSS では相対 URL を使います。
 
@@ -200,49 +172,13 @@ CSS では相対 URL を使います。
 }
 ```
 
-Font を同梱する場合は、その Font の License File も Package に含めてください。
+フォントを同梱する場合は、そのフォントのライセンスファイルもパッケージに含めてください。Latin サブセットのような比較的小さいフォントは同梱できます。日本語などの CJK フォントはファイルサイズが大きいため、基本的にはシステムフォントスタックへフォールバックします。
 
-Latin Subset のような比較的小さい Font は同梱できます。
+キャラクターレイヤーも表示専用です。コンテンツ、構造、振る舞いを変更してはいけません。
 
-日本語などの CJK Font は File Size が大きいため、基本的には System Font Stack へ fallback します。
+## 6. CSS のカスケード
 
-
-## 25. `userCss`
-
-`userCss` は Site 利用者が Theme の上から最終調整するための CSS です。
-
-```ts id="mphtk3"
-theme: defaultTheme({
-  userCss: [
-    "/extensions/custom.css",
-  ],
-}),
-```
-
-Theme の Stylesheet より後に読み込まれるため、`userCss` が最終的な Override になります。
-
-Theme Package 側で `userCss` より強い Selector や `!important` を多用しないでください。
-
-
-## 26. CSS Cascade
-
-Riebeckite では CSS の読み込み順も取り決めの一部です。
-
-```mermaid id="e5j94x"
-flowchart TD
-    Base["Base / Application<br/>Structural CSS"]
-    Plugin["Plugin Default CSS"]
-    Theme["Theme CSS"]
-    Token["Config Token<br/>Inline Style"]
-    User["userCss"]
-
-    Base --> Plugin
-    Plugin --> Theme
-    Theme --> Token
-    Token --> User
-```
-
-順番は、
+読み込み順は、表示拡張のための重要な取り決めです。
 
 ```text id="jz92ku"
 Framework Structural CSS
@@ -258,11 +194,21 @@ Config Token Inline Style
 userCss
 ```
 
-です。
+```mermaid id="e5j94x"
+flowchart TD
+    Base["ベース / アプリケーション<br/>構造 CSS"]
+    Plugin["プラグインの既定 CSS"]
+    Theme["テーマ CSS"]
+    Token["設定トークン<br/>インラインスタイル"]
+    User["userCss"]
 
-この順番は偶然ではなく、Presentation Extension の取り決めとして保証されます。
+    Base --> Plugin
+    Plugin --> Theme
+    Theme --> Token
+    Token --> User
+```
 
-`@riebeckite/honox` は、
+この順番は偶然ではなく、保証されています。`@riebeckite/honox` は次のファイルを生成します。
 
 ```text id="i2y97j"
 .riebeckite/framework-styles.css
@@ -270,11 +216,9 @@ userCss
 .riebeckite/theme-styles.css
 ```
 
-を生成します。
+`.riebeckite/framework-styles.css` はフレームワークの構造 CSS、`.riebeckite/plugin-styles.css` は解決されたプラグイン順のプラグインスタイル、`.riebeckite/theme-styles.css` はテーマスタイルです。サイトは、フレームワークのスタイルシートをプラグインのスタイルシートより先に、プラグインのスタイルシートをテーマのスタイルシートより先に読み込みます。そのため、テーマ CSS は常にプラグインの既定を上書きし、`userCss` が最終的な上書きになります。
 
-Site は Framework Stylesheet を Plugin Stylesheet より先に、Plugin Stylesheet を Theme Stylesheet より先に読み込みます。
-
-そのため、
+その結果、次の関係になります。
 
 ```text id="4w8d9d"
 Plugin
@@ -287,39 +231,34 @@ userCss
   → Site 利用者が最終調整
 ```
 
-という関係になります。
+生成されたファイルを直接編集したり、インポート順を変更したりしないでください。生成される各ファイルには、カスケード上の位置を示すヘッダーコメントが付きます。カスケードは通常、`!important` に依存しません。
 
-生成された Stylesheet を直接編集したり、Import 順を変更したりしないでください。
+## トラブルシューティング: テーマが適用されない場合
 
-
-## 30. 見た目がおかしい場合
-
-Theme が期待どおりに適用されない場合は、まず次の順番で確認します。
+テーマが期待どおりに適用されない場合は、次の順番で確認します。
 
 ```mermaid id="pm3ukv"
 flowchart TD
-    Start["Themeが適用されない"]
+    Start["テーマが適用されない"]
 
-    Start --> Name{"data-theme-name は正しい？"}
-    Name -->|No| FixName["Theme nameを確認"]
-    Name -->|Yes| Hook{"正しいHookを対象にしている？"}
+    Start --> Name{"data-theme-name は正しいか"}
+    Name -->|いいえ| FixName["テーマ名を確認"]
+    Name -->|はい| Hook{"正しいフックを対象にしているか"}
 
-    Hook -->|No| FixHook["rb-* / rr-* を確認"]
-    Hook -->|Yes| Cascade{"Cascadeは正しい？"}
+    Hook -->|いいえ| FixHook["rb-* / rr-* を確認"]
+    Hook -->|はい| Cascade{"カスケードは正しいか"}
 
-    Cascade -->|No| FixCascade["Plugin → Theme → userCssを確認"]
-    Cascade -->|Yes| Mode{"Color Mode条件は正しい？"}
+    Cascade -->|いいえ| FixCascade["プラグイン → テーマ → userCss を確認"]
+    Cascade -->|はい| Mode{"カラーモードの条件は正しいか"}
 
-    Mode -->|No| FixMode["data-theme / systemを確認"]
-    Mode -->|Yes| CSS["Selector / CSSを確認"]
+    Mode -->|いいえ| FixMode["data-theme / system を確認"]
+    Mode -->|はい| CSS["セレクター / CSS を確認"]
 ```
 
-特に確認するのは、
+特に確認する項目は次のとおりです。
 
-1. `data-theme-name` が Theme の `name` と一致しているか
-2. `.rb-*` / `.rr-*` の正しい Stable Hook を対象にしているか
-3. Plugin CSS → Theme CSS → `userCss` の順になっているか
+1. `data-theme-name` がテーマの `name` と一致しているか
+2. `.rb-*` / `.rr-*` の正しい安定したフックを対象にしているか
+3. プラグイン CSS → テーマ CSS → `userCss` の順になっているか
 4. `system` なのに `data-theme=""` が残っていないか
-5. Theme Root の外へ Selector が漏れていないか
-
-です。
+5. テーマルートの外へセレクターが漏れていないか

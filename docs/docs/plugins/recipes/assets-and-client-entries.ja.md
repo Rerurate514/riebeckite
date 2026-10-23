@@ -119,7 +119,7 @@ export function initCopyCode(config: CopyCodeConfig = {}): void {
 
 配布するパッケージでは、`exports` を実際に同梱するファイルへ向けてください。生成されたクライアントモジュールは名前付き export を import し、`publicConfig` を渡して呼び出します。それ以外のオプションは渡しません。
 
-コンポーネントの状態が必要で、DOM の強化では足りない場合は、サイト側でコンポーネントを HonoX Island で包みます。プラグインは `app/islands/` を所有しません。
+コンポーネントの状態が必要で、DOM の拡張では足りない場合は、サイト側でコンポーネントを HonoX Island で包みます。プラグインは `app/islands/` を所有しません。
 
 ---
 

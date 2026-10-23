@@ -1,25 +1,25 @@
 ---
 date: 2026-10-14
-title: Site Config
+title: サイト設定（Site Config）
 sidebar:
   hidden: true
 ---
 
-# Site Config
+# サイト設定（Site Config）
 
-SiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）はサイトを記述します。これらの値がSEOやfeed、localeを駆動します。
+サイトを記述し、SEO、フィード、ロケールを駆動するSiteConfigのフィールド（title、description、author、baseUrl、locale、twitterSite、defaultOgImage、feed）です。
 
-## SiteConfigフィールド
+## SiteConfigのフィールド
 
 | フィールド | 説明 |
 | --- | --- |
-| `title` | ページの `<title>` とSEOメタデータに使用されるサイトタイトル |
-| `description` | ページのデフォルトdescription |
-| `author` | ページのデフォルトauthor |
+| `title` | ページの `<title>` とSEOメタデータに使うサイトタイトル |
+| `description` | ページの既定の説明 |
+| `author` | ページの既定の著者 |
 | `baseUrl` | サイトのベースURL（例：`https://example.com`） |
-| `locale` | デフォルトlocale（例：`en`, `ja`） |
-| `twitterSite` | Cardメタデータ用のTwitter @handle |
-| `defaultOgImage` | デフォルトのOpen Graph画像URL |
+| `locale` | 既定のロケール（例：`en`、`ja`） |
+| `twitterSite` | カードメタデータ用のTwitter @ハンドル |
+| `defaultOgImage` | 既定のOpen Graph画像URL |
 | `feed` | RSS/Atom/JSON Feedの設定 |
 
 ```ts
@@ -41,10 +41,10 @@ export default defineConfig({
 });
 ```
 
-## resolved configでのSite config
-Site configフィールドはconfig解決時に`ResolvedRiebeckiteConfig`にマージされ、`packages/core/src/config.ts`で定義されています。解決済みのconfigには`site`が`title`、`description`、`author`、`baseUrl`、`locale`、`twitterSite`、`defaultOgImage`、`feed`を含みます。`feed`サブセクションには`title`、`description`、`language`（`locale`から導出）が含まれます。
+## 解決済み設定でのサイト設定
+サイト設定のフィールドは設定の解決時に `ResolvedRiebeckiteConfig` へ解決され、`packages/core/src/config.ts` で定義されています。解決済みの設定には `site` が含まれ、`title`、`description`、`author`、`baseUrl`、`locale`、`twitterSite`、`defaultOgImage`、`feed` を持ちます。`feed` のサブセクションには `title`、`description`、`language`（`locale` から導出）が含まれます。
 
-これらの解決された値は、BuildとRuntimeを通じてintegrationとプラグインによって使用されます。たとえば、`buildAbsoluteUrl`は`config.site.baseUrl`を使用し、SEOプラグインは`config.site.title`と`config.site.description`をメタデータに使用し、l10nプラグインは`config.site.locale`を言語検出の既定値として使用します。
+これらの解決済みの値は、ビルドと実行環境を通じてインテグレーションとプラグインが使います。たとえば `buildAbsoluteUrl` は `config.site.baseUrl` を使い、SEOプラグインはメタデータに `config.site.title` と `config.site.description` を使い、l10nプラグインは言語検出の既定値に `config.site.locale` を使います。
 
 ## 関連用語
 

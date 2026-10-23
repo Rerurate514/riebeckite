@@ -1,23 +1,23 @@
 ---
 date: 2026-10-14
-title: Content Index
+title: コンテンツインデックス（Content Index）
 sidebar:
   hidden: true
 ---
 
-# Content Index
+# コンテンツインデックス（Content Index）
 
-WikiLinkやembedを解決するための、小文字化した名前からノートへの対応表です。複数のノートに一致する名前は載せず、誤った解決を避けてdiagnosticとして報告します。
+WikiLinkと埋め込みを解決するために使う、小文字化した名前からノートへの対応表です。複数のノートに一致する名前は対応表から外され、誤った対象へ解決する代わりに診断として報告されます。
 
-## キーとパスの後方一致
+## キーと接尾辞
 
-`guides/localization.md`のノートは、`localization`、`guides/localization`、フルパスの各キーで登録されます。そのため`[[localization]]`も`[[guides/localization]]`も解決します。
+`guides/localization.md`のノートでは、`localization`、`guides/localization`、フルパスのすべてのパスの接尾辞がインデックスに登録されます。そのため`[[localization]]`も`[[guides/localization]]`も解決します。
 
-frontmatterのaliasも追加のキーとして登録します。
+frontmatterのエイリアスは追加のキーとして登録されます。
 
 ## 曖昧さ
 
-2つのノートが同じキーを登録すると、そのキーは対応表から外し、報告します。リンクは誤ったノートを指さず、未解決のまま残ります。
+2つのノートが同じキーを登録すると、そのキーはインデックスから削除され、報告されます。リンクは誤ったノートを指さず、未解決のまま残ります。
 
 曖昧な名前へ意図的にリンクする場合は、明示的なパス形式を使います。
 
@@ -25,14 +25,14 @@ frontmatterのaliasも追加のキーとして登録します。
 [[glossary/theme|theme]]
 ```
 
-## content indexの構造
+## コンテンツインデックスの構造
 
-content indexは`ContentIndexBuild`(`packages/core/src/content/content_index_builder.ts`)の型で、`ContentIndexBuilder.build()`または`resolveContentIndex()`が返します。以下のプロパティを持ちます：
+コンテンツインデックスは`ContentIndexBuild`型（`packages/core/src/content/content_index_builder.ts`）で、`ContentIndexBuilder.build()`または`resolveContentIndex()`が返します。次を含みます。
 
-- **`index`** ：`Map<string, string>`。lowercase slug suffixからcanonicalなcontent pathへのマッピング。キーが1つの候補だけと一致する場合、それを解決キーとします。複数の候補と一致するキーは意図的にインデックスから外されます（曖昧と判定）。
-- **`ambiguities`** ：`ReadonlyMap<string, readonly string[]>`。曖昧なキーを、ソートされた候補のリストへマップします。
+- **`index`** — 小文字化したslugの接尾辞を正規のコンテンツパスへ対応付ける`Map<string, string>`。候補が1つだけのキーはそれに解決し、複数の候補に一致するキーは意図的に含まれません（曖昧）。
+- **`ambiguities`** — 曖昧なキーを、並べ替えた候補エントリの一覧へ対応付ける`ReadonlyMap<string, readonly string[]>`。
 
-index構築の出力例：
+インデックス構築の出力例：
 
 ```ts
 {
@@ -41,12 +41,12 @@ index構築の出力例：
     ["world", "notes/world"],
   ]),
   ambiguities: new Map([
-    ["tags", ["notes/tag1", "notes/tag2"]], // "tags" slug suffixを持つノートが複数存在
+    ["tags", ["notes/tag1", "notes/tag2"]], // multiple notes with "tags" slug suffix
   ]),
 }
 ```
 
-indexはすべてのコンテンツentryを走査し、lowercasedなパスの後方一致（frontmatter aliasも含む）を収集した後、`resolveContentIndex`によって候補を収束させます。キーが1つのノートと一致しない場合、インデックスから外され、誤った解決を防ぎます。
+インデックスは、すべてのコンテンツエントリを走査して小文字化したパスの接尾辞（frontmatterのエイリアスを含む）を集め、`resolveContentIndex`で候補を1つにまとめて構築します。キーが複数のノートに一致する場合は、誤った解決を防ぐためインデックスから削除されます。
 
 ## 関連用語
 

@@ -4,7 +4,7 @@ title: GitHub Actions
 ---
 # GitHub Actions
 
-Riebeckite では、GitHub Actions を使って **GitHub への Push から Cloudflare Workers への Deployment を自動化**できます。
+Riebeckite と GitHub Actions を組み合わせると、**GitHub へのプッシュをきっかけに Cloudflare Workers へ自動デプロイ**できます。
 
 ```mermaid id="s7gf16"
 flowchart LR
@@ -22,17 +22,17 @@ flowchart LR
     Dist --> CF
 ```
 
-Site と Content が同じ Repository にある一般的な構成なら、`main` へ Push するだけで Build と Deploy を実行できます。
+サイトとコンテンツを同じリポジトリに置く一般的な構成なら、`main` へプッシュするだけでビルドとデプロイが実行されます。
 
-## GitHub Actions を有効にして Site を作る
+## GitHub Actions を有効にしてサイトを作る
 
-対話式の CLI では、最後にデプロイ設定を尋ねたところで `GitHub Actions` を選びます。手元からの初回公開（Local-first）は `Cloudflare Workers` を選びます。コマンドラインから GitHub Actions を指定する場合は次のとおりです。
+対話形式の CLI では、セットアップの最後にデプロイ方法を尋ねられます。継続デプロイには `GitHub Actions` を選んでください。手元から最初の公開を行う場合は `Cloudflare Workers` を選びます。コマンドラインから GitHub Actions を指定する場合は次のとおりです。
 
 ```bash id="f10w6x"
-npx create-riebeckite my-site --github-actions
+npx create-riebeckite my-site --preset starter --github-actions
 ```
 
-これによって、Cloudflare Workers への Deployment に必要な、
+`--github-actions` を付けると、サイトに次の2つが追加されます。
 
 ```text id="hw99qe"
 my-site/
@@ -44,84 +44,74 @@ my-site/
 └─ ...
 ```
 
-が生成されます。
-
-| File | 役割 |
+| ファイル | 役割 |
 | --- | --- |
-| `wrangler.jsonc` | Cloudflare Workers の Deployment 設定 |
-| `.github/workflows/deploy.yml` | GitHub Actions の Build / Deploy Workflow |
+| `wrangler.jsonc` | Cloudflare Workers へのデプロイ設定 |
+| `.github/workflows/deploy.yml` | GitHub Actions のビルド／デプロイワークフロー |
 
-通常は、生成された Workflow を出発点として利用します。
+通常は、生成されたワークフローを出発点として使います。
 
-## 既存の Site に追加する
+## 既存のサイトに継続デプロイを追加する
 
-すでに Local-first で公開している場合は、Site を作り直さずに継続デプロイを追加できます。Site の Directory で次を実行します。
+すでに Local-first で公開しているサイトなら、作り直さずに継続デプロイを追加できます。サイトのディレクトリで次を実行してください。
 
 ```sh id="d3setupj1"
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは次の順で進みます。
+このコマンドは次の順に処理を進めます。
 
-1. Git Repository と GitHub Remote を検出する
-2. GitHub CLI（`gh`）が install 済みでログイン済みか確認する
-3. `.github/workflows/deploy.yml` が無ければ、同じテンプレートから作成する。Riebeckite 以外の既存 workflow は上書きせず、検出したことを報告し、secret の登録には進まずに停止する
-4. Wrangler のログイン状態から Cloudflare Account を取得する。複数ある場合は選択する
-5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` を Repository Secret として登録する。Token は hidden prompt、または non-interactive 用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
+1. Git リポジトリと GitHub のリモートを検出する
+2. GitHub CLI（`gh`）がインストール済みで、ログイン済みか確認する
+3. `.github/workflows/deploy.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出したことを報告して、シークレットの登録に進む前に停止する
+4. Wrangler のログイン状態から Cloudflare アカウントを取得する。複数ある場合は選択する
+5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリシークレットとして登録する。トークンは入力内容が表示されないプロンプト、または非対話実行用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
 
-GitHub Repository の作成と push は行いません。完了後、次で Deploy します。
+GitHub リポジトリの作成やプッシュは行いません。完了したら、次のコマンドでデプロイします。
 
 ```sh
 git push
 ```
 
-再実行も可能です。一致する workflow と登録済みの secret は検出され、残りの手順だけを実行します。別の deployment workflow が既にある場合は、置き換えるか削除してから再実行してください。
+このコマンドは何度でも再実行できます。一致するワークフローと登録済みのシークレットがあれば、それらはスキップされ、残りの手順だけが実行されます。別のデプロイワークフローがすでにある場合は、置き換えるか削除してから再実行してください。
 
 ## 必要なもの
 
-GitHub Actions から Deployment するには、次の設定が必要です。
+GitHub Actions からデプロイするには、次のものが必要です。
 
 - `package-lock.json`
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
-- `deploy setup` を使う場合は GitHub CLI（`gh`）の install とログイン、および Wrangler の依存（Local-first の Site には含まれています）
+- `deploy setup` を使う場合は、GitHub CLI（`gh`）のインストールとログイン、およびプロジェクト内の Wrangler（Local-first のサイトには含まれています）
 
 ### `package-lock.json`
 
-生成される Workflow は、
+生成されるワークフローは、次のコマンドで依存パッケージをインストールします。
 
 ```sh id="8ihzjv"
 npm ci
 ```
 
-を使って依存 Package をインストールします。
-
-そのため、
+そのため、`package-lock.json` をリポジトリにコミットしてください。
 
 ```text id="3oyv7c"
-package-lock.json
-```
-
-を Repository に Commit してください。
-
-```text id="s9xb5j"
 package.json
 package-lock.json
       ↓
 npm ci
       ↓
-同じ依存関係をCIでinstall
+CI でも同じ依存関係がインストールされる
 ```
 
-`package-lock.json` がない状態では、生成 Workflow の `npm ci` をそのまま利用できません。
+`package-lock.json` がないと、生成されたワークフローの `npm ci` をそのまま使えません。
 
-## Repository を GitHub に置く
+## リポジトリを GitHub に置く
 
-GitHub Actions は GitHub 上の Repository を読みます。Site Repository がまだなければ、作ります。
+GitHub Actions は GitHub 上のリポジトリを読み取ります。サイトのリポジトリがまだない場合は作成してください。
 
-### Git で初期化する
+### Git でリポジトリを初期化する
 
-Site の Directory で、次を実行します。
+サイトのディレクトリで次を実行します。
 
 ```sh
 git init
@@ -129,19 +119,19 @@ git add .
 git commit -m "First commit"
 ```
 
-`.gitignore` は生成済みなので `node_modules/` や `dist/` は commit されません。一方で `package-lock.json` は commit されます。このファイルが無いと、この後説明する `npm ci` が動かないので必ず残してください。
+`.gitignore` は生成済みなので、`node_modules/` や `dist/` はコミットされません。一方、`package-lock.json` はコミットされます。このファイルがないと後述の `npm ci` が動かないため、必ず残してください。
 
-Git を初めて使う場合、`git commit` が `Author identity unknown` で失敗することがあります。そのときは次を設定してからやり直します。
+Git を初めて使う場合、`git commit` が `Author identity unknown` で失敗することがあります。その場合は次を設定してから、もう一度実行してください。
 
 ```sh
-git config --global user.name "あなたの名前"
+git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 
-### GitHub に Repository を作って push する
+### GitHub にリポジトリを作成してプッシュする
 
-1. [GitHub で New repository](https://github.com/new) を開きます。Repository 名を決めて作成します**。Add a README file** と **Add .gitignore** は**付けません**。ローカルに既に履歴があるため、両方を入れると push が拒否されます。
-2. 作成直後の画面に表示される「…or push an existing repository from the command line」のコマンドを、そのまま実行します。`main` を使う構成の例は次のとおりです。
+1. [GitHub の New repository](https://github.com/new) を開きます。リポジトリ名を決めて作成してください。**Add a README file** と **Add .gitignore** は追加しません。ローカルにすでに履歴があるため、どちらかを追加するとプッシュが拒否されます。
+2. 作成直後に表示される「…or push an existing repository from the command line」のコマンドを、そのまま実行します。`main` を使う構成の例は次のとおりです。
 
 ```sh
 git remote add origin https://github.com/<you>/my-site.git
@@ -149,11 +139,11 @@ git branch -M main
 git push -u origin main
 ```
 
-`git push -u origin main` が成功したら、GitHub の Repository ページにファイルが表示されます。これで `main` への次回 push から Workflow を動かせます。
+`git push -u origin main` が成功すると、GitHub のリポジトリページにファイルが表示されます。以降は `main` へプッシュするたびにワークフローが実行されます。
 
-## Cloudflare の Secrets
+## Cloudflare のシークレット
 
-Site Repository に、次の GitHub Actions Secrets を設定します。
+サイトのリポジトリに、次の GitHub Actions シークレットを設定します。
 
 ```text id="79c4ea"
 CLOUDFLARE_API_TOKEN
@@ -162,39 +152,39 @@ CLOUDFLARE_ACCOUNT_ID
 
 どちらも Cloudflare 側で用意します。
 
-### `CLOUDFLARE_API_TOKEN` を作る
+### `CLOUDFLARE_API_TOKEN` を作成する
 
-1. [Cloudflare ダッシュボード](https://dash.cloudflare.com/) にログインし、右上のアカウントメニューから **My Profile** を開きます。直接 [API Tokens](https://dash.cloudflare.com/profile/api-tokens) でも開けます。
+1. [Cloudflare ダッシュボード](https://dash.cloudflare.com/) にログインし、右上のアカウントメニューから **My Profile** を開きます。[API Tokens](https://dash.cloudflare.com/profile/api-tokens) を直接開いてもかまいません。
 2. **Create Token** → **Create Custom Token** を選びます。
-3. **Permissions** に **Account** / **Workers Scripts** / **Edit** を追加します。
-4. **Account Resources** に自分の Account を含めます。
+3. **Permissions** で **Account** / **Workers Scripts** / **Edit** を追加します。
+4. **Account Resources** に自分のアカウントを含めます。
 5. **Continue to review** → **Create Token** を押します。
-6. 表示されたトークンの値をコピーします。この画面を閉じると、この値は二度と表示されません。
+6. 表示されたトークンの値をコピーします。この画面を閉じると、値は二度と表示されません。
 
-権限の詳しい考え方は [Cloudflare の公式手順](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) を参照してください。トークンが事故で漏れたときは、同じ画面からローテーションできます。
+権限の考え方については、[Cloudflare の公式ガイド](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) を参照してください。トークンが漏れた場合は、同じ画面からローテーションできます。
 
-### `CLOUDFLARE_ACCOUNT_ID` を探す
+### `CLOUDFLARE_ACCOUNT_ID` を確認する
 
-ダッシュボードで **Workers & Pages** を開くと、ブラウザのアドレスバーが次の形式になります。
+ダッシュボードで **Workers & Pages** を開くと、ブラウザのアドレスバーは次の形式になります。
 
 ```text
 https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages
 ```
 
-`<ACCOUNT_ID>` が `CLOUDFLARE_ACCOUNT_ID` の値です。Worker の詳細ページに表示される **Account ID** と同じ値でも構いません。
+`<ACCOUNT_ID>` が `CLOUDFLARE_ACCOUNT_ID` の値です。Worker の詳細ページに表示される **Account ID** も同じ値です。
 
 ### GitHub に登録する
 
-GitHub の Site Repository → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開きます。名前と値をそれぞれ登録します。
+GitHub のサイトリポジトリで **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開き、名前と値をそれぞれ登録します。
 
 ```text
 名前: CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
 名前: CLOUDFLARE_ACCOUNT_ID  値: 上の ACCOUNT_ID
 ```
 
-`riebeckite deploy setup` は、すでに Git Repository になっている Site に対してこの2つの登録を自動化します。Wrangler のログインから Account を取得し、Token は hidden prompt に貼り付けます。手元で secret を登録したい場合や、CLI を使えない場合は、上記の手動手順をそのまま利用してください。
+`riebeckite deploy setup` を使うと、すでに Git リポジトリになっているサイトでこの2つの登録を自動化できます。Wrangler のログインからアカウントを取得し、トークンは入力内容が表示されないプロンプトに貼り付けます。シークレットを手動で登録したい場合や、CLI を使えない場合は、上記の手順をそのまま利用してください。
 
-GitHub Repository の Actions から、Workflow がこれらを参照します。
+ワークフローは、GitHub リポジトリの Actions からこれらのシークレットを参照します。
 
 ```mermaid id="ngbty6"
 flowchart LR
@@ -206,33 +196,31 @@ flowchart LR
     Actions --> Cloudflare
 ```
 
-これらは Source Code や `riebeckite.config.ts` に直接書かず、Repository Secret として管理します。
+これらの値はソースコードや `riebeckite.config.ts` に直接書かず、リポジトリシークレットとして管理してください。
 
-## Workflow が動くタイミング
+## ワークフローが実行されるタイミング
 
-生成される Workflow は、次の3つの Trigger に対応します。
+生成されるワークフローは、次の3つのトリガーに対応しています。
 
-| Trigger | 用途 |
+| トリガー | 用途 |
 | --- | --- |
-| `main` への `push` | Site の変更を自動 Deploy |
-| `workflow_dispatch` | GitHub から手動実行 |
-| `repository_dispatch: content-updated` | 別 Repository の Content 更新から実行 |
+| `main` への `push` | サイトの変更を自動でデプロイする |
+| `workflow_dispatch` | GitHub から手動で実行する |
+| `repository_dispatch: content-updated` | 別リポジトリでのコンテンツ更新をきっかけに実行する |
 
-通常の Site Repository では、
+通常のサイトリポジトリでは、次の流れになります。
 
 ```text id="whvm5u"
-mainへpush
+main へプッシュ
     ↓
 GitHub Actions
     ↓
-Deploy
+デプロイ
 ```
 
-という流れになります。
+## サイトとコンテンツが同じリポジトリにある場合
 
-## Site と Content が同じ Repository の場合
-
-最も単純な構成です。
+これが最も単純な構成です。
 
 ```text id="8tqoq6"
 my-site/
@@ -244,13 +232,13 @@ my-site/
       └─ deploy.yml
 ```
 
-記事も Site も同じ Repository にあるため、
+記事とサイトが同じリポジトリにあるため、流れは次のようになります。
 
 ```mermaid id="j89zya"
 flowchart LR
-    Push["mainへpush"]
+    Push["main へプッシュ"]
     Workflow["deploy.yml"]
-    Build["Build"]
+    Build["ビルド"]
     Deploy["Cloudflare"]
 
     Push --> Workflow
@@ -258,66 +246,54 @@ flowchart LR
     Build --> Deploy
 ```
 
-となります。
+記事を変更して `main` へプッシュすれば、そのプッシュ自体がワークフローを起動します。
 
-記事を変更して `main` に Push すれば、その Push 自体が Workflow を起動します。
+## サイトとコンテンツが別リポジトリにある場合
 
-## Site と Content が別 Repository の場合
-
-Content Repository を分離している場合は少し流れが変わります。
+コンテンツリポジトリを分離している場合は、流れが少し変わります。
 
 ```text id="w3jwej"
-Content Repository
+コンテンツリポジトリ
   → Markdown / Obsidian Vault
 
-Site Repository
-  → Riebeckite / Config / Theme / Plugin
+サイトリポジトリ
+  → Riebeckite / 設定 / テーマ / プラグイン
 ```
 
-Content Repository に Push しても、**それだけでは Site Repository の Workflow は起動しません**。
-
-GitHub Actions の Workflow は、それぞれの Repository に属しているためです。
+コンテンツリポジトリへプッシュしても、**それだけではサイトリポジトリのワークフローは起動しません**。GitHub Actions のワークフローは、それぞれのリポジトリに属しているからです。
 
 ```mermaid id="v20ejj"
 flowchart LR
-    Content["Content Repository"]
-    Site["Site Repository"]
-    Workflow["Site deploy.yml"]
+    Content["コンテンツリポジトリ"]
+    Site["サイトリポジトリ"]
+    Workflow["サイトの deploy.yml"]
 
-    Content -.->|"pushだけでは起動しない"| Workflow
-    Site -->|"push"| Workflow
+    Content -.->|"プッシュだけでは起動しない"| Workflow
+    Site -->|"プッシュ"| Workflow
 ```
 
-Content の更新から Site を自動 Deploy するには、Content Repository から Site Repository へ通知します。
+コンテンツの更新をきっかけにサイトを自動デプロイするには、コンテンツリポジトリからサイトリポジトリへ通知します。
 
 ## `repository_dispatch`
 
-別 Repository から Site Workflow を起動するために、
+別リポジトリからサイトのワークフローを起動するには、`repository_dispatch` を利用します。
 
-```text id="ejx6wo"
-repository_dispatch
-```
-
-を利用します。
-
-Riebeckite の生成 Workflow は、
+Riebeckite が生成するワークフローは、次のイベントを受け取れるように設定されています。
 
 ```text id="5ss0v6"
 content-updated
 ```
 
-という Event を受け取れる構成です。
-
-全体の流れは、
+全体の流れは次のとおりです。
 
 ```mermaid id="k5hvll"
 flowchart LR
-    Push["Content<br/>mainへpush"]
+    Push["コンテンツの<br/>main へプッシュ"]
     Notify["notify-site.yml"]
     Dispatch["repository_dispatch<br/>content-updated"]
-    Site["Site Repository"]
+    Site["サイトリポジトリ"]
     Workflow["deploy.yml"]
-    Build["Build"]
+    Build["ビルド"]
     Deploy["Cloudflare"]
 
     Push --> Notify
@@ -328,72 +304,56 @@ flowchart LR
     Build --> Deploy
 ```
 
-となります。
-
 ## `notify-site.yml`
 
-Content Repository 側には、
+コンテンツリポジトリ側には、次のファイルを置きます。
 
 ```text id="7p33l5"
 .github/workflows/notify-site.yml
 ```
 
-を置きます。
-
-この Workflow の役割は Site を Build することではありません。
+このワークフローの役割は、サイトをビルドすることではありません。コンテンツが更新されたことをサイトリポジトリへ通知することです。
 
 ```text id="kw1g8g"
-Content Repository
+コンテンツリポジトリ
       ↓
-Site Repositoryへ
-「Contentが更新された」と通知
+サイトリポジトリへ
+「コンテンツが更新された」と通知
 ```
 
-することです。
-
-その通知を受けた Site Repository の `deploy.yml` が Build と Deploy を実行します。
+通知を受け取ったサイトリポジトリの `deploy.yml` が、ビルドとデプロイを実行します。
 
 ## `SITE_DISPATCH_TOKEN`
 
-Content Repository から Site Repository へ `repository_dispatch` を送るには、
-
-```text id="b18f8j"
-SITE_DISPATCH_TOKEN
-```
-
-を Content Repository 側の Secret として設定します。
+コンテンツリポジトリからサイトリポジトリへ `repository_dispatch` を送るには、`SITE_DISPATCH_TOKEN` をコンテンツリポジトリ側のシークレットとして設定します。
 
 ```mermaid id="m04tnw"
 flowchart LR
-    Content["Content Repository"]
+    Content["コンテンツリポジトリ"]
     Token["SITE_DISPATCH_TOKEN"]
-    Site["Site Repository"]
+    Site["サイトリポジトリ"]
 
     Content --> Token
     Token -->|"content-updated"| Site
 ```
 
-この Token は、
+このトークンは、**コンテンツリポジトリからサイトリポジトリのワークフローを起動するためのもの**です。
 
-**Content Repository から Site Repository の Workflow を起動するためのもの**
+## ワークフローの処理順
 
-です。
-
-## Workflow の流れ
-
-生成された Deployment Workflow は、概ね次の順番で処理します。
+生成されるデプロイワークフローは、おおむね次の順に処理を進めます。
 
 ```mermaid id="hdbpqw"
 flowchart TD
-    Start["Workflow開始"]
-    CheckoutSite["1. SiteをCheckout"]
-    CheckoutContent["2. 外部ContentをCheckout<br/>必要な場合のみ"]
+    Start["ワークフロー開始"]
+    CheckoutSite["1. サイトをチェックアウト"]
+    CheckoutContent["2. 外部コンテンツをチェックアウト<br/>必要な場合のみ"]
     Node["3. Node.js 22"]
     Install["4. npm ci"]
-    Cache["5. Riebeckite cacheを復元"]
+    Cache["5. Riebeckite のキャッシュを復元"]
     Check["6. riebeckite check"]
     Build["7. riebeckite build"]
-    Deploy["8. CloudflareへDeploy"]
+    Deploy["8. Cloudflare へデプロイ"]
 
     Start --> CheckoutSite
     CheckoutSite --> CheckoutContent
@@ -405,49 +365,41 @@ flowchart TD
     Build --> Deploy
 ```
 
-### 1. Site Repository を Checkout
+### 1. サイトリポジトリをチェックアウトする
 
-最初に Site Repository を取得します。
+最初にサイトリポジトリを取得します。
 
 ```text id="cq3r5o"
-GitHub Runner
+GitHub ランナー
     ↓
-Site Repository
+サイトリポジトリ
 ```
 
-ここには、
+ここには次のものが含まれます。
 
-- Riebeckite Config
-- Application
-- Plugin / Theme の設定
+- Riebeckite の設定
+- アプリケーション
+- プラグイン／テーマの設定
 - `package.json`
 - `package-lock.json`
 
-などが含まれます。
+### 2. 外部コンテンツをチェックアウトする
 
-### 2. 外部 Content を Checkout
+コンテンツが同じリポジトリにある場合、この追加手順は不要です。
 
-Content が同じ Repository にある場合、この追加処理は必要ありません。
-
-別 Repository を利用している場合は、Content Repository を、
-
-```text id="7xb8gc"
-content/
-```
-
-へ Checkout します。
+別リポジトリを使っている場合は、コンテンツリポジトリを `content/` へチェックアウトします。
 
 ```text id="1rhw6a"
-Runner
+ランナー
 
-Site Repository
+サイトリポジトリ
 ├─ app/
 ├─ riebeckite.config.ts
 ├─ package.json
-└─ content/          ← 外部Content Repository
+└─ content/          ← 外部のコンテンツリポジトリ
 ```
 
-その場合、Riebeckite 側では、
+その場合、Riebeckite 側では次のように読み込めます。
 
 ```ts id="k2zv1m"
 content: {
@@ -455,309 +407,278 @@ content: {
 },
 ```
 
-として読み込めます。
+### 3. Node.js をセットアップする
 
-### 3. Node.js を設定
-
-生成 Workflow では Node.js 22 を設定します。
+生成されるワークフローでは Node.js 22 をセットアップします。
 
 ```text id="db4q7u"
-GitHub Runner
+GitHub ランナー
       ↓
 Node.js 22
 ```
 
-その後の `npm ci` や Riebeckite CLI はこの環境で実行されます。
+以降の `npm ci` と Riebeckite CLI は、この環境で実行されます。
 
-### 4. Package をインストール
+### 4. パッケージをインストールする
+
+次のコマンドを実行します。
 
 ```sh id="82x1ig"
 npm ci
 ```
 
-を実行します。
+`npm ci` は `package-lock.json` に従って依存パッケージをインストールします。そのため、生成されたワークフローを使う場合は `package-lock.json` をコミットしておく必要があります。
 
-`npm ci` は `package-lock.json` に従って依存 Package をインストールします。
+### 5. Riebeckite のビルド状態を復元する
 
-そのため、生成 Workflow を利用する場合は `package-lock.json` を Commit しておく必要があります。
+生成されるワークフローは、増分 SSG に必要な状態を1つの `actions/cache` 手順で復元します。
 
-### 5. Riebeckite の build state を復元
+- `.riebeckite/cache`：Markdown とプラグインの処理キャッシュ
+- `.riebeckite/build/content-state.json`：増分ビルドの状態
+- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG 出力キャッシュ。描画済みのルートとファイル、およびそのエントリの blob を保持します
+- `.riebeckite/ssg-output-cache.fast-path.json`：変更なしのファストパスを検証するためのサイドカー
 
-生成 Workflow は incremental SSG に必要な状態を 1 つの `actions/cache` step で復元します。
-
-- `.riebeckite/cache`：Markdown と Plugin の処理 cache
-- `.riebeckite/build/content-state.json`：incremental build の state
-- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG output cache。描画済みの route とファイル、およびその entry blob を保持します
-- `.riebeckite/ssg-output-cache.fast-path.json`：no-change fast path の検証用 sidecar
-
-cache key には runner OS、Node.js のバージョンが含まれます。`package-lock.json` の hash、`riebeckite.config.ts` の hash も含め、run ごとの generation として保存します。
+キャッシュキーは、ランナーの OS、Node.js のバージョン、`package-lock.json` のハッシュ、`riebeckite.config.ts` のハッシュで範囲を絞り、実行ごとの世代として保存します。
 
 ```text
 riebeckite-build-v2-<os>-node<node>-<lockfile hash>-<config hash>-<run id>-<run attempt>
 ```
 
-`restore-keys` は互換 generation を 2 段階でフォールバックします。まず lockfile と config の hash が同じ generation、次に lockfile の hash だけが同じ generation です。lockfile の hash はインストールされる Riebeckite のバージョンです。config の hash は Preset と Plugin の設定を覆うため、どちらかが変わると新しい cache 系列になります。実際の再利用は Riebeckite 自身の fingerprint 検証です。entry をその場で上書きすることはなく、各 run が新しい generation を保存し、古いものは GitHub が自動的に破棄します。
+`restore-keys` は、互換性のある直近の世代へ2段階でフォールバックします。まず lockfile と config のハッシュが一致する世代、次に lockfile のハッシュだけが一致する世代です。lockfile のハッシュはインストールされる Riebeckite のバージョンを、config のハッシュはプリセットとプラグインの設定を反映します。どちらかが変わると新しいキャッシュ系列が始まりますが、実際に再利用するかどうかは Riebeckite 自身のフィンガープリント検証（スキーマバージョン、アプリ／パイプライン／コンテンツのフィンガープリント、プラグインの `cacheVersion`）が決めます。
 
-cache は OS や Node.js のバージョンをまたいで共有されないため、異なる環境では非互換 entry を再利用せず cold build になります。`dist/` は cache しません。
+エントリがその場で上書きされることはありません。各実行が新しい世代を保存し、古い世代は GitHub が自動的に削除します。キャッシュは OS や Node.js のバージョンをまたいで共有されないため、環境が変われば互換性のないエントリを再利用せず、コールドビルドになります。`dist/` はキャッシュしません。
 
-復元した output cache を Riebeckite が棄却した場合（cache が無い）。壊れている、app fingerprint が変わった、`unknown` 依存の出力がある、full regeneration が必要、cache の無い出力がある。
-その後、すべての出力を描画し直して `dist/` を書き直すため、古い・不完全な cache が Deploy に混入することはありません。cache miss は安全で、単に cold build になるだけです。
+Riebeckite が復元した出力キャッシュを拒否した場合（キャッシュがない、キャッシュが壊れている、アプリケーションのフィンガープリントが変わった、`unknown` の出力依存関係がある、全体を再生成する必要がある、キャッシュされたエントリのない出力がある）は、すべての出力を描画し直して `dist/` を最初から書き直します。そのため、古いキャッシュや不完全なキャッシュがデプロイに混入することはありません。キャッシュミスは安全で、コールドビルドになるだけです。
 
-build 後は新しい cache generation が自動保存されます。build log の `Persistent content cache` 行にある `hits`、`misses`、`bypasses` は content 処理の再利用を示します。`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力の再利用を示します。`.riebeckite/` を削除する、または workflow の cache step を外すと次の run は cold になりますが、出力の正しさには影響しません。content cache は残しておきます。output cache の転送だけを省略したい場合は、cache step から `.riebeckite/ssg-output-cache*` の 3 パスを外してください。次の run はすべての出力を描画し直します。Workflow は復元・保存した cache のサイズも出力するので、転送コストを確認できます。cache の保存に失敗・省略されても Deploy は実行されます。
+ビルド後は、新しいキャッシュ世代が自動的に保存されます。ビルドログの `Persistent content cache` 行にある `hits`、`misses`、`bypasses` はコンテンツ処理を再利用したかどうかを、`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力を再利用したかどうかを示します。
 
-### 6. Site を検証
+`.riebeckite/` を削除するか、ワークフローのキャッシュ手順を外すと、次回はコールドビルドになりますが、出力の正しさには影響しません。コンテンツキャッシュは残したまま、出力キャッシュの転送だけを省きたい場合は、キャッシュ手順から `.riebeckite/ssg-output-cache*` の3つのパスを外してください。次回はすべての出力が再描画されます。
 
-次に、
+ワークフローは復元・保存したキャッシュのサイズも出力するので、転送コストを確認できます。キャッシュの保存に失敗した場合や省略された場合でも、デプロイは実行されます。
+
+### 6. サイトを検証する
+
+次に、次のコマンドを実行します。
 
 ```sh id="e8v6ki"
 npm exec riebeckite check
 ```
 
-を実行します。
-
-Config や Plugin の解決に問題があれば、Deploy 前にここで失敗します。
+設定やプラグインの解決に問題があれば、デプロイ前にここで失敗します。
 
 ```text id="ryypt0"
-Checkout
+チェックアウト
    ↓
-Install
+インストール
    ↓
 check
    ↓
 問題があれば停止
 ```
 
-壊れた設定のまま Deployment まで進めないための確認です。
+壊れた設定のままデプロイしないための確認です。
 
-### 7. Site を Build
+### 7. サイトをビルドする
 
-`check` が成功したら、
+`check` が成功したら、次のコマンドを実行します。
 
 ```sh id="4brn9u"
 npm exec riebeckite build
 ```
 
-を実行します。
-
-Riebeckite が公開用の、
-
-```text id="qqd5y7"
-dist/
-```
-
-を生成します。
+Riebeckite が公開用の `dist/` を生成します。
 
 ```text id="k2bc05"
-Content
-Config
-Plugin
-Theme
+コンテンツ
+設定
+プラグイン
+テーマ
    ↓
 riebeckite build
    ↓
 dist/
 ```
 
-### 7. Cloudflare Workers へ Deploy
+### 8. Cloudflare Workers へデプロイする
 
-最後に、
+最後に、`cloudflare/wrangler-action@v3` を使って Cloudflare Workers へデプロイします。
 
 ```text id="b6nmf8"
 cloudflare/wrangler-action@v3
 ```
-
-を使って Cloudflare Workers へ Deploy します。
 
 ```mermaid id="sxq25c"
 flowchart LR
     Dist["dist/"]
     Wrangler["wrangler-action"]
     Workers["Cloudflare Workers"]
-    Site["Public Site"]
+    Site["公開サイト"]
 
     Dist --> Wrangler
     Wrangler --> Workers
     Workers --> Site
 ```
 
-ここで、
+ここでは次のシークレットが使われます。
 
 ```text id="7y1w2d"
 CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 ```
 
-が利用されます。
+## プライベートなコンテンツリポジトリを使う
 
-## Private Content Repository を使う
+コンテンツリポジトリがパブリックかプライベートかで、チェックアウト時の認証方法が異なります。
 
-Content Repository が Public の場合と Private の場合では、Checkout の認証が異なります。
-
-Private Content Repository を読む場合は、Site Repository に、
+プライベートなコンテンツリポジトリを読むには、サイトリポジトリに `RIEBECKITE_CONTENT_READ_TOKEN` を設定します。
 
 ```text id="c2wnxd"
 RIEBECKITE_CONTENT_READ_TOKEN
 ```
 
-を設定します。
-
 ```mermaid id="bhq18h"
 flowchart LR
-    Site["Site Repository"]
+    Site["サイトリポジトリ"]
     Token["RIEBECKITE_CONTENT_READ_TOKEN"]
-    Content["Private Content Repository"]
+    Content["プライベートなコンテンツリポジトリ"]
 
     Site --> Token
     Token -->|"read"| Content
 ```
 
-この Token の役割は、
+このトークンは、**サイトのワークフローからプライベートなコンテンツリポジトリを読み込むためのもの**です。
 
-**Site の Workflow から Private Content Repository を読み込むこと**
+## 2つのトークンを使い分ける
 
-です。
+リポジトリを分離すると、名前の似た2つのトークンが登場します。用途が異なるので、混同しないよう注意してください。
 
-## 2つの Token を混同しない
-
-Repository を分離した構成では、似た名前の Token が2つ登場します。
-
-| Secret | 保存する場所 | 役割 |
+| シークレット | 保存する場所 | 役割 |
 | --- | --- | --- |
-| `RIEBECKITE_CONTENT_READ_TOKEN` | Site Repository | Private Content Repository を読む |
-| `SITE_DISPATCH_TOKEN` | Content Repository | Site Repository に更新を通知する |
+| `RIEBECKITE_CONTENT_READ_TOKEN` | サイトリポジトリ | プライベートなコンテンツリポジトリを読む |
+| `SITE_DISPATCH_TOKEN` | コンテンツリポジトリ | サイトリポジトリに更新を通知する |
 
-方向で覚えると分かりやすくなります。
+方向で整理すると区別しやすくなります。
 
 ```text id="xklxpf"
 RIEBECKITE_CONTENT_READ_TOKEN
 
-Site ─────read─────> Content
+サイト ─────read─────> コンテンツ
 ```
 
 ```text id="50j8kg"
 SITE_DISPATCH_TOKEN
 
-Content ───notify───> Site
+コンテンツ ───notify───> サイト
 ```
 
-つまり、
+つまり、次の関係です。
 
 ```mermaid id="z6g3xm"
 flowchart LR
-    Content["Content Repository"]
-    Site["Site Repository"]
+    Content["コンテンツリポジトリ"]
+    Site["サイトリポジトリ"]
 
     Content -->|"SITE_DISPATCH_TOKEN<br/>更新を通知"| Site
-    Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>Contentを取得"| Content
+    Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>コンテンツを取得"| Content
 ```
 
-です。
+## サイト更新時とコンテンツ更新時のデプロイ経路
 
-## Site Push と Content Push の違い
+リポジトリを分けると、デプロイ経路は2つになります。
 
-Repository を分離した場合は、2つの Deployment 経路があります。
-
-### Site を変更した場合
+### サイトを変更した場合
 
 ```text id="z48j9w"
-Site Repository
+サイトリポジトリ
       ↓
-mainへpush
+main へプッシュ
       ↓
 deploy.yml
       ↓
-ContentをCheckout
+コンテンツをチェックアウト
       ↓
-Build
+ビルド
       ↓
-Deploy
+デプロイ
 ```
 
-Site の `push` が直接 Workflow を起動します。
+サイトの `push` が直接ワークフローを起動します。
 
-### Content を変更した場合
+### コンテンツを変更した場合
 
 ```text id="rqr5jk"
-Content Repository
+コンテンツリポジトリ
       ↓
-mainへpush
+main へプッシュ
       ↓
 notify-site.yml
       ↓
 repository_dispatch
       ↓
-Site deploy.yml
+サイトの deploy.yml
       ↓
-ContentをCheckout
+コンテンツをチェックアウト
       ↓
-Build
+ビルド
       ↓
-Deploy
+デプロイ
 ```
 
-こちらでは、Content Repository から Site Repository への通知が1段階追加されます。
+こちらは、コンテンツリポジトリからサイトリポジトリへの通知が1段階増えます。
 
-どちらの場合も、最終的に **Site Repository 側で Build する**点は同じです。
+どちらの場合も、最終的に**サイトリポジトリ側でビルドする**点は同じです。
 
-## 手動で Deploy Workflow を実行する
+## デプロイワークフローを手動で実行する
 
-生成 Workflow は、
+生成されるワークフローは `workflow_dispatch` にも対応しているため、GitHub の画面から手動で実行できます。
 
 ```text id="25pv89"
 workflow_dispatch
 ```
 
-にも対応しています。
-
-そのため、GitHub 上から Workflow を手動実行できます。
+実行手順は次のとおりです。
 
 ```text id="0coc2a"
 GitHub
   ↓
 Actions
   ↓
-Deploy Workflow
+デプロイワークフロー
   ↓
 Run workflow
 ```
 
-Content や Site に新しい Commit を作らず、現在の状態でもう一度 Deployment したい場合などに利用できます。
+コンテンツやサイトに新しいコミットを作らず、現在の状態でもう一度デプロイしたいときに便利です。
 
-## Deployment が動かない場合
+## デプロイが動かないとき
 
-まず「Workflow が起動していない」のか、「Workflow は起動したが失敗した」のかを分けます。
+まず、ワークフローが起動していないのか、起動したけれど失敗したのかを切り分けます。
 
 ```mermaid id="o5l9js"
 flowchart TD
-    Problem["Deployされない"]
+    Problem["デプロイされない"]
 
-    Problem --> Started{"Workflowは起動した？"}
+    Problem --> Started{"ワークフローは起動した？"}
 
-    Started -->|"No"| Trigger["Triggerを確認"]
-    Started -->|"Yes"| Failed{"どこで失敗？"}
+    Started -->|"いいえ"| Trigger["トリガーを確認"]
+    Started -->|"はい"| Failed{"どこで失敗した？"}
 
-    Trigger --> Push["main push"]
+    Trigger --> Push["main への push"]
     Trigger --> Manual["workflow_dispatch"]
     Trigger --> Dispatch["repository_dispatch"]
 
-    Failed --> Checkout["Checkout"]
+    Failed --> Checkout["チェックアウト"]
     Failed --> Install["npm ci"]
     Failed --> Check["riebeckite check"]
     Failed --> Build["riebeckite build"]
-    Failed --> Deploy["Cloudflare Deploy"]
+    Failed --> Deploy["Cloudflare へのデプロイ"]
 ```
 
-## Workflow が起動しない
+## ワークフローが起動しない
 
-Site Repository への Push なら、
+サイトリポジトリへのプッシュなら、`main` へプッシュしているか確認します。
 
-```text id="r3q62q"
-main
-```
-
-へ Push しているか確認します。
-
-Content Repository への Push なら、
+コンテンツリポジトリへのプッシュなら、次の点を確認してください。
 
 ```text id="1xb7gc"
 notify-site.yml
@@ -766,65 +687,55 @@ repository_dispatch
 content-updated
 ```
 
-を確認します。
+コンテンツリポジトリへのプッシュだけでは、サイトのワークフローは起動しません。
 
-Content Repository への Push だけでは Site Workflow は起動しません。
+## `npm ci` が失敗する
 
-## `npm ci` で失敗する
-
-生成 Workflow は、
+生成されるワークフローは `npm ci` を使います。`package-lock.json` がリポジトリにコミットされているか確認してください。
 
 ```sh id="dtah4e"
 npm ci
 ```
 
-を利用します。
-
-そのため、
+必要なファイルは次のとおりです。
 
 ```text id="afg8hg"
 package-lock.json
 ```
 
-が Repository に Commit されているか確認してください。
+## コンテンツのチェックアウトが失敗する
 
-## Content の Checkout で失敗する
-
-Private Content Repository の場合は、
+プライベートなコンテンツリポジトリの場合は、`RIEBECKITE_CONTENT_READ_TOKEN` を確認します。
 
 ```text id="9d9gdo"
 RIEBECKITE_CONTENT_READ_TOKEN
 ```
 
-を確認します。
+サイトリポジトリのワークフローが、そのトークンを使ってコンテンツリポジトリを読める必要があります。
 
-Site Repository の Workflow が、その Token を使って Content Repository を読み取れる必要があります。
+## `check` が失敗する
 
-## `check` で失敗する
+次のコマンドを手元でも実行します。
 
 ```sh id="5jffy5"
 npm exec riebeckite check
 ```
 
-と同じ Command を手元でも実行します。
+設定やプラグインの問題を修正してからプッシュしてください。
 
-Config や Plugin の問題を修正してから Push してください。
+## `build` が失敗する
 
-## `build` で失敗する
-
-手元で、
+手元で次のコマンドを実行し、再現するか確認します。
 
 ```sh id="o2n6np"
 npm exec riebeckite build
 ```
 
-を実行して再現するか確認します。
+リポジトリを分けている場合は、CI と同じ場所にコンテンツがあるかも確認してください。
 
-Repository を分離している場合は、CI と同じ場所に Content が存在することも確認してください。
+## Cloudflare へのデプロイが失敗する
 
-## Cloudflare Deployment で失敗する
-
-Build までは成功している場合は、
+ビルドまでは成功しているなら、次の点を確認します。
 
 ```text id="rxagkm"
 CLOUDFLARE_API_TOKEN
@@ -832,16 +743,14 @@ CLOUDFLARE_ACCOUNT_ID
 wrangler.jsonc
 ```
 
-を確認します。
-
-Riebeckite の Build と Cloudflare Deployment は別の段階なので、どちらで失敗したかを分けて調べると原因を特定しやすくなります。
+Riebeckite のビルドと Cloudflare へのデプロイは別の段階です。どちらで失敗したかを切り分けると、原因を特定しやすくなります。
 
 ## まとめ
 
-通常の Site Repository では、
+通常のサイトリポジトリでは、次の流れになります。
 
 ```text id="8p29zx"
-mainへpush
+main へプッシュ
     ↓
 GitHub Actions
     ↓
@@ -854,46 +763,60 @@ riebeckite build
 Cloudflare Workers
 ```
 
-という流れになります。
-
-Content Repository を分離している場合は、
+コンテンツリポジトリを分離している場合は、次のようになります。
 
 ```text id="yt0pvq"
-Contentをpush
+コンテンツをプッシュ
     ↓
 notify-site.yml
     ↓
 repository_dispatch
     ↓
-Site Workflow
+サイトのワークフロー
     ↓
-ContentをCheckout
+コンテンツをチェックアウト
     ↓
-Build
+ビルド
     ↓
-Deploy
+デプロイ
 ```
 
-となります。
-
-特に覚えておきたいのは、
+特に覚えておきたいのは、次の役割の違いです。
 
 ```text id="30lm4f"
 SITE_DISPATCH_TOKEN
-  → ContentからSiteへ通知する
+  → コンテンツからサイトへ通知する
 
 RIEBECKITE_CONTENT_READ_TOKEN
-  → SiteからContentを読む
+  → サイトからコンテンツを読む
 
 CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
-  → CloudflareへDeployする
+  → Cloudflare へデプロイする
 ```
 
-という役割の違いです。
+## ローカルで確認する
 
-### 関連資料
+デプロイせずに、ビルドと設定を確認できます。
 
-- [Deployment Guides](./README.ja.md)：Deployment 方法の選択
-- [Cloudflare Workers](./cloudflare-workers.ja.md)：Cloudflare Workers の設定と手動 Deployment
-- [Separate Content Repository](./separate-content-repository.ja.md)：Content と Site を別 Repository で運用する
+```sh
+npm install
+npm exec riebeckite build
+npx wrangler deploy --dry-run
+```
+
+`wrangler deploy --dry-run` は Cloudflare に接続せず、`wrangler.jsonc` とアセットディレクトリを検証します。`npx wrangler dev` は同じ出力をローカルで配信します。
+
+## 運用上の注意点
+
+- **静的アセットだけで十分です。** Riebeckite はコンテンツのルートとプラグインのエンドポイントを事前レンダリングするため、`dist/` は実行時の `main` エントリなしで静的アセットとして配信されます。
+- **ビルド状態はビルド時に留まります。** `.riebeckite/` とプラグインのキャッシュは `dist/` に含まれず、Worker の実行環境に渡ることはありません。
+- **添付ファイルはサイト側で管理します。** 公開するつもりのファイルだけを、ビルド前の `prebuild` 手順でコピーしてください。
+
+## 関連資料
+
+- [デプロイガイド](./README.ja.md)：デプロイ方法の選び方
+- [Cloudflare Workers](./cloudflare-workers.ja.md)：Cloudflare Workers の設定と手動デプロイ
+- [コンテンツリポジトリの分離](./separate-content-repository.ja.md)：コンテンツとサイトを別リポジトリで運用する方法
+- Cloudflare デプロイテンプレート：元のファイル
+- [ビルドシステム](../../framework/build-system.ja.md)：ビルドが書き出すもの

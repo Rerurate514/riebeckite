@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Visibility
+title: 公開範囲（Visibility）
 sidebar:
   hidden: true
 ---
 
-# Visibility
+# 公開範囲（Visibility）
 
-公開したページをどう見せるかを細かく決めるfrontmatterのfieldです。ページを下書きにせず、一覧に載せるかどうかを分けます。
+公開したページの見せ方を調整するfrontmatterフィールドです。ページを下書きにせず、一覧に載せるページと非公開（unlisted）のページを分けます。
 
 ## 値
 
@@ -18,17 +18,17 @@ sidebar:
 
 ## publishedとの違い
 
-`visibility`は見せ方を調整し、`published`は公開するかどうか自体を決めます。unlistedのページは公開されていますが、一覧からは外れます。
+`visibility` は見せ方を調整し、`published` はページを公開するかどうか自体を決めます。[非公開（unlisted）](./unlisted.md)のページは公開されていますが、一覧からは外れます。
 
 ## 公開状態との統合
 
-frontmatterの`visibility`fieldは`resolvePublishingState`（`packages/core/src/content/publishing.ts`）の入力の一つです。publish strategyと`published`フィールドとともに、`ResolvedPublishingState`を決定します：
+frontmatterの `visibility` フィールドは、`resolvePublishingState`（`packages/core/src/content/publishing.ts`）への入力の1つです。公開戦略と `published` フィールドとともに、最終的な `ResolvedPublishingState` を決めます。
 
-- `visibility: "listed"`（既定）+`published: true`→ `visibility: "public", routable: true, discoverable: true`
-- `visibility: "unlisted"`+`published: true`→ `visibility: "unlisted", routable: true, discoverable: false`
-- `visibility: "public"`または`visibility: "unlisted"`で`published: false`→ `visibility: "draft", routable: false, discoverable: false`
+- `visibility: "listed"`（既定）＋ `published: true` → `visibility: "public", routable: true, discoverable: true`
+- `visibility: "unlisted"` ＋ `published: true` → `visibility: "unlisted", routable: true, discoverable: false`
+- `visibility: "public"` または `visibility: "unlisted"` で `published: false` → `visibility: "draft", routable: false, discoverable: false`
 
-つまり`visibility`はページが一覧に表示されるかどうかを制御し、`published`は公開されているかどうかを制御します。
+つまり `visibility` は公開済みのページが一覧に載るかを制御し、`published` はそもそも公開するかを制御します。
 
 ```ts
 // From packages/core/src/content/publishing.ts

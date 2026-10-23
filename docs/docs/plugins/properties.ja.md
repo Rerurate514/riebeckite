@@ -4,7 +4,7 @@ title: Properties
 ---
 # Properties
 
-ノートの frontmatter を Obsidian 風のプロパティパネルとして描画するプラグインです。プラグインは値を構造化データに変換し、Site がパネルの配置を決めます。
+ノートの frontmatter を Obsidian 風のプロパティパネルとして描画するプラグインです。プラグインは値を構造化データに変換し、パネルの配置はサイト側が決めます。
 
 [English](./properties.md)
 
@@ -12,7 +12,7 @@ title: Properties
 
 `properties()` はスタイルシートの提供、ウィキリンクの依存関係の追跡、変換できない frontmatter 値の警告を行います。描画済みの Markdown 本文は変更しません。
 
-Site はエクスポートされたコンポーネントを描画します。
+サイトはエクスポートされたコンポーネントを描画します。
 
 ```tsx
 import { Properties } from "@riebeckite/plugin-properties";
@@ -20,7 +20,7 @@ import { Properties } from "@riebeckite/plugin-properties";
 <Properties />;
 ```
 
-props を渡さない場合、`<Properties />` は Site コンテキストから現在の記事を読み取り、`properties()` の PluginConfig とコンポーネントのオプションをマージします。既定のスキャフォールドでは、すでに記事レイアウトに配置されています。
+props を渡さない場合、`<Properties />` はサイトのコンテキストから現在の記事を読み取り、`properties()` の PluginConfig とコンポーネントのオプションをマージします。既定のスキャフォールドでは、すでに記事レイアウトに配置されています。
 
 独自レイアウトでは、データを自分で解決してコンポーネントに渡せます。
 
@@ -158,9 +158,9 @@ type PropertiesData = {
 
 `renderPropertiesPanel()` も同じモデルを消費するため、パネルとコンポーネントの値の意味は常に一致します。公開型は `@riebeckite/plugin-properties` からインポートできます。
 
-### Publication Boundary
+### 公開境界
 
-ウィキリンクは Site の `PublicContentView` を通して解決されます。そのため、draft などルーティングされないエントリはプロパティからリンクできず、エスケープしたテキストのまま残ります。ルーティングされる unlisted エントリはリンクできますが、他の場所では非公開のままです。プラグインが公開判定を迂回することはありません。
+ウィキリンクはサイトの `PublicContentView` を通して解決されます。そのため、draft などルーティングされないエントリはプロパティからリンクできず、エスケープしたテキストのまま残ります。ルーティングされる unlisted エントリはリンクできますが、他の場所では非公開のままです。プラグインが公開判定を迂回することはありません。
 
 ## 表示と CSS
 
@@ -205,7 +205,7 @@ type PropertiesData = {
 }
 ```
 
-プラグインのスタイルシートはパネル内部の既定表示を担当します。Site の CSS はレイアウトを担当し、上記のフックを上書きできます。テーマの CSS は色とタイポグラフィのトークンを担当します。
+プラグインのスタイルシートはパネル内部の既定表示を担当します。サイトの CSS はレイアウトを担当し、上記のフックを上書きできます。テーマの CSS は色とタイポグラフィのトークンを担当します。
 
 外部リンクには `rel="noopener noreferrer"` と `target="_blank"` が付きます。テキストと属性値はすべてエスケープされます。出力する href は HTTP(S)、アンカー、ルート相対パスに限られます。
 
@@ -213,7 +213,7 @@ type PropertiesData = {
 
 - `properties(options?)` / `propertiesPlugin(options?)`：プラグインファクトリ
 - `getProperties({ view, frontmatter, options? })`：構造化データのヘルパー
-- `<Properties data? options? className? />`：共通レンダラーのコンポーネント
+- `<Properties data? options? className? />`：共通レンダラーコンポーネント
 - `renderPropertiesPanel(frontmatter, options?, context?)`：純粋な HTML レンダラー
 - `resolvePropertiesOptions(options?)`：既定値の解決
 - `validatePropertiesOptions(options?)`：設定の検証

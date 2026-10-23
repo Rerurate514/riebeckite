@@ -1,13 +1,13 @@
 ---
 date: 2026-10-08
-title: Theme の設定
+title: テーマの設定
 sidebar:
-  label: Theme の設定
+  label: テーマの設定
   order: 70
 ---
-# Theme の設定
+# テーマの設定
 
-Theme は `theme` で設定します。
+テーマは `theme` で設定します。
 
 ```ts id="pgj2be"
 theme: {
@@ -16,24 +16,24 @@ theme: {
 }
 ```
 
-raw configuration または宣言済み Theme を利用できます。
+テーマの設定を直接書く方法と、宣言済みのテーマを利用する方法があります。
 
-Theme は presentation の設定です。
+テーマは表示に関する設定です。
 
-HonoX、Vite、Cloudflare など Integration 固有の設定を Core configuration へ入れないでください。
+HonoX、Vite、Cloudflare など、インテグレーション固有の設定を Core の設定に混ぜないでください。
 
 ```mermaid id="m54zmx"
 flowchart TD
-    Config["Riebeckite Config"]
+    Config["Riebeckite の設定"]
 
-    Config --> Site["Site"]
-    Config --> Content["Content"]
+    Config --> Site["サイト"]
+    Config --> Content["コンテンツ"]
     Config --> Markdown["Markdown"]
-    Config --> Theme["Theme"]
-    Config --> Plugins["Plugins"]
+    Config --> Theme["テーマ"]
+    Config --> Plugins["プラグイン"]
 
-    Framework["HonoX / Vite / Platform"]
-    Framework --> Integration["Integration Config"]
+    Framework["HonoX / Vite / プラットフォーム"]
+    Framework --> Integration["インテグレーション設定"]
 
-    Integration -. "Core Configへ混ぜない" .-> Config
+    Integration -. "Core の設定へ混ぜない" .-> Config
 ```

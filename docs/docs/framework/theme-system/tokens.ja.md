@@ -1,56 +1,37 @@
 ---
 date: 2026-10-08
-title: Design Tokens
+title: デザイントークン
 sidebar:
-  label: Design Tokens
+  label: デザイントークン
   order: 30
 ---
-# Design Tokens
+# デザイントークン
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Design Token（Color / Typography / Layout）と Semantic Token の使い方を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、デザイントークンを扱います。
 
-## 10. Design Tokens
+## 3-4. デザイントークン（tokens）
 
-Theme の中心となるのが Semantic Design Token です。
+Coreの `ThemeDesignTokens` は、次のセマンティックなグループに分かれています。スタイルシートでは、これらを `--rb-*` というセマンティックなCSSカスタムプロパティとして扱います。
 
-Component や Plugin は、
-
-```text id="9vwkwf"
-このThemeの黒
-このThemeの灰色
-```
-
-のような Theme 固有の値を参照するのではなく、
-
-```text id="zfg9dh"
-本文色
-背景色
-Accent
-Border
-```
-
-という**意味**を参照します。
+コンポーネントやプラグインは、「このテーマの黒」「このテーマの灰色」のようなテーマ固有の値ではなく、**意味**を参照します。本文色、背景、アクセント、ボーダーなどがその例です。
 
 ```mermaid id="e6x8ou"
 flowchart LR
-    UI["Component / Plugin"]
+    UI["コンポーネント / プラグイン"]
     Token["--rb-color-ink"]
-    ThemeA["Theme A<br/>#202020"]
-    ThemeB["Theme B<br/>#d8dee9"]
+    ThemeA["テーマA<br/>#202020"]
+    ThemeB["テーマB<br/>#d8dee9"]
 
     UI --> Token
     ThemeA --> Token
     ThemeB --> Token
 ```
 
-これによって Theme を交換しても Component を変更する必要がありません。
+これにより、コンポーネントに手を加えずにテーマを交換できます。
 
+### 色
 
-## 11. Color Tokens
-
-主な Color Token は次のとおりです。
-
-| Token | CSS Variable |
+| トークン | CSS変数 |
 | --- | --- |
 | `paper` | `--rb-color-paper` |
 | `ink` | `--rb-color-ink` |
@@ -65,31 +46,28 @@ flowchart LR
 | `success` | `--rb-color-success` |
 | `codeBackground` | `--rb-color-code-background` |
 
+### タイポグラフィ
 
-## 12. Typography Tokens
-
-| Token | CSS Variable |
+| トークン | CSS変数 |
 | --- | --- |
 | `bodyFont` | `--rb-font-body` |
 | `headingFont` | `--rb-font-heading` |
 | `monoFont` | `--rb-font-mono` |
 
+### レイアウト
 
-## 13. Layout Tokens
-
-| Token | CSS Variable |
+| トークン | CSS変数 |
 | --- | --- |
 | `pageMaxWidth` | `--rb-layout-page-max` |
 | `articleMaxWidth` | `--rb-layout-article-max` |
 | `sidebarWidth` | `--rb-layout-sidebar` |
 | `contentGap` | `--rb-layout-gap` |
 
-CSS では次のように定義します。
+CSSでは次のように定義します。
 
 ```css id="u6csj3"
 @layer base {
-  :is(:root, .rb-theme-root)
-  [data-theme-name="example"] {
+  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
     --rb-color-paper: #fafafa;
     --rb-color-ink: #202020;
     --rb-color-accent: #555;
@@ -102,9 +80,7 @@ CSS では次のように定義します。
 }
 ```
 
-Token 名と CSS Variable 名が完全に同じとは限りません。
-
-たとえば、
+CSS変数名は、トークン名をケバブケースにしたものです。指定するトークン名とCSS変数名は異なります。
 
 ```text id="avjyrb"
 borderStrong
@@ -117,12 +93,7 @@ codeBackground
   → --rb-color-code-background
 ```
 
-のように kebab-case へ変換されます。
-
-
-## 14. Semantic Token を使う
-
-Plugin や Component でも Semantic Token を利用してください。
+**なぜセマンティックトークンが必要か**：コンポーネントやプラグインが特定のテーマの色名を直接参照すると、テーマを交換できなくなります。
 
 ```css id="0ld7xq"
 /* Good */
@@ -136,7 +107,7 @@ Plugin や Component でも Semantic Token を利用してください。
 }
 ```
 
-次のように Theme 固有の色を直接指定することは避けます。
+次のように、テーマ固有の色を直接指定することは避けます。
 
 ```css id="5tkz4j"
 /* Avoid */
@@ -147,21 +118,11 @@ Plugin や Component でも Semantic Token を利用してください。
 }
 ```
 
-後者では Theme を交換しても Plugin の色が変わりません。
+後者では、テーマを交換してもプラグインの色が変わりません。
 
-Plugin 固有の意味を持つ Token が必要なら、
-
-```text id="fbfuw6"
---rr-*
-```
-
-を Plugin 側で定義できます。
-
-必要に応じて、
+プラグイン固有の意味を持つトークンは、プラグインが `--rr-*` として所有し、利用できる場合は `--rb-*` にフォールバックします。
 
 ```css id="8qr5yn"
 --rr-example-background:
   var(--rb-color-surface);
 ```
-
-のように `--rb-*` を fallback として利用できます。

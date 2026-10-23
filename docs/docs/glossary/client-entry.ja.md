@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Client entry
+title: クライアントエントリ（Client Entry）
 sidebar:
   hidden: true
 ---
 
-# Client entry
+# クライアントエントリ（Client Entry）
 
-Client entryは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各entryはPlugin名、module specifier、任意のexport名、公開configを持ちます。
+クライアントエントリは、実行時に本当に必要なブラウザJavaScriptの初期化を宣言します。各エントリはプラグイン名、module specifier、任意のexport名、初期化処理に渡す公開設定を持ちます。
 
 ## 宣言
 
@@ -24,7 +24,7 @@ clientEntries: [
 
 ## 使う場面
 
-ブラウザでの初期化が本当に必要な場合だけClient entryを追加してください。SSRやビルド時だけで完結するPluginには、client用のJavaScriptを追加しないでください。`publicConfig`はclientの初期化処理に渡され、静的ホスト用にmanifestへ記録されます。
+ブラウザでの初期化が必要な場合にだけクライアントエントリを追加してください。SSRやビルド時に完結するプラグインには、クライアント用のJavaScriptを追加しないでください。`publicConfig`はクライアントの初期化処理に渡され、静的ホスト向けにマニフェストへ記録されます。
 
 ## 関連用語
 

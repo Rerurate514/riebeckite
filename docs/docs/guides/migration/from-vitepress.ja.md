@@ -29,12 +29,12 @@ sidebar:
 
 | 移行元の機能 | Riebeckite での方法 | 対応状況 |
 | --- | --- | --- |
-| Markdown ページと Frontmatter | 設定した content root 配下に Markdown を置く | Supported |
-| theme config、sidebar、navbar、Markdown 拡張 | Plugin、Theme CSS、アプリケーションコードとして再実装する | Manual Migration Required |
-| ナビゲーションとドキュメント階層 | Navigation / Docs Plugin と公開済みコンテンツ、sidebar Frontmatter を使う | Partially Supported |
-| 検索、backlinks、graph | 必要な Riebeckite Plugin を有効にする | Partially Supported |
-| ホスト・デプロイ固有の動作 | 移行先のホストで別途設定する | Manual Migration Required |
-| 未調査のサードパーティ拡張 | ソースを確認し、検証できた動作だけを再現する | Unverified |
+| Markdown ページと Frontmatter | 設定した content root 配下に Markdown を置く | 対応済み |
+| theme config、sidebar、navbar、Markdown 拡張 | Plugin、Theme CSS、アプリケーションコードとして再実装する | 手作業での移行が必要 |
+| ナビゲーションとドキュメント階層 | Navigation / Docs Plugin と公開済みコンテンツ、sidebar Frontmatter を使う | 一部対応 |
+| 検索、backlinks、graph | 必要な Riebeckite Plugin を有効にする | 一部対応 |
+| ホスト・デプロイ固有の動作 | 移行先のホストで別途設定する | 手作業での移行が必要 |
+| 未調査のサードパーティ拡張 | ソースを確認し、検証できた動作だけを再現する | 未検証 |
 
 ## 手順
 

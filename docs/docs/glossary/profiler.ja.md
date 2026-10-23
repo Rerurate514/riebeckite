@@ -1,32 +1,36 @@
 ---
 date: 2026-10-14
-title: Profiler
+title: プロファイラ（Profiler）
 sidebar:
   hidden: true
 ---
 
-# Profiler
+# プロファイラ（Profiler）
 
-コンテンツ処理からPluginのhook、出力生成まで、どこに時間がかかるかを計測するBuild時の仕組みです。trace spanを読み、Buildの所要時間を報告します。
+コンテンツ処理からプラグインのフック、出力生成まで、どこに時間がかかるかを計測するビルド時の仕組みです。トレーススパンを読み、ビルドの所要時間を報告します。
 
-## 計測するもの
+## 役割
 
-Buildの各段階の所要時間を計測します。記録したspanから時間を報告します。
+ビルドの各段階の所要時間を計測します。記録したスパンから所要時間を報告します。
 
-## Profiler Report
+## CLIでの使い方
 
-Profilerレポートはplugin-cacheアクティビティとpersistent-content-cacheアクティビティを分離してレポートします。content-cacheのhits、misses、bypassesを報告します。それぞれのmissの理由（例: `no-entry`や`dependency-changed`）とbypassの理由（例: l10n safe bypass）も含みます。そのため、incrementalな状態を再利用していない温かいビルドでも、キャッシュ内部を読まなくても説明できます。
+`riebeckite profile` を実行すると、トレースを収集してパフォーマンスレポートを表示します。増分再利用なしで計測するには `riebeckite profile --full` を使います。
 
-### diagnosticsの計測
+## プロファイルレポート
 
-Profilerは`diagnostics.run`spanの所要時間と、diagnosticsが検出したfindingsの件数を表示します。
+プロファイラのレポートは、プラグインキャッシュの動きと永続コンテンツキャッシュの動きを分けて示します。コンテンツキャッシュのヒット、ミス、バイパスに加え、各ミスの理由（例：`no-entry`、`dependency-changed`）と各バイパスの理由（例：l10nの安全なバイパス）を報告するため、エントリを再利用していないウォームビルドでも、キャッシュの内部を読まずに理由を説明できます。
 
-- total
-- error
-- warning
-- info
+### 診断の計測
 
-diagnosticsがかかった時間と同時に報告された問題の数がわかります。
+プロファイラは `diagnostics.run` スパンの所要時間と、診断が検出したfindingsの件数を表示します。
+
+- 合計（total）
+- エラー（error）
+- 警告（warning）
+- 情報（info）
+
+これにより、診断にどれだけ時間がかかり、同時にいくつの問題が報告されたかを確認できます。
 
 ```
 diagnostics.run
@@ -37,15 +41,15 @@ diagnostics.run
 └─ info
 ```
 
-diagnosticsがビルド時間の大部分を占めている場合、さらに調査するべき合図となります。
+診断がビルド時間の大部分を占めている場合は、その段階をさらに調査する合図です。
 
 ### 例
 
 ```sh
-# トレースを収集してパフォーマンスレポートを表示
+# Collect trace and display performance report
 riebeckite profile
 
-# incremental 状態を使わずに全体を計測
+# Without incremental reuse (full build path)
 riebeckite profile --full
 ```
 ## 関連用語

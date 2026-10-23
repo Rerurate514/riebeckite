@@ -1,15 +1,15 @@
 ---
 date: 2026-10-14
-title: Endpoint
+title: エンドポイント（Endpoint）
 sidebar:
   hidden: true
 ---
 
-# Endpoint
+# エンドポイント（Endpoint）
 
-Endpointは、Pluginが使える再利用可能なHTTPの振る舞いを宣言します。Integrationは、Pluginごとにフレームワーク固有のroutingを組み込むことなく、Endpointの宣言をホストのrouterに接続します。
+エンドポイントは、プラグインが使える再利用可能なHTTPの振る舞いを宣言します。インテグレーションがエンドポイントの取り決めをホストのルーターに接続するため、プラグイン自体にフレームワーク固有のルーティングを埋め込む必要はありません。
 
-## Endpointの定義
+## エンドポイントの定義
 
 ```ts
 import { defineEndpoint } from "@riebeckite/core";
@@ -21,9 +21,9 @@ const searchEndpoint = defineEndpoint(
 );
 ```
 
-## Integrationへの接続
+## インテグレーションとの接続
 
-IntegrationはEndpointの宣言をホストのrouterに接続します。Plugin自身で特定のrouter実装（HonoXなど）を組み込まないでください。
+インテグレーションがエンドポイントの取り決めをホストのルーターに接続します。プラグイン自体に特定のルーター実装（HonoXなど）を埋め込まないでください。
 
 ## 関連用語
 

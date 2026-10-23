@@ -1,30 +1,23 @@
 ---
 date: 2026-10-08
-title: Theme Root と Attributes
+title: テーマルートと属性
 sidebar:
-  label: Theme Root と Attributes
+  label: テーマルートと属性
   order: 40
 ---
-# Theme Root と Attributes
+# テーマルートと属性
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Theme Root と Theme 固有 Attribute を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、テーマルートとテーマ固有の属性を扱います。
 
-## 15. Theme Root
+## 3-6. テーマルートセレクター
 
-Theme CSS は Document 全体へ無条件に適用しません。
-
-基本 Selector は、
+組み込みテーマは、`:root` 単体を対象にしません。すべてのルールをテーマの識別名でスコープするため、同じスタイルシートを実際のドキュメントと埋め込みプレビューの両方に使えます。
 
 ```css id="36j35i"
-:is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
+:is(:root, .rb-theme-root)[data-theme-name="<name>"]
 ```
 
-です。
-
-`<name>` には Theme の Identity Name が入ります。
-
-組み込み Theme では、たとえば、
+`<name>` はテーマの識別名です。既定テーマは `riebeckite` です。組み込みテーマには次のものがあります。
 
 ```text id="l0yyse"
 riebeckite
@@ -35,20 +28,15 @@ tokyonight
 rerurate
 ```
 
-があります。
-
-
-## 16. Theme Root が必要な理由
-
-通常の Site では Application が `<html>` に Theme 名を付けます。
+実際のサイトでは、アプリが `<html>` にテーマ名を付けます。
 
 ```html id="18amdy"
 <html data-theme-name="minimal">
 ```
 
-この場合は `:root` が Theme Root になります。
+この場合、`:root` がテーマルートになります。
 
-一方、Theme Gallery では、
+一方、テーマギャラリーでは、同じドキュメント内に複数のテーマを表示できます。
 
 ```html id="3ynnb9"
 <div
@@ -66,18 +54,16 @@ rerurate
 </div>
 ```
 
-のように、同じ Document 内で複数 Theme を表示できます。
-
 ```mermaid id="5jjg45"
 flowchart TD
-    CSS["同じTheme CSS"]
+    CSS["同じテーマ CSS"]
 
-    CSS --> Site["実Site<br/>:root"]
-    CSS --> PreviewA["Preview<br/>.rb-theme-root"]
-    CSS --> PreviewB["別Theme Preview<br/>.rb-theme-root"]
+    CSS --> Site["実際のサイト<br/>:root"]
+    CSS --> PreviewA["プレビュー<br/>.rb-theme-root"]
+    CSS --> PreviewB["別テーマのプレビュー<br/>.rb-theme-root"]
 ```
 
-そのため Theme CSS を裸の、
+テーマ CSS を `:root` 単体に対して定義しないでください。
 
 ```css id="69pszy"
 :root {
@@ -85,12 +71,7 @@ flowchart TD
 }
 ```
 
-として定義しないでください。
-
-
-## 17. Theme Rule の Scope
-
-Color Mode、Typography、Theme Option、Element Rule も同じ Theme Root に閉じ込めます。
+ライト、ダーク、システム、タイポグラフィ、テーマオプション、要素と疑似クラスのルールは、すべて同じ接頭辞を持ちます。
 
 ```css id="bsov79"
 /* Light */
@@ -137,14 +118,11 @@ Color Mode、Typography、Theme Option、Element Rule も同じ Theme Root に�
 }
 ```
 
-`data-theme-name` は Application が出力します。
+`data-theme-name` はアプリが出力します。プレビューのコンテナに必要なのは、`.rb-theme-root` フックと一致するテーマ名だけです。
 
-Preview では `.rb-theme-root` と同じ Theme Name を指定します。
+## 4. カラーモード・属性・オプションの詳細
 
-
-## 18. Theme 固有 Attributes
-
-Theme 固有 Option を CSS へ渡したい場合は、安全な `data-*` Attribute を利用します。
+3-1 で説明した取り決めに加えて、テーマ固有のオプションは安全な `data-*` 属性を通じて CSS へ渡せます。
 
 ```ts id="ylx4jp"
 return defineTheme({
@@ -157,7 +135,7 @@ return defineTheme({
 });
 ```
 
-CSS では、
+その属性は、CSS から次のように対象にできます。
 
 ```css id="4evhcs"
 :is(:root, .rb-theme-root)
@@ -167,9 +145,7 @@ CSS では、
 }
 ```
 
-のように利用できます。
-
-Theme API から、
+テーマ API は、`class`、`style`、`id`、`lang` を自由に変更できるようには設計されていません。
 
 ```text id="cn9sza"
 class
@@ -178,13 +154,11 @@ id
 lang
 ```
 
-などを自由に変更する設計にはしません。
+フレームワークが所有する属性の名前空間と、テーマ固有の属性の名前空間を分けて保ちます。
 
-Framework が所有する Attribute と Theme 固有 Attribute を分離してください。
+## テーマルートと themeRootAttributes
 
-### ThemeRoot と themeRootAttributes
-
-Framework は `ThemeRoot` という UI primitive を提供し、`<html>` 要素への theme 属性の付与を担当します。
+フレームワークは `ThemeRoot` という UI プリミティブを提供しています。`<html>` 要素へのテーマ属性の設定を担当します。
 
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
@@ -197,7 +171,7 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 </ThemeRoot>
 ```
 
-`ThemeRoot` は次のように `<html>` 要素を描画します。
+`ThemeRoot` は次の属性を持つ `<html>` 要素を描画します。
 
 ```html
 <html
@@ -209,14 +183,14 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 >
 ```
 
-Framework は `themeRootAttributes(theme)` を使って、theme の `attributes` に加え、以下の予約属性を `<html>` へ出力します。
+フレームワークは `themeRootAttributes(theme)` を使い、テーマ自身の `attributes` に予約属性を加えて出力します。
 
-- `data-theme`: Color Mode の状態 (`"light"` / `"dark"` / 未設定の場合は削除)
-- `data-theme-name`: Theme の識別子
-- `data-typography`: Typography Preset の値
-- `data-article-layout`: Article Layout Preset の値
+- `data-theme`: カラーモードの状態（`"light"` / `"dark"`。`"system"` のときは省略）
+- `data-theme-name`: テーマの識別子
+- `data-typography`: タイポグラフィプリセットの値
+- `data-article-layout`: 記事レイアウトプリセットの値
 
-独自の `<html>` 属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` を直接使えます。
+`<html>` に独自の属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` ヘルパーを直接使います。
 
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
@@ -230,6 +204,6 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-ただし、Framework が予約する `data-theme`, `data-theme-name`, `data-typography`, `data-article-layout` は theme 側の `attributes` では上書きされません。
+ただし、フレームワークが予約している `data-theme`、`data-theme-name`、`data-typography`、`data-article-layout` は、テーマの `attributes` では上書きされません。
 
-Plugin や Theme が独自に `themeAttributes()` を実装していた場合は、Framework が提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。Framework が所有する attribute namespace と Theme 固有の namespace を明確に分離できます。
+プラグインやテーマが以前に独自の `themeAttributes()` を実装していた場合は、フレームワークが提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。これにより、フレームワークが所有する属性の名前空間と、テーマ固有の名前空間の分離が明確になります。

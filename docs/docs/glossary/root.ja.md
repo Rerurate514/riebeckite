@@ -1,26 +1,26 @@
 ---
 date: 2026-10-14
-title: Root
+title: ルート（Root）
 sidebar:
   hidden: true
 ---
 
-# Root
+# ルート（Root）
 
-Riebeckiteが他のパスを解決する基準となるディレクトリで、Application rootやcontent rootがあります。安定したrootを基準に解決することで、パスをマシン間で持ち運べます。
+Riebeckiteが他のパスを解決する基準となるディレクトリで、アプリケーションルートやコンテンツルートがあります。安定したルートを基準に解決することで、パスをマシン間で持ち運べます。
 
-## Application rootとContent root
-Riebeckiteは2つのrootディレクトリを定義します：
+## アプリケーションルートとコンテンツルート
+Riebeckiteは2つのルートディレクトリを定義します。
 
-| Root | 意味 |
+| ルート | 意味 |
 | --- | --- |
-| Application root | サイトをBuildするディレクトリ；Vite/project rootのデフォルト |
-| Content root | コンテンツを読み取るディレクトリ；configの`content.directory`で設定 |
+| アプリケーションルート | サイトをビルドするディレクトリ。既定はVite/プロジェクトのルート |
+| コンテンツルート | コンテンツを読み取るディレクトリ。設定の `content.directory` で指定 |
 
-Application rootはconfigの相対パス、環境変数、integration設定を解決するベースとして使用されます。Content rootは[[content-source|Content Source]]がMarkdownファイルをスキャンする対象です。configの相対パスはApplication rootを基準に解決するため、同じconfigは別のマシンでも動作します。
+アプリケーションルートは、設定、環境変数、インテグレーション設定の相対パスを解決する基準として使われます。コンテンツルートは[コンテンツソース](./content-source.md)がMarkdownファイルを走査する対象です。設定の相対パスはアプリケーションルートを基準に解決されるため、同じ設定が別のマシンでも動きます。
 
-## honox integrationでのroot解決
-`@riebeckite/honox`integrationは`resolveHonoxApplication`を通じてrootを解決し、`appRoot`と`configRoot`を決定します。デフォルトでは`appRoot`はVite root、`configRoot`は`appRoot`がデフォルトです。configパスは`configRoot`を相対にImportされます；`content.directory`は`appRoot`を相対に解決されます。
+## honoxインテグレーションでのルート解決
+`@riebeckite/honox` インテグレーションは `resolveHonoxApplication` を通じてルートを解決し、`appRoot` と `configRoot` を決めます。既定では `appRoot` はViteのルート、`configRoot` は `appRoot` です。設定パスは `configRoot` を基準にインポートされ、`content.directory` は `appRoot` を基準に解決されます。
 
 ```ts
 // Example: content.directory resolved relative to appRoot
@@ -29,15 +29,5 @@ content: {
 }
 ```
 
-その後は元の内容が続きます。
-
-## rootの種類
-
-| root | 意味 |
-| --- | --- |
-| Application root | サイトをBuildするディレクトリ |
-| Content root | コンテンツを読み取るディレクトリ |
-
 ## パスの持ち運び
-
-configの相対パスはapplication rootを基準に解決するため、同じconfigが別のマシンでも動きます。content rootはContent Sourceが走査する対象です。
+設定の相対パスはアプリケーションルートを基準に解決されるため、同じ設定が別のマシンでも動きます。コンテンツルートは[コンテンツソース](./content-source.md)が走査する対象です。

@@ -8,7 +8,7 @@ Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグ�
 
 [English](./canvas.md)
 
-## 設定する
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,14 +30,14 @@ export default defineConfig({
 
 `.canvas` が見つからない、または JSON Canvas として解釈できない場合はコードブロックをそのまま残し、`@riebeckite/plugin-canvas` を source とするメッセージを報告します。
 
-## どのように描画されるか
+## 描画結果
 
 `div.rb-canvas` を出力します。属性は `data-canvas`（入力元）、`data-canvas-nodes`、`data-canvas-edges`、`data-canvas-render`（`static` / `client` / `both` / 描画後の `ready`）です。内部には次を置きます。
 
 - `script[type="application/json"][data-canvas-payload]`：エスケープ済みの JSON Canvas。実行されません
 - `div.rb-canvas__static`：`render` が `"static"` または `"both"` のときの静的フォールバック。絶対配置したノードカードと SVG のエッジ
-- `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が内容を充填します
-- `details.rb-canvas__fallback`：ノードとエッジの一覧（JS なしでも内容を確認できます）
+- `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が中身を埋めます
+- `details.rb-canvas__fallback`：ノードとエッジの一覧（JavaScript なしでも内容を確認できます）
 
 `file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードは最小限の Markdown（wikilink とエスケープ）だけを扱います。
 
@@ -60,7 +60,7 @@ canvas({ documentPages: true })
 
 公開されるのは、公開ルーティングされたエントリからたどれる Canvas だけです。下書き・公開予定・その他非公開のノートからしか参照されていない Canvas は公開しません。Canvas 内のノートリンクが非公開ノートを指す場合は `#` に置き換えます。同じ URL を Markdown ページやリダイレクトが既に持っている場合は Markdown を優先し、Canvas ページは `canvas-page-conflict` を報告して生成しません。
 
-独立ページは `global` の output dependency を宣言します。Canvas の追加・改名・編集・削除や、参照するノートの変更で、影響する出力を無効化します。
+独立ページはグローバルな出力依存（`global`）を宣言します。Canvas の追加・改名・編集・削除や、参照するノートの変更で、影響する出力を無効化します。
 
 ## オプション
 

@@ -1,32 +1,32 @@
 ---
 date: 2026-10-08
-title: Inspector
+title: インスペクター
 ---
-# Inspector
+# インスペクター
 
-Inspector は、Riebeckite がすでに解決した設定やコンテンツ、Plugin、Build State を確認するための機能です。
+インスペクターは、Riebeckite がすでに解決した設定やコンテンツ、プラグイン、ビルド状態を確認するための機能です。
 
 簡単に言えば、**「Riebeckite から今どう見えているか」を調べるための読み取り専用ツール**です。
 
 たとえば、
 
 - 実際にどの設定が使われているか
-- どの Plugin が有効になっているか
+- どのプラグインが有効になっているか
 - 記事の最終的な URL は何か
 - コンテンツ同士がどうつながっているか
-- incremental build の state は正常か
+- インクリメンタルビルドの状態は正常か
 
 といった情報を確認できます。
 
 ```mermaid id="qg9q71"
 flowchart LR
-    A["Config"]
-    B["Plugins"]
-    C["Content"]
-    D["Content Graph"]
-    E["Build State"]
+    A["設定"]
+    B["プラグイン"]
+    C["コンテンツ"]
+    D["コンテンツグラフ"]
+    E["ビルド状態"]
 
-    A --> I["Inspector"]
+    A --> I["インスペクター"]
     B --> I
     C --> I
     D --> I
@@ -35,29 +35,29 @@ flowchart LR
     I --> F["情報を表示するだけ"]
 ```
 
-Inspector はこれらの情報を**確認するだけ**で、build や設定の変更は行いません。
+インスペクターはこれらの情報を**確認するだけ**で、ビルドや設定の変更は行いません。
 
-### 基本的な使い方
+## 基本的な使い方
 
-Inspector には、確認したい対象ごとにコマンドがあります。
+インスペクターには、確認したい対象ごとにコマンドがあります。
 
 | コマンド | 確認できるもの |
 | --- | --- |
 | `riebeckite inspect config` | 解決済みの設定 |
-| `riebeckite inspect plugins` | 有効になっている Plugin |
+| `riebeckite inspect plugins` | 有効になっているプラグイン |
 | `riebeckite inspect content --list` | 公開コンテンツと URL |
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
-| `riebeckite inspect build` | incremental build の state |
+| `riebeckite inspect build` | インクリメンタルビルドの状態 |
 
-### Config を確認する
+### 設定を確認する
 
 ```sh id="5zrcz3"
 riebeckite inspect config
 ```
 
-Riebeckite が実際に使用する **解決済みの config** を確認します。
+Riebeckite が実際に使用する**解決済みの設定**を確認します。
 
-設定ファイルに書いた値そのものではなく、既定値なども適用された後の「Riebeckite が最終的に認識している設定」を確認したいときに使用します。
+設定ファイルに書いた値そのものではなく、既定値などが適用された後の「Riebeckite が最終的に認識している設定」を確認したいときに使用します。
 
 たとえば、
 
@@ -65,17 +65,17 @@ Riebeckite が実際に使用する **解決済みの config** を確認しま�
 
 という場合に、まず実際の設定値を確認できます。
 
-### Plugin を確認する
+### プラグインを確認する
 
 ```sh id="4g0qba"
 riebeckite inspect plugins
 ```
 
-現在有効になっている Plugin を確認します。
+現在有効になっているプラグインを確認します。
 
-「Plugin を追加したつもりだけれど、本当に読み込まれているのか」を調べるときなどに利用できます。
+「プラグインを追加したつもりだけれど、本当に読み込まれているのか」を調べるときなどに利用できます。
 
-### Content を確認する
+### コンテンツを確認する
 
 ```sh id="v20yqo"
 riebeckite inspect content --list
@@ -83,7 +83,7 @@ riebeckite inspect content --list
 
 Riebeckite が認識しているコンテンツを一覧表示します。
 
-各 entry について、解決済みの **canonical permalink** を確認できます。
+各エントリーについて、解決済みの**正規パーマリンク**（canonical permalink）を確認できます。
 
 たとえば、
 
@@ -97,13 +97,13 @@ content/posts/hello.md
 /blog/hello/
 ```
 
-であれば、Inspector では最終的に解決された `/blog/hello/` を確認できます。
+であれば、インスペクターでは最終的に解決された `/blog/hello/` を確認できます。
 
-つまり、filesystem 上の場所ではなく、**実際にサイトで使われる URL** を確認するための情報です。
+つまり、ファイルシステム上の場所ではなく、**実際にサイトで使われる URL** を確認するための情報です。
 
-Public Location Plugin が identity metadata を提供している場合は、コンテンツ ID とその ID がどこから取得されたかも表示します。
+Public Location プラグインが識別メタデータを提供している場合は、コンテンツ ID とその ID がどこから取得されたかも表示します。
 
-### Content Graph を確認する
+### コンテンツグラフを確認する
 
 ```sh id="91iyz5"
 riebeckite inspect graph
@@ -122,67 +122,67 @@ graph LR
 
 のようなリンク関係を、Riebeckite がどのように認識しているか調べるために利用します。
 
-リンク、backlink、graph を利用する Plugin を開発するときの確認にも使えます。
+リンク、バックリンク、グラフを利用するプラグインを開発するときの確認にも使えます。
 
-### Build State を確認する
+### ビルド状態を確認する
 
 ```sh id="i6hsvx"
 riebeckite inspect build
 ```
 
-incremental build で利用する state の状態を確認します。
+インクリメンタルビルドで利用する状態を確認します。
 
-正常な state が存在する場合は、その情報を表示します。
+正常な状態が存在する場合は、その情報を表示します。
 
-state が利用できない場合は、その理由も確認できます。
+状態が利用できない場合は、その理由も確認できます。
 
 たとえば、
 
-- state file が存在しない
+- 状態ファイルが存在しない
 - JSON が壊れている
-- state version が現在の Riebeckite に対応していない
-- state の構造を認識できない
+- 状態のバージョンが現在の Riebeckite に対応していない
+- 状態の構造を認識できない
 
 といった状態です。
 
-Inspector はこれらを**修復しません**。
+インスペクターはこれらを**修復しません**。
 
 ```mermaid id="25a2uw"
 flowchart TD
     A["inspect build"]
-    B{"Build State は存在する？"}
+    B{"ビルド状態は存在する？"}
 
     A --> B
-    B -->|Yes| C{"State は有効？"}
-    B -->|No| D["State がないことを表示"]
+    B -->|はい| C{"状態は有効？"}
+    B -->|いいえ| D["状態がないことを表示"]
 
-    C -->|Yes| E["State の情報を表示"]
-    C -->|No| F["無効な理由を表示"]
+    C -->|はい| E["状態の情報を表示"]
+    C -->|いいえ| F["無効な理由を表示"]
 
     D --> G["終了"]
     E --> G
     F --> G
 ```
 
-state が壊れていても、Inspector が新しい state を作ったり、既存 state を書き換えたりすることはありません。
+状態が壊れていても、インスペクターが新しい状態を作ったり、既存の状態を書き換えたりすることはありません。
 
-## Read-only の保証
+## 読み取り専用の保証
 
-Inspector は **read-only** です。
+インスペクターは**読み取り専用**です。
 
-Inspector の実行によってプロジェクトの状態が変わってはいけません。
+インスペクターの実行によってプロジェクトの状態が変わってはいけません。
 
 具体的には、次の処理を行いません。
 
-- build の開始
-- incremental state の書き込み
-- Plugin Cache の書き込み
-- asset の生成
-- artifact の生成
-- Vite / HonoX build
-- config の自動修正
+- ビルドの開始
+- インクリメンタル状態の書き込み
+- プラグインキャッシュの書き込み
+- アセットの生成
+- 成果物の生成
+- Vite / HonoX のビルド
+- 設定の自動修正
 
-まだ一度も build しておらず、確認対象の情報が存在しない場合も、Inspector が勝手に生成することはありません。
+まだ一度もビルドしておらず、確認対象の情報が存在しない場合も、インスペクターが勝手に生成することはありません。
 
 代わりに、
 
@@ -190,7 +190,7 @@ Inspector の実行によってプロジェクトの状態が変わってはい�
 
 ことを明確に表示します。
 
-この性質により、Inspector は開発中だけでなく CI でも安全に利用できます。
+この性質により、インスペクターは開発中だけでなく CI でも安全に利用できます。
 
 ## `inspect` / `check` / `doctor` / `build` の違い
 
@@ -206,17 +206,17 @@ flowchart LR
     Q -->|"サイトを生成・更新したい"| B["build"]
 
     I --> IR["状態を変更しない"]
-    C --> CR["Config / Plugin を検証"]
-    D --> DR["Health を診断"]
-    B --> BR["Output / State を更新"]
+    C --> CR["設定とプラグインを検証"]
+    D --> DR["健全性を診断"]
+    B --> BR["出力と状態を更新"]
 ```
 
 | やりたいこと | コマンド |
 | --- | --- |
 | 現在の解決結果を確認する | `inspect` |
-| Config / Plugin が正しいか検証する | `check` |
-| Environment を含めて問題を診断する | `doctor` |
-| Site や Build State を生成・更新する | `build` |
+| 設定とプラグインが正しいか検証する | `check` |
+| 実行環境を含めて問題を診断する | `doctor` |
+| サイトやビルド状態を生成・更新する | `build` |
 
 迷った場合は、
 
@@ -224,6 +224,6 @@ flowchart LR
 
 と考えると分かりやすいです。
 
-この役割分担によって、状態を確認するだけのコマンドが cache や deployment output を意図せず変更することを防いでいます。
+この役割分担によって、状態を確認するだけのコマンドがキャッシュやデプロイ出力を意図せず変更することを防いでいます。
 
-各コマンドの詳細は [CLI](../reference/cli.ja.md)、診断の仕組みについては [Diagnostics](./diagnostics.ja.md)、incremental state については [Build System](./build-system.ja.md) を参照してください。
+各コマンドの詳細は [CLI](../reference/cli.ja.md)、診断の仕組みについては[診断](./diagnostics.ja.md)、インクリメンタル状態については [ビルドシステム](./build-system.ja.md) を参照してください。

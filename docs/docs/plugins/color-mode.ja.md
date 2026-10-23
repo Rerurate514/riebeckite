@@ -10,19 +10,19 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 ## 概要
 
-[theme-system.md](../reference/theme-api.ja.md) テーマの配色は、次の 3 つの CSS 状態で決まります。
+[テーマシステム](../reference/theme-api.ja.md) のテーマは、次の 3 つの CSS 状態から配色を決めます。
 
 - `:root`：ライト
 - `:root[data-theme="dark"]`：ダーク
 - `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }`：OS に追随（system）
 
-プラグインは、この 3 つの CSS 状態を切り替えるだけの薄い実行時スイッチで、次の 3 つを提供します。
+このプラグインは、その取り決めを切り替えるだけの薄い実行時スイッチで、次の 3 つを提供します。
 
-- `ColorModeScript`：`<head>` に置く 1 行のインラインスクリプト**。最初の描画の前に**保存済みモードを適用し、テーマのちらつき（FOUC）を防ぎます。
-- `ColorModeToggle`：ライト / ダーク / システムのセグメント型コントロール。
-- `initColorMode`：クライアントエントリ。ボタンの結線、`localStorage` への保存、ドキュメントの状態同期を行います。
+- `ColorModeScript`：`<head>` に置く 1 行のインラインスクリプトです。**最初の描画の前に**保存済みのモードを適用し、テーマのちらつき（FOUC）を防ぎます。
+- `ColorModeToggle`：ライト / ダーク / システムを選ぶセグメントコントロール。
+- `initColorMode`：クライアントエントリー。ボタンの結線、`localStorage` への保存、ドキュメントの状態同期を行います。
 
-`colorModePlugin()` はスタイルシートとクライアントエントリの登録だけを行います。UI はサイトシェルで描画する 2 つのコンポーネントから届きます。
+`colorModePlugin()` はスタイルシートとクライアントエントリーの登録だけを行います。UI は、サイトシェルで描画する 2 つのコンポーネントが担います。
 
 ## 使い方
 
@@ -63,7 +63,7 @@ return (
 
 `<ColorModeScript />` は CSS が適用される前にモードが確定するよう、スタイルシートより先に `<head>` へ置いてください。`<ColorModeToggle />` はヘッダーやナビバーなど任意の場所に配置できます。
 
-### Props
+### 受け取る props
 
 `ColorModeScript`
 
@@ -78,7 +78,7 @@ return (
 | `storageKey` | 保存先の localStorage キー。既定値は `riebeckite-color-mode`。 |
 | `modes` | 表示するモード（順序付き）。既定値は `["light", "dark", "system"]`。 |
 | `labels` | モードごとの `aria-label` 上書き: `{ light?, dark?, system? }`。 |
-| `label` | グループの先頭に置く可視非表示の `<legend>` として使われます。既定値は `"Color mode"`。 |
+| `label` | グループ名に使う文言。視覚的に隠した `<legend>` として描画されます。既定値は `"Color mode"`。 |
 
 ストレージキーを変更する場合は、両コンポーネントで同じ値を指定してください。
 
@@ -100,12 +100,12 @@ return (
 
 スタイルシートは `--rb-color-*` トークンを使うため、アクティブなテーマに追従します。ルートは `display: none` で、`initColorMode`（またはインラインスクリプト）が `<html>` に `data-rb-color-mode="ready"` を付けるまで非表示です。JavaScript が無効なページではコントロールそのものが現れません。
 
-Theme は `rr-color-mode` の root に `--rr-color-mode-border-radius` を指定すると、子要素を
-選択せずにコンテナとボタンで共有する角丸を変更できます。
+テーマは `rr-color-mode` のルート要素に `--rr-color-mode-border-radius` を指定すると、
+子要素を選択せずにコンテナとボタンで共有する角丸を変更できます。
 
 ## アクセシビリティ
 
-- コンテナは `<fieldset>` で、グループ名は可視非表示の `<legend>`（`label` props）が提供します。
+- コンテナは `<fieldset>` で、グループ名は視覚的に隠した `<legend>` が提供します。文言は `label` プロップで指定します。
 - 各ボタンは `type="button"` でモード名の `aria-label` を持ち、アクティブなボタンには実行時設定の `aria-pressed="true"` が付きます。
 - アイコンは装飾（`aria-hidden`）。ラベルはボタンから提供されます。
 - `prefers-reduced-motion` ではトランジションを無効化します。
@@ -129,12 +129,12 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 - `localStorage` へのアクセスは `try/catch` で保護しています。ストレージが使えない環境でも、そのページでは切替が機能します（永続化のみされません）。
 - 1 ページに複数のトグルを置く場合は、同じ `storageKey` を共有してください。
 
-## Exports
+## エクスポート
 
 - `colorModePlugin()`：プラグインファクトリ
 - `ColorModeToggle`：切替コンポーネント
 - `ColorModeScript`：描画前インラインスクリプトのコンポーネント
-- `initColorMode`：ブラウザ初期化関数（`@riebeckite/plugin-color-mode/client` からも export）
+- `initColorMode`：ブラウザ初期化関数（`@riebeckite/plugin-color-mode/client` からもエクスポート）
 - 定数: `COLOR_MODES` / `COLOR_MODE_STORAGE_KEY` / `COLOR_MODE_EVENT` ほか
 - 型: `ColorMode`
 

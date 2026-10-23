@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Unlisted
+title: 非公開（unlisted）
 sidebar:
   hidden: true
 ---
 
-# Unlisted
+# 非公開（unlisted）
 
-URLでは提供しつつ、一覧やfeedには載せない公開状態です。routableだがdiscoverableではないため、共有用のリンクや下書きに近いページに向きます。
+URLでは提供しつつ、一覧やフィードには載せない公開状態です。ルーティング対象だが検出可能ではないため、共有リンクや下書きに近いページに向きます。
 
 ## 設定
 
@@ -19,17 +19,27 @@ visibility: unlisted
 
 ## 効果
 
-ページはroutableのままで出力も作りますが、discoverableのビューから外れるため、一覧やfeedには載りません。
+ページは[ルーティング対象](./routable.md)のままで出力も作りますが、[検出可能](./discoverable.md)ビューから外れるため、一覧やフィードには載りません。
 
 ## 公開状態
 
-unlistedは`PublishingVisibility`の一つです（`packages/core/src/content/publishing.ts`）。frontmatterで`visibility: unlisted`が設定されると、`resolvePublishingState`は`routable: true, discoverable: false`を返します。つまり：
+非公開（unlisted）は `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。frontmatterで `visibility: unlisted` を設定すると、`resolvePublishingState` は `routable: true, discoverable: false` を返します。つまり次のようになります。
 
-- ページはURLで提供され、出力も生成されます
-- `discoverableEntries`ビューから除外されます
-- 一覧、feed、taxonomy用のページには表示されません
-- 直接のURLやWikiLinkで参照することはできます
+- ページはURLで提供され、出力も生成される
+- `discoverableEntries` ビューから除外される
+- 一覧、フィード、タクソノミーのタームページには表示されない
+- 直接のURLやWikiLinkからは参照できる
 
-## ドラフトとの違い
+```ts
+// From packages/core/src/content/publishing.ts
+export type PublishingVisibility = "public" | "unlisted" | "draft" | "scheduled";
+export type ResolvedPublishingState = {
+  visibility: PublishingVisibility;
+  routable: boolean;
+  discoverable: boolean;
+};
+```
 
-`draft`のvisibilityとは異なり、unlistedページは公開された状態でroutableです。draft（`published: false`や`visibility: draft`）はルーティングから完全に除外され、公開されるまで公出力は作られません。
+## 下書きとの関係
+
+`draft` のvisibilityとは異なり、非公開（unlisted）のページは公開済みかつルーティング対象とみなされます。下書き（`published: false` または `visibility: draft`）はルーティングから完全に除外され、公開されるまで公開出力を作りません。

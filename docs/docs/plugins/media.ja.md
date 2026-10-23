@@ -14,7 +14,7 @@ Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレ�
 
 ## 設定
 
-`media()` は既定の添付カードより先に動くため、Obsidian Markdown と添付ファイルのプラグインとあわせて登録します。
+`media()` は既定の添付カードより先に実行されるため、Obsidian Markdown と添付ファイルのプラグインとあわせて登録します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -38,7 +38,7 @@ export default defineConfig({
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
 | `preload` | `"none" \| "metadata" \| "auto"` | `lazy: true` なら `"none"`、それ以外は `"metadata"` | メディア要素の `preload` 属性 |
-| `lazy` | `boolean` | `true` | 未指定時に初期読み込みを抑える |
+| `lazy` | `boolean` | `true` | `preload` 未指定時に初期読み込みを抑える |
 | `showCaption` | `boolean` | `true` | キャプションを表示するか |
 | `showDownload` | `boolean` | `true` | ダウンロードリンクを表示するか |
 | `showOpenOriginal` | `boolean` | `true` | 元ファイルへのリンクを表示するか |

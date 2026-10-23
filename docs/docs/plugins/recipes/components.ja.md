@@ -7,7 +7,7 @@ sidebar:
 ---
 # UI コンポーネントを配布する
 
-プラグインは Hono JSX コンポーネントを export できますが、Riebeckite にコンポーネントレジストリはありません。サイトがコンポーネントを import し、どこに描画するかを決めます。レイアウトの所有権はサイト側に残ります。
+プラグインから Hono JSX コンポーネントを export できますが、Riebeckite にコンポーネントレジストリはありません。サイトがコンポーネントを import し、どこに描画するかを決めます。レイアウトの所有権はサイト側に残ります。
 
 プラグインのパッケージにコンポーネントを作ります。
 
@@ -49,7 +49,7 @@ export { default as SeriesList } from "./components/series-list.js";
 export type { SeriesListProps } from "./components/series-list.js";
 ```
 
-サイトは他のコンポーネントと同じように配置します。
+サイト側では、他のコンポーネントと同じように配置します。
 
 ```tsx
 import { SeriesList } from "@example/riebeckite-plugin-series-list";
@@ -64,7 +64,7 @@ return (
 );
 ```
 
-表示するものがないときは `null` を返すので、サイトは条件分岐なしで描画できます。manifest のデータが必要な場合は、公開済みのビューだけを受け取るヘルパーを export してください。ブラウザ側で下書きを読まないようにします。
+表示するものがないときは `null` を返すため、サイトは条件分岐なしで描画できます。マニフェストのデータが必要な場合は、公開範囲で絞り込んだビューだけを受け取るヘルパーを export してください。ブラウザ側で下書きを読まないようにします。
 
 ---
 

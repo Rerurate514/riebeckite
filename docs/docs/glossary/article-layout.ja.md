@@ -1,22 +1,22 @@
 ---
 date: 2026-10-14
-title: Article Layout
+title: 記事レイアウト（Article Layout）
 sidebar:
   hidden: true
 ---
-# Article Layout
+# 記事レイアウト（Article Layout）
 
-Article Layoutは、記事エリアの幅とサイドバーの構成を決めるプリセットです。`data-article-layout`属性で選び、`article`、`sidebar`、`full-width`の3つを用意します。
+記事レイアウトのプリセット（`article`、`sidebar`、`full-width`）は、テーマルートの`data-article-layout`属性を通じて記事領域の表示を決めます。ルートやコンポーネントツリーを変えずに、幅とサイドバーの構成を制御します。
 
 ## プリセット
 - `article`：サイドエリア付きの標準的な記事レイアウト
-- `sidebar`：サイドバーを重視したレイアウト
-- `full-width`：サイドバーのないフル幅の記事
+- `sidebar`：サイドバーを重視するレイアウト
+- `full-width`：サイドバーのない全幅の記事
 
-プリセットはTheme Rootの`data-article-layout`属性で設定し、Theme名でスコープしたCSSルールで反映します。
+プリセットはテーマルートの`data-article-layout`属性で設定され、テーマ名でスコープしたCSSルールに反映されます。
 
-## Article LayoutのCSSルール
-各レイアウトプリセットはTheme Rootの`data-article-layout`属性を使用してCSSルールで反映されます：`:is(:root, .rb-theme-root)[data-article-layout="sidebar"]`はサイドバーの幅とレイアウト構成を制御します。`article`プリセットは標準的なサイドエリア付きの記事を提供し、`full-width`は最大幅でサイドバーを削除します。
+## 記事レイアウトのCSSルール
+各レイアウトプリセットは、テーマルートの`data-article-layout`属性を使ったCSSルールに反映されます。`:is(:root, .rb-theme-root)[data-article-layout="sidebar"]`はサイドバーの幅とレイアウト構成を制御します。`article`プリセットはサイドエリア付きの標準的な記事を提供し、`full-width`はサイドバーを取り除いて最大幅にします。
 
 ```css
 :is(:root, .rb-theme-root)[data-article-layout="sidebar"] {
@@ -26,7 +26,7 @@ Article Layoutは、記事エリアの幅とサイドバーの構成を決める
 ```
 
 ## 境界
-Themeはレイアウトプリセットの見た目を定義しますが、routeやコンポーネントツリーは置き換えません。コンポーネントの構造はアプリケーションが用意し、Themeはdata属性とCSSで見た目を提供します。
+テーマはレイアウトプリセットの表示を定義しますが、ルートやコンポーネントツリーを置き換えるものではありません。コンポーネントの構造はアプリケーションが提供し、テーマはデータ属性とCSSを通じて表示を提供します。
 
 ## 関連用語
 - [[glossary/theme|Theme]]

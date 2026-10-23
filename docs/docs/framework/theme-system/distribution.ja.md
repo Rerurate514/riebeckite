@@ -7,11 +7,11 @@ sidebar:
 ---
 # テーマの配布と検証
 
-このページは [テーマ作成の詳細](../theme-system.ja.md) の一部で、Theme のパッケージ化、配布、検証を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、テーマのパッケージ化、配布、検証を扱います。
 
-## 27. Package として配布する
+## 8. 配布用にパッケージ化する
 
-公開 Theme は、たとえば次の構成にできます。
+公開するテーマは、たとえば次のような構成にできます。
 
 ```text id="c4cx40"
 packages/themes/example/
@@ -25,15 +25,13 @@ packages/themes/example/
 └─ README.md
 ```
 
-Riebeckite Repository 内では、
+Riebeckite リポジトリ内では、次の構成が雛形になります。
 
 ```text id="7s39yd"
 packages/themes/minimal
 ```
 
-が雛形になります。
-
-`src/index.ts` では Theme Factory を公開します。
+`src/index.ts` では、テーマのファクトリを公開します。
 
 ```ts id="lhhz91"
 import { defineTheme } from "@riebeckite/core";
@@ -52,28 +50,19 @@ export function exampleTheme() {
 }
 ```
 
-`package.json` では Stylesheet を、
+`package.json` では、スタイルシートを `./style.css` としてエクスポートします。
 
 ```text id="8md3uw"
 ./style.css
 ```
 
-として Export します。
-
-
-## 28. Repository 外で Theme を配布する
-
-外部 Theme Package は Riebeckite monorepo の内部構造へ依存させません。
-
-基本的には、
+外部に配布するテーマのパッケージは、Riebeckite の monorepo の内部構造に依存させません。基本的には、次のパッケージの公開 API だけを利用します。
 
 ```text id="a8r4we"
 @riebeckite/core
 ```
 
-の Public API だけを利用します。
-
-次のような Internal Import は避けてください。
+次のような内部インポートは避けてください。
 
 ```ts id="0q5wfe"
 import {
@@ -81,20 +70,17 @@ import {
 } from "@riebeckite/core/src/...";
 ```
 
-また、
+また、次のような monorepo 内部のパスにも依存させないでください。
 
 ```text id="mpy5js"
 ../../../../packages/core/...
 ```
 
-のような monorepo 内部 Path にも依存しません。
+テーマのスタイルシートも、パッケージ自身のエクスポートとして公開します。
 
-Theme の Stylesheet も Package 自身の Export として公開します。
+## 9. 検証する
 
-
-## 29. Theme を検証する
-
-Theme を作成・変更したら、次の順番で確認します。
+テーマを作成または変更したら、次の順番で確認します。
 
 ```mermaid id="muvx0f"
 flowchart LR
@@ -108,39 +94,35 @@ flowchart LR
     Dev --> Build
 ```
 
-まず Configuration を確認します。
+まず、設定とプラグインの解決を検証します。
 
 ```sh id="cb8y30"
 pnpm exec riebeckite check
 ```
 
-次に解決された Theme 設定を確認します。
+次に、解決されたテーマ設定を確認します。
 
 ```sh id="56lmdw"
 pnpm exec riebeckite inspect config
 ```
 
-実際の表示を確認する場合は、
+実際の表示を確認する場合は、開発サーバーを起動します。
 
 ```sh id="i9vjkb"
 pnpm exec riebeckite dev
 ```
 
-を使います。
-
-最後に生成物まで確認します。
+最後に、生成物まで確認します。
 
 ```sh id="tsbdjv"
 pnpm exec riebeckite build
 ```
 
-`check`、`doctor`、`inspect` は Build Output を変更しません。
+`check`、`doctor`、`inspect` はビルド出力を変更しません。テーマを交換しても、次のものは変わらないのが基本です。
 
-Theme を交換しても、
+- ルート
+- マニフェスト
+- コンテンツグラフ
+- クライアントの動作
 
-- Route
-- Manifest
-- Content Graph
-- Client Behavior
-
-は変わらないことが基本です。
+表示が意図と違うときは、カスケードの順序（`userCss` が最後）と、`rr-*` と `rb-*` のどちらを対象にしているかを確認してください。

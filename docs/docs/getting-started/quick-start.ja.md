@@ -8,7 +8,7 @@ title: クイックスタート
 
 ## 要件
 
-簡単な要件：[Installation](./installation.ja.md#requirements)。Node.js (LTS)、ターミナルが必要です。約5分で終わります。
+簡単な要件：[Installation](./installation.ja.md#必要なもの)。Node.js (LTS)、ターミナルが必要です。約5分で終わります。
 
 ## 1. サイトを作る
 

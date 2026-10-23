@@ -7,24 +7,9 @@ sidebar:
 
 # UI
 
-`@riebeckite/honox/ui` は UI framework ではありません。
+`@riebeckite/honox/ui` が提供するUIプリミティブは、コンポーネントフレームワークではなく小さな構造の契約です。プリミティブには `Article`、`ArticleLayout`、`ArticleContent`、`ArticleBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar` があり、安定したCSSフック（`rb-article`、`rb-article-layout` など）を持ちます。
 
-Site が独自のデザインを作りながら、Riebeckite と共通の HTML 構造を利用するための小さな primitive set です。
-
-公開されている main な component は次のとおりです。
-
-- `Article`
-- `ArticleLayout`
-- `ArticleHeader`
-- `ArticleContent`
-- `ArticleBody`
-- `ArticleMeta`
-- `ArticleFooter`
-- `Sidebar`
-
-対応する `*Props` 型も公開されています。
-
-## Articleプリミティブ
+## 記事のプリミティブ
 
 ```tsx
 import { Article, ArticleBody, ArticleContent, ArticleLayout } from "@riebeckite/honox/ui";
@@ -38,17 +23,17 @@ import { Article, ArticleBody, ArticleContent, ArticleLayout } from "@riebeckite
 </Article>;
 ```
 
-安定したstyling hookと構造 CSS が提供されます。記事の本文、メタデータの表示形式、navigation の配置、card、ページレイアウトの構成、island、サイトの視覚デザインはサイトのapplicationが管理します。
+安定したスタイリング用フックと構造CSSは、この契約が提供します。記事本文、メタデータの表示形式、ナビゲーションの配置、カード、ページレイアウトの構成、アイランド、サイトの視覚デザインは、サイトアプリケーションに属します。
 
-## Plugin UI の composition
+## プラグインUIの組み立て
 
-Plugin はデータヘルパーと JSX コンポーネントを公開し、Site は自分の TSX でこれらを composition します。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component は直接描画され、Site は配置、順序、コンディショナルレンダリングの全てを制御します。
+プラグインはデータヘルパーとJSXコンポーネントを公開し、サイトが自分のTSXで組み立てます。各プラグインのデータヘルパーは `PublicContentView`（または同様のフィルタ済みファサード）を受け取り、型付きモデルを返します。その後コンポーネントを直接描画するため、配置、順序、条件付き描画はサイトが完全に制御できます。
 
-Plugin UI も同じ形で組み立てます：
+プラグインUIも同じ形で組み立てます。
 
-- Plugin はデータヘルパー（例：`getProperties`）をエクスポートし、狭い input を受けて model を返します
-- Plugin は JSX コンポーネント（例：`<Properties />`）をエクスポートし、型付き props を受け入れます
-- Site は必要な箇所で import して描画します：`<Properties data={data} />`
+- プラグインがデータヘルパー（例：`getProperties`）を公開し、限られた入力を受けてモデルを返す
+- プラグインがJSXコンポーネント（例：`<Properties />`）を公開し、型付きpropsを受け取る
+- サイトが必要な箇所でコンポーネントをインポートして描画する（例：`<Properties data={data} />`）
 
 ```tsx
 import { getProperties } from "@riebeckite/plugin-properties";
@@ -58,11 +43,11 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-## 安定したstyling hook
+## 安定したスタイリング用フック
 
-各 primitive は次の class を stable styling hook として提供します。
+各プリミティブは、安定したスタイリング用フックとして1つのクラスを公開します。
 
-| Component | Class |
+| コンポーネント | クラス |
 | --- | --- |
 | `Article` | `rb-article` |
 | `ArticleLayout` | `rb-article-layout` |
@@ -73,23 +58,11 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-構造CSSは`@riebeckite/honox/style.css`に入っており、`.riebeckite/framework-styles.css`を通じてサイトに届きます。一方、
+構造CSSは `@riebeckite/honox/style.css` にあり、生成される `.riebeckite/framework-styles.css` を通じてサイトに届きます。プリミティブが提供するのは、セマンティックHTML、これらのフック、`class`/`className` の合成、フックを機能させる構造CSSです。記事本文、メタデータの表示形式、ナビゲーションの配置、カード、ページレイアウトの構成、アイランド、サイトの視覚デザインと上書きは所有しません。それらはサイトアプリケーションに属します。`ArticleHeader` はchildrenかHTML入力用のpropを受け取り、`ArticleContent` はchildrenを受け取ります。`ArticleBody` は描画済みのMarkdownを `.rb-article-content` として描画し、Markdownのタイポグラフィはそのラッパーにスコープされるため、プラグインのコンポーネントはどこに置いても独自の見出しを保てます。
 
-- 記事本文の見た目
-- metadata の表示形式
-- navigation の配置
-- card
-- page layout の composition
-- island
-- Site 固有の visual design と override
+## サイトが持つもの
 
-は Site Application が管理します。
-
-プリミティブは主に、セマンティック HTML、stable styling hook、`class` / `className` の合成、hook を成立させる構造 CSS を担当します。`rb-*` hook を成立させる構造 CSS は `@riebeckite/honox/style.css` にあり、生成された `.riebeckite/framework-styles.css` 経由で Site に読み込まれます。プリミティブは記事の本文の見た目、metadata の表示形式、navigation の配置、card、ページレイアウトの composition、island を所有しません。サイトの視覚デザインと override も所有しません。それらはサイトのapplicationに属します。`ArticleHeader` は children またはその HTML input prop を受け入れます。`ArticleContent` は children を受け入れます。レンダリング済み Markdown 本文は `ArticleBody` に渡してください。
-
-## Site が持つもの
-
-プリミティブはセマンティックHTML、hook、class と構成、構造CSSを提供します。記事の本文、メタデータの表示形式、navigation の配置、card、ページレイアウトの構成、island、サイトの視覚デザインはサイトのapplicationに属します。
+プリミティブはセマンティックHTML、フック、クラスと合成、構造CSSを提供します。記事本文、メタデータの表示形式、ナビゲーションの配置、カード、ページレイアウトの構成、アイランド、サイトの視覚デザインはサイトアプリケーションに属します。
 
 ## 関連用語
 

@@ -1,12 +1,12 @@
 ---
 date: 2026-10-08
-title: First Content
+title: 最初のコンテンツ
 ---
-# First Content
+# 最初のコンテンツ
 
-Markdown をサイトに表示する方法を確認します。`starter` preset が生成したサンプルを編集しても、新しいファイルを作っても構いません。
+このページでは、Markdown をサイトに表示する方法を説明します。`starter` プリセットが生成したサンプルを編集しても、新しいファイルを作っても構いません。
 
-## content の場所
+## コンテンツを置く場所
 
 生成されたサイトは、既定では `content/` の Markdown を読み込みます。
 
@@ -23,21 +23,21 @@ my-site/
 └─ package.json
 ```
 
-`starter` preset では、最初からサンプル content が生成されます。新しいファイルを作らなくても、まずはこれらの Markdown を編集して動作を確認できます。
+`starter` プリセットでは、最初からサンプルのコンテンツが生成されます。編集が機能することを確かめるだけなら、新しいページを作らず、まずこれらのファイルを編集してください。
 
-既定では、frontmatter に `publish: true` がある Markdown だけが公開対象になります。
+既定では公開は明示的です。frontmatter に `publish: true` がある Markdown だけがサイトに表示されます。
 
-## 既存サンプルを編集する
+## サンプルを編集して表示を確認する
 
-まだ起動していなければ、ローカル確認用のサーバーを起動します。
+ローカルのプレビューが起動していなければ、開発サーバーを起動します。
 
 ```bash
 npm exec riebeckite dev
 ```
 
-ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.md` を編集して保存してください。ブラウザに変更した文章が表示されれば成功です。
+ターミナルに表示されたローカル URL をブラウザで開きます。次に `content/notes/writing.md` や `content/index.md` を編集して保存してください。ブラウザに変更した文章が表示されれば、Markdown の編集は機能しています。
 
-## 最小のページを作る
+## 最小のページを新しく作る
 
 `content/first-post.md` を作ります。
 
@@ -50,23 +50,23 @@ publish: true
 Hello from Riebeckite.
 ```
 
-`title` はページのタイトルです。`publish: true` は、そのページを公開対象にする指定です。通常、`content/first-post.md` は `/first-post` として表示されます。`index` 系のファイルは、その階層のトップページになります。
+`title` はページのタイトルです。`publish: true` は、そのページを公開対象にする指定です。ファイル名は URL の一部になります。`content/first-post.md` は `/first-post` で表示され、`index` 系のファイルはその階層のトップページになります。
 
-本文は通常の Markdown で書けます。`starter` preset には Obsidian 風の Markdown support も含まれているため、生成されたサンプルノートでは `[[planning]]` のような WikiLink も使えます。
+本文は通常の Markdown で書けます。`starter` プリセットには Obsidian 風の Markdown サポートも含まれているため、生成されたサンプルノートでは `[[planning]]` のような WikiLink も使えます。
 
 frontmatter、下書き、画像、内部リンクの詳しい書き方は [Writing Content](../guides/writing-content.ja.md) を参照してください。
 
-## ビルドする
+## ビルドして公開用ファイルを出力する
 
 ```bash
 npm exec riebeckite build
 ```
 
-成功すると、公開用のファイルが `dist/` に作られます。
+ビルドに成功すると、公開用のファイルが `dist/` に作られます。
 
-ページが表示されないときは、まず開発サーバーが起動しているか、ファイルを保存したか、frontmatter に `publish: true` があるかを確認してください。さらに詳しく調べる場合は、[CLI reference](../reference/cli.ja.md) の `inspect content --list` や `doctor` を使います。
+ページが表示されないときは、まず開発サーバーが起動しているか、ファイルを保存したか、frontmatter に `publish: true` があるかを確認してください。さらに詳しく調べる場合は、[CLI リファレンス](../reference/cli.ja.md) の `inspect content --list` や `doctor` を使います。
 
 ## 次に読むページ
 
-- [Presets →](./presets.ja.md)
-- [Deployment →](./deployment.ja.md)
+- [プリセット →](./presets.ja.md)
+- [デプロイ →](./deployment.ja.md)

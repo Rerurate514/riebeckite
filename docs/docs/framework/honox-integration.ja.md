@@ -1,22 +1,20 @@
 ---
 date: 2026-10-08
-title: HonoX Integration
+title: HonoX との統合
 sidebar:
-  label: HonoX Integration
+  label: HonoX との統合
 ---
-# HonoX Integration
+# HonoX との統合
 
-`@riebeckite/honox` は、Riebeckite Core と HonoX / Vite を接続する integration です。
+`@riebeckite/honox` は、Riebeckite Core と HonoX / Vite を接続する統合パッケージです。
 
-Core はコンテンツやプラグインの処理を担当しますが、HonoX の route や Vite の build 方法については知りません。
-
-その間を接続するのが `@riebeckite/honox` です。
+Core はコンテンツとプラグインの処理を担当しますが、HonoX のルートや Vite のビルド方法については知りません。その間を接続するのが `@riebeckite/honox` です。
 
 ```mermaid
 flowchart LR
-    A["Riebeckite Core<br/>Content / Plugin / Manifest"]
-    B["@riebeckite/honox<br/>Integration"]
-    C["HonoX / Vite<br/>Application"]
+    A["Riebeckite Core<br/>コンテンツ / プラグイン / マニフェスト"]
+    B["@riebeckite/honox<br/>統合"]
+    C["HonoX / Vite<br/>アプリケーション"]
 
     A --> B
     B --> C
@@ -24,25 +22,24 @@ flowchart LR
 
 主に次の処理を担当します。
 
-- application root / config の解決
-- Vite の development / build
+- アプリケーションルートと設定の解決
+- Vite の開発とビルド
 - SSG の設定
-- plugin / theme の style entry 生成
-- client entry の生成
-- Riebeckite のコンテンツと HonoX application の接続
+- プラグインとテーマのスタイルエントリ生成
+- クライアントエントリの生成
+- Riebeckite のコンテンツと HonoX アプリケーションの接続
 
-これにより、通常の Site は Riebeckite 内部の Vite / HonoX 設定を毎回組み立てる必要がありません。
+これにより、通常のサイトは Riebeckite 内部の Vite / HonoX 設定を毎回組み立てる必要がありません。
 
-生成される client module は、opt-in の SPA runtime を接続する場所でもあります。
-[SPAランタイムの内部実装](./spa-runtime.ja.md) を参照してください。
+生成されるクライアントモジュールは、オプトインの SPA ランタイムを接続する場所でもあります。[SPA ランタイムの内部実装](./spa-runtime.ja.md) を参照してください。
 
 
 ## このページの構成
 
-- [UI Primitive](./honox-integration/ui.ja.md)
-- [Site Application の責務](./honox-integration/site.ja.md)
+- [UI プリミティブ](./honox-integration/ui.ja.md)
+- [サイトアプリケーションの責務](./honox-integration/site.ja.md)
 
-## 基本的な使い方
+## `riebeckiteVite()` で Riebeckite を HonoX に接続する
 
 通常は `vite.config.ts` で `riebeckiteVite()` を登録します。
 
@@ -55,22 +52,18 @@ export default defineConfig({
 });
 ```
 
-`riebeckiteVite()` は通常の Site 向けの higher-level helper です。
+`riebeckiteVite()` は通常のサイト向けの高レベルヘルパーです。Riebeckite の Vite プラグインを追加するだけでなく、次の設定もまとめて行います。
 
-Riebeckite の Vite plugin を追加するだけでなく、次の設定もまとめて行います。
+- SSG エントリの設定
+- 拡張マッピングの設定
+- SSR に必要な外部依存の設定
+- プラグインとテーマの生成エントリの接続
 
-- SSG entry の設定
-- extension mapping
-- SSR に必要な external dependency の設定
-- plugin / theme の生成 entry の接続
+HonoX プラグイン、デプロイ用のビルドプラグイン、Tailwind など、サイト自身が必要とする Vite プラグインと組み合わせて利用できます。
 
-HonoX plugin、deployment 用 build plugin、Tailwind など、Site 自身が必要とする Vite plugin と組み合わせて利用できます。
+## プラグイン UI コンポーネントを宣言的に配置する
 
-## 宣言的な plugin component
-
-plugin の UI component は個別の package から import し、既定の data は
-`@riebeckite/ui` の context から解決します。Site は配置だけを決めればよく、通常の
-article UI のために manifest の検索や plugin helper の呼び出しを繰り返す必要はありません。
+プラグインの UI コンポーネントは、それぞれのパッケージからインポートし、既定のデータは `@riebeckite/ui` のコンテキストから解決します。サイト側は配置を決めるだけでよく、通常の記事 UI のためにマニフェストを検索したり、プラグインヘルパーを呼び出したりする必要はありません。
 
 ```tsx
 import { SiteProvider } from "@riebeckite/ui";
@@ -87,33 +80,24 @@ import { ShareControls } from "@riebeckite/plugin-share";
 </SiteProvider>;
 ```
 
-`SiteProvider` には `createPublicContentView(manifest)` などで作成した public content
-view を渡します。`Article` は `post` と public な `entry` を受け取ると article context
-を提供します。必要な context がない component は何も描画しないため、共通 layout でも安全です。
-明示的な component prop は引き続き利用でき、context より優先されます。Site 独自の data
-composition が必要な場合は、export されている pure data helper を使用してください。
+`SiteProvider` には `createPublicContentView(manifest)` などで作成した公開コンテンツビューを渡します。`Article` は `post` と公開された `entry` を受け取ると、記事のコンテキストを提供します。必要なコンテキストがないコンポーネントは何も描画しないため、共通レイアウトに置いても安全です。明示的なコンポーネント prop も引き続き利用でき、コンテキストより優先されます。サイト独自のデータ構成が必要な場合は、エクスポートされている純粋なデータヘルパーを使用してください。
 
-依存方向は `plugin → @riebeckite/ui ← honox` です。HonoX の plugin barrel から plugin UI を
-import しないでください。
+依存方向は `plugin → @riebeckite/ui ← honox` です。HonoX のプラグインバレルからプラグイン UI をインポートしないでください。
 
-## Root と Config
+## アプリケーションルートと設定の解決
 
 `riebeckiteVite()` では、必要に応じて次の場所を指定できます。
 
-| Option | 意味 |
+| オプション | 意味 |
 | --- | --- |
-| `appRoot` | Site application の基準ディレクトリ |
-| `configRoot` | Riebeckite config を探す基準 |
-| `configFile` | 使用する config file |
-| `workspaceRoot` | monorepo 開発時の workspace root |
+| `appRoot` | サイトアプリケーションの基準ディレクトリ |
+| `configRoot` | Riebeckite の設定を探す基準 |
+| `configFile` | 使用する設定ファイル |
+| `workspaceRoot` | monorepo 開発時のワークスペースルート |
 
 通常は指定する必要はありません。
 
-`appRoot` の既定値は Vite root、`configRoot` の既定値は `appRoot` です。
-
-Riebeckite config は `configRoot` を基準に読み込みます。
-
-一方、
+`appRoot` の既定値は Vite のルート、`configRoot` の既定値は `appRoot` です。Riebeckite の設定は `configRoot` を基準に読み込みます。一方、次のようなコンテンツディレクトリは `appRoot` を基準に解決します。
 
 ```ts
 content: {
@@ -121,72 +105,72 @@ content: {
 }
 ```
 
-のような content directory は `appRoot` を基準に解決します。
-
-`resolveHonoxApplication()` は、これらの root と解決済み config をまとめて返します。
-
-CLI と Vite がこの共通モデルを利用することで、それぞれが異なる方法で application を解決しないようにしています。
+`resolveHonoxApplication()` は、これらのルートと解決済みの設定をまとめて返します。CLI と Vite がこの共通モデルを利用することで、アプリケーションの解決方法が両者で食い違わないようにしています。
 
 ### `workspaceRoot`
 
-`workspaceRoot` は、Riebeckite 自体を monorepo で開発するときに source package alias を利用するための設定です。
+`workspaceRoot` は、Riebeckite 自体を monorepo で開発するときに、ソースパッケージのエイリアスを利用するための設定です。
 
-npm から Riebeckite をインストールした通常の Site では必要ありません。
+npm から Riebeckite をインストールした通常のサイトでは必要ありません。その場合、パッケージはサイト自身の `node_modules` から解決されます。
 
-その場合は Site 自身の `node_modules` から package が解決されます。
+## `.riebeckite` に生成される接続ファイル
 
-## `.riebeckite` に生成されるファイル
-
-Integration は application 内の
+統合パッケージは、プラグインやテーマを接続するためのファイルを、アプリケーション内の次のディレクトリへ生成します。
 
 ```text
 app/.riebeckite/
 ```
 
-へ、plugin や theme を接続するためのファイルを生成します。
-
-たとえば plugin style や theme style です。client module は `.riebeckite` には生成されず、virtual module として提供されます。
+たとえば、プラグインのスタイルやテーマのスタイルが生成されます。クライアントモジュールは `.riebeckite` には生成されず、仮想モジュールとして提供されます。
 
 ```mermaid
 flowchart LR
-    A["Installed Plugins / Themes"]
+    A["インストール済みのプラグイン / テーマ"]
     B["@riebeckite/honox"]
     C["app/.riebeckite/"]
-    D["Site Application"]
+    D["サイトアプリケーション"]
 
     A --> B
-    B -->|"generated entries"| C
+    B -->|"生成されたエントリ"| C
     C --> D
 ```
 
-`.riebeckite` は integration が管理する生成物です。
+`.riebeckite` は統合パッケージが管理する生成物です。
 
-**Site のソースコードとして直接編集しないでください**。
+**サイトのソースコードとして直接編集しないでください**。
 
-## Bootstrap module
+## ブートストラップモジュールが設定とコンテンツを供給する
 
-生成された Site は Framework が提供する bootstrap module を import します。解決済み config は `virtual:riebeckite/config`、構成済みの content runtime は `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG entry の `app/server.ts` はこの2つを再エクスポートし、`riebeckiteSsg` はそこから manifest を見つけます。
+生成されたサイトは、フレームワークが提供するブートストラップモジュールをインポートします。解決済みの設定は `virtual:riebeckite/config`、構成済みのコンテンツランタイムは `virtual:riebeckite/content` です。そのため `app/config.ts`、`app/content.ts`、`app/constants/paths.ts` は生成されません。SSG エントリの `app/server.ts` はこの2つを再エクスポートし、`riebeckiteSsg` はそこからマニフェストを見つけます。
 
-Vite の外で動く script（`tsx` で起動する Node script など）でも同じ config を解決できます。`@riebeckite/honox/runtime` の `resolveHonoxConfig` を使用します。
+Vite の外で動くスクリプト（`tsx` で起動する Node スクリプトなど）でも同じ設定を解決できます。`@riebeckite/honox/runtime` の `resolveHonoxConfig` を使用します。
 
-## Lower-level API
+## 下位レベルの API で統合を制御する
 
-より細かく integration を制御したい場合は、lower-level API も利用できます。
+統合処理をより細かく制御したい場合は、下位レベルの API も利用できます。
 
-- `riebeckite`
-- `riebeckiteSsg`
+- `riebeckite`（Vite プラグイン）
+- `riebeckiteSsg`（静的生成）
 - `riebeckiteSsgExtensionMap`
-- `createRiebeckiteSsg`
+- `createRiebeckiteSsg`（Riebeckite の既定値を埋める SSG ラッパー）
 
-通常の Site では `riebeckiteVite()` を利用し、独自の build integration が必要な場合のみ lower-level API を利用してください。
+通常のサイトでは `riebeckiteVite()` を利用し、独自のビルド統合が必要な場合に限って下位レベルの API を使用してください。
 
-## Routing と SSG
+`riebeckiteSsg` は内部の Vite サーバーを、解決済みのアプリケーションルートと define 値で起動します。そのため、サブディレクトリから `riebeckite build` を実行しても、アプリケーションルートから実行した場合と同じ出力になります。`defaultSsgEntry` はルートからの相対パス `./app/server.ts` で、`defaultSsrExternals` は両方のヘルパーが使う SSR の外部依存リストです。
 
-HonoX の runtime routing と静的生成では、同じ URL が同じページとして扱われる必要があります。
+SSG エントリは、解決済みの `config` と `content` を再エクスポートする必要があります。
 
-特に catch-all route がある場合、SSG の route 列挙に注意が必要です。
+```ts
+export { config, content }
+```
 
-Riebeckite はこのために2つの helper を提供します。
+`riebeckiteSsg` はこれによってマニフェストを見つけ、プラグインが生成する出力の書き出しと、ページごとの HTML 検査を行います。そのほかのエクスポートは `loadRiebeckiteConfig`、`resolveHonoxApplication`、`resolveHonoxApplicationRoot`、`buildHonoxApplication`、`startHonoxDevServer` です。
+
+## ルーティングと SSG で同じ URL を同じページとして扱う
+
+HonoX の実行時ルーティングと静的生成では、同じ URL が同じページとして扱われる必要があります。特に catch-all ルートがある場合、SSG のルート列挙には注意が必要です。
+
+Riebeckite はこのための2つのヘルパーを提供します。
 
 ### `contentRouteSsgParams`
 
@@ -194,23 +178,21 @@ Riebeckite はこのために2つの helper を提供します。
 contentRouteSsgParams(routePath, params)
 ```
 
-`hono/ssg` の `ssgParams` の代わりとして使用します。
+`hono/ssg` の `ssgParams` の代わりに使用します。
 
-この helper は、その route 自身に属する params だけを返します。
+このヘルパーは、そのルート自身に属するパラメータだけを返します。
 
-たとえば、
+たとえば、次のような catch-all ルートがあっても、
 
 ```text
 /:slug{.+}
 ```
 
-という catch-all route があっても、
+次のルートに属するページまで横取りしません。
 
 ```text
 /tags/:slug{.+}
 ```
-
-に属するページまで横取りしません。
 
 ### `ssgEnumerableHandler`
 
@@ -218,13 +200,13 @@ contentRouteSsgParams(routePath, params)
 ssgEnumerableHandler(handler)
 ```
 
-`next()` を使って sibling route に処理を渡す handler を、SSG の列挙対象として残すための helper です。
+`next()` を使って兄弟ルートに処理を渡すハンドラーを、SSG の列挙対象として残すためのヘルパーです。
 
-Hono は middleware 形式の handler を通常 SSG の列挙対象から外すため、この差を補います。
+Hono はミドルウェア形式のハンドラーを通常は SSG の列挙対象から外すため、このヘルパーがその差を補います。
 
-## Plugin Page
+## プラグインページをルート解決に組み込む
 
-Plugin は通常の content とは別に、独自のページを提供できます。
+プラグインは通常のコンテンツとは別に、独自のページを提供できます。
 
 その場合は、
 
@@ -240,49 +222,45 @@ resolveRiebeckiteRoute(content, path)
 
 を使用します。
 
-SSG params には、
+SSG のパラメータには、次のヘルパーを追加します。
 
 ```ts
 pluginPageSsgParams(content)
 ```
 
-を追加します。
+生成されたサイトの catch-all ルートは、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。このヘルパーはコンテンツ、プラグインページ、リダイレクト、見つからないページを解決します。さらに `htmlLanguage` と `headTags` をコンテキストへ設定するため、サイトは返された結果を自身の構成に渡すだけで済みます。ルート `/` も、同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
 
-生成された Site の catch-all route は、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。この helper は content / Plugin Page / redirect / not-found を解決します。さらに `htmlLanguage` と `headTags` を context へ設定するため、Site は返された結果を自身の composition に渡すだけで済みます。root `/` も同じ mechanics を共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
-
-Route resolver は次の順序で URL を解決します。
+ルートリゾルバーは次の順序で URL を解決します。
 
 ```mermaid
 flowchart TD
-    A["Request Path"]
-    B{"Plugin Page?"}
-    C["Plugin Page"]
-    D{"Content?"}
-    E["Content"]
-    F{"Redirect?"}
-    G["Redirect"]
-    H["Not Found"]
+    A["リクエストパス"]
+    B{"プラグインページか？"}
+    C["プラグインページ"]
+    D{"コンテンツか？"}
+    E["コンテンツ"]
+    F{"リダイレクトか？"}
+    G["リダイレクト"]
+    H["見つからない"]
 
     A --> B
-    B -->|Yes| C
-    B -->|No| D
-    D -->|Yes| E
-    D -->|No| F
-    F -->|Yes| G
-    F -->|No| H
+    B -->|はい| C
+    B -->|いいえ| D
+    D -->|はい| E
+    D -->|いいえ| F
+    F -->|はい| G
+    F -->|いいえ| H
 ```
 
-Plugin Page の body は意図的に文字列として扱います。
+プラグインページの本文は意図的に文字列として扱います。サイトの既存ドキュメントフレーム内に描画し、`page.headTags` もサイトのフレームへ渡します。
 
-Site が持つ既存の document frame 内へ描画し、`page.headTags` も Site の frame へ渡します。
+この仕組みにより、プラグインが独自ページを提供するためだけに HonoX のルートファイルを追加する必要はありません。
 
-この仕組みにより、Plugin が独自ページを提供するためだけに HonoX の route file を追加する必要はありません。
+## 統合の境界を保つ
 
-## Integration の境界
+Riebeckite のルーティングでは、すでに解決された公開 URL を使用します。
 
-Riebeckite の routing では、すでに解決された公開 URL を使用します。
-
-基本的には、
+基本的には、次の順でリクエストを解決します。
 
 ```text
 byPermalink
@@ -290,37 +268,29 @@ byPermalink
 redirects
 ```
 
-の順で request を解決します。
+ファイルシステムのパスやディレクトリ構造から公開 URL を逆算しません。
 
-filesystem path やディレクトリ構造から公開 URL を逆算しません。
+また、`slug` はコンテンツを内部で検索するためのキーです。実際に公開される URL は、解決済みの `permalink` です。
 
-また、`slug` はコンテンツを内部で検索するためのキーです。
-
-実際に公開される URL は、解決済みの `permalink` です。
-
-### 責務のまとめ
+### 責務の分担
 
 Riebeckite 全体では、次のように責務を分離します。
 
 ```mermaid
 flowchart LR
-    Core["Core<br/>Content / Manifest / Plugin API"]
-    Integration["HonoX Integration<br/>Vite / SSG / Route Resolution"]
-    Plugin["Plugin<br/>Content Extension / Page / Asset / Client Entry"]
-    Site["Site Application<br/>Route / Shell / UI / Island / CSS"]
+    Core["Core<br/>コンテンツ / マニフェスト / プラグイン API"]
+    Integration["HonoX 統合<br/>Vite / SSG / ルート解決"]
+    Plugin["プラグイン<br/>コンテンツ拡張 / ページ / アセット / クライアントエントリ"]
+    Site["サイトアプリケーション<br/>ルート / シェル / UI / アイランド / CSS"]
 
     Core --> Integration
     Plugin --> Core
     Integration --> Site
-    Plugin -. "提供した情報を<br/>Site が配置" .-> Site
+    Plugin -. "提供した情報を<br/>サイトが配置" .-> Site
 ```
 
-HonoX / Vite / Cloudflare 固有の処理は integration または Site Application に閉じます。
+HonoX、Vite、Cloudflare、ルーティングの API は、このパッケージか `apps/web` に置きます。Core は移植性を保ち、HonoX のルーティングを所有しません。プラグインはアセット、クライアントエントリ、エンドポイント、レンダラーを公開できますが、Core が HonoX のルーターになることはありません。具体的なルート構成やアイランドはアプリケーションが決めます。
 
-Core は HonoX routing を所有しません。
+**Core はコンテンツを扱い、統合パッケージは HonoX と接続し、プラグインは機能を提供し、サイトが最終的な表示を決める**、という境界を維持してください。
 
-Plugin はページ、アセット、client entry などを提供できますが、Site 全体の route composition や UI 構造は所有しません。
-
-**Core はコンテンツを扱い、Integration は HonoX と接続し、Plugin は機能を提供し、Site が最終的な表示を決める**、という境界を維持してください。
-
-build state の扱いについては [Build system](./build-system.ja.md)、package ごとの責務については [Architecture](./architecture.ja.md) を参照してください。
+ビルド状態の扱いについては [ビルドシステム](./build-system.ja.md)、パッケージごとの責務については [アーキテクチャ](./architecture.ja.md) を参照してください。

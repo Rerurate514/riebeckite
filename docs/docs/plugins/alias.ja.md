@@ -8,7 +8,7 @@ Obsidian の frontmatter `aliases`（`alias` も可）を、サイト内のリ�
 
 [English](./alias.md)
 
-## できること
+## 概要
 
 Vault のノートが
 
@@ -40,7 +40,7 @@ export default defineConfig({
 });
 ```
 
-`permalink` プラグインと併用できます。`alias` は「解決済みの公開ロケーション」を後から拡張する（`extendContentLocations`）ため、正規パーマリンクがどのように決まっていても、その値を上書きしたり再現したりしません。
+`permalink` プラグインと併用できます。`alias` は解決済みの公開ロケーションを `extendContentLocations` で後から拡張するため、正規パーマリンクがどのように決まっていても、その値を上書きしたり再現したりしません。
 
 ```ts
 plugins: [permalinkPlugin(), aliasPlugin()],
@@ -54,7 +54,7 @@ plugins: [permalinkPlugin(), aliasPlugin()],
 
 ## エイリアスの正規化
 
-エイリアスは「ノートの別名」として扱い、サイトルートからのパスに変換します。
+エイリアスはノートの別名として扱い、サイトルートからのパスに変換します。
 
 - 先頭の `/` は無視します（`Old` も `/Old` も `/Old` になります）。
 - パス区切り `/` による階層を許可します（`archive/Old` → `/archive/Old`）。
@@ -76,7 +76,7 @@ plugins: [permalinkPlugin(), aliasPlugin()],
 
 ## 制限事項
 
-- リダイレクトはビルド時に確定します。エイリアスの追加・変更はサイトを再ビルドすると反映されます。
+- リダイレクトはビルド時に確定します。エイリアスを追加・変更したときは、サイトを再ビルドしてください。
 - SSG ではリダイレクト専用の HTML ファイルは生成されません。リダイレクトはサーバー（HonoX の `resolveContentRoute`）が解決します。
 - エイリアスはコンテンツグラフ（バックリンク）には含まれません。元の Markdown に書かれたリンクだけが対象です。
 

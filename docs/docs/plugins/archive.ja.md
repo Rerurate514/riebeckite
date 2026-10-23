@@ -6,9 +6,9 @@ title: Archive
 
 [English](./archive.md)
 
-Riebeckite の月別アーカイブ一覧ページです。Core の collection 機構
-(`buildContentCollections`) で一覧を組み立てるため、リンク・順序・ページ
-ネーションはサイト全体と同じ query パイプラインを再利用します。
+Riebeckite の月別アーカイブ一覧ページを生成するプラグインです。一覧は Core の
+collection 機構（`buildContentCollections`）で組み立てるため、リンク・順序・
+ページネーションはサイト全体と同じクエリパイプラインを再利用します。
 
 ## インストール
 
@@ -28,30 +28,30 @@ export default {
 
 ## ページタイプ
 
-`archive` という 1 つの Page Type を登録し、plugin を有効にしている間だけ
-ルートを生成します。ルートはアプリケーションコードではなく plugin が生成
-し、サイトの catch-all content route が配信します。専用のアプリケーション
+`archive` という 1 つの PageType を登録し、プラグインを有効にしている間だけ
+ルートを生成します。ルートはアプリケーションコードではなくプラグインが生成
+し、サイトのキャッチオールのコンテンツルートが配信します。専用のアプリケーション
 ルートは不要です。
 
 - `archive`: `<basePath>/<yyyy>/<mm>` に月ごとの一覧ページを、ページネー
   ションがある場合は `<basePath>/<yyyy>/<mm>/page/<n>` に追加ページを生成
   します。
 
-エントリは `published`、`date`、`created` のうち最初に利用できる日付を月単
-位でグループ化します。月は新しい順に並び、各リンクはエントリの解決済み
-パーマリンクを使います。
+エントリは `published`、`date`、`created` のうち最初に利用できる日付を月単位
+でグループ化します。月は新しい順に並び、各リンクにはエントリの解決済みパーマ
+リンクを使います。
 
-## publication と l10n
+## 公開範囲と言語
 
 一覧は `manifest.discoverableEntries` から組み立てるため、unlisted・下書き・
 スケジュール公開のノートは現れません。期間タイトルと前後ページのラベルは
-`site.locale` に従います。plugin の `locale` で上書きできます。日本語と英語
+`site.locale` に従います。プラグインの `locale` で上書きできます。日本語と英語
 のラベルを用意し、期間は `Intl.DateTimeFormat` で任意のロケール向けに整形し
 ます。`en_US` のようなアンダースコア区切りのロケールは整形前に正規化しま
 す。
 
 解決したページは `description` と `language` も設定するため、サイトの
-document frame は期間を再計算せずにアーカイブの SEO メタデータと `lang` 属性
+ドキュメントフレームは期間を再計算せずにアーカイブの SEO メタデータと `lang` 属性
 を描画できます。
 
 ## オプション
@@ -65,10 +65,10 @@ document frame は期間を再計算せずにアーカイブの SEO メタデー
 
 ## エクスポート
 
-- `archive` / `archivePlugin`：plugin ファクトリ。
+- `archive` / `archivePlugin`：プラグインファクトリ。
 - `resolveArchiveOptions`：既定値を適用してオプションを解決します。
 - `buildArchiveCollections`：エントリから月別 collection を組み立てます。
-- `archiveDefinitions`：plugin が使う Core collection 定義。
+- `archiveDefinitions`：プラグインが使う Core collection 定義。
 - `renderArchivePage`：アーカイブ一覧ページを HTML に描画します。
 - `formatArchivePeriod`、`archivePaginationLabels`、
   `buildArchiveDescription`：ロケール補助関数。
@@ -79,5 +79,5 @@ document frame は期間を再計算せずにアーカイブの SEO メタデー
 
 スタイルシートは同梱しません。描画フラグメントは `rb-archive` クラスを持つ
 ので、サイト側で直接スタイルできます。`/archive` が既存コンテンツと衝突す
-る場合は `basePath` を変更し、plugin を残したまま生成ページを止めたい場合は
+る場合は `basePath` を変更し、プラグインを残したまま生成ページを止めたい場合は
 `""` を設定します。

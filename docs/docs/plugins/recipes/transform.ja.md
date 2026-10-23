@@ -1,6 +1,6 @@
----
+﻿---
 date: 2026-10-20
-title: "Markdown / HTML を変換する"
+title: Markdown / HTML を変換する
 sidebar:
   label: "1. Markdown / HTML を変換する"
   order: 1
@@ -9,7 +9,7 @@ sidebar:
 
 既製の unified プラグインを使うなら `remarkPlugins`、自分で `pipeline.use` を呼ぶなら `extendMarkdownPipeline` を使います。HTML 側は `rehypePlugins` と `extendHtmlPipeline` です。
 
-`:::tip` ディレクティブを一から作る手順は [はじめてのプラグイン作成](../writing-a-plugin.ja.md#3-markdown--html-を変換する) にあります。ここでは既製の変換を最短で組み込む形だけ示します。
+`:::tip` ディレクティブを一から作る手順は [はじめてのプラグイン作成](../writing-a-plugin.ja.md#3-markdown-html-を変換する) にあります。ここでは既製の変換を最短で組み込む形だけ示します。
 
 パッケージをインストールします。
 

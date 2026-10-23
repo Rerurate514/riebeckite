@@ -1,20 +1,21 @@
 ---
 date: 2026-10-14
-title: Content hook
+title: コンテンツフック（Content Hook）
 sidebar:
   hidden: true
 ---
 
-# Content hook
-Content hookは、コンテンツ処理の各フェーズに参加します。configの解決からcontentの読み込み、post parsed、post processed、content graph、manifestの作成、diagnosticsまでが対象です。
+# コンテンツフック（Content Hook）
 
-## 処理フェーズ
-コンテンツ処理のパイプラインでhookが呼ばれる順序は次のとおりです。
+コンテンツフックは、コンテンツ処理の名前付きの段階をつなぎます。設定の解決から、コンテンツの読み込み、post parsed、post processed、コンテンツグラフ、マニフェストの作成、診断までが対象です。
 
-`setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`
+## 処理の段階
 
-## hookの使い方
-hookは本当に必要なフェーズだけに使ってください。たとえば`onContentLoaded`の中でmanifestの情報を組み立て直すように、後のフェーズの情報を前のフェーズで作り直さないでください。各hookは順次多くのデータを受け取ります：`onConfigResolved`は`config`を、`onContentLoaded`は生のコンテンツを、`onPostParsed`はparsed ASTを、`onPostProcessed`はprocessed HTMLを受け取り、`onManifestCreated`はフルなmanifestにアクセスできます。
+コンテンツ処理のパイプラインは、フックを次の順に並べます：`setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`。
+
+## フックの使い方
+
+本当に必要な段階にだけフックを使ってください。後の段階の情報を前の段階で作り直すのは避けてください。たとえば`onContentLoaded`の中でマニフェストの情報を組み立て直さないでください。各フックが受け取るデータは段階ごとに増えます。`onConfigResolved`は`config`を、`onContentLoaded`は生のコンテンツを、`onPostParsed`は解析済みのASTを、`onPostProcessed`は処理済みのHTMLを受け取り、`onManifestCreated`は完全なマニフェストにアクセスできます。
 
 ## 関連用語
 - [[plugin|Plugin]]
@@ -25,4 +26,4 @@ hookは本当に必要なフェーズだけに使ってください。たとえ�
 
 ## さらに詳しく
 - [Plugin API](../reference/plugin-api.ja.md)
-- [Build Dependency の取り決め](../framework/build-dependency.ja.md)
+- [Build Dependency Contract](../framework/build-dependency.ja.md)

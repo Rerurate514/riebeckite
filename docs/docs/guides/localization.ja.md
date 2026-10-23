@@ -1,16 +1,16 @@
 ---
 date: 2026-10-08
-title: Localization
+title: 多言語サイト
 ---
-# Localization
+# 多言語サイト
 
-Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語 Site を構築できます。
+Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語サイトを構築できます。翻訳の対象はコンテンツです。Riebeckite 自身の画面に表示される文字列は翻訳しません。
 
-l10n Plugin は、Content ごとの言語を判定し、
+l10n プラグインは、コンテンツごとの言語を判定し、
 
 - 言語ごとの URL
-- 同じ Content の翻訳版
-- Site 内リンク
+- 同じコンテンツの翻訳版
+- サイト内リンク
 - 言語切り替え
 - SEO と組み合わせた `hreflang`
 
@@ -19,8 +19,8 @@ l10n Plugin は、Content ごとの言語を判定し、
 ```mermaid
 flowchart LR
     Content["Markdown"]
-    L10n["l10n Plugin"]
-    EN["English"]
+    L10n["l10n プラグイン"]
+    EN["英語"]
     JA["日本語"]
 
     Content --> L10n
@@ -28,7 +28,7 @@ flowchart LR
     L10n --> JA
 ```
 
-`showcase` preset では、次の7言語が設定されます。
+`showcase` プリセットでは、次の7言語が設定されます。
 
 ```text
 en
@@ -40,11 +40,11 @@ fr
 ko
 ```
 
-`starter` は Site locale に応じた1言語のページを生成し、`minimal` は英語のみです。翻訳済みの Route が必要になったら l10n を追加してください。すべての言語の記事を用意する必要はありません。実際に利用する言語に合わせて設定できます。
+`starter` はサイトのロケールに応じた1言語のページを生成し、`minimal` は英語のみです。翻訳済みのルートが必要になったら l10n を追加してください。すべての言語の記事を用意する必要はありません。実際に利用する言語に合わせて設定できます。
 
 ## 基本設定
 
-`riebeckite.config.ts` に `l10n` Plugin を追加します。
+`riebeckite.config.ts` に `l10n` プラグインを追加します。
 
 ```ts
 import { l10n } from "@riebeckite/plugin-l10n";
@@ -52,40 +52,30 @@ import { l10n } from "@riebeckite/plugin-l10n";
 export default defineConfig({
   plugins: [
     l10n({
-      defaultLang: "en",
-      languages: ["en", "ja"],
+      defaultLang: "ja",
+      languages: ["ja", "en", "zh-CN"],
     }),
   ],
 });
 ```
 
-この例では、
+この例では、既定の言語が `ja`、利用する言語が `ja`、`en`、`zh-CN` です。`defaultLang` は `languages` に含める必要があります。
 
-```text
-defaultLang
-  → en
+`defaultLang` は、コンテンツの言語を他の方法で判定できなかった場合にも使われます。
 
-利用する言語
-  → en / ja
-```
+## コンテンツの言語を決める
 
-となります。
-
-`defaultLang` は、Content の言語を他の方法で判定できなかった場合にも使われます。
-
-## Content の言語を決める
-
-l10n Plugin は、それぞれの Content が何語なのかを判定します。
+l10n プラグインは、それぞれのコンテンツが何語なのかを判定します。
 
 判定には優先順位があります。
 
 ```mermaid
 flowchart TD
-    Start["Content"]
+    Start["コンテンツ"]
 
     Start --> FM{"frontmatterに<br/>言語がある？"}
     FM -->|Yes| Result["言語を決定"]
-    FM -->|No| Detector{"custom detectorで<br/>判定できる？"}
+    FM -->|No| Detector{"独自の判定処理で<br/>判定できる？"}
 
     Detector -->|Yes| Result
     Detector -->|No| File{"ファイル名で<br/>判定できる？"}
@@ -96,16 +86,16 @@ flowchart TD
 
 優先順位は次のとおりです。
 
-1. Frontmatter
-2. Custom Detector
+1. frontmatter
+2. 独自の判定処理
 3. ファイル名
 4. `defaultLang`
 
-上の方法で判定できた時点で、その Content の言語が決まります。
+上の方法で判定できた時点で、そのコンテンツの言語が決まります。
 
-## Frontmatter で指定する
+## frontmatter で指定する
 
-最も明示的なのは Frontmatter の `lang` です。
+最も明示的なのは frontmatter の `lang` です。
 
 ```md
 ---
@@ -117,13 +107,13 @@ publish: true
 日本語の記事です。
 ```
 
-この Content は日本語として扱われます。
+このコンテンツは日本語として扱われます。
 
 ファイルの場所や名前とは別に言語を明示したい場合に利用できます。
 
 ## ファイル名で分ける
 
-同じ Directory に複数言語の記事を置く場合は、ファイル名の末尾で分けます。
+同じディレクトリに複数言語の記事を置く場合は、ファイル名の末尾で分けます。
 
 たとえば、
 
@@ -134,9 +124,9 @@ README.ja.md
 
 のように配置します。
 
-`README.ja.md` の `.ja` から、その Content が日本語だと判定できます。`defaultLang` の言語には接尾辞を付けません。
+`README.ja.md` の `.ja` から、そのコンテンツが日本語だと判定できます。`defaultLang` の言語には接尾辞を付けません。
 
-推奨は `.言語` ですが、`-言語` と `_言語` も同じ意味で扱われます。
+推奨は `.言語` ですが、`-言語` と `_言語` も同じ意味で扱われます。`note.en-US.md` や `note.zh-CN.md` のような BCP 47 タグも使えます。
 
 この方式なら、
 
@@ -150,15 +140,15 @@ docs/
 
 のように、元の記事と翻訳版を近くに置いて管理できます。
 
-## Directory では分けない
+## ディレクトリでは分けない
 
-言語ごとに Directory を分ける構成（`en/note.md`、`ja/note.md`）は、言語判定には使われません。
+言語ごとにディレクトリを分ける構成（`en/note.md`、`ja/note.md`）は、言語判定には使われません。
 
-言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても WikiLink が一意に解決されます。言語はファイル名の接尾辞か、Frontmatter の `lang` で指定してください。
+言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても WikiLink が一意に解決されます。言語はファイル名の接尾辞か、frontmatter の `lang` で指定してください。複数の判定材料が食い違う場合は `L10N_LANGUAGE_CONFLICT` が報告されます。`strict: true` を設定している場合、この警告はビルドの失敗になります。
 
 ## 翻訳同士を対応付ける
 
-「この日本語記事と、この英語記事は同じ Content の翻訳版」という関係は、Frontmatter の `translation` で表します。
+「この日本語記事と、この英語記事は同じコンテンツの翻訳版」という関係は、frontmatter の `translation` で表します。
 
 たとえば日本語版を、
 
@@ -194,7 +184,7 @@ This is the English version.
 translation: hello
 ```
 
-があるため、同じ Content の翻訳として扱われます。
+があるため、同じコンテンツの翻訳として扱われます。
 
 ```mermaid
 flowchart LR
@@ -206,7 +196,9 @@ flowchart LR
     JA --> Group
 ```
 
-翻訳グループの ID を読み取る Frontmatter プロパティは、l10n プラグインの `translationKey` で変更できます。既定値は `translation` です。
+同じ翻訳グループと言語の組み合わせが重複すると、`L10N_DUPLICATE_TRANSLATION` が報告されます。`strict: true` ではビルドが失敗します。パスや名前が無関係なファイル同士を対応付ける場合は `translation` を使ってください。
+
+翻訳グループの ID を読み取る frontmatter プロパティは、l10n プラグインの `translationKey` で変更できます。既定値は `translation` です。
 
 ```ts
 l10n({
@@ -216,11 +208,22 @@ l10n({
 });
 ```
 
+プラグインが知らない独自の規則を使う場合は、`detect` を指定します。`detect` が返す言語は frontmatter の次、ファイル名より前に検討されます。翻訳グループの ID も明示できます。
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en", "fr"],
+  detect: ({ path }) =>
+    path.startsWith("French/") ? { lang: "fr", translationId: "hello" } : undefined,
+});
+```
+
 ## `lang` と `translation` の違い
 
 この2つは役割が異なります。
 
-| Field | 意味 |
+| フィールド | 意味 |
 | --- | --- |
 | `lang` | このページが何語なのか |
 | `translation` | どのページ同士が翻訳関係なのか |
@@ -250,7 +253,7 @@ translation: getting-started
 
 ## 翻訳が存在しない場合
 
-すべての Content にすべての言語版を用意する必要はありません。
+すべてのコンテンツにすべての言語版を用意する必要はありません。
 
 たとえば、
 
@@ -274,16 +277,16 @@ flowchart LR
     Check -->|No| None["何も生成しない"]
 ```
 
-l10n Plugin は既存の翻訳関係を扱いますが、Content 自体を翻訳する機能ではありません。
+l10n プラグインは既存の翻訳関係を扱いますが、コンテンツ自体を翻訳する機能ではありません。
 
 ## URL
 
-l10n Plugin は Content の言語情報を使って Public URL を扱います。
+l10n プラグインはコンテンツの言語情報を使って公開 URL を扱います。
 
 つまり、多言語化は単に画面へ言語名を表示するだけではなく、
 
 ```text
-Content
+コンテンツ
   ↓
 言語判定
   ↓
@@ -294,21 +297,26 @@ URL
 
 まで含めて処理されます。
 
-Site 側でファイル名から独自に URL を組み立てるのではなく、Riebeckite が解決した Public Location を利用してください。
+既定の言語は Core が解決した URL（`/about` など）をそのまま使います。それ以外の言語には接頭辞が付きます（`/en/about` など）。プラグインは既存の公開位置リゾルバーを拡張するもので、新しいルーターを追加するわけではありません。そのため `@riebeckite/plugin-permalink` などの URL プラグインと組み合わせられます。
 
-Public Location の仕組みについては [Content System](../framework/content-system.ja.md) を参照してください。
+サイト側でファイル名から独自に URL を組み立てるのではなく、Riebeckite が解決した Public Location を利用してください。公開位置の仕組みについては [コンテンツシステム](../framework/content-system.ja.md) を参照してください。
 
-## Site 内リンク
+翻訳が存在しない場合のフォールバックページは生成されません。内部のヘルパーは、翻訳の欠落を次のように報告します。
 
-多言語 Site では、本文中のリンクも言語を考慮して扱われます。
+- `getLocalization(manifest, slug)` は、実在するノートについてのみ `availableLanguages` と言語ごとのリンク `translations` を返します。
+- `getLocalizedContent(manifest, slug, lang)` は、翻訳がなければ `null` を返します。
+
+## サイト内リンク
+
+多言語サイトでは、本文中のリンクも言語を考慮して扱われます。
 
 たとえば日本語の記事から別の記事へ移動するとき、対応する日本語版が存在する場合は、その言語に対応したリンクとして扱えます。
 
 ```mermaid
 flowchart LR
-    JA1["日本語 Article A"]
-    EN2["Article B / English"]
-    JA2["Article B / 日本語"]
+    JA1["日本語の記事 A"]
+    EN2["記事 B / 英語"]
+    JA2["記事 B / 日本語"]
 
     JA1 -.-> EN2
     JA1 -->|"対応する言語"| JA2
@@ -316,9 +324,11 @@ flowchart LR
 
 これによって、記事本文のリンクだけ別言語のページへ戻ってしまう、といった問題を避けられます。
 
+コンテンツグラフを構築する前に、WikiLink のリンク先は、対応する翻訳が存在すればリンク元の記事と同じ言語へ切り替えられます。存在しなければ元のリンク先のままです。描画時には、Obsidian の WikiLink（`@riebeckite/plugin-obsidian-markdown` が解決した後）と Markdown リンクの両方が、現在のページと同じ言語の翻訳へ書き換えられます。クエリ文字列とフラグメントは保持されます。外部 URL、フラグメントだけのリンク、存在しないリンク先、アセットの URL は変更されません。
+
 ## 言語切り替え
 
-同じ `translation` を持つ Content は、言語切り替えの候補になります。
+同じ `translation` を持つコンテンツは、言語切り替えの候補になります。
 
 たとえば、
 
@@ -330,26 +340,33 @@ translation: hello
 └─ lang: de
 ```
 
-という Content が存在すれば、それぞれを同じ Content の別言語版として扱えます。
+というコンテンツが存在すれば、それぞれを同じコンテンツの別言語版として扱えます。
 
-**実際に存在する翻訳だけが候補になります**。
+**実際に存在する翻訳だけが候補になります**。存在しない言語版のフォールバックページは自動生成されません。
 
-存在しない言語版への Fallback Page は自動生成されません。
+`l10n(...)` は既存の翻訳をグループ化し、`getLocalization(manifest, slug)` と `<LanguageSwitcher />` コンポーネントを公開します。サイトは好きな場所に切り替え UI を配置できます。l10n 専用の統合は必要ありません。実際の翻訳が2つ未満のページでは、このコンポーネントは何も描画しません。
 
-Theme は `.rr-l10n-switcher` root hook を通じて標準の言語切替 UI を調整できます。
+```tsx
+import { LanguageSwitcher, getLocalization } from "@riebeckite/plugin-l10n";
+
+const localization = getLocalization(manifest, entry.slug);
+<LanguageSwitcher localization={localization} />;
+```
+
+`SiteProvider` と、公開済みの `entry` を持つ `Article` がある場合、`<LanguageSwitcher />` は現在の多言語情報を自分で解決します。テーマは `.rr-l10n-switcher` ルートフックを通じて標準の言語切替 UI を調整できます。
 
 ## SEO
 
-SEO Plugin と組み合わせることで、翻訳関係を `hreflang` として出力できます。
+SEO プラグインと組み合わせることで、翻訳関係を `hreflang` として出力できます。
 
 概念的には、
 
 ```text
-English page
+英語ページ
    ↕
-translation relationship
+翻訳関係
    ↕
-日本語 page
+日本語ページ
    ↓
 SEO
    ↓
@@ -358,7 +375,7 @@ hreflang
 
 という関係です。
 
-これによって Search Engine に同じ Content の別言語版であることを伝えられます。
+これによって検索エンジンに同じコンテンツの別言語版であることを伝えられます。翻訳された各エントリには、実在する翻訳ごとに1つの `<link rel="alternate" hreflang="…">` が、Core の head タグ拡張ポイントを通じて追加されます。サイトのシェルがこれらのタグを描画し、リクエストに応じて `<html lang>` を選びます。
 
 ## おすすめの構成
 
@@ -373,7 +390,7 @@ content/
 └─ faq.ja.md
 ```
 
-そして翻訳関係を Frontmatter で明示します。
+そして翻訳関係を frontmatter で明示します。
 
 英語版は次のとおりです。
 
@@ -401,17 +418,17 @@ publish: true
 
 ## 導入の流れ
 
-多言語 Site を作る場合は、次の順番で考えると分かりやすくなります。
+多言語サイトを作る場合は、次の順番で考えると分かりやすくなります。
 
 ```mermaid
 flowchart TD
     Lang["1. 使用する言語を決める"]
-    Config["2. l10nを設定"]
+    Config["2. l10n を設定"]
     Detection["3. 言語の判定方法を決める"]
     Content["4. 各言語の記事を書く"]
-    Translation["5. translationで対応付ける"]
+    Translation["5. translation で対応付ける"]
     Link["6. URL・リンクを確認"]
-    SEO["7. 必要ならSEOと組み合わせる"]
+    SEO["7. 必要なら SEO と組み合わせる"]
 
     Lang --> Config
     Config --> Detection
@@ -427,13 +444,13 @@ Riebeckite の多言語対応では、次の3つを分けて考えると分か�
 
 ```text
 lang
-  → このContentは何語か
+  → このコンテンツは何語か
 
 translation
-  → どのContentと翻訳関係にあるか
+  → どのコンテンツと翻訳関係にあるか
 
 Public Location
-  → その言語のContentをどのURLで公開するか
+  → その言語のコンテンツをどの URL で公開するか
 ```
 
 言語は、
@@ -441,7 +458,7 @@ Public Location
 ```text
 frontmatter
     ↓
-custom detector
+独自の判定処理
     ↓
 ファイル名
     ↓
@@ -452,4 +469,14 @@ defaultLang
 
 翻訳関係は `translation` で明示し、実際に存在する翻訳だけを利用します。存在しない翻訳を Riebeckite が自動生成することはありません。
 
-詳しい Option や Public API は、`@riebeckite/plugin-l10n` の Package README と [Plugin API](../reference/plugin-api.ja.md) を参照してください。
+## オプション
+
+| オプション | 役割 |
+| --- | --- |
+| `defaultLang` | 接頭辞を付けない URL を使う言語。必須 |
+| `languages` | 認識する言語。ここに含めた言語だけをロケールとして扱う |
+| `translationKey` | 翻訳グループの ID を持つ frontmatter プロパティ。既定値は `translation` |
+| `strict` | 言語の競合と翻訳の重複をビルドの失敗にする |
+| `detect` | 独自の判定処理。`{ lang, translationId }` または `undefined` を返す |
+
+詳しいオプションや公開 API は、`@riebeckite/plugin-l10n` のパッケージ README と [プラグイン API](../reference/plugin-api.ja.md) を参照してください。

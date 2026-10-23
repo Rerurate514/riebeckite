@@ -6,53 +6,47 @@ sidebar:
 ---
 # テーマ作成の詳細
 
-このページは、Riebeckite Theme を実際に設計・実装するときの詳細ガイドです。
+このページは、Riebeckiteのテーマを実際に設計・実装するときの詳細ガイドです。初めてテーマを作る場合は、先に[はじめてのテーマ作成](../themes/writing-a-theme.ja.md)を読んでください。
 
-初めて Theme を作る場合は、先に [はじめてのテーマ作成](../themes/writing-a-theme.ja.md) を読んでください。
+ここでは、その次の段階で必要になる次の内容を扱います。
 
-このページでは、その先に必要になる、
-
-- Theme の責務
+- テーマの責務
 - `defineTheme`
-- Color Mode
-- Typography
-- Layout
-- Design Token
-- Stable CSS Hook
-- Theme 固有 Option
-- CSS Cascade
-- Package としての配布
-
-までをまとめて扱います。
+- カラーモード
+- タイポグラフィ
+- レイアウト
+- デザイントークン
+- 安定したCSSフック
+- テーマ固有のオプション
+- CSSのカスケード
+- パッケージとしての配布
 
 各型やフィールドの完全な定義を確認したい場合は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
 
 ## このページの構成
 
-- [Color Mode](./theme-system/color-mode.ja.md)
-- [Typography と Article Layout](./theme-system/typography.ja.md)
-- [Design Tokens](./theme-system/tokens.ja.md)
-- [Theme Root と Attributes](./theme-system/theme-root.ja.md)
-- [Stable CSS Hooks と Cascade](./theme-system/css.ja.md)
+- [カラーモード](./theme-system/color-mode.ja.md)
+- [タイポグラフィと記事レイアウト](./theme-system/typography.ja.md)
+- [デザイントークン](./theme-system/tokens.ja.md)
+- [テーマのルートと属性](./theme-system/theme-root.ja.md)
+- [安定したCSSフックとカスケード](./theme-system/css.ja.md)
 - [テーマの配布と検証](./theme-system/distribution.ja.md)
 
-## 1. Theme にするべき変更
+## 1. テーマで変えてよいもの
 
-[[glossary/theme|Theme]] は **Presentation Layer** です。
+[[glossary/theme|テーマ]]は**表示層**です。サイトの機能やコンテンツの意味は変えず、見た目だけを変更します。
 
-Site の機能や Content の意味は変更せず、見た目だけを変更します。
-
-| Theme でできる | Theme ではしない |
+| テーマでできること | テーマでしないこと |
 | --- | --- |
-| Token の上書き・追加 | Component Replacement |
-| CSS Rule の定義 | JSX の注入 |
-| Theme 固有 `data-*` Attribute | Route の追加 |
-| Color Mode の宣言 | Plugin の追加・削除 |
-| Typography の宣言 | Client Script の実行 |
-| Layout Preset の宣言 | DOM Transformation |
-| Stable Hook の Styling | Island の登録 |
-| `userCss` による最終上書き | Filesystem / ContentManager へのアクセス |
+| トークンの上書き・追加 | コンポーネントの置き換え |
+| CSSルールの定義 | JSXの注入 |
+| テーマ固有の `data-*` 属性 | ルートの追加 |
+| カラーモードの宣言 | プラグインの追加・削除 |
+| タイポグラフィの宣言 | クライアントスクリプトの実行 |
+| レイアウトプリセットの宣言 | DOMの変換 |
+| 安定したフックへのスタイル指定 | アイランドの登録 |
+| `userCss` による最終的な上書き | ファイルシステムやContentManagerへのアクセス |
 
 迷った場合は、次のように判断します。
 
@@ -60,33 +54,30 @@ Site の機能や Content の意味は変更せず、見た目だけを変更し
 flowchart TD
     Q{"何を変更したい？"}
 
-    Q -->|"見た目"| Theme["Theme"]
-    Q -->|"再利用可能な機能"| Plugin["Plugin"]
-    Q -->|"Site固有Route / Layout構造"| App["Application"]
-    Q -->|"Framework共通Model"| Core["Core"]
+    Q -->|"見た目"| Theme["テーマ"]
+    Q -->|"再利用できる機能"| Plugin["プラグイン"]
+    Q -->|"サイト固有のルートやレイアウト"| App["アプリケーション"]
+    Q -->|"フレームワーク共通のモデル"| Core["Core"]
 ```
 
-基本的には、
+判断の基準は次のとおりです。
 
 ```text id="kl9kkm"
 機能
-  → Plugin
+  → プラグイン
 
 見た目
-  → Theme
+  → テーマ
 
-Site 固有 Route
-  → Application
+サイト固有のルート
+  → アプリケーション
 ```
 
-です。
+見た目を変えるためだけにプラグインを作ったり、機能を追加するためにテーマを拡張したりしないでください。
 
-見た目を変えるためだけに Plugin を作ったり、機能を追加するために Theme を拡張したりしないでください。
+## 2. 最小のテーマ
 
-
-## 2. 最小の Theme
-
-Theme は `defineTheme()` で定義します。
+テーマは `defineTheme()` で定義します。
 
 ```ts id="yplspq"
 import { defineTheme } from "@riebeckite/core";
@@ -105,7 +96,7 @@ export function exampleTheme() {
 }
 ```
 
-Site では `theme` に指定します。
+サイトの設定では、`theme` に指定します。
 
 ```ts id="ij1yvm"
 export default defineConfig({
@@ -118,17 +109,17 @@ export default defineConfig({
 
 ## 3. `defineTheme` の取り決め
 
-Theme が扱う主な取り決めは次のとおりです。
+テーマが扱う主な項目は次のとおりです。
 
 | 領域 | 内容 |
 | --- | --- |
-| Identity | `name` |
-| Theme 固有設定 | `options` |
+| 基本情報 | `name` |
+| テーマ固有の設定 | `options` |
 | CSS | `styles[].moduleSpecifier` |
 | 共通設定 | `colorMode`, `typography`, `articleLayout`, `tokens`, `userCss` |
-| Attributes | 安全な `data-*` Attribute |
+| 属性 | 安全な `data-*` 属性 |
 
-たとえば、
+たとえば、次のように定義できます。
 
 ```ts id="k0nh8m"
 import { defineTheme } from "@riebeckite/core";
@@ -138,7 +129,7 @@ export function exampleTheme() {
     name: "example",
 
     options: {
-      // Theme 固有 Option
+      // テーマ固有のオプション
     },
 
     styles: [
@@ -155,18 +146,11 @@ export function exampleTheme() {
 }
 ```
 
-のように定義できます。
+`styles[].moduleSpecifier` には、ホスト側のバンドラーが解決できるモジュール指定子を書きます。CSSファイルをアプリケーションのディレクトリへコピーするためのパスではありません。
 
-`styles[].moduleSpecifier` は Host Bundler が解決する Module Specifier です。
+## 4. サイト内だけで使うテーマ
 
-CSS File を Application Directory へコピーするための Path ではありません。
-
-
-## 4. Site 内だけで使う Theme
-
-Theme は npm Package として公開しなくても利用できます。
-
-たとえば、
+テーマは、npmパッケージとして公開しなくても利用できます。たとえば、次のようにサイト内へ置けます。
 
 ```text id="10b70z"
 site/
@@ -174,8 +158,6 @@ site/
    ├─ local-theme.ts
    └─ theme.css
 ```
-
-のように Site 内へ置けます。
 
 ```ts id="31fzcq"
 // site/extensions/local-theme.ts
@@ -200,19 +182,11 @@ export function localTheme() {
 }
 ```
 
-Site-local Theme の、
+サイト内に置いたテーマでも、`name`、`styles`、`attributes`、`tokens` は公開パッケージのテーマと同じく `resolveThemeConfig` で解決され、無害化されたうえで適用されます。
 
-- `name`
-- `styles`
-- `attributes`
-- `tokens`
+## 5. テーマ固有のオプション
 
-も Published Theme と同じ `resolveThemeConfig` の経路で解決・sanitize・適用されます。
-
-
-## 19. Theme Factory Options
-
-Theme 固有の機能は Factory Option として定義します。
+テーマ固有の機能は、ファクトリのオプションとして定義します。
 
 ```ts id="94pd1f"
 type NewspaperOptions = {
@@ -245,7 +219,7 @@ export function newspaperTheme(
 }
 ```
 
-この Option は Core の `ThemeConfig` に追加しません。
+このオプションはCoreの `ThemeConfig` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
 
 ```text id="2cqt02"
 newspaper の density
@@ -255,67 +229,53 @@ tokyonight の neon
   → tokyonightTheme が所有
 ```
 
-Theme 固有の概念は、その Theme Package 内で完結させます。
+## 6. テーマを作るときの基本方針
 
-
-## 31. Theme を作るときの基本方針
-
-Theme の実装では、最終的に次の境界を維持することが重要です。
+テーマの実装では、次の境界を保つことが重要です。
 
 ```mermaid id="sdf2dm"
 flowchart LR
-    App["Application"]
-    Plugin["Plugin"]
+    App["アプリケーション"]
+    Plugin["プラグイン"]
 
-    App --> Hooks["Stable Hooks"]
+    App --> Hooks["安定したフック"]
     Plugin --> Hooks
 
-    Core["Core"] --> Tokens["Semantic Tokens"]
+    Core["Core"] --> Tokens["セマンティックトークン"]
 
-    Hooks --> Contract["Presentation Contract"]
+    Hooks --> Contract["表示上の取り決め"]
     Tokens --> Contract
 
-    Theme["Theme"] --> Contract
+    Theme["テーマ"] --> Contract
 
-    Contract --> Site["Final Site"]
+    Contract --> Site["完成したサイト"]
 ```
 
-Theme は Application や Plugin の内部構造を所有しません。
-
-Framework と Plugin が公開した、
+テーマは、アプリケーションやプラグインの内部構造を所有しません。フレームワークとプラグインが公開した次の取り決めを利用します。
 
 ```text id="ysb8qa"
-Stable CSS Hooks
-Semantic Design Tokens
-Theme Attributes
-CSS Cascade
+安定したCSSフック
+セマンティックデザイントークン
+テーマ属性
+CSSのカスケード
 ```
 
-という Presentation の取り決めを利用します。
-
-Theme 固有の設定は Theme Package 内に閉じ込め、Core へ漏らしません。
-
-そして、Theme の変更によって、
+テーマ固有の設定はテーマのパッケージ内に閉じ込め、Coreへ漏らさないでください。また、テーマを変更しても次のものが変わらない状態を保ちます。
 
 ```text id="e6c5sk"
-Content
-Route
-Manifest
+コンテンツ
+ルート
+マニフェスト
 Content Graph
-Plugin Behavior
-Client Behavior
+プラグインの動作
+クライアントの動作
 ```
 
-が変化しない状態を維持してください。
-
-**機能は Plugin、構造は Framework / Application、見た目は Theme**
-
-という境界を守ることで、Theme を交換しても同じ Site と Plugin をそのまま利用できます。
-
+**機能はプラグイン、構造はフレームワークとアプリケーション、見た目はテーマ**という境界を守れば、テーマを交換しても同じサイトとプラグインをそのまま利用できます。
 
 ## 関連資料
 
-- [[writing-a-theme|はじめてのテーマ作成]]：最初の Theme を作る
-- [[theme-system|Theme System]]：Theme System 全体の考え方
-- [[plugin-system|Plugin System]]：Plugin との責務の違い
-- [[reference/README|Framework Reference]]：`defineTheme` などの Public API
+- [[writing-a-theme|はじめてのテーマ作成]]：最初のテーマを作る
+- [[theme-system|テーマシステム]]：テーマシステム全体の考え方
+- [[plugin-system|プラグインシステム]]：プラグインとの責務の違い
+- [[reference/README|フレームワークリファレンス]]：`defineTheme` などの公開API

@@ -34,7 +34,7 @@ console.log("Hello");
 ```
 ````
 
-`tab` を持つコードブロックが連続している間だけ、一つのタブグループになります。段落、見出し、画像などが間に入ると別のグループです。`tab` のないコードブロックは変更しません。
+`tab` を持つコードブロックが連続している間だけ、1 つのタブグループになります。段落、見出し、画像などが間に入ると別のグループです。`tab` のないコードブロックは変更しません。
 
 ## オプションとアクセシビリティ
 
@@ -49,7 +49,7 @@ console.log("Hello");
 ## 公開 API
 
 - `codeTabs(options?)`：プラグインファクトリ
-- `rehypeCodeTabs(options?)`：Rehype 変換
+- `rehypeCodeTabs(options?)`：rehype 変換
 - `initCodeTabs(options?)`：ブラウザ初期化関数
 - `CodeTabsOptions`、`CodeTabsClientOptions`：型
 

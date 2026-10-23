@@ -1,30 +1,28 @@
 ---
 date: 2026-10-14
-title: Content Dependency
+title: コンテンツ依存関係（Content Dependency）
 sidebar:
   hidden: true
 ---
 
-# Content Dependency
+# コンテンツ依存関係（Content Dependency）
 
-あるentryの出力が別のentryに依存することを示す記録です。依存先が変わると、依存元を再処理して派生した内容の正しさを保ちます。
+あるエントリの出力が別のエントリに依存することを示す記録です。依存先が変わると、依存元のエントリを再処理して、派生した内容の正しさを保ちます。
 
-## 依存とみなすもの
+## 依存関係とみなすもの
 
-WikiLink、embed、別のentryを読むPluginのhookがcontent dependencyを作ります。content graphは、この関係の供給元の一つです。
+WikiLink、埋め込み、別のエントリを読むプラグインのフックがコンテンツ依存関係を作ります。コンテンツグラフは、こうした関係の供給元の1つです。
 
 ## 伝播
 
-依存は[[cache-invalidation|cache invalidation]]に使われます。content dependency tracker (`packages/core/src/content/content_dependency_tracker.ts`)が依存関係を記録し、build coordinatorが依存先のentryを無効化します。ノートの内容が変更されると、派生コンテンツ（HTMLやgraphエッジなど）が次のビルドで再生成され、正しさが保たれます。
+依存関係はキャッシュの無効化に使われます。ノートの内容が変わると、コンテンツ依存関係トラッカー（`packages/core/src/content/content_dependency_tracker.ts`）が関係を記録し、ビルドコーディネーターが依存するエントリを無効化します。これにより、派生した内容（描画済みHTMLやグラフの辺など）が次のビルドで再生成されます。
 
-例）dependency trackingの流れ：
+依存関係の追跡の流れの例：
 
-1. entry Aが編集され、entry BへWikiLinkを含んでいる
-2. content dependencyのtrackerが、BをAへの依存として記録します。
-3. 以降のビルドでAのfingerprintが変更
-4. build coordinatorはBをinvalidatedとしてマーク
-5. entry Bのコンテンツが再処理され、派生コンテンツの正しさが保たれる
+1. エントリAが編集され、エントリBへのWikiLinkを含んでいる
+2. コンテンツ依存関係トラッカーが、BをAの依存先として記録する
+3. 次のビルドでエントリAのフィンガープリントが変わる
+4. ビルドコーディネーターがエントリBを無効として印を付ける
+5. エントリBのコンテンツが再処理され、派生した内容の正しさが保たれる
 
-Pluginは`extendContentGraph`やカスタムhookを介して他のentryを読み取ることで依存を作成でき、これらはcoreで解決された依存と併せて追跡されます。
-
-依存はcache invalidationに使われます。ノートを編集すると、それをembedするノートが無効化され、さらに連鎖して伝わります。
+プラグインも、`extendContentGraph`や独自のフックを通じて別のエントリを読むことで依存関係を作れます。それらはCoreが解決した依存関係とあわせて追跡されます。

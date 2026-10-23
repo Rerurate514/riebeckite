@@ -47,7 +47,7 @@ export function libraryUrlsPlugin(prefix = "/library") {
 }
 ```
 
-別のプラグインがすでに正規 URL を決めていて、リダイレクトやメタデータだけを足したい場合は `extendContentLocations` を使います。すべてのリゾルバーの後に実行されるため、permalink を作り直す必要はありません。
+別のプラグインがすでに正規 URL を決めていて、リダイレクトやメタデータだけを足したい場合は `extendContentLocations` を使います。すべてのリゾルバーの後に実行されるため、パーマリンクを作り直す必要はありません。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -76,7 +76,7 @@ export function legacyRedirectsPlugin() {
 }
 ```
 
-複数のプラグインが公開位置を解決できます。実行順はプラグインの順序に従い、同じ slug について後から返された位置が前の位置を上書きします。URL の区画ごとに担当を分けるか、`order` で優先順位を明示してください。
+複数のプラグインが公開位置を解決できます。実行順はプラグインの順序に従い、同じ slug について後から返された位置が前の位置を上書きします。URL の範囲ごとに担当を分けるか、`order` で優先順位を明示してください。
 
 ---
 

@@ -4,12 +4,12 @@ title: Riebeckite をアップグレードする
 ---
 # Riebeckite をアップグレードする
 
-既存の Site を新しい Riebeckite へ更新するときの手順です。
+既存のサイトを新しい Riebeckite に更新するときの手順です。
 
-1. 利用中の Package を確認する
-2. Site が利用する Riebeckite Package をまとめて更新する
-3. 検証と Build を実行する
-4. 対象 Version の Release Note と Migration Guide を確認する
+1. インストール済みのパッケージを確認する
+2. サイトが利用する Riebeckite のパッケージをまとめて更新する
+3. 検証とビルドを実行する
+4. 対象バージョンのリリースノートと移行ガイドを確認する
 
 ```sh
 npm ls @riebeckite/core @riebeckite/cli @riebeckite/honox
@@ -18,24 +18,14 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-`check` は Config と Plugin の取り決めを検証します。`doctor` は環境、Project
-の検出、Config、Plugin、Content Source、Build State を診断します。`build` は
-Site を生成できるか確認します。
+`check` は設定とプラグインの取り決めを検証します。`doctor` は実行環境、プロジェクトの検出、設定、プラグイン、コンテンツソース、ビルド状態を診断します。`build` はサイトを生成できるかを確認します。
 
 ## 互換性に関する方針
 
-現在の Riebeckite は、非推奨 API に対する runtime warning や互換 layer を標準では
-提供していません。破壊的変更は Version、変更履歴、必要に応じて Migration Guide で
-案内します。この方針は、将来の Release で非推奨期間を設けることを妨げるものでは
-ありません。
+現在の Riebeckite は、非推奨 API に対する実行時の警告や互換レイヤーを標準では提供していません。破壊的変更は、バージョン、変更履歴、必要に応じて移行ガイドで案内します。この方針は、将来のリリースで非推奨期間を設けることを妨げるものではありません。
 
-1.0 前では、minor release に破壊的変更が含まれることがあります。1.0 以降は
-Semantic Versioning に従います。minor または major version をまたいで更新するときは、
-Release Note を確認してください。
+1.0 より前は、マイナーリリースに破壊的変更が含まれることがあります。1.0 以降はセマンティックバージョニングに従います。マイナーまたはメジャーバージョンをまたいで更新するときは、リリースノートを確認してください。
 
 ## 更新に失敗したとき
 
-失敗した Command の診断から確認します。Package Version を確認し、Migration Guide に
-従って対象の Config または Plugin の取り決めを更新してから、`check`、`doctor`、`build` を
-再実行してください。更新前の状態を Version Control に残しておくと、差分の確認や安全な
-切り戻しができます。
+失敗したコマンドの診断から確認します。パッケージのバージョンを確認し、移行ガイドに従って対象の設定またはプラグインの取り決めを更新してから、`check`、`doctor`、`build` を再実行してください。更新前の状態をバージョン管理に残しておくと、差分の確認や安全な切り戻しができます。

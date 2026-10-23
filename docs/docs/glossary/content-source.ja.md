@@ -1,34 +1,34 @@
 ---
 date: 2026-10-14
-title: Content Source
+title: ContentSource（コンテンツソース）
 sidebar:
   hidden: true
 ---
 
-# Content Source
+# ContentSource（コンテンツソース）
 
-パイプラインの他の部分にコンテンツを供給する読み取りの抽象です。標準の実装はファイルシステムやObsidian vaultを読み取るため、Content Managerがファイルシステムを直接走査することはありません。
+パイプラインのほかの部分のためにコンテンツを見つけて読み取る抽象です。標準の実装はファイルシステムやObsidian vaultを読み取るため、ContentManagerがファイルシステムを直接たどることはありません。
 
-## 読み取り側の役割
+## パイプラインの読み取り側
 
-content sourceは走査と読み取りを担います。パスとバイト列を持つ生のentryを返し、解析と公開位置の解決は後段で行います。
+コンテンツソースは走査と読み取りを担います。パスとバイト列を持つ生のエントリを返し、解析と公開先の解決は後段で行います。
 
-読み取りがインターフェースの背後にあるため、ローカルのディレクトリでもObsidian vaultでも、Content Managerを変えずに同じBuildで扱えます。
+読み取りがインターフェースの背後にあるため、ContentManagerを変えずに、ローカルのディレクトリ、Obsidian vault、その他のソースを同じビルドで扱えます。
 
-## 分離しておく理由
+## 分離している理由
 
-取得を分離すると、cacheとincremental buildがファイルの同一性をもとに判断でき、処理は受け取ったentryに対して純粋なまま保てます。
+取得を分離しておくと、キャッシュと増分ビルドがファイルの同一性をもとに判断でき、処理は受け取ったエントリに対して純粋なまま保てます。
 
-## Content Sourceの種類
+## コンテンツソースの種類
 
-標準の実装は`FileSystemContentSource`(`packages/core/src/content/file_system_content_source.ts`)で、ディレクトリツリーをスキャンしてファイルを読み取ります。`ContentSource`インターフェース経由で行うため、Content Managerを変更せずにObsidian vaultやクラウドストレージなど、任意のファイルシステムソースから読み取るカスタムソースを実装できます。
+標準の実装は`FileSystemContentSource`（`packages/core/src/content/file_system_content_source.ts`）で、ディレクトリツリーを走査し、`ContentSource`インターフェースを通じてファイルを読み取ります。カスタムのソースも同じインターフェースを実装すれば、ContentManagerを変更せずにObsidian vault、クラウドストレージ、その他のファイルシステムに似たソースから読み取れます。
 
-`ContentSource`インターフェース(`packages/core/src/content/content_source.ts`)は以下を定義します：
+`ContentSource`インターフェース（`packages/core/src/content/content_source.ts`）は次を定義します。
 
-- **`scan()`** ：`ContentSourceEntry`の配列を返します。各エントリは`path`とオプションの`metadata`（modified, size, etag, hash）を持ちます
-- **`read(entry)`** ：`ContentSourceContent`を返します。生のファイルバイトまたはテキストです
+- **`scan()`** — `Promise<readonly ContentSourceEntry[]>`を返す。各エントリは`path`と任意の`metadata`（modified、size、etag、hash）を持つ
+- **`read(entry)`** — `Promise<ContentSourceContent>`を返す。生のファイルのバイト列またはテキスト
 
-`ContentSourceEntry`の例:
+`ContentSourceEntry`の例：
 
 ```ts
 {
@@ -42,16 +42,16 @@ content sourceは走査と読み取りを担います。パスとバイト列を
 }
 ```
 
-最小限のカスタムcontent source:
+最小限のカスタムコンテンツソースの例：
 
 ```ts
 const mySource: ContentSource = {
   async scan() {
-    // 処理する各ファイルのエントリを返します
+    // Return entries for each file to process
     return [{ path: "my/path.md" }];
   },
   async read(entry) {
-    // ファイル内容を読み込みます（stringまたはUint8Array）
+    // Read the file content (string or Uint8Array)
     return await fs.promises.readFile(entry.path, "utf8");
   }
 };

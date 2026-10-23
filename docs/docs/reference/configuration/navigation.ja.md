@@ -1,4 +1,4 @@
----
+﻿---
 date: 2026-10-08
 title: ナビゲーションの設定
 sidebar:
@@ -182,7 +182,7 @@ Plugin は Vault の discoverable entries からリンクを導出します。Pl
 
 Plugin が作るページを表示したい場合は、そのページへのリンクを `navigation({ items })` に追加してください。
 
-Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../../guides/customizing-your-site.ja.md#navigation-を変える) を参照してください。
+Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../../guides/customizing-your-site.ja.md#ナビゲーションを変える) を参照してください。
 
 ## エクスポートされる helper と型
 

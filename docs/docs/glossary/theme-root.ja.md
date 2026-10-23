@@ -1,34 +1,34 @@
 ---
 date: 2026-10-14
-title: Theme Root
+title: テーマルート（Theme Root）
 sidebar:
   hidden: true
 ---
 
-# Theme Root
+# テーマルート（Theme Root）
 
-Theme Rootのセレクタ（`[data-theme-root]`または`<html>`）は、Tokenと属性のルールをページ全体に適用します。Color ModeとTypographyの属性をここへ付けると、カスケードがすべての要素に届きます。
+テーマルートのセレクタ（`[data-theme-root]` または `<html>`）で、トークンと属性のルールをページ全体にスコープします。カラーモードとタイポグラフィの属性をここに付けることで、カスケードがすべての要素に届きます。
 
 ## セレクタ
 
-すべてのThemeのルールは、Themeの識別名にスコープされます。
+すべてのテーマルールは、テーマの識別名にスコープされます。
 
 ```css
 :is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
 :is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
 ```
 
-## data属性
+## データ属性
 
-Theme Rootは`<html>`に次の属性を付けます。
+テーマルートは `<html>` に次の属性を出力します。
 
-- `data-theme-name`: Themeの識別名（例: "riebeckite"、"minimal"）
-- `data-theme`: Color Modeの状態（"light" / "dark"。`system`の場合は省略）
-- `data-typography`: Typographyのプリセット値
-- `data-article-layout`: Article Layoutのプリセット値
+- `data-theme-name`：テーマの識別名（例：`"riebeckite"`、`"minimal"`）
+- `data-theme`：カラーモードの状態（`"light"` / `"dark"`。`"system"` では省略）
+- `data-typography`：タイポグラフィのプリセット値
+- `data-article-layout`：記事レイアウトのプリセット値
 
 ## ThemeRootのUIコンポーネント
-フレームワークは`@riebeckite/honox/ui`から`ThemeRoot`というUIプリミティブを提供します。使用方法は以下の通りです。
+フレームワークは `@riebeckite/honox/ui` のUIプリミティブ `ThemeRoot` を提供し、`<html>` 要素へのテーマ属性の設定を担います。使い方は次のとおりです。
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
 <ThemeRoot
@@ -38,10 +38,10 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
   {children}
 </ThemeRoot>
 ```
-`ThemeRoot`は以下の属性を持つ`<html>`要素をレンダリングします：`lang`、`data-theme-name`、`data-theme`、`data-typography`、`data-article-layout`。
+`ThemeRoot` は `lang`、`data-theme-name`、`data-theme`、`data-typography`、`data-article-layout` 属性を持つ `<html>` 要素を描画します。
 
 ## `<html>`の予約属性
-枠組みによって予約されている属性`data-theme`、`data-theme-name`、`data-typography`、`data-article-layout`は、Themeの`attributes`によって上書きできません。カスタム`<html>`属性を追加するには、`themeRootAttributes`ヘルパーを直接使用してください。
+フレームワークが予約する `data-theme`、`data-theme-name`、`data-typography`、`data-article-layout` は、テーマの `attributes` で上書きできません。カスタムの `<html>` 属性を追加するには、`themeRootAttributes` ヘルパーを直接使います。
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
 <html

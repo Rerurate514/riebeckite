@@ -1,22 +1,22 @@
 ---
 date: 2026-10-16
-title: プラグイン UI コンポーネント
+title: プラグインコンポーネント（Plugin UI component）
 sidebar:
   hidden: true
 ---
 
-# プラグイン UI コンポーネント
+# プラグインコンポーネント（Plugin UI component）
 
-Plugin は server-rendered Hono JSX コンポーネントとデータヘルパーを公開し、CSS と選択的な client runtime を提供します。Site はどこで描画するかを決めます。データヘルパーは狭いサーバー安全な query で不変 model を返します。コンポーネントは型付き props を受け取り、描画済み JSX を返します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を自ら決定します。
+プラグインは、サーバー描画のHono JSXコンポーネントとデータヘルパー、さらにCSSと任意のクライアントランタイムを公開します。どこに描画するかはサイトが決めます。データヘルパーは、不変のモデルを返す狭くサーバー安全なクエリです。コンポーネントは型付きpropsを受け取り、描画済みのJSXを返します。サイトは自分のTSXでコンポーネントを組み立て、それぞれを描画するか、どこに、何回描画するかを選びます。
 
-各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後 Site が記事レイアウトやページテンプレートで直接コンポーネントを描画します。これにより Site は配置、順序、コンディショナルレンダリングを制御できます。一方、Plugin は model、内部実装、asset、client-entry 登録の所有権を保持します。
+各データヘルパーは `PublicContentView`（または同様のフィルタ済みファサード）を受け取り、型付きモデルを返します。コンポーネントはサイトの記事レイアウトやページテンプレートから直接描画されます。これにより、配置、順序、条件付き描画はサイトが制御し、モデル、内部実装、アセット、クライアントエントリの登録はプラグインが所有します。
 
-**典型的な Plugin エクスポート形態：**
+**プラグインが公開する典型的な形：**
 
-- **データヘルパー + コンポーネント**：各 Plugin は helper（query）と component を公開し、Site がそれらを組み立てます。
-- **Site が描画を所有**：Site は配置、順序、表示するかどうかを決定します。
-- **選択的な CSS と client runtime**：Plugin は通常どおり `./style.css` と `./client` を export します。これらは integration を通じて登録されます。
-- **context を読むコンポーネント**：Site が周囲の context を用意している場合、コンポーネントが現在の site や article のデータを自分で解決できます。
+- **データヘルパーとコンポーネント** — 各プラグインがヘルパー（クエリ）とコンポーネントを公開し、サイトがそれらを組み立てます。
+- **描画はサイトが所有** — 配置、順序、描画するかどうかはサイトが決めます。
+- **任意のCSSとクライアントランタイム** — プラグインは通常どおり `./style.css` と `./client` を公開でき、インテグレーションを通じて登録されます。
+- **コンテキストを読むコンポーネント** — サイトが周囲のコンテキストを用意している場合、コンポーネントが現在のサイトや記事のデータを自分で解決できます。
 
 ```ts
 // index.ts
@@ -30,18 +30,18 @@ export function examplePlugin() {
 export { Properties, getProperties };
 ```
 
-あるいはより規則的な形で、Plugin は `./components/` の下に置くことができます：
+または、より一般的には、プラグインがコンポーネントとヘルパーを `./components/` の下に置くこともできます。
 
 ```text
 packages/plugins/example/
 ├─ index.ts
 ├─ components/
-│  └─ properties.tsx   // <Properties /> と getProperties を export
+│  └─ properties.tsx   // exports <Properties /> and getProperties
 ├─ style.css
 └─ client.ts
 ```
 
-Site はその後 import して描画します：
+サイト側はこれをインポートして描画します。
 
 ```tsx
 import { getProperties } from "@riebeckite/plugin-properties";

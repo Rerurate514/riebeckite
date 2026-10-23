@@ -1,22 +1,27 @@
 ---
 date: 2026-10-14
-title: Cache Invalidation
+title: キャッシュの無効化（Cache Invalidation）
 sidebar:
   hidden: true
 ---
 
-# Cache Invalidation
+# キャッシュの無効化（Cache Invalidation）
 
-記録した依存やfingerprintが変わったcacheのコンテンツを捨てる処理です。無効化したentryは再処理され、他のentryに影響する場合は変化が伝播します。
+記録した依存関係やフィンガープリントが変わったキャッシュ済みコンテンツを捨てる処理です。無効化されたエントリは再処理され、そのエントリがほかのエントリに影響する場合は変更が伝播します。
 
-## 無効化のトリガー
+## 役割
 
-キャッシュ無効化は以下の具体的なシナリオでトリガーされます：
+入力が変わったエントリを取り除きます。
+無効化を依存するコンテンツへ推移的に伝播します。
 
-- content依存のfingerprintが変わったとき：永続的content cache entryのdependenciesが現在のcontentと照合されます。`CachedContentDependency`のfingerprintが変わった場合（`packages/core/src/pipeline.ts`の`findInvalidDependency`経由など）、entryは無効化されます。
-- pluginのprocessedContentCacheの取り決めに違反したとき：pluginの`dependencyMode`が`tracked`です。この状態で、last build以来変更されたcontentやfileをCore API経由で読み込んだ場合です。この場合、処理済みcontent cache entryは無効化されます。
-- cache versionの不一致やschemaの不一致時：cache lookup中に`entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`（現在は5）の場合、entryは`schema-miss`として扱われ、最初から再処理されます。
-- external dependencyが変わったとき：external dependencyのfingerprintまたはscopeが変化した場合、対応するcache entryは無効化されます。
+## 起きる場面
+
+キャッシュの無効化は、次の具体的な場面で起きます。
+
+- コンテンツ依存関係のフィンガープリントが変わったとき：永続コンテンツキャッシュのエントリの依存関係が現在のコンテンツと照合されます。`CachedContentDependency`のフィンガープリントが変わっていれば（`packages/core/src/pipeline.ts`の`findInvalidDependency`など）、そのエントリは無効化されます。
+- プラグインのprocessedContentCacheの取り決めに反したとき：プラグインの`dependencyMode`が`tracked`で、前回のビルド以降に変わったコンテンツやファイルをCoreのAPI経由で読み込んだ場合、処理済みコンテンツキャッシュのエントリは無効化されます。
+- キャッシュのバージョンやスキーマが一致しないとき：キャッシュの検索中に`entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`（現在は5）であれば、そのエントリは`schema-miss`として扱われ、最初から再処理されます。
+- 外部依存関係が変わったとき：外部依存関係のフィンガープリントやスコープが変わると、対応するキャッシュエントリが無効化されます。
 
 ## 関連用語
 

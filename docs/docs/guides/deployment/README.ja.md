@@ -1,10 +1,10 @@
 ---
 date: 2026-10-08
-title: Deployment Guides
+title: デプロイガイド
 ---
-# Deployment Guides
+# デプロイガイド
 
-Riebeckite で作成した Site を Cloudflare Workers へ公開するための Guide です。
+Riebeckite で作成したサイトを Cloudflare Workers へ公開するためのガイドです。
 
 基本的な流れは次のとおりです。
 
@@ -26,19 +26,19 @@ flowchart LR
 npm exec riebeckite build
 ```
 
-を実行すると、公開用の Site が `dist/` に生成されます。
+を実行すると、公開用のサイトが `dist/` に生成されます。
 
-通常の静的 Site では、この `dist/` を Cloudflare Workers の Static Assets として配信します。
+通常の静的サイトでは、この `dist/` を Cloudflare Workers の Static Assets として配信します。
 
-## どの Guide を読めばいい？
+## どのガイドを読めばいい？
 
-| やりたいこと | Guide |
+| やりたいこと | ガイド |
 | --- | --- |
 | 手元から Cloudflare Workers へ公開したい | [Cloudflare Workers](./cloudflare-workers.ja.md) |
 | GitHub への Push から自動公開したい | [GitHub Actions](./github-actions.ja.md) |
-| Content と Site を別 Repository で運用したい | [Separate Content Repository](./separate-content-repository.ja.md) |
+| コンテンツとサイトを別リポジトリで運用したい | [コンテンツとサイトを分ける](./separate-content-repository.ja.md) |
 
-初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec riebeckite deploy` で手元から公開できます。`deploy` は build を行わないため、先に `npm exec riebeckite build` で `dist/` を作ります。すでに手元から公開している Site は、`npm exec riebeckite deploy setup` で GitHub Actions の継続デプロイを準備できます。
+初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec riebeckite deploy` で手元から公開できます。`deploy` はビルドを行わないため、先に `npm exec riebeckite build` で `dist/` を作ります。すでに手元から公開しているサイトは、`npm exec riebeckite deploy setup` で GitHub Actions の継続デプロイを準備できます。
 
 ```mermaid
 flowchart TD
@@ -53,9 +53,9 @@ flowchart TD
     Separate -->|"Yes"| Content["Separate Content Repository"]
 ```
 
-## Build と Deploy
+## ビルドとデプロイ
 
-Riebeckite では、Build と Deploy は別の処理です。
+Riebeckite では、ビルドとデプロイは別の処理です。
 
 ```text
 Build
@@ -67,7 +67,7 @@ Deploy
 
 公開対象は `dist/` です。
 
-`.riebeckite/` や Plugin Cache は Build 時に利用する状態であり、公開 Asset ではありません。
+`.riebeckite/` やプラグインのキャッシュはビルド時に利用する状態であり、公開アセットではありません。
 
 ```text
 dist/
@@ -78,11 +78,11 @@ Plugin Cache
   → 公開しない
 ```
 
-通常の静的 Site では Runtime の `main` も必要ありません。Riebeckite の Build 処理を Workers 上で実行するのではなく、Build 済みの `dist/` を配信します。
+通常の静的サイトでは Runtime の `main` も必要ありません。Riebeckite のビルド処理を Workers 上で実行するのではなく、ビルド済みの `dist/` を配信します。
 
 ## 公開前の確認
 
-Deploy 前には、次の順で確認できます。
+デプロイ前には、次の順で確認できます。
 
 ```sh
 npm exec riebeckite check
@@ -90,9 +90,9 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-`build` が成功したら、生成された `dist/` を Deploy します。
+`build` が成功したら、生成された `dist/` をデプロイします。
 
-## Deployment Guides
+## デプロイガイド
 
 ### Cloudflare Workers
 
@@ -104,19 +104,19 @@ npm exec riebeckite build
 
 [GitHub Actions](./github-actions.ja.md)
 
-Site Repository への Push から、Build と Cloudflare Workers への Deploy を自動化します。
+サイトリポジトリへの Push から、ビルドと Cloudflare Workers へのデプロイを自動化します。
 
-### Separate Content Repository
+### コンテンツとサイトを分ける
 
-[Separate Content Repository](./separate-content-repository.ja.md)
+[コンテンツとサイトを分ける](./separate-content-repository.ja.md)
 
-Obsidian Vault などの Content と Site を別 Repository で管理する方法を説明します。
+Obsidian Vault などのコンテンツとサイトを別リポジトリで管理する方法を説明します。
 
-Private Content Repository の認証や、Content 更新から Site の Deployment を起動する方法もこちらで扱います。
+プライベートなコンテンツリポジトリの認証や、コンテンツ更新からサイトのデプロイを起動する方法もこちらで扱います。
 
 ## まとめ
 
-Riebeckite の Deployment は、
+Riebeckite のデプロイは、
 
 ```text
 Content
@@ -132,4 +132,4 @@ Cloudflare Workers
 
 - 手動で公開する → [Cloudflare Workers](./cloudflare-workers.ja.md)
 - Push から自動公開する → [GitHub Actions](./github-actions.ja.md)
-- Content Repository を分離する → [Separate Content Repository](./separate-content-repository.ja.md)
+- コンテンツリポジトリを分ける → [コンテンツとサイトを分ける](./separate-content-repository.ja.md)

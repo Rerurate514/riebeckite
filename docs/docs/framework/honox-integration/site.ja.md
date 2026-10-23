@@ -57,7 +57,7 @@ resolveRiebeckiteRoute(content, c.req.path)
 
 Riebeckite repository にある `apps/web` は実装例の1つであり、外部 Site が同じ layout を使う必要はありません。
 
-## Head Tags
+## headタグ
 
 Plugin が document head に情報を追加したい場合は、
 

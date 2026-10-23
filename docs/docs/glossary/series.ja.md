@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Series
+title: シリーズ（Series）
 sidebar:
   hidden: true
 ---
 
-# Series
+# シリーズ（Series）
 
-順序を持ってまとまるコンテンツの集合で、frontmatterのseries fieldで設定します。seriesの一覧は、同じseries値を持つcontent collectionから作られます。
+順序を持ってまとまるコンテンツの集合で、frontmatterのseriesフィールドで設定します。シリーズ一覧は、同じseries値を持つコンテンツコレクションから作られます。
 
 ## 設定
 
@@ -19,19 +19,19 @@ series: Building a Theme
 
 ## 順序と一覧
 
-同じseries値を持つentryをまとめ、通常は日付か明示したorderで並べます。一覧はseries fieldを対象にしたcontent collectionです。
+同じseries値を持つエントリをまとめ、通常は日付か明示したorderで並べます。一覧は、seriesフィールドを対象にした[コンテンツコレクション](./content-collection.md)です。
 
-## seriesプラグインのオプション
+## シリーズプラグインのオプション
 
-seriesプラグインは`SeriesOptions`（`packages/plugins/series/src/types.ts`）を受け入れ、seriesのグループ化とレンダリングを構成します。主なオプションには以下があります：
+シリーズプラグインは `SeriesOptions`（`packages/plugins/series/src/types.ts`）を受け取り、シリーズのグループ化と描画を設定します。主なオプションは次のとおりです。
 
-- `key`（既定: `"series"`）：seriesを名前づけるfrontmatter key
-- `orderKey`（既定: `"series_order"`）：数値orderを持つfrontmatter key
-- `titleKey`（既定: `"series_title"`）：表示タイトルをオーバーライドするfrontmatter key
-- `heading`（既定: `true`）：seriesのheadingをpartリストの上にレンダリングするか
-- `className`（既定: `"rb-series"`）：CSSクラス名の接頭辞
-- `positionLabel`（既定: `false`）：current note用の"Part N of M"ラベルをレンダリングするか
-- `basePath`（既定: `"/series"`）：seriesランディングページのbase path
+- `key`（既定：`"series"`）：シリーズ名を持つfrontmatterキー
+- `orderKey`（既定：`"series_order"`）：数値の順序を持つfrontmatterキー
+- `titleKey`（既定：`"series_title"`）：表示するシリーズタイトルを上書きするfrontmatterキー
+- `heading`（既定：`true`）：パーツ一覧の上にシリーズの見出しを描画するか
+- `className`（既定：`"rb-series"`）：CSSクラス名の接頭辞
+- `positionLabel`（既定：`false`）：現在のノートに「Part N of M」ラベルを描画するか
+- `basePath`（既定：`"/series"`）：シリーズのランディングページのベースパス
 
 ```ts
 // From packages/plugins/series/src/types.ts
@@ -46,4 +46,4 @@ export type SeriesOptions = {
 };
 ```
 
-`collectSeriesIndexes`関数（`packages/plugins/series/src/series.ts`）はseriesを宣言するすべてのマニフェストエントリをグループ化し、first-seen orderでone `SeriesIndex`per seriesを返します。membersはorderKeyによって、次にdate、title、slugによって並べられ、決定論的なtiesが解決されます。
+`collectSeriesIndexes` 関数（`packages/plugins/series/src/series.ts`）は、シリーズを宣言するすべてのマニフェストエントリをグループ化し、シリーズごとに1つの `SeriesIndex` を、最初に現れた順で返します。メンバーは `orderKey`、次に日付、タイトル、slugの順で並べられ、同着でも順序が決まるようになっています。

@@ -1,93 +1,93 @@
 ---
 date: 2026-10-08
-title: Build Dependency の取り決め
+title: ビルド依存関係の取り決め
 ---
-# Build Dependency の取り決め
+# ビルド依存関係の取り決め
 
-Incremental Buildの無効化はCoreの責務です。PluginはどのContentが影響を受けるかを計算せず、依存stateも自分では持ちません。取り決めを宣言すると、何を再利用するかはCoreが決めます。
+増分ビルドにおける無効化の判断はCoreが担います。プラグインは、どのコンテンツが影響を受けるかを計算せず、依存状態も自分では保持しません。プラグインが取り決めを宣言し、何を再利用するかはCoreが決めます。
 
-Pluginが関わる取り決めは、Content DependencyとOutput Dependencyの二つです。前者は`processedContentCache`で、Coreがどのsource Contentを処理し直すかを決めます。後者は`outputDependencies`と`context.output.emit`で、Coreがどの出力ファイルを書き直すかを決めます。両者は独立した取り決めです。
+プラグインが関わる取り決めは、コンテンツ依存関係と出力依存関係の2つです。前者は `processedContentCache` で、Coreがどのソースコンテンツを処理し直すかを決めます。後者は `contentOutputDependencies` と `context.output.emit` で、Coreがどの出力ファイルを書き直すかを決めます。両者は独立した取り決めです。
 
 ```mermaid
 flowchart LR
-    Change["Contentまたはfileの変更"] --> Content["Content Dependency"]
-    Content --> Reprocess["影響するContentの再処理"]
-    Reprocess --> Output["Output Dependency"]
-    Output --> Rewrite["影響するOutputの再書き込み"]
+    Change["コンテンツまたはファイルの変更"] --> Content["コンテンツ依存関係"]
+    Content --> Reprocess["影響するコンテンツの再処理"]
+    Reprocess --> Output["出力依存関係"]
+    Output --> Rewrite["影響する出力の再書き込み"]
 ```
 
-## Content Dependency
+## コンテンツ依存関係
 
-`processedContentCache`は、Pluginの処理済みContentをBuild間でどう再利用してよいかを示す取り決めです。
+`processedContentCache` は、プラグインが処理したコンテンツをビルド間でどのように再利用してよいかを示す取り決めです。
 
 | `dependencyMode` | 意味 |
 | --- | --- |
-| `none` | 処理結果がsource Content、frontmatter、Pluginのoptions、宣言したversionだけに依存する。 |
-| `tracked` | 他のContentやfileをCore経由で読む。Coreがその読み取りを記録し、利用側だけを再処理する。 |
-| `global` | 解決済みのContent Location集合に依存する。Locationが変わると、すべての処理済みentryを無効にする。 |
-| `unsafe` | Git、network、時刻、process stateなど、Coreが観測できない入力に依存する。永続的な再利用は行わない。 |
+| `none` | 処理結果がソースコンテンツ、frontmatter、プラグインのオプション、宣言したバージョンだけに依存する。 |
+| `tracked` | 他のコンテンツやファイルをCore経由で読む。Coreがその読み取りを記録し、利用側だけを再処理する。 |
+| `global` | 解決済みのコンテンツ公開先の集合に依存する。公開先が変わると、処理済みのエントリをすべて無効にする。 |
+| `unsafe` | Git、ネットワーク、時刻、プロセス状態など、Coreが観測できない入力に依存する。永続的な再利用は行わない。 |
 
-Contentを変化させるPluginが取り決めを宣言していない場合、そのPluginは`unsafe`として扱われます。
+コンテンツを変化させるプラグインが取り決めを宣言していない場合、そのプラグインは `unsafe` として扱われます。
 
-`version`は取り決めの名前です。Coreは解決済みのPlugin設定もcache keyに含めます。そのため、options、hooks、versionのいずれかを変えると、cacheされたentryは無効です。
+`version` は取り決めの名前です。Coreは解決済みのプラグイン設定もキャッシュキーに含めます。そのため、オプション、フック、バージョンのいずれかを変えると、キャッシュされたエントリは無効になります。
 
-`global`は、Content変換がvault全体のLocation metadataに依存するときだけ使います。Coreはslug、permalink、redirect、language、metadataを含む解決済みLocationをfingerprintします。manifest専用hookにはこのmodeは不要です。hookは毎Buildで現在のmanifestに対して実行され、処理済みContentを無効化しません。
+`global` は、コンテンツ変換がvault全体の公開先メタデータに依存するときだけ使います。Coreは、slug、permalink、リダイレクト、言語、メタデータを含む解決済みの公開先をフィンガープリントします。マニフェスト専用のフックにこのモードは不要です。フックは毎回のビルドで現在のマニフェストに対して実行され、処理済みコンテンツを無効化しません。
 
 ### Coreが記録する入力
 
-CoreのContent API経由の読み取りが、安定したidentityを持つdependencyになります。
+CoreのコンテンツAPIを経由した読み取りが、安定した識別子を持つ依存関係になります。
 
-| 種類 | 記録される場面 | identity |
+| 種類 | 記録される場面 | 識別子 |
 | --- | --- | --- |
-| `content` | `readContent`、`renderContent`、`renderNoteEmbed` | Contentのslug |
-| `file` | `contentSource.read`と`readContentSourceEntry`などのhelper | file path |
-| `link` | link先がpermalinkに解決されたとき | link id |
+| `content` | `readContent`、`renderContent`、`renderNoteEmbed` | コンテンツのslug |
+| `file` | `contentSource.read` と `readContentSourceEntry` などのヘルパー | ファイルパス |
+| `link` | リンク先がpermalinkに解決されたとき | リンクID |
 
-`contentSource.scan()`はentryを列挙するだけでdependencyを作りません。filesystem、network、時計への直接アクセスはCoreから見えないため、それらの入力は`unsafe`です。
+`contentSource.scan()` はエントリを列挙するだけで、依存関係を作りません。ファイルシステム、ネットワーク、時計への直接アクセスはCoreから見えないため、それらの入力は `unsafe` に属します。
 
 ### 再利用と検証
 
-次のBuildでCoreは、cacheされた処理済みContentを取り出したあと、記録したcontent、file、linkのdependencyをすべて読み直し、fingerprintを比べます。一つでも変わっていれば、そのentryを捨てて処理し直します。
+次のビルドでCoreは、キャッシュされた処理済みコンテンツを取り出したあと、記録したコンテンツ、ファイル、リンクの依存関係をすべて読み直し、フィンガープリントを比較します。1つでも変わっていれば、そのエントリを破棄して処理し直します。
 
-cacheが省略するのはMarkdownとHTMLの処理だけです。post処理のhooks（`onPostParsed`、`onPostProcessed`）は常に実行します。`onManifestCreated` は、永続化したentryのsnapshotが有効で、外部dependencyやmanifest entry以外への副作用がない場合に限り、Coreが再利用できます。ほかのmanifest stateを変更するhookは常に実行するため、manifest段階の処理はそこに置いてください。
+キャッシュが省略するのはMarkdownとHTMLの処理だけです。後処理のフック（`onPostParsed`、`onPostProcessed`）は常に実行します。`onManifestCreated` は、永続化したエントリのスナップショットが有効で、外部依存関係やマニフェストエントリ以外への副作用がない場合に限り、Coreが再利用できます。ほかのマニフェスト状態を変更するフックは常に実行するため、マニフェスト段階の処理はそこに置いてください。
 
 ### 影響範囲の決定
 
-Coreは各entryのdependency identityをbuild stateに永続化し、そこから逆引きindexを作ります。dependencyが変わると、依存するentryに印を付け、さらにその依存先へと無効化を伝播させます。Contentが追加または削除された場合も、変わったlink先を参照していたentryは無効です。初回Buildや前回のstateが無いときは、すべてのnoteを処理します。
+Coreは各エントリの依存関係の識別子をビルド状態に永続化し、そこから逆引きインデックスを作ります。依存関係が変わると、依存するエントリに印を付け、さらにそのエントリに依存する側へ無効化を伝播させます。コンテンツが追加または削除された場合も、変わったリンク先を参照していたエントリは無効です。初回ビルドや前回の状態がないときは、すべてのノートを処理します。
 
-## Output Dependency
+## 出力依存関係
 
-Output DependencyはContent Dependencyとは別の取り決めです。種類ごとに、change setの異なる部分に反応します。
+出力依存関係は、コンテンツ依存関係とは別の取り決めです。種類ごとに、変更セットの異なる部分に反応します。
 
 | 種類 | 影響を受ける条件 |
 | --- | --- |
-| `content { slug }` | そのContentが変わったとき |
-| `tag { tag }` | そのtagを持つContentが変わったとき |
-| `folder { folder }` | そのfolderのContentが変わったとき |
-| `public-location { pathname }` | その正規pathnameを所有するroutable Contentが変わった、現れた、または消えたとき |
-| `global` | いずれかのContentが変わったとき |
-| `unknown` | 常に。Coreは全Outputの再生成も要求する。 |
+| `content { slug }` | そのコンテンツが変わったとき |
+| `tag { tag }` | そのタグを持つコンテンツが変わったとき |
+| `folder { folder }` | そのフォルダのコンテンツが変わったとき |
+| `public-location { pathname }` | その正規のpathnameを所有するルーティング可能なコンテンツが変わった、現れた、または消えたとき |
+| `global` | いずれかのコンテンツが変わったとき |
+| `unknown` | 常に。Coreはすべての出力の再生成も要求する。 |
 
-宣言する場所は三つです。
+宣言する場所は3つです。
 
 | 対象 | 宣言場所 |
 | --- | --- |
-| Plugin page | `pageTypes[].outputDependencies` |
-| manifest entry HTMLを更新するPlugin | rootの`contentOutputDependencies`、または`resolveContentOutputDependencies({ entry, manifest })`。resolverはContent Outputごとに依存を宣言できる。 |
-| 生成output | `context.output.emit(..., { dependencies })`。未宣言なら`unknown`。 |
+| プラグインページ | `pageTypes[].outputDependencies` |
+| マニフェストエントリのHTMLを更新するプラグイン | ルートの `contentOutputDependencies`、または `resolveContentOutputDependencies({ entry, manifest })`。リゾルバーはコンテンツ出力ごとに依存関係を宣言できる。 |
+| 生成される出力 | `context.output.emit(..., { dependencies })`。依存関係を宣言しない場合は `unknown` になる。 |
 
-対象が特定できる場合は`content`、`tag`、`folder`を使ってください。manifest全体に依存する集合変換は`global`です。表現できない入力だけに`unknown`を使います。
+対象を特定できる場合は `content`、`tag`、`folder` を使ってください。マニフェスト全体に依存する集合変換には `global` を使います。表現できない入力にだけ `unknown` を使ってください。
 
-`none`、`tracked`、`global`、`unsafe`は処理済みContentの再利用を示す取り決めであり、Outputの再利用を示すものではありません。たとえばPluginは`none`と`global` output dependencyを安全に組み合わせられます。また、`tracked`でも生成outputには狭い`content` dependencyを指定できます。誤ったoutput宣言では古いfileが残るため、outputの範囲を完全に表現できない場合は`unknown`を使ってください。`unknown`ではincremental SSGよりfull output renderを優先します。
+`none`、`tracked`、`global`、`unsafe` は処理済みコンテンツの再利用を示す取り決めであり、出力の再利用を示すものではありません。たとえば、プラグインは `none` と `global` の出力依存関係を安全に組み合わせられます。また、`tracked` でも生成される出力には狭い `content` 依存関係を指定できます。出力の宣言が誤っていると古いファイルが残るため、出力の範囲を完全に表現できない場合は `unknown` を使ってください。`unknown` では、増分SSGよりも出力全体の再生成を優先します。
 
-Coreは、entryのprocessed-content dependency fingerprintが前回のBuildから変わった場合も、そのContent Outputを影響ありとします。関連項目は[Content Dependency](#content-dependency)を参照してください。処理済みContentが他のContentに依存するPluginは、`global` output dependencyを宣言せずに、その依存をentry単位で追跡できます。
+エントリの処理済みコンテンツについて、依存関係のフィンガープリントが前回のビルドから変わった場合も、Coreはそのコンテンツ出力を影響ありとみなします。関連項目は[コンテンツ依存関係](#コンテンツ依存関係)を参照してください。処理済みコンテンツが他のコンテンツに依存するプラグインは、`global` の出力依存関係を宣言せずに、その依存関係をエントリ単位で追跡できます。
 
-## Plugin作者向けのルール
+## プラグイン作者向けのルール
 
-- Contentを変化させるPluginはすべて`processedContentCache`を宣言します。
-- 他のContentやfileはCoreのAPI経由でのみ読み、dependencyとして記録させます。
-- Content mapを持ったり、vaultを再走査したり、Plugin固有のincremental stateを保存したりしません。
-- 観測できない入力がある場合は`unsafe`を使います。広い再処理は許容できますが、古い結果の再利用は許容できません。
-- manifest段階の変更と生成outputにはOutput Dependencyを宣言します。
+- コンテンツを変化させるプラグインは、すべて `processedContentCache` を宣言する。
+- 他のコンテンツやファイルはCoreのAPI経由でのみ読み、依存関係として記録させる。
+- コンテンツマップを保持したり、vaultを再走査したり、プラグイン固有の増分状態を保存したりしない。
+- 観測できない入力がある場合は `unsafe` を使う。広い範囲の再処理は許容できるが、古い結果の再利用は許容できない。
+- マニフェスト段階の変更と生成される出力には、出力依存関係を宣言する。
 
-正確なfieldは[Plugin API](../reference/plugin-api.ja.md)、Build lifecycleは[Build System](./build-system.ja.md)を参照してください。
+正確なフィールドは[プラグインAPI](../reference/plugin-api.ja.md)、ビルドライフサイクルは[ビルドシステム](./build-system.ja.md)を参照してください。

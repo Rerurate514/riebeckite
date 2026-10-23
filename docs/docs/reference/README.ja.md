@@ -1,42 +1,40 @@
 ---
 date: 2026-10-08
-title: Reference
+title: リファレンス
 sidebar:
-  label: Reference
+  label: リファレンス
   order: 40
 ---
-# Reference
+# リファレンス
 
-Reference は、Riebeckite の**設定値・CLI・公開 API・Theme・内部構造を調べるための章**です。
-
-「どう使えばいいか」という手順を知りたい場合は [Guides](../guides/README.ja.md) を参照してください。
+リファレンスは、事実を調べるための章です。設定値、CLI コマンド、公開エクスポート、プラグイン API、テーマ API、テーマのカスタマイズ、内部構造を扱います。手順を知りたい場合は [ガイド](../guides/README.ja.md) を参照してください。
 
 ```mermaid id="h2qw1n"
 flowchart TD
     Q{"何を知りたい？"}
 
-    Q -->|"使い方・手順"| Guides["Guides"]
-    Q -->|"設定・Command・API・Theme"| Reference["Reference"]
+    Q -->|"使い方・手順"| Guides["ガイド"]
+    Q -->|"設定・コマンド・API・テーマ"| Reference["リファレンス"]
     Q -->|"内部構造・仕組み"| Framework["Framework"]
 ```
 
-Reference は最初から順番に読む必要はありません。設定項目や API を確認したくなったときに、必要なページを参照してください。
+リファレンスは最初から順番に読む必要はありません。設定項目や API を確認したくなったときに、必要なページを開いてください。
 
-## ページ
+## 調べたいことからページを選ぶ
 
 | 知りたいこと | ページ |
 | --- | --- |
-| `riebeckite.config.ts` の設定 | [Configuration](./configuration.ja.md) |
-| `riebeckite.config.ts` の全フィールド | [Configuration リファレンス](./configuration-reference.ja.md) |
-| CLI Command とその役割 | [CLI](./cli.ja.md) |
-| Plugin の Public API | [Plugin API](./plugin-api.ja.md) |
-| Theme の Public API | [Theme API](./theme-api.ja.md) |
+| `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
+| `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
+| `dev`、`check`、`doctor`、`build`、`profile`、`inspect` | [CLI](./cli.ja.md) |
+| `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
+| `defineTheme`、CSS の取り決め、トークン、カラーモード、パッケージの形 | [Theme API](./theme-api.ja.md) |
 | Riebeckite の内部構造 | [Framework](../framework/README.ja.md) |
-| Theme の作り方 | [Themes](../themes/README.ja.md) |
+| テーマの作り方 | [テーマ](../themes/README.ja.md) |
 
-### Configuration
+### 設定項目を調べる
 
-[Configuration](./configuration.ja.md) では、
+[設定](./configuration.ja.md) では、次の設定とその解決方法を確認できます。
 
 - `site`
 - `content`
@@ -47,11 +45,9 @@ Reference は最初から順番に読む必要はありません。設定項目�
 - `configRoot`
 - `contentRoot`
 
-など、Riebeckite の設定とその解決方法を確認できます。
+### CLI コマンドを調べる
 
-### CLI
-
-[CLI](./cli.ja.md) では、
+[CLI](./cli.ja.md) では、次の各コマンドとその役割を確認できます。
 
 ```text
 init
@@ -63,15 +59,13 @@ profile
 inspect
 ```
 
-の各 Command と、その役割を確認できます。
+### プラグインの公開 API を調べる
 
-### Plugin API
-
-[Plugin API](./plugin-api.ja.md) では、
+[Plugin API](./plugin-api.ja.md) では、プラグインが利用できる次の公開の取り決めを確認できます。
 
 - `definePlugin`
-- Lifecycle Hook
-- Content Hook
+- ライフサイクルフック
+- コンテンツフック
 - Renderer
 - Page Type
 - Assets
@@ -79,48 +73,44 @@ inspect
 - Endpoint
 - Diagnostics
 
-など、Plugin が利用できる Public の取り決めを確認できます。
+プラグインの仕組みそのものを理解したい場合は [Plugin System](../framework/plugin-system.ja.md) を参照してください。
 
-Plugin の仕組みそのものを理解したい場合は [Plugin System](../framework/plugin-system.ja.md) を参照してください。
+### テーマの公開 API を調べる
 
-### Theme API
-
-[Theme API](./theme-api.ja.md) では、
+[Theme API](./theme-api.ja.md) では、テーマが利用できる次の公開の取り決めを確認できます。
 
 - `defineTheme`
-- Design Token
-- Color Mode
-- Typography
-- Article Layout
+- デザイントークン
+- カラーモード
+- タイポグラフィ
+- 記事レイアウト
 - CSS の取り決め
-- Theme Package
+- テーマパッケージ
 
-など、Theme が利用できる Public の取り決めを確認できます。
+テーマの設計思想や仕組みを理解したい場合は [Theme System](../framework/theme-system.ja.md) を参照してください。
 
-Theme の設計思想や仕組みを理解したい場合は [Theme System](../framework/theme-system.ja.md) を参照してください。
+## 公開パッケージ
 
-## 公開 Package
+外部のプラグイン、テーマ、サイトは、**公開パッケージと公開エクスポートだけ**に依存してください。
 
-Riebeckite の外部 Plugin / Theme / Site は、**公開 Package と公開 Export だけ**に依存してください。
+主なパッケージは次のとおりです。
 
-主な Package は次のとおりです。
-
-| Package | 用途 |
+| パッケージ | 公開するもの |
 | --- | --- |
-| `@riebeckite/core` | Config、Content、Plugin、Theme、Pipeline などの共通 API |
+| `@riebeckite/core` | `defineConfig`、`definePlugin`、`defineTheme`、コンテンツ API、パイプライン API、診断、可観測性の型 |
 | `@riebeckite/cli` | `riebeckite` CLI |
-| `@riebeckite/honox` | HonoX / Vite Integration と Scaffold。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、`contentRouteSsgParams`、`riebeniteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent` と各種 Props 型）を公開 |
-| `@riebeckite/test` | テスト helper（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部 site engine |
-| `@riebeckite/plugin-*` | 各 Plugin |
-| `@riebeckite/theme-*` | 各 Theme |
+| `@riebeckite/honox` | HonoX / Vite との統合とスキャフォールド。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、`contentRouteSsgParams`、`riebeniteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent` と各種 Props 型）を公開 |
+| `@riebeckite/test` | テストヘルパー（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部サイトエンジン |
+| `@riebeckite/plugin-*` | プラグインのファクトリと、ドキュメント化された subpath エクスポート |
+| `@riebeckite/theme-*` | テーマのファクトリと CSS エクスポート |
 
 依存関係は概ね次のようになります。
 
 ```mermaid id="65lzss"
 flowchart BT
-    Site["Site"]
-    ExternalPlugin["External Plugin"]
-    ExternalTheme["External Theme"]
+    Site["サイト"]
+    ExternalPlugin["外部プラグイン"]
+    ExternalTheme["外部テーマ"]
 
     Honox["@riebeckite/honox"]
     Core["@riebeckite/core"]
@@ -132,13 +122,13 @@ flowchart BT
     Honox --> Core
 ```
 
-外部 Package から Riebeckite monorepo の内部実装へ直接依存しないことが重要です。
+外部パッケージから Riebeckite モノレポの内部実装へ直接依存しないことが重要です。
 
-## Public API と Internal API
+## 公開 API と内部 API
 
-外部 Package では Package の Public Export を利用します。
+外部パッケージでは、パッケージの公開エクスポートを利用します。
 
-たとえば、
+たとえば、次のようにインポートします。
 
 ```ts
 import {
@@ -147,9 +137,7 @@ import {
 } from "@riebeckite/core";
 ```
 
-のように Import します。
-
-一方、次のような Import は使用しないでください。
+一方、次のようなインポートは使用しないでください。
 
 ```ts
 import {
@@ -157,34 +145,38 @@ import {
 } from "@riebeckite/core/src/...";
 ```
 
-また、
+また、次のような Riebeckite モノレポ内部のパスにも依存しないでください。
 
 ```text
 ../../../../packages/core/...
 ```
 
-のような Riebeckite monorepo 内部の Path にも依存しません。
-
 ```mermaid id="8n7pvm"
 flowchart LR
-    Consumer["External Package"]
+    Consumer["外部パッケージ"]
 
-    Consumer -->|"✓"| Public["@riebeckite/core<br/>Public Export"]
+    Consumer -->|"✓"| Public["@riebeckite/core<br/>公開エクスポート"]
     Consumer -.->|"✗"| Internal["@riebeckite/core/src/**"]
-    Consumer -.->|"✗"| Monorepo["Monorepo Internal Path"]
+    Consumer -.->|"✗"| Monorepo["モノレポ内部パス"]
 ```
 
-Public API は外部利用を前提とした取り決めです。
+公開 API は外部利用を前提とした取り決めです。`src/**` やモノレポ内部のパスは実装の詳細であり、パッケージの更新によって変更される可能性があります。
 
-`src/**` や monorepo 内部 Path は実装詳細であり、Package の更新によって変更される可能性があります。
+## `@riebeckite/core` が公開するもの
 
-## `@riebeckite/core`
+`@riebeckite/core` は、Riebeckite のフレームワークに依存しない公開 API を提供します。
 
-`@riebeckite/core` は、Riebeckite の Framework 非依存な Public API を提供します。
+### 主なエクスポート
 
-主な Export は次のとおりです。
+- 設定: `defineConfig`、`resolveConfig`、`resolveConfigModule`、`isPublished`、`isExcluded`
+- コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`ContentQuery`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
+- プラグイン: `definePlugin`、`resolvePlugins`、`defineEndpoint`、`createStyleAsset`、`createClientEntry`、`createPluginMemo`、`stableStringify`
+- テーマ: `defineTheme`、`RiebeckiteTheme`、`ThemeDesignTokens`、`ThemeColorMode`、`ThemeTypographyPreset`、`ThemeArticleLayoutPreset`
+- パイプライン: `Pipeline`、`MarkdownPipeline`、`HtmlPipeline`
+- ユーティリティ: `escapeHtml`、`escapeHtmlAttribute`、`normalizeTag`、`calculateReadingTime`、`stripHtml`
+- 可観測性: `Logger`、`Tracer`、`TraceSpan`、`TraceSink`
 
-### Config
+### 設定
 
 ```text
 defineConfig
@@ -194,11 +186,9 @@ isPublished
 isExcluded
 ```
 
-Config の宣言、解決、Publication Policy などに使用します。
+設定の宣言と解決、公開ポリシーに使用します。詳しくは [設定](./configuration.ja.md) を参照してください。
 
-詳しくは [Configuration](./configuration.ja.md) を参照してください。
-
-### Content
+### コンテンツ
 
 ```text
 ContentManager
@@ -210,11 +200,9 @@ fingerprintContentEntries
 resolveDefaultContentLocation
 ```
 
-Content の読み込み、解決、Collection、Graph、Query、Public Location などに使用します。
+コンテンツの読み込みと解決、コレクション、コンテンツグラフ、クエリ、公開ロケーションに使用します。仕組みについては [Content System](../framework/content-system.ja.md) を参照してください。
 
-仕組みについては [Content System](../framework/content-system.ja.md) を参照してください。
-
-### Plugins
+### プラグイン
 
 ```text
 definePlugin
@@ -226,11 +214,9 @@ createPluginMemo
 stableStringify
 ```
 
-Plugin の定義や解決、Endpoint などに使用します。
+プラグインの定義と解決、エンドポイントなどに使用します。プラグインを作成する場合は [Plugin API](./plugin-api.ja.md) と [プラグイン作成の詳細](../framework/plugin-system.ja.md) を参照してください。
 
-Plugin を作成する場合は [Plugin API](./plugin-api.ja.md) と [プラグイン作成の詳細](../framework/plugin-system.ja.md) を参照してください。
-
-### Themes
+### テーマ
 
 ```text
 defineTheme
@@ -241,11 +227,9 @@ ThemeTypographyPreset
 ThemeArticleLayoutPreset
 ```
 
-Theme の定義と Presentation の取り決めに使用します。
+テーマの定義とプレゼンテーションの取り決めに使用します。テーマを作成する場合は [Theme API](./theme-api.ja.md) と [テーマ作成の詳細](../framework/theme-system.ja.md) を参照してください。
 
-Theme を作成する場合は [Theme API](./theme-api.ja.md) と [テーマ作成の詳細](../framework/theme-system.ja.md) を参照してください。
-
-### Pipeline
+### パイプライン
 
 ```text
 Pipeline
@@ -253,11 +237,9 @@ MarkdownPipeline
 HtmlPipeline
 ```
 
-Markdown / HTML の処理 Pipeline を拡張するときに使用します。
+Markdown / HTML の処理パイプラインを拡張するときに使用します。通常のサイト利用で直接扱う必要はありません。
 
-通常の Site 利用で直接扱う必要はありません。
-
-### Utilities
+### ユーティリティ
 
 ```text
 escapeHtml
@@ -267,9 +249,9 @@ calculateReadingTime
 stripHtml
 ```
 
-Plugin や Integration から利用できる共通 Utility です。
+プラグインやインテグレーションから利用できる共通のユーティリティです。
 
-### Observability
+### 可観測性
 
 ```text
 Logger
@@ -278,45 +260,41 @@ TraceSpan
 TraceSink
 ```
 
-Log や Trace を Framework と統合するための型です。
+ログやトレースをフレームワークと統合するための型です。詳しくは [Observability](../framework/observability.ja.md) を参照してください。
 
-詳しくは [Observability](../framework/observability.ja.md) を参照してください。
+## どのドキュメントを読むべきか
 
-## どのドキュメントを見るべきか
-
-迷った場合は、次の基準で選べます。
+迷った場合は、次の基準で選んでください。
 
 ```mermaid id="q2v3n8"
 flowchart TD
     Start["知りたいこと"]
 
     Start --> Use{"具体的な手順？"}
-    Use -->|Yes| Guides["Guides"]
+    Use -->|Yes| Guides["ガイド"]
     Use -->|No| API{"設定値やAPIを調べたい？"}
 
-    API -->|Yes| Reference["Reference"]
+    API -->|Yes| Reference["リファレンス"]
     API -->|No| Internal{"内部の仕組みを知りたい？"}
 
     Internal -->|Yes| Framework["Framework"]
-    Internal -->|No| GettingStarted["Getting Started"]
+    Internal -->|No| GettingStarted["はじめに"]
 ```
 
-簡単に分けると、
+簡単に分けると、次のようになります。
 
 ```text
 サイトを作り始めたい
-  → Getting Started
+  → はじめに
 
 具体的な作業手順を知りたい
-  → Guides
+  → ガイド
 
 設定・CLI・APIを調べたい
-  → Reference
+  → リファレンス
 
 Riebeckiteの内部構造を理解したい
   → Framework
 ```
 
-です。
-
-Reference は **API の使い方を探すための索引**として使い、設計思想や内部実装の説明は Framework、実際の作業手順は Guides と役割を分けています。
+リファレンスは **API の使い方を調べるための索引**です。設計思想や内部実装は Framework、実際の作業手順はガイドが担当します。

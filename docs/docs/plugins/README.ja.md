@@ -1,14 +1,14 @@
 ---
 date: 2026-10-08
-title: Plugins
+title: プラグイン
 sidebar:
-  label: Plugins
+  label: プラグイン
   order: 30
   collapsed: true
 ---
-# Plugins
+# プラグイン
 
-Plugin は、Riebeckite のサイトに機能を追加する仕組みです。通常の Markdown だけでは足りないとき、Obsidian 記法、検索、図表、メディア、SEO、記事の発見、多言語対応、診断などを追加できます。
+プラグインは、Riebeckite のサイトに機能を追加する仕組みです。通常の Markdown だけでは足りないとき、Obsidian 記法、検索、図表、メディア、SEO、記事の発見、多言語対応、診断などを追加できます。
 
 ## 何をしたいですか？
 

@@ -71,7 +71,7 @@ JetBrains Mono のラテン文字サブセットを同梱しているため、�
 - [`@riebeckite/theme-default`](./default.ja.md)
 - [`@riebeckite/theme-sakura`](./sakura.ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 Tokyo Night を基調とした高コントラストな Theme です。
 

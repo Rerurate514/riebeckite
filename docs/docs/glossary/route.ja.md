@@ -1,22 +1,22 @@
 ---
 date: 2026-10-14
-title: Route
+title: ルート（Route）
 sidebar:
   hidden: true
 ---
 
-# Route
+# ルート（Route）
 
-Integrationがページを解決するURLパスで、ページのpublic pathから生成され、HonoXのフレームワークによって描画されます。
+インテグレーションがページへ解決するURLパスで、ページの公開パスから作られ、フレームワーク（HonoX）が描画します。
 
-## Route解決
+## ルート解決
 
-Integrationは以下の順序でルートを解決します。
+インテグレーションは次の順序でルートを解決します。
 
-1. **Plugin page**: パスに対してPluginがpage typeを提供しているか確認
-2. **Content**: manifestから`publicLocation`を使用してコンテンツを解決
-3. **Redirect**: パーマリンクを指す追加URLを確認
-4. **404**: not-foundを返却
+1. **プラグインページ**：そのパスにプラグインのページ種別があるか確認する
+2. **コンテンツ**：マニフェストから `publicLocation` を使ってコンテンツを解決する
+3. **リダイレクト**：permalinkを指す追加URLを確認する
+4. **404**：見つからなければnot-foundを返す
 
 ```ts
 import { resolveRiebeckiteRoute } from "@riebeckite/honox";
@@ -24,15 +24,7 @@ import { resolveRiebeckiteRoute } from "@riebeckite/honox";
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 
-## Route解決の順序
-integrationは以下の順序でルートを解決します、これは`@riebeckite/honox`で定義されています：
-
-1. **Plugin page**: パスに対してPluginがpage typeを提供しているか確認
-2. **Content**: manifestから`publicLocation`を使用してコンテンツを解決
-3. **Redirect**: パーマリンクを指す追加URLを確認
-4. **404**: マッチするものがない場合はnot-foundを返却
-
-この解決順序によって、plugin-providedページが最優先され、次にcontentページ、その後リダイレクト、一致するパスがない場合は404フォールバックが行われます。`resolveRiebeckiteRoute`関数はフル解決パイプラインを処理し、ページボディとhead tagsを含む解決されたroute結果を返します。
+この解決順序により、プラグインが提供するページが優先され、次にコンテンツページ、その後リダイレクト、一致しないパスは404になります。`resolveRiebeckiteRoute` 関数が解決パイプライン全体を処理し、ページ本文とheadタグを含む解決済みのルート結果を返します。
 
 ## 関連用語
 

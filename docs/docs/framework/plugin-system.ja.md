@@ -6,87 +6,75 @@ sidebar:
 ---
 # プラグイン作成の詳細
 
-このページは、Riebeckite Plugin を実際に設計・実装するときの詳細ガイドです。
+このページは、Riebeckiteのプラグインを実際に設計・実装するときの詳細ガイドです。初めてプラグインを作る場合は、先に[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読んでください。
 
-初めて Plugin を作る場合は、先に [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md) を読んでください。
-
-このページでは、その先に必要になる、
+このページでは、その先に必要になる次の内容を扱います。
 
 - どの拡張ポイントを使うか
-- Plugin 同士の依存関係
-- Lifecycle
-- Content Pipeline
-- Renderer / Page Type
-- CSS / Browser 処理
-- Cache / Diagnostics
-- Package としての配布
+- プラグイン同士の依存関係
+- ライフサイクル
+- コンテンツパイプライン
+- レンダラーとページ種別
+- CSSとブラウザ側の処理
+- キャッシュと診断
+- パッケージとしての配布
 
-までをまとめて扱います。
-
-各型やフィールドの完全な定義を確認したい場合は [Plugin API](../reference/plugin-api.ja.md) を参照してください。
-
+各型やフィールドの完全な定義は[プラグインAPI](../reference/plugin-api.ja.md)を参照してください。
 
 ## このページの構成
 
-- [プラグインの依存関係と Lifecycle](./plugin-system/lifecycle.ja.md)
-- [Content パイプラインと拡張ポイント](./plugin-system/pipeline.ja.md)
-- [Diagram Plugin Infrastructure](./diagram-infrastructure.ja.md)
+- [プラグインの依存関係とライフサイクル](./plugin-system/lifecycle.ja.md)
+- [コンテンツ処理のパイプラインと拡張ポイント](./plugin-system/pipeline.ja.md)
+- [ダイアグラムプラグインの基盤](./diagram-infrastructure.ja.md)
 - [プラグインの配布と検証](./plugin-system/distribution.ja.md)
 
-## 1. Plugin にするべき機能
+## 1. プラグインが担う機能
 
-Plugin は **Riebeckite に再利用可能な機能を追加する仕組み**です。
+プラグインは、**Riebeckiteに再利用可能な機能を追加する仕組み**です。たとえば、次のような機能を実装できます。
 
-たとえば、
-
-- Markdown / HTML の解釈
-- Content Transformation
-- 独自形式の Renderer
-- Browser Behavior
-- Diagnostics
-- HTTP Endpoint
+- Markdown / HTMLの解釈
+- コンテンツの変換
+- 独自形式のレンダラー
+- ブラウザ上の動作
+- 診断
+- HTTPエンドポイント
 - SEO
-- 独立ページ
+- 独立したページ
 
-などを実装できます。
-
-一方、すべての拡張を Plugin にするわけではありません。
+一方、すべての拡張をプラグインにするわけではありません。
 
 ```mermaid id="5h0kzp"
 flowchart TD
     Q{"何を追加する？"}
 
-    Q -->|"Framework共通のContent Model"| Core["Core"]
-    Q -->|"再利用可能な機能"| Plugin["Plugin"]
-    Q -->|"HonoX / Viteとの接続"| Integration["Integration"]
-    Q -->|"Site固有Route / Layout"| App["Application"]
-    Q -->|"見た目だけ"| Theme["Theme"]
+    Q -->|"フレームワーク共通のコンテンツモデル"| Core["Core"]
+    Q -->|"再利用可能な機能"| Plugin["プラグイン"]
+    Q -->|"HonoX / Viteとの接続"| Integration["インテグレーション"]
+    Q -->|"サイト固有のルート / レイアウト"| App["アプリケーション"]
+    Q -->|"見た目だけ"| Theme["テーマ"]
 ```
 
-特に、
+特に、責務は次のように分かれます。
 
 ```text id="6pgq3j"
 見た目だけ
-  → Theme
+  → テーマ
 
-Site 固有の Route / Layout
-  → Application
+サイト固有のルート / レイアウト
+  → アプリケーション
 
-HonoX / Vite との接続
-  → Integration
+HonoX / Viteとの接続
+  → インテグレーション
 
-Framework 全体の Content Model
+フレームワーク全体のコンテンツモデル
   → Core
 ```
 
-です。
+「何でもプラグインにする」のではなく、その機能がどの責務に属するかを先に判断してください。
 
-「何でも Plugin にする」のではなく、その機能がどの責務に属するかを先に判断してください。
+## 2. 最小のプラグイン
 
-
-## 2. 最小の Plugin
-
-Plugin は `definePlugin()` で定義します。
+プラグインは`definePlugin()`で定義します。
 
 ```ts id="sf8rf2"
 import { definePlugin } from "@riebeckite/core";
@@ -98,7 +86,7 @@ export function examplePlugin() {
 }
 ```
 
-Site では `riebeckite.config.ts` の `plugins` に追加します。
+サイトでは`riebeckite.config.ts`の`plugins`に追加します。
 
 ```ts id="32z2wh"
 export default defineConfig({
@@ -110,10 +98,9 @@ export default defineConfig({
 
 これが最小構成です。
 
+## 3. オプションを追加する
 
-## 3. Options を追加する
-
-Plugin に設定が必要なら Factory の引数として受け取ります。
+プラグインに設定が必要な場合は、ファクトリ関数の引数として受け取ります。
 
 ```ts id="m8h0dc"
 type ExampleOptions = {
@@ -130,7 +117,7 @@ export function examplePlugin(
 }
 ```
 
-利用側では、
+利用側では次のように指定します。
 
 ```ts id="xw3gy8"
 export default defineConfig({
@@ -142,9 +129,7 @@ export default defineConfig({
 });
 ```
 
-のように指定できます。
-
-条件付き Plugin も利用できます。
+条件付きでプラグインを有効にすることもできます。
 
 ```ts id="d7esfe"
 plugins: [
@@ -152,33 +137,28 @@ plugins: [
 ]
 ```
 
-`false`、`null`、`undefined` は Plugin Input の解決時に除外されます。
-
-また、
+`false`、`null`、`undefined`は、プラグインの入力解決時に除外されます。また、`enabled: false`のプラグインも実行されません。
 
 ```ts id="3ud7ge"
 enabled: false
 ```
 
-の Plugin も実行されません。
-
-
 ## 4. 拡張ポイントを選ぶ
 
-Plugin を実装するときは、必要な最小の拡張ポイントを選びます。
+プラグインを実装するときは、必要な最小の拡張ポイントを選びます。
 
 ```mermaid id="z0g35w"
 flowchart TD
     Q{"何を実装する？"}
 
-    Q -->|"Markdown / HTML変換"| Pipeline["remark / rehype"]
-    Q -->|"Content処理の特定段階"| Hook["Content Hooks"]
+    Q -->|"Markdown / HTMLの変換"| Pipeline["remark / rehype"]
+    Q -->|"コンテンツ処理の特定段階"| Hook["コンテンツフック"]
     Q -->|"記事内の特殊表示"| Renderer["renderers"]
-    Q -->|"独立ページ"| Page["pageTypes"]
-    Q -->|"Graph拡張"| Graph["extendContentGraph"]
-    Q -->|"URL規則"| Location["resolveContentLocations"]
+    Q -->|"独立したページ"| Page["pageTypes"]
+    Q -->|"グラフの拡張"| Graph["extendContentGraph"]
+    Q -->|"URLの規則"| Location["resolveContentLocations"]
     Q -->|"CSS"| Asset["assets"]
-    Q -->|"Browser処理"| Client["clientEntries"]
+    Q -->|"ブラウザ側の処理"| Client["clientEntries"]
     Q -->|"HTTP"| Endpoint["endpoints"]
     Q -->|"SEO"| SEO["seo"]
     Q -->|"診断"| Diagnostics["addDiagnostics"]
@@ -188,30 +168,29 @@ flowchart TD
 
 | 領域 | API |
 | --- | --- |
-| Identity | `name`, `enabled`, `order`, `options` |
-| Dependency | `provides`, `requires`, `optional` |
-| Validation | `validateOptions` |
-| Cache | `cacheVersion`, `context.cache` |
-| Lifecycle | `setup`, `buildStart`, `buildEnd`, `dispose` |
-| Content Hooks | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
-| Public Location | `resolveContentLocations` |
-| Pipeline | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
-| Graph | `extendContentGraph` |
-| Diagnostics | `addDiagnostics` |
+| 識別情報 | `name`, `enabled`, `order`, `options` |
+| 依存関係 | `provides`, `requires`, `optional` |
+| 設定の検証 | `validateOptions` |
+| キャッシュ | `cacheVersion`, `context.cache` |
+| ライフサイクル | `setup`, `buildStart`, `buildEnd`, `dispose` |
+| コンテンツフック | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
+| 公開ロケーション | `resolveContentLocations` |
+| パイプライン | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
+| グラフ | `extendContentGraph` |
+| 診断 | `addDiagnostics` |
 | 本文内の描画 | `renderers` |
 | 独立ページ | `pageTypes` |
-| Browser | `assets`, `clientEntries` |
+| ブラウザ | `assets`, `clientEntries` |
 | HTTP | `endpoints` |
 | SEO | `seo` |
 
 すべてを実装する必要はありません。
 
-UI や output の拡張ポイントは複数あり、優劣の順列ではなく選択肢です。Markdown / HTML 変換、renderer、Page Type、公開する Hono JSX component、client entry があります。どれを選ぶかは [UI の提供方法](../plugins/writing-a-plugin.ja.md#ui-の提供方法) を参照してください。
+UIや出力の拡張ポイントは複数あり、優劣ではなく選択肢です。Markdown / HTMLの変換、レンダラー、ページ種別、公開するHono JSXコンポーネント、クライアントエントリがあります。どれを選ぶかは[UIや出力を追加する方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
 
+## 実装前の確認
 
-## 27. 実装前の確認
-
-Plugin を作り始める前に、最後に次の順番で考えると責務を分離しやすくなります。
+プラグインを作り始める前に、次の順番で考えると責務を分離しやすくなります。
 
 ```mermaid id="7p5i6d"
 flowchart TD
@@ -220,34 +199,29 @@ flowchart TD
 
     Start --> Plugin
 
-    Plugin -->|No| Other{"何を変える？"}
-    Plugin -->|Yes| Point{"最小のExtension Pointは？"}
+    Plugin -->|"いいえ"| Other{"何を変える？"}
+    Plugin -->|"はい"| Point{"最小の拡張ポイントは？"}
 
-    Other -->|"見た目"| Theme["Theme"]
-    Other -->|"Site固有"| App["Application"]
-    Other -->|"Framework共通Model"| Core["Core"]
-    Other -->|"HonoX / Vite接続"| Integration["Integration"]
+    Other -->|"見た目"| Theme["テーマ"]
+    Other -->|"サイト固有"| App["アプリケーション"]
+    Other -->|"フレームワーク共通のモデル"| Core["Core"]
+    Other -->|"HonoX / Viteとの接続"| Integration["インテグレーション"]
 
-    Point --> Implement["Pluginとして実装"]
+    Point --> Implement["プラグインとして実装"]
 ```
 
-Plugin にすると決めた後も、
+プラグインにすると決めた後も、**その機能に本当に必要な拡張ポイントだけを使う**ことが重要です。
 
-**その機能に本当に必要な Extension Point だけを使用する**
+ファイルシステムを再走査する前に、マニフェストやコンテンツグラフを使えないか確認してください。独自のルートを追加する前に、ページ種別を使えないか確認してください。クライアントJavaScriptを追加する前に、SSRやビルド時だけで完結できないか確認してください。
 
-ことが重要です。
-
-Filesystem を再走査する前に Manifest や Content Graph が使えないか確認してください。独自 Route を追加する前に Page Type が使えないか確認してください。Client JavaScript を追加する前に SSR / Build-time だけで完結できないか確認してください。
-
-これによって Plugin を小さく保ち、Core、Integration、Application との不要な結合を避けられます。
-
+これにより、プラグインを小さく保ち、Core、インテグレーション、アプリケーションとの不要な結合を避けられます。
 
 ## 関連資料
 
-- [[writing-a-plugin|はじめてのプラグイン作成]]：最初の Plugin を作る
-- [[plugin-system|Plugin System]]：Plugin System 全体の考え方
-- [[plugin-api|Plugin API]]：API の取り決め
-- [[page-system|Page System]]：独立ページ
-- [[content-system|Content System]]：Manifest / Graph / Pipeline
-- [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
-- [[reference/README|Framework Reference]]：Public API
+- [[writing-a-plugin|はじめてのプラグイン作成]]：最初のプラグインを作る
+- [[plugin-system|プラグインシステム]]：プラグインシステム全体の考え方
+- [[plugin-api|プラグインAPI]]：APIの取り決め
+- [[page-system|ページシステム]]：独立したページ
+- [[content-system|コンテンツシステム]]：マニフェスト、グラフ、パイプライン
+- [[architecture|アーキテクチャ]]：Core、プラグイン、インテグレーション、テーマ、アプリケーションの責務
+- [[reference/README|フレームワークリファレンス]]：公開API

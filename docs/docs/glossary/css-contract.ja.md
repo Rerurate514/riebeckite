@@ -1,30 +1,29 @@
 ---
 date: 2026-10-14
-title: CSS の取り決め
+title: CSSの取り決め（CSS Contract）
 sidebar:
   hidden: true
 ---
-# CSS の取り決め
+# CSSの取り決め（CSS Contract）
 
-CSS の取り決めは、コンポーネントが依存できる安定したCSSのhookと、カスケードの順序です。Themeは`rb-*`と`rr-*`のhookを公開し、コンポーネントが特定のThemeを前提にせずスタイルを当てられるようにします。
+コンポーネントが依存してよい、安定したCSSのフックとカスケードの順序です。テーマは文書化されたフック（`rb-*`と`rr-*`）を公開するため、コンポーネントは特定のテーマを前提にせずにスタイルを当てられます。
 
 ## 安定したフック
-クラスの名前空間は2つあります。
-
-- `rb-*`：フレームワークが提供する構造のhookと意味的なDesign Token（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body`など）
-- `rr-<feature>`：Pluginが描画する最も外側の要素に付くroot hook（`.rr-search`、`.rr-callout`など）
+クラス名の名前空間は2つあります。
+- `rb-*` — フレームワークが提供する構造のフックとセマンティックデザイントークン（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body`など）
+- `rr-<feature>` — プラグインが描画する最も外側の要素に付くルートフック（`.rr-search`、`.rr-callout`など）
 
 ## カスケード順
-読み込み順は、ThemeのCSSがPluginの既定スタイルを上書きし、userCssが最後の上書きになるように決まります。
+読み込み順は、テーマのCSSがプラグインの既定スタイルに勝ち、`userCss`が最後の上書きになることを保証します。
 
-frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのtokenインラインスタイル→ userCss
+フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → userCss
 
 ```mermaid
 flowchart TD
-  Base[Base / App Structural CSS]
-  Plugin[Plugin Default CSS]
-  Theme[Theme CSS]
-  Token[Config Token Inline Style]
+  Base[base/appの構造CSS]
+  Plugin[プラグインの既定CSS]
+  Theme[テーマのCSS]
+  Token[設定トークンのインラインスタイル]
   User[userCss]
   Base --> Plugin
   Plugin --> Theme
@@ -33,10 +32,10 @@ flowchart TD
 ```
 
 ## カスケード順の検証
-読み込み順は次のとおりです。frameworkの構造CSS → base/appの構造CSS → Pluginの既定CSS → ThemeのCSS → configのトークンによるインラインstyle → userCss。この順序が保証されています。`@riebeckite/honox`が各レイヤー用に別々のstylesheetを生成し、ヘッダーのコメントでカスケード位置を示します。`userCss`は最後の上書きとなり、サイト固有の小さな調整に適しています。
+保証されるカスケード順は、フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → userCssです。この順序は`@riebeckite/honox`が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`userCss`は最後の上書きで、サイト固有の小さな調整に適しています。
 
-## Theme CSSの書き方
-Themeは安定したhookと、文書化された子孫要素だけにスタイルを当ててください。新しい`rb-*`/`rr-*`のクラス名は増やさないでください。`.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`および各プラグインが文書化した`rr-*`root hookのみをターゲットにしてください。BEM要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
+## テーマCSSの書き方
+テーマは安定したフックと、文書化された子孫要素にだけスタイルを当ててください。新しい`rb-*`/`rr-*`のクラス名を考案しないでください。対象にするのは`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-content`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、および各プラグインが文書化した`rr-*`のルートフックだけです。BEMの要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
 
 ## 関連用語
 - [[glossary/theme|Theme]]

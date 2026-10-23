@@ -1,17 +1,21 @@
 ---
 date: 2026-10-08
-title: Build cache
+title: ビルドキャッシュ
 sidebar:
-  label: Build cache
+  label: ビルドキャッシュ
   order: 50
 ---
-# Build cache
+# ビルドキャッシュ
 
-`cache` は build 時に使う永続 cache の設定です。省略可能で、既定では Integration が適切な directory を決めます。
+`cache` は、ビルド時に使う永続キャッシュの設定です。省略可能で、既定ではインテグレーションが適切なディレクトリを決めます。
 
-| Field | 既定値 | 説明 |
+## 設定できる項目
+
+| フィールド | 既定値 | 説明 |
 | --- | --- | --- |
-| `cache.enabled` | `true` | `false` にすると永続 cache を無効化し、毎回すべてを再生成します。 |
-| `cache.directory` | `<buildDirectory>/cache` | cache の保存先を上書きします。cache を別の場所へ移したり共有したい場合に指定します。未指定なら Integration の既定値を使います。 |
+| `cache.enabled` | `true` | `false` にすると永続キャッシュを無効化し、毎回すべてを作り直します。 |
+| `cache.directory` | `<buildDirectory>/cache` | キャッシュの保存先を上書きします。キャッシュを別の場所へ移したり共有したりするときに指定します。未指定ならインテグレーションの既定値を使います。 |
 
-cache には build 間で再利用する処理済み Content や Plugin の結果が入ります。無効化や保存先の変更は build の速度にだけ影響し、出力は変わりません。cold build でも同じ結果になります。
+## キャッシュが出力に与える影響
+
+キャッシュには、ビルド間で再利用する処理済みのコンテンツやプラグインの結果が入ります。無効化したり保存先を変えたりしても、影響するのはビルドの速度だけで、出力は変わりません。コールドビルドでも同じ結果になります。

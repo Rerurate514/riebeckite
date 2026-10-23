@@ -4,38 +4,36 @@ title: はじめてのテーマ作成
 ---
 # はじめてのテーマ作成
 
-Riebeckite の Theme は、Site の**見た目を変更する仕組み**です。
+Riebeckite のテーマは、**サイトの見た目を変える仕組み**です。
 
-ローカル Theme の実装を雛形から始める場合は、[Theme Generator](./generator.ja.md) を使えます。
+ローカルでテーマを実装する場合は、雛形として[テーマジェネレーター](./generator.ja.md)を利用できます。
 
-たとえば、
+たとえば、次のような点を変更できます。
 
 - 配色
 - フォント
 - 文字サイズ
 - 余白
 - 記事幅
-- Layout
-- Light / Dark Mode
+- レイアウト
+- ライト / ダークモード
 
-などを変更できます。
-
-一方で、Theme から新しい機能を追加することはできません。
+一方、テーマから新しい機能を追加することはできません。
 
 ```mermaid id="kmfyjs"
 flowchart TD
     Want{"何を作りたい？"}
 
-    Want -->|"見た目を変える"| Theme["Theme"]
-    Want -->|"機能を追加する"| Plugin["Plugin"]
+    Want -->|"見た目を変える"| Theme["テーマ"]
+    Want -->|"機能を追加する"| Plugin["プラグイン"]
 
-    Theme --> Visual["Color / Font / Layout / Spacing"]
-    Plugin --> Feature["Search / Mermaid / Analytics / Page"]
+    Theme --> Visual["色 / フォント / レイアウト / 余白"]
+    Plugin --> Feature["検索 / Mermaid / アクセス解析 / ページ"]
 ```
 
-検索、図表、Markdown の拡張などを追加したい場合は、[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md) を参照してください。
+検索や図表、Markdown の拡張などを追加したい場合は、[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を参照してください。
 
-この Guide では、
+このガイドは、次の順に進めます。
 
 ```text id="br3nd6"
 既存Themeを少し調整
@@ -49,13 +47,11 @@ Light / Darkに対応
 必要ならPackageとして配布
 ```
 
-の順に進めます。
+## テーマを作る必要があるか確認する
 
-## まずは Theme を作る必要があるか確認する
+少しだけ見た目を変えたい場合は、新しいテーマを作る必要はありません。
 
-少しだけ見た目を変えたい場合は、新しい Theme を作る必要はありません。
-
-たとえば、
+たとえば次の程度の変更なら、既存のテーマの `userCss` で対応できます。
 
 ```text id="b83ut7"
 記事幅を少し変えたい
@@ -63,9 +59,7 @@ Light / Darkに対応
 Site固有のCSSを追加したい
 ```
 
-程度なら、既存 Theme の `userCss` を利用できます。
-
-一方、
+一方、次のような場合はテーマとして作るのが向いています。
 
 ```text id="71uv2w"
 独自の配色を作りたい
@@ -74,22 +68,18 @@ Typographyを一式設計したい
 他の利用者へ配布したい
 ```
 
-場合は Theme として作るのが向いています。
-
 ```mermaid id="dq1mge"
 flowchart TD
     Change{"どの程度変更する？"}
 
-    Change -->|"小さなSite固有調整"| UserCss["userCss"]
-    Change -->|"まとまったDesign"| Theme["独自Theme"]
-    Change -->|"機能も追加したい"| Plugin["Plugin"]
+    Change -->|"サイト固有の小さな調整"| UserCss["userCss"]
+    Change -->|"まとまったデザイン"| Theme["独自のテーマ"]
+    Change -->|"機能も追加したい"| Plugin["プラグイン"]
 ```
 
-## 1. 組み込み Theme を調整する
+## 1. 組み込みテーマを調整する
 
-最も簡単なのは、既存 Theme に Option と `userCss` を指定する方法です。
-
-たとえば Default Theme を調整します。
+最も簡単な方法は、既存のテーマにオプションと `userCss` を渡すことです。ここでは Default テーマを例に調整します。
 
 ```ts id="ih0etb"
 // riebeckite.config.ts
@@ -106,7 +96,7 @@ export default defineConfig({
 });
 ```
 
-ここでは、
+この例では、次の3つの値を指定しています。
 
 ```text id="14l98v"
 colorMode
@@ -119,11 +109,9 @@ userCss
   → /extensions/custom.css
 ```
 
-を指定しています。
+`userCss` はテーマの CSS より後に読み込まれるため、サイト固有の小さな上書きに利用できます。
 
-`userCss` は Theme の CSS より後に読み込まれるため、Site 固有の小さな上書きに利用できます。
-
-たとえば、
+たとえば、次のような調整ができます。
 
 ```css id="q11q8v"
 .rb-article {
@@ -131,19 +119,17 @@ userCss
 }
 ```
 
-のような調整ができます。
+これだけで目的を達成できるなら、独自のテーマを作る必要はありません。
 
-これだけで目的を達成できるなら、独自 Theme を作る必要はありません。
+## 2. 最小構成のテーマを作る
 
-## 2. 最小の Theme を作る
+独自のテーマは `defineTheme` で定義します。
 
-独自 Theme は `defineTheme` で定義します。
+`defineTheme` は `@riebeckite/core` からインポートします。
 
-`defineTheme` は `@riebeckite/core` から Import します。
+最初から npm パッケージを作る必要はありません。
 
-最初から npm Package を作る必要はありません。
-
-まずは Site の中に、
+まずはサイトの中に、次のような構成でファイルを置きます。
 
 ```text id="byvcr1"
 my-site/
@@ -155,11 +141,9 @@ my-site/
 └─ package.json
 ```
 
-のように置いて作れます。
+### テーマを定義する
 
-### Theme を定義する
-
-`extensions/local-theme.ts` を作ります。
+`extensions/local-theme.ts` を作成します。
 
 ```ts id="bs4dkd"
 // extensions/local-theme.ts
@@ -177,7 +161,7 @@ export function localTheme() {
 }
 ```
 
-最小構成では、
+最小構成では、次の2つを指定します。
 
 ```text id="dbwgoq"
 name
@@ -187,19 +171,15 @@ styles
   → Themeが使うStylesheet
 ```
 
-を指定します。
+`styles[].moduleSpecifier` には、ホストバンドラが解決できるモジュール指定子を指定します。
 
-`styles[].moduleSpecifier` には、Host Bundler が解決できる Module Specifier を指定します。
-
-Site 内 Theme なら、
+サイト内のテーマなら、`/extensions/theme.css` のように指定できます。
 
 ```text id="42dg5e"
 /extensions/theme.css
 ```
 
-のように指定できます。
-
-## 3. Site で Theme を使う
+## 3. サイトでテーマを使う
 
 作成した `localTheme` を `riebeckite.config.ts` から読み込みます。
 
@@ -215,7 +195,7 @@ export default defineConfig({
 });
 ```
 
-これで、
+これで、次の流れで独自のテーマが使われます。
 
 ```text id="kpcf2q"
 local-theme.ts
@@ -229,26 +209,20 @@ riebeckite.config.ts
 Site
 ```
 
-という形で独自 Theme が利用されます。
+## 4. テーマの CSS を書く
 
-## 4. Theme の CSS を書く
-
-次に、
+次に、テーマのスタイルを書きます。対象は次のファイルです。
 
 ```text id="mx8gdm"
 extensions/theme.css
 ```
 
-へ実際の Style を書きます。
+テーマの CSS では、Riebeckite が提供する次の仕組みを利用します。
 
-Theme の CSS では、Riebeckite が提供する、
+- セマンティックトークン
+- 安定した CSS フック
 
-- Semantic Token
-- Stable CSS Hook
-
-を利用します。
-
-最小の例は次のようになります。
+最小の例は次のとおりです。
 
 ```css id="j5jkvb"
 :is(:root, .rb-theme-root)[data-theme-name="local"] .rb-site {
@@ -261,7 +235,7 @@ Theme の CSS では、Riebeckite が提供する、
 }
 ```
 
-最初は少し長く見えますが、それぞれに役割があります。
+一見長く見えますが、それぞれに役割があります。
 
 ```text id="ehn64e"
 [data-theme-name="local"]
@@ -274,55 +248,49 @@ Theme の CSS では、Riebeckite が提供する、
   → RiebeckiteのSemantic Token
 ```
 
-## Theme Root Selector
+## テーマルートのセレクタ
 
-Theme の Style は、Theme Root の内側に限定します。
+テーマのスタイルは、テーマルートの内側に限定します。
 
-基本形は、
+基本形は次のとおりです。
 
 ```css id="5t9k0r"
 :is(:root, .rb-theme-root)[data-theme-name="<name>"]
 ```
 
-です。
-
 `<name>` には `defineTheme` で指定した `name` を入れます。
 
-今回なら、
+今回は `name: "local"` と指定しています。
 
 ```ts id="2ukjvx"
 name: "local"
 ```
 
-なので、
+したがって、セレクタは次のようになります。
 
 ```css id="u27p4e"
 :is(:root, .rb-theme-root)[data-theme-name="local"]
 ```
 
-となります。
+### `:root` と `.rb-theme-root` の両方が必要な理由
 
-### なぜ `:root` と `.rb-theme-root` の両方がある？
-
-この Selector は、実際の Site と Theme Preview の両方で同じ CSS を利用するためのものです。
+このセレクタは、実際のサイトとテーマプレビューの両方で同じ CSS を使うためのものです。
 
 ```mermaid id="m0r13h"
 flowchart TD
-    CSS["Theme CSS"]
+    CSS["テーマ CSS"]
 
-    CSS --> Root[":root<br/>実際のSite"]
-    CSS --> Preview[".rb-theme-root<br/>Theme Preview"]
+    CSS --> Root[":root<br/>実際のサイト"]
+    CSS --> Preview[".rb-theme-root<br/>テーマプレビュー"]
 ```
 
-実際の Site では、Application が Document Root に、
+実際のサイトでは、アプリケーションがドキュメントルートに次のようなテーマ情報を付けます。
 
 ```html id="tfjfs9"
 <html data-theme-name="local">
 ```
 
-のような Theme 情報を付けます。
-
-Theme Preview では、
+テーマプレビューでは、次のような任意のコンテナの中でテーマを表示できます。
 
 ```html id="xwskmw"
 <div
@@ -331,36 +299,28 @@ Theme Preview では、
 >
 ```
 
-のような任意の Container 内で Theme を表示できます。
-
-そのため Theme CSS は、
+そのため、テーマの CSS は `:is(:root, .rb-theme-root)[data-theme-name="local"]` をルートとして書きます。
 
 ```css id="7xf9zn"
 :is(:root, .rb-theme-root)[data-theme-name="local"]
 ```
 
-を Root として書きます。
+## セマンティックトークンを使う
 
-## Semantic Token を使う
+テーマでは、色やレイアウトの値をあちこちに直接書くのではなく、[[semantic-token|セマンティックトークン]]を使います。
 
-Theme では、色や Layout の値を直接あちこちへ書くのではなく、[[semantic-token|Semantic Token]] を利用します。
-
-Riebeckite の共通 Token は、
+Riebeckite の共通トークンは、`--rb-*` という名前です。
 
 ```text id="f0yh64"
 --rb-*
 ```
 
-という名前です。
-
-たとえば、
+たとえば、次のように利用します。
 
 ```css id="m5h77c"
 color: var(--rb-color-ink);
 background: var(--rb-color-paper);
 ```
-
-のように利用します。
 
 ```text id="w2v0ss"
 paper
@@ -376,11 +336,9 @@ border
   → 境界線
 ```
 
-のように、具体的な色ではなく**役割**を表す Token になっています。
+このように、トークンは具体的な色ではなく**役割**を表します。これがセマンティックトークンです。
 
-これが Semantic Token です。
-
-Theme 全体で同じ意味の色を共有できるため、
+テーマ全体で同じ意味の色を共有できるため、各コンポーネントに次のような値を直接書き散らすより、テーマを管理しやすくなります。
 
 ```text id="bcv48d"
 #ffffff
@@ -388,38 +346,30 @@ Theme 全体で同じ意味の色を共有できるため、
 #888888
 ```
 
-のような値を各 Component に直接書き散らすより、Theme を管理しやすくなります。
+トークンの正確な一覧は[テーマ API](../reference/theme-api.ja.md)を参照してください。
 
-Token の正確な一覧は [Theme API](../reference/theme-api.ja.md) を参照してください。
+## 安定したフックを使う
 
-## Stable Hook を使う
-
-Riebeckite の共通 UI には、
+Riebeckite の共通 UI には、`rb-*` という安定したフックがあります。
 
 ```text id="lq35s3"
 rb-*
 ```
 
-という Stable Hook があります。
-
-たとえば、
+たとえば、`.rb-site` や `.rb-article` です。
 
 ```css id="2jhw92"
 .rb-site
 .rb-article
 ```
 
-などです。
-
-Plugin が提供する UI では、
+プラグインが提供する UI では、`rr-<feature>` 形式の安定したフックを利用します。
 
 ```text id="qg0kb3"
 rr-<feature>
 ```
 
-形式の Stable Hook を利用します。
-
-Theme は、特定の Route や Page Type ID に依存するのではなく、こうした Stable Hook を対象に Style を書きます。
+テーマは、特定のルートやページタイプ ID に依存するのではなく、こうした安定したフックを対象にスタイルを書きます。
 
 ```text id="v5o69k"
 避ける
@@ -437,13 +387,13 @@ rr-<feature> Stable Hook
 --rb-* Semantic Token
 ```
 
-これによって、Theme を作った時点では存在していなかった Page Type にも、共通の Design を適用しやすくなります。
+これによって、テーマを作った時点では存在していなかったページタイプにも、共通のデザインを適用しやすくなります。
 
-## なぜ Page Type ごとに CSS を書かない？
+## ページタイプごとに CSS を書かない理由
 
-Plugin は独自の Page Type を追加できます。
+プラグインは独自のページタイプを追加できます。
 
-そのため Theme 側で、
+そのため、テーマ側で次のようにページタイプを列挙してしまうと、新しいプラグインがページを追加するたびにテーマを変更する必要があります。
 
 ```text id="70qh6b"
 home
@@ -453,9 +403,7 @@ tags
 ...
 ```
 
-のように Page Type を列挙してしまうと、新しい Plugin が Page を追加するたびに Theme の変更が必要になります。
-
-代わりに、
+代わりに、次の関係にします。
 
 ```text id="myo7di"
 Page Type
@@ -465,25 +413,23 @@ Framework / PluginのStable Hook
 Theme
 ```
 
-という関係にします。
-
 ```mermaid id="ox4v8a"
 flowchart LR
-    A["既存Page"]
-    B["将来追加されたPage"]
-    Hooks["Stable Hooks<br/>rb-* / rr-*"]
-    Theme["Theme"]
+    A["既存のページ"]
+    B["後から追加されたページ"]
+    Hooks["安定したフック<br/>rb-* / rr-*"]
+    Theme["テーマ"]
 
     A --> Hooks
     B --> Hooks
     Hooks --> Theme
 ```
 
-Theme が Page の種類ではなく Semantic Hook を見ることで、新しい Page Type とも疎結合にできます。
+テーマがページの種類ではなくセマンティックなフックを見ることで、新しいページタイプとも疎結合に保てます。
 
-## 5. Light / Dark Mode に対応する
+## 5. ライト / ダークモードに対応する
 
-Color Mode に対応する場合は、3つの状態を考えます。
+カラーモードに対応する場合は、ライト、ダーク、システムの3つの状態を考えます。
 
 ```text id="k24wdk"
 light
@@ -491,7 +437,7 @@ dark
 system
 ```
 
-基本形は次のようになります。
+基本形は次のとおりです。
 
 ```css id="c9pm84"
 :is(:root, .rb-theme-root)[data-theme-name="local"] {
@@ -509,9 +455,9 @@ system
 }
 ```
 
-### Light
+### ライト
 
-通常の Light Mode です。
+通常のライトモードです。
 
 ```css id="6s0kr3"
 :is(:root, .rb-theme-root)[data-theme-name="local"] {
@@ -519,9 +465,9 @@ system
 }
 ```
 
-### Dark
+### ダーク
 
-明示的に Dark Mode が選択されている場合は、
+ダークモードが明示的に選択されている場合は、次のセレクタで扱います。
 
 ```css id="khq4ec"
 :is(:root, .rb-theme-root)[data-theme-name="local"][data-theme="dark"] {
@@ -529,11 +475,9 @@ system
 }
 ```
 
-で扱います。
+### システム
 
-### System
-
-`system` では `data-theme` を付けず、OS / Browser の設定に従います。
+`system` では `data-theme` を付けず、OS またはブラウザの設定に従います。
 
 ```css id="4nrvxb"
 @media (prefers-color-scheme: dark) {
@@ -543,47 +487,41 @@ system
 }
 ```
 
-System Mode では、
+システムモードでは、`data-theme` に次のような空の値が入るのではなく、**`data-theme` 属性自体が存在しません**。
 
 ```html id="k8uz2d"
 data-theme=""
 ```
 
-ではなく、**`data-theme` Attribute 自体が存在しません**。
-
-そのため、
+そのため、`:not([data-theme])` で判定します。
 
 ```css id="dh4axr"
 :not([data-theme])
 ```
 
-で判定します。
-
 ## 6. アクセシビリティを確認する
 
-Theme は見た目を変更するため、アクセシビリティにも影響します。
+テーマは見た目を変えるため、アクセシビリティにも影響します。
 
-特に、
+特に、次の点を確認してください。
 
-- 本文と背景の Contrast
-- Link が本文と区別できるか
-- Keyboard 操作中の Focus が見えるか
-- Light Mode / Dark Mode の両方で読めるか
-- Hover だけに情報を依存していないか
+- 本文と背景のコントラスト
+- リンクが本文と区別できるか
+- キーボード操作中のフォーカスが見えるか
+- ライトモードとダークモードの両方で読めるか
+- ホバーだけに情報を依存していないか
 
-などを確認してください。
+テーマは単に見た目を整えるだけでなく、コンテンツを読みやすい状態に保つ必要があります。
 
-Theme は単に「きれいに見える」だけではなく、Content を読みやすい状態に保つ必要があります。
-
-詳しくは [アクセシビリティ](../accessibility.ja.md) を参照してください。
+詳しくは[アクセシビリティ](../accessibility.ja.md)を参照してください。
 
 ## 7. CSS の読み込み順を理解する
 
 Riebeckite では CSS の読み込み順が決まっています。
 
-Theme CSS は `userCss` より前に適用されます。
+テーマの CSS は `userCss` より前に適用されます。
 
-概念的には、
+概念的には、次の順になります。
 
 ```text id="tl3h0p"
 Framework / Application
@@ -597,9 +535,7 @@ ConfigによるToken
 userCss
 ```
 
-という順になります。
-
-そのため、
+そのため、次のような役割分担になります。
 
 ```text id="8i6rvp"
 Theme
@@ -609,36 +545,32 @@ userCss
   → Site固有の最終調整
 ```
 
-という役割分担ができます。
+テーマ側でサイト固有の上書きまで抱え込む必要はありません。
 
-Theme 側で Site 固有の上書きまで抱え込む必要はありません。
+正確なカスケードは[テーマ API](../reference/theme-api.ja.md)を参照してください。
 
-正確な Cascade は [Theme API](../reference/theme-api.ja.md) を参照してください。
+## 8. ブラウザで確認する
 
-## 8. Browser で確認する
-
-Theme を作ったら Development Server を起動します。
+テーマを作ったら、開発サーバーを起動します。
 
 ```sh id="p90emf"
 npm exec riebeckite dev
 ```
 
-実際の記事を開いて、
+実際の記事を開いて、次の点を確認します。
 
 - 本文
 - 見出し
-- Link
-- Code Block
-- Table
-- List
-- Image
-- Plugin UI
-- Light Mode
-- Dark Mode
+- リンク
+- コードブロック
+- テーブル
+- リスト
+- 画像
+- プラグイン UI
+- ライトモード
+- ダークモード
 
-などを確認します。
-
-特定の Demo Page だけではなく、実際の記事でも確認してください。
+デモページだけでなく、実際の記事でも確認してください。
 
 ## 9. Riebeckite の検証を実行する
 
@@ -651,30 +583,28 @@ npm exec riebeckite inspect config
 npm exec riebeckite build
 ```
 
-それぞれの役割は次のとおりです。
+各コマンドの役割は次のとおりです。
 
-| Command | 確認すること |
+| コマンド | 確認すること |
 | --- | --- |
-| `check` | Config や Theme の解決が正しいか |
-| `doctor` | Site 全体に問題がないか |
-| `inspect config` | 解決済み Theme 設定 |
-| `build` | 実際に Site を生成できるか |
+| `check` | 設定とテーマが正しく解決されるか |
+| `doctor` | サイト全体に問題がないか |
+| `inspect config` | 解決済みのテーマ設定 |
+| `build` | 実際にサイトを生成できるか |
 
-`check` / `doctor` / `inspect` は読み取り専用です。
+`check`、`doctor`、`inspect` は読み取り専用です。
 
-これらの Command が Theme File を自動で修正することはありません。
+テーマのファイルを自動で修正することはありません。診断の内容に従って修正してください。
 
-## 10. 配布用 Package にする
+## 10. 配布用のパッケージにする
 
-Site 内 Theme として問題なく動作したら、必要に応じて Package として配布できます。
+サイト内のテーマとして問題なく動作したら、必要に応じてパッケージとして配布できます。
 
-Riebeckite Repository 内では、
+Riebeckite リポジトリ内では、`packages/themes/minimal/` が構成例になります。
 
 ```text id="c7gzq8"
 packages/themes/minimal/
 ```
-
-が構成例になります。
 
 ```text id="5j0p0f"
 packages/themes/minimal/
@@ -687,7 +617,7 @@ packages/themes/minimal/
 └─ README.md
 ```
 
-`src/index.ts` では Theme Factory を公開します。
+`src/index.ts` ではテーマのファクトリを公開します。
 
 ```ts id="a6e4vn"
 import { defineTheme } from "@riebeckite/core";
@@ -704,25 +634,21 @@ export function myTheme() {
 }
 ```
 
-Package では Stylesheet を、
+パッケージでは、スタイルシートを `./style.css` のような公開エクスポートとして公開します。
 
 ```text id="hhg9pd"
 ./style.css
 ```
 
-のような Public Export として公開します。
+## 外部テーマの依存関係
 
-## 外部 Theme の依存関係
-
-配布する Theme は、
+配布するテーマは、次のパッケージの公開 API に依存します。
 
 ```text id="n1cn77"
 @riebeckite/core
 ```
 
-の Public API に依存します。
-
-Riebeckite Monorepo 内部の、
+Riebeckite モノレポ内部の、`packages/...`、`src/...`、`../../...` のようなパスには依存させないでください。
 
 ```text id="ohs3aa"
 packages/...
@@ -730,25 +656,23 @@ src/...
 ../../...
 ```
 
-のような Path に依存させないでください。
-
 ```mermaid id="52m7im"
 flowchart LR
-    Theme["External Theme"]
-    Core["@riebeckite/core<br/>Public API"]
-    Internal["Riebeckite内部Path"]
+    Theme["外部テーマ"]
+    Core["@riebeckite/core<br/>公開 API"]
+    Internal["Riebeckite 内部のパス"]
 
     Theme --> Core
     Theme -.->|"依存しない"| Internal
 ```
 
-外部利用者が npm から Theme をインストールした場合でも動作する構成にします。
+外部の利用者が npm からテーマをインストールした場合でも動作する構成にしてください。
 
-## Theme 独自 Option
+## テーマ固有のオプション
 
-Theme 固有の設定が必要な場合は、その Theme の Factory Option として定義します。
+テーマ固有の設定が必要な場合は、そのテーマのファクトリのオプションとして定義します。
 
-たとえば、
+たとえば、次のような形です。
 
 ```ts id="w8b3zk"
 myTheme({
@@ -756,9 +680,7 @@ myTheme({
 });
 ```
 
-のような形です。
-
-Theme 固有の都合だけで Core の共通 Config を増やすのは避けます。
+テーマ固有の都合だけでコアの共通設定を増やすのは避けます。境界は次のように考えます。
 
 ```text id="bwrfbx"
 Riebeckite全体で共通
@@ -768,13 +690,11 @@ Riebeckite全体で共通
   → Theme Factory Option
 ```
 
-という境界で考えます。
+## テーマがしてはいけないこと
 
-## Theme がしてはいけないこと
+テーマの責任はプレゼンテーションです。
 
-Theme の責任は Presentation です。
-
-そのため、
+そのため、次のような処理はテーマに入れません。
 
 ```text id="1txwn9"
 Routeを追加する
@@ -787,25 +707,21 @@ ContentManagerを操作する
 Filesystemを読む
 ```
 
-といった処理は Theme に入れません。
-
-必要な責務に応じて、
+必要な責務に応じて、次のように分担します。
 
 ```mermaid id="sgcd92"
 flowchart TD
     Need{"何を変更する？"}
 
-    Need -->|"見た目"| Theme["Theme"]
-    Need -->|"再利用できる機能"| Plugin["Plugin"]
-    Need -->|"Site固有のPage / 構成"| App["Application"]
-    Need -->|"Framework共通Contract"| Core["Core"]
+    Need -->|"見た目"| Theme["テーマ"]
+    Need -->|"再利用できる機能"| Plugin["プラグイン"]
+    Need -->|"サイト固有のページ / 構成"| App["アプリケーション"]
+    Need -->|"フレームワーク共通の契約"| Core["コア"]
 ```
-
-と分けます。
 
 ## 最小の完成形
 
-最小の Site 内 Theme は2ファイルで作れます。
+最小のサイト内テーマは2ファイルで作れます。
 
 ```text id="wub30o"
 extensions/
@@ -843,7 +759,7 @@ export function localTheme() {
 }
 ```
 
-そして `riebeckite.config.ts` から、
+そして `riebeckite.config.ts` から、次のように指定します。
 
 ```ts id="hcg2hm"
 import { localTheme } from "./extensions/local-theme";
@@ -853,13 +769,11 @@ export default defineConfig({
 });
 ```
 
-と指定します。
-
-これが Riebeckite Theme の最小構成です。
+これが Riebeckite テーマの最小構成です。
 
 ## まとめ
 
-Theme を作るときは、最初から Package 化する必要はありません。
+テーマを作るときは、最初からパッケージ化する必要はありません。
 
 ```text id="ypbhk"
 少しだけ変更
@@ -872,7 +786,7 @@ Theme を作るときは、最初から Package 化する必要はありませ�
   → Theme Package
 ```
 
-Theme の CSS では、
+テーマの CSS では、次の仕組みを利用します。
 
 ```text id="doxcc6"
 --rb-*
@@ -888,9 +802,7 @@ Theme Root Selector
   → ThemeのStyleを適用する範囲
 ```
 
-を利用します。
-
-そして、**Theme が Page Type や内部 Component の構造を知りすぎない**ことが最も重要です。
+そして、**テーマがページタイプや内部コンポーネントの構造を知りすぎない**ことが最も重要です。
 
 ```text id="3p18me"
 Page Type
@@ -900,13 +812,13 @@ Stable Hook / Semantic Token
 Theme
 ```
 
-という境界を保つことで、新しい Plugin や Page Type が追加されても利用できる Theme を作れます。
+この境界を保つことで、新しいプラグインやページタイプが追加されても使い続けられるテーマを作れます。
 
-### 関連資料
+### 関連ページ
 
-- [Theme](./README.ja.md)：Theme の選択と利用方法
-- [テーマ作成の詳細](../framework/theme-system.ja.md)：Option、Token、Hook、Cascade、配布を含む詳しい設計
-- [Theme API](../reference/theme-api.ja.md)：`defineTheme` と Theme の公開取り決め
+- [テーマ](./README.ja.md)：テーマの選択と利用方法
+- [テーマ作成の詳細](../framework/theme-system.ja.md)：オプション、トークン、フック、カスケード、配布を含む詳しい設計
+- [テーマ API](../reference/theme-api.ja.md)：`defineTheme` とテーマの公開取り決め
 - [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)：機能を追加する場合
-- [Plugin API](../reference/plugin-api.ja.md)：Plugin の公開取り決め
-- [アクセシビリティ](../accessibility.ja.md)：Theme 作成時のアクセシビリティ
+- [プラグイン API](../reference/plugin-api.ja.md)：プラグインの公開取り決め
+- [アクセシビリティ](../accessibility.ja.md)：テーマ作成時のアクセシビリティ

@@ -4,35 +4,33 @@ title: はじめてのプラグイン作成
 ---
 # はじめてのプラグイン作成
 
-プラグインは**機能**（Markdown/HTML の変換、クライアント動作、独立ページ、SEO、診断など）を足す仕組みです。見た目を変えたいときはテーマ（[はじめてのテーマ作成](../themes/writing-a-theme.ja.md)）を使います。Plugin の独立ページは Site の共通 route で表示します。Site 固有の画面だけを App（`app/`）の route に置いてください。
+プラグインは**機能**（Markdown や HTML の変換、ブラウザ側の動作、独立したページ、SEO、診断など）を追加する仕組みです。見た目だけを変えたいときは、テーマ（[はじめてのテーマ作成](../themes/writing-a-theme.ja.md)）を使います。プラグインの独立ページはサイト共通のルートで表示します。サイト固有の画面だけを App（`app/`）のルートに置いてください。
 
-プラグインが HTML や外部 URL を生成する場合は、表示する値や URL を安全に扱う必要があります。特に、外部から取得したデータやユーザー入力をそのまま HTML に埋め込まないでください。
-Riebeckite がどこまで安全性を保証し、プラグイン側で何を確認する必要があるかは、[セキュリティモデル](../security.ja.md) を参照してください。
+プラグインは信頼されたアプリケーションコードです。HTML、ページ本文、head タグ、クライアントエントリ、エンドポイント、生成ファイルを出力する場合、信頼できないテキストのエスケープと、その出力先に応じた URL の検証はプラグインの責任です。Riebeckite は Markdown 中の生の HTML をそのまま保持し、プラグインが生成した HTML のサニタイズは行いません。詳しくは [セキュリティモデル](../security.ja.md) を参照してください。
 
-Plugin がボタンやメニューなどの UI を表示する場合は、キーボードでも操作できるようにしてください。
-基本的な考え方や注意点は、[アクセシビリティ](../accessibility.ja.md) を参照してください。
+プラグインが UI を生成するときは、[アクセシビリティの取り決め](../accessibility.ja.md) に従ってください。意味のある HTML を選び、リンクとボタンには実際の要素を使い、キーボード操作とフォーカス管理を保ちます。ARIA の状態は、ARIA が必要な場合にだけ同期します。
 
-## 全体像
+## このページでたどる流れ
 
-このページは、何もない状態から配布できる Plugin までを一続きで扱います。
+このページでは、空のフォルダから配布できるプラグインまでを一続きで扱います。
 
 ```text
-最小の Plugin を作る（1〜2）
+最小のプラグインを作る（1〜2）
    ↓
 Markdown / HTML を変換する（3、実践）
    ↓
-出力をテストする（テストの進め方）
+出力をテストする（プラグインをテストする）
    ↓
-配布用パッケージにする（5）
+配布用のパッケージにする（5）
    ↓
 外部パッケージとして検証する（tests/plugin-dx / test:plugin-dx:external）
 ```
 
-site の中だけで使う場合は「配布用パッケージにする」より前で完結します。外部へ配布する場合だけ、package 化と外部検証まで進めます。各拡張ポイントの正確な取り決めは [Plugin System](../reference/plugin-api.ja.md) を参照してください。
+1つのサイトの中でだけ使うなら、パッケージ化の手前で止めてかまいません。配布する場合にだけ、パッケージ化と外部での検証まで進めます。各拡張ポイントの正確な取り決めは [Plugin API](../reference/plugin-api.ja.md) を参照してください。
 
 ## 1. 最小のプラグインを作る
 
-プラグインは `definePlugin`（`@riebeckite/core` から import）で作ります**。パッケージにする必要はなく、サイトの中に置けます**。
+プラグインは `@riebeckite/core` の `definePlugin` で作ります。パッケージにする必要はなく、サイトの中に直接置けます。
 
 ```ts
 // extensions/local-plugin.ts
@@ -45,7 +43,7 @@ export function localPlugin() {
 }
 ```
 
-`riebeckite.config.ts` の `plugins` 配列に追加します。
+`riebeckite.config.ts` の `plugins` 配列に登録します。
 
 ```ts
 // riebeckite.config.ts
@@ -57,7 +55,7 @@ export default defineConfig({
 });
 ```
 
-`name` だけのプラグインは「何もしない」最小構成です。オプションを渡したい場合は factory に引数を付けて型を付けます。
+`name` だけのプラグインは、何もしない最小構成です。オプションを受け取りたいときは、factory に引数と型を追加します。
 
 ```ts
 type LocalOptions = { enabled?: boolean };
@@ -67,9 +65,9 @@ export function localPlugin(options: LocalOptions = {}) {
 }
 ```
 
-## 2. CSS を足す
+## 2. CSS を追加する
 
-Plugin 固有の stylesheet は `assets` で宣言します。サイトに CSS をコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグイン固有のスタイルシートは `assets` で宣言します。CSS をサイトへ手でコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
 ```ts
 // extensions/local-plugin.ts
@@ -89,12 +87,12 @@ export function localPlugin() {
 }
 ```
 
-- `moduleSpecifier` は host bundler が解決できるものを指定します。site 内プラグインでは `/extensions/plugin.css` の形です。
-- 描画する最外要素には安定した root hook（`rr-<feature>`）を付けます。CSS の規約は [Plugin System](../reference/plugin-api.ja.md) を参照してください。
+- `moduleSpecifier` には、ホスト側のバンドラーが解決できるものを指定します。サイト内のプラグインなら `/extensions/plugin.css` のようなパスです。
+- 描画する最外要素には、`rr-<feature>` のような安定したルートフックを付けます。CSS の規約は [Plugin API](../reference/plugin-api.ja.md) を参照してください。
 
 ## 3. Markdown / HTML を変換する
 
-マークダウンの意味変換は Plugin の責務です。簡単な remark プラグインは配列で宣言できます。
+Markdown の意味を変える変換は、プラグインの仕事です。簡単な remark プラグインなら配列で宣言できます。
 
 ```ts
 // extensions/local-plugin.ts
@@ -112,15 +110,15 @@ export function localPlugin() {
 }
 ```
 
-pipeline 自体を細かく構成したい場合は `extendMarkdownPipeline` / `extendHtmlPipeline` を使います。その他の拡張ポイントは [Plugin System](../reference/plugin-api.ja.md) を参照してください。依存関係・lifecycle・renderer・endpoint などの詳細は個別に確認してください。
-`remarkPlugins` / `rehypePlugins` も `extendMarkdownPipeline` も同じ Pipeline に参加します。Riebeckite は Plugin より前に `remark-parse` や `remark-directive` を適用する
-`:::tip` のような directive はすでに AST node として Plugin へ渡されます。これらを著者がインストールしたり登録したりする必要はありません。
+処理の流れ自体を細かく組み立てたいときは、`extendMarkdownPipeline` / `extendHtmlPipeline` を使います。依存関係、ライフサイクルフック、レンダラー、エンドポイントなどの拡張ポイントは [Plugin API](../reference/plugin-api.ja.md) を参照してください。
 
-Content 変換に参加する Plugin は `processedContentCache` も宣言してください。宣言がない場合でも動作はします。その site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`。他 Plugin の出力に依存するなら `tracked` を指定します。正確に追跡できない場合のみ `unsafe` を指定します。
+`remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-directive`、`remark-gfm` などの基本となるプラグインを、作成するプラグインより先に実行します。そのため、`:::tip` のようなディレクティブ記法や GFM はすでに AST ノードとして渡されます。これらを自分でインストールしたり登録したりする必要はありません。
 
-## 実践: directive プラグインを最後まで作る
+コンテンツの変換に参加するプラグインは、`processedContentCache` も宣言してください。宣言がなくても動作はしますが、そのサイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。ほかのプラグインのコンテンツに依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、ほかのプラグインの出力に依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。
 
-ここでは、次のような Markdown を独自の Tip 表示に変換するプラグインを作ります。
+## 実践: ディレクティブプラグインを最後まで作る
+
+ここでは、次の Markdown を独自の Tip ブロックに変換するプラグインを作ります。
 
 ```md
 :::tip[Heads up]
@@ -128,7 +126,7 @@ Save often.
 :::
 ```
 
-最終的には、次のような HTML が生成されます。
+最終的には、次の HTML が生成されます。
 
 ```html
 <aside class="rr-tip">
@@ -137,18 +135,18 @@ Save often.
 </aside>
 ```
 
-作業は4段階です。
+作業は4つの手順に分かれます。
 
 1. Markdown を変換するプラグインを作る
 2. 見た目を整える CSS を追加する
 3. `riebeckite.config.ts` に登録する
-4. 期待した HTML が生成されることを test する
+4. 期待どおりの HTML が生成されるかテストする
 
-### Step 1: プラグインを作る
+### 手順 1: プラグインを作る
 
 `extensions/tip-plugin.ts` を作成します。
 
-まず、このプラグインの入口を見てみましょう。
+まず、プラグインの入口から見ていきます。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -174,14 +172,14 @@ export function tipPlugin() {
 
 ここでやっていることは2つだけです。
 
-- `remarkTip` という Markdown 変換を追加する
-- `/extensions/plugin.css` を stylesheet として読み込む
+- `remarkTip` という Markdown の変換を加える
+- `/extensions/plugin.css` をスタイルシートとして読み込む
 
-`remarkTip` が、実際に `:::tip` を `<aside>` へ変換する部分です。
+`:::tip` を実際に `<aside>` へ変えるのが `remarkTip` です。
 
 #### `:::tip` を見つける
 
-必要な import と、directive を扱うための型を追加します。
+import と、ディレクティブを扱うための型を追加します。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -196,13 +194,13 @@ type ContainerDirective = {
 };
 ```
 
-この例では Markdown AST の型に `mdast`、node の走査に `unist-util-visit` を使います。どちらも通常の npm package として自分の package に追加してください（`@riebeckite/core` からは import しません）。
+この例では、AST ノードの型には `mdast`、ツリーの走査には `unist-util-visit` を使います。どちらも通常の npm パッケージとして自分のパッケージに追加してください。`@riebeckite/core` からは import しません。
 
-Riebeckite の Markdown pipeline では、`:::tip` のような記法があらかじめ変換されています。`remark-directive` によって `containerDirective` node になります。
+Riebeckite の Markdown パイプラインでは、`:::tip` のような記法がプラグインの実行前に解析済みです。`remark-directive` によって `containerDirective` ノードになります。
 
-そのため、プラグイン側で Markdown の文字列を解析する必要はありません。
+そのため、プラグインが Markdown の文字列を自分で解析する必要はありません。
 
-`unist-util-visit` を使って、その node を探します。
+`unist-util-visit` でそのノードを探します。
 
 ```ts
 function remarkTip() {
@@ -218,7 +216,7 @@ function remarkTip() {
 }
 ```
 
-`containerDirective` には `tip` 以外の directive も含まれます。
+`containerDirective` には `tip` 以外のディレクティブも含まれます。
 
 そのため、
 
@@ -226,11 +224,11 @@ function remarkTip() {
 if (directive.name !== "tip") return;
 ```
 
-として、`:::tip` だけを処理しています。
+と書き、`:::tip` だけを処理します。
 
 #### `<aside>` に変換する
 
-見つけた `:::tip` に、生成したい HTML 要素を指定します。
+見つけた `:::tip` に対して、生成する HTML 要素を指定します。
 
 ```ts
 directive.data = {
@@ -254,7 +252,7 @@ hName: "aside"
 className: ["rr-tip"]
 ```
 
-が class を指定しています。
+がクラスを指定しています。
 
 つまり、
 
@@ -272,7 +270,7 @@ Save often.
 </aside>
 ```
 
-のように出力されます。
+と出力されます。
 
 #### `[Heads up]` をタイトルにする
 
@@ -284,11 +282,11 @@ Save often.
 :::
 ```
 
-の `[Heads up]` をタイトルとして扱います。
+の `[Heads up]` をタイトルにします。
 
-`remark-directive` は、この label を directive の最初の子 node として渡します。
+`remark-directive` は、このラベルをディレクティブの最初の子ノードとして渡します。
 
-そこで最初の子が label かどうかを確認します。
+そこで、最初の子がラベルかどうかを確認します。
 
 ```ts
 const [first, ...rest] = directive.children;
@@ -299,12 +297,12 @@ const hasLabel =
     ?.directiveLabel === true;
 ```
 
-label があれば、
+ラベルがあれば、
 
 - 最初の子 → タイトル
 - それ以降 → 本文
 
-として分けます。
+と分けます。
 
 ```ts
 const titleChildren = hasLabel
@@ -316,13 +314,13 @@ const bodyChildren = hasLabel
   : directive.children;
 ```
 
-そしてタイトルを、
+続いて、タイトルを
 
 ```html
 <p class="rr-tip__title">
 ```
 
-として追加します。
+という要素として追加します。
 
 ```ts
 directive.children = [
@@ -357,11 +355,11 @@ Save often.
 </aside>
 ```
 
-が生成されます。
+が得られます。
 
-#### 完成したプラグイン
+#### プラグイン全体
 
-ここまでをまとめると、`extensions/tip-plugin.ts` は次のようになります。
+ここまでの内容をまとめると、`extensions/tip-plugin.ts` は次のようになります。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -446,11 +444,11 @@ export function tipPlugin() {
 }
 ```
 
-> `extendMarkdownPipeline` は Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では directive の HTML 構造そのものを変更したいため使用しています。
+> `extendMarkdownPipeline` は、Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では、ディレクティブから生成される HTML 構造そのものを変える必要があるため使っています。
 
-### Step 2: stylesheet を追加する
+### 手順 2: スタイルシートを追加する
 
-次に `extensions/plugin.css` を作成します。
+次に、`extensions/plugin.css` を作成します。
 
 ```css
 .rr-tip {
@@ -464,7 +462,7 @@ export function tipPlugin() {
 }
 ```
 
-先ほど生成した、
+先ほど生成した要素にスタイルを当てます。
 
 ```html
 <aside class="rr-tip">
@@ -476,21 +474,21 @@ export function tipPlugin() {
 <p class="rr-tip__title">
 ```
 
-に対してスタイルを適用しています。
+の2つです。
 
-色には固定値ではなく、
+色は固定値ではなく、
 
 ```css
 var(--rb-color-accent)
 ```
 
-という Riebeckite の theme token を使っています。
+という Riebeckite のテーマトークンを使っています。
 
-こうしておくと、利用している theme が変わっても、その theme の accent color に追従できます。
+こうしておけば、利用するテーマが変わっても、そのテーマのアクセントカラーに追従できます。
 
-これが Theme Extension の取り決めの基本です。Plugin は最外要素に stable な root hook（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` semantic token を使います。`--rb-*` は light / 明示 dark / system dark のいずれでも解決されます。そのため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` class には依存しないでください。dark 専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.ja.md) を参照してください。
+これがテーマ拡張の取り決めの基本です。プラグインは最外要素に安定したルートフック（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` のセマンティックトークンを使います。`--rb-*` はライト、明示的なダーク、システムのダークのいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-theme]` を自分で分岐する必要はありません。`.dark` クラスには依存しないでください。ダーク専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
-### Step 3: プラグインを登録する
+### 手順 3: プラグインを登録する
 
 作ったプラグインを `riebeckite.config.ts` に登録します。
 
@@ -505,7 +503,7 @@ export default defineConfig({
 });
 ```
 
-これで Markdown に、
+これで、Markdown に
 
 ```md
 :::tip[Heads up]
@@ -513,13 +511,13 @@ Save often.
 :::
 ```
 
-と書けば、Tip が生成されるようになります。
+と書けば Tip が表示されます。
 
-### Step 4: 出力を test する
+### 手順 4: 出力をテストする
 
-最後に、期待した HTML が生成されることを test します。
+最後に、期待どおりの HTML が生成されるかテストします。
 
-このテストでは site 全体を build する必要はありません。`Pipeline` を直接実行して、Markdown の変換結果だけを確認できます。
+このテストのためにサイト全体をビルドする必要はありません。`Pipeline` を直接実行すれば、Markdown の変換結果だけを確認できます。
 
 `extensions/tip-plugin.test.ts` を作成します。
 
@@ -560,7 +558,7 @@ test("renders :::tip as an aside with a title", async () => {
 });
 ```
 
-この test では3つのことを確認しています。
+このテストでは3つの点を確認しています。
 
 ```text
 :::tip
@@ -576,13 +574,13 @@ Save often.
 本文として出力される
 ```
 
-これで、Markdown の変換、stylesheet の追加、Plugin の登録、そして test までを含む小さな site 内プラグインが完成しました。
+これで、Markdown の変換、スタイルシートの追加、プラグインの登録、出力のテストまでを備えた、サイト内で動く小さなプラグインが完成しました。
 
-### この例で覚えておくこと
+### この例で押さえること
 
-この例のすべての AST 操作を覚える必要はありません。
+この例で使った AST 操作をすべて覚える必要はありません。
 
-重要なのは、Riebeckite Plugin では、
+押さえておきたいのは、Riebeckite のプラグインでは
 
 ```ts
 definePlugin({
@@ -596,30 +594,30 @@ definePlugin({
 });
 ```
 
-という形で、Markdown の変換や stylesheet などをひとつの Plugin にまとめられることです。
+という形で、Markdown の変換やスタイルシートを1つのプラグインにまとめられることです。
 
-`extendMarkdownPipeline` は remark / mdast を直接扱うための低レベルな API なので、独自の Markdown 構文や複雑な変換が必要な場合に使います。
+`extendMarkdownPipeline` は remark と mdast を直接扱う低レベルな API です。独自の Markdown 構文や複雑な変換が必要なときに使います。
 
-この例では、`processedContentCache` も宣言しています。宣言がない場合でも動作はします。site の処理済み Content キャッシュが無効化され、build のたびに Markdown を再処理します。他 Plugin の Content に依存しない単独の変換なら `dependencyMode: "none"`。他 Plugin の出力に依存するなら `tracked` を指定します。正確に追跡できない場合のみ `unsafe` を指定します。`version` は変換の意味を変えたときに上げてください。Plugin の `options` と変換関数の内容も pipeline fingerprint に含まれるため、Option の変更だけで `version` を上げる必要はありません。
+この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、ほかのプラグインの出力に依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換の意味が変わったときに上げてください。プラグインの `options` と変換関数の内容もパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
 
-## テストの進め方
+## プラグインをテストする
 
-Plugin のテストは、確認したい範囲に合わせて4段階に分けられます。すべてを行う必要はありません。小さい範囲から始めてください。
+プラグインのテストは、確かめたい範囲に応じて4つのレベルに分けられます。すべてを行う必要はありません。変更した挙動を確かめられる最小のレベルから始めてください。
 
 ```text
-Level 1  Pure logic          通常の test runner だけでよい（AST ヘルパー、文字列変換など）
-Level 2  Markdown / HTML     Pipeline に Plugin を渡して変換結果を検証する
-Level 3  Content / lifecycle ContentManager と In-memory ContentSource で manifest や hook を検証する
-Level 4  外部パッケージ境界   pack した package を隔離プロジェクトへ install して検証する
+レベル 1  純粋なロジック         通常のテストランナーだけでよい（AST ヘルパー、文字列変換など）
+レベル 2  Markdown / HTML         Pipeline にプラグインを渡して変換結果を検証する
+レベル 3  コンテンツ / ライフサイクル  ContentManager とインメモリの ContentSource で manifest やフックを検証する
+レベル 4  パッケージの公開境界    pack したパッケージを隔離プロジェクトへインストールして検証する
 ```
 
-### Level 1: 純粋な処理
+### レベル 1: 純粋なロジック
 
-Option の解決、文字列や AST のヘルパーなど、Riebeckite に依存しない処理は `node:test` などの通常の test runner でそのままテストします。この段階では Riebeckite のテスト基盤は不要です。
+オプションの解決や文字列・AST のヘルパーなど、Riebeckite に依存しない処理は、`node:test` などの通常のテストランナーでそのままテストできます。このレベルでは Riebeckite のテスト基盤は要りません。
 
-### Level 2: Markdown / HTML の変換
+### レベル 2: Markdown / HTML の変換
 
-`Pipeline` に Plugin を渡し、代表的な Markdown を `execute()` して意味のある出力を検証します。これが「実践」の Step 4 で行っているテストです。
+`Pipeline` にプラグインを渡し、代表的な Markdown を `execute()` に通して、意味のある出力が得られるか検証します。実践の手順 4 で書いたテストがこれです。
 
 ```ts
 const pipeline = new Pipeline(new Map(), new Map(), undefined, {
@@ -631,11 +629,11 @@ const { html } = await pipeline.execute(
 );
 ```
 
-`Pipeline` の第1・第2引数は content index と permalink の解決に使う `Map` です。単一ファイルの変換を確認するだけなら空の `Map` で十分です。第3引数（`getMarkdownBySlug`）は embed など他の Content を参照する場合だけ必要です。
+`Pipeline` の第1引数と第2引数は、コンテンツインデックスと permalink の解決に使う `Map` です。1つのファイルの変換を確かめるだけなら空の `Map` で足ります。第3引数（`getMarkdownBySlug`）は、埋め込みなど他のコンテンツを参照する場合にだけ必要です。
 
-### Level 3: Content / lifecycle
+### レベル 3: コンテンツとライフサイクル
 
-Content の読み込み、hook、manifest、Page Type などを検証する場合は `ContentManager` を使います。実際の Filesystem を用意する代わりに、小さな In-memory `ContentSource` を渡します。
+コンテンツの読み込み、フック、manifest、Page Type などを検証するには `ContentManager` を使います。実際のファイルシステムを用意する代わりに、小さなインメモリの `ContentSource` を渡します。
 
 ```ts
 const source = {
@@ -651,15 +649,15 @@ const manager = new ContentManager(source, [], { config });
 const manifest = await manager.getManifest();
 ```
 
-詳しい pattern は [テスト](../framework/testing.ja.md) を参照してください。
+より詳しいパターンは [テスト](../framework/testing.ja.md) を参照してください。
 
-### Level 4: 外部パッケージ境界
+### レベル 4: パッケージの公開境界
 
-配布する Package は、pack した tarball を monorepo の外の隔離プロジェクトへ install して検証します。これによって、公開 Export の不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。Riebeckite repository では `tests/plugin-dx` がこの検証の実例です。実行には `pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` を使います。
+配布するパッケージは、pack した tarball を monorepo の外にある隔離プロジェクトへインストールして検証します。これにより、公開エクスポートの不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落などを検出できます。このリポジトリでは `tests/plugin-dx` が実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
 
-## 4. 独立ページを追加する（必要な場合）
+## 4. 独立したページを追加する（必要な場合）
 
-独立画面には `pageTypes` を使います。Page Type は HTML body を返し、Site の共通 catch-all route が document frame と Theme を適用します。ページで entry を一覧する場合は `manifest.discoverableEntries` を使ってください。`manifest.publicEntries`（`unlisted` を含む）は、本当に必要な場合だけに限ります。`manifest.entries`（`draft`・`scheduled` を含む）も同様です。詳しくは [Manifest の collection と公開境界](../reference/plugin-api.ja.md#manifest-の-collection-と公開境界) を参照してください。Plugin 固有の HonoX route は追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは `renderers` のままです。
+独立したページには `pageTypes` を使います。Page Type は HTML の body を返し、サイト共通の catch-all ルートがドキュメントの枠とテーマを適用します。ページでエントリを一覧するときは `manifest.discoverableEntries` を読んでください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft` や `scheduled` を含む）は、本当に必要な場面だけに取っておきます。詳しくは [Manifest のコレクションと公開境界](../reference/plugin-api.ja.md#マニフェストのコレクションと公開範囲) を参照してください。プラグイン固有の HonoX ルートは追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは、これまでどおり `renderers` で扱います。
 
 ```ts
 pageTypes: [{
@@ -671,15 +669,15 @@ pageTypes: [{
 }],
 ```
 
-scaffold が生成する HonoX route はすでに `resolveRiebeckiteRoute` と `pluginPageSsgParams` を使います。ID は全体で一意にし、動的ページの SSG path は public manifest から導き、所有しない path では `null` を返してください。責務と接続全体は [Page System](../framework/page-system.ja.md) を参照してください。
+scaffold が生成する HonoX ルートは、すでに `resolveRiebeckiteRoute` と `pluginPageSsgParams` を使っています。ID は全体で一意にし、動的ページの SSG パスは公開 manifest から導いてください。自分が所有しないパスでは `null` を返します。責務の分担と全体の接続は [Page System](../framework/page-system.ja.md) を参照してください。
 
-## 5. 配布用パッケージにする（任意）
+## 5. 配布用のパッケージにする（任意）
 
-site 内プラグインとして動けば、パッケージにできます。雛形は `packages/plugins/backlinks` です。
+サイト内のプラグインとして動くようになれば、パッケージにできます。雛形は `packages/plugins/backlinks` です。
 
 ```text
 packages/plugins/backlinks/
-├─ index.ts              ← definePlugin を呼ぶ factory、公開部品の再 export
+├─ index.ts              ← definePlugin を呼ぶ factory、公開する部品の再エクスポート
 ├─ components/           ← コンポーネント（必要なら）
 ├─ src/                  ← 実装（型・ヘルパーなど）
 ├─ styles/style.css      ← プラグインの CSS
@@ -688,50 +686,50 @@ packages/plugins/backlinks/
 └─ README.md
 ```
 
-外部配布のプラグインは `@riebeckite/core` だけに依存し、自身の subpath を `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内の path を参照したりしないでください。package 構成と、ESM と型定義を同梱する build については [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` の subpath を明示して渡します。
+外部に配布するプラグインは `@riebeckite/core` だけに依存し、自分のサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
 
-この directive プラグインを配布する場合、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies` です。`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild + `tsc` による build Script の例は [Repository 外で Plugin を配布する](../reference/plugin-api.ja.md#repository-外で-plugin-を配布する) にあります。
+このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) にあります。
 
 ## 6. 検証する
 
 ```sh
 npm exec riebeckite check              # 設定と Plugin の解決を検証
 npm exec riebeckite doctor             # 健全性診断
-npm exec riebeckite inspect plugins# 解決済みの Plugin 一覧を確認
+npm exec riebeckite inspect plugins    # 解決済みの Plugin 一覧を確認
 npm exec riebeckite build              # 生成物に反映されるか確認
 ```
 
-`check` / `doctor` / `inspect` は読み取り専用です。解決されない場合は、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に「本当に Plugin が必要か（設定や App 実装で済まないか）」も確認してください。
+`check`、`doctor`、`inspect` は読み取り専用です。プラグインが解決されないときは、まず `check` のメッセージで capability エラーや import エラーを確認してください。プラグインを作る前に、その要件を設定や App 側のコードで済ませられないかも検討してください。
 
-## UI の提供方法
+## UI や出力を追加する方法
 
-Plugin が UI を追加する方法はいくつかあります。最小のものを選んでください。優劣の順列ではなく、組み合わせてもかまいません。
+プラグインが UI を追加する方法はいくつかあります。用途に合う最小のものを選んでください。上から順に優れているという意味ではなく、組み合わせてもかまいません。
 
 ```text
-UI / output を提供したい
+UI や出力を追加したい
 │
 ├─ Markdown / HTML 自体を変換する
-│    └─ remark / rehype pipeline
+│    └─ remark / rehype パイプライン
 │
-├─ 埋め込み content を描画する
+├─ 埋め込みコンテンツを描画する
 │    └─ renderers
 │
-├─ 独立ページを提供する
+├─ 独立したページを追加する
 │    └─ pageTypes
 │
-├─ 記事 layout へ自動配置する
-│    └─ Data helper + JSX component
+├─ 記事レイアウトに自動で表示する
+│    └─ データヘルパー + JSX コンポーネント
 │
-├─ Site 作者に配置を任せる
-│    └─ Hono JSX component を export
+├─ サイト作者に配置を任せる
+│    └─ Hono JSX コンポーネントをエクスポート
 │
-└─ Browser 側で強化する
-     └─ clientEntries（必要なら Site 所有の Island）
+└─ ブラウザ側で強化する
+     └─ clientEntries（必要ならサイト所有の Island）
 ```
 
-### 記事 layout へ自動配置する
+### 記事レイアウトに自動で配置する
 
-出力が標準の位置にあり、Plugin を有効化すればすぐ表示したい場合は、Data helper + JSX component を使います。Plugin は型付きモデルを返す data helper と、それを描画する JSX component を export します。Site が helper を呼んで自分の layout に component を配置します。
+出力の置き場所が決まっていて、プラグインを有効にすればすぐ表示したい場合は、データヘルパーと JSX コンポーネントを使います。プラグインは、型付きのモデルを返すデータヘルパーと、それを描画する JSX コンポーネントをエクスポートします。サイト側がヘルパーを呼び、自分のレイアウトにコンポーネントを置きます。
 
 ```ts
 import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
@@ -741,13 +739,13 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-helper は絞り込まれた `PublicContentView` を読むため、公開境界が許す content だけを表示できます。component は表示するものがないとき `null` を返すので、Site は無条件に描画できます。helper と component の取り決めは [UI components](../reference/plugin-api.ja.md#ui-components) を参照してください。
+ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [UI コンポーネント](../reference/plugin-api.ja.md#uiコンポーネント) を参照してください。
 
-### Hono JSX component で手動配置する
+### Hono JSX コンポーネントで手動配置する
 
-UI の配置を Site 作者に任せたい場合は、通常の Hono JSX component を export します。component registry や Plugin 固有の component API はありません。ほかの component と同じように import して組み合わせます。
+UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。コンポーネントレジストリやプラグイン固有のコンポーネント API はありません。ほかのコンポーネントと同じように import して組み合わせます。
 
-package の `exports` に `./components` subpath を宣言し、component module の default export を保ちます。必要なら同じ component を package root から名前付きでも再 export します。既存 Plugin はこの形です。
+パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を保ちます。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
 
 ```ts
 import { Backlinks } from "@riebeckite/plugin-backlinks";
@@ -756,23 +754,23 @@ import { SearchBar } from "@riebeckite/plugin-search";
 import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 ```
 
-`color-mode` は root のみの形です。`ColorModeScript` と `ColorModeToggle` を package root から公開し、`./components` subpath を持ちません。名前は各 package README に従ってください。
+`color-mode` はルートのみの形です。`ColorModeScript` と `ColorModeToggle` をパッケージのルートから公開し、`./components` サブパスを持ちません。名前は各パッケージの README に従ってください。
 
-### component か素の HTML か
+### コンポーネントと素の HTML のどちらにするか
 
-判断基準は **誰が配置するか** です。JSX component なら、Site が props・順序・位置を自分の component tree で選べます。Plugin がすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーを export して Site に呼ばせることもできます。どちらでも、Plugin が manifest entry へ markup を注入することはありません。何をどこに描画するかは Site が決めます。
+判断の分かれ目は**誰が配置するか**です。JSX コンポーネントなら、サイト側が props、順序、位置を自分のコンポーネントツリーの中で選べます。プラグインがすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーをエクスポートし、サイト側から呼んでもらうこともできます。どちらの場合も、プラグインが manifest のエントリへマークアップを注入することはありません。何をどこに描画するかはサイト側が決めます。
 
-`backlinks` と `local-graph` は component と data helper の両方を export します。参照サイトは article layout でそれらを組み合わせています。よくある pattern であり、必須ではありません。
+`backlinks` と `local-graph` はコンポーネントとデータヘルパーの両方をエクスポートします。リファレンスサイトは記事レイアウトでこれらを組み合わせています。よくあるパターンであり、必須ではありません。
 
-### Browser 強化と Island
+### ブラウザ側の強化と Island
 
-Plugin は `app/islands/` を所有せず、Riebeckite に Plugin 用 Island registry もありません。Browser 側の動作が必要な場合は、server-render 済み DOM を強化する `clientEntries` initializer を提供します。component state が必要なら、Site が Plugin component を自前の HonoX Island で包みます。`garden-explorer` は Page Type と client entry を組み合わせた特殊例であり、必須の pattern として一般化しないでください。詳しくは [Client Entries](../reference/plugin-api.ja.md#client-entries) を参照してください。
+プラグインは `app/islands/` を所有しません。Riebeckite にもプラグイン用の Island レジストリはありません。ブラウザ側の動作が必要な場合は、サーバーで描画済みの DOM を強化する `clientEntries` の初期化関数を提供します。コンポーネントの状態が必要なら、サイト側がプラグインのコンポーネントを自分の HonoX Island で包みます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [クライアントエントリ](../reference/plugin-api.ja.md#クライアントエントリ) を参照してください。
 
 ## 関連資料
 
-- [[plugin-system|プラグイン作成の詳細]]：この入門の詳細編（拡張ポイント・capability・lifecycle・配布）
-- [[plugin-api|Plugin System]]：すべての拡張ポイントの詳細
-- [[testing|テスト]]：Plugin のテスト戦略と External 検証
-- [[theme-api|Theme API]]：Theme Extension の取り決めと Semantic Token
+- [[plugin-system|プラグイン作成の詳細]]：この入門の詳細編（拡張ポイント・capability・ライフサイクル・配布）
+- [[plugin-api|Plugin API]]：すべての拡張ポイントの詳細
+- [[testing|テスト]]：プラグインのテスト戦略と外部パッケージの検証
+- [[theme-api|Theme API]]：テーマ拡張の取り決めとセマンティックトークン
 - [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
 - [[reference/README|Framework Reference]]：`definePlugin` などの公開 API

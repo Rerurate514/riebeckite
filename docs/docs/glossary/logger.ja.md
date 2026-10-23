@@ -1,25 +1,25 @@
 ---
 date: 2026-10-14
-title: Logger
+title: ロガー（Logger）
 sidebar:
   hidden: true
 ---
 
-# Logger
+# ロガー（Logger）
 
-Build全体で構造化されたイベントとspanを出すobservabilityの経路です。その出力はCLI、Profiler、Integrationが受け取ります。
+ビルド全体で構造化されたイベントとスパンを出力する可観測性のチャネルです。出力はCLI、プロファイラ、インテグレーションが消費します。
 
 ## 役割
 
-構造化されたBuildのイベントを出します。CLI、Profiler、Integrationに供給します。
+構造化されたビルドイベントを出力します。CLI、プロファイラ、インテグレーションに供給します。
 
-## 出す内容
+## 出力するもの
 
-安全な運用に必要なメッセージを構造化して出します。性能の原因を調べるときは大量のメッセージを出さず、Profilerを使います。
+安全な運用メッセージを構造化して出力します。性能上の原因を探すために大量のメッセージを流す場ではありません。それにはプロファイラを使ってください。
 
-## Logger Details
+## ロガーの詳細
 
-`Logger`インターフェースはビルド全体で利用できる構造化されたログ方法を提供します。
+`Logger` インターフェースは、ビルド全体で使う構造化ログのメソッドを提供します。
 
 ```ts
 interface Logger {
@@ -31,7 +31,7 @@ interface Logger {
 }
 ```
 
-`ConsoleLogger`実装は適切なレベルで`console`に書き込みます。ログメッセージには相関関係のための`LogContext`キーバリュー マップが含まれます。`child`メソッドを使用して、追加のコンテキストを持つ子ロガーを作成できます。
+`ConsoleLogger` 実装は適切なレベルで `console` に書き込みます。ログメッセージには、構造化された相関のための `LogContext` キーと値のマップが含まれます。各ロガーは `child` メソッドで、追加コンテキストを持つ子ロガーを作れます。
 
 ### 例
 
@@ -41,7 +41,7 @@ import { ConsoleLogger } from "@riebeckite/core";
 const logger = new ConsoleLogger({ phase: "build" });
 logger.info("Build started");
 logger.child({ step: "content" }).info("Processing content");
-// 出力は相関関係のための構造化されたコンテキストを含みます
+// Output includes structured context for correlation
 ```
 ## 関連用語
 

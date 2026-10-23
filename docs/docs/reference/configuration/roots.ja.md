@@ -7,38 +7,35 @@ sidebar:
 ---
 # 3つの Root
 
-外部 Vault や monorepo 構成を扱う場合に重要なのが、
+外部 Vault や monorepo 構成を扱う場合に重要なのが、次の3つの違いです。
 
 - `appRoot`
 - `configRoot`
 - `contentRoot`
 
-の違いです。
-
 ```mermaid id="w3x2dv"
 flowchart TD
-    App["appRoot<br/>Site Application"]
-    Config["configRoot<br/>Config の場所"]
-    Content["contentRoot<br/>Content / Vault の場所"]
+    App["appRoot<br/>サイトアプリケーション"]
+    Config["configRoot<br/>設定の場所"]
+    Content["contentRoot<br/>コンテンツ / Vault の場所"]
 
     App -->|"既定"| Config
     App -->|"content.directory を解決"| Content
 ```
 
-| 名前 | 何を表す？ | 既定値 / 基準 |
+| 名前 | 役割 | 既定値 / 解決の基準 |
 | --- | --- | --- |
-| `appRoot` | HonoX / Vite Site の root | Vite `root` |
-| `configRoot` | `riebeckite.config.*` を探す場所 | `appRoot` |
-| `contentRoot` | 実際にコンテンツを読む場所 | `path.resolve(appRoot, content.directory)` |
+| `appRoot` | HonoX / Vite アプリケーションのルート | Vite の `root` |
+| `configRoot` | `riebeckite.config.*` を探すディレクトリ | `appRoot` |
+| `contentRoot` | 実際にコンテンツを読み込む絶対パス | `path.resolve(appRoot, content.directory)` |
 
-この3つは別の役割を持ちます。
-
+この3つは、それぞれ別の役割を持ちます。
 
 ## appRoot
 
-`appRoot` は **Site Application の基準となるディレクトリ**です。
+`appRoot` は、**サイトアプリケーションの基準となるディレクトリ**です。
 
-たとえば、
+たとえば、次のような構成なら、
 
 ```text id="xkjg5v"
 site/
@@ -49,36 +46,29 @@ site/
 └─ riebeckite.config.ts
 ```
 
-なら通常、
+通常は次のようになります。
 
 ```text id="2hwbbd"
 appRoot = site/
 ```
 
-です。
-
-`appRoot` は、
+`appRoot` は、次のようなサイトアプリケーションの基準になります。
 
 - `app/`
 - `public/`
-- route
-- generated styles
-- Build 設定
-
-など Site Application の基準になります。
-
+- ルート
+- 生成されたスタイル
+- ビルド設定
 
 ## configRoot
 
-`configRoot` は、
+`configRoot` は、次のファイルを探す基準です。
 
 ```text id="53pg8g"
 riebeckite.config.ts
 riebeckite.config.js
 riebeckite.config.mjs
 ```
-
-を探す基準です。
 
 通常は `appRoot` と同じです。
 
@@ -87,16 +77,15 @@ appRoot
    └─ riebeckite.config.ts
 ```
 
-特殊な repository 構成で config を別の場所へ置く場合のみ変更します。
+特殊なリポジトリ構成で、設定を別の場所へ置く場合だけ変更します。
 
-**`configRoot` を変更しても `content.directory` の基準は変わらない**点に注意してください。
-
+**`configRoot` を変更しても、`content.directory` の基準は変わらない**点に注意してください。
 
 ## contentRoot
 
-`contentRoot` は、実際に Markdown や asset を読み込む場所です。
+`contentRoot` は、実際に Markdown やアセットを読み込む場所です。
 
-相対 `content.directory` は常に `appRoot` を基準に解決されます。
+相対パスの `content.directory` は、常に `appRoot` を基準に解決されます。
 
 ```ts id="jgnfqm"
 content: {
@@ -104,14 +93,12 @@ content: {
 }
 ```
 
-なら、
+この場合、次のようになります。
 
 ```text id="y6zaw5"
 contentRoot
   = path.resolve(appRoot, "../vault")
 ```
-
-となります。
 
 ```mermaid id="uupc5x"
 flowchart LR
@@ -123,16 +110,15 @@ flowchart LR
     Directory --> Root
 ```
 
-`process.cwd()` を基準にするわけではありません。
+基準は `process.cwd()` ではありません。
 
-そのため CLI を別の directory から実行しても、同じ Site Application を解決できれば同じ Vault を参照できます。
-
+そのため、CLI を別のディレクトリから実行しても、同じサイトアプリケーションを解決できれば、同じ Vault を参照できます。
 
 ## 外部 Vault を使う
 
-Obsidian Vault を Site と独立して管理したい場合は、Site の外へ置く構成を推奨します。
+Obsidian Vault をサイトと独立して管理したい場合は、サイトの外へ置く構成を推奨します。
 
-たとえば、
+たとえば、次のような構成です。
 
 ```text id="bgmthg"
 workspace/
@@ -150,30 +136,27 @@ workspace/
    └─ media/
 ```
 
-という構成です。
-
 ```mermaid id="63njzu"
 flowchart LR
-    Site["site/<br/>HonoX / Vite Application"]
+    Site["site/<br/>HonoX / Vite アプリケーション"]
     Config["riebeckite.config.ts"]
-    Vault["vault/<br/>Obsidian Content"]
+    Vault["vault/<br/>Obsidian コンテンツ"]
 
     Site --> Config
     Config -->|"content.directory = ../vault"| Vault
 ```
 
-Site と Vault の役割が明確に分離されます。
+サイトと Vault の役割が明確に分離されます。
 
 ```text id="wx10hc"
 site/
-  → Application
+  → アプリケーション
 
 vault/
-  → Source Content
+  → ソースコンテンツ
 ```
 
-Vault を Vite application root にする必要はありません。
-
+Vault を Vite アプリケーションのルートにする必要はありません。
 
 ## 外部 Vault の設定例
 
@@ -206,7 +189,7 @@ export default defineConfig({
 });
 ```
 
-この場合、
+この場合、次のようになります。
 
 ```text id="9w7l08"
 appRoot
@@ -219,8 +202,6 @@ contentRoot
   = workspace/vault
 ```
 
-となります。
-
 絶対パスを指定することもできます。
 
 ```ts id="vmohm9"
@@ -229,12 +210,11 @@ content: {
 }
 ```
 
-ただし絶対パスは開発 PC や CI で場所が変わると使えなくなるため、通常は Site からの相対パスを推奨します。
-
+ただし、絶対パスは開発用の PC や CI で場所が変わると使えなくなるため、通常はサイトからの相対パスを推奨します。
 
 ## `process.cwd()` に依存しない
 
-Content directory を次のように組み立てることは避けてください。
+コンテンツディレクトリを次のように組み立てることは避けてください。
 
 ```ts id="i3cfla"
 directory: path.resolve(
@@ -243,43 +223,40 @@ directory: path.resolve(
 )
 ```
 
-CLI をどこから実行したかによって結果が変化するためです。
+CLI をどこから実行したかによって結果が変わるためです。
 
-また、
+また、次のようにする必要もありません。
 
 ```text id="p2j2rb"
 appRoot = Vault
 ```
 
-とする必要もありません。
-
-Vault は **source data**、`appRoot` は **Site Application** です。
+Vault は**ソースデータ**、`appRoot` は**サイトアプリケーション**です。
 
 ```mermaid id="xzz84j"
 flowchart LR
-    Vault["Vault<br/>Source Data"]
-    Site["Site<br/>Application"]
+    Vault["Vault<br/>ソースデータ"]
+    Site["サイト<br/>アプリケーション"]
     Build["Riebeckite"]
 
     Vault --> Build
     Site --> Build
 
-    Build --> Output["Generated Site"]
+    Build --> Output["生成されたサイト"]
 ```
 
 この境界を維持してください。
 
+## アプリケーションから ContentManager を使う
 
-## Application から ContentManager を使う
-
-通常、HonoX Integration が `contentRoot` を自動的に解決します。解決済みの値は Framework 所有の module として公開されるため、Site が `riebeckite.config.ts` を読み直す必要はありません。
+通常、HonoX インテグレーションが `contentRoot` を自動的に解決します。解決済みの値はフレームワークが所有するモジュールとして公開されるため、サイトが `riebeckite.config.ts` を読み直す必要はありません。
 
 ```ts id="veou0j"
 import { config } from "virtual:riebeckite/config";
 import { content } from "virtual:riebeckite/content";
 ```
 
-`config.content.directory` は絶対パスで、`content` はそれに結びついた `ContentManager` です。そのため、別の基準からもう一度 `path.resolve()` しないでください。この module は `riebeckiteVite()` が解決します。Vite の外で動く script（`tsx` で起動する Node script など）は `@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ値を解決できます。
+`config.content.directory` は絶対パスで、`content` はそれに結びついた `ContentManager` です。そのため、別の基準からもう一度 `path.resolve()` しないでください。このモジュールは `riebeckiteVite()` が解決します。Vite の外で動くスクリプト（`tsx` で起動する Node スクリプトなど）は、`@riebeckite/honox/runtime` の `resolveHonoxConfig` で同じ値を解決できます。
 
 ```ts id="9pr6g1"
 import { fileURLToPath } from "node:url";
@@ -297,7 +274,7 @@ export const config = resolveHonoxConfig(
 ```mermaid id="54gq7n"
 flowchart LR
     Relative["../vault"]
-    Resolve["appRoot から一度だけ resolve"]
+    Resolve["appRoot から一度だけ解決"]
     Absolute["C:/.../vault"]
     Manager["ContentManager"]
 
@@ -306,34 +283,32 @@ flowchart LR
     Absolute --> Manager
 ```
 
-## Config を Site の外へ置く
+## 設定をサイトの外へ置く
 
-通常、
+通常は次の関係になります。
 
 ```text id="4p7m8h"
 appRoot
   = configRoot
 ```
 
-ですが、意図的に `riebeckite.config.ts` を別の directory に置くこともできます。
+ただし、意図的に `riebeckite.config.ts` を別のディレクトリに置くこともできます。
 
-その場合は `riebeckiteVite()` に `configRoot` を指定します。
+その場合は、`riebeckiteVite()` に `configRoot` を指定します。
 
-ただし、
+ただし、次の役割は変わりません。
 
 ```text id="8y2qf9"
 appRoot
-  → Site Application
+  → サイトアプリケーション
 
 configRoot
-  → Config
+  → 設定
 
 contentRoot
-  → Content / Vault
+  → コンテンツ / Vault
 ```
 
-という役割は変わりません。
+特に、`appRoot` を Vault 側へ変更しないでください。
 
-特に `appRoot` を Vault 側へ変更しないでください。
-
-相対 `content.directory` は、`configRoot` ではなく引き続き **`appRoot` を基準**に指定します。
+相対パスの `content.directory` は、`configRoot` ではなく、引き続き **`appRoot` を基準**に指定します。

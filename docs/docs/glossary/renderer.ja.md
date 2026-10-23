@@ -1,18 +1,18 @@
 ---
 date: 2026-10-14
-title: Renderer
+title: レンダラー（Renderer）
 sidebar:
   hidden: true
 ---
 
-# Renderer
-Rendererはコンテンツの対象をPlugin固有のHTMLに変換します。対象を処理しない場合は`null`を返し、次のRendererに処理を渡します。Canvas、Excalidraw、attachmentの描画が例です。
+# レンダラー（Renderer）
+レンダラーはコンテンツの対象をプラグイン固有のHTMLに変換します。対象を処理しない場合は `null` を返し、別のレンダラーに処理を渡します。Canvas、Excalidraw、添付ファイルの描画が例です。
 
-## Rendererの取り決め
-Rendererは`kind`、`path`、`raw`、`label`、`url`、`embed`を含む対象と、標準の`PluginContext`を受け取ります。対象を処理しない場合は`null`を返し、次のRendererが試せるようにします。
+## レンダラーの契約
+レンダラーは `kind`、`path`、`raw`、`label`、`url`、`embed` を持つ対象と、標準の `PluginContext` を受け取ります。対象を処理しない場合は `null` を返し、次のレンダラーが試されるようにします。
 
-## Rendererタイプ
-`PluginContentRenderer`型はRendererの取り決めを定義します：
+## レンダラーの型
+`PluginContentRenderer` 型がレンダラーの契約を定義します。
 
 ```ts
 type PluginContentRenderer = {
@@ -24,10 +24,10 @@ type PluginContentRenderer = {
 };
 ```
 
-各Rendererは`kind`文字列（例：「canvas」、「excalidraw」、「attachment」、「media」）を宣言します。フレームワークは`kind`でターゲットをRendererにマッチングし、Pluginは複数のRendererを異なるコンテンツ種別用に登録できます。
+各レンダラーは `kind` 文字列（例：`"canvas"`、`"excalidraw"`、`"attachment"`、`"media"`）を宣言します。フレームワークは `kind` で対象をレンダラーに照合し、プラグインは異なるコンテンツ種別用に複数のレンダラーを登録できます。
 
 ## 例
-組み込みのRendererにはcanvas（Excalidraw）、attachment、mediaがあります。Pluginで独自のRendererを定義し、Basesやサードパーティの図形式にも対応できます。
+組み込みのレンダラーには、canvas（Excalidraw）、添付ファイル、mediaがあります。Basesやサードパーティの図ライブラリなどの形式向けに、プラグインごとに独自のレンダラーを定義できます。
 
 ## 関連用語
 - [[plugin|Plugin]]

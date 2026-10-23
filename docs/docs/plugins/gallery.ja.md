@@ -5,7 +5,7 @@ title: Gallery
 # Gallery
 
 Markdown からカードギャラリーを生成するプラグインです。YAML を本文に持つ
-`gallery` フェンスコードブロックが、レスポンシブなカードグリッドとして描画
+`gallery` フェンス付きコードブロックが、レスポンシブなカードグリッドとして描画
 されます。テーマギャラリーやプロジェクト紹介、リンク集を HTML を書かずに
 作れます。
 
@@ -27,7 +27,7 @@ items:
 ```
 ````
 
-各要素が 1 枚のカードになります。`href` があるカードは `<a>`、ないカードは
+各項目が 1 枚のカードになります。`href` があるカードは `<a>`、ないカードは
 `<div>` として出力されます。`image` を省略するとテキストのみのカードに
 なります。グリッドはビルド時に生成されるため、クライアント側 JavaScript は
 不要です。
@@ -70,10 +70,10 @@ gallery({ columns: 4, aspect: "1/1" });
 | フィールド | 説明 |
 | ---------- | ---- |
 | `image` | 画像の URL |
-| `alt` | 代替テキスト。`title`、次に `""` へフォールバックする |
+| `alt` | 代替テキスト。`title`、次に `""` の順でフォールバックする |
 | `title` | カードの見出し |
 | `description` | 補足の説明文 |
-| `href` | リンク先。省略すると非インタラクティブなカードになる |
+| `href` | リンク先。省略すると操作できないカードになる |
 | `meta` | バージョンや日付などの小さなラベル |
 
 ## 出力
@@ -99,12 +99,10 @@ gallery({ columns: 4, aspect: "1/1" });
 
 | コード | 重大度 | 意味 |
 | ------ | ------ | ---- |
-| `gallery-invalid` | `error` | 本文が不正な YAML、マッピングでない、または `items` / `columns` / `aspect` が不正。ブロックはエラーボックスに置き換わる |
+| `gallery-invalid` | `error` | 本文が不正な YAML である、マッピングでない、または `items` / `columns` / `aspect` が不正。ブロックはエラーボックスに置き換わる |
 | `gallery-item-incomplete` | `warning` | `title` も `image` も持たない要素がある |
 
-生成される画像には常に `alt` が付与されるため、`quality:img-alt-missing` を
-通り抜けます。また `responsive-image`（`srcset`）や `lightbox`（ズーム）とも
-そのまま組み合わせられます。
+生成される画像には常に `alt` が付くため、`quality:img-alt-missing` の指摘を受けません。`responsive-image`（`srcset`）や `lightbox`（ズーム）ともそのまま組み合わせられます。
 
 ## スタイル
 
@@ -121,7 +119,7 @@ import "@riebeckite/plugin-gallery/style.css";
 
 - `gallery(options?)`：プラグインファクトリ
 - `galleryPlugin`：`gallery` のエイリアス
-- `parseGallery(source, options)`：ブロック本文をスペックへパースする
+- `parseGallery(source, options)`：ブロック本文を `GallerySpec` にパースする
 - `renderGallery(spec)` / `renderGalleryError(message)`：グリッドまたはエラーボックスを描画する
 - `remarkGallery(options?)`：remark トランスフォーム
 - `resolveGalleryOptions(options?)`：オプションの既定値を適用する
@@ -130,7 +128,7 @@ import "@riebeckite/plugin-gallery/style.css";
 
 ## 制約
 
-- 要素は静的なデータです。コンテンツマニフェストへの問い合わせや絞り込みには
+- 項目は静的なデータです。コンテンツマニフェストへの問い合わせや絞り込みには
   対応しません。その用途には `query` プラグインの table / cards 出力を使って
   ください。
 - コンテナクエリによる折り返しは既定の複数列レイアウトを対象にしています。

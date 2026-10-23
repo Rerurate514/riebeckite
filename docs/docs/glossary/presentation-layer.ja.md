@@ -1,22 +1,26 @@
 ---
 date: 2026-10-14
-title: Presentation Layer
+title: 表示層（Presentation Layer）
 sidebar:
   hidden: true
 ---
 
-# Presentation Layer
+# 表示層（Presentation Layer）
 
-Presentation LayerはThemeの担当範囲で、色、フォント、余白、レイアウト、記事のスタイルを指します。コンテンツの意味、route、manifest、Pluginの動作、クライアントスクリプトは含みません。
+表示層はテーマの責務で、色、フォント、余白、レイアウト、記事のスタイルを指します。コンテンツの意味、ルート、マニフェスト、プラグインの動作、クライアントスクリプトは含みません。
 
-## Themeができること
-- Tokenを上書きまたは追加する、スタイルシートの規則を定義する、Theme固有のdata属性を宣言する。Color Mode、Typography、レイアウトのプリセットを提供する。`userCss`で上書きする（カスケードで最後に読み込まれます）
+## テーマができること
+- トークンを上書きまたは追加する
+- スタイルシートの規則を定義する
+- テーマ固有のデータ属性を宣言する
+- カラーモード、タイポグラフィ、レイアウトのプリセットを提供する
+- `userCss` で上書きする（カスケードで最後に読み込まれます）
 
-## ThemeとColor Modeの相互作用
-Themeは`data-theme`属性とSemantic Tokenを通じてColor Modeと相互作用します。`colorMode`が`"system"`の場合、`data-theme`属性は省略され、`@media (prefers-color-scheme: dark)`クエリでOSの設定が検出されます。Themeは個々のコンポーネントに色をハードコードしないでください：代わりに、各Color Modeで適切に解決する意味的なトークン（例：`--rb-color-ink`）を使用してください。
+## テーマとカラーモードの相互作用
+テーマは `data-theme` 属性とセマンティックトークンを通じてカラーモードと相互作用します。`colorMode` が `"system"` のときは `data-theme` 属性が省略され、`@media (prefers-color-scheme: dark)` クエリでOSの設定を検出します。テーマは個々のコンポーネントに色をハードコードせず、各カラーモードで適切に解決されるセマンティックトークン（例：`--rb-color-ink`）を使ってください。
 
-## Themeができないこと
-- コンポーネントを置き換える、JSXへ注入する、routeを追加する、Pluginを追加または削除する。クライアントスクリプトを実行する、DOMを変換する、islandを登録する、ファイルシステムへアクセスする、ContentManagerへアクセスする
+## テーマができないこと
+コンポーネントの置き換え、JSXの注入、ルートの追加、プラグインの追加・削除、クライアントスクリプトの実行、DOMの変換、アイランドの登録、ファイルシステムへのアクセス、`ContentManager` へのアクセス。
 
 ## 関連用語
 

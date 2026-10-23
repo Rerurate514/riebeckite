@@ -9,7 +9,7 @@ Core owns incremental invalidation. A plugin does not compute which content is a
 A plugin takes part in two independent contracts:
 
 - **Content dependency** (`processedContentCache`) decides which source content Core processes again.
-- **Output dependency** (`outputDependencies` and `context.output.emit`) decides which emitted files Core writes again.
+- **Output dependency** (`contentOutputDependencies` and `context.output.emit`) decides which emitted files Core writes again.
 
 ```mermaid
 flowchart LR
@@ -79,7 +79,7 @@ Output dependencies are separate from content dependencies. Each type reacts to 
 Declare them in the following places.
 
 - `pageTypes[].outputDependencies` for a plugin page.
-- Root `outputDependencies`, or `resolveContentOutputDependencies({ entry, manifest })`, for a plugin that updates existing manifest entry HTML in `onManifestCreated`. The resolver may declare dependencies for each content output.
+- Root `contentOutputDependencies`, or `resolveContentOutputDependencies({ entry, manifest })`, for a plugin that updates existing manifest entry HTML in `onManifestCreated`. The resolver may declare dependencies for each content output.
 - `context.output.emit(..., { dependencies })` for a generated output. Without declared dependencies, a generated output is `unknown`.
 
 Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.

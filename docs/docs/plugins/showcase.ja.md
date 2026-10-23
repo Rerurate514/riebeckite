@@ -1,12 +1,12 @@
 ---
 date: 2026-10-08
-title: Plugin Showcase
+title: プラグインの動作例
 ---
-# Plugin Showcase
+# プラグインの動作例
 
-Plugin catalog は [Plugins](./README.ja.md) にあります。このページでは、Plugin が実際に何を生成するかを確認できます。各項目では Markdown のソースと、Riebeckite 上での実行例を並べています。
+プラグインの一覧は [プラグイン](./README.ja.md) にあります。このページでは、プラグインが実際に何を生成するかを確認できます。各項目では Markdown のソースと、Riebeckite 上での実行例を並べています。
 
-> 生成される `showcase` preset では、ここにあるような例をローカルで確認できます。
+> 生成される `showcase` プリセットでは、ここにあるような例をローカルで確認できます。
 
 ## Obsidian Markdown
 

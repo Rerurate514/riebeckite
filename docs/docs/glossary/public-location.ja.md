@@ -1,19 +1,19 @@
 ---
 date: 2026-10-14
-title: Public Location
+title: 公開先（Public Location）
 sidebar:
   hidden: true
 ---
 
-# Public Location
+# 公開先（Public Location）
 
-ノートをどこに公開するかを表し、内部のslugと正準のpermalinkに、任意のredirectとメタデータを組み合わせます。manifestがentryごとに公開する解決済みの結果です。
+ノートをどこに公開するかを表すもので、内部slugと正規のpermalinkに、任意のリダイレクトとメタデータを組み合わせます。マニフェストがエントリごとに公開する解決済みの結果です。
 
-## public locationの構造
+## 公開先の構造
 
-public locationはinternalなslugとcanonicalなpermalink、任意のredirectsとメタデータを組み合わせたものです。manifestがentryごとに公開する解決済みの結果です。`ContentPublicLocation`(`packages/core/src/types/content_manifest.ts`)で型付けされています。
+公開先は、内部slugと正規のpermalinkに、任意のリダイレクトとメタデータを組み合わせたものです。マニフェストがエントリごとに公開する解決済みの結果で、`ContentPublicLocation`（`packages/core/src/types/content_manifest.ts`）として型付けされています。
 
-標準的な構造:
+標準的な構造：
 
 ```ts
 {
@@ -24,13 +24,13 @@ public locationはinternalなslugとcanonicalなpermalink、任意のredirects�
 }
 ```
 
-`slug`フィールドはコンテンツのinternalなslugに一致します。`permalink`フィールドは正規の公開URLです。オプションの`redirects`配列は`ContentRedirect`エントリ(`packages/core/src/types/content_manifest.ts`)を含み、古いURLを正規のpermalinkに導きます。オプションの`metadata`フィールドはpluginやintegrationが追加のkey-value情報を添付することを許可します。
+`slug` フィールドはコンテンツの内部slugと一致します。`permalink` フィールドは正規の公開URLです。任意の `redirects` 配列には、古いURLを正規のpermalinkへ導く `ContentRedirect` エントリ（`packages/core/src/types/content_manifest.ts`）が入ります。任意の `metadata` フィールドでは、プラグインやインテグレーションが追加のキーと値の情報を添付できます。
 
-## redirectとメタデータ
+## リダイレクトとメタデータ
 
-pluginは正規の位置に別名URLやredirectを添えられます。permalinkは正規のままで、redirectが古いURLをそこへ導きます。これは`buildManifest`(`packages/core/src/content/content_manager.ts`)で`publicRedirects`と`redirects`マップが埋められている際に管理されます。
+プラグインは、正規の公開先の隣に別名URLや[リダイレクト](./redirect.md)を添えられます。permalinkは正規のままで、リダイレクトが古いURLをそこへ導きます。これはマニフェストの `publicRedirects` と `redirects` のマップで管理され、`packages/core/src/content/content_manager.ts` の `buildManifest` で埋められます。
 
-redirectsとメタデータを持つmanifest entryの例:
+リダイレクトとメタデータを持つマニフェストエントリの例：
 
 ```ts
 {

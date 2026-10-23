@@ -1,51 +1,53 @@
 ---
 date: 2026-10-14
-title: Manifest
+title: マニフェスト（Manifest）
 sidebar:
   hidden: true
 ---
 
-# Manifest
+# マニフェスト（Manifest）
 
-すべてのコンテンツを記録するビルド時の一覧です。entry、公開ビュー、検索用の対応表、content graph、diagnosticを持ちます。ページ生成、実行時のquery、incremental build、inspectionはいずれもmanifestを読みます。
+ビルド時にすべてのコンテンツを記録するものです。エントリ、公開ビュー、検索用マップ、コンテンツグラフ、診断を持ちます。ページ生成、実行時のクエリ、増分ビルド、インスペクションはいずれもマニフェストから読みます。
 
-## manifestの検索用ビュー
+## マニフェストが持つもの
 
-`ContentManifest`は、異なるアクセスパターンに対応する専門的なビューをいくつか提供します。これらのビューはビルド時に生成され、ファイルシステムへのアクセスを必要とせず、manifestからentryデータをprojectionしたものです。
+| フィールド | 内容 |
+| --- | --- |
+| `entries` | 処理済みのすべての[コンテンツエントリ](./content-entry.md) |
+| `publicEntries` | 公開してよいエントリ |
+| `discoverableEntries` | 一覧やフィードに載せてよいエントリ |
+| `bySlug`, `byPermalink`, `byAlias` | 検索用マップ |
+| `graph` | [コンテンツグラフ](./content-graph.md) |
+| `diagnostics` | 収集した警告とエラー |
 
-| ビュー | 内容 | 典型的な使用目的 |
+## マニフェストの検索用マップ
+
+`ContentManifest` は、アクセスパターンに応じた専用のビューをいくつか提供します。
+
+| ビュー | 内容 | 典型的な用途 |
 | --- | --- | --- |
-| `bySlug` | `Map<string, ContentManifestEntry>` | slugでentryを検索する。 |
-| `byPermalink` | `Map<string, ContentManifestEntry>` | permlink URLでentryを検索する。 |
-| `byAlias` | `Map<string, ContentManifestEntry[]>` | エイリアス/redirectパスによってentryを検索する。 |
-| `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | public + unlisted entryのみを検索（draft/scheduledを除く）。 |
-| `byTag` | `Map<string, ContentManifestEntry[]>` | タグによってentryをグループ化してtaxonomyページを作成する。 |
-| `byAsset` | `Map<string, ContentManifestEntry[]>` | assetによってentryをグループ化してassetマニフェストを生成する。 |
-| `publicRedirects` | `Map<string, ContentRedirect & { slug: string }>` | 公開redirectと owning entryのslug。 |
+| `bySlug` | `Map<string, ContentManifestEntry>` | slugでエントリを引く。 |
+| `byPermalink` | `Map<string, ContentManifestEntry>` | permalink URLでエントリを引く。 |
+| `byAlias` | `Map<string, ContentManifestEntry[]>` | エイリアス/リダイレクトパスでエントリを探す。 |
+| `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | ルーティング対象のエントリ（public + unlisted、draft/scheduledを除く）だけを引く。 |
+| `byTag` | `Map<string, ContentManifestEntry[]>` | タクソノミーページ用にタグでエントリをグループ化する。 |
+| `byAsset` | `Map<string, ContentManifestEntry[]>` | アセットマニフェスト生成用にアセットでエントリをグループ化する。 |
+| `publicRedirects` | `Map<string, ContentRedirect & { slug: string }>` | 所有エントリのslug付きの公開リダイレクト。 |
 
-エントリデータを検索する例：
+これらのビューはビルド時に生成され、**純粋な射影**です。ファイルシステムにアクセスせず、マニフェスト上のエントリデータを読みます。たとえばpermalinkでエントリを引くには、次のようにします。
 
 ```ts
 const entry = manifest.byPermalink.get("/blog/my-post/");
 ```
 
-## graphとdiagnostics
+## グラフと診断
 
-`graph`フィールドは`ContentGraph`インスタンスを保持し、`graph.outgoing(slug)`、`graph.incoming(slug)`、`graph.neighbors(slug)`などの問い合わせを可能にします。backlink表示、関連リンクセクション、内部リンク検証に使用されます。
+`graph` フィールドは `ContentGraph` インスタンスを保持し、`graph.outgoing(slug)`、`graph.incoming(slug)`、`graph.neighbors(slug)` などのクエリを可能にします。バックリンク表示、関連リンクのセクション、内部リンクの検証で使われます。
 
-`diagnostics`フィールドは`Diagnostic`オブジェクトの配列で、コンテンツ処理中に収集されます。各diagnosticには`level`（`info`、`warn`、`error`）、`source`、`message`、`range`（ソース位置）が含まれます。ページ生成、実行時のquery、inspectionはすべてmanifestから読み込みのみを行い、ファイルシステムに触れる必要はありません。
+`diagnostics` フィールドは、コンテンツ処理中に収集された `Diagnostic` オブジェクトの配列です。各診断には `level`（`info`、`warn`、`error`）、`source`、`message`、`range`（ソース位置）が含まれます。下流の消費者（ページ生成、実行時のクエリ、インスペクション）はマニフェストだけを読み、ファイルシステムに触れる必要はありません。
 
-## manifestが持つもの
+---
 
-| field | 内容 |
-| --- | --- |
-| `entries` | 処理済みのすべてのContent Entry |
-| `publicEntries` | 公開して安全なentry |
-| `discoverableEntries` | 一覧やfeedに載せてよいentry |
-| `bySlug`, `byPermalink`, `byAlias` | 検索用の対応表 |
-| `graph` | content graph |
-| `diagnostics` | 集めた警告とエラー |
+## 段階を分ける境界
 
-段階を分ける境界
-
-コンテンツ処理がmanifestを作り、ページ生成、実行時のquery、incremental build、inspectionがそれを読みます。後段がファイルシステムに触れる必要はありません。
+コンテンツ処理がマニフェストを作り、ページ生成、実行時のクエリ、[増分ビルド](./incremental-build.md)、インスペクションがそれを読みます。下流がファイルシステムに触れる必要はありません。

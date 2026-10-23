@@ -1,32 +1,32 @@
 ---
 date: 2026-10-14
-title: Page Type
+title: ページ種別（Page Type）
 sidebar:
   hidden: true
 ---
 
-# Page Type
+# ページ種別（Page Type）
 
-Pluginが独自の公開パスと本文を添えて提供するページの種類で、通常のMarkdownではないページに使います。Integrationがrouteを解決し、Applicationが最終的なHTMLを組み立てます。
+プラグインが独自の公開パスと本文を添えて提供するページの種類で、通常のMarkdownではないページに使います。インテグレーションがルートを解決し、アプリケーションが最終的なHTMLを組み立てます。
 
-## page typeが提供するもの
+## ページ種別が提供するもの
 
 - ページの公開パス。
-- Integrationが描画できる本文。
-- incremental build用のoutput dependency。
+- インテグレーションが描画できる本文。
+- [増分ビルド](./incremental-build.md)用の出力依存関係。
 
-## page typeの境界
+## ページ種別の境界
 
-page typeはHonoXのrouteやサイトの枠組みを所有しません。ページを宣言し、配置するのはIntegrationとApplicationです。この境界により、plugin page typeはframework-independentであり、Integrationによって構成されます。
+ページ種別はHonoXのルートやサイトシェルを所有しません。ページを宣言し、配置するのはインテグレーションとアプリケーションです。この境界により、プラグインのページ種別はフレームワークに依存せず、インテグレーションが組み合わせられます。
 
-page typeライフサイクル：
+ページ種別のライフサイクル：
 
-1. **Declaration**: pluginが`id`、`paths`、`resolve`、およびオプションの`priority`、`directoryIndex`、`outputDependencies`を持ってpage typeを宣言
-2. **Resolution**: Integrationが`pluginRuntime.resolvePage()`(`packages/core/src/plugin/plugin_runtime.ts`)を呼び出し、与えられたpathnameに一致するpage typeを見つける
-3. **Rendering**: Applicationはplugin pageのbodyとメタデータを使用してdocument frameを通じて描画
-4. **Output dependencies**: `outputDependencies`が指定されている場合、incremental buildサポートのために追跡される
+1. **宣言**：プラグインが `id`、`paths`、`resolve`、および任意の `priority`、`directoryIndex`、`outputDependencies` を指定してページ種別を宣言する
+2. **解決**：インテグレーションが `pluginRuntime.resolvePage()`（`packages/core/src/plugin/plugin_runtime.ts`）を呼び、指定されたpathnameに一致するページ種別を探す
+3. **描画**：アプリケーションが `PluginPage` のbodyとメタデータを使い、ドキュメントフレームを通じてプラグインページを描画する
+4. **出力依存関係**：`outputDependencies` が指定されていれば、増分ビルドのために追跡される
 
-output dependencies付きpage typeの例:
+出力依存関係付きのページ種別の例：
 
 ```ts
 pageTypes: [
@@ -39,13 +39,13 @@ pageTypes: [
       return {
         type: "tag-archive",
         pathname: `/tags/${tag}/`,
-        body: `<p>Tagged posts: ${tag}</p>`,
+        body: `<p>Posts tagged: ${tag}</p>`,
       };
     },
   },
 ],
 ```
 
-output dependenciesのtracking例:
+出力依存関係の追跡例：
 
-`outputDependencies`はSSGビルド中に収集され、マニフェストに保存されます。dependencyが変更された場合（例：tag設定の変更）、次のビルドでaffected pagesが再生成されます。
+`outputDependencies` はSSGビルド中に収集され、マニフェストに保存されます。依存関係が変わると（例：タグ設定の変更）、次のビルドで影響を受けるページが再生成されます。

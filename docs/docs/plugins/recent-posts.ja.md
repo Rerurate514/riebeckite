@@ -10,7 +10,7 @@ title: Recent Posts
 
 ## できること
 
-`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` は、ホームページ route で一覧を本文の後に明示的に配置します。
+`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` は、ホームページのルートで一覧を本文の後に明示的に配置します。
 
 ## 設定と配置
 
@@ -31,12 +31,12 @@ const posts = getRecentPosts({ manifest: await content.getManifest() });
 return <RecentPosts posts={posts} />;
 ```
 
-生成されたホームページの一覧を無効にするには、ホームページ route から `RecentPosts` の import と要素を削除します。位置を変える場合は、同じ要素を別の route または layout へ移動します。
+生成されたホームページの一覧を無効にするには、ホームページのルートから `RecentPosts` の import と要素を削除します。位置を変える場合は、同じ要素を別のルートまたはレイアウトへ移動します。
 
-| オプション | 既定値 | 内容 |
-| --- | --- | --- |
-| `manifest` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
-| `limit` | `5` | 返す記事数の上限 |
+| オプション | 型 | 既定値 | 内容 |
+| --- | --- | --- | --- |
+| `manifest` | `Pick<ContentManifest, "discoverableEntries">` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
+| `limit` | `number` | `5` | 返す記事数の上限 |
 
 ## 公開 API
 

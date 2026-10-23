@@ -1,36 +1,42 @@
 ---
 date: 2026-10-14
-title: Check
+title: チェック（Check）
 sidebar:
   hidden: true
 ---
 
-# Check
+# チェック（Check）
 
-Plugin依存の循環やpermalinkの重複など、Buildを壊す問題がないか、サイトの設定とコンテンツを検証するCLIコマンドです。
+ビルドの前に、設定、プラグイン、ケイパビリティが正しく構成されているかを検証するCLIコマンドです。
 
 ## 検証する内容
 
-Pluginの依存関係の循環、提供capabilityの重複、permalinkの衝突、公開設定の誤りなどを調べます。Buildの前に実行し、失敗につながる問題を早く見つけます。
+設定の形式が有効であること。
+プラグインの設定が有効であること。
+必要なケイパビリティが解決されていること。
 
-## `check`コマンドの詳細
+## 目的
 
-`riebeckite check`は以下を検証します。
+プロジェクトの基本的な妥当性を確かめるもので、出力がビルド済みか、デプロイ済みかは確かめません。設定が有効であることを保証します。
 
-- **設定形式** ：設定ファイルの構造が妥当か（型、必須フィールド）
-- **Plugin設定** ：各pluginの`validateOptions`が通過したか
-- **必要なcapability** ：すべてのpluginの`provides`と`requires`が循環なく解決されているか
+## checkコマンドの詳細
 
-コマンドは検証に失敗すると非ゼロの終了コードで終了しますが、buildを実行したり出力を出したりしません。
+`riebeckite check`は次を検証します。
+
+- **設定の形式** — 設定ファイルの構造が有効か（型、必須フィールド）
+- **プラグインの設定** — 各プラグインの`validateOptions`が通過しているか
+- **必要なケイパビリティ** — すべてのプラグインの`provides`と`requires`が循環依存なしに解決されるか
+
+いずれかの検証に失敗すると、コマンドは非ゼロの終了コードで終了しますが、ビルドは実行せず、出力も書き出しません。
 
 ### 例
 
 ```sh
-# 設定の検証前にビルドを実行
+# Check validates configuration before building
 npm exec riebeckite check
 
-# 結果：妥当であれ「✓ Configuration」と「✓ Content directory」が表示、
-# 設定に問題があれエラーメッセージが表示されて検出されます
+# Output: "✓ Configuration" and "✓ Content directory" if valid,
+# or an error message indicating what is misconfigured
 ```
 ## 関連用語
 

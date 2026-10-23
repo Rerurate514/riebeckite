@@ -1,14 +1,14 @@
 ---
 date: 2026-10-08
-title: Configuration
+title: 設定
 sidebar:
-  label: Configuration
+  label: 設定
 ---
-# Configuration
+# 設定
 
-Riebeckite の設定は `riebeckite.config.ts` に記述します。
+Riebeckite の設定は `riebeckite.config.ts` に記述します。`defineConfig()` で設定を宣言し、コンテンツやプラグインの処理が始まる前に、インテグレーションが設定を解決します。
 
-基本的な Site では、`defineConfig()` を使って次のように設定します。
+基本的なサイトでは、次のように設定します。
 
 ```ts id="vps2rj"
 import { defineConfig } from "@riebeckite/core";
@@ -36,87 +36,73 @@ export default defineConfig({
 });
 ```
 
-必須なのは `site` です。
+必須は `site` だけです。`content`、`theme`、`plugins`、`cache`、`spa` は必要に応じて設定します。
 
-そのほかは必要に応じて設定します。
-
-| Field | 用途 |
+| フィールド | 用途 |
 | --- | --- |
-| `site` | Site の基本情報 |
+| `site` | サイトの基本情報 |
 | `content` | コンテンツの場所と公開条件 |
-| `theme` | Theme の設定 |
-| `plugins` | 使用する Plugin |
-| `cache` | build cache の設定 |
-| `spa` | SPA navigation の設定 |
+| `theme` | テーマの設定 |
+| `plugins` | 使用するプラグイン |
+| `cache` | ビルドキャッシュの設定 |
+| `spa` | SPA ナビゲーションの設定 |
 
-`spa` は client-side page transition を有効にします。`true`、`false`、または
-options object を指定できます。動作とオプションは
-[SPAナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
+`spa` はクライアント側のページ遷移を有効にします。`true`、`false`、またはオプションオブジェクトを指定できます。動作とオプションは [SPA ナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
 
-Config は Content や Plugin の処理が始まる前に Integration によって解決されます。
-
-
-## このセクションの構成
+## 関連ページから詳細を調べる
 
 - [ナビゲーションの設定](./configuration/navigation.ja.md)
-- [Content の設定と ContentSource](./configuration/content.ja.md)
-- [3つの Root と外部 Vault](./configuration/roots.ja.md)
-- [Attachment・Media と公開](./configuration/assets.ja.md)
-- [Build cache](./configuration/cache.ja.md)
-- [Plugin の設定](./configuration/plugins.ja.md)
-- [Theme の設定](./configuration/theme.ja.md)
-- [外部 Vault のトラブルシュート](./configuration/troubleshooting.ja.md)
+- [コンテンツの選択と ContentSource](./configuration/content.ja.md)
+- [ファイルシステムのルートと外部 Vault](./configuration/roots.ja.md)
+- [添付ファイル・メディアと公開](./configuration/assets.ja.md)
+- [ビルドキャッシュ](./configuration/cache.ja.md)
+- [プラグインの設定](./configuration/plugins.ja.md)
+- [テーマの設定](./configuration/theme.ja.md)
+- [外部 Vault のトラブルシューティング](./configuration/troubleshooting.ja.md)
 
-## Config の検証
+## 設定を検証する
 
-Configuration に問題がある場合は `ConfigValidationError` として報告されます。
+設定に問題がある場合は `ConfigValidationError` として報告されます。不正な設定を無視してそのまま起動するのではなく、早い段階で失敗させてください。
 
-不正な Configuration を無視してそのまま起動するのではなく、早い段階で失敗させます。
-
-Config を変更した後は、
+設定を変更した後は、次を実行してください。
 
 ```sh id="khhx15"
 npm exec riebeckite check
 ```
 
-を実行してください。
+## サイトとコンテンツの場所を分けて考える
 
-
-## まとめ
-
-Configuration では、Site と Content の場所を混同しないことが重要です。
+設定では、サイトとコンテンツの場所を混同しないことが重要です。
 
 ```mermaid id="zzmq0d"
 flowchart LR
-    App["appRoot<br/>Siteはどこ？"]
-    Config["configRoot<br/>Configはどこ？"]
-    Content["contentRoot<br/>Contentはどこ？"]
+    App["appRoot<br/>サイトはどこ？"]
+    Config["configRoot<br/>設定はどこ？"]
+    Content["contentRoot<br/>コンテンツはどこ？"]
 
-    Config --> Resolve["Configuration Resolution"]
+    Config --> Resolve["設定の解決"]
     App --> Resolve
     Resolve --> Content
 
-    Content --> Manager["Content System"]
-    Manager --> Build["Build"]
+    Content --> Manager["コンテンツシステム"]
+    Manager --> Build["ビルド"]
 ```
 
-基本的には、
+基本は次の3つです。
 
 ```text id="htn7yn"
 appRoot
-  = Site Application の場所
+  = サイトアプリケーションの場所
 
 configRoot
-  = Config の場所
+  = riebeckite.config.* の場所
 
 contentRoot
   = Markdown / Vault の場所
 ```
 
-と覚えておけば十分です。
+`content.directory` に相対パスを指定した場合、基準になるのは `appRoot` です。`configRoot` や `process.cwd()` は基準になりません。
 
-通常の Site では3つの違いを意識する必要はほとんどありません。
+通常のサイトでは、3つの違いを意識する必要はほとんどありません。外部の Vault を使う場合、コンテンツを別のリポジトリに置く場合、特殊なモノレポ構成にする場合だけ、この境界を意識してください。
 
-外部 Vault、別 repository の Content、特殊な monorepo 構成を使う場合だけ、この境界を意識してください。
-
-Config の変更後は `riebeckite check`、実際にどう解決されたか確認したい場合は `riebeckite inspect config` を使用してください。
+設定を変更した後は `riebeckite check` を実行してください。実際にどう解決されたかを確認したい場合は `riebeckite inspect config` を使います。

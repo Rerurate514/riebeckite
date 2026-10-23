@@ -4,11 +4,11 @@ title: Markmap
 ---
 # Markmap
 
-` ```markmap ` コードブロックを、Markdown の見出しから組み立てるマインドマップとして表示するプラグインです。マインドマップはブラウザ側で `markmap-lib` と `markmap-view` により描画し、これらのライブラリは図があるときだけ CDN から読み込みます。
+` ```markmap ` コードブロックを、Markdown の見出しから組み立てるマインドマップとして表示するプラグインです。マインドマップはブラウザ側で `markmap-lib` と `markmap-view` により描画します。これらのライブラリは図があるときだけ CDN から読み込みます。
 
 [English](./markmap.md)
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -30,7 +30,7 @@ export default defineConfig({
 
 ## 記法
 
-コードブロックの本文は通常の Markdown です。見出しがノードになり、見出しの階層が木構造になります。見出し以外の内容は無視します。
+コードブロックの本文は通常の Markdown です。見出しがノードになり、見出しの階層が木構造になります。見出し以外の内容は無視されます。
 
 ````markdown
 ```markmap
@@ -47,7 +47,7 @@ export default defineConfig({
 
 キャプションにはコードブロックの `title` を使います。
 
-## どのように描画されるか
+## 描画の仕組み
 
 ` ```markmap ` のコードブロックは `figure.rb-markmap` に置き換わります。
 
@@ -71,15 +71,15 @@ Markdown の見出しを 1 つも含まないコードブロックは置き換�
 | `className` | `"rb-markmap"` | figure に付ける基準クラス |
 | `language` | `"markmap"` | 対象にするコードブロックの言語 |
 | `fallback` | `true` | 元の Markdown を表示する `details` を描画する |
-| `colorFreezeLevel` |：| ノードの色を固定する深さ |
+| `colorFreezeLevel` | — | ノードの色を固定する深さ |
 
 ## クライアント側の描画
 
-クライアントの初期化コードは静的なので、プラグインのオプションは受け取りません。`height` と `colorFreezeLevel` は figure の `data-markmap-*` 属性に埋め込まれ、`initMarkmap` がそこから読み取ります。
+クライアントの初期化コードは固定で、プラグインのオプションを受け取りません。`height` と `colorFreezeLevel` は figure の `data-markmap-*` 属性に埋め込まれ、`initMarkmap` がそこから読み取ります。
 
-`markmap-lib` と `markmap-view` は計算された import 指定子で jsDelivr から取得するため、ホストのクライアントバンドルには含まれません。`markmap-view` は依存として `d3` を読み込みます。ライブラリを遅延して読み込むので、JavaScript を無効にしていてもページは表示され、元の Markdown はフォールバックの `details` から読めます。
+`markmap-lib` と `markmap-view` は動的に組み立てた import 指定子で jsDelivr から取得するため、ホスト側のクライアントバンドルには含まれません。`markmap-view` は依存として `d3` を読み込みます。遅延読み込みなので、JavaScript を無効にしていてもページは表示され、元の Markdown はフォールバックの `details` から読めます。
 
-## 入力記法の継ぎ目（notation seam）
+## 入力記法の拡張点
 
 コードブロックの本文は、`src/parse.ts` にある単一の純粋関数でマインドマップの木に変換します。
 
@@ -87,9 +87,9 @@ Markdown の見出しを 1 つも含まないコードブロックは置き換�
 parseMarkmapSource(source: string): MarkmapNode | null
 ```
 
-`MarkmapNode` は記法に依存しない木（`{ content, children, payload? }`）です。現在は標準の Markdown 見出し記法だけを実装しています。将来別の入力記法（たとえば "ExcaliMindMap" 風のアウトライン）を追加するときは、同じ `MarkmapNode` を返すパーサーを実装するだけです。figure の生成と描画の経路は記法を解析しないため、変更する必要はありません。`parseMarkmapSource` はそのためにパッケージのエントリーポイントから公開しています。
+`MarkmapNode` は記法に依存しない木（`{ content, children, payload? }`）です。現在は標準の Markdown 見出し記法だけを実装しています。将来別の入力記法（たとえば "ExcaliMindMap" 風のアウトライン）を追加するときは、同じ `MarkmapNode` を返すパーサーを実装するだけです。figure の生成と描画の処理は記法を解析しないため、変更する必要はありません。`parseMarkmapSource` はそのためにパッケージのエントリーポイントから公開しています。
 
-## 出力のフック
+## 出力フック
 
 - `figure[data-markmap]`: 状態（`pending` / `rendered` / `error`）
 - `figure[data-markmap-source]`: 元の Markdown

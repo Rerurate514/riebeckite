@@ -1,29 +1,31 @@
 ---
 date: 2026-10-14
-title: Deterministic Build
+title: 決定論的ビルド（Deterministic Build）
 sidebar:
   hidden: true
 ---
 
-# Deterministic Build
+# 決定論的ビルド（Deterministic Build）
 
-同じ入力に対して同じ出力を生成するBuildです。fingerprint、pipelineのバージョン管理、設定のスナップショットが一貫していることで保証されます。
+同じ入力から同じ出力を生成するビルドです。一貫したフィンガープリント、パイプラインのバージョン管理、設定のスナップショットによって保証されます。
 
 ## 決定性の確保
 
-コンテンツのfingerprint（source、frontmatter、pipeline、PluginのcacheVersion）が一貫します。pipelineのfingerprintにはPluginの設定とcontent filterの設定が含まれます。設定のスナップショットはBuild Stateと外部依存に記録されます。
+コンテンツのフィンガープリント（ソース、frontmatter、パイプライン、プラグインのcacheVersion）が一貫していること。
+パイプラインのフィンガープリントにプラグインの設定とコンテンツフィルターの設定が含まれること。
+設定のスナップショットがビルド状態と外部依存関係に記録されること。
 
 ## フォールバック
 
-決定性を確認できない場合（安全でないPlugin、グローバルな依存など）はFull Buildの経路が選ばれます。cacheやstateのentryが欠落または非互換の場合も同じです。
+決定性を確認できない場合（安全でないプラグイン、グローバルな依存関係など）は、フルビルドの経路に入ります。キャッシュや状態のエントリが欠落または非互換の場合も、フルビルドの経路に入ります。
 
 ## キャッシュと状態
 
-決定的なビルドでは、persistent content cacheとincremental build stateが一貫していることが重要です。キャッシュヒットが継続する限り同じ出力が生成され、stateのfingerprintが一致しない場合はfull build pathが取られます。
+決定的なビルドでは、永続コンテンツキャッシュと増分ビルド状態が一貫していることが重要です。キャッシュにヒットし続ける限り同じ出力が生成され、状態のフィンガープリントが一致しない場合はフルビルドの経路に入ります。
 
-### fingerpringpの再計算
+### フィンガープリントの再計算
 
-pipeline fingerprintはpluginの設定とcontent filterの設定を含みます。設定が変わると全体のfingerprintが変わるため、キャッシュがbypassされ、再ビルドがtriggerされます。
+パイプラインのフィンガープリントにはプラグインの設定とコンテンツフィルターの設定が含まれます。設定が変わるとフィンガープリント全体が変わるため、キャッシュがバイパスされ、再ビルドが引き起こされます。
 
 ### 例
 

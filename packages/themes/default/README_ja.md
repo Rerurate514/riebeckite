@@ -62,7 +62,7 @@ export default defineConfig({
 
 - [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 Riebeckite の標準 Theme です。基本的な記事閲覧とサイト UI の基準となる見た目を提供します。
 

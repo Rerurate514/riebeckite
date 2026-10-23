@@ -1,14 +1,14 @@
 ---
 date: 2026-10-14
-title: Asset
+title: アセット（Asset）
 sidebar:
   hidden: true
 ---
 
-# Asset
-Pluginのassetはstylesheetなどの静的ファイルです。`assets`配列で宣言し、Integrationのstylesheetパイプラインを通してブラウザに届きます。`apps/web`へ直接コピーされることはありません。
+# アセット（Asset）
+プラグインのアセットは、`assets`配列で宣言するスタイルシートなどの静的リソースです。インテグレーションのスタイルシートパイプラインを通じてブラウザに届き、`apps/web`へ直接コピーされることはありません。
 
-## アセット宣言
+## アセットの宣言
 ```ts
 assets: [{
   pluginName: "example",
@@ -18,10 +18,10 @@ assets: [{
 ```
 
 ## パイプライン
-Pluginが持つCSSは集められてブラウザに届きます。ブラウザから`/node_modules`を直接参照しないでください。Integrationはmodule specifierを解決し、ブラウザに届けます。
+プラグインのCSSは収集され、インテグレーションを通じてブラウザに届きます。ブラウザから`/node_modules`を直接参照しないでください。インテグレーションがmodule specifierを解決し、ブラウザへ届けます。
 
 ## アセットの種類
-`PluginAssetKind`は`"style"`または`"script"`です。styleアセットはCSSファイル；scriptアセットはJavaScriptファイルです。どちらも`assets`配列で宣言され、Integrationのパイプラインを通してブラウザに届きます。
+`PluginAssetKind`は`"style"`または`"script"`です。styleアセットはCSSファイル、scriptアセットはJavaScriptファイルです。どちらも`assets`配列で宣言し、インテグレーションのパイプラインを通じてブラウザに届きます。
 
 ## 関連用語
 - [[plugin|Plugin]]

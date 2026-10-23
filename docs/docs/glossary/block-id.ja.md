@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Block ID
+title: ブロックID（Block ID）
 sidebar:
   hidden: true
 ---
 
-# Block ID
+# ブロックID（Block ID）
 
-段落やblockに付ける短い識別子で、見出しなしでそのblockを直接リンク・埋め込みできるようにします。
+段落やブロックに付ける短い識別子で、見出しなしでそのブロックを直接リンクしたり埋め込んだりできるようにします。
 
 ## 記法
 
@@ -19,12 +19,12 @@ sidebar:
 
 ## 用途
 
-block idを使うと、embedやWikiLinkがノート全体やセクションではなく、1つのblockを対象にできます。
+ブロックIDを使うと、埋め込みやWikiLinkがノート全体やセクションではなく、1つのブロックを対象にできます。
 
-## block IDの解決
+## ブロックIDの解決
 
-`^intro`のようなblock IDは、embedとwikilinkの処理中にcontent indexによって解決されます。IDはソースノート内のアンカーとマッチングされ、`![[note#^intro]]`（embed）や`[[note#^intro]]`（wikilink）のパターンに従って解決されます。
+`^intro`のようなブロックIDは、埋め込みとWikiLinkの処理中にコンテンツインデックスが解決します。IDはソースノート内のブロックのアンカーと照合され、解決されたパスは埋め込みなら`![[note#^intro]]`、WikiLinkなら`[[note#^intro]]`の形に従います。
 
-## block IDとcontent dependency
+## ブロックIDとコンテンツ依存関係
 
-block IDがembedで使用された場合`![[note#^intro]]`、埋め込みページはソースノートのcontent dependencyとなります。ソースノートのblockが編集されると、埋め込みページは無効化され、次回のビルドで再生成されます。
+ブロックIDを埋め込み（`![[note#^intro]]`）で使うと、埋め込む側のページはソースノートのコンテンツ依存関係になります。ソースノートのブロックを編集すると埋め込みページが無効化される点は、ノート単位の埋め込みの追跡と同じです。

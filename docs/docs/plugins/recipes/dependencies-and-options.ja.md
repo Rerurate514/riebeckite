@@ -62,7 +62,7 @@ function validateCatalogOptions(
 optional: ["content.folder-pages"]
 ```
 
-`validateOptions` は例外を投げずに issue を返します。Riebeckite は設定パス付きで報告するため、利用者はプラグインのソースを読まなくても値を直せます。
+`validateOptions` は例外を投げずに問題点を返します。Riebeckite は設定ファイル内のパスを添えて報告するため、利用者はプラグインのソースを読まなくても値を直せます。
 
 1 つのケイパビリティにつき、有効な提供側は 1 つだけです。同じケイパビリティを複数のプラグインが提供すると、解決に失敗します。
 

@@ -1,41 +1,41 @@
 ---
 date: 2026-10-14
-title: Content Manager
+title: ContentManager（コンテンツマネージャー）
 sidebar:
   hidden: true
 ---
 
-# Content Manager
+# ContentManager（コンテンツマネージャー）
 
-走査済みのentryを完成したmanifestに変えるコンポーネントです。公開位置を解決し、MarkdownとPluginのパイプラインを実行してから、content graphと検索用のindexを作ります。
+走査済みのエントリを完成したマニフェストに変えるコンポーネントです。公開先を解決し、Markdownとプラグインのパイプラインを実行し、コンテンツグラフとクエリ用のインデックスを構築します。
 
 ## 責務
 
-- 各entryの公開位置を解決します。
-- 各entryにMarkdownとPluginのパイプラインを実行します。
-- content graphとcontent indexを作ります。
-- manifestを組み立て、diagnosticを集めます。
+- 各エントリの公開先を解決する。
+- 各エントリにMarkdownとプラグインのパイプラインを実行する。
+- コンテンツグラフとコンテンツインデックスを構築する。
+- マニフェストを組み立て、診断を集める。
 
 ## 処理の順序
 
-公開位置の解決を先に行うため、後続のhookとページは安定したpermalinkを前提にできます。その後で処理、graphの順に進み、最後にmanifestを確定します。
+公開先の解決を最初に行うため、後続のフックとページは安定したパーマリンクを前提にできます。その後で処理、グラフの順に進み、最後にマニフェストを確定します。
 
 ## 行わないこと
 
-Content Managerはファイルを読みません。読み取りはContent Sourceの役割です。
+ContentManagerはファイルを読みません。それはContentSourceの役割です。
 
 ## ContentManagerの型
 
-`ContentManager`クラス(`packages/core/src/content/content_manager.ts`)は核心的なオーケストレータです。主なメソッドは以下の通りです：
+`ContentManager`クラス（`packages/core/src/content/content_manager.ts`）は中核となるオーケストレーターです。主なメソッドは次のとおりです。
 
-- **`getManifest()`** ：全ての場所解決、plugin pipelineの実行、content graphの構築を終えた`ContentManifest`を構築して返します
-- **`getContentLocations()`** ：各slugを解決済みの公開位置（slug, permalink, redirects, メタデータ）へマップする`ReadonlyMap<string, ContentPublicLocation>`を返します
-- **`getContentGraph()`** ：参照リンクのクエリ用の`ContentGraph`を返します
-- **`getBacklinks(targetSlug)`** ：与えられたentryへのbacklinkを返します
-- **`inspect()`** ：entries、content index、diagnosticsを持つ`ContentInspection`を返します
-- **`getPagePaths()`および`getPageRoutes()`** ：pluginページの宣言されたパスとルートを返します
+- **`getManifest()`** — すべての公開先を解決し、プラグインのパイプラインを実行し、コンテンツグラフを構築して、完全な`ContentManifest`を組み立てて返す
+- **`getContentLocations()`** — 各slugを解決済みの公開先（slug、permalink、リダイレクト、メタデータ）へ対応付ける`ReadonlyMap<string, ContentPublicLocation>`を返す
+- **`getContentGraph()`** — 被リンク・発リンク・隣接リンクを問い合わせる`ContentGraph`を返す
+- **`getBacklinks(targetSlug)`** — 指定したエントリへのバックリンクを返す
+- **`inspect()`** — エントリ、コンテンツインデックス、診断を持つ`ContentInspection`を返す
+- **`getPagePaths()`**と**`getPageRoutes()`** — 宣言されたプラグインページのパスとルートを返す
 
-`getManifest()`で見えるmanifest entryの断片例:
+`getManifest()`で見えるマニフェストエントリの抜粋例：
 
 ```ts
 {
@@ -52,12 +52,12 @@ Content Managerはファイルを読みません。読み取りはContent Source
 }
 ```
 
-Content Managerは以下のコンポーネントを内部で調整します：
+ContentManagerは内部で次のコンポーネントを調整します。
 
-- **`ContentIndexBuilder`** (`packages/core/src/content/content_index_builder.ts`) ：slugバリアントの解決と曖昧さの特定
-- **`ContentLocationResolver`** ：公開位置の解決、plugin調整パスの対応
-- **`PluginRuntime`** (`packages/core/src/plugin/plugin_runtime.ts`) ：onContentLoaded, extendContentGraph, onManifestCreatedなどのplugin hookの実行
-- **`ContentBuildCoordinator`** ：インクリメンタルビルド状態とoutput変更の検知管理
+- **`ContentIndexBuilder`**（`packages/core/src/content/content_index_builder.ts`）— slugの異形と曖昧さを解決する
+- **`ContentLocationResolver`** — プラグインが調整したパスを含む公開先を解決する
+- **`PluginRuntime`**（`packages/core/src/plugin/plugin_runtime.ts`）— プラグインのフック（onContentLoaded、extendContentGraph、onManifestCreatedなど）を実行する
+- **`ContentBuildCoordinator`** — 増分ビルドの状態と出力の変更検知を管理する
 
 ## 関連用語
 

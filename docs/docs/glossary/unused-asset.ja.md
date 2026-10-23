@@ -1,34 +1,38 @@
 ---
 date: 2026-10-14
-title: Unused Asset
+title: 未使用アセット（Unused Asset）
 sidebar:
   hidden: true
 ---
 
-# Unused Asset
+# 未使用アセット（Unused Asset）
 
-どのコンテンツからも参照されていないassetです。診断は既定でオフになっており、有効にすると未使用のassetを報告します。
+どのコンテンツのfrontmatterからも本文からも参照されていないアセット（画像、ファイルなど）です。未使用アセットは削除して出力サイズを減らせます。
 
-## 検出
+## 追跡
 
-`diagnostics`の設定で未使用のassetの報告を有効にします。削除候補のassetを、Buildを止めずに知らせます。
+アセットはコンテンツの `assets` フィールドとリンク参照を通じて追跡されます。どこからも追跡されていないアセットは未使用とみなされます。
 
-## Asset Tracking
+## 整理
 
-assetは、コンテンツの`assets`フィールドとcontent内のリンク参照で追跡されます。Diagnostics PluginはBuild中にassetの参照を監視し、参照されていないassetを報告します。コンテンツのfrontmatterの`assets`フィールドやリンク参照（`![alt]`やWikiLink構文）で参照されていないassetはunusedとみなされます。
+未使用アセットは正しさに影響しませんが、サイズ最適化のために削除できます。公開サイトで参照されていないアセットを特定するには `doctor` か `inspect` を使います。
 
-diagnosticsプラグインは`unused-asset`コードのdiagnosticsをレポートし、assetのパスとリメディエーションのヒントを含みます。
+## アセットの追跡
+
+アセットは、コンテンツの `assets` フィールドとコンテンツ内のリンク参照を通じて追跡されます。診断プラグインはビルド中にアセット参照を監視し、参照されていないアセットを報告します。どのコンテンツのfrontmatter `assets` フィールドからも、リンク参照（`![alt]` やWikiLink構文）からも参照されていないアセットは未使用とみなされます。
+
+診断プラグインは未使用アセットを `unused-asset` コードの診断として報告し、アセットのパスと修正のヒントを含めます。
 
 ### 例
 
 ```sh
-# diagnostics で未使用 asset レポート（例出力）
-# unused-asset: content/images/header.png （どのコンテンツでも参照されていない）
-# unused-asset: files/config.yaml （どのコンテンツでも参照されていない）
+# Diagnostics report unused assets (example output)
+# unused-asset: content/images/header.png (not referenced in any content)
+# unused-asset: files/config.yaml (not referenced in any content)
 
-# 未参照 asset を特定するには inspector を使用
+# Identify unreferenced assets via inspector
 riebeckite inspect content --list
-# ( 各 content エントリで追跡されている asset を確認 )
+# (check which assets are tracked by each content entry)
 ```
 ## 関連用語
 

@@ -1,17 +1,17 @@
 ---
 date: 2026-10-08
-title: プラグインの依存関係と Lifecycle
+title: プラグインの依存関係とライフサイクル
 sidebar:
-  label: 依存関係と Lifecycle
+  label: 依存関係とライフサイクル
   order: 10
 ---
-# プラグインの依存関係と Lifecycle
+# プラグインの依存関係とライフサイクル
 
-このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、Plugin 同士の依存関係、Options の検証、Plugin Context、Lifecycle を扱います。
+このページは[プラグイン作成の詳細](../plugin-system.ja.md)の一部で、プラグイン同士の依存関係、オプションの検証、プラグインコンテキスト、ライフサイクルを扱います。
 
-## 5. Plugin の依存関係
+## 3-1. 依存関係とケイパビリティ
 
-Plugin 同士に実際の依存関係がある場合は Capability の取り決めを使用します。
+プラグイン同士に実際の依存関係がある場合は、ケイパビリティの取り決めを使用します。
 
 ```ts id="mdj2qn"
 definePlugin({
@@ -31,72 +31,58 @@ definePlugin({
 });
 ```
 
-それぞれ、
+各フィールドの意味は次のとおりです。
 
-| Field | 意味 |
+| フィールド | 意味 |
 | --- | --- |
-| `provides` | この Plugin が提供する Capability |
-| `requires` | 必須の Capability |
-| `optional` | あれば利用する Capability |
+| `provides` | このプラグインが提供するケイパビリティ |
+| `requires` | 必須のケイパビリティ |
+| `optional` | あれば利用するケイパビリティ |
 
-です。
-
-Resolver は依存関係をもとに実行順を解決します。
+リゾルバーは依存関係をもとに実行順を解決します。
 
 ```mermaid id="ahm3ow"
 flowchart LR
-    Provider["Provider<br/>provides: content.graph"]
-    Consumer["Consumer<br/>requires: content.graph"]
+    Provider["提供側<br/>provides: content.graph"]
+    Consumer["利用側<br/>requires: content.graph"]
 
     Provider --> Consumer
 ```
 
-次の状態は Configuration Error になります。
+次の状態は設定エラーになります。
 
-- 必須 Capability がない
-- Provider が重複している
-- Dependency Cycle がある
+- 必須のケイパビリティがない
+- 提供者が重複している
+- 依存関係に循環がある
 
-`order` は依存解決前の基本順序です。
+`order`は依存解決前の基本順序です。実際の依存関係を表現するために`order`を使わないでください。
 
-実際の依存関係を表現するために `order` を使わないでください。
+## 3-2. `validateOptions` で設定を検証する
 
-
-## 6. Options を検証する
-
-TypeScript の型だけでは Runtime Value を完全には保証できません。
-
-必要な Plugin は `validateOptions` を実装します。
+TypeScriptの型だけでは、実行時の値が正しいことを完全には保証できません。必要なプラグインは`validateOptions`を実装します。
 
 ```text id="09xj48"
-Options
+オプション
    ↓
 validateOptions
    ↓
-Structured Issues
+構造化された問題
    ↓
 riebeckite check
 ```
 
-Validator は副作用を持たせません。
+検証関数には副作用を持たせません。特に、次の処理を行わないでください。
 
-特に、
-
-- Filesystem Scan
-- Build
-- Cache Write
+- ファイルシステムの走査
+- ビルド
+- キャッシュの書き込み
 - 外部状態の変更
 
-を行わないでください。
+問題は構造化された指摘として返し、設定の検証からまとめて表示できるようにします。
 
-問題は Structured Issue として返し、Config Validation からまとめて表示できるようにします。
+## 3-3. プラグインコンテキスト
 
-
-## 7. Plugin Context
-
-Plugin は Framework の Service を `PluginContext` から受け取ります。
-
-基本的な Context は概念的に次のようになります。
+プラグインは、フレームワークのサービスを`PluginContext`から受け取ります。基本的なコンテキストは概念的に次のような形です。
 
 ```ts id="jrp2vo"
 type PluginContext = {
@@ -111,7 +97,7 @@ type PluginContext = {
 };
 ```
 
-Hook によって、
+フックによって、次のような情報が追加されます。
 
 ```text id="2t18qa"
 slug
@@ -122,14 +108,11 @@ entries
 location input
 ```
 
-などが追加されます。
+プラグインの中でフレームワークのサービスをグローバルなシングルトンとして作るのではなく、コンテキストから必要なサービスを受け取ることを優先してください。
 
-Plugin 内で Framework Service の Global Singleton を作るのではなく、Context から必要な Service を受け取ることを優先します。
+## 3-4. ライフサイクル
 
-
-## 8. Lifecycle
-
-Framework Lifecycle には、
+フレームワークのライフサイクルには、次の4つの段階があります。
 
 ```text id="oy9iqs"
 setup
@@ -138,15 +121,13 @@ buildEnd
 dispose
 ```
 
-があります。
-
-概念的には、
+概念的な流れは次のとおりです。
 
 ```mermaid id="6hsbmh"
 flowchart LR
     Setup["setup"]
     Start["buildStart"]
-    Work["Build / Content Processing"]
+    Work["ビルド / コンテンツ処理"]
     End["buildEnd"]
     Dispose["dispose"]
 
@@ -156,34 +137,23 @@ flowchart LR
     End --> Dispose
 ```
 
-という流れになります。
+`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`は、1つの`ContentManager`につき一度だけ実行されます。`buildEnd`は、診断の収集後に完成したマニフェストを受け取る唯一の終端フックです。`dispose`は確保したリソースの解放に使い、解決済みプラグインの逆順で実行されます。
 
-`setup`、`buildStart`、`onConfigResolved`、Content 処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は Diagnostics の収集後に完成した Manifest を受け取る唯一の終端 Hook です。`dispose` は確保した Resource の解放に使用し、解決済み Plugin の逆順で実行されます。
+ライフサイクルの実行順は、解決済みプラグインの順序に従います。フックでエラーが発生した場合は、プラグイン名、フック名、元の原因が分かる形で上位へ伝播させてください。
 
-Lifecycle の実行順は、解決済み Plugin Order に従います。
+## 3-5. コンテンツ処理の段階
 
-Hook で Error が発生した場合は、
-
-- Plugin 名
-- Hook 名
-- 元の Cause
-
-が分かる形で上位へ伝播させてください。
-
-
-## 9. Content Lifecycle
-
-Content は複数の段階を通って処理されます。
+コンテンツは複数の段階を通って処理されます。
 
 ```mermaid id="47k3qg"
 flowchart TD
-    Config["Config Resolved"]
-    Loaded["Content Loaded"]
-    Location["Public Location Resolved"]
-    Parsed["Post Parsed"]
-    Processed["Post Processed"]
-    Graph["Content Graph"]
-    Manifest["Manifest Created"]
+    Config["設定の解決"]
+    Loaded["コンテンツの読み込み"]
+    Location["公開ロケーションの解決"]
+    Parsed["解析後の処理"]
+    Processed["処理後の処理"]
+    Graph["コンテンツグラフ"]
+    Manifest["マニフェストの生成"]
 
     Config --> Location
     Location --> Loaded
@@ -193,9 +163,9 @@ flowchart TD
     Graph --> Manifest
 ```
 
-全体の順序は `setup` → `buildStart` → `onConfigResolved` → Public Location 解決 → `onContentLoaded` → Markdown / HTML Pipeline → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → Diagnostics → `buildEnd` です。
+全体の順序は、`setup` → `buildStart` → `onConfigResolved` → 公開ロケーションの解決 → `onContentLoaded` → Markdown / HTMLパイプライン → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → 診断 → `buildEnd`です。
 
-代表的な Hook は、
+代表的なフックは次のとおりです。
 
 ```text id="6idgbj"
 onConfigResolved
@@ -205,8 +175,4 @@ onPostProcessed
 onManifestCreated
 ```
 
-です。
-
-必要な段階の Hook だけを使用してください。
-
-たとえば Manifest にすでに存在する情報を `onContentLoaded` で独自に再構築する、といった実装は避けます。
+必要な段階のフックだけを使用してください。たとえば、マニフェストにすでに存在する情報を`onContentLoaded`で独自に再構築するような実装は避けます。

@@ -97,7 +97,7 @@ Riebeckite theme based on the design principles of Minimal for Obsidian by Steph
 - [`@riebeckite/theme-gruvbox`](../gruvbox/README_ja.md)
 - [`@riebeckite/theme-rerurate`](../rerurate/README_ja.md)
 
-## Documentation site
+## ドキュメントサイト
 
 装飾を抑え、コンテンツを中心に見せるための Theme です。
 

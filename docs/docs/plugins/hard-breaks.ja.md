@@ -13,12 +13,11 @@ Markdown の通常の改行を `<br>` 要素として出力するプラグイン
 
 標準の Markdown では、段落内の単一の改行はソフトブレークとなり、空白として
 描画されます。`hardBreaks()` は
-[`remark-breaks`](https://github.com/remarkjs/remark-breaks) のトランス
-フォーマーを Riebeckite の Markdown パイプラインに登録し、ソフトブレークを
-ビルド時に `<br>` 要素へ変換します。
+[`remark-breaks`](https://github.com/remarkjs/remark-breaks) のトランスフォーマーを Riebeckite の Markdown
+パイプラインに登録し、ソフトブレークをビルド時に `<br>` 要素へ変換します。
 
 変換は Markdown AST の段階で行われるため、コードブロック、インラインコード、
-明示的な hard break の意味は変わりません。クライアント JavaScript と CSS は
+明示的なハードブレークの意味は変わりません。クライアント側の JavaScript と CSS は
 追加しません。
 
 ## インストール
@@ -34,7 +33,7 @@ export default defineConfig({
 ```
 
 `riebeckite.config.ts` の `plugins` 配列に `hardBreaks()` を追加します。この
-プラグインは opt-in です。追加しない場合、パイプラインは標準の Markdown の
+プラグインはオプトインです。追加しない場合、パイプラインは標準の Markdown の
 ソフトブレークの挙動を維持します。
 
 ## 使い方
@@ -72,12 +71,12 @@ hardBreaks();
 | --- | --- |
 | 段落内の単一の改行 | `<br>` に変換する |
 | 空行による段落の分割 | 従来どおり段落を分割する |
-| Fenced code block | 変更しない |
+| フェンス付きコードブロック | 変更しない |
 | インラインコード | 変更しない |
 | 見出し | Markdown の見出し構造を維持する |
 | リスト項目内の改行 | Markdown AST の構造に従って処理する |
-| Blockquote 内の改行 | 通常の段落と同様に処理する |
-| 明示的な hard break（行末の空白 2 つ、または `\`） | 二重変換しない |
+| 引用内の改行 | 通常の段落と同様に処理する |
+| 明示的なハードブレーク（行末の空白 2 つ、または `\`） | 二重変換しない |
 | Markdown 内の HTML | そのまま扱う |
 
 ## 制約事項

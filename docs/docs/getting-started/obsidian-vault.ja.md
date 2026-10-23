@@ -4,7 +4,7 @@ title: Obsidian Vault を使う
 ---
 # Obsidian Vault を使う
 
-すでに Obsidian Vault を持っている場合、Riebeckite はその Vault をサイトのコンテンツとして読むことができます。まずはローカルで 1 つのノートを公開し、リンクと画像を確認してから `dist/` をビルドします。
+すでに Obsidian Vault がある場合は、Riebeckite からその Vault をサイトのコンテンツとして読むことができます。まずローカルで 1 つのノートを公開し、リンクと画像を確認してから、`dist/` をビルドします。
 
 ## 始める前に
 
@@ -25,7 +25,7 @@ npx create-riebeckite my-site --preset starter
 cd my-site
 ```
 
-`starter` preset には、WikiLink、埋め込み、Callout、タグを扱う Obsidian Markdown plugin が最初から入っています。
+`starter` プリセットには、WikiLink、埋め込み、Callout、タグを扱う Obsidian Markdown プラグインが最初から入っています。
 
 ## 2. Vault を接続する
 
@@ -43,7 +43,7 @@ content: {
 
 Riebeckite は、既定では明示的に指定したノートだけを公開します。
 
-公開したいノートに、次の frontmatter を追加します。
+公開したいノートに、次のフロントマターを追加します。
 
 ```yaml
 ---
@@ -62,18 +62,18 @@ aliases:
 - `publish: false` のノートはビルド結果に含まれません。
 - `publish` がないノートは、既定の `starter` 構成では下書きとして扱われます。
 
-公開ノートから未公開のノートへリンクすると、リンク先ページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
+公開ノートから未公開のノートへリンクすると、リンク先のページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
 
 ## 4. Riebeckite を起動する
 
-依存関係を入れ、check を実行します。
+依存関係をインストールし、`check` を実行します。
 
 ```sh
 npm install
 npm exec riebeckite check
 ```
 
-続いてローカルプレビューを起動します。
+続いて、ローカルプレビューを起動します。
 
 ```sh
 npm exec riebeckite dev
@@ -81,11 +81,11 @@ npm exec riebeckite dev
 
 ターミナルに表示されたローカル URL を開いてください。
 
-開発サーバーを起動したまま Obsidian でノートを保存すると、次のページ表示に内容が反映されます。公開設定の変更もそのまま反映されます。
+開発サーバーを起動したまま Obsidian でノートを保存すると、次にページを表示したときに内容が反映されます。公開設定の変更も同じように反映されます。
 
 ## 5. WikiLink と画像を確認する
 
-以下は、Fresh `starter` サイトと小さなテスト Vault で実際に確認した例です。
+以下は、新しい `starter` サイトと小さなテスト用 Vault で実際に確認した例です。
 
 WikiLink は次のように書きます。
 
@@ -102,7 +102,7 @@ Vault 内の画像は、Obsidian の埋め込み構文で参照できます。
 ![[sample.png]]
 ```
 
-Riebeckite は Vault から画像を解決し、公開ノートから参照されている画像を build 時に `dist/` へコピーします。この基本ケースでは、Riebeckite 用に画像を別フォルダへ移動する必要はありません。
+Riebeckite は Vault から画像を解決し、公開ノートから参照されている画像をビルド時に `dist/` へコピーします。この基本的なケースでは、Riebeckite 用に画像を別のフォルダへ移動する必要はありません。
 
 公開ノートの埋め込みも使えます。
 
@@ -112,7 +112,7 @@ Riebeckite は Vault から画像を解決し、公開ノートから参照さ�
 
 ## 6. サイトをビルドする
 
-ローカル表示に問題がなければ、静的サイトをビルドします。
+ローカルでの表示に問題がなければ、静的サイトをビルドします。
 
 ```sh
 npm exec riebeckite build
@@ -120,36 +120,36 @@ npm exec riebeckite build
 
 出力先は `dist/` です。
 
-## Obsidian の何が使えるか
+## Obsidian の機能と対応状況
 
 | Obsidian の機能 | Riebeckite での扱い |
 | --- | --- |
 | Markdown | 標準の Markdown として対応 |
-| WikiLinks | starter の Obsidian Markdown plugin で対応 |
-| WikiLink aliases | `[[note|label]]` に対応 |
-| Heading links | `[[note#Heading]]` に対応 |
-| Images | `![[sample.png]]` のような公開ノートから参照される画像に対応 |
-| Note embeds | 公開 Markdown ノートの埋め込みに対応 |
-| Callouts | `> [!NOTE]` に対応 |
-| Tags | Obsidian Markdown plugin でタグ化。tag ページは starter の taxonomy plugin が提供 |
-| Frontmatter | 対応 |
-| Obsidian aliases | `aliases:` を WikiLink 解決に利用 |
+| WikiLinks | starter の Obsidian Markdown プラグインで対応 |
+| WikiLink のエイリアス | `[[note|label]]` に対応 |
+| 見出しリンク | `[[note#Heading]]` に対応 |
+| 画像 | `![[sample.png]]` のように、公開ノートから参照される画像に対応 |
+| ノートの埋め込み | 公開 Markdown ノートの埋め込みに対応 |
+| Callout | `> [!NOTE]` に対応 |
+| タグ | Obsidian Markdown プラグインでタグ化。タグページは starter の taxonomy プラグインが提供 |
+| フロントマター | 対応 |
+| Obsidian のエイリアス | `aliases:` を WikiLink の解決に利用 |
 | `publish` | 対応。`publish: true` が公開、下書きはビルドされない |
 | Canvas | `@riebeckite/plugin-canvas` が必要 |
 | Excalidraw | `@riebeckite/plugin-excalidraw` が必要 |
 | Bases | `@riebeckite/plugin-bases` が必要 |
-| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid-pele` などのレンダラーが必要。未導入ならコードブロックとして扱われる |
+| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid-pele` などのレンダラーが必要。導入していない場合はコードブロックとして扱われる |
 | `.obsidian/` | Riebeckite には不要。自動的に無視される |
 
 ## Vault を別リポジトリで管理する
 
-最短ルートは、ローカルの Vault フォルダを `content.directory` に指定する方法です。Vault とサイトを別々の GitHub リポジトリで管理したい場合は、Separate content repository の構成を使います。
+最短の方法は、ローカルの Vault フォルダを `content.directory` に指定することです。Vault とサイトを別々の GitHub リポジトリで管理したい場合は、コンテンツリポジトリを分離する構成を使います。
 
-GitHub Actions の設定は [Content Repositories](../guides/content-repositories.ja.md) を参照してください。
+GitHub Actions の設定は[コンテンツリポジトリ](../guides/content-repositories.ja.md)を参照してください。
 
 ## 次のステップ
 
 - 必要なノートだけに `publish: true` を付ける
-- config を変更したら `npm exec riebeckite check` を実行する
+- 設定を変更したら `npm exec riebeckite check` を実行する
 - 公開前に `npm exec riebeckite build` を実行する
-- 機能を追加したくなったら [最初の Plugin を追加する](./first-plugin.ja.md) を読む
+- 機能を追加したくなったら[最初のプラグインを追加する](./first-plugin.ja.md)を読む

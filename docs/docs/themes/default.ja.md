@@ -64,7 +64,7 @@ export default defineConfig({
 
 - [[theme-api|テーマシステム]]
 
-## Documentation site
+## ドキュメントサイト
 
 Riebeckite の標準 Theme です。基本的な記事閲覧とサイト UI の基準となる見た目を提供します。
 

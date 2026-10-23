@@ -1,34 +1,35 @@
 ---
 date: 2026-10-14
-title: Integration
+title: インテグレーション（Integration）
 sidebar:
   hidden: true
 ---
 
-# Integration
+# インテグレーション（Integration）
 
-Coreのコンテンツとページを、HonoXやViteといった描画・配信のスタックにつなぐパッケージです。コンテンツの論理を持たずに、routeを描画し出力を書き出します。
+Coreのコンテンツとページを、HonoXやViteなどの描画・配信のスタックにつなぐパッケージです。コンテンツの解釈を持たずに、ルートを描画し、出力を書き出します。
 
 ## 責務
 
-- routeを通してページとPluginのpage typeを描画します。
-- 生成した出力を書き出します。
-- サイトを配信先につなぎます。
+- ルートを通じてページとプラグインのページ種別を描画する。
+- 生成した出力を書き出す。
+- サイトを配信先につなぐ。
 
-## integrationの責務
-integrationはRiebeckite Coreとホストフレームワーク（例：HonoX + Vite）の間のブリッジとして機能します。主要な責務は以下の通りです：
+## インテグレーションの責務の詳細
 
-- **route解決**: `resolveRiebeckiteRoute`(`@riebeckite/honox`)を使用して、incoming request pathsをページにマッピングします。解決順序は：plugin pageチェック→ publicLocationによるcontent解決→ redirectチェック→ 404です。
-- **出力生成**: ページHTMLを描画し、sitemap、robots、feedなどの生成ファイルを書き出します。
-- **デプロイ接続**: ビルド出力をCloudflare Workersなどのホスティング先に接続します。integrationはコンテンツ解釈を所有しません：Coreのコンテンツ処理とmanifest解決は、integrationの選択とは独立しています。
+インテグレーションは、Riebeckite Coreとホストのフレームワーク（例：HonoX + Vite）の間の橋渡しをします。主な責務は次のとおりです。
+
+- **ルートの解決**：`resolveRiebeckiteRoute`（`@riebeckite/honox`）を使って、受信したリクエストのパスをページに対応付けます。解決の順序は、プラグインページの確認 → `publicLocation`によるコンテンツの解決 → リダイレクトの確認 → 404です。
+- **出力の生成**：ページのHTMLを描画し、サイトマップ、robots、フィードなどの生成ファイルをSEOプラグインを通じて書き出します。
+- **デプロイとの接続**：ビルド済みの出力をCloudflare Workersなどのホスティング先につなぎます。インテグレーションはコンテンツの解釈を持ちません。コンテンツの処理と公開先の解決はCoreが担い、インテグレーションは配信につなぎます。
 
 ```ts
 import { resolveRiebeckiteRoute } from "@riebeckite/honox";
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 
-integrationを差し替えても、Coreのコンテンツ処理とmanifest解決は変更されないため、コンテンツの解釈は変わりません。
+インテグレーションを差し替えてもコンテンツの解釈が変わらないのは、Coreのコンテンツ処理とマニフェストの解決がインテグレーションの選択から独立しているためです。
 
 ## 境界
 
-Coreがコンテンツ処理と公開位置の解決を担い、integrationが描画と配信を担います。そのためintegrationを差し替えても、コンテンツの解釈は変わりません。
+Coreがコンテンツの処理と公開先の解決を担います。インテグレーションは描画と配信を担うため、インテグレーションを差し替えてもコンテンツの解釈は変わりません。

@@ -1,21 +1,25 @@
 ---
 date: 2026-10-14
-title: Trace Span
+title: トレーススパン（Trace Span）
 sidebar:
   hidden: true
 ---
 
-# Trace Span
+# トレーススパン（Trace Span）
 
-Buildのobservabilityにおける名前付きの計測区間で、Pluginのhookやcacheの参照などの文脈のタグを持ちます。SpanはProfilerとobservabilityのイベントに使われます。
+ビルド作業の計測単位です。トレースはビルド作業をスパンに分けて所要時間を記録します。スパン名は安定している必要があります（例：`content.load`、`plugins.run`、`diagnostics.run`、`application.build`）。
 
-## 付く情報
+## 構造
 
-計測のため区間に名前を付けます。Pluginやcacheなどの文脈tagを持ちます。
+トレースには親スパン（例：`build`）と、作業単位ごとの子スパンがあります。成功時も失敗時も、必ずスパンを閉じてください。
 
-## Span Structure
+## 命名規則
 
-trace spanは`TraceSpan`型で表され、name, startTime, durationMs, statusおよびオプションのattributesを持ちます。
+ビルド間で比較できる安定したスパン名を使ってください。入力ファイル名によって実行ごとに変わる名前は避けます。
+
+## スパンの構造
+
+トレーススパンは `TraceSpan` 型で表され、name、startTime、durationMs、status、任意のattributesを持ちます。
 
 ```ts
 type TraceSpan = Readonly<{
@@ -27,9 +31,9 @@ type TraceSpan = Readonly<{
 }>;
 ```
 
-Spanは`TraceSink`インターフェースを通じて`onSpan`コールバックで発行され、`SinkTracer`はspanを収集してProfilerがレポートを生成できるようにします。
+スパンは `TraceSink` インターフェースを通じて `onSpan` コールバックで出力されます。`@riebeckite/core` の `SinkTracer` がスパンを収集し、プロファイラがレポートを生成できるようにします。
 
-### 例：span JSON
+### 例：スパンのJSON
 
 ```json
 {

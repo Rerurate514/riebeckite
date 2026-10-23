@@ -1,13 +1,13 @@
 ---
 date: 2026-10-14
-title: Draft
+title: 下書き（Draft）
 sidebar:
   hidden: true
 ---
 
-# Draft
+# 下書き（Draft）
 
-公開の判定によって公開サイトから外されるコンテンツです。処理自体は続けられますが、公開されるまでroutableとdiscoverableのビューから除外されます。
+公開の判定によって公開サイトから外されるコンテンツです。下書きも処理はできますが、公開されるまでルーティング対象と検出可能のビューから除外されます。
 
 ## 設定
 
@@ -19,16 +19,16 @@ published: false
 
 ## それでも起きること
 
-draftも解析と内部リンクの対象になるため、プレビューや相互参照ができます。publishされるまで公開の出力は作りません。
+下書きも解析と内部リンクの対象になるため、プレビューや相互参照ができます。公開されるまで公開出力は生成されません。
 
 ## 公開状態
 
-draftは`PublishingVisibility`の一つです（`packages/core/src/content/publishing.ts`）。`published: false`または`visibility: draft`が設定されている場合、`resolvePublishingState`は`routable: false, discoverable: false`を返します。つまり：
+下書きは`PublishingVisibility`の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに`published: false`または`visibility: draft`があると、`resolvePublishingState`は`routable: false, discoverable: false`を返します。つまり：
 
-- ノートは`publicEntries`や`byRoutablePermalink`から除外されます
-- 何らかの公開出力も生成されません
-- プレビュー目的で内部リンクを引くことはできます
-- 公開された後も既存のコンテンツやリンクが保持されるよう、`entries`マニフェスト全体には残ります
+- ノートは`publicEntries`と`byRoutablePermalink`から除外されます
+- 公開出力を生成しません
+- プレビューのために解析し、内部リンクを張ることはできます
+- 公開後に既存のコンテンツとリンクが保たれるよう、`entries`マニフェスト全体には残ります
 
 ```ts
 // From packages/core/src/content/publishing.ts

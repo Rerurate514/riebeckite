@@ -1,18 +1,18 @@
 ---
 date: 2026-10-08
-title: 最初の Plugin を追加する
+title: 最初のプラグインを追加する
 ---
-# 最初の Plugin を追加する
+# 最初のプラグインを追加する
 
-Plugin は Riebeckite サイトに検索や図表、埋め込みなどの機能を追加します。このガイドでは **highlight** プラグインを追加し、`==二重イコール==` 構文でテキストをハイライトできるようにします。
+プラグインは、Riebeckite のサイトに検索や図表、埋め込みなどの機能を追加します。このガイドでは **highlight** プラグインを追加し、`==二重イコール==` 構文でテキストをハイライトできるようにします。
 
-> 見た目を変えたい場合は [最初の Theme を変える](./first-theme.ja.md) を参照してください。
+> 見た目を変えたい場合は、[最初のテーマを変える](./first-theme.ja.md)を参照してください。
 
 ---
 
 ## 1. インストール
 
-生成されたサイトのディレクトリで次のコマンドを実行してください。
+生成されたサイトのディレクトリで、次のコマンドを実行してください。
 
 ```sh
 npm install @riebeckite/plugin-highlight
@@ -30,7 +30,7 @@ import { highlight } from "@riebeckite/plugin-highlight";
 
 ---
 
-## 3. Plugin を追加
+## 3. プラグインを追加
 
 `plugins` 配列に `highlight()` を追加してください。
 
@@ -45,13 +45,13 @@ plugins: [
 
 ## 4. 試す
 
-開発サーバーを再起動 (または起動) してください。
+開発サーバーを再起動するか、起動していない場合は起動してください。
 
 ```sh
 npm exec riebeckite dev
 ```
 
-サイトを開き、Markdown ファイル (例: `content/index.md`) を編集してハイライトを書いてください。
+サイトを開き、Markdown ファイル（例: `content/index.md`）を編集して、ハイライトを書いてください。
 
 ```md
 この文には ==ハイライトされる語句== が含まれています。
@@ -63,7 +63,7 @@ npm exec riebeckite dev
 
 ## 5. 次のステップ
 
-- [Plugin リファレンス](../plugins/README.ja.md) で他の Plugin を探す
-- Chromium を使わない静的な図表用に `@riebeckite/plugin-mermaid-pele` を試す
-- グラフ可視化用に `@riebeckite/plugin-graphviz` を試す
-- [自作 Plugin の書き方](../plugins/writing-a-plugin.ja.md) を学ぶ
+- [プラグインのリファレンス](../plugins/README.ja.md)で他のプラグインを探す
+- Chromium を使わない静的な図表には `@riebeckite/plugin-mermaid-pele` を試す
+- グラフの可視化には `@riebeckite/plugin-graphviz` を試す
+- [はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読む

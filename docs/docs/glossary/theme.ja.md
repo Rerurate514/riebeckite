@@ -1,15 +1,15 @@
 ---
 date: 2026-10-14
-title: Theme
+title: テーマ（Theme）
 sidebar:
   hidden: true
 ---
-# Theme
-ThemeはRiebeckiteサイトのプレゼンテーション層を担い、色、フォント、余白、レイアウト、記事のスタイルを決めます。コンテンツの意味やアプリケーションの構造は変えません。
+# テーマ（Theme）
+テーマはRiebeckiteサイトの表示層（色、タイポグラフィ、余白、レイアウト、記事スタイル）を担い、コンテンツの意味やアプリケーション構造は変えません。
 
-## Themeの取り決め
+## テーマの契約
 
-Themeは`@riebeckite/core`の`defineTheme`で作成します。公開するのは、識別子、ファクトリーのオプション、スタイル、共通設定、安全なdata属性の5つです。共通設定には`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss`が含まれます。
+テーマは `@riebeckite/core` の `defineTheme` で作成し、5つの領域を公開します。識別情報、ファクトリのオプション、スタイル、共通設定（`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss`）、安全なデータ属性です。
 
 ```ts
 import { defineTheme } from "@riebeckite/core";
@@ -23,34 +23,35 @@ export function exampleTheme() {
 }
 ```
 
-## Color Mode
+## カラーモード
 
-Themeは`light`、`dark`、`system`の3つのColor Modeを扱います。
-`system`はOSの設定に従い、`data-theme`属性を付けません。
-サーバーは`light`または`dark`の場合に`<html>`へ`data-theme`を付けます。
-実行時は`document.documentElement.dataset.theme = "dark"`を設定するか、`system`なら属性を削除します。
-`data-theme=""`を設定しないでください。空の属性はsystemのメディアクエリを壊します。
+テーマは `light`、`dark`、`system` の3つのカラーモードに対応します。
+`system` はOSの設定に従い、`data-theme` 属性を省略します。
+サーバーは `light` と `dark` の場合に `<html>` へ `data-theme` を出力します。
+実行時は `document.documentElement.dataset.theme = "dark"` を設定するか、`system` なら属性を削除します。
 
-## プレゼンテーションの境界
+`data-theme=""` を設定しないでください。空の属性はsystemのメディアクエリを壊します。
 
-Themeはコンテンツの意味、route、manifest、Pluginの動作、クライアントスクリプトを変更しません。
-機能はPluginに、見た目はThemeに、サイトの構造はアプリケーションに割り当てます。
-Themeを入れ替えても、コンテンツ、route、Pluginの動作に影響しないようにします。
+## 表示の境界
 
-## Theme設定の解決
+テーマはコンテンツの意味、ルート、マニフェスト、プラグインの動作、クライアントスクリプトを変えません。
+機能はプラグインに、見た目はテーマに、サイト構造はアプリケーションに属します。
+テーマを入れ替えても、コンテンツ、ルート、プラグインの動作に影響してはいけません。
 
-`resolveThemeConfig`は`packages/core/src/config.ts`でテーマ設定を解決します。この関数は2つのテーマ入力形式を扱います：
+## テーマ設定の解決
 
-- **`RiebeckiteTheme`**（`styles`、`config`、`attributes`を持つ）: `name`を抽出します。`colorMode`、`typography`、`articleLayout`、`tokens`用に`config`を展開し、`attributes`をマージします。スタイルは`styles`配列から取られます。
-- **`ThemeConfig`**（プレーンオブジェクト）: 不足しているフィールドにデフォルトが適用されます。デフォルトには`colorMode: "system"`、`typography: "system"`、`articleLayout: "article"`、`tokens: {}`が含まれます。`styles`は`[defaultThemeStyle]`です。
+テーマ設定は `packages/core/src/config.ts` の `resolveThemeConfig` で解決されます。この関数は2つのテーマ入力形式を扱います。
 
-解決されたテーマは、解決されたconfigの下に`theme`キーとしてマージされます。含まれるのは、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`です。`attributes`は`data-*`属性のみ許可されるようサニタイズされます。その後、テーマはパイプラインとCSS/HTMLジェネレータによって最終的なプレゼンテーションを生成するために消費されます。
+- **`RiebeckiteTheme`**（`styles`、`config`、`attributes` を持つ）：`name` を取り出し、`colorMode`、`typography`、`articleLayout`、`tokens` のために `config` を展開し、`attributes` をマージします。スタイルは `styles` 配列から取ります。
+- **`ThemeConfig`**（プレーンオブジェクト）：そのまま使い、不足するフィールドには既定値を適用します。既定値は `colorMode: "system"`、`typography: "system"`、`articleLayout: "article"`、`tokens: {}`、`styles: [defaultThemeStyle]` です。
 
-## Theme名とCSSスコープ
-Themeの`name`フィールドが`<html>`の`data-theme-name`属性として伝播します。CSSは`:is(:root, .rb-theme-root)[data-theme-name="<name>"]`セレクターでルールをスコープします。これにより、プレビュー環境で複数のThemeがスタイル漏れなく横並びにレンダリングされます。
+解決されたテーマは、解決済み設定の `theme` キーに保存され、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`（予約されていない `data-*` 属性だけを許可するようサニタイズ済み）、`userCss` を含みます。この解決済みテーマをパイプラインとCSS/HTML生成器が使い、最終的な表示を生成します。
 
-## 解決済みThemeの構造
-`packages/core/src/config.ts`の`resolveThemeConfig`によって、解決されたThemeオブジェクトが得られます。これには`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`、`styles`が含まれます。この解決されたThemeは、解決されたconfigの下の`theme`キーに格納され、パイプラインとCSS/HTMLジェネレータによって消費されます。
+## テーマ名とCSSスコープ
+テーマの `name` フィールドは `<html>` の `data-theme-name` 属性として伝播し、CSSは `:is(:root, .rb-theme-root)[data-theme-name="<name>"]` セレクタでルールをスコープします。これにより、プレビュー環境で複数のテーマをスタイルの漏れなく並べて描画できます。
+
+## 解決済みテーマの構造
+`packages/core/src/config.ts` の `resolveThemeConfig` が返す解決済みテーマオブジェクトには、`name`、`colorMode`、`typography`、`articleLayout`、`tokens`、`attributes`、`userCss`、`styles` が含まれます。解決済みテーマは全体の解決済み設定の `theme` キーに保存され、パイプラインとCSS/HTML生成器が使います。
 
 ## 関連用語
 

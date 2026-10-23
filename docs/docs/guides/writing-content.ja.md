@@ -73,7 +73,7 @@ Riebeckite で Markdown を公開してみます。
 
 これだけで、公開できる最小の記事になります。
 
-## Frontmatter
+## frontmatter
 
 記事の先頭にある、
 
@@ -84,14 +84,14 @@ publish: true
 ---
 ```
 
-の部分を **Frontmatter** と呼びます。
+の部分を **frontmatter** と呼びます。
 
-Frontmatter には、記事そのものではなく、記事についての情報を書きます。
+frontmatter には、記事そのものではなく、記事についての情報を書きます。
 
 ```text
-Markdown File
+Markdown ファイル
 │
-├─ Frontmatter
+├─ frontmatter
 │    ├─ title
 │    └─ publish
 │
@@ -155,7 +155,7 @@ title: まだ出さない記事
 書きかけの記事です。
 ```
 
-このファイルは Content として管理できますが、既定の公開ルールでは公開ページになりません。
+このファイルはコンテンツとして管理できますが、既定の公開ルールでは公開ページになりません。
 
 ```mermaid
 flowchart LR
@@ -247,21 +247,21 @@ console.log(message);
 
 ## リンクを書く
 
-外部 Site へのリンクは通常の Markdown Link を使います。
+外部サイトへのリンクは通常の Markdown リンクを使います。
 
 ```md
 [Example](https://example.com)
 ```
 
-Site 内の記事へリンクする場合も Markdown Link を利用できます。
+サイト内の記事へリンクする場合も Markdown リンクを利用できます。
 
 ```md
 [プロフィール](/about)
 ```
 
-## WikiLink
+## Wikiリンク
 
-Obsidian 形式の WikiLink に対応した Plugin を利用している構成では、
+Obsidian 形式の WikiLink に対応したプラグインを利用している構成では、
 
 ```md
 [[about]]
@@ -280,18 +280,18 @@ Obsidian 形式の WikiLink に対応した Plugin を利用している構成�
 ```text
 [[about]]
       ↓
-対応するContentを解決
+対応するコンテンツを解決
       ↓
 公開先のURL
 ```
 
-Riebeckite では、最終的な Site 内リンクは解決済みの Content 情報を使って扱われます。
+Riebeckite では、最終的なサイト内リンクは解決済みのコンテンツ情報を使って扱われます。
 
-そのため、Plugin や多言語設定などによって公開 URL が変わる場合でも、対応する仕組みからリンクを解決できます。
+そのため、プラグインや多言語設定などによって公開 URL が変わる場合でも、対応する仕組みからリンクを解決できます。
 
 ## ファイル名と URL
 
-標準的な構成では、Content の[[logical-path|論理的な Path]]が公開先を決める基準になります。
+標準的な構成では、コンテンツの[[logical-path|論理パス]]が公開先を決める基準になります。
 
 たとえば基本的な構成では、
 
@@ -318,9 +318,9 @@ first-post.md
 ただし、Riebeckite では、
 
 ```text
-ファイルPath
+ファイルパス
       ↓
-Content
+コンテンツ
       ↓
 Public Location
       ↓
@@ -331,11 +331,11 @@ Public Location
 
 そのため、
 
-**ファイルの物理 Path が常にそのまま URL になるわけではありません**。
+**ファイルの物理パスが常にそのまま URL になるわけではありません**。
 
-Plugin や設定によって Public Location が変更されることがあります。
+プラグインや設定によって Public Location が変更されることがあります。
 
-詳しい仕組みは [Content System](../framework/content-system.ja.md) を参照してください。
+詳しい仕組みは [コンテンツシステム](../framework/content-system.ja.md) を参照してください。
 
 ## 画像を使う
 
@@ -364,12 +364,12 @@ Markdown
    ↓
 画像URL
    ↓
-公開Siteに画像が存在
+公開サイトに画像が存在
    ↓
-Browserで表示
+ブラウザーで表示
 ```
 
-利用している Site 構成に合わせて、画像が公開 Output に含まれるようにしてください。
+利用しているサイト構成に合わせて、画像が公開出力に含まれるようにしてください。
 
 Obsidian Vault の添付ファイルを利用する場合は [Obsidian のノートをサイトにするガイド](./obsidian.ja.md) も参照してください。
 
@@ -402,17 +402,17 @@ Riebeckite で最初のサイトを作ってみました。
 [Riebeckite の GitHub](https://github.com/Rerurate514/riebeckite)
 ```
 
-Frontmatter の後は、通常の Markdown として記事を書いていけば問題ありません。
+frontmatter の後は、通常の Markdown として記事を書いていけば問題ありません。
 
 ## 公開前にブラウザで確認する
 
-記事を書いたら Development Server を起動します。
+記事を書いたら開発サーバーを起動します。
 
 ```sh
 npm exec riebeckite dev
 ```
 
-Browser で記事を開き、
+ブラウザーで記事を開き、
 
 - タイトル
 - 見出し
@@ -436,13 +436,13 @@ npm exec riebeckite doctor
 
 役割は次のように異なります。
 
-| Command | 主に確認すること |
+| コマンド | 主に確認すること |
 | --- | --- |
-| `check` | Config や Plugin の設定が正しいか |
-| `doctor` | Content や Site に問題がないか |
-| `dev` | Browser で実際の表示を確認する |
+| `check` | 設定やプラグインの設定が正しいか |
+| `doctor` | コンテンツやサイトに問題がないか |
+| `dev` | ブラウザーで実際の表示を確認する |
 
-Site 内リンクの整合性を診断する Plugin を利用している場合は、存在しない内部リンクなども確認できます。
+サイト内リンクの整合性を診断するプラグインを利用している場合は、存在しない内部リンクなども確認できます。
 
 ## どの記事が認識されているか確認する
 
@@ -454,7 +454,7 @@ npm exec -- riebeckite inspect content --list
 
 を利用できます。
 
-これによって、Riebeckite がどの Content を認識しているか確認できます。
+これによって、Riebeckite がどのコンテンツを認識しているか確認できます。
 
 記事が見つからない場合は、
 
@@ -463,18 +463,18 @@ content.directory
       ↓
 exclude
       ↓
-Contentとして認識
+コンテンツとして認識
       ↓
 publish条件
       ↓
-Public Site
+公開サイト
 ```
 
 の順番で確認すると原因を切り分けやすくなります。
 
-## Site をビルドする
+## サイトをビルドする
 
-Browser で確認して問題がなければ、Site をビルドします。
+ブラウザーで確認して問題がなければ、サイトをビルドします。
 
 ```sh
 npm exec riebeckite build
@@ -489,7 +489,7 @@ flowchart LR
     Dev["devで確認"]
     Check["check / doctor"]
     Build["build"]
-    Deploy["Deploy"]
+    Deploy["デプロイ"]
 
     Write --> Publish
     Publish --> Dev
@@ -525,8 +525,8 @@ publish: true
 Markdown
 WikiLink
 画像
-Frontmatter
-Plugin
+frontmatter
+プラグイン
 多言語対応
 ```
 
@@ -566,5 +566,5 @@ publish: true
 
 - [サイト公開までの最短ガイド](../getting-started/deployment.ja.md)
 - [Obsidian のノートをサイトにするガイド](./obsidian.ja.md)
-- [Localization](./localization.ja.md)
+- [多言語サイト](./localization.ja.md)
 - [Configuration](../reference/configuration.ja.md)

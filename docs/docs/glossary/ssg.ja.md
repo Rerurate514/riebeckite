@@ -1,29 +1,33 @@
 ---
 date: 2026-10-14
-title: SSG
+title: SSG（静的サイト生成）
 sidebar:
   hidden: true
 ---
 
-# SSG
+# SSG（静的サイト生成）
 
-サイトを事前にファイルへ描画するRiebeckiteの静的サイト生成です。Coreがコンテンツと公開位置を担い、IntegrationがHonoXとViteにつないでrouteを描画し、出力を書き出します。
+サイトを事前に静的ファイルへ描画するRiebeckiteの静的サイト生成です。Coreがコンテンツと公開先を担い、インテグレーションがHonoXとViteにつないでルートを描画し、出力を書き出します。
 
-## 出力の再利用
+## 役割
 
-HonoXは影響するrouteだけを描画し、変わっていない出力はoutput cacheから復元します。どの出力を描画するかはoutput inventoryの比較で決まります。
+デプロイ前にサイトを静的ファイルへ描画します。出力キャッシュを使い、変わっていないルートを再利用します。
+
+## インテグレーション
+
+Coreがコンテンツと公開先を担い、インテグレーションがHonoXとViteにつないでルートを描画し、出力を書き出します。
 
 ## 出力キャッシュ
 
-出力キャッシュはルートパスとfingerprintでキーを持ち、変更のないrouteは再描画せずキャッシュから復元します。output inventoryの比較で変更があったrouteのみが再描画の対象となります。
+出力キャッシュは、描画済みのルート結果をルートパスとフィンガープリントでキー付けして保存します。後続のビルドでは、変わっていないルートを再描画せずキャッシュから復元します。キャッシュキーは出力一覧の比較から導かれ、前回のビルド以降にどのルートが変わったかが決まります。
 
 ### 例
 
 ```sh
-# キャッシュヒット：変更のないrouteはキャッシュから復元されます
+# Output cache hit — unchanged routes are restored from cache
 riebeckite build
 
-# キャッシュミス：変更があったrouteは再描画されます
+# Output cache miss — changed routes are re-rendered
 riebeckite build --full
 ```
 

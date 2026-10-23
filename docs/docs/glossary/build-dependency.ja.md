@@ -1,49 +1,51 @@
 ---
 date: 2026-10-14
-title: Build Dependency
+title: ビルド依存関係（Build Dependency）
 sidebar:
   hidden: true
 ---
 
-# Build Dependency
+# ビルド依存関係（Build Dependency）
 
-あるコンテンツや出力に影響する入力の宣言で、別のノート、ファイル、tag、folderなどがあります。依存を記録することで、Coreは変化が影響し得る分だけを無効化できます。
+Coreとプラグインの間の取り決めで、処理済みコンテンツや出力したファイルが、ビルド間でどの入力に依存するかを宣言します。
 
-## 依存の種類
+## コンテンツ依存関係
 
-content（slug）、file（sourceのパス）、link（解決済みのリンク）、global（設定の変更）、projection（taxonomyやrecent-posts）を扱います。tagとfolderも扱います。
+プラグインは`processedContentCache`に`dependencyMode`（none、tracked、global、unsafe）を宣言します。
+CoreはCoreのコンテンツAPIを通じた読み取りを、安定した識別子を持つ依存関係として記録します。
+コンテンツ、ファイル、リンクの依存関係は記録され、以降のビルドで比較されます。
 
-## 依存の宣言
+## 出力依存関係
 
-出力依存はcontent依存とは別に扱われます。各型は変更の異なる部分に反応します。
+出力依存関係はコンテンツ依存関係とは別に扱います。それぞれの種類は、変更セットの異なる部分に反応します。
 
-| タイプ | 影響を受けるとき |
+| 種類 | 影響を受ける条件 |
 | --- | --- |
-| `content { slug }` | そのcontentが変わったとき。 |
-| `tag { tag }` | そのtagを持つcontentが変わったとき。 |
-| `folder { folder }` | そのfolder内のcontentが変わったとき。 |
-| `global` | どのcontentも変わったとき。 |
-| `unknown` | 常に。Coreはもともと出力再生成を要求します。 |
+| `content { slug }` | そのコンテンツが変わったとき。 |
+| `tag { tag }` | そのタグを持つコンテンツが変わったとき。 |
+| `folder { folder }` | そのフォルダー内のコンテンツが変わったとき。 |
+| `global` | どのコンテンツかが変わったとき。 |
+| `unknown` | 常に。Coreは出力の完全な再生成も要求します。 |
 
-## 依存宣言の場所
+## 依存関係の宣言場所
 
-出力依存は以下の場所で宣言できます：
+出力依存関係は次の場所で宣言できます。
 
 - プラグインページの`pageTypes[].outputDependencies`。
-- `onManifestCreated`で既存のmanifest entry HTMLを更新するプラグインのルート`outputDependencies`。Coreはすべてのcontent outputに追加します。
-- 生成出力の`context.output.emit(..., { dependencies })`。依存関係が宣言されていない生成出力は`unknown`として扱われ、すべての出力の再生成を引き起こします。
+- `onManifestCreated`で既存のマニフェストエントリのHTMLを更新するプラグインの、ルートの`outputDependencies`。Coreはこれをすべてのコンテンツ出力に追加します。
+- 生成物の`context.output.emit(..., { dependencies })`。依存関係を宣言していない生成物は`unknown`となり、出力全体の再生成を引き起こします。
 
-依存タイプとその効果：
+依存関係の種類とその効果は次のとおりです。
 
-| タイプ | 説明 |
+| 種類 | 説明 |
 | --- | --- |
-| `content { slug }` | 特定のcontent slugが変わったときに再生成をトリガーします。 |
-| `tag { tag }` | そのtagを持つany contentが変わったときに再生成をトリガーします。 |
-| `folder { folder }` | そのfolder内のcontentが変わったときに再生成をトリガーします。 |
-| `global` | マニフェスト全体のコレクション変換に関連し、any contentが変わったときに再生成をトリガーします。 |
-| `unknown` | 常に全出力再生成をトリガーします。scopeを完全に記述できないときに使用します。 |
+| `content { slug }` | 特定のコンテンツのslugが変わったときに再生成します。 |
+| `tag { tag }` | そのタグを持つコンテンツが変わったときに再生成します。 |
+| `folder { folder }` | そのフォルダー内のコンテンツが変わったときに再生成します。 |
+| `global` | ソースを問わず、どのコンテンツかが変わったときに再生成します。 |
+| `unknown` | 常に出力全体の再生成を引き起こします。スコープを記述できないときに使います。 |
 
-`content`、`tag`、または`folder`の範囲が分かっている場合はそれを使用し、`global`はマニフェストwideのコレクション変換のために使用してください。入力が完全に記述できない場合にのみ`unknown`を使用してください。誤った出力宣言は古いファイルを保存する可能性があります。そのため`unknown`はインクリメンタルSSGを犠牲にして全出力描画に振り切る意図があります。
+スコープが分かっている場合は`content`、`tag`、`folder`を使い、マニフェスト全体のコレクション変換には`global`を使います。`unknown`は、入力を完全には表現できない場合にだけ使ってください。誤った出力宣言は古いファイルを残す可能性があるため、`unknown`は増分SSGを犠牲にして出力全体を描画し直す、意図的な選択です。
 
 ## 関連用語
 

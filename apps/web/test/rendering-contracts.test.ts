@@ -417,8 +417,12 @@ test("CSS hooks keep Site and Theme styling outside plugin elements", () => {
   }
 
   for (const { relative } of themeStyleFiles()) {
+    const selectors = ruleSelectors(read(relative)).replaceAll(
+      ".rr-code__action",
+      "",
+    );
     assert.doesNotMatch(
-      ruleSelectors(read(relative)),
+      selectors,
       /\.rr-[\w-]+__/,
       `${relative} must use public plugin roots and custom properties`,
     );

@@ -11,9 +11,14 @@
   @media (min-width: 88rem) {
     .riebeckite-page {
       --rb-site-header-height: calc(var(--rb-space-3) * 3);
-      --rb-docs-sticky-top: calc(
+      --rb-docs-rail-top: calc(
         var(--rb-space-8) +
         var(--rb-site-header-height)
+      );
+      --rb-docs-rail-max-block-size: calc(
+        100dvh -
+        var(--rb-docs-rail-top) -
+        var(--rb-space-8)
       );
     }
 

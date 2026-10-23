@@ -83,6 +83,57 @@ function rgb(value: string): number[] {
 }
 
 for (const theme of ["light", "dark"] as const) {
+  test(`homepage and article code actions share the ${theme} theme treatment`, async (t) => {
+    if (!browser) return t.skip("puppeteer browser is unavailable");
+    const page = await browser.newPage();
+    try {
+      await loadHome(page, theme, 1440);
+      const actions = await page.evaluate(() => {
+        const home = document.querySelector<HTMLButtonElement>(
+          ".rb-home__runtime-code .rr-code__action[data-code-copy]",
+        );
+        const article = document.querySelector<HTMLButtonElement>(
+          ".rb-article-content .rr-code__action",
+        );
+        if (!home || !article)
+          throw new Error("code action fixture is incomplete");
+        home.dataset.codeCopyState = "success";
+        article.dataset.codeCopyState = "success";
+        const homeStyle = getComputedStyle(home);
+        const articleStyle = getComputedStyle(article);
+        const homeProperties = {
+          background: homeStyle.backgroundColor,
+          border: homeStyle.border,
+          color: homeStyle.color,
+          padding: homeStyle.padding,
+          borderRadius: homeStyle.borderRadius,
+        };
+        const articleProperties = {
+          background: articleStyle.backgroundColor,
+          border: articleStyle.border,
+          color: articleStyle.color,
+          padding: articleStyle.padding,
+          borderRadius: articleStyle.borderRadius,
+        };
+        home.focus();
+        const homeOutline = getComputedStyle(home).outline;
+        article.focus();
+        const articleOutline = getComputedStyle(article).outline;
+        return {
+          home: homeProperties,
+          article: articleProperties,
+          homeOutline,
+          articleOutline,
+        };
+      });
+      assert.deepEqual(actions.home, actions.article);
+      assert.equal(actions.homeOutline, actions.articleOutline);
+      assert.notEqual(actions.homeOutline, "rgb(0, 0, 0) none 0px");
+    } finally {
+      await page.close();
+    }
+  });
+
   test(`homepage ${theme} mode keeps code, controls, and section copy readable`, async (t) => {
     if (!browser) return t.skip("puppeteer browser is unavailable");
     const page = await browser.newPage();

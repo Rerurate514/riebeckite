@@ -10,12 +10,8 @@ test("localizeDocsHref prefixes docs links on localized pages", () => {
   );
 });
 
-test("localizeDocsHref keeps default and non-docs links unchanged", () => {
+test("localizeDocsHref keeps default and external links unchanged", () => {
   assert.equal(localizeDocsHref("/docs/", "/docs/reference/"), "/docs/");
-  assert.equal(
-    localizeDocsHref("/explore/", "/ja/docs/reference/"),
-    "/explore/",
-  );
   assert.equal(
     localizeDocsHref("https://github.com/Rerurate514/riebeckite", "/ja/docs/"),
     "https://github.com/Rerurate514/riebeckite",

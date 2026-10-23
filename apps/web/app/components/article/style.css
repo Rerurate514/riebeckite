@@ -57,10 +57,10 @@
     grid-column: 1;
     grid-row: 1;
     position: sticky;
-    top: var(--rb-docs-sticky-top);
+    top: var(--rb-docs-rail-top);
     align-self: start;
     width: var(--rb-layout-sidebar);
-    max-height: calc(100dvh - var(--rb-docs-sticky-top) - var(--rb-space-8));
+    max-height: var(--rb-docs-rail-max-block-size);
     margin-block: 0;
     margin-inline-start: calc(
       -1 *
@@ -88,18 +88,14 @@
     margin-inline-start: calc(100% + var(--rb-layout-gap));
     overflow-x: hidden;
     position: sticky;
-    top: var(--rb-docs-sticky-top, 4rem);
-    max-height: calc(
-      100dvh -
-      var(--rb-docs-sticky-top, 4rem) -
-      var(--rb-space-8)
-    );
+    top: var(--rb-docs-rail-top);
+    max-height: var(--rb-docs-rail-max-block-size);
     overflow-y: auto;
     overscroll-behavior: contain;
     border-block: 0;
     border-inline-start: 1px solid
       color-mix(in oklab, currentColor 18%, transparent);
-    padding-block: var(--rb-space-1) 0;
+    padding-block: 0;
     padding-inline-start: 1rem;
   }
 

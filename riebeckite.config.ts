@@ -21,7 +21,6 @@ import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { folderPages } from "@riebeckite/plugin-folder-pages";
 import { galleryPlugin } from "@riebeckite/plugin-gallery";
-import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
@@ -193,10 +192,6 @@ export default defineConfig({
           label: "Themes",
           href: "/docs/themes/",
         },
-        {
-          label: "Explore",
-          href: "/explore/",
-        },
       ],
       secondary: [
         {
@@ -211,7 +206,6 @@ export default defineConfig({
       sidebar: { auto: true, label: "Documentation" },
       prevNext: true,
     }),
-    gardenExplorerPlugin(),
     hoverPreviewPlugin(),
     shortcodes(),
     sidenotes(),

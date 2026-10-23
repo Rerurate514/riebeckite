@@ -108,7 +108,7 @@ for (const theme of ["light", "dark"] as const) {
       });
       assert.ok(Math.abs(initial.docsTop - initial.headerBottom) <= 1);
       assert.ok(Math.abs(initial.tocTop - initial.headerBottom) <= 1);
-      assert.ok(initial.tocEyebrowTop > initial.tocTop);
+      assert.ok(Math.abs(initial.tocEyebrowTop - initial.tocTop) <= 1);
       assert.ok(initial.docsScrollable);
       assert.ok(initial.tocScrollable);
 

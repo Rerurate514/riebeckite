@@ -41,8 +41,10 @@ async function copyCode(
   if (!code) return;
 
   await navigator.clipboard.writeText(code);
+  button.dataset.codeCopyState = "success";
   button.textContent = copiedLabel;
   window.setTimeout(() => {
+    delete button.dataset.codeCopyState;
     button.textContent = copyLabel;
   }, 1500);
 }

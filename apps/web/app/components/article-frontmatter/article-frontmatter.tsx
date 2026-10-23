@@ -25,7 +25,7 @@ export default function ArticleFrontmatter(props: Props) {
     return null;
 
   return (
-    <ArticleMeta>
+    <ArticleMeta class="site-article-frontmatter">
       {createdDate && (
         <time
           class="site-article-frontmatter__date"

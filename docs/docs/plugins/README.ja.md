@@ -110,6 +110,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | Plugin | できること |
 | --- | --- |
 | [Code Enhance](./code-enhance.ja.md) | 拡張したシンタックスハイライト |
+| [Source Files](./source-files.ja.md) | 選択したソースファイルのコードページと埋め込み |
 | [Code Tabs](./code-tabs.ja.md) | アクセシブルなタブ付きコードブロック |
 | [Code Annotations](./code-annotations.ja.md) | コードの注釈・強調・差分マーカー |
 | [Table of Contents](./toc.ja.md) | スクロールに追従する目次 |

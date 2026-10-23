@@ -28,6 +28,7 @@ export type PluginPageContext = PluginContext & {
   manifest: ContentManifest;
   /** Request pathname, normalized to an absolute path. */
   pathname: string;
+  renderMarkdown(markdown: string): Promise<string>;
 };
 
 export type PluginPageType = {

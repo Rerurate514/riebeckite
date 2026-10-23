@@ -4,6 +4,7 @@ import path from "node:path";
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
+  "packages/diagram",
   "packages/diagnostics",
   "packages/preview",
   "packages/spa",
@@ -76,6 +77,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/share",
   "packages/plugins/shortcodes",
   "packages/plugins/sidenotes",
+  "packages/plugins/source-files",
   "packages/plugins/taxonomy",
   "packages/plugins/text-fragment",
   "packages/plugins/toc",
@@ -117,6 +119,10 @@ const packagePublishingMetadata = {
     description:
       "Core content pipeline, configuration, and extension APIs for Riebeckite.",
     keywords: ["riebeckite", "markdown", "obsidian", "static-site-generator"],
+  },
+  "packages/diagram": {
+    description: "Shared diagram infrastructure for Riebeckite plugins.",
+    keywords: ["riebeckite", "diagram", "plugin"],
   },
   "packages/diagnostics": {
     description:
@@ -431,6 +437,11 @@ const packagePublishingMetadata = {
       "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
     keywords: ["riebeckite", "plugin", "sidenotes", "footnotes"],
   },
+  "packages/plugins/source-files": {
+    description:
+      "Publish selected vault source files as syntax-highlighted pages and wikilink embeds.",
+    keywords: ["riebeckite", "plugin", "source-files", "obsidian"],
+  },
   "packages/plugins/taxonomy": {
     description:
       "Build-time tag and folder taxonomy data, per-term feeds, and SEO for Riebeckite.",
@@ -531,6 +542,18 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory === "packages/core") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/diagram") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
@@ -684,6 +707,7 @@ export function expectedPackageMetadata(directory) {
       "series",
       "share",
       "shortcodes",
+      "source-files",
       "taxonomy",
       "text-fragment",
       "toc",

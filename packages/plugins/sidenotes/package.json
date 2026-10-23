@@ -40,7 +40,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Footnote styling for Riebeckite, with optional Tufte-style margin notes",
+  "description": "Tufte-style side notes for Riebeckite footnotes, with mobile popovers",
   "keywords": [
     "riebeckite",
     "plugin",

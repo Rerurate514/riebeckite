@@ -127,7 +127,8 @@ test("only the latest navigation commits, updates head, and owns history", async
     assert.equal(state.activeElement, "main-content");
 
     const head = await page.evaluate(() => ({
-      descriptions: document.querySelectorAll('meta[name="description"]').length,
+      descriptions: document.querySelectorAll('meta[name="description"]')
+        .length,
       description: document
         .querySelector('meta[name="description"]')
         ?.getAttribute("content"),
@@ -201,9 +202,7 @@ test("same-page hash history does not refetch and focuses the target", async () 
     assert.equal(fixture.requests("/c-fast"), 1);
 
     await page.goForward();
-    await page.waitForFunction(
-      () => document.activeElement?.id === "section",
-    );
+    await page.waitForFunction(() => document.activeElement?.id === "section");
     assert.equal(windowHash(await page.url()), "#section");
     assert.equal(fixture.requests("/c-fast"), 1);
     assert.deepEqual(errors, []);
@@ -237,6 +236,40 @@ test("fetch failures fall back to a document navigation", async () => {
   }
 });
 
+test("a commit failure falls back to a document navigation", async () => {
+  const { page, errors } = await open();
+  try {
+    await page.evaluate(() => {
+      (
+        window as Window & { __spaDocumentMarker?: string }
+      ).__spaDocumentMarker = "alive";
+    });
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: "load" }),
+      page.click('a[href="/commit-error"]'),
+    ]);
+    await page.waitForFunction(
+      () =>
+        !(window as Window & { __spaDocumentMarker?: string })
+          .__spaDocumentMarker,
+    );
+    await waitForMarker(page, "PAGE_COMMIT_ERROR");
+    const state = await spaState(page);
+    const marker = await page.evaluate(
+      () =>
+        (window as Window & { __spaDocumentMarker?: string })
+          .__spaDocumentMarker,
+    );
+    assert.equal(state.path, "/commit-error");
+    assert.equal(state.bootCount, 1);
+    assert.equal(state.headScriptRuns, 1);
+    assert.equal(marker, undefined);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("a same-origin redirect commits the final URL", async () => {
   const { page, errors } = await open();
   try {
@@ -244,7 +277,9 @@ test("a same-origin redirect commits the final URL", async () => {
     await page.waitForFunction(
       () =>
         window.location.pathname === "/c-fast" &&
-        document.querySelector("#main-content")?.textContent?.includes("PAGE_C"),
+        document
+          .querySelector("#main-content")
+          ?.textContent?.includes("PAGE_C"),
     );
     const state = await spaState(page);
     assert.equal(state.path, "/c-fast");

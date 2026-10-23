@@ -8,12 +8,21 @@ type Route = {
   delay?: number;
   main?: boolean;
   runtime?: boolean;
+  commitError?: boolean;
 };
 
 const routes = new Map<string, Route>([
   ["/a", { title: "Page A", marker: "PAGE_A" }],
   ["/b-slow", { title: "Page B", marker: "PAGE_B", delay: 150 }],
   ["/c-fast", { title: "Page C", marker: "PAGE_C", delay: 20 }],
+  [
+    "/commit-error",
+    {
+      title: "Commit error",
+      marker: "PAGE_COMMIT_ERROR",
+      commitError: true,
+    },
+  ],
   [
     "/missing",
     {
@@ -104,6 +113,7 @@ function html(route: Route, pathname: string, bundle: string): string {
       <a href="/missing">Missing</a>
       <a href="/error">Error</a>
       <a href="/no-main">No main</a>
+      <a href="/commit-error">Commit error</a>
       <a href="#section">Section</a>
     </nav>`;
   return `<!doctype html>
@@ -128,7 +138,7 @@ function html(route: Route, pathname: string, bundle: string): string {
   <div id="shell" data-shell-marker="preserved">shell</div>
   ${
     main
-      ? `<main id="main-content" tabindex="-1">
+      ? `<main id="main-content" tabindex="-1"${route.commitError ? ' data-commit-error="true"' : ""}>
     <h1>${route.marker}</h1>
     ${links}
     <div id="section">Section target</div>
@@ -155,6 +165,9 @@ function html(route: Route, pathname: string, bundle: string): string {
       onPageCommit({ root, signal }) {
         window.__pageCommits.push(root.querySelector("h1")?.textContent ?? "");
         if (signal.aborted) window.__abortedAfterCommit = true;
+        if (root.dataset.commitError === "true") {
+          throw new Error("intentional commit failure");
+        }
       },
     });
   </script>`

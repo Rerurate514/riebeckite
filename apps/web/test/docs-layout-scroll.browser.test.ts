@@ -54,6 +54,7 @@ async function loadDocsPage(
         --rb-space-3: 1.5rem;
         --rb-space-4: 2rem;
         --rb-space-8: 4rem;
+        --rb-rule-width: 1px;
         --rb-layout-page-max: 80rem;
         --rb-layout-article-max: 46rem;
         --rb-layout-sidebar: 15rem;
@@ -63,7 +64,12 @@ async function loadDocsPage(
         --rb-color-muted: #58677a;
       }</style><style>${styles}</style></head>
       <body class="riebeckite-page">
-        <header class="rb-site-header">Header</header>
+        <header class="rb-site-header">
+          <a class="rb-site-header__home" href="/">
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="" width="28" height="28" />
+            <span>Riebeckite</span>
+          </a>
+        </header>
         <main>
           <article class="rb-article">
             <div class="rb-article-layout">
@@ -102,15 +108,38 @@ for (const theme of ["light", "dark"] as const) {
           docsTop: docs.getBoundingClientRect().top,
           tocTop: toc.getBoundingClientRect().top,
           tocEyebrowTop: tocEyebrow.getBoundingClientRect().top,
+          docsStickyTop: Number.parseFloat(getComputedStyle(docs).top),
+          tocStickyTop: Number.parseFloat(getComputedStyle(toc).top),
           docsScrollable: docs.scrollHeight > docs.clientHeight,
           tocScrollable: toc.scrollHeight > toc.clientHeight,
         };
       });
-      assert.ok(Math.abs(initial.docsTop - initial.headerBottom) <= 1);
-      assert.ok(Math.abs(initial.tocTop - initial.headerBottom) <= 1);
+      assert.ok(Math.abs(initial.docsTop - initial.headerBottom) <= 0.5);
+      assert.ok(Math.abs(initial.tocTop - initial.headerBottom) <= 0.5);
+      assert.ok(Math.abs(initial.docsTop - initial.docsStickyTop) <= 0.5);
+      assert.ok(Math.abs(initial.tocTop - initial.tocStickyTop) <= 0.5);
       assert.ok(Math.abs(initial.tocEyebrowTop - initial.tocTop) <= 1);
       assert.ok(initial.docsScrollable);
       assert.ok(initial.tocScrollable);
+
+      await page.evaluate(() => window.scrollTo(0, 1));
+      const onePixel = await page.evaluate(() => {
+        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const toc = document.querySelector<HTMLElement>(
+          ".rr-table-of-contents--desktop",
+        );
+        if (!docs || !toc) throw new Error("docs fixture is incomplete");
+        return {
+          docsTop: docs.getBoundingClientRect().top,
+          tocTop: toc.getBoundingClientRect().top,
+          docsStickyTop: Number.parseFloat(getComputedStyle(docs).top),
+          tocStickyTop: Number.parseFloat(getComputedStyle(toc).top),
+        };
+      });
+      assert.ok(Math.abs(onePixel.docsTop - onePixel.docsStickyTop) <= 0.5);
+      assert.ok(Math.abs(onePixel.tocTop - onePixel.tocStickyTop) <= 0.5);
+      assert.ok(Math.abs(onePixel.docsTop - initial.docsTop) <= 0.5);
+      assert.ok(Math.abs(onePixel.tocTop - initial.tocTop) <= 0.5);
 
       await page.evaluate(() => window.scrollTo(0, 1200));
       const sticky = await page.evaluate(() => {

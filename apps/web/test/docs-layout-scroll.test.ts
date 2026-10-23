@@ -10,9 +10,10 @@ const shellCss = read("../app/styles/shell.css");
 const articleCss = read("../app/components/article/style.css");
 
 test("docs layout derives header height and rail bounds from one contract", () => {
+  assert.match(shellCss, /--rb-site-header-logo-size:\s*1\.75rem/);
   assert.match(
     shellCss,
-    /--rb-site-header-height:\s*calc\(var\(--rb-space-3\)\s*\*\s*3\)/,
+    /--rb-site-header-height:\s*calc\(\s*var\(--rb-space-3\)\s*\*\s*2\s*\+\s*var\(--rb-site-header-logo-size\)\s*\+\s*var\(--rb-rule-width,\s*1px\)\s*\)/,
   );
   assert.match(
     shellCss,
@@ -24,7 +25,19 @@ test("docs layout derives header height and rail bounds from one contract", () =
   );
   assert.match(
     shellCss,
+    /\.rb-site-header\s*\{[^}]*height:\s*var\(--rb-site-header-height\)/,
+  );
+  assert.doesNotMatch(
+    shellCss,
     /\.rb-site-header\s*\{[^}]*min-height:\s*var\(--rb-site-header-height\)/,
+  );
+  assert.match(
+    shellCss,
+    /\.rb-site-header\s*\{[^}]*border-bottom:\s*var\(--rb-rule-width,\s*1px\)/,
+  );
+  assert.match(
+    shellCss,
+    /\.rb-site-header__home img\s*\{[^}]*width:\s*var\(--rb-site-header-logo-size\)[^}]*height:\s*var\(--rb-site-header-logo-size\)/,
   );
 });
 

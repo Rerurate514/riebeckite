@@ -38,7 +38,7 @@ export default defineConfig({
 
 ::kbd[Ctrl+S]
 
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 
 :::note[補足]{type=warning}
 コンテナの本文では **Markdown** が使えます。
@@ -199,30 +199,30 @@ export default defineConfig({
 プライバシーに配慮した `youtube-nocookie.com` ドメインを使用して、YouTube 動画を埋め込めます。
 
 ```md
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 ```
 
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 
 ### Vimeo
 
 `dnt=1` プライバシーパラメータを使用して、Vimeo 動画を埋め込めます。
 
 ```md
-::vimeo[id=76979871]
+::vimeo{id=76979871}
 ```
 
-::vimeo[id=76979871]
+::vimeo{id=76979871}
 
 ### GitHub Gist
 
 GitHub Gist のコードスニペットをページ内に直接埋め込めます。JavaScript が無効な環境では、代替リンクが提供されます。
 
 ```md
-::gist{user=octocat id=aa5a315d61ae9438b18d}
+::gist{user=octocat id=6cad326836d38bd3a7ae}
 ```
 
-::gist{user=octocat id=aa5a315d61ae9438b18d}
+::gist{user=octocat id=6cad326836d38bd3a7ae}
 
 ### リンクカード（link-card）
 

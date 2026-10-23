@@ -359,7 +359,7 @@ Factory: `shortcodes` · [README](https://github.com/Rerurate514/riebeckite/blob
 
 Expands built-in shortcode syntax inside Markdown.
 
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 
 ::figure[Demo image]{src="/images/demo.png"}
 

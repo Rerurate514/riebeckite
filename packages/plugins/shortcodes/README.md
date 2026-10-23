@@ -39,7 +39,7 @@ Styles ship in `style.css`.
 
 ::kbd[Ctrl+S]
 
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 
 :::note[Heads up]{type=warning}
 Container bodies support **Markdown**.
@@ -200,30 +200,30 @@ Display images with optional captions and dimensions using semantic `<figure>` m
 Embed YouTube videos using the privacy-enhanced `youtube-nocookie.com` domain.
 
 ```md
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 ```
 
-::youtube[id=dQw4w9WgXcQ]
+::youtube{id=dQw4w9WgXcQ}
 
 ### Vimeo
 
 Embed Vimeo videos with the `dnt=1` privacy parameter.
 
 ```md
-::vimeo[id=76979871]
+::vimeo{id=76979871}
 ```
 
-::vimeo[id=76979871]
+::vimeo{id=76979871}
 
 ### GitHub Gist
 
 Embed GitHub Gist code snippets directly into a page. A fallback link is provided for environments where JavaScript is disabled.
 
 ```md
-::gist{user=octocat id=aa5a315d61ae9438b18d}
+::gist{user=octocat id=6cad326836d38bd3a7ae}
 ```
 
-::gist{user=octocat id=aa5a315d61ae9438b18d}
+::gist{user=octocat id=6cad326836d38bd3a7ae}
 
 ### Link Card
 

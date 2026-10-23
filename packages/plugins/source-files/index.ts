@@ -39,6 +39,7 @@ export function sourceFiles(options: SourceFilesOptions) {
     pageTypes: [
       {
         id: "source-file",
+        directoryIndex: true,
         paths: (context) =>
           listSourceFiles(context.manifest, context.contentSource, options),
         outputDependencies: (context) => {

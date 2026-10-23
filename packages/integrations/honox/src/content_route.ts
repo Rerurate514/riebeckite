@@ -106,6 +106,11 @@ export async function resolveRiebeckiteContentRequest(
   const requestedSlug = c.req.param(parameter);
   if (!requestedSlug) return { kind: "response", response: c.notFound() };
   if (contentExtensionPattern.test(requestedSlug)) {
+    const page = await content.resolvePage(c.req.path);
+    if (page) {
+      applyRiebeckiteRouteContext(c, { kind: "page", page });
+      return { kind: "page", page };
+    }
     return { kind: "response", response: c.notFound() };
   }
 

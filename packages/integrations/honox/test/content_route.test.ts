@@ -191,6 +191,27 @@ test("resolveRiebeckiteContentRequest resolves a plugin page and assigns context
   assert.equal(variables.get("htmlLanguage"), "ja");
 });
 
+test("resolveRiebeckiteContentRequest resolves a plugin page with an extension", async () => {
+  const page = pluginPage({
+    pathname: "/source/assets/example.ts",
+    language: "ja",
+  });
+  const { context, variables } = requestContext({
+    slug: "source/assets/example.ts",
+    path: "/source/assets/example.ts",
+  });
+
+  const resolved = await resolveRiebeckiteContentRequest(
+    context,
+    contentStub({ manifest: manifestOf([]), page }),
+  );
+
+  assert.equal(resolved.kind, "page");
+  if (resolved.kind !== "page") return;
+  assert.equal(resolved.page.pathname, "/source/assets/example.ts");
+  assert.equal(variables.get("htmlLanguage"), "ja");
+});
+
 test("resolveRiebeckiteContentRequest returns the redirect response", async () => {
   const manifest = manifestOf([entry("public", "/new", true)]);
   manifest.publicRedirects.set("/old", {

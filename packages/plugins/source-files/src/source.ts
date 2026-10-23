@@ -85,7 +85,7 @@ export async function resolveSourcePage(
 }
 
 export function sourceFilePath(path: string): string {
-  return `/source/${path.split("/").map(encodeURIComponent).join("/")}`;
+  return `/source/${path.split("/").map(encodeURIComponent).join("/")}/`;
 }
 
 export function resolveSourcePath(

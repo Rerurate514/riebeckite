@@ -30,7 +30,7 @@ export default defineConfig({
 
 ## リンクと埋め込み
 
-- `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.ja.md)` は `/source/src/main.ts` のページへリンクします。
+- `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.ja.md)` は `/source/src/main.ts/` のページへリンクします。
 - `![src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.ja.md)` は既存のコードブロック表示経路でソースを表示します。
 - `#L10` と `#L10-L20` は埋め込みの行範囲を選びます。Code Enhance を有効にすると、ソースページでも該当の行または範囲へスクロールし、強調表示します。
 

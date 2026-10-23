@@ -30,7 +30,7 @@ export default defineConfig({
 
 ## Links and embeds
 
-- `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` links to `/source/src/main.ts`.
+- `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` links to `/source/src/main.ts/`.
 - `![src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` renders the source in the existing code-block path.
 - `#L10` and `#L10-L20` select lines in an embed. With Code Enhance enabled, those source-page fragments scroll to and highlight the matching line or range.
 

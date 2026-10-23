@@ -68,20 +68,20 @@ test("publishes a selected source file linked from public content", async () => 
     "src/main.ts": "const first = 1;\nconst second = 2;\nconst third = 3;\n",
   });
 
-  assert.deepEqual(await content.getPagePaths(), ["/source/src/main.ts"]);
+  assert.deepEqual(await content.getPagePaths(), ["/source/src/main.ts/"]);
   const changes = await content.getOutputChangeSet({ incremental: false });
   assert.deepEqual(
     changes.affected.filter((output) => output.kind === "plugin-page"),
     [
       {
         kind: "plugin-page",
-        path: "source/src/main.ts.html",
+        path: "source/src/main.ts/index.html",
         producer: "plugin:source-files:page:source-file",
         dependencies: [{ type: "file", path: "src/main.ts" }],
       },
     ],
   );
-  const page = await content.resolvePage("/source/src/main.ts");
+  const page = await content.resolvePage("/source/src/main.ts/");
   assert.equal(page?.type, "source-file");
   assert.match(page?.body ?? "", /const[\s\S]*first[\s\S]*=[\s\S]*1/);
   assert.match(page?.body ?? "", /id="L1"/);
@@ -92,7 +92,7 @@ test("publishes a selected source file linked from public content", async () => 
   const manifest = await content.getManifest();
   assert.match(
     manifest.publicEntries[0]?.html ?? "",
-    /href="\/source\/src\/main.ts#L2"/,
+    /href="\/source\/src\/main.ts\/#L2"/,
   );
   assert.match(
     manifest.publicEntries[0]?.html ?? "",
@@ -131,20 +131,20 @@ test("keeps incremental source page paths equivalent to clean builds", async () 
   };
 
   try {
-    await expected(["/source/src/main.ts"]);
+    await expected(["/source/src/main.ts/"]);
     files["src/main.ts"] = "export const value = 2;";
-    await expected(["/source/src/main.ts"]);
+    await expected(["/source/src/main.ts/"]);
     files["src/unused.ts"] = "export const unused = true;";
-    await expected(["/source/src/main.ts"]);
+    await expected(["/source/src/main.ts/"]);
     files["index.md"] += "\n\n[[src/unused.ts]]";
-    await expected(["/source/src/main.ts", "/source/src/unused.ts"]);
+    await expected(["/source/src/main.ts/", "/source/src/unused.ts/"]);
     files["index.md"] = "---\npublish: true\n---\n\n[[src/unused.ts]]";
-    await expected(["/source/src/unused.ts"]);
+    await expected(["/source/src/unused.ts/"]);
     delete files["src/unused.ts"];
     await expected([]);
     files["src/renamed.ts"] = "export const renamed = true;";
     files["index.md"] = "---\npublish: true\n---\n\n[[src/renamed.ts]]";
-    await expected(["/source/src/renamed.ts"]);
+    await expected(["/source/src/renamed.ts/"]);
     files["index.md"] = "---\npublish: false\n---\n\n[[src/renamed.ts]]";
     await expected([]);
     files["index.md"] = "---\npublish: true\n---\n\n[[src/renamed.ts]]";
@@ -157,7 +157,7 @@ test("keeps incremental source page paths equivalent to clean builds", async () 
     delete files["src/.env"];
     files["src/final.ts"] = "export const final = true;";
     files["index.md"] = "---\npublish: true\n---\n\n[[src/final.ts]]";
-    await expected(["/source/src/final.ts"]);
+    await expected(["/source/src/final.ts/"]);
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }

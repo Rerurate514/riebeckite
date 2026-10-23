@@ -15,7 +15,7 @@ export function defineDiagramPlugin<TOptions>(
     processedContentCache: definition.processedContentCache,
     validateOptions: definition.validateOptions,
     extendHtmlPipeline: (pipeline) =>
-      pipeline.use(definition.rehype(definition.options) as never),
+      pipeline.use(definition.rehype as never, definition.options),
     assets: definition.style
       ? [createStyleAsset(definition.name, definition.style)]
       : undefined,

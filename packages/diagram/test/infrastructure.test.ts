@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildDiagramFigure,
+  defineDiagramPlugin,
   findDiagramBlocks,
   resolveDiagramCaption,
 } from "../index.js";
@@ -76,6 +77,32 @@ test("buildDiagramFigure emits the shared DOM contract", () => {
   assert.equal(figure.children?.[0]?.properties?.dataDiagramCaption, "true");
   assert.equal(figure.children?.[1]?.properties?.dataDiagramContent, "true");
   assert.equal(figure.children?.[2]?.properties?.dataDiagramFallback, "true");
+});
+
+test("defineDiagramPlugin registers the rehype factory with its options", () => {
+  const options = { enabled: true };
+  const rehype = (_options: typeof options) => () => undefined;
+  const plugin = defineDiagramPlugin({
+    name: "example-diagram",
+    options,
+    processedContentCache: {
+      version: "example-v1",
+      dependencyMode: "none",
+    },
+    rehype,
+  });
+  let registeredPlugin: unknown;
+  let registeredOptions: unknown;
+
+  plugin.extendHtmlPipeline?.({
+    use(plugin, pluginOptions) {
+      registeredPlugin = plugin;
+      registeredOptions = pluginOptions;
+    },
+  });
+
+  assert.equal(registeredPlugin, rehype);
+  assert.equal(registeredOptions, options);
 });
 
 test("render sessions serialize work and retry selected failures", async () => {

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Filesystem roots and external vaults
 sidebar:
   label: Filesystem roots and external vaults

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "CSS とブラウザ動作を追加する"
 sidebar:
   label: "8. CSS とブラウザ動作を追加する"

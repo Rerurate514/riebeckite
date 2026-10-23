@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: 3つの Root と外部 Vault
 sidebar:
   label: Root と外部 Vault

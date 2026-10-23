@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Plugin の設定
 sidebar:
   label: Plugin の設定

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Troubleshooting an external vault
 sidebar:
   label: Troubleshooting an external vault

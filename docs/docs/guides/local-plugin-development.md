@@ -1,4 +1,5 @@
 ---
+date: 2026-10-22
 title: Local Plugin Development
 ---
 # Local Plugin Development

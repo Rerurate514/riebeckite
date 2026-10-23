@@ -1,4 +1,5 @@
 ---
+date: 2026-10-11
 title: Next.js static export から移行する
 private: true
 sidebar:

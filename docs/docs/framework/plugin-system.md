@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Plugins in Depth
 sidebar:
   label: Plugins in Depth

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Change Public URLs"
 sidebar:
   label: "4. Change Public URLs"

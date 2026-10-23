@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Separating Content and the Site (In Depth)
 ---
 # Separating Content and the Site (In Depth)

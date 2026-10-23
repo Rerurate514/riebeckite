@@ -1,4 +1,5 @@
 ---
+date: 2026-10-23
 title: SPA Runtime の内部実装
 ---
 

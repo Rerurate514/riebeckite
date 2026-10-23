@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Build Dependency Contract
 ---
 # Build Dependency Contract

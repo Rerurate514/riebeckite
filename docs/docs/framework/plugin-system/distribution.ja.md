@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: プラグインの配布と検証
 sidebar:
   label: 配布と検証

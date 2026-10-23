@@ -1,4 +1,5 @@
 ---
+date: 2026-10-11
 title: Migrate from GitBook
 private: true
 sidebar:

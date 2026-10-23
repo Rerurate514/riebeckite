@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "公開 URL を変える"
 sidebar:
   label: "4. 公開 URL を変える"

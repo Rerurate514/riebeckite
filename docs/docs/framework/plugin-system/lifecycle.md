@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Dependencies, context, and lifecycle
 sidebar:
   label: Dependencies, context, and lifecycle

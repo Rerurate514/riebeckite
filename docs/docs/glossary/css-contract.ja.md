@@ -1,4 +1,5 @@
 ---
+date: 2026-10-14
 title: CSS の取り決め
 sidebar:
   hidden: true

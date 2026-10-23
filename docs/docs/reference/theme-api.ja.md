@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Theme System
 ---
 # Theme System

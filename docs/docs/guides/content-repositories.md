@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Separating content from the site
 ---
 # Separating content from the site

@@ -39,6 +39,7 @@ import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
 import { qualityPlugin } from "@riebeckite/plugin-quality";
 import { queryPlugin } from "@riebeckite/plugin-query";
+import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
@@ -84,24 +85,8 @@ export default defineConfig({
   plugins: [
     obsidianMarkdown(),
     properties({
-      include: [
-        "created",
-        "modified",
-        "tags",
-        "status",
-        "kind",
-        "date",
-        "source",
-      ],
-      order: [
-        "created",
-        "modified",
-        "tags",
-        "status",
-        "kind",
-        "date",
-        "source",
-      ],
+      include: ["created", "modified", "tags", "status", "kind", "source"],
+      order: ["created", "modified", "tags", "status", "kind", "source"],
     }),
     seo({
       feed: {
@@ -171,6 +156,7 @@ export default defineConfig({
     kanban(),
     uxPlugin(),
     share(),
+    recentPostsPlugin(),
     relatedPosts(),
     diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: webmentionProvider }),

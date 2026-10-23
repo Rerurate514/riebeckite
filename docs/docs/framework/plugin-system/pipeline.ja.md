@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Content パイプラインと拡張ポイント
 sidebar:
   label: パイプラインと拡張ポイント

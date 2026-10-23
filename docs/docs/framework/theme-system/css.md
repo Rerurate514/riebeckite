@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Stable CSS hooks and the cascade
 sidebar:
   label: Stable CSS hooks and the cascade

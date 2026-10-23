@@ -126,7 +126,7 @@
 
 .site-footer__main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.9fr) auto;
   gap: clamp(2rem, 6vw, 6rem);
   padding-block: clamp(2rem, 4vw, 3.5rem);
 }
@@ -162,6 +162,43 @@
   text-underline-offset: 0.2em;
 }
 
+.site-footer__recent .rr-recent-posts {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.site-footer__recent .rr-recent-posts__header {
+  margin-bottom: var(--rb-space-2);
+}
+
+.site-footer__recent .rr-recent-posts__title {
+  color: var(--rb-color-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.site-footer__recent .rr-recent-posts__link {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.125rem;
+  padding-block: 0.625rem;
+}
+
+.site-footer__recent .rr-recent-posts__date {
+  font-size: 0.6875rem;
+}
+
+.site-footer__recent .rr-recent-posts__post-title {
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.site-footer__recent .rr-recent-posts__item:last-child {
+  border-bottom: 0;
+}
+
 .site-footer__navigation {
   align-self: end;
 }
@@ -181,6 +218,17 @@
 .site-footer__author a:focus-visible {
   outline: 2px solid var(--rb-color-accent);
   outline-offset: 3px;
+}
+
+@media (max-width: 72rem) {
+  .site-footer__main {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
+  }
+
+  .site-footer__navigation {
+    grid-column: 1 / -1;
+    align-self: start;
+  }
 }
 
 @media (max-width: 48rem) {

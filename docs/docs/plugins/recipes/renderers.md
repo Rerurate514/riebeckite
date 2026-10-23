@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Render an Embedded File"
 sidebar:
   label: "2. Render an Embedded File"

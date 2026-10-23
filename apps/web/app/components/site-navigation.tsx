@@ -3,7 +3,9 @@ import {
   resolveSiteNavigation,
   SiteNav,
 } from "@riebeckite/plugin-navigation";
+import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
+import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
 
 export function SiteHeader() {
@@ -48,6 +50,17 @@ export function SiteHeader() {
 export function SiteFooter() {
   const site = useSiteContext();
   const path = site?.path ?? "/";
+  const language = resolveWebLocale(site?.language);
+  const posts = site
+    ? getRecentPosts({
+        manifest: {
+          discoverableEntries: site.manifest.discoverableEntries.filter(
+            (entry) =>
+              resolveWebLocale(entry.publicLocation.language) === language,
+          ),
+        },
+      })
+    : [];
 
   return (
     <footer class="site-footer rb-site-footer">
@@ -74,6 +87,9 @@ export function SiteFooter() {
               GitHub
             </a>
           </div>
+        </div>
+        <div class="site-footer__recent">
+          <RecentPosts posts={posts} />
         </div>
         <SiteNav
           placement="secondary"

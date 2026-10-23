@@ -1,4 +1,5 @@
 ---
+date: 2026-10-14
 title: Diagnostic code
 sidebar:
   hidden: true

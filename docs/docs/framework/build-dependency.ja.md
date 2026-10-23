@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Build Dependency の取り決め
 ---
 # Build Dependency の取り決め

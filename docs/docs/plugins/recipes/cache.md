@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Cache Derived Data"
 sidebar:
   label: "12. Cache Derived Data"

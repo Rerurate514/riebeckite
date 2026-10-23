@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Add Your First Plugin
 ---
 # Add Your First Plugin

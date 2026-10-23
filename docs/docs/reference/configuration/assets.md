@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Attachments, media, and publishing
 sidebar:
   label: Attachments, media, and publishing

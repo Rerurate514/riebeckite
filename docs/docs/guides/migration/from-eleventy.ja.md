@@ -1,4 +1,5 @@
 ---
+date: 2026-10-11
 title: Eleventy (11ty) から移行する
 private: true
 sidebar:

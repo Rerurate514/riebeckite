@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Add CSS and Browser Behavior"
 sidebar:
   label: "8. Add CSS and Browser Behavior"

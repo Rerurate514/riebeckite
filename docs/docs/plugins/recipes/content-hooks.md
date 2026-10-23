@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Run Code at Content Phases"
 sidebar:
   label: "3. Run Code at Content Phases"

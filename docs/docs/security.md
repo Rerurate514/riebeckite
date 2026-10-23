@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Security model
 sidebar:
   label: Security

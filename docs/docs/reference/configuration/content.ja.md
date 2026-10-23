@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Content の設定
 sidebar:
   label: Content の設定

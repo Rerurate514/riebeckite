@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Packaging and verification
 sidebar:
   label: Packaging and verification

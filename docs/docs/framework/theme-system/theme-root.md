@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Theme root and attributes
 sidebar:
   label: Theme root and attributes

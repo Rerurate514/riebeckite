@@ -1,4 +1,5 @@
 ---
+date: 2026-10-16
 title: Plugin UI component
 sidebar:
   hidden: true

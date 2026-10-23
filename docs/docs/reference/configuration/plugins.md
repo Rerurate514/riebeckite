@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Plugin configuration
 sidebar:
   label: Plugin configuration

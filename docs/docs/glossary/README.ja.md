@@ -1,4 +1,5 @@
 ---
+date: 2026-10-14
 title: 用語集
 sidebar:
   label: 用語集

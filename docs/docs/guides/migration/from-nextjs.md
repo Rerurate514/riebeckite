@@ -1,4 +1,5 @@
 ---
+date: 2026-10-11
 title: Migrate from Next.js static export
 private: true
 sidebar:

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Stable CSS Hooks と Cascade
 sidebar:
   label: CSS Hooks と Cascade

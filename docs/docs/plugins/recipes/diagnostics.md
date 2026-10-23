@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Report Diagnostics"
 sidebar:
   label: "11. Report Diagnostics"

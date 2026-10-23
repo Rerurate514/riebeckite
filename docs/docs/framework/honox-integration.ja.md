@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: HonoX Integration
 sidebar:
   label: HonoX Integration

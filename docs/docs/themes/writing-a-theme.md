@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Your First Theme
 ---
 # Your First Theme

@@ -1,4 +1,5 @@
 ---
+date: 2026-09-28
 title: Site application contract
 sidebar:
   label: Site application contract

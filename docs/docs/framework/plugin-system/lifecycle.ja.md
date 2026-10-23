@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: プラグインの依存関係と Lifecycle
 sidebar:
   label: 依存関係と Lifecycle

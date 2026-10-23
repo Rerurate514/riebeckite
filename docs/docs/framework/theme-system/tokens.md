@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Design tokens
 sidebar:
   label: Design tokens

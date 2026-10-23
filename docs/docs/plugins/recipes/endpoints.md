@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Add an HTTP Endpoint"
 sidebar:
   label: "9. Add an HTTP Endpoint"

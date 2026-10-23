@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Attachment・Media と公開
 sidebar:
   label: Attachment・Media と公開

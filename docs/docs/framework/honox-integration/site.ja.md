@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Site Application の責務
 sidebar:
   label: Site Application の責務

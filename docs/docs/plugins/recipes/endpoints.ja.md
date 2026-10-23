@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "HTTP エンドポイントを追加する"
 sidebar:
   label: "9. HTTP エンドポイントを追加する"

@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Log and Trace"
 sidebar:
   label: "15. Log and Trace"

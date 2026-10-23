@@ -1,4 +1,5 @@
 ---
+date: 2026-10-21
 title: SPA Navigation
 ---
 

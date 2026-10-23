@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Share a UI Component"
 sidebar:
   label: "7. Share a UI Component"

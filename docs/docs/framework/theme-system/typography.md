@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Typography and article layout
 sidebar:
   label: Typography and article layout

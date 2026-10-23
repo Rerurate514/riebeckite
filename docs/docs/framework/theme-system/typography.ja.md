@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Typography と Article Layout
 sidebar:
   label: Typography と Article Layout

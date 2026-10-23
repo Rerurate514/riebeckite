@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Getting Started
 sidebar:
   label: Getting Started

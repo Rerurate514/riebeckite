@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "診断を返す"
 sidebar:
   label: "11. 診断を返す"

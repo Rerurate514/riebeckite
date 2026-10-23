@@ -1,4 +1,5 @@
 ---
+date: 2026-10-22
 title: ローカル Plugin の開発
 ---
 # ローカル Plugin の開発

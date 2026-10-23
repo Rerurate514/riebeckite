@@ -1,4 +1,5 @@
 ---
+date: 2026-10-11
 title: Migration Guides
 private: true
 sidebar:

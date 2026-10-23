@@ -1,4 +1,5 @@
 ---
+date: 2026-10-20
 title: "Transform Markdown or HTML"
 sidebar:
   label: "1. Transform Markdown or HTML"

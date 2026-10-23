@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/diagram": "workspace:*",
     "wavedrom": "^3.7.0"
   },
   "publishConfig": {

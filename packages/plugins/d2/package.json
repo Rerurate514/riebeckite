@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@d2lang/d2": "^0.1.34",
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/diagram": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -499,6 +499,19 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/diagram:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/integrations/analytics-cloudflare:
     dependencies:
       '@riebeckite/plugin-analytics':
@@ -702,6 +715,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
@@ -770,6 +786,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
 
   packages/plugins/daily-notes:
     dependencies:
@@ -978,6 +997,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       '@viz-js/viz':
         specifier: ^3.31.0
         version: 3.31.0
@@ -1091,12 +1113,18 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
 
   packages/plugins/markmap:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       markmap-lib:
         specifier: ^0.18.12
         version: 0.18.12(markmap-common@0.18.9)
@@ -1128,6 +1156,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       mermaid:
         specifier: ^11.12.2
         version: 11.17.2
@@ -1214,6 +1245,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
 
   packages/plugins/properties:
     dependencies:
@@ -1338,6 +1372,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
 
   packages/plugins/search:
     dependencies:
@@ -1484,6 +1521,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       vega:
         specifier: ^6.4.0
         version: 6.4.0
@@ -1499,6 +1539,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
       wavedrom:
         specifier: ^3.7.0
         version: 3.7.0(patch_hash=66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a)

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/diagram": "workspace:*",
     "chart.js": "^4.5.1"
   },
   "publishConfig": {

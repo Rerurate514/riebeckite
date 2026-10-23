@@ -277,7 +277,7 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes("External Consumer Citations")) {
     fail("citations plugin did not render the bibliography entry");
   }
-  if (!combined.includes("data-chartjs-config")) {
+  if (!combined.includes("data-diagram-config")) {
     fail("generated HTML is missing the chartjs canvas configuration");
   }
   if (!combined.includes("rb-chartjs")) {

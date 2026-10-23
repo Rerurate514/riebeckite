@@ -1,4 +1,5 @@
 ---
+date: 2026-10-06
 title: Chart.js
 ---
 # Chart.js
@@ -93,20 +94,22 @@ configuration is serialized, so Chart.js never sees it:
 ## Output
 
 ````html
-<figure class="rb-chartjs" data-chartjs-marker="RIEBECKITE_EXTERNAL_CHARTJS_MARKER">
+<figure class="rb-chartjs" data-diagram="chartjs" data-diagram-status="pending" data-diagram-id="rb-chartjs-…" data-chartjs-marker="RIEBECKITE_EXTERNAL_CHARTJS_MARKER">
+  <figcaption class="rb-chartjs__caption" data-diagram-caption="true">Weekly visits</figcaption>
   <canvas
     class="rb-chartjs__canvas"
-    data-chartjs-config="{&quot;type&quot;:&quot;bar&quot;,...}"
+    data-diagram-content="true"
+    data-diagram-config="{&quot;type&quot;:&quot;bar&quot;,...}"
     role="img"
-    aria-label="Weekly visits"
+    aria-labelledby="rb-chartjs-…-caption"
   ></canvas>
-  <figcaption class="rb-chartjs__caption">Weekly visits</figcaption>
+  <details class="rb-chartjs__fallback" data-diagram-fallback="true">…</details>
 </figure>
 ````
 
 - `.rb-chartjs` — figure wrapper (responsive, themed with `--rb-color-*`)
 - `.rb-chartjs__canvas` — the `<canvas>` Chart.js draws into; its
-  `data-chartjs-config` attribute holds the escaped JSON configuration
+  `data-diagram-config` attribute holds the escaped JSON configuration
 - `.rb-chartjs__caption` — the `<figcaption>` shown when a caption is present
 
 ## Options
@@ -126,11 +129,11 @@ diagnostic with `source: "@riebeckite/plugin-chartjs"` and
 
 ## Client rendering
 
-Chart.js is **not** bundled at build time. The site's client bundle must call
-`initChartJs`, which `chartjs()` wires up through `createClientEntry`. It looks
-for `canvas[data-chartjs-config]`, parses each payload, imports
-`chart.js/auto`, and constructs a chart per canvas. A parse error or a Chart.js
-exception skips that canvas only.
+Chart.js is **not** bundled at build time. The site's client bundle calls
+`initChartJs` through the shared diagram client lifecycle. It renders pending
+`[data-diagram="chartjs"]` figures, imports `chart.js/auto`, and finalizes each
+Chart.js instance on page unmount. A failure marks that figure as `error` and
+opens its source fallback.
 
 ## Limitations
 

@@ -1,3 +1,11 @@
+import {
+  element,
+  getStringProperty,
+  getTextContent,
+  hasClass,
+  text,
+  visitElements,
+} from "./hast.js";
 import { resolveMarkmapOptions } from "./options.js";
 import { describeMarkmapTree, parseMarkmapSource } from "./parse.js";
 import type {
@@ -6,7 +14,6 @@ import type {
   MarkmapOptions,
   MarkmapResolvedOptions,
   ParentNode,
-  TextNode,
 } from "./types.js";
 
 const DIAGNOSTIC_SOURCE = "@riebeckite/plugin-markmap";
@@ -156,75 +163,4 @@ function reportDiagnostic(file: unknown, message: string) {
       ruleId: "invalid-source",
     });
   }
-}
-
-function visitElements(
-  node: HastNode,
-  visitor: (node: ElementNode, parent?: ParentNode, index?: number) => void,
-  parent?: ParentNode,
-  index?: number,
-) {
-  if (isElementNode(node)) visitor(node, parent, index);
-
-  for (const [childIndex, child] of [...getChildren(node)].entries()) {
-    visitElements(
-      child,
-      visitor,
-      hasChildren(node) ? node : parent,
-      childIndex,
-    );
-  }
-}
-
-function element(
-  tagName: string,
-  properties: Record<string, unknown> = {},
-  children: HastNode[] = [],
-): ElementNode {
-  return { type: "element", tagName, properties, children };
-}
-
-function text(value: string): TextNode {
-  return { type: "text", value };
-}
-
-function getTextContent(node: HastNode): string {
-  if (
-    node.type === "text" &&
-    "value" in node &&
-    typeof node.value === "string"
-  ) {
-    return node.value;
-  }
-  return getChildren(node).map(getTextContent).join("");
-}
-
-function getStringProperty(node: ElementNode, key: string): string | null {
-  const value = node.properties?.[key];
-  if (typeof value === "string") return value;
-  if (Array.isArray(value)) return value.join(" ");
-  return null;
-}
-
-function hasClass(node: ElementNode, className: string): boolean {
-  const value = node.properties?.className;
-  const classes = Array.isArray(value)
-    ? value.map(String)
-    : typeof value === "string"
-      ? value.split(/\s+/)
-      : [];
-  return classes.includes(className);
-}
-
-function isElementNode(node: HastNode): node is ElementNode {
-  return node.type === "element";
-}
-
-function hasChildren(node: HastNode): node is ParentNode {
-  return Array.isArray((node as { children?: unknown }).children);
-}
-
-function getChildren(node: HastNode): HastNode[] {
-  const children = (node as { children?: unknown }).children;
-  return Array.isArray(children) ? (children as HastNode[]) : [];
 }

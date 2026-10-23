@@ -1,9 +1,5 @@
-import {
-  type ConfigValidationIssue,
-  createClientEntry,
-  createStyleAsset,
-  definePlugin,
-} from "@riebeckite/core";
+import type { ConfigValidationIssue } from "@riebeckite/core";
+import { defineDiagramPlugin } from "@riebeckite/diagram";
 import { rehypeChartJs } from "./src/rehype.js";
 import type { ChartJsOptions } from "./src/types.js";
 
@@ -20,7 +16,7 @@ export type {
  * drawn in the browser by `initChartJs`.
  */
 export function chartjs(options: ChartJsOptions = {}) {
-  return definePlugin({
+  return defineDiagramPlugin({
     name: "chartjs",
     order: -10,
     processedContentCache: {
@@ -29,26 +25,15 @@ export function chartjs(options: ChartJsOptions = {}) {
     },
     options,
     validateOptions: validateChartJsOptions,
-    extendHtmlPipeline: (pipeline) => {
-      pipeline.use(rehypeChartJs, options);
+    rehype: rehypeChartJs,
+    style: "@riebeckite/plugin-chartjs/style.css",
+    client: {
+      moduleSpecifier: "@riebeckite/plugin-chartjs/client",
+      exportName: "initChartJs",
     },
-    assets: [
-      createStyleAsset("chartjs", "@riebeckite/plugin-chartjs/style.css"),
-    ],
-    clientEntries: [
-      createClientEntry(
-        "chartjs",
-        "@riebeckite/plugin-chartjs/client",
-        "initChartJs",
-        undefined,
-        undefined,
-        "context",
-      ),
-    ],
   });
 }
 
-/** Alias kept for symmetry with the other plugin factories. */
 export const chartjsPlugin = chartjs;
 
 function validateChartJsOptions(

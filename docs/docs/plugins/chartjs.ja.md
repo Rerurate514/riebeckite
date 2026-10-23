@@ -1,4 +1,5 @@
 ---
+date: 2026-10-08
 title: Chart.js
 ---
 # Chart.js
@@ -85,19 +86,21 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 ## 出力
 
 ````html
-<figure class="rb-chartjs" data-chartjs-marker="RIEBECKITE_EXTERNAL_CHARTJS_MARKER">
+<figure class="rb-chartjs" data-diagram="chartjs" data-diagram-status="pending" data-diagram-id="rb-chartjs-…" data-chartjs-marker="RIEBECKITE_EXTERNAL_CHARTJS_MARKER">
+  <figcaption class="rb-chartjs__caption" data-diagram-caption="true">週間の訪問数</figcaption>
   <canvas
     class="rb-chartjs__canvas"
-    data-chartjs-config="{&quot;type&quot;:&quot;bar&quot;,...}"
+    data-diagram-content="true"
+    data-diagram-config="{&quot;type&quot;:&quot;bar&quot;,...}"
     role="img"
-    aria-label="週間の訪問数"
+    aria-labelledby="rb-chartjs-…-caption"
   ></canvas>
-  <figcaption class="rb-chartjs__caption">週間の訪問数</figcaption>
+  <details class="rb-chartjs__fallback" data-diagram-fallback="true">…</details>
 </figure>
 ````
 
 - `.rb-chartjs`：図全体のラッパー。`--rb-color-*` で配色を引き継ぎます
-- `.rb-chartjs__canvas`：Chart.js が描画する `<canvas>`。`data-chartjs-config` にエスケープ済みの JSON 設定が入ります
+- `.rb-chartjs__canvas`：Chart.js が描画する `<canvas>`。`data-diagram-config` にエスケープ済みの JSON 設定が入ります
 - `.rb-chartjs__caption`：キャプションがある場合の `<figcaption>`
 
 ## オプション
@@ -114,7 +117,7 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 
 ## クライアント側の描画
 
-Chart.js はビルド時にはバンドルされません。サイトのクライアントバンドルが `initChartJs` を呼ぶ必要があり、`chartjs()` が `createClientEntry` で結線します。`canvas[data-chartjs-config]` を探し、各ペイロードをパースして `chart.js/auto` を import し、canvas ごとにグラフを生成します。パース失敗や Chart.js の例外はその canvas だけをスキップします。
+Chart.js はビルド時にはバンドルされません。サイトのクライアントバンドルは共有 Diagram クライアントライフサイクルを通じて `initChartJs` を呼びます。`[data-diagram="chartjs"]` のうち未描画の figure を処理し、`chart.js/auto` を import します。ページを離れる際には各 Chart.js instance を破棄します。失敗した figure には `error` を設定し、ソースのフォールバックを開きます。
 
 ## 制限
 

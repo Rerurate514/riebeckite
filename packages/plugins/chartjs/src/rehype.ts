@@ -1,12 +1,10 @@
-import { escapeHtmlAttribute } from "@riebeckite/core";
 import {
-  element,
-  getStringProperty,
-  getTextContent,
-  hasClass,
-  text,
-  visitElements,
-} from "./hast.js";
+  buildDiagramFigure,
+  deterministicDiagramId,
+  findDiagramBlocks,
+  reportDiagramDiagnostic,
+  resolveDiagramCaption,
+} from "@riebeckite/diagram";
 import type {
   ChartJsOptions,
   ElementNode,
@@ -15,7 +13,6 @@ import type {
 } from "./types.js";
 
 const DEFAULT_CLASS_NAME = "rb-chartjs";
-const CHART_LANGUAGE_CLASS = "language-chart";
 /**
  * Stable hook emitted on every generated figure. It lets consumers (and the
  * external build fixture) detect Chart.js output without parsing the JSON.
@@ -28,14 +25,21 @@ export function rehypeChartJs(options: ChartJsOptions = {}) {
   const caption = options.caption !== false;
 
   return (tree: HastNode, file: unknown) => {
-    visitElements(tree, (node, parent, index) => {
-      if (!parent || index === undefined || !isChartCodeBlock(node)) return;
-      replaceChartBlock(parent, index, node, file, {
-        className,
-        responsive,
-        caption,
-      });
-    });
+    for (const block of findDiagramBlocks(tree, { languages: ["chart"] })) {
+      replaceChartBlock(
+        block.parent as ParentNode,
+        block.index,
+        block.pre as ElementNode,
+        block.code as ElementNode,
+        block.source,
+        file,
+        {
+          className,
+          responsive,
+          caption,
+        },
+      );
+    }
   };
 }
 
@@ -43,67 +47,46 @@ function replaceChartBlock(
   parent: ParentNode,
   index: number,
   pre: ElementNode,
+  code: ElementNode,
+  source: string,
   file: unknown,
   options: { className: string; responsive: boolean; caption: boolean },
 ) {
-  const code = findDirectChild(pre, "code");
-  const source = code
-    ? getTextContent(code).trim()
-    : getTextContent(pre).trim();
   const parsed = parseChartConfig(source);
   if (isParseFailure(parsed)) {
-    reportDiagnostic(file, parsed.message);
+    reportDiagramDiagnostic(file, {
+      source: "@riebeckite/plugin-chartjs",
+      ruleId: "invalid-config",
+      message: `Invalid chart config: ${parsed.message}`,
+    });
     return;
   }
 
   applyResponsiveDefault(parsed.config, options.responsive);
   const captionText = options.caption
-    ? (extractCaption(pre, code, parsed.caption) ?? null)
+    ? (resolveDiagramCaption(
+        { pre, code, parent, index, source, language: "chart" },
+        [() => parsed.caption],
+      ) ?? null)
     : null;
   const label = captionText ?? `Chart: ${String(parsed.config.type)}`;
 
   parent.children = parent.children ?? [];
-  parent.children[index] = buildFigure({
+  parent.children[index] = buildDiagramFigure({
     className: options.className,
-    config: parsed.config,
+    id: deterministicDiagramId("chartjs", source),
+    kind: "chartjs",
+    source,
     caption: captionText,
     label,
-  });
-}
-
-function buildFigure(input: {
-  className: string;
-  config: Record<string, unknown>;
-  caption: string | null;
-  label: string;
-}): ElementNode {
-  const canvasClass = `${input.className}__canvas`;
-  const captionClass = `${input.className}__caption`;
-  const serialized = JSON.stringify(input.config);
-  const canvasAttributes = [
-    `class="${escapeHtmlAttribute(canvasClass)}"`,
-    `data-chartjs-config="${escapeHtmlAttribute(serialized)}"`,
-    `role="img"`,
-    `aria-label="${escapeHtmlAttribute(input.label)}"`,
-  ].join(" ");
-
-  const children: HastNode[] = [
-    { type: "raw", value: `<canvas ${canvasAttributes}></canvas>` },
-  ];
-  if (input.caption) {
-    children.push(
-      element("figcaption", { className: captionClass }, [text(input.caption)]),
-    );
-  }
-
-  return element(
-    "figure",
-    {
-      className: input.className,
-      dataChartjsMarker: FIGURE_MARKER,
+    status: "pending",
+    fallback: true,
+    content: {
+      kind: "canvas",
+      attrs: { dataDiagramConfig: JSON.stringify(parsed.config) },
     },
-    children,
-  );
+    attributes: { dataChartjsMarker: FIGURE_MARKER },
+  });
 }
 
 type ParseResult =
@@ -180,48 +163,6 @@ function applyResponsiveDefault(
   }
   if (config.options.responsive === undefined) {
     config.options.responsive = responsive;
-  }
-}
-
-function extractCaption(
-  pre: ElementNode,
-  code: ElementNode | null,
-  fromConfig: string | null,
-): string | undefined {
-  const title =
-    getStringProperty(pre, "title") ??
-    (code ? getStringProperty(code, "title") : null);
-  const value = title ?? fromConfig;
-  return value?.trim() || undefined;
-}
-
-function isChartCodeBlock(node: ElementNode): boolean {
-  if (node.tagName !== "pre") return false;
-  const code = findDirectChild(node, "code");
-  return Boolean(code && hasClass(code, CHART_LANGUAGE_CLASS));
-}
-
-function findDirectChild(
-  node: ElementNode,
-  tagName: string,
-): ElementNode | null {
-  return (
-    node.children?.find(
-      (child): child is ElementNode =>
-        child.type === "element" && child.tagName === tagName,
-    ) ?? null
-  );
-}
-
-function reportDiagnostic(file: unknown, message: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, `Invalid chart config: ${message}`);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-chartjs",
-      ruleId: "invalid-config",
-    });
   }
 }
 

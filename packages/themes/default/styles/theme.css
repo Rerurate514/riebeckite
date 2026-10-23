@@ -72,8 +72,17 @@
       var(--rb-color-code-ink) 56%,
       transparent
     );
-    --rb-code-action-hover-border: var(--rb-color-accent);
-    --rb-code-action-hover-color: var(--rb-color-accent);
+    --rb-code-action-hover-background: color-mix(
+      in srgb,
+      var(--rb-color-code-ink) 14%,
+      var(--rb-color-code-background)
+    );
+    --rb-code-action-hover-border: color-mix(
+      in srgb,
+      var(--rb-color-code-ink) 42%,
+      transparent
+    );
+    --rb-code-action-hover-color: var(--rb-color-code-ink);
     --rb-motion-fast: 140ms;
     --rb-motion-standard: 180ms;
     --rb-motion-ease: ease;
@@ -192,6 +201,7 @@
   line-height: 1.4;
   cursor: pointer;
   transition:
+    background var(--rb-motion-fast) var(--rb-motion-ease),
     border-color var(--rb-motion-fast) var(--rb-motion-ease),
     color var(--rb-motion-fast) var(--rb-motion-ease);
 }
@@ -203,7 +213,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
   .rr-code__action[data-code-copy-state="success"] {
   border-color: var(--rb-code-action-hover-border);
-  background: transparent;
+  background: var(--rb-code-action-hover-background);
   color: var(--rb-code-action-hover-color);
 }
 
@@ -546,7 +556,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
   .rb-article-content
-  button:hover:not(:disabled) {
+  button:hover:not(:disabled):not(.rr-code__action) {
   border-color: color-mix(
     in srgb,
     var(--rb-color-accent) 84%,
@@ -561,7 +571,7 @@
 
 :is(:root, .rb-theme-root)[data-theme-name="riebeckite"]
   .rb-article-content
-  button:active:not(:disabled) {
+  button:active:not(:disabled):not(.rr-code__action) {
   background: color-mix(
     in srgb,
     var(--rb-color-accent) 72%,

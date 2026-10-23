@@ -3,7 +3,7 @@
     --rb-color-code-background,
     var(--rb-color-ink, #000000)
   );
-  --rr-code-ink: var(--rb-color-code-ink, var(--rb-color-paper, #ffffff));
+  --rr-code-ink: var(--rb-color-code-ink, var(--rb-color-ink, #ffffff));
   --rr-code-muted: color-mix(in srgb, var(--rr-code-ink) 56%, transparent);
   --rr-code-rule: color-mix(in srgb, var(--rr-code-ink) 18%, transparent);
   --rr-code-accent: var(--rb-color-accent, #686868);
@@ -56,8 +56,12 @@
 
 .rr-code__action:hover,
 .rr-code__action:focus-visible {
-  border-color: var(--rr-code-accent);
-  color: var(--rr-code-accent);
+  border-color: color-mix(in srgb, var(--rr-code-ink) 42%, transparent);
+  background: var(
+    --rb-code-action-hover-background,
+    color-mix(in srgb, var(--rr-code-ink) 14%, var(--rb-color-paper, #ffffff))
+  );
+  color: var(--rr-code-ink);
   outline: none;
 }
 

@@ -114,4 +114,3 @@ The Framework chapter covers Riebeckite's **internal design and framework develo
 
 Keeping this boundary separate lets people who only want to build a site with Riebeckite do so without learning the internals of the framework.
 
-

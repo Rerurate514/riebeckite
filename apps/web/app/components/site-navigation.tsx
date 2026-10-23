@@ -53,6 +53,7 @@ export function SiteFooter() {
     <footer class="site-footer rb-site-footer">
       <div class="site-footer__main">
         <div class="site-footer__identity">
+          <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
           <a href="/" class="site-footer__project">
             Riebeckite
           </a>

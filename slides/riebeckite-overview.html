@@ -1,0 +1,2271 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="icon" type="image/png" href="../assets/logos/riebeckite-logo.png">
+<title>Riebeckite — プロジェクト概要</title>
+<style>
+:root {
+  --paper: #f7f8fa;
+  --surface: #ffffff;
+  --ink: #182230;
+  --muted: #58677a;
+  --faint: #7b899b;
+  --border: #d7e0ea;
+  --border-strong: #aebdcc;
+  --accent: #075fc9;
+  --accent-deep: #0b3f7d;
+  --accent-soft: #e8f1fb;
+  --code-bg: #14263d;
+  --code-ink: #e8f1ff;
+  --code-muted: #8fa6c1;
+  --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", "Noto Sans Mono CJK JP", monospace;
+  --serif: Georgia, Cambria, "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #dfe5ec;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-synthesis: none;
+  overflow: hidden;
+}
+
+a { color: inherit; }
+
+.viewport {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.stage {
+  width: 1280px;
+  height: 720px;
+  position: relative;
+  transform-origin: center center;
+  background: var(--paper);
+  box-shadow: 0 26px 80px rgb(16 24 32 / 0.2);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  padding: 54px 64px 62px;
+  background: var(--paper);
+  overflow: hidden;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.slide.is-active { display: flex; }
+
+.slide::before {
+  content: "Riebeckite";
+  position: absolute;
+  left: 64px;
+  bottom: 26px;
+  font: 10px/1 var(--mono);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.slide::after {
+  content: attr(data-page);
+  position: absolute;
+  right: 64px;
+  bottom: 26px;
+  font: 10px/1 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+h1, h2, h3, p, dl, dd, blockquote, figure { margin: 0; }
+
+h2 {
+  font-size: 42px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  margin-top: 14px;
+  text-wrap: balance;
+}
+
+.lead {
+  margin-top: 16px;
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 48em;
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 600 10px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.kicker::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+}
+
+.mono { font-family: var(--mono); }
+
+.fine {
+  font: 12px/1.65 var(--mono);
+  color: var(--muted);
+}
+
+.fine strong { color: var(--accent-deep); }
+
+.slide--title { padding: 44px 64px 52px; }
+
+.title-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.title-top {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  font: 600 10px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.title-grid {
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  gap: 64px;
+  flex: 1;
+  min-height: 0;
+  padding-top: 22px;
+}
+
+.title-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.title-copy { margin: auto 0; }
+
+.title-logo {
+  display: block;
+  width: 262px;
+  height: auto;
+  margin-bottom: 30px;
+}
+
+.title-copy h1 {
+  font-size: 60px;
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  text-wrap: balance;
+}
+
+.title-sub {
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 34em;
+}
+
+.title-meta {
+  display: flex;
+  gap: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font: 11px/1 var(--mono);
+  color: var(--muted);
+}
+
+.specimen {
+  position: relative;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 496px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.specimen::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+.specimen-top {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.specimen-flow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  padding: 4px 20px;
+  list-style: none;
+}
+
+.specimen-flow li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 14px;
+  padding: 21px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.specimen-flow li:last-child { border-bottom: 0; }
+
+.specimen-flow .n {
+  font: 600 10px/1.6 var(--mono);
+  color: var(--accent);
+}
+
+.specimen-flow strong {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+}
+
+.specimen-flow p {
+  margin-top: 5px;
+  font: 10.5px/1.75 var(--mono);
+  color: var(--muted);
+}
+
+.specimen-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--border);
+  font: 10px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.specimen-foot .dot {
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1.16fr 0.84fr;
+  gap: 56px;
+  margin-top: 8px;
+}
+
+.reason-list {
+  margin-top: 32px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.reason {
+  display: grid;
+  grid-template-columns: 126px 1fr;
+  gap: 20px;
+  padding: 19px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.reason dt {
+  padding-top: 3px;
+  font: 600 10px/1.5 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.reason dd {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.quote-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: start;
+  margin-top: 44px;
+  padding: 32px 30px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+}
+
+.quote-panel blockquote {
+  font-family: var(--serif);
+  font-size: 23px;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  text-wrap: pretty;
+}
+
+.quote-panel cite {
+  display: block;
+  margin-top: 18px;
+  font: 10px/1.5 var(--mono);
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.quote-panel .after {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.quote-panel .after strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 42px;
+}
+
+.pillar {
+  padding-top: 18px;
+  border-top: 2px solid var(--ink);
+}
+
+.pillar .tag {
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.pillar h3 {
+  margin: 12px 0 9px;
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.pillar p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.note-bar {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-top: 36px;
+  padding: 16px 20px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.note-bar .label {
+  flex: none;
+  font: 600 9.5px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.principles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 64px;
+  margin-top: 34px;
+}
+
+.principle {
+  padding: 20px 0 24px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.principle .idx {
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.principle h3 {
+  margin: 9px 0 9px;
+  font-size: 23px;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.principle p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.principle-foot {
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.principle-foot strong { color: var(--ink); }
+
+.arch {
+  margin-top: 24px;
+}
+
+.arch-box {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 13px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+}
+
+.arch-box .name {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.arch-box .name span {
+  display: block;
+  margin-top: 2px;
+  font: 10px/1.4 var(--mono);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.arch-box p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.arch-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 22px;
+  font: 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.arch-arrow::before {
+  content: "↓";
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.arch-core-row {
+  display: grid;
+  grid-template-columns: 1fr 44px 1.7fr 44px 1fr;
+  align-items: stretch;
+}
+
+.arch-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
+  padding: 14px 16px;
+  border: 1px dashed var(--border-strong);
+}
+
+.arch-side .name {
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.arch-side .count {
+  margin-top: 3px;
+  font: 10px/1.5 var(--mono);
+  color: var(--muted);
+}
+
+.arch-side-arrow {
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.arch-box--core {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #eef4fb;
+}
+
+.arch-box--core .name span { color: #9db3cb; }
+.arch-box--core p { color: #c8d6e6; }
+
+.boundary {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-strong);
+}
+
+.boundary-head {
+  margin-bottom: 10px;
+  font: 600 9.5px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.boundary-head strong { color: var(--ink); }
+
+.boundary-steps {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr 24px 1fr 24px 1fr;
+  align-items: stretch;
+}
+
+.b-step {
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.b-step .layer {
+  display: block;
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.b-step p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.b-arrow {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.flow {
+  display: grid;
+  grid-template-columns: 1fr 28px 1fr 28px 1fr 28px 1fr;
+  align-items: stretch;
+  margin-top: 30px;
+}
+
+.flow-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 166px;
+  padding: 16px 17px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--accent);
+}
+
+.flow-box .name {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.flow-box .api {
+  margin-top: 3px;
+  font: 9.5px/1.5 var(--mono);
+  color: var(--muted);
+}
+
+.flow-box p {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.flow-box .role {
+  margin-top: auto;
+  padding-top: 10px;
+  font: 600 9px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.flow-arrow {
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--faint);
+}
+
+.locations {
+  display: grid;
+  grid-template-columns: 1fr 26px 1fr 26px 1.2fr;
+  align-items: stretch;
+  margin-top: 26px;
+}
+
+.loc {
+  padding: 12px 15px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.loc span {
+  display: block;
+  margin-bottom: 5px;
+  font: 600 9px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.loc code {
+  font: 12.5px/1.5 var(--mono);
+  color: var(--ink);
+}
+
+.loc--truth {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.loc--truth code {
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.loc--truth em {
+  display: block;
+  margin-top: 3px;
+  font: 9px/1.4 var(--mono);
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.loc-arrow {
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.flow-foot {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.flow-foot strong { color: var(--ink); }
+
+.eco {
+  display: grid;
+  grid-template-columns: 1.55fr 0.85fr;
+  gap: 48px;
+  margin-top: 26px;
+}
+
+.plugin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.plugin-table th {
+  padding: 0 0 9px;
+  border-bottom: 1px solid var(--border-strong);
+  text-align: left;
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.plugin-table td {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.plugin-table td:first-child {
+  width: 104px;
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.plugin-table td:last-child {
+  font: 11.5px/1.8 var(--mono);
+  color: var(--muted);
+}
+
+.eco-side {
+  align-self: start;
+  padding: 24px;
+  background: var(--ink);
+  color: #eef4fb;
+}
+
+.stats {
+  display: flex;
+  gap: 30px;
+}
+
+.stat .n {
+  font-size: 42px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.stat .l {
+  margin-top: 5px;
+  font: 9px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9db3cb;
+}
+
+.eco-side p {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c8d6e6;
+}
+
+.eco-note {
+  margin-top: 34px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.eco-note strong { color: var(--ink); }
+
+.code-grid {
+  display: grid;
+  grid-template-columns: 1.04fr 0.96fr;
+  gap: 42px;
+  margin-top: 24px;
+}
+
+.code-card {
+  align-self: start;
+  overflow: hidden;
+  background: var(--code-bg);
+  border-radius: 2px;
+  box-shadow: 0 18px 42px rgb(16 24 32 / 0.14);
+}
+
+.code-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  font: 10px/1.4 var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--code-muted);
+}
+
+.code-card pre {
+  margin: 0;
+  padding: 17px 19px;
+  overflow: auto;
+  font: 12.5px/1.72 var(--mono);
+  color: var(--code-ink);
+  tab-size: 2;
+}
+
+.tok-k { color: #9cc4ff; }
+.tok-s { color: #b6e3c8; }
+.tok-f { color: #ffd28a; }
+.tok-c { color: #7f93aa; }
+
+.ext-list {
+  border-top: 1px solid var(--border-strong);
+}
+
+.ext {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ext dt {
+  font-size: 11.5px;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.ext dd {
+  font: 10.5px/1.7 var(--mono);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.ext-note {
+  margin-top: 22px;
+  padding: 14px 16px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.ext-note strong { color: var(--accent-deep); }
+
+.api-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.build-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 42px;
+  margin-top: 24px;
+}
+
+.phases {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-strong);
+}
+
+.phases li {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.phases .n {
+  padding-top: 2px;
+  font: 600 10px/1.5 var(--mono);
+  color: var(--accent);
+}
+
+.phases strong {
+  display: block;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.phases p {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.build-card {
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.build-card + .build-card { margin-top: 14px; }
+
+.build-card h3 {
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.build-card .file {
+  margin-top: 4px;
+  margin-bottom: 9px;
+  font: 10px/1.5 var(--mono);
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.build-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.build-card li {
+  position: relative;
+  padding-left: 13px;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.build-card li + li { margin-top: 3px; }
+
+.build-card li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+}
+
+.bt-rt {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.bt-rt span {
+  display: block;
+  margin-bottom: 3px;
+  font: 600 8.5px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.bt-rt p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.build-foot {
+  margin-top: 42px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.build-foot strong { color: var(--ink); }
+
+.spa-grid {
+  display: grid;
+  grid-template-columns: 0.92fr 1.08fr;
+  gap: 46px;
+  margin-top: 26px;
+}
+
+.shell-fig {
+  align-self: start;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+}
+
+.shell-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 12px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--border);
+}
+
+.shell-bar .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+
+.shell-url {
+  margin-left: 8px;
+  font: 9.5px/1 var(--mono);
+  color: var(--muted);
+}
+
+.shell-header, .shell-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 15px;
+  font: 10px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.shell-header { border-bottom: 1px solid var(--border); }
+.shell-footer { border-top: 1px solid var(--border); }
+
+.shell-main {
+  padding: 44px 16px;
+  text-align: center;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+}
+
+.shell-main code {
+  font: 12.5px/1.5 var(--mono);
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.shell-main em {
+  display: block;
+  margin-top: 6px;
+  font: 9px/1.4 var(--mono);
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.sequence {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-strong);
+}
+
+.sequence li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.sequence .n {
+  padding-top: 2px;
+  font: 600 10px/1.5 var(--mono);
+  color: var(--accent);
+}
+
+.sequence strong {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.sequence p {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.spa-foot {
+  margin-top: 28px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.spa-foot code {
+  font: 11px/1.6 var(--mono);
+  color: var(--accent-deep);
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 44px;
+  margin-top: 26px;
+}
+
+.terminal {
+  align-self: start;
+  background: var(--code-bg);
+  border-radius: 2px;
+  box-shadow: 0 18px 42px rgb(16 24 32 / 0.12);
+}
+
+.terminal .code-bar { color: var(--code-muted); }
+
+.terminal pre {
+  margin: 0;
+  padding: 16px 18px;
+  font: 12.5px/2.05 var(--mono);
+  color: var(--code-ink);
+  overflow: auto;
+}
+
+.term-prompt { color: #62aaff; }
+.term-comment { color: #7f93aa; }
+
+.commands {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.commands td {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.commands td:first-child {
+  width: 86px;
+  font: 11.5px/1.5 var(--mono);
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.commands td:last-child { color: var(--muted); }
+
+.work-foot {
+  margin-top: 28px;
+  padding-top: 13px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.work-foot code {
+  font: 11px/1.5 var(--mono);
+  color: var(--accent-deep);
+}
+
+.repo-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 0.7fr;
+  gap: 42px;
+  margin-top: 24px;
+}
+
+.tree {
+  margin: 0;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font: 12px/1.8 var(--mono);
+  color: var(--ink);
+  white-space: pre;
+  overflow: auto;
+}
+
+.tree .c { color: var(--muted); }
+
+.repo-note {
+  align-self: start;
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.repo-note strong {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.repo-note code {
+  font: 10.5px/1.5 var(--mono);
+  color: var(--accent-deep);
+}
+
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: auto;
+  border-top: 1px solid var(--border-strong);
+}
+
+.stat-cell {
+  padding-top: 13px;
+  border-right: 1px solid var(--border);
+}
+
+.stat-cell:last-child { border-right: 0; }
+
+.stat-cell .n {
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.stat-cell .l {
+  margin-top: 5px;
+  font: 9px/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.fit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  margin-top: 30px;
+}
+
+.fit-col h3 {
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--border-strong);
+  font: 600 10px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fit-col--yes h3 { color: var(--accent); }
+.fit-col--no h3 { color: var(--muted); }
+
+.fit-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fit-list li {
+  padding: 17px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.fit-list li::before {
+  content: "—";
+  margin-right: 10px;
+  color: var(--border-strong);
+}
+
+.fit-col--yes li::before { color: var(--accent); }
+
+.fit-foot {
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.fit-foot strong { color: var(--ink); }
+
+.fit-note {
+  margin-top: auto;
+  padding: 15px 18px;
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.fit-note strong { color: var(--accent-deep); }
+
+.slide--dark {
+  background: #101a26;
+  color: #f2f6fa;
+}
+
+.slide--dark::before, .slide--dark::after { color: rgb(255 255 255 / 0.42); }
+.slide--dark .kicker { color: #62aaff; }
+.slide--dark .kicker::before { background: #62aaff; }
+
+.closing-grid {
+  display: grid;
+  grid-template-columns: 1.16fr 0.84fr;
+  gap: 56px;
+  flex: 1;
+  align-items: center;
+}
+
+.closing-copy h2 {
+  max-width: 15ch;
+  margin-top: 18px;
+  font-size: 56px;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.closing-copy p {
+  margin-top: 24px;
+  font-size: 16.5px;
+  line-height: 1.8;
+  color: #b8c7d8;
+  max-width: 40em;
+}
+
+.closing-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 30px;
+  font: 10.5px/1.6 var(--mono);
+  color: #9db3cb;
+}
+
+.closing-links a {
+  color: #dce8f5;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(255 255 255 / 0.26);
+  padding-bottom: 2px;
+}
+
+.closing-card {
+  padding: 24px;
+  background: rgb(255 255 255 / 0.035);
+  border: 1px solid rgb(255 255 255 / 0.17);
+}
+
+.closing-card .label {
+  font: 600 9.5px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9db3cb;
+}
+
+.closing-card code {
+  display: block;
+  margin-top: 12px;
+  font: 14px/1.5 var(--mono);
+  color: #eef5fd;
+  overflow-wrap: anywhere;
+}
+
+.closing-card .then {
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  font: 10.5px/1.9 var(--mono);
+  color: #9db3cb;
+}
+
+.closing-tag {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  font: 10px/1.5 var(--mono);
+  letter-spacing: 0.06em;
+  color: #7f93aa;
+}
+
+.hud {
+  position: fixed;
+  right: 18px;
+  bottom: 14px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: rgb(247 248 250 / 0.94);
+  border: 1px solid var(--border);
+  font: 10px/1 var(--mono);
+  color: var(--muted);
+}
+
+.hud button {
+  width: 25px;
+  height: 23px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 13px/1 var(--mono);
+  cursor: pointer;
+}
+
+.hud button:hover {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+
+.hud button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.hud .count {
+  padding: 0 8px;
+  letter-spacing: 0.05em;
+}
+
+.progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  height: 2px;
+  background: rgb(24 34 48 / 0.1);
+}
+
+.progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: width 220ms ease;
+}
+
+@media (max-width: 760px) {
+  html, body { height: auto; overflow: auto; background: var(--paper); }
+
+  .viewport {
+    position: static;
+    display: block;
+    overflow: visible;
+    background: var(--paper);
+  }
+
+  .stage {
+    width: 100%;
+    height: auto;
+    transform: none !important;
+    box-shadow: none;
+  }
+
+  .slide {
+    position: relative;
+    inset: auto;
+    display: flex !important;
+    width: 100%;
+    height: auto;
+    min-height: 100svh;
+    padding: 36px 22px 66px;
+    border-bottom: 1px solid var(--border);
+    font-size: 16px;
+  }
+
+  .slide::before, .slide::after { bottom: 22px; }
+  .slide::before { left: 22px; }
+  .slide::after { right: 22px; }
+
+  h2 { font-size: 30px; max-width: none; }
+  .lead { font-size: 16px; }
+
+  .title-grid,
+  .two-col,
+  .eco,
+  .code-grid,
+  .build-grid,
+  .spa-grid,
+  .work-grid,
+  .repo-grid,
+  .closing-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .title-grid { padding-top: 8px; }
+  .title-main { min-height: 0; }
+  .title-copy { margin: 0; }
+  .title-copy h1 { font-size: 31px; }
+  .title-logo { width: 220px; margin-bottom: 24px; }
+  .title-sub { font-size: 16px; }
+  .title-meta { flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .specimen { height: auto; min-height: 420px; margin-top: 12px; }
+
+  .pillar-grid { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
+  .principles { grid-template-columns: 1fr; }
+  .principle { padding: 18px 0 20px; }
+
+  .arch-box { grid-template-columns: 1fr; gap: 4px; }
+  .arch-core-row { grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+  .arch-side { grid-row: 1; flex-direction: row; justify-content: space-between; align-items: center; }
+  .arch-side:first-child { grid-column: 1; }
+  .arch-side:last-child { grid-column: 2; }
+  .arch-side-arrow:nth-child(2) { grid-column: 1 / -1; grid-row: 2; height: 18px; transform: rotate(90deg); }
+  .arch-side-arrow:nth-child(4) { display: none; }
+  .arch-box--core { grid-column: 1 / -1; grid-row: 3; }
+  .arch-arrow { height: 26px; }
+
+  .boundary-steps { grid-template-columns: 1fr; gap: 8px; }
+  .b-arrow { transform: rotate(90deg); height: 16px; }
+
+  .flow { grid-template-columns: 1fr; gap: 8px; }
+  .flow-arrow { transform: rotate(90deg); height: 18px; }
+  .flow-box { min-height: 0; }
+
+  .locations { grid-template-columns: 1fr; gap: 8px; }
+  .loc-arrow { transform: rotate(90deg); }
+
+  .eco-side { margin-top: 6px; }
+  .plugin-table td:first-child { width: 84px; }
+
+  .code-card pre { font-size: 11.5px; }
+
+  .stats-strip { grid-template-columns: 1fr 1fr; gap: 14px 0; }
+  .stat-cell { border-right: 0; }
+  .stat-cell:nth-child(odd) { border-right: 1px solid var(--border); }
+  .stat-cell:last-child { grid-column: 1 / -1; border-right: 0; }
+
+  .tree { font-size: 10.5px; white-space: pre; overflow-x: auto; }
+  .tree .c { display: none; }
+
+  .br-desktop { display: none; }
+
+  .fit-grid { grid-template-columns: 1fr; gap: 28px; }
+
+  .closing-copy h2 { font-size: 38px; max-width: none; }
+  .closing-copy p { font-size: 15px; }
+
+  .hud, .progress { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress span { transition: none; }
+}
+
+@media print {
+  @page { size: 338.67mm 190.5mm; margin: 0; }
+
+  html, body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .viewport {
+    position: static;
+    display: block;
+    overflow: visible;
+  }
+
+  .stage {
+    width: 1280px;
+    height: auto;
+    transform: none !important;
+    box-shadow: none;
+  }
+
+  .slide {
+    position: relative;
+    inset: auto;
+    display: flex !important;
+    width: 1280px;
+    height: 720px;
+    page-break-after: always;
+    break-after: page;
+    border: 0;
+  }
+
+  .hud, .progress { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="viewport">
+<main class="stage" id="stage">
+
+  <section class="slide slide--title is-active" data-page="01" aria-label="表紙">
+    <div class="title-shell">
+      <header class="title-top">
+        <span>Project overview</span>
+        <span>2026 · OSS</span>
+      </header>
+      <div class="title-grid">
+        <div class="title-main">
+          <div class="title-copy">
+            <img class="title-logo" src="../assets/logos/riebeckite-logo-horizontal.png" alt="Riebeckite">
+            <h1>Markdownを書く。<br>サイトは、自分で組む。</h1>
+            <p class="title-sub">ObsidianノートとMarkdownを、TypeScriptとHonoXで<br class="br-desktop">自由に組み立てる静的サイトフレームワーク。</p>
+          </div>
+          <div class="title-meta">
+            <span>v0.0.32</span>
+            <span>Apache-2.0</span>
+            <span>riebeckite.dev</span>
+          </div>
+        </div>
+        <aside class="specimen" aria-label="コンテンツからサイトができるまで">
+          <div class="specimen-top">
+            <span>Content → Site</span>
+            <span>build</span>
+          </div>
+          <ol class="specimen-flow">
+            <li>
+              <span class="n">01</span>
+              <div>
+                <strong>Write</strong>
+                <p>content/notes/*.md<br>Obsidian Vault</p>
+              </div>
+            </li>
+            <li>
+              <span class="n">02</span>
+              <div>
+                <strong>Resolve</strong>
+                <p>parse · links · permalink<br>Plugin hooks</p>
+              </div>
+            </li>
+            <li>
+              <span class="n">03</span>
+              <div>
+                <strong>Build</strong>
+                <p>static HTML + islands<br>HonoX / Vite</p>
+              </div>
+            </li>
+          </ol>
+          <div class="specimen-foot"><span class="dot"></span>Your content. Your code.</div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-page="02" aria-label="背景">
+    <span class="kicker">Background</span>
+    <div class="two-col">
+      <div>
+        <h2>出発点は、<br>Quartz 4への不満だった</h2>
+        <p class="lead">Markdownを書けばサイトになる。その基本はよくできていた。問題は、その先にあった。</p>
+        <dl class="reason-list">
+          <div class="reason">
+            <dt>クライアントUI</dt>
+            <dd>HooksとDOM操作。普段使っているコンポーネントの書き方ではなかった。</dd>
+          </div>
+          <div class="reason">
+            <dt>構成の分離</dt>
+            <dd>Vaultとサイトのコードを分けて管理するのが難しい。</dd>
+          </div>
+          <div class="reason">
+            <dt>アップグレード</dt>
+            <dd>v4からv5へ移るとき、サイトのセットアップをやり直すことになった。</dd>
+          </div>
+        </dl>
+      </div>
+      <aside class="quote-panel">
+        <blockquote>Markdownは入力であって、アーキテクチャの中心ではありません。</blockquote>
+        <cite>README_ja — Riebeckiteを選ぶ理由</cite>
+        <div class="after">
+          <strong>だから、生成物の前提を変えた。</strong>
+          設定済みの製品ではなく、普通のHonoXアプリケーションを出力する。
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="slide" data-page="03" aria-label="Riebeckiteとは">
+    <span class="kicker">What it is</span>
+    <h2>Markdownを、自分のコードで組むサイトへ</h2>
+    <p class="lead">Riebeckiteは、ObsidianノートやMarkdownを静的サイトとして公開するためのフレームワークです。生成されるのは、@riebeckite/* を依存に持つ普通のHonoXアプリケーションです。</p>
+    <div class="pillar-grid">
+      <article class="pillar">
+        <span class="tag">STACK</span>
+        <h3>いつもの道具</h3>
+        <p>TypeScript、JSX、HonoX、npm。独自のテンプレート言語を覚える必要はない。</p>
+      </article>
+      <article class="pillar">
+        <span class="tag">CONTENT</span>
+        <h3>コンテンツは手元に</h3>
+        <p>フォルダでも、既存のVaultでも、別リポジトリでも。content.directoryで指定する。</p>
+      </article>
+      <article class="pillar">
+        <span class="tag">ECOSYSTEM</span>
+        <h3>npmで拡張する</h3>
+        <p>PluginもThemeも普通のnpmパッケージ。公式に72のPluginと6のThemeがある。</p>
+      </article>
+    </div>
+    <div class="note-bar">
+      <span class="label">Ownership</span>
+      <span>サイトはフレームワークの付属物ではない。更新は依存パッケージの更新で済み、自分のタイミングでバージョンを上げられる。</span>
+    </div>
+  </section>
+
+  <section class="slide" data-page="04" aria-label="設計原則">
+    <span class="kicker">Principles</span>
+    <h2>四つの設計原則</h2>
+    <p class="lead">フレームワークの形を決めているのは、機能の数ではなく境界の引き方です。</p>
+    <div class="principles">
+      <article class="principle">
+        <span class="idx">01</span>
+        <h3>内側は外側を知らない</h3>
+        <p>CoreはHonoX、Vite、Cloudflare、特定のPluginを知らない。</p>
+      </article>
+      <article class="principle">
+        <span class="idx">02</span>
+        <h3>Markdownは入力</h3>
+        <p>ページ、URL、リンク、アセットはビルド時に解決する。Markdownはアーキテクチャの中心ではない。</p>
+      </article>
+      <article class="principle">
+        <span class="idx">03</span>
+        <h3>静的を基準にする</h3>
+        <p>JavaScriptがなくても本文が読める。動きは必要な場所だけに足す。</p>
+      </article>
+      <article class="principle">
+        <span class="idx">04</span>
+        <h3>permalinkが正</h3>
+        <p>ファイルパスからURLを再計算しない。解決済みのpermalinkだけを公開URLとして使う。</p>
+      </article>
+    </div>
+    <p class="principle-foot"><strong>迷ったら、その機能を成立させるために必要な、最も内側のpackageに置く。</strong></p>
+  </section>
+
+  <section class="slide" data-page="05" aria-label="アーキテクチャ">
+    <span class="kicker">Architecture</span>
+    <h2>依存は、常に内側へ</h2>
+    <p class="lead">ApplicationはIntegrationへ、Integration・Plugin・ThemeはCoreへ依存する。<br class="br-desktop">CLIはIntegrationとCoreを使う。Coreから外側への依存は作らない。</p>
+    <div class="arch">
+      <div class="arch-box">
+        <div class="name">Application<span>apps/web</span></div>
+        <p>routes · components · islands · site shell</p>
+      </div>
+      <div class="arch-arrow">depends on</div>
+      <div class="arch-box">
+        <div class="name">Integration<span>packages/integrations/*</span></div>
+        <p>HonoX · Vite · Cloudflare · platform connection</p>
+      </div>
+      <div class="arch-arrow">depends on</div>
+      <div class="arch-core-row">
+        <div class="arch-side">
+          <span class="name">Plugin</span>
+          <span class="count">72 packages</span>
+        </div>
+        <div class="arch-side-arrow" aria-hidden="true">→</div>
+        <div class="arch-box arch-box--core">
+          <div class="name">Core<span>packages/core</span></div>
+          <p>config · content · pipeline · plugin runtime</p>
+        </div>
+        <div class="arch-side-arrow" aria-hidden="true">←</div>
+        <div class="arch-side">
+          <span class="name">Theme</span>
+          <span class="count">6 packages</span>
+        </div>
+      </div>
+    </div>
+    <div class="boundary">
+      <div class="boundary-head">境界の例 — <strong>「PluginのページをHonoXで表示したい」</strong></div>
+      <div class="boundary-steps">
+        <div class="b-step">
+          <span class="layer">Core</span>
+          <p>framework非依存のPage contract</p>
+        </div>
+        <div class="b-arrow" aria-hidden="true">→</div>
+        <div class="b-step">
+          <span class="layer">Plugin</span>
+          <p>Pageを提供する</p>
+        </div>
+        <div class="b-arrow" aria-hidden="true">→</div>
+        <div class="b-step">
+          <span class="layer">Integration</span>
+          <p>Pageをrouteに接続する</p>
+        </div>
+        <div class="b-arrow" aria-hidden="true">→</div>
+        <div class="b-step">
+          <span class="layer">App</span>
+          <p>最終的なdocumentを描画する</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-page="06" aria-label="コンテンツシステム">
+    <span class="kicker">Content system</span>
+    <h2>コンテンツが、公開URLになるまで</h2>
+    <p class="lead">ContentSourceが「どこから読むか」、ContentManagerが「どう扱うか」を担当する。</p>
+    <div class="flow">
+      <div class="flow-box">
+        <span class="name">ContentSource</span>
+        <span class="api">scan · read · hash</span>
+        <p>ファイル、Vault、別リポジトリ。保存場所を抽象化する。</p>
+        <span class="role">どこから読むか</span>
+      </div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box">
+        <span class="name">ContentManager</span>
+        <span class="api">location · parse · hooks</span>
+        <p>公開URLを解決し、Pluginを通してコンテンツを処理する。</p>
+        <span class="role">どう扱うか</span>
+      </div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box">
+        <span class="name">Manifest / Graph</span>
+        <span class="api">pages · links · assets</span>
+        <p>サイト全体の事実をひとつのmanifestにまとめる。</p>
+        <span class="role">何が公開されるか</span>
+      </div>
+      <div class="flow-arrow" aria-hidden="true">→</div>
+      <div class="flow-box">
+        <span class="name">HonoX build</span>
+        <span class="api">routes · islands</span>
+        <p>静的HTMLと、必要なブラウザコードを出力する。</p>
+        <span class="role">どう届けるか</span>
+      </div>
+    </div>
+    <div class="locations">
+      <div class="loc">
+        <span>ファイルパス</span>
+        <code>content/posts/hello.md</code>
+      </div>
+      <div class="loc-arrow" aria-hidden="true">→</div>
+      <div class="loc">
+        <span>論理パス</span>
+        <code>posts/hello</code>
+      </div>
+      <div class="loc-arrow" aria-hidden="true">→</div>
+      <div class="loc loc--truth">
+        <span>公開URL</span>
+        <code>/blog/hello/</code>
+        <em>source of truth</em>
+      </div>
+    </div>
+    <p class="flow-foot">ファイルパスからURLを推測しない。<strong>Pluginやconfigが解決したpermalink</strong>だけを使う。</p>
+  </section>
+
+  <section class="slide" data-page="07" aria-label="Pluginエコシステム">
+    <span class="kicker">Plugin ecosystem</span>
+    <h2>拡張は、npmパッケージで</h2>
+    <p class="lead">PluginはMarkdownの変換だけでなく、ページ、コンポーネント、CSS、ブラウザコード、HTTPエンドポイント、生成ファイルまで追加できる。</p>
+    <div class="eco">
+      <table class="plugin-table">
+        <thead>
+          <tr><th>領域</th><th>公式Pluginの例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Markdown</td><td>obsidian-markdown · properties · citations · shortcodes</td></tr>
+          <tr><td>図表</td><td>mermaid · plantuml · d2 · graphviz · wavedrom · chartjs</td></tr>
+          <tr><td>発見</td><td>search · backlinks · local-graph · toc · query · bases</td></tr>
+          <tr><td>執筆</td><td>code-enhance · diff · flashcards · kanban · marp</td></tr>
+          <tr><td>公開</td><td>seo · webmention · share · l10n · deploy · analytics</td></tr>
+        </tbody>
+      </table>
+      <aside class="eco-side">
+        <div class="stats">
+          <div class="stat">
+            <div class="n">72</div>
+            <div class="l">official plugins</div>
+          </div>
+          <div class="stat">
+            <div class="n">6</div>
+            <div class="l">official themes</div>
+          </div>
+        </div>
+        <p>Themeは見た目だけを担当する。route、Page Type、application componentは持たない。</p>
+      </aside>
+    </div>
+    <p class="eco-note"><strong>Pluginは機能、Themeは見た目。</strong>どちらもCoreが公開しているcontractだけを使う。</p>
+  </section>
+
+  <section class="slide" data-page="08" aria-label="Plugin API">
+    <span class="kicker">Plugin API</span>
+    <h2>Pluginは、ひとつの関数から</h2>
+    <p class="lead">definePlugin()に、必要な拡張ポイントだけを渡す。サイト内のファイルでも、npmパッケージでも同じ仕組み。</p>
+    <div class="code-grid">
+      <div class="code-card">
+        <div class="code-bar"><span>extensions/local-plugin.ts</span><span>TypeScript</span></div>
+        <pre><code><span class="tok-k">import</span> { definePlugin } <span class="tok-k">from</span> <span class="tok-s">"@riebeckite/core"</span>;
+
+<span class="tok-k">export function</span> <span class="tok-f">localPlugin</span>() {
+  <span class="tok-k">return</span> definePlugin({
+    name: <span class="tok-s">"local"</span>,
+    assets: [
+      {
+        pluginName: <span class="tok-s">"local"</span>,
+        kind: <span class="tok-s">"style"</span>,
+        moduleSpecifier: <span class="tok-s">"/extensions/plugin.css"</span>,
+      },
+    ],
+  });
+}</code></pre>
+      </div>
+      <div class="ext-col">
+        <dl class="ext-list">
+          <div class="ext">
+            <dt>変換</dt>
+            <dd>remarkPlugins / rehypePlugins / extendMarkdownPipeline</dd>
+          </div>
+          <div class="ext">
+            <dt>コンテンツ</dt>
+            <dd>onContentLoaded / onPostParsed / resolveContentLocations</dd>
+          </div>
+          <div class="ext">
+            <dt>表示</dt>
+            <dd>renderers / pageTypes / assets / clientEntries</dd>
+          </div>
+          <div class="ext">
+            <dt>配信</dt>
+            <dd>endpoints / seo / addDiagnostics</dd>
+          </div>
+          <div class="ext">
+            <dt>依存</dt>
+            <dd>provides / requires / order</dd>
+          </div>
+        </dl>
+        <p class="ext-note"><strong>nameだけでもPluginになる。</strong>必要になった拡張ポイントを、ひとつずつ足していく。</p>
+      </div>
+    </div>
+    <p class="api-foot">配布しないなら、<span class="mono">extensions/local-plugin.ts</span> に置くだけでよい。packageにするのは、他のサイトでも使うときだけ。</p>
+  </section>
+
+  <section class="slide" data-page="09" aria-label="ビルドシステム">
+    <span class="kicker">Build</span>
+    <h2>ビルドは、変更だけをやり直す</h2>
+    <p class="lead">前回の結果を使い、変更された部分だけを処理する。stateが使えなければ、最初からやり直せばいい。</p>
+    <div class="build-grid">
+      <ol class="phases">
+        <li>
+          <span class="n">01</span>
+          <div><strong>設定とPluginを読む</strong><p>configを解決し、依存関係を検証する。</p></div>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <div><strong>コンテンツを読み、変換する</strong><p>Plugin hooksを通してMarkdownを処理する。</p></div>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <div><strong>公開URL・リンク・アセットを確定する</strong><p>サイト全体のmanifestとcontent graphを作る。</p></div>
+        </li>
+        <li>
+          <span class="n">04</span>
+          <div><strong>HonoXでbuildする</strong><p>静的HTMLと、必要なislandsを生成する。</p></div>
+        </li>
+      </ol>
+      <div>
+        <div class="build-card">
+          <h3>Incremental build</h3>
+          <div class="file">.riebeckite/build/content-state.json</div>
+          <ul>
+            <li>変更されたコンテンツだけを再利用する</li>
+            <li>安全に再利用できるか判断できなければfull build</li>
+            <li>buildが失敗したら、前回の成功状態を保持する</li>
+            <li><span class="mono">--full</span> で最初から処理する</li>
+          </ul>
+        </div>
+        <div class="build-card">
+          <h3>Build-time と Runtime</h3>
+          <div class="bt-rt">
+            <div>
+              <span>Build-time</span>
+              <p>CLI · Doctor · Inspector · cache · profile</p>
+            </div>
+            <div>
+              <span>Runtime</span>
+              <p>生成済みアプリと安定したcontent dataだけ。Workersはstateを読まない。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="build-foot"><strong>高速化のためのstateがなくても、同じサイトを正しく生成できる。</strong>これを前提にしている。</p>
+  </section>
+
+  <section class="slide" data-page="10" aria-label="SPAナビゲーション">
+    <span class="kicker">SPA navigation</span>
+    <h2>SPAは、静的な土台を壊さない</h2>
+    <p class="lead">サーバー描画を基準に、ブラウザ側だけを強化する。置き換えるのはページのルートで、HTML文書全体ではない。</p>
+    <div class="spa-grid">
+      <div class="shell-fig" aria-label="アプリケーションシェルとページルート">
+        <div class="shell-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="shell-url">riebeckite.dev/docs</span>
+        </div>
+        <div class="shell-header"><span>Header / global UI</span><span>stays</span></div>
+        <div class="shell-main">
+          <code>main#main-content</code>
+          <em>replaced</em>
+        </div>
+        <div class="shell-footer"><span>Footer</span><span>stays</span></div>
+      </div>
+      <ol class="sequence">
+        <li>
+          <span class="n">01</span>
+          <div><strong>クリックを横取りし、次のHTMLを取得する</strong><p>通常のリンク遷移を、fetchに置き換える。</p></div>
+        </li>
+        <li>
+          <span class="n">02</span>
+          <div><strong>ページスコープをunmountし、headを更新する</strong><p>後始末をしてから、メタデータを差し替える。</p></div>
+        </li>
+        <li>
+          <span class="n">03</span>
+          <div><strong>mainを置き換え、islandsをhydrateする</strong><p>シェルは残したまま、ページのルートだけを更新する。</p></div>
+        </li>
+        <li>
+          <span class="n">04</span>
+          <div><strong>履歴、スクロール、フォーカスを更新する</strong><p>最後にページスコープをmountし、navigationイベントを発火する。</p></div>
+        </li>
+      </ol>
+    </div>
+    <p class="spa-foot"><code>spa: { prefetch: "hover", viewTransitions: true }</code> で、先読みと画面遷移を有効にできる。</p>
+  </section>
+
+  <section class="slide" data-page="11" aria-label="開発ワークフロー">
+    <span class="kicker">Workflow</span>
+    <h2>作る、確かめる、届ける</h2>
+    <p class="lead">雛形の生成からデプロイまで、CLIで完結する。</p>
+    <div class="work-grid">
+      <div class="terminal">
+        <div class="code-bar"><span>terminal</span><span>quick start</span></div>
+        <pre><span class="term-comment"># 雛形を生成</span>
+<span class="term-prompt">$</span> npx create-riebeckite
+
+<span class="term-comment"># 依存を入れて、開発サーバーを起動</span>
+<span class="term-prompt">$</span> cd my-site
+<span class="term-prompt">$</span> npm install
+<span class="term-prompt">$</span> npm exec riebeckite dev
+
+<span class="term-comment"># 静的サイトを dist/ へ</span>
+<span class="term-prompt">$</span> npm exec riebeckite build</pre>
+      </div>
+      <table class="commands">
+        <tbody>
+          <tr><td>dev</td><td>開発サーバーを起動する</td></tr>
+          <tr><td>check</td><td>設定とPluginを検証する</td></tr>
+          <tr><td>doctor</td><td>環境、content、output、Themeを診断する（--fix）</td></tr>
+          <tr><td>inspect</td><td>config、plugins、content、graph、buildの解決結果を見る</td></tr>
+          <tr><td>build</td><td>静的サイトを生成する（--fullで全処理）</td></tr>
+          <tr><td>deploy</td><td>Cloudflare Workersへ公開する</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="work-foot">プリセットは <code>starter</code> / <code>showcase</code> / <code>minimal</code> / <code>empty</code>。<code>--list-presets</code> で一覧できる。</p>
+  </section>
+
+  <section class="slide" data-page="12" aria-label="リポジトリ構成">
+    <span class="kicker">Repository</span>
+    <h2>責務ごとに、packageを分ける</h2>
+    <p class="lead">pnpm workspaceのmonorepo。内側のpackageは、外側の実装を知らない。</p>
+    <div class="repo-grid">
+      <pre class="tree">riebeckite/
+├─ packages/
+│  ├─ core/              <span class="c">config · content · pipeline · plugin runtime</span>
+│  ├─ cli/               <span class="c">create · dev · check · build · deploy</span>
+│  ├─ integrations/      <span class="c">honox · analytics · webmention</span>
+│  ├─ plugins/           <span class="c">72 official plugins</span>
+│  ├─ themes/            <span class="c">default · minimal · gruvbox · ...</span>
+│  └─ create-riebeckite/ <span class="c">site generator</span>
+├─ apps/web/             <span class="c">公式サイト / 参照アプリ</span>
+├─ docs/                 <span class="c">ドキュメントの原本</span>
+├─ templates/            <span class="c">デプロイ用テンプレート</span>
+└─ riebeckite.config.ts  <span class="c">サイト設定</span></pre>
+      <aside class="repo-note">
+        <strong>apps/webも、参照アプリのひとつ。</strong>
+        Core、Plugin、Theme、Integrationが正しく組み合わさることを確認する。公式ドキュメントサイトを兼ねている。
+      </aside>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-cell"><div class="n">v0.0.32</div><div class="l">version</div></div>
+      <div class="stat-cell"><div class="n">72</div><div class="l">plugins</div></div>
+      <div class="stat-cell"><div class="n">6</div><div class="l">themes</div></div>
+      <div class="stat-cell"><div class="n">3</div><div class="l">integrations</div></div>
+      <div class="stat-cell"><div class="n">Apache-2.0</div><div class="l">license</div></div>
+    </div>
+  </section>
+
+  <section class="slide" data-page="13" aria-label="向いている人">
+    <span class="kicker">Fit</span>
+    <h2>向いている人、向かない人</h2>
+    <p class="lead">Riebeckiteが向くのは、サイトを自分のプロダクトとして持ちたい人。</p>
+    <div class="fit-grid">
+      <div class="fit-col fit-col--yes">
+        <h3>向いている</h3>
+        <ul class="fit-list">
+          <li>ObsidianやMarkdownで書いている</li>
+          <li>サイトのUIも自分で作りたい</li>
+          <li>TypeScript / JSX / HonoXを普段使っている</li>
+          <li>コンテンツをサイトの外に置きたい</li>
+        </ul>
+      </div>
+      <div class="fit-col fit-col--no">
+        <h3>向かない</h3>
+        <ul class="fit-list">
+          <li>コードを書かずにサイトを完成させたい</li>
+          <li>既製テーマを選ぶだけで十分</li>
+          <li>Markdownの表示だけを最速で公開したい</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fit-note"><strong>表示だけなら、ホスティング型のサービスで足りる。</strong>サイトの構造まで自分で決めたいなら、ここから始める。</p>
+  </section>
+
+  <section class="slide slide--dark" data-page="14" aria-label="まとめ">
+    <span class="kicker">Start</span>
+    <div class="closing-grid">
+      <div class="closing-copy">
+        <h2>Your content.<br>Your code.<br>Your framework.</h2>
+        <p>Obsidianで書き、TypeScriptで組み、自分のタイミングで公開する。</p>
+        <div class="closing-links">
+          <a href="https://riebeckite.dev/docs/">Documentation</a>
+          <a href="https://riebeckite.dev/docs/plugins/">Plugin catalog</a>
+          <a href="https://riebeckite.dev/docs/plugins/showcase">Showcase</a>
+          <a href="https://github.com/Rerurate514/riebeckite">GitHub</a>
+        </div>
+      </div>
+      <div class="closing-card">
+        <span class="label">Create a site</span>
+        <code>npx create-riebeckite</code>
+        <div class="then">starter / showcase<br>minimal / empty</div>
+      </div>
+    </div>
+    <div class="closing-tag">Publish your knowledge. Build without limits.</div>
+  </section>
+
+</main>
+</div>
+
+<nav class="hud" aria-label="スライド操作">
+  <button type="button" id="prev" aria-label="前のスライド" title="前へ (←)">←</button>
+  <span class="count" id="count">01 / 14</span>
+  <button type="button" id="next" aria-label="次のスライド" title="次へ (→)">→</button>
+</nav>
+<div class="progress" aria-hidden="true"><span id="bar"></span></div>
+
+<script>
+(() => {
+  const stage = document.getElementById("stage");
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const count = document.getElementById("count");
+  const bar = document.getElementById("bar");
+  const prev = document.getElementById("prev");
+  const next = document.getElementById("next");
+  const total = slides.length;
+  let index = 0;
+  let touchX = null;
+
+  const mobile = () => window.matchMedia("(max-width: 760px)").matches;
+
+  const clamp = (n) => Math.max(0, Math.min(total - 1, n));
+
+  const paint = () => {
+    count.textContent = String(index + 1).padStart(2, "0") + " / " + String(total).padStart(2, "0");
+    bar.style.width = ((index + 1) / total) * 100 + "%";
+  };
+
+  const show = (n, writeHash = true) => {
+    index = clamp(n);
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("is-active", i === index);
+      if (!mobile()) slide.setAttribute("aria-hidden", i === index ? "false" : "true");
+      else slide.removeAttribute("aria-hidden");
+    });
+    paint();
+    if (writeHash) history.replaceState(null, "", "#" + (index + 1));
+    if (mobile()) slides[index].scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const fit = () => {
+    if (mobile()) {
+      stage.style.transform = "none";
+      slides.forEach((slide) => slide.removeAttribute("aria-hidden"));
+      return;
+    }
+    const scale = Math.min((window.innerWidth - 48) / 1280, (window.innerHeight - 96) / 720);
+    stage.style.transform = "scale(" + scale + ")";
+  };
+
+  prev.addEventListener("click", () => show(index - 1));
+  next.addEventListener("click", () => show(index + 1));
+
+  window.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented) return;
+    const tag = event.target instanceof Element ? event.target.tagName : "";
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown") {
+      event.preventDefault();
+      show(index + 1);
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp" || event.key === "PageUp") {
+      event.preventDefault();
+      show(index - 1);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      show(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      show(total - 1);
+    } else if (event.code === "Space" && !(event.target instanceof HTMLButtonElement)) {
+      event.preventDefault();
+      show(index + 1);
+    } else if (event.key === "f" || event.key === "F") {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  stage.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch") touchX = event.clientX;
+  });
+
+  stage.addEventListener("pointerup", (event) => {
+    if (touchX === null || mobile()) return;
+    const delta = event.clientX - touchX;
+    if (Math.abs(delta) > 54) {
+      if (delta < 0) show(index + 1);
+      else show(index - 1);
+    }
+    touchX = null;
+  });
+
+  window.addEventListener("resize", fit);
+
+  window.addEventListener("hashchange", () => {
+    const n = Number(window.location.hash.replace("#", ""));
+    if (Number.isFinite(n) && n > 0) show(n - 1, false);
+  });
+
+  const fromHash = Number(window.location.hash.replace("#", ""));
+  fit();
+  show(Number.isFinite(fromHash) && fromHash > 0 ? fromHash - 1 : 0, false);
+})();
+</script>
+</body>
+</html>

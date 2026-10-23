@@ -146,9 +146,12 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
     const code = findDirectChild(pre, "code");
     const titleNode = findTitleNode(node);
     const title = titleNode ? getTextContent(titleNode) : null;
-    const isSourceFile = title?.startsWith(SOURCE_FILE_TITLE_PREFIX) ?? false;
-    const displayTitle = isSourceFile
-      ? title.slice(SOURCE_FILE_TITLE_PREFIX.length)
+    const sourceFileTitle = title?.startsWith(SOURCE_FILE_TITLE_PREFIX)
+      ? title
+      : null;
+    const isSourceFile = sourceFileTitle !== null;
+    const displayTitle = sourceFileTitle
+      ? sourceFileTitle.slice(SOURCE_FILE_TITLE_PREFIX.length)
       : title;
     const language = getLanguage(pre, code);
     const isShell = isTerminalLanguage(language);

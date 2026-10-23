@@ -150,6 +150,12 @@ export class ContentManager {
     this.contentIndexBuilder = new ContentIndexBuilder(this.source);
     this.manifestAssembler = new ManifestAssembler(this.contentCache);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
+    this.pluginRuntime.setPageMarkdownRenderer(async (markdown) => {
+      if (!this.pipeline) {
+        throw new Error("Markdown pipeline is unavailable for plugin pages.");
+      }
+      return (await this.pipeline.execute(markdown)).html;
+    });
     const buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
       typeof content === "string" ? content : undefined,

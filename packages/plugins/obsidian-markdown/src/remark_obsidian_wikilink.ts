@@ -24,6 +24,7 @@ export interface WikilinkOptions {
     label: string;
     url: string;
     embed: boolean;
+    fragment?: string;
   }) => Promise<string | null>;
 }
 
@@ -142,6 +143,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           label,
           url,
           embed: true,
+          fragment: rawFragment?.trim(),
         });
 
         newNodes.push(
@@ -181,6 +183,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           label,
           url,
           embed: false,
+          fragment: rawFragment?.trim(),
         });
 
         newNodes.push(

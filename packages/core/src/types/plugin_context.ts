@@ -78,6 +78,7 @@ export type PluginRenderTarget = {
   label: string;
   url: string;
   embed: boolean;
+  fragment?: string;
 };
 
 export type PluginRenderContext = PluginContext & PluginRenderTarget;
@@ -94,6 +95,7 @@ export type PluginRenderInput = {
   label: string;
   url: string;
   embed: boolean;
+  fragment?: string;
 };
 
 export type PluginGeneratedHtml = {

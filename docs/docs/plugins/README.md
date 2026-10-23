@@ -112,6 +112,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | Plugin | What it does |
 | --- | --- |
 | [Code Enhance](./code-enhance.md) | Enhanced syntax-highlighted code blocks |
+| [Source Files](./source-files.md) | Publish selected source files as code pages and embeds |
 | [Code Tabs](./code-tabs.md) | Accessible tabbed code blocks |
 | [Code Annotations](./code-annotations.md) | Code annotations, highlights, and diff markers |
 | [Table of Contents](./toc.md) | Scroll-aware in-page table of contents |

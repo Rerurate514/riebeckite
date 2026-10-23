@@ -22,6 +22,7 @@ type PluginPageResolverOptions = {
     plugin: RiebeckitePlugin,
     context: TContext,
   ) => PluginContextWithCache<TContext>;
+  readonly renderMarkdown: (markdown: string) => Promise<string>;
 };
 
 type DeclaredPluginPage = {
@@ -52,6 +53,7 @@ export class PluginPageResolver {
           ...this.options.createContext(contentIndex),
           manifest,
           pathname: pagePathname,
+          renderMarkdown: this.options.renderMarkdown,
         };
         const page = await pageType.resolve(
           this.options.createPluginContext(plugin, context),
@@ -123,6 +125,7 @@ export class PluginPageResolver {
             ...this.options.createContext(contentIndex),
             manifest,
             pathname,
+            renderMarkdown: this.options.renderMarkdown,
           };
           const dependencies = pageType.outputDependencies
             ? typeof pageType.outputDependencies === "function"

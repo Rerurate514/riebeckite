@@ -78,6 +78,8 @@ export class PluginRuntime {
   private externalDependenciesResolved = false;
   private readonly pageResolver: PluginPageResolver;
   private readonly manifestHooks: ManifestHookRunner;
+  private pageMarkdownRenderer: ((markdown: string) => Promise<string>) | null =
+    null;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {
     this.pageResolver = new PluginPageResolver({
@@ -85,6 +87,12 @@ export class PluginRuntime {
       createContext: (contentIndex) => this.createContext(contentIndex),
       createPluginContext: (plugin, context) =>
         this.createPluginContext(plugin, context),
+      renderMarkdown: async (markdown) => {
+        if (!this.pageMarkdownRenderer) {
+          throw new Error("Plugin page Markdown renderer is unavailable.");
+        }
+        return await this.pageMarkdownRenderer(markdown);
+      },
     });
     this.manifestHooks = new ManifestHookRunner({
       plugins: () => this.plugins(),
@@ -98,6 +106,12 @@ export class PluginRuntime {
 
   getDiagnostics(): Diagnostic[] {
     return this.diagnostics;
+  }
+
+  setPageMarkdownRenderer(
+    renderer: (markdown: string) => Promise<string>,
+  ): void {
+    this.pageMarkdownRenderer = renderer;
   }
 
   getManifestHookMetrics(): ManifestHookMetrics {

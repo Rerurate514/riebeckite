@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/core/client": ["packages/core/client.ts"],
       "@riebeckite/diagnostics": ["packages/diagnostics/index.ts"],
       "@riebeckite/preview": ["packages/preview/index.ts"],
       "@riebeckite/honox": ["packages/integrations/honox/index.ts"],

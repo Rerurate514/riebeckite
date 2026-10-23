@@ -1,0 +1,60 @@
+# @riebeckite/plugin-source-files
+
+<!-- Generated from docs/docs/plugins/source-files.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
+
+Publish selected text source files as first-class, syntax-highlighted pages.
+
+[日本語](./README_ja.md)
+
+## Usage
+
+`sourceFiles()` requires explicit include patterns. A file is published only when a routable note links or embeds it, so draft and scheduled notes cannot expose a source page.
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
+import { sourceFiles } from "@riebeckite/plugin-source-files";
+
+export default defineConfig({
+  plugins: [
+    obsidianMarkdown(),
+    codeEnhance({ lineNumbers: true }),
+    sourceFiles({
+      include: ["src/**/*.ts", "scripts/*.ts"],
+      exclude: ["src/generated/**"],
+    }),
+  ],
+});
+```
+
+## Links and embeds
+
+- `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` links to `/source/src/main.ts`.
+- `![src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` renders the source in the existing code-block path.
+- `#L10` and `#L10-L20` select lines in an embed. With Code Enhance enabled, those source-page fragments scroll to and highlight the matching line or range.
+
+Each source page includes its vault-relative path, detected language, size, a Copy action, and a Raw link to the normal attachment URL.
+
+## Safety and publication
+
+Only files matching `include` and not matching `exclude` are eligible. The plugin rejects unsafe logical paths, binary content, invalid UTF-8, files over `maxBytes`, and common secret file names and extensions (`.env`, keys, certificates, and credentials). It uses the configured `ContentSource`; it never reads a filesystem path directly or exposes an absolute path.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `include` | `readonly string[]` | required | Vault-relative `*` / `**` patterns allowed for publication |
+| `exclude` | `readonly string[]` | `[]` | Matching paths are never published |
+| `maxBytes` | `number` | `1048576` | Maximum accepted UTF-8 file size |
+
+## Exports
+
+- `sourceFiles(options)` / `sourceFilesPlugin`
+- `sourceFilePath(path)`
+- `SourceFilesOptions`
+
+## See also
+
+- [`@riebeckite/plugin-obsidian-markdown`](../obsidian-markdown/README.md)
+- [`@riebeckite/plugin-code-enhance`](../code-enhance/README.md)

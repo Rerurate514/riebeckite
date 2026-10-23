@@ -75,6 +75,7 @@ function restoreCodeMeta(tree: HastNode) {
 }
 
 const LANGUAGE_CLASS_PREFIX = "language-";
+const SOURCE_FILE_TITLE_PREFIX = "source-file:";
 
 /**
  * Shiki language ids are lowercase, but rehype-pretty-code reads the id
@@ -145,6 +146,13 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
     const code = findDirectChild(pre, "code");
     const titleNode = findTitleNode(node);
     const title = titleNode ? getTextContent(titleNode) : null;
+    const sourceFileTitle = title?.startsWith(SOURCE_FILE_TITLE_PREFIX)
+      ? title
+      : null;
+    const isSourceFile = sourceFileTitle !== null;
+    const displayTitle = sourceFileTitle
+      ? sourceFileTitle.slice(SOURCE_FILE_TITLE_PREFIX.length)
+      : title;
     const language = getLanguage(pre, code);
     const isShell = isTerminalLanguage(language);
 
@@ -152,6 +160,7 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
       ...node.properties,
       className: mergeClassName(node.properties?.className, "rr-code"),
       dataLanguage: language,
+      ...(isSourceFile ? { dataSourceFile: "true" } : {}),
     };
 
     pre.properties = {
@@ -169,6 +178,7 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
         className: mergeClassName(code.properties?.className, "rr-code__code"),
       };
       if (options.lineNumbers) markLineNumbers(code);
+      if (isSourceFile) markSourceFileLines(code);
       if (options.diffHighlight !== false && isDiffLanguage(language))
         markDiffLines(code);
       if (options.commandPrompt !== false && isShell) markCommandPrompts(code);
@@ -179,7 +189,7 @@ function enhancePrettyCodeFigures(tree: HastNode, options: CodeEnhanceOptions) {
     const body = element("div", { className: "rr-code__body" }, bodyChildren);
     node.children = [
       buildHeader({
-        title: options.filename === false ? null : title,
+        title: options.filename === false ? null : displayTitle,
         language,
         copyButton: options.copyButton !== false,
         wrapToggle: options.wrapToggle !== false,
@@ -262,6 +272,16 @@ function markLineNumbers(code: ElementNode) {
     line.properties = {
       ...line.properties,
       dataLineNumber: String(index + 1),
+    };
+  }
+}
+
+function markSourceFileLines(code: ElementNode) {
+  for (const [index, line] of getCodeLines(code).entries()) {
+    line.properties = {
+      ...line.properties,
+      id: `L${index + 1}`,
+      tabindex: "-1",
     };
   }
 }

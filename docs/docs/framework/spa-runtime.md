@@ -42,8 +42,9 @@ the generated module starts the runtime once:
 stopSpaNavigation ??= startSpaNavigation({
   ...spaConfig,
   onBeforePageCommit: () => lifecycle.unmount("page"),
-  onPageCommit: async ({ root }) => {
+  onPageCommit: async ({ root, signal }) => {
     await createClient();
+    if (signal.aborted || !root.isConnected) return;
     mountPageClientInitializers(root);
   },
 });
@@ -108,8 +109,9 @@ the previous one.
 11. Focuses the page root and announces the new page.
 12. Dispatches `riebeckite:navigation`.
 
-The runtime checks the signal at key await boundaries. An aborted navigation
-returns without updating history or dispatching the event.
+The runtime checks both its navigation generation and the signal at each async
+boundary. Only the newest navigation can update the head, DOM, history, page
+lifecycle, focus, announcement, or navigation event.
 
 If a non-aborted error occurs, the runtime calls
 `window.location.assign(url.href)`. This is the document-navigation fallback.
@@ -123,7 +125,13 @@ Before replacing the main element, the runtime updates the document head:
 - removes current head children matching the page-owned set
 - clones matching children from the fetched page into the current head
 
-The page-owned set is selector-based:
+Head ownership is explicit:
+
+- `data-riebeckite-head="page"` nodes are replaced.
+- `data-riebeckite-head="global"` and `"runtime"` nodes persist.
+- Plugin head tags emitted by `PluginHeadTags` are marked page-owned.
+
+The following legacy selector set is also page-owned for compatibility:
 
 - `link[rel="canonical"]`, `link[hreflang]`
 - `script[type="application/ld+json"]`
@@ -132,9 +140,8 @@ The page-owned set is selector-based:
 - `meta[name^="twitter:"]`
 - `meta[property^="og:"]`, `meta[property^="article:"]`
 
-Everything else in the head persists. There is no ownership-key mechanism for
-arbitrary plugin nodes, and scripts other than JSON-LD are not cloned or
-executed.
+Everything else in the head persists. Normal scripts and styles are not cloned
+or executed during a navigation.
 
 ## History, scroll, focus, and announcement
 
@@ -170,16 +177,14 @@ eligibility rules as click navigation and ignores hash-only links.
 
 The cache:
 
-- holds at most 20 entries, keyed by URL
-- is populated only by hover prefetch
-- keeps successful responses for the lifetime of the runtime
-- removes failed entries
-- has no TTL and no successful-entry eviction
+- holds at most 20 least-recently-used entries, keyed by URL
+- deduplicates active requests from prefetch and navigation
+- keeps successful responses for 30 seconds
+- removes failed and expired entries
+- aborts pending work when the runtime stops
 
-Prefetch requests are not aborted when the pointer leaves or when navigation
-starts. A navigation reuses a cached promise even if its own signal is aborted;
-the navigation then checks its signal after the fetch resolves. This is current
-behavior, not a guarantee that unused prefetches are cheap.
+Prefetch is skipped for data-saving, slow-2G, and 2G connections. A caller's
+abort signal rejects only that caller; it does not cancel a shared request.
 
 ## HonoX integration and lifecycle
 
@@ -203,17 +208,15 @@ When the same initializer name is mounted twice in the same scope:
 `ClientLifecycle.unmount` aborts first, then awaits cleanup. Cleanup errors are
 reported and do not block other initializers.
 
-The generated `onPageCommit` awaits `createClient()` and then mounts page
-initializers. It does not re-check the navigation signal before mounting. A
-rapid second navigation can overlap with this work; initializers must treat the
-signal and `isConnected` checks as their safety boundary.
+The generated `onPageCommit` awaits `createClient()` and re-checks both the
+navigation signal and the page root's connection before mounting page
+initializers. This prevents a completed hydration from mounting a stale page
+scope.
 
-Client entries are not uniformly SPA-safe. The lifecycle can unmount a page
-initializer, but it cannot remove a document-level listener or stop an async
-renderer that ignores the signal. Some entries already return cleanup and check
-the signal; others still query `document` or return no cleanup. Treat each
-plugin entry as its own contract and inspect its initializer before relying on
-it.
+For `initializerArguments: "context"`, a client entry receives `{ root, config,
+signal, scope }`. Resource scope tracks listeners, timeouts, intervals, and
+custom cleanup. It is deliberately opt-in: it does not monkey-patch globals or
+infer resources created outside the initializer.
 
 ## Build and SSG
 
@@ -237,19 +240,18 @@ These numbers are fixture-specific.
 
 Automated checks currently cover:
 
-- option validation and freezing in `packages/spa/test/spa.test.ts`
+- option validation in `packages/spa/test/spa.test.ts`, plus cache TTL,
+  deduplication, LRU eviction, and caller abort isolation in
+  `packages/spa/test/prefetch.test.ts`
 - generated client imports, app/page/context arguments, and SPA on/off wiring in
   `packages/integrations/honox/test/client_module.test.ts`
-- an external fixture that verifies SPA preservation, island hydration after
-  back navigation, and SPA-off behavior
+- browser navigation races, head ownership, history, hash focus, fallbacks,
+  redirects, and prefetched-page reuse in `tests/spa-runtime/browser.test.ts`
 
 Not covered by automated browser tests in this repository:
 
 - click eligibility edge cases
-- abort races between overlapping navigations
-- head reconciliation selectors
-- scroll and focus restoration
-- prefetch cancellation and cache eviction
+- scroll restoration on `popstate`
 - cleanup failures in real plugin initializers
 
 Treat changes to these areas as requiring targeted tests or manual verification.
@@ -261,11 +263,11 @@ The absence of a test is not evidence that the behavior is complete.
   programmatic navigation are not intercepted.
 - The runtime requires a stable `main#main-content`; missing roots fall back to a
   full document load.
-- Head ownership is a fixed selector list; arbitrary page head nodes are not
-  reconciled and page scripts are not executed.
-- Page-scope cleanup depends on initializers returning cleanup. The lifecycle
-  cannot detect listeners or timers that an initializer forgets.
-- Prefetch has no cancellation or TTL.
+- Page ownership is explicit for generated plugin head tags; other custom head
+  nodes must set an ownership attribute. Page scripts and styles are not run.
+- Resource scope only releases resources registered through it; returned cleanup
+  remains necessary for resources it cannot own.
+- Prefetch is short-lived and is not an offline cache.
 - HonoX `createClient()` hydrates new islands but is not a general island
   teardown API.
 - SPA is not an offline cache or a client-side router.

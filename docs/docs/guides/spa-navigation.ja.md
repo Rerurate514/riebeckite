@@ -55,7 +55,7 @@ export default defineConfig({
 
 - 現在の Page を離れずに、次の HTML document を取得する
 - `<main id="main-content">` を、取得した Page の main element で置き換える
-- document title、言語、方向、一部の Page metadata を更新する
+- document title、言語、方向、page-owned metadata を更新する
 - 新しい Page の island を hydrate する
 - history を更新し、scroll を復元し、Page の内容へ focus を移し、支援技術に
   新しい Page を通知する
@@ -113,9 +113,10 @@ runtime が追加しますが、明示しておくと意図が伝わります。
 
 不正な値は runtime の開始時に例外になります。
 
-`prefetch: "hover"` は best-effort です。runtime は最大20件の Page を保持し、
-別の Page へ移動しても prefetch を中止しません。リンクが多い Page で余分な
-request を避けたい場合は `prefetch: false` にします。
+`prefetch: "hover"` は best-effort です。runtime はデータ節約設定と 2G 接続では実行せず、
+request を重複排除します。最大20件の最近使った entry を30秒間保持し、runtime 停止時には
+未使用の request を abort します。一つの navigation を cancel しても、共有中の prefetch は
+cancel しません。リンクが多い Page で余分な request を避けたい場合は `prefetch: false` にします。
 
 ## Page の script と island
 
@@ -151,8 +152,8 @@ event は新しい Page の commit 後に発火します。最初の Page load �
   新しい tab で開く link は browser に任せます。
 - `main#main-content` がない場合や fetch に失敗した場合は、document 全体を
   読み込み直します。
-- runtime は history entry ごとに Page を取得します。Page cache を持たないため、
-  offline の back/forward は SPA navigation では動作しません。
+- runtime は fresh な cache がなければ history entry ごとに Page を取得します。Cache は短時間なので、
+  offline の back/forward が確実に動くわけではありません。
 - Page 固有の `<script>` や stylesheet の変更は反映されません。island と
   global asset を使ってください。
 - View transition は browser の対応に依存し、

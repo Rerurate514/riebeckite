@@ -252,16 +252,21 @@ function renderPluginHeadTag(tag: PluginHeadTag, index: number) {
   const key = `${tag.tag}-${index}`;
 
   if (tag.tag === "meta") {
-    return <meta {...tag.attrs} key={key} />;
+    return (
+      <meta {...tag.attrs} data-riebeckite-head="page" key={key} />
+    );
   }
 
   if (tag.tag === "link") {
-    return <link {...tag.attrs} key={key} />;
+    return (
+      <link {...tag.attrs} data-riebeckite-head="page" key={key} />
+    );
   }
 
   return (
     <script
       {...tag.attrs}
+      data-riebeckite-head="page"
       key={key}
       dangerouslySetInnerHTML={
         tag.children ? { __html: tag.children } : undefined

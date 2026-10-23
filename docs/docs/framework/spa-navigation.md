@@ -94,14 +94,15 @@ the only place that connects the runtime to `createClient()` and
 `app` initializers mount once. `page` initializers unmount before the page root
 is replaced, then mount again on the new root.
 
-An initializer may return a cleanup function. Unmount aborts the initializer's
-signal first, then awaits cleanup. Initialization and cleanup errors are
+An initializer may return a cleanup function. With
+`initializerArguments: "context"`, it also receives `{ root, config, signal,
+scope }`. `scope` can register event listeners, timeouts, intervals, and custom
+cleanup. Unmount aborts the shared scope signal first, disposes registered
+resources, then awaits returned cleanup. Initialization and cleanup errors are
 isolated and logged; one failing initializer does not stop the others.
 
-The lifecycle can only clean up what an initializer returns. A page initializer
-that attaches a listener to `document` without returning cleanup will outlive
-its page. Page behavior should query the supplied root and return cleanup for
-anything outside the replaced DOM.
+Page behavior should query the supplied root. Any resource attached outside the
+replaced DOM must use the resource scope or be released by returned cleanup.
 
 ## Islands and hydration
 
@@ -122,7 +123,8 @@ transition, for example:
 - the fetch fails or returns a non-success status
 - the fetched response has no `main#main-content`
 - the current page has no `main#main-content`
-- page commit or head replacement throws
+- a redirect leaves the current origin
+- page cleanup or head replacement throws before the main element is replaced
 
 A newer navigation aborts the older one. An aborted navigation does not fall
 back; the newer navigation owns the page.
@@ -137,10 +139,14 @@ reduced motion is requested, the commit runs without a transition.
 - Only same-origin GET links are handled; forms and programmatic navigation are
   out of scope.
 - The application shell must stay outside `main#main-content`.
-- Head reconciliation covers a fixed metadata set; arbitrary page scripts are
-  not cloned or executed.
+- Head nodes marked `data-riebeckite-head="page"` are replaced. Nodes marked
+  `global` or `runtime` persist. Legacy metadata selectors remain page-owned
+  for compatibility; arbitrary scripts and styles are not cloned or executed.
+- Plugin head tags are emitted as page-owned automatically. Other plugin page
+  tags must opt in with the ownership attribute.
 - Plugin page entries must cooperate with the lifecycle: use the supplied root,
-  return cleanup, and respect the abort signal.
+  register external resources through `scope` or return cleanup, and respect
+  the abort signal.
 - SPA-off builds do not import the SPA package.
 
 ## Related

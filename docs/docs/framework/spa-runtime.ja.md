@@ -41,8 +41,9 @@ HonoX integration は `virtual:riebeckite/client` を提供します。`spa` が
 stopSpaNavigation ??= startSpaNavigation({
   ...spaConfig,
   onBeforePageCommit: () => lifecycle.unmount("page"),
-  onPageCommit: async ({ root }) => {
+  onPageCommit: async ({ root, signal }) => {
     await createClient();
+    if (signal.aborted || !root.isConnected) return;
     mountPageClientInitializers(root);
   },
 });
@@ -109,8 +110,8 @@ navigation を abort します。
 11. Page root に focus し、新しい Page を announce する。
 12. `riebeckite:navigation` を dispatch する。
 
-Runtime は await の境界で signal を確認します。Abort された navigation は
-history を更新せず、event も dispatch しません。
+Runtime は各非同期境界で navigation generation と signal を確認します。最新の navigation
+だけが head、DOM、history、page lifecycle、focus、announcement、navigation event を更新できます。
 
 Abort されていない error が起きた場合、runtime は
 `window.location.assign(url.href)` を呼びます。これが document navigation への
@@ -125,7 +126,13 @@ Main element を置き換える前に、runtime は document head を更新し�
 - 現在の head から、page-owned の selector に一致する child を削除する。
 - 取得した Page の head から、同じ selector に一致する child を clone して追加する。
 
-Page-owned として扱う selector:
+Head の所有権は明示します。
+
+- `data-riebeckite-head="page"` の node は置き換える
+- `data-riebeckite-head="global"` と `"runtime"` の node は残す
+- `PluginHeadTags` が出力する Plugin head tag には page-owned 属性が付く
+
+互換性のため、次の従来 selector も page-owned として扱います。
 
 - `link[rel="canonical"]`、`link[hreflang]`
 - `script[type="application/ld+json"]`
@@ -134,8 +141,8 @@ Page-owned として扱う selector:
 - `meta[name^="twitter:"]`
 - `meta[property^="og:"]`、`meta[property^="article:"]`
 
-それ以外の head child は残ります。任意の Plugin node を ownership key で判定する
-仕組みはなく、JSON-LD 以外の script は clone も実行もしません。
+それ以外の head child は残ります。通常の script と style は navigation 中に clone も実行も
+しません。
 
 ## History、scroll、focus、announcement
 
@@ -171,16 +178,14 @@ click と同じで、hash だけの link は無視します。
 
 Cache:
 
-- URL を key に最大20件
-- hover prefetch だけが追加する
-- 成功した response は runtime の寿命まで保持する
-- 失敗した entry は削除する
-- TTL と成功 entry の eviction はない
+- URL を key に最近使った順で最大20件
+- prefetch と navigation の進行中 request を重複排除する
+- 成功した response は30秒間保持する
+- 失敗・期限切れの entry は削除する
+- runtime 停止時には進行中 request を abort する
 
-Prefetch request は、pointer が離れたときも navigation が始まったときも abort されません。
-Navigation は、自分の signal が abort されていても cached promise を再利用し、fetch
-が解決した後に signal を確認します。これは現在の動作であり、未使用の prefetch が
-安価であることを保証するものではありません。
+Prefetch はデータ節約設定、slow-2g、2g 接続では実行しません。呼び出し元の signal を abort
+しても、その呼び出し元だけが失敗し、共有 request は cancel しません。
 
 ## HonoX integration と lifecycle
 
@@ -205,17 +210,14 @@ Navigation は、自分の signal が abort されていても cached promise �
 `ClientLifecycle.unmount` は先に abort し、cleanup を待ちます。Cleanup の
 error は報告され、他の initializer を止めません。
 
-生成された `onPageCommit` は `createClient()` を待ってから page initializer を
-mount します。Mount 前に navigation signal を再確認しません。素早い2回目の
-navigation はこの処理と重なることがあるため、initializer は signal と
-`isConnected` を安全境界として扱う必要があります。
+生成された `onPageCommit` は `createClient()` を待った後、navigation signal と page root の
+接続状態を再確認してから page initializer を mount します。これにより、古い page の hydration が
+完了しても stale な page scope を mount しません。
 
-Client entry がすべて SPA に対応済みというわけではありません。Lifecycle は page
-initializer を unmount できますが、document-level の listener を消したり、signal
-を無視する async renderer を停止したりはできません。cleanup を返して signal を
-確認する entry もあれば、今も `document` を検索したり cleanup を返さなかったり
-する entry もあります。Plugin entry ごとの取り決めとして、initializer を確認して
-から依存してください。
+`initializerArguments: "context"` の client entry は `{ root, config, signal, scope }` を
+受け取ります。Resource scope は listener、timeout、interval、独自 cleanup を管理します。
+Global を monkey-patch したり、initializer 外で作られた resource を推測したりはしない、
+明示的な仕組みです。
 
 ## Build と SSG
 
@@ -240,19 +242,17 @@ fixture 固有です。
 
 現在の自動検証:
 
-- `packages/spa/test/spa.test.ts` の option validation と freeze
+- `packages/spa/test/spa.test.ts` の option validation と
+  `packages/spa/test/prefetch.test.ts` の cache TTL、重複排除、LRU eviction、呼び出し元 abort の分離
 - `packages/integrations/honox/test/client_module.test.ts` の生成 import、
   app/page/context 引数、SPA on/off の接続
-- SPA の保持、back navigation 後の island hydration、SPA 無効時の動作を確認
-  する external fixture
+- `tests/spa-runtime/browser.test.ts` の browser 上での navigation race、head の所有権、
+  history、hash focus、fallback、redirect、prefetch 済み page の再利用
 
 Repository の browser test では、次を網羅していません。
 
 - Click 判定の edge case
-- Navigation が重なったときの abort race
-- Head reconciliation の selector
-- Scroll / focus の復元
-- Prefetch の cancellation と cache eviction
+- `popstate` 時の scroll 復元
 - 実際の Plugin initializer での cleanup failure
 
 これらの領域を変更するときは、対象を絞った test か手動確認が必要です。Test がない
@@ -264,11 +264,11 @@ Repository の browser test では、次を網羅していません。
   programmatic navigation は intercept しません。
 - 安定した `main#main-content` が必要です。Root がない場合は document 全体の
   load に fallback します。
-- Head の所有権は固定の selector list です。任意の page head node は
-  reconcile せず、page script も実行しません。
-- Page scope の cleanup は initializer が cleanup を返すことが前提です。
-  Lifecycle は listener や timer の追加を検出できません。
-- Prefetch には cancellation と TTL がありません。
+- 生成される Plugin head tag の page 所有権は明示されます。それ以外の custom head node は
+  所有権属性を付ける必要があります。Page script と style は実行しません。
+- Resource scope が解放できるのは登録された resource だけです。管理外の resource には
+  返り値の cleanup が引き続き必要です。
+- Prefetch は短時間の cache であり、offline cache ではありません。
 - HonoX の `createClient()` は新しい island を hydrate しますが、汎用の
   island teardown API ではありません。
 - SPA は offline cache でも client-side router でもありません。

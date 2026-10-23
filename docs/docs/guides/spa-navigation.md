@@ -54,8 +54,7 @@ When an eligible link is clicked, Riebeckite:
 
 - fetches the next HTML document without leaving the current page
 - replaces `<main id="main-content">` with the fetched page's main element
-- updates the document title, language, direction, and a small set of page
-  metadata
+- updates the document title, language, direction, and page-owned metadata
 - hydrates islands in the new page content
 - updates history, restores scroll, moves focus to the page content, and
   announces the new page to assistive technology
@@ -111,9 +110,11 @@ it when missing, but rendering it explicitly keeps the intent clear.
 
 Invalid option values throw when the runtime starts.
 
-`prefetch: "hover"` is best-effort. The runtime keeps up to 20 prefetched pages
-and does not cancel a prefetch when you navigate away. Use `prefetch: false` if
-a page has many links and you want to avoid extra requests.
+`prefetch: "hover"` is best-effort. The runtime skips data-saving and 2G
+connections, deduplicates requests, keeps up to 20 least-recently-used entries
+for 30 seconds, and aborts unused work when the runtime stops. Cancelling one
+navigation does not cancel its shared prefetch request. Use `prefetch: false`
+if a page has many links and you want to avoid extra requests.
 
 ## Page scripts and islands
 
@@ -152,8 +153,8 @@ initial page load.
   and new-tab links are left to the browser.
 - A missing `main#main-content` or a failed fetch falls back to a full document
   load.
-- The runtime fetches each history entry; it does not keep a page cache.
-  Offline back/forward does not work through SPA navigation.
+- The runtime fetches history entries unless a fresh cached response is
+  available. The cache is short-lived, so offline back/forward is not reliable.
 - Page-specific `<script>` and stylesheet changes are not applied. Use islands
   and global assets.
 - View transitions depend on browser support and are skipped when

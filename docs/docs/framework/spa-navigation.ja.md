@@ -92,14 +92,14 @@ SPA package は HonoX や Plugin を知りません。Runtime と `createClient(
 `app` initializer は一度だけ mount します。`page` initializer は page root を
 置き換える前に unmount し、新しい root に mount し直します。
 
-Initializer は cleanup function を返せます。Unmount は先に initializer の
-signal を abort し、その後に cleanup を待ちます。初期化と cleanup の error は
-隔離して記録するため、1つの失敗で他の initializer は止まりません。
+Initializer は cleanup function を返せます。`initializerArguments: "context"` を指定すると、
+`{ root, config, signal, scope }` も受け取れます。`scope` では event listener、timeout、
+interval、独自の cleanup を登録できます。Unmount は共有 scope の signal を先に abort し、
+登録済み resource を破棄してから cleanup を待ちます。初期化と cleanup の error は隔離して
+記録するため、1つの失敗で他の initializer は止まりません。
 
-Lifecycle が cleanup できるのは、initializer が返したものだけです。
-`document` に listener を追加し、cleanup を返さない page initializer は、その
-Page より長く残ります。Page の動作は渡された root を検索し、置き換わる DOM の
-外に作ったものは cleanup で解放してください。
+Page の動作は渡された root を基点にしてください。置き換わる DOM の外に作った resource は、
+resource scope へ登録するか、返した cleanup で解放する必要があります。
 
 ## Island の hydration
 
@@ -120,7 +120,8 @@ fallback します。例:
 - fetch に失敗した、または成功 status 以外が返った
 - 取得した response に `main#main-content` がない
 - 現在の Page に `main#main-content` がない
-- page commit または head の置き換えで例外が起きた
+- redirect 先が現在の origin 外である
+- main の置き換え前に page cleanup や head の更新で例外が起きた
 
 新しい navigation が始まると、古い navigation は abort されます。Abort された
 navigation は fallback せず、新しい navigation が Page を引き継ぎます。
@@ -135,10 +136,13 @@ View transition は任意です。Browser が API に対応していない場合
 - 対象は同一 origin の GET link だけです。Form と programmatic な navigation
   は対象外です。
 - Application shell は `main#main-content` の外側に置く必要があります。
-- Head reconciliation の対象は決まった metadata だけです。任意の Page script
-  を clone したり実行したりしません。
-- Plugin の page entry は lifecycle に合わせる必要があります。渡された root を
-  使い、cleanup を返し、abort signal を尊重してください。
+- `data-riebeckite-head="page"` を付けた head node は置き換えます。`global` と `runtime`
+  を付けた node は残します。互換性のため従来の metadata selector も page-owned として扱いますが、
+  任意の script と style は clone も実行もしません。
+- Plugin の head tag には page-owned 属性が自動で付きます。それ以外の Plugin page tag は属性を
+  明示して opt-in します。
+- Plugin の page entry は lifecycle に合わせる必要があります。渡された root を使い、外部 resource は
+  `scope` に登録するか cleanup で解放し、abort signal を尊重してください。
 - SPA 無効時の build は SPA package を import しません。
 
 ## 関連ページ

@@ -1,4 +1,4 @@
-// Type-only check across every publishable package.
+// Type-only check across the whole workspace.
 //
 // `build_package.mjs` runs a per-package TypeScript program for declaration
 // emit. This script runs its own programs with noEmit so contributors and CI can
@@ -7,10 +7,16 @@
 // Coverage is deliberately wider than `build_package.mjs`. It used to omit
 // `strict`, skip test trees entirely and ignore `apps/web`, which is how the
 // twelve real errors already present in production sources went unnoticed. The
-// check now runs two tiers per package:
+// check now runs two workspace-wide tiers plus the app:
 //
 //   sources: every non-test file under `strict`
 //   tests:   test files under `strict` with the fixture-shaped flags relaxed
+//   web:     `apps/web` with its own DOM, worker and client typings
+//
+// Each tier is a single program. Per-package programs re-parsed and re-checked
+// the same dependency graph (most packages import `@riebeckite/core`) dozens of
+// times, which dominated runtime; sharing one program per tier keeps coverage
+// identical while removing that repeated work.
 //
 // The test tier keeps `allowImportingTsExtensions` (tests import with explicit
 // `.ts` specifiers) but relaxes `noImplicitAny`, `strictNullChecks` and
@@ -102,12 +108,21 @@ const testOptions = {
   noUncheckedIndexedAccess: false,
 };
 
+function compareDiagnostics(left, right) {
+  const leftFile = left.file?.fileName ?? "";
+  const rightFile = right.file?.fileName ?? "";
+  if (leftFile !== rightFile) return leftFile < rightFile ? -1 : 1;
+  const leftStart = left.start ?? -1;
+  const rightStart = right.start ?? -1;
+  if (leftStart !== rightStart) return leftStart - rightStart;
+  return left.code - right.code;
+}
+
 function reportErrors(label, program) {
   const errors = ts
     .getPreEmitDiagnostics(program)
-    .filter(
-      (diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error,
-    );
+    .filter((diagnostic) => diagnostic.category === ts.DiagnosticCategory.Error)
+    .sort(compareDiagnostics);
   if (errors.length === 0) return 0;
   console.log(ts.formatDiagnostics(errors, formatHost));
   console.log(`[typecheck] ${label}: ${errors.length} type error(s)`);
@@ -117,6 +132,7 @@ function reportErrors(label, program) {
 let totalErrors = 0;
 let checked = 0;
 
+const packageFiles = [];
 for (const directory of PACKAGE_DIRECTORIES) {
   const absolute = path.join(repositoryRoot, directory);
   if (!fs.existsSync(path.join(absolute, "package.json"))) {
@@ -124,29 +140,27 @@ for (const directory of PACKAGE_DIRECTORIES) {
     totalErrors += 1;
     continue;
   }
-  const packageJson = JSON.parse(
-    fs.readFileSync(path.join(absolute, "package.json"), "utf8"),
+  packageFiles.push(...collectSourceFiles(absolute));
+}
+
+const allFiles = packageFiles.sort();
+
+const sourceFiles = allFiles.filter((file) => !isTestFile(file));
+if (sourceFiles.length > 0) {
+  totalErrors += reportErrors(
+    "sources",
+    ts.createProgram(sourceFiles, baseOptions),
   );
-  const files = collectSourceFiles(absolute);
-  if (files.length === 0) continue;
+  checked += 1;
+}
 
-  const sourceFiles = files.filter((file) => !isTestFile(file));
-  if (sourceFiles.length > 0) {
-    totalErrors += reportErrors(
-      `${packageJson.name} (sources)`,
-      ts.createProgram(sourceFiles, baseOptions),
-    );
-    checked += 1;
-  }
-
-  const testFiles = files.filter((file) => isTestFile(file));
-  if (testFiles.length > 0) {
-    totalErrors += reportErrors(
-      `${packageJson.name} (tests)`,
-      ts.createProgram(testFiles, testOptions),
-    );
-    checked += 1;
-  }
+const testFiles = allFiles.filter(isTestFile);
+if (testFiles.length > 0) {
+  totalErrors += reportErrors(
+    "tests",
+    ts.createProgram(testFiles, testOptions),
+  );
+  checked += 1;
 }
 
 const webConfigPath = path.join(repositoryRoot, "apps/web/tsconfig.json");

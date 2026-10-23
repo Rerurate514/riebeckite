@@ -9,6 +9,8 @@ type Route = {
   main?: boolean;
   runtime?: boolean;
   commitError?: boolean;
+  networkError?: boolean;
+  notHtml?: boolean;
 };
 
 const routes = new Map<string, Route>([
@@ -52,6 +54,22 @@ const routes = new Map<string, Route>([
       runtime: false,
     },
   ],
+  [
+    "/network-error",
+    {
+      title: "Network error",
+      marker: "network error fallback",
+      networkError: true,
+    },
+  ],
+  [
+    "/not-html",
+    {
+      title: "Not HTML",
+      marker: "not html fallback",
+      notHtml: true,
+    },
+  ],
 ]);
 
 export type SpaFixture = {
@@ -79,6 +97,15 @@ export async function createSpaFixture(bundle: string): Promise<SpaFixture> {
     const route = routes.get(pathname);
     if (!route) {
       response.writeHead(404, { "content-type": "text/html" }).end();
+      return;
+    }
+    const spaRequest = request.headers["sec-fetch-mode"] === "cors";
+    if (route.networkError && spaRequest) {
+      request.socket.destroy();
+      return;
+    }
+    if (route.notHtml && spaRequest) {
+      response.writeHead(200, { "content-type": "text/plain" }).end("not html");
       return;
     }
     if (route.delay) await sleep(route.delay);
@@ -113,6 +140,8 @@ function html(route: Route, pathname: string, bundle: string): string {
       <a href="/missing">Missing</a>
       <a href="/error">Error</a>
       <a href="/no-main">No main</a>
+      <a href="/network-error">Network error</a>
+      <a href="/not-html">Not HTML</a>
       <a href="/commit-error">Commit error</a>
       <a href="#section">Section</a>
     </nav>`;

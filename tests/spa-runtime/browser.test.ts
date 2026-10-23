@@ -216,6 +216,8 @@ test("fetch failures fall back to a document navigation", async () => {
     ["/missing", "404 fallback"],
     ["/error", "500 fallback"],
     ["/no-main", "no main fallback"],
+    ["/network-error", "network error fallback"],
+    ["/not-html", "not html fallback"],
   ] as const) {
     const { page, errors } = await open();
     try {

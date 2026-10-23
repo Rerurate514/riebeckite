@@ -176,6 +176,9 @@ importers:
       '@riebeckite/plugin-garden-explorer':
         specifier: workspace:*
         version: link:../../packages/plugins/garden-explorer
+      '@riebeckite/plugin-glossary':
+        specifier: workspace:*
+        version: link:../../packages/plugins/glossary
       '@riebeckite/plugin-graphviz':
         specifier: workspace:*
         version: link:../../packages/plugins/graphviz
@@ -281,6 +284,9 @@ importers:
       '@riebeckite/plugin-text-fragment':
         specifier: workspace:*
         version: link:../../packages/plugins/text-fragment
+      '@riebeckite/plugin-timeline':
+        specifier: workspace:*
+        version: link:../../packages/plugins/timeline
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../../packages/plugins/toc
@@ -998,6 +1004,16 @@ importers:
         specifier: 'catalog:'
         version: 4.13.12
 
+  packages/plugins/glossary:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/graphviz:
     dependencies:
       '@riebeckite/core':
@@ -1495,6 +1511,16 @@ importers:
         version: 4.22.4
 
   packages/plugins/text-fragment:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/plugins/timeline:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

@@ -39,6 +39,7 @@ Obsidian ボールト向けの日常ノート機能。
 | プラグイン | できること |
 | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | Obsidian 風マークダウン：ウィキリンク・埋め込み・コールアウト・タグ。 |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | 印を付けた用語ノートからアルファベット順の用語集ページを生成。 |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | ウィキリンクによるファイル添付とアセットの埋め込み表示。 |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | プレーンなリンクから音声・動画を埋め込み。 |
 
@@ -73,6 +74,7 @@ Obsidian ボールト向けの日常ノート機能。
 | --- | --- |
 | [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | Ctrl+K モーダル付きのクライアント側全文検索。 |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | ノートのグラフと検索を探索するインタラクティブビュー。 |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | 印を付けた日付付きノートから時系列ページを生成。 |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | ノート周辺のリンクグラフ。 |
 | [`@riebeckite/plugin-permalink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/permalink/README.md) | 安定したカスタマイズ可能なパーマリンク。 |
 

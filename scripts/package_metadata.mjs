@@ -43,6 +43,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/folder-pages",
   "packages/plugins/gallery",
   "packages/plugins/garden-explorer",
+  "packages/plugins/glossary",
   "packages/plugins/graphviz",
   "packages/plugins/hard-breaks",
   "packages/plugins/highlight",
@@ -80,6 +81,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/source-files",
   "packages/plugins/taxonomy",
   "packages/plugins/text-fragment",
+  "packages/plugins/timeline",
   "packages/plugins/toc",
   "packages/plugins/ux",
   "packages/plugins/vega-lite",
@@ -292,6 +294,10 @@ const packagePublishingMetadata = {
     description: "Interactive graph and search explorer for Riebeckite notes.",
     keywords: ["riebeckite", "plugin", "knowledge-graph", "search"],
   },
+  "packages/plugins/glossary": {
+    description: "Build-time glossary pages for Riebeckite notes.",
+    keywords: ["riebeckite", "plugin", "glossary", "documentation"],
+  },
   "packages/plugins/graphviz": {
     description: "Graphviz DOT diagram rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "graphviz", "diagrams"],
@@ -450,6 +456,10 @@ const packagePublishingMetadata = {
   "packages/plugins/text-fragment": {
     description: "Text Fragment links and quotes for Riebeckite articles.",
     keywords: ["riebeckite", "plugin", "text-fragment", "sharing"],
+  },
+  "packages/plugins/timeline": {
+    description: "Build-time timelines from dated Riebeckite notes.",
+    keywords: ["riebeckite", "plugin", "timeline", "collections"],
   },
   "packages/plugins/toc": {
     description: "Scroll-aware table of contents for Riebeckite articles.",

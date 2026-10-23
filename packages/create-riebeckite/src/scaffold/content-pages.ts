@@ -900,6 +900,18 @@ const PLUGIN_CATEGORIES: readonly PluginCategory[] = [
         },
       },
       {
+        slug: "glossary",
+        desc: {
+          en: "An alphabetical glossary page from marked term notes.",
+          ja: "印を付けた用語ノートからアルファベット順の用語集ページを生成。",
+          "zh-CN": "从标记的术语笔记生成按字母排序的术语表页面。",
+          es: "Una página de glosario alfabético a partir de notas de términos marcadas.",
+          de: "Eine alphabetische Glossarseite aus markierten Begriffnotizen.",
+          fr: "Une page de glossaire alphabétique à partir de notes de termes marquées.",
+          ko: "표시한 용어 노트에서 알파벳순 용어집 페이지를 생성.",
+        },
+      },
+      {
         slug: "attachment",
         desc: {
           en: "Renders attached files and embeds assets via wikilinks.",
@@ -1119,6 +1131,18 @@ const PLUGIN_CATEGORIES: readonly PluginCategory[] = [
           de: "Ein interaktiver Graph- und Such-Explorer.",
           fr: "Un explorateur interactif de graphe et de recherche.",
           ko: "노트 그래프와 검색을 탐색하는 대화형 뷰.",
+        },
+      },
+      {
+        slug: "timeline",
+        desc: {
+          en: "A chronological page from marked, dated notes.",
+          ja: "印を付けた日付付きノートから時系列ページを生成。",
+          "zh-CN": "从标记且带日期的笔记生成时间线页面。",
+          es: "Una página cronológica a partir de notas marcadas y fechadas.",
+          de: "Eine chronologische Seite aus markierten, datierten Notizen.",
+          fr: "Une page chronologique à partir de notes marquées et datées.",
+          ko: "표시한 날짜가 있는 노트에서 시간순 페이지를 생성.",
         },
       },
       {

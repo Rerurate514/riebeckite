@@ -74,6 +74,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Flashcards](./flashcards.md) | Interactive flashcard decks from code blocks |
 | [Kanban](./kanban.md) | Build-time Obsidian Kanban boards |
 | [Hover Preview](./hover-preview.md) | Popover previews for internal links |
+| [Glossary](./glossary.md) | Glossary pages from marked term notes |
 
 ### Diagrams and presentation
 
@@ -137,6 +138,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Dataview](./dataview.md) | Build-time Dataview queries |
 | [Folder Pages](./folder-pages.md) | Folder entry pages and generated listings |
 | [Archive](./archive.md) | Monthly archive listing pages |
+| [Timeline](./timeline.md) | Chronological timelines from marked notes |
 
 ### Publishing and SEO
 

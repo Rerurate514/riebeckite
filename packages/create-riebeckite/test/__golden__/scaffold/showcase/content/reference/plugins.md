@@ -42,6 +42,7 @@ README.
 | [`@riebeckite/plugin-autocardlink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md) | `autoCardLinkPlugin` | `{ className: "rb-cardlink" }` |
 | [`@riebeckite/plugin-rich-embed`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rich-embed/README.md) | `richEmbed` | `{ providers: ["youtube", "vimeo", "spotify"] }` |
 | [`@riebeckite/plugin-gallery`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/gallery/README.md) | `gallery` | `{ columns: 3, aspect: "4/3", language: "gallery" }` |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | `glossary` | — |
 | [`@riebeckite/plugin-mermaid-pele`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/mermaid-pele/README.md) | `mermaidPele` | — |
 | [`@riebeckite/plugin-graphviz`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/graphviz/README.md) | `graphviz` | `{ render: "build", engine: "dot", caption: true, fallback: true }` |
 | [`@riebeckite/plugin-d2`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/d2/README.md) | `d2` | `{ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }` |
@@ -69,6 +70,7 @@ README.
 | [`@riebeckite/plugin-daily-notes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md) | `dailyNotesPlugin` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
 | [`@riebeckite/plugin-rename`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md) | `renamePlugin` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
 | [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragmentPlugin` | `{ prefix: "showcase: " }` |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | `timeline` | — |
 | [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | `qualityPlugin` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
 | [`@riebeckite/plugin-deploy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md) | `deployPlugin` | `{ provider: "cloudflare-pages" }` |
 | [`@riebeckite/plugin-diagnostics`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/diagnostics/README.md) | `diagnostics` | `{ reportUnusedAssets: true, reportOrphans: true, requiredFrontmatter: ["title"] }` |
@@ -440,6 +442,12 @@ items:
     meta: v0.0.5
     href: https://riebeckite.dev/docs/themes/gruvbox
 ```
+
+### @riebeckite/plugin-glossary
+
+Factory: `glossary` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md)
+
+This plugin has no Markdown-specific demo in the scaffold yet. See its package README for the exact behavior and options.
 
 ### @riebeckite/plugin-mermaid-pele
 
@@ -833,6 +841,12 @@ Factory: `textFragmentPlugin` · [README](https://github.com/Rerurate514/riebeck
 Adds text-fragment friendly copy/open behavior for selected Markdown text.
 
 Select this sentence in the rendered page and copy a text-fragment link to it.
+
+### @riebeckite/plugin-timeline
+
+Factory: `timeline` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md)
+
+This plugin has no Markdown-specific demo in the scaffold yet. See its package README for the exact behavior and options.
 
 ### @riebeckite/plugin-quality
 

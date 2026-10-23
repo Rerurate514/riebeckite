@@ -38,6 +38,41 @@ A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
 
 A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
 
+## Generated pages
+
+### Timeline — [`timeline`](./timeline.md)
+
+#### Source
+
+````md
+---
+title: First release
+date: 2026-01-15
+timeline: true
+---
+````
+
+#### Rendered
+
+[Open the Timeline](/timeline)
+
+### Glossary — [`glossary`](./glossary.md)
+
+#### Source
+
+````md
+---
+title: Static site generation
+glossary: true
+term: SSG
+definition: Generates HTML before deployment.
+---
+````
+
+#### Rendered
+
+[Open the Glossary](/glossary)
+
 ## Code
 
 ### Code with a toolbar — [`code-enhance`](./code-enhance.md)

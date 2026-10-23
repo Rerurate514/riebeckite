@@ -73,6 +73,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Flashcards](./flashcards.ja.md) | コードブロックから作るフラッシュカード |
 | [Kanban](./kanban.ja.md) | Obsidian Kanban のビルド時描画 |
 | [Hover Preview](./hover-preview.ja.md) | 内部リンクのホバープレビュー |
+| [Glossary](./glossary.ja.md) | 用語ノートから用語集ページを生成 |
 
 ### 図とプレゼンテーション
 
@@ -136,6 +137,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Dataview](./dataview.ja.md) | ビルド時の Dataview クエリ |
 | [Folder Pages](./folder-pages.ja.md) | フォルダの入口ページと一覧生成 |
 | [Archive](./archive.ja.md) | 月別アーカイブ一覧 |
+| [Timeline](./timeline.ja.md) | マークしたノートから時系列ページを生成 |
 
 ### 公開と SEO
 

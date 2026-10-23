@@ -9,6 +9,7 @@ series: publish-a-site
 series_title: Publish a site
 series_order: 1
 publish: true
+timeline: true
 ---
 
 # Planning a Markdown site

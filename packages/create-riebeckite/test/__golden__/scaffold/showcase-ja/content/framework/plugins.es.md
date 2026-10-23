@@ -39,6 +39,7 @@ Toma de notas diaria afinada para bóvedas Obsidian.
 | Plugin | Qué hace |
 | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | Markdown estilo Obsidian: wikilinks, embeds, callouts y etiquetas. |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | Una página de glosario alfabético a partir de notas de términos marcadas. |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | Renderiza archivos adjuntos e incrusta assets con wikilinks. |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | Incrusta audio y vídeo desde enlaces simples. |
 
@@ -73,6 +74,7 @@ Encuentra y recorre tus notas rápidamente.
 | --- | --- |
 | [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | Búsqueda de texto completo en el cliente con modal Ctrl+K. |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | Un explorador interactivo de grafo y búsqueda. |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | Una página cronológica a partir de notas marcadas y fechadas. |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | Un grafo de enlaces alrededor de la nota actual. |
 | [`@riebeckite/plugin-permalink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/permalink/README.md) | Permalinks estables y configurables. |
 

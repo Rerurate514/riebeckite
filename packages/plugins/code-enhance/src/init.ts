@@ -6,14 +6,15 @@ export const DEFAULT_COPIED_LABEL = "Copied";
 export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
   const copyLabel = options.copyLabel ?? DEFAULT_COPY_LABEL;
   const copiedLabel = options.copiedLabel ?? DEFAULT_COPIED_LABEL;
+  const timers = new Set<number>();
 
-  document.addEventListener("click", async (event) => {
+  const onClick = async (event: MouseEvent) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
 
     const copyButton = target.closest<HTMLButtonElement>("[data-code-copy]");
     if (copyButton) {
-      await copyCode(copyButton, copyLabel, copiedLabel);
+      await copyCode(copyButton, copyLabel, copiedLabel, timers);
       return;
     }
 
@@ -29,13 +30,21 @@ export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
       "[data-code-collapse-toggle]",
     );
     if (collapseButton) toggleCollapse(collapseButton);
-  });
+  };
+
+  document.addEventListener("click", onClick);
+  return () => {
+    document.removeEventListener("click", onClick);
+    for (const timer of timers) window.clearTimeout(timer);
+    timers.clear();
+  };
 }
 
 async function copyCode(
   button: HTMLButtonElement,
   copyLabel: string,
   copiedLabel: string,
+  timers: Set<number>,
 ) {
   const code = getCodeText(button);
   if (!code) return;
@@ -43,10 +52,12 @@ async function copyCode(
   await navigator.clipboard.writeText(code);
   button.dataset.codeCopyState = "success";
   button.textContent = copiedLabel;
-  window.setTimeout(() => {
+  const timer = window.setTimeout(() => {
+    timers.delete(timer);
     delete button.dataset.codeCopyState;
     button.textContent = copyLabel;
   }, 1500);
+  timers.add(timer);
 }
 
 function getCodeText(button: HTMLButtonElement): string {

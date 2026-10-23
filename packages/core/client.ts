@@ -6,6 +6,7 @@ export type {
   ClientLifecycleMount,
   ClientLifecycleOptions,
   ClientLifecycleScope,
+  ClientResourceScope,
 } from "./src/client_lifecycle.js";
 export { ClientLifecycle } from "./src/client_lifecycle.js";
 export type {

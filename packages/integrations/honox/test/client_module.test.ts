@@ -64,6 +64,10 @@ test("client module imports the SPA runtime only when configured", async () => {
 
   assert.match(module as string, /@riebeckite\/spa/);
   assert.match(module as string, /onBeforePageCommit/);
+  assert.match(
+    module as string,
+    /if \(signal\.aborted \|\| !root\.isConnected\) return/,
+  );
 });
 
 test("client module omits the SPA runtime when disabled", async () => {

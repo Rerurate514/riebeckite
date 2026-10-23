@@ -101,3 +101,117 @@ test("isolates initializer and cleanup errors", async () => {
 
   assert.deepEqual(failures, ["initialize", "cleanup"]);
 });
+
+test("shares one signal across all page initializers", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  const signals: AbortSignal[] = [];
+  const mount = (name: string) =>
+    lifecycle.mount({
+      scope: "page",
+      name,
+      root: {},
+      config: undefined,
+      initialize: ({ signal }) => {
+        signals.push(signal);
+        return undefined;
+      },
+    });
+
+  await Promise.all([mount("one"), mount("two")]);
+  assert.equal(signals[0], signals[1]);
+  assert.equal(signals[0]?.aborted, false);
+
+  await lifecycle.unmount("page");
+  assert.equal(signals[0]?.aborted, true);
+});
+
+test("disposes listeners, timers, intervals, and cleanups registered on the scope", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  const target = new EventTarget();
+  let clicks = 0;
+  let timeouts = 0;
+  let intervals = 0;
+  let cleanups = 0;
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "resources",
+    root: {},
+    config: undefined,
+    initialize: ({ scope }) => {
+      scope.on(target, "click", () => {
+        clicks += 1;
+      });
+      scope.timeout(() => {
+        timeouts += 1;
+      }, 5);
+      scope.interval(() => {
+        intervals += 1;
+      }, 5);
+      scope.cleanup(() => {
+        cleanups += 1;
+      });
+      return undefined;
+    },
+  });
+
+  await lifecycle.unmount("page");
+  await lifecycle.unmount("page");
+  target.dispatchEvent(new Event("click"));
+  await new Promise((resolve) => setTimeout(resolve, 20));
+
+  assert.equal(clicks, 0);
+  assert.equal(timeouts, 0);
+  assert.equal(intervals, 0);
+  assert.equal(cleanups, 1);
+});
+
+test("cleans registrations made before an initializer fails", async () => {
+  const failures: string[] = [];
+  const lifecycle = new ClientLifecycle<object>({
+    onError: (_error, context) => failures.push(context.phase),
+  });
+  const target = new EventTarget();
+  let clicks = 0;
+  let cleaned = false;
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "failing",
+    root: {},
+    config: undefined,
+    initialize: ({ scope }) => {
+      scope.on(target, "click", () => {
+        clicks += 1;
+      });
+      scope.cleanup(() => {
+        cleaned = true;
+      });
+      throw new Error("initialization");
+    },
+  });
+  target.dispatchEvent(new Event("click"));
+
+  assert.equal(clicks, 0);
+  assert.equal(cleaned, true);
+  assert.deepEqual(failures, ["initialize"]);
+});
+
+test("runs an initializer cleanup once when unmounted twice", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  let cleanups = 0;
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "example",
+    root: {},
+    config: undefined,
+    initialize: () => () => {
+      cleanups += 1;
+    },
+  });
+  await lifecycle.unmount("page");
+  await lifecycle.unmount("page");
+
+  assert.equal(cleanups, 1);
+});

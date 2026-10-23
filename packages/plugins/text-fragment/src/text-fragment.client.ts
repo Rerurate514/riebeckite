@@ -42,7 +42,7 @@ type ActiveSelection = {
  */
 export function initTextFragmentShare(
   labels: Partial<TextFragmentLabels> = {},
-): void {
+): (() => void) | undefined {
   if (typeof document === "undefined") return;
   if (initialized) return;
   initialized = true;
@@ -73,6 +73,7 @@ export function initTextFragmentShare(
   document.body.appendChild(popover);
 
   let active: ActiveSelection | null = null;
+  const copyingTimers = new Set<number>();
   // The `execCommand` fallback moves the DOM selection, which fires
   // `selectionchange`. Ignore those events until the copy has settled.
   let isCopying = false;
@@ -119,20 +120,22 @@ export function initTextFragmentShare(
       positionPopover(popover, selection.rect);
     } finally {
       // Runs after the queued `selectionchange` events of the fallback path.
-      window.setTimeout(() => {
+      const timer = window.setTimeout(() => {
+        copyingTimers.delete(timer);
         isCopying = false;
       }, 0);
+      copyingTimers.add(timer);
     }
   };
 
-  linkButton.addEventListener("click", () => {
+  const onLinkButtonClick = () => {
     void copy(
       (selection) => buildTextFragmentUrl(resolvePageUrl(), selection),
       resolved.linkCopiedLabel,
     );
-  });
+  };
 
-  quoteButton.addEventListener("click", () => {
+  const onQuoteButtonClick = () => {
     void copy(
       (selection) =>
         buildQuoteMarkdown({
@@ -142,29 +145,46 @@ export function initTextFragmentShare(
         }),
       resolved.quoteCopiedLabel,
     );
-  });
+  };
 
   // Keep the selection alive while the user presses a popover button.
-  popover.addEventListener("mousedown", (event) => event.preventDefault());
-
-  document.addEventListener("selectionchange", refresh);
-  document.addEventListener("mouseup", refresh);
-  document.addEventListener("keyup", refresh);
-
-  document.addEventListener("keydown", (event) => {
+  const onPopoverMouseDown = (event: MouseEvent) => event.preventDefault();
+  const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Escape" && !popover.hidden) {
       event.preventDefault();
       hide();
     }
-  });
-
-  document.addEventListener("mousedown", (event) => {
+  };
+  const onMouseDown = (event: MouseEvent) => {
     if (popover.hidden) return;
     if (event.target instanceof Node && popover.contains(event.target)) return;
     hide();
-  });
+  };
 
+  linkButton.addEventListener("click", onLinkButtonClick);
+  quoteButton.addEventListener("click", onQuoteButtonClick);
+  popover.addEventListener("mousedown", onPopoverMouseDown);
+  document.addEventListener("selectionchange", refresh);
+  document.addEventListener("mouseup", refresh);
+  document.addEventListener("keyup", refresh);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("mousedown", onMouseDown);
   window.addEventListener("scroll", hide, { passive: true });
+  return () => {
+    initialized = false;
+    for (const timer of copyingTimers) window.clearTimeout(timer);
+    copyingTimers.clear();
+    linkButton.removeEventListener("click", onLinkButtonClick);
+    quoteButton.removeEventListener("click", onQuoteButtonClick);
+    popover.removeEventListener("mousedown", onPopoverMouseDown);
+    document.removeEventListener("selectionchange", refresh);
+    document.removeEventListener("mouseup", refresh);
+    document.removeEventListener("keyup", refresh);
+    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("mousedown", onMouseDown);
+    window.removeEventListener("scroll", hide);
+    popover.remove();
+  };
 }
 
 function createButton(label: string): HTMLButtonElement {

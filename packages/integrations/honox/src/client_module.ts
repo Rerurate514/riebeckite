@@ -100,8 +100,10 @@ ${
     : `  stopSpaNavigation ??= startSpaNavigation({
     ...${serializePublicClientConfig(config.spa)},
     onBeforePageCommit: () => lifecycle.unmount("page"),
-    onPageCommit: async ({ root }) => {
+    onPageCommit: async ({ root, signal }) => {
+      if (signal.aborted) return;
       await createClient();
+      if (signal.aborted || !root.isConnected) return;
       mountPageClientInitializers(root);
     },
   });`

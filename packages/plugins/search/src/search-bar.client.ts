@@ -118,6 +118,12 @@ export function initSearch() {
 
   input.addEventListener("input", () => renderResults(input.value));
 
+  results.addEventListener("click", (event) => {
+    if ((event.target as Element | null)?.closest("[data-search-result]")) {
+      closeSearch();
+    }
+  });
+
   openButtons.forEach((button) => {
     button.addEventListener("click", () => void openSearch());
   });

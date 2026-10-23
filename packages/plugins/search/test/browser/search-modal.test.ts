@@ -466,6 +466,31 @@ test("keyboard result selection navigates to the result", async (t) => {
   await page.close();
 });
 
+test("clicking a result closes the dialog during client-side navigation", async (t) => {
+  if (!browser) return t.skip("puppeteer browser unavailable");
+  const page = await openPage();
+  await openWithQuery(page, "note");
+
+  await page.evaluate(() => {
+    document.addEventListener("click", (event) => {
+      const link = (event.target as Element | null)?.closest<HTMLAnchorElement>(
+        "[data-search-result]",
+      );
+      if (link?.href.startsWith(`${window.location.origin}/notes/`)) {
+        event.preventDefault();
+      }
+    });
+  });
+
+  await page.click("[data-search-result]");
+  await waitClosed(page);
+
+  assert.equal(new URL(page.url()).pathname, "/");
+  assert.equal(await inputFocused(page), false);
+
+  await page.close();
+});
+
 test("dynamic result updates keep focus in the search input", async (t) => {
   if (!browser) return t.skip("puppeteer browser unavailable");
   const page = await openPage();

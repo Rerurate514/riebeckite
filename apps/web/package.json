@@ -103,6 +103,7 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "catalog:",
     "esbuild": "^0.28.2",
+    "puppeteer": "^25.11.0",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.22.4",
     "vite": "^8.0.9",

@@ -8,7 +8,7 @@ title: SPA Navigation
 This page explains the structure behind SPA navigation: which packages
 participate, how a page transition differs from a normal load, and how
 page-scoped behavior is replaced. It is for maintainers. To enable SPA
-navigation in a site, see the guide.
+navigation in a site, see the [guide](../guides/spa-navigation.md).
 
 ## The big picture
 
@@ -125,6 +125,7 @@ transition, for example:
 - the current page has no `main#main-content`
 - a redirect leaves the current origin
 - page cleanup or head replacement throws before the main element is replaced
+- a commit hook throws after the main element has been replaced
 
 A newer navigation aborts the older one. An aborted navigation does not fall
 back; the newer navigation owns the page.
@@ -141,7 +142,8 @@ reduced motion is requested, the commit runs without a transition.
 - The application shell must stay outside `main#main-content`.
 - Head nodes marked `data-riebeckite-head="page"` are replaced. Nodes marked
   `global` or `runtime` persist. Legacy metadata selectors remain page-owned
-  for compatibility; arbitrary scripts and styles are not cloned or executed.
+  for compatibility. Executable scripts are never replaced or re-executed;
+  scripts and styles without an ownership attribute persist.
 - Plugin head tags are emitted as page-owned automatically. Other plugin page
   tags must opt in with the ownership attribute.
 - Plugin page entries must cooperate with the lifecycle: use the supplied root,

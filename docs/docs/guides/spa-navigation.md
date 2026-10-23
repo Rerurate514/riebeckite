@@ -54,7 +54,7 @@ When an eligible link is clicked, Riebeckite:
 
 - fetches the next HTML document without leaving the current page
 - replaces `<main id="main-content">` with the fetched page's main element
-- updates the document title, language, direction, and page-owned metadata
+- updates the document title, language, direction, and page-specific metadata
 - hydrates islands in the new page content
 - updates history, restores scroll, moves focus to the page content, and
   announces the new page to assistive technology
@@ -68,7 +68,7 @@ The runtime handles an `<a href>` when all of these are true:
 
 - the link is same-origin and uses HTTP or HTTPS
 - `target` is absent or `_self`
-- no modifier key is pressed
+- no Meta, Ctrl, Shift, or Alt key is pressed
 - the link has no `download` attribute
 - the link does not set `data-spa="false"`
 - the destination is not only a hash change on the current page
@@ -110,11 +110,12 @@ it when missing, but rendering it explicitly keeps the intent clear.
 
 Invalid option values throw when the runtime starts.
 
-`prefetch: "hover"` is best-effort. The runtime skips data-saving and 2G
-connections, deduplicates requests, keeps up to 20 least-recently-used entries
-for 30 seconds, and aborts unused work when the runtime stops. Cancelling one
-navigation does not cancel its shared prefetch request. Use `prefetch: false`
-if a page has many links and you want to avoid extra requests.
+`prefetch: "hover"` is best-effort. The runtime skips data-saving and slow
+connections (2G and below), deduplicates requests, keeps up to 20 completed
+least-recently-used pages for 30 seconds, and aborts pending fetches when the
+runtime stops. Cancelling one navigation does not cancel its shared prefetch
+request. Use `prefetch: false` if a page has many links and you want to avoid
+extra requests.
 
 ## Page scripts and islands
 

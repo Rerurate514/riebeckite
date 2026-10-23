@@ -34,7 +34,7 @@ flowchart LR
 これにより、通常の Site は Riebeckite 内部の Vite / HonoX 設定を毎回組み立てる必要がありません。
 
 生成される client module は、opt-in の SPA runtime を接続する場所でもあります。
-[SPA Runtime の内部実装](./spa-runtime.ja.md) を参照してください。
+[SPAランタイムの内部実装](./spa-runtime.ja.md) を参照してください。
 
 
 ## このページの構成

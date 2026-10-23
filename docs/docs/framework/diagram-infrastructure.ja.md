@@ -102,7 +102,7 @@ export async function initExampleDiagram({ root, signal }) {
 }
 ```
 
-この helper は別の SPA lifecycle を作りません。page client entry の mount と disposal は Core の `ClientLifecycle` が所有します。周辺の transaction と cancellation は [SPA Runtime の内部実装](./spa-runtime.ja.md) を参照してください。
+この helper は別の SPA lifecycle を作りません。page client entry の mount と disposal は Core の `ClientLifecycle` が所有します。周辺の transaction と cancellation は [SPAランタイムの内部実装](./spa-runtime.ja.md) を参照してください。
 
 browser renderer が engine 固有の色を選ぶ必要がある場合、`detectDiagramTheme()` で現在の `light` / `dark` preference を取得できます。
 

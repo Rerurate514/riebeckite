@@ -51,7 +51,7 @@ export default defineConfig({
 
 `spa` は client-side page transition を有効にします。`true`、`false`、または
 options object を指定できます。動作とオプションは
-[SPA Navigation](../guides/spa-navigation.ja.md) を参照してください。
+[SPAナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
 
 Config は Content や Plugin の処理が始まる前に Integration によって解決されます。
 

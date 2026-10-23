@@ -1,23 +1,19 @@
 ---
 date: 2026-10-23
-title: SPA Navigation
+title: SPAナビゲーション
 ---
 
-# SPA Navigation
+# SPAナビゲーション
 
-このガイドは、Riebeckite Site で SPA navigation を有効にする方法、対象になる
-リンク、Renderer に必要な要件を説明します。Site を開発する人向けの内容で、
-内部実装は別ページで扱います。
+このガイドは、RiebeckiteのサイトでSPAナビゲーションを有効にする方法を説明します。ページ移動の対象になるリンクと、ページを描画する側に必要な要件も扱います。サイトを開発する人向けの内容で、内部実装は別ページで説明します。
 
-## SPA navigation が変えるもの
+## SPAナビゲーションで変わること
 
-Riebeckite は Page を Server で描画します。SPA navigation は opt-in の拡張です。最初の
-Page を読み込んだ後、条件を満たすリンクをクリックすると、次の Page を
-background で取得し、Page の内容だけを置き換えます。Header、Footer、その他の
-application shell はそのまま残ります。
+Riebeckiteはページをサーバーで描画します。SPAナビゲーションは、それを置き換えるものではなく、ページ移動を軽くするための任意の拡張です。
 
-Riebeckite は client-side router を追加しません。各 URL はこれまでどおり
-Server が描画し、直接アクセスや reload では通常の document を読み込みます。
+最初のページを読み込んだ後、条件を満たすリンクをクリックすると、次のページのHTMLをバックグラウンドで取得し、ページの内容だけを置き換えます。ヘッダー、フッター、その他のアプリケーションシェルはそのまま残ります。
+
+Riebeckiteはクライアントサイドルーターを追加しません。各URLはこれまでどおりサーバーが描画し、直接アクセスした場合や再読み込みした場合は通常のHTML文書を読み込みます。
 
 ## 有効にする
 
@@ -32,8 +28,7 @@ export default defineConfig({
 });
 ```
 
-`spa: true` は既定値で runtime を有効にします。設定を変える場合は object を
-渡します。
+`spa: true` は既定値でランタイムを有効にします。設定を変える場合はオブジェクトを渡します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -47,46 +42,42 @@ export default defineConfig({
 });
 ```
 
-`spa` を省略するか `spa: false` にすると、通常の browser navigation になります。
+`spa` を省略するか `spa: false` にすると、通常のブラウザのページ移動になります。
 
-## Navigation で変わること
+## ページ移動時に起きること
 
-対象のリンクをクリックすると、Riebeckite は次の処理を行います。
+対象のリンクをクリックすると、Riebeckiteは次の処理を行います。
 
-- 現在の Page を離れずに、次の HTML document を取得する
-- `<main id="main-content">` を、取得した Page の main element で置き換える
-- document title、言語、方向、page-owned metadata を更新する
-- 新しい Page の island を hydrate する
-- history を更新し、scroll を復元し、Page の内容へ focus を移し、支援技術に
-  新しい Page を通知する
+- 現在のページを離れずに、次のページのHTMLを取得する
+- `<main id="main-content">` を、取得したページのmain要素で置き換える
+- ページタイトル、言語、文字方向、ページ固有のメタデータを更新する
+- 新しいページのislandをhydrateする
+- 履歴を更新し、スクロール位置を復元し、ページの内容へフォーカスを移し、支援技術に新しいページを通知する
 
-main element の外側にある application shell は再描画されません。Global の
-stylesheet と script は読み込まれたままです。
+main要素の外側にあるアプリケーションシェルは再描画されません。グローバルなスタイルシートとスクリプトは読み込まれたままです。
 
-## SPA navigation の対象になるリンク
+## ページ移動の対象になるリンク
 
 次の条件をすべて満たす `<a href>` が対象です。
 
-- 同一 origin で、HTTP または HTTPS である
+- 同一オリジンで、HTTPまたはHTTPSである
 - `target` がない、または `_self` である
-- modifier key が押されていない
+- 修飾キー（Meta、Ctrl、Shift、Alt）が押されていない
 - `download` 属性がない
 - `data-spa="false"` が指定されていない
-- 現在の Page の hash だけを変えるリンクではない
+- 現在のページのハッシュだけを変えるリンクではない
 
-それ以外のリンクは通常の browser 動作になります。対象から外すには
-`data-spa="false"` を指定します。
+それ以外のリンクは通常のブラウザ動作になります。対象から外すには `data-spa="false"` を指定します。
 
 ```html
 <a href="/print/article" data-spa="false">Print view</a>
 ```
 
-Form と programmatic な navigation は intercept しません。
+フォームとプログラムからのページ移動は横取りしません。
 
-## Renderer の要件
+## ページを描画する側の要件
 
-各 Page は、`main-content` という ID を持つ main element を1つだけ描画する
-必要があります。
+各ページは、`main-content` というIDを持つmain要素を1つだけ描画する必要があります。
 
 ```tsx
 <SiteHeader />
@@ -96,39 +87,29 @@ Form と programmatic な navigation は intercept しません。
 <SiteFooter />
 ```
 
-Header、Footer、その他の永続する UI はこの element の外側に置きます。現在の
-Page または取得した Page に `main#main-content` がない場合、transition は失敗
-し、通常の document navigation に fallback します。
+ヘッダー、フッター、その他の永続するUIは、この要素の外側に置きます。現在のページまたは取得したページに `main#main-content` がない場合、ページ移動は失敗し、ページ全体の読み込みにフォールバックします。
 
-`tabindex={-1}` は、runtime が新しい内容へ focus を移すために使います。なくても
-runtime が追加しますが、明示しておくと意図が伝わります。
+`tabindex={-1}` は、ランタイムが新しい内容へフォーカスを移すために使います。省略してもランタイムが追加しますが、明示しておくと意図が伝わります。
 
-## オプション
+## 設定項目
 
-| Option | 型 | 既定値 | 効果 |
+| 設定キー | 型 | 既定値 | 効果 |
 | --- | --- | --- | --- |
-| `prefetch` | `false \| "hover"` | `false` | リンクに pointer が入ったとき、同一 origin の Page を先に取得する |
-| `scrollRestoration` | `boolean` | `true` | history entry ごとに scroll 位置を保存・復元する |
-| `viewTransitions` | `boolean` | `false` | 利用可能で、動きが許可されている場合に View Transitions API を使う |
+| `prefetch` | `false \| "hover"` | `false` | リンクにポインターが入ったとき、同一オリジンのページを先に取得する |
+| `scrollRestoration` | `boolean` | `true` | 履歴の項目ごとにスクロール位置を保存・復元する |
+| `viewTransitions` | `boolean` | `false` | 利用可能で、動きが許可されている場合にView Transitions APIを使う |
 
-不正な値は runtime の開始時に例外になります。
+不正な値は、ランタイムの開始時に例外になります。
 
-`prefetch: "hover"` は best-effort です。runtime はデータ節約設定と 2G 接続では実行せず、
-request を重複排除します。最大20件の最近使った entry を30秒間保持し、runtime 停止時には
-未使用の request を abort します。一つの navigation を cancel しても、共有中の prefetch は
-cancel しません。リンクが多い Page で余分な request を避けたい場合は `prefetch: false` にします。
+`prefetch: "hover"` は、必ず成功するとは限りません。ランタイムはデータ節約設定や低速接続（2G以下）では実行せず、同じURLへのリクエストを重複排除します。完了したページを最大20件、30秒間保持し、ランタイムの停止時には進行中の取得を中断します。ページ移動を中断しても、共有されている先読みのリクエストは中断しません。リンクが多いページで余分なリクエストを避けたい場合は `prefetch: false` にします。
 
-## Page の script と island
+## ページのスクリプトとisland
 
-新しい main element 内の island は、置き換え後に hydrate されます。通常の
-`<script>` tag は SPA navigation では再実行されません。Page の操作は island か
-plugin client entry に置き、Riebeckite が Page ごとに初期化できるようにします。
+新しいmain要素内のislandは、置き換え後にhydrateされます。通常の `<script>` タグは、SPAナビゲーションでは再実行されません。ページ固有の操作はislandかPluginのクライアントエントリに置き、Riebeckiteがページごとに初期化できるようにします。
 
-Global の stylesheet は読み込まれたままです。Stylesheet の変更は反映されません。
-次の Page にだけ存在する stylesheet は追加されません。共有する style は global
-に読み込んでください。
+グローバルなスタイルシートは読み込まれたままです。スタイルシートの変更は反映されません。次のページにだけ存在するスタイルシートは追加されません。共有するスタイルはグローバルに読み込んでください。
 
-独自の code は `riebeckite:navigation` event で transition の完了を検知できます。
+独自のコードは `riebeckite:navigation` イベントでページ移動の完了を検知できます。
 
 ```ts
 document.addEventListener("riebeckite:navigation", (event) => {
@@ -142,28 +123,21 @@ document.addEventListener("riebeckite:navigation", (event) => {
 });
 ```
 
-event は新しい Page の commit 後に発火します。最初の Page load では発火しません。
+イベントは新しいページの反映後に発火します。最初のページの読み込みでは発火しません。
 
 ## 制限と注意点
 
-- SPA navigation には JavaScript が必要です。最初の load は通常の
-  server-rendered Page で、SPA 無効時の build もこれまでどおり動作します。
-- 対象は同一 origin の GET link だけです。Cross-origin link、form、download、
-  新しい tab で開く link は browser に任せます。
-- `main#main-content` がない場合や fetch に失敗した場合は、document 全体を
-  読み込み直します。
-- runtime は fresh な cache がなければ history entry ごとに Page を取得します。Cache は短時間なので、
-  offline の back/forward が確実に動くわけではありません。
-- Page 固有の `<script>` や stylesheet の変更は反映されません。island と
-  global asset を使ってください。
-- View transition は browser の対応に依存し、
-  `prefers-reduced-motion: reduce` のときは省略されます。
-- SPA navigation は router ではありません。Route の解決、redirect、HTML の
-  生成は Server が行います。
+- SPAナビゲーションにはJavaScriptが必要です。最初の読み込みは通常のサーバー描画ページで、SPAを無効にしたビルドもこれまでどおり動作します。
+- 対象は同一オリジンのGETリンクだけです。別オリジンのリンク、フォーム、ダウンロード、新しいタブで開くリンクはブラウザに任せます。
+- `main#main-content` がない場合や取得に失敗した場合は、ページ全体を読み込み直します。
+- ランタイムは、有効なキャッシュがなければ履歴の項目ごとにページを取得します。キャッシュは短時間しか有効ではないため、オフライン時の戻る・進むが確実に動くわけではありません。
+- ページ固有の `<script>` やスタイルシートの変更は反映されません。islandとグローバルなアセットを使ってください。
+- View Transitionはブラウザの対応に依存し、`prefers-reduced-motion: reduce` のときは省略されます。
+- SPAナビゲーションはルーターではありません。ルートの解決、リダイレクト、HTMLの生成はサーバーが行います。
 
 ## 関連ページ
 
-- [SPA navigation の構成](../framework/spa-navigation.ja.md)
-- [SPA runtime の内部実装](../framework/spa-runtime.ja.md)
-- [HonoX Integration](../framework/honox-integration.ja.md)
-- [Configuration](../reference/configuration.ja.md)
+- [SPAナビゲーションの構成](../framework/spa-navigation.ja.md)
+- [SPAランタイムの内部実装](../framework/spa-runtime.ja.md)
+- [HonoXとの連携](../framework/honox-integration.ja.md)
+- [設定リファレンス](../reference/configuration.ja.md)

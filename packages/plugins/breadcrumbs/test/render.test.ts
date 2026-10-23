@@ -8,8 +8,9 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
+import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
-import { renderToString } from "hono/jsx/dom/server";
+import { renderToReadableStream, renderToString } from "hono/jsx/dom/server";
 import Breadcrumbs from "../components/breadcrumbs.js";
 import {
   breadcrumbs,
@@ -291,6 +292,80 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
     ),
     ["Home", "Documentation", "Intro"],
   );
+});
+
+test("links intermediate folder crumbs whose permalink has a trailing slash", async () => {
+  const folder = makeEntry({
+    slug: "docs/README",
+    title: "Documentation",
+    permalink: "/docs/",
+  });
+  const nested = makeEntry({
+    slug: "docs/guides/README",
+    title: "Guides",
+    permalink: "/docs/guides/",
+  });
+  const entry = makeEntry({
+    slug: "docs/guides/intro",
+    title: "Intro",
+    permalink: "/docs/guides/intro",
+  });
+  const items = await getBreadcrumbs({
+    view: createPublicContentView(makeManifest([folder, nested, entry])),
+    entry,
+    homeLabel: "Home",
+  });
+
+  assert.deepEqual(items, [
+    { name: "Home", url: "/" },
+    { name: "Documentation", url: "/docs/" },
+    { name: "Guides", url: "/docs/guides/" },
+    { name: "Intro", url: "/docs/guides/intro" },
+  ]);
+});
+
+test("component links folders and generated folder pages from the site manifest", async () => {
+  const folder = makeEntry({
+    slug: "docs/README",
+    title: "Documentation",
+    permalink: "/docs/",
+  });
+  const reference = makeEntry({
+    slug: "docs/reference/README",
+    title: "Reference",
+    permalink: "/docs/reference/",
+  });
+  const entry = makeEntry({
+    slug: "docs/reference/configuration/content",
+    title: "Content",
+    permalink: "/docs/reference/configuration/content",
+  });
+  const manifest = makeManifest([folder, reference, entry]);
+  manifest.folderLocations.set("docs/reference/configuration", {
+    pathname: "/docs/reference/configuration/",
+  } as never);
+  const html = await new Response(
+    await renderToReadableStream(
+      createElement(
+        SiteProvider,
+        {
+          config,
+          manifest,
+          view: createPublicContentView(manifest),
+          path: entry.permalink,
+        },
+        createElement(
+          ArticleProvider,
+          { entry, post: entry as never },
+          createElement(Breadcrumbs, {}),
+        ),
+      ),
+    ),
+  ).text();
+
+  assert.match(html, /href="\/docs\/"/);
+  assert.match(html, /href="\/docs\/reference\/"/);
+  assert.match(html, /href="\/docs\/reference\/configuration\/"/);
 });
 
 test("onManifestCreated retains JSON-LD", async () => {

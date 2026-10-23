@@ -1,6 +1,5 @@
 import type {
   ContentManifest,
-  ContentManifestEntry,
   PluginDataHelper,
   PublicContentEntry,
   PublicContentView,
@@ -11,7 +10,11 @@ import type { BreadcrumbItem } from "./types.js";
 
 export type BuildBreadcrumbItemsArgs = {
   manifest: ContentManifest;
-  entry: ContentManifestEntry;
+  entry: {
+    slug: string;
+    title: string;
+    publicLocation: { permalink: string };
+  };
   config: ResolvedRiebeckiteConfig;
   homeLabel: string;
 };
@@ -68,7 +71,7 @@ export const getBreadcrumbs: PluginDataHelper<
   for (let index = 0; index < segments.length - 1; index += 1) {
     const pathname = `/${segments.slice(0, index + 1).join("/")}`;
     const target = view.discoverableEntries.find(
-      (candidate) => candidate.permalink === pathname,
+      (candidate) => normalizePathname(candidate.permalink) === pathname,
     );
     pushBreadcrumbItem(items, {
       name: target?.title || titleCaseSegment(segments[index]),
@@ -91,6 +94,11 @@ function pushBreadcrumbItem(items: BreadcrumbItem[], item: BreadcrumbItem) {
 
 function publicPathSegments(permalink: string): string[] {
   return permalink.split("/").filter(Boolean);
+}
+
+function normalizePathname(pathname: string): string {
+  const segments = publicPathSegments(pathname);
+  return segments.length === 0 ? "/" : `/${segments.join("/")}`;
 }
 
 function titleCaseSegment(segment: string): string {

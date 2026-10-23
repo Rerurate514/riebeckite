@@ -1,7 +1,7 @@
 import type { PluginComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
-import { getBreadcrumbs } from "../src/breadcrumbs.js";
+import { buildBreadcrumbItems } from "../src/breadcrumbs.js";
 import type { BreadcrumbItem } from "../src/types.js";
 
 export type BreadcrumbsProps = {
@@ -21,9 +21,10 @@ const Breadcrumbs = (async ({
   const items =
     explicitItems ??
     (site && article?.entry
-      ? await getBreadcrumbs({
-          view: site.view,
+      ? buildBreadcrumbItems({
+          manifest: site.manifest,
           entry: article.entry,
+          config: site.config,
           homeLabel: site.config.site.title,
         })
       : undefined);

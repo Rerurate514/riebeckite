@@ -1,4 +1,5 @@
 import type { ContentManifestEntry } from "./content_manifest.js";
+import { resolvePlugins } from "./plugin.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 import type { PostContent } from "./post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
@@ -27,6 +28,18 @@ export type WebsiteSeoInput = {
 export type RenderableFeedEntry = ContentManifestEntry & {
   html?: string;
 };
+
+export function resolveSeoProvider(
+  config: ResolvedRiebeckiteConfig,
+): PluginSeoExtension {
+  const provider = resolvePlugins(config.plugins).find(
+    (plugin) => plugin.seo,
+  )?.seo;
+  if (!provider) {
+    throw new Error("SEO plugin extension is not configured.");
+  }
+  return provider;
+}
 
 export type PluginSeoExtension = {
   buildArticleSeo(

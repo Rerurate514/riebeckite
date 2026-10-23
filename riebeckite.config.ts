@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { articleMetadataPlugin } from "@riebeckite/plugin-article-metadata";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
@@ -91,6 +92,7 @@ export default defineConfig({
       include: ["created", "modified", "tags", "status", "kind", "source"],
       order: ["created", "modified", "tags", "status", "kind", "source"],
     }),
+    articleMetadataPlugin(),
     seo({
       feed: {
         rss: true,

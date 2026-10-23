@@ -7,7 +7,8 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
 const shellCss = read("../app/styles/shell.css");
-const articleCss = read("../app/components/article/style.css");
+const docsCss = read("../../../packages/plugins/docs/style.css");
+const tocCss = read("../../../packages/plugins/toc/style.css");
 
 test("docs layout derives header height and rail bounds from one contract", () => {
   assert.match(shellCss, /--rb-site-header-logo-size:\s*1\.75rem/);
@@ -43,22 +44,16 @@ test("docs layout derives header height and rail bounds from one contract", () =
 
 test("left docs sidebar uses the shared rail bounds", () => {
   assert.match(
-    articleCss,
-    /\.rb-article-aside\s*\{[^}]*position:\s*sticky;\s*top:\s*var\(--rb-docs-rail-top\)/,
+    docsCss,
+    /\.rb-docs-sidebar-rail\s*\{[^}]*position:\s*sticky;\s*top:\s*var\(--rb-docs-rail-top\)/,
   );
-  assert.match(
-    articleCss,
-    /max-height:\s*var\(--rb-docs-rail-max-block-size\)/,
-  );
+  assert.match(docsCss, /max-height:\s*var\(--rb-docs-rail-max-block-size\)/);
 });
 
 test("desktop table of contents uses the shared rail bounds", () => {
-  assert.match(articleCss, /top:\s*var\(--rb-docs-rail-top\)/);
-  assert.match(
-    articleCss,
-    /max-height:\s*var\(--rb-docs-rail-max-block-size\)/,
-  );
-  assert.match(articleCss, /padding-block:\s*0/);
-  assert.doesNotMatch(articleCss, /--rb-docs-sticky-top/);
-  assert.doesNotMatch(articleCss, /--rr-toc-sticky-top/);
+  assert.match(tocCss, /top:\s*var\(--rb-docs-rail-top\)/);
+  assert.match(tocCss, /max-height:\s*var\(--rb-docs-rail-max-block-size\)/);
+  assert.match(tocCss, /padding-block:\s*0/);
+  assert.doesNotMatch(tocCss, /--rb-docs-sticky-top/);
+  assert.doesNotMatch(tocCss, /--rr-toc-sticky-top/);
 });

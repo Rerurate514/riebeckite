@@ -89,7 +89,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div class="site-footer__recent">
-          <RecentPosts posts={posts} />
+          <RecentPosts posts={posts} locale={language} variant="compact" />
         </div>
         <SiteNav
           placement="secondary"

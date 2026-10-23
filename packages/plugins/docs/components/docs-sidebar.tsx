@@ -8,6 +8,7 @@ export type DocsSidebarProps = {
   readonly items?: readonly DocsNavigationItem[];
   readonly currentPermalink?: string;
   readonly label?: string;
+  readonly placement?: "inline" | "article-rail";
 };
 
 const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
@@ -28,7 +29,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
   const label = props.label ?? options?.sidebar?.label ?? "Docs navigation";
   if (items.length === 0) return html``;
   const permalink = currentPermalink ?? "";
-  return (
+  const sidebar = (
     <details class="rb-docs-sidebar-details" data-docs-sidebar-details open>
       <summary class="rb-docs-sidebar-summary">{label}</summary>
       <nav class="rb-docs-sidebar" aria-label={label} data-docs-sidebar>
@@ -39,6 +40,11 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
         />
       </nav>
     </details>
+  );
+  return props.placement === "article-rail" ? (
+    <aside class="rb-docs-sidebar-rail">{sidebar}</aside>
+  ) : (
+    sidebar
   );
 }) satisfies PluginComponent<DocsSidebarProps>;
 

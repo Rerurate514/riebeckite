@@ -333,6 +333,7 @@ export type {
   SeoMetadata,
   WebsiteSeoInput,
 } from "./src/types/plugin_seo.js";
+export { resolveSeoProvider } from "./src/types/plugin_seo.js";
 export type { PostContent, PostFrontmatter } from "./src/types/post_content.js";
 export type {
   PublishFrontmatter,

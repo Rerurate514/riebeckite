@@ -13,6 +13,7 @@ export type ColorModeToggleProps = {
   readonly labels?: Readonly<Partial<Record<ColorMode, string>>>;
   /** Group label, used as the `<legend>`. */
   readonly label?: string;
+  readonly placement?: "inline" | "floating";
 };
 
 const DEFAULT_LABELS: Record<ColorMode, string> = {
@@ -31,10 +32,11 @@ export default function ColorModeToggle({
   modes = COLOR_MODES,
   labels = {},
   label = "Color mode",
+  placement = "inline",
 }: ColorModeToggleProps) {
   return (
     <fieldset
-      class="rr-color-mode"
+      class={`rr-color-mode rr-color-mode--${placement}`}
       data-color-mode-root
       data-color-mode-storage-key={storageKey}
     >

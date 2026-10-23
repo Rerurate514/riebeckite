@@ -17,8 +17,14 @@ import { supportsWebmentionCapability } from "./src/provider.js";
 import { countUnmatchedMentions } from "./src/server.js";
 import type { WebmentionOptions } from "./src/types.js";
 
-export type { WebmentionSectionProps } from "./components/webmention-section.js";
-export { default as WebmentionSection } from "./components/webmention-section.js";
+export type {
+  ArticleWebmentionSectionProps,
+  WebmentionSectionProps,
+} from "./components/webmention-section.js";
+export {
+  ArticleWebmentionSection,
+  default as WebmentionSection,
+} from "./components/webmention-section.js";
 export { createWebmentionEndpoints } from "./src/endpoints.js";
 export type {
   WebmentionFeed,

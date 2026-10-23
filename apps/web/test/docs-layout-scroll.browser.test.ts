@@ -73,11 +73,11 @@ async function loadDocsPage(
         <main>
           <article class="rb-article">
             <div class="rb-article-layout">
-              <aside class="rr-table-of-contents rr-table-of-contents--desktop" aria-label="Contents">
+              <aside class="rr-table-of-contents rr-table-of-contents--desktop-rail" aria-label="Contents">
                 <p class="rr-table-of-contents__eyebrow">Contents</p>
                 <ol class="rr-table-of-contents__list">${navigationItems(120, "rr-table-of-contents__item")}</ol>
               </aside>
-              <div class="rb-article-aside"><nav class="rb-docs-sidebar" aria-label="Documentation"><ul class="rb-docs-sidebar__list">${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></div>
+              <div class="rb-docs-sidebar-rail"><nav class="rb-docs-sidebar" aria-label="Documentation"><ul class="rb-docs-sidebar__list">${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></div>
               <div class="rb-article-body"><div style="height: 300rem">Article</div></div>
             </div>
           </article>
@@ -94,9 +94,11 @@ for (const theme of ["light", "dark"] as const) {
       await loadDocsPage(page, 1600, theme);
       const initial = await page.evaluate(() => {
         const header = document.querySelector<HTMLElement>(".rb-site-header");
-        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const docs = document.querySelector<HTMLElement>(
+          ".rb-docs-sidebar-rail",
+        );
         const toc = document.querySelector<HTMLElement>(
-          ".rr-table-of-contents--desktop",
+          ".rr-table-of-contents--desktop-rail",
         );
         const tocEyebrow = document.querySelector<HTMLElement>(
           ".rr-table-of-contents__eyebrow",
@@ -124,9 +126,11 @@ for (const theme of ["light", "dark"] as const) {
 
       await page.evaluate(() => window.scrollTo(0, 1));
       const onePixel = await page.evaluate(() => {
-        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const docs = document.querySelector<HTMLElement>(
+          ".rb-docs-sidebar-rail",
+        );
         const toc = document.querySelector<HTMLElement>(
-          ".rr-table-of-contents--desktop",
+          ".rr-table-of-contents--desktop-rail",
         );
         if (!docs || !toc) throw new Error("docs fixture is incomplete");
         return {
@@ -144,9 +148,11 @@ for (const theme of ["light", "dark"] as const) {
       await page.evaluate(() => window.scrollTo(0, 1200));
       const sticky = await page.evaluate(() => {
         const header = document.querySelector<HTMLElement>(".rb-site-header");
-        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const docs = document.querySelector<HTMLElement>(
+          ".rb-docs-sidebar-rail",
+        );
         const toc = document.querySelector<HTMLElement>(
-          ".rr-table-of-contents--desktop",
+          ".rr-table-of-contents--desktop-rail",
         );
         if (!header || !docs || !toc)
           throw new Error("docs fixture is incomplete");
@@ -169,9 +175,11 @@ for (const theme of ["light", "dark"] as const) {
 
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       const atPageEnd = await page.evaluate(() => {
-        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const docs = document.querySelector<HTMLElement>(
+          ".rb-docs-sidebar-rail",
+        );
         const toc = document.querySelector<HTMLElement>(
-          ".rr-table-of-contents--desktop",
+          ".rr-table-of-contents--desktop-rail",
         );
         if (!docs || !toc) throw new Error("docs fixture is incomplete");
         return {
@@ -193,9 +201,11 @@ test("tablet and mobile keep docs rails out of desktop sticky positioning", asyn
     for (const width of [1024, 375]) {
       await loadDocsPage(page, width);
       const layout = await page.evaluate(() => {
-        const docs = document.querySelector<HTMLElement>(".rb-article-aside");
+        const docs = document.querySelector<HTMLElement>(
+          ".rb-docs-sidebar-rail",
+        );
         const toc = document.querySelector<HTMLElement>(
-          ".rr-table-of-contents--desktop",
+          ".rr-table-of-contents--desktop-rail",
         );
         if (!docs || !toc) throw new Error("docs fixture is incomplete");
         return {

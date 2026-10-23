@@ -6,8 +6,14 @@ import {
   type PluginDataHelper,
 } from "@riebeckite/core";
 
-export type { PostDiffProps } from "./components/post-diff.js";
-export { default as PostDiffView } from "./components/post-diff.js";
+export type {
+  ArticlePostDiffProps,
+  PostDiffProps,
+} from "./components/post-diff.js";
+export {
+  ArticlePostDiffView,
+  default as PostDiffView,
+} from "./components/post-diff.js";
 export { renderDiffHistory } from "./src/components/diff-history.js";
 export { renderDiffLine } from "./src/components/diff-line.js";
 export {

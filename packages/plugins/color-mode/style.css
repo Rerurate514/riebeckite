@@ -19,6 +19,16 @@
     border-radius: var(--rr-color-mode-border-radius);
   }
 
+  .rr-color-mode--floating {
+    position: fixed;
+    inset-inline-start: 1.5rem;
+    inset-block-end: 1.5rem;
+    z-index: 50;
+    background: var(--rr-color-mode-surface);
+    box-shadow: 0 2px 12px
+      color-mix(in oklab, var(--rb-color-ink) 18%, transparent);
+  }
+
   /* The legend names the group for assistive technology only. */
   .rr-color-mode__legend {
     position: absolute;

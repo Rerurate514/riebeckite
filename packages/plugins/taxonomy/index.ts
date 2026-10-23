@@ -46,7 +46,7 @@ export {
   renderTaxonomyPage,
 } from "./src/pages.js";
 export { buildTaxonomySeo } from "./src/seo.js";
-export { slugifyTaxonomyValue } from "./src/slug.js";
+export { buildTaxonomyTagHref, slugifyTaxonomyValue } from "./src/slug.js";
 export type {
   ResolvedTaxonomyOptions,
   TaxonomyEntryReference,

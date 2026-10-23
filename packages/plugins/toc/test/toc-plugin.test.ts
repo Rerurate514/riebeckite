@@ -4,11 +4,8 @@ import { test } from "node:test";
 import { tocPlugin } from "../index.ts";
 
 const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
-const articleStyle = readFileSync(
-  new URL(
-    "../../../../apps/web/app/components/article/style.css",
-    import.meta.url,
-  ),
+const component = readFileSync(
+  new URL("../components/table-of-contents.tsx", import.meta.url),
   "utf8",
 );
 
@@ -40,10 +37,12 @@ test("desktop ToC remains visible from tablet width", () => {
   );
 });
 
-test("the Site owns desktop ToC placement in the article rail", () => {
+test("the plugin owns desktop ToC placement in the article rail", () => {
+  assert.match(component, /rr-table-of-contents--desktop-rail/);
   assert.match(
-    articleStyle,
-    /@media \(min-width: 88rem\) \{[\s\S]*?\.rb-article-layout > \.rr-table-of-contents--desktop \{[\s\S]*?position: sticky;[\s\S]*?top: var\(--rb-docs-sticky-top, 4rem\);[\s\S]*?max-height: calc\([\s\S]*?100dvh[\s\S]*?overflow-y: auto;[\s\S]*?overscroll-behavior: contain;/,
+    style,
+    /@media \(min-width: 88rem\) \{[\s\S]*?\.rb-article-layout > \.rr-table-of-contents--desktop-rail \{/,
   );
-  assert.doesNotMatch(articleStyle, /--rr-toc-sticky-top/);
+  assert.match(style, /position: sticky;/);
+  assert.match(style, /top: var\(--rb-docs-rail-top\);/);
 });

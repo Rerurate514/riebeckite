@@ -16,6 +16,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/alias",
   "packages/plugins/analytics",
   "packages/plugins/archive",
+  "packages/plugins/article-metadata",
   "packages/plugins/attachment",
   "packages/plugins/autocardlink",
   "packages/plugins/backlinks",
@@ -181,6 +182,11 @@ const packagePublishingMetadata = {
     description:
       "Monthly archive listing pages built on the Core collection engine.",
     keywords: ["riebeckite", "plugin", "archive", "collections"],
+  },
+  "packages/plugins/article-metadata": {
+    description:
+      "Article dates, reading time, and taxonomy tags for Riebeckite sites.",
+    keywords: ["riebeckite", "plugin", "article", "metadata"],
   },
   "packages/plugins/attachment": {
     description: "Attachment link and embed rendering for Obsidian wikilinks.",
@@ -686,6 +692,7 @@ export function expectedPackageMetadata(directory) {
       "alias",
       "analytics",
       "archive",
+      "article-metadata",
       "backlinks",
       "breadcrumbs",
       "citations",

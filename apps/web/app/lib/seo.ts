@@ -1,11 +1,10 @@
 import { config } from "virtual:riebeckite/config";
-import type {
-  PluginHeadTag,
-  PluginSeoExtension,
-  PostContent,
-  SeoMetadata,
+import {
+  type PluginHeadTag,
+  type PostContent,
+  resolveSeoProvider,
+  type SeoMetadata,
 } from "@riebeckite/core";
-import { resolvePlugins } from "@riebeckite/core";
 import {
   buildSoftwareApplicationSchema,
   getHomeMetadata,
@@ -13,17 +12,11 @@ import {
   type HomeLocale,
 } from "./home";
 
-const seoProvider = findSeoProvider();
+function seoProvider() {
+  return resolveSeoProvider(config);
+}
 
 export type { SeoMetadata } from "@riebeckite/core";
-export const getDescription = seoProvider.getDescription;
-export const getEntryPublishedTime = seoProvider.getEntryPublishedTime;
-export const getEntryUpdatedTime = seoProvider.getEntryUpdatedTime;
-export const renderAtomFeed = seoProvider.renderAtomFeed;
-export const renderJsonFeed = seoProvider.renderJsonFeed;
-export const renderRobots = seoProvider.renderRobots;
-export const renderRssFeed = seoProvider.renderRssFeed;
-export const renderSitemap = seoProvider.renderSitemap;
 
 export function buildArticleSeo(
   permalink: string,
@@ -31,7 +24,7 @@ export function buildArticleSeo(
   headTags?: readonly PluginHeadTag[],
   language?: string,
 ): SeoMetadata {
-  return seoProvider.buildArticleSeo(
+  return seoProvider().buildArticleSeo(
     config,
     permalink,
     post,
@@ -50,7 +43,7 @@ export function buildWebsiteSeo(
   headTags?: readonly PluginHeadTag[],
   language?: string,
 ): SeoMetadata {
-  return seoProvider.buildWebsiteSeo(config, input, headTags, language);
+  return seoProvider().buildWebsiteSeo(config, input, headTags, language);
 }
 
 export function buildHomeSeo(
@@ -77,24 +70,13 @@ export function buildHomeSeo(
 }
 
 export function buildAbsoluteUrl(pathOrUrl: string): string {
-  return seoProvider.buildAbsoluteUrl(config, pathOrUrl);
+  return seoProvider().buildAbsoluteUrl(config, pathOrUrl);
 }
 
 export function buildPostUrl(permalink: string): string {
-  return seoProvider.buildPostUrl(config, permalink);
+  return seoProvider().buildPostUrl(config, permalink);
 }
 
 export function getHtmlLanguage(): string {
-  return seoProvider.getHtmlLanguage(config);
-}
-
-function findSeoProvider(): PluginSeoExtension {
-  const provider = resolvePlugins(config.plugins).find(
-    (plugin) => plugin.seo,
-  )?.seo;
-  if (!provider) {
-    throw new Error("SEO plugin extension is not configured.");
-  }
-
-  return provider;
+  return seoProvider().getHtmlLanguage(config);
 }

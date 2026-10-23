@@ -8,21 +8,24 @@ function read(relativePath: string): string {
 
 const notFound = read("../app/routes/_404.tsx");
 const errorPage = read("../app/routes/_error.tsx");
-const shellCss = read("../app/styles/shell.css");
+const searchCss = read("../../../packages/plugins/search/style.css");
 
-test("the canonical 404 surface owns its presentation and keeps status 404", () => {
+test("the canonical 404 route delegates its surface to the search plugin", () => {
+  assert.match(
+    notFound,
+    /import \{ SmartNotFound \} from "@riebeckite\/plugin-search"/,
+  );
   assert.match(notFound, /import type \{ Context \} from "hono"/);
   assert.match(notFound, /const handler = async \(c: Context\) => \{/);
   assert.match(notFound, /c\.status\(404\)/);
   assert.match(notFound, /c\.render\(/);
-  assert.match(notFound, /class="not-found"/);
+  assert.match(notFound, /<SmartNotFound path=\{c\.req\.path\} \/>/);
   assert.doesNotMatch(notFound, /dangerouslySetInnerHTML/);
-  assert.doesNotMatch(notFound, /Default404/);
 });
 
-test("the canonical 404 surface is styled by site CSS", () => {
-  assert.match(shellCss, /\.not-found \{/);
-  assert.match(shellCss, /\.not-found__status \{/);
+test("the search plugin owns smart 404 styling", () => {
+  assert.match(searchCss, /\.rr-search-not-found \{/);
+  assert.match(searchCss, /\.rr-search-not-found__status \{/);
 });
 
 test("the canonical error surface logs and returns a plain 500", () => {

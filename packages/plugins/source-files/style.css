@@ -41,8 +41,24 @@
 }
 
 .rr-source-file__download {
+  display: inline-flex;
+  align-items: center;
   justify-self: start;
   margin-top: 0.25rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid currentColor;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rr-source-file__download:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.rr-source-file__download:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .rr-source-file-embed__title {

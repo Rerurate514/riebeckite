@@ -90,7 +90,7 @@ test("publishes a selected source file linked from public content", async () => 
   assert.match(page?.body ?? "", /rr-source-file__path/);
   assert.match(
     page?.body ?? "",
-    /rr-source-file__download[\s\S]*assets\/attachments\/src\/main.ts[\s\S]*download/,
+    /rr-source-file__download[\s\S]*assets\/attachments\/src\/main.ts[\s\S]*download[\s\S]*>Download source file</,
   );
   assert.doesNotMatch(page?.body ?? "", /data-source-file-copy|>Raw</);
   const manifest = await content.getManifest();

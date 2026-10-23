@@ -48,7 +48,7 @@ export class PageCache {
   }
 
   get(url: URL, signal?: AbortSignal): Promise<FetchedPage> {
-    const href = url.href;
+    const href = cacheKey(url);
     const cached = this.freshEntry(href);
     if (cached) {
       this.touch(href, cached);
@@ -59,8 +59,9 @@ export class PageCache {
 
   prefetch(url: URL): void {
     if (!this.canPrefetch()) return;
-    if (this.freshEntry(url.href)) return;
-    void this.load(url.href).promise.catch(() => undefined);
+    const href = cacheKey(url);
+    if (this.freshEntry(href)) return;
+    void this.load(href).promise.catch(() => undefined);
   }
 
   dispose(): void {
@@ -158,6 +159,12 @@ export async function fetchPage(
 function isHtmlContentType(value: string): boolean {
   const mediaType = value.split(";", 1)[0]?.trim().toLowerCase();
   return mediaType === "text/html" || mediaType === "application/xhtml+xml";
+}
+
+function cacheKey(url: URL): string {
+  const key = new URL(url.href);
+  key.hash = "";
+  return key.href;
 }
 
 function allowsPrefetch(): boolean {

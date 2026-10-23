@@ -2,17 +2,13 @@
 
 <!-- Generated from docs/docs/plugins/related-posts.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-ビルド時に「関連ノート」ナビゲーションのデータを生成するプラグインです。公開対象の
-各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べます。
-Site が `<RelatedPosts />` コンポーネントを記事の後などに配置します。クライアント側
-JavaScript は不要です。
+ビルド時に「関連ノート」ナビゲーションのデータを生成するプラグインです。公開対象の各エントリについて、コンテンツマニフェスト上の他のエントリをスコア順に並べます。サイトが `<RelatedPosts />` コンポーネントを記事の後などに配置します。クライアント側 JavaScript は不要です。
 
 [English](./README.md)
 
 ## 推奨配置
 
-`relatedPosts()` はマニフェストのコンテンツグラフを読み、現在のエントリと
-他の公開エントリを次のシグナルで採点します。
+`relatedPosts()` はマニフェストのコンテンツグラフを読み、現在のエントリと他の公開エントリを次のシグナルで採点します。
 
 | シグナル | 重み | 意味 |
 | -------- | ---- | ---- |
@@ -20,13 +16,9 @@ JavaScript は不要です。
 | タグの共有 | 共通タグ 1 件につき 2 | 現在のエントリと候補が同じタグを持つ |
 | 共引用 | 共通リンク先 1 件につき 1 | 両方のエントリが同じノートへリンクしている |
 
-候補はスコアの降順、同点ならタイトル、さらに同点ならスラッグの順に並べ、
-`limit` 件に絞ります。`minScore` 未満の候補は除外します。条件を満たす候補が
-1 件もない場合、そのエントリの HTML は変更しません。
+候補はスコアの降順、同点ならタイトル、さらに同点ならスラッグの順に並べ、`limit` 件に絞ります。`minScore` 未満の候補は除外します。条件を満たす候補が 1 件もない場合、そのエントリの HTML は変更しません。
 
-Site は `<RelatedPosts entries={...} options={...} />` コンポーネントを
-記事の後などに配置します。条件を満たす関連エントリがない場合、コンポーネントは
-何も描画しません。
+サイトは `<RelatedPosts entries={...} options={...} />` コンポーネントを記事の後などに配置します。条件を満たす関連エントリがない場合、コンポーネントは何も描画しません。
 
 ## クイックスタート
 
@@ -42,8 +34,7 @@ export default defineConfig({
 
 ## 高度なカスタマイズ
 
-Site のレイアウト内で任意の位置に配置できるサーバー描画の Hono JSX Component
-を公開しています。helper で entries を計算して解決済み options を渡してください。採点と公開境界のフィルタリングは維持されます。
+サイトのレイアウト内で任意の位置に配置できる、サーバー描画の Hono JSX コンポーネントを公開しています。ヘルパーで `entries` を計算し、解決済みの `options` を渡してください。採点と公開境界のフィルタリングは維持されます。
 
 ```tsx
 import { buildRelatedPosts, RelatedPosts, resolveRelatedPostsOptions } from "@riebeckite/plugin-related-posts";
@@ -54,7 +45,7 @@ const entries = buildRelatedPosts({ manifest, entry, options, config });
 <nav rb-related-posts><RelatedPosts entries={entries} options={options} /></nav>;
 ```
 
-1つの記事につき1回だけ描画してください。UI を外すにはコンポーネントを取り除きます。
+1 つの記事につき 1 回だけ描画してください。UI を外すにはコンポーネントを取り除きます。
 
 ## オプション
 
@@ -76,10 +67,9 @@ relatedPosts({
 });
 ```
 
-## 表示
+## 記事下に表示されるナビゲーション
 
-このサイトでは、条件に合う公開エントリがあれば記事下に実際のナビゲーションを
-表示します。
+このサイトでは、条件に合う公開エントリがあれば、記事の下に実際のナビゲーションを表示します。
 
 ## スタイル
 
@@ -96,7 +86,7 @@ import "@riebeckite/plugin-related-posts/style.css";
 - `resolveRelatedPostsOptions(options?)`：オプションの既定値を適用する
 - `buildRelatedPosts({ manifest, entry, options, config? })`：関連エントリを採点・整列する
 - `renderRelatedPosts(entries, options)`：ナビゲーション HTML を生成する
-- `RelatedPosts` と `@riebeckite/plugin-related-posts/components`：Hono JSX Component
+- `RelatedPosts` と `@riebeckite/plugin-related-posts/components`：Hono JSX コンポーネント
 - 型: `RelatedPostsOptions`, `ResolvedRelatedPostsOptions`, `RelatedPostsEntry`
 
 ## 制約

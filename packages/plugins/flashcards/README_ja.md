@@ -2,11 +2,11 @@
 
 <!-- Generated from docs/docs/plugins/flashcards.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-`flashcards` コードブロックを学習用のカードデッキに変えるプラグインです。質問を表示して答えをめくり、前後の移動とシャッフルができます。ビルド時には静的なリストを先に出力するため、JavaScript がなくても内容を読めます。
+`flashcards` コードブロックを学習用のカードデッキに変えるプラグインです。質問を表示し、カードをめくって答えを確認できます。前後の移動とシャッフルにも対応します。ビルド時には静的なリストを先に出力するため、JavaScript がなくても内容を読めます。
 
 [English](./README.md)
 
-## 設定する
+## 設定
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -35,7 +35,7 @@ It stays readable without JavaScript.
 ```
 ````
 
-カードが 1 枚もない、`::` のないカードがある、どちらかの側が空である、といった場合は `invalid-flashcards` の診断を出し、コードブロックのまま残します。
+カードが 1 枚もない場合や、`::` のないカード、どちらかの側が空のカードがある場合は、`invalid-flashcards` の診断を出してコードブロックのまま残します。
 
 ## 出力
 
@@ -55,11 +55,11 @@ It stays readable without JavaScript.
 </div>
 ```
 
-payload は実行されない JSON で、`<` `>` `&` はエスケープ済みです。カードの文言にこれらの文字が含まれていても script 要素を閉じることはできません。順序付きリストは JavaScript がない場合の代替表示です。
+ペイロードは実行されない JSON で、`<` `>` `&` はエスケープ済みです。カードの文言にこれらの文字が含まれていても script 要素を閉じることはできません。順序付きリストは JavaScript がない場合の代替表示です。
 
 ## クライアントの動作
 
-`initFlashcards()` は各 `[data-flashcards]` 要素の payload を読み、代替リストの上に操作できるデッキを組み立てます。対応している操作は次のとおりです。
+`initFlashcards()` は各 `[data-flashcards]` 要素のペイロードを読み、代替リストの上に操作できるデッキを組み立てます。対応している操作は次のとおりです。
 
 - 答えの表示・非表示
 - 前後のカードへの移動（端で折り返す）
@@ -67,7 +67,7 @@ payload は実行されない JSON で、`<` `>` `&` はエスケープ済みで
 - カード位置の表示
 - キーボード操作: `Space` で答えを表示、`ArrowLeft` / `ArrowRight` で移動
 
-成功するとルートに `data-flashcards="ready"` が付き、静的なリストは非表示になります。payload がない、または壊れている場合は代替表示をそのまま残します。ビルドからクライアントへオプションは渡しません。シャッフルの初期状態は `data-flashcards-shuffle` 属性で伝えます。
+成功するとルートに `data-flashcards="ready"` が付き、静的なリストは非表示になります。ペイロードがない、または壊れている場合は代替表示をそのまま残します。ビルドからクライアントへオプションは渡しません。シャッフルの初期状態は `data-flashcards-shuffle` 属性で伝えます。
 
 ## オプション
 

@@ -97,7 +97,7 @@ format: list
 
 ## 診断
 
-不正な YAML やマッピングでないブロックは、その場にエラー表示を出しつつ、`content-query-invalid` のエラー診断を生成します。未知のフィールドは `content-query-unknown-field` の警告になります。
+不正な YAML やマッピングでないブロックは、その場にエラーを表示し、`content-query-invalid` のエラー診断を生成します。未知のフィールドは `content-query-unknown-field` の警告になります。
 
 ## 制限事項
 

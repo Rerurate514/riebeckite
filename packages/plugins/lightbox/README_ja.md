@@ -8,7 +8,7 @@
 
 ## 仕組み
 
-ビルド時の Rehype 変換と、ブラウザ側の初期化処理で動きます。変換では画像をトリガーリンクで囲み、初期化処理ではアクセシブルなダイアログを用意します。
+ビルド時の Rehype 変換と、ブラウザ側の初期化処理の 2 つで構成されます。変換では画像をトリガーリンクで囲み、初期化処理ではアクセシブルなダイアログを用意します。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -27,8 +27,7 @@ export default defineConfig({
 - `initLightbox` は `Escape`、背景クリック、閉じるボタンでダイアログを閉じ、開く前のフォーカスを戻します。
 - 開いている間は `html[data-lightbox-open="true"]` を設定するため、CSS でスクロールを止められます。
 
-Theme は `rr-lightbox` の root に `--rr-lightbox-image-border-radius` を指定すると、
-子要素を選択せずに表示中の画像を調整できます。
+テーマ側では、`rr-lightbox` のルート要素に `--rr-lightbox-image-border-radius` を指定すると、子要素を選択せずに表示中の画像を調整できます。
 
 ## オプション
 
@@ -37,16 +36,16 @@ Theme は `rr-lightbox` の root に `--rr-lightbox-image-border-radius` を指�
 | `selectorClass` | `string` | `"rr-lightbox-trigger"` | トリガーに使う CSS クラス |
 | `expandLabel` | `string` | `"Expand image"` | トリガーとダイアログのアクセシブルラベル |
 | `closeLabel` | `string` | `"Close"` | 閉じるボタンのアクセシブルラベル |
-| `autoWrapImages` | `boolean` | `true` | 初期化時に未処理の画像も囲むか。クライアント側だけの設定 |
+| `autoWrapImages` | `boolean` | `true` | 初期化時に未処理の画像も囲むか。クライアント側でのみ有効 |
 
-`initLightbox()` はイベントリスナー、ダイアログ、追加したトリガーを解除する cleanup 関数を返します。
+`initLightbox()` はイベントリスナー、ダイアログ、追加したトリガーを片付けるクリーンアップ関数を返します。
 
 ## 公開 API
 
 - `lightboxPlugin(options?)`：プラグインファクトリ
 - `rehypeLightbox(options?)`：Rehype 変換
 - `initLightbox(root?, options?)`：ブラウザ初期化関数
-- `initLightboxFromOptions(options?)`：プラグインのクライアントスクリプトが呼ぶ、オプションを先に取る初期化関数
+- `initLightboxFromOptions(options?)`：プラグインのクライアントスクリプトが呼ぶ初期化関数。オプションを第 1 引数に取る
 - `LightboxOptions`、`LightboxInitOptions`：型
 
 ## 関連資料

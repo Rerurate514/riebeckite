@@ -6,9 +6,9 @@ Obsidian 形式の添付ファイルリンクを、ダウンロードリンク�
 
 [English](./README.md)
 
-## まず何を解決するか
+## 概要
 
-`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` や `![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` のような画像以外のウィキリンクを扱います。`@riebeckite/plugin-obsidian-markdown` がリンク先を添付ファイルとして解決したとき、このプラグインが表示を引き受けます。未登録でも通常のダウンロードリンクにはなりますが、埋め込み用のカードは作られません。
+`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` や `![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` のような画像以外のウィキリンクを扱います。`@riebeckite/plugin-obsidian-markdown` がリンク先を添付ファイルとして解決したとき、このプラグインが表示を引き受けます。プラグインを登録しない場合も通常のダウンロードリンクにはなりますが、埋め込み用のカードは作られません。
 
 ## 設定
 
@@ -25,7 +25,7 @@ export default defineConfig({
 });
 ```
 
-## リンクと埋め込みで表示を分ける
+## リンクと埋め込みの表示
 
 - `[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)` は、`download` 属性を持つ通常のリンクになります。
 - `![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
@@ -46,12 +46,12 @@ export default defineConfig({
 
 ![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)
 
-- 形式は大文字にした拡張子です。
+- 形式は拡張子を大文字にしたものです。
 - カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスは
   コンテンツディレクトリの外へ出られないよう検査され、読めないファイルのサイズは表示しません。
-- 埋め込みカードには Theme が対象にできる安定した `rr-attachment` ルート Hook が付き、インライン添付リンクには `rr-attachment-link` を使用します。
+- 埋め込みカードには、テーマが対象にできる安定した `rr-attachment` ルートフックが付きます。インラインの添付リンクには `rr-attachment-link` を使います。
 
-スタイルは `style.css` に同梱されます（インラインの添付リンクには `↓` 接尾辞も付きます）。
+スタイルは `style.css` に含まれます（インラインの添付リンクには `↓` の接尾辞も付きます）。
 
 ## オプション
 

@@ -8,7 +8,7 @@
 
 ヘッドレスブラウザを使わずに静的 SVG を生成したい場合は [Mermaid (Pele)](../mermaid-pele/README_ja.md) を使ってください。
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -27,17 +27,17 @@ export default defineConfig({
 
 このプラグインは `order: -10` で実行されます。Mermaid のコードブロックを先に処理したい場合に適した順序です。
 
-## どのように描画されるか
+## 描画の仕組み
 
-` ```mermaid ` のコードブロックは `figure.rr-mermaid` に置き換わります。図のタイトルはコードブロックの title、またはソース内の `%% caption: ...` 行から取得します。図には代替テキスト相当の `role="img"` を付け、必要に応じて元の記法を折りたたみ表示します。
+` ```mermaid ` のコードブロックは `figure.rr-mermaid` に置き換わります。図のタイトルはコードブロックの `title`、またはソース内の `%% caption: ...` 行から取得します。図には `role="img"` を付け、キャプションがあればそれをラベルにします。元の記法は必要に応じて折りたたみで残します。
 
-`render: "build"` では、Puppeteer が起動するヘッドレス Chromium 上で Mermaid を実行し、静的な SVG を生成します。簡易な DOM 実装や寸法の推測には頼らないため、ブラウザと同じレイアウトエンジンで図を作れます。Mermaid は `securityLevel: "strict"` で実行されます。
+`render: "build"` では、Puppeteer が起動するヘッドレス Chromium 上で Mermaid を実行し、静的な SVG を生成します。JSDOM のような簡易な DOM 実装や寸法の推測には頼らないため、ブラウザと同じレイアウトエンジンで図を作れます。Mermaid は `securityLevel: "strict"` で実行されます。
 
-構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルド時の描画に失敗した場合、既定ではビルドを失敗させます。失敗した図を成功したコンテンツとして保存しません。SVG ID は図の ID をシードにして決定的に生成します。
+構文エラーは `invalid-diagram`、描画環境の問題は `renderer-error` として区別して診断します。ビルド時の描画に失敗した場合、既定ではビルドを失敗させます。失敗した描画が成功したコンテンツとして保存されることはありません。SVG ID は図の ID をシードにして決定的に生成します。
 
 ## クライアント側の再試行
 
-`initMermaidDiagrams` は保留中の図だけを描画します。Mermaid のインスタンスがなければ jsDelivr から Mermaid 11 を読み込みます。描画に失敗した場合は `data-mermaid="error"` となり、CSS のプレースホルダー表示に切り替わります。
+`initMermaidDiagrams` は未描画の図だけを描画します。Mermaid のインスタンスがなければ jsDelivr から Mermaid 11 を読み込みます。描画に失敗した場合は `data-mermaid="error"` となり、CSS のプレースホルダー表示に切り替わります。
 
 明暗別のテーマを指定した場合は、`html[data-theme]` を優先し、なければ OS の配色設定に従います。
 
@@ -51,7 +51,7 @@ export default defineConfig({
 | `caption` | `true` | タイトルまたは `%% caption:` をキャプションとして表示する |
 | `fallback` | `true` | 元の Mermaid 記法を `<details>` に残す |
 
-`"client"` はビルド時の描画を行いません。`render: "build"` で `onRenderError: "client"` を指定するときだけ、ビルド時の描画失敗をクライアント側へ明示的に委譲します。この設定では生成HTMLが描画環境の可用性に依存します。
+`"client"` はビルド時の描画を行いません。`render: "build"` で `onRenderError: "client"` を指定するときだけ、ビルド時の描画失敗をクライアント側へ明示的に委譲します。この設定では、生成される HTML がレンダラーの可用性に左右されます。
 
 ## 主なエクスポート
 

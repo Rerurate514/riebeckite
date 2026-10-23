@@ -76,7 +76,7 @@ export default defineConfig({
 
 ## 実際のレンダリング
 
-以下の例では、組み込みショートコード全12種類の使い方を紹介します。各例では Markdown の記法と、その直下にショートコード自体を記載しています。Shortcodes プラグインが有効な場合、実際のレンダリング結果を確認できます。
+以下の例では、組み込みショートコード 12 種類の使い方を紹介します。各例では Markdown の記法を示し、その直下にショートコード自体を置いています。Shortcodes プラグインが有効な場合、実際のレンダリング結果を確認できます。
 
 ### バッジ（badge）
 
@@ -244,7 +244,7 @@ GitHub Gist のコードスニペットをページ内に直接埋め込めま�
 
 ::file[サンプルPDF]{url="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" name="sample.pdf" size="13 KB"}
 
-上記のコードブロックは元の Markdown 記法を示しています。その直下のショートコードは、Shortcodes プラグインを有効にした Riebeckite で処理された際の、実際のレンダリングを確認するための例です。
+上のコードブロックは元の Markdown 記法です。その直下のショートコードは、Shortcodes プラグインを有効にした Riebeckite が実際にどう描画するかを示す例です。
 
 ## オプション
 

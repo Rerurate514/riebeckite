@@ -6,7 +6,7 @@
 
 [English](./README.md)
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -35,7 +35,7 @@ Bob --> Alice: Hi
 ```
 ````
 
-#### 実行例
+#### 描画結果
 
 ```plantuml
 @startuml
@@ -71,7 +71,7 @@ Bob --> Alice: Hi
 
 ## 出力される HTML / CSS
 
-プラグインは `style.css` を公開し、`rb-plantuml`、`rb-plantuml__frame`、`rb-plantuml__image`、`rb-plantuml__caption`、`rb-plantuml__fallback` という安定したクラス名で出力します。CSS 変数 `--rb-color-*` があればそれに追従し、`html[data-theme="dark"]`、または `data-theme` が無いときの `prefers-color-scheme: dark` で暗色に切り替わります。
+プラグインは `style.css` を公開し、`rb-plantuml`、`rb-plantuml__frame`、`rb-plantuml__image`、`rb-plantuml__caption`、`rb-plantuml__fallback` という安定したクラス名で出力します。CSS 変数 `--rb-color-*` があればそれに追従し、`html[data-theme="dark"]`、または `data-theme` が無いときの `prefers-color-scheme: dark` で暗い配色に切り替わります。
 
 ## 診断
 

@@ -20,7 +20,7 @@ export default defineConfig({
 
 `searchPlugin()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
 
-検索機能の登録と `SearchBar` の配置は別です。登録だけでは表示されないため、global Site shell（通常は header）に `SearchBar` を一つ描画します。位置を変える・消すときはその要素を移動・削除します。
+検索機能の登録と `SearchBar` の配置は別です。登録だけでは表示されないため、サイト全体のシェル（通常はヘッダー）に `SearchBar` を 1 つ描画します。位置を変える・消すときはその要素を移動・削除します。
 
 ## 検索バーを置く
 
@@ -52,17 +52,16 @@ return (
 
 完全一致は 3 倍、前方一致は 2 倍、部分一致は 1 倍として採点します。2 文字以上の問い合わせで部分一致が見つからない場合は、文字が順に現れる候補も探します。入力は小文字化、NFKC 正規化、カタカナの表記ゆれ吸収を経て比較されます。
 
-各 `SearchItem` は解決済みの canonical `permalink` も持ちます。これはスコア対象ではありません。`slug` は検索用の identity で、モーダルの遷移先は `permalink` です。
+各 `SearchItem` は解決済みの canonical `permalink` も持ちます。これはスコア対象ではありません。`slug` は検索用の識別子で、モーダルの遷移先は `permalink` です。
 
-Theme はどちらの `rr-search` root にも `--rr-search-modal-panel-border-radius` と
-`--rr-search-modal-panel-shadow` を指定でき、子要素を選択せずにモーダルパネルを調整できます。
+テーマはどちらの `rr-search` ルートにも `--rr-search-modal-panel-border-radius` と `--rr-search-modal-panel-shadow` を指定でき、子要素を選択せずにモーダルパネルを調整できます。
 
-## CSS Hook
+## CSS フック
 
 検索結果には `rr-search-result`、`rr-search-result__title`、
 `rr-search-result__meta`、`rr-search-result__excerpt`、
 `rr-search-result__tags`、`rr-search-result__tag`、
-`rr-search-result__mark` を使用します。default CSS はこれらの Hook を対象にします。
+`rr-search-result__mark` を使用します。既定の CSS はこれらのフックを対象にします。
 
 ## 検索エンジンだけを使う
 

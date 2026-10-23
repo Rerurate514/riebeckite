@@ -2,11 +2,11 @@
 
 <!-- Generated from docs/docs/plugins/permalink.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite の記事に対して、公開 URL（permalink）を決定するプラグインです。
+Riebeckite のコンテンツに、安定した公開 URL（permalink）を与えるプラグインです。
 
-ファイル構造をそのまま URL に使う代わりに、frontmatter の ID、ファイルパスから導出した ID、独自の resolver などを使って公開 URL を構築できます。
+公開 URL をファイルの配置に直接結び付けず、frontmatter の ID、ファイルパスから決定論的に導いた ID、独自の resolver などから URL を組み立てられます。
 
-旧 URL から canonical URL へのリダイレクトも同じ設定から登録できます。
+旧 URL から canonical URL へのリダイレクトも、同じ設定で登録できます。
 
 [English](./README.md)
 
@@ -38,7 +38,7 @@ export default defineConfig({
 });
 ```
 
-例えば次の記事があるとします。
+次のコンテンツがあるとします。
 
 ```md
 ---
@@ -48,39 +48,39 @@ id: hello-world
 # Hello
 ```
 
-`path.mode: "flat"`、`path.prefix: "/n"` なら公開 URL は次のようになります。
+`path.mode: "flat"` と `path.prefix: "/n"` を指定すると、公開 URL は次のようになります。
 
 ```text
 /n/hello-world
 ```
 
-frontmatter に ID がない場合も、既定の `frontmatter-or-hash` ではファイルパスから決定論的な ID を生成できます。
+frontmatter に ID がないコンテンツにも、既定の `frontmatter-or-hash` ならファイルパスから決定論的な ID が付きます。
 
-そのため、既存の Obsidian Vault の全記事へ `id` を追加する必要はありません。
+そのため、既存の Obsidian Vault の全ファイルに `id` を追加する必要はありません。
 
 ---
 
-## 仕組み
+## URL が決まるまで
 
-`permalink()` はビルド時の `resolveContentLocations` フックを利用して、各記事の公開位置を解決します。
+`permalink()` は、ビルド時に `resolveContentLocations` フックを使って各コンテンツの公開位置を解決します。
 
-概念的には次の流れです。
+処理の流れは次のとおりです。
 
 ```text
-Content
+コンテンツ
    │
    ├─ frontmatter
    ├─ slug
-   └─ source path
+   └─ ソースパス
           │
           ▼
 @riebeckite/plugin-permalink
           │
-          ├─ resolve ID
-          ├─ resolve path
-          ├─ normalize
-          ├─ validate
-          └─ redirects
+          ├─ ID を解決
+          ├─ パスを解決
+          ├─ 正規化
+          ├─ 検証
+          └─ リダイレクト
           │
           ▼
 ContentPublicLocation
@@ -90,19 +90,19 @@ ContentPublicLocation
           └─ metadata
 ```
 
-Core は返された `permalink` を canonical URL として扱います。
+Core は、解決された `permalink` を canonical URL として扱います。
 
-その URL は、Wikilink、Backlinks、Search、Content Graph などから共通して参照されます。SEO canonical、Sitemap、RSS / Atom / JSON Feed も同じ URL を使います。
+同じ URL が、Wikilink、バックリンク、検索、コンテンツグラフなどから共通して参照されます。SEO の canonical、サイトマップ、RSS / Atom / JSON Feed も同じ URL を使います。
 
-Permalink Plugin を使用しない場合も、Core の resolver `resolveDefaultContentLocation` が URL を解決します。`index` は `/`、それ以外は `/{slug}` です。これはフォールバックではなく、Core の標準方針です。
+このプラグインを使わなくても、Core の resolver `resolveDefaultContentLocation` がすべての URL を解決します。`index` は `/`、それ以外は `/{slug}` です。これはフォールバックではなく、Core の正式な方針です。
 
 ---
 
-## Frontmatter
+## frontmatter で指定する
 
-### ID
+### ID を指定する
 
-既定では `id` を読み取ります。
+既定では `id` フィールドを読みます。
 
 ```md
 ---
@@ -124,11 +124,11 @@ permalink-id: hello-world
 ---
 ```
 
-`frontmatter` が指定するのはトップレベルのフィールドです。
+`frontmatter` が指すのは、トップレベルの frontmatter フィールドです。
 
-### Permalink override
+### permalink を直接指定する
 
-特定の記事だけ URL を直接指定できます。
+特定のコンテンツだけ、公開 URL を直接指定できます。
 
 ```md
 ---
@@ -137,9 +137,9 @@ permalink: /about
 ---
 ```
 
-この場合、通常の ID からのパス生成より `/about` が優先されます。
+この場合、ID からの通常のパス生成より `/about` が優先されます。
 
-`id` と公開 URL は別の概念なので、
+`id` と公開 URL は別の概念であり、次のように扱います。
 
 ```text
 ID
@@ -149,9 +149,7 @@ Canonical URL
 /about
 ```
 
-として扱われます。
-
-フィールド名は変更できます。
+フィールド名も変更できます。
 
 ```ts
 permalink({
@@ -161,9 +159,9 @@ permalink({
 });
 ```
 
-### Redirects
+### 旧 URL からのリダイレクトを指定する
 
-旧 URL も frontmatter から指定できます。
+旧 URL も frontmatter で指定できます。
 
 ```md
 ---
@@ -174,13 +172,13 @@ redirect_from:
 ---
 ```
 
-例えば canonical URL が、
+canonical URL が
 
 ```text
 /n/hello-world
 ```
 
-なら、
+の場合、旧 URL は次のようにリダイレクトされます。
 
 ```text
 /posts/hello
@@ -191,8 +189,6 @@ redirect_from:
         ↓ 308
 /n/hello-world
 ```
-
-として扱われます。
 
 設定は次のとおりです。
 
@@ -214,13 +210,13 @@ permalink({
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
 | `frontmatter` | `string` | `"id"` | ID として読むトップレベルの frontmatter フィールド |
-| `id.strategy` | `"frontmatter" \| "hash" \| "frontmatter-or-hash"` | `"frontmatter-or-hash"` | ID の決定方法 |
-| `id.length` | `number` | `12` | ハッシュ ID の文字数（6〜43） |
-| `path.mode` | `"flat" \| "preserve" \| "append"` | `"flat"` | ID を公開 URL へ配置する方式 |
-| `path.prefix` | `string` | `"/n"` | URL prefix。`"/"` または空文字なら prefix なし |
-| `path.trailingSlash` | `boolean` | `false` | canonical URL 末尾へ `/` を付ける |
-| `index.collapse` | `boolean` | `true` | `index` ファイルのパスを collapse する |
-| `override.frontmatter` | `string` | `"permalink"` | URL を直接指定する frontmatter フィールド |
+| `id.strategy` | `"frontmatter" \| "hash" \| "frontmatter-or-hash"` | `"frontmatter-or-hash"` | ID の解決方法 |
+| `id.length` | `number` | `12` | パス由来ハッシュ ID の長さ（6〜43） |
+| `path.mode` | `"flat" \| "preserve" \| "append"` | `"flat"` | 解決した ID を公開 URL のどこに置くか |
+| `path.prefix` | `string` | `"/n"` | URL の接頭辞。`"/"` または空文字なら接頭辞なし |
+| `path.trailingSlash` | `boolean` | `false` | canonical URL の末尾に `/` を付けるか |
+| `index.collapse` | `boolean` | `true` | `index` セグメントを畳むか |
+| `override.frontmatter` | `string` | `"permalink"` | URL を直接上書きする frontmatter フィールド |
 | `redirects.frontmatter` | `string` | `"redirect_from"` | 旧 URL を指定する frontmatter フィールド |
 | `redirects.status` | `301 \| 302 \| 307 \| 308` | `308` | リダイレクトの HTTP ステータス |
 | `resolveId` | `(content) => string` | なし | ID の解決を完全にカスタマイズする |
@@ -228,11 +224,11 @@ permalink({
 
 ---
 
-## ID strategy
+## ID の解決方法（`id.strategy`）
 
 ### `frontmatter`
 
-frontmatter から ID を取得します。
+`frontmatter` フィールドの値を ID にします。
 
 ```ts
 permalink({
@@ -243,9 +239,9 @@ permalink({
 });
 ```
 
-ID が存在しない記事はビルドエラーになります。
+すべてのコンテンツがこのフィールドを持つ必要があります。ID がないコンテンツがあると、ビルドはエラーになります。
 
-永続的な URL を明示的に管理したい場合に向いています。
+URL の同一性を明示的に管理したい場合に向いています。
 
 ```md
 ---
@@ -253,13 +249,13 @@ id: article-123
 ---
 ```
 
-ファイルを rename/move しても、`flat` の mode なら ID および URL を維持できます。
+ソースファイルを名前変更したり移動したりしても、`flat` モードなら ID と公開 URL は変わりません。
 
 ---
 
 ### `hash`
 
-frontmatter を使用せず、ファイルパスから ID を導出します。
+frontmatter の ID を使わず、ソースファイルのパスから ID を導出します。
 
 ```ts
 permalink({
@@ -270,21 +266,19 @@ permalink({
 });
 ```
 
-入力 path は、
+入力となるパスは、次の正規化を経て SHA-256 でハッシュ化されます。
 
 - `\` → `/`
-- 先頭 `/` の除去
-- Unicode NFC 正規化
+- 先頭の `/` を除去
+- Unicode NFC で正規化
 
-を行った上で SHA-256 へ渡されます。
-
-結果を base64url として表現し、その先頭 `id.length` 文字を ID として利用します。
+ハッシュは base64url として表現し、先頭の `id.length` 文字を ID に使います。
 
 ```text
 notes/flutter/riverpod.md
         │
         ▼
-normalized path
+正規化したパス
         │
         ▼
 SHA-256
@@ -296,15 +290,15 @@ base64url
 K7m3Qp8d...
 ```
 
-同じ path なら OS や build 環境が異なっても同じ ID になります。
+同じパスなら、OS やビルド環境が違っても同じ ID になります。
 
-ただし、path が入力なので rename/move すると ID も変わります。
+ただし、パスが入力になるため、名前変更や移動をすると ID も変わります。
 
 ---
 
 ### `frontmatter-or-hash`
 
-既定値です。
+これが既定の strategy です。
 
 ```ts
 permalink({
@@ -315,53 +309,49 @@ permalink({
 });
 ```
 
-解決順序は、
+解決の順序は次のとおりです。
 
 ```text
-frontmatter ID あり
+frontmatter に ID がある
         ↓
-frontmatter ID
+その ID を使う
 
-frontmatter ID なし
+frontmatter に ID がない
         ↓
-path-derived hash
+パスから ID を導出する
 ```
 
-この順序で解決します。
-
-既存 Obsidian Vault を変更せず利用しながら、重要な記事だけ永続 ID を与えたい場合に向いています。
+既存の Obsidian Vault を変更せずに使いながら、重要なコンテンツだけに明示的な永続 ID を与えたい場合に向いています。
 
 ---
 
-## ID メタデータ
+## ID の出所を確認する
 
-解決された ID の由来はメタデータから確認できます。
+解決された ID がどこから来たかは、メタデータで確認できます。
 
 | `metadata.idSource` | 意味 |
 | --- | --- |
-| `frontmatter` | frontmatter から取得 |
-| `derived` | path hash から導出 |
-| `custom` | `resolveId` から取得 |
+| `frontmatter` | frontmatter のフィールドから取得 |
+| `derived` | ソースパスのハッシュから導出 |
+| `custom` | `resolveId` が返した値 |
 
-手動の `permalink` override は URL を変更しますが、同一性は消しません。frontmatter の ID があれば引き続き記録されます。明示的な ID がない場合のみメタデータは付与されません。override から暗黙の `/{id}` URL を生成することはありません。
+手動の `permalink` による上書きは URL を変えますが、同一性は失われません。frontmatter に ID があれば、その ID は引き続き記録されます（`metadata.idSource` は `frontmatter`）。メタデータが付かないのは、明示的な ID が存在しない場合だけです。上書きによって `/{id}` という URL が暗黙に生成されることはありません。
 
 ---
 
-## URL path mode
+## URL への配置方法（`path.mode`）
 
-ID の決定方法と、URL の構築方法は独立しています。
+ID の解決と URL の組み立ては、別々に設定できます。
 
-例えば、
+次の例で考えます。
 
 ```text
-source:
+ソース:
 notes/flutter/hello.md
 
 ID:
 hello-world
 ```
-
-とします。
 
 ### `flat`
 
@@ -378,15 +368,15 @@ path: {
 /n/hello-world
 ```
 
-ファイルシステムのディレクトリ構造を URL へ含めません。
+ファイルシステムのディレクトリ構造は URL に現れません。
 
-読み取れない URL を作りたい場合に適しています。
+ファイルの場所を URL から隠したい場合に適しています。
 
 ---
 
 ### `preserve`
 
-ディレクトリ構造を残しつつ ID を配置します。
+ソースのディレクトリ構造を残したまま、ID を URL に配置します。
 
 ```ts
 path: {
@@ -395,7 +385,7 @@ path: {
 }
 ```
 
-例を示します。
+例は次のとおりです。
 
 ```text
 notes/flutter/hello.md
@@ -409,7 +399,7 @@ notes/flutter/hello.md
 
 ### `append`
 
-`append` も選べます。
+`append` も指定できます。
 
 ```ts
 path: {
@@ -417,15 +407,15 @@ path: {
 }
 ```
 
-現在の実装では `append` は `preserve` と同じパスを返します。
+現在の実装では、`append` は `preserve` と同じパスを返します。
 
-将来的に別の意味を持たせる場合に備えて mode として分離されています。`append` 固有の挙動を期待する場合は、現在の実装仕様に注意してください。
+将来、別の意味を持たせられるようにモードとして分けています。現行バージョンで `append` に `preserve` と異なる挙動を期待しないでください。
 
 ---
 
-## index ファイル
+## index ファイルの扱い
 
-`index.collapse` によって `index.md` の扱いを変更できます。
+`index.collapse` で `index.md` の扱いを変えられます。
 
 ```ts
 index: {
@@ -433,13 +423,13 @@ index: {
 }
 ```
 
-例えば、
+例として、
 
 ```text
 notes/flutter/index.md
 ```
 
-ID が `hello-world` の場合、URL は次のとおりです。
+ID が `hello-world` の場合、URL は次のようになります。
 
 | 設定 | URL |
 | --- | --- |
@@ -447,19 +437,19 @@ ID が `hello-world` の場合、URL は次のとおりです。
 | `preserve` + collapse | `/n/notes/flutter/hello-world` |
 | `preserve` + `collapse` なし | `/n/notes/flutter/index/hello-world` |
 
-`flat` ではファイルシステム構造自体を使わないため、`collapse` の影響を受けません。
+`flat` はファイルシステムの構造を使わないため、`collapse` の影響を受けません。
 
 ---
 
-## 上級者向け: カスタム resolver
+## 上級: 独自の resolver を書く
 
-組み込みの strategy では表現できない URL 設計なら、`resolveId` と `resolvePath` を利用できます。
+組み込みの strategy では表せない URL 設計には、`resolveId` と `resolvePath` を使えます。
 
-Permalink Plugin の通常設定で十分な場合は、カスタム resolver を使う必要はありません。
+通常のオプションで足りるなら、カスタム resolver は不要です。プロジェクト固有の ID や URL の設計に使います。
 
 ### `resolveId`
 
-記事から独自 ID を生成します。
+`resolveId` を使うと、コンテンツの ID を自分で計算できます。
 
 ```ts
 permalink({
@@ -474,29 +464,27 @@ permalink({
 });
 ```
 
-概念的には、
+概念的な流れは次のとおりです。
 
 ```text
-Content
+コンテンツ
    ↓
 resolveId(content)
    ↓
 ID
    ↓
-built-in path resolver
+組み込みのパス resolver
    ↓
 canonical URL
 ```
 
-となります。
+`resolveId` の戻り値も、組み込みの ID と同じ検証を通ります。
 
-`resolveId` の戻り値も組み込み ID と同じ検証を通ります。
+つまり、カスタム resolver はプラグインの通常の検証を迂回できません。
 
-不正な ID を返しても検証を通りません。
+#### 例: 独自の frontmatter から ID を作る
 
-#### 例: frontmatter を組み合わせる
-
-例えば、プロジェクト固有の frontmatter から ID を作る場合は次のとおりです。
+プロジェクト固有の frontmatter から ID を作る例です。
 
 ```md
 ---
@@ -535,13 +523,13 @@ permalink({
 /articles/flutter-42
 ```
 
-カスタム resolver 内で扱う frontmatter の検証は resolver 側の責務です。
+カスタム resolver が読むプロジェクト固有の frontmatter の検証は、resolver の責任です。
 
 ---
 
-## 上級者向け: `resolvePath`
+## 上級: `resolvePath` で URL を組み立てる
 
-`resolvePath` を使うと、ID を URL のどこへ配置するかを完全に制御できます。
+`resolvePath` を使えば、解決した ID を URL のどこに置くかを完全に制御できます。
 
 ```ts
 permalink({
@@ -563,24 +551,24 @@ permalink({
 /articles/hello-world
 ```
 
-`resolvePath` はサイト内の絶対パスを返してください。
+`resolvePath` は、サイト内の絶対パスを返してください。
 
 ```text
-/articles/hello     OK
-/articles/hello/    OK
-articles/hello      NG
-https://example.com NG
+/articles/hello     有効
+/articles/hello/    有効
+articles/hello      無効
+https://example.com 無効
 ```
 
-戻り値は Plugin の通常の URL 正規化・検証・衝突検出を通ります。
+戻り値は、プラグインの通常の URL 正規化、検証、衝突検出を通ります。
 
 ---
 
 ## `resolveId` と `resolvePath` を組み合わせる
 
-両方を指定すると、ID 決定と URL 構築を完全にカスタマイズできます。
+2つを指定すれば、ID の解決と URL の構造の両方を自分で決められます。
 
-例えば年別 URL を作る場合は次のとおりです。
+たとえば、年ごとの URL を作る例です。
 
 ```md
 ---
@@ -621,39 +609,39 @@ permalink({
 /articles/2026/riebeckite-permalink
 ```
 
-この場合も Riebeckite 内部では最終的に解決された URL だけが canonical URL として扱われます。
+この場合も、Riebeckite が canonical URL として扱うのは、最終的に解決された URL だけです。
 
 ---
 
-## カスタム resolver の使い分け
+## 組み込みオプションとカスタム resolver の使い分け
 
-基本的には次の順序で検討してください。
+基本的には、次の順に検討してください。
 
 ```text
-built-in strategy で足りる
+組み込みの strategy で足りる
         ↓
-通常オプションを使用
+通常のオプションを使う
 
 ID だけ特殊
         ↓
-resolveId
+resolveId を使う
 
 URL 構造だけ特殊
         ↓
-resolvePath
+resolvePath を使う
 
-両方特殊
+両方とも特殊
         ↓
-resolveId + resolvePath
+resolveId + resolvePath を使う
 ```
 
-例えば、
+たとえば、
 
 ```text
 /n/{id}
 ```
 
-を作るだけならカスタム resolver は不要です。
+を作るだけなら、カスタム resolver は要りません。
 
 ```ts
 permalink({
@@ -667,13 +655,13 @@ permalink({
 });
 ```
 
-こちらの方が設定意図が明確です。
+こちらのほうが設定の意図が明確で、宣言的なまま保てます。
 
 ---
 
-## カスタム resolver でも維持される保証
+## カスタム resolver を使っても保証されること
 
-カスタム resolver を使用しても、Permalink Plugin の以下の処理は維持されます。
+カスタム resolver を使っても、次の処理は変わりません。
 
 - ID の検証
 - URL の正規化
@@ -684,15 +672,15 @@ permalink({
 - 末尾スラッシュの扱い
 - Core への canonical な公開位置の登録
 
-つまりカスタム resolver は Plugin の安全機構を迂回する API ではありません。
+カスタム resolver が変えるのは ID やパスの作り方だけで、出来上がった公開位置の検証と登録の方法は変わりません。つまり、カスタム resolver はプラグインの安全機構を迂回する API ではありません。
 
 ---
 
-## 手動の permalink との優先順位
+## 手動の permalink が優先される
 
-frontmatter に手動の permalink がある場合は、通常の ID 解決と path 構築より優先されます。
+frontmatter に手動の permalink があれば、通常の ID 解決とパス生成より優先されます。
 
-例えば、次のようになります。
+たとえば、次のとおりです。
 
 ```md
 ---
@@ -701,29 +689,27 @@ permalink: /about
 ---
 ```
 
-とすると、
+とした場合、次のように扱われます。
 
 ```text
-ID候補
+ID の候補
 abc
 
 Canonical URL
 /about
 ```
 
-となります。
+`resolvePath` が別の URL を返す設定でも、手動の permalink による上書きが優先されます。
 
-`resolvePath` で別の URL を返す設定があっても、手動の permalink override が優先されます。
-
-特殊ページだけ URL を固定したい場合に利用できます。
+全体では共通の URL 戦略を使いつつ、一部の特別なページだけ URL を固定したい場合に使えます。
 
 ---
 
-## ステートレスな設計
+## 状態を持たずにビルドする
 
-Permalink Plugin は永続的な ID のレジストリを持ちません。
+このプラグインは、永続的な ID のレジストリを持ちません。
 
-以下は作成しません。
+次のものは作成せず、必要としません。
 
 ```text
 .riebeckite/content-ids.json
@@ -732,36 +718,34 @@ SQLite database
 KV database
 ```
 
-必要な情報は、
+公開位置は、ビルド時に次の入力だけから決まります。
 
 ```text
-Plugin 設定
+プラグインの設定
 +
 ソースコンテンツ
 ```
 
-からビルド時に決定されます。
+そのため、ローカルビルド、CI、Cloudflare Workers、別の PC でも、追加の状態を持たずに同じ入力から同じ URL を生成できます。
 
-そのため Cloudflare Workers、CI、別 PC などでも同じ入力から同じ URL を生成できます。
+`hash` strategy ではソースパスが同一性の入力になるため、名前変更や移動をすると URL が変わります。
 
-`hash` strategy では path が同一性を決める入力になるため、rename/move によって URL が変化します。
-
-rename/move 後も URL を維持したい記事には frontmatter ID を利用してください。
+名前変更や移動の後も URL を維持したいコンテンツには、frontmatter の ID を使ってください。
 
 ---
 
-## Rename / Move 時の挙動
+## 名前変更や移動で URL はどう変わるか
 
-URL の安定性は ID strategy と path mode の組み合わせによって変わります。
+URL の安定性は、ID の strategy とパスモードの組み合わせで決まります。
 
-| ID | Path mode | Rename | Move |
+| ID | パスモード | 名前変更 | 移動 |
 | --- | --- | --- | --- |
 | frontmatter | flat | 維持 | 維持 |
-| frontmatter | preserve | 状況により変更 | 変更 |
-| frontmatter | append | 状況により変更 | 変更 |
-| hash | flat | 変更 | 変更 |
-| hash | preserve | 変更 | 変更 |
-| hash | append | 変更 | 変更 |
+| frontmatter | preserve | 変わる場合がある | 変わる |
+| frontmatter | append | 変わる場合がある | 変わる |
+| hash | flat | 変わる | 変わる |
+| hash | preserve | 変わる | 変わる |
+| hash | append | 変わる | 変わる |
 
 永続的な URL が必要なら、
 
@@ -779,7 +763,7 @@ permalink({
 
 が最も明示的です。
 
-既存 Vault への変更を最小化したい場合は、
+既存の Vault への変更を最小限にしたい場合は、
 
 ```ts
 id: {
@@ -791,13 +775,13 @@ id: {
 
 ---
 
-## 検証
+## 検証される値
 
-### ID
+### ID の条件
 
-ID は URL の 1 つのパスセグメントとして扱われます。
+ID は、URL の1つのパスセグメントでなければなりません。
 
-以下はエラーになります。
+次の値はエラーになります。
 
 - 空文字列
 - `/` を含む
@@ -806,13 +790,13 @@ ID は URL の 1 つのパスセグメントとして扱われます。
 - 空白を含む
 - 正しくデコードできないパーセントエンコード
 
-Custom `resolveId` の結果も同じ検証を受けます。
+`resolveId` が返した値も同じ検証を受けます。
 
-### Permalink
+### permalink とリダイレクトの条件
 
-Permalink とリダイレクトはサイト内の絶対 path である必要があります。
+permalink とリダイレクトは、サイト内の絶対パスである必要があります。
 
-以下は許可されません。
+次の値は許可されません。
 
 - 相対パス
 - クエリ文字列
@@ -821,22 +805,22 @@ Permalink とリダイレクトはサイト内の絶対 path である必要が�
 - 不正な `//`
 - 外部 URL
 
-Custom `resolvePath` の結果も同じ検証を受けます。
+`resolvePath` が返した値も同じ検証を受けます。
 
 ---
 
-## 衝突検出
+## 衝突の検出
 
-Permalink Plugin はビルド時に衝突を検出します。
+このプラグインは、ビルド時に公開位置の衝突を検出します。
 
-対象は次のとおりです。
+検出する組み合わせは次のとおりです。
 
 - ID ↔ ID
 - canonical URL ↔ canonical URL
 - canonical URL ↔ リダイレクト
 - リダイレクト ↔ リダイレクト
 
-例えば、次のようになります。
+たとえば、次の2つが同じ URL になると、ビルドはエラーになります。
 
 ```text
 a.md
@@ -846,9 +830,7 @@ b.md
 → /about
 ```
 
-はビルドエラーです。
-
-また、
+次のように、canonical URL とリダイレクトがぶつかる場合もエラーです。
 
 ```text
 a.md canonical
@@ -858,25 +840,23 @@ b.md redirect
 → /about
 ```
 
-もエラーです。
+衝突を避けるために接尾辞を自動で付けることはありません。
 
-自動的に接尾辞を付けて回避することはありません。
-
-これにより、ビルド順序によって URL が変化することを防ぎます。
+これにより、ビルドやコンテンツの順序によって公開 URL が変わることを防ぎます。
 
 ---
 
-## Inspect
+## 解決結果を確認する
 
-解決結果は Riebeckite の inspect 機能から確認できます。
+解決結果は、Riebeckite の inspect 機能で確認できます。
 
 ```sh
 riebeckite inspect content --list
 ```
 
-Permalink Plugin が有効な場合、記事ごとの ID、ID の出典、permalink を確認できます。
+Permalink Plugin が有効なら、コンテンツごとの ID、ID の出典、permalink を確認できます。
 
-例えば、次のようになります。
+出力例は次のとおりです。
 
 ```text
 PATH                 ID            ID SOURCE     PERMALINK
@@ -884,11 +864,11 @@ notes/a.md           K7m3Qp8d...   derived       /n/K7m3Qp8d...
 notes/about.md       about         frontmatter   /about
 ```
 
-実際の表示形式は CLI バージョンによって異なる場合があります。
+実際の表示形式は CLI のバージョンによって異なる場合があります。
 
 ---
 
-## 主なエクスポート
+## エクスポートされる関数と型
 
 ### 関数
 
@@ -904,15 +884,15 @@ notes/about.md       about         frontmatter   /about
 - `PermalinkPathMode`
 - `RedirectStatus`
 
-カスタム resolver を書く場合は、公開されている型を使って設定を型安全に書けます。
+カスタム resolver を書くときは、公開されている型を使えば、設定を型安全に書けます。
 
 ---
 
 ## 設定例
 
-### 既存 Obsidian Vault 向け
+### 既存の Obsidian Vault 向け
 
-frontmatter 変更を必須とせず、URL からファイルシステム構造を隠します。
+Vault 全体に frontmatter を追加することなく、URL からファイルシステムの構造を隠します。
 
 ```ts
 permalink({
@@ -928,7 +908,7 @@ permalink({
 });
 ```
 
-### 完全に明示的な永続 URL
+### 永続 URL を明示的に管理する
 
 ```ts
 permalink({
@@ -943,7 +923,7 @@ permalink({
 });
 ```
 
-すべての記事に frontmatter ID が必要になります。
+すべてのコンテンツに frontmatter の ID が必要になります。
 
 ### ディレクトリ構造を残す
 
@@ -959,7 +939,7 @@ permalink({
 });
 ```
 
-### 独自 URL 設計
+### 独自の URL 設計を使う
 
 ```ts
 permalink({
@@ -979,5 +959,5 @@ permalink({
 
 ## 関連資料
 
-- [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+- [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [コンテンツシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/framework/content-system.ja.md)

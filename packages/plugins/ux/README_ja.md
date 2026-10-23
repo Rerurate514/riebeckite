@@ -9,7 +9,7 @@
 ## できること
 
 - **読み進捗バー**: 画面上部に固定した細いバー（`.rb-ux__progress`）が記事のスクロール量に追従します。
-- **トップへ戻るボタン**: 一定量スクロールすると表示される button 要素（`.rb-ux__back-to-top`）。`aria-label` を持ち、スムーズスクロールで先頭へ戻ります。
+- **トップへ戻るボタン**: 一定量スクロールすると表示される `button` 要素（`.rb-ux__back-to-top`）。`aria-label` を持ち、スムーズスクロールで先頭へ戻ります。
 - **目次のスクロール連動**: 記事の目次コンテナ内の `a[href^="#"]` を `IntersectionObserver` で監視し、現在位置の見出しリンクに `.rb-ux__toc-active` を付けます。
 
 いずれも対応する DOM が無いページでは何もしません。`initUx()` は何度呼んでも二重に初期化しません。
@@ -48,7 +48,7 @@ export default defineConfig({
 
 クライアント側の初期化コードは静的にバンドルされ、プラグインのオプションを直接受け取れません。そのためこのプラグインは、ビルド時に各記事 HTML の先頭へ不活性な JSON 設定要素を挿入します。これは実装用のデータであり、記事本文には表示しません。
 
-`initUx()` はこの要素を読み取って設定を復元します。要素が無い場合は全機能が有効な既定値で動作します。挿入は `onPostProcessed` で行い、`onManifestCreated` でも未挿入の記事エントリへ反映します。挿入はページごとに一度だけで、`data-rb-ux-config` を目印に重複挿入を防ぎます。
+`initUx()` はこの要素を読み取って設定を復元します。要素が無い場合は全機能が有効な既定値で動作します。挿入は `onPostProcessed` で行い、`onManifestCreated` でも未挿入の記事エントリへ反映します。挿入はページごとに 1 回だけで、`data-rb-ux-config` を目印に重複挿入を防ぎます。
 
 ## 出力される HTML / CSS フック
 
@@ -56,7 +56,7 @@ export default defineConfig({
 | --- | --- |
 | `rb-ux__progress` | 進捗バーのトラック（`role="progressbar"`） |
 | `rb-ux__progress-bar` | 進捗に応じて `scaleX` されるバー |
-| `rb-ux__back-to-top` | トップへ戻る button |
+| `rb-ux__back-to-top` | トップへ戻るボタン |
 | `rb-ux__back-to-top--visible` | 表示状態のとき付与 |
 | `rb-ux__toc-active` | 現在位置の目次リンク |
 

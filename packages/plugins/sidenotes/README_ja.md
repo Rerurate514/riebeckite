@@ -2,17 +2,13 @@
 
 <!-- Generated from docs/docs/plugins/sidenotes.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite 用の脚注スタイル・プラグインです。執筆者は通常の GFM 脚注
-（`[^1]` と `[^1]: 本文`）をそのまま書き続けます。既定では脚注定義は記事末尾の
-脚注リストに残ります。`placement: "margin"` を指定すると、Tufte スタイルの
-マージンノートとして参照の横に表示します。
+Riebeckite 用の脚注スタイルプラグインです。執筆者は通常の GFM 脚注（`[^1]` と `[^1]: 本文`）をそのまま書き続けます。既定では脚注定義は記事末尾の脚注リストに残ります。`placement: "margin"` を指定すると、Tufte スタイルのマージンノートとして参照の横に表示します。
 
 [English](./README.md)
 
 ## 仕組み
 
-このプラグインは、`remark-gfm` の出力をコアのパイプラインが脚注マークアップ
-に変換したものを、rehype プラグインで読み取ります。
+このプラグインは、コアのパイプラインが `remark-gfm` の出力を脚注マークアップに変換した後、rehype プラグインとしてそれを読み取ります。
 
 既定の `placement: "end"` では:
 
@@ -145,8 +141,7 @@ import "@riebeckite/plugin-sidenotes/style.css";
   します。
 - マージン配置では、文末の脚注定義セクションは DOM に残りますが非表示に
   なります。テーマは `.rr-sidenotes__note` を自由に再スタイルできます。
-- テーブル内や深く入れ子になったインライン要素の中の注は、最も近いブロック
-  要素の後ろに置かれるため、縦位置はおおよその位置になります。
+- テーブル内や深く入れ子になったインライン要素の中の注記は、最も近いブロック要素の後ろに置かれるため、縦位置はおおよその位置になります。
 
 ## 関連リンク
 

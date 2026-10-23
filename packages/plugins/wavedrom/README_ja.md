@@ -103,7 +103,7 @@ JSON のトップレベル `"caption"` キーでも指定できます。この�
 | `skin` | `"default" \| "narrow" \| "lowkey"` | `"default"` | ブラウザ側で使う WaveDrom スキン |
 | `caption` | `boolean` | `true` | キャプションを `<figcaption>` として表示する |
 | `fallback` | `boolean` | `true` | WaveJSON ソースを `<details>` に表示する |
-| `className` | `string` | `"rb-wavedrom"` | figure に付ける基底クラス |
+| `className` | `string` | `"rb-wavedrom"` | `<figure>` に付ける基底クラス |
 
 ## 診断
 
@@ -119,7 +119,7 @@ JSON のトップレベル `"caption"` キーでも指定できます。この�
 - E2E のビルドは出力マークアップだけを検査します。実際の描画にはブラウザが必要です
 - 本文は厳密な JSON である必要があります。WaveDrom エディタが受け付ける JSON5 形式（引用符なしキー、シングルクォート、コメント）は受理しません
 - WaveJSON は HTML 属性に直接埋め込まれるため、巨大な図は避けてください
-- 認識するのは `wavedrom` と `wavejson` という info string だけです。他の言語には影響しません
+- 認識するのは `wavedrom` と `wavejson` という info 文字列だけです。他の言語には影響しません
 
 ## 関連資料
 

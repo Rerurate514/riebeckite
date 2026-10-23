@@ -9,7 +9,7 @@
 ## 概要
 
 `richEmbed()` は ` ```embed ` フェンスをレスポンシブな
-`<figure class="rb-rich-embed">` に置き換えます。プロバイダの判定は URL の文字列解析だけで行うため、ビルド時にネットワークへアクセスしません。クライアント側 JavaScript も不要です。
+`<figure class="rb-rich-embed">` に置き換えます。プロバイダーの判定は URL の文字列解析だけで行うため、ビルド時にネットワークへアクセスしません。クライアント側 JavaScript も不要です。
 
 ## 使い方
 
@@ -50,9 +50,9 @@ start: 30
 
 未知のキーは無視します。`aspect` が不正な場合は `16/9` に戻します。
 
-## 対応プロバイダ
+## 対応プロバイダー
 
-| プロバイダ | 認識する URL | 出力する `src` |
+| プロバイダー | 認識する URL | 出力する `src` |
 | ---------- | ------------ | -------------- |
 | YouTube | `youtube.com/watch?v=`, `youtu.be/`, `/shorts/`, `/embed/`, `/live/` | `https://www.youtube-nocookie.com/embed/<id>` |
 | Vimeo | `vimeo.com/<数値ID>` | `https://player.vimeo.com/video/<id>` |
@@ -66,9 +66,9 @@ start: 30
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
-| `allowHosts` | `string[]` | `[]` | 汎用 iframe へのフォールバックを許可するホスト名 |
-| `providers` | `RichEmbedProvider[]` | すべて | 有効にするプロバイダの許可リスト |
-| `disable` | `RichEmbedProvider[]` | `[]` | 無効にするプロバイダ（`providers` より優先） |
+| `allowHosts` | `string[]` | `[]` | 汎用 `<iframe>` へのフォールバックを許可するホスト名 |
+| `providers` | `RichEmbedProvider[]` | すべて | 有効にするプロバイダーの許可リスト |
+| `disable` | `RichEmbedProvider[]` | `[]` | 無効にするプロバイダー（`providers` より優先） |
 
 ## 出力 HTML
 
@@ -113,8 +113,8 @@ Gist の場合は iframe の代わりに
 ## セキュリティ
 
 - `https:` の URL だけを受理します。
-- プロバイダの出力は検証済みのパスセグメントから組み立て、動的な部分は `encodeURIComponent` を通します。
-- 汎用 iframe には `allowHosts` への明示的な登録が必要です。
+- プロバイダーの出力は検証済みのパスセグメントから組み立て、動的な部分は `encodeURIComponent` を通します。
+- 汎用 `<iframe>` には `allowHosts` への明示的な登録が必要です。
 - 生のユーザー HTML は出力しません。タイトル・キャプション・ラベルはすべてエスケープされるテキストノードとして書き込みます。
 
 ## 制限事項

@@ -2,8 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/deploy.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite の静的ホスティング向け出力ヘルパーです。デプロイ先が必要とする
-ファイルを組み立て、ビルドの generated-output シンク経由で出力します。
+Riebeckite の静的ホスティング向けの出力ヘルパーです。デプロイ先に必要なファイルを組み立て、ビルドの生成出力シンクへ渡します。
 アップロードは行わず、ファイルシステムにも書き込みません。
 
 [English](./README.md)
@@ -12,7 +11,7 @@ Riebeckite の静的ホスティング向け出力ヘルパーです。デプロ
 
 `deployPlugin()` はコンテンツマニフェストの公開リダイレクトを読み、
 Cloudflare Pages / Netlify / Vercel / GitHub Pages 向けのファイルを計画します。
-計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、パスの順序も安定します。
+出力計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、パスの順序も安定します。
 
 ## 使い方
 

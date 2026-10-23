@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/code-annotations.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-差分のコードブロックを、対象言語のシンタックスハイライトとRiebeckiteのコードブロックUIで表示します。
+コードの差分を、対象言語のシンタックスハイライトと Riebeckite のコードブロック UI で表示するプラグインです。
 
 [English](./README.md)
 
@@ -33,7 +33,7 @@ const unchanged = true;
 ```
 ````
 
-`+` と `-` はコード本体とは別に描画されます。そのためJavaScript、TypeScript、Python、JSON
+`+` と `-` はコード本体とは別に描画されます。そのため JavaScript、TypeScript、Python、JSON
 などのシンタックスハイライトを妨げません。コピー操作では、表示された差分と同じくマーカーも含めてコピーします。
 
 対象言語が空、形式が不正、または指定されていないフェンスは、通常の `diff` コードブロックとして扱います。
@@ -41,15 +41,15 @@ const unchanged = true;
 
 ## 連携
 
-このプラグインはremark段階で差分マーカーをコード本体から分離し、フェンスメタ情報に記録します。rehype段階では、
-マーカーと既存の `rr-code__line--add` / `rr-code__line--remove` クラスを戻します。行ラッパーやコードブロックUIは
-`code-enhance` が提供します。両パッケージはimportで依存していないため、個別に設定できます。
+このプラグインは remark 段階で差分マーカーをコード本体から分離し、フェンスのメタ情報に記録します。rehype 段階では、
+マーカーと既存の `rr-code__line--add` / `rr-code__line--remove` クラスを戻します。行ラッパーやコードブロック UI は
+`code-enhance` が提供します。両パッケージは相互に import していないため、個別に設定できます。
 
-## 公開API
+## 公開 API
 
 - `codeAnnotations()` / `codeAnnotationsPlugin()`：プラグインファクトリ
-- `remarkCodeAnnotations()`：Markdown変換
-- `rehypeCodeAnnotations()`：HTML変換
+- `remarkCodeAnnotations()`：Markdown 変換
+- `rehypeCodeAnnotations()`：HTML 変換
 - `collectCodeDiff(code)`：差分マーカーとコード本体を分離
 - `serializeCodeDiff(plan)` / `deserializeCodeDiff(value)`：行情報の変換
 - `encodeCodeDiffMeta(plan)` / `extractCodeDiffMeta(meta)`：メタ情報の変換

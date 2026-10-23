@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/code-enhance.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Shiki によるシンタックスハイライトへ、コピー、折り返し、折りたたみなどの操作を加えるプラグインです。
+Shiki のシンタックスハイライトに、ファイル名ヘッダーとコピー、折り返し、折りたたみの操作を加えたコードブロックを提供するプラグインです。
 
 [English](./README.md)
 
@@ -29,7 +29,7 @@ export default defineConfig({
 - `bash`、`console`、`sh` などのシェル言語の行に `$` を付ける
 - キーボードで内容を確認できるよう、`<pre>` をフォーカス可能にする
 
-Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイライト済みコードの
+テーマは `rr-code` のルート要素に `--rr-code-syntax` を指定すると、ハイライト済みコードの
 子要素を選択せずに構文色を指定できます。
 
 ## オプション
@@ -51,12 +51,12 @@ Theme は `rr-code` の root に `--rr-code-syntax` を指定すると、ハイ�
 
 ## クライアント側の初期化
 
-`codeEnhance()` は `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのために document 全体のクリックハンドラーを登録します。直接呼び出す場合も同じ二つの文言を指定できます。
+`codeEnhance()` は `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのためにドキュメント全体のクリックハンドラーを登録します。直接呼び出す場合も同じ 2 つの文言を指定できます。
 
 ## 公開 API
 
 - `codeEnhance(options?)`：プラグインファクトリ
-- `rehypeCodeEnhance(options?)`：Rehype 変換
+- `rehypeCodeEnhance(options?)`：rehype 変換
 - `initCodeEnhance(options?)`：ブラウザ初期化関数
 - `DEFAULT_COPY_LABEL`、`DEFAULT_COPIED_LABEL`：既定のコピー文言
 - `CodeEnhanceOptions`、`CodeEnhanceClientOptions`、`CodeEnhanceTheme`：型

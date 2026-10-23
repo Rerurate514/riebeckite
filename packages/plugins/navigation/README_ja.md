@@ -5,8 +5,8 @@
 サイトナビゲーションを提供する Riebeckite プラグインです。`navigation()` は
 Vault にすでにあるノートから主要ナビゲーションを導出します。Riebeckite 専用の
 ファイルも必須 frontmatter も不要なので、既存の Obsidian Vault をそのまま
-公開できます。ナビゲーションの「モデル」、UI、操作に関わるスタイルはプラグインが持ち、
-配置は Site が担当します。
+公開できます。ナビゲーションのモデル、描画される UI、インタラクションの
+スタイルはプラグインが持ち、どこに置くかは Site が決めます。
 
 [English](./README.md)
 
@@ -15,11 +15,11 @@ Vault にすでにあるノートから主要ナビゲーションを導出し�
 `navigation()` はマニフェストの discoverable エントリ（公開され、ルーティング
 可能なノート）を読み、スラッグ階層でまとめます。
 
-- フォルダはセクションになる
+- フォルダはセクションになります
 - `index` / `README` ノートはそのフォルダへのリンクになり、同じフォルダの
-  直下のノートは子になる
-- それ以外のノートはリンクになる
-- タイトルはノート自身の `title` を使い、なければスラッグのセグメントから作る
+  直下のノートは子になります
+- それ以外のノートはリンクになります
+- タイトルはノート自身の `title` を使い、なければスラッグのセグメントから作ります
 
 index ノートを持たないフォルダは、子をまとめたラベルとして表示されます。
 モデルは `manifest.discoverableEntries` から作るため、下書き・予約公開・
@@ -59,10 +59,11 @@ const secondary = model?.secondary ?? [];
 `SiteNav` は解決済みのツリーを `<nav>` ランドマークとネストしたリストとして
 描画し、`MobileSiteNav` はコンパクトな `<details>` メニューを描画します。子の
 再帰描画、現在パスの判定、言語を考慮した正規化、外部リンクの扱い、`aria-current`
-に加え、リスト・リンク・子メニュー・フォーカス表示・モバイルパネルの `rb-nav` UI は
-プラグインが自身の `style.css` で担当します（自動生成される plugin styles 経由で
-読み込まれます）。Site はコンポーネントの root を独自のレイアウト用ラッパーに置き、
-`rb-nav` の子要素をスタイルしたりモバイルメニューのマークアップを組み立てたりしません。
+の付与はプラグインが行います。リストの流し方、リンク、子メニュー、フォーカス
+表示、モバイルパネルといった `rb-nav` の UI も、プラグインが自身の `style.css`
+で提供します（自動生成されるプラグインスタイル経由で読み込まれます）。Site は
+コンポーネントのルートを独自のレイアウト用ラッパーに置くだけにし、`rb-nav` の
+子要素をスタイルしたり、モバイルメニューのマークアップを組み立てたりしないでください。
 
 ```tsx
 import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
@@ -87,13 +88,13 @@ import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 ```
 
 `path` は現在のリクエストパスです。`language` は現在のコンテンツ言語で、指定すると
-`SiteNav` は `/language` プレフィックスを取り除いてから現在のアイテムを判定します。
+`SiteNav` は `/language` プレフィックスを取り除いてからアクティブな項目を判定します。
 そのため、言語プレフィックスのない手書き href でもローカライズされたページに
 一致します。`localizeHref` を渡すと現在の言語に合わせて href を書き換えられます。
 `label` でランドマークのラベルを、`class` / `className` で `<nav>` のクラスを
 拡張できます。
 
-root レベルで意図的に見た目を上書きする場合は、`SiteNav` の root またはラッパーに
+ルートレベルで意図的に見た目を上書きする場合は、`SiteNav` のルートまたはラッパーに
 次の公開カスタムプロパティを指定します。`--rb-nav-gap`、
 `--rb-nav-list-flex-wrap`、`--rb-nav-list-justify-content`、
 `--rb-nav-item-display`、`--rb-nav-item-padding`、
@@ -165,9 +166,9 @@ navigation({
 
 ## 制約
 
-- `l10n` Plugin が言語 metadata を付与している場合、導出は表示中の言語に追従し、
-  多言語 Vault の Navigation が言語を混在させることはありません。localization
-  metadata のない Vault では、discoverable な全 entry を使います。
+- `l10n` プラグインが言語メタデータを付与している場合、導出は表示中の言語に追従し、
+  多言語 Vault のナビゲーションが言語を混在させることはありません。ローカライズの
+  メタデータがない Vault では、discoverable な全エントリを使います。
 - 並び順はタイトルのアルファベット順です。frontmatter の順序は読みません。
 - `exclude` / `include` / `order` はまだありません。実際のサイトが必要とした
   ときにだけ追加します。

@@ -6,7 +6,7 @@ Obsidian 形式の PDF 添付ファイルをインライン表示するプラグ
 
 [English](./README.md)
 
-## まず何を解決するか
+## 概要
 
 `pdf()` は、埋め込み形式の PDF 添付（`![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)`）をダウンロード専用のカードではなく、ブラウザ標準の PDF ビューアでインライン表示します。ビルド時（SSR）だけで完結し、クライアント JavaScript は不要です。
 
@@ -30,7 +30,7 @@ export default defineConfig({
 
 ## 実行例
 
-以下のソースは、このページ上でブラウザ標準の PDF ビューアとして実際に描画されます。
+以下のソースは、このページ上で実際にブラウザ標準の PDF ビューアとして描画されます。
 
 #### ソース
 
@@ -38,30 +38,27 @@ export default defineConfig({
 ![[pdf-example.pdf]]
 ````
 
-#### 実行例
+#### 描画結果
 
 ![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/pdf-example.pdf.ja.md)
 
-`<object>` はブラウザ内蔵の PDF ビューアを使い、その中のダウンロードリンクが PDF
+`<object>` はブラウザ内蔵の PDF ビューアを使い、その中のダウンロードリンクが、PDF
 表示に対応しない環境向けのフォールバックになります。ビューアの下にはダウンロード
-リンクと、形式バッジ・ファイル名・サイズを表示します。サイズは
-`config.content.directory` 配下から読み取り、読めない場合は表示しません。埋め込みには
-Theme が対象にできる安定した `rr-pdf` ルートフックが付きます。
+リンクと、形式バッジ・ファイル名・サイズが表示されます。サイズは
+`config.content.directory` 配下から読み取り、読めない場合は表示しません。埋め込みには、
+テーマから対象にできる安定した `rr-pdf` ルートフックが付きます。
 
-`initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）として
-埋め込みます。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことが
-あります。通常のリンク（`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)`）は `@riebeckite/plugin-attachment`（または
-Markdown のフォールバック）に委ねます。
+`initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）としてエンコードします。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことがあります。通常のリンク（`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)`）は `@riebeckite/plugin-attachment`（または Markdown のフォールバック）に委ねます。
 
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
-| `height` | `string \| number` | `"640px"` | ビューアの高さ。数値は px、文字列は CSS の長さとして扱います。 |
-| `initialPage` | `number` | `1` | 最初に開くページ番号。 |
-| `toolbar` | `boolean` | `true` | `false` で `#toolbar=0` を付けてビューアのツールバーを隠します。 |
-| `showMetadata` | `boolean` | `true` | ビューア下に形式バッジ・ファイル名・サイズを表示するか。 |
-| `downloadLabel` | `string` | `"Download PDF"` | ダウンロードリンクのラベル。 |
+| `height` | `string \| number` | `"640px"` | ビューアの高さ。数値は px、文字列は CSS の長さとして扱う |
+| `initialPage` | `number` | `1` | 最初に開くページ番号 |
+| `toolbar` | `boolean` | `true` | `false` で `#toolbar=0` を付けてビューアのツールバーを隠す |
+| `showMetadata` | `boolean` | `true` | ビューア下に形式バッジ・ファイル名・サイズを表示するか |
+| `downloadLabel` | `string` | `"Download PDF"` | ダウンロードリンクのラベル |
 
 スタイルは `style.css` に同梱されます。
 

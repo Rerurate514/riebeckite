@@ -8,7 +8,7 @@
 
 ## できること
 
-`responsiveImage()` はビルド時の HTML レイヤーとして動作します。
+`responsiveImage()` はビルド時の HTML 変換レイヤーとして動作します。
 
 1. `<img>` に `loading="lazy"` と `decoding="async"` を付与します。すでに属性がある場合は変更しません。
 2. `sizes` がなければ追加します。
@@ -59,7 +59,7 @@ export default defineConfig({
 
 このプラグインは、決定的な探索と HTML 変換だけを担当します。既定では新しい画像ファイルを生成しません。`PluginAsset` は `style` と `script` のモジュール指定子しか扱えず、プラグインが任意のバイナリファイルをビルド成果物へ出力する手段を Core は提供していません。
 
-`generate` と `outputDir` は将来のリリース向けの予約で、現在は何もしません。実際のエンコードには Core のファイル出力 API が必要です。それまでは、外部の画像ツールなどでバリアントを事前生成し、元画像の隣にコミットしてください。サイト側では `apps/web/scripts/build_images.ts` が、参照されたボールト内アセットを `public/` へコピーします。
+`generate` と `outputDir` は将来のリリース向けの予約で、現在は何もしません。実際のエンコードには Core のファイル出力 API が必要です。それまでは外部の画像ツールなどでバリアントを事前生成し、元画像の隣にコミットしてください。サイト側では `apps/web/scripts/build_images.ts` が、参照された Vault 内アセットを `public/` へコピーします。
 
 ## 公開 API
 

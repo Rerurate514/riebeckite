@@ -6,7 +6,7 @@ Marp のスライドデッキをビルド時に描画するプラグインです
 
 [English](./README.md)
 
-## 設定する
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -27,7 +27,7 @@ export default defineConfig({
 
 ## Obsidian Vault との互換性
 
-Obsidian プラグインの [Marp](https://github.com/jichoup/obsidian-marp-plugin) と [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) はノート全体を Marp デッキとして扱い、`marp` コードフェンスを保存しません。Obsidian 側のアクティベーションはプラグイン単位です。スライドプレビューを開いたり、エクスポートしたりすると、アクティブなノートのファイル全体をデッキとして描画し、ノート単位のマーカーは読みません。Riebeckite では代わりに、文書単位で Marp CLI や VS Code 拡張と同じ canonical なフラグ（frontmatter の `marp: true`）によってデッキ化します。これらのプラグインで書いたノートは次のように検出されます。
+Obsidian プラグインの [Marp](https://github.com/jichoup/obsidian-marp-plugin) と [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) はノート全体を Marp デッキとして扱い、`marp` コードフェンスを保存しません。Obsidian ではプラグイン単位で有効になります。スライドプレビューを開いたり、エクスポートしたりすると、アクティブなノートのファイル全体をデッキとして描画し、ノート単位のマーカーは読みません。Riebeckite では代わりに、Marp CLI や VS Code 拡張と同じ標準的なフラグ（frontmatter の `marp: true`）を使い、文書単位でデッキとして描画します。これらのプラグインで書いたノートは次のように検出されます。
 
 ````markdown
 ---
@@ -43,9 +43,9 @@ paginate: true
 # 2 枚目のスライド
 ````
 
-文書全体（directive として `theme` や `paginate` を効かせるため frontmatter を含む）を、ページ本文を置き換える 1 つの `<figure class="rb-marp">` デッキとして描画します。スライドの区切りは Marp と同じく `---` / `===` です。フラグも `marp` コードブロックもないノートは変更しません。
+文書全体（ディレクティブとして `theme` や `paginate` を効かせるため frontmatter を含む）を、ページ本文を置き換える 1 つの `<figure class="rb-marp">` デッキとして描画します。スライドの区切りは Marp と同じく `---` / `===` です。フラグも `marp` コードブロックもないノートは変更しません。
 
-> **アクティベーションの条件.** Riebeckite は Obsidian プラグインと同じ方法ではアクティベートされません。Obsidian でスライドとして表示されていたノート（プレビューを開いたノート）も、frontmatter に `marp: true` がなければここではデッキとして描画されません。そのような Vault に必要な変更はこの 1 行の追加だけです。デッキの本体（セパレータ、`theme` / `paginate` などの directive、標準 Marp 構文）は保存された内容をそのまま使います。つまり、出力は Marp の意味論に従いますが、プラグインの設定不要なプラグインレベルでのアクティベーションは再現しません。完全なドロップイン互換ではなく「コンテンツ互換」として扱ってください。
+> **有効化の条件.** Riebeckite は Obsidian プラグインと同じ方法では有効になりません。Obsidian でスライドプレビューを開いてスライドとして表示していたノートも、frontmatter に `marp: true` がなければここではデッキとして描画されません。そのような Vault に必要な変更はこの 1 行の追加だけです。デッキの本体（セパレータ、`theme` / `paginate` などのディレクティブ、標準 Marp 構文）は保存された内容をそのまま使います。つまり、出力は Marp のセマンティクスに従いますが、設定なしでプラグイン単位に有効になる Obsidian 側の挙動は再現しません。完全なドロップイン互換ではなく「コンテンツ互換」として扱ってください。
 
 ## インラインデッキ
 
@@ -63,7 +63,7 @@ paginate: true
 ```
 ````
 
-## どのように描画されるか
+## 描画の仕組み
 
 `@marp-team/marp-core` をビルド時に動的 import して `Marp#render` を呼び出します。Marp Core はクライアントバンドルには含まれません。1 つのコードブロックは次の HTML に置き換わります。
 
@@ -82,15 +82,15 @@ paginate: true
 </figure>
 ```
 
-### 生成 CSS のスコープとインライン化
+### 生成される CSS のスコープとインライン化
 
-プラグインは `<head>` へ注入できないため、Marp が生成した CSS は `<figure class="rb-marp">` の中へ `<style>` 要素としてインライン展開します。漏れを防ぐため次の処理を行います。
+プラグインは `<head>` へ注入できないため、Marp が生成した CSS は `<figure class="rb-marp">` の中へ `<style>` 要素としてインライン化します。ほかの要素に漏れないよう、次の処理を行います。
 
 - Marp の `container` オプションでデッキのコンテナクラスを `rb-marp__deck` に固定し、生成 CSS の全セレクタがそのコンテナ配下に来るようにする
 - コンテナセレクタを `.rb-marp` の子孫に限定する（例: `.rb-marp div.rb-marp__deck > svg > foreignObject > section`）
 - グローバルに漏れる `@page` ルールを削除し、`@media print` 内の `html, body` を `.rb-marp` に置き換える
 
-同じテーマのデッキが 1 ページに複数ある場合、生成 CSS が同一になるため `<style>` は 1 回だけ出力します。
+同じテーマのデッキが 1 ページに複数ある場合、生成される CSS が同一になるため `<style>` は 1 回だけ出力されます。
 
 ### ビルド時のレンダリング
 
@@ -115,7 +115,8 @@ paginate: true
 
 - クライアント側でのスライド編集やページ送り UI は提供しません。ビルド時に静的な HTML/CSS を生成するだけです
 - 利用できるテーマは Marp Core に登録済みのものに限られます。任意のテーマ CSS の読み込みには対応していません
-- `inlineSVG: false` を指定すると SVG ラッパーなしの `<section>` を出力します。生成 CSS もその構造に合わせて変わります
+- `inlineSVG: false` を指定すると SVG ラッパーなしの `<section>` を出力します。生成される CSS もその構造に合わせて変わります
+- 文書全体のデッキは通常の Markdown パイプラインを通らないため、スライド内の Obsidian の `![image](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.ja.md)` 埋め込みは解決されません。公開サイトに存在するパスを指定した通常の Markdown 画像記法を使ってください（Marp Slides 自体もウィキリンクには対応していません）
 
 ## 主なエクスポート
 

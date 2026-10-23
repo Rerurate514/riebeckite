@@ -51,7 +51,7 @@ LIMIT <n>
 
 ### `LIST`
 
-`LIST` は一致したノートを箇条書きにします。末尾に式を書くと、リンクの横にメタ情報として表示します。
+`LIST` は一致したノートを箇条書きにします。末尾の式は、リンクの横にメタ情報として表示されます。
 
 ```dataview
 LIST file.date
@@ -86,7 +86,7 @@ CALENDAR date
 FROM #project
 ```
 
-## 節
+## クエリの節
 
 ### `FROM`
 
@@ -95,7 +95,7 @@ FROM #project
 | ソース | 意味 |
 | --- | --- |
 | `#tag` | そのタグを持つ |
-| `"folder"` | スラッグがそのフォルダ、またはその配下 |
+| `"folder"` | slug がそのフォルダ、またはその配下 |
 | `[note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/note.ja.md)` | `note` へリンクしている（被リンク） |
 
 ソースは `and` / `or` でつなぎ、`!` または `-` で否定し、`(` `)` でまとめられます。ソースを続けて書いた場合は `and` とみなします。
@@ -106,7 +106,7 @@ FROM (#project or #area) and "notes" and !#archive
 
 ### `WHERE`
 
-`WHERE` は `file.*` と frontmatter のフィールドに対する真偽式でノートを絞り込みます。
+`WHERE` は `file.*` と frontmatter のフィールドを対象とする真偽式でノートを絞り込みます。
 
 | 機能 | 例 |
 | --- | --- |
@@ -116,13 +116,13 @@ FROM (#project or #area) and "notes" and !#archive
 | `date()` | `date(due) >= date("2026-01-01")` |
 | `number()` / `string()` | `number(weight) > 3` |
 
-文字列の `=` / `!=` と `contains()` は大文字小文字を区別しません。`date()` はミリ秒のタイムスタンプ（または `null`）を返すので、`date(a) < date(b)` は時系列で比較できます。`null` や未定義の値は `<` / `>` を満たしません。
+文字列の `=` / `!=` と `contains()` は大文字小文字を区別しません。`date()` はミリ秒のタイムスタンプ（または `null`）を返すので、`date(a) < date(b)` は時系列順に比較できます。`null` や未定義の値は `<` / `>` を満たしません。
 
 `file.*` で使えるフィールドは `file.name`、`file.title`、`file.slug`、`file.path`、`file.folder`、`file.link`、`file.permalink`、`file.url`、`file.tags`、`file.date`、`file.created`、`file.updated`、`file.published` です。それ以外は frontmatter のキーをそのまま名前で参照します（`status`、`priority`、`due` など）。
 
 ### `SORT`
 
-`SORT` はフィールドをカンマ区切りで並べ、各フィールドに `asc`（既定）または `desc` を付けられます。値が無いノートは末尾に並びます。
+`SORT` はカンマ区切りでフィールドを指定し、各フィールドに `asc`（既定）または `desc` を付けられます。値がないノートは末尾に並びます。
 
 ```dataview
 SORT priority desc, file.name asc
@@ -130,7 +130,7 @@ SORT priority desc, file.name asc
 
 ### `GROUP BY`
 
-`GROUP BY <フィールド>` は一致したノートをグループ化します。グループ値が見出しになり、`LIST` と `TASK` はグループごとにリストを、`TABLE` はグループ行を描画します。グループの順序は `SORT` の結果を保ちます。
+`GROUP BY <フィールド>` は一致したノートをグループ化します。グループ値が見出しになり、`LIST` と `TASK` はグループごとにリストを、`TABLE` はグループ行を描画します。グループの順序は `SORT` の結果を引き継ぎます。
 
 ### `LIMIT`
 
@@ -168,10 +168,10 @@ SORT priority desc, file.name asc
 
 ## 制限事項
 
-- **DataviewJS には対応しません**。 `dataviewjs` は意図的に対象外です。
-- **インラインフィールド（`field:: value`）には対応しません**。 参照するのは frontmatter だけです。
-- **`TABLE` の列はフィールドパスです**。 任意の式は書けません。見出しの変更は `AS "Label"` だけです（`file.size / 1024` のような計算列は不可）。
-- **`TASK` が絞り込むのはノートです**。 `FROM` / `WHERE` はタスクを含むノートに働きます。
+- **DataviewJS には対応しません**。`dataviewjs` は意図的に対象外です。
+- **インラインフィールド（`field:: value`）には対応しません**。参照するのは frontmatter だけです。
+- **`TABLE` の列はフィールドパスです**。任意の式は書けません。見出しの変更は `AS "Label"` だけです（`file.size / 1024` のような計算列は不可）。
+- **`TASK` が絞り込むのはノートです**。`FROM` / `WHERE` はタスクを含むノートに働きます。
 - **`CALENDAR` が表示するのは 1 か月分**です。一致した日付のうち最も新しい月を描画します。
 - `file.size`、`file.mtime`、`file.ctime` はマニフェストから取得できず `undefined` になります。
 - 結果はビルド時に確定します。dataview ブロックが生成したリンクはコンテンツグラフ（バックリンク）には含まれません。フルビルドでは常に正しく再計算されます。

@@ -6,9 +6,9 @@
 
 [English](./README.md)
 
-## まずはビルドに診断を加える
+## ビルドに診断を組み込む
 
-通常は `diagnostics()` を設定に登録します。診断結果は manifest に入り、`failOnError` を有効にするとエラーがあったビルドを失敗させられます。
+通常は `diagnostics()` を設定に登録します。診断結果はマニフェストに入り、`failOnError` を有効にするとエラーがあったビルドを失敗させられます。
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -26,7 +26,7 @@ export default defineConfig({
 });
 ```
 
-`failOnError: true` を指定すると、`buildEnd` で error レベルの Diagnostics が残っている場合に `DiagnosticsFailure` を送出します。
+`failOnError: true` を指定すると、`buildEnd` で error レベルの診断が残っている場合に `DiagnosticsFailure` を送出します。
 
 ## 検出する問題
 
@@ -34,7 +34,7 @@ export default defineConfig({
 | --- | --- | --- |
 | `broken-wikilink` | error | Wiki リンクの参照先またはフラグメントを解決できない |
 | `broken-image` | error | 埋め込み画像または画像リンクの参照先がない |
-| `broken-link` | error | Markdown リンクが存在しない、または除外されたノートを指す |
+| `broken-link` | error | Markdown リンクが存在しない、または除外されたノートやファイルを指す |
 | `unused-asset` | warning | どのノートからも参照されない画像 |
 | `orphan-note` | info | 公開ノートのうち、他のノートからリンクされていないもの |
 | `missing-frontmatter` | warning | 必須フィールドが欠けている |
@@ -45,9 +45,9 @@ export default defineConfig({
 | `invalid-content-id` | error | `id` の frontmatter が安定コンテンツ ID の要件を満たしていない |
 | `excluded-public` | warning | 除外されたノートに `publish: true` が指定されている |
 | `publish-boundary` | warning | 公開コンテンツから非公開コンテンツへリンク・埋め込みしている |
-| `analytics-untracked` | info | 安定 `id` のない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動で有効化） |
+| `analytics-untracked` | info | 安定した `id` を持たない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動的に有効） |
 | `content-integrity:broken-link` | warning | 公開ページが、公開または登録されていないサイト内経路へリンクしている |
-| `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wiki リンクを、設定済みの解決規則で解決できない |
+| `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wiki リンクを、設定済みの WikiLink / コンテンツインデックスの解決規則で解決できない |
 | `content-integrity:broken-asset` | warning | 公開ページが、解決済みアセット・プラグインアセット・生成出力・公開経路のいずれにもないローカルアセットを参照している |
 | `content-integrity:duplicate-public-location` | error | 複数の公開コンテンツまたは生成経路が、同じ最終公開パスを所有している |
 | `content-integrity:redirect-target-missing` | warning | 公開リダイレクトの転送先コンテンツが公開されない |
@@ -59,11 +59,11 @@ export default defineConfig({
 
 ## サイト全体の参照整合性
 
-Riebeckite のプラグインとして使う場合、リンク関係の検査はコンテンツを再走査せず、解決済み manifest から行います。`publicEntries`、解決済み `ContentLink`、`ContentPublicLocation`、`publicRedirects`、プラグインページのパス、プラグインアセット、生成出力を参照します。これにより permalink、alias、rename によるリダイレクト、l10n、公開・除外設定、Page System の扱いがビルド処理と揃います。
+Riebeckite のプラグインとして使う場合、リンク関係の検査はコンテンツを再走査せず、解決済みマニフェストから行います。`publicEntries`、解決済み `ContentLink`、`ContentPublicLocation`、`publicRedirects`、プラグインページのパス、プラグインアセット、生成出力を参照します。これにより、パーマリンク、エイリアス、リネームによるリダイレクト、l10n、公開・除外設定、Page System の扱いがビルド処理と一致します。
 
 外部 URL の疎通確認、SEO、スペルチェック、Lighthouse、自動修復は行いません。`http:`、`https:`、`mailto:`、`tel:`、`data:`、プロトコル相対 URL、ページ内フラグメントだけのリンクは対象外です。経路の存在確認では、クエリ文字列とフラグメントを除いて判定します。生成ページや生成アセットを提供するプラグインは、Page Type、生成出力、アセット登録の既存の仕組みを使ってください。登録されていれば、整合性検査でも有効な公開先として扱われます。
 
-`runDiagnostics()` と単体 CLI は、完全な manifest を持たないため、従来の content source 解析を使います。そのため `orphan-note` と `unused-asset` は `runDiagnostics()` と単体 CLI でのみ報告されます。ビルド時はリンク関係を manifest から解決するため、これらは出力しません。
+`runDiagnostics()` と単体 CLI は、完全なマニフェストを持たないため、従来のコンテンツソース解析を使います。そのため `orphan-note` と `unused-asset` は `runDiagnostics()` と単体 CLI でのみ報告されます。ビルド時はリンク関係をマニフェストから解決するので、これらは出力しません。
 
 ## 設定項目
 
@@ -78,7 +78,7 @@ Riebeckite のプラグインとして使う場合、リンク関係の検査は
 | `exclude` | `[]` | 解析対象から追加で除外する glob |
 | `publishStrategy` | 設定ファイルの値 | 公開ノートの判定方法 |
 
-## CI や編集時には CLI を使う
+## CI や編集時は CLI を使う
 
 設定を読み込んで実行する場合は、次のようにします。
 
@@ -87,7 +87,7 @@ riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
 ```
 
-`--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。
+`--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。`exclude` の一覧は統合されます。
 
 | オプション | 内容 |
 | --- | --- |
@@ -121,7 +121,7 @@ console.log(formatDiagnostics(report));
 assertNoErrors(report);
 ```
 
-`DiagnosticsReport` には診断の一覧に加え、エラー・警告・情報の件数、コード別の集計、`hasErrors` と `hasWarnings` が入ります。
+`DiagnosticsReport` には診断の一覧に加え、エラー・警告・情報の件数、集計（`summary`）、コード別の集計（`byCode`）、`hasErrors`、`hasWarnings` が入ります。
 
 ## 主なエクスポート
 

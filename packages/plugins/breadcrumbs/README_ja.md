@@ -19,7 +19,7 @@ JavaScript は不要です。
 
 途中のフォルダはマニフェストと突き合わせて解決します。フォルダ自身に
 インデックスノート（フォルダと同名のスラッグを持つノート）があればその
-タイトルを使い、なければセグメントをタイトルケース（先頭大文字）にして
+タイトルを使い、なければセグメントをタイトルケース（先頭を大文字にする）にして
 代用します。最後のパンくずはそのノート自身で、パーマリンクへリンクします。
 
 マニフェストエントリの HTML にナビゲーションを挿入します。Core がその HTML を
@@ -29,7 +29,7 @@ JavaScript は不要です。
 ## JSON-LD
 
 `breadcrumbs()` は階層的な BreadcrumbList を `entry.headTags` の
-`<script type="application/ld+json">` として提供します。Site シェルがこれを
+`<script type="application/ld+json">` として提供します。サイトシェルがこれを
 文書の `<head>` に描画します（リファレンスアプリの `_renderer.tsx` は
 `entry.headTags` を描画します）。アイテムの URL は設定の `baseUrl` に基づき
 絶対 URL に変換されます。
@@ -37,7 +37,7 @@ JavaScript は不要です。
 `seo` プラグインも有効な場合、seo 側は独自の 2 階層の BreadcrumbList
 （`ホーム / ノート`）を記事 JSON-LD に含めようとします。ページの `headTags`
 を seo 拡張へ渡すと、本プラグインが提供した BreadcrumbList を検出して seo 側の
-暫定版を省略するため、Site 側で調整しなくても BreadcrumbList は 1 つだけに
+暫定版を省略するため、サイト側で調整しなくても BreadcrumbList は 1 つだけに
 なります。本プラグインからの出力自体を止めたい場合は `jsonLd: false` を使います。
 
 ## 使い方

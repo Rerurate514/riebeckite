@@ -36,6 +36,7 @@ definePlugin({
 ```
 
 Semantic Markdown/HTML transformation belongs in the plugin; do not bring AST processing into application components.
+Diagram plugins that share fenced-block, figure, and browser-rendering concerns can use [Diagram plugin infrastructure](../diagram-infrastructure.md).
 
 ## 3-7. Content graph and public locations
 

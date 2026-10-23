@@ -50,6 +50,8 @@ definePlugin({
 
 Markdown / HTML の意味変換を Application Component に持ち込まず、Plugin の Pipeline 処理として実装するのが基本です。
 
+fenced block、figure、browser rendering を共有する Diagram Plugin では、[Diagram Plugin Infrastructure](../diagram-infrastructure.ja.md) を使えます。
+
 
 ## 11. Content Graph
 

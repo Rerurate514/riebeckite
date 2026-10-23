@@ -29,6 +29,7 @@ sidebar:
 
 - [プラグインの依存関係と Lifecycle](./plugin-system/lifecycle.ja.md)
 - [Content パイプラインと拡張ポイント](./plugin-system/pipeline.ja.md)
+- [Diagram Plugin Infrastructure](./diagram-infrastructure.ja.md)
 - [プラグインの配布と検証](./plugin-system/distribution.ja.md)
 
 ## 1. Plugin にするべき機能

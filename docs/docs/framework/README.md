@@ -38,6 +38,7 @@ flowchart LR
 | Package ownership and dependency direction | [Architecture](./architecture.md) |
 | How Markdown and assets become pages | [Content system](./content-system.md) |
 | How plugins are resolved and run | [Plugin system](./plugin-system.md) |
+| Shared utilities and contracts for diagram plugins | [Diagram plugin infrastructure](./diagram-infrastructure.md) |
 | How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |

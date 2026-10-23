@@ -13,11 +13,13 @@ Publish selected text source files as first-class, syntax-highlighted pages.
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { sourceFiles } from "@riebeckite/plugin-source-files";
 
 export default defineConfig({
   plugins: [
     obsidianMarkdown(),
+    codeEnhance({ lineNumbers: true }),
     sourceFiles({
       include: ["src/**/*.ts", "scripts/*.ts"],
       exclude: ["src/generated/**"],
@@ -30,7 +32,7 @@ export default defineConfig({
 
 - `[src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` links to `/source/src/main.ts`.
 - `![src/main.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/src/main.ts.md)` renders the source in the existing code-block path.
-- `#L10` and `#L10-L20` select lines in an embed and are retained in the source-page URL.
+- `#L10` and `#L10-L20` select lines in an embed. With Code Enhance enabled, those source-page fragments scroll to and highlight the matching line or range.
 
 Each source page includes its vault-relative path, detected language, size, a Copy action, and a Raw link to the normal attachment URL.
 

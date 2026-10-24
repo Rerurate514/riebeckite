@@ -1,4 +1,4 @@
-import type { OutputDependency } from "@riebeckite/core";
+import type { ContentIcon, OutputDependency } from "@riebeckite/core";
 
 export type FolderPagesOptions = {
   className?: string;
@@ -15,6 +15,7 @@ export type ResolvedFolderPagesOptions = {
 export type FolderPageLink = {
   title: string;
   permalink: string;
+  icon?: ContentIcon;
 };
 
 export type FolderPage = {
@@ -22,6 +23,7 @@ export type FolderPage = {
   pathname: string;
   language?: string;
   title: string;
+  icon?: ContentIcon;
   pages: FolderPageLink[];
   folders: FolderPageLink[];
   dependencies: OutputDependency[];

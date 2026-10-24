@@ -1,8 +1,9 @@
-import type { ContentManifestEntry } from "@riebeckite/core";
+import type { ContentIcon, ContentManifestEntry } from "@riebeckite/core";
 
 export type NavigationItem = {
   readonly label: string;
   readonly href?: string;
+  readonly icon?: ContentIcon;
   readonly children?: readonly NavigationItem[];
   readonly external?: boolean;
 };

@@ -26,6 +26,7 @@ export function buildSearchItems(args: {
       body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
       excerpt: createExcerpt(entry),
       tags: entry.tags,
+      ...(entry.icon ? { icon: entry.icon } : {}),
       ...(language === undefined ? {} : { language }),
       date: getEntryDate(entry.frontmatter),
     };

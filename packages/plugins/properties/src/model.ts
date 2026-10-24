@@ -1,4 +1,8 @@
-import type { PublicContentView } from "@riebeckite/core";
+import type {
+  ContentIcon,
+  ContentIconRegistry,
+  PublicContentView,
+} from "@riebeckite/core";
 import {
   DEFAULT_PROPERTY_DATE_FORMAT,
   formatPropertyDate,
@@ -45,16 +49,20 @@ export function buildPropertiesData(
     title: options.title,
     className: options.className,
     collapsed: options.collapsed,
-    items: entries.map(([key, value]) => ({
-      key,
-      value: convertValue(
-        value,
+    items: entries.map(([key, value]) => {
+      const icon = findPropertyIcon(context.icons, key);
+      return {
         key,
-        propertiesFieldConfig(options.fields, key),
-        state,
-        0,
-      ),
-    })),
+        ...(icon ? { icon } : {}),
+        value: convertValue(
+          value,
+          key,
+          propertiesFieldConfig(options.fields, key),
+          state,
+          0,
+        ),
+      };
+    }),
   };
 }
 
@@ -418,6 +426,19 @@ function isTagString(key: string, value: string): boolean {
 
 function isTagKey(key: string): boolean {
   return key === "tags" || key === "tag";
+}
+
+function findPropertyIcon(
+  registry: ContentIconRegistry | undefined,
+  key: string,
+): ContentIcon | undefined {
+  if (!registry?.properties) return undefined;
+  if (registry.properties[key]) return registry.properties[key];
+  const lower = key.toLowerCase();
+  for (const [candidate, icon] of Object.entries(registry.properties)) {
+    if (candidate.toLowerCase() === lower) return icon;
+  }
+  return undefined;
 }
 
 function report(

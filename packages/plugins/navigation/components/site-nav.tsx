@@ -120,10 +120,24 @@ function NavigationItemView(props: NavigationItemViewProps) {
           target={item.external ? "_blank" : undefined}
           rel={item.external ? "noreferrer" : undefined}
         >
+          {item.icon ? (
+            <span
+              class="rb-nav__icon"
+              dangerouslySetInnerHTML={{ __html: item.icon.html }}
+            />
+          ) : null}
           {item.label}
         </a>
       ) : (
-        <span class="rb-nav__label">{item.label}</span>
+        <span class="rb-nav__label">
+          {item.icon ? (
+            <span
+              class="rb-nav__icon"
+              dangerouslySetInnerHTML={{ __html: item.icon.html }}
+            />
+          ) : null}
+          {item.label}
+        </span>
       )}
       {item.children && item.children.length > 0 ? (
         <NavigationItems

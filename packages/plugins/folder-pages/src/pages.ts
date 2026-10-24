@@ -1,3 +1,4 @@
+import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import type { FolderPage, ResolvedFolderPagesOptions } from "./types.js";
 
@@ -8,7 +9,7 @@ export function renderFolderPage(
   const className = escapeHtmlAttribute(options.className);
   const parts: string[] = [
     `<section class="${className}" data-rr-folder-page="${escapeHtmlAttribute(page.folder)}">`,
-    `<h1 class="${className}__title">${escapeHtml(page.title)}</h1>`,
+    `<h1 class="${className}__title">${renderIcon(page.icon)}${escapeHtml(page.title)}</h1>`,
   ];
   if (page.pages.length > 0) {
     parts.push(
@@ -32,7 +33,11 @@ export function renderFolderPage(
 
 function renderLink(
   className: string,
-  link: { title: string; permalink: string },
+  link: { title: string; permalink: string; icon?: ContentIcon },
 ): string {
-  return `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(link.permalink)}">${escapeHtml(link.title)}</a></li>`;
+  return `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(link.permalink)}">${renderIcon(link.icon)}${escapeHtml(link.title)}</a></li>`;
+}
+
+function renderIcon(icon: ContentIcon | undefined): string {
+  return icon ? `<span class="rr-folder-page__icon">${icon.html}</span>` : "";
 }

@@ -1,4 +1,8 @@
-import type { ContentManifestEntry, SeoMetadata } from "@riebeckite/core";
+import type {
+  ContentIcon,
+  ContentManifestEntry,
+  SeoMetadata,
+} from "@riebeckite/core";
 
 /** Feed formats the taxonomy plugin can generate per term. */
 export type TaxonomyFeedFormat = "rss" | "atom" | "json";
@@ -74,6 +78,7 @@ export type TaxonomyEntryReference = {
   title: string;
   updated: string | null;
   summary: string;
+  icon?: ContentIcon;
 };
 
 /** A related-term reference used by related-tag navigation. */
@@ -84,6 +89,7 @@ export type TaxonomyRelatedTerm = {
   path: string;
   permalink: string;
   count: number;
+  icon?: ContentIcon;
 };
 
 /** Resolved feed URLs for one term. */
@@ -100,6 +106,8 @@ export type TaxonomyTerm = {
   value: string;
   /** Display title, `#value` for tags by default. */
   title: string;
+  /** Resolved icon for the term, when one is configured. */
+  icon?: ContentIcon;
   /** Site-local listing path, for example `/tags/guide/intro`. */
   path: string;
   /** Resolved entries, in manifest query order. */
@@ -129,6 +137,7 @@ export type TaxonomyTermData = {
   entries: TaxonomyEntryReference[];
   related: TaxonomyRelatedTerm[];
   feeds: TaxonomyFeedLinks;
+  icon?: ContentIcon;
 };
 
 /** JSON-safe projection of a {@link TaxonomyIndex}. */

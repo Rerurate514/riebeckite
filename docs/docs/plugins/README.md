@@ -104,6 +104,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Responsive Image](./responsive-image.md) | Responsive image markup and lazy loading |
 | [Gallery](./gallery.md) | Markdown-driven card galleries |
 | [Lightbox](./lightbox.md) | Click-to-zoom image lightboxes |
+| [Icons](./icons.md) | Obsidian Iconize and Iconic icons across the site |
 | [PDF](./pdf.md) | Inline PDF attachment viewing |
 | [QR Code](./qr-code.md) | Inline SVG QR codes from code blocks |
 | [Map](./map.md) | Interactive and static OpenStreetMap embeds |

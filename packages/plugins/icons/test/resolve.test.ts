@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { parseIconReference } from "../src/iconize.js";
 import {
   createIconResolver,
   resolveIconsOptions,
@@ -115,8 +116,19 @@ test("inline names resolve emoji first, then Lucide, and keep unknown names", ()
   );
   assert.equal(value.inline("rocket")?.kind, "emoji");
   assert.equal(value.inline("smile")?.kind, "emoji");
+  assert.equal(value.inline("LiRocket")?.id, "lucide:rocket");
+  assert.equal(value.inline("list")?.id, "lucide:list");
   assert.equal(value.inline("not-a-real-icon-xyz"), undefined);
   assert.equal(value.identifier, ":");
+});
+
+test("icon references preserve names starting with li and split pack names", () => {
+  assert.equal(parseIconReference("LiRocket", []), "lucide:rocket");
+  assert.equal(parseIconReference("list", []), "lucide:list");
+  assert.equal(
+    parseIconReference("MypackRocket", ["my-pack"]),
+    "pack:MyPack:Rocket",
+  );
 });
 
 test("inline icons respect the Iconize switch and Lucide pack mode", () => {

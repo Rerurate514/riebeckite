@@ -60,6 +60,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
           ...(page.language === undefined ? {} : { language: page.language }),
         });
       }
+      models.delete(manifest);
     },
     pageTypes: [
       {

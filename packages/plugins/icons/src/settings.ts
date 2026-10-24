@@ -122,7 +122,9 @@ export async function loadIconsSettings(
     ...(iconPacksRoot === undefined ? {} : { iconPacksRoot }),
     vaultPrefix,
     fingerprint: fingerprintExternalValue({
-      iconize: iconize ?? null,
+      iconize: iconize
+        ? { settings: iconize.settings, icons: [...iconize.icons] }
+        : null,
       iconic: iconic ?? null,
       packs: [...iconPacks].map(([pack, files]) => [
         pack,
@@ -539,7 +541,10 @@ async function loadIconPacks(
         });
       } catch {}
     }
-    if (pack.size > 0) packs.set(entry.name.toLowerCase(), pack);
+    if (pack.size > 0) {
+      const packName = normalizeIconName(entry.name).toLowerCase();
+      if (packName) packs.set(packName, pack);
+    }
   }
 
   if (zipCount > 0) {

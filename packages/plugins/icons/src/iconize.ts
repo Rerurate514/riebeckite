@@ -74,7 +74,7 @@ export function parseIconReference(
     }
   }
 
-  if (/^li[A-Z0-9]/i.test(trimmed)) {
+  if (/^Li[A-Z0-9]/.test(trimmed)) {
     return `lucide:${toKebab(trimmed.slice(2))}`;
   }
   if (lower.startsWith("lucide-")) {

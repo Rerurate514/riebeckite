@@ -12,11 +12,7 @@ import {
 } from "./iconic.js";
 import { parseIconReference, resolveIconize } from "./iconize.js";
 import { IconRenderer } from "./render.js";
-import {
-  type LoadedIconsSettings,
-  normalizeIconName,
-  normalizeVaultPath,
-} from "./settings.js";
+import { type LoadedIconsSettings, normalizeVaultPath } from "./settings.js";
 import type {
   IconOverride,
   IconPrecedence,
@@ -320,15 +316,11 @@ export function createIconResolver(input: {
         return render(`emoji:${emoji}`, "iconize", `inline:${name}`, color);
       }
       const lucideType = iconizeSettings?.lucideIconPackType ?? "native";
-      const normalized = normalizeIconName(name);
-      const packReference = packNames.length
-        ? parseIconReference(normalized, packNames)
-        : undefined;
-      if (packReference?.startsWith("pack:")) {
-        return render(packReference, "iconize", `inline:${name}`, color);
+      const reference = parseIconReference(name, packNames);
+      if (!reference) return undefined;
+      if (lucideType === "none" && reference.startsWith("lucide:")) {
+        return undefined;
       }
-      if (lucideType === "none") return undefined;
-      const reference = `lucide:${toKebabName(name)}`;
       return render(reference, "iconize", `inline:${name}`, color);
     },
     warnings() {
@@ -415,14 +407,6 @@ function findKey<T>(
     if (candidate.toLowerCase() === lower) return value;
   }
   return undefined;
-}
-
-function toKebabName(value: string): string {
-  return value
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .replace(/[\s_]+/g, "-")
-    .toLowerCase();
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

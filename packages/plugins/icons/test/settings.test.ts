@@ -121,13 +121,42 @@ test("explicit data files inside the vault are read", async () => {
   assert.equal(loaded.iconic?.tagIcons.x?.icon, "lucide-star");
 });
 
+test("settings fingerprint tracks Iconize icon changes", async () => {
+  const root = await vault();
+  const dataFile = path.join(
+    root,
+    ".obsidian",
+    "plugins",
+    "obsidian-icon-folder",
+    "data.json",
+  );
+  await mkdir(path.dirname(dataFile), { recursive: true });
+  await writeFile(
+    dataFile,
+    JSON.stringify({
+      settings: { iconColor: "123456" },
+      "content/note.md": { iconName: "LiRocket" },
+    }),
+  );
+  const first = await loadIconsSettings(resolveIconsOptions({}), config(root));
+  await writeFile(
+    dataFile,
+    JSON.stringify({
+      settings: { iconColor: "654321" },
+      "content/note.md": { iconName: "LiStar" },
+    }),
+  );
+  const second = await loadIconsSettings(resolveIconsOptions({}), config(root));
+  assert.notEqual(first.fingerprint, second.fingerprint);
+});
+
 test("custom folder packs are discovered without reading SVG contents", async () => {
   const root = await vault();
-  await mkdir(path.join(root, ".obsidian", "icons", "MyPack"), {
+  await mkdir(path.join(root, ".obsidian", "icons", "My-Pack"), {
     recursive: true,
   });
   await writeFile(
-    path.join(root, ".obsidian", "icons", "MyPack", "Rocket.svg"),
+    path.join(root, ".obsidian", "icons", "My-Pack", "Rocket.svg"),
     '<svg viewBox="0 0 24 24"><path d="M0 0h1v1z"/></svg>',
   );
   const loaded = await loadIconsSettings(resolveIconsOptions({}), config(root));

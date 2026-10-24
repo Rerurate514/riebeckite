@@ -94,6 +94,68 @@ test("does not emit assets from unpublished Markdown or invalid image URLs", asy
   assert.deepEqual(manifest.publicEntries[0]?.assets, []);
 });
 
+test("transforms only public Markdown assets and exposes output metadata", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "post.md": "---\npublish: true\n---\n![logo](images/logo.png)",
+      "images/logo.png": new Uint8Array([1]),
+      "private.md": "---\npublish: false\n---\n![secret](secret.png)",
+      "secret.png": new Uint8Array([2]),
+    }),
+    [],
+    {
+      plugins: [
+        definePlugin({
+          name: "asset-transform",
+          transformAssets: async ({ assets, readAsset }) => {
+            assert.deepEqual(
+              assets.map((asset) => asset.path),
+              ["images/logo.png"],
+            );
+            assert.deepEqual(
+              await readAsset("images/logo.png"),
+              new Uint8Array([1]),
+            );
+            return [
+              {
+                sourcePath: "images/logo.png",
+                path: "images/logo-640.webp",
+                content: new Uint8Array([3]),
+                mimeType: "image/webp",
+                width: 640,
+                height: 320,
+              },
+            ];
+          },
+        }),
+      ],
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(manifest.publicEntries[0]?.assets, [
+    { path: "images/logo.png" },
+    {
+      path: "images/logo-640.webp",
+      sourcePath: "images/logo.png",
+      mimeType: "image/webp",
+      width: 640,
+      height: 320,
+      size: 1,
+    },
+  ]);
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => [
+      output.path,
+      output.dependencies,
+    ]),
+    [
+      ["images/logo-640.webp", [{ type: "file", path: "images/logo.png" }]],
+      ["images/logo.png", [{ type: "file", path: "images/logo.png" }]],
+    ],
+  );
+});
+
 test("normalizes referenced Markdown images", async () => {
   const pipeline = new Pipeline(new Map(), new Map());
   const content = await pipeline.execute(

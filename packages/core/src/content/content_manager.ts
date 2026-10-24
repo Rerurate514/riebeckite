@@ -407,6 +407,7 @@ export class ContentManager {
         manifest.pageRoutes = [
           ...(await this.pluginRuntime.getPageRoutes(manifest, contentIndex)),
         ];
+        await this.pluginRuntime.runAssetTransforms(manifest);
         await this.pluginRuntime.runManifestCreated(
           manifest,
           contentIndex,

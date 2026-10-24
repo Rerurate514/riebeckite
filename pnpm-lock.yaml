@@ -1237,6 +1237,22 @@ importers:
         specifier: 1.7.0
         version: 1.7.0
 
+  packages/plugins/meta-bind:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/navigation:
     dependencies:
       '@riebeckite/core':

@@ -24,6 +24,29 @@ test("parses supported same-page INPUT and VIEW fields", () => {
   );
 });
 
+test("parses documented INPUT and VIEW fixture forms", () => {
+  for (const source of [
+    "INPUT[text(placeholder('Name')):profile.name]",
+    "INPUT[number(minValue(1), maxValue(5), defaultValue(2)):priority]",
+    "INPUT[slider(minValue(0), maxValue(10), stepSize(0.5)):progress]",
+    "INPUT[toggle(onValue('yes'), offValue('no')):done]",
+    "VIEW[{progress} / 2][math]",
+  ]) {
+    assert.equal(parseMetaBind(source).ok, true, source);
+  }
+  const select = parseMetaBind(
+    "INPUT[select(option('low', 'Low'), option('high', 'High')):priority]",
+    false,
+  );
+  assert.equal(select.ok, true);
+  if (!select.ok || select.value.kind !== "input") return;
+  assert.deepEqual(select.value.options, [
+    { value: "low", label: "Low" },
+    { value: "high", label: "High" },
+  ]);
+  assert.equal(parseMetaBind("INPUT[select(option(low)):priority]").ok, false);
+});
+
 test("rejects unsupported targets and oversized expressions", () => {
   assert.equal(parseMetaBind("INPUT[text:memory^value]").ok, false);
   assert.equal(parseMetaBind("INPUT[text:__proto__.value]").ok, false);
@@ -40,6 +63,20 @@ test("renders escaped initial values without exposing unrelated frontmatter", ()
   });
   assert.match(html, /&lt;safe&gt;/);
   assert.doesNotMatch(html, /secret/);
+});
+
+test("escapes field arguments and VIEW data attributes", () => {
+  const input = parseMetaBind(
+    "INPUT[text(defaultValue('<img src=x onerror=alert(1)>')):name]",
+  );
+  const view = parseMetaBind("VIEW[{name}]");
+  assert.equal(input.ok, true);
+  assert.equal(view.ok, true);
+  if (!input.ok || !view.ok) return;
+  assert.doesNotMatch(renderMetaBind(input.value), /<img/);
+  const html = renderMetaBind(view.value, { name: '" onmouseover="alert(1)' });
+  assert.match(html, /&quot;/);
+  assert.doesNotMatch(html, /data-meta-bind-values="[^"]*" onmouseover=/);
 });
 
 test("remark replaces valid fields and preserves invalid Markdown", () => {
@@ -77,26 +114,16 @@ test("remark replaces valid fields and preserves invalid Markdown", () => {
 });
 
 test("bounded evaluation returns a safe value for hostile depth", () => {
-  let expression = parseMetaBind("VIEW[1]");
-  assert.equal(expression.ok, true);
-  if (!expression.ok || expression.value.kind !== "view") return;
+  const parsed = parseMetaBind("VIEW[1]");
+  assert.equal(parsed.ok, true);
+  if (!parsed.ok || parsed.value.kind !== "view") return;
+  let expression = parsed.value.expression;
   for (let index = 0; index < 80; index += 1) {
     expression = {
-      ok: true,
-      value: {
-        kind: "view",
-        source: "",
-        dependencies: [],
-        expression: {
-          kind: "unary",
-          operator: "-",
-          value: expression.value.expression,
-        },
-      },
+      kind: "unary",
+      operator: "-",
+      value: expression,
     };
   }
-  assert.equal(
-    evaluateMetaBindExpression(expression.value.expression, {}),
-    null,
-  );
+  assert.equal(evaluateMetaBindExpression(expression, {}), null);
 });

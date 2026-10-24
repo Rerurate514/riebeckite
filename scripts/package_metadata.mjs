@@ -49,6 +49,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/hard-breaks",
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
+  "packages/plugins/icons",
   "packages/plugins/image-optimizer",
   "packages/plugins/kanban",
   "packages/plugins/l10n",
@@ -327,6 +328,11 @@ const packagePublishingMetadata = {
     description: "Sharp-backed responsive image transforms for Riebeckite.",
     keywords: ["riebeckite", "plugin", "images", "optimization"],
   },
+  "packages/plugins/icons": {
+    description:
+      "Obsidian Iconize and Iconic icons for Riebeckite navigation, notes, tags, and properties.",
+    keywords: ["riebeckite", "plugin", "icons", "obsidian", "lucide"],
+  },
   "packages/plugins/kanban": {
     description: "Build-time rendering for Obsidian Kanban boards.",
     keywords: ["riebeckite", "plugin", "kanban", "obsidian"],
@@ -544,10 +550,13 @@ function publishingMetadata(directory, sideEffects) {
 export const catalogDependencies = {
   "@types/mdast": "^4.0.4",
   "@types/node": "^24.5.2",
+  "@types/sanitize-html": "^2.16.2",
   "@types/unist": "^3.0.3",
   esbuild: "^0.28.2",
   hono: "^4.12.25",
+  "lucide-static": "^1.61.0",
   "remark-parse": "^11.0.0",
+  "sanitize-html": "^2.18.1",
   unified: "^11.0.5",
   "unist-util-visit": "^5.1.0",
   "vfile-matter": "^5.0.1",
@@ -718,6 +727,7 @@ export function expectedPackageMetadata(directory) {
       "gallery",
       "hard-breaks",
       "highlight",
+      "icons",
       "image-optimizer",
       "l10n",
       "local-graph",

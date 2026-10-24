@@ -23,6 +23,7 @@ npx create-riebeckite --list-presets
 | Obsidian のようにノートを相互リンクして育てたい | `digital-garden` |
 | 記事、タグ、シリーズを持つメディアを作りたい | `blog` |
 | プロダクトやプロジェクトのドキュメントを作りたい | `docs` |
+| 選んだ作品と連絡先を見せるポートフォリオを作りたい | `portfolio` |
 | アプリケーションを自分で組み立てたい | `empty` |
 | 公開できる最小の Markdown サイトがほしい | `minimal` |
 | 実用的なデジタルガーデンやブログを始めたい | `starter`（既定） |
@@ -38,6 +39,7 @@ npx create-riebeckite --list-presets
 | `digital-garden` | `default` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
 | `blog` | `default` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
 | `docs` | `default` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
+| `portfolio` | `default` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、カラーモード |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | すべてのプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | なし | なし | 空のアプリケーションシェル |
@@ -59,6 +61,27 @@ Obsidian を意識した、相互リンクするノートのための構成で�
 ### `docs`
 
 ドキュメント用のサイドバー、レスポンシブな目次、前後ページへのナビゲーションを備えた構成です。小さなドキュメントツリーとコード例から始められ、現在読んでいるページに集中できるレイアウトです。
+
+### `portfolio`
+
+選んだプロジェクト、自己紹介、連絡先を載せるための控えめな構成です。画像がなくてもプロジェクトページを読めるようにしつつ、必要になればレスポンシブ画像、lightbox、メディア埋め込み、Markdown の gallery を使えます。経歴、顧客、成果について、テンプレートが事実でない主張をすることはありません。
+
+## 任意の Feature Pack
+
+Feature Pack は、選んだプリセットに Plugin を明示的に追加します。`--features <names>` にカンマ区切りで指定するか、対話式の質問で選んでください。
+
+```sh
+npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
+```
+
+| Pack | 追加する機能 |
+| --- | --- |
+| `knowledge` | リンクプレビューとローカルグラフ |
+| `diagrams` | Mermaid と Graphviz の Markdown 図表 |
+| `media` | 音声・動画の埋め込み、レスポンシブ画像、lightbox |
+| `i18n` | 英語・日本語のローカライズされたルート |
+
+プリセットに含まれる Plugin と重複する Pack は、重複した import を生成せずエラーにします。Pack を追加しないことを明示する場合は `--features none` を使えます。
 
 ### `minimal`
 

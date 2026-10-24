@@ -74,6 +74,12 @@ test("parseCommand reads the project file selection", () => {
   );
 });
 
+test("parseCommand reads init feature packs", () => {
+  const command = parseCommand(["init", "--features", "diagrams,i18n"]);
+  assert.equal(command.name, "init");
+  assert.deepEqual(command.features, ["diagrams", "i18n"]);
+});
+
 test("parseCommand accepts the local Cloudflare Workers deployment", () => {
   const command = parseCommand(["init", "--cloudflare-workers"]);
   assert.equal(command.name, "init");

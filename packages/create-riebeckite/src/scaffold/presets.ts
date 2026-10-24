@@ -45,6 +45,7 @@ export type ScaffoldPresetName =
   | "digital-garden"
   | "blog"
   | "docs"
+  | "portfolio"
   | "minimal"
   | "showcase"
   | "empty";
@@ -54,6 +55,7 @@ export const SCAFFOLD_PRESET_NAMES: readonly ScaffoldPresetName[] = [
   "digital-garden",
   "blog",
   "docs",
+  "portfolio",
   "minimal",
   "showcase",
   "empty",
@@ -671,6 +673,25 @@ export const documentation: ScaffoldPreset = {
   readme: "standard",
 };
 
+export const portfolio: ScaffoldPreset = {
+  name: "portfolio",
+  description:
+    "A calm portfolio for projects and contact details, with image and media support when you add it.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    ...readingPlugins,
+    seo,
+    properties,
+    responsiveImage,
+    lightbox,
+    media,
+    gallery,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
 export const showcase: ScaffoldPreset = {
   name: "showcase",
   description:
@@ -762,6 +783,7 @@ export const scaffoldPresets: Readonly<
   "digital-garden": digitalGarden,
   blog,
   docs: documentation,
+  portfolio,
   minimal,
   showcase,
   empty,

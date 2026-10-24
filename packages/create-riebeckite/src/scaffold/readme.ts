@@ -54,6 +54,10 @@ const README_INTRO: Readonly<
     en: "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
     ja: "自動サイドバー、目次、前後ページナビゲーションを備えたドキュメントサイトです。",
   },
+  portfolio: {
+    en: "A focused portfolio with pages for selected projects, an introduction, and contact details.",
+    ja: "選んだプロジェクト、自己紹介、連絡先のページから始められる、要点を絞ったポートフォリオです。",
+  },
   showcase: {
     en: "A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples, reference pages, and local fixtures.",
     ja: "Riebeckite の Plugin エコシステムを実際に確認できる機能紹介用の構成です。描画例・リファレンスページ・ローカルのフィクスチャを含みます。",

@@ -1,5 +1,6 @@
 import {
   isScaffoldPresetName,
+  parseScaffoldFeatures,
   parseScaffoldUtilities,
   SCAFFOLD_DEFAULT_PRESET,
   SCAFFOLD_DEFAULT_UTILITIES,
@@ -72,6 +73,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         directory: command.directory,
         force: command.force,
         preset: command.preset,
+        features: command.features,
         utilities: command.utilities,
         deployment: command.deployment,
       });
@@ -245,6 +247,7 @@ type Command =
       directory: string;
       force: boolean;
       preset: ScaffoldPresetName;
+      features?: readonly import("create-riebeckite/scaffold").ScaffoldFeatureName[];
       utilities: readonly ScaffoldUtilityName[];
       listPresets: boolean;
       deployment: ScaffoldDeployment;
@@ -820,13 +823,14 @@ function parseCreatePluginCommand(options: readonly string[]): Command {
 }
 
 const INIT_USAGE =
-  "Usage: riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]";
+  "Usage: riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]";
 
 function parseInitCommand(options: readonly string[]): Command {
   let directory: string | undefined;
   let force = false;
   let listPresets = false;
   let preset: ScaffoldPresetName | undefined;
+  let features: readonly import("create-riebeckite/scaffold").ScaffoldFeatureName[] | undefined;
   let utilities: readonly ScaffoldUtilityName[] | undefined;
   let githubActions = false;
   let cloudflareWorkers = false;
@@ -860,6 +864,23 @@ function parseInitCommand(options: readonly string[]): Command {
         );
       }
       preset = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--features") {
+      const value = options[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new CliUsageError(
+          "--features requires a comma-separated list of feature names.",
+        );
+      }
+      try {
+        features = parseScaffoldFeatures(value);
+      } catch (error) {
+        throw new CliUsageError(
+          error instanceof Error ? error.message : String(error),
+        );
+      }
       index += 1;
       continue;
     }
@@ -924,6 +945,7 @@ function parseInitCommand(options: readonly string[]): Command {
     directory: directory ?? ".",
     force,
     preset: preset ?? SCAFFOLD_DEFAULT_PRESET,
+    ...(features ? { features } : {}),
     utilities: utilities ?? SCAFFOLD_DEFAULT_UTILITIES,
     listPresets,
     deployment,

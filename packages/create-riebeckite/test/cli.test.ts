@@ -171,6 +171,17 @@ test("--utilities selects the generated project files", () => {
   );
 });
 
+test("--features selects validated feature packs", () => {
+  assert.deepEqual(
+    parseArguments(["my-site", "--features", "diagrams,i18n"]).features,
+    ["diagrams", "i18n"],
+  );
+  assert.throws(
+    () => parseArguments(["--features", "unknown"]),
+    /Unknown feature/,
+  );
+});
+
 test("existing argument errors keep throwing", () => {
   assert.throws(() => parseArguments(["--unknown"]), /Unknown option/);
   assert.throws(

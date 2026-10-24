@@ -11,6 +11,10 @@ import {
   scaffoldPresets,
   validateScaffoldPreset,
 } from "../src/scaffold/presets.js";
+import {
+  composeScaffoldPreset,
+  parseScaffoldFeatures,
+} from "../src/scaffold/features.js";
 
 test("the public scaffold presets have the documented order and default", () => {
   assert.deepEqual(SCAFFOLD_PRESET_NAMES, [
@@ -18,6 +22,7 @@ test("the public scaffold presets have the documented order and default", () => 
     "digital-garden",
     "blog",
     "docs",
+    "portfolio",
     "minimal",
     "showcase",
     "empty",
@@ -27,6 +32,34 @@ test("the public scaffold presets have the documented order and default", () => 
   for (const removedName of ["rich", "full", "max", "ultra"]) {
     assert.equal(isScaffoldPresetName(removedName), false);
   }
+});
+
+test("feature packs add explicit config and reject duplicate plugins", () => {
+  const features = parseScaffoldFeatures("diagrams,i18n");
+  const preset = composeScaffoldPreset(scaffoldPresets.portfolio, features);
+  assert.deepEqual(preset.languages, ["en", "ja"]);
+  assert.ok(preset.plugins.some((plugin) => plugin.factory === "mermaidPele"));
+  assert.throws(
+    () => composeScaffoldPreset(scaffoldPresets.portfolio, ["media"]),
+    /cannot be combined/,
+  );
+  assert.throws(() => parseScaffoldFeatures("diagrams,diagrams"), /repeated/);
+});
+
+test("feature packs are written to generated configuration", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    await scaffoldRiebeckiteSite({
+      targetDirectory: directory,
+      preset: "portfolio",
+      features: ["diagrams", "i18n"],
+    });
+    const config = await fs.readFile(
+      path.join(directory, "riebeckite.config.ts"),
+      "utf8",
+    );
+    assert.match(config, /@riebeckite\/plugin-mermaid-pele/);
+    assert.match(config, /defaultLang: "en"/);
+  });
 });
 
 test("preset declarations reject conflicting generated imports", () => {

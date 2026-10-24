@@ -53,9 +53,11 @@ function createClientModule(
     const importTarget = entry.exportName
       ? `{ ${entry.exportName} as ${localName} }`
       : localName;
-    imports.push(
-      `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
-    );
+    if (entry.presenceSelector === undefined) {
+      imports.push(
+        `import ${importTarget} from ${JSON.stringify(entry.moduleSpecifier)};`,
+      );
+    }
     const publicConfig = entry.publicConfig;
     const serializedConfig =
       publicConfig === undefined
@@ -69,8 +71,20 @@ function createClientModule(
           : `${localName}(context.config)`;
     const initializers =
       entry.scope === "app" ? appInitializers : pageInitializers;
+    if (entry.presenceSelector === undefined) {
+      initializers.push(
+        `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,
+      );
+      continue;
+    }
+    const dynamicInitializer =
+      entry.initializerArguments === "context"
+        ? `initializer(context)`
+        : entry.initializerArguments === "root"
+          ? `initializer(context.root)`
+          : `initializer(context.config)`;
     initializers.push(
-      `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,
+      `mountConditionalPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${JSON.stringify(entry.presenceSelector)}, async () => { const { ${entry.exportName ?? "default"}: initializer } = await import(${JSON.stringify(entry.moduleSpecifier)}); return (context) => ${dynamicInitializer}; })`,
     );
   }
 
@@ -81,6 +95,14 @@ let stopSpaNavigation;
 
 function mountPluginClientInitializer(scope, name, root, config, initialize) {
   void lifecycle.mount({ scope, name, root, config, initialize });
+}
+
+function mountConditionalPluginClientInitializer(scope, name, root, config, presenceSelector, load) {
+  if (!root.querySelector(presenceSelector)) return;
+  void load().then((initialize) => {
+    if ("isConnected" in root && !root.isConnected) return;
+    void lifecycle.mount({ scope, name, root, config, initialize });
+  }, (error) => console.error("[riebeckite] Client initializer module failed: " + name, error));
 }
 
 function mountAppClientInitializers(root) {

@@ -1,3 +1,7 @@
+export type {
+  ClientInitializerContext,
+  ClientResourceScope,
+} from "./src/client_lifecycle.js";
 export {
   defineConfig,
   isExcluded,

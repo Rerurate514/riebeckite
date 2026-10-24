@@ -15,6 +15,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   exportName?: string;
   scope?: ClientLifecycleScope;
   initializerArguments?: ClientInitializerArguments;
+  presenceSelector?: string;
   /**
    * Configuration intentionally made available to this browser entry.
    *
@@ -45,6 +46,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
   publicConfig?: TPublicConfig,
   scope?: ClientLifecycleScope,
   initializerArguments?: ClientInitializerArguments,
+  presenceSelector?: string,
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
@@ -53,6 +55,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
     ...(publicConfig === undefined ? {} : { publicConfig }),
     ...(scope === undefined ? {} : { scope }),
     ...(initializerArguments === undefined ? {} : { initializerArguments }),
+    ...(presenceSelector === undefined ? {} : { presenceSelector }),
   };
 }
 

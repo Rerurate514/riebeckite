@@ -40,10 +40,20 @@ export function defaultLanguageForLocale(locale: string): string {
   return "en";
 }
 
-export type ScaffoldPresetName = "starter" | "minimal" | "showcase" | "empty";
+export type ScaffoldPresetName =
+  | "starter"
+  | "digital-garden"
+  | "blog"
+  | "docs"
+  | "minimal"
+  | "showcase"
+  | "empty";
 
 export const SCAFFOLD_PRESET_NAMES: readonly ScaffoldPresetName[] = [
   "starter",
+  "digital-garden",
+  "blog",
+  "docs",
   "minimal",
   "showcase",
   "empty",
@@ -184,6 +194,11 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
   robots: { depth: 2, value: "true" },
   feed: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
 });
+const blogSeo = np(
+  "@riebeckite/plugin-seo",
+  "seo",
+  `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }`,
+);
 const toc = np("@riebeckite/plugin-toc", "toc");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
@@ -311,6 +326,11 @@ const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
   feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
   relatedLimit: { depth: 3, value: "8" },
 });
+const blogTaxonomy = np(
+  "@riebeckite/plugin-taxonomy",
+  "taxonomy",
+  `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true } }`,
+);
 const folderPages = np("@riebeckite/plugin-folder-pages", "folderPages");
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
@@ -454,6 +474,11 @@ const query = np("@riebeckite/plugin-query", "query", {
   excludeSelf: { depth: 3, value: "true" },
 });
 const localGraph = np("@riebeckite/plugin-local-graph", "localGraph");
+const docs = np(
+  "@riebeckite/plugin-docs",
+  "docs",
+  `{ root: "docs", sidebar: { auto: true }, prevNext: true }`,
+);
 const hoverPreview = np("@riebeckite/plugin-hover-preview", "hoverPreview", {
   delay: { depth: 2, value: "120" },
   excerptLength: { depth: 2, value: "160" },
@@ -577,6 +602,83 @@ export const starter: ScaffoldPreset = {
   readme: "standard",
 };
 
+export const digitalGarden: ScaffoldPreset = {
+  name: "digital-garden",
+  description:
+    "An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    obsidianMarkdown,
+    colorMode,
+    seo,
+    toc,
+    properties,
+    alias,
+    codeEnhance,
+    search,
+    backlinks,
+    breadcrumbs,
+    navigationStarter,
+    relatedPosts,
+    recentPosts,
+    taxonomy,
+    folderPages,
+    localGraph,
+    hoverPreview,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
+export const blog: ScaffoldPreset = {
+  name: "blog",
+  description:
+    "A publishing-focused blog with tags, series, related posts, sharing, and feeds.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    obsidianMarkdown,
+    colorMode,
+    blogSeo,
+    toc,
+    properties,
+    codeEnhance,
+    search,
+    breadcrumbs,
+    navigationStarter,
+    relatedPosts,
+    share,
+    recentPosts,
+    series,
+    blogTaxonomy,
+    folderPages,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
+export const documentation: ScaffoldPreset = {
+  name: "docs",
+  description:
+    "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    obsidianMarkdown,
+    colorMode,
+    seo,
+    toc,
+    codeEnhance,
+    search,
+    breadcrumbs,
+    navigationStarter,
+    docs,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
 export const showcase: ScaffoldPreset = {
   name: "showcase",
   description:
@@ -663,7 +765,15 @@ export const showcase: ScaffoldPreset = {
 
 export const scaffoldPresets: Readonly<
   Record<ScaffoldPresetName, ScaffoldPreset>
-> = { starter, minimal, showcase, empty } as const;
+> = {
+  starter,
+  "digital-garden": digitalGarden,
+  blog,
+  docs: documentation,
+  minimal,
+  showcase,
+  empty,
+} as const;
 
 export const SCAFFOLD_DEFAULT_PRESET: ScaffoldPresetName = "starter";
 

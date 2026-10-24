@@ -14,6 +14,9 @@ import {
 test("the public scaffold presets have the documented order and default", () => {
   assert.deepEqual(SCAFFOLD_PRESET_NAMES, [
     "starter",
+    "digital-garden",
+    "blog",
+    "docs",
     "minimal",
     "showcase",
     "empty",
@@ -182,6 +185,25 @@ test("each preset generates its intended self-contained composition", async () =
         );
         assert.match(guide, /npm exec riebeckite dev/);
         assert.match(guide, /content\/hello\.md/);
+      }
+      if (preset === "digital-garden") {
+        assert.ok(config.includes("@riebeckite/plugin-local-graph"));
+        assert.ok(await exists(path.join(targetDirectory, "content/notes/seed-idea.md")));
+        const index = await fs.readFile(path.join(targetDirectory, "content/index.md"), "utf8");
+        assert.match(index, /!\[\[notes\/how-this-garden-works\]\]/);
+      }
+      if (preset === "blog") {
+        assert.ok(config.includes("@riebeckite/plugin-series"));
+        assert.ok(config.includes("@riebeckite/plugin-share"));
+        assert.match(config, /feeds: \{ rss: true, atom: true, json: true \}/);
+        assert.ok(await exists(path.join(targetDirectory, "content/posts/writing-a-useful-post.md")));
+      }
+      if (preset === "docs") {
+        assert.match(config, /docs\(\{ root: "docs", sidebar: \{ auto: true \}, prevNext: true \}\)/);
+        const article = await fs.readFile(path.join(targetDirectory, "app/components/article.tsx"), "utf8");
+        assert.match(article, /<DocsSidebar \/>/);
+        assert.match(article, /<DocsPrevNext \/>/);
+        assert.ok(await exists(path.join(targetDirectory, "content/docs/getting-started.md")));
       }
     }
   });

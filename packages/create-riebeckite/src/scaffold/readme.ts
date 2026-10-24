@@ -42,6 +42,18 @@ const README_INTRO: Readonly<
     en: "Recommended default: a practical Markdown garden with search, navigation, and reading essentials.",
     ja: "大半のサイトにおすすめの既定構成です。検索・ナビゲーション・閲覧に必要な機能を備えた実用的な Markdown サイトを作れます。",
   },
+  "digital-garden": {
+    en: "An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.",
+    ja: "Obsidian と互換性のあるデジタルガーデンです。ノート間リンク、バックリンク、ローカルグラフを備えます。",
+  },
+  blog: {
+    en: "A publishing-focused blog with tags, series, related posts, sharing, and feeds.",
+    ja: "タグ、シリーズ、関連記事、共有、フィードを備えた公開向けブログです。",
+  },
+  docs: {
+    en: "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
+    ja: "自動サイドバー、目次、前後ページナビゲーションを備えたドキュメントサイトです。",
+  },
   showcase: {
     en: "A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples, reference pages, and local fixtures.",
     ja: "Riebeckite の Plugin エコシステムを実際に確認できる機能紹介用の構成です。描画例・リファレンスページ・ローカルのフィクスチャを含みます。",

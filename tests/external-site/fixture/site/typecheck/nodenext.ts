@@ -109,6 +109,7 @@ import {
   type ShortcodeRenderer,
   shortcodes,
 } from "@riebeckite/plugin-shortcodes";
+import { svgOptimizer } from "@riebeckite/plugin-svg-optimizer";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
@@ -190,6 +191,7 @@ export const resolvedEntries = {
   RelatedPosts,
   responsiveImage,
   imageOptimizer,
+  svgOptimizer,
   searchPlugin,
   initSearch,
   SearchBar,

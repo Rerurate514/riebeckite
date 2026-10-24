@@ -81,6 +81,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-image-optimizer",
   },
   {
+    directory: "packages/plugins/svg-optimizer",
+    name: "@riebeckite/plugin-svg-optimizer",
+  },
+  {
     directory: "packages/plugins/rich-embed",
     name: "@riebeckite/plugin-rich-embed",
   },
@@ -206,3 +210,4 @@ export const GRAPHVIZ_MARKER = "RIEBECKITE_EXTERNAL_GRAPHVIZ_MARKER";
 export const VEGALITE_MARKER = "RIEBECKITE_EXTERNAL_VEGALITE_MARKER";
 export const WAVEDROM_MARKER = "RIEBECKITE_EXTERNAL_WAVEDROM_MARKER";
 export const MARP_MARKER = "RIEBECKITE_EXTERNAL_MARP_MARKER";
+export const SVG_MARKER = "RIEBECKITE_EXTERNAL_SVG_MARKER";

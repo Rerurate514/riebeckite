@@ -76,6 +76,7 @@ const {
   VEGALITE_MARKER,
   WAVEDROM_MARKER,
   MARP_MARKER,
+  SVG_MARKER,
 } = fixture;
 
 const cliEntryFor = (siteDir: string): string =>
@@ -550,6 +551,39 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   }
   if (!combined.includes('srcset="/attachments/rb-photo-640.webp 640w')) {
     fail("responsive-image plugin did not emit a width-described srcset");
+  }
+  const svgOutput = path.join(distDir, "attachments", "external-diagram.svg");
+  if (!fs.existsSync(svgOutput)) {
+    fail("svg optimizer did not emit the referenced SVG asset");
+  }
+  const optimizedSvg = fs.readFileSync(svgOutput, "utf8");
+  if (!optimizedSvg.includes(SVG_MARKER)) {
+    fail("svg optimizer did not preserve the SVG title");
+  }
+  if (!optimizedSvg.includes('viewBox="0 0 120 80"')) {
+    fail("svg optimizer did not preserve the viewBox");
+  }
+  if (
+    !optimizedSvg.includes("url(#external-paint)") ||
+    !optimizedSvg.includes("url(#external-mask)") ||
+    !optimizedSvg.includes("url(#external-clip)")
+  ) {
+    fail("svg optimizer did not preserve gradient, mask, or clip references");
+  }
+  if (
+    optimizedSvg.includes("RIEBECKITE_EXTERNAL_SVG_COMMENT") ||
+    optimizedSvg.includes("RIEBECKITE_EXTERNAL_SVG_METADATA")
+  ) {
+    fail("svg optimizer did not remove comments and metadata");
+  }
+  if (!combined.includes('src="/attachments/external-diagram.svg"')) {
+    fail("generated HTML did not use the optimized SVG public URL");
+  }
+  if (
+    Buffer.byteLength(optimizedSvg) >=
+    fs.statSync(path.join(vaultDir, "attachments", "external-diagram.svg")).size
+  ) {
+    fail("svg optimizer did not reduce the emitted SVG size");
   }
   for (const file of [
     "attachments/rb-photo-640.webp",

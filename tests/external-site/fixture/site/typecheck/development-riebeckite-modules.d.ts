@@ -180,6 +180,10 @@ declare module "@riebeckite/plugin-image-optimizer" {
   export const imageOptimizer: any;
 }
 
+declare module "@riebeckite/plugin-svg-optimizer" {
+  export const svgOptimizer: any;
+}
+
 declare module "@riebeckite/plugin-search" {
   export const initSearch: any;
   export const SearchBar: any;

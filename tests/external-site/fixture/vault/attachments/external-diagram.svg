@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 120 80" aria-labelledby="external-svg-title external-svg-desc">
+  <title id="external-svg-title">RIEBECKITE_EXTERNAL_SVG_MARKER</title>
+  <desc id="external-svg-desc">A gradient diagram used by the external fixture.</desc>
+  <metadata>RIEBECKITE_EXTERNAL_SVG_METADATA</metadata>
+  <!-- RIEBECKITE_EXTERNAL_SVG_COMMENT -->
+  <defs>
+    <linearGradient id="external-paint">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <mask id="external-mask"><rect width="120" height="80" fill="white"/></mask>
+    <clipPath id="external-clip"><rect width="120" height="80" rx="8"/></clipPath>
+  </defs>
+  <g mask="url(#external-mask)" clip-path="url(#external-clip)">
+    <path fill="url(#external-paint)" d="M 0 0 L 120 80 L 0 80 Z"/>
+  </g>
+</svg>

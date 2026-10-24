@@ -12,6 +12,8 @@ This note links back to [[index]].
 
 RIEBECKITE_EXTERNAL_NOTE_MARKER
 
+![[attachments/external-diagram.svg]]
+
 ![[attachments/external-guide.pdf]]
 
 ![[media/external-audio.mp3]]

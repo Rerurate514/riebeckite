@@ -38,6 +38,7 @@ import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { searchPlugin } from "@riebeckite/plugin-search";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
+import { svgOptimizer } from "@riebeckite/plugin-svg-optimizer";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
@@ -95,6 +96,7 @@ export default defineConfig({
     recentPostsPlugin(),
     relatedPosts(),
     imageOptimizer({ widths: [640, 1280] }),
+    svgOptimizer(),
     responsiveImage(),
     richEmbed(),
     searchPlugin(),

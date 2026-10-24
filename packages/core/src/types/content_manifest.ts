@@ -1,5 +1,6 @@
 import type { ContentGraph } from "../content/content_graph.js";
 import type { ResolvedPublishingState } from "../content/publishing.js";
+import type { ContentIcon, ContentIconRegistry } from "./content_icon.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type { GeneratedOutput } from "./generated_output.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
@@ -49,6 +50,8 @@ export type ContentManifestEntry = {
   title: string;
   file?: ContentFileMetadata;
   aliases?: readonly string[];
+  /** Icon resolved for this content path. */
+  icon?: ContentIcon;
   frontmatter: PostFrontmatter;
   publishing: ResolvedPublishingState;
   html: string;
@@ -80,6 +83,8 @@ export type FolderLocation = {
   pathname: string;
   folder?: string;
   language?: string;
+  /** Icon resolved for this folder or generated folder page. */
+  icon?: ContentIcon;
 };
 
 export type PluginPageRoute = {
@@ -142,6 +147,8 @@ export type ContentManifest = {
   diagnostics: Diagnostic[];
   generatedOutputs: GeneratedOutput[];
   folderLocations: Map<string, FolderLocation>;
+  /** Icons that are not tied to a content path, such as tags and properties. */
+  icons?: ContentIconRegistry;
   pageRoutes: PluginPageRoute[];
   pagePaths: string[];
 };

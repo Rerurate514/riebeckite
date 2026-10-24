@@ -27,6 +27,7 @@
     "@riebeckite/plugin-color-mode": "workspace:*",
     "@riebeckite/plugin-docs": "workspace:*",
     "@riebeckite/plugin-obsidian-markdown": "workspace:*",
+    "@riebeckite/test": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
     "@riebeckite/theme-default": "workspace:*",
     "@riebeckite/ui": "workspace:*",

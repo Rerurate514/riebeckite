@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { parseCommand } from "../src/cli.js";
 import {
   pluginDevFixtureMarker,
   writePluginDevFixture,
@@ -80,6 +81,21 @@ test("loads a local plugin from a directory and resolves export aliases", async 
         },
       ]);
     },
+  );
+});
+
+test("parses plugin contract verification options", () => {
+  assert.deepEqual(
+    parseCommand(["plugin", "verify", "plugin", "--level", "full", "--json"]),
+    {
+      name: "plugin-verify",
+      pluginPath: "plugin",
+      level: "full",
+      json: true,
+    },
+  );
+  assert.throws(() =>
+    parseCommand(["plugin", "verify", "plugin", "--level", "slow"]),
   );
 });
 

@@ -48,6 +48,7 @@ import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { type InspectTarget, runInspect } from "./commands/inspect.js";
 import { runPluginDev } from "./commands/plugin_dev.js";
+import { runPluginVerify } from "./commands/plugin_verify.js";
 import { runProfile } from "./commands/profile.js";
 import { runThemePreview } from "./commands/theme_preview.js";
 import { renderCliError } from "./error_renderer.js";
@@ -155,6 +156,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
         port: command.port,
         open: command.open,
       });
+      return;
+    }
+    if (command.name === "plugin-verify") {
+      if (!runPluginVerify(command)) process.exitCode = 1;
       return;
     }
 
@@ -278,7 +283,13 @@ type Command =
     }
   | { name: "create-component-interactive" }
   | { name: "theme-preview"; themeName: string; port?: number; open: boolean }
-  | { name: "plugin-dev"; pluginPath: string; port?: number; open: boolean };
+  | { name: "plugin-dev"; pluginPath: string; port?: number; open: boolean }
+  | {
+      name: "plugin-verify";
+      pluginPath: string;
+      level: import("@riebeckite/test/plugin-contract").PluginContractLevel;
+      json: boolean;
+    };
 
 export function parseCommand(arguments_: readonly string[]): Command {
   const [name, ...options] = arguments_;
@@ -306,6 +317,8 @@ export function parseCommand(arguments_: readonly string[]): Command {
     return parseThemePreviewCommand(options.slice(1));
   if (name === "plugin" && options[0] === "dev")
     return parsePluginDevCommand(options.slice(1));
+  if (name === "plugin" && options[0] === "verify")
+    return parsePluginVerifyCommand(options.slice(1));
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -345,7 +358,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
@@ -569,6 +582,37 @@ function parsePluginDevCommand(options: readonly string[]): Command {
   if (pluginPath === undefined)
     throw new CliUsageError("plugin dev requires a local plugin path.");
   return { name: "plugin-dev", pluginPath, port, open };
+}
+
+function parsePluginVerifyCommand(options: readonly string[]): Command {
+  let pluginPath: string | undefined;
+  let level: import("@riebeckite/test/plugin-contract").PluginContractLevel =
+    "basic";
+  let json = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--json") {
+      json = true;
+      continue;
+    }
+    if (option === "--level") {
+      const value = options[index + 1];
+      if (value !== "basic" && value !== "integration" && value !== "full") {
+        throw new CliUsageError("--level must be basic, integration, or full.");
+      }
+      level = value;
+      index += 1;
+      continue;
+    }
+    if (option.startsWith("-"))
+      throw new CliUsageError(`Unknown plugin verify option: ${option}`);
+    if (pluginPath !== undefined)
+      throw new CliUsageError("plugin verify accepts one plugin path.");
+    pluginPath = option;
+  }
+  if (pluginPath === undefined)
+    throw new CliUsageError("plugin verify requires a plugin package path.");
+  return { name: "plugin-verify", pluginPath, level, json };
 }
 
 function parseCreateThemeCommand(options: readonly string[]): Command {

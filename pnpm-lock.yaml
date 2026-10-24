@@ -405,6 +405,9 @@ importers:
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../plugins/toc
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../test
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../themes/default

@@ -23,6 +23,12 @@
       "import": "./dist/fixtures.js",
       "source": "./fixtures.ts",
       "default": "./dist/fixtures.js"
+    },
+    "./plugin-contract": {
+      "types": "./dist/plugin-contract.d.ts",
+      "import": "./dist/plugin-contract.js",
+      "source": "./plugin-contract.ts",
+      "default": "./dist/plugin-contract.js"
     }
   },
   "files": [

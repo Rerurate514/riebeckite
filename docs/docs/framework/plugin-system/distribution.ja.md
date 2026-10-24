@@ -74,6 +74,17 @@ NodeNext / ESMのパッケージでは、ビルド後もNode.jsがimportを解�
 
 ## 5. 検証する
 
+`riebeckite plugin verify <path>`は、サイトへ組み込む前に配布パッケージの境界を検証します。任意の第三者プラグインを安全に実行・隔離できるとは主張せず、契約の結果を報告するコマンドです。
+
+```sh
+riebeckite plugin verify ./packages/my-plugin
+riebeckite plugin verify ./packages/my-plugin --level full --json
+```
+
+既定の`basic`は`package.json`、exports、型定義の参照先、公開したclient/CSSサブパスを確認します。`integration`では、プラグイン自身のfixtureが実行しないランタイム契約を`UNVERIFIED`として記録します。`full`はさらに`pnpm pack`を実行し、tarballに配布用manifestと`dist/`があることを確認します。結果は`FAIL`、`SKIP`、`UNSUPPORTED`、`UNVERIFIED`を区別します。実行して成功した検証だけが`PASS`です。
+
+Markdown変換、Plugin Runtimeとcapability解決、HonoX描画、公開境界、ブラウザのライフサイクルは、プラグインまたはサイトfixtureの対象を絞ったテストで確認してください。リポジトリ内では`tests/plugin-dx`がtarball consumer fixture、`@riebeckite/test/e2e`がpackと隔離installの再利用部品です。
+
 実装後は、小さい範囲から順番に確認します。
 
 ```mermaid id="b4ivxl"

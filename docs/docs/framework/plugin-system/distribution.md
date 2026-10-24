@@ -79,6 +79,28 @@ In NodeNext/ESM packages, keep imports resolvable by Node after the build. Do no
 
 ## 5. Verify
 
+`riebeckite plugin verify <path>` checks the distributable package boundary before
+it is added to a site. It is intentionally a contract reporter, not a sandbox:
+it never claims to safely execute arbitrary third-party plugin code.
+
+```sh
+riebeckite plugin verify ./packages/my-plugin
+riebeckite plugin verify ./packages/my-plugin --level full --json
+```
+
+`basic` (the default) checks `package.json`, exports, declaration targets, and
+declared client/CSS subpaths. `integration` records runtime contracts as
+`UNVERIFIED` unless the plugin's own fixture runs them. `full` additionally runs
+`pnpm pack` and verifies the tarball contains the distribution manifest and
+`dist/`. The report distinguishes `FAIL`, `SKIP`, `UNSUPPORTED`, and
+`UNVERIFIED`; only a check that ran successfully is `PASS`.
+
+For Markdown transforms, Plugin Runtime/capability resolution, HonoX rendering,
+publication boundaries, and browser lifecycle behavior, keep focused tests in
+the plugin or site fixture. `tests/plugin-dx` is the repository's tarball
+consumer fixture and `@riebeckite/test/e2e` provides its reusable packing and
+isolated-install primitives.
+
 ```mermaid
 flowchart LR
     Check["check"]

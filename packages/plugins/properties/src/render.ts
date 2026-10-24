@@ -1,3 +1,4 @@
+import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { buildPropertiesData } from "./model.js";
 import {
@@ -18,7 +19,7 @@ export function renderPropertiesData(data: PropertiesData): string {
   const className = data.className.trim() || DEFAULT_PROPERTIES_CLASS;
   const cls = className.split(/\s+/, 1)[0] || DEFAULT_PROPERTIES_CLASS;
   const rows = data.items
-    .map((item) => renderRow(item.key, item.value, cls))
+    .map((item) => renderRow(item.key, item.value, cls, item.icon))
     .join("");
   const list = `<dl class="${escapeHtmlAttribute(cls)}__rows">${rows}</dl>`;
   const title = data.title ?? "";
@@ -59,10 +60,15 @@ export function renderPropertiesPanel(
   );
 }
 
-function renderRow(key: string, value: PropertyValue, cls: string): string {
+function renderRow(
+  key: string,
+  value: PropertyValue,
+  cls: string,
+  icon?: ContentIcon,
+): string {
   return (
     `<div class="${escapeHtmlAttribute(cls)}__row" data-property-key="${escapeHtmlAttribute(key)}">` +
-    `<dt class="${escapeHtmlAttribute(cls)}__key">${escapeHtml(key)}</dt>` +
+    `<dt class="${escapeHtmlAttribute(cls)}__key">${icon ? icon.html : ""}${escapeHtml(key)}</dt>` +
     `<dd class="${escapeHtmlAttribute(cls)}__value">${renderValue(value, cls)}</dd>` +
     "</div>"
   );

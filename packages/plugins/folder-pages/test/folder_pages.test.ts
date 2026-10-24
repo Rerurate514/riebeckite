@@ -6,6 +6,7 @@ import {
   type ContentManifest,
   type ContentManifestEntry,
   type ContentSource,
+  definePlugin,
   determineOutputChanges,
   type OutputDescriptor,
   type ResolvedRiebeckiteConfig,
@@ -259,6 +260,35 @@ test("lists only discoverable content in generated folder pages", async () => {
   assert.doesNotMatch(body, /Unlisted/);
   assert.doesNotMatch(body, /Draft/);
   assert.doesNotMatch(body, /Scheduled/);
+});
+
+test("renders icons attached after folder locations are resolved", async () => {
+  const icon = (id: string) => ({
+    id,
+    kind: "svg" as const,
+    source: "iconize" as const,
+    html: `<span data-test-icon="${id}"></span>`,
+  });
+  const attachIcons = definePlugin({
+    name: "test-icons",
+    order: 20,
+    onManifestCreated: ({ manifest }) => {
+      manifest.icons = { folders: { folder: icon("lucide:folder") } };
+      for (const entry of manifest.entries) {
+        entry.icon = icon(`lucide:${entry.slug.split("/").pop()}`);
+      }
+    },
+  });
+  const content = manager(
+    {
+      "folder/one.md": "---\ntitle: One\npublish: true\n---\n",
+    },
+    [folderPages(), attachIcons],
+  );
+
+  const page = await content.resolvePage("/folder/");
+  assert.match(page?.body ?? "", /data-test-icon="lucide:folder"/);
+  assert.match(page?.body ?? "", /data-test-icon="lucide:one"/);
 });
 
 test("does not create a folder page when nothing is discoverable", async () => {

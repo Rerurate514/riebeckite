@@ -87,6 +87,7 @@ export default function ArticleMetadata({
         >
           {tags.map((tag) => (
             <li class="rr-article-metadata__tag-item" key={tag}>
+              <TagIcon icon={findTagIcon(site?.manifest.icons?.tags, tag)} />
               {taxonomy?.tags ? (
                 <a
                   class="rr-article-metadata__tag"
@@ -103,6 +104,28 @@ export default function ArticleMetadata({
       ) : null}
     </aside>
   );
+}
+
+function TagIcon(props: { readonly icon?: { readonly html: string } }) {
+  return props.icon ? (
+    <span
+      class="rr-article-metadata__tag-icon"
+      dangerouslySetInnerHTML={{ __html: props.icon.html }}
+    />
+  ) : null;
+}
+
+function findTagIcon(
+  tags: Readonly<Record<string, { readonly html: string }>> | undefined,
+  tag: string,
+): { readonly html: string } | undefined {
+  if (!tags) return undefined;
+  if (tags[tag]) return tags[tag];
+  const lower = tag.toLowerCase();
+  for (const [candidate, icon] of Object.entries(tags)) {
+    if (candidate.toLowerCase() === lower) return icon;
+  }
+  return undefined;
 }
 
 function normalizeTags(tags: unknown): string[] {

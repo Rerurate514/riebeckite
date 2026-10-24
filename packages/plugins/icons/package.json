@@ -1,0 +1,65 @@
+{
+  "name": "@riebeckite/plugin-icons",
+  "version": "0.0.32",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "@types/mdast": "catalog:",
+    "lucide-static": "catalog:",
+    "sanitize-html": "catalog:"
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "catalog:",
+    "remark-parse": "catalog:",
+    "unified": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/icons"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Obsidian Iconize and Iconic icons for Riebeckite navigation, notes, tags, and properties.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "icons",
+    "obsidian",
+    "lucide"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
+}

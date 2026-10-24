@@ -40,7 +40,10 @@ export default function Article(props: Props) {
   // Notes often carry their title as a `title` property or filename rather
   // than a leading `#` heading. Without an h1 the extracted lead is empty, so
   // synthesize one from the resolved title to keep the article header intact.
-  const leadHtml = articleHtml.lead || renderTitleHeading(props.title);
+  const leadHtml = withTitleIcon(
+    articleHtml.lead || renderTitleHeading(props.title),
+    props.entry?.icon?.html,
+  );
 
   return (
     <ArticlePrimitive post={props.content} entry={props.entry}>
@@ -83,4 +86,9 @@ function splitAfterFirstHeading(html: string): { lead: string; rest: string } {
 function renderTitleHeading(title: string | undefined): string {
   const trimmed = title?.trim();
   return trimmed ? `<h1>${escapeHtml(trimmed)}</h1>` : "";
+}
+
+function withTitleIcon(html: string, iconHtml: string | undefined): string {
+  if (!html || !iconHtml) return html;
+  return html.replace(/(<h1\b[^>]*>)/, `$1${iconHtml}`);
 }

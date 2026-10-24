@@ -2,6 +2,8 @@ import {
   buildContentCollections,
   type ContentCollectionContext,
   type ContentCollectionDefinition,
+  type ContentIcon,
+  type ContentIconRegistry,
   type ContentManifestEntry,
   type ContentQueryGroupBy,
   stripHtml,
@@ -30,6 +32,7 @@ import type {
 export function buildTaxonomyIndex(
   entries: readonly ContentManifestEntry[],
   options: ResolvedTaxonomyOptions,
+  icons?: ContentIconRegistry,
 ): TaxonomyIndex {
   const tags = options.tags
     ? buildTerms(entries, {
@@ -37,6 +40,7 @@ export function buildTaxonomyIndex(
         basePath: options.tagsBasePath,
         groupBy: { by: "tags" },
         options,
+        icon: findRegistryIcon(icons?.tags),
       })
     : [];
   const folders = options.folders
@@ -48,6 +52,7 @@ export function buildTaxonomyIndex(
             ? { by: "folder", depth: options.folderDepth }
             : { by: "folder" },
         options,
+        icon: findRegistryIcon(icons?.folders),
       })
     : [];
 
@@ -70,6 +75,7 @@ export function serializeTaxonomyTerm(term: TaxonomyTerm): TaxonomyTermData {
     entries: term.entries.map(toEntryReference),
     related: term.related,
     feeds: term.feeds,
+    ...(term.icon ? { icon: term.icon } : {}),
   };
 }
 
@@ -92,6 +98,7 @@ export function toEntryReference(
     title: entry.title,
     updated: getEntryUpdatedTime(entry),
     summary: getEntrySummary(entry),
+    ...(entry.icon ? { icon: entry.icon } : {}),
   };
 }
 
@@ -102,9 +109,10 @@ function buildTerms(
     basePath: string;
     groupBy: ContentQueryGroupBy;
     options: ResolvedTaxonomyOptions;
+    icon?: (value: string) => ContentIcon | undefined;
   },
 ): TaxonomyTerm[] {
-  const { kind, basePath, groupBy, options } = input;
+  const { kind, basePath, groupBy, options, icon } = input;
   const definition: ContentCollectionDefinition = {
     kind,
     basePath,
@@ -125,11 +133,13 @@ function buildTerms(
     if (seen.has(path)) continue;
     seen.add(path);
 
+    const termIcon = icon?.(collection.value);
     terms.push({
       kind,
       value: collection.value,
       title: collection.title,
       path,
+      ...(termIcon ? { icon: termIcon } : {}),
       entries: collection.entries,
       related: [],
       feeds: buildFeedLinks(path, options),
@@ -199,6 +209,7 @@ function attachRelatedTerms(
         path: related.path,
         permalink: related.path,
         count,
+        ...(related.icon ? { icon: related.icon } : {}),
       }));
   }
 }
@@ -252,4 +263,18 @@ function getEntryUpdatedTime(entry: ContentManifestEntry): string | null {
   if (typeof value !== "string" || value.trim() === "") return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+function findRegistryIcon(
+  registry: Readonly<Record<string, ContentIcon>> | undefined,
+): ((value: string) => ContentIcon | undefined) | undefined {
+  if (!registry) return undefined;
+  return (value) => {
+    if (registry[value]) return registry[value];
+    const lower = value.toLowerCase();
+    for (const [candidate, icon] of Object.entries(registry)) {
+      if (candidate.toLowerCase() === lower) return icon;
+    }
+    return undefined;
+  };
 }

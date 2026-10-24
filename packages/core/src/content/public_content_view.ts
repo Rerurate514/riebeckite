@@ -1,3 +1,4 @@
+import type { ContentIcon } from "../types/content_icon.js";
 import type {
   ContentLink,
   ContentManifest,
@@ -21,6 +22,7 @@ export type PublicContentEntry = DeepReadonly<{
   publicLocation: ContentPublicLocation;
   title: string;
   aliases?: readonly string[];
+  icon?: ContentIcon;
   publishing: ResolvedPublishingState;
   tags: string[];
   links: ContentLink[];
@@ -109,6 +111,7 @@ function copyEntry(
       publicLocation: entry.publicLocation,
       title: entry.title,
       ...(entry.aliases === undefined ? {} : { aliases: entry.aliases }),
+      ...(entry.icon === undefined ? {} : { icon: entry.icon }),
       publishing: {
         visibility: entry.publishing.visibility,
         routable: entry.publishing.routable,

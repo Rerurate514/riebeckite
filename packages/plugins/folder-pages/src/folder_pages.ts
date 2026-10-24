@@ -1,4 +1,5 @@
 import type {
+  ContentIcon,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
@@ -57,6 +58,7 @@ export function collapseFolderEntryLocations(
 }
 
 export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
+  const folderIcons = manifest.icons?.folders ?? {};
   const routableBySlug = new Map<string, ContentManifestEntry>();
   const routablePermalinks = new Set<string>();
 
@@ -194,14 +196,18 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
     language: Language,
   ): FolderPageLink | null => {
     const owner = owners.get(languageKey(folder, language));
-    if (owner) return { title: owner.title, permalink: owner.permalink };
+    if (owner) return toLink(owner, folderIcons[folder]);
     const page = hasRoutablePage(folder, language)
       ? routableBySlug.get(folder)
       : undefined;
-    if (page) return { title: page.title, permalink: page.permalink };
+    if (page) return toLink(page, folderIcons[folder]);
     const pathname = generatedPath(folder, language);
     if (!pathname) return null;
-    return { title: lastSegment(folder), permalink: pathname };
+    return {
+      title: lastSegment(folder),
+      permalink: pathname,
+      ...(folderIcons[folder] ? { icon: folderIcons[folder] } : {}),
+    };
   };
 
   const sortedSubfolders = (
@@ -239,7 +245,8 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
         pathname,
         language,
         title: lastSegment(folder),
-        pages: sortedPages(folder, language).map(toLink),
+        ...(folderIcons[folder] ? { icon: folderIcons[folder] } : {}),
+        pages: sortedPages(folder, language).map((entry) => toLink(entry)),
         folders: folderLinks.map((sub) => sub.link),
         dependencies: [
           { type: "folder", folder },
@@ -285,8 +292,16 @@ function isEntryBasename(basename: string): boolean {
   return ENTRY_BASENAMES.includes(basename as (typeof ENTRY_BASENAMES)[number]);
 }
 
-function toLink(entry: ContentManifestEntry): FolderPageLink {
-  return { title: entry.title, permalink: entry.permalink };
+function toLink(
+  entry: ContentManifestEntry,
+  fallbackIcon?: ContentIcon,
+): FolderPageLink {
+  const icon = entry.icon ?? fallbackIcon;
+  return {
+    title: entry.title,
+    permalink: entry.permalink,
+    ...(icon ? { icon } : {}),
+  };
 }
 
 function lastSegment(path: string): string {

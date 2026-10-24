@@ -1,5 +1,6 @@
 import {
   type ConfigValidationIssue,
+  type ContentIcon,
   type ContentManifest,
   type ContentManifestEntry,
   selectEntriesByLanguage,
@@ -14,10 +15,13 @@ import type {
 
 type TreeNode = {
   readonly segment: string;
+  readonly path: string;
   readonly indexes: NavigationEntry[];
   page?: NavigationEntry;
   readonly children: Map<string, TreeNode>;
 };
+
+type FolderIcons = Readonly<Record<string, ContentIcon>>;
 
 const ROOT_SEGMENT = "";
 
@@ -28,9 +32,10 @@ export const NAVIGATION_PLUGIN_NAME = "navigation";
 export function buildNavigation(
   entries: readonly ContentManifestEntry[],
   options: NavigationOptions = {},
+  folderIcons: FolderIcons = {},
 ): SiteNavigation {
   return {
-    primary: options.items ?? deriveNavigation(entries),
+    primary: options.items ?? deriveNavigation(entries, folderIcons),
     secondary: options.secondary ?? [],
   };
 }
@@ -48,6 +53,7 @@ export function resolveSiteNavigation(
   return buildNavigation(
     selectEntriesByLanguage(manifest.discoverableEntries, language),
     (plugin.options as NavigationOptions | undefined) ?? {},
+    manifest.icons?.folders ?? {},
   );
 }
 
@@ -63,13 +69,14 @@ export function validateNavigationOptions(
 
 function deriveNavigation(
   entries: readonly ContentManifestEntry[],
+  folderIcons: FolderIcons,
 ): readonly NavigationItem[] {
   const nodes = entries
     .map(toNavigationEntry)
     .filter((entry): entry is NavigationEntry => Boolean(entry));
-  const root = createTreeNode(ROOT_SEGMENT);
+  const root = createTreeNode(ROOT_SEGMENT, "");
   for (const node of nodes) addEntry(root, node);
-  return buildItems(root);
+  return buildItems(root, folderIcons);
 }
 
 function toNavigationEntry(
@@ -100,7 +107,9 @@ function addEntry(root: TreeNode, entry: NavigationEntry): void {
   const path = entry.isIndex ? entry.segments.slice(0, -1) : entry.segments;
   let node = root;
   for (const segment of path) {
-    const child = node.children.get(segment) ?? createTreeNode(segment);
+    const child =
+      node.children.get(segment) ??
+      createTreeNode(segment, node.path ? `${node.path}/${segment}` : segment);
     node.children.set(segment, child);
     node = child;
   }
@@ -108,11 +117,16 @@ function addEntry(root: TreeNode, entry: NavigationEntry): void {
   else node.page = entry;
 }
 
-function buildItems(node: TreeNode): readonly NavigationItem[] {
-  return [...node.children.values()].toSorted(compareNodes).map(nodeToItem);
+function buildItems(
+  node: TreeNode,
+  folderIcons: FolderIcons,
+): readonly NavigationItem[] {
+  return [...node.children.values()]
+    .toSorted(compareNodes)
+    .map((child) => nodeToItem(child, folderIcons));
 }
 
-function nodeToItem(node: TreeNode): NavigationItem {
+function nodeToItem(node: TreeNode, folderIcons: FolderIcons): NavigationItem {
   const singleIndex = node.indexes.length === 1 ? node.indexes[0] : undefined;
   const primary =
     singleIndex ?? (node.indexes.length === 0 ? node.page : undefined);
@@ -124,11 +138,12 @@ function nodeToItem(node: TreeNode): NavigationItem {
       : [...node.indexes, ...(node.page ? [node.page] : [])];
   const children: NavigationItem[] = [
     ...extra.map((entry) => toItem(entry)),
-    ...buildItems(node),
+    ...buildItems(node, folderIcons),
   ];
   if (primary) return toItem(primary, children);
   return {
     label: titleFromSegment(node.segment),
+    ...(folderIcons[node.path] ? { icon: folderIcons[node.path] } : {}),
     children,
   };
 }
@@ -140,6 +155,7 @@ function toItem(
   return {
     label: entry.title,
     href: entry.entry.permalink,
+    ...(entry.entry.icon ? { icon: entry.entry.icon } : {}),
     ...(children.length === 0 ? {} : { children }),
   };
 }
@@ -156,8 +172,8 @@ function compareNodes(a: TreeNode, b: TreeNode): number {
   return a.segment.localeCompare(b.segment, "en", { sensitivity: "base" });
 }
 
-function createTreeNode(segment: string): TreeNode {
-  return { segment, indexes: [], children: new Map() };
+function createTreeNode(segment: string, path: string): TreeNode {
+  return { segment, path, indexes: [], children: new Map() };
 }
 
 function titleFromSegment(segment: string): string {

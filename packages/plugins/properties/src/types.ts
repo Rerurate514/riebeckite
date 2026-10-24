@@ -1,3 +1,5 @@
+import type { ContentIcon, ContentIconRegistry } from "@riebeckite/core";
+
 /**
  * Public option and rendering types for `@riebeckite/plugin-properties`.
  */
@@ -81,6 +83,8 @@ export type PropertiesRenderContext = {
    * still emitted as escaped text.
    */
   onMessage?: (message: PropertiesMessage) => void;
+  /** Icons resolved for property keys by the icons plugin. */
+  icons?: ContentIconRegistry;
 };
 
 export type PropertyTextPart = {
@@ -109,6 +113,7 @@ export type PropertiesData = {
   readonly collapsed: boolean;
   readonly items: readonly {
     readonly key: string;
+    readonly icon?: ContentIcon;
     readonly value: PropertyValue;
   }[];
 };

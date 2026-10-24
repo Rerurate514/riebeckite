@@ -103,6 +103,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Responsive Image](./responsive-image.ja.md) | レスポンシブ画像と遅延読み込み |
 | [Gallery](./gallery.ja.md) | Markdown で書くカードギャラリー |
 | [Lightbox](./lightbox.ja.md) | クリックで拡大する画像表示 |
+| [Icons](./icons.ja.md) | Obsidian の Iconize・Iconic アイコンをサイト全体に表示 |
 | [PDF](./pdf.ja.md) | PDF 添付のインライン表示 |
 | [QR Code](./qr-code.ja.md) | コードブロックからのインライン SVG QR コード |
 | [Map](./map.ja.md) | OpenStreetMap の対話的・静的な埋め込み |

@@ -1,3 +1,5 @@
+import type { ContentIcon } from "@riebeckite/core";
+
 export type SearchItem = {
   slug: string;
   permalink: string;
@@ -7,6 +9,7 @@ export type SearchItem = {
   body: string;
   excerpt: string;
   tags: string[];
+  icon?: ContentIcon;
   language?: string;
   date: string | null;
 };

@@ -234,6 +234,10 @@ export type {
   PluginPageRoute,
 } from "./src/types/content_manifest.js";
 export type {
+  ContentIcon,
+  ContentIconRegistry,
+} from "./src/types/content_icon.js";
+export type {
   Diagnostic,
   DiagnosticCode,
   DiagnosticSeverity,

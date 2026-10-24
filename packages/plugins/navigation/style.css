@@ -65,6 +65,11 @@
     text-transform: var(--rb-nav-item-text-transform, none);
   }
 
+  .rb-nav__icon {
+    margin-inline-end: 0.35em;
+    vertical-align: -0.125em;
+  }
+
   .rb-nav__link:hover,
   .rb-nav__link:focus-visible,
   .rb-nav__link--active {

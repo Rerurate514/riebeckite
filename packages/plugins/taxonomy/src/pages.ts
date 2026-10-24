@@ -1,3 +1,4 @@
+import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { buildFeedHeadTags } from "./feeds.js";
 import type {
@@ -22,7 +23,7 @@ export function renderTaxonomyPage(
       (entry) =>
         `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(
           entry.permalink,
-        )}">${escapeHtml(entry.title)}</a></li>`,
+        )}">${renderIcon(entry.icon)}${escapeHtml(entry.title)}</a></li>`,
     )
     .join("");
   const feeds = renderFeedLinks(term, className);
@@ -30,7 +31,7 @@ export function renderTaxonomyPage(
 
   const html = `<section class="${className}" data-rr-taxonomy="${term.kind}" data-rr-taxonomy-value="${escapeHtmlAttribute(
     term.value,
-  )}"><h1 class="${className}__title">${escapeHtml(term.title)}</h1><p class="${className}__count" data-rr-taxonomy-count="${term.entries.length}">${term.entries.length}</p>${feeds}<ul class="${className}__list">${entries}</ul>${related}</section>`;
+  )}"><h1 class="${className}__title">${renderIcon(term.icon)}${escapeHtml(term.title)}</h1><p class="${className}__count" data-rr-taxonomy-count="${term.entries.length}">${term.entries.length}</p>${feeds}<ul class="${className}__list">${entries}</ul>${related}</section>`;
 
   return {
     title: term.title,
@@ -54,7 +55,7 @@ export function renderRelatedTerms(
       (related) =>
         `<li class="${className}__related-item"><a class="${className}__related-link" href="${escapeHtmlAttribute(
           related.path,
-        )}" data-rr-taxonomy-related-count="${related.count}">${escapeHtml(related.title)}</a></li>`,
+        )}" data-rr-taxonomy-related-count="${related.count}">${renderIcon(related.icon)}${escapeHtml(related.title)}</a></li>`,
     )
     .join("");
   return `<nav class="${className}__related" aria-label="Related tags" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
@@ -72,7 +73,7 @@ export function renderTaxonomyIndexPage(
       (term) =>
         `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(
           term.path,
-        )}" data-rr-taxonomy-count="${term.entries.length}">${escapeHtml(
+        )}" data-rr-taxonomy-count="${term.entries.length}">${renderIcon(term.icon)}${escapeHtml(
           term.title,
         )}</a></li>`,
     )
@@ -87,6 +88,10 @@ export function renderTaxonomyIndexPage(
     html,
     headTags: [],
   };
+}
+
+function renderIcon(icon: ContentIcon | undefined): string {
+  return icon ? `<span class="rr-taxonomy__icon">${icon.html}</span>` : "";
 }
 
 function renderFeedLinks(term: TaxonomyTerm, className: string): string {

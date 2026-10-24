@@ -256,6 +256,13 @@ function createResultElement(
 
   const title = document.createElement("p");
   title.className = "rr-search-result__title";
+  if (result.icon) {
+    const icon = document.createElement("span");
+    icon.className = "rr-search-result__icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.innerHTML = result.icon.html;
+    title.appendChild(icon);
+  }
   appendHighlightedText(title, result.title, normalizedQuery);
 
   const meta = document.createElement("p");

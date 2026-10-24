@@ -29,6 +29,7 @@ const Properties = (({
             findPropertiesOptions(site.config.plugins),
             options,
           ),
+          icons: site.manifest.icons,
         })
       : undefined);
 

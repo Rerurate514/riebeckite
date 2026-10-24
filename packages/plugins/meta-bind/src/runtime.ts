@@ -45,10 +45,13 @@ export function initMetaBind(
     for (const control of controls) syncControl(control, state);
   };
   for (const control of controls) {
-    const input = control.querySelector<HTMLInputElement | HTMLSelectElement>(
-      ".rb-meta-bind__control",
-    );
-    if (!input) continue;
+    const candidate = control.querySelector(".rb-meta-bind__control");
+    if (
+      !(candidate instanceof HTMLInputElement) &&
+      !(candidate instanceof HTMLSelectElement)
+    )
+      continue;
+    const input = candidate;
     context.scope.on(
       input,
       input instanceof HTMLSelectElement || input.type === "checkbox"
@@ -96,10 +99,14 @@ function syncControl(
   state: Readonly<Record<string, unknown>>,
 ): void {
   const target = control.dataset.metaBindTarget;
-  const input = control.querySelector<HTMLInputElement | HTMLSelectElement>(
-    ".rb-meta-bind__control",
-  );
-  if (!target || !input) return;
+  const candidate = control.querySelector(".rb-meta-bind__control");
+  if (
+    !target ||
+    (!(candidate instanceof HTMLInputElement) &&
+      !(candidate instanceof HTMLSelectElement))
+  )
+    return;
+  const input = candidate;
   const value = read(state, target);
   if (input instanceof HTMLSelectElement) input.value = JSON.stringify(value);
   else if (input.type === "checkbox")

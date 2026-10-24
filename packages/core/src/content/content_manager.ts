@@ -815,12 +815,21 @@ export class ContentManager {
   private async emitPublicImageAssets(
     manifest: ContentManifest,
   ): Promise<void> {
+    const replacedPaths = new Set(
+      manifest.publicEntries
+        .flatMap((entry) => entry.assets)
+        .filter(
+          (asset) =>
+            asset.sourcePath !== undefined && asset.path === asset.sourcePath,
+        )
+        .map((asset) => normalizeContentPath(asset.path)),
+    );
     const imagePaths = new Set(
       manifest.publicEntries.flatMap((entry) =>
         entry.assets
           .filter((asset) => asset.sourcePath === undefined)
           .map((asset) => normalizeContentPath(asset.path))
-          .filter(isImagePath),
+          .filter((path) => isImagePath(path) && !replacedPaths.has(path)),
       ),
     );
     const entriesByPath = new Map(

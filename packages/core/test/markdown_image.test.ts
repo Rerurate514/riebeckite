@@ -191,6 +191,47 @@ test("does not emit source files over transformed assets", async () => {
   );
 });
 
+test("lets a transform replace a public image at the same path", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "post.md": "---\npublish: true\n---\n![logo](images/logo.svg)",
+      "images/logo.svg": "<svg></svg>",
+    }),
+    [],
+    {
+      plugins: [
+        definePlugin({
+          name: "asset-transform",
+          transformAssets: async () => [
+            {
+              sourcePath: "images/logo.svg",
+              path: "images/logo.svg",
+              content: new Uint8Array([3]),
+              mimeType: "image/svg+xml",
+            },
+          ],
+        }),
+      ],
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => [
+      output.path,
+      output.content,
+      output.dependencies,
+    ]),
+    [
+      [
+        "images/logo.svg",
+        new Uint8Array([3]),
+        [{ type: "file", path: "images/logo.svg" }],
+      ],
+    ],
+  );
+});
+
 test("emits image transforms only for routable public and unlisted entries", async () => {
   const transformed: string[] = [];
   const manager = new ContentManager(

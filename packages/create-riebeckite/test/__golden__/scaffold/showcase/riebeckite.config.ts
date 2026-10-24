@@ -31,6 +31,7 @@ import { folderPagesPlugin } from "@riebeckite/plugin-folder-pages";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { gallery } from "@riebeckite/plugin-gallery";
+import { glossary } from "@riebeckite/plugin-glossary";
 import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { d2 } from "@riebeckite/plugin-d2";
@@ -58,6 +59,7 @@ import { uxPlugin } from "@riebeckite/plugin-ux";
 import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
 import { renamePlugin } from "@riebeckite/plugin-rename";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+import { timeline } from "@riebeckite/plugin-timeline";
 import { qualityPlugin } from "@riebeckite/plugin-quality";
 import { deployPlugin } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
@@ -108,6 +110,7 @@ export default defineConfig({
     autoCardLinkPlugin({ className: "rb-cardlink" }),
     richEmbed({ providers: ["youtube", "vimeo", "spotify"] }),
     gallery({ columns: 3, aspect: "4/3", language: "gallery" }),
+    glossary(),
     mermaidPele(),
     graphviz({ render: "build", engine: "dot", caption: true, fallback: true }),
     d2({ render: "build", theme: { light: 0, dark: 1 }, layout: "dagre", caption: true }),
@@ -135,6 +138,7 @@ export default defineConfig({
     dailyNotesPlugin({ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }),
     renamePlugin({ enabled: true, status: 308, onUnexpectedRemoval: "warning" }),
     textFragmentPlugin({ prefix: "showcase: " }),
+    timeline(),
     qualityPlugin({ a11y: { enabled: true }, ignoreRules: [] }),
     deployPlugin({ provider: "cloudflare-pages" }),
     diagnostics({ reportUnusedAssets: true, reportOrphans: true, requiredFrontmatter: ["title"] }),

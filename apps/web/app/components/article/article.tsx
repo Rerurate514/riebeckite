@@ -1,5 +1,4 @@
 import {
-  calculateReadingTime,
   escapeHtml,
   type PostContent,
   type PublicContentEntry,
@@ -11,7 +10,7 @@ import {
   ArticleLayout,
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
-import ArticleFrontmatter from "../article-frontmatter/article-frontmatter";
+import ArticleMetadata from "@riebeckite/plugin-article-metadata/components";
 
 type Props = {
   content: PostContent;
@@ -38,7 +37,6 @@ type Props = {
 export default function Article(props: Props) {
   const html = props.content.html ?? "";
   const articleHtml = splitAfterFirstHeading(html);
-  const readingTimeMinutes = calculateReadingTime(html);
   // Notes often carry their title as a `title` property or filename rather
   // than a leading `#` heading. Without an h1 the extracted lead is empty, so
   // synthesize one from the resolved title to keep the article header intact.
@@ -53,10 +51,7 @@ export default function Article(props: Props) {
           {props.headerContent}
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           {props.metadataContent}
-          <ArticleFrontmatter
-            frontmatter={props.content.frontmatter}
-            readingTimeMinutes={readingTimeMinutes}
-          />
+          <ArticleMetadata locale="ja-JP" />
           {props.beforeContent}
           <ArticleBody html={articleHtml.rest} />
           {props.afterContent}

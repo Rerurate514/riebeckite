@@ -1,5 +1,8 @@
-import type { PluginComponent } from "@riebeckite/core";
+import { type PluginComponent, resolvePlugins } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import type { WebmentionMention } from "../src/mention.js";
+import type { WebmentionProvider } from "../src/provider.js";
+import { getWebmentionSectionData } from "../src/server.js";
 
 export type WebmentionSectionProps = {
   readonly mentions: readonly WebmentionMention[];
@@ -50,3 +53,36 @@ const WebmentionSection = (({
 }) satisfies PluginComponent<WebmentionSectionProps>;
 
 export default WebmentionSection;
+
+export type ArticleWebmentionSectionProps = Omit<
+  WebmentionSectionProps,
+  "mentions"
+>;
+
+export async function ArticleWebmentionSection(
+  props: Readonly<ArticleWebmentionSectionProps>,
+) {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  if (!site || !article?.entry) return <></>;
+  const provider = findProvider(site.config.plugins);
+  if (!provider) return <></>;
+  const data = await getWebmentionSectionData({
+    view: site.view,
+    slug: article.entry.slug,
+    config: site.config,
+    provider,
+    heading: props.heading,
+    className: props.className,
+  });
+  return <WebmentionSection {...data} />;
+}
+
+function findProvider(
+  plugins: readonly { name: string; options?: unknown }[],
+): WebmentionProvider | undefined {
+  const options = resolvePlugins([...plugins]).find(
+    (plugin) => plugin.name === "webmention",
+  )?.options as { readonly provider?: WebmentionProvider } | undefined;
+  return options?.provider;
+}

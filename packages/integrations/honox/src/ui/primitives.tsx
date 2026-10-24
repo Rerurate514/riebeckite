@@ -3,7 +3,9 @@ import type {
   PostContent,
   PublicContentEntry,
   ResolvedRiebeckiteConfig,
+  SeoMetadata,
 } from "@riebeckite/core";
+import { escapeScriptJson, uniqueStrings } from "@riebeckite/core";
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { raw } from "hono/html";
 import { Link, Script } from "honox/server";
@@ -283,6 +285,8 @@ export type RiebeckiteHeadProps = {
   faviconHref?: string | null;
   colorModeScript?: boolean;
   stylesheets?: readonly string[];
+  themeStyle?: string;
+  themeStylesheets?: readonly string[];
   clientSrc?: string | null;
   prod?: boolean;
   children?: PrimitiveChildren;
@@ -314,11 +318,216 @@ export function RiebeckiteHead(props: RiebeckiteHeadProps) {
       {stylesheets.map((href) => (
         <Link href={href} rel="stylesheet" key={href} prod={props.prod} />
       ))}
+      {props.themeStyle ? (
+        <style dangerouslySetInnerHTML={{ __html: props.themeStyle }} />
+      ) : null}
+      {props.themeStylesheets?.map((href) => (
+        <Link href={href} rel="stylesheet" key={href} prod={props.prod} />
+      ))}
       <PluginHeadTags tags={props.headTags ?? site?.headTags} />
       {clientSrc ? <Script src={clientSrc} async prod={props.prod} /> : null}
       {props.children}
     </>
   );
+}
+
+export type SeoHeadProps = {
+  seo: SeoMetadata;
+  siteTitle: string;
+  author?: string;
+  ogLocale?: string;
+  ogAlternates?: readonly string[];
+  twitterSite?: string;
+  feedLinks?: readonly { href: string; type: string }[];
+};
+
+export function SeoHead(props: SeoHeadProps) {
+  const { seo } = props;
+  const twitterCard = seo.imageUrl ? "summary_large_image" : "summary";
+  return (
+    <>
+      <meta
+        name="description"
+        content={seo.description}
+        data-riebeckite-head="page"
+      />
+      {props.author ? (
+        <meta
+          name="author"
+          content={props.author}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {seo.noindex ? (
+        <meta
+          name="robots"
+          content="noindex, nofollow"
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      <title>{seo.title}</title>
+      {seo.canonicalUrl ? (
+        <link
+          rel="canonical"
+          href={seo.canonicalUrl}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      <meta
+        property="og:title"
+        content={seo.title}
+        data-riebeckite-head="page"
+      />
+      <meta
+        property="og:description"
+        content={seo.description}
+        data-riebeckite-head="page"
+      />
+      <meta property="og:type" content={seo.type} data-riebeckite-head="page" />
+      {seo.canonicalUrl ? (
+        <meta
+          property="og:url"
+          content={seo.canonicalUrl}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      <meta
+        property="og:site_name"
+        content={props.siteTitle}
+        data-riebeckite-head="page"
+      />
+      {props.ogLocale ? (
+        <meta
+          property="og:locale"
+          content={props.ogLocale}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {props.ogAlternates?.map((locale) => (
+        <meta
+          property="og:locale:alternate"
+          content={locale}
+          data-riebeckite-head="page"
+          key={locale}
+        />
+      ))}
+      {seo.imageUrl ? (
+        <meta
+          property="og:image"
+          content={seo.imageUrl}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {seo.publishedTime ? (
+        <meta
+          property="article:published_time"
+          content={seo.publishedTime}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {seo.modifiedTime ? (
+        <meta
+          property="article:modified_time"
+          content={seo.modifiedTime}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {seo.tags.map((tag) => (
+        <meta
+          property="article:tag"
+          content={tag}
+          data-riebeckite-head="page"
+          key={tag}
+        />
+      ))}
+      <meta
+        name="twitter:card"
+        content={twitterCard}
+        data-riebeckite-head="page"
+      />
+      <meta
+        name="twitter:title"
+        content={seo.title}
+        data-riebeckite-head="page"
+      />
+      <meta
+        name="twitter:description"
+        content={seo.description}
+        data-riebeckite-head="page"
+      />
+      {props.twitterSite ? (
+        <meta
+          name="twitter:site"
+          content={props.twitterSite}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {seo.imageUrl ? (
+        <meta
+          name="twitter:image"
+          content={seo.imageUrl}
+          data-riebeckite-head="page"
+        />
+      ) : null}
+      {props.feedLinks?.map((feed) => (
+        <link
+          rel="alternate"
+          type={feed.type}
+          href={feed.href}
+          data-riebeckite-head="global"
+          key={feed.href}
+        />
+      ))}
+      {seo.jsonLd ? (
+        <script
+          type="application/ld+json"
+          data-riebeckite-head="page"
+          dangerouslySetInnerHTML={{
+            __html: escapeScriptJson(JSON.stringify(seo.jsonLd)),
+          }}
+        />
+      ) : null}
+    </>
+  );
+}
+
+export function getThemeStyle(
+  tokens: ResolvedRiebeckiteConfig["theme"]["tokens"],
+): string {
+  const variables: Array<[string, string | undefined]> = [
+    ["--rb-color-paper", tokens.color?.paper],
+    ["--rb-color-ink", tokens.color?.ink],
+    ["--rb-color-muted", tokens.color?.muted],
+    ["--rb-color-accent", tokens.color?.accent],
+    ["--rb-color-link", tokens.color?.link],
+    ["--rb-color-focus", tokens.color?.focus],
+    ["--rb-color-selected", tokens.color?.selected],
+    ["--rb-color-border", tokens.color?.border],
+    ["--rb-color-border-strong", tokens.color?.borderStrong],
+    ["--rb-color-surface", tokens.color?.surface],
+    ["--rb-color-surface-hover", tokens.color?.surfaceHover],
+    ["--rb-color-overlay", tokens.color?.overlay],
+    ["--rb-color-danger", tokens.color?.danger],
+    ["--rb-color-success", tokens.color?.success],
+    ["--rb-color-code-background", tokens.color?.codeBackground],
+    ["--rb-color-code-ink", tokens.color?.codeInk],
+    ["--rb-color-code-inline", tokens.color?.codeInline],
+    ["--rb-font-body", tokens.typography?.bodyFont],
+    ["--rb-font-heading", tokens.typography?.headingFont],
+    ["--rb-font-mono", tokens.typography?.monoFont],
+    ["--rb-layout-page-max", tokens.layout?.pageMaxWidth],
+    ["--rb-layout-article-max", tokens.layout?.articleMaxWidth],
+    ["--rb-layout-sidebar", tokens.layout?.sidebarWidth],
+    ["--rb-layout-gap", tokens.layout?.contentGap],
+  ];
+  const declarations = variables
+    .filter((variable): variable is [string, string] => Boolean(variable[1]))
+    .map(([name, value]) => `${name}: ${value};`);
+  return declarations.length === 0 ? "" : `:root { ${declarations.join(" ")} }`;
+}
+
+export function getThemeStylesheets(userCss: readonly string[]): string[] {
+  return uniqueStrings([...userCss]);
 }
 
 function joinClassNames(...classNames: Array<string | undefined>): string {

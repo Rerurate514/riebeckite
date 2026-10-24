@@ -948,6 +948,48 @@ test("a generated-output plan blocks the no-change fast path", async () => {
   await second.dispose();
 });
 
+test("a generated-output plan takes precedence over a cache-disabled manifest hook", async () => {
+  const directory = await tempDirectory(
+    "incremental-fast-path-plan-precedence",
+  );
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "diagnostic-hook",
+      onManifestCreated: () => {},
+    }),
+    definePlugin({
+      name: "taxonomy",
+      planGeneratedOutputs: () => [
+        {
+          path: "tags/a/feed.xml",
+          content: "feed",
+          dependencies: [{ type: "tag", tag: "a" }],
+        },
+      ],
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    "plugin-generated-output-plan",
+  );
+  await second.dispose();
+});
+
 test("an unknown generated-output dependency blocks the no-change fast path", async () => {
   const directory = await tempDirectory("incremental-fast-path-unknown-output");
   const files = { "a.md": "# A" };

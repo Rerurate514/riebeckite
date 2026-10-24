@@ -39,6 +39,7 @@ Alltägliche Notizfunktionen, optimiert für Obsidian-Vaults.
 | Plugin | Funktion |
 | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | Obsidian-Markdown: Wikilinks, Einbettungen, Callouts und Tags. |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | Eine alphabetische Glossarseite aus markierten Begriffnotizen. |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | Rendert Dateianhänge und bettet Assets per Wikilinks ein. |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | Audio- und Video-Embeds aus einfachen Links. |
 
@@ -73,6 +74,7 @@ Notizen schnell finden und durch sie navigieren.
 | --- | --- |
 | [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | Clientseitige Volltextsuche mit Ctrl+K-Modal. |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | Ein interaktiver Graph- und Such-Explorer. |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | Eine chronologische Seite aus markierten, datierten Notizen. |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | Ein Link-Graph rund um die aktuelle Notiz. |
 | [`@riebeckite/plugin-permalink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/permalink/README.md) | Stabile, konfigurierbare Permalinks. |
 

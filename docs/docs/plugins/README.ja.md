@@ -73,6 +73,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Flashcards](./flashcards.ja.md) | コードブロックから作るフラッシュカード |
 | [Kanban](./kanban.ja.md) | Obsidian Kanban のビルド時描画 |
 | [Hover Preview](./hover-preview.ja.md) | 内部リンクのホバープレビュー |
+| [Glossary](./glossary.ja.md) | 用語ノートから用語集ページを生成 |
 
 ### 図とプレゼンテーション
 
@@ -136,12 +137,14 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Dataview](./dataview.ja.md) | ビルド時の Dataview クエリ |
 | [Folder Pages](./folder-pages.ja.md) | フォルダの入口ページと一覧生成 |
 | [Archive](./archive.ja.md) | 月別アーカイブ一覧 |
+| [Timeline](./timeline.ja.md) | マークしたノートから時系列ページを生成 |
 
 ### 公開と SEO
 
 | Plugin | できること |
 | --- | --- |
 | [SEO](./seo.ja.md) | メタデータ、サイトマップ、フィード、robots.txt |
+| [Article Metadata](./article-metadata.ja.md) | 記事の公開日・更新日・読了時間・タクソノミーのタグ |
 | [Deploy](./deploy.ja.md) | 静的ホスティング向けの出力 |
 | [Permalink](./permalink.ja.md) | 安定した設定可能なパーマリンク |
 | [Rename](./rename.ja.md) | 公開ノートのリネーム・移動リダイレクト |

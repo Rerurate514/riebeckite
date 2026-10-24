@@ -33,6 +33,37 @@
     z-index: 40;
   }
 
+  .rr-search-not-found {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+    margin-block: auto;
+    padding-block: var(--rb-space-8);
+  }
+
+  .rr-search-not-found__status {
+    margin: 0;
+    color: var(--rb-color-accent);
+    font-weight: 700;
+  }
+
+  .rr-search-not-found code {
+    overflow-wrap: anywhere;
+  }
+
+  .rr-search-not-found li + li {
+    margin-top: var(--rb-space-3);
+  }
+
+  .rr-search-not-found li code {
+    display: block;
+  }
+
+  .rr-search-not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rb-space-4);
+    margin-top: var(--rb-space-6);
+  }
+
   .rr-search-bar__trigger {
     display: inline-flex;
     align-items: center;

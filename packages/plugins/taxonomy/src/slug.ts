@@ -15,6 +15,19 @@ export function slugifyTaxonomyValue(value: string): string {
     .join("/");
 }
 
+export function buildTaxonomyTagHref(
+  tag: string,
+  tagsBasePath: string,
+): string {
+  const slug = slugifyTaxonomyValue(tag);
+  const trimmedBase = tagsBasePath.trim().replace(/\/+$/, "");
+  const base =
+    trimmedBase === "" || trimmedBase.startsWith("/")
+      ? trimmedBase
+      : `/${trimmedBase}`;
+  return slug ? `${base}/${slug}` : base;
+}
+
 function slugifyTaxonomySegment(segment: string): string {
   const slug = segment
     .trim()

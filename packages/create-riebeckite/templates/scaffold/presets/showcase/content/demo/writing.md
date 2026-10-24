@@ -8,6 +8,9 @@ series: publish-a-site
 series_title: Publish a site
 series_order: 2
 publish: true
+glossary: true
+term: Markdown site
+definition: A website authored in Markdown and built into static pages.
 ---
 
 # Writing the first note

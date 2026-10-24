@@ -39,6 +39,7 @@ export default defineConfig({
 | 插件 | 作用 |
 | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | Obsidian 风格 Markdown：双链、嵌入、标注与标签。 |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | 从标记的术语笔记生成按字母排序的术语表页面。 |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | 通过双链渲染附件并嵌入资源。 |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | 从普通链接嵌入音频和视频。 |
 
@@ -73,6 +74,7 @@ export default defineConfig({
 | --- | --- |
 | [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | 带 Ctrl+K 弹窗的客户端全文搜索。 |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | 交互式图谱与搜索探索器。 |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | 从标记且带日期的笔记生成时间线页面。 |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | 当前笔记周边的链接图谱。 |
 | [`@riebeckite/plugin-permalink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/permalink/README.md) | 稳定、可配置的永久链接。 |
 

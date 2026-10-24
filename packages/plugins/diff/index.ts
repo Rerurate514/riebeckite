@@ -6,8 +6,14 @@ import {
   type PluginDataHelper,
 } from "@riebeckite/core";
 
-export type { PostDiffProps } from "./components/post-diff.js";
-export { default as PostDiffView } from "./components/post-diff.js";
+export type {
+  ArticlePostDiffProps,
+  PostDiffProps,
+} from "./components/post-diff.js";
+export {
+  ArticlePostDiffView,
+  default as PostDiffView,
+} from "./components/post-diff.js";
 export { renderDiffHistory } from "./src/components/diff-history.js";
 export { renderDiffLine } from "./src/components/diff-line.js";
 export {
@@ -15,22 +21,22 @@ export {
   renderDiffViewer,
 } from "./src/components/diff-viewer.js";
 
-import { createLineDiff } from "./src/diff/line_diff.js";
+import {
+  createPostDiffApiFromReader,
+  getMarkdownRevisions,
+  type PostDiffApi,
+} from "./src/api.js";
 import { GitMarkdownHistoryReader } from "./src/git/history_reader.js";
-import type {
-  DiffPluginUiOptions,
-  DiffRevision,
-  GitHistoryReaderOptions,
-  MarkdownRevision,
-  PostDiff,
-  RevisionComparisonInput,
-} from "./src/types.js";
+import type { DiffPluginOptions, PostDiff } from "./src/types.js";
 
+export type { PostDiffApi } from "./src/api.js";
+export { createPostDiffApi } from "./src/api.js";
 export { createLineDiff } from "./src/diff/line_diff.js";
 export { GitMarkdownHistoryReader } from "./src/git/history_reader.js";
 export type {
   DiffLine,
   DiffLineType,
+  DiffPluginOptions,
   DiffPluginUiOptions,
   DiffRevision,
   GitHistoryReaderOptions,
@@ -38,17 +44,6 @@ export type {
   PostDiff,
   RevisionComparisonInput,
 } from "./src/types.js";
-
-export type DiffPluginOptions = GitHistoryReaderOptions & {
-  ui?: DiffPluginUiOptions;
-};
-
-export type PostDiffApi = {
-  getHistory(filePath: string): Promise<DiffRevision[]>;
-  getRevisionMarkdown(filePath: string, hash: string): Promise<string | null>;
-  getCurrentDiff(filePath: string): Promise<PostDiff | null>;
-  compareRevisions(input: RevisionComparisonInput): Promise<PostDiff | null>;
-};
 
 export const getPostDiff: PluginDataHelper<
   { api: PostDiffApi; filePath: string },
@@ -155,81 +150,6 @@ function diffPayloadPath(slug: string): string {
   return `_riebeckite/diff/${Buffer.from(slug).toString("base64url")}.json`;
 }
 
-export function createPostDiffApi(
-  options: GitHistoryReaderOptions = {},
-): PostDiffApi {
-  return createPostDiffApiFromReader(new GitMarkdownHistoryReader(options));
-}
-
-function createPostDiffApiFromReader(
-  reader: GitMarkdownHistoryReader,
-): PostDiffApi {
-  return {
-    getHistory: (filePath) => reader.getHistory(filePath),
-    getRevisionMarkdown: (filePath, hash) =>
-      reader.getRevisionMarkdown(filePath, hash),
-    getCurrentDiff: async (filePath) => {
-      const history = await reader.getHistory(filePath);
-      const [current, previous] = history;
-      if (!current) return null;
-
-      const toMarkdown = await reader.getRevisionMarkdown(
-        filePath,
-        current.hash,
-      );
-      if (toMarkdown === null) return null;
-
-      const fromMarkdown = previous
-        ? await reader.getRevisionMarkdown(filePath, previous.hash)
-        : null;
-
-      return buildPostDiff({
-        from: previous ?? null,
-        fromMarkdown,
-        to: current,
-        toMarkdown,
-      });
-    },
-    compareRevisions: async (input) => {
-      const history = await reader.getHistory(input.filePath);
-      const from = history.find((revision) => revision.hash === input.fromHash);
-      const to = history.find((revision) => revision.hash === input.toHash);
-      if (!to) return null;
-
-      const [fromMarkdown, toMarkdown] = await Promise.all([
-        input.fromHash
-          ? reader.getRevisionMarkdown(input.filePath, input.fromHash)
-          : Promise.resolve(null),
-        reader.getRevisionMarkdown(input.filePath, input.toHash),
-      ]);
-      if (toMarkdown === null) return null;
-
-      return buildPostDiff({
-        from: from ?? null,
-        fromMarkdown,
-        to,
-        toMarkdown,
-      });
-    },
-  };
-}
-
-async function getMarkdownRevisions(
-  api: PostDiffApi,
-  filePath: string,
-  history: DiffRevision[],
-): Promise<MarkdownRevision[]> {
-  const revisions = await Promise.all(
-    history.map(async (revision) => ({
-      revision,
-      markdown: await api.getRevisionMarkdown(filePath, revision.hash),
-    })),
-  );
-  return revisions.flatMap(({ revision, markdown }) =>
-    markdown === null ? [] : [{ ...revision, markdown }],
-  );
-}
-
 function resolvePostFilePath(context: {
   slug: string;
   contentIndex: Map<string, string>;
@@ -237,17 +157,4 @@ function resolvePostFilePath(context: {
   const indexedPath = context.contentIndex.get(context.slug.toLowerCase());
   const contentPath = `${indexedPath ?? context.slug}.md`;
   return contentPath;
-}
-
-function buildPostDiff(input: {
-  from: DiffRevision | null;
-  fromMarkdown: string | null;
-  to: DiffRevision;
-  toMarkdown: string;
-}): PostDiff {
-  return {
-    from: input.from,
-    to: input.to,
-    lines: createLineDiff(input.fromMarkdown ?? "", input.toMarkdown),
-  };
 }

@@ -468,6 +468,7 @@ const gardenExplorer = np(
   "@riebeckite/plugin-garden-explorer",
   "gardenExplorerPlugin",
 );
+const glossary = np("@riebeckite/plugin-glossary", "glossary");
 const ux = np("@riebeckite/plugin-ux", "uxPlugin", {
   progress: { depth: 2, value: "true" },
   backToTop: { depth: 2, value: "true" },
@@ -490,6 +491,7 @@ const textFragment = np(
   "textFragmentPlugin",
   (context) => `{ prefix: ${JSON.stringify(`${context.variables.title}: `)} }`,
 );
+const timeline = np("@riebeckite/plugin-timeline", "timeline");
 const quality = np(
   "@riebeckite/plugin-quality",
   "qualityPlugin",
@@ -618,6 +620,7 @@ export const showcase: ScaffoldPreset = {
     autoCardLink,
     richEmbed,
     gallery,
+    glossary,
     mermaidPele,
     graphviz,
     d2,
@@ -645,6 +648,7 @@ export const showcase: ScaffoldPreset = {
     dailyNotes,
     rename,
     textFragment,
+    timeline,
     quality,
     deploy,
     diagnostics,

@@ -7,6 +7,7 @@ import {
 import { buildSearchItems } from "./src/search-index.server.js";
 
 export { default as SearchBar } from "./components/search-bar.js";
+export { default as SmartNotFound } from "./components/smart-not-found.js";
 export {
   findSmart404Candidates,
   normalizeSearchQuery,

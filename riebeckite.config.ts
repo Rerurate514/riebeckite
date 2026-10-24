@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { articleMetadataPlugin } from "@riebeckite/plugin-article-metadata";
 import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
 import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
@@ -21,6 +22,7 @@ import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { folderPages } from "@riebeckite/plugin-folder-pages";
 import { galleryPlugin } from "@riebeckite/plugin-gallery";
+import { glossary } from "@riebeckite/plugin-glossary";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
@@ -51,6 +53,7 @@ import { sidenotes } from "@riebeckite/plugin-sidenotes";
 import { sourceFiles } from "@riebeckite/plugin-source-files";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
 import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+import { timeline } from "@riebeckite/plugin-timeline";
 import { tocPlugin } from "@riebeckite/plugin-toc";
 import { uxPlugin } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
@@ -89,6 +92,7 @@ export default defineConfig({
       include: ["created", "modified", "tags", "status", "kind", "source"],
       order: ["created", "modified", "tags", "status", "kind", "source"],
     }),
+    articleMetadataPlugin(),
     seo({
       feed: {
         rss: true,
@@ -153,6 +157,7 @@ export default defineConfig({
     queryPlugin(),
     bases(),
     galleryPlugin(),
+    glossary(),
     dataviewPlugin(),
     flashcardsPlugin(),
     kanban(),
@@ -199,6 +204,7 @@ export default defineConfig({
     sidenotes(),
     taxonomy(),
     textFragmentPlugin(),
+    timeline(),
     qualityPlugin(),
     deployPlugin({ provider: "cloudflare-pages" }),
     diagnostics({

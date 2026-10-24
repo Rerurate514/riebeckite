@@ -1,5 +1,10 @@
-import type { PluginComponent } from "@riebeckite/core";
-import type { PostDiff as PostDiffData } from "../src/types.js";
+import { type PluginComponent, resolvePlugins } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { createPostDiffApi } from "../src/api.js";
+import type {
+  DiffPluginOptions,
+  PostDiff as PostDiffData,
+} from "../src/types.js";
 
 export type PostDiffProps = {
   readonly diff: PostDiffData | null;
@@ -38,3 +43,30 @@ const PostDiff = (({ diff, title = "History" }: Readonly<PostDiffProps>) => {
 }) satisfies PluginComponent<PostDiffProps>;
 
 export default PostDiff;
+
+export type ArticlePostDiffProps = Omit<PostDiffProps, "diff">;
+
+export async function ArticlePostDiffView(
+  props: Readonly<ArticlePostDiffProps>,
+) {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  if (!site || !article?.entry) return <></>;
+  const options = findDiffOptions(site.config.plugins);
+  if (!options || options.ui?.enabled === false) return <></>;
+  const filePath =
+    site.manifest.contentIndex.get(article.entry.slug.toLowerCase()) ??
+    `${article.entry.slug}.md`;
+  const diff = await createPostDiffApi({
+    ...options,
+    cwd: options.cwd ?? site.config.content.directory,
+  }).getCurrentDiff(filePath);
+  return <PostDiff diff={diff} title={props.title} />;
+}
+
+function findDiffOptions(
+  plugins: readonly { name: string; options?: unknown }[],
+): DiffPluginOptions | undefined {
+  return resolvePlugins([...plugins]).find((plugin) => plugin.name === "diff")
+    ?.options as DiffPluginOptions | undefined;
+}

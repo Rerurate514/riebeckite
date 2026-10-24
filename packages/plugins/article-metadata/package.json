@@ -1,0 +1,66 @@
+{
+  "name": "@riebeckite/plugin-article-metadata",
+  "version": "0.0.32",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/article-metadata.d.ts",
+      "import": "./dist/components/article-metadata.js",
+      "source": "./components/article-metadata.tsx",
+      "default": "./dist/components/article-metadata.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/plugin-taxonomy": "workspace:*",
+    "@riebeckite/ui": "workspace:*",
+    "hono": "catalog:"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/article-metadata"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Article dates, reading time, and taxonomy tags for Riebeckite sites.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "article",
+    "metadata"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
+}

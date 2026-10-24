@@ -7,7 +7,7 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
 const styleCss = read("../app/style.css");
-const markdownCss = read("../app/styles/markdown.css");
+const markdownCss = read("../../../packages/integrations/honox/style.css");
 const articleTsx = read("../app/components/article/article.tsx");
 const honoxPrimitivesTsx = read(
   "../../../packages/integrations/honox/src/ui/primitives.tsx",
@@ -21,10 +21,11 @@ const themeCss = readdirSync(
     read(`../../../packages/themes/${entry.name}/styles/theme.css`),
   );
 
-test("apps/web no longer depends on the typography plugin", () => {
+test("the Markdown baseline lives in the Honox integration", () => {
   assert.doesNotMatch(styleCss, /@tailwindcss\/typography/);
   assert.doesNotMatch(styleCss, /@plugin/);
-  assert.match(styleCss, /@import "\.\/styles\/markdown\.css";/);
+  assert.doesNotMatch(styleCss, /styles\/markdown\.css/);
+  assert.match(markdownCss, /\.rb-article-content/);
 });
 
 test("articles expose the rb-article-content markdown hook instead of prose", () => {
@@ -34,7 +35,7 @@ test("articles expose the rb-article-content markdown hook instead of prose", ()
 });
 
 test("markdown typography stays scoped to rendered markdown, not plugin components", () => {
-  assert.doesNotMatch(markdownCss, /\.rb-article-body/);
+  assert.doesNotMatch(markdownCss, /\.rb-article-body\s+:where/);
   assert.match(markdownCss, /\.rb-article-content/);
 });
 

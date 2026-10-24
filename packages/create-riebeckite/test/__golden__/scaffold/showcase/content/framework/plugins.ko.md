@@ -39,6 +39,7 @@ Obsidian 볼트에 맞춘 일상 노트 기능.
 | 플러그인 | 기능 |
 | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | Obsidian 스타일 마크다운: 위키링크, 임베드, 콜아웃, 태그. |
+| [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | 표시한 용어 노트에서 알파벳순 용어집 페이지를 생성. |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | 위키링크로 첨부 파일을 렌더링하고 자산을 임베드. |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | 일반 링크에서 오디오·비디오 임베드. |
 
@@ -73,6 +74,7 @@ fenced 코드 블록을 다이어그램·차트·슬라이드로 전환.
 | --- | --- |
 | [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | Ctrl+K 모달이 있는 클라이언트 전체 텍스트 검색. |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | 노트 그래프와 검색을 탐색하는 대화형 뷰. |
+| [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | 표시한 날짜가 있는 노트에서 시간순 페이지를 생성. |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | 현재 노트 주변의 링크 그래프. |
 | [`@riebeckite/plugin-permalink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/permalink/README.md) | 안정적이고 설정 가능한 고유 주소. |
 

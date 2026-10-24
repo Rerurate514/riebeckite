@@ -271,12 +271,12 @@ async function removeOrphanedImages(
 async function collectReferencedAssets(
   contentDir: string,
   exclude: readonly string[],
-  config: typeof config,
+  appConfig: typeof config,
 ): Promise<ReferencedAssets> {
   const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
   const content = new ContentManager(contentDir, [...exclude], {
-    config: { ...config, plugins: [] },
+    config: { ...appConfig, plugins: [] },
   });
   const manifest = await content.build();
 

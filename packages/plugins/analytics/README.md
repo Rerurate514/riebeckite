@@ -92,7 +92,7 @@ diagnostics.
 
 ## Exports
 
-- `analytics()` / `analyticsPlugin()`
+- `analytics()` / `analytics()`
 - `initAnalytics` (`@riebeckite/plugin-analytics/client`)
 - `MemoryAnalyticsProvider`
 - Event, query/result, provider/capability, and public-config types

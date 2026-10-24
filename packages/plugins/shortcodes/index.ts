@@ -74,5 +74,3 @@ export function shortcodes(options: ShortcodeOptions = {}) {
     ],
   });
 }
-
-export const shortcodesPlugin = shortcodes;

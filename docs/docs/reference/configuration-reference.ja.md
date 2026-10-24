@@ -349,7 +349,7 @@ Theme の仕組みについては [Theme system](./theme-api.ja.md) を参照し
 ```ts
 plugins: [
   obsidianMarkdown(),
-  enableSearch && searchPlugin(),
+  enableSearch && search(),
 ]
 ```
 

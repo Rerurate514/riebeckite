@@ -17,7 +17,7 @@ import {
   type ContentPublicLocation,
 } from "@riebeckite/core";
 
-export function libraryUrlsPlugin(prefix = "/library") {
+export function libraryUrls(prefix = "/library") {
   const base = prefix.replace(/\/+$/, "");
 
   return definePlugin({
@@ -52,7 +52,7 @@ If another plugin has already resolved the canonical URL and you only need to ad
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function legacyRedirectsPlugin() {
+export function legacyRedirects() {
   return definePlugin({
     name: "legacy-redirects",
     extendContentLocations: ({ entries, locations }) => {

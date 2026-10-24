@@ -284,7 +284,7 @@ input themselves — `escapeHtml` and `escapeHtmlAttribute` are re-exported from
 
 ## Exports
 
-- `shortcodes(options?)` / `shortcodesPlugin` — plugin factory
+- `shortcodes(options?)` / `shortcodes` — plugin factory
 - `remarkShortcodes(options?)` — standalone remark transform
 - `renderShortcode(request, options)` — render a single shortcode
 - `resolveShortcodeOptions(options?)` — normalize options

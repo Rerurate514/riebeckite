@@ -52,9 +52,6 @@ export function vegaLite(options: VegaLiteOptions = {}) {
   });
 }
 
-/** Alias kept for symmetry with the other plugin factories. */
-export const vegaLitePlugin = vegaLite;
-
 function validateVegaLiteOptions(
   options: VegaLiteOptions | undefined,
 ): readonly ConfigValidationIssue[] {

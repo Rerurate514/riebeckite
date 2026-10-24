@@ -79,7 +79,7 @@ HonoX / Viteとの接続
 ```ts id="sf8rf2"
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
   });
@@ -91,7 +91,7 @@ export function examplePlugin() {
 ```ts id="32z2wh"
 export default defineConfig({
   plugins: [
-    examplePlugin(),
+    example(),
   ],
 });
 ```
@@ -107,7 +107,7 @@ type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(
+export function example(
   options: ExampleOptions = {},
 ) {
   return definePlugin({
@@ -122,7 +122,7 @@ export function examplePlugin(
 ```ts id="xw3gy8"
 export default defineConfig({
   plugins: [
-    examplePlugin({
+    example({
       enabled: true,
     }),
   ],
@@ -133,7 +133,7 @@ export default defineConfig({
 
 ```ts id="d7esfe"
 plugins: [
-  condition && myPlugin(),
+  condition && my(),
 ]
 ```
 

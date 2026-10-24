@@ -7,14 +7,14 @@ import {
 import {
   findRelatedPosts,
   type RelatedPostsOptions,
-  relatedPostsPlugin,
+  relatedPosts,
 } from "@plugin-dx/related-posts";
 import type { RiebeckitePlugin } from "@riebeckite/core";
 
 const highlight: RiebeckitePlugin = markdownHighlightPlugin({
   className: "rr-highlight",
 });
-const related: RiebeckitePlugin = relatedPostsPlugin({ max: 2 });
+const related: RiebeckitePlugin = relatedPosts({ max: 2 });
 const demo: RiebeckitePlugin = pluginDemoPlugin();
 
 const highlightOptions: HighlightOptions = { className: "x" };

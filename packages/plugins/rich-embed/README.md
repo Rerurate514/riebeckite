@@ -136,7 +136,7 @@ warning through the vfile message channel:
 ## Exports
 
 - `richEmbed(options?)` — plugin factory
-- `richEmbedPlugin` — alias of `richEmbed`
+- `richEmbed` — alias of `richEmbed`
 - Types: `RichEmbedOptions`, `RichEmbedProvider`
 
 ## See also

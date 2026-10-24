@@ -82,7 +82,7 @@ sidebar:
 
 ## エクスポート
 
-- `docs(options)` / `docsPlugin(options)`: プラグインファクトリ
+- `docs(options)` / `docs(options)`: プラグインファクトリ
 - `buildDocsNavigation(entries, options)`: フレームワークに依存しないナビゲーションモデル
 - `flattenDocsNavigation(items)`: 前後ページリンク用の並び
 - `renderDocsSidebar(...)` / `renderDocsPrevNext(...)`: サーバー側の HTML レンダラー

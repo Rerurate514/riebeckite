@@ -121,7 +121,7 @@ point for that purpose.
 
 ## Main exports
 
-- `markmap(options?)`: create the plugin (`markmapPlugin` is an alias)
+- `markmap(options?)`: create the plugin (`markmap` is an alias)
 - `initMarkmap`: initialize client-side rendering
 - `parseMarkmapSource`: parse the standard notation into a tree
 - `describeMarkmapTree`: derive an accessible label from a tree

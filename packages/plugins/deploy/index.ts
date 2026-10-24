@@ -1,4 +1,4 @@
-export { deployPlugin } from "./src/plugin.js";
+export { deploy } from "./src/plugin.js";
 export {
   mergePlannedOutputs,
   planDeployOutputs,

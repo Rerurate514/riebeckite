@@ -172,7 +172,7 @@ const obsidianMarkdown = np(
 );
 
 /** The next tier: look and language. */
-const colorMode = np("@riebeckite/plugin-color-mode", "colorModePlugin");
+const colorMode = np("@riebeckite/plugin-color-mode", "colorMode");
 const l10n = np("@riebeckite/plugin-l10n", "l10n", (context) => {
   const defaultLang = defaultLanguageForLocale(context.variables.locale);
   return `{ defaultLang: ${JSON.stringify(defaultLang)}, languages: ${JSON.stringify(context.languages)} }`;
@@ -184,7 +184,7 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
   robots: { depth: 2, value: "true" },
   feed: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
 });
-const toc = np("@riebeckite/plugin-toc", "tocPlugin");
+const toc = np("@riebeckite/plugin-toc", "toc");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
   fields: {
@@ -193,7 +193,7 @@ const properties = np("@riebeckite/plugin-properties", "properties", {
       '{ created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } }',
   },
 });
-const alias = np("@riebeckite/plugin-alias", "aliasPlugin", `{ status: 308 }`);
+const alias = np("@riebeckite/plugin-alias", "alias", `{ status: 308 }`);
 const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
   lineNumbers: { depth: 1, value: "true" },
   copyButton: { depth: 1, value: "true" },
@@ -205,9 +205,9 @@ const codeEnhance = np("@riebeckite/plugin-code-enhance", "codeEnhance", {
 });
 
 /** Discovery, media, and reading polish. */
-const search = np("@riebeckite/plugin-search", "searchPlugin");
-const backlinks = np("@riebeckite/plugin-backlinks", "backlinksPlugin");
-const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbsPlugin");
+const search = np("@riebeckite/plugin-search", "search");
+const backlinks = np("@riebeckite/plugin-backlinks", "backlinks");
+const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbs");
 const navigationStarter = np("@riebeckite/plugin-navigation", "navigation");
 const navigationShowcase = np(
   "@riebeckite/plugin-navigation",
@@ -231,7 +231,7 @@ const share = np("@riebeckite/plugin-share", "share", {
   },
   mastodonInstance: { depth: 3, value: '"mastodon.social"' },
 });
-const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPostsPlugin");
+const recentPosts = np("@riebeckite/plugin-recent-posts", "recentPosts");
 const changelog = np("@riebeckite/plugin-changelog", "changelog", {
   perNote: { depth: 2, value: "true" },
   lookbackDays: { depth: 3, value: "90" },
@@ -275,7 +275,7 @@ const responsiveImage = np(
 );
 const lightbox = np(
   "@riebeckite/plugin-lightbox",
-  "lightboxPlugin",
+  "lightbox",
   `{ selectorClass: "rr-lightbox-trigger" }`,
 );
 const highlight = np("@riebeckite/plugin-highlight", "highlight", {
@@ -311,10 +311,10 @@ const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
   feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
   relatedLimit: { depth: 3, value: "8" },
 });
-const folderPages = np("@riebeckite/plugin-folder-pages", "folderPagesPlugin");
+const folderPages = np("@riebeckite/plugin-folder-pages", "folderPages");
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
-  "autoCardLinkPlugin",
+  "autoCardLink",
   `{ className: "rb-cardlink" }`,
 );
 const richEmbed = np(
@@ -431,12 +431,12 @@ const bases = np("@riebeckite/plugin-bases", "bases", {
   className: { depth: 3, value: '"rb-bases"' },
   showFallback: { depth: 3, value: "true" },
 });
-const dataview = np("@riebeckite/plugin-dataview", "dataviewPlugin", {
+const dataview = np("@riebeckite/plugin-dataview", "dataview", {
   limit: { depth: 2, value: "50" },
   className: { depth: 3, value: '"rb-dataview"' },
   hideFallback: { depth: 3, value: "false" },
 });
-const flashcards = np("@riebeckite/plugin-flashcards", "flashcardsPlugin", {
+const flashcards = np("@riebeckite/plugin-flashcards", "flashcards", {
   shuffle: { depth: 2, value: "true" },
   fallback: { depth: 2, value: "true" },
   className: { depth: 3, value: '"rb-flashcards"' },
@@ -447,29 +447,25 @@ const kanban = np("@riebeckite/plugin-kanban", "kanban", {
   className: { depth: 3, value: '"rb-kanban"' },
   fallback: { depth: 3, value: "true" },
 });
-const query = np("@riebeckite/plugin-query", "queryPlugin", {
+const query = np("@riebeckite/plugin-query", "query", {
   defaultFormat: { depth: 2, value: '"list"' },
   defaultLimit: { depth: 2, value: "50" },
   className: { depth: 3, value: '"rb-query"' },
   excludeSelf: { depth: 3, value: "true" },
 });
-const localGraph = np("@riebeckite/plugin-local-graph", "localGraphPlugin");
-const hoverPreview = np(
-  "@riebeckite/plugin-hover-preview",
-  "hoverPreviewPlugin",
-  {
-    delay: { depth: 2, value: "120" },
-    excerptLength: { depth: 2, value: "160" },
-    selector: { depth: 2, value: "'a[href^=\"/\"]'" },
-    includeTitles: { depth: 3, value: "true" },
-  },
-);
+const localGraph = np("@riebeckite/plugin-local-graph", "localGraph");
+const hoverPreview = np("@riebeckite/plugin-hover-preview", "hoverPreview", {
+  delay: { depth: 2, value: "120" },
+  excerptLength: { depth: 2, value: "160" },
+  selector: { depth: 2, value: "'a[href^=\"/\"]'" },
+  includeTitles: { depth: 3, value: "true" },
+});
 const gardenExplorer = np(
   "@riebeckite/plugin-garden-explorer",
-  "gardenExplorerPlugin",
+  "gardenExplorer",
 );
 const glossary = np("@riebeckite/plugin-glossary", "glossary");
-const ux = np("@riebeckite/plugin-ux", "uxPlugin", {
+const ux = np("@riebeckite/plugin-ux", "ux", {
   progress: { depth: 2, value: "true" },
   backToTop: { depth: 2, value: "true" },
   tocScrollSpy: { depth: 2, value: "true" },
@@ -478,28 +474,28 @@ const ux = np("@riebeckite/plugin-ux", "uxPlugin", {
 /** Developer-experience and ops plugins for the top tier. */
 const dailyNotes = np(
   "@riebeckite/plugin-daily-notes",
-  "dailyNotesPlugin",
+  "dailyNotes",
   `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }`,
 );
 const rename = np(
   "@riebeckite/plugin-rename",
-  "renamePlugin",
+  "rename",
   `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }`,
 );
 const textFragment = np(
   "@riebeckite/plugin-text-fragment",
-  "textFragmentPlugin",
+  "textFragment",
   (context) => `{ prefix: ${JSON.stringify(`${context.variables.title}: `)} }`,
 );
 const timeline = np("@riebeckite/plugin-timeline", "timeline");
 const quality = np(
   "@riebeckite/plugin-quality",
-  "qualityPlugin",
+  "quality",
   `{ a11y: { enabled: true }, ignoreRules: [] }`,
 );
 const deploy = np(
   "@riebeckite/plugin-deploy",
-  "deployPlugin",
+  "deploy",
   `{ provider: "cloudflare-pages" }`,
 );
 const diagnostics = np(

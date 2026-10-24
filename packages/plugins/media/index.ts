@@ -67,8 +67,6 @@ export function media(options: MediaOptions = {}) {
   });
 }
 
-export const mediaPlugin = media;
-
 function renderMedia(
   context: PluginRenderContext,
   options: MediaOptions,

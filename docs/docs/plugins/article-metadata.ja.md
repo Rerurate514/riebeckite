@@ -10,7 +10,7 @@ title: Article Metadata
 
 ## できること
 
-`articleMetadataPlugin()` はコンポーネントのスタイルシートを登録します。ルートの追加や Markdown 本文の変更は行いません。
+`articleMetadata()` はコンポーネントのスタイルシートを登録します。ルートの追加や Markdown 本文の変更は行いません。
 
 サイトは、メタデータを表示したい位置でコンポーネントを描画します。
 

@@ -35,5 +35,3 @@ export function navigation(options: NavigationOptions = {}) {
     ],
   });
 }
-
-export const navigationPlugin = navigation;

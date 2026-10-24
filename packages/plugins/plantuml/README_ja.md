@@ -18,7 +18,7 @@ export default defineConfig({
 });
 ```
 
-`plantuml` は `plantumlPlugin` という別名でもエクスポートしています。
+`plantuml` は `plantuml` という別名でもエクスポートしています。
 
 ## 実行例
 
@@ -86,7 +86,7 @@ Bob --> Alice: Hi
 ## 主なエクスポート
 
 - `plantuml(options?)`: プラグインを作成する
-- `plantumlPlugin`: `plantuml` の別名
+- `plantuml`: `plantuml` の別名
 - 型: `PlantumlOptions`、`PlantumlFormat`
 
 ## 関連資料

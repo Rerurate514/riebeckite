@@ -10,7 +10,7 @@ page.
 
 ## Overview
 
-At build time `hoverPreviewPlugin()` builds a preview index from the content
+At build time `hoverPreview()` builds a preview index from the content
 manifest (`permalink` → `{ title, excerpt, slug }`) and injects it once into
 every page that contains internal links as an inert
 `<script type="application/json" data-rb-hover-preview>` block. The client
@@ -26,15 +26,15 @@ bounded by `maxEntries` when set.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 
 export default defineConfig({
   // ...
-  plugins: [hoverPreviewPlugin()],
+  plugins: [hoverPreview()],
 });
 ```
 
-`hoverPreviewPlugin()` registers the style asset, the client entry, and the
+`hoverPreview()` registers the style asset, the client entry, and the
 build-time payload injection. `hoverPreview` is an alias of the same factory.
 
 The client entry takes no arguments. Behavior is carried by data attributes on
@@ -53,7 +53,7 @@ called without options.
 | `includeTitles` | `true`         | Whether the popover shows the target entry title.      |
 
 ```ts
-hoverPreviewPlugin({
+hoverPreview({
   delay: 200,
   excerptLength: 120,
   maxEntries: 200,
@@ -63,8 +63,8 @@ hoverPreviewPlugin({
 
 ## API
 
-- `hoverPreviewPlugin(options?)` — plugin factory
-- `hoverPreview` — alias of `hoverPreviewPlugin`
+- `hoverPreview(options?)` — plugin factory
+- `hoverPreview` — alias of `hoverPreview`
 - `resolveHoverPreviewOptions(options?)` — applies defaults and returns a
   `ResolvedHoverPreviewOptions`
 - `buildPreviewIndex(entries, options)` — builds a `HoverPreviewIndex`

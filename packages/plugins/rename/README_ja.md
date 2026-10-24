@@ -10,11 +10,11 @@
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { renamePlugin } from "@riebeckite/plugin-rename";
+import { rename } from "@riebeckite/plugin-rename";
 
 export default defineConfig({
   plugins: [
-    renamePlugin({
+    rename({
       status: 308,
       onUnexpectedRemoval: "warning",
     }),
@@ -82,7 +82,7 @@ buildRouteLock ──► 現在の RouteLock
 
 関数のシグネチャは次のとおりです。
 
-- `renamePlugin(options?)` / `rename(options?)`
+- `rename(options?)` / `rename(options?)`
 - `diffRoutes(previous, current, options?)`
 - `buildRouteLock(entries, isPublished)`
 - `collapseRedirects(rules)`

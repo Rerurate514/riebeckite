@@ -19,7 +19,7 @@ import {
   type ContentManifestEntry,
 } from "@riebeckite/core";
 
-export function seriesPagesPlugin() {
+export function seriesPages() {
   return definePlugin({
     name: "series-pages",
     pageTypes: [

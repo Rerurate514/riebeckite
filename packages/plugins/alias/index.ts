@@ -35,8 +35,6 @@ export function alias(options: AliasOptions = {}) {
   });
 }
 
-export const aliasPlugin = alias;
-
 type PathOwner = {
   slug: string;
   kind: "permalink" | "redirect";

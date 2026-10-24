@@ -26,7 +26,7 @@ The plugin is a thin runtime switch over that contract:
 - `initColorMode` — the client entry that binds the buttons, persists the
   choice in `localStorage` and keeps the document in sync.
 
-`colorModePlugin()` itself only registers the stylesheet and the client entry;
+`colorMode()` itself only registers the stylesheet and the client entry;
 everything else is delivered through the two components you render in your site
 shell.
 
@@ -34,15 +34,15 @@ shell.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { colorModePlugin } from "@riebeckite/plugin-color-mode";
+import { colorMode } from "@riebeckite/plugin-color-mode";
 
 export default defineConfig({
   // ...
-  plugins: [colorModePlugin()],
+  plugins: [colorMode()],
 });
 ```
 
-`colorModePlugin()` bundles `style.css` and declares `initColorMode` as a client
+`colorMode()` bundles `style.css` and declares `initColorMode` as a client
 entry.
 
 ### Render the components
@@ -159,7 +159,7 @@ diagrams) can follow mode changes in the future.
 
 ## Exports
 
-- `colorModePlugin()` — plugin factory
+- `colorMode()` — plugin factory
 - `ColorModeToggle` — the switch component
 - `ColorModeScript` — the before-paint inline script component
 - `initColorMode` — browser init (also exported by `@riebeckite/plugin-color-mode/client`)

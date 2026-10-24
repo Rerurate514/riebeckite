@@ -7,7 +7,7 @@ export async function writePluginDevConfig(
   previewRoot: string,
   plugin: LocalPluginPackage,
 ): Promise<void> {
-  const [core, colorMode, obsidianMarkdown, themeDefault, tocPlugin] =
+  const [core, colorMode, obsidianMarkdown, themeDefault, toc] =
     await Promise.all([
       resolveModuleSpecifier("@riebeckite/core"),
       resolveModuleSpecifier("@riebeckite/plugin-color-mode"),
@@ -17,16 +17,14 @@ export async function writePluginDevConfig(
     ]);
   const factoryName = pluginFactoryName(plugin.name);
   const source = `import { defineConfig } from ${JSON.stringify(core)};
-import { colorModePlugin } from ${JSON.stringify(colorMode)};
+import { colorMode } from ${JSON.stringify(colorMode)};
 import { obsidianMarkdown } from ${JSON.stringify(obsidianMarkdown)};
-import { tocPlugin } from ${JSON.stringify(tocPlugin)};
+import { toc } from ${JSON.stringify(toc)};
 import { defaultTheme } from ${JSON.stringify(themeDefault)};
 import * as pluginModule from ${JSON.stringify(plugin.entry)};
 
 const moduleRecord = pluginModule as unknown as Record<string, unknown>;
-const preferredFactory =
-  moduleRecord[${JSON.stringify(factoryName)}] ??
-  moduleRecord[${JSON.stringify(`${factoryName}Plugin`)}];
+const preferredFactory = moduleRecord[${JSON.stringify(factoryName)}];
 const fallbackFactory = Object.values(moduleRecord).find(
   (value) => typeof value === "function",
 );
@@ -56,7 +54,7 @@ export default defineConfig({
   },
   content: { directory: "content" },
   theme: defaultTheme(),
-  plugins: [obsidianMarkdown(), colorModePlugin(), tocPlugin(), plugin],
+  plugins: [obsidianMarkdown(), colorMode(), toc(), plugin],
 });
 `;
   await fs.writeFile(

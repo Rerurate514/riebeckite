@@ -125,7 +125,7 @@ assertNoErrors(report);
 
 ## 主なエクスポート
 
-- `diagnostics(options?)` / `diagnosticsPlugin`: プラグインを作成する
+- `diagnostics(options?)` / `diagnostics`: プラグインを作成する
 - `runDiagnostics(target, options?)`: 診断と集計を実行する
 - `analyzeContent(config, options?)`: 生の `Diagnostic[]` を取得する
 - `hasEnabledAnalyticsPlugin(config?)`: 解決済み設定で analytics プラグインが有効かを判定する

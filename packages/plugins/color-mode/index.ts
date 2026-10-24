@@ -22,7 +22,7 @@ export { initColorMode } from "./src/init.js";
  * Registers the color-mode plugin: bundles the toggle stylesheet and declares
  * `initColorMode` as the browser entry point that wires up toggling at runtime.
  */
-export function colorModePlugin() {
+export function colorMode() {
   return definePlugin({
     name: "color-mode",
     assets: [

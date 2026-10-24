@@ -60,7 +60,7 @@ frontmatter の色が無効な場合は診断 `discord-embed-invalid-color`（wa
 
 ## 主なエクスポート
 
-- `discordEmbed(options?)` / `discordEmbedPlugin(options?)`: プラグインを作成する
+- `discordEmbed(options?)` / `discordEmbed(options?)`: プラグインを作成する
 - `buildDiscordHeadTags(entry, options, diagnostics)`: エントリーの head タグを組み立てる
 - `resolveDiscordEmbedOptions(options?)`: 既定値を解決する
 - 型: `DiscordEmbedOptions`、`ResolvedDiscordEmbedOptions`

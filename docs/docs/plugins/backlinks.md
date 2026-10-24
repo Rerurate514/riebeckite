@@ -10,7 +10,7 @@ current note.
 [日本語](./backlinks.ja.md)
 
 ## Recommended placement
-`backlinksPlugin()` provides a `getBacklinks({ view, slug })` helper that returns
+`backlinks()` provides a `getBacklinks({ view, slug })` helper that returns
 `readonly ArticleBacklink[]` (`{ slug, permalink, title }`) and a `<Backlinks
 backlinks={...} />` component that renders a `<footer class="rr-backlinks">` with
 an eyebrow label and a list of links. The Site places the `<Backlinks />`
@@ -25,15 +25,15 @@ renders nothing.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { backlinks } from "@riebeckite/plugin-backlinks";
 
 export default defineConfig({
   // ...
-  plugins: [backlinksPlugin()],
+  plugins: [backlinks()],
 });
 ```
 
-`backlinksPlugin()` adds backlinks for every public entry with published
+`backlinks()` adds backlinks for every public entry with published
 incoming links and bundles `style.css` into the app stylesheet. Render
 `<Backlinks backlinks={getBacklinks({ view, slug })} />` once in the article
 layout to display it. The official Starter already renders this component.
@@ -60,7 +60,7 @@ return (
 
 ## Configuration
 
-There are no plugin options for `backlinksPlugin`. The `Backlinks` component
+There are no plugin options for `backlinks`. The `Backlinks` component
 accepts `backlinks` as a required prop.
 
 ## Component
@@ -70,7 +70,7 @@ an eyebrow label and a list of links to each backlink's resolved `permalink`.
 
 ## Exports
 
-- `backlinksPlugin()` — plugin factory
+- `backlinks()` — plugin factory
 - `Backlinks` — list component (default export of `components/backlinks.tsx`)
 - `getBacklinks({ view, slug })` — resolves published backlinks for a slug
   (`{ slug, permalink, title }` each)

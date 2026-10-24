@@ -8,7 +8,7 @@ import {
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { buildLocalGraph, LocalGraph, localGraphPlugin } from "../index.ts";
+import { buildLocalGraph, LocalGraph, localGraph } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -94,7 +94,7 @@ test("builds a local graph with current, outgoing, backlink and both nodes", asy
 test("builds local graphs for connected pages only", async () => {
   const manifest = await new ContentManager(source(FILES), [], {
     config: explicitConfig,
-    plugins: [localGraphPlugin()],
+    plugins: [localGraph()],
   }).getManifest();
 
   // Graph data should be available for published pages with connections
@@ -120,7 +120,7 @@ test("builds local graphs for connected pages only", async () => {
 test("keeps graph data available for the Site to render", async () => {
   const manifest = await new ContentManager(source(FILES), [], {
     config: explicitConfig,
-    plugins: [localGraphPlugin()],
+    plugins: [localGraph()],
   }).getManifest();
 
   const graph = buildLocalGraph({

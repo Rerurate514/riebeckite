@@ -197,7 +197,9 @@ async function registerPlugin(name: string): Promise<boolean> {
   } catch {
     return false;
   }
-  const identifier = `${name.replace(/-([a-z0-9])/g, (_, letter: string) => letter.toUpperCase())}Plugin`;
+  const identifier = name.replace(/-([a-z0-9])/g, (_, letter: string) =>
+    letter.toUpperCase(),
+  );
   if (source.includes(`name: "${name}"`) || source.includes(`${identifier}(`))
     return false;
   const array = /plugins:\s*\[([\s\S]*?)\n(\s*)\]/.exec(source);

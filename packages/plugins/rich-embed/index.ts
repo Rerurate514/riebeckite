@@ -27,8 +27,6 @@ export function richEmbed(options: RichEmbedOptions = {}) {
   });
 }
 
-export const richEmbedPlugin = richEmbed;
-
 function validateRichEmbedOptions(
   options: RichEmbedOptions | undefined,
 ): readonly ConfigValidationIssue[] {

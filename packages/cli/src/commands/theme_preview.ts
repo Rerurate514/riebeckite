@@ -83,19 +83,18 @@ async function writePreviewConfig(
   name: string,
 ): Promise<void> {
   const identifier = `${name.replace(/-([a-z0-9])/g, (_, letter: string) => letter.toUpperCase())}Theme`;
-  const [core, colorMode, docsPlugin, obsidianMarkdown, tocPlugin] =
-    await Promise.all([
-      resolveModuleSpecifier("@riebeckite/core"),
-      resolveModuleSpecifier("@riebeckite/plugin-color-mode"),
-      resolveModuleSpecifier("@riebeckite/plugin-docs"),
-      resolveModuleSpecifier("@riebeckite/plugin-obsidian-markdown"),
-      resolveModuleSpecifier("@riebeckite/plugin-toc"),
-    ]);
+  const [core, colorMode, docs, obsidianMarkdown, toc] = await Promise.all([
+    resolveModuleSpecifier("@riebeckite/core"),
+    resolveModuleSpecifier("@riebeckite/plugin-color-mode"),
+    resolveModuleSpecifier("@riebeckite/plugin-docs"),
+    resolveModuleSpecifier("@riebeckite/plugin-obsidian-markdown"),
+    resolveModuleSpecifier("@riebeckite/plugin-toc"),
+  ]);
   const source = `import { defineConfig, type RiebeckiteTheme } from ${JSON.stringify(core)};
-import { colorModePlugin } from ${JSON.stringify(colorMode)};
-import { docs } from ${JSON.stringify(docsPlugin)};
+import { colorMode } from ${JSON.stringify(colorMode)};
+import { docs } from ${JSON.stringify(docs)};
 import { obsidianMarkdown } from ${JSON.stringify(obsidianMarkdown)};
-import { tocPlugin } from ${JSON.stringify(tocPlugin)};
+import { toc } from ${JSON.stringify(toc)};
 import * as themeModule from ${JSON.stringify(path.join(themeRoot, "index.ts"))};
 
 const themeFactory = (themeModule.${identifier} ?? Object.values(themeModule).find(
@@ -110,8 +109,8 @@ export default defineConfig({
   theme: themeFactory(),
   plugins: [
     obsidianMarkdown(),
-    colorModePlugin(),
-    tocPlugin(),
+    colorMode(),
+    toc(),
     docs({ root: "docs", sidebar: { auto: true, label: "Documentation" }, prevNext: true }),
   ],
 });

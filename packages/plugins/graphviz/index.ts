@@ -40,8 +40,6 @@ export function graphviz(options: GraphvizOptions = {}) {
   });
 }
 
-export const graphvizPlugin = graphviz;
-
 function validateGraphvizOptions(
   options: GraphvizOptions | undefined,
 ): readonly ConfigValidationIssue[] {

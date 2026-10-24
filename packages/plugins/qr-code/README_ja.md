@@ -80,7 +80,7 @@ QR エンコーダ（`qrcode`）はビルド時に動的インポートするた
 ## 主なエクスポート
 
 - `qrCode(options?)`: プラグインを作成する
-- `qrCodePlugin`: `qrCode` の別名
+- `qrCode`: `qrCode` の別名
 - `resolveQrCodeOptions(options?)`: オプションを正規化する
 - `buildQrSvg(text, options)`: テキストを SVG 文字列へエンコードする
 - 型: `QrCodeOptions`、`ResolvedQrCodeOptions`、`QrCodeLevel`、`QrBuildResult`

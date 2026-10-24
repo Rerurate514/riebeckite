@@ -77,8 +77,6 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
   });
 }
 
-export const diagnosticsPlugin = diagnostics;
-
 const ANALYTICS_PLUGIN_NAME = "analytics";
 const L10N_PLUGIN_NAME = "l10n";
 

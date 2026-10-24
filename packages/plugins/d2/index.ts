@@ -37,9 +37,6 @@ export function d2(options: D2Options = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` convention used by several packages. */
-export const d2Plugin = d2;
-
 function validateD2Options(
   options: D2Options | undefined,
 ): readonly ConfigValidationIssue[] {

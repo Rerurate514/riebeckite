@@ -138,10 +138,10 @@ Markdown / HTML の変換は、公開されている `Pipeline` にプラグイ�
 
 ```ts
 import { Pipeline } from "@riebeckite/core";
-import { tipPlugin } from "../src/index.ts";
+import { tip } from "../src/index.ts";
 
 const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-  plugins: [tipPlugin()],
+  plugins: [tip()],
 });
 
 const { html } = await pipeline.execute(":::tip\nSave often.\n:::");

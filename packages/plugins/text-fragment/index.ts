@@ -29,7 +29,7 @@ export type TextFragmentPluginOptions = {
  * Registers the client-only text fragment share plugin: a selection popover
  * that copies a `#:~:text=` deep link or a Markdown quote.
  */
-export function textFragmentPlugin(
+export function textFragment(
   options: TextFragmentPluginOptions = {},
 ): RiebeckitePlugin {
   return definePlugin({

@@ -10,7 +10,7 @@ import {
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { getRecentPosts, RecentPosts, recentPostsPlugin } from "../index.ts";
+import { getRecentPosts, RecentPosts, recentPosts } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -166,8 +166,8 @@ test("getRecentPosts returns an empty list for no entries", () => {
   assert.deepEqual(getRecentPosts({ manifest: manifest([], []) }), []);
 });
 
-test("recentPostsPlugin registers its stylesheet", () => {
-  assert.deepEqual(recentPostsPlugin().assets, [
+test("recentPosts registers its stylesheet", () => {
+  assert.deepEqual(recentPosts().assets, [
     {
       pluginName: "recent-posts",
       kind: "style",
@@ -176,14 +176,14 @@ test("recentPostsPlugin registers its stylesheet", () => {
   ]);
 });
 
-test("recentPostsPlugin declares a recent-posts projection", () => {
-  assert.deepEqual(recentPostsPlugin().contentOutputDependencies, [
+test("recentPosts declares a recent-posts projection", () => {
+  assert.deepEqual(recentPosts().contentOutputDependencies, [
     { type: "projection", projection: "recent-posts" },
   ]);
 });
 
 test("a post date change regenerates the index with only the plugin dependency", () => {
-  const dependencies = recentPostsPlugin().contentOutputDependencies;
+  const dependencies = recentPosts().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     entry("index"),

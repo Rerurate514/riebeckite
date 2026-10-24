@@ -55,8 +55,6 @@ export function glossary(options: GlossaryOptions = {}) {
   });
 }
 
-export const glossaryPlugin = glossary;
-
 function validateGlossaryOptions(
   options: GlossaryOptions | undefined,
 ): readonly ConfigValidationIssue[] {

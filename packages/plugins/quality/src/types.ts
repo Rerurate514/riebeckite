@@ -15,7 +15,7 @@ export type InspectOptions = {
 };
 
 /**
- * Options for {@link qualityPlugin}. Extends the inspection options with a
+ * Options for {@link quality}. Extends the inspection options with a
  * build-failure policy.
  */
 export type QualityOptions = InspectOptions & {

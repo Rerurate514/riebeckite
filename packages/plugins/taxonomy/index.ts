@@ -188,9 +188,6 @@ export function taxonomy(options: TaxonomyOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const taxonomyPlugin = taxonomy;
-
 function taxonomyPagePaths(
   entries: Parameters<typeof buildTaxonomyIndex>[0],
   options: ResolvedTaxonomyOptions,

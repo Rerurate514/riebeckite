@@ -70,7 +70,7 @@ export const getRelatedPosts: PluginDataHelper<
   return findRelatedPosts(entry, view.discoverableEntries, options?.max ?? 3);
 };
 
-export function relatedPostsPlugin(
+export function relatedPosts(
   options: RelatedPostsOptions = {},
 ): RiebeckitePlugin<RelatedPostsOptions> {
   return definePlugin({

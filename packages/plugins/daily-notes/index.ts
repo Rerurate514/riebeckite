@@ -35,7 +35,7 @@ export {
  * Registers the Daily Notes widget. Extraction options are consumed by
  * `getDailyNotes`; the plugin wires the stylesheet and output dependencies.
  */
-export function dailyNotesPlugin(
+export function dailyNotes(
   options?: DailyNotesOptions,
 ): RiebeckitePlugin<DailyNotesOptions | undefined> {
   return definePlugin({

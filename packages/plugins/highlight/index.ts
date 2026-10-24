@@ -29,9 +29,6 @@ export function highlight(options: HighlightOptions = {}) {
   });
 }
 
-/** Alias kept for parity with plugins that export a `…Plugin` factory. */
-export const highlightPlugin = highlight;
-
 function validateHighlightOptions(
   options: HighlightOptions | undefined,
 ): readonly ConfigValidationIssue[] {

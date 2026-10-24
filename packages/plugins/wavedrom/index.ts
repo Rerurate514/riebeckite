@@ -43,9 +43,6 @@ export function wavedrom(options: WavedromOptions = {}) {
   });
 }
 
-/** Alias kept for symmetry with the other plugin factories. */
-export const wavedromPlugin = wavedrom;
-
 function validateWavedromOptions(
   options: WavedromOptions | undefined,
 ): readonly ConfigValidationIssue[] {

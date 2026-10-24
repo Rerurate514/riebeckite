@@ -43,7 +43,7 @@ export function resolvePublicRedirects(
  * plans and emits files through the build's generated-output sink; it never
  * writes to the filesystem and never uploads anything.
  */
-export function deployPlugin(options: DeployOptions): RiebeckitePlugin {
+export function deploy(options: DeployOptions): RiebeckitePlugin {
   return definePlugin({
     name: PLUGIN_NAME,
     options,

@@ -10,15 +10,15 @@
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { tocPlugin } from "@riebeckite/plugin-toc";
+import { toc } from "@riebeckite/plugin-toc";
 
 export default defineConfig({
   // ...
-  plugins: [tocPlugin()],
+  plugins: [toc()],
 });
 ```
 
-`tocPlugin()` はスタイルと `initTableOfContents` を登録します。初期化処理はスクロール位置を追跡し、読んだ節と現在の節を目次に反映します。
+`toc()` はスタイルと `initTableOfContents` を登録します。初期化処理はスクロール位置を追跡し、読んだ節と現在の節を目次に反映します。
 
 UI は自動配置されません。サイトが見出しを抽出してコンポーネントを描画し、通常は記事の `aside` に置きます。記事の横にレールを置ける幅では、サイトが安定した目次ルートをそのレールに配置し、sticky のオフセット・高さの上限・範囲内の縦スクロールを担当します。プラグインは目次のリスト、リンク、スクロール連動の状態を担当します。
 
@@ -54,7 +54,7 @@ return (
 
 ## 主なエクスポート
 
-- `tocPlugin()`: プラグインを作成する
+- `toc()`: プラグインを作成する
 - `TableOfContents`: 目次のコンポーネント
 - `extractTableOfContents(html)`: ID 付き見出しから `TableOfContentsItem[]` を作る
 - `initTableOfContents`: ブラウザ側のスクロール連動を初期化する。`@riebeckite/plugin-toc/client` からも読み込める

@@ -20,21 +20,21 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 - `ColorModeToggle`：ライト / ダーク / システムを選ぶセグメントコントロール。
 - `initColorMode`：クライアントエントリー。ボタンの結線、`localStorage` への保存、ドキュメントの状態同期を行います。
 
-`colorModePlugin()` はスタイルシートとクライアントエントリーの登録だけを行います。UI は、サイトシェルで描画する 2 つのコンポーネントが担います。
+`colorMode()` はスタイルシートとクライアントエントリーの登録だけを行います。UI は、サイトシェルで描画する 2 つのコンポーネントが担います。
 
 ## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { colorModePlugin } from "@riebeckite/plugin-color-mode";
+import { colorMode } from "@riebeckite/plugin-color-mode";
 
 export default defineConfig({
   // ...
-  plugins: [colorModePlugin()],
+  plugins: [colorMode()],
 });
 ```
 
-`colorModePlugin()` は `style.css` をバンドルし、`initColorMode` をクライアントエントリとして宣言します。
+`colorMode()` は `style.css` をバンドルし、`initColorMode` をクライアントエントリとして宣言します。
 
 ### コンポーネントの描画
 
@@ -129,7 +129,7 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## エクスポート
 
-- `colorModePlugin()`：プラグインファクトリ
+- `colorMode()`：プラグインファクトリ
 - `ColorModeToggle`：切替コンポーネント
 - `ColorModeScript`：描画前インラインスクリプトのコンポーネント
 - `initColorMode`：ブラウザ初期化関数（`@riebeckite/plugin-color-mode/client` からもエクスポート）

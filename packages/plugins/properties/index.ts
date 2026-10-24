@@ -87,8 +87,6 @@ export function properties(options: PropertiesOptions = {}) {
   });
 }
 
-export const propertiesPlugin = properties;
-
 function reportUnrenderableValues(
   context: PluginManifestContext,
   resolved: ReturnType<typeof resolvePropertiesOptions>,

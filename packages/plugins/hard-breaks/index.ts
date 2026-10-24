@@ -11,6 +11,3 @@ export function hardBreaks() {
     remarkPlugins: [remarkBreaks],
   });
 }
-
-/** Alias kept for parity with plugins that export a `…Plugin` factory. */
-export const hardBreaksPlugin = hardBreaks;

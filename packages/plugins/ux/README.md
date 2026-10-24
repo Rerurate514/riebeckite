@@ -25,12 +25,12 @@ idempotent.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { uxPlugin } from "@riebeckite/plugin-ux";
+import { ux } from "@riebeckite/plugin-ux";
 
 export default defineConfig({
   // ...
   plugins: [
-    uxPlugin({
+    ux({
       progress: true,
       backToTop: true,
       tocScrollSpy: true,
@@ -96,7 +96,7 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 
 ## Exports
 
-- `uxPlugin(options?)` / `ux(options?)` — plugin factory
+- `ux(options?)` / `ux(options?)` — plugin factory
 - `initUx` — browser initializer
 - Types: `UxOptions`, `UxResolvedConfig`
 

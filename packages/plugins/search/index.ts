@@ -26,7 +26,7 @@ export {
 export { initSearch } from "./src/search-bar.client.js";
 export { buildSearchItems } from "./src/search-index.server.js";
 
-export function searchPlugin() {
+export function search() {
   return definePlugin({
     name: "search",
     assets: [createStyleAsset("search", "@riebeckite/plugin-search/style.css")],

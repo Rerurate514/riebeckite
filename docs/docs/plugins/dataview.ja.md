@@ -10,7 +10,7 @@ title: Dataview
 
 ## できること
 
-`dataviewPlugin()` は、フェンス言語が `dataview` のコードブロックを検出します。
+`dataview()` は、フェンス言語が `dataview` のコードブロックを検出します。
 
 ````md
 ```dataview
@@ -28,11 +28,11 @@ LIMIT 10
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { dataview } from "@riebeckite/plugin-dataview";
 
 export default defineConfig({
   // ...
-  plugins: [dataviewPlugin()],
+  plugins: [dataview()],
 });
 ```
 
@@ -180,7 +180,7 @@ SORT priority desc, file.name asc
 
 ## エクスポート
 
-- `dataviewPlugin(options?)` / `dataview(options?)`：プラグインファクトリ
+- `dataview(options?)` / `dataview(options?)`：プラグインファクトリ
 - `remarkDataview(options?)`：Remark 変換だけを利用する場合の API
 - `parseDataview(source)`：ブロック本文を `DataviewSpec` に変換
 - `selectDataviewEntries(spec, manifest, defaultLimit)`：照合エンジン

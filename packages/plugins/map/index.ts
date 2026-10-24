@@ -73,9 +73,6 @@ export function map(options: MapOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const mapPlugin = map;
-
 function validateMapOptions(
   options: MapOptions | undefined,
 ): readonly ConfigValidationIssue[] {

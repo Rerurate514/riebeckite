@@ -21,17 +21,17 @@ actions:
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+import { textFragment } from "@riebeckite/plugin-text-fragment";
 
 export default defineConfig({
   // ...
-  plugins: [textFragmentPlugin()],
+  plugins: [textFragment()],
 });
 ```
 
-`textFragmentPlugin()` registers `style.css` and the `initTextFragmentShare`
+`textFragment()` registers `style.css` and the `initTextFragmentShare`
 client entry, which the app calls during page initialization. Pass
-`textFragmentPlugin({ labels })` to override individual UI labels.
+`textFragment({ labels })` to override individual UI labels.
 
 ## Behavior
 
@@ -59,7 +59,7 @@ The fragment follows `#:~:text=[prefix-,]start[,end][,-suffix]`:
 
 ## API
 
-- `textFragmentPlugin(options?)` — plugin factory; `options.labels` overrides
+- `textFragment(options?)` — plugin factory; `options.labels` overrides
   the UI labels
 - `initTextFragmentShare(labels?)` — client initializer (also via
   `@riebeckite/plugin-text-fragment/client`)

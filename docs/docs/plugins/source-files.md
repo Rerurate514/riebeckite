@@ -73,7 +73,7 @@ Only files matching `include` and not matching `exclude` are eligible. The plugi
 
 ## Exports
 
-- `sourceFiles(options)` / `sourceFilesPlugin`
+- `sourceFiles(options)` / `sourceFiles`
 - `sourceFilePath(path)`
 - `SourceFilesOptions`
 

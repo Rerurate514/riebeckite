@@ -60,7 +60,7 @@ Markdown として保存された Excalidraw の描画は、通常の Markdown �
 
 ## 公開 API
 
-- `excalidraw(options?)` / `excalidrawPlugin`：プラグインファクトリ
+- `excalidraw(options?)` / `excalidraw`：プラグインファクトリ
 - `ExcalidrawOptions`：オプションの型
 
 ## 関連資料

@@ -14,7 +14,7 @@ type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(options: ExampleOptions = {}) {
+export function example(options: ExampleOptions = {}) {
   return definePlugin({
     name: "example",
     options,

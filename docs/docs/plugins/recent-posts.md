@@ -25,15 +25,15 @@ With no posts, the component renders nothing.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { recentPosts } from "@riebeckite/plugin-recent-posts";
 
 export default defineConfig({
   // ...
-  plugins: [recentPostsPlugin()],
+  plugins: [recentPosts()],
 });
 ```
 
-`recentPostsPlugin()` registers the plugin in the plugin list and bundles
+`recentPosts()` registers the plugin in the plugin list and bundles
 `style.css` into the app stylesheet; it never renders UI itself. The generated
 `starter` and `showcase` demonstrate the recommended homepage placement.
 
@@ -71,7 +71,7 @@ target.
 
 ## Exports
 
-- `recentPostsPlugin()` — plugin factory
+- `recentPosts()` — plugin factory
 - `RecentPosts` — list component (default export of `components/recent-posts.tsx`)
 - `getRecentPosts({ manifest, limit? })` — collects the latest discoverable
   posts

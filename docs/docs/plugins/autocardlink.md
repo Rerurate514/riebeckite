@@ -10,7 +10,7 @@ Render `cardlink` code blocks as link preview cards.
 
 ## Overview
 
-`autoCardLinkPlugin()` replaces fenced `cardlink` code blocks with an
+`autoCardLink()` replaces fenced `cardlink` code blocks with an
 anchor-style link card (title, description, favicon, host, and an optional
 image). Styles ship in `style.css`.
 
@@ -27,11 +27,11 @@ image: https://example.com/og.png
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 
 export default defineConfig({
   // ...
-  plugins: [autoCardLinkPlugin()],
+  plugins: [autoCardLink()],
 });
 ```
 
@@ -82,7 +82,7 @@ image.
 
 ## Exports
 
-- `autoCardLinkPlugin(options?)` — plugin factory
+- `autoCardLink(options?)` — plugin factory
 - `remarkAutoCardLink(options?)` — remark transform usable on its own
 - Types: `AutoCardLink`, `AutoCardLinkOptions`
 

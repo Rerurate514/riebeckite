@@ -104,7 +104,7 @@ document with a `@riebeckite/plugin-kanban` message.
 ## Exports
 
 - `kanban(options?)` — plugin factory
-- `kanbanPlugin` — alias of `kanban`
+- `kanban` — alias of `kanban`
 - `resolveKanbanOptions(options?)` — apply defaults
 - `remarkKanban(options?)` — remark transform used by the plugin
 - `parseKanban(source, options)`, `renderKanban(result, options, resolveLink, source)`

@@ -12,7 +12,7 @@ client-side JavaScript is required.
 
 ## Overview
 
-`dataviewPlugin()` recognises fenced blocks whose language is `dataview`:
+`dataview()` recognises fenced blocks whose language is `dataview`:
 
 ````md
 ```dataview
@@ -33,11 +33,11 @@ code blocks and produce a diagnostic.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { dataview } from "@riebeckite/plugin-dataview";
 
 export default defineConfig({
   // ...
-  plugins: [dataviewPlugin()],
+  plugins: [dataview()],
 });
 ```
 
@@ -215,7 +215,7 @@ with `hideFallback`.
 
 ## Exports
 
-- `dataviewPlugin(options?)` / `dataview(options?)` — plugin factory
+- `dataview(options?)` / `dataview(options?)` — plugin factory
 - `remarkDataview(options?)` — remark transform usable on its own
 - `parseDataview(source)` — parse a block body into a `DataviewSpec`
 - `selectDataviewEntries(spec, manifest, defaultLimit)` — matching engine

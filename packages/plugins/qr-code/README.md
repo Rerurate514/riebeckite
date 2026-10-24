@@ -95,7 +95,7 @@ The caption comes from the code-block `title` (code meta) or a leading
 ## Exports
 
 - `qrCode(options?)` — plugin factory
-- `qrCodePlugin` — alias of `qrCode`
+- `qrCode` — alias of `qrCode`
 - `resolveQrCodeOptions(options?)` — normalise options
 - `buildQrSvg(text, options)` — encode text into an SVG string
 - Types: `QrCodeOptions`, `ResolvedQrCodeOptions`, `QrCodeLevel`,

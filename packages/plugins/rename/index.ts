@@ -59,7 +59,7 @@ export type RenameOptions = {
  * machinery (`manifest.redirects`). The only cross-build state is a JSON route
  * lock persisted through `context.cache`; no files are written directly.
  */
-export function renamePlugin(
+export function rename(
   options: RenameOptions = {},
 ): RiebeckitePlugin<RenameOptions> {
   const enabled = options.enabled ?? true;
@@ -152,8 +152,6 @@ export function renamePlugin(
     },
   });
 }
-
-export const rename = renamePlugin;
 
 async function writeLock(
   cache: PluginCache,

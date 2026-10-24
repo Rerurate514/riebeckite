@@ -97,8 +97,6 @@ export function citations(options: CitationsOptions = {}) {
   });
 }
 
-export const citationsPlugin = citations;
-
 function validateCitationsOptions(
   options: CitationsOptions | undefined,
 ): readonly ConfigValidationIssue[] {

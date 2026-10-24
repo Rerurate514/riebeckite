@@ -1,61 +1,65 @@
 import { defineConfig } from "@riebeckite/core";
-import { articleMetadataPlugin } from "@riebeckite/plugin-article-metadata";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
-import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { articleMetadata } from "@riebeckite/plugin-article-metadata";
+import { attachment } from "@riebeckite/plugin-attachment";
+import { autoCardLink } from "@riebeckite/plugin-autocardlink";
+import { backlinks } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
+import { citations } from "@riebeckite/plugin-citations";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
-import { colorModePlugin } from "@riebeckite/plugin-color-mode";
+import { colorMode } from "@riebeckite/plugin-color-mode";
 import { d2 } from "@riebeckite/plugin-d2";
-import { dataviewPlugin } from "@riebeckite/plugin-dataview";
-import { deployPlugin } from "@riebeckite/plugin-deploy";
+import { dataview } from "@riebeckite/plugin-dataview";
+import { deploy } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
 import { diff } from "@riebeckite/plugin-diff";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { docs } from "@riebeckite/plugin-docs";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { flashcards } from "@riebeckite/plugin-flashcards";
 import { folderPages } from "@riebeckite/plugin-folder-pages";
-import { galleryPlugin } from "@riebeckite/plugin-gallery";
+import { gallery } from "@riebeckite/plugin-gallery";
 import { glossary } from "@riebeckite/plugin-glossary";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
-import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { l10n } from "@riebeckite/plugin-l10n";
-import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
-import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { lightbox } from "@riebeckite/plugin-lightbox";
+import { localGraph } from "@riebeckite/plugin-local-graph";
 import { map } from "@riebeckite/plugin-map";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
 import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
+import { metaBind } from "@riebeckite/plugin-meta-bind";
 import { navigation } from "@riebeckite/plugin-navigation";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { pdf } from "@riebeckite/plugin-pdf";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
-import { qualityPlugin } from "@riebeckite/plugin-quality";
-import { queryPlugin } from "@riebeckite/plugin-query";
-import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { quality } from "@riebeckite/plugin-quality";
+import { query } from "@riebeckite/plugin-query";
+import { recentPosts } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
 import { share } from "@riebeckite/plugin-share";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { sidenotes } from "@riebeckite/plugin-sidenotes";
 import { sourceFiles } from "@riebeckite/plugin-source-files";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
-import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+import { textFragment } from "@riebeckite/plugin-text-fragment";
 import { timeline } from "@riebeckite/plugin-timeline";
-import { tocPlugin } from "@riebeckite/plugin-toc";
-import { uxPlugin } from "@riebeckite/plugin-ux";
+import { toc } from "@riebeckite/plugin-toc";
+import { ux } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { webmention } from "@riebeckite/plugin-webmention";
@@ -88,11 +92,13 @@ export default defineConfig({
   spa: { prefetch: "hover", viewTransitions: true },
   plugins: [
     obsidianMarkdown(),
+    attachment(),
+    pdf(),
     properties({
       include: ["created", "modified", "tags", "status", "kind", "source"],
       order: ["created", "modified", "tags", "status", "kind", "source"],
     }),
-    articleMetadataPlugin(),
+    articleMetadata(),
     seo({
       feed: {
         rss: true,
@@ -102,8 +108,12 @@ export default defineConfig({
       sitemap: true,
       robots: true,
     }),
+    citations({
+      bibliography: "assets/showcase-references.bib",
+    }),
     discordEmbed(),
     mermaidPele(),
+    metaBind(),
     markmap(),
     map(),
     marp(),
@@ -131,7 +141,7 @@ export default defineConfig({
     excalidraw(),
     canvas(),
     richEmbed(),
-    autoCardLinkPlugin(),
+    autoCardLink(),
     highlight(),
     codeEnhance({
       theme: {
@@ -147,28 +157,28 @@ export default defineConfig({
     }),
     codeTabs(),
     sourceFiles({ include: ["assets/*.ts"] }),
-    colorModePlugin(),
+    colorMode(),
     codeAnnotations(),
-    lightboxPlugin(),
-    searchPlugin(),
-    tocPlugin(),
-    backlinksPlugin(),
+    lightbox(),
+    search(),
+    toc(),
+    backlinks(),
     breadcrumbs(),
-    queryPlugin(),
+    query(),
     bases(),
-    galleryPlugin(),
+    gallery(),
     glossary(),
-    dataviewPlugin(),
-    flashcardsPlugin(),
+    dataview(),
+    flashcards(),
     kanban(),
-    uxPlugin(),
+    ux(),
     share(),
-    recentPostsPlugin(),
+    recentPosts(),
     relatedPosts(),
     diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: webmentionProvider }),
     responsiveImage(),
-    localGraphPlugin(),
+    localGraph(),
     l10n({ defaultLang: "en", languages: ["en", "ja"] }),
     folderPages(),
     navigation({
@@ -199,14 +209,14 @@ export default defineConfig({
       sidebar: { auto: true, label: "Documentation" },
       prevNext: true,
     }),
-    hoverPreviewPlugin(),
+    hoverPreview(),
     shortcodes(),
     sidenotes(),
     taxonomy(),
-    textFragmentPlugin(),
+    textFragment(),
     timeline(),
-    qualityPlugin(),
-    deployPlugin({ provider: "cloudflare-pages" }),
+    quality(),
+    deploy({ provider: "cloudflare-pages" }),
     diagnostics({
       reportUnusedAssets: true,
       reportOrphans: true,

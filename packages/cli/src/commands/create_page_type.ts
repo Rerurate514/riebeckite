@@ -335,7 +335,7 @@ async function registerPlugin(name: string): Promise<boolean> {
   const configPath = path.resolve(process.cwd(), "riebeckite.config.ts");
   const source = await fs.readFile(configPath, "utf8").catch(() => null);
   if (!source) return false;
-  const identifier = `${toPluginIdentifier(name)}Plugin`;
+  const identifier = toPluginIdentifier(name);
   if (source.includes(`name: "${name}"`) || source.includes(`${identifier}(`))
     return false;
   const array = /plugins:\s*\[([\s\S]*?)\n(\s*)\]/.exec(source);

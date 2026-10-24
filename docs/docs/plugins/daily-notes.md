@@ -25,18 +25,18 @@ wholesale, so a long private note only contributes the snippet that opted in.
 note. An unpublished note's permalink and title stay `null`, so private notes
 never leak their location.
 
-`dailyNotesPlugin()` registers data and styles but does not render the widget.
+`dailyNotes()` registers data and styles but does not render the widget.
 The Site owns placement; a homepage section is the recommended location.
 
 ## Quick Start
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
+import { dailyNotes } from "@riebeckite/plugin-daily-notes";
 
 export default defineConfig({
   // ...
-  plugins: [dailyNotesPlugin()],
+  plugins: [dailyNotes()],
 });
 ```
 
@@ -92,7 +92,7 @@ official Starter renders Daily Notes by default.
 
 ## Exports
 
-- `dailyNotesPlugin(options?)` — plugin factory (registers `style.css`)
+- `dailyNotes(options?)` — plugin factory (registers `style.css`)
 - `getDailyNotes({ manifest, config, options? })` — sorted `DailyNote[]`
 - `DailyNotes` — widget component (`{ notes, limit? }`)
 - `resolveDisplayOptions(options?)` — apply date-format defaults

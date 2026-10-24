@@ -79,8 +79,6 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
   });
 }
 
-export const excalidrawPlugin = excalidraw;
-
 async function renderAttachment(
   context: PluginRenderContext,
   options: ExcalidrawOptions,

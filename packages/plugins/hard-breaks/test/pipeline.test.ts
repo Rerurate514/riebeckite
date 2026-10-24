@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
-import { hardBreaks, hardBreaksPlugin } from "../index.ts";
+import { hardBreaks } from "../index.ts";
 
 async function renderWithPlugin(markdown: string): Promise<string> {
   const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [hardBreaksPlugin()],
+    plugins: [hardBreaks()],
   });
   const { html } = await pipeline.execute(markdown);
   return html.trim();

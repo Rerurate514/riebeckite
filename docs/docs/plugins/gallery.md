@@ -118,7 +118,7 @@ The grid uses `container-type: inline-size` and collapses to two columns below
 ## Exports
 
 - `gallery(options?)` — plugin factory
-- `galleryPlugin` — alias of `gallery`
+- `gallery` — alias of `gallery`
 - `parseGallery(source, options)` — parse a block body into a spec
 - `renderGallery(spec)` / `renderGalleryError(message)` — render the grid or an error box
 - `remarkGallery(options?)` — the remark transform

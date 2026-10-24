@@ -10,17 +10,17 @@ title: Backlinks
 
 ## 推奨配置
 
-`backlinksPlugin()` はコンテンツマニフェストから被リンクを解決する `getBacklinks({ view, slug })` と、その結果を描画する `<Backlinks backlinks={...} />` コンポーネントを提供します。`getBacklinks()` は公開対象のノートだけを残し、マニフェスト順で返します。`Backlinks` は受け取った一覧をリンク集として描画し、表示対象がなければ何も出力しません。配置はサイト側が担当し、通常は記事本文の後でこのコンポーネントを一度描画します。
+`backlinks()` はコンテンツマニフェストから被リンクを解決する `getBacklinks({ view, slug })` と、その結果を描画する `<Backlinks backlinks={...} />` コンポーネントを提供します。`getBacklinks()` は公開対象のノートだけを残し、マニフェスト順で返します。`Backlinks` は受け取った一覧をリンク集として描画し、表示対象がなければ何も出力しません。配置はサイト側が担当し、通常は記事本文の後でこのコンポーネントを一度描画します。
 
 ## クイックスタート
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { backlinks } from "@riebeckite/plugin-backlinks";
 
 export default defineConfig({
   // ...
-  plugins: [backlinksPlugin()],
+  plugins: [backlinks()],
 });
 ```
 
@@ -43,11 +43,11 @@ return <Article footerContent={<Backlinks backlinks={items} />} />;
 
 ## 設定
 
-`backlinksPlugin()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントは `backlinks` 必須プロップを受け取ります。
+`backlinks()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントは `backlinks` 必須プロップを受け取ります。
 
 ## 公開 API
 
-- `backlinksPlugin()`：プラグインファクトリ
+- `backlinks()`：プラグインファクトリ
 - `Backlinks`：被リンク一覧コンポーネント
 - `getBacklinks({ view, slug })`：公開済みの被リンクを解決する関数
 - `ArticleBacklink`：`{ slug, permalink, title }` の型。`permalink` は解決済みの正規 URL

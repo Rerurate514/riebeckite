@@ -9,7 +9,7 @@ Riebeckite の静的ホスティング向けの出力ヘルパーです。デプ
 
 ## 概要
 
-`deployPlugin()` はコンテンツマニフェストの公開リダイレクトを読み、
+`deploy()` はコンテンツマニフェストの公開リダイレクトを読み、
 Cloudflare Pages / Netlify / Vercel / GitHub Pages 向けのファイルを計画します。
 出力計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、パスの順序も安定します。
 
@@ -17,11 +17,11 @@ Cloudflare Pages / Netlify / Vercel / GitHub Pages 向けのファイルを計�
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { deployPlugin } from "@riebeckite/plugin-deploy";
+import { deploy } from "@riebeckite/plugin-deploy";
 
 export default defineConfig({
   plugins: [
-    deployPlugin({
+    deploy({
       provider: ["cloudflare-pages", "github-pages"],
       cname: "example.com",
       headers: { "X-Frame-Options": "DENY" },
@@ -48,7 +48,7 @@ GitHub Pages には `_redirects` 構文がないため、各リダイレクト�
 
 ## 公開 API
 
-- `deployPlugin(options: DeployOptions): RiebeckitePlugin`
+- `deploy(options: DeployOptions): RiebeckitePlugin`
 - `planDeployOutputs({ provider, redirects, options }): DeployOutput[]`
 - `renderRedirectLines(redirects): string`
 - `renderVercelConfig({ redirects, options }): string`

@@ -4,7 +4,7 @@ export { default as RecentPosts } from "./components/recent-posts.js";
 export type { RecentPost } from "./src/recent-posts.js";
 export { getRecentPosts } from "./src/recent-posts.server.js";
 
-export function recentPostsPlugin() {
+export function recentPosts() {
   return definePlugin({
     name: "recent-posts",
     contentOutputDependencies: [

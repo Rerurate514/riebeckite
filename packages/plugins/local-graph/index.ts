@@ -19,7 +19,7 @@ export { buildGraphEdges, layoutRadialGraph };
 
 export type LocalGraphOptions = Record<never, never>;
 
-export function localGraphPlugin(options: LocalGraphOptions = {}) {
+export function localGraph(options: LocalGraphOptions = {}) {
   return definePlugin({
     name: "local-graph",
     order: 400,

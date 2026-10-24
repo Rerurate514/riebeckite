@@ -47,9 +47,6 @@ export function markmap(options: MarkmapOptions = {}) {
   });
 }
 
-/** Alias kept for symmetry with the other plugin factories. */
-export const markmapPlugin = markmap;
-
 function validateMarkmapOptions(
   options: MarkmapOptions | undefined,
 ): readonly ConfigValidationIssue[] {

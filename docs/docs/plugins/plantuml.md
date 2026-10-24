@@ -22,7 +22,7 @@ export default defineConfig({
 });
 ```
 
-`plantuml` is also exported under the alias `plantumlPlugin`.
+`plantuml` is also exported under the alias `plantuml`.
 
 ## Live example
 
@@ -102,7 +102,7 @@ Encoding failures are reported with `file.message(...)`. Diagnostics use
 ## Exports
 
 - `plantuml(options?)` — plugin factory
-- `plantumlPlugin` — alias of `plantuml`
+- `plantuml` — alias of `plantuml`
 - Types: `PlantumlOptions`, `PlantumlFormat`
 
 ## See also

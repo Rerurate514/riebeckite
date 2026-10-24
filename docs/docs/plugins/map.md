@@ -158,7 +158,7 @@ to inject a fake Leaflet).
 
 ## Main exports
 
-- `map(options?)`: create the plugin (`mapPlugin` is an alias)
+- `map(options?)`: create the plugin (`map` is an alias)
 - `initMap`: initialize client-side maps
 - `parseMapSource`: parse a fenced block into `MapData`
 - `normalizeMapInput`: normalize frontmatter into `MapData`

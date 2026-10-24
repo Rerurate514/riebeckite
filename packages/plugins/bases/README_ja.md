@@ -154,6 +154,6 @@ Formula の循環、動的なプロパティ参照など、静的に証明でき
 ## オプションとエクスポート
 
 `className`、`language`、`limit`、`showFallback`、`view` の意味は従来どおりです。
-パッケージは `bases`、`basesPlugin`、`remarkBases`、`parseBases`、
+パッケージは `bases`、`bases`、`remarkBases`、`parseBases`、
 `parseBasesExpression`、`analyzeBasesDependencies`、`evaluateBasesExpression`、`matchesCondition`、公開 Bases 型を
 エクスポートします。

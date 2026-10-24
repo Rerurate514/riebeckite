@@ -85,7 +85,7 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 ## Exports
 
 - `breadcrumbs(options?)` — plugin factory
-- `breadcrumbsPlugin` — alias of `breadcrumbs`
+- `breadcrumbs` — alias of `breadcrumbs`
 - `resolveBreadcrumbsOptions(options?)` — apply option defaults
 - `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — build the trail
 - `renderBreadcrumbNav(items, options)` — render the navigation HTML

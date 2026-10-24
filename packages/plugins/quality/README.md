@@ -8,7 +8,7 @@ Static quality and accessibility inspection for generated HTML in Riebeckite.
 
 ## Overview
 
-`qualityPlugin()` runs a small set of dependency-free, regex-based rules over
+`quality()` runs a small set of dependency-free, regex-based rules over
 the HTML produced by the build and reports the findings through the shared
 diagnostics channel. There is no DOM, no axe-core, and no headless browser.
 
@@ -20,11 +20,11 @@ exported `inspectGeneratedHtml` hook for final pages.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { qualityPlugin } from "@riebeckite/plugin-quality";
+import { quality } from "@riebeckite/plugin-quality";
 
 export default defineConfig({
   // ...
-  plugins: [qualityPlugin({ failOn: "error" })],
+  plugins: [quality({ failOn: "error" })],
 });
 ```
 
@@ -50,7 +50,7 @@ export default defineConfig({
 
 ## API
 
-- `qualityPlugin(options?)` — plugin factory.
+- `quality(options?)` — plugin factory.
 - `inspectHtml(html, options?)` — pure function returning `Diagnostic[]`.
 - `inspectGeneratedHtml(page, options?)` — pure function that inspects a final
   page and sets `filePath` to `page.path`.

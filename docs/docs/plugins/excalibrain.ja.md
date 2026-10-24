@@ -156,7 +156,7 @@ related:: [[note-a]] and [[note-b]] are similar
 
 ## 主なエクスポート
 
-- `excaliBrain(options?)` / `excaliBrainPlugin`: プラグインを作成する
+- `excaliBrain(options?)` / `excaliBrain`: プラグインを作成する
 - `resolveExcaliBrainOptions(options?)`: 既定値を解決する
 - `buildExcaliBrainGraph(input)`: 純粋なグラフ構築
 - `layoutExcaliBrain(graph, options?)`: 決定的なレイアウト

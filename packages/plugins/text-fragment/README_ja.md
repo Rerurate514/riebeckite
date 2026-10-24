@@ -17,15 +17,15 @@
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { textFragmentPlugin } from "@riebeckite/plugin-text-fragment";
+import { textFragment } from "@riebeckite/plugin-text-fragment";
 
 export default defineConfig({
   // ...
-  plugins: [textFragmentPlugin()],
+  plugins: [textFragment()],
 });
 ```
 
-`textFragmentPlugin()` はスタイルと `initTextFragmentShare` を登録します。初期化処理はアプリのページ初期化時に呼ばれます。`textFragmentPlugin({ labels })` で UI ラベルだけを差し替えられます。
+`textFragment()` はスタイルと `initTextFragmentShare` を登録します。初期化処理はアプリのページ初期化時に呼ばれます。`textFragment({ labels })` で UI ラベルだけを差し替えられます。
 
 ## 挙動
 
@@ -47,7 +47,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `textFragmentPlugin(options?)`：プラグインファクトリ。`options.labels` で UI ラベルを上書きする
+- `textFragment(options?)`：プラグインファクトリ。`options.labels` で UI ラベルを上書きする
 - `initTextFragmentShare(labels?)`：ブラウザ初期化関数（`@riebeckite/plugin-text-fragment/client` からも読み込める）
 - `encodeTextFragment(text)`：テキスト片をパーセントエンコードする
 - `buildTextFragmentUrl(pageUrl, selection, options?)`：ディープリンクを作る。`options` は `{ prefix?, suffix? }`

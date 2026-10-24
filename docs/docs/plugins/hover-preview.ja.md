@@ -10,7 +10,7 @@ title: Hover Preview
 
 ## 概要
 
-ビルド時に `hoverPreviewPlugin()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。
+ビルド時に `hoverPreview()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。
 
 抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` を指定するとページごとのデータ量を抑えられます。
 
@@ -18,15 +18,15 @@ title: Hover Preview
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 
 export default defineConfig({
   // ...
-  plugins: [hoverPreviewPlugin()],
+  plugins: [hoverPreview()],
 });
 ```
 
-`hoverPreviewPlugin()` がスタイル、クライアントエントリ、ビルド時のデータ注入をまとめて登録します。`hoverPreview` は同じファクトリの別名です。
+`hoverPreview()` がスタイル、クライアントエントリ、ビルド時のデータ注入をまとめて登録します。`hoverPreview` は同じファクトリの別名です。
 
 クライアントエントリは引数を取りません。表示に関する設定はデータ用スクリプトの data 属性に格納されるため、初期化処理をオプションなしで呼んでも動作します。
 
@@ -42,7 +42,7 @@ export default defineConfig({
 | `includeTitles` | `true`         | ポップオーバーにタイトルを表示するか       |
 
 ```ts
-hoverPreviewPlugin({
+hoverPreview({
   delay: 200,
   excerptLength: 120,
   maxEntries: 200,
@@ -52,8 +52,8 @@ hoverPreviewPlugin({
 
 ## 主なエクスポート
 
-- `hoverPreviewPlugin(options?)`: プラグインを作成する
-- `hoverPreview`: `hoverPreviewPlugin` の別名
+- `hoverPreview(options?)`: プラグインを作成する
+- `hoverPreview`: `hoverPreview` の別名
 - `resolveHoverPreviewOptions(options?)`: 既定値を適用して `ResolvedHoverPreviewOptions` を返す
 - `buildPreviewIndex(entries, options)`: `HoverPreviewIndex`（`permalink` → `{ title, excerpt, slug }`）を作る
 - `htmlToPlainText(html)` / `createExcerpt(html, length)`: 抜粋を作る補助関数

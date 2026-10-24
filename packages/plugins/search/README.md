@@ -37,15 +37,15 @@ example to generate a `search-data.json` index the modal fetches at runtime.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 
 export default defineConfig({
   // ...
-  plugins: [searchPlugin()],
+  plugins: [search()],
 });
 ```
 
-`searchPlugin()` registers the plugin, bundles `style.css`, and declares
+`search()` registers the plugin, bundles `style.css`, and declares
 `initSearch` as a client entry that wires up the modal on page load.
 
 Search functionality and `SearchBar` placement are separate: registration does
@@ -98,7 +98,7 @@ const results = searchItems(items, "#obsidian");
 
 ## Exports
 
-- `searchPlugin()` — plugin factory
+- `search()` — plugin factory
 - `SearchBar` — modal component (default export of `components/search-bar.tsx`)
 - `initSearch` — browser init (also via `@riebeckite/plugin-search/client`)
 - `searchItems`, `normalizeSearchQuery`, `normalizeSearchText` — search engine

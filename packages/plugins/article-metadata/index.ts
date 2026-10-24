@@ -2,7 +2,7 @@ import { createStyleAsset, definePlugin } from "@riebeckite/core";
 
 export type { ArticleMetadataProps } from "./components/article-metadata.js";
 
-export function articleMetadataPlugin() {
+export function articleMetadata() {
   return definePlugin({
     name: "article-metadata",
     assets: [

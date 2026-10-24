@@ -184,17 +184,16 @@ export function sampleTheme() {
     await waitFor(() =>
       output.includes(`Theme preview: http://127.0.0.1:${port}/`),
     );
-    const [home, article, stylesheet] = await Promise.all([
-      fetch(`http://127.0.0.1:${port}/`),
-      fetch(`http://127.0.0.1:${port}/article`),
-      fetch(`http://127.0.0.1:${port}/app/style.css`),
-    ]);
-    assert.equal(home.status, 200);
-    assert.equal(article.status, 200);
-    assert.equal(stylesheet.status, 200);
-    assert.match(await home.text(), /Theme preview/);
-    assert.match(await article.text(), /Heading one/);
-    assert.match(await stylesheet.text(), /--theme-preview-test: active/);
+    const [home, article, stylesheet] = await Promise.all(
+      ["/", "/article", "/app/style.css"].map(async (pathname) => {
+        const response = await fetch(`http://127.0.0.1:${port}${pathname}`);
+        assert.equal(response.status, 200);
+        return response.text();
+      }),
+    );
+    assert.match(home, /Theme preview/);
+    assert.match(article, /Heading one/);
+    assert.match(stylesheet, /--theme-preview-test: active/);
     assert.equal(
       await fsPromises.readFile(path.join(themeRoot, "index.ts"), "utf8"),
       source,

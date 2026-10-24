@@ -29,7 +29,7 @@ import {
   renderSitemap,
 } from "@riebeckite/plugin-seo";
 
-export function titleSuffixPlugin(suffix = " | Example") {
+export function titleSuffix(suffix = " | Example") {
   return definePlugin({
     name: "seo-title-suffix",
     order: -10,

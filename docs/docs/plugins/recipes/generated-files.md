@@ -14,7 +14,7 @@ This recipe writes `llms.txt` from public entries.
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function llmsTxtPlugin() {
+export function llmsTxt() {
   return definePlugin({
     name: "llms-txt",
     planGeneratedOutputs: ({ manifest }) => [

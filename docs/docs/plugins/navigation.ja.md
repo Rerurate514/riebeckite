@@ -155,7 +155,7 @@ navigation({
 ## エクスポート
 
 - `navigation(options?)`：プラグインファクトリ
-- `navigationPlugin`：`navigation` のエイリアス
+- `navigation`：`navigation` のエイリアス
 - `NAVIGATION_PLUGIN_NAME`：プラグイン名 `"navigation"`
 - `buildNavigation(entries, options?)`：マニフェストエントリからモデルを構築する
 - `resolveSiteNavigation(config, manifest)`：有効なプラグインを見つけてモデルを

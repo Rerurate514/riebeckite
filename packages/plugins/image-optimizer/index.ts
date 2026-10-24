@@ -127,8 +127,6 @@ export function imageOptimizer(options: ImageOptimizerOptions = {}) {
   });
 }
 
-export const imageOptimizerPlugin = imageOptimizer;
-
 function extensionOf(path: string): string {
   return path.slice(path.lastIndexOf(".") + 1).toLowerCase();
 }

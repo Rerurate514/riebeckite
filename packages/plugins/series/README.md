@@ -91,7 +91,7 @@ to percent-encoding. Set `basePath` to match a custom routing scheme, or pass
 
 ## Exports
 
-- `series(options?)` / `seriesPlugin(options?)` — plugin factory
+- `series(options?)` / `series(options?)` — plugin factory
 - `buildSeriesIndex(manifest, name, options?)` — ordered members for one series
   (`SeriesIndex | null`); useful for landing pages
 - `renderSeriesIndex(manifest, name, options?)` — standalone `<section>` block

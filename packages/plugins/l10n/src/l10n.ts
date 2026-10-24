@@ -141,8 +141,6 @@ export function l10n(options: L10nOptions) {
   });
 }
 
-export const l10nPlugin = l10n;
-
 type LocalizedLinkOptions = {
   readonly state: L10nState;
   readonly sourceSlug: string | undefined;

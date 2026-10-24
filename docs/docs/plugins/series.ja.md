@@ -77,7 +77,7 @@ series_order: 2
 
 ## 公開 API
 
-- `series(options?)` / `seriesPlugin(options?)`：プラグインファクトリ
+- `series(options?)` / `series(options?)`：プラグインファクトリ
 - `buildSeriesIndex(manifest, name, options?)`：1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
 - `renderSeriesIndex(manifest, name, options?)`：シリーズ全体の `<section>` ブロック
 - `renderSeriesList(manifest, options?, label?)`：全シリーズを並べた `<section>` ブロック。無ければ `""`

@@ -147,8 +147,6 @@ export function series(options: SeriesOptions = {}) {
   });
 }
 
-export const seriesPlugin = series;
-
 function validateSeriesOptions(
   options: SeriesOptions | undefined,
 ): readonly ConfigValidationIssue[] {

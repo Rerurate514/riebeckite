@@ -12,7 +12,7 @@ It does not upload anything and never writes to the filesystem.
 
 ## Overview
 
-`deployPlugin()` reads public redirects from the content manifest and plans the
+`deploy()` reads public redirects from the content manifest and plans the
 provider-specific files for Cloudflare Pages, Netlify, Vercel, or GitHub Pages.
 All planning is pure and deterministic: no timestamps, no randomness, and a
 stable path order.
@@ -21,11 +21,11 @@ stable path order.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { deployPlugin } from "@riebeckite/plugin-deploy";
+import { deploy } from "@riebeckite/plugin-deploy";
 
 export default defineConfig({
   plugins: [
-    deployPlugin({
+    deploy({
       provider: ["cloudflare-pages", "github-pages"],
       cname: "example.com",
       headers: { "X-Frame-Options": "DENY" },
@@ -52,7 +52,7 @@ skipped because the root cannot be stubbed.
 
 ## Public API
 
-- `deployPlugin(options: DeployOptions): RiebeckitePlugin`
+- `deploy(options: DeployOptions): RiebeckitePlugin`
 - `planDeployOutputs({ provider, redirects, options }): DeployOutput[]`
 - `renderRedirectLines(redirects): string`
 - `renderVercelConfig({ redirects, options }): string`

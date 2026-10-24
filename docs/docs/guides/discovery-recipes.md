@@ -84,7 +84,7 @@ Then render them on the homepage with a `query` block. Install and register
 `@riebeckite/plugin-query` first (it is not in `starter`):
 
 ```ts
-plugins: [queryPlugin()],
+plugins: [query()],
 ```
 
 ````md

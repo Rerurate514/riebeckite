@@ -31,8 +31,6 @@ export function plantuml(options: PlantumlOptions = {}) {
   });
 }
 
-export const plantumlPlugin = plantuml;
-
 function validatePlantumlOptions(
   options: PlantumlOptions | undefined,
 ): readonly ConfigValidationIssue[] {

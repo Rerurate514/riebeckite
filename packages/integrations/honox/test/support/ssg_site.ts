@@ -323,7 +323,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     lines.unshift(
       'import { d2 } from "@riebeckite/plugin-d2";',
       'import { marp } from "@riebeckite/plugin-marp";',
-      'import { searchPlugin } from "@riebeckite/plugin-search";',
+      'import { search } from "@riebeckite/plugin-search";',
     );
   }
   if (sources.properties) {
@@ -412,7 +412,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), searchPlugin()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), search()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
     "});",
     "",
   );

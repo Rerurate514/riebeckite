@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { lightboxPlugin, rehypeLightbox } from "../index.ts";
+import { lightbox, rehypeLightbox } from "../index.ts";
 import type { ElementNode } from "../src/types.js";
 
 function makeTree(alt = "A cat"): ElementNode {
@@ -51,8 +51,8 @@ test("rehypeLightbox honors expandLabel overrides", () => {
   assert.equal(findTrigger(tree).properties?.ariaLabel, "Zoom image: A cat");
 });
 
-test("lightboxPlugin forwards English labels to the client entry", () => {
-  const entry = lightboxPlugin().clientEntries?.[0];
+test("lightbox forwards English labels to the client entry", () => {
+  const entry = lightbox().clientEntries?.[0];
 
   assert.deepEqual(entry?.publicConfig, {
     expandLabel: "Expand image",
@@ -60,8 +60,8 @@ test("lightboxPlugin forwards English labels to the client entry", () => {
   });
 });
 
-test("lightboxPlugin forwards label overrides to the client entry", () => {
-  const entry = lightboxPlugin({
+test("lightbox forwards label overrides to the client entry", () => {
+  const entry = lightbox({
     expandLabel: "Zoom image",
     closeLabel: "閉じる",
   }).clientEntries?.[0];

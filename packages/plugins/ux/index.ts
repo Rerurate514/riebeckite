@@ -16,7 +16,7 @@ export type { UxOptions, UxResolvedConfig } from "./src/options.js";
  * None of the features change the rendered article markup, so the plugin
  * only injects a JSON config element and registers a browser initializer.
  */
-export function uxPlugin(options: UxOptions = {}) {
+export function ux(options: UxOptions = {}) {
   const config = resolveUxConfig(options);
 
   return definePlugin({
@@ -44,9 +44,6 @@ export function uxPlugin(options: UxOptions = {}) {
     },
   });
 }
-
-/** Alias kept for naming symmetry with the other plugin factories. */
-export const ux = uxPlugin;
 
 function validateUxOptions(
   options: UxOptions | undefined,

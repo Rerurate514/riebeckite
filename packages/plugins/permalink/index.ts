@@ -61,8 +61,6 @@ export function permalink(options: PermalinkOptions = {}) {
   });
 }
 
-export const permalinkPlugin = permalink;
-
 function resolveLocation(
   content: ResolverContent,
   options: PermalinkOptions,

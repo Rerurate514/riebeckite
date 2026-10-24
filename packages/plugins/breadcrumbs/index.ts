@@ -93,9 +93,6 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const breadcrumbsPlugin = breadcrumbs;
-
 function breadcrumbOutputDependencies(
   entry: ContentManifestEntry,
   manifest: ContentManifest,

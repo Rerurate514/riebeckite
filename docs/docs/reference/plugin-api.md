@@ -43,7 +43,7 @@ standalone screen does not mean adding a plugin-specific HonoX route.
 ``` ts
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({ name: "example" });
 }
 ```
@@ -56,7 +56,7 @@ type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(options: ExampleOptions = {}) {
+export function example(options: ExampleOptions = {}) {
   return definePlugin({
     name: "example",
     options,
@@ -97,7 +97,7 @@ capability merely to encode transform order.
 
 ``` ts
 plugins: [
-  condition && myPlugin(),
+  condition && my(),
 ]
 ```
 
@@ -276,7 +276,7 @@ Typical plugin export shape:
 
 ```ts
 // index.ts
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
     // ... factory hooks, assets, clientEntries, etc.
@@ -460,7 +460,7 @@ import {
   definePlugin,
 } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
     assets: [createStyleAsset("example", "@riebeckite/plugin-example/style.css")],

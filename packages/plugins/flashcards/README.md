@@ -27,11 +27,11 @@ and replaces them with an interactive deck.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { flashcards } from "@riebeckite/plugin-flashcards";
 
 export default defineConfig({
   // ...
-  plugins: [flashcardsPlugin()],
+  plugins: [flashcards()],
 });
 ```
 
@@ -106,7 +106,7 @@ untouched. No options are passed from the build to the client; the deck reads
 
 ## Exports
 
-- `flashcards(options?)` / `flashcardsPlugin(options?)` — plugin factory
+- `flashcards(options?)` / `flashcards(options?)` — plugin factory
 - `initFlashcards(root?)` — client initializer
 - `parseFlashcards(source)` — parse a block into cards
 - `splitFlashcardGroups(source)` — split a block into card groups

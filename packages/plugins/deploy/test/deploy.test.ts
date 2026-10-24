@@ -8,7 +8,7 @@ import {
 } from "@riebeckite/core";
 import {
   type DeployOutput,
-  deployPlugin,
+  deploy,
   type PublicRedirect,
   planDeployOutputs,
   renderRedirectLines,
@@ -233,7 +233,7 @@ test("renderRedirectStub is self-contained and newline terminated", () => {
   assert.match(stub, /rel="canonical"/);
 });
 
-test("deployPlugin plans a single provider through the output sink", async () => {
+test("deploy plans a single provider through the output sink", async () => {
   const { outputs } = await runPlugin(
     { provider: "netlify" },
     sampleManifest(),
@@ -246,7 +246,7 @@ test("deployPlugin plans a single provider through the output sink", async () =>
   );
 });
 
-test("deployPlugin unions multiple providers and dedupes shared files", async () => {
+test("deploy unions multiple providers and dedupes shared files", async () => {
   const { outputs } = await runPlugin(
     { provider: ["netlify", "cloudflare-pages", "vercel"] },
     sampleManifest(),
@@ -284,12 +284,12 @@ function sampleManifest(): ContentManifest {
 }
 
 async function runPlugin(
-  options: Parameters<typeof deployPlugin>[0],
+  options: Parameters<typeof deploy>[0],
   manifest: ContentManifest,
 ): Promise<{ outputs: DeployOutput[]; diagnostics: Diagnostic[] }> {
   const outputs: DeployOutput[] = [];
   const diagnostics: Diagnostic[] = [];
-  const plugin = deployPlugin(options);
+  const plugin = deploy(options);
   await plugin.buildEnd?.({
     manifest,
     output: { emit: (output) => outputs.push(output) },

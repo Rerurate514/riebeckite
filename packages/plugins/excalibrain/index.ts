@@ -152,5 +152,3 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
     ],
   });
 }
-
-export const excaliBrainPlugin = excaliBrain;

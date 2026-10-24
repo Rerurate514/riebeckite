@@ -12,7 +12,7 @@ sidebar:
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function timedPlugin() {
+export function timed() {
   return definePlugin({
     name: "timed",
     buildStart: async ({ logger, tracer }) => {

@@ -16,12 +16,12 @@ title: Recent Posts
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { recentPosts } from "@riebeckite/plugin-recent-posts";
 
-export default defineConfig({ plugins: [recentPostsPlugin()] });
+export default defineConfig({ plugins: [recentPosts()] });
 ```
 
-`recentPostsPlugin()` は UI を自動描画しません。生成された `starter` と `showcase` は推奨するホームページ配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
+`recentPosts()` は UI を自動描画しません。生成された `starter` と `showcase` は推奨するホームページ配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -40,7 +40,7 @@ return <RecentPosts posts={posts} />;
 
 ## 公開 API
 
-- `recentPostsPlugin()`：プラグインファクトリ
+- `recentPosts()`：プラグインファクトリ
 - `RecentPosts`：最新記事一覧コンポーネント
 - `getRecentPosts({ manifest, limit? })`
 - `RecentPost`：`{ slug, permalink, title, postedAt }` の型

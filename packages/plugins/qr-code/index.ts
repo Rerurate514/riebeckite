@@ -40,8 +40,6 @@ export function qrCode(options: QrCodeOptions = {}) {
   });
 }
 
-export const qrCodePlugin = qrCode;
-
 function validateQrCodeOptions(
   options: QrCodeOptions | undefined,
 ): readonly ConfigValidationIssue[] {

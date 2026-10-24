@@ -119,7 +119,7 @@ import "@riebeckite/plugin-changelog/style.css";
 ## Exports
 
 - `changelog(options?)` — plugin factory
-- `changelogPlugin` — alias of `changelog`
+- `changelog` — alias of `changelog`
 - `resolveChangelogOptions(options?)` — apply option defaults
 - `GitChangelogReader` — Git-backed history reader (`getFileHistory`,
   `getRecentCommits`, `isAvailable`)

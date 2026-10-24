@@ -11,7 +11,7 @@ Backlink list rendering showing which published notes link to the current note, 
 
 ## Recommended placement
 
-`backlinksPlugin()` registers the data source. Render `<Backlinks />` where the list belongs, normally once after article content. Inside `SiteProvider` and an `Article` carrying its public `entry`, the component resolves incoming links itself.
+`backlinks()` registers the data source. Render `<Backlinks />` where the list belongs, normally once after article content. Inside `SiteProvider` and an `Article` carrying its public `entry`, the component resolves incoming links itself.
 
 Without incoming links (or when none are published), the component renders nothing.
 
@@ -34,7 +34,7 @@ return (
 ## Configuration
 
 ```ts
-plugins: [backlinksPlugin()];
+plugins: [backlinks()];
 ```
 
 Enable the plugin and render the component once. Remove the element to remove the UI.

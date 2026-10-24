@@ -11,7 +11,7 @@ tag/folder filters, and note details in a single page.
 
 ## Overview
 
-`gardenExplorerPlugin()` provides an interactive `GardenExplorer` component with
+`gardenExplorer()` provides an interactive `GardenExplorer` component with
 three panels:
 
 - **Explorer** — search box plus optional tag and folder filter chips (with
@@ -63,11 +63,11 @@ of rescanning the vault in the browser.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { gardenExplorer } from "@riebeckite/plugin-garden-explorer";
 
 export default defineConfig({
   // ...
-  plugins: [gardenExplorerPlugin()],
+  plugins: [gardenExplorer()],
 });
 ```
 
@@ -75,7 +75,7 @@ With configuration:
 
 ```ts
 plugins: [
-  gardenExplorerPlugin({
+  gardenExplorer({
     layout: "force",
     depth: 1,
     showTags: true,
@@ -88,7 +88,7 @@ plugins: [
 ];
 ```
 
-`gardenExplorerPlugin()` registers the `/explore` page type and bundles
+`gardenExplorer()` registers the `/explore` page type and bundles
 `style.css` and its client hydrator into the app. A catch-all route using
 `resolveRiebeckiteRoute()` and `pluginPageSsgParams()` renders and emits it;
 no plugin-specific application route is needed. The page is server-rendered
@@ -134,7 +134,7 @@ explorer/detail structure and links in semantic lists.
 
 ## Exports
 
-- `gardenExplorerPlugin(options?)` — plugin factory
+- `gardenExplorer(options?)` — plugin factory
 - `GardenExplorer` — interactive explorer component (default export of
   `components/garden-explorer.tsx`)
 - `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — builds

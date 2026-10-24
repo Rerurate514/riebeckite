@@ -12,7 +12,7 @@ sidebar:
 ```ts
 import { definePlugin, type Diagnostic } from "@riebeckite/core";
 
-export function descriptionDiagnosticsPlugin() {
+export function descriptionDiagnostics() {
   let diagnostics: Diagnostic[] = [];
 
   return definePlugin({

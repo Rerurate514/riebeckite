@@ -72,7 +72,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `sourceFiles(options)` / `sourceFilesPlugin`
+- `sourceFiles(options)` / `sourceFiles`
 - `sourceFilePath(path)`
 - `SourceFilesOptions`
 

@@ -7,7 +7,7 @@ import {
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
-import { hoverPreviewPlugin } from "../index.ts";
+import { hoverPreview } from "../index.ts";
 import { HOVER_PREVIEW_INDEX_PATH } from "../src/render.ts";
 import type { HoverPreviewIndex } from "../src/types.ts";
 
@@ -50,7 +50,7 @@ const customLocation = definePlugin({
 async function manifest(files: Record<string, string>) {
   const manager = new ContentManager(source(files), [], {
     config,
-    plugins: [customLocation, hoverPreviewPlugin()],
+    plugins: [customLocation, hoverPreview()],
     publishingBuildTime: "2025-01-01T00:00:00.000Z",
   });
   return await manager.getManifest();

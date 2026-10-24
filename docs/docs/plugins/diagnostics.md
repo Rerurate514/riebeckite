@@ -151,7 +151,7 @@ assertNoErrors(report);
 
 ## Exports
 
-- `diagnostics(options?)` / `diagnosticsPlugin` — plugin factory
+- `diagnostics(options?)` / `diagnostics` — plugin factory
 - `runDiagnostics(target, options?)` — run the analysis directly
 - `analyzeContent(config, options?)` — raw analysis returning `Diagnostic[]`
 - `hasEnabledAnalyticsPlugin(config?)` — whether the resolved config enables the analytics plugin

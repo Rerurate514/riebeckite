@@ -30,18 +30,18 @@ aliases:
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { aliasPlugin } from "@riebeckite/plugin-alias";
+import { alias } from "@riebeckite/plugin-alias";
 
 export default defineConfig({
   // ...
-  plugins: [aliasPlugin()],
+  plugins: [alias()],
 });
 ```
 
 `permalink` プラグインと併用できます。`alias` は解決済みの公開ロケーションを `extendContentLocations` で後から拡張するため、正規パーマリンクがどのように決まっていても、その値を上書きしたり再現したりしません。
 
 ```ts
-plugins: [permalinkPlugin(), aliasPlugin()],
+plugins: [permalink(), alias()],
 ```
 
 ## オプション
@@ -80,7 +80,7 @@ plugins: [permalinkPlugin(), aliasPlugin()],
 
 ## エクスポート
 
-- `aliasPlugin(options?)` / `alias(options?)`：プラグインファクトリ
+- `alias(options?)` / `alias(options?)`：プラグインファクトリ
 - `resolveAliasPath(alias)`：エイリアスをサイト内パスへ変換する純関数（`null` で無効）
 - 型: `AliasOptions`、`AliasRedirectStatus`、`ResolvedAliasOptions`
 

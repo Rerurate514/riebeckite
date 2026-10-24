@@ -41,10 +41,10 @@ npm install @riebeckite/plugin-search
 `riebeckite.config.ts` の `plugins` に登録します。
 
 ```ts
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 
 export default defineConfig({
-  plugins: [searchPlugin()],
+  plugins: [search()],
 });
 ```
 

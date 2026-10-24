@@ -116,7 +116,7 @@ import "@riebeckite/plugin-gallery/style.css";
 ## エクスポート
 
 - `gallery(options?)`：プラグインファクトリ
-- `galleryPlugin`：`gallery` のエイリアス
+- `gallery`：`gallery` のエイリアス
 - `parseGallery(source, options)`：ブロック本文を `GallerySpec` にパースする
 - `renderGallery(spec)` / `renderGalleryError(message)`：グリッドまたはエラーボックスを描画する
 - `remarkGallery(options?)`：remark トランスフォーム

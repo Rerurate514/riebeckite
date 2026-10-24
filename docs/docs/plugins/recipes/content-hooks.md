@@ -22,7 +22,7 @@ The following plugin records a diagnostic for every `TODO` marker and reports it
 ```ts
 import { definePlugin, type Diagnostic } from "@riebeckite/core";
 
-export function todoCheckPlugin() {
+export function todoCheck() {
   const diagnostics: Diagnostic[] = [];
 
   return definePlugin({

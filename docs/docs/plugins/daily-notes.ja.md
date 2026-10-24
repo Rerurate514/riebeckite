@@ -20,17 +20,17 @@ title: Daily Notes
 
 `sourceUrl` と `sourceTitle` は `isPublished` が公開と判定したときだけ付与されます。非公開ノートのパーマリンクとタイトルは `null` のままなので、置き場所が漏れることはありません。
 
-`dailyNotesPlugin()` はデータとスタイルを登録しますが、ウィジェットを自動描画しません。配置はサイト側が管理し、ホームページのセクションが推奨位置です。
+`dailyNotes()` はデータとスタイルを登録しますが、ウィジェットを自動描画しません。配置はサイト側が管理し、ホームページのセクションが推奨位置です。
 
 ## クイックスタート
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { dailyNotesPlugin } from "@riebeckite/plugin-daily-notes";
+import { dailyNotes } from "@riebeckite/plugin-daily-notes";
 
 export default defineConfig({
   // ...
-  plugins: [dailyNotesPlugin()],
+  plugins: [dailyNotes()],
 });
 ```
 
@@ -74,7 +74,7 @@ getDailyNotes({
 
 ## 主なエクスポート
 
-- `dailyNotesPlugin(options?)`: プラグインを作る（`style.css` を登録する）
+- `dailyNotes(options?)`: プラグインを作る（`style.css` を登録する）
 - `getDailyNotes({ manifest, config, options? })`: 並べ替え済みの `DailyNote[]` を返す
 - `DailyNotes`: ウィジェットのコンポーネント（`{ notes, limit? }`）
 - `resolveDisplayOptions(options?)`: 日付表示の既定値を適用する

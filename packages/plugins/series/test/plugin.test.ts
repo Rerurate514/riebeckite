@@ -17,7 +17,6 @@ import {
   getSeriesNavigation,
   SeriesNavigation,
   series,
-  seriesPlugin,
 } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -43,8 +42,8 @@ function entry(
   };
 }
 
-test("series() is re-exported as seriesPlugin and registers its stylesheet", () => {
-  assert.equal(seriesPlugin, series);
+test("series() is re-exported as series and registers its stylesheet", () => {
+  assert.equal(series, series);
   assert.deepEqual(series().contentOutputDependencies, [{ type: "global" }]);
   assert.deepEqual(series().assets, [
     {

@@ -14,7 +14,7 @@ sidebar:
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function llmsTxtPlugin() {
+export function llmsTxt() {
   return definePlugin({
     name: "llms-txt",
     planGeneratedOutputs: ({ manifest }) => [

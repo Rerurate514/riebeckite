@@ -69,7 +69,6 @@ export function sourceFiles(options: SourceFilesOptions) {
   });
 }
 
-export const sourceFilesPlugin = sourceFiles;
 export { sourceFilePath };
 
 function validateOptions(

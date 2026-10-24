@@ -60,9 +60,6 @@ export function pdf(options: PdfOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const pdfPlugin = pdf;
-
 function validatePdfOptions(
   options: PdfOptions | undefined,
 ): readonly ConfigValidationIssue[] {

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
-import { localGraphPlugin } from "../index.ts";
+import { localGraph } from "../index.ts";
 
 const NODES = [
   { slug: "a", outgoing: ["b", "b", "c"], backlinks: [] },
@@ -52,8 +52,8 @@ test("layoutRadialGraph centers the selected node and clamps radii", () => {
   assert.equal(crowded.get("x")?.radius, 14);
 });
 
-test("localGraphPlugin registers only its stylesheet", () => {
-  const plugin = localGraphPlugin();
+test("localGraph registers only its stylesheet", () => {
+  const plugin = localGraph();
 
   assert.equal(plugin.name, "local-graph");
   assert.equal(plugin.contentOutputDependencies, undefined);
@@ -67,7 +67,7 @@ test("localGraphPlugin registers only its stylesheet", () => {
 });
 
 test("exposes no options or validation", () => {
-  const plugin = localGraphPlugin();
+  const plugin = localGraph();
 
   assert.deepEqual(plugin.options, {});
   assert.equal(plugin.validateOptions, undefined);

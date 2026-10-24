@@ -161,6 +161,6 @@ the static, no-JavaScript output model.
 ## Options and exports
 
 `className`, `language`, `limit`, `showFallback`, and `view` retain their existing
-meanings. The package exports `bases`, `basesPlugin`, `remarkBases`, `parseBases`,
+meanings. The package exports `bases`, `bases`, `remarkBases`, `parseBases`,
 `parseBasesExpression`, `analyzeBasesDependencies`, `evaluateBasesExpression`, `matchesCondition`, and the
 public Bases types.

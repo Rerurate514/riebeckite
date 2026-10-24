@@ -55,8 +55,6 @@ export function timeline(options: TimelineOptions = {}) {
   });
 }
 
-export const timelinePlugin = timeline;
-
 function validateTimelineOptions(
   options: TimelineOptions | undefined,
 ): readonly ConfigValidationIssue[] {

@@ -65,7 +65,7 @@ export default {
 
 ## エクスポート
 
-- `archive` / `archivePlugin`：プラグインファクトリ。
+- `archive` / `archive`：プラグインファクトリ。
 - `resolveArchiveOptions`：既定値を適用してオプションを解決します。
 - `buildArchiveCollections`：エントリから月別 collection を組み立てます。
 - `archiveDefinitions`：プラグインが使う Core collection 定義。

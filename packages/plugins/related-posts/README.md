@@ -97,7 +97,7 @@ import "@riebeckite/plugin-related-posts/style.css";
 ## Exports
 
 - `relatedPosts(options?)` — plugin factory
-- `relatedPostsPlugin` — alias of `relatedPosts`
+- `relatedPosts` — alias of `relatedPosts`
 - `resolveRelatedPostsOptions(options?)` — apply option defaults
 - `buildRelatedPosts({ manifest, entry, options, config? })` — rank related entries
 - `renderRelatedPosts(entries, options)` — render the navigation HTML

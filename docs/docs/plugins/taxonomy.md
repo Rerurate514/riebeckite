@@ -159,7 +159,7 @@ import "@riebeckite/plugin-taxonomy/style.css";
 ## Exports
 
 - `taxonomy(options?)` — plugin factory
-- `taxonomyPlugin` — alias of `taxonomy`
+- `taxonomy` — alias of `taxonomy`
 - `resolveTaxonomyOptions(options?)` — apply option defaults
 - `resolveTaxonomyOptionsFromConfig(config)` — read resolved options back from a config
 - `buildTaxonomyIndex(entries, options)` — build tag and folder terms

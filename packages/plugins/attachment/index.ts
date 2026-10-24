@@ -37,8 +37,6 @@ export function attachment(options: AttachmentOptions = {}) {
   });
 }
 
-export const attachmentPlugin = attachment;
-
 async function renderAttachment(
   context: PluginRenderContext,
   options: AttachmentOptions,

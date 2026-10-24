@@ -30,18 +30,18 @@ Redirects are written into the build-time manifest and resolved by HonoX at requ
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { aliasPlugin } from "@riebeckite/plugin-alias";
+import { alias } from "@riebeckite/plugin-alias";
 
 export default defineConfig({
   // ...
-  plugins: [aliasPlugin()],
+  plugins: [alias()],
 });
 ```
 
 It composes with the `permalink` plugin. `alias` augments already-resolved public locations through `extendContentLocations`, so it never overrides or re-derives the canonical permalink, whatever decided it.
 
 ```ts
-plugins: [permalinkPlugin(), aliasPlugin()],
+plugins: [permalink(), alias()],
 ```
 
 ## Options
@@ -80,7 +80,7 @@ A colliding alias is not registered; the existing path wins.
 
 ## Exports
 
-- `aliasPlugin(options?)` / `alias(options?)` — the plugin factory
+- `alias(options?)` / `alias(options?)` — the plugin factory
 - `resolveAliasPath(alias)` — pure alias-to-path helper (returns `null` when invalid)
 - Types: `AliasOptions`, `AliasRedirectStatus`, `ResolvedAliasOptions`
 

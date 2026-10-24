@@ -87,7 +87,7 @@ outside-root content does not appear in the sidebar or previous/next sequence.
 
 ## Exports
 
-- `docs(options)` / `docsPlugin(options)` — plugin factory
+- `docs(options)` / `docs(options)` — plugin factory
 - `buildDocsNavigation(entries, options)` — build the framework-independent model
 - `flattenDocsNavigation(items)` — derive the previous/next sequence
 - `renderDocsSidebar(...)` and `renderDocsPrevNext(...)` — server HTML renderers

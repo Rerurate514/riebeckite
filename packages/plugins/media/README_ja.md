@@ -47,7 +47,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `media(options?)` / `mediaPlugin`：プラグインファクトリ
+- `media(options?)` / `media`：プラグインファクトリ
 - `MediaOptions`、`MediaPreload`：型
 
 ## 関連リンク

@@ -22,7 +22,7 @@ export type CopyCodeOptions = {
   label?: string;
 };
 
-export function copyCodePlugin(options: CopyCodeOptions = {}) {
+export function copyCode(options: CopyCodeOptions = {}) {
   return definePlugin({
     name: "copy-code",
     options,

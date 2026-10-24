@@ -57,8 +57,6 @@ export function kanban(options: KanbanOptions = {}) {
   });
 }
 
-export const kanbanPlugin = kanban;
-
 function validateKanbanOptions(
   options: KanbanOptions | undefined,
 ): readonly ConfigValidationIssue[] {

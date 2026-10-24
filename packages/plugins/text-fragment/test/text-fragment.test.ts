@@ -4,7 +4,7 @@ import {
   DEFAULT_TEXT_FRAGMENT_LABELS,
   initTextFragmentShare,
 } from "../client.js";
-import { textFragmentPlugin } from "../index.ts";
+import { textFragment } from "../index.ts";
 import {
   buildQuoteMarkdown,
   buildTextFragmentUrl,
@@ -164,14 +164,14 @@ test("initTextFragmentShare accepts label overrides without a document", () => {
   );
 });
 
-test("textFragmentPlugin forwards labels to the client entry", () => {
-  const entry = textFragmentPlugin().clientEntries?.[0];
+test("textFragment forwards labels to the client entry", () => {
+  const entry = textFragment().clientEntries?.[0];
 
   assert.deepEqual(entry?.publicConfig, DEFAULT_TEXT_FRAGMENT_LABELS);
 });
 
-test("textFragmentPlugin merges label overrides into the client entry", () => {
-  const entry = textFragmentPlugin({
+test("textFragment merges label overrides into the client entry", () => {
+  const entry = textFragment({
     labels: { copyLinkLabel: "Copy", regionLabel: "共有" },
   }).clientEntries?.[0];
 

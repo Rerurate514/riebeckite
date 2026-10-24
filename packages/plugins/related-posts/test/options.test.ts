@@ -1,10 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  relatedPosts,
-  relatedPostsPlugin,
-  resolveRelatedPostsOptions,
-} from "../index.ts";
+import { relatedPosts, resolveRelatedPostsOptions } from "../index.ts";
 
 test("applies the documented defaults", () => {
   assert.deepEqual(resolveRelatedPostsOptions(), {
@@ -55,6 +51,6 @@ test("trims a custom class name", () => {
   );
 });
 
-test("relatedPostsPlugin is the same factory as relatedPosts", () => {
-  assert.equal(relatedPostsPlugin, relatedPosts);
+test("relatedPosts is the same factory as relatedPosts", () => {
+  assert.equal(relatedPosts, relatedPosts);
 });

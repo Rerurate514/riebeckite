@@ -22,7 +22,7 @@ Start with the smallest possible plugin:
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
   });
@@ -33,14 +33,14 @@ Register it:
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { examplePlugin } from "./extensions/example";
+import { example } from "./extensions/example";
 
 export default defineConfig({
-  plugins: [examplePlugin()],
+  plugins: [example()],
 });
 ```
 
-Each recipe defines its own factory. Put it in `extensions/` and register it instead of `examplePlugin`. The `name` must be unique across enabled plugins, because it owns the plugin cache and generated output namespace.
+Each recipe defines its own factory. Put it in `extensions/` and register it instead of `example`. The `name` must be unique across enabled plugins, because it owns the plugin cache and generated output namespace.
 
 ## Recipe map
 

@@ -208,7 +208,7 @@ flowchart LR
 ```ts id="1ql4hf"
 import { definePlugin } from "@riebeckite/core";
 
-export function reportPlugin() {
+export function report() {
   return definePlugin({
     name: "report",
 

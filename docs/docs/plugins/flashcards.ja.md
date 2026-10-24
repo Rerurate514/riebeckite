@@ -12,11 +12,11 @@ title: Flashcards
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { flashcards } from "@riebeckite/plugin-flashcards";
 
 export default defineConfig({
   // ...
-  plugins: [flashcardsPlugin()],
+  plugins: [flashcards()],
 });
 ```
 
@@ -82,7 +82,7 @@ It stays readable without JavaScript.
 
 ## 主なエクスポート
 
-- `flashcards(options?)` / `flashcardsPlugin(options?)`: プラグインを作成する
+- `flashcards(options?)` / `flashcards(options?)`: プラグインを作成する
 - `initFlashcards(root?)`: クライアント側を初期化する
 - `parseFlashcards(source)`: ブロックをカードに分解する
 - `splitFlashcardGroups(source)`: ブロックをカードのまとまりに分割する

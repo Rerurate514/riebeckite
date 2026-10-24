@@ -73,7 +73,7 @@ import "@riebeckite/plugin-share/style.css";
 ## エクスポート
 
 - `share(options?)`：プラグインファクトリ
-- `sharePlugin`：`share` のエイリアス
+- `share`：`share` のエイリアス
 - `resolveShareOptions(options?)`：オプションの既定値を適用する
 - `validateShareOptions(options?)`：実行時オプションを検証する
 - `buildAbsoluteUrl(config, permalink)`：ノート URL を絶対 URL に解決する

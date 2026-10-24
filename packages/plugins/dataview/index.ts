@@ -45,7 +45,7 @@ export {
   resolveDataviewOptions,
 } from "./src/types.js";
 
-export function dataviewPlugin(options: DataviewOptions = {}) {
+export function dataview(options: DataviewOptions = {}) {
   const language = options.language ?? "dataview";
   const runtime = createDataviewRuntime(options);
 
@@ -70,8 +70,6 @@ export function dataviewPlugin(options: DataviewOptions = {}) {
     ],
   });
 }
-
-export const dataview = dataviewPlugin;
 
 function validateDataviewOptions(
   options: DataviewOptions | undefined,

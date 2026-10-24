@@ -14,7 +14,6 @@ import { renderToReadableStream, renderToString } from "hono/jsx/dom/server";
 import Breadcrumbs from "../components/breadcrumbs.js";
 import {
   breadcrumbs,
-  breadcrumbsPlugin,
   buildBreadcrumbHeadTag,
   buildBreadcrumbJsonLd,
   hasBreadcrumbHeadTag,
@@ -439,6 +438,6 @@ test("onManifestCreated leaves an entry with no trail untouched", async () => {
   assert.equal(entry.headTags, undefined);
 });
 
-test("breadcrumbsPlugin is the same factory", () => {
-  assert.equal(breadcrumbsPlugin, breadcrumbs);
+test("breadcrumbs is the same factory", () => {
+  assert.equal(breadcrumbs, breadcrumbs);
 });

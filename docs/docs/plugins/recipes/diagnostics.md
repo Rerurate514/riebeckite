@@ -12,7 +12,7 @@ Return structured diagnostics instead of printing from a plugin. The CLI can gro
 ```ts
 import { definePlugin, type Diagnostic } from "@riebeckite/core";
 
-export function descriptionDiagnosticsPlugin() {
+export function descriptionDiagnostics() {
   let diagnostics: Diagnostic[] = [];
 
   return definePlugin({

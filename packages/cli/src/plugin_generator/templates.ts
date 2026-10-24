@@ -111,7 +111,7 @@ export function renderPluginIndex(
     .filter(Boolean)
     .join("\n    ");
   const buildStart = renderBuildStart(pluginName, features);
-  return `import { ${imports.join(", ")} } from "@riebeckite/core";\n\n${options}export function ${toIdentifier(pluginName)}Plugin(${factoryOptions}) {\n  return definePlugin({\n    name: "${pluginName}",\n    ${properties}${buildStart}\n  });\n}\n`;
+  return `import { ${imports.join(", ")} } from "@riebeckite/core";\n\n${options}export function ${toIdentifier(pluginName)}(${factoryOptions}) {\n  return definePlugin({\n    name: "${pluginName}",\n    ${properties}${buildStart}\n  });\n}\n`;
 }
 
 function renderBuildStart(
@@ -152,12 +152,12 @@ export function renderPluginFiles(
   if (tests)
     files.set(
       "test/plugin.test.ts",
-      `import assert from "node:assert/strict";\nimport { test } from "node:test";\nimport { ${toIdentifier(pluginName)}Plugin } from "../index.js";\n\ntest("creates the plugin", () => {\n  assert.equal(${toIdentifier(pluginName)}Plugin().name, "${pluginName}");\n});\n`,
+      `import assert from "node:assert/strict";\nimport { test } from "node:test";\nimport { ${toIdentifier(pluginName)} } from "../index.js";\n\ntest("creates the plugin", () => {\n  assert.equal(${toIdentifier(pluginName)}().name, "${pluginName}");\n});\n`,
     );
   if (documentation)
     files.set(
       "README.md",
-      `# ${pluginName}\n\nGenerated from: ${features.join(", ")}.\n\nRegister \`${toIdentifier(pluginName)}Plugin()\` in \`riebeckite.config.ts\`.\n`,
+      `# ${pluginName}\n\nGenerated from: ${features.join(", ")}.\n\nRegister \`${toIdentifier(pluginName)}()\` in \`riebeckite.config.ts\`.\n`,
     );
   return files;
 }

@@ -51,7 +51,7 @@ const resultsDir = args.out
   ? path.resolve(args.out)
   : path.join(root, "benchmarks", "results");
 
-const l10nPlugin = args.l10n
+const l10n = args.l10n
   ? (
       await import(
         pathToFileURL(path.join(root, "packages/plugins/l10n/index.ts"))
@@ -154,7 +154,7 @@ for (const profile of profiles) {
           size,
           profile,
           seed: 1234 + runIndex,
-          l10n: Boolean(l10nPlugin),
+          l10n: Boolean(l10n),
         });
         let baseline = null;
         if (definition.warm !== false && definition.name !== "cold") {
@@ -257,10 +257,7 @@ async function measure(input) {
         filters: { publishStrategy: "selective" },
       },
       cache: { enabled: true, directory: input.cacheDirectory },
-      plugins: [
-        benchmarkPlugin(input.pluginVersion),
-        ...(l10nPlugin ? [l10nPlugin] : []),
-      ],
+      plugins: [benchmarkPlugin(input.pluginVersion), ...(l10n ? [l10n] : [])],
     }),
   );
   if (input.configMutate) config = input.configMutate(config);

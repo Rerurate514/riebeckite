@@ -13,10 +13,7 @@ import {
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import DailyNotes from "../components/daily-notes.js";
-import {
-  dailyNotesPlugin,
-  resolveDailyNotesOptionsFromConfig,
-} from "../index.ts";
+import { dailyNotes, resolveDailyNotesOptionsFromConfig } from "../index.ts";
 import {
   DEFAULT_DAILY_NOTES_DATE_FORMAT,
   DEFAULT_DAILY_NOTES_LOCALE,
@@ -440,7 +437,7 @@ test("resolveDailyNotesOptionsFromConfig returns the registered plugin options",
   const config = resolveConfig({
     site: { title: "Test" },
     plugins: [
-      dailyNotesPlugin({
+      dailyNotes({
         source: { directory: "Journal" },
         widget: { limit: 2 },
         dateFormat: "long",
@@ -465,7 +462,7 @@ test("getDailyNotes reflects the plugin options registered in the config", () =>
   const config = resolveConfig({
     site: { title: "Test" },
     plugins: [
-      dailyNotesPlugin({
+      dailyNotes({
         source: { directory: "Journal" },
         widget: { limit: 1 },
         dateFormat: "long",
@@ -499,7 +496,7 @@ test("explicit options override the plugin options from the config", () => {
   const config = resolveConfig({
     site: { title: "Test" },
     plugins: [
-      dailyNotesPlugin({
+      dailyNotes({
         source: { directory: "Journal" },
         widget: { limit: 5 },
       }),
@@ -549,29 +546,28 @@ test("DailyNotes renders English labels and ISO dates", () => {
   assert.doesNotMatch(html, /[\u3040-\u30ff\u4e00-\u9faf]/);
 });
 
-test("dailyNotesPlugin declares a folder output dependency for the default directory", () => {
-  assert.deepEqual(dailyNotesPlugin().contentOutputDependencies, [
+test("dailyNotes declares a folder output dependency for the default directory", () => {
+  assert.deepEqual(dailyNotes().contentOutputDependencies, [
     { type: "folder", folder: "Daily" },
   ]);
 });
 
-test("dailyNotesPlugin scopes its output dependency to a custom source directory", () => {
+test("dailyNotes scopes its output dependency to a custom source directory", () => {
   assert.deepEqual(
-    dailyNotesPlugin({ source: { directory: "Journal" } })
-      .contentOutputDependencies,
+    dailyNotes({ source: { directory: "Journal" } }).contentOutputDependencies,
     [{ type: "folder", folder: "Journal" }],
   );
 });
 
-test("dailyNotesPlugin falls back to a global dependency for an empty directory", () => {
+test("dailyNotes falls back to a global dependency for an empty directory", () => {
   assert.deepEqual(
-    dailyNotesPlugin({ source: { directory: "" } }).contentOutputDependencies,
+    dailyNotes({ source: { directory: "" } }).contentOutputDependencies,
     [{ type: "global" }],
   );
 });
 
 test("adding a nested daily note regenerates the index with only the plugin dependency", () => {
-  const dependencies = dailyNotesPlugin().contentOutputDependencies;
+  const dependencies = dailyNotes().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     makeEntry({ slug: "index" }),
@@ -612,7 +608,7 @@ test("adding a nested daily note regenerates the index with only the plugin depe
 });
 
 test("changing a daily note's frontmatter date regenerates the index", () => {
-  const dependencies = dailyNotesPlugin().contentOutputDependencies;
+  const dependencies = dailyNotes().contentOutputDependencies;
   assert.ok(dependencies);
   const previousEntries = [
     makeEntry({ slug: "index" }),
@@ -652,7 +648,7 @@ test("changing a daily note's frontmatter date regenerates the index", () => {
 });
 
 test("a non-daily note change leaves the index unchanged", () => {
-  const dependencies = dailyNotesPlugin().contentOutputDependencies;
+  const dependencies = dailyNotes().contentOutputDependencies;
   assert.ok(dependencies);
   const daily = makeEntry({
     slug: "Daily/2024-01-01",

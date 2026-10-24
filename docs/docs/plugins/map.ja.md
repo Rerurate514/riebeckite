@@ -127,7 +127,7 @@ map:
 
 ## 主なエクスポート
 
-- `map(options?)`: プラグインを作成する（`mapPlugin` は別名）
+- `map(options?)`: プラグインを作成する（`map` は別名）
 - `initMap`: クライアント側の地図を初期化する
 - `parseMapSource`: コードブロックを `MapData` に変換する
 - `normalizeMapInput`: frontmatter を `MapData` に正規化する

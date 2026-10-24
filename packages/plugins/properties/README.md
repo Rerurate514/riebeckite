@@ -232,7 +232,7 @@ are emitted.
 
 ## Exports
 
-- `properties(options?)` and `propertiesPlugin(options?)` — plugin factory
+- `properties(options?)` and `properties(options?)` — plugin factory
 - `getProperties({ view, frontmatter, options? })` — structured data helper
 - `<Properties data? options? className? />` — shared renderer component
 - `renderPropertiesPanel(frontmatter, options?, context?)` — pure HTML renderer

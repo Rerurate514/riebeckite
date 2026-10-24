@@ -49,7 +49,7 @@ flowchart TD
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
   });
@@ -63,7 +63,7 @@ type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(
+export function example(
   options: ExampleOptions = {},
 ) {
   return definePlugin({
@@ -105,7 +105,7 @@ export function examplePlugin(
 
 ```ts
 plugins: [
-  myPlugin(),
+  my(),
 ]
 ```
 
@@ -113,7 +113,7 @@ plugins: [
 
 ```ts
 plugins: [
-  condition && myPlugin(),
+  condition && my(),
 ]
 ```
 
@@ -321,7 +321,7 @@ flowchart LR
 
 ```ts
 // index.ts
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
     // ... factory hooks, assets, clientEntries, etc.

@@ -14,7 +14,7 @@ sidebar:
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function relatedLinksPlugin() {
+export function relatedLinks() {
   return definePlugin({
     name: "related-links",
     extendContentGraph: ({ entries, contentIndex }) => {

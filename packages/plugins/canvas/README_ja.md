@@ -73,7 +73,7 @@ canvas({ documentPages: true })
 
 ## 主なエクスポート
 
-- `canvas(options?)` / `canvasPlugin`：プラグインを作成する
+- `canvas(options?)` / `canvas`：プラグインを作成する
 - `initCanvas()`：クライアント側の描画を初期化する
 - `parseCanvas(json)`：JSON Canvas を解析する（純粋関数）
 - `buildCanvasLayout(doc)`：座標を正規化し、エッジを線分に解決する（純粋関数）

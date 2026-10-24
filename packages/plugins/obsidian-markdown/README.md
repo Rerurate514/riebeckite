@@ -92,7 +92,7 @@ Themes can customize a callout from its `rr-callout` root with
 
 ## Exports
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdownPlugin` — plugin factory
+- `obsidianMarkdown(options?)` / `obsidianMarkdown` — plugin factory
 - Types: `ObsidianMarkdownOptions`, `CalloutOptions`, `TagOptions`,
   `WikilinkOptions`, `WikilinkFragment`
 

@@ -170,7 +170,7 @@ test("registers an existing PageType Plugin only in a recognized config array", 
     await fs.mkdir("extensions/example", { recursive: true });
     await fs.writeFile(
       "extensions/example/index.ts",
-      'import { definePlugin } from "@riebeckite/core";\n\nexport const examplePlugin = () => definePlugin({ name: "example", pageTypes: [] });\n',
+      'import { definePlugin } from "@riebeckite/core";\n\nexport const example = () => definePlugin({ name: "example", pageTypes: [] });\n',
       "utf8",
     );
     await fs.writeFile(
@@ -187,7 +187,7 @@ test("registers an existing PageType Plugin only in a recognized config array", 
     });
     assert.match(
       await fs.readFile("riebeckite.config.ts", "utf8"),
-      /examplePlugin\(\)/,
+      /example\(\)/,
     );
   } finally {
     process.chdir(previous);

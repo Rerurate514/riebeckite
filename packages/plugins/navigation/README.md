@@ -150,7 +150,7 @@ tab.
 ## Exports
 
 - `navigation(options?)` — plugin factory
-- `navigationPlugin` — alias of `navigation`
+- `navigation` — alias of `navigation`
 - `NAVIGATION_PLUGIN_NAME` — the plugin name, `"navigation"`
 - `buildNavigation(entries, options?)` — build a model from manifest entries
 - `resolveSiteNavigation(config, manifest)` — find the enabled plugin and build

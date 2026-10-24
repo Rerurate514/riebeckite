@@ -23,7 +23,7 @@ sidebar:
 import { definePlugin } from "@riebeckite/core";
 import { Properties, getProperties } from "./components/properties";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({ name: "example" });
 }
 

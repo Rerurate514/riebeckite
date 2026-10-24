@@ -31,5 +31,3 @@ export function codeAnnotations() {
     },
   });
 }
-
-export const codeAnnotationsPlugin = codeAnnotations;

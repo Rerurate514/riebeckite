@@ -15,7 +15,7 @@ export type {
   QuerySpec,
 } from "./src/types.js";
 
-export function queryPlugin(options: QueryOptions = {}) {
+export function query(options: QueryOptions = {}) {
   const language = options.language ?? "query";
   const runtime = createQueryRuntime(options);
 

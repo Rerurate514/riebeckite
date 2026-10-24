@@ -47,9 +47,6 @@ export function relatedPosts(options: RelatedPostsOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const relatedPostsPlugin = relatedPosts;
-
 function validateRelatedPostsOptions(
   options: RelatedPostsOptions | undefined,
 ): readonly ConfigValidationIssue[] {

@@ -97,7 +97,7 @@ parseMarkmapSource(source: string): MarkmapNode | null
 
 ## 主なエクスポート
 
-- `markmap(options?)`: プラグインを作成する（`markmapPlugin` は別名）
+- `markmap(options?)`: プラグインを作成する（`markmap` は別名）
 - `initMarkmap`: クライアント側の描画を初期化する
 - `parseMarkmapSource`: 標準記法を木に変換する
 - `describeMarkmapTree`: 木からアクセシブルなラベルを作る

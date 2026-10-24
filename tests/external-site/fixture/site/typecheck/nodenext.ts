@@ -54,9 +54,9 @@ import {
   MemoryAnalyticsProvider,
 } from "@riebeckite/plugin-analytics";
 import { initAnalytics } from "@riebeckite/plugin-analytics/client";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 import { initAutoCardLink } from "@riebeckite/plugin-autocardlink/client";
-import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { backlinks } from "@riebeckite/plugin-backlinks";
 import Backlinks from "@riebeckite/plugin-backlinks/components";
 import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
@@ -70,12 +70,12 @@ import { initD2Diagrams } from "@riebeckite/plugin-d2/client";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { initExcaliBrain } from "@riebeckite/plugin-excalibrain/client";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { flashcards } from "@riebeckite/plugin-flashcards";
 import { initFlashcards } from "@riebeckite/plugin-flashcards/client";
 import { graphviz } from "@riebeckite/plugin-graphviz";
-import { highlight, highlightPlugin } from "@riebeckite/plugin-highlight";
+import { highlight } from "@riebeckite/plugin-highlight";
 import {
-  hoverPreviewPlugin,
+  hoverPreview,
   resolveHoverPreviewOptions,
 } from "@riebeckite/plugin-hover-preview";
 import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
@@ -84,7 +84,6 @@ import {
   type KanbanOptions,
   type KanbanParseResult,
   kanban,
-  kanbanPlugin,
   parseKanban,
   type ResolvedKanbanOptions,
   renderKanban,
@@ -92,16 +91,16 @@ import {
 } from "@riebeckite/plugin-kanban";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { initMarkmap } from "@riebeckite/plugin-markmap/client";
-import { marp, marpPlugin } from "@riebeckite/plugin-marp";
+import { marp } from "@riebeckite/plugin-marp";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
-import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { recentPosts } from "@riebeckite/plugin-recent-posts";
 import RecentPosts from "@riebeckite/plugin-recent-posts/components";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import RelatedPosts from "@riebeckite/plugin-related-posts/components";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 import { initSearch } from "@riebeckite/plugin-search/client";
 import SearchBar from "@riebeckite/plugin-search/components";
 import { series } from "@riebeckite/plugin-series";
@@ -110,10 +109,10 @@ import {
   shortcodes,
 } from "@riebeckite/plugin-shortcodes";
 import { svgOptimizer } from "@riebeckite/plugin-svg-optimizer";
-import { tocPlugin } from "@riebeckite/plugin-toc";
+import { toc } from "@riebeckite/plugin-toc";
 import { initTableOfContents } from "@riebeckite/plugin-toc/client";
 import TableOfContents from "@riebeckite/plugin-toc/components";
-import { uxPlugin } from "@riebeckite/plugin-ux";
+import { ux } from "@riebeckite/plugin-ux";
 import { initUx } from "@riebeckite/plugin-ux/client";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { initVegaLite } from "@riebeckite/plugin-vega-lite/client";
@@ -149,11 +148,11 @@ export const resolvedEntries = {
   ArticleLayout,
   ArticleMeta,
   Sidebar,
-  autoCardLinkPlugin,
+  autoCardLink,
   initAutoCardLink,
   analytics,
   initAnalytics,
-  backlinksPlugin,
+  backlinks,
   Backlinks,
   discordEmbed,
   excaliBrain,
@@ -161,46 +160,43 @@ export const resolvedEntries = {
   markmap,
   initMarkmap,
   bases,
-  hoverPreviewPlugin,
+  hoverPreview,
   resolveHoverPreviewOptions,
   initHoverPreview,
-  flashcardsPlugin,
+  flashcards,
   initFlashcards,
   codeAnnotations,
   collectCodeDiff,
   canvas,
   initCanvas,
   highlight,
-  highlightPlugin,
   d2,
   initD2Diagrams,
   graphviz,
   obsidianMarkdown,
   marp,
-  marpPlugin,
   qrCode,
   properties,
   kanban,
-  kanbanPlugin,
   parseKanban,
   renderKanban,
   resolveKanbanOptions,
-  recentPostsPlugin,
+  recentPosts,
   RecentPosts,
   relatedPosts,
   RelatedPosts,
   responsiveImage,
   imageOptimizer,
   svgOptimizer,
-  searchPlugin,
+  search,
   initSearch,
   SearchBar,
   series,
   shortcodes,
-  tocPlugin,
+  toc,
   initTableOfContents,
   TableOfContents,
-  uxPlugin,
+  ux,
   initUx,
   vegaLite,
   initVegaLite,
@@ -242,15 +238,15 @@ export const config: RiebeckiteConfig = defineConfig({
     }),
     obsidianMarkdown(),
     markmap(),
-    autoCardLinkPlugin(),
+    autoCardLink(),
     excaliBrain(),
     highlight(),
-    tocPlugin(),
-    searchPlugin(),
-    hoverPreviewPlugin({ delay: 0 }),
+    toc(),
+    search(),
+    hoverPreview({ delay: 0 }),
     canvas(),
     graphviz(),
-    uxPlugin(),
+    ux(),
     wavedrom(),
     marp(),
   ],

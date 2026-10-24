@@ -10,7 +10,6 @@ import {
 import {
   archive,
   archivePaginationLabels,
-  archivePlugin,
   buildArchiveDescription,
   formatArchivePeriod,
   renderArchivePage,
@@ -42,8 +41,8 @@ const monthlyFiles = {
   "d.md": "---\npublish: true\ntitle: Delta\ndate: 2024-12-20\n---\n# Delta",
 };
 
-test("archive() is re-exported as archivePlugin and declares no assets", () => {
-  assert.equal(archivePlugin, archive);
+test("archive() is re-exported as archive and declares no assets", () => {
+  assert.equal(archive, archive);
   assert.equal(archive().assets, undefined);
   assert.deepEqual(archive().contentOutputDependencies, undefined);
 });

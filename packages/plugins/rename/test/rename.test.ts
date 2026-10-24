@@ -19,7 +19,7 @@ import {
   type RedirectRule,
   type RouteLock,
   type RouteLockRoute,
-  renamePlugin,
+  rename,
 } from "../index.js";
 
 function route(
@@ -332,7 +332,7 @@ function fakeManifest(
 }
 
 async function runManifestHook(
-  plugin: ReturnType<typeof renamePlugin>,
+  plugin: ReturnType<typeof rename>,
   manifest: ContentManifest,
   cache: PluginCache,
   diagnostics: unknown[] = [],
@@ -363,7 +363,7 @@ async function runManifestHook(
 
 test("hook persists the lock and replays redirects across builds", async () => {
   const cache = memoryCache();
-  const plugin = renamePlugin();
+  const plugin = rename();
 
   const first = fakeManifest([
     { slug: "alpha", permalink: "/a", frontmatter: {}, html: "<p>a</p>" },
@@ -396,7 +396,7 @@ test("hook persists the lock and replays redirects across builds", async () => {
 
 test("hook respects existing redirects and never locks private notes", async () => {
   const cache = memoryCache();
-  const plugin = renamePlugin();
+  const plugin = rename();
 
   await runManifestHook(
     plugin,
@@ -435,7 +435,7 @@ test("hook respects existing redirects and never locks private notes", async () 
 });
 
 async function resolveSnapshot(
-  plugin: ReturnType<typeof renamePlugin>,
+  plugin: ReturnType<typeof rename>,
   cache: PluginCache,
 ): Promise<{ fingerprint: string; value: RouteLock }> {
   const resolutions = await plugin.resolveExternalDependencies?.({
@@ -452,7 +452,7 @@ async function resolveSnapshot(
 }
 
 test("dependency fingerprint tracks applied redirects, not route bookkeeping", async () => {
-  const plugin = renamePlugin();
+  const plugin = rename();
   const empty = await resolveSnapshot(plugin, memoryCache());
 
   const cache = memoryCache();

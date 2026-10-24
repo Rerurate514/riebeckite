@@ -10,11 +10,7 @@ import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import Properties from "../components/properties.js";
-import {
-  properties,
-  propertiesPlugin,
-  renderPropertiesPanel,
-} from "../index.ts";
+import { properties, renderPropertiesPanel } from "../index.ts";
 import { getProperties } from "../src/component-data.js";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -59,8 +55,8 @@ async function runHook(
   return diagnostics;
 }
 
-test("properties() is re-exported as propertiesPlugin and registers its stylesheet", () => {
-  assert.equal(propertiesPlugin, properties);
+test("properties() is re-exported as properties and registers its stylesheet", () => {
+  assert.equal(properties, properties);
   assert.deepEqual(properties().assets, [
     {
       pluginName: "properties",

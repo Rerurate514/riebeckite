@@ -14,7 +14,7 @@ sidebar:
 ```ts
 import { definePlugin, type PluginCache } from "@riebeckite/core";
 
-export function readingTimePlugin() {
+export function readingTime() {
   return definePlugin({
     name: "reading-time",
     cacheVersion: "1",

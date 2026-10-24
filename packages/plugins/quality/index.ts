@@ -48,7 +48,7 @@ export function inspectGeneratedHtml(
  * field lets an SSG integration inspect final pages after the build, where no
  * manifest is available.
  */
-export function qualityPlugin(options: QualityOptions = {}): RiebeckitePlugin {
+export function quality(options: QualityOptions = {}): RiebeckitePlugin {
   const resolved = resolveQualityOptions(options);
   const inspectOptions: InspectOptions = {
     ignoreRules: options.ignoreRules,
@@ -89,5 +89,3 @@ export function qualityPlugin(options: QualityOptions = {}): RiebeckitePlugin {
     },
   });
 }
-
-export const quality = qualityPlugin;

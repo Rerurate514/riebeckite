@@ -19,7 +19,7 @@ export type CatalogOptions = {
   catalogPath?: string;
 };
 
-export function catalogPlugin(options: CatalogOptions = {}) {
+export function catalog(options: CatalogOptions = {}) {
   return definePlugin({
     name: "catalog",
     options,
@@ -28,7 +28,7 @@ export function catalogPlugin(options: CatalogOptions = {}) {
   });
 }
 
-export function catalogSearchPlugin() {
+export function catalogSearch() {
   return definePlugin({
     name: "catalog-search",
     order: -10,

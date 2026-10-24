@@ -84,7 +84,7 @@ highlight({ className: "my-highlight", tag: "span" });
 ## 主なエクスポート
 
 - `highlight(options?)`: プラグインを作成する
-- `highlightPlugin`: `highlight` の別名
+- `highlight`: `highlight` の別名
 - `remarkHighlight(options?)`: 内部の remark トランスフォーマー
 - 型: `HighlightOptions`
 

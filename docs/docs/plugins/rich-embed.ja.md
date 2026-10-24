@@ -128,7 +128,7 @@ Gist の場合は iframe の代わりに
 ## エクスポート
 
 - `richEmbed(options?)`：プラグインファクトリ
-- `richEmbedPlugin`：`richEmbed` の別名
+- `richEmbed`：`richEmbed` の別名
 - 型: `RichEmbedOptions`, `RichEmbedProvider`
 
 ## 関連

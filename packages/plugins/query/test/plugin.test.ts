@@ -5,7 +5,7 @@ import type {
   ContentManifestEntry,
   Diagnostic,
 } from "@riebeckite/core";
-import { queryPlugin, remarkQuery } from "../index.ts";
+import { query, remarkQuery } from "../index.ts";
 import { createQueryPlaceholder } from "../src/placeholder.ts";
 
 function entry(
@@ -39,8 +39,8 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-test("queryPlugin registers its capability and stylesheet", () => {
-  const plugin = queryPlugin();
+test("query registers its capability and stylesheet", () => {
+  const plugin = query();
 
   assert.equal(plugin.name, "query");
   assert.deepEqual(plugin.provides, ["content.query"]);
@@ -53,8 +53,8 @@ test("queryPlugin registers its capability and stylesheet", () => {
   ]);
 });
 
-test("queryPlugin validates its options", () => {
-  const validate = queryPlugin().validateOptions;
+test("query validates its options", () => {
+  const validate = query().validateOptions;
   assert.ok(validate);
 
   assert.deepEqual(validate(undefined), []);
@@ -103,8 +103,8 @@ test("extendMarkdownPipeline registers remarkQuery with the configured language"
     },
   };
 
-  queryPlugin().extendMarkdownPipeline?.(pipeline as never, {} as never);
-  queryPlugin({ language: "sql" }).extendMarkdownPipeline?.(
+  query().extendMarkdownPipeline?.(pipeline as never, {} as never);
+  query({ language: "sql" }).extendMarkdownPipeline?.(
     pipeline as never,
     {} as never,
   );
@@ -116,7 +116,7 @@ test("extendMarkdownPipeline registers remarkQuery with the configured language"
 });
 
 test("the plugin resolves placeholders at manifest time", async () => {
-  const plugin = queryPlugin();
+  const plugin = query();
   const one = entry(
     "one",
     {},

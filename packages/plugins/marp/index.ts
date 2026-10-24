@@ -64,9 +64,6 @@ export function marp(options: MarpOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` naming used by other Riebeckite plugins. */
-export const marpPlugin = marp;
-
 function validateMarpOptions(
   options: MarpOptions | undefined,
 ): readonly ConfigValidationIssue[] {

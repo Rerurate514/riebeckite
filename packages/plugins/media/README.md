@@ -52,7 +52,7 @@ a future pipeline extension.
 
 ## Exports
 
-- `media(options?)` / `mediaPlugin` — plugin factory
+- `media(options?)` / `media` — plugin factory
 - Types: `MediaOptions`, `MediaPreload`
 
 ## See also

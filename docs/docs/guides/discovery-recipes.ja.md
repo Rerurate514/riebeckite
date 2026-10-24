@@ -62,7 +62,7 @@ featured: true
 Homepage には `query` ブロックで描画します。まず `@riebeckite/plugin-query` を install して登録します（`starter` には含まれません）。
 
 ```ts
-plugins: [queryPlugin()],
+plugins: [query()],
 ```
 
 ````md

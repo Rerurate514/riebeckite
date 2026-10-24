@@ -55,5 +55,3 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
     },
   });
 }
-
-export const obsidianMarkdownPlugin = obsidianMarkdown;

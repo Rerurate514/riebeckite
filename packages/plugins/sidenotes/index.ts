@@ -49,9 +49,6 @@ export function sidenotes(options: SidenotesOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const sidenotesPlugin = sidenotes;
-
 function validateSidenotesOptions(
   options: SidenotesOptions | undefined,
 ): readonly ConfigValidationIssue[] {

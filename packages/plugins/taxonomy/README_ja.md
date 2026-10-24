@@ -125,7 +125,7 @@ import "@riebeckite/plugin-taxonomy/style.css";
 ## エクスポート
 
 - `taxonomy(options?)`：プラグインファクトリ
-- `taxonomyPlugin`：`taxonomy` の別名
+- `taxonomy`：`taxonomy` の別名
 - `resolveTaxonomyOptions(options?)`：既定値を適用する
 - `resolveTaxonomyOptionsFromConfig(config)`：config から解決済みオプションを読む
 - `buildTaxonomyIndex(entries, options)`：タグ・フォルダタームを構築する

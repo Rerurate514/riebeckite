@@ -10,5 +10,4 @@ export {
   type L10nOptions,
   type LocalizedContent,
   l10n,
-  l10nPlugin,
 } from "./src/l10n.js";

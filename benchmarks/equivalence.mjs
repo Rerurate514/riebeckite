@@ -30,7 +30,7 @@ const scenarioNames = (
   .map((part) => part.trim())
   .filter(Boolean);
 const baseDir = path.join(os.tmpdir(), "riebeckite-vault-equivalence");
-const l10nPlugin = args.l10n
+const l10n = args.l10n
   ? (
       await import(
         pathToFileURL(path.join(root, "packages/plugins/l10n/index.ts"))
@@ -106,7 +106,7 @@ for (const scenarioName of scenarioNames) {
     size,
     profile,
     seed: 4242,
-    l10n: Boolean(l10nPlugin),
+    l10n: Boolean(l10n),
   });
 
   const pluginVersionFor = (name) => (name === "plugin-edit" ? "v2" : "v1");
@@ -198,10 +198,7 @@ async function buildOnce(input) {
         filters: { publishStrategy: "selective" },
       },
       cache: { enabled: true, directory: input.cacheDirectory },
-      plugins: [
-        plugin(input.pluginVersion),
-        ...(l10nPlugin ? [l10nPlugin] : []),
-      ],
+      plugins: [plugin(input.pluginVersion), ...(l10n ? [l10n] : [])],
     }),
   );
   const start = performance.now();

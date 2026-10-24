@@ -10,7 +10,7 @@ import {
 import {
   getRelatedPosts,
   type RelatedPostsOptions,
-  relatedPostsPlugin,
+  relatedPosts,
   renderRelatedPosts,
 } from "../index.ts";
 
@@ -51,7 +51,7 @@ async function manifest(
 ): Promise<ContentManifest> {
   return await new ContentManager(source(FILES), [], {
     config,
-    plugins: [relatedPostsPlugin(options)],
+    plugins: [relatedPosts(options)],
   }).getManifest();
 }
 

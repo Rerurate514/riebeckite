@@ -34,8 +34,6 @@ export function chartjs(options: ChartJsOptions = {}) {
   });
 }
 
-export const chartjsPlugin = chartjs;
-
 function validateChartJsOptions(
   options: ChartJsOptions | undefined,
 ): readonly ConfigValidationIssue[] {

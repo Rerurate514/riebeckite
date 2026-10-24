@@ -21,7 +21,7 @@ import {
 
 const PREVIEW_LINES = 8;
 
-export function csvPreviewPlugin() {
+export function csvPreview() {
   return definePlugin({
     name: "csv-preview",
     processedContentCache: {

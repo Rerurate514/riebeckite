@@ -8,7 +8,7 @@ import {
 import { assertGoldenJson } from "@riebeckite/test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { Backlinks, backlinksPlugin, getPublishedBacklinks } from "../index.ts";
+import { Backlinks, backlinks, getPublishedBacklinks } from "../index.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
@@ -168,8 +168,8 @@ test("matches a structured link graph", async () => {
   );
 });
 
-test("backlinksPlugin registers only its stylesheet", () => {
-  const plugin = backlinksPlugin();
+test("backlinks registers only its stylesheet", () => {
+  const plugin = backlinks();
 
   assert.equal(plugin.name, "backlinks");
   assert.equal(plugin.onManifestCreated, undefined);
@@ -184,7 +184,7 @@ test("backlinksPlugin registers only its stylesheet", () => {
 });
 
 test("exposes no options or validation", () => {
-  const plugin = backlinksPlugin();
+  const plugin = backlinks();
   assert.deepEqual(plugin.name, "backlinks");
   assert.deepEqual(plugin.options, {});
   assert.equal(plugin.validateOptions, undefined);
@@ -197,20 +197,20 @@ test("publishes backlinks to the article footer only when present", async () => 
       "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
     }),
     [],
-    { config: explicitConfig, plugins: [backlinksPlugin()] },
+    { config: explicitConfig, plugins: [backlinks()] },
   ).getManifest();
 
-  const backlinks = getPublishedBacklinks({
+  const published = getPublishedBacklinks({
     manifest,
     config: explicitConfig,
     slug: "alpha",
     resolveTitle,
   });
-  assert.deepEqual(backlinks, [
+  assert.deepEqual(published, [
     { slug: "beta", permalink: "/beta", title: "Beta" },
   ]);
 
-  const html = renderToString(await Backlinks({ backlinks }));
+  const html = renderToString(await Backlinks({ backlinks: published }));
   assert.ok(html.includes('<footer class="rr-backlinks">'));
   assert.ok(html.includes('href="/beta"'));
   assert.ok(html.includes(">Beta</a>"));
@@ -231,7 +231,7 @@ test("keeps backlink data available for the Site to render", async () => {
       "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
     }),
     [],
-    { config: explicitConfig, plugins: [backlinksPlugin()] },
+    { config: explicitConfig, plugins: [backlinks()] },
   ).getManifest();
 
   assert.deepEqual(

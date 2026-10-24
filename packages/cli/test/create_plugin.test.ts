@@ -160,12 +160,9 @@ test("registers a generated plugin only in a recognized config array", async () 
     const registered = await fs.readFile("riebeckite.config.ts", "utf8");
     assert.match(
       registered,
-      /import \{ examplePluginPlugin \} from "\.\/extensions\/example-plugin\/index"/,
+      /import \{ examplePlugin \} from "\.\/extensions\/example-plugin\/index"/,
     );
-    assert.match(
-      registered,
-      /plugins: \[\n {4}examplePluginPlugin\(\),\n {2}\]/,
-    );
+    assert.match(registered, /plugins: \[\n {4}examplePlugin\(\),\n {2}\]/);
   } finally {
     process.chdir(previous);
     await fs.rm(directory, { recursive: true, force: true });

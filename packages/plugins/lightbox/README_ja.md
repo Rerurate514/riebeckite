@@ -12,11 +12,11 @@
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { lightbox } from "@riebeckite/plugin-lightbox";
 
 export default defineConfig({
   // ...
-  plugins: [lightboxPlugin()],
+  plugins: [lightbox()],
 });
 ```
 
@@ -42,7 +42,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `lightboxPlugin(options?)`：プラグインファクトリ
+- `lightbox(options?)`：プラグインファクトリ
 - `rehypeLightbox(options?)`：Rehype 変換
 - `initLightbox(root?, options?)`：ブラウザ初期化関数
 - `initLightboxFromOptions(options?)`：プラグインのクライアントスクリプトが呼ぶ初期化関数。オプションを第 1 引数に取る

@@ -94,7 +94,7 @@ Riebeckite's rendered pages.
 ## Exports
 
 - `hardBreaks()` — plugin factory
-- `hardBreaksPlugin` — alias of `hardBreaks`
+- `hardBreaks` — alias of `hardBreaks`
 
 ## See also
 

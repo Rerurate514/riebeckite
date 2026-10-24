@@ -15,7 +15,7 @@ export { initLightbox } from "./src/init.js";
 export { rehypeLightbox } from "./src/rehype.js";
 export type { LightboxInitOptions, LightboxOptions } from "./src/types.js";
 
-export function lightboxPlugin(options: LightboxOptions = {}) {
+export function lightbox(options: LightboxOptions = {}) {
   return definePlugin({
     name: "lightbox",
     processedContentCache: {

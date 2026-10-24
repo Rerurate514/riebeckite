@@ -133,7 +133,7 @@ Stable hooks follow the `rr-sidenotes` convention: `rr-sidenotes__toggle`,
 ## Exports
 
 - `sidenotes(options?)` — plugin factory
-- `sidenotesPlugin` — alias of `sidenotes`
+- `sidenotes` — alias of `sidenotes`
 - `rehypeSidenotes(options?)` — the rehype transformer
 - `resolveSidenotesOptions(options?)` — apply option defaults
 - `renderSidenotesReference(input)` / `renderSidenotesNote(input)` — HTML builders

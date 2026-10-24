@@ -22,7 +22,7 @@ sidebar:
 ```ts
 import { definePlugin, type Diagnostic } from "@riebeckite/core";
 
-export function todoCheckPlugin() {
+export function todoCheck() {
   const diagnostics: Diagnostic[] = [];
 
   return definePlugin({

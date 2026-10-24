@@ -77,7 +77,7 @@ import "@riebeckite/plugin-changelog/style.css";
 ## 公開 API
 
 - `changelog(options?)`：プラグインファクトリ
-- `changelogPlugin`：`changelog` の別名
+- `changelog`：`changelog` の別名
 - `resolveChangelogOptions(options?)`：既定値を適用
 - `GitChangelogReader`：Git 履歴リーダー（`getFileHistory`、`getRecentCommits`、`isAvailable`）
 - `buildNoteChangeHistory(entry, commits, options)`：ノート単位のデータセット

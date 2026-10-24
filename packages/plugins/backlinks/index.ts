@@ -7,7 +7,7 @@ export { getBacklinks, getPublishedBacklinks } from "./src/backlinks.server.js";
 
 export type BacklinksOptions = Record<never, never>;
 
-export function backlinksPlugin(options: BacklinksOptions = {}) {
+export function backlinks(options: BacklinksOptions = {}) {
   return definePlugin({
     name: "backlinks",
     order: 500,

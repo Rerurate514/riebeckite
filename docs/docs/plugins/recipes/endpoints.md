@@ -12,7 +12,7 @@ sidebar:
 ```ts
 import { defineEndpoint, definePlugin } from "@riebeckite/core";
 
-export function catalogEndpointPlugin() {
+export function catalogEndpoint() {
   return definePlugin({
     name: "catalog-endpoint",
     endpoints: [

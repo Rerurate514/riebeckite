@@ -66,8 +66,6 @@ export function analytics(options: AnalyticsOptions) {
   });
 }
 
-export const analyticsPlugin = analytics;
-
 function appendContentIdentity(entry: ContentManifestEntry): void {
   if (!entry.contentId) return;
   const marker = `<span hidden ${ANALYTICS_CONTENT_ID_ATTRIBUTE}="${escapeHtmlAttribute(entry.contentId)}"></span>`;

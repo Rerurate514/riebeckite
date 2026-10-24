@@ -24,7 +24,7 @@ import {
  *
  * The widget is rendered by the host application route rather than the plugin
  * itself, so `getDailyNotes` resolves the registered options here to keep the
- * displayed widget in sync with `dailyNotesPlugin(options)`.
+ * displayed widget in sync with `dailyNotes(options)`.
  */
 export function resolveDailyNotesOptionsFromConfig(
   config: ResolvedRiebeckiteConfig,

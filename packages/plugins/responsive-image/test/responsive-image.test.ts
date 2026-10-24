@@ -12,7 +12,7 @@ import {
   collectKnownAssetPaths,
   rehypeResponsiveImage,
   resolveResponsiveImageOptions,
-  responsiveImagePlugin,
+  responsiveImage,
 } from "../index.ts";
 import { validateResponsiveImageOptions } from "../src/options.ts";
 
@@ -217,7 +217,7 @@ test("collects known asset paths from a real manifest", async () => {
 });
 
 test("registers the responsive-image stylesheet", () => {
-  const plugin = responsiveImagePlugin();
+  const plugin = responsiveImage();
 
   assert.equal(plugin.name, "responsive-image");
   assert.equal(plugin.order, 100);

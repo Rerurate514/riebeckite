@@ -97,9 +97,6 @@ export function bases(options: BasesOptions = {}) {
   });
 }
 
-/** Alias kept for symmetry with other plugin factories. */
-export const basesPlugin = bases;
-
 function validateBasesOptions(
   options: BasesOptions | undefined,
 ): readonly ConfigValidationIssue[] {

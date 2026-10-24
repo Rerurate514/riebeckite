@@ -283,7 +283,7 @@ container }` を受け取り、文字列を返します。独自レンダラー�
 
 ## エクスポート
 
-- `shortcodes(options?)` / `shortcodesPlugin`：プラグインファクトリ
+- `shortcodes(options?)` / `shortcodes`：プラグインファクトリ
 - `remarkShortcodes(options?)`：単体で使える remark トランスフォーム
 - `renderShortcode(request, options)`：単一ショートコードの描画
 - `resolveShortcodeOptions(options?)`：オプションの正規化

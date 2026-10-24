@@ -6,7 +6,7 @@ import {
   type PostFrontmatter,
   resolveConfig,
 } from "@riebeckite/core";
-import { searchPlugin } from "../index.ts";
+import { search } from "../index.ts";
 
 function entry(
   slug: string,
@@ -49,8 +49,8 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-test("searchPlugin registers its style, client entry, and endpoint", () => {
-  const plugin = searchPlugin();
+test("search registers its style, client entry, and endpoint", () => {
+  const plugin = search();
 
   assert.equal(plugin.name, "search");
   assert.deepEqual(plugin.assets, [
@@ -77,7 +77,7 @@ test("the search-data endpoint returns published items with cache headers", asyn
     site: { title: "Test" },
     content: { filters: { publishStrategy: "explicit" } },
   });
-  const endpoint = searchPlugin().endpoints?.[0];
+  const endpoint = search().endpoints?.[0];
   assert.ok(endpoint);
 
   const response = await endpoint.handler({

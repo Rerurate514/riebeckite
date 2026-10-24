@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
-import { shortcodesPlugin } from "../index.ts";
+import { shortcodes } from "../index.ts";
 
 function createPipeline(): Pipeline {
   return new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [shortcodesPlugin()],
+    plugins: [shortcodes()],
   });
 }
 

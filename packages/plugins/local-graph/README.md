@@ -22,15 +22,15 @@ neighbor.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { localGraph } from "@riebeckite/plugin-local-graph";
 
 export default defineConfig({
   // ...
-  plugins: [localGraphPlugin()],
+  plugins: [localGraph()],
 });
 ```
 
-`localGraphPlugin()` registers the plugin and bundles `style.css` into the app
+`localGraph()` registers the plugin and bundles `style.css` into the app
 stylesheet. The Site renders `<LocalGraph />` component itself, normally once
 after article content, to display the graph output.
 
@@ -61,7 +61,7 @@ Render the component once per article. Remove the element to remove the UI.
 
 ## Configuration
 
-There are no plugin options for `localGraphPlugin`. The `LocalGraph` component
+There are no plugin options for `localGraph`. The `LocalGraph` component
 accepts `graph` as a required prop.
 
 ## Graph layout
@@ -74,7 +74,7 @@ internal selection key `/explore?note=<slug>`.
 
 ## Exports
 
-- `localGraphPlugin()` — plugin factory
+- `localGraph()` — plugin factory
 - `LocalGraph` — SVG graph component (default export of `components/local-graph.tsx`)
 - `getLocalGraph({ manifest, config, slug, resolveTitle })` — builds nearby-note
   data for a slug (`null` when the note is absent or unpublished)

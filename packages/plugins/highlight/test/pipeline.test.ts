@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
-import { highlightPlugin } from "../index.ts";
+import { highlight } from "../index.ts";
 
 test("golden: highlights render through the markdown pipeline", async () => {
   const markdown = [
@@ -11,7 +11,7 @@ test("golden: highlights render through the markdown pipeline", async () => {
   ].join("\n");
 
   const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [highlightPlugin({ className: "hl", tag: "span" })],
+    plugins: [highlight({ className: "hl", tag: "span" })],
   });
   const { html } = await pipeline.execute(markdown);
 

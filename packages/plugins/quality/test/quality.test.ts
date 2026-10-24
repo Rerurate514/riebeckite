@@ -9,7 +9,7 @@ import type {
 import {
   inspectGeneratedHtml,
   inspectHtml,
-  qualityPlugin,
+  quality,
   RULE_CODES,
 } from "../index.js";
 
@@ -230,8 +230,8 @@ test("inspectGeneratedHtml records the page path as filePath", () => {
   assert.equal(inspectHtml('<img src="a.png">')[0]?.filePath, undefined);
 });
 
-test("qualityPlugin pushes article-body diagnostics with slug and filePath", async () => {
-  const plugin = qualityPlugin();
+test("quality pushes article-body diagnostics with slug and filePath", async () => {
+  const plugin = quality();
   const diagnostics: Diagnostic[] = [];
   await plugin.onManifestCreated?.({
     manifest: manifestOf([entry("post", '<img src="a.png">')]),
@@ -245,8 +245,8 @@ test("qualityPlugin pushes article-body diagnostics with slug and filePath", asy
   assert.equal(diagnostics[0]?.filePath, "/post");
 });
 
-test("qualityPlugin exposes an inspectGeneratedHtml hook", () => {
-  const plugin = qualityPlugin();
+test("quality exposes an inspectGeneratedHtml hook", () => {
+  const plugin = quality();
   const diagnostics = plugin.inspectGeneratedHtml?.({
     path: "post.html",
     html: '<img src="a.png">',
@@ -256,7 +256,7 @@ test("qualityPlugin exposes an inspectGeneratedHtml hook", () => {
 });
 
 test("failOn error throws on error-severity diagnostics", () => {
-  const plugin = qualityPlugin({ failOn: "error" });
+  const plugin = quality({ failOn: "error" });
   const manifest = {
     diagnostics: [
       {
@@ -278,7 +278,7 @@ test("failOn error throws on error-severity diagnostics", () => {
 });
 
 test("failOn defaults to never", () => {
-  const plugin = qualityPlugin();
+  const plugin = quality();
   const manifest = {
     diagnostics: [
       {

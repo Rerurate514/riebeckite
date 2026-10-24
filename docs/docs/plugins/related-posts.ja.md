@@ -84,7 +84,7 @@ import "@riebeckite/plugin-related-posts/style.css";
 ## エクスポート
 
 - `relatedPosts(options?)`：プラグインファクトリ
-- `relatedPostsPlugin`：`relatedPosts` のエイリアス
+- `relatedPosts`：`relatedPosts` のエイリアス
 - `resolveRelatedPostsOptions(options?)`：オプションの既定値を適用する
 - `buildRelatedPosts({ manifest, entry, options, config? })`：関連エントリを採点・整列する
 - `renderRelatedPosts(entries, options)`：ナビゲーション HTML を生成する

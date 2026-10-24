@@ -189,10 +189,7 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       config.includes("obsidianMarkdown()"),
       "starter: obsidianMarkdown must be bare",
     );
-    expect(
-      config.includes("colorModePlugin()"),
-      "starter: colorModePlugin must be bare",
-    );
+    expect(config.includes("colorMode()"), "starter: colorMode must be bare");
     expect(
       !config.includes("@riebeckite/plugin-l10n"),
       "starter: l10n must not be registered",
@@ -201,12 +198,9 @@ async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
       config.includes("seo({ sitemap: true, robots: true })"),
       "starter: seo must include practical options",
     );
+    expect(config.includes("search()"), "starter: search must be registered");
     expect(
-      config.includes("searchPlugin()"),
-      "starter: search must be registered",
-    );
-    expect(
-      config.includes("breadcrumbsPlugin()"),
+      config.includes("breadcrumbs()"),
       "starter: breadcrumbs must be registered",
     );
     expect(
@@ -310,11 +304,11 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
       "showcase: l10n must resolve the Japanese default",
     );
     expect(
-      config.includes('deployPlugin({ provider: "cloudflare-pages" })'),
+      config.includes('deploy({ provider: "cloudflare-pages" })'),
       "showcase: deploy must configure a provider",
     );
     expect(
-      config.includes('textFragmentPlugin({ prefix: "私のブログ: " })'),
+      config.includes('textFragment({ prefix: "私のブログ: " })'),
       "showcase: textFragment prefix must follow the site title",
     );
     expect(
@@ -322,11 +316,11 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
       "showcase: diagnostics must show its options",
     );
     expect(
-      config.includes("breadcrumbsPlugin()"),
+      config.includes("breadcrumbs()"),
       "showcase: breadcrumbs must be registered",
     );
     expect(
-      config.includes("folderPagesPlugin()"),
+      config.includes("folderPages()"),
       "showcase: folder-pages must be registered",
     );
     expectHoverPreviewSelector(config, "showcase");

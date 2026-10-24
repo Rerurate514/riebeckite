@@ -16,16 +16,16 @@ title: Local Graph
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { localGraphPlugin } from "@riebeckite/plugin-local-graph";
+import { localGraph } from "@riebeckite/plugin-local-graph";
 
-export default defineConfig({ plugins: [localGraphPlugin()] });
+export default defineConfig({ plugins: [localGraph()] });
 ```
 
 記事レイアウトで `<LocalGraph />` コンポーネントを一度描画します。
 
 ## 設定
 
-`localGraphPlugin()` にはプラグイン用のオプションがありません。`LocalGraph` コンポーネントは必須プロップ `graph` を受け取ります。
+`localGraph()` にはプラグイン用のオプションがありません。`LocalGraph` コンポーネントは必須プロップ `graph` を受け取ります。
 
 ## 高度なカスタマイズ
 
@@ -41,7 +41,7 @@ return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 
 ## 公開 API
 
-- `localGraphPlugin()`、`LocalGraph`
+- `localGraph()`、`LocalGraph`
 - `getLocalGraph({ manifest, config, slug, resolveTitle })`
 - `buildGraphEdges(nodes, visibleSlugs?)`、`layoutRadialGraph(nodes, options)`
 - `LocalGraphData`、`LocalGraphNode`

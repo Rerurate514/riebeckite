@@ -34,7 +34,7 @@ export type {
   ResolvedHoverPreviewOptions,
 } from "./src/types.js";
 
-export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
+export function hoverPreview(options: HoverPreviewOptions = {}) {
   const resolved = resolveHoverPreviewOptions(options);
   const runtime = createHoverPreviewRuntime(resolved);
 
@@ -67,8 +67,6 @@ export function hoverPreviewPlugin(options: HoverPreviewOptions = {}) {
     ],
   });
 }
-
-export const hoverPreview = hoverPreviewPlugin;
 
 function validateHoverPreviewOptions(
   options: HoverPreviewOptions | undefined,

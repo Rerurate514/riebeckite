@@ -8,7 +8,7 @@
 
 ## できること
 
-`queryPlugin()` は Markdown 中のフェンスコードブロック
+`query()` は Markdown 中のフェンスコードブロック
 
 ````md
 ```query
@@ -28,11 +28,11 @@ limit: 5
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { queryPlugin } from "@riebeckite/plugin-query";
+import { query } from "@riebeckite/plugin-query";
 
 export default defineConfig({
   // ...
-  plugins: [queryPlugin()],
+  plugins: [query()],
 });
 ```
 
@@ -106,7 +106,7 @@ format: list
 
 ## エクスポート
 
-- `queryPlugin(options?)`：プラグインファクトリ
+- `query(options?)`：プラグインファクトリ
 - `remarkQuery(options?)`：Remark 変換だけを利用する場合の API（`options.language` でフェンス言語を指定）
 - `queryContentEntries(entries, spec)`：Core の照合エンジン（`@riebeckite/core` からも利用可能）
 - 型: `QueryOptions`、`QuerySpec`、`QueryOutputFormat`

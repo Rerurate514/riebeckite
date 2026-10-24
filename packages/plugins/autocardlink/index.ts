@@ -11,7 +11,7 @@ export { initAutoCardLink } from "./src/init.js";
 export { remarkAutoCardLink } from "./src/remark.js";
 export type { AutoCardLink, AutoCardLinkOptions } from "./src/types.js";
 
-export function autoCardLinkPlugin(options: AutoCardLinkOptions = {}) {
+export function autoCardLink(options: AutoCardLinkOptions = {}) {
   return definePlugin({
     name: "autocardlink",
     processedContentCache: {

@@ -103,7 +103,7 @@ required. Only public entries are listed.
 
 ## Exports
 
-- `excalidraw(options?)` / `excalidrawPlugin` — plugin factory
+- `excalidraw(options?)` / `excalidraw` — plugin factory
 - Type: `ExcalidrawOptions`
 
 ## See also

@@ -96,7 +96,7 @@ the optional `className` is added to the root without replacing them.
 ## Exports
 
 - `share(options?)` — plugin factory
-- `sharePlugin` — alias of `share`
+- `share` — alias of `share`
 - `resolveShareOptions(options?)` — apply option defaults
 - `validateShareOptions(options?)` — validate runtime options
 - `buildAbsoluteUrl(config, permalink)` — resolve a note URL to absolute

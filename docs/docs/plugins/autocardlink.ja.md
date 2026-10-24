@@ -10,7 +10,7 @@ title: AutoCardLink
 
 ## できること
 
-`autoCardLinkPlugin()` は、タイトル、説明、ホスト名、favicon、任意の画像を含むリンクカードを生成します。スタイルはパッケージ内の `style.css` に含まれます。
+`autoCardLink()` は、タイトル、説明、ホスト名、favicon、任意の画像を含むリンクカードを生成します。スタイルはパッケージ内の `style.css` に含まれます。
 
 ```cardlink
 url: https://example.com/post
@@ -25,11 +25,11 @@ image: https://example.com/og.png
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
+import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 
 export default defineConfig({
   // ...
-  plugins: [autoCardLinkPlugin()],
+  plugins: [autoCardLink()],
 });
 ```
 
@@ -67,7 +67,7 @@ image: https://example.com/og.png
 | --- | --- | --- | --- |
 | `className` | `string` | `(なし)` | カードのルート要素に追加する CSS クラス。`rr-cardlink` フックは常に付与します |
 
-- `autoCardLinkPlugin(options?)`：プラグインファクトリ
+- `autoCardLink(options?)`：プラグインファクトリ
 - `remarkAutoCardLink(options?)`：Remark 変換だけを利用する場合の API
 - `AutoCardLink`、`AutoCardLinkOptions`：型
 

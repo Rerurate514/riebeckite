@@ -19,11 +19,11 @@ Two parts:
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { lightboxPlugin } from "@riebeckite/plugin-lightbox";
+import { lightbox } from "@riebeckite/plugin-lightbox";
 
 export default defineConfig({
   // ...
-  plugins: [lightboxPlugin()],
+  plugins: [lightbox()],
 });
 ```
 
@@ -72,7 +72,7 @@ to style the displayed image without selecting its descendants.
 
 ## Exports
 
-- `lightboxPlugin(options?)` — plugin factory
+- `lightbox(options?)` — plugin factory
 - `rehypeLightbox(options?)` — rehype transform
 - `initLightbox(root?, options?)` — client initializer, returns a cleanup
   function

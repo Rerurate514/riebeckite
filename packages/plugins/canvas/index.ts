@@ -137,8 +137,6 @@ export function canvas(options: CanvasOptions = {}) {
   });
 }
 
-export const canvasPlugin = canvas;
-
 function validateCanvasOptions(
   options: CanvasOptions | undefined,
 ): readonly ConfigValidationIssue[] {

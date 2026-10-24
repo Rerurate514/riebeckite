@@ -14,7 +14,7 @@ This recipe reads a `related` list from frontmatter and adds note links. The lin
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function relatedLinksPlugin() {
+export function relatedLinks() {
   return definePlugin({
     name: "related-links",
     extendContentGraph: ({ entries, contentIndex }) => {

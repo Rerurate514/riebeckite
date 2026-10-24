@@ -94,7 +94,7 @@ Obsidian には「厳密な改行」という設定があります。これを�
 ## 主なエクスポート
 
 - `hardBreaks()`: プラグインを作成する
-- `hardBreaksPlugin`: `hardBreaks` の別名
+- `hardBreaks`: `hardBreaks` の別名
 
 ## 関連資料
 

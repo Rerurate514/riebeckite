@@ -112,7 +112,7 @@ JavaScript is disabled and the spec stays readable in the fallback `details`.
 
 ## Main exports
 
-- `vegaLite(options?)`: create the plugin (`vegaLitePlugin` is an alias)
+- `vegaLite(options?)`: create the plugin (`vegaLite` is an alias)
 - `initVegaLite`: initialize client-side rendering
 - Types: `VegaLiteOptions`, `VegaLiteSpec`, `VegaLiteTheme`,
   `VegaLiteRenderer`

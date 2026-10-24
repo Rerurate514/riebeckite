@@ -257,7 +257,7 @@ article and do not need a page of their own.
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function reportPlugin() {
+export function report() {
   return definePlugin({
     name: "report",
     pageTypes: [{

@@ -65,7 +65,7 @@ See [HonoX Integration](https://github.com/Rerurate514/riebeckite/blob/main/docs
 
 ## Exports
 
-- `discordEmbed(options?)` / `discordEmbedPlugin(options?)` — plugin factory
+- `discordEmbed(options?)` / `discordEmbed(options?)` — plugin factory
 - `buildDiscordHeadTags(entry, options, diagnostics)` — build one entry's head
   tags
 - `resolveDiscordEmbedOptions(options?)` — resolve defaults

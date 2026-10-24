@@ -62,7 +62,7 @@ recomputing the period.
 
 ## Exports
 
-- `archive` / `archivePlugin` — the plugin factory.
+- `archive` / `archive` — the plugin factory.
 - `resolveArchiveOptions` — resolves options with defaults.
 - `buildArchiveCollections` — builds the monthly collections for entries.
 - `archiveDefinitions` — the Core collection definitions used by the plugin.

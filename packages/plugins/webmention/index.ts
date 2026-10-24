@@ -131,9 +131,6 @@ export {
 
 export type { WebmentionOptions as WebmentionPluginOptions };
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const webmentionPlugin = webmention;
-
 /**
  * Receives Webmentions and displays verified ones as "mentions" near articles.
  *

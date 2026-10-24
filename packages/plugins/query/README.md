@@ -10,7 +10,7 @@ JavaScript is required.
 
 ## Overview
 
-`queryPlugin()` recognises fenced blocks
+`query()` recognises fenced blocks
 
 ````md
 ```query
@@ -31,11 +31,11 @@ permalink).
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { queryPlugin } from "@riebeckite/plugin-query";
+import { query } from "@riebeckite/plugin-query";
 
 export default defineConfig({
   // ...
-  plugins: [queryPlugin()],
+  plugins: [query()],
 });
 ```
 
@@ -113,7 +113,7 @@ emits a `content-query-invalid` error diagnostic. Unknown fields emit a
 
 ## Exports
 
-- `queryPlugin(options?)` — plugin factory
+- `query(options?)` — plugin factory
 - `remarkQuery(options?)` — remark transform usable on its own (`options.language` selects the fence language)
 - `queryContentEntries(entries, spec)` — the Core matching engine (also
   available from `@riebeckite/core`)

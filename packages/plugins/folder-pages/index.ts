@@ -94,8 +94,6 @@ export function folderPages(options: FolderPagesOptions = {}) {
   });
 }
 
-export const folderPagesPlugin = folderPages;
-
 function validateFolderPagesOptions(
   options: FolderPagesOptions | undefined,
 ): readonly ConfigValidationIssue[] {

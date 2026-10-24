@@ -1,26 +1,26 @@
 import { defineConfig } from "@riebeckite/core";
-import { aliasPlugin } from "@riebeckite/plugin-alias";
+import { alias } from "@riebeckite/plugin-alias";
 import {
   analytics,
   MemoryAnalyticsProvider,
 } from "@riebeckite/plugin-analytics";
 import { attachment } from "@riebeckite/plugin-attachment";
-import { autoCardLinkPlugin } from "@riebeckite/plugin-autocardlink";
-import { backlinksPlugin } from "@riebeckite/plugin-backlinks";
+import { autoCardLink } from "@riebeckite/plugin-autocardlink";
+import { backlinks } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { citations } from "@riebeckite/plugin-citations";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
-import { colorModePlugin } from "@riebeckite/plugin-color-mode";
+import { colorMode } from "@riebeckite/plugin-color-mode";
 import { d2 } from "@riebeckite/plugin-d2";
-import { dataviewPlugin } from "@riebeckite/plugin-dataview";
+import { dataview } from "@riebeckite/plugin-dataview";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
-import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
+import { flashcards } from "@riebeckite/plugin-flashcards";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
-import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { markmap } from "@riebeckite/plugin-markmap";
@@ -30,18 +30,18 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
 import { properties } from "@riebeckite/plugin-properties";
 import { qrCode } from "@riebeckite/plugin-qr-code";
-import { queryPlugin } from "@riebeckite/plugin-query";
-import { recentPostsPlugin } from "@riebeckite/plugin-recent-posts";
+import { query } from "@riebeckite/plugin-query";
+import { recentPosts } from "@riebeckite/plugin-recent-posts";
 import { relatedPosts } from "@riebeckite/plugin-related-posts";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 import { series } from "@riebeckite/plugin-series";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { svgOptimizer } from "@riebeckite/plugin-svg-optimizer";
 import { taxonomy } from "@riebeckite/plugin-taxonomy";
-import { tocPlugin } from "@riebeckite/plugin-toc";
-import { uxPlugin } from "@riebeckite/plugin-ux";
+import { toc } from "@riebeckite/plugin-toc";
+import { ux } from "@riebeckite/plugin-ux";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { localFixturePlugin } from "./extensions/local-plugin";
@@ -74,36 +74,36 @@ export default defineConfig({
     attachment(),
     marp(),
     codeAnnotations(),
-    colorModePlugin(),
+    colorMode(),
     canvas(),
-    aliasPlugin(),
+    alias(),
     graphviz({ render: "build", engine: "dot" }),
-    autoCardLinkPlugin(),
+    autoCardLink(),
     excaliBrain(),
     highlight(),
     d2(),
-    tocPlugin(),
+    toc(),
     vegaLite(),
     wavedrom(),
-    backlinksPlugin(),
-    queryPlugin(),
+    backlinks(),
+    query(),
     bases(),
-    dataviewPlugin(),
-    flashcardsPlugin(),
+    dataview(),
+    flashcards(),
     kanban(),
     chartjs(),
     citations({ bibliography: "references.bib" }),
-    recentPostsPlugin(),
+    recentPosts(),
     relatedPosts(),
     imageOptimizer({ widths: [640, 1280] }),
     svgOptimizer(),
     responsiveImage(),
     richEmbed(),
-    searchPlugin(),
-    hoverPreviewPlugin(),
+    search(),
+    hoverPreview(),
     shortcodes(),
     series(),
-    uxPlugin(),
+    ux(),
     taxonomy(),
     localFixturePlugin(),
   ],

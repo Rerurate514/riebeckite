@@ -20,12 +20,12 @@ title: UX
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { uxPlugin } from "@riebeckite/plugin-ux";
+import { ux } from "@riebeckite/plugin-ux";
 
 export default defineConfig({
   // ...
   plugins: [
-    uxPlugin({
+    ux({
       progress: true,
       backToTop: true,
       tocScrollSpy: true,
@@ -35,7 +35,7 @@ export default defineConfig({
 });
 ```
 
-`uxPlugin` は `ux` という別名でもエクスポートしています。
+`ux` は `ux` という別名でもエクスポートしています。
 
 ## オプション
 
@@ -80,7 +80,7 @@ export default defineConfig({
 
 ## 主なエクスポート
 
-- `uxPlugin(options?)` / `ux(options?)`: プラグインを作成する
+- `ux(options?)` / `ux(options?)`: プラグインを作成する
 - `initUx`: クライアント側の初期化
 - 型: `UxOptions`、`UxResolvedConfig`
 

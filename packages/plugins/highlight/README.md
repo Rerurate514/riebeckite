@@ -84,7 +84,7 @@ the appearance.
 ## Exports
 
 - `highlight(options?)` — plugin factory
-- `highlightPlugin` — alias of `highlight`
+- `highlight` — alias of `highlight`
 - `remarkHighlight(options?)` — the underlying remark transformer
 - Type: `HighlightOptions`
 

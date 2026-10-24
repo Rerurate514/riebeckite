@@ -5,7 +5,7 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
-import { dataviewPlugin } from "../index.ts";
+import { dataview } from "../index.ts";
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -38,7 +38,7 @@ test("dataview queries exclude entries that are not discoverable", async () => {
         "---\npublish: true\ntitle: SECRET_UNLISTED_TITLE\nvisibility: unlisted\n---\n# Unlisted",
     }),
     [],
-    { config: config(), plugins: [dataviewPlugin()] },
+    { config: config(), plugins: [dataview()] },
   );
 
   const manifest = await content.getManifest();

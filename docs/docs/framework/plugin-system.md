@@ -48,7 +48,7 @@ feature belongs to.
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
   });
@@ -62,7 +62,7 @@ type ExampleOptions = {
   enabled?: boolean;
 };
 
-export function examplePlugin(options: ExampleOptions = {}) {
+export function example(options: ExampleOptions = {}) {
   return definePlugin({
     name: "example",
     options,
@@ -74,7 +74,7 @@ Register it in `riebeckite.config.ts`:
 
 ```ts
 export default defineConfig({
-  plugins: [examplePlugin({ enabled: true })],
+  plugins: [example({ enabled: true })],
 });
 ```
 
@@ -82,7 +82,7 @@ export default defineConfig({
 
 ```ts
 plugins: [
-  condition && myPlugin(),
+  condition && my(),
 ]
 ```
 

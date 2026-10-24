@@ -64,7 +64,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `pdf(options?)` / `pdfPlugin`：プラグインファクトリ
+- `pdf(options?)` / `pdf`：プラグインファクトリ
 - `buildPdfViewerUrl(url, options)`：ビューア URL の生成
 - `isPdfRenderTarget(context)`：PDF 判定
 - `renderPdf(context, options)`：レンダラー実装

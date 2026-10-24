@@ -130,7 +130,7 @@ paginate: true
 
 ## 主なエクスポート
 
-- `marp(options?)` / `marpPlugin(options?)`: プラグインを作成する
+- `marp(options?)` / `marp(options?)`: プラグインを作成する
 - `isMarpDocument(matter?)`: frontmatter の `marp: true` を判定するヘルパー
 - `initMarpDecks()`: ビューアの初期化関数。`@riebeckite/plugin-marp/client` から公開
 - 型: `MarpOptions`、`MarpDeck`、`MarpBuildRenderResult`

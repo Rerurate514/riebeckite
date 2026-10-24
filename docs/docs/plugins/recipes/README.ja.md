@@ -22,7 +22,7 @@ sidebar:
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function examplePlugin() {
+export function example() {
   return definePlugin({
     name: "example",
   });
@@ -33,14 +33,14 @@ export function examplePlugin() {
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { examplePlugin } from "./extensions/example";
+import { example } from "./extensions/example";
 
 export default defineConfig({
-  plugins: [examplePlugin()],
+  plugins: [example()],
 });
 ```
 
-各レシピは独自のファクトリを定義します。`extensions/` に置き、`examplePlugin` の代わりに登録してください。`name` は有効なプラグインの中で一意にしてください。プラグインのキャッシュと生成出力の名前空間は、この `name` が所有します。
+各レシピは独自のファクトリを定義します。`extensions/` に置き、`example` の代わりに登録してください。`name` は有効なプラグインの中で一意にしてください。プラグインのキャッシュと生成出力の名前空間は、この `name` が所有します。
 
 ## レシピ一覧
 

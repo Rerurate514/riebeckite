@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
-import { codeAnnotationsPlugin } from "../index.ts";
+import { codeAnnotations } from "../index.ts";
 
 async function render(markdown: string): Promise<string> {
   const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [codeAnnotationsPlugin()],
+    plugins: [codeAnnotations()],
   });
   return (await pipeline.execute(markdown)).html;
 }

@@ -113,7 +113,7 @@ a lingering worker.
 
 ## Exports
 
-- `graphviz(options?)` — plugin factory (`graphvizPlugin` is an alias)
+- `graphviz(options?)` — plugin factory (`graphviz` is an alias)
 - `initGraphvizDiagrams` — client initializer (`@riebeckite/plugin-graphviz/client`)
 - Types: `GraphvizOptions`, `GraphvizClientOptions`, `GraphvizRenderMode`,
   `GraphvizEngine`

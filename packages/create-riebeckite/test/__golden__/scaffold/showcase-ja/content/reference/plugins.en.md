@@ -11,35 +11,35 @@ README.
 | Package | Factory | Options |
 | --- | --- | --- |
 | [`@riebeckite/plugin-obsidian-markdown`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/obsidian-markdown/README.md) | `obsidianMarkdown` | — |
-| [`@riebeckite/plugin-color-mode`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/color-mode/README.md) | `colorModePlugin` | — |
+| [`@riebeckite/plugin-color-mode`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/color-mode/README.md) | `colorMode` | — |
 | [`@riebeckite/plugin-l10n`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/l10n/README.md) | `l10n` | `{ defaultLang: "ja", languages: ["en","ja","zh-CN","es","de","fr","ko"] }` |
 | [`@riebeckite/plugin-seo`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/seo/README.md) | `seo` | `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }` |
-| [`@riebeckite/plugin-toc`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/toc/README.md) | `tocPlugin` | — |
+| [`@riebeckite/plugin-toc`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/toc/README.md) | `toc` | — |
 | [`@riebeckite/plugin-properties`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/properties/README.md) | `properties` | `{ include: ["created", "modified", "tags", "status"], fields: { created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } } }` |
-| [`@riebeckite/plugin-alias`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/alias/README.md) | `aliasPlugin` | `{ status: 308 }` |
+| [`@riebeckite/plugin-alias`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/alias/README.md) | `alias` | `{ status: 308 }` |
 | [`@riebeckite/plugin-code-enhance`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-enhance/README.md) | `codeEnhance` | `{ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, theme: { light: "github-light", dark: "github-dark" }, wrapToggle: true }` |
-| [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | `searchPlugin` | — |
-| [`@riebeckite/plugin-backlinks`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/backlinks/README.md) | `backlinksPlugin` | — |
-| [`@riebeckite/plugin-breadcrumbs`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/breadcrumbs/README.md) | `breadcrumbsPlugin` | — |
+| [`@riebeckite/plugin-search`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md) | `search` | — |
+| [`@riebeckite/plugin-backlinks`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/backlinks/README.md) | `backlinks` | — |
+| [`@riebeckite/plugin-breadcrumbs`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/breadcrumbs/README.md) | `breadcrumbs` | — |
 | [`@riebeckite/plugin-navigation`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/navigation/README.md) | `navigation` | `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }` |
 | [`@riebeckite/plugin-related-posts`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/related-posts/README.md) | `relatedPosts` | `{ limit: 5, useTags: true, useBacklinks: true, minScore: 1, heading: true, headingText: "Related", className: "rb-related-posts" }` |
 | [`@riebeckite/plugin-share`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/share/README.md) | `share` | `{ services: ["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"], mastodonInstance: "mastodon.social" }` |
 | [`@riebeckite/plugin-changelog`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/changelog/README.md) | `changelog` | `{ perNote: true, lookbackDays: 90, dateFormat: "iso", siteWide: false }` |
 | [`@riebeckite/plugin-webmention`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/webmention/README.md) | `webmention` | `{ headingText: "Mentions", limit: 20 }` |
-| [`@riebeckite/plugin-recent-posts`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/recent-posts/README.md) | `recentPostsPlugin` | — |
+| [`@riebeckite/plugin-recent-posts`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/recent-posts/README.md) | `recentPosts` | — |
 | [`@riebeckite/plugin-attachment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/attachment/README.md) | `attachment` | `{ showSize: true }` |
 | [`@riebeckite/plugin-pdf`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/pdf/README.md) | `pdf` | `{ height: "640px", initialPage: 1, toolbar: true, showMetadata: true, downloadLabel: "Download PDF" }` |
 | [`@riebeckite/plugin-media`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/media/README.md) | `media` | `{ preload: "metadata", lazy: true, showCaption: true, showDownload: false, showOpenOriginal: true }` |
 | [`@riebeckite/plugin-responsive-image`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/responsive-image/README.md) | `responsiveImage` | `{ lazy: true, decoding: true, sizes: "100vw", widths: [640, 1280, 1920], formats: ["webp", "avif"], className: "rb-responsive-image" }` |
-| [`@riebeckite/plugin-lightbox`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/lightbox/README.md) | `lightboxPlugin` | `{ selectorClass: "rr-lightbox-trigger" }` |
+| [`@riebeckite/plugin-lightbox`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/lightbox/README.md) | `lightbox` | `{ selectorClass: "rr-lightbox-trigger" }` |
 | [`@riebeckite/plugin-highlight`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/highlight/README.md) | `highlight` | `{ tag: "mark", className: "rb-mark" }` |
 | [`@riebeckite/plugin-code-tabs`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-tabs/README.md) | `codeTabs` | `{ syncTabs: true }` |
 | [`@riebeckite/plugin-code-annotations`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/code-annotations/README.md) | `codeAnnotations` | — |
 | [`@riebeckite/plugin-shortcodes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/shortcodes/README.md) | `shortcodes` | `{ builtins: true }` |
 | [`@riebeckite/plugin-series`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/series/README.md) | `series` | `{ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false, heading: true, className: "rb-series" }` |
 | [`@riebeckite/plugin-taxonomy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/taxonomy/README.md) | `taxonomy` | `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true }, relatedLimit: 8 }` |
-| [`@riebeckite/plugin-folder-pages`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/folder-pages/README.md) | `folderPagesPlugin` | — |
-| [`@riebeckite/plugin-autocardlink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md) | `autoCardLinkPlugin` | `{ className: "rb-cardlink" }` |
+| [`@riebeckite/plugin-folder-pages`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/folder-pages/README.md) | `folderPages` | — |
+| [`@riebeckite/plugin-autocardlink`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md) | `autoCardLink` | `{ className: "rb-cardlink" }` |
 | [`@riebeckite/plugin-rich-embed`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rich-embed/README.md) | `richEmbed` | `{ providers: ["youtube", "vimeo", "spotify"] }` |
 | [`@riebeckite/plugin-gallery`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/gallery/README.md) | `gallery` | `{ columns: 3, aspect: "4/3", language: "gallery" }` |
 | [`@riebeckite/plugin-glossary`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/glossary/README.md) | `glossary` | — |
@@ -59,20 +59,20 @@ README.
 | [`@riebeckite/plugin-excalibrain`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/excalibrain/README.md) | `excaliBrain` | `{ render: "build", auto: true, heading: true, infer: true, siblings: true, headingText: "ExcaliBrain", width: 720, height: 480 }` |
 | [`@riebeckite/plugin-canvas`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/canvas/README.md) | `canvas` | `{ language: "canvas", render: "both", className: "rb-canvas" }` |
 | [`@riebeckite/plugin-bases`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/bases/README.md) | `bases` | `{ language: "base", limit: 100, className: "rb-bases", showFallback: true }` |
-| [`@riebeckite/plugin-dataview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/dataview/README.md) | `dataviewPlugin` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
-| [`@riebeckite/plugin-flashcards`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/flashcards/README.md) | `flashcardsPlugin` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
+| [`@riebeckite/plugin-dataview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/dataview/README.md) | `dataview` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
+| [`@riebeckite/plugin-flashcards`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/flashcards/README.md) | `flashcards` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
 | [`@riebeckite/plugin-kanban`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/kanban/README.md) | `kanban` | `{ columnMarker: "##", autoDetect: true, className: "rb-kanban", fallback: true }` |
-| [`@riebeckite/plugin-query`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md) | `queryPlugin` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
-| [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | `localGraphPlugin` | — |
-| [`@riebeckite/plugin-hover-preview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md) | `hoverPreviewPlugin` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
-| [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | `gardenExplorerPlugin` | — |
-| [`@riebeckite/plugin-ux`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md) | `uxPlugin` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
-| [`@riebeckite/plugin-daily-notes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md) | `dailyNotesPlugin` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
-| [`@riebeckite/plugin-rename`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md) | `renamePlugin` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
-| [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragmentPlugin` | `{ prefix: "showcase-ja: " }` |
+| [`@riebeckite/plugin-query`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md) | `query` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
+| [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | `localGraph` | — |
+| [`@riebeckite/plugin-hover-preview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md) | `hoverPreview` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
+| [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | `gardenExplorer` | — |
+| [`@riebeckite/plugin-ux`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md) | `ux` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
+| [`@riebeckite/plugin-daily-notes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md) | `dailyNotes` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
+| [`@riebeckite/plugin-rename`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md) | `rename` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
+| [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragment` | `{ prefix: "showcase-ja: " }` |
 | [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | `timeline` | — |
-| [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | `qualityPlugin` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
-| [`@riebeckite/plugin-deploy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md) | `deployPlugin` | `{ provider: "cloudflare-pages" }` |
+| [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | `quality` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
+| [`@riebeckite/plugin-deploy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md) | `deploy` | `{ provider: "cloudflare-pages" }` |
 | [`@riebeckite/plugin-diagnostics`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/diagnostics/README.md) | `diagnostics` | `{ reportUnusedAssets: true, reportOrphans: true, requiredFrontmatter: ["title"] }` |
 
 ## Markdown behavior
@@ -102,7 +102,7 @@ Read the [[guide]] and [[index]] pages. `![[index]]` embeds the note inline.
 
 ### @riebeckite/plugin-color-mode
 
-Factory: `colorModePlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/color-mode/README.md)
+Factory: `colorMode` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/color-mode/README.md)
 
 Adds the light/dark/system color-mode control to the app shell. Markdown does not need special syntax; every page inherits the toggle.
 
@@ -138,7 +138,7 @@ publish: true
 
 ### @riebeckite/plugin-toc
 
-Factory: `tocPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/toc/README.md)
+Factory: `toc` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/toc/README.md)
 
 Builds a table of contents from Markdown headings.
 
@@ -165,7 +165,7 @@ status: active
 
 ### @riebeckite/plugin-alias
 
-Factory: `aliasPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/alias/README.md)
+Factory: `alias` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/alias/README.md)
 
 Creates redirects from old Markdown paths declared in frontmatter.
 
@@ -192,7 +192,7 @@ export function hello(name: string): string {
 
 ### @riebeckite/plugin-search
 
-Factory: `searchPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md)
+Factory: `search` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/search/README.md)
 
 Indexes published Markdown pages for client-side search. No special syntax is required; searchable text comes from each page body and metadata.
 
@@ -202,7 +202,7 @@ This body text becomes searchable after the site is built.
 
 ### @riebeckite/plugin-backlinks
 
-Factory: `backlinksPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/backlinks/README.md)
+Factory: `backlinks` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/backlinks/README.md)
 
 Shows pages that link to the current page. Use normal Markdown links or Obsidian wikilinks.
 
@@ -210,7 +210,7 @@ Mention another page with [[guide]] or [the guide](/guide/). The target page can
 
 ### @riebeckite/plugin-breadcrumbs
 
-Factory: `breadcrumbsPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/breadcrumbs/README.md)
+Factory: `breadcrumbs` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/breadcrumbs/README.md)
 
 This plugin has no Markdown-specific demo in the scaffold yet. See its package README for the exact behavior and options.
 
@@ -268,7 +268,7 @@ canonical: https://example.com/mentionable-page/
 
 ### @riebeckite/plugin-recent-posts
 
-Factory: `recentPostsPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/recent-posts/README.md)
+Factory: `recentPosts` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/recent-posts/README.md)
 
 Builds recent-post lists from dated Markdown entries.
 
@@ -314,7 +314,7 @@ Rewrites Markdown image embeds into responsive images with configured widths and
 
 ### @riebeckite/plugin-lightbox
 
-Factory: `lightboxPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/lightbox/README.md)
+Factory: `lightbox` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/lightbox/README.md)
 
 Makes image links open in a lightbox when the configured trigger class is present.
 
@@ -391,13 +391,13 @@ tags: [design, notes]
 
 ### @riebeckite/plugin-folder-pages
 
-Factory: `folderPagesPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/folder-pages/README.md)
+Factory: `folderPages` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/folder-pages/README.md)
 
 This plugin has no Markdown-specific demo in the scaffold yet. See its package README for the exact behavior and options.
 
 ### @riebeckite/plugin-autocardlink
 
-Factory: `autoCardLinkPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md)
+Factory: `autoCardLink` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/autocardlink/README.md)
 
 Turns suitable standalone links into rich card links.
 
@@ -697,7 +697,7 @@ views:
 
 ### @riebeckite/plugin-dataview
 
-Factory: `dataviewPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/dataview/README.md)
+Factory: `dataview` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/dataview/README.md)
 
 #### Dataview
 
@@ -713,7 +713,7 @@ LIMIT 10
 
 ### @riebeckite/plugin-flashcards
 
-Factory: `flashcardsPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/flashcards/README.md)
+Factory: `flashcards` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/flashcards/README.md)
 
 Turns Q/A style Markdown into flashcards.
 
@@ -747,7 +747,7 @@ A note whose body is `##` columns of task lists becomes a board; `#tags` and `[[
 
 ### @riebeckite/plugin-query
 
-Factory: `queryPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md)
+Factory: `query` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md)
 
 #### Query
 
@@ -765,7 +765,7 @@ limit: 5
 
 ### @riebeckite/plugin-local-graph
 
-Factory: `localGraphPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md)
+Factory: `localGraph` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md)
 
 Shows nearby notes based on Markdown links and wikilinks.
 
@@ -775,7 +775,7 @@ Connect this page to [[guide]], [[examples]], and [[reference/plugins]].
 
 ### @riebeckite/plugin-hover-preview
 
-Factory: `hoverPreviewPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md)
+Factory: `hoverPreview` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md)
 
 Shows previews when hovering internal links generated from Markdown.
 
@@ -783,7 +783,7 @@ Hover this internal link: [Guide](/guide/) or this wikilink: [[guide]].
 
 ### @riebeckite/plugin-garden-explorer
 
-Factory: `gardenExplorerPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md)
+Factory: `gardenExplorer` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md)
 
 Adds garden navigation/explorer UI from the content tree. Markdown files and folders become the source data.
 
@@ -798,7 +798,7 @@ content/
 
 ### @riebeckite/plugin-ux
 
-Factory: `uxPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md)
+Factory: `ux` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md)
 
 Adds reading UX such as progress, back-to-top, scroll spy, and copy buttons. Markdown headings and code blocks provide the anchors.
 
@@ -810,7 +810,7 @@ console.log('copy me')
 
 ### @riebeckite/plugin-daily-notes
 
-Factory: `dailyNotesPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md)
+Factory: `dailyNotes` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md)
 
 Extracts daily-note summaries/snippets from dated Markdown files.
 
@@ -824,7 +824,7 @@ Updated the showcase examples.
 
 ### @riebeckite/plugin-rename
 
-Factory: `renamePlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md)
+Factory: `rename` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md)
 
 Creates redirects when Markdown entries declare previous paths or when rename data is available.
 
@@ -836,7 +836,7 @@ previousPaths:
 
 ### @riebeckite/plugin-text-fragment
 
-Factory: `textFragmentPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md)
+Factory: `textFragment` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md)
 
 Adds text-fragment friendly copy/open behavior for selected Markdown text.
 
@@ -850,7 +850,7 @@ This plugin has no Markdown-specific demo in the scaffold yet. See its package R
 
 ### @riebeckite/plugin-quality
 
-Factory: `qualityPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md)
+Factory: `quality` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md)
 
 Reports accessibility/content quality diagnostics from rendered Markdown output.
 
@@ -860,7 +860,7 @@ Use headings in order: #, then ##, then ###.
 
 ### @riebeckite/plugin-deploy
 
-Factory: `deployPlugin` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md)
+Factory: `deploy` · [README](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md)
 
 Adds deployment integration for the generated site. Markdown does not need syntax; published pages become deployable output.
 

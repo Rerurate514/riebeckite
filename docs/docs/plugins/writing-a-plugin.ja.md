@@ -36,7 +36,7 @@ Markdown / HTML を変換する（3、実践）
 // extensions/local-plugin.ts
 import { definePlugin } from "@riebeckite/core";
 
-export function localPlugin() {
+export function local() {
   return definePlugin({
     name: "local",
   });
@@ -47,10 +47,10 @@ export function localPlugin() {
 
 ```ts
 // riebeckite.config.ts
-import { localPlugin } from "./extensions/local-plugin";
+import { local } from "./extensions/local-plugin";
 
 export default defineConfig({
-  plugins: [localPlugin()],
+  plugins: [local()],
   // ...
 });
 ```
@@ -60,7 +60,7 @@ export default defineConfig({
 ```ts
 type LocalOptions = { enabled?: boolean };
 
-export function localPlugin(options: LocalOptions = {}) {
+export function local(options: LocalOptions = {}) {
   return definePlugin({ name: "local", options });
 }
 ```
@@ -73,7 +73,7 @@ export function localPlugin(options: LocalOptions = {}) {
 // extensions/local-plugin.ts
 import { definePlugin } from "@riebeckite/core";
 
-export function localPlugin() {
+export function local() {
   return definePlugin({
     name: "local",
     assets: [
@@ -105,7 +105,7 @@ function remarkLocal() {
   };
 }
 
-export function localPlugin() {
+export function local() {
   return definePlugin({ name: "local", remarkPlugins: [remarkLocal] });
 }
 ```
@@ -151,7 +151,7 @@ Save often.
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function tipPlugin() {
+export function tip() {
   return definePlugin({
     name: "tip",
 
@@ -420,7 +420,7 @@ function remarkTip() {
   };
 }
 
-export function tipPlugin() {
+export function tip() {
   return definePlugin({
     name: "tip",
 
@@ -494,11 +494,11 @@ var(--rb-color-accent)
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { tipPlugin } from "./extensions/tip-plugin";
+import { tip } from "./extensions/tip-plugin";
 
 export default defineConfig({
   plugins: [
-    tipPlugin(),
+    tip(),
   ],
 });
 ```
@@ -525,7 +525,7 @@ Save often.
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
-import { tipPlugin } from "./tip-plugin.ts";
+import { tip } from "./tip-plugin.ts";
 
 test("renders :::tip as an aside with a title", async () => {
   const pipeline = new Pipeline(
@@ -533,7 +533,7 @@ test("renders :::tip as an aside with a title", async () => {
     new Map(),
     undefined,
     {
-      plugins: [tipPlugin()],
+      plugins: [tip()],
     },
   );
 
@@ -621,7 +621,7 @@ definePlugin({
 
 ```ts
 const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-  plugins: [tipPlugin()],
+  plugins: [tip()],
 });
 
 const { html } = await pipeline.execute(

@@ -53,7 +53,6 @@ declare module "@riebeckite/plugin-attachment" {
 
 declare module "@riebeckite/plugin-flashcards" {
   export const flashcards: any;
-  export const flashcardsPlugin: any;
   export const initFlashcards: any;
 }
 
@@ -62,7 +61,7 @@ declare module "@riebeckite/plugin-flashcards/client" {
 }
 
 declare module "@riebeckite/plugin-autocardlink" {
-  export const autoCardLinkPlugin: any;
+  export const autoCardLink: any;
 }
 
 declare module "@riebeckite/plugin-autocardlink/client" {
@@ -70,7 +69,7 @@ declare module "@riebeckite/plugin-autocardlink/client" {
 }
 
 declare module "@riebeckite/plugin-backlinks" {
-  export const backlinksPlugin: any;
+  export const backlinks: any;
 }
 
 declare module "@riebeckite/plugin-backlinks/components" {
@@ -80,12 +79,10 @@ declare module "@riebeckite/plugin-backlinks/components" {
 
 declare module "@riebeckite/plugin-bases" {
   export const bases: any;
-  export const basesPlugin: any;
 }
 
 declare module "@riebeckite/plugin-hover-preview" {
   export const hoverPreview: any;
-  export const hoverPreviewPlugin: any;
 }
 
 declare module "@riebeckite/plugin-hover-preview/client" {
@@ -94,7 +91,6 @@ declare module "@riebeckite/plugin-hover-preview/client" {
 
 declare module "@riebeckite/plugin-kanban" {
   export const kanban: any;
-  export const kanbanPlugin: any;
   export const parseKanban: any;
   export const renderKanban: any;
   export const resolveKanbanOptions: any;
@@ -102,7 +98,6 @@ declare module "@riebeckite/plugin-kanban" {
 
 declare module "@riebeckite/plugin-code-annotations" {
   export const codeAnnotations: any;
-  export const codeAnnotationsPlugin: any;
   export const collectCodeDiff: any;
 }
 
@@ -112,7 +107,6 @@ declare module "@riebeckite/plugin-canvas" {
 
 declare module "@riebeckite/plugin-citations" {
   export const citations: any;
-  export const citationsPlugin: any;
 }
 
 declare module "@riebeckite/plugin-canvas/client" {
@@ -129,7 +123,6 @@ declare module "@riebeckite/plugin-obsidian-markdown" {
 
 declare module "@riebeckite/plugin-marp" {
   export const marp: any;
-  export const marpPlugin: any;
 }
 
 declare module "@riebeckite/plugin-properties" {
@@ -138,20 +131,18 @@ declare module "@riebeckite/plugin-properties" {
 
 declare module "@riebeckite/plugin-graphviz" {
   export const graphviz: any;
-  export const graphvizPlugin: any;
 }
 
 declare module "@riebeckite/plugin-query" {
-  export const queryPlugin: any;
+  export const query: any;
 }
 
 declare module "@riebeckite/plugin-dataview" {
-  export const dataviewPlugin: any;
   export const dataview: any;
 }
 
 declare module "@riebeckite/plugin-recent-posts" {
-  export const recentPostsPlugin: any;
+  export const recentPosts: any;
 }
 
 declare module "@riebeckite/plugin-recent-posts/components" {
@@ -161,7 +152,6 @@ declare module "@riebeckite/plugin-recent-posts/components" {
 
 declare module "@riebeckite/plugin-related-posts" {
   export const relatedPosts: any;
-  export const relatedPostsPlugin: any;
   export const resolveRelatedPostsOptions: any;
   export const buildRelatedPosts: any;
   export const renderRelatedPosts: any;
@@ -187,7 +177,7 @@ declare module "@riebeckite/plugin-svg-optimizer" {
 declare module "@riebeckite/plugin-search" {
   export const initSearch: any;
   export const SearchBar: any;
-  export const searchPlugin: any;
+  export const search: any;
 }
 
 declare module "@riebeckite/plugin-search/client" {
@@ -201,7 +191,6 @@ declare module "@riebeckite/plugin-search/components" {
 
 declare module "@riebeckite/plugin-shortcodes" {
   export const shortcodes: any;
-  export const shortcodesPlugin: any;
   export const renderShortcode: any;
   export const resolveShortcodeOptions: any;
   export type ShortcodeRenderer = any;
@@ -209,12 +198,11 @@ declare module "@riebeckite/plugin-shortcodes" {
 
 declare module "@riebeckite/plugin-series" {
   export const series: any;
-  export const seriesPlugin: any;
 }
 
 declare module "@riebeckite/plugin-toc" {
   export const initTableOfContents: any;
-  export const tocPlugin: any;
+  export const toc: any;
 }
 
 declare module "@riebeckite/plugin-toc/client" {
@@ -228,7 +216,6 @@ declare module "@riebeckite/plugin-toc/components" {
 
 declare module "@riebeckite/plugin-ux" {
   export const ux: any;
-  export const uxPlugin: any;
 }
 
 declare module "@riebeckite/plugin-ux/client" {
@@ -237,7 +224,6 @@ declare module "@riebeckite/plugin-ux/client" {
 
 declare module "@riebeckite/plugin-vega-lite" {
   export const vegaLite: any;
-  export const vegaLitePlugin: any;
 }
 
 declare module "@riebeckite/plugin-vega-lite/client" {

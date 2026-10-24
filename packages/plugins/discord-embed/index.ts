@@ -38,5 +38,3 @@ export function discordEmbed(options: DiscordEmbedOptions = {}) {
     },
   });
 }
-
-export const discordEmbedPlugin = discordEmbed;

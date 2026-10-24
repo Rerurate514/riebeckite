@@ -53,8 +53,6 @@ export function docs(options: DocsOptions) {
   });
 }
 
-export const docsPlugin = docs;
-
 function validateDocsOptions(
   options: DocsOptions | undefined,
 ): readonly ConfigValidationIssue[] {

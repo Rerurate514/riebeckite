@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { tocPlugin } from "../index.ts";
+import { toc } from "../index.ts";
 
 const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
 const component = readFileSync(
@@ -9,8 +9,8 @@ const component = readFileSync(
   "utf8",
 );
 
-test("tocPlugin registers the style asset and the scroll-spy client entry", () => {
-  const plugin = tocPlugin();
+test("toc registers the style asset and the scroll-spy client entry", () => {
+  const plugin = toc();
 
   assert.equal(plugin.name, "toc");
   assert.deepEqual(plugin.assets, [

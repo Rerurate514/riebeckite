@@ -12,15 +12,15 @@ title: Search
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { searchPlugin } from "@riebeckite/plugin-search";
+import { search } from "@riebeckite/plugin-search";
 
 export default defineConfig({
   // ...
-  plugins: [searchPlugin()],
+  plugins: [search()],
 });
 ```
 
-`searchPlugin()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
+`search()` はスタイルとクライアント初期化処理を登録します。検索ダイアログは `Ctrl+K`、`Cmd+K`、または `/` で開けます。
 
 検索機能の登録と `SearchBar` の配置は別です。登録だけでは表示されないため、サイト全体のシェル（通常はヘッダー）に `SearchBar` を 1 つ描画します。位置を変える・消すときはその要素を移動・削除します。
 
@@ -79,7 +79,7 @@ const results = searchItems(items, "#obsidian");
 
 ## 主なエクスポート
 
-- `searchPlugin()`: プラグインを作成する
+- `search()`: プラグインを作成する
 - `SearchBar`: 検索モーダルの導線となるコンポーネント
 - `initSearch`: ブラウザ側の初期化。`@riebeckite/plugin-search/client` からも読み込める
 - `searchItems`、`normalizeSearchQuery`、`normalizeSearchText`: 検索エンジン

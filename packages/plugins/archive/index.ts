@@ -80,8 +80,6 @@ export function archive(options: ArchiveOptions = {}) {
   });
 }
 
-export const archivePlugin = archive;
-
 function resolveLocale(
   config: ResolvedRiebeckiteConfig | undefined,
   options: ResolvedArchiveOptions,

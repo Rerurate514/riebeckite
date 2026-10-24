@@ -15,9 +15,7 @@ export type {
 } from "./src/garden-explorer.js";
 export { getGardenExplorerData } from "./src/garden-explorer.server.js";
 
-export function gardenExplorerPlugin(
-  options: GardenExplorerPluginOptions = {},
-) {
+export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
   return definePlugin({
     name: "garden-explorer",
     assets: [

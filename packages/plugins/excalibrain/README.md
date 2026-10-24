@@ -179,7 +179,7 @@ wrapping an `<a href>` around its `<rect>` and `<text>`. Links are
 
 ## Exports
 
-- `excaliBrain(options?)` / `excaliBrainPlugin` — plugin factory
+- `excaliBrain(options?)` / `excaliBrain` — plugin factory
 - `resolveExcaliBrainOptions(options?)` — resolved defaults
 - `buildExcaliBrainGraph(input)` — pure graph builder
 - `layoutExcaliBrain(graph, options?)` — pure deterministic layout

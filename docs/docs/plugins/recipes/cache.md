@@ -14,7 +14,7 @@ This recipe computes reading time and caches it by a hash of the rendered HTML. 
 ```ts
 import { definePlugin, type PluginCache } from "@riebeckite/core";
 
-export function readingTimePlugin() {
+export function readingTime() {
   return definePlugin({
     name: "reading-time",
     cacheVersion: "1",

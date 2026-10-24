@@ -17,7 +17,7 @@ import {
   type ContentPublicLocation,
 } from "@riebeckite/core";
 
-export function libraryUrlsPlugin(prefix = "/library") {
+export function libraryUrls(prefix = "/library") {
   const base = prefix.replace(/\/+$/, "");
 
   return definePlugin({
@@ -52,7 +52,7 @@ export function libraryUrlsPlugin(prefix = "/library") {
 ```ts
 import { definePlugin } from "@riebeckite/core";
 
-export function legacyRedirectsPlugin() {
+export function legacyRedirects() {
   return definePlugin({
     name: "legacy-redirects",
     extendContentLocations: ({ entries, locations }) => {

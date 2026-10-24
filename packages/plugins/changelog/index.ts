@@ -82,9 +82,6 @@ export function changelog(options: ChangelogOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const changelogPlugin = changelog;
-
 function validateChangelogOptions(
   options: ChangelogOptions | undefined,
 ): readonly ConfigValidationIssue[] {

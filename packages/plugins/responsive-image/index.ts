@@ -88,5 +88,3 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
     ],
   });
 }
-
-export const responsiveImagePlugin = responsiveImage;

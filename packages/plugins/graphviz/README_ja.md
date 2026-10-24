@@ -85,7 +85,7 @@ digraph {
 
 ## 主なエクスポート
 
-- `graphviz(options?)`: プラグインを作成する（`graphvizPlugin` は別名）
+- `graphviz(options?)`: プラグインを作成する（`graphviz` は別名）
 - `initGraphvizDiagrams`: クライアント側の描画を初期化する
 - 型: `GraphvizOptions`、`GraphvizClientOptions`、`GraphvizRenderMode`、`GraphvizEngine`
 

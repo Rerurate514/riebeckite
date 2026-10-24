@@ -72,9 +72,6 @@ export function gallery(options: GalleryOptions = {}) {
   });
 }
 
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const galleryPlugin = gallery;
-
 function validateGalleryOptions(
   options: GalleryOptions | undefined,
 ): readonly ConfigValidationIssue[] {

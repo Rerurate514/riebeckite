@@ -75,8 +75,6 @@ export function flashcards(options: FlashcardsOptions = {}) {
   });
 }
 
-export const flashcardsPlugin = flashcards;
-
 function validateFlashcardsOptions(
   options: FlashcardsOptions | undefined,
 ): readonly ConfigValidationIssue[] {

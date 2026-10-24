@@ -874,7 +874,7 @@ The exact output format may vary between CLI versions.
 ### Functions
 
 - `permalink(options?)`
-- `permalinkPlugin(options?)`
+- `permalink(options?)`
 
 Both create the Permalink Plugin.
 

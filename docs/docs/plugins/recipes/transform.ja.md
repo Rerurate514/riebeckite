@@ -22,7 +22,7 @@ import { definePlugin } from "@riebeckite/core";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 
-export function mathPlugin() {
+export function math() {
   return definePlugin({
     name: "math",
     processedContentCache: {

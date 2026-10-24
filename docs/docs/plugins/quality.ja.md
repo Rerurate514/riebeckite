@@ -10,7 +10,7 @@ Riebeckite が生成する HTML を静的に検査し、品質とアクセシビ
 
 ## 概要
 
-`qualityPlugin()` は、ビルドで生成された HTML に対して依存パッケージなしの正規表現ベースのルールを実行し、結果を共通の診断チャネルへ流します。DOM も axe-core もヘッドレスブラウザも使いません。
+`quality()` は、ビルドで生成された HTML に対して依存パッケージなしの正規表現ベースのルールを実行し、結果を共通の診断チャネルへ流します。DOM も axe-core もヘッドレスブラウザも使いません。
 
 マニフェスト生成の段階では、公開エントリごとの記事 HTML を検査します。HTML 生成を完了する統合側は、最終ページに対して公開 API の `inspectGeneratedHtml` を追加で呼び出せます。
 
@@ -18,11 +18,11 @@ Riebeckite が生成する HTML を静的に検査し、品質とアクセシビ
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { qualityPlugin } from "@riebeckite/plugin-quality";
+import { quality } from "@riebeckite/plugin-quality";
 
 export default defineConfig({
   // ...
-  plugins: [qualityPlugin({ failOn: "error" })],
+  plugins: [quality({ failOn: "error" })],
 });
 ```
 
@@ -48,7 +48,7 @@ export default defineConfig({
 
 ## API
 
-- `qualityPlugin(options?)`：プラグインファクトリ。
+- `quality(options?)`：プラグインファクトリ。
 - `inspectHtml(html, options?)`：`Diagnostic[]` を返す純粋関数。
 - `inspectGeneratedHtml(page, options?)`：最終ページを検査し、`filePath` に `page.path` を設定する純粋関数。
 - `RULE_CODES`：安定した code の一覧。

@@ -85,7 +85,7 @@ First, let's look at the entry point of the plugin:
 ```ts id="szeg4x"
 import { definePlugin } from "@riebeckite/core";
 
-export function tipPlugin() {
+export function tip() {
   return definePlugin({
     name: "tip",
 
@@ -344,7 +344,7 @@ function remarkTip() {
   };
 }
 
-export function tipPlugin() {
+export function tip() {
   return definePlugin({
     name: "tip",
 
@@ -416,11 +416,11 @@ Register the plugin in `riebeckite.config.ts`:
 
 ```ts id="b49mge"
 import { defineConfig } from "@riebeckite/core";
-import { tipPlugin } from "./extensions/tip-plugin";
+import { tip } from "./extensions/tip-plugin";
 
 export default defineConfig({
   plugins: [
-    tipPlugin(),
+    tip(),
   ],
 });
 ```
@@ -447,7 +447,7 @@ Create `extensions/tip-plugin.test.ts`:
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Pipeline } from "@riebeckite/core";
-import { tipPlugin } from "./tip-plugin.ts";
+import { tip } from "./tip-plugin.ts";
 
 test("renders :::tip as an aside with a title", async () => {
   const pipeline = new Pipeline(
@@ -455,7 +455,7 @@ test("renders :::tip as an aside with a title", async () => {
     new Map(),
     undefined,
     {
-      plugins: [tipPlugin()],
+      plugins: [tip()],
     },
   );
 
@@ -541,7 +541,7 @@ Pass the plugin to a `Pipeline`, run representative Markdown through `execute()`
 
 ```ts
 const pipeline = new Pipeline(new Map(), new Map(), undefined, {
-  plugins: [tipPlugin()],
+  plugins: [tip()],
 });
 
 const { html } = await pipeline.execute(

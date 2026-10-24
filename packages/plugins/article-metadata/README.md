@@ -9,7 +9,7 @@ article context.
 
 ## Overview
 
-`articleMetadataPlugin()` registers the component stylesheet. It does not add
+`articleMetadata()` registers the component stylesheet. It does not add
 routes or modify the Markdown body.
 
 The Site renders the component wherever metadata belongs:

@@ -96,7 +96,7 @@ Vega ランタイムは `import()` で動的に読み込むため、JavaScript �
 
 ## 主なエクスポート
 
-- `vegaLite(options?)`: プラグインを作成する（`vegaLitePlugin` は別名）
+- `vegaLite(options?)`: プラグインを作成する（`vegaLite` は別名）
 - `initVegaLite`: クライアント側の描画を初期化する
 - 型: `VegaLiteOptions`、`VegaLiteSpec`、`VegaLiteTheme`、`VegaLiteRenderer`
 

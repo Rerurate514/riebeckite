@@ -20,15 +20,15 @@ The component renders nothing when fewer than 2 items are extracted.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { tocPlugin } from "@riebeckite/plugin-toc";
+import { toc } from "@riebeckite/plugin-toc";
 
 export default defineConfig({
   // ...
-  plugins: [tocPlugin()],
+  plugins: [toc()],
 });
 ```
 
-`tocPlugin()` registers the plugin, bundles `style.css`, and declares
+`toc()` registers the plugin, bundles `style.css`, and declares
 `initTableOfContents` as a client entry.
 
 It does not place UI. The Site extracts headings and renders the component,
@@ -73,7 +73,7 @@ its list descendants.
 
 ## Exports
 
-- `tocPlugin()` — plugin factory
+- `toc()` — plugin factory
 - `TableOfContents` — list component (default export of
   `components/table-of-contents.tsx`)
 - `extractTableOfContents(html)` — heading extractor

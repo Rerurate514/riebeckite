@@ -42,7 +42,7 @@ function memorySource(files: Record<string, string>): ContentSource {
   };
 }
 
-const permalinkPlugin = definePlugin({
+const permalink = definePlugin({
   name: "test-permalink",
   resolveContentLocations: ({ entries }) =>
     entries.map((entry) => ({
@@ -237,11 +237,7 @@ test("uses resolved public URLs for sidebar and previous-next", async () => {
 test("isolates multiple plugin instances", async () => {
   const config = resolveConfig({
     site: { title: "Test" },
-    plugins: [
-      permalinkPlugin,
-      docs({ root: "docs" }),
-      docs({ root: "guides" }),
-    ],
+    plugins: [permalink, docs({ root: "docs" }), docs({ root: "guides" })],
   });
   const manager = new ContentManager(
     memorySource({
@@ -577,7 +573,7 @@ test("collapses the sidebar below the desktop rail breakpoint", () => {
 function createManager(files: Record<string, string>): ContentManager {
   const config = resolveConfig({
     site: { title: "Test" },
-    plugins: [permalinkPlugin, docs({ root: "docs" })],
+    plugins: [permalink, docs({ root: "docs" })],
   });
   return new ContentManager(memorySource(files), [], { config });
 }

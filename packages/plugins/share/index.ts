@@ -76,6 +76,3 @@ export function share(options: ShareOptions = {}) {
     ],
   });
 }
-
-/** Alias matching the `*Plugin` suffix used by other plugin factories. */
-export const sharePlugin = share;

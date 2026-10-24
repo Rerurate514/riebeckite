@@ -18,35 +18,35 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | Package | Factory | Options |
 | --- | --- | --- |
 | `@riebeckite/plugin-obsidian-markdown` | `obsidianMarkdown` | — |
-| `@riebeckite/plugin-color-mode` | `colorModePlugin` | — |
+| `@riebeckite/plugin-color-mode` | `colorMode` | — |
 | `@riebeckite/plugin-l10n` | `l10n` | `{ defaultLang: "en", languages: ["en","ja","zh-CN","es","de","fr","ko"] }` |
 | `@riebeckite/plugin-seo` | `seo` | `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }` |
-| `@riebeckite/plugin-toc` | `tocPlugin` | — |
+| `@riebeckite/plugin-toc` | `toc` | — |
 | `@riebeckite/plugin-properties` | `properties` | `{ include: ["created", "modified", "tags", "status"], fields: { created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } } }` |
-| `@riebeckite/plugin-alias` | `aliasPlugin` | `{ status: 308 }` |
+| `@riebeckite/plugin-alias` | `alias` | `{ status: 308 }` |
 | `@riebeckite/plugin-code-enhance` | `codeEnhance` | `{ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true, theme: { light: "github-light", dark: "github-dark" }, wrapToggle: true }` |
-| `@riebeckite/plugin-search` | `searchPlugin` | — |
-| `@riebeckite/plugin-backlinks` | `backlinksPlugin` | — |
-| `@riebeckite/plugin-breadcrumbs` | `breadcrumbsPlugin` | — |
+| `@riebeckite/plugin-search` | `search` | — |
+| `@riebeckite/plugin-backlinks` | `backlinks` | — |
+| `@riebeckite/plugin-breadcrumbs` | `breadcrumbs` | — |
 | `@riebeckite/plugin-navigation` | `navigation` | `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }` |
 | `@riebeckite/plugin-related-posts` | `relatedPosts` | `{ limit: 5, useTags: true, useBacklinks: true, minScore: 1, heading: true, headingText: "Related", className: "rb-related-posts" }` |
 | `@riebeckite/plugin-share` | `share` | `{ services: ["x", "bluesky", "mastodon", "facebook", "linkedin", "hatena", "copy"], mastodonInstance: "mastodon.social" }` |
 | `@riebeckite/plugin-changelog` | `changelog` | `{ perNote: true, lookbackDays: 90, dateFormat: "iso", siteWide: false }` |
 | `@riebeckite/plugin-webmention` | `webmention` | `{ headingText: "Mentions", limit: 20 }` |
-| `@riebeckite/plugin-recent-posts` | `recentPostsPlugin` | — |
+| `@riebeckite/plugin-recent-posts` | `recentPosts` | — |
 | `@riebeckite/plugin-attachment` | `attachment` | `{ showSize: true }` |
 | `@riebeckite/plugin-pdf` | `pdf` | `{ height: "640px", initialPage: 1, toolbar: true, showMetadata: true, downloadLabel: "Download PDF" }` |
 | `@riebeckite/plugin-media` | `media` | `{ preload: "metadata", lazy: true, showCaption: true, showDownload: false, showOpenOriginal: true }` |
 | `@riebeckite/plugin-responsive-image` | `responsiveImage` | `{ lazy: true, decoding: true, sizes: "100vw", widths: [640, 1280, 1920], formats: ["webp", "avif"], className: "rb-responsive-image" }` |
-| `@riebeckite/plugin-lightbox` | `lightboxPlugin` | `{ selectorClass: "rr-lightbox-trigger" }` |
+| `@riebeckite/plugin-lightbox` | `lightbox` | `{ selectorClass: "rr-lightbox-trigger" }` |
 | `@riebeckite/plugin-highlight` | `highlight` | `{ tag: "mark", className: "rb-mark" }` |
 | `@riebeckite/plugin-code-tabs` | `codeTabs` | `{ syncTabs: true }` |
 | `@riebeckite/plugin-code-annotations` | `codeAnnotations` | — |
 | `@riebeckite/plugin-shortcodes` | `shortcodes` | `{ builtins: true }` |
 | `@riebeckite/plugin-series` | `series` | `{ key: "series", orderKey: "series_order", titleKey: "series_title", positionLabel: false, heading: true, className: "rb-series" }` |
 | `@riebeckite/plugin-taxonomy` | `taxonomy` | `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true }, relatedLimit: 8 }` |
-| `@riebeckite/plugin-folder-pages` | `folderPagesPlugin` | — |
-| `@riebeckite/plugin-autocardlink` | `autoCardLinkPlugin` | `{ className: "rb-cardlink" }` |
+| `@riebeckite/plugin-folder-pages` | `folderPages` | — |
+| `@riebeckite/plugin-autocardlink` | `autoCardLink` | `{ className: "rb-cardlink" }` |
 | `@riebeckite/plugin-rich-embed` | `richEmbed` | `{ providers: ["youtube", "vimeo", "spotify"] }` |
 | `@riebeckite/plugin-gallery` | `gallery` | `{ columns: 3, aspect: "4/3", language: "gallery" }` |
 | `@riebeckite/plugin-glossary` | `glossary` | — |
@@ -66,20 +66,20 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-excalibrain` | `excaliBrain` | `{ render: "build", auto: true, heading: true, infer: true, siblings: true, headingText: "ExcaliBrain", width: 720, height: 480 }` |
 | `@riebeckite/plugin-canvas` | `canvas` | `{ language: "canvas", render: "both", className: "rb-canvas" }` |
 | `@riebeckite/plugin-bases` | `bases` | `{ language: "base", limit: 100, className: "rb-bases", showFallback: true }` |
-| `@riebeckite/plugin-dataview` | `dataviewPlugin` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
-| `@riebeckite/plugin-flashcards` | `flashcardsPlugin` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
+| `@riebeckite/plugin-dataview` | `dataview` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
+| `@riebeckite/plugin-flashcards` | `flashcards` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
 | `@riebeckite/plugin-kanban` | `kanban` | `{ columnMarker: "##", autoDetect: true, className: "rb-kanban", fallback: true }` |
-| `@riebeckite/plugin-query` | `queryPlugin` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
-| `@riebeckite/plugin-local-graph` | `localGraphPlugin` | — |
-| `@riebeckite/plugin-hover-preview` | `hoverPreviewPlugin` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
-| `@riebeckite/plugin-garden-explorer` | `gardenExplorerPlugin` | — |
-| `@riebeckite/plugin-ux` | `uxPlugin` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
-| `@riebeckite/plugin-daily-notes` | `dailyNotesPlugin` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
-| `@riebeckite/plugin-rename` | `renamePlugin` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
-| `@riebeckite/plugin-text-fragment` | `textFragmentPlugin` | `{ prefix: "showcase: " }` |
+| `@riebeckite/plugin-query` | `query` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
+| `@riebeckite/plugin-local-graph` | `localGraph` | — |
+| `@riebeckite/plugin-hover-preview` | `hoverPreview` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
+| `@riebeckite/plugin-garden-explorer` | `gardenExplorer` | — |
+| `@riebeckite/plugin-ux` | `ux` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
+| `@riebeckite/plugin-daily-notes` | `dailyNotes` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
+| `@riebeckite/plugin-rename` | `rename` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
+| `@riebeckite/plugin-text-fragment` | `textFragment` | `{ prefix: "showcase: " }` |
 | `@riebeckite/plugin-timeline` | `timeline` | — |
-| `@riebeckite/plugin-quality` | `qualityPlugin` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
-| `@riebeckite/plugin-deploy` | `deployPlugin` | `{ provider: "cloudflare-pages" }` |
+| `@riebeckite/plugin-quality` | `quality` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
+| `@riebeckite/plugin-deploy` | `deploy` | `{ provider: "cloudflare-pages" }` |
 | `@riebeckite/plugin-diagnostics` | `diagnostics` | `{ reportUnusedAssets: true, reportOrphans: true, requiredFrontmatter: ["title"] }` |
 
 ## Commands

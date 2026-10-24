@@ -247,7 +247,7 @@ dropped, so a boolean can toggle a plugin.
 ```ts
 plugins: [
   obsidianMarkdown(),
-  enableSearch && searchPlugin(),
+  enableSearch && search(),
 ]
 ```
 

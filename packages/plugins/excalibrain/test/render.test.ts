@@ -5,7 +5,7 @@ import {
   type ExcaliBrainGraph,
   type ExcaliBrainLayout,
   type ExcaliBrainNode,
-  excaliBrainPlugin,
+  excaliBrain,
   layoutExcaliBrain,
   renderExcaliBrainSection,
   renderExcaliBrainSvg,
@@ -276,8 +276,8 @@ test("replaces placeholder divs with the rendered section", () => {
   );
 });
 
-test("excaliBrainPlugin registers assets and a client entry", () => {
-  const plugin = excaliBrainPlugin();
+test("excaliBrain registers assets and a client entry", () => {
+  const plugin = excaliBrain();
 
   assert.equal(plugin.name, "excalibrain");
   assert.equal(plugin.order, -10);

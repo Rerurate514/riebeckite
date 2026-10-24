@@ -100,7 +100,7 @@ invalidates the affected outputs.
 
 ## Exports
 
-- `canvas(options?)` / `canvasPlugin` — plugin factory
+- `canvas(options?)` / `canvas` — plugin factory
 - `initCanvas()` — client initializer
 - `parseCanvas(json)` — pure JSON Canvas parser
 - `buildCanvasLayout(doc)` — pure coordinate/edge normaliser

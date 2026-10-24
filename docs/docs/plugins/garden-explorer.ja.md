@@ -10,7 +10,7 @@ title: Garden Explorer
 
 ## 用意される画面
 
-`gardenExplorerPlugin()` は、次の三つの領域を持つ `GardenExplorer` コンポーネントとスタイルを提供します。
+`gardenExplorer()` は、次の三つの領域を持つ `GardenExplorer` コンポーネントとスタイルを提供します。
 
 - **一覧**: キーワード検索、任意表示のタグ・フォルダーフィルター、該当ノートの一覧
 - **グラフ**: 公開ノートと内部リンクを表示する SVG グラフ。Local / Global の切り替え、Force / Radial レイアウト、ホバー時の隣接ノート強調、ノードのドラッグ、ホイール / ボタンによるズームに対応します。キャンバスのパン、リセット、クリックでの記事移動にも対応します
@@ -38,11 +38,11 @@ title: Garden Explorer
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { gardenExplorerPlugin } from "@riebeckite/plugin-garden-explorer";
+import { gardenExplorer } from "@riebeckite/plugin-garden-explorer";
 
 export default defineConfig({
   // ...
-  plugins: [gardenExplorerPlugin()],
+  plugins: [gardenExplorer()],
 });
 ```
 
@@ -50,7 +50,7 @@ export default defineConfig({
 
 ```ts
 plugins: [
-  gardenExplorerPlugin({
+  gardenExplorer({
     layout: "force",
     depth: 1,
     showTags: true,
@@ -63,7 +63,7 @@ plugins: [
 ];
 ```
 
-`gardenExplorerPlugin()` は `/explore` の Page Type、スタイル、クライアント側のハイドレーターを登録します。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all ルートが表示と SSG を担当します。そのため、プラグイン固有のルートは不要です。ページはまずサーバーで描画し、読み込み後に登録済みのクライアントエントリがグラフ、フィルター、URL 状態をハイドレーションします。
+`gardenExplorer()` は `/explore` の Page Type、スタイル、クライアント側のハイドレーターを登録します。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all ルートが表示と SSG を担当します。そのため、プラグイン固有のルートは不要です。ページはまずサーバーで描画し、読み込み後に登録済みのクライアントエントリがグラフ、フィルター、URL 状態をハイドレーションします。
 
 コンポーネントを別のサイトが用意するコンポーネントに埋め込む場合だけ、マニフェストから表示用データを作って渡します。
 
@@ -99,7 +99,7 @@ return <GardenExplorer data={data} />;
 
 ## 主なエクスポート
 
-- `gardenExplorerPlugin(options?)`: プラグインを作成する
+- `gardenExplorer(options?)`: プラグインを作成する
 - `GardenExplorer`: 探索画面のコンポーネント
 - `getGardenExplorerData({ manifest, config, resolveTitle, options? })`: 表示データを構築する
 - 型: `GardenExplorerData`、`GardenExplorerEdge`、`GardenExplorerFolder`、`GardenExplorerGraphLayout`、`GardenExplorerGraphMode`、`GardenExplorerNote`、`GardenExplorerOptions`、`GardenExplorerPluginOptions`、`GardenExplorerTag`

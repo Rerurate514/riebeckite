@@ -12,11 +12,11 @@ machinery.
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { renamePlugin } from "@riebeckite/plugin-rename";
+import { rename } from "@riebeckite/plugin-rename";
 
 export default defineConfig({
   plugins: [
-    renamePlugin({
+    rename({
       status: 308,
       onUnexpectedRemoval: "warning",
     }),
@@ -104,7 +104,7 @@ history and cannot detect a rename that happened before the lock existed.
 
 Functions:
 
-- `renamePlugin(options?)` / `rename(options?)`
+- `rename(options?)` / `rename(options?)`
 - `diffRoutes(previous, current, options?)`
 - `buildRouteLock(entries, isPublished)`
 - `collapseRedirects(rules)`

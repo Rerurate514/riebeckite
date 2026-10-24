@@ -131,7 +131,7 @@ import "@riebeckite/plugin-sidenotes/style.css";
 ## エクスポート
 
 - `sidenotes(options?)`：プラグインファクトリ
-- `sidenotesPlugin`：`sidenotes` のエイリアス
+- `sidenotes`：`sidenotes` のエイリアス
 - `rehypeSidenotes(options?)`：rehype トランスフォーマー
 - `resolveSidenotesOptions(options?)`：オプションの既定値を適用する
 - `renderSidenotesReference(input)` / `renderSidenotesNote(input)`：HTML 生成関数

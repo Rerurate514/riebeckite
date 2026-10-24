@@ -92,7 +92,7 @@ pnpm exec riebeckite upgrade --check --to latest --json
 
 レポートでは依存関係・peerDependencies・Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、フルの本番ビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
 
-対応するのは `package-lock.json` または `pnpm-lock.yaml` の片方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越える代わりに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。
+対応するのは `package-lock.json` または `pnpm-lock.yaml` の片方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越える代わりに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH と OS の一時ディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、未信頼のビルドコードを安全に実行できるわけではありません。
 
 ## `init`
 

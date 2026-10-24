@@ -9,6 +9,8 @@ export type CommandResult = {
 export type CommandRunOptions = {
   readonly cwd?: string;
   readonly input?: string;
+  readonly environment?: NodeJS.ProcessEnv;
+  readonly shell?: boolean;
 };
 
 export type CommandRunner = {
@@ -34,6 +36,8 @@ function runProcess(
   return new Promise((resolve) => {
     const child = spawn(command, [...arguments_], {
       cwd: options.cwd,
+      env: options.environment,
+      shell: options.shell,
       stdio: ["pipe", "pipe", "pipe"],
       windowsHide: true,
     });

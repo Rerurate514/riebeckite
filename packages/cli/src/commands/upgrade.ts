@@ -123,8 +123,19 @@ export async function collectUpgradeReport(
       target,
     );
 
-    const baseline = await verifySite(baselineRoot, manager, manifest);
-    const candidate = await verifySite(candidateRoot, manager, manifest);
+    const baseline = await verifySite(
+      baselineRoot,
+      manager,
+      manifest,
+      packages,
+    );
+    const candidate = await verifySite(
+      candidateRoot,
+      manager,
+      manifest,
+      packages,
+      target,
+    );
     const checks: Check[] = [
       {
         name: "dependency / peer / engines",
@@ -160,6 +171,7 @@ export async function collectUpgradeReport(
       notes.push("Generated URL changes need publication review.");
     if (output.added.length || output.removed.length)
       notes.push("Generated output or asset changes need review.");
+    notes.push(...baseline.notes, ...candidate.notes);
     const verdict = determineVerdict(
       checks,
       baseline.diagnostics,
@@ -203,18 +215,42 @@ async function verifySite(
   root: string,
   manager: PackageManager,
   manifest: Manifest,
+  packages: readonly string[],
+  target?: string,
 ) {
   const runner = createProcessRunner();
-  const install = await runner.run(manager, installArgs(manager), {
+  const environment = isolatedEnvironment(root);
+  const install = await runner.run(manager, installArgs(manager, !target), {
     cwd: root,
+    environment,
+    shell: process.platform === "win32",
   });
-  if (install.code !== 0) return emptyVerification("FAIL");
-  const typecheck = await runTypecheck(runner, root, manager);
-  const check = status(await runCli(runner, root, manager, ["check"]));
-  const doctorResult = await runCli(runner, root, manager, [
-    "doctor",
-    "--json",
-  ]);
+  if (install.code !== 0)
+    return emptyVerification(
+      "FAIL",
+      `${target ? "Candidate" : "Baseline"} dependency installation failed. Check the requested version, peer dependencies, and Node engine requirements.`,
+    );
+  const resolution = await verifyInstalledRiebeckitePackages(
+    root,
+    packages,
+    target,
+  );
+  if (resolution)
+    return emptyVerification(
+      "FAIL",
+      `${target ? "Candidate" : "Baseline"} ${resolution}`,
+    );
+  const typecheck = await runTypecheck(runner, root, manager, environment);
+  const check = status(
+    await runCli(runner, root, manager, ["check"], environment),
+  );
+  const doctorResult = await runCli(
+    runner,
+    root,
+    manager,
+    ["doctor", "--json"],
+    environment,
+  );
   const diagnostics =
     doctorResult.code === 0
       ? "PASS"
@@ -222,7 +258,7 @@ async function verifySite(
         ? "UNVERIFIED"
         : "FAIL";
   const build = status(
-    await runCli(runner, root, manager, ["build", "--full"]),
+    await runCli(runner, root, manager, ["build", "--full"], environment),
   );
   const output =
     build === "PASS"
@@ -236,10 +272,11 @@ async function verifySite(
     build,
     ...output,
     engines: manifest.engines?.node,
+    notes: [],
   };
 }
 
-function emptyVerification(install: Status) {
+function emptyVerification(install: Status, note?: string) {
   return {
     install,
     typecheck: "UNVERIFIED" as Status,
@@ -248,6 +285,7 @@ function emptyVerification(install: Status) {
     build: "UNVERIFIED" as Status,
     files: [],
     urls: [],
+    notes: note ? [note] : [],
   };
 }
 
@@ -255,6 +293,7 @@ async function runTypecheck(
   runner: ReturnType<typeof createProcessRunner>,
   root: string,
   manager: PackageManager,
+  environment: NodeJS.ProcessEnv,
 ): Promise<Status> {
   try {
     await fs.access(path.join(root, "tsconfig.json"));
@@ -267,7 +306,7 @@ async function runTypecheck(
       manager === "pnpm"
         ? ["exec", "tsc", "--noEmit"]
         : ["exec", "--", "tsc", "--noEmit"],
-      { cwd: root },
+      { cwd: root, environment, shell: process.platform === "win32" },
     ),
   );
 }
@@ -277,30 +316,83 @@ function runCli(
   root: string,
   manager: PackageManager,
   arguments_: readonly string[],
+  environment: NodeJS.ProcessEnv,
 ) {
   return runner.run(
     manager,
     manager === "pnpm"
       ? ["exec", "riebeckite", ...arguments_]
       : ["exec", "--", "riebeckite", ...arguments_],
-    { cwd: root },
+    { cwd: root, environment, shell: process.platform === "win32" },
   );
 }
 
-function installArgs(manager: PackageManager): readonly string[] {
+async function verifyInstalledRiebeckitePackages(
+  root: string,
+  packages: readonly string[],
+  target?: string,
+): Promise<string | undefined> {
+  const versions = await Promise.all(
+    packages.map(async (name) => {
+      try {
+        const installed = await readManifest(
+          path.join(root, "node_modules", ...name.split("/"), "package.json"),
+        );
+        const version = (installed as Manifest & { version?: unknown }).version;
+        return typeof version === "string" ? version : undefined;
+      } catch {
+        return undefined;
+      }
+    }),
+  );
+  if (versions.some((version) => !version))
+    return "did not install every declared @riebeckite/* package.";
+  const resolved = versions as string[];
+  if (new Set(resolved).size !== 1)
+    return "resolved @riebeckite/* packages to inconsistent versions.";
+  const exactTarget = target?.replace(/^v/, "");
+  if (exactTarget && /^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(exactTarget)) {
+    if (resolved[0] !== exactTarget)
+      return `resolved ${resolved[0]} instead of requested ${target}.`;
+  }
+  return undefined;
+}
+
+function isolatedEnvironment(root: string): NodeJS.ProcessEnv {
+  const pathValue = process.env.PATH ?? process.env.Path;
+  return {
+    PATH: pathValue,
+    Path: pathValue,
+    PATHEXT: process.env.PATHEXT,
+    SystemRoot: process.env.SystemRoot,
+    SYSTEMROOT: process.env.SYSTEMROOT,
+    ComSpec: process.env.ComSpec,
+    TEMP: process.env.TEMP,
+    TMP: process.env.TMP,
+    npm_config_cache: path.join(path.dirname(root), ".npm-cache"),
+    npm_config_userconfig: path.join(root, ".npmrc"),
+  };
+}
+
+function installArgs(
+  manager: PackageManager,
+  useLockfile: boolean,
+): readonly string[] {
   return manager === "pnpm"
     ? [
         "install",
         "--ignore-scripts",
         "--ignore-pnpmfile",
-        "--lockfile=false",
+        useLockfile ? "--frozen-lockfile" : "--lockfile=false",
         "--strict-peer-dependencies",
         "--engine-strict",
       ]
     : [
-        "install",
+        useLockfile ? "ci" : "install",
         "--ignore-scripts",
-        "--package-lock=false",
+        ...(useLockfile ? [] : ["--package-lock=false"]),
+        "--no-audit",
+        "--no-fund",
         "--strict-peer-deps",
         "--engine-strict",
       ];

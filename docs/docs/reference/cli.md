@@ -105,6 +105,9 @@ are supported. Symlinks and content roots outside the project are not copied: th
 command returns `UNVERIFIED` rather than crossing that boundary. It does not run package
 install scripts, pnpmfiles, deployment, or browser E2E tests. A temporary directory is
 not a security sandbox; builds still execute the site's own configuration and plugins.
+Child processes receive only the path and OS temporary-directory variables needed to run,
+plus an isolated npm cache and user configuration. This reduces accidental environment-secret
+exposure but does not make untrusted build code safe to execute.
 
 ## `init`
 

@@ -81,6 +81,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/shortcodes",
   "packages/plugins/sidenotes",
   "packages/plugins/source-files",
+  "packages/plugins/svg-optimizer",
   "packages/plugins/taxonomy",
   "packages/plugins/text-fragment",
   "packages/plugins/timeline",
@@ -459,6 +460,10 @@ const packagePublishingMetadata = {
       "Publish selected vault source files as syntax-highlighted pages and wikilink embeds.",
     keywords: ["riebeckite", "plugin", "source-files", "obsidian"],
   },
+  "packages/plugins/svg-optimizer": {
+    description: "SVGO-backed SVG optimization for Riebeckite assets.",
+    keywords: ["riebeckite", "plugin", "svg", "optimization"],
+  },
   "packages/plugins/taxonomy": {
     description:
       "Build-time tag and folder taxonomy data, per-term feeds, and SEO for Riebeckite.",
@@ -731,6 +736,7 @@ export function expectedPackageMetadata(directory) {
       "share",
       "shortcodes",
       "source-files",
+      "svg-optimizer",
       "taxonomy",
       "text-fragment",
       "toc",

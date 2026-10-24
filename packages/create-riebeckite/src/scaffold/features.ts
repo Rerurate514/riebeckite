@@ -46,7 +46,7 @@ const featurePacks: Readonly<Record<ScaffoldFeatureName, ScaffoldFeaturePack>> =
   },
   i18n: {
     name: "i18n",
-    description: "English and Japanese localized content routes.",
+    description: "English and Japanese localization support for content you add.",
     plugins: [
       feature(
         "@riebeckite/plugin-l10n",

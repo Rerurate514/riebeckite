@@ -79,7 +79,7 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 | `knowledge` | Link previews and a local graph |
 | `diagrams` | Mermaid and Graphviz Markdown diagrams |
 | `media` | Embedded audio/video, responsive images, and lightbox |
-| `i18n` | English and Japanese localized routes |
+| `i18n` | English and Japanese localization support for content you add |
 
 Packs that repeat a preset's plugin are rejected rather than silently generating duplicate imports. Use `none` to make `--features` explicit without adding a pack.
 

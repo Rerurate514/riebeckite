@@ -79,7 +79,7 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 | `knowledge` | リンクプレビューとローカルグラフ |
 | `diagrams` | Mermaid と Graphviz の Markdown 図表 |
 | `media` | 音声・動画の埋め込み、レスポンシブ画像、lightbox |
-| `i18n` | 英語・日本語のローカライズされたルート |
+| `i18n` | 追加するコンテンツ向けの英語・日本語ローカライズ対応 |
 
 プリセットに含まれる Plugin と重複する Pack は、重複した import を生成せずエラーにします。Pack を追加しないことを明示する場合は `--features none` を使えます。
 

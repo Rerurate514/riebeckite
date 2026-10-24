@@ -124,6 +124,14 @@ npm exec -- riebeckite init my-site --preset starter
 npm exec -- riebeckite init --list-presets
 ```
 
+### Feature Packを追加する
+
+`--features <names>` には、任意の Pack をカンマ区切りで指定します。指定できるのは `knowledge`、`diagrams`、`media`、`i18n` です。`none` は Pack を追加しません。プリセットがすでに選んだ Plugin と重複する Pack はエラーになります。
+
+```sh
+npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
+```
+
 ### プロジェクトファイルの選び方
 
 プロジェクトファイルはプリセットとは別に、`--utilities <names>` で選びます。値には `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。
@@ -155,7 +163,7 @@ npm exec -- riebeckite init my-site --force
 
 ### `create-riebeckite`
 
-`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset` / `--list-presets` フラグも同じように受け付けます。
+`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset`、`--features`、`--list-presets` フラグも同じように受け付けます。
 
 ```sh id="kyw0rx"
 npx create-riebeckite

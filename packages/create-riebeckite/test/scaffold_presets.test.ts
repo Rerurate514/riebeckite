@@ -62,6 +62,19 @@ test("feature packs are written to generated configuration", async () => {
   });
 });
 
+test("portfolio registers every plugin used by its article layout", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    await scaffoldRiebeckiteSite({ targetDirectory: directory, preset: "portfolio" });
+    const config = await fs.readFile(
+      path.join(directory, "riebeckite.config.ts"),
+      "utf8",
+    );
+    for (const plugin of ["backlinks", "relatedPosts", "recentPosts"]) {
+      assert.match(config, new RegExp(`\\b${plugin}\\(`));
+    }
+  });
+});
+
 test("preset declarations reject conflicting generated imports", () => {
   assert.throws(
     () =>

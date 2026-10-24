@@ -20,6 +20,9 @@ npx create-riebeckite --list-presets
 
 | 目的 | プリセット |
 | --- | --- |
+| Obsidian のようにノートを相互リンクして育てたい | `digital-garden` |
+| 記事、タグ、シリーズを持つメディアを作りたい | `blog` |
+| プロダクトやプロジェクトのドキュメントを作りたい | `docs` |
 | アプリケーションを自分で組み立てたい | `empty` |
 | 公開できる最小の Markdown サイトがほしい | `minimal` |
 | 実用的なデジタルガーデンやブログを始めたい | `starter`（既定） |
@@ -27,11 +30,14 @@ npx create-riebeckite --list-presets
 
 迷ったら `starter` を選んでください。必要なプラグインは後から `riebeckite.config.ts` に追加できます。
 
-## 4つのプリセットを比較する
+## プリセットを比較する
 
 | プリセット | テーマ | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | サイトのロケールに応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、検索、コンテンツから生成するナビゲーション、パンくず、バックリンク、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
+| `digital-garden` | `default` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
+| `blog` | `default` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
+| `docs` | `default` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | すべてのプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | なし | なし | 空のアプリケーションシェル |
@@ -41,6 +47,18 @@ npx create-riebeckite --list-presets
 ### `starter`
 
 実用的な既定構成です。Obsidian Markdown、カラーモード、SEO、目次、properties と alias、コード表示の拡張、検索と発見の導線、パンくず、レスポンシブ画像と lightbox、taxonomy、フォルダのランディングページ、リンクプレビューを含みます。ナビゲーションはサンプル用の固定 URL ではなく、公開済みのコンテンツから組み立てます。相互リンクしたサンプルノートで、バックリンク、関連記事、検索、最新記事、タグを試せます。ニッチな統合は含みません。
+
+### `digital-garden`
+
+Obsidian を意識した、相互リンクするノートのための構成です。生成されるコンテンツで frontmatter、wiki link、embed、properties、バックリンク、ローカルグラフを確認できます。ナビゲーション、パンくず、taxonomy、検索、リンクプレビューも最初から含むため、追加設定なしでノートのつながりをたどれます。
+
+### `blog`
+
+記事の公開を中心にした構成です。記事、タグ、シリーズ、関連記事と最新記事、共有操作、検索、目次を含みます。生成される設定では RSS、Atom、JSON feed を明示的に有効にし、サンプル記事でシリーズナビゲーションと taxonomy を確認できます。
+
+### `docs`
+
+ドキュメント用のサイドバー、レスポンシブな目次、前後ページへのナビゲーションを備えた構成です。小さなドキュメントツリーとコード例から始められ、現在読んでいるページに集中できるレイアウトです。
 
 ### `minimal`
 

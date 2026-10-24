@@ -13,7 +13,7 @@ npm exec riebeckite <command>
 ## コマンド一覧
 
 ```text id="7uw50m"
-riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]

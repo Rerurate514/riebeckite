@@ -13,7 +13,7 @@ npm exec riebeckite <command>
 ## Command list
 
 ```text
-riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]

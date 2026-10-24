@@ -97,11 +97,11 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
   const directory = projectInput.trim() || DEFAULT_DIRECTORY;
 
   const preset = await select<ScaffoldPresetName>({
-    message: "Choose a preset",
+    message: "What would you like to build?",
     initialValue: "starter",
     options: SCAFFOLD_PRESETS.map(({ name, description }) => ({
       value: name,
-      label: capitalize(name),
+      label: presetLabel(name),
       hint: description,
     })),
   });
@@ -203,6 +203,15 @@ export async function promptDeployNow(): Promise<boolean> {
   return answer === "yes";
 }
 
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function presetLabel(name: ScaffoldPresetName): string {
+  const labels: Record<ScaffoldPresetName, string> = {
+    starter: "Starter site",
+    "digital-garden": "Digital garden",
+    blog: "Blog",
+    docs: "Documentation",
+    minimal: "Minimal site",
+    showcase: "Plugin showcase",
+    empty: "Empty application",
+  };
+  return labels[name];
 }

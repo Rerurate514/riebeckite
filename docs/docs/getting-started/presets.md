@@ -20,6 +20,9 @@ npx create-riebeckite --list-presets
 
 | Goal | Preset |
 | --- | --- |
+| I want an Obsidian-style network of notes | `digital-garden` |
+| I want a publication with posts, tags, and series | `blog` |
+| I want product or project documentation | `docs` |
 | I will assemble the application myself | `empty` |
 | I want the smallest publishable Markdown site | `minimal` |
 | I want the recommended starting point for a real garden or blog | `starter` (default) |
@@ -32,6 +35,9 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | Preset | Theme | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
+| `digital-garden` | `default` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
+| `blog` | `default` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, search, table of contents |
+| `docs` | `default` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
@@ -41,6 +47,18 @@ The seven showcase languages are English, Japanese, Simplified Chinese, Spanish,
 ### `starter`
 
 The practical default. It includes Obsidian Markdown, color mode, SEO, table of contents, properties and aliases, code enhancement, search and discovery, breadcrumbs, responsive images and lightbox, taxonomy, folder landing pages, and link previews. Navigation is derived from published content rather than sample URLs. Its connected sample notes exercise backlinks, related posts, search, recent posts, and tags without adding niche integrations.
+
+### `digital-garden`
+
+An Obsidian-oriented site for linked notes. The generated content demonstrates frontmatter, wiki links, embeds, properties, backlinks, and the local graph. Navigation, breadcrumbs, taxonomy, search, and link previews make the note network usable without extra setup.
+
+### `blog`
+
+A publication-focused starting point with posts, tags, series, related and recent posts, sharing controls, search, and a table of contents. Its generated configuration explicitly enables RSS, Atom, and JSON feeds, while the sample articles demonstrate series navigation and taxonomy.
+
+### `docs`
+
+A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page.
 
 ### `minimal`
 

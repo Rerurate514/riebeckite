@@ -21,15 +21,15 @@ verification fixes recorded with this report.
 - The image optimizer test covers cold, unchanged, edited, configuration-changed,
   and removed image inventories. Unchanged builds reuse cached binary variants;
   the cold and unchanged inventories and bytes are identical.
-- `pnpm build:packages` passed for all 90 public packages. Core tests passed
-  (337 tests) and image-optimizer tests passed (4 tests).
-- After building packages on both revisions, `pnpm typecheck` reported the same
-  pre-existing `TS2502` in `apps/web/scripts/build_images.ts` on the candidate
-  and its `main` baseline.
+- `pnpm build:packages` passed for all 94 public packages. Core tests passed
+  (338 tests) and image-optimizer tests passed (4 tests).
+- After building packages on the original branch and its merge-base baseline,
+  `pnpm typecheck` reported the same pre-existing `TS2502` in
+  `apps/web/scripts/build_images.ts`. The integrated candidate subsequently
+  passed typecheck with no errors in all three projects.
 
 ## Boundaries and residual risk
 
 Core does not import Sharp; it is confined to the image-optimizer plugin.
 The external build retains existing nonfatal Vite, Lightning CSS, WaveDrom, and
-bundle-size warnings. The shared `TS2502` typecheck error remains outside this
-change.
+bundle-size warnings.

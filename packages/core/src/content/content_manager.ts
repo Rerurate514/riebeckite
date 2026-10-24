@@ -818,6 +818,7 @@ export class ContentManager {
     const imagePaths = new Set(
       manifest.publicEntries.flatMap((entry) =>
         entry.assets
+          .filter((asset) => asset.sourcePath === undefined)
           .map((asset) => normalizeContentPath(asset.path))
           .filter(isImagePath),
       ),

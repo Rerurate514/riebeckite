@@ -77,6 +77,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-responsive-image",
   },
   {
+    directory: "packages/plugins/image-optimizer",
+    name: "@riebeckite/plugin-image-optimizer",
+  },
+  {
     directory: "packages/plugins/rich-embed",
     name: "@riebeckite/plugin-rich-embed",
   },

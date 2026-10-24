@@ -551,6 +551,20 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes('srcset="/attachments/rb-photo-640.webp 640w')) {
     fail("responsive-image plugin did not emit a width-described srcset");
   }
+  for (const file of [
+    "attachments/rb-photo-640.webp",
+    "attachments/rb-photo-640.avif",
+    "attachments/rb-photo-1280.webp",
+    "attachments/rb-photo-1280.avif",
+  ]) {
+    const output = path.join(distDir, file);
+    if (!fs.existsSync(output)) {
+      fail(`image optimizer did not emit ${file}`);
+    }
+    if (fs.statSync(output).size === 0) {
+      fail(`image optimizer emitted an empty ${file}`);
+    }
+  }
   if (!combined.includes("data-kanban-plugin")) {
     fail("generated HTML is missing the kanban plugin board output");
   }

@@ -79,6 +79,7 @@ import {
   resolveHoverPreviewOptions,
 } from "@riebeckite/plugin-hover-preview";
 import { initHoverPreview } from "@riebeckite/plugin-hover-preview/client";
+import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import {
   type KanbanOptions,
   type KanbanParseResult,
@@ -188,6 +189,7 @@ export const resolvedEntries = {
   relatedPosts,
   RelatedPosts,
   responsiveImage,
+  imageOptimizer,
   searchPlugin,
   initSearch,
   SearchBar,

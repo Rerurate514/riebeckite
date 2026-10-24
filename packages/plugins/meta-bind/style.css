@@ -1,0 +1,47 @@
+.rb-meta-bind--input {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.rb-meta-bind__block {
+  display: grid;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+
+.rb-meta-bind__control {
+  min-inline-size: 12rem;
+  max-inline-size: 100%;
+  border: 1px solid
+    var(--rb-color-border, color-mix(in srgb, currentColor 20%, transparent));
+  border-radius: 0.25rem;
+  padding: 0.4rem 0.55rem;
+  background: var(--rb-color-paper, Canvas);
+  color: var(--rb-color-ink, CanvasText);
+  font: inherit;
+}
+
+.rb-meta-bind__control[type="checkbox"] {
+  min-inline-size: auto;
+  accent-color: var(--rb-color-accent, currentColor);
+}
+
+.rb-meta-bind__control[type="range"] {
+  padding-inline: 0;
+}
+
+.rb-meta-bind__control:focus-visible {
+  outline: 2px solid var(--rb-color-accent, currentColor);
+  outline-offset: 2px;
+}
+
+.rb-meta-bind--view {
+  color: var(--rb-color-ink, currentColor);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-meta-bind__control {
+    scroll-behavior: auto;
+  }
+}

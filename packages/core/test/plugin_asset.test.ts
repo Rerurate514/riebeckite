@@ -45,4 +45,23 @@ test("asset helpers preserve explicitly registered module specifiers", () => {
       initializerArguments: "context",
     },
   );
+  assert.deepEqual(
+    createClientEntry(
+      "conditional",
+      "@example/riebeckite-plugin/client",
+      "initConditional",
+      undefined,
+      "page",
+      "context",
+      "[data-conditional]",
+    ),
+    {
+      pluginName: "conditional",
+      moduleSpecifier: "@example/riebeckite-plugin/client",
+      exportName: "initConditional",
+      scope: "page",
+      initializerArguments: "context",
+      presenceSelector: "[data-conditional]",
+    },
+  );
 });

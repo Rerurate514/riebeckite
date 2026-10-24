@@ -70,6 +70,35 @@ test("client module imports the SPA runtime only when configured", async () => {
   );
 });
 
+test("client module splits entries gated by a page marker", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        clientEntries: [
+          {
+            pluginName: "conditional",
+            moduleSpecifier: "conditional-entry",
+            exportName: "initConditional",
+            initializerArguments: "context",
+            presenceSelector: "[data-conditional]",
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /import\("conditional-entry"\)/);
+  assert.match(module as string, /root\.querySelector\(presenceSelector\)/);
+  assert.doesNotMatch(
+    module as string,
+    /import \{ initConditional as pluginClientInitializer0 \}/,
+  );
+});
+
 test("client module omits the SPA runtime when disabled", async () => {
   const plugin = riebeckiteClientModule(() => config);
   const load = hookHandler(plugin.load);

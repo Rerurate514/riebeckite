@@ -99,6 +99,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Attachment](./attachment.ja.md) | 添付ファイルのリンクと埋め込み |
 | [Media](./media.ja.md) | タイムスタンプ指定付きの音声・動画埋め込み |
 | [Image Optimizer](./image-optimizer.ja.md) | 公開画像を WebP・AVIF バリアントへ変換 |
+| [SVG Optimizer](./svg-optimizer.ja.md) | 公開 SVG を構造とアクセシビリティを保ったまま軽量化 |
 | [Responsive Image](./responsive-image.ja.md) | レスポンシブ画像と遅延読み込み |
 | [Gallery](./gallery.ja.md) | Markdown で書くカードギャラリー |
 | [Lightbox](./lightbox.ja.md) | クリックで拡大する画像表示 |

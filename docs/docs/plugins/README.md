@@ -99,6 +99,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | --- | --- |
 | [Attachment](./attachment.md) | Attachment link and embed rendering |
 | [Media](./media.md) | Audio and video embeds with timestamp fragments |
+| [Image Optimizer](./image-optimizer.md) | Encode public images into WebP and AVIF variants |
 | [Responsive Image](./responsive-image.md) | Responsive image markup and lazy loading |
 | [Gallery](./gallery.md) | Markdown-driven card galleries |
 | [Lightbox](./lightbox.md) | Click-to-zoom image lightboxes |

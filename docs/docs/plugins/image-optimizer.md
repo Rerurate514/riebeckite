@@ -1,0 +1,55 @@
+---
+date: 2026-10-24
+title: Image Optimizer
+---
+# Image Optimizer
+
+Encodes public Markdown image assets into responsive WebP and AVIF variants.
+
+[日本語](./image-optimizer.ja.md)
+
+## Usage
+
+```ts
+import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
+import { responsiveImage } from "@riebeckite/plugin-responsive-image";
+
+export default defineConfig({
+  plugins: [imageOptimizer(), responsiveImage()],
+});
+```
+
+`imageOptimizer()` runs before `responsiveImage()`. Generated variants are
+registered in the public asset manifest, so responsive image markup only refers
+to files that will be emitted.
+
+## Output
+
+JPEG, PNG, WebP, and AVIF inputs are supported when Sharp can read them. For an
+input `images/photo.png`, the default output is:
+
+- `images/photo-640.webp`
+- `images/photo-640.avif`
+- `images/photo-1280.webp`
+- `images/photo-1280.avif`
+- `images/photo-1920.webp`
+- `images/photo-1920.avif`
+
+Widths at least as large as the source are omitted. The original public image is
+preserved by Core's normal content-asset output. EXIF and other metadata are
+stripped unless `keepMetadata` is enabled.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `widths` | `number[]` | `[640, 1280, 1920]` | Target widths |
+| `formats` | `("webp" \| "avif")[]` | `['webp', 'avif']` | Output formats |
+| `quality` | `number` | `80` | Sharp encoder quality, clamped to 1–100 |
+| `keepMetadata` | `boolean` | `false` | Retain source metadata, including EXIF |
+| `maxInputBytes` | `number` | `52428800` | Skip larger source files |
+
+Only assets referenced by routable public Markdown are exposed to the transform.
+Paths are validated by Core, transformed outputs participate in normal output
+collision detection, and a no-change SSG build reuses the existing output cache
+instead of running Sharp again.

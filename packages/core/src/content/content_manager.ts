@@ -407,6 +407,7 @@ export class ContentManager {
         manifest.pageRoutes = [
           ...(await this.pluginRuntime.getPageRoutes(manifest, contentIndex)),
         ];
+        await this.pluginRuntime.runAssetTransforms(manifest);
         await this.pluginRuntime.runManifestCreated(
           manifest,
           contentIndex,
@@ -817,6 +818,7 @@ export class ContentManager {
     const imagePaths = new Set(
       manifest.publicEntries.flatMap((entry) =>
         entry.assets
+          .filter((asset) => asset.sourcePath === undefined)
           .map((asset) => normalizeContentPath(asset.path))
           .filter(isImagePath),
       ),

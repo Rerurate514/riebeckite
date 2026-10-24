@@ -6,6 +6,7 @@ import {
   definePlugin,
   Pipeline,
 } from "../index.js";
+import { resolveConfig } from "../src/config.js";
 
 function memorySource(
   files: Record<string, string | Uint8Array>,
@@ -92,6 +93,158 @@ test("does not emit assets from unpublished Markdown or invalid image URLs", asy
   const manifest = await manager.getManifest();
   assert.deepEqual(manifest.generatedOutputs, []);
   assert.deepEqual(manifest.publicEntries[0]?.assets, []);
+});
+
+test("transforms only public Markdown assets and exposes output metadata", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "post.md": "---\npublish: true\n---\n![logo](images/logo.png)",
+      "images/logo.png": new Uint8Array([1]),
+      "private.md": "---\npublish: false\n---\n![secret](secret.png)",
+      "secret.png": new Uint8Array([2]),
+    }),
+    [],
+    {
+      plugins: [
+        definePlugin({
+          name: "asset-transform",
+          transformAssets: async ({ assets, readAsset }) => {
+            assert.deepEqual(
+              assets.map((asset) => asset.path),
+              ["images/logo.png"],
+            );
+            assert.deepEqual(
+              await readAsset("images/logo.png"),
+              new Uint8Array([1]),
+            );
+            return [
+              {
+                sourcePath: "images/logo.png",
+                path: "images/logo-640.webp",
+                content: new Uint8Array([3]),
+                mimeType: "image/webp",
+                width: 640,
+                height: 320,
+              },
+            ];
+          },
+        }),
+      ],
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(manifest.publicEntries[0]?.assets, [
+    { path: "images/logo.png" },
+    {
+      path: "images/logo-640.webp",
+      sourcePath: "images/logo.png",
+      mimeType: "image/webp",
+      width: 640,
+      height: 320,
+      size: 1,
+    },
+  ]);
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => [
+      output.path,
+      output.dependencies,
+    ]),
+    [
+      ["images/logo-640.webp", [{ type: "file", path: "images/logo.png" }]],
+      ["images/logo.png", [{ type: "file", path: "images/logo.png" }]],
+    ],
+  );
+});
+
+test("does not emit source files over transformed assets", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "post.md": "---\npublish: true\n---\n![logo](images/logo.png)",
+      "images/logo.png": new Uint8Array([1]),
+      "images/logo-640.webp": new Uint8Array([2]),
+    }),
+    [],
+    {
+      plugins: [
+        definePlugin({
+          name: "asset-transform",
+          transformAssets: async () => [
+            {
+              sourcePath: "images/logo.png",
+              path: "images/logo-640.webp",
+              content: new Uint8Array([3]),
+            },
+          ],
+        }),
+      ],
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => [output.path, output.content]),
+    [
+      ["images/logo-640.webp", new Uint8Array([3])],
+      ["images/logo.png", new Uint8Array([1])],
+    ],
+  );
+});
+
+test("emits image transforms only for routable public and unlisted entries", async () => {
+  const transformed: string[] = [];
+  const manager = new ContentManager(
+    memorySource({
+      "public.md":
+        "---\nvisibility: public\n---\n![public](public.png)![shared](shared.png)",
+      "unlisted.md":
+        "---\nvisibility: unlisted\n---\n![unlisted](unlisted.png)",
+      "draft.md":
+        "---\nvisibility: draft\n---\n![draft](draft.png)![shared](shared.png)",
+      "scheduled.md":
+        "---\npublishAt: 2999-01-01T00:00:00.000Z\n---\n![scheduled](scheduled.png)",
+      "public.png": new Uint8Array([1]),
+      "unlisted.png": new Uint8Array([2]),
+      "draft.png": new Uint8Array([3]),
+      "scheduled.png": new Uint8Array([4]),
+      "shared.png": new Uint8Array([5]),
+    }),
+    [],
+    {
+      config: resolveConfig({
+        site: { title: "Test" },
+        content: { filters: { publishStrategy: "explicit" } },
+      }),
+      publishingBuildTime: "2024-01-01T00:00:00.000Z",
+      plugins: [
+        definePlugin({
+          name: "asset-transform",
+          transformAssets: async ({ assets }) => {
+            transformed.push(...assets.map((asset) => asset.path));
+            return assets.map((asset) => ({
+              sourcePath: asset.path,
+              path: `${asset.path}.webp`,
+              content: new Uint8Array([9]),
+            }));
+          },
+        }),
+      ],
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(transformed, ["public.png", "shared.png", "unlisted.png"]);
+  assert.deepEqual(
+    manifest.generatedOutputs.map((output) => output.path),
+    [
+      "public.png",
+      "public.png.webp",
+      "shared.png",
+      "shared.png.webp",
+      "unlisted.png",
+      "unlisted.png.webp",
+    ],
+  );
 });
 
 test("normalizes referenced Markdown images", async () => {

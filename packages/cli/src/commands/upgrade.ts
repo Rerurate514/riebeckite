@@ -53,7 +53,7 @@ export async function runUpgradeCheck(
   console.log(
     options.json ? JSON.stringify(report) : renderUpgradeReport(report),
   );
-  return report.verdict === "READY";
+  return report.verdict === "READY" && process.exitCode !== 130;
 }
 
 export async function collectUpgradeReport(
@@ -112,6 +112,12 @@ export async function collectUpgradeReport(
   const temporary = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-upgrade-"),
   );
+  const controller = new AbortController();
+  const interrupt = () => {
+    process.exitCode = 130;
+    controller.abort();
+  };
+  process.once("SIGINT", interrupt);
   try {
     await assertSafeProjectTree(project.projectRoot);
     const baselineRoot = path.join(temporary, "baseline");
@@ -128,14 +134,21 @@ export async function collectUpgradeReport(
       manager,
       manifest,
       packages,
+      undefined,
+      controller.signal,
     );
+    if (controller.signal.aborted)
+      throw new Error("Upgrade check interrupted.");
     const candidate = await verifySite(
       candidateRoot,
       manager,
       manifest,
       packages,
       target,
+      controller.signal,
     );
+    if (controller.signal.aborted)
+      throw new Error("Upgrade check interrupted.");
     const checks: Check[] = [
       {
         name: "dependency / peer / engines",
@@ -207,6 +220,7 @@ export async function collectUpgradeReport(
       "BLOCKED",
     );
   } finally {
+    process.removeListener("SIGINT", interrupt);
     await fs.rm(temporary, { recursive: true, force: true });
   }
 }
@@ -217,6 +231,7 @@ async function verifySite(
   manifest: Manifest,
   packages: readonly string[],
   target?: string,
+  signal?: AbortSignal,
 ) {
   const runner = createProcessRunner();
   const environment = isolatedEnvironment(root);
@@ -224,6 +239,7 @@ async function verifySite(
     cwd: root,
     environment,
     shell: process.platform === "win32",
+    signal,
   });
   if (install.code !== 0)
     return emptyVerification(
@@ -240,9 +256,15 @@ async function verifySite(
       "FAIL",
       `${target ? "Candidate" : "Baseline"} ${resolution}`,
     );
-  const typecheck = await runTypecheck(runner, root, manager, environment);
+  const typecheck = await runTypecheck(
+    runner,
+    root,
+    manager,
+    environment,
+    signal,
+  );
   const check = status(
-    await runCli(runner, root, manager, ["check"], environment),
+    await runCli(runner, root, manager, ["check"], environment, signal),
   );
   const doctorResult = await runCli(
     runner,
@@ -250,6 +272,7 @@ async function verifySite(
     manager,
     ["doctor", "--json"],
     environment,
+    signal,
   );
   const diagnostics =
     doctorResult.code === 0
@@ -258,7 +281,14 @@ async function verifySite(
         ? "UNVERIFIED"
         : "FAIL";
   const build = status(
-    await runCli(runner, root, manager, ["build", "--full"], environment),
+    await runCli(
+      runner,
+      root,
+      manager,
+      ["build", "--full"],
+      environment,
+      signal,
+    ),
   );
   const output =
     build === "PASS"
@@ -294,6 +324,7 @@ async function runTypecheck(
   root: string,
   manager: PackageManager,
   environment: NodeJS.ProcessEnv,
+  signal?: AbortSignal,
 ): Promise<Status> {
   try {
     await fs.access(path.join(root, "tsconfig.json"));
@@ -306,7 +337,7 @@ async function runTypecheck(
       manager === "pnpm"
         ? ["exec", "tsc", "--noEmit"]
         : ["exec", "--", "tsc", "--noEmit"],
-      { cwd: root, environment, shell: process.platform === "win32" },
+      { cwd: root, environment, shell: process.platform === "win32", signal },
     ),
   );
 }
@@ -317,13 +348,14 @@ function runCli(
   manager: PackageManager,
   arguments_: readonly string[],
   environment: NodeJS.ProcessEnv,
+  signal?: AbortSignal,
 ) {
   return runner.run(
     manager,
     manager === "pnpm"
       ? ["exec", "riebeckite", ...arguments_]
       : ["exec", "--", "riebeckite", ...arguments_],
-    { cwd: root, environment, shell: process.platform === "win32" },
+    { cwd: root, environment, shell: process.platform === "win32", signal },
   );
 }
 
@@ -369,6 +401,10 @@ function isolatedEnvironment(root: string): NodeJS.ProcessEnv {
     ComSpec: process.env.ComSpec,
     TEMP: process.env.TEMP,
     TMP: process.env.TMP,
+    HOME: root,
+    USERPROFILE: root,
+    APPDATA: path.join(root, ".appdata"),
+    LOCALAPPDATA: path.join(root, ".localappdata"),
     npm_config_cache: path.join(path.dirname(root), ".npm-cache"),
     npm_config_userconfig: path.join(root, ".npmrc"),
   };

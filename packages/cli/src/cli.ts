@@ -214,7 +214,11 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       return;
     }
     if (command.name === "upgrade") {
-      if (!(await runUpgradeCheck(project, command))) process.exitCode = 1;
+      if (
+        !(await runUpgradeCheck(project, command)) &&
+        process.exitCode !== 130
+      )
+        process.exitCode = 1;
       return;
     }
 

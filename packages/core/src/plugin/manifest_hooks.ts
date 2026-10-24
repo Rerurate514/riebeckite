@@ -76,10 +76,13 @@ export class ManifestHookRunner {
     previousCache: readonly ManifestHookCacheEntry[],
     pipelineFingerprint: string | undefined,
   ): string | undefined {
+    const plugins = this.options.plugins();
+    if (plugins.some((plugin) => plugin.buildEnd)) return "plugin-build-end";
+    if (plugins.some((plugin) => plugin.planGeneratedOutputs))
+      return "plugin-generated-output-plan";
+
     let cacheIndex = 0;
-    for (const plugin of this.options.plugins()) {
-      if (plugin.buildEnd) return "plugin-build-end";
-      if (plugin.planGeneratedOutputs) return "plugin-generated-output-plan";
+    for (const plugin of plugins) {
       if (!plugin.onManifestCreated) continue;
       if (!plugin.manifestHookCache) return "manifest-hook-cache-disabled";
 

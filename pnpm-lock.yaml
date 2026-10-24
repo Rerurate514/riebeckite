@@ -625,9 +625,6 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@riebeckite/honox':
-        specifier: workspace:*
-        version: link:../../integrations/honox
       '@riebeckite/plugin-taxonomy':
         specifier: workspace:*
         version: link:../taxonomy

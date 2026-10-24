@@ -68,9 +68,9 @@ test("embedded theme roots isolate explicit light and dark plugin surfaces", asy
   try {
     const light = await colors(page, "#riebeckite-light");
     const dark = await colors(page, "#gruvbox-dark");
-    assert.equal(light.paper, "#fafafa");
+    assert.equal(light.paper, "#f7f8fa");
     assert.equal(dark.paper, "#282828");
-    assert.equal(light.color, "rgb(32, 32, 32)");
+    assert.equal(light.color, "rgb(24, 34, 48)");
     assert.equal(dark.color, "rgb(235, 219, 178)");
     assert.notEqual(light.background, dark.background);
     assert.equal(
@@ -94,9 +94,9 @@ test("system dark applies only to a root without an explicit theme mode", async 
     ]);
     const explicitLight = await colors(page, "#riebeckite-light");
     const system = await colors(page, "#system");
-    assert.equal(explicitLight.paper, "#fafafa");
-    assert.equal(system.paper, "#17171a");
-    assert.equal(system.color, "rgb(235, 235, 238)");
+    assert.equal(explicitLight.paper, "#f7f8fa");
+    assert.equal(system.paper, "#171b21");
+    assert.equal(system.color, "rgb(237, 242, 248)");
   } finally {
     await page.close();
   }

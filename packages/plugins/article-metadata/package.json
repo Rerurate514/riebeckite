@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/honox": "workspace:*",
     "@riebeckite/plugin-taxonomy": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
@@ -51,7 +50,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Article dates, reading time, and taxonomy tags for Riebeckite.",
+  "description": "Article dates, reading time, and taxonomy tags for Riebeckite sites.",
   "keywords": [
     "riebeckite",
     "plugin",

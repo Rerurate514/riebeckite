@@ -134,6 +134,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
       - uses: actions/download-artifact@v4
         with:
           name: package-dist-${{ github.sha }}
@@ -167,6 +168,7 @@ jobs:
           path: .
       - run: pnpm ci:build-artifact verify
       - run: pnpm --dir tests/plugin-dx install --frozen-lockfile
+      - run: pnpm --dir tests/plugin-dx run build
       - run: pnpm test:plugin-dx
       - run: pnpm test:plugin-dx:external
 

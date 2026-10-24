@@ -1,5 +1,4 @@
 import { calculateReadingTime } from "@riebeckite/core";
-import { ArticleMeta } from "@riebeckite/honox/ui";
 import {
   buildTaxonomyTagHref,
   resolveTaxonomyOptionsFromConfig,
@@ -45,7 +44,7 @@ export default function ArticleMetadata({
   }
 
   return (
-    <ArticleMeta class="rr-article-metadata">
+    <aside class="rr-article-metadata" aria-label="Article metadata">
       {createdDate ? (
         <time
           class="rr-article-metadata__date"
@@ -99,7 +98,7 @@ export default function ArticleMetadata({
           ))}
         </ul>
       ) : null}
-    </ArticleMeta>
+    </aside>
   );
 }
 

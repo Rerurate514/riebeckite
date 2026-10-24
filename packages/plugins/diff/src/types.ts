@@ -45,3 +45,7 @@ export type DiffPluginUiOptions = {
   enabled?: boolean;
   maxRevisions?: number;
 };
+
+export type DiffPluginOptions = GitHistoryReaderOptions & {
+  ui?: DiffPluginUiOptions;
+};

@@ -36,7 +36,11 @@ export default function ColorModeToggle({
 }: ColorModeToggleProps) {
   return (
     <fieldset
-      class={`rr-color-mode rr-color-mode--${placement}`}
+      class={
+        placement === "inline"
+          ? "rr-color-mode"
+          : `rr-color-mode rr-color-mode--${placement}`
+      }
       data-color-mode-root
       data-color-mode-storage-key={storageKey}
     >

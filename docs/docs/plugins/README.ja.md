@@ -144,6 +144,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | Plugin | できること |
 | --- | --- |
 | [SEO](./seo.ja.md) | メタデータ、サイトマップ、フィード、robots.txt |
+| [Article Metadata](./article-metadata.ja.md) | 記事の公開日・更新日・読了時間・タクソノミーのタグ |
 | [Deploy](./deploy.ja.md) | 静的ホスティング向けの出力 |
 | [Permalink](./permalink.ja.md) | 安定した設定可能なパーマリンク |
 | [Rename](./rename.ja.md) | 公開ノートのリネーム・移動リダイレクト |

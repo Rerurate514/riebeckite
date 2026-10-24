@@ -2205,7 +2205,9 @@ h2 {
   const fit = () => {
     if (mobile()) {
       stage.style.transform = "none";
-      slides.forEach((slide) => slide.removeAttribute("aria-hidden"));
+      slides.forEach((slide) => {
+        slide.removeAttribute("aria-hidden");
+      });
       return;
     }
     const scale = Math.min((window.innerWidth - 48) / 1280, (window.innerHeight - 96) / 720);

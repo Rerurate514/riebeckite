@@ -1,7 +1,10 @@
 import { type PluginComponent, resolvePlugins } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
-import { createPostDiffApi, type DiffPluginOptions } from "../index.js";
-import type { PostDiff as PostDiffData } from "../src/types.js";
+import { createPostDiffApi } from "../src/api.js";
+import type {
+  DiffPluginOptions,
+  PostDiff as PostDiffData,
+} from "../src/types.js";
 
 export type PostDiffProps = {
   readonly diff: PostDiffData | null;

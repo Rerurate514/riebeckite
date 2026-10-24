@@ -1,0 +1,20 @@
+@import "./.riebeckite/framework-styles.css";
+@import "./.riebeckite/plugin-styles.css";
+@import "./.riebeckite/theme-styles.css";
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.fixture-site-header {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.fixture-site-header__home {
+  color: #111827;
+  font-weight: 700;
+}

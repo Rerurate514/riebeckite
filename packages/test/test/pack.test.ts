@@ -24,9 +24,14 @@ async function writePackFixture(root: string, name: string): Promise<void> {
     "utf8",
   );
   await fs.writeFile(path.join(directory, "dist", "index.js"), "export {};\n");
+  await fs.writeFile(
+    path.join(directory, ".pnpmfile.cjs"),
+    'require("fs").writeFileSync("pnpmfile-ran", "");\n',
+    "utf8",
+  );
 }
 
-test("packPackages packs isolated prebuilt artifacts without running lifecycle scripts", async () => {
+test("packPackages packs isolated prebuilt artifacts without running lifecycle scripts or pnpmfile hooks", async () => {
   await withTemporaryDirectory("riebeckite-pack-", async (root) => {
     await Promise.all([
       writePackFixture(root, "fixture-one"),
@@ -48,6 +53,9 @@ test("packPackages packs isolated prebuilt artifacts without running lifecycle s
     assert.equal(packed.size, 2);
     for (const artifact of packed.values()) {
       await fs.access(artifact.tarball);
+    }
+    for (const name of ["fixture-one", "fixture-two"]) {
+      await assert.rejects(fs.access(path.join(root, name, "pnpmfile-ran")));
     }
   });
 });

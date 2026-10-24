@@ -92,17 +92,39 @@ riebeckite plugin verify ./packages/my-plugin --level full --json
 ```
 
 `basic` (the default) checks `package.json`, exports, declaration targets, and
-declared client/CSS subpaths. `integration` records runtime contracts as
-`UNVERIFIED` unless the plugin's own fixture runs them. `full` additionally runs
-`pnpm pack` and verifies the tarball contains the distribution manifest and
-`dist/`. The report distinguishes `FAIL`, `SKIP`, `UNSUPPORTED`, and
-`UNVERIFIED`; only a check that ran successfully is `PASS`.
+declared client/CSS subpaths. `integration` runs a trusted fixture registered
+for the exact package name and directory. Such a fixture typically packs the
+package, installs it in an isolated consumer, builds a HonoX site, and asserts
+the generated output; integration does not imply browser verification. `full`
+also runs the registered browser fixture. `full` additionally runs `pnpm pack`
+and verifies the tarball contains the distribution manifest and `dist/`. The
+report distinguishes `FAIL`, `SKIP`, `UNSUPPORTED`, and `UNVERIFIED`; only a
+check that ran successfully is `PASS`.
+
+Only fixtures registered in this repository can run, and only when both the
+package name and the real package directory match. A package cannot opt itself
+in. Registration lives in `packages/cli/src/commands/plugin_contract_fixtures.ts`
+and requires both a repository-owned runner and an entry that names the package
+and directory. Integration or full on an unregistered package reports
+`UNVERIFIED`; the verifier does not execute unregistered plugin code. Every JSON
+result has an `executed` field, and the report has `complete`, which is true only
+when no requested result is `FAIL`, `UNVERIFIED`, or `UNSUPPORTED`. An
+incomplete report makes the command exit nonzero. A passing full fixture is
+evidence for that fixture's contracts, not proof of complete compatibility.
+
+`pnpm pack` runs with lifecycle scripts and pnpmfile hooks disabled
+(`--config.ignore-scripts=true --config.ignore-pnpmfile=true`), and the tarball
+is inspected rather than executed. A temporary directory is not a security
+sandbox. A fixture is marked as a browser fixture only when it launches a
+browser; a build-only fixture is never reported as browser-verified.
 
 For Markdown transforms, Plugin Runtime/capability resolution, HonoX rendering,
 publication boundaries, and browser lifecycle behavior, keep focused tests in
-the plugin or site fixture. `tests/plugin-dx` is the repository's tarball
-consumer fixture and `@riebeckite/test/e2e` provides its reusable packing and
-isolated-install primitives.
+the plugin or site fixture. The Meta Bind fixture under
+`tests/plugin-contracts/meta-bind` covers its tarball, HonoX output, client
+lazy-load, DOM interaction, CSS, and SPA remount. `tests/plugin-dx` is the
+repository's general tarball consumer fixture and `@riebeckite/test/e2e`
+provides its reusable packing and isolated-install primitives.
 
 ```mermaid
 flowchart LR

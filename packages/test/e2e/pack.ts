@@ -124,6 +124,7 @@ export async function packPackages(
       "pnpm",
       [
         "--config.ignore-scripts=true",
+        "--config.ignore-pnpmfile=true",
         "pack",
         "--pack-destination",
         tarballDir,

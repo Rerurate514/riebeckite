@@ -17,6 +17,10 @@ import {
   SCAFFOLD_UTILITIES,
   type ScaffoldUtilityName,
 } from "./scaffold/utilities.js";
+import {
+  SCAFFOLD_FEATURE_PACKS,
+  type ScaffoldFeatureName,
+} from "./scaffold/features.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
 export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
@@ -29,6 +33,7 @@ export type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
+      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "local";
       readonly deployment: InteractiveDeployment;
@@ -36,6 +41,7 @@ export type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
+      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "external";
       readonly contentRepository: string;
@@ -54,6 +60,7 @@ export function interactiveAnswersToOptions(
     directory: answers.directory,
     force: false,
     preset: answers.preset,
+    ...(answers.features ? { features: answers.features } : {}),
     utilities: answers.utilities,
     listPresets: false,
     deployment: deploymentFromAnswers(answers),
@@ -97,15 +104,33 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
   const directory = projectInput.trim() || DEFAULT_DIRECTORY;
 
   const preset = await select<ScaffoldPresetName>({
-    message: "Choose a preset",
+    message: "What would you like to build?",
     initialValue: "starter",
     options: SCAFFOLD_PRESETS.map(({ name, description }) => ({
       value: name,
-      label: capitalize(name),
+      label: presetLabel(name),
       hint: description,
     })),
   });
   if (isCancel(preset)) return null;
+
+  const addFeatures = await confirm({
+    message: "Add optional feature packs?",
+    initialValue: false,
+  });
+  if (isCancel(addFeatures)) return null;
+  const features = addFeatures
+    ? await multiselect<ScaffoldFeatureName>({
+        message: "Feature packs",
+        options: SCAFFOLD_FEATURE_PACKS.map(({ name, description }) => ({
+          value: name,
+          label: name,
+          hint: description,
+        })),
+        required: false,
+      })
+    : [];
+  if (isCancel(features)) return null;
 
   const customize = await confirm({
     message: "Customize extra project files?",
@@ -154,6 +179,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     answers = {
       directory,
       preset,
+      features,
       utilities,
       contentSource,
       contentRepository: contentRepository.trim(),
@@ -178,7 +204,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       ],
     });
     if (isCancel(deployment)) return null;
-    answers = { directory, preset, utilities, contentSource, deployment };
+    answers = { directory, preset, features, utilities, contentSource, deployment };
   }
 
   log.step("Creating Riebeckite site...");
@@ -203,6 +229,16 @@ export async function promptDeployNow(): Promise<boolean> {
   return answer === "yes";
 }
 
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function presetLabel(name: ScaffoldPresetName): string {
+  const labels: Record<ScaffoldPresetName, string> = {
+    starter: "Starter site",
+    "digital-garden": "Digital garden",
+    blog: "Blog",
+    docs: "Documentation",
+    portfolio: "Portfolio",
+    minimal: "Minimal site",
+    showcase: "Plugin showcase",
+    empty: "Empty application",
+  };
+  return labels[name];
 }

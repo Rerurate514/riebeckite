@@ -12,6 +12,7 @@ import {
   type ScaffoldSiteResult,
 } from "./options.js";
 import { resolveScaffoldPreset } from "./presets.js";
+import { composeScaffoldPreset } from "./features.js";
 import type { SiteTemplateFile } from "./template_types.js";
 import { siteTemplateFiles } from "./templates.js";
 import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
@@ -41,6 +42,14 @@ export {
   type ScaffoldPresetSummary,
 } from "./presets.js";
 export {
+  isScaffoldFeatureName,
+  parseScaffoldFeatures,
+  SCAFFOLD_FEATURE_NAMES,
+  SCAFFOLD_FEATURE_PACKS,
+  type ScaffoldFeatureName,
+  type ScaffoldFeaturePack,
+} from "./features.js";
+export {
   isScaffoldUtilityName,
   parseScaffoldUtilities,
   SCAFFOLD_DEFAULT_UTILITIES,
@@ -60,7 +69,10 @@ export async function scaffoldRiebeckiteSite(
   options: ScaffoldSiteOptions,
 ): Promise<ScaffoldSiteResult> {
   const targetDirectory = path.resolve(options.targetDirectory);
-  const preset = resolveScaffoldPreset(options.preset);
+  const preset = composeScaffoldPreset(
+    resolveScaffoldPreset(options.preset),
+    options.features ?? [],
+  );
   const deployment = options.deployment ?? NO_DEPLOYMENT;
   const externalContent = externalContentSource(deployment);
 

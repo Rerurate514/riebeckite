@@ -13,7 +13,7 @@ npm exec riebeckite <command>
 ## コマンド一覧
 
 ```text id="7uw50m"
-riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets]
+riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
@@ -124,6 +124,14 @@ npm exec -- riebeckite init my-site --preset starter
 npm exec -- riebeckite init --list-presets
 ```
 
+### Feature Packを追加する
+
+`--features <names>` には、任意の Pack をカンマ区切りで指定します。指定できるのは `knowledge`、`diagrams`、`media`、`i18n` です。`none` は Pack を追加しません。プリセットがすでに選んだ Plugin と重複する Pack はエラーになります。
+
+```sh
+npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
+```
+
 ### プロジェクトファイルの選び方
 
 プロジェクトファイルはプリセットとは別に、`--utilities <names>` で選びます。値には `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` をカンマ区切りで指定します。
@@ -155,7 +163,7 @@ npm exec -- riebeckite init my-site --force
 
 ### `create-riebeckite`
 
-`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset` / `--list-presets` フラグも同じように受け付けます。
+`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset`、`--features`、`--list-presets` フラグも同じように受け付けます。
 
 ```sh id="kyw0rx"
 npx create-riebeckite

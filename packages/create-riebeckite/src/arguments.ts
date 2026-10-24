@@ -7,6 +7,10 @@ import {
   type ScaffoldPresetName,
 } from "./scaffold/presets.js";
 import {
+  parseScaffoldFeatures,
+  type ScaffoldFeatureName,
+} from "./scaffold/features.js";
+import {
   parseScaffoldUtilities,
   SCAFFOLD_DEFAULT_UTILITIES,
   type ScaffoldUtilityName,
@@ -16,6 +20,7 @@ export type CreateRiebeckiteOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
+  readonly features?: readonly ScaffoldFeatureName[];
   readonly utilities: readonly ScaffoldUtilityName[];
   readonly listPresets: boolean;
   readonly deployment: ScaffoldDeployment;
@@ -27,6 +32,7 @@ export function parseArguments(
   let directory: string | undefined;
   let force = false;
   let preset: ScaffoldPresetName | undefined;
+  let features: readonly ScaffoldFeatureName[] | undefined;
   let utilities: readonly ScaffoldUtilityName[] | undefined;
   let listPresets = false;
   let githubActions = false;
@@ -77,6 +83,15 @@ export function parseArguments(
       index += 1;
       continue;
     }
+    if (argument === "--features") {
+      const value = arguments_[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new Error("--features requires a comma-separated list of feature names.");
+      }
+      features = parseScaffoldFeatures(value);
+      index += 1;
+      continue;
+    }
     if (argument === "--utilities") {
       const value = arguments_[index + 1];
       if (value === undefined || value.startsWith("-")) {
@@ -93,7 +108,7 @@ export function parseArguments(
     }
     if (directory !== undefined) {
       throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
+        "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
       );
     }
     directory = argument;
@@ -103,6 +118,7 @@ export function parseArguments(
     directory: directory ?? ".",
     force,
     preset: preset ?? "starter",
+    ...(features ? { features } : {}),
     utilities: utilities ?? SCAFFOLD_DEFAULT_UTILITIES,
     listPresets,
     deployment: scaffoldDeploymentFromFlags({

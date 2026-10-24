@@ -40,10 +40,22 @@ export function defaultLanguageForLocale(locale: string): string {
   return "en";
 }
 
-export type ScaffoldPresetName = "starter" | "minimal" | "showcase" | "empty";
+export type ScaffoldPresetName =
+  | "starter"
+  | "digital-garden"
+  | "blog"
+  | "docs"
+  | "portfolio"
+  | "minimal"
+  | "showcase"
+  | "empty";
 
 export const SCAFFOLD_PRESET_NAMES: readonly ScaffoldPresetName[] = [
   "starter",
+  "digital-garden",
+  "blog",
+  "docs",
+  "portfolio",
   "minimal",
   "showcase",
   "empty",
@@ -184,6 +196,11 @@ const seo = np("@riebeckite/plugin-seo", "seo", {
   robots: { depth: 2, value: "true" },
   feed: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
 });
+const blogSeo = np(
+  "@riebeckite/plugin-seo",
+  "seo",
+  `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }`,
+);
 const toc = np("@riebeckite/plugin-toc", "toc");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
@@ -311,6 +328,11 @@ const taxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
   feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
   relatedLimit: { depth: 3, value: "8" },
 });
+const blogTaxonomy = np(
+  "@riebeckite/plugin-taxonomy",
+  "taxonomy",
+  `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true } }`,
+);
 const folderPages = np("@riebeckite/plugin-folder-pages", "folderPages");
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
@@ -454,6 +476,21 @@ const query = np("@riebeckite/plugin-query", "query", {
   excludeSelf: { depth: 3, value: "true" },
 });
 const localGraph = np("@riebeckite/plugin-local-graph", "localGraph");
+const docs = np(
+  "@riebeckite/plugin-docs",
+  "docs",
+  `{ root: "docs", sidebar: { auto: true }, prevNext: true }`,
+);
+
+const readingPlugins = [
+  obsidianMarkdown,
+  colorMode,
+  toc,
+  codeEnhance,
+  search,
+  breadcrumbs,
+  navigationStarter,
+] as const;
 const hoverPreview = np("@riebeckite/plugin-hover-preview", "hoverPreview", {
   delay: { depth: 2, value: "120" },
   excerptLength: { depth: 2, value: "160" },
@@ -577,6 +614,87 @@ export const starter: ScaffoldPreset = {
   readme: "standard",
 };
 
+export const digitalGarden: ScaffoldPreset = {
+  name: "digital-garden",
+  description:
+    "An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    seo,
+    ...readingPlugins,
+    properties,
+    alias,
+    backlinks,
+    relatedPosts,
+    recentPosts,
+    taxonomy,
+    folderPages,
+    localGraph,
+    hoverPreview,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
+export const blog: ScaffoldPreset = {
+  name: "blog",
+  description:
+    "A publishing-focused blog with tags, series, related posts, sharing, and feeds.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    ...readingPlugins,
+    blogSeo,
+    properties,
+    relatedPosts,
+    share,
+    recentPosts,
+    series,
+    blogTaxonomy,
+    folderPages,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
+export const documentation: ScaffoldPreset = {
+  name: "docs",
+  description:
+    "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    seo,
+    ...readingPlugins,
+    docs,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
+export const portfolio: ScaffoldPreset = {
+  name: "portfolio",
+  description:
+    "A calm portfolio for projects and contact details, with image and media support when you add it.",
+  languages: ["en"],
+  theme: defaultTheme,
+  plugins: [
+    ...readingPlugins,
+    seo,
+    properties,
+    backlinks,
+    relatedPosts,
+    recentPosts,
+    responsiveImage,
+    lightbox,
+    media,
+    gallery,
+  ],
+  contentPages: [],
+  readme: "standard",
+};
+
 export const showcase: ScaffoldPreset = {
   name: "showcase",
   description:
@@ -663,7 +781,16 @@ export const showcase: ScaffoldPreset = {
 
 export const scaffoldPresets: Readonly<
   Record<ScaffoldPresetName, ScaffoldPreset>
-> = { starter, minimal, showcase, empty } as const;
+> = {
+  starter,
+  "digital-garden": digitalGarden,
+  blog,
+  docs: documentation,
+  portfolio,
+  minimal,
+  showcase,
+  empty,
+} as const;
 
 export const SCAFFOLD_DEFAULT_PRESET: ScaffoldPresetName = "starter";
 
@@ -681,7 +808,11 @@ export const SCAFFOLD_PRESETS: readonly ScaffoldPresetSummary[] =
 export function resolveScaffoldPreset(
   value: ScaffoldPresetName | undefined,
 ): ScaffoldPreset {
-  if (value === undefined) return scaffoldPresets[SCAFFOLD_DEFAULT_PRESET];
+  if (value === undefined) {
+    const preset = scaffoldPresets[SCAFFOLD_DEFAULT_PRESET];
+    validateScaffoldPreset(preset);
+    return preset;
+  }
   const preset = scaffoldPresets[value];
   if (!preset) {
     throw new Error(
@@ -689,5 +820,40 @@ export function resolveScaffoldPreset(
         `Available presets: ${SCAFFOLD_PRESET_NAMES.join(", ")}.`,
     );
   }
+  validateScaffoldPreset(preset);
   return preset;
+}
+
+export function validateScaffoldPreset(preset: ScaffoldPreset): void {
+  const factories = new Map<string, string>();
+  const packages = new Map<string, string>();
+
+  for (const plugin of preset.plugins) {
+    if (plugin.package.trim() === "" || plugin.factory.trim() === "") {
+      throw new Error(`Invalid plugin declaration in preset "${preset.name}".`);
+    }
+    const factoryPackage = factories.get(plugin.factory);
+    if (factoryPackage !== undefined && factoryPackage !== plugin.package) {
+      throw new Error(
+        `Preset "${preset.name}" imports "${plugin.factory}" from both "${factoryPackage}" and "${plugin.package}".`,
+      );
+    }
+    const packageFactory = packages.get(plugin.package);
+    if (packageFactory === plugin.factory) {
+      throw new Error(
+        `Preset "${preset.name}" registers "${plugin.factory}" from "${plugin.package}" more than once.`,
+      );
+    }
+    factories.set(plugin.factory, plugin.package);
+    packages.set(plugin.package, plugin.factory);
+  }
+
+  if (
+    preset.theme &&
+    preset.plugins.some((plugin) => plugin.factory === preset.theme?.factory)
+  ) {
+    throw new Error(
+      `Preset "${preset.name}" reuses theme factory "${preset.theme.factory}" as a plugin import.`,
+    );
+  }
 }

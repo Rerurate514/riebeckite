@@ -38,6 +38,7 @@ test("ArticleMetadata renders dates, reading time, and plain tags without a site
     }),
   );
 
+  assert.match(html, /rb-article-meta/);
   assert.match(html, /rr-article-metadata/);
   assert.match(html, /PUBLISHED/);
   assert.match(html, /UPDATED/);

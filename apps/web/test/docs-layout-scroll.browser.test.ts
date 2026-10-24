@@ -220,6 +220,9 @@ test("tablet and mobile keep docs rails out of desktop sticky positioning", asyn
       if (width < 768) {
         assert.equal(layout.docsDisplay, "none");
         assert.equal(layout.tocDisplay, "none");
+      } else {
+        assert.notEqual(layout.docsDisplay, "none");
+        assert.equal(layout.tocDisplay, "flex");
       }
     }
   } finally {

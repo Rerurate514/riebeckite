@@ -44,7 +44,10 @@ export default function ArticleMetadata({
   }
 
   return (
-    <aside class="rr-article-metadata" aria-label="Article metadata">
+    <aside
+      class="rb-article-meta rr-article-metadata"
+      aria-label="Article metadata"
+    >
       {createdDate ? (
         <time
           class="rr-article-metadata__date"

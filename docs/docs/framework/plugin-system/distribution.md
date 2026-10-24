@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: Packaging and verification
+series: plugins-in-depth-en
+series_order: 3
+series_title: Plugins in Depth
 sidebar:
   label: Packaging and verification
   order: 30

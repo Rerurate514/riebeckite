@@ -136,6 +136,36 @@ test("collectSeriesIndexes honors custom keys and series_title", () => {
   );
 });
 
+test("collectSeriesIndexes carries the language shared by every member", () => {
+  const index = collectSeriesIndexes(
+    manifestOf([
+      entry("en-1", { series: "S", series_order: 1 }, {
+        publicLocation: { slug: "en-1", permalink: "/en-1", language: "en" },
+      }),
+      entry("en-2", { series: "S", series_order: 2 }, {
+        publicLocation: { slug: "en-2", permalink: "/en-2", language: "en" },
+      }),
+    ]),
+  )[0];
+
+  assert.equal(index?.language, "en");
+});
+
+test("collectSeriesIndexes leaves language undefined for mixed members", () => {
+  const index = collectSeriesIndexes(
+    manifestOf([
+      entry("en", { series: "S", series_order: 1 }, {
+        publicLocation: { slug: "en", permalink: "/en", language: "en" },
+      }),
+      entry("ja", { series: "S", series_order: 2 }, {
+        publicLocation: { slug: "ja", permalink: "/ja", language: "ja" },
+      }),
+    ]),
+  )[0];
+
+  assert.equal(index?.language, undefined);
+});
+
 test("buildSeriesIndex finds a series by name or returns null", () => {
   assert.equal(buildSeriesIndex(guide, "Guide")?.members.length, 2);
   assert.equal(buildSeriesIndex(guide, "Missing"), null);

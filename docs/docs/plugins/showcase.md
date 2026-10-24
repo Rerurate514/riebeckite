@@ -1,6 +1,8 @@
 ---
 date: 2026-10-06
 title: Plugin Showcase
+showcase_progress: 4
+showcase_priority: low
 ---
 # Plugin Showcase
 
@@ -533,6 +535,38 @@ Write JSON Canvas directly in a code fence, or embed a Canvas file with `![[diag
 
 ## Media
 
+### Attachments — [`attachment`](./attachment.md)
+
+A plain WikiLink becomes a download link, and an embedded WikiLink becomes an attachment card.
+
+#### Source
+
+````md
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+````
+
+#### Rendered
+
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+
+### PDF — [`pdf`](./pdf.md)
+
+Embedded PDFs render in the browser's native PDF viewer.
+
+#### Source
+
+````md
+![[pdf-example.pdf]]
+````
+
+#### Rendered
+
+![[pdf-example.pdf]]
+
 ### Rich embeds — [`rich-embed`](./rich-embed.md)
 
 Turn a URL into an embed for YouTube, Vimeo, Spotify, CodePen, Gist, and more.
@@ -647,6 +681,24 @@ host: example.com
 
 ## Knowledge and data
 
+### Citations — [`citations`](./citations.md)
+
+Inline citations become numbered links, and the page gets a References section at the end.
+
+#### Source
+
+````md
+Riebeckite builds on Markdown[@gruber2004] and ships its own plugin model.[@riebeckite2026]
+
+Several sources can be cited together.[@riebeckite2026; @gruber2004]
+````
+
+#### Rendered
+
+Riebeckite builds on Markdown[@gruber2004] and ships its own plugin model.[@riebeckite2026]
+
+Several sources can be cited together.[@riebeckite2026; @gruber2004]
+
 ### Dataview — [`dataview`](./dataview.md)
 
 #### Source
@@ -725,6 +777,34 @@ views:
   - type: table
     name: Featured
     limit: 10
+```
+
+### Meta Bind — [`meta-bind`](./meta-bind.md)
+
+Inline inputs and views use page-local state. The initial values come from frontmatter.
+
+#### Source
+
+````md
+Progress: `INPUT[slider(minValue(0), maxValue(10), stepSize(1)):showcase_progress]`
+
+Double progress: `VIEW[{showcase_progress} * 2]`
+
+```meta-bind
+INPUT[select(option(low), option(medium), option(high)):showcase_priority]
+VIEW[{showcase_priority}]
+```
+````
+
+#### Rendered
+
+Progress: `INPUT[slider(minValue(0), maxValue(10), stepSize(1)):showcase_progress]`
+
+Double progress: `VIEW[{showcase_progress} * 2]`
+
+```meta-bind
+INPUT[select(option(low), option(medium), option(high)):showcase_priority]
+VIEW[{showcase_priority}]
 ```
 
 ### Kanban boards — [`kanban`](./kanban.md)
@@ -808,6 +888,7 @@ These Plugins cannot be expressed by a single Markdown fragment. They are visibl
 | [`backlinks`](./backlinks.md) | A list of notes that reference this note |
 | [`related-posts`](./related-posts.md) | Related notes at the bottom of a note |
 | [`properties`](./properties.md) | A list of frontmatter properties |
+| [`meta-bind`](./meta-bind.md) | Inline inputs and views backed by page-local state |
 | breadcrumbs | Page hierarchy breadcrumbs |
 | share | Share controls for a note |
 | hover-preview | A hover preview of link targets |
@@ -828,15 +909,18 @@ These Plugins do not appear in the body. Their results show up as generated file
 | Plugin | What it generates |
 | --- | --- |
 | [`seo`](./seo.md) | sitemap.xml / robots.txt / feeds, plus canonical and OGP head tags |
+| [`citations`](./citations.md) | Numbered citations and a References section |
 | webmention | webmentions.json and the send/receive endpoints |
 | [`alias`](./alias.md) | Redirects from alternative names |
-| series | Previous/next navigation from `series` frontmatter |
+| [`series`](./series.md) | Previous/next navigation and landing pages from `series` frontmatter |
 | [`recent-posts`](./recent-posts.md) | A list of recent notes, placed by the site |
 | [`daily-notes`](./daily-notes.md) | Short snippets from Daily Notes, placed by the site |
 | rename | Redirects from old paths |
 | [`deploy`](./deploy.md) | Deployment config files for each host |
 | [`diagnostics`](./diagnostics.md) | Diagnostics for orphan notes and unused assets |
 | [`quality`](./quality.md) | Quality checks such as heading order and duplicate ids |
+
+See [Plugins in Depth](/series/plugins-in-depth-en) for a live series.
 
 ## Related
 

@@ -15,6 +15,7 @@ import { LanguageSwitcher } from "@riebeckite/plugin-l10n";
 import { LocalGraph } from "@riebeckite/plugin-local-graph";
 import { Properties } from "@riebeckite/plugin-properties";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
+import { SeriesNavigation } from "@riebeckite/plugin-series";
 import { ShareControls } from "@riebeckite/plugin-share";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import { ArticleWebmentionSection } from "@riebeckite/plugin-webmention";
@@ -41,6 +42,9 @@ export default createRoute(
     if (resolved.kind === "response") return resolved.response;
 
     if (resolved.kind === "page") {
+      if (resolved.page.language) {
+        c.set("htmlLanguage", resolved.page.language);
+      }
       c.set(
         "seo",
         buildWebsiteSeo(
@@ -94,6 +98,7 @@ export default createRoute(
         footerContent={
           <>
             <DocsPrevNext />
+            <SeriesNavigation />
             <Backlinks />
             <RelatedPosts />
             <ShareControls />

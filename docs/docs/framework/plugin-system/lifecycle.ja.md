@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: プラグインの依存関係とライフサイクル
+series: plugins-in-depth-ja
+series_order: 1
+series_title: プラグイン作成の詳細
 sidebar:
   label: 依存関係とライフサイクル
   order: 10

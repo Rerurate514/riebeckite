@@ -67,7 +67,18 @@ export function collectSeriesIndexes(
     const members = [...entries]
       .sort((a, b) => compareEntries(a, b, resolved))
       .map((entry) => toMember(manifest, entry, resolved, name));
-    indexes.push({ name, title: titles.get(name) ?? name, members });
+    const languages = new Set(
+      entries
+        .map((entry) => entry.publicLocation.language)
+        .filter((language): language is string => Boolean(language)),
+    );
+    const language = languages.size === 1 ? [...languages][0] : undefined;
+    indexes.push({
+      name,
+      title: titles.get(name) ?? name,
+      members,
+      ...(language ? { language } : {}),
+    });
   }
   return indexes;
 }

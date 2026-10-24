@@ -1,6 +1,8 @@
 ---
 date: 2026-10-08
 title: プラグインの動作例
+showcase_progress: 4
+showcase_priority: low
 ---
 # プラグインの動作例
 
@@ -533,6 +535,38 @@ JSON Canvas をコードフェンスへ直接書くか、`![[diagram.canvas]]` �
 
 ## Media
 
+### Attachments：[`attachment`](./attachment.ja.md)
+
+通常の WikiLink はダウンロードリンクに、埋め込み WikiLink は添付カードになります。
+
+#### ソース
+
+````md
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+````
+
+#### 実行例
+
+[[attachment-example.txt]]
+
+![[attachment-example.txt]]
+
+### PDF：[`pdf`](./pdf.ja.md)
+
+埋め込んだ PDF はブラウザ標準の PDF ビューアで表示されます。
+
+#### ソース
+
+````md
+![[pdf-example.pdf]]
+````
+
+#### 実行例
+
+![[pdf-example.pdf]]
+
 ### Rich embeds：[`rich-embed`](./rich-embed.ja.md)
 
 URL を YouTube、Vimeo、Spotify、CodePen、Gist などの埋め込みに変換します。
@@ -647,6 +681,24 @@ host: example.com
 
 ## ナレッジとデータ
 
+### Citations：[`citations`](./citations.ja.md)
+
+インライン引用は番号付きリンクになり、ページ末尾に References セクションが追加されます。
+
+#### ソース
+
+````md
+Riebeckite は Markdown[@gruber2004] を基盤にし、独自の Plugin モデルを備えています。[@riebeckite2026]
+
+複数の出典をまとめて引用できます。[@riebeckite2026; @gruber2004]
+````
+
+#### 実行例
+
+Riebeckite は Markdown[@gruber2004] を基盤にし、独自の Plugin モデルを備えています。[@riebeckite2026]
+
+複数の出典をまとめて引用できます。[@riebeckite2026; @gruber2004]
+
 ### Dataview：[`dataview`](./dataview.ja.md)
 
 #### ソース
@@ -725,6 +777,34 @@ views:
   - type: table
     name: Featured
     limit: 10
+```
+
+### Meta Bind：[`meta-bind`](./meta-bind.ja.md)
+
+インライン入力とビューはページローカルの状態を使います。初期値はフロントマターから読み込みます。
+
+#### ソース
+
+````md
+進捗：`INPUT[slider(minValue(0), maxValue(10), stepSize(1)):showcase_progress]`
+
+2 倍の進捗：`VIEW[{showcase_progress} * 2]`
+
+```meta-bind
+INPUT[select(option(low), option(medium), option(high)):showcase_priority]
+VIEW[{showcase_priority}]
+```
+````
+
+#### 実行例
+
+進捗：`INPUT[slider(minValue(0), maxValue(10), stepSize(1)):showcase_progress]`
+
+2 倍の進捗：`VIEW[{showcase_progress} * 2]`
+
+```meta-bind
+INPUT[select(option(low), option(medium), option(high)):showcase_priority]
+VIEW[{showcase_priority}]
 ```
 
 ### Kanban boards：[`kanban`](./kanban.ja.md)
@@ -808,6 +888,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | [`backlinks`](./backlinks.ja.md) | このノートを参照するノートの一覧 |
 | [`related-posts`](./related-posts.ja.md) | note 末尾の関連記事一覧 |
 | [`properties`](./properties.ja.md) | フロントマターのプロパティ一覧 |
+| [`meta-bind`](./meta-bind.ja.md) | ページローカルの状態を使うインライン入力とビュー |
 | breadcrumbs | ページ階層のパンくず |
 | share | note の共有ボタン |
 | hover-preview | リンク先を表示するホバープレビュー |
@@ -828,15 +909,18 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | Plugin | 生成されるもの |
 | --- | --- |
 | [`seo`](./seo.ja.md) | sitemap.xml / robots.txt / feed / head の canonical と OGP |
+| [`citations`](./citations.ja.md) | 番号付き引用と References セクション |
 | webmention | webmentions.json と送受信のエンドポイント |
 | [`alias`](./alias.ja.md) | 別名からのリダイレクト |
-| series | `series` frontmatter による前後ナビ |
+| [`series`](./series.ja.md) | `series` frontmatter による前後ナビと一覧ページ |
 | [`recent-posts`](./recent-posts.ja.md) | 最新記事の一覧（Site が配置） |
 | [`daily-notes`](./daily-notes.ja.md) | デイリーノートの短いスニペット（Site が配置） |
 | rename | 旧パスからのリダイレクト |
 | [`deploy`](./deploy.ja.md) | 各ホスト向けのデプロイ設定ファイル |
 | [`diagnostics`](./diagnostics.ja.md) | 孤立ノートや未使用アセットの診断 |
 | [`quality`](./quality.ja.md) | 見出し順や重複 id などの品質チェック |
+
+実際の例は[プラグイン作成の詳細](/series/plugins-in-depth-ja)を参照してください。
 
 ## 関連
 

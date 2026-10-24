@@ -51,6 +51,7 @@ import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 import { richEmbed } from "@riebeckite/plugin-rich-embed";
 import { search } from "@riebeckite/plugin-search";
 import { seo } from "@riebeckite/plugin-seo";
+import { series } from "@riebeckite/plugin-series";
 import { share } from "@riebeckite/plugin-share";
 import { shortcodes } from "@riebeckite/plugin-shortcodes";
 import { sidenotes } from "@riebeckite/plugin-sidenotes";
@@ -175,6 +176,7 @@ export default defineConfig({
     share(),
     recentPosts(),
     relatedPosts(),
+    series(),
     diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: webmentionProvider }),
     responsiveImage(),

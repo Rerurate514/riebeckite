@@ -139,6 +139,7 @@ export function series(options: SeriesOptions = {}) {
             pathname,
             title: index.title,
             body,
+            ...(index.language ? { language: index.language } : {}),
           };
         },
       },

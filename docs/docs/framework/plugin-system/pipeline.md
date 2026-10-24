@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: Content processing and extension points
+series: plugins-in-depth-en
+series_order: 2
+series_title: Plugins in Depth
 sidebar:
   label: Content processing and extension points
   order: 20

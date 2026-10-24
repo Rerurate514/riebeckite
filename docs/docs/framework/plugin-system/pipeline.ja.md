@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: コンテンツ処理のパイプラインと拡張ポイント
+series: plugins-in-depth-ja
+series_order: 2
+series_title: プラグイン作成の詳細
 sidebar:
   label: パイプラインと拡張ポイント
   order: 20

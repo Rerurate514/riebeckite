@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: Dependencies, context, and lifecycle
+series: plugins-in-depth-en
+series_order: 1
+series_title: Plugins in Depth
 sidebar:
   label: Dependencies, context, and lifecycle
   order: 10

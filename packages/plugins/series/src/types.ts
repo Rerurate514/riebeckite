@@ -45,4 +45,6 @@ export type SeriesIndex = {
   title: string;
   /** Members sorted by `order`, then date, title, and slug. */
   members: SeriesMember[];
+  /** Language shared by every member, or `undefined` for mixed languages. */
+  language?: string;
 };

@@ -38,6 +38,82 @@
   margin-bottom: 0;
 }
 
+figure[data-marp][data-marp-viewer] > div:first-of-type > [hidden] {
+  display: none;
+}
+
+figure[data-marp][data-marp-viewer] > div:first-of-type > svg[data-marpit-svg] {
+  margin-bottom: 0;
+}
+
+figure[data-marp][data-marp-viewer]:focus-visible {
+  outline: 2px solid var(--rb-color-accent, currentColor);
+  outline-offset: 2px;
+}
+
+.rb-marp__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--rr-marp-rule);
+}
+
+.rb-marp__control {
+  min-width: 2rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--rr-marp-rule);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.rb-marp__control:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.rb-marp__counter {
+  margin-left: auto;
+  color: var(--rr-marp-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+figure[data-marp]:fullscreen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  background: var(--rr-marp-paper);
+}
+
+figure[data-marp]:fullscreen > figcaption {
+  display: none;
+}
+
+figure[data-marp]:fullscreen > div:first-of-type {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+figure[data-marp]:fullscreen > div:first-of-type > svg[data-marpit-svg] {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+}
+
 .rb-marp__fallback {
   border-top: 1px solid var(--rr-marp-rule);
   color: var(--rr-marp-muted);
@@ -56,6 +132,22 @@
   border-top: 1px solid var(--rr-marp-rule);
   color: var(--rr-marp-ink);
   background: color-mix(in srgb, var(--rr-marp-ink) 6%, transparent);
+}
+
+figure[data-marp]:fullscreen > details {
+  display: none;
+}
+
+.rb-marp-slides {
+  margin: 2rem 0;
+}
+
+.rb-marp-slides > figure[data-marp] {
+  margin: 0;
+}
+
+.rb-marp-slides > figure[data-marp] > details {
+  display: none;
 }
 
 :is(:root, .rb-theme-root)[data-theme="dark"] .rb-marp {

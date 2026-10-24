@@ -94,9 +94,17 @@ paginate: true
 
 ### ビルド時のレンダリング
 
-- `script: false` でレンダリングするため、デッキにクライアントスクリプトは含まれません。SVG スライドのサイズは `style.css` 側で調整します
+- `script: false` でレンダリングするため、Marp Core 由来のクライアントスクリプトは含まれません。SVG スライドのサイズは `style.css` 側で調整します
 - キャプションはコードブロックの `title` から取得します
 - `data-marp-slides` にスライド枚数、`data-marp` にデッキであることを示す属性を付けます
+
+### ビューア
+
+小さなクライアントエントリ（`initMarpDecks`）が、2 枚以上のスライドを持つデッキを 1 枚ずつ表示するビューアに変えます。前後ボタン、スライド枚数、全画面ボタンを備え、デッキにフォーカスがある間は矢印キー、Page Up / Page Down、Home、End でも移動できます。JavaScript がない場合は全スライドが縦に積まれたまま表示されます。
+
+### スライド単体ページ
+
+公開された全文 Marp ノートには、パーマリンクの前に `/slides` を付けたデッキ専用ページも生成されます。`/notes/talk/` で公開されるノートは `/slides/notes/talk/` でも開けます。Marp ソースの折りたたみを除いて同じデッキを表示し、ノート本来のページは変わりません。インラインの `marp` フェンスには単体ページは生成されません。
 
 ## オプション
 
@@ -113,7 +121,7 @@ paginate: true
 
 ## 制約
 
-- クライアント側でのスライド編集やページ送り UI は提供しません。ビルド時に静的な HTML/CSS を生成するだけです
+- クライアント側でのスライド編集は提供しません。ページ送りは組み込みビューアのみで、JavaScript が必要です。JavaScript がない場合は全スライドが縦に積まれて表示されます
 - 利用できるテーマは Marp Core に登録済みのものに限られます。任意のテーマ CSS の読み込みには対応していません
 - `inlineSVG: false` を指定すると SVG ラッパーなしの `<section>` を出力します。生成される CSS もその構造に合わせて変わります
 - 文書全体のデッキは通常の Markdown パイプラインを通らないため、スライド内の Obsidian の `![image](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.ja.md)` 埋め込みは解決されません。公開サイトに存在するパスを指定した通常の Markdown 画像記法を使ってください（Marp Slides 自体もウィキリンクには対応していません）
@@ -122,6 +130,7 @@ paginate: true
 
 - `marp(options?)` / `marpPlugin(options?)`: プラグインを作成する
 - `isMarpDocument(matter?)`: frontmatter の `marp: true` を判定するヘルパー
+- `initMarpDecks()`: ビューアの初期化関数。`@riebeckite/plugin-marp/client` から公開
 - 型: `MarpOptions`、`MarpDeck`、`MarpBuildRenderResult`
 
 ## 関連資料

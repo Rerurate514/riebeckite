@@ -94,9 +94,17 @@ When several decks on one page use the same theme their generated CSS is identic
 
 ### Build-time rendering
 
-- Rendering uses `script: false`, so a deck never ships client JavaScript. SVG slide sizing is handled by `style.css`;
+- Rendering uses `script: false`, so Marp Core adds no client script of its own. SVG slide sizing is handled by `style.css`;
 - captions come from the code block `title`;
 - `data-marp-slides` carries the slide count and `data-marp` marks the deck.
+
+### Viewer
+
+A small client entry (`initMarpDecks`) turns decks with two or more slides into a one-slide-at-a-time viewer: previous/next buttons, a slide counter, and a fullscreen toggle. Arrow keys, Page Up/Page Down, Home, and End move between slides while the deck has focus. Without JavaScript every slide stays in the vertical stack.
+
+### Standalone slide pages
+
+Every published whole-document Marp note also gets a deck-only page at `/slides` followed by its permalink. A note published at `/notes/talk/` is available at `/slides/notes/talk/`. The page renders the same deck without the Marp source fallback, and the note's normal page is unchanged. Inline `marp` fences keep their permalink only.
 
 ## Options
 
@@ -113,7 +121,7 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## Limitations
 
-- No client-side slide editing or paging UI; this only produces static HTML/CSS at build time.
+- No client-side slide editing. Paging is limited to the built-in viewer, which needs JavaScript; without it the deck renders as a vertical stack of slides.
 - Only themes registered in Marp Core are available; loading arbitrary theme CSS is not supported.
 - `inlineSVG: false` emits bare `<section>` elements without the SVG wrapper, and the generated CSS changes to match that structure.
 - Whole-document decks bypass the normal Markdown pipeline, so Obsidian `![image](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.md)` image embeds are not resolved inside slides. Use regular Markdown image syntax with paths that exist on the published site, mirroring how Marp Slides itself does not support wiki links.
@@ -122,6 +130,7 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 - `marp(options?)` / `marpPlugin(options?)` — plugin factory
 - `isMarpDocument(matter?)` — frontmatter `marp: true` detection helper
+- `initMarpDecks()` — viewer initializer, exported from `@riebeckite/plugin-marp/client`
 - Types: `MarpOptions`, `MarpDeck`, `MarpBuildRenderResult`
 
 ## See also

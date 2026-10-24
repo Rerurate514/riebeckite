@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { isMarpDocument } from "../index.ts";
+import { isMarpDocument, marp } from "../index.ts";
+import {
+  listMarpSlidesPaths,
+  marpSlidesPath,
+  resolveMarpSlidesPage,
+} from "../src/page.ts";
 import { rehypeMarp } from "../src/rehype.ts";
 
 const UPSTREAM_DECK = `---
@@ -19,6 +24,67 @@ First slide body.
 
 Second slide body.
 `;
+
+test("registers the one-slide-at-a-time viewer client entry", () => {
+  assert.deepEqual(marp().clientEntries, [
+    {
+      pluginName: "marp",
+      moduleSpecifier: "@riebeckite/plugin-marp/client",
+      exportName: "initMarpDecks",
+    },
+  ]);
+});
+
+test("serves whole-document marp notes at /slides<permalink>", async () => {
+  const manifest = {
+    publicEntries: [
+      {
+        slug: "notes/deck",
+        permalink: "/notes/deck",
+        title: "Deck",
+        html: '<figure data-marp data-marp-slides="2"></figure>',
+        frontmatter: { marp: true },
+        publicLocation: {
+          slug: "notes/deck",
+          permalink: "/notes/deck",
+          language: "en",
+        },
+      },
+      {
+        slug: "notes/plain",
+        permalink: "/notes/plain/",
+        title: "Plain",
+        html: "<p>plain</p>",
+        frontmatter: {},
+        publicLocation: { slug: "notes/plain", permalink: "/notes/plain/" },
+      },
+    ],
+  };
+
+  assert.deepEqual(listMarpSlidesPaths(manifest as never), [
+    "/slides/notes/deck",
+  ]);
+  assert.equal(marpSlidesPath("/ja/notes/deck/"), "/slides/ja/notes/deck");
+  assert.equal(marp().pageTypes?.[0]?.id, "marp-slides");
+
+  const page = await resolveMarpSlidesPage({
+    manifest,
+    pathname: "/slides/notes/deck/",
+  } as never);
+  assert.equal(page?.type, "marp-slides");
+  assert.equal(page?.title, "Deck");
+  assert.equal(page?.language, "en");
+  assert.match(page?.body ?? "", /class="rb-marp-slides"/);
+  assert.match(page?.body ?? "", /data-marp/);
+
+  assert.equal(
+    await resolveMarpSlidesPage({
+      manifest,
+      pathname: "/slides/notes/plain/",
+    } as never),
+    null,
+  );
+});
 
 test("detects the canonical `marp: true` frontmatter flag", () => {
   assert.equal(isMarpDocument({ marp: true }), true);

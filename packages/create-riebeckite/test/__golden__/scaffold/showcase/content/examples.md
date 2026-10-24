@@ -163,6 +163,8 @@ A `marp` fence renders slides, separated by `---`.
 # Second slide
 ```
 
+This preset also ships a whole-document Marp note. Open the [note](/deck/) or its [standalone slide page](/slides/deck/).
+
 ## QR codes
 
 A `qr` fence becomes an inline SVG QR code, encoded entirely at build time.

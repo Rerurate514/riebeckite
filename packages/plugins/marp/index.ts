@@ -1,8 +1,14 @@
 import {
   type ConfigValidationIssue,
+  createClientEntry,
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
+import {
+  findMarpDeckEntry,
+  listMarpSlidesPaths,
+  resolveMarpSlidesPage,
+} from "./src/page.js";
 import type { HastNode, MarpOptions } from "./src/types.js";
 
 export { isMarpDocument } from "./src/rehype.js";
@@ -33,7 +39,28 @@ export function marp(options: MarpOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMarpLazy, options);
     },
+    pageTypes: [
+      {
+        id: "marp-slides",
+        directoryIndex: true,
+        paths: ({ manifest }) => listMarpSlidesPaths(manifest),
+        outputDependencies: ({ manifest, pathname }) => {
+          const entry = findMarpDeckEntry(manifest, pathname);
+          return entry
+            ? [{ type: "content" as const, slug: entry.slug }]
+            : [{ type: "unknown" as const }];
+        },
+        resolve: (context) => resolveMarpSlidesPage(context),
+      },
+    ],
     assets: [createStyleAsset("marp", "@riebeckite/plugin-marp/style.css")],
+    clientEntries: [
+      createClientEntry(
+        "marp",
+        "@riebeckite/plugin-marp/client",
+        "initMarpDecks",
+      ),
+    ],
   });
 }
 

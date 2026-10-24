@@ -1355,6 +1355,11 @@ function readSummary(text: SummaryText, language: ScaffoldLanguage): string {
   return language === "ja" ? (text.ja ?? text.en) : text.en;
 }
 
+const SHOWCASE_DECK_LINK: SummaryText = {
+  en: "This preset also ships a whole-document Marp note. Open the [note](/deck/) or its [standalone slide page](/slides/deck/).",
+  ja: "このプリセットには全文が Marp のノートも含まれます。[ノート](/deck/) または [スライド単体ページ](/slides/deck/) を開いてください。",
+};
+
 const EXAMPLES_COPY: {
   readonly heading: SummaryText;
   readonly intro: SummaryText;
@@ -1475,6 +1480,9 @@ function examplesContent(
     lines.push(heading(2, readSummary(demo.title, language)), "");
     lines.push(readSummary(demo.intro, language), "");
     lines.push(demo.markdown, "");
+    if (preset.name === "showcase" && key === "@riebeckite/plugin-marp") {
+      lines.push(readSummary(SHOWCASE_DECK_LINK, language), "");
+    }
   }
   if (preset.name === "showcase") {
     for (const packageName of SHOWCASE_GUIDE_DEMOS) {

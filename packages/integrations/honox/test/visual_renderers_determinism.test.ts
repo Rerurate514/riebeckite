@@ -37,13 +37,25 @@ test("D2 and Marp outputs stay equal across cold and incremental SSG builds", as
     visualRenderers: true,
   });
   await appendFile(notePath(site, 0), visualRendererSource, "utf8");
+  await writeFile(
+    path.join(site, "vault", "notes", "deck.md"),
+    "---\ntitle: Deck\nvisibility: public\nmarp: true\n---\n\n# One\n\n---\n\n# Two\n",
+    "utf8",
+  );
 
   await buildSite(site, "cold", leanBuildOptions);
   const cold = await snapshotTree(distPath(site));
   const coldOutputCache = await readFile(cachePath(site), "utf8");
 
   assert.ok(Object.hasOwn(cold, "notes/note-0.html"));
+  assert.ok(Object.hasOwn(cold, "slides/notes/deck/index.html"));
   assert.ok(Object.hasOwn(cold, "search-data.json"));
+  const slideHtml = await readFile(
+    path.join(distPath(site), "slides/notes/deck/index.html"),
+    "utf8",
+  );
+  assert.match(slideHtml, /rb-marp-slides/u);
+  assert.match(slideHtml, /data-marpit-svg/u);
   const noteHtml = await readFile(
     path.join(distPath(site), "notes/note-0.html"),
     "utf8",

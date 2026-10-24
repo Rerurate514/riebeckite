@@ -56,6 +56,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/local-graph",
   "packages/plugins/map",
   "packages/plugins/markmap",
+  "packages/plugins/meta-bind",
   "packages/plugins/marp",
   "packages/plugins/media",
   "packages/plugins/mermaid",
@@ -350,6 +351,11 @@ const packagePublishingMetadata = {
   "packages/plugins/markmap": {
     description: "Markdown mindmap rendering with Markmap for Riebeckite.",
     keywords: ["riebeckite", "plugin", "markmap", "mindmap"],
+  },
+  "packages/plugins/meta-bind": {
+    description:
+      "Safe browser-state compatibility subset for Obsidian Meta Bind syntax.",
+    keywords: ["riebeckite", "plugin", "obsidian", "meta-bind"],
   },
   "packages/plugins/marp": {
     description: "Build-time Marp slide deck rendering for Riebeckite.",
@@ -716,6 +722,7 @@ export function expectedPackageMetadata(directory) {
       "image-optimizer",
       "l10n",
       "local-graph",
+      "meta-bind",
       "navigation",
       "permalink",
       "properties",

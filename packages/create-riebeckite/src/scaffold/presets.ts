@@ -479,6 +479,16 @@ const docs = np(
   "docs",
   `{ root: "docs", sidebar: { auto: true }, prevNext: true }`,
 );
+
+const readingPlugins = [
+  obsidianMarkdown,
+  colorMode,
+  toc,
+  codeEnhance,
+  search,
+  breadcrumbs,
+  navigationStarter,
+] as const;
 const hoverPreview = np("@riebeckite/plugin-hover-preview", "hoverPreview", {
   delay: { depth: 2, value: "120" },
   excerptLength: { depth: 2, value: "160" },
@@ -609,17 +619,11 @@ export const digitalGarden: ScaffoldPreset = {
   languages: ["en"],
   theme: defaultTheme,
   plugins: [
-    obsidianMarkdown,
-    colorMode,
     seo,
-    toc,
+    ...readingPlugins,
     properties,
     alias,
-    codeEnhance,
-    search,
     backlinks,
-    breadcrumbs,
-    navigationStarter,
     relatedPosts,
     recentPosts,
     taxonomy,
@@ -638,15 +642,9 @@ export const blog: ScaffoldPreset = {
   languages: ["en"],
   theme: defaultTheme,
   plugins: [
-    obsidianMarkdown,
-    colorMode,
+    ...readingPlugins,
     blogSeo,
-    toc,
     properties,
-    codeEnhance,
-    search,
-    breadcrumbs,
-    navigationStarter,
     relatedPosts,
     share,
     recentPosts,
@@ -665,14 +663,8 @@ export const documentation: ScaffoldPreset = {
   languages: ["en"],
   theme: defaultTheme,
   plugins: [
-    obsidianMarkdown,
-    colorMode,
     seo,
-    toc,
-    codeEnhance,
-    search,
-    breadcrumbs,
-    navigationStarter,
+    ...readingPlugins,
     docs,
   ],
   contentPages: [],
@@ -791,7 +783,11 @@ export const SCAFFOLD_PRESETS: readonly ScaffoldPresetSummary[] =
 export function resolveScaffoldPreset(
   value: ScaffoldPresetName | undefined,
 ): ScaffoldPreset {
-  if (value === undefined) return scaffoldPresets[SCAFFOLD_DEFAULT_PRESET];
+  if (value === undefined) {
+    const preset = scaffoldPresets[SCAFFOLD_DEFAULT_PRESET];
+    validateScaffoldPreset(preset);
+    return preset;
+  }
   const preset = scaffoldPresets[value];
   if (!preset) {
     throw new Error(
@@ -799,5 +795,40 @@ export function resolveScaffoldPreset(
         `Available presets: ${SCAFFOLD_PRESET_NAMES.join(", ")}.`,
     );
   }
+  validateScaffoldPreset(preset);
   return preset;
+}
+
+export function validateScaffoldPreset(preset: ScaffoldPreset): void {
+  const factories = new Map<string, string>();
+  const packages = new Map<string, string>();
+
+  for (const plugin of preset.plugins) {
+    if (plugin.package.trim() === "" || plugin.factory.trim() === "") {
+      throw new Error(`Invalid plugin declaration in preset "${preset.name}".`);
+    }
+    const factoryPackage = factories.get(plugin.factory);
+    if (factoryPackage !== undefined && factoryPackage !== plugin.package) {
+      throw new Error(
+        `Preset "${preset.name}" imports "${plugin.factory}" from both "${factoryPackage}" and "${plugin.package}".`,
+      );
+    }
+    const packageFactory = packages.get(plugin.package);
+    if (packageFactory === plugin.factory) {
+      throw new Error(
+        `Preset "${preset.name}" registers "${plugin.factory}" from "${plugin.package}" more than once.`,
+      );
+    }
+    factories.set(plugin.factory, plugin.package);
+    packages.set(plugin.package, plugin.factory);
+  }
+
+  if (
+    preset.theme &&
+    preset.plugins.some((plugin) => plugin.factory === preset.theme?.factory)
+  ) {
+    throw new Error(
+      `Preset "${preset.name}" reuses theme factory "${preset.theme.factory}" as a plugin import.`,
+    );
+  }
 }

@@ -9,6 +9,7 @@ import {
   SCAFFOLD_DEFAULT_PRESET,
   SCAFFOLD_PRESET_NAMES,
   scaffoldPresets,
+  validateScaffoldPreset,
 } from "../src/scaffold/presets.js";
 
 test("the public scaffold presets have the documented order and default", () => {
@@ -26,6 +27,31 @@ test("the public scaffold presets have the documented order and default", () => 
   for (const removedName of ["rich", "full", "max", "ultra"]) {
     assert.equal(isScaffoldPresetName(removedName), false);
   }
+});
+
+test("preset declarations reject conflicting generated imports", () => {
+  assert.throws(
+    () =>
+      validateScaffoldPreset({
+        ...scaffoldPresets.minimal,
+        plugins: [
+          { package: "@example/one", factory: "plugin" },
+          { package: "@example/two", factory: "plugin" },
+        ],
+      }),
+    /imports "plugin" from both/,
+  );
+  assert.throws(
+    () =>
+      validateScaffoldPreset({
+        ...scaffoldPresets.minimal,
+        plugins: [
+          { package: "@example/plugin", factory: "plugin" },
+          { package: "@example/plugin", factory: "plugin" },
+        ],
+      }),
+    /more than once/,
+  );
 });
 
 test("preset descriptions state distinct roles and keep starter the recommendation", () => {

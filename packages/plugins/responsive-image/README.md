@@ -3,8 +3,8 @@
 <!-- Generated from docs/docs/plugins/responsive-image.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Upgrades existing `<img>` elements with lazy loading and responsive
-`<picture>` / `srcset` markup, using only image variants that are already
-present in the content manifest.
+`<picture>` / `srcset` markup, using only image variants already present in the
+content manifest, including variants from `imageOptimizer()`.
 
 [日本語](./README_ja.md)
 
@@ -30,11 +30,12 @@ assets that the manifest already knows about.
 import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), attachment(), responsiveImage()],
+  plugins: [obsidianMarkdown(), attachment(), imageOptimizer(), responsiveImage()],
 });
 ```
 
@@ -67,18 +68,11 @@ site asset URL (`/attachments/photo.png`) and the attachment URL
 (`/assets/attachments/photo.png`). If the source cannot be matched to a manifest
 asset, the `<img>` is left untouched.
 
-## Limitation: no image encoding
+## Image encoding
 
-This plugin is a deterministic discovery/HTML layer. It does **not** encode or
-generate new image files by default. `PluginAsset` only supports `style` and
-`script` module specifiers, so Core currently exposes no supported way for a
-plugin to emit arbitrary binary files into the build output.
-
-`generate` and `outputDir` are reserved for a future release and do nothing
-today. Adding real encoding requires a Core file-emission API; until then,
-pre-generate the variants yourself (for example with an external image tool) and
-commit them next to the original image. Sites copy referenced vault assets into
-`public/` through `apps/web/scripts/build_images.ts`.
+This plugin remains a deterministic markup layer. Add
+`@riebeckite/plugin-image-optimizer` to encode WebP and AVIF variants during the
+same build; generated assets are discovered before this plugin creates markup.
 
 ## Exports
 

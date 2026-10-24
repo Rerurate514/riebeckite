@@ -21,6 +21,7 @@ import { flashcardsPlugin } from "@riebeckite/plugin-flashcards";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreviewPlugin } from "@riebeckite/plugin-hover-preview";
+import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
@@ -93,6 +94,7 @@ export default defineConfig({
     citations({ bibliography: "references.bib" }),
     recentPostsPlugin(),
     relatedPosts(),
+    imageOptimizer({ widths: [640, 1280] }),
     responsiveImage(),
     richEmbed(),
     searchPlugin(),

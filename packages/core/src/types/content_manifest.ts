@@ -23,6 +23,11 @@ export type ContentLink = {
 
 export type ContentAsset = {
   path: string;
+  sourcePath?: string;
+  mimeType?: string;
+  width?: number;
+  height?: number;
+  size?: number;
 };
 
 export type ContentManifestPluginAsset = PluginAsset & {

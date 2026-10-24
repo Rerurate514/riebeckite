@@ -1088,6 +1088,25 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/plugins/image-optimizer:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      sharp:
+        specifier: ^0.35.5
+        version: 0.35.5(@types/node@24.13.6)
+    devDependencies:
+      '@riebeckite/plugin-responsive-image':
+        specifier: workspace:*
+        version: link:../responsive-image
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/kanban:
     dependencies:
       '@riebeckite/core':

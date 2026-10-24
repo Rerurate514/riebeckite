@@ -1,9 +1,11 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import { getContentSourceEntry } from "../content/content_source.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
 import type {
+  ContentAsset,
   ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
@@ -21,6 +23,7 @@ import type {
   GeneratedOutputSink,
 } from "../types/generated_output.js";
 import type {
+  AssetTransformOutput,
   ContentOutputDependencyResolver,
   RiebeckitePlugin,
 } from "../types/plugin.js";
@@ -280,6 +283,52 @@ export class PluginRuntime {
     );
   }
 
+  async runAssetTransforms(manifest: ContentManifest): Promise<void> {
+    const source = this.pipelineOptions.contentSource;
+    if (!source) return;
+
+    const referencedBy = new Map<string, ContentManifestEntry[]>();
+    for (const entry of manifest.publicEntries) {
+      for (const asset of entry.assets) {
+        const entries = referencedBy.get(asset.path) ?? [];
+        entries.push(entry);
+        referencedBy.set(asset.path, entries);
+      }
+    }
+    if (referencedBy.size === 0) return;
+
+    const sourceEntries = new Map(
+      (await source.scan()).map((entry) => [entry.path, entry]),
+    );
+    const assets = [...referencedBy.keys()]
+      .sort()
+      .map((path) => ({ path, size: sourceEntries.get(path)?.metadata?.size }));
+    const readAsset = async (path: string): Promise<Uint8Array | null> => {
+      if (!referencedBy.has(path)) {
+        throw new Error(
+          `Asset transform cannot read non-public asset: "${path}".`,
+        );
+      }
+      const entry =
+        sourceEntries.get(path) ?? (await getContentSourceEntry(source, path));
+      if (!entry) return null;
+      const content = await source.read(entry);
+      return typeof content === "string" ? null : content;
+    };
+
+    for (const plugin of this.plugins()) {
+      if (!plugin.transformAssets) continue;
+      const outputs = await plugin.transformAssets({
+        assets,
+        readAsset,
+        cache: this.cacheFor(plugin),
+        logger: this.observability().logger.child({ plugin: plugin.name }),
+        tracer: this.observability().tracer,
+      });
+      this.registerAssetTransforms(plugin, outputs, referencedBy);
+    }
+  }
+
   async runBuildEnd(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
@@ -369,6 +418,39 @@ export class PluginRuntime {
       content,
       dependencies: [{ type: "file", path }],
     });
+  }
+
+  private registerAssetTransforms(
+    plugin: RiebeckitePlugin,
+    outputs: readonly AssetTransformOutput[],
+    referencedBy: ReadonlyMap<string, readonly ContentManifestEntry[]>,
+  ): void {
+    const sink = this.generatedOutputSinkFor(plugin);
+    for (const output of outputs) {
+      const entries = referencedBy.get(output.sourcePath);
+      if (!entries) {
+        throw new Error(
+          `Asset transform from "${plugin.name}" emitted output for non-public asset: "${output.sourcePath}".`,
+        );
+      }
+      sink.emitAsset({
+        path: output.path,
+        content: output.content,
+        dependencies: [
+          { type: "file", path: output.sourcePath },
+          ...(output.dependencies ?? []),
+        ],
+      });
+      const asset: ContentAsset = {
+        path: output.path,
+        sourcePath: output.sourcePath,
+        mimeType: output.mimeType,
+        width: output.width,
+        height: output.height,
+        size: output.content.byteLength,
+      };
+      for (const entry of entries) entry.assets.push(asset);
+    }
   }
 
   async resolvePage(

@@ -96,6 +96,9 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   setup?(context: PluginLifecycleContext): void | Promise<void>;
   buildStart?(context: PluginLifecycleContext): void | Promise<void>;
   buildEnd?(context: PluginManifestContext): void | Promise<void>;
+  transformAssets?(
+    context: PluginAssetTransformContext,
+  ): readonly AssetTransformOutput[] | Promise<readonly AssetTransformOutput[]>;
   planGeneratedOutputs?(
     context: PluginGeneratedOutputPlanContext,
   ):
@@ -153,6 +156,29 @@ export type PluginGeneratedOutputPlanContext = {
     readonly routableEntries: readonly ContentManifestEntry[];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
+};
+
+export type AssetTransformInput = {
+  readonly path: string;
+  readonly size?: number;
+};
+
+export type AssetTransformOutput = {
+  readonly sourcePath: string;
+  readonly path: string;
+  readonly content: Uint8Array;
+  readonly mimeType?: string;
+  readonly width?: number;
+  readonly height?: number;
+  readonly dependencies?: readonly OutputDependency[];
+};
+
+export type PluginAssetTransformContext = {
+  readonly assets: readonly AssetTransformInput[];
+  readonly readAsset: (path: string) => Promise<Uint8Array | null>;
+  readonly cache: import("../plugin/plugin_cache.js").PluginCache;
+  readonly logger: import("../observability.js").Logger;
+  readonly tracer: import("../observability.js").Tracer;
 };
 
 export type ProcessedContentCacheContext = {

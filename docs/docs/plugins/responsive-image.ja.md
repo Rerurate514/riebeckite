@@ -4,7 +4,7 @@ title: Responsive Image
 ---
 # Responsive Image
 
-既存の `<img>` に遅延読み込みと、レスポンシブな `<picture>` / `srcset` を付与するプラグインです。参照するのは、すでにコンテンツマニフェストに存在する画像バリアントだけです。
+既存の `<img>` に遅延読み込みと、レスポンシブな `<picture>` / `srcset` を付与するプラグインです。参照するのは、`imageOptimizer()` が生成したものを含め、すでにコンテンツマニフェストに存在する画像バリアントだけです。
 
 [English](./responsive-image.md)
 
@@ -24,11 +24,12 @@ URL を捏造することはありません。ファイルを書き出すこと�
 import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
+import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import { responsiveImage } from "@riebeckite/plugin-responsive-image";
 
 export default defineConfig({
   // ...
-  plugins: [obsidianMarkdown(), attachment(), responsiveImage()],
+  plugins: [obsidianMarkdown(), attachment(), imageOptimizer(), responsiveImage()],
 });
 ```
 
@@ -57,11 +58,9 @@ export default defineConfig({
 
 元の `<img src>` は、サイトのアセット URL（`/attachments/photo.png`）と添付ファイル URL（`/assets/attachments/photo.png`）の両方を試して、マニフェスト上のアセットに対応付けます。対応するアセットが見つからない `<img>` はそのまま残します。
 
-## 制約: 画像のエンコードはしない
+## 画像のエンコード
 
-このプラグインは、決定的な探索と HTML 変換だけを担当します。既定では新しい画像ファイルを生成しません。`PluginAsset` は `style` と `script` のモジュール指定子しか扱えず、プラグインが任意のバイナリファイルをビルド成果物へ出力する手段を Core は提供していません。
-
-`generate` と `outputDir` は将来のリリース向けの予約で、現在は何もしません。実際のエンコードには Core のファイル出力 API が必要です。それまでは外部の画像ツールなどでバリアントを事前生成し、元画像の隣にコミットしてください。サイト側では `apps/web/scripts/build_images.ts` が、参照された Vault 内アセットを `public/` へコピーします。
+このプラグインは引き続き決定的なマークアップ変換だけを担当します。同じビルドで WebP と AVIF を生成するには、`@riebeckite/plugin-image-optimizer` を追加してください。生成アセットは、このプラグインがマークアップを作る前に検出されます。
 
 ## 公開 API
 

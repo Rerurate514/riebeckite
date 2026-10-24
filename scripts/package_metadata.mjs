@@ -49,6 +49,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/hard-breaks",
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
+  "packages/plugins/image-optimizer",
   "packages/plugins/kanban",
   "packages/plugins/l10n",
   "packages/plugins/lightbox",
@@ -320,6 +321,10 @@ const packagePublishingMetadata = {
   "packages/plugins/hover-preview": {
     description: "Popover previews for internal Riebeckite links.",
     keywords: ["riebeckite", "plugin", "link-preview", "obsidian"],
+  },
+  "packages/plugins/image-optimizer": {
+    description: "Sharp-backed responsive image transforms for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "images", "optimization"],
   },
   "packages/plugins/kanban": {
     description: "Build-time rendering for Obsidian Kanban boards.",
@@ -708,6 +713,7 @@ export function expectedPackageMetadata(directory) {
       "gallery",
       "hard-breaks",
       "highlight",
+      "image-optimizer",
       "l10n",
       "local-graph",
       "navigation",

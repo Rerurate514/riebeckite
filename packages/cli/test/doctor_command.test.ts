@@ -28,3 +28,17 @@ test("doctor rejects incompatible or unknown options", () => {
   assert.throws(() => parseCommand(["doctor", "--json", "--fix"]));
   assert.throws(() => parseCommand(["doctor", "--github"]));
 });
+
+test("upgrade accepts only the check-only contract", () => {
+  assert.deepEqual(
+    parseCommand(["upgrade", "--check", "--to", "latest", "--json"]),
+    {
+      name: "upgrade",
+      check: true,
+      to: "latest",
+      json: true,
+    },
+  );
+  assert.throws(() => parseCommand(["upgrade", "--to", "latest"]));
+  assert.throws(() => parseCommand(["upgrade", "--check", "--to"]));
+});

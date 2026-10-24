@@ -20,6 +20,7 @@ riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
@@ -38,6 +39,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
+| `upgrade --check` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
@@ -78,6 +80,31 @@ inspect
 build
   → Actually generate the output
 ```
+
+## `upgrade --check`
+
+Upgrade Lab is a check-only preflight. It never updates the project, its lockfile,
+`node_modules`, `dist`, or `.riebeckite`. It copies the project twice into a temporary
+directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the
+current dependency set with the requested Riebeckite version.
+
+```sh
+pnpm exec riebeckite upgrade --check --to 0.0.33
+pnpm exec riebeckite upgrade --check --to latest --json
+```
+
+The report compares dependency/peer/Node-engine resolution, TypeScript checking when
+`tsconfig.json` is present, `riebeckite check`, diagnostics, a full production build,
+generated URLs, and output files. `READY` means both environments passed and no URL or
+output-file change was found. `REVIEW REQUIRED` means the candidate differs or fails.
+`BLOCKED` means an isolated dependency install could not be resolved. `UNVERIFIED`
+means the baseline failed or a check could not safely run.
+
+Only npm and pnpm projects with exactly one of `package-lock.json` or `pnpm-lock.yaml`
+are supported. Symlinks and content roots outside the project are not copied: the
+command returns `UNVERIFIED` rather than crossing that boundary. It does not run package
+install scripts, pnpmfiles, deployment, or browser E2E tests. A temporary directory is
+not a security sandbox; builds still execute the site's own configuration and plugins.
 
 ## `init`
 

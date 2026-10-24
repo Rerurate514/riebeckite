@@ -20,6 +20,7 @@ riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
@@ -38,6 +39,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
 | `check` | アプリの設定、コンテンツルートの可用性、プラグインオプション、ケイパビリティの解決を検証する | いいえ |
 | `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
+| `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
 | `deploy` | 既存のビルド出力を Wrangler 経由で Cloudflare Workers に公開する。`--dry-run` はアップロードせずに検証する。`setup` は GitHub Actions による継続的デプロイを準備する。`domain` は Cloudflare Workers の Custom Domain を追加する | いいえ |
@@ -78,6 +80,19 @@ inspect
 build
   → 実際に出力を生成する
 ```
+
+## `upgrade --check`
+
+Upgrade Lab は更新前の check-only 検証です。プロジェクト、lockfile、`node_modules`、`dist`、`.riebeckite` は更新しません。プロジェクトを一時ディレクトリへ二つ複製し、ライフサイクルスクリプトと pnpmfile を無効にして、現行の依存関係と指定した Riebeckite バージョンを比較します。
+
+```sh
+pnpm exec riebeckite upgrade --check --to 0.0.33
+pnpm exec riebeckite upgrade --check --to latest --json
+```
+
+レポートでは依存関係・peerDependencies・Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、フルの本番ビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
+
+対応するのは `package-lock.json` または `pnpm-lock.yaml` の片方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越える代わりに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。
 
 ## `init`
 

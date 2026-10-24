@@ -51,6 +51,7 @@ import { runPluginDev } from "./commands/plugin_dev.js";
 import { runPluginVerify } from "./commands/plugin_verify.js";
 import { runProfile } from "./commands/profile.js";
 import { runThemePreview } from "./commands/theme_preview.js";
+import { runUpgradeCheck } from "./commands/upgrade.js";
 import { renderCliError } from "./error_renderer.js";
 import {
   parseThemeFeatures,
@@ -212,6 +213,10 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       });
       return;
     }
+    if (command.name === "upgrade") {
+      if (!(await runUpgradeCheck(project, command))) process.exitCode = 1;
+      return;
+    }
 
     if (!(await runCheck(project))) process.exitCode = 1;
   } catch (error) {
@@ -245,6 +250,7 @@ type Command =
       deployment: ScaffoldDeployment;
     }
   | { name: "profile"; full: boolean }
+  | { name: "upgrade"; check: true; to: string; json: boolean }
   | { name: "inspect"; target?: InspectTarget; list: boolean }
   | {
       name: "create-plugin";
@@ -350,6 +356,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   if (name === "doctor") {
     return parseDoctorCommand(options);
   }
+  if (name === "upgrade") return parseUpgradeCommand(options);
   if (
     name === "profile" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -358,8 +365,42 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+function parseUpgradeCommand(options: readonly string[]): Command {
+  let check = false;
+  let to: string | undefined;
+  let json = false;
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--check") {
+      if (check) throw new CliUsageError("Duplicate upgrade option: --check.");
+      check = true;
+      continue;
+    }
+    if (option === "--json") {
+      if (json) throw new CliUsageError("Duplicate upgrade option: --json.");
+      json = true;
+      continue;
+    }
+    if (option === "--to") {
+      const value = options[index + 1];
+      if (!value || value.startsWith("-"))
+        throw new CliUsageError("--to requires a version or latest.");
+      if (to) throw new CliUsageError("Duplicate upgrade option: --to.");
+      to = value;
+      index += 1;
+      continue;
+    }
+    throw new CliUsageError(`Unknown upgrade option: ${option}.`);
+  }
+  if (!check || !to)
+    throw new CliUsageError(
+      "Usage: riebeckite upgrade --check --to <version|latest> [--json]",
+    );
+  return { name: "upgrade", check: true, to, json };
 }
 
 function parseDoctorCommand(options: readonly string[]): Command {

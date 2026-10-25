@@ -8,6 +8,12 @@ sidebar:
 ---
 # Themes
 
+## Try the official themes
+
+The [Theme Showcase](/themes) renders the same Markdown with every official theme. Use it to switch themes, light/dark/system color modes, desktop/tablet/mobile viewports, and article, notes, documentation, or portfolio fixtures before installing a package.
+
+The showcase uses the secure `@riebeckite/preview` document boundary. It renders Markdown once per fixture change, then applies the selected official theme stylesheet inside a sandboxed iframe. Add a newly published official theme to the website's Theme Showcase catalog with its factory, package name, description, and stylesheet mapping.
+
 Themes change how a Riebeckite site looks: colors, typography, spacing, layout, and article presentation. They do not add Markdown syntax, search, diagrams, or other features; use a [Plugin](../plugins/README.md) for those.
 
 Changing the theme lets you adjust:

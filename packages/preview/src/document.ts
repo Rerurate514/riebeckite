@@ -3,12 +3,24 @@ export type PreviewDocumentOptions = {
   readonly styles: readonly string[];
   readonly themeName: string;
   readonly colorMode: "light" | "dark" | "system";
+  readonly themeAttributes?: Readonly<Record<string, string>>;
 };
 
 export function createPreviewDocument(options: PreviewDocumentOptions): string {
   const themeName = escapeAttribute(options.themeName);
   const colorMode = escapeAttribute(options.colorMode);
-  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
+  const themeAttributes = serializeThemeAttributes(options.themeAttributes);
+  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"${themeAttributes}><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"${themeAttributes}><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
+}
+
+function serializeThemeAttributes(
+  attributes: Readonly<Record<string, string>> | undefined,
+): string {
+  if (!attributes) return "";
+  return Object.entries(attributes)
+    .filter(([name]) => /^data-[a-z0-9-]+$/.test(name))
+    .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
+    .join("");
 }
 
 function escapeAttribute(value: string): string {

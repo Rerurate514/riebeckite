@@ -1,346 +1,201 @@
 import { createRoute } from "honox/factory";
 import { buildWebsiteSeo } from "../lib/seo";
+import { showcaseFixtures, showcaseThemes } from "../lib/theme-showcase";
 
-type ThemePreview = {
-  id: string;
-  theme: string;
-  label: string;
-  mode: "light" | "dark";
-  attrs?: Record<string, string>;
-};
-
-/**
- * One entry per preview. `theme` must match the theme's identity name, which
- * is the `data-theme-name` its stylesheet is scoped to. `attrs` carries the
- * theme-specific option attributes that switch variants on.
- */
-const previews: ThemePreview[] = [
-  {
-    id: "riebeckite-light",
-    theme: "riebeckite",
-    label: "light",
-    mode: "light",
-  },
-  { id: "riebeckite-dark", theme: "riebeckite", label: "dark", mode: "dark" },
-  { id: "garden-light", theme: "garden", label: "light", mode: "light" },
-  { id: "garden-dark", theme: "garden", label: "dark", mode: "dark" },
-  {
-    id: "editorial-light",
-    theme: "editorial",
-    label: "light",
-    mode: "light",
-  },
-  {
-    id: "editorial-dark",
-    theme: "editorial",
-    label: "dark",
-    mode: "dark",
-  },
-  {
-    id: "technical-light",
-    theme: "technical",
-    label: "light",
-    mode: "light",
-  },
-  {
-    id: "technical-dark",
-    theme: "technical",
-    label: "dark",
-    mode: "dark",
-  },
-  { id: "folio-light", theme: "folio", label: "light", mode: "light" },
-  { id: "folio-dark", theme: "folio", label: "dark", mode: "dark" },
-  { id: "minimal-light", theme: "minimal", label: "light", mode: "light" },
-  { id: "minimal-dark", theme: "minimal", label: "dark", mode: "dark" },
-  {
-    id: "gruvbox-light",
-    theme: "gruvbox",
-    label: "light · medium contrast",
-    mode: "light",
-  },
-  {
-    id: "gruvbox-dark",
-    theme: "gruvbox",
-    label: "dark · medium contrast",
-    mode: "dark",
-  },
-  {
-    id: "rerurate-light",
-    theme: "rerurate",
-    label: "light · motion · drop cap · medium",
-    mode: "light",
-    attrs: { "data-rerurate-initial": "on" },
-  },
-  {
-    id: "rerurate-large",
-    theme: "rerurate",
-    label: "light · motion · drop cap · large",
-    mode: "light",
-    attrs: {
-      "data-rerurate-initial": "on",
-      "data-rerurate-initial-size": "large",
-    },
-  },
-  {
-    id: "rerurate-headings-large",
-    theme: "rerurate",
-    label: "light · motion · drop cap · large headings",
-    mode: "light",
-    attrs: {
-      "data-rerurate-initial": "on",
-      "data-rerurate-headings": "large",
-    },
-  },
-  {
-    id: "rerurate-motion-off",
-    theme: "rerurate",
-    label: "light · motion off · drop cap",
-    mode: "light",
-    attrs: {
-      "data-rerurate-initial": "on",
-      "data-rerurate-motion": "off",
-    },
-  },
-  {
-    id: "rerurate-still",
-    theme: "rerurate",
-    label: "light · motion off",
-    mode: "light",
-    attrs: { "data-rerurate-motion": "off" },
-  },
-  {
-    id: "rerurate-no-marks",
-    theme: "rerurate",
-    label: "light · motion · drop cap · no heading marks",
-    mode: "light",
-    attrs: {
-      "data-rerurate-initial": "on",
-      "data-rerurate-heading-marks": "off",
-    },
-  },
-  {
-    id: "sakura-light",
-    theme: "sakura",
-    label: "light · decorated · soft",
-    mode: "light",
-  },
-  {
-    id: "sakura-dark",
-    theme: "sakura",
-    label: "dark · decorated · soft",
-    mode: "dark",
-  },
-  {
-    id: "sakura-vivid",
-    theme: "sakura",
-    label: "light · plain · crisp · vivid",
-    mode: "light",
-    attrs: {
-      "data-sakura-heading": "plain",
-      "data-sakura-roundness": "crisp",
-      "data-sakura-bloom": "vivid",
-    },
-  },
-  {
-    id: "tokyonight-light",
-    theme: "tokyonight",
-    label: "light · tech · cozy",
-    mode: "light",
-  },
-  {
-    id: "tokyonight-dark",
-    theme: "tokyonight",
-    label: "dark · tech · cozy",
-    mode: "dark",
-  },
-  {
-    id: "tokyonight-neon",
-    theme: "tokyonight",
-    label: "dark · tech · cozy · neon",
-    mode: "dark",
-    attrs: { "data-tokyonight-neon": "on" },
-  },
-  {
-    id: "tokyonight-compact",
-    theme: "tokyonight",
-    label: "dark · plain · compact",
-    mode: "dark",
-    attrs: {
-      "data-tokyonight-heading": "plain",
-      "data-tokyonight-density": "compact",
-    },
-  },
-];
+const serializedFixtures = JSON.stringify(
+  Object.fromEntries(
+    showcaseFixtures.map((fixture) => [fixture.id, fixture.markdown]),
+  ),
+);
+const serializedPages = JSON.stringify(
+  Object.fromEntries(
+    showcaseFixtures
+      .filter((fixture) => fixture.pages)
+      .map((fixture) => [
+        fixture.id,
+        { currentPageId: fixture.currentPageId, pages: fixture.pages },
+      ]),
+  ),
+);
 
 export default createRoute(async (c) => {
   c.set(
     "seo",
     buildWebsiteSeo({
-      title: "Theme gallery",
+      title: "Theme showcase",
       description:
-        "Compare every built-in Riebeckite theme with the same sample article: typography, spacing, surfaces, and component chrome.",
+        "Try every official Riebeckite theme with the same rendered Markdown.",
       path: "/themes",
     }),
   );
   c.set("headTags", []);
 
   return c.render(
-    <div class="theme-gallery">
-      <header class="theme-gallery__header">
-        <p class="theme-gallery__eyebrow">Riebeckite</p>
-        <h1 class="theme-gallery__title">Theme gallery</h1>
-        <p class="theme-gallery__intro">
-          各テーマを同じサンプル記事で並べています。色だけでなく、組版・余白・
-          罫線・角丸・部品の違いを比較できます。
+    <div class="theme-showcase" data-theme-showcase>
+      <header class="theme-showcase__header">
+        <p class="theme-showcase__eyebrow">Riebeckite themes</p>
+        <h1>Find the right reading surface.</h1>
+        <p>
+          Compare every official theme with real Markdown rendering. Change the
+          content, color mode, and viewport without leaving this page.
         </p>
       </header>
-      <div class="theme-gallery__list">
-        {previews.map((preview) => (
-          <section class="theme-gallery__item" key={preview.id}>
-            <header class="theme-gallery__caption">
-              <span class="theme-gallery__name">{preview.theme}</span>
-              <span class="theme-gallery__meta">{preview.label}</span>
-            </header>
-            <div class="theme-gallery__frame">
-              <div
-                class="rb-theme-root theme-gallery__preview"
-                data-theme-name={preview.theme}
-                data-theme={preview.mode}
-                {...(preview.attrs ?? {})}
+
+      <section class="theme-showcase__preview" aria-labelledby="preview-title">
+        <div class="theme-showcase__section-heading">
+          <div>
+            <p class="theme-showcase__eyebrow">Interactive preview</p>
+            <h2 id="preview-title">Try a theme</h2>
+          </div>
+        </div>
+        <div
+          class="theme-showcase__workspace"
+          data-plugin-preview
+          data-preview-plugin="theme-showcase"
+          data-preview-fixtures={serializedFixtures}
+          data-preview-pages={serializedPages}
+        >
+          <output data-preview-status aria-live="polite">
+            Preparing preview
+          </output>
+          <div class="theme-showcase__controls">
+            <label>
+              Theme
+              <select data-preview-theme>
+                {showcaseThemes.map((theme) => (
+                  <option value={theme.name} key={theme.name}>
+                    {theme.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Color mode
+              <select data-preview-mode>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system" selected>
+                  System
+                </option>
+              </select>
+            </label>
+            <label>
+              Sample
+              <select data-preview-fixture>
+                {showcaseFixtures.map((fixture) => (
+                  <option value={fixture.id} key={fixture.id}>
+                    {fixture.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label hidden>
+              Page
+              <select data-preview-page />
+            </label>
+            <fieldset class="theme-showcase__devices">
+              <legend>Viewport</legend>
+              <button
+                type="button"
+                data-preview-device="desktop"
+                aria-pressed="true"
               >
-                <SampleArticle title={preview.theme} id={preview.id} />
+                Desktop
+              </button>
+              <button
+                type="button"
+                data-preview-device="tablet"
+                aria-pressed="false"
+              >
+                Tablet
+              </button>
+              <button
+                type="button"
+                data-preview-device="mobile"
+                aria-pressed="false"
+              >
+                Mobile
+              </button>
+            </fieldset>
+            <button type="button" data-preview-reset>
+              Reset preview
+            </button>
+          </div>
+          <textarea data-preview-markdown hidden>
+            {showcaseFixtures[0].markdown}
+          </textarea>
+          <div
+            class="theme-showcase__frame-wrap"
+            data-preview-viewport="desktop"
+          >
+            <iframe data-preview-frame title="Theme preview" sandbox="" />
+          </div>
+          <ul
+            class="theme-showcase__diagnostics"
+            data-preview-diagnostics
+            aria-live="polite"
+          />
+        </div>
+      </section>
+
+      <section class="theme-showcase__detail" aria-labelledby="detail-title">
+        <p class="theme-showcase__eyebrow">Selected theme</p>
+        <h2 id="detail-title" data-theme-detail-name>
+          Default
+        </h2>
+        <p data-theme-detail-description />
+        <div class="theme-showcase__detail-meta">
+          <code data-theme-detail-package />
+          <a data-theme-detail-docs href="/themes/default">
+            Theme documentation
+          </a>
+        </div>
+        <pre>
+          <code data-theme-detail-code />
+        </pre>
+        <button type="button" data-theme-copy>
+          Copy configuration
+        </button>
+      </section>
+
+      <section class="theme-showcase__gallery" aria-labelledby="gallery-title">
+        <div class="theme-showcase__section-heading">
+          <div>
+            <p class="theme-showcase__eyebrow">Official collection</p>
+            <h2 id="gallery-title">Choose by purpose</h2>
+          </div>
+          <p>{showcaseThemes.length} official themes</p>
+        </div>
+        <div class="theme-showcase__theme-list">
+          {showcaseThemes.map((theme) => (
+            <article
+              class="theme-showcase__theme"
+              key={theme.name}
+              data-theme-card={theme.name}
+            >
+              <div>
+                <h3>{theme.label}</h3>
+                <p>{theme.description}</p>
               </div>
-            </div>
-          </section>
-        ))}
-      </div>
+              <ul>
+                {theme.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+              <div class="theme-showcase__theme-actions">
+                <button type="button" data-theme-select={theme.name}>
+                  Open preview
+                </button>
+                <a
+                  href={`/themes/${theme.name === "riebeckite" ? "default" : theme.name}`}
+                >
+                  Docs
+                </a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>,
   );
 });
-
-/**
- * A single sample article exercising the stable hooks a theme may style:
- * headings, lists, code, table, a callout, a TOC, and backlinks.
- */
-function SampleArticle(props: { title: string; id: string }) {
-  const demoId = `sample-${props.id}`;
-  const codeLines = [
-    "export const theme = defineTheme({",
-    `  name: "${props.title}",`,
-    '  options: { density: "cozy" },',
-    "});",
-  ];
-  return (
-    <article class="rb-article">
-      <header class="rb-article-header">
-        <h1>{props.title}</h1>
-      </header>
-      <p class="rb-article-meta">テーマ見本 · 2026</p>
-      <div class="rb-article-body">
-        <div class="rb-article-content">
-          <p>
-            この段落はテーマの本文組版を示します。インラインコードは
-            <code>const theme = "{props.title}"</code> のように表示され、
-            <a href={`#${demoId}`}>リンク</a>や<strong>強調</strong>、
-            <em>斜体</em>
-            も含みます。
-          </p>
-          <h2 id={demoId}>見出しレベル2</h2>
-          <p>
-            Riebeckite
-            のテーマは色だけでなく、余白・罫線・角丸・組版まで変えられます。
-            段落のリズムと見出しの階層に注目してください。
-          </p>
-          <h3>補足的な見出し</h3>
-          <p>h3 までの階層を用意し、見出しサイズの差も比較できます。</p>
-          <blockquote>
-            <p>引用はテーマごとに異なる表情を持ちます。</p>
-          </blockquote>
-          <h3 id={`${demoId}-toc`}>箇条書き</h3>
-          <ul>
-            <li>設計トークンで色を決める</li>
-            <li>安定したフックで構造を組む</li>
-            <li>テーマ固有のバリアントで個性を出す</li>
-          </ul>
-          <ol>
-            <li>トークン</li>
-            <li>キャラクター層</li>
-            <li>バリアント</li>
-          </ol>
-          <h3>コード</h3>
-          <div class="rr-code">
-            <div class="rr-code__body">
-              <pre class="rr-code__pre">
-                <code class="rr-code__code">
-                  {codeLines.map((line) => (
-                    <span class="rr-code__line" key={line}>
-                      {line}
-                    </span>
-                  ))}
-                </code>
-              </pre>
-            </div>
-          </div>
-          <h3>表</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Token</th>
-                <th>役割</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>paper</td>
-                <td>背景</td>
-              </tr>
-              <tr>
-                <td>ink</td>
-                <td>本文</td>
-              </tr>
-              <tr>
-                <td>accent</td>
-                <td>強調</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="rr-callout rr-callout--note" data-callout="note">
-            <div class="rr-callout__title">
-              <div class="rr-callout__icon" />
-              <div class="rr-callout__title-inner">Note</div>
-            </div>
-            <div class="rr-callout__content">
-              <p>
-                コールアウトは <code>.rr-callout</code>{" "}
-                フックでスタイルされます。
-              </p>
-            </div>
-          </div>
-          <hr />
-        </div>
-        <nav class="rr-table-of-contents">
-          <p>目次</p>
-          <ul>
-            <li>
-              <a href={`#${demoId}`}>見出しレベル2</a>
-            </li>
-            <li>
-              <a href={`#${demoId}-toc`}>箇条書き</a>
-            </li>
-          </ul>
-        </nav>
-        <aside class="rr-backlinks">
-          <h2 id={`${demoId}-backlinks`}>バックリンク</h2>
-          <ul>
-            <li>
-              <a href={`#${demoId}-backlinks`}>関連するノート</a>
-            </li>
-          </ul>
-        </aside>
-      </div>
-      <footer class="rb-article-footer">
-        <p>記事フッター（.rb-article-footer）の見本です。</p>
-      </footer>
-    </article>
-  );
-}

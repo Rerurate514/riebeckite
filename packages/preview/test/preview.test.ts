@@ -426,11 +426,17 @@ test("builds an isolated preview document", () => {
     styles: [".rb-article { color: black; }"],
     themeName: 'theme"name',
     colorMode: "system",
+    themeAttributes: {
+      "data-rerurate-initial": "on",
+      onclick: "alert(1)",
+    },
   });
 
   assert.match(document, /default-src 'none'/);
   assert.match(document, /data-theme-name="theme&quot;name"/);
   assert.match(document, /data-theme="system"/);
+  assert.match(document, /data-rerurate-initial="on"/);
+  assert.doesNotMatch(document, /onclick/);
   assert.doesNotMatch(document, /script-src/);
   assert.match(document, /<p>Preview<\/p>/);
 });

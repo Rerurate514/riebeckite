@@ -11,4 +11,9 @@ if (document.readyState === "loading") {
 
 function initPage() {
   initRiebeckiteClient();
+  if (document.querySelector("[data-theme-showcase]")) {
+    void import("./theme-showcase-client").then(({ initThemeShowcase }) =>
+      initThemeShowcase(),
+    );
+  }
 }

@@ -1,93 +1,248 @@
-/* Theme gallery.
- *
- * Loads every built-in theme so `/themes` can render them side by side. Each
- * theme writes only through `:is(:root, .rb-theme-root)[data-theme-name="..."]`,
- * so importing them globally cannot leak into the site's configured theme: a
- * preview only reacts to the theme whose `data-theme-name` it carries.
- *
- * The gallery chrome below is app-owned and uses the `theme-gallery__*`
- * namespace so it can never collide with the `rb-*` / `rr-*` theme hooks. */
-
-@import "@riebeckite/theme-default/style.css";
-@import "@riebeckite/theme-editorial/style.css";
-@import "@riebeckite/theme-folio/style.css";
-@import "@riebeckite/theme-garden/style.css";
-@import "@riebeckite/theme-gruvbox/style.css";
-@import "@riebeckite/theme-minimal/style.css";
-@import "@riebeckite/theme-rerurate/style.css";
-@import "@riebeckite/theme-sakura/style.css";
-@import "@riebeckite/theme-technical/style.css";
-@import "@riebeckite/theme-tokyonight/style.css";
-
-.theme-gallery {
-  width: min(100%, var(--rb-layout-page-max));
+.theme-showcase {
+  width: min(100%, 76rem);
   margin-inline: auto;
   padding: var(--rb-space-6) var(--rb-space-4) var(--rb-space-8);
 }
-
-.theme-gallery__header {
+.theme-showcase__header {
+  max-width: 46rem;
   border-block-end: 1px solid var(--rb-color-border);
-  padding-block-end: var(--rb-space-3);
+  padding-block-end: var(--rb-space-5);
 }
-
-.theme-gallery__eyebrow {
-  margin: 0 0 var(--rb-space-1);
-  font-size: 0.8125rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--rb-color-muted);
-}
-
-.theme-gallery__title {
+.theme-showcase__header h1,
+.theme-showcase h2,
+.theme-showcase h3 {
   margin: 0;
-  font-size: clamp(1.75rem, 1.1rem + 2vw, 2.5rem);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
 }
-
-.theme-gallery__intro {
-  margin: var(--rb-space-2) 0 0;
-  max-width: 60ch;
+.theme-showcase__header h1 {
+  font-size: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.theme-showcase__header > p:last-child,
+.theme-showcase__detail > p {
+  margin-block: var(--rb-space-2) 0;
   color: var(--rb-color-muted);
 }
-
-.theme-gallery__list {
-  display: grid;
-  gap: var(--rb-space-6);
-  margin-block-start: var(--rb-space-6);
+.theme-showcase__eyebrow {
+  margin: 0 0 var(--rb-space-1);
+  color: var(--rb-color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
-
-@media (min-width: 90rem) {
-  .theme-gallery__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
-  }
+.theme-showcase__preview,
+.theme-showcase__detail,
+.theme-showcase__gallery {
+  margin-block-start: var(--rb-space-7);
 }
-
-.theme-gallery__caption {
+.theme-showcase__section-heading {
   display: flex;
-  align-items: baseline;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--rb-space-3);
+  margin-block-end: var(--rb-space-3);
+}
+.theme-showcase__section-heading > p,
+.theme-showcase output {
+  margin: 0;
+  color: var(--rb-color-muted);
+  font-size: 0.875rem;
+}
+.theme-showcase__workspace {
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface);
+}
+.theme-showcase__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
   gap: var(--rb-space-2);
-  margin-block-end: var(--rb-space-1);
+  padding: var(--rb-space-3);
+  border-block-end: 1px solid var(--rb-color-border);
 }
-
-.theme-gallery__name {
-  font-family: var(--rb-font-mono);
-  font-size: 0.9375rem;
-  font-weight: 600;
+.theme-showcase__controls label,
+.theme-showcase__devices {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--rb-color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
-
-.theme-gallery__meta {
-  font-size: 0.8125rem;
+.theme-showcase select,
+.theme-showcase button {
+  min-height: 2.4rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-background);
+  color: var(--rb-color-text);
+  font: inherit;
+  padding-inline: 0.65rem;
+}
+.theme-showcase button {
+  cursor: pointer;
+}
+.theme-showcase button:hover,
+.theme-showcase button[aria-pressed="true"] {
+  border-color: var(--rb-color-accent);
+  color: var(--rb-color-accent);
+}
+.theme-showcase button:focus-visible,
+.theme-showcase select:focus-visible,
+.theme-showcase a:focus-visible {
+  outline: 2px solid var(--rb-color-accent);
+  outline-offset: 2px;
+}
+.theme-showcase__devices {
+  display: flex;
+  flex-wrap: wrap;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.theme-showcase__devices legend {
+  width: 100%;
+  padding: 0;
+}
+.theme-showcase__frame-wrap {
+  width: 100%;
+  height: 42rem;
+  margin-inline: auto;
+  overflow: auto;
+  background: #161616;
+}
+.theme-showcase__frame-wrap[data-preview-viewport="tablet"] {
+  width: min(100%, 48rem);
+}
+.theme-showcase__frame-wrap[data-preview-viewport="mobile"] {
+  width: min(100%, 24rem);
+}
+.theme-showcase__frame-wrap iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: white;
+}
+.theme-showcase__diagnostics {
+  margin: 0;
+  padding: var(--rb-space-2) var(--rb-space-3);
+  color: var(--rb-color-muted);
+  font-size: 0.875rem;
+}
+.theme-showcase__diagnostics:empty {
+  display: none;
+}
+.theme-showcase__detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--rb-space-2) var(--rb-space-5);
+  padding-block: var(--rb-space-5);
+  border-block: 1px solid var(--rb-color-border);
+}
+.theme-showcase__detail > p,
+.theme-showcase__detail > pre {
+  grid-column: 1 / -1;
+}
+.theme-showcase__detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rb-space-2);
+}
+.theme-showcase__detail pre {
+  overflow: auto;
+  margin: var(--rb-space-2) 0 0;
+  padding: var(--rb-space-3);
+  background: var(--rb-color-surface);
+  border: 1px solid var(--rb-color-border);
+}
+.theme-showcase__detail pre code {
+  white-space: pre;
+}
+.theme-showcase__theme-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-block: 1px solid var(--rb-color-border);
+}
+.theme-showcase__theme {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--rb-space-3);
+  padding: var(--rb-space-4);
+  border-block-end: 1px solid var(--rb-color-border);
+}
+.theme-showcase__theme:nth-last-child(-n + 2) {
+  border-block-end: 0;
+}
+.theme-showcase__theme:nth-child(odd) {
+  border-inline-end: 1px solid var(--rb-color-border);
+}
+.theme-showcase__theme[data-selected="true"] {
+  background: var(--rb-color-surface);
+}
+.theme-showcase__theme p,
+.theme-showcase__theme ul {
+  margin: var(--rb-space-1) 0 0;
   color: var(--rb-color-muted);
 }
-
-.theme-gallery__frame {
-  border: 1px solid var(--rb-color-border);
-  border-radius: 0.625rem;
-  overflow: hidden;
+.theme-showcase__theme ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
 }
-
-.theme-gallery__preview {
-  padding: clamp(1.25rem, 3vw, 2.5rem);
+.theme-showcase__theme li::before {
+  content: "• ";
+}
+.theme-showcase__theme-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rb-space-2);
+  grid-column: 1 / -1;
+}
+.theme-showcase__theme-actions a {
+  color: var(--rb-color-text);
+  font-size: 0.875rem;
+}
+@media (max-width: 42rem) {
+  .theme-showcase {
+    padding-inline: var(--rb-space-3);
+  }
+  .theme-showcase__section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .theme-showcase__controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .theme-showcase__controls > button {
+    grid-column: span 2;
+  }
+  .theme-showcase__frame-wrap {
+    height: 34rem;
+  }
+  .theme-showcase__detail {
+    display: block;
+  }
+  .theme-showcase__detail > * + * {
+    margin-block-start: var(--rb-space-2);
+  }
+  .theme-showcase__theme-list {
+    grid-template-columns: 1fr;
+  }
+  .theme-showcase__theme,
+  .theme-showcase__theme:nth-child(odd) {
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--rb-color-border);
+  }
+  .theme-showcase__theme:last-child {
+    border-block-end: 0;
+  }
 }

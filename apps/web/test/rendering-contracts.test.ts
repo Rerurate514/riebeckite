@@ -385,11 +385,14 @@ test("P2-A2: the portaled hover preview keeps document-global dark behavior", ()
   );
 });
 
-test("P2-A2: the theme gallery renders previews inside an embedded theme root", () => {
-  const gallery = read("../app/routes/themes.tsx");
-  assert.match(gallery, /class="rb-theme-root theme-gallery__preview"/);
-  assert.match(gallery, /data-theme-name=\{preview\.theme\}/);
-  assert.match(gallery, /data-theme=\{preview\.mode\}/);
+test("P2-A2: the theme gallery uses the isolated interactive preview", () => {
+  const route = read("../app/routes/themes.tsx");
+  const client = read("../app/theme-showcase-client.ts");
+  assert.match(route, /data-plugin-preview/);
+  assert.match(route, /data-preview-frame/);
+  assert.match(route, /sandbox=""/);
+  assert.match(client, /createPreviewSessionTransport/);
+  assert.match(client, /mountPreview/);
 });
 
 test("article route composes the contextual language switcher", () => {

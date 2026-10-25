@@ -86,6 +86,7 @@
     "@riebeckite/plugin-timeline": "workspace:*",
     "@riebeckite/plugin-toc": "workspace:*",
     "@riebeckite/plugin-ux": "workspace:*",
+    "@riebeckite/preview": "workspace:*",
     "@riebeckite/plugin-vega-lite": "workspace:*",
     "@riebeckite/plugin-wavedrom": "workspace:*",
     "@riebeckite/plugin-webmention": "workspace:*",

@@ -41,6 +41,9 @@ export type PreviewUiMessages = {
 
 export type PreviewUiOptions = {
   readonly themeStyles: Readonly<Record<string, string>>;
+  readonly themeAttributes?: Readonly<
+    Record<string, Readonly<Record<string, string>>>
+  >;
   readonly contentStyles?: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly endpoint?: string;
@@ -133,6 +136,7 @@ export function mountPreview(
     status,
     diagnostics,
     themeStyles: options.themeStyles,
+    themeAttributes: options.themeAttributes ?? {},
     contentStyles: options.contentStyles ?? [],
     pluginStyles: options.pluginStyles,
     messages,
@@ -204,6 +208,9 @@ type PreviewElements = {
   readonly status: HTMLElement;
   readonly diagnostics: HTMLUListElement;
   readonly themeStyles: Readonly<Record<string, string>>;
+  readonly themeAttributes: Readonly<
+    Record<string, Readonly<Record<string, string>>>
+  >;
   readonly contentStyles: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly messages: PreviewUiMessages;
@@ -228,6 +235,7 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
       elements.mode.value === "dark" || elements.mode.value === "system"
         ? elements.mode.value
         : "light",
+    themeAttributes: elements.themeAttributes[elements.theme.value],
   });
   elements.diagnostics.replaceChildren(
     ...state.response.diagnostics.map((diagnostic) => {

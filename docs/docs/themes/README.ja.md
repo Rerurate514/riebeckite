@@ -8,6 +8,12 @@ sidebar:
 ---
 # テーマ
 
+## 公式テーマを試す
+
+[Theme Showcase](/themes) では、すべての公式テーマに同じ Markdown を適用して比較できます。テーマ、ライト / ダーク / System、Desktop / Tablet / Mobile、記事・ノート・技術文書・ポートフォリオのサンプルを切り替え、パッケージを導入する前に確認できます。
+
+Showcase は安全な `@riebeckite/preview` の Document 境界を利用しています。Fixture の切替時だけ Markdown をレンダリングし、それ以外は sandboxed iframe 内で公式テーマのスタイルシートを切り替えます。新しい公式テーマを追加したら、公式サイトの Theme Showcase Catalog に factory、パッケージ名、説明、スタイルシートの対応を追加してください。
+
 テーマは、Riebeckite サイトの**見た目を変える仕組み**です。
 
 テーマを変えると、次のような点を変更できます。

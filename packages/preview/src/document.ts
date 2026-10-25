@@ -2,7 +2,7 @@ export type PreviewDocumentOptions = {
   readonly html: string;
   readonly styles: readonly string[];
   readonly themeName: string;
-  readonly colorMode: "light" | "dark";
+  readonly colorMode: "light" | "dark" | "system";
 };
 
 export function createPreviewDocument(options: PreviewDocumentOptions): string {

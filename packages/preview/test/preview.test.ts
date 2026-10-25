@@ -9,7 +9,12 @@ import {
   definePluginPreview,
   parsePreviewRequest,
 } from "../index.js";
-import { createPreviewUiController, initPluginPreviews } from "../ui.js";
+import {
+  createPreviewSessionTransport,
+  createPreviewUiController,
+  initPluginPreviews,
+  mountPreview,
+} from "../ui.js";
 
 const codeTabsPreview = definePluginPreview({
   id: "code-tabs",
@@ -145,6 +150,60 @@ test("resolves wiki links against pages in a multi-page fixture", async () => {
   await preview.dispose();
 });
 
+test("rebuilds fixture indexes when switching fixtures", async () => {
+  const preview = createPreview({
+    plugins: [
+      definePluginPreview({
+        id: "fixture-switch",
+        title: "Fixture switch",
+        availability: "browser" as const,
+        fixtures: [
+          {
+            id: "first",
+            title: "First",
+            markdown: "[[Guide]]",
+            pages: [
+              {
+                id: "guide",
+                title: "Guide",
+                path: "first/Guide.md",
+                markdown: "# First",
+              },
+            ],
+          },
+          {
+            id: "second",
+            title: "Second",
+            markdown: "[[Guide]]",
+            pages: [
+              {
+                id: "guide",
+                title: "Guide",
+                path: "second/Guide.md",
+                markdown: "# Second",
+              },
+            ],
+          },
+        ],
+        create: () => obsidianMarkdown(),
+      }),
+    ],
+  });
+
+  const first = await preview.render({
+    pluginId: "fixture-switch",
+    fixtureId: "first",
+  });
+  const second = await preview.render({
+    pluginId: "fixture-switch",
+    fixtureId: "second",
+  });
+
+  assert.match(first.html, /href="\/first\/Guide\/"/);
+  assert.match(second.html, /href="\/second\/Guide\/"/);
+  await preview.dispose();
+});
+
 test("sanitizes untrusted markdown HTML", async () => {
   const preview = createPreview();
 
@@ -173,6 +232,43 @@ test("reports registry collisions", () => {
       }),
     /Duplicate plugin ID/,
   );
+});
+
+test("rejects unsafe fixture page paths", () => {
+  assert.throws(
+    () =>
+      createPreviewRegistry({
+        fixtures: [
+          {
+            id: "unsafe",
+            title: "Unsafe",
+            markdown: "",
+            pages: [
+              { id: "page", title: "Page", path: "../Page.md", markdown: "" },
+            ],
+          },
+        ],
+      }),
+    /Invalid page/,
+  );
+});
+
+test("rejects unknown fixture and page input", async () => {
+  const preview = createPreview({ plugins: [codeTabsPreview] });
+
+  const fixture = await preview.render({
+    pluginId: "code-tabs",
+    fixtureId: "missing",
+  });
+  const page = await preview.render({
+    pluginId: "code-tabs",
+    fixtureId: "basic",
+    pageId: "missing",
+  });
+
+  assert.equal(fixture.diagnostics[0]?.code, "unknown-fixture");
+  assert.equal(page.diagnostics[0]?.code, "unknown-page");
+  await preview.dispose();
 });
 
 test("rejects unavailable and invalid preview input", async () => {
@@ -329,16 +425,75 @@ test("builds an isolated preview document", () => {
     html: "<p>Preview</p>",
     styles: [".rb-article { color: black; }"],
     themeName: 'theme"name',
-    colorMode: "dark",
+    colorMode: "system",
   });
 
   assert.match(document, /default-src 'none'/);
   assert.match(document, /data-theme-name="theme&quot;name"/);
+  assert.match(document, /data-theme="system"/);
+  assert.doesNotMatch(document, /script-src/);
   assert.match(document, /<p>Preview<\/p>/);
 });
 
 test("exports the browser preview UI entry point", () => {
   assert.equal(typeof initPluginPreviews, "function");
+  assert.equal(typeof mountPreview, "function");
+});
+
+test("adapts a local preview session as a UI transport", async () => {
+  const preview = createPreview();
+  const transport = createPreviewSessionTransport(preview);
+  const response = await transport(
+    { markdown: "# Local", options: {} },
+    new AbortController().signal,
+  );
+
+  assert.match(response?.html ?? "", /Local/);
+  await preview.dispose();
+});
+
+test("serializes local preview rendering after an aborted update", async () => {
+  let active = 0;
+  let maximumActive = 0;
+  const releases: (() => void)[] = [];
+  let firstStarted!: () => void;
+  let secondStarted!: () => void;
+  const firstStartedPromise = new Promise<void>((resolve) => {
+    firstStarted = resolve;
+  });
+  const secondStartedPromise = new Promise<void>((resolve) => {
+    secondStarted = resolve;
+  });
+  const starts = [firstStarted, secondStarted];
+  const transport = createPreviewSessionTransport({
+    render: async (input) => {
+      active += 1;
+      maximumActive = Math.max(maximumActive, active);
+      starts.shift()?.();
+      await new Promise<void>((resolve) => releases.push(resolve));
+      active -= 1;
+      return { html: input.markdown ?? "", diagnostics: [] };
+    },
+  });
+  const states: string[] = [];
+  const controller = createPreviewUiController({
+    request: transport,
+    onStateChange: (state) => {
+      if (state.kind === "rendered") states.push(state.response.html);
+    },
+  });
+
+  const first = controller.render({ markdown: "first", options: {} });
+  await firstStartedPromise;
+  const second = controller.render({ markdown: "second", options: {} });
+  releases.shift()?.();
+  await secondStartedPromise;
+  releases.shift()?.();
+  await Promise.all([first, second]);
+
+  assert.equal(maximumActive, 1);
+  assert.deepEqual(states, ["second"]);
+  controller.dispose();
 });
 
 test("renders only the latest preview UI response", async () => {

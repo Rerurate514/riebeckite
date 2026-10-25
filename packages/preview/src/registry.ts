@@ -157,6 +157,7 @@ function assertFixtures(
           page.title.trim() === "" ||
           page.path.trim() === "" ||
           !page.path.endsWith(".md") ||
+          !isSafeFixturePath(page.path) ||
           typeof page.markdown !== "string" ||
           paths.has(page.path)
         ) {
@@ -172,6 +173,14 @@ function assertFixtures(
       }
     }
   }
+}
+
+function isSafeFixturePath(path: string): boolean {
+  return (
+    !path.includes("\\") &&
+    !path.startsWith("/") &&
+    !path.split("/").some((segment) => segment === "." || segment === "..")
+  );
 }
 
 function assertOptions(

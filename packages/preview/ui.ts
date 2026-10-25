@@ -4,16 +4,19 @@ import {
   type PreviewUiInput,
   type PreviewUiResponse,
   type PreviewUiState,
+  type PreviewUiTransport,
 } from "./src/ui-controller.js";
 
 export {
   type CreatePreviewUiControllerOptions,
+  createPreviewSessionTransport,
   createPreviewUiController,
   type PreviewUiController,
   type PreviewUiDiagnostic,
   type PreviewUiInput,
   type PreviewUiResponse,
   type PreviewUiState,
+  type PreviewUiTransport,
 } from "./src/ui-controller.js";
 
 export type PreviewUiSelectors = {
@@ -41,6 +44,7 @@ export type PreviewUiOptions = {
   readonly contentStyles?: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly endpoint?: string;
+  readonly transport?: PreviewUiTransport;
   readonly selectors?: Partial<PreviewUiSelectors>;
   readonly messages?: Partial<PreviewUiMessages>;
 };
@@ -65,36 +69,47 @@ const defaultMessages: PreviewUiMessages = {
   requestFailure: "The preview could not be rendered. Try again.",
 };
 
-const controllers = new WeakMap<HTMLElement, () => void>();
-const roots = new Set<HTMLElement>();
-let observer: MutationObserver | undefined;
-
-export function initPluginPreviews(options: PreviewUiOptions): void {
+export function initPluginPreviews(options: PreviewUiOptions): () => void {
   const selectors = { ...defaultSelectors, ...options.selectors };
   const messages = { ...defaultMessages, ...options.messages };
-  document.querySelectorAll<HTMLElement>(selectors.root).forEach((root) => {
-    initialize(root, options, selectors, messages);
-  });
-  if (observer) return;
-  observer = new MutationObserver(() => {
+  const mounts = new Map<HTMLElement, () => void>();
+  const initializeRoots = () => {
     document.querySelectorAll<HTMLElement>(selectors.root).forEach((root) => {
-      initialize(root, options, selectors, messages);
+      if (!mounts.has(root)) {
+        mounts.set(root, mountPreview(root, options, selectors, messages));
+      }
     });
-    for (const root of roots) {
-      if (!root.isConnected) controllers.get(root)?.();
+    for (const [root, dispose] of mounts) {
+      if (!root.isConnected) {
+        dispose();
+        mounts.delete(root);
+      }
     }
-  });
+  };
+  initializeRoots();
+  const observer = new MutationObserver(initializeRoots);
   observer.observe(document.body, { childList: true, subtree: true });
+  return () => {
+    observer.disconnect();
+    for (const dispose of mounts.values()) dispose();
+    mounts.clear();
+  };
 }
 
-function initialize(
+export function mountPreview(
   root: HTMLElement,
   options: PreviewUiOptions,
-  selectors: PreviewUiSelectors,
-  messages: PreviewUiMessages,
-): void {
-  if (controllers.has(root)) return;
-  roots.add(root);
+  providedSelectors?: PreviewUiSelectors,
+  providedMessages?: PreviewUiMessages,
+): () => void {
+  const selectors = providedSelectors ?? {
+    ...defaultSelectors,
+    ...options.selectors,
+  };
+  const messages = providedMessages ?? {
+    ...defaultMessages,
+    ...options.messages,
+  };
   const lifetime = new AbortController();
   const markdown = requireElement<HTMLTextAreaElement>(
     root,
@@ -102,6 +117,7 @@ function initialize(
   );
   const fixture = requireElement<HTMLSelectElement>(root, selectors.fixture);
   const frame = requireElement<HTMLIFrameElement>(root, selectors.frame);
+  frame.setAttribute("sandbox", "");
   const theme = requireElement<HTMLSelectElement>(root, selectors.theme);
   const mode = requireElement<HTMLSelectElement>(root, selectors.mode);
   const status = requireElement(root, selectors.status);
@@ -109,21 +125,31 @@ function initialize(
     root,
     selectors.diagnostics,
   );
+  let lastResponse: PreviewUiResponse | undefined;
+  const elements: PreviewElements = {
+    frame,
+    theme,
+    mode,
+    status,
+    diagnostics,
+    themeStyles: options.themeStyles,
+    contentStyles: options.contentStyles ?? [],
+    pluginStyles: options.pluginStyles,
+    messages,
+  };
   const controller = createPreviewUiController({
-    request: (input, signal) =>
-      requestPreview(input, signal, messages.requestFailure, options.endpoint),
+    request:
+      options.transport ??
+      ((input, signal) =>
+        requestPreview(
+          input,
+          signal,
+          messages.requestFailure,
+          options.endpoint,
+        )),
     onStateChange: (state) => {
-      renderState(state, {
-        frame,
-        theme,
-        mode,
-        status,
-        diagnostics,
-        themeStyles: options.themeStyles,
-        contentStyles: options.contentStyles ?? [],
-        pluginStyles: options.pluginStyles,
-        messages,
-      });
+      if (state.kind === "rendered") lastResponse = state.response;
+      renderState(state, elements);
     },
   });
   const render = () => {
@@ -146,17 +172,19 @@ function initialize(
         const value = readPageMarkdown(root, fixture.value, event.target.value);
         if (value !== undefined) markdown.value = value;
       }
-      render();
+      if ((event.target === theme || event.target === mode) && lastResponse) {
+        renderState({ kind: "rendered", response: lastResponse }, elements);
+      } else {
+        render();
+      }
     },
     { signal: lifetime.signal },
   );
-  controllers.set(root, () => {
+  render();
+  return () => {
     controller.dispose();
     lifetime.abort();
-    controllers.delete(root);
-    roots.delete(root);
-  });
-  render();
+  };
 }
 
 function readPageMarkdown(
@@ -196,7 +224,10 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
     ],
     themeName:
       elements.theme.value === "default" ? "riebeckite" : elements.theme.value,
-    colorMode: elements.mode.value === "dark" ? "dark" : "light",
+    colorMode:
+      elements.mode.value === "dark" || elements.mode.value === "system"
+        ? elements.mode.value
+        : "light",
   });
   elements.diagnostics.replaceChildren(
     ...state.response.diagnostics.map((diagnostic) => {

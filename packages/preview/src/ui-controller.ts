@@ -1,3 +1,5 @@
+import type { PreviewSession } from "./preview.js";
+
 export type PreviewUiInput = {
   readonly markdown: string;
   readonly pluginId?: string;
@@ -25,13 +27,33 @@ export type PreviewUiController = {
   readonly dispose: () => void;
 };
 
+export type PreviewUiTransport = (
+  input: PreviewUiInput,
+  signal: AbortSignal,
+) => Promise<PreviewUiResponse | undefined>;
+
 export type CreatePreviewUiControllerOptions = {
-  readonly request: (
-    input: PreviewUiInput,
-    signal: AbortSignal,
-  ) => Promise<PreviewUiResponse | undefined>;
+  readonly request: PreviewUiTransport;
   readonly onStateChange: (state: PreviewUiState) => void;
 };
+
+export function createPreviewSessionTransport(
+  session: Pick<PreviewSession, "render">,
+): PreviewUiTransport {
+  let pending = Promise.resolve();
+  return (input, signal) => {
+    const response = pending.then(async () => {
+      if (signal.aborted) return undefined;
+      const result = await session.render(input);
+      return signal.aborted ? undefined : result;
+    });
+    pending = response.then(
+      () => undefined,
+      () => undefined,
+    );
+    return response;
+  };
+}
 
 export function createPreviewUiController(
   options: CreatePreviewUiControllerOptions,

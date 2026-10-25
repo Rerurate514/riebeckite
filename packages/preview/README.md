@@ -34,6 +34,10 @@ const result = await preview.render({
 `createPreview` runs the published Riebeckite `PluginRuntime` and Markdown
 `Pipeline`. It sanitizes the resulting HTML at the public preview boundary.
 
+Pass `fixtureId` and `pageId` to `render` to change fixture content. Fixture
+indexes are rebuilt on each fixture change, so links never resolve against the
+previous fixture.
+
 ## Multi-page fixtures
 
 Fixtures can include a small, in-memory Markdown site for plugins that resolve
@@ -66,6 +70,39 @@ produce diagnostics instead of being executed.
 This package does not execute plugin client entries. Hosts must explicitly
 allow and isolate any interactive client behavior.
 
+## Document and UI
+
+Use `createPreviewDocument` only with sanitized preview HTML and trusted,
+host-owned CSS. It creates iframe content with a restrictive CSP; embed it in a
+sandboxed iframe (as `mountPreview` does). Scripts, forms, and frame embedding
+are not enabled. External HTTPS images and data images remain allowed by the
+CSP.
+
+```ts
+import { createPreview } from "@riebeckite/preview";
+import {
+  createPreviewSessionTransport,
+  mountPreview,
+} from "@riebeckite/preview/ui";
+
+const session = createPreview();
+const dispose = mountPreview(document.querySelector("[data-plugin-preview]")!, {
+  themeStyles: { default: themeCss },
+  pluginStyles: [],
+  transport: createPreviewSessionTransport(session),
+});
+
+// On page teardown:
+dispose();
+await session.dispose();
+```
+
+`transport` is explicit: it can render locally as above, return static fixture
+results, or call a host API. The legacy `endpoint` option still defaults to
+`/api/playground` when no transport is supplied. Changing theme or color mode
+updates the iframe document without rerunning Markdown rendering. `light`,
+`dark`, and `system` modes are supported.
+
 ## API
 
 - `createPreview(options?)` creates an isolated stateful preview session.
@@ -76,7 +113,8 @@ allow and isolate any interactive client behavior.
 - `validatePreviewOptions(definitions, input)` rejects unknown and invalid values.
 - `parsePreviewInput(input, registry)` validates a preview input object against a registry.
 - `parsePreviewRequest(request, registry)` reads and validates a size-bounded JSON request.
-- `createPreviewDocument(options)` creates a CSP-restricted iframe document from sanitized HTML and host styles.
-- `@riebeckite/preview/ui` exports `createPreviewUiController(options)` for request state and `initPluginPreviews(options)` for DOM updates. The latter accepts selectors, messages, and host-provided styles.
+- `createPreviewDocument(options)` creates a CSP-restricted iframe document from sanitized HTML and trusted host styles.
+- `@riebeckite/preview/ui` exports `createPreviewUiController(options)` for request state, `createPreviewSessionTransport(session)` for local rendering, and `mountPreview(root, options)` for one preview root. Each returns a disposal path where applicable.
+- `initPluginPreviews(options)` remains a legacy DOM-discovery helper and now returns a disposer for its observer and mounted roots.
 - `PreviewSession.render(input)` returns sanitized HTML and diagnostics.
 - `PreviewSession.dispose()` disposes the underlying plugin runtime.

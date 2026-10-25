@@ -30,6 +30,7 @@ export type PreviewResult = {
 export type PreviewRenderInput = {
   readonly markdown?: string;
   readonly pluginId?: string;
+  readonly fixtureId?: string;
   readonly options?: unknown;
   readonly pageId?: string;
 };
@@ -55,6 +56,7 @@ export function createPreview(
   let pipeline: Pipeline | undefined;
   let activePluginId: string | undefined;
   let activeOptions: unknown;
+  let activeFixtureId: string | undefined;
   let disposed = false;
   let contentIndex = new Map([[PREVIEW_SLUG, PREVIEW_SLUG]]);
   let permalinks = new Map([[PREVIEW_SLUG, "/preview/"]]);
@@ -65,24 +67,36 @@ export function createPreview(
         return failedResult("preview-disposed", "Preview session is disposed.");
       const pluginId = input.pluginId ?? options.pluginId;
       const plugin = pluginId ? registry.plugin(pluginId) : undefined;
-      const initialFixture = options.fixture
+      const fixtureId = input.fixtureId ?? options.fixture;
+      const fixture = fixtureId
         ? pluginId
-          ? registry.fixture(pluginId, options.fixture)
-          : registry.fixtures.find((fixture) => fixture.id === options.fixture)
+          ? registry.fixture(pluginId, fixtureId)
+          : registry.fixtures.find((candidate) => candidate.id === fixtureId)
         : undefined;
-      const selectedPage = initialFixture?.pages?.find(
-        (page) => page.id === (input.pageId ?? initialFixture.currentPageId),
+      const selectedPage = fixture?.pages?.find(
+        (page) => page.id === (input.pageId ?? fixture.currentPageId),
       );
       const markdown =
-        input.markdown ??
-        selectedPage?.markdown ??
-        initialFixture?.markdown ??
-        "";
+        input.markdown ?? selectedPage?.markdown ?? fixture?.markdown ?? "";
 
       if (pluginId && !plugin) {
         return failedResult(
           "unknown-plugin",
           `Preview plugin "${pluginId}" is not registered.`,
+          pluginId,
+        );
+      }
+      if (fixtureId && !fixture) {
+        return failedResult(
+          "unknown-fixture",
+          `Preview fixture "${fixtureId}" is not registered.`,
+          pluginId,
+        );
+      }
+      if (input.pageId && !selectedPage) {
+        return failedResult(
+          "unknown-page",
+          `Preview page "${input.pageId}" is not registered.`,
           pluginId,
         );
       }
@@ -117,13 +131,14 @@ export function createPreview(
           runtime === undefined ||
           pipeline === undefined ||
           activePluginId !== plugin?.id ||
-          !sameJsonValue(activeOptions, validatedOptions.value)
+          !sameJsonValue(activeOptions, validatedOptions.value) ||
+          activeFixtureId !== fixture?.id
         ) {
           await runtime?.dispose(contentIndex);
           const plugins = plugin
             ? [createPlugin(plugin, validatedOptions.value)]
             : [];
-          const fixturePages = initialFixture?.pages;
+          const fixturePages = fixture?.pages;
           const source = fixturePages
             ? createFixtureContentSource(fixturePages)
             : undefined;
@@ -146,6 +161,7 @@ export function createPreview(
           );
           activePluginId = plugin?.id;
           activeOptions = validatedOptions.value;
+          activeFixtureId = fixture?.id;
         }
 
         await runtime.startBuild(contentIndex);

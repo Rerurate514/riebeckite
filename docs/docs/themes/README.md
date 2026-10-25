@@ -245,6 +245,10 @@ You can start by adjusting with `userCss` and reorganize into a theme once the c
 | Theme | Package | Factory | Best for |
 | --- | --- | --- | --- |
 | [Default](./default.md) | `@riebeckite/theme-default` | `defaultTheme()` | The normal starting point: readable, configurable, and compatible with color mode |
+| [Garden](./garden.md) | `@riebeckite/theme-garden` | `gardenTheme()` | A warm, linked-note digital garden |
+| [Editorial](./editorial.md) | `@riebeckite/theme-editorial` | `editorialTheme()` | Long-form blog publishing with serif rhythm |
+| [Technical](./technical.md) | `@riebeckite/theme-technical` | `technicalTheme()` | Dense, scan-friendly technical documentation |
+| [Folio](./folio.md) | `@riebeckite/theme-folio` | `folioTheme()` | A high-contrast portfolio for project work |
 | [Minimal](./minimal.md) | `@riebeckite/theme-minimal` | `minimalTheme()` | A small baseline when you want little visual opinion |
 | [Gruvbox](./gruvbox.md) | `@riebeckite/theme-gruvbox` | `gruvboxTheme()` | A warm, high-contrast Gruvbox-inspired look |
 | [Rerurate](./rerurate.md) | `@riebeckite/theme-rerurate` | `rerurateTheme()` | Rerurate's visual grammar |

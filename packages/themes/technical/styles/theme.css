@@ -1,0 +1,199 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+  --color-rb-danger: var(--rb-color-danger);
+  --color-rb-success: var(--rb-color-success);
+}
+
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="technical"] {
+    color-scheme: light;
+    --rb-color-paper: #f6f8fa;
+    --rb-color-surface: #ffffff;
+    --rb-color-surface-hover: #edf2f7;
+    --rb-color-ink: #182431;
+    --rb-color-muted: #627181;
+    --rb-color-accent: #1766b1;
+    --rb-color-link: #075ca8;
+    --rb-color-focus: #1175cc;
+    --rb-color-selected: #c9e2f8;
+    --rb-color-border: #d2dbe4;
+    --rb-color-border-strong: #9fadb9;
+    --rb-color-danger: #b34435;
+    --rb-color-success: #17755d;
+    --rb-color-code-background: #152333;
+    --rb-color-code-ink: #e8f2fb;
+    --rb-color-code-inline: #e7eef5;
+    --rb-color-overlay: rgb(11 22 33 / 0.62);
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans",
+      "Noto Sans JP", "Yu Gothic", sans-serif;
+    --rb-font-heading: var(--rb-font-body);
+    --rb-font-mono:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-layout-page-max: 96rem;
+    --rb-layout-article-max: 52rem;
+    --rb-layout-sidebar: 17rem;
+    --rb-layout-gap: 2rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="technical"][data-theme="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #111b25;
+    --rb-color-surface: #182633;
+    --rb-color-surface-hover: #233545;
+    --rb-color-ink: #e8f0f7;
+    --rb-color-muted: #b0becb;
+    --rb-color-accent: #76baff;
+    --rb-color-link: #9bceff;
+    --rb-color-focus: #b5dcff;
+    --rb-color-selected: #245782;
+    --rb-color-border: #35495a;
+    --rb-color-border-strong: #577086;
+    --rb-color-danger: #ff9a8d;
+    --rb-color-success: #86d1b3;
+    --rb-color-code-background: #09131d;
+    --rb-color-code-ink: #e8f0f7;
+    --rb-color-code-inline: #263a4b;
+    --rb-color-overlay: rgb(0 0 0 / 0.7);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-theme-name="technical"]:not([data-theme]) {
+      color-scheme: dark;
+      --rb-color-paper: #111b25;
+      --rb-color-surface: #182633;
+      --rb-color-surface-hover: #233545;
+      --rb-color-ink: #e8f0f7;
+      --rb-color-muted: #b0becb;
+      --rb-color-accent: #76baff;
+      --rb-color-link: #9bceff;
+      --rb-color-focus: #b5dcff;
+      --rb-color-selected: #245782;
+      --rb-color-border: #35495a;
+      --rb-color-border-strong: #577086;
+      --rb-color-danger: #ff9a8d;
+      --rb-color-success: #86d1b3;
+      --rb-color-code-background: #09131d;
+      --rb-color-code-ink: #e8f0f7;
+      --rb-color-code-inline: #263a4b;
+      --rb-color-overlay: rgb(0 0 0 / 0.7);
+    }
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="technical"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="technical"] ::selection {
+  background: var(--rb-color-selected);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] :focus-visible {
+  outline: 2px solid var(--rb-color-focus);
+  outline-offset: 2px;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header {
+  border-bottom: 2px solid var(--rb-color-ink);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header h1 {
+  font-size: clamp(1.75rem, 1.4rem + 1.8vw, 2.65rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-meta {
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.78rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h2 {
+  border-bottom: 1px solid var(--rb-color-border);
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 3rem;
+  padding-bottom: 0.5rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h3 {
+  color: var(--rb-color-accent);
+  font-size: 1.12rem;
+  font-weight: 700;
+  margin-top: 2.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content a {
+  color: var(--rb-color-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  .rb-article-content
+  blockquote {
+  border-left: 4px solid var(--rb-color-accent);
+  color: var(--rb-color-muted);
+  margin-inline: 0;
+  padding: 0.75rem 1rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+  font-size: 0.92em;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  .rb-article-content
+  table {
+  border-collapse: collapse;
+  display: block;
+  font-size: 0.92em;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  .rb-article-content
+  :is(th, td) {
+  border: 1px solid var(--rb-color-border);
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content th {
+  background: var(--rb-color-surface-hover);
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  :is(.rr-table-of-contents, .rr-code, .rr-code-tabs, .rr-callout, .rr-query) {
+  border: 1px solid var(--rb-color-border);
+}
+:is(:root, .rb-theme-root)[data-theme-name="technical"]
+  :is(.rb-site-header, .rb-sidebar, .rb-site-footer) {
+  font-size: 0.9rem;
+}
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article {
+    font-size: 0.97rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-theme-name="technical"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+  }
+}

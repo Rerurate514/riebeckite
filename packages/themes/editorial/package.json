@@ -1,0 +1,58 @@
+{
+  "name": "@riebeckite/theme-editorial",
+  "version": "0.0.32",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "source": "./src/index.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./style.css": "./styles/theme.css",
+    "./styles/theme.css": "./styles/theme.css"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist",
+    "styles"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/themes/editorial"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "An editorial blog CSS theme for Riebeckite sites.",
+  "keywords": [
+    "riebeckite",
+    "theme",
+    "css",
+    "editorial",
+    "blog"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./styles/*.css"
+  ]
+}

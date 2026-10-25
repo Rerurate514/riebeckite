@@ -1,0 +1,201 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+  --color-rb-danger: var(--rb-color-danger);
+  --color-rb-success: var(--rb-color-success);
+}
+
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"] {
+    color-scheme: light;
+    --rb-color-paper: #faf8f3;
+    --rb-color-surface: #fffdf9;
+    --rb-color-surface-hover: #f0e9df;
+    --rb-color-ink: #24201d;
+    --rb-color-muted: #706762;
+    --rb-color-accent: #8a2738;
+    --rb-color-link: #7a2031;
+    --rb-color-focus: #a52f45;
+    --rb-color-selected: #f1cbd0;
+    --rb-color-border: #ddd4ca;
+    --rb-color-border-strong: #bdaea1;
+    --rb-color-danger: #a32d29;
+    --rb-color-success: #356a4c;
+    --rb-color-code-background: #292525;
+    --rb-color-code-ink: #fff5ec;
+    --rb-color-code-inline: #eee7df;
+    --rb-color-overlay: rgb(27 20 18 / 0.62);
+    --rb-font-body: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --rb-font-heading: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --rb-font-mono:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-layout-page-max: 84rem;
+    --rb-layout-article-max: 48rem;
+    --rb-layout-sidebar: 14rem;
+    --rb-layout-gap: 3.5rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"][data-theme="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #211d1c;
+    --rb-color-surface: #2d2725;
+    --rb-color-surface-hover: #3b322f;
+    --rb-color-ink: #f7eee5;
+    --rb-color-muted: #c5b7ad;
+    --rb-color-accent: #eb9da9;
+    --rb-color-link: #ffb4bd;
+    --rb-color-focus: #ffc5cb;
+    --rb-color-selected: #71303b;
+    --rb-color-border: #514541;
+    --rb-color-border-strong: #786761;
+    --rb-color-danger: #ff9d93;
+    --rb-color-success: #91caa6;
+    --rb-color-code-background: #161313;
+    --rb-color-code-ink: #f7eee5;
+    --rb-color-code-inline: #3b302e;
+    --rb-color-overlay: rgb(0 0 0 / 0.7);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-theme-name="editorial"]:not([data-theme]) {
+      color-scheme: dark;
+      --rb-color-paper: #211d1c;
+      --rb-color-surface: #2d2725;
+      --rb-color-surface-hover: #3b322f;
+      --rb-color-ink: #f7eee5;
+      --rb-color-muted: #c5b7ad;
+      --rb-color-accent: #eb9da9;
+      --rb-color-link: #ffb4bd;
+      --rb-color-focus: #ffc5cb;
+      --rb-color-selected: #71303b;
+      --rb-color-border: #514541;
+      --rb-color-border-strong: #786761;
+      --rb-color-danger: #ff9d93;
+      --rb-color-success: #91caa6;
+      --rb-color-code-background: #161313;
+      --rb-color-code-ink: #f7eee5;
+      --rb-color-code-inline: #3b302e;
+      --rb-color-overlay: rgb(0 0 0 / 0.7);
+    }
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] ::selection {
+  background: var(--rb-color-selected);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] :focus-visible {
+  outline: 2px solid var(--rb-color-focus);
+  outline-offset: 3px;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article {
+  font-size: 1.125rem;
+  line-height: 1.82;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+  margin: 3rem 0 4rem;
+  text-align: center;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-meta {
+  color: var(--rb-color-muted);
+  font-family: ui-sans-serif, system-ui, "Hiragino Sans", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h2 {
+  font-family: var(--rb-font-heading);
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.15;
+  margin-top: 4rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h3 {
+  font-family: var(--rb-font-heading);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-top: 2.75rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content a {
+  color: var(--rb-color-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  .rb-article-content
+  blockquote {
+  border-block: 1px solid var(--rb-color-border-strong);
+  font-family: var(--rb-font-heading);
+  font-size: 1.3em;
+  margin: 3rem 0;
+  padding: 1.5rem 0;
+  text-align: center;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  .rb-article-content
+  table {
+  border-collapse: collapse;
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  .rb-article-content
+  :is(th, td) {
+  border-bottom: 1px solid var(--rb-color-border);
+  padding: 0.7rem;
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  :is(.rr-callout, .rr-recent-posts, .rr-backlinks) {
+  border-top: 1px solid var(--rb-color-border);
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  :is(.rb-site-header, .rb-site-footer) {
+  font-family: ui-sans-serif, system-ui, "Hiragino Sans", sans-serif;
+}
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article {
+    font-size: 1.04rem;
+  }
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+    margin-block: 2rem 3rem;
+    text-align: left;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-theme-name="editorial"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+  }
+}

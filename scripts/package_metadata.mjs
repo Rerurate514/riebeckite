@@ -94,10 +94,14 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/webmention",
   "packages/test",
   "packages/themes/default",
+  "packages/themes/editorial",
+  "packages/themes/folio",
+  "packages/themes/garden",
   "packages/themes/gruvbox",
   "packages/themes/minimal",
   "packages/themes/rerurate",
   "packages/themes/sakura",
+  "packages/themes/technical",
   "packages/themes/tokyonight",
 ];
 
@@ -524,6 +528,18 @@ const packagePublishingMetadata = {
     description: "The default CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "default-theme"],
   },
+  "packages/themes/editorial": {
+    description: "An editorial blog CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "editorial", "blog"],
+  },
+  "packages/themes/folio": {
+    description: "A portfolio CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "portfolio", "folio"],
+  },
+  "packages/themes/garden": {
+    description: "A digital-garden CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "digital-garden"],
+  },
   "packages/themes/gruvbox": {
     description: "A Gruvbox-inspired CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "gruvbox"],
@@ -539,6 +555,10 @@ const packagePublishingMetadata = {
   "packages/themes/sakura": {
     description: "A sakura-inspired CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "sakura"],
+  },
+  "packages/themes/technical": {
+    description: "A technical documentation CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "documentation", "technical"],
   },
   "packages/themes/tokyonight": {
     description: "A Tokyo Night CSS theme for Riebeckite sites.",

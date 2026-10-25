@@ -264,6 +264,10 @@ Riebeckite には複数の公式テーマがあります。
 | テーマ | パッケージ | ファクトリ | 特徴 |
 | --- | --- | --- | --- |
 | [Default](./default.ja.md) | `@riebeckite/theme-default` | `defaultTheme()` | 標準の出発点。読みやすさと設定のしやすさを重視 |
+| [Garden](./garden.ja.md) | `@riebeckite/theme-garden` | `gardenTheme()` | 暖かくリンクされたノート向けデジタルガーデン |
+| [Editorial](./editorial.ja.md) | `@riebeckite/theme-editorial` | `editorialTheme()` | セリフ体のリズムを持つ長文ブログ向け |
+| [Technical](./technical.ja.md) | `@riebeckite/theme-technical` | `technicalTheme()` | 高密度で走査しやすい技術ドキュメント向け |
+| [Folio](./folio.ja.md) | `@riebeckite/theme-folio` | `folioTheme()` | プロジェクト作品向けの高コントラストなテーマ |
 | [Minimal](./minimal.ja.md) | `@riebeckite/theme-minimal` | `minimalTheme()` | 装飾を抑えた小さなテーマ |
 | [Gruvbox](./gruvbox.ja.md) | `@riebeckite/theme-gruvbox` | `gruvboxTheme()` | Gruvbox 風の暖かくコントラストの高い配色 |
 | [Rerurate](./rerurate.ja.md) | `@riebeckite/theme-rerurate` | `rerurateTheme()` | Rerurate の視覚文法に基づくテーマ |

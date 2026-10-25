@@ -9,10 +9,14 @@
  * namespace so it can never collide with the `rb-*` / `rr-*` theme hooks. */
 
 @import "@riebeckite/theme-default/style.css";
+@import "@riebeckite/theme-editorial/style.css";
+@import "@riebeckite/theme-folio/style.css";
+@import "@riebeckite/theme-garden/style.css";
 @import "@riebeckite/theme-gruvbox/style.css";
 @import "@riebeckite/theme-minimal/style.css";
 @import "@riebeckite/theme-rerurate/style.css";
 @import "@riebeckite/theme-sakura/style.css";
+@import "@riebeckite/theme-technical/style.css";
 @import "@riebeckite/theme-tokyonight/style.css";
 
 .theme-gallery {

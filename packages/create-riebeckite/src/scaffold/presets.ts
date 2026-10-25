@@ -546,6 +546,26 @@ const defaultTheme = {
   factory: "defaultTheme",
 } satisfies ScaffoldThemeSpec;
 
+const gardenTheme = {
+  package: "@riebeckite/theme-garden",
+  factory: "gardenTheme",
+} satisfies ScaffoldThemeSpec;
+
+const editorialTheme = {
+  package: "@riebeckite/theme-editorial",
+  factory: "editorialTheme",
+} satisfies ScaffoldThemeSpec;
+
+const technicalTheme = {
+  package: "@riebeckite/theme-technical",
+  factory: "technicalTheme",
+} satisfies ScaffoldThemeSpec;
+
+const folioTheme = {
+  package: "@riebeckite/theme-folio",
+  factory: "folioTheme",
+} satisfies ScaffoldThemeSpec;
+
 /**
  * The showcasing tiers also set every theme option so `riebeckite.config.ts`
  * demonstrates the theme configuration surface.
@@ -619,7 +639,7 @@ export const digitalGarden: ScaffoldPreset = {
   description:
     "An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.",
   languages: ["en"],
-  theme: defaultTheme,
+  theme: gardenTheme,
   plugins: [
     seo,
     ...readingPlugins,
@@ -642,7 +662,7 @@ export const blog: ScaffoldPreset = {
   description:
     "A publishing-focused blog with tags, series, related posts, sharing, and feeds.",
   languages: ["en"],
-  theme: defaultTheme,
+  theme: editorialTheme,
   plugins: [
     ...readingPlugins,
     blogSeo,
@@ -663,12 +683,8 @@ export const documentation: ScaffoldPreset = {
   description:
     "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
   languages: ["en"],
-  theme: defaultTheme,
-  plugins: [
-    seo,
-    ...readingPlugins,
-    docs,
-  ],
+  theme: technicalTheme,
+  plugins: [seo, ...readingPlugins, docs],
   contentPages: [],
   readme: "standard",
 };
@@ -678,7 +694,7 @@ export const portfolio: ScaffoldPreset = {
   description:
     "A calm portfolio for projects and contact details, with image and media support when you add it.",
   languages: ["en"],
-  theme: defaultTheme,
+  theme: folioTheme,
   plugins: [
     ...readingPlugins,
     seo,

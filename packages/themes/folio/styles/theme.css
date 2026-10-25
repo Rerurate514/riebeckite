@@ -1,0 +1,203 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+  --color-rb-danger: var(--rb-color-danger);
+  --color-rb-success: var(--rb-color-success);
+}
+
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="folio"] {
+    color-scheme: light;
+    --rb-color-paper: #f1f0ec;
+    --rb-color-surface: #ffffff;
+    --rb-color-surface-hover: #e4e2dc;
+    --rb-color-ink: #161616;
+    --rb-color-muted: #65635f;
+    --rb-color-accent: #d6422c;
+    --rb-color-link: #bd301e;
+    --rb-color-focus: #d6422c;
+    --rb-color-selected: #ffd1c9;
+    --rb-color-border: #cbc8c0;
+    --rb-color-border-strong: #827e76;
+    --rb-color-danger: #bc302a;
+    --rb-color-success: #297052;
+    --rb-color-code-background: #1c1c1b;
+    --rb-color-code-ink: #f4f1eb;
+    --rb-color-code-inline: #e1ded7;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+    --rb-font-body:
+      ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans",
+      "Noto Sans JP", "Yu Gothic", sans-serif;
+    --rb-font-heading:
+      ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans",
+      "Noto Sans JP", "Yu Gothic", sans-serif;
+    --rb-font-mono:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-layout-page-max: 100rem;
+    --rb-layout-article-max: 62rem;
+    --rb-layout-sidebar: 15rem;
+    --rb-layout-gap: 2.5rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="folio"][data-theme="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #171716;
+    --rb-color-surface: #222220;
+    --rb-color-surface-hover: #30302d;
+    --rb-color-ink: #f5f2eb;
+    --rb-color-muted: #c0bcb3;
+    --rb-color-accent: #ff826c;
+    --rb-color-link: #ffac9c;
+    --rb-color-focus: #ffbdaf;
+    --rb-color-selected: #71382e;
+    --rb-color-border: #4a4945;
+    --rb-color-border-strong: #76736c;
+    --rb-color-danger: #ff9e8d;
+    --rb-color-success: #88cda8;
+    --rb-color-code-background: #0d0d0c;
+    --rb-color-code-ink: #f5f2eb;
+    --rb-color-code-inline: #33312e;
+    --rb-color-overlay: rgb(0 0 0 / 0.76);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-theme-name="folio"]:not([data-theme]) {
+      color-scheme: dark;
+      --rb-color-paper: #171716;
+      --rb-color-surface: #222220;
+      --rb-color-surface-hover: #30302d;
+      --rb-color-ink: #f5f2eb;
+      --rb-color-muted: #c0bcb3;
+      --rb-color-accent: #ff826c;
+      --rb-color-link: #ffac9c;
+      --rb-color-focus: #ffbdaf;
+      --rb-color-selected: #71382e;
+      --rb-color-border: #4a4945;
+      --rb-color-border-strong: #76736c;
+      --rb-color-danger: #ff9e8d;
+      --rb-color-success: #88cda8;
+      --rb-color-code-background: #0d0d0c;
+      --rb-color-code-ink: #f5f2eb;
+      --rb-color-code-inline: #33312e;
+      --rb-color-overlay: rgb(0 0 0 / 0.76);
+    }
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="folio"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="folio"] ::selection {
+  background: var(--rb-color-selected);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] :focus-visible {
+  outline: 3px solid var(--rb-color-focus);
+  outline-offset: 3px;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article {
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header {
+  border-left: 0.5rem solid var(--rb-color-accent);
+  margin-bottom: 3rem;
+  padding-left: 1.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header h1 {
+  font-size: clamp(2.4rem, 1.6rem + 3.5vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-meta {
+  color: var(--rb-color-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content h2 {
+  border-left: 0.25rem solid var(--rb-color-accent);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-top: 3.5rem;
+  padding-left: 0.75rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-top: 2.4rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content a {
+  color: var(--rb-color-link);
+  font-weight: 650;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.16em;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"]
+  .rb-article-content
+  blockquote {
+  border-left: 0.35rem solid var(--rb-color-accent);
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-inline: 0;
+  padding-left: 1.2rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content table {
+  border-collapse: collapse;
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"]
+  .rb-article-content
+  :is(th, td) {
+  border-bottom: 2px solid var(--rb-color-border);
+  padding: 0.65rem;
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"]
+  :is(.rr-media, .rr-lightbox, .rr-recent-posts, .rr-cardlink) {
+  border-top: 3px solid var(--rb-color-ink);
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="folio"]
+  :is(.rb-site-header, .rb-site-footer) {
+  font-weight: 700;
+}
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article {
+    font-size: 1rem;
+  }
+  :is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header {
+    border-left-width: 0.3rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-theme-name="folio"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+  }
+}

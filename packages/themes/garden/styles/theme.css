@@ -1,0 +1,198 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+  --color-rb-danger: var(--rb-color-danger);
+  --color-rb-success: var(--rb-color-success);
+}
+
+@layer base {
+  :is(:root, .rb-theme-root)[data-theme-name="garden"] {
+    color-scheme: light;
+    --rb-color-paper: #f5f3ea;
+    --rb-color-surface: #fcfbf5;
+    --rb-color-surface-hover: #e8ebda;
+    --rb-color-ink: #263126;
+    --rb-color-muted: #687064;
+    --rb-color-accent: #526b38;
+    --rb-color-link: #405a2d;
+    --rb-color-focus: #315e36;
+    --rb-color-selected: #dce8bd;
+    --rb-color-border: #d5d8c7;
+    --rb-color-border-strong: #aeb69a;
+    --rb-color-danger: #a13d32;
+    --rb-color-success: #39734a;
+    --rb-color-code-background: #28352a;
+    --rb-color-code-ink: #eff4df;
+    --rb-color-code-inline: #e6ead7;
+    --rb-color-overlay: rgb(21 29 20 / 0.6);
+    --rb-font-body: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --rb-font-heading:
+      ui-serif, Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --rb-font-mono:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-layout-page-max: 86rem;
+    --rb-layout-article-max: 46rem;
+    --rb-layout-sidebar: 16rem;
+    --rb-layout-gap: 3rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+    --rb-motion-fast: 140ms;
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="garden"][data-theme="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #1d251d;
+    --rb-color-surface: #283227;
+    --rb-color-surface-hover: #354233;
+    --rb-color-ink: #edf0df;
+    --rb-color-muted: #b6bea9;
+    --rb-color-accent: #afc77c;
+    --rb-color-link: #c4d99a;
+    --rb-color-focus: #d1e9a4;
+    --rb-color-selected: #4d643b;
+    --rb-color-border: #485544;
+    --rb-color-border-strong: #6a7861;
+    --rb-color-danger: #f09b85;
+    --rb-color-success: #91c99a;
+    --rb-color-code-background: #141b15;
+    --rb-color-code-ink: #edf0df;
+    --rb-color-code-inline: #34402f;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-theme-name="garden"]:not([data-theme]) {
+      color-scheme: dark;
+      --rb-color-paper: #1d251d;
+      --rb-color-surface: #283227;
+      --rb-color-surface-hover: #354233;
+      --rb-color-ink: #edf0df;
+      --rb-color-muted: #b6bea9;
+      --rb-color-accent: #afc77c;
+      --rb-color-link: #c4d99a;
+      --rb-color-focus: #d1e9a4;
+      --rb-color-selected: #4d643b;
+      --rb-color-border: #485544;
+      --rb-color-border-strong: #6a7861;
+      --rb-color-danger: #f09b85;
+      --rb-color-success: #91c99a;
+      --rb-color-code-background: #141b15;
+      --rb-color-code-ink: #edf0df;
+      --rb-color-code-inline: #34402f;
+      --rb-color-overlay: rgb(0 0 0 / 0.68);
+    }
+  }
+
+  :is(:root, .rb-theme-root)[data-theme-name="garden"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+
+:is(:root, .rb-theme-root)[data-theme-name="garden"] ::selection {
+  background: var(--rb-color-selected);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] :focus-visible {
+  outline: 2px solid var(--rb-color-focus);
+  outline-offset: 3px;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article {
+  font-size: 1.0625rem;
+  line-height: 1.9;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header {
+  border-bottom: 1px solid var(--rb-color-border);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-meta {
+  color: var(--rb-color-muted);
+  font-size: 0.875rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content h2 {
+  border-top: 1px solid var(--rb-color-border);
+  font-family: var(--rb-font-heading);
+  font-size: 1.55rem;
+  font-weight: 600;
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content h3 {
+  font-family: var(--rb-font-heading);
+  font-size: 1.2rem;
+  margin-top: 2.5rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content a {
+  color: var(--rb-color-link);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--rb-color-link) 45%,
+    transparent
+  );
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  .rb-article-content
+  blockquote {
+  border-left: 3px solid var(--rb-color-accent);
+  color: var(--rb-color-muted);
+  margin-inline: 0;
+  padding-left: 1.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content table {
+  border-collapse: collapse;
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  .rb-article-content
+  :is(th, td) {
+  border-bottom: 1px solid var(--rb-color-border);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer, .rr-callout) {
+  border-left: 1px solid var(--rb-color-border-strong);
+  margin-block: 2rem;
+  padding-left: 1rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  :is(.rb-site-header, .rb-site-footer, .rb-sidebar) {
+  color: var(--rb-color-muted);
+}
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article {
+    font-size: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-theme-name="garden"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+  }
+}

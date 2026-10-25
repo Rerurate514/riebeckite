@@ -323,6 +323,15 @@ importers:
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
+      '@riebeckite/theme-editorial':
+        specifier: workspace:*
+        version: link:../../packages/themes/editorial
+      '@riebeckite/theme-folio':
+        specifier: workspace:*
+        version: link:../../packages/themes/folio
+      '@riebeckite/theme-garden':
+        specifier: workspace:*
+        version: link:../../packages/themes/garden
       '@riebeckite/theme-gruvbox':
         specifier: workspace:*
         version: link:../../packages/themes/gruvbox
@@ -335,6 +344,9 @@ importers:
       '@riebeckite/theme-sakura':
         specifier: workspace:*
         version: link:../../packages/themes/sakura
+      '@riebeckite/theme-technical':
+        specifier: workspace:*
+        version: link:../../packages/themes/technical
       '@riebeckite/theme-tokyonight':
         specifier: workspace:*
         version: link:../../packages/themes/tokyonight
@@ -1774,6 +1786,24 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/themes/editorial:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/themes/folio:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/themes/garden:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/themes/gruvbox:
     dependencies:
       '@riebeckite/core':
@@ -1793,6 +1823,12 @@ importers:
         version: link:../../core
 
   packages/themes/sakura:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/themes/technical:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

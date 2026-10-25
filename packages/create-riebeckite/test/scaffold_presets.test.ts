@@ -62,6 +62,39 @@ test("feature packs are written to generated configuration", async () => {
   });
 });
 
+test("purpose presets select their purpose-built theme", async () => {
+  const expectedThemes = {
+    "digital-garden": ["@riebeckite/theme-garden", "gardenTheme"],
+    blog: ["@riebeckite/theme-editorial", "editorialTheme"],
+    docs: ["@riebeckite/theme-technical", "technicalTheme"],
+    portfolio: ["@riebeckite/theme-folio", "folioTheme"],
+  } as const;
+  await withTemporaryDirectory(async (directory) => {
+    for (const [preset, [packageName, factory]] of Object.entries(
+      expectedThemes,
+    )) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({
+        targetDirectory,
+        preset: preset as keyof typeof expectedThemes,
+      });
+      const config = await fs.readFile(
+        path.join(targetDirectory, "riebeckite.config.ts"),
+        "utf8",
+      );
+      const packageJson = JSON.parse(
+        await fs.readFile(path.join(targetDirectory, "package.json"), "utf8"),
+      ) as { dependencies?: Record<string, string> };
+      assert.match(
+        config,
+        new RegExp(`import \\{ ${factory} \\} from "${packageName}"`),
+      );
+      assert.match(config, new RegExp(`theme: ${factory}\\(\\)`));
+      assert.equal(packageJson.dependencies?.[packageName], "^0.0.32");
+    }
+  });
+});
+
 test("portfolio registers every plugin used by its article layout", async () => {
   await withTemporaryDirectory(async (directory) => {
     await scaffoldRiebeckiteSite({ targetDirectory: directory, preset: "portfolio" });

@@ -1,0 +1,39 @@
+---
+date: 2026-10-25
+title: Garden
+---
+# Garden
+
+つながったノートを主役にする、暖かいデジタルガーデン向けテーマです。落ち着いた明朝体の読書リズム、オリーブ色の操作状態、カードではなく罫線による構造を使います。
+
+[English](./garden.md)
+
+## 使い方
+
+```ts
+import { gardenTheme } from "@riebeckite/theme-garden";
+
+export default defineConfig({
+  theme: gardenTheme({ colorMode: "system" }),
+});
+```
+
+## デザイン
+
+- 暖色の紙面、緑のリンク、ゆとりのある明朝体でノートを読みやすくします。
+- 記事見出しとメタデータはカードではなく静かな罫線で整理します。
+- Backlinks、Local graph、Garden explorer、Callout は安定した公開ルートを通じて左罫線で統一します。
+
+## 設定とトークン
+
+`gardenTheme(options?)` は `name` 以外の `ThemeConfig`、すなわち `colorMode`、`typography`、`articleLayout`、`tokens`、`userCss` を受け取ります。`tokens` で共通の `--rb-color-*`、`--rb-font-*`、レイアウトトークンを上書きできます。
+
+## モードと互換性
+
+ライト、明示ダーク、システムダークのすべてで同じセマンティックトークン契約を定義します。`colorMode: "system"` は `data-theme` がない限り `prefers-color-scheme` に従います。縮小モーション、狭い画面、キーボードフォーカス、横スクロール表に対応し、システムフォントと安定した `rb-*`／`rr-*` フックだけを使います。
+
+## エクスポート
+
+- `gardenTheme(options?)`
+- `GardenThemeOptions`
+- `@riebeckite/theme-garden/style.css`

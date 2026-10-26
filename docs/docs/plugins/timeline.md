@@ -38,7 +38,8 @@ timeline: true
 
 The page is available at `/timeline`. Entries use the first valid value among
 `date`, `published`, and `created`, and are ordered from oldest to newest.
-Only discoverable notes appear.
+Only discoverable notes appear. The plugin includes a responsive timeline
+stylesheet that uses the active theme's color and typography tokens.
 
 ## Live example
 

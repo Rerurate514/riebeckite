@@ -1,0 +1,53 @@
+[data-rr-glossary] {
+  margin-block: clamp(2rem, 6vw, 4.5rem);
+  color: var(--rb-color-ink);
+}
+
+[data-rr-glossary] .rb-glossary__title {
+  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--rb-color-accent);
+  font-family: var(--rb-font-heading, inherit);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  line-height: 1.1;
+}
+
+[data-rr-glossary] .rb-glossary__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-border);
+}
+
+[data-rr-glossary] .rb-glossary__item {
+  min-width: 0;
+  padding: 1.25rem;
+  background: var(--rb-color-surface);
+}
+
+[data-rr-glossary] .rb-glossary__term {
+  margin: 0;
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+[data-rr-glossary] .rb-glossary__link {
+  color: var(--rb-color-link, var(--rb-color-accent));
+  text-decoration: none;
+}
+
+[data-rr-glossary] .rb-glossary__link:hover {
+  color: var(--rb-color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+[data-rr-glossary] .rb-glossary__definition {
+  margin: 0.6rem 0 0;
+  color: var(--rb-color-muted);
+  line-height: 1.65;
+}

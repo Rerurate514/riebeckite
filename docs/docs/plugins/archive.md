@@ -80,7 +80,7 @@ recomputing the period.
 
 ## Notes
 
-The plugin ships no stylesheet; the rendered fragment carries `rb-archive`
-classes so a site can style it directly. Set `basePath` to a different prefix if
-`/archive` clashes with existing content, and set it to `""` to turn the
-generated pages off without removing the plugin.
+The plugin includes a responsive archive stylesheet that uses the active theme's
+color and typography tokens. Set `basePath` to a different prefix if `/archive`
+clashes with existing content, and set it to `""` to turn the generated pages
+off without removing the plugin.

@@ -1,0 +1,69 @@
+[data-rr-archive] {
+  margin-block: clamp(2rem, 6vw, 4.5rem);
+  color: var(--rb-color-ink);
+}
+
+[data-rr-archive] .rb-archive__title {
+  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--rb-color-accent);
+  font-family: var(--rb-font-heading, inherit);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  line-height: 1.1;
+}
+
+[data-rr-archive] .rb-archive__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rb-color-border);
+  list-style: none;
+}
+
+[data-rr-archive] .rb-archive__item {
+  border-bottom: 1px solid var(--rb-color-border);
+}
+
+[data-rr-archive] .rb-archive__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0.25rem;
+  color: var(--rb-color-link, var(--rb-color-accent));
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 1.1rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+[data-rr-archive] .rb-archive__link::after {
+  flex: none;
+  color: var(--rb-color-muted);
+  content: "→";
+  transition: transform 140ms ease;
+}
+
+[data-rr-archive] .rb-archive__link:hover {
+  color: var(--rb-color-accent);
+  background: var(--rb-color-surface-hover);
+}
+
+[data-rr-archive] .rb-archive__link:hover::after {
+  transform: translateX(0.25rem);
+}
+
+[data-rr-archive] .rb-archive__pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+[data-rr-archive] .rb-archive__pagination .rb-archive__link {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rb-color-border-strong);
+  font-size: 0.9375rem;
+}

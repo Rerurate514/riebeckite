@@ -1,5 +1,6 @@
 import {
   type ConfigValidationIssue,
+  createStyleAsset,
   definePlugin,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
@@ -43,6 +44,9 @@ export function archive(options: ArchiveOptions = {}) {
   return definePlugin({
     name: ARCHIVE_PLUGIN_NAME,
     options,
+    assets: [
+      createStyleAsset("archive", "@riebeckite/plugin-archive/style.css"),
+    ],
     validateOptions: validateArchiveOptions,
     pageTypes: [
       {

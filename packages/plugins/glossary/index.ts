@@ -1,4 +1,8 @@
-import { type ConfigValidationIssue, definePlugin } from "@riebeckite/core";
+import {
+  type ConfigValidationIssue,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import {
   buildGlossary,
   renderGlossaryPage,
@@ -27,6 +31,9 @@ export function glossary(options: GlossaryOptions = {}) {
   return definePlugin({
     name: GLOSSARY_PLUGIN_NAME,
     options,
+    assets: [
+      createStyleAsset("glossary", "@riebeckite/plugin-glossary/style.css"),
+    ],
     validateOptions: validateGlossaryOptions,
     pageTypes: [
       {

@@ -1,4 +1,8 @@
-import { type ConfigValidationIssue, definePlugin } from "@riebeckite/core";
+import {
+  type ConfigValidationIssue,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
 import {
   buildTimeline,
   renderTimelinePage,
@@ -27,6 +31,9 @@ export function timeline(options: TimelineOptions = {}) {
   return definePlugin({
     name: TIMELINE_PLUGIN_NAME,
     options,
+    assets: [
+      createStyleAsset("timeline", "@riebeckite/plugin-timeline/style.css"),
+    ],
     validateOptions: validateTimelineOptions,
     pageTypes: [
       {

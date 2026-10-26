@@ -34,7 +34,8 @@ definition: Generates HTML before deployment.
 
 The plugin creates `/glossary`, alphabetically ordered by `term`. When `term`
 is absent, the note title is used. `definition` is optional. Only discoverable
-notes appear.
+notes appear. The plugin includes a responsive glossary stylesheet that uses the
+active theme's color and typography tokens.
 
 ## Live example
 

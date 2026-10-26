@@ -56,7 +56,7 @@ export function renderTimelinePage(
     .join("");
   return {
     title: options.title,
-    html: `<section class="${className}"><h1 class="${className}__title">${escapeHtml(options.title)}</h1><ol class="${className}__list">${items}</ol></section>`,
+    html: `<section class="${className}" data-rr-timeline><h1 class="${className}__title">${escapeHtml(options.title)}</h1><ol class="${className}__list">${items}</ol></section>`,
   };
 }
 

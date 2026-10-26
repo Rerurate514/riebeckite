@@ -55,7 +55,7 @@ export function renderGlossaryPage(
     .join("");
   return {
     title: options.title,
-    html: `<section class="${className}"><h1 class="${className}__title">${escapeHtml(options.title)}</h1><dl class="${className}__list">${items}</dl></section>`,
+    html: `<section class="${className}" data-rr-glossary><h1 class="${className}__title">${escapeHtml(options.title)}</h1><dl class="${className}__list">${items}</dl></section>`,
   };
 }
 

@@ -1,0 +1,91 @@
+[data-rr-timeline] {
+  margin-block: clamp(2rem, 6vw, 4.5rem);
+  color: var(--rb-color-ink);
+}
+
+[data-rr-timeline] .rb-timeline__title {
+  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--rb-color-accent);
+  font-family: var(--rb-font-heading, inherit);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  line-height: 1.1;
+}
+
+[data-rr-timeline] .rb-timeline__list {
+  position: relative;
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+[data-rr-timeline] .rb-timeline__list::before {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 7.75rem;
+  width: 1px;
+  background: var(--rb-color-border-strong);
+  content: "";
+}
+
+[data-rr-timeline] .rb-timeline__item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 0 0 2rem;
+}
+
+[data-rr-timeline] .rb-timeline__item::before {
+  position: absolute;
+  top: 0.35rem;
+  left: 7.4rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid var(--rb-color-surface);
+  border-radius: 50%;
+  background: var(--rb-color-accent);
+  content: "";
+}
+
+[data-rr-timeline] .rb-timeline__date {
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono, monospace);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+[data-rr-timeline] .rb-timeline__link {
+  color: var(--rb-color-link, var(--rb-color-accent));
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 1.125rem;
+  font-weight: 650;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+[data-rr-timeline] .rb-timeline__link:hover {
+  color: var(--rb-color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+@media (max-width: 36rem) {
+  [data-rr-timeline] .rb-timeline__list::before {
+    left: 0.3rem;
+  }
+
+  [data-rr-timeline] .rb-timeline__item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+    padding: 0 0 1.75rem 1.5rem;
+  }
+
+  [data-rr-timeline] .rb-timeline__item::before {
+    top: 0.3rem;
+    left: 0;
+  }
+}

@@ -41,8 +41,14 @@ const monthlyFiles = {
   "d.md": "---\npublish: true\ntitle: Delta\ndate: 2024-12-20\n---\n# Delta",
 };
 
-test("archive() declares no assets", () => {
-  assert.equal(archive().assets, undefined);
+test("archive() declares its stylesheet", () => {
+  assert.deepEqual(archive().assets, [
+    {
+      pluginName: "archive",
+      kind: "style",
+      moduleSpecifier: "@riebeckite/plugin-archive/style.css",
+    },
+  ]);
   assert.deepEqual(archive().contentOutputDependencies, undefined);
 });
 

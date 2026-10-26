@@ -14,9 +14,9 @@ sidebar:
 サイトマップはマニフェストの検出可能エントリから生成され、各URLのlastmod、changefreq、priority値が含まれます。検索エンジンがサイトのコンテンツを見つけてインデックスするために使われます。
 
 ```ts
-import { buildSitemap } from "@riebeckite/plugins/seo";
+import { renderSitemap } from "@riebeckite/plugin-seo";
 
-const sitemap = buildSitemap(manifest.discoverableEntries);
+const sitemap = renderSitemap(manifest.discoverableEntries);
 ```
 
 ## サイトマップ生成の詳細

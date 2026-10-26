@@ -48,8 +48,6 @@ These resolved values are used by the integration and plugins throughout the bui
 
 ## Related terms
 
-## Related terms
-
 - [[glossary/site|Site]]
 - [[config|Config]]
 - [[feed|Feed]]

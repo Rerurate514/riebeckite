@@ -44,6 +44,7 @@ If the file lives elsewhere or has a different name, pass `configRoot` and
 | `theme` | No | Appearance and design tokens |
 | `plugins` | No | Content, rendering, and discovery features |
 | `cache` | No | Persistent build cache |
+| `spa` | No | Client-side navigation, prefetch, scroll restoration, and view transitions |
 
 Only `site` is required. Every other section falls back to the default in its
 table.

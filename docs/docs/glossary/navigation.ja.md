@@ -14,7 +14,7 @@ sidebar:
 ナビゲーションは `navigation` プラグインを使って、解決済みマニフェストから構築されます。項目は `discoverable` なコンテンツから導出され、`navigation` 設定セクションでカスタマイズできます。
 
 ```ts
-import { buildNavigation } from "@riebeckite/plugins/navigation";
+import { buildNavigation } from "@riebeckite/plugin-navigation";
 
 const nav = buildNavigation(manifest.discoverableEntries, {
   items: [

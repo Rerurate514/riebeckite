@@ -36,8 +36,6 @@ This resolution order ensures that plugin-provided pages take precedence, follow
 
 ## Related terms
 
-## Related terms
-
 - [[page|Page]]
 - [[page-type|Page Type]]
 - [[public-path|Public Path]]

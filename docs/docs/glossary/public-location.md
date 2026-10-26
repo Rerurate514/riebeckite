@@ -41,6 +41,3 @@ Example manifest entry with redirects and metadata:
 }
 ```
 
-## Redirects and metadata
-
-A plugin can attach alias URLs or [redirects](./redirect.md) next to the canonical location. The permalink stays canonical; redirects point older URLs at it.

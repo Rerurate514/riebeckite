@@ -17,7 +17,7 @@ By Rerurate_514 ^WpA1y2eL
 riebeckite.dev ^RvFaMEZu
 
 ## Embedded Files
-ac4cfc9875041e60cc32b2ff448c2192786e0f2f: [[riebecite-ogp.png]]
+ac4cfc9875041e60cc32b2ff448c2192786e0f2f: [[riebeckite-ogp.png]]
 
 %%
 ## Drawing

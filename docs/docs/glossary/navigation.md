@@ -14,7 +14,7 @@ Site navigation configuration and the navigation plugin that renders header/foot
 The navigation is built from the resolved manifest using the `navigation` plugin. Entries are derived from `discoverable` content and can be customized via the `navigation` config section.
 
 ```ts
-import { buildNavigation } from "@riebeckite/plugins/navigation";
+import { buildNavigation } from "@riebeckite/plugin-navigation";
 
 const nav = buildNavigation(manifest.discoverableEntries, {
   items: [
@@ -42,8 +42,6 @@ navigation: {
   ],
 },
 ```
-
-## Related terms
 
 ## Related terms
 

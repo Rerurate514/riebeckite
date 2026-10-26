@@ -17,6 +17,7 @@ riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities 
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
+riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
@@ -36,6 +37,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `create` | choose a Site, Plugin, Theme, PageType, or Component generator | generator-dependent |
 | `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
 | `plugin dev` | run an isolated HonoX preview of a local Plugin | temporary files only |
+| `plugin verify` | check a distributable Plugin package boundary before adding it to a site | no |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |

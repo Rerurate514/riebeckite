@@ -59,22 +59,6 @@ The `starter` preset includes the `@riebeckite/plugin-obsidian-markdown` plugin,
 - Callout parsing (`> [!WARNING]` etc.)
 - Tag `#hashtag` conversion to taxonomy tag links
 
-## Explicit publishing
-Add `publish: true` frontmatter to notes you want to make public:
-
-```md
----
-title: Hello
-publish: true
-tags:
-  - example
-aliases:
-  - Hello note
----
-```
-
-Notes without `publish: true` are treated as drafts and not built.
-
 ## Related terms
 
 - [[tag|Tag]]

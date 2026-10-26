@@ -14,7 +14,7 @@ sidebar:
 検索インデックスはビルド時にマニフェストから生成され、slug、permalink、title、body、tags、headingsを持つエントリを含みます。読み手は検索プラグインでインデックスを照会でき、テキスト検索と、タグ、言語、パスによる絞り込みに対応します。
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 
 const results = searchItems(manifest.entries, "plugin");
 ```
@@ -28,7 +28,7 @@ const results = searchItems(manifest.entries, "plugin");
 - **パスフィルタ**：URLパスによる結果の絞り込み
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 // Example: search for entries with tag "plugin"
 const results = searchItems(manifest.entries, "plugin", { tags: ["plugin"] });
 // Example: search in Japanese

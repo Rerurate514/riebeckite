@@ -77,19 +77,6 @@ The `hasGlobalContentDependency` utility checks whether any enabled plugin uses 
 - [[incremental-build|Incremental Build]]
 - [[fingerprint|Fingerprint]]
 
-```ts
-cache: {
-  enabled: true,
-}
-```
-
-## Related terms
-
-- [[plugin-cache|Plugin cache]]
-- [[cache-invalidation|Cache Invalidation]]
-- [[build-state|Build State]]
-- [[incremental-build|Incremental Build]]
-
 ## Learn more
 
 - [Cache](../reference/configuration/cache.md)

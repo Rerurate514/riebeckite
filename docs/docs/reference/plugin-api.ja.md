@@ -738,7 +738,7 @@ import {
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.19",
+    "@riebeckite/core": "^0.0.32",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

@@ -21,7 +21,7 @@ sidebar:
 | `frontmatter field` | 任意のfrontmatterのキーで照合する |
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 
 const results = searchItems(entries, "tag:news");
 ```

@@ -26,7 +26,7 @@ flowchart TD
 | --- | --- |
 | `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
-| `dev`、`check`、`doctor`、`build`、`profile`、`inspect` | [CLI](./cli.ja.md) |
+| `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`upgrade`、`profile`、`inspect`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
 | `defineTheme`、CSS の取り決め、トークン、カラーモード、パッケージの形 | [Theme API](./theme-api.ja.md) |
 | Riebeckite の内部構造 | [Framework](../framework/README.ja.md) |
@@ -51,10 +51,17 @@ flowchart TD
 
 ```text
 init
+create
+theme preview
+plugin dev
+plugin verify
 dev
 check
 doctor
+upgrade --check
 build
+clean
+deploy
 profile
 inspect
 ```
@@ -99,7 +106,15 @@ inspect
 | --- | --- |
 | `@riebeckite/core` | `defineConfig`、`definePlugin`、`defineTheme`、コンテンツ API、パイプライン API、診断、可観測性の型 |
 | `@riebeckite/cli` | `riebeckite` CLI |
-| `@riebeckite/honox` | HonoX / Vite との統合とスキャフォールド。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、`contentRouteSsgParams`、`riebeniteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent` と各種 Props 型）を公開 |
+| `@riebeckite/honox` | HonoX / Vite との統合とスキャフォールド。`server` subpath に route / SSG helper（`resolveRiebeckiteRoute`、`resolveRiebeckiteContentRequest`、`resolveRiebeckiteHomeRequest`、`contentRouteSsgParams`、`riebeckiteSsgParams`）、`ui` subpath に article / site の UI primitive（`Article`、`ArticleBody`、`PageBody`、`ArticleContent` と各種 Props 型）を公開 |
+| `create-riebeckite` | `create-riebeckite` スキャフォールド CLI |
+| `@riebeckite/diagnostics` | CLI と integration が共有する開発診断 |
+| `@riebeckite/diagram` | 図表プラグインが共有する基盤 |
+| `@riebeckite/preview` | 安全な Markdown プレビューランタイム |
+| `@riebeckite/spa` | 任意で有効にする SPA ナビゲーションランタイム |
+| `@riebeckite/ui` | integration とプラグインが共有する宣言的 UI コンテキスト |
+| `@riebeckite/analytics-cloudflare` | analytics 用の Cloudflare Workers・D1・KV ランタイム |
+| `@riebeckite/webmention-cloudflare` | Webmention 用の Cloudflare Workers・D1・KV ランタイム |
 | `@riebeckite/test` | テストヘルパー（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部サイトエンジン |
 | `@riebeckite/plugin-*` | プラグインのファクトリと、ドキュメント化された subpath エクスポート |
 | `@riebeckite/theme-*` | テーマのファクトリと CSS エクスポート |

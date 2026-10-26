@@ -17,6 +17,7 @@ riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities 
 riebeckite create [site | plugin | theme | page-type | component]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
+riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]]
@@ -36,6 +37,7 @@ riebeckite inspect [config | plugins | content [--list] | graph | build]
 | `create` | サイト、プラグイン、テーマ、PageType、コンポーネントのジェネレーターを選ぶ | ジェネレーターによる |
 | `theme preview` | ローカルのテーマを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
 | `plugin dev` | ローカルのプラグインを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `plugin verify` | サイトに追加する前に、配布可能なプラグインのパッケージ境界を検査する | いいえ |
 | `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
 | `check` | アプリの設定、コンテンツルートの可用性、プラグインオプション、ケイパビリティの解決を検証する | いいえ |
 | `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |

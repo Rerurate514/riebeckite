@@ -64,6 +64,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Hard Breaks](./hard-breaks.ja.md) | 通常の改行を `<br>` として出力 |
 | [Alias](./alias.ja.md) | Obsidian の alias によるリダイレクト |
 | [Properties](./properties.ja.md) | frontmatter プロパティのパネル表示 |
+| [Meta Bind](./meta-bind.ja.md) | ブラウザ状態だけを使う安全な Meta Bind の入力と表示 |
 | [Bases](./bases.ja.md) | Obsidian Bases のビルド時テーブル |
 | [Citations](./citations.ja.md) | BibTeX・BibLaTeX の引用 |
 | [Sidenotes](./sidenotes.ja.md) | モバイルのポップオーバー付きの傍注 |

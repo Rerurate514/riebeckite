@@ -64,6 +64,14 @@ Plugins that generate HTML must:
 
 `inspectGeneratedHtml` is a final-page inspection hook for diagnostics. It is not a security scanner and should not be treated as a sanitizer.
 
+## Plugin endpoints
+
+Plugins can expose their own endpoints. Treat everything a browser or network sends to an endpoint as untrusted input, and validate the request body, query parameters, `Content-Type`, size, authentication, CORS, and rate limits where needed. Riebeckite mounts the endpoint and passes the request to the Plugin; it does not decide whether the data is appropriate for the Plugin's purpose.
+
+## What Riebeckite does not do automatically
+
+Riebeckite does not convert every input into safe HTML. In particular, raw HTML in Markdown, Plugin-generated HTML, and installed Plugin JavaScript are not sanitized automatically. This is deliberate: it lets a site owner publish their own Markdown and Obsidian vault as written. Content received from other people must be validated before it enters Riebeckite.
+
 ## Current built-in policies
 
 - Rich embeds accept only `https:` provider URLs. Known providers are converted to controlled iframe URLs, and generic iframes require an explicit host allow-list.

@@ -14,7 +14,7 @@ The build-time search index and plugin that let readers query content, built fro
 The search index is generated at build time from the manifest and contains entries with their slug, permalink, title, body, tags, and headings. Readers can query the index using the search plugin, which supports text search and filter by tag, language, or path.
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 
 const results = searchItems(manifest.entries, "plugin");
 ```
@@ -28,7 +28,7 @@ The search index is generated at build time by the search plugin (`packages/plug
 - **Path filter**: Filter results by URL path
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 // Example: search for entries with tag "plugin"
 const results = searchItems(manifest.entries, "plugin", { tags: ["plugin"] });
 // Example: search in Japanese
@@ -36,8 +36,6 @@ const results = searchItems(manifest.entries, "plugin", { lang: "ja" });
 ```
 
 The search plugin is registered during site setup and provides the search UI integration. Results are sorted by relevance, considering tag matches, language priority, and path proximity.
-
-## Related terms
 
 ## Related terms
 

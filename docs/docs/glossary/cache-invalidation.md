@@ -25,8 +25,6 @@ Cache invalidation is triggered in the following specific scenarios:
 
 ## Related terms
 
-## Related terms
-
 - [[glossary/cache|Cache]]
 - [[fingerprint|Fingerprint]]
 - [[glossary/build-dependency|Build Dependency]]

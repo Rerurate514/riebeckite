@@ -50,6 +50,16 @@ Riebeckiteでは、MarkdownにHTMLを直接書けます。
 
 これはObsidianとの互換性や、Markdownだけでは表現できない内容を記述できるようにするためです。
 
+### Markdown パイプライン
+
+Core のパイプラインは、意図的に raw HTML を有効にしています。
+
+- Markdown は `remark-rehype` で変換し、`allowDangerousHtml: true` を指定します。
+- raw HTML は `rehype-raw` で解析します。
+- HTML は `rehype-stringify` でシリアライズし、`allowDangerousHtml: true` を指定します。
+
+これはサニタイザーではなく、信頼できる Vault のための互換性と執筆機能です。信頼できないユーザーのコンテンツをビルドする場合は、Riebeckite へ渡す前にサニタイズするか拒否してください。
+
 その代わり、RiebeckiteはMarkdown内のHTMLを自動的には無害化しません。
 
 そのため、**信頼できない人が作成したMarkdownをそのまま公開しないでください**。
@@ -72,6 +82,8 @@ Pluginは、たとえば次のようなことができます。
 そのため、Pluginは一般的なnpm packageと同じように、**信頼できるものだけをインストールしてください**。
 
 RiebeckiteがPluginの処理内容を自動的に安全化することはありません。
+
+`inspectGeneratedHtml` は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
 
 ## 外部サイトのデータ
 
@@ -142,10 +154,11 @@ Riebeckiteの公式Pluginでも、外部データを扱うものには用途に�
 
 たとえば、
 
-- Rich Embedではiframeに利用できるURLを制限する
-- Webmentionでは取得先やレスポンスサイズなどを制限する
-- Analyticsでは送信先URLや受信するJSONを検証する
-- Autocardではリンクや画像URLを検証してからHTMLへ出力する
+- Rich Embed は `https:` のプロバイダー URL だけを受け付け、既知のプロバイダーを制御された iframe URL へ変換します。汎用 iframe はホストの明示的な許可リストが必要です。
+- Webmention の取得元は HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、既定でプライベートホストを拒否します。
+- Analytics の収集 URL はサイト相対または HTTP(S) に限られ、Cloudflare Worker 連携は JSON の形と本文サイズを検証します。
+- Autocard のメタデータリンクと画像はエスケープされ、相対 URL、`http:`、`https:` に制限されます。
+- Diagram とメディアの Plugin は、設定された外部プロバイダーをブラウザに読み込ませることがあります。その URL は信頼できる設定として扱ってください。
 
 といった対策を行っています。
 

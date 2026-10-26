@@ -65,6 +65,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Hard Breaks](./hard-breaks.md) | Render ordinary line breaks as `<br>` |
 | [Alias](./alias.md) | Obsidian alias redirects for notes |
 | [Properties](./properties.md) | Frontmatter property panels |
+| [Meta Bind](./meta-bind.md) | Safe, browser-state-only Meta Bind inputs and views |
 | [Bases](./bases.md) | Build-time Obsidian Bases tables |
 | [Citations](./citations.md) | BibTeX and BibLaTeX citations |
 | [Sidenotes](./sidenotes.md) | Tufte-style side notes with mobile popovers |

@@ -26,7 +26,7 @@ You do not have to read Reference from start to finish. When you want to check a
 | --- | --- |
 | [Configuration](./configuration.md) | `riebeckite.config.ts`, roots, content, theme, plugins |
 | [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
-| [CLI](./cli.md) | `dev`, `check`, `doctor`, `build`, `profile`, `inspect` |
+| [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `upgrade`, `profile`, `inspect`, `theme preview`, `plugin dev`, `plugin verify` |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |
 | [Theme API](./theme-api.md) | `defineTheme`, CSS contract, tokens, color mode, package shape |
 | [Framework](../framework/README.md) | Riebeckite's internal structure |
@@ -51,10 +51,17 @@ In [CLI](./cli.md) you can check each command and its role:
 
 ```text
 init
+create
+theme preview
+plugin dev
+plugin verify
 dev
 check
 doctor
+upgrade --check
 build
+clean
+deploy
 profile
 inspect
 ```
@@ -97,7 +104,15 @@ External plugins and themes should depend on public packages and public exports 
 | --- | --- |
 | `@riebeckite/core` | `defineConfig`, `definePlugin`, `defineTheme`, content APIs, pipeline APIs, diagnostics, observability types |
 | `@riebeckite/cli` | `riebeckite` CLI binary |
-| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `resolveRiebeckiteContentRequest`, `resolveRiebeckiteHomeRequest`, `contentRouteSsgParams`, `riebeniteSsgParams`), and the `ui` subpath exports the article/site UI primitives (`Article`, `ArticleBody`, `PageBody`, `ArticleContent`, and their props) |
+| `@riebeckite/honox` | HonoX integration and scaffolding support; the `server` subpath exports the route/SSG helpers (`resolveRiebeckiteRoute`, `resolveRiebeckiteContentRequest`, `resolveRiebeckiteHomeRequest`, `contentRouteSsgParams`, `riebeckiteSsgParams`), and the `ui` subpath exports the article/site UI primitives (`Article`, `ArticleBody`, `PageBody`, `ArticleContent`, and their props) |
+| `create-riebeckite` | `create-riebeckite` scaffolding CLI |
+| `@riebeckite/diagnostics` | Shared development diagnostics for the CLI and integrations |
+| `@riebeckite/diagram` | Shared diagram infrastructure for diagram plugins |
+| `@riebeckite/preview` | Secure Markdown preview runtime |
+| `@riebeckite/spa` | Opt-in SPA navigation runtime |
+| `@riebeckite/ui` | Declarative UI context for integrations and plugins |
+| `@riebeckite/analytics-cloudflare` | Cloudflare Workers, D1, and KV runtime for analytics |
+| `@riebeckite/webmention-cloudflare` | Cloudflare Workers, D1, and KV runtime for Webmentions |
 | `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |

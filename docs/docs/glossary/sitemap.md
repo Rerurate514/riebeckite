@@ -14,9 +14,9 @@ A generated sitemap/robots listing discoverable URLs for search engines, built f
 The sitemap is generated from the manifest's discoverable entries and includes URLs with their lastmod, changefreq, and priority values. It is used by search engines to discover and index site content.
 
 ```ts
-import { buildSitemap } from "@riebeckite/plugins/seo";
+import { renderSitemap } from "@riebeckite/plugin-seo";
 
-const sitemap = buildSitemap(manifest.discoverableEntries);
+const sitemap = renderSitemap(manifest.discoverableEntries);
 ```
 
 ## Sitemap generation details
@@ -33,8 +33,6 @@ The sitemap includes the site root URL and all discoverable entry URLs (excludin
 import { renderSitemap } from "@riebeckite/plugin-seo";
 // Usage: renderSitemap(config, entries) returns the sitemap XML string
 ```
-
-## Related terms
 
 ## Related terms
 

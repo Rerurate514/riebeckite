@@ -47,14 +47,6 @@ Examples of generated output dependency declarations:
   "dependencies": [{ "type": "unknown" }]
 }
 
-Each generated output has a `producer` (e.g., `plugin:${output.owner}`) and a list of `dependencies` of type `OutputDependency`.
-Without declared dependencies, a generated output is `unknown`, which triggers full output regeneration.
-
-## Comparison with content outputs
-
-Content outputs are owned by content entries and have `content` type dependencies.
-Generated outputs are owned by plugins and can have arbitrary dependency types.
-
 ## Related terms
 
 - [[ssg|SSG]]

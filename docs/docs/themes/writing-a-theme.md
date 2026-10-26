@@ -129,7 +129,9 @@ styles
 
 `styles[].moduleSpecifier` must be a module specifier the host bundler can resolve. For an in-site theme, use something like `/extensions/theme.css`.
 
-Pass it to `theme` in `riebeckite.config.ts`.
+## 3. Use the theme on a site
+
+Pass the theme to `theme` in `riebeckite.config.ts`.
 
 ```ts
 // riebeckite.config.ts
@@ -155,7 +157,7 @@ riebeckite.config.ts
 Site
 ```
 
-## 3. Write the CSS
+## 4. Write the CSS
 
 Do not hardcode colors. Use **semantic tokens (`--rb-*`) and stable hooks (`rb-*` / `rr-<feature>`)** so themes stay swappable, and scope every rule to the theme root selector. Replace `<name>` with the theme's identity name — here the theme is named `local`.
 
@@ -308,7 +310,7 @@ Because a theme looks at semantic hooks instead of page kinds, it stays loosely 
 
 Themes also own the visual accessibility contract. Keep visible focus styles, readable contrast in light and dark modes, recognizable links, scalable text, reduced-motion behavior, and non-color-only state cues. See [Accessibility](../accessibility.md).
 
-## 4. Support Light / Dark mode
+## 5. Support Light / Dark mode
 
 To support color modes, handle three states:
 
@@ -356,7 +358,7 @@ In system mode the attribute is not `data-theme=""`; **the `data-theme` attribut
 
 CSS ordering is fixed: theme CSS loads before `userCss` (which is highest priority). See [Theme System](../reference/theme-api.md) for the token and hook lists and the cascade details.
 
-## 5. Check accessibility
+## 6. Check accessibility
 
 A theme changes appearance, so it also affects accessibility. Check in particular:
 
@@ -368,7 +370,7 @@ A theme changes appearance, so it also affects accessibility. Check in particula
 
 A theme must keep content readable, not merely look attractive. See [Accessibility](../accessibility.md) for details.
 
-## 6. Understand the CSS load order
+## 7. Understand the CSS load order
 
 Riebeckite fixes the CSS load order. Theme CSS is applied before `userCss`:
 
@@ -396,7 +398,7 @@ userCss
 
 A theme does not need to carry site-specific overrides. For the exact cascade, see [Theme API](../reference/theme-api.md).
 
-## 7. Check in the browser
+## 8. Check in the browser
 
 Start the development server:
 
@@ -419,7 +421,7 @@ Open real articles and check:
 
 Check real articles, not only a demo page.
 
-## 8. Run Riebeckite's checks
+## 9. Run Riebeckite's checks
 
 Validate the configuration:
 
@@ -441,7 +443,7 @@ Each command checks something different:
 
 `check` / `doctor` / `inspect` are read-only. They never edit theme files automatically. Fix what the diagnostics say.
 
-## 9. Package it for distribution (optional)
+## 10. Package it for distribution (optional)
 
 Once it works in a site, you can distribute it. Use `packages/themes/minimal` as a template.
 
@@ -630,6 +632,15 @@ Theme
 ```
 
 Keeping that boundary lets a theme keep working when new plugins or Page Types are added.
+
+### Related pages
+
+- [Themes](./README.md) — choosing and using a theme
+- [Themes in depth](../framework/theme-system.md) — options, tokens, hooks, cascade and distribution
+- [Theme API](../reference/theme-api.md) — `defineTheme` and the theme contract
+- [Writing a Plugin](../plugins/writing-a-plugin.md) — when you need to add features
+- [Plugin API](../reference/plugin-api.md) — the plugin contract
+- [Accessibility](../accessibility.md) — accessibility when writing a theme
 
 ## Further reading
 

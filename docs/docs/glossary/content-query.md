@@ -21,7 +21,7 @@ Content queries are resolved through the `content-query` plugin and support filt
 | `frontmatter field` | Match by arbitrary frontmatter key |
 
 ```ts
-import { searchItems } from "@riebeckite/plugins/search";
+import { searchItems } from "@riebeckite/plugin-search";
 
 const results = searchItems(entries, "tag:news");
 ```

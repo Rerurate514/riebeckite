@@ -739,21 +739,21 @@ there is no client).
 ```
 
 Building in `prepack` keeps `npm pack` / `npm publish` shipping fresh output.
-Puting `@riebeckite/core` in `dependencies` is the simplest choice; use
+Putting `@riebeckite/core` in `dependencies` is the simplest choice; use
 `peerDependencies` instead when the site should provide the module instance.
 Declare each transform dependency you import (`unist-util-visit`, `unified`,
 remark/rehype packages) in `dependencies`, and never point a published `exports`
 entry at TypeScript source (`./index.ts`).
 
 For testing a distributed package, see [Testing](../framework/testing.md#testing-a-plugin);
-for CSS and client packaging, see [Assets](#assets) and [Client entries](#client-entries).
+for CSS and client packaging, see [Assets and client entries](#assets-and-client-entries).
 
 ### Distributing a Plugin outside this repository
 
 An external Plugin package depends only on `@riebeckite/core` and declares the
 subpaths it owns (`./client`, `./components`, `./style.css`) in its own `exports`
 map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
-[Public packages and import paths](./README.md#public-packages-and-import-paths)
+[Public packages and import paths](./README.md#public-packages-and-imports)
 for the supported package surface and current constraints.
 
 ### Package shape
@@ -787,7 +787,7 @@ A complete, copyable manifest:
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.19",
+    "@riebeckite/core": "^0.0.32",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
@@ -845,98 +845,6 @@ await build({
 }
 ```
 
-`prepack`でbuildするようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark/rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
-
-配布する Package のテストは [Testing](../framework/testing.md#testing-a-plugin) を、CSS / Client entry の packaging は [Assets](#assets) と [Client Entries](#client-entries) を参照してください。
-
-### Package 構成
-
-公開 package では、Build 済み ESM と型定義を publish し、`exports` をその
-Build 成果物へ向けます。最小構成の `package.json` は次のとおりです。
-
-```json
-{
-  "name": "my-riebeckite-plugin",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.js",
-      "default": "./dist/client.js"
-    },
-    "./style.css": "./style.css"
-  },
-  "files": ["dist", "style.css"],
-  "scripts": {
-    "build": "node build.mjs && tsc -p tsconfig.json",
-    "prepack": "npm run build"
-  },
-  "dependencies": {
-    "@riebeckite/core": "^0.0.19",
-    "unist-util-visit": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/mdast": "^4.0.0",
-    "esbuild": "^0.28.0",
-    "typescript": "^5.0.0"
-  }
-}
-```
-
-`client.ts` や `style.css` を持たない Plugin では、その subpath と `files` の entry を削除します。
-
-JavaScript の entry point は `esbuild` で bundle し、型定義は `tsc` で emit します。どちらも一般的なツールで、Riebeckite 固有の build script は必要ありません。
-
-`build.mjs`:
-
-```js
-import { build } from "esbuild";
-
-await build({
-  entryPoints: ["index.ts", "client.ts"],
-  outdir: "dist",
-  bundle: true,
-  format: "esm",
-  platform: "neutral",
-  packages: "external",
-  external: ["@riebeckite/*"],
-  logLevel: "warning",
-});
-```
-
-`entryPoints` には、その Package が持つ entry だけを列挙します（client を持たないなら `index.ts` だけ）。
-
-`tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
-    "rootDir": ".",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ESNext",
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["index.ts", "client.ts"]
-}
-```
-
-`prepack` で build するようにしておけば、`npm pack` / `npm publish` は常に最新の成果物を同梱します。`@riebeckite/core` は `dependencies` に置くのが最も簡単です（Site 側の instance を共有したい場合は `peerDependencies` でもかまいません）。import する変換依存（`unist-util-visit`、`unified`、remark / rehype package など）は `dependencies` に宣言し、公開 package の `exports` を TypeScript の source（`./index.ts`）へ向けないでください。
-
-公式 Plugin も可能な限り同じ Public API の consumer として実装します。
 
 ## Responsibility boundary
 

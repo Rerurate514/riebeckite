@@ -526,7 +526,7 @@ Do not reorder those imports, and do not edit the generated files by hand;
 each carries a header comment stating its position in the cascade. The
 cascade normally does not rely on `!important`.
 
-## Theme vs Plugin
+## What a theme must not do
 
 Themes own appearance, semantic tokens, stable-hook styling, and
 presentation attributes. Plugins own transformations, renderers, client
@@ -582,7 +582,7 @@ packages/themes/example/
 An external Theme package depends only on `@riebeckite/core`, uses `defineTheme`,
 and exposes its stylesheet through a `./style.css` export. Do not reference
 monorepo paths. See
-[Public packages and import paths](./README.md#public-packages-and-import-paths)
+[Public packages and import paths](./README.md#public-packages-and-imports)
 for the supported package surface and current constraints.
 
 Following the shared contract keeps themes replaceable without changing

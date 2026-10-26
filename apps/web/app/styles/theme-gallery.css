@@ -76,8 +76,8 @@
   min-height: 2.4rem;
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
-  background: var(--rb-color-background);
-  color: var(--rb-color-text);
+  background: var(--rb-color-paper);
+  color: var(--rb-color-ink);
   font: inherit;
   padding-inline: 0.65rem;
 }
@@ -207,7 +207,7 @@
   grid-column: 1 / -1;
 }
 .theme-showcase__theme-actions a {
-  color: var(--rb-color-text);
+  color: var(--rb-color-ink);
   font-size: 0.875rem;
 }
 @media (max-width: 42rem) {

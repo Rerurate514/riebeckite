@@ -40,6 +40,9 @@ export function renderExcaliBrainSvg(
   parts.push(
     `<svg class="${className}__svg" viewBox="0 0 ${layout.width} ${layout.height}" role="img" aria-label="${escapeAttribute(`${graph.center.title} ExcaliBrain`)}" xmlns="http://www.w3.org/2000/svg" width="${layout.width}" height="${layout.height}">`,
   );
+  parts.push(
+    `<defs><marker id="${className}-arrow" class="${className}__arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker></defs>`,
+  );
 
   const links = layout.links
     .map((link) => renderLink(link, byId, className))
@@ -105,7 +108,7 @@ function renderNode(
   node: ExcaliBrainPositionedNode,
   className: string,
 ): string {
-  const box = `<rect class="${className}__node-box" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" rx="4" />`;
+  const box = `<rect class="${className}__node-box" x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" rx="8" />`;
   const label = `<text class="${className}__node-label" x="${round(
     node.x + node.width / 2,
   )}" y="${round(node.y + node.height / 2)}" text-anchor="middle" dominant-baseline="middle">${escapeHtml(node.title)}</text>`;
@@ -134,8 +137,12 @@ function renderLink(
   const to = byId.get(link.to);
   if (!from || !to) return "";
 
-  const d = `M ${round(from.x + from.width / 2)} ${round(from.y + from.height / 2)} L ${round(to.x + to.width / 2)} ${round(to.y + to.height / 2)}`;
-  return `<path class="${className}__link" data-link-role="${ROLE_ATTRIBUTE[link.role]}" data-relation-type="${link.relationType}" d="${d}" />`;
+  const fromX = from.x + from.width / 2;
+  const fromY = from.y + from.height / 2;
+  const toX = to.x + to.width / 2;
+  const toY = to.y + to.height / 2;
+  const d = `M ${round(fromX)} ${round(fromY)} L ${round(toX)} ${round(toY)}`;
+  return `<path class="${className}__link" data-link-role="${ROLE_ATTRIBUTE[link.role]}" data-relation-type="${link.relationType}" marker-end="url(#${className}-arrow)" d="${d}" />`;
 }
 
 function round(value: number): number {

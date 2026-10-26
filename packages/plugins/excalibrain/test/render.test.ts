@@ -143,6 +143,9 @@ test("lays out every region deterministically", () => {
     new URL("./__golden__/layout.json", import.meta.url),
   );
 
+  assertNoOverlap(layout.nodes, "left", "previous");
+  assertNoOverlap(layout.nodes, "right", "next");
+
   const collapsed = layoutExcaliBrain(GRAPH, { maxPerRegion: 0 });
   assert.equal(collapsed.nodes.length, 1);
   assert.equal(collapsed.nodes[0]?.region, "center");
@@ -191,7 +194,40 @@ test("renders an SVG with escaped titles and links", () => {
   );
   assert.ok(svg.includes('data-node-slug="a&amp;b"'));
   assert.ok(svg.includes("&lt;"));
+  assert.ok(svg.includes("__arrow"));
 });
+
+test("renders directional links", () => {
+  const svg = renderExcaliBrainSvg(GRAPH, layoutExcaliBrain(GRAPH));
+
+  assert.ok(svg.includes('marker-end="url(#rb-excalibrain-arrow)"'));
+  assert.ok(svg.includes(' d="M '));
+  assert.ok(svg.includes(" L "));
+});
+
+function assertNoOverlap(
+  nodes: readonly {
+    id: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[],
+  firstId: string,
+  secondId: string,
+): void {
+  const first = nodes.find((node) => node.id === firstId);
+  const second = nodes.find((node) => node.id === secondId);
+
+  assert.ok(first);
+  assert.ok(second);
+  assert.ok(
+    first.x + first.width <= second.x ||
+      second.x + second.width <= first.x ||
+      first.y + first.height <= second.y ||
+      second.y + second.height <= first.y,
+  );
+}
 
 test("renders build, client and both section modes", () => {
   const layout = layoutExcaliBrain(GRAPH);

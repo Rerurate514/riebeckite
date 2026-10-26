@@ -82,6 +82,11 @@ export function layoutExcaliBrain(
     nearRadius,
     Math.min(nearRadius * 1.5, minDimension / 2 - 28),
   );
+  const sideFarRadius = Math.max(0, width / 2 - MAX_NODE_WIDTH / 2 - 4);
+  const sideNearRadius = Math.min(
+    sideFarRadius,
+    Math.max(MAX_CENTER_WIDTH / 2 + MAX_NODE_WIDTH / 2 + 20, width * 0.16),
+  );
 
   const positioned: ExcaliBrainPositionedNode[] = [
     positionCenter(graph.center, cx, cy, width, height),
@@ -123,7 +128,14 @@ export function layoutExcaliBrain(
     }
 
     const anchor = ROLE_ANCHOR[role];
-    const radius = anchor.radius === "far" ? farRadius : nearRadius;
+    const radius =
+      role === "leftFriend" || role === "rightFriend"
+        ? sideNearRadius
+        : role === "previous" || role === "next"
+          ? sideFarRadius
+          : anchor.radius === "far"
+            ? farRadius
+            : nearRadius;
     group.forEach((node, index) => {
       const angle = spreadAngle(anchor.angle, index, group.length);
       positioned.push(positionNode(node, angle, radius, cx, cy, width, height));

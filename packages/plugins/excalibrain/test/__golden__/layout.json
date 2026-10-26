@@ -53,7 +53,7 @@
       "slug": "left",
       "permalink": "/left",
       "virtual": false,
-      "x": 170,
+      "x": 129,
       "y": 222,
       "width": 93,
       "height": 36
@@ -67,7 +67,7 @@
       "slug": "right",
       "permalink": "/right",
       "virtual": false,
-      "x": 455,
+      "x": 496,
       "y": 222,
       "width": 99,
       "height": 36
@@ -81,7 +81,7 @@
       "slug": "previous",
       "permalink": "/previous",
       "virtual": false,
-      "x": 112,
+      "x": 43,
       "y": 222,
       "width": 73,
       "height": 36
@@ -95,7 +95,7 @@
       "slug": "next",
       "permalink": "/next",
       "virtual": false,
-      "x": 544,
+      "x": 613,
       "y": 222,
       "width": 56,
       "height": 36

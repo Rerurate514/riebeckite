@@ -120,6 +120,35 @@ test("trusts raw HTML added by plugins", async () => {
   );
 });
 
+test("keeps interactive and PDF elements added by Markdown plugins", async () => {
+  const plugin = definePlugin({
+    name: "markdown-plugin-elements",
+    extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(() => (tree: Node) => {
+        const root = tree as unknown as HtmlNode;
+        root.children ??= [];
+        root.children.push({
+          type: "html",
+          value:
+            '<span data-meta-bind="input"><input class="rb-meta-bind__control" type="range" value="2" min="0" max="10" step="1"></span><output data-meta-bind="view">2</output><figure class="rr-pdf"><object class="rr-pdf__viewer" data="/report.pdf" type="application/pdf"></object></figure>',
+        });
+      });
+    },
+  });
+
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [plugin],
+  }).execute("# Title");
+
+  assert.match(html, /data-meta-bind="input"/);
+  assert.match(html, /<input[^>]*type="range"[^>]*value="2"/);
+  assert.match(html, /<output data-meta-bind="view">2<\/output>/);
+  assert.match(
+    html,
+    /<object[^>]*data="\/report\.pdf"[^>]*type="application\/pdf"><\/object>/,
+  );
+});
+
 test("frontmatter-only content produces no body html", async () => {
   const { frontmatter, html } = await createPipeline().execute(
     "---\ntitle: Only\n---\n",

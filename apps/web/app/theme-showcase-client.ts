@@ -14,7 +14,21 @@ import rerurateStyle from "@riebeckite/theme-rerurate/style.css?inline";
 import sakuraStyle from "@riebeckite/theme-sakura/style.css?inline";
 import technicalStyle from "@riebeckite/theme-technical/style.css?inline";
 import tokyonightStyle from "@riebeckite/theme-tokyonight/style.css?inline";
+import sakuraSerifFont from "../../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline";
+import tokyonightMonoFont from "../../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline";
 import { showcaseFixtures, showcaseThemes } from "./lib/theme-showcase";
+
+function inlinePreviewFont(
+  style: string,
+  fileName: string,
+  dataUrl: string,
+): string {
+  const stem = fileName.replace(/\.[^.]+$/, "");
+  return style.replace(
+    new RegExp(`url\\([^)]*${stem}[^)]*\\)`),
+    () => `url("${dataUrl}")`,
+  );
+}
 
 const themeStyles = {
   riebeckite: defaultStyle,
@@ -24,9 +38,17 @@ const themeStyles = {
   gruvbox: gruvboxStyle,
   minimal: minimalStyle,
   rerurate: rerurateStyle,
-  sakura: sakuraStyle,
+  sakura: inlinePreviewFont(
+    sakuraStyle,
+    "source-serif-4-latin-wght-normal.woff2",
+    sakuraSerifFont,
+  ),
   technical: technicalStyle,
-  tokyonight: tokyonightStyle,
+  tokyonight: inlinePreviewFont(
+    tokyonightStyle,
+    "jetbrains-mono-latin-wght-normal.woff2",
+    tokyonightMonoFont,
+  ),
 };
 const themeAttributes = Object.fromEntries(
   showcaseThemes.map((theme) => [theme.name, theme.attributes]),

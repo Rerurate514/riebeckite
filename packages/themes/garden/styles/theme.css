@@ -162,6 +162,9 @@
   :is(pre, code) {
   font-family: var(--rb-font-mono);
 }
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content pre {
+  overflow-x: auto;
+}
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content table {
   border-collapse: collapse;
   display: block;

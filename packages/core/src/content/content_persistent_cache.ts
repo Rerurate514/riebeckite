@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -37,7 +37,7 @@ export const CONTENT_CACHE_SCHEMA_VERSION = 5;
 export const CONTENT_CACHE_COMPATIBILITY_VERSION = 3;
 
 function hash(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(value).digest("hex");
 }
 
 function cacheDirectory(config: ResolvedRiebeckiteConfig): string {
@@ -70,7 +70,8 @@ async function writeAtomically(
   serialized: string,
 ): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
-  const temporaryPath = `${targetPath}.${createHash("sha256")
+  const temporaryPath = `${targetPath}.${crypto
+    .createHash("sha256")
     .update(`${Date.now()}-${Math.random()}`)
     .digest("hex")
     .slice(0, 12)}.tmp`;

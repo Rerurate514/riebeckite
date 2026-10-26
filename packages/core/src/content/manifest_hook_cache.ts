@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import { stableStringify } from "../plugin/plugin_memo.js";
 import type {
   ContentManifest,
@@ -287,7 +287,10 @@ function manifestFingerprintValue(manifest: ContentManifest) {
 
 function fingerprintManifest(value: unknown): string {
   const normalized = JSON.parse(JSON.stringify(value));
-  return createHash("sha256").update(stableStringify(normalized)).digest("hex");
+  return crypto
+    .createHash("sha256")
+    .update(stableStringify(normalized))
+    .digest("hex");
 }
 
 function isManifestEntry(value: unknown): value is ContentManifestEntry {

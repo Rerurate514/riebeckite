@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from "node:crypto";
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { Logger, Tracer } from "../observability.js";
@@ -110,7 +110,7 @@ async function writeAtomically(
   serialized: string,
 ): Promise<void> {
   await fs.mkdir(versionDirectory, { recursive: true });
-  const temporaryPath = `${targetPath}.${randomUUID()}.tmp`;
+  const temporaryPath = `${targetPath}.${crypto.randomUUID()}.tmp`;
 
   try {
     await fs.writeFile(temporaryPath, serialized, "utf8");
@@ -141,7 +141,7 @@ function pluginNamespace(pluginName: string): string {
 }
 
 function hash(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(value).digest("hex");
 }
 
 function isNotFoundError(error: unknown): boolean {

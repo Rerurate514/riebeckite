@@ -9,34 +9,22 @@ const PUBLIC_RUNTIME_EXPORTS = [
   "GITHUB_ACTIONS_SECRETS",
   "SCAFFOLD_DEFAULT_PRESET",
   "SCAFFOLD_DEFAULT_UTILITIES",
+  "SCAFFOLD_FEATURE_NAMES",
+  "SCAFFOLD_FEATURE_PACKS",
   "SCAFFOLD_PRESETS",
   "SCAFFOLD_UTILITIES",
   "SCAFFOLD_UTILITY_NAMES",
   "ScaffoldSiteError",
   "deploymentWorkflow",
   "formatScaffoldNextSteps",
+  "isScaffoldFeatureName",
   "isScaffoldPresetName",
   "isScaffoldUtilityName",
+  "parseScaffoldFeatures",
   "parseScaffoldUtilities",
   "scaffoldDeploymentFromFlags",
   "scaffoldRiebeckiteSite",
   "wranglerConfigForDirectory",
-];
-
-const REMOVED_EXPORTS = [
-  "DEFAULT_PRESET",
-  "README_DEMOS",
-  "WRANGLER_DEFAULTS",
-  "buildDefaultWranglerConfig",
-  "buildWranglerConfig",
-  "deploymentTemplateFiles",
-  "empty",
-  "minimal",
-  "resolveScaffoldPreset",
-  "scaffoldPresets",
-  "showcase",
-  "starter",
-  "workerNameFromDirectory",
 ];
 
 const ALLOWED_CLI_IMPORTS = new Set([
@@ -47,6 +35,8 @@ const ALLOWED_CLI_IMPORTS = new Set([
   "ScaffoldContentSource",
   "ScaffoldDeployment",
   "ScaffoldDeploymentFlags",
+  "ScaffoldFeatureName",
+  "ScaffoldFeaturePack",
   "ScaffoldNextStepsOptions",
   "ScaffoldPresetName",
   "ScaffoldPresetSummary",
@@ -58,6 +48,7 @@ const ALLOWED_CLI_IMPORTS = new Set([
   "deploymentWorkflow",
   "formatScaffoldNextSteps",
   "isScaffoldPresetName",
+  "parseScaffoldFeatures",
   "parseScaffoldUtilities",
   "scaffoldDeploymentFromFlags",
   "scaffoldRiebeckiteSite",
@@ -72,12 +63,6 @@ test("the scaffold entry exposes only the intended public runtime values", () =>
     Object.keys(scaffold).sort(),
     [...PUBLIC_RUNTIME_EXPORTS].sort(),
   );
-});
-
-test("the scaffold entry no longer re-exports internal generator helpers", () => {
-  for (const name of REMOVED_EXPORTS) {
-    assert.equal(Object.hasOwn(scaffold, name), false, name);
-  }
 });
 
 test("@riebeckite/cli imports only the public scaffold surface", async () => {

@@ -32,26 +32,6 @@
   height: auto;
 }
 
-.rb-d2__fallback {
-  border-top: 1px solid var(--rb-d2-rule);
-  color: var(--rb-d2-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-d2__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-d2__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-d2-rule);
-  color: var(--rb-d2-ink);
-  background: color-mix(in srgb, var(--rb-d2-ink) 6%, transparent);
-}
-
 .rb-d2[data-d2="error"] .rb-d2__canvas::before,
 .rb-d2[data-d2="pending"] .rb-d2__canvas:empty::before {
   content: "Diagram could not be rendered.";

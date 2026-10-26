@@ -131,10 +131,14 @@ function buildFigure(input: {
   );
   if (input.fallback) {
     children.push(
-      element("details", { className: `${input.className}__fallback` }, [
-        element("summary", {}, [text("Diagram source")]),
-        element("pre", {}, [element("code", {}, [text(input.source)])]),
-      ]),
+      element(
+        "details",
+        { className: `${input.className}__fallback rb-source-fallback` },
+        [
+          element("summary", {}, [text("Diagram source")]),
+          element("pre", {}, [element("code", {}, [text(input.source)])]),
+        ],
+      ),
     );
   }
   return element(

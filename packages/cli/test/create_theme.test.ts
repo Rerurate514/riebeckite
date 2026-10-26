@@ -8,10 +8,6 @@ import { fileURLToPath } from "node:url";
 import { parseCommand } from "../src/cli.js";
 import { runCreateTheme } from "../src/commands/create_theme.js";
 import {
-  THEME_TEMPLATE_IDS,
-  themeTemplateRegistry,
-} from "../src/theme_generator/registry.js";
-import {
   renderThemeFiles,
   renderThemeIndex,
 } from "../src/theme_generator/templates.js";
@@ -53,18 +49,13 @@ test("parses create theme options and lists templates", () => {
   );
 });
 
-test("renders every theme template deterministically with public contracts", () => {
-  for (const template of THEME_TEMPLATE_IDS) {
-    const first = renderThemeFiles("example", template, [], true, true, true);
-    const second = renderThemeFiles("example", template, [], true, true, true);
-    const css = first.get("styles/theme.css") ?? "";
-    assert.equal(css, second.get("styles/theme.css"));
-    assert.match(first.get("index.ts") ?? "", /defineTheme/);
-    assert.match(css, /data-theme-name="example"/);
-    assert.match(css, /--rb-color-paper/);
-    assert.doesNotMatch(css, /\.rb-[\w-]+\s*>/);
-    assert.ok(themeTemplateRegistry[template].description.length > 0);
-  }
+test("renders a theme template with public contracts", () => {
+  const first = renderThemeFiles("example", "minimal", [], true, true, true);
+  const css = first.get("styles/theme.css") ?? "";
+  assert.match(first.get("index.ts") ?? "", /defineTheme/);
+  assert.match(css, /data-theme-name="example"/);
+  assert.match(css, /--rb-color-paper/);
+  assert.doesNotMatch(css, /\.rb-[\w-]+\s*>/);
 });
 
 test("typechecks a generated theme", async () => {

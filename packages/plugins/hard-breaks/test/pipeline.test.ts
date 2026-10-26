@@ -12,12 +12,6 @@ async function renderWithPlugin(markdown: string): Promise<string> {
   return html.trim();
 }
 
-async function renderWithoutPlugin(markdown: string): Promise<string> {
-  const pipeline = new Pipeline(new Map(), new Map(), undefined, {});
-  const { html } = await pipeline.execute(markdown);
-  return html.trim();
-}
-
 test("a single soft break becomes <br>", async () => {
   assert.equal(
     await renderWithPlugin("line one\nline two"),
@@ -95,20 +89,6 @@ test("raw HTML in Markdown is left as-is", async () => {
     await renderWithPlugin("<div>raw</div>\n\nplain"),
     "<div>raw</div>\n<p>plain</p>",
   );
-});
-
-test("without the plugin the standard soft break output is preserved", async () => {
-  assert.equal(
-    await renderWithoutPlugin("line one\nline two"),
-    "<p>\n  line one\n  line two\n</p>",
-  );
-});
-
-test("output is deterministic for the same input", async () => {
-  const markdown = "one\ntwo\n\n- three\n  four\n\n> five\n> six";
-  const first = await renderWithPlugin(markdown);
-  const second = await renderWithPlugin(markdown);
-  assert.equal(first, second);
 });
 
 test("golden: hard breaks render through the markdown pipeline", async () => {

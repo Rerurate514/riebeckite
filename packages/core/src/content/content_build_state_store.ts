@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { OutputDependency } from "../types/output_dependency.js";
@@ -74,7 +74,7 @@ export async function saveContentBuildState(
   state: ContentBuildState,
 ): Promise<void> {
   const directory = path.dirname(statePath);
-  const temporaryPath = `${statePath}.${randomUUID()}.tmp`;
+  const temporaryPath = `${statePath}.${crypto.randomUUID()}.tmp`;
   await fs.mkdir(directory, { recursive: true });
 
   try {

@@ -34,26 +34,6 @@
   height: auto;
 }
 
-.rb-wavedrom__fallback {
-  border-top: 1px solid var(--rb-wavedrom-rule);
-  color: var(--rb-wavedrom-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-wavedrom__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-wavedrom__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-wavedrom-rule);
-  color: var(--rb-wavedrom-ink);
-  background: color-mix(in srgb, var(--rb-wavedrom-ink) 6%, transparent);
-}
-
 .rb-wavedrom[data-wavedrom="pending"] .rb-wavedrom__canvas:empty::before,
 .rb-wavedrom[data-wavedrom="error"] .rb-wavedrom__canvas:empty::before {
   content: "Timing diagram could not be rendered.";

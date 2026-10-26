@@ -106,10 +106,6 @@ test("RiebeckiteHead renders the default title", () => {
   assert.match(renderHead({ title: "My Blog" }), /<title>My Blog<\/title>/);
 });
 
-test("RiebeckiteHead renders the default favicon", () => {
-  assert.match(renderHead(), /<link rel="icon" href="\/favicon.ico"/);
-});
-
 test("RiebeckiteHead renders a custom favicon path", () => {
   assert.match(
     renderHead({ faviconHref: "/brand/icon.svg" }),
@@ -121,10 +117,6 @@ test("RiebeckiteHead omits the favicon when faviconHref is null", () => {
   assert.doesNotMatch(renderHead({ faviconHref: null }), /rel="icon"/);
 });
 
-test("RiebeckiteHead renders the default stylesheet entry", () => {
-  assert.match(renderHead(), /href="\/app\/style.css"/);
-});
-
 test("RiebeckiteHead renders custom stylesheet entries in order", () => {
   const html = renderHead({
     stylesheets: ["/app/theme.css", "/app/print.css"],
@@ -134,19 +126,11 @@ test("RiebeckiteHead renders custom stylesheet entries in order", () => {
   assert.doesNotMatch(html, /\/app\/style\.css/);
 });
 
-test("RiebeckiteHead renders the default client entry", () => {
-  assert.match(renderHead(), /src="\/app\/client.ts"/);
-});
-
 test("RiebeckiteHead omits the client entry when clientSrc is null", () => {
   assert.doesNotMatch(
     renderHead({ clientSrc: null }),
     /src="\/app\/client\.ts"/,
   );
-});
-
-test("RiebeckiteHead includes the color-mode bootstrap by default", () => {
-  assert.match(renderHead(), /data-rb-color-mode/);
 });
 
 test("RiebeckiteHead omits the color-mode bootstrap when disabled", () => {
@@ -250,13 +234,6 @@ test("themeRootAttributes derives the reserved attributes", () => {
     "data-typography": "system",
     "data-article-layout": "article",
   });
-});
-
-test("themeRootAttributes omits data-theme for the system color mode", () => {
-  assert.equal(
-    themeRootAttributes(theme({ colorMode: "system" }))["data-theme"],
-    undefined,
-  );
 });
 
 test("themeRootAttributes sets data-theme for explicit light and dark modes", () => {

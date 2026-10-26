@@ -255,14 +255,17 @@ export class Pipeline {
     markDownContent: string,
     context: MarkdownExecutionContext = {},
   ): Promise<PostContent> {
+    const dependencyTracker =
+      this.options.contentSource &&
+      (this.persistentCache || this.options.onContentDependencies)
+        ? createContentDependencyTracker(this.options.contentSource)
+        : null;
     return await this.executeWithEmbedState(
       markDownContent,
       context,
       0,
       new Set(context.sourceSlug ? [context.sourceSlug] : []),
-      this.options.contentSource
-        ? createContentDependencyTracker(this.options.contentSource)
-        : null,
+      dependencyTracker,
     );
   }
 

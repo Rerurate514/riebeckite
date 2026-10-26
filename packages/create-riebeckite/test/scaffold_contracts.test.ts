@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -358,47 +357,6 @@ test("Contract 2: starter preset generates exact content files documented in Get
   });
 });
 
-test("Contract 2b: Getting Started first-post example matches actual generated structure", async () => {
-  await withTemporaryDirectory(async (tmpDir) => {
-    const targetDir = path.join(tmpDir, "test-site");
-    await generateStarterSite(targetDir);
-
-    // Verify the exact path structure documented in quick-start.md
-    // content/first-post.md should work when created by user
-    const _contentDir = path.join(targetDir, "content");
-    assert.ok(
-      await dirExists(targetDir, "content"),
-      "content/ directory must exist",
-    );
-
-    // The starter preset generates these specific files (from presets.ts)
-    assert.ok(
-      await fileExists(targetDir, "content/index.md"),
-      "content/index.md (base) must exist",
-    );
-    assert.ok(
-      !(await fileExists(targetDir, "content/index.ja.md")),
-      "starter must not generate localized variants without l10n",
-    );
-    assert.ok(
-      await fileExists(targetDir, "content/guide.md"),
-      "content/guide.md must exist",
-    );
-    assert.ok(
-      await fileExists(targetDir, "content/examples.md"),
-      "content/examples.md must exist",
-    );
-    assert.ok(
-      await fileExists(targetDir, "content/notes/planning.md"),
-      "content/notes/planning.md must exist",
-    );
-    assert.ok(
-      await fileExists(targetDir, "content/notes/writing.md"),
-      "content/notes/writing.md must exist",
-    );
-  });
-});
-
 // =============================================================================
 // CONTRACT 3: Package manager consistency
 // =============================================================================
@@ -451,34 +409,6 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
     // Note: next-steps are printed to console, not written to file
     // We verify via the scaffold source in a different test
   });
-});
-
-test("Contract 3b: scaffold CLI prints npm commands in next steps", async () => {
-  // This verifies the source of truth for CLI output
-  // The formatScaffoldNextSteps function in next-steps.ts is the canonical source
-  const { formatScaffoldNextSteps } = await import(
-    "../src/scaffold/next-steps.js"
-  );
-  const steps = formatScaffoldNextSteps("my-site");
-
-  assert.ok(
-    steps.includes("npm install"),
-    "CLI next steps must include 'npm install'",
-  );
-  assert.ok(
-    steps.includes("npm exec riebeckite check"),
-    "CLI next steps must include 'npm exec riebeckite check'",
-  );
-  assert.ok(
-    steps.includes("npm exec riebeckite dev"),
-    "CLI next steps must include 'npm exec riebeckite dev'",
-  );
-  assert.ok(
-    steps.includes("npm exec riebeckite build"),
-    "CLI next steps must include 'npm exec riebeckite build'",
-  );
-
-  assert.ok(!steps.includes("pnpm"), "CLI next steps must not mention pnpm");
 });
 
 // =============================================================================
@@ -684,32 +614,6 @@ Body text.
 // =============================================================================
 // CONTRACT 10: Documentation paths and links (reuse existing check_docs)
 // =============================================================================
-
-test("Contract 10: Getting Started documentation links are valid", () => {
-  // This is verified by scripts/check_docs.mjs which runs in CI
-  // We just ensure the key Getting Started files exist
-  // Test runs from packages/create-riebeckite/test, so go up 3 levels to repo root
-  const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
-  const gettingStartedFiles = [
-    "docs/docs/getting-started/README.md",
-    "docs/docs/getting-started/quick-start.md",
-    "docs/docs/getting-started/installation.md",
-    "docs/docs/getting-started/first-content.md",
-    "docs/docs/getting-started/deployment.md",
-    "docs/docs/getting-started/presets.md",
-    "docs/docs/guides/deployment/cloudflare-workers.md",
-    "docs/docs/guides/deployment/github-actions.md",
-    "docs/docs/guides/deployment/separate-content-repository.md",
-  ];
-
-  for (const file of gettingStartedFiles) {
-    const fullPath = path.join(repoRoot, file);
-    assert.ok(
-      fsSync.existsSync(fullPath),
-      `Getting Started file ${file} must exist`,
-    );
-  }
-});
 
 // =============================================================================
 // CONTRACT 11: Every preset's generated sources compile

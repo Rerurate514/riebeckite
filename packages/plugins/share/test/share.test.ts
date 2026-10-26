@@ -9,7 +9,7 @@ import {
 import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToReadableStream } from "hono/jsx/dom/server";
-import { getShareLinks, initShare, ShareControls, share } from "../index.ts";
+import { getShareLinks, ShareControls, share } from "../index.ts";
 import {
   DEFAULT_SHARE_SERVICES,
   resolveShareOptions,
@@ -275,9 +275,4 @@ test("share keeps its assets and client entry", () => {
 
   assert.equal(plugin.assets?.length, 1);
   assert.equal(plugin.clientEntries?.length, 1);
-});
-
-test("initShare is a no-op without a document", () => {
-  assert.equal(typeof document, "undefined");
-  assert.doesNotThrow(() => initShare());
 });

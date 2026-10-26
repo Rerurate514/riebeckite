@@ -234,7 +234,7 @@ function renderEmpty(className: string): string {
 }
 
 function renderFallback(className: string, source: string): string {
-  return `<details class="${escapeHtmlAttribute(className)}__fallback"><summary>Base definition</summary><pre><code>${escapeHtml(source)}</code></pre></details>`;
+  return `<details class="${escapeHtmlAttribute(className)}__fallback rb-source-fallback"><summary>Base definition</summary><pre><code>${escapeHtml(source)}</code></pre></details>`;
 }
 
 function renderCell(

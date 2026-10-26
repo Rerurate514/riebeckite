@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import type {
   ContentSource,
   ContentSourceContent,
@@ -67,7 +67,8 @@ export function createContentDependencyTracker(
 }
 
 export function fingerprintContent(content: ContentSourceContent): string {
-  return `sha256:${createHash("sha256")
+  return `sha256:${crypto
+    .createHash("sha256")
     .update(typeof content === "string" ? content : content)
     .digest("hex")}`;
 }

@@ -3,6 +3,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
 import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
+import {
+  composeScaffoldPreset,
+  parseScaffoldFeatures,
+} from "../src/scaffold/features.js";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
   isScaffoldPresetName,
@@ -11,10 +15,6 @@ import {
   scaffoldPresets,
   validateScaffoldPreset,
 } from "../src/scaffold/presets.js";
-import {
-  composeScaffoldPreset,
-  parseScaffoldFeatures,
-} from "../src/scaffold/features.js";
 
 test("the public scaffold presets have the documented order and default", () => {
   assert.deepEqual(SCAFFOLD_PRESET_NAMES, [
@@ -97,7 +97,10 @@ test("purpose presets select their purpose-built theme", async () => {
 
 test("portfolio registers every plugin used by its article layout", async () => {
   await withTemporaryDirectory(async (directory) => {
-    await scaffoldRiebeckiteSite({ targetDirectory: directory, preset: "portfolio" });
+    await scaffoldRiebeckiteSite({
+      targetDirectory: directory,
+      preset: "portfolio",
+    });
     const config = await fs.readFile(
       path.join(directory, "riebeckite.config.ts"),
       "utf8",
@@ -131,22 +134,6 @@ test("preset declarations reject conflicting generated imports", () => {
       }),
     /more than once/,
   );
-});
-
-test("preset descriptions state distinct roles and keep starter the recommendation", () => {
-  const descriptions = SCAFFOLD_PRESET_NAMES.map(
-    (name) => scaffoldPresets[name].description,
-  );
-  for (const description of descriptions) {
-    assert.ok(description.trim().length > 0);
-  }
-  assert.equal(
-    new Set(descriptions).size,
-    descriptions.length,
-    "each preset must describe a distinct role",
-  );
-  assert.match(scaffoldPresets.starter.description, /Recommended default/);
-  assert.match(scaffoldPresets.showcase.description, /demonstrat/i);
 });
 
 test("each preset generates its intended self-contained composition", async () => {
@@ -293,22 +280,46 @@ test("each preset generates its intended self-contained composition", async () =
       }
       if (preset === "digital-garden") {
         assert.ok(config.includes("@riebeckite/plugin-local-graph"));
-        assert.ok(await exists(path.join(targetDirectory, "content/notes/seed-idea.md")));
-        const index = await fs.readFile(path.join(targetDirectory, "content/index.md"), "utf8");
+        assert.ok(
+          await exists(
+            path.join(targetDirectory, "content/notes/seed-idea.md"),
+          ),
+        );
+        const index = await fs.readFile(
+          path.join(targetDirectory, "content/index.md"),
+          "utf8",
+        );
         assert.match(index, /!\[\[notes\/how-this-garden-works\]\]/);
       }
       if (preset === "blog") {
         assert.ok(config.includes("@riebeckite/plugin-series"));
         assert.ok(config.includes("@riebeckite/plugin-share"));
         assert.match(config, /feeds: \{ rss: true, atom: true, json: true \}/);
-        assert.ok(await exists(path.join(targetDirectory, "content/posts/writing-a-useful-post.md")));
+        assert.ok(
+          await exists(
+            path.join(
+              targetDirectory,
+              "content/posts/writing-a-useful-post.md",
+            ),
+          ),
+        );
       }
       if (preset === "docs") {
-        assert.match(config, /docs\(\{ root: "docs", sidebar: \{ auto: true \}, prevNext: true \}\)/);
-        const article = await fs.readFile(path.join(targetDirectory, "app/components/article.tsx"), "utf8");
+        assert.match(
+          config,
+          /docs\(\{ root: "docs", sidebar: \{ auto: true \}, prevNext: true \}\)/,
+        );
+        const article = await fs.readFile(
+          path.join(targetDirectory, "app/components/article.tsx"),
+          "utf8",
+        );
         assert.match(article, /<DocsSidebar \/>/);
         assert.match(article, /<DocsPrevNext \/>/);
-        assert.ok(await exists(path.join(targetDirectory, "content/docs/getting-started.md")));
+        assert.ok(
+          await exists(
+            path.join(targetDirectory, "content/docs/getting-started.md"),
+          ),
+        );
       }
     }
   });

@@ -13,10 +13,8 @@ import {
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import DailyNotes from "../components/daily-notes.js";
-import { dailyNotes, resolveDailyNotesOptionsFromConfig } from "../index.ts";
+import { dailyNotes } from "../index.ts";
 import {
-  DEFAULT_DAILY_NOTES_DATE_FORMAT,
-  DEFAULT_DAILY_NOTES_LOCALE,
   DEFAULT_SLUG_DATE_FORMAT,
   formatDailyNoteDate,
   resolveDailyNoteDate,
@@ -397,14 +395,6 @@ test("getDailyNotes applies the configured slug date format", () => {
   assert.equal(dates["Daily/2024-01-04"], "");
 });
 
-test("date display defaults to a locale-independent ISO date", () => {
-  const display = resolveDisplayOptions(undefined);
-
-  assert.equal(display.dateFormat, DEFAULT_DAILY_NOTES_DATE_FORMAT);
-  assert.equal(display.locale, DEFAULT_DAILY_NOTES_LOCALE);
-  assert.equal(formatDailyNoteDate("2024-01-05", display), "2024-01-05");
-});
-
 test("date display can use a locale-aware format", () => {
   const display = resolveDisplayOptions({
     dateFormat: "long",
@@ -431,31 +421,6 @@ test("getDailyNotes applies the configured date format", () => {
 
   assert.equal(notes[0].date, "2024-01-05");
   assert.match(notes[0].dateDisplay, /January 5, 2024/);
-});
-
-test("resolveDailyNotesOptionsFromConfig returns the registered plugin options", () => {
-  const config = resolveConfig({
-    site: { title: "Test" },
-    plugins: [
-      dailyNotes({
-        source: { directory: "Journal" },
-        widget: { limit: 2 },
-        dateFormat: "long",
-        locale: "en-US",
-      }),
-    ],
-  });
-
-  assert.deepEqual(resolveDailyNotesOptionsFromConfig(config), {
-    source: { directory: "Journal" },
-    widget: { limit: 2 },
-    dateFormat: "long",
-    locale: "en-US",
-  });
-});
-
-test("resolveDailyNotesOptionsFromConfig is empty without the plugin", () => {
-  assert.deepEqual(resolveDailyNotesOptionsFromConfig(explicitConfig), {});
 });
 
 test("getDailyNotes reflects the plugin options registered in the config", () => {

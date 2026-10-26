@@ -42,8 +42,7 @@ function entry(
   };
 }
 
-test("series() is re-exported as series and registers its stylesheet", () => {
-  assert.equal(series, series);
+test("series() registers its stylesheet", () => {
   assert.deepEqual(series().contentOutputDependencies, [{ type: "global" }]);
   assert.deepEqual(series().assets, [
     {

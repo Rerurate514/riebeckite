@@ -49,29 +49,6 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-test("search registers its style, client entry, and endpoint", () => {
-  const plugin = search();
-
-  assert.equal(plugin.name, "search");
-  assert.deepEqual(plugin.assets, [
-    {
-      pluginName: "search",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-search/style.css",
-    },
-  ]);
-  assert.deepEqual(plugin.clientEntries, [
-    {
-      pluginName: "search",
-      moduleSpecifier: "@riebeckite/plugin-search/client",
-      exportName: "initSearch",
-      scope: "app",
-    },
-  ]);
-  assert.equal(plugin.endpoints?.length, 1);
-  assert.equal(plugin.endpoints?.[0]?.path, "/search-data.json");
-});
-
 test("the search-data endpoint returns published items with cache headers", async () => {
   const config = resolveConfig({
     site: { title: "Test" },

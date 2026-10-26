@@ -55,8 +55,7 @@ async function runHook(
   return diagnostics;
 }
 
-test("properties() is re-exported as properties and registers its stylesheet", () => {
-  assert.equal(properties, properties);
+test("properties() registers its stylesheet", () => {
   assert.deepEqual(properties().assets, [
     {
       pluginName: "properties",

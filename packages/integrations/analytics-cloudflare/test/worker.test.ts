@@ -4,9 +4,7 @@ import type { AnalyticsEvent } from "@riebeckite/plugin-analytics";
 import {
   createWorker,
   D1AnalyticsStorage,
-  d1Storage,
   KvAnalyticsStorage,
-  kvStorage,
   MemoryAnalyticsRateLimiter,
 } from "../index.js";
 
@@ -78,11 +76,6 @@ test("KV declares capture only and worker reports unsupported reads", async () =
     error: "unsupported_query",
     message: "Analytics provider does not support popular_content queries.",
   });
-});
-
-test("storage factories construct the documented adapters", () => {
-  assert.ok(d1Storage(new FakeD1()) instanceof D1AnalyticsStorage);
-  assert.ok(kvStorage(new FakeKv()) instanceof KvAnalyticsStorage);
 });
 
 test("D1 content totals select whole UTC-day buckets from a time range", async () => {

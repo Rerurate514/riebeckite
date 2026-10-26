@@ -159,10 +159,14 @@ function buildFigure(input: {
 
   if (options.fallback && input.source) {
     children.push(
-      element("details", { className: `${options.className}__fallback` }, [
-        element("summary", {}, [text("Map source")]),
-        element("pre", {}, [element("code", {}, [text(input.source)])]),
-      ]),
+      element(
+        "details",
+        { className: `${options.className}__fallback rb-source-fallback` },
+        [
+          element("summary", {}, [text("Map source")]),
+          element("pre", {}, [element("code", {}, [text(input.source)])]),
+        ],
+      ),
     );
   }
 

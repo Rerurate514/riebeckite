@@ -166,17 +166,6 @@ test("applies heading and limit options", async () => {
   assert.equal((html.match(/<li /g) ?? []).length, 1);
 });
 
-test("registers the stylesheet asset", async () => {
-  const manifest = await manager().getManifest();
-
-  assert.ok(
-    manifest.assets.some(
-      (asset) =>
-        asset.moduleSpecifier === "@riebeckite/plugin-related-posts/style.css",
-    ),
-  );
-});
-
 test("validates option shapes", () => {
   assert.deepEqual(relatedPosts().validateOptions?.({}), []);
 

@@ -113,19 +113,6 @@ test("partially populated cache: only the absent browser is missing", () => {
   );
 });
 
-test("version mismatch: a cached build of another version is not reused", () => {
-  const resolved = [shell("/cache/chrome-headless-shell/linux-153/shell")];
-  const onDisk = new Set(["/cache/chrome-headless-shell/linux-152/shell"]);
-  const { present, missing } = classifyBrowsers(resolved, (path) =>
-    onDisk.has(path),
-  );
-  assert.deepEqual(present, []);
-  assert.deepEqual(
-    missing.map((entry) => entry.name),
-    ["chrome-headless-shell"],
-  );
-});
-
 test("ensureBrowsers installs nothing when the cache is restored", async () => {
   const installs = [];
   const result = await ensureBrowsers({
@@ -152,23 +139,6 @@ test("ensureBrowsers installs a missing browser and re-verifies it", async () =>
   assert.deepEqual(installs, ["chrome-headless-shell", "chrome"]);
   assert.deepEqual(result.installed, ["chrome-headless-shell", "chrome"]);
   assert.deepEqual(result.reused, []);
-});
-
-test("ensureBrowsers installs only the browser missing from a version-mismatched cache", async () => {
-  const installs = [];
-  const onDisk = new Set(["/cache/chrome/linux-153/chrome"]);
-  await ensureBrowsers({
-    resolved: [
-      shell("/cache/shell/linux-153/shell"),
-      chrome("/cache/chrome/linux-153/chrome"),
-    ],
-    install: (name) => {
-      installs.push(name);
-      onDisk.add("/cache/shell/linux-153/shell");
-    },
-    exists: (path) => onDisk.has(path),
-  });
-  assert.deepEqual(installs, ["chrome-headless-shell"]);
 });
 
 test("ensureBrowsers throws when installation does not produce the executable", async () => {

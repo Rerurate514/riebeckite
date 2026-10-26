@@ -115,7 +115,7 @@ function buildFigure(input: {
     );
   }
   children.push(
-    element("details", { className: `${base}__fallback` }, [
+    element("details", { className: `${base}__fallback rb-source-fallback` }, [
       element("summary", {}, [text("Vega-Lite spec")]),
       element("pre", {}, [element("code", {}, [text(input.source)])]),
     ]),

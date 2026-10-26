@@ -12,7 +12,6 @@ import {
   collectKnownAssetPaths,
   rehypeResponsiveImage,
   resolveResponsiveImageOptions,
-  responsiveImage,
 } from "../index.ts";
 import { validateResponsiveImageOptions } from "../src/options.ts";
 
@@ -214,20 +213,6 @@ test("collects known asset paths from a real manifest", async () => {
   ).getManifest();
 
   assert.deepEqual([...collectKnownAssetPaths(manifest)], ["images/hero.png"]);
-});
-
-test("registers the responsive-image stylesheet", () => {
-  const plugin = responsiveImage();
-
-  assert.equal(plugin.name, "responsive-image");
-  assert.equal(plugin.order, 100);
-  assert.deepEqual(plugin.assets, [
-    {
-      pluginName: "responsive-image",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-responsive-image/style.css",
-    },
-  ]);
 });
 
 function source(files: Record<string, string>): ContentSource {

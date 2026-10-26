@@ -30,12 +30,3 @@
   overflow-x: auto;
   color: var(--pele-error);
 }
-
-.rr-mermaid-pele__fallback {
-  color: var(--pele-muted);
-  font-size: 0.8125rem;
-}
-
-.rr-mermaid-pele__fallback pre {
-  overflow: auto;
-}

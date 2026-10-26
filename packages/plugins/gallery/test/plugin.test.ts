@@ -93,17 +93,6 @@ test("warns about items missing a title and an image", async () => {
   assert.ok((manifest.bySlug.get("sparse")?.html ?? "").includes("__items"));
 });
 
-test("registers the stylesheet asset", async () => {
-  const manifest = await manager().getManifest();
-
-  assert.ok(
-    manifest.assets.some(
-      (asset) =>
-        asset.moduleSpecifier === "@riebeckite/plugin-gallery/style.css",
-    ),
-  );
-});
-
 test("validates option shapes", () => {
   assert.deepEqual(gallery().validateOptions?.({}), []);
 

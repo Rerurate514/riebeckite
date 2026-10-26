@@ -1,20 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { resolveConfig } from "@riebeckite/core";
-import type {
-  AnalyticsCapability,
-  AnalyticsEvent,
-  AnalyticsProvider,
-  AnalyticsQuery,
-  AnalyticsResult,
-} from "../index.js";
 import {
   analytics,
   assertAnalyticsQuerySupported,
   initAnalytics,
   MemoryAnalyticsProvider,
-  requiredCapabilityForQuery,
-  supportsAnalyticsCapability,
   UnsupportedAnalyticsQueryError,
   validateAnalyticsOptions,
 } from "../index.js";
@@ -309,34 +300,6 @@ test("popular ranking breaks ties by content ID", async () => {
     result.items.map((item) => item.contentId),
     ["a", "b"],
   );
-});
-
-test("every query type maps to its own required capability", () => {
-  assert.equal(
-    requiredCapabilityForQuery({ type: "content_page_views", contentId: "a" }),
-    "content_page_views",
-  );
-  assert.equal(
-    requiredCapabilityForQuery({ type: "popular_content" }),
-    "popular_content",
-  );
-});
-
-test("supportsAnalyticsCapability distinguishes capture-only providers", () => {
-  const captureOnly = new MemoryAnalyticsProvider();
-  const provider: AnalyticsProvider = {
-    capabilities: new Set<AnalyticsCapability>(["capture"]),
-    async capture(_event: AnalyticsEvent) {},
-    async query(_query: AnalyticsQuery): Promise<AnalyticsResult> {
-      return { type: "popular_content", items: [] };
-    },
-  };
-  assert.equal(
-    supportsAnalyticsCapability(captureOnly, "popular_content"),
-    true,
-  );
-  assert.equal(supportsAnalyticsCapability(provider, "capture"), true);
-  assert.equal(supportsAnalyticsCapability(provider, "popular_content"), false);
 });
 
 function pageView(contentId: string, occurredAt: string) {

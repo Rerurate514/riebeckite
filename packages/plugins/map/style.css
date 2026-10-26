@@ -75,26 +75,6 @@
   font-size: 0.75rem;
 }
 
-.rr-map__fallback {
-  border-top: 1px solid var(--rr-map-rule);
-  color: var(--rr-map-muted);
-  font-size: 0.8125rem;
-}
-
-.rr-map__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rr-map__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rr-map-rule);
-  color: var(--rr-map-ink);
-  background: color-mix(in srgb, var(--rr-map-ink) 6%, transparent);
-}
-
 .rr-map[data-rr-map="error"] .rr-map__static::before {
   content: "The interactive map could not be loaded. ";
   color: var(--rr-map-muted);

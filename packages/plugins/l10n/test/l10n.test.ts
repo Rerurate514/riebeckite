@@ -269,6 +269,17 @@ test("publishes the default LanguageSwitcher", async () => {
       (asset) => asset.moduleSpecifier === "@riebeckite/plugin-l10n/style.css",
     ),
   );
+
+  const single = manager({
+    "only.ja.md": "---\ntranslation: only\n---\n# 一つだけ",
+  });
+  const singleManifest = await single.getManifest();
+  const singleLocalization = getLocalization(singleManifest, "only.ja");
+  assert.ok(singleLocalization, "expected only.ja localization");
+  assert.equal(
+    renderToString(LanguageSwitcher({ localization: singleLocalization })),
+    "",
+  );
 });
 
 test("does not duplicate generated l10n fragments when entries are reused from cache", async () => {
@@ -470,31 +481,6 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
       scenario.name,
     );
   }
-});
-
-test("language switcher visibility and content", async () => {
-  const content = manager({
-    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
-    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
-  });
-  const manifest = await content.getManifest();
-  const localization = getLocalization(manifest, "guide.en");
-  assert.ok(localization, "expected guide.en localization");
-  const html = renderToString(LanguageSwitcher({ localization }));
-  assert.match(html, /class="rr-l10n-switcher"/);
-  assert.match(html, /href="\/guide"/);
-  assert.match(html, /href="\/en\/guide"/);
-
-  const content2 = manager({
-    "only.ja.md": "---\ntranslation: only\n---\n# 一つだけ",
-  });
-  const manifest2 = await content2.getManifest();
-  const localization2 = getLocalization(manifest2, "only.ja");
-  assert.ok(localization2, "expected only.ja localization");
-  const html2 = renderToString(
-    LanguageSwitcher({ localization: localization2 }),
-  );
-  assert.equal(html2, "");
 });
 
 test("reports duplicate translation identities without exposing an ambiguous translation", async () => {

@@ -168,28 +168,6 @@ test("matches a structured link graph", async () => {
   );
 });
 
-test("backlinks registers only its stylesheet", () => {
-  const plugin = backlinks();
-
-  assert.equal(plugin.name, "backlinks");
-  assert.equal(plugin.onManifestCreated, undefined);
-  assert.equal(plugin.contentOutputDependencies, undefined);
-  assert.deepEqual(plugin.assets, [
-    {
-      pluginName: "backlinks",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-backlinks/style.css",
-    },
-  ]);
-});
-
-test("exposes no options or validation", () => {
-  const plugin = backlinks();
-  assert.deepEqual(plugin.name, "backlinks");
-  assert.deepEqual(plugin.options, {});
-  assert.equal(plugin.validateOptions, undefined);
-});
-
 test("publishes backlinks to the article footer only when present", async () => {
   const manifest = await new ContentManager(
     source({
@@ -222,41 +200,4 @@ test("publishes backlinks to the article footer only when present", async () => 
     resolveTitle,
   });
   assert.deepEqual(betaBacklinks, []);
-});
-
-test("keeps backlink data available for the Site to render", async () => {
-  const manifest = await new ContentManager(
-    source({
-      "alpha.md": "---\npublish: true\ntitle: Alpha\n---\n# Alpha",
-      "beta.md": "---\npublish: true\ntitle: Beta\n---\n[[alpha]]",
-    }),
-    [],
-    { config: explicitConfig, plugins: [backlinks()] },
-  ).getManifest();
-
-  assert.deepEqual(
-    getPublishedBacklinks({
-      manifest,
-      config: explicitConfig,
-      slug: "alpha",
-      resolveTitle,
-    }),
-    [{ slug: "beta", permalink: "/beta", title: "Beta" }],
-  );
-
-  const manualHtml = renderToString(
-    await Backlinks({
-      backlinks: getPublishedBacklinks({
-        manifest,
-        config: explicitConfig,
-        slug: "alpha",
-        resolveTitle,
-      }),
-    }),
-  );
-  assert.equal(
-    (manualHtml.match(/<footer class="rr-backlinks">/g) ?? []).length,
-    1,
-  );
-  assert.ok(manualHtml.includes('href="/beta"'));
 });

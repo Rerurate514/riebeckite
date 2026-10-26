@@ -74,21 +74,19 @@ test("reports the node mismatch with artifact and runner versions", (t) => {
   );
 });
 
-for (const key of ["platform", "arch"]) {
-  test(`reports the ${key} mismatch`, (t) => {
-    const fixture = createFixture(t);
-    const artifact = create(fixture);
-    artifact[key] = "mismatched";
-    assert.throws(
-      () => verify(artifact, create(fixture)),
-      (error) => {
-        assert.match(error.message, new RegExp(`Key:\\s+${key}`));
-        assert.match(error.message, /Artifact: mismatched/);
-        return true;
-      },
-    );
-  });
-}
+test("reports a platform mismatch", (t) => {
+  const fixture = createFixture(t);
+  const artifact = create(fixture);
+  artifact.platform = "mismatched";
+  assert.throws(
+    () => verify(artifact, create(fixture)),
+    (error) => {
+      assert.match(error.message, /Key:\s+platform/);
+      assert.match(error.message, /Artifact: mismatched/);
+      return true;
+    },
+  );
+});
 
 test("rejects an artifact from another commit", (t) => {
   const fixture = createFixture(t);

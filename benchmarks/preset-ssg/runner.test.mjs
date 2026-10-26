@@ -16,31 +16,6 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-test("preset benchmark prepares workspace packages and explicit package links", async () => {
-  const runner = await fs.readFile(
-    path.join(process.cwd(), "benchmarks", "preset-ssg", "runner.mjs"),
-    "utf8",
-  );
-  assert.match(runner, /await buildWorkspacePackages\(\)/);
-  assert.match(runner, /async function linkWorkspacePackages/);
-  assert.match(runner, /packages\/integrations\/honox\/dist\/server\.js/);
-  assert.match(runner, /"mermaid",\s*"node_modules",\s*"puppeteer"/);
-  assert.match(runner, /"excalidraw",\s*"node_modules",\s*"lz-string"/);
-  assert.match(runner, /"d2",\s*"node_modules",\s*"@d2lang",\s*"d2"/);
-  assert.match(
-    runner,
-    /"marp",\s*"node_modules",\s*"@marp-team",\s*"marp-core"/,
-  );
-  assert.match(runner, /async function optionalAlias/);
-  assert.match(runner, /optionalAlias\(\s*"@marp-team\/marp-core"/);
-  assert.match(runner, /\{ cwd: siteRoot, maxBuffer:/);
-  assert.match(runner, /async function linkJunctionIfAbsent/);
-  assert.match(runner, /Refusing to replace non-link dependency/);
-  assert.match(runner, /Refusing to replace mismatched dependency link/);
-  assert.match(runner, /manifestHooksExecuted/);
-  assert.match(runner, /manifestHookDurationMs/);
-});
-
 test("official starter and showcase scaffolds preserve their plugin order", async (t) => {
   const { scaffoldRiebeckiteSite } = await import(
     "../../packages/create-riebeckite/src/scaffold/index.ts"

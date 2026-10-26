@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  getEntryLanguage,
-  selectEntriesByLanguage,
-} from "../src/content/content_language.js";
+import { selectEntriesByLanguage } from "../src/content/content_language.js";
 import type { ContentManifestEntry } from "../src/types/content_manifest.js";
 
 test("returns every entry when no language is requested", () => {
@@ -52,11 +49,6 @@ test("does not reimplement publishing state", () => {
     selectEntriesByLanguage(entries, "en").map((item) => item.slug),
     ["en/draft", "en/public"],
   );
-});
-
-test("reads the language from the public location", () => {
-  assert.equal(getEntryLanguage(entry("en/a", "en")), "en");
-  assert.equal(getEntryLanguage(entry("plain")), undefined);
 });
 
 function entry(slug: string, language?: string): ContentManifestEntry {

@@ -143,6 +143,6 @@ test("is idempotent and labels generated READMEs", () => {
 test("every official plugin has paired canonical docs and generated READMEs", () => {
   const { readmes, errors } = buildDesiredReadmes();
   assert.deepEqual(errors, []);
-  assert.equal(readmes.length, 150);
+  assert.equal(readmes.length, 158);
   assert.deepEqual(planSync(readmes), []);
 });

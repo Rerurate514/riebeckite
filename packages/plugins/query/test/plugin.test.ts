@@ -39,20 +39,6 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-test("query registers its capability and stylesheet", () => {
-  const plugin = query();
-
-  assert.equal(plugin.name, "query");
-  assert.deepEqual(plugin.provides, ["content.query"]);
-  assert.deepEqual(plugin.assets, [
-    {
-      pluginName: "query",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-query/style.css",
-    },
-  ]);
-});
-
 test("query validates its options", () => {
   const validate = query().validateOptions;
   assert.ok(validate);

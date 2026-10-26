@@ -25,16 +25,6 @@ First slide body.
 Second slide body.
 `;
 
-test("registers the one-slide-at-a-time viewer client entry", () => {
-  assert.deepEqual(marp().clientEntries, [
-    {
-      pluginName: "marp",
-      moduleSpecifier: "@riebeckite/plugin-marp/client",
-      exportName: "initMarpDecks",
-    },
-  ]);
-});
-
 test("serves whole-document marp notes at /slides<permalink>", async () => {
   const manifest = {
     publicEntries: [

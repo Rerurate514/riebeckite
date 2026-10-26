@@ -12,8 +12,6 @@ import {
 import {
   createPreviewSessionTransport,
   createPreviewUiController,
-  initPluginPreviews,
-  mountPreview,
 } from "../ui.js";
 
 const codeTabsPreview = definePluginPreview({
@@ -439,11 +437,6 @@ test("builds an isolated preview document", () => {
   assert.doesNotMatch(document, /onclick/);
   assert.doesNotMatch(document, /script-src/);
   assert.match(document, /<p>Preview<\/p>/);
-});
-
-test("exports the browser preview UI entry point", () => {
-  assert.equal(typeof initPluginPreviews, "function");
-  assert.equal(typeof mountPreview, "function");
 });
 
 test("adapts a local preview session as a UI transport", async () => {

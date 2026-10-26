@@ -6,6 +6,10 @@
 
 [English](./README.md)
 
+## 実行例
+
+[Plugins in depth](/series/plugins-in-depth-en) のシリーズページでは、記事が順番に並び、各記事に前後のナビゲーションが表示されます。
+
 ## 概要
 
 `series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えたうえで、各ノートの HTML に `<nav class="rb-series">` ブロックを追加します。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。1 件だけのシリーズにはナビゲーションを出力しません。

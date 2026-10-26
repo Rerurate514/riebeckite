@@ -57,6 +57,12 @@ Riebeckite は脚注を記事末尾のリストに表示します。[^1]
 plugins: [sidenotes({ placement: "margin" })];
 ```
 
+## 実行例
+
+ここに脚注への参照を置きます。[^live-example]
+
+[^live-example]: この注釈は sidenotes プラグインが描画します。
+
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |

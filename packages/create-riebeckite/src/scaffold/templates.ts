@@ -154,7 +154,7 @@ function packageJson(
         "@riebeckite/cli": RIEBECKITE_VERSION,
         "@types/node": "^24.5.2",
         typescript: "^5.0.0",
-        vite: "^8.0.9",
+        vite: "^8.3.5",
         ...(options.cloudflareWorkers ? { wrangler: WRANGLER_VERSION } : {}),
       },
     },

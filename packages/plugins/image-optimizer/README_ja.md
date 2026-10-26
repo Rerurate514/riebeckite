@@ -32,6 +32,12 @@ Sharp が読み取れる JPEG、PNG、WebP、AVIF を入力として扱えます
 
 元画像以上の幅は生成しません。元の公開画像は Core の通常のコンテンツアセット出力によって保持されます。`keepMetadata` を有効にしない限り、EXIF を含むメタデータは除去されます。
 
+## 実行例
+
+このサイトでは、`imageOptimizer()` が生成した画像バリアントを `responsiveImage()` 経由で配信しています。
+
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |

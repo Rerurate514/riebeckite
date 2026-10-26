@@ -37,6 +37,15 @@ It stays readable without JavaScript.
 
 カードが 1 枚もない場合や、`::` のないカード、どちらかの側が空のカードがある場合は、`invalid-flashcards` の診断を出してコードブロックのまま残します。
 
+## 実行例
+
+~~~flashcards
+Riebeckite とは？ :: Markdown から静的サイトを作るツール
+公開の単位は？ :: ノート
+~~~
+
+JavaScript がなくても、カードは静的なリストとして読めます。
+
 ## 出力
 
 ビルド時に、ブロックは次の要素に置き換わります。

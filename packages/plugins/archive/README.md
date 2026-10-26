@@ -51,6 +51,10 @@ Each resolved page also sets `description` and `language`, so the site's
 document frame can render archive SEO metadata and the `lang` attribute without
 recomputing the period.
 
+## Live example
+
+[Open the October 2026 archive](/archive/2026/10)
+
 ## Options
 
 | Option | Type | Default | Description |

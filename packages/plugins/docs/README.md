@@ -8,6 +8,10 @@ router or recalculating public URLs from filesystem paths.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+This page is a Docs entry. The Documentation sidebar on the right, the previous/next links below the article, and the [Docs index](/docs/) all come from this plugin.
+
 ## Installation
 
 ```sh

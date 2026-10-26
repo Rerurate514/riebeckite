@@ -7,6 +7,10 @@ article context.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+The line under this page's title — publication date and reading time — is rendered here. The `<time>` element carries the machine-readable date. Tags appear as well when the note has any.
+
 ## Overview
 
 `articleMetadata()` registers the component stylesheet. It does not add

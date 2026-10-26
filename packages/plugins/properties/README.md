@@ -7,6 +7,10 @@ turns raw values into structured data; the Site decides where the panel goes.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+The property panel above the article body shows this page's `status` value. It is built from frontmatter by the exported `Properties` component.
+
 ## Overview
 
 `properties()` contributes a stylesheet, tracks wikilink dependencies, and

@@ -50,6 +50,13 @@ client -> server: request
 ```
 ````
 
+## Live example
+
+~~~d2
+site: Riebeckite
+content -> build -> deploy
+~~~
+
 ## Behavior
 
 ### Build

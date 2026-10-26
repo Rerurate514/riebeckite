@@ -8,6 +8,10 @@ Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前
 
 [English](./README.md)
 
+## 実行例
+
+このページは Docs のエントリです。右側の Documentation サイドバー、記事下の前後リンク、[Docs の一覧](/ja/docs/) はすべてこのプラグインが生成しています。
+
 ## インストール
 
 ```sh

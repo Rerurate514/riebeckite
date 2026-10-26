@@ -8,6 +8,10 @@ Folder Page support for Riebeckite. The plugin turns folder entry notes into the
 folder's landing page and generates a listing page for folders that have no
 entry note.
 
+## Live example
+
+The generated [folders](/folders) index is a Folder Page tree built from the site's folder structure.
+
 ## Installation
 
 ```bash

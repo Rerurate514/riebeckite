@@ -64,6 +64,16 @@ With `hardBreaks()`:
 明日も晴れるといいな。</p>
 ```
 
+## Live example
+
+`hardBreaks()` is opt-in, so this site keeps the standard Markdown behavior: the three lines below render as one paragraph.
+
+First line
+Second line
+Third line
+
+With the plugin enabled, each line ends with `<br>` instead.
+
 ## Behavior
 
 | Input | Result |

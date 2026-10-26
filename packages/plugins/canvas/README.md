@@ -30,6 +30,17 @@ The plugin runs with `order: -15`, after `obsidian-markdown`.
 When a canvas is missing or cannot be parsed, the code block is kept and a
 message with `source: "@riebeckite/plugin-canvas"` is reported.
 
+## Live example
+
+~~~canvas
+{
+  "nodes": [
+    { "id": "note", "type": "text", "x": 0, "y": 0, "width": 240, "height": 100, "text": "Note" }
+  ],
+  "edges": []
+}
+~~~
+
 ## Output
 
 The plugin emits `div.rb-canvas` with `data-canvas` (the input), `data-canvas-nodes`,

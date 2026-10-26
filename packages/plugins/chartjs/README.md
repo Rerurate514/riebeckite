@@ -89,6 +89,18 @@ configuration is serialized, so Chart.js never sees it:
 ```
 ````
 
+## Live example
+
+~~~chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["Mon", "Tue", "Wed"],
+    "datasets": [{ "label": "Visits", "data": [12, 19, 8] }]
+  }
+}
+~~~
+
 ## Output
 
 ````html

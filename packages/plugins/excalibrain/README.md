@@ -132,6 +132,13 @@ The `render` option selects where the map is produced:
 
 `heading` / `headingText` control the optional `<h2>`.
 
+## Live example
+
+The map is assembled from this page's links; the fence body is ignored.
+
+~~~excalibrain
+~~~
+
 ## Options
 
 | Option | Type | Default | Description |

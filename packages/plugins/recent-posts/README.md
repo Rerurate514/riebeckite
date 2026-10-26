@@ -7,6 +7,10 @@ frontmatter date.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+The Recent posts list on the [home page](/) is rendered by this plugin from the site's published entries.
+
 ## Overview
 
 `RecentPosts` renders an ordered list of recently posted articles.

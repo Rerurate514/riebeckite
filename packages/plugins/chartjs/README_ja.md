@@ -81,6 +81,18 @@ JSON の `"caption"` キーでも指定できます。このキーは設定を�
 ```
 ````
 
+## 実行例
+
+~~~chart
+{
+  "type": "bar",
+  "data": {
+    "labels": ["Mon", "Tue", "Wed"],
+    "datasets": [{ "label": "Visits", "data": [12, 19, 8] }]
+  }
+}
+~~~
+
 ## 出力
 
 ````html

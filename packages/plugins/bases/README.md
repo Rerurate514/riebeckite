@@ -58,6 +58,18 @@ The same YAML may be placed in a fenced `base` block or in a `.base` file.
 Top-level and view-local `filters` are combined with AND. Table and cards are
 rendered at build time; all dynamic values are escaped before HTML output.
 
+## Live example
+
+~~~base
+properties:
+  file.name:
+    displayName: Title
+views:
+  - type: table
+    name: Pages
+    limit: 5
+~~~
+
 ## Official syntax audit
 
 This implementation follows the documented YAML shape in the [Obsidian Bases

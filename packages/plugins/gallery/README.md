@@ -72,6 +72,22 @@ or `image`:
 | `href` | Link target. Omitted renders a non-interactive card |
 | `meta` | Small trailing label, for example a version or a date |
 
+## Live example
+
+~~~gallery
+columns: 3
+items:
+  - title: Default
+    description: A clean, typographic theme.
+    href: https://riebeckite.dev/docs/themes/default
+  - title: Minimal
+    description: Stripped back to the essentials.
+    href: https://riebeckite.dev/docs/themes/minimal
+  - title: Gruvbox
+    description: A warm, high-contrast palette.
+    href: https://riebeckite.dev/docs/themes/gruvbox
+~~~
+
 ## Output
 
 ```html

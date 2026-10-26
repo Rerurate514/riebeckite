@@ -62,6 +62,23 @@ kanban-plugin: board
 - [ ] Ship the plugin
 ```
 
+## Live example
+
+~~~kanban
+## Backlog
+
+- [ ] Draft the release notes
+- [ ] Link to [[README]]
+- [x] Review **metadata**
+- A plain card with #documentation
+
+## Done
+
+- [x] Publish the fixture
+~~~
+
+Cards support checked, unchecked, and plain items, plus inline WikiLinks, tags, and bold text.
+
 ## Output
 
 ```html

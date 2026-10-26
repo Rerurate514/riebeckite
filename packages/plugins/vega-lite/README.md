@@ -54,6 +54,20 @@ Put a Vega-Lite specification as JSON in the body of the code block. Both
 The caption comes from the code-block `title`, or from the specification's
 `title`.
 
+## Live example
+
+~~~vega-lite
+{
+  "title": "Revenue",
+  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
+  "mark": "bar",
+  "encoding": {
+    "x": { "field": "category", "type": "nominal" },
+    "y": { "field": "value", "type": "quantitative" }
+  }
+}
+~~~
+
 ## How it renders
 
 A ` ```vega-lite ` block becomes a `figure.rb-vega-lite`:

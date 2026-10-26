@@ -39,6 +39,43 @@ export default defineConfig({
 `--rr-callout-title-text-transform`、`--rr-callout-icon-color` を指定して見た目を
 調整できます。コールアウトの子要素は選択しないでください。
 
+## 実行例
+
+以下の記法は、このサイトで実際に描画されています。
+
+**Callout の種類。** `note`、`tip`、`warning`、`danger`、`quote` は同じ引用構文で書けます。
+
+> [!note] Note
+> note の callout です。
+
+> [!tip] Tip
+> tip の callout です。
+
+> [!warning] Warning
+> warning の callout です。
+
+> [!danger] Danger
+> danger の callout です。
+
+> [!quote] Quote
+> quote の callout です。
+
+**WikiLink とフラグメント。** [README](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/README.ja.md) へのリンク、[プラグインカタログ](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.ja.md) という別名付きリンク、[plugins/showcase#Inline](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase.ja.md#Inline) という見出しリンクです。
+
+**埋め込み。** ノートと画像を埋め込みます。
+
+![head-tag](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/glossary/head-tag.ja.md)
+
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+
+**タグ。** #documentation や #plugins のようなインラインタグは、タクソノミーページへのリンクになります。
+
+**ブロック参照。** 次の段落にはブロック ID が付いています。
+
+^live-example-block
+
+別のノートからは `[obsidian-markdown#^live-example-block](./README_ja.md#^live-example-block)` で参照できます。
+
 ## オプション
 
 | オプション | 既定値 | 内容 |

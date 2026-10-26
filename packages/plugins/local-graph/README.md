@@ -7,6 +7,10 @@ outgoing links and backlinks.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+Open [Backlink](/docs/glossary/backlink) to see the local graph at the bottom of the article, centered on that page and its neighbors.
+
 ## Recommended placement
 
 `localGraph()` provides a `LocalGraph` component that renders the current note

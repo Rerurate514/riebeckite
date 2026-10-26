@@ -8,6 +8,10 @@ client-side JavaScript is required.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+Browse the generated [tags](/tags) and [folders](/folders) indexes. Each index page is produced by this plugin from the site's notes.
+
 ## Overview
 
 `taxonomy()` reads the manifest's public entries and produces two sets of

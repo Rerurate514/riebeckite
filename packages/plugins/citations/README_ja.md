@@ -34,6 +34,20 @@ Riebeckite はこのプラグインより先に `:name` をディレクティブ
 
 変換しない対象: インラインコード、フェンス付きコードブロック、HTML、frontmatter、任意の階層にある通常の Markdown リンク、Obsidian の Wikilink。
 
+## 実行例
+
+以下の引用はサイトの文献ファイルを使っています。
+
+Riebeckite は Markdown を基盤にしています[@gruber2004]。また独自のプラグインモデルを持ちます。[@riebeckite2026]
+
+複数の文献をまとめて引用できます。[@riebeckite2026; @gruber2004]
+
+著者名を文中に置く引用: @gruber2004 は、読みやすいソースの重要性を説いています。
+
+著者名を省略する引用: [-@riebeckite2026] は番号だけを表示します。
+
+位置情報と接頭辞: [see @riebeckite2026, p. 42]。
+
 ## 文献ファイルの読み込み
 
 - `citations({ bibliography })` のパスはコンテンツルートからの相対パスです。

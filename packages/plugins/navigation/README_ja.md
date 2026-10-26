@@ -10,6 +10,10 @@ Vault にすでにあるノートから主要ナビゲーションを導出し�
 
 [English](./README.md)
 
+## 実行例
+
+ヘッダーの Docs・Plugins・Themes・GitHub のリンクは、`navigation()` の設定から生成されています。右側の Documentation サイドバーは Docs コレクションのナビゲーションです。
+
 ## 仕組み
 
 `navigation()` はマニフェストの discoverable エントリ（公開され、ルーティング

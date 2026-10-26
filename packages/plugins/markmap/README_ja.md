@@ -45,6 +45,19 @@ export default defineConfig({
 
 キャプションにはコードブロックの `title` を使います。
 
+## 実行例
+
+~~~markmap
+# Project
+
+## Design
+
+### Notation
+### Rendering
+
+## Delivery
+~~~
+
 ## 描画の仕組み
 
 ` ```markmap ` のコードブロックは `figure.rb-markmap` に置き換わります。

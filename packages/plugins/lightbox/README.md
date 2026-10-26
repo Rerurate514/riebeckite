@@ -28,6 +28,12 @@ export default defineConfig({
 The plugin registers `style.css` and a client entry (`initLightbox`), which
 the app calls on page initialization.
 
+## Live example
+
+Click the image to open the lightbox.
+
+![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo.png.md)
+
 ## Behavior
 
 ### Build (`rehypeLightbox`)

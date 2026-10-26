@@ -27,7 +27,13 @@ export async function runPluginDev(options: PluginDevOptions): Promise<void> {
   const removePreview = () => {
     fsSync.rmSync(previewRoot, { recursive: true, force: true });
   };
+  const shutdown = () => {
+    removePreview();
+    process.exit(0);
+  };
   process.once("exit", removePreview);
+  process.once("SIGINT", shutdown);
+  process.once("SIGTERM", shutdown);
   try {
     await scaffoldPreviewSite(previewRoot, `${plugin.name} preview`);
     const dependencies = await linkPreviewDependencies(previewRoot, [
@@ -74,6 +80,8 @@ export async function runPluginDev(options: PluginDevOptions): Promise<void> {
     });
   } finally {
     process.removeListener("exit", removePreview);
+    process.removeListener("SIGINT", shutdown);
+    process.removeListener("SIGTERM", shutdown);
     await fs.rm(previewRoot, { recursive: true, force: true });
   }
 }

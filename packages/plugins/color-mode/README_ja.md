@@ -6,6 +6,10 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 [English](./README.md)
 
+## 実行例
+
+サイトヘッダーにあるカラーモードのコントロールが、このプラグインの UI です。ライト・ダーク・システムを切り替えるとページが即座に変わり、選択は次回の訪問のために保存されます。
+
 ## 概要
 
 [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md) のテーマは、次の 3 つの CSS 状態から配色を決めます。

@@ -20,6 +20,12 @@ export default defineConfig({
 });
 ```
 
+## 実行例
+
+画像をクリックすると lightbox が開きます。
+
+![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo.png.ja.md)
+
 ## 利用時の挙動
 
 - `rehypeLightbox` は各 `<img>` を `.rr-lightbox-trigger` で囲みます。

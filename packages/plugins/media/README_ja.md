@@ -31,6 +31,12 @@ export default defineConfig({
 - 音声: `mp3`、`m4a`、`aac`、`ogg`、`oga`、`opus`、`wav`、`flac`
 - 動画: `mp4`、`m4v`、`webm`、`ogv`、`mov`
 
+## 実行例
+
+音声はブラウザ標準のプレイヤーで再生できます。動画も同じ埋め込み記法で、拡張子だけが変わります。
+
+![media-example.wav](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/media-example.wav.ja.md)
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

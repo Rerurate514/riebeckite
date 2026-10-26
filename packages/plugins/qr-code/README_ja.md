@@ -39,6 +39,13 @@ https://example.com/
 
 フェンス本文がエンコード対象のテキストまたは URL です（前後の空白は除去します）。本文が空の場合、コードブロックはそのまま残し、`@riebeckite/plugin-qr-code` を発行元とする診断を出します。
 
+## 実行例
+
+~~~qr
+# caption: Project page
+https://example.com/
+~~~
+
 ## 出力
 
 各ブロックは次の形になります。

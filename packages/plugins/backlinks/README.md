@@ -7,6 +7,10 @@ current note.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+Open [Backlink](/docs/glossary/backlink) to see the rendered Backlinks section at the bottom of an article that other pages link to.
+
 ## Recommended placement
 `backlinks()` provides a `getBacklinks({ view, slug })` helper that returns
 `readonly ArticleBacklink[]` (`{ slug, permalink, title }`) and a `<Backlinks

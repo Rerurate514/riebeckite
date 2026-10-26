@@ -6,6 +6,10 @@ Content localization for Riebeckite Markdown. It detects a locale and a separate
 
 [日本語](./README_ja.md)
 
+## Live example
+
+The language switcher under the breadcrumbs links this page to its Japanese translation. Both URLs belong to the same translation group.
+
 ## Basic setup
 
 ```ts

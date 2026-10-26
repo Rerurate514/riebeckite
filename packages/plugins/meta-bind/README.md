@@ -50,6 +50,21 @@ VIEW[{priority}]
 
 Supported inputs are `text`, `number`, `slider`, `toggle`, and block-only `select`. Supported expressions use same-page `{property}` references, literals, parentheses, `!`, `-`, arithmetic, comparison, equality, `&&`, and `||`.
 
+## Live example
+
+The controls below use page-local Reader State. They do not write Markdown or frontmatter.
+
+`INPUT[text:meta_bind_text]` `INPUT[number(minValue(1), maxValue(5)):meta_bind_number]`
+
+`INPUT[slider(minValue(0), maxValue(10), stepSize(1)):meta_bind_slider]` `INPUT[toggle:meta_bind_toggle]`
+
+Current page title: `VIEW[{title}]`
+
+~~~meta-bind
+INPUT[select(option(low), option(medium), option(high)):meta_bind_select]
+VIEW[{meta_bind_select}]
+~~~
+
 ## Boundaries
 
 Only simple same-page frontmatter paths such as `status` and `task.done` are supported. Cross-note targets, storage and memory targets, bracket paths, button actions, JavaScript views, view write-back, Obsidian commands, and file writes remain literal Markdown and produce a build diagnostic.

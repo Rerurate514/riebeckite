@@ -56,6 +56,23 @@ kanban-plugin: board
 
 カードのテキストでは `[ウィキリンク](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/ウィキリンク.ja.md)`（マニフェストから実際の href に解決）、`#タグ`、`**太字**` を使えます。
 
+## 実行例
+
+~~~kanban
+## Backlog
+
+- [ ] リリースノートを書く
+- [ ] [[README]] へのリンクを追加する
+- [x] **メタデータ**を確認する
+- #documentation を付けた通常のカード
+
+## Done
+
+- [x] フィクスチャを公開する
+~~~
+
+チェック済み・未チェック・通常のカードに加え、WikiLink、タグ、太字を同じボードに表示できます。
+
 ## 出力
 
 ```html

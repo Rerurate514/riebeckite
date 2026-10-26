@@ -33,6 +33,12 @@ export default defineConfig({
 
 `responsiveImage()` は `order: 100` で動作するため、メディアと添付ファイルのレンダラーより後に実行されます。
 
+## 実行例
+
+マニフェストに画像のバリアントがあれば、次のロゴは `<picture>` 要素として出力されます。
+
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

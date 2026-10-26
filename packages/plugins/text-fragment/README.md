@@ -7,6 +7,10 @@ you select in an article.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+Select any sentence on this page. The plugin adds a copy action that produces a URL containing a `#:~:text=` fragment for the selected text.
+
 ## Overview
 
 Client-only plugin. On page load it installs one selection popover with two

@@ -62,6 +62,7 @@ const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
   ...defaultSchema,
   tagNames: [
     ...(defaultSchema.tagNames ?? []),
+    "aside",
     "button",
     "figcaption",
     "figure",
@@ -96,6 +97,15 @@ const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
   ],
   attributes: {
     ...defaultSchema.attributes,
+    a: [
+      ...(defaultSchema.attributes?.a ?? []).filter(
+        (attribute) =>
+          attribute !== "className" &&
+          (!Array.isArray(attribute) || attribute[0] !== "className"),
+      ),
+      "className",
+      "download",
+    ],
     "*": [
       ...(defaultSchema.attributes?.["*"] ?? []),
       "className",

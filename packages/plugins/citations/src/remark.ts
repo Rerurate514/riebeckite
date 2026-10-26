@@ -407,7 +407,7 @@ function renderCitation(
 
   return {
     type: "link",
-    url: `#${referenceId(references[0]?.key ?? "unknown", context)}`,
+    url: `#user-content-${referenceId(references[0]?.key ?? "unknown", context)}`,
     title: null,
     children: [{ type: "text", value: label }],
   };

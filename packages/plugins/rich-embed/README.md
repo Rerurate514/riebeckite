@@ -75,6 +75,15 @@ listed in `allowHosts`.
 | `providers` | `RichEmbedProvider[]` | all | Allowlist of providers to enable |
 | `disable` | `RichEmbedProvider[]` | `[]` | Providers to disable (wins over `providers`) |
 
+## Live example
+
+~~~embed
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+title: Demo video
+caption: A short caption
+aspect: 16/9
+~~~
+
 ## Output HTML
 
 ```html

@@ -76,6 +76,15 @@ You can also use a top-level `"caption"` key in the JSON. It is removed before t
 ```
 ````
 
+## Live example
+
+~~~wavedrom
+{ "signal": [
+  { "name": "clk", "wave": "p......" },
+  { "name": "bus", "wave": "x.34.5x", "data": "head body tail" }
+] }
+~~~
+
 ## Output
 
 ```html

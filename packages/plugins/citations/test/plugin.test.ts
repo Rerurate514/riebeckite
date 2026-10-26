@@ -61,10 +61,16 @@ Multiple [@smith2024; @doe2025].
 
   assert.match(
     content.html,
-    /previous research <a href="#ref-smith2024">\[1\]<\/a>/,
+    /previous research <a href="#user-content-ref-smith2024">\[1\]<\/a>/,
   );
-  assert.match(content.html, /Multiple <a href="#ref-smith2024">\[1, 2\]<\/a>/);
-  assert.match(content.html, /<a href="#ref-conf2023">3<\/a> argues/);
+  assert.match(
+    content.html,
+    /Multiple <a href="#user-content-ref-smith2024">\[1, 2\]<\/a>/,
+  );
+  assert.match(
+    content.html,
+    /<a href="#user-content-ref-conf2023">3<\/a> argues/,
+  );
   assert.match(content.html, /<h2 id="references">References<\/h2>/);
   assert.match(content.html, /Smith, Jane\. \(2024\)\. Citation Systems/);
   assert.match(content.html, /Doe, John\. \(2025\)\. Markdown Research/);
@@ -84,7 +90,10 @@ test("keeps code, fenced code, wikilinks, and markdown links intact", async () =
     content.html,
     /<a href="https:\/\/example.com">link @smith2024<\/a>/,
   );
-  assert.match(content.html, /Real <a href="#ref-smith2024">\[1\]<\/a>/);
+  assert.match(
+    content.html,
+    /Real <a href="#user-content-ref-smith2024">\[1\]<\/a>/,
+  );
 });
 
 test("does not rewrite citations nested inside a link", async () => {
@@ -98,7 +107,7 @@ test("does not rewrite citations nested inside a link", async () => {
     content.html,
     /<a href="https:\/\/example.com"><strong>bold @smith2024<\/strong><\/a>/,
   );
-  assert.doesNotMatch(content.html, /#ref-smith2024/);
+  assert.doesNotMatch(content.html, /#user-content-ref-smith2024/);
 });
 
 test("repairs citation keys that remark-directive splits at a colon", async () => {
@@ -110,17 +119,17 @@ test("repairs citation keys that remark-directive splits at a colon", async () =
 
   assert.match(
     content.html,
-    /Bracket <a href="#ref-colon-2024">\[1\]<\/a> and inline <a href="#ref-colon-2024">1<\/a> argues/,
+    /Bracket <a href="#user-content-ref-colon-2024">\[1\]<\/a> and inline <a href="#user-content-ref-colon-2024">1<\/a> argues/,
   );
   assert.match(
     content.html,
-    /<li id="ref-colon-2024">Colon, Casey\. \(2024\)\. Colon Keys\. Journal of Colons<\/li>/,
+    /<li id="user-content-ref-colon-2024">Colon, Casey\. \(2024\)\. Colon Keys\. Journal of Colons<\/li>/,
   );
   assert.match(content.html, /Unrelated foo/);
   assert.match(content.html, /stays a directive/);
-  assert.doesNotMatch(content.html, /href="#ref-foo/);
+  assert.doesNotMatch(content.html, /href="#user-content-ref-foo/);
   assert.equal(
-    content.html.match(/id="ref-/g)?.length,
+    content.html.match(/id="user-content-ref-/g)?.length,
     1,
     "only the colon citation key should receive a reference anchor",
   );
@@ -288,7 +297,7 @@ test("uses frontmatter bibliography and a custom references heading", async () =
 
   assert.match(
     content.html,
-    /<a href="#ref-doe2025">\[1\]<\/a>/,
+    /<a href="#user-content-ref-doe2025">\[1\]<\/a>/,
     "frontmatter bibliography must win over the default one",
   );
   assert.match(
@@ -297,7 +306,7 @@ test("uses frontmatter bibliography and a custom references heading", async () =
     "referencesHeading must replace the default heading text",
   );
   assert.doesNotMatch(content.html, /<h2[^>]*>References<\/h2>/);
-  assert.match(content.html, /<li id="ref-doe2025">/);
+  assert.match(content.html, /<li id="user-content-ref-doe2025">/);
 });
 
 test("preserves citation affixes, punctuation, and parenthesised citations", async () => {
@@ -309,18 +318,18 @@ test("preserves citation affixes, punctuation, and parenthesised citations", asy
 
   assert.match(
     content.html,
-    /Japanese本文<a href="#ref-smith2024">\[1, p\. 42\]<\/a>\./,
+    /Japanese本文<a href="#user-content-ref-smith2024">\[1, p\. 42\]<\/a>\./,
   );
   assert.match(
     content.html,
-    /Parenthetical \(<a href="#ref-smith2024">\[1\]<\/a>\)\./,
+    /Parenthetical \(<a href="#user-content-ref-smith2024">\[1\]<\/a>\)\./,
   );
   assert.match(
     content.html,
-    /Suppressed <a href="#ref-smith2024">\[1\]<\/a> and <a href="#ref-doe2025">\[see 2\]<\/a>/,
+    /Suppressed <a href="#user-content-ref-smith2024">\[1\]<\/a> and <a href="#user-content-ref-doe2025">\[see 2\]<\/a>/,
   );
-  assert.match(content.html, /<li id="ref-smith2024">/);
-  assert.match(content.html, /<li id="ref-doe2025">/);
+  assert.match(content.html, /<li id="user-content-ref-smith2024">/);
+  assert.match(content.html, /<li id="user-content-ref-doe2025">/);
 });
 
 test("keeps citation numbering and diagnostics scoped to each page", async () => {
@@ -339,10 +348,16 @@ test("keeps citation numbering and diagnostics scoped to each page", async () =>
   );
   const diagnostics = await plugin.addDiagnostics?.(baseContext());
 
-  assert.match(pageA.html, /<a href="#ref-unknownAlpha">\[1\]<\/a>/);
-  assert.match(pageB.html, /<a href="#ref-unknownBeta">\[1\]<\/a>/);
-  assert.doesNotMatch(pageB.html, /#ref-unknownAlpha/);
-  assert.doesNotMatch(pageA.html, /#ref-unknownBeta/);
+  assert.match(
+    pageA.html,
+    /<a href="#user-content-ref-unknownAlpha">\[1\]<\/a>/,
+  );
+  assert.match(
+    pageB.html,
+    /<a href="#user-content-ref-unknownBeta">\[1\]<\/a>/,
+  );
+  assert.doesNotMatch(pageB.html, /#user-content-ref-unknownAlpha/);
+  assert.doesNotMatch(pageA.html, /#user-content-ref-unknownBeta/);
 
   const fromA = diagnostics?.find((item) => item.target === "unknownAlpha");
   const fromB = diagnostics?.find((item) => item.target === "unknownBeta");

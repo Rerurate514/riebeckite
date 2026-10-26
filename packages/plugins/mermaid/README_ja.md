@@ -27,6 +27,17 @@ export default defineConfig({
 
 このプラグインは `order: -10` で実行されます。Mermaid のコードブロックを先に処理したい場合に適した順序です。
 
+## 実行例
+
+このサイトでは `mermaid` フェンスを headless browser 版ではなく Mermaid (Pele) で描画しています。どちらのプラグインも同じフェンスを受け付けます。
+
+~~~mermaid
+flowchart LR
+  Draft --> Review --> Published
+~~~
+
+ここで使っている描画器は [Mermaid (Pele)](../mermaid-pele/README_ja.md) です。
+
 ## 描画の仕組み
 
 ` ```mermaid ` のコードブロックは `figure.rr-mermaid` に置き換わります。図のタイトルはコードブロックの `title`、またはソース内の `%% caption: ...` 行から取得します。図には `role="img"` を付け、キャプションがあればそれをラベルにします。元の記法は必要に応じて折りたたみで残します。

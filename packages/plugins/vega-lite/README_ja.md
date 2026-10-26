@@ -51,6 +51,20 @@ export default defineConfig({
 
 キャプションにはコードブロックの `title`、なければ仕様の `title` を使います。
 
+## 実行例
+
+~~~vega-lite
+{
+  "title": "Revenue",
+  "data": { "values": [{ "category": "A", "value": 28 }, { "category": "B", "value": 55 }] },
+  "mark": "bar",
+  "encoding": {
+    "x": { "field": "category", "type": "nominal" },
+    "y": { "field": "value", "type": "quantitative" }
+  }
+}
+~~~
+
 ## 描画の仕組み
 
 ` ```vega-lite ` のコードブロックは `figure.rb-vega-lite` に置き換わります。

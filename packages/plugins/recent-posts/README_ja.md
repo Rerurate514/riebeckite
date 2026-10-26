@@ -6,6 +6,10 @@
 
 [English](./README.md)
 
+## 実行例
+
+[ホームページ](/ja/) の Recent posts は、公開済みのエントリからこのプラグインが描画しています。
+
 ## できること
 
 `getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` は、ホームページのルートで一覧を本文の後に明示的に配置します。

@@ -43,6 +43,13 @@ https://example.com/
 The fence body is the text or URL to encode (trimmed). An empty body leaves the
 code block untouched and reports a `@riebeckite/plugin-qr-code` diagnostic.
 
+## Live example
+
+~~~qr
+# caption: Project page
+https://example.com/
+~~~
+
 ## Behavior
 
 Each block becomes:

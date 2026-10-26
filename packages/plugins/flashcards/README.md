@@ -58,6 +58,15 @@ It stays readable without JavaScript.
 A block with no cards, a card without `::`, or a card with an empty side is
 reported as a diagnostic (`invalid-flashcards`) and left as a code block.
 
+## Live example
+
+~~~flashcards
+What is Riebeckite? :: A tool that builds a static site from Markdown
+What is the unit of publishing? :: A note
+~~~
+
+Without JavaScript the cards remain readable as a static list.
+
 ## Output
 
 At build time the block becomes

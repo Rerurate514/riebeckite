@@ -31,6 +31,17 @@ export default defineConfig({
 });
 ```
 
+## Live example
+
+This site renders `mermaid` fences with Mermaid (Pele), not the headless browser build. Both plugins accept the same fence:
+
+~~~mermaid
+flowchart LR
+  Draft --> Review --> Published
+~~~
+
+See [Mermaid (Pele)](../mermaid-pele/README.md) for the renderer used here.
+
 ## Behavior
 
 ### Build

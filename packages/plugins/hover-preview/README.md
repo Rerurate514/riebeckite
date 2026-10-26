@@ -8,6 +8,10 @@ page.
 
 [日本語](./README_ja.md)
 
+## Live example
+
+Hover over this link to [Plugin API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md). The preview card is fetched and rendered by this plugin; keyboard focus opens it as well.
+
 ## Overview
 
 At build time `hoverPreview()` builds a preview index from the content

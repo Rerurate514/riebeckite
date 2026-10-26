@@ -41,6 +41,10 @@ Highlights are matched non-greedily, must stay on a single line, and are
 ignored when they are empty or contain only whitespace. Matches inside code
 blocks, inline code, raw HTML, and frontmatter are left untouched.
 
+## Live example
+
+A sentence with an ==emphasized phrase== and a second ==highlight==.
+
 ## Options
 
 | Option | Type | Default | Description |

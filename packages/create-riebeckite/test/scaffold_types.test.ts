@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type {
   ScaffoldDeployment,
+  ScaffoldFeatureName,
   ScaffoldPresetName,
   ScaffoldSiteMetadata,
   ScaffoldSiteOptions,
@@ -33,6 +34,7 @@ export type ScaffoldSiteOptionsShapeIsPinned = Assert<
       readonly name?: string;
       readonly site?: ScaffoldSiteMetadata;
       readonly preset?: ScaffoldPresetName;
+      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities?: readonly ScaffoldUtilityName[];
       readonly deployment?: ScaffoldDeployment;
       readonly overwrite?: boolean;

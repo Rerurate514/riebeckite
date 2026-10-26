@@ -50,6 +50,8 @@ export const getPostDiff: PluginDataHelper<
   Promise<PostDiff | null>
 > = ({ api, filePath }) => api.getCurrentDiff(filePath);
 
+const manifestConcurrency = 12;
+
 export function diff(options: DiffPluginOptions = {}) {
   const ui = { enabled: true, maxRevisions: 20, ...options.ui };
   let api: PostDiffApi | undefined;
@@ -117,30 +119,41 @@ export function diff(options: DiffPluginOptions = {}) {
       if (!snapshot || !(snapshot.value instanceof GitMarkdownHistoryReader)) {
         return;
       }
-      api ??= createPostDiffApiFromReader(snapshot.value);
-      for (const entry of context.manifest.discoverableEntries) {
-        const filePath = resolvePostFilePath({
-          slug: entry.slug,
-          contentIndex: context.contentIndex,
-        });
-        const history = (await api.getHistory(filePath)).slice(
-          0,
-          ui.maxRevisions,
-        );
-        const revisions = await getMarkdownRevisions(api, filePath, history);
-        if (revisions.length === 0) continue;
-        const selected = await api.getCurrentDiff(filePath);
-        if (!selected) continue;
+      const postDiffApi = (api ??= createPostDiffApiFromReader(snapshot.value));
+      const entries = context.manifest.discoverableEntries;
+      for (let index = 0; index < entries.length; index += manifestConcurrency) {
+        const outputs = await Promise.all(
+          entries.slice(index, index + manifestConcurrency).map(async (entry) => {
+            const filePath = resolvePostFilePath({
+              slug: entry.slug,
+              contentIndex: context.contentIndex,
+            });
+            const history = (await postDiffApi.getHistory(filePath)).slice(
+              0,
+              ui.maxRevisions,
+            );
+            const revisions = await getMarkdownRevisions(
+              postDiffApi,
+              filePath,
+              history,
+            );
+            if (revisions.length === 0) return undefined;
+            const selected = await postDiffApi.getCurrentDiff(filePath);
+            if (!selected) return undefined;
 
-        const payloadPath = diffPayloadPath(entry.slug);
-        context.output.emit({
-          path: payloadPath,
-          content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
-          dependencies: [
-            { type: "content", slug: entry.slug },
-            { type: "external", id: "diff:git-history" },
-          ],
-        });
+            return {
+              path: diffPayloadPath(entry.slug),
+              content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
+              dependencies: [
+                { type: "content", slug: entry.slug },
+                { type: "external", id: "diff:git-history" },
+              ] as const,
+            };
+          }),
+        );
+        for (const output of outputs) {
+          if (output) context.output.emit(output);
+        }
       }
     },
   });

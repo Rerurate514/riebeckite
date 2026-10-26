@@ -169,7 +169,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             ...config.resolve,
             builtins: [...config.resolve.builtins, /^node:/],
           },
-          plugins: [],
+          plugins: [
+            {
+              name: "riebeckite-ssg-package-resolution",
+              enforce: "post",
+              configResolved(runtimeConfig) {
+                runtimeConfig.resolve.alias = [];
+              },
+            },
+          ],
           build: { ssr: true },
           environments: {
             ssr: { resolve: { noExternal: [/^honox(?:\/.*)?$/] } },

@@ -191,21 +191,34 @@ test(
   async () => {
     const repository = createTestRepository("riebeckite-diff-output-");
     try {
+      const files = Object.fromEntries(
+          Array.from({ length: 13 }, (_, index) => [
+          `notes/article-${index + 1}.md`,
+          HELLO_V1,
+        ]),
+      );
       repository.commit(
-        { "notes/hello.md": HELLO_V1 },
-        "add hello",
+        files,
+        "add articles",
         "2024-01-01T00:00:00+00:00",
       );
       repository.commit(
-        { "notes/hello.md": HELLO_V2 },
-        "extend hello",
+        Object.fromEntries(
+          Object.keys(files).map((filePath) => [filePath, HELLO_V2]),
+        ),
+        "extend articles",
         "2024-01-02T00:00:00+00:00",
       );
 
       const manifest = await new ContentManager(
-        memorySource({
-          "hello.md": "---\npublish: true\ntitle: Hello\n---\n# Hello",
-        }),
+        memorySource(
+          Object.fromEntries(
+            Array.from({ length: 13 }, (_, index) => [
+              `article-${index + 1}.md`,
+              `---\npublish: true\ntitle: Article ${index + 1}\n---\n# Article ${index + 1}`,
+            ]),
+          ),
+        ),
         [],
         {
           config: resolveConfig({
@@ -219,22 +232,32 @@ test(
       const outputs = manifest.generatedOutputs.filter((candidate) =>
         candidate.path.startsWith("_riebeckite/diff/"),
       );
-      assert.equal(outputs.length, 1);
-      const output = outputs[0];
-      assert.ok(output);
-      assert.equal(output.owner, "diff");
-      assert.deepEqual(output.dependencies, [
-        { type: "content", slug: "hello" },
-        { type: "external", id: "diff:git-history" },
-      ]);
-      const payload = JSON.parse(String(output.content)) as {
-        revisions: MarkdownRevision[];
-      };
+      assert.equal(outputs.length, 13);
+      const slugs = new Set<string>();
+      for (const output of outputs) {
+        assert.equal(output.owner, "diff");
+        const dependency = output.dependencies?.find(
+          (candidate) => candidate.type === "content",
+        );
+        assert.equal(dependency?.type, "content");
+        if (dependency?.type === "content") slugs.add(dependency.slug);
+        assert.deepEqual(output.dependencies, [
+          dependency,
+          { type: "external", id: "diff:git-history" },
+        ]);
+        const payload = JSON.parse(String(output.content)) as {
+          revisions: MarkdownRevision[];
+        };
+        assert.deepEqual(
+          payload.revisions.map((revision) => revision.message),
+          ["extend articles", "add articles"],
+        );
+        assert.equal(payload.revisions[0]?.markdown, HELLO_V2);
+      }
       assert.deepEqual(
-        payload.revisions.map((revision) => revision.message),
-        ["extend hello", "add hello"],
+        [...slugs].sort(),
+        Array.from({ length: 13 }, (_, index) => `article-${index + 1}`).sort(),
       );
-      assert.equal(payload.revisions[0]?.markdown, HELLO_V2);
     } finally {
       repository.dispose();
     }

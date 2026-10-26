@@ -361,7 +361,7 @@ function renderFallback(
   if (hideFallback) return "";
   const trimmed = source.trim();
   if (trimmed.length === 0) return "";
-  return `<details class="${escapeHtmlAttribute(`${className}__fallback`)}"><summary class="${escapeHtmlAttribute(`${className}__fallback-summary`)}">Dataview query</summary><pre class="${escapeHtmlAttribute(`${className}__fallback-code`)}"><code>${escapeHtml(trimmed)}</code></pre></details>`;
+  return `<details class="${escapeHtmlAttribute(`${className}__fallback`)} rb-source-fallback"><summary>Dataview query</summary><pre><code>${escapeHtml(trimmed)}</code></pre></details>`;
 }
 
 function renderEmpty(className: string): string {

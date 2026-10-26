@@ -35,26 +35,6 @@
   height: auto;
 }
 
-.rb-graphviz__fallback {
-  border-top: 1px solid var(--rb-graphviz-rule);
-  color: var(--rb-graphviz-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-graphviz__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-graphviz__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-graphviz-rule);
-  color: var(--rb-graphviz-ink);
-  background: color-mix(in srgb, var(--rb-graphviz-ink) 6%, transparent);
-}
-
 .rb-graphviz[data-graphviz="error"] .rb-graphviz__canvas::before,
 .rb-graphviz[data-graphviz="pending"] .rb-graphviz__canvas:empty::before {
   content: "Diagram could not be rendered.";

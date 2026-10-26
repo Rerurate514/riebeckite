@@ -126,10 +126,14 @@ function buildFigure(input: {
   );
   if (input.fallback) {
     children.push(
-      element("details", { className: "rr-mermaid__fallback" }, [
-        element("summary", {}, [text("Diagram source")]),
-        element("pre", {}, [element("code", {}, [text(input.source)])]),
-      ]),
+      element(
+        "details",
+        { className: "rr-mermaid__fallback rb-source-fallback" },
+        [
+          element("summary", {}, [text("Diagram source")]),
+          element("pre", {}, [element("code", {}, [text(input.source)])]),
+        ],
+      ),
     );
   }
   return element(

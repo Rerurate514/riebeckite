@@ -77,6 +77,10 @@ test("buildDiagramFigure emits the shared DOM contract", () => {
   assert.equal(figure.children?.[0]?.properties?.dataDiagramCaption, "true");
   assert.equal(figure.children?.[1]?.properties?.dataDiagramContent, "true");
   assert.equal(figure.children?.[2]?.properties?.dataDiagramFallback, "true");
+  assert.equal(
+    figure.children?.[2]?.properties?.className,
+    "rb-example__fallback rb-source-fallback",
+  );
 });
 
 test("defineDiagramPlugin registers the rehype factory with its options", () => {

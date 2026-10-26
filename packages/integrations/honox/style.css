@@ -250,6 +250,35 @@
     line-height: 1.43;
   }
 
+  .rb-source-fallback {
+    inline-size: 100%;
+    margin-block: 0.75rem 0;
+    border-block-start: 1px solid var(--rb-color-border);
+    color: var(--rb-color-muted);
+    font-size: 0.8125rem;
+    text-align: start;
+  }
+
+  figure > .rb-source-fallback {
+    margin-block: 0;
+  }
+
+  .rb-source-fallback > summary {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+  }
+
+  .rb-source-fallback > pre {
+    overflow: auto;
+    margin: 0 0.75rem 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--rb-color-border);
+    border-radius: 6px;
+    background: var(--rb-color-code-background);
+    color: var(--rb-color-ink);
+    font-size: 0.8125rem;
+  }
+
   .rb-article-content :where(dl) {
     margin-block: 1.25em;
   }

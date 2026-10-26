@@ -204,22 +204,6 @@
   border: 0;
 }
 
-.rb-bases__fallback {
-  margin-top: 1rem;
-  color: var(--rb-bases-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-bases__fallback pre {
-  overflow-x: auto;
-  margin: 0.5rem 0 0;
-  padding: 0.75rem;
-  border: 1px solid var(--rb-bases-rule);
-  background: var(--rb-bases-surface);
-  color: var(--rb-bases-ink);
-  font-size: 0.8125rem;
-}
-
 .rb-bases--error {
   margin: 1.5rem 0;
   padding: 0.75rem 1rem;

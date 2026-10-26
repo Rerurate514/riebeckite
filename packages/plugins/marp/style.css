@@ -114,26 +114,6 @@ figure[data-marp]:fullscreen > div:first-of-type > svg[data-marpit-svg] {
   margin: 0;
 }
 
-.rb-marp__fallback {
-  border-top: 1px solid var(--rr-marp-rule);
-  color: var(--rr-marp-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-marp__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-marp__fallback pre {
-  overflow: auto;
-  margin: 0 1rem 0.75rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rr-marp-rule);
-  color: var(--rr-marp-ink);
-  background: color-mix(in srgb, var(--rr-marp-ink) 6%, transparent);
-}
-
 figure[data-marp]:fullscreen > details {
   display: none;
 }

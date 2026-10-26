@@ -69,7 +69,9 @@ function createFigure(
       {
         type: "element",
         tagName: "details",
-        properties: { className: ["rr-mermaid-pele__fallback"] },
+        properties: {
+          className: ["rr-mermaid-pele__fallback", "rb-source-fallback"],
+        },
         children: [
           {
             type: "element",

@@ -34,26 +34,6 @@
   max-width: 100%;
 }
 
-.rb-markmap__fallback {
-  border-top: 1px solid var(--rb-markmap-rule);
-  color: var(--rb-markmap-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-markmap__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-markmap__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-markmap-rule);
-  color: var(--rb-markmap-ink);
-  background: color-mix(in srgb, var(--rb-markmap-ink) 6%, transparent);
-}
-
 .rb-markmap[data-markmap="error"] .rb-markmap__canvas:empty::before,
 .rb-markmap[data-markmap="pending"] .rb-markmap__canvas:empty::before {
   content: "Mind map could not be rendered.";

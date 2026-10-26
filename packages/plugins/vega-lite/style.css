@@ -40,26 +40,6 @@
   height: auto;
 }
 
-.rb-vega-lite__fallback {
-  border-top: 1px solid var(--rb-vega-lite-rule);
-  color: var(--rb-vega-lite-muted);
-  font-size: 0.8125rem;
-}
-
-.rb-vega-lite__fallback summary {
-  cursor: pointer;
-  padding: 0.5rem 0.75rem;
-}
-
-.rb-vega-lite__fallback pre {
-  overflow: auto;
-  margin: 0 1rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--rb-vega-lite-rule);
-  color: var(--rb-vega-lite-ink);
-  background: color-mix(in srgb, var(--rb-vega-lite-ink) 6%, transparent);
-}
-
 .rb-vega-lite[data-vega-lite="error"] .rb-vega-lite__canvas::before,
 .rb-vega-lite[data-vega-lite="pending"] .rb-vega-lite__canvas:empty::before {
   content: "Chart could not be rendered.";

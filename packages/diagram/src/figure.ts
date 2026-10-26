@@ -29,7 +29,7 @@ export function buildDiagramFigure(input: DiagramFigureInput): DiagramNode {
       element(
         "details",
         {
-          className: `${input.className}__fallback`,
+          className: `${input.className}__fallback rb-source-fallback`,
           dataDiagramFallback: "true",
         },
         [

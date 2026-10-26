@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import type { Logger } from "../observability.js";
 import type { JsonValue, PluginCache } from "./plugin_cache.js";
 
@@ -78,7 +78,7 @@ export function stableStringify(value: JsonValue): string {
 }
 
 function hash(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
+  return crypto.createHash("sha256").update(value).digest("hex");
 }
 
 function warn(

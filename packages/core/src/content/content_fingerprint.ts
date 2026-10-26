@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import { mapConcurrent } from "../utils/concurrency.js";
 import type { FingerprintedContentEntry } from "./content_build_state.js";
 import type {
@@ -40,7 +40,8 @@ async function fingerprintContent(
   read: (entry: ContentSourceEntry) => Promise<ContentSourceContent>,
 ): Promise<string> {
   const content = await read(entry);
-  return `sha256:${createHash("sha256")
+  return `sha256:${crypto
+    .createHash("sha256")
     .update(typeof content === "string" ? content : content)
     .digest("hex")}`;
 }

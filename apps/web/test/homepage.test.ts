@@ -33,10 +33,7 @@ test("homepage runtime renders the Markdown conversion fixture", async () => {
 
   assert.match(runtime.demoHtml, /<h2[^>]*>Hello<\/h2>/);
   assert.match(runtime.demoHtml, /<strong>first<\/strong>/);
-  assert.match(
-    runtime.demoHtml,
-    /href="\/getting-started\/" class="rr-obsidian-wikilink"/,
-  );
+  assert.match(runtime.demoHtml, /href="\/docs\/getting-started"/);
   assert.match(runtime.codes.install, /class="rr-code"/);
   assert.match(runtime.codes.install, /data-code-copy="true"/);
   assert.match(runtime.codes.application, /@riebeckite\/plugin-search/);
@@ -156,15 +153,18 @@ for (const locale of locales) {
     for (const href of [
       `${docsPrefix}/docs/`,
       `${docsPrefix}/docs/getting-started/`,
+      `${docsPrefix}/docs/getting-started/first-content`,
+      `${docsPrefix}/docs/getting-started/presets`,
       `${docsPrefix}/docs/plugins/`,
-      `${docsPrefix}/docs/plugins/search/`,
-      `${docsPrefix}/docs/plugins/l10n/`,
-      `${docsPrefix}/docs/plugins/local-graph/`,
-      `${docsPrefix}/docs/plugins/related-posts/`,
-      `${docsPrefix}/docs/plugins/showcase/`,
-      `${docsPrefix}/docs/guides/customizing-your-site/`,
+      `${docsPrefix}/docs/plugins/search`,
+      `${docsPrefix}/docs/plugins/l10n`,
+      `${docsPrefix}/docs/plugins/local-graph`,
+      `${docsPrefix}/docs/plugins/related-posts`,
+      `${docsPrefix}/docs/plugins/showcase`,
+      `${docsPrefix}/docs/reference/configuration-reference`,
+      `${docsPrefix}/docs/guides/customizing-your-site`,
       `${docsPrefix}/docs/themes/`,
-      locale === "en" ? "/themes/" : "/ja/themes/",
+      locale === "en" ? "/themes" : "/ja/themes",
       "https://github.com/Rerurate514/riebeckite",
     ]) {
       assert.ok(html.includes(`href="${href}"`), `missing link: ${href}`);
@@ -173,7 +173,6 @@ for (const locale of locales) {
     assert.ok(html.includes('hreflang="en"') || html.includes('hreflang="ja"'));
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
     assert.match(html, /data-code-copy="true"/);
-    assert.match(html, /rr-obsidian-wikilink/);
     assert.match(html, /class="rb-home__wordmark"/);
     assert.match(html, /src="\/riebeckite-logo\.png"/);
   });

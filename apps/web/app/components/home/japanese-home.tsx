@@ -87,8 +87,8 @@ export default function JapaneseHomePage({
             <nav aria-label="プレビューのナビゲーション">
               <p>Notebook</p>
               <a href="/ja/docs/getting-started/">はじめる</a>
-              <a href="/ja/docs/guides/writing-content/">書く</a>
-              <a href="/ja/docs/plugins/showcase/">動作例</a>
+              <a href="/ja/docs/guides/writing-content">書く</a>
+              <a href="/ja/docs/plugins/showcase">動作例</a>
             </nav>
             <div class="rb-home__preview-page">
               <p class="rb-home__example-kicker">Architecture / Notes</p>
@@ -99,10 +99,8 @@ export default function JapaneseHomePage({
               </p>
               <div class="rb-home__preview-links">
                 <a href="/ja/docs/plugins/">Plugin</a>
-                <a href="/ja/themes/">Theme プレビュー</a>
-                <a href="/ja/docs/guides/discovery-recipes/">
-                  見つけやすくする
-                </a>
+                <a href="/ja/themes">Theme プレビュー</a>
+                <a href="/ja/docs/guides/discovery-recipes">見つけやすくする</a>
               </div>
             </div>
           </div>
@@ -161,7 +159,7 @@ export default function JapaneseHomePage({
               <a class="rb-home__text-link" href="/ja/docs/plugins/">
                 Plugin を探す
               </a>
-              <a class="rb-home__text-link" href="/ja/docs/plugins/search/">
+              <a class="rb-home__text-link" href="/ja/docs/plugins/search">
                 検索 Plugin
               </a>
               <a class="rb-home__text-link" href="/ja/docs/themes/">
@@ -181,19 +179,19 @@ export default function JapaneseHomePage({
           </p>
         </div>
         <div class="rb-home__recipe-links">
-          <a href="/ja/docs/plugins/search/">
+          <a href="/ja/docs/plugins/search">
             <strong>検索</strong>
             <span>ノートを見つけやすくする。</span>
           </a>
-          <a href="/ja/docs/plugins/related-posts/">
+          <a href="/ja/docs/plugins/related-posts">
             <strong>関連記事</strong>
             <span>内容で文章をつなげる。</span>
           </a>
-          <a href="/ja/docs/plugins/local-graph/">
+          <a href="/ja/docs/plugins/local-graph">
             <strong>ローカルグラフ</strong>
             <span>ノートの周辺にあるリンクを表示する。</span>
           </a>
-          <a href="/ja/docs/plugins/l10n/">
+          <a href="/ja/docs/plugins/l10n">
             <strong>多言語化</strong>
             <span>複数の言語で公開する。</span>
           </a>
@@ -205,8 +203,38 @@ export default function JapaneseHomePage({
           <p class="rb-home__section-label">読めるプロジェクト</p>
           <h2 id="home-project">コンテンツ、UI、設定を分けて置く。</h2>
           <p>
-            生成されるのは通常のファイルです。別のプロジェクト形式を覚えなくても、ルートやコンポーネントを編集し、コンテンツを移動できます。
+            生成されるのは通常のファイルなので、変更する場所がすぐに分かります。書いたもの、読者が触れる
+            UI、サイトの設定を、それぞれ独立して育てられます。
           </p>
+          <dl class="rb-home__project-parts">
+            <div>
+              <dt>
+                <a href="/ja/docs/getting-started/first-content">コンテンツ</a>
+              </dt>
+              <dd>
+                Markdown は <code>content/</code>{" "}
+                に置きます。ノートを増やしたり移動したりしても、アプリケーションは変えずに済みます。
+              </dd>
+            </div>
+            <div>
+              <dt>
+                <a href="/ja/docs/getting-started/presets">UI</a>
+              </dt>
+              <dd>
+                <code>app/routes/</code> と <code>app/components/</code>{" "}
+                には、読者が使うページと UI を置きます。
+              </dd>
+            </div>
+            <div>
+              <dt>
+                <a href="/ja/docs/reference/configuration-reference">設定</a>
+              </dt>
+              <dd>
+                Plugin、Theme、コンテンツソースは{" "}
+                <code>riebeckite.config.ts</code> で選びます。
+              </dd>
+            </div>
+          </dl>
           <a class="rb-home__text-link" href="/ja/docs/getting-started/">
             プロジェクトの設定を見る
           </a>
@@ -223,19 +251,19 @@ export default function JapaneseHomePage({
         </div>
         <ol class="rb-home__workflow-list">
           <li>
-            <strong>1. 作成</strong>
+            <strong>作成</strong>
             <span>プロジェクトを生成する。</span>
           </li>
           <li>
-            <strong>2. 書く</strong>
+            <strong>書く</strong>
             <span>コンテンツソースに Markdown を追加する。</span>
           </li>
           <li>
-            <strong>3. 確認</strong>
+            <strong>確認</strong>
             <span>ビルドして出力を確認する。</span>
           </li>
           <li>
-            <strong>4. 公開</strong>
+            <strong>公開</strong>
             <span>
               生成された <code>dist/</code> をデプロイする。
             </span>
@@ -252,15 +280,15 @@ export default function JapaneseHomePage({
           </p>
         </div>
         <div class="rb-home__gallery-links">
-          <a href="/themes/">
+          <a href="/ja/themes">
             <span>Theme プレビュー</span>
             <b>→</b>
           </a>
-          <a href="/ja/docs/plugins/showcase/">
+          <a href="/ja/docs/plugins/showcase">
             <span>Plugin の動作例</span>
             <b>→</b>
           </a>
-          <a href="/ja/docs/guides/customizing-your-site/">
+          <a href="/ja/docs/guides/customizing-your-site">
             <span>サイトのカスタマイズ</span>
             <b>→</b>
           </a>
@@ -284,7 +312,7 @@ export default function JapaneseHomePage({
           </a>
           <a
             class="rb-home__text-link"
-            href="/ja/docs/getting-started/deployment/"
+            href="/ja/docs/getting-started/deployment"
           >
             デプロイ
           </a>
@@ -308,7 +336,7 @@ title: Hello
 
 My **first** note.
 
-[[Getting started]]`;
+[Getting started](/docs/getting-started)`;
 
 const projectTree = `app/
   routes/

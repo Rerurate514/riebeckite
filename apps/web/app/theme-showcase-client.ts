@@ -16,7 +16,11 @@ import technicalStyle from "@riebeckite/theme-technical/style.css?inline";
 import tokyonightStyle from "@riebeckite/theme-tokyonight/style.css?inline";
 import sakuraSerifFont from "../../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline";
 import tokyonightMonoFont from "../../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline";
-import { showcaseFixtures, showcaseThemes } from "./lib/theme-showcase";
+import {
+  getThemeDocsHref,
+  showcaseFixtures,
+  showcaseThemes,
+} from "./lib/theme-showcase";
 
 function inlinePreviewFont(
   style: string,
@@ -125,7 +129,10 @@ export function initThemeShowcase(): void {
     detailName.textContent = theme.label;
     detailDescription.textContent = theme.description;
     detailPackage.textContent = theme.packageName;
-    detailDocs.href = `/themes/${theme.name === "riebeckite" ? "default" : theme.name}`;
+    detailDocs.href = getThemeDocsHref(
+      theme.name,
+      root.dataset.themeShowcaseLocale === "ja" ? "ja" : "en",
+    );
     detailCode.textContent = configuration(theme);
     root
       .querySelectorAll<globalThis.HTMLElement>("[data-theme-card]")

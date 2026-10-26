@@ -81,8 +81,8 @@ export default function EnglishHomePage({
             <nav aria-label="Preview navigation">
               <p>Notebook</p>
               <a href="/docs/getting-started/">Getting started</a>
-              <a href="/docs/guides/writing-content/">Writing</a>
-              <a href="/docs/plugins/showcase/">Showcase</a>
+              <a href="/docs/guides/writing-content">Writing</a>
+              <a href="/docs/plugins/showcase">Showcase</a>
             </nav>
             <div class="rb-home__preview-page">
               <p class="rb-home__example-kicker">Architecture / Notes</p>
@@ -93,8 +93,8 @@ export default function EnglishHomePage({
               </p>
               <div class="rb-home__preview-links">
                 <a href="/docs/plugins/">Plugins</a>
-                <a href="/themes/">Theme previews</a>
-                <a href="/docs/guides/discovery-recipes/">Discovery</a>
+                <a href="/themes">Theme previews</a>
+                <a href="/docs/guides/discovery-recipes">Discovery</a>
               </div>
             </div>
           </div>
@@ -154,7 +154,7 @@ export default function EnglishHomePage({
               <a class="rb-home__text-link" href="/docs/plugins/">
                 Browse plugins
               </a>
-              <a class="rb-home__text-link" href="/docs/plugins/search/">
+              <a class="rb-home__text-link" href="/docs/plugins/search">
                 Search plugin
               </a>
               <a class="rb-home__text-link" href="/docs/themes/">
@@ -175,19 +175,19 @@ export default function EnglishHomePage({
           </p>
         </div>
         <div class="rb-home__recipe-links">
-          <a href="/docs/plugins/search/">
+          <a href="/docs/plugins/search">
             <strong>Search</strong>
             <span>Help readers find notes.</span>
           </a>
-          <a href="/docs/plugins/related-posts/">
+          <a href="/docs/plugins/related-posts">
             <strong>Related posts</strong>
             <span>Connect writing by content.</span>
           </a>
-          <a href="/docs/plugins/local-graph/">
+          <a href="/docs/plugins/local-graph">
             <strong>Local graph</strong>
             <span>Show links around a note.</span>
           </a>
-          <a href="/docs/plugins/l10n/">
+          <a href="/docs/plugins/l10n">
             <strong>Localization</strong>
             <span>Publish in more than one language.</span>
           </a>
@@ -201,10 +201,39 @@ export default function EnglishHomePage({
             Keep content, interface, and settings separate.
           </h2>
           <p>
-            Generated projects use ordinary files. Add a route, edit a
-            component, or move content without adopting a separate project
-            format.
+            Generated projects use ordinary files, so each change has an obvious
+            home. Writing stays separate from the interface around it, while one
+            configuration file describes the site you are assembling.
           </p>
+          <dl class="rb-home__project-parts">
+            <div>
+              <dt>
+                <a href="/docs/getting-started/first-content">Content</a>
+              </dt>
+              <dd>
+                Keep Markdown in <code>content/</code> so notes can grow and
+                move without changing the application.
+              </dd>
+            </div>
+            <div>
+              <dt>
+                <a href="/docs/getting-started/presets">Interface</a>
+              </dt>
+              <dd>
+                Use <code>app/routes/</code> and <code>app/components/</code>{" "}
+                for the pages and UI your readers use.
+              </dd>
+            </div>
+            <div>
+              <dt>
+                <a href="/docs/reference/configuration-reference">Settings</a>
+              </dt>
+              <dd>
+                Choose plugins, themes, and content sources in{" "}
+                <code>riebeckite.config.ts</code>.
+              </dd>
+            </div>
+          </dl>
           <a class="rb-home__text-link" href="/docs/getting-started/">
             See the project setup
           </a>
@@ -221,19 +250,19 @@ export default function EnglishHomePage({
         </div>
         <ol class="rb-home__workflow-list">
           <li>
-            <strong>1. Create</strong>
+            <strong>Create</strong>
             <span>Generate the project.</span>
           </li>
           <li>
-            <strong>2. Write</strong>
+            <strong>Write</strong>
             <span>Add Markdown to your content source.</span>
           </li>
           <li>
-            <strong>3. Review</strong>
+            <strong>Review</strong>
             <span>Build and inspect the output.</span>
           </li>
           <li>
-            <strong>4. Publish</strong>
+            <strong>Publish</strong>
             <span>
               Deploy the generated <code>dist/</code>.
             </span>
@@ -251,15 +280,15 @@ export default function EnglishHomePage({
           </p>
         </div>
         <div class="rb-home__gallery-links">
-          <a href="/themes/">
+          <a href="/themes">
             <span>Theme previews</span>
             <b>→</b>
           </a>
-          <a href="/docs/plugins/showcase/">
+          <a href="/docs/plugins/showcase">
             <span>Plugin showcase</span>
             <b>→</b>
           </a>
-          <a href="/docs/guides/customizing-your-site/">
+          <a href="/docs/guides/customizing-your-site">
             <span>Customization guide</span>
             <b>→</b>
           </a>
@@ -280,10 +309,7 @@ export default function EnglishHomePage({
           >
             Getting started
           </a>
-          <a
-            class="rb-home__text-link"
-            href="/docs/getting-started/deployment/"
-          >
+          <a class="rb-home__text-link" href="/docs/getting-started/deployment">
             Deployment
           </a>
           <a class="rb-home__text-link" href="/docs/">
@@ -306,7 +332,7 @@ title: Hello
 
 My **first** note.
 
-[[Getting started]]`;
+[Getting started](/docs/getting-started)`;
 
 const projectTree = `app/
   routes/

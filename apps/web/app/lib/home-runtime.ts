@@ -15,7 +15,7 @@ title: Hello
 
 My **first** note.
 
-[[Getting started]]`;
+[Getting started](/docs/getting-started)`;
 
 export async function renderHomeRuntime(): Promise<HomeRuntime> {
   const plugins = [

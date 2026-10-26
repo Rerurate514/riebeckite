@@ -9,6 +9,7 @@ import { rerurateTheme } from "@riebeckite/theme-rerurate";
 import { sakuraTheme } from "@riebeckite/theme-sakura";
 import { technicalTheme } from "@riebeckite/theme-technical";
 import { tokyonightTheme } from "@riebeckite/theme-tokyonight";
+import type { WebLocale } from "./locale";
 
 type ThemeDefinition = ReturnType<typeof defaultTheme>;
 
@@ -109,6 +110,12 @@ export const showcaseThemes = [
     factory: "folioTheme",
   }),
 ] as const;
+
+export function getThemeDocsHref(name: string, locale: WebLocale): string {
+  const theme = name === "riebeckite" ? "default" : name;
+  const prefix = locale === "ja" ? "/ja" : "";
+  return `${prefix}/docs/themes/${theme}`;
+}
 
 export const showcaseFixtures: readonly PreviewFixture[] = [
   {

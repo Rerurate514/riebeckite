@@ -542,6 +542,7 @@ export async function buildSite(
   }
   const config = {
     root: siteRoot,
+    oxc: { jsx: { runtime: "automatic", importSource: "hono/jsx" } },
     resolve: { alias },
     customLogger,
     plugins: [

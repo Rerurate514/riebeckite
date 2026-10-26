@@ -910,7 +910,7 @@ test("a build-end hook blocks the no-change fast path", async () => {
   await second.dispose();
 });
 
-test("a generated-output plan blocks the no-change fast path", async () => {
+test("a generated-output plan permits the no-change fast path", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-generated-output",
   );
@@ -943,12 +943,12 @@ test("a generated-output plan blocks the no-change fast path", async () => {
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan",
+    undefined,
   );
   await second.dispose();
 });
 
-test("a generated-output plan takes precedence over a cache-disabled manifest hook", async () => {
+test("a cache-disabled manifest hook blocks the no-change fast path with a generated-output plan", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-plan-precedence",
   );
@@ -985,7 +985,7 @@ test("a generated-output plan takes precedence over a cache-disabled manifest ho
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan",
+    "manifest-hook-cache-disabled",
   );
   await second.dispose();
 });
@@ -1026,7 +1026,7 @@ test("an unknown generated-output dependency blocks the no-change fast path", as
   await second.dispose();
 });
 
-test("a generated-output planner with a global dependency blocks the no-change fast path", async () => {
+test("a generated-output planner with a global dependency permits the no-change fast path", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-unverified-plan",
   );
@@ -1059,7 +1059,7 @@ test("a generated-output planner with a global dependency blocks the no-change f
   await second.getOutputChangeSet({ incremental: true });
   assert.equal(
     await second.getNoChangeFastPathBlockReason({ incremental: true }),
-    "plugin-generated-output-plan",
+    undefined,
   );
   await second.dispose();
 });

@@ -78,8 +78,6 @@ export class ManifestHookRunner {
   ): string | undefined {
     const plugins = this.options.plugins();
     if (plugins.some((plugin) => plugin.buildEnd)) return "plugin-build-end";
-    if (plugins.some((plugin) => plugin.planGeneratedOutputs))
-      return "plugin-generated-output-plan";
 
     let cacheIndex = 0;
     for (const plugin of plugins) {

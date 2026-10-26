@@ -12,8 +12,10 @@ import {
   collectKnownAssetPaths,
   rehypeResponsiveImage,
   resolveResponsiveImageOptions,
+  responsiveImage,
 } from "../index.ts";
 import { validateResponsiveImageOptions } from "../src/options.ts";
+import { RESPONSIVE_IMAGE_MARKER } from "../src/rehype.ts";
 
 const KNOWN_PATHS = new Set([
   "images/hero.png",
@@ -199,6 +201,25 @@ test("rehype pass warns on a missing src and skips marked images", () => {
     src: "/x.png",
     dataResponsiveImage: "1",
   });
+});
+
+test("only declares global output dependencies for pages with responsive images", () => {
+  const dependencies = responsiveImage().resolveContentOutputDependencies;
+
+  assert.deepEqual(
+    dependencies?.({
+      entry: { html: "<p>Plain</p>" } as never,
+      manifest: {} as never,
+    }),
+    [],
+  );
+  assert.deepEqual(
+    dependencies?.({
+      entry: { html: `<img ${RESPONSIVE_IMAGE_MARKER} />` } as never,
+      manifest: {} as never,
+    }),
+    [{ type: "global" }],
+  );
 });
 
 test("collects known asset paths from a real manifest", async () => {

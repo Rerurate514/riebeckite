@@ -46,6 +46,7 @@ export function hoverPreview(options: HoverPreviewOptions = {}) {
     },
     options,
     validateOptions: validateHoverPreviewOptions,
+    manifestHookCache: { version: "hover-preview-v1" },
     onManifestCreated: (context) => {
       const publicEntries = new Set(context.manifest.publicEntries);
       runtime.inject(context.manifest, (entry) => publicEntries.has(entry));

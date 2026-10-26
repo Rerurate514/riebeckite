@@ -73,8 +73,8 @@ test("adds stable line anchors to source file fences", async () => {
 
   assert.match(html, /data-source-file="true"/);
   assert.match(html, /class="rr-code__title">hello.ts</);
-  assert.match(html, /id="L1"[^>]*tabindex="-1"/);
-  assert.match(html, /id="L2"[^>]*tabindex="-1"/);
+  assert.match(html, /id="user-content-L1"[^>]*tabindex="-1"/);
+  assert.match(html, /id="user-content-L2"[^>]*tabindex="-1"/);
 });
 
 test("code copy button uses an English accessible label", async () => {

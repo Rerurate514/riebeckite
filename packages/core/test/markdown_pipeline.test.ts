@@ -65,24 +65,69 @@ test("wraps Markdown tables in a horizontal scroll container", async () => {
   assert.match(html, /<div class="rb-table-scroll">\s*<table>/);
 });
 
-test("raw HTML is preserved as trusted author content", async () => {
+test("sanitizes raw HTML after plugin transformations", async () => {
   const { html } = await createPipeline().execute(
     [
-      "# Trusted HTML",
+      "# Raw HTML",
       "",
-      '<img src="x" onerror="alert(1)">',
+      '<img src="x" alt="safe" onerror="alert(1)">',
       '<script type="application/json">{"ok":true}</script>',
-      '<iframe src="https://example.com/embed"></iframe>',
-      "<svg><foreignObject><p>HTML</p></foreignObject></svg>",
-      '<a href="javascript:alert(1)">trusted link</a>',
+      '<iframe srcdoc="<script>alert(1)</script>"></iframe>',
+      '<a href="javascript:alert(1)">unsafe link</a>',
+      '<img src="data:text/html,unsafe">',
+      '<svg><foreignObject><p>unsafe</p></foreignObject><path d="M0 0"></path></svg>',
+      "<math><mi>x</mi></math>",
+      '<div id="location" class="plugin-output" data-plugin="safe" style="background:url(https://evil.test)">safe</div>',
     ].join("\n"),
   );
 
-  assert.match(html, /onerror="alert\(1\)"/);
-  assert.match(html, /<script type="application\/json">/);
-  assert.match(html, /<iframe src="https:\/\/example\.com\/embed"><\/iframe>/);
-  assert.match(html, /<foreignObject>/);
-  assert.match(html, /href="javascript:alert\(1\)"/);
+  assert.match(html, /<img src="x" alt="safe">/);
+  assert.match(html, /<a>unsafe link<\/a>/);
+  assert.match(html, /<svg>[\s\S]*<path d="M0 0"><\/path>[\s\S]*<\/svg>/);
+  assert.match(html, /<math>\s*<mi>x<\/mi>\s*<\/math>/);
+  assert.match(html, /id="user-content-location"/);
+  assert.match(html, /class="plugin-output"/);
+  assert.match(html, /data-plugin="safe"/);
+  assert.doesNotMatch(html, /style=/);
+  assert.doesNotMatch(
+    html,
+    /onerror|<script|<iframe|foreignObject|javascript:|data:text/i,
+  );
+});
+
+test("sanitizes unsafe HAST added by plugins", async () => {
+  const plugin = definePlugin({
+    name: "unsafe-hast",
+    rehypePlugins: [
+      () => (tree: Node) => {
+        const root = tree as unknown as HtmlNode;
+        root.children ??= [];
+        root.children.push({
+          type: "element",
+          tagName: "script",
+          properties: {},
+          children: [{ type: "text", value: "alert(1)" }],
+        });
+        root.children.push({ type: "raw", value: "<script>alert(2)</script>" });
+        root.children.push({
+          type: "element",
+          tagName: "div",
+          properties: {
+            className: ["safe-plugin-output"],
+            onClick: "alert(1)",
+          },
+          children: [{ type: "text", value: "safe" }],
+        });
+      },
+    ],
+  });
+
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [plugin],
+  }).execute("# Title");
+
+  assert.match(html, /class="safe-plugin-output"/);
+  assert.doesNotMatch(html, /<script|onclick|alert\([12]\)/i);
 });
 
 test("frontmatter-only content produces no body html", async () => {
@@ -170,6 +215,7 @@ type HtmlNode = {
   tagName?: string;
   properties?: Record<string, unknown>;
   children?: HtmlNode[];
+  value?: string;
 };
 
 function markHeadings(node: HtmlNode): void {

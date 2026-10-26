@@ -1,6 +1,7 @@
 import rehypeFormat from "rehype-format";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import remarkDirective from "remark-directive";
@@ -56,6 +57,116 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
+
+const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
+  ...defaultSchema,
+  tagNames: [
+    ...(defaultSchema.tagNames ?? []),
+    "button",
+    "figcaption",
+    "figure",
+    "mark",
+    "svg",
+    "g",
+    "path",
+    "circle",
+    "ellipse",
+    "line",
+    "polyline",
+    "polygon",
+    "rect",
+    "title",
+    "desc",
+    "defs",
+    "linearGradient",
+    "radialGradient",
+    "stop",
+    "math",
+    "semantics",
+    "mrow",
+    "msup",
+    "mi",
+    "mn",
+    "mo",
+    "mfrac",
+    "msqrt",
+    "mroot",
+    "mtext",
+    "annotation",
+  ],
+  attributes: {
+    ...defaultSchema.attributes,
+    "*": [
+      ...(defaultSchema.attributes?.["*"] ?? []),
+      "className",
+      "data*",
+      "role",
+      "ariaControls",
+      "ariaDescribedBy",
+      "ariaExpanded",
+      "ariaHidden",
+      "ariaLabel",
+      "ariaLabelledBy",
+      "ariaSelected",
+      "style",
+      "tabIndex",
+      "tabindex",
+    ],
+    button: ["type", "disabled"],
+    svg: ["xmlns", "viewBox", "width", "height", "role", "focusable"],
+    circle: ["cx", "cy", "r"],
+    ellipse: ["cx", "cy", "rx", "ry"],
+    line: ["x1", "y1", "x2", "y2"],
+    rect: ["x", "y", "width", "height", "rx", "ry"],
+    polyline: ["points"],
+    polygon: ["points"],
+    path: ["d", "pathLength"],
+    g: ["clipPath", "mask"],
+    linearGradient: [
+      "id",
+      "gradientUnits",
+      "gradientTransform",
+      "x1",
+      "y1",
+      "x2",
+      "y2",
+    ],
+    radialGradient: [
+      "id",
+      "gradientUnits",
+      "gradientTransform",
+      "cx",
+      "cy",
+      "r",
+      "fx",
+      "fy",
+    ],
+    stop: ["offset", "stopColor", "stopOpacity"],
+    math: ["xmlns"],
+    annotation: ["encoding"],
+  },
+};
+
+const safeMarkdownStyle =
+  /^(?:--shiki-(?:light|dark):#[\da-f]{3,8};?)+$|^height:\d+(?:\.\d+)?px$|^--rb-(?:qr-size:\d+(?:\.\d+)?px|rich-embed-aspect:\d+(?:\.\d+)?)$/i;
+
+function sanitizeMarkdownStyles() {
+  return (tree: Node) => {
+    removeUnsafeMarkdownStyles(tree as HtmlNode);
+  };
+}
+
+function removeUnsafeMarkdownStyles(node: HtmlNode): void {
+  if (
+    typeof node.properties?.style === "string" &&
+    !safeMarkdownStyle.test(node.properties.style)
+  ) {
+    delete node.properties.style;
+  }
+  for (const child of node.children ?? []) {
+    removeUnsafeMarkdownStyles(child as HtmlNode);
+  }
+}
 
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
@@ -325,10 +436,13 @@ export class Pipeline {
       });
     }
 
+    this.use(processor, rehypeRaw);
     this.use(processor, wrapMarkdownTables);
-    this.use(processor, rehypeSlug);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
     this.use(processor, rehypeFormat);
+    this.use(processor, rehypeSanitize, markdownSanitizeSchema);
+    this.use(processor, sanitizeMarkdownStyles);
+    this.use(processor, rehypeSlug);
 
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });
 

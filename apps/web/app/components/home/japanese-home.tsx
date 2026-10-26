@@ -50,19 +50,20 @@ export default function JapaneseHomePage({
         </div>
         <div class="rb-home__published-example">
           <div class="rb-home__example-bar">
-            <span>content/notes/ownership.md</span>
+            <span>content/guides/development-setup.md</span>
             <span>published</span>
           </div>
           <article class="rb-home__example-page">
-            <p class="rb-home__example-kicker">Notes / Architecture</p>
+            <p class="rb-home__example-kicker">チームノート / 開発ガイド</p>
             <p class="rb-home__example-title">
-              書く場所と、サイトのつくり方を分けて管理する。
+              新しいメンバーの開発環境をセットアップする。
             </p>
             <p>
-              書くものは Markdown に残し、アプリケーションは通常の TypeScript
-              ファイルで管理する。片方を変えても、もう片方を手放す必要はありません。
+              Node.js
+              のバージョン、必要な環境変数、ローカルでの起動手順をまとめます。
+              更新があればこのページだけを直せます。
             </p>
-            <a href="/ja/docs/getting-started/">コンテンツの設定を見る →</a>
+            <a href="/ja/docs/getting-started/">コンテンツの置き方を見る →</a>
           </article>
         </div>
       </section>
@@ -80,27 +81,26 @@ export default function JapaneseHomePage({
         </div>
         <div class="rb-home__site-preview">
           <div class="rb-home__preview-bar">
-            <span>my-notes.example</span>
+            <span>team-handbook.example</span>
             <span>preview</span>
           </div>
           <div class="rb-home__preview-layout">
             <nav aria-label="プレビューのナビゲーション">
-              <p>Notebook</p>
-              <a href="/ja/docs/getting-started/">はじめる</a>
-              <a href="/ja/docs/guides/writing-content">書く</a>
-              <a href="/ja/docs/plugins/showcase">動作例</a>
+              <p>Team Handbook</p>
+              <a href="/ja/docs/getting-started/">入社ガイド</a>
+              <a href="/ja/docs/guides/writing-content">開発手順</a>
+              <a href="/ja/docs/plugins/showcase">議事録</a>
             </nav>
             <div class="rb-home__preview-page">
-              <p class="rb-home__example-kicker">Architecture / Notes</p>
-              <h3>ノートをつなぎ、サイトは自分のものとして残す。</h3>
+              <p class="rb-home__example-kicker">開発手順 / リリース</p>
+              <h3>今週のリリース手順</h3>
               <p>
-                リンクされた文章を公開しながら、その周りのサイト構造と UI
-                は必要な形に保てます。
+                変更内容の確認、ステージング環境でのテスト、公開後の確認項目を順番に進めます。
               </p>
               <div class="rb-home__preview-links">
-                <a href="/ja/docs/plugins/">Plugin</a>
-                <a href="/ja/themes">Theme プレビュー</a>
-                <a href="/ja/docs/guides/discovery-recipes">見つけやすくする</a>
+                <a href="/ja/docs/plugins/">変更履歴</a>
+                <a href="/ja/themes">ロールバック</a>
+                <a href="/ja/docs/guides/discovery-recipes">障害対応</a>
               </div>
             </div>
           </div>

@@ -43,19 +43,20 @@ export default function EnglishHomePage({
         </div>
         <div class="rb-home__published-example">
           <div class="rb-home__example-bar">
-            <span>content/notes/ownership.md</span>
+            <span>content/guides/development-setup.md</span>
             <span>published</span>
           </div>
           <article class="rb-home__example-page">
-            <p class="rb-home__example-kicker">Notes / Architecture</p>
+            <p class="rb-home__example-kicker">Team notes / Development</p>
             <p class="rb-home__example-title">
-              Ownership is a practical decision.
+              Set up a development environment for new team members.
             </p>
             <p>
-              Keep writing in Markdown and the application in ordinary
-              TypeScript files. Change either without giving up the other.
+              Keep the Node.js version, required environment variables, and
+              local startup steps in one place. Update this page when they
+              change.
             </p>
-            <a href="/docs/getting-started/">Read the source setup →</a>
+            <a href="/docs/getting-started/">See how content is organized →</a>
           </article>
         </div>
       </section>
@@ -74,27 +75,27 @@ export default function EnglishHomePage({
         </div>
         <div class="rb-home__site-preview">
           <div class="rb-home__preview-bar">
-            <span>my-notes.example</span>
+            <span>team-handbook.example</span>
             <span>preview</span>
           </div>
           <div class="rb-home__preview-layout">
             <nav aria-label="Preview navigation">
-              <p>Notebook</p>
-              <a href="/docs/getting-started/">Getting started</a>
-              <a href="/docs/guides/writing-content">Writing</a>
-              <a href="/docs/plugins/showcase">Showcase</a>
+              <p>Team Handbook</p>
+              <a href="/docs/getting-started/">Onboarding</a>
+              <a href="/docs/guides/writing-content">Development</a>
+              <a href="/docs/plugins/showcase">Meeting notes</a>
             </nav>
             <div class="rb-home__preview-page">
-              <p class="rb-home__example-kicker">Architecture / Notes</p>
-              <h3>Notes that connect, pages that remain yours.</h3>
+              <p class="rb-home__example-kicker">Development / Releases</p>
+              <h3>This week&apos;s release checklist</h3>
               <p>
-                Publish linked writing with the site structure and interface you
-                need around it.
+                Review the changes, test in staging, and complete the checks
+                after publishing.
               </p>
               <div class="rb-home__preview-links">
-                <a href="/docs/plugins/">Plugins</a>
-                <a href="/themes">Theme previews</a>
-                <a href="/docs/guides/discovery-recipes">Discovery</a>
+                <a href="/docs/plugins/">Changelog</a>
+                <a href="/themes">Rollback</a>
+                <a href="/docs/guides/discovery-recipes">Incident response</a>
               </div>
             </div>
           </div>

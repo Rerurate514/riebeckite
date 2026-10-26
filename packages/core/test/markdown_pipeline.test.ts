@@ -65,7 +65,7 @@ test("wraps Markdown tables in a horizontal scroll container", async () => {
   assert.match(html, /<div class="rb-table-scroll">\s*<table>/);
 });
 
-test("sanitizes raw HTML after plugin transformations", async () => {
+test("sanitizes raw HTML in Markdown", async () => {
   const { html } = await createPipeline().execute(
     [
       "# Raw HTML",
@@ -95,28 +95,16 @@ test("sanitizes raw HTML after plugin transformations", async () => {
   );
 });
 
-test("sanitizes unsafe HAST added by plugins", async () => {
+test("trusts raw HTML added by plugins", async () => {
   const plugin = definePlugin({
-    name: "unsafe-hast",
+    name: "trusted-hast",
     rehypePlugins: [
       () => (tree: Node) => {
         const root = tree as unknown as HtmlNode;
         root.children ??= [];
         root.children.push({
-          type: "element",
-          tagName: "script",
-          properties: {},
-          children: [{ type: "text", value: "alert(1)" }],
-        });
-        root.children.push({ type: "raw", value: "<script>alert(2)</script>" });
-        root.children.push({
-          type: "element",
-          tagName: "div",
-          properties: {
-            className: ["safe-plugin-output"],
-            onClick: "alert(1)",
-          },
-          children: [{ type: "text", value: "safe" }],
+          type: "raw",
+          value: "<svg><foreignObject><p>slide</p></foreignObject></svg>",
         });
       },
     ],
@@ -126,8 +114,10 @@ test("sanitizes unsafe HAST added by plugins", async () => {
     plugins: [plugin],
   }).execute("# Title");
 
-  assert.match(html, /class="safe-plugin-output"/);
-  assert.doesNotMatch(html, /<script|onclick|alert\([12]\)/i);
+  assert.match(
+    html,
+    /<svg><foreignObject><p>slide<\/p><\/foreignObject><\/svg>/,
+  );
 });
 
 test("frontmatter-only content produces no body html", async () => {

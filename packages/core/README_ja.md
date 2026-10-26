@@ -33,7 +33,7 @@ export default defineConfig({
 
 ## Markdown HTML の安全性
 
-Core は Markdown と Plugin の HAST 変換をすべて終えた後に、Markdown 由来の HTML をサニタイズします。安全な構造的 HTML、Plugin の class、`data-*` 属性は維持しますが、script、イベント属性、安全でない URL スキーム、iframe、安全でない SVG/MathML は除去します。Framework の renderer が `PostContent.html` を HTML として挿入できるのは、ここが Core の Markdown 境界だからです。Plugin のページ HTML と Plugin コードは信頼済み拡張の境界であり、このパイプラインではサニタイズしません。
+Core は Plugin の rehype 変換より前に、Markdown 由来の HTML をサニタイズします。安全な構造的 HTML、class、`data-*` 属性は維持しますが、script、イベント属性、安全でない URL スキーム、iframe、安全でない SVG/MathML は除去します。Plugin の rehype 変換が出力する HTML は信頼済みとして扱い、ここではサニタイズしません。Framework の renderer が `PostContent.html` を HTML として挿入できるのは、ここが Core の Markdown 境界だからです。Plugin のページ HTML と Plugin コードは信頼済み拡張の境界であり、このパイプラインではサニタイズしません。
 
 ## 公開 API
 

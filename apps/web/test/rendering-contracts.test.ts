@@ -390,10 +390,12 @@ test("P2-A2: the portaled hover preview keeps document-global dark behavior", ()
 
 test("P2-A2: the theme gallery uses the isolated interactive preview", () => {
   const showcase = read("../app/components/theme-showcase.tsx");
+  const contentRoute = read("../app/routes/[slug{.+}].tsx");
   const client = read("../app/theme-showcase-client.ts");
   assert.match(showcase, /data-plugin-preview/);
   assert.match(showcase, /data-preview-frame/);
   assert.match(showcase, /sandbox=""/);
+  assert.match(contentRoute, /if \(response\.status === 404\) return next\(\)/);
   assert.match(client, /createPreviewSessionTransport/);
   assert.match(client, /mountPreview/);
 });

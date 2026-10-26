@@ -29,7 +29,7 @@ import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
-  ssgEnumerableHandler(async (c) => {
+  ssgEnumerableHandler(async (c, next) => {
     if (c.req.path === "/ja" || c.req.path === "/ja/") {
       c.set("htmlLanguage", "ja");
       c.set("seo", buildHomeSeo("ja"));
@@ -39,7 +39,11 @@ export default createRoute(
     }
 
     const resolved = await resolveRiebeckiteContentRequest(c, content);
-    if (resolved.kind === "response") return resolved.response;
+    if (resolved.kind === "response") {
+      const response = await resolved.response;
+      if (response.status === 404) return next();
+      return response;
+    }
 
     if (resolved.kind === "page") {
       if (resolved.page.language) {

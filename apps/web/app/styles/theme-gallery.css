@@ -137,7 +137,7 @@
 }
 .theme-showcase__detail {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--rb-space-2) var(--rb-space-5);
   padding-block: var(--rb-space-5);
   border-block: 1px solid var(--rb-color-border);
@@ -161,6 +161,9 @@
 }
 .theme-showcase__detail pre code {
   white-space: pre;
+}
+.theme-showcase__detail > button {
+  width: 100%;
 }
 .theme-showcase__theme-list {
   display: grid;

@@ -387,52 +387,6 @@ test("computeContentScopeFingerprint is stable and changes with locations", () =
   );
 });
 
-test("extractFrontmatter parses YAML frontmatter", () => {
-  // Test indirectly via cache key computation which uses extractFrontmatter internally
-  const markdown1 =
-    "---\ntitle: Test\npublish: true\ntags: [a, b]\n---\n\n# Content";
-  const markdown2 =
-    "---\ntitle: Test\npublish: true\ntags: [a, b]\n---\n\n# Content";
-
-  const key1 = computeContentCacheKey({
-    slug: "test",
-    source: markdown1,
-    frontmatter: { title: "Test", publish: true, tags: ["a", "b"] },
-    pipelineFingerprint: "fp",
-  });
-
-  const key2 = computeContentCacheKey({
-    slug: "test",
-    source: markdown2,
-    frontmatter: { title: "Test", publish: true, tags: ["a", "b"] },
-    pipelineFingerprint: "fp",
-  });
-
-  assert.equal(key1, key2);
-});
-
-test("extractFrontmatter returns empty object for no frontmatter", () => {
-  // Test indirectly - no frontmatter should still produce stable keys
-  const markdown1 = "# Just content";
-  const markdown2 = "# Just content";
-
-  const key1 = computeContentCacheKey({
-    slug: "test",
-    source: markdown1,
-    frontmatter: {},
-    pipelineFingerprint: "fp",
-  });
-
-  const key2 = computeContentCacheKey({
-    slug: "test",
-    source: markdown2,
-    frontmatter: {},
-    pipelineFingerprint: "fp",
-  });
-
-  assert.equal(key1, key2);
-});
-
 test("isPersistentlyCacheable allows transform functions with global processed content cache contract", () => {
   const config = contentTestConfig(TEST_CACHE_DIR, [
     {

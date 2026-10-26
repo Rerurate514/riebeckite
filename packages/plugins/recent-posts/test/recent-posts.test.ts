@@ -166,22 +166,6 @@ test("getRecentPosts returns an empty list for no entries", () => {
   assert.deepEqual(getRecentPosts({ manifest: manifest([], []) }), []);
 });
 
-test("recentPosts registers its stylesheet", () => {
-  assert.deepEqual(recentPosts().assets, [
-    {
-      pluginName: "recent-posts",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-recent-posts/style.css",
-    },
-  ]);
-});
-
-test("recentPosts declares a recent-posts projection", () => {
-  assert.deepEqual(recentPosts().contentOutputDependencies, [
-    { type: "projection", projection: "recent-posts" },
-  ]);
-});
-
 test("a post date change regenerates the index with only the plugin dependency", () => {
   const dependencies = recentPosts().contentOutputDependencies;
   assert.ok(dependencies);

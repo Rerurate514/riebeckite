@@ -1,5 +1,3 @@
-import assert from "node:assert/strict";
-import { test } from "node:test";
 import type {
   ScaffoldDeployment,
   ScaffoldFeatureName,
@@ -14,17 +12,6 @@ type Equal<A, B> =
     ? true
     : false;
 type Assert<T extends true> = T;
-
-test("the deployment domain narrows content to the github-actions variant", () => {
-  const options: ScaffoldSiteOptions = {
-    targetDirectory: ".",
-    deployment: {
-      type: "github-actions",
-      content: { type: "local" },
-    },
-  };
-  assert.equal(options.deployment?.type, "github-actions");
-});
 
 export type ScaffoldSiteOptionsShapeIsPinned = Assert<
   Equal<

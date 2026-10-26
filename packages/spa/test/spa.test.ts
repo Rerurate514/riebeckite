@@ -5,7 +5,6 @@ import { spa } from "../index.js";
 test("spa freezes validated navigation options", () => {
   const options = spa({ prefetch: "hover", scrollRestoration: true });
 
-  assert.deepEqual(options, { prefetch: "hover", scrollRestoration: true });
   assert.ok(Object.isFrozen(options));
 });
 

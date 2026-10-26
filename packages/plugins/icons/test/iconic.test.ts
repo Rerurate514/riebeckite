@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { resolveIconic } from "../src/iconic.js";
-import { iconicData, link, target } from "./helpers.js";
+import { iconicData, target } from "./helpers.js";
 
 function resolve(data = iconicData(), subject = target("notes/Note.md")) {
   const messages: string[] = [];
@@ -147,8 +147,4 @@ test("disabled and empty rules are ignored", () => {
     ],
   });
   assert.equal(resolve(data).value, undefined);
-});
-
-test("link helpers are accepted without changing matching", () => {
-  assert.equal(link("Note").raw, "Note");
 });

@@ -437,7 +437,3 @@ test("onManifestCreated leaves an entry with no trail untouched", async () => {
   assert.equal(entry.html, "<p>Body</p>");
   assert.equal(entry.headTags, undefined);
 });
-
-test("breadcrumbs is the same factory", () => {
-  assert.equal(breadcrumbs, breadcrumbs);
-});

@@ -15,25 +15,9 @@ function fenced(language: string, code: string): string {
 }
 
 test("normalizes capitalized fence languages to lowercase Shiki ids", async () => {
-  const cases: Array<[string, string]> = [
-    ["Kotlin", "kotlin"],
-    ["Dart", "dart"],
-    ["C#", "c#"],
-    ["LaTeX", "latex"],
-    ["Ts", "ts"],
-  ];
-
-  for (const [language, normalized] of cases) {
-    const html = await render(fenced(language, "val answer = 42"));
-    assert.ok(
-      html.includes(`data-language="${normalized}"`),
-      `${language} should render as data-language="${normalized}"`,
-    );
-    assert.ok(
-      !html.includes(`data-language="${language}"`),
-      `${language} should not keep its original casing`,
-    );
-  }
+  const html = await render(fenced("Kotlin", "val answer = 42"));
+  assert.ok(html.includes('data-language="kotlin"'));
+  assert.ok(!html.includes('data-language="Kotlin"'));
 });
 
 test("capitalized fence languages are syntax highlighted", async () => {

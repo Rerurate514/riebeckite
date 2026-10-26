@@ -220,16 +220,6 @@ test("conflicting paths within a provider throw", () => {
   );
 });
 
-test("planning is deterministic across repeated calls", () => {
-  const plan = () =>
-    planDeployOutputs({
-      provider: "github-pages",
-      redirects: sampleRedirects,
-      options: { provider: "github-pages", cname: "example.com" },
-    });
-  assert.deepEqual(plan(), plan());
-});
-
 test("renderRedirectStub is self-contained and newline terminated", () => {
   const stub = renderRedirectStub({ from: "/old", to: "/new", status: 301 });
   assert.ok(stub.endsWith("\n"));

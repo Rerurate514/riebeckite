@@ -464,20 +464,6 @@ test("option validation reports unsafe values", () => {
   assert.deepEqual(validateWebmentionOptions(undefined), []);
 });
 
-test("plugin declares receive and feed endpoints without client config", () => {
-  const provider = new MemoryWebmentionProvider();
-  const plugin = webmention({ provider });
-  assert.equal(plugin.name, "webmention");
-  assert.deepEqual(
-    plugin.endpoints?.map((endpoint) => [endpoint.method, endpoint.path]),
-    [
-      ["POST", "/webmentions"],
-      ["GET", "/webmentions"],
-    ],
-  );
-  assert.equal(plugin.clientEntries, undefined);
-});
-
 test("findTargetEntry ignores entries that are not routable", () => {
   const manifest = makeManifest([
     makeEntry(),

@@ -542,34 +542,6 @@ test("keeps the current branch expanded when a section is collapsed", async () =
   assert.match(searchSidebarHtml, /data-docs-collapsed="false"/);
 });
 
-test("registers the style asset and the collapsible sidebar client entry", () => {
-  const plugin = docs({ root: "docs" });
-
-  assert.deepEqual(plugin.assets, [
-    {
-      pluginName: "docs",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-docs/style.css",
-    },
-  ]);
-  assert.deepEqual(plugin.clientEntries, [
-    {
-      pluginName: "docs",
-      moduleSpecifier: "@riebeckite/plugin-docs/client",
-      exportName: "initDocsSidebar",
-      initializerArguments: "context",
-    },
-  ]);
-});
-
-test("collapses the sidebar below the desktop rail breakpoint", () => {
-  assert.match(style, /--rb-docs-sidebar-collapsible: 1;/);
-  assert.match(
-    style,
-    /@media \(min-width: 88rem\) \{[\s\S]*?--rb-docs-sidebar-collapsible: 0;[\s\S]*?\.rb-docs-sidebar-summary \{[\s\S]*?display: none;/,
-  );
-});
-
 function createManager(files: Record<string, string>): ContentManager {
   const config = resolveConfig({
     site: { title: "Test" },

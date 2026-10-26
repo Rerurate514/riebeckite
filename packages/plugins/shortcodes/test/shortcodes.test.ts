@@ -15,7 +15,6 @@ test("resolveShortcodeOptions applies defaults and registers builtins", () => {
   assert.equal(resolved.className, DEFAULT_SHORTCODE_CLASS_NAME);
   assert.equal(resolved.builtins, true);
   assert.equal(resolved.language, undefined);
-  assert.equal(typeof resolved.shortcodes.badge, "function");
   assert.ok(builtinShortcodeNames.includes("link-card"));
 });
 

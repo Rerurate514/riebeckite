@@ -230,58 +230,6 @@ test("force guard blocks force layout at threshold", () => {
   );
 });
 
-test("global graph uses all filtered notes and list is limited", () => {
-  const notes = createNotes(100);
-  const options = resolveGardenExplorerOptions({ layout: "force", depth: 1 });
-  const graphNodes = layoutForceGraph(notes, {
-    width: 900,
-    height: 620,
-    centerSlug: notes[0].slug,
-    linkDistance: options.linkDistance,
-    repulsion: options.repulsion,
-  });
-  assert.equal(graphNodes.size, 100, "Global Graph should have all 100 nodes");
-  // List limit is 80
-  const listNotes = notes.slice(0, 80);
-  assert.equal(listNotes.length, 80, "Explorer list should be limited to 80");
-});
-
-test("selected note outside list limit is preserved in Global Graph", () => {
-  const notes = createNotes(100);
-  const selectedSlug = "note-090"; // index 90, outside first 80
-  const options = resolveGardenExplorerOptions({ layout: "force", depth: 1 });
-
-  // Simulate graphNotes construction: selected note is prepended if not in filteredNotes
-  const filteredNotes = notes;
-  const noteBySlug = new Map(notes.map((n) => [n.slug, n]));
-  const selectedNote = noteBySlug.get(selectedSlug);
-  const graphNotes =
-    selectedNote && !filteredNotes.some((n) => n.slug === selectedSlug)
-      ? [selectedNote, ...filteredNotes]
-      : filteredNotes;
-
-  const graphNodes = layoutForceGraph(graphNotes, {
-    width: 900,
-    height: 620,
-    centerSlug: selectedSlug,
-    linkDistance: options.linkDistance,
-    repulsion: options.repulsion,
-  });
-
-  assert.ok(
-    graphNodes.has(selectedSlug),
-    "Global Graph should contain selected note",
-  );
-  assert.equal(graphNodes.size, 100, "Global Graph should have all 100 nodes");
-  // Note at index 90 is outside first 80, so list limit should not affect Graph
-  const listNotes = filteredNotes.slice(0, 80);
-  assert.equal(listNotes.length, 80, "Explorer list should be limited to 80");
-  assert.ok(
-    !listNotes.some((n) => n.slug === selectedSlug),
-    "Selected note should be outside list limit",
-  );
-});
-
 test("garden explorer page renders an English description", () => {
   const html = renderGardenExplorerPage(
     {

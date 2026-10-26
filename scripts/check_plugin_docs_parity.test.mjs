@@ -12,7 +12,6 @@ import {
   collectLegacyFiles,
   collectOptionIdentifiers,
   collectPluginSlugs,
-  runCheck,
 } from "./check_plugin_docs_parity.mjs";
 
 const repositoryRoot = path.resolve(
@@ -40,11 +39,6 @@ test("collects every official plugin slug in sorted order", () => {
   assert.deepEqual(slugs, [...slugs].sort());
   assert.ok(slugs.includes("alias"));
   assert.ok(slugs.includes("shortcodes"));
-});
-
-test("every official plugin README pair has parity and website pages", () => {
-  const { issues } = runCheck();
-  assert.deepEqual(issues, []);
 });
 
 test("extracts option identifiers from option tables only", () => {

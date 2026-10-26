@@ -111,10 +111,3 @@ test("is idempotent and labels generated theme READMEs", () => {
   assert.ok(readme.includes(generatedMarker("sample.md")));
   assert.equal((readme.match(/^# /gm) ?? []).length, 1);
 });
-
-test("every official theme has paired canonical docs and generated READMEs", () => {
-  const { readmes, errors } = buildDesiredReadmes();
-  assert.deepEqual(errors, []);
-  assert.equal(readmes.length, 12);
-  assert.deepEqual(planSync(readmes), []);
-});

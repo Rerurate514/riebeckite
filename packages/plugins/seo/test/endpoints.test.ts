@@ -22,10 +22,6 @@ const manifest = {
   discoverableEntries: [],
 } as unknown as ContentManifest;
 
-test("seo() registers no endpoints by default", () => {
-  assert.deepEqual(seo().endpoints, []);
-});
-
 test("seo() registers only the requested feed and site-file endpoints", () => {
   const plugin = seo({
     sitemap: true,

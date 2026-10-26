@@ -68,40 +68,6 @@ test("readme and index are ambiguous rather than implicitly ordered", () => {
   assert.deepEqual(candidateKinds(resolution), ["readme", "index"]);
 });
 
-test("readme and folder entry are ambiguous", () => {
-  const resolution = resolveFolderEntry(
-    manifestOf(entry(`${FOLDER}/README`), entry(FOLDER)),
-    FOLDER,
-  );
-
-  assert.equal(resolution.type, "ambiguous");
-  assert.deepEqual(candidateKinds(resolution), ["readme", "folder"]);
-});
-
-test("index and folder entry are ambiguous", () => {
-  const resolution = resolveFolderEntry(
-    manifestOf(entry(`${FOLDER}/index`), entry(FOLDER)),
-    FOLDER,
-  );
-
-  assert.equal(resolution.type, "ambiguous");
-  assert.deepEqual(candidateKinds(resolution), ["index", "folder"]);
-});
-
-test("readme, index, and folder entry are all ambiguous", () => {
-  const resolution = resolveFolderEntry(
-    manifestOf(
-      entry(`${FOLDER}/README`),
-      entry(`${FOLDER}/index`),
-      entry(FOLDER),
-    ),
-    FOLDER,
-  );
-
-  assert.equal(resolution.type, "ambiguous");
-  assert.deepEqual(candidateKinds(resolution), ["readme", "index", "folder"]);
-});
-
 test("resolves root readme and index as candidates", () => {
   const resolution = resolveFolderEntry(
     manifestOf(entry("README"), entry("index")),

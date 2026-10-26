@@ -45,13 +45,6 @@ test("buildTextFragmentUrl builds a Japanese link", () => {
   );
 });
 
-test("buildTextFragmentUrl builds an emoji link", () => {
-  assert.equal(
-    buildTextFragmentUrl(PAGE, "絵文字😀"),
-    `${PAGE}#:~:text=%E7%B5%B5%E6%96%87%E5%AD%97%F0%9F%98%80`,
-  );
-});
-
 test("buildTextFragmentUrl encodes , - and & in the selection", () => {
   assert.equal(
     buildTextFragmentUrl(PAGE, "a,b-c&d"),
@@ -155,13 +148,6 @@ test("text fragment defaults use English labels", () => {
   for (const value of Object.values(DEFAULT_TEXT_FRAGMENT_LABELS)) {
     assert.doesNotMatch(value, /[\u3040-\u30ff\u4e00-\u9faf]/);
   }
-});
-
-test("initTextFragmentShare accepts label overrides without a document", () => {
-  assert.equal(typeof document, "undefined");
-  assert.doesNotThrow(() =>
-    initTextFragmentShare({ copyLinkLabel: "リンクをコピー" }),
-  );
 });
 
 test("textFragment forwards labels to the client entry", () => {

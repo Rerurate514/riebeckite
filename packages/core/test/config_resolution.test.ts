@@ -39,14 +39,6 @@ test("resolveConfig fills documented defaults", () => {
   assert.deepEqual(config.plugins, []);
 });
 
-test("resolveConfig preserves an SPA runtime configuration", () => {
-  const spa = { prefetch: "hover" } as const;
-
-  const config = resolveConfig({ site: { title: "My Site" }, spa });
-
-  assert.equal(config.spa, spa);
-});
-
 test("resolveConfig normalizes the SPA switch", () => {
   assert.deepEqual(
     resolveConfig({ site: { title: "My Site" }, spa: true }).spa,

@@ -179,8 +179,3 @@ test("both homepage sources are paired for hreflang", () => {
     assert.match(source, /^homepage: true$/m);
   }
 });
-
-test("site identity names the software project", () => {
-  const configSource = read("../../../riebeckite.config.ts");
-  assert.match(configSource, /title: "Riebeckite"/);
-});

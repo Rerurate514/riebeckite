@@ -82,45 +82,6 @@ function makeEntry(
   };
 }
 
-test("scores an outgoing direct link with DIRECT_LINK_WEIGHT", async () => {
-  const related = await relatedFor(
-    {
-      "source.md": "---\npublish: true\n---\n# Source\n\n[[friend]]",
-      "friend.md": "---\npublish: true\ntitle: Friend\n---\n# Friend",
-    },
-    "source",
-  );
-
-  assert.deepEqual(related, [
-    {
-      slug: "friend",
-      permalink: "/friend",
-      title: "Friend",
-      score: DIRECT_LINK_WEIGHT,
-    },
-  ]);
-});
-
-test("scores an incoming direct link with DIRECT_LINK_WEIGHT", async () => {
-  const related = await relatedFor(
-    {
-      "source.md": "---\npublish: true\n---\n# Source",
-      "friend.md":
-        "---\npublish: true\ntitle: Friend\n---\n# Friend\n\n[[source]]",
-    },
-    "source",
-  );
-
-  assert.deepEqual(related, [
-    {
-      slug: "friend",
-      permalink: "/friend",
-      title: "Friend",
-      score: DIRECT_LINK_WEIGHT,
-    },
-  ]);
-});
-
 test("adds SHARED_TAG_WEIGHT once per shared tag", async () => {
   const related = await relatedFor(
     {

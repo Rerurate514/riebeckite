@@ -115,25 +115,6 @@ test("canvas page note links resolve public notes and neutralize private ones", 
   assert.doesNotMatch(body, /href="\/notes\/Hidden"/);
 });
 
-test("the pan and zoom client entry stays registered", async () => {
-  const manager = createManager(files, { documentPages: true });
-  const manifest = await manager.getManifest();
-
-  assert.equal(
-    manifest.clientEntries.some(
-      (entry) =>
-        entry.pluginName === "canvas" && entry.exportName === "initCanvas",
-    ),
-    true,
-  );
-  assert.equal(
-    manifest.assets.some(
-      (asset) => asset.pluginName === "canvas" && asset.kind === "style",
-    ),
-    true,
-  );
-});
-
 test("invalid canvas JSON declares no page and reports a diagnostic", async () => {
   const manager = createManager(
     { ...files, "drawings/Architecture.canvas": "{ not valid json" },

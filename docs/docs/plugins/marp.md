@@ -27,6 +27,18 @@ export default defineConfig({
 });
 ```
 
+## Live example
+
+~~~marp title="Intro deck"
+# First slide
+
+- a bullet
+
+---
+
+# Second slide
+~~~
+
 ## Obsidian vault compatibility
 
 The Obsidian plugins [Marp](https://github.com/jichoup/obsidian-marp-plugin) and [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) treat the entire note as a Marp deck and never store `marp` code fences. In Obsidian, activation is plugin-level: opening the slide preview or exporting renders the whole file of the active note, and neither plugin reads a per-note marker. Riebeckite instead activates per document using the canonical `marp: true` frontmatter flag — the same signal Marp CLI and the VS Code extension use — so notes written for those plugins are detected as:

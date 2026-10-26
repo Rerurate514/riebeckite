@@ -40,6 +40,16 @@ digraph {
 
 コードブロックの言語指定では `dot` のほかに `graphviz` も使えます。
 
+## 実行例
+
+~~~dot
+digraph G {
+  rankdir="LR";
+  notes -> pages;
+  pages -> html;
+}
+~~~
+
 ## 描画の仕組み
 
 ` ```dot ` のコードブロックは `figure.rb-graphviz` に置き換わります。内容は次のとおりです。

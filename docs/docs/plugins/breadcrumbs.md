@@ -11,6 +11,10 @@ No client-side JavaScript is required.
 
 [日本語](./breadcrumbs.ja.md)
 
+## Live example
+
+The breadcrumb trail above the article — **Riebeckite / Docs / Plugins / Breadcrumbs** — is this plugin's output. It is built from the page's folder and title, and the same trail is emitted as `BreadcrumbList` JSON-LD.
+
 ## Overview
 
 `breadcrumbs()` reads the entry's slug, splits it into segments, and produces a

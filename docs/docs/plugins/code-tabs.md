@@ -48,6 +48,18 @@ console.log("Hello");
 
 Regular code blocks without `tab="..."` are not changed.
 
+## Live example
+
+The two adjacent blocks below form one tab group.
+
+~~~ts tab="TypeScript"
+const greeting: string = "Hello";
+~~~
+
+~~~js tab="JavaScript"
+const greeting = "Hello";
+~~~
+
 ## Grouping rules
 
 Adjacent `tab="..."` code blocks become one group. Any other content ends the

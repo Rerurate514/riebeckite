@@ -61,6 +61,15 @@ image: https://example.com/og.png
 
 カードは `div.rr-cardlink` コンテナとして出力され、カード本体のリンク（`a.rr-cardlink__card`）と、URL をクリップボードへコピーするボタン（`button.rr-cardlink__copy`）で構成されます。コピーボタンはデスクトップではホバー時とフォーカス時だけ表示され、タッチデバイスでは常に表示されます。カードはコンテナクエリに対応しており、幅が狭い場合は説明文、続いてプレビュー画像が非表示になります。
 
+## 実行例
+
+~~~cardlink
+url: https://example.com/riebeckite
+title: Riebeckite
+description: Markdown から静的サイトを作るツール
+host: example.com
+~~~
+
 ## オプションと API
 
 | オプション | 型 | 既定値 | 内容 |

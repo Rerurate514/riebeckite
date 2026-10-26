@@ -36,6 +36,20 @@ Riebeckite parses `:name` as a directive before this plugin runs. When that spli
 
 Not transformed: inline code, fenced code blocks, HTML, frontmatter, normal Markdown links (at any nesting depth), and Obsidian WikiLinks.
 
+## Live example
+
+The citations below use the site bibliography.
+
+Riebeckite builds on Markdown[@gruber2004] and ships its own plugin model.[@riebeckite2026]
+
+Several sources can be cited together.[@riebeckite2026; @gruber2004]
+
+An author-integrated citation: @gruber2004 argues that readable source matters.
+
+A suppressed-author citation: [-@riebeckite2026] keeps the number.
+
+A locator and prefix: [see @riebeckite2026, p. 42].
+
 ## Bibliography files
 
 - `citations({ bibliography })` paths are relative to the content root.

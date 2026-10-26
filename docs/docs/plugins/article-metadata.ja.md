@@ -8,6 +8,10 @@ title: Article Metadata
 
 [English](./article-metadata.md)
 
+## 実行例
+
+このページのタイトルの下にある公開日・読了時間の行が、ここで描画されています。`<time>` 要素には機械可読な日付が入ります。タグがあるノートではタグも表示されます。
+
 ## できること
 
 `articleMetadata()` はコンポーネントのスタイルシートを登録します。ルートの追加や Markdown 本文の変更は行いません。

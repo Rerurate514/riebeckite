@@ -41,6 +41,10 @@ The plugin creates `/glossary`, alphabetically ordered by `term`. When `term`
 is absent, the note title is used. `definition` is optional. Only discoverable
 notes appear.
 
+## Live example
+
+[Open the Glossary](/glossary)
+
 ## Options
 
 | Option | Type | Default | Description |

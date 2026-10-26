@@ -10,6 +10,10 @@ and table-of-contents scroll-spy at runtime.
 
 [日本語](./ux.ja.md)
 
+## Live example
+
+A reading-progress bar runs along the top of this page, and a back-to-top button appears once you scroll. The **Contents** rail also follows the current section.
+
 ## Features
 
 - **Reading progress bar** — a thin fixed bar (`.rb-ux__progress`) that follows

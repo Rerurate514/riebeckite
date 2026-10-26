@@ -52,6 +52,21 @@ VIEW[{priority}]
 
 対応する入力型は `text`、`number`、`slider`、`toggle`、コードブロック内の `select` です。式では同一ページの `{property}`、リテラル、丸括弧、`!`、`-`、算術演算、比較、等値比較、`&&`、`||` を使えます。
 
+## 実行例
+
+以下のコントロールはページ内の Reader State だけを更新し、Markdown や frontmatter は書き換えません。
+
+`INPUT[text:meta_bind_text]` `INPUT[number(minValue(1), maxValue(5)):meta_bind_number]`
+
+`INPUT[slider(minValue(0), maxValue(10), stepSize(1)):meta_bind_slider]` `INPUT[toggle:meta_bind_toggle]`
+
+現在のページタイトル: `VIEW[{title}]`
+
+~~~meta-bind
+INPUT[select(option(low), option(medium), option(high)):meta_bind_select]
+VIEW[{meta_bind_select}]
+~~~
+
 ## 対応範囲と安全性
 
 `status` や `task.done` のような同一ページの単純なfrontmatterパスだけを扱います。別ノート参照、storage・memoryの参照、角括弧のパス、button action、JavaScript View、VIEWの書き戻し、Obsidian command、ファイル書き込みは実行しません。これらは元のMarkdownのまま残し、ビルド診断を出します。

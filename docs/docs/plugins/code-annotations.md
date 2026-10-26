@@ -46,6 +46,16 @@ An empty, malformed, or missing target language leaves the fence as an ordinary
 `diff` code block. A target language that the syntax highlighter does not know
 falls back to its normal unhighlighted rendering and does not fail the build.
 
+## Live example
+
+A `diff` fence with a target language renders additions and removals with the normal code block UI.
+
+~~~diff js
+const kept = true;
++ const added = "new line";
+- const removed = false;
+~~~
+
 ## Integration
 
 The plugin transforms Markdown in its remark phase, records each line marker in

@@ -35,6 +35,12 @@ export default defineConfig({
 - audio: `mp3`, `m4a`, `aac`, `ogg`, `oga`, `opus`, `wav`, `flac`
 - video: `mp4`, `m4v`, `webm`, `ogv`, `mov`
 
+## Live example
+
+Audio uses the native browser player. Video uses the same embed form with a video extension.
+
+![[media-example.wav]]
+
 ## Options
 
 | Option | Type | Default | Description |

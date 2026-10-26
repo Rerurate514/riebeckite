@@ -11,6 +11,10 @@ JavaScript は不要です。
 
 [English](./breadcrumbs.md)
 
+## 実行例
+
+記事の上に表示されている **Riebeckite / Docs / Plugins / Breadcrumbs** が、このプラグインの出力です。ページのフォルダとタイトルから組み立てられ、同じ内容が `BreadcrumbList` の JSON-LD としても出力されます。
+
 ## 仕組み
 
 `breadcrumbs()` はエントリのスラッグを「/」で区切り、必ずサイトのホームから

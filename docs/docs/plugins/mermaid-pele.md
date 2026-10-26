@@ -38,6 +38,15 @@ flowchart LR
 
 The plugin replaces the block with a static `<figure class="rr-mermaid-pele">`. It needs no client JavaScript, Puppeteer, or Chromium and works during HonoX SSG. Invalid diagrams remain as an accessible error and their escaped source is available in a disclosure; they do not abort the whole build.
 
+## Live example
+
+~~~mermaid
+flowchart LR
+  A[Note] --> B{Published?}
+  B -->|yes| C[Site]
+  B -->|no| D[Draft]
+~~~
+
 ## Theme and layout
 
 The plugin owns the `rr-mermaid-pele` structure, overflow behavior, and Pele variable mapping. Themes supply public `--rb-color-*` and `--rb-font-*` tokens; sites retain control over page layout. SVGs are responsive, retain their natural aspect ratio, and scroll horizontally only when a diagram still cannot fit.

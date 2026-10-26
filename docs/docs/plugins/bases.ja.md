@@ -60,6 +60,18 @@ views:
 レベルとビューごとの `filters` は AND で結合します。表とカードはビルド時に
 描画し、HTML に出す動的な値はすべてエスケープします。
 
+## 実行例
+
+~~~base
+properties:
+  file.name:
+    displayName: Title
+views:
+  - type: table
+    name: Pages
+    limit: 5
+~~~
+
 ## 公式構文への対応
 
 Obsidian の [Bases 構文](https://help.obsidian.md/bases/syntax) と

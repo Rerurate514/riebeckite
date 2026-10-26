@@ -74,6 +74,15 @@ desktop and is always visible on touch devices. Cards respond to container
 queries: at narrow widths the description is hidden first, then the preview
 image.
 
+## Live example
+
+~~~cardlink
+url: https://example.com/riebeckite
+title: Riebeckite
+description: A tool that builds a static site from Markdown
+host: example.com
+~~~
+
 ## Options
 
 | Option | Type | Default | Description |

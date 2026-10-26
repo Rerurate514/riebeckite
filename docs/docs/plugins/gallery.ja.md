@@ -76,6 +76,22 @@ gallery({ columns: 4, aspect: "1/1" });
 | `href` | リンク先。省略すると操作できないカードになる |
 | `meta` | バージョンや日付などの小さなラベル |
 
+## 実行例
+
+~~~gallery
+columns: 3
+items:
+  - title: Default
+    description: タイポグラフィ中心の落ち着いたテーマ。
+    href: https://riebeckite.dev/docs/themes/default
+  - title: Minimal
+    description: 必要最小限の要素だけを残したテーマ。
+    href: https://riebeckite.dev/docs/themes/minimal
+  - title: Gruvbox
+    description: 暖色系でコントラストの強い配色。
+    href: https://riebeckite.dev/docs/themes/gruvbox
+~~~
+
 ## 出力
 
 ```html

@@ -11,6 +11,10 @@ needs no JavaScript in the theme itself.
 
 [日本語](./color-mode.ja.md)
 
+## Live example
+
+The color-mode control in the site header is this plugin's UI. Switch it between light, dark, and system: the page updates immediately and the choice is stored for the next visit.
+
 ## Overview
 
 Themes derive their palette from three CSS states (see

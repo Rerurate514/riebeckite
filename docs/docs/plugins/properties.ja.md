@@ -1,12 +1,17 @@
 ---
 date: 2026-10-08
 title: Properties
+status: stable
 ---
 # Properties
 
 ノートの frontmatter を Obsidian 風のプロパティパネルとして描画するプラグインです。プラグインは値を構造化データに変換し、パネルの配置はサイト側が決めます。
 
 [English](./properties.md)
+
+## 実行例
+
+記事本文の上にあるプロパティパネルには、このページの `status` が表示されています。エクスポートされた `Properties` コンポーネントが frontmatter から組み立てています。
 
 ## できること
 

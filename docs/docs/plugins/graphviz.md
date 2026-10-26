@@ -46,6 +46,16 @@ digraph {
 
 The fenced info string `graphviz` is accepted as an alias of `dot`.
 
+## Live example
+
+~~~dot
+digraph G {
+  rankdir="LR";
+  notes -> pages;
+  pages -> html;
+}
+~~~
+
 ## Behavior
 
 ### Build

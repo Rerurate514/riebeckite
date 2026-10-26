@@ -9,6 +9,10 @@ driven search modal — no external search service required.
 
 [日本語](./search.ja.md)
 
+## Live example
+
+The **Search** control in the header opens the site search dialog. Type `mermaid` to query the generated index without leaving the page.
+
 ## Overview
 
 `search()` adds a `SearchBar` component and a browser entry point that opens a

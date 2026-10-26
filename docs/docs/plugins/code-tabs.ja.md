@@ -36,6 +36,18 @@ console.log("Hello");
 
 `tab` を持つコードブロックが連続している間だけ、1 つのタブグループになります。段落、見出し、画像などが間に入ると別のグループです。`tab` のないコードブロックは変更しません。
 
+## 実行例
+
+隣接する次の 2 つのブロックは、1 つのタブグループになります。
+
+~~~ts tab="TypeScript"
+const greeting: string = "Hello";
+~~~
+
+~~~js tab="JavaScript"
+const greeting = "Hello";
+~~~
+
 ## オプションとアクセシビリティ
 
 | オプション | 既定値 | 内容 |

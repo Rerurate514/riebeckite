@@ -44,6 +44,12 @@ export default defineConfig({
 `responsiveImage()` uses `order: 100`, so it runs after the media and
 attachment renderers.
 
+## Live example
+
+The logo below is emitted as a `<picture>` element when image variants exist in the manifest.
+
+![[riebeckite-logo-horizontal.png]]
+
 ## Options
 
 | Option | Type | Default | Description |

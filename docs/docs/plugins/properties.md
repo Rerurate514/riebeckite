@@ -1,6 +1,7 @@
 ---
 date: 2026-10-06
 title: Properties
+status: stable
 ---
 # Properties
 
@@ -8,6 +9,10 @@ Render a note's frontmatter as an Obsidian-style property panel. The plugin
 turns raw values into structured data; the Site decides where the panel goes.
 
 [日本語](./properties.ja.md)
+
+## Live example
+
+The property panel above the article body shows this page's `status` value. It is built from frontmatter by the exported `Properties` component.
 
 ## Overview
 

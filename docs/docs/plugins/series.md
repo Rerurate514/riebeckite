@@ -10,6 +10,10 @@ order, with the current part marked and previous/next links.
 
 [日本語](./series.ja.md)
 
+## Live example
+
+The [Plugins in depth](/series/plugins-in-depth-en) series page lists its articles in order and shows previous/next navigation on each one.
+
 ## Overview
 
 `series()` reads series metadata from frontmatter, groups every matching

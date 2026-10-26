@@ -12,6 +12,10 @@ the Site owns placement — where each rendered navigation appears.
 
 [日本語](./navigation.ja.md)
 
+## Live example
+
+The header links — Docs, Plugins, Themes, and GitHub — are generated from the `navigation()` configuration. The Documentation sidebar is the Docs collection navigation.
+
 ## Overview
 
 `navigation()` reads the manifest's discoverable entries — the notes that are

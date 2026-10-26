@@ -63,6 +63,12 @@ To render margin notes instead:
 plugins: [sidenotes({ placement: "margin" })];
 ```
 
+## Live example
+
+A footnote reference appears here.[^live-example]
+
+[^live-example]: The note is rendered by the sidenotes plugin.
+
 ## Options
 
 | Option | Type | Default | Description |

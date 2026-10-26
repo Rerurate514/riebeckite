@@ -8,6 +8,10 @@ title: Hover Preview
 
 [English](./hover-preview.md)
 
+## 実行例
+
+[Plugin API](../reference/plugin-api.ja.md) へのリンクにカーソルを合わせてください。プレビューカードを取得して表示するのがこのプラグインです。キーボードフォーカスでも開きます。
+
 ## 概要
 
 ビルド時に `hoverPreview()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。

@@ -87,6 +87,26 @@ limit: 10
 format: list
 ```
 
+## Live example
+
+A list with a limit:
+
+~~~query
+format: list
+sort:
+  field: title
+  order: asc
+limit: 5
+~~~
+
+A table with selected columns:
+
+~~~query
+format: table
+columns: [title, date, tags]
+limit: 5
+~~~
+
 ## Options
 
 | Option | Type | Default | Description |

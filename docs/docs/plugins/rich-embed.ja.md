@@ -72,6 +72,15 @@ start: 30
 | `providers` | `RichEmbedProvider[]` | すべて | 有効にするプロバイダーの許可リスト |
 | `disable` | `RichEmbedProvider[]` | `[]` | 無効にするプロバイダー（`providers` より優先） |
 
+## 実行例
+
+~~~embed
+https://www.youtube.com/watch?v=dQw4w9WgXcQ
+title: Demo video
+caption: A short caption
+aspect: 16/9
+~~~
+
 ## 出力 HTML
 
 ```html

@@ -50,6 +50,19 @@ becomes the tree. Content other than headings is ignored.
 
 The caption comes from the code-block `title`.
 
+## Live example
+
+~~~markmap
+# Project
+
+## Design
+
+### Notation
+### Rendering
+
+## Delivery
+~~~
+
 ## How it renders
 
 A ` ```markmap ` block becomes a `figure.rb-markmap`:

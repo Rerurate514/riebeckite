@@ -115,6 +115,13 @@ related:: [[note-a]] and [[note-b]] are similar
 
 `heading` と `headingText` は任意の `<h2>` を制御します。
 
+## 実行例
+
+マップはこのページのリンクから組み立てられます。フェンスの中身は使われません。
+
+~~~excalibrain
+~~~
+
 ## オプション
 
 | 項目 | 型 | 既定値 | 説明 |

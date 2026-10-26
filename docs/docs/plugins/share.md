@@ -12,6 +12,10 @@ copy-link action is a progressive enhancement.
 
 [日本語](./share.ja.md)
 
+## Live example
+
+The share row at the bottom of this page is the rendered control: social-share links plus the copy-link button that appears after JavaScript loads.
+
 ## Overview
 
 `share()` resolves each note's `permalink` to an absolute URL, composes the

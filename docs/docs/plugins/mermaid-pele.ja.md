@@ -38,6 +38,15 @@ flowchart LR
 
 コードブロックは静的な `<figure class="rr-mermaid-pele">` に置き換わります。クライアント JavaScript、Puppeteer、Chromium は不要で、HonoX の SSG でも動きます。無効な図はビルド全体を止めず、アクセシブルなエラー表示に置き換わり、エスケープ済みのソースは折りたたみで確認できます。
 
+## 実行例
+
+~~~mermaid
+flowchart LR
+  A[Note] --> B{Published?}
+  B -->|yes| C[Site]
+  B -->|no| D[Draft]
+~~~
+
 ## テーマとレイアウト
 
 プラグインが `rr-mermaid-pele` の構造、オーバーフロー時の挙動、Pele の CSS 変数への対応を担当します。テーマは公開済みの `--rb-color-*` と `--rb-font-*` トークンを提供し、Site はページ上の配置を決めます。SVG は自然な縦横比を維持して親幅に収まり、それでも収まらない場合だけ横スクロールします。

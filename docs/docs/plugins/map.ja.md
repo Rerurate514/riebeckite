@@ -72,6 +72,17 @@ map:
 
 `lat`/`lng` は `latitude`/`longitude`、`coordinates: [lat, lng]` または `coordinates: "lat, lng"` も受け付けます。`label` は `title`/`place`/`name` も使えます。
 
+## 実行例
+
+~~~map
+center: 35.6812, 139.7671
+zoom: 13
+label: Tokyo Station
+markers:
+  - 35.6812, 139.7671 | Tokyo Station
+  - 35.6586, 139.7454 | Tokyo Tower
+~~~
+
 ## 描画の仕組み
 
 コードブロックまたは frontmatter の地図は `figure.rr-map` になります。

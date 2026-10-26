@@ -79,6 +79,17 @@ map:
 `lat`/`lng` also accept `latitude`/`longitude`, `coordinates: [lat, lng]` or
 `coordinates: "lat, lng"`, and `label` also accepts `title`/`place`/`name`.
 
+## Live example
+
+~~~map
+center: 35.6812, 139.7671
+zoom: 13
+label: Tokyo Station
+markers:
+  - 35.6812, 139.7671 | Tokyo Station
+  - 35.6586, 139.7454 | Tokyo Tower
+~~~
+
 ## How it renders
 
 A block or frontmatter map becomes a `figure.rr-map`:

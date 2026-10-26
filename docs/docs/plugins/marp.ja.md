@@ -27,6 +27,18 @@ export default defineConfig({
 });
 ```
 
+## 実行例
+
+~~~marp title="Intro deck"
+# First slide
+
+- a bullet
+
+---
+
+# Second slide
+~~~
+
 ## Obsidian Vault との互換性
 
 Obsidian プラグインの [Marp](https://github.com/jichoup/obsidian-marp-plugin) と [Marp Slides](https://github.com/samuele-cozzi/obsidian-marp-slides) はノート全体を Marp デッキとして扱い、`marp` コードフェンスを保存しません。Obsidian ではプラグイン単位で有効になります。スライドプレビューを開いたり、エクスポートしたりすると、アクティブなノートのファイル全体をデッキとして描画し、ノート単位のマーカーは読みません。Riebeckite では代わりに、Marp CLI や VS Code 拡張と同じ標準的なフラグ（frontmatter の `marp: true`）を使い、文書単位でデッキとして描画します。これらのプラグインで書いたノートは次のように検出されます。

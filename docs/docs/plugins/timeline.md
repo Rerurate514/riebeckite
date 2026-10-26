@@ -40,6 +40,10 @@ The page is available at `/timeline`. Entries use the first valid value among
 `date`, `published`, and `created`, and are ordered from oldest to newest.
 Only discoverable notes appear.
 
+## Live example
+
+[Open the Timeline](/timeline)
+
 ## Options
 
 | Option | Type | Default | Description |

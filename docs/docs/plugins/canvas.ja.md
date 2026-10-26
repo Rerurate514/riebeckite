@@ -30,6 +30,17 @@ export default defineConfig({
 
 `.canvas` が見つからない、または JSON Canvas として解釈できない場合はコードブロックをそのまま残し、`@riebeckite/plugin-canvas` を source とするメッセージを報告します。
 
+## 実行例
+
+~~~canvas
+{
+  "nodes": [
+    { "id": "note", "type": "text", "x": 0, "y": 0, "width": 240, "height": 100, "text": "Note" }
+  ],
+  "edges": []
+}
+~~~
+
 ## 描画結果
 
 `div.rb-canvas` を出力します。属性は `data-canvas`（入力元）、`data-canvas-nodes`、`data-canvas-edges`、`data-canvas-render`（`static` / `client` / `both` / 描画後の `ready`）です。内部には次を置きます。

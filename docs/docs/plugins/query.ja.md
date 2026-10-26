@@ -84,6 +84,26 @@ limit: 10
 format: list
 ```
 
+## 実行例
+
+件数を絞ったリスト:
+
+~~~query
+format: list
+sort:
+  field: title
+  order: asc
+limit: 5
+~~~
+
+列を選んだテーブル:
+
+~~~query
+format: table
+columns: [title, date, tags]
+limit: 5
+~~~
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

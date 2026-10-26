@@ -38,6 +38,10 @@ timeline: true
 ページは `/timeline` に生成されます。日付は `date`、`published`、`created` の順で
 最初に有効な値を使い、古い順に並びます。公開一覧に載せられるノートだけが対象です。
 
+## 実行例
+
+[Timeline を開く](/timeline)
+
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |

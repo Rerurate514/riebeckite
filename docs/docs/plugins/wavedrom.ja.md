@@ -78,6 +78,15 @@ JSON のトップレベル `"caption"` キーでも指定できます。この�
 ```
 ````
 
+## 実行例
+
+~~~wavedrom
+{ "signal": [
+  { "name": "clk", "wave": "p......" },
+  { "name": "bus", "wave": "x.34.5x", "data": "head body tail" }
+] }
+~~~
+
 ## 出力
 
 ```html

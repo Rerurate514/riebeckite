@@ -10,6 +10,10 @@ page.
 
 [日本語](./hover-preview.ja.md)
 
+## Live example
+
+Hover over this link to [Plugin API](../reference/plugin-api.md). The preview card is fetched and rendered by this plugin; keyboard focus opens it as well.
+
 ## Overview
 
 At build time `hoverPreview()` builds a preview index from the content

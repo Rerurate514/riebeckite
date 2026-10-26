@@ -83,6 +83,43 @@ Themes can customize a callout from its `rr-callout` root with
 - A trailing `^block-id` on a block is removed from the text and applied to
   the element as `id` and `data-block-id`
 
+## Live example
+
+The forms below are rendered by this site.
+
+**Callout types.** `note`, `tip`, `warning`, `danger`, and `quote` share the same block-quote syntax.
+
+> [!note] Note
+> A note callout.
+
+> [!tip] Tip
+> A tip callout.
+
+> [!warning] Warning
+> A warning callout.
+
+> [!danger] Danger
+> A danger callout.
+
+> [!quote] Quote
+> A quote callout.
+
+**WikiLinks and fragments.** A link to [[README]], an aliased link to [[plugins/README|the Plugin catalog]], and a heading link to [[plugins/showcase#Inline]].
+
+**Embeds.** A note embed and an image embed:
+
+![[head-tag]]
+
+![[riebeckite-logo-horizontal.png]]
+
+**Tags.** Inline tags such as #documentation and #plugins link to the taxonomy pages.
+
+**Block references.** This paragraph carries a block id.
+
+^live-example-block
+
+Another note can target it with `[[obsidian-markdown#^live-example-block]]`.
+
 ## Options
 
 | Option | Type | Default | Description |

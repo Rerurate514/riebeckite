@@ -37,6 +37,16 @@ export default defineConfig({
 });
 ```
 
+## Live example
+
+The block below uses a filename header, line numbers, and a highlighted line.
+
+~~~ts title="greeting.ts" {2}
+export function greet(name: string) {
+  return `Hello, ${name}`;
+}
+~~~
+
 ## Features
 
 - Syntax highlighting via Shiki (rehype-pretty-code)

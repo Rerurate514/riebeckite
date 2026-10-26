@@ -22,6 +22,16 @@ export default defineConfig({
 
 `codeEnhance()` は `rehype-pretty-code` を使ってコードブロックを処理し、ファイル名と操作ボタンを持つ `.rr-code` 要素に整えます。ボタンの操作はクライアントエントリーが担当します。
 
+## 実行例
+
+次のブロックでは、ファイル名ヘッダー、行番号、行ハイライトを同時に使っています。
+
+~~~ts title="greeting.ts" {2}
+export function greet(name: string) {
+  return `Hello, ${name}`;
+}
+~~~
+
 ## 表示と操作
 
 - Shiki のテーマによる色付け、行番号、メタデータによる行・文字の強調

@@ -18,8 +18,7 @@ body:has(.rb-home) main {
   font-family: var(--rb-font-heading);
 }
 .rb-home__hero,
-.rb-home__statement,
-.rb-home__preview {
+.rb-home__explore {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
   gap: clamp(2rem, 7vw, 7rem);
@@ -27,11 +26,8 @@ body:has(.rb-home) main {
 }
 .rb-home__hero-copy,
 .rb-home__hero > *,
-.rb-home__statement > *,
-.rb-home__content-example > *,
-.rb-home__ownership-example > *,
 .rb-home__application-example > *,
-.rb-home__preview > * {
+.rb-home__explore > * {
   min-width: 0;
 }
 .rb-home__wordmark {
@@ -78,10 +74,14 @@ body:has(.rb-home) main {
   line-height: 1;
   text-wrap: balance;
 }
+:lang(ja) .rb-home :is(h1, h2, h3) {
+  line-break: strict;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
 .rb-home__lead,
 .rb-home__section-intro > p,
-.rb-home__continue > p,
-.rb-home__preview-body > p {
+.rb-home__continue > p {
   max-width: 41rem;
   margin: var(--rb-space-4) 0 0;
   color: var(--rb-color-muted);
@@ -181,24 +181,111 @@ body:has(.rb-home) main {
 .rb-home__runtime-code > :first-child {
   margin-top: 0;
 }
-.rb-home__statement,
+.rb-home__explore,
 .rb-home__conversion,
-.rb-home__section,
 .rb-home__configuration,
+.rb-home__recipes,
+.rb-home__project,
 .rb-home__workflow,
-.rb-home__preview,
+.rb-home__gallery,
 .rb-home__continue {
   margin-top: clamp(4.5rem, 10vw, 8rem);
 }
-.rb-home__statement {
-  display: block;
-  padding-top: var(--rb-space-4);
-}
-.rb-home__statement .rb-home__section-intro {
-  max-width: 41rem;
-}
 .rb-home__conversion {
   padding-top: var(--rb-space-4);
+}
+.rb-home__explore {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+}
+.rb-home__site-preview {
+  overflow: hidden;
+  border: 1px solid var(--rb-color-border-strong);
+  background: var(--rb-color-surface);
+  box-shadow: 0.75rem 0.75rem 0
+    color-mix(in oklab, var(--rb-color-accent) 16%, transparent);
+}
+.rb-home__preview-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface-hover);
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.rb-home__preview-bar span:last-child {
+  color: var(--rb-color-accent);
+}
+.rb-home__preview-layout {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.38fr) minmax(0, 1fr);
+  min-height: 17rem;
+}
+.rb-home__preview-layout nav {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+  padding: 1rem;
+  border-right: 1px solid var(--rb-color-border);
+  background: color-mix(
+    in oklab,
+    var(--rb-color-surface-hover) 55%,
+    transparent
+  );
+}
+.rb-home__preview-layout nav p {
+  margin: 0 0 0.45rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.rb-home__preview-layout a,
+.rb-home__preview-links a {
+  color: var(--rb-color-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.rb-home__preview-layout a:hover,
+.rb-home__preview-layout a:focus-visible,
+.rb-home__preview-links a:hover,
+.rb-home__preview-links a:focus-visible {
+  color: var(--rb-color-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.rb-home__preview-page {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.rb-home__preview-page h3 {
+  max-width: 18ch;
+  margin: 0.6rem 0 0;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.25rem, 2.1vw, 1.7rem);
+  font-weight: 620;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+}
+.rb-home__preview-page > p:not(.rb-home__example-kicker) {
+  max-width: 35rem;
+  margin: 0.9rem 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.rb-home__preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1.3rem;
 }
 .rb-home__conversion-flow {
   display: grid;
@@ -254,13 +341,8 @@ body:has(.rb-home) main {
   color: var(--rb-color-accent);
   font-size: 1.5rem;
 }
-.rb-home__section {
-  max-width: 63rem;
-  margin-inline: auto;
-}
 .rb-home__section-intro h2,
-.rb-home__continue h2,
-.rb-home__preview h2 {
+.rb-home__continue h2 {
   max-width: 22ch;
   margin: 0;
   font-size: clamp(1.7rem, 3vw, 3rem);
@@ -269,26 +351,18 @@ body:has(.rb-home) main {
   line-height: 1.1;
   text-wrap: balance;
 }
-.rb-home__content-example,
-.rb-home__application-example,
-.rb-home__ownership-example {
+.rb-home__application-example {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr);
   gap: clamp(1.75rem, 5vw, 5rem);
   align-items: start;
 }
-.rb-home__content-note,
-.rb-home__ownership-example > p,
 .rb-home__application-copy > p {
   margin: 0;
   color: var(--rb-color-muted);
   font-size: 0.95rem;
   line-height: 1.7;
 }
-.rb-home__content-example {
-  margin-top: var(--rb-space-4);
-}
-.rb-home__ownership-example,
 .rb-home__application-example {
   margin-top: var(--rb-space-5);
 }
@@ -298,6 +372,123 @@ body:has(.rb-home) main {
 }
 .rb-home__application-example {
   grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
+}
+.rb-home__recipes {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rb-home__recipe-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--rb-color-border-strong);
+  border-left: 1px solid var(--rb-color-border-strong);
+}
+.rb-home__recipe-links a {
+  display: grid;
+  gap: 0.3rem;
+  min-height: 7.5rem;
+  padding: 1.25rem;
+  border-right: 1px solid var(--rb-color-border-strong);
+  border-bottom: 1px solid var(--rb-color-border-strong);
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+.rb-home__recipe-links strong {
+  font-family: var(--rb-font-heading);
+  font-size: 1.1rem;
+}
+.rb-home__recipe-links span {
+  color: var(--rb-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.rb-home__recipe-links a:hover,
+.rb-home__recipe-links a:focus-visible {
+  background: var(--rb-color-surface-hover);
+}
+.rb-home__project {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.85fr) minmax(0, 0.6fr);
+  gap: clamp(2rem, 8vw, 8rem);
+  align-items: center;
+  padding-block: clamp(2rem, 5vw, 4rem);
+  border-block: 1px solid var(--rb-color-border-strong);
+}
+.rb-home__project-tree {
+  margin: 0;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-code-ink);
+  font-family: var(--rb-font-mono);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.rb-home__workflow {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rb-home__workflow-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  background: var(--rb-color-border-strong);
+  list-style: none;
+}
+.rb-home__workflow-list li {
+  display: grid;
+  gap: 0.5rem;
+  min-height: 7rem;
+  padding: 1.25rem;
+  background: var(--rb-color-surface);
+}
+.rb-home__workflow-list strong {
+  font-family: var(--rb-font-heading);
+}
+.rb-home__workflow-list span {
+  color: var(--rb-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.rb-home__gallery {
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--rb-color-surface-hover);
+}
+.rb-home__gallery-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: var(--rb-space-5);
+  background: var(--rb-color-border-strong);
+}
+.rb-home__gallery-links a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 5.5rem;
+  padding: 1.25rem;
+  background: var(--rb-color-surface);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  text-decoration: none;
+}
+.rb-home__gallery-links b {
+  color: var(--rb-color-accent);
+  font-size: 1.2rem;
+}
+.rb-home__gallery-links a:hover,
+.rb-home__gallery-links a:focus-visible {
+  background: var(--rb-color-accent);
+  color: var(--rb-color-paper);
+}
+.rb-home__gallery-links a:hover b,
+.rb-home__gallery-links a:focus-visible b {
+  color: inherit;
 }
 .rb-home__resource-links {
   align-items: center;
@@ -318,37 +509,6 @@ body:has(.rb-home) main {
   color: var(--rb-color-accent);
   text-decoration: underline;
 }
-.rb-home__workflow {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(2rem, 7vw, 7rem);
-  padding-block: var(--rb-space-5);
-}
-.rb-home__workflow-list {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  border-top: 1px solid var(--rb-color-border);
-}
-.rb-home__workflow-list > div {
-  padding: var(--rb-space-3) 0;
-  border-bottom: 1px solid var(--rb-color-border);
-}
-.rb-home__workflow-list dt {
-  color: var(--rb-color-ink);
-  font-weight: 700;
-}
-.rb-home__workflow-list dd {
-  margin: 0.35rem 0 0;
-  color: var(--rb-color-muted);
-  line-height: 1.6;
-}
-.rb-home__preview {
-  align-items: start;
-}
-.rb-home__preview-body .rb-home__runtime-code {
-  margin-top: var(--rb-space-4);
-}
 .rb-home__continue {
   max-width: 48rem;
   margin-inline: auto;
@@ -364,13 +524,12 @@ body:has(.rb-home) main {
 
 @media (max-width: 52rem) {
   .rb-home__hero,
+  .rb-home__explore,
   .rb-home__conversion-flow,
-  .rb-home__statement,
-  .rb-home__content-example,
   .rb-home__application-example,
-  .rb-home__ownership-example,
-  .rb-home__workflow,
-  .rb-home__preview {
+  .rb-home__recipes,
+  .rb-home__project,
+  .rb-home__workflow {
     grid-template-columns: 1fr;
   }
   .rb-home__published-example {
@@ -379,6 +538,12 @@ body:has(.rb-home) main {
   .rb-home__conversion-arrow {
     justify-self: center;
     transform: rotate(90deg);
+  }
+  .rb-home__site-preview {
+    max-width: 40rem;
+  }
+  .rb-home__project-tree {
+    max-width: 34rem;
   }
 }
 
@@ -398,5 +563,21 @@ body:has(.rb-home) main {
   }
   .rb-home__configuration {
     padding: 1.25rem;
+  }
+  .rb-home__preview-layout {
+    grid-template-columns: 1fr;
+  }
+  .rb-home__preview-layout nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-right: 0;
+    border-bottom: 1px solid var(--rb-color-border);
+  }
+  .rb-home__preview-layout nav p {
+    grid-column: 1 / -1;
+  }
+  .rb-home__recipe-links,
+  .rb-home__workflow-list,
+  .rb-home__gallery-links {
+    grid-template-columns: 1fr;
   }
 }

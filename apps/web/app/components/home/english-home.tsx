@@ -60,6 +60,47 @@ export default function EnglishHomePage({
         </div>
       </section>
 
+      <section class="rb-home__explore" aria-labelledby="home-explore">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">A framework, not a theme</p>
+          <h2 id="home-explore">
+            See the pieces of a published site together.
+          </h2>
+          <p>
+            Start from Markdown, then choose the navigation, discovery tools,
+            theme, and routes that make the site yours. These are the same
+            surfaces available to a generated project.
+          </p>
+        </div>
+        <div class="rb-home__site-preview">
+          <div class="rb-home__preview-bar">
+            <span>my-notes.example</span>
+            <span>preview</span>
+          </div>
+          <div class="rb-home__preview-layout">
+            <nav aria-label="Preview navigation">
+              <p>Notebook</p>
+              <a href="/docs/getting-started/">Getting started</a>
+              <a href="/docs/guides/writing-content/">Writing</a>
+              <a href="/docs/plugins/showcase/">Showcase</a>
+            </nav>
+            <div class="rb-home__preview-page">
+              <p class="rb-home__example-kicker">Architecture / Notes</p>
+              <h3>Notes that connect, pages that remain yours.</h3>
+              <p>
+                Publish linked writing with the site structure and interface you
+                need around it.
+              </p>
+              <div class="rb-home__preview-links">
+                <a href="/docs/plugins/">Plugins</a>
+                <a href="/themes/">Theme previews</a>
+                <a href="/docs/guides/discovery-recipes/">Discovery</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="rb-home__conversion" aria-labelledby="home-conversion">
         <div class="rb-home__section-intro">
           <p class="rb-home__section-label">Markdown → Web</p>
@@ -91,82 +132,30 @@ export default function EnglishHomePage({
         </div>
       </section>
 
-      <section class="rb-home__statement" aria-labelledby="home-content">
-        <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Markdown and Obsidian</p>
-          <h2 id="home-content">
-            Your notes do not have to own your architecture.
-          </h2>
-          <p>
-            Use <code>content/</code> in the project or point to an external
-            Obsidian vault. Published notes become static pages; the application
-            remains a normal Hono JSX project.
-          </p>
-        </div>
-        <div class="rb-home__content-example">
-          <div>
-            <p class="rb-home__label">content/notes/ownership.md</p>
-            {runtime && <RuntimeCode html={runtime.codes.content} />}
-          </div>
-          <p class="rb-home__content-note">
-            The official Obsidian plugin supports WikiLinks, embeds, callouts,
-            properties, and tags. Frontmatter keeps publication data next to the
-            writing.
-          </p>
-        </div>
-        <a class="rb-home__text-link" href="/docs/guides/writing-content/">
-          Configure content sources
-        </a>
-      </section>
-
-      <section class="rb-home__section" aria-labelledby="home-application">
-        <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Application ownership</p>
-          <h2 id="home-application">
-            Start with a project, not a closed template.
-          </h2>
-          <p>
-            The generated site has an <code>app/</code> directory, a
-            configuration file, and dependencies you control. Add pages,
-            documentation, navigation, and components with Hono JSX.
-          </p>
-        </div>
-        <div class="rb-home__ownership-example">
-          <div>
-            <p class="rb-home__label">The generated project</p>
-            {runtime && <RuntimeCode html={runtime.codes.project} />}
-          </div>
-          <p>
-            Riebeckite is a set of packages, not a project format that absorbs
-            your site. Updating it is a dependency change, with the usual care
-            for major versions.
-          </p>
-        </div>
-      </section>
-
       <section class="rb-home__configuration" aria-labelledby="home-extensions">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Extension boundaries</p>
-          <h2 id="home-extensions">
-            Plugins add capabilities. Themes handle presentation.
-          </h2>
+          <p class="rb-home__section-label">npm packages</p>
+          <h2 id="home-extensions">Add the feature your site needs.</h2>
           <p>
-            Install npm packages and register them in one configuration. Decide
-            where their components belong in your routes.
+            Install a package, register it in the configuration, and decide
+            where its components belong in your routes.
           </p>
         </div>
         <div class="rb-home__application-example">
           {runtime && <RuntimeCode html={runtime.codes.application} />}
           <div class="rb-home__application-copy">
             <p>
-              Plugins can add Markdown and HTML transforms, renderers,
-              standalone pages, browser behavior, endpoints, SEO, and
-              diagnostics. A theme supplies tokens and styles without deciding
+              This example adds site search. Plugins can also add transforms,
+              renderers, standalone pages, browser behavior, endpoints, SEO, and
+              diagnostics. Themes supply tokens and styles without deciding the
               application structure.
             </p>
             <div class="rb-home__resource-links">
               <a class="rb-home__text-link" href="/docs/plugins/">
-                Browse plugins and APIs
+                Browse plugins
+              </a>
+              <a class="rb-home__text-link" href="/docs/plugins/search/">
+                Search plugin
               </a>
               <a class="rb-home__text-link" href="/docs/themes/">
                 Explore themes
@@ -176,57 +165,104 @@ export default function EnglishHomePage({
         </div>
       </section>
 
-      <section class="rb-home__workflow" aria-labelledby="home-workflow">
+      <section class="rb-home__recipes" aria-labelledby="home-recipes">
         <div class="rb-home__section-intro">
-          <p class="rb-home__section-label">Build and inspect</p>
-          <h2 id="home-workflow">
-            Build only what changed, then inspect the result.
-          </h2>
+          <p class="rb-home__section-label">Choose by outcome</p>
+          <h2 id="home-recipes">Find a Plugin by what you want to publish.</h2>
           <p>
-            Successful builds record reusable state and dependency
-            relationships. When a linked page or asset changes, related output
-            is regenerated; <code>--full</code> bypasses reuse when you need it.
+            Start with a site need rather than a package name. Each guide covers
+            setup and the pieces you add to your routes.
           </p>
         </div>
-        <dl class="rb-home__workflow-list">
-          <div>
-            <dt>Develop</dt>
-            <dd>
-              <code>riebeckite dev</code> starts the integration workflow.
-            </dd>
-          </div>
-          <div>
-            <dt>Validate</dt>
-            <dd>
-              <code>riebeckite check</code> validates configuration, content,
-              plugin options, and capabilities.
-            </dd>
-          </div>
-          <div>
-            <dt>Inspect</dt>
-            <dd>
-              <code>riebeckite inspect</code> displays resolved configuration,
-              plugins, content, graph, or build state.
-            </dd>
-          </div>
-        </dl>
+        <div class="rb-home__recipe-links">
+          <a href="/docs/plugins/search/">
+            <strong>Search</strong>
+            <span>Help readers find notes.</span>
+          </a>
+          <a href="/docs/plugins/related-posts/">
+            <strong>Related posts</strong>
+            <span>Connect writing by content.</span>
+          </a>
+          <a href="/docs/plugins/local-graph/">
+            <strong>Local graph</strong>
+            <span>Show links around a note.</span>
+          </a>
+          <a href="/docs/plugins/l10n/">
+            <strong>Localization</strong>
+            <span>Publish in more than one language.</span>
+          </a>
+        </div>
       </section>
 
-      <section class="rb-home__preview" aria-labelledby="home-preview">
-        <div>
-          <p class="rb-home__section-label">Local previews</p>
-          <h2 id="home-preview">
-            Develop extensions against a real fixture site.
+      <section class="rb-home__project" aria-labelledby="home-project">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">A project you can read</p>
+          <h2 id="home-project">
+            Keep content, interface, and settings separate.
           </h2>
-        </div>
-        <div class="rb-home__preview-body">
           <p>
-            <code>riebeckite theme preview</code> serves Home, Article,
-            Documentation, and Components fixtures.{" "}
-            <code>riebeckite plugin dev</code> links one local plugin into a
-            temporary site with deterministic Markdown.
+            Generated projects use ordinary files. Add a route, edit a
+            component, or move content without adopting a separate project
+            format.
           </p>
-          {runtime && <RuntimeCode html={runtime.codes.preview} />}
+          <a class="rb-home__text-link" href="/docs/getting-started/">
+            See the project setup
+          </a>
+        </div>
+        <pre class="rb-home__project-tree">
+          <code>{projectTree}</code>
+        </pre>
+      </section>
+
+      <section class="rb-home__workflow" aria-labelledby="home-workflow">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">From draft to live site</p>
+          <h2 id="home-workflow">Keep the publishing path short.</h2>
+        </div>
+        <ol class="rb-home__workflow-list">
+          <li>
+            <strong>1. Create</strong>
+            <span>Generate the project.</span>
+          </li>
+          <li>
+            <strong>2. Write</strong>
+            <span>Add Markdown to your content source.</span>
+          </li>
+          <li>
+            <strong>3. Review</strong>
+            <span>Build and inspect the output.</span>
+          </li>
+          <li>
+            <strong>4. Publish</strong>
+            <span>
+              Deploy the generated <code>dist/</code>.
+            </span>
+          </li>
+        </ol>
+      </section>
+
+      <section class="rb-home__gallery" aria-labelledby="home-gallery">
+        <div class="rb-home__section-intro">
+          <p class="rb-home__section-label">Working references</p>
+          <h2 id="home-gallery">Open the parts before choosing them.</h2>
+          <p>
+            Compare official themes, see plugins running together, or read how
+            to customize the site around your content.
+          </p>
+        </div>
+        <div class="rb-home__gallery-links">
+          <a href="/themes/">
+            <span>Theme previews</span>
+            <b>→</b>
+          </a>
+          <a href="/docs/plugins/showcase/">
+            <span>Plugin showcase</span>
+            <b>→</b>
+          </a>
+          <a href="/docs/guides/customizing-your-site/">
+            <span>Customization guide</span>
+            <b>→</b>
+          </a>
         </div>
       </section>
 
@@ -271,3 +307,9 @@ title: Hello
 My **first** note.
 
 [[Getting started]]`;
+
+const projectTree = `app/
+  routes/
+  components/
+content/
+riebeckite.config.ts`;

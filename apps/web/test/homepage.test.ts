@@ -39,6 +39,8 @@ test("homepage runtime renders the Markdown conversion fixture", async () => {
   );
   assert.match(runtime.codes.install, /class="rr-code"/);
   assert.match(runtime.codes.install, /data-code-copy="true"/);
+  assert.match(runtime.codes.application, /@riebeckite\/plugin-search/);
+  assert.match(runtime.codes.application, /data-language="sh"/);
 });
 
 test("homepage copy avoids unsupported marketing claims", () => {
@@ -125,7 +127,7 @@ for (const locale of locales) {
     assert.equal((html.match(/<main\b/g) ?? []).length, 0);
     assert.match(renderer, /<main id="main-content" tabindex=\{-1\}>/);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-    assert.equal((html.match(/<h2\b/g) ?? []).length, 8);
+    assert.equal((html.match(/<h2\b/g) ?? []).length, 9);
     assert.match(html, /<h1[^>]*id="home-title"/);
 
     const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
@@ -134,7 +136,7 @@ for (const locale of locales) {
     const labelled = [...html.matchAll(/aria-labelledby="([^"]+)"/g)].map(
       (match) => match[1],
     );
-    assert.ok(labelled.length >= 7);
+    assert.ok(labelled.length >= 9);
     for (const id of labelled) {
       assert.ok(ids.includes(id), `aria-labelledby target is missing: ${id}`);
     }
@@ -155,7 +157,14 @@ for (const locale of locales) {
       `${docsPrefix}/docs/`,
       `${docsPrefix}/docs/getting-started/`,
       `${docsPrefix}/docs/plugins/`,
+      `${docsPrefix}/docs/plugins/search/`,
+      `${docsPrefix}/docs/plugins/l10n/`,
+      `${docsPrefix}/docs/plugins/local-graph/`,
+      `${docsPrefix}/docs/plugins/related-posts/`,
+      `${docsPrefix}/docs/plugins/showcase/`,
+      `${docsPrefix}/docs/guides/customizing-your-site/`,
       `${docsPrefix}/docs/themes/`,
+      locale === "en" ? "/themes/" : "/ja/themes/",
       "https://github.com/Rerurate514/riebeckite",
     ]) {
       assert.ok(html.includes(`href="${href}"`), `missing link: ${href}`);
@@ -167,8 +176,6 @@ for (const locale of locales) {
     assert.match(html, /rr-obsidian-wikilink/);
     assert.match(html, /class="rb-home__wordmark"/);
     assert.match(html, /src="\/riebeckite-logo\.png"/);
-    assert.match(html, /riebeckite theme preview/);
-    assert.match(html, /riebeckite plugin dev/);
   });
 }
 

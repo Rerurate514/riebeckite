@@ -4,10 +4,7 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 
 export type HomeRuntime = {
   readonly demoHtml: string;
-  readonly codes: Record<
-    "install" | "content" | "project" | "application" | "preview",
-    string
-  >;
+  readonly codes: Record<"install" | "application", string>;
 };
 
 const demoSource = `---
@@ -75,10 +72,7 @@ export async function renderHomeRuntime(): Promise<HomeRuntime> {
           "```sh title=terminal\nnpx create-riebeckite\n```",
           "install",
         ),
-        content: await render(contentCode, "content-example"),
-        project: await render(projectCode, "project-example"),
         application: await render(applicationCode, "application-example"),
-        preview: await render(previewCode, "preview-example"),
       },
     };
   } finally {
@@ -86,31 +80,14 @@ export async function renderHomeRuntime(): Promise<HomeRuntime> {
   }
 }
 
-const contentCode = `\`\`\`md title=content/notes/ownership.md
----
-title: Ownership
-tags: [architecture]
----
+const applicationCode = `\`\`\`sh title=terminal
+npm install @riebeckite/plugin-search
+\`\`\`
 
-# Ownership
+\`\`\`ts title=riebeckite.config.ts
+import { search } from "@riebeckite/plugin-search";
 
-[[Getting started]]
-\`\`\``;
-
-const projectCode = `\`\`\`text title=project
-app/
-content/
-riebeckite.config.ts
-\`\`\``;
-
-const applicationCode = `\`\`\`ts title=riebeckite.config.ts
 export default defineConfig({
-  plugins: [obsidianMarkdown()],
-  theme: defaultTheme(),
+  plugins: [search()],
 });
-\`\`\``;
-
-const previewCode = `\`\`\`sh title=terminal
-riebeckite theme preview my-theme --no-open
-riebeckite plugin dev ./extensions/my-plugin --no-open
 \`\`\``;

@@ -3,10 +3,10 @@ import type {
   ResolvedRelatedPostsOptions,
 } from "./types.js";
 
-export const DEFAULT_RELATED_POSTS_LIMIT = 5;
-export const DEFAULT_RELATED_POSTS_MIN_SCORE = 1;
-export const DEFAULT_RELATED_POSTS_HEADING_TEXT = "Related";
-export const DEFAULT_RELATED_POSTS_CLASS_NAME = "rb-related-posts";
+const DEFAULT_RELATED_POSTS_LIMIT = 5;
+const DEFAULT_RELATED_POSTS_MIN_SCORE = 1;
+const DEFAULT_RELATED_POSTS_HEADING_TEXT = "Related";
+const DEFAULT_RELATED_POSTS_CLASS_NAME = "rb-related-posts";
 
 /**
  * Applies defaults to `RelatedPostsOptions`. Pure and deterministic so the

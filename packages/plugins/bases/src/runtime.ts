@@ -14,7 +14,7 @@ import {
 import { renderBases, renderBasesError } from "./render.js";
 import type { BasesOptions } from "./types.js";
 
-export type BasesRuntime = {
+type BasesRuntime = {
   /** Replaces every Base placeholder in the manifest with rendered output. */
   resolve(
     manifest: ContentManifest,

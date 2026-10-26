@@ -15,7 +15,7 @@ const PLUGIN_NAME = "deploy";
  * non-public paths, which must never leak into deploy files. A redirect whose
  * target slug no longer exists is skipped and reported as a diagnostic.
  */
-export function resolvePublicRedirects(
+function resolvePublicRedirects(
   manifest: ContentManifest,
   diagnostics: Diagnostic[],
 ): PublicRedirect[] {

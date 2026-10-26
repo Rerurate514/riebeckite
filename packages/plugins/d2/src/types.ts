@@ -85,7 +85,7 @@ export type TextNode = {
   value: string;
 };
 
-export type RawNode = {
+type RawNode = {
   type: "raw";
   value: string;
 };

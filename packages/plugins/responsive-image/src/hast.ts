@@ -20,7 +20,7 @@ export function visitElements(
   }
 }
 
-export function isElementNode(node: HastNode): node is ElementNode {
+function isElementNode(node: HastNode): node is ElementNode {
   return node.type === "element";
 }
 

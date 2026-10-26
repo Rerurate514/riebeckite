@@ -124,16 +124,6 @@ export function isResolvedRepository(
 }
 
 /**
- * True when history cannot be read and a reason is available. Narrows the
- * resolution so callers can read `detail`.
- */
-export function isRepositoryUnavailable(
-  resolution: RepositoryPathsResolution,
-): resolution is Exclude<RepositoryPathsResolution, { kind: "resolved" }> {
-  return resolution.kind !== "resolved";
-}
-
-/**
  * Splits `git rev-parse --show-toplevel --show-prefix` output. The prefix line
  * is omitted entirely when the content directory is the work tree root.
  */

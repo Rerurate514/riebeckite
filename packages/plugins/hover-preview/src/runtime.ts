@@ -12,7 +12,7 @@ import {
 } from "./render.js";
 import type { ResolvedHoverPreviewOptions } from "./types.js";
 
-export type HoverPreviewRuntime = {
+type HoverPreviewRuntime = {
   plan(
     entries: readonly ContentManifestEntry[],
   ): readonly PlannedGeneratedOutput[];

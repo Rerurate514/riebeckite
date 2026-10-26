@@ -7,14 +7,14 @@ export type GeneratedOutputAsset = {
   source: string | Uint8Array;
 };
 
-export type SsgGeneratedHtmlDiagnostic = {
+type SsgGeneratedHtmlDiagnostic = {
   severity: "info" | "warning" | "error";
   message: string;
   code?: string;
   filePath?: string;
 };
 
-export type SsgHtmlInspectorPlugin = {
+type SsgHtmlInspectorPlugin = {
   name?: string;
   inspectGeneratedHtml?: (page: {
     path: string;

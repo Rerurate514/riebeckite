@@ -13,7 +13,7 @@ import {
  * `escapeScriptJson` neutralizes `<`, `>`, `&`, U+2028 and U+2029 so labels
  * can never terminate the script element.
  */
-export function renderUxConfigElement(config: UxResolvedConfig): string {
+function renderUxConfigElement(config: UxResolvedConfig): string {
   const json = escapeScriptJson(JSON.stringify(config));
   return `<script type="application/json" id="${UX_CONFIG_ELEMENT_ID}" ${UX_CONFIG_ATTRIBUTE}>${json}</script>`;
 }

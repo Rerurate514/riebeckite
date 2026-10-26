@@ -1,7 +1,7 @@
 import type { ContentManifestEntry } from "@riebeckite/core";
 import type { HoverPreviewIndex } from "./types.js";
 
-export type PreviewIndexSource = {
+type PreviewIndexSource = {
   permalink: string;
   slug: string;
   title: string;

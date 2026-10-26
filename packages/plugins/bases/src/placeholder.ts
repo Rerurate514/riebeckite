@@ -12,12 +12,12 @@ import type { BasesSpec } from "./types.js";
  */
 export const BASES_ATTRIBUTE = "data-rr-bases";
 
-export type BasesPlaceholderPayload = {
+type BasesPlaceholderPayload = {
   readonly spec: BasesSpec;
   readonly source: string;
 };
 
-export function encodeBasesPayload(payload: BasesPlaceholderPayload): string {
+function encodeBasesPayload(payload: BasesPlaceholderPayload): string {
   return encodeURIComponent(JSON.stringify(payload));
 }
 

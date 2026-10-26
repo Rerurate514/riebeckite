@@ -9,7 +9,7 @@ import type { RiebeckiteProject } from "./application_root.js";
 const BUILD_OUTPUT_MARKER_VERSION = 1;
 const BUILD_OUTPUT_MARKER_FILE = "build-output.json";
 
-export type BuildOutputMarker = {
+type BuildOutputMarker = {
   readonly outputDirectory: string;
 };
 

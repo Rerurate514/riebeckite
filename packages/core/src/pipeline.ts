@@ -166,6 +166,29 @@ function sanitizeMarkdownStyles() {
   };
 }
 
+const footnoteClobberPrefix = /^user-content-((?:fn|fnref|footnote-label).*)$/;
+
+function dedupeFootnoteClobberPrefix() {
+  return (tree: Node) => {
+    removeFootnoteClobberPrefix(tree as HtmlNode);
+  };
+}
+
+function removeFootnoteClobberPrefix(node: HtmlNode): void {
+  const properties = node.properties;
+  if (properties) {
+    for (const property of ["id", "name", "ariaDescribedBy"] as const) {
+      const value = properties[property];
+      if (typeof value !== "string") continue;
+      const match = footnoteClobberPrefix.exec(value);
+      if (match) properties[property] = match[1];
+    }
+  }
+  for (const child of node.children ?? []) {
+    removeFootnoteClobberPrefix(child as HtmlNode);
+  }
+}
+
 function removeUnsafeMarkdownStyles(node: HtmlNode): void {
   if (
     typeof node.properties?.style === "string" &&
@@ -434,6 +457,7 @@ export class Pipeline {
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);
+    this.use(processor, dedupeFootnoteClobberPrefix);
     this.use(processor, rehypeSanitize, markdownSanitizeSchema);
     this.use(processor, sanitizeMarkdownStyles);
 

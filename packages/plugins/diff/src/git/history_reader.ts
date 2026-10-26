@@ -1,14 +1,11 @@
-import path from "node:path";
-import type { DiffRevision, GitHistoryReaderOptions } from "../types.js";
 import {
+  GitRepository,
   type GitRepositoryPaths,
-  isResolvedRepository,
   normalizeContentPath,
-  type RepositoryPathsResolution,
-  resolveRepositoryPaths,
+  runGit,
   toRepositoryPath,
-} from "./repo_paths.js";
-import { runGit } from "./run_git.js";
+} from "@riebeckite/git-history";
+import type { DiffRevision, GitHistoryReaderOptions } from "../types.js";
 
 const fieldSeparator = "\u001f";
 const recordSeparator = "\u001e";
@@ -21,15 +18,14 @@ const recordSeparator = "\u001e";
  * path itself, so the process working directory never influences a result.
  */
 export class GitMarkdownHistoryReader {
-  readonly #contentRoot: string;
+  readonly #repository: GitRepository;
   readonly #historyCache = new Map<string, Promise<DiffRevision[]>>();
   readonly #markdownCache = new Map<string, Promise<string | null>>();
   /** Maps a content-relative path to `<revision hash>` → work tree path. */
   readonly #revisionPathCache = new Map<string, Map<string, string>>();
-  #repository?: Promise<RepositoryPathsResolution>;
 
   constructor(options: GitHistoryReaderOptions = {}) {
-    this.#contentRoot = path.resolve(options.cwd ?? process.cwd());
+    this.#repository = new GitRepository(options);
   }
 
   /**
@@ -113,33 +109,13 @@ export class GitMarkdownHistoryReader {
     return result.ok ? result.stdout : null;
   }
 
-  async getStateFingerprint(): Promise<string | null> {
-    const repository = await this.#resolvePaths();
-    if (!repository) return null;
-    const results = await Promise.all([
-      runGit(["rev-parse", "HEAD"], repository.repositoryRoot),
-      runGit(
-        ["status", "--porcelain=v1", "--untracked-files=all"],
-        repository.repositoryRoot,
-      ),
-      runGit(
-        ["for-each-ref", "--format=%(refname):%(objectname)"],
-        repository.repositoryRoot,
-      ),
-    ]);
-    if (results.some((result) => !result.ok)) return null;
-    return results
-      .filter((result): result is { ok: true; stdout: string } => result.ok)
-      .map((result) => result.stdout)
-      .join("\u001e");
+  getStateFingerprint(): Promise<string | null> {
+    return this.#repository.getStateFingerprint();
   }
 
   /** `null` when the content directory has no readable work tree. */
-  async #resolvePaths(): Promise<GitRepositoryPaths | null> {
-    this.#repository ??= resolveRepositoryPaths(this.#contentRoot);
-    const resolution = await this.#repository;
-    if (!isResolvedRepository(resolution)) return null;
-    return resolution.paths;
+  #resolvePaths(): Promise<GitRepositoryPaths | null> {
+    return this.#repository.paths();
   }
 }
 

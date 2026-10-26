@@ -1,7 +1,7 @@
 import { createExcaliBrainPlaceholder } from "./placeholder.js";
 import type { ElementNode, HastNode } from "./types.js";
 
-export type RehypeExcaliBrainOptions = {
+type RehypeExcaliBrainOptions = {
   language?: string;
 };
 

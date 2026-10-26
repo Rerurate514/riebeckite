@@ -1,6 +1,5 @@
 import {
   element as sharedElement,
-  getStringProperty as sharedGetStringProperty,
   getTextContent as sharedGetTextContent,
   hasClass as sharedHasClass,
   text as sharedText,
@@ -17,10 +16,6 @@ export const text = sharedText as (value: string) => TextNode;
 export const getTextContent = sharedGetTextContent as (
   node: HastNode,
 ) => string;
-export const getStringProperty = sharedGetStringProperty as (
-  node: ElementNode,
-  key: string,
-) => string | null;
 export const hasClass = sharedHasClass as (
   node: ElementNode,
   className: string,

@@ -5,7 +5,7 @@ import {
 } from "@riebeckite/test/plugin-contract";
 import { repositoryPluginContractFixtures } from "./plugin_contract_fixtures.js";
 
-export type PluginVerifyOptions = {
+type PluginVerifyOptions = {
   readonly pluginPath: string;
   readonly level: PluginContractLevel;
   readonly json: boolean;

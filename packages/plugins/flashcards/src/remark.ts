@@ -3,9 +3,9 @@ import { visit } from "unist-util-visit";
 import { parseFlashcards } from "./parse.js";
 import { createFlashcardsPlaceholder } from "./placeholder.js";
 
-export const FLASHCARDS_DIAGNOSTIC_SOURCE = "@riebeckite/plugin-flashcards";
+const FLASHCARDS_DIAGNOSTIC_SOURCE = "@riebeckite/plugin-flashcards";
 
-export type RemarkFlashcardsOptions = {
+type RemarkFlashcardsOptions = {
   language?: string;
 };
 

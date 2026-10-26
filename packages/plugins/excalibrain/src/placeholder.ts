@@ -1,10 +1,10 @@
-export const EXCALIBRAIN_PLACEHOLDER_ATTRIBUTE = "data-rb-excalibrain";
+const EXCALIBRAIN_PLACEHOLDER_ATTRIBUTE = "data-rb-excalibrain";
 
 export function createExcaliBrainPlaceholder(): string {
   return `<div ${EXCALIBRAIN_PLACEHOLDER_ATTRIBUTE}=""></div>`;
 }
 
-export function createExcaliBrainPlaceholderPattern(): RegExp {
+function createExcaliBrainPlaceholderPattern(): RegExp {
   return new RegExp(
     `<div\\b[^>]*\\b${EXCALIBRAIN_PLACEHOLDER_ATTRIBUTE}(?:="[^"]*")?[^>]*>\\s*</div>`,
     "g",

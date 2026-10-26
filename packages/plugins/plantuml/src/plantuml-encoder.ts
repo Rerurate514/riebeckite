@@ -46,7 +46,7 @@ export async function encodePlantuml(source: string): Promise<string> {
  * Exposed separately from the compression step so it can be reasoned about
  * (and tested) without a Node runtime.
  */
-export function encodePlantumlBase64(bytes: Uint8Array): string {
+function encodePlantumlBase64(bytes: Uint8Array): string {
   let encoded = "";
   for (let index = 0; index < bytes.length; index += 3) {
     const b1 = bytes[index] ?? 0;

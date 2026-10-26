@@ -4,7 +4,7 @@ import { renderCanvas } from "./render.js";
 import { createCanvasResolver, lookupContentIndex } from "./resolve.js";
 import type { ResolvedCanvasOptions } from "./types.js";
 
-export type RemarkCanvasOptions = {
+type RemarkCanvasOptions = {
   options: ResolvedCanvasOptions;
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;

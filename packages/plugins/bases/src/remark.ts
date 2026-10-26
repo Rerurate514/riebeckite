@@ -4,7 +4,7 @@ import { parseBases } from "./parse.js";
 import { createBasesPlaceholder } from "./placeholder.js";
 import { parseBasesYaml } from "./yaml.js";
 
-export type RemarkBasesOptions = {
+type RemarkBasesOptions = {
   /** Fenced code block language treated as a Base. Defaults to `base`. */
   language?: string;
 };

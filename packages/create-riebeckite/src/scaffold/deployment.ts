@@ -116,7 +116,7 @@ function notifySiteWorkflow(siteRepository: string): string {
     .join(repository);
 }
 
-export function wranglerJsoncFile(workerName: string): SiteTemplateFile {
+function wranglerJsoncFile(workerName: string): SiteTemplateFile {
   return {
     path: "wrangler.jsonc",
     content: buildWranglerConfig(workerName),

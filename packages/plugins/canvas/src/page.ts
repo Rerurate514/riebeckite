@@ -14,7 +14,7 @@ import type { CanvasDocument, ResolvedCanvasOptions } from "./types.js";
 const PLUGIN_NAME = "canvas";
 const CANVAS_SUFFIX = /\.canvas$/i;
 
-export type CanvasPageSource = {
+type CanvasPageSource = {
   manifest: ContentManifest;
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;

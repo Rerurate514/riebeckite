@@ -20,7 +20,7 @@ const DEFAULT_SEVERITY: Record<string, DiagnosticSeverity> = {
   "content-integrity:ambiguous-folder-page-owner": "warning",
 };
 
-export type SiteIntegrityOptions = {
+type SiteIntegrityOptions = {
   readonly severity?: Partial<Record<DiagnosticCode, DiagnosticSeverity>>;
 };
 

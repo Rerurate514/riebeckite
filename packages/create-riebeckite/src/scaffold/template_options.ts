@@ -40,7 +40,7 @@ function renderOptionValue(
  * Resolve a plugin's options literal for the preset's depth, or `null` when
  * the plugin takes no options at that depth (and should be called bare).
  */
-export function renderOptions(
+function renderOptions(
   options: ScaffoldOptions | undefined,
   context: ScaffoldOptionContext,
 ): string | null {

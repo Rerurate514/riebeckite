@@ -15,27 +15,27 @@ import {
   useSiteContext,
 } from "./context.js";
 
-export type PrimitiveChildren = unknown;
+type PrimitiveChildren = unknown;
 
-export type PrimitiveProps = {
+type PrimitiveProps = {
   children?: PrimitiveChildren;
   class?: string;
   className?: string;
 };
 
-export type PrimitiveClassProps = {
+type PrimitiveClassProps = {
   class?: string;
   className?: string;
 };
 
-export type ArticleProps = PrimitiveProps & {
+type ArticleProps = PrimitiveProps & {
   post?: PostContent;
   entry?: PublicContentEntry;
 };
 
-export type ArticleLayoutProps = PrimitiveProps;
+type ArticleLayoutProps = PrimitiveProps;
 
-export type ArticleHeaderProps =
+type ArticleHeaderProps =
   | (PrimitiveClassProps & {
       dangerouslySetInnerHTML: { __html: string };
       children?: never;
@@ -45,19 +45,19 @@ export type ArticleHeaderProps =
       children?: PrimitiveChildren;
     });
 
-export type ArticleContentProps = PrimitiveClassProps & {
+type ArticleContentProps = PrimitiveClassProps & {
   children?: PrimitiveChildren;
 };
 
-export type ArticleMetaProps = PrimitiveProps & {
+type ArticleMetaProps = PrimitiveProps & {
   label?: string;
 };
 
-export type SidebarProps = PrimitiveProps & {
+type SidebarProps = PrimitiveProps & {
   label?: string;
 };
 
-export type ArticleFooterProps = PrimitiveProps;
+type ArticleFooterProps = PrimitiveProps;
 
 export function Article(props: ArticleProps) {
   const article = (
@@ -122,13 +122,13 @@ export function ArticleContent(props: ArticleContentProps) {
   return <div class={className}>{props.children}</div>;
 }
 
-export type ArticleBodyProps = PrimitiveClassProps & {
+type ArticleBodyProps = PrimitiveClassProps & {
   html?: string;
 };
 
-export type HtmlFragmentSource = "markdown" | "plugin-page";
+type HtmlFragmentSource = "markdown" | "plugin-page";
 
-export type HtmlFragmentProps = {
+type HtmlFragmentProps = {
   html: string;
   source: HtmlFragmentSource;
 };
@@ -154,7 +154,7 @@ export function ArticleBody(props: ArticleBodyProps) {
   );
 }
 
-export type PageBodyProps = PrimitiveClassProps & {
+type PageBodyProps = PrimitiveClassProps & {
   html: string;
 };
 
@@ -194,7 +194,7 @@ export function Sidebar(props: SidebarProps) {
   );
 }
 
-export type ThemeRootProps = {
+type ThemeRootProps = {
   theme?: ResolvedRiebeckiteConfig["theme"];
   lang?: string;
   children?: PrimitiveChildren;
@@ -237,7 +237,7 @@ export function ThemeRoot(props: ThemeRootProps) {
   );
 }
 
-export type PluginHeadTagsProps = {
+type PluginHeadTagsProps = {
   tags?: readonly PluginHeadTag[];
 };
 
@@ -279,7 +279,7 @@ function isDataScript(tag: PluginHeadTag): boolean {
   return type === "application/ld+json" || type === "application/json";
 }
 
-export type RiebeckiteHeadProps = {
+type RiebeckiteHeadProps = {
   title?: string;
   headTags?: readonly PluginHeadTag[];
   faviconHref?: string | null;
@@ -331,7 +331,7 @@ export function RiebeckiteHead(props: RiebeckiteHeadProps) {
   );
 }
 
-export type SeoHeadProps = {
+type SeoHeadProps = {
   seo: SeoMetadata;
   siteTitle: string;
   author?: string;

@@ -13,7 +13,7 @@ export const CONTENT_BUILD_STATE_DIRECTORY = ".riebeckite";
 
 export const CONTENT_BUILD_STATE_EXCLUDE = `${CONTENT_BUILD_STATE_DIRECTORY}/**`;
 
-export type ContentBuildEntry = {
+type ContentBuildEntry = {
   readonly fingerprint: string;
   readonly aliases: readonly string[];
   readonly dependencies: readonly ContentBuildDependency[];

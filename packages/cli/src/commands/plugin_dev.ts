@@ -13,7 +13,7 @@ import {
   writePreviewViteConfig,
 } from "../preview_site.js";
 
-export type PluginDevOptions = {
+type PluginDevOptions = {
   readonly pluginPath: string;
   readonly port?: number;
   readonly open: boolean;

@@ -6,10 +6,9 @@ import type {
   IconizeRule,
   IconizeValue,
   IconTarget,
-  ResolvedIconSpec,
 } from "./types.js";
 
-export type IconizeResolution = {
+type IconizeResolution = {
   readonly icon: string;
   readonly color?: string;
 };
@@ -34,25 +33,6 @@ export function resolveIconize(
     data,
     options,
   );
-}
-
-export function resolveIconizeRule(
-  data: IconizeData,
-  target: IconTarget,
-  options: {
-    readonly colors: boolean;
-    readonly packs: IconPacks;
-  },
-): ResolvedIconSpec | undefined {
-  const resolution = resolveIconize(data, target, options);
-  if (!resolution) return undefined;
-  return {
-    id: resolution.icon,
-    source: "iconize",
-    kind: isEmoji(resolution.icon) ? "emoji" : "svg",
-    target: target.path,
-    ...(resolution.color ? { color: resolution.color } : {}),
-  };
 }
 
 export function parseIconReference(
@@ -86,7 +66,7 @@ export function parseIconReference(
   return `lucide:${toKebab(trimmed)}`;
 }
 
-export function toKebab(value: string): string {
+function toKebab(value: string): string {
   return value
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")

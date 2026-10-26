@@ -20,7 +20,7 @@ const ROLE_ATTRIBUTE: Record<ExcaliBrainNodeRole, string> = {
   center: "center",
 };
 
-export type ExcaliBrainSectionInput = {
+type ExcaliBrainSectionInput = {
   graph: ExcaliBrainGraph;
   layout: ExcaliBrainLayout;
   options?: ExcaliBrainOptions;

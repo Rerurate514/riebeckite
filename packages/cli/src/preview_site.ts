@@ -3,12 +3,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { scaffoldRiebeckiteSite } from "create-riebeckite/scaffold";
 
-export type PreviewPackage = {
+type PreviewPackage = {
   readonly name: string;
   readonly directory: string;
 };
 
-export type PreviewAlias = {
+type PreviewAlias = {
   readonly find: string;
   readonly replacement: string;
 };
@@ -112,7 +112,7 @@ export async function resolveModuleSpecifier(
   return fileURLToPath(await import.meta.resolve(specifier));
 }
 
-export async function findPackageDirectory(file: string): Promise<string> {
+async function findPackageDirectory(file: string): Promise<string> {
   let current = path.dirname(file);
   while (true) {
     try {

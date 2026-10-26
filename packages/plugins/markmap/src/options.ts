@@ -1,13 +1,13 @@
 import type { MarkmapOptions, MarkmapResolvedOptions } from "./types.js";
 
 /** Default base class for the generated figure. */
-export const DEFAULT_MARKMAP_CLASS_NAME = "rb-markmap";
+const DEFAULT_MARKMAP_CLASS_NAME = "rb-markmap";
 
 /** Default canvas height in pixels. */
-export const DEFAULT_MARKMAP_HEIGHT = 320;
+const DEFAULT_MARKMAP_HEIGHT = 320;
 
 /** Default fenced-code language. */
-export const DEFAULT_MARKMAP_LANGUAGE = "markmap";
+const DEFAULT_MARKMAP_LANGUAGE = "markmap";
 
 /**
  * Applies defaults to the user-provided options.

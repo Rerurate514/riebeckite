@@ -18,7 +18,7 @@ type DomainPrompts = {
   confirm(message: string, initial: boolean): Promise<boolean>;
 };
 
-export type DeployDomainOptions = {
+type DeployDomainOptions = {
   readonly prompts?: DomainPrompts;
   readonly writeLine?: (line: string) => void;
   readonly deploy?: (project: RiebeckiteProject) => Promise<void>;

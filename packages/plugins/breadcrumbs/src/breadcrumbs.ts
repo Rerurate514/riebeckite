@@ -8,7 +8,7 @@ import type {
 import { resolvePublicFolderLocation } from "@riebeckite/core";
 import type { BreadcrumbItem } from "./types.js";
 
-export type BuildBreadcrumbItemsArgs = {
+type BuildBreadcrumbItemsArgs = {
   manifest: ContentManifest;
   entry: {
     slug: string;

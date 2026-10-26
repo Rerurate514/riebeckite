@@ -67,10 +67,7 @@ export type RemarkShortcodesOptions = ShortcodeOptions & {
   contentSource?: ContentSource;
 };
 
-export type DirectiveName =
-  | "textDirective"
-  | "leafDirective"
-  | "containerDirective";
+type DirectiveName = "textDirective" | "leafDirective" | "containerDirective";
 
 export type DirectiveNode = Parent & {
   type: DirectiveName;

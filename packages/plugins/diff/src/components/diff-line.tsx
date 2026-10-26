@@ -1,6 +1,6 @@
 import type { PostDiff } from "../types.js";
 
-export type DiffLineProps = {
+type DiffLineProps = {
   line: PostDiff["lines"][number];
 };
 

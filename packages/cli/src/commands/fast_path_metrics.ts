@@ -1,6 +1,6 @@
 import type { TraceAttributes, Tracer } from "@riebeckite/core";
 
-export const FAST_PATH_PLAN_SPANS: readonly string[] = [
+const FAST_PATH_PLAN_SPANS: readonly string[] = [
   "content.discovery",
   "content.fingerprint",
   "content.build-state.load",

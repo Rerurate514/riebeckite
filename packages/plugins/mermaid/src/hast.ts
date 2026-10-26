@@ -3,7 +3,6 @@ import {
   getStringProperty as sharedGetStringProperty,
   getTextContent as sharedGetTextContent,
   hasClass as sharedHasClass,
-  mergeClassName as sharedMergeClassName,
   text as sharedText,
   visitElements as sharedVisitElements,
 } from "@riebeckite/diagram";
@@ -32,4 +31,3 @@ export const visitElements = sharedVisitElements as (
   parent?: ParentNode,
   index?: number,
 ) => void;
-export const mergeClassName = sharedMergeClassName;

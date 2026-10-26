@@ -1,6 +1,6 @@
 import type { ExcaliBrainNodeRole, ExcaliBrainOntology } from "./types.js";
 
-export type ExcaliBrainFieldRole =
+type ExcaliBrainFieldRole =
   | "parents"
   | "children"
   | "leftFriends"
@@ -51,7 +51,7 @@ export const DEFAULT_ONTOLOGY: Required<ExcaliBrainOntology> = {
 };
 
 /** Canonical processing order; earlier roles win when a target is listed twice. */
-export const FIELD_ROLE_ORDER: readonly ExcaliBrainFieldRole[] = [
+const FIELD_ROLE_ORDER: readonly ExcaliBrainFieldRole[] = [
   "parents",
   "children",
   "leftFriends",
@@ -116,7 +116,7 @@ export function resolveOntology(
   return { fieldRole };
 }
 
-export function fieldRoleOf(
+function fieldRoleOf(
   field: string,
   ontology: ResolvedOntology,
 ): ExcaliBrainFieldRole | null {

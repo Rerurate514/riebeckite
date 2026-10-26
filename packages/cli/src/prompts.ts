@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline/promises";
 
-export type SelectChoice<T> = {
+type SelectChoice<T> = {
   readonly value: T;
   readonly label: string;
 };
@@ -12,7 +12,7 @@ export type SetupPrompts = {
   password(message: string): Promise<string>;
 };
 
-export class NonInteractiveSetupError extends Error {
+class NonInteractiveSetupError extends Error {
   readonly hint: string;
 
   constructor(message: string, hint?: string) {

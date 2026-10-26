@@ -21,14 +21,14 @@ const ICONIC_ID = "iconic";
 const MAX_SETTINGS_BYTES = 2 * 1024 * 1024;
 const MAX_SVG_BYTES = 256 * 1024;
 
-export type IconDiagnostic = {
+type IconDiagnostic = {
   readonly code: string;
   readonly severity: "info" | "warning";
   readonly message: string;
   readonly meta?: Readonly<Record<string, unknown>>;
 };
 
-export type IconPackFile = {
+type IconPackFile = {
   readonly name: string;
   readonly filePath: string;
   readonly size: number;
@@ -133,12 +133,6 @@ export async function loadIconsSettings(
     }),
     diagnostics,
   };
-}
-
-export async function readCustomIcon(
-  file: IconPackFile,
-): Promise<string | undefined> {
-  return readTextFile(file.filePath, MAX_SVG_BYTES);
 }
 
 export function findIconPackFile(

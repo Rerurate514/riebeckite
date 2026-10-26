@@ -59,7 +59,7 @@ export const SCAFFOLD_DEFAULT_UTILITIES: readonly ScaffoldUtilityName[] = [
   "biome",
 ];
 
-export const SCAFFOLD_NO_UTILITIES = "none";
+const SCAFFOLD_NO_UTILITIES = "none";
 
 export function isScaffoldUtilityName(
   value: string,

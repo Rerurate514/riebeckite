@@ -1,36 +1,35 @@
 import type { MapOptions, ResolvedMapOptions } from "./types.js";
 
 /** Default base class for the generated figure. */
-export const DEFAULT_MAP_CLASS_NAME = "rr-map";
+const DEFAULT_MAP_CLASS_NAME = "rr-map";
 
 /** Default map height in pixels. */
-export const DEFAULT_MAP_HEIGHT = 320;
+const DEFAULT_MAP_HEIGHT = 320;
 
 /** Default fenced-code language. */
-export const DEFAULT_MAP_LANGUAGE = "map";
+const DEFAULT_MAP_LANGUAGE = "map";
 
 /** Default zoom level. */
-export const DEFAULT_MAP_ZOOM = 13;
+const DEFAULT_MAP_ZOOM = 13;
 
 /** Default minimum zoom level. */
-export const DEFAULT_MAP_MIN_ZOOM = 1;
+const DEFAULT_MAP_MIN_ZOOM = 1;
 
 /** Default maximum zoom level (OpenStreetMap's standard maximum). */
-export const DEFAULT_MAP_MAX_ZOOM = 19;
+const DEFAULT_MAP_MAX_ZOOM = 19;
 
 /** Frontmatter property read for coordinates by default. */
-export const DEFAULT_MAP_FRONTMATTER_KEY = "map";
+const DEFAULT_MAP_FRONTMATTER_KEY = "map";
 
 /**
  * Default OpenStreetMap tile template. It is keyless and safe to expose to the
  * browser, but sites with meaningful traffic should follow the tile usage
  * policy or point `tileUrl` at their own tile server.
  */
-export const DEFAULT_MAP_TILE_URL =
-  "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const DEFAULT_MAP_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 /** Attribution required by the default tile provider. */
-export const DEFAULT_MAP_ATTRIBUTION =
+const DEFAULT_MAP_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 /**

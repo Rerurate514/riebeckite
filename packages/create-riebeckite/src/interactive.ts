@@ -23,13 +23,13 @@ import {
 } from "./scaffold/utilities.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
-export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
+const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
 
-export type InteractiveContentSource = "local" | "external";
+type InteractiveContentSource = "local" | "external";
 
-export type InteractiveDeployment = "cloudflare" | "github-actions" | "none";
+type InteractiveDeployment = "cloudflare" | "github-actions" | "none";
 
-export type InteractiveAnswers =
+type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
@@ -48,7 +48,7 @@ export type InteractiveAnswers =
       readonly siteRepository: string;
     };
 
-export type InteractiveSetupAnswers = {
+type InteractiveSetupAnswers = {
   readonly answers: InteractiveAnswers;
   readonly installDependencies: boolean;
 };

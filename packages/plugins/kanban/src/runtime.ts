@@ -12,7 +12,7 @@ import {
 } from "./render.js";
 import type { ResolvedKanbanOptions } from "./types.js";
 
-export type KanbanRuntime = {
+type KanbanRuntime = {
   track(slug: string, markdown: string): void;
   resolve(manifest: ContentManifest): void;
 };

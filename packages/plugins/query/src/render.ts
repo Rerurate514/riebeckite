@@ -5,7 +5,7 @@ import {
 } from "@riebeckite/core";
 import type { QueryOptions, QuerySpec } from "./types.js";
 
-export type ResolvedQuery = {
+type ResolvedQuery = {
   format: "table" | "list";
   columns: readonly string[];
   empty: string;

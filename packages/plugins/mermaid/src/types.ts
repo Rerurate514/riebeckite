@@ -30,7 +30,7 @@ export type MermaidBuildRenderResult =
       message: string;
     };
 
-export type MermaidBuildRenderer = (
+type MermaidBuildRenderer = (
   id: string,
   source: string,
   theme: string,
@@ -51,7 +51,7 @@ export type MermaidClientOptions = {
   scriptUrl?: string;
 };
 
-export type MermaidApi = {
+type MermaidApi = {
   initialize(options: Record<string, unknown>): void;
   render(
     id: string,
@@ -75,7 +75,7 @@ export type TextNode = {
   value: string;
 };
 
-export type RawNode = {
+type RawNode = {
   type: "raw";
   value: string;
 };

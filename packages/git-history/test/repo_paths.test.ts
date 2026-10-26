@@ -9,12 +9,9 @@ import {
   resolveRepositoryPaths,
   toContentPath,
   toRepositoryPath,
-} from "../src/git/repo_paths.ts";
-import { runGit } from "../src/git/run_git.ts";
-import {
-  createTestRepository,
-  gitAvailable,
-} from "./support/git_repository.ts";
+} from "../src/repo_paths.ts";
+import { runGit } from "../src/run_git.ts";
+import { createTestRepository, gitAvailable } from "../test-support.ts";
 
 const nested: GitRepositoryPaths = {
   repositoryRoot: "/site",

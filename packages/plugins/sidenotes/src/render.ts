@@ -4,12 +4,12 @@ import type { HastNode, ResolvedSidenotesOptions } from "./types.js";
 /** Feature hooks follow the `rr-sidenotes` convention from the CSS hooks doc. */
 export const SIDENOTES_REF_CLASS = "rr-sidenotes__ref";
 export const SIDENOTES_TOGGLE_CLASS = "rr-sidenotes__toggle";
-export const SIDENOTES_NOTE_CLASS = "rr-sidenotes__note";
-export const SIDENOTES_INDEX_CLASS = "rr-sidenotes__index";
-export const SIDENOTES_BODY_CLASS = "rr-sidenotes__body";
+const SIDENOTES_NOTE_CLASS = "rr-sidenotes__note";
+const SIDENOTES_INDEX_CLASS = "rr-sidenotes__index";
+const SIDENOTES_BODY_CLASS = "rr-sidenotes__body";
 export const SIDENOTES_FOOTNOTES_CLASS = "rr-sidenotes__footnotes";
 
-export const SIDENOTES_NOTE_ID_PREFIX = "rr-sidenotes-";
+const SIDENOTES_NOTE_ID_PREFIX = "rr-sidenotes-";
 
 /**
  * GFM footnote definitions and references share a normalized key such as `1`
@@ -34,7 +34,7 @@ export function sidenotesNoteId(key: string): string {
   return `${SIDENOTES_NOTE_ID_PREFIX}${key}`;
 }
 
-export type SidenotesReferenceInput = {
+type SidenotesReferenceInput = {
   /** Existing `href` of the GFM footnote reference, used when no key exists. */
   href: string;
   /** Existing `id` of the GFM footnote reference, kept for back-links. */
@@ -68,7 +68,7 @@ export function renderSidenotesReference(
   );
 }
 
-export type SidenotesNoteInput = {
+type SidenotesNoteInput = {
   key: string;
   index: string;
   /** Serialized definition content (back-links stripped). */

@@ -8,7 +8,7 @@ import {
   resolveHonoxConfig,
 } from "./config_loader.js";
 
-export type HonoxApplicationOptions = {
+type HonoxApplicationOptions = {
   root: string;
   tracer?: Tracer;
   server?: {

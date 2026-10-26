@@ -8,7 +8,7 @@ import {
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
-export type RiebeckiteContentWatchOptions = {
+type RiebeckiteContentWatchOptions = {
   appRoot: () => string;
   contentRoot: () => string;
   exclude: () => readonly string[];

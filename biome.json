@@ -12,6 +12,9 @@
     "indentWidth": 2,
     "lineWidth": 80
   },
+  "files": {
+    "includes": ["**", "!docs/agents/history"]
+  },
   "linter": {
     "enabled": true,
     "rules": {

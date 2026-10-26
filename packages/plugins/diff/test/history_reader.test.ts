@@ -6,16 +6,16 @@ import {
   resolveConfig,
 } from "@riebeckite/core";
 import {
+  createTestRepository,
+  gitAvailable,
+} from "@riebeckite/git-history/test-support";
+import {
   createPostDiffApi,
   diff,
   GitMarkdownHistoryReader,
   type MarkdownRevision,
   renderDiffHistory,
 } from "../index.ts";
-import {
-  createTestRepository,
-  gitAvailable,
-} from "./support/git_repository.ts";
 
 const options = { skip: !gitAvailable };
 

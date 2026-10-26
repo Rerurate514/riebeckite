@@ -86,7 +86,7 @@ export type IconizeData = {
 
 export type IconicValue = { icon?: string; color?: string };
 
-export type IconicCondition = {
+type IconicCondition = {
   source?: string;
   operator?: string;
   value?: string;
@@ -110,7 +110,7 @@ export type IconicData = {
   folderRules: readonly IconicRule[];
 };
 
-export type IconTargetKind = "file" | "folder";
+type IconTargetKind = "file" | "folder";
 
 export type IconTarget = {
   kind: IconTargetKind;

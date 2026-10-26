@@ -77,7 +77,7 @@ async function load(page: Page, body: string, width: number): Promise<void> {
 before(async () => {
   try {
     browser = await puppeteer.launch({
-      headless: true,
+      headless: "shell",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
   } catch {

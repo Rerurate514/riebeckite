@@ -30,7 +30,7 @@ export function pageRelativeCandidates(
   return relative === normalized ? [normalized] : [relative, normalized];
 }
 
-export function isAbsoluteLikePath(path: string): boolean {
+function isAbsoluteLikePath(path: string): boolean {
   return path.startsWith("/") || /^[A-Za-z]:\//.test(path);
 }
 
@@ -63,6 +63,6 @@ export function pushUniqueDiagnostics(
   }
 }
 
-export function diagnosticSignature(diagnostic: Diagnostic): string {
+function diagnosticSignature(diagnostic: Diagnostic): string {
   return `${diagnostic.code}:${diagnostic.slug ?? ""}:${diagnostic.filePath ?? ""}:${diagnostic.target ?? ""}:${diagnostic.message}`;
 }

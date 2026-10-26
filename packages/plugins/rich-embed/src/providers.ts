@@ -13,7 +13,7 @@ export const RICH_EMBED_PROVIDERS: readonly RichEmbedProvider[] = [
   "generic",
 ];
 
-export const DEFAULT_ASPECT = "16/9";
+const DEFAULT_ASPECT = "16/9";
 
 const PROVIDER_TITLES: Record<RichEmbedProvider, string> = {
   youtube: "YouTube video",
@@ -52,12 +52,12 @@ const USERNAME = /^[A-Za-z0-9_-]+$/;
 const ASPECT_PATTERN = /^\d+(?:\.\d+)?\/\d+(?:\.\d+)?$/;
 const OPTION_LINE = /^([A-Za-z][A-Za-z0-9_-]*)\s*:\s*(.*)$/;
 
-export type ParsedEmbedBlock = {
+type ParsedEmbedBlock = {
   url: string;
   options: RichEmbedBlockOptions;
 };
 
-export type EmbedResolution =
+type EmbedResolution =
   | {
       kind: "iframe";
       provider: RichEmbedProvider;
@@ -125,7 +125,7 @@ export function parseEmbedBlock(source: string): ParsedEmbedBlock | null {
   return { url, options };
 }
 
-export function normalizeAspect(value: string): string | null {
+function normalizeAspect(value: string): string | null {
   const normalized = value.replace(/\s+/g, "");
   return ASPECT_PATTERN.test(normalized) ? normalized : null;
 }

@@ -24,7 +24,7 @@ export const SHARED_TAG_WEIGHT = 2;
 /** Added once per note that both entries link to. */
 export const CO_CITATION_WEIGHT = 1;
 
-export type BuildRelatedPostsArgs = {
+type BuildRelatedPostsArgs = {
   manifest: ContentManifest;
   entry: ContentManifestEntry;
   options: ResolvedRelatedPostsOptions;

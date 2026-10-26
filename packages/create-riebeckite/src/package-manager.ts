@@ -1,6 +1,6 @@
 import { PACKAGE_MANAGER } from "./scaffold/wrangler-defaults.js";
 
-export type PackageManagerName = "npm" | "pnpm";
+type PackageManagerName = "npm" | "pnpm";
 
 export type PackageManagerCommand = {
   readonly command: string;

@@ -1,7 +1,7 @@
 import type { ContentIcon } from "@riebeckite/core";
 import type { Html, Parent, Root, Text } from "mdast";
 
-export type InlineIconOptions = {
+type InlineIconOptions = {
   readonly identifier: string;
   readonly resolve: (name: string) => ContentIcon | undefined;
 };

@@ -129,12 +129,12 @@ export type MapClientOptions = {
 };
 
 /** The subset of the Leaflet API the initializer uses. */
-export type LeafletLayer = {
+type LeafletLayer = {
   addTo(map: LeafletMap): LeafletLayer;
   bindPopup?(content: string): LeafletLayer;
 };
 
-export type LeafletMap = {
+type LeafletMap = {
   setView(center: [number, number], zoom: number): LeafletMap;
   fitBounds(bounds: unknown, options?: Record<string, unknown>): LeafletMap;
   remove(): void;
@@ -166,7 +166,7 @@ export type TextNode = {
   value: string;
 };
 
-export type RawNode = {
+type RawNode = {
   type: "raw";
   value: string;
 };

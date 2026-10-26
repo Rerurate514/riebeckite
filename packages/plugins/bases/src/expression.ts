@@ -11,7 +11,7 @@ type Token = {
   readonly text: string;
 };
 
-export type ExpressionResult =
+type ExpressionResult =
   | { readonly ok: true; readonly value: BasesExpression }
   | { readonly ok: false; readonly message: string };
 

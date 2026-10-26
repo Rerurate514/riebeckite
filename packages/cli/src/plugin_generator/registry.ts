@@ -1,6 +1,6 @@
-export type PluginFeatureCategory = "primary" | "support";
+type PluginFeatureCategory = "primary" | "support";
 
-export type PluginFeature = {
+type PluginFeature = {
   readonly id: PluginFeatureId;
   readonly name: string;
   readonly description: string;
@@ -115,7 +115,7 @@ export const pluginFeatureRegistry: Readonly<
   ]),
 ) as unknown as Record<PluginFeatureId, PluginFeature>;
 
-export function isPluginFeatureId(value: string): value is PluginFeatureId {
+function isPluginFeatureId(value: string): value is PluginFeatureId {
   return PLUGIN_FEATURE_IDS.includes(value as PluginFeatureId);
 }
 

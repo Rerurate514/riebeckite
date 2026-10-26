@@ -4,7 +4,7 @@ import type {
 } from "./package-manager.js";
 import type { CommandRunner } from "./run-commands.js";
 
-export type DeploymentPhase = "install" | "build" | "deploy";
+type DeploymentPhase = "install" | "build" | "deploy";
 
 export class DeploymentFailure extends Error {
   readonly phase: DeploymentPhase;

@@ -10,7 +10,7 @@ const execFileAsync = promisify(execFile);
  * read must still build, so every caller decides what an unavailable repository
  * means for its own output.
  */
-export type GitCommandResult =
+type GitCommandResult =
   | { ok: true; stdout: string }
   /**
    * `spawnError` separates "Git could not be started" (missing or unexecutable

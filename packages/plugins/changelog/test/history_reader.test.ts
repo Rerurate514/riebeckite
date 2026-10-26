@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import path from "node:path";
 import { test } from "node:test";
-import { GitChangelogReader } from "../index.ts";
 import {
   createTestRepository,
   gitAvailable,
-} from "./support/git_repository.ts";
+} from "@riebeckite/git-history/test-support";
+import { GitChangelogReader } from "../index.ts";
 
 const options = { skip: !gitAvailable };
 

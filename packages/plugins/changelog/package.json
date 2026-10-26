@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/git-history": "workspace:*",
     "hono": "catalog:"
   },
   "devDependencies": {

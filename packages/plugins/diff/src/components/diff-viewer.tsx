@@ -2,7 +2,7 @@ import type { DiffRevision, PostDiff } from "../types.js";
 import { escapeHtml, renderDiffLine } from "./diff-line.js";
 import { formatDiffDate } from "./format-date.js";
 
-export type DiffViewerProps = {
+type DiffViewerProps = {
   history: DiffRevision[];
   selected: PostDiff;
 };

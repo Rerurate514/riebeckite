@@ -4,7 +4,7 @@ import type {
 } from "../types/content_manifest.js";
 import { uniqueStrings } from "../utils/collections.js";
 
-export type ContentGraphSource = {
+type ContentGraphSource = {
   entries: ContentManifestEntry[];
   bySlug: Map<string, ContentManifestEntry>;
   outgoingLinks: Map<string, ContentLink[]>;

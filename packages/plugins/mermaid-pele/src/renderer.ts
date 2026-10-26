@@ -1,6 +1,6 @@
 import { PeleError, render } from "pele";
 
-export type PeleRenderResult =
+type PeleRenderResult =
   | { ok: true; svg: string }
   | { ok: false; message: string };
 

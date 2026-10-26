@@ -8,7 +8,7 @@ import {
 } from "./placeholder.js";
 import { renderGallery, renderGalleryError } from "./render.js";
 
-export type GalleryRuntime = {
+type GalleryRuntime = {
   /** Replaces every gallery placeholder in the manifest with rendered output. */
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };

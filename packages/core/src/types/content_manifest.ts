@@ -31,7 +31,7 @@ export type ContentAsset = {
   size?: number;
 };
 
-export type ContentManifestPluginAsset = PluginAsset & {
+type ContentManifestPluginAsset = PluginAsset & {
   path: string;
 };
 

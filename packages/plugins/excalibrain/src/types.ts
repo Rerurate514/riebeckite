@@ -142,12 +142,12 @@ export type ElementNode = {
   children?: HastNode[];
 };
 
-export type TextNode = {
+type TextNode = {
   type: "text";
   value: string;
 };
 
-export type RawNode = {
+type RawNode = {
   type: "raw";
   value: string;
 };

@@ -6,12 +6,7 @@ import { runInteractiveCreatePageType } from "./create_page_type.js";
 import { runInteractiveCreatePlugin } from "./create_plugin.js";
 import { runInteractiveCreateTheme } from "./create_theme.js";
 
-export type CreateTarget =
-  | "site"
-  | "plugin"
-  | "theme"
-  | "page-type"
-  | "component";
+type CreateTarget = "site" | "plugin" | "theme" | "page-type" | "component";
 
 export async function runInteractiveCreate(): Promise<void> {
   if (process.stdin.isTTY !== true || process.stdout.isTTY !== true) {

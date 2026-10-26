@@ -4,14 +4,14 @@ import type {
   ResolvedChangelogOptions,
 } from "./types.js";
 
-export const DEFAULT_CHANGELOG_DATE_FORMAT: ChangelogDateFormat = "iso";
+const DEFAULT_CHANGELOG_DATE_FORMAT: ChangelogDateFormat = "iso";
 export const DEFAULT_CHANGELOG_LOCALE = "en";
-export const DEFAULT_CHANGELOG_PER_NOTE = true;
-export const DEFAULT_CHANGELOG_SITE_WIDE = false;
+const DEFAULT_CHANGELOG_PER_NOTE = true;
+const DEFAULT_CHANGELOG_SITE_WIDE = false;
 export const DEFAULT_CHANGELOG_SITE_WIDE_SLUG = "changelog";
 export const DEFAULT_CHANGELOG_MAX_PER_NOTE = 10;
 export const DEFAULT_CHANGELOG_MAX_SITE_WIDE = 50;
-export const DEFAULT_CHANGELOG_SHOW_AUTHOR = true;
+const DEFAULT_CHANGELOG_SHOW_AUTHOR = true;
 export const DEFAULT_CHANGELOG_HEADING = true;
 export const DEFAULT_CHANGELOG_PER_NOTE_HEADING = "Change history";
 export const DEFAULT_CHANGELOG_SITE_WIDE_HEADING = "Changelog";

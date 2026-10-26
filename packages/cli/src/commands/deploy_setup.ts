@@ -13,12 +13,12 @@ import { resolveWranglerEntry } from "./deploy.js";
 const WORKFLOW_RELATIVE_PATH = ".github/workflows/deploy.yml";
 const TOKEN_URL = "https://dash.cloudflare.com/profile/api-tokens";
 
-export type CloudflareAccount = {
+type CloudflareAccount = {
   readonly id: string;
   readonly name: string;
 };
 
-export type DeploySetupOptions = {
+type DeploySetupOptions = {
   readonly runner?: CommandRunner;
   readonly prompts?: SetupPrompts;
   readonly env?: NodeJS.ProcessEnv;

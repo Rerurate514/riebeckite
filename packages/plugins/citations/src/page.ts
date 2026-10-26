@@ -19,7 +19,7 @@ const PLUGIN_NAME = "citations";
 const PAGE_TITLE = "Bibliography";
 const EXTENSION = /\.[a-zA-Z0-9]+$/;
 
-export type BibliographyPageSource = {
+type BibliographyPageSource = {
   readonly manifest: ContentManifest;
   readonly contentSource?: ContentSource;
   readonly diagnostics: Diagnostic[];

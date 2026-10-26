@@ -12,7 +12,7 @@ const WRANGLER_CONFIG_FILES = [
   "wrangler.toml",
 ] as const;
 
-export type DeployOptions = {
+type DeployOptions = {
   readonly dryRun: boolean;
 };
 
@@ -20,7 +20,7 @@ export function resolveDeployRoot(project: RiebeckiteProject): string {
   return project.appRoot;
 }
 
-export class WranglerNotFoundError extends Error {
+class WranglerNotFoundError extends Error {
   readonly hint: string;
 
   constructor(message: string) {
@@ -40,7 +40,7 @@ export class MissingBuildOutputError extends Error {
   }
 }
 
-export class DeployError extends Error {
+class DeployError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "DeployError";

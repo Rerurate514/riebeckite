@@ -92,7 +92,7 @@ export function scanElements(document: string): HtmlElement[] {
 }
 
 /** Parses an attribute list into a lowercase-keyed map. */
-export function parseAttributes(text: string): Map<string, string> {
+function parseAttributes(text: string): Map<string, string> {
   const attributes = new Map<string, string>();
   const pattern = new RegExp(ATTRIBUTE_PATTERN.source, "g");
   for (const match of text.matchAll(pattern)) {
@@ -127,7 +127,7 @@ export function hasNonEmptyAttribute(
 }
 
 /** Decodes a small set of named and numeric HTML entities. */
-export function decodeHtmlEntities(value: string): string {
+function decodeHtmlEntities(value: string): string {
   return value.replace(
     /&(#x[0-9a-f]+|#\d+|[a-z]+);/gi,
     (match, entity: string) => {

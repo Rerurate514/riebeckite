@@ -53,7 +53,7 @@ before(async () => {
     readFile(path.join(showcaseDirectory, "app/style.css"), "utf8"),
   ]);
   const renderDocsPage = (articleHeight: string, itemCount = 80) =>
-    `<!doctype html><html data-article-layout="article"><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-docs-sticky-top: 4rem; --rb-space-2: 1rem; --rb-space-4: 2rem; --rb-space-6: 3rem; --rb-color-muted: #555; --rb-color-ink: #111; }</style><style>${tocStyle}</style><style>${honoxStyle}</style><style>${articleStyle}</style></head><body><header style="height: 7rem">Header</header><article class="rb-article"><div class="rb-article-layout"><aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc(itemCount)}</ol></aside><div class="rb-article-body"><div style="height: ${articleHeight}">Article</div></div></div></article></body></html>`;
+    `<!doctype html><html data-article-layout="article"><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-docs-rail-top: 4rem; --rb-docs-rail-max-block-size: calc(100dvh - 4rem); --rb-space-2: 1rem; --rb-space-4: 2rem; --rb-space-6: 3rem; --rb-color-muted: #555; --rb-color-ink: #111; }</style><style>${tocStyle}</style><style>${honoxStyle}</style><style>${articleStyle}</style></head><body><header style="height: 7rem">Header</header><article class="rb-article"><div class="rb-article-layout"><aside class="rr-table-of-contents rr-table-of-contents--desktop-rail"><ol class="rr-table-of-contents__list">${sampleToc(itemCount)}</ol></aside><div class="rb-article-body"><div style="height: ${articleHeight}">Article</div></div></div></article></body></html>`;
   const renderSitePage = (siteStyle: string, includeToc = true) =>
     `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
   server = createServer((request, response) => {
@@ -80,7 +80,7 @@ before(async () => {
   const address = server.address();
   baseUrl = `http://127.0.0.1:${typeof address === "object" && address ? address.port : 0}`;
   browser = await puppeteer.launch({
-    headless: true,
+    headless: "shell",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 });
@@ -108,7 +108,7 @@ test("desktop TOC remains sticky and scrolls internally in the Site layout", asy
   const page = await openPage({ width: 1600, height: 900 });
   const before = await page.evaluate(() => {
     const toc = document.querySelector(
-      ".rr-table-of-contents--desktop",
+      ".rr-table-of-contents--desktop-rail",
     ) as HTMLElement;
     const layout = document.querySelector(".rb-article-layout") as HTMLElement;
     return {
@@ -126,7 +126,7 @@ test("desktop TOC remains sticky and scrolls internally in the Site layout", asy
   await page.evaluate(() => window.scrollTo(0, 1200));
   const afterScroll = await page.evaluate(() => {
     const toc = document.querySelector(
-      ".rr-table-of-contents--desktop",
+      ".rr-table-of-contents--desktop-rail",
     ) as HTMLElement;
     toc.scrollTop = 200;
     return { top: toc.getBoundingClientRect().top, scrollTop: toc.scrollTop };
@@ -138,28 +138,31 @@ test("desktop TOC remains sticky and scrolls internally in the Site layout", asy
 
 test("docs TOC uses the layout sticky contract through scroll and navigation", async () => {
   const page = await openPage({ width: 1600, height: 900 });
-  const initial = await page.$eval(".rr-table-of-contents--desktop", (toc) => ({
-    top: toc.getBoundingClientRect().top,
-    position: getComputedStyle(toc).position,
-    stickyTop: getComputedStyle(toc).top,
-    inlineStickyTop: (toc as HTMLElement).style.getPropertyValue(
-      "--rr-toc-sticky-top",
-    ),
-  }));
+  const initial = await page.$eval(
+    ".rr-table-of-contents--desktop-rail",
+    (toc) => ({
+      top: toc.getBoundingClientRect().top,
+      position: getComputedStyle(toc).position,
+      stickyTop: getComputedStyle(toc).top,
+      inlineStickyTop: (toc as HTMLElement).style.getPropertyValue(
+        "--rr-toc-sticky-top",
+      ),
+    }),
+  );
   assert.equal(initial.position, "sticky");
   assert.equal(initial.stickyTop, "64px");
   assert.equal(initial.inlineStickyTop, "");
 
   await page.evaluate(() => window.scrollTo(0, 1200));
   const afterHeaderLeavesViewport = await page.$eval(
-    ".rr-table-of-contents--desktop",
+    ".rr-table-of-contents--desktop-rail",
     (toc) => toc.getBoundingClientRect().top,
   );
   assert.ok(Math.abs(afterHeaderLeavesViewport - 64) < 2);
 
   await page.goto(`${baseUrl}/short`, { waitUntil: "load" });
   const afterNavigation = await page.$eval(
-    ".rr-table-of-contents--desktop",
+    ".rr-table-of-contents--desktop-rail",
     (toc) => ({
       top: toc.getBoundingClientRect().top,
       position: getComputedStyle(toc).position,
@@ -288,7 +291,7 @@ test("mobile hides the desktop TOC rail", async () => {
   const page = await openPage({ width: 600, height: 900 });
   assert.equal(
     await page.$eval(
-      ".rr-table-of-contents--desktop",
+      ".rr-table-of-contents--desktop-rail",
       (element) => getComputedStyle(element).display,
     ),
     "none",

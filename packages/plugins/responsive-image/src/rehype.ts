@@ -9,7 +9,7 @@ import { resolveResponsiveImageOptions } from "./options.js";
 import type { HastFile, HastNode } from "./types.js";
 
 export const RESPONSIVE_IMAGE_MARKER = "data-responsive-image";
-export const RESPONSIVE_IMAGE_SOURCE = "@riebeckite/plugin-responsive-image";
+const RESPONSIVE_IMAGE_SOURCE = "@riebeckite/plugin-responsive-image";
 
 const MARKER_PROPERTY = "dataResponsiveImage";
 

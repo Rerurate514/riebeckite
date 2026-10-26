@@ -231,7 +231,7 @@ function findDirectChild(
   );
 }
 
-export function element(
+function element(
   tagName: string,
   properties: Record<string, unknown> = {},
   children: HastNode[] = [],
@@ -239,11 +239,11 @@ export function element(
   return { type: "element", tagName, properties, children };
 }
 
-export function text(value: string): TextNode {
+function text(value: string): TextNode {
   return { type: "text", value };
 }
 
-export function raw(value: string): RawNode {
+function raw(value: string): RawNode {
   return { type: "raw", value };
 }
 
@@ -270,7 +270,7 @@ function hasClass(node: ElementNode, className: string): boolean {
   return classes.includes(className);
 }
 
-export function visitElements(
+function visitElements(
   node: HastNode,
   visitor: (node: ElementNode, parent?: ParentNode, index?: number) => void,
   parent?: ParentNode,

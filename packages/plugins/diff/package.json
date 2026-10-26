@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/git-history": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
   },

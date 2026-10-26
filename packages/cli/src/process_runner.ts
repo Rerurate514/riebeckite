@@ -6,7 +6,7 @@ export type CommandResult = {
   readonly stderr: string;
 };
 
-export type CommandRunOptions = {
+type CommandRunOptions = {
   readonly cwd?: string;
   readonly input?: string;
   readonly environment?: NodeJS.ProcessEnv;

@@ -17,7 +17,7 @@ const navigationStyle = await readFile(
 before(async () => {
   try {
     browser = await puppeteer.launch({
-      headless: true,
+      headless: "shell",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
   } catch {

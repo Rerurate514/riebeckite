@@ -3,7 +3,7 @@ import { escapeHtml } from "./diff-line.js";
 import { renderDiffViewer } from "./diff-viewer.js";
 import { formatDiffDate } from "./format-date.js";
 
-export type DiffHistoryProps = {
+type DiffHistoryProps = {
   revisions: MarkdownRevision[];
   selected: PostDiff | null;
   payloadPath?: string;

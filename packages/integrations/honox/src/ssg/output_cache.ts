@@ -31,7 +31,7 @@ import type {
   OutputCacheRejectionReason,
 } from "./types.js";
 
-export type OutputCacheEntry = {
+type OutputCacheEntry = {
   cachePath: string;
   checksum: string;
 };

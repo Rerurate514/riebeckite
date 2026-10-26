@@ -1,5 +1,6 @@
 import type { ScaffoldPreset } from "./presets.js";
-export type ReadmeDemo = {
+
+type ReadmeDemo = {
   readonly title: { readonly en: string; readonly ja: string };
   readonly intro: { readonly en: string; readonly ja: string };
   readonly markdown: string;

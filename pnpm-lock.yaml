@@ -564,6 +564,15 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/git-history:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.6
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/integrations/analytics-cloudflare:
     dependencies:
       '@riebeckite/plugin-analytics':
@@ -766,6 +775,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/git-history':
+        specifier: workspace:*
+        version: link:../../git-history
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -929,6 +941,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/git-history':
+        specifier: workspace:*
+        version: link:../../git-history
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui

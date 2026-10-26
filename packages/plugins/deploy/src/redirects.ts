@@ -15,10 +15,7 @@ export function isPermanentRedirect(status: PublicRedirect["status"]): boolean {
  * Deterministic ordering shared by every renderer: by `from`, then `to`, then
  * `status`, using code-unit comparison so the result never depends on locale.
  */
-export function compareRedirects(
-  left: PublicRedirect,
-  right: PublicRedirect,
-): number {
+function compareRedirects(left: PublicRedirect, right: PublicRedirect): number {
   return (
     compareStrings(left.from, right.from) ||
     compareStrings(left.to, right.to) ||

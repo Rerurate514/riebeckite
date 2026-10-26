@@ -5,6 +5,10 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
+import {
+  createTestRepository,
+  gitAvailable,
+} from "@riebeckite/git-history/test-support";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import {
@@ -16,10 +20,6 @@ import {
   renderSiteChangelog,
   resolveChangelogOptions,
 } from "../index.ts";
-import {
-  createTestRepository,
-  gitAvailable,
-} from "./support/git_repository.ts";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 

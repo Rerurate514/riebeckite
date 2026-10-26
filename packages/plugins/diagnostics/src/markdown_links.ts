@@ -3,7 +3,7 @@ import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 
-export type MarkdownReference = {
+type MarkdownReference = {
   kind: "link" | "image";
   url: string;
   line: number;

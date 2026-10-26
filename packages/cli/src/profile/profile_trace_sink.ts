@@ -8,12 +8,12 @@ export type ProfileSpanAggregate = Readonly<{
   wallDurationMs: number | undefined;
 }>;
 
-export type ProfilePlugin = Readonly<{
+type ProfilePlugin = Readonly<{
   name: string;
   duration: ProfileSpanAggregate;
 }>;
 
-export type ProfileIncremental = Readonly<{
+type ProfileIncremental = Readonly<{
   added: number;
   changed: number;
   removed: number;
@@ -21,18 +21,18 @@ export type ProfileIncremental = Readonly<{
   affected: number;
 }>;
 
-export type ProfileCache = Readonly<{
+type ProfileCache = Readonly<{
   hits: number;
   misses: number;
   hitRate: number | undefined;
 }>;
 
-export type ProfileCacheReasonCount = Readonly<{
+type ProfileCacheReasonCount = Readonly<{
   reason: string;
   count: number;
 }>;
 
-export type ProfileContentCache = Readonly<{
+type ProfileContentCache = Readonly<{
   hits: number;
   misses: number;
   bypasses: number;
@@ -41,14 +41,14 @@ export type ProfileContentCache = Readonly<{
   bypassReasons: readonly ProfileCacheReasonCount[];
 }>;
 
-export type ProfileSlowOperation = Readonly<{
+type ProfileSlowOperation = Readonly<{
   plugin: string;
   name: string;
   durationMs: number;
   contentPath: string;
 }>;
 
-export type ProfileDiagnostics = Readonly<{
+type ProfileDiagnostics = Readonly<{
   calls: number;
   durationMs: number;
   total: number;
@@ -57,7 +57,7 @@ export type ProfileDiagnostics = Readonly<{
   info: number;
 }>;
 
-export type ProfileFastPath = Readonly<{
+type ProfileFastPath = Readonly<{
   used: boolean;
   blockReason: string;
   fastPathDecisionDurationMs: number;

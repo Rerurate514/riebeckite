@@ -19,7 +19,7 @@ import {
 import { renderPluginFiles } from "../plugin_generator/templates.js";
 import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 
-export type CreatePluginOptions = {
+type CreatePluginOptions = {
   readonly name: string;
   readonly directory: string;
   readonly features: readonly PluginFeatureId[];

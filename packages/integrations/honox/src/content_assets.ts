@@ -8,7 +8,7 @@ import {
 import type { Plugin } from "vite";
 import { isPathInsideDirectory } from "./content_watch.js";
 
-export type RiebeckiteContentAssetsOptions = {
+type RiebeckiteContentAssetsOptions = {
   appRoot: () => string;
   contentRoot: () => string;
 };

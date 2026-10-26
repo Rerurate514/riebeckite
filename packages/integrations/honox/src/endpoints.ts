@@ -8,7 +8,7 @@ import type {
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 
-export type RiebeckiteEndpointMountOptions = {
+type RiebeckiteEndpointMountOptions = {
   config: ResolvedRiebeckiteConfig;
   content: ContentManager;
 };

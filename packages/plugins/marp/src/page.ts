@@ -6,13 +6,13 @@ import type {
 } from "@riebeckite/core";
 import { isMarpDocument } from "./rehype.js";
 
-export const MARP_SLIDES_BASE_PATH = "/slides";
+const MARP_SLIDES_BASE_PATH = "/slides";
 
 export function marpSlidesPath(permalink: string): string {
   return `${MARP_SLIDES_BASE_PATH}${permalink}`.replace(/\/+$/, "");
 }
 
-export function listMarpDeckEntries(
+function listMarpDeckEntries(
   manifest: ContentManifest,
 ): ContentManifestEntry[] {
   return manifest.publicEntries.filter((entry) =>

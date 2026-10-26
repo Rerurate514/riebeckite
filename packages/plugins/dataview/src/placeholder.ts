@@ -1,6 +1,6 @@
 export const DATAVIEW_ATTRIBUTE = "data-rr-dataview";
 
-export function encodeDataviewSource(source: string): string {
+function encodeDataviewSource(source: string): string {
   return encodeURIComponent(source);
 }
 

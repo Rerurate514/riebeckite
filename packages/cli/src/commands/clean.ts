@@ -8,7 +8,7 @@ import type { RiebeckiteProject } from "../application_root.js";
 
 export type CleanScope = "state" | "output" | "all";
 
-export type CleanOptions = {
+type CleanOptions = {
   readonly scope: CleanScope;
 };
 

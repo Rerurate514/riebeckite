@@ -16,7 +16,7 @@ import type {
 } from "./types.js";
 
 /** Base class applied when `options.className` is not set. */
-export const DEFAULT_SERIES_CLASS_NAME = "rb-series";
+const DEFAULT_SERIES_CLASS_NAME = "rb-series";
 export const DEFAULT_SERIES_BASE_PATH = "/series";
 
 /** Applies defaults to the user-supplied options. */

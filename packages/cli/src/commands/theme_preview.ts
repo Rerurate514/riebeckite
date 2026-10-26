@@ -13,7 +13,7 @@ import {
 } from "../theme_preview/fixtures.js";
 import { assertThemeName } from "./create_theme.js";
 
-export type ThemePreviewOptions = {
+type ThemePreviewOptions = {
   readonly name: string;
   readonly port?: number;
   readonly open: boolean;

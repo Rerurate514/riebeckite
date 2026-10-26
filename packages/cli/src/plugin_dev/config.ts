@@ -64,7 +64,7 @@ export default defineConfig({
   );
 }
 
-export function pluginFactoryName(packageName: string): string {
+function pluginFactoryName(packageName: string): string {
   const bare = packageName.split("/").at(-1) ?? packageName;
   const withoutPrefix = bare.startsWith("plugin-")
     ? bare.slice("plugin-".length)

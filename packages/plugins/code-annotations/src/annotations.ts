@@ -1,4 +1,4 @@
-export const DIFF_META_PREFIX = "rb-diff=";
+const DIFF_META_PREFIX = "rb-diff=";
 
 export type DiffMarker = "+" | "-" | null;
 

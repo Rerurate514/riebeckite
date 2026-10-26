@@ -19,7 +19,7 @@ export type GardenExplorerNote = GardenExplorerSearchFields & {
 
 export type GardenExplorerEdge = GraphEdge;
 
-export type GardenExplorerGraphLayout = "force" | "radial";
+type GardenExplorerGraphLayout = "force" | "radial";
 
 export type GardenExplorerGraphMode = "local" | "global";
 

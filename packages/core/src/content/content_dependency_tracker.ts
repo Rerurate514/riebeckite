@@ -73,7 +73,7 @@ export function fingerprintContent(content: ContentSourceContent): string {
     .digest("hex")}`;
 }
 
-export function normalizeDependencyIdentity<T extends DependencyIdentity>(
+function normalizeDependencyIdentity<T extends DependencyIdentity>(
   dependency: T,
 ): T {
   return {
@@ -85,7 +85,7 @@ export function normalizeDependencyIdentity<T extends DependencyIdentity>(
   };
 }
 
-export function dependencyKey(dependency: DependencyIdentity): string {
+function dependencyKey(dependency: DependencyIdentity): string {
   const normalized = normalizeDependencyIdentity(dependency);
   return `${normalized.kind}:${normalized.id}`;
 }

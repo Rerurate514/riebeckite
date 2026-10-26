@@ -24,7 +24,7 @@ export type ScannedNote = {
   published: boolean;
 };
 
-export type ScannedAsset = {
+type ScannedAsset = {
   relativePath: string;
   extension: string;
 };
@@ -40,14 +40,14 @@ export type ScanResult = {
   targetIndex: Map<string, ResolvedTarget>;
 };
 
-export type TargetKind = "note" | "image" | "attachment";
+type TargetKind = "note" | "image" | "attachment";
 
-export type ResolvedTarget = {
+type ResolvedTarget = {
   kind: TargetKind;
   value: string;
 };
 
-export type WikilinkMatch = {
+type WikilinkMatch = {
   embed: boolean;
   target: string;
   fragment: string | null;
@@ -259,7 +259,7 @@ function addToIndex(
   }
 }
 
-export function extractHeadings(markdown: string): Set<string> {
+function extractHeadings(markdown: string): Set<string> {
   const headings = new Set<string>();
   for (const line of markdown.split("\n")) {
     const match = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
@@ -269,7 +269,7 @@ export function extractHeadings(markdown: string): Set<string> {
   return headings;
 }
 
-export function extractBlockIds(markdown: string): Set<string> {
+function extractBlockIds(markdown: string): Set<string> {
   const blockIds = new Set<string>();
   for (const line of markdown.split("\n")) {
     const match = line.match(/(?:^|\s)\^([A-Za-z0-9_-]+)\s*$/);

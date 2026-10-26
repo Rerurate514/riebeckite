@@ -19,7 +19,7 @@ export const WRANGLER_VERSION = "^4.83.0";
 
 export const DEFAULT_WORKER_NAME = "riebeckite-site";
 
-export const WORKER_NAME_MAX_LENGTH = 63;
+const WORKER_NAME_MAX_LENGTH = 63;
 
 export function workerNameFromDirectory(directoryName: string): string {
   const normalized = directoryName

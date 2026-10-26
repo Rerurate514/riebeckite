@@ -14,7 +14,7 @@ import {
 import { renderQueryError, renderQueryResult, resolveQuery } from "./render.js";
 import type { QueryOptions, QuerySpec } from "./types.js";
 
-export type QueryRuntime = {
+type QueryRuntime = {
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 

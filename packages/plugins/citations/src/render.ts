@@ -1,7 +1,7 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import type { BibliographyEntry } from "./types.js";
 
-export type RenderBibliographyInput = {
+type RenderBibliographyInput = {
   readonly title: string;
   readonly entries: readonly (readonly [string, BibliographyEntry])[];
 };

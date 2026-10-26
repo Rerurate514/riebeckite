@@ -40,16 +40,16 @@ export type HastElementNode = {
   children?: HastNode[];
 };
 
-export type HastTextNode = { type: "text"; value: string };
+type HastTextNode = { type: "text"; value: string };
 
 /** A raw HTML fragment emitted by the plugin and serialized verbatim. */
 export type HastRawNode = { type: "raw"; value: string };
 
-export type HastCommentNode = { type: "comment"; value: string };
+type HastCommentNode = { type: "comment"; value: string };
 
-export type HastDoctypeNode = { type: "doctype"; name?: string };
+type HastDoctypeNode = { type: "doctype"; name?: string };
 
-export type HastRootNode = { type: "root"; children?: HastNode[] };
+type HastRootNode = { type: "root"; children?: HastNode[] };
 
 /** Any node the sidenotes transformer may encounter in a hast tree. */
 export type HastNode =

@@ -55,11 +55,11 @@ import {
   resolvePublishingState,
 } from "./publishing.js";
 
-export type Backlink = {
+type Backlink = {
   slug: string;
 };
 
-export type ContentPostReference = {
+type ContentPostReference = {
   slug: string;
 };
 

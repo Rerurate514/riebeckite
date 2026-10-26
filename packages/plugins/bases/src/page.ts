@@ -14,7 +14,7 @@ import { parseBasesYaml } from "./yaml.js";
 
 const BASE_SUFFIX = /\.base$/i;
 
-export type BaseDocument = {
+type BaseDocument = {
   readonly pathname: string;
   readonly dependencies: readonly import("@riebeckite/core").OutputDependency[];
 };

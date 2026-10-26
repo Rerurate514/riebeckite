@@ -68,7 +68,7 @@ export function isScaffoldPresetName(
 }
 
 /** How a theme factory is referenced in the generated config file. */
-export type ScaffoldThemeSpec = {
+type ScaffoldThemeSpec = {
   /** Npm package, for example `@riebeckite/theme-minimal`. */
   readonly package: string;
   /** Factory/import name, for example `minimalTheme`. */
@@ -112,7 +112,7 @@ export type ScaffoldOptionValue =
   | ((context: ScaffoldOptionContext) => string);
 
 /** A config field gated to a minimum preset depth. */
-export type ScaffoldOptionField = {
+type ScaffoldOptionField = {
   /** The lowest `ScaffoldOptionContext.depth` that includes this field. */
   readonly depth: number;
   readonly value: ScaffoldOptionValue;
@@ -130,7 +130,7 @@ export type ScaffoldOptions =
   | Readonly<Record<string, ScaffoldOptionField>>;
 
 /** Content pages the scaffold can emit. */
-export type ScaffoldPageKey =
+type ScaffoldPageKey =
   | "index"
   | "framework/plugins"
   | "framework/themes"
@@ -140,7 +140,7 @@ export type ScaffoldPageKey =
   | "reference/themes";
 
 /** README verbosity. */
-export type ScaffoldReadmeLevel = "short" | "standard" | "rich";
+type ScaffoldReadmeLevel = "short" | "standard" | "rich";
 
 export type ScaffoldPreset = {
   readonly name: ScaffoldPresetName;
@@ -634,7 +634,7 @@ export const starter: ScaffoldPreset = {
   readme: "standard",
 };
 
-export const digitalGarden: ScaffoldPreset = {
+const digitalGarden: ScaffoldPreset = {
   name: "digital-garden",
   description:
     "An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.",
@@ -678,7 +678,7 @@ export const blog: ScaffoldPreset = {
   readme: "standard",
 };
 
-export const documentation: ScaffoldPreset = {
+const documentation: ScaffoldPreset = {
   name: "docs",
   description:
     "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",

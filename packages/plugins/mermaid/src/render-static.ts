@@ -13,10 +13,10 @@ const RENDER_TIMEOUT_MS = 30_000;
 const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
 const PUPPETEER_PACKAGE = "puppeteer";
 
-export const MERMAID_HEADLESS_MODE = "shell" as const;
-export const MERMAID_PUPPETEER_BROWSER = "chrome-headless-shell";
+const MERMAID_HEADLESS_MODE = "shell" as const;
+const MERMAID_PUPPETEER_BROWSER = "chrome-headless-shell";
 
-export type MermaidSessionDependencies = {
+type MermaidSessionDependencies = {
   /**
    * Overrides browser launch. Tests inject a fake browser so session
    * lifecycle can be asserted without launching Chrome.

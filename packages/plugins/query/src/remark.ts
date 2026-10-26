@@ -2,7 +2,7 @@ import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { createQueryPlaceholder } from "./placeholder.js";
 
-export type RemarkQueryOptions = {
+type RemarkQueryOptions = {
   language?: string;
 };
 

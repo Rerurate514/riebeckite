@@ -26,7 +26,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   publicConfig?: TPublicConfig;
 };
 
-export type ClientInitializerArguments = "config" | "root" | "context";
+type ClientInitializerArguments = "config" | "root" | "context";
 
 export function createStyleAsset(
   pluginName: string,

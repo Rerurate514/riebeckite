@@ -1,7 +1,7 @@
 import { type ContentManifest, escapeHtmlAttribute } from "@riebeckite/core";
 import { CANVAS_NOTE_HREF } from "./render.js";
 
-export type CanvasRuntime = {
+type CanvasRuntime = {
   resolve(manifest: ContentManifest): void;
 };
 

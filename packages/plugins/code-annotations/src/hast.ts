@@ -46,10 +46,6 @@ export function getBooleanProperty(node: ElementNode, key: string): boolean {
   return value === true || value === "true" || value === "";
 }
 
-export function hasProperty(node: ElementNode, key: string): boolean {
-  return getProperty(node, key) !== undefined;
-}
-
 export function mergeClassName(current: unknown, next: string): string {
   const currentClass = Array.isArray(current)
     ? current.join(" ")
@@ -68,17 +64,6 @@ export function getDataMeta(
   if (data === null || typeof data !== "object") return null;
   const meta = (data as { meta?: unknown }).meta;
   return typeof meta === "string" ? meta : null;
-}
-
-export function getTextContent(node: HastNode): string {
-  if (
-    node.type === "text" &&
-    "value" in node &&
-    typeof node.value === "string"
-  ) {
-    return node.value;
-  }
-  return getChildren(node).map(getTextContent).join("");
 }
 
 function getProperty(node: ElementNode, key: string): unknown {

@@ -92,7 +92,7 @@ const SANITIZE_OPTIONS: sanitizeHtml.IOptions = {
   },
 };
 
-export type IconRenderOptions = {
+type IconRenderOptions = {
   readonly source: IconPrecedence;
   readonly target: string;
   readonly color?: string;

@@ -2,7 +2,7 @@ import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { createGalleryPlaceholder } from "./placeholder.js";
 
-export type RemarkGalleryOptions = {
+type RemarkGalleryOptions = {
   /** Fenced code block language treated as a gallery. Defaults to `gallery`. */
   language?: string;
 };

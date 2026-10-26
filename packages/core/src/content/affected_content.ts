@@ -4,7 +4,7 @@ import type {
 } from "./content_build_state.js";
 import type { ContentChangeSet } from "./content_change_set.js";
 
-export type AffectedContent = {
+type AffectedContent = {
   readonly direct: ReadonlySet<string>;
   readonly dependent: ReadonlySet<string>;
 };

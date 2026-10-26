@@ -1,8 +1,8 @@
 import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
-export const DEFAULT_SIDENOTES_ARIA_LABEL = "Sidenote";
-export const DEFAULT_SIDENOTES_OPEN_LABEL = "Footnote";
-export const DEFAULT_SIDENOTES_PLACEMENT = "end";
+const DEFAULT_SIDENOTES_ARIA_LABEL = "Sidenote";
+const DEFAULT_SIDENOTES_OPEN_LABEL = "Footnote";
+const DEFAULT_SIDENOTES_PLACEMENT = "end";
 
 /**
  * Applies defaults to `SidenotesOptions`. Pure and deterministic so the

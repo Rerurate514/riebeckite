@@ -1,6 +1,6 @@
 export const QUERY_ATTRIBUTE = "data-rr-query";
 
-export function encodeQuerySpec(source: string): string {
+function encodeQuerySpec(source: string): string {
   return encodeURIComponent(source);
 }
 

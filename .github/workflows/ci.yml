@@ -122,6 +122,9 @@ jobs:
           path: .
       - run: pnpm ci:build-artifact verify
       - run: pnpm -r --workspace-concurrency=1 test
+      - run: pnpm --filter @riebeckite/plugin-navigation test:browser
+      - run: pnpm --filter @riebeckite/plugin-toc test:browser:required
+      - run: pnpm --filter @riebeckite/cli test:integration
 
   integration-e2e:
     name: integration-e2e

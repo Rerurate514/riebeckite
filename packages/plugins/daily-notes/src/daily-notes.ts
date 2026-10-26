@@ -55,9 +55,9 @@ export type ResolvedDailyNotesDisplay = {
 
 export const DAILY_NOTES_PLUGIN_NAME = "daily-notes";
 export const DEFAULT_DIRECTORY = "Daily";
-export const DEFAULT_FRONTMATTER_KEY = "daily-summary";
-export const DEFAULT_SECTION = "今日のひとこと";
-export const DEFAULT_CODE_BLOCK = "daily-snippet";
+const DEFAULT_FRONTMATTER_KEY = "daily-summary";
+const DEFAULT_SECTION = "今日のひとこと";
+const DEFAULT_CODE_BLOCK = "daily-snippet";
 export const DEFAULT_LIMIT = 5;
 export const DEFAULT_DAILY_NOTES_DATE_FORMAT: DailyNotesDateFormat = "iso";
 export const DEFAULT_DAILY_NOTES_LOCALE = "en";
@@ -127,7 +127,7 @@ export function isDailyNoteSlug(
   return matchesSlugPattern(slug, pathPattern);
 }
 
-export function matchesSlugPattern(slug: string, pattern: string): boolean {
+function matchesSlugPattern(slug: string, pattern: string): boolean {
   return new RegExp(`^${toSlugPatternSource(pattern)}$`).test(slug);
 }
 
@@ -193,10 +193,7 @@ export function extractDailyNoteSnippet(
 
 const HEADING_PATTERN = /<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/g;
 
-export function extractSectionSnippet(
-  html: string,
-  section: string,
-): string | null {
+function extractSectionSnippet(html: string, section: string): string | null {
   const headings = [...html.matchAll(HEADING_PATTERN)].map((match) => {
     const start = match.index ?? 0;
     return {
@@ -221,7 +218,7 @@ export function extractSectionSnippet(
 
 const CODE_BLOCK_PATTERN = /<code\b([^>]*)>([\s\S]*?)<\/code>/g;
 
-export function extractCodeBlockSnippet(
+function extractCodeBlockSnippet(
   html: string,
   language: string,
 ): string | null {

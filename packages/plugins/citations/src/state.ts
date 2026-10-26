@@ -1,7 +1,7 @@
 import type { Diagnostic } from "@riebeckite/core";
 import type { BibliographyCache } from "./types.js";
 
-export type CitationState = {
+type CitationState = {
   readonly bibliographies: BibliographyCache;
   readonly diagnostics: Diagnostic[];
 };

@@ -1,7 +1,7 @@
 import type { ContentManifest } from "@riebeckite/core";
 import type { RecentPost } from "./recent-posts.js";
 
-export const DEFAULT_RECENT_POSTS_LIMIT = 5;
+const DEFAULT_RECENT_POSTS_LIMIT = 5;
 
 /**
  * Builds the recent-posts list from the manifest.

@@ -22,7 +22,7 @@ import {
 } from "../theme_generator/registry.js";
 import { renderThemeFiles } from "../theme_generator/templates.js";
 
-export type CreateThemeOptions = {
+type CreateThemeOptions = {
   readonly name: string;
   readonly directory: string;
   readonly template: ThemeTemplateId;

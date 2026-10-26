@@ -8,7 +8,7 @@ import {
   scaffoldRiebeckiteSite,
 } from "create-riebeckite/scaffold";
 
-export type InitOptions = {
+type InitOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;

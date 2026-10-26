@@ -6,6 +6,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/core",
   "packages/diagram",
   "packages/diagnostics",
+  "packages/git-history",
   "packages/preview",
   "packages/spa",
   "packages/create-riebeckite",
@@ -139,6 +140,10 @@ const packagePublishingMetadata = {
     description:
       "Shared development diagnostics for Riebeckite CLI and integrations.",
     keywords: ["riebeckite", "diagnostics", "development", "validation"],
+  },
+  "packages/git-history": {
+    description: "Shared Git repository access for Riebeckite plugins.",
+    keywords: ["riebeckite", "git", "history"],
   },
   "packages/preview": {
     description: "Shared secure Markdown preview runtime for Riebeckite.",
@@ -586,7 +591,7 @@ export const catalogDependencies = {
   unified: "^11.0.5",
   "unist-util-visit": "^5.1.0",
   "vfile-matter": "^5.0.1",
-  vite: "^8.0.9",
+  vite: "^8.3.5",
 };
 
 export function expectedPackageMetadata(directory) {
@@ -627,6 +632,18 @@ export function expectedPackageMetadata(directory) {
   }
 
   if (directory === "packages/diagnostics") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/git-history") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
@@ -739,6 +756,7 @@ export function expectedPackageMetadata(directory) {
       "archive",
       "article-metadata",
       "backlinks",
+      "bases",
       "breadcrumbs",
       "citations",
       "code-annotations",
@@ -753,6 +771,7 @@ export function expectedPackageMetadata(directory) {
       "gallery",
       "hard-breaks",
       "highlight",
+      "hover-preview",
       "icons",
       "image-optimizer",
       "l10n",
@@ -772,6 +791,7 @@ export function expectedPackageMetadata(directory) {
       "series",
       "share",
       "shortcodes",
+      "sidenotes",
       "source-files",
       "svg-optimizer",
       "taxonomy",

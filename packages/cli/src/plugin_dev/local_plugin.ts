@@ -8,7 +8,7 @@ export type LocalPluginPackage = {
   readonly aliases: readonly LocalPluginAlias[];
 };
 
-export type LocalPluginAlias = {
+type LocalPluginAlias = {
   readonly find: string;
   readonly replacement: string;
 };

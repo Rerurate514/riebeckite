@@ -17,7 +17,7 @@ import {
   resolveDataviewOptions,
 } from "./types.js";
 
-export type DataviewRuntime = {
+type DataviewRuntime = {
   resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
 };
 

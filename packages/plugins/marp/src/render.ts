@@ -30,7 +30,7 @@ type MarpCoreModule = {
   default?: unknown;
 };
 
-export type MarpRenderRequest = {
+type MarpRenderRequest = {
   theme: string;
   allowHtml: boolean;
   math: boolean;

@@ -1,4 +1,4 @@
-export type SourcePosition = {
+type SourcePosition = {
   line: number;
   column: number;
 };

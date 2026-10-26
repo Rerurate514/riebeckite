@@ -1,12 +1,7 @@
 export type MetaBindValue = string | number | boolean | null;
 export type MetaBindTarget = { readonly path: readonly string[] };
-export type MetaBindInputKind =
-  | "text"
-  | "number"
-  | "slider"
-  | "toggle"
-  | "select";
-export type MetaBindOption = {
+type MetaBindInputKind = "text" | "number" | "slider" | "toggle" | "select";
+type MetaBindOption = {
   readonly value: MetaBindValue;
   readonly label: string;
 };
@@ -31,7 +26,7 @@ export type MetaBindExpression =
       readonly left: MetaBindExpression;
       readonly right: MetaBindExpression;
     };
-export type MetaBindView = {
+type MetaBindView = {
   readonly kind: "view";
   readonly source: string;
   readonly expression: MetaBindExpression;

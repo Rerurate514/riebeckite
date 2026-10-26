@@ -22,7 +22,7 @@ export const THEME_FEATURE_IDS = [
 
 export type ThemeFeatureId = (typeof THEME_FEATURE_IDS)[number];
 
-export type ThemeTemplate = {
+type ThemeTemplate = {
   readonly id: ThemeTemplateId;
   readonly name: string;
   readonly description: string;
@@ -93,7 +93,7 @@ export const themeFeatureRegistry: Readonly<
   "print-styles": { description: "Print-friendly presentation rules." },
 };
 
-export function isThemeTemplateId(value: string): value is ThemeTemplateId {
+function isThemeTemplateId(value: string): value is ThemeTemplateId {
   return THEME_TEMPLATE_IDS.includes(value as ThemeTemplateId);
 }
 

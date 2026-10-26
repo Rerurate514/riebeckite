@@ -14,7 +14,7 @@ type Check = {
   readonly candidate: Status;
 };
 
-export type UpgradeReport = {
+type UpgradeReport = {
   readonly version: 1;
   readonly verdict: Verdict;
   readonly target: string;

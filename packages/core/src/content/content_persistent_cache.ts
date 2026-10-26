@@ -16,7 +16,7 @@ import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
 
-export type PersistentContentCacheEntry = {
+type PersistentContentCacheEntry = {
   schemaVersion: number;
   key: string;
   dependencies: readonly CachedContentDependency[];
@@ -26,7 +26,7 @@ export type PersistentContentCacheEntry = {
   };
 };
 
-export type PersistentContentCacheOptions = {
+type PersistentContentCacheOptions = {
   config: ResolvedRiebeckiteConfig;
   logger?: Logger;
   tracer?: Tracer;
@@ -34,7 +34,7 @@ export type PersistentContentCacheOptions = {
 
 const CONTENT_CACHE_NAMESPACE = "content";
 export const CONTENT_CACHE_SCHEMA_VERSION = 5;
-export const CONTENT_CACHE_COMPATIBILITY_VERSION = 3;
+const CONTENT_CACHE_COMPATIBILITY_VERSION = 3;
 
 function hash(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");
@@ -85,7 +85,7 @@ async function writeAtomically(
   }
 }
 
-export type PersistentContentCacheMissReason =
+type PersistentContentCacheMissReason =
   | "disabled"
   | "no-entry"
   | "corrupted"
@@ -94,7 +94,7 @@ export type PersistentContentCacheMissReason =
   | "key-mismatch"
   | "invalid-entry";
 
-export type PersistentContentCacheLookup =
+type PersistentContentCacheLookup =
   | { status: "hit"; entry: PersistentContentCacheEntry }
   | { status: "miss"; reason: PersistentContentCacheMissReason };
 
@@ -248,7 +248,7 @@ function isValidDependency(value: unknown): value is CachedContentDependency {
   );
 }
 
-export type CacheKeyInputs = {
+type CacheKeyInputs = {
   slug: string;
   source: string;
   frontmatter: PostContent["frontmatter"];

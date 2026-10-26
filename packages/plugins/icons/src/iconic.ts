@@ -7,7 +7,7 @@ import type {
   IconTarget,
 } from "./types.js";
 
-export type IconicResolution = {
+type IconicResolution = {
   readonly icon?: string;
   readonly color?: string;
   readonly rule?: string;

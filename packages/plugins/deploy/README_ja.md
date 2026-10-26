@@ -10,8 +10,9 @@ Riebeckite の静的ホスティング向けの出力ヘルパーです。デプ
 ## 概要
 
 `deploy()` はコンテンツマニフェストの公開リダイレクトを読み、
-Cloudflare Pages / Netlify / Vercel / GitHub Pages 向けのファイルを計画します。
-出力計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、パスの順序も安定します。
+Cloudflare Pages / Cloudflare Workers / Netlify / Vercel / GitHub Pages 向けの
+ファイルを計画します。出力計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、
+パスの順序も安定します。
 
 ## 使い方
 
@@ -22,7 +23,7 @@ import { deploy } from "@riebeckite/plugin-deploy";
 export default defineConfig({
   plugins: [
     deploy({
-      provider: ["cloudflare-pages", "github-pages"],
+      provider: ["cloudflare-workers", "github-pages"],
       cname: "example.com",
       headers: { "X-Frame-Options": "DENY" },
     }),
@@ -38,9 +39,14 @@ export default defineConfig({
 
 | プロバイダ | ファイル |
 | --- | --- |
-| `cloudflare-pages`, `netlify` | `_redirects`（リダイレクトがある場合）、`_headers`（ヘッダー設定時） |
+| `cloudflare-pages`, `cloudflare-workers`, `netlify` | `_redirects`（リダイレクトがある場合）、`_headers`（ヘッダー設定時） |
 | `vercel` | `vercel.json` |
 | `github-pages` | `.nojekyll`、`404.html`、`CNAME`（設定時）、リダイレクトごとの `<from>/index.html` メタリフレッシュ |
+
+`cloudflare-workers` は `cloudflare-pages` と同じファイルを出力します。Workers
+Static Assets が `_redirects` と `_headers` の両方を読むためです。ただし Cloudflare
+は `_redirects` を静的アセットのレスポンスにのみ適用し、Worker コードが返す
+レスポンスには適用しません。
 
 GitHub Pages には `_redirects` 構文がないため、各リダイレクトはメタリフレッシュと
 `<link rel="canonical">` を持つ HTML スタブになります。`/` からのリダイレクトは

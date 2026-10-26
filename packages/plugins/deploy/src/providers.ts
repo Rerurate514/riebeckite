@@ -78,7 +78,8 @@ export function planDeployOutputs(args: {
 
   switch (provider) {
     case "netlify":
-    case "cloudflare-pages": {
+    case "cloudflare-pages":
+    case "cloudflare-workers": {
       const lines = renderRedirectLines(redirects);
       if (lines.length > 0) add("_redirects", lines);
       if (options?.headers && Object.keys(options.headers).length > 0) {

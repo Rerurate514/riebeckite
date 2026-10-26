@@ -79,7 +79,11 @@ test("github-pages stubs resolve the site base URL to an absolute canonical", ()
 });
 
 test("_redirects is sorted, deduped, and newline terminated", () => {
-  for (const provider of ["netlify", "cloudflare-pages"] as const) {
+  for (const provider of [
+    "netlify",
+    "cloudflare-pages",
+    "cloudflare-workers",
+  ] as const) {
     const outputs = planDeployOutputs({ provider, redirects: sampleRedirects });
     assert.equal(
       pathOf(outputs, "_redirects").content,

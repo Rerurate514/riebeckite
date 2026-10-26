@@ -5,6 +5,7 @@
  */
 export type DeployProvider =
   | "cloudflare-pages"
+  | "cloudflare-workers"
   | "netlify"
   | "vercel"
   | "github-pages";

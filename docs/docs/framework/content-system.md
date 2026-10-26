@@ -56,7 +56,7 @@ ContentManager
 
 ## Two explicit responsibilities
 
-`ContentSource` is the boundary for finding and reading source data. It owns scanning, reading, identity, and source metadata such as mtime, size, ETag, or hashes. `FileSystemContentSource` is the normal local implementation.
+`ContentSource` is the boundary for finding and reading source data. It owns scanning, reading, identity, and source metadata such as mtime, size, ETag, or hashes. `FileSystemContentSource` from `@riebeckite/node` is the normal local implementation.
 
 Content does not have to live inside the site repository. Riebeckite can read
 from a site repository, an external repository, or an Obsidian vault, and all of

@@ -21,7 +21,12 @@ Keeping acquisition separate means caching and [incremental builds](./incrementa
 
 ## Content source types
 
-The standard implementation is `FileSystemContentSource` (`packages/core/src/content/file_system_content_source.ts`), which scans a directory tree and reads files via the `ContentSource` interface. Custom sources can implement the same interface to read from an Obsidian vault, cloud storage, or any other filesystem-like source without changing the Content Manager.
+The standard Node.js implementation is `FileSystemContentSource` from
+`@riebeckite/node` (`packages/node/src/file_system_content_source.ts`). It
+scans a directory tree and reads files via the `ContentSource` interface.
+Custom sources can implement the same interface to read from an Obsidian vault,
+cloud storage, or any other filesystem-like source without changing the Content
+Manager.
 
 The `ContentSource` interface (`packages/core/src/content/content_source.ts`) defines:
 

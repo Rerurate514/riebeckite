@@ -1,9 +1,9 @@
-import {
-  buildGraphEdges,
-  type ContentManifest,
-  type ContentManifestEntry,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { buildGraphEdges } from "@riebeckite/core/client";
 import type {
   GardenExplorerData,
   GardenExplorerFolder,

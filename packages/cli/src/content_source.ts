@@ -1,8 +1,5 @@
-import {
-  type ContentSource,
-  FileSystemContentSource,
-  type ResolvedRiebeckiteConfig,
-} from "@riebeckite/core";
+import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "./application_root.js";
 
 export function resolveProjectContentSource(

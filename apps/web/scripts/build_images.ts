@@ -10,6 +10,7 @@ import {
   resolveConfigModule,
 } from "@riebeckite/core";
 import { resolveHonoxConfig } from "@riebeckite/honox/runtime";
+import { FileSystemContentSource } from "@riebeckite/node";
 import * as rawConfigModule from "../../../riebeckite.config";
 
 const appRoot = fileURLToPath(new URL("../", import.meta.url));
@@ -275,9 +276,11 @@ async function collectReferencedAssets(
 ): Promise<ReferencedAssets> {
   const referencedImages = new Set<string>();
   const referencedAttachments = new Set<string>();
-  const content = new ContentManager(contentDir, [...exclude], {
-    config: { ...appConfig, plugins: [] },
-  });
+  const content = new ContentManager(
+    new FileSystemContentSource(contentDir, exclude),
+    [],
+    { config: { ...appConfig, plugins: [] } },
+  );
   const manifest = await content.build();
 
   for (const entry of manifest.publicEntries) {

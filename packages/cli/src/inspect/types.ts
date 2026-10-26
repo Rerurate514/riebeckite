@@ -1,7 +1,5 @@
-import type {
-  ContentBuildStateInvalidReason,
-  ContentSourceExclusion,
-} from "@riebeckite/core";
+import type { ContentBuildStateInvalidReason } from "@riebeckite/core";
+import type { ContentSourceExclusion } from "@riebeckite/node";
 
 export type ApplicationInspection = {
   readonly root: string;

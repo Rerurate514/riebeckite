@@ -62,11 +62,15 @@ export const config = resolveHonoxConfig(
 
 function createContentModule(): string {
   return `import { ContentManager } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 
 export const content = new ContentManager(
-  config.content.directory,
-  config.content.exclude,
+  config.content.source ?? new FileSystemContentSource(
+    config.content.directory,
+    config.content.exclude,
+  ),
+  [],
   { config, plugins: config.plugins },
 );
 `;

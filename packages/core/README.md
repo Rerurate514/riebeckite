@@ -62,11 +62,9 @@ remain trusted extension boundaries and are not sanitized by this pipeline.
 
 - `ContentManager` — interpretation, manifest, graph, plugin orchestration, and
   public-location resolution
-- `ContentSource`, `FileSystemContentSource`, `readContentSourceEntry`,
-  `getContentSourceEntry`
+- `ContentSource`, `readContentSourceEntry`, `getContentSourceEntry`
 - `queryContentEntries` with the `ContentQuery*` filter and sort types
-- `createContentGraph`, `readOnlyContentGraph`, `buildGraphEdges`,
-  `layoutRadialGraph`
+- `createContentGraph`, `readOnlyContentGraph`
 - `resolveDefaultContentLocation`, `attachmentUrl`, and the content path and
   extension helpers
 - `readContentBuildStateStatus`, `resolveContentBuildStatePath`
@@ -74,6 +72,11 @@ remain trusted extension boundaries and are not sanitized by this pipeline.
 ### Pipeline
 
 - `Pipeline`, `PipelineOptions`
+
+### Client
+
+- `@riebeckite/core/client` exports graph layout helpers
+- `@riebeckite/node` exports `FileSystemContentSource`
 
 ### Plugins
 

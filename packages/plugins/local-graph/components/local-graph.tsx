@@ -1,5 +1,5 @@
 import type { PluginComponent } from "@riebeckite/core";
-import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
+import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core/client";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import type { LocalGraphData } from "../src/local-graph.js";

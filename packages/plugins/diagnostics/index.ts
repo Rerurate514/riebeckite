@@ -3,7 +3,8 @@ import type {
   PluginContext,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { definePlugin, FileSystemContentSource } from "@riebeckite/core";
+import { definePlugin } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { analyzeContent } from "./src/analyze.js";
 import { buildReport, DiagnosticsFailure } from "./src/report.js";
 import { checkSiteIntegrity } from "./src/site_integrity.js";

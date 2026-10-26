@@ -1,4 +1,4 @@
-import type { GraphEdge } from "@riebeckite/core";
+import type { GraphEdge } from "@riebeckite/core/client";
 
 type GardenExplorerSearchFields = {
   slug: string;

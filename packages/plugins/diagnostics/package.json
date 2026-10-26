@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/node": "workspace:*",
     "remark-parse": "catalog:",
     "unified": "catalog:",
     "unist-util-visit": "catalog:"

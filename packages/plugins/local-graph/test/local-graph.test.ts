@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core";
+import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core/client";
 
 const NODES = [
   { slug: "a", outgoing: ["b", "b", "c"], backlinks: [] },

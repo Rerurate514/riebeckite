@@ -4,6 +4,7 @@ import path from "node:path";
 export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
+  "packages/node",
   "packages/diagram",
   "packages/diagnostics",
   "packages/git-history",
@@ -131,6 +132,10 @@ const packagePublishingMetadata = {
     description:
       "Core content pipeline, configuration, and extension APIs for Riebeckite.",
     keywords: ["riebeckite", "markdown", "obsidian", "static-site-generator"],
+  },
+  "packages/node": {
+    description: "Node.js adapters for Riebeckite.",
+    keywords: ["riebeckite", "node", "content-source", "filesystem"],
   },
   "packages/diagram": {
     description: "Shared diagram infrastructure for Riebeckite plugins.",
@@ -601,13 +606,25 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
-          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --outfile=dist/cli.js",
+          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:@riebeckite/node=../node/index.ts --outfile=dist/cli.js",
         prepack: "node ../../scripts/copy_license.mjs && pnpm run build",
       },
     };
   }
 
   if (directory === "packages/core") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/node") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],

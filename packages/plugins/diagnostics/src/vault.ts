@@ -1,10 +1,10 @@
 import {
-  FileSystemContentSource,
   IMAGE_EXTENSIONS,
   isAttachmentPath,
   isExcluded,
   isPublishable,
 } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { type ParsedFrontmatter, parseFrontmatter } from "./frontmatter.js";
 import type { AnalyzerContentConfig } from "./types.js";
 

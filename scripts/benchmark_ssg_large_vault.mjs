@@ -337,6 +337,7 @@ export const config = resolveConfig(defineConfig({ site: { title: "Benchmark" },
     `import { appendFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import { ContentManager, NoopLogger, SinkTracer } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { config } from "./config";
 const traceFile = process.env.RIEBECKITE_BENCH_TRACE_FILE;
 if (traceFile) {
@@ -351,7 +352,7 @@ const tracer = new SinkTracer({
     if (traceFile) appendFileSync(traceFile, JSON.stringify({ type: "event", name: event.name, attributes: event.attributes }) + "\\n");
   },
 });
-export const content = new ContentManager(config.content.directory, config.content.exclude, { config, plugins: config.plugins, observability: { logger: new NoopLogger(), tracer } });
+export const content = new ContentManager(new FileSystemContentSource(config.content.directory, config.content.exclude), [], { config, plugins: config.plugins, observability: { logger: new NoopLogger(), tracer } });
 `,
   );
   await fs.writeFile(

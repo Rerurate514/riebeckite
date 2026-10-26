@@ -7,6 +7,9 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const { ContentManager, NoopLogger, SinkTracer, defineConfig, resolveConfig } =
   await import(pathToFileURL(path.join(root, "packages/core/index.ts")));
+const { FileSystemContentSource } = await import(
+  pathToFileURL(path.join(root, "packages/node/index.ts"))
+);
 
 const sizes = parseList(
   process.env.RIEBECKITE_BENCH_SIZES ?? "100,1000,10000",
@@ -150,10 +153,14 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
   );
   const startMemory = process.memoryUsage().rss;
   const start = performance.now();
-  const manager = new ContentManager(directory, [], {
-    config,
-    observability: { logger: new NoopLogger(), tracer },
-  });
+  const manager = new ContentManager(
+    new FileSystemContentSource(directory),
+    [],
+    {
+      config,
+      observability: { logger: new NoopLogger(), tracer },
+    },
+  );
   sampleMemory(memorySamples, "after manager");
   const peak = startPeakSampler(memorySamples);
   const manifest = await manager.build({ incremental: true });

@@ -1,7 +1,6 @@
 import {
   buildOutputPlan,
   ContentManager,
-  FileSystemContentSource,
   type OutputChangeSet,
   type OutputDependency,
   type OutputDescriptor,
@@ -12,6 +11,7 @@ import {
   diagnoseOutputPlan,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
+import { FileSystemContentSource } from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
 

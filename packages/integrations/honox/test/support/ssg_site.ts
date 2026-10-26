@@ -459,10 +459,11 @@ export async function createSite(
     path.join(siteRoot, "app", "content.ts"),
     [
       'import { ContentManager } from "@riebeckite/core";',
+      'import { FileSystemContentSource } from "@riebeckite/node";',
       'import { config } from "./config";',
       "export const content = new ContentManager(",
-      "  config.content.directory,",
-      "  config.content.exclude,",
+      "  new FileSystemContentSource(config.content.directory, config.content.exclude),",
+      "  [],",
       "  { config, plugins: config.plugins },",
       ");",
       "",

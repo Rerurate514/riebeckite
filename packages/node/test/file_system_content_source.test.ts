@@ -3,12 +3,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { ContentManager } from "../src/content/content_manager.js";
+import { ContentManager } from "@riebeckite/core";
 import {
   FileSystemContentSource,
   isIgnoredContentPath,
   matchContentExcludePattern,
-} from "../src/content/file_system_content_source.js";
+} from "../src/file_system_content_source.js";
 
 test("isIgnoredContentPath covers internal metadata and user excludes", () => {
   assert.equal(isIgnoredContentPath("notes/keep.md"), false);
@@ -117,8 +117,12 @@ test("content manifests retain file metadata across a cached rebuild", async () 
   await writeFile(root, "note.md", content);
   await fs.utimes(path.join(root, "note.md"), mtime, mtime);
 
-  const first = await new ContentManager(root).build({ incremental: true });
-  const second = await new ContentManager(root).build({ incremental: true });
+  const first = await new ContentManager(
+    new FileSystemContentSource(root),
+  ).build({ incremental: true });
+  const second = await new ContentManager(
+    new FileSystemContentSource(root),
+  ).build({ incremental: true });
   const expectedSize = Buffer.byteLength(content);
 
   for (const manifest of [first, second]) {
@@ -197,8 +201,12 @@ test("file-system content source excludes the configured Obsidian Templater fold
     },
   ]);
 
-  const cold = await new ContentManager(root).build();
-  const warm = await new ContentManager(root).build();
+  const cold = await new ContentManager(
+    new FileSystemContentSource(root),
+  ).build();
+  const warm = await new ContentManager(
+    new FileSystemContentSource(root),
+  ).build();
   assert.deepEqual(
     cold.entries.map((entry) => entry.slug),
     ["notes/example"],
@@ -258,7 +266,7 @@ test("file-system content source does not emit images through symlinks", async (
     return;
   }
 
-  const manager = new ContentManager(root);
+  const manager = new ContentManager(new FileSystemContentSource(root));
   const manifest = await manager.getManifest();
 
   assert.deepEqual(

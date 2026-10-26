@@ -1,10 +1,10 @@
 import path from "node:path";
 import {
   isAttachmentPath,
-  isIgnoredContentPath,
   isImagePath,
   normalizeContentPath,
 } from "@riebeckite/core";
+import { isIgnoredContentPath } from "@riebeckite/node";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 

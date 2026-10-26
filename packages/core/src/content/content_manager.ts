@@ -24,7 +24,7 @@ import {
   type ContentBuildPlan,
   reusableOutputChangeSet,
 } from "./content_build_plan.js";
-import { CONTENT_BUILD_STATE_EXCLUDE } from "./content_build_state.js";
+import { ContentBuildSession } from "./content_build_session.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { ContentEntryReader } from "./content_entry_reader.js";
@@ -44,7 +44,6 @@ import {
   requiresFullContentRegeneration as requiresFullContentRegenerationForConfig,
 } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
-import { FileSystemContentSource } from "./file_system_content_source.js";
 import { ManifestAssembler } from "./manifest_assembler.js";
 import {
   determineOutputChanges,
@@ -99,7 +98,7 @@ export class ContentManager {
   private processedContentCount = 0;
   private reusedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
-  private buildPlan: Promise<ContentBuildPlan> | null = null;
+  private buildSession: ContentBuildSession;
   private buildStateCommitRequested = false;
   private buildStateCommitted = false;
   private cacheManifestEntries: readonly ContentManifestEntry[] = [];
@@ -113,8 +112,8 @@ export class ContentManager {
   >();
 
   constructor(
-    content: string | ContentSource,
-    exclude: string[] = [],
+    content: ContentSource,
+    _exclude: string[] = [],
     private pipelineOptions: PipelineOptions = {},
   ) {
     const config = pipelineOptions.config
@@ -132,14 +131,7 @@ export class ContentManager {
     this.publishingBuildTime = resolvePublishingBuildTime(
       pipelineOptions.publishingBuildTime,
     );
-    this.source =
-      typeof content === "string"
-        ? (pipelineOptions.config?.content.source ??
-          new FileSystemContentSource(content, [
-            ...exclude,
-            CONTENT_BUILD_STATE_EXCLUDE,
-          ]))
-        : content;
+    this.source = content;
     this.pipelineOptions = {
       ...this.pipelineOptions,
       contentSource: this.source,
@@ -158,7 +150,7 @@ export class ContentManager {
     });
     const buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
-      typeof content === "string" ? content : undefined,
+      undefined,
     );
     const observability = this.observability();
     this.entryReader = new ContentEntryReader(this.source, observability);
@@ -178,6 +170,21 @@ export class ContentManager {
         this.pipelineOptions.plugins?.some(
           (plugin) => plugin && plugin.contentFileMetadata === true,
         ) ?? false,
+    });
+    this.buildSession = new ContentBuildSession({
+      config: () => this.pipelineOptions.config,
+      enableBuildTime: () => this.enableBuildTime(),
+      getContentIndex: () => this.getContentIndex(),
+      getContentLocations: () => this.getContentLocations(),
+      computePipelineFingerprint: (locations) =>
+        (this.pipelineFingerprint = this.computePipelineFingerprint(locations)),
+      getPipelineFingerprint: () => this.getPipelineFingerprint(),
+      requiresFullContentRegeneration: () =>
+        this.requiresFullContentRegeneration(),
+      pluginRuntime: this.pluginRuntime,
+      buildCoordinator: this.buildCoordinator,
+      observability,
+      publishingBuildTime: this.publishingBuildTime,
     });
   }
 
@@ -699,40 +706,7 @@ export class ContentManager {
   private getBuildPlan(
     options?: ContentBuildOptions,
   ): Promise<ContentBuildPlan> {
-    if (this.buildPlan) return this.buildPlan;
-
-    const plan = this.createBuildPlan(options);
-    this.buildPlan = plan;
-    void plan.catch(() => {
-      if (this.buildPlan === plan) this.buildPlan = null;
-    });
-    return plan;
-  }
-
-  private async createBuildPlan(
-    options?: ContentBuildOptions,
-  ): Promise<ContentBuildPlan> {
-    this.enableBuildTime();
-    const config = this.pipelineOptions.config;
-    if (config && hasGlobalContentDependency(config)) {
-      this.pipelineFingerprint = this.computePipelineFingerprint(
-        await this.getContentLocations(),
-      );
-    }
-    const contentIndex = await this.getContentIndex();
-    const external = await this.observability().tracer.span(
-      "external.dependencies.resolve",
-      {},
-      () => this.pluginRuntime.resolveExternalDependencies(contentIndex),
-    );
-    return this.buildCoordinator.getPlan(
-      options?.incremental !== false,
-      this.getPipelineFingerprint(),
-      this.requiresFullContentRegeneration(),
-      external.snapshots,
-      external.failures,
-      this.publishingBuildTime,
-    );
+    return this.buildSession.getPlan(options);
   }
 
   private computePipelineFingerprint(

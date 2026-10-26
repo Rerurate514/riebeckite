@@ -7,10 +7,10 @@ import {
   ContentManager,
   type ContentSource,
   definePlugin,
-  FileSystemContentSource,
   type RiebeckitePlugin,
   resolveConfig,
 } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";

@@ -21,7 +21,12 @@ sidebar:
 
 ## コンテンツソースの種類
 
-標準の実装は`FileSystemContentSource`（`packages/core/src/content/file_system_content_source.ts`）で、ディレクトリツリーを走査し、`ContentSource`インターフェースを通じてファイルを読み取ります。カスタムのソースも同じインターフェースを実装すれば、ContentManagerを変更せずにObsidian vault、クラウドストレージ、その他のファイルシステムに似たソースから読み取れます。
+Node.js 向けの標準実装は、`@riebeckite/node` の `FileSystemContentSource`
+（`packages/node/src/file_system_content_source.ts`）です。ディレクトリツリーを
+走査し、`ContentSource` インターフェースを通じてファイルを読み取ります。
+カスタムのソースも同じインターフェースを実装すれば、ContentManager を変更せずに
+Obsidian vault、クラウドストレージ、その他のファイルシステムに似たソースから
+読み取れます。
 
 `ContentSource`インターフェース（`packages/core/src/content/content_source.ts`）は次を定義します。
 

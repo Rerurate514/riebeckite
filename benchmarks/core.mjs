@@ -19,6 +19,9 @@ import {
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const { ContentManager, NoopLogger, SinkTracer, defineConfig, resolveConfig } =
   await import(pathToFileURL(path.join(root, "packages/core/index.ts")));
+const { FileSystemContentSource } = await import(
+  pathToFileURL(path.join(root, "packages/node/index.ts"))
+);
 
 const args = parseArgs(process.argv.slice(2));
 const profiles = listArg(args.profiles) ?? ["baseline", "realistic"];
@@ -263,10 +266,14 @@ async function measure(input) {
   if (input.configMutate) config = input.configMutate(config);
   const startMemory = process.memoryUsage().rss;
   const start = performance.now();
-  const manager = new ContentManager(input.directory, [], {
-    config,
-    observability: { logger: new NoopLogger(), tracer },
-  });
+  const manager = new ContentManager(
+    new FileSystemContentSource(input.directory),
+    [],
+    {
+      config,
+      observability: { logger: new NoopLogger(), tracer },
+    },
+  );
   const peak = startPeakSampler(memorySamples);
   const manifest =
     operation === "build" ? await manager.build({ incremental: true }) : null;

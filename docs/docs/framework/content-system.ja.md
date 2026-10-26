@@ -59,7 +59,7 @@ ContentManager
 
 `ContentSource` は、Markdown やアセットを**どこから、どのように読み込むか**を抽象化した API です。
 
-通常は、`content.directory` で指定されたディレクトリから読み込みます。たとえば、次のとおりです。
+通常は、`@riebeckite/node` の `FileSystemContentSource` を通じて、`content.directory` で指定されたディレクトリから読み込みます。たとえば、次のとおりです。
 
 ```text id="9u1ygf"
 content/

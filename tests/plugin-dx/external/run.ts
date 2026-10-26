@@ -22,6 +22,7 @@ const logger = createLogger("plugin-dx-external");
 
 const PACKAGES = [
   { directory: "packages/core", name: "@riebeckite/core" },
+  { directory: "packages/node", name: "@riebeckite/node" },
   {
     directory: "tests/plugin-dx/plugins/markdown-highlight",
     name: "@plugin-dx/markdown-highlight",

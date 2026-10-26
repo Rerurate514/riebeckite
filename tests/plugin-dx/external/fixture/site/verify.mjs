@@ -6,6 +6,7 @@ import {
   createPublicContentView,
   resolveConfigModule,
 } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import configModule from "./riebeckite.config.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -13,10 +14,11 @@ const config = resolveConfigModule(configModule);
 
 assert.equal(config.plugins.length, 3);
 
-const manager = new ContentManager(path.resolve(here, "../vault"), [], {
-  config,
-  plugins: config.plugins,
-});
+const manager = new ContentManager(
+  new FileSystemContentSource(path.resolve(here, "../vault")),
+  [],
+  { config, plugins: config.plugins },
+);
 const manifest = await manager.getManifest();
 
 const discoverable = manifest.discoverableEntries

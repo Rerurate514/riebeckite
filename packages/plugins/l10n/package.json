@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@riebeckite/plugin-obsidian-markdown": "workspace:*",
+    "@riebeckite/node": "workspace:*",
     "tsx": "^4.22.4"
   },
   "publishConfig": {

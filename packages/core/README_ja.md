@@ -45,15 +45,20 @@ Core は Plugin の rehype 変換より前に、Markdown 由来の HTML をサ�
 ### コンテンツ
 
 - `ContentManager` — 解釈、マニフェスト、グラフ、Plugin の実行、公開 URL の解決
-- `ContentSource`、`FileSystemContentSource`、`readContentSourceEntry`、`getContentSourceEntry`
+- `ContentSource`、`readContentSourceEntry`、`getContentSourceEntry`
 - `queryContentEntries` と `ContentQuery*` のフィルタ・ソート型
-- `createContentGraph`、`readOnlyContentGraph`、`buildGraphEdges`、`layoutRadialGraph`
+- `createContentGraph`、`readOnlyContentGraph`
 - `resolveDefaultContentLocation`、`attachmentUrl`、コンテンツパスと拡張子のヘルパー
 - `readContentBuildStateStatus`、`resolveContentBuildStatePath`
 
 ### パイプライン
 
 - `Pipeline`、`PipelineOptions`
+
+### Client
+
+- `@riebeckite/core/client` はグラフレイアウトのヘルパーを公開します
+- `@riebeckite/node` は `FileSystemContentSource` を公開します
 
 ### Plugin
 

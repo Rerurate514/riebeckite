@@ -3,7 +3,6 @@ import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   ContentManager,
   computePipelineFingerprint,
-  FileSystemContentSource,
   getResolvedPluginMetadata,
   isPersistentlyCacheable,
   loadContentBuildState,
@@ -11,6 +10,7 @@ import {
   readOnlyContentGraph,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../application_root.js";
 import {
   contentSourceName,

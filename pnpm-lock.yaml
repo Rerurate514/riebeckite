@@ -99,6 +99,9 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../../packages/integrations/honox
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../packages/node
       '@riebeckite/plugin-alias':
         specifier: workspace:*
         version: link:../../packages/plugins/alias
@@ -424,6 +427,9 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../integrations/honox
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../node
       '@riebeckite/plugin-color-mode':
         specifier: workspace:*
         version: link:../plugins/color-mode
@@ -594,6 +600,9 @@ importers:
       '@riebeckite/diagnostics':
         specifier: workspace:*
         version: link:../../diagnostics
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../node
       '@riebeckite/plugin-color-mode':
         specifier: workspace:*
         version: link:../../plugins/color-mode
@@ -629,6 +638,19 @@ importers:
         specifier: workspace:*
         version: link:../../plugins/webmention
     devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/node:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@riebeckite/test':
+        specifier: workspace:*
+        version: link:../test
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
@@ -916,6 +938,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../node
       remark-parse:
         specifier: 'catalog:'
         version: 11.0.0(supports-color@10.2.2)
@@ -1215,6 +1240,9 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../node
       '@riebeckite/plugin-obsidian-markdown':
         specifier: workspace:*
         version: link:../obsidian-markdown

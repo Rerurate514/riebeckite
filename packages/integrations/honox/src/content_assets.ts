@@ -1,10 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import {
-  isIgnoredContentPath,
-  isImagePath,
-  normalizeContentPath,
-} from "@riebeckite/core";
+import { isImagePath, normalizeContentPath } from "@riebeckite/core";
+import { isIgnoredContentPath } from "@riebeckite/node";
 import type { Plugin } from "vite";
 import { isPathInsideDirectory } from "./content_watch.js";
 

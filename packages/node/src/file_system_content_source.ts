@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { isExcluded } from "../config.js";
-import { normalizeContentPath } from "./attachment.js";
-import type {
-  ContentSource,
-  ContentSourceContent,
-  ContentSourceEntry,
-} from "./content_source.js";
+import {
+  type ContentSource,
+  type ContentSourceContent,
+  type ContentSourceEntry,
+  isExcluded,
+  normalizeContentPath,
+} from "@riebeckite/core";
 
 export const INTERNAL_CONTENT_IGNORE_PATTERNS = [
   ".riebeckite",

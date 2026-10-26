@@ -100,16 +100,6 @@ export {
 export { resolveContentStableId } from "./src/content/content_stable_id.js";
 export { fingerprintExternalValue } from "./src/content/external_fingerprint.js";
 export type {
-  ContentSourceExclusion,
-  ContentSourceScan,
-} from "./src/content/file_system_content_source.js";
-export {
-  FileSystemContentSource,
-  INTERNAL_CONTENT_IGNORE_PATTERNS,
-  isIgnoredContentPath,
-  matchContentExcludePattern,
-} from "./src/content/file_system_content_source.js";
-export type {
   FolderEntryCandidate,
   FolderEntryKind,
   FolderEntryResolution,
@@ -123,18 +113,6 @@ export {
   resolveGeneratedFolderLocation,
   resolvePublicFolderLocation,
 } from "./src/content/folder_entry.js";
-export type {
-  ForceGraphLayoutOptions,
-  GraphEdge,
-  GraphLayoutNode,
-  LinkableGraphNode,
-  RadialGraphLayoutOptions,
-} from "./src/content/graph_layout.js";
-export {
-  buildGraphEdges,
-  layoutForceGraph,
-  layoutRadialGraph,
-} from "./src/content/graph_layout.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export type {
   OutputChangeSet,

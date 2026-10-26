@@ -8,6 +8,7 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import { parseCommand } from "../src/cli.js";
 import {
@@ -310,8 +311,11 @@ test("clean regenerates managed state on the next build", async () => {
 
   const build = async () => {
     const content = new ContentManager(
-      config.content.directory,
-      config.content.exclude,
+      new FileSystemContentSource(
+        config.content.directory,
+        config.content.exclude,
+      ),
+      [],
       {
         config,
       },

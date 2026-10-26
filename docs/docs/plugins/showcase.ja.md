@@ -19,14 +19,30 @@ showcase_priority: low
 ````md
 > [!tip] 試してみる
 > Callout は `[!type]` マーカー付きの block quote です。
-> `[!info]`、`[!warning]`、`[!question]` も同じように表示されます。
+
+> [!info] 情報
+> 情報用の callout も同じ書き方です。
+
+> [!warning] 警告
+> 警告は追加設定なしで使えます。
+
+> [!question] 質問
+> 未解決の論点には question を使います。
 ````
 
 #### 実行例
 
 > [!tip] 試してみる
 > Callout は `[!type]` マーカー付きの block quote です。
-> `[!info]`、`[!warning]`、`[!question]` も同じように表示されます。
+
+> [!info] 情報
+> 情報用の callout も同じ書き方です。
+
+> [!warning] 警告
+> 警告は追加設定なしで使えます。
+
+> [!question] 質問
+> 未解決の論点には question を使います。
 
 ### WikiLinks と埋め込み：[`obsidian-markdown`](./obsidian-markdown.ja.md)
 
@@ -34,11 +50,49 @@ showcase_priority: low
 
 ````md
 [[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+
+ノートの埋め込み：
+
+![[head-tag]]
+
+画像の埋め込み：
+
+![[riebeckite-logo-horizontal.png]]
 ````
 
 #### 実行例
 
 [[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+
+ノートの埋め込み：
+
+![[head-tag]]
+
+画像の埋め込み：
+
+![[riebeckite-logo-horizontal.png]]
+
+ブロック参照 `![[head-tag#^block]]` は、対象ノートにブロック ID がある場合に使えます。
+
+### Hard breaks：[`hard-breaks`](./hard-breaks.ja.md)
+
+`hardBreaks()` は単一の改行をすべて `<br>` に変換します。opt-in のプラグインで、このサイトでは有効にしていないため、次の 3 行は 1 つの段落として表示されます。
+
+#### ソース
+
+````md
+1 行目
+2 行目
+3 行目
+````
+
+#### 実行例
+
+1 行目
+2 行目
+3 行目
+
+有効にすると各行が独立した行になります。
 
 ## 生成ページ
 
@@ -74,6 +128,14 @@ definition: デプロイ前に HTML を生成する方式です。
 #### 実行例
 
 [Glossary を開く](/glossary)
+
+### Archive：[`archive`](./archive.ja.md)
+
+ノートの frontmatter にある日付から、月別の一覧ページを生成します。ページは `/archive/<yyyy>/<mm>` に出力されます。
+
+#### 実行例
+
+[2026 年 10 月の Archive を開く](/archive/2026/10)
 
 ## Code
 
@@ -125,7 +187,7 @@ const greeting = "Hello from React";
 console.log("Hello from JavaScript");
 ```
 
-### Code annotations
+### Code annotations：[`code-annotations`](./code-annotations.ja.md)
 
 `diff` フェンスに対象言語を指定して、追加行と削除行を表示します。
 
@@ -171,7 +233,7 @@ const kept = true;
 
 ## インライン表現
 
-### Highlight
+### Highlight：[`highlight`](./highlight.ja.md)
 
 `==text==` で囲んだ範囲をインラインで強調します。
 
@@ -185,7 +247,7 @@ const kept = true;
 
 この文は ==強調== され、ほかはそのまま表示されます。
 
-### Sidenotes
+### Sidenotes：[`sidenotes`](./sidenotes.ja.md)
 
 脚注記法が、本文の横に並ぶ補足へ変換されます。
 
@@ -203,7 +265,7 @@ const kept = true;
 
 [^1]: ここが sidenote の本文です。
 
-### Shortcodes
+### Shortcodes：[`shortcodes`](./shortcodes.ja.md)
 
 `::name` と `:::name` のディレクティブで、badge、kbd、note などを差し込みます。
 
@@ -252,6 +314,10 @@ flowchart LR
   B -->|yes| C[Site]
   B -->|no| D[Draft]
 ```
+
+### Mermaid（headless browser）：[`mermaid`](./mermaid.ja.md)
+
+`mermaid` プラグインは同じ `mermaid` フェンスを、ビルド時に headless browser で SVG に変換します。このサイトでは Chromium を必要としない Mermaid (Pele) を使っています。
 
 ### D2：[`d2`](./d2.ja.md)
 
@@ -535,6 +601,20 @@ JSON Canvas をコードフェンスへ直接書くか、`![[diagram.canvas]]` �
 
 ## Media
 
+### 音声と動画：[`media`](./media.ja.md)
+
+音声と動画の添付ファイルは、ブラウザ標準のプレイヤーで再生できます。次の例は短い無音の WAV です。
+
+#### ソース
+
+````md
+![[media-example.wav]]
+````
+
+#### 実行例
+
+![[media-example.wav]]
+
 ### Attachments：[`attachment`](./attachment.ja.md)
 
 通常の WikiLink はダウンロードリンクに、埋め込み WikiLink は添付カードになります。
@@ -655,7 +735,21 @@ Excalidraw 形式のノートを埋め込むと、ブラウザ側で SVG に置�
 
 ![[riebeckite-logo-horizontal.png]]
 
-### AutoCardLink
+### Lightbox：[`lightbox`](./lightbox.ja.md)
+
+画像をクリックすると、アクセシブルなダイアログで拡大表示されます。
+
+#### ソース
+
+````md
+![[riebeckite-logo.png]]
+````
+
+#### 実行例
+
+![[riebeckite-logo.png]]
+
+### AutoCardLink：[`autocardlink`](./autocardlink.ja.md)
 
 `cardlink` フェンスに URL とメタ情報を書くと、リンクカードになります。
 
@@ -837,7 +931,7 @@ VIEW[{showcase_priority}]
 - [x] Publish the fixture
 ```
 
-### Flashcards
+### Flashcards：[`flashcards`](./flashcards.ja.md)
 
 `front :: back` を並べた `flashcards` フェンスが、学習用のデッキになります。JavaScript が無効な環境でも静的なリストとして読めます。
 
@@ -879,7 +973,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 
 ## ページやサイト全体に作用する Plugin
 
-次の Plugin は 1 つの Markdown 断片では表現できません。このページ上でも検索 box、目次、color mode toggle などとして確認できます。
+次の Plugin は 1 つの Markdown 断片では表現できません。多くはこのページ上でも検索 box、目次、color mode toggle などとして確認できます。opt-in の項目は設定するまで表示されません。
 
 | Plugin | 確認するもの |
 | --- | --- |
@@ -888,15 +982,20 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | [`backlinks`](./backlinks.ja.md) | このノートを参照するノートの一覧 |
 | [`related-posts`](./related-posts.ja.md) | note 末尾の関連記事一覧 |
 | [`properties`](./properties.ja.md) | フロントマターのプロパティ一覧 |
+| [`article-metadata`](./article-metadata.ja.md) | 記事ヘッダーの公開日・読了時間・タグ |
+| [`icons`](./icons.ja.md) | Obsidian Iconize / Iconic のアイコンをナビ、検索、タグ、プロパティに表示（opt-in） |
+| [`navigation`](./navigation.ja.md) | 設定または Vault から組み立てるサイトナビ |
+| [`ux`](./ux.ja.md) | 読書プログレス、戻るボタン、目次の scroll-spy |
+| [`text-fragment`](./text-fragment.ja.md) | 選択テキストのリンク・引用コピー |
 | [`meta-bind`](./meta-bind.ja.md) | ページローカルの状態を使うインライン入力とビュー |
-| breadcrumbs | ページ階層のパンくず |
-| share | note の共有ボタン |
-| hover-preview | リンク先を表示するホバープレビュー |
+| [`breadcrumbs`](./breadcrumbs.ja.md) | ページ階層のパンくず |
+| [`share`](./share.ja.md) | note の共有ボタン |
+| [`hover-preview`](./hover-preview.ja.md) | リンク先を表示するホバープレビュー |
 | [`local-graph`](./local-graph.ja.md) | 周辺ノートのミニグラフ |
 | [`garden-explorer`](./garden-explorer.ja.md) | graph と検索の explorer Page Type |
 | [`taxonomy`](./taxonomy.ja.md) | tag と folder の一覧 Page Type |
 | [`docs`](./docs.ja.md) | Docs の sidebar と previous/next |
-| folder-pages | folder ごとの index Page Type |
+| [`folder-pages`](./folder-pages.ja.md) | folder ごとの index Page Type |
 | [`lightbox`](./lightbox.ja.md) | 画像を拡大する操作 |
 | [`diff`](./diff.ja.md) / [`changelog`](./changelog.ja.md) | note ごとの git history |
 | [`l10n`](./l10n.ja.md) | 翻訳ページ上の language switcher |
@@ -904,23 +1003,40 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 
 ## ビルド時・メタデータに作用する Plugin
 
-本文には現れず、生成物や head、リダイレクトとして結果が出る Plugin です。
+本文には現れず、生成物や head、リダイレクトとして結果が出る Plugin です。一部は opt-in でこのサイトでは有効になっていません。表には生成されるものを記載しています。
 
 | Plugin | 生成されるもの |
 | --- | --- |
 | [`seo`](./seo.ja.md) | sitemap.xml / robots.txt / feed / head の canonical と OGP |
 | [`citations`](./citations.ja.md) | 番号付き引用と References セクション |
-| webmention | webmentions.json と送受信のエンドポイント |
+| [`webmention`](./webmention.ja.md) | webmentions.json と送受信のエンドポイント |
 | [`alias`](./alias.ja.md) | 別名からのリダイレクト |
 | [`series`](./series.ja.md) | `series` frontmatter による前後ナビと一覧ページ |
 | [`recent-posts`](./recent-posts.ja.md) | 最新記事の一覧（Site が配置） |
 | [`daily-notes`](./daily-notes.ja.md) | デイリーノートの短いスニペット（Site が配置） |
-| rename | 旧パスからのリダイレクト |
+| [`rename`](./rename.ja.md) | 旧パスからのリダイレクト |
 | [`deploy`](./deploy.ja.md) | 各ホスト向けのデプロイ設定ファイル |
 | [`diagnostics`](./diagnostics.ja.md) | 孤立ノートや未使用アセットの診断 |
 | [`quality`](./quality.ja.md) | 見出し順や重複 id などの品質チェック |
+| [`hard-breaks`](./hard-breaks.ja.md) | ソフト改行をビルド時に `<br>` へ変換（opt-in） |
+| [`mermaid`](./mermaid.ja.md) | headless browser によるビルド時 SVG（このサイトは Mermaid (Pele) を使用） |
+| [`permalink`](./permalink.ja.md) | frontmatter の ID から安定した公開 URL とリダイレクトを生成 |
+| [`analytics`](./analytics.ja.md) | collector の設定とクライアント側のイベント送信 |
+| [`discord-embed`](./discord-embed.ja.md) | Discord のリンクプレビュー用メタデータ |
+| [`image-optimizer`](./image-optimizer.ja.md) | Responsive Image が使う WebP / AVIF 派生画像 |
+| [`svg-optimizer`](./svg-optimizer.ja.md) | 同じパスで置き換える最適化済み SVG |
 
 実際の例は[プラグイン作成の詳細](/series/plugins-in-depth-ja)を参照してください。
+
+## 開発ツール
+
+これらは描画ではなく作成を支援する Plugin です。
+
+| Plugin | できること |
+| --- | --- |
+| [`generator`](./generator.ja.md) | `riebeckite create plugin` でローカル Plugin を作成 |
+| [`page-type-generator`](./page-type-generator.ja.md) | Plugin の `pageTypes` API 経由で単独ページを作成 |
+| [`component-generator`](./component-generator.ja.md) | 型付き Hono JSX コンポーネントを作成 |
 
 ## 関連
 

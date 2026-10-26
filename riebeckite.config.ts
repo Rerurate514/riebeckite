@@ -1,4 +1,5 @@
 import { defineConfig } from "@riebeckite/core";
+import { archive } from "@riebeckite/plugin-archive";
 import { articleMetadata } from "@riebeckite/plugin-article-metadata";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLink } from "@riebeckite/plugin-autocardlink";
@@ -35,6 +36,7 @@ import { localGraph } from "@riebeckite/plugin-local-graph";
 import { map } from "@riebeckite/plugin-map";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
+import { media } from "@riebeckite/plugin-media";
 import { mermaidPele } from "@riebeckite/plugin-mermaid-pele";
 import { metaBind } from "@riebeckite/plugin-meta-bind";
 import { navigation } from "@riebeckite/plugin-navigation";
@@ -93,6 +95,7 @@ export default defineConfig({
   spa: { prefetch: "hover", viewTransitions: true },
   plugins: [
     obsidianMarkdown(),
+    media(),
     attachment(),
     pdf(),
     properties({
@@ -217,6 +220,7 @@ export default defineConfig({
     taxonomy(),
     textFragment(),
     timeline(),
+    archive(),
     quality(),
     deploy({ provider: "cloudflare-pages" }),
     diagnostics({

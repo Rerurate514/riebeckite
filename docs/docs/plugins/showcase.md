@@ -19,14 +19,30 @@ The Plugin catalog lives in [Plugins](./README.md). This page shows what each Pl
 ````md
 > [!tip] Try it
 > A callout is a block quote with a `[!type]` marker.
-> `[!info]`, `[!warning]`, and `[!question]` render the same way.
+
+> [!info] Info
+> Informational callouts use the same block quote syntax.
+
+> [!warning] Warning
+> Warnings are available without extra configuration.
+
+> [!question] Question
+> Use a question callout for an open point.
 ````
 
 #### Rendered
 
 > [!tip] Try it
 > A callout is a block quote with a `[!type]` marker.
-> `[!info]`, `[!warning]`, and `[!question]` render the same way.
+
+> [!info] Info
+> Informational callouts use the same block quote syntax.
+
+> [!warning] Warning
+> Warnings are available without extra configuration.
+
+> [!question] Question
+> Use a question callout for an open point.
 
 ### WikiLinks and embeds — [`obsidian-markdown`](./obsidian-markdown.md)
 
@@ -34,11 +50,49 @@ The Plugin catalog lives in [Plugins](./README.md). This page shows what each Pl
 
 ````md
 A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+
+A note embed:
+
+![[head-tag]]
+
+An image embed:
+
+![[riebeckite-logo-horizontal.png]]
 ````
 
 #### Rendered
 
 A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+
+A note embed:
+
+![[head-tag]]
+
+An image embed:
+
+![[riebeckite-logo-horizontal.png]]
+
+Block references such as `![[head-tag#^block]]` work when the target note has a block id.
+
+### Hard breaks — [`hard-breaks`](./hard-breaks.md)
+
+`hardBreaks()` turns every soft line break into `<br>`. It is opt-in, and this site does not enable it, so the lines below stay in one paragraph.
+
+#### Source
+
+````md
+First line
+Second line
+Third line
+````
+
+#### Rendered
+
+First line
+Second line
+Third line
+
+Enable `hardBreaks()` to keep each line on its own row.
 
 ## Generated pages
 
@@ -74,6 +128,14 @@ definition: Generates HTML before deployment.
 #### Rendered
 
 [Open the Glossary](/glossary)
+
+### Archive — [`archive`](./archive.md)
+
+Monthly listing pages generated from the dates in note frontmatter. Pages live under `/archive/<yyyy>/<mm>`.
+
+#### Rendered
+
+[Open the October 2026 archive](/archive/2026/10)
 
 ## Code
 
@@ -125,7 +187,7 @@ const greeting = "Hello from React";
 console.log("Hello from JavaScript");
 ```
 
-### Code annotations
+### Code annotations — [`code-annotations`](./code-annotations.md)
 
  Use a `diff` fence with the target language to render additions and removals.
 
@@ -171,7 +233,7 @@ Publish selected text files as pages, embed the full file, or embed a line range
 
 ## Inline
 
-### Highlight
+### Highlight — [`highlight`](./highlight.md)
 
 Text wrapped in `==...==` is emphasized inline.
 
@@ -185,7 +247,7 @@ This sentence contains an ==emphasized== span; the rest stays unchanged.
 
 This sentence contains an ==emphasized== span; the rest stays unchanged.
 
-### Sidenotes
+### Sidenotes — [`sidenotes`](./sidenotes.md)
 
 Footnote syntax becomes a side note next to the body.
 
@@ -203,7 +265,7 @@ We reference a side note here.[^1]
 
 [^1]: This is the side note body.
 
-### Shortcodes
+### Shortcodes — [`shortcodes`](./shortcodes.md)
 
 `::name` and `:::name` directives insert badges, keyboard keys, notes, and more.
 
@@ -252,6 +314,10 @@ flowchart LR
   B -->|yes| C[Site]
   B -->|no| D[Draft]
 ```
+
+### Mermaid (headless browser) — [`mermaid`](./mermaid.md)
+
+The `mermaid` plugin renders the same `mermaid` fence to SVG with a headless browser at build time. This site uses Mermaid (Pele) instead, so the build does not need Chromium.
 
 ### D2 — [`d2`](./d2.md)
 
@@ -535,6 +601,20 @@ Write JSON Canvas directly in a code fence, or embed a Canvas file with `![[diag
 
 ## Media
 
+### Audio and video — [`media`](./media.md)
+
+Audio and video attachments render with the native browser players. The sample below is a short silent WAV.
+
+#### Source
+
+````md
+![[media-example.wav]]
+````
+
+#### Rendered
+
+![[media-example.wav]]
+
 ### Attachments — [`attachment`](./attachment.md)
 
 A plain WikiLink becomes a download link, and an embedded WikiLink becomes an attachment card.
@@ -655,7 +735,21 @@ Embedding an image with `![[...]]` expands to a `<picture>` element with multipl
 
 ![[riebeckite-logo-horizontal.png]]
 
-### AutoCardLink
+### Lightbox — [`lightbox`](./lightbox.md)
+
+Click the image to open it in an accessible dialog.
+
+#### Source
+
+````md
+![[riebeckite-logo.png]]
+````
+
+#### Rendered
+
+![[riebeckite-logo.png]]
+
+### AutoCardLink — [`autocardlink`](./autocardlink.md)
 
 A `cardlink` fence with a URL and metadata becomes a link card.
 
@@ -837,7 +931,7 @@ Put `##` column headings and task lists in the body to get a board.
 - [x] Publish the fixture
 ```
 
-### Flashcards
+### Flashcards — [`flashcards`](./flashcards.md)
 
 A `flashcards` fence of `front :: back` pairs becomes a study deck. It still reads as a static list without JavaScript.
 
@@ -879,7 +973,7 @@ The map above is built from this page's WikiLinks. Because each Plugin page is l
 
 ## Plugins that act on the page or site
 
-These Plugins cannot be expressed by a single Markdown fragment. They are visible on this page as the search box, table of contents, color mode toggle, and so on.
+These Plugins cannot be expressed by a single Markdown fragment. Most are visible on this page as the search box, table of contents, color mode toggle, and so on; opt-in entries need configuration before they appear.
 
 | Plugin | What to look for |
 | --- | --- |
@@ -888,15 +982,20 @@ These Plugins cannot be expressed by a single Markdown fragment. They are visibl
 | [`backlinks`](./backlinks.md) | A list of notes that reference this note |
 | [`related-posts`](./related-posts.md) | Related notes at the bottom of a note |
 | [`properties`](./properties.md) | A list of frontmatter properties |
+| [`article-metadata`](./article-metadata.md) | Publication date, reading time, and tags in the article header |
+| [`icons`](./icons.md) | Icons from Obsidian Iconize and Iconic in navigation, search, tags, and property panels (opt-in) |
+| [`navigation`](./navigation.md) | Site navigation built from config or the vault |
+| [`ux`](./ux.md) | Reading progress, back-to-top, and TOC scroll-spy |
+| [`text-fragment`](./text-fragment.md) | Copy link and copy quote actions for selected text |
 | [`meta-bind`](./meta-bind.md) | Inline inputs and views backed by page-local state |
-| breadcrumbs | Page hierarchy breadcrumbs |
-| share | Share controls for a note |
-| hover-preview | A hover preview of link targets |
+| [`breadcrumbs`](./breadcrumbs.md) | Page hierarchy breadcrumbs |
+| [`share`](./share.md) | Share controls for a note |
+| [`hover-preview`](./hover-preview.md) | A hover preview of link targets |
 | [`local-graph`](./local-graph.md) | A mini graph of nearby notes |
 | [`garden-explorer`](./garden-explorer.md) | The explorer Page Type with a graph and search |
 | [`taxonomy`](./taxonomy.md) | The tag and folder listing Page Types |
 | [`docs`](./docs.md) | The Docs sidebar and previous/next links |
-| folder-pages | An index Page Type for each folder |
+| [`folder-pages`](./folder-pages.md) | An index Page Type for each folder |
 | [`lightbox`](./lightbox.md) | Click to enlarge an image |
 | [`diff`](./diff.md) / [`changelog`](./changelog.md) | Per-note git history |
 | [`l10n`](./l10n.md) | The language switcher on translated pages |
@@ -904,23 +1003,40 @@ These Plugins cannot be expressed by a single Markdown fragment. They are visibl
 
 ## Plugins that act at build time or on metadata
 
-These Plugins do not appear in the body. Their results show up as generated files, head tags, or redirects.
+These Plugins do not appear in the body. Their results show up as generated files, head tags, or redirects. Some are opt-in and not enabled on this site; the table describes what they generate.
 
 | Plugin | What it generates |
 | --- | --- |
 | [`seo`](./seo.md) | sitemap.xml / robots.txt / feeds, plus canonical and OGP head tags |
 | [`citations`](./citations.md) | Numbered citations and a References section |
-| webmention | webmentions.json and the send/receive endpoints |
+| [`webmention`](./webmention.md) | webmentions.json and the send/receive endpoints |
 | [`alias`](./alias.md) | Redirects from alternative names |
 | [`series`](./series.md) | Previous/next navigation and landing pages from `series` frontmatter |
 | [`recent-posts`](./recent-posts.md) | A list of recent notes, placed by the site |
 | [`daily-notes`](./daily-notes.md) | Short snippets from Daily Notes, placed by the site |
-| rename | Redirects from old paths |
+| [`rename`](./rename.md) | Redirects from old paths |
 | [`deploy`](./deploy.md) | Deployment config files for each host |
 | [`diagnostics`](./diagnostics.md) | Diagnostics for orphan notes and unused assets |
 | [`quality`](./quality.md) | Quality checks such as heading order and duplicate ids |
+| [`hard-breaks`](./hard-breaks.md) | Converts soft line breaks to `<br>` at build time (opt-in) |
+| [`mermaid`](./mermaid.md) | Build-time SVG via a headless browser (this site uses Mermaid (Pele)) |
+| [`permalink`](./permalink.md) | Stable public URLs from frontmatter ids and redirects |
+| [`analytics`](./analytics.md) | Collector configuration and the client event script |
+| [`discord-embed`](./discord-embed.md) | Discord link-preview metadata |
+| [`image-optimizer`](./image-optimizer.md) | WebP / AVIF variants used by Responsive Image |
+| [`svg-optimizer`](./svg-optimizer.md) | Optimized SVG bytes at the same path |
 
 See [Plugins in Depth](/series/plugins-in-depth-en) for a live series.
+
+## Developer tools
+
+These Plugins support authoring rather than rendering.
+
+| Plugin | What it does |
+| --- | --- |
+| [`generator`](./generator.md) | Creates a local Plugin with `riebeckite create plugin` |
+| [`page-type-generator`](./page-type-generator.md) | Creates a standalone page through a Plugin's `pageTypes` API |
+| [`component-generator`](./component-generator.md) | Creates a typed Hono JSX component |
 
 ## Related
 

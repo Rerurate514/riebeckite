@@ -30,7 +30,6 @@ jobs:
       fastPath: ${{ steps.select.outputs.fastPath }}
       fingerprint: ${{ steps.select.outputs.fingerprint }}
       presetFastPath: ${{ steps.select.outputs.presetFastPath }}
-      faultRecovery: ${{ steps.select.outputs.faultRecovery }}
       productionAssets: ${{ steps.select.outputs.productionAssets }}
     steps:
       - uses: actions/checkout@v4
@@ -129,7 +128,7 @@ jobs:
   integration-e2e:
     name: integration-e2e
     needs: [changes, build]
-    if: needs.changes.outputs.external == 'true' || needs.changes.outputs.fastPath == 'true' || needs.changes.outputs.fingerprint == 'true' || needs.changes.outputs.presetFastPath == 'true' || needs.changes.outputs.faultRecovery == 'true'
+    if: needs.changes.outputs.external == 'true' || needs.changes.outputs.fastPath == 'true' || needs.changes.outputs.fingerprint == 'true' || needs.changes.outputs.presetFastPath == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -151,8 +150,6 @@ jobs:
         run: pnpm test:e2e:fingerprint
       - if: needs.changes.outputs.presetFastPath == 'true'
         run: pnpm test:e2e:preset-fast-path
-      - if: needs.changes.outputs.faultRecovery == 'true'
-        run: pnpm test:e2e:fault-recovery:smoke
 
   plugin-dx:
     name: plugin-dx

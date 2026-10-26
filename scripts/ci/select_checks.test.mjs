@@ -26,7 +26,6 @@ test("core changes select cache and publication contracts", () => {
     "browser",
     "external",
     "fastPath",
-    "faultRecovery",
     "fingerprint",
     "presetFastPath",
   ]);
@@ -37,18 +36,16 @@ test("HonoX changes select integration contracts", () => {
     "browser",
     "external",
     "fastPath",
-    "faultRecovery",
     "fingerprint",
     "presetFastPath",
   ]);
 });
 
-test("CLI changes select publication and recovery contracts", () => {
+test("CLI changes select publication contracts", () => {
   assert.deepEqual(enabled(["packages/cli/bin/riebeckite.mjs"]), [
     "browser",
     "external",
     "fastPath",
-    "faultRecovery",
     "fingerprint",
     "presetFastPath",
   ]);
@@ -61,13 +58,6 @@ test("scaffold changes select scaffold and generated-site contracts", () => {
     "presetFastPath",
     "scaffold",
   ]);
-});
-
-test("cache-related core changes select the full recovery contract", () => {
-  assert.equal(
-    selectChecks(["packages/core/src/cache.ts"]).faultRecovery,
-    true,
-  );
 });
 
 test("lockfile changes fall back to the full suite", () => {

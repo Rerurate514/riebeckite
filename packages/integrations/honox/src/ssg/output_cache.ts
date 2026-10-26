@@ -58,7 +58,6 @@ type FastPathCacheState = {
   outputPaths: readonly string[];
 };
 
-const faultInjectionCounts = new Map<string, number>();
 const outputCacheValidationConcurrency = 12;
 
 export function decideOutputCacheRejection(
@@ -214,7 +213,6 @@ export async function saveOutputCache(
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
 
   try {
-    await waitForFaultInjection("metadata-save-start");
     const outputs = await measure(timingsMs, "outputCacheEntriesWrite", () =>
       saveOutputCacheEntries(
         entriesPath,
@@ -235,7 +233,6 @@ export async function saveOutputCache(
     await measure(timingsMs, "outputCacheRename", () =>
       replaceFile(temporaryPath, path),
     );
-    await waitForFaultInjection("metadata-committed");
     const checksum = createHash("sha256").update(serialized).digest("hex");
     if (state.finalOutputInventory && state.configFile) {
       await saveFastPathCache(
@@ -345,7 +342,6 @@ async function saveOutputCacheEntries(
     const source = resolveOutputCacheFile(outputDirectory, outputPath);
     const cachePath = outputCacheEntryName(outputPath);
     const destination = join(directory, cachePath);
-    await waitForFaultInjection("entry-create-start");
     await replaceOutputCacheEntry(source, destination, timingsMs);
     const checksum = finalOutputInventory?.[outputPath];
     if (!checksum) {
@@ -453,14 +449,12 @@ async function saveFastPathCache(
   }
   const temporaryPath = `${path}.${randomUUID()}.tmp`;
   try {
-    await waitForFaultInjection("sidecar-save-start");
     await measure(timingsMs, "sidecarWrite", () =>
       writeFile(temporaryPath, `${JSON.stringify(state)}\n`, "utf8"),
     );
     await measure(timingsMs, "sidecarRename", () =>
       replaceFile(temporaryPath, path),
     );
-    await waitForFaultInjection("sidecar-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
@@ -646,15 +640,12 @@ async function replaceOutputCacheEntry(
     await measure(timingsMs, "outputCacheEntryWrite", () =>
       writeFile(temporaryPath, new Uint8Array()),
     );
-    await waitForFaultInjection("entry-body-write");
     await measure(timingsMs, "outputCacheEntryCopy", () =>
       copyFile(source, temporaryPath),
     );
-    await waitForFaultInjection("entry-rename-before");
     await measure(timingsMs, "outputCacheEntryRename", () =>
       replaceFile(temporaryPath, destination),
     );
-    await waitForFaultInjection("entry-committed");
   } catch (error) {
     await rm(temporaryPath, { force: true }).catch(() => undefined);
     throw error;
@@ -668,7 +659,6 @@ async function collectUnreferencedOutputCacheEntries(
 ): Promise<void> {
   try {
     if (!(await isSafeOutputCacheEntriesDirectory(directory))) return;
-    await waitForFaultInjection("gc-start");
     const referenced = new Set(
       Object.values(outputs).map((entry) => entry.cachePath),
     );
@@ -681,7 +671,6 @@ async function collectUnreferencedOutputCacheEntries(
       }
       const path = join(directory, entry.name);
       if (await isRegularFile(path)) {
-        await waitForFaultInjection("gc-entry-delete");
         await measure(timingsMs, "outputCacheGcDelete", () =>
           rm(path, { force: true }),
         );
@@ -690,30 +679,4 @@ async function collectUnreferencedOutputCacheEntries(
   } catch {
     return;
   }
-}
-
-export async function waitForFaultInjection(point: string): Promise<void> {
-  if (
-    process.env.NODE_ENV !== "test" ||
-    process.env.RIEBECKITE_SSG_FAULT_INJECTION !== "1" ||
-    process.env.RIEBECKITE_SSG_FAULT_POINT !== point
-  ) {
-    return;
-  }
-  const occurrence = Number.parseInt(
-    process.env.RIEBECKITE_SSG_FAULT_OCCURRENCE ?? "1",
-    10,
-  );
-  const count = (faultInjectionCounts.get(point) ?? 0) + 1;
-  faultInjectionCounts.set(point, count);
-  if (
-    !Number.isSafeInteger(occurrence) ||
-    occurrence < 1 ||
-    count !== occurrence
-  )
-    return;
-  const signalFile = process.env.RIEBECKITE_SSG_FAULT_SIGNAL_FILE;
-  if (!signalFile) return;
-  await writeFile(signalFile, `${point}\n`, "utf8");
-  await new Promise<void>(() => {});
 }

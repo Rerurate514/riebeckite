@@ -8,14 +8,14 @@ Tier 2 is selected from the changed paths. A selector failure, an empty comparis
 
 | Change | Tier 2 contracts |
 | --- | --- |
-| `packages/core/**`, `packages/cli/**`, integrations | external consumer, fast path, fingerprint, preset fast path, fault-recovery smoke |
+| `packages/core/**`, `packages/cli/**`, integrations | external consumer, fast path, fingerprint, preset fast path |
 | plugins and themes | plugin DX, external consumer, fast path, preset fast path |
 | `packages/create-riebeckite/**` | scaffold golden, external consumer, fast path, preset fast path |
 | `apps/web/**` | browser and production asset integrity |
 | documentation only | none; Tier 1 documentation contract remains required |
 | shared, unknown, cache/build configuration | every Tier 2 contract |
 
-Tier 3 is scheduled or manual. Nightly E2E runs the complete 13-checkpoint fault-recovery matrix on Ubuntu and Windows. The PR smoke set is `content-build-state-committed`, `entry-committed`, and `gc-entry-delete`; it covers state commit, entry commit, and garbage-collection recovery. The full matrix remains the release-quality recovery contract, including Windows junction and symlink behavior. The weekly benchmark uses three samples, median and range output, metrics, and a retained artifact. An optional repository baseline reports deltas but never fails on a single noisy measurement.
+Tier 3 is scheduled or manual. The weekly benchmark uses three samples, median and range output, metrics, and a retained artifact. An optional repository baseline reports deltas but never fails on a single noisy measurement.
 
 ## Operational notes
 

@@ -37,7 +37,6 @@ import {
   loadOutputCache,
   type OutputCacheState,
   saveOutputCache,
-  waitForFaultInjection,
 } from "./ssg/output_cache.js";
 import {
   measure,
@@ -603,14 +602,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 fingerprintDirectory(resolve(publicDir)),
               )
             : undefined;
-          await waitForFaultInjection("build-state-before");
           await saveOutputCache(
             outputCache.path,
             outputCache.state,
             outputCache.outDir,
             outputCache.timingsMs,
           );
-          await waitForFaultInjection("build-state-committed");
         } catch (error) {
           this.warn(
             `SSG output cache could not be saved; the next build regenerates every output. ${

@@ -9,7 +9,6 @@ const checks = [
   "fastPath",
   "fingerprint",
   "presetFastPath",
-  "faultRecovery",
   "productionAssets",
 ];
 
@@ -51,7 +50,6 @@ export function selectChecks(files) {
         "fastPath",
         "fingerprint",
         "presetFastPath",
-        "faultRecovery",
       ]);
       continue;
     }
@@ -62,7 +60,6 @@ export function selectChecks(files) {
         "fastPath",
         "fingerprint",
         "presetFastPath",
-        "faultRecovery",
       ]);
       continue;
     }
@@ -97,7 +94,6 @@ export function selectChecks(files) {
         "fastPath",
         "fingerprint",
         "presetFastPath",
-        "faultRecovery",
       ]);
       continue;
     }

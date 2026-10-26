@@ -93,6 +93,9 @@ export function riebeckite(
           define: {
             "process.env.RIEBECKITE_APP_ROOT": JSON.stringify(appRoot),
           },
+          oxc: {
+            jsx: { runtime: "automatic", importSource: "hono/jsx" },
+          },
           server: {
             watch: {
               ignored: ["**/.riebeckite/**"],

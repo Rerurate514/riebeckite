@@ -241,6 +241,38 @@ test("SSG output cache falls back when a cached entry is corrupted", async () =>
   assert.equal(await loadOutputCache(cachePath), undefined);
 });
 
+test("SSG output cache validates every entry when loading in parallel", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  const outputs = Object.fromEntries(
+    Array.from({ length: 13 }, (_, index) => [
+      `output-${index}.txt`,
+      { cachePath: "", checksum: "" },
+    ]),
+  );
+  await fs.mkdir(output, { recursive: true });
+  await Promise.all(
+    Object.keys(outputs).map((fileName) =>
+      fs.writeFile(path.join(output, fileName), fileName),
+    ),
+  );
+  await saveOutputCache(cachePath, { version: 4, outputs }, output);
+
+  const cached = await loadOutputCache(cachePath);
+  assert.ok(cached);
+  const corrupted = cached.outputs["output-12.txt"];
+  assert.ok(corrupted);
+  await fs.writeFile(
+    path.join(directory, "ssg-output-cache.entries", corrupted.cachePath),
+    "corrupted",
+  );
+
+  assert.equal(await loadOutputCache(cachePath), undefined);
+});
+
 test("SSG output cache rejects unsafe logical paths and mismatched entry names", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-ssg-cache-"),

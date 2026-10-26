@@ -59,6 +59,7 @@ type FastPathCacheState = {
 };
 
 const faultInjectionCounts = new Map<string, number>();
+const outputCacheValidationConcurrency = 12;
 
 export function decideOutputCacheRejection(
   decision: OutputCacheDecision,
@@ -368,24 +369,47 @@ async function validateOutputCacheEntries(
   try {
     const directory = outputCacheEntriesPath(outputCachePath);
     if (!(await isSafeOutputCacheEntriesDirectory(directory))) return false;
-    for (const [outputPath, entry] of Object.entries(entries)) {
-      if (
-        !isSafeLogicalOutputPath(outputPath) ||
-        entry.cachePath !== outputCacheEntryName(outputPath) ||
-        !isChecksum(entry.checksum)
-      ) {
-        return false;
+    const entriesToValidate = Object.entries(entries);
+    let nextEntryIndex = 0;
+    let valid = true;
+    const validateEntry = async (): Promise<void> => {
+      while (valid) {
+        const next = entriesToValidate[nextEntryIndex++];
+        if (!next) return;
+        const [outputPath, entry] = next;
+        if (
+          !isSafeLogicalOutputPath(outputPath) ||
+          entry.cachePath !== outputCacheEntryName(outputPath) ||
+          !isChecksum(entry.checksum)
+        ) {
+          valid = false;
+          return;
+        }
+        const path = resolveOutputCacheFile(directory, entry.cachePath);
+        if (!(await isRegularFile(path))) {
+          valid = false;
+          return;
+        }
+        if (
+          (await measure(timingsMs, "outputCacheEntryChecksum", () =>
+            checksumFile(path),
+          )) !== entry.checksum
+        )
+          valid = false;
       }
-      const path = resolveOutputCacheFile(directory, entry.cachePath);
-      if (!(await isRegularFile(path))) return false;
-      if (
-        (await measure(timingsMs, "outputCacheEntryChecksum", () =>
-          checksumFile(path),
-        )) !== entry.checksum
-      )
-        return false;
-    }
-    return true;
+    };
+    await Promise.all(
+      Array.from(
+        {
+          length: Math.min(
+            outputCacheValidationConcurrency,
+            entriesToValidate.length,
+          ),
+        },
+        validateEntry,
+      ),
+    );
+    return valid;
   } catch {
     return false;
   }

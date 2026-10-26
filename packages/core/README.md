@@ -40,15 +40,6 @@ The content directory is resolved relative to the application root. See
 [Configuration](../../docs/docs/reference/configuration.md) for the full field list and the
 `projectRoot` / `appRoot` / `configRoot` / `contentRoot` resolution rules.
 
-## Markdown HTML safety
-
-Core sanitizes Markdown-produced HTML after Markdown and plugin HAST transforms.
-Safe structural HTML, plugin classes, and `data-*` attributes remain available;
-scripts, event handlers, unsafe URL schemes, iframes, and unsafe SVG/MathML are
-removed. Framework renderers may insert `PostContent.html` as HTML because this
-is the Core Markdown boundary. Plugin page HTML and plugin code remain trusted
-extension boundaries and are not sanitized by this pipeline.
-
 ## Public API
 
 ### Configuration
@@ -101,3 +92,4 @@ extension boundaries and are not sanitized by this pipeline.
 - [Content System](../../docs/docs/framework/content-system.md)
 - [Plugin System](../../docs/docs/reference/plugin-api.md) / [Theme System](../../docs/docs/reference/theme-api.md)
 - [Architecture](../../docs/docs/framework/architecture.md)
+

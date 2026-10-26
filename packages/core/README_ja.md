@@ -31,10 +31,6 @@ export default defineConfig({
 
 コンテンツディレクトリはアプリケーションルート基準で解決します。設定項目の全体と `projectRoot` / `appRoot` / `configRoot` / `contentRoot` の解決規則は [Configuration](../../docs/docs/reference/configuration.ja.md) を参照してください。
 
-## Markdown HTML の安全性
-
-Core は Markdown と Plugin の HAST 変換をすべて終えた後に、Markdown 由来の HTML をサニタイズします。安全な構造的 HTML、Plugin の class、`data-*` 属性は維持しますが、script、イベント属性、安全でない URL スキーム、iframe、安全でない SVG/MathML は除去します。Framework の renderer が `PostContent.html` を HTML として挿入できるのは、ここが Core の Markdown 境界だからです。Plugin のページ HTML と Plugin コードは信頼済み拡張の境界であり、このパイプラインではサニタイズしません。
-
 ## 公開 API
 
 ### 設定
@@ -77,3 +73,4 @@ Core は Markdown と Plugin の HAST 変換をすべて終えた後に、Markdo
 - [Content System](../../docs/docs/framework/content-system.ja.md)
 - [Plugin System](../../docs/docs/reference/plugin-api.ja.md) / [Theme System](../../docs/docs/reference/theme-api.ja.md)
 - [Architecture](../../docs/docs/framework/architecture.ja.md)
+

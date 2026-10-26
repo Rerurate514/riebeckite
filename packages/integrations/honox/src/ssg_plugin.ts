@@ -179,7 +179,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             },
           ],
           build: { ssr: true },
-          oxc: { jsx: { runtime: "automatic", importSource: "hono/jsx" } },
           environments: {
             ssr: { resolve: { noExternal: [/^honox(?:\/.*)?$/] } },
           },

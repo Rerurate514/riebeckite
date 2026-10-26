@@ -85,7 +85,9 @@ $env:UPDATE_GOLDEN=1; pnpm --filter @riebeckite/plugin-toc test
 Each package keeps its tests in `test/*.test.ts` and declares its own `test`
 script (`node --import tsx --test "test/*.test.ts"`). Test directories and test
 files are excluded from type checking, from builds, and from published `files`,
-so they never ship or affect consumers.
+so they never ship or affect consumers. Browser-only tests live in
+`test/browser/` and run through separate `test:browser*` scripts; the root
+`test` command does not include them.
 
 For example:
 

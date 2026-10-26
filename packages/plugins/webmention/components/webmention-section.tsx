@@ -64,9 +64,9 @@ export async function ArticleWebmentionSection(
 ) {
   const site = useSiteContext();
   const article = useArticleContext();
-  if (!site || !article?.entry) return <></>;
+  if (!site || !article?.entry) return [];
   const provider = findProvider(site.config.plugins);
-  if (!provider) return <></>;
+  if (!provider) return [];
   const data = await getWebmentionSectionData({
     view: site.view,
     slug: article.entry.slug,

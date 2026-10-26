@@ -7,6 +7,10 @@ import {
   text,
 } from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
+import {
+  SCAFFOLD_FEATURE_PACKS,
+  type ScaffoldFeatureName,
+} from "./scaffold/features.js";
 import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
   SCAFFOLD_PRESETS,
@@ -17,10 +21,6 @@ import {
   SCAFFOLD_UTILITIES,
   type ScaffoldUtilityName,
 } from "./scaffold/utilities.js";
-import {
-  SCAFFOLD_FEATURE_PACKS,
-  type ScaffoldFeatureName,
-} from "./scaffold/features.js";
 
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
 export const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
@@ -204,7 +204,14 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       ],
     });
     if (isCancel(deployment)) return null;
-    answers = { directory, preset, features, utilities, contentSource, deployment };
+    answers = {
+      directory,
+      preset,
+      features,
+      utilities,
+      contentSource,
+      deployment,
+    };
   }
 
   log.step("Creating Riebeckite site...");

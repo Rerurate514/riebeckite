@@ -834,7 +834,9 @@ function parseInitCommand(options: readonly string[]): Command {
   let force = false;
   let listPresets = false;
   let preset: ScaffoldPresetName | undefined;
-  let features: readonly import("create-riebeckite/scaffold").ScaffoldFeatureName[] | undefined;
+  let features:
+    | readonly import("create-riebeckite/scaffold").ScaffoldFeatureName[]
+    | undefined;
   let utilities: readonly ScaffoldUtilityName[] | undefined;
   let githubActions = false;
   let cloudflareWorkers = false;

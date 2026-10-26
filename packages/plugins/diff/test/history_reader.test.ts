@@ -192,16 +192,12 @@ test(
     const repository = createTestRepository("riebeckite-diff-output-");
     try {
       const files = Object.fromEntries(
-          Array.from({ length: 13 }, (_, index) => [
+        Array.from({ length: 13 }, (_, index) => [
           `notes/article-${index + 1}.md`,
           HELLO_V1,
         ]),
       );
-      repository.commit(
-        files,
-        "add articles",
-        "2024-01-01T00:00:00+00:00",
-      );
+      repository.commit(files, "add articles", "2024-01-01T00:00:00+00:00");
       repository.commit(
         Object.fromEntries(
           Object.keys(files).map((filePath) => [filePath, HELLO_V2]),

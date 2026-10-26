@@ -322,19 +322,16 @@ async function linkWorkspacePackages(siteRoot) {
       );
     }
   }
-  await fs.symlink(
-    await fs.realpath(
-      path.join(
-        root,
-        "packages",
-        "plugins",
-        "mermaid",
-        "node_modules",
-        "puppeteer",
-      ),
+  await linkJunctionIfAbsent(
+    path.join(
+      root,
+      "packages",
+      "plugins",
+      "mermaid",
+      "node_modules",
+      "puppeteer",
     ),
     path.join(nodeModulesDirectory, "puppeteer"),
-    "junction",
   );
   await linkJunctionIfAbsent(
     path.join(

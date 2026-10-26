@@ -1,5 +1,6 @@
 ---
 title: アセットパイプライン Phase 2–3 検証
+private: true
 ---
 
 # アセットパイプライン Phase 2–3 検証

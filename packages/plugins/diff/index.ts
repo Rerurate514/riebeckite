@@ -119,37 +119,44 @@ export function diff(options: DiffPluginOptions = {}) {
       if (!snapshot || !(snapshot.value instanceof GitMarkdownHistoryReader)) {
         return;
       }
-      const postDiffApi = (api ??= createPostDiffApiFromReader(snapshot.value));
+      api ??= createPostDiffApiFromReader(snapshot.value);
+      const postDiffApi = api;
       const entries = context.manifest.discoverableEntries;
-      for (let index = 0; index < entries.length; index += manifestConcurrency) {
+      for (
+        let index = 0;
+        index < entries.length;
+        index += manifestConcurrency
+      ) {
         const outputs = await Promise.all(
-          entries.slice(index, index + manifestConcurrency).map(async (entry) => {
-            const filePath = resolvePostFilePath({
-              slug: entry.slug,
-              contentIndex: context.contentIndex,
-            });
-            const history = (await postDiffApi.getHistory(filePath)).slice(
-              0,
-              ui.maxRevisions,
-            );
-            const revisions = await getMarkdownRevisions(
-              postDiffApi,
-              filePath,
-              history,
-            );
-            if (revisions.length === 0) return undefined;
-            const selected = await postDiffApi.getCurrentDiff(filePath);
-            if (!selected) return undefined;
+          entries
+            .slice(index, index + manifestConcurrency)
+            .map(async (entry) => {
+              const filePath = resolvePostFilePath({
+                slug: entry.slug,
+                contentIndex: context.contentIndex,
+              });
+              const history = (await postDiffApi.getHistory(filePath)).slice(
+                0,
+                ui.maxRevisions,
+              );
+              const revisions = await getMarkdownRevisions(
+                postDiffApi,
+                filePath,
+                history,
+              );
+              if (revisions.length === 0) return undefined;
+              const selected = await postDiffApi.getCurrentDiff(filePath);
+              if (!selected) return undefined;
 
-            return {
-              path: diffPayloadPath(entry.slug),
-              content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
-              dependencies: [
-                { type: "content", slug: entry.slug },
-                { type: "external", id: "diff:git-history" },
-              ] as const,
-            };
-          }),
+              return {
+                path: diffPayloadPath(entry.slug),
+                content: JSON.stringify({ revisions }).replace(/</g, "\\u003c"),
+                dependencies: [
+                  { type: "content", slug: entry.slug },
+                  { type: "external", id: "diff:git-history" },
+                ] as const,
+              };
+            }),
         );
         for (const output of outputs) {
           if (output) context.output.emit(output);

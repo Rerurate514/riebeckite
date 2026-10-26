@@ -220,6 +220,10 @@ export type {
   PluginOptionsValidator,
 } from "./src/types/config_validation.js";
 export type {
+  ContentIcon,
+  ContentIconRegistry,
+} from "./src/types/content_icon.js";
+export type {
   ContentAsset,
   ContentFileMetadata,
   ContentLink,
@@ -233,10 +237,6 @@ export type {
   FolderLocation,
   PluginPageRoute,
 } from "./src/types/content_manifest.js";
-export type {
-  ContentIcon,
-  ContentIconRegistry,
-} from "./src/types/content_icon.js";
 export type {
   Diagnostic,
   DiagnosticCode,

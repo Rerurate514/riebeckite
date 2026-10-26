@@ -185,10 +185,19 @@ test("A7: the theme leaves the code surface to the plugin in every mode", () => 
   );
 });
 
-test("A7: every plugin fallback code surface owns its own foreground", () => {
+test("A7: fallback code surfaces own their foreground", () => {
+  const sharedFallbackCss = read(
+    "../../../packages/integrations/honox/style.css",
+  );
+  const sharedRule = declarationsFor(
+    sharedFallbackCss,
+    /\.rb-source-fallback > pre\s*\{([^}]*)\}/,
+  );
+  assert.match(sharedRule, /background\s*:/);
+  assert.match(sharedRule, /(?:^|[;{\s])color\s*:/);
+
   const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
   const rule = /([^{}]+)\{([^{}]*)\}/g;
-  let checked = 0;
 
   for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
@@ -201,7 +210,6 @@ test("A7: every plugin fallback code surface owns its own foreground", () => {
       const body = match[2];
       if (!/__fallback[^{}]*(?:pre|code)\b/i.test(selector)) continue;
       if (!/background\s*:/.test(body)) continue;
-      checked += 1;
       assert.match(
         body,
         /(?:^|[;{\s])color\s*:/,
@@ -209,11 +217,6 @@ test("A7: every plugin fallback code surface owns its own foreground", () => {
       );
     }
   }
-
-  assert.ok(
-    checked >= 2,
-    `expected plugin fallback code rules to scan, saw ${checked}`,
-  );
 });
 
 test("A5: the search modal is a sibling of the fixed search trigger", () => {

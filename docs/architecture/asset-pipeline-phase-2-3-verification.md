@@ -1,5 +1,6 @@
 ---
 title: Asset pipeline Phase 2–3 verification
+private: true
 ---
 
 # Asset pipeline Phase 2–3 verification

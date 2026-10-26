@@ -51,9 +51,9 @@ export async function ArticlePostDiffView(
 ) {
   const site = useSiteContext();
   const article = useArticleContext();
-  if (!site || !article?.entry) return <></>;
+  if (!site || !article?.entry) return [];
   const options = findDiffOptions(site.config.plugins);
-  if (!options || options.ui?.enabled === false) return <></>;
+  if (!options || options.ui?.enabled === false) return [];
   const filePath =
     site.manifest.contentIndex.get(article.entry.slug.toLowerCase()) ??
     `${article.entry.slug}.md`;

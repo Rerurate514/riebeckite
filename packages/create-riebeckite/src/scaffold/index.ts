@@ -4,6 +4,7 @@ import {
   assertGitHubRepository,
   deploymentTemplateFiles,
 } from "./deployment.js";
+import { composeScaffoldPreset } from "./features.js";
 import {
   type ScaffoldContentSource,
   type ScaffoldDeployment,
@@ -12,7 +13,6 @@ import {
   type ScaffoldSiteResult,
 } from "./options.js";
 import { resolveScaffoldPreset } from "./presets.js";
-import { composeScaffoldPreset } from "./features.js";
 import type { SiteTemplateFile } from "./template_types.js";
 import { siteTemplateFiles } from "./templates.js";
 import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
@@ -21,6 +21,14 @@ export {
   deploymentWorkflow,
   scaffoldDeploymentFromFlags,
 } from "./deployment.js";
+export {
+  isScaffoldFeatureName,
+  parseScaffoldFeatures,
+  SCAFFOLD_FEATURE_NAMES,
+  SCAFFOLD_FEATURE_PACKS,
+  type ScaffoldFeatureName,
+  type ScaffoldFeaturePack,
+} from "./features.js";
 export {
   formatScaffoldNextSteps,
   type ScaffoldNextStepsOptions,
@@ -41,14 +49,6 @@ export {
   type ScaffoldPresetName,
   type ScaffoldPresetSummary,
 } from "./presets.js";
-export {
-  isScaffoldFeatureName,
-  parseScaffoldFeatures,
-  SCAFFOLD_FEATURE_NAMES,
-  SCAFFOLD_FEATURE_PACKS,
-  type ScaffoldFeatureName,
-  type ScaffoldFeaturePack,
-} from "./features.js";
 export {
   isScaffoldUtilityName,
   parseScaffoldUtilities,

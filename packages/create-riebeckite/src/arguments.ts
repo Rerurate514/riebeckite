@@ -1,4 +1,8 @@
 import { scaffoldDeploymentFromFlags } from "./scaffold/deployment.js";
+import {
+  parseScaffoldFeatures,
+  type ScaffoldFeatureName,
+} from "./scaffold/features.js";
 import type { ScaffoldDeployment } from "./scaffold/options.js";
 import {
   isScaffoldPresetName,
@@ -6,10 +10,6 @@ import {
   SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
 } from "./scaffold/presets.js";
-import {
-  parseScaffoldFeatures,
-  type ScaffoldFeatureName,
-} from "./scaffold/features.js";
 import {
   parseScaffoldUtilities,
   SCAFFOLD_DEFAULT_UTILITIES,
@@ -86,7 +86,9 @@ export function parseArguments(
     if (argument === "--features") {
       const value = arguments_[index + 1];
       if (value === undefined || value.startsWith("-")) {
-        throw new Error("--features requires a comma-separated list of feature names.");
+        throw new Error(
+          "--features requires a comma-separated list of feature names.",
+        );
       }
       features = parseScaffoldFeatures(value);
       index += 1;

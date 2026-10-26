@@ -1,7 +1,7 @@
 import {
-  validateScaffoldPreset,
   type ScaffoldPluginSpec,
   type ScaffoldPreset,
+  validateScaffoldPreset,
 } from "./presets.js";
 
 export type ScaffoldFeatureName = "knowledge" | "diagrams" | "media" | "i18n";
@@ -18,44 +18,46 @@ const feature = (
   options?: string,
 ): ScaffoldPluginSpec => ({ package: package_, factory, options });
 
-const featurePacks: Readonly<Record<ScaffoldFeatureName, ScaffoldFeaturePack>> = {
-  knowledge: {
-    name: "knowledge",
-    description: "Link previews and a local graph for connected notes.",
-    plugins: [
-      feature("@riebeckite/plugin-hover-preview", "hoverPreview"),
-      feature("@riebeckite/plugin-local-graph", "localGraph"),
-    ],
-  },
-  diagrams: {
-    name: "diagrams",
-    description: "Mermaid and Graphviz diagrams in Markdown.",
-    plugins: [
-      feature("@riebeckite/plugin-mermaid-pele", "mermaidPele"),
-      feature("@riebeckite/plugin-graphviz", "graphviz"),
-    ],
-  },
-  media: {
-    name: "media",
-    description: "Embedded audio and video, responsive images, and lightbox.",
-    plugins: [
-      feature("@riebeckite/plugin-media", "media"),
-      feature("@riebeckite/plugin-responsive-image", "responsiveImage"),
-      feature("@riebeckite/plugin-lightbox", "lightbox"),
-    ],
-  },
-  i18n: {
-    name: "i18n",
-    description: "English and Japanese localization support for content you add.",
-    plugins: [
-      feature(
-        "@riebeckite/plugin-l10n",
-        "l10n",
-        '{ defaultLang: "en", languages: ["en", "ja"] }',
-      ),
-    ],
-  },
-};
+const featurePacks: Readonly<Record<ScaffoldFeatureName, ScaffoldFeaturePack>> =
+  {
+    knowledge: {
+      name: "knowledge",
+      description: "Link previews and a local graph for connected notes.",
+      plugins: [
+        feature("@riebeckite/plugin-hover-preview", "hoverPreview"),
+        feature("@riebeckite/plugin-local-graph", "localGraph"),
+      ],
+    },
+    diagrams: {
+      name: "diagrams",
+      description: "Mermaid and Graphviz diagrams in Markdown.",
+      plugins: [
+        feature("@riebeckite/plugin-mermaid-pele", "mermaidPele"),
+        feature("@riebeckite/plugin-graphviz", "graphviz"),
+      ],
+    },
+    media: {
+      name: "media",
+      description: "Embedded audio and video, responsive images, and lightbox.",
+      plugins: [
+        feature("@riebeckite/plugin-media", "media"),
+        feature("@riebeckite/plugin-responsive-image", "responsiveImage"),
+        feature("@riebeckite/plugin-lightbox", "lightbox"),
+      ],
+    },
+    i18n: {
+      name: "i18n",
+      description:
+        "English and Japanese localization support for content you add.",
+      plugins: [
+        feature(
+          "@riebeckite/plugin-l10n",
+          "l10n",
+          '{ defaultLang: "en", languages: ["en", "ja"] }',
+        ),
+      ],
+    },
+  };
 
 export const SCAFFOLD_FEATURE_NAMES: readonly ScaffoldFeatureName[] = [
   "knowledge",

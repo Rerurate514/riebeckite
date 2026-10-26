@@ -1,5 +1,5 @@
-import type { ScaffoldPresetName } from "./presets.js";
 import type { ScaffoldFeatureName } from "./features.js";
+import type { ScaffoldPresetName } from "./presets.js";
 import type { ScaffoldUtilityName } from "./utilities.js";
 
 export type ScaffoldSiteMetadata = {

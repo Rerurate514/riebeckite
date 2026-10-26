@@ -42,12 +42,13 @@ The content directory is resolved relative to the application root. See
 
 ## Markdown HTML safety
 
-Core sanitizes Markdown-produced HTML after Markdown and plugin HAST transforms.
-Safe structural HTML, plugin classes, and `data-*` attributes remain available;
+Core sanitizes Markdown-authored HTML before plugin rehype transforms run.
+Safe structural HTML, classes, and `data-*` attributes remain available;
 scripts, event handlers, unsafe URL schemes, iframes, and unsafe SVG/MathML are
-removed. Framework renderers may insert `PostContent.html` as HTML because this
-is the Core Markdown boundary. Plugin page HTML and plugin code remain trusted
-extension boundaries and are not sanitized by this pipeline.
+removed. HTML emitted by a plugin's rehype transform is trusted and is not
+sanitized here. Framework renderers may insert `PostContent.html` as HTML
+because this is the Core Markdown boundary. Plugin page HTML and plugin code
+remain trusted extension boundaries and are not sanitized by this pipeline.
 
 ## Public API
 

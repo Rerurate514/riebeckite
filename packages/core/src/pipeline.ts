@@ -424,6 +424,8 @@ export class Pipeline {
 
     this.use(processor, remarkRehype, { allowDangerousHtml: true });
     this.use(processor, rehypeRaw);
+    this.use(processor, rehypeSanitize, markdownSanitizeSchema);
+    this.use(processor, sanitizeMarkdownStyles);
 
     for (const plugin of plugins) {
       for (const rehypePlugin of plugin.rehypePlugins ?? []) {
@@ -436,12 +438,9 @@ export class Pipeline {
       });
     }
 
-    this.use(processor, rehypeRaw);
     this.use(processor, wrapMarkdownTables);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
     this.use(processor, rehypeFormat);
-    this.use(processor, rehypeSanitize, markdownSanitizeSchema);
-    this.use(processor, sanitizeMarkdownStyles);
     this.use(processor, rehypeSlug);
 
     this.use(processor, rehypeStringify, { allowDangerousHtml: true });

@@ -3,6 +3,8 @@ title: Tokyo Night
 ---
 # Tokyo Night
 
+[English](./tokyonight.md)
+
 `@riebeckite/theme-tokyonight` は公式テーマ **Tokyo Night** を提供します。テーマ ID は `tokyonight` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

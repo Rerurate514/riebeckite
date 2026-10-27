@@ -2,6 +2,8 @@
 
 <!-- Generated from docs/docs/themes/rerurate.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
+[English](./README.md)
+
 `@riebeckite/theme-rerurate` は公式テーマ **Rerurate** を提供します。テーマ ID は `rerurate` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

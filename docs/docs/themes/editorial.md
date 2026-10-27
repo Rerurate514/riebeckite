@@ -3,6 +3,8 @@ title: Editorial
 ---
 # Editorial
 
+[日本語](./editorial.ja.md)
+
 `@riebeckite/theme-editorial` provides the **Editorial** official theme. Its identity is `editorial` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

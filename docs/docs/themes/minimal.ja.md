@@ -3,6 +3,8 @@ title: Minimal
 ---
 # Minimal
 
+[English](./minimal.md)
+
 `@riebeckite/theme-minimal` は公式テーマ **Minimal** を提供します。テーマ ID は `minimal` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

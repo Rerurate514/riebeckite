@@ -3,6 +3,8 @@ title: Minimal
 ---
 # Minimal
 
+[日本語](./minimal.ja.md)
+
 `@riebeckite/theme-minimal` provides the **Minimal** official theme. Its identity is `minimal` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

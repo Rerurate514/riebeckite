@@ -3,6 +3,8 @@ title: Default
 ---
 # Default
 
+[English](./default.md)
+
 `@riebeckite/theme-default` は公式テーマ **Default** を提供します。テーマ ID は `riebeckite` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

@@ -3,6 +3,8 @@ title: Technical
 ---
 # Technical
 
+[English](./technical.md)
+
 `@riebeckite/theme-technical` は公式テーマ **Technical** を提供します。テーマ ID は `technical` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

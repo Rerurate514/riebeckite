@@ -200,12 +200,6 @@ type ThemeRootProps = {
   children?: PrimitiveChildren;
 };
 
-/**
- * Derives the `<html>` attributes from a resolved theme.
- *
- * Combines the theme's custom `data-*` attributes with the reserved
- * color-mode, name, typography, and article-layout attributes.
- */
 export function themeRootAttributes(
   theme: ResolvedRiebeckiteConfig["theme"],
 ): Record<string, string | undefined> {

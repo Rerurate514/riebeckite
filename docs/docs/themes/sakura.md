@@ -3,6 +3,8 @@ title: Sakura
 ---
 # Sakura
 
+[日本語](./sakura.ja.md)
+
 `@riebeckite/theme-sakura` provides the **Sakura** official theme. Its identity is `sakura` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

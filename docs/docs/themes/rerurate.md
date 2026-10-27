@@ -3,6 +3,8 @@ title: Rerurate
 ---
 # Rerurate
 
+[日本語](./rerurate.ja.md)
+
 `@riebeckite/theme-rerurate` provides the **Rerurate** official theme. Its identity is `rerurate` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

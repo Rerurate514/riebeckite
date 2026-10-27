@@ -3,6 +3,8 @@ title: Garden
 ---
 # Garden
 
+[日本語](./garden.ja.md)
+
 `@riebeckite/theme-garden` provides the **Garden** official theme. Its identity is `garden` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

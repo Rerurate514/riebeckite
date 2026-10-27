@@ -3,6 +3,8 @@ title: Sakura
 ---
 # Sakura
 
+[English](./sakura.md)
+
 `@riebeckite/theme-sakura` は公式テーマ **Sakura** を提供します。テーマ ID は `sakura` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

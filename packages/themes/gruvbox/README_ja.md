@@ -2,6 +2,8 @@
 
 <!-- Generated from docs/docs/themes/gruvbox.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
+[English](./README.md)
+
 `@riebeckite/theme-gruvbox` は公式テーマ **Gruvbox** を提供します。テーマ ID は `gruvbox` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

@@ -2,6 +2,8 @@
 
 <!-- Generated from docs/docs/themes/editorial.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
+[English](./README.md)
+
 `@riebeckite/theme-editorial` は公式テーマ **Editorial** を提供します。テーマ ID は `editorial` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

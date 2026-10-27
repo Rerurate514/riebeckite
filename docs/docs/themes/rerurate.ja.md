@@ -3,6 +3,8 @@ title: Rerurate
 ---
 # Rerurate
 
+[English](./rerurate.md)
+
 `@riebeckite/theme-rerurate` は公式テーマ **Rerurate** を提供します。テーマ ID は `rerurate` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

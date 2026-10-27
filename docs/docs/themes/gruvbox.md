@@ -3,6 +3,8 @@ title: Gruvbox
 ---
 # Gruvbox
 
+[日本語](./gruvbox.ja.md)
+
 `@riebeckite/theme-gruvbox` provides the **Gruvbox** official theme. Its identity is `gruvbox` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

@@ -2,6 +2,8 @@
 
 <!-- Generated from docs/docs/themes/garden.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
+[日本語](./README_ja.md)
+
 `@riebeckite/theme-garden` provides the **Garden** official theme. Its identity is `garden` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

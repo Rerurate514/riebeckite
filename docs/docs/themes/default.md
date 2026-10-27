@@ -3,6 +3,8 @@ title: Default
 ---
 # Default
 
+[日本語](./default.ja.md)
+
 `@riebeckite/theme-default` provides the **Default** official theme. Its identity is `riebeckite` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

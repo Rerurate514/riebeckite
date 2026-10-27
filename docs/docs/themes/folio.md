@@ -3,6 +3,8 @@ title: Folio
 ---
 # Folio
 
+[日本語](./folio.ja.md)
+
 `@riebeckite/theme-folio` provides the **Folio** official theme. Its identity is `folio` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

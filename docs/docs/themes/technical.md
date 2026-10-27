@@ -3,6 +3,8 @@ title: Technical
 ---
 # Technical
 
+[日本語](./technical.ja.md)
+
 `@riebeckite/theme-technical` provides the **Technical** official theme. Its identity is `technical` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

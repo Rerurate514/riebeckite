@@ -782,7 +782,7 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!css.includes("fixture-local-plugin")) {
     fail("site-local plugin stylesheet was not bundled into the dist CSS");
   }
-  if (!css.includes("data-fixture-theme")) {
+  if (!css.includes("data-rb-setting-fixture")) {
     fail("site-local theme stylesheet was not bundled into the dist CSS");
   }
   if (!css.includes("rb-dataview")) {

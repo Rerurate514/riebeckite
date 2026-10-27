@@ -2,6 +2,8 @@
 
 <!-- Generated from docs/docs/themes/folio.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
+[English](./README.md)
+
 `@riebeckite/theme-folio` は公式テーマ **Folio** を提供します。テーマ ID は `folio` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方

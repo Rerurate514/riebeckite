@@ -3,6 +3,8 @@ title: Tokyo Night
 ---
 # Tokyo Night
 
+[日本語](./tokyonight.ja.md)
+
 `@riebeckite/theme-tokyonight` provides the **Tokyo Night** official theme. Its identity is `tokyonight` and its settings schema is the source of truth for configuration and the preview controls.
 
 ## Use it

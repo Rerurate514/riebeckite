@@ -6,6 +6,7 @@ import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import {
   composeScaffoldPreset,
   parseScaffoldFeatures,
+  SCAFFOLD_FEATURE_NAMES,
 } from "../src/scaffold/features.js";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
@@ -34,16 +35,35 @@ test("the public scaffold presets have the documented order and default", () => 
   }
 });
 
-test("feature packs add explicit config and reject duplicate plugins", () => {
+test("feature packs add explicit config without duplicating preset plugins", () => {
   const features = parseScaffoldFeatures("diagrams,i18n");
   const preset = composeScaffoldPreset(scaffoldPresets.portfolio, features);
   assert.deepEqual(preset.languages, ["en", "ja"]);
   assert.ok(preset.plugins.some((plugin) => plugin.factory === "mermaidPele"));
-  assert.throws(
-    () => composeScaffoldPreset(scaffoldPresets.portfolio, ["media"]),
-    /cannot be combined/,
+  const withMedia = composeScaffoldPreset(scaffoldPresets.portfolio, ["media"]);
+  assert.equal(
+    withMedia.plugins.filter((plugin) => plugin.factory === "media").length,
+    1,
   );
   assert.throws(() => parseScaffoldFeatures("diagrams,diagrams"), /repeated/);
+});
+
+test("every preset supports every feature pack", () => {
+  for (const preset of Object.values(scaffoldPresets)) {
+    const composed = composeScaffoldPreset(preset, SCAFFOLD_FEATURE_NAMES);
+    assert.deepEqual(
+      composed.plugins.map((plugin) => `${plugin.package}:${plugin.factory}`),
+      [
+        ...new Set(
+          composed.plugins.map(
+            (plugin) => `${plugin.package}:${plugin.factory}`,
+          ),
+        ),
+      ],
+    );
+    assert.ok(composed.languages.includes("en"));
+    assert.ok(composed.languages.includes("ja"));
+  }
 });
 
 test("feature packs are written to generated configuration", async () => {

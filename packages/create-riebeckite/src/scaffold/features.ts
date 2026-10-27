@@ -99,10 +99,24 @@ export function composeScaffoldPreset(
   features: readonly ScaffoldFeatureName[],
 ): ScaffoldPreset {
   const selected = features.map((name) => featurePacks[name]);
+  const plugins = [...preset.plugins];
+  for (const plugin of selected.flatMap((pack) => pack.plugins)) {
+    if (
+      !plugins.some(
+        (existing) =>
+          existing.package === plugin.package &&
+          existing.factory === plugin.factory,
+      )
+    ) {
+      plugins.push(plugin);
+    }
+  }
   const composed: ScaffoldPreset = {
     ...preset,
-    languages: features.includes("i18n") ? ["en", "ja"] : preset.languages,
-    plugins: [...preset.plugins, ...selected.flatMap((pack) => pack.plugins)],
+    languages: features.includes("i18n")
+      ? [...new Set([...preset.languages, "en", "ja"])]
+      : preset.languages,
+    plugins,
   };
   try {
     validateScaffoldPreset(composed);

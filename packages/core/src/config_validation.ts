@@ -148,68 +148,8 @@ function validateTheme(value: unknown, issues: ConfigValidationIssue[]): void {
   if (value === undefined) return;
   if (!isRecord(value)) {
     issues.push({ path: "theme", message: "Expected an object." });
-    return;
-  }
-
-  validateThemeConfig(value, "theme", issues);
-  validateThemeStyles(value.styles, "theme.styles", issues);
-
-  if (value.config !== undefined) {
-    if (!isRecord(value.config)) {
-      issues.push({ path: "theme.config", message: "Expected an object." });
-    } else {
-      validateThemeConfig(value.config, "theme.config", issues);
-    }
-  }
-}
-
-function validateThemeConfig(
-  value: Record<string, unknown>,
-  path: string,
-  issues: ConfigValidationIssue[],
-): void {
-  validateOptionalString(value.name, `${path}.name`, issues);
-  validateOneOf(
-    value.colorMode,
-    `${path}.colorMode`,
-    ["light", "dark", "system"],
-    issues,
-  );
-  validateOneOf(
-    value.typography,
-    `${path}.typography`,
-    ["system", "serif", "sans"],
-    issues,
-  );
-  validateOneOf(
-    value.articleLayout,
-    `${path}.articleLayout`,
-    ["article", "sidebar", "full-width"],
-    issues,
-  );
-  validateStringArray(value.userCss, `${path}.userCss`, issues);
-  if (value.attributes !== undefined && !isRecord(value.attributes)) {
-    issues.push({ path: `${path}.attributes`, message: "Expected an object." });
-  }
-}
-
-function validateThemeStyles(
-  value: unknown,
-  path: string,
-  issues: ConfigValidationIssue[],
-): void {
-  if (value === undefined) return;
-  if (!Array.isArray(value)) {
-    issues.push({ path, message: "Expected an array." });
-    return;
-  }
-  for (const [index, style] of value.entries()) {
-    if (!isRecord(style) || !isNonEmptyString(style.moduleSpecifier)) {
-      issues.push({
-        path: `${path}[${index}].moduleSpecifier`,
-        message: "Expected a non-empty string.",
-      });
-    }
+  } else if (!("definition" in value && "options" in value)) {
+    issues.push({ path: "theme", message: "Expected a theme instance." });
   }
 }
 

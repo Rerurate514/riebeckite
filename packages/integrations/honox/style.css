@@ -30,12 +30,11 @@
     max-width: none;
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="full-width"] .rb-article {
+  :is(:root, .rb-theme-root)[data-rb-layout="full-width"] .rb-article {
     width: 100%;
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
-    .rb-article-body {
+  :is(:root, .rb-theme-root)[data-rb-layout="full-width"] .rb-article-body {
     max-width: none;
   }
 
@@ -52,26 +51,23 @@
     block-size: auto;
   }
 
-  :is(:root, .rb-theme-root)[data-article-layout="full-width"]
-    .rb-article-layout {
+  :is(:root, .rb-theme-root)[data-rb-layout="full-width"] .rb-article-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
   @media (min-width: 88rem) {
-    :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
-      .rb-article-layout {
+    :is(:root, .rb-theme-root)[data-rb-layout="sidebar"] .rb-article-layout {
       grid-template-columns:
         minmax(0, var(--rb-layout-article-max, 48rem))
         var(--rb-layout-sidebar, 14rem);
     }
 
-    :is(:root, .rb-theme-root)[data-article-layout="article"]
-      .rb-article-layout {
+    :is(:root, .rb-theme-root)[data-rb-layout="article"] .rb-article-layout {
       position: relative;
     }
 
-    :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-body,
-    :is(:root, .rb-theme-root)[data-article-layout="sidebar"] .rb-article-body {
+    :is(:root, .rb-theme-root)[data-rb-layout="article"] .rb-article-body,
+    :is(:root, .rb-theme-root)[data-rb-layout="sidebar"] .rb-article-body {
       grid-column: 1;
       grid-row: 1;
     }

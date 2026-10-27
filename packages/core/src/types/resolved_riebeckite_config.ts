@@ -3,7 +3,7 @@ import type { RiebeckitePlugin } from "./plugin.js";
 import type { PublishStrategy } from "./publish_strategy.js";
 import type { SpaConfig } from "./riebeckite_config.js";
 import type { SiteConfig } from "./site_config.js";
-import type { ThemeConfig, ThemeStyle } from "./theme_config.js";
+import type { ResolvedTheme } from "./theme_config.js";
 
 export type ResolvedRiebeckiteConfig = {
   /**
@@ -31,10 +31,7 @@ export type ResolvedRiebeckiteConfig = {
       publishStrategy: PublishStrategy;
     };
   };
-  theme: Required<Omit<ThemeConfig, "tokens">> & {
-    tokens: NonNullable<ThemeConfig["tokens"]>;
-    styles: ThemeStyle[];
-  };
+  theme: ResolvedTheme;
   plugins: RiebeckitePlugin[];
   cache: {
     enabled: boolean;

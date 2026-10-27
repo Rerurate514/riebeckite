@@ -62,11 +62,9 @@ function theme(overrides: Partial<ResolvedTheme> = {}): ResolvedTheme {
   return {
     name: "riebeckite",
     colorMode: "system",
-    typography: "system",
-    articleLayout: "article",
-    tokens: {},
-    attributes: {},
-    userCss: [],
+    layout: "article",
+    stylesheets: [],
+    settings: { values: {}, attributes: {}, style: "" },
     styles: [],
     ...overrides,
   };
@@ -229,55 +227,47 @@ test("PluginHeadTags renders nothing without tags", () => {
 
 test("themeRootAttributes derives the reserved attributes", () => {
   assert.deepEqual(themeRootAttributes(theme()), {
-    "data-theme": undefined,
-    "data-theme-name": "riebeckite",
-    "data-typography": "system",
-    "data-article-layout": "article",
+    "data-rb-theme": "riebeckite",
+    "data-rb-mode": undefined,
+    "data-rb-layout": "article",
   });
 });
 
-test("themeRootAttributes sets data-theme for explicit light and dark modes", () => {
+test("themeRootAttributes sets data-rb-mode for explicit light and dark modes", () => {
   assert.equal(
-    themeRootAttributes(theme({ colorMode: "light" }))["data-theme"],
+    themeRootAttributes(theme({ colorMode: "light" }))["data-rb-mode"],
     "light",
   );
   assert.equal(
-    themeRootAttributes(theme({ colorMode: "dark" }))["data-theme"],
+    themeRootAttributes(theme({ colorMode: "dark" }))["data-rb-mode"],
     "dark",
   );
 });
 
-test("themeRootAttributes passes through custom data attributes", () => {
-  const attributes = themeRootAttributes(
-    theme({ attributes: { "data-fixture-theme": "local" } }),
-  );
-
-  assert.equal(attributes["data-fixture-theme"], "local");
-});
-
-test("themeRootAttributes lets the reserved attributes win over custom ones", () => {
+test("themeRootAttributes passes through schema-derived data attributes", () => {
   const attributes = themeRootAttributes(
     theme({
-      name: "custom",
-      attributes: { "data-theme-name": "ignored" },
+      settings: {
+        values: {},
+        attributes: { "data-rb-setting-density": "compact" },
+        style: "",
+      },
     }),
   );
 
-  assert.equal(attributes["data-theme-name"], "custom");
+  assert.equal(attributes["data-rb-setting-density"], "compact");
 });
 
-test("themeRootAttributes derives the theme name, typography, and article layout", () => {
+test("themeRootAttributes derives theme name and layout", () => {
   const attributes = themeRootAttributes(
     theme({
       name: "minimal",
-      typography: "serif",
-      articleLayout: "sidebar",
+      layout: "sidebar",
     }),
   );
 
-  assert.equal(attributes["data-theme-name"], "minimal");
-  assert.equal(attributes["data-typography"], "serif");
-  assert.equal(attributes["data-article-layout"], "sidebar");
+  assert.equal(attributes["data-rb-theme"], "minimal");
+  assert.equal(attributes["data-rb-layout"], "sidebar");
 });
 
 test("ThemeRoot renders the html attributes and children", () => {
@@ -285,7 +275,11 @@ test("ThemeRoot renders the html attributes and children", () => {
     ThemeRoot({
       theme: theme({
         name: "fixture-local",
-        attributes: { "data-fixture-theme": "local" },
+        settings: {
+          values: {},
+          attributes: { "data-rb-setting-density": "compact" },
+          style: "",
+        },
       }),
       lang: "en",
       children: "body",
@@ -293,11 +287,10 @@ test("ThemeRoot renders the html attributes and children", () => {
   );
 
   assert.match(html, /^<html lang="en"/);
-  assert.match(html, /data-theme-name="fixture-local"/);
-  assert.match(html, /data-fixture-theme="local"/);
-  assert.match(html, /data-typography="system"/);
-  assert.match(html, /data-article-layout="article"/);
-  assert.doesNotMatch(html, /data-theme=/);
+  assert.match(html, /data-rb-theme="fixture-local"/);
+  assert.match(html, /data-rb-setting-density="compact"/);
+  assert.match(html, /data-rb-layout="article"/);
+  assert.doesNotMatch(html, /data-rb-mode=/);
   assert.match(html, /body/);
 });
 

@@ -8,8 +8,10 @@ import {
 import { ConfigValidationError } from "../src/config_validation.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { RiebeckiteConfig } from "../src/types/riebeckite_config.js";
-import type { ThemeAttributes } from "../src/types/theme_config.js";
-import { defineTheme } from "../src/types/theme_config.js";
+import {
+  defineTheme,
+  ThemeSettingsValidationError,
+} from "../src/types/theme_config.js";
 
 test("resolveConfig fills documented defaults", () => {
   const config = resolveConfig({ site: { title: "My Site" } });
@@ -29,11 +31,9 @@ test("resolveConfig fills documented defaults", () => {
   assert.deepEqual(config.theme, {
     name: "riebeckite",
     colorMode: "system",
-    typography: "system",
-    articleLayout: "article",
-    tokens: {},
-    attributes: {},
-    userCss: [],
+    layout: "article",
+    stylesheets: [],
+    settings: { values: {}, attributes: {}, style: "" },
     styles: [{ moduleSpecifier: "@riebeckite/theme-default/style.css" }],
   });
   assert.deepEqual(config.plugins, []);
@@ -69,7 +69,26 @@ test("resolveConfig rejects an invalid SPA value", () => {
   );
 });
 
-test("resolveConfig merges theme config and sanitizes theme attributes", () => {
+test("resolveConfig resolves theme settings and presets", () => {
+  const theme = defineTheme({
+    name: "custom",
+    styles: [{ moduleSpecifier: "@example/theme.css" }],
+    settings: {
+      accent: { type: "color", label: "Accent", default: "#112233" },
+      density: {
+        type: "select",
+        label: "Density",
+        default: "comfortable",
+        options: [
+          { value: "comfortable", label: "Comfortable" },
+          { value: "compact", label: "Compact" },
+        ],
+      },
+    },
+    presets: {
+      compact: { label: "Compact", settings: { density: "compact" } },
+    },
+  });
   const config = resolveConfig({
     site: {
       title: "Site",
@@ -77,21 +96,7 @@ test("resolveConfig merges theme config and sanitizes theme attributes", () => {
       locale: "ja",
       feed: { title: "Feed title", language: "ja-JP" },
     },
-    theme: defineTheme({
-      name: "custom",
-      styles: [{ moduleSpecifier: "@example/theme.css" }],
-      config: {
-        colorMode: "dark",
-        typography: "serif",
-        articleLayout: "sidebar",
-        attributes: {
-          "data-brand": "from-config",
-          "data-theme": "reserved",
-          "aria-label": "not-a-data-attribute",
-        } as ThemeAttributes,
-      },
-      attributes: { "data-brand": "from-theme", "data-density": "compact" },
-    }),
+    theme: theme({ colorMode: "dark", layout: "sidebar", preset: "compact" }),
   });
 
   assert.equal(config.site.feed.title, "Feed title");
@@ -99,46 +104,60 @@ test("resolveConfig merges theme config and sanitizes theme attributes", () => {
   assert.equal(config.site.feed.language, "ja-JP");
   assert.equal(config.theme.name, "custom");
   assert.equal(config.theme.colorMode, "dark");
-  assert.equal(config.theme.typography, "serif");
-  assert.equal(config.theme.articleLayout, "sidebar");
+  assert.equal(config.theme.layout, "sidebar");
   assert.deepEqual(config.theme.styles, [
     { moduleSpecifier: "@example/theme.css" },
   ]);
-  assert.deepEqual(config.theme.attributes, {
-    "data-brand": "from-theme",
-    "data-density": "compact",
-  });
+  assert.equal(config.theme.settings.values.density, "compact");
+  assert.equal(
+    config.theme.settings.attributes["data-rb-setting-density"],
+    "compact",
+  );
 });
 
-test("resolveConfig rejects invalid theme presets and styles", () => {
+test("resolveConfig rejects invalid theme instances", () => {
   assert.throws(
     () =>
       resolveConfig({
         site: { title: "Site" },
-        theme: {
-          colorMode: "blue",
-          typography: "comic",
-          articleLayout: "wide",
-          styles: [{ moduleSpecifier: "" }],
-        },
+        theme: { name: "invalid" },
       } as unknown as RiebeckiteConfig),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(
         error.issues.map((issue) => issue.path),
-        [
-          "theme.colorMode",
-          "theme.typography",
-          "theme.articleLayout",
-          "theme.styles[0].moduleSpecifier",
-        ],
+        ["theme"],
       );
-      assert.equal(
-        error.issues[0]?.message,
-        "Expected one of: light, dark, system.",
-      );
+      assert.equal(error.issues[0]?.message, "Expected a theme instance.");
       return true;
     },
+  );
+});
+
+test("resolveConfig rejects unknown and unsafe theme settings", () => {
+  const theme = defineTheme({
+    name: "custom",
+    styles: [],
+    settings: {
+      accent: { type: "color", label: "Accent", default: "#112233" },
+    },
+  });
+
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        theme: theme({ settings: { accent: "red" } }),
+      }),
+    ThemeSettingsValidationError,
+  );
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        theme: theme({ settings: { unknown: "value" } as never }),
+      }),
+    ThemeSettingsValidationError,
   );
 });
 

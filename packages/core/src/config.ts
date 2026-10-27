@@ -7,12 +7,20 @@ import { resolvePlugins } from "./types/plugin.js";
 import type { PostFrontmatter } from "./types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
 import type { RiebeckiteConfig, SpaConfig } from "./types/riebeckite_config.js";
-import type { ThemeAttributes, ThemeStyle } from "./types/theme_config.js";
-import { isRiebeckiteTheme } from "./types/theme_config.js";
+import {
+  defineTheme,
+  resolveTheme,
+  type ThemeStyle,
+} from "./types/theme_config.js";
 
 const defaultThemeStyle: ThemeStyle = {
   moduleSpecifier: "@riebeckite/theme-default/style.css",
 };
+
+const fallbackTheme = defineTheme({
+  name: "riebeckite",
+  styles: [defaultThemeStyle],
+});
 
 export function defineConfig(config: RiebeckiteConfig): RiebeckiteConfig {
   return config;
@@ -98,52 +106,7 @@ function resolveSpaConfig(spa: RiebeckiteConfig["spa"]): SpaConfig | undefined {
 function resolveThemeConfig(
   themeInput: RiebeckiteConfig["theme"],
 ): ResolvedRiebeckiteConfig["theme"] {
-  const theme = themeInput
-    ? isRiebeckiteTheme(themeInput)
-      ? { name: themeInput.name, ...themeInput.config }
-      : themeInput
-    : undefined;
-  const styles = themeInput
-    ? isRiebeckiteTheme(themeInput)
-      ? (themeInput.styles ?? [])
-      : [defaultThemeStyle]
-    : [defaultThemeStyle];
-  const attributes = themeInput
-    ? isRiebeckiteTheme(themeInput)
-      ? { ...themeInput.config?.attributes, ...themeInput.attributes }
-      : themeInput.attributes
-    : undefined;
-
-  return {
-    name: theme?.name ?? "riebeckite",
-    colorMode: theme?.colorMode ?? "system",
-    typography: theme?.typography ?? "system",
-    articleLayout: theme?.articleLayout ?? "article",
-    tokens: theme?.tokens ?? {},
-    attributes: sanitizeThemeAttributes(attributes),
-    userCss: theme?.userCss ?? [],
-    styles,
-  };
-}
-
-function sanitizeThemeAttributes(
-  attributes: ThemeAttributes | undefined,
-): ThemeAttributes {
-  if (!attributes) return {};
-  const reservedAttributes = new Set([
-    "data-theme",
-    "data-theme-name",
-    "data-typography",
-    "data-article-layout",
-  ]);
-
-  return Object.fromEntries(
-    Object.entries(attributes)
-      .filter(
-        ([name, value]) => name.startsWith("data-") && value !== undefined,
-      )
-      .filter(([name]) => !reservedAttributes.has(name)),
-  ) as ThemeAttributes;
+  return resolveTheme(themeInput, fallbackTheme);
 }
 
 export function isPublished(

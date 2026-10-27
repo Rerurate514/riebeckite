@@ -44,7 +44,7 @@ export default jsxRenderer(async ({ children }, c) => {
       },
       headTags,
     );
-  const themeStyle = getThemeStyle(config.theme.tokens);
+  const themeStyle = getThemeStyle(config.theme);
 
   return (
     <SiteProvider
@@ -82,7 +82,7 @@ export default jsxRenderer(async ({ children }, c) => {
           {themeStyle ? (
             <style dangerouslySetInnerHTML={{ __html: themeStyle }} />
           ) : null}
-          {getThemeStylesheets(config.theme.userCss).map((href) => (
+          {getThemeStylesheets(config.theme.stylesheets).map((href) => (
             <link href={href} rel="stylesheet" key={href} />
           ))}
           <Script src="/app/client.ts" async />

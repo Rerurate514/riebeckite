@@ -336,17 +336,27 @@ export type {
 } from "./src/types/riebeckite_config.js";
 export type { SiteConfig } from "./src/types/site_config.js";
 export type {
-  RiebeckiteTheme,
-  ThemeArticleLayoutPreset,
-  ThemeAttributes,
   ThemeColorMode,
-  ThemeConfig,
-  ThemeDesignTokens,
+  ThemeDefinition,
   ThemeInput,
+  ThemeInstance,
+  ThemeOptions,
+  ThemePreset,
+  ResolvedTheme,
+  ResolvedThemeSettings,
+  ThemeSetting,
+  ThemeSettings,
+  ThemeSettingsSchema,
   ThemeStyle,
-  ThemeTypographyPreset,
 } from "./src/types/theme_config.js";
-export { defineTheme } from "./src/types/theme_config.js";
+export {
+  defineTheme,
+  defineThemeSettings,
+  reflectThemeSettings,
+  resolveTheme,
+  ThemeSettingsValidationError,
+  validateThemeSettings,
+} from "./src/types/theme_config.js";
 export { uniqueStrings } from "./src/utils/collections.js";
 export { attachErrorPath } from "./src/utils/error.js";
 export {

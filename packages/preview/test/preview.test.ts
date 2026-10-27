@@ -427,6 +427,8 @@ test("builds an isolated preview document", () => {
     styles: [".rb-article { color: black; }"],
     themeName: 'theme"name',
     colorMode: "system",
+    articleTitle: "Preview <article>",
+    themeSettingsStyle: ":root { --rb-setting-font-size: 1rem; }",
     themeAttributes: {
       "data-rb-setting-initial": "on",
       onclick: "alert(1)",
@@ -440,6 +442,14 @@ test("builds an isolated preview document", () => {
   assert.doesNotMatch(document, /onclick/);
   assert.doesNotMatch(document, /script-src/);
   assert.match(document, /<p>Preview<\/p>/);
+  assert.match(
+    document,
+    /<header class="rb-article-header"><h1>Preview &lt;article&gt;<\/h1><\/header>/,
+  );
+  assert.match(
+    document,
+    /<style data-rb-preview-theme-settings>:root \{ --rb-setting-font-size: 1rem; \}<\/style>/,
+  );
 });
 
 test("derives preview controls and resolved settings from a theme schema", () => {

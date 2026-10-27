@@ -3,6 +3,8 @@ export type PreviewDocumentOptions = {
   readonly styles: readonly string[];
   readonly themeName: string;
   readonly colorMode: "light" | "dark" | "system";
+  readonly articleTitle?: string;
+  readonly themeSettingsStyle?: string;
   readonly themeAttributes?: Readonly<Record<string, string>>;
 };
 
@@ -12,7 +14,10 @@ export function createPreviewDocument(options: PreviewDocumentOptions): string {
   const themeAttributes = serializeThemeAttributes(options.themeAttributes);
   const modeAttribute =
     colorMode === "system" ? "" : ` data-rb-mode="${colorMode}"`;
-  return `<!doctype html><html data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style></head><body><div class="rb-theme-root" data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
+  const header = options.articleTitle
+    ? `<header class="rb-article-header"><h1>${escapeHtml(options.articleTitle)}</h1></header>`
+    : "";
+  return `<!doctype html><html data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style><style data-rb-preview-theme-settings>${options.themeSettingsStyle ?? ""}</style></head><body><div class="rb-theme-root" data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><article class="rb-article"><div class="rb-article-body">${header}<div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
 }
 
 function serializeThemeAttributes(
@@ -31,5 +36,13 @@ function escapeAttribute(value: string): string {
     if (character === "<") return "&lt;";
     if (character === ">") return "&gt;";
     return "&quot;";
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>]/g, (character) => {
+    if (character === "&") return "&amp;";
+    if (character === "<") return "&lt;";
+    return "&gt;";
   });
 }

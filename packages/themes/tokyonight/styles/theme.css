@@ -756,16 +756,35 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="tokyonight"][data-rb-setting-flourish="true"] .rb-article-header {
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="tokyonight"][data-rb-setting-flourish="true"]
+  .rb-article-header {
   position: relative;
 }
-:is(:root, .rb-theme-root)[data-rb-theme="tokyonight"][data-rb-setting-flourish="true"] .rb-article-header::after {
+:is(:root, .rb-theme-root)[data-rb-theme="tokyonight"]
+  .rb-article-content
+  > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
+  + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
+  margin-block-start: 2rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="tokyonight"][data-rb-setting-flourish="true"]
+  .rb-article-header::after {
   content: "";
   display: block;
   width: 5rem;
   height: 0.75rem;
   margin-top: 1rem;
   background-color: var(--rb-color-accent);
-  mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCAxNicgZmlsbD0nbm9uZSc+PHBhdGggZD0nTTAgOCBIMjAgVjIgSDQwIFY4IEg2MCBWMTQgSDgwJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEuNScgZmlsbD0nbm9uZScvPjwvc3ZnPg==") center / contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCAxNicgZmlsbD0nbm9uZSc+PHBhdGggZD0nTTAgOCBIMjAgVjIgSDQwIFY4IEg2MCBWMTQgSDgwJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEuNScgZmlsbD0nbm9uZScvPjwvc3ZnPg==") center / contain no-repeat;
+  mask:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCAxNicgZmlsbD0nbm9uZSc+PHBhdGggZD0nTTAgOCBIMjAgVjIgSDQwIFY4IEg2MCBWMTQgSDgwJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEuNScgZmlsbD0nbm9uZScvPjwvc3ZnPg==")
+    center / contain no-repeat;
+  -webkit-mask:
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA4MCAxNicgZmlsbD0nbm9uZSc+PHBhdGggZD0nTTAgOCBIMjAgVjIgSDQwIFY4IEg2MCBWMTQgSDgwJyBzdHJva2U9J2JsYWNrJyBzdHJva2Utd2lkdGg9JzEuNScgZmlsbD0nbm9uZScvPjwvc3ZnPg==")
+    center / contain no-repeat;
 }

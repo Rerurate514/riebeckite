@@ -418,9 +418,22 @@
   line-height: 0.78;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
   .rb-article-header::before,
-:is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
   .rb-article-header::after {
   display: none;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
+  .rb-article-content
+  > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
+  + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
+  margin-block-start: 2rem;
 }

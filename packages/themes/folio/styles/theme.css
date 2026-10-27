@@ -322,3 +322,10 @@
     font-size: 0.4375rem;
   }
 }
+
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
+  .rb-article-content
+  > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
+  + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
+  margin-block-start: 2rem;
+}

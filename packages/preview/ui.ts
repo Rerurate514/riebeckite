@@ -50,6 +50,7 @@ export type PreviewUiOptions = {
         readonly style: string;
       }
     | undefined;
+  readonly articleTitle?: string;
   readonly contentStyles?: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly endpoint?: string;
@@ -126,7 +127,7 @@ export function mountPreview(
   );
   const fixture = requireElement<HTMLSelectElement>(root, selectors.fixture);
   const frame = requireElement<HTMLIFrameElement>(root, selectors.frame);
-  frame.setAttribute("sandbox", "");
+  frame.setAttribute("sandbox", "allow-same-origin");
   const theme = requireElement<HTMLSelectElement>(root, selectors.theme);
   const mode = requireElement<HTMLSelectElement>(root, selectors.mode);
   const status = requireElement(root, selectors.status);
@@ -144,6 +145,7 @@ export function mountPreview(
     themeStyles: options.themeStyles,
     themeAttributes: options.themeAttributes ?? {},
     themeSettings: options.themeSettings,
+    articleTitle: options.articleTitle,
     contentStyles: options.contentStyles ?? [],
     pluginStyles: options.pluginStyles,
     messages,
@@ -167,10 +169,24 @@ export function mountPreview(
     void controller.render(readInput(root, markdown, fixture, selectors));
   };
 
-  root.addEventListener("input", render, { signal: lifetime.signal });
+  root.addEventListener(
+    "input",
+    (event) => {
+      if (isThemeSettingEvent(event)) {
+        updateThemeSettings(elements);
+        return;
+      }
+      render();
+    },
+    { signal: lifetime.signal },
+  );
   root.addEventListener(
     "change",
     (event) => {
+      if (isThemeSettingEvent(event)) {
+        updateThemeSettings(elements);
+        return;
+      }
       if (event.target === fixture) {
         const value = readFixtureMarkdown(root, fixture.value);
         if (value !== undefined) markdown.value = value;
@@ -219,6 +235,7 @@ type PreviewElements = {
     Record<string, Readonly<Record<string, string>>>
   >;
   readonly themeSettings: PreviewUiOptions["themeSettings"];
+  readonly articleTitle: PreviewUiOptions["articleTitle"];
   readonly contentStyles: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly messages: PreviewUiMessages;
@@ -235,7 +252,6 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
     html: state.response.html,
     styles: [
       themeStyle ?? elements.themeStyles.default ?? "",
-      themeSettings?.style ?? "",
       ...elements.contentStyles,
       ...elements.pluginStyles,
     ],
@@ -245,6 +261,8 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
       elements.mode.value === "dark" || elements.mode.value === "system"
         ? elements.mode.value
         : "light",
+    articleTitle: elements.articleTitle,
+    themeSettingsStyle: themeSettings?.style,
     themeAttributes:
       themeSettings?.attributes ??
       elements.themeAttributes[elements.theme.value],
@@ -262,6 +280,31 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
   )
     ? elements.messages.checkDiagnostics
     : elements.messages.rendered;
+}
+
+function isThemeSettingEvent(event: Event): boolean {
+  return (
+    event.target instanceof Element &&
+    event.target.closest("[data-preview-theme-settings]") !== null
+  );
+}
+
+function updateThemeSettings(elements: PreviewElements): void {
+  const document = elements.frame.contentDocument;
+  const settings = elements.themeSettings?.(elements.theme.value);
+  if (!document || !settings) return;
+  for (const element of document.querySelectorAll(":root, .rb-theme-root")) {
+    for (const attribute of [...element.attributes]) {
+      if (attribute.name.startsWith("data-rb-setting-"))
+        element.removeAttribute(attribute.name);
+    }
+    for (const [name, value] of Object.entries(settings.attributes))
+      element.setAttribute(name, value);
+  }
+  const style = document.querySelector<HTMLStyleElement>(
+    "style[data-rb-preview-theme-settings]",
+  );
+  if (style) style.textContent = settings.style;
 }
 
 function readInput(

@@ -61,6 +61,11 @@ const themeStyles = {
 const themeAttributes = Object.fromEntries(
   showcaseThemes.map((theme) => [theme.name, theme.attributes]),
 );
+const previewLayoutStyle = `
+html, body { margin: 0; min-height: 100%; }
+.rb-theme-root { min-height: 100vh; padding: 1rem; }
+.rb-article { width: min(100%, var(--rb-layout-article-max, 48rem)); margin-inline: auto; }
+`;
 
 export function initThemeShowcase(): void {
   const root = document.querySelector<globalThis.HTMLElement>(
@@ -94,6 +99,8 @@ export function initThemeShowcase(): void {
     themeStyles,
     themeAttributes,
     themeSettings: (name) => resolveSettings(name, settingsByTheme[name] ?? {}),
+    articleTitle: locale === "ja" ? "テーマのプレビュー" : "Theme preview",
+    contentStyles: [previewLayoutStyle],
     pluginStyles: [],
     transport: createPreviewSessionTransport(session),
     selectors: {
@@ -157,7 +164,6 @@ export function initThemeShowcase(): void {
           "[data-preview-mode]",
         ).value,
       );
-      themeSelect.dispatchEvent(new Event("change", { bubbles: true }));
     });
     root
       .querySelectorAll<globalThis.HTMLElement>("[data-theme-card]")
@@ -394,7 +400,7 @@ function renderThemeSettings(
       description.textContent = setting.description;
       field.appendChild(description);
     }
-    input.addEventListener("change", () => {
+    const updateSetting = () => {
       settingsByTheme[theme.name] = {
         ...settingsByTheme[theme.name],
         [key]:
@@ -406,7 +412,11 @@ function renderThemeSettings(
               : input.value,
       };
       onChange();
-    });
+    };
+    input.addEventListener(
+      setting.type === "select" ? "change" : "input",
+      updateSetting,
+    );
     fragment.appendChild(field);
   }
   container.replaceChildren(fragment);

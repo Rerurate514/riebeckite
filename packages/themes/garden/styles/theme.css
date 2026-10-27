@@ -527,10 +527,23 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
   .rb-article-header::after,
-:is(:root, .rb-theme-root)[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
   .rb-article-content
   h2::after {
   display: none;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="garden"]
+  .rb-article-content
+  > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
+  + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
+  margin-block-start: 2rem;
 }

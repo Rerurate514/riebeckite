@@ -105,12 +105,12 @@
       "bytes": 43282
     },
     "module-light.png": {
-      "sha256": "6214d030d513c5f171980ad98f699b144bb3f327e444959f0ac41147d749f501",
-      "bytes": 133038
+      "sha256": "b75be527d83b470ffba44f9028b53bab03a9137213dafeed2f81d7ac1e683d02",
+      "bytes": 133039
     },
     "module-dark.png": {
-      "sha256": "f508607813730284b610162b4dc5e68e6f61b4120e4a31527cc9ac98ec006549",
-      "bytes": 124185
+      "sha256": "095cf3bf16c2829ab0ec7798ab4f0d1236b4126b038288d319339da9c36543e6",
+      "bytes": 124186
     }
   }
 }

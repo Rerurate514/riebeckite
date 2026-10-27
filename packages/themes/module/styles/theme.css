@@ -297,6 +297,11 @@
   box-shadow: inset 2px 0 var(--rb-color-accent);
 }
 
+:is(:root, .rb-theme-root)[data-rb-theme="module"] .rr-callout {
+  margin-block: 1.5rem;
+  padding: 1rem 1.25rem;
+}
+
 @media (max-width: 48rem) {
   :is(:root, .rb-theme-root)[data-rb-theme="module"] .rb-article-header {
     padding: 1.25rem;

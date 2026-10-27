@@ -131,21 +131,26 @@
   }
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header {
-  border-bottom: 1px solid var(--rb-color-border);
   margin-bottom: 2.5rem;
   padding-bottom: 3rem;
   position: relative;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header::after {
   background-color: var(--rb-color-accent);
-  mask: var(--rb-garden-sprig) center / contain no-repeat;
-  -webkit-mask: var(--rb-garden-sprig) center / contain no-repeat;
+  mask-image: var(--rb-garden-sprig);
+  -webkit-mask-image: var(--rb-garden-sprig);
+  mask-repeat: repeat-x;
+  -webkit-mask-repeat: repeat-x;
+  mask-position: left center;
+  -webkit-mask-position: left center;
+  mask-size: auto 100%;
+  -webkit-mask-size: auto 100%;
   bottom: 0.9rem;
   content: "";
   height: 1.125rem;
   left: 0;
   position: absolute;
-  width: 7rem;
+  width: 100%;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header h1 {
   font-family: var(--rb-font-heading);
@@ -167,19 +172,7 @@
   margin-top: 3.5rem;
   padding-top: 1.25rem;
 }
-:is(:root, .rb-theme-root)[data-rb-theme="garden"]
-  .rb-article-content
-  h2::after {
-  background-color: var(--rb-color-accent);
-  mask: var(--rb-garden-sprig) center / contain no-repeat;
-  -webkit-mask: var(--rb-garden-sprig) center / contain no-repeat;
-  content: "";
-  display: inline-block;
-  height: 0.8em;
-  margin-left: 0.7rem;
-  vertical-align: 0.05em;
-  width: 3.8rem;
-}
+
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-content h3 {
   font-family: var(--rb-font-heading);
   font-size: 1.2rem;

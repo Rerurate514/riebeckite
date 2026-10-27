@@ -1,6 +1,6 @@
+import { reflectThemeSettings, validateThemeSettings } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { createPreview, definePluginPreview } from "@riebeckite/preview";
-import { reflectThemeSettings, validateThemeSettings } from "@riebeckite/core";
 import {
   createPreviewSessionTransport,
   mountPreview,
@@ -306,9 +306,11 @@ function renderThemeSettings(
   const settings = settingsByTheme[theme.name] ?? {};
   const fragment = document.createDocumentFragment();
   if (Object.keys(theme.presets).length > 0) {
-    const label = document.createElement("label");
-    label.textContent = "Preset";
+    const field = document.createElement("label");
+    field.className = "theme-showcase__setting";
+    field.dataset.settingType = "preset";
     const select = document.createElement("select");
+    select.className = "theme-showcase__setting-control";
     select.add(new Option("Default", ""));
     for (const [key, preset] of Object.entries(theme.presets)) {
       select.add(new Option(preset.label, key));
@@ -325,12 +327,15 @@ function renderThemeSettings(
       renderThemeSettings(root, theme, settingsByTheme, onChange);
       onChange();
     });
-    label.appendChild(select);
-    fragment.appendChild(label);
+    field.appendChild(createSettingHead("Preset"));
+    field.appendChild(select);
+    fragment.appendChild(field);
   }
   for (const [key, setting] of Object.entries(theme.settings)) {
-    const label = document.createElement("label");
-    label.textContent = setting.label;
+    const field = document.createElement("label");
+    field.className = "theme-showcase__setting";
+    field.dataset.settingType = setting.type;
+    const head = createSettingHead(setting.label);
     const value = settings[key] ?? setting.default;
     let input: HTMLInputElement | HTMLSelectElement;
     if (setting.type === "select") {
@@ -343,6 +348,7 @@ function renderThemeSettings(
       if (setting.type === "boolean") {
         input.type = "checkbox";
         input.checked = value === true;
+        head.insertBefore(input, head.firstChild);
       } else {
         input.type =
           setting.type === "color"
@@ -360,6 +366,32 @@ function renderThemeSettings(
         }
       }
     }
+    input.className = "theme-showcase__setting-control";
+    if (setting.type !== "boolean") {
+      if (
+        setting.type === "color" ||
+        setting.type === "number" ||
+        setting.type === "slider"
+      ) {
+        const output = document.createElement("output");
+        output.className = "theme-showcase__setting-value";
+        output.textContent = input.value;
+        head.appendChild(output);
+        input.addEventListener("input", () => {
+          output.textContent = input.value;
+        });
+      }
+      field.appendChild(head);
+      field.appendChild(input);
+    } else {
+      field.appendChild(head);
+    }
+    if (setting.description) {
+      const description = document.createElement("span");
+      description.className = "theme-showcase__setting-description";
+      description.textContent = setting.description;
+      field.appendChild(description);
+    }
     input.addEventListener("change", () => {
       settingsByTheme[theme.name] = {
         ...settingsByTheme[theme.name],
@@ -373,10 +405,19 @@ function renderThemeSettings(
       };
       onChange();
     });
-    label.appendChild(input);
-    fragment.appendChild(label);
+    fragment.appendChild(field);
   }
   container.replaceChildren(fragment);
+}
+
+function createSettingHead(label: string): HTMLSpanElement {
+  const head = document.createElement("span");
+  head.className = "theme-showcase__setting-head";
+  const name = document.createElement("span");
+  name.className = "theme-showcase__setting-name";
+  name.textContent = label;
+  head.appendChild(name);
+  return head;
 }
 
 function required<Element>(

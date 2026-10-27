@@ -68,68 +68,90 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
             {japanese ? "プレビューを準備中" : "Preparing preview"}
           </output>
           <div class="theme-showcase__controls">
-            <label>
-              {japanese ? "テーマ" : "Theme"}
-              <select data-preview-theme>
-                {themes.map((theme) => (
-                  <option value={theme.name} key={theme.name}>
-                    {theme.label}
+            <div class="theme-showcase__toolbar">
+              <label class="theme-showcase__control">
+                <span class="theme-showcase__control-label">
+                  {japanese ? "テーマ" : "Theme"}
+                </span>
+                <select data-preview-theme>
+                  {themes.map((theme) => (
+                    <option value={theme.name} key={theme.name}>
+                      {theme.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label class="theme-showcase__control">
+                <span class="theme-showcase__control-label">
+                  {japanese ? "カラーモード" : "Color mode"}
+                </span>
+                <select data-preview-mode>
+                  <option value="light">{japanese ? "ライト" : "Light"}</option>
+                  <option value="dark">{japanese ? "ダーク" : "Dark"}</option>
+                  <option value="system" selected>
+                    {japanese ? "システム" : "System"}
                   </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              {japanese ? "カラーモード" : "Color mode"}
-              <select data-preview-mode>
-                <option value="light">{japanese ? "ライト" : "Light"}</option>
-                <option value="dark">{japanese ? "ダーク" : "Dark"}</option>
-                <option value="system" selected>
-                  {japanese ? "システム" : "System"}
-                </option>
-              </select>
-            </label>
-            <label>
-              {japanese ? "サンプル" : "Sample"}
-              <select data-preview-fixture>
-                {fixtures.map((fixture) => (
-                  <option value={fixture.id} key={fixture.id}>
-                    {fixture.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label hidden>
-              {japanese ? "ページ" : "Page"}
-              <select data-preview-page />
-            </label>
-            <div data-preview-theme-settings />
-            <fieldset class="theme-showcase__devices">
-              <legend>{japanese ? "表示幅" : "Viewport"}</legend>
+                </select>
+              </label>
+              <label class="theme-showcase__control">
+                <span class="theme-showcase__control-label">
+                  {japanese ? "サンプル" : "Sample"}
+                </span>
+                <select data-preview-fixture>
+                  {fixtures.map((fixture) => (
+                    <option value={fixture.id} key={fixture.id}>
+                      {fixture.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label hidden>
+                {japanese ? "ページ" : "Page"}
+                <select data-preview-page />
+              </label>
+              <fieldset class="theme-showcase__devices">
+                <legend>{japanese ? "表示幅" : "Viewport"}</legend>
+                <div class="theme-showcase__segmented">
+                  <button
+                    type="button"
+                    data-preview-device="desktop"
+                    aria-pressed="true"
+                  >
+                    {japanese ? "デスクトップ" : "Desktop"}
+                  </button>
+                  <button
+                    type="button"
+                    data-preview-device="tablet"
+                    aria-pressed="false"
+                  >
+                    {japanese ? "タブレット" : "Tablet"}
+                  </button>
+                  <button
+                    type="button"
+                    data-preview-device="mobile"
+                    aria-pressed="false"
+                  >
+                    {japanese ? "モバイル" : "Mobile"}
+                  </button>
+                </div>
+              </fieldset>
               <button
+                class="theme-showcase__reset"
                 type="button"
-                data-preview-device="desktop"
-                aria-pressed="true"
+                data-preview-reset
               >
-                {japanese ? "デスクトップ" : "Desktop"}
+                {japanese ? "プレビューをリセット" : "Reset preview"}
               </button>
-              <button
-                type="button"
-                data-preview-device="tablet"
-                aria-pressed="false"
-              >
-                {japanese ? "タブレット" : "Tablet"}
-              </button>
-              <button
-                type="button"
-                data-preview-device="mobile"
-                aria-pressed="false"
-              >
-                {japanese ? "モバイル" : "Mobile"}
-              </button>
-            </fieldset>
-            <button type="button" data-preview-reset>
-              {japanese ? "プレビューをリセット" : "Reset preview"}
-            </button>
+            </div>
+            <div class="theme-showcase__settings">
+              <p class="theme-showcase__eyebrow">
+                {japanese ? "テーマ設定" : "Theme settings"}
+              </p>
+              <div
+                class="theme-showcase__settings-grid"
+                data-preview-theme-settings
+              />
+            </div>
           </div>
           <textarea data-preview-markdown hidden>
             {fixtures[0].markdown}

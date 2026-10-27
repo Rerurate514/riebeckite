@@ -1,4 +1,5 @@
 import {
+  type ScaffoldLanguage,
   type ScaffoldPluginSpec,
   type ScaffoldPreset,
   validateScaffoldPreset,
@@ -114,7 +115,7 @@ export function composeScaffoldPreset(
   const composed: ScaffoldPreset = {
     ...preset,
     languages: features.includes("i18n")
-      ? [...new Set([...preset.languages, "en", "ja"])]
+      ? [...new Set<ScaffoldLanguage>([...preset.languages, "en", "ja"])]
       : preset.languages,
     plugins,
   };

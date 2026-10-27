@@ -29,7 +29,8 @@
     --rb-color-code-inline: #15351b;
     --rb-color-overlay: rgb(0 0 0 / 0.78);
     --rb-font-body:
-      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+      "Cascadia Mono", "Cascadia Code", "Lucida Console", "DejaVu Sans Mono",
+      "Noto Sans Mono CJK JP", monospace;
     --rb-font-heading: var(--rb-font-body);
     --rb-font-mono: var(--rb-font-body);
     --rb-layout-page-max: 88rem;
@@ -85,6 +86,7 @@
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
+    font-variant-ligatures: none;
     accent-color: var(--rb-color-accent);
     caret-color: var(--rb-color-accent);
   }

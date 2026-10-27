@@ -60,6 +60,7 @@ const NODE_HEIGHT = 36;
 const CENTER_HEIGHT = 40;
 const MAX_NODE_WIDTH = 150;
 const MAX_CENTER_WIDTH = 180;
+const NODE_GAP = 12;
 
 /**
  * Position every node in its ExcaliBrain region. Parents sit at the top,
@@ -106,6 +107,21 @@ export function layoutExcaliBrain(
       .sort(compareNodes)
       .slice(0, maxPerRegion);
     if (group.length === 0) continue;
+
+    if (role === "parent" || role === "child") {
+      positioned.push(
+        ...positionVerticalGroup(
+          group,
+          role,
+          nearRadius,
+          cx,
+          cy,
+          width,
+          height,
+        ),
+      );
+      continue;
+    }
 
     if (role === "sibling") {
       const buckets: ExcaliBrainNode[][] = [[], [], [], []];
@@ -198,10 +214,7 @@ function positionNode(
   height: number,
 ): ExcaliBrainPositionedNode {
   const point = polar(cx, cy, angle, radius);
-  const boxWidth = Math.min(
-    MAX_NODE_WIDTH,
-    Math.max(56, Math.round(node.title.length * 6.6 + 20)),
-  );
+  const boxWidth = nodeWidth(node.title);
   return {
     id: node.id,
     role: node.role,
@@ -220,6 +233,71 @@ function positionNode(
     width: boxWidth,
     height: NODE_HEIGHT,
   };
+}
+
+function positionVerticalGroup(
+  nodes: readonly ExcaliBrainNode[],
+  role: "parent" | "child",
+  radius: number,
+  cx: number,
+  cy: number,
+  width: number,
+  height: number,
+): ExcaliBrainPositionedNode[] {
+  const rows: ExcaliBrainNode[][] = [[]];
+  let rowWidth = 0;
+  for (const node of nodes) {
+    const nextWidth = nodeWidth(node.title);
+    if (rowWidth > 0 && rowWidth + NODE_GAP + nextWidth > width - 8) {
+      rows.push([]);
+      rowWidth = 0;
+    }
+    rows.at(-1)?.push(node);
+    rowWidth += (rowWidth > 0 ? NODE_GAP : 0) + nextWidth;
+  }
+
+  return rows.flatMap((row, rowIndex) => {
+    const totalWidth =
+      row.reduce((sum, node) => sum + nodeWidth(node.title), 0) +
+      NODE_GAP * (row.length - 1);
+    let x = Math.round(cx - totalWidth / 2);
+    const y = clamp(
+      Math.round(
+        cy +
+          (role === "child" ? radius : -radius) -
+          NODE_HEIGHT / 2 +
+          (role === "child" ? 1 : -1) * rowIndex * (NODE_HEIGHT + NODE_GAP),
+      ),
+      4,
+      height - NODE_HEIGHT - 4,
+    );
+    return row.map((node) => {
+      const nodeWidthValue = nodeWidth(node.title);
+      const positioned: ExcaliBrainPositionedNode = {
+        id: node.id,
+        role: node.role,
+        region: ROLE_REGION[node.role],
+        relationType: node.relationType,
+        title: node.title,
+        slug: node.slug,
+        permalink: node.permalink,
+        virtual: node.virtual,
+        x: clamp(x, 4, width - nodeWidthValue - 4),
+        y,
+        width: nodeWidthValue,
+        height: NODE_HEIGHT,
+      };
+      x += nodeWidthValue + NODE_GAP;
+      return positioned;
+    });
+  });
+}
+
+function nodeWidth(title: string): number {
+  return Math.min(
+    MAX_NODE_WIDTH,
+    Math.max(56, Math.round(title.length * 6.6 + 20)),
+  );
 }
 
 function polar(

@@ -151,6 +151,25 @@ test("lays out every region deterministically", () => {
   assert.equal(collapsed.nodes[0]?.region, "center");
 });
 
+test("separates multiple child labels", () => {
+  const graph: ExcaliBrainGraph = {
+    center: node("center", "center", "プラグインの動作"),
+    nodes: Array.from({ length: 5 }, (_, index) =>
+      node(`child-${index}`, "child", `子ノード ${index + 1}`),
+    ),
+    links: [],
+  };
+  const layout = layoutExcaliBrain(graph);
+  const children = layout.nodes.filter((item) => item.role === "child");
+
+  for (let index = 0; index < children.length - 1; index += 1) {
+    const current = children[index];
+    const next = children[index + 1];
+    assert.ok(current && next);
+    assert.ok(current.x + current.width + 12 <= next.x);
+  }
+});
+
 test("renders an SVG with escaped titles and links", () => {
   const graph: ExcaliBrainGraph = {
     center: {

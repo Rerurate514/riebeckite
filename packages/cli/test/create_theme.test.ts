@@ -53,7 +53,7 @@ test("renders a theme template with public contracts", () => {
   const first = renderThemeFiles("example", "minimal", [], true, true, true);
   const css = first.get("styles/theme.css") ?? "";
   assert.match(first.get("index.ts") ?? "", /defineTheme/);
-  assert.match(css, /data-theme-name="example"/);
+  assert.match(css, /data-rb-theme="example"/);
   assert.match(css, /--rb-color-paper/);
   assert.doesNotMatch(css, /\.rb-[\w-]+\s*>/);
 });

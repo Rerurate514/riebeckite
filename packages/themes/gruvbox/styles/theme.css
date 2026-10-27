@@ -13,7 +13,7 @@
 
 @layer base {
   /* Light / medium: bg0 = light0, bg1 = light0_soft. */
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] {
     color-scheme: light;
     --rb-color-paper: #fbf1c7;
     --rb-color-surface: #f2e5bc;
@@ -51,7 +51,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-gruvbox-contrast="soft"] {
+  )[data-rb-theme="gruvbox"][data-rb-setting-contrast="soft"] {
     --rb-color-paper: #f2e5bc;
     --rb-color-surface: #ebdbb2;
     --rb-color-surface-hover: #d5c4a1;
@@ -62,7 +62,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-gruvbox-contrast="hard"] {
+  )[data-rb-theme="gruvbox"][data-rb-setting-contrast="hard"] {
     --rb-color-paper: #f9f5d7;
     --rb-color-surface: #f2e5bc;
     --rb-color-surface-hover: #ebdbb2;
@@ -70,7 +70,7 @@
   }
 
   /* Dark / medium: bg0 = dark0, bg1 = dark0_soft. */
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #282828;
     --rb-color-surface: #32302f;
@@ -92,7 +92,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-theme="dark"][data-gruvbox-contrast="soft"] {
+  )[data-rb-theme="gruvbox"][data-rb-mode="dark"][data-rb-setting-contrast="soft"] {
     --rb-color-paper: #32302f;
     --rb-color-surface: #3c3836;
     --rb-color-surface-hover: #504945;
@@ -103,7 +103,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-theme="dark"][data-gruvbox-contrast="hard"] {
+  )[data-rb-theme="gruvbox"][data-rb-mode="dark"][data-rb-setting-contrast="hard"] {
     --rb-color-paper: #1d2021;
     --rb-color-surface: #282828;
     --rb-color-surface-hover: #32302f;
@@ -111,7 +111,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #282828;
       --rb-color-surface: #32302f;
@@ -129,18 +129,18 @@
       --gruvbox-focus-ring: #fabd2f;
     }
 
-    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not(
-        [data-theme]
-      )[data-gruvbox-contrast="soft"] {
+    :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]:not(
+        [data-rb-mode]
+      )[data-rb-setting-contrast="soft"] {
       --rb-color-paper: #32302f;
       --rb-color-surface: #3c3836;
       --rb-color-surface-hover: #504945;
       --rb-color-code-background: #1d2021;
     }
 
-    :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]:not(
-        [data-theme]
-      )[data-gruvbox-contrast="hard"] {
+    :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]:not(
+        [data-rb-mode]
+      )[data-rb-setting-contrast="hard"] {
       --rb-color-paper: #1d2021;
       --rb-color-surface: #282828;
       --rb-color-surface-hover: #32302f;
@@ -151,7 +151,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-typography="serif"] {
+  )[data-rb-theme="gruvbox"][data-rb-setting-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -161,14 +161,14 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="gruvbox"][data-typography="sans"] {
+  )[data-rb-theme="gruvbox"][data-rb-setting-typography="sans"] {
     --rb-font-body:
       ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
       sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -176,34 +176,34 @@
     caret-color: var(--rb-color-accent);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] ::selection {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rb-color-paper);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] :focus-visible {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] :focus-visible {
     outline: 2px solid var(--gruvbox-focus-ring);
     outline-offset: 2px;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] * {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] * {
     scrollbar-color: var(--rb-color-muted) transparent;
     scrollbar-width: thin;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"] ::-webkit-scrollbar {
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
     ::-webkit-scrollbar-thumb {
     background: var(--rb-color-muted);
     border-radius: 10px;
     border: 2px solid var(--rb-color-paper);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+  :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
     ::-webkit-scrollbar-track {
     background: transparent;
   }
@@ -219,44 +219,44 @@
  * ------------------------------------------------------------------ */
 
 /* ---- Site shell ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-site {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-site {
   background: var(--rb-color-paper);
   color: var(--rb-color-ink);
 }
 
 /* ---- Long-form rhythm ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content {
   font-family: var(--rb-font-body);
   font-size: 1.0625rem;
   line-height: 1.75;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content p {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content p {
   margin: 1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   :is(ul, ol) {
   margin: 1.1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content li {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content li {
   margin: 0.3em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   li::marker {
   color: var(--rb-color-muted);
 }
 
 /* ---- Headings: warm ink, clear size steps, quiet h2 rule ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-header {
   margin-bottom: 1.25rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-header h1 {
   margin: 0;
   color: var(--rb-color-ink);
   font-family: var(--rb-font-heading);
@@ -267,7 +267,7 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   :is(h2, h3, h4, h5, h6) {
   color: var(--rb-color-ink);
@@ -275,7 +275,7 @@
   line-height: 1.3;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content h2 {
   margin: 2.2em 0 0.7em;
   padding-bottom: 0.3em;
   border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
@@ -283,19 +283,19 @@
   font-weight: 700;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content h3 {
   margin: 1.8em 0 0.55em;
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content h4 {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content h4 {
   margin: 1.5em 0 0.45em;
   font-size: 1.02rem;
   font-weight: 600;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   :is(h5, h6) {
   margin: 1.3em 0 0.4em;
@@ -306,7 +306,7 @@
 }
 
 /* ---- Links: Gruvbox blue, underline on hover ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rb-article-content, .rb-article-footer, .rb-article-meta, .rb-sidebar)
   a {
   color: var(--rb-color-accent);
@@ -315,14 +315,14 @@
   text-underline-offset: 0.22em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rb-article-content, .rb-article-footer, .rb-article-meta, .rb-sidebar)
   a:hover {
   text-decoration: underline;
 }
 
 /* ---- Blockquote: flat, gray left rule (Gruvbox markdownBlockquote) ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   blockquote {
   margin: 1.5em 0 0;
@@ -333,11 +333,11 @@
   font-style: normal;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   blockquote
   p:first-of-type::before,
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   blockquote
   p:last-of-type::after {
@@ -345,14 +345,14 @@
 }
 
 /* ---- Rules ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-content hr {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content hr {
   margin: 2.6em 0;
   border: 0;
   border-top: var(--rb-rule-width) solid var(--rb-color-border);
 }
 
 /* ---- Inline code: chip on the Gruvbox code surface ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   :not(pre)
   > code {
@@ -366,7 +366,7 @@
 }
 
 /* ---- Bare fenced code (plugin code keeps its own frame/padding) ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   pre:not(:where(.rr-code *)) {
   margin: 1.5em 0;
@@ -381,7 +381,7 @@
   overflow-x: auto;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   pre:not(:where(.rr-code *))
   code {
@@ -393,7 +393,7 @@
 }
 
 /* ---- Tables: hairlines + a tinted header row ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   border: var(--rb-rule-width) solid var(--rb-color-border);
@@ -401,7 +401,7 @@
   font-size: 0.95em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   :is(th, td) {
   border: var(--rb-rule-width) solid var(--rb-color-border);
@@ -409,7 +409,7 @@
   text-align: left;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rb-article-content
   thead
   th {
@@ -423,7 +423,7 @@
 }
 
 /* ---- Media ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(
     .rb-article-content img,
     .rb-article-content video,
@@ -436,26 +436,26 @@
 }
 
 /* ---- Article chrome ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-meta {
   margin: 0 0 1.6rem;
   color: var(--rb-color-muted);
   font-size: 0.85rem;
   letter-spacing: 0.01em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-article-footer {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-footer {
   margin-top: 2.5rem;
   border-top: var(--rb-rule-width) solid var(--rb-color-border);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rb-sidebar {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-sidebar {
   border-left: var(--rb-rule-width) solid var(--rb-color-border-strong);
   padding-left: 1rem;
   font-size: 0.92rem;
 }
 
 /* ---- Plugin: quiet flat panels ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(
     .rr-table-of-contents,
     .rr-backlinks,
@@ -470,14 +470,14 @@
   padding: 0.9rem 1rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
   a {
   color: var(--rb-color-ink);
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
   a:hover {
   color: var(--rb-color-accent);
@@ -485,18 +485,18 @@
 }
 
 /* ---- Plugin: code frames (the plugin owns its own spacing) ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rr-code, .rr-code-tabs) {
   margin: 1.6rem 0;
   border: var(--rb-rule-width) solid var(--rb-color-border);
   border-radius: 2px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-code-tabs {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-code-tabs {
   background: var(--rb-color-code-background);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rr-code, .rr-code-tabs)
   pre {
   margin: 0;
@@ -508,7 +508,7 @@
 }
 
 /* ---- Plugin: callouts (flat, semantic left rule) ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-callout {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-callout {
   margin: 1.6rem 0;
   border: var(--rb-rule-width) solid var(--rb-color-border);
   border-left: 3px solid var(--rb-color-accent);
@@ -518,9 +518,7 @@
   padding: 0.9rem 1rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rr-callout
-  > :first-child {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-callout > :first-child {
   margin-top: 0;
   margin-bottom: 0.5rem;
   color: var(--rb-color-ink);
@@ -531,51 +529,49 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
-  .rr-callout
-  > :last-child {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-callout > :last-child {
   margin-bottom: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="warning"],
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="caution"] {
   border-left-color: var(--gruvbox-warning);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="danger"],
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="error"] {
   border-left-color: var(--rb-color-danger);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="success"],
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-callout[data-callout="tip"] {
   border-left-color: var(--rb-color-success);
 }
 
 /* ---- Plugin: surfaces ---- */
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   :is(.rr-search, .rr-cardlink, .rr-local-graph, .rr-mermaid) {
   border: var(--rb-rule-width) solid var(--rb-color-border);
   border-radius: 2px;
   background: var(--rb-color-surface);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-cardlink {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-cardlink {
   padding: 0.9rem 1rem;
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"] .rr-cardlink:hover {
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-cardlink:hover {
   border-color: var(--rb-color-accent);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="gruvbox"]
+:is(:root, .rb-theme-root)[data-rb-theme="gruvbox"]
   .rr-search
   :is(input, button) {
   border-radius: 2px;

@@ -39,9 +39,9 @@ async function pageWithThemes(): Promise<Page> {
   const page = await browser.newPage();
   await page.setContent(`<!doctype html>
 <style>${themeStyles}\n${searchStyle}</style>
-<div id="riebeckite-light" class="rb-theme-root" data-theme-name="riebeckite" data-theme="light"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
-<div id="gruvbox-dark" class="rb-theme-root" data-theme-name="gruvbox" data-theme="dark"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
-<div id="system" class="rb-theme-root" data-theme-name="riebeckite"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
+<div id="riebeckite-light" class="rb-theme-root" data-rb-theme="riebeckite" data-rb-mode="light"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
+<div id="gruvbox-dark" class="rb-theme-root" data-rb-theme="gruvbox" data-rb-mode="dark"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
+<div id="system" class="rb-theme-root" data-rb-theme="riebeckite"><div class="rr-search"><button class="rr-search-bar__trigger">Search</button></div></div>
 <button id="outside" class="rr-search-bar__trigger">Outside</button>`);
   return page;
 }

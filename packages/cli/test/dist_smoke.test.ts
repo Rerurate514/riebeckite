@@ -136,12 +136,10 @@ test("the built CLI previews an isolated local Theme", async () => {
   const themeRoot = path.join(project, "themes", "sample");
   const source = `import { defineTheme } from "@riebeckite/core";
 
-export function sampleTheme() {
-  return defineTheme({
-    name: "sample",
-    styles: [{ moduleSpecifier: "/themes/sample/styles/theme.css" }],
-  });
-}
+export const sampleTheme = defineTheme({
+  name: "sample",
+  styles: [{ moduleSpecifier: "/themes/sample/styles/theme.css" }],
+});
 `;
   const updatedSource = source.replace("theme.css", "updated.css");
   const port = await reservePort();

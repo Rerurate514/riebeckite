@@ -15,8 +15,7 @@
 }
 
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"]
-    .rb-docs-sidebar-rail {
+  :is(:root, .rb-theme-root)[data-rb-layout="article"] .rb-docs-sidebar-rail {
     display: block;
     grid-column: 1;
     grid-row: 1;

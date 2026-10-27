@@ -147,13 +147,13 @@
   margin: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme="dark"] .rb-canvas {
+:is(:root, .rb-theme-root)[data-rb-mode="dark"] .rb-canvas {
   --rb-canvas-paper: var(--rb-color-ink, #000000);
   --rb-canvas-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rb-canvas {
+  :is(:root, .rb-theme-root):not([data-rb-mode]) .rb-canvas {
     --rb-canvas-paper: var(--rb-color-ink, #000000);
     --rb-canvas-ink: var(--rb-color-paper, #ffffff);
   }

@@ -2,45 +2,29 @@
 
 <!-- Generated from docs/docs/themes/folio.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-A high-contrast portfolio theme with direct sans-serif typography, an
-asymmetric title rule, and a restrained vermilion accent.
+`@riebeckite/theme-folio` provides the **Folio** official theme. Its identity is `folio` and its settings schema is the source of truth for configuration and the preview controls.
 
-[日本語](./README_ja.md)
-
-## Usage
+## Use it
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { folioTheme } from "@riebeckite/theme-folio";
 
 export default defineConfig({
-  theme: folioTheme({ colorMode: "system" }),
+  theme: folioTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## Character
+`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
 
-- Large, tightly tracked titles, a left accent rule, and an SVG crop mark give
-  project pages a confident poster-like hierarchy.
-- A wide article measure suits project descriptions and media without turning
-  content into a card grid.
-- Media, lightbox, recent posts, and card links receive structural top rules
-  through stable public plugin roots; the frame and card hover use brief,
-  reduced-motion-safe movement.
+## Settings
 
-## Options and tokens
+Read `folioTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
 
-`folioTheme(options?)` accepts `ThemeConfig` fields other than `name`:
-`colorMode`, `typography`, `articleLayout`, `tokens`, and `userCss`. Use
-`tokens` for shared semantic color, type, spacing, and layout overrides.
+Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="folio"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
 
-## Modes and compatibility
-
-The theme has matching light, explicit-dark, and system-dark token contracts.
-It supports visible focus, responsive typography, reduced motion, and
-horizontally scrollable tables. It ships only CSS and uses system fonts.
-
-## Exports
-
-- `folioTheme(options?)`
-- `FolioThemeOptions`
-- `@riebeckite/theme-folio/style.css`
+See [Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) and [Writing a theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

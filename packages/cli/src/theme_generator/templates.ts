@@ -1,7 +1,7 @@
 import type { ThemeFeatureId, ThemeTemplateId } from "./registry.js";
 
 const root = (name: string) =>
-  `:is(:root, .rb-theme-root)[data-theme-name="${name}"]`;
+  `:is(:root, .rb-theme-root)[data-rb-theme="${name}"]`;
 
 export function renderThemeFiles(
   name: string,
@@ -22,20 +22,27 @@ export function renderThemeFiles(
 
 export function renderThemeIndex(name: string): string {
   const identifier = toIdentifier(name);
-  return `import { defineTheme, type ThemeConfig } from "@riebeckite/core";
+  return `import { defineTheme, defineThemeSettings } from "@riebeckite/core";
 
-export type ${identifier}ThemeOptions = Omit<ThemeConfig, "name" | "userCss"> & {
-  userCss?: string[];
-};
-
-export function ${identifier}Theme(options: ${identifier}ThemeOptions = {}) {
-  return defineTheme({
-    name: "${name}",
-    options,
-    styles: [{ moduleSpecifier: "/themes/${name}/styles/theme.css" }],
-    config: options,
-  });
-}
+export const ${identifier}Theme = defineTheme({
+  name: "${name}",
+  styles: [{ moduleSpecifier: "/themes/${name}/styles/theme.css" }],
+  settings: defineThemeSettings({
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+  }),
+  presets: {
+    reading: { label: "Reading", settings: { typography: "serif" } },
+  },
+});
 `;
 }
 
@@ -80,7 +87,7 @@ function renderThemeCss(
     font-family: var(--rb-font-body);
   }
 
-  ${selector}[data-typography="serif"] {
+  ${selector}[data-rb-setting-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", serif;
     --rb-font-heading: ui-sans-serif, system-ui, sans-serif;
   }
@@ -88,7 +95,7 @@ function renderThemeCss(
 `;
   const dark = darkMode
     ? `
-${selector}[data-theme="dark"] {
+ ${selector}[data-rb-mode="dark"] {
   color-scheme: dark;
   --rb-color-paper: #1d201d;
   --rb-color-surface: #282c28;
@@ -102,7 +109,7 @@ ${selector}[data-theme="dark"] {
 }
 
 @media (prefers-color-scheme: dark) {
-  ${selector}:not([data-theme]) {
+   ${selector}:not([data-rb-mode]) {
     color-scheme: dark;
     --rb-color-paper: #1d201d;
     --rb-color-surface: #282c28;
@@ -193,8 +200,8 @@ import { ${identifier}Theme } from "../index.js";
 
 test("creates the theme", () => {
   const theme = ${identifier}Theme({ colorMode: "dark" });
-  assert.equal(theme.name, "${name}");
-  assert.deepEqual(theme.styles, [{ moduleSpecifier: "/themes/${name}/styles/theme.css" }]);
+  assert.equal(theme.definition.name, "${name}");
+  assert.deepEqual(theme.definition.styles, [{ moduleSpecifier: "/themes/${name}/styles/theme.css" }]);
 });
 `;
 }

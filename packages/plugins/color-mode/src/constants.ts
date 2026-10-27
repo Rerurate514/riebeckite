@@ -25,6 +25,6 @@ export const COLOR_MODE_READY_ATTRIBUTE = "data-rb-color-mode";
 /**
  * `CustomEvent` dispatched on `document` whenever the mode changes, with
  * `{ detail: { mode } }`. Present for integrations (for example, re-rendering
- * diagrams that read `data-theme`); nothing consumes it today.
+ * diagrams that read `data-rb-mode`); nothing consumes it today.
  */
 export const COLOR_MODE_EVENT = "riebeckite:color-mode";

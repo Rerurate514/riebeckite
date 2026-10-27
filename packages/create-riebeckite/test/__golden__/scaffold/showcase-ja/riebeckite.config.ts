@@ -76,7 +76,7 @@ export default defineConfig({
   content: {
     directory: "content",
   },
-  theme: defaultTheme({ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] }),
+  theme: defaultTheme({ colorMode: "system" }),
   plugins: [
     obsidianMarkdown(),
     colorMode(),

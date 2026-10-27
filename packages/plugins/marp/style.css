@@ -130,13 +130,13 @@ figure[data-marp]:fullscreen > details {
   display: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme="dark"] .rb-marp {
+:is(:root, .rb-theme-root)[data-rb-mode="dark"] .rb-marp {
   --rr-marp-paper: var(--rb-color-ink, #000000);
   --rr-marp-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rb-marp {
+  :is(:root, .rb-theme-root):not([data-rb-mode]) .rb-marp {
     --rr-marp-paper: var(--rb-color-ink, #000000);
     --rr-marp-ink: var(--rb-color-paper, #ffffff);
   }

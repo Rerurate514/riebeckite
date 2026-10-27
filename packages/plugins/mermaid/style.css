@@ -42,13 +42,13 @@
   color: var(--rr-mermaid-muted);
 }
 
-:is(:root, .rb-theme-root)[data-theme="dark"] .rr-mermaid {
+:is(:root, .rb-theme-root)[data-rb-mode="dark"] .rr-mermaid {
   --rr-mermaid-paper: var(--rb-color-ink, #000000);
   --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rr-mermaid {
+  :is(:root, .rb-theme-root):not([data-rb-mode]) .rr-mermaid {
     --rr-mermaid-paper: var(--rb-color-ink, #000000);
     --rr-mermaid-ink: var(--rb-color-paper, #ffffff);
   }

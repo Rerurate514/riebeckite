@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] {
     color-scheme: light;
     --rb-color-paper: #faf8f3;
     --rb-color-surface: #fffdf9;
@@ -43,7 +43,7 @@
     --rb-radius-md: 0;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #211d1c;
     --rb-color-surface: #2d2725;
@@ -65,7 +65,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="editorial"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="editorial"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #211d1c;
       --rb-color-surface: #2d2725;
@@ -87,7 +87,7 @@
     }
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -96,55 +96,55 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] ::selection {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] ::selection {
   background: var(--rb-color-selected);
   color: var(--rb-color-ink);
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] :focus-visible {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] :focus-visible {
   outline: 2px solid var(--rb-color-focus);
   outline-offset: 3px;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article {
   font-size: 1.125rem;
   line-height: 1.82;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {
   margin: 3rem 0 4rem;
   text-align: center;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header h1 {
   font-family: var(--rb-font-heading);
   font-size: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
   font-weight: 400;
   line-height: 1.05;
   text-wrap: balance;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-meta {
   color: var(--rb-color-muted);
   font-family: ui-sans-serif, system-ui, "Hiragino Sans", sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content h2 {
   font-family: var(--rb-font-heading);
   font-size: 2rem;
   font-weight: 400;
   line-height: 1.15;
   margin-top: 4rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content h3 {
   font-family: var(--rb-font-heading);
   font-size: 1.4rem;
   font-weight: 400;
   margin-top: 2.75rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content a {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content a {
   color: var(--rb-color-link);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   blockquote {
   border-block: 1px solid var(--rb-color-border-strong);
@@ -154,17 +154,15 @@
   padding: 1.5rem 0;
   text-align: center;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   :is(pre, code) {
   font-family: var(--rb-font-mono);
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
-  .rb-article-content
-  pre {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content pre {
   overflow-x: auto;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   table {
   border-collapse: collapse;
@@ -172,62 +170,62 @@
   max-width: 100%;
   overflow-x: auto;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   :is(th, td) {
   border-bottom: 1px solid var(--rb-color-border);
   padding: 0.7rem;
   text-align: left;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   :is(.rr-callout, .rr-recent-posts, .rr-backlinks) {
   border-top: 1px solid var(--rb-color-border);
   margin-top: 2.5rem;
   padding-top: 1.25rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   :is(.rb-site-header, .rb-site-footer) {
   font-family: ui-sans-serif, system-ui, "Hiragino Sans", sans-serif;
 }
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article {
     font-size: 1.04rem;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {
     margin-block: 2rem 3rem;
     text-align: left;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] * {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] * {
     scroll-behavior: auto;
     transition-duration: 0s;
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] {
   --rb-editorial-ornament: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='16' viewBox='0 0 160 16'%3E%3Cpath d='M0 8h62m36 0h62M72 2l8 6-8 6m16-12-8 6 8 6' fill='none' stroke='%238a2738' stroke-width='1'/%3E%3Ccircle cx='80' cy='8' r='2.5' fill='%238a2738'/%3E%3C/svg%3E");
   --rb-editorial-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='40' viewBox='0 0 48 40'%3E%3Cpath d='M5 31c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H5zm21 0c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H26z' fill='%238a2738'/%3E%3C/svg%3E");
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"][data-theme="dark"] {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-mode="dark"] {
   --rb-editorial-ornament: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='16' viewBox='0 0 160 16'%3E%3Cpath d='M0 8h62m36 0h62M72 2l8 6-8 6m16-12-8 6 8 6' fill='none' stroke='%23eb9da9' stroke-width='1'/%3E%3Ccircle cx='80' cy='8' r='2.5' fill='%23eb9da9'/%3E%3C/svg%3E");
   --rb-editorial-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='40' viewBox='0 0 48 40'%3E%3Cpath d='M5 31c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H5zm21 0c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H26z' fill='%23eb9da9'/%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"]:not([data-theme]) {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]:not([data-rb-mode]) {
     --rb-editorial-ornament: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='16' viewBox='0 0 160 16'%3E%3Cpath d='M0 8h62m36 0h62M72 2l8 6-8 6m16-12-8 6 8 6' fill='none' stroke='%23eb9da9' stroke-width='1'/%3E%3Ccircle cx='80' cy='8' r='2.5' fill='%23eb9da9'/%3E%3C/svg%3E");
     --rb-editorial-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='40' viewBox='0 0 48 40'%3E%3Cpath d='M5 31c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H5zm21 0c0-11 4-19 14-23l3 5c-6 3-9 7-9 11h8v9H26z' fill='%23eb9da9'/%3E%3C/svg%3E");
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article {
   font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
   line-height: 1.9;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {
   position: relative;
   margin: 2rem 0 4.5rem;
   padding: 3.5rem 1rem 2.75rem;
@@ -235,9 +233,9 @@
   text-align: center;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-header::before,
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-header::after {
   display: block;
   width: min(10rem, 55%);
@@ -247,25 +245,25 @@
   background: var(--rb-editorial-ornament) center / contain no-repeat;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-header::before {
   margin-bottom: 1.75rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-header::after {
   margin-top: 1.75rem;
   transform: rotate(180deg);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header h1 {
   max-width: 17ch;
   margin-inline: auto;
   font-size: clamp(2.75rem, 2rem + 3.4vw, 5rem);
   letter-spacing: -0.04em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-meta {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
@@ -275,7 +273,7 @@
   letter-spacing: 0.16em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content h2 {
   margin-top: 4.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--rb-color-border-strong);
@@ -283,13 +281,13 @@
   letter-spacing: -0.025em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content h3 {
   color: var(--rb-color-accent);
   font-size: 1.5rem;
   font-style: italic;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content a {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content a {
   text-decoration-color: color-mix(
     in srgb,
     var(--rb-color-link) 55%,
@@ -302,14 +300,14 @@
     text-decoration-thickness 160ms ease;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   a:hover {
   color: var(--rb-color-accent);
   text-decoration-thickness: 2px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   blockquote {
   position: relative;
@@ -323,7 +321,7 @@
   line-height: 1.45;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   .rb-article-content
   blockquote::before {
   position: absolute;
@@ -336,7 +334,7 @@
   transform: translateX(-50%);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-content hr {
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-content hr {
   width: min(10rem, 45%);
   height: 1rem;
   margin: 4rem auto;
@@ -344,23 +342,21 @@
   background: var(--rb-editorial-ornament) center / contain no-repeat;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="editorial"]
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"]
   :is(.rr-callout, .rr-recent-posts, .rr-backlinks) {
   padding-top: 1.75rem;
   border-top: 1px solid var(--rb-color-border-strong);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]
     .rb-article-header::before {
     animation: editorial-reveal 500ms ease-out both;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"]
-    .rb-article-header
-    h1 {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header h1 {
     animation: editorial-rise 500ms ease-out 90ms both;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"]
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]
     .rb-article-header::after {
     animation: editorial-reveal 500ms ease-out 180ms both;
   }
@@ -389,10 +385,10 @@
 }
 
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-header {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {
     padding-block: 2.5rem 2rem;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="editorial"] .rb-article-meta {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-meta {
     justify-content: flex-start;
     margin-top: -2.25rem;
     margin-bottom: 2.5rem;

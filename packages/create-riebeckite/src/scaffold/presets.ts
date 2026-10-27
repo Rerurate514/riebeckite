@@ -573,8 +573,7 @@ const folioTheme = {
 const showCaseTheme: ScaffoldThemeSpec = {
   package: "@riebeckite/theme-default",
   factory: "defaultTheme",
-  options:
-    '{ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] }',
+  options: '{ colorMode: "system" }',
 };
 
 const minimalTheme = {

@@ -13,7 +13,7 @@ Riebeckite の Plugin エコシステムを実際に確認できる機能紹介�
 
 `riebeckite.config.ts` には、以下の全プラグインが全オプション付きで登録されています。これは出発点として使い、設定の仕様は[設定リファレンス](https://riebeckite.dev/docs/reference/configuration-reference)と各プラグインパッケージの README を確認してください。
 
-- **テーマ**: `defaultTheme({ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] })`
+- **テーマ**: `defaultTheme({ colorMode: "system" })`
 
 | Package | ファクトリ | オプション |
 | --- | --- | --- |

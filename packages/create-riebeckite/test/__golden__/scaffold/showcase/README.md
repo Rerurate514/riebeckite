@@ -13,7 +13,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 
 `riebeckite.config.ts` registers every plugin below with its full option set. Treat it as a starting point; the documented options live in the [configuration reference](https://riebeckite.dev/docs/reference/configuration-reference) and each plugin's package README.
 
-- **Theme**: `defaultTheme({ colorMode: "system", typography: "system", articleLayout: "article", userCss: [] })`
+- **Theme**: `defaultTheme({ colorMode: "system" })`
 
 | Package | Factory | Options |
 | --- | --- | --- |

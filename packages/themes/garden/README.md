@@ -2,46 +2,29 @@
 
 <!-- Generated from docs/docs/themes/garden.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-A warm, note-first theme for connected digital gardens. It uses a calm serif
-reading rhythm, olive interactive states, and rules rather than panels.
+`@riebeckite/theme-garden` provides the **Garden** official theme. Its identity is `garden` and its settings schema is the source of truth for configuration and the preview controls.
 
-[日本語](./README_ja.md)
-
-## Usage
+## Use it
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { gardenTheme } from "@riebeckite/theme-garden";
 
 export default defineConfig({
-  theme: gardenTheme({ colorMode: "system" }),
+  theme: gardenTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## Character
+`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
 
-- Warm paper, green links, and generous serif text support exploratory notes.
-- A leaf-and-stem SVG gives the article header and section headings a quiet
-  botanical thread; its short grow-in respects reduced-motion preferences.
-- Backlinks, local graphs, garden explorer, and callouts receive shared
-  ruled treatment through their stable public roots.
+## Settings
 
-## Options and tokens
+Read `gardenTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
 
-`gardenTheme(options?)` accepts `ThemeConfig` fields other than `name`,
-including `colorMode`, `typography`, `articleLayout`, `tokens`, and `userCss`.
-Use `tokens` to override the shared `--rb-color-*`, `--rb-font-*`, and layout
-tokens without changing the theme stylesheet.
+Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="garden"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
 
-## Modes and compatibility
-
-Light, explicit dark, and system dark modes define the same semantic token
-contract. `colorMode: "system"` follows `prefers-color-scheme` until a
-`data-theme` attribute is set. The stylesheet supports reduced motion, narrow
-screens, keyboard focus, and horizontally scrollable tables. It uses only
-system fonts and stable `rb-*` and `rr-*` hooks.
-
-## Exports
-
-- `gardenTheme(options?)`
-- `GardenThemeOptions`
-- `@riebeckite/theme-garden/style.css`
+See [Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) and [Writing a theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

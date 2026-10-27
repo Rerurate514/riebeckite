@@ -108,7 +108,7 @@ before(async () => {
   const clientJs = `${bundle.outputFiles[0].text}\nRiebeckiteSearch.initSearch();\nwindow.__searchReady = true;`;
 
   const html = `<!doctype html>
-<html lang="en" data-theme-name="default">
+<html lang="en" data-rb-theme="default">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />

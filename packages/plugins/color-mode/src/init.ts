@@ -64,9 +64,9 @@ export function initColorMode(): void {
 function apply(mode: ColorMode): void {
   const element = document.documentElement;
   if (mode === "system") {
-    element.removeAttribute("data-theme");
+    element.removeAttribute("data-rb-mode");
   } else {
-    element.setAttribute("data-theme", mode);
+    element.setAttribute("data-rb-mode", mode);
   }
   element.setAttribute(COLOR_MODE_READY_ATTRIBUTE, "ready");
 
@@ -94,7 +94,7 @@ function getCurrentMode(roots: readonly HTMLElement[]): ColorMode {
     const stored = readStoredMode(readStorageKey(root));
     if (stored !== null) return stored;
   }
-  const theme = document.documentElement.getAttribute("data-theme");
+  const theme = document.documentElement.getAttribute("data-rb-mode");
   return theme === "light" || theme === "dark" ? theme : "system";
 }
 

@@ -16,7 +16,7 @@
      (`paper` → `surface` → `surface-hover`), so a future background-contrast
      variant could remap these three values without touching the character
      layer. See the README for the upstream contrast variants. */
-  :is(:root, .rb-theme-root)[data-theme-name="minimal"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="minimal"] {
     color-scheme: light;
     --rb-color-paper: #ffffff;
     --rb-color-surface: #f7f7f7;
@@ -49,7 +49,7 @@
     --rb-layout-gap: 2rem;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="minimal"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="minimal"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1a1a1a;
     --rb-color-surface: #242424;
@@ -67,7 +67,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="minimal"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="minimal"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #1a1a1a;
       --rb-color-surface: #242424;
@@ -88,7 +88,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="minimal"][data-typography="serif"] {
+  )[data-rb-theme="minimal"][data-rb-setting-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading: ui-sans-serif, system-ui, sans-serif;
   }
@@ -96,12 +96,12 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="minimal"][data-typography="sans"] {
+  )[data-rb-theme="minimal"][data-rb-setting-typography="sans"] {
     --rb-font-body: ui-sans-serif, system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="minimal"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="minimal"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -122,59 +122,59 @@
  * `!important`.
  * ------------------------------------------------------------------ */
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] ::selection {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] ::selection {
   background: var(--rb-color-accent);
   color: var(--rb-color-paper);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] :focus-visible {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] :focus-visible {
   outline: 2px solid var(--rb-color-accent);
   outline-offset: 2px;
 }
 
 /* ---- Body rhythm: open leading, generous paragraphs. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content {
   font-family: var(--rb-font-body);
   font-size: 1.0625rem;
   line-height: 1.85;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content p {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content p {
   margin: 1.2em 0;
   text-wrap: pretty;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   :is(ul, ol) {
   margin: 1.35em 0;
   padding-left: 1.5em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   :is(ul, ol)
   :is(ul, ol) {
   margin: 0.5em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content li {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content li {
   margin: 0.5em 0;
   padding-left: 0.15em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   li::marker {
   color: var(--rb-color-muted);
 }
 
 /* ---- Headings: size, weight and tracking do the work. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-header {
   margin-bottom: 2.5rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-header h1 {
   font-family: var(--rb-font-heading);
   font-size: clamp(1.9rem, 1.5rem + 1.4vw, 2.4rem);
   font-weight: 700;
@@ -183,7 +183,7 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content h2 {
   margin: 3.25rem 0 1rem;
   padding-top: 1.75rem;
   border-top: 1px solid var(--rb-color-border);
@@ -195,7 +195,7 @@
   text-wrap: balance;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content h3 {
   margin: 2.25rem 0 0.75rem;
   font-family: var(--rb-font-heading);
   font-size: 1.125rem;
@@ -204,7 +204,7 @@
   letter-spacing: -0.005em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content h4 {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content h4 {
   margin: 1.9rem 0 0.6rem;
   font-family: var(--rb-font-heading);
   font-size: 1rem;
@@ -213,7 +213,7 @@
   letter-spacing: 0.01em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   :is(h5, h6) {
   margin: 1.6rem 0 0.5rem;
@@ -226,7 +226,7 @@
 }
 
 /* ---- Links: ink, with a quiet underline that firms up on hover. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a {
   color: var(--rb-color-ink);
@@ -240,14 +240,14 @@
   text-underline-offset: 0.25em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rb-article-content, .rb-article-footer, .rb-article-meta)
   a:hover {
   text-decoration-color: var(--rb-color-ink);
 }
 
 /* ---- Blockquote: a single hairline, muted ink, no fill. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   blockquote {
   margin: 2rem 0 0;
@@ -259,11 +259,11 @@
   font-style: normal;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   blockquote
   p:first-of-type::before,
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   blockquote
   p:last-of-type::after {
@@ -271,7 +271,7 @@
 }
 
 /* ---- Rules: a low-contrast hairline. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-content hr {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content hr {
   width: 100%;
   height: 1px;
   margin: 3.5rem 0;
@@ -280,7 +280,7 @@
 }
 
 /* ---- Inline code: a monochrome chip. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   :not(pre)
   > code {
@@ -294,7 +294,7 @@
 }
 
 /* ---- Bare code blocks: flat, hairline border, bare tint. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   pre:not(:where(.rr-code *)) {
   margin: 2rem 0 0;
@@ -309,13 +309,13 @@
   overflow-x: auto;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
   margin-bottom: 2rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   pre:not(:where(.rr-code *))
   code {
@@ -327,14 +327,14 @@
 }
 
 /* ---- Tables: hairlines and a quiet, weighted header. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   border: 0;
   font-size: 0.95em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   :is(th, td) {
   padding: 0.55em 0.85em;
@@ -343,7 +343,7 @@
   vertical-align: top;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   thead
   th {
@@ -353,7 +353,7 @@
   font-weight: 600;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rb-article-content
   tbody
   tr:last-child
@@ -362,7 +362,7 @@
 }
 
 /* ---- Media and embedded plugin frames: square corners. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(
     .rb-article-content img,
     .rb-article-content video,
@@ -376,7 +376,7 @@
 }
 
 /* ---- Article chrome: quiet hairlines. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-meta {
   margin: 0 0 2.5rem;
   padding-block: 0.75rem;
   border-block: 1px solid var(--rb-color-border);
@@ -386,14 +386,14 @@
   letter-spacing: 0.02em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-article-footer {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-footer {
   margin-top: 4rem;
   border-top: 1px solid var(--rb-color-border);
   color: var(--rb-color-muted);
   font-size: 0.9rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rb-sidebar {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-sidebar {
   padding-left: 1.25rem;
   border-left: 1px solid var(--rb-color-border);
   font-size: 0.9rem;
@@ -401,7 +401,7 @@
 }
 
 /* ---- Plugin roots: hairlines, no fill, room to breathe. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-table-of-contents {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-table-of-contents {
   margin: 2.5rem 0;
   padding: 1.25rem 1.15rem;
   border-radius: 0;
@@ -410,7 +410,7 @@
   line-height: 1.8;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-backlinks, .rr-recent-posts) {
   margin-top: 4rem;
   padding-top: 1.5rem;
@@ -419,14 +419,14 @@
   background: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
   a {
   color: var(--rb-color-ink);
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-table-of-contents, .rr-backlinks, .rr-recent-posts)
   a:hover {
   text-decoration: underline;
@@ -434,7 +434,7 @@
   text-underline-offset: 0.25em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-code, .rr-code-tabs) {
   margin: 2rem 0;
   border: 1px solid var(--rb-color-border);
@@ -444,16 +444,16 @@
 /* The code-enhance plugin paints every block with its own surface tokens, so
    the theme only reads them for the surface colour and the flat square frame.
    The plugin owns `.rr-code__pre` / `.rr-code__line` padding. */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-code {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-code {
   background: var(--rr-code-paper, var(--rb-color-code-background));
   color: var(--rr-code-ink, var(--rb-color-ink));
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-code-tabs {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-code-tabs {
   background: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-code, .rr-code-tabs)
   pre {
   margin: 0;
@@ -464,7 +464,7 @@
   font-family: var(--rb-font-mono);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-callout {
   --rr-callout-title-color: var(--rr-callout-tone);
   --rr-callout-title-font-family: var(--rb-font-body);
   --rr-callout-title-font-size: 0.8125rem;
@@ -487,11 +487,11 @@
   color: var(--rb-color-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-callout p:last-child {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-callout p:last-child {
   margin-bottom: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   :is(.rr-local-graph, .rr-mermaid) {
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
@@ -501,18 +501,18 @@
 /* `.rr-search` is the fixed wrapper, so it carries no frame of its own; the
    plugin's trigger and modal already read the semantic tokens. Square the
    controls and drop the modal shadow to match the flat character. */
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"]
   .rr-search
   :is(input, button, a, kbd) {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-search {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-search {
   --rr-search-modal-panel-border-radius: 0;
   --rr-search-modal-panel-shadow: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-cardlink {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-cardlink {
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
   background: none;
@@ -520,22 +520,21 @@
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-cardlink:hover,
-:is(:root, .rb-theme-root)[data-theme-name="minimal"]
-  .rr-cardlink:focus-visible {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-cardlink:hover,
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-cardlink:focus-visible {
   border-color: var(--rb-color-border-strong);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-lightbox img {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-lightbox img {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-garden-explorer {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-garden-explorer {
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
   background: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="minimal"] .rr-color-mode {
+:is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-color-mode {
   --rr-color-mode-border-radius: 0;
 }

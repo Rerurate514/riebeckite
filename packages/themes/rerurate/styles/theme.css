@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] {
     --rr-color-paper: #f6efe2;
     --rr-color-ink: #171717;
     --rr-color-orange: #f66620;
@@ -59,7 +59,7 @@
     --rb-layout-gap: 2rem;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #1c1a17;
     --rb-color-surface: #26231f;
@@ -78,7 +78,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #1c1a17;
       --rb-color-surface: #26231f;
@@ -100,7 +100,7 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-typography="serif"] {
+  )[data-rb-theme="rerurate"][data-rb-setting-typography="serif"] {
     --rb-font-body: Georgia, Cambria, "Times New Roman", Times, serif;
     --rb-font-heading:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
@@ -110,14 +110,14 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-typography="sans"] {
+  )[data-rb-theme="rerurate"][data-rb-setting-typography="sans"] {
     --rb-font-body:
       Futura, "Futura PT", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans",
       "Noto Sans JP", "Yu Gothic", system-ui, sans-serif;
     --rb-font-heading: var(--rb-font-body);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -125,12 +125,12 @@
     caret-color: var(--rb-color-accent);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] ::selection {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] ::selection {
     background: var(--rb-color-accent);
     color: var(--rr-color-paper, #f6efe2);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] :focus-visible {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] :focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
@@ -138,28 +138,29 @@
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-initial-size="small"] {
+  )[data-rb-theme="rerurate"][data-rb-setting-initial="small"] {
     --rr-initial-size: 1.8em;
   }
 
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-initial-size="medium"] {
+  )[data-rb-theme="rerurate"][data-rb-setting-initial="medium"] {
     --rr-initial-size: 2.4em;
   }
 
   :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-initial-size="large"] {
+  )[data-rb-theme="rerurate"][data-rb-setting-initial="large"] {
     --rr-initial-size: 3.2em;
   }
 
-  :is(
-      :root,
-      .rb-theme-root
-    )[data-theme-name="rerurate"][data-rerurate-initial="on"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:is(
+      [data-rb-setting-initial="small"],
+      [data-rb-setting-initial="medium"],
+      [data-rb-setting-initial="large"]
+    )
     .rb-article-content
     p:first-of-type::first-letter {
     float: left;
@@ -170,23 +171,23 @@
     line-height: 1;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] * {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] * {
     scrollbar-color: var(--rb-color-muted) transparent;
     scrollbar-width: thin;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] ::-webkit-scrollbar {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
     ::-webkit-scrollbar-thumb {
     background: var(--rb-color-muted);
     border: 2px solid var(--rb-color-paper);
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
     ::-webkit-scrollbar-track {
     background: transparent;
   }
@@ -206,7 +207,7 @@
  * defaults by cascade order, without `!important`.
  * ------------------------------------------------------------------ */
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] {
   /* Secondary palette: used only as thin adjacent rule segments. */
   --rr-color-red: #802520;
   --rr-color-ochre: #ba8530;
@@ -233,41 +234,41 @@
 }
 
 /* ---- Body rhythm: readable body, kept off the display treatment. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content {
   font-family: var(--rb-font-body);
   line-height: 1.75;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-header {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-site-header {
   border-bottom: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content p {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content p {
   margin: 1.1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   :is(ul, ol) {
   margin: 1.1em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content li {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content li {
   margin: 0.35em 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   li::marker {
   color: var(--rb-color-accent);
 }
 
 /* ---- Article header: rule first, then the title, then a diagram. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-header {
   margin-bottom: 2rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-header::before {
   content: "";
   display: block;
@@ -280,7 +281,7 @@
   transform-origin: left center;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-header h1 {
   margin: 0;
   color: var(--rb-color-accent);
   font-family: var(--rb-font-heading);
@@ -292,8 +293,7 @@
 }
 
 /* Rule -> diagram: a precise vector mark drawn from the header rule. */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-article-header::after {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-header::after {
   content: "";
   display: block;
   width: 68px;
@@ -310,7 +310,7 @@
 }
 
 /* ---- Metadata: sparse ALL CAPS English, led by a short Orange rule. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-meta {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -324,8 +324,7 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rb-article-meta::before {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-meta::before {
   content: "";
   flex: none;
   width: 1.75rem;
@@ -334,7 +333,7 @@
 }
 
 /* ---- Headings: hierarchy from size, weight and whitespace. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content h2 {
   margin: 2.75rem 0 0.9rem;
   padding-top: calc(3px + 0.6rem);
   font-family: var(--rb-font-heading);
@@ -350,7 +349,7 @@
   background-size: 2.75rem 3px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content h3 {
   margin: 2rem 0 0.6rem;
   font-family: var(--rb-font-heading);
   font-size: 1.05rem;
@@ -358,7 +357,7 @@
   line-height: 1.3;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content h4 {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content h4 {
   margin: 1.5rem 0 0.5rem;
   font-family: var(--rb-font-heading);
   font-size: 0.9rem;
@@ -366,7 +365,7 @@
   line-height: 1.35;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   :is(h5, h6) {
   margin: 1.25rem 0 0.4rem;
@@ -378,10 +377,10 @@
 /* ---- Markdown-style heading marks: `#` .. `#####` inline before the heading
    text so each heading reads as if the marks were typed from the start. The
    marks inherit the heading's own size, colour and font. On by default;
-   `data-rerurate-heading-marks="off"` removes them. h6 is left unmarked. ---- */
+   `data-rb-setting-heading-marks="false"` removes them. h6 is left unmarked. ---- */
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   :is(
     .rb-article-header h1,
@@ -397,40 +396,40 @@
   user-select: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   .rb-article-header
   h1::before {
   content: "#";
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   .rb-article-content
   h2::before {
   content: "##";
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   .rb-article-content
   h3::before {
   content: "###";
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   .rb-article-content
   h4::before {
   content: "####";
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-    [data-rerurate-heading-marks="off"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+    [data-rb-setting-heading-marks="false"]
   )
   .rb-article-content
   h5::before {
@@ -441,7 +440,7 @@
 :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  )[data-rb-theme="rerurate"][data-rb-setting-large-headings="large"]
   .rb-article-header
   h1 {
   font-size: clamp(2rem, 1.4rem + 2.4vw, 2.9rem);
@@ -450,7 +449,7 @@
 :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  )[data-rb-theme="rerurate"][data-rb-setting-large-headings="large"]
   .rb-article-content
   h2 {
   font-size: 1.35rem;
@@ -459,7 +458,7 @@
 :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  )[data-rb-theme="rerurate"][data-rb-setting-large-headings="large"]
   .rb-article-content
   h3 {
   font-size: 1.1rem;
@@ -468,14 +467,14 @@
 :is(
     :root,
     .rb-theme-root
-  )[data-theme-name="rerurate"][data-rerurate-headings="large"]
+  )[data-rb-theme="rerurate"][data-rb-setting-large-headings="large"]
   .rb-article-content
   h4 {
   font-size: 0.95rem;
 }
 
 /* ---- Links: Ink -> Orange, with the rule (underline) expanding. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   :is(
     .rb-article-content,
     .rb-article-footer,
@@ -500,7 +499,7 @@
     text-decoration-thickness var(--rr-motion-fast) var(--rr-motion-ease);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   :is(
     .rb-article-content,
     .rb-article-footer,
@@ -516,7 +515,7 @@
 }
 
 /* ---- Blockquote: flat, marked by Orange quote chevrons. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   blockquote {
   position: relative;
@@ -528,7 +527,7 @@
   font-style: normal;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   blockquote::before {
   content: "";
@@ -543,11 +542,11 @@
   background-size: contain;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   blockquote
   p:first-of-type::before,
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   blockquote
   p:last-of-type::after {
@@ -555,7 +554,7 @@
 }
 
 /* ---- Rules: 1px Ink, Paper-safe, stopping at the text edge. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-content hr {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content hr {
   width: 100%;
   height: 1px;
   margin: 3rem 0;
@@ -564,7 +563,7 @@
 }
 
 /* ---- Inline code and bare pre (guarded against the code plugin). ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   :not(pre)
   > code {
@@ -577,7 +576,7 @@
 }
 
 :where(
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
     .rb-article-content
     pre:not(:where(.rr-code *))
 ) {
@@ -594,7 +593,7 @@
 }
 
 :where(
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"][data-theme="dark"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-mode="dark"]
     .rb-article-content
     pre:not(:where(.rr-code *))
 ) {
@@ -604,7 +603,7 @@
 
 @media (prefers-color-scheme: dark) {
   :where(
-    :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not([data-theme])
+    :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not([data-rb-mode])
       .rb-article-content
       pre:not(:where(.rr-code *))
   ) {
@@ -613,13 +612,13 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   pre:not(:where(.rr-code *)):has(+ :is(h1, h2)) {
   margin-bottom: 1.75rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   pre:not(:where(.rr-code *))
   code {
@@ -630,13 +629,13 @@
 }
 
 /* ---- Tables: hairline rules, no card chrome. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   table:not(:where(.rr-diff-history *)) {
   font-size: 0.92em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   :is(th, td) {
   padding: 0.55rem 0.75rem;
@@ -645,7 +644,7 @@
   vertical-align: top;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   thead
   th {
@@ -654,7 +653,7 @@
   font-weight: 600;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rb-article-content
   tbody
   tr:last-child
@@ -663,19 +662,19 @@
 }
 
 /* ---- Article chrome: flat rules, square corners. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-article-footer {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-footer {
   margin-top: 3rem;
   border-top: 1px solid var(--rb-color-border);
   font-size: 0.9rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-sidebar {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-sidebar {
   padding-left: 1rem;
   border-left: 1px solid var(--rb-color-border-strong);
   font-size: 0.9rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   :is(
     .rb-article-content img,
     .rb-article-content video,
@@ -686,13 +685,13 @@
 }
 
 /* ---- Plugin roots: flatten radii and normalise rules. ---- */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-code {
   margin: 1.75rem 0 0;
   border: 1px solid var(--rb-color-border);
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code pre {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-code pre {
   margin: 0;
   border: 0;
   border-radius: 0;
@@ -700,17 +699,17 @@
   font-family: var(--rb-font-mono);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code-tabs {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-code-tabs {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-code-tabs .rr-code {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-code-tabs .rr-code {
   margin-block: 0;
   border: 0;
 }
 
 /* Callouts: flat Paper/Ink, 1px rule, Orange left rule, ALL CAPS title. */
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-callout {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-callout {
   --rr-callout-title-color: var(--rb-color-ink);
   --rr-callout-title-font-family: var(--rb-font-heading);
   --rr-callout-title-font-size: 0.72rem;
@@ -731,7 +730,7 @@
   color: var(--rb-color-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-table-of-contents {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-table-of-contents {
   --rr-table-of-contents-eyebrow-font-size: 1rem;
   --rr-table-of-contents-eyebrow-margin-block-end: 1rem;
   --rr-table-of-contents-item-line-height: 22px;
@@ -739,49 +738,47 @@
   font-size: 0.9rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-backlinks {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-backlinks {
   margin-top: 3.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--rb-color-border);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-recent-posts {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-recent-posts {
   margin-top: 3.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--rb-color-border);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .rr-recent-posts
-  a:hover {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-recent-posts a:hover {
   color: var(--rr-link-hover);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   :is(.rr-backlinks, .rr-cardlink)
   a {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-cardlink {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-cardlink {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-search {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-search {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .rr-search
   :is(input, button, a) {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-mermaid {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-mermaid {
   border-radius: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rr-lightbox {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rr-lightbox {
   --rr-lightbox-image-border-radius: 0;
 }
 
@@ -789,30 +786,30 @@
    Short (under 600ms) and staggered across a few elements only. The final
    state is valid without motion: no base opacity/transform is hidden. ---- */
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-      [data-rerurate-motion="off"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
     )
     .rb-article-header::before {
     animation: rr-rule-draw var(--rr-motion-duration) var(--rr-motion-ease) both;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-      [data-rerurate-motion="off"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
     )
     .rb-article-header
     h1 {
     animation: rr-rise var(--rr-motion-duration) var(--rr-motion-ease) 60ms both;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-      [data-rerurate-motion="off"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
     )
     .rb-article-header::after {
     animation: rr-mark-in var(--rr-motion-slow) var(--rr-motion-ease) 120ms both;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]:not(
-      [data-rerurate-motion="off"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
     )
     .rb-article-meta {
     animation: rr-fade var(--rr-motion-duration) var(--rr-motion-ease) 180ms
@@ -859,7 +856,7 @@
     opacity: 1;
   }
 }
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-site-footer {
   position: relative;
   width: min(100% - 2rem, 80rem);
   margin-top: 6rem;
@@ -867,7 +864,7 @@
   border: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer::before {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-site-footer::before {
   display: block;
   width: 6rem;
   height: 3px;
@@ -877,7 +874,7 @@
   background-size: 100% 100%;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__main {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 3rem;
@@ -885,7 +882,7 @@
   border-top: 1px solid var(--rb-color-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__project {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__project {
   display: inline-block;
   color: var(--rb-color-ink);
   font-family: var(--rb-font-heading);
@@ -896,13 +893,12 @@
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .site-footer__project::first-letter {
   color: var(--rb-color-accent);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .site-footer__description {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__description {
   max-width: 22rem;
   margin: 0.75rem 0 0;
   color: var(--rb-color-muted);
@@ -910,7 +906,7 @@
   line-height: 1.55;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__author {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__author {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
@@ -923,35 +919,32 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .site-footer__author
-  span {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__author span {
   color: var(--rb-color-muted);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__author a {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__author a {
   color: var(--rb-color-ink);
   text-decoration: none;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .site-footer__author
   a:hover,
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .site-footer__author
   a:focus-visible {
   color: var(--rb-color-accent);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
   .site-footer__author
   a:focus-visible {
   outline: 2px solid var(--rb-color-accent);
   outline-offset: 2px;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"]
-  .site-footer__navigation {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__navigation {
   align-self: end;
   --rb-nav-list-flex-wrap: wrap;
   --rb-nav-list-justify-content: flex-end;
@@ -965,7 +958,7 @@
   --rb-nav-item-text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__meta {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
@@ -981,24 +974,24 @@
 }
 
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .rb-site-footer {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-site-footer {
     width: calc(100% - 2rem);
     margin-top: 4rem;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__main {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__main {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"]
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]
     .site-footer__navigation {
     align-self: start;
     --rb-nav-list-justify-content: flex-start;
     --rb-nav-item-padding: 0.5rem 1.5rem 0.5rem 0;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="rerurate"] .site-footer__meta {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .site-footer__meta {
     flex-direction: column;
     gap: 0.5rem;
     padding-bottom: 1.5rem;

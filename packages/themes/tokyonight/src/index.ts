@@ -1,29 +1,37 @@
-import { defineTheme, type ThemeConfig } from "@riebeckite/core";
-
-export type TokyonightThemeOptions = Omit<ThemeConfig, "name" | "userCss"> & {
-  density?: "cozy" | "compact";
-  heading?: "tech" | "plain";
-  neon?: boolean;
-  userCss?: string[];
-};
-
-export function tokyonightTheme(options: TokyonightThemeOptions = {}) {
-  const {
-    density = "cozy",
-    heading = "tech",
-    neon = false,
-    ...config
-  } = options;
-
-  return defineTheme({
-    name: "tokyonight",
-    options,
-    attributes: {
-      "data-tokyonight-density": density,
-      "data-tokyonight-heading": heading,
-      "data-tokyonight-neon": neon ? "on" : undefined,
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+export const tokyonightTheme = defineTheme({
+  name: "tokyonight",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-tokyonight/style.css" }],
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "cozy",
+      options: [
+        { value: "cozy", label: "Cozy" },
+        { value: "compact", label: "Compact" },
+      ],
     },
-    styles: [{ moduleSpecifier: "@riebeckite/theme-tokyonight/style.css" }],
-    config,
-  });
-}
+    heading: {
+      type: "select",
+      label: "Headings",
+      default: "tech",
+      options: [
+        { value: "tech", label: "Tech" },
+        { value: "plain", label: "Plain" },
+      ],
+    },
+    neon: { type: "boolean", label: "Neon", default: false },
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+  }),
+  presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
+});

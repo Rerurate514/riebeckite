@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] {
     color-scheme: light;
     --rb-color-paper: #f1f0ec;
     --rb-color-surface: #ffffff;
@@ -47,7 +47,7 @@
     --rb-radius-md: 0;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="folio"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #171716;
     --rb-color-surface: #222220;
@@ -69,7 +69,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="folio"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="folio"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #171716;
       --rb-color-surface: #222220;
@@ -91,7 +91,7 @@
     }
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -100,37 +100,37 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="folio"] ::selection {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] ::selection {
   background: var(--rb-color-selected);
   color: var(--rb-color-ink);
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] :focus-visible {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] :focus-visible {
   outline: 3px solid var(--rb-color-focus);
   outline-offset: 3px;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article {
   font-size: 1.05rem;
   line-height: 1.65;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] {
   --rb-folio-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72' fill='none'%3E%3Cpath d='M2 34V2h32M70 38v32H38' stroke='%23d6422c' stroke-width='4'/%3E%3Cpath d='M2 70 70 2' stroke='%23d6422c' stroke-width='1'/%3E%3C/svg%3E");
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"][data-theme="dark"] {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-mode="dark"] {
   --rb-folio-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72' fill='none'%3E%3Cpath d='M2 34V2h32M70 38v32H38' stroke='%23ff826c' stroke-width='4'/%3E%3Cpath d='M2 70 70 2' stroke='%23ff826c' stroke-width='1'/%3E%3C/svg%3E");
 }
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="folio"]:not([data-theme]) {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"]:not([data-rb-mode]) {
     --rb-folio-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72' fill='none'%3E%3Cpath d='M2 34V2h32M70 38v32H38' stroke='%23ff826c' stroke-width='4'/%3E%3Cpath d='M2 70 70 2' stroke='%23ff826c' stroke-width='1'/%3E%3C/svg%3E");
   }
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header {
   border-left: 0.5rem solid var(--rb-color-accent);
   margin-bottom: 3rem;
   padding-left: 1.25rem;
   padding-right: 5rem;
   position: relative;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header::after {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header::after {
   background: var(--rb-folio-corner) center / contain no-repeat;
   content: "";
   height: 4rem;
@@ -139,21 +139,21 @@
   top: 0;
   width: 4rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header h1 {
   font-size: clamp(2.4rem, 1.6rem + 3.5vw, 5rem);
   font-weight: 800;
   letter-spacing: -0.055em;
   line-height: 0.95;
   text-wrap: balance;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-meta {
   color: var(--rb-color-muted);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content h2 {
   border-left: 0.25rem solid var(--rb-color-accent);
   font-size: 1.65rem;
   font-weight: 800;
@@ -161,12 +161,12 @@
   margin-top: 3.5rem;
   padding-left: 0.75rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content h3 {
   font-size: 1.2rem;
   font-weight: 800;
   margin-top: 2.4rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content a {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content a {
   color: var(--rb-color-link);
   font-weight: 650;
   text-decoration-thickness: 2px;
@@ -175,13 +175,11 @@
     color 140ms ease,
     text-decoration-thickness 140ms ease;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
-  .rb-article-content
-  a:hover {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content a:hover {
   color: var(--rb-color-accent);
   text-decoration-thickness: 3px;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
   .rb-article-content
   blockquote {
   border-left: 0.35rem solid var(--rb-color-accent);
@@ -190,48 +188,46 @@
   margin-inline: 0;
   padding-left: 1.2rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
   .rb-article-content
   :is(pre, code) {
   font-family: var(--rb-font-mono);
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content pre {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content pre {
   overflow-x: auto;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-content table {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-content table {
   border-collapse: collapse;
   display: block;
   max-width: 100%;
   overflow-x: auto;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
   .rb-article-content
   :is(th, td) {
   border-bottom: 2px solid var(--rb-color-border);
   padding: 0.65rem;
   text-align: left;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
   :is(.rr-media, .rr-lightbox, .rr-recent-posts, .rr-cardlink) {
   border-top: 3px solid var(--rb-color-ink);
   margin-top: 2.5rem;
   padding-top: 1rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
-  :is(.rr-media, .rr-lightbox) {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] :is(.rr-media, .rr-lightbox) {
   border-top-color: var(--rb-color-accent);
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"] .rr-cardlink {
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rr-cardlink {
   transition:
     border-color 140ms ease,
     transform 140ms ease;
 }
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-theme-name="folio"]
-    .rb-article-header::after {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header::after {
     animation: rb-folio-frame-in 420ms ease-out both;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] .rr-cardlink:hover {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rr-cardlink:hover {
     border-color: var(--rb-color-accent);
     transform: translateX(0.25rem);
   }
@@ -246,21 +242,21 @@
     transform: translate(0);
   }
 }
-:is(:root, .rb-theme-root)[data-theme-name="folio"]
+:is(:root, .rb-theme-root)[data-rb-theme="folio"]
   :is(.rb-site-header, .rb-site-footer) {
   font-weight: 700;
 }
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article {
     font-size: 1rem;
   }
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] .rb-article-header {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header {
     border-left-width: 0.3rem;
     padding-right: 3.5rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(:root, .rb-theme-root)[data-theme-name="folio"] * {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"] * {
     scroll-behavior: auto;
     transition-duration: 0s;
   }

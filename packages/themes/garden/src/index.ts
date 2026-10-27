@@ -1,14 +1,18 @@
-import { defineTheme, type ThemeConfig } from "@riebeckite/core";
-
-export type GardenThemeOptions = Omit<ThemeConfig, "name" | "userCss"> & {
-  userCss?: string[];
-};
-
-export function gardenTheme(options: GardenThemeOptions = {}) {
-  return defineTheme({
-    name: "garden",
-    options,
-    styles: [{ moduleSpecifier: "@riebeckite/theme-garden/style.css" }],
-    config: options,
-  });
-}
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+export const gardenTheme = defineTheme({
+  name: "garden",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-garden/style.css" }],
+  settings: defineThemeSettings({
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+  }),
+  presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
+});

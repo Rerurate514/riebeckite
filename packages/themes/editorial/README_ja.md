@@ -2,36 +2,29 @@
 
 <!-- Generated from docs/docs/themes/editorial.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-アイボリーの紙面、書籍らしいセリフ体、バーガンディの編集記号で構成する長文エッセイ向けテーマです。
-
-[English](./README.md)
+`@riebeckite/theme-editorial` は公式テーマ **Editorial** を提供します。テーマ ID は `editorial` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { editorialTheme } from "@riebeckite/theme-editorial";
 
 export default defineConfig({
-  theme: editorialTheme({ colorMode: "system" }),
+  theme: editorialTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## デザイン
+`colorMode` は `"light"`、`"dark"`、`"system"`、`layout` は `"article"`、`"sidebar"`、`"full-width"` です。`stylesheets` はテーマ CSS の後にサイト固有のスタイルシートを追加します。プリセットを適用した後に、明示した `settings` が優先されます。
 
-- 装飾を添えたタイトルページ、控えめなメタデータ、表示向けのセリフ体で、マークアップを増やさず雑誌のような導入を作ります。
-- 罫線による区切り、イタリックの小見出し、中央配置のプルクオートで、エッセイに印刷物らしいリズムを与えます。
-- 埋め込み SVG の装飾と短いタイトル表示アニメーションを使い、縮小モーション設定にも対応します。
+## 設定
 
-## 設定とトークン
+ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `editorialTheme.settings` を参照してください。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
 
-`editorialTheme(options?)` は `name` 以外の `ThemeConfig`、`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss` を受け取ります。共通の色、フォント、余白、レイアウトトークンは `tokens` で上書きできます。
+設定は `data-rb-setting-<name>` 属性へ反映されます。ルートには `data-rb-theme="editorial"`、明示的なライト / ダーク時だけ `data-rb-mode`、そして `data-rb-layout` が設定されます。
 
-## モードと互換性
-
-ライト、明示ダーク、システムダークは同じトークンセットを公開します。キーボードフォーカス、縮小モーション、レスポンシブな文字、横スクロール表、Callout・Recent posts・Backlinks の安定した公開ルートに対応します。同梱フォントと実行時コードはありません。
-
-## エクスポート
-
-- `editorialTheme(options?)`
-- `EditorialThemeOptions`
-- `@riebeckite/theme-editorial/style.css`
+[Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) と [テーマを書く](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) も参照してください。

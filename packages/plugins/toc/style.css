@@ -105,14 +105,14 @@
       padding-inline-start: 1rem;
     }
 
-    :is(:root, .rb-theme-root)[data-article-layout="sidebar"]
+    :is(:root, .rb-theme-root)[data-rb-layout="sidebar"]
       .rb-article-layout
       > .rr-table-of-contents--desktop-rail {
       grid-column: 2;
       margin-inline-start: 0;
     }
 
-    :is(:root, .rb-theme-root)[data-article-layout="full-width"]
+    :is(:root, .rb-theme-root)[data-rb-layout="full-width"]
       .rr-table-of-contents--desktop-rail {
       display: none;
     }

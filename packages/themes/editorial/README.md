@@ -2,45 +2,29 @@
 
 <!-- Generated from docs/docs/themes/editorial.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-A long-form essay theme with an ivory paper palette, bookish serif type, and
-burgundy editorial marks.
+`@riebeckite/theme-editorial` provides the **Editorial** official theme. Its identity is `editorial` and its settings schema is the source of truth for configuration and the preview controls.
 
-[日本語](./README_ja.md)
-
-## Usage
+## Use it
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { editorialTheme } from "@riebeckite/theme-editorial";
 
 export default defineConfig({
-  theme: editorialTheme({ colorMode: "system" }),
+  theme: editorialTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## Character
+`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
 
-- An ornamented title page, restrained metadata, and display-like serif type
-  establish a magazine-like opening without adding markup.
-- Ruled section breaks, italic subheads, and centered pull quotes give essays a
-  deliberate print rhythm.
-- Embedded SVG ornaments and a short title reveal add character while honoring
-  reduced-motion preferences.
+## Settings
 
-## Options and tokens
+Read `editorialTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
 
-`editorialTheme(options?)` accepts `ThemeConfig` fields other than `name`:
-`colorMode`, `typography`, `articleLayout`, `tokens`, and `userCss`. Override
-the shared semantic color, font, spacing, and layout tokens through `tokens`.
+Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="editorial"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
 
-## Modes and compatibility
-
-The light, explicit-dark, and system-dark palettes expose the same token set.
-The stylesheet has visible keyboard focus, reduced-motion behavior, responsive
-type, scrollable tables, and stable public roots for callouts, recent posts,
-and backlinks. It bundles no fonts or runtime code.
-
-## Exports
-
-- `editorialTheme(options?)`
-- `EditorialThemeOptions`
-- `@riebeckite/theme-editorial/style.css`
+See [Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) and [Writing a theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

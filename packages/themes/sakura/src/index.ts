@@ -1,29 +1,45 @@
-import { defineTheme, type ThemeConfig } from "@riebeckite/core";
-
-export type SakuraThemeOptions = Omit<ThemeConfig, "name" | "userCss"> & {
-  bloom?: "soft" | "vivid";
-  roundness?: "soft" | "crisp";
-  heading?: "decorated" | "plain";
-  userCss?: string[];
-};
-
-export function sakuraTheme(options: SakuraThemeOptions = {}) {
-  const {
-    bloom = "soft",
-    roundness = "soft",
-    heading = "decorated",
-    ...config
-  } = options;
-
-  return defineTheme({
-    name: "sakura",
-    options,
-    attributes: {
-      "data-sakura-bloom": bloom,
-      "data-sakura-roundness": roundness,
-      "data-sakura-heading": heading,
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+export const sakuraTheme = defineTheme({
+  name: "sakura",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-sakura/style.css" }],
+  settings: defineThemeSettings({
+    bloom: {
+      type: "select",
+      label: "Bloom",
+      default: "soft",
+      options: [
+        { value: "soft", label: "Soft" },
+        { value: "vivid", label: "Vivid" },
+      ],
     },
-    styles: [{ moduleSpecifier: "@riebeckite/theme-sakura/style.css" }],
-    config,
-  });
-}
+    roundness: {
+      type: "select",
+      label: "Roundness",
+      default: "soft",
+      options: [
+        { value: "soft", label: "Soft" },
+        { value: "crisp", label: "Crisp" },
+      ],
+    },
+    heading: {
+      type: "select",
+      label: "Headings",
+      default: "decorated",
+      options: [
+        { value: "decorated", label: "Decorated" },
+        { value: "plain", label: "Plain" },
+      ],
+    },
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+  }),
+  presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
+});

@@ -18,6 +18,6 @@ export default function ColorModeScript({
 }: ColorModeScriptProps) {
   const key = JSON.stringify(storageKey);
   const ready = JSON.stringify(COLOR_MODE_READY_ATTRIBUTE);
-  const source = `(function(){var d=document.documentElement;var m=null;try{m=localStorage.getItem(${key})}catch(e){m=null}if(m==="light"||m==="dark"){d.setAttribute("data-theme",m)}else if(m==="system"){d.removeAttribute("data-theme")}d.setAttribute(${ready},"ready")})();`;
+  const source = `(function(){var d=document.documentElement;var m=null;try{m=localStorage.getItem(${key})}catch(e){m=null}if(m==="light"||m==="dark"){d.setAttribute("data-rb-mode",m)}else if(m==="system"){d.removeAttribute("data-rb-mode")}d.setAttribute(${ready},"ready")})();`;
   return <script dangerouslySetInnerHTML={{ __html: source }} />;
 }

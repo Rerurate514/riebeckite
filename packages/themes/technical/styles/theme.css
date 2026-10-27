@@ -12,7 +12,7 @@
 }
 
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="technical"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"] {
     color-scheme: light;
     --rb-color-paper: #f6f8fa;
     --rb-color-surface: #ffffff;
@@ -45,7 +45,7 @@
     --rb-radius-md: 0;
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="technical"][data-theme="dark"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"][data-rb-mode="dark"] {
     color-scheme: dark;
     --rb-color-paper: #111b25;
     --rb-color-surface: #182633;
@@ -67,7 +67,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :is(:root, .rb-theme-root)[data-theme-name="technical"]:not([data-theme]) {
+    :is(:root, .rb-theme-root)[data-rb-theme="technical"]:not([data-rb-mode]) {
       color-scheme: dark;
       --rb-color-paper: #111b25;
       --rb-color-surface: #182633;
@@ -89,7 +89,7 @@
     }
   }
 
-  :is(:root, .rb-theme-root)[data-theme-name="technical"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"] {
     background: var(--rb-color-paper);
     color: var(--rb-color-ink);
     font-family: var(--rb-font-body);
@@ -98,54 +98,54 @@
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] ::selection {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] ::selection {
   background: var(--rb-color-selected);
   color: var(--rb-color-ink);
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] :focus-visible {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] :focus-visible {
   outline: 2px solid var(--rb-color-focus);
   outline-offset: 2px;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article {
   font-size: 1rem;
   line-height: 1.7;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header {
   border-bottom: 2px solid var(--rb-color-ink);
   margin-bottom: 2rem;
   padding-bottom: 1rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header h1 {
   font-size: clamp(1.75rem, 1.4rem + 1.8vw, 2.65rem);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.15;
   text-wrap: balance;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-meta {
   color: var(--rb-color-muted);
   font-family: var(--rb-font-mono);
   font-size: 0.78rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content h2 {
   border-bottom: 1px solid var(--rb-color-border);
   font-size: 1.4rem;
   font-weight: 700;
   margin-top: 3rem;
   padding-bottom: 0.5rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content h3 {
   color: var(--rb-color-accent);
   font-size: 1.12rem;
   font-weight: 700;
   margin-top: 2.25rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content a {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content a {
   color: var(--rb-color-link);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   blockquote {
   border-left: 4px solid var(--rb-color-accent);
@@ -153,13 +153,13 @@
   margin-inline: 0;
   padding: 0.75rem 1rem;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   :is(pre, code) {
   font-family: var(--rb-font-mono);
   font-size: 0.92em;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   table {
   border-collapse: collapse;
@@ -168,47 +168,47 @@
   max-width: 100%;
   overflow-x: auto;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   :is(th, td) {
   border: 1px solid var(--rb-color-border);
   padding: 0.5rem 0.65rem;
   text-align: left;
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content th {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content th {
   background: var(--rb-color-surface-hover);
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   :is(.rr-table-of-contents, .rr-code, .rr-code-tabs, .rr-callout, .rr-query) {
   border: 1px solid var(--rb-color-border);
 }
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   :is(.rb-site-header, .rb-sidebar, .rb-site-footer) {
   font-size: 0.9rem;
 }
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article {
     font-size: 0.97rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(:root, .rb-theme-root)[data-theme-name="technical"] * {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"] * {
     scroll-behavior: auto;
     transition-duration: 0s;
   }
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] {
   --rb-technical-grid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M.5 0v24M0 .5h24' fill='none' stroke='%23182431' stroke-opacity='.08'/%3E%3C/svg%3E");
   --rb-technical-circuit: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='28' viewBox='0 0 160 28'%3E%3Cpath d='M1 14h34l9-9h26l10 9h34l10-9h35' fill='none' stroke='%231766b1' stroke-width='2'/%3E%3Ccircle cx='1' cy='14' r='3' fill='%231766b1'/%3E%3Ccircle cx='159' cy='5' r='3' fill='%231766b1'/%3E%3C/svg%3E");
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article {
   font-size: 1rem;
   line-height: 1.75;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header {
   position: relative;
   margin-bottom: 2.5rem;
   padding: 1.5rem 1.5rem 1.75rem;
@@ -218,7 +218,7 @@
   background-image: var(--rb-technical-grid);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-header::after {
   display: block;
   width: min(10rem, 100%);
@@ -228,7 +228,7 @@
   background: var(--rb-technical-circuit) left center / contain no-repeat;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header h1 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header h1 {
   max-width: 22ch;
   font-family: var(--rb-font-mono);
   font-size: clamp(1.8rem, 1.45rem + 2vw, 3rem);
@@ -236,7 +236,7 @@
   letter-spacing: -0.045em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-meta {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 1rem;
@@ -247,11 +247,11 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content {
   counter-reset: technical-section;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h2 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content h2 {
   display: flex;
   align-items: baseline;
   gap: 0.75rem;
@@ -263,7 +263,7 @@
   letter-spacing: -0.025em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   h2::before {
   content: counter(technical-section, decimal-leading-zero);
@@ -273,7 +273,7 @@
   letter-spacing: 0;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content h3 {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content h3 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -284,7 +284,7 @@
   text-transform: uppercase;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   h3::before {
   width: 0.45rem;
@@ -293,14 +293,14 @@
   background: var(--rb-color-accent);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-content a {
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-content a {
   color: var(--rb-color-link);
   text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.24em;
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   blockquote {
   margin: 2rem 0;
@@ -311,7 +311,7 @@
   color: var(--rb-color-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   pre:not(:where(.rr-code *)) {
   padding: 1.25rem;
@@ -321,7 +321,7 @@
   color: var(--rb-color-code-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   .rb-article-content
   :not(pre)
   > code {
@@ -330,7 +330,7 @@
   color: var(--rb-color-ink);
 }
 
-:is(:root, .rb-theme-root)[data-theme-name="technical"]
+:is(:root, .rb-theme-root)[data-rb-theme="technical"]
   :is(.rr-table-of-contents, .rr-code, .rr-code-tabs, .rr-callout, .rr-query) {
   border: 1px solid var(--rb-color-border-strong);
   border-radius: 0;
@@ -338,7 +338,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-theme-name="technical"]
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"]
     .rb-article-header::after {
     animation: technical-signal 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
     transform-origin: left center;
@@ -357,7 +357,7 @@
 }
 
 @media (max-width: 48rem) {
-  :is(:root, .rb-theme-root)[data-theme-name="technical"] .rb-article-header {
+  :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header {
     padding: 1.15rem;
   }
 }

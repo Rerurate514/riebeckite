@@ -152,13 +152,13 @@
   font-size: 0.8125rem;
 }
 
-:is(:root, .rb-theme-root)[data-theme="dark"] .rb-excalibrain {
+:is(:root, .rb-theme-root)[data-rb-mode="dark"] .rb-excalibrain {
   --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
   --rb-excalibrain-paper: var(--rb-color-ink, #000000);
 }
 
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root):not([data-theme]) .rb-excalibrain {
+  :is(:root, .rb-theme-root):not([data-rb-mode]) .rb-excalibrain {
     --rb-excalibrain-ink: var(--rb-color-paper, #ffffff);
     --rb-excalibrain-paper: var(--rb-color-ink, #000000);
   }

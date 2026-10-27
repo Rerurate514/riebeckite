@@ -90,23 +90,23 @@ async function writePreviewConfig(
     resolveModuleSpecifier("@riebeckite/plugin-obsidian-markdown"),
     resolveModuleSpecifier("@riebeckite/plugin-toc"),
   ]);
-  const source = `import { defineConfig, type RiebeckiteTheme } from ${JSON.stringify(core)};
+  const source = `import { defineConfig, type ThemeDefinition } from ${JSON.stringify(core)};
 import { colorMode } from ${JSON.stringify(colorMode)};
 import { docs } from ${JSON.stringify(docs)};
 import { obsidianMarkdown } from ${JSON.stringify(obsidianMarkdown)};
 import { toc } from ${JSON.stringify(toc)};
 import * as themeModule from ${JSON.stringify(path.join(themeRoot, "index.ts"))};
 
-const themeFactory = (themeModule.${identifier} ?? Object.values(themeModule).find(
-  (value): value is () => RiebeckiteTheme => typeof value === "function",
+const themeDefinition = (themeModule.${identifier} ?? Object.values(themeModule).find(
+  (value): value is ThemeDefinition => typeof value === "function",
 ));
 
-if (!themeFactory) throw new Error("Theme must export a Theme factory.");
+if (!themeDefinition) throw new Error("Theme must export a Theme definition.");
 
 export default defineConfig({
   site: { title: ${JSON.stringify(`${name} preview`)}, description: "Isolated Theme preview", baseUrl: "", locale: "en" },
   content: { directory: "content" },
-  theme: themeFactory(),
+  theme: themeDefinition(),
   plugins: [
     obsidianMarkdown(),
     colorMode(),

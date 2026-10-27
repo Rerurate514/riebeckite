@@ -2,36 +2,29 @@
 
 <!-- Generated from docs/docs/themes/technical.ja.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-高密度な参照情報を、体系的でコンパクト、かつ走査しやすい計測パネルとして見せるドキュメント向けテーマです。
-
-[English](./README.md)
+`@riebeckite/theme-technical` は公式テーマ **Technical** を提供します。テーマ ID は `technical` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { technicalTheme } from "@riebeckite/theme-technical";
 
 export default defineConfig({
-  theme: technicalTheme({ colorMode: "system" }),
+  theme: technicalTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## デザイン
+`colorMode` は `"light"`、`"dark"`、`"system"`、`layout` は `"article"`、`"sidebar"`、`"full-width"` です。`stylesheets` はテーマ CSS の後にサイト固有のスタイルシートを追加します。プリセットを適用した後に、明示した `settings` が優先されます。
 
-- グリッドを敷いたタイトルパネルと回路モチーフにより、本文に入る前からページ構造を見せます。
-- 連番付きのセクション、等幅の見出し、信号マーカー、精密な罫線で、参照情報の概念をひと目で分けます。
-- Code とプラグインの面も計測パネルの形状にそろえ、タイトルの信号アニメーションは一度だけ動作し、縮小モーション設定にも対応します。
+## 設定
 
-## 設定とトークン
+ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `technicalTheme.settings` を参照してください。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
 
-`technicalTheme(options?)` は `name` 以外の `ThemeConfig`、`colorMode`、`typography`、`articleLayout`、`tokens`、`userCss` を受け取ります。共通のセマンティックな色、フォント、余白、レイアウトトークンは `tokens` で上書きできます。
+設定は `data-rb-setting-<name>` 属性へ反映されます。ルートには `data-rb-theme="technical"`、明示的なライト / ダーク時だけ `data-rb-mode`、そして `data-rb-layout` が設定されます。
 
-## モードと互換性
-
-ライト、明示ダーク、システムダークでは同じセマンティックな役割を定義します。キーボードフォーカス、レスポンシブな文字、表の横スクロール、縮小モーションに対応します。システムフォントだけを使い、プラグイン内部のセレクタは扱いません。
-
-## エクスポート
-
-- `technicalTheme(options?)`
-- `TechnicalThemeOptions`
-- `@riebeckite/theme-technical/style.css`
+[Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) と [テーマを書く](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.ja.md) も参照してください。

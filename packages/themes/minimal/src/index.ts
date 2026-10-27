@@ -1,14 +1,18 @@
-import { defineTheme, type ThemeConfig } from "@riebeckite/core";
-
-export type MinimalThemeOptions = Omit<ThemeConfig, "name" | "userCss"> & {
-  userCss?: string[];
-};
-
-export function minimalTheme(options: MinimalThemeOptions = {}) {
-  return defineTheme({
-    name: "minimal",
-    options,
-    styles: [{ moduleSpecifier: "@riebeckite/theme-minimal/style.css" }],
-    config: options,
-  });
-}
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+export const minimalTheme = defineTheme({
+  name: "minimal",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-minimal/style.css" }],
+  settings: defineThemeSettings({
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+  }),
+  presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
+});

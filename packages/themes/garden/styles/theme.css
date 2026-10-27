@@ -110,10 +110,31 @@
   font-size: 1.0625rem;
   line-height: 1.9;
 }
+:is(:root, .rb-theme-root)[data-theme-name="garden"] {
+  --rb-garden-sprig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 18' fill='none'%3E%3Cpath d='M0 9h38c14 0 17-8 26-8 9 0 12 8 26 8h22' stroke='%23526b38' stroke-width='1'/%3E%3Cpath d='M43 9c0-5 5-7 9-7-1 5-4 7-9 7Zm17 0c0-5-5-7-9-7 1 5 4 7 9 7Z' fill='%23526b38'/%3E%3C/svg%3E");
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"][data-theme="dark"] {
+  --rb-garden-sprig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 18' fill='none'%3E%3Cpath d='M0 9h38c14 0 17-8 26-8 9 0 12 8 26 8h22' stroke='%23afc77c' stroke-width='1'/%3E%3Cpath d='M43 9c0-5 5-7 9-7-1 5-4 7-9 7Zm17 0c0-5-5-7-9-7 1 5 4 7 9 7Z' fill='%23afc77c'/%3E%3C/svg%3E");
+}
+@media (prefers-color-scheme: dark) {
+  :is(:root, .rb-theme-root)[data-theme-name="garden"]:not([data-theme]) {
+    --rb-garden-sprig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 18' fill='none'%3E%3Cpath d='M0 9h38c14 0 17-8 26-8 9 0 12 8 26 8h22' stroke='%23afc77c' stroke-width='1'/%3E%3Cpath d='M43 9c0-5 5-7 9-7-1 5-4 7-9 7Zm17 0c0-5-5-7-9-7 1 5 4 7 9 7Z' fill='%23afc77c'/%3E%3C/svg%3E");
+  }
+}
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header {
   border-bottom: 1px solid var(--rb-color-border);
   margin-bottom: 2.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 3rem;
+  position: relative;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header::after {
+  background: var(--rb-garden-sprig) center / contain no-repeat;
+  bottom: 0.9rem;
+  content: "";
+  height: 1.125rem;
+  left: 0;
+  position: absolute;
+  width: 7rem;
 }
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header h1 {
   font-family: var(--rb-font-heading);
@@ -125,6 +146,7 @@
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-meta {
   color: var(--rb-color-muted);
   font-size: 0.875rem;
+  letter-spacing: 0.025em;
 }
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content h2 {
   border-top: 1px solid var(--rb-color-border);
@@ -133,6 +155,17 @@
   font-weight: 600;
   margin-top: 3.5rem;
   padding-top: 1.25rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  .rb-article-content
+  h2::after {
+  background: var(--rb-garden-sprig) center / contain no-repeat;
+  content: "";
+  display: inline-block;
+  height: 0.8em;
+  margin-left: 0.7rem;
+  vertical-align: 0.05em;
+  width: 3.8rem;
 }
 :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-content h3 {
   font-family: var(--rb-font-heading);
@@ -148,6 +181,15 @@
   );
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
+  transition:
+    color var(--rb-motion-fast) ease,
+    text-decoration-color var(--rb-motion-fast) ease;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
+  .rb-article-content
+  a:hover {
+  color: var(--rb-color-accent);
+  text-decoration-color: currentColor;
 }
 :is(:root, .rb-theme-root)[data-theme-name="garden"]
   .rb-article-content
@@ -185,12 +227,37 @@
   padding-left: 1rem;
 }
 :is(:root, .rb-theme-root)[data-theme-name="garden"]
+  :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer) {
+  border-top: 1px solid var(--rb-color-border);
+  padding-top: 1rem;
+}
+:is(:root, .rb-theme-root)[data-theme-name="garden"]
   :is(.rb-site-header, .rb-site-footer, .rb-sidebar) {
   color: var(--rb-color-muted);
 }
 @media (max-width: 48rem) {
   :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article {
     font-size: 1rem;
+  }
+  :is(:root, .rb-theme-root)[data-theme-name="garden"] .rb-article-header {
+    padding-bottom: 2.5rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(:root, .rb-theme-root)[data-theme-name="garden"]
+    .rb-article-header::after {
+    animation: rb-garden-grow 600ms ease-out both;
+    transform-origin: left center;
+  }
+}
+@keyframes rb-garden-grow {
+  from {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
   }
 }
 @media (prefers-reduced-motion: reduce) {

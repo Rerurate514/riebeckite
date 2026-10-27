@@ -21,12 +21,13 @@ export default defineConfig({
 
 ## Character
 
-- Large, tightly tracked titles and a left accent rule give project pages a
-  confident hierarchy.
+- Large, tightly tracked titles, a left accent rule, and an SVG crop mark give
+  project pages a confident poster-like hierarchy.
 - A wide article measure suits project descriptions and media without turning
   content into a card grid.
 - Media, lightbox, recent posts, and card links receive structural top rules
-  through stable public plugin roots.
+  through stable public plugin roots; the frame and card hover use brief,
+  reduced-motion-safe movement.
 
 ## Options and tokens
 

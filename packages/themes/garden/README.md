@@ -20,9 +20,10 @@ export default defineConfig({
 ## Character
 
 - Warm paper, green links, and generous serif text support exploratory notes.
-- Article headings and note metadata use quiet rules instead of cards.
-- Backlinks, local graphs, garden explorer, and callouts receive a shared
-  left-rule treatment through their stable public roots.
+- A leaf-and-stem SVG gives the article header and section headings a quiet
+  botanical thread; its short grow-in respects reduced-motion preferences.
+- Backlinks, local graphs, garden explorer, and callouts receive shared
+  ruled treatment through their stable public roots.
 
 ## Options and tokens
 

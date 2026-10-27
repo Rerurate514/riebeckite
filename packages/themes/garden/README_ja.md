@@ -19,8 +19,8 @@ export default defineConfig({
 ## デザイン
 
 - 暖色の紙面、緑のリンク、ゆとりのある明朝体でノートを読みやすくします。
-- 記事見出しとメタデータはカードではなく静かな罫線で整理します。
-- Backlinks、Local graph、Garden explorer、Callout は安定した公開ルートを通じて左罫線で統一します。
+- 葉と茎の SVG を記事ヘッダーと節見出しに添え、縮小モーション設定を尊重した短い生長アニメーションを使います。
+- Backlinks、Local graph、Garden explorer、Callout は安定した公開ルートを通じて罫線で統一します。
 
 ## 設定とトークン
 

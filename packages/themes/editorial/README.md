@@ -2,8 +2,8 @@
 
 <!-- Generated from docs/docs/themes/editorial.md. Edit the canonical documentation in docs/docs/themes and run `pnpm docs:sync`. -->
 
-A long-form blog theme with ivory paper, ink-heavy serif type, and burgundy
-interaction states.
+A long-form essay theme with an ivory paper palette, bookish serif type, and
+burgundy editorial marks.
 
 [日本語](./README_ja.md)
 
@@ -19,10 +19,12 @@ export default defineConfig({
 
 ## Character
 
-- Centered, generous article titles establish a publishing hierarchy.
-- Long-form serif copy, display-like headings, and ruled pull quotes create an
-  editorial rhythm without shadows, gradients, or card grids.
-- Metadata and site chrome use compact sans-serif text to remain secondary.
+- An ornamented title page, restrained metadata, and display-like serif type
+  establish a magazine-like opening without adding markup.
+- Ruled section breaks, italic subheads, and centered pull quotes give essays a
+  deliberate print rhythm.
+- Embedded SVG ornaments and a short title reveal add character while honoring
+  reduced-motion preferences.
 
 ## Options and tokens
 

@@ -4,8 +4,8 @@ title: Technical
 ---
 # Technical
 
-A dense documentation theme with neutral surfaces, compact sans-serif type,
-and blue technical cues.
+A documentation theme that treats dense reference material as an instrument
+panel: systematic, compact, and easy to scan.
 
 [日本語](./technical.ja.md)
 
@@ -21,12 +21,12 @@ export default defineConfig({
 
 ## Character
 
-- A broad page, compact article measure, and small navigation text make dense
-  reference material easy to scan.
-- Strong article rules, blue `h3` labels, monospaced metadata, and square table
-  cells separate concepts without decorative surfaces.
-- Table of contents, code, code tabs, callouts, and queries use their stable
-  public roots and shared borders.
+- A gridded title panel and circuit motif make the page structure visible before
+  readers enter the content.
+- Numbered sections, monospaced headings, signal markers, and precise borders
+  separate reference concepts at a glance.
+- Code and plugin surfaces keep the same instrument-panel geometry; the title
+  signal animates once and respects reduced-motion preferences.
 
 ## Options and tokens
 

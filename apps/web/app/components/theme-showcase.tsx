@@ -57,6 +57,11 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
             </h2>
           </div>
         </div>
+        <p class="theme-showcase__preview-notice">
+          {japanese
+            ? "このプレビューにはプラグインが反映されないため、画像やコードブロックなどの表示は本番サイトと若干異なる場合があります。"
+            : "Plugins are not applied in this preview, so images, code blocks, and other content may look slightly different on your published site."}
+        </p>
         <div
           class="theme-showcase__workspace"
           data-plugin-preview

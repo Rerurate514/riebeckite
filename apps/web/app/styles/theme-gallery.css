@@ -55,6 +55,13 @@ body:has(.theme-showcase) main {
   color: var(--rb-color-muted);
   font-size: 0.875rem;
 }
+.theme-showcase__preview-notice {
+  margin: 0 0 var(--rb-space-3);
+  border-inline-start: 2px solid var(--rb-color-border);
+  padding-inline-start: var(--rb-space-3);
+  color: var(--rb-color-muted);
+  font-size: 0.875rem;
+}
 .theme-showcase output {
   padding: var(--rb-space-2) var(--rb-space-3);
 }

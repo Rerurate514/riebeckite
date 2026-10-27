@@ -7,6 +7,7 @@ import {
 } from "@riebeckite/preview/ui";
 import defaultStyle from "@riebeckite/theme-default/style.css?inline";
 import editorialStyle from "@riebeckite/theme-editorial/style.css?inline";
+import fieldnotesStyle from "@riebeckite/theme-fieldnotes/style.css?inline";
 import folioStyle from "@riebeckite/theme-folio/style.css?inline";
 import gardenStyle from "@riebeckite/theme-garden/style.css?inline";
 import gruvboxStyle from "@riebeckite/theme-gruvbox/style.css?inline";
@@ -14,7 +15,9 @@ import minimalStyle from "@riebeckite/theme-minimal/style.css?inline";
 import moduleStyle from "@riebeckite/theme-module/style.css?inline";
 import rerurateStyle from "@riebeckite/theme-rerurate/style.css?inline";
 import sakuraStyle from "@riebeckite/theme-sakura/style.css?inline";
+import signalStyle from "@riebeckite/theme-signal/style.css?inline";
 import technicalStyle from "@riebeckite/theme-technical/style.css?inline";
+import terminalStyle from "@riebeckite/theme-terminal/style.css?inline";
 import tokyonightStyle from "@riebeckite/theme-tokyonight/style.css?inline";
 import sakuraSerifFont from "../../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline";
 import tokyonightMonoFont from "../../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline";
@@ -40,6 +43,7 @@ function inlinePreviewFont(
 const themeStyles = {
   riebeckite: defaultStyle,
   editorial: editorialStyle,
+  fieldnotes: fieldnotesStyle,
   folio: folioStyle,
   garden: gardenStyle,
   gruvbox: gruvboxStyle,
@@ -51,7 +55,9 @@ const themeStyles = {
     "source-serif-4-latin-wght-normal.woff2",
     sakuraSerifFont,
   ),
+  signal: signalStyle,
   technical: technicalStyle,
+  terminal: terminalStyle,
   tokyonight: inlinePreviewFont(
     tokyonightStyle,
     "jetbrains-mono-latin-wght-normal.woff2",

@@ -41,6 +41,7 @@ export default defineConfig({
 
 - [Default](./default.md)
 - [Editorial](./editorial.md)
+- [Fieldnotes](./fieldnotes.md)
 - [Folio](./folio.md)
 - [Garden](./garden.md)
 - [Gruvbox](./gruvbox.md)
@@ -48,7 +49,9 @@ export default defineConfig({
 - [Module](./module.md)
 - [Rerurate](./rerurate.md)
 - [Sakura](./sakura.md)
+- [Signal](./signal.md)
 - [Technical](./technical.md)
+- [Terminal](./terminal.md)
 - [Tokyo Night](./tokyonight.md)
 
 機能には [Plugin](../plugins/README.md) を使います。契約の詳細は [テーマを書く](./writing-a-theme.ja.md) と [Theme API](../reference/theme-api.md) を参照してください。

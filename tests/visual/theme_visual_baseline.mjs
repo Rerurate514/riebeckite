@@ -21,18 +21,30 @@ const mobileViewport = { width: 375, height: 900 };
 const deviceScaleFactor = 1;
 const pixelThreshold = 8;
 const maxChangedRatio = 0.0005;
-const mobileCaptureKeys = new Set(["riebeckite-light", "tokyonight-dark"]);
+const mobileCaptureKeys = new Set([
+  "riebeckite-light",
+  "tokyonight-dark",
+  "signal-light",
+  "signal-dark",
+  "fieldnotes-light",
+  "fieldnotes-dark",
+  "terminal-light",
+  "terminal-dark",
+]);
 const themes = [
   ["riebeckite", "default"],
   ["minimal", "minimal"],
   ["module", "module"],
+  ["signal", "signal"],
   ["gruvbox", "gruvbox"],
   ["rerurate", "rerurate"],
   ["sakura", "sakura"],
   ["tokyonight", "tokyonight"],
   ["garden", "garden"],
+  ["fieldnotes", "fieldnotes"],
   ["editorial", "editorial"],
   ["technical", "technical"],
+  ["terminal", "terminal"],
   ["folio", "folio"],
 ];
 const cssFiles = [

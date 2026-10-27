@@ -333,6 +333,9 @@ importers:
       '@riebeckite/theme-editorial':
         specifier: workspace:*
         version: link:../../packages/themes/editorial
+      '@riebeckite/theme-fieldnotes':
+        specifier: workspace:*
+        version: link:../../packages/themes/fieldnotes
       '@riebeckite/theme-folio':
         specifier: workspace:*
         version: link:../../packages/themes/folio
@@ -354,9 +357,15 @@ importers:
       '@riebeckite/theme-sakura':
         specifier: workspace:*
         version: link:../../packages/themes/sakura
+      '@riebeckite/theme-signal':
+        specifier: workspace:*
+        version: link:../../packages/themes/signal
       '@riebeckite/theme-technical':
         specifier: workspace:*
         version: link:../../packages/themes/technical
+      '@riebeckite/theme-terminal':
+        specifier: workspace:*
+        version: link:../../packages/themes/terminal
       '@riebeckite/theme-tokyonight':
         specifier: workspace:*
         version: link:../../packages/themes/tokyonight
@@ -1845,6 +1854,12 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/themes/fieldnotes:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/themes/folio:
     dependencies:
       '@riebeckite/core':
@@ -1887,7 +1902,19 @@ importers:
         specifier: workspace:*
         version: link:../../core
 
+  packages/themes/signal:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
   packages/themes/technical:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/themes/terminal:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

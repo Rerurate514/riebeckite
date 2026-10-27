@@ -41,6 +41,7 @@ The root contract is `data-rb-theme`, `data-rb-mode` for an explicit light/dark 
 
 - [Default](./default.md)
 - [Editorial](./editorial.md)
+- [Fieldnotes](./fieldnotes.md)
 - [Folio](./folio.md)
 - [Garden](./garden.md)
 - [Gruvbox](./gruvbox.md)
@@ -48,7 +49,9 @@ The root contract is `data-rb-theme`, `data-rb-mode` for an explicit light/dark 
 - [Module](./module.md)
 - [Rerurate](./rerurate.md)
 - [Sakura](./sakura.md)
+- [Signal](./signal.md)
 - [Technical](./technical.md)
+- [Terminal](./terminal.md)
 - [Tokyo Night](./tokyonight.md)
 
 Use a [Plugin](../plugins/README.md) for behavior. See [Writing a theme](./writing-a-theme.md) and [Theme API](../reference/theme-api.md) for the contract.

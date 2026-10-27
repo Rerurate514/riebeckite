@@ -97,6 +97,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/test",
   "packages/themes/default",
   "packages/themes/editorial",
+  "packages/themes/fieldnotes",
   "packages/themes/folio",
   "packages/themes/garden",
   "packages/themes/gruvbox",
@@ -104,7 +105,9 @@ export const PACKAGE_DIRECTORIES = [
   "packages/themes/module",
   "packages/themes/rerurate",
   "packages/themes/sakura",
+  "packages/themes/signal",
   "packages/themes/technical",
+  "packages/themes/terminal",
   "packages/themes/tokyonight",
 ];
 
@@ -543,6 +546,10 @@ const packagePublishingMetadata = {
     description: "An editorial blog CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "editorial", "blog"],
   },
+  "packages/themes/fieldnotes": {
+    description: "A research notebook CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "notebook", "research"],
+  },
   "packages/themes/folio": {
     description: "A portfolio CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "portfolio", "folio"],
@@ -571,9 +578,17 @@ const packagePublishingMetadata = {
     description: "A sakura-inspired CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "sakura"],
   },
+  "packages/themes/signal": {
+    description: "A Swiss neo-brutalist CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "swiss", "brutalist"],
+  },
   "packages/themes/technical": {
     description: "A technical documentation CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "documentation", "technical"],
+  },
+  "packages/themes/terminal": {
+    description: "A retro terminal CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "terminal", "retro-computing"],
   },
   "packages/themes/tokyonight": {
     description: "A Tokyo Night CSS theme for Riebeckite sites.",

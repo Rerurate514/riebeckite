@@ -7,6 +7,7 @@ import {
 import type { PreviewFixture } from "@riebeckite/preview";
 import { defaultTheme } from "@riebeckite/theme-default";
 import { editorialTheme } from "@riebeckite/theme-editorial";
+import { fieldnotesTheme } from "@riebeckite/theme-fieldnotes";
 import { folioTheme } from "@riebeckite/theme-folio";
 import { gardenTheme } from "@riebeckite/theme-garden";
 import { gruvboxTheme } from "@riebeckite/theme-gruvbox";
@@ -14,7 +15,9 @@ import { minimalTheme } from "@riebeckite/theme-minimal";
 import { moduleTheme } from "@riebeckite/theme-module";
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
 import { sakuraTheme } from "@riebeckite/theme-sakura";
+import { signalTheme } from "@riebeckite/theme-signal";
 import { technicalTheme } from "@riebeckite/theme-technical";
+import { terminalTheme } from "@riebeckite/theme-terminal";
 import { tokyonightTheme } from "@riebeckite/theme-tokyonight";
 import type { WebLocale } from "./locale";
 
@@ -67,6 +70,14 @@ export const showcaseThemes = [
     packageName: "@riebeckite/theme-module",
     factory: "moduleTheme",
   }),
+  themeDefinition(signalTheme(), {
+    label: "Signal",
+    description:
+      "Bold Swiss rules and graphic markers for high-signal reading.",
+    features: ["Graphic hierarchy", "Swiss", "Density settings"],
+    packageName: "@riebeckite/theme-signal",
+    factory: "signalTheme",
+  }),
   themeDefinition(gruvboxTheme(), {
     label: "Gruvbox",
     description: "Warm contrast for technical notes and focused writing.",
@@ -95,12 +106,26 @@ export const showcaseThemes = [
     packageName: "@riebeckite/theme-tokyonight",
     factory: "tokyonightTheme",
   }),
+  themeDefinition(terminalTheme(), {
+    label: "Terminal",
+    description: "A restrained phosphor terminal for code and technical notes.",
+    features: ["Monospace", "Phosphor options", "CRT controls"],
+    packageName: "@riebeckite/theme-terminal",
+    factory: "terminalTheme",
+  }),
   themeDefinition(gardenTheme(), {
     label: "Garden",
     description: "Built for connected notes and a calm knowledge garden.",
     features: ["Notes", "Connected writing"],
     packageName: "@riebeckite/theme-garden",
     factory: "gardenTheme",
+  }),
+  themeDefinition(fieldnotesTheme(), {
+    label: "Fieldnotes",
+    description: "A research notebook with paper, margins, and archival marks.",
+    features: ["Paper styles", "Notebook details", "Research-ready"],
+    packageName: "@riebeckite/theme-fieldnotes",
+    factory: "fieldnotesTheme",
   }),
   themeDefinition(editorialTheme(), {
     label: "Editorial",
@@ -139,6 +164,10 @@ const japaneseThemeDetails = [
     ["設計グリッド", "エッジ発光"],
   ],
   [
+    "太いルールとグラフィックマーカーで、情報の輪郭を際立たせるスイススタイルのテーマ。",
+    ["グラフィック階層", "スイススタイル", "密度設定"],
+  ],
+  [
     "技術メモや集中して書く文章に合う、温かみのあるコントラスト。",
     ["暖色パレット", "コントラスト設定"],
   ],
@@ -155,8 +184,16 @@ const japaneseThemeDetails = [
     ["技術向け", "ネオン設定"],
   ],
   [
+    "コードや技術ノート向けの、抑制された蛍光表示のターミナルテーマ。",
+    ["等幅フォント", "蛍光色設定", "CRT設定"],
+  ],
+  [
     "つながりのあるノートと、落ち着いたナレッジガーデンのためのテーマ。",
     ["ノート", "リンクされた文章"],
+  ],
+  [
+    "紙面、マージン、記録マークを備えたリサーチノート風のテーマ。",
+    ["用紙スタイル", "ノートの細部", "リサーチ向け"],
   ],
   [
     "エッセイのための、よく考えられた出版物のようなレイアウト。",

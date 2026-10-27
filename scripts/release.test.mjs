@@ -66,6 +66,7 @@ function internalEdges() {
 function createHarness({
   published = [],
   publishedAfterInitialInspection = [],
+  arrayView = [],
   failView = [],
   failViewAfterPublish = [],
   invalidView = [],
@@ -87,6 +88,7 @@ function createHarness({
     published: new Set(published),
     registry: new Set(published),
     publishedAfterInitialInspection: new Set(publishedAfterInitialInspection),
+    arrayView: new Set(arrayView),
     failView: new Set(failView),
     failViewAfterPublish: new Set(failViewAfterPublish),
     invalidView: new Set(invalidView),
@@ -199,7 +201,11 @@ function createHarness({
           return ok("not json");
         }
         const result = state.registry.has(name)
-          ? ok(`${JSON.stringify(VERSION)}\n`)
+          ? ok(
+              `${JSON.stringify(
+                state.arrayView.has(name) ? [VERSION] : VERSION,
+              )}\n`,
+            )
           : {
               status: 1,
               stdout: "",
@@ -477,6 +483,19 @@ test("already published packages are skipped", async () => {
       line.includes(`${ALL_PACKAGES.length}/${ALL_PACKAGES.length}`),
     ),
   );
+});
+
+test("array-shaped npm view responses mark packages as published", async () => {
+  const harness = createHarness({
+    published: ALL_PACKAGES,
+    arrayView: ALL_PACKAGES,
+  });
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.ok(stepLabels(harness.state).includes("git tag"));
 });
 
 test("re-running the same release never republishes anything", async () => {

@@ -680,7 +680,10 @@ async function queryPublishedState(packageName, version) {
         };
       }
 
-      if (publishedVersion === version) {
+      if (
+        publishedVersion === version ||
+        (Array.isArray(publishedVersion) && publishedVersion.includes(version))
+      ) {
         return {
           state: PACKAGE_STATE.PUBLISHED,
           reason: null,

@@ -473,7 +473,7 @@
   --rr-callout-title-text-transform: none;
   --rr-callout-icon-color: var(--rr-callout-tone);
   margin: 2rem 0;
-  padding: 1.125rem 1.25rem;
+  padding: 1.125rem 1.5rem;
   border: 1px solid
     color-mix(in srgb, var(--rr-callout-tone) 32%, var(--rb-color-border));
   border-left: 2px solid var(--rr-callout-tone);

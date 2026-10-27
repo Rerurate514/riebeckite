@@ -515,7 +515,7 @@
   border-radius: 2px;
   background: var(--rb-color-surface);
   color: var(--rb-color-ink);
-  padding: 1.125rem 1.25rem;
+  padding: 1.125rem 1.5rem;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rr-callout > :first-child {

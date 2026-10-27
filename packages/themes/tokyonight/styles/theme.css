@@ -522,7 +522,7 @@
   border-left: 3px solid var(--rb-color-accent);
   border-radius: 0;
   background: color-mix(in srgb, var(--rb-color-accent) 6%, transparent);
-  padding: 1.125rem 1.25rem;
+  padding: 1.125rem 1.5rem;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="tokyonight"]

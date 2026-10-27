@@ -723,7 +723,7 @@
   --rr-callout-title-letter-spacing: 0.16em;
   --rr-callout-title-text-transform: uppercase;
   --rr-callout-icon-color: var(--rb-color-accent);
-  padding: 1.125rem 1.25rem;
+  padding: 1.125rem 1.5rem;
   border: 1px solid var(--rb-color-border);
   border-left: 3px solid var(--rb-color-accent);
   border-radius: 0;

@@ -228,7 +228,7 @@
   :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer, .rr-callout) {
   border-left: 1px solid var(--rb-color-border-strong);
   margin-block: 2rem;
-  padding-left: 1.25rem;
+  padding-left: 1.5rem;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"]
   :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer) {

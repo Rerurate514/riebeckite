@@ -273,13 +273,17 @@ function captureChecks() {
   const probeCallout = probe.querySelector(".rr-callout");
   const probeTable = probe.querySelector(".rb-table-scroll");
   const probeTitle = probe.querySelector(".rr-callout__title");
+  const probeContent = probe.querySelector(".rr-callout__content");
   const calloutBounds = probeCallout?.getBoundingClientRect();
   const tableBounds = probeTable?.getBoundingClientRect();
   const titleBounds = probeTitle?.getBoundingClientRect();
+  const contentBounds = probeContent?.getBoundingClientRect();
   const calloutTableGap =
     calloutBounds && tableBounds ? tableBounds.top - calloutBounds.bottom : 0;
   const calloutTextInset =
-    calloutBounds && titleBounds ? titleBounds.left - calloutBounds.left : 0;
+    calloutBounds && titleBounds && contentBounds
+      ? Math.min(titleBounds.left, contentBounds.left) - calloutBounds.left
+      : 0;
   probe.remove();
   return {
     overflow: document.documentElement.scrollWidth > window.innerWidth,
@@ -541,7 +545,7 @@ try {
         `${theme}/${mode}: callout and table are too close`,
       );
       assert.ok(
-        desktop.checks.calloutTextInset >= 20,
+        desktop.checks.calloutTextInset >= 24,
         `${theme}/${mode}: callout text is too close to its border`,
       );
       assert.deepEqual(
@@ -599,7 +603,7 @@ try {
         `${theme}/${mode}: mobile callout and table are too close`,
       );
       assert.ok(
-        mobile.checks.calloutTextInset >= 20,
+        mobile.checks.calloutTextInset >= 24,
         `${theme}/${mode}: mobile callout text is too close to its border`,
       );
       assert.deepEqual(

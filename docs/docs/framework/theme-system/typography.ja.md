@@ -20,7 +20,7 @@ type ThemeTypographyPreset =
 
 プリセットは、本文や見出しなどのセマンティックフォントトークンに反映されます。
 
-## 3-3. 記事レイアウト（articleLayout）
+## 3-3. 記事レイアウト（layout）
 
 ```ts id="l0kwo9"
 type ThemeArticleLayoutPreset =

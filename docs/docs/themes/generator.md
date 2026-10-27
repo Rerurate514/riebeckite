@@ -43,7 +43,7 @@ riebeckite theme preview my-theme --port 4173 --no-open
 
 The preview starts an isolated temporary HonoX Site with deterministic Home, Article, Documentation, and Components fixtures. It uses the Theme's real factory and stylesheet path, never edits the current Site or Vault, and removes the temporary files after Ctrl+C. Vite updates Theme CSS changes; changing `index.ts` restarts the dev server and reloads the open page. Use browser developer tools for responsive widths and system color preference. Previewing executes the local Theme module, so run it only for trusted Theme code.
 
-Generated tests verify the factory and stylesheet module specifier. Run the site in both light and dark modes, at mobile and desktop widths, and with enabled Plugins. Theme CSS loads after Framework and Plugin styles, while `userCss` loads last. Keep functionality in Plugins and site-specific structure in the application.
+Generated tests verify the factory and stylesheet module specifier. Run the site in both light and dark modes, at mobile and desktop widths, and with enabled Plugins. Theme CSS loads after Framework and Plugin styles, while configured `stylesheets` load last. Keep functionality in Plugins and site-specific structure in the application.
 
 ```sh
 pnpm typecheck

@@ -12,7 +12,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers design tok
 
 ## 3-4. tokens
 
-Core's `ThemeDesignTokens` has the following semantic groups. In stylesheets they are handled as `--rb-*` semantic CSS custom properties.
+Core's `semantic tokens` has the following semantic groups. In stylesheets they are handled as `--rb-*` semantic CSS custom properties.
 
 Components and plugins reference a **meaning** such as body color, background, accent, or border, rather than a theme-specific value such as "this theme's black" or "this theme's gray".
 
@@ -66,7 +66,7 @@ This is what lets a theme be swapped without touching components.
 
 ```css
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="<name>"] {
     --rb-color-paper: #fafafa;
     --rb-color-ink: #202020;
     --rb-color-accent: #555;

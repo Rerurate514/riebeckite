@@ -3,12 +3,15 @@ import { test } from "node:test";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
+  createThemePreviewState,
   createPreview,
   createPreviewDocument,
   createPreviewRegistry,
   definePluginPreview,
   parsePreviewRequest,
+  updateThemePreviewState,
 } from "../index.js";
+import { defineTheme } from "@riebeckite/core";
 import {
   createPreviewSessionTransport,
   createPreviewUiController,
@@ -425,18 +428,47 @@ test("builds an isolated preview document", () => {
     themeName: 'theme"name',
     colorMode: "system",
     themeAttributes: {
-      "data-rerurate-initial": "on",
+      "data-rb-setting-initial": "on",
       onclick: "alert(1)",
     },
   });
 
   assert.match(document, /default-src 'none'/);
-  assert.match(document, /data-theme-name="theme&quot;name"/);
-  assert.match(document, /data-theme="system"/);
-  assert.match(document, /data-rerurate-initial="on"/);
+  assert.match(document, /data-rb-theme="theme&quot;name"/);
+  assert.doesNotMatch(document, /data-rb-mode/);
+  assert.match(document, /data-rb-setting-initial="on"/);
   assert.doesNotMatch(document, /onclick/);
   assert.doesNotMatch(document, /script-src/);
   assert.match(document, /<p>Preview<\/p>/);
+});
+
+test("derives preview controls and resolved settings from a theme schema", () => {
+  const theme = defineTheme({
+    name: "preview",
+    styles: [],
+    settings: {
+      density: {
+        type: "select" as const,
+        label: "Density",
+        default: "cozy",
+        options: [
+          { value: "cozy", label: "Cozy" },
+          { value: "compact", label: "Compact" },
+        ],
+      },
+    },
+    presets: {
+      compact: { label: "Compact", settings: { density: "compact" } },
+    },
+  });
+  const state = createThemePreviewState(theme, { preset: "compact" });
+  const updated = updateThemePreviewState(theme, state, { density: "cozy" });
+
+  assert.equal(state.controls[0]?.value, "compact");
+  assert.equal(
+    updated.theme.settings.attributes["data-rb-setting-density"],
+    "cozy",
+  );
 });
 
 test("adapts a local preview session as a UI transport", async () => {

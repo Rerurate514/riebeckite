@@ -18,7 +18,7 @@ type ThemeTypographyPreset = "system" | "serif" | "sans";
 
 The preset is reflected in semantic font tokens such as body and heading.
 
-## 3-3. articleLayout
+## 3-3. layout
 
 ```ts
 type ThemeArticleLayoutPreset = "article" | "sidebar" | "full-width";

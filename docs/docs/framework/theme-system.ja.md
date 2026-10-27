@@ -46,7 +46,7 @@ sidebar:
 | タイポグラフィの宣言 | クライアントスクリプトの実行 |
 | レイアウトプリセットの宣言 | DOMの変換 |
 | 安定したフックへのスタイル指定 | アイランドの登録 |
-| `userCss` による最終的な上書き | ファイルシステムやContentManagerへのアクセス |
+| `stylesheets` による最終的な上書き | ファイルシステムやContentManagerへのアクセス |
 
 迷った場合は、次のように判断します。
 
@@ -116,7 +116,7 @@ export default defineConfig({
 | 基本情報 | `name` |
 | テーマ固有の設定 | `options` |
 | CSS | `styles[].moduleSpecifier` |
-| 共通設定 | `colorMode`, `typography`, `articleLayout`, `tokens`, `userCss` |
+| 共通設定 | `colorMode`, `typography`, `layout`, `tokens`, `stylesheets` |
 | 属性 | 安全な `data-*` 属性 |
 
 たとえば、次のように定義できます。
@@ -182,7 +182,7 @@ export function localTheme() {
 }
 ```
 
-サイト内に置いたテーマでも、`name`、`styles`、`attributes`、`tokens` は公開パッケージのテーマと同じく `resolveThemeConfig` で解決され、無害化されたうえで適用されます。
+サイト内に置いたテーマでも、`name`、`styles`、`attributes`、`tokens` は公開パッケージのテーマと同じく `resolveThemeOptions` で解決され、無害化されたうえで適用されます。
 
 ## 5. テーマ固有のオプション
 
@@ -219,7 +219,7 @@ export function newspaperTheme(
 }
 ```
 
-このオプションはCoreの `ThemeConfig` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
+このオプションはCoreの `ThemeOptions` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
 
 ```text id="2cqt02"
 newspaper の density

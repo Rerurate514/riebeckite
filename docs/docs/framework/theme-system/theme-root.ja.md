@@ -14,7 +14,7 @@ sidebar:
 組み込みテーマは、`:root` 単体を対象にしません。すべてのルールをテーマの識別名でスコープするため、同じスタイルシートを実際のドキュメントと埋め込みプレビューの両方に使えます。
 
 ```css id="36j35i"
-:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"]
 ```
 
 `<name>` はテーマの識別名です。既定テーマは `riebeckite` です。組み込みテーマには次のものがあります。
@@ -31,7 +31,7 @@ rerurate
 実際のサイトでは、アプリが `<html>` にテーマ名を付けます。
 
 ```html id="18amdy"
-<html data-theme-name="minimal">
+<html data-rb-theme="minimal">
 ```
 
 この場合、`:root` がテーマルートになります。
@@ -41,14 +41,14 @@ rerurate
 ```html id="3ynnb9"
 <div
   class="rb-theme-root"
-  data-theme-name="minimal"
+  data-rb-theme="minimal"
 >
   ...
 </div>
 
 <div
   class="rb-theme-root"
-  data-theme-name="gruvbox"
+  data-rb-theme="gruvbox"
 >
   ...
 </div>
@@ -76,49 +76,49 @@ flowchart TD
 ```css id="bsov79"
 /* Light */
 :is(:root, .rb-theme-root)
-[data-theme-name="<name>"] {
+[data-rb-theme="<name>"] {
   /* ... */
 }
 
 /* Dark */
 :is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-theme="dark"] {
+[data-rb-theme="<name>"]
+[data-rb-mode="dark"] {
   /* ... */
 }
 
 /* System */
 @media (prefers-color-scheme: dark) {
   :is(:root, .rb-theme-root)
-  [data-theme-name="<name>"]
-  :not([data-theme]) {
+  [data-rb-theme="<name>"]
+  :not([data-rb-mode]) {
     /* ... */
   }
 }
 
 /* Typography */
 :is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
-[data-typography="serif"] {
+[data-rb-theme="<name>"]
+[data-rb-setting-typography="serif"] {
   /* ... */
 }
 
 /* Theme Option */
 :is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
+[data-rb-theme="<name>"]
 [data-example-option="on"] {
   /* ... */
 }
 
 /* Elements */
 :is(:root, .rb-theme-root)
-[data-theme-name="<name>"]
+[data-rb-theme="<name>"]
 :focus-visible {
   /* ... */
 }
 ```
 
-`data-theme-name` はアプリが出力します。プレビューのコンテナに必要なのは、`.rb-theme-root` フックと一致するテーマ名だけです。
+`data-rb-theme` はアプリが出力します。プレビューのコンテナに必要なのは、`.rb-theme-root` フックと一致するテーマ名だけです。
 
 ## 4. カラーモード・属性・オプションの詳細
 
@@ -139,7 +139,7 @@ return defineTheme({
 
 ```css id="4evhcs"
 :is(:root, .rb-theme-root)
-[data-theme-name="newspaper"]
+[data-rb-theme="newspaper"]
 [data-newspaper-density="compact"] {
   /* ... */
 }
@@ -176,19 +176,19 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 ```html
 <html
   lang="ja"
-  data-theme-name="minimal"
-  data-theme="dark"
-  data-typography="system"
-  data-article-layout="article"
+  data-rb-theme="minimal"
+  data-rb-mode="dark"
+  data-rb-setting-typography="system"
+  data-rb-layout="article"
 >
 ```
 
 フレームワークは `themeRootAttributes(theme)` を使い、テーマ自身の `attributes` に予約属性を加えて出力します。
 
-- `data-theme`: カラーモードの状態（`"light"` / `"dark"`。`"system"` のときは省略）
-- `data-theme-name`: テーマの識別子
-- `data-typography`: タイポグラフィプリセットの値
-- `data-article-layout`: 記事レイアウトプリセットの値
+- `data-rb-mode`: カラーモードの状態（`"light"` / `"dark"`。`"system"` のときは省略）
+- `data-rb-theme`: テーマの識別子
+- `data-rb-setting-typography`: タイポグラフィプリセットの値
+- `data-rb-layout`: 記事レイアウトプリセットの値
 
 `<html>` に独自の属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` ヘルパーを直接使います。
 
@@ -204,6 +204,6 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-ただし、フレームワークが予約している `data-theme`、`data-theme-name`、`data-typography`、`data-article-layout` は、テーマの `attributes` では上書きされません。
+ただし、フレームワークが予約している `data-rb-mode`、`data-rb-theme`、`data-rb-setting-typography`、`data-rb-layout` は、テーマの `attributes` では上書きされません。
 
 プラグインやテーマが以前に独自の `themeAttributes()` を実装していた場合は、フレームワークが提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。これにより、フレームワークが所有する属性の名前空間と、テーマ固有の名前空間の分離が明確になります。

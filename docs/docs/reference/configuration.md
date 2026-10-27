@@ -11,6 +11,7 @@ Create configuration with `defineConfig` and let the integration resolve it befo
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
+import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
   site: { title: "My site", baseUrl: "https://example.com" },
@@ -19,7 +20,7 @@ export default defineConfig({
     exclude: ["drafts/**"],
     filters: { publishStrategy: "explicit" },
   },
-  theme: { colorMode: "system", articleLayout: "article" },
+  theme: defaultTheme({ colorMode: "system" }),
   plugins: [],
 });
 ```

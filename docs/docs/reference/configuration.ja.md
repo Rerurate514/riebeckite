@@ -29,7 +29,7 @@ export default defineConfig({
 
   theme: {
     colorMode: "system",
-    articleLayout: "article",
+    layout: "article",
   },
 
   plugins: [],

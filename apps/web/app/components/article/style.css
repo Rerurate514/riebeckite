@@ -13,7 +13,7 @@
    the readable column left. These rules are unlayered so they beat the plugin
    styles imported later via `.riebeckite/plugin-styles.css`. */
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-article-layout="article"] .rb-article-outro {
+  :is(:root, .rb-theme-root)[data-rb-layout="article"] .rb-article-outro {
     grid-column: 1;
   }
 }

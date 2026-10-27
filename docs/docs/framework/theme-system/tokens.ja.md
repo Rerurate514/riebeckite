@@ -11,7 +11,7 @@ sidebar:
 
 ## 3-4. デザイントークン（tokens）
 
-Coreの `ThemeDesignTokens` は、次のセマンティックなグループに分かれています。スタイルシートでは、これらを `--rb-*` というセマンティックなCSSカスタムプロパティとして扱います。
+Coreの `semantic tokens` は、次のセマンティックなグループに分かれています。スタイルシートでは、これらを `--rb-*` というセマンティックなCSSカスタムプロパティとして扱います。
 
 コンポーネントやプラグインは、「このテーマの黒」「このテーマの灰色」のようなテーマ固有の値ではなく、**意味**を参照します。本文色、背景、アクセント、ボーダーなどがその例です。
 
@@ -67,7 +67,7 @@ CSSでは次のように定義します。
 
 ```css id="u6csj3"
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="<name>"] {
     --rb-color-paper: #fafafa;
     --rb-color-ink: #202020;
     --rb-color-accent: #555;

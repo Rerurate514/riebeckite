@@ -184,7 +184,7 @@ The public API is a contract intended for external use. `src/**` and monorepo-in
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
 - Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `ContentQuery`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
 - Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `createPluginMemo`, `stableStringify`
-- Themes: `defineTheme`, `RiebeckiteTheme`, `ThemeDesignTokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
+- Themes: `defineTheme`, `ThemeDefinition`, `semantic tokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
 - Pipeline: `Pipeline`, `MarkdownPipeline`, `HtmlPipeline`
 - Utilities: `escapeHtml`, `escapeHtmlAttribute`, `normalizeTag`, `calculateReadingTime`, `stripHtml`
 - Observability: `Logger`, `Tracer`, `TraceSpan`, `TraceSink`
@@ -233,8 +233,8 @@ Used to define and resolve plugins, endpoints, and more. To build a plugin, see 
 
 ```text
 defineTheme
-RiebeckiteTheme
-ThemeDesignTokens
+ThemeDefinition
+semantic tokens
 ThemeColorMode
 ThemeTypographyPreset
 ThemeArticleLayoutPreset

@@ -1,38 +1,26 @@
 ---
-date: 2026-10-08
+date: 2026-10-27
 title: Theme configuration
 sidebar:
   label: Theme configuration
   order: 70
 ---
-
 # Theme configuration
 
-Configure the theme with `theme`:
+Pass a theme instance to `theme`.
 
 ```ts
-theme: {
-  colorMode: "system",
-  articleLayout: "article",
-}
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export default defineConfig({
+  theme: defaultTheme({
+    colorMode: "system",
+    layout: "article",
+    preset: "reading",
+    settings: { typography: "serif" },
+    stylesheets: ["/site.css"],
+  }),
+});
 ```
 
-You can use a raw theme configuration or a declared theme.
-
-A theme is a presentation setting. Do not put integration-specific settings (HonoX, Vite, Cloudflare, and so on) into the Core configuration.
-
-```mermaid
-flowchart TD
-    Config["Riebeckite Config"]
-
-    Config --> Site["Site"]
-    Config --> Content["Content"]
-    Config --> Markdown["Markdown"]
-    Config --> Theme["Theme"]
-    Config --> Plugins["Plugins"]
-
-    Framework["HonoX / Vite / Platform"]
-    Framework --> Integration["Integration Config"]
-
-    Integration -. "do not mix into Core Config" .-> Config
-```
+Settings are specific to the selected theme and are validated against its schema. See [Theme API](../theme-api.md) for schema definitions and CSS reflection.

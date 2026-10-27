@@ -14,18 +14,18 @@ sidebar:
 すべてのテーマルールは、テーマの識別名にスコープされます。
 
 ```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-mode="dark"] { /* dark */ }
 ```
 
 ## データ属性
 
 テーマルートは `<html>` に次の属性を出力します。
 
-- `data-theme-name`：テーマの識別名（例：`"riebeckite"`、`"minimal"`）
-- `data-theme`：カラーモードの状態（`"light"` / `"dark"`。`"system"` では省略）
-- `data-typography`：タイポグラフィのプリセット値
-- `data-article-layout`：記事レイアウトのプリセット値
+- `data-rb-theme`：テーマの識別名（例：`"riebeckite"`、`"minimal"`）
+- `data-rb-mode`：カラーモードの状態（`"light"` / `"dark"`。`"system"` では省略）
+- `data-rb-setting-typography`：タイポグラフィのプリセット値
+- `data-rb-layout`：記事レイアウトのプリセット値
 
 ## ThemeRootのUIコンポーネント
 フレームワークは `@riebeckite/honox/ui` のUIプリミティブ `ThemeRoot` を提供し、`<html>` 要素へのテーマ属性の設定を担います。使い方は次のとおりです。
@@ -38,10 +38,10 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
   {children}
 </ThemeRoot>
 ```
-`ThemeRoot` は `lang`、`data-theme-name`、`data-theme`、`data-typography`、`data-article-layout` 属性を持つ `<html>` 要素を描画します。
+`ThemeRoot` は `lang`、`data-rb-theme`、`data-rb-mode`、`data-rb-setting-typography`、`data-rb-layout` 属性を持つ `<html>` 要素を描画します。
 
 ## `<html>`の予約属性
-フレームワークが予約する `data-theme`、`data-theme-name`、`data-typography`、`data-article-layout` は、テーマの `attributes` で上書きできません。カスタムの `<html>` 属性を追加するには、`themeRootAttributes` ヘルパーを直接使います。
+フレームワークが予約する `data-rb-mode`、`data-rb-theme`、`data-rb-setting-typography`、`data-rb-layout` は、テーマの `attributes` で上書きできません。カスタムの `<html>` 属性を追加するには、`themeRootAttributes` ヘルパーを直接使います。
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
 <html

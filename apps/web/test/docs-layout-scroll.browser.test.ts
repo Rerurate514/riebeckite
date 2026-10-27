@@ -47,7 +47,7 @@ async function loadDocsPage(
 ): Promise<void> {
   await page.setViewport({ width, height: 900 });
   await page.setContent(`<!doctype html>
-    <html data-article-layout="article" data-theme="${theme}">
+    <html data-rb-layout="article" data-rb-mode="${theme}">
       <head><style>:root {
         --rb-space-2: 1rem;
         --rb-space-1: 0.5rem;

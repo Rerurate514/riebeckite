@@ -1,39 +1,31 @@
 ---
-date: 2026-10-25
 title: Garden
 ---
 # Garden
 
-つながったノートを主役にする、暖かいデジタルガーデン向けテーマです。落ち着いた明朝体の読書リズム、オリーブ色の操作状態、カードではなく罫線による構造を使います。
-
-[English](./garden.md)
+`@riebeckite/theme-garden` は公式テーマ **Garden** を提供します。テーマ ID は `garden` です。設定スキーマが設定とプレビュー操作部の唯一の情報源になります。
 
 ## 使い方
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { gardenTheme } from "@riebeckite/theme-garden";
 
 export default defineConfig({
-  theme: gardenTheme({ colorMode: "system" }),
+  theme: gardenTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## デザイン
+`colorMode` は `"light"`、`"dark"`、`"system"`、`layout` は `"article"`、`"sidebar"`、`"full-width"` です。`stylesheets` はテーマ CSS の後にサイト固有のスタイルシートを追加します。プリセットを適用した後に、明示した `settings` が優先されます。
 
-- 暖色の紙面、緑のリンク、ゆとりのある明朝体でノートを読みやすくします。
-- 葉と茎の SVG を記事ヘッダーと節見出しに添え、縮小モーション設定を尊重した短い生長アニメーションを使います。
-- Backlinks、Local graph、Garden explorer、Callout は安定した公開ルートを通じて罫線で統一します。
+## 設定
 
-## 設定とトークン
+ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `gardenTheme.settings` を参照してください。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
 
-`gardenTheme(options?)` は `name` 以外の `ThemeConfig`、すなわち `colorMode`、`typography`、`articleLayout`、`tokens`、`userCss` を受け取ります。`tokens` で共通の `--rb-color-*`、`--rb-font-*`、レイアウトトークンを上書きできます。
+設定は `data-rb-setting-<name>` 属性へ反映されます。ルートには `data-rb-theme="garden"`、明示的なライト / ダーク時だけ `data-rb-mode`、そして `data-rb-layout` が設定されます。
 
-## モードと互換性
-
-ライト、明示ダーク、システムダークのすべてで同じセマンティックトークン契約を定義します。`colorMode: "system"` は `data-theme` がない限り `prefers-color-scheme` に従います。縮小モーション、狭い画面、キーボードフォーカス、横スクロール表に対応し、システムフォントと安定した `rb-*`／`rr-*` フックだけを使います。
-
-## エクスポート
-
-- `gardenTheme(options?)`
-- `GardenThemeOptions`
-- `@riebeckite/theme-garden/style.css`
+[Theme API](../reference/theme-api.md) と [テーマを書く](./writing-a-theme.ja.md) も参照してください。

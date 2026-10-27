@@ -1,3 +1,9 @@
+import {
+  resolveTheme,
+  type ThemeInstance,
+  type ThemePreset,
+  type ThemeSettingsSchema,
+} from "@riebeckite/core";
 import type { PreviewFixture } from "@riebeckite/preview";
 import { defaultTheme } from "@riebeckite/theme-default";
 import { editorialTheme } from "@riebeckite/theme-editorial";
@@ -11,8 +17,6 @@ import { technicalTheme } from "@riebeckite/theme-technical";
 import { tokyonightTheme } from "@riebeckite/theme-tokyonight";
 import type { WebLocale } from "./locale";
 
-type ThemeDefinition = ReturnType<typeof defaultTheme>;
-
 export type ShowcaseTheme = {
   readonly name: string;
   readonly label: string;
@@ -21,20 +25,21 @@ export type ShowcaseTheme = {
   readonly packageName: string;
   readonly factory: string;
   readonly attributes: Readonly<Record<string, string>>;
+  readonly settings: ThemeSettingsSchema;
+  readonly presets: Readonly<Record<string, ThemePreset<ThemeSettingsSchema>>>;
 };
 
 function themeDefinition(
-  theme: ThemeDefinition,
-  details: Omit<ShowcaseTheme, "name" | "attributes">,
+  theme: ThemeInstance,
+  details: Omit<ShowcaseTheme, "name" | "attributes" | "settings" | "presets">,
 ): ShowcaseTheme {
+  const resolved = resolveTheme(theme, defaultTheme);
   return {
     ...details,
-    name: theme.name,
-    attributes: Object.fromEntries(
-      Object.entries(theme.attributes ?? {}).filter(
-        (entry): entry is [string, string] => typeof entry[1] === "string",
-      ),
-    ),
+    name: resolved.name,
+    attributes: resolved.settings.attributes,
+    settings: theme.definition.settings,
+    presets: theme.definition.presets,
   };
 }
 

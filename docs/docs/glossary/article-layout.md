@@ -6,20 +6,20 @@ sidebar:
 ---
 # Article Layout
 
-The article layout preset (`article`, `sidebar`, `full-width`) determines the article area's presentation through the `data-article-layout` attribute on the theme root. It controls the width and sidebar configuration without changing the route or component tree.
+The article layout preset (`article`, `sidebar`, `full-width`) determines the article area's presentation through the `data-rb-layout` attribute on the theme root. It controls the width and sidebar configuration without changing the route or component tree.
 
 ## Presets
 `article` — Standard article layout with side area
 `sidebar` — Sidebar-focused layout
 `full-width` — Full-width article without sidebar
 
-The preset is set via `data-article-layout` attribute on the theme root and reflected in CSS rules scoped to the theme name.
+The preset is set via `data-rb-layout` attribute on the theme root and reflected in CSS rules scoped to the theme name.
 
 ## Article Layout CSS Rules
-Each layout preset is reflected in CSS rules using the `data-article-layout` attribute on the theme root: `:is(:root, .rb-theme-root)[data-article-layout="sidebar"]` controls sidebar width and layout configuration. The `article` preset provides a standard article with side area, while `full-width` removes the sidebar for maximum width.
+Each layout preset is reflected in CSS rules using the `data-rb-layout` attribute on the theme root: `:is(:root, .rb-theme-root)[data-rb-layout="sidebar"]` controls sidebar width and layout configuration. The `article` preset provides a standard article with side area, while `full-width` removes the sidebar for maximum width.
 
 ```css
-:is(:root, .rb-theme-root)[data-article-layout="sidebar"] {
+:is(:root, .rb-theme-root)[data-rb-layout="sidebar"] {
   --rb-layout-sidebar: 300px;
   --rb-layout-article-max: calc(100% - 300px);
 }

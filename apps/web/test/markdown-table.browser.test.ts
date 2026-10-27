@@ -36,7 +36,7 @@ async function loadTable(
 ): Promise<void> {
   await page.setViewport({ width, height: 900 });
   await page.setContent(`<!doctype html>
-    <html data-theme-name="riebeckite" data-theme="${theme}">
+    <html data-rb-theme="riebeckite" data-rb-mode="${theme}">
       <head><style>${styles}</style></head>
       <body>
         <article class="rb-article"><div class="rb-article-content">

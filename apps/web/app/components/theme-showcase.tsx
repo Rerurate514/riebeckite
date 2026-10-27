@@ -102,6 +102,7 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
               {japanese ? "ページ" : "Page"}
               <select data-preview-page />
             </label>
+            <div data-preview-theme-settings />
             <fieldset class="theme-showcase__devices">
               <legend>{japanese ? "表示幅" : "Viewport"}</legend>
               <button

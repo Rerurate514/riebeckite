@@ -10,13 +10,13 @@ This page is part of [Themes in Depth](../theme-system.md) and covers stable CSS
 
 # Stable CSS hooks and the cascade
 
-## 3-5. userCss
+## 3-5. stylesheets
 
-`userCss` loads last (top of the cascade) and is the final override. It is for sites that want to tweak one thing without forking the theme. Theme stylesheets load before `userCss`, so `userCss` wins. A theme package should not rely on stronger selectors or heavy use of `!important` to beat `userCss`.
+`stylesheets` loads last (top of the cascade) and is the final override. It is for sites that want to tweak one thing without forking the theme. Theme stylesheets load before `stylesheets`, so `stylesheets` wins. A theme package should not rely on stronger selectors or heavy use of `!important` to beat `stylesheets`.
 
 ```ts
 theme: defaultTheme({
-  userCss: ["/extensions/custom.css"],
+  stylesheets: ["/extensions/custom.css"],
 }),
 ```
 
@@ -79,13 +79,13 @@ styles/
 ```css
 /* Tokens stay layered. */
 @layer base {
-  :is(:root, .rb-theme-root)[data-theme-name="example"] {
+  :is(:root, .rb-theme-root)[data-rb-theme="example"] {
     --rb-color-accent: #b45309;
   }
 }
 
 /* Character rules are unlayered, so they beat app and plugin CSS. */
-:is(:root, .rb-theme-root)[data-theme-name="example"] .rb-article-header {
+:is(:root, .rb-theme-root)[data-rb-theme="example"] .rb-article-header {
   border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
 }
 
@@ -110,10 +110,10 @@ framework structural CSS
 → Plugin default CSS
 → Theme CSS
 → config token inline style
-→ userCss
+→ stylesheets
 ```
 
-This order is guaranteed, not incidental. `@riebeckite/honox` generates `.riebeckite/framework-styles.css` (framework structural CSS), `.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and `.riebeckite/theme-styles.css` (theme styles). The site imports the framework stylesheet before the plugin stylesheet, and the plugin stylesheet before the theme stylesheet, so theme CSS always overrides plugin defaults and `userCss` is the final override.
+This order is guaranteed, not incidental. `@riebeckite/honox` generates `.riebeckite/framework-styles.css` (framework structural CSS), `.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and `.riebeckite/theme-styles.css` (theme styles). The site imports the framework stylesheet before the plugin stylesheet, and the plugin stylesheet before the theme stylesheet, so theme CSS always overrides plugin defaults and `stylesheets` is the final override.
 
 ```mermaid
 flowchart TD
@@ -121,7 +121,7 @@ flowchart TD
     Plugin["Plugin Default CSS"]
     Theme["Theme CSS"]
     Token["Config Token<br/>Inline Style"]
-    User["userCss"]
+    User["stylesheets"]
 
     Base --> Plugin
     Plugin --> Theme
@@ -138,7 +138,7 @@ Plugin
 Theme
   → changes the plugin's appearance
 
-userCss
+stylesheets
   → the site author's final adjustment
 ```
 
@@ -152,24 +152,24 @@ If a theme does not apply as expected, check in this order:
 flowchart TD
     Start["Theme is not applied"]
 
-    Start --> Name{"Is data-theme-name correct?"}
+    Start --> Name{"Is data-rb-theme correct?"}
     Name -->|No| FixName["Check the theme name"]
     Name -->|Yes| Hook{"Are you targeting the right hook?"}
 
     Hook -->|No| FixHook["Check rb-* / rr-*"]
     Hook -->|Yes| Cascade{"Is the cascade correct?"}
 
-    Cascade -->|No| FixCascade["Check Plugin → Theme → userCss"]
+    Cascade -->|No| FixCascade["Check Plugin → Theme → stylesheets"]
     Cascade -->|Yes| Mode{"Is the color mode condition correct?"}
 
-    Mode -->|No| FixMode["Check data-theme / system"]
+    Mode -->|No| FixMode["Check data-rb-mode / system"]
     Mode -->|Yes| CSS["Check the selector / CSS"]
 ```
 
 In particular, verify:
 
-1. `data-theme-name` matches the theme's `name`.
+1. `data-rb-theme` matches the theme's `name`.
 2. You target the correct `.rb-*` / `.rr-*` stable hook.
-3. The order is Plugin CSS → Theme CSS → `userCss`.
-4. `data-theme=""` is not left behind when using `system`.
+3. The order is Plugin CSS → Theme CSS → `stylesheets`.
+4. `data-rb-mode=""` is not left behind when using `system`.
 5. The selector does not leak outside the theme root.

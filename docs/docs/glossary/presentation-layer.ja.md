@@ -14,10 +14,10 @@ sidebar:
 - スタイルシートの規則を定義する
 - テーマ固有のデータ属性を宣言する
 - カラーモード、タイポグラフィ、レイアウトのプリセットを提供する
-- `userCss` で上書きする（カスケードで最後に読み込まれます）
+- `stylesheets` で上書きする（カスケードで最後に読み込まれます）
 
 ## テーマとカラーモードの相互作用
-テーマは `data-theme` 属性とセマンティックトークンを通じてカラーモードと相互作用します。`colorMode` が `"system"` のときは `data-theme` 属性が省略され、`@media (prefers-color-scheme: dark)` クエリでOSの設定を検出します。テーマは個々のコンポーネントに色をハードコードせず、各カラーモードで適切に解決されるセマンティックトークン（例：`--rb-color-ink`）を使ってください。
+テーマは `data-rb-mode` 属性とセマンティックトークンを通じてカラーモードと相互作用します。`colorMode` が `"system"` のときは `data-rb-mode` 属性が省略され、`@media (prefers-color-scheme: dark)` クエリでOSの設定を検出します。テーマは個々のコンポーネントに色をハードコードせず、各カラーモードで適切に解決されるセマンティックトークン（例：`--rb-color-ink`）を使ってください。
 
 ## テーマができないこと
 コンポーネントの置き換え、JSXの注入、ルートの追加、プラグインの追加・削除、クライアントスクリプトの実行、DOMの変換、アイランドの登録、ファイルシステムへのアクセス、`ContentManager` へのアクセス。
@@ -27,7 +27,7 @@ sidebar:
 - [[glossary/theme|Theme]]
 - [[glossary/color-mode|Color Mode]]
 - [[article-layout|Article Layout]]
-- [[user-css|userCss]]
+- [[user-css|stylesheets]]
 
 ## さらに詳しく
 

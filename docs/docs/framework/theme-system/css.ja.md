@@ -7,15 +7,15 @@ sidebar:
 ---
 # 安定した CSS フックとカスケード
 
-このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、`userCss`、安定した CSS フック、キャラクターレイヤー、CSS のカスケードを扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、`stylesheets`、安定した CSS フック、キャラクターレイヤー、CSS のカスケードを扱います。
 
-## 3-5. `userCss`
+## 3-5. `stylesheets`
 
-`userCss` は最後に読み込まれ（カスケードの最上位）、最終的な上書きになります。テーマをフォークせずに1箇所だけ調整したいサイトのためのものです。テーマのスタイルシートは `userCss` より先に読み込まれるため、`userCss` が勝ちます。テーマパッケージは、`userCss` に打ち勝つために強いセレクターや `!important` の多用に頼らないでください。
+`stylesheets` は最後に読み込まれ（カスケードの最上位）、最終的な上書きになります。テーマをフォークせずに1箇所だけ調整したいサイトのためのものです。テーマのスタイルシートは `stylesheets` より先に読み込まれるため、`stylesheets` が勝ちます。テーマパッケージは、`stylesheets` に打ち勝つために強いセレクターや `!important` の多用に頼らないでください。
 
 ```ts id="mphtk3"
 theme: defaultTheme({
-  userCss: [
+  stylesheets: [
     "/extensions/custom.css",
   ],
 }),
@@ -104,7 +104,7 @@ __result
 
 ```css id="n72uhc"
 :is(:root, .rb-theme-root)
-[data-theme-name="example"]
+[data-rb-theme="example"]
 .rb-article-header {
   border-bottom:
     var(--rb-rule-width)
@@ -127,7 +127,7 @@ rr-*
 ```css id="43rbsh"
 @layer base {
   :is(:root, .rb-theme-root)
-  [data-theme-name="example"] {
+  [data-rb-theme="example"] {
     --rb-color-accent: #b45309;
   }
 }
@@ -137,7 +137,7 @@ rr-*
 
 ```css id="s2xwqm"
 :is(:root, .rb-theme-root)
-[data-theme-name="example"]
+[data-rb-theme="example"]
 .rb-article-header {
   border-bottom:
     var(--rb-rule-width)
@@ -191,7 +191,7 @@ Theme CSS
         ↓
 Config Token Inline Style
         ↓
-userCss
+stylesheets
 ```
 
 ```mermaid id="e5j94x"
@@ -200,7 +200,7 @@ flowchart TD
     Plugin["プラグインの既定 CSS"]
     Theme["テーマ CSS"]
     Token["設定トークン<br/>インラインスタイル"]
-    User["userCss"]
+    User["stylesheets"]
 
     Base --> Plugin
     Plugin --> Theme
@@ -216,7 +216,7 @@ flowchart TD
 .riebeckite/theme-styles.css
 ```
 
-`.riebeckite/framework-styles.css` はフレームワークの構造 CSS、`.riebeckite/plugin-styles.css` は解決されたプラグイン順のプラグインスタイル、`.riebeckite/theme-styles.css` はテーマスタイルです。サイトは、フレームワークのスタイルシートをプラグインのスタイルシートより先に、プラグインのスタイルシートをテーマのスタイルシートより先に読み込みます。そのため、テーマ CSS は常にプラグインの既定を上書きし、`userCss` が最終的な上書きになります。
+`.riebeckite/framework-styles.css` はフレームワークの構造 CSS、`.riebeckite/plugin-styles.css` は解決されたプラグイン順のプラグインスタイル、`.riebeckite/theme-styles.css` はテーマスタイルです。サイトは、フレームワークのスタイルシートをプラグインのスタイルシートより先に、プラグインのスタイルシートをテーマのスタイルシートより先に読み込みます。そのため、テーマ CSS は常にプラグインの既定を上書きし、`stylesheets` が最終的な上書きになります。
 
 その結果、次の関係になります。
 
@@ -227,7 +227,7 @@ Plugin
 Theme
   → Plugin の見た目を変更
 
-userCss
+stylesheets
   → Site 利用者が最終調整
 ```
 
@@ -241,24 +241,24 @@ userCss
 flowchart TD
     Start["テーマが適用されない"]
 
-    Start --> Name{"data-theme-name は正しいか"}
+    Start --> Name{"data-rb-theme は正しいか"}
     Name -->|いいえ| FixName["テーマ名を確認"]
     Name -->|はい| Hook{"正しいフックを対象にしているか"}
 
     Hook -->|いいえ| FixHook["rb-* / rr-* を確認"]
     Hook -->|はい| Cascade{"カスケードは正しいか"}
 
-    Cascade -->|いいえ| FixCascade["プラグイン → テーマ → userCss を確認"]
+    Cascade -->|いいえ| FixCascade["プラグイン → テーマ → stylesheets を確認"]
     Cascade -->|はい| Mode{"カラーモードの条件は正しいか"}
 
-    Mode -->|いいえ| FixMode["data-theme / system を確認"]
+    Mode -->|いいえ| FixMode["data-rb-mode / system を確認"]
     Mode -->|はい| CSS["セレクター / CSS を確認"]
 ```
 
 特に確認する項目は次のとおりです。
 
-1. `data-theme-name` がテーマの `name` と一致しているか
+1. `data-rb-theme` がテーマの `name` と一致しているか
 2. `.rb-*` / `.rr-*` の正しい安定したフックを対象にしているか
-3. プラグイン CSS → テーマ CSS → `userCss` の順になっているか
-4. `system` なのに `data-theme=""` が残っていないか
+3. プラグイン CSS → テーマ CSS → `stylesheets` の順になっているか
+4. `system` なのに `data-rb-mode=""` が残っていないか
 5. テーマルートの外へセレクターが漏れていないか

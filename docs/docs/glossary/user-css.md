@@ -1,33 +1,33 @@
 ---
 date: 2026-10-14
-title: userCss
+title: stylesheets
 sidebar:
   hidden: true
 ---
-# userCss
+# stylesheets
 
-Extra stylesheets that load last in the CSS cascade, allowing site authors to make final adjustments to the theme's appearance without forking the theme. userCss wins over theme CSS, plugin CSS, and config token styles.
+Extra stylesheets that load last in the CSS cascade, allowing site authors to make final adjustments to the theme's appearance without forking the theme. stylesheets wins over theme CSS, plugin CSS, and config token styles.
 
 ## Cascade position
-Load order: framework CSS → plugin CSS → theme CSS → config token inline style → userCss
-userCss is the final override — ideal for small site-specific tweaks.
+Load order: framework CSS → plugin CSS → theme CSS → config token inline style → stylesheets
+stylesheets is the final override — ideal for small site-specific tweaks.
 
 ```ts
 export default defineConfig({
   theme: defaultTheme({
-    userCss: ["/extensions/custom.css"],
+    stylesheets: ["/extensions/custom.css"],
   }),
 });
 ```
 
-## userCss File Setup
-`userCss` is configured as an array of stylesheet paths in `defineConfig`, e.g., `userCss: ["/extensions/custom.css"]`. The loaded stylesheets are added to the page header in the order provided, with the last stylesheet having the highest specificity.
+## stylesheets File Setup
+`stylesheets` is configured as an array of stylesheet paths in `defineConfig`, e.g., `stylesheets: ["/extensions/custom.css"]`. The loaded stylesheets are added to the page header in the order provided, with the last stylesheet having the highest specificity.
 
 ## Use cases
 - Adjust article spacing slightly
 - Change the text size of a specific element
 - Add site-specific decoration
-Use `userCss` for tweaks; reorganize into a theme when changes grow.
+Use `stylesheets` for tweaks; reorganize into a theme when changes grow.
 
 ## Related terms
 - [[glossary/theme|Theme]]

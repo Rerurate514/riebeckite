@@ -181,47 +181,20 @@ full decision table is in
 
 ## theme
 
-`theme` accepts either a raw `ThemeConfig` object or a theme returned by
-`defineTheme`. With a raw object or no `theme` at all, the default theme
-stylesheet is used. A declared theme supplies its own stylesheets.
+`theme` accepts a theme instance returned by a theme definition. A definition
+owns its styles, settings schema, and presets.
 
-### Raw ThemeConfig
+| Field | Type | Default |
+| --- | --- | --- |
+| `colorMode` | `"light"` \| `"dark"` \| `"system"` | `"system"` |
+| `layout` | `"article"` \| `"sidebar"` \| `"full-width"` | `"article"` |
+| `preset` | declared preset name | none |
+| `settings` | inferred from the schema | schema defaults |
+| `stylesheets` | `string[]` | `[]` |
 
-| Field | Type | Default | Effect |
-| --- | --- | --- | --- |
-| `name` | `string` | `"riebeckite"` | Theme identity. Sets `data-theme-name`. |
-| `colorMode` | `"light"` \| `"dark"` \| `"system"` | `"system"` | Initial color mode. `"system"` omits `data-theme` and follows the OS. |
-| `typography` | `"system"` \| `"serif"` \| `"sans"` | `"system"` | Sets `data-typography` for font presets. |
-| `articleLayout` | `"article"` \| `"sidebar"` \| `"full-width"` | `"article"` | Sets `data-article-layout`. |
-| `tokens` | `ThemeDesignTokens` | `{}` | Semantic values emitted as `--rb-*` CSS custom properties. |
-| `attributes` | ``Record<`data-${string}`, string \| undefined>`` | `{}` | Extra `data-*` attributes. Only `data-*` keys are kept, and framework-owned names (`data-theme`, `data-theme-name`, `data-typography`, `data-article-layout`) are dropped. |
-| `userCss` | `string[]` | `[]` | Stylesheet hrefs emitted as `<link rel="stylesheet">` after theme styles. Use public paths such as `/app/custom.css`. |
-
-### theme.tokens
-
-| Group | Fields |
-| --- | --- |
-| `color` | `paper`, `ink`, `muted`, `accent`, `border`, `borderStrong`, `surface`, `surfaceHover`, `overlay`, `danger`, `success`, `codeBackground` |
-| `typography` | `bodyFont`, `headingFont`, `monoFont` |
-| `layout` | `pageMaxWidth`, `articleMaxWidth`, `sidebarWidth`, `contentGap` |
-
-Each token maps to a `--rb-*` custom property. See
-[Design tokens](./theme-api.md#design-tokens) for the full mapping.
-
-`theme.tokens` is emitted as an unlayered `:root { --rb-* }` rule after the
-theme stylesheet, so a value set here overrides the theme's value in every mode
-(light, explicit dark, and system dark). Adjust accents and surfaces here
-instead of copying theme CSS.
-
-```ts
-theme: {
-  colorMode: "system",
-  typography: "serif",
-  articleLayout: "sidebar",
-  tokens: { color: { accent: "#c2410c" } },
-  userCss: ["/app/custom.css"],
-}
-```
+Unknown settings and invalid values fail resolution. Core resolves defaults,
+then the preset, then explicit settings, and reflects the result through
+`data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and `data-rb-setting-*`.
 
 ### Declared themes
 
@@ -233,7 +206,7 @@ import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({
   site: { title: "My site" },
-  theme: rerurateTheme({ colorMode: "system", motion: true }),
+  theme: rerurateTheme({ colorMode: "system", settings: { motion: true } }),
 });
 ```
 

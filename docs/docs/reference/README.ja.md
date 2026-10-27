@@ -186,7 +186,7 @@ flowchart LR
 - 設定: `defineConfig`、`resolveConfig`、`resolveConfigModule`、`isPublished`、`isExcluded`
 - コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`ContentQuery`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
 - プラグイン: `definePlugin`、`resolvePlugins`、`defineEndpoint`、`createStyleAsset`、`createClientEntry`、`createPluginMemo`、`stableStringify`
-- テーマ: `defineTheme`、`RiebeckiteTheme`、`ThemeDesignTokens`、`ThemeColorMode`、`ThemeTypographyPreset`、`ThemeArticleLayoutPreset`
+- テーマ: `defineTheme`、`ThemeDefinition`、`semantic tokens`、`ThemeColorMode`、`ThemeTypographyPreset`、`ThemeArticleLayoutPreset`
 - パイプライン: `Pipeline`、`MarkdownPipeline`、`HtmlPipeline`
 - ユーティリティ: `escapeHtml`、`escapeHtmlAttribute`、`normalizeTag`、`calculateReadingTime`、`stripHtml`
 - 可観測性: `Logger`、`Tracer`、`TraceSpan`、`TraceSink`
@@ -235,8 +235,8 @@ stableStringify
 
 ```text
 defineTheme
-RiebeckiteTheme
-ThemeDesignTokens
+ThemeDefinition
+semantic tokens
 ThemeColorMode
 ThemeTypographyPreset
 ThemeArticleLayoutPreset

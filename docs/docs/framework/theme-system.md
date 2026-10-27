@@ -30,7 +30,7 @@ A [[glossary/theme|theme]] is the **presentation layer**. It changes tokens, sty
 | Define stylesheet rules | JSX injection |
 | Declare theme-specific `data-*` attributes | Route additions |
 | Declare color mode / typography / layout presets | Adding or removing plugins |
-| Provide the final override through `userCss` | Client script execution |
+| Provide the final override through `stylesheets` | Client script execution |
 | Style stable hooks | DOM transformation, island registration, filesystem access, ContentManager access |
 
 If you are unsure, decide like this:
@@ -69,7 +69,7 @@ Keep the boundary: do not write a plugin just to change appearance, and do not e
 | Identity | `name` |
 | Factory options | `options` |
 | Styles | `styles[].moduleSpecifier` |
-| Common config | `colorMode`, `typography`, `articleLayout`, `tokens`, `userCss` |
+| Common config | `colorMode`, `typography`, `layout`, `tokens`, `stylesheets` |
 | Attributes | safe `data-*` attributes |
 
 ```ts
@@ -125,11 +125,11 @@ export function localTheme() {
 }
 ```
 
-An in-site theme's `name`, `styles`, `attributes`, and `tokens` go through the same `resolveThemeConfig` path (resolution, sanitization, application) as a published theme.
+An in-site theme's `name`, `styles`, `attributes`, and `tokens` go through the same `resolveThemeOptions` path (resolution, sanitization, application) as a published theme.
 
 ## 7. Theme factory options
 
-Resolve theme-specific options inside the theme package. Do not grow Core's `ThemeConfig` with them.
+Resolve theme-specific options inside the theme package. Do not grow Core's `ThemeOptions` with them.
 
 ```ts
 type NewspaperOptions = {

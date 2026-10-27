@@ -17,16 +17,16 @@ theme's identity name so the same stylesheet can style the real document and
 an embedded preview:
 
 ```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"]
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"]
 ```
 
 `<name>` is the theme's identity name: `riebeckite` for the default theme,
 otherwise one of `minimal`, `gruvbox`, `sakura`, `tokyonight`, `rerurate`.
 
-- On a real site the app sets `data-theme-name` on `<html>`, so the `:root`
+- On a real site the app sets `data-rb-theme` on `<html>`, so the `:root`
   branch matches the document root.
 - In a preview such as a theme gallery, the same stylesheet styles any
-  element carrying `class="rb-theme-root" data-theme-name="<name>"`, so
+  element carrying `class="rb-theme-root" data-rb-theme="<name>"`, so
   several themes can render side by side in one document.
 
 ```mermaid
@@ -50,17 +50,17 @@ Light, dark, system, typography, theme options, and element/pseudo rules all
 carry the same prefix:
 
 ```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-mode="dark"] { /* dark */ }
 @media (prefers-color-scheme: dark) {
-  :is(:root, .rb-theme-root)[data-theme-name="<name>"]:not([data-theme]) { /* system */ }
+  :is(:root, .rb-theme-root)[data-rb-theme="<name>"]:not([data-rb-mode]) { /* system */ }
 }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-typography="serif"] { /* typography */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] :focus-visible { /* element/pseudo */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-setting-typography="serif"] { /* typography */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"] :focus-visible { /* element/pseudo */ }
 ```
 
-The app provides `data-theme-name`; a preview container only needs the
+The app provides `data-rb-theme`; a preview container only needs the
 `.rb-theme-root` hook and the matching name.
 
 ## 4. Color mode, attributes, and options in detail
@@ -79,7 +79,7 @@ return defineTheme({
 The attribute can then be targeted from CSS:
 
 ```css
-:is(:root, .rb-theme-root)[data-theme-name="newspaper"][data-newspaper-density="compact"] {
+:is(:root, .rb-theme-root)[data-rb-theme="newspaper"][data-newspaper-density="compact"] {
   /* ... */
 }
 ```
@@ -106,19 +106,19 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 ```html
 <html
   lang="en"
-  data-theme-name="minimal"
-  data-theme="dark"
-  data-typography="system"
-  data-article-layout="article"
+  data-rb-theme="minimal"
+  data-rb-mode="dark"
+  data-rb-setting-typography="system"
+  data-rb-layout="article"
 >
 ```
 
 The framework uses `themeRootAttributes(theme)` to emit the theme's own `attributes` plus reserved attributes:
 
-- `data-theme`: Color Mode state (`"light"` / `"dark"` / omitted for "system")
-- `data-theme-name`: Theme identity name
-- `data-typography`: Typography preset value
-- `data-article-layout`: Article layout preset value
+- `data-rb-mode`: Color Mode state (`"light"` / `"dark"` / omitted for "system")
+- `data-rb-theme`: Theme identity name
+- `data-rb-setting-typography`: Typography preset value
+- `data-rb-layout`: Article layout preset value
 
 To add your own `<html>` attributes, use the `themeRootAttributes` helper directly instead of `ThemeRoot`:
 
@@ -134,6 +134,6 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-However, the framework-reserved `data-theme`, `data-theme-name`, `data-typography`, and `data-article-layout` cannot be overwritten by the theme's `attributes`.
+However, the framework-reserved `data-rb-mode`, `data-rb-theme`, `data-rb-setting-typography`, and `data-rb-layout` cannot be overwritten by the theme's `attributes`.
 
 If a plugin or theme previously implemented its own `themeAttributes()`, consider migrating to the framework-provided `ThemeRoot` / `themeRootAttributes()`. This clarifies the separation between framework-owned and theme-specific attribute namespaces.

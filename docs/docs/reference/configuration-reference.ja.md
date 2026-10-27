@@ -225,35 +225,35 @@ frontmatter の `visibility` と `publishAt` は、この設定より優先さ�
 
 設定方法は大きく2種類あります。
 
-1. `ThemeConfig` を直接記述する
+1. `ThemeOptions` を直接記述する
 2. Theme パッケージが提供する関数を使う
 
 `theme` を指定しなかった場合は、Riebeckite の既定 Theme が使われます。
 
-### ThemeConfig を直接指定する
+### ThemeOptions を直接指定する
 
 | 設定 | 型 | 既定値 | 用途 |
 | --- | --- | --- | --- |
-| `name` | `string` | `"riebeckite"` | Theme の識別名。`data-theme-name` に設定される。 |
+| `name` | `string` | `"riebeckite"` | Theme の識別名。`data-rb-theme` に設定される。 |
 | `colorMode` | `"light"` \| `"dark"` \| `"system"` | `"system"` | 明るい表示・暗い表示・OS設定への追従を選ぶ。 |
 | `typography` | `"system"` \| `"serif"` \| `"sans"` | `"system"` | 使用するフォントの種類を選ぶ。 |
-| `articleLayout` | `"article"` \| `"sidebar"` \| `"full-width"` | `"article"` | 記事ページのレイアウトを選ぶ。 |
-| `tokens` | `ThemeDesignTokens` | `{}` | 色、フォント、幅などの共通デザイン値を変更する。 |
+| `layout` | `"article"` \| `"sidebar"` \| `"full-width"` | `"article"` | 記事ページのレイアウトを選ぶ。 |
+| `tokens` | `semantic tokens` | `{}` | 色、フォント、幅などの共通デザイン値を変更する。 |
 | `attributes` | ``Record<`data-${string}`, string \| undefined>`` | `{}` | 独自の `data-*` 属性を追加する。 |
-| `userCss` | `string[]` | `[]` | 独自のCSSファイルを追加する。 |
+| `stylesheets` | `string[]` | `[]` | 独自のCSSファイルを追加する。 |
 
-`colorMode: "system"` の場合は `data-theme` を設定せず、OS の設定に従います。
+`colorMode: "system"` の場合は `data-rb-mode` を設定せず、OS の設定に従います。
 
-`typography` の値は `data-typography` に、`articleLayout` の値は `data-article-layout` に設定されます。
+`typography` の値は `data-rb-setting-typography` に、`layout` の値は `data-rb-layout` に設定されます。
 
 `attributes` では独自の `data-*` 属性を追加できます。
 
 ただし、Riebeckite が使用する次の属性は上書きできません。
 
-- `data-theme`
-- `data-theme-name`
-- `data-typography`
-- `data-article-layout`
+- `data-rb-mode`
+- `data-rb-theme`
+- `data-rb-setting-typography`
+- `data-rb-layout`
 
 ### theme.tokens
 
@@ -303,17 +303,17 @@ frontmatter の `visibility` と `publishAt` は、この設定より優先さ�
 theme: {
   colorMode: "system",
   typography: "serif",
-  articleLayout: "sidebar",
+  layout: "sidebar",
   tokens: {
     color: {
       accent: "#c2410c",
     },
   },
-  userCss: ["/app/custom.css"],
+  stylesheets: ["/app/custom.css"],
 }
 ```
 
-`userCss` には、ブラウザからアクセスできるCSSファイルのパスを指定します。
+`stylesheets` には、ブラウザからアクセスできるCSSファイルのパスを指定します。
 
 指定したCSSは Theme のCSSより後に読み込まれるため、Theme のスタイルを上書きできます。
 

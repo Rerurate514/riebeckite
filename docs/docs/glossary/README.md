@@ -75,13 +75,13 @@ A categorized glossary of the concepts Riebeckite uses. Each entry gives a short
 - [Theme](./theme.md) — A theme controls the presentation layer of a Riebeckite site — colors, typography, spacing, layout, and article style — without changing content semantics or application structure.
 - [Design Token](./design-token.md) — A named value such as a color, spacing, or font exposed as a CSS custom property (--rb-*) that flows through the cascade so components and themes can share a stable vocabulary.
 - [Semantic Token](./semantic-token.md) — A design token referenced by meaning (e.g. body color, accent, border) rather than a theme-specific value, enabling theme swapping without component changes.
-- [Color Mode](./color-mode.md) — The active color scheme among light, dark, and system. Controlled by the theme's `colorMode` option and the `data-theme` attribute on `<html>`, with runtime switching via JavaScript.
-- [Typography](./typography.md) — The typographic configuration of the site — font families, sizes, line heights — applied through theme presets (`system`, `serif`, `sans`) via the `data-typography` attribute on the theme root.
+- [Color Mode](./color-mode.md) — The active color scheme among light, dark, and system. Controlled by the theme's `colorMode` option and the `data-rb-mode` attribute on `<html>`, with runtime switching via JavaScript.
+- [Typography](./typography.md) — The typographic configuration of the site — font families, sizes, line heights — applied through theme presets (`system`, `serif`, `sans`) via the `data-rb-setting-typography` attribute on the theme root.
 - [CSS Contract](./css-contract.md) — The stable CSS hooks and cascade order that components may rely on. Themes expose documented hooks (rb-* and rr-*) so components can style without hardcoding a specific theme.
 - [Theme Root](./theme-root.md) — The theme root selector (`[data-theme-root]` or `<html>`) that scopes token and attribute rules to the whole page. Color mode and typography attributes are applied here so the cascade reaches all elements.
 - [Presentation Layer](./presentation-layer.md) — The presentation layer is the theme's responsibility — colors, fonts, spacing, layout, and article style. It does not include content semantics, routes, manifests, plugin behavior, or client scripts.
-- [Article Layout](./article-layout.md) — The article layout preset (`article`, `sidebar`, `full-width`) determines the article area's presentation through the `data-article-layout` attribute on the theme root. It controls the width and sidebar configuration without changing the route or component tree.
-- [userCss](./user-css.md) — Extra stylesheets that load last in the CSS cascade, allowing site authors to make final adjustments to the theme's appearance without forking the theme. userCss wins over theme CSS, plugin CSS, and config token styles.
+- [Article Layout](./article-layout.md) — The article layout preset (`article`, `sidebar`, `full-width`) determines the article area's presentation through the `data-rb-layout` attribute on the theme root. It controls the width and sidebar configuration without changing the route or component tree.
+- [stylesheets](./user-css.md) — Extra stylesheets that load last in the CSS cascade, allowing site authors to make final adjustments to the theme's appearance without forking the theme. stylesheets wins over theme CSS, plugin CSS, and config token styles.
 
 ## Build and operations
 

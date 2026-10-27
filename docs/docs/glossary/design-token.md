@@ -11,7 +11,7 @@ A named value such as a color, spacing, or font exposed as a CSS custom property
 
 ## Token groups
 
-Core's ThemeDesignTokens define semantic groups for color, typography, and layout:
+Core's semantic tokens define semantic groups for color, typography, and layout:
 
 | Color            | CSS variable          |
 | ---------------- | --------------------- |
@@ -61,7 +61,7 @@ This enables theme swapping without touching component code — the same token r
 ```
 
 ## Token Definition
-The token taxonomy is defined by the `ThemeDesignTokens` type in `packages/core/src/types/theme_config.ts`. Tokens are grouped into three categories — color, typography, and layout — each mapping to CSS custom properties (`--rb-*`):
+The token taxonomy is defined by the `semantic tokens` type in `packages/core/src/types/theme_config.ts`. Tokens are grouped into three categories — color, typography, and layout — each mapping to CSS custom properties (`--rb-*`):
 
 | Category | Sub-groups | Example CSS variable |
 | --- | --- | --- |

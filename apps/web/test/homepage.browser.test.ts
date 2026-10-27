@@ -41,7 +41,7 @@ async function loadHome(
 ): Promise<void> {
   await page.setViewport({ width, height: 900 });
   await page.setContent(`<!doctype html>
-    <html data-theme-name="riebeckite" data-theme="${theme}" data-rb-color-mode="ready">
+    <html data-rb-theme="riebeckite" data-rb-mode="${theme}" data-rb-color-mode="ready">
       <head><style>${styles}</style></head>
       <body>
         <main>${renderToString(HomePage({ locale: "en", runtime: await renderHomeRuntime() }))}</main>

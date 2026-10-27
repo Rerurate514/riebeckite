@@ -45,7 +45,7 @@ test("A1: rendered blocks own their foreground, the theme keeps bare markdown pr
   );
   assert.doesNotMatch(
     themeCss,
-    /:is\(:root, \.rb-theme-root\)\[data-theme-name="rerurate"\]\s+\.rb-article-content\s+pre:not\(:where\(\.rr-code \*\)\)\s*\{/,
+    /:is\(:root, \.rb-theme-root\)\[data-rb-theme="rerurate"\]\s+\.rb-article-content\s+pre:not\(:where\(\.rr-code \*\)\)\s*\{/,
   );
   assert.match(themeCss, /\.rr-code\s*\{[^}]*margin:\s*1\.75rem 0 0/);
 });
@@ -103,23 +103,23 @@ test("A7: rendered plugins treat explicit dark and system dark identically", () 
     const scope = escapeRegExp(":is(:root, .rb-theme-root)");
     const explicit = declarationsFor(
       css,
-      new RegExp(`${scope}\\[data-theme="dark"\\] ${name}[^{]*\\{([^}]*)\\}`),
+      new RegExp(`${scope}\\[data-rb-mode="dark"\\] ${name}[^{]*\\{([^}]*)\\}`),
     );
     const system = declarationsFor(
       css,
       new RegExp(
-        `@media \\(prefers-color-scheme: dark\\) \\{[\\s\\S]*?${scope}:not\\(\\[data-theme\\]\\) ${name}[^{]*\\{([^}]*)\\}`,
+        `@media \\(prefers-color-scheme: dark\\) \\{[\\s\\S]*?${scope}:not\\(\\[data-rb-mode\\]\\) ${name}[^{]*\\{([^}]*)\\}`,
       ),
     );
 
     assert.match(
       css,
-      new RegExp(`${scope}\\[data-theme="dark"\\] ${name}`),
+      new RegExp(`${scope}\\[data-rb-mode="dark"\\] ${name}`),
       `${selector} explicit dark must be scoped to the theme root`,
     );
     assert.match(
       css,
-      new RegExp(`${scope}:not\\(\\[data-theme\\]\\) ${name}`),
+      new RegExp(`${scope}:not\\(\\[data-rb-mode\\]\\) ${name}`),
       `${selector} system dark must be scoped to the theme root`,
     );
     assert.equal(
@@ -143,11 +143,11 @@ test("A7: every plugin with explicit dark tokens also handles system dark", () =
     if (!existsSync(file)) continue;
 
     const css = readFileSync(file, "utf8");
-    if (!/\[data-theme="dark"\]/.test(css)) continue;
+    if (!/\[data-rb-mode="dark"\]/.test(css)) continue;
 
     assert.match(
       css,
-      /@media \(prefers-color-scheme: dark\)[\s\S]*?(?::is\(:root, \.rb-theme-root\)|:root):not\(\[data-theme\]\)/,
+      /@media \(prefers-color-scheme: dark\)[\s\S]*?(?::is\(:root, \.rb-theme-root\)|:root):not\(\[data-rb-mode\]\)/,
       `${entry.name}/style.css declares explicit dark but has no system-dark twin`,
     );
   }
@@ -157,11 +157,11 @@ test("A7: the theme resolves dark tokens in both explicit and system dark", () =
   assert.match(themeCss, /--rb-color-paper:\s*#f6efe2/);
   assert.match(
     themeCss,
-    /\[data-theme="dark"\][\s\S]*?--rb-color-paper:\s*#1c1a17/,
+    /\[data-rb-mode="dark"\][\s\S]*?--rb-color-paper:\s*#1c1a17/,
   );
   assert.match(
     themeCss,
-    /@media \(prefers-color-scheme: dark\)[\s\S]*?:not\(\[data-theme\]\)[\s\S]*?--rb-color-paper:\s*#1c1a17/,
+    /@media \(prefers-color-scheme: dark\)[\s\S]*?:not\(\[data-rb-mode\]\)[\s\S]*?--rb-color-paper:\s*#1c1a17/,
   );
 });
 
@@ -251,8 +251,8 @@ function themeStyleFiles(): Array<{ name: string; relative: string }> {
     const relative = `../../../packages/themes/${entry.name}/styles/theme.css`;
     if (!existsSync(new URL(relative, import.meta.url))) continue;
     const css = read(relative);
-    const name = /data-theme-name="([^"]+)"/.exec(css)?.[1];
-    assert.ok(name, `${entry.name} must set a data-theme-name`);
+    const name = /data-rb-theme="([^"]+)"/.exec(css)?.[1];
+    assert.ok(name, `${entry.name} must set a data-rb-theme`);
     themes.push({ name, relative });
   }
   return themes;
@@ -287,7 +287,7 @@ test("A7: dark mode has a single mechanism, no .dark class", () => {
     assert.doesNotMatch(
       read(relative),
       darkClass,
-      `${relative} must use data-theme="dark" plus prefers-color-scheme, not a .dark class`,
+      `${relative} must use data-rb-mode="dark" plus prefers-color-scheme, not a .dark class`,
     );
   }
 });
@@ -300,19 +300,19 @@ test("A7: every theme exposes the public color tokens in all three states", () =
       light: extractRule(
         css,
         new RegExp(
-          `:is\\(\\s*:root,\\s*\\.rb-theme-root\\s*\\)\\[data-theme-name="${token}"\\]\\s*\\{([^}]*)\\}`,
+          `:is\\(\\s*:root,\\s*\\.rb-theme-root\\s*\\)\\[data-rb-theme="${token}"\\]\\s*\\{([^}]*)\\}`,
         ),
       ),
       "explicit dark": extractRule(
         css,
         new RegExp(
-          `\\[data-theme-name="${token}"\\]\\[data-theme="dark"\\]\\s*\\{([^}]*)\\}`,
+          `\\[data-rb-theme="${token}"\\]\\[data-rb-mode="dark"\\]\\s*\\{([^}]*)\\}`,
         ),
       ),
       "system dark": extractRule(
         css,
         new RegExp(
-          `@media \\(prefers-color-scheme: dark\\)\\s*\\{[\\s\\S]*?\\[data-theme-name="${token}"\\]:not\\(\\[data-theme\\]\\)\\s*\\{([^}]*)\\}`,
+          `@media \\(prefers-color-scheme: dark\\)\\s*\\{[\\s\\S]*?\\[data-rb-theme="${token}"\\]:not\\(\\[data-rb-mode\\]\\)\\s*\\{([^}]*)\\}`,
         ),
       ),
     };
@@ -334,13 +334,13 @@ test("A7: every theme resolves identical dark tokens in explicit and system dark
     const explicit = extractRule(
       css,
       new RegExp(
-        `\\[data-theme-name="${token}"\\]\\[data-theme="dark"\\]\\s*\\{([^}]*)\\}`,
+        `\\[data-rb-theme="${token}"\\]\\[data-rb-mode="dark"\\]\\s*\\{([^}]*)\\}`,
       ),
     );
     const system = extractRule(
       css,
       new RegExp(
-        `@media \\(prefers-color-scheme: dark\\)\\s*\\{[\\s\\S]*?\\[data-theme-name="${token}"\\]:not\\(\\[data-theme\\]\\)\\s*\\{([^}]*)\\}`,
+        `@media \\(prefers-color-scheme: dark\\)\\s*\\{[\\s\\S]*?\\[data-rb-theme="${token}"\\]:not\\(\\[data-rb-mode\\]\\)\\s*\\{([^}]*)\\}`,
       ),
     );
 
@@ -359,7 +359,7 @@ const PORTALED_DARK_PLUGINS = new Set(["hover-preview"]);
 test("P2-A2: plugin dark overrides are scoped to the theme root, not just the document root", () => {
   const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
   const documentRootOnly =
-    /^\s*(?:html|:root)(?:\[data-theme="dark"\]|:not\(\[data-theme\]\))/;
+    /^\s*(?:html|:root)(?:\[data-rb-mode="dark"\]|:not\(\[data-rb-mode\]\))/;
   for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     const relative = `../../../packages/plugins/${entry.name}/style.css`;
@@ -383,7 +383,7 @@ test("P2-A2: the portaled hover preview keeps document-global dark behavior", ()
   const css = read("../../../packages/plugins/hover-preview/style.css");
   assert.match(
     css,
-    /html\[data-theme="dark"\] \.rb-hover-preview/,
+    /html\[data-rb-mode="dark"\] \.rb-hover-preview/,
     "the hover preview popover is portaled to document.body, so its dark override stays document-global",
   );
 });

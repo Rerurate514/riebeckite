@@ -72,7 +72,7 @@ See [Mermaid (Pele)](./mermaid-pele.md) for the renderer used here.
 - Renders every `[data-mermaid="pending"]` figure; failures set
   `data-mermaid="error"` (placeholder message via CSS)
 - When `theme` is `{ light, dark }`, the theme is chosen from
-  `html[data-theme]` or `prefers-color-scheme`
+  `html[data-rb-mode]` or `prefers-color-scheme`
 
 ## Options
 

@@ -1,49 +1,31 @@
 ---
-date: 2026-10-25
 title: Technical
 ---
 # Technical
 
-A documentation theme that treats dense reference material as an instrument
-panel: systematic, compact, and easy to scan.
+`@riebeckite/theme-technical` provides the **Technical** official theme. Its identity is `technical` and its settings schema is the source of truth for configuration and the preview controls.
 
-[日本語](./technical.ja.md)
-
-## Usage
+## Use it
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { technicalTheme } from "@riebeckite/theme-technical";
 
 export default defineConfig({
-  theme: technicalTheme({ colorMode: "system" }),
+  theme: technicalTheme({
+    colorMode: "system",
+    preset: "reading",
+    settings: { typography: "serif" },
+  }),
 });
 ```
 
-## Character
+`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
 
-- A gridded title panel and circuit motif make the page structure visible before
-  readers enter the content.
-- Numbered sections, monospaced headings, signal markers, and precise borders
-  separate reference concepts at a glance.
-- Code and plugin surfaces keep the same instrument-panel geometry; the title
-  signal animates once and respects reduced-motion preferences.
+## Settings
 
-## Options and tokens
+Read `technicalTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
 
-`technicalTheme(options?)` accepts `ThemeConfig` fields except `name`:
-`colorMode`, `typography`, `articleLayout`, `tokens`, and `userCss`. Shared
-semantic color, font, spacing, and layout tokens can be overridden with
-`tokens`.
+Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="technical"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
 
-## Modes and compatibility
-
-Light, explicit dark, and system dark define identical semantic roles. The
-theme provides keyboard focus, responsive type, horizontal table overflow, and
-reduced-motion handling. It uses system font stacks only and styles no
-plugin-internal selectors.
-
-## Exports
-
-- `technicalTheme(options?)`
-- `TechnicalThemeOptions`
-- `@riebeckite/theme-technical/style.css`
+See [Theme API](../reference/theme-api.md) and [Writing a theme](./writing-a-theme.md).

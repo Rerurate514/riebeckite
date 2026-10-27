@@ -408,7 +408,7 @@ instead of a hard-coded color.
 
 This allows the Tip block to follow the active theme's accent color automatically.
 
-This is the Theme Extension Contract in practice. Put a stable root hook (`rr-<feature>`; here `rr-tip`) on the outermost element, and use `--rb-*` semantic tokens for color and spacing. `--rb-*` tokens resolve in light, explicit dark, and system dark, so you normally do not branch on `prefers-color-scheme` or `[data-theme]` yourself, and you must not depend on a `.dark` class. See the [Theme API](../reference/theme-api.md) for details, including how to scope a dark-only branch when one is genuinely necessary.
+This is the Theme Extension Contract in practice. Put a stable root hook (`rr-<feature>`; here `rr-tip`) on the outermost element, and use `--rb-*` semantic tokens for color and spacing. `--rb-*` tokens resolve in light, explicit dark, and system dark, so you normally do not branch on `prefers-color-scheme` or `[data-rb-mode]` yourself, and you must not depend on a `.dark` class. See the [Theme API](../reference/theme-api.md) for details, including how to scope a dark-only branch when one is genuinely necessary.
 
 ### Step 3: Register the plugin
 

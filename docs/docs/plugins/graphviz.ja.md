@@ -93,7 +93,7 @@ digraph G {
 
 - `.rb-graphviz`、`.rb-graphviz__canvas`、`.rb-graphviz__caption`、`.rb-graphviz__fallback`
 - `[data-graphviz="pending"]` / `[data-graphviz="error"]` はプレースホルダーを表示
-- ダークモードは `html[data-theme="dark"]`、または `data-theme` が無いときの `prefers-color-scheme: dark` に追従
+- ダークモードは `html[data-rb-mode="dark"]`、または `data-rb-mode` が無いときの `prefers-color-scheme: dark` に追従
 
 ## 主なエクスポート
 

@@ -1,39 +1,26 @@
 ---
-date: 2026-10-08
-title: テーマの設定
+date: 2026-10-27
+title: テーマ設定
 sidebar:
-  label: テーマの設定
+  label: テーマ設定
   order: 70
 ---
-# テーマの設定
+# テーマ設定
 
-テーマは `theme` で設定します。
+`theme` にはテーマインスタンスを渡します。
 
-```ts id="pgj2be"
-theme: {
-  colorMode: "system",
-  articleLayout: "article",
-}
+```ts
+import { defaultTheme } from "@riebeckite/theme-default";
+
+export default defineConfig({
+  theme: defaultTheme({
+    colorMode: "system",
+    layout: "article",
+    preset: "reading",
+    settings: { typography: "serif" },
+    stylesheets: ["/site.css"],
+  }),
+});
 ```
 
-テーマの設定を直接書く方法と、宣言済みのテーマを利用する方法があります。
-
-テーマは表示に関する設定です。
-
-HonoX、Vite、Cloudflare など、インテグレーション固有の設定を Core の設定に混ぜないでください。
-
-```mermaid id="m54zmx"
-flowchart TD
-    Config["Riebeckite の設定"]
-
-    Config --> Site["サイト"]
-    Config --> Content["コンテンツ"]
-    Config --> Markdown["Markdown"]
-    Config --> Theme["テーマ"]
-    Config --> Plugins["プラグイン"]
-
-    Framework["HonoX / Vite / プラットフォーム"]
-    Framework --> Integration["インテグレーション設定"]
-
-    Integration -. "Core の設定へ混ぜない" .-> Config
-```
+設定は選択したテーマのスキーマに対して検証されます。スキーマとCSSへの反映は[テーマ API](../theme-api.ja.md)を参照してください。

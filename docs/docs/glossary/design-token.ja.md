@@ -11,7 +11,7 @@ sidebar:
 
 ## トークンのグループ
 
-Coreの`ThemeDesignTokens`は、色、タイポグラフィ、レイアウトの意味のグループを定義します。
+Coreの`semantic tokens`は、色、タイポグラフィ、レイアウトの意味のグループを定義します。
 
 | 色 | CSS変数 |
 | ---------------- | --------------------- |
@@ -61,7 +61,7 @@ Coreの`ThemeDesignTokens`は、色、タイポグラフィ、レイアウトの
 ```
 
 ## トークンの定義
-トークンの分類は`packages/core/src/types/theme_config.ts`の`ThemeDesignTokens`型で定義されています。トークンは色、タイポグラフィ、レイアウトの3つのカテゴリに分かれ、それぞれがCSSカスタムプロパティ（`--rb-*`）に対応します。
+トークンの分類は`packages/core/src/types/theme_config.ts`の`semantic tokens`型で定義されています。トークンは色、タイポグラフィ、レイアウトの3つのカテゴリに分かれ、それぞれがCSSカスタムプロパティ（`--rb-*`）に対応します。
 
 | カテゴリ | サブグループ | CSS変数の例 |
 | --- | --- | --- |

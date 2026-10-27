@@ -81,8 +81,8 @@ fully build-time; no request is made to the PlantUML server.
 The plugin ships `style.css` and emits stable class names: `rb-plantuml`,
 `rb-plantuml__frame`, `rb-plantuml__image`, `rb-plantuml__caption`, and
 `rb-plantuml__fallback`. Styling follows the `--rb-color-*` custom properties
-when present and switches to dark colors under `html[data-theme="dark"]`, or
-under the `prefers-color-scheme: dark` system query while `data-theme` is
+when present and switches to dark colors under `html[data-rb-mode="dark"]`, or
+under the `prefers-color-scheme: dark` system query while `data-rb-mode` is
 absent.
 
 ## Diagnostics

@@ -95,4 +95,4 @@ npm exec riebeckite dev               # check the look locally
 npm exec riebeckite build             # check the generated output
 ```
 
-`check` / `doctor` / `inspect` are read-only. Swapping a theme does not change routes, the manifest, the graph, or client behavior. If the look is wrong, check the cascade order (`userCss` last) and whether you are targeting `rr-*` or `rb-*`.
+`check` / `doctor` / `inspect` are read-only. Swapping a theme does not change routes, the manifest, the graph, or client behavior. If the look is wrong, check the cascade order (`stylesheets` last) and whether you are targeting `rr-*` or `rb-*`.

@@ -14,9 +14,9 @@ sidebar:
 - `rr-<feature>` — プラグインが描画する最も外側の要素に付くルートフック（`.rr-search`、`.rr-callout`など）
 
 ## カスケード順
-読み込み順は、テーマのCSSがプラグインの既定スタイルに勝ち、`userCss`が最後の上書きになることを保証します。
+読み込み順は、テーマのCSSがプラグインの既定スタイルに勝ち、`stylesheets`が最後の上書きになることを保証します。
 
-フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → userCss
+フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → stylesheets
 
 ```mermaid
 flowchart TD
@@ -24,7 +24,7 @@ flowchart TD
   Plugin[プラグインの既定CSS]
   Theme[テーマのCSS]
   Token[設定トークンのインラインスタイル]
-  User[userCss]
+  User[stylesheets]
   Base --> Plugin
   Plugin --> Theme
   Theme --> Token
@@ -32,7 +32,7 @@ flowchart TD
 ```
 
 ## カスケード順の検証
-保証されるカスケード順は、フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → userCssです。この順序は`@riebeckite/honox`が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`userCss`は最後の上書きで、サイト固有の小さな調整に適しています。
+保証されるカスケード順は、フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → stylesheetsです。この順序は`@riebeckite/honox`が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`stylesheets`は最後の上書きで、サイト固有の小さな調整に適しています。
 
 ## テーマCSSの書き方
 テーマは安定したフックと、文書化された子孫要素にだけスタイルを当ててください。新しい`rb-*`/`rr-*`のクラス名を考案しないでください。対象にするのは`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-content`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、および各プラグインが文書化した`rr-*`のルートフックだけです。BEMの要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。

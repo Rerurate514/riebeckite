@@ -10,7 +10,9 @@ export function createPreviewDocument(options: PreviewDocumentOptions): string {
   const themeName = escapeAttribute(options.themeName);
   const colorMode = escapeAttribute(options.colorMode);
   const themeAttributes = serializeThemeAttributes(options.themeAttributes);
-  return `<!doctype html><html data-theme-name="${themeName}" data-theme="${colorMode}"${themeAttributes}><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style></head><body><div class="rb-theme-root" data-theme-name="${themeName}" data-theme="${colorMode}"${themeAttributes}><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
+  const modeAttribute =
+    colorMode === "system" ? "" : ` data-rb-mode="${colorMode}"`;
+  return `<!doctype html><html data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src https: data:; font-src data:; base-uri 'none'; form-action 'none'"><style>${options.styles.join("\n")}</style></head><body><div class="rb-theme-root" data-rb-theme="${themeName}"${modeAttribute}${themeAttributes}><article class="rb-article"><div class="rb-article-body"><div class="rb-article-content">${options.html}</div></div></article></div></body></html>`;
 }
 
 function serializeThemeAttributes(

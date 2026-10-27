@@ -1,5 +1,6 @@
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { createPreview, definePluginPreview } from "@riebeckite/preview";
+import { reflectThemeSettings, validateThemeSettings } from "@riebeckite/core";
 import {
   createPreviewSessionTransport,
   mountPreview,
@@ -83,9 +84,14 @@ export function initThemeShowcase(): void {
       }),
     ],
   });
+  const settingsByTheme: Record<
+    string,
+    Record<string, string | number | boolean>
+  > = {};
   const disposePreview = mountPreview(previewRoot, {
     themeStyles,
     themeAttributes,
+    themeSettings: (name) => resolveSettings(name, settingsByTheme[name] ?? {}),
     pluginStyles: [],
     transport: createPreviewSessionTransport(session),
     selectors: {
@@ -134,7 +140,25 @@ export function initThemeShowcase(): void {
     detailDescription.textContent = theme.description;
     detailPackage.textContent = theme.packageName;
     detailDocs.href = getThemeDocsHref(theme.name, locale);
-    detailCode.textContent = configuration(theme);
+    detailCode.textContent = configuration(
+      theme,
+      settingsByTheme[theme.name],
+      required<globalThis.HTMLSelectElement>(
+        previewRoot,
+        "[data-preview-mode]",
+      ).value,
+    );
+    renderThemeSettings(previewRoot, theme, settingsByTheme, () => {
+      detailCode.textContent = configuration(
+        theme,
+        settingsByTheme[theme.name],
+        required<globalThis.HTMLSelectElement>(
+          previewRoot,
+          "[data-preview-mode]",
+        ).value,
+      );
+      themeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    });
     root
       .querySelectorAll<globalThis.HTMLElement>("[data-theme-card]")
       .forEach((card) => {
@@ -153,6 +177,14 @@ export function initThemeShowcase(): void {
   themeSelect.addEventListener("change", () => selectTheme(themeSelect.value), {
     signal: lifetime.signal,
   });
+  required<globalThis.HTMLSelectElement>(
+    previewRoot,
+    "[data-preview-mode]",
+  ).addEventListener(
+    "change",
+    () => selectTheme(themeSelect.value),
+    { signal: lifetime.signal },
+  );
   root
     .querySelectorAll<globalThis.HTMLButtonElement>("[data-preview-device]")
     .forEach((button) => {
@@ -186,6 +218,8 @@ export function initThemeShowcase(): void {
     "click",
     () => {
       themeSelect.value = themes[0].name;
+      for (const key of Object.keys(settingsByTheme))
+        delete settingsByTheme[key];
       required<globalThis.HTMLSelectElement>(
         previewRoot,
         "[data-preview-mode]",
@@ -236,8 +270,114 @@ export function initThemeShowcase(): void {
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-function configuration(theme: (typeof showcaseThemes)[number]): string {
-  return `import { defineConfig } from "@riebeckite/core";\nimport { ${theme.factory} } from "${theme.packageName}";\n\nexport default defineConfig({\n  theme: ${theme.factory}(),\n});`;
+function configuration(
+  theme: (typeof showcaseThemes)[number],
+  settings: Record<string, string | number | boolean> | undefined,
+  colorMode: string,
+): string {
+  const options: Record<string, unknown> = {};
+  if (colorMode !== "system") options.colorMode = colorMode;
+  if (settings && Object.keys(settings).length > 0) options.settings = settings;
+  const call =
+    Object.keys(options).length > 0 ? `(${JSON.stringify(options)})` : "()";
+  return `import { defineConfig } from "@riebeckite/core";\nimport { ${theme.factory} } from "${theme.packageName}";\n\nexport default defineConfig({\n  theme: ${theme.factory}${call},\n});`;
+}
+
+function resolveSettings(
+  name: string,
+  configured: Record<string, string | number | boolean>,
+): { attributes: Readonly<Record<string, string>>; style: string } | undefined {
+  const theme = showcaseThemes.find((candidate) => candidate.name === name);
+  if (!theme) return undefined;
+  const values = validateThemeSettings(theme.settings, configured);
+  return reflectThemeSettings(
+    theme.settings,
+    values,
+    new Set(Object.keys(configured)),
+  );
+}
+
+function renderThemeSettings(
+  root: HTMLElement,
+  theme: (typeof showcaseThemes)[number],
+  settingsByTheme: Record<string, Record<string, string | number | boolean>>,
+  onChange: () => void,
+): void {
+  const container = required<HTMLElement>(
+    root,
+    "[data-preview-theme-settings]",
+  );
+  const settings = settingsByTheme[theme.name] ?? {};
+  const fragment = document.createDocumentFragment();
+  if (Object.keys(theme.presets).length > 0) {
+    const label = document.createElement("label");
+    label.textContent = "Preset";
+    const select = document.createElement("select");
+    select.add(new Option("Default", ""));
+    for (const [key, preset] of Object.entries(theme.presets)) {
+      select.add(new Option(preset.label, key));
+    }
+    select.addEventListener("change", () => {
+      const preset = theme.presets[select.value];
+      settingsByTheme[theme.name] = preset
+        ? (Object.fromEntries(
+            Object.entries(preset.settings).filter(
+              ([, value]) => value !== undefined,
+            ),
+          ) as unknown as Record<string, string | number | boolean>)
+        : {};
+      renderThemeSettings(root, theme, settingsByTheme, onChange);
+      onChange();
+    });
+    label.appendChild(select);
+    fragment.appendChild(label);
+  }
+  for (const [key, setting] of Object.entries(theme.settings)) {
+    const label = document.createElement("label");
+    label.textContent = setting.label;
+    const value = settings[key] ?? setting.default;
+    let input: HTMLInputElement | HTMLSelectElement;
+    if (setting.type === "select") {
+      input = document.createElement("select");
+      for (const option of setting.options)
+        input.add(new Option(option.label, option.value));
+      input.value = String(value);
+    } else {
+      input = document.createElement("input");
+      if (setting.type === "boolean") {
+        input.type = "checkbox";
+        input.checked = value === true;
+      } else {
+        input.type =
+          setting.type === "color"
+            ? "color"
+            : setting.type === "text"
+              ? "text"
+              : "number";
+        input.value = String(value);
+        if (setting.type === "number" || setting.type === "slider") {
+          if (setting.min !== undefined) input.min = String(setting.min);
+          if (setting.max !== undefined) input.max = String(setting.max);
+          if (setting.step !== undefined) input.step = String(setting.step);
+        }
+      }
+    }
+    input.addEventListener("change", () => {
+      settingsByTheme[theme.name] = {
+        ...settingsByTheme[theme.name],
+        [key]:
+          input instanceof HTMLInputElement && input.type === "checkbox"
+            ? input.checked
+            : input instanceof HTMLInputElement && input.type === "number"
+              ? Number(input.value)
+              : input.value,
+      };
+      onChange();
+    });
+    label.appendChild(input);
+    fragment.appendChild(label);
+  }
+  container.replaceChildren(fragment);
 }
 
 function required<Element>(

@@ -14,18 +14,18 @@ The theme root selector (`[data-theme-root]` or `<html>`) that scopes token and 
 Every theme rule is scoped to the theme's identity name:
 
 ```css
-:is(:root, .rb-theme-root)[data-theme-name="<name>"] { /* light */ }
-:is(:root, .rb-theme-root)[data-theme-name="<name>"][data-theme="dark"] { /* dark */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"] { /* light */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-mode="dark"] { /* dark */ }
 ```
 
 ## Data attributes
 
 ThemeRoot emits the following attributes on `<html>`:
 
-- `data-theme-name`: Theme identity name (e.g. "riebeckite", "minimal")
-- `data-theme`: Color mode state ("light" / "dark" / omitted for "system")
-- `data-typography`: Typography preset value
-- `data-article-layout`: Article layout preset value
+- `data-rb-theme`: Theme identity name (e.g. "riebeckite", "minimal")
+- `data-rb-mode`: Color mode state ("light" / "dark" / omitted for "system")
+- `data-rb-setting-typography`: Typography preset value
+- `data-rb-layout`: Article layout preset value
 
 ## Theme Root UI Component
 The framework provides `ThemeRoot`, a UI primitive from `@riebeckite/honox/ui` that handles setting theme attributes on the `<html>` element. Usage:
@@ -38,10 +38,10 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
   {children}
 </ThemeRoot>
 ```
-`ThemeRoot` renders the `<html>` element with the following attributes: `lang`, `data-theme-name`, `data-theme`, `data-typography`, and `data-article-layout`.
+`ThemeRoot` renders the `<html>` element with the following attributes: `lang`, `data-rb-theme`, `data-rb-mode`, `data-rb-setting-typography`, and `data-rb-layout`.
 
 ## Reserved Attributes on `<html>`
-The framework-reserved attributes `data-theme`, `data-theme-name`, `data-typography`, and `data-article-layout` cannot be overwritten by the theme's `attributes`. To add custom `<html>` attributes, use the `themeRootAttributes` helper directly:
+The framework-reserved attributes `data-rb-mode`, `data-rb-theme`, `data-rb-setting-typography`, and `data-rb-layout` cannot be overwritten by the theme's `attributes`. To add custom `<html>` attributes, use the `themeRootAttributes` helper directly:
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
 <html

@@ -30,3 +30,11 @@ export {
   parsePreviewInput,
   parsePreviewRequest,
 } from "./src/request.js";
+export {
+  createThemePreviewState,
+  exportThemeOptions,
+  resetThemePreviewState,
+  type ThemePreviewControl,
+  type ThemePreviewState,
+  updateThemePreviewState,
+} from "./src/theme_settings.js";

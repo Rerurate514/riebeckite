@@ -7,7 +7,7 @@ sidebar:
 
 # Color Mode
 
-The active color scheme among light, dark, and system. Controlled by the theme's `colorMode` option and the `data-theme` attribute on `<html>`, with runtime switching via JavaScript.
+The active color scheme among light, dark, and system. Controlled by the theme's `colorMode` option and the `data-rb-mode` attribute on `<html>`, with runtime switching via JavaScript.
 
 ## Modes
 
@@ -15,13 +15,13 @@ The active color scheme among light, dark, and system. Controlled by the theme's
 `dark` — Dark palette
 `system` — Follows the OS preference (prefers-color-scheme media query)
 
-The server emits `data-theme` on `<html>` for `light` or `dark`; the attribute is omitted for `system`.
+The server emits `data-rb-mode` on `<html>` for `light` or `dark`; the attribute is omitted for `system`.
 
 ```html
-<html data-theme-name="example" data-theme="dark">
+<html data-rb-theme="example" data-rb-mode="dark">
 ---
 
-<html data-theme-name="example">
+<html data-rb-theme="example">
 ```
 
 At runtime: set `document.documentElement.dataset.theme = "dark"` to force dark, or remove the attribute for system.
@@ -29,14 +29,14 @@ At runtime: set `document.documentElement.dataset.theme = "dark"` to force dark,
 ## Runtime switching
 
 Set `document.documentElement.dataset.theme = "light"` or `"dark"` to switch modes.
-Remove the `data-theme` attribute for `system` mode so the OS media query takes over.
+Remove the `data-rb-mode` attribute for `system` mode so the OS media query takes over.
 
 ```ts
 document.documentElement.dataset.theme = "dark";
 delete document.documentElement.dataset.theme;
 ```
 
-Do not set `data-theme=""` — an empty attribute matches `[data-theme]`, breaking the system media query.
+Do not set `data-rb-mode=""` — an empty attribute matches `[data-rb-mode]`, breaking the system media query.
 
 ## Theme Config
 The `colorMode` option in the theme config (`packages/core/src/types/theme_config.ts`) resolves to one of `light`, `dark`, or `system`. This option is typically set in the Vite config or theme file:
@@ -55,24 +55,24 @@ export default defineConfig({
 })
 ```
 
-The resolved value drives the `data-theme` attribute on `<html>` and the corresponding `--rb-*` CSS variable overrides.
+The resolved value drives the `data-rb-mode` attribute on `<html>` and the corresponding `--rb-*` CSS variable overrides.
 
-## `data-theme`/`data-theme-name` CSS Adaptation
-The `<html>` element receives `data-theme` and `data-theme-name` attributes based on the resolved mode:
+## `data-rb-mode`/`data-rb-theme` CSS Adaptation
+The `<html>` element receives `data-rb-mode` and `data-rb-theme` attributes based on the resolved mode:
 
 ```html
 <!-- light mode -->
-<html data-theme-name="riebeckite" data-theme="light">
+<html data-rb-theme="riebeckite" data-rb-mode="light">
 
 <!-- dark mode -->
-<html data-theme-name="riebeckite" data-theme="dark">
+<html data-rb-theme="riebeckite" data-rb-mode="dark">
 
-<!-- system mode (no data-theme attribute) -->
-<html data-theme-name="riebeckite">
+<!-- system mode (no data-rb-mode attribute) -->
+<html data-rb-theme="riebeckite">
 ```
 
-- `data-theme` (`"light"` or `"dark"`) is used by the CSS to switch color palettes via `[data-theme="light"]` and `[data-theme="dark"]` rules.
-- `data-theme-name` is a free-form identifier for the active theme (e.g., `"riebeckite"`), used for targeting theme-specific styles.
+- `data-rb-mode` (`"light"` or `"dark"`) is used by the CSS to switch color palettes via `[data-rb-mode="light"]` and `[data-rb-mode="dark"]` rules.
+- `data-rb-theme` is a free-form identifier for the active theme (e.g., `"riebeckite"`), used for targeting theme-specific styles.
 
 ## Related terms
 

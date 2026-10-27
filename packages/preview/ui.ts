@@ -44,6 +44,12 @@ export type PreviewUiOptions = {
   readonly themeAttributes?: Readonly<
     Record<string, Readonly<Record<string, string>>>
   >;
+  readonly themeSettings?: (theme: string) =>
+    | {
+        readonly attributes: Readonly<Record<string, string>>;
+        readonly style: string;
+      }
+    | undefined;
   readonly contentStyles?: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly endpoint?: string;
@@ -137,6 +143,7 @@ export function mountPreview(
     diagnostics,
     themeStyles: options.themeStyles,
     themeAttributes: options.themeAttributes ?? {},
+    themeSettings: options.themeSettings,
     contentStyles: options.contentStyles ?? [],
     pluginStyles: options.pluginStyles,
     messages,
@@ -211,6 +218,7 @@ type PreviewElements = {
   readonly themeAttributes: Readonly<
     Record<string, Readonly<Record<string, string>>>
   >;
+  readonly themeSettings: PreviewUiOptions["themeSettings"];
   readonly contentStyles: readonly string[];
   readonly pluginStyles: readonly string[];
   readonly messages: PreviewUiMessages;
@@ -222,10 +230,12 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
     return;
   }
   const themeStyle = elements.themeStyles[elements.theme.value];
+  const themeSettings = elements.themeSettings?.(elements.theme.value);
   elements.frame.srcdoc = createPreviewDocument({
     html: state.response.html,
     styles: [
       themeStyle ?? elements.themeStyles.default ?? "",
+      themeSettings?.style ?? "",
       ...elements.contentStyles,
       ...elements.pluginStyles,
     ],
@@ -235,7 +245,9 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
       elements.mode.value === "dark" || elements.mode.value === "system"
         ? elements.mode.value
         : "light",
-    themeAttributes: elements.themeAttributes[elements.theme.value],
+    themeAttributes:
+      themeSettings?.attributes ??
+      elements.themeAttributes[elements.theme.value],
   });
   elements.diagnostics.replaceChildren(
     ...state.response.diagnostics.map((diagnostic) => {

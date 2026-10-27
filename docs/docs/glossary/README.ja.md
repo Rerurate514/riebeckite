@@ -75,13 +75,13 @@ Riebeckiteが使う概念をカテゴリ別にまとめた用語集です。各�
 - [Theme](./theme.ja.md) — テーマはRiebeckiteサイトの表示層（色、タイポグラフィ、余白、レイアウト、記事スタイル）を担い、コンテンツの意味やアプリケーション構造は変えません。
 - [Design Token](./design-token.ja.md) — 色、余白、フォントなどの名前付きの値で、CSSカスタムプロパティ（`--rb-*`）として公開します。カスケードを通じて、コンポーネントとテーマが安定した語彙を共有できます。
 - [Semantic Token](./semantic-token.ja.md) — テーマ固有の値ではなく、意味（本文色、アクセント、境界など）で参照するデザイントークンです。コンポーネントを変えずにテーマを入れ替えられます。
-- [Color Mode](./color-mode.ja.md) — light、dark、systemのうち有効な配色です。テーマの `colorMode` オプションと `<html>` の `data-theme` 属性で制御し、JavaScriptで実行時に切り替えられます。
-- [Typography](./typography.ja.md) — フォントファミリ、サイズ、行間といったサイトの組版設定です。テーマルートの `data-typography` 属性を通じて、テーマのプリセット（`system`、`serif`、`sans`）で適用します。
+- [Color Mode](./color-mode.ja.md) — light、dark、systemのうち有効な配色です。テーマの `colorMode` オプションと `<html>` の `data-rb-mode` 属性で制御し、JavaScriptで実行時に切り替えられます。
+- [Typography](./typography.ja.md) — フォントファミリ、サイズ、行間といったサイトの組版設定です。テーマルートの `data-rb-setting-typography` 属性を通じて、テーマのプリセット（`system`、`serif`、`sans`）で適用します。
 - [CSS Contract](./css-contract.ja.md) — コンポーネントが依存してよい安定したCSSフックとカスケード順です。テーマは文書化されたフック（`rb-*` と `rr-*`）を公開し、コンポーネントが特定テーマを前提にせずスタイルを当てられるようにします。
 - [Theme Root](./theme-root.ja.md) — テーマルートのセレクタ（`[data-theme-root]` または `<html>`）で、トークンと属性のルールをページ全体に適用します。カラーモードとタイポグラフィの属性をここに付けると、カスケードがすべての要素に届きます。
 - [Presentation Layer](./presentation-layer.ja.md) — 表示層はテーマの責務で、色、フォント、余白、レイアウト、記事スタイルを指します。コンテンツの意味、ルート、マニフェスト、プラグインの動作、クライアントスクリプトは含みません。
-- [Article Layout](./article-layout.ja.md) — 記事レイアウトのプリセット（`article`、`sidebar`、`full-width`）で、テーマルートの `data-article-layout` 属性を通じて記事領域の見せ方を決めます。ルートやコンポーネントツリーを変えずに、幅とサイドバー構成を制御します。
-- [userCss](./user-css.ja.md) — CSSカスケードで最後に読み込まれる追加スタイルシートです。テーマをフォークせずに、サイト作者が外観を最終調整できます。userCssはテーマCSS、プラグインCSS、設定のトークンスタイルに優先します。
+- [Article Layout](./article-layout.ja.md) — 記事レイアウトのプリセット（`article`、`sidebar`、`full-width`）で、テーマルートの `data-rb-layout` 属性を通じて記事領域の見せ方を決めます。ルートやコンポーネントツリーを変えずに、幅とサイドバー構成を制御します。
+- [stylesheets](./user-css.ja.md) — CSSカスケードで最後に読み込まれる追加スタイルシートです。テーマをフォークせずに、サイト作者が外観を最終調整できます。stylesheetsはテーマCSS、プラグインCSS、設定のトークンスタイルに優先します。
 
 ## ビルドと運用
 

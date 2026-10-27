@@ -528,6 +528,79 @@
 }
 
 :is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="spring"] {
+  --rb-color-paper: #fdf6f8;
+  --rb-color-surface: #fffafb;
+  --rb-color-surface-hover: #f7e8ef;
+  --rb-color-ink: #3a2a32;
+  --rb-color-muted: #7a6070;
+  --rb-color-accent: #c45a7a;
+  --rb-color-link: #a84a6a;
+  --rb-color-focus: #8a3a5a;
+  --rb-color-selected: #f2d6e2;
+  --rb-color-border: #e8d6de;
+  --rb-color-border-strong: #c8b0bc;
+  --rb-color-danger: #a13d32;
+  --rb-color-success: #4a7a5a;
+  --rb-color-code-background: #3a2830;
+  --rb-color-code-ink: #f8e8f0;
+  --rb-color-code-inline: #f0e0e8;
+  --rb-color-overlay: rgb(30 18 24 / 0.6);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="spring"][data-rb-mode="dark"] {
+  --rb-color-paper: #241820;
+  --rb-color-surface: #2e1e28;
+  --rb-color-surface-hover: #3a2832;
+  --rb-color-ink: #f5e4ec;
+  --rb-color-muted: #c4a8b8;
+  --rb-color-accent: #e8a0bc;
+  --rb-color-link: #f0b0c8;
+  --rb-color-focus: #f8c0d4;
+  --rb-color-selected: #5a3040;
+  --rb-color-border: #4a3040;
+  --rb-color-border-strong: #6a4858;
+  --rb-color-danger: #f09b85;
+  --rb-color-success: #9ac99a;
+  --rb-color-code-background: #1a1218;
+  --rb-color-code-ink: #f5e4ec;
+  --rb-color-code-inline: #3a2832;
+  --rb-color-overlay: rgb(0 0 0 / 0.68);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-season="spring"]:not(
+    [data-rb-mode]
+  ) {
+    --rb-color-paper: #241820;
+    --rb-color-surface: #2e1e28;
+    --rb-color-surface-hover: #3a2832;
+    --rb-color-ink: #f5e4ec;
+    --rb-color-muted: #c4a8b8;
+    --rb-color-accent: #e8a0bc;
+    --rb-color-link: #f0b0c8;
+    --rb-color-focus: #f8c0d4;
+    --rb-color-selected: #5a3040;
+    --rb-color-border: #4a3040;
+    --rb-color-border-strong: #6a4858;
+    --rb-color-danger: #f09b85;
+    --rb-color-success: #9ac99a;
+    --rb-color-code-background: #1a1218;
+    --rb-color-code-ink: #f5e4ec;
+    --rb-color-code-inline: #3a2832;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+  }
+}
+
+:is(
     :root,
     .rb-theme-root
   )[data-rb-theme="garden"][data-rb-setting-sprigs="false"]

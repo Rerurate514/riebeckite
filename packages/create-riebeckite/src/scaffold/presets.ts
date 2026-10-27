@@ -666,6 +666,7 @@ export const blog: ScaffoldPreset = {
     ...readingPlugins,
     blogSeo,
     properties,
+    backlinks,
     relatedPosts,
     share,
     recentPosts,

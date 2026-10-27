@@ -16,6 +16,7 @@ import {
   scaffoldPresets,
   validateScaffoldPreset,
 } from "../src/scaffold/presets.js";
+import { RIEBECKITE_VERSION } from "../src/scaffold/version.js";
 
 test("the public scaffold presets have the documented order and default", () => {
   assert.deepEqual(SCAFFOLD_PRESET_NAMES, [
@@ -110,7 +111,7 @@ test("purpose presets select their purpose-built theme", async () => {
         new RegExp(`import \\{ ${factory} \\} from "${packageName}"`),
       );
       assert.match(config, new RegExp(`theme: ${factory}\\(\\)`));
-      assert.equal(packageJson.dependencies?.[packageName], "^0.0.34");
+      assert.equal(packageJson.dependencies?.[packageName], RIEBECKITE_VERSION);
     }
   });
 });
@@ -167,7 +168,14 @@ test("each preset generates its intended self-contained composition", async () =
       );
       const packageJson = JSON.parse(
         await fs.readFile(path.join(targetDirectory, "package.json"), "utf8"),
-      ) as { devDependencies?: Record<string, string> };
+      ) as {
+        dependencies?: Record<string, string>;
+        devDependencies?: Record<string, string>;
+      };
+      await assertPluginImportsAreDependencies(
+        path.join(targetDirectory, "app"),
+        packageJson,
+      );
       assert.equal(
         packageJson.devDependencies?.["@hono/node-server"],
         "^1.19.17",
@@ -759,6 +767,29 @@ async function exists(filePath: string): Promise<boolean> {
     return true;
   } catch {
     return false;
+  }
+}
+
+async function assertPluginImportsAreDependencies(
+  directory: string,
+  packageJson: { readonly dependencies?: Record<string, string> },
+): Promise<void> {
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const entryPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await assertPluginImportsAreDependencies(entryPath, packageJson);
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.endsWith(".tsx")) continue;
+    const source = await fs.readFile(entryPath, "utf8");
+    for (const match of source.matchAll(
+      /from "(@riebeckite\/plugin-[^"]+)"/g,
+    )) {
+      assert.ok(
+        packageJson.dependencies?.[match[1]],
+        `${entryPath} imports ${match[1]} but package.json does not depend on it`,
+      );
+    }
   }
 }
 

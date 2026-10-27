@@ -226,8 +226,29 @@
   outline-offset: 3px;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article {
-  font-size: 0.95rem;
-  line-height: 1.75;
+  font-size: calc(var(--rb-setting-font-size, 0.95) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.75);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-typography="system"]
+  .rb-article,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-typography="sans"]
+  .rb-article {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-typography="serif"]
+  .rb-article {
+  font-family: Georgia, Cambria, "Times New Roman", serif;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-header {
   margin-bottom: 2rem;

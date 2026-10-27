@@ -139,6 +139,14 @@
   line-height: var(--rb-setting-line-height, 1.85);
 }
 
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="minimal"][data-rb-setting-typography="mono"]
+  .rb-article-content {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
 :is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content p {
   margin: 1.2em 0;
   text-wrap: pretty;

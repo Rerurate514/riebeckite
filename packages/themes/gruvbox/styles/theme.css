@@ -227,8 +227,16 @@
 /* ---- Long-form rhythm ---- */
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content {
   font-family: var(--rb-font-body);
-  font-size: 1.0625rem;
+  font-size: calc(var(--rb-setting-font-size, 1.0625) * 1rem);
   line-height: var(--rb-setting-line-height, 1.75);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="gruvbox"][data-rb-setting-typography="mono"]
+  .rb-article-content {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content p {

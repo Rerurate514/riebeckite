@@ -221,8 +221,16 @@
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article {
-  font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+  font-size: calc(var(--rb-setting-font-size, 1.125) * 1rem);
   line-height: var(--rb-setting-line-height, 1.9);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="editorial"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {

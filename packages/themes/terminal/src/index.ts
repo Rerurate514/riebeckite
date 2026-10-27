@@ -4,6 +4,35 @@ export const terminalTheme = defineTheme({
   name: "terminal",
   styles: [{ moduleSpecifier: "@riebeckite/theme-terminal/style.css" }],
   settings: defineThemeSettings({
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "mono",
+      options: [
+        { value: "mono", label: "Mono" },
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+      ],
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 0.95,
+      min: 0.875,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.75,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
+    },
     phosphor: {
       type: "select",
       label: "Phosphor",

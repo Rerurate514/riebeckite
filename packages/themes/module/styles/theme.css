@@ -135,8 +135,16 @@
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="module"] .rb-article {
-  font-size: 1rem;
+  font-size: calc(var(--rb-setting-font-size, 1) * 1rem);
   line-height: var(--rb-setting-line-height, 1.75);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="module"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="module"] .rb-article-header {

@@ -12,6 +12,7 @@ export const defaultTheme = defineTheme({
         { value: "system", label: "System" },
         { value: "serif", label: "Serif" },
         { value: "sans", label: "Sans" },
+        { value: "mono", label: "Mono" },
       ],
     },
     accentColor: {

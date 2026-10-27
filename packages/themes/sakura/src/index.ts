@@ -38,6 +38,7 @@ export const sakuraTheme = defineTheme({
         { value: "system", label: "System" },
         { value: "serif", label: "Serif" },
         { value: "sans", label: "Sans" },
+        { value: "mono", label: "Mono" },
       ],
     },
     articleWidth: {
@@ -48,6 +49,24 @@ export const sakuraTheme = defineTheme({
       min: 34,
       max: 60,
       step: 1,
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.0625,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.9,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
     },
     petals: {
       type: "boolean",

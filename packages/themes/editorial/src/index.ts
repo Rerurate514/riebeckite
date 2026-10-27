@@ -11,6 +11,7 @@ export const editorialTheme = defineTheme({
         { value: "system", label: "System" },
         { value: "serif", label: "Serif" },
         { value: "sans", label: "Sans" },
+        { value: "mono", label: "Mono" },
       ],
     },
     accentColor: {
@@ -29,6 +30,15 @@ export const editorialTheme = defineTheme({
       min: 36,
       max: 64,
       step: 1,
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.125,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
     },
     lineHeight: {
       type: "slider",

@@ -11,6 +11,7 @@ export const folioTheme = defineTheme({
         { value: "system", label: "System" },
         { value: "serif", label: "Serif" },
         { value: "sans", label: "Sans" },
+        { value: "mono", label: "Mono" },
       ],
     },
     accentColor: {
@@ -29,6 +30,24 @@ export const folioTheme = defineTheme({
       min: 44,
       max: 76,
       step: 1,
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.05,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.65,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
     },
     motion: { type: "boolean", label: "Motion", default: true },
     ornament: {

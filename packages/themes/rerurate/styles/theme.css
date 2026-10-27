@@ -242,7 +242,16 @@
 /* ---- Body rhythm: readable body, kept off the display treatment. ---- */
 :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-content {
   font-family: var(--rb-font-body);
-  line-height: 1.75;
+  font-size: calc(var(--rb-setting-font-size, 1) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.75);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-typography="mono"]
+  .rb-article-content {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-site-header {

@@ -29,6 +29,7 @@ export const signalTheme = defineTheme({
         { value: "grotesk", label: "Grotesk" },
         { value: "system", label: "System" },
         { value: "serif", label: "Serif" },
+        { value: "mono", label: "Mono" },
       ],
     },
     density: {
@@ -40,6 +41,24 @@ export const signalTheme = defineTheme({
         { value: "editorial", label: "Editorial" },
         { value: "reading", label: "Reading" },
       ],
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.04,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.65,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
     },
     markers: {
       type: "boolean",

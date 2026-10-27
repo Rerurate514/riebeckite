@@ -109,8 +109,16 @@
   outline-offset: 3px;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article {
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: calc(var(--rb-setting-font-size, 1.05) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.65);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="folio"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="folio"] {
   --rb-folio-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72' fill='none'%3E%3Cpath d='M2 34V2h32M70 38v32H38' stroke='%23d6422c' stroke-width='4'/%3E%3Cpath d='M2 70 70 2' stroke='%23d6422c' stroke-width='1'/%3E%3C/svg%3E");

@@ -191,6 +191,14 @@
   line-height: var(--rb-setting-line-height, 1.8);
 }
 
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="riebeckite"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
 :is(:root, .rb-theme-root)[data-rb-theme="riebeckite"] .rr-code__action {
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--rb-code-action-border);

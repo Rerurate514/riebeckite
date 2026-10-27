@@ -159,8 +159,29 @@
 }
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article {
   position: relative;
-  font-size: 1.05rem;
-  line-height: 1.8;
+  font-size: calc(var(--rb-setting-font-size, 1.05) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.8);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="fieldnotes"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="fieldnotes"][data-rb-setting-typography="system"]
+  .rb-article,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="fieldnotes"][data-rb-setting-typography="sans"]
+  .rb-article {
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 :is(
     :root,

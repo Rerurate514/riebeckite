@@ -4,6 +4,35 @@ export const fieldnotesTheme = defineTheme({
   name: "fieldnotes",
   styles: [{ moduleSpecifier: "@riebeckite/theme-fieldnotes/style.css" }],
   settings: defineThemeSettings({
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "system",
+      options: [
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+        { value: "sans", label: "Sans" },
+        { value: "mono", label: "Mono" },
+      ],
+    },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.05,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.8,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
+    },
     paperStyle: {
       type: "select",
       label: "Paper style",

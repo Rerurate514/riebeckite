@@ -189,8 +189,16 @@
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rb-article {
   color: var(--rb-color-ink);
   font-family: var(--rb-font-body);
-  font-size: 1.0625rem;
-  line-height: 1.9;
+  font-size: calc(var(--rb-setting-font-size, 1.0625) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.9);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="sakura"][data-rb-setting-typography="mono"]
+  .rb-article {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rb-article-header h1 {

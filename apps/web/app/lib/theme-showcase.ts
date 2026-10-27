@@ -45,10 +45,10 @@ function themeDefinition(
 }
 
 export const showcaseThemes = [
-  themeDefinition(defaultTheme({ settings: { flourish: true } }), {
+  themeDefinition(defaultTheme(), {
     label: "Default",
     description: "A balanced foundation for documentation and product sites.",
-    features: ["Balanced", "System-ready", "Flourish"],
+    features: ["Balanced", "System-ready"],
     packageName: "@riebeckite/theme-default",
     factory: "defaultTheme",
   }),

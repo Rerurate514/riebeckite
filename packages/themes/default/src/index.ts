@@ -17,7 +17,7 @@ export const defaultTheme = defineTheme({
     accentColor: {
       type: "color",
       label: "Accent color",
-      description: "Interactive accents for controls and reading markers.",
+      description: "Interactive accents for controls.",
       default: "#075fc9",
       light: "#075fc9",
       dark: "#62aaff",
@@ -48,18 +48,6 @@ export const defaultTheme = defineTheme({
       min: 1.5,
       max: 2.1,
       step: 0.05,
-    },
-    readingProgress: {
-      type: "boolean",
-      label: "Reading progress",
-      description: "Show a scroll progress line at the top of the page.",
-      default: false,
-    },
-    flourish: {
-      type: "boolean",
-      label: "Flourish",
-      description: "Show a subtle SVG flourish in the article header.",
-      default: false,
     },
   }),
   presets: {

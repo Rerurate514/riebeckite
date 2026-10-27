@@ -231,6 +231,12 @@
   --rr-svg-rule: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='96'%20height='3'%20viewBox='0%200%2096%203'%3E%3Crect%20width='32'%20height='3'%20fill='%23802520'/%3E%3Crect%20x='32'%20width='32'%20height='3'%20fill='%23b98430'/%3E%3Crect%20x='64'%20width='32'%20height='3'%20fill='%235c7f71'/%3E%3C/svg%3E");
   --rr-svg-mark: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='68'%20height='16'%20viewBox='0%200%2068%2016'%3E%3Crect%20y='7'%20width='58'%20height='2'%20fill='%23fff'/%3E%3Ccircle%20cx='4'%20cy='8'%20r='4'%20fill='%23fff'/%3E%3Cpath%20d='M56%203%20L64%208%20L56%2013'%20fill='none'%20stroke='%23fff'%20stroke-width='2'/%3E%3C/svg%3E");
   --rr-svg-quote: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='40'%20height='32'%20viewBox='0%200%2040%2032'%3E%3Cpath%20d='M3%205%20L15%2016%20L3%2027'%20fill='none'%20stroke='%23f66620'%20stroke-width='3'/%3E%3Cpath%20d='M19%205%20L31%2016%20L19%2027'%20fill='none'%20stroke='%23f66620'%20stroke-width='3'/%3E%3C/svg%3E");
+  --rr-svg-stars: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='80'%20viewBox='0%200%20120%2080'%3E%3Cg%20fill='%23f66620'%20fill-opacity='.22'%3E%3Ccircle%20cx='10'%20cy='12'%20r='1'/%3E%3Ccircle%20cx='28'%20cy='6'%20r='.8'/%3E%3Ccircle%20cx='45'%20cy='18'%20r='1.2'/%3E%3Ccircle%20cx='70'%20cy='10'%20r='.9'/%3E%3Ccircle%20cx='95'%20cy='22'%20r='1'/%3E%3Ccircle%20cx='110'%20cy='8'%20r='.7'/%3E%3Ccircle%20cx='18'%20cy='48'%20r='.8'/%3E%3Ccircle%20cx='52'%20cy='56'%20r='1'/%3E%3Ccircle%20cx='88'%20cy='50'%20r='1.1'/%3E%3Ccircle%20cx='34'%20cy='72'%20r='.7'/%3E%3Ccircle%20cx='76'%20cy='70'%20r='.9'/%3E%3C/g%3E%3C/svg%3E");
+  --rr-svg-constellation: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='90'%20viewBox='0%200%20140%2090'%3E%3Cg%20stroke='%23f66620'%20stroke-width='1'%20fill='none'%20opacity='.22'%3E%3Cpath%20d='M12%2024%20L46%2012%20L82%2028%20L120%2014'/%3E%3Cpath%20d='M46%2012%20L62%2052%20L100%2062'/%3E%3C/g%3E%3Cg%20fill='%23f66620'%20opacity='.3'%3E%3Ccircle%20cx='12'%20cy='24'%20r='2'/%3E%3Ccircle%20cx='46'%20cy='12'%20r='2'/%3E%3Ccircle%20cx='82'%20cy='28'%20r='2'/%3E%3Ccircle%20cx='120'%20cy='14'%20r='2'/%3E%3Ccircle%20cx='62'%20cy='52'%20r='2'/%3E%3Ccircle%20cx='100'%20cy='62'%20r='2'/%3E%3C/g%3E%3C/svg%3E");
+  --rr-svg-orbit: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='60'%20viewBox='0%200%20160%2060'%3E%3Cellipse%20cx='80'%20cy='30'%20rx='70'%20ry='18'%20fill='none'%20stroke='%23f66620'%20stroke-width='1'%20opacity='.18'%20transform='rotate(-8%2080%2030)'/%3E%3Ccircle%20cx='148'%20cy='24'%20r='3'%20fill='%23f66620'%20opacity='.26'/%3E%3Ccircle%20cx='12'%20cy='36'%20r='1.5'%20fill='%23f66620'%20opacity='.2'/%3E%3C/svg%3E");
+  --rr-cosmic-stars: none;
+  --rr-cosmic-constellation: none;
+  --rr-cosmic-orbit: none;
 }
 
 /* ---- Body rhythm: readable body, kept off the display treatment. ---- */
@@ -1005,32 +1011,31 @@
   margin-block-start: 2rem;
 }
 
-:is(
-    :root,
-    .rb-theme-root
-  )[data-rb-theme="rerurate"][data-rb-setting-watermark="true"]
-  .rb-article-header
-  h1 {
-  position: relative;
-  isolation: isolate;
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-header {
+  background-image:
+    var(--rr-cosmic-stars, none),
+    var(--rr-cosmic-constellation, none),
+    var(--rr-cosmic-orbit, none);
+  background-repeat: no-repeat;
+  background-position: right 0.25rem top 0.25rem, left 0.5rem bottom 0.25rem,
+    center;
+  background-size: 9rem 6rem, 11rem 7rem, 13rem 4.5rem;
 }
 
-:is(
-    :root,
-    .rb-theme-root
-  )[data-rb-theme="rerurate"][data-rb-setting-watermark="true"]
-  .rb-article-header
-  h1::after {
-  position: absolute;
-  top: -0.55em;
-  right: 0;
-  z-index: -1;
-  color: var(--rb-color-accent);
-  content: "R";
-  font-family: var(--rb-font-heading);
-  font-size: 3.2em;
-  font-weight: 700;
-  line-height: 1;
-  opacity: 0.08;
-  pointer-events: none;
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] {
+  --rr-cosmic-stars: var(--rr-svg-stars);
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] {
+  --rr-cosmic-constellation: var(--rr-svg-constellation);
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] {
+  --rr-cosmic-orbit: var(--rr-svg-orbit);
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-header,
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rb-article-header,
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] .rb-article-header {
+  position: relative;
 }

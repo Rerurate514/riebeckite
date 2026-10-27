@@ -17,10 +17,22 @@ export const rerurateTheme = defineTheme({
     largeHeadings: { type: "boolean", label: "Large headings", default: false },
     headingMarks: { type: "boolean", label: "Heading marks", default: true },
     motion: { type: "boolean", label: "Motion", default: true },
-    watermark: {
+    stars: {
       type: "boolean",
-      label: "Watermark",
-      description: "Show a large low-contrast R behind the article title.",
+      label: "Stars",
+      description: "Scatter a low-contrast starfield across the article header.",
+      default: false,
+    },
+    constellation: {
+      type: "boolean",
+      label: "Constellation",
+      description: "Connect the header stars into a thin constellation.",
+      default: false,
+    },
+    orbit: {
+      type: "boolean",
+      label: "Orbit",
+      description: "Draw a faint orbital ring around the article header.",
       default: false,
     },
     typography: {

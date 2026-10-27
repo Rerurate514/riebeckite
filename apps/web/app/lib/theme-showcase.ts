@@ -77,7 +77,7 @@ export const showcaseThemes = [
   themeDefinition(rerurateTheme(), {
     label: "Rerurate",
     description: "A characterful reading experience with editorial details.",
-    features: ["Drop caps", "Motion options"],
+    features: ["Drop caps", "Motion options", "Cosmic motifs"],
     packageName: "@riebeckite/theme-rerurate",
     factory: "rerurateTheme",
   }),
@@ -144,7 +144,7 @@ const japaneseThemeDetails = [
   ],
   [
     "エディトリアルな細部を備えた、個性ある読書体験。",
-    ["ドロップキャップ", "モーション設定"],
+    ["ドロップキャップ", "モーション設定", "宇宙モチーフ"],
   ],
   [
     "個人的な文章のための、やわらかく表情豊かなテーマ。",

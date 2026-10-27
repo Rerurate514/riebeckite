@@ -1039,3 +1039,35 @@
 :is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] .rb-article-header {
   position: relative;
 }
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-content {
+  background-image: var(--rr-svg-stars);
+  background-repeat: repeat;
+  background-size: 180px 120px;
+  background-position: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
+    )[data-rb-setting-stars="true"] .rb-article-header,
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
+    )[data-rb-setting-constellation="true"] .rb-article-header,
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
+    )[data-rb-setting-orbit="true"] .rb-article-header {
+    animation: rr-cosmic-drift 28s linear infinite;
+  }
+}
+
+@keyframes rr-cosmic-drift {
+  from {
+    background-position: right 0.25rem top 0.25rem, left 0.5rem bottom 0.25rem,
+      center;
+  }
+  to {
+    background-position: right 0.25rem top 1.25rem, left 0.5rem bottom 1.25rem,
+      center;
+  }
+}

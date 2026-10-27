@@ -1,0 +1,312 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+}
+@layer base {
+  :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] {
+    color-scheme: light;
+    --rb-color-paper: #f7f1df;
+    --rb-color-surface: #fdf9ec;
+    --rb-color-surface-hover: #eee5cf;
+    --rb-color-ink: var(--rb-setting-ink-color, #304a62);
+    --rb-color-muted: #6d716b;
+    --rb-color-accent: #a44832;
+    --rb-color-link: #315b79;
+    --rb-color-focus: #a44832;
+    --rb-color-selected: #f2d88c;
+    --rb-color-border: #d5c9ad;
+    --rb-color-border-strong: #a99c7f;
+    --rb-color-danger: #a33f32;
+    --rb-color-success: #427052;
+    --rb-color-code-background: #2a3c4b;
+    --rb-color-code-ink: #f7f1df;
+    --rb-color-code-inline: #e9e1ca;
+    --rb-color-overlay: rgb(25 32 35 / 0.64);
+    --rb-font-body: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
+    --rb-font-heading:
+      ui-monospace, "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP",
+      monospace;
+    --rb-font-mono:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-layout-page-max: 84rem;
+    --rb-layout-article-max: 46rem;
+    --rb-layout-sidebar: 15rem;
+    --rb-layout-gap: 2.5rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"][data-rb-mode="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #1e2527;
+    --rb-color-surface: #283235;
+    --rb-color-surface-hover: #354346;
+    --rb-color-ink: var(--rb-setting-ink-color, #b8d8ed);
+    --rb-color-muted: #b1b8ad;
+    --rb-color-accent: #e3997e;
+    --rb-color-link: #a9d5ee;
+    --rb-color-focus: #ffc0a8;
+    --rb-color-selected: #605329;
+    --rb-color-border: #536264;
+    --rb-color-border-strong: #829092;
+    --rb-color-danger: #ff9e8d;
+    --rb-color-success: #91cb9d;
+    --rb-color-code-background: #11191b;
+    --rb-color-code-ink: #e8f1ef;
+    --rb-color-code-inline: #354346;
+    --rb-color-overlay: rgb(0 0 0 / 0.75);
+  }
+  @media (prefers-color-scheme: dark) {
+    :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]:not([data-rb-mode]) {
+      color-scheme: dark;
+      --rb-color-paper: #1e2527;
+      --rb-color-surface: #283235;
+      --rb-color-surface-hover: #354346;
+      --rb-color-ink: var(--rb-setting-ink-color, #b8d8ed);
+      --rb-color-muted: #b1b8ad;
+      --rb-color-accent: #e3997e;
+      --rb-color-link: #a9d5ee;
+      --rb-color-focus: #ffc0a8;
+      --rb-color-selected: #605329;
+      --rb-color-border: #536264;
+      --rb-color-border-strong: #829092;
+      --rb-color-danger: #ff9e8d;
+      --rb-color-success: #91cb9d;
+      --rb-color-code-background: #11191b;
+      --rb-color-code-ink: #e8f1ef;
+      --rb-color-code-inline: #354346;
+      --rb-color-overlay: rgb(0 0 0 / 0.75);
+    }
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] {
+  --rb-fieldnotes-texture: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--rb-color-ink) 9%, transparent) 0.45px,
+    transparent 0.6px
+  );
+  background-image:
+    var(--rb-fieldnotes-texture),
+    linear-gradient(
+      to bottom,
+      transparent 1.75rem,
+      color-mix(in srgb, var(--rb-color-border) 52%, transparent) 1.8rem
+    );
+  background-size:
+    5px 5px,
+    100% 1.8rem;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="fieldnotes"][data-rb-setting-paper-style="plain"] {
+  background-image: var(--rb-fieldnotes-texture);
+  background-size: 5px 5px;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="fieldnotes"][data-rb-setting-paper-style="grid"] {
+  background-image:
+    var(--rb-fieldnotes-texture),
+    linear-gradient(var(--rb-color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rb-color-border) 1px, transparent 1px);
+  background-size:
+    5px 5px,
+    1.5rem 1.5rem,
+    1.5rem 1.5rem;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="fieldnotes"][data-rb-setting-paper-style="dotted"] {
+  background-image:
+    var(--rb-fieldnotes-texture),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--rb-color-border) 75%, transparent) 1px,
+      transparent 1.1px
+    );
+  background-size:
+    5px 5px,
+    1rem 1rem;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="fieldnotes"][data-rb-setting-texture="false"] {
+  --rb-fieldnotes-texture: none;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] ::selection {
+  background: var(--rb-color-selected);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] :focus-visible {
+  outline: 2px solid var(--rb-color-focus);
+  outline-offset: 3px;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article {
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="fieldnotes"][data-rb-setting-margin-rule="true"]
+  .rb-article {
+  border-left: 1px solid var(--rb-color-accent);
+  padding-left: clamp(1rem, 4vw, 3rem);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-header {
+  margin-bottom: 2.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px double var(--rb-color-border-strong);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.8rem, 1.35rem + 2vw, 3rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-meta {
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-content h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-top: 3.4rem;
+  font-family: var(--rb-font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  h2::before {
+  color: var(--rb-color-accent);
+  content: "//";
+  font-size: 0.8em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-content h3 {
+  margin-top: 2.3rem;
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-heading);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-content a {
+  color: var(--rb-color-link);
+  text-decoration-color: color-mix(in srgb, currentColor 50%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  blockquote {
+  margin: 2rem 0;
+  padding: 0.4rem 1.15rem;
+  border-left: 2px solid var(--rb-color-accent);
+  color: var(--rb-color-muted);
+  font-style: italic;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  :not(pre)
+  > code {
+  padding: 0.1em 0.28em;
+  background: var(--rb-color-code-inline);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  pre:not(:where(.rr-code *)) {
+  overflow-x: auto;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rb-color-border-strong);
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-code-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.93em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  :is(th, td) {
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--rb-color-border-strong);
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rb-article-content th {
+  font-family: var(--rb-font-mono);
+  font-size: 0.8em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  :is(
+    .rr-table-of-contents,
+    .rr-backlinks,
+    .rr-callout,
+    .rr-search,
+    .rr-code,
+    .rr-code-tabs,
+    .rr-query
+  ) {
+  border: 1px solid var(--rb-color-border-strong);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--rb-color-surface) 90%, transparent);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rr-callout {
+  border-left: 3px solid var(--rb-color-accent);
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="fieldnotes"][data-rb-setting-index-marks="false"]
+  .rb-article-content
+  h2::before {
+  display: none;
+}
+@media (max-width: 48rem) {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-rb-theme="fieldnotes"][data-rb-setting-margin-rule="true"]
+    .rb-article {
+    padding-left: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+  }
+}

@@ -184,6 +184,57 @@ test("resolveConfig rejects unknown and unsafe theme settings", () => {
   );
 });
 
+test("resolveConfig reflects bounded color and slider settings", () => {
+  const theme = defineTheme({
+    name: "custom",
+    styles: [],
+    settings: {
+      accentColor: {
+        type: "color",
+        label: "Accent",
+        default: "#112233",
+        light: "#112233",
+        dark: "#aabbcc",
+      },
+      articleWidth: {
+        type: "slider",
+        label: "Width",
+        default: 46,
+        min: 36,
+        max: 56,
+        step: 1,
+      },
+    },
+    presets: {
+      reading: { label: "Reading", settings: { articleWidth: 44 } },
+    },
+  });
+  const configured = resolveConfig({
+    site: { title: "Site" },
+    theme: theme({
+      colorMode: "dark",
+      preset: "reading",
+      settings: { accentColor: "#ff5500" },
+    }),
+  }).theme.settings;
+
+  assert.equal(configured.values.articleWidth, 44);
+  assert.equal(
+    configured.attributes["data-rb-setting-accent-color"],
+    "#ff5500",
+  );
+  assert.match(configured.style, /--rb-setting-article-width: 44;/);
+  assert.match(configured.style, /--rb-setting-accent-color: #ff5500;/);
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        theme: theme({ settings: { articleWidth: 57 } }),
+      }),
+    ThemeSettingsValidationError,
+  );
+});
+
 test("resolveConfig rejects a bad publish strategy and non-HTTP base URL", () => {
   assert.throws(
     () =>

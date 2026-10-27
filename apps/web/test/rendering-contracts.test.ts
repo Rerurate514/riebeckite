@@ -401,6 +401,27 @@ test("P2-A2: the theme gallery uses the isolated interactive preview", () => {
   assert.match(client, /setting\.type === "slider"\s*\? "range"/);
 });
 
+test("Default exposes color and width settings through semantic tokens", () => {
+  const defaultTheme = read("../../../packages/themes/default/src/index.ts");
+  const defaultCss = read("../../../packages/themes/default/styles/theme.css");
+
+  assert.match(defaultTheme, /accentColor:\s*\{[\s\S]*?type: "color"/);
+  assert.match(defaultTheme, /articleWidth:\s*\{[\s\S]*?type: "slider"/);
+  assert.match(defaultTheme, /min: 36,[\s\S]*?max: 56,[\s\S]*?step: 1/);
+  assert.match(
+    defaultCss,
+    /--rb-color-accent:\s*var\(--rb-setting-accent-color, #075fc9\)/,
+  );
+  assert.match(
+    defaultCss,
+    /--rb-color-accent:\s*var\(--rb-setting-accent-color, #62aaff\)/,
+  );
+  assert.match(
+    defaultCss,
+    /--rb-layout-article-max:\s*calc\(var\(--rb-setting-article-width, 46\) \* 1rem\)/,
+  );
+});
+
 test("article route composes the contextual language switcher", () => {
   const route = read("../app/routes/[slug{.+}].tsx");
 

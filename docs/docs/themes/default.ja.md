@@ -17,7 +17,7 @@ export default defineConfig({
   theme: defaultTheme({
     colorMode: "system",
     preset: "reading",
-    settings: { typography: "serif" },
+    settings: { typography: "serif", accentColor: "#075fc9", articleWidth: 44 },
   }),
 });
 ```
@@ -26,7 +26,7 @@ export default defineConfig({
 
 ## 設定
 
-ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `defaultTheme.settings` を参照してください。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
+ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `defaultTheme.settings` を参照してください。`accentColor` はコントロールと読書用マーカーのセマンティックなアクセントトークンを変え、`articleWidth` は 36–56 rem のスライダーです。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
 
 設定は `data-rb-setting-<name>` 属性へ反映されます。ルートには `data-rb-theme="riebeckite"`、明示的なライト / ダーク時だけ `data-rb-mode`、そして `data-rb-layout` が設定されます。
 

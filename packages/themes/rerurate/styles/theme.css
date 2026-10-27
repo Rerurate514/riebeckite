@@ -1066,6 +1066,23 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
       [data-rb-setting-motion="false"]
+    )[data-rb-setting-stars="true"]
+    :is(.rb-article-content, .rb-page-body),
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
+    )[data-rb-setting-constellation="true"]
+    :is(.rb-sidebar, .rr-table-of-contents),
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
+    )[data-rb-setting-orbit="true"]
+    .rb-article-footer {
+    animation: rr-cosmic-drift-soft 40s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
+      [data-rb-setting-motion="false"]
     )[data-rb-setting-stars="true"] .rb-article-header,
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
       [data-rb-setting-motion="false"]
@@ -1085,5 +1102,14 @@
   to {
     background-position: right 0.25rem top 1.25rem, left 0.5rem bottom 1.25rem,
       center;
+  }
+}
+
+@keyframes rr-cosmic-drift-soft {
+  from {
+    background-position: center;
+  }
+  to {
+    background-position: 6px 4px;
   }
 }

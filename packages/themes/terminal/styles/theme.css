@@ -1,0 +1,436 @@
+@theme {
+  --font-sans: var(--rb-font-body);
+  --font-serif: var(--rb-font-heading);
+  --font-mono: var(--rb-font-mono);
+  --color-rb-paper: var(--rb-color-paper);
+  --color-rb-ink: var(--rb-color-ink);
+  --color-rb-muted: var(--rb-color-muted);
+  --color-rb-accent: var(--rb-color-accent);
+  --color-rb-surface: var(--rb-color-surface);
+}
+@layer base {
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"] {
+    color-scheme: dark;
+    --rb-color-paper: #07100a;
+    --rb-color-surface: #0d1910;
+    --rb-color-surface-hover: #15261a;
+    --rb-color-ink: #b7ffc5;
+    --rb-color-muted: #79a781;
+    --rb-color-accent: #69ed85;
+    --rb-color-link: #a2ffb4;
+    --rb-color-focus: #d5ffdb;
+    --rb-color-selected: #205b2c;
+    --rb-color-border: #3a7545;
+    --rb-color-border-strong: #66a872;
+    --rb-color-danger: #ff9a8d;
+    --rb-color-success: #9affac;
+    --rb-color-code-background: #030804;
+    --rb-color-code-ink: #b7ffc5;
+    --rb-color-code-inline: #15351b;
+    --rb-color-overlay: rgb(0 0 0 / 0.78);
+    --rb-font-body:
+      "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
+    --rb-font-heading: var(--rb-font-body);
+    --rb-font-mono: var(--rb-font-body);
+    --rb-layout-page-max: 88rem;
+    --rb-layout-article-max: 52rem;
+    --rb-layout-sidebar: 16rem;
+    --rb-layout-gap: 2rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"][data-rb-mode="light"] {
+    color-scheme: light;
+    --rb-color-paper: #ecf1e8;
+    --rb-color-surface: #f7faf3;
+    --rb-color-surface-hover: #dce6d7;
+    --rb-color-ink: #183a21;
+    --rb-color-muted: #4e7155;
+    --rb-color-accent: #237e3d;
+    --rb-color-link: #155d2a;
+    --rb-color-focus: #175f2d;
+    --rb-color-selected: #c5e6c9;
+    --rb-color-border: #73a27a;
+    --rb-color-border-strong: #376d41;
+    --rb-color-danger: #aa4438;
+    --rb-color-success: #28723b;
+    --rb-color-code-background: #102416;
+    --rb-color-code-ink: #d9f7dc;
+    --rb-color-code-inline: #dcebdc;
+    --rb-color-overlay: rgb(4 15 6 / 0.64);
+  }
+  @media (prefers-color-scheme: light) {
+    :is(:root, .rb-theme-root)[data-rb-theme="terminal"]:not([data-rb-mode]) {
+      color-scheme: light;
+      --rb-color-paper: #ecf1e8;
+      --rb-color-surface: #f7faf3;
+      --rb-color-surface-hover: #dce6d7;
+      --rb-color-ink: #183a21;
+      --rb-color-muted: #4e7155;
+      --rb-color-accent: #237e3d;
+      --rb-color-link: #155d2a;
+      --rb-color-focus: #175f2d;
+      --rb-color-selected: #c5e6c9;
+      --rb-color-border: #73a27a;
+      --rb-color-border-strong: #376d41;
+      --rb-color-danger: #aa4438;
+      --rb-color-success: #28723b;
+      --rb-color-code-background: #102416;
+      --rb-color-code-ink: #d9f7dc;
+      --rb-color-code-inline: #dcebdc;
+      --rb-color-overlay: rgb(4 15 6 / 0.64);
+    }
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"] {
+    background: var(--rb-color-paper);
+    color: var(--rb-color-ink);
+    font-family: var(--rb-font-body);
+    accent-color: var(--rb-color-accent);
+    caret-color: var(--rb-color-accent);
+  }
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-setting-phosphor="amber"] {
+  --rb-color-ink: #ffc86b;
+  --rb-color-muted: #bd9554;
+  --rb-color-accent: #f0a62b;
+  --rb-color-link: #ffda92;
+  --rb-color-focus: #ffe1a8;
+  --rb-color-selected: #704a16;
+  --rb-color-border: #8a6635;
+  --rb-color-border-strong: #c69a52;
+  --rb-color-code-ink: #ffc86b;
+  --rb-color-code-inline: #3e2c12;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-setting-phosphor="white"] {
+  --rb-color-ink: #e7ebe6;
+  --rb-color-muted: #adb7af;
+  --rb-color-accent: #d4ddd5;
+  --rb-color-link: #ffffff;
+  --rb-color-focus: #ffffff;
+  --rb-color-selected: #4c554e;
+  --rb-color-border: #738077;
+  --rb-color-border-strong: #b5c0b7;
+  --rb-color-code-ink: #e7ebe6;
+  --rb-color-code-inline: #29312b;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-setting-phosphor="ice"] {
+  --rb-color-ink: #b7ecff;
+  --rb-color-muted: #82adbd;
+  --rb-color-accent: #62c5e8;
+  --rb-color-link: #b5efff;
+  --rb-color-focus: #d4f7ff;
+  --rb-color-selected: #1f5265;
+  --rb-color-border: #42788c;
+  --rb-color-border-strong: #78b4c8;
+  --rb-color-code-ink: #b7ecff;
+  --rb-color-code-inline: #123442;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-mode="light"][data-rb-setting-phosphor="amber"] {
+  --rb-color-ink: #6a4300;
+  --rb-color-muted: #715a32;
+  --rb-color-accent: #8b5800;
+  --rb-color-link: #6a4300;
+  --rb-color-focus: #573800;
+  --rb-color-selected: #f2d49b;
+  --rb-color-border: #ab8950;
+  --rb-color-border-strong: #6c501a;
+  --rb-color-code-inline: #f5e6c3;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-mode="light"][data-rb-setting-phosphor="white"] {
+  --rb-color-ink: #26312a;
+  --rb-color-muted: #5d675f;
+  --rb-color-accent: #48554c;
+  --rb-color-link: #26312a;
+  --rb-color-focus: #26312a;
+  --rb-color-selected: #d9e0d9;
+  --rb-color-border: #869189;
+  --rb-color-border-strong: #4b584f;
+  --rb-color-code-inline: #dfe5df;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-mode="light"][data-rb-setting-phosphor="ice"] {
+  --rb-color-ink: #064357;
+  --rb-color-muted: #416979;
+  --rb-color-accent: #0b627d;
+  --rb-color-link: #064357;
+  --rb-color-focus: #043548;
+  --rb-color-selected: #bde7f2;
+  --rb-color-border: #6799aa;
+  --rb-color-border-strong: #185e73;
+  --rb-color-code-inline: #ccecf4;
+}
+@media (prefers-color-scheme: light) {
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"]:not(
+    [data-rb-mode]
+  )[data-rb-setting-phosphor="amber"] {
+    --rb-color-ink: #6a4300;
+    --rb-color-muted: #715a32;
+    --rb-color-accent: #8b5800;
+    --rb-color-link: #6a4300;
+    --rb-color-focus: #573800;
+    --rb-color-selected: #f2d49b;
+    --rb-color-border: #ab8950;
+    --rb-color-border-strong: #6c501a;
+    --rb-color-code-inline: #f5e6c3;
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"]:not(
+    [data-rb-mode]
+  )[data-rb-setting-phosphor="white"] {
+    --rb-color-ink: #26312a;
+    --rb-color-muted: #5d675f;
+    --rb-color-accent: #48554c;
+    --rb-color-link: #26312a;
+    --rb-color-focus: #26312a;
+    --rb-color-selected: #d9e0d9;
+    --rb-color-border: #869189;
+    --rb-color-border-strong: #4b584f;
+    --rb-color-code-inline: #dfe5df;
+  }
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"]:not(
+    [data-rb-mode]
+  )[data-rb-setting-phosphor="ice"] {
+    --rb-color-ink: #064357;
+    --rb-color-muted: #416979;
+    --rb-color-accent: #0b627d;
+    --rb-color-link: #064357;
+    --rb-color-focus: #043548;
+    --rb-color-selected: #bde7f2;
+    --rb-color-border: #6799aa;
+    --rb-color-border-strong: #185e73;
+    --rb-color-code-inline: #ccecf4;
+  }
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] ::selection {
+  background: var(--rb-color-accent);
+  color: var(--rb-color-paper);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] :focus-visible {
+  outline: 2px solid var(--rb-color-focus);
+  outline-offset: 3px;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article {
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-header {
+  margin-bottom: 2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--rb-color-border-strong);
+  background: var(--rb-color-surface);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-header h1 {
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.45rem, 1.15rem + 1.8vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+  text-wrap: balance;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-header
+  h1::before {
+  content: "> ";
+  color: var(--rb-color-accent);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-meta {
+  margin-top: 0.75rem;
+  color: var(--rb-color-muted);
+  font-size: 0.75rem;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content h2 {
+  margin-top: 3rem;
+  color: var(--rb-color-accent);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  h2::before {
+  content: "## ";
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content h3 {
+  margin-top: 2rem;
+  color: var(--rb-color-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  h3::before {
+  content: "### ";
+  color: var(--rb-color-muted);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content a {
+  color: var(--rb-color-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  blockquote {
+  margin: 1.75rem 0;
+  padding: 0.8rem 1rem;
+  border-left: 2px solid var(--rb-color-accent);
+  background: color-mix(in srgb, var(--rb-color-surface) 85%, transparent);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  blockquote::before {
+  content: "[QUOTE] ";
+  color: var(--rb-color-muted);
+  font-size: 0.8em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  :is(pre, code) {
+  font-family: var(--rb-font-mono);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  :not(pre)
+  > code {
+  padding: 0.1em 0.25em;
+  background: var(--rb-color-code-inline);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  pre:not(:where(.rr-code *)) {
+  overflow-x: auto;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-code-background);
+  color: var(--rb-color-code-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  pre::before {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--rb-color-muted);
+  content: "$ cat snippet";
+  font-size: 0.75rem;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--rb-color-border);
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  .rb-article-content
+  :is(th, td) {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--rb-color-border);
+  text-align: left;
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content th {
+  background: var(--rb-color-surface-hover);
+  color: var(--rb-color-ink);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"]
+  :is(
+    .rr-table-of-contents,
+    .rr-backlinks,
+    .rr-callout,
+    .rr-search,
+    .rr-code,
+    .rr-code-tabs,
+    .rr-query
+  ) {
+  border: 1px solid var(--rb-color-border);
+  border-radius: 0;
+  background: var(--rb-color-surface);
+}
+:is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rr-callout {
+  border-left: 2px solid var(--rb-color-accent);
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-frame-style="none"]
+  .rb-article-header {
+  padding-inline: 0;
+  border-inline: 0;
+  background: transparent;
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-frame-style="window"]
+  .rb-article-header::before {
+  display: block;
+  margin: -1rem -1.2rem 1rem;
+  padding: 0.2rem 0.6rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  content: "● ● ●  terminal";
+  font-size: 0.7rem;
+}
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="terminal"][data-rb-setting-scanlines="true"] {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.035) 0 1px,
+    transparent 1px 4px
+  );
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-glow="true"]
+  :is(.rb-article-header h1, .rb-article-content h2) {
+  text-shadow: 0 0 8px
+    color-mix(in srgb, var(--rb-color-accent) 45%, transparent);
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="terminal"][data-rb-setting-cursor="true"]
+  .rb-article-header
+  h1::after {
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.18em;
+  background: var(--rb-color-accent);
+  content: "";
+  vertical-align: -0.15em;
+  animation: rb-terminal-cursor 1s steps(1) infinite;
+}
+@keyframes rb-terminal-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"] * {
+    scroll-behavior: auto;
+    transition-duration: 0s;
+    animation: none;
+  }
+}

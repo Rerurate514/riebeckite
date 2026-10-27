@@ -1,0 +1,66 @@
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+
+export const signalTheme = defineTheme({
+  name: "signal",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-signal/style.css" }],
+  settings: defineThemeSettings({
+    accentColor: {
+      type: "color",
+      label: "Accent color",
+      description: "Graphic accents, links, and markers.",
+      default: "#e63b17",
+      light: "#e63b17",
+      dark: "#ff7554",
+    },
+    borderWeight: {
+      type: "select",
+      label: "Border weight",
+      default: "bold",
+      options: [
+        { value: "standard", label: "Standard" },
+        { value: "bold", label: "Bold" },
+      ],
+    },
+    typography: {
+      type: "select",
+      label: "Typography",
+      default: "grotesk",
+      options: [
+        { value: "grotesk", label: "Grotesk" },
+        { value: "system", label: "System" },
+        { value: "serif", label: "Serif" },
+      ],
+    },
+    density: {
+      type: "select",
+      label: "Density",
+      default: "editorial",
+      options: [
+        { value: "poster", label: "Poster" },
+        { value: "editorial", label: "Editorial" },
+        { value: "reading", label: "Reading" },
+      ],
+    },
+    markers: {
+      type: "boolean",
+      label: "Markers",
+      description: "Show geometric section markers.",
+      default: true,
+    },
+  }),
+  presets: {
+    poster: {
+      label: "Poster",
+      settings: { density: "poster", borderWeight: "bold" },
+    },
+    editorial: { label: "Editorial", settings: { density: "editorial" } },
+    reading: {
+      label: "Reading",
+      settings: {
+        density: "reading",
+        typography: "serif",
+        borderWeight: "standard",
+      },
+    },
+  },
+});

@@ -40,6 +40,12 @@ export const gardenTheme = defineTheme({
       step: 0.05,
     },
     motion: { type: "boolean", label: "Motion", default: true },
+    sprigs: {
+      type: "boolean",
+      label: "Sprigs",
+      description: "Show the decorative sprigs in headings.",
+      default: true,
+    },
     season: {
       type: "select",
       label: "Season",

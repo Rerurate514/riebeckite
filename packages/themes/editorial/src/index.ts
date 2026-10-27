@@ -46,6 +46,12 @@ export const editorialTheme = defineTheme({
       description: "Enlarge the first letter of the article.",
       default: false,
     },
+    ornament: {
+      type: "boolean",
+      label: "Ornament",
+      description: "Show the editorial ornament in the article header.",
+      default: true,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

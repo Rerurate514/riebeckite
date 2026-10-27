@@ -55,6 +55,12 @@ export const defaultTheme = defineTheme({
       description: "Show a scroll progress line at the top of the page.",
       default: false,
     },
+    flourish: {
+      type: "boolean",
+      label: "Flourish",
+      description: "Show a subtle SVG flourish in the article header.",
+      default: false,
+    },
   }),
   presets: {
     reading: {

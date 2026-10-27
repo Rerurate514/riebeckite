@@ -417,3 +417,10 @@
   font-weight: 700;
   line-height: 0.78;
 }
+
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
+  .rb-article-header::before,
+:is(:root, .rb-theme-root)[data-rb-theme="editorial"][data-rb-setting-ornament="false"]
+  .rb-article-header::after {
+  display: none;
+}

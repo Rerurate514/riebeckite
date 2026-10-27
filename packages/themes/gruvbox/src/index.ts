@@ -55,6 +55,12 @@ export const gruvboxTheme = defineTheme({
       description: "Overlay a subtle CRT scanline pattern on the page.",
       default: false,
     },
+    flourish: {
+      type: "boolean",
+      label: "Flourish",
+      description: "Show a subtle SVG flourish in the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

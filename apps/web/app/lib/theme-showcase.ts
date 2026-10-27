@@ -45,32 +45,32 @@ function themeDefinition(
 }
 
 export const showcaseThemes = [
-  themeDefinition(defaultTheme(), {
+  themeDefinition(defaultTheme({ settings: { flourish: true } }), {
     label: "Default",
     description: "A balanced foundation for documentation and product sites.",
-    features: ["Balanced", "System-ready"],
+    features: ["Balanced", "System-ready", "Flourish"],
     packageName: "@riebeckite/theme-default",
     factory: "defaultTheme",
   }),
-  themeDefinition(minimalTheme(), {
+  themeDefinition(minimalTheme({ settings: { flourish: true } }), {
     label: "Minimal",
     description: "A quiet baseline that keeps long-form content in focus.",
-    features: ["Restrained", "Readable"],
+    features: ["Restrained", "Readable", "Flourish"],
     packageName: "@riebeckite/theme-minimal",
     factory: "minimalTheme",
   }),
-  themeDefinition(moduleTheme(), {
+  themeDefinition(moduleTheme({ settings: { flourish: true } }), {
     label: "Module",
     description:
       "Precision-built dark surfaces with a blueprint grid and warm edge light.",
-    features: ["Blueprint grid", "Edge glow"],
+    features: ["Blueprint grid", "Edge glow", "Flourish"],
     packageName: "@riebeckite/theme-module",
     factory: "moduleTheme",
   }),
-  themeDefinition(gruvboxTheme(), {
+  themeDefinition(gruvboxTheme({ settings: { flourish: true } }), {
     label: "Gruvbox",
     description: "Warm contrast for technical notes and focused writing.",
-    features: ["Warm palette", "Contrast options"],
+    features: ["Warm palette", "Contrast options", "Flourish"],
     packageName: "@riebeckite/theme-gruvbox",
     factory: "gruvboxTheme",
   }),
@@ -81,17 +81,17 @@ export const showcaseThemes = [
     packageName: "@riebeckite/theme-rerurate",
     factory: "rerurateTheme",
   }),
-  themeDefinition(sakuraTheme(), {
+  themeDefinition(sakuraTheme({ settings: { petals: true } }), {
     label: "Sakura",
     description: "A soft, expressive theme for personal writing.",
-    features: ["Serif tone", "Decorated headings"],
+    features: ["Serif tone", "Decorated headings", "Petals"],
     packageName: "@riebeckite/theme-sakura",
     factory: "sakuraTheme",
   }),
-  themeDefinition(tokyonightTheme(), {
+  themeDefinition(tokyonightTheme({ settings: { flourish: true } }), {
     label: "Tokyo Night",
     description: "A nocturnal technical theme with precise contrast.",
-    features: ["Technical", "Neon option"],
+    features: ["Technical", "Neon option", "Flourish"],
     packageName: "@riebeckite/theme-tokyonight",
     factory: "tokyonightTheme",
   }),

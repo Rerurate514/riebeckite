@@ -47,6 +47,12 @@ export const tokyonightTheme = defineTheme({
       description: "Animate a neon aurora line under the article header.",
       default: false,
     },
+    flourish: {
+      type: "boolean",
+      label: "Flourish",
+      description: "Show a subtle SVG flourish in the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

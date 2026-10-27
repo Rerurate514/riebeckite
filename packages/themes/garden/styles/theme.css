@@ -526,3 +526,11 @@
     --rb-color-overlay: rgb(0 0 0 / 0.68);
   }
 }
+
+:is(:root, .rb-theme-root)[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
+  .rb-article-header::after,
+:is(:root, .rb-theme-root)[data-rb-theme="garden"][data-rb-setting-sprigs="false"]
+  .rb-article-content
+  h2::after {
+  display: none;
+}

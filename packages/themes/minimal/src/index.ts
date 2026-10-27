@@ -54,6 +54,12 @@ export const minimalTheme = defineTheme({
       description: "Place consecutive images in a two-column grid.",
       default: false,
     },
+    flourish: {
+      type: "boolean",
+      label: "Flourish",
+      description: "Show a subtle SVG flourish in the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

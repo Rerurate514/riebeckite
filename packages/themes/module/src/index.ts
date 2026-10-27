@@ -52,6 +52,12 @@ export const moduleTheme = defineTheme({
       description: "Illuminate the article frame with the accent color.",
       default: true,
     },
+    flourish: {
+      type: "boolean",
+      label: "Flourish",
+      description: "Show a subtle SVG flourish in the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

@@ -41,12 +41,12 @@
       "bytes": 117397
     },
     "signal-light.png": {
-      "sha256": "8a9ef9b6e49afcb6f1a4de6c2dce8bc7424bd77e07f8ece9b1b2e1f54aaade24",
-      "bytes": 48207
+      "sha256": "116ab90c7470f1bc58323460bd7ddb2b3621c143074777b3f77948199e0a62fb",
+      "bytes": 48397
     },
     "signal-dark.png": {
-      "sha256": "f9df4314a6cf3860ae54d95019c4b059d263c7894eb3828a09218bdc380db1d7",
-      "bytes": 49115
+      "sha256": "1a2601a6616f2b47ad8360650cedcb6022d5bc2be8f9074ce2104f62f86415c2",
+      "bytes": 49296
     },
     "gruvbox-light.png": {
       "sha256": "17a2d91798c1e8112c644dc3b51bd878c7ea66b2552ec48991b069d4cb23807b",
@@ -89,12 +89,12 @@
       "bytes": 51985
     },
     "fieldnotes-light.png": {
-      "sha256": "53c9165dd87a5b05106e2510ed5cd98f7364eecc2744ffd35d7a859143beb649",
-      "bytes": 51490
+      "sha256": "52f6b7ed6fb2081907d24c41cd314dc3e4a25646a6998bd681118edd1e4a636a",
+      "bytes": 51591
     },
     "fieldnotes-dark.png": {
-      "sha256": "6b86e96accd58175f3304962464c47be31f8972b17fc82c98efdc3817a635794",
-      "bytes": 51582
+      "sha256": "26068df839d370ceac6af889b97359002671ea5e432e0b3c0144bd320ce8ae7f",
+      "bytes": 51819
     },
     "editorial-light.png": {
       "sha256": "024421aae94115351d1c1fc2dadcd1eb8cd20676dff3e0211f7bb74c7bd4f166",
@@ -105,20 +105,20 @@
       "bytes": 65939
     },
     "technical-light.png": {
-      "sha256": "a27f2320c7f32970bcccaa1ac98c8fbbc18133bee6bfeb0f329d4f80febd2516",
-      "bytes": 53818
+      "sha256": "2b9868cd732efb6c78140863fd124ccb36626dae8928704cdb93f4ae1a842329",
+      "bytes": 54013
     },
     "technical-dark.png": {
-      "sha256": "096d3885a3be88cd409e2dcf30b05ff06046ad14c5d683e06316193fd4a3047f",
-      "bytes": 55535
+      "sha256": "9896ff7ec1ef1abe01c3729eb9958332620404a775b4edbbae0b6887f7fd7527",
+      "bytes": 55710
     },
     "terminal-light.png": {
-      "sha256": "9b19a120044b579831a87fdb6f0f2cf5ab809f0687f130c807e9a75cb4f0cb61",
-      "bytes": 43334
+      "sha256": "55baf80201d5986d06cb39ebdec38ecffb65fd72853f6e65801a42b8922867cb",
+      "bytes": 43322
     },
     "terminal-dark.png": {
-      "sha256": "57be08fd274faeef63ac932cc67e7caca4e2b022788debb61de09e0422ab1218",
-      "bytes": 43316
+      "sha256": "d95bb03d1ddfe3930e399492c39fb06f501a81a81ee3186b9476b03b9decdd6e",
+      "bytes": 43339
     },
     "folio-light.png": {
       "sha256": "f6403da27f2384b22e218ffe9f2adb2d802a7c51ac570ced2c0548bae7c63807",
@@ -137,28 +137,28 @@
       "bytes": 43691
     },
     "signal-light-mobile.png": {
-      "sha256": "523561c07889a55831d3655e9ab958f9c64910b343d2c42d7b418c516ab4b479",
-      "bytes": 38005
+      "sha256": "0cd157975592ef2a9d9e94cb8675519a05a7f4d751961aacc30e982415b2bfbe",
+      "bytes": 38042
     },
     "signal-dark-mobile.png": {
-      "sha256": "c71da0763b5e0c2a24d13bd124d61509ff1bc6a700d9a51f3ecfb5552fc89df8",
-      "bytes": 38891
+      "sha256": "9a5e42f4f4ce01eb630b03ce788ee482e8a1e90d9735a305510095ab32251dac",
+      "bytes": 38930
     },
     "fieldnotes-light-mobile.png": {
-      "sha256": "9117a3d7ce133e58903fbe8858d010a153da1d9b44eb6476eba08d9376401c64",
-      "bytes": 41107
+      "sha256": "18a6a8bdedabc4c3fb896e2b45fc43c183a3933e2f271678a43ee7f4926f5b6b",
+      "bytes": 41256
     },
     "fieldnotes-dark-mobile.png": {
-      "sha256": "766fcfa4005b404a1fbb64b0ecbf66b71d2e79a473a9071e10c603e70a1fefdc",
-      "bytes": 41836
+      "sha256": "3c93405fc700e454df5943573d3517d5ea25ee64fca30ddd388b0a0db59bb60e",
+      "bytes": 42074
     },
     "terminal-light-mobile.png": {
-      "sha256": "a3560676aed7010c3c73cf40b345744bb477dda7c21b875f4371e71ffb26387d",
-      "bytes": 35263
+      "sha256": "62ee722c1830b2c9347b9c63a8a1285e7d40dd9b94ed9a32f53dd7dc4766ffd8",
+      "bytes": 35286
     },
     "terminal-dark-mobile.png": {
-      "sha256": "6be7c14b0ebb617c493b87c98ff8250f8ec745e835d08f04ad85e772902721d3",
-      "bytes": 35015
+      "sha256": "d2f01c8fb662758dc9326a7295b5f54f2af1ebb0c750adac32ddda7958099f29",
+      "bytes": 35074
     }
   }
 }

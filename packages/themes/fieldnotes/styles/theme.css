@@ -253,9 +253,9 @@
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
   .rb-article-content
   table {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
+  display: table;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: 0.93em;
 }
@@ -285,7 +285,7 @@
   background: color-mix(in srgb, var(--rb-color-surface) 90%, transparent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rr-callout {
-  padding-inline: 2rem;
+  padding: 1.5rem 2rem;
   border-left: 3px solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]

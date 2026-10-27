@@ -226,9 +226,9 @@
   color: var(--rb-color-code-ink);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="signal"] .rb-article-content table {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
+  display: table;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
   border: var(--rb-signal-rule) solid var(--rb-color-border);
 }
@@ -259,7 +259,7 @@
   box-shadow: none;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="signal"] .rr-callout {
-  padding-inline: 2rem;
+  padding: 1.5rem 2rem;
   border-left: 0.75rem solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="signal"]

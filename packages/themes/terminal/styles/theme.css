@@ -332,9 +332,9 @@
   font-size: 0.75rem;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rb-article-content table {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
+  display: table;
+  width: max-content;
+  min-width: 100%;
   border: 1px solid var(--rb-color-border);
   border-collapse: collapse;
   font-size: 0.9em;
@@ -365,7 +365,7 @@
   background: var(--rb-color-surface);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rr-callout {
-  padding-inline: 2rem;
+  padding: 1.5rem 2rem;
   border-left: 2px solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"]

@@ -1,27 +1,29 @@
 import type { WebLocale } from "../lib/locale";
 import {
+  getShowcaseFixtures,
+  getShowcaseThemes,
   getThemeDocsHref,
-  showcaseFixtures,
-  showcaseThemes,
 } from "../lib/theme-showcase";
 
-const serializedFixtures = JSON.stringify(
-  Object.fromEntries(
-    showcaseFixtures.map((fixture) => [fixture.id, fixture.markdown]),
-  ),
-);
-const serializedPages = JSON.stringify(
-  Object.fromEntries(
-    showcaseFixtures
-      .filter((fixture) => fixture.pages)
-      .map((fixture) => [
-        fixture.id,
-        { currentPageId: fixture.currentPageId, pages: fixture.pages },
-      ]),
-  ),
-);
-
 export function ThemeShowcase({ locale }: { locale: WebLocale }) {
+  const themes = getShowcaseThemes(locale);
+  const fixtures = getShowcaseFixtures(locale);
+  const japanese = locale === "ja";
+  const serializedFixtures = JSON.stringify(
+    Object.fromEntries(
+      fixtures.map((fixture) => [fixture.id, fixture.markdown]),
+    ),
+  );
+  const serializedPages = JSON.stringify(
+    Object.fromEntries(
+      fixtures
+        .filter((fixture) => fixture.pages)
+        .map((fixture) => [
+          fixture.id,
+          { currentPageId: fixture.currentPageId, pages: fixture.pages },
+        ]),
+    ),
+  );
   return (
     <div
       class="theme-showcase"
@@ -29,19 +31,30 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
       data-theme-showcase-locale={locale}
     >
       <header class="theme-showcase__header">
-        <p class="theme-showcase__eyebrow">Riebeckite themes</p>
-        <h1>Find the right reading surface.</h1>
+        <p class="theme-showcase__eyebrow">
+          {japanese ? "Riebeckite テーマ" : "Riebeckite themes"}
+        </p>
+        <h1>
+          {japanese
+            ? "読むための最適なテーマを見つけよう。"
+            : "Find the right reading surface."}
+        </h1>
         <p>
-          Compare every official theme with real Markdown rendering. Change the
-          content, color mode, and viewport without leaving this page.
+          {japanese
+            ? "すべての公式テーマを、実際の Markdown レンダリングで比較できます。このページでコンテンツ、カラーモード、表示幅を切り替えられます。"
+            : "Compare every official theme with real Markdown rendering. Change the content, color mode, and viewport without leaving this page."}
         </p>
       </header>
 
       <section class="theme-showcase__preview" aria-labelledby="preview-title">
         <div class="theme-showcase__section-heading">
           <div>
-            <p class="theme-showcase__eyebrow">Interactive preview</p>
-            <h2 id="preview-title">Try a theme</h2>
+            <p class="theme-showcase__eyebrow">
+              {japanese ? "インタラクティブプレビュー" : "Interactive preview"}
+            </p>
+            <h2 id="preview-title">
+              {japanese ? "テーマを試す" : "Try a theme"}
+            </h2>
           </div>
         </div>
         <div
@@ -52,13 +65,13 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
           data-preview-pages={serializedPages}
         >
           <output data-preview-status aria-live="polite">
-            Preparing preview
+            {japanese ? "プレビューを準備中" : "Preparing preview"}
           </output>
           <div class="theme-showcase__controls">
             <label>
-              Theme
+              {japanese ? "テーマ" : "Theme"}
               <select data-preview-theme>
-                {showcaseThemes.map((theme) => (
+                {themes.map((theme) => (
                   <option value={theme.name} key={theme.name}>
                     {theme.label}
                   </option>
@@ -66,19 +79,19 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
               </select>
             </label>
             <label>
-              Color mode
+              {japanese ? "カラーモード" : "Color mode"}
               <select data-preview-mode>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
+                <option value="light">{japanese ? "ライト" : "Light"}</option>
+                <option value="dark">{japanese ? "ダーク" : "Dark"}</option>
                 <option value="system" selected>
-                  System
+                  {japanese ? "システム" : "System"}
                 </option>
               </select>
             </label>
             <label>
-              Sample
+              {japanese ? "サンプル" : "Sample"}
               <select data-preview-fixture>
-                {showcaseFixtures.map((fixture) => (
+                {fixtures.map((fixture) => (
                   <option value={fixture.id} key={fixture.id}>
                     {fixture.title}
                   </option>
@@ -86,45 +99,49 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
               </select>
             </label>
             <label hidden>
-              Page
+              {japanese ? "ページ" : "Page"}
               <select data-preview-page />
             </label>
             <fieldset class="theme-showcase__devices">
-              <legend>Viewport</legend>
+              <legend>{japanese ? "表示幅" : "Viewport"}</legend>
               <button
                 type="button"
                 data-preview-device="desktop"
                 aria-pressed="true"
               >
-                Desktop
+                {japanese ? "デスクトップ" : "Desktop"}
               </button>
               <button
                 type="button"
                 data-preview-device="tablet"
                 aria-pressed="false"
               >
-                Tablet
+                {japanese ? "タブレット" : "Tablet"}
               </button>
               <button
                 type="button"
                 data-preview-device="mobile"
                 aria-pressed="false"
               >
-                Mobile
+                {japanese ? "モバイル" : "Mobile"}
               </button>
             </fieldset>
             <button type="button" data-preview-reset>
-              Reset preview
+              {japanese ? "プレビューをリセット" : "Reset preview"}
             </button>
           </div>
           <textarea data-preview-markdown hidden>
-            {showcaseFixtures[0].markdown}
+            {fixtures[0].markdown}
           </textarea>
           <div
             class="theme-showcase__frame-wrap"
             data-preview-viewport="desktop"
           >
-            <iframe data-preview-frame title="Theme preview" sandbox="" />
+            <iframe
+              data-preview-frame
+              title={japanese ? "テーマプレビュー" : "Theme preview"}
+              sandbox=""
+            />
           </div>
           <ul
             class="theme-showcase__diagnostics"
@@ -135,7 +152,9 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
       </section>
 
       <section class="theme-showcase__detail" aria-labelledby="detail-title">
-        <p class="theme-showcase__eyebrow">Selected theme</p>
+        <p class="theme-showcase__eyebrow">
+          {japanese ? "選択中のテーマ" : "Selected theme"}
+        </p>
         <h2 id="detail-title" data-theme-detail-name>
           Default
         </h2>
@@ -146,27 +165,35 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
             data-theme-detail-docs
             href={getThemeDocsHref("riebeckite", locale)}
           >
-            Theme documentation
+            {japanese ? "テーマドキュメント" : "Theme documentation"}
           </a>
         </div>
         <pre>
           <code data-theme-detail-code />
         </pre>
         <button type="button" data-theme-copy>
-          Copy configuration
+          {japanese ? "設定をコピー" : "Copy configuration"}
         </button>
       </section>
 
       <section class="theme-showcase__gallery" aria-labelledby="gallery-title">
         <div class="theme-showcase__section-heading">
           <div>
-            <p class="theme-showcase__eyebrow">Official collection</p>
-            <h2 id="gallery-title">Choose by purpose</h2>
+            <p class="theme-showcase__eyebrow">
+              {japanese ? "公式コレクション" : "Official collection"}
+            </p>
+            <h2 id="gallery-title">
+              {japanese ? "用途から選ぶ" : "Choose by purpose"}
+            </h2>
           </div>
-          <p>{showcaseThemes.length} official themes</p>
+          <p>
+            {japanese
+              ? `公式テーマ ${themes.length} 種`
+              : `${themes.length} official themes`}
+          </p>
         </div>
         <div class="theme-showcase__theme-list">
-          {showcaseThemes.map((theme) => (
+          {themes.map((theme) => (
             <article
               class="theme-showcase__theme"
               key={theme.name}
@@ -183,9 +210,11 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
               </ul>
               <div class="theme-showcase__theme-actions">
                 <button type="button" data-theme-select={theme.name}>
-                  Open preview
+                  {japanese ? "プレビューを開く" : "Open preview"}
                 </button>
-                <a href={getThemeDocsHref(theme.name, locale)}>Docs</a>
+                <a href={getThemeDocsHref(theme.name, locale)}>
+                  {japanese ? "ドキュメント" : "Docs"}
+                </a>
               </div>
             </article>
           ))}

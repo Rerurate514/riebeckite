@@ -17,8 +17,9 @@ import tokyonightStyle from "@riebeckite/theme-tokyonight/style.css?inline";
 import sakuraSerifFont from "../../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline";
 import tokyonightMonoFont from "../../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline";
 import {
+  getShowcaseFixtures,
+  getShowcaseThemes,
   getThemeDocsHref,
-  showcaseFixtures,
   showcaseThemes,
 } from "./lib/theme-showcase";
 
@@ -67,6 +68,9 @@ export function initThemeShowcase(): void {
   );
   if (!root || !previewRoot || previewRoot.dataset.previewMounted === "true")
     return;
+  const locale = root.dataset.themeShowcaseLocale === "ja" ? "ja" : "en";
+  const themes = getShowcaseThemes(locale);
+  const fixtures = getShowcaseFixtures(locale);
   previewRoot.dataset.previewMounted = "true";
   const session = createPreview({
     plugins: [
@@ -74,7 +78,7 @@ export function initThemeShowcase(): void {
         id: "theme-showcase",
         title: "Theme showcase",
         availability: "browser",
-        fixtures: showcaseFixtures,
+        fixtures,
         create: () => obsidianMarkdown(),
       }),
     ],
@@ -119,7 +123,7 @@ export function initThemeShowcase(): void {
   );
   const lifetime = new AbortController();
   const selectTheme = (name: string) => {
-    const theme = showcaseThemes.find((candidate) => candidate.name === name);
+    const theme = themes.find((candidate) => candidate.name === name);
     if (!theme) return;
     if (themeSelect.value !== theme.name) {
       themeSelect.value = theme.name;
@@ -129,10 +133,7 @@ export function initThemeShowcase(): void {
     detailName.textContent = theme.label;
     detailDescription.textContent = theme.description;
     detailPackage.textContent = theme.packageName;
-    detailDocs.href = getThemeDocsHref(
-      theme.name,
-      root.dataset.themeShowcaseLocale === "ja" ? "ja" : "en",
-    );
+    detailDocs.href = getThemeDocsHref(theme.name, locale);
     detailCode.textContent = configuration(theme);
     root
       .querySelectorAll<globalThis.HTMLElement>("[data-theme-card]")
@@ -184,7 +185,7 @@ export function initThemeShowcase(): void {
   ).addEventListener(
     "click",
     () => {
-      themeSelect.value = showcaseThemes[0].name;
+      themeSelect.value = themes[0].name;
       required<globalThis.HTMLSelectElement>(
         previewRoot,
         "[data-preview-mode]",
@@ -192,7 +193,7 @@ export function initThemeShowcase(): void {
       required<globalThis.HTMLSelectElement>(
         previewRoot,
         "[data-preview-fixture]",
-      ).value = showcaseFixtures[0].id;
+      ).value = fixtures[0].id;
       required<globalThis.HTMLElement>(
         previewRoot,
         "[data-preview-viewport]",
@@ -216,9 +217,10 @@ export function initThemeShowcase(): void {
       if (!navigator.clipboard) return;
       try {
         await navigator.clipboard.writeText(detailCode.textContent ?? "");
-        copy.textContent = "Copied";
+        copy.textContent = locale === "ja" ? "コピーしました" : "Copied";
       } catch {
-        copy.textContent = "Copy failed";
+        copy.textContent =
+          locale === "ja" ? "コピーできませんでした" : "Copy failed";
       }
     },
     { signal: lifetime.signal },

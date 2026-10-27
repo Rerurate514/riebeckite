@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { localizeDocsHref } from "../app/lib/navigation-link";
-import { getThemeDocsHref } from "../app/lib/theme-showcase";
+import {
+  getShowcaseFixtures,
+  getShowcaseThemes,
+  getThemeDocsHref,
+} from "../app/lib/theme-showcase";
 
 test("localizeDocsHref prefixes docs links on localized pages", () => {
   assert.equal(localizeDocsHref("/docs/", "/ja/docs/reference/"), "/ja/docs/");
@@ -22,4 +26,14 @@ test("localizeDocsHref keeps default and external links unchanged", () => {
 test("theme documentation links use the localized documentation route", () => {
   assert.equal(getThemeDocsHref("riebeckite", "en"), "/docs/themes/default");
   assert.equal(getThemeDocsHref("garden", "ja"), "/ja/docs/themes/garden");
+});
+
+test("Japanese theme showcase content is localized", () => {
+  assert.match(getShowcaseThemes("ja")[0].description, /基本テーマ/);
+  assert.equal(getShowcaseFixtures("ja")[0].title, "記事");
+  assert.match(getShowcaseFixtures("ja")[0].markdown, /考え抜かれた/);
+  assert.equal(
+    getShowcaseFixtures("ja")[1].pages?.[0].title,
+    "テーマについての観察",
+  );
 });

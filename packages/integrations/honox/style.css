@@ -205,7 +205,7 @@
     padding: 0.75rem 1rem;
     border-radius: 6px;
     background: var(--rb-color-code-background);
-    color: var(--rb-color-ink);
+    color: var(--rb-color-code-ink, var(--rb-color-ink));
     font-family: var(--rb-font-mono);
     font-size: 0.875em;
     line-height: 1.7;
@@ -271,7 +271,7 @@
     border: 1px solid var(--rb-color-border);
     border-radius: 6px;
     background: var(--rb-color-code-background);
-    color: var(--rb-color-ink);
+    color: var(--rb-color-code-ink, var(--rb-color-ink));
     font-size: 0.8125rem;
   }
 

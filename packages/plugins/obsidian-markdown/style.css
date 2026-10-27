@@ -1,6 +1,10 @@
 .rr-callout {
   --rr-callout-tone: var(--rb-color-info, var(--rb-color-accent));
-  --rr-callout-title-color: var(--rr-callout-tone);
+  --rr-callout-title-color: color-mix(
+    in srgb,
+    var(--rr-callout-tone) 45%,
+    var(--rb-color-ink)
+  );
   --rr-callout-title-font-family: inherit;
   --rr-callout-title-font-size: inherit;
   --rr-callout-title-font-weight: 700;

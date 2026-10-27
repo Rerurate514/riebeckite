@@ -459,6 +459,34 @@ test("CSS hooks keep Site and Theme styling outside plugin elements", () => {
   }
 });
 
+test("A7: shared code and overlay foregrounds keep readable tone", () => {
+  const sharedCss = read("../../../packages/integrations/honox/style.css");
+  const calloutCss = read(
+    "../../../packages/plugins/obsidian-markdown/style.css",
+  );
+
+  assert.equal(
+    [
+      ...sharedCss.matchAll(
+        /color:\s*var\(--rb-color-code-ink, var\(--rb-color-ink\)\)/g,
+      ),
+    ].length,
+    2,
+  );
+  assert.match(
+    navigationCss,
+    /color:\s*color-mix\(\s*in srgb,\s*var\(--rb-color-accent\) 60%,\s*var\(--rb-color-ink\)\s*\)/,
+  );
+  assert.match(
+    searchCss,
+    /\.rr-search-bar__key\s*\{[^}]*color:\s*color-mix\([\s\S]*?var\(--rr-search-ink\) 75%,\s*var\(--rr-search-muted\)/,
+  );
+  assert.match(
+    calloutCss,
+    /--rr-callout-title-color:\s*color-mix\([\s\S]*?var\(--rr-callout-tone\) 45%,\s*var\(--rb-color-ink\)/,
+  );
+});
+
 test("CSS hooks namespace search and localization defaults", () => {
   const l10nCss = read("../../../packages/plugins/l10n/style.css");
   const searchClient = read(

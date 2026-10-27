@@ -533,7 +533,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--rb-color-accent) 50%, var(--rb-color-ink));
+  color: color-mix(in srgb, var(--rb-color-accent) 45%, var(--rb-color-ink));
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="tokyonight"]

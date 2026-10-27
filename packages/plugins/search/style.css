@@ -94,7 +94,7 @@
 
   .rr-search-bar__key {
     padding: 0.1rem 0.35rem;
-    color: var(--rr-search-muted);
+    color: color-mix(in srgb, var(--rr-search-ink) 75%, var(--rr-search-muted));
     font-size: 0.7rem;
     line-height: 1.2;
     background: var(--rr-search-surface-hover);

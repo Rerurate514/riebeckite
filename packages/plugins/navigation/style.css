@@ -73,7 +73,7 @@
   .rb-nav__link:hover,
   .rb-nav__link:focus-visible,
   .rb-nav__link--active {
-    color: var(--rb-color-accent);
+    color: color-mix(in srgb, var(--rb-color-accent) 60%, var(--rb-color-ink));
   }
 
   .rb-nav__link:focus-visible,

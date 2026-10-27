@@ -31,6 +31,30 @@ export const defaultTheme = defineTheme({
       max: 56,
       step: 1,
     },
+    fontSize: {
+      type: "slider",
+      label: "Font size",
+      description: "Article text size in rem.",
+      default: 1.0625,
+      min: 0.9375,
+      max: 1.25,
+      step: 0.0625,
+    },
+    lineHeight: {
+      type: "slider",
+      label: "Line height",
+      description: "Article line height.",
+      default: 1.8,
+      min: 1.5,
+      max: 2.1,
+      step: 0.05,
+    },
+    readingProgress: {
+      type: "boolean",
+      label: "Reading progress",
+      description: "Show a scroll progress line at the top of the page.",
+      default: false,
+    },
   }),
   presets: {
     reading: {

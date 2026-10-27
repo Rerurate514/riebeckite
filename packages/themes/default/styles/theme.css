@@ -187,8 +187,8 @@
 :is(:root, .rb-theme-root)[data-rb-theme="riebeckite"] .rb-article {
   color: var(--rb-color-ink);
   font-family: var(--rb-font-body);
-  font-size: 1.0625rem;
-  line-height: 1.8;
+  font-size: calc(var(--rb-setting-font-size, 1.0625) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.8);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="riebeckite"] .rr-code__action {
@@ -635,5 +635,33 @@
   :is(:root, .rb-theme-root)[data-rb-theme="riebeckite"] * {
     scroll-behavior: auto;
     transition-duration: 0ms;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="riebeckite"][data-rb-setting-reading-progress="true"]::before {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 90;
+    height: 3px;
+    background: var(--rb-color-accent);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: rb-reading-progress linear both;
+    animation-timeline: scroll();
+    pointer-events: none;
+  }
+}
+
+@keyframes rb-reading-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }

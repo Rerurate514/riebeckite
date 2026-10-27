@@ -40,6 +40,21 @@ export const sakuraTheme = defineTheme({
         { value: "sans", label: "Sans" },
       ],
     },
+    articleWidth: {
+      type: "slider",
+      label: "Article width",
+      description: "Maximum article width in rem.",
+      default: 46,
+      min: 34,
+      max: 60,
+      step: 1,
+    },
+    petals: {
+      type: "boolean",
+      label: "Petals",
+      description: "Let petals drift across the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

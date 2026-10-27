@@ -25,7 +25,7 @@ export default defineConfig({
 
 ## Settings
 
-Read `defaultTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. `accentColor` changes the semantic accent token for controls and reading markers; `articleWidth` is a 36–56 rem slider. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
+Read `defaultTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. `accentColor` changes the semantic accent token for controls and reading markers. `fontSize` and `lineHeight` tune the article text, `articleWidth` is a 36–56 rem slider, and `readingProgress` adds a scroll progress line. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
 
 Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="riebeckite"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
 

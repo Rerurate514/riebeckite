@@ -19,7 +19,7 @@
     --rb-color-surface-hover: #e8ebda;
     --rb-color-ink: #263126;
     --rb-color-muted: #687064;
-    --rb-color-accent: #526b38;
+    --rb-color-accent: var(--rb-setting-accent-color, #526b38);
     --rb-color-link: #405a2d;
     --rb-color-focus: #315e36;
     --rb-color-selected: #dce8bd;
@@ -37,7 +37,7 @@
     --rb-font-mono:
       "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
     --rb-layout-page-max: 86rem;
-    --rb-layout-article-max: 46rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 46) * 1rem);
     --rb-layout-sidebar: 16rem;
     --rb-layout-gap: 3rem;
     --rb-radius-sm: 0;
@@ -52,7 +52,7 @@
     --rb-color-surface-hover: #354233;
     --rb-color-ink: #edf0df;
     --rb-color-muted: #b6bea9;
-    --rb-color-accent: #afc77c;
+    --rb-color-accent: var(--rb-setting-accent-color, #afc77c);
     --rb-color-link: #c4d99a;
     --rb-color-focus: #d1e9a4;
     --rb-color-selected: #4d643b;
@@ -74,7 +74,7 @@
       --rb-color-surface-hover: #354233;
       --rb-color-ink: #edf0df;
       --rb-color-muted: #b6bea9;
-      --rb-color-accent: #afc77c;
+      --rb-color-accent: var(--rb-setting-accent-color, #afc77c);
       --rb-color-link: #c4d99a;
       --rb-color-focus: #d1e9a4;
       --rb-color-selected: #4d643b;
@@ -108,7 +108,7 @@
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article {
   font-size: 1.0625rem;
-  line-height: 1.9;
+  line-height: var(--rb-setting-line-height, 1.9);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] {
   --rb-garden-sprig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 112 18' fill='none'%3E%3Cpath d='M0 9h38c14 0 17-8 26-8 9 0 12 8 26 8h22' stroke='%23526b38' stroke-width='1'/%3E%3Cpath d='M43 9c0-5 5-7 9-7-1 5-4 7-9 7Zm17 0c0-5-5-7-9-7 1 5 4 7 9 7Z' fill='%23526b38'/%3E%3C/svg%3E");
@@ -242,7 +242,10 @@
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header::after {
+  :is(:root, .rb-theme-root)[data-rb-theme="garden"]:not(
+      [data-rb-setting-motion="false"]
+    )
+    .rb-article-header::after {
     animation: rb-garden-grow 600ms ease-out both;
     transform-origin: left center;
   }
@@ -262,4 +265,32 @@
     scroll-behavior: auto;
     transition-duration: 0s;
   }
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="summer"] {
+  --rb-garden-season-filter: saturate(1.4) hue-rotate(-10deg);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="autumn"] {
+  --rb-garden-season-filter: sepia(1) saturate(2.1) hue-rotate(-18deg);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="winter"] {
+  --rb-garden-season-filter: grayscale(1) brightness(1.25);
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header::after,
+:is(:root, .rb-theme-root)[data-rb-theme="garden"]
+  .rb-article-content
+  h2::after {
+  filter: var(--rb-garden-season-filter, none);
 }

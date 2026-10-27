@@ -997,3 +997,33 @@
     padding-bottom: 1.5rem;
   }
 }
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-watermark="true"]
+  .rb-article-header
+  h1 {
+  position: relative;
+  isolation: isolate;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-watermark="true"]
+  .rb-article-header
+  h1::after {
+  position: absolute;
+  top: -0.55em;
+  right: 0;
+  z-index: -1;
+  color: var(--rb-color-accent);
+  content: "R";
+  font-family: var(--rb-font-heading);
+  font-size: 3.2em;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.08;
+  pointer-events: none;
+}

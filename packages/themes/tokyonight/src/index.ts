@@ -32,6 +32,21 @@ export const tokyonightTheme = defineTheme({
         { value: "sans", label: "Sans" },
       ],
     },
+    articleWidth: {
+      type: "slider",
+      label: "Article width",
+      description: "Maximum article width in rem.",
+      default: 48,
+      min: 36,
+      max: 64,
+      step: 1,
+    },
+    aurora: {
+      type: "boolean",
+      label: "Aurora",
+      description: "Animate a neon aurora line under the article header.",
+      default: false,
+    },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
 });

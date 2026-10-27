@@ -23,7 +23,7 @@
     --rb-color-surface-hover: #ececec;
     --rb-color-ink: #1a1a1a;
     --rb-color-muted: #6b6b6b;
-    --rb-color-accent: #1a1a1a;
+    --rb-color-accent: var(--rb-setting-accent-color, #1a1a1a);
     --rb-color-border: color-mix(in srgb, currentColor 18%, transparent);
     --rb-color-border-strong: color-mix(in srgb, currentColor 28%, transparent);
     --rb-color-danger: #b42318;
@@ -44,7 +44,7 @@
     --rb-space-8: 4rem;
     --rb-rule-width: 1px;
     --rb-layout-page-max: 80rem;
-    --rb-layout-article-max: 43rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 43) * 1rem);
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
   }
@@ -56,7 +56,7 @@
     --rb-color-surface-hover: #2e2e2e;
     --rb-color-ink: #e5e5e5;
     --rb-color-muted: #9e9e9e;
-    --rb-color-accent: #e5e5e5;
+    --rb-color-accent: var(--rb-setting-accent-color, #e5e5e5);
     --rb-color-danger: #e5484d;
     --rb-color-success: #30a46c;
     --rb-color-info: #70b8ff;
@@ -74,7 +74,7 @@
       --rb-color-surface-hover: #2e2e2e;
       --rb-color-ink: #e5e5e5;
       --rb-color-muted: #9e9e9e;
-      --rb-color-accent: #e5e5e5;
+      --rb-color-accent: var(--rb-setting-accent-color, #e5e5e5);
       --rb-color-danger: #e5484d;
       --rb-color-success: #30a46c;
       --rb-color-info: #70b8ff;
@@ -135,8 +135,8 @@
 /* ---- Body rhythm: open leading, generous paragraphs. ---- */
 :is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content {
   font-family: var(--rb-font-body);
-  font-size: 1.0625rem;
-  line-height: 1.85;
+  font-size: calc(var(--rb-setting-font-size, 1.0625) * 1rem);
+  line-height: var(--rb-setting-line-height, 1.85);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rb-article-content p {
@@ -537,4 +537,39 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="minimal"] .rr-color-mode {
   --rr-color-mode-border-radius: 0;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="minimal"][data-rb-setting-image-grid="true"]
+  .rb-article-content
+  p:has(img + img) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="minimal"][data-rb-setting-image-grid="true"]
+  .rb-article-content
+  p:has(img + img)
+  img {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+@media (max-width: 40rem) {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-rb-theme="minimal"][data-rb-setting-image-grid="true"]
+    .rb-article-content
+    p:has(img + img) {
+    grid-template-columns: 1fr;
+  }
 }

@@ -19,7 +19,7 @@
     --rb-color-surface-hover: #edf2f7;
     --rb-color-ink: #182431;
     --rb-color-muted: #627181;
-    --rb-color-accent: #1766b1;
+    --rb-color-accent: var(--rb-setting-accent-color, #1766b1);
     --rb-color-link: #075ca8;
     --rb-color-focus: #1175cc;
     --rb-color-selected: #c9e2f8;
@@ -38,7 +38,7 @@
     --rb-font-mono:
       "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
     --rb-layout-page-max: 96rem;
-    --rb-layout-article-max: 52rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 52) * 1rem);
     --rb-layout-sidebar: 17rem;
     --rb-layout-gap: 2rem;
     --rb-radius-sm: 0;
@@ -52,7 +52,7 @@
     --rb-color-surface-hover: #233545;
     --rb-color-ink: #e8f0f7;
     --rb-color-muted: #b0becb;
-    --rb-color-accent: #76baff;
+    --rb-color-accent: var(--rb-setting-accent-color, #76baff);
     --rb-color-link: #9bceff;
     --rb-color-focus: #b5dcff;
     --rb-color-selected: #245782;
@@ -74,7 +74,7 @@
       --rb-color-surface-hover: #233545;
       --rb-color-ink: #e8f0f7;
       --rb-color-muted: #b0becb;
-      --rb-color-accent: #76baff;
+      --rb-color-accent: var(--rb-setting-accent-color, #76baff);
       --rb-color-link: #9bceff;
       --rb-color-focus: #b5dcff;
       --rb-color-selected: #245782;
@@ -205,7 +205,7 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article {
   font-size: 1rem;
-  line-height: 1.75;
+  line-height: var(--rb-setting-line-height, 1.75);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header {
@@ -226,6 +226,22 @@
   margin-top: 1.25rem;
   content: "";
   background: var(--rb-technical-circuit) left center / contain no-repeat;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="technical"][data-rb-setting-ornaments="false"]
+  .rb-article-header {
+  background-image: none;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="technical"][data-rb-setting-ornaments="false"]
+  .rb-article-header::after {
+  display: none;
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header h1 {
@@ -360,4 +376,26 @@
   :is(:root, .rb-theme-root)[data-rb-theme="technical"] .rb-article-header {
     padding: 1.15rem;
   }
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="technical"][data-rb-setting-terminal="true"]
+  .rb-article,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="technical"][data-rb-setting-terminal="true"]
+  .rb-article-content {
+  font-family: var(--rb-font-mono);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="technical"][data-rb-setting-terminal="true"]
+  .rb-article-content
+  :is(p, li) {
+  letter-spacing: 0.01em;
 }

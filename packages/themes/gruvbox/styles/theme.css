@@ -20,7 +20,7 @@
     --rb-color-surface-hover: #ebdbb2;
     --rb-color-ink: #3c3836;
     --rb-color-muted: #665c54;
-    --rb-color-accent: #076678;
+    --rb-color-accent: var(--rb-setting-accent-color, #076678);
     --rb-color-border: #d5c4a1;
     --rb-color-border-strong: #bdae93;
     --rb-color-danger: #9d0006;
@@ -42,7 +42,7 @@
     --rb-space-8: 4rem;
     --rb-rule-width: 1px;
     --rb-layout-page-max: 80rem;
-    --rb-layout-article-max: 48rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 48) * 1rem);
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
   }
@@ -77,7 +77,7 @@
     --rb-color-surface-hover: #3c3836;
     --rb-color-ink: #ebdbb2;
     --rb-color-muted: #a89984;
-    --rb-color-accent: #83a598;
+    --rb-color-accent: var(--rb-setting-accent-color, #83a598);
     --rb-color-border: #504945;
     --rb-color-border-strong: #665c54;
     --rb-color-danger: #fb4934;
@@ -118,7 +118,7 @@
       --rb-color-surface-hover: #3c3836;
       --rb-color-ink: #ebdbb2;
       --rb-color-muted: #a89984;
-      --rb-color-accent: #83a598;
+      --rb-color-accent: var(--rb-setting-accent-color, #83a598);
       --rb-color-border: #504945;
       --rb-color-border-strong: #665c54;
       --rb-color-danger: #fb4934;
@@ -228,7 +228,7 @@
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content {
   font-family: var(--rb-font-body);
   font-size: 1.0625rem;
-  line-height: 1.75;
+  line-height: var(--rb-setting-line-height, 1.75);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-content p {
@@ -575,4 +575,21 @@
   .rr-search
   :is(input, button) {
   border-radius: 2px;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="gruvbox"][data-rb-setting-scanlines="true"]
+  .rb-article::after {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: repeating-linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--rb-color-ink) 8%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+  content: "";
+  pointer-events: none;
 }

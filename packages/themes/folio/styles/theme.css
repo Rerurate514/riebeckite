@@ -19,7 +19,7 @@
     --rb-color-surface-hover: #e4e2dc;
     --rb-color-ink: #161616;
     --rb-color-muted: #65635f;
-    --rb-color-accent: #d6422c;
+    --rb-color-accent: var(--rb-setting-accent-color, #d6422c);
     --rb-color-link: #bd301e;
     --rb-color-focus: #d6422c;
     --rb-color-selected: #ffd1c9;
@@ -40,7 +40,7 @@
     --rb-font-mono:
       "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
     --rb-layout-page-max: 100rem;
-    --rb-layout-article-max: 62rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 62) * 1rem);
     --rb-layout-sidebar: 15rem;
     --rb-layout-gap: 2.5rem;
     --rb-radius-sm: 0;
@@ -54,7 +54,7 @@
     --rb-color-surface-hover: #30302d;
     --rb-color-ink: #f5f2eb;
     --rb-color-muted: #c0bcb3;
-    --rb-color-accent: #ff826c;
+    --rb-color-accent: var(--rb-setting-accent-color, #ff826c);
     --rb-color-link: #ffac9c;
     --rb-color-focus: #ffbdaf;
     --rb-color-selected: #71382e;
@@ -76,7 +76,7 @@
       --rb-color-surface-hover: #30302d;
       --rb-color-ink: #f5f2eb;
       --rb-color-muted: #c0bcb3;
-      --rb-color-accent: #ff826c;
+      --rb-color-accent: var(--rb-setting-accent-color, #ff826c);
       --rb-color-link: #ffac9c;
       --rb-color-focus: #ffbdaf;
       --rb-color-selected: #71382e;
@@ -138,6 +138,20 @@
   right: 0;
   top: 0;
   width: 4rem;
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="folio"][data-rb-setting-ornament="false"]
+  .rb-article-header {
+  padding-right: 1.25rem;
+}
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="folio"][data-rb-setting-ornament="false"]
+  .rb-article-header::after {
+  display: none;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header h1 {
   font-size: clamp(2.4rem, 1.6rem + 3.5vw, 5rem);
@@ -224,7 +238,10 @@
     transform 140ms ease;
 }
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rb-article-header::after {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"]:not(
+      [data-rb-setting-motion="false"]
+    )
+    .rb-article-header::after {
     animation: rb-folio-frame-in 420ms ease-out both;
   }
   :is(:root, .rb-theme-root)[data-rb-theme="folio"] .rr-cardlink:hover {
@@ -259,5 +276,49 @@
   :is(:root, .rb-theme-root)[data-rb-theme="folio"] * {
     scroll-behavior: auto;
     transition-duration: 0s;
+  }
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-setting-seal="true"]
+  .rb-article-header {
+  padding-right: 5rem;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-setting-seal="true"]
+  .rb-article-header::before {
+  position: absolute;
+  top: 1.25rem;
+  right: 5.25rem;
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid var(--rb-color-accent);
+  border-radius: 50%;
+  color: var(--rb-color-accent);
+  content: "FOLIO";
+  font-family: var(--rb-font-heading);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  opacity: 0.75;
+  place-items: center;
+  text-indent: 0.14em;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+@media (max-width: 48rem) {
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-setting-seal="true"]
+    .rb-article-header {
+    padding-right: 3.5rem;
+  }
+
+  :is(:root, .rb-theme-root)[data-rb-theme="folio"][data-rb-setting-seal="true"]
+    .rb-article-header::before {
+    top: 1rem;
+    right: 3.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 0.4375rem;
   }
 }

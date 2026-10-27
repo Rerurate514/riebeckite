@@ -204,6 +204,14 @@ test("resolveConfig reflects bounded color and slider settings", () => {
         max: 56,
         step: 1,
       },
+      lineHeight: {
+        type: "slider",
+        label: "Line height",
+        default: 1.9,
+        min: 1.5,
+        max: 2.1,
+        step: 0.05,
+      },
     },
     presets: {
       reading: { label: "Reading", settings: { articleWidth: 44 } },
@@ -219,6 +227,7 @@ test("resolveConfig reflects bounded color and slider settings", () => {
   }).theme.settings;
 
   assert.equal(configured.values.articleWidth, 44);
+  assert.equal(configured.values.lineHeight, 1.9);
   assert.equal(
     configured.attributes["data-rb-setting-accent-color"],
     "#ff5500",
@@ -230,6 +239,14 @@ test("resolveConfig reflects bounded color and slider settings", () => {
       resolveConfig({
         site: { title: "Site" },
         theme: theme({ settings: { articleWidth: 57 } }),
+      }),
+    ThemeSettingsValidationError,
+  );
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        theme: theme({ settings: { lineHeight: 1.92 } }),
       }),
     ThemeSettingsValidationError,
   );

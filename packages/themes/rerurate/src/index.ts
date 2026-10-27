@@ -17,6 +17,12 @@ export const rerurateTheme = defineTheme({
     largeHeadings: { type: "boolean", label: "Large headings", default: false },
     headingMarks: { type: "boolean", label: "Heading marks", default: true },
     motion: { type: "boolean", label: "Motion", default: true },
+    watermark: {
+      type: "boolean",
+      label: "Watermark",
+      description: "Show a large low-contrast R behind the article title.",
+      default: false,
+    },
     typography: {
       type: "select",
       label: "Typography",

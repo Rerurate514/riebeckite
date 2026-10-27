@@ -26,7 +26,7 @@ export default defineConfig({
 
 ## 設定
 
-ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `defaultTheme.settings` を参照してください。`accentColor` はコントロールと読書用マーカーのセマンティックなアクセントトークンを変え、`articleWidth` は 36–56 rem のスライダーです。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
+ラベル、説明、select の選択肢、slider の範囲、ライト・ダークの既定値を含む完全な型付きスキーマは `defaultTheme.settings` を参照してください。`accentColor` はコントロールと読書用マーカーのセマンティックなアクセントトークンを変えます。`fontSize` と `lineHeight` は本文の文字サイズと行間を調整し、`articleWidth` は 36–56 rem のスライダーです。`readingProgress` はスクロール進捗ラインを追加します。不明な設定や不正な値は解決時に拒否されます。このテーマには `reading` プリセットがあります。
 
 設定は `data-rb-setting-<name>` 属性へ反映されます。ルートには `data-rb-theme="riebeckite"`、明示的なライト / ダーク時だけ `data-rb-mode`、そして `data-rb-layout` が設定されます。
 

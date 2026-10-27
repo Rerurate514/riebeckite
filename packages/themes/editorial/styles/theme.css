@@ -19,7 +19,7 @@
     --rb-color-surface-hover: #f0e9df;
     --rb-color-ink: #24201d;
     --rb-color-muted: #706762;
-    --rb-color-accent: #8a2738;
+    --rb-color-accent: var(--rb-setting-accent-color, #8a2738);
     --rb-color-link: #7a2031;
     --rb-color-focus: #a52f45;
     --rb-color-selected: #f1cbd0;
@@ -36,7 +36,7 @@
     --rb-font-mono:
       "SFMono-Regular", Consolas, "Noto Sans Mono CJK JP", monospace;
     --rb-layout-page-max: 84rem;
-    --rb-layout-article-max: 48rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 48) * 1rem);
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 3.5rem;
     --rb-radius-sm: 0;
@@ -50,7 +50,7 @@
     --rb-color-surface-hover: #3b322f;
     --rb-color-ink: #f7eee5;
     --rb-color-muted: #c5b7ad;
-    --rb-color-accent: #eb9da9;
+    --rb-color-accent: var(--rb-setting-accent-color, #eb9da9);
     --rb-color-link: #ffb4bd;
     --rb-color-focus: #ffc5cb;
     --rb-color-selected: #71303b;
@@ -72,7 +72,7 @@
       --rb-color-surface-hover: #3b322f;
       --rb-color-ink: #f7eee5;
       --rb-color-muted: #c5b7ad;
-      --rb-color-accent: #eb9da9;
+      --rb-color-accent: var(--rb-setting-accent-color, #eb9da9);
       --rb-color-link: #ffb4bd;
       --rb-color-focus: #ffc5cb;
       --rb-color-selected: #71303b;
@@ -222,7 +222,7 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article {
   font-size: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
-  line-height: 1.9;
+  line-height: var(--rb-setting-line-height, 1.9);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header {
@@ -349,14 +349,22 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]:not(
+      [data-rb-setting-motion="false"]
+    )
     .rb-article-header::before {
     animation: editorial-reveal 500ms ease-out both;
   }
-  :is(:root, .rb-theme-root)[data-rb-theme="editorial"] .rb-article-header h1 {
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]:not(
+      [data-rb-setting-motion="false"]
+    )
+    .rb-article-header
+    h1 {
     animation: editorial-rise 500ms ease-out 90ms both;
   }
-  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]
+  :is(:root, .rb-theme-root)[data-rb-theme="editorial"]:not(
+      [data-rb-setting-motion="false"]
+    )
     .rb-article-header::after {
     animation: editorial-reveal 500ms ease-out 180ms both;
   }
@@ -393,4 +401,19 @@
     margin-top: -2.25rem;
     margin-bottom: 2.5rem;
   }
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="editorial"][data-rb-setting-drop-cap="true"]
+  .rb-article-content
+  > p:first-of-type::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  color: var(--rb-color-accent);
+  font-family: var(--rb-font-heading);
+  font-size: 4.2em;
+  font-weight: 700;
+  line-height: 0.78;
 }

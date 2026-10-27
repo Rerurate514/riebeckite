@@ -242,7 +242,7 @@ function isSettingValue(
       (setting.min === undefined || value >= setting.min) &&
       (setting.max === undefined || value <= setting.max) &&
       (setting.step === undefined ||
-        Number.isInteger((value - (setting.min ?? 0)) / setting.step))
+        isStepAligned(value, setting.min, setting.step))
     );
   }
   if (setting.type === "select")
@@ -256,6 +256,11 @@ function isSettingValue(
       /^(?:#[0-9a-f]{3,8}|(?:rgb|hsl)a?\([0-9.%\s,/-]+\))$/i.test(value)
     );
   return typeof value === "string" && !/[\u0000-\u001f<>]/.test(value);
+}
+
+function isStepAligned(value: number, min: number | undefined, step: number) {
+  const steps = (value - (min ?? 0)) / step;
+  return Math.abs(steps - Math.round(steps)) < 1e-9;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

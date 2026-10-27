@@ -44,7 +44,7 @@
     --rb-space-8: 4rem;
     --rb-rule-width: 1px;
     --rb-layout-page-max: 80rem;
-    --rb-layout-article-max: 48rem;
+    --rb-layout-article-max: calc(var(--rb-setting-article-width, 48) * 1rem);
     --rb-layout-sidebar: 14rem;
     --rb-layout-gap: 2rem;
   }
@@ -706,4 +706,52 @@
   ::-webkit-scrollbar-thumb {
   box-shadow: 0 0 6px
     color-mix(in srgb, var(--rb-color-accent) 60%, transparent);
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="tokyonight"][data-rb-setting-aurora="true"]
+  .rb-article-header {
+  position: relative;
+}
+
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="tokyonight"][data-rb-setting-aurora="true"]
+  .rb-article-header::after {
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--rb-color-accent),
+    #bb9af7,
+    #7dcfff,
+    #9ece6a,
+    var(--rb-color-accent)
+  );
+  background-size: 200% 100%;
+  content: "";
+  animation: rb-tokyonight-aurora 7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rb-tokyonight-aurora {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(
+      :root,
+      .rb-theme-root
+    )[data-rb-theme="tokyonight"][data-rb-setting-aurora="true"]
+    .rb-article-header::after {
+    animation: none;
+  }
 }

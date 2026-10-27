@@ -682,10 +682,10 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes(`data-local-plugin-marker="${LOCAL_PLUGIN_MARKER}"`)) {
     fail("site-local plugin marker attribute was not rendered");
   }
-  if (!combined.includes('data-theme-name="fixture-local"')) {
+  if (!combined.includes('data-rb-theme="fixture-local"')) {
     fail("site-local theme name was not applied to the document");
   }
-  if (!combined.includes('data-fixture-theme="local"')) {
+  if (!combined.includes('data-rb-setting-fixture="local"')) {
     fail("site-local theme attribute was not applied to the document");
   }
   if (!combined.includes("data-rb-hover-preview")) {

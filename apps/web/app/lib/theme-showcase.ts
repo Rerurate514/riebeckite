@@ -67,10 +67,10 @@ export const showcaseThemes = [
     packageName: "@riebeckite/theme-module",
     factory: "moduleTheme",
   }),
-  themeDefinition(gruvboxTheme({ settings: { flourish: true } }), {
+  themeDefinition(gruvboxTheme(), {
     label: "Gruvbox",
     description: "Warm contrast for technical notes and focused writing.",
-    features: ["Warm palette", "Contrast options", "Flourish"],
+    features: ["Warm palette", "Contrast options"],
     packageName: "@riebeckite/theme-gruvbox",
     factory: "gruvboxTheme",
   }),
@@ -88,10 +88,10 @@ export const showcaseThemes = [
     packageName: "@riebeckite/theme-sakura",
     factory: "sakuraTheme",
   }),
-  themeDefinition(tokyonightTheme({ settings: { flourish: true } }), {
+  themeDefinition(tokyonightTheme(), {
     label: "Tokyo Night",
     description: "A nocturnal technical theme with precise contrast.",
-    features: ["Technical", "Neon option", "Flourish"],
+    features: ["Technical", "Neon option"],
     packageName: "@riebeckite/theme-tokyonight",
     factory: "tokyonightTheme",
   }),

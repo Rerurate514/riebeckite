@@ -11,8 +11,8 @@
   --rr-callout-title-letter-spacing: normal;
   --rr-callout-title-text-transform: none;
   --rr-callout-icon-color: var(--rr-callout-tone);
-  margin-block: 1.5rem;
-  padding: 1rem 1.125rem;
+  margin-block: 1.75rem;
+  padding: 1.125rem 1.25rem;
   border: 1px solid
     color-mix(in srgb, var(--rr-callout-tone) 32%, var(--rb-color-border));
   border-inline-start: 3px solid var(--rr-callout-tone);

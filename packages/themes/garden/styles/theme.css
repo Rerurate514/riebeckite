@@ -228,7 +228,7 @@
   :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer, .rr-callout) {
   border-left: 1px solid var(--rb-color-border-strong);
   margin-block: 2rem;
-  padding-left: 1rem;
+  padding-left: 1.25rem;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"]
   :is(.rr-backlinks, .rr-local-graph, .rr-garden-explorer) {
@@ -611,5 +611,5 @@
   .rb-article-content
   > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
   + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
-  margin-block-start: 2rem;
+  margin-block-start: 2.5rem;
 }

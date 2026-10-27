@@ -263,6 +263,24 @@ function captureChecks() {
   const lowContrast = text.filter((entry) => entry.contrast < 4.5);
   const toc = document.querySelector(".rr-table-of-contents--desktop");
   const article = rect(".rb-article-content");
+  const probe = document.createElement("div");
+  probe.className = "rb-article-content";
+  probe.style.cssText =
+    "position:absolute;visibility:hidden;width:20rem;pointer-events:none";
+  probe.innerHTML =
+    '<div class="rr-callout" data-callout="note"><div class="rr-callout__title">Callout</div><div class="rr-callout__content"><p>A semantic note surface.</p></div></div><div class="rb-table-scroll"><table><tbody><tr><td>Token</td></tr></tbody></table></div>';
+  document.body.append(probe);
+  const probeCallout = probe.querySelector(".rr-callout");
+  const probeTable = probe.querySelector(".rb-table-scroll");
+  const probeTitle = probe.querySelector(".rr-callout__title");
+  const calloutBounds = probeCallout?.getBoundingClientRect();
+  const tableBounds = probeTable?.getBoundingClientRect();
+  const titleBounds = probeTitle?.getBoundingClientRect();
+  const calloutTableGap =
+    calloutBounds && tableBounds ? tableBounds.top - calloutBounds.bottom : 0;
+  const calloutTextInset =
+    calloutBounds && titleBounds ? titleBounds.left - calloutBounds.left : 0;
+  probe.remove();
   return {
     overflow: document.documentElement.scrollWidth > window.innerWidth,
     tocDisplay: toc ? getComputedStyle(toc).display : "missing",
@@ -272,6 +290,8 @@ function captureChecks() {
     ),
     tocArticleOverlap: overlap(rect(".rr-table-of-contents--desktop"), article),
     articleWithinViewport: article ? article.right <= window.innerWidth : false,
+    calloutTableGap,
+    calloutTextInset,
     lowContrast,
     paper: getComputedStyle(document.documentElement)
       .getPropertyValue("--rb-color-paper")
@@ -516,6 +536,14 @@ try {
         true,
         `${theme}/${mode}: article outside viewport`,
       );
+      assert.ok(
+        desktop.checks.calloutTableGap >= 32,
+        `${theme}/${mode}: callout and table are too close`,
+      );
+      assert.ok(
+        desktop.checks.calloutTextInset >= 20,
+        `${theme}/${mode}: callout text is too close to its border`,
+      );
       assert.deepEqual(
         desktop.checks.lowContrast,
         [],
@@ -565,6 +593,14 @@ try {
         mobile.checks.articleWithinViewport,
         true,
         `${theme}/${mode}: mobile article outside viewport`,
+      );
+      assert.ok(
+        mobile.checks.calloutTableGap >= 32,
+        `${theme}/${mode}: mobile callout and table are too close`,
+      );
+      assert.ok(
+        mobile.checks.calloutTextInset >= 20,
+        `${theme}/${mode}: mobile callout text is too close to its border`,
       );
       assert.deepEqual(
         mobile.checks.lowContrast,

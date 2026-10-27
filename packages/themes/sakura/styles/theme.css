@@ -510,7 +510,7 @@
 /* Plugin roots. */
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-callout {
   margin-block: 1.75rem;
-  padding: 1rem 1.25rem;
+  padding: 1.125rem 1.25rem;
   border: 1px solid color-mix(in srgb, var(--rb-color-accent) 24%, transparent);
   border-inline-start: 3px solid var(--rb-color-accent);
   border-radius: var(--rb-sakura-radius);
@@ -699,5 +699,5 @@
   .rb-article-content
   > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
   + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
-  margin-block-start: 2rem;
+  margin-block-start: 2.5rem;
 }

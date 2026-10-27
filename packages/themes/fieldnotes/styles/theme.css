@@ -287,6 +287,12 @@
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rr-callout {
   border-left: 3px solid var(--rb-color-accent);
 }
+:is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]
+  .rb-article-content
+  > :is(.rr-callout, .rb-table-scroll, pre, .rr-code)
+  + :is(.rr-callout, .rb-table-scroll, pre, .rr-code) {
+  margin-block-start: 2.5rem;
+}
 :is(
     :root,
     .rb-theme-root

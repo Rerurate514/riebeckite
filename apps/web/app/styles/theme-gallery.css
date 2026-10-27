@@ -3,6 +3,12 @@
   margin-inline: auto;
   padding: var(--rb-space-6) var(--rb-space-4) var(--rb-space-8);
 }
+
+body:has(.theme-showcase) main {
+  width: 100%;
+  min-width: 0;
+}
+
 .theme-showcase__header {
   max-width: 46rem;
   border-block-end: 1px solid var(--rb-color-border);
@@ -49,6 +55,9 @@
   color: var(--rb-color-muted);
   font-size: 0.875rem;
 }
+.theme-showcase output {
+  padding: var(--rb-space-2) var(--rb-space-3);
+}
 .theme-showcase__workspace {
   border: 1px solid var(--rb-color-border);
   background: var(--rb-color-surface);
@@ -70,6 +79,9 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+.theme-showcase__controls [data-preview-theme-settings] {
+  display: contents;
 }
 .theme-showcase select,
 .theme-showcase button {

@@ -110,7 +110,7 @@ test("purpose presets select their purpose-built theme", async () => {
         new RegExp(`import \\{ ${factory} \\} from "${packageName}"`),
       );
       assert.match(config, new RegExp(`theme: ${factory}\\(\\)`));
-      assert.equal(packageJson.dependencies?.[packageName], "^0.0.32");
+      assert.equal(packageJson.dependencies?.[packageName], "^0.0.34");
     }
   });
 });

@@ -30,6 +30,8 @@
     "test:release": "node --test scripts/release.test.mjs",
     "test:registry": "node scripts/run_registry_e2e.mjs",
     "test:update": "node scripts/run_tests.mjs --update",
+    "test:visual": "node tests/visual/theme_visual_baseline.mjs",
+    "test:visual:update": "node tests/visual/theme_visual_baseline.mjs --update",
     "test:e2e:external": "node --import tsx tests/external-site/run.ts",
     "test:e2e:fingerprint": "node --import tsx tests/external-site/fingerprint.ts",
     "test:e2e:fast-path": "node --import tsx tests/external-site/fast-path.ts",

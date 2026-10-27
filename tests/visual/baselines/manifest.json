@@ -1,0 +1,108 @@
+{
+  "format": 1,
+  "chromeVersion": "Chrome/155.0.8059.79",
+  "platform": "win32-x64",
+  "desktopViewport": {
+    "width": 1440,
+    "height": 1200
+  },
+  "mobileViewport": {
+    "width": 375,
+    "height": 900
+  },
+  "deviceScaleFactor": 1,
+  "timezone": "UTC",
+  "locale": "en-US",
+  "reducedMotion": "reduce",
+  "fonts": "embedded",
+  "screenshots": {
+    "riebeckite-light.png": {
+      "sha256": "3fe7df274c4219959acb63c429c9524ef6ed49385d06311817e93c683872a935",
+      "bytes": 53600
+    },
+    "riebeckite-dark.png": {
+      "sha256": "5628077461a7c92b079b5b2533eaee1bae6c9b32c01ba1b2074520418bd9ffac",
+      "bytes": 55024
+    },
+    "minimal-light.png": {
+      "sha256": "03302b49771ae3f209bc3b66c60a417ce9d72cafc0ee4927710e95777671d9e9",
+      "bytes": 50288
+    },
+    "minimal-dark.png": {
+      "sha256": "9f5ecfc6dca26a4e263bee710f4212d2fe8e4623aa46cad83d933a6698206670",
+      "bytes": 51201
+    },
+    "gruvbox-light.png": {
+      "sha256": "5a1445cb2eafa5713fc80509d204a8a0ed7881c9fd542dc70e60f79e59f1a6f7",
+      "bytes": 58298
+    },
+    "gruvbox-dark.png": {
+      "sha256": "365f0d87b9d6ee5a97d3cdce6fe43e34ea12db08511b9863c1dafc887aee3eb7",
+      "bytes": 57939
+    },
+    "rerurate-light.png": {
+      "sha256": "5587b2dc074a258fa4972de13dd9ec7494c08c926072a366c02fb368f5dd93f1",
+      "bytes": 58887
+    },
+    "rerurate-dark.png": {
+      "sha256": "f5476bdc9b80f30c4d91cb661da562756f5c3b23e610e59777f38a0619dcda7e",
+      "bytes": 61017
+    },
+    "sakura-light.png": {
+      "sha256": "3797ca2a3193ca8a8001e9bdd0fc3ee2f44fdbc4235ee562015f935f31ba2788",
+      "bytes": 70091
+    },
+    "sakura-dark.png": {
+      "sha256": "890ec73452af12fe447b96a69f31573933f36c2bb93db50482e8e480a551ae2b",
+      "bytes": 70291
+    },
+    "tokyonight-light.png": {
+      "sha256": "b7908a3247d40aadd783300cca09f3b257ddbea3daec467fe7f63c858fed2ad5",
+      "bytes": 53095
+    },
+    "tokyonight-dark.png": {
+      "sha256": "04380adfd765153f24eb904d570589d2437e999b2652a8cee7688cf211235b8b",
+      "bytes": 53459
+    },
+    "garden-light.png": {
+      "sha256": "7772facab478bf0976f41ee2d546d99c24119e62f4bbcb1cf6dd19a3bc11d235",
+      "bytes": 51973
+    },
+    "garden-dark.png": {
+      "sha256": "59eb64557620d0ea86ea3a5ea0747588e53c0ece3ad86bfd2cf6f9c19dc1f020",
+      "bytes": 52231
+    },
+    "editorial-light.png": {
+      "sha256": "6a29057d3ffc4e171b772325454267c9474c554d72c7fdf545dfc244948394aa",
+      "bytes": 64938
+    },
+    "editorial-dark.png": {
+      "sha256": "bde562c0e2879b0bf245dee0c04f4726a9484aa8fbd44e01a6877bce99dc9bb3",
+      "bytes": 65813
+    },
+    "technical-light.png": {
+      "sha256": "066863f054e41a35590f67c6d9c2c4d46713c9eb190c824dd8dcd3846429d24d",
+      "bytes": 53798
+    },
+    "technical-dark.png": {
+      "sha256": "c66cc8fde0c610b62a519ad85d56f24ba911e5cb159e41a60a70e7a76388571e",
+      "bytes": 55520
+    },
+    "folio-light.png": {
+      "sha256": "18429d56150a5cbdeb1e839dbcd46dc9d026b8bfe81a0cc9266de863203b99f6",
+      "bytes": 52903
+    },
+    "folio-dark.png": {
+      "sha256": "fc8773deb45a125a0fcfb07587e1813df40701555237eb62da19b0baff7c8171",
+      "bytes": 56962
+    },
+    "riebeckite-light-mobile.png": {
+      "sha256": "d625cfb2e9d782bd0beb8a0117b63e1248872e7df3110e458bbce8f9d09b4531",
+      "bytes": 44583
+    },
+    "tokyonight-dark-mobile.png": {
+      "sha256": "9bf9d88cf534a219611f4b243e7cf83402fa5cf77a520fa310f307f9ce7e03e9",
+      "bytes": 43282
+    }
+  }
+}

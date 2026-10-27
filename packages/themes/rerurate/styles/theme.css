@@ -1040,10 +1040,26 @@
   position: relative;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-content {
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-content,
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-page-body {
   background-image: var(--rr-svg-stars);
   background-repeat: repeat;
   background-size: 180px 120px;
+  background-position: center;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rb-sidebar,
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rr-table-of-contents {
+  background-image: var(--rr-svg-constellation);
+  background-repeat: repeat;
+  background-size: 140px 90px;
+  background-position: center;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] .rb-article-footer {
+  background-image: var(--rr-svg-orbit);
+  background-repeat: repeat;
+  background-size: 160px 60px;
   background-position: center;
 }
 

@@ -335,6 +335,17 @@ body:has(.theme-showcase) main {
   color: var(--rb-color-ink);
   font-size: 0.875rem;
 }
+@media (max-width: 64rem) {
+  .theme-showcase__toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .theme-showcase__devices {
+    grid-column: span 2;
+  }
+  .theme-showcase .theme-showcase__reset {
+    justify-self: start;
+  }
+}
 @media (max-width: 42rem) {
   .theme-showcase {
     padding-inline: var(--rb-space-3);
@@ -344,11 +355,15 @@ body:has(.theme-showcase) main {
     flex-direction: column;
   }
   .theme-showcase__toolbar {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
   }
   .theme-showcase__devices,
-  .theme-showcase__reset {
+  .theme-showcase .theme-showcase__reset {
     grid-column: 1 / -1;
+  }
+  .theme-showcase__segmented button {
+    flex: 1;
+    padding-inline: 0.4rem;
   }
   .theme-showcase__frame-wrap {
     height: 34rem;

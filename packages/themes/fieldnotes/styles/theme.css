@@ -285,6 +285,7 @@
   background: color-mix(in srgb, var(--rb-color-surface) 90%, transparent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"] .rr-callout {
+  padding-inline: 2rem;
   border-left: 3px solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="fieldnotes"]

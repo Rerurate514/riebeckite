@@ -259,6 +259,7 @@
   box-shadow: none;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="signal"] .rr-callout {
+  padding-inline: 2rem;
   border-left: 0.75rem solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="signal"]

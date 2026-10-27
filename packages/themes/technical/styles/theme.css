@@ -353,6 +353,10 @@
   box-shadow: inset 3px 0 var(--rb-color-accent);
 }
 
+:is(:root, .rb-theme-root)[data-rb-theme="technical"] .rr-callout {
+  padding-inline: 2rem;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :is(:root, .rb-theme-root)[data-rb-theme="technical"]
     .rb-article-header::after {

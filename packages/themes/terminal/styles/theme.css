@@ -365,6 +365,7 @@
   background: var(--rb-color-surface);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"] .rr-callout {
+  padding-inline: 2rem;
   border-left: 2px solid var(--rb-color-accent);
 }
 :is(:root, .rb-theme-root)[data-rb-theme="terminal"]

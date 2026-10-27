@@ -50,7 +50,7 @@ flowchart LR
 
 `initMermaidDiagrams` は未描画の図だけを描画します。Mermaid のインスタンスがなければ jsDelivr から Mermaid 11 を読み込みます。描画に失敗した場合は `data-mermaid="error"` となり、CSS のプレースホルダー表示に切り替わります。
 
-明暗別のテーマを指定した場合は、`html[data-theme]` を優先し、なければ OS の配色設定に従います。
+明暗別のテーマを指定した場合は、`html[data-rb-mode]` を優先し、なければ OS の配色設定に従います。
 
 ## オプション
 

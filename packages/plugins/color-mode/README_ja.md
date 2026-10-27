@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/color-mode.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite サイト向けのライト / ダーク / システム連動のカラーモード切替プラグインです。実行時に `<html>` の `data-theme` 属性へ書き込みます。これはテーマが配色を選ぶのに使う属性そのものなので、組み込みの全テーマで動作し、テーマ側に JavaScript は一切必要ありません。
+Riebeckite サイト向けのライト / ダーク / システム連動のカラーモード切替プラグインです。実行時に `<html>` の `data-rb-mode` 属性へ書き込みます。これはテーマが配色を選ぶのに使う属性そのものなので、組み込みの全テーマで動作し、テーマ側に JavaScript は一切必要ありません。
 
 [English](./README.md)
 
@@ -15,8 +15,8 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 [テーマシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.ja.md) のテーマは、次の 3 つの CSS 状態から配色を決めます。
 
 - `:root`：ライト
-- `:root[data-theme="dark"]`：ダーク
-- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }`：OS に追随（system）
+- `:root[data-rb-mode="dark"]`：ダーク
+- `@media (prefers-color-scheme: dark) { :root:not([data-rb-mode]) }`：OS に追随（system）
 
 このプラグインは、その取り決めを切り替えるだけの薄い実行時スイッチで、次の 3 つを提供します。
 
@@ -86,11 +86,11 @@ return (
 
 ## モードの決定方法
 
-1. `ColorModeScript` が最初の描画時に保存値を適用します。値が有効なモード（`light` / `dark` / `system`）の場合のみ上書きし、それ以外はサーバーが出力した `data-theme`（テーマの `colorMode` 由来）をそのまま残します。
+1. `ColorModeScript` が最初の描画時に保存値を適用します。値が有効なモード（`light` / `dark` / `system`）の場合のみ上書きし、それ以外はサーバーが出力した `data-rb-mode`（テーマの `colorMode` 由来）をそのまま残します。
 2. 読み込み時に `initColorMode` が同じ判定を行い、ボタンの `aria-pressed` を同期します。
-3. ボタンを押すと選択を保存して即時に再適用します。`"system"` は `data-theme` 属性を**削除**し、OS の設定 CSS に委ねます。
+3. ボタンを押すと選択を保存して即時に再適用します。`"system"` は `data-rb-mode` 属性を**削除**し、OS の設定 CSS に委ねます。
 
-テーマは表示のみを担当するため、SSR 時の `data-theme` はテーマの `colorMode` から生成されます。プラグインは訪問者が別のモードを選んだときだけ上書きします。
+テーマは表示のみを担当するため、SSR 時の `data-rb-mode` はテーマの `colorMode` から生成されます。プラグインは訪問者が別のモードを選んだときだけ上書きします。
 
 ## CSS フック
 
@@ -126,7 +126,7 @@ document.addEventListener("riebeckite:color-mode", (event) => {
 
 ## 制約
 
-- 図関連プラグイン（`d2` / `mermaid` / `vega-lite`）は初期化時にしか `data-theme` を読みません。モード切替後、リロードまでは前の配色のままです。将来の再描画のためのフックが `riebeckite:color-mode` イベントです。
+- 図関連プラグイン（`d2` / `mermaid` / `vega-lite`）は初期化時にしか `data-rb-mode` を読みません。モード切替後、リロードまでは前の配色のままです。将来の再描画のためのフックが `riebeckite:color-mode` イベントです。
 - インラインスクリプトは Content-Security-Policy の影響を受けます。`script-src` がインラインを禁止している場合は nonce や hash で許可してください。
 - `localStorage` へのアクセスは `try/catch` で保護しています。ストレージが使えない環境でも、そのページでは切替が機能します（永続化のみされません）。
 - 1 ページに複数のトグルを置く場合は、同じ `storageKey` を共有してください。

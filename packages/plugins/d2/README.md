@@ -84,7 +84,7 @@ content -> build -> deploy
 - Renders every `[data-d2="pending"]` figure; failures set `data-d2="error"`
   (placeholder message via CSS)
 - When `theme` is `{ light, dark }`, the theme is chosen from
-  `html[data-theme]` or `prefers-color-scheme`
+  `html[data-rb-mode]` or `prefers-color-scheme`
 
 ## Options
 

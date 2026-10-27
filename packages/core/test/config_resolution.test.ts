@@ -159,6 +159,29 @@ test("resolveConfig rejects unknown and unsafe theme settings", () => {
       }),
     ThemeSettingsValidationError,
   );
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Site" },
+        theme: theme({ settings: { toString: "value" } as never }),
+      }),
+    ThemeSettingsValidationError,
+  );
+  assert.throws(
+    () =>
+      defineTheme({
+        name: "custom",
+        styles: [],
+        settings: {
+          "accent; color: red": {
+            type: "color",
+            label: "Accent",
+            default: "#112233",
+          },
+        },
+      }),
+    ThemeSettingsValidationError,
+  );
 });
 
 test("resolveConfig rejects a bad publish strategy and non-HTTP base URL", () => {

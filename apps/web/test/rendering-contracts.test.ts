@@ -398,6 +398,7 @@ test("P2-A2: the theme gallery uses the isolated interactive preview", () => {
   assert.match(contentRoute, /if \(response\.status === 404\) return next\(\)/);
   assert.match(client, /createPreviewSessionTransport/);
   assert.match(client, /mountPreview/);
+  assert.match(client, /setting\.type === "slider"\s*\? "range"/);
 });
 
 test("article route composes the contextual language switcher", () => {

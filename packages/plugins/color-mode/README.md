@@ -3,7 +3,7 @@
 <!-- Generated from docs/docs/plugins/color-mode.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Light / dark / system color-mode switching for Riebeckite sites. The control
-writes to `data-theme` on `<html>` at runtime, exactly the attribute the
+writes to `data-rb-mode` on `<html>` at runtime, exactly the attribute the
 themes' CSS uses to pick a palette — so it works with every built-in theme and
 needs no JavaScript in the theme itself.
 
@@ -19,8 +19,8 @@ Themes derive their palette from three CSS states (see
 [theme-system.md](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md)):
 
 - `:root` — light
-- `:root[data-theme="dark"]` — dark
-- `@media (prefers-color-scheme: dark) { :root:not([data-theme]) }` — follow the OS ("system")
+- `:root[data-rb-mode="dark"]` — dark
+- `@media (prefers-color-scheme: dark) { :root:not([data-rb-mode]) }` — follow the OS ("system")
 
 The plugin is a thin runtime switch over that contract:
 
@@ -100,14 +100,14 @@ the storage key.
 
 1. On first paint, `ColorModeScript` applies the persisted value if it is a
    valid mode (`light`, `dark` or `system`); otherwise it leaves the
-   `data-theme` the server already emitted (from your theme's `colorMode`).
+   `data-rb-mode` the server already emitted (from your theme's `colorMode`).
 2. On load, `initColorMode` repeats the same logic and syncs the buttons'
    `aria-pressed` state.
 3. Clicking a button persists the choice and re-applies it immediately.
-   `"system"` **removes** the `data-theme` attribute, so the OS preference CSS
+   `"system"` **removes** the `data-rb-mode` attribute, so the OS preference CSS
    takes over.
 
-Since themes are presentation-only, the SSRed `data-theme` comes from your
+Since themes are presentation-only, the SSRed `data-rb-mode` comes from your
 theme's `colorMode`. The plugin only overrides it when the visitor has chosen
 otherwise.
 
@@ -151,7 +151,7 @@ diagrams) can follow mode changes in the future.
 
 ## Limitations
 
-- Diagram plugins (`d2`, `mermaid`, `vega-lite`) read `data-theme` once at
+- Diagram plugins (`d2`, `mermaid`, `vega-lite`) read `data-rb-mode` once at
   initialization. After switching modes they keep their previous palette until
   the page is reloaded. Listening for `riebeckite:color-mode` is the hook for a
   future re-render.

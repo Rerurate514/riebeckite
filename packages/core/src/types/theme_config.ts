@@ -114,6 +114,12 @@ export function defineTheme<const S extends ThemeSettingsSchema>(definition: {
   settings?: S;
   presets?: Record<string, ThemePreset<S>>;
 }): ThemeDefinition<S> {
+  for (const key of Object.keys(definition.settings ?? {})) {
+    if (!/^[a-z][a-zA-Z0-9]*$/.test(key))
+      throw new ThemeSettingsValidationError([
+        `settings.${key}: Invalid setting key.`,
+      ]);
+  }
   const theme = ((options: ThemeOptions<S> = {}) => ({
     definition: theme,
     options,
@@ -171,11 +177,12 @@ export function validateThemeSettings<S extends ThemeSettingsSchema>(
     throw new ThemeSettingsValidationError(["settings: Expected an object."]);
   const issues: string[] = [];
   for (const key of Object.keys(input)) {
-    if (!(key in schema)) issues.push(`settings.${key}: Unknown setting.`);
+    if (!Object.hasOwn(schema, key))
+      issues.push(`settings.${key}: Unknown setting.`);
   }
   const values: Record<string, string | number | boolean> = {};
   for (const [key, setting] of Object.entries(schema)) {
-    const value = input[key] ?? setting.default;
+    const value = Object.hasOwn(input, key) ? input[key] : setting.default;
     if (!isSettingValue(setting, value)) {
       issues.push(`settings.${key}: Invalid ${setting.type} value.`);
     } else {

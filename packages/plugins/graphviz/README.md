@@ -116,8 +116,8 @@ a lingering worker.
 - `.rb-graphviz`, `.rb-graphviz__canvas`, `.rb-graphviz__caption`,
   `.rb-graphviz__fallback`
 - `[data-graphviz="pending"]` / `[data-graphviz="error"]` show a placeholder
-- Dark mode follows `html[data-theme="dark"]`, or the
-  `prefers-color-scheme: dark` system query while `data-theme` is absent
+- Dark mode follows `html[data-rb-mode="dark"]`, or the
+  `prefers-color-scheme: dark` system query while `data-rb-mode` is absent
 
 ## Exports
 

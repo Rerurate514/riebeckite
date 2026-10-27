@@ -143,10 +143,8 @@ export function initThemeShowcase(): void {
     detailCode.textContent = configuration(
       theme,
       settingsByTheme[theme.name],
-      required<globalThis.HTMLSelectElement>(
-        previewRoot,
-        "[data-preview-mode]",
-      ).value,
+      required<globalThis.HTMLSelectElement>(previewRoot, "[data-preview-mode]")
+        .value,
     );
     renderThemeSettings(previewRoot, theme, settingsByTheme, () => {
       detailCode.textContent = configuration(
@@ -180,11 +178,9 @@ export function initThemeShowcase(): void {
   required<globalThis.HTMLSelectElement>(
     previewRoot,
     "[data-preview-mode]",
-  ).addEventListener(
-    "change",
-    () => selectTheme(themeSelect.value),
-    { signal: lifetime.signal },
-  );
+  ).addEventListener("change", () => selectTheme(themeSelect.value), {
+    signal: lifetime.signal,
+  });
   root
     .querySelectorAll<globalThis.HTMLButtonElement>("[data-preview-device]")
     .forEach((button) => {
@@ -353,7 +349,9 @@ function renderThemeSettings(
             ? "color"
             : setting.type === "text"
               ? "text"
-              : "number";
+              : setting.type === "slider"
+                ? "range"
+                : "number";
         input.value = String(value);
         if (setting.type === "number" || setting.type === "slider") {
           if (setting.min !== undefined) input.min = String(setting.min);
@@ -368,7 +366,8 @@ function renderThemeSettings(
         [key]:
           input instanceof HTMLInputElement && input.type === "checkbox"
             ? input.checked
-            : input instanceof HTMLInputElement && input.type === "number"
+            : input instanceof HTMLInputElement &&
+                (input.type === "number" || input.type === "range")
               ? Number(input.value)
               : input.value,
       };

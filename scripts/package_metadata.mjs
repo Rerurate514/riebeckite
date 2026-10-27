@@ -101,6 +101,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/themes/garden",
   "packages/themes/gruvbox",
   "packages/themes/minimal",
+  "packages/themes/module",
   "packages/themes/rerurate",
   "packages/themes/sakura",
   "packages/themes/technical",
@@ -558,6 +559,10 @@ const packagePublishingMetadata = {
     description: "A minimal baseline CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "minimal"],
   },
+  "packages/themes/module": {
+    description: "A precision interface CSS theme for Riebeckite sites.",
+    keywords: ["riebeckite", "theme", "css", "precision", "dark"],
+  },
   "packages/themes/rerurate": {
     description: "The Rerurate visual-grammar CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "rerurate"],
@@ -840,7 +845,14 @@ export function expectedPackageMetadata(directory) {
   if (directory.startsWith("packages/themes/")) {
     return {
       ...publishingMetadata(directory, ["./styles/*.css"]),
-      files: ["LICENSE", "README.md", "README_ja.md", "dist", "styles"],
+      files: [
+        "LICENSE",
+        "README.md",
+        "README_ja.md",
+        "dist",
+        ...(directory === "packages/themes/module" ? ["src"] : []),
+        "styles",
+      ],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
         prepack: "pnpm run build",

@@ -45,6 +45,7 @@ The root contract is `data-rb-theme`, `data-rb-mode` for an explicit light/dark 
 - [Garden](./garden.md)
 - [Gruvbox](./gruvbox.md)
 - [Minimal](./minimal.md)
+- [Module](./module.md)
 - [Rerurate](./rerurate.md)
 - [Sakura](./sakura.md)
 - [Technical](./technical.md)

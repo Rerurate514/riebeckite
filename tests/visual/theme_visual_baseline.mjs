@@ -25,6 +25,7 @@ const mobileCaptureKeys = new Set(["riebeckite-light", "tokyonight-dark"]);
 const themes = [
   ["riebeckite", "default"],
   ["minimal", "minimal"],
+  ["module", "module"],
   ["gruvbox", "gruvbox"],
   ["rerurate", "rerurate"],
   ["sakura", "sakura"],

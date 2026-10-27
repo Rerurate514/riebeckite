@@ -97,6 +97,7 @@
     "@riebeckite/theme-garden": "workspace:*",
     "@riebeckite/theme-gruvbox": "workspace:*",
     "@riebeckite/theme-minimal": "workspace:*",
+    "@riebeckite/theme-module": "workspace:*",
     "@riebeckite/theme-rerurate": "workspace:*",
     "@riebeckite/theme-sakura": "workspace:*",
     "@riebeckite/theme-technical": "workspace:*",

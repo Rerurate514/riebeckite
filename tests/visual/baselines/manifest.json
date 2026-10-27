@@ -103,6 +103,14 @@
     "tokyonight-dark-mobile.png": {
       "sha256": "9bf9d88cf534a219611f4b243e7cf83402fa5cf77a520fa310f307f9ce7e03e9",
       "bytes": 43282
+    },
+    "module-light.png": {
+      "sha256": "6214d030d513c5f171980ad98f699b144bb3f327e444959f0ac41147d749f501",
+      "bytes": 133038
+    },
+    "module-dark.png": {
+      "sha256": "f508607813730284b610162b4dc5e68e6f61b4120e4a31527cc9ac98ec006549",
+      "bytes": 124185
     }
   }
 }

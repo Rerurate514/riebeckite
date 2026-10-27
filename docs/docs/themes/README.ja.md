@@ -45,6 +45,7 @@ export default defineConfig({
 - [Garden](./garden.md)
 - [Gruvbox](./gruvbox.md)
 - [Minimal](./minimal.md)
+- [Module](./module.md)
 - [Rerurate](./rerurate.md)
 - [Sakura](./sakura.md)
 - [Technical](./technical.md)

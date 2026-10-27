@@ -345,6 +345,9 @@ importers:
       '@riebeckite/theme-minimal':
         specifier: workspace:*
         version: link:../../packages/themes/minimal
+      '@riebeckite/theme-module':
+        specifier: workspace:*
+        version: link:../../packages/themes/module
       '@riebeckite/theme-rerurate':
         specifier: workspace:*
         version: link:../../packages/themes/rerurate
@@ -1861,6 +1864,12 @@ importers:
         version: link:../../core
 
   packages/themes/minimal:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/themes/module:
     dependencies:
       '@riebeckite/core':
         specifier: workspace:*

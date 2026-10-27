@@ -11,6 +11,7 @@ import { folioTheme } from "@riebeckite/theme-folio";
 import { gardenTheme } from "@riebeckite/theme-garden";
 import { gruvboxTheme } from "@riebeckite/theme-gruvbox";
 import { minimalTheme } from "@riebeckite/theme-minimal";
+import { moduleTheme } from "@riebeckite/theme-module";
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
 import { sakuraTheme } from "@riebeckite/theme-sakura";
 import { technicalTheme } from "@riebeckite/theme-technical";
@@ -57,6 +58,14 @@ export const showcaseThemes = [
     features: ["Restrained", "Readable"],
     packageName: "@riebeckite/theme-minimal",
     factory: "minimalTheme",
+  }),
+  themeDefinition(moduleTheme(), {
+    label: "Module",
+    description:
+      "Precision-built dark surfaces with a blueprint grid and warm edge light.",
+    features: ["Blueprint grid", "Edge glow"],
+    packageName: "@riebeckite/theme-module",
+    factory: "moduleTheme",
   }),
   themeDefinition(gruvboxTheme(), {
     label: "Gruvbox",
@@ -124,6 +133,10 @@ const japaneseThemeDetails = [
   [
     "長い文章を読みやすく見せる、静かなベースライン。",
     ["控えめ", "読みやすい"],
+  ],
+  [
+    "設計グリッドと暖色のエッジライトを備えた、精密なダークテーマ。",
+    ["設計グリッド", "エッジ発光"],
   ],
   [
     "技術メモや集中して書く文章に合う、温かみのあるコントラスト。",

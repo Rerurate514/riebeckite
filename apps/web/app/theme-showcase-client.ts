@@ -11,6 +11,7 @@ import folioStyle from "@riebeckite/theme-folio/style.css?inline";
 import gardenStyle from "@riebeckite/theme-garden/style.css?inline";
 import gruvboxStyle from "@riebeckite/theme-gruvbox/style.css?inline";
 import minimalStyle from "@riebeckite/theme-minimal/style.css?inline";
+import moduleStyle from "@riebeckite/theme-module/style.css?inline";
 import rerurateStyle from "@riebeckite/theme-rerurate/style.css?inline";
 import sakuraStyle from "@riebeckite/theme-sakura/style.css?inline";
 import technicalStyle from "@riebeckite/theme-technical/style.css?inline";
@@ -43,6 +44,7 @@ const themeStyles = {
   garden: gardenStyle,
   gruvbox: gruvboxStyle,
   minimal: minimalStyle,
+  module: moduleStyle,
   rerurate: rerurateStyle,
   sakura: inlinePreviewFont(
     sakuraStyle,

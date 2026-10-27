@@ -272,7 +272,7 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
       `generated HTML is missing the citations marker (${CITATIONS_MARKER})`,
     );
   }
-  if (!combined.includes('href="#ref-smith2024"')) {
+  if (!combined.includes('href="#user-content-ref-smith2024"')) {
     fail("citations plugin did not link citation labels to references");
   }
   if (!combined.includes("External Consumer Citations")) {

@@ -407,15 +407,15 @@ async function main(): Promise<void> {
       `${JSON.stringify(Object.fromEntries(coldSnapshot), null, 2)}\n`,
     );
 
-    // 2. No-change fallback for generated-output planners.
-    logger.step("case 2: No-change planner fallback");
+    // 2. No-change fallback for cache-disabled manifest hooks.
+    logger.step("case 2: No-change manifest hook fallback");
     const noChange = await build("No-change Fast Path", {
       expectFastPath: false,
     });
     assert.equal(
       noChange.blockReason,
-      "plugin-generated-output-plan",
-      "generated-output planners must block the no-change fast path",
+      "manifest-hook-cache-disabled",
+      "cache-disabled manifest hooks must block the no-change fast path",
     );
     assertNoDifference(
       "no-change vs cold",
@@ -635,8 +635,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       feedTampered.blockReason,
-      "plugin-generated-output-plan",
-      `generated-output planner must block the fast path before output inventory validation (got ${feedTampered.blockReason})`,
+      "manifest-hook-cache-disabled",
+      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${feedTampered.blockReason})`,
     );
     assertNoDifference(
       "feed modification self-heal",
@@ -649,8 +649,8 @@ async function main(): Promise<void> {
     const feedDeleted = await build("Feed deletion", { expectFastPath: false });
     assert.equal(
       feedDeleted.blockReason,
-      "plugin-generated-output-plan",
-      `generated-output planner must block the fast path before output inventory validation (got ${feedDeleted.blockReason})`,
+      "manifest-hook-cache-disabled",
+      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${feedDeleted.blockReason})`,
     );
     assertNoDifference(
       "feed deletion self-heal",
@@ -666,8 +666,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       extraFileResult.blockReason,
-      "plugin-generated-output-plan",
-      `generated-output planner must block the fast path before output inventory validation (got ${extraFileResult.blockReason})`,
+      "manifest-hook-cache-disabled",
+      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${extraFileResult.blockReason})`,
     );
     if (fs.existsSync(extraFile)) {
       fail("extra dist file was not removed by the recovered build");
@@ -703,15 +703,15 @@ async function main(): Promise<void> {
       diffSnapshots(incrementalSnapshot, fullSnapshot),
     );
 
-    // 17. No-change planner fallback recovery.
-    logger.step("case 17: No-change planner fallback recovery");
+    // 17. No-change manifest hook fallback recovery.
+    logger.step("case 17: No-change manifest hook fallback recovery");
     const recovered = await build("No-change recovery", {
       expectFastPath: false,
     });
     assert.equal(
       recovered.blockReason,
-      "plugin-generated-output-plan",
-      "recovered no-change build must keep the generated-output planner fallback",
+      "manifest-hook-cache-disabled",
+      "recovered no-change build must keep the cache-disabled manifest hook fallback",
     );
     assertNoDifference(
       "no-change recovery vs full",
@@ -743,7 +743,7 @@ async function main(): Promise<void> {
       );
     }
     logger.step(
-      "PASS: standard starter falls back safely for generated-output planners and every change invalidates it safely",
+      "PASS: standard starter falls back safely for cache-disabled manifest hooks and every change invalidates it safely",
     );
   } finally {
     if (keep) {

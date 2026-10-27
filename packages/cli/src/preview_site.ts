@@ -35,6 +35,7 @@ export async function linkPreviewDependencies(
     ["@hono/vite-build", "@hono/vite-build/node"],
     ["@riebeckite/core", "@riebeckite/core"],
     ["@riebeckite/honox", "@riebeckite/honox"],
+    ["@riebeckite/node", "@riebeckite/node"],
     ["@riebeckite/plugin-color-mode", "@riebeckite/plugin-color-mode"],
     ["@riebeckite/plugin-docs", "@riebeckite/plugin-docs"],
     [

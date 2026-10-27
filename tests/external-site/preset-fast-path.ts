@@ -36,7 +36,7 @@ const FAST_PATH_EXPECTATIONS: Readonly<
 > = {
   empty: { capable: true },
   minimal: { capable: true },
-  starter: { capable: false, blockReason: "plugin-generated-output-plan" },
+  starter: { capable: false, blockReason: "manifest-hook-cache-disabled" },
   showcase: { capable: false, blockReason: "plugin-build-end" },
 };
 

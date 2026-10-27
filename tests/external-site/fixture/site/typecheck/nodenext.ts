@@ -35,19 +35,12 @@ import {
 } from "@riebeckite/honox/server";
 import {
   ArticleContent,
-  type ArticleContentProps,
   ArticleFooter,
-  type ArticleFooterProps,
   ArticleHeader,
-  type ArticleHeaderProps,
   ArticleLayout,
-  type ArticleLayoutProps,
   ArticleMeta,
-  type ArticleMetaProps,
   Article as ArticlePrimitive,
-  type ArticleProps,
   Sidebar,
-  type SidebarProps,
 } from "@riebeckite/honox/ui";
 import {
   analytics,
@@ -204,15 +197,6 @@ export const resolvedEntries = {
   initWaveDrom,
   defaultTheme,
 } as const;
-
-export type UiPrimitiveProps =
-  | ArticleProps
-  | ArticleContentProps
-  | ArticleFooterProps
-  | ArticleHeaderProps
-  | ArticleLayoutProps
-  | ArticleMetaProps
-  | SidebarProps;
 
 export type CollectionInputs = {
   definition: ContentCollectionDefinition;

@@ -4,9 +4,17 @@
 
 [日本語](./README_ja.md)
 
-`@riebeckite/theme-module` provides the **Module** official theme. It combines a calibrated blueprint grid, steel surfaces, and warm edge lighting for technical notes that need a darker, more deliberate interface.
+## Overview
 
-## Use it
+`@riebeckite/theme-module` provides the official **Module** theme. Its theme identity is `module`. A structured technical theme with calibrated grids and edge details.
+
+## Installation
+
+```sh
+npm install @riebeckite/theme-module
+```
+
+## Usage
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -14,18 +22,45 @@ import { moduleTheme } from "@riebeckite/theme-module";
 
 export default defineConfig({
   theme: moduleTheme({
-    colorMode: "dark",
-    settings: { glow: true },
+    colorMode: "system",
+    settings: { typography: "system" },
   }),
 });
 ```
 
-`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
+## Common options
 
-## Settings
+| Property | Values | Description |
+| --- | --- | --- |
+| `colorMode` | `"light"`, `"dark"`, `"system"` | Chooses the color mode. `"system"` follows the browser preference. |
+| `layout` | `"article"`, `"sidebar"`, `"full-width"` | Chooses the page layout. |
+| `preset` | — | This theme does not define presets. |
+| `settings` | object | Overrides the settings listed below. Unknown keys and invalid values are rejected. |
+| `stylesheets` | string array | Loads site-owned stylesheets after the theme CSS. |
 
-Read `moduleTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
+Resolution order is schema defaults, then the selected preset, then explicit `settings`.
 
-Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="module"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
+## Theme settings
 
-See [Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) and [Writing a theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md) for the contract.
+| Property | Type | Default and allowed values | Effect |
+| --- | --- | --- | --- |
+| `typography` | select | `"system"` — `system`, `serif`, `sans`, `mono` | Selects the article typeface. |
+| `accentColor` | color | `"#a94e08"` | Warm accent for controls and structural details. |
+| `articleWidth` | slider | `50` — 40–68, step 1 | Maximum article width in rem. |
+| `fontSize` | slider | `1` — 0.9375–1.25, step 0.0625 | Article text size in rem. |
+| `lineHeight` | slider | `1.75` — 1.5–2.1, step 0.05 | Article line height. |
+| `blueprint` | boolean | `true` | Show the calibrated grid behind the reading surface. |
+| `glow` | boolean | `true` | Illuminate the article frame with the accent color. |
+| `flourish` | boolean | `false` | Show a subtle SVG flourish in the article header. |
+
+## Presets
+
+This theme does not define presets.
+
+## CSS and attributes
+
+The root receives `data-rb-theme="module"`, `data-rb-mode` for an explicit light or dark mode, and `data-rb-layout`. Every setting is reflected as `data-rb-setting-<name>`; color, number, and slider settings are also available as safe `--rb-setting-<name>` custom properties.
+
+## See also
+
+[Theme API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/theme-api.md) and [Writing a theme](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/writing-a-theme.md).

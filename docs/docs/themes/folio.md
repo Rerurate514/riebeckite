@@ -5,9 +5,17 @@ title: Folio
 
 [日本語](./folio.ja.md)
 
-`@riebeckite/theme-folio` provides the **Folio** official theme. Its identity is `folio` and its settings schema is the source of truth for configuration and the preview controls.
+## Overview
 
-## Use it
+`@riebeckite/theme-folio` provides the official **Folio** theme. Its theme identity is `folio`. A spacious portfolio-style theme with editorial framing.
+
+## Installation
+
+```sh
+npm install @riebeckite/theme-folio
+```
+
+## Usage
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
@@ -16,18 +24,44 @@ import { folioTheme } from "@riebeckite/theme-folio";
 export default defineConfig({
   theme: folioTheme({
     colorMode: "system",
-    preset: "reading",
-    settings: { typography: "serif" },
+    settings: { typography: "system" },
   }),
 });
 ```
 
-`colorMode` is `"light"`, `"dark"`, or `"system"`; `layout` is `"article"`, `"sidebar"`, or `"full-width"`; `stylesheets` adds site-owned stylesheets after theme CSS. A preset is applied before explicit `settings`.
+## Common options
 
-## Settings
+| Property | Values | Description |
+| --- | --- | --- |
+| `colorMode` | `"light"`, `"dark"`, `"system"` | Chooses the color mode. `"system"` follows the browser preference. |
+| `layout` | `"article"`, `"sidebar"`, `"full-width"` | Chooses the page layout. |
+| `preset` | — | This theme does not define presets. |
+| `settings` | object | Overrides the settings listed below. Unknown keys and invalid values are rejected. |
+| `stylesheets` | string array | Loads site-owned stylesheets after the theme CSS. |
 
-Read `folioTheme.settings` for the complete typed schema, including labels, descriptions, allowed select values, slider bounds, and light/dark defaults. Unknown settings and invalid values are rejected at resolution time. This theme includes a `reading` preset.
+Resolution order is schema defaults, then the selected preset, then explicit `settings`.
 
-Settings are reflected as `data-rb-setting-<name>` attributes. The root carries `data-rb-theme="folio"`, `data-rb-mode` only for explicit light or dark mode, and `data-rb-layout`.
+## Theme settings
 
-See [Theme API](../reference/theme-api.md) and [Writing a theme](./writing-a-theme.md).
+| Property | Type | Default and allowed values | Effect |
+| --- | --- | --- | --- |
+| `typography` | select | `"system"` — `system`, `serif`, `sans`, `mono` | Selects the article typeface. |
+| `accentColor` | color | `"#d6422c"` | Rules and interactive accents. |
+| `articleWidth` | slider | `62` — 44–76, step 1 | Maximum article width in rem. |
+| `fontSize` | slider | `1.05` — 0.95–1.25, step 0.05 | Article text size in rem. |
+| `lineHeight` | slider | `1.65` — 1.5–2.1, step 0.05 | Article line height. |
+| `motion` | boolean | `true` | Enables theme motion effects. |
+| `ornament` | boolean | `true` | Show the corner mark in the article header. |
+| `seal` | boolean | `false` | Add a circular folio stamp to the article header. |
+
+## Presets
+
+This theme does not define presets.
+
+## CSS and attributes
+
+The root receives `data-rb-theme="folio"`, `data-rb-mode` for an explicit light or dark mode, and `data-rb-layout`. Every setting is reflected as `data-rb-setting-<name>`; color, number, and slider settings are also available as safe `--rb-setting-<name>` custom properties.
+
+## See also
+
+[Theme API](../reference/theme-api.md) and [Writing a theme](./writing-a-theme.md).

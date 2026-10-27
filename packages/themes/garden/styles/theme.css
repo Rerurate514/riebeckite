@@ -14,23 +14,26 @@
 @layer base {
   :is(:root, .rb-theme-root)[data-rb-theme="garden"] {
     color-scheme: light;
-    --rb-color-paper: #f5f3ea;
-    --rb-color-surface: #fcfbf5;
-    --rb-color-surface-hover: #e8ebda;
-    --rb-color-ink: #263126;
-    --rb-color-muted: #687064;
+    --rb-color-paper: var(--rb-setting-paper-color, #f5f3ea);
+    --rb-color-surface: var(--rb-setting-surface-color, #fcfbf5);
+    --rb-color-surface-hover: var(--rb-setting-surface-hover-color, #e8ebda);
+    --rb-color-ink: var(--rb-setting-ink-color, #263126);
+    --rb-color-muted: var(--rb-setting-muted-color, #687064);
     --rb-color-accent: var(--rb-setting-accent-color, #526b38);
-    --rb-color-link: #405a2d;
-    --rb-color-focus: #315e36;
-    --rb-color-selected: #dce8bd;
-    --rb-color-border: #d5d8c7;
-    --rb-color-border-strong: #aeb69a;
-    --rb-color-danger: #a13d32;
-    --rb-color-success: #39734a;
-    --rb-color-code-background: #28352a;
-    --rb-color-code-ink: #eff4df;
-    --rb-color-code-inline: #e6ead7;
-    --rb-color-overlay: rgb(21 29 20 / 0.6);
+    --rb-color-link: var(--rb-setting-link-color, #405a2d);
+    --rb-color-focus: var(--rb-setting-focus-color, #315e36);
+    --rb-color-selected: var(--rb-setting-selected-color, #dce8bd);
+    --rb-color-border: var(--rb-setting-border-color, #d5d8c7);
+    --rb-color-border-strong: var(--rb-setting-border-strong-color, #aeb69a);
+    --rb-color-danger: var(--rb-setting-danger-color, #a13d32);
+    --rb-color-success: var(--rb-setting-success-color, #39734a);
+    --rb-color-code-background: var(
+      --rb-setting-code-background-color,
+      #28352a
+    );
+    --rb-color-code-ink: var(--rb-setting-code-ink-color, #eff4df);
+    --rb-color-code-inline: var(--rb-setting-code-inline-color, #e6ead7);
+    --rb-color-overlay: var(--rb-setting-overlay-color, rgb(21 29 20 / 0.6));
     --rb-font-body: Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
     --rb-font-heading:
       ui-serif, Georgia, "Hiragino Mincho ProN", "Yu Mincho", serif;
@@ -47,45 +50,51 @@
 
   :is(:root, .rb-theme-root)[data-rb-theme="garden"][data-rb-mode="dark"] {
     color-scheme: dark;
-    --rb-color-paper: #1d251d;
-    --rb-color-surface: #283227;
-    --rb-color-surface-hover: #354233;
-    --rb-color-ink: #edf0df;
-    --rb-color-muted: #b6bea9;
+    --rb-color-paper: var(--rb-setting-paper-color, #1d251d);
+    --rb-color-surface: var(--rb-setting-surface-color, #283227);
+    --rb-color-surface-hover: var(--rb-setting-surface-hover-color, #354233);
+    --rb-color-ink: var(--rb-setting-ink-color, #edf0df);
+    --rb-color-muted: var(--rb-setting-muted-color, #b6bea9);
     --rb-color-accent: var(--rb-setting-accent-color, #afc77c);
-    --rb-color-link: #c4d99a;
-    --rb-color-focus: #d1e9a4;
-    --rb-color-selected: #4d643b;
-    --rb-color-border: #485544;
-    --rb-color-border-strong: #6a7861;
-    --rb-color-danger: #f09b85;
-    --rb-color-success: #91c99a;
-    --rb-color-code-background: #141b15;
-    --rb-color-code-ink: #edf0df;
-    --rb-color-code-inline: #34402f;
-    --rb-color-overlay: rgb(0 0 0 / 0.68);
+    --rb-color-link: var(--rb-setting-link-color, #c4d99a);
+    --rb-color-focus: var(--rb-setting-focus-color, #d1e9a4);
+    --rb-color-selected: var(--rb-setting-selected-color, #4d643b);
+    --rb-color-border: var(--rb-setting-border-color, #485544);
+    --rb-color-border-strong: var(--rb-setting-border-strong-color, #6a7861);
+    --rb-color-danger: var(--rb-setting-danger-color, #f09b85);
+    --rb-color-success: var(--rb-setting-success-color, #91c99a);
+    --rb-color-code-background: var(
+      --rb-setting-code-background-color,
+      #141b15
+    );
+    --rb-color-code-ink: var(--rb-setting-code-ink-color, #edf0df);
+    --rb-color-code-inline: var(--rb-setting-code-inline-color, #34402f);
+    --rb-color-overlay: var(--rb-setting-overlay-color, rgb(0 0 0 / 0.68));
   }
 
   @media (prefers-color-scheme: dark) {
     :is(:root, .rb-theme-root)[data-rb-theme="garden"]:not([data-rb-mode]) {
       color-scheme: dark;
-      --rb-color-paper: #1d251d;
-      --rb-color-surface: #283227;
-      --rb-color-surface-hover: #354233;
-      --rb-color-ink: #edf0df;
-      --rb-color-muted: #b6bea9;
+      --rb-color-paper: var(--rb-setting-paper-color, #1d251d);
+      --rb-color-surface: var(--rb-setting-surface-color, #283227);
+      --rb-color-surface-hover: var(--rb-setting-surface-hover-color, #354233);
+      --rb-color-ink: var(--rb-setting-ink-color, #edf0df);
+      --rb-color-muted: var(--rb-setting-muted-color, #b6bea9);
       --rb-color-accent: var(--rb-setting-accent-color, #afc77c);
-      --rb-color-link: #c4d99a;
-      --rb-color-focus: #d1e9a4;
-      --rb-color-selected: #4d643b;
-      --rb-color-border: #485544;
-      --rb-color-border-strong: #6a7861;
-      --rb-color-danger: #f09b85;
-      --rb-color-success: #91c99a;
-      --rb-color-code-background: #141b15;
-      --rb-color-code-ink: #edf0df;
-      --rb-color-code-inline: #34402f;
-      --rb-color-overlay: rgb(0 0 0 / 0.68);
+      --rb-color-link: var(--rb-setting-link-color, #c4d99a);
+      --rb-color-focus: var(--rb-setting-focus-color, #d1e9a4);
+      --rb-color-selected: var(--rb-setting-selected-color, #4d643b);
+      --rb-color-border: var(--rb-setting-border-color, #485544);
+      --rb-color-border-strong: var(--rb-setting-border-strong-color, #6a7861);
+      --rb-color-danger: var(--rb-setting-danger-color, #f09b85);
+      --rb-color-success: var(--rb-setting-success-color, #91c99a);
+      --rb-color-code-background: var(
+        --rb-setting-code-background-color,
+        #141b15
+      );
+      --rb-color-code-ink: var(--rb-setting-code-ink-color, #edf0df);
+      --rb-color-code-inline: var(--rb-setting-code-inline-color, #34402f);
+      --rb-color-overlay: var(--rb-setting-overlay-color, rgb(0 0 0 / 0.68));
     }
   }
 
@@ -128,7 +137,9 @@
   position: relative;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="garden"] .rb-article-header::after {
-  background: var(--rb-garden-sprig) center / contain no-repeat;
+  background-color: var(--rb-color-accent);
+  mask: var(--rb-garden-sprig) center / contain no-repeat;
+  -webkit-mask: var(--rb-garden-sprig) center / contain no-repeat;
   bottom: 0.9rem;
   content: "";
   height: 1.125rem;
@@ -159,7 +170,9 @@
 :is(:root, .rb-theme-root)[data-rb-theme="garden"]
   .rb-article-content
   h2::after {
-  background: var(--rb-garden-sprig) center / contain no-repeat;
+  background-color: var(--rb-color-accent);
+  mask: var(--rb-garden-sprig) center / contain no-repeat;
+  -webkit-mask: var(--rb-garden-sprig) center / contain no-repeat;
   content: "";
   display: inline-block;
   height: 0.8em;

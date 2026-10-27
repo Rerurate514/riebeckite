@@ -20,9 +20,9 @@ export const fieldnotesTheme = defineTheme({
       label: "Font size",
       description: "Article text size in rem.",
       default: 1.05,
-      min: 0.9375,
+      min: 0.95,
       max: 1.25,
-      step: 0.0625,
+      step: 0.05,
     },
     lineHeight: {
       type: "slider",

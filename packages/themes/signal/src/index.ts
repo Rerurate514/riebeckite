@@ -47,9 +47,9 @@ export const signalTheme = defineTheme({
       label: "Font size",
       description: "Article text size in rem.",
       default: 1.04,
-      min: 0.9375,
-      max: 1.25,
-      step: 0.0625,
+      min: 0.94,
+      max: 1.24,
+      step: 0.01,
     },
     lineHeight: {
       type: "slider",

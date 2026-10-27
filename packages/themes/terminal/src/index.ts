@@ -20,9 +20,9 @@ export const terminalTheme = defineTheme({
       label: "Font size",
       description: "Article text size in rem.",
       default: 0.95,
-      min: 0.875,
+      min: 0.85,
       max: 1.25,
-      step: 0.0625,
+      step: 0.05,
     },
     lineHeight: {
       type: "slider",

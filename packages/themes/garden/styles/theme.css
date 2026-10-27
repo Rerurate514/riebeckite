@@ -307,3 +307,222 @@
   h2::after {
   filter: var(--rb-garden-season-filter, none);
 }
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="summer"] {
+  --rb-color-paper: #f7f4e6;
+  --rb-color-surface: #fdfbf2;
+  --rb-color-surface-hover: #e6ecda;
+  --rb-color-ink: #243324;
+  --rb-color-muted: #66735f;
+  --rb-color-accent: #5a8a2f;
+  --rb-color-link: #4a7a24;
+  --rb-color-focus: #3a6e2e;
+  --rb-color-selected: #d6e8a8;
+  --rb-color-border: #d2d9c2;
+  --rb-color-border-strong: #a7b592;
+  --rb-color-danger: #a13d32;
+  --rb-color-success: #3f7a45;
+  --rb-color-code-background: #2a3a28;
+  --rb-color-code-ink: #eff4df;
+  --rb-color-code-inline: #e8ead4;
+  --rb-color-overlay: rgb(20 30 18 / 0.6);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="summer"][data-rb-mode="dark"] {
+  --rb-color-paper: #1a2418;
+  --rb-color-surface: #243020;
+  --rb-color-surface-hover: #2f3d2a;
+  --rb-color-ink: #edf2e4;
+  --rb-color-muted: #b4c0a8;
+  --rb-color-accent: #9ecf6a;
+  --rb-color-link: #b0da7a;
+  --rb-color-focus: #bfe68a;
+  --rb-color-selected: #3f5a2f;
+  --rb-color-border: #3f4e38;
+  --rb-color-border-strong: #5a6b4f;
+  --rb-color-danger: #f09b85;
+  --rb-color-success: #95d09a;
+  --rb-color-code-background: #141d13;
+  --rb-color-code-ink: #edf2e4;
+  --rb-color-code-inline: #30402a;
+  --rb-color-overlay: rgb(0 0 0 / 0.68);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-season="summer"]:not(
+    [data-rb-mode]
+  ) {
+    --rb-color-paper: #1a2418;
+    --rb-color-surface: #243020;
+    --rb-color-surface-hover: #2f3d2a;
+    --rb-color-ink: #edf2e4;
+    --rb-color-muted: #b4c0a8;
+    --rb-color-accent: #9ecf6a;
+    --rb-color-link: #b0da7a;
+    --rb-color-focus: #bfe68a;
+    --rb-color-selected: #3f5a2f;
+    --rb-color-border: #3f4e38;
+    --rb-color-border-strong: #5a6b4f;
+    --rb-color-danger: #f09b85;
+    --rb-color-success: #95d09a;
+    --rb-color-code-background: #141d13;
+    --rb-color-code-ink: #edf2e4;
+    --rb-color-code-inline: #30402a;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+  }
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="autumn"] {
+  --rb-color-paper: #f6efe2;
+  --rb-color-surface: #fcf6ea;
+  --rb-color-surface-hover: #eadfce;
+  --rb-color-ink: #2b241d;
+  --rb-color-muted: #7a6b5f;
+  --rb-color-accent: #8a5a2b;
+  --rb-color-link: #7a4a24;
+  --rb-color-focus: #6e4a24;
+  --rb-color-selected: #e6d3a8;
+  --rb-color-border: #d8cfc2;
+  --rb-color-border-strong: #b8a89a;
+  --rb-color-danger: #a13d32;
+  --rb-color-success: #5a7a45;
+  --rb-color-code-background: #2f2a24;
+  --rb-color-code-ink: #f0eade;
+  --rb-color-code-inline: #e8e0d4;
+  --rb-color-overlay: rgb(30 24 18 / 0.6);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="autumn"][data-rb-mode="dark"] {
+  --rb-color-paper: #241f1a;
+  --rb-color-surface: #302820;
+  --rb-color-surface-hover: #3d3228;
+  --rb-color-ink: #f0e6d8;
+  --rb-color-muted: #c4b6a4;
+  --rb-color-accent: #d9a066;
+  --rb-color-link: #e0ad78;
+  --rb-color-focus: #e8b880;
+  --rb-color-selected: #5a4328;
+  --rb-color-border: #4a3f34;
+  --rb-color-border-strong: #6a5a48;
+  --rb-color-danger: #f09b85;
+  --rb-color-success: #9ac99a;
+  --rb-color-code-background: #1a1510;
+  --rb-color-code-ink: #f0e6d8;
+  --rb-color-code-inline: #3a3028;
+  --rb-color-overlay: rgb(0 0 0 / 0.68);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-season="autumn"]:not(
+    [data-rb-mode]
+  ) {
+    --rb-color-paper: #241f1a;
+    --rb-color-surface: #302820;
+    --rb-color-surface-hover: #3d3228;
+    --rb-color-ink: #f0e6d8;
+    --rb-color-muted: #c4b6a4;
+    --rb-color-accent: #d9a066;
+    --rb-color-link: #e0ad78;
+    --rb-color-focus: #e8b880;
+    --rb-color-selected: #5a4328;
+    --rb-color-border: #4a3f34;
+    --rb-color-border-strong: #6a5a48;
+    --rb-color-danger: #f09b85;
+    --rb-color-success: #9ac99a;
+    --rb-color-code-background: #1a1510;
+    --rb-color-code-ink: #f0e6d8;
+    --rb-color-code-inline: #3a3028;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+  }
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="winter"] {
+  --rb-color-paper: #f0f2f5;
+  --rb-color-surface: #f6f8fa;
+  --rb-color-surface-hover: #e3e7ec;
+  --rb-color-ink: #1f2630;
+  --rb-color-muted: #6b7280;
+  --rb-color-accent: #3a5a6b;
+  --rb-color-link: #2f4a5a;
+  --rb-color-focus: #2f4f60;
+  --rb-color-selected: #cfdce6;
+  --rb-color-border: #d0d6de;
+  --rb-color-border-strong: #a8b2be;
+  --rb-color-danger: #a13d32;
+  --rb-color-success: #3a7a6b;
+  --rb-color-code-background: #1f2630;
+  --rb-color-code-ink: #eaf0f5;
+  --rb-color-code-inline: #dfe5ec;
+  --rb-color-overlay: rgb(10 15 25 / 0.6);
+}
+
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="garden"][data-rb-setting-season="winter"][data-rb-mode="dark"] {
+  --rb-color-paper: #1a1f26;
+  --rb-color-surface: #222831;
+  --rb-color-surface-hover: #2c343f;
+  --rb-color-ink: #e6ecf2;
+  --rb-color-muted: #a8b2be;
+  --rb-color-accent: #7fa0b4;
+  --rb-color-link: #8fb0c4;
+  --rb-color-focus: #9fc0d4;
+  --rb-color-selected: #2f3f4f;
+  --rb-color-border: #3a424d;
+  --rb-color-border-strong: #5a6470;
+  --rb-color-danger: #f09b85;
+  --rb-color-success: #8ac9b4;
+  --rb-color-code-background: #12161c;
+  --rb-color-code-ink: #e6ecf2;
+  --rb-color-code-inline: #2a323c;
+  --rb-color-overlay: rgb(0 0 0 / 0.68);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="garden"][data-rb-setting-season="winter"]:not(
+    [data-rb-mode]
+  ) {
+    --rb-color-paper: #1a1f26;
+    --rb-color-surface: #222831;
+    --rb-color-surface-hover: #2c343f;
+    --rb-color-ink: #e6ecf2;
+    --rb-color-muted: #a8b2be;
+    --rb-color-accent: #7fa0b4;
+    --rb-color-link: #8fb0c4;
+    --rb-color-focus: #9fc0d4;
+    --rb-color-selected: #2f3f4f;
+    --rb-color-border: #3a424d;
+    --rb-color-border-strong: #5a6470;
+    --rb-color-danger: #f09b85;
+    --rb-color-success: #8ac9b4;
+    --rb-color-code-background: #12161c;
+    --rb-color-code-ink: #e6ecf2;
+    --rb-color-code-inline: #2a323c;
+    --rb-color-overlay: rgb(0 0 0 / 0.68);
+  }
+}

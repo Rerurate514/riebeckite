@@ -68,21 +68,22 @@ test("keeps details state when a SPA page replaces the navigation", async (t) =>
           };
         }
       ).SidebarNavigationClient;
-      const initialCleanup = client.initSidebarNavigation({ root: document });
+      const cleanup = client.initSidebarNavigation({ root: document });
       const details = document.querySelector<HTMLDetailsElement>(
         ".rb-sidebar-navigation__details",
       );
       if (!details) throw new Error("missing details");
       details.open = false;
       details.dispatchEvent(new Event("toggle"));
-      initialCleanup();
       const main = document.querySelector("#main-content");
       if (!main) throw new Error("missing main content");
       main.outerHTML = `<main id="main-content">${nextPage}</main>`;
-      client.initSidebarNavigation({ root: document });
-      return document.querySelector<HTMLDetailsElement>(
+      document.dispatchEvent(new Event("spa:navigation"));
+      const open = document.querySelector<HTMLDetailsElement>(
         ".rb-sidebar-navigation__details",
       )?.open;
+      cleanup();
+      return open;
     }, html);
     assert.equal(open, false);
   } finally {

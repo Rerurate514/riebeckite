@@ -39,9 +39,8 @@ export function initAnalytics({
 
   sendPageView();
   if (typeof document.addEventListener !== "function") return;
-  document.addEventListener("riebeckite:navigation", sendPageView);
-  return () =>
-    document.removeEventListener("riebeckite:navigation", sendPageView);
+  document.addEventListener("spa:navigation", sendPageView);
+  return () => document.removeEventListener("spa:navigation", sendPageView);
 }
 
 async function sendAnalyticsEvent(

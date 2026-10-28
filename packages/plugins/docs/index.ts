@@ -46,7 +46,7 @@ export function docs(options: DocsOptions) {
         "@riebeckite/plugin-docs/client",
         "initDocsSidebar",
         undefined,
-        undefined,
+        "app",
         "context",
       ),
     ],

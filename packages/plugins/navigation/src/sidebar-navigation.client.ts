@@ -1,15 +1,35 @@
 type ClientContext = { root?: ParentNode };
 
 const expandedState = new Map<string, Map<string, boolean>>();
+const initializers = new WeakMap<ParentNode, () => void>();
 
 export function initSidebarNavigation(context: ClientContext = {}) {
   const root = context.root ?? document;
-  const cleanups = Array.from(
-    root.querySelectorAll<HTMLElement>("[data-sidebar-navigation]"),
-  ).map(init);
-  return () => {
+  const initialized = initializers.get(root);
+  if (initialized) return () => {};
+
+  let cleanups: Array<() => void> = [];
+  const initialize = () => {
     for (const cleanup of cleanups) cleanup();
+    cleanups = Array.from(
+      root.querySelectorAll<HTMLElement>("[data-sidebar-navigation]"),
+    ).map(init);
   };
+  initialize();
+  if (root === document) {
+    document.addEventListener("spa:navigation", initialize);
+  }
+
+  const dispose = () => {
+    if (initializers.get(root) !== dispose) return;
+    if (root === document) {
+      document.removeEventListener("spa:navigation", initialize);
+    }
+    for (const cleanup of cleanups) cleanup();
+    initializers.delete(root);
+  };
+  initializers.set(root, dispose);
+  return dispose;
 }
 
 function init(navigation: HTMLElement): () => void {

@@ -14,6 +14,8 @@ export type SpaNavigationEventDetail = {
   popstate: boolean;
 };
 
+export const SPA_NAVIGATION_EVENT = "spa:navigation";
+
 export type SpaNavigationOptions = SpaOptions & {
   onBeforePageCommit?: (signal: AbortSignal) => void | Promise<void>;
   onPageCommit?: SpaPageCommit;

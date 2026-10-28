@@ -5,7 +5,7 @@ let listening = false;
 export function initShellDrawers(): void {
   if (!listening) {
     listening = true;
-    document.addEventListener("riebeckite:navigation", initShellDrawers);
+    document.addEventListener("spa:navigation", initShellDrawers);
   }
   for (const drawer of document.querySelectorAll<HTMLElement>(
     "[data-rb-shell-drawer]",
@@ -74,7 +74,7 @@ export function initShellDrawers(): void {
         setOpen(false);
       }
     });
-    document.addEventListener("riebeckite:navigation", () => setOpen(false));
+    document.addEventListener("spa:navigation", () => setOpen(false));
     panel.addEventListener("click", (event) => {
       if ((event.target as Element | null)?.closest("a[href]")) setOpen(false);
     });

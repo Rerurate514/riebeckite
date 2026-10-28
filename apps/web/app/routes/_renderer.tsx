@@ -113,25 +113,29 @@ export default jsxRenderer(async ({ children }, c) => {
               <SiteShell>
                 <ShellHeader sticky>
                   <ShellContainer>
-                    <SiteHeader>
-                      <SearchBar class="rr-search-bar--header" />
-                      <ColorModeToggle />
-                      <ShellDrawer label="Menu" icon="menu">
-                        <SiteDrawerNavigation />
-                        <DocsSidebar />
-                      </ShellDrawer>
-                    </SiteHeader>
+                    <div data-spa-region="site-header">
+                      <SiteHeader>
+                        <ColorModeToggle />
+                        <SearchBar class="rr-search-bar--header" />
+                        <ShellDrawer label="Menu" icon="menu">
+                          <SiteDrawerNavigation />
+                          <DocsSidebar />
+                        </ShellDrawer>
+                      </SiteHeader>
+                    </div>
                   </ShellContainer>
                 </ShellHeader>
                 <ShellBody>
                   <ShellSidebar>
-                    <DocsSidebar />
+                    <div data-spa-region="docs-navigation">
+                      <DocsSidebar />
+                    </div>
                   </ShellSidebar>
                   <ShellMain id="main-content" tabindex={-1}>
                     <ContentContainer>{children}</ContentContainer>
                   </ShellMain>
                   <ShellAside>
-                    <div data-riebeckite-spa-region="toc">
+                    <div data-spa-region="toc">
                       <TableOfContents
                         className="rr-table-of-contents--desktop"
                         items={tocItems}
@@ -140,21 +144,27 @@ export default jsxRenderer(async ({ children }, c) => {
                   </ShellAside>
                 </ShellBody>
               </SiteShell>
-              <SiteFooter />
+              <div data-spa-region="site-footer">
+                <SiteFooter />
+              </div>
             </>
           ) : (
             <>
-              <SiteHeader>
-                <SearchBar class="rr-search-bar--header" />
-                <ColorModeToggle />
-                <ShellDrawer label="Menu" icon="menu">
-                  <SiteDrawerNavigation />
-                </ShellDrawer>
-              </SiteHeader>
+              <div data-spa-region="site-header">
+                <SiteHeader>
+                  <SearchBar class="rr-search-bar--header" />
+                  <ColorModeToggle />
+                  <ShellDrawer label="Menu" icon="menu">
+                    <SiteDrawerNavigation />
+                  </ShellDrawer>
+                </SiteHeader>
+              </div>
               <main id="main-content" tabindex={-1}>
                 {children}
               </main>
-              <SiteFooter />
+              <div data-spa-region="site-footer">
+                <SiteFooter />
+              </div>
             </>
           )}
         </body>

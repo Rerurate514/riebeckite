@@ -72,6 +72,7 @@ type SpaState = {
   abortedBefore: boolean;
   abortedAfter: boolean;
   activeElement: string;
+  navigations: Array<{ url: string; popstate: boolean }>;
 };
 
 async function spaState(page: Page): Promise<SpaState> {
@@ -83,6 +84,7 @@ async function spaState(page: Page): Promise<SpaState> {
       __abortedBeforeCommit?: boolean;
       __abortedAfterCommit?: boolean;
       headScriptRuns?: number;
+      __spaNavigations?: Array<{ url: string; popstate: boolean }>;
     };
     return {
       path: window.location.pathname,
@@ -94,6 +96,7 @@ async function spaState(page: Page): Promise<SpaState> {
       abortedBefore: spa.__abortedBeforeCommit ?? false,
       abortedAfter: spa.__abortedAfterCommit ?? false,
       activeElement: document.activeElement?.id ?? "",
+      navigations: spa.__spaNavigations ?? [],
     };
   });
 }
@@ -101,6 +104,17 @@ async function spaState(page: Page): Promise<SpaState> {
 test("only the latest navigation commits, updates head, and owns history", async () => {
   const { page, errors } = await open();
   try {
+    await page.evaluate(() => {
+      const spa = window as Window & {
+        __spaNavigations?: Array<{ url: string; popstate: boolean }>;
+      };
+      spa.__spaNavigations = [];
+      document.addEventListener("spa:navigation", (event) => {
+        spa.__spaNavigations?.push(
+          (event as CustomEvent<{ url: string; popstate: boolean }>).detail,
+        );
+      });
+    });
     await page.evaluate(() => window.scrollTo(0, 400));
     await new Promise((resolve) => setTimeout(resolve, 150));
     await page.evaluate(() => {
@@ -125,6 +139,9 @@ test("only the latest navigation commits, updates head, and owns history", async
     assert.equal(state.abortedBefore, false);
     assert.equal(state.abortedAfter, false);
     assert.equal(state.activeElement, "main-content");
+    assert.deepEqual(state.navigations, [
+      { url: `${fixture.url}/c-fast`, popstate: false },
+    ]);
 
     const head = await page.evaluate(() => ({
       descriptions: document.querySelectorAll('meta[name="description"]')
@@ -148,8 +165,7 @@ test("only the latest navigation commits, updates head, and owns history", async
       stylesheets: document.querySelectorAll('link[rel="stylesheet"]').length,
       shell: document.querySelectorAll('[data-shell-marker="preserved"]')
         .length,
-      toc: document.querySelector('[data-riebeckite-spa-region="toc"]')
-        ?.textContent,
+      toc: document.querySelector('[data-spa-region="toc"]')?.textContent,
       skipLink: document.querySelectorAll(".skip-link").length,
     }));
     assert.equal(head.descriptions, 1);

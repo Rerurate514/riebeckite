@@ -114,13 +114,10 @@ test("browser initializer sends one stable-ID page view with contextual metadata
         documentElement,
         querySelector: () => ({ getAttribute: () => "guide-1" }),
         addEventListener: (type: string, listener: () => void) => {
-          if (type === "riebeckite:navigation") navigationListener = listener;
+          if (type === "spa:navigation") navigationListener = listener;
         },
         removeEventListener: (type: string, listener: () => void) => {
-          if (
-            type === "riebeckite:navigation" &&
-            navigationListener === listener
-          ) {
+          if (type === "spa:navigation" && navigationListener === listener) {
             navigationListener = undefined;
           }
         },

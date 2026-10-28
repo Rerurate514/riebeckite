@@ -218,7 +218,7 @@ async function measureBrowser(
             performance.mark("benchmark-main-ready");
           }
         });
-        document.addEventListener("riebeckite:navigation", () =>
+        document.addEventListener("spa:navigation", () =>
           performance.mark("benchmark-spa-complete"),
         );
       });
@@ -283,7 +283,7 @@ async function measureBrowser(
     for (const count of [0, 10, 25, 50]) {
       const page = await browser.newPage();
       await page.evaluateOnNewDocument(() => {
-        document.addEventListener("riebeckite:navigation", () =>
+        document.addEventListener("spa:navigation", () =>
           performance.mark("benchmark-spa-complete"),
         );
       });

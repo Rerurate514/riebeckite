@@ -27,10 +27,10 @@ export function initSourceFiles() {
   };
 
   window.addEventListener("hashchange", updateLineTarget);
-  document.addEventListener("riebeckite:navigation", updateLineTarget);
+  document.addEventListener("spa:navigation", updateLineTarget);
   updateLineTarget();
   return () => {
     window.removeEventListener("hashchange", updateLineTarget);
-    document.removeEventListener("riebeckite:navigation", updateLineTarget);
+    document.removeEventListener("spa:navigation", updateLineTarget);
   };
 }

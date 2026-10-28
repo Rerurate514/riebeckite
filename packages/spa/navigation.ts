@@ -5,6 +5,7 @@ import {
   reconcileDocument,
 } from "./document.js";
 import {
+  SPA_NAVIGATION_EVENT,
   type SpaNavigationEventDetail,
   type SpaNavigationOptions,
   type SpaOptions,
@@ -194,7 +195,7 @@ class SpaNavigation {
       focusHashTarget(page.url);
       announceNavigation();
       document.dispatchEvent(
-        new CustomEvent<SpaNavigationEventDetail>("riebeckite:navigation", {
+        new CustomEvent<SpaNavigationEventDetail>(SPA_NAVIGATION_EVENT, {
           detail: { url: page.url.href, popstate },
         }),
       );
@@ -247,12 +248,12 @@ class SpaNavigation {
 
 function reconcilePageRegions(page: Document): void {
   for (const current of document.querySelectorAll<HTMLElement>(
-    "[data-riebeckite-spa-region]",
+    "[data-spa-region]",
   )) {
-    const name = current.dataset.riebeckiteSpaRegion;
+    const name = current.dataset.spaRegion;
     if (!name) continue;
     const next = page.querySelector<HTMLElement>(
-      `[data-riebeckite-spa-region="${CSS.escape(name)}"]`,
+      `[data-spa-region="${CSS.escape(name)}"]`,
     );
     if (next) current.replaceWith(next);
   }

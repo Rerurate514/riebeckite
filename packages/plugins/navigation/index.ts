@@ -42,7 +42,7 @@ export function navigation(options: NavigationOptions = {}) {
         "@riebeckite/plugin-navigation/client",
         "initSidebarNavigation",
         undefined,
-        undefined,
+        "app",
         "context",
       ),
     ],

@@ -224,6 +224,14 @@ export function getThemeDocsHref(name: string, locale: WebLocale): string {
   return `${prefix}/docs/themes/${theme}`;
 }
 
+export function getThemeIdForDocsSlug(slug: string): string | undefined {
+  const name = slug.replace(/^ja\//, "").replace(/^docs\/themes\//, "");
+  const themeId = name === "default" ? "riebeckite" : name;
+  return showcaseThemes.some((theme) => theme.name === themeId)
+    ? themeId
+    : undefined;
+}
+
 export const showcaseFixtures: readonly PreviewFixture[] = [
   {
     id: "article",

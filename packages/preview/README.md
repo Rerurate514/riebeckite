@@ -115,6 +115,7 @@ updates the iframe document without rerunning Markdown rendering. `light`,
 - `parsePreviewRequest(request, registry)` reads and validates a size-bounded JSON request.
 - `createPreviewDocument(options)` creates a CSP-restricted iframe document from sanitized HTML and trusted host styles.
 - `@riebeckite/preview/ui` exports `createPreviewUiController(options)` for request state, `createPreviewSessionTransport(session)` for local rendering, and `mountPreview(root, options)` for one preview root. Each returns a disposal path where applicable.
+- `mountThemePreview(root, options)` builds on `mountPreview` with host-supplied theme schemas, styles, fixtures, settings controls, viewport controls, reset, and configuration output. It does not include official themes or CSS.
 - `initPluginPreviews(options)` remains a legacy DOM-discovery helper and now returns a disposer for its observer and mounted roots.
 - `PreviewSession.render(input)` returns sanitized HTML and diagnostics.
 - `PreviewSession.dispose()` disposes the underlying plugin runtime.

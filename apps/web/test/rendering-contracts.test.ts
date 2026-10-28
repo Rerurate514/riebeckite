@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
+import {
+  getThemeIdForDocsSlug,
+  showcaseThemes,
+} from "../app/lib/theme-showcase";
 
 function read(relativePath: string): string {
   return readFileSync(new URL(relativePath, import.meta.url), "utf8");
@@ -388,17 +392,30 @@ test("P2-A2: the portaled hover preview keeps document-global dark behavior", ()
   );
 });
 
-test("P2-A2: the theme gallery uses the isolated interactive preview", () => {
+test("P2-A2: gallery and theme documentation use the isolated interactive preview", () => {
   const showcase = read("../app/components/theme-showcase.tsx");
+  const preview = read("../app/components/theme-preview.tsx");
   const contentRoute = read("../app/routes/[slug{.+}].tsx");
   const client = read("../app/theme-showcase-client.ts");
-  assert.match(showcase, /data-plugin-preview/);
-  assert.match(showcase, /data-preview-frame/);
-  assert.match(showcase, /sandbox=""/);
+  assert.match(showcase, /<ThemePreview/);
+  assert.match(preview, /data-plugin-preview/);
+  assert.match(preview, /data-preview-frame/);
+  assert.match(preview, /sandbox=""/);
   assert.match(contentRoute, /if \(response\.status === 404\) return next\(\)/);
+  assert.match(contentRoute, /<ThemeDocumentationPreview/);
+  assert.match(contentRoute, /beforeContent=/);
   assert.match(client, /createPreviewSessionTransport/);
-  assert.match(client, /mountPreview/);
-  assert.match(client, /setting\.type === "slider"\s*\? "range"/);
+  assert.match(client, /mountThemePreview/);
+  assert.match(client, /inlinePreviewFont/);
+});
+
+test("P2-A2: every official theme documentation slug mounts its theme preview", () => {
+  for (const theme of showcaseThemes) {
+    const slug = theme.name === "riebeckite" ? "default" : theme.name;
+    assert.equal(getThemeIdForDocsSlug(`docs/themes/${slug}`), theme.name);
+    assert.equal(getThemeIdForDocsSlug(`ja/docs/themes/${slug}`), theme.name);
+  }
+  assert.equal(getThemeIdForDocsSlug("docs/themes/unknown"), undefined);
 });
 
 test("Default exposes color and width settings through semantic tokens", () => {

@@ -1,29 +1,10 @@
 import type { WebLocale } from "../lib/locale";
-import {
-  getShowcaseFixtures,
-  getShowcaseThemes,
-  getThemeDocsHref,
-} from "../lib/theme-showcase";
+import { getShowcaseThemes, getThemeDocsHref } from "../lib/theme-showcase";
+import { ThemePreview } from "./theme-preview";
 
 export function ThemeShowcase({ locale }: { locale: WebLocale }) {
   const themes = getShowcaseThemes(locale);
-  const fixtures = getShowcaseFixtures(locale);
   const japanese = locale === "ja";
-  const serializedFixtures = JSON.stringify(
-    Object.fromEntries(
-      fixtures.map((fixture) => [fixture.id, fixture.markdown]),
-    ),
-  );
-  const serializedPages = JSON.stringify(
-    Object.fromEntries(
-      fixtures
-        .filter((fixture) => fixture.pages)
-        .map((fixture) => [
-          fixture.id,
-          { currentPageId: fixture.currentPageId, pages: fixture.pages },
-        ]),
-    ),
-  );
   return (
     <div
       class="theme-showcase"
@@ -62,124 +43,14 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
             ? "このプレビューにはプラグインが反映されないため、画像やコードブロックなどの表示は本番サイトと若干異なる場合があります。"
             : "Plugins are not applied in this preview, so images, code blocks, and other content may look slightly different on your published site."}
         </p>
-        <div
-          class="theme-showcase__workspace"
-          data-plugin-preview
-          data-preview-plugin="theme-showcase"
-          data-preview-fixtures={serializedFixtures}
-          data-preview-pages={serializedPages}
-        >
-          <output data-preview-status aria-live="polite">
-            {japanese ? "プレビューを準備中" : "Preparing preview"}
-          </output>
-          <div class="theme-showcase__controls">
-            <div class="theme-showcase__toolbar">
-              <label class="theme-showcase__control">
-                <span class="theme-showcase__control-label">
-                  {japanese ? "テーマ" : "Theme"}
-                </span>
-                <select data-preview-theme>
-                  {themes.map((theme) => (
-                    <option value={theme.name} key={theme.name}>
-                      {theme.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label class="theme-showcase__control">
-                <span class="theme-showcase__control-label">
-                  {japanese ? "カラーモード" : "Color mode"}
-                </span>
-                <select data-preview-mode>
-                  <option value="light">{japanese ? "ライト" : "Light"}</option>
-                  <option value="dark">{japanese ? "ダーク" : "Dark"}</option>
-                  <option value="system" selected>
-                    {japanese ? "システム" : "System"}
-                  </option>
-                </select>
-              </label>
-              <label class="theme-showcase__control">
-                <span class="theme-showcase__control-label">
-                  {japanese ? "サンプル" : "Sample"}
-                </span>
-                <select data-preview-fixture>
-                  {fixtures.map((fixture) => (
-                    <option value={fixture.id} key={fixture.id}>
-                      {fixture.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label hidden>
-                {japanese ? "ページ" : "Page"}
-                <select data-preview-page />
-              </label>
-              <fieldset class="theme-showcase__devices">
-                <legend>{japanese ? "表示幅" : "Viewport"}</legend>
-                <div class="theme-showcase__segmented">
-                  <button
-                    type="button"
-                    data-preview-device="desktop"
-                    aria-pressed="true"
-                  >
-                    {japanese ? "デスクトップ" : "Desktop"}
-                  </button>
-                  <button
-                    type="button"
-                    data-preview-device="tablet"
-                    aria-pressed="false"
-                  >
-                    {japanese ? "タブレット" : "Tablet"}
-                  </button>
-                  <button
-                    type="button"
-                    data-preview-device="mobile"
-                    aria-pressed="false"
-                  >
-                    {japanese ? "モバイル" : "Mobile"}
-                  </button>
-                </div>
-              </fieldset>
-              <button
-                class="theme-showcase__reset"
-                type="button"
-                data-preview-reset
-              >
-                {japanese ? "プレビューをリセット" : "Reset preview"}
-              </button>
-            </div>
-            <div class="theme-showcase__settings">
-              <p class="theme-showcase__eyebrow">
-                {japanese ? "テーマ設定" : "Theme settings"}
-              </p>
-              <div
-                class="theme-showcase__settings-grid"
-                data-preview-theme-settings
-              />
-            </div>
-          </div>
-          <textarea data-preview-markdown hidden>
-            {fixtures[0].markdown}
-          </textarea>
-          <div
-            class="theme-showcase__frame-wrap"
-            data-preview-viewport="desktop"
-          >
-            <iframe
-              data-preview-frame
-              title={japanese ? "テーマプレビュー" : "Theme preview"}
-              sandbox=""
-            />
-          </div>
-          <ul
-            class="theme-showcase__diagnostics"
-            data-preview-diagnostics
-            aria-live="polite"
-          />
-        </div>
+        <ThemePreview locale={locale} mode="gallery" />
       </section>
 
-      <section class="theme-showcase__detail" aria-labelledby="detail-title">
+      <section
+        class="theme-showcase__detail"
+        data-preview-configuration
+        aria-labelledby="detail-title"
+      >
         <p class="theme-showcase__eyebrow">
           {japanese ? "選択中のテーマ" : "Selected theme"}
         </p>
@@ -199,7 +70,14 @@ export function ThemeShowcase({ locale }: { locale: WebLocale }) {
         <pre>
           <code data-theme-detail-code />
         </pre>
-        <button type="button" data-theme-copy>
+        <button
+          type="button"
+          data-theme-copy
+          data-preview-copy-success={japanese ? "コピーしました" : "Copied"}
+          data-preview-copy-failure={
+            japanese ? "コピーできませんでした" : "Copy failed"
+          }
+        >
           {japanese ? "設定をコピー" : "Copy configuration"}
         </button>
       </section>

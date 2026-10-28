@@ -8,6 +8,11 @@ import {
 } from "./src/ui-controller.js";
 
 export {
+  mountThemePreview,
+  type ThemePreviewOptions,
+  type ThemePreviewTheme,
+} from "./src/theme-preview.js";
+export {
   type CreatePreviewUiControllerOptions,
   createPreviewSessionTransport,
   createPreviewUiController,

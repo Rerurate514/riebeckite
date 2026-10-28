@@ -98,6 +98,7 @@ await session.dispose();
 - `parsePreviewRequest(request, registry)`：サイズを制限した JSON リクエストを読み取り、検証します。
 - `createPreviewDocument(options)`：サニタイズ済み HTML と信頼済みホスト CSS から、CSP 制限付き iframe 文書を作成します。
 - `@riebeckite/preview/ui` の `createPreviewUiController(options)` はリクエスト状態を、`createPreviewSessionTransport(session)` はローカル描画を、`mountPreview(root, options)` は単一 Preview Root の DOM 更新を担当します。必要に応じて dispose してください。
+- `mountThemePreview(root, options)` は `mountPreview` を基盤に、ホストから渡したテーマスキーマ、CSS、fixture を使って、テーマ設定、表示幅、リセット、設定コード出力を担当します。公式テーマや CSS は含みません。
 - `initPluginPreviews(options)` は既存互換の DOM 検出ヘルパーです。Observer と mount 済み root を破棄する disposer を返します。
 - `PreviewSession.render(input)`：サニタイズ済み HTML と診断を返します。
 - `PreviewSession.dispose()`：内部のプラグインランタイムを破棄します。

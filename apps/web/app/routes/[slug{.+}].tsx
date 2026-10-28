@@ -22,10 +22,12 @@ import { ArticleWebmentionSection } from "@riebeckite/plugin-webmention";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
 import HomePage from "../components/home/home";
+import { ThemeDocumentationPreview } from "../components/theme-preview";
 import { getArticleTitle } from "../lib/article-title";
 import { renderHomeRuntime } from "../lib/home-runtime";
 import { resolveWebLocale } from "../lib/locale";
 import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
+import { getThemeIdForDocsSlug } from "../lib/theme-showcase";
 
 export default createRoute(
   contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
@@ -74,6 +76,8 @@ export default createRoute(
 
     const slug = resolved.entry.slug;
     const entry = resolved.entry;
+    const locale = resolveWebLocale(getEntryLanguage(entry));
+    const themeId = getThemeIdForDocsSlug(slug);
 
     c.set(
       "seo",
@@ -97,6 +101,11 @@ export default createRoute(
           </>
         }
         metadataContent={<Properties />}
+        beforeContent={
+          themeId ? (
+            <ThemeDocumentationPreview locale={locale} themeId={themeId} />
+          ) : undefined
+        }
         asideContent={<TableOfContents placement="desktop-rail" />}
         articleAside={<DocsSidebar placement="article-rail" />}
         footerContent={

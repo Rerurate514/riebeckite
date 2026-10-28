@@ -42,6 +42,28 @@ body:has(.theme-showcase) main {
 .theme-showcase__gallery {
   margin-block-start: var(--rb-space-7);
 }
+.theme-documentation-preview {
+  width: 100%;
+  margin-block: var(--rb-space-6);
+}
+:where(.theme-documentation-preview) .theme-showcase__toolbar {
+  grid-template-columns: minmax(8rem, 0.85fr) minmax(10rem, 1fr) auto auto;
+}
+.theme-documentation-preview__configuration {
+  display: grid;
+  gap: var(--rb-space-2);
+  margin-block-start: var(--rb-space-3);
+}
+.theme-documentation-preview__configuration pre {
+  overflow: auto;
+  margin: 0;
+  padding: var(--rb-space-3);
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface);
+}
+.theme-documentation-preview__configuration button {
+  justify-self: start;
+}
 .theme-showcase__section-heading {
   display: flex;
   align-items: end;

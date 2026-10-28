@@ -1,7 +1,6 @@
 import { initRiebeckiteClient } from "virtual:riebeckite/client";
 import { createClient } from "honox/client";
 
-let themeShowcaseRoot: globalThis.HTMLElement | null = null;
 let themeShowcaseModule:
   | Promise<typeof import("./theme-showcase-client")>
   | undefined;
@@ -24,13 +23,7 @@ function initPage() {
 }
 
 function mountThemeShowcase(): void {
-  const root = document.querySelector<globalThis.HTMLElement>(
-    "[data-theme-showcase]",
-  );
-  if (!root || root === themeShowcaseRoot) return;
-  themeShowcaseRoot = root;
+  if (!document.querySelector("[data-plugin-preview]")) return;
   themeShowcaseModule ??= import("./theme-showcase-client");
-  void themeShowcaseModule.then(({ initThemeShowcase }) => {
-    if (root.isConnected) initThemeShowcase();
-  });
+  void themeShowcaseModule.then(({ initThemeShowcase }) => initThemeShowcase());
 }

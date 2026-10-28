@@ -108,15 +108,8 @@
   }
 
   .rr-search-bar--header .rr-search-bar__trigger {
-    min-width: 2.75rem;
     min-height: 2.75rem;
-    padding: 0.5rem;
-    justify-content: center;
-  }
-
-  .rr-search-bar--header .rr-search-bar__label,
-  .rr-search-bar--header .rr-search-bar__key {
-    display: none;
+    min-width: 15rem;
   }
 
   .rr-search-modal {
@@ -290,6 +283,14 @@
 
     .rr-search-bar--header .rr-search-bar__trigger {
       width: 2.75rem;
+      min-width: 2.75rem;
+      padding: 0.5rem;
+      justify-content: center;
+    }
+
+    .rr-search-bar--header .rr-search-bar__label,
+    .rr-search-bar--header .rr-search-bar__key {
+      display: none;
     }
 
     .rr-search-bar__key {

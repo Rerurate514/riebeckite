@@ -21,8 +21,8 @@
 
   .rr-color-mode--floating {
     position: fixed;
-    inset-inline-start: 1.5rem;
-    inset-block-end: 1.5rem;
+    inset-inline-start: max(1.5rem, env(safe-area-inset-left));
+    inset-block-end: max(1.5rem, env(safe-area-inset-bottom));
     z-index: 50;
     background: var(--rr-color-mode-surface);
     box-shadow: 0 2px 12px
@@ -95,9 +95,19 @@
   }
 
   @media (max-width: 48rem) {
+    html[data-rb-color-mode="ready"] .rr-color-mode--inline {
+      display: none;
+    }
+
     .rr-color-mode__button {
       width: 2.5rem;
       height: 2.5rem;
+    }
+  }
+
+  @media (min-width: 48.001rem) {
+    html[data-rb-color-mode="ready"] .rr-color-mode--floating {
+      display: none;
     }
   }
 

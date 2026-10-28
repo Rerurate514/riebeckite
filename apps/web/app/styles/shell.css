@@ -27,6 +27,7 @@
 
   .rb-shell {
     --rb-shell-header-height: var(--rb-site-header-height);
+    --rb-shell-max-width: 96rem;
   }
 
   .rb-site-header,
@@ -90,6 +91,7 @@
 
   .rb-shell .rb-site-header {
     flex: 1;
+    width: 100%;
     min-width: 0;
   }
 

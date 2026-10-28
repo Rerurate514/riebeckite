@@ -115,6 +115,7 @@ export default jsxRenderer(async ({ children }, c) => {
                   <ShellContainer>
                     <SiteHeader>
                       <SearchBar class="rr-search-bar--header" />
+                      <ColorModeToggle />
                       <ShellDrawer label="Menu" icon="menu">
                         <SiteDrawerNavigation />
                         <DocsSidebar />
@@ -145,6 +146,7 @@ export default jsxRenderer(async ({ children }, c) => {
             <>
               <SiteHeader>
                 <SearchBar class="rr-search-bar--header" />
+                <ColorModeToggle />
                 <ShellDrawer label="Menu" icon="menu">
                   <SiteDrawerNavigation />
                 </ShellDrawer>

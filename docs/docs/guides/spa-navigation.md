@@ -53,13 +53,14 @@ Omit `spa` or set `spa: false` to keep normal browser navigation.
 When an eligible link is clicked, Riebeckite:
 
 - fetches the next HTML document without leaving the current page
-- replaces `<main id="main-content">` with the fetched page's main element
+- replaces `<main id="main-content">` and matching `data-spa-region` elements
+  with the fetched page's output
 - updates the document title, language, direction, and page-specific metadata
 - hydrates islands in the new page content
 - updates history, restores scroll, moves focus to the page content, and
   announces the new page to assistive technology
 
-The application shell outside the main element is not re-rendered. Global
+Unmarked application shell outside the main element is not re-rendered. Global
 styles and global scripts stay loaded.
 
 ## Which links use SPA navigation
@@ -93,9 +94,20 @@ Every page must render one main element with the exact ID `main-content`:
 <SiteFooter />
 ```
 
-Keep the header, footer, and other persistent UI outside this element. If the
-current or fetched page has no `main#main-content`, the transition fails and
-Riebeckite falls back to a normal document navigation.
+Keep persistent UI outside this element. When shell output depends on the URL,
+language, or page data, put it in a named region on every route that can
+navigate between it:
+
+```tsx
+<header data-spa-region="site-header"><SiteHeader /></header>
+<main id="main-content" tabindex={-1}>{children}</main>
+<footer data-spa-region="site-footer"><SiteFooter /></footer>
+```
+
+Region names must be unique in a document and present in both the current and
+fetched page. Regions are replaced before `main`; unmarked shell UI persists.
+If either page has no `main#main-content`, the transition falls back to a
+normal document navigation.
 
 `tabindex={-1}` lets the runtime move focus to the new content. The runtime adds
 it when missing, but rendering it explicitly keeps the intent clear.
@@ -129,10 +141,11 @@ stylesheet that exists only on the next page is not added. Include shared styles
 globally.
 
 Custom code can react to a completed transition with the
-`riebeckite:navigation` event:
+`spa:navigation` event. Shell behavior that attaches listeners to a
+region must reinitialize after this event, or use event delegation:
 
 ```ts
-document.addEventListener("riebeckite:navigation", (event) => {
+document.addEventListener("spa:navigation", (event) => {
   const { url, popstate } = (
     event as CustomEvent<{
       url: string;

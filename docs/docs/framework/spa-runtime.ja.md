@@ -11,7 +11,7 @@ title: SPAランタイムの内部実装
 
 ## ページが切り替わるまでの流れ
 
-SPAナビゲーションでは、ページ全体を読み直す代わりに、次のページのHTMLを取得して `<main id="main-content">` だけを置き換えます。ヘッダー、フッター、グローバルなスタイルなど、ページの外側にあるアプリケーションシェルはそのまま残ります。
+SPAナビゲーションでは、ページ全体を読み直す代わりに、次のページのHTMLを取得して `<main id="main-content">` と一致する `data-spa-region` 要素を置き換えます。グローバルなスタイルなど、属性のないアプリケーションシェルはそのまま残ります。
 
 ```mermaid
 sequenceDiagram
@@ -26,11 +26,11 @@ sequenceDiagram
     R->>S: 対象URLを取得（Accept: text/html）
     S-->>R: HTML
     R->>L: ページスコープをunmount
-    R->>R: headを更新し、mainを置き換え
+    R->>R: headを更新し、regionとmainを置き換え
     R->>H: createClient()
     R->>L: ページスコープをmount
     R->>R: 履歴・スクロール位置・フォーカス・通知を更新
-    R-->>U: riebeckite:navigation
+    R-->>U: spa:navigation
 ```
 
 処理の順序には意味があります。ページ固有の後始末は `main` を置き換える前に済ませ、新しいページの初期化処理は、HonoXがislandをhydrateした後に実行します。
@@ -70,12 +70,12 @@ sequenceDiagram
 4. 取得したdocumentと現在のdocumentの両方に `main#main-content` があることを確認する
 5. レスポンスURLから最終的なURLを求め、リダイレクトを反映する
 6. `onBeforePageCommit(signal)` を実行する
-7. `<head>` を更新し、現在の `main` を取得した `main` で置き換える
+7. `<head>` を更新し、一致するregionを置き換えた後に、現在の `main` を取得した `main` で置き換える
 8. `onPageCommit({ root, signal })` を実行する
 9. View Transitionを使う場合は、DOM更新の完了を待つ
 10. クリックによる移動なら履歴を追加し、スクロール位置を復元する
 11. ページのルートにフォーカスを移し、新しいページを読み上げ用に通知する
-12. `riebeckite:navigation` イベントを発火する
+12. `spa:navigation` イベントを発火する
 
 ランタイムは、非同期処理の区切りごとに、ページ移動の世代と `signal` を確認します。最新の移動だけが、ページ情報、DOM、履歴、ページのライフサイクル、フォーカス、通知、イベントを更新できます。
 
@@ -130,7 +130,7 @@ sequenceDiagram
 
 - URLにハッシュがない場合、必要なら `tabindex="-1"` を追加し、`preventScroll` を指定して新しい `main` にフォーカスする
 - `#riebeckite-navigation-announcer` を作成または再利用し、`aria-live="polite"` の要素に新しいページタイトルを設定する
-- `riebeckite:navigation` イベントの `detail` は `{ url, popstate }` を持つ
+- `spa:navigation` イベントの `detail` は `{ url, popstate }` を持つ
 
 ## リンク先の先読み
 

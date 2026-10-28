@@ -18,7 +18,8 @@ browser enhancement:
 - Normal load: the browser requests a document, the server returns the full
   page, and HonoX hydrates islands.
 - SPA transition: the browser fetches the next document, the runtime replaces
-  the main element, HonoX hydrates the new islands, and the shell stays.
+  the main element and matching named shell regions, HonoX hydrates new islands,
+  and the rest of the shell stays.
 
 The unit of replacement is the page root, not the whole document.
 
@@ -41,8 +42,11 @@ export default defineConfig({
 });
 ```
 
-The only renderer contract is one stable `main#main-content` per page. The
-current app and scaffolds place it in `_renderer.tsx` around the route content.
+Every page must have one stable `main#main-content`. A Site may additionally
+mark page-dependent shell output with `data-spa-region="name"`. The runtime
+replaces a current region only when the fetched document has a region with the
+same unique name; it does not add or remove regions. Sites must therefore emit
+the same regions on every route that can SPA-navigate between them.
 
 ## Normal navigation and SPA navigation
 
@@ -60,11 +64,12 @@ SPA navigation:
 2. The runtime fetches HTML for the target URL.
 3. The runtime unmounts page scope.
 4. The runtime reconciles head metadata.
-5. The runtime replaces `main#main-content`.
+5. The runtime replaces matching `data-spa-region` elements, then
+   `main#main-content`.
 6. HonoX `createClient()` hydrates the new islands.
 7. The runtime mounts page scope on the new root.
 8. The runtime updates history, scroll, focus, and announcement.
-9. The `riebeckite:navigation` event fires.
+9. The `spa:navigation` event fires.
 
 The order matters: page cleanup happens before replacement, and page
 initialization happens after hydration.
@@ -76,7 +81,7 @@ initialization happens after hydration.
 | `@riebeckite/core` | Resolves `spa` config; defines `ClientLifecycle`, scopes, the cleanup contract, and plugin client-entry metadata. |
 | `@riebeckite/honox` | Generates `virtual:riebeckite/client`; conditionally imports the SPA runtime; wires page unmount/mount and island hydration. |
 | `@riebeckite/spa` | Owns link interception, fetch, replacement, head reconciliation, history, scroll, focus, announcement, and prefetch. |
-| Site application | Provides the stable page root and app shell; registers page behavior through islands or plugin client entries. |
+| Site application | Provides the stable page root and app shell; owns plugin-component placement and declares regions for page-dependent shell output. |
 
 The SPA package does not know about HonoX or plugins. The HonoX integration is
 the only place that connects the runtime to `createClient()` and
@@ -140,6 +145,11 @@ reduced motion is requested, the commit runs without a transition.
 - Only same-origin GET links are handled; forms and programmatic navigation are
   out of scope.
 - The application shell must stay outside `main#main-content`.
+- A plugin component does not choose its own SPA boundary. The Site places it in
+  `main` or in a named `data-spa-region` when its server-rendered output depends
+  on the destination page.
+- A client entry that operates on replaceable shell output must use `app` scope
+  and reinitialize after `spa:navigation`, or use event delegation.
 - Head nodes marked `data-riebeckite-head="page"` are replaced. Nodes marked
   `global` or `runtime` persist. Legacy metadata selectors remain page-owned
   for compatibility. Executable scripts are never replaced or re-executed;

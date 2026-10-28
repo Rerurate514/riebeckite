@@ -49,12 +49,12 @@ export default defineConfig({
 対象のリンクをクリックすると、Riebeckiteは次の処理を行います。
 
 - 現在のページを離れずに、次のページのHTMLを取得する
-- `<main id="main-content">` を、取得したページのmain要素で置き換える
+- `<main id="main-content">` と一致する `data-spa-region` 要素を、取得したページの出力で置き換える
 - ページタイトル、言語、文字方向、ページ固有のメタデータを更新する
 - 新しいページのislandをhydrateする
 - 履歴を更新し、スクロール位置を復元し、ページの内容へフォーカスを移し、支援技術に新しいページを通知する
 
-main要素の外側にあるアプリケーションシェルは再描画されません。グローバルなスタイルシートとスクリプトは読み込まれたままです。
+属性のないmain要素の外側にあるアプリケーションシェルは再描画されません。グローバルなスタイルシートとスクリプトは読み込まれたままです。
 
 ## ページ移動の対象になるリンク
 
@@ -87,7 +87,15 @@ main要素の外側にあるアプリケーションシェルは再描画され�
 <SiteFooter />
 ```
 
-ヘッダー、フッター、その他の永続するUIは、この要素の外側に置きます。現在のページまたは取得したページに `main#main-content` がない場合、ページ移動は失敗し、ページ全体の読み込みにフォールバックします。
+永続するUIは、この要素の外側に置きます。URL、言語、ページデータによって変わるシェルの出力は、相互にSPA遷移するすべてのルートで、名前付きのregionに入れてください。
+
+```tsx
+<header data-spa-region="site-header"><SiteHeader /></header>
+<main id="main-content" tabindex={-1}>{children}</main>
+<footer data-spa-region="site-footer"><SiteFooter /></footer>
+```
+
+region名は文書内で一意にし、現在のページと取得したページの両方に置く必要があります。regionは `main` より先に置き換えられ、属性のないシェルUIは残ります。いずれかのページに `main#main-content` がない場合は、ページ全体の読み込みにフォールバックします。
 
 `tabindex={-1}` は、ランタイムが新しい内容へフォーカスを移すために使います。省略してもランタイムが追加しますが、明示しておくと意図が伝わります。
 
@@ -109,10 +117,10 @@ main要素の外側にあるアプリケーションシェルは再描画され�
 
 グローバルなスタイルシートは読み込まれたままです。スタイルシートの変更は反映されません。次のページにだけ存在するスタイルシートは追加されません。共有するスタイルはグローバルに読み込んでください。
 
-独自のコードは `riebeckite:navigation` イベントでページ移動の完了を検知できます。
+独自のコードは `spa:navigation` イベントでページ移動の完了を検知できます。region内の要素にリスナーを付けるシェルの動作は、このイベントの後に初期化し直すか、イベント委譲で実装してください。
 
 ```ts
-document.addEventListener("riebeckite:navigation", (event) => {
+document.addEventListener("spa:navigation", (event) => {
   const { url, popstate } = (
     event as CustomEvent<{
       url: string;

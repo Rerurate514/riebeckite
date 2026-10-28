@@ -6,7 +6,7 @@ Date: 2026-10-21
 
 `pnpm benchmark:spa` packs the 51 public packages, installs them into an isolated temporary copy of `tests/external-site/fixture`, and measures production builds and a local static server with Puppeteer. Every mode has five cold builds and five browser trials. The server sends `Cache-Control: no-store` so browser HTTP cache does not hide a navigation request.
 
-The initial metric is `navigationStart` to `DOMContentLoaded` after `main#main-content` is present. Traditional navigation ends at the same document marker. SPA navigation ends at the `riebeckite:navigation` event, after lifecycle work and page commit; no `networkidle` timing is used. Hover prefetch records target-page requests before and after the click. Outliers are retained; median, minimum, maximum, and spread are reported.
+The initial metric is `navigationStart` to `DOMContentLoaded` after `main#main-content` is present. Traditional navigation ends at the same document marker. SPA navigation ends at the `spa:navigation` event, after lifecycle work and page commit; no `networkidle` timing is used. Hover prefetch records target-page requests before and after the click. Outliers are retained; median, minimum, maximum, and spread are reported.
 
 Memory is `JSHeapUsedSize` after 0, 10, 25, and 50 forward/back transitions in a fresh page for each point. Chromium was not launched with exposed GC, so the measurements are uncontrolled and do not establish a leak verdict.
 

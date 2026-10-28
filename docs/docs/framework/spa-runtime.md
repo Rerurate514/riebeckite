@@ -16,8 +16,8 @@ package-level picture and design rationale.
 ## The page transition flow
 
 During SPA navigation, the runtime fetches the next HTML document and replaces
-only `<main id="main-content">`. The application shell outside that element,
-including the header, footer, and global styles, stays in place.
+`<main id="main-content">` plus any matching `data-spa-region` elements. The
+unmarked application shell, including global styles, stays in place.
 
 ```mermaid
 sequenceDiagram
@@ -32,11 +32,11 @@ sequenceDiagram
     R->>S: GET target URL (Accept: text/html)
     S-->>R: HTML
     R->>L: unmount page scope
-    R->>R: reconcile head, replace main
+    R->>R: reconcile head, replace regions and main
     R->>H: createClient()
     R->>L: mount page scope
     R->>R: update history, scroll, focus, announcement
-    R-->>U: riebeckite:navigation
+    R-->>U: spa:navigation
 ```
 
 The order matters. Page-specific cleanup runs before the main element is
@@ -84,12 +84,13 @@ the previous one.
 4. Requires `main#main-content` in both the fetched and current document.
 5. Computes the final URL from the response URL, resolving redirects.
 6. Runs `onBeforePageCommit(signal)`.
-7. Reconciles the head and replaces the current main with the fetched main.
+7. Reconciles the head, replaces matching regions, and replaces the current
+   main with the fetched main.
 8. Runs `onPageCommit({ root, signal })`.
 9. Waits for the view transition's DOM update to complete, if one is used.
 10. Pushes history for click navigations and restores scroll.
 11. Focuses the page root and announces the new page.
-12. Dispatches `riebeckite:navigation`.
+12. Dispatches `spa:navigation`.
 
 The runtime checks both its navigation generation and the signal at each async
 boundary. Only the newest navigation can update the head, DOM, history, page
@@ -168,7 +169,7 @@ Focus and announcement:
   focuses the new main element with `preventScroll`.
 - It creates or reuses `#riebeckite-navigation-announcer`, an
   `aria-live="polite"` element, and sets its text to the new document title.
-- The `riebeckite:navigation` event carries `{ url, popstate }`.
+- The `spa:navigation` event carries `{ url, popstate }`.
 
 ## Prefetch
 

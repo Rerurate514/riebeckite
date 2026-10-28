@@ -310,6 +310,26 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 
 Components may also optionally export internal CSS and a client entry, registered through the integration as usual. Existing asset and client-entry registration remains factory-owned; importing a component alone neither registers CSS/client runtime nor enables a plugin capability.
 
+### Placement during SPA navigation
+
+A component renders for the server request; it does not own its placement or
+choose when it is replaced in the browser. The Site places it in
+`main#main-content` when it belongs to page content. When shell output depends
+on the current URL, language, or page data, the Site wraps it in a stable,
+unique `data-spa-region` on every route that can navigate between it:
+
+```tsx
+<aside data-spa-region="docs-navigation">
+  <DocsSidebar />
+</aside>
+```
+
+Client behavior follows DOM lifetime, not component ownership. A client entry
+for content in `main` uses the default `page` scope. A client entry for a
+replaceable shell region uses `app` scope and reinitializes after
+`spa:navigation`, or uses event delegation. Plugins must not assume that
+their component is placed in either location.
+
 HonoX primitives such as `Article`, `ArticleHeader`, `ArticleContent`, `ArticleBody`, `ArticleFooter`, `Sidebar`, and `ThemeRoot` remain as semantic primitives for article structure and layout. Components belong in plugin packages and are exported from their public entry points with their model types and helpers. Site TSX belongs under the application's `app/`. HonoX owns rendering primitives only; it does not collect plugin components or select their order.
 
 ```tsx

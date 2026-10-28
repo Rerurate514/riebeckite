@@ -156,6 +156,7 @@
       position: sticky;
       top: var(--rb-shell-sticky-offset);
       align-self: start;
+      block-size: calc(100dvh - var(--rb-shell-sticky-offset));
       max-height: calc(100dvh - var(--rb-shell-sticky-offset));
       overflow-y: auto;
       overscroll-behavior: contain;

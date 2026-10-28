@@ -65,7 +65,8 @@ The client entry finds elements by the `data-toc-target` attribute emitted on
 each link, so it works when multiple ToCs (desktop/mobile) are rendered. The
 Site keeps the desktop root sticky in its article rail and gives it a bounded
 vertical scroll area; the plugin keeps labels wrapping rather than creating
-horizontal scrolling.
+horizontal scrolling. The list has a rule above and below it by default; pass
+`bordered={false}` to remove both rules.
 
 Themes can set `--rr-table-of-contents-eyebrow-font-size`,
 `--rr-table-of-contents-eyebrow-margin-block-end`, and

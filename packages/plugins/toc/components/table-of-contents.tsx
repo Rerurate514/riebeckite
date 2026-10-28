@@ -3,8 +3,9 @@ import type { TableOfContentsItem } from "../src/table-of-contents.js";
 import { extractTableOfContents } from "../src/table-of-contents.js";
 
 type Props = {
+  bordered?: boolean;
   className?: string;
-  items?: TableOfContentsItem[];
+  items?: readonly TableOfContentsItem[];
   placement?: "inline" | "desktop-rail";
 };
 
@@ -18,6 +19,7 @@ export default function TableOfContents(props: Props) {
     props.placement === "desktop-rail"
       ? "rr-table-of-contents--desktop-rail"
       : "",
+    props.bordered === false ? "rr-table-of-contents--borderless" : "",
     props.className ?? "",
   ]
     .filter(Boolean)

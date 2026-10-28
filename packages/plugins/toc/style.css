@@ -8,6 +8,10 @@
     padding-block: 1rem;
   }
 
+  .rr-table-of-contents--borderless {
+    border-block: 0;
+  }
+
   .rr-table-of-contents--desktop {
     display: none;
   }

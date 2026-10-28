@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { assertGoldenJson } from "@riebeckite/test";
-import { extractTableOfContents } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import { extractTableOfContents, TableOfContents } from "../index.ts";
+
+const style = readFileSync(new URL("../style.css", import.meta.url), "utf8");
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 test("extracts h2-h4 headings that carry an id", () => {
   const html = [
@@ -79,6 +86,24 @@ test("keeps duplicate ids in document order", () => {
 test("returns an empty list for empty or heading-free input", () => {
   assert.deepEqual(extractTableOfContents(""), []);
   assert.deepEqual(extractTableOfContents("<p>Just a paragraph.</p>"), []);
+});
+
+test("toggles the top and bottom rules", () => {
+  const items = [
+    { id: "intro", level: 2, title: "Intro" },
+    { id: "api", level: 2, title: "API" },
+  ];
+  const bordered = renderToString(createElement(TableOfContents, { items }));
+  const borderless = renderToString(
+    createElement(TableOfContents, { items, bordered: false }),
+  );
+
+  assert.doesNotMatch(bordered, /rr-table-of-contents--borderless/);
+  assert.match(borderless, /rr-table-of-contents--borderless/);
+  assert.match(
+    style,
+    /\.rr-table-of-contents--borderless\s*\{[^}]*border-block:\s*0/,
+  );
 });
 
 test("matches a structured article document", () => {

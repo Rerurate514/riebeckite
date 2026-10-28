@@ -65,49 +65,57 @@ test("official docs composition aligns and scrolls both desktop rails", async (t
   if (!browser) return t.skip("puppeteer browser is unavailable");
   const page = await browser.newPage();
   try {
-    await loadDocsPage(page, 1600);
-    const initial = await page.evaluate(() => {
-      const header = document.querySelector<HTMLElement>(".rb-shell__header");
-      const sidebar = document.querySelector<HTMLElement>(".rb-shell__sidebar");
-      const aside = document.querySelector<HTMLElement>(".rb-shell__aside");
-      const footer = document.querySelector<HTMLElement>(".rb-site-footer");
-      if (!header || !sidebar || !aside || !footer)
-        throw new Error("docs fixture is incomplete");
-      return {
-        header: header.getBoundingClientRect().bottom,
-        sidebar: sidebar.getBoundingClientRect().top,
-        aside: aside.getBoundingClientRect().top,
-        sidebarScrollable: sidebar.scrollHeight > sidebar.clientHeight,
-        asideScrollable: aside.scrollHeight > aside.clientHeight,
-        footerLeft: footer.getBoundingClientRect().left,
-        footerRight: footer.getBoundingClientRect().right,
-      };
-    });
-    assert.equal(initial.sidebar, initial.header);
-    assert.equal(initial.aside, initial.header);
-    assert.ok(initial.sidebarScrollable);
-    assert.ok(initial.asideScrollable);
-    assert.ok(Math.abs(initial.footerLeft - (1600 - initial.footerRight)) <= 1);
+    for (const width of [1024, 1440, 1920]) {
+      await loadDocsPage(page, width);
+      const initial = await page.evaluate(() => {
+        const header = document.querySelector<HTMLElement>(".rb-shell__header");
+        const sidebar =
+          document.querySelector<HTMLElement>(".rb-shell__sidebar");
+        const aside = document.querySelector<HTMLElement>(".rb-shell__aside");
+        const footer = document.querySelector<HTMLElement>(".rb-site-footer");
+        if (!header || !sidebar || !aside || !footer)
+          throw new Error("docs fixture is incomplete");
+        return {
+          header: header.getBoundingClientRect().bottom,
+          sidebar: sidebar.getBoundingClientRect().top,
+          aside: aside.getBoundingClientRect().top,
+          sidebarScrollable: sidebar.scrollHeight > sidebar.clientHeight,
+          asideScrollable: aside.scrollHeight > aside.clientHeight,
+          footerLeft: footer.getBoundingClientRect().left,
+          footerRight: footer.getBoundingClientRect().right,
+        };
+      });
+      assert.equal(initial.sidebar, initial.header);
+      assert.equal(initial.aside, initial.header);
+      assert.ok(initial.sidebarScrollable);
+      assert.ok(initial.asideScrollable);
+      assert.ok(
+        Math.abs(initial.footerLeft - (width - initial.footerRight)) <= 1,
+      );
 
-    await page.evaluate(() => window.scrollTo(0, 1200));
-    const sticky = await page.evaluate(() => ({
-      header: document
-        .querySelector(".rb-shell__header")
-        ?.getBoundingClientRect().top,
-      sidebar: document
-        .querySelector(".rb-shell__sidebar")
-        ?.getBoundingClientRect().top,
-      aside: document.querySelector(".rb-shell__aside")?.getBoundingClientRect()
-        .top,
-      headerHeight: document
-        .querySelector(".rb-shell__header")
-        ?.getBoundingClientRect().height,
-    }));
-    assert.equal(sticky.header, 0);
-    assert.ok(
-      Math.abs((sticky.sidebar ?? 0) - (sticky.headerHeight ?? 0)) <= 1,
-    );
-    assert.ok(Math.abs((sticky.aside ?? 0) - (sticky.headerHeight ?? 0)) <= 1);
+      await page.evaluate(() => window.scrollTo(0, 1200));
+      const sticky = await page.evaluate(() => ({
+        header: document
+          .querySelector(".rb-shell__header")
+          ?.getBoundingClientRect().top,
+        sidebar: document
+          .querySelector(".rb-shell__sidebar")
+          ?.getBoundingClientRect().top,
+        aside: document
+          .querySelector(".rb-shell__aside")
+          ?.getBoundingClientRect().top,
+        headerHeight: document
+          .querySelector(".rb-shell__header")
+          ?.getBoundingClientRect().height,
+      }));
+      assert.equal(sticky.header, 0);
+      assert.ok(
+        Math.abs((sticky.sidebar ?? 0) - (sticky.headerHeight ?? 0)) <= 1,
+      );
+      assert.ok(
+        Math.abs((sticky.aside ?? 0) - (sticky.headerHeight ?? 0)) <= 1,
+      );
+    }
   } finally {
     await page.close();
   }
@@ -117,26 +125,21 @@ test("official docs composition hides desktop rails below their breakpoints", as
   if (!browser) return t.skip("puppeteer browser is unavailable");
   const page = await browser.newPage();
   try {
-    await loadDocsPage(page, 768);
-    assert.equal(
-      await page.$eval(
-        ".rb-shell__aside",
-        (element) => getComputedStyle(element).display,
-      ),
-      "none",
-    );
-    await page.setViewport({ width: 375, height: 900 });
-    assert.equal(
-      await page.$eval(
-        ".rb-shell__sidebar",
-        (element) => getComputedStyle(element).display,
-      ),
-      "none",
-    );
-    assert.equal(
-      await page.evaluate(() => document.body.scrollWidth > window.innerWidth),
-      false,
-    );
+    for (const width of [320, 375, 390, 768]) {
+      await loadDocsPage(page, width);
+      const visibility = await page.evaluate(() => ({
+        aside: getComputedStyle(
+          document.querySelector(".rb-shell__aside") ?? document.body,
+        ).display,
+        sidebar: getComputedStyle(
+          document.querySelector(".rb-shell__sidebar") ?? document.body,
+        ).display,
+        overflowing: document.body.scrollWidth > window.innerWidth,
+      }));
+      assert.equal(visibility.aside, "none");
+      assert.equal(visibility.overflowing, false);
+      assert.equal(visibility.sidebar, width < 768 ? "none" : "block");
+    }
   } finally {
     await page.close();
   }

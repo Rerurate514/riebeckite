@@ -17,6 +17,7 @@ import { Properties } from "@riebeckite/plugin-properties";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { SeriesNavigation } from "@riebeckite/plugin-series";
 import { ShareControls } from "@riebeckite/plugin-share";
+import { extractTableOfContents } from "@riebeckite/plugin-toc";
 import { ArticleWebmentionSection } from "@riebeckite/plugin-webmention";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
@@ -88,6 +89,7 @@ export default createRoute(
       ),
     );
     c.set("shell", "docs");
+    c.set("tocItems", extractTableOfContents(resolved.post.html ?? ""));
 
     return c.render(
       <Article

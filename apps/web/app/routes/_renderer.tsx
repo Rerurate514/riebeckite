@@ -59,6 +59,7 @@ export default jsxRenderer(async ({ children }, c) => {
     );
   const themeStyle = getThemeStyle(config.theme);
   const shell = c.get("shell");
+  const tocItems = c.get("tocItems");
 
   return (
     <SiteProvider
@@ -123,7 +124,10 @@ export default jsxRenderer(async ({ children }, c) => {
                     <ContentContainer>{children}</ContentContainer>
                   </ShellMain>
                   <ShellAside>
-                    <TableOfContents className="rr-table-of-contents--desktop" />
+                    <TableOfContents
+                      className="rr-table-of-contents--desktop"
+                      items={tocItems}
+                    />
                   </ShellAside>
                 </ShellBody>
               </SiteShell>

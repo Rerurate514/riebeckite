@@ -20,10 +20,9 @@ test("docs routes compose the shared shell around article content", () => {
   assert.match(renderer, /<ContentContainer>\{children\}<\/ContentContainer>/);
   assert.match(renderer, /<ShellAside>/);
   assert.match(renderer, /<DocsSidebar \/>/);
-  assert.match(
-    renderer,
-    /<TableOfContents className="rr-table-of-contents--desktop" \/>/,
-  );
+  assert.match(renderer, /items=\{tocItems\}/);
+  assert.match(renderer, /const tocItems = c\.get\("tocItems"\)/);
+  assert.match(read("../app/routes/[slug{.+}].tsx"), /c\.set\("tocItems"/);
 });
 
 test("the official site uses Shell UI instead of an article-specific rail", () => {

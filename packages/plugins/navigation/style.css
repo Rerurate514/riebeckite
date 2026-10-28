@@ -159,6 +159,27 @@
     margin-block-start: 0.125rem;
     padding-inline-start: var(--rb-sidebar-navigation-indent, 1rem);
   }
+  .rb-sidebar-navigation__details > summary {
+    list-style: none;
+  }
+  .rb-sidebar-navigation__details > summary::-webkit-details-marker {
+    display: none;
+  }
+  .rb-sidebar-navigation__details > summary::after {
+    content: "›";
+    width: 2rem;
+    min-height: 2rem;
+    flex: 0 0 auto;
+    text-align: center;
+    line-height: 2rem;
+  }
+  .rb-sidebar-navigation__details[open] > summary::after {
+    transform: rotate(90deg);
+  }
+  .rb-sidebar-navigation__details > .rb-sidebar-navigation__list {
+    margin-block-start: 0.125rem;
+    padding-inline-start: var(--rb-sidebar-navigation-indent, 1rem);
+  }
   .rb-sidebar-navigation__row {
     display: flex;
     align-items: start;
@@ -180,6 +201,7 @@
     );
   }
   .rb-sidebar-navigation__link:focus-visible,
+  .rb-sidebar-navigation__details > summary:focus-visible,
   .rb-sidebar-navigation__toggle:focus-visible,
   .rb-sidebar-navigation__search input:focus-visible {
     outline: 2px solid

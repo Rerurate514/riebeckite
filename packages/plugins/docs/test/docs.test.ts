@@ -497,7 +497,10 @@ test("component rendering uses the documented docs sidebar DOM contract", async 
   );
   assert.match(html, /rb-sidebar-navigation__list/);
   assert.match(html, /rb-sidebar-navigation__section/);
-  assert.match(html, /data-sidebar-toggle/);
+  assert.match(
+    html,
+    /<details class="rb-sidebar-navigation__details" open="">/,
+  );
   assert.match(html, /aria-current="page"/);
   assert.match(html, /data-sidebar-expanded="true"/);
 });

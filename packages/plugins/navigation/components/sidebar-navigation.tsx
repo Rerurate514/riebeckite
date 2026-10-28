@@ -8,6 +8,7 @@ export type SidebarNavigationProps = {
   readonly label?: string;
   readonly searchable?: boolean;
   readonly collapsible?: boolean;
+  readonly nativeDetails?: boolean;
   readonly autoExpandActive?: boolean;
   readonly class?: string;
   readonly className?: string;
@@ -19,6 +20,7 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
   const language = props.language ?? site?.language;
   const searchable = props.searchable ?? false;
   const collapsible = props.collapsible ?? true;
+  const nativeDetails = props.nativeDetails ?? false;
   const autoExpandActive = props.autoExpandActive ?? true;
 
   return (
@@ -44,6 +46,7 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
         path={path}
         language={language}
         collapsible={collapsible}
+        nativeDetails={nativeDetails}
         autoExpandActive={autoExpandActive}
       />
     </nav>
@@ -55,6 +58,7 @@ type SidebarItemsProps = {
   readonly path: string;
   readonly language?: string;
   readonly collapsible: boolean;
+  readonly nativeDetails: boolean;
   readonly autoExpandActive: boolean;
 };
 
@@ -67,6 +71,7 @@ function SidebarItems(props: SidebarItemsProps) {
           path={props.path}
           language={props.language}
           collapsible={props.collapsible}
+          nativeDetails={props.nativeDetails}
           autoExpandActive={props.autoExpandActive}
           key={`${item.href ?? item.label}-${index}`}
         />
@@ -88,6 +93,27 @@ function SidebarItem(
   const expanded =
     props.autoExpandActive && activeBranch ? true : !props.item.collapsed;
   const hasChildren = children.length > 0;
+  const label = props.item.href ? (
+    <a
+      class={
+        active
+          ? "rb-sidebar-navigation__link rb-sidebar-navigation__link--active"
+          : "rb-sidebar-navigation__link"
+      }
+      href={props.item.href}
+      aria-current={active ? "page" : undefined}
+      target={props.item.external ? "_blank" : undefined}
+      rel={props.item.external ? "noreferrer" : undefined}
+    >
+      <Icon icon={props.item.icon} />
+      {props.item.label}
+    </a>
+  ) : (
+    <span class="rb-sidebar-navigation__section">
+      <Icon icon={props.item.icon} />
+      {props.item.label}
+    </span>
+  );
 
   return (
     <li
@@ -96,41 +122,30 @@ function SidebarItem(
       data-sidebar-label={props.item.label.toLocaleLowerCase()}
       data-sidebar-expanded={hasChildren ? String(expanded) : undefined}
     >
-      <div class="rb-sidebar-navigation__row">
-        {props.item.href ? (
-          <a
-            class={
-              active
-                ? "rb-sidebar-navigation__link rb-sidebar-navigation__link--active"
-                : "rb-sidebar-navigation__link"
-            }
-            href={props.item.href}
-            aria-current={active ? "page" : undefined}
-            target={props.item.external ? "_blank" : undefined}
-            rel={props.item.external ? "noreferrer" : undefined}
-          >
-            <Icon icon={props.item.icon} />
-            {props.item.label}
-          </a>
-        ) : (
-          <span class="rb-sidebar-navigation__section">
-            <Icon icon={props.item.icon} />
-            {props.item.label}
-          </span>
-        )}
-        {hasChildren && props.collapsible ? (
-          <button
-            class="rb-sidebar-navigation__toggle"
-            type="button"
-            aria-label={`${expanded ? "Collapse" : "Expand"} ${props.item.label}`}
-            aria-expanded={String(expanded)}
-            data-sidebar-toggle
-          >
-            <span aria-hidden="true">›</span>
-          </button>
-        ) : null}
-      </div>
-      {hasChildren ? <SidebarItems {...props} items={children} /> : null}
+      {hasChildren && props.collapsible && props.nativeDetails ? (
+        <details class="rb-sidebar-navigation__details" open={expanded}>
+          <summary class="rb-sidebar-navigation__row">{label}</summary>
+          <SidebarItems {...props} items={children} />
+        </details>
+      ) : (
+        <>
+          <div class="rb-sidebar-navigation__row">
+            {label}
+            {hasChildren && props.collapsible ? (
+              <button
+                class="rb-sidebar-navigation__toggle"
+                type="button"
+                aria-label={`${expanded ? "Collapse" : "Expand"} ${props.item.label}`}
+                aria-expanded={String(expanded)}
+                data-sidebar-toggle
+              >
+                <span aria-hidden="true">›</span>
+              </button>
+            ) : null}
+          </div>
+          {hasChildren ? <SidebarItems {...props} items={children} /> : null}
+        </>
+      )}
     </li>
   );
 }

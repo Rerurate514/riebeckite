@@ -37,6 +37,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
       path={props.currentPermalink ?? article?.entry?.permalink}
       label={label}
       searchable
+      nativeDetails
       autoExpandActive
       class="rb-docs-sidebar"
     />

@@ -8,12 +8,49 @@
   padding-block-end: var(--rb-space-6);
 }
 
-/* App-level layout: keep the article rail centered on its own. The table of
-   contents is an anchored right rail, rather than a grid column that shifts
-   the readable column left. These rules are unlayered so they beat the plugin
-   styles imported later via `.riebeckite/plugin-styles.css`. */
 @media (min-width: 88rem) {
-  :is(:root, .rb-theme-root)[data-rb-layout="article"] .rb-article-outro {
+  #main-content:has(.rb-docs-sidebar-rail) {
+    width: 100%;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) {
+    width: 100%;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) .rb-article-layout {
+    display: grid;
+    grid-template-columns: minmax(14rem, 17rem) minmax(
+        0,
+        var(--rb-layout-article-max, 48rem)
+      ) minmax(12rem, 15rem);
+    justify-content: center;
+    gap: var(--rb-layout-gap, 2rem);
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) .rb-docs-sidebar-rail {
     grid-column: 1;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: var(--rb-docs-rail-top, 1rem);
+    align-self: start;
+    max-height: var(--rb-docs-rail-max-block-size, calc(100dvh - 2rem));
+    margin: 0;
+    overflow-y: auto;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) .rb-article-body,
+  .rb-article:has(.rb-docs-sidebar-rail) .rb-article-outro {
+    grid-column: 2;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) .rr-table-of-contents--desktop-rail {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    width: auto;
+    margin: 0;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail) .rb-article-outro {
+    min-width: 0;
   }
 }

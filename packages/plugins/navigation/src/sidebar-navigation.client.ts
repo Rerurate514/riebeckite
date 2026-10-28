@@ -32,11 +32,20 @@ function init(navigation: HTMLElement): () => void {
   for (const toggle of toggles) toggle.addEventListener("click", onToggle);
 
   const initial = new Map<HTMLElement, string | undefined>();
+  const details = Array.from(
+    navigation.querySelectorAll<HTMLDetailsElement>(
+      ".rb-sidebar-navigation__details",
+    ),
+  );
+  const initialDetails = new Map<HTMLDetailsElement, boolean>();
   const items = Array.from(
     navigation.querySelectorAll<HTMLElement>("[data-sidebar-item]"),
   );
   const onFilter = () => {
     const query = filter?.value.trim().toLocaleLowerCase() ?? "";
+    for (const detail of details) {
+      if (!initialDetails.has(detail)) initialDetails.set(detail, detail.open);
+    }
     for (const item of items) {
       if (!initial.has(item)) initial.set(item, item.dataset.sidebarExpanded);
       const own = item.dataset.sidebarLabel?.includes(query) ?? false;
@@ -50,6 +59,15 @@ function init(navigation: HTMLElement): () => void {
         if (expanded === undefined) delete item.dataset.sidebarExpanded;
         else item.dataset.sidebarExpanded = expanded;
       }
+    }
+    for (const detail of details) {
+      if (
+        query !== "" &&
+        detail.querySelector("[data-sidebar-item]:not([hidden])")
+      ) {
+        detail.open = true;
+      }
+      if (query === "") detail.open = initialDetails.get(detail) ?? detail.open;
     }
   };
   filter?.addEventListener("input", onFilter);

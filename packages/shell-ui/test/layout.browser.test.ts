@@ -65,6 +65,9 @@ test("application composition uses full-width chrome and independently constrain
       content: content ? { width: content.width } : undefined,
       sidebarOverflow: getComputedStyle(sidebar ?? document.body).overflowY,
       asideOverflow: getComputedStyle(aside ?? document.body).overflowY,
+      body: document.querySelector(".rb-shell__body")?.getBoundingClientRect(),
+      sidebarHeight: sidebarBox?.height,
+      asideHeight: asideBox?.height,
       viewportWidth: document.documentElement.clientWidth,
     };
   });
@@ -75,6 +78,8 @@ test("application composition uses full-width chrome and independently constrain
   assert.equal(layout.aside?.right, layout.viewportWidth);
   assert.equal(layout.sidebarOverflow, "auto");
   assert.equal(layout.asideOverflow, "auto");
+  assert.ok((layout.body?.height ?? 0) >= (layout.sidebarHeight ?? 0));
+  assert.ok((layout.body?.height ?? 0) >= (layout.asideHeight ?? 0));
 
   await page.evaluate(() => window.scrollTo(0, 800));
   const sticky = await page.evaluate(() => ({

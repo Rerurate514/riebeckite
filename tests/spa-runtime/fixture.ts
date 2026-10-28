@@ -165,6 +165,7 @@ function html(route: Route, pathname: string, bundle: string): string {
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <div id="shell" data-shell-marker="preserved">shell</div>
+  <div data-riebeckite-spa-region="toc">${route.title} TOC</div>
   ${
     main
       ? `<main id="main-content" tabindex="-1"${route.commitError ? ' data-commit-error="true"' : ""}>

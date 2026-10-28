@@ -148,6 +148,8 @@ test("only the latest navigation commits, updates head, and owns history", async
       stylesheets: document.querySelectorAll('link[rel="stylesheet"]').length,
       shell: document.querySelectorAll('[data-shell-marker="preserved"]')
         .length,
+      toc: document.querySelector('[data-riebeckite-spa-region="toc"]')
+        ?.textContent,
       skipLink: document.querySelectorAll(".skip-link").length,
     }));
     assert.equal(head.descriptions, 1);
@@ -162,6 +164,7 @@ test("only the latest navigation commits, updates head, and owns history", async
     assert.equal(head.feeds, 1);
     assert.equal(head.stylesheets, 1);
     assert.equal(head.shell, 1);
+    assert.equal(head.toc, "Page C TOC");
     assert.equal(head.skipLink, 1);
 
     await page.goBack();

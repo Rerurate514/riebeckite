@@ -124,10 +124,12 @@ export default jsxRenderer(async ({ children }, c) => {
                     <ContentContainer>{children}</ContentContainer>
                   </ShellMain>
                   <ShellAside>
-                    <TableOfContents
-                      className="rr-table-of-contents--desktop"
-                      items={tocItems}
-                    />
+                    <div data-riebeckite-spa-region="toc">
+                      <TableOfContents
+                        className="rr-table-of-contents--desktop"
+                        items={tocItems}
+                      />
+                    </div>
                   </ShellAside>
                 </ShellBody>
               </SiteShell>

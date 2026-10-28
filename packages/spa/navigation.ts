@@ -157,6 +157,7 @@ class SpaNavigation {
           await this.options.onBeforePageCommit?.(controller.signal);
           if (!this.isCurrent(id, controller)) return;
           reconcileDocument(page.document);
+          reconcilePageRegions(page.document);
           current.replaceWith(page.root);
           committed = true;
           await this.options.onPageCommit?.({
@@ -241,6 +242,19 @@ class SpaNavigation {
       "startViewTransition" in document &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
+  }
+}
+
+function reconcilePageRegions(page: Document): void {
+  for (const current of document.querySelectorAll<HTMLElement>(
+    "[data-riebeckite-spa-region]",
+  )) {
+    const name = current.dataset.riebeckiteSpaRegion;
+    if (!name) continue;
+    const next = page.querySelector<HTMLElement>(
+      `[data-riebeckite-spa-region="${CSS.escape(name)}"]`,
+    );
+    if (next) current.replaceWith(next);
   }
 }
 

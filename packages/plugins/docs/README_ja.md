@@ -69,7 +69,7 @@ sidebar:
 プラグインは、サイトへ組み込むための React 風の JSX コンポーネントを提供します。
 
 - `<DocsSidebar items={...} currentPermalink? label? />` は Docs のツリーを
-  `SidebarNavigation` に変換し、`nav.rb-docs-sidebar` を描画します
+  `SidebarNavigation` に変換し、`nav.rb-docs-sidebar` を描画します。記事コンテキストの外では、サイトのパスから現在のエントリを解決します。
 - `<DocsPrevNext previous? next? />` は `nav.rb-docs-prev-next` を描画
 
 クライアント側の `initDocsSidebar` はグループごとの開閉とサイドバーの絞り込みを有効にします。

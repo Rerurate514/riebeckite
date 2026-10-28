@@ -72,7 +72,8 @@ fields you want to override and leave the rest of the vault untouched.
 The plugin provides React-like JSX components for site integration:
 
 - `<DocsSidebar items={...} currentPermalink? label? />` converts the Docs tree
-  to `SidebarNavigation` and renders `nav.rb-docs-sidebar`
+  to `SidebarNavigation` and renders `nav.rb-docs-sidebar`. Outside an article
+  context it resolves the current entry from the site path.
 - `<DocsPrevNext previous? next? />` renders `nav.rb-docs-prev-next`
 
 The `initDocsSidebar` client enables independent group disclosure and sidebar

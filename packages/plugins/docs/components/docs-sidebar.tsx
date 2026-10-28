@@ -1,4 +1,8 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type {
+  PluginComponent,
+  PublicContentEntry,
+  PublicContentView,
+} from "@riebeckite/core";
 import {
   type NavigationItem,
   SidebarNavigation,
@@ -19,13 +23,18 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
   const options = findDocsOptions(site?.config.plugins);
+  const requestedPermalink =
+    props.currentPermalink ?? article?.entry?.permalink ?? site?.path;
+  const currentEntry =
+    article?.entry ?? findEntryByPermalink(site?.view, requestedPermalink);
+  const currentPermalink = currentEntry?.permalink ?? requestedPermalink;
   const items =
     props.items ??
-    (site && article?.entry && options
+    (site && currentEntry && options
       ? await getDocsNavigation({
           view: site.view,
           entries: site.manifest.discoverableEntries,
-          entrySlug: article.entry.slug,
+          entrySlug: currentEntry.slug,
           options,
         })
       : []);
@@ -34,7 +43,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
   const sidebar = (
     <SidebarNavigation
       items={toNavigationItems(items)}
-      path={props.currentPermalink ?? article?.entry?.permalink}
+      path={currentPermalink}
       label={label}
       searchable
       nativeDetails
@@ -71,4 +80,19 @@ function findDocsOptions(
   return plugins?.find((plugin) => plugin.name.startsWith("docs:"))?.options as
     | DocsOptions
     | undefined;
+}
+
+function findEntryByPermalink(
+  view: PublicContentView | undefined,
+  permalink: string | undefined,
+): PublicContentEntry | undefined {
+  if (!permalink) return undefined;
+  const path = normalizePermalink(permalink);
+  return view?.routableEntries.find(
+    (entry) => normalizePermalink(entry.permalink) === path,
+  );
+}
+
+function normalizePermalink(permalink: string): string {
+  return permalink.replace(/\/+$/, "") || "/";
 }

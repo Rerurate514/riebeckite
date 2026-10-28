@@ -9,8 +9,9 @@ import {
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
+import { SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
-import { renderToString } from "hono/jsx/dom/server";
+import { renderToReadableStream, renderToString } from "hono/jsx/dom/server";
 import {
   DocsPrevNext,
   DocsSidebar,
@@ -503,6 +504,41 @@ test("component rendering uses the documented docs sidebar DOM contract", async 
   );
   assert.match(html, /aria-current="page"/);
   assert.match(html, /data-sidebar-expanded="true"/);
+});
+
+test("resolves the current docs entry from the site path outside an article", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [permalink, docs({ root: "docs" })],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",
+      "docs/guide.md": "---\ntitle: Guide\npublish: true\n---\n# Guide\n",
+    }),
+    [],
+    { config },
+  );
+  const manifest = await manager.getManifest();
+  const entry = manifest.bySlug.get("docs/guide");
+  assert.ok(entry);
+
+  const html = await new Response(
+    await renderToReadableStream(
+      createElement(
+        SiteProvider,
+        {
+          config,
+          manifest,
+          view: createPublicContentView(manifest),
+          path: `${entry.permalink}/`,
+        },
+        createElement(DocsSidebar, {}),
+      ),
+    ),
+  ).text();
+
+  assert.match(html, /<a[^>]*href="\/docs\/guide"[^>]*aria-current="page"/);
 });
 
 test("keeps the current branch expanded when a section is collapsed", async () => {

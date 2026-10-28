@@ -7,6 +7,7 @@ declare module "hono" {
       seo?: SeoMetadata;
       headTags?: readonly PluginHeadTag[];
       htmlLanguage?: string;
+      shell?: "docs";
     };
     Bindings: Record<string, never>;
   }

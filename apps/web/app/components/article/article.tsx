@@ -24,10 +24,6 @@ type Props = {
   headerContent?: unknown;
   /** Reading metadata such as the properties panel, next to the title. */
   metadataContent?: unknown;
-  /** Primary table of contents rail rendered in its own grid column. */
-  asideContent?: unknown;
-  /** Secondary aside content, such as the docs sidebar, next to the article. */
-  articleAside?: unknown;
   /** Content injected before the article body, such as share controls. */
   beforeContent?: unknown;
   afterContent?: unknown;
@@ -48,8 +44,6 @@ export default function Article(props: Props) {
   return (
     <ArticlePrimitive post={props.content} entry={props.entry}>
       <ArticleLayout>
-        {props.asideContent}
-        {props.articleAside}
         <ArticleContent>
           {props.headerContent}
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />

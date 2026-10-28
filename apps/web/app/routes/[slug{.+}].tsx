@@ -10,14 +10,13 @@ import { PageBody } from "@riebeckite/honox/ui";
 import { Backlinks } from "@riebeckite/plugin-backlinks";
 import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { ArticlePostDiffView } from "@riebeckite/plugin-diff";
-import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
+import { DocsPrevNext } from "@riebeckite/plugin-docs";
 import { LanguageSwitcher } from "@riebeckite/plugin-l10n";
 import { LocalGraph } from "@riebeckite/plugin-local-graph";
 import { Properties } from "@riebeckite/plugin-properties";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { SeriesNavigation } from "@riebeckite/plugin-series";
 import { ShareControls } from "@riebeckite/plugin-share";
-import { TableOfContents } from "@riebeckite/plugin-toc";
 import { ArticleWebmentionSection } from "@riebeckite/plugin-webmention";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
@@ -88,6 +87,7 @@ export default createRoute(
         getEntryLanguage(resolved.entry),
       ),
     );
+    c.set("shell", "docs");
 
     return c.render(
       <Article
@@ -106,8 +106,6 @@ export default createRoute(
             <ThemeDocumentationPreview locale={locale} themeId={themeId} />
           ) : undefined
         }
-        asideContent={<TableOfContents placement="desktop-rail" />}
-        articleAside={<DocsSidebar placement="article-rail" />}
         footerContent={
           <>
             <DocsPrevNext />

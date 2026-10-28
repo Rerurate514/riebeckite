@@ -12,7 +12,20 @@ import {
   ColorModeScript,
   ColorModeToggle,
 } from "@riebeckite/plugin-color-mode";
+import { DocsSidebar } from "@riebeckite/plugin-docs";
 import { SearchBar } from "@riebeckite/plugin-search";
+import { TableOfContents } from "@riebeckite/plugin-toc";
+import {
+  ContentContainer,
+  ShellAside,
+  ShellBody,
+  ShellContainer,
+  ShellDrawer,
+  ShellHeader,
+  ShellMain,
+  ShellSidebar,
+  SiteShell,
+} from "@riebeckite/shell-ui";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
@@ -45,6 +58,7 @@ export default jsxRenderer(async ({ children }, c) => {
       headTags,
     );
   const themeStyle = getThemeStyle(config.theme);
+  const shell = c.get("shell");
 
   return (
     <SiteProvider
@@ -88,13 +102,42 @@ export default jsxRenderer(async ({ children }, c) => {
           <Script src="/app/client.ts" async />
         </head>
         <body class="riebeckite-page rb-site">
-          <SiteHeader />
           <ColorModeToggle placement="floating" />
           <SearchBar />
-          <main id="main-content" tabindex={-1}>
-            {children}
-          </main>
-          <SiteFooter />
+          {shell === "docs" ? (
+            <>
+              <SiteShell>
+                <ShellHeader sticky>
+                  <ShellContainer>
+                    <SiteHeader />
+                    <ShellDrawer label="Documentation">
+                      <DocsSidebar />
+                    </ShellDrawer>
+                  </ShellContainer>
+                </ShellHeader>
+                <ShellBody>
+                  <ShellSidebar>
+                    <DocsSidebar />
+                  </ShellSidebar>
+                  <ShellMain id="main-content" tabindex={-1}>
+                    <ContentContainer>{children}</ContentContainer>
+                  </ShellMain>
+                  <ShellAside>
+                    <TableOfContents className="rr-table-of-contents--desktop" />
+                  </ShellAside>
+                </ShellBody>
+              </SiteShell>
+              <SiteFooter />
+            </>
+          ) : (
+            <>
+              <SiteHeader />
+              <main id="main-content" tabindex={-1}>
+                {children}
+              </main>
+              <SiteFooter />
+            </>
+          )}
         </body>
       </ThemeRoot>
     </SiteProvider>

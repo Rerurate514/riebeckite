@@ -327,6 +327,9 @@ importers:
       '@riebeckite/preview':
         specifier: workspace:*
         version: link:../../packages/preview
+      '@riebeckite/shell-ui':
+        specifier: workspace:*
+        version: link:../../packages/shell-ui
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default

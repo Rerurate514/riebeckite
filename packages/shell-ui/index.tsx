@@ -18,7 +18,6 @@ export type ShellMainProps = ShellProps & {
 };
 export type ShellDrawerProps = ShellProps & {
   readonly label?: string;
-  readonly closeLabel?: string;
 };
 
 export function SiteShell(props: SiteShellProps) {
@@ -84,42 +83,12 @@ export function ShellAside(props: ShellProps) {
 
 export function ShellDrawer(props: ShellDrawerProps) {
   return (
-    <div
-      class={join("rb-shell__drawer", props.class, props.className)}
-      data-rb-shell-drawer
-    >
-      <button
-        class="rb-shell__drawer-trigger"
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded="false"
-        data-rb-shell-drawer-open
-      >
+    <details class={join("rb-shell__drawer", props.class, props.className)}>
+      <summary class="rb-shell__drawer-trigger">
         {props.label ?? "Navigation"}
-      </button>
-      <dialog
-        class="rb-shell__drawer-dialog"
-        aria-label={props.label ?? "Navigation"}
-        data-rb-shell-drawer-dialog
-      >
-        <div class="rb-shell__drawer-panel">
-          <div class="rb-shell__drawer-header">
-            <span>{props.label ?? "Navigation"}</span>
-            <button
-              class="rb-shell__drawer-close"
-              type="button"
-              aria-label={
-                props.closeLabel ?? `Close ${props.label ?? "Navigation"}`
-              }
-              data-rb-shell-drawer-close
-            >
-              ×
-            </button>
-          </div>
-          {props.children}
-        </div>
-      </dialog>
-    </div>
+      </summary>
+      <div class="rb-shell__drawer-panel">{props.children}</div>
+    </details>
   );
 }
 

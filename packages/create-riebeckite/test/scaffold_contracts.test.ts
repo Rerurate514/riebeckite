@@ -323,10 +323,8 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       preset: "docs",
     });
     const article = await readFile(targetDir, "app/components/article.tsx");
-    const client = await readFile(targetDir, "app/client.ts");
     assert.match(article ?? "", /<ShellDrawer label="Documentation"/);
     assert.match(article ?? "", /<ShellSidebar>/);
-    assert.match(client ?? "", /initShellDrawer/);
 
     const { execSync } = await import("node:child_process");
     await prepareGeneratedDocsSiteInstall(targetDir);

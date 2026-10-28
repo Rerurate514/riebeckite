@@ -1,6 +1,6 @@
 # @riebeckite/shell-ui
 
-Composable, CSS Grid layout primitives for Riebeckite sites. Import `@riebeckite/shell-ui/style.css`, then compose `SiteShell`, `ShellHeader`, `ShellBody`, `ShellSidebar`, `ShellMain`, `ShellAside`, and `ShellDrawer`. Import and call `initShellDrawer` from `@riebeckite/shell-ui/client` when using the drawer. Layout placement remains owned by the site.
+Composable, CSS Grid layout primitives for Riebeckite sites. Import `@riebeckite/shell-ui/style.css`, then compose `SiteShell`, `ShellHeader`, `ShellBody`, `ShellSidebar`, `ShellMain`, `ShellAside`, and `ShellDrawer`. Layout placement remains owned by the site.
 
 ## Recipes
 

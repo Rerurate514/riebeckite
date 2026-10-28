@@ -48,8 +48,8 @@
   .rb-shell__drawer {
     position: relative;
   }
-  .rb-shell__drawer-trigger,
-  .rb-shell__drawer-close {
+  .rb-shell__drawer-trigger {
+    display: block;
     border: 1px solid var(--rb-color-border);
     color: inherit;
     cursor: pointer;
@@ -60,51 +60,20 @@
     min-height: 2.5rem;
     padding-inline: 0.75rem;
   }
-  .rb-shell__drawer-dialog {
-    width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
-    max-width: none;
-    height: 100dvh;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    inset-inline-start: 0;
-    inset-inline-end: auto;
-  }
-  .rb-shell__drawer-dialog::backdrop {
-    background: var(--rb-color-overlay, rgb(0 0 0 / 0.5));
-  }
   .rb-shell__drawer-panel {
-    min-height: 100%;
+    position: absolute;
+    z-index: 30;
+    width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
+    max-height: calc(100dvh - var(--rb-shell-header-height));
+    overflow-y: auto;
     padding: var(--rb-space-3, 1.5rem);
+    border: 1px solid var(--rb-color-border);
     background: var(--rb-shell-drawer-background, var(--rb-color-surface));
   }
-  .rb-shell__drawer-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--rb-space-2, 1rem);
-    margin-block-end: var(--rb-space-3, 1.5rem);
-    font-weight: 700;
-  }
-  .rb-shell__drawer-close {
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-  html.rb-shell-drawer-open {
-    overflow: hidden;
-  }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
     .rb-shell__body {
       grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr);
-    }
-    .rb-shell:has(.rb-shell__aside) .rb-shell__body {
-      grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr) var(
-          --rb-shell-aside-width
-        );
     }
     .rb-shell[data-rb-shell="blog"] .rb-shell__body {
       grid-template-columns: minmax(0, 1fr);
@@ -120,6 +89,16 @@
       padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
       border-inline-end: 1px solid var(--rb-color-border);
     }
+    .rb-shell__drawer {
+      display: none;
+    }
+  }
+  @media (min-width: 64rem) {
+    .rb-shell:has(.rb-shell__aside) .rb-shell__body {
+      grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr) var(
+          --rb-shell-aside-width
+        );
+    }
     .rb-shell__aside {
       display: block;
       position: sticky;
@@ -130,9 +109,6 @@
       overscroll-behavior: contain;
       padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
       border-inline-start: 1px solid var(--rb-color-border);
-    }
-    .rb-shell__drawer {
-      display: none;
     }
   }
 }

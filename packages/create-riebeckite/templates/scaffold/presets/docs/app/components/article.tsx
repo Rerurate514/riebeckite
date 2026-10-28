@@ -19,7 +19,7 @@ export function SiteArticle() {
       <SiteShell variant="docs">
         <ShellHeader sticky>
           <SiteHeader />
-          <ShellDrawer label="Documentation" closeLabel="Close documentation">
+          <ShellDrawer label="Documentation">
             <DocsSidebar />
           </ShellDrawer>
         </ShellHeader>

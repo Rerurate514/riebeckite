@@ -57,7 +57,7 @@
   min-width: 0;
 }
 
-@media (max-width: 63.999rem) {
+@media (max-width: 47.999rem) {
   .site-header__primary-navigation {
     display: none;
   }

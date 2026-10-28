@@ -3,9 +3,6 @@
 }
 
 .rb-article-header-context {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
   gap: var(--rb-space-2);
   min-width: 0;
 }

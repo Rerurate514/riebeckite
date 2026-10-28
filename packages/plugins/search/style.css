@@ -102,6 +102,23 @@
     border-radius: 0.35rem;
   }
 
+  .rr-search-bar--header {
+    position: static;
+    margin: 0;
+  }
+
+  .rr-search-bar--header .rr-search-bar__trigger {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.5rem;
+    justify-content: center;
+  }
+
+  .rr-search-bar--header .rr-search-bar__label,
+  .rr-search-bar--header .rr-search-bar__key {
+    display: none;
+  }
+
   .rr-search-modal {
     position: fixed;
     inset: 0;
@@ -260,10 +277,19 @@
       margin-inline-start: auto;
     }
 
+    .rr-search-bar--header {
+      width: auto;
+      margin: 0;
+    }
+
     .rr-search-bar__trigger {
       width: 100%;
       min-width: auto;
       min-height: 2.75rem;
+    }
+
+    .rr-search-bar--header .rr-search-bar__trigger {
+      width: 2.75rem;
     }
 
     .rr-search-bar__key {

@@ -12,7 +12,13 @@
       "source": "./index.tsx",
       "default": "./dist/index.js"
     },
-    "./style.css": "./style.css"
+    "./style.css": "./style.css",
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    }
   },
   "dependencies": {
     "hono": "catalog:"
@@ -48,6 +54,7 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "sideEffects": [
-    "./style.css"
+    "./style.css",
+    "./client"
   ]
 }

@@ -29,7 +29,11 @@ import {
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
-import { SiteFooter, SiteHeader } from "../components/site-navigation";
+import {
+  SiteDrawerNavigation,
+  SiteFooter,
+  SiteHeader,
+} from "../components/site-navigation";
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 
@@ -104,16 +108,18 @@ export default jsxRenderer(async ({ children }, c) => {
         </head>
         <body class="riebeckite-page rb-site">
           <ColorModeToggle placement="floating" />
-          <SearchBar />
           {shell === "docs" ? (
             <>
               <SiteShell>
                 <ShellHeader sticky>
                   <ShellContainer>
-                    <SiteHeader />
-                    <ShellDrawer label="Documentation">
-                      <DocsSidebar />
-                    </ShellDrawer>
+                    <SiteHeader>
+                      <SearchBar class="rr-search-bar--header" />
+                      <ShellDrawer label="Menu" icon="menu">
+                        <SiteDrawerNavigation />
+                        <DocsSidebar />
+                      </ShellDrawer>
+                    </SiteHeader>
                   </ShellContainer>
                 </ShellHeader>
                 <ShellBody>
@@ -137,7 +143,12 @@ export default jsxRenderer(async ({ children }, c) => {
             </>
           ) : (
             <>
-              <SiteHeader />
+              <SiteHeader>
+                <SearchBar class="rr-search-bar--header" />
+                <ShellDrawer label="Menu" icon="menu">
+                  <SiteDrawerNavigation />
+                </ShellDrawer>
+              </SiteHeader>
               <main id="main-content" tabindex={-1}>
                 {children}
               </main>

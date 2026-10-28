@@ -14,7 +14,9 @@ const articleCss = read("../app/components/article/style.css");
 test("docs routes compose the shared shell around article content", () => {
   assert.match(renderer, /<SiteShell>/);
   assert.match(renderer, /<ShellHeader sticky>/);
-  assert.match(renderer, /<ShellDrawer label="Documentation">/);
+  assert.match(renderer, /<SearchBar class="rr-search-bar--header" \/>/);
+  assert.match(renderer, /<ShellDrawer label="Menu" icon="menu">/);
+  assert.match(renderer, /<SiteDrawerNavigation \/>/);
   assert.match(renderer, /<ShellSidebar>/);
   assert.match(renderer, /<ShellMain id="main-content" tabindex=\{-1\}>/);
   assert.match(renderer, /<ContentContainer>\{children\}<\/ContentContainer>/);

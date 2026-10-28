@@ -36,7 +36,7 @@
   .rb-site-header {
     display: flex;
     align-items: center;
-    gap: var(--rb-space-4);
+    gap: var(--rb-space-3);
     padding-block: var(--rb-space-3);
   }
 
@@ -57,13 +57,14 @@
     object-fit: contain;
   }
 
-  @media (min-width: 30.001rem) and (max-width: 48rem) {
-    .rb-site-header {
-      flex-wrap: wrap;
-    }
+  .site-header__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  @media (max-width: 30rem) {
+  @media (max-width: 47.999rem) {
     .riebeckite-page:not(:has(.rb-shell)) {
       /* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a
@@ -71,12 +72,18 @@
       padding-block: var(--rb-space-3);
     }
 
-    .rb-site-header {
-      flex-wrap: wrap;
-    }
-
     .site-header__primary-navigation {
       display: none;
+    }
+
+    .rb-site-header__home {
+      min-width: 0;
+    }
+
+    .rb-site-header__home span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 

@@ -1,7 +1,15 @@
-export default function SearchBar() {
+type SearchBarProps = {
+  readonly class?: string;
+  readonly className?: string;
+};
+
+export default function SearchBar(props: SearchBarProps) {
+  const className = ["rr-search-bar", "rr-search", props.class, props.className]
+    .filter(Boolean)
+    .join(" ");
   return (
     <>
-      <div class="rr-search-bar rr-search" data-search-root>
+      <div class={className} data-search-root>
         <button
           type="button"
           class="rr-search-bar__trigger"

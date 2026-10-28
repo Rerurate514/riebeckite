@@ -228,7 +228,11 @@ test("A5: the search modal is a sibling of the fixed search trigger", () => {
     "../../../packages/plugins/search/components/search-bar.tsx",
   );
 
-  assert.match(component, /class="rr-search-bar rr-search" data-search-root/);
+  assert.match(
+    component,
+    /\["rr-search-bar", "rr-search", props\.class, props\.className\]/,
+  );
+  assert.match(component, /<div class=\{className\} data-search-root>/);
   assert.match(
     component,
     /<\/div>\s*<dialog[\s\S]*?class="rr-search-modal rr-search"[\s\S]*?data-search-modal/,

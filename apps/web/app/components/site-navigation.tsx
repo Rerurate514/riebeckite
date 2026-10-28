@@ -1,14 +1,10 @@
-import {
-  MobileSiteNav,
-  resolveSiteNavigation,
-  SiteNav,
-} from "@riebeckite/plugin-navigation";
+import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
 
-export function SiteHeader() {
+export function SiteHeader(props: { readonly children?: unknown }) {
   const site = useSiteContext();
   const path = site?.path ?? "/";
   const hasNavigation = site
@@ -20,30 +16,42 @@ export function SiteHeader() {
     : false;
 
   return (
-    <header class="site-header rb-site-header">
+    <div class="site-header rb-site-header">
       <a href="/" class="site-header__home rb-site-header__home">
         <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
         <span>{site?.config.site.title}</span>
       </a>
       {hasNavigation ? (
-        <>
-          <div class="site-header__primary-navigation">
-            <SiteNav
-              placement="primary"
-              omitHome
-              localizeHref={(href) => localizeDocsHref(href, path)}
-            />
-          </div>
-          <div class="site-header__mobile-navigation">
-            <MobileSiteNav
-              placement="primary"
-              omitHome
-              localizeHref={(href) => localizeDocsHref(href, path)}
-            />
-          </div>
-        </>
+        <div class="site-header__primary-navigation">
+          <SiteNav
+            placement="primary"
+            omitHome
+            localizeHref={(href) => localizeDocsHref(href, path)}
+          />
+        </div>
       ) : null}
-    </header>
+      <div class="site-header__actions">{props.children}</div>
+    </div>
+  );
+}
+
+export function SiteDrawerNavigation() {
+  const site = useSiteContext();
+  const path = site?.path ?? "/";
+
+  return (
+    <>
+      <SiteNav
+        placement="primary"
+        omitHome
+        localizeHref={(href) => localizeDocsHref(href, path)}
+      />
+      <SiteNav
+        placement="secondary"
+        label="Secondary navigation"
+        localizeHref={(href) => localizeDocsHref(href, path)}
+      />
+    </>
   );
 }
 

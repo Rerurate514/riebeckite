@@ -16,6 +16,7 @@ export type ShellMainProps = ShellProps & {
 };
 export type ShellDrawerProps = ShellProps & {
   readonly label?: string;
+  readonly icon?: "menu";
 };
 
 export function SiteShell(props: SiteShellProps) {
@@ -94,12 +95,27 @@ export function ShellAside(props: ShellProps) {
 
 export function ShellDrawer(props: ShellDrawerProps) {
   return (
-    <details class={join("rb-shell__drawer", props.class, props.className)}>
-      <summary class="rb-shell__drawer-trigger">
-        {props.label ?? "Navigation"}
-      </summary>
-      <div class="rb-shell__drawer-panel">{props.children}</div>
-    </details>
+    <div
+      class={join("rb-shell__drawer", props.class, props.className)}
+      data-rb-shell-drawer
+    >
+      <button
+        type="button"
+        class="rb-shell__drawer-trigger"
+        data-rb-shell-drawer-trigger
+        aria-expanded="false"
+      >
+        {props.icon === "menu" ? (
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        ) : null}
+        <span>{props.label ?? "Navigation"}</span>
+      </button>
+      <div class="rb-shell__drawer-panel" data-rb-shell-drawer-panel hidden>
+        {props.children}
+      </div>
+    </div>
   );
 }
 

@@ -5,6 +5,7 @@ import { TableOfContents } from "@riebeckite/plugin-toc";
 import {
   ShellAside,
   ShellBody,
+  ContentContainer,
   ShellDrawer,
   ShellHeader,
   ShellMain,
@@ -16,7 +17,7 @@ import { SiteHeader } from "./site-header";
 export function SiteArticle() {
   return (
     <Article class="site-article">
-      <SiteShell variant="docs">
+      <SiteShell>
         <ShellHeader sticky>
           <SiteHeader />
           <ShellDrawer label="Documentation">
@@ -28,13 +29,15 @@ export function SiteArticle() {
             <DocsSidebar />
           </ShellSidebar>
           <ShellMain id="main-content" tabindex={-1}>
-            <ArticleContent>
-              <Breadcrumbs />
-              <ArticleBody />
-              <ArticleFooter class="site-article__footer">
-                <DocsPrevNext />
-              </ArticleFooter>
-            </ArticleContent>
+            <ContentContainer>
+              <ArticleContent>
+                <Breadcrumbs />
+                <ArticleBody />
+                <ArticleFooter class="site-article__footer">
+                  <DocsPrevNext />
+                </ArticleFooter>
+              </ArticleContent>
+            </ContentContainer>
           </ShellMain>
           <ShellAside>
             <TableOfContents className="rr-table-of-contents--desktop" />

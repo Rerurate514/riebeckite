@@ -141,6 +141,16 @@ navigation({
 `primary` and `secondary` describe prominence, not placement. Where each list
 is rendered — a header, a footer, a sidebar — is the Site's decision.
 
+## Sidebar navigation
+
+Use `SidebarNavigation` for a deep documentation tree, not for the compact global links rendered by `SiteNav`.
+
+```tsx
+<SidebarNavigation items={items} searchable collapsible autoExpandActive />
+```
+
+It accepts the same `NavigationItem` tree. A parent with both `href` and children renders a separate link and disclosure button. The current page uses `aria-current="page"`; active ancestors are expanded without being marked current. Filtering keeps matching items and ancestors visible, then restores disclosure state when cleared. Interactive behavior is registered only with `navigation()`; server output remains readable without JavaScript.
+
 ## Options
 
 | Option | Type | Default | Description |

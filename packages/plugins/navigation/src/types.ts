@@ -6,6 +6,7 @@ export type NavigationItem = {
   readonly icon?: ContentIcon;
   readonly children?: readonly NavigationItem[];
   readonly external?: boolean;
+  readonly collapsed?: boolean;
 };
 
 export type NavigationOptions = {

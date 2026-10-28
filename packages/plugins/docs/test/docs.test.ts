@@ -493,21 +493,13 @@ test("component rendering uses the documented docs sidebar DOM contract", async 
 
   assert.match(
     html,
-    /<details class="rb-docs-sidebar-details" data-docs-sidebar-details="true" open=""/,
+    /<nav class="rb-sidebar-navigation rb-docs-sidebar" aria-label="Documentation"/,
   );
-  assert.match(
-    html,
-    /<summary class="rb-docs-sidebar-summary">Documentation<\/summary>/,
-  );
-  assert.match(
-    html,
-    /<nav class="rb-docs-sidebar" aria-label="Documentation" data-docs-sidebar/,
-  );
-  assert.match(html, /rb-docs-sidebar__list--level-1/);
-  assert.match(html, /rb-docs-sidebar__list--level-2/);
-  assert.match(html, /rb-docs-sidebar__section/);
+  assert.match(html, /rb-sidebar-navigation__list/);
+  assert.match(html, /rb-sidebar-navigation__section/);
+  assert.match(html, /data-sidebar-toggle/);
   assert.match(html, /aria-current="page"/);
-  assert.match(html, /data-docs-collapsed="false"/);
+  assert.match(html, /data-sidebar-expanded="true"/);
 });
 
 test("keeps the current branch expanded when a section is collapsed", async () => {

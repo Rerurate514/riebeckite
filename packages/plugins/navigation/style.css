@@ -142,3 +142,103 @@
     }
   }
 }
+
+@layer components {
+  .rb-sidebar-navigation {
+    color: var(--rb-sidebar-navigation-color, var(--rb-color-ink));
+    font-size: var(--rb-sidebar-navigation-font-size, 0.9375rem);
+  }
+  .rb-sidebar-navigation__list {
+    display: grid;
+    gap: var(--rb-sidebar-navigation-row-gap, 0.125rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rb-sidebar-navigation__item > .rb-sidebar-navigation__list {
+    margin-block-start: 0.125rem;
+    padding-inline-start: var(--rb-sidebar-navigation-indent, 1rem);
+  }
+  .rb-sidebar-navigation__row {
+    display: flex;
+    align-items: start;
+    min-width: 0;
+  }
+  .rb-sidebar-navigation__link,
+  .rb-sidebar-navigation__section {
+    min-width: 0;
+    flex: 1;
+    padding: 0.35rem 0.5rem;
+    color: inherit;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+  }
+  .rb-sidebar-navigation__link:hover {
+    background: var(
+      --rb-sidebar-navigation-hover,
+      color-mix(in srgb, var(--rb-color-accent) 10%, transparent)
+    );
+  }
+  .rb-sidebar-navigation__link:focus-visible,
+  .rb-sidebar-navigation__toggle:focus-visible,
+  .rb-sidebar-navigation__search input:focus-visible {
+    outline: 2px solid
+      var(--rb-sidebar-navigation-focus, var(--rb-color-accent));
+    outline-offset: 2px;
+  }
+  .rb-sidebar-navigation__link--active {
+    color: var(--rb-sidebar-navigation-active, var(--rb-color-accent));
+    font-weight: 700;
+  }
+  .rb-sidebar-navigation__section {
+    font-weight: 600;
+  }
+  .rb-sidebar-navigation__icon {
+    margin-inline-end: 0.35em;
+    vertical-align: -0.125em;
+  }
+  .rb-sidebar-navigation__toggle {
+    width: 2rem;
+    min-height: 2rem;
+    flex: 0 0 auto;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    background: transparent;
+  }
+  .rb-sidebar-navigation__toggle span {
+    display: inline-block;
+    transition: transform 120ms ease;
+  }
+  .rb-sidebar-navigation__item[data-sidebar-expanded="true"]
+    > .rb-sidebar-navigation__row
+    .rb-sidebar-navigation__toggle
+    span {
+    transform: rotate(90deg);
+  }
+  .rb-sidebar-navigation__item[data-sidebar-expanded="false"]
+    > .rb-sidebar-navigation__list {
+    display: none;
+  }
+  .rb-sidebar-navigation__search {
+    display: block;
+    margin-block-end: var(--rb-space-3, 1.5rem);
+  }
+  .rb-sidebar-navigation__search input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid var(--rb-color-border);
+    color: inherit;
+    background: var(--rb-color-surface);
+    font: inherit;
+  }
+  .rb-sidebar-navigation__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

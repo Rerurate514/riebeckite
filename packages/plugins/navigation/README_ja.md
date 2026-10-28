@@ -142,6 +142,16 @@ navigation({
 `primary` と `secondary` は配置ではなく目立ちやすさを表します。それぞれを
 ヘッダー・フッター・サイドバーのどこに描画するかは Site が決めます。
 
+## Sidebar navigation
+
+深いドキュメントツリーには、コンパクトなグローバルリンク用の `SiteNav` ではなく `SidebarNavigation` を使います。
+
+```tsx
+<SidebarNavigation items={items} searchable collapsible autoExpandActive />
+```
+
+同じ `NavigationItem` ツリーを受け取ります。`href` と子項目を持つ親ではリンクと開閉ボタンを分離します。現在のページには `aria-current="page"` を付け、祖先は現在ページとして扱わずに展開します。フィルターは一致項目と祖先を表示し、解除すると開閉状態に戻ります。操作用 JavaScript は `navigation()` を有効にした場合だけ登録され、JavaScript なしでもサーバー出力は読めます。
+
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |

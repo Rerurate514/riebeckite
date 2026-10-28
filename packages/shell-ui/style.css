@@ -1,0 +1,99 @@
+@layer components {
+  .rb-shell {
+    --rb-shell-header-height: 4rem;
+    --rb-shell-sidebar-width: 17rem;
+    --rb-shell-aside-width: 15rem;
+    --rb-shell-gap: var(--rb-layout-gap, 2rem);
+    --rb-shell-sticky-offset: var(--rb-shell-header-height);
+    min-height: 100dvh;
+    color: var(--rb-color-ink);
+    background: var(--rb-color-surface);
+  }
+
+  .rb-shell__header {
+    z-index: 20;
+    display: flex;
+    min-height: var(--rb-shell-header-height);
+    align-items: center;
+    gap: var(--rb-space-3, 1.5rem);
+    padding-inline: max(var(--rb-space-3, 1.5rem), env(safe-area-inset-left));
+    border-block-end: 1px solid var(--rb-color-border);
+    background: var(--rb-shell-header-background, var(--rb-color-surface));
+  }
+
+  .rb-shell__header[data-rb-shell-sticky="true"] {
+    position: sticky;
+    top: 0;
+  }
+  .rb-shell__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: calc(100dvh - var(--rb-shell-header-height));
+  }
+  .rb-shell__sidebar,
+  .rb-shell__aside {
+    min-width: 0;
+  }
+  .rb-shell__main {
+    min-width: 0;
+    padding: var(--rb-space-5, 2.5rem)
+      max(var(--rb-space-3, 1.5rem), env(safe-area-inset-right));
+  }
+  .rb-shell__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--rb-space-2, 1rem);
+  }
+  .rb-shell__drawer {
+    position: relative;
+  }
+  .rb-shell__drawer > summary {
+    cursor: pointer;
+  }
+  .rb-shell__drawer-panel {
+    position: absolute;
+    z-index: 30;
+    inset-inline-start: 0;
+    width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
+    padding: var(--rb-space-3, 1.5rem);
+    border: 1px solid var(--rb-color-border);
+    background: var(--rb-shell-drawer-background, var(--rb-color-surface));
+  }
+
+  @media (min-width: 64rem) {
+    .rb-shell__body {
+      grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr);
+    }
+    .rb-shell:has(.rb-shell__aside) .rb-shell__body {
+      grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr) var(
+          --rb-shell-aside-width
+        );
+    }
+    .rb-shell[data-rb-shell="blog"] .rb-shell__body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .rb-shell__sidebar {
+      position: sticky;
+      top: var(--rb-shell-sticky-offset);
+      align-self: start;
+      max-height: calc(100dvh - var(--rb-shell-sticky-offset));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
+      border-inline-end: 1px solid var(--rb-color-border);
+    }
+    .rb-shell__aside {
+      position: sticky;
+      top: var(--rb-shell-sticky-offset);
+      align-self: start;
+      max-height: calc(100dvh - var(--rb-shell-sticky-offset));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
+      border-inline-start: 1px solid var(--rb-color-border);
+    }
+    .rb-shell__drawer {
+      display: none;
+    }
+  }
+}

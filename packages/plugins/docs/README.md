@@ -71,11 +71,13 @@ fields you want to override and leave the rest of the vault untouched.
 
 The plugin provides React-like JSX components for site integration:
 
-- `<DocsSidebar items={...} currentPermalink? label? />` renders
-  `details.rb-docs-sidebar-details` with `nav.rb-docs-sidebar`
+- `<DocsSidebar items={...} currentPermalink? label? />` converts the Docs tree
+  to `SidebarNavigation` and renders `nav.rb-docs-sidebar`
 - `<DocsPrevNext previous? next? />` renders `nav.rb-docs-prev-next`
 
-The `initDocsSidebar` client keeps the sidebar collapsible.
+The `initDocsSidebar` client enables independent group disclosure and sidebar
+filtering. It reuses the navigation plugin renderer; the navigation plugin never
+depends on Docs.
 
 ## l10n and publishing
 

@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/plugin-navigation": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
   },

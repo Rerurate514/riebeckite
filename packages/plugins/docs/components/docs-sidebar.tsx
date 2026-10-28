@@ -1,4 +1,8 @@
 import type { PluginComponent } from "@riebeckite/core";
+import {
+  type NavigationItem,
+  SidebarNavigation,
+} from "@riebeckite/plugin-navigation";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { getDocsNavigation } from "../src/data.js";
@@ -25,21 +29,17 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
           options,
         })
       : []);
-  const currentPermalink = props.currentPermalink ?? article?.entry?.permalink;
-  const label = props.label ?? options?.sidebar?.label ?? "Docs navigation";
   if (items.length === 0) return html``;
-  const permalink = currentPermalink ?? "";
+  const label = props.label ?? options?.sidebar?.label ?? "Docs navigation";
   const sidebar = (
-    <details class="rb-docs-sidebar-details" data-docs-sidebar-details open>
-      <summary class="rb-docs-sidebar-summary">{label}</summary>
-      <nav class="rb-docs-sidebar" aria-label={label} data-docs-sidebar>
-        <DocsSidebarItems
-          items={items}
-          currentPermalink={permalink}
-          level={1}
-        />
-      </nav>
-    </details>
+    <SidebarNavigation
+      items={toNavigationItems(items)}
+      path={props.currentPermalink ?? article?.entry?.permalink}
+      label={label}
+      searchable
+      autoExpandActive
+      class="rb-docs-sidebar"
+    />
   );
   return props.placement === "article-rail" ? (
     <aside class="rb-docs-sidebar-rail">{sidebar}</aside>
@@ -48,87 +48,15 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
   );
 }) satisfies PluginComponent<DocsSidebarProps>;
 
-function DocsSidebarItems({
-  items,
-  currentPermalink,
-  level,
-}: {
-  readonly items: readonly DocsNavigationItem[];
-  readonly currentPermalink: string;
-  readonly level: number;
-}) {
-  return (
-    <ul
-      class={`rb-docs-sidebar__list rb-docs-sidebar__list--level-${level}`}
-      data-docs-level={String(level)}
-    >
-      {items.map((item) => (
-        <DocsSidebarItem
-          item={item}
-          currentPermalink={currentPermalink}
-          level={level}
-          key={item.slug ?? item.title}
-        />
-      ))}
-    </ul>
-  );
-}
-
-function DocsSidebarItem({
-  item,
-  currentPermalink,
-  level,
-}: {
-  readonly item: DocsNavigationItem;
-  readonly currentPermalink: string;
-  readonly level: number;
-}) {
-  const isCurrent = item.href === currentPermalink;
-  const isCurrentBranch = item.children.some((child) =>
-    containsPermalink(child, currentPermalink),
-  );
-  const collapsed = item.collapsed === true && !isCurrent && !isCurrentBranch;
-  return (
-    <li
-      class={`rb-docs-sidebar__item rb-docs-sidebar__item--level-${level}`}
-      data-docs-level={String(level)}
-      data-docs-collapsed={
-        item.children.length > 0 ? String(collapsed) : undefined
-      }
-    >
-      {item.href ? (
-        <a
-          class="rb-docs-sidebar__link"
-          href={item.href}
-          data-docs-link
-          aria-current={isCurrent ? "page" : undefined}
-        >
-          {item.title}
-        </a>
-      ) : (
-        <span class="rb-docs-sidebar__section" data-docs-section>
-          {item.title}
-        </span>
-      )}
-      {item.children.length > 0 ? (
-        <DocsSidebarItems
-          items={item.children}
-          currentPermalink={currentPermalink}
-          level={level + 1}
-        />
-      ) : null}
-    </li>
-  );
-}
-
-function containsPermalink(
-  item: DocsNavigationItem,
-  currentPermalink: string,
-): boolean {
-  return (
-    item.href === currentPermalink ||
-    item.children.some((child) => containsPermalink(child, currentPermalink))
-  );
+function toNavigationItems(
+  items: readonly DocsNavigationItem[],
+): readonly NavigationItem[] {
+  return items.map((item) => ({
+    label: item.title,
+    ...(item.href ? { href: item.href } : {}),
+    ...(item.collapsed === undefined ? {} : { collapsed: item.collapsed }),
+    children: toNavigationItems(item.children),
+  }));
 }
 
 export default DocsSidebar;

@@ -46,7 +46,6 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin-right: auto;
     color: var(--rb-color-ink);
     font-weight: 700;
     text-decoration: none;
@@ -64,6 +63,13 @@
     flex: none;
     align-items: center;
     gap: 0.5rem;
+  }
+
+  .site-header__end {
+    display: flex;
+    align-items: center;
+    gap: var(--rb-space-3);
+    margin-left: auto;
   }
 
   @media (max-width: 47.999rem) {

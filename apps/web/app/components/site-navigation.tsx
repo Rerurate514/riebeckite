@@ -21,16 +21,18 @@ export function SiteHeader(props: { readonly children?: unknown }) {
         <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
         <span>{site?.config.site.title}</span>
       </a>
-      {hasNavigation ? (
-        <div class="site-header__primary-navigation">
-          <SiteNav
-            placement="primary"
-            omitHome
-            localizeHref={(href) => localizeDocsHref(href, path)}
-          />
-        </div>
-      ) : null}
-      <div class="site-header__actions">{props.children}</div>
+      <div class="site-header__end">
+        {hasNavigation ? (
+          <div class="site-header__primary-navigation">
+            <SiteNav
+              placement="primary"
+              omitHome
+              localizeHref={(href) => localizeDocsHref(href, path)}
+            />
+          </div>
+        ) : null}
+        <div class="site-header__actions">{props.children}</div>
+      </div>
     </div>
   );
 }

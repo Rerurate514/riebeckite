@@ -5,8 +5,9 @@
 
   .riebeckite-page {
     --rb-site-header-logo-size: 1.75rem;
+    --rb-site-header-padding-block: calc(var(--rb-space-3) - 0.25rem);
     --rb-site-header-height: calc(
-      var(--rb-space-3) *
+      var(--rb-site-header-padding-block) *
       2 +
       var(--rb-site-header-logo-size) +
       var(--rb-rule-width, 1px)
@@ -37,7 +38,7 @@
     display: flex;
     align-items: center;
     gap: var(--rb-space-3);
-    padding-block: var(--rb-space-3);
+    padding-block: var(--rb-site-header-padding-block);
   }
 
   .rb-site-header__home {

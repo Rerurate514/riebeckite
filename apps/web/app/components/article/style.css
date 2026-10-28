@@ -45,7 +45,6 @@
     position: sticky;
     z-index: 1;
     top: 0;
-    padding-block: var(--rb-space-1, 0.5rem);
     background: var(--rb-color-surface);
   }
 

@@ -121,6 +121,14 @@ for (const theme of ["light", "dark"] as const) {
           filterTop: document
             .querySelector<HTMLElement>(".rb-sidebar-navigation__search")
             ?.getBoundingClientRect().top,
+          filterHeight: document
+            .querySelector<HTMLElement>(".rb-sidebar-navigation__search")
+            ?.getBoundingClientRect().height,
+          inputHeight: document
+            .querySelector<HTMLInputElement>(
+              ".rb-sidebar-navigation__search input",
+            )
+            ?.getBoundingClientRect().height,
           tocScrollable: toc.scrollHeight > toc.clientHeight,
         };
       });
@@ -132,6 +140,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.ok(initial.docsScrollable);
       assert.equal(initial.docsPaddingEnd, 16);
       assert.equal(initial.filterTop, initial.docsTop);
+      assert.equal(initial.filterHeight, initial.inputHeight);
       assert.ok(initial.tocScrollable);
 
       await page.evaluate(() => window.scrollTo(0, 1));

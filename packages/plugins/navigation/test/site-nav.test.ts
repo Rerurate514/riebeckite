@@ -3,7 +3,7 @@ import { test } from "node:test";
 
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-
+import { SidebarNavigation } from "../components/sidebar-navigation.tsx";
 import {
   MobileSiteNav,
   SiteNav,
@@ -32,6 +32,26 @@ test("MobileSiteNav owns the mobile menu markup", () => {
   assert.match(html, /^<details class="rb-nav__mobile">/);
   assert.match(html, /<summary class="rb-nav__toggle">Menu<\/summary>/);
   assert.match(html, /<nav class="rb-nav"/);
+});
+
+test("SidebarNavigation emits stable keys for persisted disclosure state", () => {
+  const html = renderToString(
+    SidebarNavigation({
+      items: [
+        {
+          label: "Guide",
+          href: "/guide",
+          children: [{ label: "Install", href: "/guide/install" }],
+        },
+      ],
+      nativeDetails: true,
+      stateKey: "docs:guide:en",
+    }),
+  );
+
+  assert.match(html, /data-sidebar-state-key="docs:guide:en"/);
+  assert.match(html, /data-sidebar-key="root\/\/guide"/);
+  assert.match(html, /data-sidebar-key="root\/\/guide\/\/guide\/install"/);
 });
 
 test("SiteNav omits the root item when requested", () => {

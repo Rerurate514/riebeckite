@@ -39,6 +39,9 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
       searchable
       nativeDetails
       autoExpandActive
+      stateKey={
+        options ? `docs:${options.root}:${site?.language ?? ""}` : undefined
+      }
       class="rb-docs-sidebar"
     />
   );

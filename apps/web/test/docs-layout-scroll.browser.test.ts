@@ -113,6 +113,9 @@ for (const theme of ["light", "dark"] as const) {
           docsStickyTop: Number.parseFloat(getComputedStyle(docs).top),
           tocStickyTop: Number.parseFloat(getComputedStyle(toc).top),
           docsScrollable: docs.scrollHeight > docs.clientHeight,
+          docsPaddingEnd: Number.parseFloat(
+            getComputedStyle(docs).paddingRight,
+          ),
           tocScrollable: toc.scrollHeight > toc.clientHeight,
         };
       });
@@ -122,6 +125,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.ok(Math.abs(initial.tocTop - initial.tocStickyTop) <= 0.5);
       assert.ok(Math.abs(initial.tocEyebrowTop - initial.tocTop) <= 1);
       assert.ok(initial.docsScrollable);
+      assert.equal(initial.docsPaddingEnd, 40);
       assert.ok(initial.tocScrollable);
 
       await page.evaluate(() => window.scrollTo(0, 1));

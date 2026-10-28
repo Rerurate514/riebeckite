@@ -10,6 +10,7 @@ export type SidebarNavigationProps = {
   readonly collapsible?: boolean;
   readonly nativeDetails?: boolean;
   readonly autoExpandActive?: boolean;
+  readonly stateKey?: string;
   readonly class?: string;
   readonly className?: string;
 };
@@ -29,6 +30,7 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
       aria-label={props.label ?? "Sidebar navigation"}
       data-sidebar-navigation
       data-sidebar-auto-expand={autoExpandActive ? "true" : "false"}
+      data-sidebar-state-key={props.stateKey}
     >
       {searchable ? (
         <label class="rb-sidebar-navigation__search">
@@ -48,6 +50,7 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
         collapsible={collapsible}
         nativeDetails={nativeDetails}
         autoExpandActive={autoExpandActive}
+        keyPath="root"
       />
     </nav>
   );
@@ -60,6 +63,7 @@ type SidebarItemsProps = {
   readonly collapsible: boolean;
   readonly nativeDetails: boolean;
   readonly autoExpandActive: boolean;
+  readonly keyPath: string;
 };
 
 function SidebarItems(props: SidebarItemsProps) {
@@ -73,6 +77,7 @@ function SidebarItems(props: SidebarItemsProps) {
           collapsible={props.collapsible}
           nativeDetails={props.nativeDetails}
           autoExpandActive={props.autoExpandActive}
+          keyPath={`${props.keyPath}/${item.href ?? `group-${index}`}`}
           key={`${item.href ?? item.label}-${index}`}
         />
       ))}
@@ -120,6 +125,7 @@ function SidebarItem(
       class="rb-sidebar-navigation__item"
       data-sidebar-item
       data-sidebar-label={props.item.label.toLocaleLowerCase()}
+      data-sidebar-key={props.keyPath}
       data-sidebar-expanded={hasChildren ? String(expanded) : undefined}
     >
       {hasChildren && props.collapsible && props.nativeDetails ? (

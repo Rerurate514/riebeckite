@@ -35,6 +35,7 @@
     align-self: start;
     max-height: var(--rb-docs-rail-max-block-size, calc(100dvh - 2rem));
     margin: 0;
+    padding-inline-end: var(--rb-layout-gap, 2rem);
     overflow-y: auto;
   }
 

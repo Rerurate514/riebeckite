@@ -49,6 +49,16 @@ export function mountThemePreview(
   const fixture = required<HTMLSelectElement>(root, "[data-preview-fixture]");
   const viewport = required<HTMLElement>(root, "[data-preview-viewport]");
   const settings = required<HTMLElement>(root, "[data-preview-theme-settings]");
+  const reset = root.querySelector<HTMLButtonElement>("[data-preview-reset]");
+  const updateReset = () => {
+    if (!reset) return;
+    reset.hidden =
+      themeSelect.value === options.defaultTheme &&
+      mode.value === "system" &&
+      fixture.selectedIndex === 0 &&
+      viewport.dataset.previewViewport === "desktop" &&
+      Object.values(values).every((value) => Object.keys(value).length === 0);
+  };
   const selectTheme = () => {
     renderThemeSettings(
       settings,
@@ -75,6 +85,8 @@ export function mountThemePreview(
       updateConfiguration(root, options, values, themeSelect.value, mode.value),
     { signal: lifetime.signal },
   );
+  root.addEventListener("input", updateReset, { signal: lifetime.signal });
+  root.addEventListener("change", updateReset, { signal: lifetime.signal });
   settings.addEventListener(
     "change",
     () =>
@@ -125,31 +137,32 @@ export function mountThemePreview(
             .forEach((item) => {
               item.setAttribute("aria-pressed", String(item === button));
             });
+          updateReset();
         },
         { signal: lifetime.signal },
       );
     });
-  root
-    .querySelector<HTMLButtonElement>("[data-preview-reset]")
-    ?.addEventListener(
-      "click",
-      () => {
-        for (const key of Object.keys(values)) delete values[key];
-        themeSelect.value = options.defaultTheme;
-        mode.value = "system";
-        fixture.selectedIndex = 0;
-        viewport.dataset.previewViewport = "desktop";
-        root
-          .querySelectorAll<HTMLButtonElement>("[data-preview-device]")
-          .forEach((button, index) => {
-            button.setAttribute("aria-pressed", String(index === 0));
-          });
-        themeSelect.dispatchEvent(new Event("change", { bubbles: true }));
-        fixture.dispatchEvent(new Event("change", { bubbles: true }));
-      },
-      { signal: lifetime.signal },
-    );
+  reset?.addEventListener(
+    "click",
+    () => {
+      for (const key of Object.keys(values)) delete values[key];
+      themeSelect.value = options.defaultTheme;
+      mode.value = "system";
+      fixture.selectedIndex = 0;
+      viewport.dataset.previewViewport = "desktop";
+      root
+        .querySelectorAll<HTMLButtonElement>("[data-preview-device]")
+        .forEach((button, index) => {
+          button.setAttribute("aria-pressed", String(index === 0));
+        });
+      themeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      fixture.dispatchEvent(new Event("change", { bubbles: true }));
+      updateReset();
+    },
+    { signal: lifetime.signal },
+  );
   selectTheme();
+  updateReset();
   return () => {
     lifetime.abort();
     disposePreview();

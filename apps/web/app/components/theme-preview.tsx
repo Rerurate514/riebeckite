@@ -38,7 +38,11 @@ export function ThemePreview({
       data-preview-pages={serializedPages}
       data-theme-preview-mode={mode}
     >
-      <output data-preview-status aria-live="polite">
+      <output
+        class="theme-showcase__status"
+        data-preview-status
+        aria-live="polite"
+      >
         {japanese ? "プレビューを準備中" : "Preparing preview"}
       </output>
       <div class="theme-showcase__controls">
@@ -122,6 +126,7 @@ export function ThemePreview({
             class="theme-showcase__reset"
             type="button"
             data-preview-reset
+            hidden
           >
             {japanese ? "プレビューをリセット" : "Reset preview"}
           </button>

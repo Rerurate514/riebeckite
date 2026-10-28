@@ -1,5 +1,6 @@
 ---
 title: Configuration
+publish: true
 order: 2
 ---
 

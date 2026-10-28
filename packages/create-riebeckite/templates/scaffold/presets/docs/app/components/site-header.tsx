@@ -6,7 +6,7 @@ export function SiteHeader() {
   const site = useSiteContext();
 
   return (
-    <header class="site-header rb-site-header">
+    <div class="site-header rb-site-header">
       <a href="/" class="site-header__home rb-site-header__home">
         <img
           src="/riebeckite-logo.png"
@@ -24,7 +24,7 @@ export function SiteHeader() {
         <MobileSiteNav placement="primary" omitHome />
       </div>
       <ColorModeToggle />
-    </header>
+    </div>
   );
 }
 

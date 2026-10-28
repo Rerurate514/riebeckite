@@ -12,7 +12,14 @@ export type SiteShellProps = ShellProps & {
 
 export type ShellHeaderProps = ShellProps & { readonly sticky?: boolean };
 export type ShellSidebarProps = ShellProps & { readonly collapsible?: boolean };
-export type ShellDrawerProps = ShellProps & { readonly label?: string };
+export type ShellMainProps = ShellProps & {
+  readonly id?: string;
+  readonly tabindex?: number;
+};
+export type ShellDrawerProps = ShellProps & {
+  readonly label?: string;
+  readonly closeLabel?: string;
+};
 
 export function SiteShell(props: SiteShellProps) {
   return (
@@ -55,9 +62,13 @@ export function ShellSidebar(props: ShellSidebarProps) {
   );
 }
 
-export function ShellMain(props: ShellProps) {
+export function ShellMain(props: ShellMainProps) {
   return (
-    <main class={join("rb-shell__main", props.class, props.className)}>
+    <main
+      id={props.id}
+      tabindex={props.tabindex}
+      class={join("rb-shell__main", props.class, props.className)}
+    >
       {props.children}
     </main>
   );
@@ -73,10 +84,42 @@ export function ShellAside(props: ShellProps) {
 
 export function ShellDrawer(props: ShellDrawerProps) {
   return (
-    <details class={join("rb-shell__drawer", props.class, props.className)}>
-      <summary>{props.label ?? "Navigation"}</summary>
-      <div class="rb-shell__drawer-panel">{props.children}</div>
-    </details>
+    <div
+      class={join("rb-shell__drawer", props.class, props.className)}
+      data-rb-shell-drawer
+    >
+      <button
+        class="rb-shell__drawer-trigger"
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        data-rb-shell-drawer-open
+      >
+        {props.label ?? "Navigation"}
+      </button>
+      <dialog
+        class="rb-shell__drawer-dialog"
+        aria-label={props.label ?? "Navigation"}
+        data-rb-shell-drawer-dialog
+      >
+        <div class="rb-shell__drawer-panel">
+          <div class="rb-shell__drawer-header">
+            <span>{props.label ?? "Navigation"}</span>
+            <button
+              class="rb-shell__drawer-close"
+              type="button"
+              aria-label={
+                props.closeLabel ?? `Close ${props.label ?? "Navigation"}`
+              }
+              data-rb-shell-drawer-close
+            >
+              ×
+            </button>
+          </div>
+          {props.children}
+        </div>
+      </dialog>
+    </div>
   );
 }
 

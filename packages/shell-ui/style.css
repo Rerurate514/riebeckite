@@ -32,6 +32,7 @@
   }
   .rb-shell__sidebar,
   .rb-shell__aside {
+    display: none;
     min-width: 0;
   }
   .rb-shell__main {
@@ -47,17 +48,53 @@
   .rb-shell__drawer {
     position: relative;
   }
-  .rb-shell__drawer > summary {
+  .rb-shell__drawer-trigger,
+  .rb-shell__drawer-close {
+    border: 1px solid var(--rb-color-border);
+    color: inherit;
     cursor: pointer;
+    background: var(--rb-color-surface);
+    font: inherit;
+  }
+  .rb-shell__drawer-trigger {
+    min-height: 2.5rem;
+    padding-inline: 0.75rem;
+  }
+  .rb-shell__drawer-dialog {
+    width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+  .rb-shell__drawer-dialog::backdrop {
+    background: var(--rb-color-overlay, rgb(0 0 0 / 0.5));
   }
   .rb-shell__drawer-panel {
-    position: absolute;
-    z-index: 30;
-    inset-inline-start: 0;
-    width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
+    min-height: 100%;
     padding: var(--rb-space-3, 1.5rem);
-    border: 1px solid var(--rb-color-border);
     background: var(--rb-shell-drawer-background, var(--rb-color-surface));
+  }
+  .rb-shell__drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--rb-space-2, 1rem);
+    margin-block-end: var(--rb-space-3, 1.5rem);
+    font-weight: 700;
+  }
+  .rb-shell__drawer-close {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  html.rb-shell-drawer-open {
+    overflow: hidden;
   }
 
   @media (min-width: 64rem) {
@@ -73,6 +110,7 @@
       grid-template-columns: minmax(0, 1fr);
     }
     .rb-shell__sidebar {
+      display: block;
       position: sticky;
       top: var(--rb-shell-sticky-offset);
       align-self: start;
@@ -83,6 +121,7 @@
       border-inline-end: 1px solid var(--rb-color-border);
     }
     .rb-shell__aside {
+      display: block;
       position: sticky;
       top: var(--rb-shell-sticky-offset);
       align-self: start;

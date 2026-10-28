@@ -156,6 +156,7 @@ async function collectStarterClosure(
 }
 
 let packedWorkspacePromise: Promise<PackedPackages> | undefined;
+let packedDocsWorkspacePromise: Promise<PackedPackages> | undefined;
 
 async function packStarterWorkspace(siteDir: string): Promise<PackedPackages> {
   const tarballDir = await fs.mkdtemp(
@@ -193,6 +194,15 @@ async function prepareGeneratedSiteInstall(siteDir: string): Promise<void> {
   }
   packedWorkspacePromise ??= packStarterWorkspace(siteDir);
   writeFileDependencies(siteDir, await packedWorkspacePromise);
+}
+
+async function prepareGeneratedDocsSiteInstall(siteDir: string): Promise<void> {
+  if (process.env.RIEBECKITE_REGISTRY_E2E === "1") {
+    await assertRegistryArtifacts(siteDir);
+    return;
+  }
+  packedDocsWorkspacePromise ??= packStarterWorkspace(siteDir);
+  writeFileDependencies(siteDir, await packedDocsWorkspacePromise);
 }
 
 // =============================================================================
@@ -302,6 +312,36 @@ test("Contract 1: generated starter site installs and builds successfully", asyn
         `${relative} skip link must precede the repeated header`,
       );
     }
+  });
+});
+
+test("generated docs site installs, checks, and builds the shell", async () => {
+  await withTemporaryDirectory("riebeckite-docs-contract-", async (tmpDir) => {
+    const targetDir = path.join(tmpDir, "docs-site");
+    await scaffoldRiebeckiteSite({
+      targetDirectory: targetDir,
+      preset: "docs",
+    });
+    const article = await readFile(targetDir, "app/components/article.tsx");
+    const client = await readFile(targetDir, "app/client.ts");
+    assert.match(article ?? "", /<ShellDrawer label="Documentation"/);
+    assert.match(article ?? "", /<ShellSidebar>/);
+    assert.match(client ?? "", /initShellDrawer/);
+
+    const { execSync } = await import("node:child_process");
+    await prepareGeneratedDocsSiteInstall(targetDir);
+    execSync("npm install", { cwd: targetDir, stdio: "pipe" });
+    execSync("npm exec riebeckite check", { cwd: targetDir, stdio: "pipe" });
+    execSync("npm exec riebeckite build", { cwd: targetDir, stdio: "pipe" });
+
+    const htmlFiles = await collectHtmlFiles(path.join(targetDir, "dist"));
+    assert.ok(htmlFiles.length > 0, "docs build must emit HTML");
+    const pages = await Promise.all(
+      htmlFiles.map(async (file) => fs.readFile(file, "utf8")),
+    );
+    const html = pages.join("\n");
+    assert.match(html, /data-rb-shell="docs"/);
+    assert.match(html, /<main id="main-content" tabindex="-1"/);
   });
 });
 

@@ -1,5 +1,6 @@
 ---
 title: Getting started
+publish: true
 order: 1
 ---
 

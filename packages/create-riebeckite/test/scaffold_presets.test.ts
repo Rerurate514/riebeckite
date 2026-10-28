@@ -343,6 +343,14 @@ test("each preset generates its intended self-contained composition", async () =
         );
         assert.match(article, /<DocsSidebar \/>/);
         assert.match(article, /<DocsPrevNext \/>/);
+        assert.match(article, /<SiteShell variant="docs">/);
+        assert.match(article, /<ShellDrawer label="Documentation"/);
+        const packageJson = await fs.readFile(
+          path.join(targetDirectory, "package.json"),
+          "utf8",
+        );
+        assert.match(packageJson, /"@riebeckite\/shell-ui"/);
+        assert.ok(await exists(path.join(targetDirectory, "app/client.ts")));
         assert.ok(
           await exists(
             path.join(targetDirectory, "content/docs/getting-started.md"),

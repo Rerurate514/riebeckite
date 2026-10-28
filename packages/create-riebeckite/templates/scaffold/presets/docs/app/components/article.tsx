@@ -2,25 +2,45 @@ import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite
 import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
 import { TableOfContents } from "@riebeckite/plugin-toc";
+import {
+  ShellAside,
+  ShellBody,
+  ShellDrawer,
+  ShellHeader,
+  ShellMain,
+  ShellSidebar,
+  SiteShell,
+} from "@riebeckite/shell-ui";
+import { SiteHeader } from "./site-header";
 
 export function SiteArticle() {
   return (
     <Article class="site-article">
-      <div class="site-article__layout">
-        <aside class="site-article__sidebar">
-          <DocsSidebar />
-        </aside>
-        <ArticleContent>
-          <Breadcrumbs />
-          <ArticleBody />
-          <ArticleFooter class="site-article__footer">
-            <DocsPrevNext />
-          </ArticleFooter>
-        </ArticleContent>
-        <aside class="site-article__aside">
-          <TableOfContents className="rr-table-of-contents--desktop" />
-        </aside>
-      </div>
+      <SiteShell variant="docs">
+        <ShellHeader sticky>
+          <SiteHeader />
+          <ShellDrawer label="Documentation" closeLabel="Close documentation">
+            <DocsSidebar />
+          </ShellDrawer>
+        </ShellHeader>
+        <ShellBody>
+          <ShellSidebar>
+            <DocsSidebar />
+          </ShellSidebar>
+          <ShellMain id="main-content" tabindex={-1}>
+            <ArticleContent>
+              <Breadcrumbs />
+              <ArticleBody />
+              <ArticleFooter class="site-article__footer">
+                <DocsPrevNext />
+              </ArticleFooter>
+            </ArticleContent>
+          </ShellMain>
+          <ShellAside>
+            <TableOfContents className="rr-table-of-contents--desktop" />
+          </ShellAside>
+        </ShellBody>
+      </SiteShell>
     </Article>
   );
 }

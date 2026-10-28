@@ -45,7 +45,9 @@ export default function Article(props: Props) {
     <ArticlePrimitive post={props.content} entry={props.entry}>
       <ArticleLayout>
         <ArticleContent>
-          {props.headerContent}
+          {props.headerContent ? (
+            <div class="rb-article-header-context">{props.headerContent}</div>
+          ) : null}
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           {props.metadataContent}
           <ArticleMetadata locale="ja-JP" />

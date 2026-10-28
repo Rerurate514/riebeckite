@@ -2,6 +2,21 @@
   margin-block-start: var(--rb-space-2);
 }
 
+.rb-article-header-context {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rb-space-2);
+  min-width: 0;
+}
+
+@media (max-width: 48rem) {
+  .rb-article-header-context {
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
 .rb-article-outro {
   min-width: 0;
   padding-inline: var(--rb-space-2);

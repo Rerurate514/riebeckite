@@ -3,11 +3,30 @@
     --rb-shell-header-height: 4rem;
     --rb-shell-sidebar-width: 17rem;
     --rb-shell-aside-width: 15rem;
-    --rb-shell-gap: var(--rb-layout-gap, 2rem);
-    --rb-shell-sticky-offset: var(--rb-shell-header-height);
+    --rb-shell-panel-padding: var(--rb-space-3, 1.5rem);
+    --rb-shell-sticky-offset: 0px;
     min-height: 100dvh;
     color: var(--rb-color-ink);
     background: var(--rb-color-surface);
+  }
+
+  .rb-shell:has(> .rb-shell__header[data-rb-shell-sticky="true"]) {
+    --rb-shell-sticky-offset: var(--rb-shell-header-height);
+  }
+
+  .rb-shell__container {
+    width: min(
+      100%,
+      var(--rb-shell-max-width, var(--rb-layout-page-max, 80rem))
+    );
+    min-width: 0;
+    margin-inline: auto;
+  }
+
+  .rb-content-container {
+    width: min(100%, var(--rb-content-max-width, 54rem));
+    min-width: 0;
+    margin-inline: auto;
   }
 
   .rb-shell__header {
@@ -19,6 +38,12 @@
     padding-inline: max(var(--rb-space-3, 1.5rem), env(safe-area-inset-left));
     border-block-end: 1px solid var(--rb-color-border);
     background: var(--rb-shell-header-background, var(--rb-color-surface));
+  }
+
+  .rb-shell__header > .rb-shell__container {
+    display: flex;
+    align-items: center;
+    gap: inherit;
   }
 
   .rb-shell__header[data-rb-shell-sticky="true"] {
@@ -61,6 +86,7 @@
     padding-inline: 0.75rem;
   }
   .rb-shell__drawer-panel {
+    box-sizing: border-box;
     position: absolute;
     z-index: 30;
     width: min(var(--rb-shell-sidebar-width), calc(100vw - 2rem));
@@ -72,11 +98,8 @@
   }
 
   @media (min-width: 48rem) {
-    .rb-shell__body {
+    .rb-shell__body:has(> .rb-shell__sidebar) {
       grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr);
-    }
-    .rb-shell[data-rb-shell="blog"] .rb-shell__body {
-      grid-template-columns: minmax(0, 1fr);
     }
     .rb-shell__sidebar {
       display: block;
@@ -86,7 +109,7 @@
       max-height: calc(100dvh - var(--rb-shell-sticky-offset));
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
+      padding: var(--rb-shell-panel-padding);
       border-inline-end: 1px solid var(--rb-color-border);
     }
     .rb-shell__drawer {
@@ -94,10 +117,13 @@
     }
   }
   @media (min-width: 64rem) {
-    .rb-shell:has(.rb-shell__aside) .rb-shell__body {
+    .rb-shell__body:has(> .rb-shell__sidebar):has(> .rb-shell__aside) {
       grid-template-columns: var(--rb-shell-sidebar-width) minmax(0, 1fr) var(
           --rb-shell-aside-width
         );
+    }
+    .rb-shell__body:not(:has(> .rb-shell__sidebar)):has(> .rb-shell__aside) {
+      grid-template-columns: minmax(0, 1fr) var(--rb-shell-aside-width);
     }
     .rb-shell__aside {
       display: block;
@@ -107,7 +133,7 @@
       max-height: calc(100dvh - var(--rb-shell-sticky-offset));
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: var(--rb-space-5, 2.5rem) var(--rb-shell-gap);
+      padding: var(--rb-shell-panel-padding);
       border-inline-start: 1px solid var(--rb-color-border);
     }
   }

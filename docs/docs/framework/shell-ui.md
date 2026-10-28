@@ -5,25 +5,29 @@ title: Shell UI
 # Shell UI
 
 `@riebeckite/shell-ui` provides composable site layout primitives. It owns Grid
-placement and semantic layout tokens; themes only override their CSS values.
+placement, scrolling, sticky positioning, and semantic layout tokens; themes
+only override their CSS values. Layouts are expressed by component composition,
+not a `SiteShell` variant.
 
 ```tsx
-import { ShellAside, ShellBody, ShellHeader, ShellMain, ShellSidebar, SiteShell } from "@riebeckite/shell-ui";
+import { ContentContainer, ShellAside, ShellBody, ShellHeader, ShellMain, ShellSidebar, SiteShell } from "@riebeckite/shell-ui";
 import { SidebarNavigation } from "@riebeckite/plugin-navigation";
 
-<SiteShell variant="docs">
+<SiteShell>
   <ShellHeader sticky>...</ShellHeader>
   <ShellBody>
     <ShellSidebar><SidebarNavigation items={items} searchable autoExpandActive /></ShellSidebar>
-    <ShellMain>{children}</ShellMain>
+    <ShellMain><ContentContainer>{children}</ContentContainer></ShellMain>
     <ShellAside><TableOfContents /></ShellAside>
   </ShellBody>
 </SiteShell>
 ```
 
-Use `docs` for header, sidebar, main and table of contents; `wiki` omits the
-aside; `blog` uses centered main content; `dashboard` uses the same grid with
-application content. `ShellDrawer` is a native-details mobile fallback.
+Use a header, sidebar, main, and aside for Docs; omit the aside for Wiki; wrap
+the header and body in `ShellContainer` for a centered Blog; use the same Grid
+with application content for a Dashboard. `ShellContainer` limits the Shell,
+while `ContentContainer` limits reading width inside Main. `ShellDrawer` is a
+native-details mobile fallback.
 
 `SiteNav` is for compact primary or footer navigation. `SidebarNavigation` is
 for deep document trees: it supports independent expansion, active-ancestor

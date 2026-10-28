@@ -6,9 +6,7 @@ type ShellProps = {
   readonly className?: string;
 };
 
-export type SiteShellProps = ShellProps & {
-  readonly variant?: "docs" | "wiki" | "blog" | "dashboard";
-};
+export type SiteShellProps = ShellProps;
 
 export type ShellHeaderProps = ShellProps & { readonly sticky?: boolean };
 export type ShellSidebarProps = ShellProps & { readonly collapsible?: boolean };
@@ -22,10 +20,23 @@ export type ShellDrawerProps = ShellProps & {
 
 export function SiteShell(props: SiteShellProps) {
   return (
-    <div
-      class={join("rb-shell", props.class, props.className)}
-      data-rb-shell={props.variant ?? "docs"}
-    >
+    <div class={join("rb-shell", props.class, props.className)}>
+      {props.children}
+    </div>
+  );
+}
+
+export function ShellContainer(props: ShellProps) {
+  return (
+    <div class={join("rb-shell__container", props.class, props.className)}>
+      {props.children}
+    </div>
+  );
+}
+
+export function ContentContainer(props: ShellProps) {
+  return (
+    <div class={join("rb-content-container", props.class, props.className)}>
       {props.children}
     </div>
   );

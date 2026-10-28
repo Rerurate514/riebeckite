@@ -42,6 +42,7 @@ flowchart LR
 | Shared utilities and contracts for diagram plugins | [Diagram plugin infrastructure](./diagram-infrastructure.md) |
 | How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
+| Application Shell composition and responsive layout primitives | [Shell UI](./shell-ui.md) |
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
 | How plugins declare build dependencies | [Build dependency contract](./build-dependency.md) |
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
@@ -113,4 +114,3 @@ Build a site with Riebeckite
 The Framework chapter covers Riebeckite's **internal design and framework development**. Normal usage — creating a site, adding content, configuring plugins and themes, and deploying — is described in [Getting Started](../getting-started/README.md) and Guides.
 
 Keeping this boundary separate lets people who only want to build a site with Riebeckite do so without learning the internals of the framework.
-

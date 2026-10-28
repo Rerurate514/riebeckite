@@ -46,6 +46,7 @@ flowchart LR
 | Diagram Plugin の共有 utility と契約 | [Diagram Plugin Infrastructure](./diagram-infrastructure.ja.md) |
 | Plugin が独立したページを提供する仕組み | [Page System](./page-system.ja.md) |
 | Theme が見た目を変更する仕組み | [Theme System](./theme-system.ja.md) |
+| Application Shell の組み立てとレスポンシブレイアウトのプリミティブ | [Shell UI](./shell-ui.ja.md) |
 | Build と Incremental Build の仕組み | [Build System](./build-system.ja.md) |
 | Plugin が build dependency を宣言する仕組み | [Build Dependency の取り決め](./build-dependency.ja.md) |
 | Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.ja.md) |

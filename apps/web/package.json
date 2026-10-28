@@ -3,13 +3,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predev": "tsx scripts/build_images.ts",
-    "prebuild": "tsx scripts/build_images.ts",
+    "predev": "tsx --conditions=source scripts/build_images.ts",
+    "prebuild": "tsx --conditions=source scripts/build_images.ts",
     "build": "vite build --mode client && vite build && node scripts/build_worker.mjs",
     "preview": "wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "rb": "npm run prebuild && npm run build && npm run preview",
-    "test": "node --import tsx --test \"test/*.test.ts\""
+    "test": "node --conditions=source --import tsx --test \"test/*.test.ts\""
   },
   "private": true,
   "dependencies": {

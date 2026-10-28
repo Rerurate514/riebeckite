@@ -12,6 +12,7 @@ const styles = [
   read("../app/styles/shell.css"),
   read("../app/components/article/style.css"),
   read("../../../packages/plugins/docs/style.css"),
+  read("../../../packages/plugins/navigation/style.css"),
   read("../../../packages/plugins/toc/style.css"),
 ].join("\n");
 
@@ -62,6 +63,7 @@ async function loadDocsPage(
         --rb-color-border: #d7e0ea;
         --rb-color-ink: #182230;
         --rb-color-muted: #58677a;
+        --rb-color-surface: #fff;
       }</style><style>${styles}</style></head>
       <body class="riebeckite-page">
         <header class="rb-site-header">
@@ -77,7 +79,7 @@ async function loadDocsPage(
                 <p class="rr-table-of-contents__eyebrow">Contents</p>
                 <ol class="rr-table-of-contents__list">${navigationItems(120, "rr-table-of-contents__item")}</ol>
               </aside>
-              <div class="rb-docs-sidebar-rail"><nav class="rb-docs-sidebar" aria-label="Documentation"><ul class="rb-docs-sidebar__list">${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></div>
+              <div class="rb-docs-sidebar-rail"><nav class="rb-sidebar-navigation rb-docs-sidebar" aria-label="Documentation"><label class="rb-sidebar-navigation__search"><input type="search" /></label><ul class="rb-docs-sidebar__list">${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></div>
               <div class="rb-article-body"><div style="height: 300rem">Article</div></div>
             </div>
           </article>
@@ -116,6 +118,9 @@ for (const theme of ["light", "dark"] as const) {
           docsPaddingEnd: Number.parseFloat(
             getComputedStyle(docs).paddingRight,
           ),
+          filterTop: document
+            .querySelector<HTMLElement>(".rb-sidebar-navigation__search")
+            ?.getBoundingClientRect().top,
           tocScrollable: toc.scrollHeight > toc.clientHeight,
         };
       });
@@ -125,7 +130,8 @@ for (const theme of ["light", "dark"] as const) {
       assert.ok(Math.abs(initial.tocTop - initial.tocStickyTop) <= 0.5);
       assert.ok(Math.abs(initial.tocEyebrowTop - initial.tocTop) <= 1);
       assert.ok(initial.docsScrollable);
-      assert.equal(initial.docsPaddingEnd, 40);
+      assert.equal(initial.docsPaddingEnd, 16);
+      assert.equal(initial.filterTop, initial.docsTop);
       assert.ok(initial.tocScrollable);
 
       await page.evaluate(() => window.scrollTo(0, 1));
@@ -168,6 +174,9 @@ for (const theme of ["light", "dark"] as const) {
           headerBottom: header.getBoundingClientRect().bottom,
           stickyTop: Number.parseFloat(getComputedStyle(docs).top),
           docsScrollTop: docs.scrollTop,
+          filterTop: document
+            .querySelector<HTMLElement>(".rb-sidebar-navigation__search")
+            ?.getBoundingClientRect().top,
           tocScrollTop: toc.scrollTop,
         };
       });
@@ -175,6 +184,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.ok(Math.abs(sticky.tocTop - sticky.stickyTop) <= 1);
       assert.ok(sticky.headerBottom < 0);
       assert.equal(sticky.docsScrollTop, 200);
+      assert.equal(sticky.filterTop, sticky.docsTop);
       assert.equal(sticky.tocScrollTop, 200);
 
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));

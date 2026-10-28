@@ -35,8 +35,18 @@
     align-self: start;
     max-height: var(--rb-docs-rail-max-block-size, calc(100dvh - 2rem));
     margin: 0;
-    padding-inline-end: var(--rb-layout-gap, 2rem);
+    padding-inline-end: var(--rb-space-2, 1rem);
     overflow-y: auto;
+  }
+
+  .rb-article:has(.rb-docs-sidebar-rail)
+    .rb-docs-sidebar-rail
+    .rb-sidebar-navigation__search {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    padding-block: var(--rb-space-1, 0.5rem);
+    background: var(--rb-color-surface);
   }
 
   .rb-article:has(.rb-docs-sidebar-rail) .rb-article-body,

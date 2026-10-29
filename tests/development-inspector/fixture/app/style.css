@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+main {
+  min-height: 120vh;
+  padding: 24px;
+}

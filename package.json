@@ -38,6 +38,7 @@
     "test:e2e:preset-fast-path": "node --import tsx tests/external-site/preset-fast-path.ts",
     "test:browser": "pnpm --filter @riebeckite/plugin-search test:browser:required",
     "test:plugin-dev:browser": "node --import tsx --test tests/plugin-dev/browser.test.ts",
+    "test:inspector:browser": "node --import tsx --test tests/development-inspector/browser.test.ts",
     "test:spa:browser": "node --import tsx --test tests/spa-runtime/browser.test.ts",
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run test:external",

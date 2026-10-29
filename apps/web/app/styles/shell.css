@@ -32,7 +32,8 @@
 
   .rb-site-header,
   .rb-site-footer {
-    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+    margin-inline: auto;
   }
 
   .rb-site-header {

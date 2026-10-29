@@ -4,6 +4,7 @@ import {
   definePlugin,
 } from "@riebeckite/core";
 
+export type { TableOfContentsProps } from "./components/table-of-contents.js";
 export { default as TableOfContents } from "./components/table-of-contents.js";
 export { initTableOfContents } from "./src/table-of-contents.client.js";
 export type { TableOfContentsItem } from "./src/table-of-contents.js";

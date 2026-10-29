@@ -26,7 +26,7 @@
 
 .rr-mermaid__canvas {
   overflow: auto;
-  padding: 1rem;
+  padding: clamp(1rem, 2vw, 2rem);
 }
 
 .rr-mermaid__canvas > svg {

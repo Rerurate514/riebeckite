@@ -52,18 +52,9 @@
 
 @media (max-width: 48rem) {
   .rr-l10n-switcher {
-    flex: none;
-    gap: 0.25rem;
+    min-width: 0;
+    gap: 0.5rem 1rem;
     margin: 0;
-  }
-
-  .rr-l10n-switcher__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 
   .rr-l10n-switcher__list {

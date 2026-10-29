@@ -104,13 +104,19 @@ export function ShellDrawer(props: ShellDrawerProps) {
         class="rb-shell__drawer-trigger"
         data-rb-shell-drawer-trigger
         aria-expanded="false"
+        aria-label={
+          props.icon === "menu" ? (props.label ?? "Navigation") : undefined
+        }
+        data-rb-shell-drawer-icon={props.icon}
       >
         {props.icon === "menu" ? (
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path d="M3 6h18M3 12h18M3 18h18" />
           </svg>
         ) : null}
-        <span>{props.label ?? "Navigation"}</span>
+        {props.icon !== "menu" ? (
+          <span>{props.label ?? "Navigation"}</span>
+        ) : null}
       </button>
       <div class="rb-shell__drawer-panel" data-rb-shell-drawer-panel hidden>
         {props.children}

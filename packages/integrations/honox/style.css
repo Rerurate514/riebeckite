@@ -266,7 +266,7 @@
 
   .rb-source-fallback > pre {
     overflow: auto;
-    margin: 0 0.75rem 0.75rem;
+    margin: 0.25rem 0.75rem 0.75rem;
     padding: 0.75rem;
     border: 1px solid var(--rb-color-border);
     border-radius: 6px;

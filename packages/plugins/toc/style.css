@@ -8,8 +8,12 @@
     padding-block: 1rem;
   }
 
-  .rr-table-of-contents--borderless {
-    border-block: 0;
+  .rr-table-of-contents--without-top-border {
+    border-block-start: 0;
+  }
+
+  .rr-table-of-contents--without-bottom-border {
+    border-block-end: 0;
   }
 
   .rr-table-of-contents--desktop {

@@ -40,7 +40,8 @@ export default defineConfig({
 It does not place UI. The Site extracts headings and renders the component,
 normally in an article aside. When an article rail fits, the Site positions the
 stable ToC root there and owns its sticky offset, height limit, and bounded
-vertical scrolling. The plugin owns the ToC list, links, and scroll-spy state.
+vertical scrolling. The plugin owns the ToC list, its optional block borders,
+links, and scroll-spy state.
 
 ### Render the component
 
@@ -65,8 +66,9 @@ The client entry finds elements by the `data-toc-target` attribute emitted on
 each link, so it works when multiple ToCs (desktop/mobile) are rendered. The
 Site keeps the desktop root sticky in its article rail and gives it a bounded
 vertical scroll area; the plugin keeps labels wrapping rather than creating
-horizontal scrolling. The list has a rule above and below it by default; pass
-`bordered={false}` to remove both rules.
+horizontal scrolling. The list has a rule above and below it by default. Use
+`borders={{ blockStart: false }}` or `borders={{ blockEnd: false }}` to remove
+one rule; set both values to `false` to remove both.
 
 Themes can set `--rr-table-of-contents-eyebrow-font-size`,
 `--rr-table-of-contents-eyebrow-margin-block-end`, and

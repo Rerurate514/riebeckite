@@ -45,53 +45,18 @@
   }
 
   .rb-breadcrumbs ol {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.25rem;
-    overflow: hidden;
   }
 
   .rb-breadcrumbs__item {
     min-width: 0;
-    flex: none;
-  }
-
-  .rb-breadcrumbs__item:not(:first-child):not(:last-child) {
-    display: none;
-  }
-
-  .rb-breadcrumbs__item:first-child {
-    max-width: 40%;
-  }
-
-  .rb-breadcrumbs__item:last-child {
-    flex: 1;
+    max-width: 100%;
   }
 
   .rb-breadcrumbs__link,
-  .rb-breadcrumbs__current {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .rb-breadcrumbs__item:first-child .rb-breadcrumbs__link::after {
-    content: "…";
-  }
-
-  .rb-breadcrumbs__item:first-child .rb-breadcrumbs__link {
-    font-size: 0;
-  }
-
-  .rb-breadcrumbs__item:first-child .rb-breadcrumbs__link::after {
-    font-size: 0.875rem;
-  }
-
-  .rb-breadcrumbs__item:not(:last-child) .rb-breadcrumbs__separator {
-    font-size: 0;
-  }
-
-  .rb-breadcrumbs__item:not(:last-child) .rb-breadcrumbs__separator::after {
-    content: "/";
-    font-size: 0.875rem;
+  .rb-breadcrumbs__current,
+  .rb-breadcrumbs__text {
+    overflow-wrap: anywhere;
   }
 }

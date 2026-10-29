@@ -88,21 +88,29 @@ test("returns an empty list for empty or heading-free input", () => {
   assert.deepEqual(extractTableOfContents("<p>Just a paragraph.</p>"), []);
 });
 
-test("toggles the top and bottom rules", () => {
+test("toggles the top and bottom rules independently", () => {
   const items = [
     { id: "intro", level: 2, title: "Intro" },
     { id: "api", level: 2, title: "API" },
   ];
   const bordered = renderToString(createElement(TableOfContents, { items }));
-  const borderless = renderToString(
-    createElement(TableOfContents, { items, bordered: false }),
+  const withoutTop = renderToString(
+    createElement(TableOfContents, { items, borders: { blockStart: false } }),
+  );
+  const withoutBottom = renderToString(
+    createElement(TableOfContents, { items, borders: { blockEnd: false } }),
   );
 
-  assert.doesNotMatch(bordered, /rr-table-of-contents--borderless/);
-  assert.match(borderless, /rr-table-of-contents--borderless/);
+  assert.doesNotMatch(bordered, /without-(top|bottom)-border/);
+  assert.match(withoutTop, /rr-table-of-contents--without-top-border/);
+  assert.match(withoutBottom, /rr-table-of-contents--without-bottom-border/);
   assert.match(
     style,
-    /\.rr-table-of-contents--borderless\s*\{[^}]*border-block:\s*0/,
+    /\.rr-table-of-contents--without-top-border\s*\{[^}]*border-block-start:\s*0/,
+  );
+  assert.match(
+    style,
+    /\.rr-table-of-contents--without-bottom-border\s*\{[^}]*border-block-end:\s*0/,
   );
 });
 

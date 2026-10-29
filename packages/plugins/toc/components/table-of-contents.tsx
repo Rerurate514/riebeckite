@@ -2,14 +2,17 @@ import { useArticleContext } from "@riebeckite/ui";
 import type { TableOfContentsItem } from "../src/table-of-contents.js";
 import { extractTableOfContents } from "../src/table-of-contents.js";
 
-type Props = {
-  bordered?: boolean;
+export type TableOfContentsProps = {
+  borders?: Readonly<{
+    blockStart?: boolean;
+    blockEnd?: boolean;
+  }>;
   className?: string;
   items?: readonly TableOfContentsItem[];
   placement?: "inline" | "desktop-rail";
 };
 
-export default function TableOfContents(props: Props) {
+export default function TableOfContents(props: TableOfContentsProps) {
   const article = useArticleContext();
   const items =
     props.items ??
@@ -19,7 +22,12 @@ export default function TableOfContents(props: Props) {
     props.placement === "desktop-rail"
       ? "rr-table-of-contents--desktop-rail"
       : "",
-    props.bordered === false ? "rr-table-of-contents--borderless" : "",
+    props.borders?.blockStart === false
+      ? "rr-table-of-contents--without-top-border"
+      : "",
+    props.borders?.blockEnd === false
+      ? "rr-table-of-contents--without-bottom-border"
+      : "",
     props.className ?? "",
   ]
     .filter(Boolean)

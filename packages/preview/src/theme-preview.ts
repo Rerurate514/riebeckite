@@ -4,7 +4,7 @@ import {
   type ThemeSettingsSchema,
   validateThemeSettings,
 } from "@riebeckite/core";
-import { mountPreview, type PreviewUiOptions } from "../ui.js";
+import type { PreviewUiOptions } from "./ui-types.js";
 
 export type ThemePreviewTheme = {
   readonly id: string;
@@ -27,6 +27,7 @@ export type ThemePreviewOptions = PreviewUiOptions & {
 export function mountThemePreview(
   root: HTMLElement,
   options: ThemePreviewOptions,
+  mountPreview: (root: HTMLElement, options: PreviewUiOptions) => () => void,
 ): () => void {
   const values: Record<string, Record<string, string | number | boolean>> = {};
   const resolve = (themeId: string) => {

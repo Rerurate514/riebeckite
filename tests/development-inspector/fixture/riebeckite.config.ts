@@ -9,7 +9,7 @@ export default defineConfig({
     baseUrl: "https://inspector.example.com",
     locale: "en",
   },
-  content: { directory: "content" },
+  content: { directory: "content", exclude: ["ignored/**"] },
   spa: {},
   theme: defaultTheme(),
   plugins: [diagnostics({ requiredFrontmatter: ["title"] })],

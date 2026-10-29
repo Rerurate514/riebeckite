@@ -290,6 +290,121 @@ test("development inspector works in a real Vite dev server", async () => {
         throw new Error("regeneration missing");
     });
 
+    const baseUrl = url.replace(/\/$/, "");
+    const initial = await inspectorJson(
+      baseUrl,
+      "/__riebeckite/inspector/report",
+    );
+    await fs.writeFile(
+      path.join(fixtureRoot, "content", "added.md"),
+      "---\ntitle: Home\npublish: true\n---\n# Added page\n",
+      "utf8",
+    );
+    const afterAdd = await waitForInspectorRevision(
+      baseUrl,
+      initial.revision + 1,
+    );
+    await waitForMissingPanel(page, 120_000);
+    await openInspector(page);
+    await clickShadow(page, "[data-tab='1']");
+    await page.evaluate(() => {
+      const host = document.getElementById("riebeckite-development-inspector");
+      const input = host?.shadowRoot?.querySelector<HTMLInputElement>(
+        "[data-diagnostic-query]",
+      );
+      input?.focus();
+      input?.select();
+    });
+    await page.keyboard.type("added");
+    await waitForShadowText(page, "ul", "DUPLICATE_TITLE", 30_000);
+    assert.equal(
+      (
+        await inspectorJson(
+          baseUrl,
+          "/__riebeckite/inspector/output?output=added.html",
+        )
+      ).output?.lookups?.output.status,
+      "found",
+    );
+
+    await fs.rename(
+      path.join(fixtureRoot, "content", "added.md"),
+      path.join(fixtureRoot, "content", "renamed.md"),
+    );
+    const afterRename = await waitForInspectorRevision(
+      baseUrl,
+      afterAdd.revision + 1,
+    );
+    assert.equal(
+      afterRename.revision,
+      afterAdd.revision + 1,
+      "rename should invalidate the inspector once",
+    );
+    assert.equal(
+      (
+        await inspectorJson(
+          baseUrl,
+          "/__riebeckite/inspector/output?output=renamed.html",
+        )
+      ).output?.lookups?.output.status,
+      "found",
+    );
+    assert.equal(
+      (
+        await inspectorJson(
+          baseUrl,
+          "/__riebeckite/inspector/output?output=added.html",
+        )
+      ).output?.lookups?.output.status,
+      "not-found",
+    );
+
+    await fs.rm(path.join(fixtureRoot, "content", "renamed.md"));
+    const afterRemove = await waitForInspectorRevision(
+      baseUrl,
+      afterRename.revision + 1,
+    );
+    assert.equal(
+      afterRemove.revision,
+      afterRename.revision + 1,
+      "delete should invalidate the inspector once",
+    );
+    assert.equal(
+      (
+        await inspectorJson(
+          baseUrl,
+          "/__riebeckite/inspector/output?output=renamed.html",
+        )
+      ).output?.lookups?.output.status,
+      "not-found",
+    );
+
+    await fs.mkdir(path.join(fixtureRoot, "content", "ignored"), {
+      recursive: true,
+    });
+    await fs.writeFile(
+      path.join(fixtureRoot, "content", "ignored", "secret.md"),
+      "---\ntitle: Secret\n---\n# Ignored\n",
+      "utf8",
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    assert.equal(
+      (await inspectorJson(baseUrl, "/__riebeckite/inspector/report")).revision,
+      afterRemove.revision,
+      "ignored content should not invalidate the inspector",
+    );
+
+    await fs.appendFile(
+      path.join(fixtureRoot, "app", "style.css"),
+      "\n/* inspector unrelated change */\n",
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+    assert.equal(
+      (await inspectorJson(baseUrl, "/__riebeckite/inspector/report")).revision,
+      afterRemove.revision,
+      "application styles should not invalidate the inspector",
+    );
+
     assert.deepEqual(pageErrors, []);
   } finally {
     if (running && running.child.exitCode === null) {
@@ -299,6 +414,52 @@ test("development inspector works in a real Vite dev server", async () => {
     await fs.rm(fixtureRoot, { recursive: true, force: true });
   }
 });
+
+async function openInspector(page: Page): Promise<void> {
+  await page.waitForSelector(
+    'button[aria-label="Open Riebeckite Development Inspector"]',
+    { timeout: 60_000 },
+  );
+  await page.keyboard.down("Control");
+  await page.keyboard.down("Alt");
+  await page.keyboard.press("r");
+  await page.keyboard.up("Alt");
+  await page.keyboard.up("Control");
+  await waitForShadow(page, "section[role='dialog']");
+  await waitForShadowText(page, ".status", "Inspector report updated", 120_000);
+}
+
+async function inspectorJson(
+  baseUrl: string,
+  path: string,
+): Promise<{
+  revision: number;
+  output?: { lookups?: { output: { status: string } } };
+}> {
+  const response = await fetch(`${baseUrl}${path}`, { cache: "no-store" });
+  assert.ok(response.ok, `${path} returned ${response.status}`);
+  return (await response.json()) as {
+    revision: number;
+    output?: { lookups?: { output: { status: string } } };
+  };
+}
+
+async function waitForInspectorRevision(
+  baseUrl: string,
+  minimum: number,
+  timeout = 60_000,
+): Promise<{ revision: number }> {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const report = await inspectorJson(
+      baseUrl,
+      "/__riebeckite/inspector/report",
+    );
+    if (report.revision >= minimum) return report;
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  throw new Error(`Timed out waiting for inspector revision ${minimum}`);
+}
 
 async function waitForHttp(url: string, timeout: number): Promise<void> {
   const deadline = Date.now() + timeout;

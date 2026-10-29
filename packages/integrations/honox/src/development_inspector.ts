@@ -15,9 +15,12 @@ import {
   diagnoseOutputPlan,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
-import { FileSystemContentSource } from "@riebeckite/node";
+import {
+  FileSystemContentSource,
+  isIgnoredContentPath,
+} from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
-import { isPathInsideDirectory } from "./content_watch.js";
+import { isPathInsideDirectory, toLogicalPath } from "./content_watch.js";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 const clientModuleId = "virtual:riebeckite/development-inspector";
@@ -26,6 +29,7 @@ const reportPath = "/__riebeckite/inspector/report";
 const outputPath = "/__riebeckite/inspector/output";
 const listedOutputLimit = 20;
 const maximumListedOutputLimit = 100;
+const invalidationDelayMs = 150;
 
 type ListedOutput = {
   readonly path: string;
@@ -284,6 +288,32 @@ export function riebeckiteDevelopmentInspector(
       return () => {
         prioritizeMiddleware(server, outputMiddleware, outputPath);
         prioritizeMiddleware(server, reportMiddleware, reportPath);
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const schedule = () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            timer = undefined;
+            revision += 1;
+            server.hot.send({ type: "custom", event: "riebeckite:inspector" });
+          }, invalidationDelayMs);
+        };
+        const handle = (file: string) => {
+          let application: ResolvedHonoxApplication;
+          try {
+            application = getApplication();
+          } catch {
+            return;
+          }
+          if (!isContentWatchTarget(application, file)) return;
+          schedule();
+        };
+        server.watcher.on("add", handle);
+        server.watcher.on("unlink", handle);
+        server.httpServer?.once("close", () => {
+          if (timer) clearTimeout(timer);
+          server.watcher.off("add", handle);
+          server.watcher.off("unlink", handle);
+        });
       };
     },
     handleHotUpdate({ file, server }) {
@@ -467,9 +497,10 @@ function serializeOutputResult(
               ),
             ),
             hiddenRemovedCount: removedPage.hidden,
-            ...(query.output || query.changed
-              ? { lookups: outputLookups(result, query) }
-              : {}),
+            lookups:
+              query.output || query.changed
+                ? outputLookups(result, query)
+                : undefined,
           }
         : result.output,
     dependencies:
@@ -850,6 +881,17 @@ function shouldInvalidateInspection(
     !isPathInsideDirectory(application.appRoot, file) ||
     isPathInsideDirectory(application.contentRoot, file) ||
     file === application.configFile
+  );
+}
+
+function isContentWatchTarget(
+  application: ResolvedHonoxApplication,
+  file: string,
+): boolean {
+  if (!isPathInsideDirectory(application.contentRoot, file)) return false;
+  return !isIgnoredContentPath(
+    toLogicalPath(application.contentRoot, file),
+    application.config.content.exclude ?? [],
   );
 }
 

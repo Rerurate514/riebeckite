@@ -81,3 +81,11 @@ observation, the report lists it under `unknown` instead of guessing.
 The inspector caches one inspection per application and revision. A content or
 configuration change advances the revision; unrelated application modules do
 not invalidate the cached plan.
+
+Content file creation and deletion are observed through the Vite watcher's
+`add` and `unlink` events. The inspector registers those listeners after the
+content watcher has suppressed Vite's own add/unlink handlers. Paths under the
+content root that match the content exclude rules are ignored. Events are
+coalesced for 150 ms, so a rename produces one revision and one inspection, and
+the listeners plus any pending timer are released when the server closes. Edits
+continue to use `handleHotUpdate`.

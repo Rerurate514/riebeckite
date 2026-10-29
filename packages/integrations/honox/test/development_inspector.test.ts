@@ -227,7 +227,14 @@ function inspectorStack(
         stack.push({ route, handle });
       },
     },
-    httpServer: { address: () => ({ address: "127.0.0.1" }) },
+    watcher: {
+      on() {},
+      off() {},
+    },
+    httpServer: {
+      address: () => ({ address: "127.0.0.1" }),
+      once() {},
+    },
   });
   const afterConfigure = Reflect.apply(configure, undefined, [server]);
   stack.unshift({ route: "", handle() {} });

@@ -36,6 +36,7 @@ import {
 } from "./content_index_builder.js";
 import { ContentLocationResolver } from "./content_location_resolver.js";
 import { reuseManifestEntry } from "./content_manifest_reuse.js";
+import { ContentOutputResolver } from "./content_output_resolver.js";
 import {
   computeContentCacheFingerprint,
   computeContentScopeFingerprint,
@@ -46,10 +47,7 @@ import {
 } from "./content_persistent_cache.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
 import { ManifestAssembler } from "./manifest_assembler.js";
-import {
-  determineOutputChanges,
-  type OutputChangeSet,
-} from "./output_dependency.js";
+import type { OutputChangeSet } from "./output_dependency.js";
 import {
   resolvePublishingBuildTime,
   resolvePublishingState,
@@ -99,6 +97,7 @@ export class ContentManager {
   private entryReader: ContentEntryReader;
   private locationResolver: ContentLocationResolver;
   private buildCoordinator: ContentBuildCoordinator;
+  private outputResolver: ContentOutputResolver;
   private isBuildTime = false;
   private publishingBuildTime: Date;
   private routableSlugs: Set<string> | null = null;
@@ -180,6 +179,10 @@ export class ContentManager {
           (plugin) => plugin && plugin.contentFileMetadata === true,
         ) ?? false,
     });
+    this.outputResolver = new ContentOutputResolver(
+      this.pluginRuntime,
+      observability,
+    );
     this.buildSession = new ContentBuildSession({
       config: () => this.pipelineOptions.config,
       enableBuildTime: () => this.enableBuildTime(),
@@ -420,9 +423,7 @@ export class ContentManager {
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];
-        manifest.pageRoutes = [
-          ...(await this.pluginRuntime.getPageRoutes(manifest, contentIndex)),
-        ];
+        await this.outputResolver.populatePageRoutes(manifest, contentIndex);
         await this.pluginRuntime.runAssetTransforms(manifest);
         await this.pluginRuntime.runManifestCreated(
           manifest,
@@ -443,28 +444,16 @@ export class ContentManager {
         await this.emitPublicImageAssets(manifest);
         manifest.generatedOutputs =
           this.pluginRuntime.collectGeneratedOutputs();
-        const pluginPageOutputs = await this.observability().tracer.span(
-          "output.dependencies.plugin",
-          {},
-          () => this.pluginRuntime.getPageOutputs(manifest, contentIndex),
-        );
-        this.outputChangeSet = await this.observability().tracer.span(
-          "output.dependencies.resolve",
-          {},
-          () =>
-            determineOutputChanges({
-              manifest,
-              previousState: plan.previousState,
-              changeSet: plan.changeSet,
-              affectedContent: plan.affectedContent,
-              pluginPageOutputs,
-              contentOutputDependencies:
-                this.pluginRuntime.getContentOutputDependencies(),
-              externalDependencies: plan.externalDependencies,
-              externalDependencyFailures: plan.externalDependencyFailures,
-              contentFingerprints: this.processedContentCacheFingerprints,
-            }),
-        );
+        this.outputChangeSet = await this.outputResolver.resolve({
+          manifest,
+          contentIndex,
+          previousState: plan.previousState,
+          changeSet: plan.changeSet,
+          affectedContent: plan.affectedContent,
+          externalDependencies: plan.externalDependencies,
+          externalDependencyFailures: plan.externalDependencyFailures,
+          contentFingerprints: this.processedContentCacheFingerprints,
+        });
         if (this.outputChangeSet) {
           this.observability().tracer.event("build.incremental.outputs", {
             candidateOutputCount: this.outputChangeSet.candidateOutputCount,
@@ -563,35 +552,23 @@ export class ContentManager {
     if (!this.outputChangeSet) {
       const manifest = await this.getManifest();
       const contentIndex = await this.getContentIndex();
-      const pluginPageOutputs = await this.observability().tracer.span(
-        "output.dependencies.plugin",
-        {},
-        () => this.pluginRuntime.getPageOutputs(manifest, contentIndex),
-      );
-      return await this.observability().tracer.span(
-        "output.dependencies.resolve",
-        {},
-        () =>
-          determineOutputChanges({
-            manifest,
-            previousState: undefined,
-            changeSet: {
-              added: manifest.entries.map((entry) => `${entry.slug}.md`),
-              changed: [],
-              removed: [],
-              unchanged: [],
-            },
-            affectedContent: {
-              direct: new Set(manifest.entries.map((entry) => entry.slug)),
-              dependent: new Set(),
-            },
-            pluginPageOutputs,
-            contentOutputDependencies:
-              this.pluginRuntime.getContentOutputDependencies(),
-            externalDependencies: plan.externalDependencies,
-            externalDependencyFailures: plan.externalDependencyFailures,
-          }),
-      );
+      return await this.outputResolver.resolve({
+        manifest,
+        contentIndex,
+        previousState: undefined,
+        changeSet: {
+          added: manifest.entries.map((entry) => `${entry.slug}.md`),
+          changed: [],
+          removed: [],
+          unchanged: [],
+        },
+        affectedContent: {
+          direct: new Set(manifest.entries.map((entry) => entry.slug)),
+          dependent: new Set(),
+        },
+        externalDependencies: plan.externalDependencies,
+        externalDependencyFailures: plan.externalDependencyFailures,
+      });
     }
     return this.outputChangeSet;
   }

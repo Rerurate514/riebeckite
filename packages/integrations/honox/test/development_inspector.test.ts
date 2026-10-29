@@ -64,12 +64,60 @@ test("development inspector reports the output plan and dependencies", async () 
     const output = JSON.parse(outputResponse.body);
     assert.equal(output.output.status, "available");
     assert.equal(output.dependencies.status, "available");
+    assert.equal(output.regeneration.status, "available");
+    assert.equal(
+      output.regeneration.required,
+      output.regeneration.reasons.length > 0,
+    );
+    assert.ok(Array.isArray(output.output.unchanged));
     assert.ok(output.output.affectedOutputCount >= 1);
     assert.ok(output.dependencies.dependencyCount >= 1);
+    assert.ok(
+      output.regeneration.reasons.some(
+        (reason: { kind: string }) => reason.kind === "build-state-missing",
+      ),
+    );
+    const filtered = await requestReport(
+      outputHandle,
+      "/__riebeckite/inspector/output?limit=1&status=affected",
+    );
+    const filteredOutput = JSON.parse(filtered.body);
+    assert.ok(filteredOutput.output.affected.length <= 1);
+    assert.equal(typeof filteredOutput.output.hiddenAffectedCount, "number");
+    const dependencies = await requestReport(
+      outputHandle,
+      "/__riebeckite/inspector/output?dlimit=1&dq=index",
+    );
+    assert.ok(JSON.parse(dependencies.body).dependencies.outputs.length <= 1);
+    const lookup = await requestReport(
+      outputHandle,
+      "/__riebeckite/inspector/output?output=index.html",
+    );
+    const lookupBody = JSON.parse(lookup.body);
+    assert.equal(lookupBody.output.lookups.output.status, "found");
+    assert.ok(
+      lookupBody.output.lookups.output.dependencies.includes("content:index"),
+    );
+    const changed = await requestReport(
+      outputHandle,
+      "/__riebeckite/inspector/output?changed=index",
+    );
+    assert.ok(JSON.parse(changed.body).output.lookups.changed.outputCount >= 1);
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
     );
   });
+});
+
+test("development inspector rejects non-loopback hosts", async () => {
+  const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
+  const stack = inspectorStack(plugin);
+  const { response } = await requestReport(
+    stack[0]?.handle,
+    "/__riebeckite/inspector/report?path=%2F",
+    "example.test:5199",
+  );
+  assert.equal(response.statusCode, 403);
 });
 
 test("development inspector shares one report across concurrent requests", async () => {
@@ -133,19 +181,19 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /aria-controls/);
   assert.match(source as string, /Ctrl\+Alt\+R/);
   assert.match(source as string, /Loading inspector report/);
-  assert.match(source as string, /if \(!panel\.isConnected\)/);
+  assert.match(source as string, /if \(!panel\?\.isConnected\)/);
   assert.match(source as string, /pendingRefresh/);
   assert.match(source as string, /clearInterval\(loadingTimer\)/);
   assert.match(source as string, /Dependencies/);
   assert.match(source as string, /Output/);
   assert.match(source as string, /report\.dependencies/);
   assert.match(source as string, /report\.output/);
+  assert.match(source as string, /report\.regeneration/);
   assert.match(source as string, /loadOutput/);
   assert.match(source as string, /reportEndpoint/);
   assert.match(source as string, /outputEndpoint/);
   assert.match(source as string, /Loading output plan/);
   assert.match(source as string, /Loading dependencies/);
-  assert.match(source as string, /loading output plan/);
   assert.match(source as string, /fullRegenerationRequired/);
   assert.match(source as string, /dependencyCount/);
   assert.match(source as string, /dependentOutputCount/);
@@ -153,10 +201,13 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /diagnosticSeverity/);
   assert.match(source as string, /diagnosticCategory/);
   assert.match(source as string, /diagnosticCode/);
-  assert.match(source as string, /data-diagnostic-query.*focus\(\)/);
+  assert.match(source as string, /data-focus-key/);
   assert.match(source as string, /Current-page filtering is unavailable/);
-  assert.match(source as string, /<details>/);
-  assert.match(source as string, /resize:horizontal/);
+  assert.match(source as string, /<details/);
+  assert.match(source as string, /data-resize/);
+  assert.match(source as string, /data-output-page/);
+  assert.match(source as string, /lookups/);
+  assert.match(source as string, /dependency-kind/);
   assert.match(source as string, /plugin\.order/);
 });
 
@@ -188,6 +239,7 @@ function inspectorStack(
 async function requestReport(
   handle: Middleware | undefined,
   url = "/__riebeckite/inspector/report?path=%2Fthemes",
+  host = "127.0.0.1:4173",
 ): Promise<{
   response: {
     statusCode: number;
@@ -209,7 +261,7 @@ async function requestReport(
       body = value ?? "";
     },
   };
-  await handle({ headers: { host: "127.0.0.1:4173" }, url }, response);
+  await handle({ headers: { host }, url }, response);
   return { response, headers, body };
 }
 

@@ -28,7 +28,7 @@ const THEMES_INDEX_URL =
   "https://github.com/Rerurate514/riebeckite/tree/main/packages/themes";
 const GALLERY_PACKAGE = "@riebeckite/plugin-gallery";
 
-const PLUGIN_MARKDOWN_GUIDES: Readonly<
+export const PLUGIN_MARKDOWN_GUIDES: Readonly<
   Record<string, { readonly summary: string; readonly markdown: string }>
 > = {
   "@riebeckite/plugin-color-mode": {

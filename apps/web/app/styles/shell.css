@@ -38,6 +38,7 @@
   .rb-site-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--rb-space-3);
     padding-block: var(--rb-site-header-padding-block);
   }

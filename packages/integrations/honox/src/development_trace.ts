@@ -24,8 +24,22 @@ export function createDevelopmentTrace(): DevelopmentTrace {
     },
     snapshot() {
       return Object.freeze({
-        spans: Object.freeze([...spans]),
-        events: Object.freeze([...events]),
+        spans: Object.freeze(
+          spans.map((span) =>
+            Object.freeze({
+              ...span,
+              attributes: Object.freeze({ ...span.attributes }),
+            }),
+          ),
+        ),
+        events: Object.freeze(
+          events.map((event) =>
+            Object.freeze({
+              ...event,
+              attributes: Object.freeze({ ...event.attributes }),
+            }),
+          ),
+        ),
       });
     },
   };

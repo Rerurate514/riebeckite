@@ -494,9 +494,14 @@ export class ContentManager {
           completedAt: Date.now(),
           startedAt,
           plugins: Object.freeze(
-            this.pluginRuntime
-              .getPluginInventory()
-              .map((plugin) => Object.freeze({ ...plugin })),
+            this.pluginRuntime.getPluginInventory().map((plugin) =>
+              Object.freeze({
+                ...plugin,
+                provides: Object.freeze([...plugin.provides]),
+                requires: Object.freeze([...plugin.requires]),
+                optional: Object.freeze([...plugin.optional]),
+              }),
+            ),
           ),
           manifestHookMetrics: freezeManifestHookMetrics(
             this.pluginRuntime.getManifestHookMetrics(),

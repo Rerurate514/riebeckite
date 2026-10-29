@@ -82,6 +82,8 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.ok(Object.isFrozen(completed.manifestHookMetrics));
     assert.ok(Object.isFrozen(completed.trace?.spans));
     assert.ok(Object.isFrozen(completed.trace?.events));
+    assert.ok(completed.trace?.spans.every((span) => Object.isFrozen(span)));
+    assert.ok(completed.trace?.events.every((event) => Object.isFrozen(event)));
     assert.ok((completed.trace?.spans.length ?? 0) > 0);
     assert.ok(Object.isFrozen(completed.outputChangeSet));
     assert.ok(Object.isFrozen(completed.outputChangeSet.affected));

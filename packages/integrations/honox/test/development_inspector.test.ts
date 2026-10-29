@@ -51,6 +51,7 @@ test("development inspector reports the output plan and dependencies", async () 
     const report = JSON.parse(body);
     assert.equal(report.output, undefined);
     assert.equal(report.dependencies, undefined);
+    assert.deepEqual(report.plugins, []);
 
     const outputHandle = stack.find(
       (layer) => layer.route === "/__riebeckite/inspector/output",
@@ -148,6 +149,14 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /fullRegenerationRequired/);
   assert.match(source as string, /dependencyCount/);
   assert.match(source as string, /dependentOutputCount/);
+  assert.match(source as string, /diagnosticQuery/);
+  assert.match(source as string, /diagnosticSeverity/);
+  assert.match(source as string, /diagnosticCategory/);
+  assert.match(source as string, /diagnosticCode/);
+  assert.match(source as string, /Current-page filtering is unavailable/);
+  assert.match(source as string, /<details>/);
+  assert.match(source as string, /resize:horizontal/);
+  assert.match(source as string, /plugin\.order/);
 });
 
 function inspectorStack(

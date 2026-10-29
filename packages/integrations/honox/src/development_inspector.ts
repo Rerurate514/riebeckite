@@ -168,7 +168,11 @@ export function riebeckiteDevelopmentInspector(
               generatedAt: new Date().toISOString(),
               currentPage: currentPageFromRequest(request.url),
               theme: application.config.theme.name,
-              plugins: application.config.plugins.map((plugin) => plugin.name),
+              plugins: application.config.plugins.map((plugin, index) => ({
+                name: plugin.name,
+                order: index + 1,
+                enabled: true,
+              })),
             }),
           );
         } catch {
@@ -418,6 +422,10 @@ export function initDevelopmentInspector() {
   let generation = 0;
   let report;
   let activeTab = 0;
+  let diagnosticQuery = "";
+  let diagnosticSeverity = "all";
+  let diagnosticCategory = "all";
+  let diagnosticCode = "all";
   let refreshing = false;
   let pendingRefresh = false;
   let loadingTimer;
@@ -522,9 +530,10 @@ export function initDevelopmentInspector() {
   function render() {
     clearInterval(loadingTimer);
     const root = panel.shadowRoot;
-    root.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-title" tabindex="-1"><header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">' + (report.output ? "Inspector report updated" : "Inspector report updated · loading output plan…") + '</p></section>';
+    root.innerHTML = '<style>' + styles + '</style><section role="dialog" aria-modal="false" aria-labelledby="rb-title" tabindex="-1"><header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R · drag the left edge to resize</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">' + (report.output ? "Inspector report updated" : "Inspector report updated · loading output plan…") + '</p></section>';
     root.querySelector("[data-close]").addEventListener("click", close);
     root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); }));
+    root.querySelectorAll("[data-diagnostic-filter]").forEach((input) => input.addEventListener("input", () => { diagnosticQuery = root.querySelector("[data-diagnostic-query]").value; diagnosticSeverity = root.querySelector("[data-diagnostic-severity]").value; diagnosticCategory = root.querySelector("[data-diagnostic-category]").value; diagnosticCode = root.querySelector("[data-diagnostic-code]").value; render(); }));
     root.querySelector("[role=tablist]").addEventListener("keydown", (event) => {
       if (event.key === "Home") activeTab = 0;
       else if (event.key === "End") activeTab = tabs.length - 1;
@@ -538,7 +547,7 @@ export function initDevelopmentInspector() {
     if (activeTab === 0) return '<dl><dt>Page</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>Theme</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>Revision</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
     if (activeTab === 1) return diagnosticList(report.diagnostics);
     if (activeTab === 2) return dependencyReport(report.dependencies);
-    if (activeTab === 3) return '<ul>' + (report.plugins.map((plugin) => '<li>' + escapeHtml(plugin) + '</li>').join("") || "<li>No plugins configured.</li>") + '</ul>';
+    if (activeTab === 3) return '<ol class="plugins">' + (report.plugins.map((plugin) => '<li><code>#' + plugin.order + '</code> ' + escapeHtml(plugin.name) + ' <small>' + (plugin.enabled ? "enabled" : "disabled") + '</small></li>').join("") || "<li>No plugins configured.</li>") + '</ol>';
     return outputReport(report.output);
   }
 }
@@ -552,9 +561,25 @@ function summarize(diagnostics) {
 }
 
 function diagnosticList(diagnostics) {
-  return '<ul>' + (diagnostics.map((diagnostic) =>
-    '<li data-severity="' + escapeHtml(diagnostic.severity) + '"><b>' + escapeHtml(diagnostic.code) + '</b> ' + escapeHtml(diagnostic.message) + location(diagnostic) + '</li>'
-  ).join("") || "<li>No diagnostic findings.</li>") + '</ul>';
+  const categories = [...new Set(diagnostics.map((diagnostic) => diagnostic.category))].sort();
+  const codes = [...new Set(diagnostics.map((diagnostic) => diagnostic.code))].sort();
+  const filtered = diagnostics.filter((diagnostic) =>
+    (diagnosticSeverity === "all" || diagnostic.severity === diagnosticSeverity) &&
+    (diagnosticCategory === "all" || diagnostic.category === diagnosticCategory) &&
+    (diagnosticCode === "all" || diagnostic.code === diagnosticCode) &&
+    (!diagnosticQuery || [diagnostic.code, diagnostic.message, diagnostic.subject.value, diagnostic.location?.file].filter(Boolean).join(" ").toLowerCase().includes(diagnosticQuery.toLowerCase()))
+  );
+  return '<div class="filters"><label>Search <input data-diagnostic-filter data-diagnostic-query value="' + escapeHtml(diagnosticQuery) + '"></label><label>Severity <select data-diagnostic-filter data-diagnostic-severity>' + options(["all", "error", "warning", "info"], diagnosticSeverity) + '</select></label><label>Category <select data-diagnostic-filter data-diagnostic-category>' + options(["all"].concat(categories), diagnosticCategory) + '</select></label><label>Code <select data-diagnostic-filter data-diagnostic-code>' + options(["all"].concat(codes), diagnosticCode) + '</select></label></div><p class="partial">Current-page filtering is unavailable: source-to-page mappings are not recorded.</p><ul>' + (filtered.map((diagnostic) =>
+    '<li data-severity="' + escapeHtml(diagnostic.severity) + '"><details><summary><b>' + escapeHtml(diagnostic.code) + '</b> ' + escapeHtml(diagnostic.message) + location(diagnostic) + '</summary><dl><dt>Fingerprint</dt><dd><code>' + escapeHtml(diagnostic.fingerprint || "legacy") + '</code></dd><dt>Subject</dt><dd>' + escapeHtml(diagnostic.subject.kind + (diagnostic.subject.value ? ": " + diagnostic.subject.value : "")) + '</dd>' + detail("Cause", diagnostic.cause) + detail("Details", diagnostic.details) + detail("Fix" + (diagnostic.fix ? " (" + diagnostic.fix.kind + ")" : ""), diagnostic.fix?.description) + '</dl></details></li>'
+  ).join("") || "<li>No matching diagnostic findings.</li>") + '</ul>';
+}
+
+function options(values, selected) {
+  return values.map((value) => '<option value="' + escapeHtml(value) + '"' + (value === selected ? " selected" : "") + '>' + escapeHtml(value) + '</option>').join("");
+}
+
+function detail(label, value) {
+  return value ? '<dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(value) + '</dd>' : "";
 }
 
 function outputReport(output) {
@@ -624,6 +649,6 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
 }
 
-const styles = ':host{all:initial}section{position:fixed;right:16px;bottom:56px;z-index:2147483647;width:min(540px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:#171717;color:#f4f4f4;border:1px solid #555;padding:16px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 8px 24px #0006}header{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #555;padding-bottom:8px}header p,.status,small{color:#b8b8b8;margin:2px 0}.summary{margin:12px 0}button{border:1px solid #666;background:#242424;color:#fff;padding:6px 8px;cursor:pointer}button[aria-selected="true"]{border-color:#e2c57b;color:#ffe08a}.partial{color:#e2c57b}.more{color:#b8b8b8;margin:4px 0}h3{color:#b8b8b8;font-size:12px;margin:12px 0 4px;text-transform:uppercase}ul{margin:12px 0;padding-left:20px}li{margin:8px 0}li[data-severity="error"]{color:#ff9797}li[data-severity="warning"]{color:#ffe08a}dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}dt{color:#b8b8b8}.failure{color:#ff9797}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media(max-width:560px){section{right:8px;bottom:52px;width:calc(100vw - 32px);max-height:75vh}}';
+const styles = ':host{all:initial}section{box-sizing:border-box;position:fixed;right:0;top:0;bottom:0;z-index:2147483647;width:min(620px,100vw);min-width:360px;resize:horizontal;overflow:auto;background:#171717;color:#f4f4f4;border-left:1px solid #555;padding:16px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}header{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #555;padding-bottom:8px}header p,.status,small{color:#b8b8b8;margin:2px 0}.summary{margin:12px 0}button,input,select{border:1px solid #666;background:#242424;color:#fff;padding:6px 8px;font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #ffe08a;outline-offset:2px}button[aria-selected="true"]{border-color:#e2c57b;color:#ffe08a}.partial{color:#e2c57b}.more{color:#b8b8b8;margin:4px 0}h3{color:#b8b8b8;font-size:12px;margin:12px 0 4px;text-transform:uppercase}ul,.plugins{margin:12px 0;padding-left:20px}li{margin:8px 0}li[data-severity="error"]{color:#ff9797}li[data-severity="warning"]{color:#ffe08a}dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}dt{color:#b8b8b8}.failure{color:#ff9797}.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid #555;padding:0 0 12px}.filters label{display:grid;gap:2px;color:#b8b8b8}.filters input,.filters select{min-width:0}summary{cursor:pointer}.plugins code{color:#b8b8b8}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media(max-width:560px){section{min-width:0;width:100vw;resize:none}.filters{grid-template-columns:1fr}}';
 `;
 }

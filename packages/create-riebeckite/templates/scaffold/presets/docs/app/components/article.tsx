@@ -1,3 +1,4 @@
+import { SiteNav } from "@riebeckite/plugin-navigation";
 import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite/honox/ui";
 import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
@@ -7,6 +8,8 @@ import {
   ShellBody,
   ContentContainer,
   Drawer,
+  DrawerTrigger,
+  ShowAt,
   ShellMain,
   ShellSidebar,
   SiteShell,
@@ -18,13 +21,25 @@ export function SiteArticle() {
     <Article class="site-article">
       <SiteShell>
         <SiteHeader sticky>
-          <Drawer label="Documentation">
-            <DocsSidebar />
-          </Drawer>
+          <DrawerTrigger
+            controls="docs-navigation"
+            label="Menu"
+            icon="menu"
+          />
         </SiteHeader>
         <ShellBody>
-          <ShellSidebar>
-            <DocsSidebar />
+          <ShellSidebar at="md">
+            <Drawer
+              id="docs-navigation"
+              label="Documentation"
+              desktop="inline"
+              at="md"
+            >
+              <ShowAt max="sm">
+                <SiteNav placement="primary" omitHome />
+              </ShowAt>
+              <DocsSidebar />
+            </Drawer>
           </ShellSidebar>
           <ShellMain id="main-content" tabindex={-1}>
             <ContentContainer>
@@ -37,7 +52,7 @@ export function SiteArticle() {
               </ArticleContent>
             </ContentContainer>
           </ShellMain>
-          <ShellAside>
+          <ShellAside at="lg">
             <TableOfContents className="rr-table-of-contents--desktop" />
           </ShellAside>
         </ShellBody>

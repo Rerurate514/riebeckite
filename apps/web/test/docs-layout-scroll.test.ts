@@ -15,12 +15,17 @@ test("docs routes compose the shared shell around article content", () => {
   assert.match(renderer, /<SiteShell>/);
   assert.match(renderer, /<SiteNavigationHeader sticky>/);
   assert.match(renderer, /<SearchBar class="rr-search-bar--header" \/>/);
-  assert.match(renderer, /<Drawer label="Menu" icon="menu">/);
+  assert.match(renderer, /<DrawerTrigger\s+controls="docs-navigation"/);
+  assert.match(
+    renderer,
+    /<Drawer\s+id="docs-navigation"[^>]*desktop="inline"/s,
+  );
   assert.match(renderer, /<SiteDrawerNavigation \/>/);
-  assert.match(renderer, /<ShellSidebar>/);
+  assert.match(renderer, /<ShellSidebar at="md">/);
+  assert.match(renderer, /<ShowAt max="sm">/);
   assert.match(renderer, /<ShellMain id="main-content" tabindex=\{-1\}>/);
   assert.match(renderer, /<ContentContainer>\{children\}<\/ContentContainer>/);
-  assert.match(renderer, /<ShellAside>/);
+  assert.match(renderer, /<ShellAside at="lg">/);
   assert.match(renderer, /data-spa-region="site-header"/);
   assert.match(renderer, /data-spa-region="docs-navigation"/);
   assert.match(renderer, /data-spa-region="toc"/);

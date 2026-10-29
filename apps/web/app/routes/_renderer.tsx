@@ -11,10 +11,12 @@ import {
 import {
   ContentContainer,
   Drawer,
+  DrawerTrigger,
   ShellAside,
   ShellBody,
   ShellMain,
   ShellSidebar,
+  ShowAt,
   SiteShell,
 } from "@riebeckite/layouts";
 import {
@@ -110,25 +112,39 @@ export default jsxRenderer(async ({ children }, c) => {
             <>
               <SiteShell>
                 <SiteNavigationHeader sticky>
-                  <div data-spa-region="site-header">
+                  <div
+                    data-spa-region="site-header"
+                    class="site-header__region"
+                  >
                     <ColorModeToggle />
                     <SearchBar class="rr-search-bar--header" />
-                    <Drawer label="Menu" icon="menu">
-                      <SiteDrawerNavigation />
-                      <DocsSidebar />
-                    </Drawer>
+                    <DrawerTrigger
+                      controls="docs-navigation"
+                      label="Menu"
+                      icon="menu"
+                    />
                   </div>
                 </SiteNavigationHeader>
                 <ShellBody>
-                  <ShellSidebar>
-                    <div data-spa-region="docs-navigation">
-                      <DocsSidebar />
-                    </div>
+                  <ShellSidebar at="md">
+                    <Drawer
+                      id="docs-navigation"
+                      label="Documentation"
+                      desktop="inline"
+                      at="md"
+                    >
+                      <div data-spa-region="docs-navigation">
+                        <ShowAt max="sm">
+                          <SiteDrawerNavigation />
+                        </ShowAt>
+                        <DocsSidebar />
+                      </div>
+                    </Drawer>
                   </ShellSidebar>
                   <ShellMain id="main-content" tabindex={-1}>
                     <ContentContainer>{children}</ContentContainer>
                   </ShellMain>
-                  <ShellAside>
+                  <ShellAside at="lg">
                     <div data-spa-region="toc">
                       <TableOfContents
                         className="rr-table-of-contents--desktop"
@@ -145,14 +161,21 @@ export default jsxRenderer(async ({ children }, c) => {
           ) : (
             <>
               <SiteNavigationHeader>
-                <div data-spa-region="site-header">
+                <div data-spa-region="site-header" class="site-header__region">
                   <SearchBar class="rr-search-bar--header" />
                   <ColorModeToggle />
-                  <Drawer label="Menu" icon="menu">
-                    <SiteDrawerNavigation />
-                  </Drawer>
+                  <DrawerTrigger
+                    controls="site-navigation"
+                    label="Menu"
+                    icon="menu"
+                  />
                 </div>
               </SiteNavigationHeader>
+              <Drawer id="site-navigation" label="Navigation">
+                <div data-spa-region="site-navigation">
+                  <SiteDrawerNavigation />
+                </div>
+              </Drawer>
               <main id="main-content" tabindex={-1}>
                 {children}
               </main>

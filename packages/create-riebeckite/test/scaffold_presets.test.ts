@@ -345,7 +345,12 @@ test("each preset generates its intended self-contained composition", async () =
         assert.match(article, /<DocsPrevNext \/>/);
         assert.match(article, /<SiteShell>/);
         assert.match(article, /<ContentContainer>/);
-        assert.match(article, /<ShellDrawer label="Documentation"/);
+        assert.match(
+          article,
+          /<Drawer\s+id="docs-navigation"[^>]*label="Documentation"/s,
+        );
+        assert.match(article, /desktop="inline"/);
+        assert.match(article, /<DrawerTrigger/);
         const packageJson = await fs.readFile(
           path.join(targetDirectory, "package.json"),
           "utf8",

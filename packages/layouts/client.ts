@@ -1,80 +1,185 @@
 const focusableSelector =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+type DrawerState = {
+  readonly drawer: HTMLElement;
+  readonly panel: HTMLElement;
+  readonly backdrop: HTMLElement | null;
+  returnFocus: HTMLElement | null;
+};
+
+const states = new Map<string, DrawerState>();
+const openStates = new Set<DrawerState>();
 let listening = false;
 
 export function initDrawers(): void {
   if (!listening) {
     listening = true;
-    document.addEventListener("spa:navigation", initDrawers);
+    document.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", closeInlineDrawers);
+    document.addEventListener("spa:navigation", () => {
+      closeAll(false);
+      initDrawers();
+    });
   }
+
+  for (const key of states.keys()) {
+    if (!states.get(key)?.drawer.isConnected) states.delete(key);
+  }
+
   for (const drawer of document.querySelectorAll<HTMLElement>(
     "[data-rb-layout-drawer]",
   )) {
-    if (drawer.dataset.rbLayoutDrawerReady === "true") continue;
-    drawer.dataset.rbLayoutDrawerReady = "true";
-    const trigger = drawer.querySelector<HTMLButtonElement>(
-      "[data-rb-layout-drawer-trigger]",
-    );
     const panel = drawer.querySelector<HTMLElement>(
       "[data-rb-layout-drawer-panel]",
     );
-    if (!trigger || !panel) continue;
-    let returnFocus: HTMLElement | null = null;
-    const setOpen = (open: boolean) => {
-      drawer.dataset.rbLayoutDrawerOpen = String(open);
-      trigger.setAttribute("aria-expanded", String(open));
-      panel.hidden = !open;
-      document.documentElement.classList.toggle("rb-layout-drawer-open", open);
-      if (!open && returnFocus?.isConnected) returnFocus.focus();
-      if (!open) returnFocus = null;
+    if (!panel?.id || states.has(panel.id)) continue;
+    const state: DrawerState = {
+      drawer,
+      panel,
+      backdrop: drawer.querySelector<HTMLElement>(
+        "[data-rb-layout-drawer-backdrop]",
+      ),
+      returnFocus: null,
     };
-    trigger.addEventListener("click", () => {
-      const open = drawer.dataset.rbLayoutDrawerOpen !== "true";
-      if (open) {
-        returnFocus = document.activeElement as HTMLElement | null;
-        setOpen(true);
-        panel.querySelector<HTMLElement>(focusableSelector)?.focus() ??
-          panel.focus();
-      } else setOpen(false);
-    });
-    document.addEventListener("keydown", (event) => {
-      if (drawer.dataset.rbLayoutDrawerOpen !== "true") return;
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setOpen(false);
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const focusable = Array.from(
-        panel.querySelectorAll<HTMLElement>(focusableSelector),
-      );
-      if (focusable.length === 0) {
-        event.preventDefault();
-        panel.focus();
-        return;
-      }
-      const first = focusable[0];
-      const last = focusable.at(-1);
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last?.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    });
-    document.addEventListener("click", (event) => {
-      if (
-        drawer.dataset.rbLayoutDrawerOpen === "true" &&
-        event.target instanceof Node &&
-        !drawer.contains(event.target)
-      )
-        setOpen(false);
-    });
-    document.addEventListener("spa:navigation", () => setOpen(false));
-    panel.addEventListener("click", (event) => {
-      if ((event.target as Element | null)?.closest("a[href]")) setOpen(false);
-    });
+    states.set(panel.id, state);
+    if (panel.matches(":target")) setOpen(state, true, false);
+  }
+}
+
+function setOpen(state: DrawerState, open: boolean, restoreFocus = true): void {
+  if (open) {
+    for (const other of [...openStates])
+      if (other !== state) setOpen(other, false, false);
+    if (!state.panel.isConnected) return;
+    state.returnFocus = document.activeElement as HTMLElement | null;
+    state.drawer.dataset.rbLayoutDrawerOpen = "true";
+    const overlay = getComputedStyle(state.panel).position === "fixed";
+    if (overlay) {
+      if (state.backdrop) state.backdrop.hidden = false;
+      state.panel.setAttribute("role", "dialog");
+      state.panel.setAttribute("aria-modal", "true");
+      document.documentElement.classList.add("rb-layout-drawer-open");
+    }
+    openStates.add(state);
+    syncTriggers(state, true);
+    const focusTarget =
+      state.panel.querySelector<HTMLElement>(focusableSelector);
+    if (focusTarget) focusTarget.focus();
+    else state.panel.focus();
+    return;
+  }
+
+  state.drawer.dataset.rbLayoutDrawerOpen = "false";
+  if (state.backdrop) state.backdrop.hidden = true;
+  if (location.hash === `#${state.panel.id}`)
+    history.replaceState(null, "", location.pathname + location.search);
+  state.panel.setAttribute("role", "region");
+  state.panel.removeAttribute("aria-modal");
+  openStates.delete(state);
+  if (openStates.size === 0)
+    document.documentElement.classList.remove("rb-layout-drawer-open");
+  syncTriggers(state, false);
+  if (restoreFocus && state.returnFocus?.isConnected) state.returnFocus.focus();
+  state.returnFocus = null;
+}
+
+function closeAll(restoreFocus: boolean): void {
+  for (const state of [...openStates]) setOpen(state, false, restoreFocus);
+}
+
+function closeInlineDrawers(): void {
+  for (const state of [...openStates]) {
+    if (getComputedStyle(state.panel).position !== "fixed")
+      setOpen(state, false, false);
+  }
+}
+
+function syncTriggers(state: DrawerState, open: boolean): void {
+  for (const trigger of document.querySelectorAll<HTMLElement>(
+    `[data-rb-layout-drawer-trigger][data-rb-layout-drawer-target="${CSS.escape(state.panel.id)}"]`,
+  )) {
+    trigger.setAttribute("aria-expanded", String(open));
+  }
+}
+
+function drawerForTrigger(trigger: HTMLElement): DrawerState | undefined {
+  const target = trigger.dataset.rbLayoutDrawerTarget;
+  return target ? states.get(target) : undefined;
+}
+
+function onClick(event: MouseEvent): void {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+  const trigger = target.closest<HTMLElement>(
+    "[data-rb-layout-drawer-trigger]",
+  );
+  if (trigger) {
+    const state = drawerForTrigger(trigger);
+    if (!state) return;
+    event.preventDefault();
+    setOpen(state, state.drawer.dataset.rbLayoutDrawerOpen !== "true");
+    return;
+  }
+  if (target.closest("[data-rb-layout-drawer-backdrop]")) {
+    const drawer = target.closest<HTMLElement>("[data-rb-layout-drawer]");
+    const state = drawer ? stateForDrawer(drawer) : undefined;
+    if (state) setOpen(state, false);
+    return;
+  }
+  if (openStates.size === 0) return;
+  for (const state of [...openStates]) {
+    if (state.drawer.contains(target)) {
+      if (target.closest("a[href]")) setOpen(state, false);
+      return;
+    }
+    setOpen(state, false);
+  }
+}
+
+function stateForDrawer(drawer: HTMLElement): DrawerState | undefined {
+  for (const state of states.values())
+    if (state.drawer === drawer) return state;
+  return undefined;
+}
+
+function onKeyDown(event: KeyboardEvent): void {
+  const target = event.target;
+  if (
+    event.key === " " &&
+    target instanceof Element &&
+    target.closest("[data-rb-layout-drawer-trigger]")
+  ) {
+    event.preventDefault();
+    target.closest<HTMLElement>("[data-rb-layout-drawer-trigger]")?.click();
+    return;
+  }
+  const state = [...openStates].at(-1);
+  if (!state) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    setOpen(state, false);
+    return;
+  }
+  if (event.key !== "Tab") return;
+  if (getComputedStyle(state.panel).position !== "fixed") return;
+  const focusable = Array.from(
+    state.panel.querySelectorAll<HTMLElement>(focusableSelector),
+  );
+  if (focusable.length === 0) {
+    event.preventDefault();
+    state.panel.focus();
+    return;
+  }
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last?.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
   }
 }
 

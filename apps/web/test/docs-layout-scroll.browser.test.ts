@@ -58,9 +58,9 @@ async function loadDocsPage(
     <body class="riebeckite-page"><div class="rb-layout">
       <header class="rb-layout__header" data-rb-layout-sticky="true"><div class="rb-site-header"><a class="rb-site-header__home">Riebeckite</a></div></header>
       <div class="rb-layout__body">
-        <aside class="rb-layout__sidebar"><nav class="rb-sidebar-navigation"><label class="rb-sidebar-navigation__search"><input type="search" /></label><ul>${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></aside>
+        <aside class="rb-layout__sidebar" data-rb-layout-at="md"><nav class="rb-sidebar-navigation"><label class="rb-sidebar-navigation__search"><input type="search" /></label><ul>${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></aside>
         <main class="rb-layout__main"><div class="rb-content-container" style="height: 300rem">Article</div></main>
-        <aside class="rb-layout__aside"><nav class="rr-table-of-contents rr-table-of-contents--desktop"><ol>${navigationItems(tocItemCount, "rr-table-of-contents__item")}</ol></nav></aside>
+        <aside class="rb-layout__aside" data-rb-layout-at="lg"><nav class="rr-table-of-contents rr-table-of-contents--desktop"><ol>${navigationItems(tocItemCount, "rr-table-of-contents__item")}</ol></nav></aside>
       </div>
     </div><footer class="rb-site-footer">Footer</footer></body></html>`);
 }

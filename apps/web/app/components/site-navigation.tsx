@@ -2,15 +2,17 @@ import {
   HeaderActions,
   HeaderBrand,
   SiteHeader as LayoutHeader,
+  ShowAt,
 } from "@riebeckite/layouts";
 import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
+import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
 
 export function SiteHeader(props: {
-  readonly children?: unknown;
+  readonly children?: Child;
   readonly sticky?: boolean;
 }) {
   const site = useSiteContext();
@@ -31,17 +33,17 @@ export function SiteHeader(props: {
           <span>{site?.config.site.title}</span>
         </a>
       </HeaderBrand>
-      <HeaderActions>
+      <HeaderActions wrap>
         {hasNavigation ? (
-          <div class="site-header__primary-navigation">
+          <ShowAt min="md">
             <SiteNav
               placement="primary"
               omitHome
               localizeHref={(href) => localizeDocsHref(href, path)}
             />
-          </div>
+          </ShowAt>
         ) : null}
-        <div class="site-header__actions">{props.children}</div>
+        {props.children}
       </HeaderActions>
     </LayoutHeader>
   );

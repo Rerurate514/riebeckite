@@ -55,11 +55,8 @@
     object-fit: contain;
   }
 
-  .site-header__actions {
-    display: flex;
-    flex: none;
-    align-items: center;
-    gap: 0.5rem;
+  .site-header__region {
+    display: contents;
   }
 
   @media (max-width: 47.999rem) {
@@ -68,10 +65,6 @@
          already stacks the chrome (search bar) above the article. Keep a
          modest margin without eating the viewport. */
       padding-block: var(--rb-space-3);
-    }
-
-    .site-header__primary-navigation {
-      display: none;
     }
 
     .rb-site-header__home {

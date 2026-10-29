@@ -211,6 +211,7 @@ function removeUnsafeMarkdownStyles(node: HtmlNode): void {
 export interface PipelineOptions {
   plugins?: RiebeckitePlugin[];
   observability?: Observability;
+  traceRecorder?: import("./observability.js").BuildTraceRecorder;
   config?: import("./types/resolved_riebeckite_config.js").ResolvedRiebeckiteConfig;
   contentSource?: ContentSource;
   isRoutable?: (slug: string) => boolean;

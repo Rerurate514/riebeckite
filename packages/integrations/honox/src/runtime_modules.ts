@@ -20,8 +20,12 @@ const resolvedContentModuleId = `\0${riebeckiteContentModuleId}`;
 export function riebeckiteRuntimeModules(
   getApplication: () => ResolvedHonoxApplication,
 ): Plugin {
+  let development = false;
   return {
     name: "riebeckite-runtime-modules",
+    configResolved(config) {
+      development = config.command === "serve";
+    },
     resolveId(id) {
       if (id === riebeckiteConfigModuleId) return resolvedConfigModuleId;
       if (id === riebeckiteContentModuleId) return resolvedContentModuleId;
@@ -32,7 +36,8 @@ export function riebeckiteRuntimeModules(
         const { appRoot, configFile } = getApplication();
         return createConfigModule(appRoot, configFile);
       }
-      if (id === resolvedContentModuleId) return createContentModule();
+      if (id === resolvedContentModuleId)
+        return createContentModule(development);
       return null;
     },
   };
@@ -60,8 +65,9 @@ export const config = resolveHonoxConfig(
 `;
 }
 
-function createContentModule(): string {
-  return `import { ContentManager } from "@riebeckite/core";
+function createContentModule(development: boolean): string {
+  if (!development) {
+    return `import { ContentManager } from "@riebeckite/core";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 
@@ -72,6 +78,27 @@ export const content = new ContentManager(
   ),
   [],
   { config, plugins: config.plugins },
+);
+`;
+  }
+  return `import { ContentManager } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
+import { createDevelopmentTrace } from "@riebeckite/honox/runtime";
+import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
+
+const trace = createDevelopmentTrace();
+export const content = new ContentManager(
+  config.content.source ?? new FileSystemContentSource(
+    config.content.directory,
+    config.content.exclude,
+  ),
+  [],
+  {
+    config,
+    plugins: config.plugins,
+    observability: trace.observability,
+    traceRecorder: trace,
+  },
 );
 `;
 }

@@ -25,9 +25,10 @@ import type {
 import type {
   AssetTransformOutput,
   ContentOutputDependencyResolver,
+  ResolvedPluginMetadata,
   RiebeckitePlugin,
 } from "../types/plugin.js";
-import { resolvePlugins } from "../types/plugin.js";
+import { getResolvedPluginMetadata, resolvePlugins } from "../types/plugin.js";
 import {
   type PluginClientEntry,
   serializePublicClientConfig,
@@ -121,6 +122,32 @@ export class PluginRuntime {
     return this.manifestHooks.getMetrics();
   }
 
+  getPluginMetadata(): readonly ResolvedPluginMetadata[] {
+    return getResolvedPluginMetadata(this.plugins());
+  }
+
+  getPluginInventory(): readonly ResolvedPluginMetadata[] {
+    const resolved = this.plugins();
+    const resolvedNames = new Set(resolved.map((plugin) => plugin.name));
+    const configured =
+      this.pipelineOptions.config?.pluginInventory ??
+      (this.pipelineOptions.plugins ?? [])
+        .filter((plugin): plugin is RiebeckitePlugin => Boolean(plugin))
+        .map((plugin) => ({
+          name: plugin.name,
+          enabled: plugin.enabled !== false,
+          provides: plugin.provides ?? [],
+          requires: plugin.requires ?? [],
+          optional: plugin.optional ?? [],
+        }));
+    return [
+      ...getResolvedPluginMetadata(resolved),
+      ...configured
+        .filter((plugin) => !resolvedNames.has(plugin.name))
+        .map((plugin) => ({ ...plugin, enabled: false })),
+    ];
+  }
+
   getNoChangeFastPathBlockReason(
     previousCache: readonly ManifestHookCacheEntry[],
     pipelineFingerprint: string | undefined,
@@ -177,11 +204,16 @@ export class PluginRuntime {
     for (const plugin of this.plugins()) {
       const resolve = plugin.resolveExternalDependencies;
       if (!resolve) continue;
-      const results = await resolve({
-        config: this.pipelineOptions.config,
-        contentIndex,
-        cache: this.cacheFor(plugin),
-      });
+      const results = await this.observability().tracer.span(
+        "plugin.resolveExternalDependencies",
+        { plugin: plugin.name, hook: "resolveExternalDependencies" },
+        () =>
+          resolve({
+            config: this.pipelineOptions.config,
+            contentIndex,
+            cache: this.cacheFor(plugin),
+          }),
+      );
       for (const result of results) {
         if (result.kind === "unavailable") {
           failures.push(result.failure);
@@ -318,13 +350,18 @@ export class PluginRuntime {
 
     for (const plugin of this.plugins()) {
       if (!plugin.transformAssets) continue;
-      const outputs = await plugin.transformAssets({
-        assets,
-        readAsset,
-        cache: this.cacheFor(plugin),
-        logger: this.observability().logger.child({ plugin: plugin.name }),
-        tracer: this.observability().tracer,
-      });
+      const outputs = await this.observability().tracer.span(
+        "plugin.transformAssets",
+        { plugin: plugin.name, hook: "transformAssets" },
+        () =>
+          plugin.transformAssets?.({
+            assets,
+            readAsset,
+            cache: this.cacheFor(plugin),
+            logger: this.observability().logger.child({ plugin: plugin.name }),
+            tracer: this.observability().tracer,
+          }) ?? [],
+      );
       this.registerAssetTransforms(plugin, outputs, referencedBy);
     }
   }
@@ -346,14 +383,19 @@ export class PluginRuntime {
     for (const plugin of this.plugins()) {
       const hook = plugin.planGeneratedOutputs;
       if (!hook) continue;
-      const outputs = await hook(
-        freezeGeneratedOutputPlanContext({
-          manifest: {
-            discoverableEntries: manifest.discoverableEntries,
-            routableEntries: manifest.publicEntries,
-          },
-          site: this.pipelineOptions.config?.site,
-        }),
+      const outputs = await this.observability().tracer.span(
+        "plugin.planGeneratedOutputs",
+        { plugin: plugin.name, hook: "planGeneratedOutputs" },
+        () =>
+          hook(
+            freezeGeneratedOutputPlanContext({
+              manifest: {
+                discoverableEntries: manifest.discoverableEntries,
+                routableEntries: manifest.publicEntries,
+              },
+              site: this.pipelineOptions.config?.site,
+            }),
+          ),
       );
       const sink = this.generatedOutputs.sinkFor(plugin.name);
       for (const output of outputs) {
@@ -597,6 +639,11 @@ export class PluginRuntime {
           tracer: this.observability().tracer,
         })
       : createUnavailablePluginCache();
+    if (!this.isBuildTime) {
+      this.observability().tracer.event("cache.bypass", {
+        plugin: plugin.name,
+      });
+    }
     this.pluginCaches.set(plugin.name, cache);
     return cache;
   }

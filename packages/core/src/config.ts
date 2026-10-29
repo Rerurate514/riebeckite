@@ -3,7 +3,7 @@ import {
   resolvePublishingBuildTime,
   resolvePublishingState,
 } from "./content/publishing.js";
-import { resolvePlugins } from "./types/plugin.js";
+import { type RiebeckitePlugin, resolvePlugins } from "./types/plugin.js";
 import type { PostFrontmatter } from "./types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
 import type { RiebeckiteConfig, SpaConfig } from "./types/riebeckite_config.js";
@@ -90,6 +90,15 @@ export function resolveConfig(
     },
     theme,
     plugins: resolvePlugins(config.plugins),
+    pluginInventory: (config.plugins ?? [])
+      .filter((plugin): plugin is RiebeckitePlugin => Boolean(plugin))
+      .map((plugin) => ({
+        name: plugin.name,
+        enabled: plugin.enabled !== false,
+        provides: plugin.provides ?? [],
+        requires: plugin.requires ?? [],
+        optional: plugin.optional ?? [],
+      })),
     cache: {
       enabled: config.cache?.enabled ?? true,
       directory: config.cache?.directory ?? "",

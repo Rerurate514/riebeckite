@@ -46,6 +46,16 @@ export type Observability = Readonly<{
   tracer: Tracer;
 }>;
 
+export type TraceSnapshot = Readonly<{
+  spans: readonly TraceSpan[];
+  events: readonly TraceEvent[];
+}>;
+
+export interface BuildTraceRecorder {
+  begin(): void;
+  snapshot(): TraceSnapshot;
+}
+
 export class NoopLogger implements Logger {
   debug(): void {}
   info(): void {}

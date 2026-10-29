@@ -11,230 +11,34 @@ import {
   type ScaffoldUtilityName,
   scaffoldDeploymentFromFlags,
 } from "create-riebeckite/scaffold";
-import { resolveRiebeckiteProject } from "./application_root.js";
-import { runBuild } from "./commands/build.js";
-import { runCheck } from "./commands/check.js";
-import { type CleanScope, runClean } from "./commands/clean.js";
-import {
-  createHelp,
-  runCreateSite,
-  runInteractiveCreate,
-} from "./commands/create.js";
-import {
-  runCreateComponent,
-  runInteractiveCreateComponent,
-} from "./commands/create_component.js";
+import { runCommand } from "./command_dispatcher.js";
+import type { CleanScope } from "./commands/clean.js";
 import {
   assertPagePath,
   assertPageTypeName,
-  runCreatePageType,
-  runInteractiveCreatePageType,
 } from "./commands/create_page_type.js";
 import {
   assertPluginName,
   parseCreatePluginFeatures,
-  runCreatePlugin,
-  runInteractiveCreatePlugin,
 } from "./commands/create_plugin.js";
-import {
-  assertThemeName,
-  runCreateTheme,
-  runInteractiveCreateTheme,
-} from "./commands/create_theme.js";
-import { runDeploy } from "./commands/deploy.js";
-import { runDeployDomain } from "./commands/deploy_domain.js";
-import { runDeploySetup } from "./commands/deploy_setup.js";
-import { runDev } from "./commands/dev.js";
-import { runDoctorCommand } from "./commands/doctor.js";
-import { runInit } from "./commands/init.js";
-import { type InspectTarget, runInspect } from "./commands/inspect.js";
-import { runPluginDev } from "./commands/plugin_dev.js";
-import { runPluginVerify } from "./commands/plugin_verify.js";
-import { runProfile } from "./commands/profile.js";
-import { runThemePreview } from "./commands/theme_preview.js";
-import { runUpgradeCheck } from "./commands/upgrade.js";
+import { assertThemeName } from "./commands/create_theme.js";
+import type { InspectTarget } from "./commands/inspect.js";
 import { renderCliError } from "./error_renderer.js";
 import {
   parseThemeFeatures,
   parseThemeTemplate,
-  themeTemplateRegistry,
 } from "./theme_generator/registry.js";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
   try {
-    const command = parseCommand(arguments_);
-
-    if (command.name === "init") {
-      if (command.listPresets) {
-        printPresets();
-        return;
-      }
-      await runInit({
-        directory: command.directory,
-        force: command.force,
-        preset: command.preset,
-        features: command.features,
-        utilities: command.utilities,
-        deployment: command.deployment,
-      });
-      return;
-    }
-
-    if (command.name === "create-help") {
-      console.log(createHelp());
-      return;
-    }
-    if (command.name === "create-interactive") {
-      await runInteractiveCreate();
-      return;
-    }
-    if (command.name === "create-site") {
-      await runCreateSite(command.arguments);
-      return;
-    }
-
-    if (command.name === "create-plugin") {
-      await runCreatePlugin({
-        name: command.pluginName,
-        directory: command.directory,
-        features: command.features,
-        tests: command.tests,
-        documentation: command.documentation,
-        register: command.register,
-      });
-      return;
-    }
-    if (command.name === "create-plugin-interactive") {
-      await runInteractiveCreatePlugin();
-      return;
-    }
-    if (command.name === "create-theme-list") {
-      printThemeTemplates();
-      return;
-    }
-    if (command.name === "create-theme") {
-      await runCreateTheme({
-        name: command.themeName,
-        directory: command.directory,
-        template: command.template,
-        features: command.features,
-        darkMode: command.darkMode,
-        tests: command.tests,
-        documentation: command.documentation,
-        register: command.register,
-      });
-      return;
-    }
-    if (command.name === "create-theme-interactive") {
-      await runInteractiveCreateTheme();
-      return;
-    }
-    if (command.name === "create-page-type") {
-      await runCreatePageType(command.options);
-      return;
-    }
-    if (command.name === "create-page-type-interactive") {
-      await runInteractiveCreatePageType();
-      return;
-    }
-    if (command.name === "create-component") {
-      await runCreateComponent(command.options);
-      return;
-    }
-    if (command.name === "create-component-interactive") {
-      await runInteractiveCreateComponent();
-      return;
-    }
-    if (command.name === "theme-preview") {
-      await runThemePreview({
-        name: command.themeName,
-        port: command.port,
-        open: command.open,
-      });
-      return;
-    }
-    if (command.name === "plugin-dev") {
-      await runPluginDev({
-        pluginPath: command.pluginPath,
-        port: command.port,
-        open: command.open,
-      });
-      return;
-    }
-    if (command.name === "plugin-verify") {
-      if (!runPluginVerify(command)) process.exitCode = 1;
-      return;
-    }
-
-    const project = await resolveRiebeckiteProject(process.cwd());
-
-    if (command.name === "dev") {
-      await runDev(project);
-      return;
-    }
-    if (command.name === "build") {
-      await runBuild(project, { full: command.full });
-      return;
-    }
-    if (command.name === "clean") {
-      await runClean(project, { scope: command.scope });
-      return;
-    }
-    if (command.name === "deploy") {
-      await runDeploy(project, { dryRun: command.dryRun });
-      return;
-    }
-    if (command.name === "deploy-setup") {
-      await runDeploySetup(project);
-      return;
-    }
-    if (command.name === "deploy-domain") {
-      await runDeployDomain(project);
-      return;
-    }
-    if (command.name === "doctor") {
-      if (
-        !(await runDoctorCommand(project, {
-          explain: command.explain,
-          json: command.json,
-          fix: command.fix,
-          dryRun: command.dryRun,
-          failOn: command.failOn,
-          codes: command.codes,
-        }))
-      )
-        process.exitCode = 1;
-      return;
-    }
-    if (command.name === "profile") {
-      await runProfile(project, { full: command.full });
-      return;
-    }
-    if (command.name === "inspect") {
-      await runInspect(project, {
-        target: command.target,
-        list: command.list,
-        path: command.path,
-      });
-      return;
-    }
-    if (command.name === "upgrade") {
-      if (
-        !(await runUpgradeCheck(project, command)) &&
-        process.exitCode !== 130
-      )
-        process.exitCode = 1;
-      return;
-    }
-
-    if (!(await runCheck(project))) process.exitCode = 1;
+    await runCommand(parseCommand(arguments_));
   } catch (error) {
     console.error(renderCliError(error));
     process.exitCode = 1;
   }
 }
 
-type Command =
+export type Command =
   | { name: "dev" }
   | { name: "build"; full: boolean }
   | { name: "clean"; scope: CleanScope }
@@ -786,12 +590,6 @@ function parseCreateThemeCommand(options: readonly string[]): Command {
   }
 }
 
-function printThemeTemplates(): void {
-  for (const template of Object.values(themeTemplateRegistry)) {
-    console.log(`${template.id}: ${template.description}`);
-  }
-}
-
 function parseCreatePluginCommand(options: readonly string[]): Command {
   let pluginName: string | undefined;
   let directory: string | undefined;
@@ -994,14 +792,6 @@ function parseInitCommand(options: readonly string[]): Command {
     listPresets,
     deployment,
   };
-}
-
-function printPresets(): void {
-  console.log("Available presets:");
-  console.log("");
-  for (const { name, description } of SCAFFOLD_PRESETS) {
-    console.log(`  ${name}: ${description}`);
-  }
 }
 
 function parseInspectCommand(options: readonly string[]): Command {

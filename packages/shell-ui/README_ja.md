@@ -2,7 +2,7 @@
 
 [English](./README.md)
 
-Riebeckite サイト向けの CSS Grid レイアウトプリミティブです。`@riebeckite/shell-ui/style.css` を読み込み、サイト側で `SiteShell`、`ShellHeader`、`ShellBody`、`ShellSidebar`、`ShellMain`、`ShellAside`、`ShellContainer`、`ContentContainer` を組み立てます。レイアウト種別ではなく、コンポーネントの組み合わせで構造を表現します。
+Riebeckite サイト向けの CSS Grid レイアウトプリミティブです。`@riebeckite/shell-ui/style.css` を読み込み、サイト側で `SiteShell`、`ShellHeader`、`ShellHeaderContent`、`ShellBody`、`ShellSidebar`、`ShellMain`、`ShellAside`、`ShellContainer`、`ContentContainer` を組み立てます。レイアウト種別ではなく、コンポーネントの組み合わせで構造を表現します。
 
 ## Recipe
 
@@ -17,4 +17,4 @@ Riebeckite サイト向けの CSS Grid レイアウトプリミティブです�
 </SiteShell>
 ```
 
-`ShellContainer` は Header や ShellBody を中央寄せして最大幅を制限します。省略すると viewport 幅を使用します。`ContentContainer` は Main 内の本文だけを制限します。
+Header の内容を利用可能な幅まで広げるときは、`ShellContainer` 内で `ShellHeaderContent` を使います。`ContentContainer` は Main 内の本文だけを制限します。

@@ -4,10 +4,6 @@
   padding-block: var(--rb-space-5) var(--rb-space-8);
 }
 
-body:has(.rb-home) .rb-site-header {
-  width: min(100% - 2rem, 76rem);
-  margin-inline: auto;
-}
 body:has(.rb-home) main {
   width: 100%;
   min-width: 0;
@@ -625,8 +621,7 @@ body:has(.rb-home) main {
 }
 
 @media (max-width: 32rem) {
-  .rb-home,
-  body:has(.rb-home) .rb-site-header {
+  .rb-home {
     width: min(100% - 1.25rem, 76rem);
   }
   .rb-home h1 {

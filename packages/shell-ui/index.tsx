@@ -35,6 +35,14 @@ export function ShellContainer(props: ShellProps) {
   );
 }
 
+export function ShellHeaderContent(props: ShellProps) {
+  return (
+    <div class={join("rb-shell__header-content", props.class, props.className)}>
+      {props.children}
+    </div>
+  );
+}
+
 export function ContentContainer(props: ShellProps) {
   return (
     <div class={join("rb-content-container", props.class, props.className)}>

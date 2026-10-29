@@ -2,16 +2,18 @@
 
 [日本語](./README_ja.md)
 
-Composable, CSS Grid layout primitives for Riebeckite sites. Import `@riebeckite/shell-ui/style.css`, then compose `SiteShell`, `ShellHeader`, `ShellBody`, `ShellSidebar`, `ShellMain`, `ShellAside`, `ShellContainer`, `ContentContainer`, and `ShellDrawer`. The chosen component combination, rather than a layout variant, owns placement.
+Composable, CSS Grid layout primitives for Riebeckite sites. Import `@riebeckite/shell-ui/style.css`, then compose `SiteShell`, `ShellHeader`, `ShellHeaderContent`, `ShellBody`, `ShellSidebar`, `ShellMain`, `ShellAside`, `ShellContainer`, `ContentContainer`, and `ShellDrawer`. The chosen component combination, rather than a layout variant, owns placement.
 
 ## Recipes
 
 ```tsx
 <SiteShell>
-  <ShellHeader sticky><SiteNav /><ShellDrawer label="Documentation"><DocsSidebar /></ShellDrawer></ShellHeader>
+  <ShellHeader sticky><ShellContainer><ShellHeaderContent><SiteNav /></ShellHeaderContent><ShellDrawer label="Documentation"><DocsSidebar /></ShellDrawer></ShellContainer></ShellHeader>
   <ShellBody><ShellSidebar><DocsSidebar /></ShellSidebar><ShellMain id="main-content"><ContentContainer><ArticleContent /></ContentContainer></ShellMain><ShellAside><TableOfContents /></ShellAside></ShellBody>
 </SiteShell>
 ```
+
+Use `ShellHeaderContent` inside `ShellContainer` for header content that must fill the available header width. `ContentContainer` constrains main content only.
 
 ```tsx
 <SiteShell>

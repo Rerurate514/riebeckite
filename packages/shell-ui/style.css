@@ -28,6 +28,7 @@
     box-sizing: border-box;
     z-index: 20;
     display: flex;
+    inline-size: 100%;
     block-size: var(--rb-shell-header-height);
     align-items: center;
     gap: var(--rb-space-3, 1.5rem);
@@ -43,6 +44,15 @@
     min-width: 0;
     align-items: center;
     gap: inherit;
+  }
+  .rb-shell__header-content {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .rb-shell__header-content > * {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .rb-shell__header[data-rb-shell-sticky="true"] {

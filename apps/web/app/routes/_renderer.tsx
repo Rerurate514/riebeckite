@@ -22,6 +22,7 @@ import {
   ShellContainer,
   ShellDrawer,
   ShellHeader,
+  ShellHeaderContent,
   ShellMain,
   ShellSidebar,
   SiteShell,
@@ -113,16 +114,18 @@ export default jsxRenderer(async ({ children }, c) => {
               <SiteShell>
                 <ShellHeader sticky>
                   <ShellContainer>
-                    <div data-spa-region="site-header">
-                      <SiteHeader>
-                        <ColorModeToggle />
-                        <SearchBar class="rr-search-bar--header" />
-                        <ShellDrawer label="Menu" icon="menu">
-                          <SiteDrawerNavigation />
-                          <DocsSidebar />
-                        </ShellDrawer>
-                      </SiteHeader>
-                    </div>
+                    <ShellHeaderContent>
+                      <div data-spa-region="site-header">
+                        <SiteHeader>
+                          <ColorModeToggle />
+                          <SearchBar class="rr-search-bar--header" />
+                          <ShellDrawer label="Menu" icon="menu">
+                            <SiteDrawerNavigation />
+                            <DocsSidebar />
+                          </ShellDrawer>
+                        </SiteHeader>
+                      </div>
+                    </ShellHeaderContent>
                   </ShellContainer>
                 </ShellHeader>
                 <ShellBody>
@@ -150,15 +153,21 @@ export default jsxRenderer(async ({ children }, c) => {
             </>
           ) : (
             <>
-              <div data-spa-region="site-header">
-                <SiteHeader>
-                  <SearchBar class="rr-search-bar--header" />
-                  <ColorModeToggle />
-                  <ShellDrawer label="Menu" icon="menu">
-                    <SiteDrawerNavigation />
-                  </ShellDrawer>
-                </SiteHeader>
-              </div>
+              <ShellHeader>
+                <ShellContainer>
+                  <ShellHeaderContent>
+                    <div data-spa-region="site-header">
+                      <SiteHeader>
+                        <SearchBar class="rr-search-bar--header" />
+                        <ColorModeToggle />
+                        <ShellDrawer label="Menu" icon="menu">
+                          <SiteDrawerNavigation />
+                        </ShellDrawer>
+                      </SiteHeader>
+                    </div>
+                  </ShellHeaderContent>
+                </ShellContainer>
+              </ShellHeader>
               <main id="main-content" tabindex={-1}>
                 {children}
               </main>

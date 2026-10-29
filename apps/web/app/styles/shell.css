@@ -30,13 +30,13 @@
     --rb-shell-max-width: 96rem;
   }
 
-  .rb-site-header,
   .rb-site-footer {
     width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
     margin-inline: auto;
   }
 
   .rb-site-header {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -97,10 +97,8 @@
     }
   }
 
-  .rb-shell .rb-site-header {
-    flex: 1;
-    width: 100%;
-    min-width: 0;
+  .rb-shell__drawer-panel .rb-sidebar-navigation__search {
+    margin-block-start: var(--rb-space-2);
   }
 
   @media (min-width: 88rem) {

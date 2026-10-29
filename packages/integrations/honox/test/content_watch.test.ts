@@ -25,6 +25,7 @@ class FakeWatcher extends EventEmitter {
 type FakeServer = {
   watcher: FakeWatcher;
   sends: Array<{ type: string }>;
+  waitForSends: (count: number) => Promise<void>;
   invalidated: string[];
   server: ViteDevServer;
 };
@@ -32,6 +33,7 @@ type FakeServer = {
 function createServer(modules: FakeModule[]): FakeServer {
   const watcher = new FakeWatcher();
   const sends: Array<{ type: string }> = [];
+  const sendWaiters: Array<() => void> = [];
   const invalidated: string[] = [];
   const moduleGraph = {
     idToModuleMap: new Map(
@@ -53,6 +55,7 @@ function createServer(modules: FakeModule[]): FakeServer {
     hot: {
       send(payload: { type: string }) {
         sends.push(payload);
+        while (sendWaiters.length > 0) sendWaiters.shift()?.();
       },
     },
     environments: {
@@ -64,6 +67,22 @@ function createServer(modules: FakeModule[]): FakeServer {
   return {
     watcher,
     sends,
+    waitForSends(count) {
+      if (sends.length >= count) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          const index = sendWaiters.indexOf(check);
+          if (index >= 0) sendWaiters.splice(index, 1);
+          reject(new Error(`Timed out waiting for ${count} reloads.`));
+        }, 1_000);
+        const check = () => {
+          if (sends.length < count) return;
+          clearTimeout(timeout);
+          resolve();
+        };
+        sendWaiters.push(check);
+      });
+    },
     invalidated,
     server: server as unknown as ViteDevServer,
   };
@@ -83,10 +102,6 @@ function configure(
   assert.equal(plugin.apply, "serve");
   const hook = plugin.configureServer as (server: ViteDevServer) => void;
   hook(fake.server);
-}
-
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 describe("isSiteAssetPath", () => {
@@ -190,7 +205,7 @@ describe("riebeckiteContentWatch", () => {
     configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
-    await delay(150);
+    await fake.waitForSends(1);
 
     assert.deepEqual(fake.invalidated, [
       path.join(appRoot, "app", "content.ts"),
@@ -211,7 +226,7 @@ describe("riebeckiteContentWatch", () => {
     fake.watcher.emit("change", path.join(contentRoot, "notes/b.md"));
     fake.watcher.emit("add", path.join(contentRoot, "notes/c.md"));
     fake.watcher.emit("unlink", path.join(contentRoot, "notes/d.md"));
-    await delay(150);
+    await fake.waitForSends(1);
 
     assert.equal(fake.sends.length, 1);
     assert.equal(fake.invalidated.length, 1);
@@ -231,7 +246,6 @@ describe("riebeckiteContentWatch", () => {
     );
     fake.watcher.emit("change", path.join(contentRoot, "drafts/secret.md"));
     fake.watcher.emit("change", path.join(appRoot, "app", "routes/index.tsx"));
-    await delay(150);
 
     assert.deepEqual(fake.sends, []);
     assert.deepEqual(fake.invalidated, []);
@@ -249,7 +263,6 @@ describe("riebeckiteContentWatch", () => {
       "change",
       path.join(contentRoot, "attachments/photo.png"),
     );
-    await delay(150);
 
     assert.deepEqual(fake.invalidated, []);
     assert.deepEqual(fake.sends, [{ type: "full-reload" }]);
@@ -267,12 +280,12 @@ describe("riebeckiteContentWatch", () => {
       "add",
       path.join(contentRoot, "attachments/photo-640.webp"),
     );
-    await delay(150);
+    await fake.waitForSends(1);
     fake.watcher.emit(
       "unlink",
       path.join(contentRoot, "attachments/photo.png"),
     );
-    await delay(150);
+    await fake.waitForSends(2);
 
     assert.equal(fake.invalidated.length, 2);
     assert.equal(fake.sends.length, 2);
@@ -296,7 +309,7 @@ describe("riebeckiteContentWatch", () => {
     fake.watcher.emit("unlink", path.join(contentRoot, "notes/old.md"));
     fake.watcher.emit("add", path.join(appRoot, "app", "routes/new.tsx"));
     fake.watcher.emit("unlink", path.join(appRoot, "app", "routes/old.tsx"));
-    await delay(150);
+    await fake.waitForSends(1);
 
     assert.deepEqual(restarts, ["restart:add", "restart:unlink"]);
     assert.deepEqual(otherListenerCalls, ["other:add", "other:unlink"]);
@@ -332,7 +345,7 @@ describe("riebeckiteContentWatch", () => {
     configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
-    await delay(150);
+    await fake.waitForSends(1);
 
     assert.equal(fake.sends.length, 1);
     assert.equal(fake.invalidated.length, 1);
@@ -355,7 +368,6 @@ describe("riebeckiteContentWatch", () => {
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
     for (const handler of closed) handler();
-    await delay(150);
 
     assert.deepEqual(fake.sends, []);
     assert.deepEqual(fake.invalidated, []);

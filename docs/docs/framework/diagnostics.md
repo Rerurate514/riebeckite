@@ -23,6 +23,8 @@ Use `check` for configuration/plugin validity and `doctor` for broader health. D
 
 The Development Inspector is available only through the Vite development server and renders the same report in a Shadow DOM panel. It is omitted from production client modules and production endpoints. The panel shows diagnostics first and loads the Dependencies and Output tabs from a separate endpoint, so a large output plan does not delay the rest of the report. Diagnostics can be filtered by text, severity, category, and code. Current-page filtering is unavailable because source-to-page mappings are not recorded; it does not infer them.
 
+The output endpoint filters and paginates on the server, so the browser does not receive every output row. You can page through affected, unchanged, and removed outputs, filter them by kind, status, or text, look up an output path and its dependencies, and list the outputs directly affected by a content change. Full-regeneration reasons are shown only when the build state, cache contract, pipeline fingerprint, or output change set provides the evidence; otherwise the cause is reported as unknown.
+
 ## Content ID integrity
 
 Stable content IDs come from the optional source-authored `id` frontmatter field and are the identity key for per-content consumers such as the analytics plugin's page-view tracking.

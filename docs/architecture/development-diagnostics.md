@@ -53,3 +53,31 @@ renderer boundary.
 The launcher is available only while serving. Use Ctrl+Alt+R outside editable
 controls to open or close it; Escape closes it and restores focus to the
 launcher.
+
+## Output queries and regeneration evidence
+
+`/__riebeckite/inspector/output` keeps its unparameterized response shape and
+adds server-side query parameters:
+
+- `page` and `limit` (maximum 100) paginate the affected, unchanged, and
+  removed output lists. `status`, `kind`, and `q` filter them.
+- `output` resolves one output path to its tracked dependencies and related
+  outputs. `changed` lists the directly dependent outputs that a content change
+  affects.
+- Listed rows carry the recorded cause: affected outputs name the changed
+  dependency, unchanged outputs report that no tracked dependency changed, and
+  removed outputs report that they are absent from the current inventory.
+- `dpage`, `dlimit`, `dkind`, and `dq` paginate and filter the dependency rows.
+
+The endpoint evaluates the existing `ContentManager.getOutputChangeSet()` and
+output plan once per revision, then filters and paginates the result. It does
+not send every row and does not rebuild the plan for each query.
+
+Full-regeneration reasons use existing Core evidence: the build state status,
+`isPersistentlyCacheable`, the pipeline fingerprint, and the reasons recorded in
+the output change set. When a cause cannot be attributed to an existing
+observation, the report lists it under `unknown` instead of guessing.
+
+The inspector caches one inspection per application and revision. A content or
+configuration change advances the revision; unrelated application modules do
+not invalidate the cached plan.

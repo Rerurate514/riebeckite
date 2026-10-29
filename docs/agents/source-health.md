@@ -21,14 +21,11 @@ cycles, cross-layer dependencies, and wildcard exports do.
 
 ## Current snapshot
 
-- 819 source files, 106,044 lines, 6,513 functions
-- 46 files at or above 400 lines; 8 at or above 800
-- 103 functions at or above 80 lines
-- 0 runtime import cycles
-- 0 cross-layer dependency violations
-- 0 wildcard exports
-
-These are review signals, not split targets.
+Run `pnpm check:source-health` for the current source counts and structural
+findings. Counts are intentionally not stored here because ordinary source
+changes make a checked-in snapshot stale. The command fails only for runtime
+cycles, cross-layer dependency violations, and wildcard exports; size signals
+remain review inputs, not split targets.
 
 ## Classification
 

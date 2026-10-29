@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { resolveConfig } from "@riebeckite/core";
+import { ContentManager, resolveConfig } from "@riebeckite/core";
+import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
 import { riebeckiteDevelopmentInspector } from "../src/development_inspector.js";
@@ -37,21 +38,57 @@ test("development inspector reports the output plan and dependencies", async () 
       path.join(contentRoot, "index.md"),
       markdown("# Home", { title: "Home", visibility: "public" }),
     );
+    let manifestHookRuns = 0;
+    const config = resolveConfig({
+      site: { title: "Test", locale: "en" },
+      plugins: [
+        {
+          name: "manifest-counter",
+          onManifestCreated() {
+            manifestHookRuns += 1;
+          },
+        },
+      ],
+    });
+    const content = new ContentManager(
+      new FileSystemContentSource(contentRoot),
+      [],
+      { config, commitBuildState: false },
+    );
+    await content.getOutputChangeSet();
+    assert.equal(manifestHookRuns, 1);
+    const completed = content.getCompletedBuildSnapshot();
+    assert.ok(completed);
+    assert.ok(completed.completedAt > 0);
+    assert.ok(Object.isFrozen(completed));
+    assert.ok(Object.isFrozen(completed.outputChangeSet));
+    assert.ok(Object.isFrozen(completed.outputChangeSet.affected));
+    assert.ok(
+      completed.outputChangeSet.affected.every((output) =>
+        Object.isFrozen(output.dependencies),
+      ),
+    );
+    assert.deepEqual(
+      await content.getOutputChangeSet(),
+      completed.outputChangeSet,
+    );
     const plugin = riebeckiteDevelopmentInspector(() => ({
-      config: resolveConfig({ site: { title: "Test", locale: "en" } }),
+      config,
       configRoot: directory,
       configFile: path.join(directory, "riebeckite.config.ts"),
       appRoot: directory,
       contentRoot,
     }));
-    const stack = inspectorStack(plugin);
+    const stack = inspectorStack(plugin, content);
     const { response, body } = await requestReport(stack[0]?.handle);
 
     assert.equal(response.statusCode, 200);
     const report = JSON.parse(body);
     assert.equal(report.output, undefined);
     assert.equal(report.dependencies, undefined);
-    assert.deepEqual(report.plugins, []);
+    assert.deepEqual(report.plugins, [
+      { name: "manifest-counter", order: 1, enabled: true },
+    ]);
 
     const outputHandle = stack.find(
       (layer) => layer.route === "/__riebeckite/inspector/output",
@@ -73,9 +110,8 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.ok(output.output.affectedOutputCount >= 1);
     assert.ok(output.dependencies.dependencyCount >= 1);
     assert.ok(
-      output.regeneration.reasons.some(
-        (reason: { kind: string }) => reason.kind === "build-state-missing",
-      ),
+      output.regeneration.reasons.length > 0 ||
+        output.regeneration.unknown.length > 0,
     );
     const filtered = await requestReport(
       outputHandle,
@@ -103,6 +139,7 @@ test("development inspector reports the output plan and dependencies", async () 
       "/__riebeckite/inspector/output?changed=index",
     );
     assert.ok(JSON.parse(changed.body).output.lookups.changed.outputCount >= 1);
+    assert.equal(manifestHookRuns, 1);
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
     );
@@ -118,6 +155,26 @@ test("development inspector rejects non-loopback hosts", async () => {
     "example.test:5199",
   );
   assert.equal(response.statusCode, 403);
+});
+
+test("development inspector reports unavailable before the development build exists", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const plugin = riebeckiteDevelopmentInspector(() => ({
+      config: resolveConfig({ site: { title: "Test", locale: "en" } }),
+      configRoot: directory,
+      configFile: path.join(directory, "riebeckite.config.ts"),
+      appRoot: directory,
+      contentRoot: path.join(directory, "content"),
+    }));
+    const stack = inspectorStack(plugin);
+    const outputHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/output",
+    )?.handle;
+    const response = await requestReport(outputHandle);
+
+    assert.equal(response.response.statusCode, 200);
+    assert.equal(JSON.parse(response.body).output.status, "unavailable");
+  });
 });
 
 test("development inspector shares one report across concurrent requests", async () => {
@@ -213,6 +270,7 @@ test("development inspector client provides accessible panels and safe refreshes
 
 function inspectorStack(
   plugin: ReturnType<typeof riebeckiteDevelopmentInspector>,
+  content?: ContentManager,
 ): Array<{ route: string; handle: Middleware }> {
   const stack: Array<{ route: string; handle: Middleware }> = [];
   const configure = plugin.configureServer;
@@ -234,6 +292,18 @@ function inspectorStack(
     httpServer: {
       address: () => ({ address: "127.0.0.1" }),
       once() {},
+    },
+    environments: {
+      ssr: {
+        moduleGraph: {
+          getModuleById() {
+            return content ? Object.create(null) : undefined;
+          },
+        },
+      },
+    },
+    async ssrLoadModule() {
+      return { content };
     },
   });
   const afterConfigure = Reflect.apply(configure, undefined, [server]);

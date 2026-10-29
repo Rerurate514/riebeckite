@@ -56,6 +56,7 @@ export {
 } from "./src/content/content_links.js";
 export { resolveDefaultContentLocation } from "./src/content/content_location.js";
 export type {
+  CompletedContentBuildSnapshot,
   ContentBuildOptions,
   ContentInspection,
 } from "./src/content/content_manager.js";

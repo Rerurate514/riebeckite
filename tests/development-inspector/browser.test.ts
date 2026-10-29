@@ -41,6 +41,7 @@ test("development inspector works in a real Vite dev server", async () => {
     running = spawnVite(fixtureRoot, port);
     const url = (await waitForOutput(running, /Local:\s+(http:\/\/\S+)/))[1];
     assert.ok(url);
+    const baseUrl = url.replace(/\/$/, "");
     await waitForHttp(url.replace(/\/$/, ""), 180_000);
 
     browser = await launchBrowser();
@@ -254,6 +255,7 @@ test("development inspector works in a real Vite dev server", async () => {
       "utf8",
     );
     await waitForMissingPanel(page, 120_000);
+    await loadSite(baseUrl);
     await page.waitForSelector(
       'button[aria-label="Open Riebeckite Development Inspector"]',
       { timeout: 60_000 },
@@ -290,7 +292,6 @@ test("development inspector works in a real Vite dev server", async () => {
         throw new Error("regeneration missing");
     });
 
-    const baseUrl = url.replace(/\/$/, "");
     const initial = await inspectorJson(
       baseUrl,
       "/__riebeckite/inspector/report",
@@ -305,6 +306,7 @@ test("development inspector works in a real Vite dev server", async () => {
       initial.revision + 1,
     );
     await waitForMissingPanel(page, 120_000);
+    await loadSite(baseUrl);
     await openInspector(page);
     await clickShadow(page, "[data-tab='1']");
     await page.evaluate(() => {
@@ -335,6 +337,7 @@ test("development inspector works in a real Vite dev server", async () => {
       baseUrl,
       afterAdd.revision + 1,
     );
+    await loadSite(baseUrl);
     assert.equal(
       afterRename.revision,
       afterAdd.revision + 1,
@@ -364,6 +367,7 @@ test("development inspector works in a real Vite dev server", async () => {
       baseUrl,
       afterRename.revision + 1,
     );
+    await loadSite(baseUrl);
     assert.equal(
       afterRemove.revision,
       afterRename.revision + 1,
@@ -442,6 +446,11 @@ async function inspectorJson(
     revision: number;
     output?: { lookups?: { output: { status: string } } };
   };
+}
+
+async function loadSite(baseUrl: string): Promise<void> {
+  const response = await fetch(`${baseUrl}/`, { cache: "no-store" });
+  assert.ok(response.ok, `/ returned ${response.status}`);
 }
 
 async function waitForInspectorRevision(

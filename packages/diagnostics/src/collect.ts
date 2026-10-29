@@ -20,6 +20,7 @@ type InspectableContent = Pick<
 export type DevelopmentDiagnosticsInput = {
   readonly config: ResolvedRiebeckiteConfig;
   readonly content?: InspectableContent;
+  readonly contentDiagnostics?: readonly Diagnostic[];
   readonly actualOutputPaths?: Iterable<string>;
   readonly revision?: number;
   readonly includeOutput?: boolean;
@@ -34,7 +35,9 @@ export async function collectDevelopmentDiagnostics(
     ...pluginDiagnostics(input.config),
     ...themeDiagnostics(input.config),
   ];
-  if (input.content) {
+  if (input.contentDiagnostics) {
+    diagnostics.push(...input.contentDiagnostics.map(fromCoreDiagnostic));
+  } else if (input.content) {
     await collectContentDiagnostics(input.content, diagnostics);
     if (input.includeOutput !== false) {
       await collectOutputDiagnostics(

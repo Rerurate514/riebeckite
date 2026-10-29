@@ -1,6 +1,7 @@
+import path from "node:path";
 import {
   buildOutputPlan,
-  ContentManager,
+  type CompletedContentBuildSnapshot,
   isPersistentlyCacheable,
   type OutputChangeReason,
   type OutputChangeSet,
@@ -15,10 +16,7 @@ import {
   diagnoseOutputPlan,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
-import {
-  FileSystemContentSource,
-  isIgnoredContentPath,
-} from "@riebeckite/node";
+import { isIgnoredContentPath } from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
 import { isPathInsideDirectory, toLogicalPath } from "./content_watch.js";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
@@ -148,17 +146,34 @@ type CachedInspection = {
     Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>
   >;
   readonly output: Promise<OutputResult>;
-  readonly dispose: () => Promise<void>;
+};
+
+type ContentAppModule = {
+  readonly content?: {
+    getCompletedBuildSnapshot(): CompletedContentBuildSnapshot | undefined;
+  };
 };
 
 export function riebeckiteDevelopmentInspector(
   getApplication: () => ResolvedHonoxApplication,
 ): Plugin {
   let revision = 0;
+  let invalidatedAt = 0;
   let inspection: CachedInspection | null = null;
+  let invalidationTimer: ReturnType<typeof setTimeout> | undefined;
+  const invalidateInspection = (server: ViteDevServer) => {
+    invalidatedAt = Date.now();
+    if (invalidationTimer) clearTimeout(invalidationTimer);
+    invalidationTimer = setTimeout(() => {
+      invalidationTimer = undefined;
+      revision += 1;
+      server.hot.send({ type: "custom", event: "riebeckite:inspector" });
+    }, invalidationDelayMs);
+  };
   const inspectApplication = (
     application: ResolvedHonoxApplication,
     currentRevision: number,
+    server: ViteDevServer,
   ): CachedInspection => {
     if (
       inspection?.revision === currentRevision &&
@@ -166,44 +181,35 @@ export function riebeckiteDevelopmentInspector(
     ) {
       return inspection;
     }
-    if (inspection) {
-      const previous = inspection;
-      const disposePrevious = () => {
-        void previous.dispose().catch(() => {});
-      };
-      void Promise.allSettled([previous.report, previous.output]).then(
-        disposePrevious,
-      );
-      inspection = null;
-    }
-    const content = createInspectionContent(application);
-    let disposed = false;
-    const dispose = async () => {
-      if (disposed) return;
-      disposed = true;
-      await content.dispose();
-    };
-    const report = collectDevelopmentDiagnostics({
-      config: application.config,
-      content,
-      revision: currentRevision,
-      includeOutput: false,
-    });
-    const output = report.then(
-      () => inspectContentOutputs(content, application),
-      () => inspectContentOutputs(content, application),
+    if (inspection) inspection = null;
+    const snapshot = completedBuildSnapshot(application, server).then(
+      (build) => (build && build.completedAt >= invalidatedAt ? build : undefined),
+    );
+    const report = snapshot.then((build) =>
+      collectDevelopmentDiagnostics({
+        config: application.config,
+        contentDiagnostics: build?.manifest.diagnostics,
+        revision: currentRevision,
+        includeOutput: false,
+      }),
+    );
+    const output = snapshot.then((build) =>
+      build
+        ? inspectContentOutputs(build, application)
+        : unavailableOutputResult(),
     );
     const entry: CachedInspection = {
       application,
       revision: currentRevision,
       report,
       output,
-      dispose,
     };
     inspection = entry;
+    void snapshot.then((build) => {
+      if (!build && inspection === entry) inspection = null;
+    });
     void report.catch(() => {
       if (inspection === entry) inspection = null;
-      void output.then(dispose, dispose);
     });
     return entry;
   };
@@ -229,7 +235,8 @@ export function riebeckiteDevelopmentInspector(
         }
         try {
           const application = getApplication();
-          const report = await inspectApplication(application, revision).report;
+          const report = await inspectApplication(application, revision, server)
+            .report;
           response.setHeader("content-type", "application/json; charset=utf-8");
           response.setHeader("cache-control", "no-store");
           response.end(
@@ -262,7 +269,7 @@ export function riebeckiteDevelopmentInspector(
         }
         try {
           const application = getApplication();
-          const entry = inspectApplication(application, revision);
+          const entry = inspectApplication(application, revision, server);
           const result = await entry.output;
           const query = outputQueryFromRequest(request.url);
           const responseBody = serializeOutputResult(result, query);
@@ -288,15 +295,6 @@ export function riebeckiteDevelopmentInspector(
       return () => {
         prioritizeMiddleware(server, outputMiddleware, outputPath);
         prioritizeMiddleware(server, reportMiddleware, reportPath);
-        let timer: ReturnType<typeof setTimeout> | undefined;
-        const schedule = () => {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(() => {
-            timer = undefined;
-            revision += 1;
-            server.hot.send({ type: "custom", event: "riebeckite:inspector" });
-          }, invalidationDelayMs);
-        };
         const handle = (file: string) => {
           let application: ResolvedHonoxApplication;
           try {
@@ -305,12 +303,12 @@ export function riebeckiteDevelopmentInspector(
             return;
           }
           if (!isContentWatchTarget(application, file)) return;
-          schedule();
+          invalidateInspection(server);
         };
         server.watcher.on("add", handle);
         server.watcher.on("unlink", handle);
         server.httpServer?.once("close", () => {
-          if (timer) clearTimeout(timer);
+          if (invalidationTimer) clearTimeout(invalidationTimer);
           server.watcher.off("add", handle);
           server.watcher.off("unlink", handle);
         });
@@ -324,37 +322,42 @@ export function riebeckiteDevelopmentInspector(
         application = undefined;
       }
       if (!shouldInvalidateInspection(application, file)) return;
-      revision += 1;
-      server.hot.send({ type: "custom", event: "riebeckite:inspector" });
+      invalidateInspection(server);
     },
   };
 }
 
-function createInspectionContent(
+async function completedBuildSnapshot(
   application: ResolvedHonoxApplication,
-): ContentManager {
-  const { config, contentRoot } = application;
-  return new ContentManager(
-    config.content.source ??
-      new FileSystemContentSource(contentRoot, config.content.exclude),
-    config.content.exclude,
-    { config, commitBuildState: false },
-  );
+  server: ViteDevServer,
+): Promise<CompletedContentBuildSnapshot | undefined> {
+  const entry = path.join(application.appRoot, "app", "server.ts");
+  const moduleGraph = server.environments?.ssr?.moduleGraph;
+  const entryLoaded =
+    moduleGraph?.getModuleById(entry) ??
+    [...(moduleGraph?.idToModuleMap?.values() ?? [])].find(
+      (module) =>
+        module.file && path.resolve(module.file) === path.resolve(entry),
+    );
+  if (!entryLoaded) {
+    return undefined;
+  }
+  const module = (await server.ssrLoadModule(entry)) as ContentAppModule;
+  return module.content?.getCompletedBuildSnapshot();
 }
 
 async function inspectContentOutputs(
-  content: ContentManager,
+  snapshot: CompletedContentBuildSnapshot,
   application: ResolvedHonoxApplication,
 ): Promise<OutputResult> {
   try {
-    const changes = await content.getOutputChangeSet();
+    const changes = snapshot.outputChangeSet;
     const plan = buildOutputPlan({
       inventory: [...changes.affected, ...changes.unchanged],
       removed: changes.removed,
       affectedPaths: new Set(changes.affected.map((output) => output.path)),
       cacheAvailable: changes.unchanged.length > 0,
     });
-    const buildReasons = await content.getFullRegenerationReasons();
     return {
       output: inspectOutput(changes, plan),
       dependencies: inspectDependencies(changes),
@@ -362,7 +365,7 @@ async function inspectContentOutputs(
       regeneration: await inspectRegeneration(
         application,
         changes,
-        buildReasons,
+        snapshot.fullRegenerationReasons,
       ),
       affected: changes.affected,
       unchanged: changes.unchanged,
@@ -390,6 +393,21 @@ async function inspectContentOutputs(
       reasons: new Map(),
     };
   }
+}
+
+function unavailableOutputResult(): OutputResult {
+  const reason =
+    "no completed development build is available for this revision";
+  return {
+    output: { status: "unavailable", reason },
+    dependencies: { status: "unavailable", reason },
+    diagnostics: [],
+    regeneration: { status: "unavailable", reason },
+    affected: [],
+    unchanged: [],
+    removed: [],
+    reasons: new Map(),
+  };
 }
 
 function inspectOutput(

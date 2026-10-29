@@ -73,6 +73,13 @@ export type ContentInspection = {
   readonly diagnostics: readonly Diagnostic[];
 };
 
+export type CompletedContentBuildSnapshot = {
+  readonly manifest: ContentManifest;
+  readonly outputChangeSet: OutputChangeSet;
+  readonly fullRegenerationReasons: readonly FullRegenerationReason[];
+  readonly completedAt: number;
+};
+
 const CONTENT_PROCESSING_CONCURRENCY = 16;
 
 export class ContentManager {
@@ -99,6 +106,7 @@ export class ContentManager {
   private processedContentCount = 0;
   private reusedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
+  private completedBuildSnapshot: CompletedContentBuildSnapshot | null = null;
   private buildSession: ContentBuildSession;
   private buildStateCommitRequested = false;
   private buildStateCommitted = false;
@@ -470,6 +478,14 @@ export class ContentManager {
         this.manifest = manifest;
         this.cacheManifestEntries = cacheManifestEntries;
         await this.commitBuildState();
+        this.completedBuildSnapshot = Object.freeze({
+          manifest,
+          outputChangeSet: freezeOutputChangeSet(this.outputChangeSet),
+          fullRegenerationReasons: Object.freeze([
+            ...plan.fullRegenerationReasons,
+          ]),
+          completedAt: Date.now(),
+        });
         return manifest;
       },
     );
@@ -489,6 +505,10 @@ export class ContentManager {
 
   getManifestHookMetrics(): ManifestHookMetrics {
     return this.pluginRuntime.getManifestHookMetrics();
+  }
+
+  getCompletedBuildSnapshot(): CompletedContentBuildSnapshot | undefined {
+    return this.completedBuildSnapshot ?? undefined;
   }
 
   async getNoChangeFastPathBlockReason(
@@ -835,6 +855,21 @@ declare module "../pipeline" {
     publishingBuildTime?: Date | string;
     commitBuildState?: boolean;
   }
+}
+
+function freezeOutputChangeSet(changes: OutputChangeSet): OutputChangeSet {
+  const freezeOutput = (output: OutputChangeSet["affected"][number]) =>
+    Object.freeze({
+      ...output,
+      dependencies: Object.freeze([...output.dependencies]),
+    });
+  return Object.freeze({
+    ...changes,
+    affected: Object.freeze(changes.affected.map(freezeOutput)),
+    unchanged: Object.freeze(changes.unchanged.map(freezeOutput)),
+    removed: Object.freeze(changes.removed.map(freezeOutput)),
+    reasons: new Map(changes.reasons),
+  });
 }
 
 function readFrontmatter(markdown: string): PostFrontmatter {

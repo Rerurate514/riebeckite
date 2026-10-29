@@ -191,6 +191,103 @@ test("development inspector works in a real Vite dev server", async () => {
     const kindSelect = await shadowElement(page, "[data-dependency-kind]");
     await kindSelect.select("content");
     await waitForShadowText(page, "[role=tabpanel]", "Outputs", 30_000);
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "Build output dependencies are shown",
+      30_000,
+    );
+    const graphSearch = await shadowElement(page, "[data-graph-query]");
+    await graphSearch.click();
+    await page.keyboard.type("about");
+    await waitForShadowText(page, "[role=tabpanel]", "Search results", 30_000);
+    await clickShadow(page, '[data-graph-selected="content:about"]');
+    await waitForShadowText(page, "[role=tabpanel]", "Selected node", 30_000);
+    await waitForShadowText(page, "[role=tabpanel]", "about.html", 30_000);
+    await waitForShadowText(page, "[role=tabpanel]", "produces", 30_000);
+    await clickShadow(page, "[data-graph-content]");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "Changed content: about",
+      30_000,
+    );
+
+    await clickShadow(page, "[data-tab='3']");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "Resolution order",
+      30_000,
+    );
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "Content build wall clock",
+      30_000,
+    );
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "not wall-clock time",
+      30_000,
+    );
+    await waitForShadowText(page, "[role=tabpanel]", "#1", 30_000);
+
+    await clickShadow(page, "[data-tab='5']");
+    await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "--rb-color-paper",
+      30_000,
+    );
+    const tokenBefore = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--rb-color-paper")
+        .trim(),
+    );
+    await page.evaluate(() => {
+      document.documentElement.dataset.rbMode = "light";
+    });
+    await page.waitForFunction(
+      () => {
+        const host = document.getElementById(
+          "riebeckite-development-inspector",
+        );
+        const terms = Array.from(
+          host?.shadowRoot?.querySelectorAll("[role=tabpanel] dt") ?? [],
+        );
+        return (
+          terms.find((term) => term.textContent === "Applied mode")
+            ?.nextElementSibling?.textContent === "light"
+        );
+      },
+      { timeout: 30_000 },
+    );
+    const tokenAfter = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--rb-color-paper")
+        .trim(),
+    );
+    assert.ok(tokenBefore);
+    assert.ok(tokenAfter);
+    assert.notEqual(tokenBefore, tokenAfter);
+    assert.equal(
+      await page.evaluate(() => {
+        const host = document.getElementById(
+          "riebeckite-development-inspector",
+        );
+        const terms = Array.from(
+          host?.shadowRoot?.querySelectorAll("[role=tabpanel] dt") ?? [],
+        );
+        const applied = terms.find(
+          (term) => term.textContent === "Applied mode",
+        );
+        return applied?.nextElementSibling?.textContent ?? "";
+      }),
+      "light",
+    );
 
     await page.setViewport({ width: 390, height: 844 });
     await page.waitForFunction(
@@ -246,7 +343,7 @@ test("development inspector works in a real Vite dev server", async () => {
           "[role='tab'][aria-selected='true']",
         )?.textContent;
       }),
-      "Output",
+      "Theme",
     );
 
     await fs.writeFile(

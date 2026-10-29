@@ -9,7 +9,11 @@ import {
 
 const MAX_RESULTS = 8;
 
-export function initSearch() {
+export type SearchInitContext = {
+  readonly signal?: AbortSignal;
+};
+
+export function initSearch(context: SearchInitContext = {}): () => void {
   const root = document.querySelector<HTMLElement>("[data-search-root]");
   const modal = document.querySelector<HTMLDialogElement>(
     "[data-search-modal]",
@@ -24,7 +28,7 @@ export function initSearch() {
     document.querySelectorAll<HTMLElement>("[data-search-close]"),
   );
 
-  if (!root || !modal || !input || !status || !results) return;
+  if (!root || !modal || !input || !status || !results) return () => {};
 
   let searchItems: SearchItem[] | null = null;
   let selectedIndex = 0;
@@ -96,6 +100,7 @@ export function initSearch() {
     triggers: openButtons,
     closeButtons,
     initialFocus: () => input,
+    signal: context.signal,
     onOpen: () => {
       void loadSearchItems().then(() => {
         if (modal.open) renderResults(input.value);
@@ -119,7 +124,7 @@ export function initSearch() {
     controller.open();
   }
 
-  document.addEventListener("keydown", (event) => {
+  const onKeyDown = (event: KeyboardEvent) => {
     if (isSearchShortcut(event)) {
       event.preventDefault();
       controller.open();
@@ -161,7 +166,18 @@ export function initSearch() {
       event.preventDefault();
       window.location.href = result.permalink;
     }
-  });
+  };
+
+  document.addEventListener(
+    "keydown",
+    onKeyDown,
+    context.signal ? { signal: context.signal } : undefined,
+  );
+
+  return () => {
+    document.removeEventListener("keydown", onKeyDown);
+    controller.destroy();
+  };
 }
 
 function isSearchShortcut(event: KeyboardEvent): boolean {

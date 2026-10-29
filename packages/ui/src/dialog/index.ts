@@ -9,6 +9,7 @@ export type DialogControllerOptions = {
   readonly restoreFocus?: boolean;
   readonly onOpen?: () => void;
   readonly onClose?: () => void;
+  readonly signal?: AbortSignal;
 };
 
 export type DialogController = {
@@ -31,6 +32,7 @@ export function createDialogController(
   const closeButtons = [...(options.closeButtons ?? [])];
   const closeOnBackdrop = options.closeOnBackdrop ?? true;
   let active = false;
+  let destroyed = false;
   let returnFocus: HTMLElement | null = null;
   let releaseScroll: (() => void) | null = null;
 
@@ -54,7 +56,7 @@ export function createDialogController(
   };
 
   const open = () => {
-    if (active || dialog.open) return;
+    if (destroyed || active || dialog.open) return;
 
     returnFocus =
       document.activeElement instanceof HTMLElement
@@ -114,25 +116,34 @@ export function createDialogController(
   dialog.addEventListener("click", onDialogClick);
   dialog.addEventListener("keydown", onDialogKeyDown);
 
+  const destroy = () => {
+    if (destroyed) return;
+    destroyed = true;
+    options.signal?.removeEventListener("abort", destroy);
+    for (const trigger of triggers) {
+      trigger.removeEventListener("click", onTriggerClick);
+    }
+    for (const button of closeButtons) {
+      button.removeEventListener("click", onCloseClick);
+    }
+    dialog.removeEventListener("close", onDialogClose);
+    dialog.removeEventListener("click", onDialogClick);
+    dialog.removeEventListener("keydown", onDialogKeyDown);
+    if (dialog.open) dialog.close();
+    finish();
+    controllers.delete(dialog);
+  };
+
   const controller: DialogController = {
     open,
     close,
     isOpen: () => dialog.open,
-    destroy: () => {
-      for (const trigger of triggers) {
-        trigger.removeEventListener("click", onTriggerClick);
-      }
-      for (const button of closeButtons) {
-        button.removeEventListener("click", onCloseClick);
-      }
-      dialog.removeEventListener("close", onDialogClose);
-      dialog.removeEventListener("click", onDialogClick);
-      dialog.removeEventListener("keydown", onDialogKeyDown);
-      if (dialog.open) dialog.close();
-      finish();
-      controllers.delete(dialog);
-    },
+    destroy,
   };
   controllers.set(dialog, controller);
+  if (options.signal) {
+    if (options.signal.aborted) destroy();
+    else options.signal.addEventListener("abort", destroy, { once: true });
+  }
   return controller;
 }

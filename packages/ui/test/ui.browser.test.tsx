@@ -358,6 +358,61 @@ test("Dialog builds on native showModal and restores focus", async (t) => {
   await page.close();
 });
 
+test("Dialog destroys when its lifecycle signal aborts", async (t) => {
+  if (!browser) return t.skip("Puppeteer browser is unavailable");
+  const page = await openPage(768, [{ name: "dialog", source: dialogJs }]);
+  await page.evaluate(`
+    (() => {
+      const dialog = document.querySelector("#test-dialog");
+      const trigger = document.querySelector("#dialog-trigger");
+      window.dialogAbort = new AbortController();
+      RbDialog.createDialogController(dialog, {
+        triggers: [trigger],
+        signal: window.dialogAbort.signal,
+      });
+    })();
+  `);
+
+  await page.click("#dialog-trigger");
+  assert.equal(
+    await page.evaluate(
+      () => document.querySelector<HTMLDialogElement>("#test-dialog")?.open,
+    ),
+    true,
+  );
+
+  await page.evaluate("window.dialogAbort.abort()");
+  await page.waitForFunction(() => {
+    const dialog = document.querySelector<HTMLDialogElement>("#test-dialog");
+    return dialog?.open === false;
+  });
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("#dialog-trigger")
+        ?.getAttribute("aria-expanded"),
+      focus: document.activeElement?.id,
+      locked: document.documentElement.style.overflow,
+      lockMarker: document.documentElement.dataset.rbScrollLock ?? null,
+    })),
+    {
+      expanded: "false",
+      focus: "dialog-trigger",
+      locked: "",
+      lockMarker: null,
+    },
+  );
+
+  await page.click("#dialog-trigger");
+  assert.equal(
+    await page.evaluate(
+      () => document.querySelector<HTMLDialogElement>("#test-dialog")?.open,
+    ),
+    false,
+  );
+  await page.close();
+});
+
 test("Tabs expose ARIA state and keyboard navigation", async (t) => {
   if (!browser) return t.skip("Puppeteer browser is unavailable");
   const page = await openPage(1440, [{ name: "tabs", source: tabsJs }]);

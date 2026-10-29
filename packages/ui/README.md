@@ -44,4 +44,6 @@ import "@riebeckite/ui/drawer/client";
 
 The Drawer keeps Escape and outside-click dismissal, focus trap and restore, initial focus, reference-counted scroll lock, trigger ARIA state, SPA cleanup, and duplicate-init protection. Without JavaScript, the trigger remains a fragment link and CSS `:target` reveals the panel. That fallback cannot provide dialog semantics, focus containment or restoration, Escape and outside-click dismissal, scroll lock, or a reliable close affordance.
 
+`createDialogController()` also accepts a `signal`. Aborting it destroys the controller, closes the dialog, releases the scroll lock, and restores focus, so page lifecycle teardown does not need a separate `destroy()` call.
+
 See the [UI guide](../../docs/docs/framework/ui.md) for the other primitives.

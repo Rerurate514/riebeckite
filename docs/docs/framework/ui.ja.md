@@ -73,10 +73,11 @@ const controller = createDialogController(dialog, {
   triggers: [openButton],
   closeButtons: [closeButton],
   initialFocus: () => input,
+  signal: context.signal,
 });
 ```
 
-コントローラは `aria-expanded` を同期し、背景クリックで閉じ、閉じたときにフォーカスを復元し、スクロールロックを参照カウントで管理します。ネイティブダイアログ自身のフォーカス管理や Escape 処理を置き換えるものではありません。
+コントローラは `aria-expanded` を同期し、背景クリックで閉じ、閉じたときにフォーカスを復元し、スクロールロックを参照カウントで管理します。ページライフサイクルの `AbortSignal` を `signal` に渡すと、abort 時にコントローラを破棄してスクロールロックを解放するため、SPA 遷移時の後始末を別の `destroy()` 呼び出しに依存しません。ネイティブダイアログ自身のフォーカス管理や Escape 処理を置き換えるものではありません。
 
 ## Tabs
 

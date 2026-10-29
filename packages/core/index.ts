@@ -336,14 +336,14 @@ export type {
 } from "./src/types/riebeckite_config.js";
 export type { SiteConfig } from "./src/types/site_config.js";
 export type {
+  ResolvedTheme,
+  ResolvedThemeSettings,
   ThemeColorMode,
   ThemeDefinition,
   ThemeInput,
   ThemeInstance,
   ThemeOptions,
   ThemePreset,
-  ResolvedTheme,
-  ResolvedThemeSettings,
   ThemeSetting,
   ThemeSettings,
   ThemeSettingsSchema,

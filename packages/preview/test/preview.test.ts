@@ -1,17 +1,17 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { defineTheme } from "@riebeckite/core";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
-  createThemePreviewState,
   createPreview,
   createPreviewDocument,
   createPreviewRegistry,
+  createThemePreviewState,
   definePluginPreview,
   parsePreviewRequest,
   updateThemePreviewState,
 } from "../index.js";
-import { defineTheme } from "@riebeckite/core";
 import {
   createPreviewSessionTransport,
   createPreviewUiController,

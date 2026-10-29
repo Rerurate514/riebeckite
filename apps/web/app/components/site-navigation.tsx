@@ -1,10 +1,10 @@
-import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
-import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import {
   HeaderActions,
   HeaderBrand,
   SiteHeader as LayoutHeader,
 } from "@riebeckite/layouts";
+import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
+import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";

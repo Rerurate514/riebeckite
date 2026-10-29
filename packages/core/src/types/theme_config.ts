@@ -255,7 +255,12 @@ function isSettingValue(
       typeof value === "string" &&
       /^(?:#[0-9a-f]{3,8}|(?:rgb|hsl)a?\([0-9.%\s,/-]+\))$/i.test(value)
     );
-  return typeof value === "string" && !/[\u0000-\u001f<>]/.test(value);
+  return (
+    typeof value === "string" &&
+    ![...value].some(
+      (character) => character < " " || character === "<" || character === ">",
+    )
+  );
 }
 
 function isStepAligned(value: number, min: number | undefined, step: number) {

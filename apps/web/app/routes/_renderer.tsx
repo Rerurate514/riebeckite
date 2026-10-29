@@ -9,13 +9,6 @@ import {
   ThemeRoot,
 } from "@riebeckite/honox/ui";
 import {
-  ColorModeScript,
-  ColorModeToggle,
-} from "@riebeckite/plugin-color-mode";
-import { DocsSidebar } from "@riebeckite/plugin-docs";
-import { SearchBar } from "@riebeckite/plugin-search";
-import { TableOfContents } from "@riebeckite/plugin-toc";
-import {
   ContentContainer,
   Drawer,
   ShellAside,
@@ -24,6 +17,13 @@ import {
   ShellSidebar,
   SiteShell,
 } from "@riebeckite/layouts";
+import {
+  ColorModeScript,
+  ColorModeToggle,
+} from "@riebeckite/plugin-color-mode";
+import { DocsSidebar } from "@riebeckite/plugin-docs";
+import { SearchBar } from "@riebeckite/plugin-search";
+import { TableOfContents } from "@riebeckite/plugin-toc";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";

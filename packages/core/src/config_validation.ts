@@ -302,20 +302,6 @@ function validateStringArray(
   }
 }
 
-function validateOneOf(
-  value: unknown,
-  path: string,
-  choices: readonly string[],
-  issues: ConfigValidationIssue[],
-): void {
-  if (
-    value !== undefined &&
-    (typeof value !== "string" || !choices.includes(value))
-  ) {
-    issues.push({ path, message: `Expected one of: ${choices.join(", ")}.` });
-  }
-}
-
 function formatValidationIssues(
   issues: readonly ConfigValidationIssue[],
 ): string {

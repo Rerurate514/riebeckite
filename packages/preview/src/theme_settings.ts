@@ -1,6 +1,6 @@
 import {
-  resolveTheme,
   type ResolvedTheme,
+  resolveTheme,
   type ThemeDefinition,
   type ThemeOptions,
   type ThemeSettings,

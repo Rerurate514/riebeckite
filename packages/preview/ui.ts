@@ -12,6 +12,10 @@ import type {
   PreviewUiSelectors,
 } from "./src/ui-types.js";
 
+export type {
+  ThemePreviewOptions,
+  ThemePreviewTheme,
+} from "./src/theme-preview.js";
 export {
   type CreatePreviewUiControllerOptions,
   createPreviewSessionTransport,
@@ -23,10 +27,6 @@ export {
   type PreviewUiState,
   type PreviewUiTransport,
 } from "./src/ui-controller.js";
-export type {
-  ThemePreviewOptions,
-  ThemePreviewTheme,
-} from "./src/theme-preview.js";
 export type {
   PreviewUiMessages,
   PreviewUiOptions,

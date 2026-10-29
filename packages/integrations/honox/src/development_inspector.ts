@@ -183,7 +183,8 @@ export function riebeckiteDevelopmentInspector(
     }
     if (inspection) inspection = null;
     const snapshot = completedBuildSnapshot(application, server).then(
-      (build) => (build && build.completedAt >= invalidatedAt ? build : undefined),
+      (build) =>
+        build && build.completedAt >= invalidatedAt ? build : undefined,
     );
     const report = snapshot.then((build) =>
       collectDevelopmentDiagnostics({

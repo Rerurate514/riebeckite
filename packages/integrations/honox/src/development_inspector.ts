@@ -293,14 +293,7 @@ export function riebeckiteDevelopmentInspector(
       } catch {
         application = undefined;
       }
-      if (
-        application &&
-        isPathInsideDirectory(application.appRoot, file) &&
-        !isPathInsideDirectory(application.contentRoot, file) &&
-        file !== application.configFile
-      ) {
-        return;
-      }
+      if (!shouldInvalidateInspection(application, file)) return;
       revision += 1;
       server.hot.send({ type: "custom", event: "riebeckite:inspector" });
     },
@@ -846,6 +839,18 @@ function dependencyLabel(dependency: OutputDependency): string {
     case "unknown":
       return "unknown";
   }
+}
+
+function shouldInvalidateInspection(
+  application: ResolvedHonoxApplication | undefined,
+  file: string,
+): boolean {
+  if (!application) return true;
+  return (
+    !isPathInsideDirectory(application.appRoot, file) ||
+    isPathInsideDirectory(application.contentRoot, file) ||
+    file === application.configFile
+  );
 }
 
 function currentPageFromRequest(url: string | undefined): string {

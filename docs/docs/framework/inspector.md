@@ -13,6 +13,7 @@ Use it through the CLI:
 riebeckite inspect config
 riebeckite inspect plugins
 riebeckite inspect content --list
+riebeckite inspect content --path /blog/hello/
 riebeckite inspect graph
 riebeckite inspect build
 ```
@@ -46,6 +47,7 @@ Inspector has a command for each target you want to inspect:
 | `riebeckite inspect config` | Resolved configuration |
 | `riebeckite inspect plugins` | Enabled plugins |
 | `riebeckite inspect content --list` | Published content and URLs |
+| `riebeckite inspect content --path <path-or-permalink>` | One content entry's resolved identity |
 | `riebeckite inspect graph` | Relationships between content |
 | `riebeckite inspect build` | Incremental build state |
 
@@ -101,6 +103,10 @@ location.
 
 If a Public Location plugin provides identity metadata, it also shows the
 content ID and where that ID came from.
+
+To inspect one known entry without listing the vault, pass its source path or
+resolved permalink with `--path`. The result contains only its path, permalink,
+ID, and ID source.
 
 ## Inspecting the content graph
 

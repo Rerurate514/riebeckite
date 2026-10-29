@@ -27,11 +27,11 @@ pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。
 ```text
 riebeckite dev
 riebeckite check
-riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 ```
 
@@ -49,6 +49,8 @@ riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 | `create theme` | 公開 Theme API に沿ったローカル Theme を生成する | ローカルファイルを書き込む |
 
 `doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) と [Framework Inspector](../../docs/docs/framework/inspector.ja.md) を参照してください。
+
+`doctor --explain` は各診断の fingerprint、原因、詳細、修正方法を表示します。`--code` は繰り返して診断を絞り込め、`--fail-on` では info・warning・error のどこから失敗にするかを指定できます。`--fix --dry-run` は対応済みの安全な修正があるかだけを表示します。現在、自動修正は提供していません。
 
 `clean` は Riebeckite が管理する成果物だけを削除します。option なしでは managed state root（`.riebeckite/`）、`--output` では Build 出力、`--all` では両方を削除します。対象が存在しなくてもエラーにならないため、script や CI から安全に実行できます。cold build を行う場合は `clean --all` の後に `build` を実行します（cache directory を別の場所に設定している場合、その場所は削除対象に含まれません）。
 

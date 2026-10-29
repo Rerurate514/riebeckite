@@ -184,14 +184,22 @@ export async function collectBuildInspection(
   if (status.kind === "invalid")
     return { status: "invalid", reason: status.reason };
   const state = await loadContentBuildState(status.path);
-  const reusable =
-    isPersistentlyCacheable("", config).cacheable &&
+  const cacheability = isPersistentlyCacheable("", config);
+  const fingerprintMatches =
     state?.pipelineFingerprint === computePipelineFingerprint(config);
+  const reusable = cacheability.cacheable && fingerprintMatches;
   return {
     status: "valid",
     version: status.version,
     entryCount: status.entryCount,
     reusable,
+    ...(reusable
+      ? {}
+      : {
+          regenerationReason: cacheability.cacheable
+            ? "the resolved pipeline changed since the saved build state"
+            : (cacheability.reason ?? "persistent content caching is disabled"),
+        }),
   };
 }
 

@@ -46,6 +46,7 @@ flowchart LR
 | `riebeckite inspect config` | 解決済みの設定 |
 | `riebeckite inspect plugins` | 有効になっているプラグイン |
 | `riebeckite inspect content --list` | 公開コンテンツと URL |
+| `riebeckite inspect content --path <path-or-permalink>` | 1件のコンテンツの解決済み識別情報 |
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | インクリメンタルビルドの状態 |
 
@@ -79,6 +80,7 @@ riebeckite inspect plugins
 
 ```sh id="v20yqo"
 riebeckite inspect content --list
+riebeckite inspect content --path /blog/hello/
 ```
 
 Riebeckite が認識しているコンテンツを一覧表示します。
@@ -102,6 +104,8 @@ content/posts/hello.md
 つまり、ファイルシステム上の場所ではなく、**実際にサイトで使われる URL** を確認するための情報です。
 
 Public Location プラグインが識別メタデータを提供している場合は、コンテンツ ID とその ID がどこから取得されたかも表示します。
+
+一覧を表示せず既知の1件を確認するには、ソースパスまたは解決済みパーマリンクを `--path` に渡します。結果には path、permalink、ID、ID の取得元だけを表示します。
 
 ### コンテンツグラフを確認する
 

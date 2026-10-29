@@ -3,6 +3,7 @@ import {
   collectDevelopmentDiagnostics,
   createDiagnosticFromError,
   type DevelopmentDiagnosticReport,
+  filterDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
 import type { RiebeckiteProject } from "../application_root.js";
 import { resolveProjectContentSource } from "../content_source.js";
@@ -15,9 +16,16 @@ export async function runDoctorCommand(
     readonly explain?: boolean;
     readonly fix?: boolean;
     readonly dryRun?: boolean;
+    readonly failOn?: "error" | "warning" | "info";
+    readonly codes?: readonly string[];
   } = {},
 ): Promise<boolean> {
-  const report = await collectDoctorReport(project);
+  const report = filterDevelopmentDiagnostics(
+    await collectDoctorReport(project),
+    {
+      codes: options.codes,
+    },
+  );
   console.log(
     options.json
       ? JSON.stringify(report)
@@ -27,7 +35,19 @@ export async function runDoctorCommand(
           dryRun: options.dryRun,
         }),
   );
-  return report.summary.errors === 0;
+  return !report.diagnostics.some((diagnostic) =>
+    meetsSeverityThreshold(diagnostic.severity, options.failOn ?? "error"),
+  );
+}
+
+function meetsSeverityThreshold(
+  severity: "error" | "warning" | "info",
+  threshold: "error" | "warning" | "info",
+): boolean {
+  return (
+    ({ info: 0, warning: 1, error: 2 }[severity] ?? 0) >=
+    ({ info: 0, warning: 1, error: 2 }[threshold] ?? 2)
+  );
 }
 
 async function collectDoctorReport(

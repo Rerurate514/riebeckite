@@ -4,6 +4,7 @@ import {
   renderApplicationInspection,
   renderBuildInspection,
   renderConfigInspection,
+  renderContentEntryInspection,
   renderContentInspection,
 } from "../src/inspect/renderer.js";
 import type {
@@ -84,6 +85,18 @@ test("inspect content hides exclusion details outside list mode", () => {
   const output = renderContentInspection(content, { list: false });
   assert.match(output, /Excluded\s+2/);
   assert.doesNotMatch(output, /EXCLUDED PATH/);
+});
+
+test("inspect content renders an exact entry with its resolved identity", () => {
+  const output = renderContentEntryInspection({
+    path: "notes/hello.md",
+    permalink: "/notes/hello/",
+    id: "hello",
+    idSource: "frontmatter",
+  });
+  assert.match(output, /Path\s+notes\/hello\.md/);
+  assert.match(output, /Permalink\s+\/notes\/hello\//);
+  assert.match(output, /ID source\s+frontmatter/);
 });
 
 const validBuild: BuildInspection = {

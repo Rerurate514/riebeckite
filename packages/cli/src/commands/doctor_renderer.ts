@@ -31,9 +31,13 @@ export function renderDoctorReport(
     const warnings = diagnostics.filter(
       (diagnostic) => diagnostic.severity === "warning",
     );
-    const unavailable = diagnostics.every((diagnostic) =>
-      diagnostic.code.endsWith("_UNAVAILABLE"),
-    );
+    const unavailable =
+      diagnostics.length > 0 &&
+      diagnostics.every(
+        (diagnostic) =>
+          diagnostic.status === "unavailable" ||
+          diagnostic.code.endsWith("_UNAVAILABLE"),
+      );
     const status =
       errors.length > 0
         ? "ERROR"
@@ -49,6 +53,7 @@ export function renderDoctorReport(
         : "";
       lines.push(`  [${diagnostic.code}] ${diagnostic.message}${location}`);
       if (options.explain) {
+        lines.push(`    Fingerprint: ${diagnostic.fingerprint ?? "legacy"}`);
         if (diagnostic.cause) lines.push(`    Cause: ${diagnostic.cause}`);
         if (diagnostic.details)
           lines.push(`    Details: ${diagnostic.details}`);
@@ -65,6 +70,18 @@ export function renderDoctorReport(
     `${report.summary.errors} errors`,
     `${report.summary.warnings} warnings`,
     `${report.summary.info} info`,
+    ...(report.summary.unavailable
+      ? [`${report.summary.unavailable} unavailable`]
+      : []),
+    ...(report.summary.byCode
+      ? [
+          "",
+          "By code",
+          ...Object.entries(report.summary.byCode).map(
+            ([code, count]) => `  ${code} ${count}`,
+          ),
+        ]
+      : []),
   );
   if (options.fix) {
     lines.push(

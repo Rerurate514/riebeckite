@@ -199,6 +199,8 @@ export async function main(arguments_: readonly string[]): Promise<void> {
           json: command.json,
           fix: command.fix,
           dryRun: command.dryRun,
+          failOn: command.failOn,
+          codes: command.codes,
         }))
       )
         process.exitCode = 1;
@@ -212,6 +214,7 @@ export async function main(arguments_: readonly string[]): Promise<void> {
       await runInspect(project, {
         target: command.target,
         list: command.list,
+        path: command.path,
       });
       return;
     }
@@ -245,6 +248,8 @@ type Command =
       readonly json: boolean;
       readonly fix: boolean;
       readonly dryRun: boolean;
+      readonly failOn?: "error" | "warning" | "info";
+      readonly codes: readonly string[];
     }
   | {
       name: "init";
@@ -258,7 +263,12 @@ type Command =
     }
   | { name: "profile"; full: boolean }
   | { name: "upgrade"; check: true; to: string; json: boolean }
-  | { name: "inspect"; target?: InspectTarget; list: boolean }
+  | {
+      name: "inspect";
+      target?: InspectTarget;
+      list: boolean;
+      path?: string;
+    }
   | {
       name: "create-plugin";
       pluginName: string;
@@ -372,7 +382,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run]] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
@@ -411,29 +421,57 @@ function parseUpgradeCommand(options: readonly string[]): Command {
 }
 
 function parseDoctorCommand(options: readonly string[]): Command {
-  const values = new Set(options);
-  if (values.size !== options.length)
-    throw new CliUsageError("Duplicate doctor option.");
-  for (const option of values) {
-    if (!["--explain", "--json", "--fix", "--dry-run"].includes(option)) {
-      throw new CliUsageError(`Unknown doctor option: ${option}.`);
-    }
+  let explain = false;
+  let json = false;
+  let fix = false;
+  let dryRun = false;
+  let failOn: "error" | "warning" | "info" | undefined;
+  const codes: string[] = [];
+  for (let index = 0; index < options.length; index += 1) {
+    const option = options[index];
+    if (option === "--explain") {
+      if (explain)
+        throw new CliUsageError("Duplicate doctor option: --explain.");
+      explain = true;
+    } else if (option === "--json") {
+      if (json) throw new CliUsageError("Duplicate doctor option: --json.");
+      json = true;
+    } else if (option === "--fix") {
+      if (fix) throw new CliUsageError("Duplicate doctor option: --fix.");
+      fix = true;
+    } else if (option === "--dry-run") {
+      if (dryRun)
+        throw new CliUsageError("Duplicate doctor option: --dry-run.");
+      dryRun = true;
+    } else if (option === "--fail-on") {
+      const value = options[++index];
+      if (value !== "error" && value !== "warning" && value !== "info")
+        throw new CliUsageError("--fail-on requires error, warning, or info.");
+      if (failOn)
+        throw new CliUsageError("Duplicate doctor option: --fail-on.");
+      failOn = value;
+    } else if (option === "--code") {
+      const value = options[++index];
+      if (!value || value.startsWith("-"))
+        throw new CliUsageError("--code requires a diagnostic code.");
+      codes.push(value);
+    } else throw new CliUsageError(`Unknown doctor option: ${option}.`);
   }
-  const fix = values.has("--fix");
-  const dryRun = values.has("--dry-run");
   if (dryRun && !fix) throw new CliUsageError("--dry-run requires --fix.");
-  if (values.has("--json") && values.has("--explain")) {
+  if (json && explain) {
     throw new CliUsageError("--json cannot be combined with --explain.");
   }
-  if (values.has("--json") && fix) {
+  if (json && fix) {
     throw new CliUsageError("--json cannot be combined with --fix.");
   }
   return {
     name: "doctor",
-    explain: values.has("--explain"),
-    json: values.has("--json"),
+    explain,
+    json,
     fix,
     dryRun,
+    failOn,
+    codes,
   };
 }
 
@@ -971,12 +1009,36 @@ function parseInspectCommand(options: readonly string[]): Command {
   if (options.length === 1 && isInspectTarget(options[0])) {
     return { name: "inspect", target: options[0], list: false };
   }
-  if (
-    options.length === 2 &&
-    options[0] === "content" &&
-    options[1] === "--list"
-  ) {
-    return { name: "inspect", target: "content", list: true };
+  if (options[0] === "content") {
+    let list = false;
+    let path: string | undefined;
+    for (let index = 1; index < options.length; index += 1) {
+      const option = options[index];
+      if (option === "--list" && !list) {
+        list = true;
+        continue;
+      }
+      if (option === "--path" && path === undefined) {
+        const value = options[index + 1];
+        if (value === undefined || value.startsWith("-")) {
+          throw new CliUsageError(
+            "--path requires a content path or permalink.",
+          );
+        }
+        path = value;
+        index += 1;
+        continue;
+      }
+      throw new CliUsageError(
+        "Usage: riebeckite inspect content [--list] [--path <path-or-permalink>]",
+      );
+    }
+    return {
+      name: "inspect",
+      target: "content",
+      list,
+      ...(path ? { path } : {}),
+    };
   }
 
   const target = options[0] ?? "";
@@ -986,7 +1048,7 @@ function parseInspectCommand(options: readonly string[]): Command {
     );
   }
   throw new CliUsageError(
-    "Usage: riebeckite inspect [config | plugins | content [--list] | graph | build]",
+    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]",
   );
 }
 

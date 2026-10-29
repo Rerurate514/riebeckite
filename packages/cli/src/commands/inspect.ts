@@ -11,6 +11,7 @@ import {
   renderApplicationInspection,
   renderBuildInspection,
   renderConfigInspection,
+  renderContentEntryInspection,
   renderContentInspection,
   renderGraphInspection,
   renderPluginInspections,
@@ -26,7 +27,7 @@ export type InspectTarget =
 
 export async function runInspect(
   project: RiebeckiteProject,
-  options: { target?: InspectTarget; list: boolean },
+  options: { target?: InspectTarget; list: boolean; path?: string },
 ): Promise<void> {
   if (!options.target) {
     console.log(
@@ -47,11 +48,18 @@ export async function runInspect(
   }
   if (options.target === "content") {
     const config = await loadProjectConfig(project);
-    console.log(
-      renderContentInspection(await collectContentInspection(config, project), {
-        list: options.list,
-      }),
-    );
+    const inspection = await collectContentInspection(config, project);
+    if (options.path) {
+      const entry = inspection.paths.find(
+        (candidate) =>
+          candidate.path === options.path ||
+          candidate.permalink === options.path,
+      );
+      if (!entry) throw new Error(`Content entry not found: ${options.path}`);
+      console.log(renderContentEntryInspection(entry));
+      return;
+    }
+    console.log(renderContentInspection(inspection, { list: options.list }));
     return;
   }
   if (options.target === "graph") {

@@ -20,13 +20,13 @@ riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
-riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
 riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
 
 ## 各コマンドの役割とビルド状態への影響
@@ -310,11 +310,12 @@ flowchart LR
 npm exec riebeckite doctor
 npm exec -- riebeckite doctor --explain
 npm exec -- riebeckite doctor --json
+npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 ```
 
-`--explain` は原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力します。`--fix` は安全な自動修正に限定され、該当する修正がなければ何も変更しません。`--dry-run` はファイルを変更せずにそのことを確認します。
+`--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable・skipped・category・code ごとの件数も含まれます。`--code` は繰り返して診断コードを絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` はファイルを変更せずにそのことを確認します。
 
-`doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、スキップとして表示します。
+`doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、利用不可として明示します。
 
 ```mermaid id="f8k3hz"
 flowchart LR

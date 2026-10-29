@@ -37,6 +37,9 @@ export function renderApplicationInspection(
       ? [
           field("Entries", inspection.build.entryCount),
           field("Reusable", inspection.build.reusable ? "yes" : "no"),
+          ...(inspection.build.regenerationReason
+            ? [field("Regenerate", inspection.build.regenerationReason)]
+            : []),
         ]
       : []),
     ...(inspection.build.status === "invalid"
@@ -150,6 +153,19 @@ export function renderContentInspection(
   ].join("\n");
 }
 
+export function renderContentEntryInspection(
+  entry: ContentInspection["paths"][number],
+): string {
+  return [
+    "Content Entry",
+    "",
+    field("Path", entry.path),
+    field("Permalink", entry.permalink ?? "-"),
+    field("ID", entry.id ?? "-"),
+    field("ID source", entry.idSource ?? "-"),
+  ].join("\n");
+}
+
 export function renderGraphInspection(inspection: GraphInspection): string {
   return [
     "Content Graph",
@@ -178,6 +194,9 @@ export function renderBuildInspection(inspection: BuildInspection): string {
           field("Version", inspection.version),
           field("Entries", inspection.entryCount),
           field("Reusable", inspection.reusable ? "yes" : "no"),
+          ...(inspection.regenerationReason
+            ? [field("Regenerate", inspection.regenerationReason)]
+            : []),
         ]
       : []),
     ...(inspection.status === "invalid"

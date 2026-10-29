@@ -9,6 +9,8 @@ test("doctor accepts diagnostic output options", () => {
     json: false,
     fix: false,
     dryRun: false,
+    failOn: undefined,
+    codes: [],
   });
   assert.deepEqual(
     parseCommand(["doctor", "--explain", "--fix", "--dry-run"]),
@@ -18,8 +20,38 @@ test("doctor accepts diagnostic output options", () => {
       json: false,
       fix: true,
       dryRun: true,
+      failOn: undefined,
+      codes: [],
     },
   );
+});
+
+test("doctor accepts exit thresholds and diagnostic code filters", () => {
+  assert.deepEqual(
+    parseCommand(["doctor", "--fail-on", "warning", "--code", "CONTENT_X"]),
+    {
+      name: "doctor",
+      explain: false,
+      json: false,
+      fix: false,
+      dryRun: false,
+      failOn: "warning",
+      codes: ["CONTENT_X"],
+    },
+  );
+});
+
+test("inspect content accepts an exact path or permalink", () => {
+  assert.deepEqual(
+    parseCommand(["inspect", "content", "--path", "/notes/hello/"]),
+    {
+      name: "inspect",
+      target: "content",
+      list: false,
+      path: "/notes/hello/",
+    },
+  );
+  assert.throws(() => parseCommand(["inspect", "content", "--path"]));
 });
 
 test("doctor rejects incompatible or unknown options", () => {

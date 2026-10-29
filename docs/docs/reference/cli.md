@@ -20,13 +20,13 @@ riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
-riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
 riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
 
 ## Command contracts
@@ -325,11 +325,12 @@ Plugin option validation runs as part of `check`. Each plugin's `validateOptions
 npm exec riebeckite doctor
 npm exec -- riebeckite doctor --explain
 npm exec -- riebeckite doctor --json
+npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 ```
 
-`--explain` includes causes, details, and suggested remediations. `--json` writes only the serializable report for tooling. `--fix` is limited to safe automatic fixes; when none are available it changes nothing, and `--dry-run` confirms that without modifying files.
+`--explain` includes the stable fingerprint, cause, details, and suggested remediation. `--json` writes only the serializable report for tooling; its additive summary includes unavailable, skipped, category, and code counts. Repeat `--code` to select diagnostic codes. `--fail-on` selects the lowest severity that fails the command (default: `error`). `--fix` is limited to safe automatic fixes; no safe automatic fix is currently available, so `--dry-run` confirms that without modifying files.
 
-It checks environment, configuration, plugins, content, output planning, and theme references where the observation is available. Unavailable observations are shown as skipped rather than inferred.
+It checks environment, configuration, plugins, content, output planning, and theme references where the observation is available. Unavailable observations are reported explicitly rather than inferred.
 
 ```mermaid
 flowchart LR

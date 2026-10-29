@@ -83,6 +83,7 @@ export type BuildInspection =
       readonly version: number;
       readonly entryCount: number;
       readonly reusable: boolean;
+      readonly regenerationReason?: string;
     }
   | {
       readonly status: "invalid";

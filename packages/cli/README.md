@@ -34,11 +34,11 @@ In a pnpm project, use `pnpm exec riebeckite`.
 ```text
 riebeckite dev
 riebeckite check
-riebeckite doctor [--explain | --json | --fix [--dry-run]]
+riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 ```
 
@@ -59,6 +59,8 @@ riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
 when health checks fail. `inspect` is deliberately read-only and never triggers
 a build or writes state. See [Diagnostics](../../docs/docs/framework/diagnostics.md) and
 [Framework Inspector](../../docs/docs/framework/inspector.md) for how to interpret output.
+
+`doctor --explain` includes each finding's fingerprint, cause, details, and fix. Repeat `--code` to select findings, and use `--fail-on` to make info, warning, or error findings fail the command. `--fix --dry-run` only reports whether supported safe fixes exist; no safe automatic fix is currently provided.
 
 `clean` deletes only Riebeckite-managed artifacts: with no options the managed
 state root (`.riebeckite/`), with `--output` the build output, and with `--all`

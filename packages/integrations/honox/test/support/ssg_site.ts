@@ -524,53 +524,68 @@ export async function buildSite(
   const metricsDirectory = path.join(siteRoot, ".riebeckite", "metrics");
   await mkdir(metricsDirectory, { recursive: true });
   const metricsFile = path.join(metricsDirectory, `${label}.json`);
-  process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
-  const warnings = options.warnings;
-  let customLogger: ViteLogger | undefined;
-  if (warnings) {
-    const baseLogger = createLogger("silent");
-    customLogger = {
-      ...baseLogger,
-      warn(message, loggerOptions) {
-        warnings.push(message);
-        baseLogger.warn(message, loggerOptions);
-      },
-      warnOnce(message, loggerOptions) {
-        warnings.push(message);
-        baseLogger.warnOnce(message, loggerOptions);
+  return withSsgMetricsFile(metricsFile, async () => {
+    const warnings = options.warnings;
+    let customLogger: ViteLogger | undefined;
+    if (warnings) {
+      const baseLogger = createLogger("silent");
+      customLogger = {
+        ...baseLogger,
+        warn(message, loggerOptions) {
+          warnings.push(message);
+          baseLogger.warn(message, loggerOptions);
+        },
+        warnOnce(message, loggerOptions) {
+          warnings.push(message);
+          baseLogger.warnOnce(message, loggerOptions);
+        },
+      };
+    }
+    const config = {
+      root: siteRoot,
+      resolve: { alias },
+      customLogger,
+      plugins: [
+        honox({
+          client: {
+            input: [
+              "/app/client.ts",
+              ...(options.stylesheet ? ["/app/style.css"] : []),
+            ],
+          },
+          islandComponents: { reactApiImportSource: "hono/jsx" },
+        }),
+        ...riebeckiteVite(),
+        ...(options.adapter === false ? [] : [viteBuild()]),
+      ],
+      logLevel: "silent",
+      build: {
+        minify: false,
+        ...(options.emptyOutDir === undefined
+          ? {}
+          : { emptyOutDir: options.emptyOutDir }),
       },
     };
+    if (options.stylesheet) {
+      await build(defineConfig({ ...config, mode: "client" }));
+    }
+    await build(defineConfig(config));
+    return JSON.parse(await readFile(metricsFile, "utf8")) as Metrics;
+  });
+}
+
+async function withSsgMetricsFile<T>(
+  metricsFile: string,
+  operation: () => Promise<T>,
+): Promise<T> {
+  const previous = process.env.RIEBECKITE_SSG_METRICS_FILE;
+  process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
+  try {
+    return await operation();
+  } finally {
+    if (previous === undefined) delete process.env.RIEBECKITE_SSG_METRICS_FILE;
+    else process.env.RIEBECKITE_SSG_METRICS_FILE = previous;
   }
-  const config = {
-    root: siteRoot,
-    resolve: { alias },
-    customLogger,
-    plugins: [
-      honox({
-        client: {
-          input: [
-            "/app/client.ts",
-            ...(options.stylesheet ? ["/app/style.css"] : []),
-          ],
-        },
-        islandComponents: { reactApiImportSource: "hono/jsx" },
-      }),
-      ...riebeckiteVite(),
-      ...(options.adapter === false ? [] : [viteBuild()]),
-    ],
-    logLevel: "silent",
-    build: {
-      minify: false,
-      ...(options.emptyOutDir === undefined
-        ? {}
-        : { emptyOutDir: options.emptyOutDir }),
-    },
-  };
-  if (options.stylesheet) {
-    await build(defineConfig({ ...config, mode: "client" }));
-  }
-  await build(defineConfig(config));
-  return JSON.parse(await readFile(metricsFile, "utf8")) as Metrics;
 }
 
 export function diffSnapshotKeys(

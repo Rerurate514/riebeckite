@@ -125,7 +125,8 @@ test("shares one signal across all page initializers", async () => {
   assert.equal(signals[0]?.aborted, true);
 });
 
-test("disposes listeners, timers, intervals, and cleanups registered on the scope", async () => {
+test("disposes listeners, timers, intervals, and cleanups registered on the scope", async (t) => {
+  t.mock.timers.enable({ apis: ["setInterval", "setTimeout"] });
   const lifecycle = new ClientLifecycle<object>();
   const target = new EventTarget();
   let clicks = 0;
@@ -158,7 +159,7 @@ test("disposes listeners, timers, intervals, and cleanups registered on the scop
   await lifecycle.unmount("page");
   await lifecycle.unmount("page");
   target.dispatchEvent(new Event("click"));
-  await new Promise((resolve) => setTimeout(resolve, 20));
+  t.mock.timers.tick(20);
 
   assert.equal(clicks, 0);
   assert.equal(timeouts, 0);

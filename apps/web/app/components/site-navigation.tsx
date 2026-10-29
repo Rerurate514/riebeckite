@@ -1,10 +1,18 @@
 import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
+import {
+  HeaderActions,
+  HeaderBrand,
+  SiteHeader as LayoutHeader,
+} from "@riebeckite/layouts";
 import { useSiteContext } from "@riebeckite/ui";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
 
-export function SiteHeader(props: { readonly children?: unknown }) {
+export function SiteHeader(props: {
+  readonly children?: unknown;
+  readonly sticky?: boolean;
+}) {
   const site = useSiteContext();
   const path = site?.path ?? "/";
   const hasNavigation = site
@@ -16,12 +24,14 @@ export function SiteHeader(props: { readonly children?: unknown }) {
     : false;
 
   return (
-    <div class="site-header rb-site-header">
-      <a href="/" class="site-header__home rb-site-header__home">
-        <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
-        <span>{site?.config.site.title}</span>
-      </a>
-      <div class="site-header__end">
+    <LayoutHeader class="site-header rb-site-header" sticky={props.sticky}>
+      <HeaderBrand>
+        <a href="/" class="site-header__home rb-site-header__home">
+          <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
+          <span>{site?.config.site.title}</span>
+        </a>
+      </HeaderBrand>
+      <HeaderActions>
         {hasNavigation ? (
           <div class="site-header__primary-navigation">
             <SiteNav
@@ -32,8 +42,8 @@ export function SiteHeader(props: { readonly children?: unknown }) {
           </div>
         ) : null}
         <div class="site-header__actions">{props.children}</div>
-      </div>
-    </div>
+      </HeaderActions>
+    </LayoutHeader>
   );
 }
 

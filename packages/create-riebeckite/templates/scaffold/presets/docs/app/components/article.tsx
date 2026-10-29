@@ -6,24 +6,22 @@ import {
   ShellAside,
   ShellBody,
   ContentContainer,
-  ShellDrawer,
-  ShellHeader,
+  Drawer,
   ShellMain,
   ShellSidebar,
   SiteShell,
-} from "@riebeckite/shell-ui";
+} from "@riebeckite/layouts";
 import { SiteHeader } from "./site-header";
 
 export function SiteArticle() {
   return (
     <Article class="site-article">
       <SiteShell>
-        <ShellHeader sticky>
-          <SiteHeader />
-          <ShellDrawer label="Documentation">
+        <SiteHeader sticky>
+          <Drawer label="Documentation">
             <DocsSidebar />
-          </ShellDrawer>
-        </ShellHeader>
+          </Drawer>
+        </SiteHeader>
         <ShellBody>
           <ShellSidebar>
             <DocsSidebar />

@@ -11,6 +11,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/preview",
   "packages/spa",
   "packages/create-riebeckite",
+  "packages/layouts",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
@@ -171,6 +172,11 @@ const packagePublishingMetadata = {
       "scaffold",
       "static-site-generator",
     ],
+  },
+  "packages/layouts": {
+    description:
+      "Composable structural layout primitives for Riebeckite sites.",
+    keywords: ["riebeckite", "layout", "jsx"],
   },
   "packages/ui": {
     description:
@@ -715,6 +721,18 @@ export function expectedPackageMetadata(directory) {
         "dist",
         "templates",
       ],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/layouts") {
+    return {
+      ...publishingMetadata(directory, ["./style.css", "./client"]),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',

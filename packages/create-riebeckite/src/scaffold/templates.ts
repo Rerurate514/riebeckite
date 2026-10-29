@@ -134,7 +134,7 @@ function packageJson(
     dependencies[preset.theme.package] = RIEBECKITE_VERSION;
   }
   if (preset.name === "docs") {
-    dependencies["@riebeckite/shell-ui"] = RIEBECKITE_VERSION;
+    dependencies["@riebeckite/layouts"] = RIEBECKITE_VERSION;
   }
 
   return `${JSON.stringify(

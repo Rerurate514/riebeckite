@@ -338,7 +338,7 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       htmlFiles.map(async (file) => fs.readFile(file, "utf8")),
     );
     const html = pages.join("\n");
-    assert.match(html, /class="rb-shell"/);
+    assert.match(html, /class="rb-layout"/);
     assert.match(html, /<main id="main-content" tabindex="-1"/);
   });
 });

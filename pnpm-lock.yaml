@@ -99,6 +99,9 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../../packages/integrations/honox
+      '@riebeckite/layouts':
+        specifier: workspace:*
+        version: link:../../packages/layouts
       '@riebeckite/node':
         specifier: workspace:*
         version: link:../../packages/node
@@ -327,9 +330,6 @@ importers:
       '@riebeckite/preview':
         specifier: workspace:*
         version: link:../../packages/preview
-      '@riebeckite/shell-ui':
-        specifier: workspace:*
-        version: link:../../packages/shell-ui
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../../packages/themes/default
@@ -656,6 +656,12 @@ importers:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
+
+  packages/layouts:
+    dependencies:
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
 
   packages/node:
     dependencies:
@@ -1835,12 +1841,6 @@ importers:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
-
-  packages/shell-ui:
-    dependencies:
-      hono:
-        specifier: 'catalog:'
-        version: 4.13.12
 
   packages/spa:
     devDependencies:

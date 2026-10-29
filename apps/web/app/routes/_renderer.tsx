@@ -17,23 +17,20 @@ import { SearchBar } from "@riebeckite/plugin-search";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import {
   ContentContainer,
+  Drawer,
   ShellAside,
   ShellBody,
-  ShellContainer,
-  ShellDrawer,
-  ShellHeader,
-  ShellHeaderContent,
   ShellMain,
   ShellSidebar,
   SiteShell,
-} from "@riebeckite/shell-ui";
+} from "@riebeckite/layouts";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import {
   SiteDrawerNavigation,
   SiteFooter,
-  SiteHeader,
+  SiteHeader as SiteNavigationHeader,
 } from "../components/site-navigation";
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
@@ -112,22 +109,16 @@ export default jsxRenderer(async ({ children }, c) => {
           {shell === "docs" ? (
             <>
               <SiteShell>
-                <ShellHeader sticky>
-                  <ShellContainer>
-                    <ShellHeaderContent>
-                      <div data-spa-region="site-header">
-                        <SiteHeader>
-                          <ColorModeToggle />
-                          <SearchBar class="rr-search-bar--header" />
-                          <ShellDrawer label="Menu" icon="menu">
-                            <SiteDrawerNavigation />
-                            <DocsSidebar />
-                          </ShellDrawer>
-                        </SiteHeader>
-                      </div>
-                    </ShellHeaderContent>
-                  </ShellContainer>
-                </ShellHeader>
+                <SiteNavigationHeader sticky>
+                  <div data-spa-region="site-header">
+                    <ColorModeToggle />
+                    <SearchBar class="rr-search-bar--header" />
+                    <Drawer label="Menu" icon="menu">
+                      <SiteDrawerNavigation />
+                      <DocsSidebar />
+                    </Drawer>
+                  </div>
+                </SiteNavigationHeader>
                 <ShellBody>
                   <ShellSidebar>
                     <div data-spa-region="docs-navigation">
@@ -153,21 +144,15 @@ export default jsxRenderer(async ({ children }, c) => {
             </>
           ) : (
             <>
-              <ShellHeader>
-                <ShellContainer>
-                  <ShellHeaderContent>
-                    <div data-spa-region="site-header">
-                      <SiteHeader>
-                        <SearchBar class="rr-search-bar--header" />
-                        <ColorModeToggle />
-                        <ShellDrawer label="Menu" icon="menu">
-                          <SiteDrawerNavigation />
-                        </ShellDrawer>
-                      </SiteHeader>
-                    </div>
-                  </ShellHeaderContent>
-                </ShellContainer>
-              </ShellHeader>
+              <SiteNavigationHeader>
+                <div data-spa-region="site-header">
+                  <SearchBar class="rr-search-bar--header" />
+                  <ColorModeToggle />
+                  <Drawer label="Menu" icon="menu">
+                    <SiteDrawerNavigation />
+                  </Drawer>
+                </div>
+              </SiteNavigationHeader>
               <main id="main-content" tabindex={-1}>
                 {children}
               </main>

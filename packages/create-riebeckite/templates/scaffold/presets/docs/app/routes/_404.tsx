@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { ContentContainer, ShellBody, ShellHeader, ShellMain, SiteShell } from "@riebeckite/shell-ui";
+import { ContentContainer, ShellBody, ShellMain, SiteShell } from "@riebeckite/layouts";
 import { SiteHeader } from "../components/site-header";
 
 const handler = (c: Context) => {
@@ -7,9 +7,7 @@ const handler = (c: Context) => {
 
   return c.render(
     <SiteShell>
-      <ShellHeader sticky>
-        <SiteHeader />
-      </ShellHeader>
+      <SiteHeader sticky />
       <ShellBody>
         <ShellMain id="main-content" tabindex={-1}>
           <ContentContainer>

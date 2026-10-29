@@ -76,7 +76,7 @@
     "@riebeckite/plugin-responsive-image": "workspace:*",
     "@riebeckite/plugin-rich-embed": "workspace:*",
     "@riebeckite/plugin-search": "workspace:*",
-    "@riebeckite/shell-ui": "workspace:*",
+    "@riebeckite/layouts": "workspace:*",
     "@riebeckite/plugin-seo": "workspace:*",
     "@riebeckite/plugin-series": "workspace:*",
     "@riebeckite/plugin-share": "workspace:*",

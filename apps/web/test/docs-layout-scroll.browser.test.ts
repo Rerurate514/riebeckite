@@ -8,7 +8,7 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
 const styles = [
-  read("../../../packages/shell-ui/style.css"),
+  read("../../../packages/layouts/style.css"),
   read("../app/styles/shell.css"),
   read("../../../packages/plugins/docs/style.css"),
   read("../../../packages/plugins/navigation/style.css"),
@@ -55,12 +55,12 @@ async function loadDocsPage(
       --rb-color-muted: #58677a;
       --rb-color-surface: #fff;
     } body { margin: 0; } ${styles}</style></head>
-    <body class="riebeckite-page"><div class="rb-shell">
-      <header class="rb-shell__header" data-rb-shell-sticky="true"><div class="rb-shell__container"><div class="rb-site-header"><a class="rb-site-header__home">Riebeckite</a></div><details class="rb-shell__drawer"><summary class="rb-shell__drawer-trigger">Documentation</summary><div class="rb-shell__drawer-panel">Navigation</div></details></div></header>
-      <div class="rb-shell__body">
-        <aside class="rb-shell__sidebar"><nav class="rb-sidebar-navigation"><label class="rb-sidebar-navigation__search"><input type="search" /></label><ul>${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></aside>
-        <main class="rb-shell__main"><div class="rb-content-container" style="height: 300rem">Article</div></main>
-        <aside class="rb-shell__aside"><nav class="rr-table-of-contents rr-table-of-contents--desktop"><ol>${navigationItems(tocItemCount, "rr-table-of-contents__item")}</ol></nav></aside>
+    <body class="riebeckite-page"><div class="rb-layout">
+      <header class="rb-layout__header" data-rb-layout-sticky="true"><div class="rb-site-header"><a class="rb-site-header__home">Riebeckite</a></div></header>
+      <div class="rb-layout__body">
+        <aside class="rb-layout__sidebar"><nav class="rb-sidebar-navigation"><label class="rb-sidebar-navigation__search"><input type="search" /></label><ul>${navigationItems(120, "rb-docs-sidebar__item")}</ul></nav></aside>
+        <main class="rb-layout__main"><div class="rb-content-container" style="height: 300rem">Article</div></main>
+        <aside class="rb-layout__aside"><nav class="rr-table-of-contents rr-table-of-contents--desktop"><ol>${navigationItems(tocItemCount, "rr-table-of-contents__item")}</ol></nav></aside>
       </div>
     </div><footer class="rb-site-footer">Footer</footer></body></html>`);
 }
@@ -72,10 +72,12 @@ test("official docs composition aligns and scrolls both desktop rails", async (t
     for (const width of [1024, 1440, 1920]) {
       await loadDocsPage(page, width);
       const initial = await page.evaluate(() => {
-        const header = document.querySelector<HTMLElement>(".rb-shell__header");
-        const sidebar =
-          document.querySelector<HTMLElement>(".rb-shell__sidebar");
-        const aside = document.querySelector<HTMLElement>(".rb-shell__aside");
+        const header =
+          document.querySelector<HTMLElement>(".rb-layout__header");
+        const sidebar = document.querySelector<HTMLElement>(
+          ".rb-layout__sidebar",
+        );
+        const aside = document.querySelector<HTMLElement>(".rb-layout__aside");
         const footer = document.querySelector<HTMLElement>(".rb-site-footer");
         if (!header || !sidebar || !aside || !footer)
           throw new Error("docs fixture is incomplete");
@@ -102,16 +104,16 @@ test("official docs composition aligns and scrolls both desktop rails", async (t
       await page.evaluate(() => window.scrollTo(0, 1200));
       const sticky = await page.evaluate(() => ({
         header: document
-          .querySelector(".rb-shell__header")
+          .querySelector(".rb-layout__header")
           ?.getBoundingClientRect().top,
         sidebar: document
-          .querySelector(".rb-shell__sidebar")
+          .querySelector(".rb-layout__sidebar")
           ?.getBoundingClientRect().top,
         aside: document
-          .querySelector(".rb-shell__aside")
+          .querySelector(".rb-layout__aside")
           ?.getBoundingClientRect().top,
         headerHeight: document
-          .querySelector(".rb-shell__header")
+          .querySelector(".rb-layout__header")
           ?.getBoundingClientRect().height,
       }));
       assert.equal(sticky.header, 0);
@@ -133,7 +135,7 @@ test("docs TOC rail fills the viewport without TOC items", async (t) => {
   try {
     await loadDocsPage(page, 1440, 0);
     const aside = await page.evaluate(() => {
-      const element = document.querySelector<HTMLElement>(".rb-shell__aside");
+      const element = document.querySelector<HTMLElement>(".rb-layout__aside");
       if (!element) throw new Error("docs aside is missing");
       const { height, top } = element.getBoundingClientRect();
       return { height, top };
@@ -152,10 +154,10 @@ test("official docs composition hides desktop rails below their breakpoints", as
       await loadDocsPage(page, width);
       const visibility = await page.evaluate(() => ({
         aside: getComputedStyle(
-          document.querySelector(".rb-shell__aside") ?? document.body,
+          document.querySelector(".rb-layout__aside") ?? document.body,
         ).display,
         sidebar: getComputedStyle(
-          document.querySelector(".rb-shell__sidebar") ?? document.body,
+          document.querySelector(".rb-layout__sidebar") ?? document.body,
         ).display,
         overflowing: document.body.scrollWidth > window.innerWidth,
       }));

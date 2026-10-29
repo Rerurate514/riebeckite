@@ -1,5 +1,5 @@
 {
-  "name": "@riebeckite/shell-ui",
+  "name": "@riebeckite/layouts",
   "version": "0.0.35",
   "license": "Apache-2.0",
   "type": "module",
@@ -41,12 +41,15 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Rerurate514/riebeckite.git",
-    "directory": "packages/shell-ui"
+    "directory": "packages/layouts"
   },
-  "description": "Composable CSS Grid site shell primitives for Riebeckite.",
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Composable structural layout primitives for Riebeckite sites.",
   "keywords": [
     "riebeckite",
-    "shell",
     "layout",
     "jsx"
   ],

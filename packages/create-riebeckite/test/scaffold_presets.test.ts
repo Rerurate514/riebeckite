@@ -350,7 +350,7 @@ test("each preset generates its intended self-contained composition", async () =
           path.join(targetDirectory, "package.json"),
           "utf8",
         );
-        assert.match(packageJson, /"@riebeckite\/shell-ui"/);
+        assert.match(packageJson, /"@riebeckite\/layouts"/);
         assert.ok(
           await exists(
             path.join(targetDirectory, "content/docs/getting-started.md"),

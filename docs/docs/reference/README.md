@@ -115,7 +115,7 @@ External plugins and themes should depend on public packages and public exports 
 | `@riebeckite/webmention-cloudflare` | Cloudflare Workers, D1, and KV runtime for Webmentions |
 | `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/node` | Node.js adapters; `FileSystemContentSource` and path helpers for filesystem-backed content |
-| `@riebeckite/shell-ui` | Composable site shell components and the drawer client entry |
+| `@riebeckite/layouts` | Composable structural layouts and the drawer client entry |
 | `@riebeckite/git-history` | Git repository access shared by plugins; the `test-support` subpath exports a throw-away repository for tests |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |

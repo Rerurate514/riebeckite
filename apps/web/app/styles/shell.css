@@ -20,14 +20,13 @@
     padding-block: var(--rb-space-8);
   }
 
-  .riebeckite-page:has(.rb-shell) {
+  .riebeckite-page:has(.rb-layout) {
     display: block;
     padding: 0;
   }
 
-  .rb-shell {
-    --rb-shell-header-height: var(--rb-site-header-height);
-    --rb-shell-max-width: 96rem;
+  .rb-layout {
+    --rb-layout-header-height: var(--rb-site-header-height);
   }
 
   .rb-site-footer {
@@ -37,10 +36,6 @@
 
   .rb-site-header {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--rb-space-3);
     padding-block: var(--rb-site-header-padding-block);
   }
 
@@ -67,15 +62,8 @@
     gap: 0.5rem;
   }
 
-  .site-header__end {
-    display: flex;
-    align-items: center;
-    gap: var(--rb-space-3);
-    margin-left: auto;
-  }
-
   @media (max-width: 47.999rem) {
-    .riebeckite-page:not(:has(.rb-shell)) {
+    .riebeckite-page:not(:has(.rb-layout)) {
       /* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a
          modest margin without eating the viewport. */
@@ -97,12 +85,12 @@
     }
   }
 
-  .rb-shell__drawer-panel .rb-sidebar-navigation__search {
+  .rb-layout__drawer-panel .rb-sidebar-navigation__search {
     margin-block-start: var(--rb-space-2);
   }
 
   @media (min-width: 88rem) {
-    .riebeckite-page:not(:has(.rb-shell)) .rb-site-header {
+    .riebeckite-page:not(:has(.rb-layout)) .rb-site-header {
       height: var(--rb-site-header-height);
     }
   }

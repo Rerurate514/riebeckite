@@ -1,5 +1,5 @@
 @import "tailwindcss" source("../app");
-@import "@riebeckite/shell-ui/style.css";
+@import "@riebeckite/layouts/style.css";
 @import "./components/style.css";
 @import "./components/home/style.css";
 @import "./styles/shell.css";

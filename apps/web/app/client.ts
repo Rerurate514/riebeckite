@@ -1,5 +1,5 @@
 import { initRiebeckiteClient } from "virtual:riebeckite/client";
-import "@riebeckite/shell-ui/client";
+import "@riebeckite/layouts/client";
 import { createClient } from "honox/client";
 import { crossesShellBoundary } from "./lib/shell-navigation";
 

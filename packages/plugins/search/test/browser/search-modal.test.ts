@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
+import os from "node:os";
+import path from "node:path";
 import { after, before, test } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
 import type { Browser, Page } from "puppeteer";
 import { launchBrowser } from "./support.js";
@@ -72,7 +75,7 @@ before(async () => {
       contents:
         'import { renderToString } from "hono/jsx/dom/server";\n' +
         'import SearchBar from "./components/search-bar.tsx";\n' +
-        "export const html = renderToString(SearchBar());\n",
+        "export const html = renderToString(SearchBar({}));\n",
       resolveDir: packageRoot,
       sourcefile: "search-bar-render.ts",
       loader: "ts",
@@ -86,11 +89,7 @@ before(async () => {
     write: false,
     logLevel: "silent",
   });
-  const renderModule = (await import(
-    `data:text/javascript;base64,${Buffer.from(
-      rendered.outputFiles[0].text,
-    ).toString("base64")}`
-  )) as { html: string };
+  const renderModule = await loadRenderedModule(rendered.outputFiles[0].text);
   const componentHtml = renderModule.html;
 
   const bundle = await build({
@@ -160,6 +159,17 @@ ${componentHtml}
 
   browser = await launchBrowser();
 });
+
+async function loadRenderedModule(source: string): Promise<{ html: string }> {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "riebeckite-search-"));
+  const modulePath = path.join(directory, "search-bar-render.mjs");
+  await writeFile(modulePath, source);
+  try {
+    return (await import(pathToFileURL(modulePath).href)) as { html: string };
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+}
 
 after(async () => {
   await browser?.close();

@@ -10,37 +10,6 @@
 }
 @layer base {
   :is(:root, .rb-theme-root)[data-rb-theme="terminal"] {
-    color-scheme: dark;
-    --rb-color-paper: #07100a;
-    --rb-color-surface: #0d1910;
-    --rb-color-surface-hover: #15261a;
-    --rb-color-ink: #b7ffc5;
-    --rb-color-muted: #79a781;
-    --rb-color-accent: #69ed85;
-    --rb-color-link: #a2ffb4;
-    --rb-color-focus: #d5ffdb;
-    --rb-color-selected: #205b2c;
-    --rb-color-border: #3a7545;
-    --rb-color-border-strong: #66a872;
-    --rb-color-danger: #ff9a8d;
-    --rb-color-success: #9affac;
-    --rb-color-code-background: #030804;
-    --rb-color-code-ink: #b7ffc5;
-    --rb-color-code-inline: #15351b;
-    --rb-color-overlay: rgb(0 0 0 / 0.78);
-    --rb-font-body:
-      "Cascadia Mono", "Cascadia Code", "Lucida Console", "DejaVu Sans Mono",
-      "Noto Sans Mono CJK JP", monospace;
-    --rb-font-heading: var(--rb-font-body);
-    --rb-font-mono: var(--rb-font-body);
-    --rb-layout-page-max: 88rem;
-    --rb-layout-article-max: 52rem;
-    --rb-layout-sidebar: 16rem;
-    --rb-layout-gap: 2rem;
-    --rb-radius-sm: 0;
-    --rb-radius-md: 0;
-  }
-  :is(:root, .rb-theme-root)[data-rb-theme="terminal"][data-rb-mode="light"] {
     color-scheme: light;
     --rb-color-paper: #ecf1e8;
     --rb-color-surface: #f7faf3;
@@ -59,27 +28,58 @@
     --rb-color-code-ink: #d9f7dc;
     --rb-color-code-inline: #dcebdc;
     --rb-color-overlay: rgb(4 15 6 / 0.64);
+    --rb-font-body:
+      "Cascadia Mono", "Cascadia Code", "Lucida Console", "DejaVu Sans Mono",
+      "Noto Sans Mono CJK JP", monospace;
+    --rb-font-heading: var(--rb-font-body);
+    --rb-font-mono: var(--rb-font-body);
+    --rb-layout-page-max: 88rem;
+    --rb-layout-article-max: 52rem;
+    --rb-layout-sidebar: 16rem;
+    --rb-layout-gap: 2rem;
+    --rb-radius-sm: 0;
+    --rb-radius-md: 0;
   }
-  @media (prefers-color-scheme: light) {
+  :is(:root, .rb-theme-root)[data-rb-theme="terminal"][data-rb-mode="dark"] {
+    color-scheme: dark;
+    --rb-color-paper: #07100a;
+    --rb-color-surface: #0d1910;
+    --rb-color-surface-hover: #15261a;
+    --rb-color-ink: #b7ffc5;
+    --rb-color-muted: #79a781;
+    --rb-color-accent: #69ed85;
+    --rb-color-link: #a2ffb4;
+    --rb-color-focus: #d5ffdb;
+    --rb-color-selected: #205b2c;
+    --rb-color-border: #3a7545;
+    --rb-color-border-strong: #66a872;
+    --rb-color-danger: #ff9a8d;
+    --rb-color-success: #9affac;
+    --rb-color-code-background: #030804;
+    --rb-color-code-ink: #b7ffc5;
+    --rb-color-code-inline: #15351b;
+    --rb-color-overlay: rgb(0 0 0 / 0.78);
+  }
+  @media (prefers-color-scheme: dark) {
     :is(:root, .rb-theme-root)[data-rb-theme="terminal"]:not([data-rb-mode]) {
-      color-scheme: light;
-      --rb-color-paper: #ecf1e8;
-      --rb-color-surface: #f7faf3;
-      --rb-color-surface-hover: #dce6d7;
-      --rb-color-ink: #183a21;
-      --rb-color-muted: #4e7155;
-      --rb-color-accent: #237e3d;
-      --rb-color-link: #155d2a;
-      --rb-color-focus: #175f2d;
-      --rb-color-selected: #c5e6c9;
-      --rb-color-border: #73a27a;
-      --rb-color-border-strong: #376d41;
-      --rb-color-danger: #aa4438;
-      --rb-color-success: #28723b;
-      --rb-color-code-background: #102416;
-      --rb-color-code-ink: #d9f7dc;
-      --rb-color-code-inline: #dcebdc;
-      --rb-color-overlay: rgb(4 15 6 / 0.64);
+      color-scheme: dark;
+      --rb-color-paper: #07100a;
+      --rb-color-surface: #0d1910;
+      --rb-color-surface-hover: #15261a;
+      --rb-color-ink: #b7ffc5;
+      --rb-color-muted: #79a781;
+      --rb-color-accent: #69ed85;
+      --rb-color-link: #a2ffb4;
+      --rb-color-focus: #d5ffdb;
+      --rb-color-selected: #205b2c;
+      --rb-color-border: #3a7545;
+      --rb-color-border-strong: #66a872;
+      --rb-color-danger: #ff9a8d;
+      --rb-color-success: #9affac;
+      --rb-color-code-background: #030804;
+      --rb-color-code-ink: #b7ffc5;
+      --rb-color-code-inline: #15351b;
+      --rb-color-overlay: rgb(0 0 0 / 0.78);
     }
   }
   :is(:root, .rb-theme-root)[data-rb-theme="terminal"] {

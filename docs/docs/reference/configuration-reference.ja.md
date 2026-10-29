@@ -395,6 +395,25 @@ cache: {
 
 詳しくは [Build cache](./configuration/cache.ja.md#ビルドキャッシュ) を参照してください。
 
+## spa
+
+`spa` では、クライアントサイドのページ遷移を有効にします。`true` を指定すると既定値で有効になり、オブジェクトを指定すると動作を設定できます。省略するか `false` を指定すると、通常のブラウザ遷移のままになります。
+
+| 設定 | 型 | 既定値 | 用途 |
+| --- | --- | --- | --- |
+| `prefetch` | `false` \| `"hover"` | `false` | リンクにポインターが乗ったとき、同一オリジンのページを先読みする。 |
+| `scrollRestoration` | `boolean` | `true` | 履歴ごとのスクロール位置を保存し、復元する。 |
+| `viewTransitions` | `boolean` | `false` | 利用可能で、モーションが許可されている場合に View Transitions API を使う。 |
+
+```ts
+spa: {
+  prefetch: "hover",
+  viewTransitions: true,
+}
+```
+
+設定の検証では `spa` が boolean かオブジェクトかだけを確認します。オプションの値が不正な場合は、ランタイムの起動時にエラーになります。リンクの扱いとレンダラーの要件は [SPA ナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
+
 ## Config の検証
 
 設定に問題がある場合は `ConfigValidationError` が発生します。

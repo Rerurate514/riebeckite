@@ -250,6 +250,30 @@ cache: {
 Disabling the cache or moving its directory affects build time only, not the
 output. See [Build cache](./configuration/cache.md#build-cache).
 
+## spa
+
+`spa` enables client-side navigation. `true` uses the defaults; an object
+configures the behavior. Omit it or set `false` to keep normal browser
+navigation.
+
+| Field | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `prefetch` | `false` \| `"hover"` | `false` | Fetches a same-origin page when the pointer enters its link. |
+| `scrollRestoration` | `boolean` | `true` | Saves and restores scroll positions for history entries. |
+| `viewTransitions` | `boolean` | `false` | Uses the browser View Transitions API when available and motion is allowed. |
+
+```ts
+spa: {
+  prefetch: "hover",
+  viewTransitions: true,
+}
+```
+
+Config validation only checks that `spa` is a boolean or an object; invalid
+option values throw when the runtime starts. See
+[SPA navigation](../guides/spa-navigation.md) for link handling and renderer
+requirements.
+
 ## Validation
 
 An invalid configuration throws `ConfigValidationError`, which lists each

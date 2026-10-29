@@ -1,3 +1,4 @@
+import { escapeHtml } from "@riebeckite/core";
 import type { DocsNavigationItem, DocsNavigationLink } from "./types.js";
 
 export function renderDocsSidebar(context: {
@@ -104,15 +105,6 @@ const PREV_NEXT_LABELS = {
 function prevNextLabels(language: string | undefined): PrevNextLabels {
   if (language === "ja") return PREV_NEXT_LABELS.ja;
   return PREV_NEXT_LABELS.en;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function escapeAttribute(value: string): string {

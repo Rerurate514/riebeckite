@@ -1,4 +1,8 @@
-import type { ContentLink, ContentManifestEntry } from "@riebeckite/core";
+import {
+  type ContentLink,
+  type ContentManifestEntry,
+  escapeHtml,
+} from "@riebeckite/core";
 import type {
   BasesBuiltinValue,
   BasesCondition,
@@ -679,20 +683,6 @@ function stringValue(value: unknown): string {
   if (value instanceof Date) return value.toISOString();
   if (Array.isArray(value)) return value.map(stringValue).join(", ");
   return value === null || value === undefined ? "" : String(value);
-}
-
-function escapeHtml(value: string): string {
-  return value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[character] ?? character,
-  );
 }
 
 function startOfUtcDate(value: Date): Date {

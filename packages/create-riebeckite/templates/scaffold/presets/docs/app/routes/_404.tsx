@@ -1,16 +1,14 @@
 import type { Context } from "hono";
-import { ContentContainer, ShellBody, ShellMain, SiteShell } from "@riebeckite/layouts";
 import { SiteHeader } from "../components/site-header";
 
 const handler = (c: Context) => {
   c.status(404);
 
   return c.render(
-    <SiteShell>
-      <SiteHeader sticky />
-      <ShellBody>
-        <ShellMain id="main-content" tabindex={-1}>
-          <ContentContainer>
+    <div class="site-shell">
+      <SiteHeader />
+      <main id="main-content" tabindex={-1} class="site-main">
+        <div class="site-content">
             <div class="not-found">
               <p class="not-found__status">404</p>
               <h1>Page not found</h1>
@@ -19,10 +17,9 @@ const handler = (c: Context) => {
                 <a href="/">Back to home</a>
               </p>
             </div>
-          </ContentContainer>
-        </ShellMain>
-      </ShellBody>
-    </SiteShell>,
+        </div>
+      </main>
+    </div>,
   );
 };
 

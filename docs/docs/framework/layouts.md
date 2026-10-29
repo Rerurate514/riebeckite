@@ -4,99 +4,49 @@ title: Layouts
 
 # Layouts
 
-`@riebeckite/layouts` provides composable structural primitives. It owns Grid placement, responsive rail visibility, sticky offsets, independent rail scrolling, Header grouping, the Drawer shell, and the responsive layout primitives. Themes provide visual tokens; plugins render navigation and table-of-contents content.
+Riebeckite is a Markdown-first static-site framework, not a UI framework. Start with Markdown, a preset and configuration, then customize output with standard HTML, CSS, and JSX. Most sites do not need `@riebeckite/layouts`.
 
-## Shell composition
+## Standard site structure
 
-```tsx
-import {
-  ContentContainer,
-  Drawer,
-  DrawerTrigger,
-  HeaderActions,
-  HeaderBrand,
-  ShellAside,
-  ShellBody,
-  ShellMain,
-  ShellSidebar,
-  SiteHeader,
-  SiteShell,
-} from "@riebeckite/layouts";
-
-<SiteShell>
-  <SiteHeader sticky>
-    <HeaderBrand>{brand}</HeaderBrand>
-    <HeaderActions wrap>
-      {desktopNavigation}
-      {search}
-      <DrawerTrigger controls="site-menu" label="Menu" icon="menu" />
-    </HeaderActions>
-  </SiteHeader>
-  <ShellBody>
-    <ShellSidebar at="md">{navigation}</ShellSidebar>
-    <ShellMain id="main-content" tabindex={-1}>
-      <ContentContainer>{children}</ContentContainer>
-    </ShellMain>
-    <ShellAside at="lg">{toc}</ShellAside>
-  </ShellBody>
-  <Drawer id="site-menu" label="Navigation">
-    {mobileNavigation}
-  </Drawer>
-</SiteShell>
-```
-
-The Header spans the viewport independently of `ContentContainer`. `HeaderBrand` stays on the left and `HeaderActions` uses the remaining width for navigation, search, and controls. `HeaderActions wrap` lets the actions wrap instead of overflowing a narrow Header.
-
-`ShellSidebar` and `ShellAside` decide when they become rails with `at`. The default is `md` for the Sidebar and `lg` for the Aside. Rails scroll independently and share the shell sticky offset.
-
-## Drawer
-
-A Drawer is split into a panel and one or more triggers. The trigger can live anywhere, so the same panel can be opened from the Header while the panel itself sits in a sidebar rail.
+Use semantic elements and own the responsive rules in site CSS:
 
 ```tsx
-<ShellSidebar at="md">
-  <Drawer id="docs-menu" label="Documentation" desktop="inline">
-    <DocsSidebar />
-  </Drawer>
-</ShellSidebar>
-<DrawerTrigger controls="docs-menu" label="Menu" icon="menu" />
+<header class="site-header">{navigation}</header>
+<div class="site-layout">
+  <aside class="site-sidebar">{sidebar}</aside>
+  <main id="main-content" tabindex={-1} class="site-main">{children}</main>
+  <aside class="site-aside">{toc}</aside>
+</div>
+<footer>{footer}</footer>
 ```
 
-`desktop="inline"` turns the panel into normal flow content once the `at` breakpoint is reached, so a single navigation instance serves the mobile Drawer and the desktop rail. The default `desktop="hidden"` removes the Drawer at the breakpoint.
+```css
+.site-layout { display: grid; }
+.site-sidebar, .site-aside { display: none; }
+@media (min-width: 48rem) { .site-sidebar { display: block; } }
+@media (min-width: 64rem) { .site-layout { grid-template-columns: 18rem minmax(0, 1fr) 16rem; } .site-aside { display: block; } }
+```
 
-`DrawerTrigger` renders an icon-only menu button by default when `icon="menu"` is set. Content inside the panel is composed by the site; Layouts does not know about Navigation, Search, or TOC.
+This keeps the DOM, breakpoints, and visual design in the site. Themes provide tokens and plugins provide content; neither requires a layout component.
 
-Import the client entry once for focus management, Escape, backdrop clicks, SPA navigation cleanup, and no-JS `:target` fallback:
+## Optional Drawer
+
+Use `@riebeckite/layouts` only when a mobile navigation panel needs its accessible interaction behavior.
+
+```tsx
+import { Drawer, DrawerTrigger } from "@riebeckite/layouts";
+import "@riebeckite/layouts/style.css";
+
+<header class="site-header">
+  <DrawerTrigger controls="site-menu" label="Menu" icon="menu" />
+</header>
+<Drawer id="site-menu" label="Navigation">{navigation}</Drawer>
+```
+
+Import the client entry once for focus management, Escape, backdrop clicks, and SPA cleanup:
 
 ```ts
 import "@riebeckite/layouts/client";
 ```
 
-Without JavaScript the trigger is a fragment link, so `#docs-menu` still reveals the panel through `:target`. With JavaScript it becomes a focus-trapped dialog and restores focus when closed.
-
-## Responsive primitives
-
-- `ShowAt min` hides content below a breakpoint; `ShowAt max` hides it at and above the breakpoint.
-- `Stack` is a vertical flex container with a shared gap scale.
-- `Cluster` is a wrapping horizontal flex container.
-- `ResponsiveGrid` uses `repeat(auto-fit, minmax(min(<min>, 100%), 1fr))`, so it adapts to the width of its own container instead of the viewport.
-- `ContentContainer size="page"` opts into the page max width.
-
-`ShowAt` and the shell rails use viewport media queries. Grid, Stack, and Cluster respond to the width they are given, which keeps nested narrow containers intact. Layout breakpoints are not exposed as CSS custom properties because media queries cannot read them.
-
-## Breakpoints
-
-| Name | Value | Typical use |
-| --- | --- | --- |
-| `sm` | `30rem` | Compact phones to small tablets |
-| `md` | `48rem` | Sidebar rail replaces the Drawer |
-| `lg` | `64rem` | Aside rail |
-| `xl` | `88rem` | Wide reading layouts |
-
-The values live only in `@riebeckite/layouts/style.css`. TypeScript accepts the names, never the numbers.
-
-## Ownership
-
-Layouts owns structural placement, rail visibility, Drawer behavior, and generic flex/grid primitives. Navigation, TOC, Search, Color mode, and localization remain in their plugins. Sites compose those components and decide where each one appears at each breakpoint. Site CSS should keep brand expression, not re-implement header alignment, rail switching, or Drawer mechanics.
-
-Every component accepts `class` and `className`. `ShellMain` additionally accepts `id` and `tabindex`; use `id="main-content"` with SPA navigation.
+Without JavaScript, the fragment link and `:target` still reveal the panel. The component emits `data-rb-drawer`, `data-rb-drawer-backdrop`, `data-rb-drawer-panel`, `data-rb-drawer-trigger`, and `data-rb-drawer-target`. Customize its placement with `--rb-drawer-inset-block-start`, `--rb-drawer-width`, `--rb-drawer-padding`, and `--rb-drawer-background`.

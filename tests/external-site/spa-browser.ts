@@ -67,6 +67,30 @@ async function assertNavigation(
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto(url, { waitUntil: "networkidle0" });
+    for (const width of [375, 768, 1440]) {
+      await page.setViewport({ width, height: 900 });
+      const standardDom = await page.evaluate(() => {
+        const main = document.querySelector<HTMLElement>("main#main-content");
+        main?.focus();
+        return {
+          headers: document.querySelectorAll("header").length,
+          mains: document.querySelectorAll("main#main-content").length,
+          focusedMain: document.activeElement === main,
+          overflow:
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth,
+          themed:
+            getComputedStyle(document.documentElement)
+              .getPropertyValue("--rb-color-ink")
+              .trim().length > 0,
+        };
+      });
+      assert.equal(standardDom.headers, 1);
+      assert.equal(standardDom.mains, 1);
+      assert.equal(standardDom.focusedMain, true);
+      assert.equal(standardDom.overflow, false);
+      assert.equal(standardDom.themed, true);
+    }
     await page.evaluate(() => {
       (
         window as Window & { spaNavigationMarker?: string }

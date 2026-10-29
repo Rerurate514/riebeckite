@@ -12,20 +12,27 @@ const appStyle = read("../app/style.css");
 const articleCss = read("../app/components/article/style.css");
 
 test("docs routes compose the shared shell around article content", () => {
-  assert.match(renderer, /<SiteShell>/);
-  assert.match(renderer, /<SiteNavigationHeader sticky>/);
+  assert.match(renderer, /<div class="site-shell site-shell--docs">/);
+  assert.match(renderer, /<SiteNavigationHeader>/);
   assert.match(renderer, /<SearchBar class="rr-search-bar--header" \/>/);
   assert.match(renderer, /<DrawerTrigger\s+controls="docs-navigation"/);
   assert.match(
     renderer,
-    /<Drawer\s+id="docs-navigation"[^>]*desktop="inline"/s,
+    /<Drawer\s+id="docs-navigation"[^>]*label="Documentation"/s,
   );
   assert.match(renderer, /<SiteDrawerNavigation \/>/);
-  assert.match(renderer, /<ShellSidebar at="md">/);
-  assert.match(renderer, /<ShowAt max="sm">/);
-  assert.match(renderer, /<ShellMain id="main-content" tabindex=\{-1\}>/);
-  assert.match(renderer, /<ContentContainer>\{children\}<\/ContentContainer>/);
-  assert.match(renderer, /<ShellAside at="lg">/);
+  assert.match(
+    renderer,
+    /<aside class="site-sidebar" aria-label="Documentation">/,
+  );
+  assert.match(
+    renderer,
+    /<main id="main-content" tabindex=\{-1\} class="site-main">/,
+  );
+  assert.match(
+    renderer,
+    /<aside class="site-aside" aria-label="Table of contents">/,
+  );
   assert.match(renderer, /data-spa-region="site-header"/);
   assert.match(renderer, /data-spa-region="docs-navigation"/);
   assert.match(renderer, /data-spa-region="toc"/);
@@ -36,7 +43,7 @@ test("docs routes compose the shared shell around article content", () => {
   assert.match(read("../app/routes/[slug{.+}].tsx"), /c\.set\("tocItems"/);
 });
 
-test("the official site uses layouts instead of an article-specific rail", () => {
+test("the official site owns its standard layout and imports the optional Drawer", () => {
   assert.match(appStyle, /@import "@riebeckite\/layouts\/style\.css"/);
   assert.doesNotMatch(articleCss, /rb-docs-sidebar-rail/);
   assert.doesNotMatch(articleCss, /desktop-rail/);

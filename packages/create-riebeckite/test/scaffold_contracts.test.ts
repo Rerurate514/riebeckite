@@ -327,9 +327,8 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       article ?? "",
       /<Drawer\s+id="docs-navigation"[^>]*label="Documentation"/s,
     );
-    assert.match(article ?? "", /desktop="inline"/);
     assert.match(article ?? "", /<DrawerTrigger/);
-    assert.match(article ?? "", /<ShellSidebar at="md">/);
+    assert.match(article ?? "", /<aside class="site-sidebar"/);
 
     const { execSync } = await import("node:child_process");
     await prepareGeneratedDocsSiteInstall(targetDir);
@@ -343,8 +342,11 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       htmlFiles.map(async (file) => fs.readFile(file, "utf8")),
     );
     const html = pages.join("\n");
-    assert.match(html, /class="rb-layout"/);
-    assert.match(html, /<main id="main-content" tabindex="-1"/);
+    assert.match(html, /class="site-shell"/);
+    assert.match(
+      html,
+      /<main id="main-content" tabindex="-1" class="site-main"/,
+    );
   });
 });
 

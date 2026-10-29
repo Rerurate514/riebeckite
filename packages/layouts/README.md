@@ -1,28 +1,21 @@
 # @riebeckite/layouts
 
-Composable structural layout primitives for Riebeckite sites. Import `@riebeckite/layouts/style.css` and compose `SiteShell`, `SiteHeader`, `HeaderBrand`, `HeaderActions`, `ShowAt`, `ShellBody`, `ShellSidebar`, `ShellMain`, `ShellAside`, `ContentContainer`, `Drawer`, `DrawerTrigger`, `Stack`, `Cluster`, and `ResponsiveGrid`. Layouts own placement and responsive rails; site code supplies the content.
+Optional accessible Drawer behavior for Riebeckite sites. Use standard HTML and site-owned CSS for headers, page grids, spacing, and responsive visibility.
 
 [日本語](./README_ja.md)
 
 ```tsx
-<SiteShell>
-  <SiteHeader sticky>
-    <HeaderBrand>{brand}</HeaderBrand>
-    <HeaderActions wrap>
-      <ShowAt min="md">{navigation}</ShowAt>
-      {search}
-      <DrawerTrigger controls="site-menu" label="Menu" icon="menu" />
-    </HeaderActions>
-  </SiteHeader>
-  <ShellBody>
-    <ShellSidebar at="md">{sidebarNavigation}</ShellSidebar>
-    <ShellMain><ContentContainer>{content}</ContentContainer></ShellMain>
-    <ShellAside at="lg">{toc}</ShellAside>
-  </ShellBody>
-  <Drawer id="site-menu" label="Navigation">{mobileNavigation}</Drawer>
-</SiteShell>
+import { Drawer, DrawerTrigger } from "@riebeckite/layouts";
+import "@riebeckite/layouts/style.css";
+
+<header class="site-header">
+  <a href="/">My site</a>
+  <DrawerTrigger controls="site-menu" label="Menu" icon="menu" />
+</header>
+<main id="main-content">{children}</main>
+<Drawer id="site-menu" label="Navigation">{navigation}</Drawer>
 ```
 
-`ShellSidebar`, `ShellAside`, `Drawer`, and `DrawerTrigger` accept `at` (`sm`, `md`, `lg`, `xl`). `Drawer desktop="inline"` reuses one navigation instance as the mobile panel and the desktop rail.
+Import `@riebeckite/layouts/client` once to enable focus management, Escape, backdrop clicks, and SPA navigation cleanup. Without JavaScript, the trigger remains a fragment link and `:target` reveals the panel.
 
-Import `@riebeckite/layouts/client` once to enable `Drawer` focus handling, Escape, backdrop clicks, SPA cleanup, and the no-JS `:target` fallback.
+`Drawer` emits `data-rb-drawer`, `data-rb-drawer-backdrop`, and `data-rb-drawer-panel`. `DrawerTrigger` emits `data-rb-drawer-trigger` and `data-rb-drawer-target`. Site CSS can set `--rb-drawer-inset-block-start`, `--rb-drawer-width`, `--rb-drawer-padding`, and `--rb-drawer-background`.

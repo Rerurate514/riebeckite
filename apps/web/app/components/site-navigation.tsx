@@ -1,9 +1,3 @@
-import {
-  HeaderActions,
-  HeaderBrand,
-  SiteHeader as LayoutHeader,
-  ShowAt,
-} from "@riebeckite/layouts";
 import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
 import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
@@ -11,10 +5,7 @@ import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
 
-export function SiteHeader(props: {
-  readonly children?: Child;
-  readonly sticky?: boolean;
-}) {
+export function SiteHeader(props: { readonly children?: Child }) {
   const site = useSiteContext();
   const path = site?.path ?? "/";
   const hasNavigation = site
@@ -26,26 +17,22 @@ export function SiteHeader(props: {
     : false;
 
   return (
-    <LayoutHeader class="site-header rb-site-header" sticky={props.sticky}>
-      <HeaderBrand>
-        <a href="/" class="site-header__home rb-site-header__home">
-          <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
-          <span>{site?.config.site.title}</span>
-        </a>
-      </HeaderBrand>
-      <HeaderActions wrap>
+    <header class="site-header rb-site-header">
+      <a href="/" class="site-header__home rb-site-header__home">
+        <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
+        <span>{site?.config.site.title}</span>
+      </a>
+      <nav class="site-header__navigation" aria-label="Primary navigation">
         {hasNavigation ? (
-          <ShowAt min="md">
-            <SiteNav
-              placement="primary"
-              omitHome
-              localizeHref={(href) => localizeDocsHref(href, path)}
-            />
-          </ShowAt>
+          <SiteNav
+            placement="primary"
+            omitHome
+            localizeHref={(href) => localizeDocsHref(href, path)}
+          />
         ) : null}
-        {props.children}
-      </HeaderActions>
-    </LayoutHeader>
+      </nav>
+      <div class="site-header__actions">{props.children}</div>
+    </header>
   );
 }
 

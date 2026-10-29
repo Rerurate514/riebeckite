@@ -20,13 +20,9 @@
     padding-block: var(--rb-space-8);
   }
 
-  .riebeckite-page:has(.rb-layout) {
+  .riebeckite-page:has(.site-shell) {
     display: block;
     padding: 0;
-  }
-
-  .rb-layout {
-    --rb-layout-header-height: var(--rb-site-header-height);
   }
 
   .rb-site-footer {
@@ -37,6 +33,52 @@
   .rb-site-header {
     width: 100%;
     padding-block: var(--rb-site-header-padding-block);
+  }
+
+  .site-header {
+    display: flex;
+    min-height: var(--rb-site-header-height);
+    align-items: center;
+    gap: var(--rb-space-3);
+    padding-inline: max(
+      var(--rb-space-3),
+      calc((100% - var(--rb-layout-page-max, 80rem)) / 2)
+    );
+    border-bottom: 1px solid var(--rb-color-border);
+  }
+
+  .site-header__navigation {
+    display: none;
+  }
+
+  .site-header__actions {
+    display: flex;
+    margin-inline-start: auto;
+    align-items: center;
+    gap: var(--rb-space-2);
+  }
+
+  .site-shell {
+    min-height: 100vh;
+  }
+
+  .site-layout {
+    display: grid;
+    min-width: 0;
+  }
+
+  .site-sidebar,
+  .site-aside {
+    display: none;
+  }
+
+  .site-main {
+    min-width: 0;
+  }
+
+  .site-content {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+    margin-inline: auto;
   }
 
   .rb-site-header__home {
@@ -60,7 +102,7 @@
   }
 
   @media (max-width: 47.999rem) {
-    .riebeckite-page:not(:has(.rb-layout)) {
+    .riebeckite-page:not(:has(.site-shell)) {
       /* The fixed 4rem padding feels oversized on phones, where the shell
          already stacks the chrome (search bar) above the article. Keep a
          modest margin without eating the viewport. */
@@ -78,13 +120,56 @@
     }
   }
 
-  .rb-layout__drawer-panel .rb-sidebar-navigation__search {
+  .rb-drawer__panel .rb-sidebar-navigation__search {
     margin-block-start: var(--rb-space-2);
   }
 
   @media (min-width: 88rem) {
-    .riebeckite-page:not(:has(.rb-layout)) .rb-site-header {
+    .riebeckite-page:not(:has(.site-shell)) .rb-site-header {
       height: var(--rb-site-header-height);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .site-header__navigation {
+      display: block;
+    }
+
+    .site-header__actions .rb-drawer-trigger {
+      display: none;
+    }
+
+    .site-layout {
+      grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+    }
+
+    .site-sidebar {
+      display: block;
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      overflow-y: auto;
+      padding: var(--rb-space-4);
+      border-inline-end: 1px solid var(--rb-color-border);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .site-layout {
+      grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(
+          13rem,
+          17rem
+        );
+    }
+
+    .site-aside {
+      display: block;
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      overflow-y: auto;
+      padding: var(--rb-space-4);
+      border-inline-start: 1px solid var(--rb-color-border);
     }
   }
 }

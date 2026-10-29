@@ -343,13 +343,15 @@ test("each preset generates its intended self-contained composition", async () =
         );
         assert.match(article, /<DocsSidebar \/>/);
         assert.match(article, /<DocsPrevNext \/>/);
-        assert.match(article, /<SiteShell>/);
-        assert.match(article, /<ContentContainer>/);
+        assert.match(article, /<div class="site-shell">/);
+        assert.match(
+          article,
+          /<main id="main-content" tabindex=\{-1\} class="site-main">/,
+        );
         assert.match(
           article,
           /<Drawer\s+id="docs-navigation"[^>]*label="Documentation"/s,
         );
-        assert.match(article, /desktop="inline"/);
         assert.match(article, /<DrawerTrigger/);
         const packageJson = await fs.readFile(
           path.join(targetDirectory, "package.json"),

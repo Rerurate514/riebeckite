@@ -3,10 +3,6 @@ import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import {
   Drawer,
   DrawerTrigger,
-  HeaderActions,
-  HeaderBrand,
-  ShowAt,
-  SiteHeader as LayoutHeader,
 } from "@riebeckite/layouts";
 import { useSiteContext } from "@riebeckite/ui";
 
@@ -16,9 +12,8 @@ export function SiteHeader() {
   return (
     <>
       <ColorModeToggle placement="floating" />
-      <LayoutHeader class="site-header rb-site-header">
-        <HeaderBrand>
-          <a href="/" class="site-header__home rb-site-header__home">
+      <header class="site-header rb-site-header">
+        <a href="/" class="site-header__home rb-site-header__home">
             <img
               src="/riebeckite-logo.png"
               alt=""
@@ -27,22 +22,21 @@ export function SiteHeader() {
               height="28"
             />
             {site?.config.site.title}
-          </a>
-        </HeaderBrand>
-        <HeaderActions wrap>
-          <ShowAt min="sm">
-            <SiteNav placement="primary" omitHome />
-          </ShowAt>
+        </a>
+        <nav class="site-header__navigation" aria-label="Primary navigation">
+          <SiteNav placement="primary" omitHome />
+        </nav>
+        <div class="site-header__actions">
           <ColorModeToggle />
           <DrawerTrigger
             controls="site-navigation"
             label="Menu"
             icon="menu"
-            at="sm"
+            class="site-header__menu"
           />
-        </HeaderActions>
-      </LayoutHeader>
-      <Drawer id="site-navigation" label="Navigation" at="sm">
+        </div>
+      </header>
+      <Drawer id="site-navigation" label="Navigation">
         <SiteNav placement="primary" omitHome />
         <SiteNav placement="secondary" label="Secondary navigation" />
       </Drawer>

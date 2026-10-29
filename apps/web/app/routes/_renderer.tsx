@@ -8,17 +8,7 @@ import {
   SeoHead,
   ThemeRoot,
 } from "@riebeckite/honox/ui";
-import {
-  ContentContainer,
-  Drawer,
-  DrawerTrigger,
-  ShellAside,
-  ShellBody,
-  ShellMain,
-  ShellSidebar,
-  ShowAt,
-  SiteShell,
-} from "@riebeckite/layouts";
+import { Drawer, DrawerTrigger } from "@riebeckite/layouts";
 import {
   ColorModeScript,
   ColorModeToggle,
@@ -110,8 +100,8 @@ export default jsxRenderer(async ({ children }, c) => {
           <ColorModeToggle placement="floating" />
           {shell === "docs" ? (
             <>
-              <SiteShell>
-                <SiteNavigationHeader sticky>
+              <div class="site-shell site-shell--docs">
+                <SiteNavigationHeader>
                   <div
                     data-spa-region="site-header"
                     class="site-header__region"
@@ -125,35 +115,31 @@ export default jsxRenderer(async ({ children }, c) => {
                     />
                   </div>
                 </SiteNavigationHeader>
-                <ShellBody>
-                  <ShellSidebar at="md">
-                    <Drawer
-                      id="docs-navigation"
-                      label="Documentation"
-                      desktop="inline"
-                      at="md"
-                    >
-                      <div data-spa-region="docs-navigation">
-                        <ShowAt max="sm">
-                          <SiteDrawerNavigation />
-                        </ShowAt>
-                        <DocsSidebar />
-                      </div>
-                    </Drawer>
-                  </ShellSidebar>
-                  <ShellMain id="main-content" tabindex={-1}>
-                    <ContentContainer>{children}</ContentContainer>
-                  </ShellMain>
-                  <ShellAside at="lg">
+                <div class="site-layout">
+                  <aside class="site-sidebar" aria-label="Documentation">
+                    <div data-spa-region="docs-navigation">
+                      <DocsSidebar />
+                    </div>
+                  </aside>
+                  <main id="main-content" tabindex={-1} class="site-main">
+                    <div class="site-content">{children}</div>
+                  </main>
+                  <aside class="site-aside" aria-label="Table of contents">
                     <div data-spa-region="toc">
                       <TableOfContents
                         className="rr-table-of-contents--desktop"
                         items={tocItems}
                       />
                     </div>
-                  </ShellAside>
-                </ShellBody>
-              </SiteShell>
+                  </aside>
+                </div>
+                <Drawer id="docs-navigation" label="Documentation">
+                  <div data-spa-region="docs-navigation-mobile">
+                    <SiteDrawerNavigation />
+                    <DocsSidebar />
+                  </div>
+                </Drawer>
+              </div>
               <div data-spa-region="site-footer">
                 <SiteFooter />
               </div>

@@ -117,7 +117,7 @@ inspect
 | `@riebeckite/webmention-cloudflare` | Webmention 用の Cloudflare Workers・D1・KV ランタイム |
 | `@riebeckite/test` | テストヘルパー（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部サイトエンジン |
 | `@riebeckite/node` | Node.js 向けアダプター。ファイルシステムから読み込む `FileSystemContentSource` とパス用ヘルパー |
-| `@riebeckite/layouts` | サイト構造を組み立てる Layouts コンポーネントと、Drawer 用の client エントリ |
+| `@riebeckite/layouts` | 任意で利用するアクセシブルな Drawer と client エントリ |
 | `@riebeckite/git-history` | プラグインが共有する Git リポジトリへのアクセス。`test-support` subpath にテスト用の使い捨てリポジトリ |
 | `@riebeckite/plugin-*` | プラグインのファクトリと、ドキュメント化された subpath エクスポート |
 | `@riebeckite/theme-*` | テーマのファクトリと CSS エクスポート |

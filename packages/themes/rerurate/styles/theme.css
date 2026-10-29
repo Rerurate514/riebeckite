@@ -1022,50 +1022,95 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] .rb-article-header {
   background-image:
-    var(--rr-cosmic-stars, none),
-    var(--rr-cosmic-constellation, none),
+    var(--rr-cosmic-stars, none), var(--rr-cosmic-constellation, none),
     var(--rr-cosmic-orbit, none);
   background-repeat: no-repeat;
-  background-position: right 0.25rem top 0.25rem, left 0.5rem bottom 0.25rem,
+  background-position:
+    right 0.25rem top 0.25rem,
+    left 0.5rem bottom 0.25rem,
     center;
-  background-size: 9rem 6rem, 11rem 7rem, 13rem 4.5rem;
+  background-size:
+    9rem 6rem,
+    11rem 7rem,
+    13rem 4.5rem;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] {
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] {
   --rr-cosmic-stars: var(--rr-svg-stars);
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] {
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] {
   --rr-cosmic-constellation: var(--rr-svg-constellation);
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] {
+:is(
+  :root,
+  .rb-theme-root
+)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] {
   --rr-cosmic-orbit: var(--rr-svg-orbit);
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-header,
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rb-article-header,
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] .rb-article-header {
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-stars="true"]
+  .rb-article-header,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-constellation="true"]
+  .rb-article-header,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-orbit="true"]
+  .rb-article-header {
   position: relative;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-article-content,
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-stars="true"] .rb-page-body {
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-stars="true"]
+  .rb-article-content,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-stars="true"]
+  .rb-page-body {
   background-image: var(--rr-svg-stars);
   background-repeat: repeat;
   background-size: 180px 120px;
   background-position: center;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rb-sidebar,
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-constellation="true"] .rr-table-of-contents {
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-constellation="true"]
+  .rb-sidebar,
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-constellation="true"]
+  .rr-table-of-contents {
   background-image: var(--rr-svg-constellation);
   background-repeat: repeat;
   background-size: 140px 90px;
   background-position: center;
 }
 
-:is(:root, .rb-theme-root)[data-rb-theme="rerurate"][data-rb-setting-orbit="true"] .rb-article-footer {
+:is(
+    :root,
+    .rb-theme-root
+  )[data-rb-theme="rerurate"][data-rb-setting-orbit="true"]
+  .rb-article-footer {
   background-image: var(--rr-svg-orbit);
   background-repeat: repeat;
   background-size: 160px 60px;
@@ -1092,24 +1137,31 @@
 @media (prefers-reduced-motion: no-preference) {
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
       [data-rb-setting-motion="false"]
-    )[data-rb-setting-stars="true"] .rb-article-header,
+    )[data-rb-setting-stars="true"]
+    .rb-article-header,
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
       [data-rb-setting-motion="false"]
-    )[data-rb-setting-constellation="true"] .rb-article-header,
+    )[data-rb-setting-constellation="true"]
+    .rb-article-header,
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"]:not(
       [data-rb-setting-motion="false"]
-    )[data-rb-setting-orbit="true"] .rb-article-header {
+    )[data-rb-setting-orbit="true"]
+    .rb-article-header {
     animation: rr-cosmic-drift 28s linear infinite;
   }
 }
 
 @keyframes rr-cosmic-drift {
   from {
-    background-position: right 0.25rem top 0.25rem, left 0.5rem bottom 0.25rem,
+    background-position:
+      right 0.25rem top 0.25rem,
+      left 0.5rem bottom 0.25rem,
       center;
   }
   to {
-    background-position: right 0.25rem top 1.25rem, left 0.5rem bottom 1.25rem,
+    background-position:
+      right 0.25rem top 1.25rem,
+      left 0.5rem bottom 1.25rem,
       center;
   }
 }

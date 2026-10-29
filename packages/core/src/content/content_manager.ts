@@ -22,6 +22,7 @@ import { isImagePath, normalizeContentPath } from "./attachment.js";
 import { ContentBuildCoordinator } from "./content_build_coordinator.js";
 import {
   type ContentBuildPlan,
+  type FullRegenerationReason,
   reusableOutputChangeSet,
 } from "./content_build_plan.js";
 import { ContentBuildSession } from "./content_build_session.js";
@@ -506,6 +507,13 @@ export class ContentManager {
       plan.previousState?.manifestHookCache ?? [],
       this.getPipelineFingerprint(),
     );
+  }
+
+  async getFullRegenerationReasons(): Promise<
+    readonly FullRegenerationReason[]
+  > {
+    const plan = await this.getBuildPlan();
+    return plan.fullRegenerationReasons;
   }
 
   async getOutputChangeSet(

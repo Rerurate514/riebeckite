@@ -59,5 +59,6 @@ export function reusableOutputChangeSet(
     affectedOutputCount: 0,
     removedOutputCount: 0,
     unchangedOutputCount: unchanged.length,
+    reasons: new Map(),
   };
 }

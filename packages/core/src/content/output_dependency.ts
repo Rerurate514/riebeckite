@@ -21,6 +21,30 @@ export type OutputDescriptor = {
   readonly dependencies: readonly OutputDependency[];
 };
 
+export type OutputChangeReason =
+  | { readonly type: "new-output" }
+  | { readonly type: "kind-changed"; readonly previousKind: OutputKind }
+  | { readonly type: "unknown-dependency" }
+  | { readonly type: "external"; readonly id: string }
+  | { readonly type: "global" }
+  | { readonly type: "content"; readonly slug: string }
+  | { readonly type: "tag"; readonly tag: string }
+  | { readonly type: "folder"; readonly folder: string }
+  | { readonly type: "file"; readonly path: string }
+  | { readonly type: "public-location"; readonly pathname: string }
+  | {
+      readonly type: "content-query";
+      readonly properties: readonly string[];
+      readonly unknown: boolean;
+    }
+  | {
+      readonly type: "projection";
+      readonly projection: Extract<
+        OutputDependency,
+        { type: "projection" }
+      >["projection"];
+    };
+
 export type OutputChangeSet = {
   readonly affected: readonly OutputDescriptor[];
   readonly removed: readonly OutputDescriptor[];
@@ -30,6 +54,7 @@ export type OutputChangeSet = {
   readonly affectedOutputCount: number;
   readonly removedOutputCount: number;
   readonly unchangedOutputCount: number;
+  readonly reasons?: ReadonlyMap<string, OutputChangeReason>;
 };
 
 export function determineOutputChanges(input: {
@@ -85,25 +110,26 @@ export function determineOutputChanges(input: {
   const changedExternalScopes = changedExternalDependencyScopes(input);
   const affected = new Map<string, OutputDescriptor>();
   const unchanged: OutputDescriptor[] = [];
+  const reasons = new Map<string, OutputChangeReason>();
 
   for (const output of current) {
-    if (
-      isOutputAffected(
-        withPreviousDependencies(output, previous.get(output.path)),
-        changedContent,
-        refreshedContent,
-        changedTags,
-        changedFolders,
-        changedFiles,
-        changedExternal,
-        changedExternalScopes,
-        currentPublicLocations,
-        previousPublicLocations,
-        input.previousState?.manifestEntries ?? [],
-        input.manifest.entries,
-      )
-    ) {
+    const reason = findOutputChangeReason(
+      withPreviousDependencies(output, previous.get(output.path)),
+      changedContent,
+      refreshedContent,
+      changedTags,
+      changedFolders,
+      changedFiles,
+      changedExternal,
+      changedExternalScopes,
+      currentPublicLocations,
+      previousPublicLocations,
+      input.previousState?.manifestEntries ?? [],
+      input.manifest.entries,
+    );
+    if (reason) {
       affected.set(output.path, output);
+      reasons.set(output.path, reason);
     } else {
       unchanged.push(output);
     }
@@ -111,8 +137,15 @@ export function determineOutputChanges(input: {
 
   for (const output of current) {
     const previousOutput = previous.get(output.path);
-    if (!previousOutput || output.kind !== previousOutput.kind) {
+    if (!previousOutput) {
       affected.set(output.path, output);
+      reasons.set(output.path, { type: "new-output" });
+    } else if (output.kind !== previousOutput.kind) {
+      affected.set(output.path, output);
+      reasons.set(output.path, {
+        type: "kind-changed",
+        previousKind: previousOutput.kind,
+      });
     }
   }
 
@@ -139,6 +172,7 @@ export function determineOutputChanges(input: {
     affectedOutputCount: affectedValues.length,
     removedOutputCount: removed.length,
     unchangedOutputCount: unchangedValues.length,
+    reasons,
   };
 }
 
@@ -205,7 +239,7 @@ function contentOutput(
   };
 }
 
-function isOutputAffected(
+function findOutputChangeReason(
   output: OutputDescriptor,
   changedContent: ReadonlySet<string>,
   refreshedContent: ReadonlySet<string>,
@@ -218,52 +252,51 @@ function isOutputAffected(
   previousPublicLocations: ReadonlyMap<string, ContentManifestEntry>,
   previousEntries: readonly ContentManifestEntry[],
   currentEntries: readonly ContentManifestEntry[],
-): boolean {
-  if (isAffectedByExternalScope(output, changedExternalScopes)) return true;
+): OutputChangeReason | undefined {
+  const externalScope = findChangedExternalScope(output, changedExternalScopes);
+  if (externalScope) return externalScope;
   for (const dependency of output.dependencies) {
-    if (dependency.type === "unknown") return true;
+    if (dependency.type === "unknown") return { type: "unknown-dependency" };
     if (dependency.type === "external" && changedExternal.has(dependency.id))
-      return true;
-    if (dependency.type === "global") return changedContent.size > 0;
+      return { type: "external", id: dependency.id };
+    if (dependency.type === "global")
+      return changedContent.size > 0 ? { type: "global" } : undefined;
     if (
       dependency.type === "content-query" &&
       isContentQueryAffected(dependency, previousEntries, currentEntries)
     )
-      return true;
-    if (
-      dependency.type === "projection" &&
-      (dependency.projection === "navigation" ||
-        dependency.projection === "recent-posts")
-    ) {
-      return changedContent.size > 0;
-    }
-    if (
-      dependency.type === "projection" &&
-      dependency.projection === "taxonomy-tags"
-    ) {
-      return changedTags.size > 0;
-    }
-    if (
-      dependency.type === "projection" &&
-      dependency.projection === "taxonomy-folders"
-    ) {
-      return changedFolders.size > 0;
+      return {
+        type: "content-query",
+        properties: dependency.properties,
+        unknown: dependency.unknown ?? false,
+      };
+    if (dependency.type === "projection") {
+      if (
+        (dependency.projection === "navigation" ||
+          dependency.projection === "recent-posts") &&
+        changedContent.size > 0
+      )
+        return { type: "projection", projection: dependency.projection };
+      if (dependency.projection === "taxonomy-tags" && changedTags.size > 0)
+        return { type: "projection", projection: dependency.projection };
+      if (
+        dependency.projection === "taxonomy-folders" &&
+        changedFolders.size > 0
+      )
+        return { type: "projection", projection: dependency.projection };
     }
     if (
       dependency.type === "content" &&
       (changedContent.has(dependency.slug) ||
         refreshedContent.has(dependency.slug))
-    ) {
-      return true;
-    }
+    )
+      return { type: "content", slug: dependency.slug };
     if (dependency.type === "tag" && changedTags.has(dependency.tag))
-      return true;
-    if (dependency.type === "folder" && changedFolders.has(dependency.folder)) {
-      return true;
-    }
-    if (dependency.type === "file" && changedFiles.has(dependency.path)) {
-      return true;
-    }
+      return { type: "tag", tag: dependency.tag };
+    if (dependency.type === "folder" && changedFolders.has(dependency.folder))
+      return { type: "folder", folder: dependency.folder };
+    if (dependency.type === "file" && changedFiles.has(dependency.path))
+      return { type: "file", path: dependency.path };
     if (dependency.type === "public-location") {
       const currentOwner = currentPublicLocations.get(
         normalizePublicPath(dependency.pathname),
@@ -271,7 +304,8 @@ function isOutputAffected(
       const previousOwner = previousPublicLocations.get(
         normalizePublicPath(dependency.pathname),
       );
-      if (currentOwner?.slug !== previousOwner?.slug) return true;
+      if (currentOwner?.slug !== previousOwner?.slug)
+        return { type: "public-location", pathname: dependency.pathname };
       if (
         (currentOwner &&
           (changedContent.has(currentOwner.slug) ||
@@ -279,12 +313,11 @@ function isOutputAffected(
         (previousOwner &&
           (changedContent.has(previousOwner.slug) ||
             refreshedContent.has(previousOwner.slug)))
-      ) {
-        return true;
-      }
+      )
+        return { type: "public-location", pathname: dependency.pathname };
     }
   }
-  return false;
+  return undefined;
 }
 
 function isContentQueryAffected(
@@ -405,17 +438,18 @@ function publicLocationOwners(
   );
 }
 
-function isAffectedByExternalScope(
+function findChangedExternalScope(
   output: OutputDescriptor,
   changedExternalScopes: ReadonlyMap<string, ExternalDependencyScope>,
-): boolean {
-  for (const scope of changedExternalScopes.values()) {
-    if (scope.type === "all") return true;
-    if (scope.type === "content" && output.kind === "content") return true;
+): OutputChangeReason | undefined {
+  for (const [id, scope] of changedExternalScopes) {
+    if (scope.type === "all") return { type: "external", id };
+    if (scope.type === "content" && output.kind === "content")
+      return { type: "external", id };
     if (scope.type === "output" && scope.paths.includes(output.path))
-      return true;
+      return { type: "external", id };
   }
-  return false;
+  return undefined;
 }
 
 function changedExternalDependencies(input: {

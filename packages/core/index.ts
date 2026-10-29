@@ -115,6 +115,7 @@ export {
 } from "./src/content/folder_entry.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export type {
+  OutputChangeReason,
   OutputChangeSet,
   OutputDescriptor,
   OutputKind,

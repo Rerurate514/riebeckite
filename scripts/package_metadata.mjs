@@ -735,7 +735,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
-        test: 'node --import tsx --test "test/*.test.ts"',
+        test: 'node --import tsx --test "test/*.test.ts*"',
         prepack: "pnpm run build",
       },
     };

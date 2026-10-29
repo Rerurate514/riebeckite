@@ -143,7 +143,8 @@ export function sortDevelopmentDiagnostics(
   for (const diagnostic of diagnostics) {
     const fingerprint =
       diagnostic.fingerprint ?? createDiagnosticFingerprint(diagnostic);
-    unique.set(fingerprint, { ...diagnostic, fingerprint });
+    const normalized = { ...diagnostic, fingerprint };
+    unique.set(JSON.stringify(normalized), normalized);
   }
   return [...unique.values()].sort(compareDiagnostics);
 }

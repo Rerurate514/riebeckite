@@ -153,6 +153,7 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /diagnosticSeverity/);
   assert.match(source as string, /diagnosticCategory/);
   assert.match(source as string, /diagnosticCode/);
+  assert.match(source as string, /data-diagnostic-query.*focus\(\)/);
   assert.match(source as string, /Current-page filtering is unavailable/);
   assert.match(source as string, /<details>/);
   assert.match(source as string, /resize:horizontal/);

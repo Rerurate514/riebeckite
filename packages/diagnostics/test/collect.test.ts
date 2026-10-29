@@ -24,6 +24,13 @@ test("development diagnostics have stable fingerprints, order, and deduplication
     second,
     first,
   ]);
+  assert.equal(
+    sortDevelopmentDiagnostics([
+      { ...first, fingerprint: "rb-same", message: "first" },
+      { ...first, fingerprint: "rb-same", message: "second" },
+    ]).length,
+    2,
+  );
   assert.match(first.fingerprint ?? "", /^rb-[a-f0-9]{8}$/);
 });
 

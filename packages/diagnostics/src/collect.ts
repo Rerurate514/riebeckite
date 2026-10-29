@@ -9,6 +9,7 @@ import type {
   DevelopmentDiagnostic,
   DevelopmentDiagnosticCategory,
   DevelopmentDiagnosticReport,
+  DevelopmentDiagnosticSeverity,
 } from "./model.js";
 
 type InspectableContent = Pick<
@@ -65,11 +66,7 @@ export async function collectDevelopmentDiagnostics(
     version: 1,
     revision: input.revision ?? 0,
     diagnostics: ordered,
-    summary: {
-      errors: ordered.filter((item) => item.severity === "error").length,
-      warnings: ordered.filter((item) => item.severity === "warning").length,
-      info: ordered.filter((item) => item.severity === "info").length,
-    },
+    summary: summarizeDevelopmentDiagnostics(ordered),
   };
 }
 
@@ -125,6 +122,12 @@ export function createDiagnosticFromError(
   _error: unknown,
 ): DevelopmentDiagnostic {
   return {
+    fingerprint: createDiagnosticFingerprint({
+      code,
+      category,
+      subject: { kind: subjectKindFor(category) },
+      message,
+    }),
     code,
     category,
     severity: "error",
@@ -138,21 +141,83 @@ export function sortDevelopmentDiagnostics(
 ): readonly DevelopmentDiagnostic[] {
   const unique = new Map<string, DevelopmentDiagnostic>();
   for (const diagnostic of diagnostics) {
-    const key = JSON.stringify(diagnostic);
-    unique.set(key, diagnostic);
+    const fingerprint =
+      diagnostic.fingerprint ?? createDiagnosticFingerprint(diagnostic);
+    unique.set(fingerprint, { ...diagnostic, fingerprint });
   }
-  return [...unique.values()].sort((left, right) =>
-    [left.category, left.code, left.location?.file ?? "", left.message]
-      .join("\0")
-      .localeCompare(
-        [
-          right.category,
-          right.code,
-          right.location?.file ?? "",
-          right.message,
-        ].join("\0"),
-      ),
+  return [...unique.values()].sort(compareDiagnostics);
+}
+
+export function createDiagnosticFingerprint(
+  diagnostic: Pick<
+    DevelopmentDiagnostic,
+    "code" | "category" | "subject" | "location" | "plugin" | "message"
+  >,
+): string {
+  const identity = [
+    diagnostic.category,
+    diagnostic.code,
+    diagnostic.subject.kind,
+    diagnostic.subject.value ?? "",
+    diagnostic.plugin ?? "",
+    diagnostic.location?.file ?? "",
+    diagnostic.location?.line ?? "",
+    diagnostic.location?.column ?? "",
+  ];
+  if (identity.every((value, index) => index < 2 || value === ""))
+    identity.push(diagnostic.message);
+  let hash = 2166136261;
+  for (const character of identity.join("\0")) {
+    hash ^= character.codePointAt(0) ?? 0;
+    hash = Math.imul(hash, 16777619);
+  }
+  return `rb-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+export function summarizeDevelopmentDiagnostics(
+  diagnostics: readonly DevelopmentDiagnostic[],
+): DevelopmentDiagnosticReport["summary"] {
+  const byCategory: Partial<Record<DevelopmentDiagnosticCategory, number>> = {};
+  const byCode: Record<string, number> = {};
+  let errors = 0;
+  let warnings = 0;
+  let info = 0;
+  let unavailable = 0;
+  let skipped = 0;
+  for (const diagnostic of diagnostics) {
+    if (diagnostic.severity === "error") errors += 1;
+    if (diagnostic.severity === "warning") warnings += 1;
+    if (diagnostic.severity === "info") info += 1;
+    if (diagnostic.status === "unavailable") unavailable += 1;
+    if (diagnostic.status === "skipped") skipped += 1;
+    byCategory[diagnostic.category] =
+      (byCategory[diagnostic.category] ?? 0) + 1;
+    byCode[diagnostic.code] = (byCode[diagnostic.code] ?? 0) + 1;
+  }
+  return { errors, warnings, info, unavailable, skipped, byCategory, byCode };
+}
+
+export function filterDevelopmentDiagnostics(
+  report: DevelopmentDiagnosticReport,
+  options: {
+    readonly codes?: readonly string[];
+    readonly severities?: readonly DevelopmentDiagnosticSeverity[];
+  },
+): DevelopmentDiagnosticReport {
+  const codes = options.codes?.length ? new Set(options.codes) : undefined;
+  const severities = options.severities?.length
+    ? new Set(options.severities)
+    : undefined;
+  const diagnostics = report.diagnostics.filter(
+    (diagnostic) =>
+      (!codes || codes.has(diagnostic.code)) &&
+      (!severities || severities.has(diagnostic.severity)),
   );
+  return {
+    ...report,
+    diagnostics,
+    summary: summarizeDevelopmentDiagnostics(diagnostics),
+  };
 }
 
 function environmentDiagnostics(): readonly DevelopmentDiagnostic[] {
@@ -161,6 +226,13 @@ function environmentDiagnostics(): readonly DevelopmentDiagnostic[] {
   if (supported) return [];
   return [
     {
+      fingerprint: createDiagnosticFingerprint({
+        code: "ENV_NODE_VERSION",
+        category: "environment",
+        subject: { kind: "environment", value: process.versions.node },
+        message:
+          "Node.js does not satisfy Riebeckite's supported version range.",
+      }),
       code: "ENV_NODE_VERSION",
       category: "environment",
       severity: "error",
@@ -181,6 +253,12 @@ function configurationDiagnostics(
     ? []
     : [
         {
+          fingerprint: createDiagnosticFingerprint({
+            code: "CONFIG_CONTENT_DIRECTORY",
+            category: "configuration",
+            subject: { kind: "configuration" },
+            message: "Content directory is not resolved.",
+          }),
           code: "CONFIG_CONTENT_DIRECTORY",
           category: "configuration",
           severity: "error",
@@ -198,6 +276,12 @@ function pluginDiagnostics(
   for (const plugin of config.plugins) {
     if (!plugin.name)
       diagnostics.push({
+        fingerprint: createDiagnosticFingerprint({
+          code: "PLUGIN_INVALID_DEFINITION",
+          category: "plugins",
+          subject: { kind: "plugin" },
+          message: "A resolved plugin has no name.",
+        }),
         code: "PLUGIN_INVALID_DEFINITION",
         category: "plugins",
         severity: "error",
@@ -206,6 +290,13 @@ function pluginDiagnostics(
       });
     if (names.has(plugin.name))
       diagnostics.push({
+        fingerprint: createDiagnosticFingerprint({
+          code: "PLUGIN_DUPLICATE_ID",
+          category: "plugins",
+          subject: { kind: "plugin", value: plugin.name },
+          plugin: plugin.name,
+          message: `Plugin ID "${plugin.name}" is declared more than once.`,
+        }),
         code: "PLUGIN_DUPLICATE_ID",
         category: "plugins",
         severity: "error",
@@ -225,6 +316,12 @@ function themeDiagnostics(
     ? []
     : [
         {
+          fingerprint: createDiagnosticFingerprint({
+            code: "THEME_INVALID_STYLE",
+            category: "theme",
+            subject: { kind: "theme" },
+            message: "A resolved theme style has no module specifier.",
+          }),
           code: "THEME_INVALID_STYLE",
           category: "theme",
           severity: "error",
@@ -240,6 +337,12 @@ export function diagnoseOutputPlan(
 ): readonly DevelopmentDiagnostic[] {
   const diagnostics: DevelopmentDiagnostic[] = plan.conflicts.map(
     (conflict) => ({
+      fingerprint: createDiagnosticFingerprint({
+        code: "OUTPUT_OWNER_CONFLICT",
+        category: "output",
+        subject: { kind: "output", value: conflict.path },
+        message: `Multiple owners declare ${conflict.path}.`,
+      }),
       code: "OUTPUT_OWNER_CONFLICT",
       category: "output",
       severity: "error",
@@ -279,6 +382,12 @@ function outputDiagnostic(
   path: string,
 ): DevelopmentDiagnostic {
   return {
+    fingerprint: createDiagnosticFingerprint({
+      code,
+      category: "output",
+      subject: { kind: "output", value: path },
+      message: `${path} violates the output plan.`,
+    }),
     code,
     category: "output",
     severity,
@@ -289,6 +398,20 @@ function outputDiagnostic(
 
 function fromCoreDiagnostic(diagnostic: Diagnostic): DevelopmentDiagnostic {
   return {
+    fingerprint: createDiagnosticFingerprint({
+      code: diagnostic.code.toUpperCase().replaceAll("-", "_"),
+      category: "content",
+      subject: { kind: "content", value: diagnostic.slug ?? diagnostic.target },
+      location: diagnostic.filePath
+        ? {
+            file: diagnostic.filePath,
+            line: diagnostic.line,
+            column: diagnostic.column,
+          }
+        : undefined,
+      plugin: diagnostic.pluginName,
+      message: diagnostic.message,
+    }),
     code: diagnostic.code.toUpperCase().replaceAll("-", "_"),
     category: "content",
     severity: diagnostic.severity,
@@ -314,12 +437,40 @@ function skipped(
   message: string,
 ): DevelopmentDiagnostic {
   return {
+    fingerprint: createDiagnosticFingerprint({
+      code,
+      category,
+      subject: { kind: subjectKindFor(category) },
+      message,
+    }),
     code,
     category,
     severity: "info",
+    status: "unavailable",
     message,
     subject: { kind: subjectKindFor(category) },
   };
+}
+
+function compareDiagnostics(
+  left: DevelopmentDiagnostic,
+  right: DevelopmentDiagnostic,
+): number {
+  const leftKey = [
+    left.category,
+    left.code,
+    left.location?.file ?? "",
+    left.message,
+    left.fingerprint,
+  ].join("\0");
+  const rightKey = [
+    right.category,
+    right.code,
+    right.location?.file ?? "",
+    right.message,
+    right.fingerprint,
+  ].join("\0");
+  return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
 }
 
 function subjectKindFor(category: DevelopmentDiagnosticCategory) {

@@ -21,7 +21,7 @@ Riebeckite Doctor と Development Inspector は `@riebeckite/diagnostics` を共
 
 ## 責務境界
 
-`@riebeckite/diagnostics` は Core に依存します。CLI はレポートを表示し、必要に応じて修正を適用します。HonoX 統合は、Vite が配信している間だけレポートと Inspector UI を提供します。Inspector は Shadow DOM を使うため、サイト、テーマ、プラグインの CSS に影響しません。
+`@riebeckite/diagnostics` は Core に依存します。CLI はレポートを表示し、明示的に対応した安全な修正だけを適用できます。現在、Doctor に自動修正はありません。HonoX 統合は、Vite が配信している間だけレポートと Inspector UI を提供します。Inspector は Shadow DOM を使うため、サイト、テーマ、プラグインの CSS に影響しません。
 
 本番用のクライアントモジュールは Inspector モジュールをインポートしません。Inspector のミドルウェアは Vite の `apply: "serve"` を使うため、エンドポイントもクライアントコードも本番の出力には含まれません。
 

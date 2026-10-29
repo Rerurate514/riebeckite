@@ -1,9 +1,12 @@
 export type { DevelopmentDiagnosticsInput } from "./src/collect.js";
 export {
   collectDevelopmentDiagnostics,
+  createDiagnosticFingerprint,
   createDiagnosticFromError,
   diagnoseOutputPlan,
+  filterDevelopmentDiagnostics,
   sortDevelopmentDiagnostics,
+  summarizeDevelopmentDiagnostics,
 } from "./src/collect.js";
 export type {
   DevelopmentDiagnostic,

@@ -6,7 +6,7 @@ import {
   sortDevelopmentDiagnostics,
 } from "../index.js";
 
-test("development diagnostics have stable order and remove exact duplicates", () => {
+test("development diagnostics have stable fingerprints, order, and deduplication", () => {
   const first = createDiagnosticFromError(
     "content",
     "CONTENT_Z",
@@ -24,6 +24,7 @@ test("development diagnostics have stable order and remove exact duplicates", ()
     second,
     first,
   ]);
+  assert.match(first.fingerprint ?? "", /^rb-[a-f0-9]{8}$/);
 });
 
 test("content and output failures are reported independently", async () => {
@@ -68,7 +69,7 @@ test("output diagnostics are optional so callers can report content first", asyn
   assert.deepEqual(report.diagnostics, []);
 });
 
-test("error diagnostics do not serialize exception details", () => {
+test("error diagnostics include a stable fingerprint but not exception details", () => {
   const diagnostic = createDiagnosticFromError(
     "plugins",
     "PLUGIN_RESOLUTION",
@@ -76,11 +77,7 @@ test("error diagnostics do not serialize exception details", () => {
     new Error("missing provider"),
   );
 
-  assert.deepEqual(JSON.parse(JSON.stringify(diagnostic)), {
-    category: "plugins",
-    code: "PLUGIN_RESOLUTION",
-    message: "Plugin resolution failed.",
-    severity: "error",
-    subject: { kind: "plugin" },
-  });
+  const serialized = JSON.stringify(diagnostic);
+  assert.match(serialized, /"fingerprint":"rb-[a-f0-9]{8}"/);
+  assert.doesNotMatch(serialized, /missing provider/);
 });

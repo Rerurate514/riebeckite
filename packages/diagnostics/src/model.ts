@@ -12,7 +12,8 @@ export type DevelopmentDiagnosticStatus =
   | "pass"
   | "warning"
   | "error"
-  | "skipped";
+  | "skipped"
+  | "unavailable";
 
 export type DevelopmentDiagnosticLocation = {
   readonly file?: string;
@@ -38,6 +39,7 @@ export type DevelopmentDiagnosticFix = {
 };
 
 export type DevelopmentDiagnostic = {
+  readonly fingerprint?: string;
   readonly code: string;
   readonly category: DevelopmentDiagnosticCategory;
   readonly severity: DevelopmentDiagnosticSeverity;
@@ -49,12 +51,22 @@ export type DevelopmentDiagnostic = {
   readonly details?: string;
   readonly fix?: DevelopmentDiagnosticFix;
   readonly related?: readonly DevelopmentDiagnosticLocation[];
+  readonly status?: Extract<
+    DevelopmentDiagnosticStatus,
+    "skipped" | "unavailable"
+  >;
 };
 
 export type DevelopmentDiagnosticSummary = {
   readonly errors: number;
   readonly warnings: number;
   readonly info: number;
+  readonly unavailable?: number;
+  readonly skipped?: number;
+  readonly byCategory?: Readonly<
+    Partial<Record<DevelopmentDiagnosticCategory, number>>
+  >;
+  readonly byCode?: Readonly<Record<string, number>>;
 };
 
 export type DevelopmentDiagnosticReport = {

@@ -843,7 +843,7 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!js.includes("@riebeckite/plugin-markmap/client")) {
     fail("the markmap plugin client bundle is missing its client entry");
   }
-  if (!combined.includes('class="rr-color-mode"')) {
+  if (!/class="[^"]*\brr-color-mode\b/.test(combined)) {
     fail("color-mode plugin did not render its rr-color-mode root hook");
   }
   if (!combined.includes("data-color-mode-root")) {

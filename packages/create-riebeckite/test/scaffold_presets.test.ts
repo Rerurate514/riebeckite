@@ -748,6 +748,30 @@ test("starter and showcase own desktop TOC sticky behavior", async () => {
   });
 });
 
+test("reader presets expand the shared article layout into local CSS", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of [
+      "starter",
+      "showcase",
+      "blog",
+      "digital-garden",
+      "portfolio",
+    ] as const) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const style = await fs.readFile(
+        path.join(targetDirectory, "app/style.css"),
+        "utf8",
+      );
+      assert.doesNotMatch(style, /\{\{reader-layout\}\}/);
+      assert.match(
+        style,
+        /\.site-article__layout > \.rb-article-body \{[\s\S]*?grid-column: 2/,
+      );
+    }
+  });
+});
+
 test("scaffolded app/style.css only lays out presets that render a shell", async () => {
   await withTemporaryDirectory(async (directory) => {
     const minimalDirectory = path.join(directory, "minimal");

@@ -89,42 +89,6 @@
       min-width: 0;
     }
   }
-
-  @media (min-width: 88rem) {
-    .rb-article-layout > .rr-table-of-contents--desktop-rail {
-      display: flex;
-      flex-direction: column;
-      grid-column: 1;
-      grid-row: 1;
-      align-self: start;
-      width: var(--rb-layout-sidebar);
-      max-height: var(--rb-docs-rail-max-block-size);
-      margin-block: 0;
-      margin-inline-start: calc(100% + var(--rb-layout-gap));
-      overflow-x: hidden;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      position: sticky;
-      top: var(--rb-docs-rail-top);
-      border-block: 0;
-      border-inline-start: 1px solid
-        color-mix(in oklab, currentColor 18%, transparent);
-      padding-block: 0;
-      padding-inline-start: 1rem;
-    }
-
-    :is(:root, .rb-theme-root)[data-rb-layout="sidebar"]
-      .rb-article-layout
-      > .rr-table-of-contents--desktop-rail {
-      grid-column: 2;
-      margin-inline-start: 0;
-    }
-
-    :is(:root, .rb-theme-root)[data-rb-layout="full-width"]
-      .rr-table-of-contents--desktop-rail {
-      display: none;
-    }
-  }
 }
 
 .rr-table-of-contents .rr-table-of-contents__link[aria-current="true"] {

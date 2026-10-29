@@ -71,25 +71,47 @@ async function assertNavigation(
       await page.setViewport({ width, height: 900 });
       const standardDom = await page.evaluate(() => {
         const main = document.querySelector<HTMLElement>("main#main-content");
+        const article = document.querySelector<HTMLElement>(".fixture-article");
         main?.focus();
         return {
-          headers: document.querySelectorAll("header").length,
+          headers: document.body.querySelectorAll(":scope > header").length,
           mains: document.querySelectorAll("main#main-content").length,
           focusedMain: document.activeElement === main,
           overflow:
             document.documentElement.scrollWidth >
             document.documentElement.clientWidth,
           themed:
-            getComputedStyle(document.documentElement)
-              .getPropertyValue("--rb-color-ink")
-              .trim().length > 0,
+            document.documentElement.dataset.rbTheme === "fixture-local" &&
+            document.documentElement.dataset.rbSettingFixture === "local" &&
+            article !== null &&
+            getComputedStyle(article).borderTopWidth === "2px",
         };
       });
-      assert.equal(standardDom.headers, 1);
-      assert.equal(standardDom.mains, 1);
-      assert.equal(standardDom.focusedMain, true);
-      assert.equal(standardDom.overflow, false);
-      assert.equal(standardDom.themed, true);
+      assert.equal(
+        standardDom.headers,
+        1,
+        `${width}px: ${JSON.stringify(standardDom)}`,
+      );
+      assert.equal(
+        standardDom.mains,
+        1,
+        `${width}px: ${JSON.stringify(standardDom)}`,
+      );
+      assert.equal(
+        standardDom.focusedMain,
+        true,
+        `${width}px: ${JSON.stringify(standardDom)}`,
+      );
+      assert.equal(
+        standardDom.overflow,
+        false,
+        `${width}px: ${JSON.stringify(standardDom)}`,
+      );
+      assert.equal(
+        standardDom.themed,
+        true,
+        `${width}px: ${JSON.stringify(standardDom)}`,
+      );
     }
     await page.evaluate(() => {
       (

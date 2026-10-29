@@ -190,7 +190,7 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       "bin",
       "riebeckite.mjs",
     );
-    run(process.execPath, [cliBin, "init", siteDir, "--preset", "minimal"], {
+    run(process.execPath, [cliBin, "init", siteDir, "--preset", "starter"], {
       cwd: consumerDir,
     });
 
@@ -217,6 +217,12 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
           ),
         ),
       "generated assets must come from the installed create-riebeckite templates",
+    );
+    assert.ok(
+      !fs
+        .readFileSync(path.join(siteDir, "app", "style.css"), "utf8")
+        .includes("{{reader-layout}}"),
+      "the installed create-riebeckite package must expand the shared reader layout",
     );
 
     const installedDeployTemplate = path.join(

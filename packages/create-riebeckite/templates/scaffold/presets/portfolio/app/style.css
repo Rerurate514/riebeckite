@@ -85,59 +85,7 @@
   object-fit: contain;
 }
 
-.site-article {
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
-  padding-block: 2rem;
-}
-
-.site-article__layout {
-  width: min(100%, var(--rb-layout-article-max, 48rem));
-  margin: 0 auto;
-}
-
-.rb-article-body {
-  min-width: 0;
-  padding-inline: var(--rb-space-2, 1rem);
-}
-
-.site-article__footer {
-  min-width: 0;
-}
-
-.site-article__aside {
-  display: none;
-}
-
-@media (min-width: 80rem) {
-  .site-article__layout {
-    display: grid;
-    width: 100%;
-    grid-template-columns: minmax(0, 1fr) minmax(0, var(--rb-layout-article-max, 48rem)) minmax(0, 1fr);
-    align-items: start;
-  }
-
-  .site-article__layout > .rb-article-body {
-    grid-column: 2;
-  }
-
-  .site-article__aside {
-    display: block;
-    min-width: 0;
-    align-self: stretch;
-    grid-column: 3;
-    padding-inline-start: var(--rb-layout-gap, 2rem);
-  }
-
-  .site-article__aside > .rr-table-of-contents--desktop {
-    position: sticky;
-    top: var(--site-toc-sticky-top);
-    max-height: calc(100dvh - var(--site-toc-sticky-top) - var(--rb-space-4, 2rem));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    border-inline-start: 1px solid color-mix(in oklab, currentColor 18%, transparent);
-    padding-inline-start: 1rem;
-  }
-}
+{{reader-layout}}
 
 .not-found {
   width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));

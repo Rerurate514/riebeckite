@@ -12,7 +12,7 @@ import type {
   SiteTemplateOptions,
   SiteTemplateVariables,
 } from "./template_types.js";
-import { copyTemplateTree } from "./template-loader.js";
+import { copyTemplateTree, readTemplate } from "./template-loader.js";
 import {
   SCAFFOLD_DEFAULT_UTILITIES,
   utilityTemplateFiles,
@@ -30,6 +30,9 @@ export function siteTemplateFiles(
   variables: SiteTemplateVariables,
   options: SiteTemplateOptions = {},
 ): readonly SiteTemplateFile[] {
+  const sharedLayout = readTemplate("shared/reader-layout.css")
+    .toString()
+    .trimEnd();
   return [
     { path: "package.json", content: packageJson(preset, variables, options) },
     {
@@ -40,7 +43,7 @@ export function siteTemplateFiles(
     ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
     ...copyTemplateTree(
       `presets/${preset.name}`,
-      {},
+      { "{{reader-layout}}": sharedLayout },
       (filePath) => !filePath.startsWith("content/"),
     ),
     ...presetContentFiles(preset, variables),

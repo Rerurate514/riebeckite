@@ -113,6 +113,17 @@ test("development inspector works in a real Vite dev server", async () => {
       document.body.classList.add("light");
     });
     assert.equal((await shadowLayout(page)).background, "rgb(23, 23, 23)");
+    await page.evaluate(() => {
+      document.documentElement.dataset.theme = "dark";
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+      document.body.classList.remove("light");
+      document.body.classList.add("dark");
+    });
+    await page.emulateMediaFeatures([
+      { name: "prefers-color-scheme", value: "dark" },
+    ]);
+    assert.equal((await shadowLayout(page)).background, "rgb(23, 23, 23)");
 
     await clickShadow(page, "[data-tab='1']");
     await waitForShadow(page, "[data-diagnostic-query]");

@@ -136,10 +136,6 @@ function packageJson(
   if (preset.theme) {
     dependencies[preset.theme.package] = RIEBECKITE_VERSION;
   }
-  if (["blog", "digital-garden", "docs", "portfolio"].includes(preset.name)) {
-    dependencies["@riebeckite/layouts"] = RIEBECKITE_VERSION;
-  }
-
   return `${JSON.stringify(
     {
       name: variables.name,

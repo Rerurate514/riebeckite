@@ -19,6 +19,12 @@
         "packages/integrations/honox/src/ui/primitives.tsx"
       ],
       "@riebeckite/ui": ["packages/ui/index.tsx"],
+      "@riebeckite/ui/drawer": ["packages/ui/drawer.tsx"],
+      "@riebeckite/ui/drawer/client": ["packages/ui/drawer-client.ts"],
+      "@riebeckite/ui/dialog": ["packages/ui/dialog.ts"],
+      "@riebeckite/ui/tabs": ["packages/ui/tabs.ts"],
+      "@riebeckite/ui/copy": ["packages/ui/copy.ts"],
+      "@riebeckite/ui/behaviors": ["packages/ui/behaviors.ts"],
       "create-riebeckite": ["packages/create-riebeckite/src/index.ts"],
       "create-riebeckite/scaffold": [
         "packages/create-riebeckite/src/scaffold/index.ts"

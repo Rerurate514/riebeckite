@@ -8,7 +8,6 @@ import {
   SeoHead,
   ThemeRoot,
 } from "@riebeckite/honox/ui";
-import { Drawer, DrawerTrigger } from "@riebeckite/layouts";
 import {
   ColorModeScript,
   ColorModeToggle,
@@ -17,6 +16,7 @@ import { DocsSidebar } from "@riebeckite/plugin-docs";
 import { SearchBar } from "@riebeckite/plugin-search";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import { SiteProvider } from "@riebeckite/ui";
+import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import {

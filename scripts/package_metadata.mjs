@@ -11,7 +11,6 @@ export const PACKAGE_DIRECTORIES = [
   "packages/preview",
   "packages/spa",
   "packages/create-riebeckite",
-  "packages/layouts",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
@@ -173,15 +172,20 @@ const packagePublishingMetadata = {
       "static-site-generator",
     ],
   },
-  "packages/layouts": {
-    description:
-      "Composable structural layout primitives for Riebeckite sites.",
-    keywords: ["riebeckite", "layout", "jsx"],
-  },
   "packages/ui": {
     description:
-      "Shared declarative UI context for Riebeckite integrations and plugins.",
-    keywords: ["riebeckite", "ui", "context", "hono", "jsx"],
+      "Optional headless UI primitives, accessibility behaviors, and shared context for Riebeckite.",
+    keywords: [
+      "riebeckite",
+      "ui",
+      "headless",
+      "accessibility",
+      "drawer",
+      "tabs",
+      "context",
+      "hono",
+      "jsx",
+    ],
   },
   "packages/integrations/honox": {
     description: "HonoX and Vite integration for building Riebeckite sites.",
@@ -729,24 +733,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
-  if (directory === "packages/layouts") {
-    return {
-      ...publishingMetadata(directory, ["./style.css", "./client"]),
-      files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
-      scripts: {
-        build: "node ../../scripts/build_package.mjs",
-        test: 'node --import tsx --test "test/*.test.ts"',
-        prepack: "pnpm run build",
-      },
-    };
-  }
-
   if (directory === "packages/ui") {
     return {
-      ...publishingMetadata(directory, false),
-      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      ...publishingMetadata(directory, [
+        "./drawer-client.ts",
+        "./src/drawer/client.ts",
+        "./dist/drawer-client.js",
+        "./styles/drawer.css",
+      ]),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist", "styles"],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts*"',
         prepack: "pnpm run build",
       },
     };

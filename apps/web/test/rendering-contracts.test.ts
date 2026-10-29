@@ -74,13 +74,15 @@ test("A5: the nav dropdown sits above the search trigger and below the modal top
   const client = read(
     "../../../packages/plugins/search/src/search-bar.client.ts",
   );
+  const dialogController = read("../../../packages/ui/src/dialog/index.ts");
 
   assert.ok(
     searchTrigger < navDropdown,
     `search trigger (${searchTrigger}) must sit below the nav dropdown (${navDropdown})`,
   );
   assert.match(component, /<dialog/);
-  assert.match(client, /\.showModal\(\)/);
+  assert.match(client, /createDialogController/);
+  assert.match(dialogController, /\.showModal\(\)/);
 });
 
 test("A7: rendered plugins treat explicit dark and system dark identically", () => {

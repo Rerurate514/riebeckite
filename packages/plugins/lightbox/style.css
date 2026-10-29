@@ -12,18 +12,21 @@
   display: block;
 }
 
-.rr-lightbox[hidden] {
-  display: none;
-}
-
 .rr-lightbox {
   --rr-lightbox-image-border-radius: 0;
+  box-sizing: border-box;
   position: fixed;
   inset: 0;
   z-index: 1000;
   display: grid;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
   place-items: center;
   padding: 24px;
+  border: 0;
   background: var(--rb-color-overlay, rgb(0 0 0 / 0.6));
   color: var(--rb-color-ink, #ffffff);
   cursor: zoom-out;
@@ -72,10 +75,6 @@
   border-color: var(--rb-color-accent, #686868);
   color: var(--rb-color-accent, #686868);
   outline: none;
-}
-
-html[data-lightbox-open="true"] {
-  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: no-preference) {

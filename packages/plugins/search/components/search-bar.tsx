@@ -3,7 +3,7 @@ type SearchBarProps = {
   readonly className?: string;
 };
 
-export default function SearchBar(props: SearchBarProps) {
+export default function SearchBar(props: SearchBarProps = {}) {
   const className = ["rr-search-bar", "rr-search", props.class, props.className]
     .filter(Boolean)
     .join(" ");

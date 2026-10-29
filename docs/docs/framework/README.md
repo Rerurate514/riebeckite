@@ -42,7 +42,7 @@ flowchart LR
 | Shared utilities and contracts for diagram plugins | [Diagram plugin infrastructure](./diagram-infrastructure.md) |
 | How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |
-| Application Shell composition and responsive layout primitives | [Layouts](./layouts.md) |
+| Optional UI primitives and accessibility behaviors | [UI](./ui.md) |
 | Incremental builds, build state, and plugin cache | [Build system](./build-system.md) |
 | How plugins declare build dependencies | [Build dependency contract](./build-dependency.md) |
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |

@@ -44,7 +44,7 @@ test("docs routes compose the shared shell around article content", () => {
 });
 
 test("the official site owns its standard layout and imports the optional Drawer", () => {
-  assert.match(appStyle, /@import "@riebeckite\/layouts\/style\.css"/);
+  assert.match(appStyle, /@import "@riebeckite\/ui\/styles\/drawer\.css"/);
   assert.doesNotMatch(articleCss, /rb-docs-sidebar-rail/);
   assert.doesNotMatch(articleCss, /desktop-rail/);
   assert.doesNotMatch(article, /asideContent/);

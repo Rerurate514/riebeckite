@@ -1,3 +1,4 @@
+import { createDialogController } from "@riebeckite/ui/dialog";
 import { createDialog } from "./dialog.js";
 import {
   DEFAULT_CLOSE_LABEL,
@@ -26,29 +27,26 @@ export function initLightbox(
     };
   }
 
-  let previouslyFocused: HTMLElement | null = null;
   const dialog = createDialog({ expandLabel, closeLabel });
   document.body.appendChild(dialog.element);
+
+  const controller = createDialogController(dialog.element, {
+    closeButtons: [dialog.closeButton],
+    initialFocus: () => dialog.closeButton,
+    onClose: () => {
+      dialog.image.removeAttribute("src");
+    },
+  });
 
   const open = (trigger: HTMLAnchorElement) => {
     const src = trigger.dataset.lightboxSrc ?? trigger.href;
     const alt = trigger.dataset.lightboxAlt ?? "";
 
-    previouslyFocused = document.activeElement as HTMLElement | null;
     dialog.image.src = src;
     dialog.image.alt = alt;
     dialog.caption.textContent = alt;
     dialog.caption.hidden = alt.length === 0;
-    dialog.element.removeAttribute("hidden");
-    document.documentElement.dataset.lightboxOpen = "true";
-    dialog.closeButton.focus();
-  };
-
-  const close = () => {
-    dialog.element.setAttribute("hidden", "");
-    dialog.image.removeAttribute("src");
-    delete document.documentElement.dataset.lightboxOpen;
-    previouslyFocused?.focus();
+    controller.open();
   };
 
   const handleTriggerClick = (event: MouseEvent) => {
@@ -59,77 +57,18 @@ export function initLightbox(
     open(trigger);
   };
 
-  const handleDialogClick = (event: MouseEvent) => {
-    if (
-      event.target === dialog.element ||
-      event.target === dialog.closeButton
-    ) {
-      close();
-    }
-  };
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (dialog.element.hidden) return;
-
-    if (event.key === "Tab") {
-      trapFocus(event, dialog.element);
-      return;
-    }
-
-    if (event.key !== "Escape") return;
-
-    event.preventDefault();
-    close();
-  };
-
   for (const trigger of triggers) {
     trigger.addEventListener("click", handleTriggerClick);
   }
-  dialog.element.addEventListener("click", handleDialogClick);
-  document.addEventListener("keydown", handleKeyDown);
 
   return () => {
     for (const trigger of triggers) {
       trigger.removeEventListener("click", handleTriggerClick);
     }
-    dialog.element.removeEventListener("click", handleDialogClick);
-    document.removeEventListener("keydown", handleKeyDown);
+    controller.destroy();
     dialog.element.remove();
-    delete document.documentElement.dataset.lightboxOpen;
     for (const trigger of wrappedTriggers) unwrapImage(trigger);
   };
-}
-
-function trapFocus(event: KeyboardEvent, container: HTMLElement) {
-  const focusableElements = getFocusableElements(container);
-  if (focusableElements.length === 0) {
-    event.preventDefault();
-    container.focus();
-    return;
-  }
-
-  const first = focusableElements[0];
-  const last = focusableElements[focusableElements.length - 1];
-  const active = document.activeElement;
-
-  if (event.shiftKey && active === first) {
-    event.preventDefault();
-    last.focus();
-    return;
-  }
-
-  if (!event.shiftKey && active === last) {
-    event.preventDefault();
-    first.focus();
-  }
-}
-
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>(
-      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((element) => !element.hasAttribute("disabled"));
 }
 
 function wrapImages(

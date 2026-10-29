@@ -336,63 +336,57 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outputCacheRejectionReason: outputCacheRejectionReason ?? null,
           timingsMs: timingsMs ?? {},
         };
-        process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental
-          ? ""
-          : "1";
-        process.env.RIEBECKITE_SSG_SKIP_UNCHANGED = canUseIncremental
-          ? "1"
-          : "";
-        const result = await measure(timingsMs, "toSSG", () =>
-          toSSG(
-            app,
-            {
-              writeFile: async (filePath, data) => {
-                const fileName = relative(outDir, filePath).replaceAll(
-                  "\\",
-                  "/",
-                );
-                if (!inventoryPaths.has(fileName)) {
-                  honoStaticRoutePaths.add(fileName);
-                }
-                if (siteOwnedOutputPaths.has(fileName)) {
-                  shadowedOutputs.add(fileName);
-                  return;
-                }
-                if (canUseIncremental && reusablePaths.has(fileName)) {
-                  return;
-                }
-                if (fileName.endsWith(".html") && typeof data === "string") {
-                  metrics.renderedOutputCount += 1;
-                  metrics.renderedRouteCount += 1;
-                  metrics.htmlOutputCount += 1;
-                  generatedHtml.push({ path: fileName, html: data });
-                } else {
-                  metrics.assetOutputCount += 1;
-                }
-                measureSync(timingsMs, "outputWrite", () =>
-                  this.emitFile({
-                    type: "asset",
-                    fileName,
-                    source: data,
-                  }),
-                );
-                metrics.emittedOutputCount += 1;
-                nextOutputCache.outputs[fileName] = {
-                  cachePath: "",
-                  checksum: "",
-                };
+        const result = await withSsgRenderEnvironment(canUseIncremental, () =>
+          measure(timingsMs, "toSSG", () =>
+            toSSG(
+              app,
+              {
+                writeFile: async (filePath, data) => {
+                  const fileName = relative(outDir, filePath).replaceAll(
+                    "\\",
+                    "/",
+                  );
+                  if (!inventoryPaths.has(fileName)) {
+                    honoStaticRoutePaths.add(fileName);
+                  }
+                  if (siteOwnedOutputPaths.has(fileName)) {
+                    shadowedOutputs.add(fileName);
+                    return;
+                  }
+                  if (canUseIncremental && reusablePaths.has(fileName)) {
+                    return;
+                  }
+                  if (fileName.endsWith(".html") && typeof data === "string") {
+                    metrics.renderedOutputCount += 1;
+                    metrics.renderedRouteCount += 1;
+                    metrics.htmlOutputCount += 1;
+                    generatedHtml.push({ path: fileName, html: data });
+                  } else {
+                    metrics.assetOutputCount += 1;
+                  }
+                  measureSync(timingsMs, "outputWrite", () =>
+                    this.emitFile({
+                      type: "asset",
+                      fileName,
+                      source: data,
+                    }),
+                  );
+                  metrics.emittedOutputCount += 1;
+                  nextOutputCache.outputs[fileName] = {
+                    cachePath: "",
+                    checksum: "",
+                  };
+                },
+                async mkdir() {},
               },
-              async mkdir() {},
-            },
-            {
-              dir: outDir,
-              plugins: [redirectPlugin(), ...(options.plugins ?? [])],
-              extensionMap: options.extensionMap ?? defaultExtensionMap,
-            },
+              {
+                dir: outDir,
+                plugins: [redirectPlugin(), ...(options.plugins ?? [])],
+                extensionMap: options.extensionMap ?? defaultExtensionMap,
+              },
+            ),
           ),
         );
-        delete process.env.RIEBECKITE_SSG_FULL_REGENERATION;
-        delete process.env.RIEBECKITE_SSG_SKIP_UNCHANGED;
         metrics.enumeratedRouteCount = result.files.length;
         if (!result.success) throw result.error;
         metrics.processedContentCount =
@@ -638,6 +632,36 @@ export function findBuildOutputSiteCollisions(
     if (siteOwnedOutputPaths.has(path)) collisions.add(path);
   }
   return [...collisions].sort();
+}
+
+async function withSsgRenderEnvironment<T>(
+  canUseIncremental: boolean,
+  operation: () => Promise<T>,
+): Promise<T> {
+  const previousFullRegeneration = process.env.RIEBECKITE_SSG_FULL_REGENERATION;
+  const previousSkipUnchanged = process.env.RIEBECKITE_SSG_SKIP_UNCHANGED;
+  process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental ? "" : "1";
+  process.env.RIEBECKITE_SSG_SKIP_UNCHANGED = canUseIncremental ? "1" : "";
+  try {
+    return await operation();
+  } finally {
+    restoreEnvironmentVariable(
+      "RIEBECKITE_SSG_FULL_REGENERATION",
+      previousFullRegeneration,
+    );
+    restoreEnvironmentVariable(
+      "RIEBECKITE_SSG_SKIP_UNCHANGED",
+      previousSkipUnchanged,
+    );
+  }
+}
+
+function restoreEnvironmentVariable(
+  name: string,
+  value: string | undefined,
+): void {
+  if (value === undefined) delete process.env[name];
+  else process.env[name] = value;
 }
 
 /**

@@ -57,6 +57,27 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
             ),
           };
         },
+        resolveRoute: ({ pathname, manifest, config }) => {
+          if (pathname !== "/explore" || !config) return null;
+          const siteTitle = config.site.title;
+          return {
+            type: "garden-explorer",
+            pathname,
+            title: "Garden Explorer",
+            description:
+              "Explore notes through links, backlinks, tags, and folders.",
+            body: renderGardenExplorerPage(
+              getGardenExplorerData({
+                manifest,
+                config,
+                resolveTitle: (slug, title) =>
+                  typeof title === "string" && title.trim() ? title : slug,
+                options,
+              }),
+              siteTitle,
+            ),
+          };
+        },
       },
     ],
   });

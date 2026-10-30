@@ -54,6 +54,9 @@ export type PluginPageType = {
   resolve(
     context: PluginPageContext,
   ): PluginPage | null | Promise<PluginPage | null>;
+  resolveRoute?(
+    context: PluginPageContext,
+  ): PluginPage | null | Promise<PluginPage | null>;
 };
 
 export type ResolvedPluginPage = PluginPage & {

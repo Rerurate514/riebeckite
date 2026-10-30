@@ -301,6 +301,64 @@ export class PluginRuntime {
     );
   }
 
+  canUseDevelopmentRouteManifest(): boolean {
+    return this.plugins().every((plugin) => {
+      if (
+        plugin.resolveExternalDependencies ||
+        plugin.transformAssets ||
+        plugin.planGeneratedOutputs ||
+        plugin.buildEnd ||
+        plugin.addDiagnostics ||
+        plugin.inspectGeneratedHtml ||
+        plugin.assets?.length ||
+        plugin.clientEntries?.length ||
+        plugin.endpoints?.length ||
+        plugin.seo ||
+        plugin.contentOutputDependencies?.length ||
+        plugin.resolveContentOutputDependencies
+      ) {
+        return false;
+      }
+      if (
+        (plugin.extendContentGraph || plugin.onManifestCreated) &&
+        plugin.developmentRouteManifest !== true
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  async runDevelopmentRouteGraphHook(
+    entries: ContentManifestEntry[],
+    contentIndex: Map<string, string>,
+  ): Promise<void> {
+    const plugins = this.plugins().filter(
+      (plugin) => plugin.developmentRouteManifest === true,
+    );
+    await this.runHook(
+      "extendContentGraph",
+      (plugin) => plugin.extendContentGraph,
+      { ...this.createContext(contentIndex), entries },
+      plugins,
+    );
+  }
+
+  async runDevelopmentRouteManifestHook(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<void> {
+    const plugins = this.plugins().filter(
+      (plugin) => plugin.developmentRouteManifest === true,
+    );
+    await this.runHook(
+      "onManifestCreated",
+      (plugin) => plugin.onManifestCreated,
+      { ...this.createContext(contentIndex), manifest },
+      plugins,
+    );
+  }
+
   async runManifestCreated(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
@@ -507,6 +565,18 @@ export class PluginRuntime {
     );
   }
 
+  async resolveRoute(
+    pathname: string,
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ResolvedPluginPage | null | undefined> {
+    return await this.pageResolver.resolveRoute(
+      pathname,
+      manifest,
+      contentIndex,
+    );
+  }
+
   async getPagePaths(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
@@ -656,8 +726,9 @@ export class PluginRuntime {
       | ((context: PluginContextWithCache<TContext>) => void | Promise<void>)
       | undefined,
     context: TContext,
+    plugins = this.plugins(),
   ) {
-    for (const plugin of this.plugins()) {
+    for (const plugin of plugins) {
       const pluginHook = hook(plugin);
       if (!pluginHook) continue;
       const pluginContext = this.createPluginContext(plugin, context);

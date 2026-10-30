@@ -79,6 +79,27 @@ export function archive(options: ArchiveOptions = {}) {
             body: page.html,
           };
         },
+        resolveRoute: ({ manifest, pathname, config }) => {
+          if (resolved.basePath === "") return null;
+          const locale = resolveLocale(config, resolved);
+          const collection = buildArchiveCollections(
+            manifest.discoverableEntries,
+            resolved,
+            locale,
+          ).find((candidate) => candidate.path === pathname);
+          if (!collection) return null;
+          const page = renderArchivePage(collection, resolved, locale);
+          return {
+            type: "archive",
+            pathname: collection.path,
+            title: page.title,
+            description: config
+              ? buildArchiveDescription(config.site.title, page.title, locale)
+              : undefined,
+            language: normalizeArchiveLocale(locale),
+            body: page.html,
+          };
+        },
       },
     ],
   });

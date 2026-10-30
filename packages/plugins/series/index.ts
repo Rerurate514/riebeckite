@@ -123,12 +123,38 @@ export function series(options: SeriesOptions = {}) {
             body,
           };
         },
+        resolveRoute: ({ manifest, pathname }) => {
+          const model = modelFor(manifest);
+          if (model.listPath === "" || pathname !== model.listPath) return null;
+          const body = renderSeriesList(model.view, options);
+          if (body === "") return null;
+          return {
+            type: "series-list",
+            pathname,
+            title: "Series",
+            body,
+          };
+        },
       },
       {
         id: "series-index",
         paths: ({ manifest }) => modelFor(manifest).landingPaths,
         outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname }) => {
+          const model = modelFor(manifest);
+          const index = model.byPath.get(pathname);
+          if (!index) return null;
+          const body = renderSeriesIndex(model.view, index.name, options);
+          if (body === "") return null;
+          return {
+            type: "series-index",
+            pathname,
+            title: index.title,
+            body,
+            ...(index.language ? { language: index.language } : {}),
+          };
+        },
+        resolveRoute: ({ manifest, pathname }) => {
           const model = modelFor(manifest);
           const index = model.byPath.get(pathname);
           if (!index) return null;

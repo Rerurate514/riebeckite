@@ -40,7 +40,7 @@ export default jsxRenderer(async ({ children }, c) => {
   const ogAlternates = getHreflangAlternates(headTags)
     .map((language) => toOgLocale(language))
     .filter((locale) => locale !== ogLocale);
-  const manifest = await content.getManifest();
+  const manifest = await content.getRequestManifest();
   const seo =
     c.get("seo") ??
     buildWebsiteSeo(

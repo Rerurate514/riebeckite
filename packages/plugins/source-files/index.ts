@@ -51,6 +51,7 @@ export function sourceFiles(options: SourceFilesOptions) {
           return path ? [{ type: "file", path }] : [];
         },
         resolve: (context) => resolveSourcePage(context, options),
+        resolveRoute: (context) => resolveSourcePage(context, options),
       },
     ],
     assets: [

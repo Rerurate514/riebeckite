@@ -90,6 +90,18 @@ export function folderPages(options: FolderPagesOptions = {}) {
             language: page.language,
           };
         },
+        resolveRoute: ({ manifest, pathname }) => {
+          const page = modelFor(manifest).byPath.get(pathname);
+          if (!page) return null;
+          const rendered = renderFolderPage(page, resolved);
+          return {
+            type: "folder-page",
+            pathname: page.pathname,
+            title: rendered.title,
+            body: rendered.html,
+            language: page.language,
+          };
+        },
       },
     ],
   });

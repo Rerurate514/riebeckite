@@ -51,6 +51,7 @@ export function marp(options: MarpOptions = {}) {
             : [{ type: "unknown" as const }];
         },
         resolve: (context) => resolveMarpSlidesPage(context),
+        resolveRoute: (context) => resolveMarpSlidesPage(context),
       },
     ],
     assets: [createStyleAsset("marp", "@riebeckite/plugin-marp/style.css")],

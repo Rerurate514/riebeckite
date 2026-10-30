@@ -57,6 +57,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   optional?: string[];
   cacheVersion?: string;
   contentFileMetadata?: boolean;
+  developmentRouteManifest?: true;
   /**
    * Explicit contract for the persistent processed-content cache.
    *

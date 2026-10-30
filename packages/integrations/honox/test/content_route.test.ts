@@ -399,6 +399,7 @@ function contentStub(options: {
   return {
     resolvePage: async () => options.page ?? null,
     getManifest: async () => options.manifest,
+    getRequestManifest: async () => options.manifest,
     getProcessedContent: async (slug: string) => ({
       html: `<p>${slug}</p>`,
       frontmatter: {},

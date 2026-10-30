@@ -21,6 +21,7 @@ type RouteContent = Pick<
   ContentManager,
   | "resolvePage"
   | "getManifest"
+  | "getRequestManifest"
   | "getProcessedContent"
   | "getOutputChangeSet"
   | "getPagePaths"
@@ -78,7 +79,7 @@ async function renderContent(
   entry: ContentManifestEntry,
   post: PostContent,
 ): Promise<Response> {
-  const manifest = await options.content.getManifest();
+  const manifest = await options.content.getRequestManifest();
   const view = createPublicContentView(manifest);
   const publicEntry = view.findRoutableBySlug(entry.slug);
   if (!publicEntry) return c.notFound();

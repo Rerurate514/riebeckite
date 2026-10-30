@@ -116,6 +116,10 @@ export function canvas(options: CanvasOptions = {}) {
           options.documentPages === true
             ? resolveCanvasDocument(context, resolved)
             : null,
+        resolveRoute: (context) =>
+          options.documentPages === true
+            ? resolveCanvasDocument(context, resolved)
+            : null,
       },
     ],
     onManifestCreated: (context) => {

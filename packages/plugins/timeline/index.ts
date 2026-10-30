@@ -57,6 +57,19 @@ export function timeline(options: TimelineOptions = {}) {
             body: page.html,
           };
         },
+        resolveRoute: ({ manifest, pathname }) => {
+          if (pathname !== resolved.basePath || resolved.basePath === "")
+            return null;
+          const entries = buildTimeline(manifest.discoverableEntries, resolved);
+          if (entries.length === 0) return null;
+          const page = renderTimelinePage(entries, resolved);
+          return {
+            type: "timeline",
+            pathname,
+            title: page.title,
+            body: page.html,
+          };
+        },
       },
     ],
   });

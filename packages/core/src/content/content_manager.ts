@@ -97,6 +97,8 @@ export class ContentManager {
   private contentCache = new Map<string, PostContent>();
   private manifest: ContentManifest | null = null;
   private manifestPromise: Promise<ContentManifest> | null = null;
+  private routeManifest: ContentManifest | null = null;
+  private routeManifestPromise: Promise<ContentManifest> | null = null;
   private pipelineFingerprint: string | null = null;
   private pipeline: Pipeline | null = null;
   private entryReader: ContentEntryReader;
@@ -156,10 +158,7 @@ export class ContentManager {
     this.manifestAssembler = new ManifestAssembler(this.contentCache);
     this.pluginRuntime = new PluginRuntime(this.pipelineOptions);
     this.pluginRuntime.setPageMarkdownRenderer(async (markdown) => {
-      if (!this.pipeline) {
-        throw new Error("Markdown pipeline is unavailable for plugin pages.");
-      }
-      return (await this.pipeline.execute(markdown)).html;
+      return (await (await this.getPipeline()).execute(markdown)).html;
     });
     const buildStatePath = resolveContentBuildStatePath(
       pipelineOptions.config,
@@ -279,27 +278,7 @@ export class ContentManager {
     await this.pluginRuntime.startBuild(contentIndex);
     await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
 
-    await this.ensureRoutableSlugs();
-    const locations = await this.getContentLocations();
-    if (this.pipelineOptions.config) {
-      this.pipelineFingerprint = this.computePipelineFingerprint(locations);
-    }
-    this.pipeline ??= new Pipeline(
-      contentIndex,
-      new Map(
-        [...locations.entries()].map(([locationSlug, location]) => [
-          locationSlug,
-          location.permalink,
-        ]),
-      ),
-      (postSlug) => this.getPost(postSlug),
-      {
-        ...this.pipelineOptions,
-        contentScopeFingerprint: this.pipelineFingerprint ?? undefined,
-      },
-      this.isBuildTime,
-    );
-    const content = await this.pipeline.execute(rawPost, {
+    const content = await (await this.getPipeline()).execute(rawPost, {
       sourceSlug: slug,
     });
     this.processedContentCount += 1;
@@ -340,6 +319,103 @@ export class ContentManager {
       this.manifestPromise = null;
       throw error;
     }
+  }
+
+  async getRouteManifest(): Promise<ContentManifest> {
+    if (this.routeManifest) return this.routeManifest;
+    if (this.routeManifestPromise) return await this.routeManifestPromise;
+
+    this.routeManifestPromise = this.buildRouteManifest();
+    try {
+      return await this.routeManifestPromise;
+    } catch (error) {
+      this.routeManifestPromise = null;
+      throw error;
+    }
+  }
+
+  async getRequestManifest(): Promise<ContentManifest> {
+    return this.pipelineOptions.isDevelopment &&
+        this.pluginRuntime.canUseDevelopmentRouteManifest()
+      ? await this.getRouteManifest()
+      : await this.getManifest();
+  }
+
+  private async buildRouteManifest(): Promise<ContentManifest> {
+    return await this.observability().tracer.span(
+      "content.route-manifest",
+      {},
+      async () => {
+        const [sourceEntries, contentIndex, locations] = await Promise.all([
+          this.scan(),
+          this.getContentIndex(),
+          this.getContentLocations(),
+        ]);
+        const entriesByPath = new Map(
+          sourceEntries.map((entry) => [entry.path, entry]),
+        );
+        const posts = sourceEntries
+          .filter((entry) => entry.path.endsWith(".md"))
+          .map((entry) => ({ slug: entry.path.replace(/\.md$/, "") }));
+        const entries = await mapConcurrent(
+          posts,
+          CONTENT_PROCESSING_CONCURRENCY,
+          async (post) => {
+            const markdown = await this.getPost(post.slug);
+            const location = locations.get(post.slug);
+            if (!location) {
+              throw new Error(
+                `Content public location was not resolved: ${post.slug}`,
+              );
+            }
+            let frontmatter: PostFrontmatter;
+            try {
+              frontmatter = readFrontmatter(markdown);
+            } catch (error) {
+              throw attachErrorPath(error, `${post.slug}.md`);
+            }
+            const publishing = resolvePublishingState(frontmatter, {
+              strategy: this.publishStrategy(),
+              buildTime: this.publishingBuildTime,
+            });
+            if (publishing.routable) {
+              this.routableSlugs ??= new Set();
+              this.routableSlugs.add(post.slug);
+            }
+            return this.manifestAssembler.createEntry(
+              post.slug,
+              markdown,
+              { frontmatter, html: "" },
+              contentIndex,
+              location,
+              publishing,
+              entriesByPath.get(`${post.slug}.md`)?.metadata,
+            );
+          },
+        );
+        await this.pluginRuntime.runDevelopmentRouteGraphHook(
+          entries,
+          contentIndex,
+        );
+        const manifest = this.manifestAssembler.build(
+          entries,
+          contentIndex,
+          this.contentIndexAmbiguities,
+        );
+        this.locationResolver.populateRedirects(manifest, locations);
+        this.manifestAssembler.applyPublicView(
+          manifest,
+          this.publishStrategy(),
+          this.publishingBuildTime,
+        );
+        await this.pluginRuntime.runDevelopmentRouteManifestHook(
+          manifest,
+          contentIndex,
+        );
+        this.routeManifest = manifest;
+        return manifest;
+      },
+    );
   }
 
   private async buildManifest(
@@ -603,7 +679,7 @@ export class ContentManager {
   }
 
   async getContentGraph(): Promise<ContentGraph> {
-    const manifest = await this.getManifest();
+    const manifest = await this.getRequestManifest();
     return manifest.graph;
   }
 
@@ -614,6 +690,21 @@ export class ContentManager {
 
   /** Resolves a page contributed by an enabled plugin. */
   async resolvePage(pathname: string): Promise<ResolvedPluginPage | null> {
+    if (
+      this.pipelineOptions.isDevelopment &&
+      this.pluginRuntime.canUseDevelopmentRouteManifest()
+    ) {
+      const [manifest, contentIndex] = await Promise.all([
+        this.getRouteManifest(),
+        this.getContentIndex(),
+      ]);
+      const page = await this.pluginRuntime.resolveRoute(
+        pathname,
+        manifest,
+        contentIndex,
+      );
+      if (page !== undefined) return page;
+    }
     const [manifest, contentIndex] = await Promise.all([
       this.getManifest({ incremental: false }),
       this.getContentIndex(),
@@ -806,6 +897,34 @@ export class ContentManager {
       if (publishing.routable) routableSlugs.add(post.slug);
     });
     return routableSlugs;
+  }
+
+  private async getPipeline(): Promise<Pipeline> {
+    if (this.pipeline) return this.pipeline;
+    const [contentIndex, locations] = await Promise.all([
+      this.getContentIndex(),
+      this.getContentLocations(),
+      this.ensureRoutableSlugs(),
+    ]);
+    if (this.pipelineOptions.config) {
+      this.pipelineFingerprint = this.computePipelineFingerprint(locations);
+    }
+    this.pipeline = new Pipeline(
+      contentIndex,
+      new Map(
+        [...locations.entries()].map(([slug, location]) => [
+          slug,
+          location.permalink,
+        ]),
+      ),
+      (slug) => this.getPost(slug),
+      {
+        ...this.pipelineOptions,
+        contentScopeFingerprint: this.pipelineFingerprint ?? undefined,
+      },
+      this.isBuildTime,
+    );
+    return this.pipeline;
   }
 
   private enableBuildTime(): void {

@@ -88,6 +88,64 @@ export class PluginPageResolver {
     return highest[0].page;
   }
 
+  async resolveRoute(
+    pathname: string,
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ResolvedPluginPage | null | undefined> {
+    const pageTypes = this.options
+      .plugins()
+      .flatMap((plugin) =>
+        (plugin.pageTypes ?? []).map((pageType) => ({ plugin, pageType })),
+      );
+    if (pageTypes.some(({ pageType }) => !pageType.resolveRoute)) {
+      return undefined;
+    }
+
+    const matches: { page: ResolvedPluginPage; priority: number }[] = [];
+    const requestedPathname = normalizePagePath(pathname);
+    for (const { plugin, pageType } of pageTypes) {
+      const resolveRoute = pageType.resolveRoute;
+      if (!resolveRoute) return undefined;
+      const pagePathname = normalizePageTypePath(pathname, pageType);
+      const context = {
+        ...this.options.createContext(contentIndex),
+        manifest,
+        pathname: pagePathname,
+        renderMarkdown: this.options.renderMarkdown,
+      };
+      const page = await resolveRoute(
+        this.options.createPluginContext(plugin, context),
+      );
+      if (page) {
+        matches.push({
+          page: {
+            ...page,
+            pathname: pageType.directoryIndex
+              ? normalizeDirectoryPagePath(page.pathname)
+              : page.pathname,
+            type: pageType.id,
+            pluginName: plugin.name,
+          },
+          priority: pageType.priority ?? 0,
+        });
+      }
+    }
+    if (matches.length === 0) return null;
+    const highestPriority = Math.max(...matches.map((match) => match.priority));
+    const highest = matches.filter(
+      (match) => match.priority === highestPriority,
+    );
+    if (highest.length !== 1) {
+      throw new Error(
+        `Multiple plugin page types match ${requestedPathname} at priority ${highestPriority}: ${highest
+          .map((match) => match.page.type)
+          .join(", ")}`,
+      );
+    }
+    return highest[0].page;
+  }
+
   async getPagePaths(
     manifest: ContentManifest,
     contentIndex: Map<string, string>,

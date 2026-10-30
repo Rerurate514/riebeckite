@@ -61,6 +61,7 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         paths: ({ manifest }) => listExcalidrawDocumentPaths(manifest),
         outputDependencies: [{ type: "global" }],
         resolve: (context) => resolveExcalidrawDocument(context, options),
+        resolveRoute: (context) => resolveExcalidrawDocument(context, options),
       },
     ],
     assets: [

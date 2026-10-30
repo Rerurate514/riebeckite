@@ -24,12 +24,12 @@ export type ResolvedRiebeckiteRoute =
  * HonoX routes themselves.
  */
 export async function resolveRiebeckiteRoute(
-  content: Pick<ContentManager, "resolvePage" | "getManifest">,
+  content: Pick<ContentManager, "resolvePage" | "getRequestManifest">,
   pathname: string,
 ): Promise<ResolvedRiebeckiteRoute> {
   const page = await content.resolvePage(pathname);
   if (page) return { kind: "page", page };
-  return resolveContentRoute(await content.getManifest(), pathname);
+  return resolveContentRoute(await content.getRequestManifest(), pathname);
 }
 
 /**
@@ -68,7 +68,7 @@ const contentExtensionPattern = /\.[a-zA-Z0-9]+$/;
 
 type RouteContent = Pick<
   ContentManager,
-  "resolvePage" | "getManifest" | "getProcessedContent"
+  "resolvePage" | "getRequestManifest" | "getProcessedContent"
 >;
 
 async function resolveRouteRequest(
@@ -129,7 +129,7 @@ export async function resolveRiebeckiteHomeRequest(
   c: Context,
   content: RouteContent,
 ): Promise<ResolvedContentRequest> {
-  const indexEntry = (await content.getManifest()).bySlug.get("index");
+  const indexEntry = (await content.getRequestManifest()).bySlug.get("index");
   if (indexEntry && indexEntry.permalink !== "/") {
     return {
       kind: "response",

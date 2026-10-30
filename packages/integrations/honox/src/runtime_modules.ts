@@ -96,6 +96,7 @@ export const content = new ContentManager(
   {
     config,
     plugins: config.plugins,
+    isDevelopment: true,
     observability: trace.observability,
     traceRecorder: trace,
   },

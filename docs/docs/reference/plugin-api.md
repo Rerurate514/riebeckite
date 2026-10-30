@@ -86,6 +86,15 @@ export function example(options: ExampleOptions = {}) {
 
 Use only the extension points a plugin actually needs.
 
+## Development route manifests
+
+Development resolves routes from frontmatter and link metadata before processing
+article HTML. A plugin that uses `extendContentGraph` or `onManifestCreated`
+must set `developmentRouteManifest: true` only when those hooks are correct
+with `entry.html === ""`, need no generated outputs or asset transforms, and
+are required while serving. Other manifest-affecting plugins use the full
+manifest in development to preserve compatibility.
+
 ## Ordering and capabilities
 
 Disabled/false/null inputs are removed, and `enabled: false` is never

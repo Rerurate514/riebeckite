@@ -49,6 +49,130 @@ test("plugins resolve framework-independent pages and declare SSG paths", async 
   });
 });
 
+test("development requests resolve route metadata without processing every post", async () => {
+  let processed = 0;
+  const plugin = definePlugin({
+    name: "route-page",
+    extendMarkdownPipeline: () => {
+      processed += 1;
+    },
+    pageTypes: [
+      {
+        id: "route-page",
+        resolve: () => null,
+        resolveRoute: () => null,
+      },
+    ],
+  });
+  const manager = new ContentManager(
+    {
+      async scan() {
+        return [{ path: "index.md" }, { path: "other.md" }];
+      },
+      async read(entry) {
+        return entry.path === "index.md"
+          ? "---\npublish: true\n---\n# Home\n\n[[other]]"
+          : "---\npublish: true\n---\n# Other";
+      },
+    },
+    [],
+    {
+      config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+      isDevelopment: true,
+    },
+  );
+
+  const [first, second] = await Promise.all([
+    manager.getRequestManifest(),
+    manager.getRequestManifest(),
+  ]);
+
+  assert.equal(first, second);
+  assert.equal(first.bySlug.get("index")?.html, "");
+  assert.deepEqual(first.bySlug.get("other")?.backlinks, ["index"]);
+  assert.equal(await manager.resolvePage("/other"), null);
+  assert.equal(processed, 0);
+  await manager.getProcessedContent("other");
+  assert.equal(processed, 1);
+});
+
+test("development routing falls back to the full manifest for unopted page types", async () => {
+  let manifestCalls = 0;
+  const plugin = definePlugin({
+    name: "legacy-page",
+    onManifestCreated: () => {
+      manifestCalls += 1;
+    },
+    pageTypes: [
+      {
+        id: "legacy",
+        resolve: ({ pathname }) =>
+          pathname === "/legacy"
+            ? { type: "legacy", pathname, body: "legacy" }
+            : null,
+      },
+    ],
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  assert.equal((await manager.resolvePage("/legacy"))?.body, "legacy");
+  assert.equal(manifestCalls, 1);
+});
+
+test("development route manifests run opted manifest hooks without article HTML", async () => {
+  const plugin = definePlugin({
+    name: "route-metadata",
+    developmentRouteManifest: true,
+    onManifestCreated: ({ manifest }) => {
+      const entry = manifest.entries[0];
+      if (entry)
+        entry.headTags = [
+          ...(entry.headTags ?? []),
+          { tag: "meta", attrs: { name: "robots", content: "index" } },
+        ];
+    },
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  const manifest = await manager.getRequestManifest();
+
+  assert.equal(manifest.entries[0]?.html, "");
+  assert.deepEqual(manifest.entries[0]?.headTags, [
+    { tag: "meta", attrs: { name: "robots", content: "index" } },
+  ]);
+});
+
+test("development route manifests fall back for unopted manifest hooks", async () => {
+  const plugin = definePlugin({
+    name: "legacy-metadata",
+    onManifestCreated: ({ manifest }) => {
+      const entry = manifest.entries[0];
+      if (entry)
+        entry.headTags = [
+          ...(entry.headTags ?? []),
+          { tag: "meta", attrs: { name: "robots", content: "noindex" } },
+        ];
+    },
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  const manifest = await manager.getRequestManifest();
+
+  assert.match(manifest.entries[0]?.html ?? "", /<h1[^>]*>Home<\/h1>/);
+  assert.deepEqual(manifest.entries[0]?.headTags, [
+    { tag: "meta", attrs: { name: "robots", content: "noindex" } },
+  ]);
+});
+
 test("same-priority page matches fail rather than silently choosing a plugin", async () => {
   const page = (name: string) =>
     definePlugin({

@@ -57,6 +57,19 @@ export function glossary(options: GlossaryOptions = {}) {
             body: page.html,
           };
         },
+        resolveRoute: ({ manifest, pathname }) => {
+          if (pathname !== resolved.basePath || resolved.basePath === "")
+            return null;
+          const entries = buildGlossary(manifest.discoverableEntries, resolved);
+          if (entries.length === 0) return null;
+          const page = renderGlossaryPage(entries, resolved);
+          return {
+            type: "glossary",
+            pathname,
+            title: page.title,
+            body: page.html,
+          };
+        },
       },
     ],
   });

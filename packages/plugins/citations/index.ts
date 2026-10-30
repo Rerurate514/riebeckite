@@ -88,6 +88,18 @@ export function citations(options: CitationsOptions = {}) {
                 },
                 options,
               ),
+        resolveRoute: (context) =>
+          options.pagePath === undefined
+            ? null
+            : resolveBibliographyPage(
+                {
+                  manifest: context.manifest,
+                  contentSource: context.contentSource,
+                  diagnostics: context.diagnostics,
+                  pathname: context.pathname,
+                },
+                options,
+              ),
       },
     ],
     assets: [

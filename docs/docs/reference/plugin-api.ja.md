@@ -99,6 +99,10 @@ export function example(
 
 この中から、**必要なものだけ**を使ってください。
 
+## 開発時のルートマニフェスト
+
+開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインは、`entry.html === ""` でも処理が正しく、生成物やアセット変換を必要とせず、開発サーバーでも実行が必要な場合に限り `developmentRouteManifest: true` を指定します。それ以外のマニフェストへ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
+
 ## プラグインを有効にする
 
 プラグインは、`riebeckite.config.ts` の `plugins` へ追加します。

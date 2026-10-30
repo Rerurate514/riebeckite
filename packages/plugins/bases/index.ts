@@ -91,6 +91,7 @@ export function bases(options: BasesOptions = {}) {
         outputDependencies: ({ pathname }) =>
           runtime.dependenciesForPage(pathname),
         resolve: (context) => resolveBaseDocument(context, options),
+        resolveRoute: (context) => resolveBaseDocument(context, options),
       },
     ],
     assets: [createStyleAsset("bases", "@riebeckite/plugin-bases/style.css")],

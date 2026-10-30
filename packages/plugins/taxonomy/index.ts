@@ -117,6 +117,23 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             headTags: page.headTags,
           };
         },
+        resolveRoute: ({ manifest, pathname }) => {
+          const term = findTaxonomyTerm(
+            manifest.discoverableEntries,
+            resolved,
+            pathname,
+            manifest.icons,
+          );
+          if (!term) return null;
+          const page = renderTaxonomyPage(term, resolved);
+          return {
+            type: "taxonomy-term",
+            pathname: term.path,
+            title: page.title,
+            body: page.html,
+            headTags: page.headTags,
+          };
+        },
       },
       {
         id: "taxonomy-index",
@@ -137,6 +154,26 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             : [{ type: "unknown" }];
         },
         resolve: ({ manifest, pathname }) => {
+          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+          if (!kind) return null;
+          const index = buildTaxonomyIndex(
+            manifest.discoverableEntries,
+            resolved,
+            manifest.icons,
+          );
+          const page = renderTaxonomyIndexPage(
+            kind,
+            kind === "tag" ? index.tags : index.folders,
+            resolved,
+          );
+          return {
+            type: "taxonomy-index",
+            pathname,
+            title: page.title,
+            body: page.html,
+          };
+        },
+        resolveRoute: ({ manifest, pathname }) => {
           const kind = resolveTaxonomyIndexPath(pathname, resolved);
           if (!kind) return null;
           const index = buildTaxonomyIndex(

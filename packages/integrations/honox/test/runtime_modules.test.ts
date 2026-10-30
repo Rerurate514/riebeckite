@@ -56,6 +56,20 @@ describe("riebeckiteRuntimeModules", () => {
     assert.match(code, /virtual:riebeckite\/config/);
   });
 
+  it("marks the content module as development during Vite serve", () => {
+    const plugin = riebeckiteRuntimeModules(() => application);
+    const configResolved = asHook<{ command: string }, void>(
+      plugin.configResolved,
+    );
+    const load = asHook<string, string | null>(plugin.load);
+
+    configResolved({ command: "serve" });
+
+    const code = load(`\0${riebeckiteContentModuleId}`);
+    assert.ok(code);
+    assert.match(code, /isDevelopment: true/);
+  });
+
   it("ignores unrelated ids", () => {
     const plugin = riebeckiteRuntimeModules(() => application);
     const resolveId = asHook<string, string | null>(plugin.resolveId);

@@ -174,13 +174,14 @@
 }
 
 .rb-site-footer {
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
-  margin-inline: auto;
-  margin-top: clamp(4rem, 9vw, 7rem);
+  width: 100%;
+  margin-top: 0;
   border-top: 1px solid var(--rb-color-border-strong, var(--rb-color-border));
 }
 
 .site-footer__main {
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  margin-inline: auto;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.9fr) auto;
   gap: clamp(2rem, 6vw, 6rem);
@@ -223,6 +224,8 @@
 }
 
 .site-footer__meta {
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  margin-inline: auto;
   display: flex;
   justify-content: space-between;
   gap: var(--rb-space-3);

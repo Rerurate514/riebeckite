@@ -26,6 +26,10 @@
   margin-inline: auto;
 }
 
+.rr-mermaid-pele > .rr-mermaid-pele__fallback {
+  margin-block-start: 0.75rem;
+}
+
 .rr-mermaid-pele__error {
   overflow-x: auto;
   color: var(--pele-error);

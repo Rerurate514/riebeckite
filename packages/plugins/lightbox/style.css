@@ -32,6 +32,10 @@
   cursor: zoom-out;
 }
 
+.rr-lightbox:not([open]) {
+  display: none;
+}
+
 .rr-lightbox__frame {
   display: grid;
   gap: 16px;

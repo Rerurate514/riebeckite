@@ -1,4 +1,5 @@
 ---
+date: 2026-09-28
 title: Riebeckite ドキュメント
 ---
 # Riebeckite ドキュメント

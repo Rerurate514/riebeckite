@@ -3,7 +3,7 @@ import { Article, ArticleBody, ArticleContent, ArticleFooter } from "@riebeckite
 import { Breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
 import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
 import { TableOfContents } from "@riebeckite/plugin-toc";
-import { Drawer, DrawerTrigger } from "@riebeckite/layouts";
+import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { SiteHeader } from "./site-header";
 
 export function SiteArticle() {

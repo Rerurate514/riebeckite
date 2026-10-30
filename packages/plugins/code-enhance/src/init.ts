@@ -1,3 +1,4 @@
+import { copyText } from "@riebeckite/ui/copy";
 import type { CodeEnhanceClientOptions } from "./types.js";
 
 export const DEFAULT_COPY_LABEL = "Copy";
@@ -49,7 +50,7 @@ async function copyCode(
   const code = getCodeText(button);
   if (!code) return;
 
-  await navigator.clipboard.writeText(code);
+  if (!(await copyText(code))) return;
   button.dataset.codeCopyState = "success";
   button.textContent = copiedLabel;
   const timer = window.setTimeout(() => {

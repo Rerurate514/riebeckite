@@ -99,9 +99,6 @@ importers:
       '@riebeckite/honox':
         specifier: workspace:*
         version: link:../../packages/integrations/honox
-      '@riebeckite/layouts':
-        specifier: workspace:*
-        version: link:../../packages/layouts
       '@riebeckite/node':
         specifier: workspace:*
         version: link:../../packages/node
@@ -657,12 +654,6 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
-  packages/layouts:
-    dependencies:
-      hono:
-        specifier: 'catalog:'
-        version: 4.13.12
-
   packages/node:
     dependencies:
       '@riebeckite/core':
@@ -739,6 +730,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
@@ -874,6 +868,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       rehype-pretty-code:
         specifier: ^0.14.1
         version: 0.14.5(shiki@3.23.0)
@@ -890,6 +887,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
 
   packages/plugins/color-mode:
     dependencies:
@@ -1279,6 +1279,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
 
   packages/plugins/local-graph:
     dependencies:
@@ -1725,6 +1728,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
     devDependencies:
       tsx:
         specifier: ^4.22.4

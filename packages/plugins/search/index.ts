@@ -36,7 +36,8 @@ export function search() {
         "@riebeckite/plugin-search/client",
         "initSearch",
         undefined,
-        "app",
+        "page",
+        "context",
       ),
     ],
     endpoints: [

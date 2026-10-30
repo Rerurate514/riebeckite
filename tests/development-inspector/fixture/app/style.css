@@ -1,3 +1,5 @@
+@import "@riebeckite/theme-default/style.css";
+
 body {
   margin: 0;
   font-family: system-ui, sans-serif;

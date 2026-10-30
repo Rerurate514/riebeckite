@@ -7,6 +7,7 @@ import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
 import { riebeckiteDevelopmentInspector } from "../src/development_inspector.js";
+import { createDevelopmentTrace } from "../src/development_trace.js";
 
 type Middleware = (
   request: { headers: { host?: string }; url?: string },
@@ -48,19 +49,42 @@ test("development inspector reports the output plan and dependencies", async () 
             manifestHookRuns += 1;
           },
         },
+        {
+          name: "disabled-plugin",
+          enabled: false,
+          onManifestCreated() {
+            throw new Error("disabled plugin must not run");
+          },
+        },
       ],
     });
+    const trace = createDevelopmentTrace();
     const content = new ContentManager(
       new FileSystemContentSource(contentRoot),
       [],
-      { config, commitBuildState: false },
+      {
+        config,
+        commitBuildState: false,
+        observability: trace.observability,
+        traceRecorder: trace,
+      },
     );
     await content.getOutputChangeSet();
     assert.equal(manifestHookRuns, 1);
     const completed = content.getCompletedBuildSnapshot();
     assert.ok(completed);
     assert.ok(completed.completedAt > 0);
+    assert.ok(completed.startedAt > 0);
+    assert.ok(completed.startedAt <= completed.completedAt);
     assert.ok(Object.isFrozen(completed));
+    assert.ok(Object.isFrozen(completed.plugins));
+    assert.ok(completed.plugins.every((plugin) => Object.isFrozen(plugin)));
+    assert.ok(Object.isFrozen(completed.manifestHookMetrics));
+    assert.ok(Object.isFrozen(completed.trace?.spans));
+    assert.ok(Object.isFrozen(completed.trace?.events));
+    assert.ok(completed.trace?.spans.every((span) => Object.isFrozen(span)));
+    assert.ok(completed.trace?.events.every((event) => Object.isFrozen(event)));
+    assert.ok((completed.trace?.spans.length ?? 0) > 0);
     assert.ok(Object.isFrozen(completed.outputChangeSet));
     assert.ok(Object.isFrozen(completed.outputChangeSet.affected));
     assert.ok(
@@ -89,6 +113,8 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.deepEqual(report.plugins, [
       { name: "manifest-counter", order: 1, enabled: true },
     ]);
+    assert.equal(report.themeConfig.name, report.theme);
+    assert.equal(report.themeConfig.colorMode, "system");
 
     const outputHandle = stack.find(
       (layer) => layer.route === "/__riebeckite/inspector/output",
@@ -139,6 +165,78 @@ test("development inspector reports the output plan and dependencies", async () 
       "/__riebeckite/inspector/output?changed=index",
     );
     assert.ok(JSON.parse(changed.body).output.lookups.changed.outputCount >= 1);
+
+    const graphHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/graph",
+    )?.handle;
+    const graphResponse = await requestReport(graphHandle);
+    const graph = JSON.parse(graphResponse.body).graph;
+    assert.equal(graph.status, "available");
+    assert.equal(
+      graph.summary.affectedOutputCount,
+      output.output.affectedOutputCount,
+    );
+    assert.equal(
+      graph.summary.removedOutputCount,
+      output.output.removedOutputCount,
+    );
+    assert.ok(
+      graph.nodes.some(
+        (node: { id: string }) => node.id === "output:index.html",
+      ),
+    );
+    const selectedGraph = JSON.parse(
+      (
+        await requestReport(
+          graphHandle,
+          "/__riebeckite/inspector/graph?node=content%3Aindex",
+        )
+      ).body,
+    ).graph;
+    assert.equal(selectedGraph.selected.id, "content:index");
+    assert.ok(
+      selectedGraph.nodes.some(
+        (node: { id: string }) => node.id === "output:index.html",
+      ),
+    );
+    assert.ok(
+      selectedGraph.edges.some(
+        (edge: { from: string; to: string }) =>
+          edge.from === "content:index" && edge.to === "output:index.html",
+      ),
+    );
+    const searchedGraph = JSON.parse(
+      (
+        await requestReport(
+          graphHandle,
+          "/__riebeckite/inspector/graph?q=index&limit=1",
+        )
+      ).body,
+    ).graph;
+    assert.ok(searchedGraph.search);
+    assert.ok(searchedGraph.nodes.length <= 1);
+
+    const pluginsHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/plugins",
+    )?.handle;
+    const pluginResponse = await requestReport(pluginsHandle);
+    const execution = JSON.parse(pluginResponse.body).pluginExecution;
+    assert.equal(execution.status, "available");
+    assert.equal(execution.plugins[0].name, "manifest-counter");
+    assert.equal(execution.plugins[0].order, 1);
+    assert.equal(execution.plugins[1].name, "disabled-plugin");
+    assert.equal(execution.plugins[1].enabled, false);
+    assert.ok(execution.plugins[0].hookCount >= 1);
+    assert.ok(
+      execution.hooks.some(
+        (hook: { plugin: string; hook: string; count: number }) =>
+          hook.plugin === "manifest-counter" &&
+          hook.hook === "onManifestCreated" &&
+          hook.count === 1,
+      ),
+    );
+    assert.equal(execution.trace.status, "available");
+    assert.ok(execution.trace.wallClockMs > 0);
     assert.equal(manifestHookRuns, 1);
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
@@ -174,6 +272,21 @@ test("development inspector reports unavailable before the development build exi
 
     assert.equal(response.response.statusCode, 200);
     assert.equal(JSON.parse(response.body).output.status, "unavailable");
+    const graphHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/graph",
+    )?.handle;
+    assert.equal(
+      JSON.parse((await requestReport(graphHandle)).body).graph.status,
+      "unavailable",
+    );
+    const pluginsHandle = stack.find(
+      (layer) => layer.route === "/__riebeckite/inspector/plugins",
+    )?.handle;
+    assert.equal(
+      JSON.parse((await requestReport(pluginsHandle)).body).pluginExecution
+        .status,
+      "unavailable",
+    );
   });
 });
 
@@ -303,6 +416,20 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /lookups/);
   assert.match(source as string, /dependency-kind/);
   assert.match(source as string, /plugin\.order/);
+  assert.match(source as string, /graphEndpoint/);
+  assert.match(source as string, /data-graph-query/);
+  assert.match(source as string, /data-graph-selected/);
+  assert.match(
+    source as string,
+    /WikiLink content links are a different graph/,
+  );
+  assert.match(source as string, /pluginsEndpoint/);
+  assert.match(source as string, /data-plugin-query/);
+  assert.match(source as string, /cumulative span durations/);
+  assert.match(source as string, /cache\.bypass/);
+  assert.match(source as string, /data-theme-query/);
+  assert.match(source as string, /collectThemeTokens/);
+  assert.match(source as string, /--\(rb\|rr\)-/);
 });
 
 function inspectorStack(

@@ -1,3 +1,5 @@
+import { copyText } from "@riebeckite/ui/copy";
+
 const CARD_CLASS = "rr-cardlink";
 const IMAGE_CLASS = "rr-cardlink__image";
 const COPY_CLASS = "rr-cardlink__copy";
@@ -72,11 +74,7 @@ async function copyUrl(
   copyClass: string,
   timers: number[],
 ): Promise<void> {
-  try {
-    await navigator.clipboard?.writeText(url);
-  } catch {
-    return;
-  }
+  if (!(await copyText(url))) return;
 
   const label = button.querySelector(`.${COPY_LABEL_CLASS}`);
   const original = label?.textContent ?? "Copy URL";

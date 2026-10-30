@@ -21,7 +21,8 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/ui": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

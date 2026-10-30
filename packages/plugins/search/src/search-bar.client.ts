@@ -1,3 +1,4 @@
+import { createDialogController } from "@riebeckite/ui/dialog";
 import {
   normalizeSearchText,
   parseSearchQuery,
@@ -8,10 +9,11 @@ import {
 
 const MAX_RESULTS = 8;
 
-const FOCUSABLE_SELECTOR =
-  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+export type SearchInitContext = {
+  readonly signal?: AbortSignal;
+};
 
-export function initSearch() {
+export function initSearch(context: SearchInitContext = {}): () => void {
   const root = document.querySelector<HTMLElement>("[data-search-root]");
   const modal = document.querySelector<HTMLDialogElement>(
     "[data-search-modal]",
@@ -26,33 +28,11 @@ export function initSearch() {
     document.querySelectorAll<HTMLElement>("[data-search-close]"),
   );
 
-  if (!root || !modal || !input || !status || !results) return;
+  if (!root || !modal || !input || !status || !results) return () => {};
 
   let searchItems: SearchItem[] | null = null;
   let selectedIndex = 0;
   let currentResults: SearchResult[] = [];
-  let previouslyFocused: HTMLElement | null = null;
-
-  const getFocusable = () =>
-    Array.from(modal.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-      (element) => element.getClientRects().length > 0,
-    );
-
-  const openSearch = async () => {
-    if (modal.open) return;
-
-    previouslyFocused = document.activeElement as HTMLElement | null;
-    modal.showModal();
-    setOpenButtonState(openButtons, true);
-    input.focus();
-    await loadSearchItems();
-
-    if (modal.open) renderResults(input.value);
-  };
-
-  const closeSearch = () => {
-    if (modal.open) modal.close();
-  };
 
   const loadSearchItems = async () => {
     if (searchItems) return;
@@ -116,55 +96,23 @@ export function initSearch() {
     updateSelectedResult();
   };
 
+  const controller = createDialogController(modal, {
+    triggers: openButtons,
+    closeButtons,
+    initialFocus: () => input,
+    signal: context.signal,
+    onOpen: () => {
+      void loadSearchItems().then(() => {
+        if (modal.open) renderResults(input.value);
+      });
+    },
+  });
+
   input.addEventListener("input", () => renderResults(input.value));
 
   results.addEventListener("click", (event) => {
     if ((event.target as Element | null)?.closest("[data-search-result]")) {
-      closeSearch();
-    }
-  });
-
-  openButtons.forEach((button) => {
-    button.addEventListener("click", () => void openSearch());
-  });
-
-  closeButtons.forEach((button) => {
-    button.addEventListener("click", closeSearch);
-  });
-
-  modal.addEventListener("close", () => {
-    setOpenButtonState(openButtons, false);
-
-    const target = previouslyFocused;
-    previouslyFocused = null;
-    if (target?.isConnected) target.focus();
-  });
-
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) closeSearch();
-  });
-
-  modal.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeSearch();
-      return;
-    }
-
-    if (event.key !== "Tab") return;
-
-    const focusable = getFocusable();
-    if (focusable.length === 0) return;
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
+      controller.close();
     }
   });
 
@@ -173,13 +121,13 @@ export function initSearch() {
   );
   if (initialQuery) {
     input.value = initialQuery;
-    void openSearch();
+    controller.open();
   }
 
-  document.addEventListener("keydown", (event) => {
+  const onKeyDown = (event: KeyboardEvent) => {
     if (isSearchShortcut(event)) {
       event.preventDefault();
-      void openSearch();
+      controller.open();
       return;
     }
 
@@ -218,16 +166,18 @@ export function initSearch() {
       event.preventDefault();
       window.location.href = result.permalink;
     }
-  });
-}
+  };
 
-function setOpenButtonState(
-  buttons: readonly HTMLButtonElement[],
-  expanded: boolean,
-) {
-  for (const button of buttons) {
-    button.setAttribute("aria-expanded", String(expanded));
-  }
+  document.addEventListener(
+    "keydown",
+    onKeyDown,
+    context.signal ? { signal: context.signal } : undefined,
+  );
+
+  return () => {
+    document.removeEventListener("keydown", onKeyDown);
+    controller.destroy();
+  };
 }
 
 function isSearchShortcut(event: KeyboardEvent): boolean {

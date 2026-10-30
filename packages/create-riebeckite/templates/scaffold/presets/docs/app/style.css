@@ -1,7 +1,7 @@
 @import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
-@import "@riebeckite/layouts/style.css";
+@import "@riebeckite/ui/styles/drawer.css";
 
 .riebeckite-page {
   display: flex;

@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -7,7 +7,7 @@ import puppeteer, { type Browser } from "puppeteer";
 const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 const styles = [
-  read("../../../packages/layouts/style.css"),
+  read("../../../packages/ui/styles/drawer.css"),
   read("../app/styles/shell.css"),
 ].join("\n");
 let browser: Browser | null = null;

@@ -11,10 +11,14 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Shared declarative UI context for Riebeckite integrations and plugins.",
+  "description": "Optional headless UI primitives, accessibility behaviors, and shared context for Riebeckite.",
   "keywords": [
     "riebeckite",
     "ui",
+    "headless",
+    "accessibility",
+    "drawer",
+    "tabs",
     "context",
     "hono",
     "jsx"
@@ -31,7 +35,44 @@
       "import": "./dist/index.js",
       "source": "./index.tsx",
       "default": "./dist/index.js"
-    }
+    },
+    "./drawer": {
+      "types": "./dist/drawer.d.ts",
+      "import": "./dist/drawer.js",
+      "source": "./drawer.tsx",
+      "default": "./dist/drawer.js"
+    },
+    "./drawer/client": {
+      "types": "./dist/drawer-client.d.ts",
+      "import": "./dist/drawer-client.js",
+      "source": "./drawer-client.ts",
+      "default": "./dist/drawer-client.js"
+    },
+    "./dialog": {
+      "types": "./dist/dialog.d.ts",
+      "import": "./dist/dialog.js",
+      "source": "./dialog.ts",
+      "default": "./dist/dialog.js"
+    },
+    "./tabs": {
+      "types": "./dist/tabs.d.ts",
+      "import": "./dist/tabs.js",
+      "source": "./tabs.ts",
+      "default": "./dist/tabs.js"
+    },
+    "./copy": {
+      "types": "./dist/copy.d.ts",
+      "import": "./dist/copy.js",
+      "source": "./copy.ts",
+      "default": "./dist/copy.js"
+    },
+    "./behaviors": {
+      "types": "./dist/behaviors.d.ts",
+      "import": "./dist/behaviors.js",
+      "source": "./behaviors.ts",
+      "default": "./dist/behaviors.js"
+    },
+    "./styles/drawer.css": "./styles/drawer.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
@@ -39,6 +80,7 @@
   },
   "scripts": {
     "build": "node ../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts*\"",
     "prepack": "pnpm run build"
   },
   "publishConfig": {
@@ -48,7 +90,13 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
-    "dist"
+    "dist",
+    "styles"
   ],
-  "sideEffects": false
+  "sideEffects": [
+    "./drawer-client.ts",
+    "./src/drawer/client.ts",
+    "./dist/drawer-client.js",
+    "./styles/drawer.css"
+  ]
 }

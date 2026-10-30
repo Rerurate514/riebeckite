@@ -33,6 +33,7 @@ export type ResolvedRiebeckiteConfig = {
   };
   theme: ResolvedTheme;
   plugins: RiebeckitePlugin[];
+  pluginInventory?: readonly import("./plugin.js").ResolvedPluginMetadata[];
   cache: {
     enabled: boolean;
     directory: string;

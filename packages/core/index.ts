@@ -156,6 +156,7 @@ export {
 } from "./src/content/publishing.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
 export type {
+  BuildTraceRecorder,
   LogContext,
   Logger,
   LogLevel,
@@ -165,6 +166,7 @@ export type {
   TraceEvent,
   Tracer,
   TraceSink,
+  TraceSnapshot,
   TraceSpan,
 } from "./src/observability.js";
 export {

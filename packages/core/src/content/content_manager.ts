@@ -1,6 +1,6 @@
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import type { Observability } from "../observability.js";
+import type { Observability, TraceSnapshot } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
 import { Pipeline } from "../pipeline.js";
@@ -12,6 +12,7 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
+import type { ResolvedPluginMetadata } from "../types/plugin.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent, PostFrontmatter } from "../types/post_content.js";
 import type { PublishStrategy } from "../types/publish_strategy.js";
@@ -76,6 +77,10 @@ export type CompletedContentBuildSnapshot = {
   readonly outputChangeSet: OutputChangeSet;
   readonly fullRegenerationReasons: readonly FullRegenerationReason[];
   readonly completedAt: number;
+  readonly startedAt: number;
+  readonly plugins: readonly ResolvedPluginMetadata[];
+  readonly manifestHookMetrics: ManifestHookMetrics;
+  readonly trace?: TraceSnapshot;
 };
 
 const CONTENT_PROCESSING_CONCURRENCY = 16;
@@ -343,6 +348,8 @@ export class ContentManager {
     if (this.manifest) return this.manifest;
 
     this.enableBuildTime();
+    this.pipelineOptions.traceRecorder?.begin();
+    const startedAt = Date.now();
 
     const config = this.pipelineOptions.config;
     const plan = await this.getBuildPlan(options);
@@ -474,6 +481,21 @@ export class ContentManager {
             ...plan.fullRegenerationReasons,
           ]),
           completedAt: Date.now(),
+          startedAt,
+          plugins: Object.freeze(
+            this.pluginRuntime.getPluginInventory().map((plugin) =>
+              Object.freeze({
+                ...plugin,
+                provides: Object.freeze([...plugin.provides]),
+                requires: Object.freeze([...plugin.requires]),
+                optional: Object.freeze([...plugin.optional]),
+              }),
+            ),
+          ),
+          manifestHookMetrics: freezeManifestHookMetrics(
+            this.pluginRuntime.getManifestHookMetrics(),
+          ),
+          trace: this.pipelineOptions.traceRecorder?.snapshot(),
         });
         return manifest;
       },
@@ -832,6 +854,22 @@ declare module "../pipeline" {
     publishingBuildTime?: Date | string;
     commitBuildState?: boolean;
   }
+}
+
+function freezeManifestHookMetrics(
+  metrics: ManifestHookMetrics,
+): ManifestHookMetrics {
+  return Object.freeze({
+    ...metrics,
+    byPlugin: Object.freeze(
+      Object.fromEntries(
+        Object.entries(metrics.byPlugin).map(([name, plugin]) => [
+          name,
+          Object.freeze({ ...plugin }),
+        ]),
+      ),
+    ),
+  });
 }
 
 function freezeOutputChangeSet(changes: OutputChangeSet): OutputChangeSet {

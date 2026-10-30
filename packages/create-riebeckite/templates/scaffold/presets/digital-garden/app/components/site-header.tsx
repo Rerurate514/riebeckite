@@ -3,7 +3,7 @@ import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import {
   Drawer,
   DrawerTrigger,
-} from "@riebeckite/layouts";
+} from "@riebeckite/ui/drawer";
 import { useSiteContext } from "@riebeckite/ui";
 
 export function SiteHeader() {

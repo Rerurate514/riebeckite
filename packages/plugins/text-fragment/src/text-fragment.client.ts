@@ -1,3 +1,4 @@
+import { copyText } from "@riebeckite/ui/copy";
 import { buildQuoteMarkdown, buildTextFragmentUrl } from "./text-fragment.js";
 
 /** Article body container emitted by the Honox article primitives. */
@@ -112,7 +113,7 @@ export function initTextFragmentShare(
 
     isCopying = true;
     try {
-      const copied = await copyToClipboard(buildValue(selection.text));
+      const copied = await copyText(buildValue(selection.text));
       status.textContent = copied ? successMessage : resolved.copyFailedLabel;
       // The fallback path may have hidden the popover; keep it visible.
       active = selection;
@@ -250,55 +251,4 @@ function positionPopover(popover: HTMLElement, rect: DOMRect): void {
 
 function resolvePageUrl(): string {
   return window.location.href.split("#")[0] ?? window.location.href;
-}
-
-async function copyToClipboard(value: string): Promise<boolean> {
-  try {
-    if (window.isSecureContext && navigator.clipboard) {
-      await navigator.clipboard.writeText(value);
-      return true;
-    }
-  } catch {
-    // Fall back to the legacy path below.
-  }
-
-  return copyWithExecCommand(value);
-}
-
-function copyWithExecCommand(value: string): boolean {
-  const selection = window.getSelection();
-  const savedRanges: Range[] = [];
-
-  if (selection) {
-    for (let index = 0; index < selection.rangeCount; index += 1) {
-      savedRanges.push(selection.getRangeAt(index).cloneRange());
-    }
-  }
-
-  const textarea = document.createElement("textarea");
-  textarea.value = value;
-  textarea.setAttribute("readonly", "");
-  textarea.style.position = "fixed";
-  textarea.style.top = "-1000px";
-  textarea.style.opacity = "0";
-
-  document.body.appendChild(textarea);
-  textarea.select();
-
-  let copied = false;
-  try {
-    copied = document.execCommand("copy");
-  } catch {
-    copied = false;
-  } finally {
-    textarea.remove();
-
-    // Restore the reader's selection so the highlight does not vanish.
-    if (selection && savedRanges.length > 0) {
-      selection.removeAllRanges();
-      for (const range of savedRanges) selection.addRange(range);
-    }
-  }
-
-  return copied;
 }

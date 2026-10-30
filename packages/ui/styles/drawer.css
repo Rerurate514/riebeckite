@@ -73,8 +73,4 @@
   .rb-drawer:has(> .rb-drawer__panel:target) > .rb-drawer__backdrop {
     display: block;
   }
-
-  .rb-drawer-open {
-    overflow: hidden;
-  }
 }

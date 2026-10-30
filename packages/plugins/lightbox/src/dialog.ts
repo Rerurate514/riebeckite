@@ -2,13 +2,9 @@ export function createDialog(options: {
   expandLabel: string;
   closeLabel: string;
 }) {
-  const element = document.createElement("div");
+  const element = document.createElement("dialog");
   element.className = "rr-lightbox";
-  element.setAttribute("role", "dialog");
-  element.setAttribute("aria-modal", "true");
   element.setAttribute("aria-label", options.expandLabel);
-  element.tabIndex = -1;
-  element.setAttribute("hidden", "");
 
   const frame = document.createElement("figure");
   frame.className = "rr-lightbox__frame";

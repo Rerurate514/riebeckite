@@ -110,12 +110,11 @@ External plugins and themes should depend on public packages and public exports 
 | `@riebeckite/diagram` | Shared diagram infrastructure for diagram plugins |
 | `@riebeckite/preview` | Secure Markdown preview runtime |
 | `@riebeckite/spa` | Opt-in SPA navigation runtime |
-| `@riebeckite/ui` | Declarative UI context for integrations and plugins |
+| `@riebeckite/ui` | Shared UI context plus optional headless primitives (`drawer`, `dialog`, `tabs`, `copy`, `behaviors`) and Drawer CSS |
 | `@riebeckite/analytics-cloudflare` | Cloudflare Workers, D1, and KV runtime for analytics |
 | `@riebeckite/webmention-cloudflare` | Cloudflare Workers, D1, and KV runtime for Webmentions |
 | `@riebeckite/test` | Test helpers (`assertGolden`, `assertGoldenJson`); the `e2e` subpath exports the packed-tarball external-site engine |
 | `@riebeckite/node` | Node.js adapters; `FileSystemContentSource` and path helpers for filesystem-backed content |
-| `@riebeckite/layouts` | Optional accessible Drawer and its client entry |
 | `@riebeckite/git-history` | Git repository access shared by plugins; the `test-support` subpath exports a throw-away repository for tests |
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |

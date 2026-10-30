@@ -95,7 +95,9 @@ export type {
   ContentSourceMetadata,
 } from "./src/content/content_source.js";
 export {
+  cacheContentSource,
   getContentSourceEntry,
+  getContentSourceEntrySize,
   readContentSourceEntry,
 } from "./src/content/content_source.js";
 export { resolveContentStableId } from "./src/content/content_stable_id.js";

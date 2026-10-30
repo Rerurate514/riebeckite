@@ -46,7 +46,11 @@ import {
   isPersistentlyCacheable,
   requiresFullContentRegeneration as requiresFullContentRegenerationForConfig,
 } from "./content_persistent_cache.js";
-import type { ContentSource, ContentSourceEntry } from "./content_source.js";
+import {
+  type ContentSource,
+  type ContentSourceEntry,
+  cacheContentSource,
+} from "./content_source.js";
 import { ManifestAssembler } from "./manifest_assembler.js";
 import type { OutputChangeSet } from "./output_dependency.js";
 import {
@@ -146,7 +150,7 @@ export class ContentManager {
     this.publishingBuildTime = resolvePublishingBuildTime(
       pipelineOptions.publishingBuildTime,
     );
-    this.source = content;
+    this.source = cacheContentSource(content);
     this.pipelineOptions = {
       ...this.pipelineOptions,
       contentSource: this.source,

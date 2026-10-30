@@ -23,6 +23,18 @@ export function computeLocalizationSignatures(
   const markdownBySlug = new Map(
     entries.map((entry) => [entry.slug, entry.markdown]),
   );
+  const linksBySlug = new Map(
+    [...markdownBySlug].map(([slug, markdown]) => [
+      slug,
+      extractContentLinks(markdown, contentIndex),
+    ]),
+  );
+  const permalinksBySlug = new Map(
+    [...markdownBySlug].map(([slug, markdown]) => [
+      slug,
+      referencedPermalinks(markdown, state.slugsByPermalink),
+    ]),
+  );
   const membersByTranslation = new Map<string, string[]>();
   for (const member of state.contents.values()) {
     const members = membersByTranslation.get(member.translationId) ?? [];
@@ -40,8 +52,7 @@ export function computeLocalizationSignatures(
       `own:${content.lang}\u0001${content.translationId}`,
       ...members.map((member) => `group:${member}`),
     ];
-    const markdown = markdownBySlug.get(content.slug) ?? "";
-    const links = extractContentLinks(markdown, contentIndex);
+    const links = linksBySlug.get(content.slug) ?? [];
     for (const link of links) {
       if (link.kind === "image" || link.kind === "attachment") continue;
       parts.push(
@@ -50,10 +61,7 @@ export function computeLocalizationSignatures(
         }`,
       );
     }
-    for (const permalink of referencedPermalinks(
-      markdown,
-      state.slugsByPermalink,
-    )) {
+    for (const permalink of permalinksBySlug.get(content.slug) ?? []) {
       const targetSlug = state.slugsByPermalink.get(permalink);
       parts.push(
         `url:${permalink}=${

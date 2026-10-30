@@ -340,7 +340,7 @@ export class ContentManager {
 
   async getRequestManifest(): Promise<ContentManifest> {
     return this.pipelineOptions.isDevelopment &&
-        this.pluginRuntime.canUseDevelopmentRouteManifest()
+      this.pluginRuntime.canUseDevelopmentRouteManifest()
       ? await this.getRouteManifest()
       : await this.getManifest();
   }

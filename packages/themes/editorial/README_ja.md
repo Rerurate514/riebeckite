@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-editorial` は公式テーマ **Editorial** を提供します。テーマ ID は `editorial` です。タイポグラフィと記事装飾を備えた、出版物風のテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-editorial-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-editorial-light.png)
+
+**ダーク**
+
+![theme-editorial-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-editorial-dark.png)
+
 ## インストール
 
 ```sh

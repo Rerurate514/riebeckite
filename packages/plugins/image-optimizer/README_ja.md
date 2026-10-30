@@ -36,7 +36,7 @@ Sharp が読み取れる JPEG、PNG、WebP、AVIF を入力として扱えます
 
 このサイトでは、`imageOptimizer()` が生成した画像バリアントを `responsiveImage()` 経由で配信しています。
 
-![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo-horizontal.png)
 
 ## オプション
 

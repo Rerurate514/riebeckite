@@ -10,6 +10,16 @@ title: Terminal
 
 `@riebeckite/theme-terminal` は公式テーマ **Terminal** を提供します。テーマ ID は `terminal` です。蛍光体色やフレームを設定できる、ターミナル風テーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-terminal-light.png]]
+
+**ダーク**
+
+![[theme-terminal-dark.png]]
+
 ## インストール
 
 ```sh

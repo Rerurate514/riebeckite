@@ -98,6 +98,11 @@ test("rewrites theme, plugin, image, and guide links without changing fenced lin
     ),
   );
   assert.ok(rewritten.includes("[日本語](./minimal.ja.md)"));
+  assert.ok(
+    rewriteDocumentLinks("![[theme-minimal-light.png]]", options).includes(
+      "https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-minimal-light.png",
+    ),
+  );
 });
 
 test("is idempotent and labels generated theme READMEs", () => {

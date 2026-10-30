@@ -10,6 +10,16 @@ title: Fieldnotes
 
 `@riebeckite/theme-fieldnotes` provides the official **Fieldnotes** theme. Its theme identity is `fieldnotes`. A notebook-inspired reading surface with paper and annotation details.
 
+## Rendered example
+
+**Light**
+
+![[theme-fieldnotes-light.png]]
+
+**Dark**
+
+![[theme-fieldnotes-dark.png]]
+
 ## Installation
 
 ```sh

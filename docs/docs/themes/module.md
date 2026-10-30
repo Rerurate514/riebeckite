@@ -10,6 +10,16 @@ title: Module
 
 `@riebeckite/theme-module` provides the official **Module** theme. Its theme identity is `module`. A structured technical theme with calibrated grids and edge details.
 
+## Rendered example
+
+**Light**
+
+![[theme-module-light.png]]
+
+**Dark**
+
+![[theme-module-dark.png]]
+
 ## Installation
 
 ```sh

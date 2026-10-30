@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-signal` は公式テーマ **Signal** を提供します。テーマ ID は `signal` です。エディトリアルやポスター風の表現に向く、大胆なグラフィックテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-signal-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-signal-light.png)
+
+**ダーク**
+
+![theme-signal-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-signal-dark.png)
+
 ## インストール
 
 ```sh

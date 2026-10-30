@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-tokyonight` provides the official **Tokyo Night** theme. Its theme identity is `tokyonight`. A night-oriented theme with technical typography and neon accents.
 
+## Rendered example
+
+**Light**
+
+![theme-tokyonight-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-tokyonight-light.png)
+
+**Dark**
+
+![theme-tokyonight-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-tokyonight-dark.png)
+
 ## Installation
 
 ```sh

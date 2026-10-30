@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-terminal` provides the official **Terminal** theme. Its theme identity is `terminal`. A terminal-inspired theme with configurable phosphor and frame details.
 
+## Rendered example
+
+**Light**
+
+![theme-terminal-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-terminal-light.png)
+
+**Dark**
+
+![theme-terminal-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-terminal-dark.png)
+
 ## Installation
 
 ```sh

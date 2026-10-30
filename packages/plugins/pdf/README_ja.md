@@ -40,7 +40,7 @@ export default defineConfig({
 
 #### 描画結果
 
-![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/pdf-example.pdf.ja.md)
+![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/pdf-example.pdf)
 
 `<object>` はブラウザ内蔵の PDF ビューアを使い、その中のダウンロードリンクが、PDF
 表示に対応しない環境向けのフォールバックになります。ビューアの下にはダウンロード

@@ -10,6 +10,16 @@ title: Garden
 
 `@riebeckite/theme-garden` provides the official **Garden** theme. Its theme identity is `garden`. A calm reading theme with seasonal botanical details.
 
+## Rendered example
+
+**Light**
+
+![[theme-garden-light.png]]
+
+**Dark**
+
+![[theme-garden-dark.png]]
+
 ## Installation
 
 ```sh

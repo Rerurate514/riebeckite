@@ -46,7 +46,7 @@ attachment renderers.
 
 The logo below is emitted as a `<picture>` element when image variants exist in the manifest.
 
-![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.md)
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo-horizontal.png)
 
 ## Options
 

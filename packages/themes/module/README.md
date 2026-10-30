@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-module` provides the official **Module** theme. Its theme identity is `module`. A structured technical theme with calibrated grids and edge details.
 
+## Rendered example
+
+**Light**
+
+![theme-module-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-module-light.png)
+
+**Dark**
+
+![theme-module-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-module-dark.png)
+
 ## Installation
 
 ```sh

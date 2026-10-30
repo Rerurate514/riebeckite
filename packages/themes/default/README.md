@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-default` provides the official **Default** theme. Its theme identity is `riebeckite`. A balanced reading surface for documentation and long-form writing.
 
+## Rendered example
+
+**Light**
+
+![theme-default-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-default-light.png)
+
+**Dark**
+
+![theme-default-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-default-dark.png)
+
 ## Installation
 
 ```sh

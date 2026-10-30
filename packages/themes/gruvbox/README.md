@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-gruvbox` provides the official **Gruvbox** theme. Its theme identity is `gruvbox`. A warm, high-contrast theme based on the Gruvbox palette.
 
+## Rendered example
+
+**Light**
+
+![theme-gruvbox-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-gruvbox-light.png)
+
+**Dark**
+
+![theme-gruvbox-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-gruvbox-dark.png)
+
 ## Installation
 
 ```sh

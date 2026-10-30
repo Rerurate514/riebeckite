@@ -10,6 +10,16 @@ title: Gruvbox
 
 `@riebeckite/theme-gruvbox` は公式テーマ **Gruvbox** を提供します。テーマ ID は `gruvbox` です。Gruvbox パレットを基調にした、暖色系でコントラストの高いテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-gruvbox-light.png]]
+
+**ダーク**
+
+![[theme-gruvbox-dark.png]]
+
 ## インストール
 
 ```sh

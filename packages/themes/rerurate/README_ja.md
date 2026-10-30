@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-rerurate` は公式テーマ **Rerurate** を提供します。テーマ ID は `rerurate` です。紙とインクを基調に、天体装飾を任意で加えられる Rerurate のテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-rerurate-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-rerurate-light.png)
+
+**ダーク**
+
+![theme-rerurate-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-rerurate-dark.png)
+
 ## インストール
 
 ```sh

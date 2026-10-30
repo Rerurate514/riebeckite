@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-default` は公式テーマ **Default** を提供します。テーマ ID は `riebeckite` です。ドキュメントや長文を読みやすくする、バランスの取れたテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-default-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-default-light.png)
+
+**ダーク**
+
+![theme-default-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-default-dark.png)
+
 ## インストール
 
 ```sh

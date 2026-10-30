@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-sakura` は公式テーマ **Sakura** を提供します。テーマ ID は `sakura` です。桜の装飾を備えた、やわらかな和風テーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-sakura-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-sakura-light.png)
+
+**ダーク**
+
+![theme-sakura-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-sakura-dark.png)
+
 ## インストール
 
 ```sh

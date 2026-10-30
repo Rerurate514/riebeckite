@@ -32,7 +32,7 @@ the app calls on page initialization.
 
 Click the image to open the lightbox.
 
-![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo.png.md)
+![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo.png)
 
 ## Behavior
 

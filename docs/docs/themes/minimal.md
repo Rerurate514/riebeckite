@@ -10,6 +10,16 @@ title: Minimal
 
 `@riebeckite/theme-minimal` provides the official **Minimal** theme. Its theme identity is `minimal`. A quiet, content-first theme with restrained decoration.
 
+## Rendered example
+
+**Light**
+
+![[theme-minimal-light.png]]
+
+**Dark**
+
+![[theme-minimal-dark.png]]
+
 ## Installation
 
 ```sh

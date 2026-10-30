@@ -10,6 +10,16 @@ title: Fieldnotes
 
 `@riebeckite/theme-fieldnotes` は公式テーマ **Fieldnotes** を提供します。テーマ ID は `fieldnotes` です。紙面や注釈の表現を備えた、ノートブック風のテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-fieldnotes-light.png]]
+
+**ダーク**
+
+![[theme-fieldnotes-dark.png]]
+
 ## インストール
 
 ```sh

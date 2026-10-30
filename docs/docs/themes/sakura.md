@@ -10,6 +10,16 @@ title: Sakura
 
 `@riebeckite/theme-sakura` provides the official **Sakura** theme. Its theme identity is `sakura`. A soft Japanese-inspired theme with blossom details.
 
+## Rendered example
+
+**Light**
+
+![[theme-sakura-light.png]]
+
+**Dark**
+
+![[theme-sakura-dark.png]]
+
 ## Installation
 
 ```sh

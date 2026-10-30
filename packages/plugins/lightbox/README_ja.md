@@ -24,7 +24,7 @@ export default defineConfig({
 
 画像をクリックすると lightbox が開きます。
 
-![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo.png.ja.md)
+![riebeckite-logo.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo.png)
 
 ## 利用時の挙動
 

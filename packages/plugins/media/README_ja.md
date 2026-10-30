@@ -35,7 +35,7 @@ export default defineConfig({
 
 音声はブラウザ標準のプレイヤーで再生できます。動画も同じ埋め込み記法で、拡張子だけが変わります。
 
-![media-example.wav](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/media-example.wav.ja.md)
+![media-example.wav](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/media-example.wav)
 
 ## オプション
 

@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-garden` は公式テーマ **Garden** を提供します。テーマ ID は `garden` です。季節の植物装飾を備えた、穏やかな読書向けテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-garden-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-garden-light.png)
+
+**ダーク**
+
+![theme-garden-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-garden-dark.png)
+
 ## インストール
 
 ```sh

@@ -10,6 +10,16 @@ title: Gruvbox
 
 `@riebeckite/theme-gruvbox` provides the official **Gruvbox** theme. Its theme identity is `gruvbox`. A warm, high-contrast theme based on the Gruvbox palette.
 
+## Rendered example
+
+**Light**
+
+![[theme-gruvbox-light.png]]
+
+**Dark**
+
+![[theme-gruvbox-dark.png]]
+
 ## Installation
 
 ```sh

@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-signal` provides the official **Signal** theme. Its theme identity is `signal`. A bold graphic theme for editorial and poster-like reading surfaces.
 
+## Rendered example
+
+**Light**
+
+![theme-signal-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-signal-light.png)
+
+**Dark**
+
+![theme-signal-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-signal-dark.png)
+
 ## Installation
 
 ```sh

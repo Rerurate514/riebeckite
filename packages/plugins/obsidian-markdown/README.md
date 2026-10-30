@@ -108,7 +108,7 @@ The forms below are rendered by this site.
 
 ![head-tag](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/glossary/head-tag.md)
 
-![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.md)
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo-horizontal.png)
 
 **Tags.** Inline tags such as #documentation and #plugins link to the taxonomy pages.
 

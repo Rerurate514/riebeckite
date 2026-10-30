@@ -118,6 +118,16 @@ function rewriteWikilink(rawTarget, label, options) {
   const { pathname, suffix } = splitTarget(rawTarget.trim());
   const extension = options.pageName?.endsWith(".ja.md") ? ".ja.md" : ".md";
   const docsRoot = path.join(options.repositoryDirectory, "docs", "docs");
+  if (hasFileExtension(pathname) && !/\.md$/i.test(pathname)) {
+    const asset = findVaultFile(
+      path.join(options.repositoryDirectory, "docs"),
+      pathname,
+    );
+    if (asset !== null) {
+      const relative = toPosix(path.relative(options.documentDirectory, asset));
+      return `[${label ?? rawTarget}](${rewriteTarget(`${relative}${suffix}`, options)})`;
+    }
+  }
   const name = pathname.replace(/\.ja?\.md$/, "");
   const absolute = name.includes("/")
     ? path.resolve(docsRoot, `${name}${extension}`)
@@ -125,6 +135,30 @@ function rewriteWikilink(rawTarget, label, options) {
       path.resolve(docsRoot, `${name}${extension}`));
   const relative = toPosix(path.relative(options.documentDirectory, absolute));
   return `[${label ?? rawTarget}](${rewriteTarget(`${relative}${suffix}`, options)})`;
+}
+
+function hasFileExtension(target) {
+  return /\.[^./\\]+$/.test(target);
+}
+
+function findVaultFile(docsDirectory, target) {
+  const direct = path.resolve(docsDirectory, target);
+  if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct;
+  const name = path.basename(target).toLowerCase();
+  const walk = (directory) => {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      if (entry.name.startsWith(".")) continue;
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        const found = walk(entryPath);
+        if (found !== null) return found;
+      } else if (entry.name.toLowerCase() === name) {
+        return entryPath;
+      }
+    }
+    return null;
+  };
+  return walk(docsDirectory);
 }
 
 export function rewriteDocumentLinks(text, options) {

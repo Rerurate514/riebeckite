@@ -10,6 +10,16 @@ title: Folio
 
 `@riebeckite/theme-folio` は公式テーマ **Folio** を提供します。テーマ ID は `folio` です。エディトリアルな枠組みを持つ、余白の広いポートフォリオ風テーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-folio-light.png]]
+
+**ダーク**
+
+![[theme-folio-dark.png]]
+
 ## インストール
 
 ```sh

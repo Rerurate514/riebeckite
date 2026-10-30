@@ -10,6 +10,16 @@ title: Tokyo Night
 
 `@riebeckite/theme-tokyonight` は公式テーマ **Tokyo Night** を提供します。テーマ ID は `tokyonight` です。技術的なタイポグラフィとネオンのアクセントを持つ、夜向けテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-tokyonight-light.png]]
+
+**ダーク**
+
+![[theme-tokyonight-dark.png]]
+
 ## インストール
 
 ```sh

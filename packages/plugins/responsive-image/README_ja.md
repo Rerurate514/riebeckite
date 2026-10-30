@@ -37,7 +37,7 @@ export default defineConfig({
 
 マニフェストに画像のバリアントがあれば、次のロゴは `<picture>` 要素として出力されます。
 
-![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo-horizontal.png)
 
 ## オプション
 

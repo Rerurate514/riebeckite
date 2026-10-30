@@ -10,6 +10,16 @@ title: Module
 
 `@riebeckite/theme-module` は公式テーマ **Module** を提供します。テーマ ID は `module` です。グリッドとエッジのディテールを備えた、構造的な技術テーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-module-light.png]]
+
+**ダーク**
+
+![[theme-module-dark.png]]
+
 ## インストール
 
 ```sh

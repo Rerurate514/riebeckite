@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-minimal` provides the official **Minimal** theme. Its theme identity is `minimal`. A quiet, content-first theme with restrained decoration.
 
+## Rendered example
+
+**Light**
+
+![theme-minimal-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-minimal-light.png)
+
+**Dark**
+
+![theme-minimal-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-minimal-dark.png)
+
 ## Installation
 
 ```sh

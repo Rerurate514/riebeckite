@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-editorial` provides the official **Editorial** theme. Its theme identity is `editorial`. A publication-style theme with typographic details and article ornaments.
 
+## Rendered example
+
+**Light**
+
+![theme-editorial-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-editorial-light.png)
+
+**Dark**
+
+![theme-editorial-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-editorial-dark.png)
+
 ## Installation
 
 ```sh

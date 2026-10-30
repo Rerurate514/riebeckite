@@ -41,9 +41,9 @@ The following source is rendered on this page. A plain wikilink becomes a downlo
 
 #### Rendered
 
-[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.md)
+[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)
 
-![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.md)
+![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)
 
 - Format is the uppercased file extension.
 - Size is read from disk under `config.content.directory` (path-traversal safe)

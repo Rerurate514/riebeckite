@@ -48,7 +48,7 @@ The following source is rendered on this page with the browser-native PDF viewer
 
 #### Rendered
 
-![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/pdf-example.pdf.md)
+![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/pdf-example.pdf)
 
 The `<object>` uses the browser's built-in PDF viewer; its nested download link
 is the graceful fallback for clients without PDF support. A visible download

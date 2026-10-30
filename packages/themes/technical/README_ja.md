@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-technical` は公式テーマ **Technical** を提供します。テーマ ID は `technical` です。技術文書向けの、設計図を思わせるテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![theme-technical-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-technical-light.png)
+
+**ダーク**
+
+![theme-technical-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-technical-dark.png)
+
 ## インストール
 
 ```sh

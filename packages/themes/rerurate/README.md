@@ -8,6 +8,16 @@
 
 `@riebeckite/theme-rerurate` provides the official **Rerurate** theme. Its theme identity is `rerurate`. Rerurate's paper-and-ink reading theme with optional celestial details.
 
+## Rendered example
+
+**Light**
+
+![theme-rerurate-light.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-rerurate-light.png)
+
+**Dark**
+
+![theme-rerurate-dark.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/themes/theme-rerurate-dark.png)
+
 ## Installation
 
 ```sh

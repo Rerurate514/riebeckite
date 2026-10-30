@@ -37,7 +37,7 @@ export default defineConfig({
 
 Audio uses the native browser player. Video uses the same embed form with a video extension.
 
-![media-example.wav](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/media-example.wav.md)
+![media-example.wav](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/media-example.wav)
 
 ## Options
 

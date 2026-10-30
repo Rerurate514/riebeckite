@@ -52,11 +52,11 @@ export default defineConfig({
 
 #### 実行例
 
-[source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md)
+[source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/source-file-example.ts)
 
-![source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md)
+![source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/source-file-example.ts)
 
-![source-file-example.ts#L3-L5](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/source-file-example.ts.ja.md#L3-L5)
+![source-file-example.ts#L3-L5](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/source-file-example.ts#L3-L5)
 
 ## 安全性と公開境界
 

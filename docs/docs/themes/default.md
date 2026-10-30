@@ -10,6 +10,16 @@ title: Default
 
 `@riebeckite/theme-default` provides the official **Default** theme. Its theme identity is `riebeckite`. A balanced reading surface for documentation and long-form writing.
 
+## Rendered example
+
+**Light**
+
+![[theme-default-light.png]]
+
+**Dark**
+
+![[theme-default-dark.png]]
+
 ## Installation
 
 ```sh

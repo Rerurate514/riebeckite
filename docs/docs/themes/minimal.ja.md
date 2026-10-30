@@ -10,6 +10,16 @@ title: Minimal
 
 `@riebeckite/theme-minimal` は公式テーマ **Minimal** を提供します。テーマ ID は `minimal` です。装飾を抑え、コンテンツに集中できるテーマです。
 
+## 実際の表示例
+
+**ライト**
+
+![[theme-minimal-light.png]]
+
+**ダーク**
+
+![[theme-minimal-dark.png]]
+
 ## インストール
 
 ```sh

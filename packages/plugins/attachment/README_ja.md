@@ -27,8 +27,8 @@ export default defineConfig({
 
 ## リンクと埋め込みの表示
 
-- `[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)` は、`download` 属性を持つ通常のリンクになります。
-- `![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
+- `[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)` は、`download` 属性を持つ通常のリンクになります。
+- `![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)` は、拡張子、ファイル名、ダウンロードリンクを含む添付カードになります。
 
 以下のソースは、このページ上で実際に描画されます。
 
@@ -42,9 +42,9 @@ export default defineConfig({
 
 #### 実行例
 
-[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)
+[attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)
 
-![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/attachment-example.txt.ja.md)
+![attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)
 
 - 形式は拡張子を大文字にしたものです。
 - カードのファイルサイズは `config.content.directory` 配下から読み取ります。パスは

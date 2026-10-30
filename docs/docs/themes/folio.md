@@ -10,6 +10,16 @@ title: Folio
 
 `@riebeckite/theme-folio` provides the official **Folio** theme. Its theme identity is `folio`. A spacious portfolio-style theme with editorial framing.
 
+## Rendered example
+
+**Light**
+
+![[theme-folio-light.png]]
+
+**Dark**
+
+![[theme-folio-dark.png]]
+
 ## Installation
 
 ```sh

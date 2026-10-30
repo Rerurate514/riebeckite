@@ -10,6 +10,16 @@ title: Technical
 
 `@riebeckite/theme-technical` provides the official **Technical** theme. Its theme identity is `technical`. A blueprint-inspired theme for technical writing.
 
+## Rendered example
+
+**Light**
+
+![[theme-technical-light.png]]
+
+**Dark**
+
+![[theme-technical-dark.png]]
+
 ## Installation
 
 ```sh

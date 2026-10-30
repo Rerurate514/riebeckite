@@ -66,7 +66,7 @@ export default defineConfig({
 
 ![head-tag](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/glossary/head-tag.ja.md)
 
-![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/riebeckite-logo-horizontal.png.ja.md)
+![riebeckite-logo-horizontal.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/riebeckite-logo-horizontal.png)
 
 **タグ。** #documentation や #plugins のようなインラインタグは、タクソノミーページへのリンクになります。
 

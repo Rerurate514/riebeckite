@@ -15,7 +15,10 @@ import {
   createPersistentContentCache,
   isPersistentlyCacheable,
 } from "../src/content/content_persistent_cache.js";
-import { readContentSourceEntry } from "../src/content/content_source.js";
+import {
+  type ContentSource,
+  readContentSourceEntry,
+} from "../src/content/content_source.js";
 import {
   NoopLogger,
   SinkTracer,
@@ -37,6 +40,20 @@ after(async () => {
   await fs.rm(TEST_CACHE_DIR, { recursive: true, force: true });
 });
 
+async function readDependency(
+  contentSource: ContentSource | undefined,
+  dependency: string,
+): Promise<string> {
+  const content = contentSource
+    ? await readContentSourceEntry(contentSource, dependency)
+    : null;
+  return content === null
+    ? "missing"
+    : typeof content === "string"
+      ? content
+      : new TextDecoder().decode(content);
+}
+
 function createTrackedFilePlugin(
   dependencyPath: (slug: string) => string,
   counters?: { pipelineExecutions: number },
@@ -52,15 +69,7 @@ function createTrackedFilePlugin(
       pipeline.use(() => async (tree: { children?: unknown[] }) => {
         if (counters) counters.pipelineExecutions += 1;
         const dependency = dependencyPath(context.sourceSlug);
-        const content = context.contentSource
-          ? await readContentSourceEntry(context.contentSource, dependency)
-          : null;
-        const value =
-          content === null
-            ? "missing"
-            : typeof content === "string"
-              ? content
-              : new TextDecoder().decode(content);
+        const value = await readDependency(context.contentSource, dependency);
         tree.children ??= [];
         tree.children.push({
           type: "html",
@@ -88,15 +97,7 @@ function createTrackedFilesPlugin(
         tree.children ??= [];
 
         for (const dependency of dependencyPaths(context.sourceSlug)) {
-          const content = context.contentSource
-            ? await readContentSourceEntry(context.contentSource, dependency)
-            : null;
-          const value =
-            content === null
-              ? "missing"
-              : typeof content === "string"
-                ? content
-                : new TextDecoder().decode(content);
+          const value = await readDependency(context.contentSource, dependency);
           tree.children.push({
             type: "html",
             value: `<p data-dependency="${dependency}">${value}</p>`,

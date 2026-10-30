@@ -1,4 +1,4 @@
-.rb-article-body > .rb-breadcrumbs {
+.rb-article-body > .rb-article-header-context > .rb-breadcrumbs {
   margin-block-start: var(--rb-space-2);
 }
 

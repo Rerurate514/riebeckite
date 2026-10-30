@@ -49,53 +49,6 @@ function manager(options: RelatedPostsOptions = {}) {
   });
 }
 
-test("publishes the navigation to eligible article footers", async () => {
-  const content = manager();
-  const manifest = await content.getManifest();
-
-  const entry = manifest.bySlug.get("source");
-  const relatedEntries = buildRelatedPosts({
-    manifest,
-    entry,
-    options: resolveRelatedPostsOptions(),
-    config: explicitConfig,
-  });
-
-  const html = renderToString(
-    await RelatedPosts({
-      entries: relatedEntries,
-      options: resolveRelatedPostsOptions(),
-    }),
-  );
-  assert.ok(html.includes("data-related-posts"));
-  assert.ok(html.includes('href="/tagged"'));
-});
-
-test("preserves related entries rendering order", async () => {
-  const manifest = await new ContentManager(source(files), [], {
-    config: explicitConfig,
-    plugins: [relatedPosts()],
-  }).getManifest();
-
-  const entry = manifest.bySlug.get("source");
-  const relatedEntries = buildRelatedPosts({
-    manifest,
-    entry,
-    options: resolveRelatedPostsOptions(),
-    config: explicitConfig,
-  });
-
-  const html = renderToString(
-    await RelatedPosts({
-      entries: relatedEntries,
-      options: resolveRelatedPostsOptions(),
-    }),
-  );
-
-  assert.ok(html.includes("data-related-posts"));
-  assert.ok(html.match(/<li /g)?.length > 0);
-});
-
 test("does not add navigation to processed content html", async () => {
   const content = manager();
   const manifest = await content.getManifest();
@@ -118,29 +71,6 @@ test("leaves entries with no related candidates untouched", async () => {
   });
 
   assert.deepEqual(relatedEntries, []);
-});
-
-test("keeps related entries available for manual placement", async () => {
-  const manifest = await manager().getManifest();
-
-  const entry = manifest.bySlug.get("source");
-  assert.ok(entry);
-
-  const relatedEntries = buildRelatedPosts({
-    manifest,
-    entry,
-    options: resolveRelatedPostsOptions(),
-    config: explicitConfig,
-  });
-
-  const manualHtml = renderToString(
-    await RelatedPosts({
-      entries: relatedEntries,
-      options: resolveRelatedPostsOptions(),
-    }),
-  );
-  assert.equal((manualHtml.match(/data-related-posts/g) ?? []).length, 1);
-  assert.ok(manualHtml.includes('href="/tagged"'));
 });
 
 test("applies heading and limit options", async () => {

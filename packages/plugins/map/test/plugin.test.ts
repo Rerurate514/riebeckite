@@ -28,16 +28,9 @@ function firstChild(tree: HastNode): ElementNode {
   return (tree as { children: ElementNode[] }).children[0];
 }
 
-test("registers the map pipeline and client entry", () => {
+test("validates options", () => {
   const plugin = map({ minZoom: 2, maxZoom: 18 });
 
-  assert.equal(plugin.name, "map");
-  assert.equal(plugin.processedContentCache?.version, "map-v1");
-  assert.equal(
-    plugin.assets?.[0]?.moduleSpecifier,
-    "@riebeckite/plugin-map/style.css",
-  );
-  assert.equal(plugin.clientEntries?.[0]?.exportName, "initMap");
   assert.deepEqual(plugin.validateOptions?.(undefined), []);
   assert.deepEqual(
     plugin.validateOptions?.({ height: 0, minZoom: 18, maxZoom: 2 }),

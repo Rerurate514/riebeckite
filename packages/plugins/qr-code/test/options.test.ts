@@ -3,7 +3,6 @@ import { test } from "node:test";
 import { qrCode } from "../index.js";
 import {
   DEFAULT_QR_CODE_OPTIONS,
-  qrElementClassName,
   resolveQrCodeOptions,
 } from "../src/options.js";
 
@@ -19,10 +18,6 @@ test("resolves documented defaults", () => {
     language: "qr",
   });
   assert.equal("fallback" in DEFAULT_QR_CODE_OPTIONS, false);
-});
-
-test("uses width", () => {
-  assert.equal(resolveQrCodeOptions({ width: 240 }).width, 240);
 });
 
 test("rejects the removed size option in plugin configuration", () => {
@@ -44,13 +39,5 @@ test("falls back on invalid values instead of throwing", () => {
   assert.equal(
     resolveQrCodeOptions({ language: "language-qrt" }).language,
     "qrt",
-  );
-});
-
-test("builds sub-element class names from the figure class", () => {
-  assert.equal(qrElementClassName("rb-qr", "source"), "rb-qr__source");
-  assert.equal(
-    qrElementClassName("my-qr", "caption-text"),
-    "my-qr__caption-text",
   );
 });

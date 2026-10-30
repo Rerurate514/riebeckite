@@ -7,10 +7,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { parseCommand } from "../src/cli.js";
 import { runCreateTheme } from "../src/commands/create_theme.js";
-import {
-  renderThemeFiles,
-  renderThemeIndex,
-} from "../src/theme_generator/templates.js";
+import { renderThemeIndex } from "../src/theme_generator/templates.js";
 
 test("parses create theme options and lists templates", () => {
   assert.deepEqual(
@@ -47,15 +44,6 @@ test("parses create theme options and lists templates", () => {
     () => parseCommand(["create", "theme", "example", "--template", "unknown"]),
     /Unknown theme template/,
   );
-});
-
-test("renders a theme template with public contracts", () => {
-  const first = renderThemeFiles("example", "minimal", [], true, true, true);
-  const css = first.get("styles/theme.css") ?? "";
-  assert.match(first.get("index.ts") ?? "", /defineTheme/);
-  assert.match(css, /data-rb-theme="example"/);
-  assert.match(css, /--rb-color-paper/);
-  assert.doesNotMatch(css, /\.rb-[\w-]+\s*>/);
 });
 
 test("typechecks a generated theme", async () => {

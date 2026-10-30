@@ -67,29 +67,27 @@ test("updates the cached PostContent html used by the content route", async () =
   assert.ok(processed.html.includes("rr-gallery__items"));
 });
 
-test("reports invalid YAML as an error and renders an error box", async () => {
+test("reports gallery diagnostics with their owner and severity", async () => {
   const manifest = await manager().getManifest();
-  const html = manifest.bySlug.get("broken")?.html ?? "";
 
-  assert.ok(html.includes("rr-gallery--error"));
-  const diagnostic = manifest.diagnostics.find(
+  const invalid = manifest.diagnostics.find(
     (candidate) => candidate.code === "gallery-invalid",
   );
-  assert.ok(diagnostic);
-  assert.equal(diagnostic.severity, "error");
-  assert.equal(diagnostic.slug, "broken");
-  assert.equal(diagnostic.pluginName, "gallery");
-});
-
-test("warns about items missing a title and an image", async () => {
-  const manifest = await manager().getManifest();
-  const diagnostic = manifest.diagnostics.find(
-    (candidate) => candidate.code === "gallery-item-incomplete",
+  assert.ok(invalid);
+  assert.equal(invalid.severity, "error");
+  assert.equal(invalid.slug, "broken");
+  assert.equal(invalid.pluginName, "gallery");
+  assert.ok(
+    (manifest.bySlug.get("broken")?.html ?? "").includes("rr-gallery--error"),
   );
 
-  assert.ok(diagnostic);
-  assert.equal(diagnostic.severity, "warning");
-  assert.equal(diagnostic.slug, "sparse");
+  const incomplete = manifest.diagnostics.find(
+    (candidate) => candidate.code === "gallery-item-incomplete",
+  );
+  assert.ok(incomplete);
+  assert.equal(incomplete.severity, "warning");
+  assert.equal(incomplete.slug, "sparse");
+  assert.equal(incomplete.pluginName, "gallery");
   assert.ok((manifest.bySlug.get("sparse")?.html ?? "").includes("__items"));
 });
 

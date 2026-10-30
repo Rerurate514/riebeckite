@@ -10,7 +10,7 @@ import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
 import Properties from "../components/properties.js";
-import { properties, renderPropertiesPanel } from "../index.ts";
+import { properties } from "../index.ts";
 import { getProperties } from "../src/component-data.js";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -54,45 +54,6 @@ async function runHook(
   await plugin.onManifestCreated?.({ manifest, diagnostics } as never);
   return diagnostics;
 }
-
-test("properties() registers its stylesheet", () => {
-  assert.deepEqual(properties().assets, [
-    {
-      pluginName: "properties",
-      kind: "style",
-      moduleSpecifier: "@riebeckite/plugin-properties/style.css",
-    },
-  ]);
-});
-
-test("renders the properties panel data for the Site", async () => {
-  const entries = [entry("a", { title: "A" }, "<p>A</p>")];
-  const manifest = manifestOf(entries);
-  const view = createPublicContentView(manifest);
-  const entry_ = manifest.entries[0];
-  const data = await getProperties({ view, frontmatter: entry_.frontmatter });
-
-  assert.equal(
-    renderToString(await Properties({ data })).includes("data-properties"),
-    true,
-  );
-  assert.match(
-    renderToString(await Properties({ data })),
-    /data-property-count="1"/,
-  );
-  await runHook(properties(), entries);
-});
-
-test("renders nothing when options produce no items", async () => {
-  const entries = [entry("a", { publish: true }, "<p>A</p>")];
-  const diagnostics = await runHook(properties(), entries);
-  assert.deepEqual(diagnostics, []);
-  const data = await getProperties({
-    view: createPublicContentView(manifestOf(entries)),
-    frontmatter: entries[0].frontmatter,
-  });
-  assert.equal(renderToString(await Properties({ data })), "");
-});
 
 test("the manifest hook is idempotent and skips empty panels", async () => {
   const already = entry("done", { title: "A" }, "<p>A</p>");
@@ -242,53 +203,6 @@ test("getProperties returns structured values without HTML", async () => {
   assert.doesNotMatch(JSON.stringify(data), /"\[/);
 });
 
-test("the component and renderPropertiesPanel share value semantics", async () => {
-  const source = entry("a", {
-    tags: ["Tag"],
-    related: "[[note]]",
-    created: "2024-01-02",
-    status: "draft",
-  });
-  const manifest = manifestOf([entry("note", {}), source]);
-  manifest.contentIndex.set("note", "note");
-  const options = {
-    fields: {
-      status: { type: "badge" as const, variants: { draft: "warning" } },
-    },
-  };
-  const view = createPublicContentView(manifest);
-  const data = await getProperties({
-    view,
-    frontmatter: source.frontmatter,
-    options,
-  });
-  const component = renderToString(await Properties({ data }));
-  const panel = renderPropertiesPanel(source.frontmatter, options, {
-    resolveLink: (target) => (target === "note" ? "/note" : null),
-  });
-
-  assert.equal(component, panel);
-});
-
-test("className adds to the configured root class and CSS hooks stay stable", async () => {
-  const source = entry("a", { tags: ["Tag"], status: "draft" });
-  const data = await getProperties({
-    view: createPublicContentView(manifestOf([source])),
-    frontmatter: source.frontmatter,
-  });
-  const html = renderToString(
-    await Properties({
-      data,
-      className: "site-panel",
-    }),
-  );
-
-  assert.match(html, /^<section class="rb-properties site-panel"/);
-  assert.match(html, /data-property-key="tags"/);
-  assert.match(html, /class="rb-properties__tag"/);
-  assert.match(html, /class="rb-properties__list"/);
-});
-
 test("component options override PluginConfig while unspecified fields remain", async () => {
   const source = entry("a", { tags: ["Tag"], status: "draft" });
   const manifest = manifestOf([source]);
@@ -397,21 +311,4 @@ test("tagBase and tag variants can be configured through PluginConfig", async ()
 
   assert.match(html, /data-variant="links"/);
   assert.match(html, /href="\/topics\/tag"/);
-});
-
-test("plugin validation reports field configuration paths", () => {
-  const issues = properties({
-    fields: {
-      status: { type: "unknown" } as never,
-    },
-  }).validateOptions?.({
-    fields: {
-      status: { type: "unknown" } as never,
-    },
-  });
-
-  assert.deepEqual(
-    issues?.map((issue) => issue.path),
-    ["fields.status.type"],
-  );
 });

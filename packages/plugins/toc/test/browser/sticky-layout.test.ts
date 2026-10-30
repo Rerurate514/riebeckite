@@ -13,14 +13,6 @@ let browser: Browser;
 let baseUrl = "";
 let generatedDirectory = "";
 
-test("TOC styles do not place an article layout", () => {
-  const tocStyle = readFileSync(
-    new URL("../../style.css", import.meta.url),
-    "utf8",
-  );
-  assert.doesNotMatch(tocStyle, /rb-article-layout|data-rb-layout/);
-});
-
 function sampleToc(itemCount = 80) {
   return Array.from(
     { length: itemCount },

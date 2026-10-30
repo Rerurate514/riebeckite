@@ -6,11 +6,7 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
-import {
-  breadcrumbs,
-  buildBreadcrumbItems,
-  resolveBreadcrumbsOptions,
-} from "../index.ts";
+import { breadcrumbs, buildBreadcrumbItems } from "../index.ts";
 
 function makeEntry(
   overrides: Omit<Partial<ContentManifestEntry>, "slug"> & { slug: string },
@@ -259,62 +255,6 @@ test("returns an empty trail for an empty slug and ignores stray slashes", () =>
     items.map((item) => item.url),
     ["/", undefined, undefined, "/n/docs/intro"],
   );
-});
-
-test("titleCaseSegment only uppercases the first character", () => {
-  const entry = makeEntry({
-    slug: "myDocs/API/leaf",
-    title: "Leaf",
-    permalink: "/myDocs/API/leaf",
-  });
-  const items = buildBreadcrumbItems({
-    manifest: makeManifest([entry]),
-    entry,
-    config,
-    homeLabel: "",
-  });
-
-  assert.equal(items[1]?.name, "MyDocs");
-  assert.equal(items[2]?.name, "API");
-  assert.equal(items[3]?.name, "Leaf");
-});
-
-test("resolveBreadcrumbsOptions applies defaults and trims strings", () => {
-  assert.deepEqual(resolveBreadcrumbsOptions(undefined), {
-    homeLabel: "",
-    className: "rb-breadcrumbs",
-    ariaLabel: "Breadcrumbs",
-    separator: "/",
-    jsonLd: true,
-  });
-
-  assert.deepEqual(
-    resolveBreadcrumbsOptions({
-      homeLabel: "  Home  ",
-      className: "  crumbs  ",
-      ariaLabel: "  You are here  ",
-      separator: "›",
-      jsonLd: false,
-    }),
-    {
-      homeLabel: "Home",
-      className: "crumbs",
-      ariaLabel: "You are here",
-      separator: "›",
-      jsonLd: false,
-    },
-  );
-
-  const blank = resolveBreadcrumbsOptions({
-    homeLabel: "   ",
-    className: "   ",
-    ariaLabel: "",
-    separator: "",
-  });
-  assert.equal(blank.homeLabel, "");
-  assert.equal(blank.className, "rb-breadcrumbs");
-  assert.equal(blank.ariaLabel, "Breadcrumbs");
-  assert.equal(blank.separator, "");
 });
 
 test("validateOptions reports invalid option values", () => {

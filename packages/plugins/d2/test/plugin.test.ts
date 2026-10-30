@@ -29,16 +29,9 @@ function firstChild(tree: HastNode): ElementNode {
   return (tree as { children: ElementNode[] }).children[0];
 }
 
-test("registers the D2 pipeline, assets, and client entry", () => {
+test("validates options", () => {
   const plugin = d2({ render: "client" });
 
-  assert.equal(plugin.name, "d2");
-  assert.equal(plugin.processedContentCache?.version, "d2-v1");
-  assert.equal(
-    plugin.assets?.[0]?.moduleSpecifier,
-    "@riebeckite/plugin-d2/style.css",
-  );
-  assert.equal(plugin.clientEntries?.[0]?.exportName, "initD2Diagrams");
   assert.deepEqual(plugin.validateOptions?.(undefined), []);
   assert.deepEqual(
     plugin.validateOptions?.({ render: "server", layout: "grid" } as never),

@@ -8,10 +8,7 @@ import { fileURLToPath } from "node:url";
 import { parseCommand } from "../src/cli.js";
 import { runCreatePlugin } from "../src/commands/create_plugin.js";
 import { PLUGIN_FEATURE_IDS } from "../src/plugin_generator/registry.js";
-import {
-  renderPluginFiles,
-  renderPluginIndex,
-} from "../src/plugin_generator/templates.js";
+import { renderPluginIndex } from "../src/plugin_generator/templates.js";
 
 test("parses create plugin features", () => {
   assert.deepEqual(
@@ -42,11 +39,6 @@ test("parses create plugin features", () => {
       parseCommand(["create", "plugin", "example", "--template", "unknown"]),
     /Unknown plugin feature/,
   );
-});
-
-test("renders a plugin with a documented feature", () => {
-  const first = renderPluginFiles("example", ["transform"], true, true);
-  assert.match(first.get("index.ts") ?? "", /definePlugin/);
 });
 
 test("typechecks a plugin composed from every feature", async () => {

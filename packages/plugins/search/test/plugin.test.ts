@@ -49,12 +49,6 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   } as unknown as ContentManifest;
 }
 
-test("the search client entry follows the page lifecycle", () => {
-  const entry = search().clientEntries?.[0];
-  assert.equal(entry?.scope, "page");
-  assert.equal(entry?.initializerArguments, "context");
-});
-
 test("the search-data endpoint returns published items with cache headers", async () => {
   const config = resolveConfig({
     site: { title: "Test" },

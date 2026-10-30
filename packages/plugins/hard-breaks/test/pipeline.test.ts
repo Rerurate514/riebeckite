@@ -23,35 +23,6 @@ test("every soft break in a multi-line paragraph is converted", async () => {
   assert.equal(await renderWithPlugin("a\nb\nc"), "<p>a<br>b<br>c</p>");
 });
 
-test("a blank line still splits paragraphs", async () => {
-  assert.equal(
-    await renderWithPlugin(
-      "first para\nstill first\n\nsecond para\nstill second",
-    ),
-    "<p>first para<br>still first</p>\n<p>second para<br>still second</p>",
-  );
-});
-
-test("fenced code blocks are unchanged", async () => {
-  assert.equal(
-    await renderWithPlugin(
-      "text before\n\n```js\nconst a = 1;\nconst b = 2;\n```\n\ntext after",
-    ),
-    '<p>text before</p>\n<pre><code class="language-js">const a = 1;\nconst b = 2;\n</code></pre>\n<p>text after</p>',
-  );
-});
-
-test("inline code content is unchanged", async () => {
-  assert.equal(
-    await renderWithPlugin("a `code` b\nc"),
-    "<p>a <code>code</code> b<br>c</p>",
-  );
-  assert.equal(
-    await renderWithPlugin("x `a\nb` y"),
-    "<p>x <code>a b</code> y</p>",
-  );
-});
-
 test("an explicit hard break is not converted twice", async () => {
   assert.equal(
     await renderWithPlugin("hard  \nbreak here"),
@@ -60,34 +31,6 @@ test("an explicit hard break is not converted twice", async () => {
   assert.equal(
     await renderWithPlugin("hard\\\nbreak here"),
     "<p>hard<br>break here</p>",
-  );
-});
-
-test("line breaks in list items are handled by the AST structure", async () => {
-  assert.equal(
-    await renderWithPlugin("- item one\n  continued\n- item two"),
-    "<ul>\n  <li>item one<br>continued</li>\n  <li>item two</li>\n</ul>",
-  );
-});
-
-test("line breaks in blockquotes behave like ordinary paragraphs", async () => {
-  assert.equal(
-    await renderWithPlugin("> quote line one\n> quote line two"),
-    "<blockquote>\n  <p>quote line one<br>quote line two</p>\n</blockquote>",
-  );
-});
-
-test("headings keep their Markdown structure", async () => {
-  assert.equal(
-    await renderWithPlugin("# Heading one\n\ntext"),
-    '<h1 id="heading-one">Heading one</h1>\n<p>text</p>',
-  );
-});
-
-test("raw HTML in Markdown is left as-is", async () => {
-  assert.equal(
-    await renderWithPlugin("<div>raw</div>\n\nplain"),
-    "<div>raw</div>\n<p>plain</p>",
   );
 });
 

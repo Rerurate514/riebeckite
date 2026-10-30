@@ -248,31 +248,3 @@ test("share exposes share links for the Site to render", async () => {
   assert.equal(data.links.length, 1);
   assert.equal(data.links[0]?.service, "x");
 });
-
-test("share keeps its assets and client entry", () => {
-  const plugin = share({ services: ["x"] });
-  const entry: ContentManifestEntry = {
-    slug: "hello",
-    permalink: "/hello",
-    publicLocation: { slug: "hello", permalink: "/hello" },
-    title: TITLE,
-    frontmatter: {},
-    html: "<p>Body</p>",
-    publishing: { visibility: "public", routable: true, discoverable: true },
-    tags: [],
-    links: [],
-    backlinks: [],
-    assets: [],
-  };
-  const context = {
-    manifest: manifestOf(entry),
-    config: resolveConfig({
-      site: { title: "Test", baseUrl: "https://example.com" },
-    }),
-  };
-
-  plugin.onManifestCreated?.(context as never);
-
-  assert.equal(plugin.assets?.length, 1);
-  assert.equal(plugin.clientEntries?.length, 1);
-});

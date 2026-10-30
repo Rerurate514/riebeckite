@@ -51,13 +51,50 @@ export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
   return async (tree: HastNode, file: unknown) => {
     restoreCodeMeta(tree);
     normalizeCodeLanguages(tree);
-    if (typeof prettyCode === "function") {
-      await (
-        prettyCode as (tree: HastNode, file: unknown) => Promise<void> | void
-      )(tree, file);
+    const fallbackSources = detachFallbackSources(tree);
+    try {
+      if (typeof prettyCode === "function") {
+        await (
+          prettyCode as (tree: HastNode, file: unknown) => Promise<void> | void
+        )(tree, file);
+      }
+    } finally {
+      restoreFallbackSources(fallbackSources);
     }
     enhancePrettyCodeFigures(tree, options);
   };
+}
+
+type DetachedFallbackSource = {
+  parent: ElementNode;
+  index: number;
+  node: HastNode;
+};
+
+function detachFallbackSources(tree: HastNode): DetachedFallbackSource[] {
+  const detached: DetachedFallbackSource[] = [];
+  visitElements(tree, (node) => {
+    if (!isSourceFallback(node)) return;
+    const children = node.children ?? [];
+    for (const [index, child] of children.entries()) {
+      if (child.type !== "element" || child.tagName !== "pre") continue;
+      detached.push({ parent: node, index, node: child });
+      children[index] = text("");
+    }
+  });
+  return detached;
+}
+
+function restoreFallbackSources(detached: DetachedFallbackSource[]) {
+  for (const { parent, index, node } of detached) {
+    if (parent.children) parent.children[index] = node;
+  }
+}
+
+function isSourceFallback(node: ElementNode): boolean {
+  if (node.tagName !== "details") return false;
+  const className = getStringProperty(node, "className");
+  return className?.split(/\s+/).includes("rb-source-fallback") === true;
 }
 
 function restoreCodeMeta(tree: HastNode) {

@@ -127,6 +127,7 @@ export default jsxRenderer(async ({ children }, c) => {
                   <aside class="site-aside" aria-label="Table of contents">
                     <div data-spa-region="toc">
                       <TableOfContents
+                        borders={{ blockStart: false, blockEnd: false }}
                         className="rr-table-of-contents--desktop"
                         items={tocItems}
                       />

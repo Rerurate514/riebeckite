@@ -32,10 +32,10 @@ remain review inputs, not split targets.
 | Area | Main responsibility | Class | Decision |
 | --- | --- | --- | --- |
 | `packages/core/src/plugin/plugin_runtime.ts` | lifecycle hooks, external dependencies, assets, diagnostics | B, D | Page resolution and manifest-hook execution moved out. The remaining runtime surface is cohesive; split again only when a hook family gains independent state. |
-| `packages/core/src/content/content_manager.ts` | build orchestration, manifest reuse, cache, output changes | B, D | Manifest assembly and reuse policy moved out. Keep the remaining build orchestration as the composition point. |
+| `packages/core/src/content/content_manager.ts` | build orchestration, manifest reuse, cache, build state | B, D | Manifest assembly, reuse policy, and output-change resolution moved out. Keep the remaining build orchestration and cache ownership as the composition point. |
 | `packages/core/src/pipeline.ts` | Markdown execution orchestration | A | Link normalization and embed-fragment selection moved out. Keep the pipeline order together. |
-| `packages/plugins/bases/src/evaluate.ts` | Bases expression evaluation | A | Cohesive domain module. `memberCall` delegates to type-specific method resolvers; keep the evaluator together. |
-| `packages/plugins/l10n/src/l10n.ts` | localization detection, routing, rendering, options | B | Confirm independent change reasons before splitting. |
+| `packages/plugins/bases/src/evaluate.ts` | Bases expression evaluation | A | Condition comparison and matching moved to `conditions.ts`; keep AST evaluation and execution order together. |
+| `packages/plugins/l10n/src/l10n.ts` | localization plugin composition | A | Detection, options, routing, signatures, head tags, and queries now have independent modules. |
 | `packages/create-riebeckite/src/scaffold/content-pages.ts` | localized scaffold page content | A | Data-heavy single purpose. Split only when page groups gain independent ownership. |
 | `packages/create-riebeckite/src/scaffold/presets.ts` | preset definitions | A | Declarative data. Keep together. |
 | `scripts/release.mjs` | release orchestration and publishing | B | Operational script. Split by phase only when the release flow changes. |
@@ -87,7 +87,41 @@ responsibilities now live in:
 
 - `manifest_assembler.ts` — entry creation, graph build, public view, HTML sync
 - `content_manifest_reuse.ts` — reuse eligibility and deterministic entry cloning
-- `content_manager.ts` — build plan, cache ownership, output changes, orchestration
+- `content_output_resolver.ts` — plugin page routes, generated outputs, output changes
+- `content_manager.ts` — build plan, cache ownership, build state, orchestration
+
+### Localization
+
+`l10n.ts` combined option validation, language detection, localized routing,
+signatures, head tags, and query helpers. It is now the plugin composition root:
+
+- `options.ts` — option validation and canonicalization
+- `detection.ts` — content language detection and diagnostics
+- `routing.ts` — localized locations, redirects, and links
+- `signatures.ts` — content-cache signatures
+- `head_tags.ts` — alternate language tags
+- `query.ts` — localization query helpers
+- `types.ts` — shared localization contracts
+
+The public l10n exports remain available from `l10n.ts`.
+
+### CLI interactive parsing
+
+`cli.ts` keeps command dispatch and its error boundary. Interactive command
+argument parsing and usage errors now live in:
+
+- `interactive_command_parser.ts` — page, component, plugin, theme, preview, dev, and verify arguments
+- `cli_usage_error.ts` — shared CLI usage error
+
+### Icon packs
+
+`settings.ts` retains settings orchestration and its public exports. Icon-pack
+filesystem loading, validation, and normalization now live in `icon_packs.ts`.
+
+### Bases conditions
+
+`evaluate.ts` keeps expression evaluation and execution order. Value references,
+comparisons, and link, tag, and folder matching now live in `conditions.ts`.
 
 ### Markdown link normalization
 

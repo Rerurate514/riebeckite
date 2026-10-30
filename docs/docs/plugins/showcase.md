@@ -104,7 +104,6 @@ Enable `hardBreaks()` to keep each line on its own row.
 ---
 title: First release
 date: 2026-01-15
-timeline: true
 ---
 ````
 

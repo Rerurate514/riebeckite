@@ -47,7 +47,7 @@
   height: 0.7rem;
   border: 2px solid var(--rb-color-surface);
   border-radius: 50%;
-  background: var(--rb-color-accent);
+  background: var(--rb-timeline-active-color, var(--rb-color-accent));
   content: "";
 }
 
@@ -71,6 +71,72 @@
   color: var(--rb-color-accent);
   text-decoration: underline;
   text-underline-offset: 0.2em;
+}
+
+[data-rr-timeline] .rb-timeline__content {
+  min-width: 0;
+}
+
+[data-rr-timeline] .rb-timeline__event-title {
+  margin: 0;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+[data-rr-timeline] .rb-timeline__body {
+  margin-top: 0.5rem;
+  color: var(--rb-color-ink);
+}
+
+[data-rr-timeline] .rb-timeline__body > :first-child {
+  margin-top: 0;
+}
+
+[data-rr-timeline] .rb-timeline__body > :last-child {
+  margin-bottom: 0;
+}
+
+[data-rr-timeline] .rb-timeline--line-2 .rb-timeline__list::before,
+[data-rr-timeline] .rb-timeline--line-3 .rb-timeline__list::before {
+  background: var(--rb-color-border-strong);
+}
+
+[data-rr-timeline] .rb-timeline--line-4 .rb-timeline__list::before {
+  width: 2px;
+}
+
+[data-rr-timeline] .rb-timeline--line-5 .rb-timeline__list::before {
+  width: 3px;
+}
+
+[data-rr-timeline] .rb-timeline--body-2 .rb-timeline__content {
+  max-width: 42rem;
+}
+
+[data-rr-timeline] .rb-timeline--body-3 .rb-timeline__content {
+  max-width: 56rem;
+}
+
+[data-rr-timeline] .rb-timeline--active-color-background-modifier-success {
+  --rb-timeline-active-color: var(--rb-color-accent);
+}
+
+[data-rr-timeline] .rb-timeline--active-color-background-modifier-error,
+[data-rr-timeline] .rb-timeline--active-color-background-modifier-error-hover,
+[data-rr-timeline] .rb-timeline--active-color-text-error,
+[data-rr-timeline] .rb-timeline--active-color-text-error-hover {
+  --rb-timeline-active-color: var(--rb-color-danger, var(--rb-color-accent));
+}
+
+[data-rr-timeline] .rb-timeline--active-color-text-accent,
+[data-rr-timeline] .rb-timeline--active-color-text-accent-hover,
+[data-rr-timeline] .rb-timeline--active-color-interactive-accent,
+[data-rr-timeline] .rb-timeline--active-color-interactive-accent-hover,
+[data-rr-timeline] .rb-timeline--active-color-interactive-success,
+[data-rr-timeline] .rb-timeline--active-color-text-selection {
+  --rb-timeline-active-color: var(--rb-color-link, var(--rb-color-accent));
 }
 
 @media (max-width: 36rem) {

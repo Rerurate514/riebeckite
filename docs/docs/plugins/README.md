@@ -142,7 +142,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Dataview](./dataview.md) | Build-time Dataview queries |
 | [Folder Pages](./folder-pages.md) | Folder entry pages and generated listings |
 | [Archive](./archive.md) | Monthly archive listing pages |
-| [Timeline](./timeline.md) | Chronological timelines from marked notes |
+| [Timeline](./timeline.md) | Chronological pages and Obsidian-compatible inline timelines |
 
 ### Publishing and SEO
 

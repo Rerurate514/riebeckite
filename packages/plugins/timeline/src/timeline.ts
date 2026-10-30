@@ -2,9 +2,11 @@ import {
   type ContentManifestEntry,
   escapeHtml,
   escapeHtmlAttribute,
+  normalizeTag,
 } from "@riebeckite/core";
 import type {
   ResolvedTimelineOptions,
+  ResolvedTimelineSelector,
   TimelineEntry,
   TimelineOptions,
 } from "./types.js";
@@ -21,15 +23,19 @@ export function resolveTimelineOptions(
     className: options.className?.trim() || DEFAULT_TIMELINE_CLASS_NAME,
     key: options.key?.trim() || DEFAULT_TIMELINE_KEY,
     title: options.title?.trim() || "Timeline",
+    include: resolveSelector(options.include),
+    exclude: resolveSelector(options.exclude),
+    selection: options.selection === "marked" ? "marked" : "automatic",
   };
 }
 
 export function buildTimeline(
   entries: readonly ContentManifestEntry[],
   options: ResolvedTimelineOptions,
+  contentIndex: ReadonlyMap<string, string> = new Map(),
 ): TimelineEntry[] {
   return entries
-    .filter((entry) => entry.frontmatter[options.key] === true)
+    .filter((entry) => selectTimelineEntry(entry, options, contentIndex))
     .flatMap((entry) => {
       const date = timelineDate(entry);
       return date
@@ -43,20 +49,38 @@ export function buildTimeline(
     );
 }
 
+export function selectTimelineEntry(
+  entry: ContentManifestEntry,
+  options: ResolvedTimelineOptions,
+  contentIndex: ReadonlyMap<string, string> = new Map(),
+): boolean {
+  if (timelineDate(entry) === null) return false;
+  if (matchesSelector(entry, options.exclude, contentIndex)) return false;
+
+  const marker = entry.frontmatter[options.key];
+  if (marker === false) return false;
+  if (marker === true) return true;
+  if (options.selection === "marked") return false;
+  return options.include
+    ? matchesSelector(entry, options.include, contentIndex)
+    : true;
+}
+
 export function renderTimelinePage(
   entries: readonly TimelineEntry[],
   options: ResolvedTimelineOptions,
 ) {
   const className = escapeHtmlAttribute(options.className);
+  const rootClassName = `${DEFAULT_TIMELINE_CLASS_NAME} ${className}`;
   const items = entries
     .map(
       (entry) =>
-        `<li class="${className}__item"><time class="${className}__date" datetime="${escapeHtmlAttribute(entry.date)}">${escapeHtml(entry.date)}</time><a class="${className}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`,
+        `<li class="${DEFAULT_TIMELINE_CLASS_NAME}__item"><time class="${DEFAULT_TIMELINE_CLASS_NAME}__date" datetime="${escapeHtmlAttribute(entry.date)}">${escapeHtml(entry.date)}</time><a class="${DEFAULT_TIMELINE_CLASS_NAME}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`,
     )
     .join("");
   return {
     title: options.title,
-    html: `<section class="${className}" data-rr-timeline><h1 class="${className}__title">${escapeHtml(options.title)}</h1><ol class="${className}__list">${items}</ol></section>`,
+    html: `<section class="${rootClassName}" data-rr-timeline><h1 class="${DEFAULT_TIMELINE_CLASS_NAME}__title">${escapeHtml(options.title)}</h1><ol class="${DEFAULT_TIMELINE_CLASS_NAME}__list">${items}</ol></section>`,
   };
 }
 
@@ -73,6 +97,56 @@ function timelineDate(entry: ContentManifestEntry): string | null {
       return date.toISOString().slice(0, 10);
   }
   return null;
+}
+
+function resolveSelector(
+  selector: TimelineOptions["include"],
+): ResolvedTimelineSelector | undefined {
+  if (!selector) return undefined;
+  return {
+    folders: (Array.isArray(selector.folders) ? selector.folders : [])
+      .filter((folder): folder is string => typeof folder === "string")
+      .map(normalizeFolder)
+      .filter(Boolean),
+    tags: (Array.isArray(selector.tags) ? selector.tags : [])
+      .filter((tag): tag is string => typeof tag === "string")
+      .map((tag) => normalizeTag(tag.replace(/^#/, "")))
+      .filter((tag): tag is string => tag !== null),
+  };
+}
+
+function matchesSelector(
+  entry: ContentManifestEntry,
+  selector: ResolvedTimelineSelector | undefined,
+  contentIndex: ReadonlyMap<string, string>,
+): boolean {
+  if (!selector) return false;
+  const folder = contentFolder(entry, contentIndex);
+  return (
+    selector.folders.some(
+      (candidate) => folder === candidate || folder.startsWith(`${candidate}/`),
+    ) || selector.tags.some((tag) => entry.tags.includes(tag))
+  );
+}
+
+function contentFolder(
+  entry: ContentManifestEntry,
+  contentIndex: ReadonlyMap<string, string>,
+): string {
+  const source =
+    contentIndex.get(entry.slug.toLowerCase()) ??
+    contentIndex.get(entry.slug) ??
+    entry.slug;
+  const normalized = normalizeFolder(source);
+  const separator = normalized.lastIndexOf("/");
+  return separator === -1 ? "" : normalized.slice(0, separator);
+}
+
+function normalizeFolder(value: string): string {
+  return value
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+|\/+$/g, "");
 }
 
 function normalizeBasePath(value: string): string {

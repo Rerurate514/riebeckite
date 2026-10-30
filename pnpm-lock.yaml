@@ -1741,7 +1741,16 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      remark-parse:
+        specifier: 'catalog:'
+        version: 11.0.0(supports-color@10.2.2)
+      unified:
+        specifier: 'catalog:'
+        version: 11.0.5
     devDependencies:
+      '@riebeckite/plugin-obsidian-markdown':
+        specifier: workspace:*
+        version: link:../obsidian-markdown
       tsx:
         specifier: ^4.22.4
         version: 4.22.4

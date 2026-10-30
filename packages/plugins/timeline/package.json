@@ -15,9 +15,12 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "remark-parse": "catalog:",
+    "unified": "catalog:"
   },
   "devDependencies": {
+    "@riebeckite/plugin-obsidian-markdown": "workspace:*",
     "tsx": "^4.22.4"
   },
   "publishConfig": {

@@ -102,7 +102,7 @@ FROM #project
 
 ソースは `and` / `or` でつなぎ、`!` または `-` で否定し、`(` `)` でまとめられます。ソースを続けて書いた場合は `and` とみなします。
 
-```dataview
+```text
 FROM (#project or #area) and "notes" and !#archive
 ```
 
@@ -126,7 +126,7 @@ FROM (#project or #area) and "notes" and !#archive
 
 `SORT` はカンマ区切りでフィールドを指定し、各フィールドに `asc`（既定）または `desc` を付けられます。値がないノートは末尾に並びます。
 
-```dataview
+```text
 SORT priority desc, file.name asc
 ```
 

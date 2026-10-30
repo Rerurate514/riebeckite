@@ -1,6 +1,36 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
 import { test } from "node:test";
-import { dataview } from "../index.ts";
+import { dataview, parseDataview } from "../index.ts";
+
+test("documented dataview blocks are valid queries", async () => {
+  for (const file of ["dataview.md", "dataview.ja.md"]) {
+    const source = await fs.readFile(
+      new URL(`../../../../docs/docs/plugins/${file}`, import.meta.url),
+      "utf8",
+    );
+    const blocks = [...source.matchAll(/```dataview[^\n]*\n([\s\S]*?)```/g)];
+    assert.ok(blocks.length > 0, `${file} contains dataview blocks`);
+    for (const block of blocks) {
+      const parsed = parseDataview(block[1] ?? "");
+      assert.equal(
+        parsed.status,
+        "ok",
+        `${file} contains an invalid dataview block: ${parsed.status === "error" ? parsed.message : ""}`,
+      );
+    }
+  }
+});
+
+test("dataview still rejects an invalid query type", () => {
+  const parsed = parseDataview("FROM #project");
+
+  assert.equal(parsed.status, "error");
+  assert.match(
+    parsed.status === "error" ? parsed.message : "",
+    /unsupported query type `FROM`/,
+  );
+});
 
 test("registers dataview runtime dependencies and validates options", () => {
   const plugin = dataview({ language: "query", limit: 10 });

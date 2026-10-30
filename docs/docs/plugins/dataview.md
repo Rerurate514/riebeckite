@@ -115,7 +115,7 @@ FROM #project
 Combine sources with `and` / `or`, negate with `!` or `-`, and group with
 parentheses. Adjacent sources are treated as `and`.
 
-```dataview
+```text
 FROM (#project or #area) and "notes" and !#archive
 ```
 
@@ -146,7 +146,7 @@ keys are read directly by name (`status`, `priority`, `due`, ...).
 `SORT` accepts a comma-separated list of fields with an optional direction
 (`asc`, the default, or `desc`). Notes with a missing field sort last.
 
-```dataview
+```text
 SORT priority desc, file.name asc
 ```
 

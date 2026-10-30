@@ -177,6 +177,43 @@ test("development inspector reports unavailable before the development build exi
   });
 });
 
+test("development inspector consumes failed snapshots and recovers", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    let fail = true;
+    const rejections: unknown[] = [];
+    const onUnhandledRejection = (reason: unknown) => rejections.push(reason);
+    process.on("unhandledRejection", onUnhandledRejection);
+    try {
+      const plugin = riebeckiteDevelopmentInspector(() => ({
+        config: resolveConfig({ site: { title: "Test", locale: "en" } }),
+        configRoot: directory,
+        configFile: path.join(directory, "riebeckite.config.ts"),
+        appRoot: directory,
+        contentRoot: path.join(directory, "content"),
+      }));
+      const stack = inspectorStack(
+        plugin,
+        Object.create(null) as ContentManager,
+        async () => {
+          if (fail) throw new Error("SSR module failed");
+          return { content: undefined };
+        },
+      );
+
+      const failed = await requestReport(stack[0]?.handle);
+      assert.equal(failed.response.statusCode, 500);
+      await new Promise<void>((resolve) => setImmediate(resolve));
+      assert.deepEqual(rejections, []);
+
+      fail = false;
+      const recovered = await requestReport(stack[0]?.handle);
+      assert.equal(recovered.response.statusCode, 200);
+    } finally {
+      process.off("unhandledRejection", onUnhandledRejection);
+    }
+  });
+});
+
 test("development inspector shares one report across concurrent requests", async () => {
   await withTemporaryDirectory(async (directory) => {
     const contentRoot = path.join(directory, "content");
@@ -271,6 +308,9 @@ test("development inspector client provides accessible panels and safe refreshes
 function inspectorStack(
   plugin: ReturnType<typeof riebeckiteDevelopmentInspector>,
   content?: ContentManager,
+  loadModule: () => Promise<{ content?: ContentManager }> = async () => ({
+    content,
+  }),
 ): Array<{ route: string; handle: Middleware }> {
   const stack: Array<{ route: string; handle: Middleware }> = [];
   const configure = plugin.configureServer;
@@ -302,9 +342,7 @@ function inspectorStack(
         },
       },
     },
-    async ssrLoadModule() {
-      return { content };
-    },
+    ssrLoadModule: loadModule,
   });
   const afterConfigure = Reflect.apply(configure, undefined, [server]);
   stack.unshift({ route: "", handle() {} });

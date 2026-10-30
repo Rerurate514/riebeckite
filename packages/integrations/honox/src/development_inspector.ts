@@ -206,11 +206,10 @@ export function riebeckiteDevelopmentInspector(
       output,
     };
     inspection = entry;
-    void snapshot.then((build) => {
-      if (!build && inspection === entry) inspection = null;
-    });
-    void report.catch(() => {
-      if (inspection === entry) inspection = null;
+    void Promise.allSettled([snapshot, report, output]).then(([result]) => {
+      if (result.status === "rejected" || !result.value) {
+        if (inspection === entry) inspection = null;
+      }
     });
     return entry;
   };

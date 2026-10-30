@@ -17,7 +17,6 @@ import { d2 } from "@riebeckite/plugin-d2";
 import { dataview } from "@riebeckite/plugin-dataview";
 import { deploy } from "@riebeckite/plugin-deploy";
 import { diagnostics } from "@riebeckite/plugin-diagnostics";
-import { diff } from "@riebeckite/plugin-diff";
 import { discordEmbed } from "@riebeckite/plugin-discord-embed";
 import { docs } from "@riebeckite/plugin-docs";
 import { excaliBrain } from "@riebeckite/plugin-excalibrain";
@@ -180,7 +179,6 @@ export default defineConfig({
     recentPosts(),
     relatedPosts(),
     series(),
-    diff({ ui: { maxRevisions: 10 } }),
     webmention({ provider: webmentionProvider }),
     responsiveImage(),
     localGraph(),

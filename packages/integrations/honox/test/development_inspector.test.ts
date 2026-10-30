@@ -296,34 +296,73 @@ test("development inspector reports unavailable before the development build exi
 test("development inspector consumes failed snapshots and recovers", async () => {
   await withTemporaryDirectory(async (directory) => {
     let fail = true;
+    let loads = 0;
     const rejections: unknown[] = [];
     const onUnhandledRejection = (reason: unknown) => rejections.push(reason);
     process.on("unhandledRejection", onUnhandledRejection);
     try {
-      const plugin = riebeckiteDevelopmentInspector(() => ({
+      const application = {
         config: resolveConfig({ site: { title: "Test", locale: "en" } }),
         configRoot: directory,
         configFile: path.join(directory, "riebeckite.config.ts"),
         appRoot: directory,
         contentRoot: path.join(directory, "content"),
-      }));
+      };
+      const plugin = riebeckiteDevelopmentInspector(() => application);
       const stack = inspectorStack(
         plugin,
         Object.create(null) as ContentManager,
         async () => {
+          loads += 1;
           if (fail) throw new Error("SSR module failed");
           return { content: undefined };
         },
       );
 
-      const failed = await requestReport(stack[0]?.handle);
-      assert.equal(failed.response.statusCode, 500);
+      const outputHandle = stack.find(
+        (layer) => layer.route === "/__riebeckite/inspector/output",
+      )?.handle;
+      const graphHandle = stack.find(
+        (layer) => layer.route === "/__riebeckite/inspector/graph",
+      )?.handle;
+      const pluginsHandle = stack.find(
+        (layer) => layer.route === "/__riebeckite/inspector/plugins",
+      )?.handle;
+      const failed = await Promise.all([
+        requestReport(stack[0]?.handle),
+        requestReport(outputHandle),
+        requestReport(graphHandle),
+        requestReport(pluginsHandle),
+      ]);
+      assert.deepEqual(
+        failed.map(({ response }) => response.statusCode),
+        [500, 500, 500, 500],
+      );
+      assert.deepEqual(
+        failed.map(({ body }) => JSON.parse(body).code),
+        [
+          "INSPECTOR_REPORT_FAILED",
+          "INSPECTOR_OUTPUT_FAILED",
+          "INSPECTOR_GRAPH_FAILED",
+          "INSPECTOR_PLUGINS_FAILED",
+        ],
+      );
+      assert.equal(loads, 1);
       await new Promise<void>((resolve) => setImmediate(resolve));
       assert.deepEqual(rejections, []);
 
       fail = false;
-      const recovered = await requestReport(stack[0]?.handle);
-      assert.equal(recovered.response.statusCode, 200);
+      const recovered = await Promise.all([
+        requestReport(stack[0]?.handle),
+        requestReport(outputHandle),
+        requestReport(graphHandle),
+        requestReport(pluginsHandle),
+      ]);
+      assert.deepEqual(
+        recovered.map(({ response }) => response.statusCode),
+        [200, 200, 200, 200],
+      );
+      assert.equal(loads, 2);
     } finally {
       process.off("unhandledRejection", onUnhandledRejection);
     }

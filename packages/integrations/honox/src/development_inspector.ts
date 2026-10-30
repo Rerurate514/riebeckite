@@ -159,6 +159,7 @@ type CachedInspection = {
     Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>
   >;
   readonly output: Promise<OutputResult>;
+  readonly settlement: Promise<void>;
 };
 
 type ContentAppModule = {
@@ -218,13 +219,19 @@ export function riebeckiteDevelopmentInspector(
       snapshot,
       report,
       output,
+      settlement: Promise.allSettled([snapshot, report, output]).then(
+        (results) => {
+          const [snapshotResult] = results;
+          if (
+            results.some((result) => result.status === "rejected") ||
+            (snapshotResult.status === "fulfilled" && !snapshotResult.value)
+          ) {
+            if (inspection === entry) inspection = null;
+          }
+        },
+      ),
     };
     inspection = entry;
-    void Promise.allSettled([snapshot, report, output]).then(([result]) => {
-      if (result.status === "rejected" || !result.value) {
-        if (inspection === entry) inspection = null;
-      }
-    });
     return entry;
   };
   return {

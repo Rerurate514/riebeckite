@@ -31,15 +31,22 @@ export type PluginPageContext = PluginContext & {
   renderMarkdown(markdown: string): Promise<string>;
 };
 
+export type PluginPagePath = {
+  pathname: string;
+  sourceSlugs?: readonly string[];
+};
+
 export type PluginPageType = {
   /** Globally unique, stable page type identifier. */
   id: string;
   /** Paths emitted by SSG for this type. */
   paths?:
-    | readonly string[]
+    | readonly (string | PluginPagePath)[]
     | ((
         context: PluginContext & { manifest: ContentManifest },
-      ) => readonly string[] | Promise<readonly string[]>);
+      ) =>
+        | readonly (string | PluginPagePath)[]
+        | Promise<readonly (string | PluginPagePath)[]>);
   /** Higher values win when more than one type matches a request. */
   priority?: number;
   directoryIndex?: boolean;

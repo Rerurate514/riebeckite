@@ -4,6 +4,7 @@ import type {
   ContentSource,
   PluginPage,
   PluginPageContext,
+  PluginPagePath,
   PluginRenderContext,
 } from "@riebeckite/core";
 import {
@@ -141,13 +142,21 @@ function isExcalidrawDocument(filePath: string, raw: string): boolean {
   return lowerPath.endsWith(".md") && isObsidianExcalidrawMarkdown(raw);
 }
 
-function listExcalidrawDocumentPaths(manifest: ContentManifest): string[] {
-  const paths = new Set<string>();
+function listExcalidrawDocumentPaths(
+  manifest: ContentManifest,
+): PluginPagePath[] {
+  const paths = new Map<string, Set<string>>();
   for (const entry of manifest.publicEntries) {
     const path = getExcalidrawPagePath(entry);
-    if (path) paths.add(path);
+    if (!path) continue;
+    const sources = paths.get(path) ?? new Set<string>();
+    sources.add(entry.slug);
+    paths.set(path, sources);
   }
-  return [...paths];
+  return [...paths].map(([pathname, sources]) => ({
+    pathname,
+    sourceSlugs: [...sources],
+  }));
 }
 
 function isExcalidrawEntry(entry: ContentManifestEntry): boolean {

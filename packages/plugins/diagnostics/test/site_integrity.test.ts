@@ -81,6 +81,37 @@ test("site integrity flags a directory-index plugin page sharing a content route
   assert(codes.includes("content-integrity:duplicate-public-location"));
 });
 
+test("site integrity treats a plugin page derived from the same content source as one route", () => {
+  const manifest = manifestOf([entry("assets/HW", "/assets/HW")]);
+  manifest.pageRoutes = [
+    {
+      pathname: "/assets/HW",
+      pluginName: "excalidraw",
+      pageType: "excalidraw-document",
+      sourceSlugs: ["assets/HW"],
+    },
+  ];
+
+  assert.deepEqual(checkSiteIntegrity(manifest), []);
+});
+
+test("site integrity still flags a plugin page claiming another content source path", () => {
+  const manifest = manifestOf([entry("assets/HW", "/assets/HW")]);
+  manifest.pageRoutes = [
+    {
+      pathname: "/assets/HW",
+      pluginName: "excalidraw",
+      pageType: "excalidraw-document",
+      sourceSlugs: ["assets/Other"],
+    },
+  ];
+
+  const codes = checkSiteIntegrity(manifest).map(
+    (diagnostic) => diagnostic.code,
+  );
+  assert(codes.includes("content-integrity:duplicate-public-location"));
+});
+
 test("site integrity identifies colliding plugin page producers", () => {
   const manifest = manifestOf([]);
   manifest.pageRoutes = [

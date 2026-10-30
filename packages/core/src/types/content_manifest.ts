@@ -91,6 +91,7 @@ export type PluginPageRoute = {
   pathname: string;
   pluginName: string;
   pageType: string;
+  sourceSlugs?: readonly string[];
 };
 
 export type ContentLocationInput = {

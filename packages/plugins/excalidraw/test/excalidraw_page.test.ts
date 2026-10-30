@@ -47,6 +47,22 @@ test("excalidraw documents declare SSG page paths from the manifest", async () =
   ]);
 });
 
+test("excalidraw page routes record their source content", async () => {
+  const manager = createManager();
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(
+    manifest.pageRoutes.map((route) => ({
+      pathname: route.pathname,
+      sourceSlugs: route.sourceSlugs,
+    })),
+    [
+      { pathname: "/drawing", sourceSlugs: ["drawing.excalidraw"] },
+      { pathname: "/note", sourceSlugs: ["note"] },
+    ],
+  );
+});
+
 test("excalidraw documents resolve to a plugin page", async () => {
   const manager = createManager();
 

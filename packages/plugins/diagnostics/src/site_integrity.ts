@@ -71,10 +71,21 @@ function buildRouteOwners(
   options: SiteIntegrityOptions,
 ): Map<string, RouteOwner> {
   const owners = new Map<string, RouteOwner>();
+  const pageRoutes = manifest.pageRoutes ?? [];
+  const pageSources = new Map<string, Set<string>>();
+  for (const route of pageRoutes) {
+    if (!route.sourceSlugs || route.sourceSlugs.length === 0) continue;
+    const path = normalizeRoutePath(route.pathname);
+    const sources = pageSources.get(path) ?? new Set<string>();
+    for (const sourceSlug of route.sourceSlugs) sources.add(sourceSlug);
+    pageSources.set(path, sources);
+  }
 
   for (const entry of manifest.publicEntries) {
+    const path = normalizeRoutePath(entry.publicLocation.permalink);
+    if (pageSources.get(path)?.has(entry.slug)) continue;
     reserveRoute(owners, diagnostics, options, {
-      path: normalizeRoutePath(entry.publicLocation.permalink),
+      path,
       slug: entry.slug,
       kind: "content",
     });
@@ -86,7 +97,6 @@ function buildRouteOwners(
       kind: "redirect",
     });
   }
-  const pageRoutes = manifest.pageRoutes ?? [];
   for (const route of pageRoutes) {
     reserveRoute(owners, diagnostics, options, {
       path: normalizeRoutePath(route.pathname),

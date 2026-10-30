@@ -29,6 +29,7 @@ type DeclaredPluginPage = {
   readonly pathname: string;
   readonly plugin: RiebeckitePlugin;
   readonly pageType: PluginPageType;
+  readonly sourceSlugs?: readonly string[];
 };
 
 export class PluginPageResolver {
@@ -164,10 +165,11 @@ export class PluginPageResolver {
     contentIndex: Map<string, string>,
   ): Promise<readonly PluginPageRoute[]> {
     return (await this.getPageDeclarations(manifest, contentIndex)).map(
-      ({ pathname, plugin, pageType }) => ({
+      ({ pathname, plugin, pageType, sourceSlugs }) => ({
         pathname,
         pluginName: plugin.name,
         pageType: pageType.id,
+        ...(sourceSlugs && sourceSlugs.length > 0 ? { sourceSlugs } : {}),
       }),
     );
   }
@@ -235,11 +237,16 @@ export class PluginPageResolver {
           typeof paths === "function"
             ? await paths(this.options.createPluginContext(plugin, context))
             : paths;
-        for (const pathname of resolved) {
+        for (const path of resolved) {
+          const declaration =
+            typeof path === "string" ? { pathname: path } : path;
           declarations.push({
-            pathname: normalizePageTypePath(pathname, pageType),
+            pathname: normalizePageTypePath(declaration.pathname, pageType),
             plugin,
             pageType,
+            ...(declaration.sourceSlugs && declaration.sourceSlugs.length > 0
+              ? { sourceSlugs: declaration.sourceSlugs }
+              : {}),
           });
         }
       }

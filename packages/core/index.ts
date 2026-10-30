@@ -311,6 +311,7 @@ export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
   PluginPage,
   PluginPageContext,
+  PluginPagePath,
   PluginPageType,
   ResolvedPluginPage,
 } from "./src/types/plugin_page.js";

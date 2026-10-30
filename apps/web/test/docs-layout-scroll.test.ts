@@ -10,6 +10,7 @@ const renderer = read("../app/routes/_renderer.tsx");
 const article = read("../app/components/article/article.tsx");
 const appStyle = read("../app/style.css");
 const articleCss = read("../app/components/article/style.css");
+const shellCss = read("../app/styles/shell.css");
 
 test("docs routes compose the shared shell around article content", () => {
   assert.match(renderer, /<div class="site-shell site-shell--docs">/);
@@ -45,6 +46,11 @@ test("docs routes compose the shared shell around article content", () => {
   );
   assert.match(renderer, /const tocItems = c\.get\("tocItems"\)/);
   assert.match(read("../app/routes/[slug{.+}].tsx"), /c\.set\("tocItems"/);
+});
+
+test("the docs rails reserve their scrollbar gutter", () => {
+  assert.match(shellCss, /\.site-sidebar \{[\s\S]*?scrollbar-gutter: stable/);
+  assert.match(shellCss, /\.site-aside \{[\s\S]*?scrollbar-gutter: stable/);
 });
 
 test("the official site owns its standard layout and imports the optional Drawer", () => {

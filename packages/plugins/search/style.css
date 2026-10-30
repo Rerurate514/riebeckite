@@ -201,6 +201,7 @@
   .rr-search-modal__results {
     max-height: min(28rem, 52vh);
     overflow-y: auto;
+    scrollbar-gutter: stable;
     padding: 0.35rem;
     overscroll-behavior-y: contain;
   }

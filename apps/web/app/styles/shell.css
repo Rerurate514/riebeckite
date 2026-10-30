@@ -148,6 +148,7 @@
       top: 0;
       height: 100dvh;
       overflow-y: auto;
+      scrollbar-gutter: stable;
       padding: var(--rb-space-4);
       border-inline-end: 1px solid var(--rb-color-border);
     }
@@ -167,6 +168,7 @@
       top: 0;
       height: 100dvh;
       overflow-y: auto;
+      scrollbar-gutter: stable;
       padding: var(--rb-space-4);
       border-inline-start: 1px solid var(--rb-color-border);
     }

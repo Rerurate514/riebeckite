@@ -6,7 +6,10 @@ import { ContentManager, resolveConfig } from "@riebeckite/core";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
-import { riebeckiteDevelopmentInspector } from "../src/development_inspector.js";
+import {
+  diagnosticMatchesPage,
+  riebeckiteDevelopmentInspector,
+} from "../src/development_inspector.js";
 import { createDevelopmentTrace } from "../src/development_trace.js";
 
 type Middleware = (
@@ -375,6 +378,93 @@ test("development inspector shares one report across concurrent requests", async
   });
 });
 
+test("development inspector maps the current page to its content sources", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const contentRoot = path.join(directory, "content");
+    await fs.mkdir(contentRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(contentRoot, "themes.md"),
+      markdown("# Themes", { title: "Themes", visibility: "public" }),
+    );
+    await fs.writeFile(
+      path.join(contentRoot, "other.md"),
+      markdown("# Other", { title: "Other", visibility: "public" }),
+    );
+    const config = resolveConfig({
+      site: { title: "Test", locale: "en" },
+      plugins: [
+        {
+          name: "test-diagnostics",
+          addDiagnostics() {
+            return [
+              {
+                code: "test:themes",
+                severity: "warning",
+                message: "Themes issue",
+                slug: "themes",
+                filePath: "themes.md",
+              },
+              {
+                code: "test:other",
+                severity: "warning",
+                message: "Other issue",
+                slug: "other",
+                filePath: "other.md",
+              },
+            ];
+          },
+        },
+      ],
+    });
+    const content = new ContentManager(
+      new FileSystemContentSource(contentRoot),
+      [],
+      { config, commitBuildState: false },
+    );
+    await content.getOutputChangeSet();
+    const getManifest = content.getManifest.bind(content);
+    let manifestReads = 0;
+    content.getManifest = async (options) => {
+      manifestReads += 1;
+      return await getManifest(options);
+    };
+    const plugin = riebeckiteDevelopmentInspector(() => ({
+      config,
+      configRoot: directory,
+      configFile: path.join(directory, "riebeckite.config.ts"),
+      appRoot: directory,
+      contentRoot,
+    }));
+    const stack = inspectorStack(plugin, content);
+    const { response, body } = await requestReport(
+      stack[0]?.handle,
+      "/__riebeckite/inspector/report?path=%2Fthemes",
+    );
+
+    assert.equal(response.statusCode, 200);
+    const report = JSON.parse(body);
+    assert.equal(report.currentPage, "/themes");
+    assert.deepEqual(report.currentPageSources, ["themes"]);
+    assert.equal(manifestReads, 0);
+    const themes = report.diagnostics.find(
+      (diagnostic: { code: string }) => diagnostic.code === "TEST:THEMES",
+    );
+    const other = report.diagnostics.find(
+      (diagnostic: { code: string }) => diagnostic.code === "TEST:OTHER",
+    );
+    assert.ok(themes);
+    assert.ok(other);
+    assert.equal(
+      diagnosticMatchesPage(themes, report.currentPageSources),
+      true,
+    );
+    assert.equal(
+      diagnosticMatchesPage(other, report.currentPageSources),
+      false,
+    );
+  });
+});
+
 test("development inspector client provides accessible panels and safe refreshes", () => {
   const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
   const load = hookHandler(plugin.load);
@@ -409,7 +499,12 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /diagnosticCategory/);
   assert.match(source as string, /diagnosticCode/);
   assert.match(source as string, /data-focus-key/);
-  assert.match(source as string, /Current-page filtering is unavailable/);
+  assert.match(source as string, /data-diagnostic-current-page/);
+  assert.match(source as string, /diagnosticMatchesPage/);
+  assert.doesNotMatch(
+    source as string,
+    /Current-page filtering is unavailable/,
+  );
   assert.match(source as string, /<details/);
   assert.match(source as string, /data-resize/);
   assert.match(source as string, /data-output-page/);

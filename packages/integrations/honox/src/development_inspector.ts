@@ -2,6 +2,7 @@ import path from "node:path";
 import {
   buildOutputPlan,
   type CompletedContentBuildSnapshot,
+  type ContentManifest,
   isPersistentlyCacheable,
   type OutputChangeReason,
   type OutputChangeSet,
@@ -250,13 +251,19 @@ export function riebeckiteDevelopmentInspector(
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
           const report = await entry.report;
+          const currentPage = currentPageFromRequest(request.url);
+          const snapshot = await entry.snapshot;
           response.setHeader("content-type", "application/json; charset=utf-8");
           response.setHeader("cache-control", "no-store");
           response.end(
             JSON.stringify({
               ...report,
               generatedAt: new Date().toISOString(),
-              currentPage: currentPageFromRequest(request.url),
+              currentPage,
+              currentPageSources: currentPageSourceSlugs(
+                snapshot?.manifest,
+                currentPage,
+              ),
               theme: application.config.theme.name,
               themeConfig: inspectThemeConfig(application.config.theme),
               plugins: application.config.plugins.map((plugin, index) => ({
@@ -1010,6 +1017,58 @@ function currentPageFromRequest(url: string | undefined): string {
   return value?.startsWith("/") && !value.startsWith("//") ? value : "/";
 }
 
+function normalizePagePath(pathname: string): string {
+  const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return normalized.length > 1 ? normalized.replace(/\/+$/, "") : "/";
+}
+
+function currentPageSourceSlugs(
+  manifest: ContentManifest | undefined,
+  pathname: string,
+): string[] {
+  if (!manifest) return [];
+  const target = normalizePagePath(pathname);
+  const sources = new Set<string>();
+  for (const entry of manifest.publicEntries) {
+    if (normalizePagePath(entry.publicLocation.permalink) === target) {
+      sources.add(entry.slug);
+    }
+    for (const redirect of entry.publicLocation.redirects ?? []) {
+      if (normalizePagePath(redirect.path) === target) sources.add(entry.slug);
+    }
+  }
+  for (const [redirectPath, redirect] of manifest.publicRedirects) {
+    if (
+      normalizePagePath(redirectPath) === target ||
+      normalizePagePath(redirect.path) === target
+    ) {
+      sources.add(redirect.slug);
+    }
+  }
+  for (const route of manifest.pageRoutes ?? []) {
+    if (normalizePagePath(route.pathname) !== target) continue;
+    for (const sourceSlug of route.sourceSlugs ?? []) sources.add(sourceSlug);
+  }
+  return [...sources].sort();
+}
+
+export function diagnosticMatchesPage(
+  diagnostic: Pick<DevelopmentDiagnostic, "subject" | "location">,
+  sources: readonly string[],
+): boolean {
+  const values = [diagnostic.subject?.value, diagnostic.location?.file].filter(
+    (value): value is string => typeof value === "string",
+  );
+  return sources.some((source) =>
+    values.some(
+      (value) =>
+        value === source ||
+        value === `${source}.md` ||
+        value.startsWith(`${source}.md:`),
+    ),
+  );
+}
+
 function prioritizeMiddleware(
   server: ViteDevServer,
   middleware: unknown,
@@ -1051,11 +1110,13 @@ const graphEndpoint = ${JSON.stringify(graphPath)};
 const pluginsEndpoint = ${JSON.stringify(pluginsPath)};
 const panelId = "riebeckite-development-inspector";
 const outputLimit = ${listedOutputLimit};
+${diagnosticMatchesPage.toString()}
 
 let diagnosticQuery = "";
 let diagnosticSeverity = "all";
 let diagnosticCategory = "all";
 let diagnosticCode = "all";
+let diagnosticCurrentPage = false;
 let outputQuery = "";
 let outputKind = "all";
 let outputStatus = "all";
@@ -1392,6 +1453,7 @@ function readDiagnosticFilters(root) {
   diagnosticSeverity = root.querySelector("[data-diagnostic-severity]").value;
   diagnosticCategory = root.querySelector("[data-diagnostic-category]").value;
   diagnosticCode = root.querySelector("[data-diagnostic-code]").value;
+  diagnosticCurrentPage = root.querySelector("[data-diagnostic-current-page]")?.checked ?? false;
 }
 
 function readOutputFilters(root) {
@@ -1431,13 +1493,19 @@ function summarize(diagnostics) {
 function diagnosticList(diagnostics) {
   const categories = [...new Set(diagnostics.map((diagnostic) => diagnostic.category))].sort();
   const codes = [...new Set(diagnostics.map((diagnostic) => diagnostic.code))].sort();
+  const pageSources = Array.isArray(report.currentPageSources) ? report.currentPageSources : [];
+  const scopeToPage = diagnosticCurrentPage && pageSources.length > 0;
   const filtered = diagnostics.filter((diagnostic) =>
     (diagnosticSeverity === "all" || diagnostic.severity === diagnosticSeverity) &&
     (diagnosticCategory === "all" || diagnostic.category === diagnosticCategory) &&
     (diagnosticCode === "all" || diagnostic.code === diagnosticCode) &&
+    (!scopeToPage || diagnosticMatchesPage(diagnostic, pageSources)) &&
     (!diagnosticQuery || [diagnostic.code, diagnostic.message, diagnostic.subject.value, diagnostic.location?.file].filter(Boolean).join(" ").toLowerCase().includes(diagnosticQuery.toLowerCase()))
   );
-  return '<div class="filters"><label>Search <input data-diagnostic-filter data-diagnostic-query data-focus-key="diagnostic-query" value="' + escapeHtml(diagnosticQuery) + '"></label><label>Severity <select data-diagnostic-filter data-diagnostic-severity data-focus-key="diagnostic-severity">' + options(["all", "error", "warning", "info"], diagnosticSeverity) + '</select></label><label>Category <select data-diagnostic-filter data-diagnostic-category data-focus-key="diagnostic-category">' + options(["all"].concat(categories), diagnosticCategory) + '</select></label><label>Code <select data-diagnostic-filter data-diagnostic-code data-focus-key="diagnostic-code">' + options(["all"].concat(codes), diagnosticCode) + '</select></label></div><p class="partial">Current-page filtering is unavailable: source-to-page mappings are not recorded.</p><ul>' + (filtered.map((diagnostic, index) =>
+  const pageScope = pageSources.length > 0
+    ? '<label><input type="checkbox" data-diagnostic-filter data-diagnostic-current-page data-focus-key="diagnostic-current-page"' + (diagnosticCurrentPage ? " checked" : "") + '> Only this page (' + escapeHtml(pageSources.join(", ")) + ')</label>'
+    : '<span class="partial">No source is mapped to ' + escapeHtml(report.currentPage) + '; showing all diagnostics.</span>';
+  return '<div class="filters"><label>Search <input data-diagnostic-filter data-diagnostic-query data-focus-key="diagnostic-query" value="' + escapeHtml(diagnosticQuery) + '"></label><label>Severity <select data-diagnostic-filter data-diagnostic-severity data-focus-key="diagnostic-severity">' + options(["all", "error", "warning", "info"], diagnosticSeverity) + '</select></label><label>Category <select data-diagnostic-filter data-diagnostic-category data-focus-key="diagnostic-category">' + options(["all"].concat(categories), diagnosticCategory) + '</select></label><label>Code <select data-diagnostic-filter data-diagnostic-code data-focus-key="diagnostic-code">' + options(["all"].concat(codes), diagnosticCode) + '</select></label>' + pageScope + '</div><ul>' + (filtered.map((diagnostic, index) =>
     '<li data-severity="' + escapeHtml(diagnostic.severity) + '"><details data-detail-key="' + escapeHtml(diagnostic.fingerprint || "legacy-" + index) + '"><summary><b>' + escapeHtml(diagnostic.code) + '</b> ' + escapeHtml(diagnostic.message) + location(diagnostic) + '</summary><dl><dt>Fingerprint</dt><dd><code>' + escapeHtml(diagnostic.fingerprint || "legacy") + '</code></dd><dt>Subject</dt><dd>' + escapeHtml(diagnostic.subject.kind + (diagnostic.subject.value ? ": " + diagnostic.subject.value : "")) + '</dd>' + detail("Cause", diagnostic.cause) + detail("Details", diagnostic.details) + detail("Fix" + (diagnostic.fix ? " (" + diagnostic.fix.kind + ")" : ""), diagnostic.fix?.description) + '</dl></details></li>'
   ).join("") || "<li>No matching diagnostic findings.</li>") + '</ul>';
 }

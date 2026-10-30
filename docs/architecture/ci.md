@@ -1,3 +1,7 @@
+---
+date: 2026-10-18
+---
+
 # CI verification contract
 
 ## Tiers

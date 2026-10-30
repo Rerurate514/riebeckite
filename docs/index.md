@@ -1,4 +1,5 @@
 ---
+date: 2026-09-30
 title: Riebeckite
 description: Riebeckite is an open-source framework for publishing Markdown and Obsidian notes as a website.
 translation: home

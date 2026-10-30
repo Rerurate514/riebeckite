@@ -1,4 +1,5 @@
 ---
+date: 2026-09-30
 title: Riebeckite
 description: Markdown や Obsidian のノートから、拡張できる Web サイトを作るオープンソースフレームワークです。
 translation: home

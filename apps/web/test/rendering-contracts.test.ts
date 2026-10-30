@@ -482,6 +482,16 @@ test("CSS hooks keep Site and Theme styling outside plugin elements", () => {
   }
 });
 
+test("Default theme leaves article buttons to plugin CSS", () => {
+  const defaultCss = read("../../../packages/themes/default/styles/theme.css");
+
+  assert.doesNotMatch(
+    ruleSelectors(defaultCss),
+    /\.rb-article-content\s+button/,
+    "Default theme must not restyle buttons owned by plugins",
+  );
+});
+
 test("A7: shared code and overlay foregrounds keep readable tone", () => {
   const sharedCss = read("../../../packages/integrations/honox/style.css");
   const calloutCss = read(

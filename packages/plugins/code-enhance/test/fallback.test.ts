@@ -4,7 +4,7 @@ import { element, text } from "../src/hast.ts";
 import { rehypeCodeEnhance } from "../src/rehype.ts";
 import type { ElementNode } from "../src/types.ts";
 
-test("keeps fallback diagram source as a plain pre", async () => {
+test("enhances fallback diagram source like a regular code block", async () => {
   const pre = element("pre", {}, [
     element("code", {}, [text("@startuml\nA -> B\n@enduml")]),
   ]);
@@ -17,9 +17,24 @@ test("keeps fallback diagram source as a plain pre", async () => {
 
   await rehypeCodeEnhance()(tree, {});
 
-  assert.equal(details.children?.[1], pre);
-  assert.equal(pre.tagName, "pre");
-  assert.equal(pre.properties?.className, undefined);
+  const figure = details.children?.[1] as ElementNode;
+  assert.equal(figure.tagName, "figure");
+  assert.match(String(figure.properties?.className), /rr-code/);
+  const header = figure.children?.[0] as ElementNode;
+  const actions = header.children?.[1] as ElementNode;
+  assert.ok(
+    actions.children?.some(
+      (action) =>
+        action.type === "element" && action.properties?.dataCodeCopy === "true",
+    ),
+  );
+  assert.ok(
+    actions.children?.some(
+      (action) =>
+        action.type === "element" &&
+        action.properties?.dataCodeWrapToggle === "true",
+    ),
+  );
 });
 
 test("still enhances regular code blocks", async () => {

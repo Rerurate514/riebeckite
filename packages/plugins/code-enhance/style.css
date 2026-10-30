@@ -17,6 +17,10 @@
   margin-bottom: 2rem;
 }
 
+.rb-source-fallback > .rr-code {
+  margin: 0;
+}
+
 .rr-code__header {
   display: flex;
   align-items: center;

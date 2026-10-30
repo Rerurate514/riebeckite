@@ -667,6 +667,7 @@ export class PluginRuntime {
   private createContext(contentIndex: Map<string, string>): PluginContextBase {
     return {
       config: this.pipelineOptions.config,
+      isDevelopment: this.pipelineOptions.isDevelopment,
       contentIndex,
       contentSource: this.pipelineOptions.contentSource,
       diagnostics: this.diagnostics,

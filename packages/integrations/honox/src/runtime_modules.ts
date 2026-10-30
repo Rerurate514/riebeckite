@@ -77,7 +77,7 @@ export const content = new ContentManager(
     config.content.exclude,
   ),
   [],
-  { config, plugins: config.plugins },
+  { config, plugins: config.plugins, isDevelopment: import.meta.env.DEV },
 );
 `;
   }

@@ -6,12 +6,13 @@ sidebar:
 ---
 
 # フックコンテキスト（Hook Context）
-フックに渡されるプラグインのコンテキストには`config`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなシングルトンより、フレームワークのサービスを優先してください。
+フックに渡されるプラグインのコンテキストには`config`、`isDevelopment`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなシングルトンより、フレームワークのサービスを優先してください。
 
 ## PluginContextの形
 ```ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;

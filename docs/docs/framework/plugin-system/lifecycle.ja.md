@@ -90,6 +90,7 @@ riebeckite check
 ```ts id="jrp2vo"
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
@@ -99,6 +100,8 @@ type PluginContext = {
   contentSource?: ContentSource;
 };
 ```
+
+`isDevelopment` は Vite の開発ランタイムでのみ `true` になり、そこで配信されない静的出力をプラグインが遅延させられます。
 
 フックによって、次のような情報が追加されます。
 

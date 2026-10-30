@@ -113,7 +113,7 @@ export function diff(options: DiffPluginOptions = {}) {
             ),
           ],
     onManifestCreated: async (context) => {
-      if (ui.enabled === false) return;
+      if (context.isDevelopment || ui.enabled === false) return;
 
       const snapshot = context.externalDependencies?.get("diff:git-history");
       if (!snapshot || !(snapshot.value instanceof GitMarkdownHistoryReader)) {

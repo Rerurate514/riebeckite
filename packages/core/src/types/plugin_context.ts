@@ -15,6 +15,7 @@ import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;

@@ -158,6 +158,7 @@ Specialized hooks add post, manifest, graph, location, or render data.
 ``` ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
@@ -167,6 +168,9 @@ type PluginContext = {
   contentSource?: ContentSource;
 };
 ```
+
+`isDevelopment` is true only for the Vite development runtime. Plugins can use
+it to defer static output that the development server does not serve.
 
 Prefer injected context services over plugin-owned global singletons.
 

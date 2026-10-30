@@ -54,6 +54,7 @@ describe("riebeckiteRuntimeModules", () => {
     assert.ok(code);
     assert.match(code, /new ContentManager/);
     assert.match(code, /virtual:riebeckite\/config/);
+    assert.match(code, /isDevelopment: import\.meta\.env\.DEV/);
   });
 
   it("marks the content module as development during Vite serve", () => {

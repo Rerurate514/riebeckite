@@ -67,6 +67,7 @@ riebeckite check
 ```ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
@@ -76,6 +77,9 @@ type PluginContext = {
   contentSource?: ContentSource;
 };
 ```
+
+`isDevelopment` is true only for the Vite development runtime and lets plugins
+defer static output that is not served there.
 
 Depending on the hook, `slug`, `markdown`, `content`, `manifest`, `entries`, and location input are added. Prefer receiving framework services from the context over creating global singletons.
 

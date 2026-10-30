@@ -6,12 +6,13 @@ sidebar:
 ---
 
 # Hook context
-The plugin context passed to hooks includes `config`, `contentIndex`, `diagnostics`, `cache`, `output`, `logger`, `tracer`, and optionally `contentSource`; prefer framework services over global singletons.
+The plugin context passed to hooks includes `config`, `isDevelopment`, `contentIndex`, `diagnostics`, `cache`, `output`, `logger`, `tracer`, and optionally `contentSource`; prefer framework services over global singletons.
 
 ## PluginContext shape
 ```ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;

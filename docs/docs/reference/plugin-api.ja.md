@@ -200,6 +200,7 @@ validateOptions
 ```ts
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
+  isDevelopment?: boolean;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
@@ -209,6 +210,8 @@ type PluginContext = {
   contentSource?: ContentSource;
 };
 ```
+
+`isDevelopment` は Vite の開発ランタイムでのみ `true` です。開発サーバーが配信しない静的出力を、プラグインが遅延させるために使えます。
 
 フックによって、`slug`、`markdown`、`content`、`manifest`、`entries`、公開先を決めるための入力などが追加されます。
 

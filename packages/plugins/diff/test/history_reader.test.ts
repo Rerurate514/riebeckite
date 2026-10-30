@@ -259,3 +259,37 @@ test(
     }
   },
 );
+
+test(
+  "the plugin skips static revision payloads during development",
+  options,
+  async () => {
+    const repository = createTestRepository("riebeckite-diff-development-");
+    try {
+      repository.commit(
+        { "notes/article.md": HELLO_V1 },
+        "add article",
+        "2024-01-01T00:00:00+00:00",
+      );
+
+      const manifest = await new ContentManager(
+        memorySource({
+          "article.md": "---\npublish: true\ntitle: Article\n---\n# Article",
+        }),
+        [],
+        {
+          config: resolveConfig({
+            site: { title: "Test" },
+            content: { directory: repository.contentRoot },
+            plugins: [diff()],
+          }),
+          isDevelopment: true,
+        },
+      ).getManifest();
+
+      assert.deepEqual(manifest.generatedOutputs, []);
+    } finally {
+      repository.dispose();
+    }
+  },
+);

@@ -1,4 +1,7 @@
-import type { DerivedView } from "../derived/derived_view.js";
+import type {
+  DerivedView,
+  DerivedViewRegistry,
+} from "../derived/derived_view.js";
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
 import type {
@@ -159,6 +162,7 @@ export type PluginGeneratedOutputPlanContext = {
     readonly routableEntries: readonly ContentManifestEntry[];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
+  readonly derived: DerivedViewRegistry;
 };
 
 export type AssetTransformInput = {

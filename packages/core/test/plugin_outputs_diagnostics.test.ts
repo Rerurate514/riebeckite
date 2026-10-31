@@ -43,6 +43,40 @@ test("plugins resolve registered derived views through the runtime context", asy
   assert.equal(result, "READY");
 });
 
+test("generated output plans resolve registered derived views", async () => {
+  const summary = defineDerivedView<string, string>({
+    id: "official.planned-summary",
+    version: "1",
+    compute: (value) => value.toUpperCase(),
+  });
+  const plugin = definePlugin({
+    name: "derived-plan-example",
+    derivedViews: [summary],
+    async planGeneratedOutputs({ derived }) {
+      return [
+        {
+          path: "derived.txt",
+          content: await derived.resolve(summary, "ready"),
+          dependencies: [{ type: "global" }],
+        },
+      ];
+    },
+  });
+  const manager = new ContentManager(memorySource(oneNote), [], {
+    plugins: [plugin],
+  });
+
+  const manifest = await manager.getManifest();
+  assert.deepEqual(manifest.generatedOutputs, [
+    {
+      content: "READY",
+      dependencies: [{ type: "global" }],
+      owner: "derived-plan-example",
+      path: "derived.txt",
+    },
+  ]);
+});
+
 test("manifest collects plugin diagnostics with owner attribution", async () => {
   const checker = definePlugin({
     name: "checker",

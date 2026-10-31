@@ -478,6 +478,7 @@ export class PluginRuntime {
                 routableEntries: manifest.publicEntries,
               },
               site: this.pipelineOptions.config?.site,
+              derived: this.derivedViews,
             }),
           ),
       );
@@ -828,8 +829,14 @@ function freezeGeneratedOutputPlanContext(context: {
     routableEntries: readonly ContentManifestEntry[];
   };
   site: ResolvedRiebeckiteConfig["site"] | undefined;
+  derived: DerivedViewRegistry;
 }) {
-  return deepFreeze(structuredClone(context));
+  return {
+    ...deepFreeze(
+      structuredClone({ manifest: context.manifest, site: context.site }),
+    ),
+    derived: context.derived,
+  };
 }
 
 function deepFreeze<T>(value: T): T {

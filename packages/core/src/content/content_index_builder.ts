@@ -61,7 +61,8 @@ export class ContentIndexBuilder {
   ) {
     const contentPath = contentEntry.path;
     const ext = contentPath.split(".").pop()?.toLowerCase() ?? "";
-    const value = ext === "md" ? contentPath.replace(/\.md$/, "") : contentPath;
+    const value =
+      ext === "md" ? contentPath.replace(/\.md$/i, "") : contentPath;
     const parts = value.split("/");
 
     for (let i = parts.length - 1; i >= 0; i--) {

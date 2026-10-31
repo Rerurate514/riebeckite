@@ -4,6 +4,7 @@ import type { Command } from "./cli.js";
 import { runBuild } from "./commands/build.js";
 import { runCheck } from "./commands/check.js";
 import { runClean } from "./commands/clean.js";
+import { runContentMutation } from "./commands/content.js";
 import {
   createHelp,
   runCreateSite,
@@ -100,6 +101,11 @@ export async function runCommand(command: Command): Promise<void> {
   }
 
   const project = await resolveRiebeckiteProject(process.cwd());
+  if (command.name === "content") {
+    if (!(await runContentMutation(project, command.arguments)))
+      process.exitCode = 1;
+    return;
+  }
   if (command.name === "dev") return runDev(project);
   if (command.name === "build")
     return runBuild(project, { full: command.full });

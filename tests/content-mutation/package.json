@@ -1,0 +1,9 @@
+{
+  "name": "@riebeckite/content-mutation-integration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "benchmark": "node --import tsx benchmark.ts",
+    "test": "node --import tsx integration.ts"
+  }
+}

@@ -96,6 +96,32 @@ useful for inspection tooling; ordinary applications should use `scan()`.
 These helpers operate on logical content paths with `/` separators, not
 absolute filesystem paths.
 
+## Content mutations
+
+`FileSystemContentMutation` is the write-side adapter. It is separate from
+`ContentSource` and `ContentManager`: create a plan first, inspect its warnings
+and conflicts, then explicitly apply it.
+
+```ts
+import { FileSystemContentMutation } from "@riebeckite/node";
+
+const mutation = new FileSystemContentMutation("content");
+const plan = await mutation.plan([
+  { kind: "rename", from: "draft.md", to: "notes/published.md" },
+]);
+if (plan.conflicts.length === 0) await mutation.apply(plan);
+```
+
+Plans contain file fingerprints and are rejected when a file changes before
+apply. The adapter accepts create, update, delete, move, rename, frontmatter,
+batch, and binary asset operations. It writes a journal and original-file
+backups under `.riebeckite/mutations`. Call `recover(journalPath)` after an
+interrupted apply; recovery refuses files changed after the interrupted write.
+
+Logical paths reject traversal, Windows reserved names, invalid characters, and
+existing symbolic-link parents. Multi-file applies are staged and journaled but
+are not filesystem-atomic.
+
 ## Package boundary
 
 `@riebeckite/core` defines the portable `ContentSource` contract and content

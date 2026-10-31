@@ -46,10 +46,17 @@ export type {
   ContentGraphNeighbors,
 } from "./src/content/content_graph.js";
 export { createContentGraph } from "./src/content/content_graph.js";
+export type { ContentIndexBuild } from "./src/content/content_index_builder.js";
+export { ContentIndexBuilder } from "./src/content/content_index_builder.js";
 export {
   getEntryLanguage,
   selectEntriesByLanguage,
 } from "./src/content/content_language.js";
+export type {
+  ContentLinkMutationPlan,
+  ContentLinkRetarget,
+} from "./src/content/content_link_mutation.js";
+export { planContentLinkUpdates } from "./src/content/content_link_mutation.js";
 export {
   extractContentLinks,
   extractMarkdownLinkUrls,
@@ -62,6 +69,17 @@ export type {
 } from "./src/content/content_manager.js";
 export { ContentManager } from "./src/content/content_manager.js";
 export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
+export type {
+  ContentMutationContent,
+  ContentMutationFileChange,
+  ContentMutationIssue,
+  ContentMutationOperation,
+  ContentMutationPlan,
+  ContentMutationPrecondition,
+  ContentMutationRecoveryResult,
+  ContentMutationResult,
+} from "./src/content/content_mutation.js";
+export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
   computePipelineFingerprint,
   isPersistentlyCacheable,
@@ -117,6 +135,27 @@ export {
   resolvePublicFolderLocation,
 } from "./src/content/folder_entry.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
+export type {
+  LinkOccurrence,
+  LinkOccurrenceOptions,
+  LinkSyntaxKind,
+  SourceRange,
+} from "./src/content/link_occurrences.js";
+export { extractLinkOccurrences } from "./src/content/link_occurrences.js";
+export type {
+  LinkOccurrenceTarget,
+  LinkResolutionContext,
+  ResolvedLinkOccurrence,
+} from "./src/content/link_resolution.js";
+export {
+  linkResolutionKey,
+  resolveLinkOccurrences,
+} from "./src/content/link_resolution.js";
+export type {
+  LinkRewrite,
+  LinkRewriteResult,
+} from "./src/content/link_rewrite.js";
+export { rewriteLinkDestinations } from "./src/content/link_rewrite.js";
 export type {
   OutputChangeReason,
   OutputChangeSet,

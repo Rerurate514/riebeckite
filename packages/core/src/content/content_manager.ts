@@ -423,6 +423,7 @@ export class ContentManager {
               location,
               publishing,
               entriesByPath.get(`${post.slug}.md`)?.metadata,
+              this.contentIndexAmbiguities,
             );
           },
         );
@@ -513,6 +514,7 @@ export class ContentManager {
                     buildTime: this.publishingBuildTime,
                   }),
                   entriesByPath.get(`${post.slug}.md`)?.metadata,
+                  this.contentIndexAmbiguities,
                 );
               },
             ),

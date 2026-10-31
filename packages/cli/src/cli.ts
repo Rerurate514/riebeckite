@@ -115,6 +115,7 @@ export type Command =
   | { name: "create-component-interactive" }
   | { name: "theme-preview"; themeName: string; port?: number; open: boolean }
   | { name: "plugin-dev"; pluginPath: string; port?: number; open: boolean }
+  | { name: "content"; arguments: readonly string[] }
   | {
       name: "plugin-verify";
       pluginPath: string;
@@ -150,6 +151,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
     return parsePluginDevCommand(options.slice(1));
   if (name === "plugin" && options[0] === "verify")
     return parsePluginVerifyCommand(options.slice(1));
+  if (name === "content") return { name, arguments: options };
   if (
     name === "build" &&
     (options.length === 0 || (options.length === 1 && options[0] === "--full"))
@@ -187,7 +189,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy setup | deploy domain | publish <plan | status | validate | run | approve | revoke | record | gate> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | content <create|edit|delete|move> [--apply] [--json] | content plan <create|edit|delete|move> [--out <name>] [--json] | content apply <plan> --apply [--json] | content recover <journal> --apply [--json] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy setup | deploy domain | publish <plan | status | validate | run | approve | revoke | record | gate> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 

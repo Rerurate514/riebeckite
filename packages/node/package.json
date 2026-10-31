@@ -23,7 +23,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

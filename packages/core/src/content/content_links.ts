@@ -2,31 +2,28 @@ import remarkParse from "remark-parse";
 import { unified } from "unified";
 import type { ContentLink } from "../types/content_manifest.js";
 import { isAttachmentPath, isImagePath } from "./attachment.js";
-
-const WIKILINK_PATTERN =
-  /(!)?\[\[([^\]|#^]+)(?:[#^][^\]|]+)?(?:\|[^\]]+)?\]\]/g;
+import { extractLinkOccurrences } from "./link_occurrences.js";
+import { resolveLinkOccurrences } from "./link_resolution.js";
 
 export function extractContentLinks(
   markdown: string,
   contentIndex: Map<string, string>,
+  contentIndexAmbiguities?: ReadonlyMap<string, readonly string[]>,
 ): ContentLink[] {
-  WIKILINK_PATTERN.lastIndex = 0;
   const links: ContentLink[] = [];
-
-  for (
-    let match = WIKILINK_PATTERN.exec(markdown);
-    match !== null;
-    match = WIKILINK_PATTERN.exec(markdown)
-  ) {
-    const rawTarget = match[2]?.trim();
-    if (!rawTarget) continue;
-
-    const resolved = contentIndex.get(rawTarget.toLowerCase()) ?? null;
+  for (const occurrence of resolveLinkOccurrences(
+    extractLinkOccurrences(markdown),
+    { contentIndex, contentIndexAmbiguities },
+  )) {
+    if (occurrence.syntax !== "wikilink" && occurrence.syntax !== "wiki-embed")
+      continue;
+    const rawTarget = occurrence.normalizedDestination;
+    const resolved = occurrence.target?.slug ?? null;
     links.push({
       raw: rawTarget,
       slug: resolved,
       kind: resolved ? linkKind(resolved) : "unresolved",
-      embed: match[1] === "!",
+      embed: occurrence.embed,
     });
   }
 

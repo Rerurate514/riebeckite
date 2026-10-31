@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -153,6 +154,41 @@ test("recovers only files whose applied fingerprint still matches", async () => 
   await assert.rejects(() => fs.readFile(path.join(root, "new.md")));
 });
 
+test("recovery rolls back a write whose journal mark was lost", async () => {
+  const root = await directory();
+  const before = "original";
+  const after = "applied";
+  await fs.writeFile(path.join(root, "note.md"), after);
+  const mutationRoot = path.join(root, ".riebeckite", "mutations", "crash");
+  await fs.mkdir(path.join(mutationRoot, "backups"), { recursive: true });
+  const backupPath = `backups/${Buffer.from("note.md").toString("base64url")}`;
+  await fs.writeFile(path.join(mutationRoot, backupPath), before);
+  const journalPath = path.join(mutationRoot, "journal.json");
+  await fs.writeFile(
+    journalPath,
+    JSON.stringify({
+      version: 1,
+      id: "crash",
+      state: "applying",
+      changes: [
+        {
+          path: "note.md",
+          beforeFingerprint: createHash("sha256").update(before).digest("hex"),
+          afterFingerprint: createHash("sha256").update(after).digest("hex"),
+          backupPath,
+          status: "pending",
+        },
+      ],
+    }),
+  );
+  const recovered = await new FileSystemContentMutation(root).recover(
+    journalPath,
+  );
+  assert.equal(recovered.recovered, true);
+  assert.deepEqual(recovered.restoredPaths, ["note.md"]);
+  assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), before);
+});
+
 test("refuses traversal and symbolic-link write paths", async (t) => {
   const root = await directory();
   const mutation = new FileSystemContentMutation(root);
@@ -243,6 +279,84 @@ test("rewrites relative links inside moved content", async () => {
     await fs.readFile(path.join(root, "nested", "source.md"), "utf8"),
     "[target](../target.md) [[target]]",
   );
+});
+
+test("folds chained moves to the final destination", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "# A");
+  await fs.writeFile(path.join(root, "source.md"), "[[a]]");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "rename", from: "a.md", to: "b.md" },
+    { kind: "rename", from: "b.md", to: "c.md" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  assert.equal((await mutation.apply(plan)).applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "source.md"), "utf8"),
+    "[[c]]",
+  );
+});
+
+test("keeps image destinations when a surrounding link moves", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "target.md"), "# Target");
+  await fs.writeFile(path.join(root, "img.png"), "image");
+  await fs.writeFile(
+    path.join(root, "source.md"),
+    "[![alt](img.png)](target.md)",
+  );
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "move", from: "target.md", to: "moved.md" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  assert.equal((await mutation.apply(plan)).applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "source.md"), "utf8"),
+    "[![alt](img.png)](moved.md)",
+  );
+});
+
+test("rewrites encoded links and uppercase Markdown extensions", async () => {
+  const root = await directory();
+  await fs.mkdir(path.join(root, "docs"));
+  await fs.writeFile(path.join(root, "docs", "a b.md"), "# Space");
+  await fs.writeFile(path.join(root, "source.md"), "[x](docs/a%20b.md)");
+  const mutation = new FileSystemContentMutation(root);
+  const encoded = await mutation.plan([
+    { kind: "move", from: "docs/a b.md", to: "docs/c.md" },
+  ]);
+  assert.deepEqual(encoded.conflicts, []);
+  assert.equal((await mutation.apply(encoded)).applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "source.md"), "utf8"),
+    "[x](docs/c.md)",
+  );
+
+  await fs.writeFile(path.join(root, "DRAFT.MD"), "# Draft");
+  await fs.writeFile(path.join(root, "wiki.md"), "[[draft]]");
+  const uppercase = await mutation.plan([
+    { kind: "move", from: "DRAFT.MD", to: "final.md" },
+  ]);
+  assert.deepEqual(uppercase.conflicts, []);
+  assert.equal((await mutation.apply(uppercase)).applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "wiki.md"), "utf8"),
+    "[[final]]",
+  );
+});
+
+test("does not warn when a deleted path is recreated in the same plan", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "# Old");
+  await fs.writeFile(path.join(root, "source.md"), "[[a]]");
+  const plan = await new FileSystemContentMutation(root).plan([
+    { kind: "delete", path: "a.md" },
+    { kind: "create", path: "a.md", content: "# New" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  assert.deepEqual(plan.warnings, []);
 });
 
 test("refuses a creation that makes existing links ambiguous", async () => {

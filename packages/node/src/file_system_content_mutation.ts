@@ -156,8 +156,10 @@ export class FileSystemContentMutation {
     }
 
     addCaseConflicts(files, conflicts);
-    const beforeIndex = buildContentIndex(initial).index;
-    const afterIndex = buildContentIndex(files).index;
+    const beforeBuild = buildContentIndex(initial);
+    const afterBuild = buildContentIndex(files);
+    const beforeIndex = beforeBuild.index;
+    const afterIndex = afterBuild.index;
     if (retargets.length > 0 || !sameContentIndex(beforeIndex, afterIndex)) {
       const markdownFiles = new Map<string, string>();
       for (const [filePath, state] of files) {
@@ -178,9 +180,11 @@ export class FileSystemContentMutation {
       }
       const linkPlan = planContentLinkUpdates({
         files: markdownFiles,
-        retargets,
+        retargets: foldRetargets(retargets, files),
         beforeIndex,
         afterIndex,
+        beforeAmbiguities: beforeBuild.ambiguities,
+        afterAmbiguities: afterBuild.ambiguities,
       });
       for (const [filePath, content] of linkPlan.updates) {
         const existing = files.get(filePath);
@@ -335,11 +339,26 @@ export class FileSystemContentMutation {
           conflicts: [],
         };
       const conflicts: ContentMutationIssue[] = [];
-      for (const change of journal.changes.filter(
-        (change) => change.status === "applied",
-      )) {
-        const current = await readState(root, change.path);
-        if (current?.fingerprint !== change.afterFingerprint) {
+      const rollback: JournalChange[] = [];
+      for (const change of journal.changes) {
+        const current =
+          (await readState(root, change.path))?.fingerprint ?? null;
+        if (change.status === "applied") {
+          if (current !== change.afterFingerprint) {
+            conflicts.push({
+              severity: "error",
+              code: "recovery-conflict",
+              path: change.path,
+              message: "The file changed after the interrupted mutation.",
+            });
+          } else rollback.push(change);
+          continue;
+        }
+        if (current === change.afterFingerprint) {
+          rollback.push(change);
+          continue;
+        }
+        if (current !== change.beforeFingerprint) {
           conflicts.push({
             severity: "error",
             code: "recovery-conflict",
@@ -356,9 +375,7 @@ export class FileSystemContentMutation {
           conflicts,
         };
       const restoredPaths: string[] = [];
-      for (const change of journal.changes.filter(
-        (change) => change.status === "applied",
-      )) {
+      for (const change of rollback) {
         const target = await safeFilePath(
           root,
           change.path,
@@ -543,9 +560,30 @@ export class FileSystemContentMutation {
       handle = await fs.open(lockPath, "wx");
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "EEXIST") {
-        const stale = await isStaleLock(lockPath);
-        if (stale) {
-          await fs.rm(lockPath, { force: true });
+        const stale = await staleLockContent(lockPath);
+        if (stale !== null) {
+          const quarantine = `${lockPath}.stale-${randomUUID()}`;
+          try {
+            await fs.rename(lockPath, quarantine);
+          } catch (renameError) {
+            if ((renameError as NodeJS.ErrnoException).code === "ENOENT")
+              return await this.acquireLock(root);
+            throw renameError;
+          }
+          const quarantined = await fs.readFile(quarantine, "utf8");
+          if (quarantined !== stale) {
+            const restored = await fs
+              .writeFile(lockPath, quarantined, { flag: "wx" })
+              .then(
+                () => true,
+                () => false,
+              );
+            if (restored) await fs.rm(quarantine, { force: true });
+            throw new Error(
+              "Another content mutation is already applying or requires recovery.",
+            );
+          }
+          await fs.rm(quarantine, { force: true });
           return await this.acquireLock(root);
         }
       }
@@ -671,6 +709,35 @@ function stateOf(content: string | Uint8Array): FileState {
 function fingerprint(content: Uint8Array): string {
   return createHash("sha256").update(content).digest("hex");
 }
+function foldRetargets(
+  retargets: readonly ContentLinkRetarget[],
+  files: ReadonlyMap<string, FileState>,
+): ContentLinkRetarget[] {
+  const byFrom = new Map(
+    retargets.map((retarget) => [normalizedPath(retarget.from), retarget]),
+  );
+  const existing = new Set([...files.keys()].map(normalizedPath));
+  return retargets
+    .filter((retarget) => !existing.has(normalizedPath(retarget.from)))
+    .map((retarget) => {
+      if (!retarget.to) return retarget;
+      let to = retarget.to;
+      const seen = new Set([normalizedPath(retarget.from)]);
+      for (;;) {
+        const key = normalizedPath(to);
+        const next = byFrom.get(key);
+        if (!next?.to || seen.has(key)) break;
+        seen.add(key);
+        to = next.to;
+      }
+      return to === retarget.to ? retarget : { from: retarget.from, to };
+    });
+}
+
+function normalizedPath(value: string): string {
+  return value.replaceAll("\\", "/").toLowerCase();
+}
+
 function buildContentIndex(
   files: ReadonlyMap<string, FileState>,
 ): ReturnType<typeof ContentIndexBuilder.buildFromAliases> {
@@ -780,20 +847,21 @@ function parseJournal(value: string): MutationJournal {
     throw new Error("Journal is missing or corrupt.");
   return journal as MutationJournal;
 }
-async function isStaleLock(lockPath: string): Promise<boolean> {
+async function staleLockContent(lockPath: string): Promise<string | null> {
   try {
-    const value: unknown = JSON.parse(await fs.readFile(lockPath, "utf8"));
+    const content = await fs.readFile(lockPath, "utf8");
+    const value: unknown = JSON.parse(content);
     const pid = isRecord(value) ? value.pid : undefined;
     if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
-      return false;
+      return null;
     try {
       process.kill(pid, 0);
-      return false;
+      return null;
     } catch (error) {
-      return (error as NodeJS.ErrnoException).code === "ESRCH";
+      return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
     }
   } catch {
-    return false;
+    return null;
   }
 }
 function serializePlan(plan: ContentMutationPlan): StoredMutationPlan {

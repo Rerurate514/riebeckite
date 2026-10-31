@@ -14,6 +14,11 @@ export type OutputDependency =
     }
   | { readonly type: "external"; readonly id: string }
   | {
+      readonly type: "derived-view";
+      readonly id: string;
+      readonly version: string;
+    }
+  | {
       readonly type: "content-query";
       readonly properties: readonly string[];
       readonly unknown?: boolean;

@@ -949,6 +949,8 @@ function reasonLabel(
       return "unknown dependency";
     case "external":
       return `external:${reason.id} changed`;
+    case "derived-view":
+      return `derived-view:${reason.id} changed`;
     case "global":
       return "global dependency changed";
     case "content":
@@ -986,6 +988,8 @@ function dependencyLabel(dependency: OutputDependency): string {
       return `projection:${dependency.projection}`;
     case "external":
       return `external:${dependency.id}`;
+    case "derived-view":
+      return `derived-view:${dependency.id}@${dependency.version}`;
     case "content-query":
       return `content-query:${dependency.properties.join(",")}${
         dependency.unknown ? "?" : ""

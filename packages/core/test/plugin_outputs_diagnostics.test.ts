@@ -12,6 +12,7 @@ import {
   defineDerivedView,
 } from "../src/derived/derived_view.js";
 import { definePlugin } from "../src/types/plugin.js";
+import { contentTestConfig } from "./support/content_fixture.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
   return {
@@ -910,6 +911,147 @@ test("derived dependencies are validated against the current build snapshot", as
       "second",
     );
     assert.deepEqual(cacheStatuses.splice(0), ["miss", "miss", "hit"]);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("view definition versions invalidate generated outputs across builds", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-view-version-"),
+  );
+  try {
+    let version = "1";
+    let computed = "first";
+    const build = async () => {
+      const view = defineDerivedView<null, string>({
+        id: "test.versioned-output",
+        version,
+        compute() {
+          return computed;
+        },
+      });
+      const plugin = definePlugin({
+        name: "versioned-plan",
+        derivedViews: [view],
+        async planGeneratedOutputs({ derived }) {
+          const resolved = await derived.resolveWithDependencies(view, null);
+          return [
+            {
+              path: "derived.txt",
+              content: resolved.value,
+              derivedDependencies: resolved.dependencies,
+              derivedViewIds: resolved.viewIds,
+            },
+          ];
+        },
+      });
+      const manager = new ContentManager(memorySource(oneNote), [], {
+        config: contentTestConfig(directory),
+        plugins: [plugin],
+      });
+      const manifest = await manager.build({ incremental: true });
+      const changes = await manager.getOutputChangeSet({ incremental: true });
+      const output = manifest.generatedOutputs[0];
+      await manager.dispose();
+      return {
+        content: String(output?.content),
+        dependencies: output?.dependencies,
+        affected: changes.affected.map((entry) => entry.path),
+        reason: changes.reasons?.get("derived.txt")?.type,
+      };
+    };
+
+    const first = await build();
+    assert.equal(first.content, "first");
+    assert.deepEqual(first.dependencies, [
+      { type: "derived-view", id: "test.versioned-output", version: "1" },
+    ]);
+
+    computed = "second";
+    const second = await build();
+    assert.ok(!second.affected.includes("derived.txt"));
+
+    version = "2";
+    computed = "third";
+    const third = await build();
+    assert.ok(third.affected.includes("derived.txt"));
+    assert.equal(third.reason, "derived-view");
+    assert.deepEqual(third.dependencies, [
+      { type: "derived-view", id: "test.versioned-output", version: "2" },
+    ]);
+
+    const fourth = await build();
+    assert.ok(!fourth.affected.includes("derived.txt"));
+    assert.equal(fourth.reason, undefined);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("query fingerprints cover unlisted entries that plans may resolve", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-query-scope-"),
+  );
+  try {
+    const config = resolveConfig({
+      site: { title: "Test" },
+      content: { filters: { publishStrategy: "explicit" } },
+      cache: { enabled: true, directory: path.join(directory, "cache") },
+    });
+    let hiddenTitle = "Hidden";
+    let computed = "first";
+    const statuses: (string | undefined)[] = [];
+    const build = async () => {
+      const view = defineDerivedView<null, string>({
+        id: "test.query-scope",
+        version: "1",
+        compute(_input, context) {
+          context.track({
+            type: "query",
+            id: "titles",
+            properties: ["title"],
+          });
+          return computed;
+        },
+      });
+      const plugin = definePlugin({
+        name: "query-scope-plan",
+        derivedViews: [view],
+        async planGeneratedOutputs({ derived }) {
+          const resolved = await derived.resolveWithDependencies(view, null);
+          statuses.push(
+            derived.inspect().find((entry) => entry.id === view.id)?.cache,
+          );
+          return [
+            {
+              path: "titles.txt",
+              content: resolved.value,
+              derivedDependencies: resolved.dependencies,
+            },
+          ];
+        },
+      });
+      const manager = new ContentManager(
+        memorySource({
+          "note.md": "---\ntitle: Note\npublish: true\n---\n",
+          "hidden.md": `---\ntitle: ${hiddenTitle}\nvisibility: unlisted\n---\n`,
+        }),
+        [],
+        { config, plugins: [plugin] },
+      );
+      const manifest = await manager.getManifest();
+      await manager.dispose();
+      return String(manifest.generatedOutputs[0]?.content);
+    };
+
+    assert.equal(await build(), "first");
+    hiddenTitle = "Changed";
+    computed = "second";
+    assert.equal(await build(), "second");
+    computed = "third";
+    assert.equal(await build(), "second");
+    assert.deepEqual(statuses, ["miss", "miss", "hit"]);
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }

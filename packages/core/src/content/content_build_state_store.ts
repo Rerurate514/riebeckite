@@ -229,6 +229,9 @@ function isOutputDependency(value: unknown): value is OutputDependency {
     (value.type === "file" && typeof value.path === "string") ||
     (value.type === "public-location" && typeof value.pathname === "string") ||
     (value.type === "external" && typeof value.id === "string") ||
+    (value.type === "derived-view" &&
+      typeof value.id === "string" &&
+      typeof value.version === "string") ||
     (value.type === "projection" &&
       (value.projection === "navigation" ||
         value.projection === "recent-posts" ||

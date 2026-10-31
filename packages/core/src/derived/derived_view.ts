@@ -94,6 +94,7 @@ export type DerivedViewRegistry = {
     options?: { signal?: AbortSignal },
   ): Promise<DerivedViewResolution<TResult>>;
   status(): readonly DerivedViewStatus[];
+  versionOf(id: string): string | undefined;
   inspect(): readonly DerivedViewExecution[];
   dispose(): void;
 };
@@ -406,6 +407,7 @@ export function createDerivedViewRegistry(
           ).length,
         }))
         .sort((left, right) => left.id.localeCompare(right.id)),
+    versionOf: (id) => views.get(id)?.version,
     inspect: () =>
       [...views.values()]
         .map(

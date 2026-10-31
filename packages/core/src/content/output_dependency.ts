@@ -26,6 +26,11 @@ export type OutputChangeReason =
   | { readonly type: "kind-changed"; readonly previousKind: OutputKind }
   | { readonly type: "unknown-dependency" }
   | { readonly type: "external"; readonly id: string }
+  | {
+      readonly type: "derived-view";
+      readonly id: string;
+      readonly version: string;
+    }
   | { readonly type: "global" }
   | { readonly type: "content"; readonly slug: string }
   | { readonly type: "tag"; readonly tag: string }
@@ -113,20 +118,23 @@ export function determineOutputChanges(input: {
   const reasons = new Map<string, OutputChangeReason>();
 
   for (const output of current) {
-    const reason = findOutputChangeReason(
-      withPreviousDependencies(output, previous.get(output.path)),
-      changedContent,
-      refreshedContent,
-      changedTags,
-      changedFolders,
-      changedFiles,
-      changedExternal,
-      changedExternalScopes,
-      currentPublicLocations,
-      previousPublicLocations,
-      input.previousState?.manifestEntries ?? [],
-      input.manifest.entries,
-    );
+    const previousOutput = previous.get(output.path);
+    const reason =
+      findChangedDerivedView(output, previousOutput) ??
+      findOutputChangeReason(
+        withPreviousDependencies(output, previousOutput),
+        changedContent,
+        refreshedContent,
+        changedTags,
+        changedFolders,
+        changedFiles,
+        changedExternal,
+        changedExternalScopes,
+        currentPublicLocations,
+        previousPublicLocations,
+        input.previousState?.manifestEntries ?? [],
+        input.manifest.entries,
+      );
     if (reason) {
       affected.set(output.path, output);
       reasons.set(output.path, reason);
@@ -237,6 +245,42 @@ function contentOutput(
       ...resolveContentOutputDependencies(dependencies, entry, manifest),
     ],
   };
+}
+
+function isDerivedViewDependency(
+  dependency: OutputDependency,
+): dependency is Extract<OutputDependency, { type: "derived-view" }> {
+  return dependency.type === "derived-view";
+}
+
+function findChangedDerivedView(
+  output: OutputDescriptor,
+  previous: OutputDescriptor | undefined,
+): OutputChangeReason | undefined {
+  const current = output.dependencies.filter(isDerivedViewDependency);
+  if (current.length === 0) return undefined;
+  const previousViews = new Map(
+    (previous?.dependencies ?? [])
+      .filter(isDerivedViewDependency)
+      .map((dependency) => [dependency.id, dependency.version]),
+  );
+  for (const dependency of current) {
+    if (previousViews.get(dependency.id) !== dependency.version) {
+      return {
+        type: "derived-view",
+        id: dependency.id,
+        version: dependency.version,
+      };
+    }
+  }
+  if (previousViews.size !== current.length) {
+    return {
+      type: "derived-view",
+      id: current[0].id,
+      version: current[0].version,
+    };
+  }
+  return undefined;
 }
 
 function findOutputChangeReason(

@@ -131,11 +131,12 @@ export class PluginRuntime {
         if (dependency.type === "query") {
           if (!dependency.properties?.length || !this.derivedManifest)
             return undefined;
+          const properties = [...dependency.properties].sort();
           return fingerprintDerivedValue(
-            this.derivedManifest.discoverableEntries
+            this.derivedManifest.entries
               .map((entry) => ({
                 slug: entry.slug,
-                values: dependency.properties?.map((property) =>
+                values: properties.map((property) =>
                   contentQueryValue(entry, property),
                 ),
               }))
@@ -550,6 +551,11 @@ export class PluginRuntime {
             ...derivedDependenciesToOutputDependencies(
               output.derivedDependencies ?? [],
             ),
+            ...(output.derivedViewIds ?? []).map((id) => ({
+              type: "derived-view" as const,
+              id,
+              version: this.derivedViews.versionOf(id) ?? "unknown",
+            })),
           ];
           if (dependencies.length === 0) {
             throw new Error(

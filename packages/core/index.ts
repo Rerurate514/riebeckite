@@ -213,6 +213,40 @@ export {
   defineDerivedView,
   derivedDependenciesToOutputDependencies,
 } from "./src/derived/derived_view.js";
+export type { ContentMigrationRegistry } from "./src/migration/migration_registry.js";
+export {
+  ContentMigrationRegistryError,
+  createContentMigrationRegistry,
+  defineContentMigration,
+  fingerprintContentMigrationDefinition,
+  migrationKey,
+} from "./src/migration/migration_registry.js";
+export type {
+  ContentIdRule,
+  ContentMigrationRule,
+  ContentMigrationRuleCondition,
+  ContentMigrationRuleValue,
+  FrontmatterAppendRule,
+  FrontmatterMapRule,
+  FrontmatterNormalizeListRule,
+  FrontmatterRemoveRule,
+  FrontmatterRenameRule,
+  FrontmatterSetRule,
+  PathRenameRule,
+  PermalinkRule,
+  VisibilityRule,
+} from "./src/migration/migration_rules.js";
+export type {
+  ContentMigration,
+  ContentMigrationDefinition,
+  ContentMigrationDiagnostic,
+  ContentMigrationReversible,
+  ContentMigrationSelector,
+  ContentMigrationTransform,
+  ContentMigrationTransformResult,
+  ContentMigrationValidator,
+  MigrationContent,
+} from "./src/migration/migration_types.js";
 export type {
   BuildTraceRecorder,
   LogContext,

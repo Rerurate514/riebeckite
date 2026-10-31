@@ -32,6 +32,7 @@ import { runDev } from "./commands/dev.js";
 import { runDoctorCommand } from "./commands/doctor.js";
 import { runInit } from "./commands/init.js";
 import { runInspect } from "./commands/inspect.js";
+import { runMigrate } from "./commands/migrate.js";
 import { runPluginDev } from "./commands/plugin_dev.js";
 import { runPluginVerify } from "./commands/plugin_verify.js";
 import { runProfile } from "./commands/profile.js";
@@ -104,6 +105,10 @@ export async function runCommand(command: Command): Promise<void> {
   if (command.name === "content") {
     if (!(await runContentMutation(project, command.arguments)))
       process.exitCode = 1;
+    return;
+  }
+  if (command.name === "migrate") {
+    if (!(await runMigrate(project, command.arguments))) process.exitCode = 1;
     return;
   }
   if (command.name === "dev") return runDev(project);

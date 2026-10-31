@@ -10,6 +10,7 @@ type RuntimeTestWindow = Window & {
   __runtimeTest?: {
     instances: Array<{ signal: AbortSignal }>;
     errors: string[];
+    clicks: number;
     unmountPage(): Promise<void>;
   };
 };
@@ -68,6 +69,7 @@ type RuntimeState = {
   instances: number;
   active: number;
   output: string | null;
+  clicks: number;
   errors: string[];
 };
 
@@ -83,6 +85,7 @@ async function runtimeState(page: Page): Promise<RuntimeState> {
       output:
         document.querySelector<HTMLElement>("[data-runtime-output]")
           ?.textContent ?? null,
+      clicks: test?.clicks ?? 0,
       errors: test?.errors ?? [],
     };
   });
@@ -129,8 +132,14 @@ test("page runtimes are disposed on navigation and recreated on return", async (
     await page.evaluate(() =>
       (window as RuntimeTestWindow).__runtimeTest?.unmountPage(),
     );
+    const clicksBefore = (await runtimeState(page)).clicks;
+    await page.evaluate(() => {
+      document.body.dispatchEvent(new Event("click", { bubbles: true }));
+    });
     const unmounted = await runtimeState(page);
     assert.equal(unmounted.active, 0);
+    assert.equal(unmounted.output, null);
+    assert.equal(unmounted.clicks, clicksBefore);
     assert.deepEqual(unmounted.errors, []);
     assert.deepEqual(errors, []);
   } finally {

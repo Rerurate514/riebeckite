@@ -11,6 +11,7 @@ type TestWindow = Window & {
   __runtimeTest?: {
     instances: ClientRuntime<number>[];
     errors: string[];
+    clicks: number;
     unmountPage(): Promise<void>;
   };
 };
@@ -21,8 +22,13 @@ registry.register(
     id: "dom",
     kind: "main",
     capabilities: ["dom"],
-    create: ({ root }) => {
+    create: ({ root, signal }) => {
       let output: HTMLElement | undefined;
+      const onClick = () => {
+        const test = testWindow().__runtimeTest;
+        if (test) test.clicks += 1;
+      };
+      window.addEventListener("click", onClick, { signal });
       return {
         start() {
           if (!(root instanceof Element)) {
@@ -39,6 +45,7 @@ registry.register(
           return input.value * 2;
         },
         stop() {
+          window.removeEventListener("click", onClick);
           output?.remove();
           output = undefined;
         },
@@ -81,6 +88,7 @@ async function mountPage(root: Element): Promise<void> {
 testWindow().__runtimeTest = {
   instances: [],
   errors: [],
+  clicks: 0,
   unmountPage: () => lifecycle.unmount("page"),
 };
 

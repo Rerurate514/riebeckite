@@ -2,17 +2,33 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  appendContentMigrationHistory,
   ContentManager,
   type ContentManifest,
   type ContentManifestEntry,
   type ContentMigrationBatch,
   type ContentMigrationDiagnostic,
+  type ContentMigrationHistory,
+  type ContentMigrationHistoryRun,
+  type ContentMigrationHistoryStatus,
+  type ContentMigrationListEntry,
+  type ContentMigrationRecord,
+  type ContentMigrationRecoveryState,
   type ContentMigrationRegistry,
+  type ContentMigrationState,
+  type ContentMigrationStatus,
   type ContentMutationFileChange,
   type ContentMutationOperation,
   type ContentMutationPlan,
+  type ContentMutationRollbackResult,
   type ContentSource,
   type ContentSourceEntry,
+  emptyContentMigrationHistory,
+  emptyContentMigrationState,
+  findContentMigrationRecord,
+  listContentMigrationEntries,
+  parseContentMigrationHistory,
+  parseContentMigrationState,
   planContentMigrationBatch,
   publicationEntriesFromManifest,
   publicationFingerprint,
@@ -20,6 +36,8 @@ import {
   publicationRedirectsFromManifest,
   type ResolvedRiebeckiteConfig,
   type RiebeckitePlugin,
+  sanitizeContentMigrationPath,
+  upsertContentMigrationRecord,
 } from "@riebeckite/core";
 import { FileSystemContentMutation } from "./file_system_content_mutation.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
@@ -75,6 +93,66 @@ export type FileSystemContentMigrationOptions = {
   readonly redirectField?: string;
 };
 
+export type ContentMigrationApplyOptions = {
+  readonly planPath?: string;
+  readonly ids?: readonly string[];
+};
+
+export type ContentMigrationApplyResult = {
+  readonly applied: boolean;
+  readonly skipped: boolean;
+  readonly plan: ContentMigrationPlan;
+  readonly journalPath?: string;
+  readonly changedPaths: readonly string[];
+  readonly conflicts: readonly ContentMigrationDiagnostic[];
+};
+
+export type ContentMigrationStatusEntry = {
+  readonly id: string;
+  readonly version: number;
+  readonly latestVersion?: number;
+  readonly status: ContentMigrationStatus;
+  readonly definitionMatches: boolean;
+  readonly planId?: string;
+  readonly appliedAt?: string;
+  readonly updatedAt: string;
+  readonly journal?: string;
+  readonly error?: string;
+};
+
+export type ContentMigrationStatusReport = {
+  readonly schemaVersion: 1;
+  readonly updatedAt: string;
+  readonly entries: readonly ContentMigrationStatusEntry[];
+  readonly migrations: readonly ContentMigrationListEntry[];
+  readonly historyCount: number;
+};
+
+export type ContentMigrationRecoverOptions = {
+  readonly journal?: string;
+  readonly migrationId?: string;
+};
+
+export type ContentMigrationRecoveryResult = {
+  readonly recovered: boolean;
+  readonly applied: boolean;
+  readonly skipped: boolean;
+  readonly restoredPaths: readonly string[];
+  readonly conflicts: readonly ContentMigrationDiagnostic[];
+};
+
+export type ContentMigrationRollbackOptions = {
+  readonly planId?: string;
+  readonly migrationId?: string;
+};
+
+export type ContentMigrationRollbackOutcome = {
+  readonly rolledBack: boolean;
+  readonly skipped: boolean;
+  readonly restoredPaths: readonly string[];
+  readonly conflicts: readonly ContentMigrationDiagnostic[];
+};
+
 export class FileSystemContentMigration {
   private readonly mutation: FileSystemContentMutation;
   private readonly source: FileSystemContentSource;
@@ -85,6 +163,10 @@ export class FileSystemContentMigration {
       ...(options.config?.content.exclude ?? []),
       ...(options.exclude ?? []),
     ]);
+  }
+
+  private get contentDirectory(): string {
+    return this.options.contentDirectory;
   }
 
   async plan(
@@ -230,6 +312,1035 @@ export class FileSystemContentMigration {
     return parsed as unknown as ContentMigrationPlan;
   }
 
+  async history(
+    options: { readonly limit?: number } = {},
+  ): Promise<ContentMigrationHistory> {
+    const history = await this.readHistory();
+    if (options.limit === undefined) return history;
+    if (!Number.isInteger(options.limit) || options.limit < 0)
+      throw new Error("The history limit must be a non-negative integer.");
+    return {
+      ...history,
+      runs: history.runs.slice(-options.limit),
+    };
+  }
+
+  async list(): Promise<readonly ContentMigrationListEntry[]> {
+    return listContentMigrationEntries(
+      this.options.registry.migrations,
+      await this.readState(),
+    );
+  }
+
+  async apply(
+    options: ContentMigrationApplyOptions = {},
+  ): Promise<ContentMigrationApplyResult> {
+    const stored = options.planPath
+      ? await this.loadPlan(options.planPath)
+      : undefined;
+    const requested = stored
+      ? [...new Set(stored.migrations.map((migration) => migration.id))]
+      : options.ids;
+    const fresh = await this.plan({ ids: requested });
+    if (stored && !sameMigrationPlan(stored, fresh))
+      return {
+        applied: false,
+        skipped: false,
+        plan: fresh,
+        changedPaths: [],
+        conflicts: [
+          {
+            severity: "error",
+            code: "stale-plan",
+            message:
+              "The stored migration plan no longer matches the current content or migration definitions.",
+          },
+        ],
+      };
+    if (fresh.conflicts.length > 0)
+      return {
+        applied: false,
+        skipped: false,
+        plan: fresh,
+        changedPaths: [],
+        conflicts: fresh.conflicts,
+      };
+
+    const release = await this.acquireLock();
+    try {
+      const state = await this.readState();
+      const conflicts = this.preflight(fresh, state);
+      const currentContent = await this.currentContentFingerprint();
+      if (currentContent !== fresh.baseContentFingerprint)
+        conflicts.push({
+          severity: "error",
+          code: "stale-plan",
+          message: "Content changed after the migration plan was created.",
+        });
+      if (conflicts.length > 0)
+        return {
+          applied: false,
+          skipped: false,
+          plan: fresh,
+          changedPaths: [],
+          conflicts,
+        };
+
+      const actionable = fresh.migrations.filter(
+        (migration) =>
+          !isAppliedRecord(
+            findContentMigrationRecord(state, migration.id, migration.version),
+            migration.fingerprint,
+          ),
+      );
+      if (actionable.length === 0)
+        return {
+          applied: false,
+          skipped: true,
+          plan: fresh,
+          changedPaths: [],
+          conflicts: [],
+        };
+
+      const mutationPlan = await this.mutation.plan(fresh.operations);
+      if (
+        fingerprintMutationPlan(
+          mutationPlan.operations,
+          mutationPlan.changes,
+        ) !== fresh.mutationPlanFingerprint
+      )
+        return {
+          applied: false,
+          skipped: false,
+          plan: fresh,
+          changedPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: "stale-plan",
+              message:
+                "The content mutation plan changed after the migration plan was created.",
+            },
+          ],
+        };
+
+      const now = new Date();
+      let nextState = this.stateWith(fresh, actionable, state, "applying", now);
+      await this.writeState(nextState);
+      try {
+        const result = await this.mutation.apply({
+          ...mutationPlan,
+          id: fresh.mutationPlanId,
+        });
+        if (!result.applied) {
+          nextState = this.stateWith(
+            fresh,
+            actionable,
+            nextState,
+            "failed",
+            new Date(),
+            {
+              error: result.conflicts
+                .map((conflict) => conflict.message)
+                .join(" "),
+              journalPath: undefined,
+            },
+          );
+          await this.writeState(nextState);
+          await this.appendHistory(
+            fresh,
+            actionable,
+            "failure",
+            "required",
+            undefined,
+          );
+          return {
+            applied: false,
+            skipped: false,
+            plan: fresh,
+            changedPaths: [],
+            conflicts: result.conflicts.map((issue) =>
+              mutationIssue(issue, "error"),
+            ),
+          };
+        }
+        const journalPath = result.journalPath
+          ? this.relativeToContent(result.journalPath)
+          : undefined;
+        const appliedState = this.stateWith(
+          fresh,
+          actionable,
+          nextState,
+          "applied",
+          new Date(),
+          { journalPath, rolledBackAt: undefined },
+        );
+        nextState = this.supersede(actionable, appliedState, new Date());
+        await this.writeState(nextState);
+        await this.appendHistory(
+          fresh,
+          actionable,
+          "success",
+          "none",
+          journalPath,
+        );
+        return {
+          applied: true,
+          skipped: false,
+          plan: fresh,
+          journalPath: result.journalPath,
+          changedPaths: result.appliedPaths,
+          conflicts: [],
+        };
+      } catch (error) {
+        const journal = await this.failedJournal(fresh);
+        nextState = this.stateWith(
+          fresh,
+          actionable,
+          nextState,
+          journal ? "recovery-required" : "failed",
+          new Date(),
+          { journalPath: journal, error: errorMessage(error) },
+        );
+        await this.writeState(nextState);
+        await this.appendHistory(
+          fresh,
+          actionable,
+          "failure",
+          journal ? "required" : "none",
+          journal,
+        );
+        return {
+          applied: false,
+          skipped: false,
+          plan: fresh,
+          changedPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: journal ? "recovery-required" : "apply-failed",
+              message: errorMessage(error),
+            },
+          ],
+        };
+      }
+    } finally {
+      await release();
+    }
+  }
+
+  async status(): Promise<ContentMigrationStatusReport> {
+    const state = await this.readState();
+    const history = await this.readHistory();
+    const reconciled: ContentMigrationRecord[] = [];
+    let changed = false;
+    for (const record of state.migrations) {
+      const resolved = await this.reconcile(record);
+      if (resolved !== record) changed = true;
+      reconciled.push(resolved);
+    }
+    const nextState: ContentMigrationState = changed
+      ? {
+          schemaVersion: 1,
+          updatedAt: new Date().toISOString(),
+          migrations: reconciled,
+        }
+      : state;
+    if (changed) {
+      try {
+        const release = await this.acquireLock();
+        try {
+          await this.writeState(nextState);
+        } finally {
+          await release();
+        }
+      } catch {}
+    }
+    const entries = nextState.migrations
+      .map((record) => {
+        const definition = this.options.registry
+          .versions(record.id)
+          .find((migration) => migration.version === record.version);
+        const latest = this.options.registry.latest(record.id);
+        return {
+          id: record.id,
+          version: record.version,
+          latestVersion: latest?.version,
+          status: record.status,
+          definitionMatches:
+            definition !== undefined &&
+            definition.fingerprint === record.definitionFingerprint,
+          planId: record.planId,
+          appliedAt: record.appliedAt,
+          updatedAt: record.updatedAt,
+          journal: record.journalPath,
+          error: record.error,
+        };
+      })
+      .toSorted(
+        (left, right) =>
+          left.id.localeCompare(right.id) || left.version - right.version,
+      );
+    return {
+      schemaVersion: 1,
+      updatedAt: nextState.updatedAt,
+      entries,
+      migrations: listContentMigrationEntries(
+        this.options.registry.migrations,
+        nextState,
+      ),
+      historyCount: history.runs.length,
+    };
+  }
+
+  async recover(
+    options: ContentMigrationRecoverOptions = {},
+  ): Promise<ContentMigrationRecoveryResult> {
+    const release = await this.acquireLock();
+    try {
+      const state = await this.readState();
+      const journalPath =
+        options.journal !== undefined
+          ? this.absoluteFromContent(options.journal)
+          : undefined;
+      const targets = state.migrations.filter((record) => {
+        if (options.journal !== undefined)
+          return (
+            record.journalPath === options.journal ||
+            (record.mutationPlanId !== undefined &&
+              journalPath !== undefined &&
+              path.basename(path.dirname(journalPath)) ===
+                record.mutationPlanId)
+          );
+        if (options.migrationId !== undefined)
+          return (
+            record.id === options.migrationId &&
+            ["applying", "recovery-required", "failed"].includes(record.status)
+          );
+        return ["applying", "recovery-required", "failed"].includes(
+          record.status,
+        );
+      });
+      const journals = new Map<string, ContentMigrationRecord[]>();
+      for (const record of targets) {
+        const resolved =
+          record.journalPath !== undefined
+            ? this.absoluteFromContent(record.journalPath)
+            : record.mutationPlanId !== undefined
+              ? path.join(
+                  this.contentDirectory,
+                  ".riebeckite",
+                  "mutations",
+                  record.mutationPlanId,
+                  "journal.json",
+                )
+              : undefined;
+        if (!resolved) continue;
+        const records = journals.get(resolved) ?? [];
+        records.push(record);
+        journals.set(resolved, records);
+      }
+      if (journalPath !== undefined && !journals.has(journalPath))
+        journals.set(journalPath, []);
+      if (journals.size === 0)
+        return {
+          recovered: false,
+          applied: false,
+          skipped: true,
+          restoredPaths: [],
+          conflicts: [],
+        };
+      let nextState = state;
+      let recovered = false;
+      let applied = false;
+      const restoredPaths: string[] = [];
+      const conflicts: ContentMigrationDiagnostic[] = [];
+      for (const [journal, records] of journals) {
+        const relativeJournal = isWithin(this.contentDirectory, journal)
+          ? this.relativeToContent(journal)
+          : undefined;
+        try {
+          const result = await this.mutation.recover(journal);
+          restoredPaths.push(...result.restoredPaths);
+          if (result.conflicts.length > 0) {
+            conflicts.push(
+              ...result.conflicts.map((issue) => mutationIssue(issue, "error")),
+            );
+            nextState = this.setStatuses(
+              nextState,
+              records,
+              "recovery-required",
+              new Date(),
+              relativeJournal,
+            );
+            await this.appendHistoryForRecords(
+              records,
+              "failure",
+              "required",
+              relativeJournal,
+            );
+            continue;
+          }
+          if (result.recovered) {
+            recovered = true;
+            nextState = this.setStatuses(
+              nextState,
+              records,
+              "rolled-back",
+              new Date(),
+              relativeJournal,
+            );
+            await this.appendHistoryForRecords(
+              records,
+              "rolled-back",
+              "recovered",
+              relativeJournal,
+            );
+            continue;
+          }
+          const snapshot = await readJournalSnapshot(journal);
+          if (snapshot?.state === "complete") {
+            applied = true;
+            nextState = this.setStatuses(
+              nextState,
+              records,
+              "applied",
+              new Date(),
+              relativeJournal,
+            );
+            await this.appendHistoryForRecords(
+              records,
+              "success",
+              "recovered",
+              relativeJournal,
+            );
+          } else if (
+            snapshot?.state === "rolled-back" ||
+            snapshot?.state === "recovered"
+          ) {
+            recovered = true;
+            nextState = this.setStatuses(
+              nextState,
+              records,
+              "rolled-back",
+              new Date(),
+              relativeJournal,
+            );
+            await this.appendHistoryForRecords(
+              records,
+              "rolled-back",
+              "recovered",
+              relativeJournal,
+            );
+          } else {
+            nextState = this.setStatuses(
+              nextState,
+              records,
+              "recovery-required",
+              new Date(),
+              relativeJournal,
+            );
+            conflicts.push({
+              severity: "error",
+              code: "journal-not-recoverable",
+              message: "The mutation journal is not in a recoverable state.",
+            });
+          }
+        } catch (error) {
+          conflicts.push({
+            severity: "error",
+            code: "recovery-failed",
+            message: errorMessage(error),
+          });
+          nextState = this.setStatuses(
+            nextState,
+            records,
+            "recovery-required",
+            new Date(),
+            relativeJournal,
+          );
+          await this.appendHistoryForRecords(
+            records,
+            "failure",
+            "required",
+            relativeJournal,
+          );
+        }
+      }
+      await this.writeState(nextState);
+      return {
+        recovered,
+        applied,
+        skipped: false,
+        restoredPaths,
+        conflicts,
+      };
+    } finally {
+      await release();
+    }
+  }
+
+  async rollback(
+    options: ContentMigrationRollbackOptions,
+  ): Promise<ContentMigrationRollbackOutcome> {
+    const release = await this.acquireLock();
+    try {
+      const state = await this.readState();
+      const candidates = state.migrations.filter((record) =>
+        options.planId !== undefined
+          ? record.planId === options.planId
+          : options.migrationId !== undefined
+            ? record.id === options.migrationId
+            : false,
+      );
+      const target = candidates
+        .filter((record) => record.status === "applied")
+        .toSorted((left, right) => right.version - left.version)[0];
+      if (!target) {
+        if (candidates.some((record) => record.status === "rolled-back"))
+          return {
+            rolledBack: false,
+            skipped: true,
+            restoredPaths: [],
+            conflicts: [],
+          };
+        return {
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: "rollback-not-applied",
+              message: "The migration has no applied state to roll back.",
+            },
+          ],
+        };
+      }
+      if (!target.journalPath)
+        return {
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: "rollback-journal-missing",
+              message: "The applied migration has no mutation journal.",
+            },
+          ],
+        };
+      const batch = state.migrations.filter(
+        (record) =>
+          record.status === "applied" &&
+          record.planId !== undefined &&
+          record.planId === target.planId,
+      );
+      const journal = this.absoluteFromContent(target.journalPath);
+      let result: ContentMutationRollbackResult;
+      try {
+        result = await this.mutation.rollback(journal);
+      } catch (error) {
+        return {
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: "rollback-failed",
+              message: errorMessage(error),
+            },
+          ],
+        };
+      }
+      if (result.conflicts.length > 0) {
+        const nextState = this.setStatuses(
+          state,
+          batch,
+          "recovery-required",
+          new Date(),
+          target.journalPath,
+          result.conflicts.map((issue) => issue.message).join(" "),
+        );
+        await this.writeState(nextState);
+        await this.appendHistoryForRecords(
+          batch,
+          "failure",
+          "required",
+          target.journalPath,
+        );
+        return {
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: result.restoredPaths,
+          conflicts: result.conflicts.map((issue) =>
+            mutationIssue(issue, "error"),
+          ),
+        };
+      }
+      const nextState = this.setStatuses(
+        state,
+        batch,
+        "rolled-back",
+        new Date(),
+        target.journalPath,
+        undefined,
+        new Date(),
+      );
+      await this.writeState(nextState);
+      await this.appendHistoryForRecords(
+        batch,
+        "rolled-back",
+        "recovered",
+        target.journalPath,
+      );
+      return {
+        rolledBack: result.rolledBack,
+        skipped: result.skipped,
+        restoredPaths: result.restoredPaths,
+        conflicts: [],
+      };
+    } finally {
+      await release();
+    }
+  }
+
+  private async reconcile(
+    record: ContentMigrationRecord,
+  ): Promise<ContentMigrationRecord> {
+    if (record.status !== "applying") return record;
+    const journal = record.journalPath
+      ? this.absoluteFromContent(record.journalPath)
+      : record.mutationPlanId
+        ? path.join(
+            this.contentDirectory,
+            ".riebeckite",
+            "mutations",
+            record.mutationPlanId,
+            "journal.json",
+          )
+        : undefined;
+    const snapshot = journal ? await readJournalSnapshot(journal) : undefined;
+    if (!snapshot)
+      return {
+        ...record,
+        status: "failed",
+        updatedAt: new Date().toISOString(),
+        ...(journal ? { journalPath: this.relativeToContent(journal) } : {}),
+        error: "The mutation journal is missing.",
+      };
+    const relative = this.relativeToContent(journal as string);
+    if (snapshot.state === "complete") {
+      if (await journalMatchesApplied(this.contentDirectory, snapshot))
+        return {
+          ...record,
+          status: "applied",
+          journalPath: relative,
+          appliedAt: record.appliedAt ?? new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      return {
+        ...record,
+        status: "recovery-required",
+        journalPath: relative,
+        updatedAt: new Date().toISOString(),
+        error: "Content changed after the mutation journal completed.",
+      };
+    }
+    if (snapshot.state === "rolled-back" || snapshot.state === "recovered")
+      return {
+        ...record,
+        status: "rolled-back",
+        journalPath: relative,
+        rolledBackAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    return {
+      ...record,
+      status: "recovery-required",
+      journalPath: relative,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  private preflight(
+    plan: ContentMigrationPlan,
+    state: ContentMigrationState,
+  ): ContentMigrationDiagnostic[] {
+    const conflicts: ContentMigrationDiagnostic[] = [];
+    for (const migration of plan.migrations) {
+      const records = state.migrations.filter(
+        (record) => record.id === migration.id,
+      );
+      const sameVersion = records.find(
+        (record) => record.version === migration.version,
+      );
+      if (
+        sameVersion?.status === "applied" &&
+        sameVersion.definitionFingerprint !== migration.fingerprint
+      )
+        conflicts.push({
+          severity: "error",
+          code: "migration-definition-changed",
+          message: `Migration "${migration.id}" changed without a version bump.`,
+          path: undefined,
+        });
+      const higher = records.find(
+        (record) =>
+          record.version > migration.version && record.status === "applied",
+      );
+      if (higher)
+        conflicts.push({
+          severity: "error",
+          code: "migration-version-regressed",
+          message: `Migration "${migration.id}" version ${migration.version} is older than the applied version ${higher.version}.`,
+        });
+      if (
+        records.some(
+          (record) =>
+            record.version === migration.version &&
+            record.status === "applying",
+        )
+      )
+        conflicts.push({
+          severity: "error",
+          code: "migration-in-progress",
+          message: `Migration "${migration.id}" is still applying; recover it first.`,
+        });
+      if (
+        records.some(
+          (record) =>
+            record.version === migration.version &&
+            record.status === "recovery-required",
+        )
+      )
+        conflicts.push({
+          severity: "error",
+          code: "recovery-required",
+          message: `Migration "${migration.id}" requires recovery before it can be applied again.`,
+        });
+    }
+    return conflicts;
+  }
+
+  private stateWith(
+    plan: ContentMigrationPlan,
+    migrations: ContentMigrationPlan["migrations"],
+    state: ContentMigrationState,
+    status: ContentMigrationStatus,
+    now: Date,
+    extra: {
+      readonly journalPath?: string;
+      readonly error?: string;
+      readonly rolledBackAt?: string;
+    } = {},
+  ): ContentMigrationState {
+    let next = state;
+    for (const migration of migrations) {
+      const prior = findContentMigrationRecord(
+        state,
+        migration.id,
+        migration.version,
+      );
+      next = upsertContentMigrationRecord(
+        next,
+        {
+          id: migration.id,
+          version: migration.version,
+          definitionFingerprint: migration.fingerprint,
+          status,
+          planId: plan.id,
+          planFingerprint: plan.planFingerprint,
+          contentFingerprint: plan.baseContentFingerprint,
+          mutationPlanId: plan.mutationPlanId,
+          mutationPlanFingerprint: plan.mutationPlanFingerprint,
+          journalPath: extra.journalPath ?? prior?.journalPath,
+          changedPaths: plan.changes.map((change) => change.path),
+          updatedAt: now.toISOString(),
+          appliedAt:
+            status === "applied"
+              ? (prior?.appliedAt ?? now.toISOString())
+              : prior?.appliedAt,
+          rolledBackAt: extra.rolledBackAt ?? prior?.rolledBackAt,
+          error: extra.error,
+        },
+        now,
+      );
+    }
+    return next;
+  }
+
+  private supersede(
+    migrations: ContentMigrationPlan["migrations"],
+    state: ContentMigrationState,
+    now: Date,
+  ): ContentMigrationState {
+    let next = state;
+    for (const migration of migrations) {
+      for (const record of state.migrations) {
+        if (
+          record.id === migration.id &&
+          record.version < migration.version &&
+          record.status === "applied"
+        )
+          next = upsertContentMigrationRecord(
+            next,
+            {
+              ...record,
+              status: "superseded",
+              updatedAt: now.toISOString(),
+            },
+            now,
+          );
+      }
+    }
+    return next;
+  }
+
+  private setStatuses(
+    state: ContentMigrationState,
+    records: readonly ContentMigrationRecord[],
+    status: ContentMigrationStatus,
+    now: Date,
+    journalPath?: string,
+    error?: string,
+    rolledBackAt?: Date,
+  ): ContentMigrationState {
+    const keys = new Set(
+      records.map((record) => `${record.id}@${record.version}`),
+    );
+    let next = state;
+    for (const record of state.migrations) {
+      if (!keys.has(`${record.id}@${record.version}`)) continue;
+      next = upsertContentMigrationRecord(
+        next,
+        {
+          ...record,
+          status,
+          journalPath: journalPath ?? record.journalPath,
+          updatedAt: now.toISOString(),
+          appliedAt:
+            status === "applied"
+              ? (record.appliedAt ?? now.toISOString())
+              : record.appliedAt,
+          rolledBackAt: rolledBackAt?.toISOString() ?? record.rolledBackAt,
+          error,
+        },
+        now,
+      );
+    }
+    return next;
+  }
+
+  private async appendHistory(
+    plan: ContentMigrationPlan,
+    migrations: ContentMigrationPlan["migrations"],
+    status: ContentMigrationHistoryStatus,
+    recoveryState: ContentMigrationRecoveryState,
+    journal: string | undefined,
+  ): Promise<void> {
+    if (migrations.length === 0) return;
+    const created = plan.changes.filter(
+      (change) => change.beforeFingerprint === null,
+    ).length;
+    const deleted = plan.changes.filter(
+      (change) => change.afterFingerprint === null,
+    ).length;
+    const updated = plan.changes.length - created - deleted;
+    const history = await this.readHistory();
+    let next = history;
+    for (const migration of migrations) {
+      const run: ContentMigrationHistoryRun = {
+        id: migration.id,
+        version: migration.version,
+        at: new Date().toISOString(),
+        planId: plan.id,
+        mutationPlanId: plan.mutationPlanId,
+        planFingerprint: plan.planFingerprint,
+        contentFingerprint: plan.baseContentFingerprint,
+        mutationPlanFingerprint: plan.mutationPlanFingerprint,
+        status,
+        created,
+        updated,
+        deleted,
+        moved: plan.impact.moved,
+        changedCount: plan.changes.length,
+        recoveryState,
+        journal,
+      };
+      next = appendContentMigrationHistory(next, run);
+    }
+    await this.writeHistory(next);
+  }
+
+  private async appendHistoryForRecords(
+    records: readonly ContentMigrationRecord[],
+    status: ContentMigrationHistoryStatus,
+    recoveryState: ContentMigrationRecoveryState,
+    journal: string | undefined,
+  ): Promise<void> {
+    if (records.length === 0) return;
+    const history = await this.readHistory();
+    let next = history;
+    for (const record of records) {
+      const run: ContentMigrationHistoryRun = {
+        id: record.id,
+        version: record.version,
+        at: new Date().toISOString(),
+        planId: record.planId ?? "",
+        mutationPlanId: record.mutationPlanId,
+        planFingerprint: record.planFingerprint ?? "",
+        contentFingerprint: record.contentFingerprint ?? "",
+        mutationPlanFingerprint: record.mutationPlanFingerprint,
+        status,
+        created: 0,
+        updated: 0,
+        deleted: 0,
+        moved: 0,
+        changedCount: record.changedPaths.length,
+        recoveryState,
+        journal,
+      };
+      next = appendContentMigrationHistory(next, run);
+    }
+    await this.writeHistory(next);
+  }
+
+  private async failedJournal(
+    plan: ContentMigrationPlan,
+  ): Promise<string | undefined> {
+    const journal = path.join(
+      this.contentDirectory,
+      ".riebeckite",
+      "mutations",
+      plan.mutationPlanId,
+      "journal.json",
+    );
+    try {
+      await fs.access(journal);
+      return this.relativeToContent(journal);
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async currentContentFingerprint(): Promise<string> {
+    const entries = (await this.source.scan()).filter((entry) =>
+      entry.path.toLowerCase().endsWith(".md"),
+    );
+    return fingerprintContentFiles(
+      await Promise.all(
+        entries.map(async (entry) => ({
+          path: entry.path,
+          content: await this.source.read(entry),
+        })),
+      ),
+    );
+  }
+
+  private async readState(): Promise<ContentMigrationState> {
+    try {
+      return parseContentMigrationState(
+        JSON.parse(await fs.readFile(this.statePath(), "utf8")) as unknown,
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT")
+        return emptyContentMigrationState();
+      throw error;
+    }
+  }
+
+  private async writeState(state: ContentMigrationState): Promise<void> {
+    const target = this.statePath();
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+  }
+
+  private async readHistory(): Promise<ContentMigrationHistory> {
+    try {
+      return parseContentMigrationHistory(
+        JSON.parse(await fs.readFile(this.historyPath(), "utf8")) as unknown,
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT")
+        return emptyContentMigrationHistory();
+      throw error;
+    }
+  }
+
+  private async writeHistory(history: ContentMigrationHistory): Promise<void> {
+    const target = this.historyPath();
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, `${JSON.stringify(history, null, 2)}\n`, "utf8");
+  }
+
+  private statePath(): string {
+    return path.join(
+      this.contentDirectory,
+      ".riebeckite",
+      "migrations",
+      "state.json",
+    );
+  }
+
+  private historyPath(): string {
+    return path.join(
+      this.contentDirectory,
+      ".riebeckite",
+      "migrations",
+      "history.json",
+    );
+  }
+
+  private relativeToContent(target: string): string {
+    return sanitizeContentMigrationPath(
+      path.relative(this.contentDirectory, target).split(path.sep).join("/"),
+    );
+  }
+
+  private absoluteFromContent(target: string): string {
+    return path.isAbsolute(target)
+      ? target
+      : path.join(this.contentDirectory, target);
+  }
+
+  private async acquireLock(): Promise<() => Promise<void>> {
+    const lockPath = path.join(
+      this.contentDirectory,
+      ".riebeckite",
+      "migrations",
+      "lock",
+    );
+    await fs.mkdir(path.dirname(lockPath), { recursive: true });
+    let handle: fs.FileHandle;
+    try {
+      handle = await fs.open(lockPath, "wx");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "EEXIST")
+        throw new Error(
+          "Another migration is already applying or requires recovery.",
+        );
+      throw error;
+    }
+    const token = randomUUID();
+    await handle.writeFile(
+      JSON.stringify({
+        pid: process.pid,
+        token,
+        startedAt: new Date().toISOString(),
+      }),
+    );
+    return async () => {
+      await handle.close();
+      try {
+        const current = JSON.parse(await fs.readFile(lockPath, "utf8"));
+        if (isRecord(current) && current.token === token)
+          await fs.rm(lockPath, { force: true });
+      } catch {}
+    };
+  }
+
   private async tryAnalyze(source: ContentSource): Promise<{
     readonly analysis?: Awaited<
       ReturnType<FileSystemContentMigration["analyze"]>
@@ -261,7 +1372,7 @@ export class FileSystemContentMigration {
   }> {
     const manager = new ContentManager(source, [], {
       config: this.options.config,
-      plugins: this.options.plugins,
+      plugins: this.options.plugins ? [...this.options.plugins] : undefined,
       commitBuildState: false,
       publishingBuildTime: this.options.buildTime,
     });
@@ -603,6 +1714,103 @@ function mutationIssue(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function sameMigrationPlan(
+  left: ContentMigrationPlan,
+  right: ContentMigrationPlan,
+): boolean {
+  if (
+    left.baseContentFingerprint !== right.baseContentFingerprint ||
+    left.mutationPlanFingerprint !== right.mutationPlanFingerprint ||
+    left.planFingerprint !== right.planFingerprint ||
+    left.migrations.length !== right.migrations.length
+  )
+    return false;
+  return left.migrations.every(
+    (migration, index) =>
+      migration.id === right.migrations[index]?.id &&
+      migration.version === right.migrations[index]?.version &&
+      migration.fingerprint === right.migrations[index]?.fingerprint,
+  );
+}
+
+function isAppliedRecord(
+  record: ContentMigrationRecord | undefined,
+  fingerprint: string,
+): boolean {
+  return (
+    record?.status === "applied" && record.definitionFingerprint === fingerprint
+  );
+}
+
+type JournalSnapshot = {
+  readonly state: string;
+  readonly changes: readonly {
+    readonly path: string;
+    readonly afterFingerprint: string | null;
+  }[];
+};
+
+async function readJournalSnapshot(
+  journalPath: string,
+): Promise<JournalSnapshot | undefined> {
+  try {
+    const value = JSON.parse(await fs.readFile(journalPath, "utf8")) as unknown;
+    if (
+      !isRecord(value) ||
+      typeof value.state !== "string" ||
+      !Array.isArray(value.changes)
+    )
+      return undefined;
+    const changes: { path: string; afterFingerprint: string | null }[] = [];
+    for (const change of value.changes) {
+      if (
+        !isRecord(change) ||
+        typeof change.path !== "string" ||
+        !(
+          change.afterFingerprint === null ||
+          typeof change.afterFingerprint === "string"
+        )
+      )
+        return undefined;
+      changes.push({
+        path: change.path,
+        afterFingerprint: change.afterFingerprint as string | null,
+      });
+    }
+    return { state: value.state, changes };
+  } catch {
+    return undefined;
+  }
+}
+
+async function journalMatchesApplied(
+  contentDirectory: string,
+  journal: JournalSnapshot,
+): Promise<boolean> {
+  for (const change of journal.changes) {
+    const target = path.resolve(contentDirectory, change.path);
+    if (!isWithin(contentDirectory, target)) return false;
+    let actual: string | null = null;
+    try {
+      actual = createHash("sha256")
+        .update(await fs.readFile(target))
+        .digest("hex");
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") return false;
+    }
+    if (actual !== change.afterFingerprint) return false;
+  }
+  return true;
+}
+
+function isWithin(root: string, target: string): boolean {
+  const relative = path.relative(path.resolve(root), path.resolve(target));
+  return (
+    relative === "" ||
+    (!relative.startsWith("..") && !path.isAbsolute(relative))
+  );
 }
 
 function errorMessage(error: unknown): string {

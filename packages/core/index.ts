@@ -78,6 +78,7 @@ export type {
   ContentMutationPrecondition,
   ContentMutationRecoveryResult,
   ContentMutationResult,
+  ContentMutationRollbackResult,
 } from "./src/content/content_mutation.js";
 export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
@@ -246,6 +247,30 @@ export type {
   PermalinkRule,
   VisibilityRule,
 } from "./src/migration/migration_rules.js";
+export type {
+  ContentMigrationHistory,
+  ContentMigrationHistoryRun,
+  ContentMigrationHistoryStatus,
+  ContentMigrationListEntry,
+  ContentMigrationRecord,
+  ContentMigrationRecoveryState,
+  ContentMigrationState,
+  ContentMigrationStatus,
+} from "./src/migration/migration_state.js";
+export {
+  appendContentMigrationHistory,
+  CONTENT_MIGRATION_HISTORY_LIMIT,
+  ContentMigrationStateError,
+  emptyContentMigrationHistory,
+  emptyContentMigrationState,
+  findContentMigrationRecord,
+  listContentMigrationEntries,
+  parseContentMigrationHistory,
+  parseContentMigrationState,
+  sanitizeContentMigrationPath,
+  sanitizeContentMigrationPaths,
+  upsertContentMigrationRecord,
+} from "./src/migration/migration_state.js";
 export type {
   MigrationContentApplication,
   MigrationContentState,

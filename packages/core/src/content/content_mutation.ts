@@ -72,6 +72,14 @@ export type ContentMutationRecoveryResult = {
   readonly conflicts: readonly ContentMutationIssue[];
 };
 
+export type ContentMutationRollbackResult = {
+  readonly journalPath: string;
+  readonly rolledBack: boolean;
+  readonly skipped: boolean;
+  readonly restoredPaths: readonly string[];
+  readonly conflicts: readonly ContentMutationIssue[];
+};
+
 export function flattenContentMutationOperations(
   operations: readonly ContentMutationOperation[],
 ): readonly Exclude<ContentMutationOperation, { readonly kind: "batch" }>[] {

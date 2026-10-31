@@ -10,6 +10,7 @@ import {
   type ContentMutationPlan,
   type ContentMutationRecoveryResult,
   type ContentMutationResult,
+  type ContentMutationRollbackResult,
   type ContentSourceEntry,
   extractFrontmatterAliases,
   flattenContentMutationOperations,
@@ -22,7 +23,13 @@ type FileState = { readonly content: Uint8Array; readonly fingerprint: string };
 type MutationJournal = {
   readonly version: 1;
   readonly id: string;
-  state: "prepared" | "applying" | "failed" | "complete" | "recovered";
+  state:
+    | "prepared"
+    | "applying"
+    | "failed"
+    | "complete"
+    | "recovered"
+    | "rolled-back";
   readonly changes: readonly JournalChange[];
 };
 
@@ -457,6 +464,146 @@ export class FileSystemContentMutation {
       return {
         journalPath: absoluteJournal,
         recovered: true,
+        restoredPaths,
+        conflicts: [],
+      };
+    } finally {
+      await release();
+    }
+  }
+
+  async rollback(journalPath: string): Promise<ContentMutationRollbackResult> {
+    const root = await this.root();
+    const absoluteJournal = path.resolve(journalPath);
+    const mutationRoot = path.join(root, ".riebeckite", "mutations");
+    const journalDirectory = path.dirname(absoluteJournal);
+    const release = await this.acquireLock(root);
+    try {
+      if (!isWithin(mutationRoot, absoluteJournal))
+        throw new Error("Journal path is outside the mutation directory.");
+      const journal = parseJournal(await fs.readFile(absoluteJournal, "utf8"));
+      if (
+        path.basename(absoluteJournal) !== "journal.json" ||
+        path.basename(journalDirectory) !== journal.id ||
+        path.basename(journalDirectory) === "plans"
+      )
+        throw new Error("Journal path does not belong to its mutation.");
+      if (journal.state === "rolled-back")
+        return {
+          journalPath: absoluteJournal,
+          rolledBack: false,
+          skipped: true,
+          restoredPaths: [],
+          conflicts: [],
+        };
+      if (journal.state !== "complete")
+        return {
+          journalPath: absoluteJournal,
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: [],
+          conflicts: [
+            {
+              severity: "error",
+              code: "rollback-journal-incomplete",
+              message: "Only a completed mutation can be rolled back.",
+            },
+          ],
+        };
+      const conflicts: ContentMutationIssue[] = [];
+      const backups = new Map<string, Uint8Array>();
+      for (const change of journal.changes) {
+        let current: string | null = null;
+        try {
+          current = (await readState(root, change.path))?.fingerprint ?? null;
+        } catch (error) {
+          conflicts.push({
+            severity: "error",
+            code: "rollback-conflict",
+            path: change.path,
+            message: error instanceof Error ? error.message : String(error),
+          });
+          continue;
+        }
+        if (current !== change.afterFingerprint) {
+          conflicts.push({
+            severity: "error",
+            code: "rollback-conflict",
+            path: change.path,
+            message: "The file changed after the mutation was applied.",
+          });
+          continue;
+        }
+        if (change.beforeFingerprint === null) continue;
+        if (!change.backupPath) {
+          conflicts.push({
+            severity: "error",
+            code: "rollback-backup-invalid",
+            path: change.path,
+            message: "The journal does not reference a backup.",
+          });
+          continue;
+        }
+        const backup = path.resolve(journalDirectory, change.backupPath);
+        if (!isWithin(journalDirectory, backup)) {
+          conflicts.push({
+            severity: "error",
+            code: "rollback-backup-invalid",
+            path: change.path,
+            message: "The backup path is outside the mutation journal.",
+          });
+          continue;
+        }
+        try {
+          const content = await fs.readFile(backup);
+          if (fingerprint(content) !== change.beforeFingerprint)
+            throw new Error("The backup fingerprint does not match.");
+          backups.set(change.path, content);
+        } catch (error) {
+          conflicts.push({
+            severity: "error",
+            code: "rollback-backup-invalid",
+            path: change.path,
+            message: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+      if (conflicts.length > 0)
+        return {
+          journalPath: absoluteJournal,
+          rolledBack: false,
+          skipped: false,
+          restoredPaths: [],
+          conflicts,
+        };
+      const restoredPaths: string[] = [];
+      for (const change of journal.changes) {
+        const conflict = await this.restoreChange(
+          root,
+          journalDirectory,
+          change,
+          backups.get(change.path),
+        );
+        if (conflict) {
+          conflicts.push(conflict);
+          break;
+        }
+        restoredPaths.push(change.path);
+      }
+      if (conflicts.length > 0)
+        return {
+          journalPath: absoluteJournal,
+          rolledBack: false,
+          skipped: false,
+          restoredPaths,
+          conflicts,
+        };
+      journal.state = "rolled-back";
+      await writeJsonAtomically(absoluteJournal, journal);
+      return {
+        journalPath: absoluteJournal,
+        rolledBack: true,
+        skipped: false,
         restoredPaths,
         conflicts: [],
       };
@@ -1028,9 +1175,14 @@ function parseJournal(value: string): MutationJournal {
     journal.version !== 1 ||
     typeof journal.id !== "string" ||
     !Array.isArray(journal.changes) ||
-    !["prepared", "applying", "failed", "complete", "recovered"].includes(
-      journal.state ?? "",
-    )
+    ![
+      "prepared",
+      "applying",
+      "failed",
+      "complete",
+      "recovered",
+      "rolled-back",
+    ].includes(journal.state ?? "")
   )
     throw new Error("Journal is missing or corrupt.");
   return journal as MutationJournal;

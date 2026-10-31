@@ -37,6 +37,41 @@ test("independent content edit affects own page and global outputs only", () => 
   assert.equal(result.fullRegenerationRequired, false);
 });
 
+test("derived-query dependencies compare every query result", () => {
+  const dependencyOutput = (fingerprints: readonly [string, string]) =>
+    manifest([entry("a")], {
+      generatedOutputs: [
+        {
+          path: "query.txt",
+          content: "",
+          owner: "plugin",
+          dependencies: [
+            {
+              type: "derived-query",
+              id: "posts",
+              fingerprint: fingerprints[0],
+            },
+            {
+              type: "derived-query",
+              id: "posts",
+              fingerprint: fingerprints[1],
+            },
+          ],
+        },
+      ],
+    });
+  const result = changes(
+    dependencyOutput(["first", "stable"]),
+    dependencyOutput(["changed", "stable"]),
+    {},
+  );
+  assert.deepEqual(paths(result.affected), ["query.txt"]);
+  assert.deepEqual(result.reasons?.get("query.txt"), {
+    type: "derived-query",
+    id: "posts",
+  });
+});
+
 test("file-dependent generated output changes only with its source asset", () => {
   const previous = manifest([entry("a")], {
     generatedOutputs: [

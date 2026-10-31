@@ -125,6 +125,25 @@ jobs:
       - run: pnpm --filter @riebeckite/plugin-toc test:browser:required
       - run: pnpm --filter @riebeckite/cli test:integration
 
+  cross-platform:
+    name: cross-platform (${{ matrix.os }})
+    needs: changes
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          pnpm-version: ${{ env.PNPM_VERSION }}
+      - run: pnpm --filter @riebeckite/core... run build
+      - run: pnpm --filter @riebeckite/core test
+      - run: pnpm --filter @riebeckite/honox... run build
+      - run: pnpm --filter @riebeckite/honox test
+
   integration-e2e:
     name: integration-e2e
     needs: [changes, build]

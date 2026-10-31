@@ -235,6 +235,32 @@ test("development inspector works in a real Vite dev server", async () => {
     await waitForShadowText(page, "[role=tabpanel]", "#1", 30_000);
 
     await clickShadow(page, "[data-tab='5']");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "e2e.public-titles",
+      30_000,
+    );
+    await waitForShadowText(page, "[role=tabpanel]", "Cache", 30_000);
+    const derivedSearch = await shadowElement(page, "[data-derived-query]");
+    await derivedSearch.click();
+    await page.keyboard.type("missing-view");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "No matching derived views",
+      30_000,
+    );
+    const derivedSelect = await shadowElement(page, "[data-derived-status]");
+    await derivedSelect.select("not-run");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "No matching derived views",
+      30_000,
+    );
+
+    await clickShadow(page, "[data-tab='6']");
     await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
     await waitForShadowText(
       page,
@@ -381,7 +407,18 @@ test("development inspector works in a real Vite dev server", async () => {
     await waitForShadowText(page, "ul", "DUPLICATE_TITLE", 30_000);
 
     await page.evaluate(async () => {
-      const response = await fetch("/__riebeckite/inspector/output?limit=1");
+      const bootstrap = await fetch("/__riebeckite/inspector/bootstrap", {
+        cache: "no-store",
+      });
+      if (!bootstrap.ok)
+        throw new Error(
+          `inspector bootstrap failed: ${bootstrap.status} ${await bootstrap.text()}`,
+        );
+      const { origin, token } = await bootstrap.json();
+      const response = await fetch(
+        `${origin}/__riebeckite/inspector/output?limit=1`,
+        { headers: { "x-riebeckite-inspector-token": token } },
+      );
       if (!response.ok) throw new Error("output endpoint failed");
       const body = await response.json();
       if (body.output.affected.length > 1) throw new Error("limit ignored");
@@ -537,7 +574,18 @@ async function inspectorJson(
   revision: number;
   output?: { lookups?: { output: { status: string } } };
 }> {
-  const response = await fetch(`${baseUrl}${path}`, { cache: "no-store" });
+  const bootstrap = await fetch(`${baseUrl}/__riebeckite/inspector/bootstrap`, {
+    cache: "no-store",
+  });
+  assert.ok(bootstrap.ok, `bootstrap returned ${bootstrap.status}`);
+  const { origin, token } = (await bootstrap.json()) as {
+    origin: string;
+    token: string;
+  };
+  const response = await fetch(`${origin}${path}`, {
+    cache: "no-store",
+    headers: { "x-riebeckite-inspector-token": token },
+  });
   assert.ok(response.ok, `${path} returned ${response.status}`);
   return (await response.json()) as {
     revision: number;

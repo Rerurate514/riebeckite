@@ -38,7 +38,7 @@ export function rehypeTimeline() {
 function visit(node: HastNode): void {
   const properties = node.properties;
   const role = properties?.dataRrTimelineRole;
-  if (typeof role === "string" && ROLE_CLASSES[role]) {
+  if (properties && typeof role === "string" && ROLE_CLASSES[role]) {
     const classes = [ROLE_CLASSES[role]];
     if (role === "timeline") {
       const line = properties?.dataRrTimelineLine;

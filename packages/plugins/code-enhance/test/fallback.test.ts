@@ -23,17 +23,22 @@ test("enhances fallback diagram source like a regular code block", async () => {
   const header = figure.children?.[0] as ElementNode;
   const actions = header.children?.[1] as ElementNode;
   assert.ok(
-    actions.children?.some(
-      (action) =>
-        action.type === "element" && action.properties?.dataCodeCopy === "true",
-    ),
+    actions.children?.some((action) => {
+      if (action.type !== "element") return false;
+      const properties = action.properties as
+        | Record<string, unknown>
+        | undefined;
+      return properties?.dataCodeCopy === "true";
+    }),
   );
   assert.ok(
-    actions.children?.some(
-      (action) =>
-        action.type === "element" &&
-        action.properties?.dataCodeWrapToggle === "true",
-    ),
+    actions.children?.some((action) => {
+      if (action.type !== "element") return false;
+      const properties = action.properties as
+        | Record<string, unknown>
+        | undefined;
+      return properties?.dataCodeWrapToggle === "true";
+    }),
   );
 });
 

@@ -148,6 +148,7 @@ export type SiteSources = {
   readonly visualRenderers?: boolean;
   readonly properties?: boolean;
   readonly svgOptimizer?: boolean;
+  readonly derivedOutput?: boolean;
 };
 
 export type Metrics = Record<string, number | boolean | null>;
@@ -290,7 +291,21 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
   const lines = [
     sources.externalDependency
       ? 'import { defineConfig, definePlugin, fingerprintExternalValue } from "@riebeckite/core";'
-      : 'import { defineConfig, definePlugin } from "@riebeckite/core";',
+      : sources.derivedOutput
+        ? 'import { defineConfig, defineDerivedView, definePlugin } from "@riebeckite/core";'
+        : 'import { defineConfig, definePlugin } from "@riebeckite/core";',
+    ...(sources.derivedOutput
+      ? [
+          "const publicTitles = defineDerivedView({",
+          '  id: "test.public-titles",',
+          '  version: "1",',
+          "  compute: (entries, context) => {",
+          '    context.query("public-titles", {});',
+          "    return entries.map((entry) => ({ slug: entry.slug, title: entry.frontmatter.title }));",
+          "  },",
+          "});",
+        ]
+      : []),
     "const demo = definePlugin({",
     '  name: "demo",',
     "  pageTypes: [",
@@ -401,6 +416,23 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
       "});",
     );
   }
+  if (sources.derivedOutput) {
+    lines.push(
+      "const derived = definePlugin({",
+      '  name: "derived-output",',
+      "  derivedViews: [publicTitles],",
+      "  async planGeneratedOutputs({ derived, manifest }) {",
+      "    const result = await derived.resolveWithDependencies(publicTitles, manifest.routableEntries);",
+      "    return [{",
+      '      path: "derived-public.json",',
+      "      content: JSON.stringify(result.value),",
+      "      derivedDependencies: result.dependencies,",
+      "      derivedViewIds: result.viewIds,",
+      "    }];",
+      "  },",
+      "});",
+    );
+  }
   lines.push(
     "export default defineConfig({",
     `  site: { title: ${JSON.stringify(sources.title)} },`,
@@ -412,7 +444,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), search()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), search()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}${sources.derivedOutput ? ", derived" : ""}],`,
     "});",
     "",
   );

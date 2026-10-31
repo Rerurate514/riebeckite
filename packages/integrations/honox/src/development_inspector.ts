@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+import http from "node:http";
 import path from "node:path";
 import {
   buildOutputPlan,
@@ -37,6 +39,8 @@ const reportPath = "/__riebeckite/inspector/report";
 const outputPath = "/__riebeckite/inspector/output";
 const graphPath = "/__riebeckite/inspector/graph";
 const pluginsPath = "/__riebeckite/inspector/plugins";
+const bootstrapPath = "/__riebeckite/inspector/bootstrap";
+const inspectorTokenHeader = "x-riebeckite-inspector-token";
 const listedOutputLimit = 20;
 const maximumListedOutputLimit = 100;
 const invalidationDelayMs = 150;
@@ -245,15 +249,11 @@ export function riebeckiteDevelopmentInspector(
       return id === resolvedClientModuleId ? inspectorClientModule() : null;
     },
     configureServer(server) {
+      const token = crypto.randomUUID();
       const reportMiddleware = async (
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -278,6 +278,7 @@ export function riebeckiteDevelopmentInspector(
                 order: index + 1,
                 enabled: plugin.enabled !== false,
               })),
+              derivedViews: snapshot?.derivedViews ?? [],
             }),
           );
         } catch {
@@ -290,11 +291,6 @@ export function riebeckiteDevelopmentInspector(
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -322,11 +318,6 @@ export function riebeckiteDevelopmentInspector(
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -357,18 +348,10 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_GRAPH_FAILED" }));
         }
       };
-      server.middlewares.use(reportPath, reportMiddleware);
-      server.middlewares.use(outputPath, outputMiddleware);
-      server.middlewares.use(graphPath, graphMiddleware);
       const pluginsMiddleware = async (
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -393,12 +376,57 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_PLUGINS_FAILED" }));
         }
       };
-      server.middlewares.use(pluginsPath, pluginsMiddleware);
+      const privateServer = http.createServer((request, response) => {
+        void handleInspectorRequest(request, response, token, {
+          [reportPath]: reportMiddleware,
+          [outputPath]: outputMiddleware,
+          [graphPath]: graphMiddleware,
+          [pluginsPath]: pluginsMiddleware,
+        });
+      });
+      const privateReady = new Promise<void>((resolve, reject) => {
+        privateServer.once("error", reject);
+        privateServer.listen(0, "127.0.0.1", () => {
+          privateServer.off("error", reject);
+          privateServer.on("error", () => privateServer.close());
+          privateServer.unref();
+          resolve();
+        });
+      });
+      const bootstrapMiddleware = async (
+        request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        if (!isTrustedInspectorRequest(request, server)) {
+          response.statusCode = 403;
+          response.end();
+          return;
+        }
+        try {
+          await privateReady;
+          const address = privateServer.address();
+          if (!address || typeof address === "string") {
+            throw new Error("Inspector server address is unavailable.");
+          }
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.setHeader("vary", "Origin");
+          response.end(
+            JSON.stringify({
+              origin: `http://127.0.0.1:${address.port}`,
+              token,
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_BOOTSTRAP_FAILED" }));
+        }
+      };
+      server.middlewares.use(bootstrapPath, bootstrapMiddleware);
+      server.httpServer?.once("close", () => privateServer.close());
       return () => {
-        prioritizeMiddleware(server, pluginsMiddleware, pluginsPath);
-        prioritizeMiddleware(server, graphMiddleware, graphPath);
-        prioritizeMiddleware(server, outputMiddleware, outputPath);
-        prioritizeMiddleware(server, reportMiddleware, reportPath);
+        prioritizeMiddleware(server, bootstrapMiddleware, bootstrapPath);
         const handle = (file: string) => {
           let application: ResolvedHonoxApplication;
           try {
@@ -876,7 +904,9 @@ function outputLookups(
     if (!selected) {
       lookups.output = { status: "not-found", target: query.output };
     } else {
-      const labels = new Set(selected.dependencies.map(dependencyLabel));
+      const labels = new Set<string>(
+        selected.dependencies.map(dependencyLabel),
+      );
       const related = allOutputs.filter(
         (output) =>
           output.path !== selected.path &&
@@ -946,6 +976,10 @@ function reasonLabel(
       return "unknown dependency";
     case "external":
       return `external:${reason.id} changed`;
+    case "derived-view":
+      return `derived-view:${reason.id} changed`;
+    case "derived-query":
+      return `derived-query:${reason.id} changed`;
     case "global":
       return "global dependency changed";
     case "content":
@@ -983,6 +1017,10 @@ function dependencyLabel(dependency: OutputDependency): string {
       return `projection:${dependency.projection}`;
     case "external":
       return `external:${dependency.id}`;
+    case "derived-view":
+      return `derived-view:${dependency.id}@${dependency.version}`;
+    case "derived-query":
+      return `derived-query:${dependency.id}@${dependency.fingerprint.slice(0, 8)}`;
     case "content-query":
       return `content-query:${dependency.properties.join(",")}${
         dependency.unknown ? "?" : ""
@@ -1093,20 +1131,120 @@ function prioritizeMiddleware(
   if (index > 0 && stack) stack.unshift(...stack.splice(index, 1));
 }
 
-function isLocalRequest(
-  host: string | undefined,
+type InspectorHandler = (
+  request: import("node:http").IncomingMessage,
+  response: import("node:http").ServerResponse,
+) => void | Promise<void>;
+
+function handleInspectorRequest(
+  request: import("node:http").IncomingMessage,
+  response: import("node:http").ServerResponse,
+  token: string,
+  handlers: Readonly<Record<string, InspectorHandler | undefined>>,
+): void {
+  const origin = inspectorOrigin(request);
+  if (origin === false) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  if (origin !== undefined) {
+    response.setHeader("access-control-allow-origin", origin);
+    response.setHeader("access-control-allow-headers", inspectorTokenHeader);
+    response.setHeader("access-control-allow-methods", "GET, OPTIONS");
+    response.setHeader("vary", "Origin");
+  }
+  response.setHeader("cache-control", "no-store");
+  response.setHeader("x-content-type-options", "nosniff");
+  if (request.method === "OPTIONS") {
+    response.statusCode = 204;
+    response.end();
+    return;
+  }
+  if (request.method !== "GET") {
+    response.statusCode = 405;
+    response.end();
+    return;
+  }
+  if (request.headers[inspectorTokenHeader] !== token) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  const handler = handlers[requestPathname(request.url)];
+  if (!handler) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+  void handler(request, response);
+}
+
+function isTrustedInspectorRequest(
+  request: import("node:http").IncomingMessage,
   server: ViteDevServer,
 ): boolean {
-  if (!host) return false;
-  const hostname = host.replace(/:\d+$/, "").toLowerCase();
+  if (request.method !== undefined && request.method !== "GET") return false;
+  if (!isLoopbackAddress(request.socket?.remoteAddress)) return false;
+  const listening = server.httpServer?.address();
   if (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname === "[::1]"
-  )
-    return true;
-  const address = server.httpServer?.address();
-  return typeof address === "object" && address?.address === hostname;
+    !listening ||
+    typeof listening === "string" ||
+    !isLoopbackAddress(listening.address)
+  ) {
+    return false;
+  }
+  if (!isLoopbackHost(request.headers.host)) return false;
+  for (const header of [
+    "forwarded",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-proto",
+    "x-real-ip",
+  ]) {
+    if (request.headers[header] !== undefined) return false;
+  }
+  return inspectorOrigin(request) !== false;
+}
+
+function inspectorOrigin(
+  request: import("node:http").IncomingMessage,
+): string | undefined | false {
+  const value = request.headers.origin;
+  if (value === undefined) return undefined;
+  if (Array.isArray(value)) return false;
+  try {
+    return isLoopbackAddress(new URL(value).hostname.replace(/^\[|\]$/g, ""))
+      ? value
+      : false;
+  } catch {
+    return false;
+  }
+}
+
+function isLoopbackHost(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    return isLoopbackAddress(
+      new URL(`http://${value}`).hostname.replace(/^\[|\]$/g, ""),
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isLoopbackAddress(value: string | undefined): boolean {
+  if (!value) return false;
+  const normalized = value.toLowerCase().replace(/^::ffff:/, "");
+  return (
+    normalized === "::1" ||
+    normalized === "localhost" ||
+    /^127\.\d+\.\d+\.\d+$/.test(normalized)
+  );
+}
+
+function requestPathname(url: string | undefined): string {
+  return new URL(url ?? "/", "http://127.0.0.1").pathname;
 }
 
 function inspectorClientModule(): string {
@@ -1115,6 +1253,8 @@ const reportEndpoint = ${JSON.stringify(reportPath)};
 const outputEndpoint = ${JSON.stringify(outputPath)};
 const graphEndpoint = ${JSON.stringify(graphPath)};
 const pluginsEndpoint = ${JSON.stringify(pluginsPath)};
+const bootstrapEndpoint = ${JSON.stringify(bootstrapPath)};
+const tokenHeader = ${JSON.stringify(inspectorTokenHeader)};
 const panelId = "riebeckite-development-inspector";
 const outputLimit = ${listedOutputLimit};
 ${diagnosticMatchesPage.toString()}
@@ -1146,6 +1286,8 @@ let pluginPage = 0;
 let pluginData;
 let themeQuery = "";
 let themeKind = "all";
+let derivedQuery = "";
+let derivedStatus = "all";
 
 export function initDevelopmentInspector() {
   let panel;
@@ -1162,7 +1304,7 @@ export function initDevelopmentInspector() {
   let pendingRefresh = false;
   let loadingTimer;
   let themeFrame = 0;
-  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Theme"];
+  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Theme"];
   const outputUrl = () => {
     const parameters = new URLSearchParams();
     if (outputQuery) parameters.set("q", outputQuery);
@@ -1197,6 +1339,28 @@ export function initDevelopmentInspector() {
     parameters.set("limit", "100");
     return pluginsEndpoint + "?" + parameters.toString();
   };
+  let inspectorConnection;
+  const connectInspector = async () => {
+    if (!inspectorConnection) {
+      inspectorConnection = fetch(bootstrapEndpoint, { cache: "no-store" })
+        .then(async (response) => {
+          if (!response.ok) throw new Error("Inspector access is unavailable.");
+          return await response.json();
+        })
+        .catch((error) => {
+          inspectorConnection = undefined;
+          throw error;
+        });
+    }
+    return await inspectorConnection;
+  };
+  const inspectorFetch = async (url, options = {}) => {
+    const connection = await connectInspector();
+    return await fetch(connection.origin + url, {
+      ...options,
+      headers: { ...(options.headers ?? {}), [tokenHeader]: connection.token },
+    });
+  };
   const refresh = async () => {
     if (!panel?.isConnected) return;
     if (refreshing) {
@@ -1208,7 +1372,7 @@ export function initDevelopmentInspector() {
     controller = new AbortController();
     const current = ++generation;
     try {
-      const response = await fetch(reportEndpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
+      const response = await inspectorFetch(reportEndpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
       if (!response.ok) throw new Error("Inspector report is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1238,7 +1402,7 @@ export function initDevelopmentInspector() {
     outputController?.abort();
     outputController = new AbortController();
     try {
-      const response = await fetch(outputUrl(), { cache: "no-store", signal: outputController.signal });
+      const response = await inspectorFetch(outputUrl(), { cache: "no-store", signal: outputController.signal });
       if (!response.ok) throw new Error("Inspector output is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1264,7 +1428,7 @@ export function initDevelopmentInspector() {
     graphController?.abort();
     graphController = new AbortController();
     try {
-      const response = await fetch(graphUrl(), { cache: "no-store", signal: graphController.signal });
+      const response = await inspectorFetch(graphUrl(), { cache: "no-store", signal: graphController.signal });
       if (!response.ok) throw new Error("Inspector graph is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1281,7 +1445,7 @@ export function initDevelopmentInspector() {
     pluginController?.abort();
     pluginController = new AbortController();
     try {
-      const response = await fetch(pluginsUrl(), { cache: "no-store", signal: pluginController.signal });
+      const response = await inspectorFetch(pluginsUrl(), { cache: "no-store", signal: pluginController.signal });
       if (!response.ok) throw new Error("Inspector plugin execution is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1354,7 +1518,7 @@ export function initDevelopmentInspector() {
   });
   import.meta.hot?.on("riebeckite:inspector", refresh);
   const refreshTheme = () => {
-    if (!panel?.isConnected || activeTab !== 5) return;
+    if (!panel?.isConnected || activeTab !== 6) return;
     cancelAnimationFrame(themeFrame);
     themeFrame = requestAnimationFrame(() => render());
   };
@@ -1421,6 +1585,7 @@ export function initDevelopmentInspector() {
     root.querySelectorAll("[data-plugin-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readPluginFilters(root); pluginPage = 0; render(); requestPlugins(); }));
     root.querySelectorAll("[data-plugin-page]").forEach((button) => button.addEventListener("click", () => { pluginPage = Math.max(0, pluginPage + Number(button.dataset.pluginPage)); render(); requestPlugins(); }));
     root.querySelectorAll("[data-theme-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readThemeFilters(root); render(); }));
+    root.querySelectorAll("[data-derived-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDerivedFilters(root); render(); }));
     root.querySelectorAll("[data-output-graph]").forEach((button) => button.addEventListener("click", () => { graphSelected = "output:" + button.dataset.outputGraph; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; graphData = undefined; activeTab = 2; render(); requestGraph(); }));
     const lookupInput = root.querySelector("[data-output-lookup]");
     const lookupSubmit = root.querySelector("[data-output-lookup-submit]");
@@ -1447,12 +1612,18 @@ export function initDevelopmentInspector() {
   }
   function panelContent() {
     if (activeTab === 0) return '<dl><dt>Page</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>Theme</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>Revision</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
-    if (activeTab === 1) return diagnosticList(report.diagnostics);
+    if (activeTab === 1) return diagnosticList(report.diagnostics, report);
     if (activeTab === 2) return graphReport(graphData) + dependencyReport(report.dependencies);
     if (activeTab === 3) return pluginExecutionReport(pluginData);
     if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
+    if (activeTab === 5) return derivedReport(report.derivedViews);
     return themeReport(report.themeConfig);
   }
+}
+
+function readDerivedFilters(root) {
+  derivedQuery = root.querySelector("[data-derived-query]").value;
+  derivedStatus = root.querySelector("[data-derived-status]").value;
 }
 
 function readDiagnosticFilters(root) {
@@ -1497,7 +1668,7 @@ function summarize(diagnostics) {
   };
 }
 
-function diagnosticList(diagnostics) {
+function diagnosticList(diagnostics, report) {
   const categories = [...new Set(diagnostics.map((diagnostic) => diagnostic.category))].sort();
   const codes = [...new Set(diagnostics.map((diagnostic) => diagnostic.code))].sort();
   const pageSources = Array.isArray(report.currentPageSources) ? report.currentPageSources : [];
@@ -1771,6 +1942,52 @@ function regenerationReport(regeneration) {
   ).join("") + '</ul>';
   const unknown = regeneration.unknown.length === 0 ? "" : '<p class="partial">Cause unavailable: ' + escapeHtml(regeneration.unknown.join(", ")) + '.</p>';
   return '<h3>Full regeneration reasons</h3>' + required + reasons + unknown;
+}
+
+function dependencyDescription(dependency) {
+  let text = dependency.type + ":" + (dependency.id || "*");
+  if (dependency.property) text += "." + dependency.property;
+  else if (dependency.properties && dependency.properties.length) text += "[" + dependency.properties.join(",") + "]";
+  if (dependency.type === "view" && dependency.fingerprint) text += "@" + dependency.fingerprint;
+  return text;
+}
+
+function derivedReport(views) {
+  const all = Array.isArray(views) ? views : [];
+  if (all.length === 0) return '<p>No derived views are registered. Plugins register them through derivedViews.</p>';
+  const query = derivedQuery.trim().toLowerCase();
+  const filtered = all.filter((view) => {
+    if (derivedStatus !== "all") {
+      const state = view.error ? "error" : view.cache;
+      if (state !== derivedStatus) return false;
+    }
+    if (!query) return true;
+    return [view.id, view.version, view.recomputeReason || "", view.cache, view.dependencies.map(dependencyDescription).join(" "), view.outputPaths.join(" ")].join(" ").toLowerCase().includes(query);
+  });
+  return '<div class="filters"><label>Search <input data-derived-filter data-derived-query data-focus-key="derived-query" value="' + escapeHtml(derivedQuery) + '"></label><label>Status <select data-derived-filter data-derived-status data-focus-key="derived-status">' + options(["all", "hit", "miss", "bypass", "not-run", "error"], derivedStatus) + '</select></label></div>' +
+    '<p>' + filtered.length + ' of ' + all.length + ' derived views.</p>' +
+    (filtered.length === 0 ? '<p class="more">No matching derived views.</p>' :
+      '<ul>' + filtered.map((view, index) => derivedView(view, index)).join("") + '</ul>');
+}
+
+function derivedView(view, index) {
+  const state = view.error === "cancelled" ? "cancelled" : view.error ? "failed" : "completed";
+  const execution = view.cache === "not-run" ? "not executed" : "executed";
+  const dependencies = view.dependencies.length === 0 ? '<p>No tracked dependencies.</p>' :
+    '<details data-detail-key="derived-dependencies-' + index + '"><summary>Dependencies (' + view.dependencies.length + ')</summary><ul>' + view.dependencies.map((dependency) =>
+      '<li><code>' + escapeHtml(dependencyDescription(dependency)) + '</code></li>'
+    ).join("") + '</ul></details>';
+  const outputs = view.outputPaths.length === 0 ? '<p>No generated outputs.</p>' :
+    '<details data-detail-key="derived-outputs-' + index + '"><summary>Generated outputs (' + view.outputPaths.length + ')</summary><ul>' + view.outputPaths.map((outputPath) =>
+      '<li><code>' + escapeHtml(outputPath) + '</code></li>'
+    ).join("") + '</ul></details>';
+  return '<li><b>' + escapeHtml(view.id) + '</b> <small>version ' + escapeHtml(view.version) + '</small><dl>' +
+    '<dt>Execution</dt><dd>' + execution + '</dd>' +
+    '<dt>State</dt><dd>' + state + '</dd>' +
+    '<dt>Cache</dt><dd>' + escapeHtml(view.cache) + '</dd>' +
+    (view.recomputeReason ? '<dt>Recompute reason</dt><dd>' + escapeHtml(view.recomputeReason) + '</dd>' : '') +
+    '<dt>Duration</dt><dd>' + view.durationMs + ' ms</dd>' +
+    '</dl>' + dependencies + outputs + '</li>';
 }
 
 function unavailable(subject, capability) {

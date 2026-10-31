@@ -16,6 +16,7 @@ If you are new, read [your first plugin](../plugins/writing-a-plugin.md) first, 
 - [Dependencies, context, and lifecycle](./plugin-system/lifecycle.md)
 - [Content processing and extension points](./plugin-system/pipeline.md)
 - [Diagram plugin infrastructure](./diagram-infrastructure.md)
+- [Derived Data](./derived-data.md)
 - [Packaging and verification](./plugin-system/distribution.md)
 
 ## 1. What a plugin does

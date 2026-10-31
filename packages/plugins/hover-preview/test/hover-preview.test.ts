@@ -2,13 +2,17 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   ContentManager,
+  type ContentManifestEntry,
   type ContentSource,
   type ContentSourceEntry,
+  createDerivedViewRegistry,
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
 import { hoverPreview } from "../index.ts";
+import { resolveHoverPreviewOptions } from "../src/options.ts";
 import { HOVER_PREVIEW_INDEX_PATH } from "../src/render.ts";
+import { createHoverPreviewRuntime } from "../src/runtime.ts";
 import type { HoverPreviewIndex } from "../src/types.ts";
 
 function source(files: Record<string, string>): ContentSource {
@@ -62,7 +66,14 @@ function previewOutput(content: Awaited<ReturnType<typeof manifest>>) {
   );
   assert.ok(output);
   assert.equal(output.owner, "hover-preview");
-  assert.deepEqual(output.dependencies, [{ type: "global" }]);
+  assert.deepEqual(output.dependencies, [
+    { type: "global" },
+    {
+      type: "derived-view",
+      id: "hover-preview.index",
+      version: "hover-preview-v1",
+    },
+  ]);
   return output;
 }
 
@@ -118,6 +129,29 @@ test("shared preview index preserves publication boundary and custom locations",
   assert.equal(index["/draft"], undefined);
   assert.equal(index["/private"], undefined);
   assert.equal(index["/future"], undefined);
+});
+
+test("resolves the preview index through its registered derived view", async () => {
+  const runtime = createHoverPreviewRuntime(resolveHoverPreviewOptions({}));
+  const derived = createDerivedViewRegistry();
+  derived.register(runtime.view);
+  const entry = {
+    permalink: "/alpha",
+    slug: "alpha",
+    title: "Alpha",
+    html: "<p>Alpha body text.</p>",
+  } as unknown as ContentManifestEntry;
+
+  const outputs = await runtime.plan([entry], derived);
+
+  assert.equal(outputs.length, 1);
+  assert.deepEqual(outputs[0]?.dependencies, [{ type: "global" }]);
+  assert.deepEqual(outputs[0]?.derivedViewIds, ["hover-preview.index"]);
+  const index = JSON.parse(String(outputs[0]?.content)) as HoverPreviewIndex;
+  assert.equal(index["/alpha"]?.excerpt, "Alpha body text.");
+  const [dependency] = derived.inspect()[0]?.dependencies ?? [];
+  assert.equal(dependency?.type, "content");
+  assert.equal(dependency?.id, "alpha");
 });
 
 test("shared preview index reflects entry additions, edits, and removals", async () => {

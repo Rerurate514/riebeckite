@@ -5,7 +5,10 @@ import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
 import { Pipeline } from "../pipeline.js";
 import type { ManifestHookMetrics } from "../plugin/plugin_runtime.js";
-import { PluginRuntime } from "../plugin/plugin_runtime.js";
+import {
+  type DerivedViewInspection,
+  PluginRuntime,
+} from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -84,6 +87,7 @@ export type CompletedContentBuildSnapshot = {
   readonly startedAt: number;
   readonly plugins: readonly ResolvedPluginMetadata[];
   readonly manifestHookMetrics: ManifestHookMetrics;
+  readonly derivedViews: readonly DerivedViewInspection[];
   readonly trace?: TraceSnapshot;
 };
 
@@ -591,6 +595,15 @@ export class ContentManager {
           manifestHookMetrics: freezeManifestHookMetrics(
             this.pluginRuntime.getManifestHookMetrics(),
           ),
+          derivedViews: Object.freeze(
+            this.pluginRuntime.getDerivedViewInspection().map((view) =>
+              Object.freeze({
+                ...view,
+                dependencies: Object.freeze([...view.dependencies]),
+                outputPaths: Object.freeze([...view.outputPaths]),
+              }),
+            ),
+          ),
           trace: this.pipelineOptions.traceRecorder?.snapshot(),
         });
         return manifest;
@@ -762,8 +775,8 @@ export class ContentManager {
 
   async dispose(): Promise<void> {
     this.entryReader.clearReadCache();
-    if (!this.contentIndex) return;
-    await this.pluginRuntime.dispose(this.contentIndex);
+    this.pipeline?.dispose();
+    if (this.contentIndex) await this.pluginRuntime.dispose(this.contentIndex);
   }
 
   async getContentLocations(): Promise<

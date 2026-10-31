@@ -1,3 +1,8 @@
+import type {
+  DerivedDependency,
+  DerivedView,
+  DerivedViewRegistry,
+} from "../derived/derived_view.js";
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
 import type {
@@ -56,6 +61,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    */
   optional?: string[];
   cacheVersion?: string;
+  derivedViews?: readonly DerivedView<unknown, unknown>[];
   contentFileMetadata?: boolean;
   developmentRouteManifest?: true;
   /**
@@ -148,7 +154,9 @@ export type ContentOutputDependencyResolver = (context: {
 export type PlannedGeneratedOutput = {
   readonly path: string;
   readonly content: GeneratedOutputContent;
-  readonly dependencies: readonly OutputDependency[];
+  readonly dependencies?: readonly OutputDependency[];
+  readonly derivedDependencies?: readonly DerivedDependency[];
+  readonly derivedViewIds?: readonly string[];
 };
 
 export type PluginGeneratedOutputPlanContext = {
@@ -157,6 +165,7 @@ export type PluginGeneratedOutputPlanContext = {
     readonly routableEntries: readonly ContentManifestEntry[];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
+  readonly derived: DerivedViewRegistry;
 };
 
 export type AssetTransformInput = {

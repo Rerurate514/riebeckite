@@ -1,6 +1,17 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import { fingerprintContent } from "../content/content_dependency_tracker.js";
 import { getContentSourceEntry } from "../content/content_source.js";
-import type { OutputDescriptor } from "../content/output_dependency.js";
+import { fingerprintExternalValue } from "../content/external_fingerprint.js";
+import {
+  contentQueryValue,
+  type OutputDescriptor,
+} from "../content/output_dependency.js";
+import {
+  createDerivedViewRegistry,
+  type DerivedViewExecution,
+  type DerivedViewRegistry,
+  derivedDependenciesToOutputDependencies,
+} from "../derived/derived_view.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
@@ -69,23 +80,72 @@ export type {
   ManifestHookPluginMetrics,
 } from "./manifest_hooks.js";
 
+export type DerivedViewInspection = DerivedViewExecution & {
+  readonly outputPaths: readonly string[];
+};
+
 export class PluginRuntime {
   private buildLifecycle: Promise<void> | null = null;
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
+  private readonly derivedViews: DerivedViewRegistry;
+  private contentIndex = new Map<string, string>();
   private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
   private resolvedPlugins: RiebeckitePlugin[] | null = null;
   private externalDependencies = new Map<string, ExternalDependencySnapshot>();
   private externalDependencyFailures: ExternalDependencyFailure[] = [];
   private externalDependenciesResolved = false;
+  private derivedFiles = new Map<string, string>();
+  private derivedManifest: ContentManifest | null = null;
+  private derivedOutputLinks = new Map<string, Set<string>>();
   private readonly pageResolver: PluginPageResolver;
   private readonly manifestHooks: ManifestHookRunner;
   private pageMarkdownRenderer: ((markdown: string) => Promise<string>) | null =
     null;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {
+    this.derivedViews = createDerivedViewRegistry({
+      cache: () => this.derivedCache(),
+      queryEntries: (pool) => {
+        const manifest = this.derivedManifest;
+        if (!manifest) {
+          throw new Error(
+            "Content queries are available only during generated output planning.",
+          );
+        }
+        return pool === "routable"
+          ? manifest.publicEntries
+          : manifest.discoverableEntries;
+      },
+      dependencyFingerprint: (dependency) => {
+        if (dependency.type === "content") {
+          const target = this.contentIndex.get(dependency.id.toLowerCase());
+          if (target === undefined) return undefined;
+          const fingerprint = this.derivedFiles.get(
+            normalizeDerivedPath(`${target}.md`),
+          );
+          return fingerprint === undefined
+            ? undefined
+            : fingerprintDerivedValue({ target, fingerprint });
+        }
+        if (dependency.type === "external") {
+          return this.externalDependencies.get(dependency.id)?.fingerprint;
+        }
+        if (dependency.type === "file") {
+          return this.derivedFiles.get(normalizeDerivedPath(dependency.id));
+        }
+        if (dependency.type === "frontmatter") {
+          const entry = this.derivedManifest?.bySlug.get(dependency.id);
+          if (!entry || !dependency.property) return undefined;
+          return fingerprintDerivedValue(
+            contentQueryValue(entry, dependency.property),
+          );
+        }
+        return undefined;
+      },
+    });
     this.pageResolver = new PluginPageResolver({
       plugins: () => this.plugins(),
       createContext: (contentIndex) => this.createContext(contentIndex),
@@ -110,6 +170,18 @@ export class PluginRuntime {
 
   getDiagnostics(): Diagnostic[] {
     return this.diagnostics;
+  }
+
+  getDerivedViews(): DerivedViewRegistry {
+    return this.derivedViews;
+  }
+
+  getDerivedViewInspection(): readonly DerivedViewInspection[] {
+    return this.derivedViews.inspect().map((view) => ({
+      ...view,
+      dependencies: [...view.dependencies],
+      outputPaths: [...(this.derivedOutputLinks.get(view.id) ?? [])].sort(),
+    }));
   }
 
   setPageMarkdownRenderer(
@@ -438,32 +510,71 @@ export class PluginRuntime {
   }
 
   async runGeneratedOutputPlans(manifest: ContentManifest): Promise<void> {
-    for (const plugin of this.plugins()) {
-      const hook = plugin.planGeneratedOutputs;
-      if (!hook) continue;
-      const outputs = await this.observability().tracer.span(
-        "plugin.planGeneratedOutputs",
-        { plugin: plugin.name, hook: "planGeneratedOutputs" },
-        () =>
-          hook(
-            freezeGeneratedOutputPlanContext({
-              manifest: {
-                discoverableEntries: manifest.discoverableEntries,
-                routableEntries: manifest.publicEntries,
-              },
-              site: this.pipelineOptions.config?.site,
-            }),
-          ),
-      );
-      const sink = this.generatedOutputs.sinkFor(plugin.name);
-      for (const output of outputs) {
-        if (output.dependencies.length === 0) {
-          throw new Error(
-            `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
-          );
+    const plugins = this.plugins().filter(
+      (plugin) => plugin.planGeneratedOutputs !== undefined,
+    );
+    if (plugins.length === 0) return;
+    this.derivedOutputLinks.clear();
+    this.derivedManifest = manifest;
+    await this.refreshDerivedFiles();
+    try {
+      for (const plugin of plugins) {
+        const hook = plugin.planGeneratedOutputs;
+        if (!hook) continue;
+        const outputs = await this.observability().tracer.span(
+          "plugin.planGeneratedOutputs",
+          { plugin: plugin.name, hook: "planGeneratedOutputs" },
+          () =>
+            hook(
+              freezeGeneratedOutputPlanContext({
+                manifest: {
+                  discoverableEntries: manifest.discoverableEntries,
+                  routableEntries: manifest.publicEntries,
+                },
+                site: this.pipelineOptions.config?.site,
+                derived: this.derivedViews,
+              }),
+            ),
+        );
+        const sink = this.generatedOutputs.sinkFor(plugin.name);
+        for (const output of outputs) {
+          const viewIds = [...new Set(output.derivedViewIds ?? [])];
+          const viewDependencies = viewIds.map((id) => {
+            const version = this.derivedViews.versionOf(id);
+            if (version === undefined) {
+              throw new Error(
+                `Generated output "${output.path}" from "${plugin.name}" references unregistered Derived View "${id}".`,
+              );
+            }
+            return { type: "derived-view" as const, id, version };
+          });
+          const dependencies = [
+            ...(output.dependencies ?? []),
+            ...derivedDependenciesToOutputDependencies(
+              output.derivedDependencies ?? [],
+            ),
+            ...viewDependencies,
+          ];
+          if (dependencies.length === 0) {
+            throw new Error(
+              `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
+            );
+          }
+          sink.emit({
+            ...output,
+            dependencies,
+            ...(viewIds.length === 0 ? {} : { derivedViewIds: viewIds }),
+          });
+          for (const viewId of viewIds) {
+            const paths = this.derivedOutputLinks.get(viewId) ?? new Set();
+            paths.add(output.path);
+            this.derivedOutputLinks.set(viewId, paths);
+          }
         }
-        sink.emit(output);
       }
+    } finally {
+      this.derivedManifest = null;
+      this.derivedFiles = new Map();
     }
   }
 
@@ -472,13 +583,22 @@ export class PluginRuntime {
   }
 
   async dispose(contentIndex: Map<string, string>) {
-    if (this.disposed || this.buildLifecycle === null) return;
+    if (this.disposed) return;
 
     this.disposed = true;
+    await this.buildLifecycle?.catch(() => undefined);
+    if (this.buildLifecycle === null) {
+      this.derivedViews.dispose();
+      return;
+    }
     const context = this.createContext(contentIndex);
-    await runDispose(this.plugins(), (plugin) =>
-      this.createPluginContext(plugin, context),
-    );
+    try {
+      await runDispose(this.plugins(), (plugin) =>
+        this.createPluginContext(plugin, context),
+      );
+    } finally {
+      this.derivedViews.dispose();
+    }
   }
 
   collectAssets() {
@@ -665,6 +785,7 @@ export class PluginRuntime {
   }
 
   private createContext(contentIndex: Map<string, string>): PluginContextBase {
+    this.contentIndex = contentIndex;
     return {
       config: this.pipelineOptions.config,
       isDevelopment: this.pipelineOptions.isDevelopment,
@@ -683,6 +804,7 @@ export class PluginRuntime {
     return {
       ...context,
       cache: this.cacheFor(plugin),
+      derived: this.derivedViews,
       output: this.generatedOutputSinkFor(plugin),
       logger: observability.logger.child({ plugin: plugin.name }),
       tracer: observability.tracer,
@@ -719,6 +841,49 @@ export class PluginRuntime {
     return cache;
   }
 
+  private derivedCache(): PluginCache {
+    if (!this.isBuildTime) return createUnavailablePluginCache();
+    return createPluginCache({
+      pluginName: "riebeckite-derived-data",
+      cacheVersion: "3",
+      cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
+      logger: this.observability().logger.child({
+        plugin: "riebeckite-derived-data",
+      }),
+      tracer: this.observability().tracer,
+    });
+  }
+
+  private async refreshDerivedFiles(): Promise<void> {
+    const source = this.pipelineOptions.contentSource;
+    if (!source) {
+      this.derivedFiles = new Map();
+      return;
+    }
+    try {
+      const entries = await source.scan();
+      const fingerprints = await Promise.all(
+        entries.map(
+          async (entry) =>
+            [
+              normalizeDerivedPath(entry.path),
+              fingerprintContent(await source.read(entry)),
+            ] as const,
+        ),
+      );
+      this.derivedFiles = new Map(fingerprints);
+    } catch {
+      this.derivedFiles = new Map();
+      this.observability().logger.warn(
+        "Derived View file dependencies could not be refreshed.",
+        { source: "derived-view" },
+      );
+      this.observability().tracer.event("derived-view.file-dependencies-miss", {
+        source: "derived-view",
+      });
+    }
+  }
+
   private async runHook<TContext extends PluginContextBase>(
     hookName: string,
     hook: (
@@ -745,9 +910,31 @@ export class PluginRuntime {
     if (this.resolvedPlugins === null) {
       const resolved = resolvePlugins(this.pipelineOptions.plugins);
       collectPageTypeOwners(resolved);
+      assertUniqueDerivedViewIds(resolved);
+      for (const plugin of resolved) {
+        for (const view of plugin.derivedViews ?? [])
+          this.derivedViews.register(view);
+      }
       this.resolvedPlugins = resolved;
     }
     return this.resolvedPlugins;
+  }
+}
+
+function assertUniqueDerivedViewIds(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  const owners = new Map<string, string>();
+  for (const plugin of plugins) {
+    for (const view of plugin.derivedViews ?? []) {
+      const previous = owners.get(view.id);
+      if (previous) {
+        throw new Error(
+          `Derived View "${view.id}" is declared by both "${previous}" and "${plugin.name}".`,
+        );
+      }
+      owners.set(view.id, plugin.name);
+    }
   }
 }
 
@@ -757,14 +944,43 @@ function freezeGeneratedOutputPlanContext(context: {
     routableEntries: readonly ContentManifestEntry[];
   };
   site: ResolvedRiebeckiteConfig["site"] | undefined;
+  derived: DerivedViewRegistry;
 }) {
-  return deepFreeze(structuredClone(context));
+  return {
+    ...deepFreeze(
+      structuredClone({ manifest: context.manifest, site: context.site }),
+    ),
+    derived: context.derived,
+  };
 }
 
 function deepFreeze<T>(value: T): T {
   if (value === null || typeof value !== "object") return value;
   Object.freeze(value);
   for (const property of Object.values(value)) deepFreeze(property);
+  return value;
+}
+
+function normalizeDerivedPath(path: string): string {
+  return path.replace(/\\/g, "/");
+}
+
+function fingerprintDerivedValue(value: unknown): string {
+  return fingerprintExternalValue(normalizeDerivedValue(value));
+}
+
+function normalizeDerivedValue(value: unknown): unknown {
+  if (value instanceof Date) return value.toISOString();
+  if (value === undefined) return null;
+  if (Array.isArray(value)) return value.map(normalizeDerivedValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [
+        key,
+        normalizeDerivedValue(child),
+      ]),
+    );
+  }
   return value;
 }
 

@@ -26,6 +26,12 @@ export type OutputChangeReason =
   | { readonly type: "kind-changed"; readonly previousKind: OutputKind }
   | { readonly type: "unknown-dependency" }
   | { readonly type: "external"; readonly id: string }
+  | {
+      readonly type: "derived-view";
+      readonly id: string;
+      readonly version: string;
+    }
+  | { readonly type: "derived-query"; readonly id: string }
   | { readonly type: "global" }
   | { readonly type: "content"; readonly slug: string }
   | { readonly type: "tag"; readonly tag: string }
@@ -113,20 +119,24 @@ export function determineOutputChanges(input: {
   const reasons = new Map<string, OutputChangeReason>();
 
   for (const output of current) {
-    const reason = findOutputChangeReason(
-      withPreviousDependencies(output, previous.get(output.path)),
-      changedContent,
-      refreshedContent,
-      changedTags,
-      changedFolders,
-      changedFiles,
-      changedExternal,
-      changedExternalScopes,
-      currentPublicLocations,
-      previousPublicLocations,
-      input.previousState?.manifestEntries ?? [],
-      input.manifest.entries,
-    );
+    const previousOutput = previous.get(output.path);
+    const reason =
+      findChangedDerivedView(output, previousOutput) ??
+      findChangedDerivedQuery(output, previousOutput) ??
+      findOutputChangeReason(
+        withPreviousDependencies(output, previousOutput),
+        changedContent,
+        refreshedContent,
+        changedTags,
+        changedFolders,
+        changedFiles,
+        changedExternal,
+        changedExternalScopes,
+        currentPublicLocations,
+        previousPublicLocations,
+        input.previousState?.manifestEntries ?? [],
+        input.manifest.entries,
+      );
     if (reason) {
       affected.set(output.path, output);
       reasons.set(output.path, reason);
@@ -239,6 +249,70 @@ function contentOutput(
   };
 }
 
+function isDerivedViewDependency(
+  dependency: OutputDependency,
+): dependency is Extract<OutputDependency, { type: "derived-view" }> {
+  return dependency.type === "derived-view";
+}
+
+function findChangedDerivedView(
+  output: OutputDescriptor,
+  previous: OutputDescriptor | undefined,
+): OutputChangeReason | undefined {
+  const current = new Map(
+    output.dependencies
+      .filter(isDerivedViewDependency)
+      .map((dependency) => [dependency.id, dependency.version]),
+  );
+  const previousViews = new Map(
+    (previous?.dependencies ?? [])
+      .filter(isDerivedViewDependency)
+      .map((dependency) => [dependency.id, dependency.version]),
+  );
+  for (const [id, version] of current) {
+    if (previousViews.get(id) !== version) {
+      return { type: "derived-view", id, version };
+    }
+  }
+  for (const [id, version] of previousViews) {
+    if (!current.has(id)) {
+      return { type: "derived-view", id, version };
+    }
+  }
+  return undefined;
+}
+
+function isDerivedQueryDependency(
+  dependency: OutputDependency,
+): dependency is Extract<OutputDependency, { type: "derived-query" }> {
+  return dependency.type === "derived-query";
+}
+
+function findChangedDerivedQuery(
+  output: OutputDescriptor,
+  previous: OutputDescriptor | undefined,
+): OutputChangeReason | undefined {
+  const current = output.dependencies
+    .filter(isDerivedQueryDependency)
+    .map((dependency) => `${dependency.id}\0${dependency.fingerprint}`)
+    .sort();
+  const previousQueries = (previous?.dependencies ?? [])
+    .filter(isDerivedQueryDependency)
+    .map((dependency) => `${dependency.id}\0${dependency.fingerprint}`)
+    .sort();
+  if (
+    current.length === previousQueries.length &&
+    current.every((key, index) => key === previousQueries[index])
+  ) {
+    return undefined;
+  }
+  const changed =
+    current.find((key, index) => key !== previousQueries[index]) ??
+    previousQueries[current.length];
+  const id = changed?.slice(0, changed.indexOf("\0")) ?? "unknown";
+  return { type: "derived-query", id };
+}
+
 function findOutputChangeReason(
   output: OutputDescriptor,
   changedContent: ReadonlySet<string>,
@@ -259,8 +333,8 @@ function findOutputChangeReason(
     if (dependency.type === "unknown") return { type: "unknown-dependency" };
     if (dependency.type === "external" && changedExternal.has(dependency.id))
       return { type: "external", id: dependency.id };
-    if (dependency.type === "global")
-      return changedContent.size > 0 ? { type: "global" } : undefined;
+    if (dependency.type === "global" && changedContent.size > 0)
+      return { type: "global" };
     if (
       dependency.type === "content-query" &&
       isContentQueryAffected(dependency, previousEntries, currentEntries)
@@ -365,7 +439,7 @@ function propertyChanged(
   );
 }
 
-function contentQueryValue(
+export function contentQueryValue(
   entry: ContentManifestEntry,
   property: string,
 ): unknown {
@@ -393,6 +467,10 @@ function contentQueryValue(
       return entry.file?.mtime;
     case "file.links":
       return entry.links;
+    case "file.backlinks":
+      return entry.backlinks;
+    case "file.content":
+      return entry.html;
     default:
       return property
         .split(".")

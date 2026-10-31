@@ -34,7 +34,9 @@ import {
   type PersistentContentCache,
 } from "./content/content_persistent_cache.js";
 import type { ContentSource } from "./content/content_source.js";
+import { fingerprintExternalValue } from "./content/external_fingerprint.js";
 import { normalizeMarkdownImages } from "./content/markdown_image.js";
+import { createDerivedViewRegistry } from "./derived/derived_view.js";
 import { selectEmbedMarkdownFragment } from "./markdown_fragments.js";
 import {
   normalizeMarkdownLinks,
@@ -269,6 +271,16 @@ function wrapTableChildren(parent: HtmlNode): void {
 
 export class Pipeline {
   private pluginCaches = new Map<string, PluginCache>();
+  private readonly derivedViews = createDerivedViewRegistry({
+    cache: () => this.derivedCache(),
+    dependencyFingerprint: (dependency) => {
+      if (dependency.type !== "content") return undefined;
+      const content = this.contentIndex.get(dependency.id);
+      return content === undefined
+        ? undefined
+        : fingerprintExternalValue(content);
+    },
+  });
   private persistentCache: PersistentContentCache | null = null;
   private pipelineFingerprint: string | null = null;
   private resolvedPlugins: RiebeckitePlugin[] | null = null;
@@ -309,6 +321,10 @@ export class Pipeline {
       new Set(context.sourceSlug ? [context.sourceSlug] : []),
       dependencyTracker,
     );
+  }
+
+  dispose(): void {
+    this.derivedViews.dispose();
   }
 
   private async executeWithEmbedState(
@@ -690,7 +706,15 @@ export class Pipeline {
   }
 
   private resolvePlugins(): RiebeckitePlugin[] {
-    this.resolvedPlugins ??= resolvePlugins(this.options.plugins);
+    if (this.resolvedPlugins === null) {
+      this.resolvedPlugins = resolvePlugins(this.options.plugins);
+      assertUniqueDerivedViewIds(this.resolvedPlugins);
+      for (const plugin of this.resolvedPlugins) {
+        for (const view of plugin.derivedViews ?? []) {
+          this.derivedViews.register(view);
+        }
+      }
+    }
     return this.resolvedPlugins;
   }
 
@@ -718,6 +742,7 @@ export class Pipeline {
               contentIndex: this.contentIndex,
               diagnostics: [],
               cache: this.cacheFor(plugin, observability),
+              derived: this.derivedViews,
               output: createUnavailableGeneratedOutputSink(),
               logger: observability.logger.child({ plugin: plugin.name }),
               tracer: observability.tracer,
@@ -749,5 +774,36 @@ export class Pipeline {
       : createUnavailablePluginCache();
     this.pluginCaches.set(plugin.name, cache);
     return cache;
+  }
+
+  private derivedCache(): PluginCache {
+    if (!this.isBuildTime) return createUnavailablePluginCache();
+    const observability = this.options.observability ?? noopObservability;
+    return createPluginCache({
+      pluginName: "riebeckite-derived-data",
+      cacheVersion: "2",
+      cacheDirectory: resolvePluginCacheDirectory(this.options.config),
+      tracer: observability.tracer,
+      logger: observability.logger.child({
+        plugin: "riebeckite-derived-data",
+      }),
+    });
+  }
+}
+
+function assertUniqueDerivedViewIds(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  const owners = new Map<string, string>();
+  for (const plugin of plugins) {
+    for (const view of plugin.derivedViews ?? []) {
+      const previous = owners.get(view.id);
+      if (previous) {
+        throw new Error(
+          `Derived View "${view.id}" is declared by both "${previous}" and "${plugin.name}".`,
+        );
+      }
+      owners.set(view.id, plugin.name);
+    }
   }
 }

@@ -235,6 +235,32 @@ test("development inspector works in a real Vite dev server", async () => {
     await waitForShadowText(page, "[role=tabpanel]", "#1", 30_000);
 
     await clickShadow(page, "[data-tab='5']");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "e2e.public-titles",
+      30_000,
+    );
+    await waitForShadowText(page, "[role=tabpanel]", "Cache", 30_000);
+    const derivedSearch = await shadowElement(page, "[data-derived-query]");
+    await derivedSearch.click();
+    await page.keyboard.type("missing-view");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "No matching derived views",
+      30_000,
+    );
+    const derivedSelect = await shadowElement(page, "[data-derived-status]");
+    await derivedSelect.select("not-run");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "No matching derived views",
+      30_000,
+    );
+
+    await clickShadow(page, "[data-tab='6']");
     await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
     await waitForShadowText(
       page,

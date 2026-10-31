@@ -51,7 +51,9 @@ context.track({
 
 `content` and `external` dependencies are rechecked whenever a runtime snapshot is available. During `planGeneratedOutputs`, `file`, `frontmatter`, qualified `query`, and `graph` dependencies are also rechecked against that plan's build snapshot. Outside that planning phase, dependencies without a current snapshot safely miss the cache. For frontmatter, set `property`; for a query, declare every property that controls its result set. File additions, removals, and content changes; discoverable query membership changes; and graph edge changes invalidate cached values. An unqualified query is not cacheable. Use `unknown` for time, network access without an external snapshot, environment variables, randomness, or any input whose fingerprint cannot be proved. Unknown dependencies are never persisted.
 
-For a content query, fingerprint the complete public result set, not just entries read by the computation. That includes additions, removals, frontmatter fields used by filtering or sorting, and publication transitions.
+For a content query, fingerprint the complete public result set, not just entries read by the computation. That includes additions, removals, frontmatter fields used by filtering or sorting, and publication transitions. Property names accepted by a query are the same names used by `content-query` output dependencies: `file.name`, `file.path`, `file.slug`, `file.folder`, `file.title`, `file.link`, `file.permalink`, `file.tags`, `file.size`, `file.ctime`, `file.mtime`, `file.links`, `file.backlinks`, `file.content`, or a frontmatter path. `file.content` fingerprints the rendered body, so a predicate that searches body text can be cached safely. Sort properties must be declared too. A predicate built from JavaScript state, configuration, or any property that is not declared is untrackable: declare `unknown` instead of under-declaring the query.
+
+External dependencies use the existing `resolveExternalDependencies` hook. A view tracks a snapshot by ID; Core reuses the result only while the current snapshot has the same fingerprint. A changed fingerprint, a missing snapshot, an `unavailable` resolution, or a duplicate external ID makes the value a cache miss. The snapshot value is not serialized into the derived cache.
 
 ## Public data and output
 
@@ -77,7 +79,15 @@ Core converts tracked content, file, external, qualified query, and graph depend
 
 The bundled `hover-preview` plugin resolves its shared preview index through a derived view. It keeps its explicit global output dependency, so incremental invalidation and the serialized output are unchanged.
 
-In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. Reading this report never resolves a view or mutates build state.
+In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. The Derived tab renders this read-only data with search, status filtering, dependency and output details, and an explicit distinction between a view that has never run and one that ran without caching. Reading this report never resolves a view or mutates build state.
+
+HonoX consumes the same generated outputs during SSG. A view-backed output participates in full, incremental, and no-change builds like any other generated output, and the emitted tree matches a clean build. The test suite covers derived SSG output that follows title changes and publication transitions, and the Inspector browser test covers the Derived tab.
+
+## Platform and performance
+
+The dependency snapshots use normalized paths, so file and content dependencies behave the same on Windows and Linux. CI runs Core, HonoX, CLI, and type checks on both platforms.
+
+A cache hit revalidates only the tracked dependencies and skips `compute`. The value cache lives in the build-time PluginCache and is shared across restarts. A miss adds the input fingerprint, `compute`, and one cache write. The benchmark in `benchmarks/` measures a 1000-entry vault with one content dependency per entry; use the same conditions when comparing changes. Generated output planning additionally scans the content source once to fingerprint files, so prefer content, frontmatter, or query dependencies when a view does not need an arbitrary file.
 
 ## Troubleshooting
 

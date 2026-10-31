@@ -272,6 +272,33 @@ test("a child view version invalidates a cached parent resolution", async () => 
   assert.equal(parentCalls, 2);
 });
 
+test("a removed child view invalidates a cached parent resolution", async () => {
+  const cache = memoryCache();
+  let parentCalls = 0;
+  const parent = defineDerivedView<string, string>({
+    id: "test.parent-removal",
+    version: "1",
+    compute: async (value, context) => {
+      parentCalls++;
+      return await context.resolve<string>("test.child-removal", value);
+    },
+  });
+  const child = defineDerivedView<string, string>({
+    id: "test.child-removal",
+    version: "1",
+    compute: (value) => `child:${value}`,
+  });
+  const first = createDerivedViewRegistry({ cache: () => cache });
+  first.register(child);
+  first.register(parent);
+  assert.equal(await first.resolve(parent, "ready"), "child:ready");
+
+  const second = createDerivedViewRegistry({ cache: () => cache });
+  second.register(parent);
+  await assert.rejects(second.resolve(parent, "ready"), /not registered/);
+  assert.equal(parentCalls, 2);
+});
+
 test("derived dependency output mapping retains query, graph, and unknown safety", () => {
   assert.deepEqual(
     derivedDependenciesToOutputDependencies([

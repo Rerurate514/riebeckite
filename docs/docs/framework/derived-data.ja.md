@@ -51,7 +51,9 @@ context.track({
 
 `content` と `external` は runtime snapshot を利用できるときに照合します。`planGeneratedOutputs` 中は、`file`・`frontmatter`・条件を明示した `query`・`graph` も、その出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全に Cache Miss になります。frontmatter には `property` を、query には結果集合を決めるすべてのプロパティを指定してください。ファイルの追加・削除・内容変更、discoverable な query メンバーの変化、graph edge の変化はキャッシュ値を無効にします。条件を明示しない query はキャッシュされません。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
 
-Content Query では、実際に読んだエントリだけでなく公開結果集合全体を fingerprint 化してください。追加・削除・フィルタやソートに使う Frontmatter・公開状態の変更も含めます。
+Content Query では、実際に読んだエントリだけでなく公開結果集合全体を fingerprint 化してください。追加・削除・フィルタやソートに使う Frontmatter・公開状態の変更も含めます。query が受け付けるプロパティ名は `content-query` 出力依存関係と同じで、`file.name`・`file.path`・`file.slug`・`file.folder`・`file.title`・`file.link`・`file.permalink`・`file.tags`・`file.size`・`file.ctime`・`file.mtime`・`file.links`・`file.backlinks`・`file.content`、または frontmatter のパスです。`file.content` はレンダリング後の本文を fingerprint 化するため、本文検索を含む述語も安全にキャッシュできます。ソートに使うプロパティも必ず宣言してください。JavaScript の状態、設定、または宣言していないプロパティに依存する述語は追跡できません。query を過少に宣言せず `unknown` を使ってください。
+
+External 依存関係は既存の `resolveExternalDependencies` フックを使います。View は snapshot を ID で追跡し、現在の snapshot の fingerprint が一致する間だけ結果を再利用します。fingerprint の変化、snapshot の欠損、`unavailable` の解決、external ID の重複は Cache Miss になります。snapshot の値そのものは派生キャッシュへ保存しません。
 
 ## 公開データと出力
 
@@ -77,7 +79,15 @@ Core は、追跡された content・file・external・完全なプロパティ�
 
 同梱の `hover-preview` プラグインは、共有プレビュー索引を Derived View で解決します。明示的な global 出力依存関係はそのまま残すため、増分無効化とシリアライズ結果は変わりません。
 
-開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。
+開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。Inspector の Derived タブはこの読み取り専用データを、検索、状態フィルタ、依存関係と出力の詳細、未実行とキャッシュなし実行の区別付きで表示します。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。
+
+HonoX の SSG も同じ生成出力を消費します。View を使う出力は通常の生成出力と同じく full・incremental・no-change ビルドに参加し、出力ツリーは clean ビルドと一致します。テストではタイトル変更と公開状態の遷移に追従する派生 SSG 出力、および Inspector のブラウザテストで Derived タブを検証します。
+
+## プラットフォームと性能
+
+依存関係の snapshot はパスを正規化するため、ファイル依存と Content 依存は Windows と Linux で同じように動作します。CI は Core、HonoX、CLI、型検査を両プラットフォームで実行します。
+
+Cache Hit では追跡済み依存関係の再照合だけを行い、`compute` を省略します。値キャッシュはビルド時の PluginCache に保存され、再起動をまたいで共有されます。Cache Miss では入力 fingerprint、`compute`、1 回のキャッシュ書き込みが加わります。`benchmarks/` のベンチマークは 1000 エントリの Vault とエントリごとの Content 依存 1 件を測定します。変更を比較するときは同じ条件を使ってください。Generated Output の計画時にはファイル fingerprint のために Content Source を一度走査するため、任意ファイルを必要としない View では Content・Frontmatter・Query 依存を優先してください。
 
 ## トラブルシューティング
 

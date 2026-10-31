@@ -1453,7 +1453,7 @@ export function initDevelopmentInspector() {
   }
   function panelContent() {
     if (activeTab === 0) return '<dl><dt>Page</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>Theme</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>Revision</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
-    if (activeTab === 1) return diagnosticList(report.diagnostics);
+    if (activeTab === 1) return diagnosticList(report.diagnostics, report);
     if (activeTab === 2) return graphReport(graphData) + dependencyReport(report.dependencies);
     if (activeTab === 3) return pluginExecutionReport(pluginData);
     if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
@@ -1509,7 +1509,7 @@ function summarize(diagnostics) {
   };
 }
 
-function diagnosticList(diagnostics) {
+function diagnosticList(diagnostics, report) {
   const categories = [...new Set(diagnostics.map((diagnostic) => diagnostic.category))].sort();
   const codes = [...new Set(diagnostics.map((diagnostic) => diagnostic.code))].sort();
   const pageSources = Array.isArray(report.currentPageSources) ? report.currentPageSources : [];

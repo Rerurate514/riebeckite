@@ -50,6 +50,11 @@ export {
   getEntryLanguage,
   selectEntriesByLanguage,
 } from "./src/content/content_language.js";
+export type {
+  ContentLinkMutationPlan,
+  ContentLinkRetarget,
+} from "./src/content/content_link_mutation.js";
+export { planContentLinkUpdates } from "./src/content/content_link_mutation.js";
 export {
   extractContentLinks,
   extractMarkdownLinkUrls,

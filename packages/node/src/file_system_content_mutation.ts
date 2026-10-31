@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  type ContentLinkRetarget,
   type ContentMutationFileChange,
   type ContentMutationIssue,
   type ContentMutationOperation,
@@ -9,6 +10,7 @@ import {
   type ContentMutationRecoveryResult,
   type ContentMutationResult,
   flattenContentMutationOperations,
+  planContentLinkUpdates,
 } from "@riebeckite/core";
 import { parseDocument } from "yaml";
 
@@ -63,6 +65,7 @@ export class FileSystemContentMutation {
     await this.loadFiles(root, "", files);
     const initial = new Map(files);
     const touched = new Set<string>();
+    const retargets: ContentLinkRetarget[] = [];
 
     for (const operation of flattenContentMutationOperations(operations)) {
       try {
@@ -86,6 +89,7 @@ export class FileSystemContentMutation {
           touched.add(target);
           if (!files.delete(target))
             throw new Error("The file does not exist.");
+          retargets.push({ from: target });
           continue;
         }
         if (
@@ -103,6 +107,7 @@ export class FileSystemContentMutation {
             throw new Error("The destination file already exists.");
           files.delete(from);
           files.set(to, source);
+          retargets.push({ from, to });
           continue;
         }
         if (operation.kind !== "frontmatter")
@@ -148,6 +153,36 @@ export class FileSystemContentMutation {
     }
 
     addCaseConflicts(files, conflicts);
+    if (retargets.length > 0) {
+      const markdownFiles = new Map<string, string>();
+      for (const [filePath, state] of files) {
+        if (!filePath.toLowerCase().endsWith(".md")) continue;
+        try {
+          markdownFiles.set(
+            filePath,
+            new TextDecoder("utf-8", { fatal: true }).decode(state.content),
+          );
+        } catch {
+          conflicts.push({
+            severity: "error",
+            code: "invalid-markdown-encoding",
+            path: filePath,
+            message: "The Markdown file is not valid UTF-8.",
+          });
+        }
+      }
+      const linkPlan = planContentLinkUpdates({
+        files: markdownFiles,
+        retargets,
+      });
+      for (const [filePath, content] of linkPlan.updates) {
+        const existing = files.get(filePath);
+        if (!existing) continue;
+        files.set(filePath, stateOf(content));
+      }
+      warnings.push(...linkPlan.warnings);
+      conflicts.push(...linkPlan.conflicts);
+    }
     const paths = new Set([...initial.keys(), ...files.keys()]);
     const changes: ContentMutationFileChange[] = [...paths]
       .filter(

@@ -7,8 +7,12 @@ export type LinkRewrite = {
 };
 
 export type LinkRewriteResult =
-  | { readonly ok: true; readonly content: string }
-  | { readonly ok: false; readonly reason: string };
+  | { readonly ok: true; readonly content: string; readonly reason?: undefined }
+  | {
+      readonly ok: false;
+      readonly reason: string;
+      readonly content?: undefined;
+    };
 
 export function rewriteLinkDestinations(
   source: string,

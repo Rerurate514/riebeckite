@@ -173,3 +173,28 @@ test("refuses traversal and symbolic-link write paths", async (t) => {
   const result = await mutation.apply(symlink);
   assert.equal(result.applied, false);
 });
+
+test("rewrites references when content moves and warns on deletion", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "target.md"), "# Target");
+  await fs.writeFile(
+    path.join(root, "source.md"),
+    "See [[target]] and [t](target.md).",
+  );
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "move", from: "target.md", to: "moved/target.md" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  const result = await mutation.apply(plan);
+  assert.equal(result.applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "source.md"), "utf8"),
+    "See [[moved/target]] and [t](moved/target.md).",
+  );
+  const deletion = await mutation.plan([
+    { kind: "delete", path: "moved/target.md" },
+  ]);
+  assert.equal(deletion.warnings[0]?.code, "broken-link");
+  assert.deepEqual(deletion.conflicts, []);
+});

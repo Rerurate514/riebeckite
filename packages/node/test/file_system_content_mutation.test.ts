@@ -198,3 +198,30 @@ test("rewrites references when content moves and warns on deletion", async () =>
   assert.equal(deletion.warnings[0]?.code, "broken-link");
   assert.deepEqual(deletion.conflicts, []);
 });
+
+test("uses content aliases when deciding which links to rewrite", async () => {
+  const root = await directory();
+  await fs.writeFile(
+    path.join(root, "target.md"),
+    "---\naliases:\n  - nickname\n---\n# Target",
+  );
+  await fs.writeFile(path.join(root, "source.md"), "[[nickname]]");
+  const mutation = new FileSystemContentMutation(root);
+  const deletion = await mutation.plan([{ kind: "delete", path: "target.md" }]);
+  assert.equal(deletion.warnings[0]?.code, "broken-link");
+
+  await fs.writeFile(
+    path.join(root, "archive.md"),
+    "---\nalias: target\n---\n",
+  );
+  await fs.writeFile(path.join(root, "other.md"), "[[target]]");
+  const move = await mutation.plan([
+    { kind: "move", from: "target.md", to: "moved/target.md" },
+  ]);
+  assert.equal(move.warnings.length, 0);
+  assert.deepEqual(move.conflicts, []);
+  assert.equal(
+    move.changes.some((change) => change.path === "other.md"),
+    false,
+  );
+});

@@ -13,16 +13,23 @@ export type ContentLinkMutationPlan = {
   readonly conflicts: readonly ContentMutationIssue[];
 };
 
-export function planContentLinkUpdates(options: {
+export type ContentLinkMutationOptions = {
   readonly files: ReadonlyMap<string, string>;
   readonly retargets: readonly ContentLinkRetarget[];
-}): ContentLinkMutationPlan {
+  readonly beforeIndex?: ReadonlyMap<string, string>;
+  readonly afterIndex?: ReadonlyMap<string, string>;
+};
+
+export function planContentLinkUpdates(
+  options: ContentLinkMutationOptions,
+): ContentLinkMutationPlan {
   const updates = new Map<string, string>();
   const warnings: ContentMutationIssue[] = [];
   const conflicts: ContentMutationIssue[] = [];
   if (options.retargets.length === 0) return { updates, warnings, conflicts };
-  const index = buildIndex([...options.files.keys()]);
-  const beforeIndex = buildBeforeIndex(options.files, options.retargets);
+  const index = options.afterIndex ?? buildIndex([...options.files.keys()]);
+  const beforeIndex =
+    options.beforeIndex ?? buildBeforeIndex(options.files, options.retargets);
 
   for (const [filePath, source] of options.files) {
     if (!filePath.toLowerCase().endsWith(".md")) continue;
@@ -33,7 +40,7 @@ export function planContentLinkUpdates(options: {
     for (const occurrence of occurrences) {
       if (!occurrence.destinationRange) continue;
       const retarget = options.retargets.find((candidate) =>
-        refersTo(occurrence, candidate.from, filePath, beforeIndex),
+        refersTo(occurrence, candidate.from, beforeIndex),
       );
       if (!retarget) continue;
       if (!retarget.to) {
@@ -53,7 +60,7 @@ export function planContentLinkUpdates(options: {
       );
       if (replacement === null || replacement === occurrence.rawDestination)
         continue;
-      if (!index.has(indexKey(retarget.to))) {
+      if (!index.has(normalizePath(retarget.to))) {
         conflicts.push({
           severity: "error",
           code: "link-target-missing",
@@ -90,25 +97,34 @@ export function planContentLinkUpdates(options: {
 function refersTo(
   occurrence: ReturnType<typeof extractLinkOccurrences>[number],
   from: string,
-  sourcePath: string,
-  beforeIndex: ReadonlyMap<string, readonly string[]>,
+  beforeIndex: ReadonlyMap<string, string>,
 ): boolean {
+  const key = referenceKey(occurrence);
+  if (!key) return false;
+  const resolved = beforeIndex.get(key);
+  return (
+    resolved !== undefined && normalizePath(resolved) === normalizePath(from)
+  );
+}
+
+function referenceKey(
+  occurrence: ReturnType<typeof extractLinkOccurrences>[number],
+): string | undefined {
   const destination = occurrence.normalizedDestination.split("#", 1)[0] ?? "";
-  if (!destination) return false;
-  if (occurrence.syntax === "wikilink" || occurrence.syntax === "wiki-embed") {
-    const candidates = beforeIndex.get(destination.toLowerCase());
-    return (
-      candidates?.length === 1 &&
-      normalizePath(candidates[0] ?? "") === normalizePath(from)
-    );
-  }
-  if (!occurrence.sourcePath) return false;
-  const directory = sourcePath.split("/").slice(0, -1);
-  const resolved = [...directory, ...destination.split("/")]
-    .filter((part) => part && part !== ".")
-    .join("/")
-    .replace(/\.md$/i, "");
-  return normalizePath(resolved) === normalizePath(from.replace(/\.md$/i, ""));
+  if (!destination) return undefined;
+  if (occurrence.syntax === "wikilink" || occurrence.syntax === "wiki-embed")
+    return destination.toLowerCase();
+  if (!occurrence.sourcePath) return undefined;
+  const relative = destination.replaceAll("\\", "/");
+  if (relative.startsWith("/") || relative.split("/").includes(".."))
+    return undefined;
+  const directory = occurrence.sourcePath
+    .replaceAll("\\", "/")
+    .split("/")
+    .slice(0, -1);
+  return normalizePath(
+    [...directory, ...relative.split("/")].filter(Boolean).join("/"),
+  );
 }
 
 function replacementDestination(
@@ -135,18 +151,26 @@ function replacementDestination(
   return `${encodeURI(relative)}${fragment ?? ""}`;
 }
 
-function buildIndex(paths: readonly string[]): Set<string> {
-  const keys = new Set<string>();
+function buildIndex(paths: readonly string[]): ReadonlyMap<string, string> {
+  const candidates = new Map<string, Set<string>>();
   for (const filePath of paths) {
-    for (const key of keysOf(filePath)) keys.add(key);
+    for (const key of keysOf(filePath)) {
+      const values = candidates.get(key) ?? new Set<string>();
+      values.add(filePath);
+      candidates.set(key, values);
+    }
   }
-  return keys;
+  const index = new Map<string, string>();
+  for (const [key, values] of candidates) {
+    if (values.size === 1) index.set(key, [...values][0] as string);
+  }
+  return index;
 }
 
 function buildBeforeIndex(
   files: ReadonlyMap<string, string>,
   retargets: readonly ContentLinkRetarget[],
-): Map<string, string[]> {
+): ReadonlyMap<string, string> {
   const movedTo = new Map<string, string>();
   for (const retarget of retargets) {
     if (retarget.to) movedTo.set(normalizePath(retarget.to), retarget.from);
@@ -155,15 +179,7 @@ function buildBeforeIndex(
   for (const filePath of files.keys())
     paths.add(movedTo.get(normalizePath(filePath)) ?? filePath);
   for (const retarget of retargets) paths.add(retarget.from);
-  const index = new Map<string, string[]>();
-  for (const filePath of paths) {
-    for (const key of keysOf(filePath)) {
-      const candidates = index.get(key) ?? [];
-      candidates.push(filePath);
-      index.set(key, candidates);
-    }
-  }
-  return index;
+  return buildIndex([...paths]);
 }
 
 function normalizePath(filePath: string): string {
@@ -178,8 +194,4 @@ function keysOf(filePath: string): string[] {
   for (let index = 0; index < parts.length; index += 1)
     keys.push(parts.slice(index).join("/").toLowerCase());
   return keys;
-}
-
-function indexKey(filePath: string): string {
-  return keysOf(filePath)[0] ?? filePath.toLowerCase();
 }

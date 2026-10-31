@@ -46,6 +46,8 @@ export type {
   ContentGraphNeighbors,
 } from "./src/content/content_graph.js";
 export { createContentGraph } from "./src/content/content_graph.js";
+export type { ContentIndexBuild } from "./src/content/content_index_builder.js";
+export { ContentIndexBuilder } from "./src/content/content_index_builder.js";
 export {
   getEntryLanguage,
   selectEntriesByLanguage,

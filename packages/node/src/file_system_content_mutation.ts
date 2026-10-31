@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  ContentIndexBuilder,
   type ContentLinkRetarget,
   type ContentMutationFileChange,
   type ContentMutationIssue,
@@ -9,6 +10,8 @@ import {
   type ContentMutationPlan,
   type ContentMutationRecoveryResult,
   type ContentMutationResult,
+  type ContentSourceEntry,
+  extractFrontmatterAliases,
   flattenContentMutationOperations,
   planContentLinkUpdates,
 } from "@riebeckite/core";
@@ -174,6 +177,8 @@ export class FileSystemContentMutation {
       const linkPlan = planContentLinkUpdates({
         files: markdownFiles,
         retargets,
+        beforeIndex: buildContentIndex(initial).index,
+        afterIndex: buildContentIndex(files).index,
       });
       for (const [filePath, content] of linkPlan.updates) {
         const existing = files.get(filePath);
@@ -663,6 +668,22 @@ function stateOf(content: string | Uint8Array): FileState {
 }
 function fingerprint(content: Uint8Array): string {
   return createHash("sha256").update(content).digest("hex");
+}
+function buildContentIndex(
+  files: ReadonlyMap<string, FileState>,
+): ReturnType<typeof ContentIndexBuilder.buildFromAliases> {
+  const decoder = new TextDecoder();
+  const entries: ContentSourceEntry[] = [];
+  const aliasesByPath = new Map<string, readonly string[]>();
+  for (const [filePath, state] of files) {
+    entries.push({ path: filePath });
+    if (filePath.toLowerCase().endsWith(".md"))
+      aliasesByPath.set(
+        filePath,
+        extractFrontmatterAliases(decoder.decode(state.content)),
+      );
+  }
+  return ContentIndexBuilder.buildFromAliases(entries, aliasesByPath);
 }
 function isWithin(parent: string, child: string): boolean {
   const relative = path.relative(parent, child);

@@ -10,6 +10,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/git-history",
   "packages/preview",
   "packages/spa",
+  "packages/runtime",
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
@@ -161,6 +162,11 @@ const packagePublishingMetadata = {
   "packages/spa": {
     description: "Opt-in SPA navigation runtime for Riebeckite sites.",
     keywords: ["riebeckite", "spa", "navigation"],
+  },
+  "packages/runtime": {
+    description:
+      "Typed interactive runtime contracts for Riebeckite main-thread, worker, WASM worker, and sandboxed iframe execution.",
+    keywords: ["riebeckite", "runtime", "web-worker", "wasm", "sandbox"],
   },
   "packages/create-riebeckite": {
     description:
@@ -702,7 +708,11 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
-  if (directory === "packages/preview" || directory === "packages/spa") {
+  if (
+    directory === "packages/preview" ||
+    directory === "packages/spa" ||
+    directory === "packages/runtime"
+  ) {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],

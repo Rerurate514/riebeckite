@@ -126,6 +126,23 @@ test("releases a lock owned by a dead process", async () => {
   assert.equal((await mutation.apply(plan)).applied, true);
 });
 
+test("refuses a lock owned by a live process", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const mutationRoot = path.join(root, ".riebeckite", "mutations");
+  await fs.mkdir(mutationRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(mutationRoot, "lock"),
+    JSON.stringify({ pid: process.pid }),
+  );
+  await assert.rejects(() => mutation.apply(plan), /already applying/);
+  assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "first");
+});
+
 test("recovers only files whose applied fingerprint still matches", async () => {
   const root = await directory();
   await fs.writeFile(path.join(root, "note.md"), "original");
@@ -187,6 +204,41 @@ test("recovery rolls back a write whose journal mark was lost", async () => {
   assert.equal(recovered.recovered, true);
   assert.deepEqual(recovered.restoredPaths, ["note.md"]);
   assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), before);
+});
+
+test("reports a recovery conflict when a file changed after the crash", async () => {
+  const root = await directory();
+  const before = "original";
+  const after = "applied";
+  await fs.writeFile(path.join(root, "note.md"), "third");
+  const mutationRoot = path.join(root, ".riebeckite", "mutations", "crash");
+  await fs.mkdir(path.join(mutationRoot, "backups"), { recursive: true });
+  const backupPath = `backups/${Buffer.from("note.md").toString("base64url")}`;
+  await fs.writeFile(path.join(mutationRoot, backupPath), before);
+  const journalPath = path.join(mutationRoot, "journal.json");
+  await fs.writeFile(
+    journalPath,
+    JSON.stringify({
+      version: 1,
+      id: "crash",
+      state: "applying",
+      changes: [
+        {
+          path: "note.md",
+          beforeFingerprint: createHash("sha256").update(before).digest("hex"),
+          afterFingerprint: createHash("sha256").update(after).digest("hex"),
+          backupPath,
+          status: "applied",
+        },
+      ],
+    }),
+  );
+  const recovered = await new FileSystemContentMutation(root).recover(
+    journalPath,
+  );
+  assert.equal(recovered.recovered, false);
+  assert.equal(recovered.conflicts[0]?.code, "recovery-conflict");
+  assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "third");
 });
 
 test("refuses traversal and symbolic-link write paths", async (t) => {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   extractLinkOccurrences,
+  linkResolutionKey,
   resolveLinkOccurrences,
   rewriteLinkDestinations,
 } from "../index.js";
@@ -48,6 +49,24 @@ test("link occurrences locate destinations past nested images and code spans", (
       ["markdown-link", "real.md", "real.md"],
     ],
   );
+});
+
+test("image labels may contain link-shaped text", () => {
+  const source = "![foo [bar](/url)](/url2)";
+  const [image] = extractLinkOccurrences(source);
+  assert.equal(image?.syntax, "markdown-image");
+  assert.equal(
+    source.slice(image?.destinationRange?.start, image?.destinationRange?.end),
+    "/url2",
+  );
+});
+
+test("malformed percent escapes fall back to the raw destination", () => {
+  const [occurrence] = extractLinkOccurrences("[x](50%.md)", {
+    sourcePath: "a.md",
+  });
+  assert.ok(occurrence);
+  assert.equal(linkResolutionKey(occurrence), "50%");
 });
 
 test("link occurrences exclude code and distinguish reference occurrences", () => {

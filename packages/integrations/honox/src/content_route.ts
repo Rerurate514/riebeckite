@@ -280,7 +280,7 @@ function normalizeRequestPath(pathname: string): string {
 }
 
 function routeOutputPath(pathname: string): string {
-  return htmlOutputPath(normalizeRequestPath(pathname));
+  return htmlOutputPath(pathname);
 }
 
 /**

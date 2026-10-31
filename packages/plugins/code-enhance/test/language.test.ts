@@ -36,6 +36,17 @@ test("lowercase fence languages keep their highlighting", async () => {
   assert.ok(html.includes("--shiki-light"));
 });
 
+test("markdown fences highlight embedded frontmatter without other languages", async () => {
+  const html = await render(
+    fenced(
+      "md",
+      ["---", "title: First release", "date: 2026-01-15", "---"].join("\n"),
+    ),
+  );
+
+  assert.ok(html.includes(">title</span>"), html);
+});
+
 test("unknown fence languages render without failing the pipeline", async () => {
   const html = await render(fenced("not-a-real-language", "const value = 1"));
 

@@ -279,7 +279,7 @@ async function collectReferencedAssets(
   const content = new ContentManager(
     new FileSystemContentSource(contentDir, exclude),
     [],
-    { config: { ...appConfig, plugins: [] } },
+    { config: { ...appConfig, plugins: [] }, commitBuildState: false },
   );
   const manifest = await content.build();
 

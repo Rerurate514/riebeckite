@@ -375,6 +375,33 @@ test("riebeniteSsgParams enumerates public content, redirects and plugin pages",
   ]);
 });
 
+test("SSG enumerates affected plugin pages without decoding their paths", async () => {
+  const encoded = "/tags/%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E4%BE%9D%E5%AD%98%E9%96%A2%E4%BF%82";
+  const params = await riebeckiteSsgParams({
+    getManifest: async () => manifestOf([]),
+    getOutputChangeSet: async () => ({
+      fullRegenerationRequired: false,
+      affected: [
+        {
+          kind: "page" as const,
+          path: `${encoded.replace(/^\/+/, "")}.html`,
+          producer: "page:taxonomy-term",
+          dependencies: [],
+        },
+      ],
+      removed: [],
+      unchanged: [],
+      candidateOutputCount: 1,
+      affectedOutputCount: 1,
+      removedOutputCount: 0,
+      unchangedOutputCount: 0,
+    }),
+    getPagePaths: async () => [encoded],
+  });
+
+  assert.deepEqual(params, [{ slug: encoded.replace(/^\/+/, "") }]);
+});
+
 function requestContext(options: { slug?: string; path: string }) {
   const variables = new Map<string, unknown>();
   const context = {

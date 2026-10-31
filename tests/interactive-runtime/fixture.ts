@@ -64,6 +64,11 @@ function html(marker: string, pathname: string, bundle: string): string {
 <body>
   <main id="main-content" tabindex="-1" data-page="${pathname}">
     <h1>${marker}</h1>
+    <div data-runtime-fallback-root>
+      <p data-runtime-loading hidden>Loading interactive result…</p>
+      <p data-runtime-fallback>Static result: 4</p>
+      <p data-runtime-error role="alert" hidden></p>
+    </div>
     ${links}
   </main>
   <script>${bundle}</script>

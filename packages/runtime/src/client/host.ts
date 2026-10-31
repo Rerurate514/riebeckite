@@ -1,4 +1,8 @@
-import type { ClientRuntime, ClientRuntimeHost } from "@riebeckite/core/client";
+import type {
+  ClientRuntime,
+  ClientRuntimeCreateOptions,
+  ClientRuntimeHost,
+} from "@riebeckite/core/client";
 import { RuntimeStateError } from "../core/errors.js";
 import type { InteractiveRuntimeRegistry } from "../core/registry.js";
 import type {
@@ -26,7 +30,10 @@ export function createClientRuntimeHost(
     ids() {
       return options.registry.ids;
     },
-    create<TOutput = unknown>(id, createOptions = {}) {
+    create<TOutput = unknown>(
+      id: string,
+      createOptions: ClientRuntimeCreateOptions = {},
+    ) {
       if (disposed) {
         throw new RuntimeStateError(
           `Client runtime host is disposed; cannot create "${id}".`,

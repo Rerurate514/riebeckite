@@ -3,10 +3,12 @@ import {
   type ClientRuntime,
   createClientRuntimeHost,
   createIframeRuntime,
+  createRuntimeFallback,
   createWasmWorkerRuntime,
   createWorkerRuntime,
   defineInteractiveRuntime,
   InteractiveRuntimeRegistry,
+  type RuntimeFallback,
 } from "../../packages/runtime/client.js";
 import { startSpaNavigation } from "../../packages/spa/index.js";
 
@@ -60,6 +62,7 @@ type TestWindow = Window & {
     testWasmMissing(): Promise<void>;
     testIframeBadSandbox(): Promise<void>;
     testIframeNavigation(): Promise<void>;
+    testFallbackError(): void;
   };
 };
 
@@ -156,11 +159,14 @@ registry.register(
 
 const lifecycle = new ClientLifecycle({
   onError(error, context) {
+    pageFallback?.showError(error);
     testWindow().__runtimeTest?.errors.push(
       `${context.phase}: ${String(error)}`,
     );
   },
 });
+
+let pageFallback: RuntimeFallback | undefined;
 
 function testWindow(): TestWindow {
   return window as TestWindow;
@@ -168,89 +174,101 @@ function testWindow(): TestWindow {
 
 async function mountPage(root: Element): Promise<void> {
   const host = createClientRuntimeHost({ registry, root });
-  await lifecycle.mount({
-    scope: "page",
-    name: "runtime",
-    root,
-    config: undefined,
-    runtimes: host,
-    initialize: async (context) => {
-      const runtime = context.runtimes?.create<number>("dom");
-      if (!runtime)
-        throw new Error("The lifecycle did not provide a runtime host.");
-      testWindow().__runtimeTest?.instances.push(runtime);
-      await runtime.mount();
-      await runtime.invoke({ value: 2 });
+  const fallbackRoot = root.querySelector("[data-runtime-fallback-root]");
+  const fallback = fallbackRoot
+    ? createRuntimeFallback(fallbackRoot)
+    : undefined;
+  pageFallback = fallback;
+  fallback?.showLoading();
+  try {
+    await lifecycle.mount({
+      scope: "page",
+      name: "runtime",
+      root,
+      config: undefined,
+      runtimes: host,
+      initialize: async (context) => {
+        const runtime = context.runtimes?.create<number>("dom");
+        if (!runtime)
+          throw new Error("The lifecycle did not provide a runtime host.");
+        testWindow().__runtimeTest?.instances.push(runtime);
+        await runtime.mount();
+        await runtime.invoke({ value: 2 });
 
-      const worker = context.runtimes?.create<number>("worker");
-      if (!worker)
-        throw new Error("The lifecycle did not provide a runtime host.");
-      const test = testWindow().__runtimeTest;
-      if (!test) throw new Error("The browser test state is missing.");
-      test.workerInstances.push(worker);
-      await worker.mount();
-      test.workerResults = await Promise.all(
-        [1, 2, 3, 4].map((value) => worker.invoke({ value })),
-      );
+        const worker = context.runtimes?.create<number>("worker");
+        if (!worker)
+          throw new Error("The lifecycle did not provide a runtime host.");
+        const test = testWindow().__runtimeTest;
+        if (!test) throw new Error("The browser test state is missing.");
+        test.workerInstances.push(worker);
+        await worker.mount();
+        test.workerResults = await Promise.all(
+          [1, 2, 3, 4].map((value) => worker.invoke({ value })),
+        );
 
-      const slow = [1, 2, 3, 4].map((value) =>
-        worker.invoke({ value, delay: 50 }),
-      );
-      try {
-        await worker.invoke({ value: 5 });
-      } catch (error) {
-        test.workerBackpressure = (error as Error).name;
-      }
-      await Promise.all(slow);
+        const slow = [1, 2, 3, 4].map((value) =>
+          worker.invoke({ value, delay: 50 }),
+        );
+        try {
+          await worker.invoke({ value: 5 });
+        } catch (error) {
+          test.workerBackpressure = (error as Error).name;
+        }
+        await Promise.all(slow);
 
-      if (window.location.pathname === "/a") {
+        if (window.location.pathname === "/a") {
+          const controller = new AbortController();
+          const aborted = worker
+            .invoke({ value: 5, delay: 2_000 }, { signal: controller.signal })
+            .then(
+              () => "resolved",
+              (error: Error) => error.name,
+            );
+          setTimeout(() => controller.abort(), 10);
+          test.workerAbort = await aborted;
+
+          const pending = worker.invoke({ value: 7, delay: 5_000 }).then(
+            () => "resolved",
+            (error: Error) => error.name,
+          );
+          void pending.then((outcome) => {
+            test.workerPending = outcome;
+          });
+        }
+        test.workerReady += 1;
+
+        const wasm = context.runtimes?.create<number>("wasm");
+        if (!wasm)
+          throw new Error("The lifecycle did not provide a runtime host.");
+        test.wasmInstances.push(wasm);
+        await wasm.mount();
+        test.wasmResults.push(await wasm.invoke([2, 3]));
+        test.wasmReady += 1;
+
+        const frame = context.runtimes?.create<number>("iframe");
+        if (!frame)
+          throw new Error("The lifecycle did not provide a runtime host.");
+        test.iframeInstances.push(frame);
+        await frame.mount();
+        test.iframeResults.push(await frame.invoke({ value: 3 }));
+
         const controller = new AbortController();
-        const aborted = worker
-          .invoke({ value: 5, delay: 2_000 }, { signal: controller.signal })
+        const aborted = frame
+          .invoke({ value: 6, delay: 2_000 }, { signal: controller.signal })
           .then(
             () => "resolved",
             (error: Error) => error.name,
           );
         setTimeout(() => controller.abort(), 10);
-        test.workerAbort = await aborted;
-
-        const pending = worker.invoke({ value: 7, delay: 5_000 }).then(
-          () => "resolved",
-          (error: Error) => error.name,
-        );
-        void pending.then((outcome) => {
-          test.workerPending = outcome;
-        });
-      }
-      test.workerReady += 1;
-
-      const wasm = context.runtimes?.create<number>("wasm");
-      if (!wasm)
-        throw new Error("The lifecycle did not provide a runtime host.");
-      test.wasmInstances.push(wasm);
-      await wasm.mount();
-      test.wasmResults.push(await wasm.invoke([2, 3]));
-      test.wasmReady += 1;
-
-      const frame = context.runtimes?.create<number>("iframe");
-      if (!frame)
-        throw new Error("The lifecycle did not provide a runtime host.");
-      test.iframeInstances.push(frame);
-      await frame.mount();
-      test.iframeResults.push(await frame.invoke({ value: 3 }));
-
-      const controller = new AbortController();
-      const aborted = frame
-        .invoke({ value: 6, delay: 2_000 }, { signal: controller.signal })
-        .then(
-          () => "resolved",
-          (error: Error) => error.name,
-        );
-      setTimeout(() => controller.abort(), 10);
-      test.iframeAbort = await aborted;
-      test.iframeReady += 1;
-    },
-  });
+        test.iframeAbort = await aborted;
+        test.iframeReady += 1;
+        fallback?.showReady();
+      },
+    });
+  } catch (error) {
+    fallback?.showError(error);
+    throw error;
+  }
 }
 
 async function crashWorker(): Promise<void> {
@@ -354,6 +372,10 @@ async function testIframeNavigation(): Promise<void> {
   }
 }
 
+function testFallbackError(): void {
+  pageFallback?.showError(new Error("Interactive runtime failed."));
+}
+
 testWindow().__runtimeTest = {
   instances: [],
   workerInstances: [],
@@ -385,6 +407,7 @@ testWindow().__runtimeTest = {
   testWasmMissing,
   testIframeBadSandbox,
   testIframeNavigation,
+  testFallbackError,
 };
 
 const main = document.querySelector("#main-content");

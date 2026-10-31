@@ -481,6 +481,87 @@ test("iframe runtimes sandbox guests and reject malformed or foreign messages", 
   }
 });
 
+test("static fallbacks remain readable without JavaScript", async () => {
+  const noScript = await browser.newPage();
+  try {
+    await noScript.setJavaScriptEnabled(false);
+    await noScript.goto(`${fixture.url}/a`, { waitUntil: "domcontentloaded" });
+    const fallback = await noScript.evaluate(() => {
+      const root = document.querySelector("[data-runtime-fallback-root]");
+      const fallbackElement = root?.querySelector<HTMLElement>(
+        "[data-runtime-fallback]",
+      );
+      const loading = root?.querySelector<HTMLElement>(
+        "[data-runtime-loading]",
+      );
+      const error = root?.querySelector<HTMLElement>("[data-runtime-error]");
+      return {
+        heading: document.querySelector("h1")?.textContent,
+        links: document.querySelectorAll("a[href]").length,
+        text: fallbackElement?.textContent,
+        fallbackHidden: fallbackElement?.hidden,
+        loadingHidden: loading?.hidden,
+        errorHidden: error?.hidden,
+      };
+    });
+    assert.equal(fallback.heading, "PAGE_A");
+    assert.equal(fallback.links, 3);
+    assert.equal(fallback.text, "Static result: 4");
+    assert.equal(fallback.fallbackHidden, false);
+    assert.equal(fallback.loadingHidden, true);
+    assert.equal(fallback.errorHidden, true);
+  } finally {
+    await noScript.close();
+  }
+});
+
+test("the hydration fallback switches to loading, ready and error states", async () => {
+  const { page, errors } = await open();
+  try {
+    const ready = await page.evaluate(() => {
+      const root = document.querySelector("[data-runtime-fallback-root]");
+      return {
+        busy: root?.getAttribute("aria-busy"),
+        fallbackHidden: root?.querySelector<HTMLElement>(
+          "[data-runtime-fallback]",
+        )?.hidden,
+        loadingHidden: root?.querySelector<HTMLElement>(
+          "[data-runtime-loading]",
+        )?.hidden,
+        errorHidden: root?.querySelector<HTMLElement>("[data-runtime-error]")
+          ?.hidden,
+      };
+    });
+    assert.equal(ready.busy, null);
+    assert.equal(ready.fallbackHidden, true);
+    assert.equal(ready.loadingHidden, true);
+    assert.equal(ready.errorHidden, true);
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testFallbackError(),
+    );
+    const failed = await page.evaluate(() => {
+      const root = document.querySelector("[data-runtime-fallback-root]");
+      const error = root?.querySelector<HTMLElement>("[data-runtime-error]");
+      return {
+        fallbackHidden: root?.querySelector<HTMLElement>(
+          "[data-runtime-fallback]",
+        )?.hidden,
+        errorHidden: error?.hidden,
+        errorRole: error?.getAttribute("role"),
+        message: error?.textContent,
+      };
+    });
+    assert.equal(failed.fallbackHidden, false);
+    assert.equal(failed.errorHidden, false);
+    assert.equal(failed.errorRole, "alert");
+    assert.equal(failed.message, "Interactive runtime failed.");
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("a fresh page mount owns a fresh runtime host", async () => {
   const { page, errors } = await open("/b");
   try {

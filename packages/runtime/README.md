@@ -60,6 +60,24 @@ The `@riebeckite/runtime/client` entry provides browser adapters:
 The worker side of an adapter uses `serveWorkerRuntime` or
 `serveWasmWorkerRuntime` from `@riebeckite/runtime/worker`.
 
+## SSR and fallbacks
+
+Nothing starts before `mount()`, so rendering a page on the server is safe.
+Render static fallback markup and let the client enhance it:
+
+```html
+<div data-runtime-fallback-root>
+  <p data-runtime-loading hidden>Loading…</p>
+  <p data-runtime-fallback>Static result</p>
+  <p data-runtime-error role="alert" hidden></p>
+</div>
+```
+
+`createRuntimeFallback(root)` from `@riebeckite/runtime/client` switches those
+elements between loading, ready, and error states and maintains `aria-busy`.
+Without JavaScript the fallback stays visible. The helper throws when no DOM
+exists, so call it only from a client initializer.
+
 ## Security
 
 - Workers and WASM are not security sandboxes. Isolation comes from origin and

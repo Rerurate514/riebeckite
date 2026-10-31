@@ -61,6 +61,24 @@ await runtime.dispose();
 Worker 側の処理は `@riebeckite/runtime/worker` の `serveWorkerRuntime` または
 `serveWasmWorkerRuntime` で実装します。
 
+## SSR とフォールバック
+
+`mount()` の前には何も起動しないため、サーバーでの描画は安全です。静的な
+フォールバックを描画し、クライアントで拡張します。
+
+```html
+<div data-runtime-fallback-root>
+  <p data-runtime-loading hidden>Loading…</p>
+  <p data-runtime-fallback>Static result</p>
+  <p data-runtime-error role="alert" hidden></p>
+</div>
+```
+
+`@riebeckite/runtime/client` の `createRuntimeFallback(root)` は、これらの要素を
+読み込み中・準備完了・エラーの状態に切り替え、`aria-busy` を維持します。
+JavaScript がない場合はフォールバックが表示されたままになります。DOM が
+ない場合は例外を投げるため、クライアント初期化処理からのみ呼び出してください。
+
 ## セキュリティ
 
 - Worker と WASM はセキュリティサンドボックスではありません。隔離は実行種別

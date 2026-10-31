@@ -33,7 +33,7 @@ function build(packagePath: string): void {
 
 before(() => {
   build(createRiebeckiteRoot);
-  for (const name of ["docs", "obsidian-markdown", "toc"]) {
+  for (const name of ["navigation", "docs", "obsidian-markdown", "toc"]) {
     build(path.resolve(packageRoot, "..", "plugins", name));
   }
   build(packageRoot);

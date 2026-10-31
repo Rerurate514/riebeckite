@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   createDerivedViewRegistry,
   defineDerivedView,
+  derivedDependenciesToOutputDependencies,
   type JsonValue,
   type PluginCache,
 } from "../index.js";
@@ -112,6 +113,106 @@ test("derived views reuse only current tracked dependencies", async () => {
   assert.deepEqual(await registry.resolve(view, "input"), { value: 1 });
   fingerprints.set("post", "two");
   assert.deepEqual(await registry.resolve(view, "input"), { value: 2 });
+});
+
+test("derived view resolutions retain child dependencies across cache hits", async () => {
+  const cache = memoryCache();
+  const fingerprints = new Map([["note", "one"]]);
+  let childCalls = 0;
+  let parentCalls = 0;
+  const child = defineDerivedView<string, string>({
+    id: "test.child-dependencies",
+    version: "1",
+    compute: (value, context) => {
+      childCalls++;
+      context.track({
+        type: "content",
+        id: "note",
+        fingerprint: fingerprints.get("note"),
+      });
+      return value;
+    },
+  });
+  const parent = defineDerivedView<string, string>({
+    id: "test.parent-dependencies",
+    version: "1",
+    compute: async (value, context) => {
+      parentCalls++;
+      return await context.resolve(child, value);
+    },
+  });
+  const createRegistry = () =>
+    createDerivedViewRegistry({
+      cache: () => cache,
+      dependencyFingerprint: (dependency) => fingerprints.get(dependency.id),
+    });
+  const first = createRegistry();
+  first.register(child);
+  first.register(parent);
+
+  const resolved = await first.resolveWithDependencies(parent, "ready");
+  assert.equal(resolved.value, "ready");
+  assert.deepEqual(
+    derivedDependenciesToOutputDependencies(resolved.dependencies),
+    [{ slug: "note", type: "content" }],
+  );
+  assert.equal(childCalls, 1);
+  assert.equal(parentCalls, 1);
+
+  const second = createRegistry();
+  second.register(child);
+  second.register(parent);
+  const cached = await second.resolveWithDependencies(parent, "ready");
+  assert.deepEqual(cached.dependencies, resolved.dependencies);
+  assert.equal(childCalls, 1);
+  assert.equal(parentCalls, 1);
+});
+
+test("a child view version invalidates a cached parent resolution", async () => {
+  const cache = memoryCache();
+  let parentCalls = 0;
+  const parent = defineDerivedView<string, string>({
+    id: "test.parent-version",
+    version: "1",
+    compute: async (value, context) => {
+      parentCalls++;
+      return await context.resolve<string>("test.child-version", value);
+    },
+  });
+  const child = (version: string) =>
+    defineDerivedView<string, string>({
+      id: "test.child-version",
+      version,
+      compute: (value) => `${version}:${value}`,
+    });
+  const first = createDerivedViewRegistry({ cache: () => cache });
+  first.register(child("1"));
+  first.register(parent);
+  assert.equal(await first.resolve(parent, "ready"), "1:ready");
+
+  const second = createDerivedViewRegistry({ cache: () => cache });
+  second.register(child("2"));
+  second.register(parent);
+  assert.equal(await second.resolve(parent, "ready"), "2:ready");
+  assert.equal(parentCalls, 2);
+});
+
+test("derived dependency output mapping retains query, graph, and unknown safety", () => {
+  assert.deepEqual(
+    derivedDependenciesToOutputDependencies([
+      { type: "frontmatter", id: "note", property: "date" },
+      { type: "query", id: "recent", properties: ["date", "tags"] },
+      { type: "query", id: "unqualified" },
+      { type: "graph", id: "related" },
+      { type: "unknown", id: "custom" },
+    ]),
+    [
+      { slug: "note", type: "content" },
+      { properties: ["date", "tags"], type: "content-query" },
+      { type: "unknown" },
+      { properties: ["file.links"], type: "content-query" },
+    ],
+  );
 });
 
 test("derived views ignore corrupted cache values and do not persist non-JSON output", async () => {

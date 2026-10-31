@@ -47,17 +47,21 @@ test("generated output plans resolve registered derived views", async () => {
   const summary = defineDerivedView<string, string>({
     id: "official.planned-summary",
     version: "1",
-    compute: (value) => value.toUpperCase(),
+    compute: (value, context) => {
+      context.track({ type: "file", id: "source.md", fingerprint: "1" });
+      return value.toUpperCase();
+    },
   });
   const plugin = definePlugin({
     name: "derived-plan-example",
     derivedViews: [summary],
     async planGeneratedOutputs({ derived }) {
+      const resolved = await derived.resolveWithDependencies(summary, "ready");
       return [
         {
           path: "derived.txt",
-          content: await derived.resolve(summary, "ready"),
-          dependencies: [{ type: "global" }],
+          content: resolved.value,
+          derivedDependencies: resolved.dependencies,
         },
       ];
     },
@@ -70,7 +74,7 @@ test("generated output plans resolve registered derived views", async () => {
   assert.deepEqual(manifest.generatedOutputs, [
     {
       content: "READY",
-      dependencies: [{ type: "global" }],
+      dependencies: [{ path: "source.md", type: "file" }],
       owner: "derived-plan-example",
       path: "derived.txt",
     },

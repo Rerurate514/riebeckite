@@ -33,7 +33,7 @@ export const example = definePlugin({
 
 View はプラグインの `derivedViews` 配列に登録します。`context.derived.resolve(view, input)` は定義または ID から View を解決します。ID の重複はプラグイン解決時に失敗します。再帰呼び出しは循環経路を含めて失敗します。同じ View、バージョン、入力への同時要求は一つの計算を共有し、エラーはすべての呼び出し元へ伝播します。失敗結果を成功値として保持しません。
 
-View 内から別の View を呼ぶ場合は `context.resolve()` を使います。子 View の入力が現在も有効かを、再実行なしでは証明できないため、別 View を呼ぶ親 View は永続化しません。
+View 内から別の View を呼ぶ場合は `context.resolve()` を使います。子 View の依存関係とバージョンは、キャッシュヒット時も含めて親 View へ伝播します。子 View のバージョンが変わると、キャッシュされた親 View は無効になります。
 
 ## 依存関係とキャッシュ
 
@@ -57,7 +57,22 @@ Content Query では、実際に読んだエントリだけでなく公開結果
 
 Derived View は自動ではシリアライズされません。Worker リクエストからも解決できますが、リクエスト時の解決では永続キャッシュを使わないため、小さい処理にとどめてください。Generated Output の計画では `derived` コンテキストから解決できます。値を公開するプラグインは、`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別する必要があります。公開境界が明示的でない限り、draft、scheduled、unlisted をシリアライズしてはいけません。
 
-Generated Output には通常の `OutputDependency` が引き続き必要です。Derived View の追跡は値キャッシュ、Output Dependency は静的出力の無効化を担います。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
+Generated Output には、View のトレース外にある入力のために通常の `OutputDependency` を宣言できます。Derived View の追跡は値キャッシュ、Output Dependency は静的出力の無効化を担います。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
+
+Generated Output が View の値を使う場合は、依存関係のトレースを保持して出力へ渡します。
+
+```ts
+async planGeneratedOutputs({ derived }) {
+  const result = await derived.resolveWithDependencies(recentCount, { count: 3 });
+  return [{
+    path: "data/recent.json",
+    content: JSON.stringify(result.value),
+    derivedDependencies: result.dependencies,
+  }];
+}
+```
+
+Core は、追跡された content・file・external・完全なプロパティ集合を持つ query・graph の依存関係を、既存の出力依存関係へ変換してから出力計画に保存します。完全なプロパティ集合を持たない query は `unknown` となり、安全側で再生成を要求します。View が追跡していない入力、たとえばシリアライズ結果を変えうる View 入力や site 設定がある場合は、明示的な `dependencies` を併用してください。
 
 ## トラブルシューティング
 

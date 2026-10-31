@@ -1,15 +1,31 @@
 import crypto from "node:crypto";
 import type { JsonValue, PluginCache } from "../plugin/plugin_cache.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
+import type { OutputDependency } from "../types/output_dependency.js";
 
 export type DerivedSchema<T> = {
   parse(value: unknown): T;
 };
 
 export type DerivedDependency = {
-  readonly type: "content" | "file" | "external" | "query" | "unknown";
+  readonly type:
+    | "content"
+    | "frontmatter"
+    | "file"
+    | "external"
+    | "query"
+    | "graph"
+    | "view"
+    | "unknown";
   readonly id: string;
   readonly fingerprint?: string;
+  readonly property?: string;
+  readonly properties?: readonly string[];
+};
+
+export type DerivedViewResolution<TResult> = {
+  readonly value: TResult;
+  readonly dependencies: readonly DerivedDependency[];
 };
 
 export type DerivedViewContext = {
@@ -56,6 +72,16 @@ export type DerivedViewRegistry = {
     input: TInput,
     options?: { signal?: AbortSignal },
   ): Promise<TResult>;
+  resolveWithDependencies<TResult>(
+    view: string,
+    input: unknown,
+    options?: { signal?: AbortSignal },
+  ): Promise<DerivedViewResolution<TResult>>;
+  resolveWithDependencies<TInput, TResult>(
+    view: DerivedView<TInput, TResult>,
+    input: TInput,
+    options?: { signal?: AbortSignal },
+  ): Promise<DerivedViewResolution<TResult>>;
   status(): readonly DerivedViewStatus[];
   dispose(): void;
 };
@@ -71,11 +97,13 @@ type CachedDependency = {
   type: DerivedDependency["type"];
   id: string;
   fingerprint: string;
+  property?: string;
+  properties?: string[];
 };
 
 type PendingView = {
   readonly controller: AbortController;
-  readonly promise: Promise<unknown>;
+  readonly promise: Promise<DerivedViewResolution<unknown>>;
   consumers: number;
 };
 
@@ -105,12 +133,12 @@ export function createDerivedViewRegistry(
   const pending = new Map<string, PendingView>();
   let disposed = false;
 
-  const resolve = async <TInput, TResult>(
+  const resolveWithDependencies = async <TInput, TResult>(
     reference: DerivedView<TInput, TResult> | string,
     input: TInput,
     resolveOptions: { signal?: AbortSignal } = {},
     stack: readonly string[] = [],
-  ): Promise<TResult> => {
+  ): Promise<DerivedViewResolution<TResult>> => {
     if (disposed) throw new Error("Derived View registry has been disposed.");
     const view = resolveView(reference);
     if (stack.includes(view.id)) {
@@ -152,7 +180,7 @@ export function createDerivedViewRegistry(
           new Error("All Derived View consumers aborted."),
         );
       }
-    })) as TResult;
+    })) as DerivedViewResolution<TResult>;
   };
 
   const execute = async (
@@ -161,7 +189,7 @@ export function createDerivedViewRegistry(
     inputFingerprint: string,
     signal: AbortSignal,
     stack: readonly string[],
-  ): Promise<unknown> => {
+  ): Promise<DerivedViewResolution<unknown>> => {
     if (signal.aborted)
       throw signal.reason ?? new Error("Derived View aborted.");
     const cacheKey = `derived-view:${view.id}:${inputFingerprint}`;
@@ -169,7 +197,7 @@ export function createDerivedViewRegistry(
     if (cached !== undefined) {
       if (signal.aborted)
         throw signal.reason ?? new Error("Derived View aborted.");
-      return cached;
+      return { value: cached.value, dependencies: cached.dependencies };
     }
 
     const dependencies: DerivedDependency[] = [];
@@ -181,22 +209,31 @@ export function createDerivedViewRegistry(
       },
       track(dependency) {
         const normalized = normalizeDependency(dependency);
-        const key = `${normalized.type}:${normalized.id}`;
+        const key = dependencyKey(normalized);
         if (!tracked.has(key)) {
           tracked.add(key);
           dependencies.push(normalized);
         }
       },
       resolve: (async <TInput, TResult>(
-        child: DerivedView<TInput, TResult>,
+        child: DerivedView<TInput, TResult> | string,
         childInput: TInput,
       ) => {
-        const value = await resolve(child, childInput, { signal }, stack);
+        const childView = resolveView(child);
+        const resolved = await resolveWithDependencies(
+          childView,
+          childInput,
+          { signal },
+          stack,
+        );
+        for (const dependency of resolved.dependencies)
+          context.track(dependency);
         context.track({
-          type: "unknown",
-          id: `derived:${child.id}`,
+          type: "view",
+          id: childView.id,
+          fingerprint: childView.version,
         });
-        return value;
+        return resolved.value;
       }) as DerivedViewContext["resolve"],
     };
     const computed = await view.compute(input, context);
@@ -212,26 +249,22 @@ export function createDerivedViewRegistry(
         version: view.version,
         input: inputFingerprint,
         value,
-        dependencies: dependencies.map((dependency) => ({
-          type: dependency.type,
-          id: dependency.id,
-          fingerprint: dependency.fingerprint,
-        })),
+        dependencies: dependencies.map(toCachedDependency),
       });
     }
-    return value;
+    return { value, dependencies };
   };
 
   const readCache = async (
     key: string,
     view: DerivedView<unknown, unknown>,
     input: string,
-  ): Promise<unknown | undefined> => {
+  ): Promise<CacheEntry | undefined> => {
     try {
       const entry = await options.cache?.().get<CacheEntry>(key);
       if (!isCacheEntry(entry, view, input)) return undefined;
       if (!entry.dependencies.every(isCurrentDependency)) return undefined;
-      return entry.value;
+      return entry;
     } catch {
       return undefined;
     }
@@ -248,9 +281,14 @@ export function createDerivedViewRegistry(
   const isCurrentDependency = (dependency: DerivedDependency): boolean => {
     if (!dependency.fingerprint) return false;
     if (dependency.type === "unknown") return false;
+    if (dependency.type === "view") {
+      return views.get(dependency.id)?.version === dependency.fingerprint;
+    }
     const current = options.dependencyFingerprint?.({
       type: dependency.type,
       id: dependency.id,
+      property: dependency.property,
+      properties: dependency.properties,
     });
     return current === dependency.fingerprint;
   };
@@ -264,6 +302,15 @@ export function createDerivedViewRegistry(
     return view as DerivedView<TInput, TResult>;
   };
 
+  const resolve = async <TInput, TResult>(
+    reference: DerivedView<TInput, TResult> | string,
+    input: TInput,
+    resolveOptions: { signal?: AbortSignal } = {},
+  ): Promise<TResult> => {
+    return (await resolveWithDependencies(reference, input, resolveOptions))
+      .value;
+  };
+
   return {
     register(view) {
       if (disposed) throw new Error("Derived View registry has been disposed.");
@@ -272,6 +319,8 @@ export function createDerivedViewRegistry(
       views.set(view.id, view as DerivedView<unknown, unknown>);
     },
     resolve: resolve as DerivedViewRegistry["resolve"],
+    resolveWithDependencies:
+      resolveWithDependencies as DerivedViewRegistry["resolveWithDependencies"],
     status: () =>
       [...views.values()]
         .map((view) => ({
@@ -292,6 +341,57 @@ export function createDerivedViewRegistry(
       pending.clear();
     },
   };
+}
+
+export function derivedDependenciesToOutputDependencies(
+  dependencies: readonly DerivedDependency[],
+): readonly OutputDependency[] {
+  const outputDependencies: OutputDependency[] = [];
+  for (const dependency of dependencies) {
+    switch (dependency.type) {
+      case "content":
+      case "frontmatter":
+        outputDependencies.push({ type: "content", slug: dependency.id });
+        break;
+      case "file":
+        outputDependencies.push({ type: "file", path: dependency.id });
+        break;
+      case "external":
+        outputDependencies.push({ type: "external", id: dependency.id });
+        break;
+      case "query":
+        if (dependency.properties) {
+          outputDependencies.push({
+            type: "content-query",
+            properties: dependency.properties,
+          });
+        } else {
+          outputDependencies.push({ type: "unknown" });
+        }
+        break;
+      case "graph":
+        outputDependencies.push({
+          type: "content-query",
+          properties: ["file.links"],
+        });
+        break;
+      case "unknown":
+        outputDependencies.push({ type: "unknown" });
+        break;
+      case "view":
+        break;
+      default:
+        outputDependencies.push({ type: "unknown" });
+        break;
+    }
+  }
+  const seen = new Set<string>();
+  return outputDependencies.filter((dependency) => {
+    const key = stableStringify(dependency as JsonValue);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function waitForConsumer(
@@ -346,6 +446,30 @@ function normalizeDependency(dependency: DerivedDependency): DerivedDependency {
   };
 }
 
+function toCachedDependency(dependency: DerivedDependency): CachedDependency {
+  return {
+    type: dependency.type,
+    id: dependency.id,
+    fingerprint: dependency.fingerprint || "",
+    ...(dependency.property === undefined
+      ? {}
+      : { property: dependency.property }),
+    ...(dependency.properties === undefined
+      ? {}
+      : { properties: [...dependency.properties] }),
+  };
+}
+
+function dependencyKey(dependency: DerivedDependency): string {
+  return JSON.stringify({
+    type: dependency.type,
+    id: dependency.id,
+    fingerprint: dependency.fingerprint,
+    property: dependency.property,
+    properties: dependency.properties && [...dependency.properties].sort(),
+  });
+}
+
 function isCacheEntry(
   value: unknown,
   view: DerivedView<unknown, unknown>,
@@ -370,9 +494,19 @@ function isDependency(value: unknown): value is CachedDependency {
       dependency.type === "file" ||
       dependency.type === "external" ||
       dependency.type === "query" ||
+      dependency.type === "frontmatter" ||
+      dependency.type === "graph" ||
+      dependency.type === "view" ||
       dependency.type === "unknown") &&
     typeof dependency.id === "string" &&
-    typeof dependency.fingerprint === "string"
+    typeof dependency.fingerprint === "string" &&
+    (dependency.property === undefined ||
+      typeof dependency.property === "string") &&
+    (dependency.properties === undefined ||
+      (Array.isArray(dependency.properties) &&
+        dependency.properties.every(
+          (property) => typeof property === "string",
+        )))
   );
 }
 

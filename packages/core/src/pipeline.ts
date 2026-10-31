@@ -781,7 +781,7 @@ export class Pipeline {
     const observability = this.options.observability ?? noopObservability;
     return createPluginCache({
       pluginName: "riebeckite-derived-data",
-      cacheVersion: "1",
+      cacheVersion: "2",
       cacheDirectory: resolvePluginCacheDirectory(this.options.config),
       tracer: observability.tracer,
       logger: observability.logger.child({

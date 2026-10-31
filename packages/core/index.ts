@@ -165,11 +165,13 @@ export type {
   DerivedViewOptions,
   DerivedViewRegistry,
   DerivedViewRegistryOptions,
+  DerivedViewResolution,
   DerivedViewStatus,
 } from "./src/derived/derived_view.js";
 export {
   createDerivedViewRegistry,
   defineDerivedView,
+  derivedDependenciesToOutputDependencies,
 } from "./src/derived/derived_view.js";
 export type {
   BuildTraceRecorder,

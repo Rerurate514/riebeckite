@@ -1,4 +1,5 @@
 import type {
+  DerivedDependency,
   DerivedView,
   DerivedViewRegistry,
 } from "../derived/derived_view.js";
@@ -153,7 +154,8 @@ export type ContentOutputDependencyResolver = (context: {
 export type PlannedGeneratedOutput = {
   readonly path: string;
   readonly content: GeneratedOutputContent;
-  readonly dependencies: readonly OutputDependency[];
+  readonly dependencies?: readonly OutputDependency[];
+  readonly derivedDependencies?: readonly DerivedDependency[];
 };
 
 export type PluginGeneratedOutputPlanContext = {

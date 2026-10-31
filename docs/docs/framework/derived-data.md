@@ -33,7 +33,7 @@ Every view has a stable `id`, a required `version`, optional `input` and `output
 
 Register views with a plugin's `derivedViews` array. `context.derived.resolve(view, input)` resolves a view by definition or ID. Duplicate IDs fail during plugin resolution. Recursive calls fail with the full cycle path. Concurrent requests for the same view, version, and input share one in-flight computation; errors are propagated to every caller and are never retained as successful values.
 
-Use `context.resolve()` inside a view to call another view. A parent that calls another view is intentionally not persisted: Core cannot prove the child input remains current without rerunning it.
+Use `context.resolve()` inside a view to call another view. Child dependencies and its version are propagated to the parent, including through a cache hit. A changed child version invalidates a cached parent.
 
 ## Dependencies and cache
 
@@ -57,7 +57,22 @@ For a content query, fingerprint the complete public result set, not just entrie
 
 Derived Views are not serialized automatically. They may be resolved from a Worker request, but request-time resolution does not use the persistent cache and should stay small. Generated Output plans can resolve views through their `derived` context. A plugin that publishes a value must select from `manifest.discoverableEntries` or `manifest.routableEntries` itself. Do not serialize drafts, scheduled entries, or unlisted entries unless the output has an explicit non-public boundary.
 
-Generated outputs must still declare normal `OutputDependency` values. Derived View tracking controls the value cache; output dependencies control static-output invalidation. This separation keeps incremental output planning and the development route-manifest fast path unchanged.
+Generated outputs may declare normal `OutputDependency` values for inputs outside a view trace. Derived View tracking controls the value cache; output dependencies control static-output invalidation. This separation keeps incremental output planning and the development route-manifest fast path unchanged.
+
+When a generated output is based on a view, retain its dependency trace and attach it to that output:
+
+```ts
+async planGeneratedOutputs({ derived }) {
+  const result = await derived.resolveWithDependencies(recentCount, { count: 3 });
+  return [{
+    path: "data/recent.json",
+    content: JSON.stringify(result.value),
+    derivedDependencies: result.dependencies,
+  }];
+}
+```
+
+Core converts tracked content, file, external, qualified query, and graph dependencies to existing output dependencies before persisting the output plan. A query without its complete tracked property set becomes `unknown` and safely requires regeneration. Merge explicit `dependencies` when the output has inputs that the view did not track, including view input or site configuration that can change the serialized value.
 
 ## Troubleshooting
 

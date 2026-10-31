@@ -5,6 +5,7 @@ import type { OutputDescriptor } from "../content/output_dependency.js";
 import {
   createDerivedViewRegistry,
   type DerivedViewRegistry,
+  derivedDependenciesToOutputDependencies,
 } from "../derived/derived_view.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
@@ -484,12 +485,18 @@ export class PluginRuntime {
       );
       const sink = this.generatedOutputs.sinkFor(plugin.name);
       for (const output of outputs) {
-        if (output.dependencies.length === 0) {
+        const dependencies = [
+          ...(output.dependencies ?? []),
+          ...derivedDependenciesToOutputDependencies(
+            output.derivedDependencies ?? [],
+          ),
+        ];
+        if (dependencies.length === 0) {
           throw new Error(
             `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
           );
         }
-        sink.emit(output);
+        sink.emit({ ...output, dependencies });
       }
     }
   }
@@ -761,7 +768,7 @@ export class PluginRuntime {
     if (!this.isBuildTime) return createUnavailablePluginCache();
     return createPluginCache({
       pluginName: "riebeckite-derived-data",
-      cacheVersion: "1",
+      cacheVersion: "2",
       cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
       logger: this.observability().logger.child({
         plugin: "riebeckite-derived-data",

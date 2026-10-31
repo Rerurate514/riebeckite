@@ -231,6 +231,7 @@ export {
 } from "./src/publication/config.js";
 export type {
   PublicationEntry,
+  PublicationOutput,
   PublicationRedirect,
   PublicationSnapshot,
 } from "./src/publication/entries.js";
@@ -240,6 +241,7 @@ export {
   publicationEntriesFromManifest,
   publicationEntryFromManifestEntry,
   publicationFingerprint,
+  publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
 } from "./src/publication/entries.js";
 export type {

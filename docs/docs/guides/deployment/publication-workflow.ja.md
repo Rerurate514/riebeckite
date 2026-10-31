@@ -51,7 +51,7 @@ const plan = createPublicationPlan({
 - `targets.public`、`targets.unlisted`、`targets.scheduled`、`targets.drafts`
 - `nextPublicationAt` — 未来の `publishAt` のうち最も早いもの
 - `changes` — added、changed、removed、unchanged、`detected`
-- `publicationFingerprint` — 公開対象のエントリと公開リダイレクトのハッシュ
+- `publicationFingerprint` — 公開対象のエントリ、公開リダイレクト、生成出力（Derived View を含む）のハッシュ
 - `workflow` と `approvals.pending`
 - `validation.issues`
 - `action` — `none`、`build-and-deploy`、`blocked`

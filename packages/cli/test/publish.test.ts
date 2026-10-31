@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -6,6 +6,8 @@ import { test } from "node:test";
 import {
   type ContentSource,
   createPublicationPlan,
+  defineDerivedView,
+  definePlugin,
   parsePublicationApprovals,
   publicationEntriesFromManifest,
   resolveConfig,
@@ -57,11 +59,13 @@ function makeProject(
   root: string,
   source: ContentSource,
   publication?: { requireApproval?: boolean; approvalFile?: string },
+  plugins: Parameters<typeof definePlugin>[0][] = [],
 ): RiebeckiteProject {
   const config = resolveConfig({
     site: { title: "Test", baseUrl: "https://example.com" },
     content: { source },
     ...(publication === undefined ? {} : { publication }),
+    ...(plugins.length === 0 ? {} : { plugins }),
   });
   return {
     invocationCwd: root,
@@ -540,4 +544,74 @@ test("publish plan --json emits only parseable JSON", async (t) => {
   assert.equal(parsed.command, "plan");
   assert.equal(parsed.plan.targets.public.length, 1);
   assert.equal(parsed.plan.action, "build-and-deploy");
+});
+
+test("derived generated outputs gate deployment against the current build marker", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  let label = "first";
+  const view = defineDerivedView<string, { label: string; slugs: string[] }>({
+    id: "test.publication-index",
+    version: "1",
+    compute(_input, context) {
+      return {
+        label,
+        slugs: context
+          .query("public", { pool: "routable", sort: { field: "slug" } })
+          .map((entry) => entry.slug),
+      };
+    },
+  });
+  const plugin = definePlugin({
+    name: "combined-publication-index",
+    derivedViews: [view],
+    async planGeneratedOutputs({ derived }) {
+      const resolved = await derived.resolveWithDependencies(view, label);
+      return [
+        {
+          path: "derived/public-index.json",
+          content: JSON.stringify(resolved.value),
+          derivedViewIds: [view.id],
+          derivedDependencies: resolved.dependencies,
+        },
+      ];
+    },
+  });
+  const project = makeProject(
+    root,
+    memorySource({ "public.md": "---\npublish: true\n---\n\nPublic.\n" }),
+    undefined,
+    [plugin],
+  );
+
+  const inspection = await inspectPublication(project, {
+    workflow: "direct",
+    at: BUILD_TIME,
+  });
+  assert.equal(inspection.plan.deploy, true);
+  await fs.mkdir(path.join(root, "dist"), { recursive: true });
+  await fs.writeFile(path.join(root, "dist", "index.html"), "<html></html>");
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: inspection.plan.publicationFingerprint,
+    completedAt: BUILD_TIME,
+  });
+  assert.equal(
+    await silently(() => runPublish(project, options("gate"))),
+    true,
+  );
+
+  label = "second";
+  const changed = await inspectPublication(project, {
+    workflow: "direct",
+    at: BUILD_TIME,
+  });
+  assert.notEqual(
+    changed.plan.publicationFingerprint,
+    inspection.plan.publicationFingerprint,
+  );
+  assert.equal(changed.plan.deploy, true);
+  assert.equal(
+    await silently(() => runPublish(project, options("gate"))),
+    false,
+  );
 });

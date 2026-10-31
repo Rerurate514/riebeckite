@@ -51,7 +51,7 @@ The plan is JSON-serializable and contains:
 - `targets.public`, `targets.unlisted`, `targets.scheduled`, `targets.drafts`
 - `nextPublicationAt` — the earliest future `publishAt`
 - `changes` — added, changed, removed, unchanged, and `detected`
-- `publicationFingerprint` — a hash of routable entries plus public redirects
+- `publicationFingerprint` — a hash of routable entries, public redirects, and generated outputs (including derived views)
 - `workflow` and `approvals.pending`
 - `validation.issues`
 - `action` — `none`, `build-and-deploy`, or `blocked`

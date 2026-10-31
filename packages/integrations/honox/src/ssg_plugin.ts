@@ -7,6 +7,7 @@ import {
   createBuildOutputMarker,
   publicationFingerprint as fingerprintPublication,
   publicationEntriesFromManifest,
+  publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
   serializeBuildOutputMarker,
 } from "@riebeckite/core";
@@ -513,6 +514,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           ? fingerprintPublication(
               publicationEntriesFromManifest(manifest),
               publicationRedirectsFromManifest(manifest),
+              publicationOutputsFromManifest(manifest),
             )
           : undefined;
         pendingOutputCache = {

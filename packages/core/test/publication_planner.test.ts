@@ -9,11 +9,13 @@ import {
   createPublicationSnapshot,
   emptyPublicationApprovals,
   type PublicationEntry,
+  type PublicationOutput,
   type PublicationRedirect,
   parseBuildOutputMarker,
   parsePublicationApprovals,
   parsePublicationHistory,
   publicationEntriesFromManifest,
+  publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
   resolveConfig,
   resolvePublicationWorkflowState,
@@ -57,12 +59,14 @@ function plan(
     approvals?: ReturnType<typeof emptyPublicationApprovals>;
     workflow?: "direct" | "approved";
     redirects?: readonly PublicationRedirect[];
+    outputs?: readonly PublicationOutput[];
   } = {},
 ) {
   return createPublicationPlan({
     buildTime: options.buildTime ?? NOW,
     entries,
     redirects: options.redirects,
+    outputs: options.outputs,
     previous: options.previous,
     approvals: options.approvals,
     workflow: options.workflow,
@@ -202,6 +206,24 @@ test("redirect changes alone trigger a deployment", () => {
   });
   assert.equal(after.changes.detected, true);
   assert.deepEqual(after.reasons, ["redirects-changed"]);
+});
+
+test("generated output changes alone trigger a deployment", () => {
+  const entries = [note("a", "public")];
+  const outputs: PublicationOutput[] = [
+    { path: "hover-preview/index.json", fingerprint: "first" },
+  ];
+  const snapshot = createPublicationSnapshot(plan(entries, { outputs }), {
+    runId: "run-1",
+    publishedAt: NOW,
+  });
+  const after = plan(entries, {
+    previous: snapshot,
+    outputs: [{ path: "hover-preview/index.json", fingerprint: "second" }],
+  });
+  assert.equal(after.changes.detected, true);
+  assert.deepEqual(after.reasons, ["outputs-changed"]);
+  assert.equal(after.deploy, true);
 });
 
 test("duplicate public permalinks block deployment", () => {
@@ -364,6 +386,29 @@ test("manifest conversion only exposes public redirects with a live target", () 
     bySlug: new Map([["a", { permalink: "/a" }]]),
   } as never);
   assert.deepEqual(redirects, [{ from: "/old", to: "/a", status: 301 }]);
+});
+
+test("manifest generated outputs contribute stable fingerprints", () => {
+  const outputs = publicationOutputsFromManifest({
+    generatedOutputs: [
+      { path: "b.json", content: "second", owner: "plugin" },
+      { path: "a.json", content: new Uint8Array([1, 2, 3]), owner: "plugin" },
+    ],
+  } as never);
+  assert.deepEqual(
+    outputs.map((output) => output.path),
+    ["a.json", "b.json"],
+  );
+  assert.notEqual(outputs[0]?.fingerprint, outputs[1]?.fingerprint);
+  assert.deepEqual(
+    outputs,
+    publicationOutputsFromManifest({
+      generatedOutputs: [
+        { path: "a.json", content: new Uint8Array([1, 2, 3]), owner: "plugin" },
+        { path: "b.json", content: "second", owner: "plugin" },
+      ],
+    } as never),
+  );
 });
 
 test("the build output marker round-trips with its publication fingerprint", () => {

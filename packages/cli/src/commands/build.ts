@@ -10,6 +10,7 @@ import {
   NoopTracer,
   publicationEntriesFromManifest,
   publicationFingerprint,
+  publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
 } from "@riebeckite/core";
 import type { NoChangeFastPathOutputMetrics } from "@riebeckite/honox";
@@ -194,6 +195,7 @@ export async function runBuild(
               publicationFingerprint: publicationFingerprint(
                 publicationEntriesFromManifest(manifest),
                 publicationRedirectsFromManifest(manifest),
+                publicationOutputsFromManifest(manifest),
               ),
             }),
       });

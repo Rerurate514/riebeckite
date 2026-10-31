@@ -20,6 +20,11 @@ export type PublicationEntry = {
   readonly contentFingerprint: string;
 };
 
+export type PublicationOutput = {
+  readonly path: string;
+  readonly fingerprint: string;
+};
+
 export type PublicationRedirect = {
   readonly from: string;
   readonly to: string;
@@ -70,6 +75,20 @@ export function publicationEntryFromManifestEntry(
   };
 }
 
+export function publicationOutputsFromManifest(
+  manifest: Pick<ContentManifest, "generatedOutputs">,
+): PublicationOutput[] {
+  return manifest.generatedOutputs
+    .map((output) => ({
+      path: output.path,
+      fingerprint: crypto
+        .createHash("sha256")
+        .update(output.content)
+        .digest("hex"),
+    }))
+    .sort((left, right) => left.path.localeCompare(right.path));
+}
+
 export function publicationRedirectsFromManifest(
   manifest: Pick<ContentManifest, "publicRedirects" | "bySlug">,
 ): PublicationRedirect[] {
@@ -89,6 +108,7 @@ export function isDeployableEntry(entry: PublicationEntry): boolean {
 export function publicationFingerprint(
   entries: readonly PublicationEntry[],
   redirects: readonly PublicationRedirect[] = [],
+  outputs: readonly PublicationOutput[] = [],
 ): string {
   return hashJson({
     entries: entries
@@ -103,6 +123,9 @@ export function publicationFingerprint(
       .sort((left, right) => left.slug.localeCompare(right.slug)),
     redirects: [...redirects].sort((left, right) =>
       left.from.localeCompare(right.from),
+    ),
+    outputs: [...outputs].sort((left, right) =>
+      left.path.localeCompare(right.path),
     ),
   });
 }

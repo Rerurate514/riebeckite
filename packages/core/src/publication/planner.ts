@@ -1,6 +1,8 @@
 import {
+  canonicalJson,
   isDeployableEntry,
   type PublicationEntry,
+  type PublicationOutput,
   type PublicationRedirect,
   type PublicationSnapshot,
   publicationFingerprint,
@@ -79,6 +81,7 @@ export type PublicationPlannerInput = {
   readonly buildTime: Date | string;
   readonly entries: readonly PublicationEntry[];
   readonly redirects?: readonly PublicationRedirect[];
+  readonly outputs?: readonly PublicationOutput[];
   readonly previous?: PublicationSnapshot;
   readonly approvals?: PublicationApprovals;
   readonly workflow?: PublicationWorkflowMode;
@@ -100,7 +103,11 @@ export function createPublicationPlan(
   const workflowMode = input.workflow ?? "direct";
   const previous = input.previous;
   const deployable = entries.filter(isDeployableEntry);
-  const fingerprint = publicationFingerprint(entries, redirects);
+  const fingerprint = publicationFingerprint(
+    entries,
+    redirects,
+    input.outputs ?? [],
+  );
 
   const previousBySlug = new Map(
     (previous?.entries ?? []).map((entry) => [entry.slug, entry]),
@@ -111,6 +118,9 @@ export function createPublicationPlan(
     previous !== undefined &&
     previous.publicationFingerprint !== fingerprint &&
     !entryChanges.detected;
+  const redirectsChanged =
+    previous !== undefined &&
+    canonicalJson(redirects) !== canonicalJson(previous.redirects);
   const changes: PublicationChanges = fingerprintChanged
     ? { ...entryChanges, detected: true }
     : entryChanges;
@@ -164,7 +174,9 @@ export function createPublicationPlan(
     if (changes.added.length > 0) reasons.push("entries-added");
     if (changes.changed.length > 0) reasons.push("entries-changed");
     if (changes.removed.length > 0) reasons.push("entries-removed");
-    if (fingerprintChanged) reasons.push("redirects-changed");
+    if (fingerprintChanged) {
+      reasons.push(redirectsChanged ? "redirects-changed" : "outputs-changed");
+    }
   } else if (nextPublicationAt !== undefined) {
     reasons.push("awaiting-scheduled-publication");
   } else {

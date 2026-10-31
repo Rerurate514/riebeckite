@@ -144,7 +144,7 @@ const pluginRuntimeEntries = {
 ${[...runtimeEntries.entries()]
   .map(
     ([id, runtime]) =>
-      `  ${JSON.stringify(id)}: { moduleSpecifier: ${JSON.stringify(runtime.moduleSpecifier)}, exportName: ${JSON.stringify(runtime.exportName ?? "default")}${runtime.options === undefined ? "" : `, options: ${serializePublicClientConfig(runtime.options)}`} }`,
+      `  ${JSON.stringify(id)}: { moduleSpecifier: ${JSON.stringify(runtime.moduleSpecifier)}, exportName: ${JSON.stringify(runtime.exportName ?? "default")}, load: () => import(${JSON.stringify(runtime.moduleSpecifier)})${runtime.options === undefined ? "" : `, options: ${serializePublicClientConfig(runtime.options)}`} }`,
   )
   .join(",\n")}
 };
@@ -155,7 +155,7 @@ async function ensurePluginRuntimes(ids) {
     if (!load) {
       const entry = pluginRuntimeEntries[id];
       if (!entry) throw new Error("Unknown plugin runtime: " + id);
-      load = import(entry.moduleSpecifier).then((module) => {
+      load = entry.load().then((module) => {
         const factory = module[entry.exportName];
         if (typeof factory !== "function") throw new Error("Plugin runtime \\"" + id + "\\" did not export a factory.");
         const definition = factory(entry.options);

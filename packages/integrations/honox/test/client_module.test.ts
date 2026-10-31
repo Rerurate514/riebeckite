@@ -137,7 +137,10 @@ test("client module loads declared plugin runtimes lazily", async () => {
     module as string,
     /await ensurePluginRuntimes\(\["calculator"\]\)/,
   );
-  assert.match(module as string, /import\(entry\.moduleSpecifier\)/);
+  assert.match(
+    module as string,
+    /load: \(\) => import\("calculator-runtime"\)/,
+  );
   assert.doesNotMatch(module as string, /^import .*calculator-runtime/m);
 });
 

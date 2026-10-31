@@ -99,6 +99,58 @@ test("client module splits entries gated by a page marker", async () => {
   );
 });
 
+test("client module loads declared plugin runtimes lazily", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        clientEntries: [
+          {
+            pluginName: "calculator",
+            moduleSpecifier: "calculator-entry",
+            initializerArguments: "context",
+            presenceSelector: "[data-calculator]",
+            runtimeEntries: [
+              {
+                id: "calculator",
+                moduleSpecifier: "calculator-runtime",
+                exportName: "createCalculatorRuntime",
+                options: { precision: 2 },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /@riebeckite\/runtime\/client/);
+  assert.match(module as string, /InteractiveRuntimeRegistry/);
+  assert.match(module as string, /createClientRuntimeHost/);
+  assert.match(module as string, /moduleSpecifier: "calculator-runtime"/);
+  assert.match(module as string, /exportName: "createCalculatorRuntime"/);
+  assert.match(module as string, /options: \{"precision":2\}/);
+  assert.match(
+    module as string,
+    /await ensurePluginRuntimes\(\["calculator"\]\)/,
+  );
+  assert.match(module as string, /import\(entry\.moduleSpecifier\)/);
+  assert.doesNotMatch(module as string, /^import .*calculator-runtime/m);
+});
+
+test("client module omits runtime support when no plugin declares it", async () => {
+  const plugin = riebeckiteClientModule(() => config);
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.doesNotMatch(module as string, /@riebeckite\/runtime/);
+  assert.doesNotMatch(module as string, /ensurePluginRuntimes/);
+});
+
 test("client module omits the SPA runtime when disabled", async () => {
   const plugin = riebeckiteClientModule(() => config);
   const load = hookHandler(plugin.load);

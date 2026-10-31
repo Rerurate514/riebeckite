@@ -9,6 +9,13 @@ export type PluginAsset = {
   moduleSpecifier: string;
 };
 
+export type PluginRuntimeEntry<TOptions extends JsonValue = JsonValue> = {
+  id: string;
+  moduleSpecifier: string;
+  exportName?: string;
+  options?: TOptions;
+};
+
 export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   pluginName: string;
   moduleSpecifier: string;
@@ -16,6 +23,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   scope?: ClientLifecycleScope;
   initializerArguments?: ClientInitializerArguments;
   presenceSelector?: string;
+  runtimeEntries?: readonly PluginRuntimeEntry[];
   /**
    * Configuration intentionally made available to this browser entry.
    *
@@ -47,6 +55,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
   scope?: ClientLifecycleScope,
   initializerArguments?: ClientInitializerArguments,
   presenceSelector?: string,
+  runtimeEntries?: readonly PluginRuntimeEntry[],
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
@@ -56,6 +65,7 @@ export function createClientEntry<TPublicConfig extends JsonValue>(
     ...(scope === undefined ? {} : { scope }),
     ...(initializerArguments === undefined ? {} : { initializerArguments }),
     ...(presenceSelector === undefined ? {} : { presenceSelector }),
+    ...(runtimeEntries === undefined ? {} : { runtimeEntries }),
   };
 }
 

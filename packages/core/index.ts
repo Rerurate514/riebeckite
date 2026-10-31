@@ -447,6 +447,7 @@ export type {
   PluginAsset,
   PluginAssetKind,
   PluginClientEntry,
+  PluginRuntimeEntry,
 } from "./src/types/plugin_asset.js";
 export {
   createClientEntry,

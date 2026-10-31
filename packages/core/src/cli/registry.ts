@@ -142,6 +142,14 @@ function buildRegistry(
     for (const alias of registration.command.aliases ?? []) {
       const normalized = normalizeCommandId(alias);
       assertCommandId(normalized, "alias");
+      if (
+        registration.namespace !== undefined &&
+        commandPathSegments(normalized)[0] !== registration.namespace
+      ) {
+        throw new CliCommandConflictError(
+          `Plugin command alias ${normalized} must be namespaced under ${registration.namespace}.`,
+        );
+      }
       if (ids.has(normalized)) {
         throw new CliCommandConflictError(
           `Command alias ${normalized} conflicts with a command id.`,

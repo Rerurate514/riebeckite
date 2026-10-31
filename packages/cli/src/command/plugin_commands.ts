@@ -1,5 +1,4 @@
 import {
-  CliCommandError,
   type CliCommandRegistry,
   registerPluginCliExtension,
 } from "@riebeckite/core";
@@ -26,11 +25,11 @@ export function discoverPluginCommands(
   let current = registry;
   const failures: PluginCommandFailure[] = [];
   for (const plugin of project.config.plugins) {
-    if (!plugin.cli) continue;
     try {
-      current = registerPluginCliExtension(current, plugin.name, plugin.cli);
+      const extension = plugin.cli;
+      if (!extension) continue;
+      current = registerPluginCliExtension(current, plugin.name, extension);
     } catch (error) {
-      if (error instanceof CliCommandError) throw error;
       failures.push({ pluginId: plugin.name, error });
     }
   }

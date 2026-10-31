@@ -36,7 +36,7 @@ export async function runCli(options: RunCliOptions): Promise<number> {
     options.stdout ?? ((text: string) => process.stdout.write(text));
   const stderr =
     options.stderr ?? ((text: string) => process.stderr.write(text));
-  const json = argv.includes("--json");
+  let json = argv.includes("--json");
   let projectPromise: Promise<CliProjectContext> | undefined;
   const loadProject = () =>
     (projectPromise ??= import("../application_root.js").then((module) =>
@@ -100,6 +100,10 @@ export async function runCli(options: RunCliOptions): Promise<number> {
     return 0;
   }
 
+  if (resolution.kind === "command" && !resolution.registration.command.raw) {
+    json = resolution.input.options.json === true;
+  }
+
   const controller = new AbortController();
   const onSigint = () => {
     controller.abort();
@@ -152,6 +156,8 @@ export async function runCli(options: RunCliOptions): Promise<number> {
           json,
           command: commandPath(resolution),
         });
+      } else {
+        stderr(`Cleanup failed: ${renderCliError(error)}\n`);
       }
     }
   }

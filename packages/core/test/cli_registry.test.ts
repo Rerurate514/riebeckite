@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import type { CliCommandSpec } from "../src/cli/index.js";
 import {
   cliArgument,
   cliBoolean,
@@ -20,13 +21,15 @@ import {
   resolveCliCommand,
   suggest,
 } from "../src/cli/index.js";
-import type { CliCommandSpec } from "../src/cli/index.js";
 
 const handler = () => undefined;
 
 function command(
   id: string,
-  { handler: commandHandler = handler, ...options }: Partial<CliCommandSpec> = {},
+  {
+    handler: commandHandler = handler,
+    ...options
+  }: Partial<CliCommandSpec> = {},
 ) {
   return { summary: `${id} summary`, ...options, id, handler: commandHandler };
 }
@@ -53,14 +56,20 @@ test("registry exposes nested commands and finds them by path", () => {
     registerCliCommand(registry, command("create")),
     command("create site"),
   );
-  assert.equal(findCommandByPath(next, "create site")?.command.id, "create site");
+  assert.equal(
+    findCommandByPath(next, "create site")?.command.id,
+    "create site",
+  );
   assert.equal(next.nodes[0]?.name, "create");
   assert.equal(next.nodes[0]?.children[0]?.name, "site");
   assert.equal(next.nodes[0]?.children[0]?.path, "create site");
 });
 
 test("registry rejects duplicate ids and aliases", () => {
-  const registry = registerCliCommand(createCliCommandRegistry(), command("build"));
+  const registry = registerCliCommand(
+    createCliCommandRegistry(),
+    command("build"),
+  );
   assert.throws(
     () => registerCliCommand(registry, command("build")),
     /Duplicate command id/,
@@ -74,7 +83,8 @@ test("registry rejects duplicate ids and aliases", () => {
     command("dev", { aliases: ["serve"] }),
   );
   assert.throws(
-    () => registerCliCommand(withAlias, command("preview", { aliases: ["serve"] })),
+    () =>
+      registerCliCommand(withAlias, command("preview", { aliases: ["serve"] })),
     /alias serve is registered by both/,
   );
 });
@@ -84,7 +94,10 @@ test("registry rejects invalid names and namespaced collisions", () => {
     () => registerCliCommand(createCliCommandRegistry(), command("Build")),
     /lowercase kebab-case/,
   );
-  const withBuiltin = registerCliCommand(createCliCommandRegistry(), command("acme"));
+  const withBuiltin = registerCliCommand(
+    createCliCommandRegistry(),
+    command("acme"),
+  );
   assert.throws(
     () =>
       registerPluginCliExtension(withBuiltin, "acme", {
@@ -112,12 +125,23 @@ test("registry rejects invalid names and namespaced collisions", () => {
       }),
     /namespace acme conflicts with alias/,
   );
+  assert.throws(
+    () =>
+      registerPluginCliExtension(createCliCommandRegistry(), "acme", {
+        commands: [command("hello", { aliases: ["deploy custom"] })],
+      }),
+    /must be namespaced under acme/,
+  );
 });
 
 test("plugin extension namespaces resolve and report plugin ownership", () => {
-  const registry = registerPluginCliExtension(createCliCommandRegistry(), "acme", {
-    commands: [command("hello"), command("hello world")],
-  });
+  const registry = registerPluginCliExtension(
+    createCliCommandRegistry(),
+    "acme",
+    {
+      commands: [command("hello"), command("hello world")],
+    },
+  );
   const resolution = resolveCliCommand(registry, ["acme", "hello", "world"]);
   assert.equal(resolution.kind, "command");
   if (resolution.kind === "command") {
@@ -128,12 +152,18 @@ test("plugin extension namespaces resolve and report plugin ownership", () => {
 });
 
 test("resolution handles root help, version, aliases and nested help", () => {
-  const registry = registerCliCommand(createCliCommandRegistry(), command("build"));
+  const registry = registerCliCommand(
+    createCliCommandRegistry(),
+    command("build"),
+  );
   assert.equal(resolveCliCommand(registry, []).kind, "root-help");
   assert.equal(resolveCliCommand(registry, ["--help"]).kind, "root-help");
   assert.equal(resolveCliCommand(registry, ["-v"]).kind, "version");
   assert.equal(resolveCliCommand(registry, ["build", "--help"]).kind, "help");
-  const alias = registerCliCommand(registry, command("dev", { aliases: ["serve"] }));
+  const alias = registerCliCommand(
+    registry,
+    command("dev", { aliases: ["serve"] }),
+  );
   assert.equal(resolveCliCommand(alias, ["serve"]).kind, "command");
 });
 
@@ -175,6 +205,27 @@ test("option parsing supports types, shorts, defaults, repeats and negation", ()
   });
 });
 
+test("short options reject another option as their value", () => {
+  const registry = registerCliCommand(
+    createCliCommandRegistry(),
+    command("demo", {
+      options: [
+        cliString("output", { short: "o" }),
+        cliNumber("count", { short: "n" }),
+        cliBoolean("full", { short: "f" }),
+      ],
+    }),
+  );
+  assert.throws(
+    () => resolveCliCommand(registry, ["demo", "-o", "--full"]),
+    /-o requires a value/,
+  );
+  const resolution = resolveCliCommand(registry, ["demo", "-n", "-2"]);
+  assert.equal(resolution.kind, "command");
+  if (resolution.kind !== "command") return;
+  assert.equal(resolution.input.options.count, -2);
+});
+
 test("double dash stops option parsing", () => {
   const registry = registerCliCommand(
     createCliCommandRegistry(),
@@ -183,7 +234,12 @@ test("double dash stops option parsing", () => {
       options: [cliBoolean("verbose", { short: "v" })],
     }),
   );
-  const resolution = resolveCliCommand(registry, ["run", "--", "--verbose", "-v"]);
+  const resolution = resolveCliCommand(registry, [
+    "run",
+    "--",
+    "--verbose",
+    "-v",
+  ]);
   assert.equal(resolution.kind, "command");
   if (resolution.kind !== "command") return;
   assert.deepEqual(resolution.input.options.verbose, false);
@@ -234,9 +290,13 @@ test("invalid arguments and options report useful errors", () => {
     () => resolveCliCommand(registry, ["deploy", "setup", "--provider", "wat"]),
     /requires one of: github, cloudflare/,
   );
-  assert.throws(() => resolveCliCommand(registry, ["deply"]), /Unknown command: deply/);
   assert.throws(
-    () => resolveCliCommand(registry, ["deploy", "setup", "--providr", "github"]),
+    () => resolveCliCommand(registry, ["deply"]),
+    /Unknown command: deply/,
+  );
+  assert.throws(
+    () =>
+      resolveCliCommand(registry, ["deploy", "setup", "--providr", "github"]),
     /Unknown option: --providr/,
   );
 });
@@ -255,7 +315,9 @@ test("help is generated from the same metadata", () => {
       arguments: [cliArgument("target", { description: "Build target." })],
       options: [
         cliBoolean("full", { description: "Run the full build." }),
-        cliStringWithDefault("output", "dist", { description: "Output directory." }),
+        cliStringWithDefault("output", "dist", {
+          description: "Output directory.",
+        }),
       ],
       examples: [cliExample("riebeckite build .", "Build here")],
     }),
@@ -263,7 +325,9 @@ test("help is generated from the same metadata", () => {
   const root = formatRootHelp(registry, { width: 60, version: "1.2.3" });
   assert.match(root, /Riebeckite CLI 1\.2\.3/);
   assert.match(root, /build\s+build summary/);
-  const help = formatCommandHelp(registry, registry.registrations[0]?.command!, {
+  const registration = registry.registrations[0];
+  assert.ok(registration);
+  const help = formatCommandHelp(registry, registration.command, {
     width: 60,
   });
   assert.match(help, /Usage: riebeckite build \[target\] \[options\]/);
@@ -291,5 +355,12 @@ test("completion is generated without executing handlers", () => {
   assert.match(bash, /--format=json/);
   assert.match(zsh, /#compdef riebeckite/);
   assert.match(powershell, /Register-ArgumentCompleter -Native/);
+
+  const pluginRegistry = registerPluginCliExtension(registry, "acme", {
+    commands: [command("hello world")],
+  });
+  assert.match(generateCompletion(pluginRegistry, "bash"), /acme hello/);
+  assert.match(generateCompletion(pluginRegistry, "zsh"), /acme hello/);
+  assert.match(generateCompletion(pluginRegistry, "powershell"), /acme hello/);
   assert.equal(calls, 0);
 });

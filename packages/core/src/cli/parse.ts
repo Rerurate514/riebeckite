@@ -370,7 +370,11 @@ function parseShortOption(
     if (value.length === 0) {
       value = tokens[index + 1] ?? "";
       consumed = 1;
-      if (!value) {
+      if (
+        !value ||
+        (value.startsWith("-") &&
+          !(definition.type === "number" && /^-\d/u.test(value)))
+      ) {
         throw new CliUsageError(`-${short} requires a value.`, {
           commandPath: command.id,
           usage: ROOT_USAGE,

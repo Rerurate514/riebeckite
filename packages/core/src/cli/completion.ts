@@ -163,10 +163,7 @@ function bashCompletion(
         )};;`,
     )
     .join("\n");
-  const pathCases = [
-    ...new Set(["", ...visibleCommands(registry).map((command) => command.id)]),
-  ]
-    .sort((left, right) => (left === "" ? -1 : left.localeCompare(right)))
+  const pathCases = allPaths(registry)
     .map(
       (path) =>
         `    ${quote(path)}) COMPREPLY=( $(compgen -W ${quote(
@@ -277,10 +274,7 @@ function powershellCompletion(
         `      ${powershellSingleQuote(`${transition.from} ${transition.token}`)} { $path = ${powershellSingleQuote(transition.to)} }`,
     )
     .join("\n");
-  const pathCases = [
-    ...new Set(["", ...visibleCommands(registry).map((command) => command.id)]),
-  ]
-    .sort((left, right) => (left === "" ? -1 : left.localeCompare(right)))
+  const pathCases = allPaths(registry)
     .map(
       (path) =>
         `    ${powershellSingleQuote(path)} { @(${wordsForPath(registry, path)

@@ -49,7 +49,7 @@ context.track({
 });
 ```
 
-`content` と `external` は runtime snapshot を利用できるときに照合します。`planGeneratedOutputs` 中は、`file`・`frontmatter`・条件を明示した `query`・`graph` も、その出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全に Cache Miss になります。frontmatter には `property` を、query には結果集合を決めるすべてのプロパティを指定してください。ファイルの追加・削除・内容変更、unlisted や private を含む全 manifest エントリの query メンバー変化、graph edge の変化はキャッシュ値を無効にします。条件を明示しない query はキャッシュされません。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
+`content` と `external` は runtime snapshot を利用できるときに照合します。`planGeneratedOutputs` 中は、`file`・`frontmatter`・条件を明示した `query`・`graph` も、その出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全に Cache Miss になります。`content` の id は content index で解決し、元の Markdown を fingerprint 化するため、本文編集・リネーム・alias の付け替えで無効になります。frontmatter には `property` を、query には結果集合を決めるすべてのプロパティを指定してください。ファイルの追加・削除・内容変更、unlisted や private を含む全 manifest エントリの query メンバー変化と公開状態の変化、graph edge の変化はキャッシュ値を無効にします。条件を明示しない query はキャッシュされません。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
 
 Content Query では、実際に読んだエントリだけでなく公開結果集合全体を fingerprint 化してください。追加・削除・フィルタやソートに使う Frontmatter・公開状態の変更も含めます。query が受け付けるプロパティ名は `content-query` 出力依存関係と同じで、`file.name`・`file.path`・`file.slug`・`file.folder`・`file.title`・`file.link`・`file.permalink`・`file.tags`・`file.size`・`file.ctime`・`file.mtime`・`file.links`・`file.backlinks`・`file.content`、または frontmatter のパスです。`file.content` はレンダリング後の本文を fingerprint 化するため、本文検索を含む述語も安全にキャッシュできます。ソートに使うプロパティも必ず宣言してください。Core は公開状態にかかわらず全 manifest エントリを fingerprint 化するため、routable な計画から見える unlisted エントリの追加・削除・編集も値を無効にします。JavaScript の状態、設定、または宣言していないプロパティに依存する述語は追跡できません。query を過少に宣言せず `unknown` を使ってください。
 
@@ -59,7 +59,7 @@ External 依存関係は既存の `resolveExternalDependencies` フックを使�
 
 Derived View は自動ではシリアライズされません。Worker リクエストからも解決できますが、リクエスト時の解決では永続キャッシュを使わないため、小さい処理にとどめてください。Generated Output の計画では `derived` コンテキストから解決できます。値を公開するプラグインは、`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別する必要があります。公開境界が明示的でない限り、draft、scheduled、unlisted をシリアライズしてはいけません。
 
-Generated Output には、View のトレース外にある入力のために通常の `OutputDependency` を宣言できます。Derived View の追跡は値キャッシュ、Output Dependency は静的出力の無効化を担います。Core は解決した View ID ごとにバージョン付きの `derived-view` 出力依存関係を付与するため、プリミティブな Content 依存が変わらなくても、定義や子 View のバージョン変化で所有出力が再生成されます。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
+Generated Output には、View のトレース外にある入力のために通常の `OutputDependency` を宣言できます。Derived View の追跡は値キャッシュ、Output Dependency は静的出力の無効化を担います。Core は解決した View ID ごとにバージョン付きの `derived-view` 出力依存関係を付与するため、プリミティブな Content 依存が変わらなくても、定義や子 View のバージョン変化で所有出力が再生成されます。重複した View ID は重複排除され、未登録の View を参照した出力計画はバージョンなしの依存関係を出さずに失敗します。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
 
 Generated Output が View の値を使う場合は、依存関係のトレースを保持して出力へ渡します。
 

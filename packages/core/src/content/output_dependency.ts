@@ -257,28 +257,25 @@ function findChangedDerivedView(
   output: OutputDescriptor,
   previous: OutputDescriptor | undefined,
 ): OutputChangeReason | undefined {
-  const current = output.dependencies.filter(isDerivedViewDependency);
-  if (current.length === 0) return undefined;
+  const current = new Map(
+    output.dependencies
+      .filter(isDerivedViewDependency)
+      .map((dependency) => [dependency.id, dependency.version]),
+  );
   const previousViews = new Map(
     (previous?.dependencies ?? [])
       .filter(isDerivedViewDependency)
       .map((dependency) => [dependency.id, dependency.version]),
   );
-  for (const dependency of current) {
-    if (previousViews.get(dependency.id) !== dependency.version) {
-      return {
-        type: "derived-view",
-        id: dependency.id,
-        version: dependency.version,
-      };
+  for (const [id, version] of current) {
+    if (previousViews.get(id) !== version) {
+      return { type: "derived-view", id, version };
     }
   }
-  if (previousViews.size !== current.length) {
-    return {
-      type: "derived-view",
-      id: current[0].id,
-      version: current[0].version,
-    };
+  for (const [id, version] of previousViews) {
+    if (!current.has(id)) {
+      return { type: "derived-view", id, version };
+    }
   }
   return undefined;
 }

@@ -110,10 +110,14 @@ export class PluginRuntime {
       cache: () => this.derivedCache(),
       dependencyFingerprint: (dependency) => {
         if (dependency.type === "content") {
-          const content = this.contentIndex.get(dependency.id);
-          return content === undefined
+          const target = this.contentIndex.get(dependency.id.toLowerCase());
+          if (target === undefined) return undefined;
+          const fingerprint = this.derivedFiles.get(
+            normalizeDerivedPath(`${target}.md`),
+          );
+          return fingerprint === undefined
             ? undefined
-            : fingerprintExternalValue(content);
+            : fingerprintDerivedValue({ target, fingerprint });
         }
         if (dependency.type === "external") {
           return this.externalDependencies.get(dependency.id)?.fingerprint;
@@ -139,6 +143,8 @@ export class PluginRuntime {
                 values: properties.map((property) =>
                   contentQueryValue(entry, property),
                 ),
+                routable: entry.publishing.routable,
+                discoverable: entry.publishing.discoverable,
               }))
               .toSorted((left, right) => left.slug.localeCompare(right.slug)),
           );
@@ -546,24 +552,34 @@ export class PluginRuntime {
         );
         const sink = this.generatedOutputs.sinkFor(plugin.name);
         for (const output of outputs) {
+          const viewIds = [...new Set(output.derivedViewIds ?? [])];
+          const viewDependencies = viewIds.map((id) => {
+            const version = this.derivedViews.versionOf(id);
+            if (version === undefined) {
+              throw new Error(
+                `Generated output "${output.path}" from "${plugin.name}" references unregistered Derived View "${id}".`,
+              );
+            }
+            return { type: "derived-view" as const, id, version };
+          });
           const dependencies = [
             ...(output.dependencies ?? []),
             ...derivedDependenciesToOutputDependencies(
               output.derivedDependencies ?? [],
             ),
-            ...(output.derivedViewIds ?? []).map((id) => ({
-              type: "derived-view" as const,
-              id,
-              version: this.derivedViews.versionOf(id) ?? "unknown",
-            })),
+            ...viewDependencies,
           ];
           if (dependencies.length === 0) {
             throw new Error(
               `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
             );
           }
-          sink.emit({ ...output, dependencies });
-          for (const viewId of output.derivedViewIds ?? []) {
+          sink.emit({
+            ...output,
+            dependencies,
+            ...(viewIds.length === 0 ? {} : { derivedViewIds: viewIds }),
+          });
+          for (const viewId of viewIds) {
             const paths = this.derivedOutputLinks.get(viewId) ?? new Set();
             paths.add(output.path);
             this.derivedOutputLinks.set(viewId, paths);

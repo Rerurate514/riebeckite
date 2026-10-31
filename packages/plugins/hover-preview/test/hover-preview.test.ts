@@ -66,7 +66,14 @@ function previewOutput(content: Awaited<ReturnType<typeof manifest>>) {
   );
   assert.ok(output);
   assert.equal(output.owner, "hover-preview");
-  assert.deepEqual(output.dependencies, [{ type: "global" }]);
+  assert.deepEqual(output.dependencies, [
+    { type: "global" },
+    {
+      type: "derived-view",
+      id: "hover-preview.index",
+      version: "hover-preview-v1",
+    },
+  ]);
   return output;
 }
 

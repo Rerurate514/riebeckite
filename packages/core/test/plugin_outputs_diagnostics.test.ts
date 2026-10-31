@@ -911,6 +911,37 @@ test("derived dependencies are validated against the current build snapshot", as
       "second",
     );
     assert.deepEqual(cacheStatuses.splice(0), ["miss", "miss", "hit"]);
+
+    computed = "first";
+    const content = defineDerivedView<null, string>({
+      id: "test.content-dependency",
+      version: "1",
+      compute(_input, context) {
+        context.track({ type: "content", id: "note" });
+        return computed;
+      },
+    });
+    assert.equal(
+      await build(content, "content-plan", {
+        "note.md": "---\ntitle: One\npublish: true\n---\nfirst body\n",
+      }),
+      "first",
+    );
+    computed = "second";
+    assert.equal(
+      await build(content, "content-plan", {
+        "note.md": "---\ntitle: One\npublish: true\n---\nsecond body\n",
+      }),
+      "second",
+    );
+    computed = "third";
+    assert.equal(
+      await build(content, "content-plan", {
+        "note.md": "---\ntitle: One\npublish: true\n---\nsecond body\n",
+      }),
+      "second",
+    );
+    assert.deepEqual(cacheStatuses.splice(0), ["miss", "miss", "hit"]);
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }
@@ -984,6 +1015,80 @@ test("view definition versions invalidate generated outputs across builds", asyn
     const fourth = await build();
     assert.ok(!fourth.affected.includes("derived.txt"));
     assert.equal(fourth.reason, undefined);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("duplicate derived view ids are deduplicated and unknown ids fail", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-view-ids-"),
+  );
+  try {
+    const view = defineDerivedView<null, string>({
+      id: "test.duplicate-output",
+      version: "1",
+      compute() {
+        return "value";
+      },
+    });
+    const plugin = definePlugin({
+      name: "duplicate-view-plan",
+      derivedViews: [view],
+      planGeneratedOutputs() {
+        const ids = [view.id, view.id];
+        return [
+          {
+            path: "duplicate.txt",
+            content: "value",
+            dependencies: [{ type: "content", slug: "note" }],
+            derivedViewIds: ids,
+          },
+        ];
+      },
+    });
+    const manager = new ContentManager(memorySource(oneNote), [], {
+      config: contentTestConfig(directory),
+      plugins: [plugin],
+    });
+    await manager.build({ incremental: true });
+    await manager.getOutputChangeSet({ incremental: true });
+    await manager.dispose();
+    const secondManager = new ContentManager(memorySource(oneNote), [], {
+      config: contentTestConfig(directory),
+      plugins: [plugin],
+    });
+    await secondManager.build({ incremental: true });
+    const changes = await secondManager.getOutputChangeSet({
+      incremental: true,
+    });
+    await secondManager.dispose();
+    assert.ok(
+      !changes.affected.some((entry) => entry.path === "duplicate.txt"),
+    );
+
+    const unknownPlugin = definePlugin({
+      name: "unknown-view-plan",
+      planGeneratedOutputs() {
+        return [
+          {
+            path: "unknown.txt",
+            content: "value",
+            dependencies: [{ type: "global" }],
+            derivedViewIds: ["missing.view"],
+          },
+        ];
+      },
+    });
+    const unknownManager = new ContentManager(memorySource(oneNote), [], {
+      config: contentTestConfig(directory),
+      plugins: [unknownPlugin],
+    });
+    await assert.rejects(
+      unknownManager.build(),
+      /references unregistered Derived View "missing.view"/,
+    );
+    await unknownManager.dispose();
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }

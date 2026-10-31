@@ -36,6 +36,7 @@ npm exec riebeckite build
 | --- | --- |
 | 手元から Cloudflare Workers へ公開したい | [Cloudflare Workers](./cloudflare-workers.ja.md) |
 | GitHub への Push から自動公開したい | [GitHub Actions](./github-actions.ja.md) |
+| 公開計画、予約公開、承認、公開前検証を行いたい | [公開ワークフロー](./publication-workflow.ja.md) |
 | コンテンツとサイトを別リポジトリで運用したい | [コンテンツとサイトを分ける](./separate-content-repository.ja.md) |
 
 初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec riebeckite deploy` で手元から公開できます。`deploy` はビルドを行わないため、先に `npm exec riebeckite build` で `dist/` を作ります。すでに手元から公開しているサイトは、`npm exec riebeckite deploy setup` で GitHub Actions の継続デプロイを準備できます。

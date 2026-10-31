@@ -571,3 +571,24 @@ test("SSG emits standard Markdown images and tracks their file changes", async (
     readFile(path.join(distPath(root), "notes", "images", "sample.png")),
   );
 });
+
+test("SSG writes the publication build output marker", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "publication-marker-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const site = path.join(root, "site");
+  await createSite(site, {
+    title: "Marker",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+  });
+
+  await buildSite(site, "cold", leanBuildOptions);
+
+  const marker = JSON.parse(
+    await readFile(path.join(site, ".riebeckite", "build-output.json"), "utf8"),
+  ) as { outputDirectory?: string; publicationFingerprint?: string };
+  assert.equal(marker.outputDirectory, distPath(site));
+  assert.match(marker.publicationFingerprint ?? "", /^[a-f0-9]{64}$/u);
+});

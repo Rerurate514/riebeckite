@@ -25,6 +25,7 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | record --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
@@ -45,6 +46,7 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
+| `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
 
@@ -425,6 +427,20 @@ npm exec riebeckite build
 ```
 
 This is also useful when the build is slow or incremental reuse is suspect. In the default layout those caches live under `.riebeckite/`; a cache directory configured elsewhere is not removed by `clean`.
+
+## `publish`
+
+`publish` adds planning, scheduled publication, approval, artifact validation, and deploy diagnostics without changing `build` or `deploy`.
+
+```sh
+npm exec riebeckite publish plan --json
+npm exec riebeckite publish status
+npm exec riebeckite publish validate
+npm exec riebeckite publish run --execute --provider cloudflare-workers
+npm exec riebeckite publish approve <slug> --all
+```
+
+`plan` and `status` are read-only. `validate` exits non-zero when the plan has an error or the build artifact does not match the plan. `run` does not build or deploy unless `--execute` is present. `record` records an external CI deployment without deploying again. Approval is opt-in with `--require-approval` or `--workflow approved`; records live in `publication/approvals.json` and only a committed file on the deployed branch is trusted. See [Publication workflow](../guides/deployment/publication-workflow.md) for scheduling, hosting adapters, history, and CI.
 
 ## `deploy`
 

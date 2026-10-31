@@ -1,17 +1,17 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  BUILD_OUTPUT_MARKER_FILE,
+  type BuildOutputMarker,
+  createBuildOutputMarker,
+  parseBuildOutputMarker,
   resolveBuildOutputDirectory,
   resolveManagedStateRoot,
+  serializeBuildOutputMarker,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "./application_root.js";
 
-const BUILD_OUTPUT_MARKER_VERSION = 1;
-const BUILD_OUTPUT_MARKER_FILE = "build-output.json";
-
-type BuildOutputMarker = {
-  readonly outputDirectory: string;
-};
+export type { BuildOutputMarker };
 
 export function resolveBuildOutputMarkerPath(
   project: RiebeckiteProject,
@@ -30,20 +30,21 @@ export async function clearBuildOutputMarker(
 
 export async function writeBuildOutputMarker(
   project: RiebeckiteProject,
+  metadata: {
+    readonly publicationFingerprint?: string;
+    readonly completedAt?: Date | string;
+  } = {},
 ): Promise<void> {
   const markerPath = resolveBuildOutputMarkerPath(project);
   const outputDirectory = resolveBuildOutputDirectory(project.config);
   if (!markerPath || !outputDirectory) return;
 
-  const marker = `${JSON.stringify(
-    {
-      version: BUILD_OUTPUT_MARKER_VERSION,
+  const marker = serializeBuildOutputMarker(
+    createBuildOutputMarker({
       outputDirectory,
-      appRoot: project.appRoot,
-    },
-    null,
-    2,
-  )}\n`;
+      ...metadata,
+    }),
+  );
   const temporaryPath = `${markerPath}.${process.pid}.tmp`;
   await fs.mkdir(path.dirname(markerPath), { recursive: true });
   try {
@@ -64,19 +65,10 @@ export async function readBuildOutputMarker(
   if (!markerPath || !outputDirectory) return undefined;
 
   try {
-    const raw = await fs.readFile(markerPath, "utf8");
-    const parsed = JSON.parse(raw) as {
-      version?: unknown;
-      outputDirectory?: unknown;
-    };
-    if (parsed.version !== BUILD_OUTPUT_MARKER_VERSION) return undefined;
-    if (typeof parsed.outputDirectory !== "string") return undefined;
-    if (
-      path.resolve(parsed.outputDirectory) !== path.resolve(outputDirectory)
-    ) {
-      return undefined;
-    }
-    return { outputDirectory: parsed.outputDirectory };
+    return parseBuildOutputMarker(
+      JSON.parse(await fs.readFile(markerPath, "utf8")),
+      outputDirectory,
+    );
   } catch {
     return undefined;
   }

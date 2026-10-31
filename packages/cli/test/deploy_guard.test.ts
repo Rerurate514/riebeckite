@@ -96,6 +96,21 @@ test("the build output marker round-trips and rejects a mismatched output direct
   assert.equal(await readBuildOutputMarker(project), undefined);
 });
 
+test("the build output marker records the publication fingerprint", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root);
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: "fingerprint",
+    completedAt: "2026-01-10T00:00:00.000Z",
+  });
+  assert.deepEqual(await readBuildOutputMarker(project), {
+    outputDirectory: path.join(root, "dist"),
+    publicationFingerprint: "fingerprint",
+    completedAt: "2026-01-10T00:00:00.000Z",
+  });
+});
+
 test("deploy refuses build output that is not from a completed build", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));

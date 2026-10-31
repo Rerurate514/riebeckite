@@ -32,6 +32,7 @@ generates the publishable site into `dist/`. For a normal static site, that `dis
 | --- | --- |
 | Deploy to Cloudflare Workers by hand | [Cloudflare Workers](./cloudflare-workers.md) |
 | Deploy automatically from GitHub | [GitHub Actions](./github-actions.md) |
+| Plan, schedule, approve, and validate publications | [Publication workflow](./publication-workflow.md) |
 | Read articles from a separate repository in CI | [Separate content repository](./separate-content-repository.md) |
 | Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 

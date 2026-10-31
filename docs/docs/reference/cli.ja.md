@@ -25,6 +25,7 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | record --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
@@ -45,6 +46,7 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
 | `deploy` | 既存のビルド出力を Wrangler 経由で Cloudflare Workers に公開する。`--dry-run` はアップロードせずに検証する。`setup` は GitHub Actions による継続的デプロイを準備する。`domain` は Cloudflare Workers の Custom Domain を追加する | いいえ |
+| `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
 
@@ -410,6 +412,20 @@ npm exec riebeckite build
 ```
 
 ビルドが遅いときや、インクリメンタルな再利用が疑わしいときにも役立ちます。既定のレイアウトでは、これらのキャッシュは `.riebeckite/` 配下にあります。別の場所にキャッシュディレクトリを設定している場合、そのディレクトリは `clean` では削除されません。
+
+## `publish`
+
+`publish` は、`build` と `deploy` を変えずに、公開計画、予約公開、承認、成果物検証、デプロイ診断を追加します。
+
+```sh
+npm exec riebeckite publish plan --json
+npm exec riebeckite publish status
+npm exec riebeckite publish validate
+npm exec riebeckite publish run --execute --provider cloudflare-workers
+npm exec riebeckite publish approve <slug> --all
+```
+
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。承認は `--require-approval` または `--workflow approved` で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## `deploy`
 

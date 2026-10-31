@@ -40,6 +40,10 @@ export type Command =
   | { name: "build"; full: boolean }
   | { name: "clean"; scope: CleanScope }
   | { name: "deploy"; dryRun: boolean }
+  | {
+      name: "publish";
+      options: import("./commands/publish.js").PublishCommandOptions;
+    }
   | { name: "deploy-setup" }
   | { name: "deploy-domain" }
   | { name: "check" }
@@ -170,6 +174,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
       return { name: "deploy-domain" };
     }
   }
+  if (name === "publish") return parsePublishCommand(options);
   if (name === "inspect") return parseInspectCommand(options);
   if (name === "doctor") {
     return parseDoctorCommand(options);
@@ -183,8 +188,175 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | publish <plan | status | validate | run | approve | record> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
+}
+
+const PUBLISH_USAGE =
+  "Usage: riebeckite publish <plan|status|validate|run|approve|record> [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--require-approval] | publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | publish approve <slug...> [--all] [--by <name>] | publish record --provider <name>";
+
+function parsePublishCommand(options: readonly string[]): Command {
+  const [action, ...rest] = options;
+  if (
+    action !== "plan" &&
+    action !== "status" &&
+    action !== "validate" &&
+    action !== "run" &&
+    action !== "approve" &&
+    action !== "record"
+  ) {
+    throw new CliUsageError(PUBLISH_USAGE);
+  }
+
+  let json = false;
+  let at: string | undefined;
+  let provider: import("@riebeckite/core").HostingProvider | undefined;
+  let approvals: string | undefined;
+  let workflow: "direct" | "approved" = "direct";
+  let execute = false;
+  let force = false;
+  let trigger: import("@riebeckite/core").PublicationRunTrigger = "cli";
+  let all = false;
+  let approvedBy: string | undefined;
+  const slugs: string[] = [];
+
+  for (let index = 0; index < rest.length; index += 1) {
+    const option = rest[index];
+    if (option === "--json") {
+      if (json) throw new CliUsageError("Duplicate publish option: --json.");
+      json = true;
+      continue;
+    }
+    if (option === "--at") {
+      const value = rest[index + 1];
+      if (!value || value.startsWith("-") || Number.isNaN(Date.parse(value))) {
+        throw new CliUsageError("--at requires an ISO 8601 date.");
+      }
+      if (at !== undefined)
+        throw new CliUsageError("Duplicate publish option: --at.");
+      at = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--provider") {
+      const value = rest[index + 1];
+      if (
+        value !== "github-pages" &&
+        value !== "cloudflare-workers" &&
+        value !== "cloudflare-pages" &&
+        value !== "netlify" &&
+        value !== "vercel"
+      ) {
+        throw new CliUsageError(
+          "--provider requires github-pages, cloudflare-workers, cloudflare-pages, netlify, or vercel.",
+        );
+      }
+      if (provider !== undefined)
+        throw new CliUsageError("Duplicate publish option: --provider.");
+      provider = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--approvals") {
+      const value = rest[index + 1];
+      if (!value || value.startsWith("-")) {
+        throw new CliUsageError("--approvals requires a file path.");
+      }
+      if (approvals !== undefined)
+        throw new CliUsageError("Duplicate publish option: --approvals.");
+      approvals = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--require-approval") {
+      workflow = "approved";
+      continue;
+    }
+    if (option === "--workflow") {
+      const value = rest[index + 1];
+      if (value !== "direct" && value !== "approved") {
+        throw new CliUsageError("--workflow requires direct or approved.");
+      }
+      workflow = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--execute") {
+      if (action !== "run") {
+        throw new CliUsageError("--execute is only valid for publish run.");
+      }
+      execute = true;
+      continue;
+    }
+    if (option === "--force") {
+      if (action !== "run") {
+        throw new CliUsageError("--force is only valid for publish run.");
+      }
+      force = true;
+      continue;
+    }
+    if (option === "--trigger") {
+      const value = rest[index + 1];
+      if (
+        value !== "manual" &&
+        value !== "scheduled" &&
+        value !== "ci" &&
+        value !== "cli"
+      ) {
+        throw new CliUsageError(
+          "--trigger requires manual, scheduled, ci, or cli.",
+        );
+      }
+      trigger = value;
+      index += 1;
+      continue;
+    }
+    if (option === "--all") {
+      if (action !== "approve") {
+        throw new CliUsageError("--all is only valid for publish approve.");
+      }
+      all = true;
+      continue;
+    }
+    if (option === "--by") {
+      const value = rest[index + 1];
+      if (!value || value.startsWith("-")) {
+        throw new CliUsageError("--by requires a name.");
+      }
+      approvedBy = value;
+      index += 1;
+      continue;
+    }
+    if (action === "approve" && !option.startsWith("-")) {
+      slugs.push(option);
+      continue;
+    }
+    throw new CliUsageError(`Unknown publish option: ${option}.`);
+  }
+
+  if (action === "approve" && slugs.length === 0 && !all) {
+    throw new CliUsageError(
+      "Pass one or more note slugs or --all to publish approve.",
+    );
+  }
+
+  return {
+    name: "publish",
+    options: {
+      action,
+      json,
+      ...(at === undefined ? {} : { at }),
+      ...(provider === undefined ? {} : { provider }),
+      ...(approvals === undefined ? {} : { approvals }),
+      workflow,
+      execute,
+      force,
+      trigger,
+      slugs,
+      all,
+      ...(approvedBy === undefined ? {} : { approvedBy }),
+    },
+  };
 }
 
 function parseUpgradeCommand(options: readonly string[]): Command {

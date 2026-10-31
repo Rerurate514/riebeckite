@@ -1,6 +1,15 @@
-﻿import { rm } from "node:fs/promises";
-import { join, relative, resolve } from "node:path";
-import { buildOutputPlan, compareOutputPlan } from "@riebeckite/core";
+﻿import { mkdir, rm, writeFile } from "node:fs/promises";
+import { dirname, join, relative, resolve } from "node:path";
+import {
+  BUILD_OUTPUT_MARKER_FILE,
+  buildOutputPlan,
+  compareOutputPlan,
+  createBuildOutputMarker,
+  publicationFingerprint as fingerprintPublication,
+  publicationEntriesFromManifest,
+  publicationRedirectsFromManifest,
+  serializeBuildOutputMarker,
+} from "@riebeckite/core";
 import { defaultExtensionMap, redirectPlugin, toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
@@ -91,6 +100,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         outDir: string;
         publicDir: string | false | undefined;
         configFile: string | undefined;
+        publicationFingerprint?: string;
         outputPlanInput: {
           inventory: SsgOutputChangeSet["affected"];
           affectedPaths: ReadonlySet<string>;
@@ -498,6 +508,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         metrics.cacheEntriesSerialized = Object.keys(
           nextOutputCache.outputs,
         ).length;
+        const manifest = await module.content?.getManifest();
+        const publicationFingerprint = manifest
+          ? fingerprintPublication(
+              publicationEntriesFromManifest(manifest),
+              publicationRedirectsFromManifest(manifest),
+            )
+          : undefined;
         pendingOutputCache = {
           path: outputCachePath,
           state: nextOutputCache,
@@ -506,6 +523,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outDir,
           publicDir: config.publicDir,
           configFile: config.configFile,
+          ...(publicationFingerprint === undefined
+            ? {}
+            : { publicationFingerprint }),
           outputPlanInput: {
             inventory,
             affectedPaths: new Set(
@@ -549,6 +569,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         }
         const outputCache = pendingOutputCache;
         if (!outputCache) return;
+        await writePublicationMarker({
+          root: resolvedConfig.root,
+          outputDirectory: outDir,
+          publicationFingerprint: outputCache.publicationFingerprint,
+          warn: (message) => this.warn(message),
+        });
         try {
           outputCache.state.finalOutputInventory = await measure(
             outputCache.timingsMs,
@@ -726,5 +752,36 @@ function removeVirtualEntryChunk(
     if (chunk.type === "chunk" && chunk.moduleIds?.includes(virtualEntryId)) {
       delete bundle[chunk.fileName];
     }
+  }
+}
+
+async function writePublicationMarker(input: {
+  readonly root: string;
+  readonly outputDirectory: string;
+  readonly publicationFingerprint?: string;
+  readonly warn: (message: string) => void;
+}): Promise<void> {
+  const path = join(input.root, ".riebeckite", BUILD_OUTPUT_MARKER_FILE);
+  try {
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(
+      path,
+      serializeBuildOutputMarker(
+        createBuildOutputMarker({
+          outputDirectory: input.outputDirectory,
+          ...(input.publicationFingerprint === undefined
+            ? {}
+            : { publicationFingerprint: input.publicationFingerprint }),
+          completedAt: new Date(),
+        }),
+      ),
+      "utf8",
+    );
+  } catch (error) {
+    input.warn(
+      `Could not write the publication marker; publish will rebuild before deploying. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }

@@ -4,6 +4,10 @@ export {
 } from "./src/config_loader.js";
 export { replaceHonoxIslandDependencyPlugin } from "./src/honox_islands.js";
 export {
+  fingerprintDirectory,
+  fingerprintOutputDirectory,
+} from "./src/ssg/inventory.js";
+export {
   createRiebeckiteSsg,
   defaultSsgEntry,
   riebeckiteSsgExtensionMap,

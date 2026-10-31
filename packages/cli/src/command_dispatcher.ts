@@ -35,6 +35,7 @@ import { runInspect } from "./commands/inspect.js";
 import { runPluginDev } from "./commands/plugin_dev.js";
 import { runPluginVerify } from "./commands/plugin_verify.js";
 import { runProfile } from "./commands/profile.js";
+import { runPublish } from "./commands/publish.js";
 import { runThemePreview } from "./commands/theme_preview.js";
 import { runUpgradeCheck } from "./commands/upgrade.js";
 import { themeTemplateRegistry } from "./theme_generator/registry.js";
@@ -107,6 +108,10 @@ export async function runCommand(command: Command): Promise<void> {
     return runClean(project, { scope: command.scope });
   if (command.name === "deploy")
     return runDeploy(project, { dryRun: command.dryRun });
+  if (command.name === "publish") {
+    if (!(await runPublish(project, command.options))) process.exitCode = 1;
+    return;
+  }
   if (command.name === "deploy-setup") return runDeploySetup(project);
   if (command.name === "deploy-domain") return runDeployDomain(project);
   if (command.name === "doctor") {

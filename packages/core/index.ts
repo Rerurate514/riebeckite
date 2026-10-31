@@ -200,6 +200,91 @@ export {
   resolveManagedStateRoot,
 } from "./src/project/project_layout.js";
 export type {
+  PublicationArtifactIssue,
+  PublicationArtifactState,
+} from "./src/publication/artifact.js";
+export { validatePublicationArtifact } from "./src/publication/artifact.js";
+export type {
+  PublicationEntry,
+  PublicationRedirect,
+  PublicationSnapshot,
+} from "./src/publication/entries.js";
+export {
+  isDeployableEntry,
+  publicationEntriesFromManifest,
+  publicationEntryFromManifestEntry,
+  publicationFingerprint,
+  publicationRedirectsFromManifest,
+} from "./src/publication/entries.js";
+export type {
+  PublicationHistory,
+  PublicationRunRecord,
+  PublicationRunStatus,
+  PublicationRunStep,
+  PublicationRunTrigger,
+} from "./src/publication/history.js";
+export {
+  appendPublicationRun,
+  emptyPublicationHistory,
+  PUBLICATION_HISTORY_LIMIT,
+  PUBLICATION_HISTORY_VERSION,
+  parsePublicationHistory,
+  recordPublicationSuccess,
+  replacePublicationRun,
+} from "./src/publication/history.js";
+export type {
+  HostingAdapterDefinition,
+  HostingCapabilities,
+  HostingDetectionInput,
+  HostingProvider,
+  HostingSchedulerGuarantee,
+} from "./src/publication/hosting.js";
+export {
+  describeSchedulerGuarantee,
+  detectHostingProvider,
+  HOSTING_ADAPTERS,
+  resolveHostingCapabilities,
+} from "./src/publication/hosting.js";
+export type { BuildOutputMarker } from "./src/publication/marker.js";
+export {
+  BUILD_OUTPUT_MARKER_FILE,
+  BUILD_OUTPUT_MARKER_VERSION,
+  createBuildOutputMarker,
+  parseBuildOutputMarker,
+  serializeBuildOutputMarker,
+} from "./src/publication/marker.js";
+export type {
+  PublicationAction,
+  PublicationChanges,
+  PublicationPlan,
+  PublicationPlannerInput,
+  PublicationPlanTarget,
+  PublicationValidation,
+  PublicationValidationIssue,
+} from "./src/publication/planner.js";
+export {
+  createPublicationPlan,
+  createPublicationSnapshot,
+} from "./src/publication/planner.js";
+export type {
+  PublicationApproval,
+  PublicationApprovalState,
+  PublicationApprovals,
+  PublicationWorkflowMode,
+  PublicationWorkflowState,
+} from "./src/publication/workflow.js";
+export {
+  approveEntries,
+  createApproval,
+  emptyPublicationApprovals,
+  isApprovalCurrent,
+  PUBLICATION_APPROVALS_VERSION,
+  parsePublicationApprovals,
+  pendingApprovalEntries,
+  resolveApprovalState,
+  resolvePublicationWorkflowState,
+} from "./src/publication/workflow.js";
+export type {
   ConfigValidationIssue,
   PluginOptionsValidator,
 } from "./src/types/config_validation.js";

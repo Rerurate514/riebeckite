@@ -19,6 +19,8 @@ export type ContentLinkMutationOptions = {
   readonly retargets: readonly ContentLinkRetarget[];
   readonly beforeIndex?: ReadonlyMap<string, string>;
   readonly afterIndex?: ReadonlyMap<string, string>;
+  readonly beforeAmbiguities?: ReadonlyMap<string, readonly string[]>;
+  readonly afterAmbiguities?: ReadonlyMap<string, readonly string[]>;
 };
 
 export function planContentLinkUpdates(
@@ -53,7 +55,25 @@ export function planContentLinkUpdates(
       if (!occurrence.destinationRange) continue;
       const key = linkResolutionKey(occurrence, occurrenceSource);
       const before = key ? beforeIndex.get(key) : undefined;
-      if (!before) continue;
+      if (!before) {
+        if (!key || !options.beforeAmbiguities?.has(key)) continue;
+        const afterKey = linkResolutionKey(occurrence, filePath);
+        const stillAmbiguous =
+          afterKey !== undefined &&
+          options.afterAmbiguities?.has(afterKey) === true;
+        const relocationAffects =
+          previousPath !== undefined &&
+          occurrence.syntax !== "wikilink" &&
+          occurrence.syntax !== "wiki-embed";
+        if (stillAmbiguous && !relocationAffects) continue;
+        conflicts.push({
+          severity: "error",
+          code: "link-target-ambiguous",
+          path: filePath,
+          message: `The link target is ambiguous around the mutation: ${occurrence.rawDestination}`,
+        });
+        continue;
+      }
       const retarget = retargetsByFrom.get(normalizePath(before));
       if (retarget && !retarget.to) {
         warnings.push({
@@ -101,7 +121,7 @@ export function planContentLinkUpdates(
       );
       if (replacement === null || replacement === occurrence.rawDestination)
         continue;
-      if (!index.has(normalizePath(target))) {
+      if (!actualPaths.has(normalizePath(target))) {
         conflicts.push({
           severity: "error",
           code: "link-target-missing",
@@ -156,7 +176,10 @@ function replacementDestination(
     ...directory.slice(common).map(() => ".."),
     ...targetParts.slice(common),
   ].join("/");
-  return `${encodeURI(relative)}${fragment ?? ""}`;
+  return `${relative
+    .split("/")
+    .map((part) => encodeURIComponent(part))
+    .join("/")}${fragment ?? ""}`;
 }
 
 function buildIndex(paths: readonly string[]): ReadonlyMap<string, string> {

@@ -97,7 +97,7 @@ function markdownOccurrences(
       const destinationRange =
         node.type === "definition"
           ? definitionDestinationRange(source, range)
-          : markdownDestinationRange(source, range);
+          : markdownDestinationRange(source, range, node);
       if (!destinationRange) return;
       const rawDestination = source.slice(
         destinationRange.start,
@@ -160,17 +160,55 @@ function nodeRange(node: Node): SourceRange | undefined {
 function markdownDestinationRange(
   source: string,
   range: SourceRange,
+  node: Node,
 ): SourceRange | undefined {
   const value = source.slice(range.start, range.end);
-  const open = value.indexOf("](");
-  if (open < 0) return undefined;
-  let start = open + 2;
+  const labelEnd = markdownLabelEnd(value, node, range.start);
+  if (labelEnd === undefined) return undefined;
+  const close = value.indexOf("]", labelEnd);
+  if (close < 0 || value[close + 1] !== "(") return undefined;
+  return markdownDestinationAt(value, range.start, close + 2);
+}
+
+function markdownLabelEnd(
+  value: string,
+  node: Node,
+  offset: number,
+): number | undefined {
+  if (node.type === "link" && Array.isArray(node.children)) {
+    const last = node.children[node.children.length - 1] as Node | undefined;
+    const end = last?.position?.end?.offset;
+    if (typeof end === "number") return end - offset;
+    return 1;
+  }
+  const start = node.type === "image" ? 2 : 1;
+  let depth = 0;
+  for (let index = start; index < value.length; index += 1) {
+    const character = value[index] ?? "";
+    if (character === "\\") {
+      index += 1;
+      continue;
+    }
+    if (character === "[") depth += 1;
+    if (character === "]") {
+      if (depth === 0) return index;
+      depth -= 1;
+    }
+  }
+  return undefined;
+}
+
+function markdownDestinationAt(
+  value: string,
+  offset: number,
+  start: number,
+): SourceRange | undefined {
   while (/\s/.test(value[start] ?? "")) start += 1;
   if (value[start] === "<") {
     const end = escapedIndexOf(value, ">", start + 1);
     return end < 0
       ? undefined
-      : { start: range.start + start + 1, end: range.start + end };
+      : { start: offset + start + 1, end: offset + end };
   }
   let end = start;
   let depth = 0;
@@ -188,9 +226,7 @@ function markdownDestinationRange(
     if (depth === 0 && /\s/.test(character)) break;
     end += 1;
   }
-  return end > start
-    ? { start: range.start + start, end: range.start + end }
-    : undefined;
+  return end > start ? { start: offset + start, end: offset + end } : undefined;
 }
 
 function definitionDestinationRange(

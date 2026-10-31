@@ -109,7 +109,16 @@ export function linkResolutionKey(
     if (segment === "..") segments.pop();
     else segments.push(segment);
   }
-  return segments.join("/").replace(/\.md$/i, "").toLowerCase();
+  const path = decodeDestination(segments.join("/"));
+  return path.replace(/\.md$/i, "").toLowerCase();
+}
+
+function decodeDestination(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 function externalDestination(destination: string): boolean {

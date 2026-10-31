@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  ContentIndexBuilder,
   extractLinkOccurrences,
   linkResolutionKey,
   planContentLinkUpdates,
@@ -12,6 +13,22 @@ test("relative links can climb out of a nested directory", () => {
   });
   assert.ok(occurrence);
   assert.equal(linkResolutionKey(occurrence), "b");
+});
+
+test("percent-encoded destinations resolve to files with spaces", () => {
+  const [occurrence] = extractLinkOccurrences("[b](docs/a%20b.md)", {
+    sourcePath: "c.md",
+  });
+  assert.ok(occurrence);
+  assert.equal(linkResolutionKey(occurrence), "docs/a b");
+});
+
+test("content indexes normalize uppercase Markdown extensions", () => {
+  const built = ContentIndexBuilder.buildFromAliases(
+    [{ path: "NOTES.MD" }],
+    new Map(),
+  );
+  assert.equal(built.index.get("notes"), "NOTES");
 });
 
 test("retargeting rewrites WikiLinks and relative Markdown links", () => {
@@ -28,6 +45,17 @@ test("retargeting rewrites WikiLinks and relative Markdown links", () => {
   );
   assert.deepEqual(result.warnings, []);
   assert.deepEqual(result.conflicts, []);
+});
+
+test("replacement destinations encode reserved path characters", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["a.md", "[x](hash%23b.md)"],
+      ["new name.md", "target"],
+    ]),
+    retargets: [{ from: "hash#b.md", to: "new name.md" }],
+  });
+  assert.deepEqual([...result.updates], [["a.md", "[x](new%20name.md)"]]);
 });
 
 test("retargeting reports links to deleted and missing content", () => {
@@ -74,6 +102,54 @@ test("deleting one of several duplicate basenames is not reported as broken", ()
   });
   assert.equal(result.updates.size, 0);
   assert.deepEqual(result.warnings, []);
+});
+
+test("ambiguous links that resolve after a mutation are refused", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["a.md", "[[note]]"],
+      ["notes/note.md", "note"],
+    ]),
+    retargets: [],
+    beforeIndex: new Map([["notes/note", "notes/note"]]),
+    afterIndex: new Map([["note", "notes/note"]]),
+    beforeAmbiguities: new Map([
+      ["note", ["archive/note.md", "notes/note.md"]],
+    ]),
+    afterAmbiguities: new Map(),
+  });
+  assert.equal(result.conflicts[0]?.code, "link-target-ambiguous");
+});
+
+test("links ambiguous before and after a mutation are left untouched", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["a.md", "[[note]]"],
+      ["x/note.md", "x"],
+      ["y/note.md", "y"],
+    ]),
+    retargets: [],
+    beforeAmbiguities: new Map([["note", ["x/note.md", "y/note.md"]]]),
+    afterAmbiguities: new Map([["note", ["x/note.md", "y/note.md"]]]),
+  });
+  assert.deepEqual(result.conflicts, []);
+  assert.equal(result.updates.size, 0);
+});
+
+test("moving a file with an ambiguous relative link is refused", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["deep/a.md", "[x](old.md)"],
+      ["x/old.md", "x"],
+      ["y/old.md", "y"],
+    ]),
+    retargets: [{ from: "a.md", to: "deep/a.md" }],
+    beforeAmbiguities: new Map([["old", ["x/old.md", "y/old.md"]]]),
+    afterAmbiguities: new Map([
+      ["deep/old", ["deep/x/old.md", "deep/y/old.md"]],
+    ]),
+  });
+  assert.equal(result.conflicts[0]?.code, "link-target-ambiguous");
 });
 
 test("retargeting reports links whose resolution changes without a rewrite", () => {

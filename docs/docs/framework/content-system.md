@@ -468,9 +468,9 @@ apply.
 
 Planning never writes content. Apply re-plans the stored operations, compares
 every file fingerprint, checks parent symlinks, and takes a lock before
-writing. Writes go through a journal, and recovery restores only files whose
-after-state still matches, so concurrent edits are reported instead of
-overwritten.
+writing. Writes go through a journal, and recovery rolls back files that still
+match their intended after-state, including a write interrupted before its
+journal mark. Concurrent edits are reported instead of overwritten.
 
 ### Links
 
@@ -484,6 +484,8 @@ destination range. It never replaces a whole Markdown document.
 - A short name shared by multiple files is ambiguous and is never rewritten.
 - Moving a file also re-relativizes its relative Markdown links for the new
   location.
+- Chained moves resolve links to the final destination, and percent-encoded
+  destinations are decoded before resolution.
 - Deleting a linked file leaves a `broken-link` warning.
 - A mutation that would break a link or silently change its target is refused
   with a conflict.

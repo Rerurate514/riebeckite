@@ -30,6 +30,26 @@ test("link occurrences retain UTF-16 source slices and Markdown destinations", (
   assert.equal(embed?.alias, "表示");
 });
 
+test("link occurrences locate destinations past nested images and code spans", () => {
+  const source = "[![alt](img.png)](target.md) [see `a](b`](real.md)";
+  const occurrences = extractLinkOccurrences(source);
+  assert.deepEqual(
+    occurrences.map((occurrence) => [
+      occurrence.syntax,
+      occurrence.rawDestination,
+      source.slice(
+        occurrence.destinationRange?.start,
+        occurrence.destinationRange?.end,
+      ),
+    ]),
+    [
+      ["markdown-link", "target.md", "target.md"],
+      ["markdown-image", "img.png", "img.png"],
+      ["markdown-link", "real.md", "real.md"],
+    ],
+  );
+});
+
 test("link occurrences exclude code and distinguish reference occurrences", () => {
   const source =
     '`[[inline]]`\n```md\n[[fence]]\n```\n[ref][target]\n\n[target]: assets/a.png "asset"\n';

@@ -82,6 +82,30 @@ test("derived views accept omitted and date inputs and reject unsupported input"
   );
 });
 
+test("unknown dependencies prevent persistent reuse", async () => {
+  const storage = memoryCache();
+  let computed = "first";
+  let runs = 0;
+  const view = defineDerivedView<null, string>({
+    id: "test.unknown-dependency",
+    version: "1",
+    compute(_input, context) {
+      context.track({ type: "unknown", id: "dynamic-predicate" });
+      runs++;
+      return computed;
+    },
+  });
+  const first = createDerivedViewRegistry({ cache: () => storage });
+  first.register(view);
+  assert.equal(await first.resolve(view, null), "first");
+
+  computed = "second";
+  const second = createDerivedViewRegistry({ cache: () => storage });
+  second.register(view);
+  assert.equal(await second.resolve(view, null), "second");
+  assert.equal(runs, 2);
+});
+
 test("derived view inspection records failures without requiring a cache", async () => {
   const registry = createDerivedViewRegistry({
     cache: () => {

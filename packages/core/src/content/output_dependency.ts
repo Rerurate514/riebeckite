@@ -393,6 +393,10 @@ export function contentQueryValue(
       return entry.file?.mtime;
     case "file.links":
       return entry.links;
+    case "file.backlinks":
+      return entry.backlinks;
+    case "file.content":
+      return entry.html;
     default:
       return property
         .split(".")

@@ -4,7 +4,7 @@ import type {
 } from "./package-manager.js";
 import type { CommandRunner } from "./run-commands.js";
 
-type DeploymentPhase = "install" | "build" | "deploy";
+type DeploymentPhase = "install" | "deploy";
 
 export class DeploymentFailure extends Error {
   readonly phase: DeploymentPhase;
@@ -24,12 +24,11 @@ export async function installDependencies(
   await runCommand("install", commands.install, directory, run);
 }
 
-export async function buildAndDeploy(
+export async function deploySite(
   directory: string,
   commands: PackageManagerCommands,
   run: CommandRunner,
 ): Promise<void> {
-  await runCommand("build", commands.build, directory, run);
   await runCommand("deploy", commands.deploy, directory, run);
 }
 
@@ -41,7 +40,6 @@ export function formatCloudflareNextSteps(
   if (relativeDirectory !== ".") {
     lines.push(`  cd ${relativeDirectory}`);
   }
-  lines.push(`  ${commands.build.label}`);
   lines.push(`  ${commands.deploy.label}`);
   return lines.join("\n");
 }
@@ -63,14 +61,12 @@ export function formatDeploymentFailure(
   if (failure.phase === "install") {
     lines.push(`  ${commands.install.label}`);
   }
-  lines.push(`  ${commands.build.label}`);
   lines.push(`  ${commands.deploy.label}`);
   return lines.join("\n");
 }
 
 function deploymentFailureSummary(phase: DeploymentPhase): string {
   if (phase === "install") return "Installing dependencies failed.";
-  if (phase === "build") return "Build failed.";
   return "Deployment failed.";
 }
 

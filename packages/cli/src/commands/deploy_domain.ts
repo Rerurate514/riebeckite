@@ -10,7 +10,11 @@ import {
   parseTree,
 } from "jsonc-parser";
 import type { RiebeckiteProject } from "../application_root.js";
-import { findWranglerConfig, resolveDeployRoot, runDeploy } from "./deploy.js";
+import {
+  findWranglerConfig,
+  resolveDeployRoot,
+  runWranglerDeployment,
+} from "../publication/wrangler.js";
 
 type DomainPrompts = {
   readonly interactive: boolean;
@@ -45,7 +49,7 @@ export async function runDeployDomain(
   if (configPath === undefined) {
     throw new CustomDomainError(
       "Could not find a Wrangler configuration file.",
-      "Deploy to Cloudflare Workers first with: npm exec riebeckite deploy",
+      "Deploy to Cloudflare Workers first with: npm exec riebeckite publish run --execute",
     );
   }
   if (path.extname(configPath).toLowerCase() === ".toml") {
@@ -96,19 +100,24 @@ export async function runDeployDomain(
     writeLine("✓ Custom Domain configured.");
     writeLine("");
     writeLine("Deploy when ready:");
-    writeLine("  npm exec riebeckite deploy");
+    writeLine("  npm exec riebeckite publish run --execute");
     return;
   }
 
   try {
     await (
-      options.deploy ?? ((target) => runDeploy(target, { dryRun: false }))
+      options.deploy ??
+      ((target) =>
+        runWranglerDeployment(target, {
+          provider: "cloudflare-workers",
+          dryRun: false,
+        }))
     )(project);
   } catch (error) {
     if (!update.alreadyConfigured) {
       throw new CustomDomainError(
         "Custom Domain configuration was saved. Deployment failed.",
-        "Retry with: npm exec riebeckite deploy",
+        "Retry with: npm exec riebeckite publish run --execute",
         error,
       );
     }

@@ -11,7 +11,10 @@ import {
   resolveBuildOutputMarkerPath,
   writeBuildOutputMarker,
 } from "../src/build_output.js";
-import { MissingBuildOutputError, runDeploy } from "../src/commands/deploy.js";
+import {
+  MissingBuildOutputError,
+  runWranglerDeployment,
+} from "../src/publication/wrangler.js";
 
 function makeConfig(root: string): ResolvedRiebeckiteConfig {
   return {
@@ -96,30 +99,47 @@ test("the build output marker round-trips and rejects a mismatched output direct
   assert.equal(await readBuildOutputMarker(project), undefined);
 });
 
-test("deploy refuses build output that is not from a completed build", async (t) => {
+test("the build output marker records the publication fingerprint", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root);
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: "fingerprint",
+    completedAt: "2026-01-10T00:00:00.000Z",
+  });
+  assert.deepEqual(await readBuildOutputMarker(project), {
+    outputDirectory: path.join(root, "dist"),
+    publicationFingerprint: "fingerprint",
+    completedAt: "2026-01-10T00:00:00.000Z",
+  });
+});
+
+test("the shared deploy gate refuses build output that is not from a completed build", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   await seedOutput(root);
 
+  await fs.mkdir(path.join(root, "content"), { recursive: true });
   await assert.rejects(
-    runDeploy(makeProject(root), { dryRun: true }),
-    (error) => {
-      assert.ok(error instanceof MissingBuildOutputError);
-      assert.match(error.message, /not from a completed build/);
-      return true;
-    },
+    runWranglerDeployment(makeProject(root), {
+      provider: "cloudflare-workers",
+      dryRun: true,
+    }),
+    /Publication gate blocked|artifact-invalid|artifact-not-from-build/u,
   );
 });
 
-test("deploy proceeds past the build output guard for a completed build", async (t) => {
+test("deploy stops when dist is missing", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await seedOutput(root);
-  const project = makeProject(root);
-  await writeBuildOutputMarker(project);
-
-  await assert.rejects(runDeploy(project, { dryRun: true }), (error) => {
-    assert.ok(!(error instanceof MissingBuildOutputError));
-    return true;
-  });
+  await assert.rejects(
+    runWranglerDeployment(makeProject(root), {
+      provider: "cloudflare-workers",
+      dryRun: true,
+    }),
+    (error) => {
+      assert.ok(error instanceof MissingBuildOutputError);
+      return true;
+    },
+  );
 });

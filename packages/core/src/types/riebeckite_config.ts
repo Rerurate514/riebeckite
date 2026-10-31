@@ -1,4 +1,5 @@
 import type { ContentSource } from "../content/content_source.js";
+import type { PublicationConfig } from "../publication/config.js";
 import type { PluginInput } from "./plugin.js";
 import type { PublishStrategy } from "./publish_strategy.js";
 import type { SiteConfig } from "./site_config.js";
@@ -26,5 +27,6 @@ export interface RiebeckiteConfig {
     enabled?: boolean;
     directory?: string;
   };
+  publication?: PublicationConfig;
   spa?: boolean | SpaConfig;
 }

@@ -43,9 +43,9 @@ test("generated workflow includes required secret names", async () => {
     await generateStarterSite(targetDir);
     const workflow = await readScaffoldFile(
       targetDir,
-      ".github/workflows/deploy.yml",
+      ".github/workflows/publish.yml",
     );
-    assert.ok(workflow, "deploy.yml must exist");
+    assert.ok(workflow, "publish.yml must exist");
     assert.ok(workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN));
     assert.ok(workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID));
     assert.ok(workflow.includes("secrets.CLOUDFLARE_API_TOKEN"));
@@ -70,10 +70,10 @@ test("external content workflow includes additional secrets", async () => {
     });
     const workflow = await readScaffoldFile(
       targetDir,
-      ".github/workflows/deploy.yml",
+      ".github/workflows/publish.yml",
     );
     const notify = await readScaffoldFile(targetDir, "github/notify-site.yml");
-    assert.ok(workflow, "deploy.yml must exist");
+    assert.ok(workflow, "publish.yml must exist");
     assert.ok(notify, "notify-site.yml must exist for external content");
     assert.ok(
       workflow.includes(GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN),

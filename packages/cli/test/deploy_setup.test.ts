@@ -27,7 +27,7 @@ import {
 import type { CommandResult, CommandRunner } from "../src/process_runner.js";
 import type { SetupPrompts } from "../src/prompts.js";
 
-const WORKFLOW_RELATIVE_PATH = ".github/workflows/deploy.yml";
+const WORKFLOW_RELATIVE_PATH = ".github/workflows/publish.yml";
 
 type Call = {
   command: string;
@@ -474,7 +474,7 @@ test("setup writes the workflow and registers both secrets", async () => {
       "utf8",
     );
     assert.equal(workflow, expectedWorkflow());
-    assert.ok(lines.includes("✓ Created .github/workflows/deploy.yml"));
+    assert.ok(lines.includes("✓ Created .github/workflows/publish.yml"));
     assert.ok(lines.includes("Continuous deployment is ready."));
 
     const setCalls = secretSetCalls(calls);
@@ -509,7 +509,7 @@ test("setup leaves a matching workflow unchanged and skips existing secrets", as
     const { prompts } = createPrompts();
     const { lines, calls } = await setup(repoRoot, handlers, prompts);
     assert.ok(
-      lines.includes("✓ .github/workflows/deploy.yml already configured"),
+      lines.includes("✓ .github/workflows/publish.yml already configured"),
     );
     assert.ok(lines.includes("✓ CLOUDFLARE_ACCOUNT_ID already configured"));
     assert.ok(lines.includes("✓ CLOUDFLARE_API_TOKEN already configured"));

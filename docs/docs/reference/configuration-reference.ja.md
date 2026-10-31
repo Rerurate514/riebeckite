@@ -46,6 +46,7 @@ CLI から実行した場合は、現在のディレクトリから親ディレ�
 | `theme` | いいえ | サイトの見た目 |
 | `plugins` | いいえ | Riebeckiteに追加する機能 |
 | `cache` | いいえ | ビルド結果のキャッシュ |
+| `publication` | いいえ | 公開承認モードと永続状態 |
 | `spa` | いいえ | クライアントサイドのページ遷移、プリフェッチ、スクロール復元、ビュー遷移 |
 
 必須なのは `site` だけです。
@@ -369,6 +370,24 @@ plugins: [
 各プラグインで利用できる設定については [Plugins](../plugins/README.ja.md) を参照してください。
 
 プラグインの仕組みについて詳しく知りたい場合は [Plugin system](./plugin-api.ja.md) を参照してください。
+
+## publication
+
+`publication` は単一の公開モデルに任意の承認を追加します。計画、成果物検証、永続状態の検査は常に実行され、承認は既定で無効です。
+
+| 設定 | 型 | 既定値 | 用途 |
+| --- | --- | --- | --- |
+| `requireApproval` | `boolean` | `false` | すべての Riebeckite のデプロイ経路で現在の承認記録を必須にします。 |
+| `approvalFile` | `string` | `"publication/approvals.json"` | コミットする承認記録のプロジェクト相対パス。 |
+
+```ts
+publication: {
+  requireApproval: true,
+  approvalFile: "publication/approvals.json",
+}
+```
+
+永続スナップショットは `publication/state.json` に書かれます。両方をコミットしてください。詳しくは [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## cache
 

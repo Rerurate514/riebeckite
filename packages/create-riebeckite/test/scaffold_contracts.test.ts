@@ -436,10 +436,10 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
     );
 
     // Check GitHub Actions workflow uses npm
-    const workflow = await readFile(targetDir, ".github/workflows/deploy.yml");
+    const workflow = await readFile(targetDir, ".github/workflows/publish.yml");
     assert.ok(
       workflow,
-      "deploy.yml must exist for the github-actions deployment",
+      "publish.yml must exist for the github-actions deployment",
     );
     assert.ok(workflow?.includes("cache: npm"), "workflow must use npm cache");
     assert.ok(workflow?.includes("npm ci"), "workflow must use npm ci");

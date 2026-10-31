@@ -25,8 +25,8 @@ CLIには次のデプロイ方法があります。
 | 方法 | 説明 |
 | --- | --- |
 | `riebeckite build` | サイトをビルドし、出力を`dist/`に書き込む |
-| `riebeckite deploy` | `dist/`をCloudflare Workerにデプロイする。`wrangler`と生成された`wrangler.jsonc`が必要。カスタムドメインも指定できる。 |
+| `riebeckite publish run --execute` | `dist/`をCloudflare Workerにデプロイする。`wrangler`と生成された`wrangler.jsonc`が必要。カスタムドメインも指定できる。 |
 | `riebeckite deploy setup` | push時の自動デプロイ用のGitHub Actionsワークフローを設定する。Cloudflare APIのシークレットを登録する。 |
 | `riebeckite deploy domain` | デプロイ済みのWorkerにカスタムドメインを設定する。`wrangler.jsonc`または`wrangler.toml`を更新する。 |
 
-初回のデプロイでは、`npm exec riebeckite build`で`dist/`を生成してから、`npm exec riebeckite deploy`で公開します。カスタムドメインを設定したあとは、`riebeckite.config.ts`の`site.baseUrl`を最終的なアドレスに更新してください。生成されるURL（サイトマップ、フィード、hreflang）が最終的なアドレスを使うようになります。
+初回のデプロイでは、`npm exec riebeckite build`で`dist/`を生成してから、`npm exec -- riebeckite publish run --execute`で公開します。カスタムドメインを設定したあとは、`riebeckite.config.ts`の`site.baseUrl`を最終的なアドレスに更新してください。生成されるURL（サイトマップ、フィード、hreflang）が最終的なアドレスを使うようになります。

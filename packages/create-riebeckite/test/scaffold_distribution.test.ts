@@ -229,7 +229,7 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       installedTemplates,
       "deployment",
       "github-actions",
-      "deploy.yml",
+      "publish.yml",
     );
     assert.ok(
       fs.existsSync(installedDeployTemplate),
@@ -256,7 +256,7 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
     );
     const generatedWorkflow = fs
       .readFileSync(
-        path.join(deployedSiteDir, ".github", "workflows", "deploy.yml"),
+        path.join(deployedSiteDir, ".github", "workflows", "publish.yml"),
         "utf8",
       )
       .replaceAll("\r\n", "\n");

@@ -1,13 +1,22 @@
+import path from "node:path";
 import type {
   ContentManifest,
   Observability,
   OutputChangeSet,
 } from "@riebeckite/core";
-import { ConsoleLogger, ContentManager, NoopTracer } from "@riebeckite/core";
+import {
+  ConsoleLogger,
+  ContentManager,
+  NoopTracer,
+  publicationEntriesFromManifest,
+  publicationFingerprint,
+  publicationRedirectsFromManifest,
+} from "@riebeckite/core";
 import type { NoChangeFastPathOutputMetrics } from "@riebeckite/honox";
 import {
   buildHonoxApplication,
   createNoChangeFastPathOutputMetrics,
+  fingerprintDirectory,
   verifyNoChangeFastPath,
 } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -50,7 +59,11 @@ function contentProcessingSummary(collector: FastPathSpanCollector): string {
 
 export async function runBuild(
   project: RiebeckiteProject,
-  options: { full: boolean; observability?: Observability },
+  options: {
+    full: boolean;
+    observability?: Observability;
+    publishingBuildTime?: Date | string;
+  },
 ): Promise<void> {
   const baseObservability = options.observability ?? {
     logger: new ConsoleLogger(),
@@ -73,6 +86,9 @@ export async function runBuild(
         config,
         observability,
         commitBuildState: false,
+        ...(options.publishingBuildTime === undefined
+          ? {}
+          : { publishingBuildTime: options.publishingBuildTime }),
         onPersistentContentCacheResult: (result) => {
           if (result === "hit") persistentContentCache.hits += 1;
           else if (result === "miss") persistentContentCache.misses += 1;
@@ -167,7 +183,20 @@ export async function runBuild(
         root: project.appRoot,
         tracer: observability.tracer,
       });
-      await writeBuildOutputMarker(project);
+      await writeBuildOutputMarker(project, {
+        completedAt: new Date(),
+        artifactFingerprint: await fingerprintDirectory(
+          project.config.outputDirectory ?? path.join(project.appRoot, "dist"),
+        ),
+        ...(manifest === null
+          ? {}
+          : {
+              publicationFingerprint: publicationFingerprint(
+                publicationEntriesFromManifest(manifest),
+                publicationRedirectsFromManifest(manifest),
+              ),
+            }),
+      });
     }
   });
   observability.logger.info(

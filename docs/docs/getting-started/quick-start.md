@@ -87,7 +87,7 @@ A site generated with `Cloudflare Workers` already includes the Wrangler depende
 
 ```sh
 npm run build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 Choosing `Yes` at `Deploy now?` runs the build and deploy immediately after scaffolding and prints a URL like `https://<name>.<account>.workers.dev`. If you chose `Later`, or you want to publish later updates, run the two commands above. The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
@@ -96,7 +96,7 @@ After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to t
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 To deploy automatically on every push, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).

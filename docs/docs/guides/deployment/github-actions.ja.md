@@ -38,7 +38,7 @@ npx create-riebeckite my-site --preset starter --github-actions
 my-site/
 ├─ .github/
 │  └─ workflows/
-│     └─ deploy.yml
+│     └─ publish.yml
 │
 ├─ wrangler.jsonc
 └─ ...
@@ -47,7 +47,7 @@ my-site/
 | ファイル | 役割 |
 | --- | --- |
 | `wrangler.jsonc` | Cloudflare Workers へのデプロイ設定 |
-| `.github/workflows/deploy.yml` | GitHub Actions のビルド／デプロイワークフロー |
+| `.github/workflows/publish.yml` | GitHub Actions のビルド／デプロイワークフロー |
 
 通常は、生成されたワークフローを出発点として使います。
 
@@ -63,7 +63,7 @@ npm exec riebeckite deploy setup
 
 1. Git リポジトリと GitHub のリモートを検出する
 2. GitHub CLI（`gh`）がインストール済みで、ログイン済みか確認する
-3. `.github/workflows/deploy.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出したことを報告して、シークレットの登録に進む前に停止する
+3. `.github/workflows/publish.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出したことを報告して、シークレットの登録に進む前に停止する
 4. Wrangler のログイン状態から Cloudflare アカウントを取得する。複数ある場合は選択する
 5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリシークレットとして登録する。トークンは入力内容が表示されないプロンプト、または非対話実行用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
 
@@ -229,7 +229,7 @@ my-site/
 ├─ riebeckite.config.ts
 └─ .github/
    └─ workflows/
-      └─ deploy.yml
+      └─ publish.yml
 ```
 
 記事とサイトが同じリポジトリにあるため、流れは次のようになります。
@@ -237,7 +237,7 @@ my-site/
 ```mermaid id="j89zya"
 flowchart LR
     Push["main へプッシュ"]
-    Workflow["deploy.yml"]
+    Workflow["publish.yml"]
     Build["ビルド"]
     Deploy["Cloudflare"]
 
@@ -266,7 +266,7 @@ flowchart LR
 flowchart LR
     Content["コンテンツリポジトリ"]
     Site["サイトリポジトリ"]
-    Workflow["サイトの deploy.yml"]
+    Workflow["サイトの publish.yml"]
 
     Content -.->|"プッシュだけでは起動しない"| Workflow
     Site -->|"プッシュ"| Workflow
@@ -292,7 +292,7 @@ flowchart LR
     Notify["notify-site.yml"]
     Dispatch["repository_dispatch<br/>content-updated"]
     Site["サイトリポジトリ"]
-    Workflow["deploy.yml"]
+    Workflow["publish.yml"]
     Build["ビルド"]
     Deploy["Cloudflare"]
 
@@ -321,7 +321,7 @@ flowchart LR
 「コンテンツが更新された」と通知
 ```
 
-通知を受け取ったサイトリポジトリの `deploy.yml` が、ビルドとデプロイを実行します。
+通知を受け取ったサイトリポジトリの `publish.yml` が、ビルドとデプロイを実行します。
 
 ## `SITE_DISPATCH_TOKEN`
 
@@ -593,7 +593,7 @@ flowchart LR
       ↓
 main へプッシュ
       ↓
-deploy.yml
+publish.yml
       ↓
 コンテンツをチェックアウト
       ↓
@@ -615,7 +615,7 @@ notify-site.yml
       ↓
 repository_dispatch
       ↓
-サイトの deploy.yml
+サイトの publish.yml
       ↓
 コンテンツをチェックアウト
       ↓

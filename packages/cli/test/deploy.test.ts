@@ -3,7 +3,7 @@ import path from "node:path";
 import test from "node:test";
 import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../src/application_root.js";
-import { resolveDeployRoot } from "../src/commands/deploy.js";
+import { resolveDeployRoot } from "../src/publication/wrangler.js";
 
 test("resolveDeployRoot targets the app directory", () => {
   assert.equal(

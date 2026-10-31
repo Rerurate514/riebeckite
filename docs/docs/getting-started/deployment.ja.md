@@ -48,10 +48,10 @@ Content Repository の分離
 
    ```bash
    npm run build
-   npm exec riebeckite deploy
+   npm exec -- riebeckite publish run --execute
    ```
 
-3. `riebeckite deploy` は `dist/` を Cloudflare Workers へ公開し、初回は Wrangler のログインをブラウザで開きます。`deploy` コマンドはビルドを行わないため、先に `riebeckite build` で `dist/` を作ってください。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行してください。
+3. `riebeckite publish run --execute` は計画し、必要ならビルドし、`dist/` を検証してから Cloudflare Workers へ公開します。初回は Wrangler のログインをブラウザで開きます。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行してください。
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 
@@ -59,7 +59,7 @@ Content Repository の分離
 
 ```bash
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 ### 独自ドメインを割り当てる
@@ -80,7 +80,7 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと、通常の `riebeckite deploy` の流れで公開します。後で公開する場合は `npm exec riebeckite deploy` を実行してください。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
+`Deploy now` を選ぶと、通常の `riebeckite publish run --execute` の流れで公開します。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行してください。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
 
 このコマンドは `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
 
@@ -105,7 +105,7 @@ npx create-riebeckite my-site --github-actions
 このオプションは次のファイルを追加します。
 
 - `wrangler.jsonc`
-- `.github/workflows/deploy.yml`
+- `.github/workflows/publish.yml`
 
 生成されたワークフローは `npm ci` で依存パッケージをインストールします。その後、`npm exec riebeckite check` と `npm exec riebeckite build` を実行し、`cloudflare/wrangler-action@v3` でデプロイします。
 
@@ -124,7 +124,7 @@ GitHub の Settings → Secrets and variables → Actions で、次のシーク�
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みのシークレットは検出され、そのまま維持されます。
+このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みのシークレットは検出され、そのまま維持されます。
 
 GitHub のワークフロー、アクセス、デプロイ用シークレットを変更せずに確認するには、次を実行します。
 

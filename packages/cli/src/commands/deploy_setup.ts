@@ -8,9 +8,9 @@ import {
 import type { RiebeckiteProject } from "../application_root.js";
 import { type CommandRunner, createProcessRunner } from "../process_runner.js";
 import { createSetupPrompts, type SetupPrompts } from "../prompts.js";
-import { resolveWranglerEntry } from "./deploy.js";
+import { resolveWranglerEntry } from "../publication/wrangler.js";
 
-const WORKFLOW_RELATIVE_PATH = ".github/workflows/deploy.yml";
+const WORKFLOW_RELATIVE_PATH = ".github/workflows/publish.yml";
 const TOKEN_URL = "https://dash.cloudflare.com/profile/api-tokens";
 
 type CloudflareAccount = {
@@ -459,7 +459,7 @@ async function ensureDeploymentWorkflow(
     repoRoot,
     ".github",
     "workflows",
-    "deploy.yml",
+    "publish.yml",
   );
   const expected = expectedWorkflow();
   const existing = await readTextFile(workflowPath);

@@ -5,6 +5,7 @@ import {
   resolveManagedStateRoot,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../application_root.js";
+import { readLivePublicationLock } from "../publication/state.js";
 
 export type CleanScope = "state" | "output" | "all";
 
@@ -21,6 +22,12 @@ export async function runClean(
   const removesOutput = options.scope !== "state";
 
   if (removesState) {
+    const liveLock = await readLivePublicationLock(project);
+    if (liveLock) {
+      throw new PublicationLockedError(
+        `A publication run is active (pid ${liveLock.pid}, started ${liveLock.startedAt}).`,
+      );
+    }
     const stateRoot = resolveManagedStateRoot(project.config);
     if (stateRoot) await removeManagedPath(boundary, stateRoot);
   }
@@ -108,5 +115,16 @@ export class UnsafeCleanPathError extends Error {
     this.name = "UnsafeCleanPathError";
     this.hint =
       "Riebeckite only removes its own state and build output inside the application directory.";
+  }
+}
+
+export class PublicationLockedError extends Error {
+  readonly hint: string;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "PublicationLockedError";
+    this.hint =
+      "Wait for the publication run to finish. A lock from a dead process or an expired run is removed automatically.";
   }
 }

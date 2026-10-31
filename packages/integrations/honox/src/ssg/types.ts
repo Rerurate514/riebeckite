@@ -1,4 +1,4 @@
-import type { OutputDescriptor } from "@riebeckite/core";
+import type { ContentManifest, OutputDescriptor } from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
 
 export type GeneratedOutputAsset = {
@@ -25,12 +25,14 @@ type SsgHtmlInspectorPlugin = {
 export type SsgModule = {
   default: Parameters<typeof toSSG>[0];
   content?: {
-    getManifest(): Promise<{
-      generatedOutputs?: readonly {
-        path: string;
-        content: string | Uint8Array;
-      }[];
-    }>;
+    getManifest(): Promise<
+      ContentManifest & {
+        generatedOutputs?: readonly {
+          path: string;
+          content: string | Uint8Array;
+        }[];
+      }
+    >;
     getProcessedContentCount(): number;
     getReusedContentCount(): number;
     getManifestHookMetrics(): {

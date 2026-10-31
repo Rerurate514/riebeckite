@@ -93,7 +93,7 @@ function renderDeployWorkflow(contentRepository?: string): string {
     contentRepository === undefined
       ? ""
       : contentCheckoutStep(contentRepository);
-  return substituteSecrets(readDeploymentTemplate("deploy.yml")).replace(
+  return substituteSecrets(readDeploymentTemplate("publish.yml")).replace(
     "{{contentCheckout}}",
     contentCheckout,
   );
@@ -134,7 +134,7 @@ export function deploymentTemplateFiles(
   const files: SiteTemplateFile[] = [
     wranglerJsoncFile(DEFAULT_WORKER_NAME),
     {
-      path: ".github/workflows/deploy.yml",
+      path: ".github/workflows/publish.yml",
       content: deploymentWorkflow(content),
     },
   ];

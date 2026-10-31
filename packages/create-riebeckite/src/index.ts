@@ -11,8 +11,8 @@ import {
 } from "./interactive.js";
 import { packageManagerCommands } from "./package-manager.js";
 import {
-  buildAndDeploy,
   DeploymentFailure,
+  deploySite,
   formatCloudflareNextSteps,
   formatDeploymentFailure,
   installDependencies,
@@ -171,7 +171,7 @@ async function publishCloudflareSite(
   }
 
   try {
-    await buildAndDeploy(targetDirectory, commands, spawnCommand);
+    await deploySite(targetDirectory, commands, spawnCommand);
   } catch (error) {
     if (!(error instanceof DeploymentFailure)) throw error;
     reportDeploymentFailure(error, relative);
@@ -195,7 +195,6 @@ function reportInstallationFailure(
   if (relative !== ".") console.error(`  cd ${relative}`);
   console.error(`  ${commands.install.label}`);
   if (options.deployment.type === "cloudflare-workers") {
-    console.error(`  ${commands.build.label}`);
     console.error(`  ${commands.deploy.label}`);
   }
   process.exitCode = 1;

@@ -38,6 +38,7 @@ import type {
   PipelinePlugin,
 } from "./plugin_pipeline.js";
 import type { PluginSeoExtension } from "./plugin_seo.js";
+import type { PluginCliExtension } from "../cli/types.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 
 export type RiebeckitePlugin<TOptions = unknown> = {
@@ -144,6 +145,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   resolveContentOutputDependencies?: ContentOutputDependencyResolver;
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
+  cli?: PluginCliExtension;
 };
 
 export type ContentOutputDependencyResolver = (context: {

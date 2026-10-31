@@ -13,6 +13,7 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
+import { loadContentBuildState } from "@riebeckite/core";
 import {
   buildSite,
   cachePath,
@@ -471,6 +472,29 @@ test("Bases incremental SSG output matches an independent clean build", async (t
       leanBuildOptions,
     );
     const incremental = await snapshotTree(distPath(inc));
+    if (index === 0) {
+      const state = await loadContentBuildState(
+        path.join(inc, "vault", ".riebeckite", "content-state.json"),
+      );
+      const artifacts = state?.provenance?.artifacts ?? [];
+      const hashes = snapshotHashes(incremental);
+      assert.equal(artifacts.length, Object.keys(hashes).length);
+      for (const artifact of artifacts) {
+        assert.equal(
+          artifact.fingerprint,
+          hashes[artifact.path],
+          artifact.path,
+        );
+        assert.equal(artifact.evidence, "measured");
+      }
+      assert.ok(artifacts.some((artifact) => artifact.cache === "hit"));
+      assert.ok(
+        artifacts.some(
+          (artifact) =>
+            artifact.path === "index.html" && artifact.descriptor === "matched",
+        ),
+      );
+    }
     const clean = path.join(root, `clean-${index}`);
     await cp(inc, clean, {
       recursive: true,

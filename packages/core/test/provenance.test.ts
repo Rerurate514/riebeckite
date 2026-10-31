@@ -150,6 +150,51 @@ test("build provenance retains prior completed builds", async (t) => {
   );
 });
 
+test("final artifact fingerprints are attached after the content build", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-provenance-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const config = contentTestConfig(directory);
+  const manager = new ContentManager(
+    memoryContentSource({ "index.md": "# Home" }),
+    [],
+    { config, plugins: config.plugins },
+  );
+
+  await manager.build();
+  const provenance = manager.getProvenance();
+  assert.ok(provenance);
+  await manager.attachFinalOutputArtifacts(
+    provenance.buildId,
+    { "index.html": "a".repeat(64), "assets/app.js": "b".repeat(64) },
+    new Set(["index.html"]),
+  );
+  const state = await loadContentBuildState(
+    path.join(directory, "build", "content-state.json"),
+  );
+  await manager.dispose();
+
+  assert.deepEqual(state?.provenance?.artifacts, [
+    {
+      id: "artifact:assets/app.js",
+      path: "assets/app.js",
+      fingerprint: "b".repeat(64),
+      descriptor: "unmapped",
+      cache: "not-measured",
+      evidence: "measured",
+    },
+    {
+      id: "artifact:index.html",
+      path: "index.html",
+      fingerprint: "a".repeat(64),
+      descriptor: "unmapped",
+      cache: "hit",
+      evidence: "measured",
+    },
+  ]);
+});
+
 test("provenance history is bounded and build comparison is deterministic", () => {
   const build = (buildId: string, sourceId: string): BuildProvenance => ({
     version: 1,

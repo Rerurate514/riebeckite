@@ -665,6 +665,19 @@ export class ContentManager {
     return this.provenance;
   }
 
+  async attachFinalOutputArtifacts(
+    buildId: string,
+    fingerprints: Readonly<Record<string, string>>,
+    cacheHits: ReadonlySet<string>,
+  ): Promise<void> {
+    if (this.provenance?.buildId !== buildId) return;
+    await this.buildCoordinator.attachFinalOutputArtifacts(
+      buildId,
+      fingerprints,
+      cacheHits,
+    );
+  }
+
   async getNoChangeFastPathBlockReason(
     options: ContentBuildOptions = {},
   ): Promise<string | undefined> {

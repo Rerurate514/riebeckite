@@ -182,7 +182,24 @@ function isBuildProvenance(value: unknown): boolean {
     Array.isArray(value.transforms) &&
     value.transforms.every(isProvenanceTransform) &&
     Array.isArray(value.outputs) &&
-    value.outputs.every(isProvenanceOutput)
+    value.outputs.every(isProvenanceOutput) &&
+    (value.artifacts === undefined ||
+      (Array.isArray(value.artifacts) &&
+        value.artifacts.every(isProvenanceArtifact)))
+  );
+}
+
+function isProvenanceArtifact(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    isOutputPath(value.path) &&
+    isSha256(value.fingerprint) &&
+    (value.descriptor === "matched" || value.descriptor === "unmapped") &&
+    (value.cache === "hit" ||
+      value.cache === "miss" ||
+      value.cache === "not-measured") &&
+    value.evidence === "measured"
   );
 }
 
@@ -294,7 +311,12 @@ function isSha256(value: unknown): boolean {
 }
 
 function isFingerprint(value: unknown): boolean {
-  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
+  return (
+    typeof value === "string" &&
+    /^(?:sha256:[a-f0-9]{64}(?::[^\r\n]+)?|hash:[^\r\n]+|etag:[^\r\n]+)$/.test(
+      value,
+    )
+  );
 }
 
 function isStringArray(value: unknown): boolean {

@@ -1,4 +1,8 @@
-import type { ContentManifest, OutputDescriptor } from "@riebeckite/core";
+import type {
+  BuildProvenance,
+  ContentManifest,
+  OutputDescriptor,
+} from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
 
 export type GeneratedOutputAsset = {
@@ -63,6 +67,12 @@ export type SsgModule = {
       removedOutputCount: number;
       unchangedOutputCount: number;
     }>;
+    getProvenance(): BuildProvenance | undefined;
+    attachFinalOutputArtifacts(
+      buildId: string,
+      fingerprints: Readonly<Record<string, string>>,
+      cacheHits: ReadonlySet<string>,
+    ): Promise<void>;
   };
   config?: {
     plugins?: readonly SsgHtmlInspectorPlugin[];

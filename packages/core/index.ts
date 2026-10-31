@@ -219,12 +219,14 @@ export {
 export type {
   BuildProvenance,
   BuildProvenanceComparison,
+  ProvenanceArtifact,
   ProvenanceOutput,
   ProvenanceSource,
   ProvenanceTransform,
 } from "./src/provenance/provenance.js";
 export {
   appendProvenanceHistory,
+  attachProvenanceArtifacts,
   compareBuildProvenance,
   createBuildProvenance,
   MAX_PROVENANCE_HISTORY,

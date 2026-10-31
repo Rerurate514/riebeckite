@@ -82,7 +82,7 @@ export type PluginHookExecution = {
   readonly sequence: number;
   readonly plugin: string;
   readonly hook: string;
-  readonly status: "executed" | "failed";
+  readonly status: "executed" | "failed" | "reused";
   readonly durationMs: number;
 };
 
@@ -169,6 +169,8 @@ export class PluginRuntime {
         this.createPluginContext(plugin, context),
       generatedOutputCount: () => this.generatedOutputs.count(),
       diagnosticCount: () => this.diagnostics.length,
+      recordExecution: (plugin, hook, status, durationMs) =>
+        this.recordHookExecution(plugin, hook, status, durationMs),
     });
   }
 
@@ -923,24 +925,40 @@ export class PluginRuntime {
     const startedAt = performance.now();
     try {
       const result = await operation();
-      this.hookExecutions.push({
-        sequence,
-        plugin: plugin.name,
+      this.recordHookExecution(
+        plugin,
         hook,
-        status: "executed",
-        durationMs: performance.now() - startedAt,
-      });
+        "executed",
+        performance.now() - startedAt,
+        sequence,
+      );
       return result;
     } catch (error) {
-      this.hookExecutions.push({
-        sequence,
-        plugin: plugin.name,
+      this.recordHookExecution(
+        plugin,
         hook,
-        status: "failed",
-        durationMs: performance.now() - startedAt,
-      });
+        "failed",
+        performance.now() - startedAt,
+        sequence,
+      );
       throw error;
     }
+  }
+
+  private recordHookExecution(
+    plugin: RiebeckitePlugin,
+    hook: string,
+    status: PluginHookExecution["status"],
+    durationMs: number,
+    sequence = ++this.hookSequence,
+  ): void {
+    this.hookExecutions.push({
+      sequence,
+      plugin: plugin.name,
+      hook,
+      status,
+      durationMs,
+    });
   }
 
   private observability(): Observability {

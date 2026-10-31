@@ -54,12 +54,22 @@ export type ProvenanceOutput = {
   readonly recomputeReason?: OutputChangeReason;
 };
 
+export type ProvenanceArtifact = {
+  readonly id: string;
+  readonly path: string;
+  readonly fingerprint: string;
+  readonly descriptor: "matched" | "unmapped";
+  readonly cache: "hit" | "miss" | "not-measured";
+  readonly evidence: "measured";
+};
+
 export type BuildProvenance = {
   readonly version: typeof PROVENANCE_VERSION;
   readonly buildId: string;
   readonly sources: readonly ProvenanceSource[];
   readonly transforms: readonly ProvenanceTransform[];
   readonly outputs: readonly ProvenanceOutput[];
+  readonly artifacts?: readonly ProvenanceArtifact[];
 };
 
 export type BuildProvenanceComparison = {
@@ -68,6 +78,7 @@ export type BuildProvenanceComparison = {
   readonly sources: ProvenanceDelta;
   readonly transforms: ProvenanceDelta;
   readonly outputs: ProvenanceDelta;
+  readonly artifacts: ProvenanceDelta;
 };
 
 export type ProvenanceDelta = {
@@ -181,7 +192,36 @@ export function compareBuildProvenance(
     sources: compareRecords(from.sources, to.sources),
     transforms: compareRecords(from.transforms, to.transforms),
     outputs: compareRecords(from.outputs, to.outputs),
+    artifacts: compareRecords(from.artifacts ?? [], to.artifacts ?? []),
   };
+}
+
+export function attachProvenanceArtifacts(
+  provenance: BuildProvenance,
+  input: {
+    readonly fingerprints: Readonly<Record<string, string>>;
+    readonly cacheHits: ReadonlySet<string>;
+  },
+): BuildProvenance {
+  const outputs = new Set(provenance.outputs.map((output) => output.path));
+  const artifacts = Object.entries(input.fingerprints)
+    .map(
+      ([path, fingerprint]) =>
+        ({
+          id: `artifact:${path}`,
+          path,
+          fingerprint,
+          descriptor: outputs.has(path) ? "matched" : "unmapped",
+          cache: input.cacheHits.has(path)
+            ? "hit"
+            : outputs.has(path)
+              ? "miss"
+              : "not-measured",
+          evidence: "measured",
+        }) satisfies ProvenanceArtifact,
+    )
+    .sort(byId);
+  return { ...provenance, artifacts };
 }
 
 export function appendProvenanceHistory(

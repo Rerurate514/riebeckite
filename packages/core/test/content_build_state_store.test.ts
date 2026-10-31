@@ -111,6 +111,53 @@ test("valid output state remains reusable", async (t) => {
   assert.deepEqual(await loadContentBuildState(statePath), state);
 });
 
+test("content fingerprints with metadata keep provenance state reusable", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-content-state-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const statePath = path.join(directory, "content-state.json");
+  for (const fingerprint of [
+    `sha256:${"b".repeat(64)}:{"createdAt":1,"modifiedAt":2,"size":3}`,
+    "hash:content-hash",
+    'etag:"content-etag"',
+  ]) {
+    const state = {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {
+        "a.md": {
+          fingerprint,
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+        },
+      },
+      contentIndex: { a: "a" },
+      externalDependencies: [],
+      provenance: {
+        version: 1,
+        buildId: "a".repeat(64),
+        sources: [
+          {
+            id: "source:a.md",
+            contentId: "a",
+            path: "a.md",
+            fingerprint,
+            type: "markdown",
+            visibility: "public",
+            evidence: "deterministic",
+          },
+        ],
+        transforms: [],
+        outputs: [],
+      },
+    };
+    await fs.writeFile(statePath, JSON.stringify(state), "utf8");
+
+    assert.deepEqual(await loadContentBuildState(statePath), state);
+  }
+});
+
 test("a state without output inventory remains valid", async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-content-state-"),

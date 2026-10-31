@@ -35,10 +35,22 @@ type RuntimeTestWindow = Window & {
     wasmTrapFlag: boolean;
     wasmMissing: string | null;
     wasmMissingMessage: string | null;
+    iframeInstances: Array<{
+      signal: AbortSignal;
+      invoke(input: unknown): Promise<number>;
+    }>;
+    iframeReady: number;
+    iframeResults: number[];
+    iframeAbort: string | null;
+    iframeBadSandbox: string | null;
+    iframeNavigation: string | null;
+    iframeAfterNavigation: number | null;
     unmountPage(): Promise<void>;
     crashWorker(): Promise<void>;
     testWasmTrap(): Promise<void>;
     testWasmMissing(): Promise<void>;
+    testIframeBadSandbox(): Promise<void>;
+    testIframeNavigation(): Promise<void>;
   };
 };
 
@@ -128,7 +140,9 @@ async function open(pathname = "/a"): Promise<{
       test.workerReady === 1 &&
       test.workerResults.length === 4 &&
       test.wasmReady === 1 &&
-      test.wasmResults.length === 1
+      test.wasmResults.length === 1 &&
+      test.iframeReady === 1 &&
+      test.iframeResults.length === 1
     );
   });
   return { page, errors };
@@ -177,6 +191,7 @@ test("page runtimes are disposed on navigation and recreated on return", async (
           .aborted === false &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
         (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 2 &&
         document.querySelector("h1")?.textContent === "PAGE_B",
     );
     const second = await runtimeState(page);
@@ -192,7 +207,8 @@ test("page runtimes are disposed on navigation and recreated on return", async (
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 3 &&
-        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 3,
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 3 &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 3,
     );
     const back = await runtimeState(page);
     assert.equal(back.instances, 3);
@@ -248,6 +264,7 @@ test("worker runtimes isolate requests, cancel, crash and dispose", async () => 
         (window as RuntimeTestWindow).__runtimeTest?.workerPending !== null &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
         (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 2 &&
         (window as RuntimeTestWindow).__runtimeTest?.workerInstances.at(-1)
           ?.signal.aborted === false,
     );
@@ -314,7 +331,8 @@ test("WASM runtimes execute, trap, fail initialization and dispose", async () =>
     await page.waitForFunction(
       () =>
         window.location.pathname === "/b" &&
-        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2,
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 2,
     );
     const navigated = await page.evaluate(async () => {
       const test = (window as RuntimeTestWindow).__runtimeTest;
@@ -372,6 +390,97 @@ test("WASM runtimes execute, trap, fail initialization and dispose", async () =>
   }
 });
 
+test("iframe runtimes sandbox guests and reject malformed or foreign messages", async () => {
+  const { page, errors } = await open();
+  try {
+    const initial = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return {
+        results: test?.iframeResults,
+        abort: test?.iframeAbort,
+        instances: test?.iframeInstances.length,
+        frames: document.querySelectorAll("iframe").length,
+        sandbox: document.querySelector("iframe")?.getAttribute("sandbox"),
+      };
+    });
+    assert.deepEqual(initial.results, [12]);
+    assert.equal(initial.abort, "RuntimeAbortError");
+    assert.equal(initial.instances, 1);
+    assert.equal(initial.frames, 1);
+    assert.equal(initial.sandbox, "allow-scripts");
+
+    await page.click('a[href="/b"]');
+    await page.waitForFunction(
+      () =>
+        window.location.pathname === "/b" &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 2,
+    );
+    const navigated = await page.evaluate(async () => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      const previous = test?.iframeInstances.at(-2);
+      const current = test?.iframeInstances.at(-1);
+      let stale = "resolved";
+      try {
+        await previous?.invoke({ value: 1 });
+      } catch (error) {
+        stale = (error as Error).name;
+      }
+      return {
+        previousAborted: previous?.signal.aborted,
+        stale,
+        current: await current?.invoke({ value: 5 }),
+        frames: document.querySelectorAll("iframe").length,
+        active: test?.iframeInstances.filter(
+          (runtime) => !runtime.signal.aborted,
+        ).length,
+      };
+    });
+    assert.equal(navigated.previousAborted, true);
+    assert.equal(navigated.stale, "RuntimeStateError");
+    assert.equal(navigated.current, 20);
+    assert.equal(navigated.frames, 1);
+    assert.equal(navigated.active, 1);
+
+    const malformed = await page.evaluate(async () => {
+      const rogue = document.createElement("iframe");
+      rogue.srcdoc = `<script>parent.postMessage({protocol:"riebeckite:iframe",version:1,sessionId:"forged",kind:"result",requestId:1,payload:999},"*")</script>`;
+      document.body.append(rogue);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const runtime = (
+        window as RuntimeTestWindow
+      ).__runtimeTest?.iframeInstances.at(-1);
+      return runtime?.invoke({ value: 2 });
+    });
+    assert.equal(malformed, 8);
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testIframeBadSandbox(),
+    );
+    assert.equal(
+      await page.evaluate(
+        () => (window as RuntimeTestWindow).__runtimeTest?.iframeBadSandbox,
+      ),
+      "RuntimeIframeError",
+    );
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testIframeNavigation(),
+    );
+    const navigation = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return {
+        outcome: test?.iframeNavigation,
+        after: test?.iframeAfterNavigation,
+      };
+    });
+    assert.equal(navigation.outcome, "RuntimeFailureError");
+    assert.equal(navigation.after, 8);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("a fresh page mount owns a fresh runtime host", async () => {
   const { page, errors } = await open("/b");
   try {
@@ -382,7 +491,8 @@ test("a fresh page mount owns a fresh runtime host", async () => {
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
-        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2,
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.iframeReady === 2,
     );
     const state = await runtimeState(page);
     assert.equal(state.instances, 2);

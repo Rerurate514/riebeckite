@@ -2,6 +2,7 @@ import { ClientLifecycle } from "../../packages/core/client.js";
 import {
   type ClientRuntime,
   createClientRuntimeHost,
+  createIframeRuntime,
   createWasmWorkerRuntime,
   createWorkerRuntime,
   defineInteractiveRuntime,
@@ -14,6 +15,18 @@ type WorkerInput = {
   readonly delay?: number;
   readonly crash?: boolean;
 };
+
+const IFRAME_HTML = `<output id="out"></output><script>
+window.parent.postMessage({protocol:"riebeckite:iframe",version:1,sessionId:"forged",kind:"result",requestId:1,payload:999},"*");
+window.addEventListener("riebeckite:iframe-invoke",function(event){
+var detail=event.detail;
+if(detail.payload.crash){window.riebeckiteIframe.error(detail.requestId,new Error("guest failure"));return;}
+setTimeout(function(){
+document.getElementById("out").textContent=String(detail.payload.value*4);
+window.riebeckiteIframe.result(detail.requestId,detail.payload.value*4);
+},detail.payload.delay||0);
+});
+</script>`;
 
 type TestWindow = Window & {
   __runtimeTest?: {
@@ -34,10 +47,19 @@ type TestWindow = Window & {
     wasmTrapFlag: boolean;
     wasmMissing: string | null;
     wasmMissingMessage: string | null;
+    iframeInstances: ClientRuntime<number>[];
+    iframeReady: number;
+    iframeResults: number[];
+    iframeAbort: string | null;
+    iframeBadSandbox: string | null;
+    iframeNavigation: string | null;
+    iframeAfterNavigation: number | null;
     unmountPage(): Promise<void>;
     crashWorker(): Promise<void>;
     testWasmTrap(): Promise<void>;
     testWasmMissing(): Promise<void>;
+    testIframeBadSandbox(): Promise<void>;
+    testIframeNavigation(): Promise<void>;
   };
 };
 
@@ -113,6 +135,22 @@ registry.register(
     wasmUrl: "/add.wasm",
     exportName: "missing",
     createWorker: wasmWorker,
+  }),
+);
+
+registry.register(
+  createIframeRuntime<WorkerInput, number>({
+    id: "iframe",
+    html: IFRAME_HTML,
+    title: "Interactive fixture",
+    limits: { invokeTimeoutMs: 5_000 },
+  }),
+);
+registry.register(
+  createIframeRuntime<WorkerInput, number>({
+    id: "iframe-bad",
+    html: IFRAME_HTML,
+    sandbox: ["allow-scripts", "allow-same-origin"],
   }),
 );
 
@@ -193,6 +231,24 @@ async function mountPage(root: Element): Promise<void> {
       await wasm.mount();
       test.wasmResults.push(await wasm.invoke([2, 3]));
       test.wasmReady += 1;
+
+      const frame = context.runtimes?.create<number>("iframe");
+      if (!frame)
+        throw new Error("The lifecycle did not provide a runtime host.");
+      test.iframeInstances.push(frame);
+      await frame.mount();
+      test.iframeResults.push(await frame.invoke({ value: 3 }));
+
+      const controller = new AbortController();
+      const aborted = frame
+        .invoke({ value: 6, delay: 2_000 }, { signal: controller.signal })
+        .then(
+          () => "resolved",
+          (error: Error) => error.name,
+        );
+      setTimeout(() => controller.abort(), 10);
+      test.iframeAbort = await aborted;
+      test.iframeReady += 1;
     },
   });
 }
@@ -251,6 +307,53 @@ async function testWasmMissing(): Promise<void> {
   }
 }
 
+async function testIframeBadSandbox(): Promise<void> {
+  const test = testWindow().__runtimeTest;
+  if (!test) throw new Error("The browser test state is missing.");
+  const host = createClientRuntimeHost({ registry, onError: () => {} });
+  try {
+    const runtime = host.create<number>("iframe-bad");
+    try {
+      await runtime.mount();
+      test.iframeBadSandbox = "resolved";
+    } catch (error) {
+      test.iframeBadSandbox = (error as Error).name;
+    }
+  } finally {
+    await host.dispose();
+  }
+}
+
+async function testIframeNavigation(): Promise<void> {
+  const test = testWindow().__runtimeTest;
+  if (!test) throw new Error("The browser test state is missing.");
+  const host = createClientRuntimeHost({ registry, onError: () => {} });
+  try {
+    const existing = new Set(document.querySelectorAll("iframe"));
+    const runtime = host.create<number>("iframe");
+    await runtime.mount();
+    const added = [...document.querySelectorAll("iframe")].find(
+      (frame) => !existing.has(frame),
+    );
+    if (!added) throw new Error("The iframe fixture was not mounted.");
+    await new Promise<void>((resolve) => {
+      added.addEventListener("load", () => resolve(), { once: true });
+      added.srcdoc = "<p>navigated</p>";
+    });
+    try {
+      await runtime.invoke({ value: 1 });
+      test.iframeNavigation = "resolved";
+    } catch (error) {
+      test.iframeNavigation = (error as Error).name;
+    }
+    const pageFrame = test.iframeInstances.at(-1);
+    test.iframeAfterNavigation =
+      (await pageFrame?.invoke({ value: 2 })) ?? null;
+  } finally {
+    await host.dispose();
+  }
+}
+
 testWindow().__runtimeTest = {
   instances: [],
   workerInstances: [],
@@ -269,10 +372,19 @@ testWindow().__runtimeTest = {
   wasmTrapFlag: false,
   wasmMissing: null,
   wasmMissingMessage: null,
+  iframeInstances: [],
+  iframeReady: 0,
+  iframeResults: [],
+  iframeAbort: null,
+  iframeBadSandbox: null,
+  iframeNavigation: null,
+  iframeAfterNavigation: null,
   unmountPage: () => lifecycle.unmount("page"),
   crashWorker,
   testWasmTrap,
   testWasmMissing,
+  testIframeBadSandbox,
+  testIframeNavigation,
 };
 
 const main = document.querySelector("#main-content");

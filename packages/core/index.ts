@@ -213,6 +213,16 @@ export {
   defineDerivedView,
   derivedDependenciesToOutputDependencies,
 } from "./src/derived/derived_view.js";
+export type {
+  ContentMigrationBatch,
+  ContentMigrationFileDiff,
+  ContentMigrationPlannedFile,
+  ContentMigrationPlannerFile,
+  ContentMigrationPlannerOptions,
+  ContentMigrationSelection,
+  ContentMigrationSkip,
+} from "./src/migration/migration_planner.js";
+export { planContentMigrationBatch } from "./src/migration/migration_planner.js";
 export type { ContentMigrationRegistry } from "./src/migration/migration_registry.js";
 export {
   ContentMigrationRegistryError,

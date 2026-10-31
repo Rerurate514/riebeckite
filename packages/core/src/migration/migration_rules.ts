@@ -265,6 +265,7 @@ function mapFrontmatterValue(
   input: ContentMigrationTransformInput,
   diagnostics: ContentMigrationDiagnostic[],
 ): void {
+  if (!(rule.key in input.frontmatter)) return;
   try {
     const value = rule.map(input.frontmatter[rule.key], input.content);
     if (value === undefined) delete input.frontmatter[rule.key];

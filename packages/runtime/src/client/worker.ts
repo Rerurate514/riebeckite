@@ -96,6 +96,7 @@ export function createWorkerRuntime<TInput, TOutput>(
       let readyReject: ((error: unknown) => void) | undefined;
       let failed: RuntimeFailureError | undefined;
       let stopped = false;
+      let counted = false;
       const pending = new Map<number, PendingRequest>();
 
       const post = (message: RuntimeMessage, transfer?: Transferable[]) => {
@@ -125,7 +126,10 @@ export function createWorkerRuntime<TInput, TOutput>(
         pending.clear();
         worker?.terminate();
         worker = undefined;
-        activeWorkers = Math.max(0, activeWorkers - 1);
+        if (counted) {
+          counted = false;
+          activeWorkers = Math.max(0, activeWorkers - 1);
+        }
       };
 
       const onMessage = (event: WorkerMessageEvent) => {
@@ -203,14 +207,9 @@ export function createWorkerRuntime<TInput, TOutput>(
           readyResolve = resolve;
           readyReject = reject;
         });
+        worker = options.createWorker();
+        counted = true;
         activeWorkers += 1;
-        try {
-          worker = options.createWorker();
-        } catch (error) {
-          activeWorkers = Math.max(0, activeWorkers - 1);
-          readyReject?.(error);
-          throw error;
-        }
         worker.addEventListener("message", onMessage);
         worker.addEventListener("error", onError);
         worker.addEventListener("messageerror", onMessageError);
@@ -310,7 +309,10 @@ export function createWorkerRuntime<TInput, TOutput>(
           worker.removeEventListener("messageerror", onMessageError);
           worker.terminate();
           worker = undefined;
-          activeWorkers = Math.max(0, activeWorkers - 1);
+          if (counted) {
+            counted = false;
+            activeWorkers = Math.max(0, activeWorkers - 1);
+          }
         }
       };
 

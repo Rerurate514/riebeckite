@@ -8,10 +8,24 @@ import { createRuntimeFixture, type RuntimeFixture } from "./fixture.js";
 
 type RuntimeTestWindow = Window & {
   __runtimeTest?: {
-    instances: Array<{ signal: AbortSignal }>;
+    instances: Array<{
+      signal: AbortSignal;
+      invoke(input: unknown): Promise<void>;
+    }>;
+    workerInstances: Array<{
+      signal: AbortSignal;
+      invoke(input: unknown): Promise<number>;
+    }>;
     errors: string[];
     clicks: number;
+    workerReady: number;
+    workerResults: number[];
+    workerBackpressure: string | null;
+    workerAbort: string | null;
+    workerPending: string | null;
+    workerCrash: string | null;
     unmountPage(): Promise<void>;
+    crashWorker(): Promise<void>;
   };
 };
 
@@ -36,7 +50,24 @@ before(async () => {
   });
   const bundle = result.outputFiles?.[0]?.text;
   assert.ok(bundle);
-  fixture = await createRuntimeFixture(bundle);
+  const workerResult = await build({
+    entryPoints: [
+      path.join(repositoryRoot, "tests/interactive-runtime/worker.ts"),
+    ],
+    bundle: true,
+    format: "esm",
+    platform: "browser",
+    target: "es2022",
+    write: false,
+  });
+  const workerBundle = workerResult.outputFiles?.[0]?.text;
+  assert.ok(workerBundle);
+  fixture = await createRuntimeFixture(bundle, {
+    "/runtime-worker.js": {
+      body: workerBundle,
+      contentType: "text/javascript; charset=utf-8",
+    },
+  });
   browser = await puppeteer.launch({
     headless: "shell",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -56,11 +87,15 @@ async function open(pathname = "/a"): Promise<{
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(String(error)));
   await page.goto(`${fixture.url}${pathname}`, { waitUntil: "networkidle0" });
-  await page.waitForFunction(
-    () =>
-      (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
-        .aborted === false,
-  );
+  await page.waitForFunction(() => {
+    const test = (window as RuntimeTestWindow).__runtimeTest;
+    return (
+      test?.instances.at(-1)?.signal.aborted === false &&
+      test.workerInstances.at(-1)?.signal.aborted === false &&
+      test.workerReady === 1 &&
+      test.workerResults.length === 4
+    );
+  });
   return { page, errors };
 }
 
@@ -105,6 +140,7 @@ test("page runtimes are disposed on navigation and recreated on return", async (
         window.location.pathname === "/b" &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
         document.querySelector("h1")?.textContent === "PAGE_B",
     );
     const second = await runtimeState(page);
@@ -118,7 +154,8 @@ test("page runtimes are disposed on navigation and recreated on return", async (
         window.location.pathname === "/a" &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.length === 3 &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
-          .aborted === false,
+          .aborted === false &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 3,
     );
     const back = await runtimeState(page);
     assert.equal(back.instances, 3);
@@ -147,6 +184,81 @@ test("page runtimes are disposed on navigation and recreated on return", async (
   }
 });
 
+test("worker runtimes isolate requests, cancel, crash and dispose", async () => {
+  const { page, errors } = await open();
+  try {
+    await page.waitForFunction(
+      () => (window as RuntimeTestWindow).__runtimeTest?.workerAbort !== null,
+    );
+    const worker = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return {
+        results: test?.workerResults,
+        backpressure: test?.workerBackpressure,
+        abort: test?.workerAbort,
+        instances: test?.workerInstances.length,
+      };
+    });
+    assert.deepEqual(worker.results, [3, 6, 9, 12]);
+    assert.equal(worker.backpressure, "RuntimeConcurrencyError");
+    assert.equal(worker.abort, "RuntimeAbortError");
+    assert.equal(worker.instances, 1);
+
+    await page.click('a[href="/b"]');
+    await page.waitForFunction(
+      () =>
+        window.location.pathname === "/b" &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerPending !== null &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerInstances.at(-1)
+          ?.signal.aborted === false,
+    );
+    const afterNavigation = await page.evaluate(async () => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      const previous = test?.workerInstances.at(-2);
+      let staleInvoke = "resolved";
+      try {
+        await previous?.invoke({ value: 1 });
+      } catch (error) {
+        staleInvoke = (error as Error).name;
+      }
+      return {
+        pending: test?.workerPending,
+        active: test?.workerInstances.filter(
+          (runtime) => !runtime.signal.aborted,
+        ).length,
+        previousAborted: previous?.signal.aborted,
+        staleInvoke,
+        results: test?.workerResults,
+      };
+    });
+    assert.equal(afterNavigation.pending, "RuntimeAbortError");
+    assert.equal(afterNavigation.active, 1);
+    assert.equal(afterNavigation.previousAborted, true);
+    assert.equal(afterNavigation.staleInvoke, "RuntimeStateError");
+    assert.deepEqual(afterNavigation.results, [3, 6, 9, 12]);
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.crashWorker(),
+    );
+    const crashed = await page.evaluate(
+      () => (window as RuntimeTestWindow).__runtimeTest?.workerCrash,
+    );
+    assert.equal(crashed, "RuntimeFailureError");
+
+    const stillWorks = await page.evaluate(async () => {
+      const runtime = (
+        window as RuntimeTestWindow
+      ).__runtimeTest?.workerInstances.at(-1);
+      return runtime?.invoke({ value: 10 });
+    });
+    assert.equal(stillWorks, 30);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("a fresh page mount owns a fresh runtime host", async () => {
   const { page, errors } = await open("/b");
   try {
@@ -155,7 +267,8 @@ test("a fresh page mount owns a fresh runtime host", async () => {
       () =>
         window.location.pathname === "/c" &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
-          .aborted === false,
+          .aborted === false &&
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2,
     );
     const state = await runtimeState(page);
     assert.equal(state.instances, 2);

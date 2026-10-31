@@ -7,6 +7,11 @@ const pages = new Map<string, string>([
   ["/c", "PAGE_C"],
 ]);
 
+export type RuntimeAsset = {
+  readonly body: string | Uint8Array;
+  readonly contentType: string;
+};
+
 export type RuntimeFixture = {
   url: string;
   close(): Promise<void>;
@@ -14,9 +19,17 @@ export type RuntimeFixture = {
 
 export async function createRuntimeFixture(
   bundle: string,
+  assets: Readonly<Record<string, RuntimeAsset>> = {},
 ): Promise<RuntimeFixture> {
   const server = http.createServer((request, response) => {
     const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
+    const asset = assets[pathname];
+    if (asset) {
+      response
+        .writeHead(200, { "content-type": asset.contentType })
+        .end(asset.body);
+      return;
+    }
     const marker = pages.get(pathname);
     if (!marker) {
       response.writeHead(404, { "content-type": "text/plain" }).end();

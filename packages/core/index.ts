@@ -142,6 +142,11 @@ export type {
 } from "./src/content/link_resolution.js";
 export { resolveLinkOccurrences } from "./src/content/link_resolution.js";
 export type {
+  LinkRewrite,
+  LinkRewriteResult,
+} from "./src/content/link_rewrite.js";
+export { rewriteLinkDestinations } from "./src/content/link_rewrite.js";
+export type {
   OutputChangeReason,
   OutputChangeSet,
   OutputDescriptor,

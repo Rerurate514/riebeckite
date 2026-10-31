@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { extractLinkOccurrences, resolveLinkOccurrences } from "../index.js";
+import {
+  extractLinkOccurrences,
+  resolveLinkOccurrences,
+  rewriteLinkDestinations,
+} from "../index.js";
 
 test("link occurrences retain UTF-16 source slices and Markdown destinations", () => {
   const source =
@@ -83,5 +87,34 @@ test("link occurrences resolve only unique canonical targets", () => {
   assert.deepEqual(
     ambiguous?.candidates?.map((candidate) => candidate.slug),
     ["a", "b"],
+  );
+});
+
+test("link destination rewrites preserve surrounding syntax and reject drift", () => {
+  const source = "[[old#section|label]] and [old](old.md#section)";
+  const occurrences = extractLinkOccurrences(source);
+  const rewritten = rewriteLinkDestinations(
+    source,
+    occurrences.flatMap((occurrence) =>
+      occurrence.destinationRange
+        ? [
+            {
+              range: occurrence.destinationRange,
+              expected: occurrence.rawDestination,
+              replacement: "new",
+            },
+          ]
+        : [],
+    ),
+  );
+  assert.deepEqual(rewritten, {
+    ok: true,
+    content: "[[new#section|label]] and [old](new)",
+  });
+  assert.deepEqual(
+    rewriteLinkDestinations(source, [
+      { range: { start: 0, end: 1 }, expected: "x", replacement: "" },
+    ]),
+    { ok: false, reason: "source-mismatch" },
   );
 });

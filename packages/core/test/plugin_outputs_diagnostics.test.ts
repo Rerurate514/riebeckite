@@ -659,6 +659,79 @@ test("body-dependent queries invalidate through file.content", async () => {
   }
 });
 
+test("query fingerprints cover declared filter and sort properties only", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-query-properties-"),
+  );
+  try {
+    let tag = "alpha";
+    let otherTitle = "Other";
+    let body = "Stable body";
+    let computed = "first";
+    const statuses: (string | undefined)[] = [];
+    const view = defineDerivedView<null, string>({
+      id: "test.query-properties",
+      version: "1",
+      compute(_input, context) {
+        context.track({
+          type: "query",
+          id: "tagged-by-title",
+          properties: ["file.tags", "title"],
+        });
+        return computed;
+      },
+    });
+    const plugin = definePlugin({
+      name: "query-properties",
+      derivedViews: [view],
+      async planGeneratedOutputs({ derived }) {
+        const resolved = await derived.resolveWithDependencies(view, null);
+        statuses.push(derived.inspect()[0]?.cache);
+        return [
+          {
+            path: "query.txt",
+            content: resolved.value,
+            derivedDependencies: resolved.dependencies,
+          },
+        ];
+      },
+    });
+    const build = async () => {
+      const manager = new ContentManager(
+        memorySource({
+          "note.md": `---\ntitle: Note\ntags: [${tag}]\npublish: true\n---\n${body}\n`,
+          "other.md": `---\ntitle: ${otherTitle}\npublish: true\n---\nStable\n`,
+        }),
+        [],
+        {
+          config: resolveConfig({
+            site: { title: "Test" },
+            content: { filters: { publishStrategy: "explicit" } },
+            cache: { enabled: true, directory: path.join(directory, "cache") },
+          }),
+          plugins: [plugin],
+        },
+      );
+      const manifest = await manager.getManifest();
+      return manifest.generatedOutputs[0];
+    };
+
+    assert.equal((await build())?.content, "first");
+    otherTitle = "Renamed";
+    computed = "second";
+    assert.equal((await build())?.content, "second");
+    body = "Changed body";
+    computed = "third";
+    assert.equal((await build())?.content, "second");
+    tag = "beta";
+    computed = "fourth";
+    assert.equal((await build())?.content, "fourth");
+    assert.deepEqual(statuses, ["miss", "miss", "hit", "miss"]);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("derived dependencies are validated against the current build snapshot", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-derived-dependencies-"),

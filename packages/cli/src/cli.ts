@@ -231,6 +231,11 @@ function parsePublishCommand(options: readonly string[]): Command {
       }
       if (at !== undefined)
         throw new CliUsageError("Duplicate publish option: --at.");
+      if (action === "run") {
+        throw new CliUsageError(
+          "--at is only valid for publish plan, status, validate, or gate.",
+        );
+      }
       at = value;
       index += 1;
       continue;

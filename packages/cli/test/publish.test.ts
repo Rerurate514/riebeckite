@@ -158,6 +158,9 @@ test("publish CLI syntax is parsed explicitly", () => {
     },
   );
   assert.throws(() => parseCommand(["publish", "run", "--all"]));
+  assert.throws(() =>
+    parseCommand(["publish", "run", "--at", "2026-01-10T00:00:00.000Z"]),
+  );
   assert.throws(() => parseCommand(["publish", "approve"]));
 });
 

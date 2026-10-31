@@ -41,11 +41,29 @@ type OptionValue<O extends CliOptionDefinition> = O extends {
         ? OptionBase<O>
         : OptionBase<O> | undefined;
 
+type UnionToIntersection<U> = (
+  U extends unknown
+    ? (value: U) => void
+    : never
+) extends (value: infer I) => void
+  ? I
+  : never;
+
+type OptionEntry<O extends CliOptionDefinition> = {
+  readonly [K in CamelCase<O["name"]>]: OptionValue<O>;
+};
+
 export type CliOptionsOf<
   Os extends readonly CliOptionDefinition[] | undefined,
-> = {
-  readonly [O in NonNullable<Os>[number] as CamelCase<O["name"]>]: OptionValue<O>;
-};
+> = [NonNullable<Os>[number]] extends [never]
+  ? {}
+  : UnionToIntersection<
+      NonNullable<Os>[number] extends infer O
+        ? O extends CliOptionDefinition
+          ? OptionEntry<O>
+          : never
+        : never
+    >;
 
 type ArgumentValue<A extends CliArgumentDefinition> = A extends {
   readonly variadic: true;
@@ -63,31 +81,53 @@ type ArgumentField<A extends CliArgumentDefinition> = A extends {
       ? readonly string[]
       : ArgumentValue<A> | undefined;
 
-export type CliArgumentsOf<
-  As extends readonly CliArgumentDefinition[] | undefined,
-> = {
-  readonly [A in NonNullable<As>[number] as CamelCase<A["name"]>]: ArgumentField<A>;
+type ArgumentEntry<A extends CliArgumentDefinition> = {
+  readonly [K in CamelCase<A["name"]>]: ArgumentField<A>;
 };
 
-type CommandShape = Omit<CliCommandSpec, "handler">;
+export type CliArgumentsOf<
+  As extends readonly CliArgumentDefinition[] | undefined,
+> = [NonNullable<As>[number]] extends [never]
+  ? {}
+  : UnionToIntersection<
+      NonNullable<As>[number] extends infer A
+        ? A extends CliArgumentDefinition
+          ? ArgumentEntry<A>
+          : never
+        : never
+    >;
 
-export type CliTypedCommandInput<C extends CommandShape> = {
+type CommandMetadata = Omit<
+  CliCommandSpec,
+  "handler" | "arguments" | "options"
+>;
+
+export type CliTypedCommandInput<
+  A extends readonly CliArgumentDefinition[] | undefined,
+  O extends readonly CliOptionDefinition[] | undefined,
+> = {
   readonly command: CliCommandDefinition;
-  readonly arguments: CliArgumentsOf<C["arguments"]>;
-  readonly options: CliOptionsOf<C["options"]>;
+  readonly arguments: CliArgumentsOf<A>;
+  readonly options: CliOptionsOf<O>;
   readonly rawArguments: readonly string[];
 };
 
-export type CliTypedCommand<C extends CommandShape> = C & {
+export type CliTypedCommand<
+  A extends readonly CliArgumentDefinition[] | undefined,
+  O extends readonly CliOptionDefinition[] | undefined,
+> = CommandMetadata & {
+  readonly arguments?: A;
+  readonly options?: O;
   readonly handler: (
     context: CliCommandContext,
-    input: CliTypedCommandInput<C>,
+    input: CliTypedCommandInput<A, O>,
   ) => Promise<CliCommandResult> | CliCommandResult;
 };
 
-export function defineCliCommand<const C extends CommandShape>(
-  command: CliTypedCommand<C>,
-): CliCommandDefinition {
+export function defineCliCommand<
+  const A extends readonly CliArgumentDefinition[] = readonly [],
+  const O extends readonly CliOptionDefinition[] = readonly [],
+>(command: CliTypedCommand<A, O>): CliCommandDefinition {
   return command as unknown as CliCommandDefinition;
 }
 
@@ -99,10 +139,10 @@ export type CliBooleanOptions = {
   readonly hidden?: boolean;
 };
 
-export function cliBoolean(
+export function cliBoolean<const O extends CliBooleanOptions = {}>(
   name: string,
-  options: CliBooleanOptions = {},
-): CliOptionDefinition {
+  options: O = {} as O,
+): CliOptionDefinition & { readonly type: "boolean" } & O {
   return {
     name,
     type: "boolean",
@@ -120,10 +160,10 @@ export type CliStringOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliString(
+export function cliString<const O extends CliStringOptions = {}>(
   name: string,
-  options: CliStringOptions = {},
-): CliOptionDefinition {
+  options: O = {} as O,
+): CliOptionDefinition & { readonly type: "string" } & O {
   return {
     name,
     type: "string",
@@ -157,10 +197,10 @@ export type CliNumberOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliNumber(
+export function cliNumber<const O extends CliNumberOptions = {}>(
   name: string,
-  options: CliNumberOptions = {},
-): CliOptionDefinition {
+  options: O = {} as O,
+): CliOptionDefinition & { readonly type: "number" } & O {
   return {
     name,
     type: "number",
@@ -177,11 +217,17 @@ export type CliEnumOptions = {
   readonly hidden?: boolean;
 };
 
-export function cliEnum<const V extends string>(
+export function cliEnum<
+  const V extends string,
+  const O extends CliEnumOptions = {},
+>(
   name: string,
   values: readonly V[],
-  options: CliEnumOptions = {},
-): CliOptionDefinition & { readonly values: readonly V[] } {
+  options: O = {} as O,
+): CliOptionDefinition & {
+  readonly type: "enum";
+  readonly values: readonly V[];
+} & O {
   return {
     name,
     type: "enum",
@@ -199,20 +245,20 @@ export type CliArgumentOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliArgument(
+export function cliArgument<const O extends CliArgumentOptions = {}>(
   name: string,
-  options: CliArgumentOptions = {},
-): CliArgumentDefinition {
+  options: O = {} as O,
+): CliArgumentDefinition & O {
   return {
     name,
     ...options,
   };
 }
 
-export function cliVariadicArgument(
+export function cliVariadicArgument<const O extends CliArgumentOptions = {}>(
   name: string,
-  options: CliArgumentOptions = {},
-): CliArgumentDefinition & { readonly variadic: true } {
+  options: O = {} as O,
+): CliArgumentDefinition & O & { readonly variadic: true } {
   return {
     name,
     ...options,
@@ -220,13 +266,8 @@ export function cliVariadicArgument(
   };
 }
 
-export function cliExample(
-  command: string,
-  description?: string,
-): CliExample {
-  return description === undefined
-    ? { command }
-    : { command, description };
+export function cliExample(command: string, description?: string): CliExample {
+  return description === undefined ? { command } : { command, description };
 }
 
 export function toOptionKey(name: string): string {

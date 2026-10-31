@@ -5,44 +5,40 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseCommand } from "../src/cli.js";
 import { runCreateTheme } from "../src/commands/create_theme.js";
 import { renderThemeIndex } from "../src/theme_generator/templates.js";
+import { resolveInput } from "./command_fixture.js";
 
 test("parses create theme options and lists templates", () => {
-  assert.deepEqual(
-    parseCommand([
-      "create",
-      "theme",
-      "my-theme",
-      "--template",
-      "blog",
-      "--features",
-      "callouts,print-styles",
-      "--no-dark-mode",
-    ]),
-    {
-      name: "create-theme",
-      themeName: "my-theme",
-      directory: "themes/my-theme",
-      template: "blog",
-      features: ["callouts", "print-styles"],
-      darkMode: false,
-      tests: true,
-      documentation: true,
-      register: false,
-    },
-  );
-  assert.deepEqual(parseCommand(["create", "theme", "--list"]), {
-    name: "create-theme-list",
-  });
+  const input = resolveInput([
+    "create",
+    "theme",
+    "my-theme",
+    "--template",
+    "blog",
+    "--features",
+    "callouts,print-styles",
+    "--no-dark-mode",
+  ]);
+  assert.equal(input.arguments.name, "my-theme");
+  assert.equal(input.options.template, "blog");
+  assert.equal(input.options.features, "callouts,print-styles");
+  assert.equal(input.options.darkMode, false);
+  assert.equal(input.options.tests, true);
+  assert.equal(input.options.docs, true);
+  assert.equal(input.options.register, false);
+
+  const list = resolveInput(["create", "theme", "--list"]);
+  assert.equal(list.arguments.name, undefined);
+  assert.equal(list.options.list, true);
+
   assert.throws(
-    () => parseCommand(["create", "theme", "Bad_Name"]),
+    () => resolveInput(["create", "theme", "Bad_Name"]),
     /kebab-case/,
   );
   assert.throws(
-    () => parseCommand(["create", "theme", "example", "--template", "unknown"]),
-    /Unknown theme template/,
+    () => resolveInput(["create", "theme", "example", "--template", "unknown"]),
+    /requires one of/,
   );
 });
 

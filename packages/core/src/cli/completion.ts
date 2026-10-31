@@ -25,7 +25,11 @@ export function parseCliShell(value: string): CliShell | undefined {
     : undefined;
 }
 
-type Transition = { readonly from: string; readonly token: string; readonly to: string };
+type Transition = {
+  readonly from: string;
+  readonly token: string;
+  readonly to: string;
+};
 
 function visibleCommands(
   registry: CliCommandRegistry,
@@ -42,7 +46,11 @@ function transitions(registry: CliCommandRegistry): Transition[] {
     const segments = command.id.split(" ");
     let path = "";
     for (const segment of segments) {
-      result.push({ from: path, token: segment, to: path ? `${path} ${segment}` : segment });
+      result.push({
+        from: path,
+        token: segment,
+        to: path ? `${path} ${segment}` : segment,
+      });
       path = path ? `${path} ${segment}` : segment;
     }
   }
@@ -134,7 +142,9 @@ function bashCompletion(
         )};;`,
     )
     .join("\n");
-  const pathCases = [...new Set(["", ...visibleCommands(registry).map((command) => command.id)])]
+  const pathCases = [
+    ...new Set(["", ...visibleCommands(registry).map((command) => command.id)]),
+  ]
     .sort((left, right) => (left === "" ? -1 : left.localeCompare(right)))
     .map(
       (path) =>
@@ -178,10 +188,16 @@ function zshCompletion(
         `    ${shellSingleQuote(`${command.id}:${sanitizeDescription(command.summary)}`)}`,
     )
     .join("\n");
-  const pathCases = [...new Set(visibleCommands(registry).map((command) => command.id))]
+  const pathCases = [
+    ...new Set(visibleCommands(registry).map((command) => command.id)),
+  ]
     .map((path) => {
-      const words = wordsForPath(registry, path).filter((word) => !word.startsWith("-"));
-      const options = wordsForPath(registry, path).filter((word) => word.startsWith("-"));
+      const words = wordsForPath(registry, path).filter(
+        (word) => !word.startsWith("-"),
+      );
+      const options = wordsForPath(registry, path).filter((word) =>
+        word.startsWith("-"),
+      );
       const values = [
         ...words.map((word) => shellSingleQuote(word)),
         ...options.map((word) => shellSingleQuote(word)),
@@ -226,7 +242,9 @@ function powershellCompletion(
         `      ${powershellSingleQuote(`${transition.from} ${transition.token}`)} { $path = ${powershellSingleQuote(transition.to)} }`,
     )
     .join("\n");
-  const pathCases = [...new Set(["", ...visibleCommands(registry).map((command) => command.id)])]
+  const pathCases = [
+    ...new Set(["", ...visibleCommands(registry).map((command) => command.id)]),
+  ]
     .sort((left, right) => (left === "" ? -1 : left.localeCompare(right)))
     .map(
       (path) =>

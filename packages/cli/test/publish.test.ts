@@ -15,7 +15,6 @@ import {
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import { writeBuildOutputMarker } from "../src/build_output.js";
-import { parseCommand } from "../src/cli.js";
 import { runClean } from "../src/commands/clean.js";
 import { runPublish } from "../src/commands/publish.js";
 import { readPublicationArtifact } from "../src/publication/artifact.js";
@@ -37,6 +36,7 @@ import {
   writePublicationHistory,
 } from "../src/publication/state.js";
 import { runWranglerDeployment } from "../src/publication/wrangler.js";
+import { resolveInput } from "./command_fixture.js";
 
 const BUILD_TIME = "2026-01-10T00:00:00.000Z";
 
@@ -119,49 +119,42 @@ async function silently<T>(run: () => Promise<T>): Promise<T> {
 }
 
 test("publish CLI syntax is parsed explicitly", () => {
-  assert.deepEqual(parseCommand(["publish", "plan", "--json"]), {
-    name: "publish",
-    options: {
-      action: "plan",
-      json: true,
-      execute: false,
-      force: false,
-      trigger: "cli",
-      slugs: [],
-      all: false,
-    },
-  });
-  assert.deepEqual(
-    parseCommand([
-      "publish",
-      "run",
-      "--execute",
-      "--require-approval",
-      "--trigger",
-      "scheduled",
-      "--provider",
-      "github-pages",
-    ]),
-    {
-      name: "publish",
-      options: {
-        action: "run",
-        json: false,
-        workflow: "approved",
-        execute: true,
-        force: false,
-        trigger: "scheduled",
-        provider: "github-pages",
-        slugs: [],
-        all: false,
-      },
-    },
+  const plan = resolveInput(["publish", "plan", "--json"]);
+  assert.equal(plan.command.id, "publish plan");
+  assert.equal(plan.options.json, true);
+  assert.equal(plan.options.execute, undefined);
+  assert.equal(plan.options.force, undefined);
+  assert.equal(plan.options.trigger, undefined);
+  assert.equal(plan.options.all, undefined);
+
+  const run = resolveInput([
+    "publish",
+    "run",
+    "--execute",
+    "--require-approval",
+    "--trigger",
+    "scheduled",
+    "--provider",
+    "github-pages",
+  ]);
+  assert.equal(run.command.id, "publish run");
+  assert.equal(run.options.requireApproval, true);
+  assert.equal(run.options.execute, true);
+  assert.equal(run.options.force, false);
+  assert.equal(run.options.trigger, "scheduled");
+  assert.equal(run.options.provider, "github-pages");
+  assert.throws(
+    () => resolveInput(["publish", "run", "--all"]),
+    /Unknown option/,
   );
-  assert.throws(() => parseCommand(["publish", "run", "--all"]));
-  assert.throws(() =>
-    parseCommand(["publish", "run", "--at", "2026-01-10T00:00:00.000Z"]),
+  assert.throws(
+    () => resolveInput(["publish", "run", "--at", "2026-01-10T00:00:00.000Z"]),
+    /Unknown option/,
   );
-  assert.throws(() => parseCommand(["publish", "approve"]));
+  assert.throws(
+    () => resolveInput(["publish", "approve"]),
+    /requires at least one slug or --all/,
+  );
 });
 
 test("authorization and history live outside the build cache and round-trip", async (t) => {

@@ -5,37 +5,30 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseCommand } from "../src/cli.js";
 import { runCreatePageType } from "../src/commands/create_page_type.js";
 import { renderPageTypeModule } from "../src/page_type_generator/templates.js";
+import { resolveInput } from "./command_fixture.js";
 
 test("parses PageType options", () => {
-  assert.deepEqual(
-    parseCommand([
-      "create",
-      "page-type",
-      "glossary",
-      "--plugin",
-      "reference",
-      "--path",
-      "/reference/glossary/",
-      "--with-tests",
-      "--register",
-    ]),
-    {
-      name: "create-page-type",
-      options: {
-        name: "glossary",
-        plugin: "reference",
-        path: "/reference/glossary/",
-        tests: true,
-        register: true,
-      },
-    },
-  );
+  const input = resolveInput([
+    "create",
+    "page-type",
+    "glossary",
+    "--plugin",
+    "reference",
+    "--path",
+    "/reference/glossary/",
+    "--with-tests",
+    "--register",
+  ]);
+  assert.equal(input.arguments.name, "glossary");
+  assert.equal(input.options.plugin, "reference");
+  assert.equal(input.options.path, "/reference/glossary/");
+  assert.equal(input.options.withTests, true);
+  assert.equal(input.options.register, true);
   assert.throws(
     () =>
-      parseCommand([
+      resolveInput([
         "create",
         "page-type",
         "glossary",

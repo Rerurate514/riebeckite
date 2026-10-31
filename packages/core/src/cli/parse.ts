@@ -1,9 +1,6 @@
 import { toArgumentKey, toOptionKey } from "./define.js";
 import { CliUsageError } from "./errors.js";
-import {
-  commandPathSegments,
-  normalizeCommandId,
-} from "./registry.js";
+import { commandPathSegments, normalizeCommandId } from "./registry.js";
 import type {
   CliArgumentDefinition,
   CliArgumentValue,
@@ -66,7 +63,10 @@ export function resolveCliCommand(
   };
 }
 
-export function suggest(value: string, candidates: readonly string[]): string[] {
+export function suggest(
+  value: string,
+  candidates: readonly string[],
+): string[] {
   return candidates
     .map((candidate) => ({
       candidate,
@@ -76,7 +76,9 @@ export function suggest(value: string, candidates: readonly string[]): string[] 
         value.toLowerCase().startsWith(candidate.toLowerCase()),
     }))
     .filter(
-      (entry) => entry.prefix || entry.distance <= Math.max(2, Math.ceil(value.length / 3)),
+      (entry) =>
+        entry.prefix ||
+        entry.distance <= Math.max(2, Math.ceil(value.length / 3)),
     )
     .sort((left, right) => {
       if (left.prefix !== right.prefix) return left.prefix ? -1 : 1;
@@ -196,6 +198,14 @@ function parseCommandInput(
       continue;
     }
     if (token === "--help" || token === "-h") return { kind: "help" };
+    if (
+      token === "--json" &&
+      command.supportsJson === true &&
+      !hasJsonOption(command)
+    ) {
+      options.json = true;
+      continue;
+    }
     if (token.startsWith("--")) {
       const consumed = parseLongOption(command, tokens, index, options, seen);
       index += consumed;
@@ -248,6 +258,10 @@ function initializeOptions(
   return values;
 }
 
+function hasJsonOption(command: CliCommandDefinition): boolean {
+  return (command.options ?? []).some((option) => option.name === "json");
+}
+
 function parseLongOption(
   command: CliCommandDefinition,
   tokens: readonly string[],
@@ -274,7 +288,9 @@ function parseLongOption(
     }
   }
   if (!definition) {
-    const names = definitions.filter((entry) => !entry.hidden).map((entry) => entry.name);
+    const names = definitions
+      .filter((entry) => !entry.hidden)
+      .map((entry) => entry.name);
     const suggestion = suggest(name, names)[0];
     throw new CliUsageError(
       `Unknown option: --${name}.${suggestion ? ` Did you mean --${suggestion}?` : ""}`,
@@ -290,10 +306,13 @@ function parseLongOption(
     return 0;
   }
   if (!booleanValue) {
-    throw new CliUsageError(`--no-${definition.name} is not a boolean option.`, {
-      commandPath: command.id,
-      usage: ROOT_USAGE,
-    });
+    throw new CliUsageError(
+      `--no-${definition.name} is not a boolean option.`,
+      {
+        commandPath: command.id,
+        usage: ROOT_USAGE,
+      },
+    );
   }
 
   let value = inlineValue;
@@ -312,7 +331,12 @@ function parseLongOption(
       });
     }
   }
-  setOptionValue(definition, convertOptionValue(definition, value), values, seen);
+  setOptionValue(
+    definition,
+    convertOptionValue(definition, value),
+    values,
+    seen,
+  );
   return consumed;
 }
 
@@ -353,7 +377,12 @@ function parseShortOption(
         });
       }
     }
-    setOptionValue(definition, convertOptionValue(definition, value), values, seen);
+    setOptionValue(
+      definition,
+      convertOptionValue(definition, value),
+      values,
+      seen,
+    );
     return consumed;
   }
   return 0;
@@ -365,10 +394,9 @@ function parseBooleanValue(
 ): boolean {
   if (value === "true") return true;
   if (value === "false") return false;
-  throw new CliUsageError(
-    `--${definition.name} accepts only true or false.`,
-    { usage: ROOT_USAGE },
-  );
+  throw new CliUsageError(`--${definition.name} accepts only true or false.`, {
+    usage: ROOT_USAGE,
+  });
 }
 
 function convertOptionValue(
@@ -458,7 +486,11 @@ function assignArguments(
   const definitions = command.arguments ?? [];
   const values: Record<string, CliArgumentValue | undefined> = {};
   let index = 0;
-  for (let definitionIndex = 0; definitionIndex < definitions.length; definitionIndex += 1) {
+  for (
+    let definitionIndex = 0;
+    definitionIndex < definitions.length;
+    definitionIndex += 1
+  ) {
     const definition = definitions[definitionIndex];
     if (!definition) continue;
     if (definition.variadic) {
@@ -489,7 +521,10 @@ function assignArguments(
       }
       continue;
     }
-    values[toArgumentKey(definition.name)] = validateArgument(definition, value);
+    values[toArgumentKey(definition.name)] = validateArgument(
+      definition,
+      value,
+    );
     index += 1;
   }
 
@@ -546,7 +581,10 @@ function validateRequiredOptions(
 
 function editDistance(left: string, right: string): number {
   if (left === right) return 0;
-  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  const previous = Array.from(
+    { length: right.length + 1 },
+    (_, index) => index,
+  );
   for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
     let diagonal = previous[0] ?? 0;
     previous[0] = leftIndex;

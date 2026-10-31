@@ -72,6 +72,13 @@ export function formatCommandHelp(
   }
 
   const options_ = (command.options ?? []).filter((option) => !option.hidden);
+  if (command.supportsJson === true && !hasJsonOption(command)) {
+    options_.push({
+      name: "json",
+      type: "boolean",
+      description: "Print the result as JSON.",
+    });
+  }
   if (options_.length > 0 || !command.raw) {
     lines.push("");
     lines.push("Options:");
@@ -83,9 +90,7 @@ export function formatCommandHelp(
         ).join(`\n${" ".repeat(28)}`)}`,
       );
     }
-    lines.push(
-      `  ${pad("-h, --help", 26)}Show help for this command.`,
-    );
+    lines.push(`  ${pad("-h, --help", 26)}Show help for this command.`);
   }
 
   if (command.raw) {
@@ -186,7 +191,10 @@ function formatNodes(
             Math.max(1, column - node.name.length),
           )}`
         : display;
-      const wrapped = wrapText(summary, Math.max(20, width - indent.length - column));
+      const wrapped = wrapText(
+        summary,
+        Math.max(20, width - indent.length - column),
+      );
       lines.push(`${indent}${colored}${wrapped[0] ?? ""}`);
       for (const line of wrapped.slice(1)) {
         lines.push(`${indent}${" ".repeat(column)}${line}`);
@@ -195,9 +203,7 @@ function formatNodes(
       lines.push(`${indent}${node.name}`);
     }
     if (node.children.length > 0) {
-      lines.push(
-        ...formatNodes(node.children, `${indent}  `, width, color),
-      );
+      lines.push(...formatNodes(node.children, `${indent}  `, width, color));
     }
   }
   return lines;
@@ -235,8 +241,16 @@ function usageFor(
   const node = findNode(registry, command.id);
   if (node && node.children.length > 0) parts.push("<command>");
   if (command.raw) parts.push("[args...]");
-  else if ((command.options ?? []).length > 0) parts.push("[options]");
+  else if (
+    (command.options ?? []).length > 0 ||
+    (command.supportsJson === true && !hasJsonOption(command))
+  )
+    parts.push("[options]");
   return parts.join(" ");
+}
+
+function hasJsonOption(command: CliCommandDefinition): boolean {
+  return (command.options ?? []).some((option) => option.name === "json");
 }
 
 function formatArgumentUsage(argument: CliArgumentDefinition): string {
@@ -252,7 +266,8 @@ function argumentHelp(argument: CliArgumentDefinition): string {
   const details: string[] = [];
   if (argument.description) details.push(argument.description);
   if (argument.values) details.push(`one of: ${argument.values.join(", ")}`);
-  if (argument.default !== undefined) details.push(`default: ${argument.default}`);
+  if (argument.default !== undefined)
+    details.push(`default: ${argument.default}`);
   if (argument.required) details.push("required");
   return details.join(" ");
 }
@@ -278,7 +293,8 @@ function optionHelp(option: CliOptionDefinition): string {
   const details: string[] = [];
   if (option.description) details.push(option.description);
   if (option.required) details.push("required");
-  if (option.default !== undefined) details.push(`default: ${String(option.default)}`);
+  if (option.default !== undefined)
+    details.push(`default: ${String(option.default)}`);
   return details.join(" ");
 }
 

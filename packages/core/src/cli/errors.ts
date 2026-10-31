@@ -41,7 +41,10 @@ export class CliCommandError extends Error {
       cause?: unknown;
     } = {},
   ) {
-    super(message, options.cause === undefined ? undefined : { cause: options.cause });
+    super(
+      message,
+      options.cause === undefined ? undefined : { cause: options.cause },
+    );
     this.name = "CliCommandError";
     this.code = options.code ?? "CLI_COMMAND_FAILED";
     this.exitCode = options.exitCode ?? 1;

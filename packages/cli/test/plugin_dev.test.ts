@@ -3,12 +3,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { parseCommand } from "../src/cli.js";
 import {
   pluginDevFixtureMarker,
   writePluginDevFixture,
 } from "../src/plugin_dev/fixtures.js";
 import { loadLocalPlugin } from "../src/plugin_dev/local_plugin.js";
+import { resolveInput } from "./command_fixture.js";
 
 async function createPlugin(
   packageJson: unknown,
@@ -85,17 +85,20 @@ test("loads a local plugin from a directory and resolves export aliases", async 
 });
 
 test("parses plugin contract verification options", () => {
-  assert.deepEqual(
-    parseCommand(["plugin", "verify", "plugin", "--level", "full", "--json"]),
-    {
-      name: "plugin-verify",
-      pluginPath: "plugin",
-      level: "full",
-      json: true,
-    },
-  );
-  assert.throws(() =>
-    parseCommand(["plugin", "verify", "plugin", "--level", "slow"]),
+  const input = resolveInput([
+    "plugin",
+    "verify",
+    "plugin",
+    "--level",
+    "full",
+    "--json",
+  ]);
+  assert.equal(input.arguments.path, "plugin");
+  assert.equal(input.options.level, "full");
+  assert.equal(input.options.json, true);
+  assert.throws(
+    () => resolveInput(["plugin", "verify", "plugin", "--level", "slow"]),
+    /requires one of/,
   );
 });
 

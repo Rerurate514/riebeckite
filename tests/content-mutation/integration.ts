@@ -23,20 +23,49 @@ const packageLinks: Record<string, string> = {
   "plugin-obsidian-markdown": "packages/plugins/obsidian-markdown",
   "plugin-media": "packages/plugins/media",
   "plugin-attachment": "packages/plugins/attachment",
+  "plugin-hover-preview": "packages/plugins/hover-preview",
   "plugin-seo": "packages/plugins/seo",
 };
 
-function run(command: string, arguments_: readonly string[], cwd: string) {
+function run(
+  command: string,
+  arguments_: readonly string[],
+  cwd: string,
+  env: NodeJS.ProcessEnv = process.env,
+) {
   const result = spawnSync(command, arguments_, {
     cwd,
     stdio: "inherit",
-    env: process.env,
+    env,
   });
   assert.equal(result.status, 0, `${command} ${arguments_.join(" ")} failed`);
 }
 
 function runCli(...arguments_: string[]) {
   run(process.execPath, [cli, ...arguments_], site);
+}
+
+function runCliWithEnvironment(
+  arguments_: readonly string[],
+  env: NodeJS.ProcessEnv,
+) {
+  run(process.execPath, [cli, ...arguments_], site, env);
+}
+
+function runCliJson(
+  arguments_: readonly string[],
+  statuses: readonly number[] = [0],
+) {
+  const result = spawnSync(process.execPath, [cli, ...arguments_], {
+    cwd: site,
+    encoding: "utf8",
+    env: process.env,
+  });
+  assert.ok(
+    result.status !== null && statuses.includes(result.status),
+    `${result.stdout}\n${result.stderr}`.trim(),
+  );
+  return JSON.parse(result.stdout) as unknown;
 }
 
 function link(target: string, linkPath: string) {
@@ -118,12 +147,48 @@ function readBuildMarker(): {
   return JSON.parse(fs.readFileSync(marker, "utf8"));
 }
 
+function writeBuildMarker(marker: unknown) {
+  fs.writeFileSync(
+    path.join(site, ".riebeckite", "build-output.json"),
+    JSON.stringify(marker),
+  );
+}
+
+type ProvenanceState = {
+  provenance?: {
+    sources: readonly { path: string }[];
+    transforms: readonly { id: string; type: string; status: string }[];
+    outputs: readonly { path: string; status: string }[];
+    artifacts?: readonly { path: string }[];
+  };
+};
+
+function readBuildState(): ProvenanceState {
+  return JSON.parse(
+    fs.readFileSync(
+      path.join(site, ".riebeckite", "build", "content-state.json"),
+      "utf8",
+    ),
+  );
+}
+
 function read(relative: string): string {
   return fs.readFileSync(path.join(site, relative), "utf8");
 }
 
 function exists(relative: string): boolean {
   return fs.existsSync(path.join(site, relative));
+}
+
+function previewSlugs(): Set<string> {
+  const index = JSON.parse(
+    read("dist/_riebeckite/hover-preview/index.json"),
+  ) as Record<string, { slug?: string }>;
+  return new Set(
+    Object.values(index)
+      .map((entry) => entry.slug)
+      .filter((slug): slug is string => slug !== undefined),
+  );
 }
 
 async function main() {
@@ -136,6 +201,15 @@ async function main() {
   runCli("build", "--full");
   const baselineHash = hashTree(dist);
   const baselineMarker = readBuildMarker();
+  const baselinePreview = previewSlugs();
+  assert.ok(
+    baselinePreview.has("notes/target"),
+    "baseline preview is missing target",
+  );
+  assert.ok(
+    baselinePreview.has("notes/unlisted"),
+    "baseline preview is missing unlisted",
+  );
 
   runCli("build", "--full");
   assert.equal(
@@ -220,6 +294,67 @@ async function main() {
     "unlisted page missing",
   );
 
+  const incrementalPreview = previewSlugs();
+  assert.ok(
+    incrementalPreview.has("moved/target"),
+    "derived view was not recomputed",
+  );
+  assert.equal(
+    incrementalPreview.has("notes/target"),
+    false,
+    "derived view kept the old path",
+  );
+  assert.ok(
+    incrementalPreview.has("notes/created"),
+    "created note missing from derived view",
+  );
+  assert.ok(
+    incrementalPreview.has("notes/unlisted"),
+    "unlisted note missing from derived view",
+  );
+  assert.equal(
+    incrementalPreview.has("notes/draft"),
+    false,
+    "draft leaked into derived view",
+  );
+  assert.equal(
+    incrementalPreview.has("notes/scheduled"),
+    false,
+    "scheduled note leaked into derived view",
+  );
+
+  const provenance = readBuildState().provenance;
+  assert.ok(provenance, "build provenance was not recorded");
+  assert.ok(
+    provenance.sources.some((source) => source.path === "moved/target.md"),
+    "provenance is missing the moved source",
+  );
+  assert.ok(
+    provenance.transforms.some(
+      (transform) =>
+        transform.type === "derived-view" &&
+        transform.id === "transform:derived:hover-preview.index",
+    ),
+    "provenance is missing the derived view",
+  );
+  assert.ok(
+    provenance.transforms.some((transform) => transform.type === "plugin-hook"),
+    "provenance is missing plugin hooks",
+  );
+  assert.equal(
+    provenance.outputs.find(
+      (output) => output.path === "_riebeckite/hover-preview/index.json",
+    )?.status,
+    "generated",
+    "provenance did not record the recomputed derived output",
+  );
+  assert.ok(
+    provenance.artifacts?.some(
+      (artifact) => artifact.path === "moved/target.html",
+    ),
+    "provenance is missing final artifacts",
+  );
+
   const movedHtml = read("dist/moved/target.html");
   const sourceHtml = read("dist/notes/source.html");
   const createdHtml = read("dist/notes/created.html");
@@ -234,6 +369,42 @@ async function main() {
   assert.doesNotMatch(sitemap, /notes\/draft/);
   assert.doesNotMatch(sitemap, /notes\/scheduled/);
   assert.doesNotMatch(sitemap, /notes\/unlisted/);
+
+  const validGate = runCliJson([
+    "publish",
+    "gate",
+    "--json",
+    "--provider",
+    "cloudflare-workers",
+  ]) as {
+    allowed: boolean;
+    reasons: readonly string[];
+    artifactIssues: readonly { code: string }[];
+  };
+  assert.equal(validGate.allowed, true, "current publication gate is blocked");
+
+  writeBuildMarker({
+    ...incrementalMarker,
+    publicationFingerprint: baselineMarker.publicationFingerprint,
+  });
+  const staleGate = runCliJson(
+    ["publish", "gate", "--json", "--provider", "cloudflare-workers"],
+    [1],
+  ) as {
+    allowed: boolean;
+    reasons: readonly string[];
+    artifactIssues: readonly { code: string }[];
+  };
+  assert.equal(staleGate.allowed, false, "stale publication gate was allowed");
+  assert.ok(
+    staleGate.artifactIssues.some((issue) => issue.code === "artifact-stale"),
+    "stale artifact was not reported",
+  );
+  assert.ok(
+    staleGate.reasons.includes("artifact-invalid"),
+    "stale artifact did not block the gate",
+  );
+  writeBuildMarker(incrementalMarker);
 
   console.log("No-change build");
   runCli("build");
@@ -250,6 +421,42 @@ async function main() {
     hashTree(dist),
     incrementalHash,
     "clean rebuild differs from incremental build",
+  );
+  assert.equal(
+    readBuildMarker().artifactFingerprint,
+    incrementalMarker.artifactFingerprint,
+  );
+
+  console.log("Provenance-disabled full rebuild");
+  const withoutProvenance: NodeJS.ProcessEnv = {
+    ...process.env,
+    RIEBECKITE_DISABLE_PROVENANCE: "1",
+  };
+  runCliWithEnvironment(["clean", "--all"], withoutProvenance);
+  runCliWithEnvironment(["build", "--full"], withoutProvenance);
+  assert.equal(
+    hashTree(dist),
+    incrementalHash,
+    "disabling provenance changed the output",
+  );
+  assert.equal(readBuildState().provenance, undefined);
+  assert.equal(
+    readBuildMarker().publicationFingerprint,
+    incrementalMarker.publicationFingerprint,
+  );
+
+  console.log("Provenance-enabled full rebuild");
+  runCli("clean", "--all");
+  runCli("build", "--full");
+  assert.equal(
+    hashTree(dist),
+    incrementalHash,
+    "reenabling provenance changed the output",
+  );
+  assert.ok(readBuildState().provenance?.artifacts?.length);
+  assert.equal(
+    readBuildMarker().publicationFingerprint,
+    incrementalMarker.publicationFingerprint,
   );
   assert.equal(
     readBuildMarker().artifactFingerprint,

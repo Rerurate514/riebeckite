@@ -1,5 +1,6 @@
 import { defineConfig } from "@riebeckite/core";
 import { attachment } from "@riebeckite/plugin-attachment";
+import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { seo } from "@riebeckite/plugin-seo";
@@ -17,6 +18,15 @@ export default defineConfig({
     defaultVisibility: "public",
     publishStrategy: "selective",
   },
-  plugins: [obsidianMarkdown(), media(), attachment(), seo({ sitemap: true })],
+  provenance: {
+    enabled: process.env.RIEBECKITE_DISABLE_PROVENANCE !== "1",
+  },
+  plugins: [
+    obsidianMarkdown(),
+    media(),
+    attachment(),
+    hoverPreview(),
+    seo({ sitemap: true }),
+  ],
   theme: defaultTheme(),
 });

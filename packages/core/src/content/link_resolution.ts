@@ -87,21 +87,29 @@ function resolveLinkOccurrence(
 }
 
 function resolutionKey(occurrence: LinkOccurrence): string | undefined {
+  return linkResolutionKey(occurrence);
+}
+
+export function linkResolutionKey(
+  occurrence: LinkOccurrence,
+  sourcePath = occurrence.sourcePath,
+): string | undefined {
   const destination = occurrence.normalizedDestination.split("#", 1)[0] ?? "";
   if (!destination) return undefined;
   if (occurrence.syntax === "wikilink" || occurrence.syntax === "wiki-embed") {
     return destination.toLowerCase();
   }
-  if (!occurrence.sourcePath) return undefined;
+  if (!sourcePath) return undefined;
   const relative = destination.replaceAll("\\", "/");
-  if (relative.startsWith("/") || relative.split("/").includes(".."))
-    return undefined;
-  const directory = occurrence.sourcePath
-    .replaceAll("\\", "/")
-    .split("/")
-    .slice(0, -1);
-  const path = [...directory, ...relative.split("/")].filter(Boolean).join("/");
-  return path.replace(/\.md$/i, "").toLowerCase();
+  if (relative.startsWith("/")) return undefined;
+  const directory = sourcePath.replaceAll("\\", "/").split("/").slice(0, -1);
+  const segments: string[] = [];
+  for (const segment of [...directory, ...relative.split("/")]) {
+    if (!segment || segment === ".") continue;
+    if (segment === "..") segments.pop();
+    else segments.push(segment);
+  }
+  return segments.join("/").replace(/\.md$/i, "").toLowerCase();
 }
 
 function externalDestination(destination: string): boolean {

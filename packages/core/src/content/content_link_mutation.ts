@@ -1,5 +1,6 @@
 import type { ContentMutationIssue } from "./content_mutation.js";
 import { extractLinkOccurrences } from "./link_occurrences.js";
+import { linkResolutionKey } from "./link_resolution.js";
 import { rewriteLinkDestinations } from "./link_rewrite.js";
 
 export type ContentLinkRetarget = {
@@ -30,77 +31,93 @@ export function planContentLinkUpdates(
   const index = options.afterIndex ?? buildIndex([...options.files.keys()]);
   const beforeIndex =
     options.beforeIndex ?? buildBeforeIndex(options.files, options.retargets);
+  const movedFrom = new Map<string, string>();
+  const retargetsByFrom = new Map<string, ContentLinkRetarget>();
+  const actualPaths = new Map<string, string>();
+  for (const filePath of options.files.keys())
+    actualPaths.set(normalizePath(filePath), filePath);
+  for (const retarget of options.retargets) {
+    if (retarget.to) movedFrom.set(normalizePath(retarget.to), retarget.from);
+    retargetsByFrom.set(normalizePath(retarget.from), retarget);
+  }
 
   for (const [filePath, source] of options.files) {
     if (!filePath.toLowerCase().endsWith(".md")) continue;
+    const previousPath = movedFrom.get(normalizePath(filePath));
+    const occurrenceSource = previousPath ?? filePath;
     const occurrences = extractLinkOccurrences(source, {
       sourcePath: filePath,
     });
     const rewrites = [];
     for (const occurrence of occurrences) {
       if (!occurrence.destinationRange) continue;
-      const retarget = options.retargets.find((candidate) =>
-        refersTo(occurrence, candidate.from, beforeIndex),
-      );
-      if (retarget) {
-        if (!retarget.to) {
-          warnings.push({
-            severity: "warning",
-            code: "broken-link",
-            path: filePath,
-            message: `A link to deleted content remains: ${occurrence.rawDestination}`,
-          });
-          continue;
-        }
-        const replacement = replacementDestination(
-          occurrence.syntax,
-          retarget.to,
-          filePath,
-          occurrence.fragment,
-        );
-        if (replacement === null || replacement === occurrence.rawDestination)
-          continue;
-        if (!index.has(normalizePath(retarget.to))) {
-          conflicts.push({
-            severity: "error",
-            code: "link-target-missing",
-            path: filePath,
-            message: `The link target is missing from the mutation: ${retarget.to}`,
-          });
-          continue;
-        }
-        rewrites.push({
-          range: occurrence.destinationRange,
-          expected: source.slice(
-            occurrence.destinationRange.start,
-            occurrence.destinationRange.end,
-          ),
-          replacement,
-        });
-        continue;
-      }
-      if (occurrence.syntax === "reference-link") continue;
-      const key = referenceKey(occurrence);
+      const key = linkResolutionKey(occurrence, occurrenceSource);
       const before = key ? beforeIndex.get(key) : undefined;
       if (!before) continue;
-      const after = key ? index.get(key) : undefined;
-      if (!after) {
-        conflicts.push({
-          severity: "error",
-          code: "link-broken",
+      const retarget = retargetsByFrom.get(normalizePath(before));
+      if (retarget && !retarget.to) {
+        warnings.push({
+          severity: "warning",
+          code: "broken-link",
           path: filePath,
-          message: `The link no longer resolves after the mutation: ${occurrence.rawDestination}`,
+          message: `A link to deleted content remains: ${occurrence.rawDestination}`,
         });
         continue;
       }
-      if (normalizePath(after) !== normalizePath(before)) {
+      const target =
+        retarget?.to ?? actualPaths.get(normalizePath(before)) ?? before;
+      const relocation =
+        previousPath !== undefined &&
+        occurrence.syntax !== "wikilink" &&
+        occurrence.syntax !== "wiki-embed";
+      if (!retarget && !relocation) {
+        const after = key
+          ? index.get(linkResolutionKey(occurrence, filePath) ?? "")
+          : undefined;
+        if (!after) {
+          conflicts.push({
+            severity: "error",
+            code: "link-broken",
+            path: filePath,
+            message: `The link no longer resolves after the mutation: ${occurrence.rawDestination}`,
+          });
+          continue;
+        }
+        if (normalizePath(after) !== normalizePath(before)) {
+          conflicts.push({
+            severity: "error",
+            code: "link-target-changed",
+            path: filePath,
+            message: `The link target changes without a rewrite: ${occurrence.rawDestination}`,
+          });
+        }
+        continue;
+      }
+      const replacement = replacementDestination(
+        occurrence.syntax,
+        target,
+        filePath,
+        occurrence.fragment,
+      );
+      if (replacement === null || replacement === occurrence.rawDestination)
+        continue;
+      if (!index.has(normalizePath(target))) {
         conflicts.push({
           severity: "error",
-          code: "link-target-changed",
+          code: "link-target-missing",
           path: filePath,
-          message: `The link target changes without a rewrite: ${occurrence.rawDestination}`,
+          message: `The link target is missing from the mutation: ${target}`,
         });
+        continue;
       }
+      rewrites.push({
+        range: occurrence.destinationRange,
+        expected: source.slice(
+          occurrence.destinationRange.start,
+          occurrence.destinationRange.end,
+        ),
+        replacement,
+      });
     }
     if (rewrites.length === 0) continue;
     const rewritten = rewriteLinkDestinations(source, rewrites);
@@ -116,39 +133,6 @@ export function planContentLinkUpdates(
     });
   }
   return { updates, warnings, conflicts };
-}
-
-function refersTo(
-  occurrence: ReturnType<typeof extractLinkOccurrences>[number],
-  from: string,
-  beforeIndex: ReadonlyMap<string, string>,
-): boolean {
-  const key = referenceKey(occurrence);
-  if (!key) return false;
-  const resolved = beforeIndex.get(key);
-  return (
-    resolved !== undefined && normalizePath(resolved) === normalizePath(from)
-  );
-}
-
-function referenceKey(
-  occurrence: ReturnType<typeof extractLinkOccurrences>[number],
-): string | undefined {
-  const destination = occurrence.normalizedDestination.split("#", 1)[0] ?? "";
-  if (!destination) return undefined;
-  if (occurrence.syntax === "wikilink" || occurrence.syntax === "wiki-embed")
-    return destination.toLowerCase();
-  if (!occurrence.sourcePath) return undefined;
-  const relative = destination.replaceAll("\\", "/");
-  if (relative.startsWith("/") || relative.split("/").includes(".."))
-    return undefined;
-  const directory = occurrence.sourcePath
-    .replaceAll("\\", "/")
-    .split("/")
-    .slice(0, -1);
-  return normalizePath(
-    [...directory, ...relative.split("/")].filter(Boolean).join("/"),
-  );
 }
 
 function replacementDestination(

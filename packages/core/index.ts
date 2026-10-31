@@ -147,7 +147,10 @@ export type {
   LinkResolutionContext,
   ResolvedLinkOccurrence,
 } from "./src/content/link_resolution.js";
-export { resolveLinkOccurrences } from "./src/content/link_resolution.js";
+export {
+  linkResolutionKey,
+  resolveLinkOccurrences,
+} from "./src/content/link_resolution.js";
 export type {
   LinkRewrite,
   LinkRewriteResult,

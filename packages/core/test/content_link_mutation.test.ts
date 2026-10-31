@@ -1,6 +1,18 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { planContentLinkUpdates } from "../index.js";
+import {
+  extractLinkOccurrences,
+  linkResolutionKey,
+  planContentLinkUpdates,
+} from "../index.js";
+
+test("relative links can climb out of a nested directory", () => {
+  const [occurrence] = extractLinkOccurrences("[b](../../b.md)", {
+    sourcePath: "deep/nested/a.md",
+  });
+  assert.ok(occurrence);
+  assert.equal(linkResolutionKey(occurrence), "b");
+});
 
 test("retargeting rewrites WikiLinks and relative Markdown links", () => {
   const result = planContentLinkUpdates({

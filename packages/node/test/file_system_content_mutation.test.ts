@@ -226,6 +226,25 @@ test("uses content aliases when deciding which links to rewrite", async () => {
   );
 });
 
+test("rewrites relative links inside moved content", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "target.md"), "# Target");
+  await fs.writeFile(
+    path.join(root, "source.md"),
+    "[target](target.md) [[target]]",
+  );
+  const plan = await new FileSystemContentMutation(root).plan([
+    { kind: "move", from: "source.md", to: "nested/source.md" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  const result = await new FileSystemContentMutation(root).apply(plan);
+  assert.equal(result.applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "nested", "source.md"), "utf8"),
+    "[target](../target.md) [[target]]",
+  );
+});
+
 test("refuses a creation that makes existing links ambiguous", async () => {
   const root = await directory();
   await fs.writeFile(path.join(root, "note.md"), "# Note");

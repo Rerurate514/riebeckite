@@ -217,6 +217,16 @@ export {
   resolveManagedStateRoot,
 } from "./src/project/project_layout.js";
 export type {
+  BuildProvenance,
+  ProvenanceOutput,
+  ProvenanceSource,
+  ProvenanceTransform,
+} from "./src/provenance/provenance.js";
+export {
+  createBuildProvenance,
+  PROVENANCE_VERSION,
+} from "./src/provenance/provenance.js";
+export type {
   PublicationArtifactIssue,
   PublicationArtifactState,
 } from "./src/publication/artifact.js";

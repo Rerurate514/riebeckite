@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { PROVENANCE_VERSION } from "../provenance/provenance.js";
 import type { OutputDependency } from "../types/output_dependency.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import {
@@ -117,6 +118,7 @@ function isContentBuildStateShape(
     !isRecord(value.entries) ||
     !isRecord(value.contentIndex) ||
     !isExternalDependencies(value.externalDependencies) ||
+    (value.provenance !== undefined && !isBuildProvenance(value.provenance)) ||
     (value.outputs !== undefined && !isOutputDescriptors(value.outputs)) ||
     (value.manifestHookCache !== undefined &&
       !isManifestHookCache(value.manifestHookCache)) ||
@@ -146,6 +148,90 @@ function isContentBuildStateShape(
     Object.values(value.contentIndex).every(
       (entry) => typeof entry === "string",
     )
+  );
+}
+
+function isBuildProvenance(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    value.version === PROVENANCE_VERSION &&
+    isSha256(value.buildId) &&
+    Array.isArray(value.sources) &&
+    value.sources.every(
+      (source) =>
+        isRecord(source) &&
+        typeof source.id === "string" &&
+        typeof source.contentId === "string" &&
+        isSafeRelativePath(source.path) &&
+        isFingerprint(source.fingerprint) &&
+        (source.type === "markdown" || source.type === "file") &&
+        (source.visibility === "public" ||
+          source.visibility === "draft" ||
+          source.visibility === "scheduled" ||
+          source.visibility === "unlisted" ||
+          source.visibility === "unknown"),
+    ) &&
+    Array.isArray(value.transforms) &&
+    value.transforms.every(isProvenanceTransform) &&
+    Array.isArray(value.outputs) &&
+    value.outputs.every(isProvenanceOutput)
+  );
+}
+
+function isProvenanceTransform(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    (value.type === "content-processing" ||
+      value.type === "plugin-hook" ||
+      value.type === "derived-view") &&
+    typeof value.producer === "string" &&
+    isStringArray(value.inputs) &&
+    isStringArray(value.outputs) &&
+    (value.status === "executed" ||
+      value.status === "reused" ||
+      value.status === "not-executed" ||
+      value.status === "opaque" ||
+      value.status === "failed") &&
+    (value.durationMs === undefined ||
+      (typeof value.durationMs === "number" &&
+        Number.isFinite(value.durationMs)))
+  );
+}
+
+function isProvenanceOutput(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    isOutputPath(value.path) &&
+    (value.kind === "content" ||
+      value.kind === "redirect" ||
+      value.kind === "plugin-page" ||
+      value.kind === "generated") &&
+    typeof value.producer === "string" &&
+    Array.isArray(value.dependencies) &&
+    value.dependencies.every(isOutputDependency) &&
+    (value.status === "generated" ||
+      value.status === "reused" ||
+      value.status === "removed")
+  );
+}
+
+function isSafeRelativePath(value: unknown): value is string {
+  return typeof value === "string" && isOutputPath(value);
+}
+
+function isSha256(value: unknown): boolean {
+  return typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
+}
+
+function isFingerprint(value: unknown): boolean {
+  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
+}
+
+function isStringArray(value: unknown): boolean {
+  return (
+    Array.isArray(value) && value.every((entry) => typeof entry === "string")
   );
 }
 

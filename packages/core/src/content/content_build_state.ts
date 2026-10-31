@@ -1,8 +1,9 @@
+import type { BuildProvenance } from "../provenance/provenance.js";
 import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import type { OutputDescriptor } from "./output_dependency.js";
 
-export const CONTENT_BUILD_STATE_VERSION = 20;
+export const CONTENT_BUILD_STATE_VERSION = 21;
 
 /**
  * Build state lives under `<content directory>/.riebeckite`. That directory is
@@ -36,6 +37,7 @@ export type ContentBuildState = {
   readonly externalDependencies?: readonly PersistedExternalDependency[];
   readonly manifestHookCache?: readonly ManifestHookCacheEntry[];
   readonly nextPublishingChangeAt?: string;
+  readonly provenance?: BuildProvenance;
 };
 
 export type ManifestHookCacheEntry = {

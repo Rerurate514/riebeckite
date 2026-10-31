@@ -1,4 +1,5 @@
 import type { Observability } from "../observability.js";
+import type { BuildProvenance } from "../provenance/provenance.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -96,6 +97,7 @@ export class ContentBuildCoordinator {
     > = new Map(),
     manifestHookCache: readonly ManifestHookCacheEntry[] = [],
     publishingBuildTime: Date,
+    provenance?: BuildProvenance,
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -145,6 +147,7 @@ export class ContentBuildCoordinator {
         }),
       ),
       manifestHookCache,
+      ...(provenance === undefined ? {} : { provenance }),
       ...(nextChangeAt
         ? {
             nextPublishingChangeAt: nextChangeAt,

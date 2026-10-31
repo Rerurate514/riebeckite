@@ -40,6 +40,9 @@ export async function readPublicationArtifact(
     ...(marker?.completedAt === undefined
       ? {}
       : { markerCompletedAt: marker.completedAt }),
+    ...(marker?.artifactFingerprint === undefined
+      ? {}
+      : { markerArtifactFingerprint: marker.artifactFingerprint }),
     artifactFingerprint: hash.digest("hex"),
     files,
   };

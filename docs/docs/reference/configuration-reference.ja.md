@@ -46,6 +46,7 @@ CLI から実行した場合は、現在のディレクトリから親ディレ�
 | `theme` | いいえ | サイトの見た目 |
 | `plugins` | いいえ | Riebeckiteに追加する機能 |
 | `cache` | いいえ | ビルド結果のキャッシュ |
+| `publication` | いいえ | 公開承認モードと永続状態 |
 | `spa` | いいえ | クライアントサイドのページ遷移、プリフェッチ、スクロール復元、ビュー遷移 |
 
 必須なのは `site` だけです。
@@ -369,6 +370,24 @@ plugins: [
 各プラグインで利用できる設定については [Plugins](../plugins/README.ja.md) を参照してください。
 
 プラグインの仕組みについて詳しく知りたい場合は [Plugin system](./plugin-api.ja.md) を参照してください。
+
+## publication
+
+`publication` はデプロイゲートを制御します。省略可能で、既定は `direct` です。既存の build-and-deploy の挙動を維持します。
+
+| 設定 | 型 | 既定値 | 用途 |
+| --- | --- | --- | --- |
+| `mode` | `"direct" \| "managed"` | `"direct"` | `managed` では、すべての Riebeckite のデプロイ経路で現在の承認記録と一致するビルド成果物を必須にします。 |
+| `approvalFile` | `string` | `"publication/approvals.json"` | コミットする承認記録のプロジェクト相対パス。 |
+
+```ts
+publication: {
+  mode: "managed",
+  approvalFile: "publication/approvals.json",
+}
+```
+
+永続スナップショットは `publication/state.json` に書かれます。両方をコミットしてください。詳しくは [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## cache
 

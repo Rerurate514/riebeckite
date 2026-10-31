@@ -25,7 +25,7 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
-riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | record --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
@@ -425,7 +425,7 @@ npm exec riebeckite publish run --execute --provider cloudflare-workers
 npm exec riebeckite publish approve <slug> --all
 ```
 
-`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。承認は `--require-approval` または `--workflow approved` で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は共通のデプロイ前チェックで、direct モードでは何もせず、`publication.mode` が `managed` のときに承認と成果物の鮮度を強制します。承認は `--require-approval`、`--workflow approved`、または設定で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## `deploy`
 

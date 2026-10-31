@@ -12,19 +12,25 @@ import {
   validatePublicationArtifact,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../src/application_root.js";
+import { writeBuildOutputMarker } from "../src/build_output.js";
 import { parseCommand } from "../src/cli.js";
+import { runClean } from "../src/commands/clean.js";
+import { runDeploy } from "../src/commands/deploy.js";
 import { runPublish } from "../src/commands/publish.js";
 import { readPublicationArtifact } from "../src/publication/artifact.js";
 import {
   detectProjectHostingProvider,
   planHostingDeployment,
 } from "../src/publication/hosting.js";
+import { inspectPublication } from "../src/publication/inspection.js";
 import {
   acquirePublicationLock,
   readPublicationHistory,
   readPublicationLock,
+  readPublicationState,
   releasePublicationLock,
   resolvePublicationApprovalPath,
+  resolvePublicationDurableStatePath,
   resolvePublicationHistoryPath,
   writePublicationHistory,
 } from "../src/publication/state.js";
@@ -46,10 +52,15 @@ async function makeRoot(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-publish-cli-"));
 }
 
-function makeProject(root: string, source: ContentSource): RiebeckiteProject {
+function makeProject(
+  root: string,
+  source: ContentSource,
+  publication?: { mode?: "direct" | "managed"; approvalFile?: string },
+): RiebeckiteProject {
   const config = resolveConfig({
     site: { title: "Test", baseUrl: "https://example.com" },
     content: { source },
+    ...(publication === undefined ? {} : { publication }),
   });
   return {
     invocationCwd: root,
@@ -67,7 +78,15 @@ function makeProject(root: string, source: ContentSource): RiebeckiteProject {
 }
 
 function options(
-  action: "plan" | "status" | "validate" | "run" | "approve" | "record",
+  action:
+    | "plan"
+    | "status"
+    | "validate"
+    | "run"
+    | "approve"
+    | "revoke"
+    | "record"
+    | "gate",
   overrides: Partial<Parameters<typeof runPublish>[1]> = {},
 ): Parameters<typeof runPublish>[1] {
   return {
@@ -100,7 +119,6 @@ test("publish CLI syntax is parsed explicitly", () => {
     options: {
       action: "plan",
       json: true,
-      workflow: "direct",
       execute: false,
       force: false,
       trigger: "cli",
@@ -296,7 +314,6 @@ test("publish record closes the loop for an external CI deployment", async (t) =
   });
   await fs.mkdir(path.join(root, "dist"), { recursive: true });
   await fs.writeFile(path.join(root, "dist", "index.html"), "<html></html>");
-  const { writeBuildOutputMarker } = await import("../src/build_output.js");
   await writeBuildOutputMarker(project, {
     publicationFingerprint: plan.publicationFingerprint,
     completedAt: BUILD_TIME,
@@ -316,6 +333,157 @@ test("publish record closes the loop for an external CI deployment", async (t) =
   assert.equal(
     history.lastSuccess?.publicationFingerprint,
     plan.publicationFingerprint,
+  );
+
+  const durable = JSON.parse(
+    await fs.readFile(resolvePublicationDurableStatePath(project), "utf8"),
+  ) as { lastSuccess?: { publicationFingerprint?: string } };
+  assert.equal(
+    durable.lastSuccess?.publicationFingerprint,
+    plan.publicationFingerprint,
+  );
+
+  const next = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "direct",
+  });
+  assert.equal(next.plan.action, "none");
+  assert.equal(next.plan.changes.detected, false);
+
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: plan.publicationFingerprint,
+    completedAt: "2020-01-01T00:00:00.000Z",
+  });
+  await assert.rejects(
+    runPublish(project, options("record", { provider: "cloudflare-workers" })),
+    /newer than the build output/,
+  );
+});
+
+test("corrupt local state files recover instead of wedging publication", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root, memorySource({}));
+  await fs.mkdir(path.dirname(resolvePublicationHistoryPath(project)), {
+    recursive: true,
+  });
+  await fs.writeFile(resolvePublicationHistoryPath(project), "{truncated");
+  assert.deepEqual(await readPublicationHistory(project), {
+    version: 1,
+    runs: [],
+  });
+
+  await fs.mkdir(path.dirname(resolvePublicationDurableStatePath(project)), {
+    recursive: true,
+  });
+  await fs.writeFile(resolvePublicationDurableStatePath(project), "{truncated");
+  assert.deepEqual(await readPublicationState(project), { version: 1 });
+
+  const lockPath = path.join(
+    path.dirname(resolvePublicationHistoryPath(project)),
+    "lock.json",
+  );
+  await fs.writeFile(lockPath, "{truncated");
+  const lock = await acquirePublicationLock(project, "fingerprint");
+  assert.equal((await readPublicationLock(project))?.id, lock.id);
+  await releasePublicationLock(project, lock);
+});
+
+test("durable state stays at the config root when the app lives in a subdirectory", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root, memorySource({}));
+  const moved = {
+    ...project,
+    appRoot: path.join(root, "apps", "web"),
+  };
+  assert.equal(
+    resolvePublicationDurableStatePath(moved),
+    path.join(root, "publication", "state.json"),
+  );
+});
+
+test("managed mode blocks the shared deploy gate until approval and artifact are current", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const source = memorySource({
+    "public.md": "---\npublish: true\n---\n\nPublic.\n",
+  });
+  const project = makeProject(root, source, { mode: "managed" });
+
+  assert.equal(
+    await silently(() => runPublish(project, options("gate"))),
+    false,
+  );
+
+  assert.equal(
+    await silently(() =>
+      runPublish(project, options("approve", { all: true })),
+    ),
+    true,
+  );
+
+  const inspection = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "approved",
+  });
+  await fs.mkdir(path.join(root, "dist"), { recursive: true });
+  await fs.writeFile(path.join(root, "dist", "index.html"), "<html></html>");
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: inspection.plan.publicationFingerprint,
+    completedAt: BUILD_TIME,
+  });
+  assert.equal(
+    await silently(() => runPublish(project, options("gate"))),
+    true,
+  );
+
+  assert.equal(
+    await silently(() =>
+      runPublish(project, options("revoke", { slugs: ["public"] })),
+    ),
+    true,
+  );
+  assert.equal(
+    await silently(() => runPublish(project, options("gate"))),
+    false,
+  );
+});
+
+test("clean --all refuses to remove state while a publication run holds the lock", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root, memorySource({}));
+  const lock = await acquirePublicationLock(project, "fingerprint");
+  await assert.rejects(
+    runClean(project, { scope: "all" }),
+    /publication run is active/,
+  );
+  await releasePublicationLock(project, lock);
+  await runClean(project, { scope: "all" });
+});
+
+test("managed mode also gates the existing deploy command", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(
+    root,
+    memorySource({ "public.md": "---\npublish: true\n---\n\nPublic.\n" }),
+    { mode: "managed" },
+  );
+  const inspection = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "approved",
+  });
+  await fs.mkdir(path.join(root, "dist"), { recursive: true });
+  await fs.writeFile(path.join(root, "dist", "index.html"), "<html></html>");
+  await writeBuildOutputMarker(project, {
+    publicationFingerprint: inspection.plan.publicationFingerprint,
+    completedAt: BUILD_TIME,
+  });
+  await assert.rejects(
+    runDeploy(project, { dryRun: true }),
+    /Publication gate blocked/,
   );
 });
 

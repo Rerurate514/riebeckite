@@ -205,12 +205,23 @@ export type {
 } from "./src/publication/artifact.js";
 export { validatePublicationArtifact } from "./src/publication/artifact.js";
 export type {
+  PublicationConfig,
+  PublicationMode,
+  ResolvedPublicationConfig,
+} from "./src/publication/config.js";
+export {
+  DEFAULT_PUBLICATION_APPROVAL_FILE,
+  publicationWorkflowForMode,
+  resolvePublicationConfig,
+} from "./src/publication/config.js";
+export type {
   PublicationEntry,
   PublicationRedirect,
   PublicationSnapshot,
 } from "./src/publication/entries.js";
 export {
   isDeployableEntry,
+  parsePublicationSnapshot,
   publicationEntriesFromManifest,
   publicationEntryFromManifestEntry,
   publicationFingerprint,
@@ -266,6 +277,12 @@ export {
   createPublicationPlan,
   createPublicationSnapshot,
 } from "./src/publication/planner.js";
+export type { PublicationState } from "./src/publication/state.js";
+export {
+  emptyPublicationState,
+  PUBLICATION_STATE_VERSION,
+  parsePublicationState,
+} from "./src/publication/state.js";
 export type {
   PublicationApproval,
   PublicationApprovalState,

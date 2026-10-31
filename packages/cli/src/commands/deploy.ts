@@ -5,6 +5,10 @@ import { resolveBuildOutputDirectory } from "@riebeckite/core";
 import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
 import { readBuildOutputMarker } from "../build_output.js";
+import {
+  evaluatePublicationGate,
+  inspectPublication,
+} from "../publication/inspection.js";
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
@@ -14,6 +18,7 @@ const WRANGLER_CONFIG_FILES = [
 
 type DeployOptions = {
   readonly dryRun: boolean;
+  readonly skipPublicationGate?: boolean;
 };
 
 export function resolveDeployRoot(project: RiebeckiteProject): string {
@@ -47,6 +52,33 @@ class DeployError extends Error {
   }
 }
 
+export class PublicationGateError extends Error {
+  readonly hint: string;
+
+  constructor(message: string) {
+    super(message);
+    this.name = "PublicationGateError";
+    this.hint =
+      "Approve the current content with `riebeckite publish approve`, rebuild, and rerun the publication gate.";
+  }
+}
+
+async function assertPublicationGate(
+  project: RiebeckiteProject,
+): Promise<void> {
+  if (project.config.publication?.mode !== "managed") return;
+  const inspection = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "approved",
+    useBuildTime: true,
+  });
+  const gate = evaluatePublicationGate(project, inspection);
+  if (gate.allowed) return;
+  throw new PublicationGateError(
+    `Publication gate blocked the deploy: ${gate.reasons.join(", ")}.`,
+  );
+}
+
 export async function runDeploy(
   project: RiebeckiteProject,
   options: DeployOptions,
@@ -58,6 +90,9 @@ export async function runDeploy(
     resolveBuildOutputDirectory(project.config) ??
       path.join(deployRoot, "dist"),
   );
+  if (!options.skipPublicationGate) {
+    await assertPublicationGate(project);
+  }
   const wranglerEntry = await resolveWranglerEntry(deployRoot);
   if (!options.dryRun) {
     await ensureAuthenticated(wranglerEntry, deployRoot);

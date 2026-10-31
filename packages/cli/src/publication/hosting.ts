@@ -139,10 +139,16 @@ export async function executeHostingDeployment(
     throw new HostingDeployError("The build output directory does not exist.");
   }
   if (provider === "cloudflare-workers") {
-    await runDeploy(project, { dryRun: false });
+    await runDeploy(project, { dryRun: false, skipPublicationGate: true });
     return { confirmed: true };
   }
   if (plan.kind === "ci") {
+    if (project.config.publication?.mode === "managed") {
+      throw new HostingDeployError(
+        "Managed mode does not dispatch GitHub Pages deployments because the target workflow cannot be verified.",
+        "Add `riebeckite publish gate --provider github-pages` to the Pages workflow, deploy with actions/deploy-pages, then run `riebeckite publish record --provider github-pages`.",
+      );
+    }
     if (process.env.GITHUB_ACTIONS === "true") {
       throw new HostingDeployError(
         "GitHub Pages is deployed by the workflow, not by publish run.",

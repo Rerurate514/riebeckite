@@ -3,6 +3,7 @@ import {
   resolvePublishingBuildTime,
   resolvePublishingState,
 } from "./content/publishing.js";
+import { resolvePublicationConfig } from "./publication/config.js";
 import { type RiebeckitePlugin, resolvePlugins } from "./types/plugin.js";
 import type { PostFrontmatter } from "./types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./types/resolved_riebeckite_config.js";
@@ -103,6 +104,7 @@ export function resolveConfig(
       enabled: config.cache?.enabled ?? true,
       directory: config.cache?.directory ?? "",
     },
+    publication: resolvePublicationConfig(config.publication),
     ...(spa === undefined ? {} : { spa }),
   };
 }

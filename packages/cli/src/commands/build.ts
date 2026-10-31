@@ -1,3 +1,4 @@
+import path from "node:path";
 import type {
   ContentManifest,
   Observability,
@@ -15,6 +16,7 @@ import type { NoChangeFastPathOutputMetrics } from "@riebeckite/honox";
 import {
   buildHonoxApplication,
   createNoChangeFastPathOutputMetrics,
+  fingerprintDirectory,
   verifyNoChangeFastPath,
 } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -183,6 +185,9 @@ export async function runBuild(
       });
       await writeBuildOutputMarker(project, {
         completedAt: new Date(),
+        artifactFingerprint: await fingerprintDirectory(
+          project.config.outputDirectory ?? path.join(project.appRoot, "dist"),
+        ),
         ...(manifest === null
           ? {}
           : {

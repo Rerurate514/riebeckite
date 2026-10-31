@@ -2,21 +2,17 @@ import crypto from "node:crypto";
 import {
   appendPublicationRun,
   approveEntries,
-  createPublicationPlan,
   createPublicationSnapshot,
   describeSchedulerGuarantee,
   type HostingProvider,
   NoopLogger,
   NoopTracer,
-  type PublicationApprovals,
-  type PublicationArtifactState,
   type PublicationHistory,
   type PublicationPlan,
   type PublicationRunRecord,
   type PublicationRunTrigger,
   type PublicationWorkflowMode,
   publicationEntriesFromManifest,
-  publicationRedirectsFromManifest,
   recordPublicationSuccess,
   resolvePublishingBuildTime,
   validatePublicationArtifact,
@@ -33,6 +29,12 @@ import {
   hostingEnvironment,
   planHostingDeployment,
 } from "../publication/hosting.js";
+import {
+  durableStateIsNewer,
+  evaluatePublicationGate,
+  inspectPublication,
+  type PublicationInspection,
+} from "../publication/inspection.js";
 import { loadPublicationManifest } from "../publication/manifest.js";
 import {
   acquirePublicationLock,
@@ -40,9 +42,11 @@ import {
   readPublicationApprovals,
   readPublicationHistory,
   releasePublicationLock,
+  resolvePublicationDurableStatePath,
   resolvePublicationHistoryPath,
   writePublicationApprovals,
   writePublicationHistory,
+  writePublicationState,
 } from "../publication/state.js";
 import { runBuild } from "./build.js";
 
@@ -52,7 +56,9 @@ export type PublishAction =
   | "validate"
   | "run"
   | "approve"
-  | "record";
+  | "revoke"
+  | "record"
+  | "gate";
 
 export type PublishCommandOptions = {
   readonly action: PublishAction;
@@ -60,7 +66,7 @@ export type PublishCommandOptions = {
   readonly at?: string;
   readonly provider?: HostingProvider;
   readonly approvals?: string;
-  readonly workflow: PublicationWorkflowMode;
+  readonly workflow?: PublicationWorkflowMode;
   readonly execute: boolean;
   readonly force: boolean;
   readonly trigger: PublicationRunTrigger;
@@ -69,24 +75,19 @@ export type PublishCommandOptions = {
   readonly approvedBy?: string;
 };
 
-type PublishContext = {
-  readonly buildTime: Date;
-  readonly plan: PublicationPlan;
-  readonly provider?: HostingProvider;
-  readonly artifact: PublicationArtifactState;
-  readonly history: PublicationHistory;
-  readonly approvals: PublicationApprovals;
-  readonly approvalFile: string;
-  readonly artifactIssues: ReturnType<typeof validatePublicationArtifact>;
-};
+type PublishContext = PublicationInspection;
 
 export async function runPublish(
   project: RiebeckiteProject,
   options: PublishCommandOptions,
 ): Promise<boolean> {
   if (options.action === "approve") return runApprove(project, options);
+  if (options.action === "revoke") return runRevoke(project, options);
   if (options.action === "record") {
     return runRecord(project, options);
+  }
+  if (options.action === "gate") {
+    return runGate(project, options);
   }
 
   const context = await createPublishContext(project, options);
@@ -104,6 +105,7 @@ export async function runPublish(
     if (options.json) printJson(context, "validate", project);
     else printValidation(context);
     return (
+      context.plan.action !== "blocked" &&
       context.plan.validation.ok &&
       !context.artifactIssues.some((issue) => issue.severity === "error")
     );
@@ -115,55 +117,25 @@ async function createPublishContext(
   project: RiebeckiteProject,
   options: PublishCommandOptions,
 ): Promise<PublishContext> {
-  const artifact = await readPublicationArtifact(project);
-  const artifactBuildTime =
-    (options.action === "validate" || options.action === "record") &&
-    options.at === undefined &&
-    artifact.markerCompletedAt !== undefined
-      ? new Date(artifact.markerCompletedAt)
-      : undefined;
-  const buildTime =
-    artifactBuildTime ??
-    (options.at === undefined
-      ? new Date()
-      : resolvePublishingBuildTime(options.at));
-  const manifest = await loadPublicationManifest(project, buildTime);
-  const entries = publicationEntriesFromManifest(manifest);
-  const redirects = publicationRedirectsFromManifest(manifest);
-  const history = await readPublicationHistory(project);
-  const { approvals, file } = await readPublicationApprovals(
-    project,
-    options.approvals,
-  );
   const provider = await resolveProvider(project, options.provider);
-  const plan = createPublicationPlan({
-    buildTime,
-    entries,
-    redirects,
-    ...(history.lastSuccess === undefined
-      ? {}
-      : { previous: history.lastSuccess }),
-    approvals,
-    workflow: options.workflow,
+  const workflow =
+    project.config.publication?.mode === "managed"
+      ? "approved"
+      : (options.workflow ?? "direct");
+  return await inspectPublication(project, {
     ...(provider === undefined ? {} : { provider }),
+    ...(options.at === undefined ? {} : { at: options.at }),
+    ...(options.approvals === undefined
+      ? {}
+      : { approvals: options.approvals }),
+    workflow,
+    useBuildTime:
+      options.action === "validate" ||
+      options.action === "record" ||
+      options.action === "gate",
     dryRun:
       options.action === "run" ? !options.execute : options.action !== "record",
-    generatedAt: new Date(),
   });
-  return {
-    buildTime,
-    plan,
-    ...(provider === undefined ? {} : { provider }),
-    artifact,
-    history,
-    approvals,
-    approvalFile: file,
-    artifactIssues: validatePublicationArtifact({
-      plan,
-      artifact,
-      ...(provider === undefined ? {} : { provider }),
-    }),
-  };
 }
 
 async function runPublication(
@@ -213,6 +185,11 @@ async function runPublication(
   if (context.provider === undefined) {
     throw new PublicationStateError(
       "Could not detect a hosting provider. Pass --provider <github-pages|cloudflare-workers|cloudflare-pages|netlify|vercel>.",
+    );
+  }
+  if (durableStateIsNewer(context) && !(options.force && artifactCurrent)) {
+    throw new PublicationStateError(
+      `Publication state at ${resolvePublicationDurableStatePath(project)} is newer than the build output. Check out the latest state or rebuild before publishing.`,
     );
   }
 
@@ -278,16 +255,17 @@ async function runPublication(
     };
     history = replaceRun(history, run);
     if (deployment.confirmed) {
-      history = recordPublicationSuccess(
-        history,
-        createPublicationSnapshot(plan, {
-          runId: run.id,
-          artifactFingerprint: artifact.artifactFingerprint,
-          provider: context.provider,
-        }),
-      );
+      const snapshot = createPublicationSnapshot(plan, {
+        runId: run.id,
+        artifactFingerprint: artifact.artifactFingerprint,
+        provider: context.provider,
+      });
+      history = recordPublicationSuccess(history, snapshot);
+      await writePublicationHistory(project, history);
+      await writePublicationState(project, snapshot);
+    } else {
+      await writePublicationHistory(project, history);
     }
-    await writePublicationHistory(project, history);
     if (options.json) printJson({ ...context, run }, "run", project);
     else {
       printRunResult(run, project);
@@ -310,6 +288,53 @@ async function runPublication(
   } finally {
     await releasePublicationLock(project, lock);
   }
+}
+
+async function runGate(
+  project: RiebeckiteProject,
+  options: PublishCommandOptions,
+): Promise<boolean> {
+  const enabled = project.config.publication?.mode === "managed";
+  if (!enabled) {
+    if (options.json) {
+      console.log(JSON.stringify({ command: "gate", enabled: false }, null, 2));
+    } else {
+      console.log(
+        "Publication gate: disabled (publication.mode is not managed).",
+      );
+    }
+    return true;
+  }
+
+  const context = await createPublishContext(project, {
+    ...options,
+    workflow: "approved",
+  });
+  const gate = evaluatePublicationGate(project, context);
+  if (options.json) {
+    console.log(
+      JSON.stringify(
+        {
+          command: "gate",
+          enabled: gate.enabled,
+          allowed: gate.allowed,
+          reasons: gate.reasons,
+          plan: context.plan,
+          artifactIssues: context.artifactIssues,
+          durableState: context.durableState,
+        },
+        null,
+        2,
+      ),
+    );
+  } else {
+    console.log(
+      `Publication gate: ${gate.allowed ? "allowed" : "blocked"} (managed mode).`,
+    );
+    printPlan(context);
+    for (const reason of gate.reasons) console.log(`  reason: ${reason}`);
+  }
+  return gate.allowed;
 }
 
 async function runRecord(
@@ -335,6 +360,11 @@ async function runRecord(
       "Could not detect the provider that performed the deployment. Pass --provider.",
     );
   }
+  if (durableStateIsNewer(context)) {
+    throw new PublicationStateError(
+      `Publication state at ${resolvePublicationDurableStatePath(project)} is newer than the build output. Check out the latest state or rebuild before recording.`,
+    );
+  }
   const run: PublicationRunRecord = {
     ...createRun(context.plan, options, "deployed", false),
     finishedAt: new Date().toISOString(),
@@ -342,6 +372,11 @@ async function runRecord(
     provider: context.provider,
     deploy: { status: "succeeded" },
   };
+  const snapshot = createPublicationSnapshot(context.plan, {
+    runId: run.id,
+    artifactFingerprint: context.artifact.artifactFingerprint,
+    provider: context.provider,
+  });
   const lock = await acquirePublicationLock(
     project,
     context.plan.publicationFingerprint,
@@ -350,13 +385,10 @@ async function runRecord(
   try {
     history = recordPublicationSuccess(
       appendPublicationRun(await readPublicationHistory(project), run),
-      createPublicationSnapshot(context.plan, {
-        runId: run.id,
-        artifactFingerprint: context.artifact.artifactFingerprint,
-        provider: context.provider,
-      }),
+      snapshot,
     );
     await writePublicationHistory(project, history);
+    await writePublicationState(project, snapshot);
   } finally {
     await releasePublicationLock(project, lock);
   }
@@ -436,6 +468,47 @@ async function runApprove(
   return true;
 }
 
+async function runRevoke(
+  project: RiebeckiteProject,
+  options: PublishCommandOptions,
+): Promise<boolean> {
+  if (options.slugs.length === 0 && !options.all) {
+    throw new PublicationStateError(
+      "Pass one or more note slugs or --all to revoke approval.",
+    );
+  }
+  const { approvals } = await readPublicationApprovals(
+    project,
+    options.approvals,
+  );
+  const selected = options.all
+    ? Object.keys(approvals.approvals)
+    : options.slugs.filter((slug) => approvals.approvals[slug] !== undefined);
+  if (selected.length === 0) {
+    throw new PublicationStateError("No matching approval records to revoke.");
+  }
+  const remove = new Set(selected);
+  const next = {
+    version: approvals.version,
+    approvals: Object.fromEntries(
+      Object.entries(approvals.approvals).filter(([slug]) => !remove.has(slug)),
+    ),
+  };
+  const file = await writePublicationApprovals(
+    project,
+    next,
+    options.approvals,
+  );
+  if (options.json) {
+    console.log(JSON.stringify({ revoked: selected, file }, null, 2));
+  } else {
+    console.log(`Revoked ${selected.length} approval(s):`);
+    for (const slug of selected) console.log(`  ${slug}`);
+    console.log(`Approval records: ${file}`);
+  }
+  return true;
+}
+
 async function resolveProvider(
   project: RiebeckiteProject,
   override: HostingProvider | undefined,
@@ -501,6 +574,8 @@ function printJson(
         artifact: context.artifact,
         artifactIssues: context.artifactIssues,
         approvalsFile: context.approvalFile,
+        durableState: context.durableState,
+        durableStateFile: resolvePublicationDurableStatePath(project),
         history: context.history,
         historyFile: resolvePublicationHistoryPath(project),
         ...(context.run === undefined ? {} : { run: context.run }),
@@ -543,7 +618,7 @@ function printStatus(
   project: RiebeckiteProject,
 ): void {
   printPlan(context);
-  const last = context.history.lastSuccess;
+  const last = context.durableState.lastSuccess ?? context.history.lastSuccess;
   console.log("");
   console.log("Publication status");
   if (last) {
@@ -552,6 +627,9 @@ function printStatus(
   } else {
     console.log("  Last success: none");
   }
+  console.log(
+    `  Durable state: ${resolvePublicationDurableStatePath(project)}${context.durableState.lastSuccess ? "" : " (snapshot missing)"}`,
+  );
   const latest = context.history.runs[0];
   console.log(
     `  Latest run: ${latest ? `${latest.status} (${latest.trigger}, ${latest.startedAt})` : "none"}`,

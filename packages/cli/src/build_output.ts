@@ -32,6 +32,7 @@ export async function writeBuildOutputMarker(
   project: RiebeckiteProject,
   metadata: {
     readonly publicationFingerprint?: string;
+    readonly artifactFingerprint?: string;
     readonly completedAt?: Date | string;
   } = {},
 ): Promise<void> {

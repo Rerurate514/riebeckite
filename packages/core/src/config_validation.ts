@@ -1,7 +1,6 @@
 import type { ConfigValidationIssue } from "./types/config_validation.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
 import type { RiebeckiteConfig } from "./types/riebeckite_config.js";
-
 export class ConfigValidationError extends Error {
   readonly issues: readonly ConfigValidationIssue[];
 
@@ -29,6 +28,7 @@ function validateConfigIssues(
   validateSite(value.site, issues);
   validateContent(value.content, issues);
   validateCache(value.cache, issues);
+  validatePublication(value.publication, issues);
   validateSpa(value.spa, issues);
   validateTheme(value.theme, issues);
   validatePlugins(value.plugins, issues);
@@ -135,6 +135,41 @@ function validateCache(value: unknown, issues: ConfigValidationIssue[]): void {
 
   validateOptionalBoolean(value.enabled, "cache.enabled", issues);
   validateOptionalString(value.directory, "cache.directory", issues);
+}
+
+function validatePublication(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({ path: "publication", message: "Expected an object." });
+    return;
+  }
+  if (
+    value.mode !== undefined &&
+    value.mode !== "direct" &&
+    value.mode !== "managed"
+  ) {
+    issues.push({
+      path: "publication.mode",
+      message: 'Expected "direct" or "managed".',
+    });
+  }
+  validateOptionalString(
+    value.approvalFile,
+    "publication.approvalFile",
+    issues,
+  );
+  if (
+    typeof value.approvalFile === "string" &&
+    value.approvalFile.trim().length === 0
+  ) {
+    issues.push({
+      path: "publication.approvalFile",
+      message: "Expected a non-empty path.",
+    });
+  }
 }
 
 function validateSpa(value: unknown, issues: ConfigValidationIssue[]): void {

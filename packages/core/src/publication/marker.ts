@@ -5,12 +5,15 @@ export type BuildOutputMarker = {
   readonly outputDirectory: string;
   /** Publication fingerprint of the content that produced this output. */
   readonly publicationFingerprint?: string;
+  /** Hash of the files in the output directory at build completion. */
+  readonly artifactFingerprint?: string;
   readonly completedAt?: string;
 };
 
 export function createBuildOutputMarker(input: {
   readonly outputDirectory: string;
   readonly publicationFingerprint?: string;
+  readonly artifactFingerprint?: string;
   readonly completedAt?: Date | string;
 }): BuildOutputMarker {
   return {
@@ -18,6 +21,9 @@ export function createBuildOutputMarker(input: {
     ...(input.publicationFingerprint === undefined
       ? {}
       : { publicationFingerprint: input.publicationFingerprint }),
+    ...(input.artifactFingerprint === undefined
+      ? {}
+      : { artifactFingerprint: input.artifactFingerprint }),
     ...(input.completedAt === undefined
       ? {}
       : {
@@ -53,6 +59,9 @@ export function parseBuildOutputMarker(
     outputDirectory: value.outputDirectory,
     ...(typeof value.publicationFingerprint === "string"
       ? { publicationFingerprint: value.publicationFingerprint }
+      : {}),
+    ...(typeof value.artifactFingerprint === "string"
+      ? { artifactFingerprint: value.artifactFingerprint }
       : {}),
     ...(typeof value.completedAt === "string" &&
     !Number.isNaN(Date.parse(value.completedAt))

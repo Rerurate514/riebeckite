@@ -44,6 +44,7 @@ If the file lives elsewhere or has a different name, pass `configRoot` and
 | `theme` | No | Appearance and design tokens |
 | `plugins` | No | Content, rendering, and discovery features |
 | `cache` | No | Persistent build cache |
+| `publication` | No | Publication approval mode and durable state |
 | `spa` | No | Client-side navigation, prefetch, scroll restoration, and view transitions |
 
 Only `site` is required. Every other section falls back to the default in its
@@ -231,6 +232,24 @@ resolution. Each plugin's `validateOptions` runs while the config is resolved.
 
 Individual plugin options are documented in the [plugin guides](../plugins/README.md)
 and the [Plugin system](./plugin-api.md).
+
+## publication
+
+`publication` controls the deploy gate. It is optional and defaults to `direct`, which preserves the existing build-and-deploy behavior.
+
+| Field | Type | Default | Effect |
+| --- | --- | --- | --- |
+| `mode` | `"direct" \| "managed"` | `"direct"` | `managed` requires current approval records and a matching build artifact on every Riebeckite deploy path. |
+| `approvalFile` | `string` | `"publication/approvals.json"` | Project-relative path to the committed approval records. |
+
+```ts
+publication: {
+  mode: "managed",
+  approvalFile: "publication/approvals.json",
+}
+```
+
+The durable snapshot is written to `publication/state.json`. Commit both files. See [Publication workflow](../guides/deployment/publication-workflow.md).
 
 ## cache
 

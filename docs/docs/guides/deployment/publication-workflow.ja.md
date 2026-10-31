@@ -75,18 +75,37 @@ Riebeckite がスケジューラーを持たない環境では、予約はベス
 
 ## 承認ワークフロー
 
-承認は任意です。個人サイトは `workflow: "direct"` を使い、追加ファイルは不要です。
+承認は任意です。個人サイトは既定のままで追加ファイルは不要です。
 
-レビューが必要な場合は `workflow: "approved"` を使います。
+```ts
+export default defineConfig({
+  site: { title: "My notes" },
+  publication: { mode: "direct" },
+});
+```
+
+すべてのデプロイ経路（通常の push ワークフローを含む）で承認を必須にするには、次のように設定します。
+
+```ts
+publication: {
+  mode: "managed",
+  approvalFile: "publication/approvals.json", // 任意
+},
+```
+
+managed モードでは共通ゲート（`riebeckite publish gate`）が `deploy.yml`、`publish.yml`、`publish run`、`riebeckite deploy` で実行されます。`wrangler` を直接呼ぶ経路は Riebeckite の管理外なので、ワークフローファイルとリポジトリ設定も保護してください。
+
+レビューが必要な場合は Core API の `workflow: "approved"` または CLI の `--require-approval` を使います。
 
 ```sh
 riebeckite publish approve <slug> [--all] [--by "editor"]
+riebeckite publish revoke <slug> [--all]
 riebeckite publish plan --require-approval
 ```
 
 承認記録はプロジェクトルートの `publication/approvals.json` に保存されます。各記録は slug と、そのノートのコンテンツ Fingerprint（slug、permalink、title、レンダリング済み HTML、リダイレクト）を結び付けます。ノートを編集すると承認は無効になります。予約ノートは、Fingerprint がスケジュール項目を含まないため、`publishAt` を迎えても再承認は不要です。
 
-信頼できるのは、CI がチェックアウトするブランチにコミットされた承認ファイルだけです。CLI はファイルを書きますが、それ自体で信頼を付与することはなく、ファイルに秘密情報は入りません。個人サイトはこの仕組みを使わなくて構いません。チームは `publication/approvals.json` を branch protection や CODEOWNERS で保護できます。
+信頼できるのは、CI がチェックアウトするブランチにコミットされた承認ファイルだけです。CLI はファイルを書きますが、それ自体で信頼を付与することはなく、ファイルに秘密情報は入りません。個人サイトはこの仕組みを使わなくて構いません。チームは `publication/approvals.json` を branch protection や CODEOWNERS で保護できます。`publish revoke` は記録を削除し、次の計画は `review` に戻ります。
 
 承認状態とサイトの公開状態は分けて扱います。
 
@@ -105,7 +124,9 @@ riebeckite publish status    [--json] ...
 riebeckite publish validate  [--json] ...
 riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] ...
 riebeckite publish approve   <slug...> [--all] [--by <name>]
+riebeckite publish revoke    <slug...> [--all]
 riebeckite publish record    --provider <name> [--trigger <manual|scheduled|ci|cli>]
+riebeckite publish gate      [--json] [--provider <name>]
 ```
 
 `plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` を付けるまで Dry Run です。
@@ -126,7 +147,9 @@ npm exec riebeckite publish run --execute --trigger scheduled
 
 `run --execute` は計画が必要とするときだけビルドします。`.riebeckite/build-output.json` に公開用メタデータを書き、現在の計画と Fingerprint が一致しない成果物のデプロイを拒否します。別の実行が `.riebeckite/publication/lock.json` を保持している場合は停止します。プロセスが終了しているロックや1時間以上前のロックは置き換えます。`--force` は変更がない計画でもデプロイできるようにします。
 
-`record` は外部の CI action が実行したデプロイ用です。ビルド済み成果物を現在の計画と照合し、デプロイせずに成功した実行とスナップショットを履歴に記録します。`wrangler-action` や `actions/deploy-pages` の後に実行すると、次回の実行が変更なしを検出できます。
+`record` は外部の CI action が実行したデプロイ用です。ビルド済み成果物を現在の計画と照合し、デプロイせずに成功した実行とスナップショットを永続状態と履歴に記録します。`wrangler-action` や `actions/deploy-pages` の後に実行します。
+
+`gate` は共通のデプロイ前チェックです。direct モードではコンテンツを読まずに成功するため、既存サイトの挙動は変わりません。managed モードでは、現在のコンテンツが承認済みで、ビルド成果物が計画と一致しなければ失敗します。`publish validate` も承認待ちで計画がブロックされている場合は失敗します。
 
 既存の `riebeckite deploy` は変更していません。`publish run` は Cloudflare Workers のときにそれを使います。
 
@@ -149,17 +172,22 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 このリポジトリの `.github/workflows/publish.yml` が動作する参考例です。
 
 - `schedule` は15分ごと、`workflow_dispatch` は手動実行です。
-- `riebeckite-publish` の concurrency group により同時実行は1つです。待機中の実行は現在の実行をキャンセルせず、後から開始されます。
+- `deploy.yml` と `publish.yml` は `riebeckite-production` concurrency group を共有するため、2つのワークフローが同時にデプロイすることはありません。実行中のデプロイはキャンセルしません。
+- 両ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
 - `publish plan --json` が build と deploy の要否を決めます。変更がなければどちらも行いません。
-- 計画は成果物としてアップロードされ、`publish validate` がビルド出力を検査します。
-- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローキャッシュが次回実行へ引き継ぎます。スナップショットがないと、新しい runner はすべてのノートを新規追加とみなします。
+- 計画は成果物としてアップロードされ、`publish validate` と managed モードの公開ゲートがビルド出力を検査します。
+- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローが `publication/state.json` を `[skip ci]` 付きでコミットします。次回実行はキャッシュではなくこのコミット済み状態を読みます。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
-スケジュール実行は runner の空き状況と GitHub のキューで遅延します。ワークフローは冪等です。遅れた実行は抜けたスケジュールを再生せず、現在の状態を計算します。失敗した段階では直前の成功スナップショットが残るため、次の実行が同じ計画を再試行します。
+状態のコミットには `contents: write` と、ワークフローが push できるブランチが必要です。branch protection で push が拒否された場合、デプロイ自体は行われ、ジョブは失敗を報告し、永続スナップショットが更新されないため次回実行が安全に再デプロイします。永続状態がない runner はすべてのノートを新規追加とみなします。これは全再デプロイであり、公開の取りこぼしではありません。
+
+スケジュール実行は runner の空き状況と GitHub のキューで遅延します。ワークフローは冪等です。遅れた実行は抜けたスケジュールを再生せず、現在の状態を計算します。再実行が古いコミットをチェックアウトした場合、ビルドマーカーがコミット済み状態より古いため、`record` は新しいスナップショットの上書きを拒否します。
 
 ## 履歴と診断
 
-公開履歴は `.riebeckite/publication/history.json` に書かれます。
+永続的な公開状態はプロジェクトルートの `publication/state.json` です。最後に成功したスナップショットだけを含みます（run id、公開 Fingerprint、公開対象の slug、Fingerprint、リダイレクト、成果物 Fingerprint、provider）。サイトと一緒にコミットしてください。本文や認証情報は含まず、変更検出の信頼できる記録です。
+
+`.riebeckite/publication/history.json` は診断用の履歴です。
 
 - run id、trigger、dry-run の別、action
 - 計画と成果物の Fingerprint
@@ -168,9 +196,21 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 - 変更概要と次回予約公開
 - 最後に成功したスナップショット
 
-履歴は50実行までで、環境変数の値やトークンを含みません。ローカルのビルド状態であり、コミットされません。長期保存したい場合は CI の成果物としてアップロードしてください。
+履歴は50実行までで、環境変数の値やトークンを含みません。ローカルのビルド状態であり、コミットされません。GitHub Actions のキャッシュは診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュの消失や切り詰めは全再デプロイを招くだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
 
-`publish status --json` は現在の計画、成果物の状態、provider の機能、必要な環境変数名、承認ファイルのパス、履歴をまとめて出力します。ネットワークがなくても動作し、認証情報が必要なのは実際のデプロイだけです。
+## Lock と clean
+
+`.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID とホスト名を記録します。プロセスが終了しているか、1時間以上前のロックは古いとみなします。実行中のロックを `--force` が削除することはありません。
+
+`clean --all` と `clean --state` は、実行中の公開ロックがある間は拒否します。clean が削除するのは `.riebeckite` だけで、永続状態と承認記録は残ります。公開履歴と信頼はクリーンビルドを越えて保持されます。異常終了した実行は、次回実行またはロックが古くなった後の `clean` で復旧できます。
+
+## Build Output Marker
+
+すべての SSG ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
+
+デプロイ前に、現在の計画と公開 Fingerprint が一致するマーカーを必須にします。CLI ビルドが成果物ハッシュを記録している場合は、`dist/` のファイルも一致しなければなりません。マーカーの欠損、破損、古い計画からコピーされたマーカーは安全側で失敗します。`publish validate` と `publish record` はマーカーの完了時刻を使うため、計画とビルドの数秒の時刻差で誤判定しません。
+
+`publish status --json` は現在の計画、成果物の状態、provider の機能、必要な環境変数名、承認ファイル、永続状態、履歴をまとめて出力します。ネットワークがなくても動作し、認証情報が必要なのは実際のデプロイだけです。
 
 ## 検証状況
 

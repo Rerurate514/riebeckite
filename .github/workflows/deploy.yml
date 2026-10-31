@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: riebeckite-deploy
-  cancel-in-progress: true
+  group: riebeckite-production
+  cancel-in-progress: false
 
 env:
   PNPM_VERSION: 11.5.3
@@ -17,10 +17,18 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
+
+      - name: Verify latest revision
+        run: |
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "This run is for an older revision; the current branch head will deploy instead."
+            exit 1
+          fi
 
       - name: Set up the workspace
         uses: ./.github/actions/setup
@@ -40,6 +48,14 @@ jobs:
       - name: Production Asset Integrity Check
         run: node scripts/check_production_asset_integrity.mjs apps/web
 
+      - name: Publication gate
+        id: publication
+        run: |
+          output="$(pnpm --filter @riebeckite/web exec riebeckite publish gate --provider cloudflare-workers --json)"
+          printf '%s\n' "$output"
+          enabled="$(printf '%s' "$output" | node -e 'let s=""; process.stdin.on("data", (chunk) => { s += chunk; }).on("end", () => { process.stdout.write(String(JSON.parse(s).enabled)); });')"
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3
         with:
@@ -48,3 +64,25 @@ jobs:
           workingDirectory: apps/web
           packageManager: pnpm
           command: deploy
+
+      - name: Record publication state
+        if: steps.publication.outputs.enabled == 'true'
+        run: >
+          pnpm --filter @riebeckite/web exec riebeckite publish record
+          --provider cloudflare-workers --trigger ci --json
+          > "$RUNNER_TEMP/publication-record.json"
+
+      - name: Persist publication state
+        if: steps.publication.outputs.enabled == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add publication/state.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "公開状態を更新 [skip ci]"
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD^)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "The branch advanced during this run; the newer run will record its own state."
+            exit 0
+          fi
+          git push

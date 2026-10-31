@@ -111,6 +111,44 @@ export function hashJson(value: unknown): string {
   return crypto.createHash("sha256").update(canonicalJson(value)).digest("hex");
 }
 
+export function parsePublicationSnapshot(
+  value: unknown,
+): PublicationSnapshot | undefined {
+  if (
+    !isRecord(value) ||
+    typeof value.runId !== "string" ||
+    typeof value.publishedAt !== "string" ||
+    Number.isNaN(Date.parse(value.publishedAt)) ||
+    typeof value.publicationFingerprint !== "string" ||
+    !Array.isArray(value.entries) ||
+    !value.entries.every(isPublicationEntry) ||
+    !Array.isArray(value.redirects)
+  ) {
+    return undefined;
+  }
+  return value as unknown as PublicationSnapshot;
+}
+
+function isPublicationEntry(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.slug === "string" &&
+    typeof value.permalink === "string" &&
+    typeof value.title === "string" &&
+    (value.visibility === "public" ||
+      value.visibility === "unlisted" ||
+      value.visibility === "scheduled" ||
+      value.visibility === "draft") &&
+    typeof value.fingerprint === "string" &&
+    typeof value.contentFingerprint === "string" &&
+    (value.publishAt === undefined || typeof value.publishAt === "string")
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export function canonicalJson(value: unknown): string {
   return JSON.stringify(sortValue(value));
 }

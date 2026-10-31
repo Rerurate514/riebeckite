@@ -67,6 +67,9 @@ jobs:
         run: |
           echo "Riebeckite cache to save: $(du -sb .riebeckite | cut -f1) bytes"
 
+      - name: Publication gate
+        run: npm exec riebeckite publish gate --provider cloudflare-workers
+
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@v3
         with:

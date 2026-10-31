@@ -1,4 +1,7 @@
-import type { PublicationSnapshot } from "./entries.js";
+import {
+  type PublicationSnapshot,
+  parsePublicationSnapshot,
+} from "./entries.js";
 import type { HostingProvider } from "./hosting.js";
 import type { PublicationChanges, PublicationPlan } from "./planner.js";
 
@@ -96,7 +99,7 @@ export function parsePublicationHistory(
     runs.push(parsed);
   }
   if (value.lastSuccess !== undefined) {
-    const snapshot = parseSnapshot(value.lastSuccess);
+    const snapshot = parsePublicationSnapshot(value.lastSuccess);
     if (snapshot === undefined) return undefined;
   }
   return {
@@ -125,20 +128,6 @@ function parseRunRecord(value: unknown): PublicationRunRecord | undefined {
     return undefined;
   }
   return value as unknown as PublicationRunRecord;
-}
-
-function parseSnapshot(value: unknown): PublicationSnapshot | undefined {
-  if (
-    !isRecord(value) ||
-    typeof value.runId !== "string" ||
-    typeof value.publishedAt !== "string" ||
-    typeof value.publicationFingerprint !== "string" ||
-    !Array.isArray(value.entries) ||
-    !Array.isArray(value.redirects)
-  ) {
-    return undefined;
-  }
-  return value as unknown as PublicationSnapshot;
 }
 
 function isRunStatus(value: unknown): value is PublicationRunStatus {

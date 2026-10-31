@@ -8,6 +8,8 @@ export type PublicationArtifactState = {
   readonly markerPublicationFingerprint?: string;
   /** When the marker says the build completed. */
   readonly markerCompletedAt?: string;
+  /** Hash of the output recorded when the build completed. */
+  readonly markerArtifactFingerprint?: string;
   /** Hash of every file currently in the output directory. */
   readonly artifactFingerprint?: string;
   /** Paths relative to the output directory, when inventory is available. */
@@ -61,6 +63,19 @@ export function validatePublicationArtifact(input: {
       severity: "error",
       message:
         "The build output was produced from a different publication plan; rebuild before deploying.",
+    });
+  }
+
+  if (
+    artifact.markerArtifactFingerprint !== undefined &&
+    artifact.artifactFingerprint !== undefined &&
+    artifact.markerArtifactFingerprint !== artifact.artifactFingerprint
+  ) {
+    issues.push({
+      code: "artifact-stale",
+      severity: "error",
+      message:
+        "The build output files do not match the marker; rebuild before deploying.",
     });
   }
 

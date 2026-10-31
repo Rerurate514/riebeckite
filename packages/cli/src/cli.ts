@@ -188,12 +188,12 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | publish <plan | status | validate | run | approve | record> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | publish <plan | status | validate | run | approve | revoke | record | gate> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
 const PUBLISH_USAGE =
-  "Usage: riebeckite publish <plan|status|validate|run|approve|record> [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--require-approval] | publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | publish approve <slug...> [--all] [--by <name>] | publish record --provider <name>";
+  "Usage: riebeckite publish <plan|status|validate|run|approve|revoke|record|gate> [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--require-approval] | publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | publish approve|revoke <slug...> [--all] [--by <name>] | publish record --provider <name> | publish gate --provider <name>";
 
 function parsePublishCommand(options: readonly string[]): Command {
   const [action, ...rest] = options;
@@ -203,7 +203,9 @@ function parsePublishCommand(options: readonly string[]): Command {
     action !== "validate" &&
     action !== "run" &&
     action !== "approve" &&
-    action !== "record"
+    action !== "revoke" &&
+    action !== "record" &&
+    action !== "gate"
   ) {
     throw new CliUsageError(PUBLISH_USAGE);
   }
@@ -212,7 +214,7 @@ function parsePublishCommand(options: readonly string[]): Command {
   let at: string | undefined;
   let provider: import("@riebeckite/core").HostingProvider | undefined;
   let approvals: string | undefined;
-  let workflow: "direct" | "approved" = "direct";
+  let workflow: "direct" | "approved" | undefined;
   let execute = false;
   let force = false;
   let trigger: import("@riebeckite/core").PublicationRunTrigger = "cli";
@@ -312,8 +314,10 @@ function parsePublishCommand(options: readonly string[]): Command {
       continue;
     }
     if (option === "--all") {
-      if (action !== "approve") {
-        throw new CliUsageError("--all is only valid for publish approve.");
+      if (action !== "approve" && action !== "revoke") {
+        throw new CliUsageError(
+          "--all is only valid for publish approve or revoke.",
+        );
       }
       all = true;
       continue;
@@ -327,16 +331,23 @@ function parsePublishCommand(options: readonly string[]): Command {
       index += 1;
       continue;
     }
-    if (action === "approve" && !option.startsWith("-")) {
+    if (
+      (action === "approve" || action === "revoke") &&
+      !option.startsWith("-")
+    ) {
       slugs.push(option);
       continue;
     }
     throw new CliUsageError(`Unknown publish option: ${option}.`);
   }
 
-  if (action === "approve" && slugs.length === 0 && !all) {
+  if (
+    (action === "approve" || action === "revoke") &&
+    slugs.length === 0 &&
+    !all
+  ) {
     throw new CliUsageError(
-      "Pass one or more note slugs or --all to publish approve.",
+      `Pass one or more note slugs or --all to publish ${action}.`,
     );
   }
 
@@ -348,7 +359,7 @@ function parsePublishCommand(options: readonly string[]): Command {
       ...(at === undefined ? {} : { at }),
       ...(provider === undefined ? {} : { provider }),
       ...(approvals === undefined ? {} : { approvals }),
-      workflow,
+      ...(workflow === undefined ? {} : { workflow }),
       execute,
       force,
       trigger,

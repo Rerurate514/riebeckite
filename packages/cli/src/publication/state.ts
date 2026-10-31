@@ -1,13 +1,18 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import {
   emptyPublicationApprovals,
   emptyPublicationHistory,
+  emptyPublicationState,
   type PublicationApprovals,
   type PublicationHistory,
+  type PublicationSnapshot,
+  type PublicationState,
   parsePublicationApprovals,
   parsePublicationHistory,
+  parsePublicationState,
   resolveManagedStateRoot,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../application_root.js";
@@ -41,11 +46,48 @@ export function resolvePublicationLockPath(project: RiebeckiteProject): string {
   return path.join(resolvePublicationStateDirectory(project), "lock.json");
 }
 
+export function resolvePublicationDurableStatePath(
+  project: RiebeckiteProject,
+): string {
+  return path.join(project.projectRoot, "publication", "state.json");
+}
+
+export async function readPublicationState(
+  project: RiebeckiteProject,
+): Promise<PublicationState> {
+  const file = resolvePublicationDurableStatePath(project);
+  const parsed = await readJson(file);
+  if (parsed === undefined) return emptyPublicationState();
+  const state = parsePublicationState(parsed);
+  if (!state) {
+    console.warn(
+      `Ignoring malformed durable publication state at ${file}; the next run publishes from scratch.`,
+    );
+    return emptyPublicationState();
+  }
+  return state;
+}
+
+export async function writePublicationState(
+  project: RiebeckiteProject,
+  snapshot: PublicationSnapshot,
+): Promise<void> {
+  await writeJsonAtomic(resolvePublicationDurableStatePath(project), {
+    version: 1,
+    lastSuccess: snapshot,
+  });
+}
+
 export function resolvePublicationApprovalPath(
   project: RiebeckiteProject,
   override?: string,
 ): string {
-  return path.resolve(project.projectRoot, override ?? DEFAULT_APPROVAL_FILE);
+  return path.resolve(
+    project.projectRoot,
+    override ??
+      project.config.publication?.approvalFile ??
+      DEFAULT_APPROVAL_FILE,
+  );
 }
 
 export async function readPublicationHistory(
@@ -76,7 +118,7 @@ export async function readPublicationApprovals(
   override?: string,
 ): Promise<{ approvals: PublicationApprovals; file: string }> {
   const file = resolvePublicationApprovalPath(project, override);
-  const parsed = await readJson(file);
+  const parsed = await readJson(file, { strict: true });
   if (parsed === undefined) {
     return { approvals: emptyPublicationApprovals(), file };
   }
@@ -102,6 +144,7 @@ export async function writePublicationApprovals(
 export type PublicationLock = {
   readonly id: string;
   readonly pid: number;
+  readonly hostname: string;
   readonly startedAt: string;
   readonly planFingerprint: string;
 };
@@ -116,6 +159,7 @@ export async function acquirePublicationLock(
   const lock: PublicationLock = {
     id: crypto.randomUUID(),
     pid: process.pid,
+    hostname: os.hostname(),
     startedAt: new Date().toISOString(),
     planFingerprint,
   };
@@ -133,7 +177,10 @@ export async function acquirePublicationLock(
     const existing = (await readJson(file)) as
       | Partial<PublicationLock>
       | undefined;
-    if (existing === undefined) continue;
+    if (existing === undefined) {
+      await fs.rm(file, { force: true });
+      continue;
+    }
     const startedAt =
       typeof existing.startedAt === "string"
         ? Date.parse(existing.startedAt)
@@ -141,7 +188,7 @@ export async function acquirePublicationLock(
     if (
       Number.isFinite(startedAt) &&
       Date.now() - startedAt < LOCK_STALE_MS &&
-      isLockOwnerAlive(existing.pid)
+      isLockOwnerAlive(existing)
     ) {
       throw new PublicationStateError(
         `Another publication run has held the lock since ${existing.startedAt}. Retry after it finishes.`,
@@ -173,13 +220,41 @@ export async function readPublicationLock(
   return parsed as PublicationLock | undefined;
 }
 
-async function readJson(file: string): Promise<unknown> {
+export async function readLivePublicationLock(
+  project: RiebeckiteProject,
+): Promise<PublicationLock | undefined> {
+  const lock = (await readJson(resolvePublicationLockPath(project))) as
+    | Partial<PublicationLock>
+    | undefined;
+  if (lock === undefined) return undefined;
+  const startedAt =
+    typeof lock.startedAt === "string" ? Date.parse(lock.startedAt) : NaN;
+  if (
+    !Number.isFinite(startedAt) ||
+    Date.now() - startedAt >= LOCK_STALE_MS ||
+    !isLockOwnerAlive(lock)
+  ) {
+    return undefined;
+  }
+  return lock as PublicationLock;
+}
+
+async function readJson(
+  file: string,
+  options: { strict?: boolean } = {},
+): Promise<unknown> {
   try {
     return JSON.parse(await fs.readFile(file, "utf8"));
   } catch (error) {
     if (isNotFound(error)) return undefined;
     if (error instanceof SyntaxError) {
-      throw new PublicationStateError(`${file} contains invalid JSON.`);
+      if (options.strict) {
+        throw new PublicationStateError(`${file} contains invalid JSON.`);
+      }
+      console.warn(
+        `Ignoring unreadable JSON at ${file}; publication state falls back to a full redeploy.`,
+      );
+      return undefined;
     }
     throw error;
   }
@@ -219,7 +294,11 @@ function isAlreadyExists(error: unknown): boolean {
   );
 }
 
-function isLockOwnerAlive(pid: unknown): boolean {
+function isLockOwnerAlive(lock: Partial<PublicationLock>): boolean {
+  if (typeof lock.hostname === "string" && lock.hostname !== os.hostname()) {
+    return false;
+  }
+  const pid = lock.pid;
   if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0) {
     return false;
   }

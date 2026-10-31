@@ -25,7 +25,7 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy [--dry-run | setup | domain]
-riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | record --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
 ```
@@ -440,7 +440,7 @@ npm exec riebeckite publish run --execute --provider cloudflare-workers
 npm exec riebeckite publish approve <slug> --all
 ```
 
-`plan` and `status` are read-only. `validate` exits non-zero when the plan has an error or the build artifact does not match the plan. `run` does not build or deploy unless `--execute` is present. `record` records an external CI deployment without deploying again. Approval is opt-in with `--require-approval` or `--workflow approved`; records live in `publication/approvals.json` and only a committed file on the deployed branch is trusted. See [Publication workflow](../guides/deployment/publication-workflow.md) for scheduling, hosting adapters, history, and CI.
+`plan` and `status` are read-only. `validate` exits non-zero when the plan has an error, approval is pending, or the build artifact does not match the plan. `run` does not build or deploy unless `--execute` is present. `record` records an external CI deployment without deploying again. `gate` is the shared pre-deploy check; it does nothing in direct mode and enforces approval plus artifact freshness when `publication.mode` is `managed`. Approval is opt-in with `--require-approval`, `--workflow approved`, or the configuration; records live in `publication/approvals.json` and only a committed file on the deployed branch is trusted. See [Publication workflow](../guides/deployment/publication-workflow.md) for scheduling, hosting adapters, history, and CI.
 
 ## `deploy`
 

@@ -1,4 +1,5 @@
 import type { ContentSource } from "../content/content_source.js";
+import type { ResolvedPublicationConfig } from "../publication/config.js";
 import type { RiebeckitePlugin } from "./plugin.js";
 import type { PublishStrategy } from "./publish_strategy.js";
 import type { SpaConfig } from "./riebeckite_config.js";
@@ -38,5 +39,6 @@ export type ResolvedRiebeckiteConfig = {
     enabled: boolean;
     directory: string;
   };
+  publication?: ResolvedPublicationConfig;
   spa?: SpaConfig;
 };

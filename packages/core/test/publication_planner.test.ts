@@ -14,6 +14,7 @@ import {
   parsePublicationApprovals,
   publicationEntriesFromManifest,
   publicationRedirectsFromManifest,
+  resolveConfig,
   resolvePublicationWorkflowState,
   resolvePublishingState,
   serializeBuildOutputMarker,
@@ -383,5 +384,27 @@ test("the build output marker round-trips with its publication fingerprint", () 
       "/other",
     ),
     undefined,
+  );
+});
+
+test("publication control defaults to direct and validates its mode", () => {
+  const resolved = resolveConfig({ site: { title: "Test" } });
+  assert.equal(resolved.publication?.mode, "direct");
+  assert.equal(
+    resolved.publication?.approvalFile,
+    "publication/approvals.json",
+  );
+  assert.equal(
+    resolveConfig({
+      site: { title: "Test" },
+      publication: { mode: "managed" },
+    }).publication?.mode,
+    "managed",
+  );
+  assert.throws(() =>
+    resolveConfig({
+      site: { title: "Test" },
+      publication: { mode: "other" as never },
+    }),
   );
 });

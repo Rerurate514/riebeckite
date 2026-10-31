@@ -75,18 +75,37 @@ A delayed run never publishes stale content: the plan is recomputed at run time.
 
 ## Approval workflow
 
-Approval is opt-in. Personal sites use `workflow: "direct"` and need no extra file.
+Approval is opt-in. Personal sites keep the default and need no extra file:
 
-For review, use `workflow: "approved"`:
+```ts
+export default defineConfig({
+  site: { title: "My notes" },
+  publication: { mode: "direct" },
+});
+```
+
+To require approval for every deploy path, including the normal push workflow:
+
+```ts
+publication: {
+  mode: "managed",
+  approvalFile: "publication/approvals.json", // optional
+},
+```
+
+In managed mode the shared gate (`riebeckite publish gate`) runs in `deploy.yml`, `publish.yml`, `publish run`, and `riebeckite deploy`. A direct `wrangler` call is outside Riebeckite's control, so protect the workflow files and repository settings as well.
+
+For review, use `workflow: "approved"` in the Core API or `--require-approval` on the CLI:
 
 ```sh
 riebeckite publish approve <slug> [--all] [--by "editor"]
+riebeckite publish revoke <slug> [--all]
 riebeckite publish plan --require-approval
 ```
 
 Approvals are stored in `publication/approvals.json` at the project root. Each record binds a slug to the note's content fingerprint — slug, permalink, title, rendered HTML, and redirects. Editing the note invalidates the approval. A scheduled note does not need re-approval when its `publishAt` arrives, because the fingerprint excludes the scheduling fields.
 
-Only a committed approval file on the branch that CI checks out is trusted. The CLI writes the file but never grants trust by itself, and the file contains no secret. A personal site can ignore the whole mechanism; a team can protect `publication/approvals.json` with branch protection or CODEOWNERS.
+Only a committed approval file on the branch that CI checks out is trusted. The CLI writes the file but never grants trust by itself, and the file contains no secret. A personal site can ignore the whole mechanism; a team can protect `publication/approvals.json` with branch protection or CODEOWNERS. `publish revoke` removes the records, and the next plan returns to `review`.
 
 Approval state and site state are deliberately separate:
 
@@ -105,7 +124,9 @@ riebeckite publish status    [--json] ...
 riebeckite publish validate  [--json] ...
 riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] ...
 riebeckite publish approve   <slug...> [--all] [--by <name>]
+riebeckite publish revoke    <slug...> [--all]
 riebeckite publish record    --provider <name> [--trigger <manual|scheduled|ci|cli>]
+riebeckite publish gate      [--json] [--provider <name>]
 ```
 
 `plan` and `status` are read-only. `validate` exits non-zero when the plan has an error or when the build artifact does not match the plan. `run` is a dry run unless `--execute` is present.
@@ -126,7 +147,9 @@ npm exec riebeckite publish run --execute --trigger scheduled
 
 `run --execute` builds only when the plan needs it. It writes `publication` metadata into `.riebeckite/build-output.json` and refuses to deploy an artifact whose publication fingerprint differs from the current plan. If another live run holds `.riebeckite/publication/lock.json`, the command stops; a lock whose process is gone or that is older than an hour is replaced. `--force` allows a deploy when the plan reports no changes.
 
-`record` is for a deployment performed by an external CI action. It validates the built artifact against the current plan, then writes a successful run and snapshot to the history without deploying. Use it after `wrangler-action` or `actions/deploy-pages` so the next run can detect that nothing changed.
+`record` is for a deployment performed by an external CI action. It validates the built artifact against the current plan, then writes a successful run and snapshot to the durable state and history without deploying. Use it after `wrangler-action` or `actions/deploy-pages`.
+
+`gate` is the shared pre-deploy check. In direct mode it succeeds without reading content, so existing sites keep their current behavior. In managed mode it fails unless the current content is approved and the build artifact matches the plan. `publish validate` also fails when the plan is blocked by approval.
 
 The old `riebeckite deploy` command is unchanged. `publish run` uses it for Cloudflare Workers.
 
@@ -149,17 +172,22 @@ For GitHub Pages, the build must include the deploy plugin's `.nojekyll` and `40
 `.github/workflows/publish.yml` in this repository is a working reference:
 
 - `schedule` runs every 15 minutes and `workflow_dispatch` allows a manual run.
-- The `riebeckite-publish` concurrency group allows one run at a time; a queued run starts after the current one instead of cancelling it.
+- `deploy.yml` and `publish.yml` share the `riebeckite-production` concurrency group, so two workflows cannot deploy at the same time. Neither cancels an in-flight deployment.
+- Both workflows fetch the branch head and stop when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
 - `publish plan --json` decides whether a build and deploy are needed. A run with no changes performs neither.
-- The plan is uploaded as an artifact, then `publish validate` checks the built output.
-- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` then writes the successful snapshot, and the workflow cache carries it to the next run. Without that snapshot a fresh runner would treat every note as newly added.
+- The plan is uploaded as an artifact, then `publish validate` and the managed publication gate check the built output.
+- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot, and the workflow commits `publication/state.json` with `[skip ci]`. The next run reads that committed state, not the cache.
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
 
-A scheduled job is delayed by runner availability and GitHub's queue. The workflow is idempotent: a late run computes the current state instead of replaying the missed schedule. Failed stages leave the previous successful snapshot in place, so the next run retries the same plan.
+The state commit requires `contents: write` and a branch that the workflow may push to. If branch protection forbids the push, the deployment still happens, the job reports the failure, and the next run safely redeploys because the durable snapshot was not updated. Without any durable snapshot a runner treats every note as newly added; that is a full redeploy, never a skipped publication.
+
+A scheduled job is delayed by runner availability and GitHub's queue. The workflow is idempotent: a late run computes the current state instead of replaying the missed schedule. If a re-run checks out an older commit, its build marker is older than the committed state and `record` refuses to overwrite the newer snapshot.
 
 ## History and diagnostics
 
-Publication history is written to `.riebeckite/publication/history.json`:
+The durable publication state is `publication/state.json` at the project root. It contains only the last successful snapshot: run id, publication fingerprint, routable slugs, fingerprints, redirects, artifact fingerprint, and provider. Commit it with the site. It has no content bodies or credentials and is the authoritative record for change detection.
+
+`.riebeckite/publication/history.json` is the diagnostic history:
 
 - run id, trigger, dry-run flag, and action
 - plan and artifact fingerprints
@@ -168,9 +196,21 @@ Publication history is written to `.riebeckite/publication/history.json`:
 - change summary and next scheduled publication
 - the last successful snapshot
 
-History is bounded to 50 runs and contains no environment values or tokens. It is local build state and is not committed. Upload it as a CI artifact if you want a long-term record.
+History is bounded to 50 runs and contains no environment values or tokens. It is local build state and is not committed. The GitHub Actions cache restores it to make diagnostics continuous, but it is never the only source of truth: losing or truncating the cache causes a full redeploy, not a wrong publication. A malformed history is ignored with a warning.
 
-`publish status --json` combines the current plan, the artifact state, provider capabilities, required environment variable names, approval file path, and history. It works without network access; only an actual deployment needs credentials.
+## Lock and clean
+
+`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock is considered stale when its process is gone or it is older than one hour; a live lock is never removed by `--force`.
+
+`clean --all` and `clean --state` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build. An abnormally terminated run is recovered by the next run or by `clean` once the lock is stale.
+
+## Build output marker
+
+Every SSG build writes `.riebeckite/build-output.json` next to the build state. It records the output directory, the publication fingerprint, and the completion time. The CLI build additionally records an artifact hash. The marker is internal state, never written into `dist/`, and contains no credentials.
+
+Before deploying, Riebeckite requires a marker whose publication fingerprint matches the current plan. If the CLI build recorded an artifact hash, the files in `dist/` must match it too. Missing, malformed, or copied markers from an older plan fail closed. `publish validate` and `publish record` use the marker completion time, so a few seconds of clock drift between plan and build does not cause a false mismatch.
+
+`publish status --json` combines the current plan, the artifact state, provider capabilities, required environment variable names, approval file path, durable state, and history. It works without network access; only an actual deployment needs credentials.
 
 ## Verification notes
 

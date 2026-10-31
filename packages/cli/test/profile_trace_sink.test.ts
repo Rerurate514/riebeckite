@@ -35,6 +35,18 @@ test("profile retains inclusive stage durations", () => {
   assert.match(renderProfile(report), /overlapping spans are not additive/);
 });
 
+test("profile reports content total and its share of build time", () => {
+  const sink = new ProfileTraceSink();
+  sink.onSpan(span("build.total", 200));
+  sink.onSpan(span("content.build", 50));
+  sink.onSpan(span("content.process", 40));
+
+  const report = sink.createReport();
+  assert.equal(report.content.get("content.build")?.cumulativeDurationMs, 50);
+  const output = renderProfile(report);
+  assert.match(output, /Content \(inclusive;.*25\.0% of build\)/);
+});
+
 test("profile includes integration timings emitted as events", () => {
   const sink = new ProfileTraceSink();
   sink.onEvent(

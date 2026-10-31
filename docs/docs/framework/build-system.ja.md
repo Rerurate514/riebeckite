@@ -185,6 +185,7 @@ Riebeckite は、Markdown を HTML に変換した結果を次の場所に保存
 あわせて、ビルドログには次の概要も表示されます。
 
 - `Content`: コンテンツの総数、実際に処理した数、再利用によって処理を省略した数
+- `Content processing`: コンテンツ処理の所要時間と、その内訳（走査、処理、Markdown 変換、マニフェスト、グラフ）。内訳の span は包含関係にあるため、合計にはなりません
 - `Build complete`: ビルド全体の所要時間
 
 ### GitHub Actions でのキャッシュ

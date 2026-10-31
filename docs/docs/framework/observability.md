@@ -165,6 +165,8 @@ from the fact that something is "slow".
 
 The profile report separates plugin-cache activity from persistent-content-cache activity. It reports content-cache hits, misses, and bypasses together with the reason for each miss (for example `no-entry` or `dependency-changed`) and each bypass (for example an l10n safe bypass), so a warm build that is not reusing entries can be explained without reading cache internals.
 
+The `Content` section shows the content phase's total time and its share of the build, followed by inclusive spans such as scan, process, markdown, manifest, and graph. Because the spans overlap, the breakdown does not add up to the total.
+
 ## Measuring diagnostics
 
 Diagnostics are measured like any other build phase. The Profiler shows the

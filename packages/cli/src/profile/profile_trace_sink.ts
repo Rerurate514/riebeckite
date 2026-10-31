@@ -309,6 +309,7 @@ export class ProfileTraceSink implements TraceSink {
 
 function isContentSpan(name: string): boolean {
   return (
+    name === "content.build" ||
     name === "content.scan" ||
     name === "content.process" ||
     name.startsWith("content.process.") ||

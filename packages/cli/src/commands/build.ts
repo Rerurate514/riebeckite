@@ -24,6 +24,25 @@ function formatDuration(durationMs: number): string {
   return `${(durationMs / 1_000).toFixed(2)}s`;
 }
 
+const contentTimingSpans: readonly (readonly [string, string])[] = [
+  ["content.scan", "scan"],
+  ["content.process", "process"],
+  ["content.markdown", "markdown"],
+  ["content.manifest", "manifest"],
+  ["content.graph", "graph"],
+];
+
+function contentProcessingSummary(collector: FastPathSpanCollector): string {
+  const total = formatDuration(collector.durationMs("content.build"));
+  const parts = contentTimingSpans
+    .map(([span, label]) => [label, collector.durationMs(span)] as const)
+    .filter(([, duration]) => duration > 0)
+    .map(([label, duration]) => `${label} ${formatDuration(duration)}`);
+  return parts.length === 0
+    ? `Content processing: ${total}`
+    : `Content processing: ${total} (inclusive: ${parts.join(" · ")})`;
+}
+
 export async function runBuild(
   project: RiebeckiteProject,
   options: { full: boolean; observability?: Observability },
@@ -64,58 +83,65 @@ export async function runBuild(
     let fastPathUsed = false;
     let pluginValidationDurationMs = 0;
     try {
-      const outputChangeSet = options.full
-        ? undefined
-        : await content.getOutputChangeSet({ incremental: true });
-      let pluginBlockReason: string | undefined;
-      if (!options.full) {
-        const pluginValidationStartedAt = performance.now();
-        try {
-          pluginBlockReason = await content.getNoChangeFastPathBlockReason({
-            incremental: true,
+      manifest = await observability.tracer.span(
+        "content.build",
+        {},
+        async () => {
+          const outputChangeSet = options.full
+            ? undefined
+            : await content.getOutputChangeSet({ incremental: true });
+          let pluginBlockReason: string | undefined;
+          if (!options.full) {
+            const pluginValidationStartedAt = performance.now();
+            try {
+              pluginBlockReason = await content.getNoChangeFastPathBlockReason({
+                incremental: true,
+              });
+            } finally {
+              pluginValidationDurationMs =
+                performance.now() - pluginValidationStartedAt;
+            }
+          }
+          const fastPath = await evaluateNoChangeFastPath(
+            project,
+            outputChangeSet,
+            pluginBlockReason,
+            outputMetrics,
+          );
+          fastPathBlockReason = fastPath.blockReason;
+          fastPathUsed = fastPath.used;
+          const rssAfterBytes = process.memoryUsage().rss;
+          observability.tracer.event("build.fast-path", {
+            fastPathEligible: fastPath.eligible,
+            fastPathUsed,
+            fastPathBlockReason: fastPathBlockReason ?? "",
+            fastPathDecisionDurationMs:
+              performance.now() - fastPathDecisionStartedAt,
+            viteStartupSkipped: fastPathUsed,
+            ssgSkipped: fastPathUsed,
+            buildStateReadDurationMs: spanCollector.durationMs(
+              "content.build-state.load",
+            ),
+            contentPlanDurationMs: spanCollector.planDurationMs(),
+            externalDependencyDurationMs: spanCollector.durationMs(
+              "external.dependencies.resolve",
+            ),
+            pluginValidationDurationMs,
+            outputInventoryValidationDurationMs:
+              outputMetrics.outputInventoryValidationDurationMs,
+            outputHashValidationDurationMs:
+              outputMetrics.outputHashValidationDurationMs,
+            outputFilesHashed: outputMetrics.outputFilesHashed,
+            outputBytesHashed: outputMetrics.outputBytesHashed,
+            rssBeforeBytes,
+            rssAfterBytes,
+            peakRssBytes: Math.max(rssBeforeBytes, rssAfterBytes),
           });
-        } finally {
-          pluginValidationDurationMs =
-            performance.now() - pluginValidationStartedAt;
-        }
-      }
-      const fastPath = await evaluateNoChangeFastPath(
-        project,
-        outputChangeSet,
-        pluginBlockReason,
-        outputMetrics,
+          if (!fastPathUsed)
+            return await content.build({ incremental: !options.full });
+          return null;
+        },
       );
-      fastPathBlockReason = fastPath.blockReason;
-      fastPathUsed = fastPath.used;
-      const rssAfterBytes = process.memoryUsage().rss;
-      observability.tracer.event("build.fast-path", {
-        fastPathEligible: fastPath.eligible,
-        fastPathUsed,
-        fastPathBlockReason: fastPathBlockReason ?? "",
-        fastPathDecisionDurationMs:
-          performance.now() - fastPathDecisionStartedAt,
-        viteStartupSkipped: fastPathUsed,
-        ssgSkipped: fastPathUsed,
-        buildStateReadDurationMs: spanCollector.durationMs(
-          "content.build-state.load",
-        ),
-        contentPlanDurationMs: spanCollector.planDurationMs(),
-        externalDependencyDurationMs: spanCollector.durationMs(
-          "external.dependencies.resolve",
-        ),
-        pluginValidationDurationMs,
-        outputInventoryValidationDurationMs:
-          outputMetrics.outputInventoryValidationDurationMs,
-        outputHashValidationDurationMs:
-          outputMetrics.outputHashValidationDurationMs,
-        outputFilesHashed: outputMetrics.outputFilesHashed,
-        outputBytesHashed: outputMetrics.outputBytesHashed,
-        rssBeforeBytes,
-        rssAfterBytes,
-        peakRssBytes: Math.max(rssBeforeBytes, rssAfterBytes),
-      });
-      if (!fastPathUsed)
-        manifest = await content.build({ incremental: !options.full });
     } finally {
       await content.dispose();
     }
@@ -123,6 +149,7 @@ export async function runBuild(
     observability.logger.info(
       `Content: ${manifest?.entries.length ?? 0} total · ${content.getProcessedContentCount()} processed · ${content.getReusedContentCount()} reused`,
     );
+    observability.logger.info(contentProcessingSummary(spanCollector));
     observability.logger.info(
       `Persistent content cache: ${persistentContentCache.hits} hits · ${persistentContentCache.misses} misses · ${persistentContentCache.bypasses} bypasses`,
     );

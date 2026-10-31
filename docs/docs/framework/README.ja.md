@@ -42,6 +42,7 @@ flowchart LR
 | --- | --- |
 | Riebeckite 全体の構造 | [Architecture](./architecture.ja.md) |
 | Markdown や Content がどう処理されるか | [Content System](./content-system.ja.md) |
+| バージョン付きのコンテンツ変更をどう計画・適用するか | [Content Migration](./content-migration.ja.md) |
 | Plugin がどう動くか | [Plugin System](./plugin-system.ja.md) |
 | Diagram Plugin の共有 utility と契約 | [Diagram Plugin Infrastructure](./diagram-infrastructure.ja.md) |
 | Plugin が独立したページを提供する仕組み | [Page System](./page-system.ja.md) |

@@ -1,0 +1,73 @@
+{
+  "name": "@riebeckite/plugin-calculator",
+  "version": "0.0.35",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    },
+    "./client-runtime": {
+      "types": "./dist/client-runtime.d.ts",
+      "import": "./dist/client-runtime.js",
+      "source": "./client-runtime.ts",
+      "default": "./dist/client-runtime.js"
+    },
+    "./style.css": "./style.css"
+  },
+  "dependencies": {
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/runtime": "workspace:*",
+    "@types/mdast": "catalog:",
+    "unist-util-visit": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/calculator"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Interactive calculator code blocks backed by the Riebeckite runtime.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "calculator",
+    "runtime",
+    "interactive"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
+}

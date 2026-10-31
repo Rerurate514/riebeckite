@@ -451,6 +451,7 @@ export type {
 } from "./src/types/plugin_asset.js";
 export {
   createClientEntry,
+  createRuntimeEntry,
   createStyleAsset,
   serializePublicClientConfig,
 } from "./src/types/plugin_asset.js";

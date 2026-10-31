@@ -16,6 +16,20 @@ export type PluginRuntimeEntry<TOptions extends JsonValue = JsonValue> = {
   options?: TOptions;
 };
 
+export function createRuntimeEntry<TOptions extends JsonValue = JsonValue>(
+  id: string,
+  moduleSpecifier: string,
+  exportName?: string,
+  options?: TOptions,
+): PluginRuntimeEntry<TOptions> {
+  return {
+    id,
+    moduleSpecifier,
+    ...(exportName === undefined ? {} : { exportName }),
+    ...(options === undefined ? {} : { options }),
+  };
+}
+
 export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   pluginName: string;
   moduleSpecifier: string;

@@ -25,6 +25,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/backlinks",
   "packages/plugins/bases",
   "packages/plugins/breadcrumbs",
+  "packages/plugins/calculator",
   "packages/plugins/canvas",
   "packages/plugins/changelog",
   "packages/plugins/chartjs",
@@ -245,6 +246,11 @@ const packagePublishingMetadata = {
   "packages/plugins/breadcrumbs": {
     description: "Slug-hierarchy breadcrumb navigation for Riebeckite.",
     keywords: ["riebeckite", "plugin", "breadcrumbs", "navigation"],
+  },
+  "packages/plugins/calculator": {
+    description:
+      "Interactive calculator code blocks backed by the Riebeckite runtime.",
+    keywords: ["riebeckite", "plugin", "calculator", "runtime", "interactive"],
   },
   "packages/plugins/canvas": {
     description: "Obsidian Canvas diagram rendering for Riebeckite.",
@@ -821,6 +827,7 @@ export function expectedPackageMetadata(directory) {
       "backlinks",
       "bases",
       "breadcrumbs",
+      "calculator",
       "citations",
       "code-annotations",
       "code-enhance",

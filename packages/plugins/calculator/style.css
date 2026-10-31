@@ -1,0 +1,50 @@
+.rb-calculator {
+  --rb-calculator-ink: var(--rb-color-ink, #000000);
+  --rb-calculator-muted: var(--rb-color-muted, #69645c);
+  --rb-calculator-rule: var(
+    --rb-color-border,
+    color-mix(in srgb, var(--rb-calculator-ink) 18%, transparent)
+  );
+
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rb-calculator-rule);
+  color: var(--rb-calculator-ink);
+}
+
+.rb-calculator__expression {
+  margin: 0 0 0.5rem;
+  color: var(--rb-calculator-muted);
+}
+
+.rb-calculator__result {
+  margin: 0;
+}
+
+.rb-calculator__result p {
+  margin: 0;
+}
+
+.rb-calculator__static output,
+.rb-calculator__live output {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.rb-calculator__loading,
+.rb-calculator__error {
+  color: var(--rb-calculator-muted);
+  font-size: 0.875rem;
+}
+
+.rb-calculator__error {
+  color: var(--rb-calculator-ink);
+}
+
+.rb-calculator [hidden] {
+  display: none;
+}
+
+.rb-calculator--invalid {
+  font-size: 0.875rem;
+}

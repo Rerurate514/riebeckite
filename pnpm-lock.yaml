@@ -129,6 +129,9 @@ importers:
       '@riebeckite/plugin-breadcrumbs':
         specifier: workspace:*
         version: link:../../packages/plugins/breadcrumbs
+      '@riebeckite/plugin-calculator':
+        specifier: workspace:*
+        version: link:../../packages/plugins/calculator
       '@riebeckite/plugin-canvas':
         specifier: workspace:*
         version: link:../../packages/plugins/canvas
@@ -799,6 +802,21 @@ importers:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4
+
+  packages/plugins/calculator:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/runtime':
+        specifier: workspace:*
+        version: link:../../runtime
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
 
   packages/plugins/canvas:
     dependencies:

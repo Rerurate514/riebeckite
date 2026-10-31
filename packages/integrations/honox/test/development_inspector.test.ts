@@ -620,6 +620,13 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /data-theme-query/);
   assert.match(source as string, /collectThemeTokens/);
   assert.match(source as string, /--\(rb\|rr\)-/);
+  assert.match(source as string, /report\.derivedViews/);
+  assert.match(source as string, /data-derived-query/);
+  assert.match(source as string, /data-derived-status/);
+  assert.match(source as string, /No derived views are registered/);
+  assert.match(source as string, /dependencyDescription/);
+  assert.match(source as string, /not executed/);
+  assert.match(source as string, /Recompute reason/);
 });
 
 function inspectorStack(

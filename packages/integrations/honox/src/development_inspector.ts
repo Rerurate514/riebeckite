@@ -1149,6 +1149,8 @@ let pluginPage = 0;
 let pluginData;
 let themeQuery = "";
 let themeKind = "all";
+let derivedQuery = "";
+let derivedStatus = "all";
 
 export function initDevelopmentInspector() {
   let panel;
@@ -1165,7 +1167,7 @@ export function initDevelopmentInspector() {
   let pendingRefresh = false;
   let loadingTimer;
   let themeFrame = 0;
-  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Theme"];
+  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Theme"];
   const outputUrl = () => {
     const parameters = new URLSearchParams();
     if (outputQuery) parameters.set("q", outputQuery);
@@ -1357,7 +1359,7 @@ export function initDevelopmentInspector() {
   });
   import.meta.hot?.on("riebeckite:inspector", refresh);
   const refreshTheme = () => {
-    if (!panel?.isConnected || activeTab !== 5) return;
+    if (!panel?.isConnected || activeTab !== 6) return;
     cancelAnimationFrame(themeFrame);
     themeFrame = requestAnimationFrame(() => render());
   };
@@ -1424,6 +1426,7 @@ export function initDevelopmentInspector() {
     root.querySelectorAll("[data-plugin-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readPluginFilters(root); pluginPage = 0; render(); requestPlugins(); }));
     root.querySelectorAll("[data-plugin-page]").forEach((button) => button.addEventListener("click", () => { pluginPage = Math.max(0, pluginPage + Number(button.dataset.pluginPage)); render(); requestPlugins(); }));
     root.querySelectorAll("[data-theme-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readThemeFilters(root); render(); }));
+    root.querySelectorAll("[data-derived-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDerivedFilters(root); render(); }));
     root.querySelectorAll("[data-output-graph]").forEach((button) => button.addEventListener("click", () => { graphSelected = "output:" + button.dataset.outputGraph; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; graphData = undefined; activeTab = 2; render(); requestGraph(); }));
     const lookupInput = root.querySelector("[data-output-lookup]");
     const lookupSubmit = root.querySelector("[data-output-lookup-submit]");
@@ -1454,8 +1457,14 @@ export function initDevelopmentInspector() {
     if (activeTab === 2) return graphReport(graphData) + dependencyReport(report.dependencies);
     if (activeTab === 3) return pluginExecutionReport(pluginData);
     if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
+    if (activeTab === 5) return derivedReport(report.derivedViews);
     return themeReport(report.themeConfig);
   }
+}
+
+function readDerivedFilters(root) {
+  derivedQuery = root.querySelector("[data-derived-query]").value;
+  derivedStatus = root.querySelector("[data-derived-status]").value;
 }
 
 function readDiagnosticFilters(root) {
@@ -1774,6 +1783,52 @@ function regenerationReport(regeneration) {
   ).join("") + '</ul>';
   const unknown = regeneration.unknown.length === 0 ? "" : '<p class="partial">Cause unavailable: ' + escapeHtml(regeneration.unknown.join(", ")) + '.</p>';
   return '<h3>Full regeneration reasons</h3>' + required + reasons + unknown;
+}
+
+function dependencyDescription(dependency) {
+  let text = dependency.type + ":" + (dependency.id || "*");
+  if (dependency.property) text += "." + dependency.property;
+  else if (dependency.properties && dependency.properties.length) text += "[" + dependency.properties.join(",") + "]";
+  if (dependency.type === "view" && dependency.fingerprint) text += "@" + dependency.fingerprint;
+  return text;
+}
+
+function derivedReport(views) {
+  const all = Array.isArray(views) ? views : [];
+  if (all.length === 0) return '<p>No derived views are registered. Plugins register them through derivedViews.</p>';
+  const query = derivedQuery.trim().toLowerCase();
+  const filtered = all.filter((view) => {
+    if (derivedStatus !== "all") {
+      const state = view.error ? "error" : view.cache;
+      if (state !== derivedStatus) return false;
+    }
+    if (!query) return true;
+    return [view.id, view.version, view.recomputeReason || "", view.cache, view.dependencies.map(dependencyDescription).join(" "), view.outputPaths.join(" ")].join(" ").toLowerCase().includes(query);
+  });
+  return '<div class="filters"><label>Search <input data-derived-filter data-derived-query data-focus-key="derived-query" value="' + escapeHtml(derivedQuery) + '"></label><label>Status <select data-derived-filter data-derived-status data-focus-key="derived-status">' + options(["all", "hit", "miss", "bypass", "not-run", "error"], derivedStatus) + '</select></label></div>' +
+    '<p>' + filtered.length + ' of ' + all.length + ' derived views.</p>' +
+    (filtered.length === 0 ? '<p class="more">No matching derived views.</p>' :
+      '<ul>' + filtered.map((view, index) => derivedView(view, index)).join("") + '</ul>');
+}
+
+function derivedView(view, index) {
+  const state = view.error === "cancelled" ? "cancelled" : view.error ? "failed" : "completed";
+  const execution = view.cache === "not-run" ? "not executed" : "executed";
+  const dependencies = view.dependencies.length === 0 ? '<p>No tracked dependencies.</p>' :
+    '<details data-detail-key="derived-dependencies-' + index + '"><summary>Dependencies (' + view.dependencies.length + ')</summary><ul>' + view.dependencies.map((dependency) =>
+      '<li><code>' + escapeHtml(dependencyDescription(dependency)) + '</code></li>'
+    ).join("") + '</ul></details>';
+  const outputs = view.outputPaths.length === 0 ? '<p>No generated outputs.</p>' :
+    '<details data-detail-key="derived-outputs-' + index + '"><summary>Generated outputs (' + view.outputPaths.length + ')</summary><ul>' + view.outputPaths.map((outputPath) =>
+      '<li><code>' + escapeHtml(outputPath) + '</code></li>'
+    ).join("") + '</ul></details>';
+  return '<li><b>' + escapeHtml(view.id) + '</b> <small>version ' + escapeHtml(view.version) + '</small><dl>' +
+    '<dt>Execution</dt><dd>' + execution + '</dd>' +
+    '<dt>State</dt><dd>' + state + '</dd>' +
+    '<dt>Cache</dt><dd>' + escapeHtml(view.cache) + '</dd>' +
+    (view.recomputeReason ? '<dt>Recompute reason</dt><dd>' + escapeHtml(view.recomputeReason) + '</dd>' : '') +
+    '<dt>Duration</dt><dd>' + view.durationMs + ' ms</dd>' +
+    '</dl>' + dependencies + outputs + '</li>';
 }
 
 function unavailable(subject, capability) {

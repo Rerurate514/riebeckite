@@ -4,22 +4,22 @@ title: Publication Workflow
 ---
 # Publication Workflow
 
-The Publication Workflow adds planning, scheduled publication, pre-publish validation, approvals, and deploy diagnostics on top of the existing static build. It keeps the simple `push → build → deploy` path working: a site that never runs `riebeckite publish` behaves exactly as before.
+The Publication Workflow adds planning, scheduled publication, pre-publish validation, approvals, and deploy diagnostics on top of the existing [[build-system|static build]]. It keeps the simple `push → build → deploy` path working: a site that never runs `riebeckite publish` behaves exactly as before.
 
 The system has four parts:
 
-1. **Publication Planner** — a Core API that turns the resolved content manifest into a plan.
-2. **Workflow** — draft, review, approved, published, and retracted states. Approvals are optional.
-3. **Hosting adapters** — deployment commands and capabilities for Cloudflare Workers, Cloudflare Pages, GitHub Pages, Netlify, and Vercel.
-4. **Diagnostics** — local validation, artifact fingerprints, and a publication history.
+1. **Publication Planner** — a Core API that turns the resolved [[glossary/manifest|content manifest]] into a plan.
+2. **Workflow** — [[glossary/draft|draft]], review, approved, published, and retracted states. Approvals are optional.
+3. **Hosting adapters** — deployment commands and capabilities for [[guides/deployment/cloudflare-workers|Cloudflare Workers]], Cloudflare Pages, GitHub Pages, Netlify, and Vercel.
+4. **Diagnostics** — local validation, artifact [[glossary/fingerprint|fingerprints]], and a publication history.
 
-Riebeckite Core never calls GitHub or Cloudflare. Adapters and history live in the CLI, and credentials stay in the environment of the command that deploys.
+Riebeckite Core never calls GitHub or Cloudflare. Adapters and history live in the [[reference/cli|CLI]], and credentials stay in the environment of the command that deploys.
 
 ## Planning is not a second publication decision
 
-The planner reads `ContentManifestEntry.publishing`, which is produced by the existing `resolvePublishingState` function. Draft, scheduled, unlisted, and public notes are therefore decided once, by the build, and the planner only observes the result. It also reads `manifest.publicRedirects`, so redirect targets that are not public never enter a plan or a deploy artifact.
+The planner reads `ContentManifestEntry.publishing`, which is produced by the existing `resolvePublishingState` function. [[glossary/draft|Draft]], scheduled, [[glossary/unlisted|unlisted]], and public notes are therefore decided once, by the build, and the planner only observes the result. It also reads `manifest.publicRedirects`, so redirect targets that are not public never enter a plan or a deploy artifact.
 
-| Visibility | Routable | Discoverable | Planner bucket |
+| [[glossary/visibility|Visibility]] | [[glossary/routable|Routable]] | [[glossary/discoverable|Discoverable]] | Planner bucket |
 | --- | ---: | ---: | --- |
 | `public` | yes | yes | public |
 | `unlisted` | yes | no | unlisted |
@@ -51,7 +51,7 @@ The plan is JSON-serializable and contains:
 - `targets.public`, `targets.unlisted`, `targets.scheduled`, `targets.drafts`
 - `nextPublicationAt` — the earliest future `publishAt`
 - `changes` — added, changed, removed, unchanged, and `detected`
-- `publicationFingerprint` — a hash of routable entries, public redirects, and generated outputs (including derived views)
+- `publicationFingerprint` — a hash of routable entries, public redirects, and [[glossary/generated-output|generated outputs]] (including [[derived-data|derived views]])
 - `workflow` and `approvals.pending`
 - `validation.issues`
 - `action` — `none`, `build-and-deploy`, or `blocked`
@@ -61,13 +61,13 @@ The plan is JSON-serializable and contains:
 
 ## Scheduled publication
 
-A scheduled note is built as not-routable before `publishAt`. When the time passes, the next build resolves it as public. The planner sees a fingerprint change and plans a build and deploy, so a scheduled publication with no content edit still reaches the site. The existing build state already records `nextPublishingChangeAt` and stops reusing output when that time has passed.
+A scheduled note is built as not-routable before `publishAt`. When the time passes, the next build resolves it as public. The planner sees a fingerprint change and plans a build and deploy, so a scheduled publication with no content edit still reaches the site. The existing [[glossary/build-state|build state]] already records `nextPublishingChangeAt` and stops [[glossary/output-cache|reusing output]] when that time has passed.
 
 Scheduling is best effort where Riebeckite does not own the scheduler:
 
 | Host | Scheduler | Meaning |
 | --- | --- | --- |
-| GitHub Pages | `ci-best-effort` | A GitHub Actions schedule triggers the build; GitHub may delay it. |
+| GitHub Pages | `ci-best-effort` | A [[guides/deployment/github-actions|GitHub Actions]] schedule triggers the build; GitHub may delay it. |
 | Cloudflare Workers / Pages | `none` | Run `publish run` from CI or manually. |
 | Netlify / Vercel | `none` | Same as Cloudflare. |
 
@@ -102,7 +102,7 @@ riebeckite publish revoke <slug> [--all]
 riebeckite publish plan --require-approval
 ```
 
-Approvals are stored in `publication/approvals.json` at the project root. Each record binds a slug to the note's content fingerprint — slug, permalink, title, rendered HTML, and redirects. Editing the note invalidates the approval. A scheduled note does not need re-approval when its `publishAt` arrives, because the fingerprint excludes the scheduling fields.
+Approvals are stored in `publication/approvals.json` at the project root. Each record binds a [[glossary/slug|slug]] to the note's content fingerprint — slug, [[glossary/permalink|permalink]], title, rendered HTML, and redirects. Editing the note invalidates the approval. A scheduled note does not need re-approval when its `publishAt` arrives, because the fingerprint excludes the scheduling fields.
 
 Only a committed approval file on the branch that CI checks out is trusted. The CLI writes the file but never grants trust by itself, and the file contains no secret. A personal site can ignore the whole mechanism; a team can protect `publication/approvals.json` with branch protection or CODEOWNERS. `publish revoke` removes the records, and the next plan returns to `review`.
 
@@ -113,7 +113,7 @@ Approval state and site state are deliberately separate:
 - `published` — the last successful snapshot matches the current plan.
 - `retracted` — a previously public note is no longer routable; the next deploy removes it.
 
-Retraction and republication use the existing visibility rules: set `visibility: draft` (or remove `publish: true`) and deploy to retract; make it public again and deploy to republish. The planner reports the removed or added entry.
+Retraction and republication use the existing [[glossary/visibility|visibility]] rules: set `visibility: draft` (or remove `publish: true`) and deploy to retract; make it public again and deploy to republish. The planner reports the removed or added entry.
 
 ## CLI
 
@@ -164,7 +164,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 Provider detection checks `wrangler.jsonc|json|toml`, `.github/workflows` for Pages actions, `vercel.json`, and `netlify.toml`. `--provider` overrides detection. Required environment variable **names** are reported by `publish status --json`; values are never read, recorded, or written by Riebeckite.
 
-For GitHub Pages, the build must include the deploy plugin's `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core and the CLI does not dispatch an unverified workflow. The publish workflow runs `publish gate --provider github-pages`, deploys with `actions/deploy-pages`, and then calls `publish record --provider github-pages`.
+For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core and the CLI does not dispatch an unverified workflow. The publish workflow runs `publish gate --provider github-pages`, deploys with `actions/deploy-pages`, and then calls `publish record --provider github-pages`.
 
 ## CI
 
@@ -175,7 +175,7 @@ For GitHub Pages, the build must include the deploy plugin's `.nojekyll` and `40
 - The workflow fetches the branch head and stops when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
 - `publish plan --json` decides whether a scheduled run needs a build and deploy. A push always builds because application code may have changed.
 - The plan is uploaded as an artifact, then `publish validate` and `publish gate` check the built output.
-- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot, and the workflow commits `publication/state.json` with `[skip ci]`. The next run reads that committed state, not the cache.
+- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot, and the workflow commits `publication/state.json` with `[skip ci]`. The next run reads that committed state, not the [[glossary/cache|cache]].
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
 
 A site that does not use scheduled publication still runs the schedule in this reference workflow, but the plan reports no changes and the workflow skips build and deploy. Remove the `schedule` trigger from generated sites that do not use `publishAt` if the periodic check itself is unwanted.
@@ -205,7 +205,7 @@ History is bounded to 50 runs and contains no environment values or tokens. It i
 
 ## Build output marker
 
-Every SSG build writes `.riebeckite/build-output.json` next to the build state. It records the output directory, the publication fingerprint, and the completion time. The CLI build additionally records an artifact hash. The marker is internal state, never written into `dist/`, and contains no credentials.
+Every [[glossary/ssg|SSG]] build writes `.riebeckite/build-output.json` next to the build state. It records the output directory, the publication fingerprint, and the completion time. The CLI build additionally records an artifact hash. The marker is internal state, never written into `dist/`, and contains no credentials.
 
 Before deploying, Riebeckite requires a marker whose publication fingerprint matches the current plan. If the CLI build recorded an artifact hash, the files in `dist/` must match it too. Missing, malformed, or copied markers from an older plan fail closed. `publish validate` and `publish record` use the marker completion time, so a few seconds of clock drift between plan and build does not cause a false mismatch.
 
@@ -219,5 +219,5 @@ Local plan, approval, artifact, adapter, and history checks run in the package t
 
 - It does not embed hosting credentials in Core, the manifest, or the static output.
 - It does not add a database, server, or scheduler inside Core.
-- It does not introduce a second visibility rule; existing frontmatter and `PublishStrategy` remain authoritative.
+- It does not introduce a second visibility rule; existing [[glossary/frontmatter|frontmatter]] and [[glossary/publish-strategy|PublishStrategy]] remain authoritative.
 - It does not change sites that never use `publish`.

@@ -7,7 +7,7 @@ sidebar:
 
 # HonoX Integration
 
-`@riebeckite/honox` connects portable Core behavior to HonoX and Vite. It owns application-root/config resolution, Vite development and build integration, SSG extension mapping, generated plugin/theme style entries, and the HonoX application build workflow.
+`@riebeckite/honox` connects portable Core behavior to HonoX and Vite. It owns application-root/config resolution, Vite development and build integration, [[glossary/ssg|SSG]] extension mapping, generated plugin/theme style entries, and the HonoX application build workflow.
 
 Core handles content and plugin processing, but it does not know HonoX routes or how Vite builds. `@riebeckite/honox` connects the two:
 
@@ -71,7 +71,7 @@ deployment build plugin, or Tailwind.
 
 ## Declarative plugin components
 
-Plugin UI components import from their own package and resolve their default data
+[[glossary/plugin|Plugin]] [[glossary/ui|UI]] components import from their own package and resolve their default data
 from `@riebeckite/ui` context. The site still chooses placement; it does not need
 to repeat manifest lookups or plugin helper calls for ordinary article UI.
 

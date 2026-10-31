@@ -30,11 +30,11 @@ flowchart LR
 
 | 名前 | 役割 | 既定値 / 解決の基準 |
 | --- | --- | --- |
-| `appRoot` | HonoX/Vite アプリケーション。`app/`、`public/`、ルート、生成されるスタイル、ビルド出力を管理する | Vite の `root` |
+| `appRoot` | [[framework/honox-integration|HonoX]]/Vite アプリケーション。`app/`、`public/`、ルート、生成されるスタイル、ビルド出力を管理する | Vite の `root` |
 | `configRoot` | `riebeckite.config.ts` を含むディレクトリ | `appRoot` |
-| `contentRoot` | 設定したコンテンツディレクトリ、または Obsidian Vault のファイルシステム上の絶対ルート | `path.resolve(appRoot, content.directory)` |
+| `contentRoot` | 設定したコンテンツディレクトリ、または [[glossary/obsidian-vault|Obsidian Vault]] のファイルシステム上の絶対ルート | `path.resolve(appRoot, content.directory)` |
 
-ここで押さえたいのは、相対パスの `content.directory` が常に `appRoot` を基準に解決され、`configRoot` や作業ディレクトリが変わっても基準が動かないことです。統合側はコンテンツやプラグインを実行する前に3つのルートを解決し、CLI も同じ結果を使います。そのため、入れ子のディレクトリから実行しても、CI の作業ディレクトリから実行しても、エディタのタスクから実行しても、同じ Vault を読みます。
+ここで押さえたいのは、相対パスの `content.directory` が常に `appRoot` を基準に解決され、`configRoot` や作業ディレクトリが変わっても基準が動かないことです。統合側はコンテンツや[[glossary/plugin|プラグイン]]を実行する前に3つのルートを解決し、CLI も同じ結果を使います。そのため、入れ子のディレクトリから実行しても、CI の作業ディレクトリから実行しても、エディタのタスクから実行しても、同じ Vault を読みます。
 
 ```mermaid
 flowchart TD
@@ -135,7 +135,7 @@ blog/
    └─ index.md
 ```
 
-最も単純な構成で、`create-riebeckite` が生成するのもこの形です。記事の公開範囲はリポジトリの公開範囲と同じになります。
+最も単純な構成で、`create-riebeckite` が生成するのもこの形です。記事の[[glossary/visibility|公開範囲]]はリポジトリの公開範囲と同じになります。
 
 ### 2-2. B: 1つのリポジトリでフォルダを分ける
 
@@ -172,7 +172,7 @@ flowchart TD
     Docs --> DocsRules["ドキュメントの設定<br/>exclude / プラグイン"]
 ```
 
-各サイトは `exclude`、`publishStrategy`、プラグイン、テーマ、デプロイを独立して設定できます。そのため、同じノートでもサイトごとに公開範囲や見せ方を変えられます。
+各サイトは `exclude`、`publishStrategy`、プラグイン、[[glossary/theme|テーマ]]、デプロイを独立して設定できます。そのため、同じノートでもサイトごとに公開範囲や見せ方を変えられます。
 
 ### 2-4. どの構成を選ぶか
 
@@ -395,11 +395,11 @@ Vault 内のファイルは3種類に分かれ、それぞれ公開する主体�
 
 | 種類 | 対象 | 公開 URL | 公開する主体 |
 | --- | --- | --- | --- |
-| コンテンツ画像 | 画像（`png`、`jpg`、`svg` など） | `/<Vault からの相対論理パス>` | ビルド（生成物として出力） |
+| コンテンツ画像 | 画像（`png`、`jpg`、`svg` など） | `/<Vault からの相対論理パス>` | ビルド（[[glossary/generated-output|生成物]]として出力） |
 | 添付ファイル / メディア | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対論理パス>` | サイト側の prebuild 手順 |
 | 静的アセット | サイトアプリケーションが管理するファイル | `/` 以下の任意の場所 | Vite の `public/` ディレクトリ |
 
-コンテンツ画像については、サイト側で何もする必要がありません。`obsidianMarkdown()` が公開ページから参照されている画像を、論理パスを保ったままビルド出力に書き出します。開発サーバーも同じ論理パスでコンテンツから直接配信します。どこからも参照されていない画像や、非公開ページだけから参照されている画像は書き出されません。
+コンテンツ画像については、サイト側で何もする必要がありません。`obsidianMarkdown()` が公開ページから参照されている画像を、[[glossary/logical-path|論理パス]]を保ったままビルド出力に書き出します。開発サーバーも同じ論理パスでコンテンツから直接配信します。どこからも参照されていない画像や、非公開ページだけから参照されている画像は書き出されません。
 
 ```mermaid
 flowchart LR
@@ -501,7 +501,7 @@ publishStrategy
 
 ## 5. ビルド前にルートと公開境界を検証する
 
-ルートと公開境界は、ビルド前に CLI で確認できます。作業ディレクトリに依存しないことは、入れ子のディレクトリから実行すると確かめられます。
+ルートと[[glossary/publication-boundary|公開境界]]は、ビルド前に CLI で確認できます。作業ディレクトリに依存しないことは、入れ子のディレクトリから実行すると確かめられます。
 
 ```sh
 cd site/app
@@ -516,9 +516,9 @@ npm exec riebeckite build
 結果は次の順に確認します。
 
 1. `check` は設定とプラグインの取り決めを検証します。
-2. `doctor` は読み取れない、または不正なファイルシステムのコンテンツソースを報告します。
+2. `doctor` は読み取れない、または不正なファイルシステムの[[glossary/content-source|コンテンツソース]]を報告します。
 3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` がパターン数です。まずここで、Vault がどこを指しているかを確定させます。
-4. WikiLink や埋め込みを調べる前に、`inspect content --list` で期待する論理パスが読み込まれているか確認します。
+4. [[glossary/wikilink|WikiLink]] や埋め込みを調べる前に、`inspect content --list` で期待する論理パスが読み込まれているか確認します。
 5. `inspect graph` で、除外したノートがノードとして現れていないか確認します。
 6. `build` は統合とルートのレンダリングを検証します。
 

@@ -4,7 +4,7 @@ title: コンテンツとサイトを分ける
 ---
 # コンテンツとサイトを分ける
 
-記事（Markdown / Obsidian Vault）とサイト（コード、設定、テーマ）を別の場所やリポジトリに置く方法を説明します。分けるべきかどうかの判断、構成の選び方、外部 Vault の読み込み、別リポジトリからの公開までを順に扱います。
+記事（Markdown / [[glossary/obsidian-vault|Obsidian Vault]]）とサイト（コード、設定、[[glossary/theme|テーマ]]）を別の場所やリポジトリに置く方法を説明します。分けるべきかどうかの判断、構成の選び方、外部 Vault の読み込み、別リポジトリからの公開までを順に扱います。
 
 GitHub Actions の具体的な構成、ルート解決、認証、アセットの詳細は [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md) を参照してください。
 
@@ -52,7 +52,7 @@ site repository          content repository
 
 | リポジトリ | 主な内容 |
 | --- | --- |
-| サイト | アプリケーション、設定、テーマ、プラグイン、デプロイ |
+| サイト | アプリケーション、設定、テーマ、[[glossary/plugin|プラグイン]]、デプロイ |
 | 記事 | Markdown、Obsidian Vault、添付ファイル |
 
 ```mermaid
@@ -116,7 +116,7 @@ export default defineConfig({
 
 記事とサイトをどの単位で分けるかを先に決めます。
 
-| パターン | 構成 | 記事の公開範囲 | 向いているケース |
+| パターン | 構成 | 記事の[[glossary/visibility|公開範囲]] | 向いているケース |
 | --- | --- | --- | --- |
 | A. 1つのリポジトリ | サイトと記事を同じリポジトリに置く（`content/`） | リポジトリと同じ | 個人ブログを1つのリポジトリで管理したい |
 | B. 同じリポジトリ内でフォルダを分ける | `site/` と `vault/` を並べる | リポジトリと同じ | 履歴は共有しつつ、場所と設定を分けたい |
@@ -228,7 +228,7 @@ git push -u origin main
 
 ### 2. サイトを生成する
 
-GitHub Actions のデプロイ設定込みでサイトを生成します。プリセットを変えてもこの構成は同じで、変わるのはスターターサイトだけです。
+GitHub Actions のデプロイ設定込みでサイトを生成します。[[glossary/preset|プリセット]]を変えてもこの構成は同じで、変わるのはスターターサイトだけです。
 
 ```sh
 npx create-riebeckite my-site --github-actions \
@@ -301,11 +301,11 @@ npm exec -- riebeckite inspect content --list
 ```
 
 - `check` は設定とプラグインの契約を検証します。
-- `doctor` は設定、プラグイン、コンテンツ、ビルド状態、環境を診断します。`--github` を付けると GitHub 関連の設定も確認します。
+- `doctor` は設定、プラグイン、コンテンツ、[[glossary/build-state|ビルド状態]]、環境を診断します。`--github` を付けると GitHub 関連の設定も確認します。
 - `inspect config` は解決済みの設定を表示します。コンテンツの `Source`、`Directory`、`Exclude`、`Publishing` を確認でき、`Directory` には絶対パスが出ます。意図した Vault を指しているか確認してください。
 - `inspect content --list` は読み込んだノートを `PATH`、`ID`、`ID SOURCE`、`PERMALINK` の列で一覧表示します。`exclude` に一致したファイルは `EXCLUDED PATH` と `PATTERN` の表に出ます。
 
-`inspect content` だけを実行すると、コンテンツソースの種類、読み込み件数、除外件数、拡張子ごとの件数が分かります。
+`inspect content` だけを実行すると、[[glossary/content-source|コンテンツソース]]の種類、読み込み件数、除外件数、拡張子ごとの件数が分かります。
 
 記事が見つからない場合は、相対パスの `directory` を確認してください。読み込まれているのに表示されない場合は、`publish: true`、`visibility`、`publishAt` を確認します。
 
@@ -420,7 +420,7 @@ frontmatter の `visibility` と `publishAt` は、`publishStrategy` より優�
 
 | frontmatter | 結果 |
 | --- | --- |
-| `visibility: public` | URL で表示でき、一覧や検索にも出る |
+| `visibility: public` | URL で表示でき、一覧や[[glossary/search|検索]]にも出る |
 | `visibility: unlisted` | URL を直接開けば表示できるが、一覧や検索には出ない |
 | `visibility: draft` | URL を直接開いても表示されず、一覧や検索にも出ない |
 | `publishAt: 2026-01-01T00:00:00.000Z` | ビルド時刻がその日時より前なら非公開、それ以降のビルドで公開される |

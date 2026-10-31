@@ -25,7 +25,7 @@ flowchart TD
 
 | 名前 | 役割 | 既定値 / 解決の基準 |
 | --- | --- | --- |
-| `appRoot` | HonoX / Vite アプリケーションのルート | Vite の `root` |
+| `appRoot` | [[framework/honox-integration|HonoX]] / Vite アプリケーションのルート | Vite の `root` |
 | `configRoot` | `riebeckite.config.*` を探すディレクトリ | `appRoot` |
 | `contentRoot` | 実際にコンテンツを読み込む絶対パス | `path.resolve(appRoot, content.directory)` |
 
@@ -116,7 +116,7 @@ flowchart LR
 
 ## 外部 Vault を使う
 
-Obsidian Vault をサイトと独立して管理したい場合は、サイトの外へ置く構成を推奨します。
+[[glossary/obsidian-vault|Obsidian Vault]] をサイトと独立して管理したい場合は、サイトの外へ置く構成を推奨します。
 
 たとえば、次のような構成です。
 

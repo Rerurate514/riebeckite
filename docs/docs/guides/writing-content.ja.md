@@ -44,7 +44,7 @@ content/first-post.md
 
 を作れば、Riebeckite が記事として読み込みます。
 
-`content/` 以外のフォルダを使うこともできます。既存の Obsidian Vault などを使いたい場合は [Obsidian のノートをサイトにするガイド](./obsidian.ja.md) を参照してください。
+`content/` 以外のフォルダを使うこともできます。既存の [[glossary/obsidian-vault|Obsidian Vault]] などを使いたい場合は [Obsidian のノートをサイトにするガイド](./obsidian.ja.md) を参照してください。
 
 ## 最初の記事を書く
 
@@ -176,7 +176,7 @@ content/
 └─ another-draft.md
 ```
 
-のように、公開記事と下書きを同じ `content/` に置いておくこともできます。
+のように、公開記事と[[glossary/draft|下書き]]を同じ `content/` に置いておくこともできます。
 
 ## Markdown の基本
 
@@ -261,7 +261,7 @@ console.log(message);
 
 ## Wikiリンク
 
-Obsidian 形式の WikiLink に対応したプラグインを利用している構成では、
+Obsidian 形式の [[glossary/wikilink|WikiLink]] に対応した[[glossary/plugin|プラグイン]]を利用している構成では、
 
 ```md
 [[about]]
@@ -291,7 +291,7 @@ Riebeckite では、最終的なサイト内リンクは解決済みのコンテ
 
 ## ファイル名と URL
 
-標準的な構成では、コンテンツの[[logical-path|論理パス]]が公開先を決める基準になります。
+標準的な構成では、コンテンツの[[logical-path|論理パス]]が[[glossary/public-location|公開先]]を決める基準になります。
 
 たとえば基本的な構成では、
 

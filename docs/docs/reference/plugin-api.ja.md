@@ -6,7 +6,7 @@ title: プラグインシステム
 
 Riebeckiteの[[plugin|プラグイン]]は、Coreやサイトアプリケーションへ直接手を入れず、再利用できる形で機能を追加するための仕組みです。
 
-プラグインでは、たとえば次のような機能を追加できます。
+[[glossary/plugin|プラグイン]]では、たとえば次のような機能を追加できます。
 
 - MarkdownやHTMLの変換
 - コンテンツの処理
@@ -17,7 +17,7 @@ Riebeckiteの[[plugin|プラグイン]]は、Coreやサイトアプリケーシ�
 - HTTPエンドポイント
 - SEO
 - 診断
-- コンテンツグラフの拡張
+- [[glossary/content-graph|コンテンツグラフ]]の拡張
 
 プラグインは、必要な機能だけを実装します。
 
@@ -84,10 +84,10 @@ export function example(
 | 基本情報 | `name`, `enabled`, `order`, `options` |
 | 依存関係 | `provides`, `requires`, `optional` |
 | 設定の検証 | `validateOptions` |
-| キャッシュ | `cacheVersion`, `context.cache` |
+| [[glossary/cache|キャッシュ]] | `cacheVersion`, `context.cache` |
 | ライフサイクル | `setup`, `buildStart`, `buildEnd`, `dispose` |
 | コンテンツ | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
-| 公開先 | `resolveContentLocations` |
+| [[glossary/public-location|公開先]] | `resolveContentLocations` |
 | Markdown / HTML | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | グラフ | `extendContentGraph` |
 | 診断 | `addDiagnostics` |
@@ -101,7 +101,7 @@ export function example(
 
 ## 開発時のルートマニフェスト
 
-開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインは、`entry.html === ""` でも処理が正しく、生成物やアセット変換を必要とせず、開発サーバーでも実行が必要な場合に限り `developmentRouteManifest: true` を指定します。それ以外のマニフェストへ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
+開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインは、`entry.html === ""` でも処理が正しく、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行が必要な場合に限り `developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
 
 ## プラグインを有効にする
 
@@ -129,9 +129,9 @@ enabled: false
 
 ## 実行順と依存関係
 
-`order` は、変換やレンダラーの優先順を決まったものにするための基本順です。プラグイン同士に機能の提供・利用関係がなく、パイプライン内の実行順だけを決めたい場合に使います。
+`order` は、変換や[[glossary/renderer|レンダラー]]の優先順を決まったものにするための基本順です。プラグイン同士に機能の提供・利用関係がなく、パイプライン内の実行順だけを決めたい場合に使います。
 
-一方、プラグイン同士に実際の提供・利用関係がある場合は、`order` ではなく**ケイパビリティ**を使います。変換順を表すためだけのケイパビリティは作成しないでください。
+一方、プラグイン同士に実際の提供・利用関係がある場合は、`order` ではなく**[[glossary/capability|ケイパビリティ]]**を使います。変換順を表すためだけのケイパビリティは作成しないでください。
 
 ```ts
 definePlugin({
@@ -225,7 +225,7 @@ type PluginContext = {
 
 `setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は、診断情報を集めたあとの完成したマニフェストを受け取る唯一の終了フックです。`dispose` は、解決済みプラグインの逆順で実行されます。
 
-名前付きのライフサイクルフックやコンテンツフックでエラーが起きた場合は、そのまま上位へ伝えます。エラーは `PluginHookError`（`@riebeckite/core` からインポート可能）です。`message` は `Plugin "<name>" failed during "<hook>"` の形式になり、元のエラーは `cause` に保持されます。コンテンツフックで起きた場合は、対象ファイルが `path`（例: `note.md`）として設定されます。
+名前付きの[[glossary/lifecycle-hook|ライフサイクルフック]]や[[glossary/content-hook|コンテンツフック]]でエラーが起きた場合は、そのまま上位へ伝えます。エラーは `PluginHookError`（`@riebeckite/core` からインポート可能）です。`message` は `Plugin "<name>" failed during "<hook>"` の形式になり、元のエラーは `cause` に保持されます。コンテンツフックで起きた場合は、対象ファイルが `path`（例: `note.md`）として設定されます。
 
 ## コンテンツ処理の流れ
 
@@ -255,7 +255,7 @@ flowchart TD
 
 ## MarkdownとHTMLの変換
 
-MarkdownやHTMLの意味を変換する場合は、パイプラインを使います。簡単なremark / rehypeプラグインなら、配列として直接宣言できます。
+MarkdownやHTMLの意味を変換する場合は、[[glossary/pipeline|パイプライン]]を使います。簡単なremark / rehypeプラグインなら、配列として直接宣言できます。
 
 ```ts
 definePlugin({
@@ -372,9 +372,9 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 </aside>
 ```
 
-クライアントの動作はコンポーネントの所有者ではなくDOMの寿命に従います。`main` 内のコンテンツ用のクライアントエントリは既定の `page` scopeを使います。置き換わるシェルregion用のクライアントエントリは `app` scopeで実行し、`spa:navigation` の後に初期化し直すか、イベント委譲を使います。Pluginはコンポーネントがどちらに置かれるかを前提にしてはいけません。
+クライアントの動作はコンポーネントの所有者ではなくDOMの寿命に従います。`main` 内のコンテンツ用の[[glossary/client-entry|クライアントエントリ]]は既定の `page` scopeを使います。置き換わるシェルregion用のクライアントエントリは `app` scopeで実行し、`spa:navigation` の後に初期化し直すか、イベント委譲を使います。Pluginはコンポーネントがどちらに置かれるかを前提にしてはいけません。
 
-HonoXの描画プリミティブとして、`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` があります。これらは記事の構造とレイアウトのための意味的な部品です。プラグインのコンポーネントはプラグインのパッケージに置き、モデルの型やヘルパーとともに公開エントリーポイントからエクスポートします。サイトのTSXはアプリケーションの `app/` に置きます。HonoXは描画のプリミティブだけを所有し、プラグインのコンポーネントを集めたり、順序を決めたりしません。
+[[framework/honox-integration|HonoX]]の描画プリミティブとして、`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` があります。これらは記事の構造とレイアウトのための意味的な部品です。プラグインのコンポーネントはプラグインのパッケージに置き、モデルの型やヘルパーとともに公開エントリーポイントからエクスポートします。サイトのTSXはアプリケーションの `app/` に置きます。HonoXは描画のプリミティブだけを所有し、プラグインのコンポーネントを集めたり、順序を決めたりしません。
 
 ```tsx
 // サイト route にある最小 UI composition
@@ -394,9 +394,9 @@ const backlinks = await getBacklinks({ view, slug });
 
 マニフェストを受け取るフック（`onManifestCreated`、ページの解決処理、レンダラー）では、用途に応じて3つのコレクションを使い分けます。
 
-- `manifest.entries`：スキャンしたソースの生のコレクションです。下書き、予約投稿、非公開のものを含みます。公開用ではないため、公開ページや、読者が記事を見つけるための一覧には描画しないでください。
-- `manifest.publicEntries`：到達可能なエントリ（`public` と `unlisted`）です。サイトマップなど、到達可能なすべてのURLを網羅する出力に使います。`unlisted` が含まれる点に注意してください。
-- `manifest.discoverableEntries`：一覧に表示してよいエントリ（`public` のみ）です。関連記事、新着、タグページ、検索インデックスなど、読者が一覧から辿るUIにはこちらを使います。
+- `manifest.entries`：スキャンしたソースの生のコレクションです。[[glossary/draft|下書き]]、予約投稿、非公開のものを含みます。公開用ではないため、公開ページや、読者が記事を見つけるための一覧には描画しないでください。
+- `manifest.publicEntries`：到達可能なエントリ（`public` と `unlisted`）です。[[glossary/sitemap|サイトマップ]]など、到達可能なすべてのURLを網羅する出力に使います。`unlisted` が含まれる点に注意してください。
+- `manifest.discoverableEntries`：一覧に表示してよいエントリ（`public` のみ）です。関連記事、新着、タグページ、検索インデックスなど、読者が一覧から辿る[[glossary/ui|UI]]にはこちらを使います。
 
 `frontmatter` から公開状態を判定し直したり、`publishAt` の処理を独自に実装したりしないでください。フックで条件分岐が必要な場合は、解決済みの `entry.publishing`（`visibility`、`routable`、`discoverable`）を参照します。それ以外の場合は、判定結果を反映済みのコレクションを選んでください。公開方針は [設定](./configuration.ja.md) で指定します。
 
@@ -439,7 +439,7 @@ flowchart LR
     Integration --> Site
 ```
 
-ページ種別では、次の項目を宣言します。
+[[glossary/page-type|ページ種別]]では、次の項目を宣言します。
 
 - 一意なID
 - 静的生成のパス
@@ -466,7 +466,7 @@ processedContentCache: {
 - `global` は、Vault全体で解決した公開先に依存する変換に使います。Coreが公開先の集合を指紋化し、変化があったときはすべてのエントリを再処理します。
 - `unsafe` は、Git、ネットワーク、時刻、プロセスの状態など、Coreが追跡できない入力に使います。処理済みコンテンツの永続的な再利用を安全側で無効にします。
 
-`tracked` の依存関係は、コンテンツの処理中に記録します。Coreがコンテンツやファイルの識別情報を保存し、その逆引きインデックスから次回の増分ビルドで再処理が必要なコンテンツを決めます。この目的でVaultを独自に走査したり、プラグイン固有の増分ビルド状態を保存したりしないでください。フレームワークのAPIで依存関係を追跡できない場合は `unsafe` を使います。広い範囲の再処理は許容されますが、古い結果の再利用は許されません。
+`tracked` の依存関係は、コンテンツの処理中に記録します。Coreがコンテンツやファイルの識別情報を保存し、その逆引きインデックスから次回の[[glossary/incremental-build|増分ビルド]]で再処理が必要なコンテンツを決めます。この目的でVaultを独自に走査したり、プラグイン固有の増分ビルド状態を保存したりしないでください。フレームワークのAPIで依存関係を追跡できない場合は `unsafe` を使います。広い範囲の再処理は許容されますが、古い結果の再利用は許されません。
 
 ## 出力の依存関係
 
@@ -490,9 +490,9 @@ pageTypes: [{
 
 `content-query` は、一覧に表示できるコンテンツの候補集合と、そこで読むfrontmatterや `file.*` のプロパティを表します。前回の条件に一致しなかったノートでも、追加、削除、公開状態の変化を検出できます。
 
-対象を特定できる場合は `content`、`tag`、`folder` を使います。マニフェスト全体に依存する集合変換は `global` を使います。表現できない入力にだけ `unknown` を使ってください。`unknown` は安全側で再生成し、すべての出力の再生成を要求します。依存関係を宣言しない生成出力も `unknown` として扱われます。
+対象を特定できる場合は `content`、`tag`、`folder` を使います。マニフェスト全体に依存する集合変換は `global` を使います。表現できない入力にだけ `unknown` を使ってください。`unknown` は安全側で再生成し、すべての出力の再生成を要求します。依存関係を宣言しない[[glossary/generated-output|生成出力]]も `unknown` として扱われます。
 
-生成出力のパスは、実際に書き出すファイルのパスです。コンテンツ、リダイレクト、プラグインページのルートと衝突させないでください。衝突した場合、ルートを上書きせず、Coreがビルドを失敗させます。
+生成出力のパスは、実際に書き出すファイルのパスです。コンテンツ、[[glossary/redirect|リダイレクト]]、プラグインページのルートと衝突させないでください。衝突した場合、ルートを上書きせず、Coreがビルドを失敗させます。
 
 `planGeneratedOutputs` は増分ビルドのたびに実行されるため、変更がないときの高速経路は使いません。任意のプランナー処理に未追跡の入力がないことをCoreは証明できないため、計画を再利用せずに毎回作り直します。
 
@@ -549,11 +549,11 @@ rr-search--loading
 | 名前空間 | 用途 |
 | --- | --- |
 | `rb-*` | フレームワークの構造フック |
-| `--rb-*` | フレームワークの意味的なデザイントークン |
+| `--rb-*` | フレームワークの意味的な[[glossary/design-token|デザイントークン]] |
 | `rr-*` | プラグインと機能のフック |
 | `--rr-*` | プラグイン固有のトークン |
 
-出力には `rr-*` のフックだけを使い、プラグインのCSSとテーマも `rr-*` のフックを対象にします。テーマに公開する必要があるフックだけを、安定した取り決めとして文書化してください。
+出力には `rr-*` のフックだけを使い、プラグインのCSSと[[glossary/theme|テーマ]]も `rr-*` のフックを対象にします。テーマに公開する必要があるフックだけを、安定した取り決めとして文書化してください。
 
 プラグインの既定のCSSはテーマのCSSより先に読み込まれるため、テーマはプラグインのパッケージを変更せずに見た目を上書きできます。
 
@@ -682,7 +682,7 @@ await context.tracer.span(
 );
 ```
 
-Loggerは「何が起きたか」を、Tracerは「どこに時間がかかったか」を記録します。Profilerはこの構造化されたトレースを利用するため、プラグインが独自のストップウォッチやプロファイラを作る必要はありません。
+Loggerは「何が起きたか」を、Tracerは「どこに時間がかかったか」を記録します。Profilerはこの構造化されたトレースを利用するため、プラグインが独自のストップウォッチや[[glossary/profiler|プロファイラ]]を作る必要はありません。
 
 ## サイト内だけで使うプラグイン
 
@@ -850,7 +850,7 @@ Riebeckiteのパッケージは、NodeNextとESMを前提とします。ビル�
 
 ## プラグインシステムの全体像
 
-プラグインシステムは、次のような役割分担で構成されます。
+[[framework/plugin-system|プラグインシステム]]は、次のような役割分担で構成されます。
 
 ```mermaid
 flowchart LR

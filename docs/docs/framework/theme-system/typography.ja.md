@@ -7,7 +7,7 @@ sidebar:
 ---
 # タイポグラフィと記事レイアウト
 
-このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、タイポグラフィと記事レイアウトを扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/typography|タイポグラフィ]]と[[glossary/article-layout|記事レイアウト]]を扱います。
 
 ## 3-2. タイポグラフィ（typography）
 
@@ -18,7 +18,7 @@ type ThemeTypographyPreset =
   | "sans";
 ```
 
-プリセットは、本文や見出しなどのセマンティックフォントトークンに反映されます。
+[[glossary/preset|プリセット]]は、本文や見出しなどのセマンティックフォントトークンに反映されます。
 
 ## 3-3. 記事レイアウト（layout）
 
@@ -29,7 +29,7 @@ type ThemeArticleLayoutPreset =
   | "full-width";
 ```
 
-テーマが定義するのは、レイアウトプリセットの見せ方です。ルートやコンポーネントツリーを置き換えるものではありません。
+[[glossary/theme|テーマ]]が定義するのは、レイアウトプリセットの見せ方です。ルートやコンポーネントツリーを置き換えるものではありません。
 
 ```mermaid id="6oqsru"
 flowchart LR

@@ -5,7 +5,7 @@ title: UI
 
 # UI
 
-Riebeckite は UI フレームワークではなく、Markdown 中心の静的サイトフレームワークです。Markdown、プリセット、設定から始め、出力は標準 HTML、CSS、JSX でカスタマイズします。ほとんどのサイトで `@riebeckite/ui` は必要ありません。
+Riebeckite は [[glossary/ui|UI]] フレームワークではなく、Markdown 中心の静的サイトフレームワークです。Markdown、[[glossary/preset|プリセット]]、設定から始め、出力は標準 HTML、CSS、JSX でカスタマイズします。ほとんどのサイトで `@riebeckite/ui` は必要ありません。
 
 ## 標準的なサイト構造
 
@@ -28,7 +28,7 @@ Riebeckite は UI フレームワークではなく、Markdown 中心の静的�
 @media (min-width: 64rem) { .site-layout { grid-template-columns: 18rem minmax(0, 1fr) 16rem; } .site-aside { display: block; } }
 ```
 
-DOM、ブレークポイント、見た目はサイト側で決めます。テーマはトークンを提供し、プラグインはコンテンツを提供します。どちらにも UI コンポーネントは必要ありません。
+DOM、ブレークポイント、見た目はサイト側で決めます。[[glossary/theme|テーマ]]はトークンを提供し、[[glossary/plugin|プラグイン]]はコンテンツを提供します。どちらにも UI コンポーネントは必要ありません。
 
 ## 任意のプリミティブ
 
@@ -37,7 +37,7 @@ DOM、ブレークポイント、見た目はサイト側で決めます。テ�
 - ルートエクスポートは、プラグインが使う共通の `SiteProvider` / `ArticleProvider` Context を提供します。
 - サブパスエクスポートは、任意で使うヘッドレスなプリミティブとアクセシビリティ動作を提供します。サイトやプラグインは必要なものだけを選べます。
 
-通常のサイトでは、機能が不要ならプリミティブをインストールしたり import したりする必要はありません。Core、Markdown パイプライン、テーマ、SSG はプリミティブに依存しません。
+通常のサイトでは、機能が不要ならプリミティブをインストールしたり import したりする必要はありません。Core、Markdown [[glossary/pipeline|パイプライン]]、テーマ、[[glossary/ssg|SSG]] はプリミティブに依存しません。
 
 ## Drawer
 
@@ -53,7 +53,7 @@ import "@riebeckite/ui/styles/drawer.css";
 <Drawer id="site-menu" label="Navigation">{navigation}</Drawer>
 ```
 
-フォーカス制御、Escape、外側クリック、SPA 遷移時の後始末には、クライアントエントリを一度読み込みます。
+フォーカス制御、Escape、外側クリック、SPA 遷移時の後始末には、[[glossary/client-entry|クライアントエントリ]]を一度読み込みます。
 
 ```ts
 import "@riebeckite/ui/drawer/client";

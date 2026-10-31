@@ -65,12 +65,12 @@ Publishing is resolved once in Core and exposed to plugins as two manifest views
 
 | View | Contains | Use for |
 | --- | --- | --- |
-| `manifest.publicEntries` | Routable entries: public and unlisted | page rendering and SSG paths |
+| `manifest.publicEntries` | [[glossary/routable|Routable]] entries: public and unlisted | page rendering and [[glossary/ssg|SSG]] paths |
 | `manifest.discoverableEntries` | Public entries only | docs navigation, search, feeds, sitemap, taxonomy, graphs, backlinks, related/recent lists |
 
 The default `publishStrategy` still applies when no explicit visibility is set.
 
-| Frontmatter | Result |
+| [[glossary/frontmatter|Frontmatter]] | Result |
 | --- | --- |
 | `visibility: public` | routable and discoverable |
 | `visibility: unlisted` | routable by direct URL, but excluded from discovery surfaces |
@@ -80,4 +80,4 @@ The default `publishStrategy` still applies when no explicit visibility is set.
 
 Malformed `visibility` or `publishAt` values fail the build instead of being guessed. Scheduled publishing is build-time only: Riebeckite does not start a runtime timer.
 
-`exclude` is different from publishing. Excluded files never enter the content pipeline, so they are unavailable for links, metadata, graph analysis, and diagnostics. Draft, unlisted, and scheduled-before entries remain in the raw manifest for internal processing, but Core keeps them out of the route or discovery views according to the table above.
+`exclude` is different from publishing. Excluded files never enter the content pipeline, so they are unavailable for links, metadata, graph analysis, and diagnostics. [[glossary/draft|Draft]], unlisted, and scheduled-before entries remain in the raw manifest for internal processing, but Core keeps them out of the route or discovery views according to the table above.

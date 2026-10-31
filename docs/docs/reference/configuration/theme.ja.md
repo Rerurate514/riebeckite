@@ -23,4 +23,4 @@ export default defineConfig({
 });
 ```
 
-設定は選択したテーマのスキーマに対して検証されます。スキーマとCSSへの反映は[テーマ API](../theme-api.ja.md)を参照してください。
+設定は選択した[[glossary/theme|テーマ]]のスキーマに対して検証されます。スキーマとCSSへの反映は[テーマ API](../theme-api.ja.md)を参照してください。

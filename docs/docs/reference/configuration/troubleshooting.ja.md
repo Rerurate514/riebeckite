@@ -40,7 +40,7 @@ flowchart LR
 npm exec riebeckite check
 ```
 
-設定とプラグインの取り決めが正しいかを確認します。
+設定と[[glossary/plugin|プラグイン]]の取り決めが正しいかを確認します。
 
 ## 2. コンテンツソースを診断する
 
@@ -48,7 +48,7 @@ npm exec riebeckite check
 npm exec riebeckite doctor
 ```
 
-ファイルシステムのコンテンツソースが存在しない、読み込めないなどの問題を確認します。
+ファイルシステムの[[glossary/content-source|コンテンツソース]]が存在しない、読み込めないなどの問題を確認します。
 
 ## 3. 解決されたディレクトリを確認する
 
@@ -64,7 +64,7 @@ npm exec riebeckite inspect config
 npm exec -- riebeckite inspect content --list
 ```
 
-WikiLink や埋め込みを調査する前に、期待する論理パスとコンテンツが認識されていることを確認します。
+[[glossary/wikilink|WikiLink]] や埋め込みを調査する前に、期待する[[glossary/logical-path|論理パス]]とコンテンツが認識されていることを確認します。
 
 ## 5. 実際にビルドする
 
@@ -72,6 +72,6 @@ WikiLink や埋め込みを調査する前に、期待する論理パスとコ�
 npm exec riebeckite build
 ```
 
-最後に、インテグレーション、SSG、ルートのレンダリングまで含めて確認します。
+最後に、インテグレーション、[[glossary/ssg|SSG]]、ルートのレンダリングまで含めて確認します。
 
 `riebeckite.config.ts` を Vite アプリケーションの外に置く場合は、`riebeckiteVite()` に `configRoot` を渡します。`appRoot` はサイトのルートに保ち、相対的な `content.directory` はそのルートを基準に解決します。

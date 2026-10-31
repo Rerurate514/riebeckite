@@ -33,7 +33,7 @@ sequenceDiagram
     R-->>U: spa:navigation
 ```
 
-処理の順序には意味があります。ページ固有の後始末は `main` を置き換える前に済ませ、新しいページの初期化処理は、HonoXがislandをhydrateした後に実行します。
+処理の順序には意味があります。ページ固有の後始末は `main` を置き換える前に済ませ、新しいページの初期化処理は、[[framework/honox-integration|HonoX]]がislandをhydrateした後に実行します。
 
 新しいページ移動が始まると、進行中のページ移動は中断されます。中断された処理は、ページ情報、DOM、履歴、ページのライフサイクル、フォーカス、通知のいずれも更新できません。
 
@@ -68,7 +68,7 @@ sequenceDiagram
 2. `Accept: text/html, application/xhtml+xml` を付けて対象URLを取得する
 3. `DOMParser` でレスポンスを解析する
 4. 取得したdocumentと現在のdocumentの両方に `main#main-content` があることを確認する
-5. レスポンスURLから最終的なURLを求め、リダイレクトを反映する
+5. レスポンスURLから最終的なURLを求め、[[glossary/redirect|リダイレクト]]を反映する
 6. `onBeforePageCommit(signal)` を実行する
 7. `<head>` を更新し、一致するregionを置き換えた後に、現在の `main` を取得した `main` で置き換える
 8. `onPageCommit({ root, signal })` を実行する
@@ -136,7 +136,7 @@ sequenceDiagram
 
 `prefetch: "hover"` を指定すると、`pointerover` のリスナーが追加されます。対象になるリンクの条件はクリック時と同じで、ハッシュだけのリンクは無視します。
 
-先読みしたページは、URLをキーにしたキャッシュで管理します。
+先読みしたページは、URLをキーにした[[glossary/cache|キャッシュ]]で管理します。
 
 - 最近使った順に、完了した項目を最大20件保持する
 - 先読みとページ移動の進行中リクエストを重複排除する
@@ -179,7 +179,7 @@ stopSpaNavigation ??= startSpaNavigation({
 
 ### 初期化処理のライフサイクル
 
-生成されたモジュールは、Pluginのクライアントエントリが持つメタデータに従って初期化処理を実行します。
+生成されたモジュールは、Pluginの[[glossary/client-entry|クライアントエントリ]]が持つメタデータに従って初期化処理を実行します。
 
 - `scope: "app"` は `document` に一度だけmountする
 - `scope: "page"`（既定）は `main#main-content` にmountし、ページを置き換える前にunmountする
@@ -197,7 +197,7 @@ stopSpaNavigation ??= startSpaNavigation({
 
 ## ビルド結果への影響
 
-SPAランタイムが変えるのはクライアントバンドルであり、サーバー側のレンダラーやSSGの出力ではありません。
+SPAランタイムが変えるのはクライアントバンドルであり、サーバー側の[[glossary/renderer|レンダラー]]や[[glossary/ssg|SSG]]の出力ではありません。
 
 - `spa` を省略するか `false` にした場合、仮想モジュールは `@riebeckite/spa` も `honox/client` も読み込みません。ランタイムはバンドルに含まれません。
 - `spa` を有効にした場合、Viteはランタイムを含め、生成されたクライアントモジュールに `createClient` の読み込みとSPAナビゲーションの開始処理を追加します。

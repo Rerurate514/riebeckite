@@ -5,7 +5,7 @@ title: UI
 
 # UI
 
-Riebeckite is a Markdown-first static-site framework, not a UI framework. Start with Markdown, a preset and configuration, then customize output with standard HTML, CSS, and JSX. Most sites do not need `@riebeckite/ui`.
+Riebeckite is a Markdown-first static-site framework, not a [[glossary/ui|UI]] framework. Start with Markdown, a preset and configuration, then customize output with standard HTML, CSS, and JSX. Most sites do not need `@riebeckite/ui`.
 
 ## Standard site structure
 
@@ -37,7 +37,7 @@ This keeps the DOM, breakpoints, and visual design in the site. Themes provide t
 - The root export provides the shared `SiteProvider` and `ArticleProvider` context used by plugins.
 - Subpath exports provide optional headless primitives and accessibility behaviors. Sites and plugins opt in only to what they use.
 
-Do not install or import the primitives for a normal site unless a feature needs them. Core, the Markdown pipeline, themes, and SSG do not depend on them.
+Do not install or import the primitives for a normal site unless a feature needs them. Core, the Markdown pipeline, themes, and [[glossary/ssg|SSG]] do not depend on them.
 
 ## Drawer
 

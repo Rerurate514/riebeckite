@@ -80,7 +80,7 @@ editing notes in Obsidian exactly as before.
 When the vault has the Obsidian Templater plugin configured, Riebeckite reads
 `.obsidian/plugins/templater-obsidian/data.json` and excludes the configured
 `templates_folder` before scanning Markdown or parsing frontmatter. Templates
-therefore do not enter the content manifest, SSG, or the development server.
+therefore do not enter the content manifest, [[glossary/ssg|SSG]], or the development server.
 
 Riebeckite does not execute Templater code. A Templater expression in an
 ordinary note remains ordinary Markdown and does not exclude that note. If the

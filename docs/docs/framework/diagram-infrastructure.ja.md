@@ -13,7 +13,7 @@ sidebar:
 
 ## 責務の境界
 
-このパッケージは `@riebeckite/core` に依存しますが、HonoX、ブラウザーレンダラー、Puppeteer、ダイアグラムエンジンには依存しません。ダイアグラムプラグインは、エンジン、設定、スタイル、失敗時の方針を引き続き所有します。
+このパッケージは `@riebeckite/core` に依存しますが、[[framework/honox-integration|HonoX]]、ブラウザーレンダラー、Puppeteer、ダイアグラムエンジンには依存しません。ダイアグラムプラグインは、エンジン、設定、スタイル、失敗時の方針を引き続き所有します。
 
 `defineDiagramPlugin()` は、共通のプラグイン形状を Core へ接続します。
 
@@ -83,7 +83,7 @@ const figure = buildDiagramFigure({
 
 ## ブラウザーレンダリングと SPA ナビゲーション
 
-ページクライアントの初期化処理では `renderPendingDiagrams()` を使います。渡された root に対象を限定し、abort signal を尊重して、成功した figure を `rendered` に更新し、失敗時には fallback を開きます。レンダラーはクリーンアップ関数を返せます。初期化処理はそれらをまとめたクリーンアップを返します。
+ページクライアントの初期化処理では `renderPendingDiagrams()` を使います。渡された root に対象を限定し、abort signal を尊重して、成功した figure を `rendered` に更新し、失敗時には fallback を開きます。[[glossary/renderer|レンダラー]]はクリーンアップ関数を返せます。初期化処理はそれらをまとめたクリーンアップを返します。
 
 ```ts
 import { renderPendingDiagrams } from "@riebeckite/diagram/client";
@@ -114,6 +114,6 @@ export async function initExampleDiagram({ root, signal }) {
 
 ## 導入状況
 
-このパッケージは関心ごと単位で導入できます。共有 HAST ヘルパーはダイアグラムプラグイン群で使われていますが、共通 figure とブラウザーレンダリングの契約を使っているのは現在 Chart.js プラグインです。ほかのダイアグラムプラグインは移行されるまで、既存のマークアップやレンダラーライフサイクルを維持できます。
+このパッケージは関心ごと単位で導入できます。共有 HAST ヘルパーはダイアグラムプラグイン群で使われていますが、共通 figure とブラウザーレンダリングの契約を使っているのは現在 Chart.js [[glossary/plugin|プラグイン]]です。ほかのダイアグラムプラグインは移行されるまで、既存のマークアップやレンダラーライフサイクルを維持できます。
 
-ダイアグラムプラグインを変更するときは、既存のコンテンツキャッシュとインクリメンタルビルドの挙動を保ち、変換とクライアント側クリーンアップのテストを追加してください。一般的なパイプラインの構成は [コンテンツ処理と拡張ポイント](./plugin-system/pipeline.ja.md) を参照してください。
+ダイアグラムプラグインを変更するときは、既存のコンテンツキャッシュとインクリメンタルビルドの挙動を保ち、変換とクライアント側クリーンアップのテストを追加してください。一般的な[[glossary/pipeline|パイプライン]]の構成は [コンテンツ処理と拡張ポイント](./plugin-system/pipeline.ja.md) を参照してください。

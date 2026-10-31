@@ -7,9 +7,9 @@ sidebar:
 ---
 # Site Application の責務
 
-Riebeckite Site は、最終的には通常の HonoX application です。
+Riebeckite Site は、最終的には通常の [[framework/honox-integration|HonoX]] application です。
 
-`@riebeckite/honox` は content と build を接しますが、実際にユーザーが見る UI の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
+`@riebeckite/honox` は content と build を接しますが、実際にユーザーが見る [[glossary/ui|UI]] の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
 
 ```mermaid
 flowchart TD
@@ -164,7 +164,7 @@ Plugin が head tags を提供する場合は、既存の `headTags` メカニ�
 
 ## Plugin UI 組み立て
 
-Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの記事レイアウトやページテンプレートで直接描画されます。
+Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの[[glossary/article-layout|記事レイアウト]]やページテンプレートで直接描画されます。
 
 Plugin UI は明示的に composition します：
 

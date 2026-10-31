@@ -54,7 +54,7 @@ export default defineConfig({
 
 The plugin looks for four signals, in this precedence order:
 
-1. **Frontmatter** — `lang:` anywhere in the file.
+1. **[[glossary/frontmatter|Frontmatter]]** — `lang:` anywhere in the file.
 2. **Custom detector** — if you provide `detect`.
 3. **Filename** — `note.ja.md` (recommended), and also `note-en.md` / `note_ja.md`, or BCP 47 tags such as `note.en-US.md`, `note.zh-CN.md`.
 4. **`defaultLang`** — used when nothing above matched.
@@ -119,11 +119,11 @@ docs/
 
 ## Directories are not used
 
-A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is **not** used for language detection. Restricting the implicit rule to the filename suffix lets a WikiLink resolve uniquely even when the same-named article exists in several languages. Specify the language through the filename suffix or the frontmatter `lang`.
+A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is **not** used for language detection. Restricting the implicit rule to the filename suffix lets a [[glossary/wikilink|WikiLink]] resolve uniquely even when the same-named article exists in several languages. Specify the language through the filename suffix or the frontmatter `lang`.
 
 ## Grouping translations
 
-Translation identity is independent of the file's path or name. Give the same `translation` value to every language version.
+[[glossary/translation|Translation]] identity is independent of the file's path or name. Give the same `translation` value to every language version.
 
 For example, the Japanese version:
 
@@ -246,7 +246,7 @@ The l10n plugin works with existing translation relationships; it is not a conte
 
 ## URLs
 
-The l10n plugin uses each content's language to resolve its public URL. Localization is therefore not just a language label in the UI:
+The l10n plugin uses each content's language to resolve its public URL. [[glossary/localization|Localization]] is therefore not just a language label in the [[glossary/ui|UI]]:
 
 ```text
 Content
@@ -260,7 +260,7 @@ URL
 
 The default language keeps Core's resolved URL (`/about`); other languages are prefixed (`/en/about`). The plugin augments the existing content-location resolver rather than adding a router, so it composes with URL plugins such as `@riebeckite/plugin-permalink`.
 
-Do not build a URL from the filename yourself on the site side; use the Public Location Riebeckite resolved. See [Content System](../framework/content-system.md) for how public locations work.
+Do not build a URL from the filename yourself on the site side; use the [[glossary/public-location|Public Location]] Riebeckite resolved. See [Content System](../framework/content-system.md) for how public locations work.
 
 No fallback pages are generated. If a translation is missing, the original target stays linked and internal helpers report the absence:
 

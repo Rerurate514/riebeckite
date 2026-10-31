@@ -42,7 +42,7 @@ npx create-riebeckite
 `npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
 
 1. **Project name** — the folder to create, for example `my-site`
-2. **Preset** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
+2. **[[glossary/preset|Preset]]** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
 3. **Customize extra project files** — optional. Keep the defaults unless you need to change generated editor or tool files.
 4. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
 5. **Deployment** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)

@@ -7,7 +7,7 @@ sidebar:
 ---
 # プリセット
 
-`create-riebeckite` は**プリセット**をもとに、プラグイン、テーマ、初期コンテンツ、HonoX アプリケーションのファイルを選び、サイト一式を生成します。既定値は `starter` です。
+`create-riebeckite` は**[[glossary/preset|プリセット]]**をもとに、[[glossary/plugin|プラグイン]]、[[glossary/theme|テーマ]]、初期コンテンツ、[[framework/honox-integration|HonoX]] アプリケーションのファイルを選び、サイト一式を生成します。既定値は `starter` です。
 
 対話式の CLI は、実行中にプリセットの選択を求めます。迷ったら `starter` を選んでください。コマンドラインから指定する場合は `--preset <name>` を使います（既定は `starter`）。
 
@@ -21,7 +21,7 @@ npx create-riebeckite --list-presets
 | 目的 | プリセット |
 | --- | --- |
 | Obsidian のようにノートを相互リンクして育てたい | `digital-garden` |
-| 記事、タグ、シリーズを持つメディアを作りたい | `blog` |
+| 記事、タグ、[[glossary/series|シリーズ]]を持つメディアを作りたい | `blog` |
 | プロダクトやプロジェクトのドキュメントを作りたい | `docs` |
 | 選んだ作品と連絡先を見せるポートフォリオを作りたい | `portfolio` |
 | アプリケーションを自分で組み立てたい | `empty` |
@@ -35,11 +35,11 @@ npx create-riebeckite --list-presets
 
 | プリセット | テーマ | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
-| `starter` | `default` | サイトのロケールに応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、検索、コンテンツから生成するナビゲーション、パンくず、バックリンク、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
+| `starter` | `default` | サイトの[[glossary/locale|ロケール]]に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、[[glossary/search|検索]]、コンテンツから生成するナビゲーション、パンくず、[[glossary/backlink|バックリンク]]、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
 | `digital-garden` | `default` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
 | `blog` | `default` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
 | `docs` | `default` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
-| `portfolio` | `default` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、カラーモード |
+| `portfolio` | `default` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | すべてのプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | なし | なし | 空のアプリケーションシェル |
@@ -97,7 +97,7 @@ Obsidian Markdown、`minimal` テーマ、英語の1ページだけを含む構�
 
 ### 生成された UI を編集するときの起点
 
-生成されるアプリケーションのファイルは通常の TypeScript、JSX、HonoX のルートです。ページや API ルートは `app/routes/`、記事 UI の並べ替えは `app/components/article.tsx`、ヘッダーとフッターは `app/components/site-header.tsx`、サイトの CSS は `app/style.css` を編集します。`SiteNav` をはじめとするプラグインの UI コンポーネントは、設定済みのデータを自分で解決します。そのため、サイト側のコンポーネントでマニフェストを解決せず、必要な場所に配置してください。
+生成されるアプリケーションのファイルは通常の TypeScript、JSX、HonoX のルートです。ページや API ルートは `app/routes/`、記事 [[glossary/ui|UI]] の並べ替えは `app/components/article.tsx`、ヘッダーとフッターは `app/components/site-header.tsx`、サイトの CSS は `app/style.css` を編集します。`SiteNav` をはじめとするプラグインの UI コンポーネントは、設定済みのデータを自分で解決します。そのため、サイト側のコンポーネントで[[glossary/manifest|マニフェスト]]を解決せず、必要な場所に配置してください。
 
 ## プリセットが書き出す設定を確認する
 

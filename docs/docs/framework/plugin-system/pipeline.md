@@ -45,7 +45,7 @@ Diagram plugins that share fenced-block, figure, and browser-rendering concerns 
 
 ## 3-7. Content graph and public locations
 
-`extendContentGraph` extends the graph before or after construction within the framework contract. For backlinks or graph features, do not rescan the filesystem yourself — use the existing Content Graph / Manifest contract.
+`extendContentGraph` extends the graph before or after construction within the framework contract. For backlinks or graph features, do not rescan the filesystem yourself — use the existing [[glossary/content-graph|Content Graph]] / [[glossary/manifest|Manifest]] contract.
 
 ```mermaid
 flowchart LR
@@ -95,7 +95,7 @@ flowchart TD
 
 `pageTypes` provides an independent screen through the site's generic catch-all route. Examples include `/explore`, `/report`, and `/tags/example`. A type has a globally unique `id`, static or manifest-derived `paths`, an optional `priority`, and `resolve`. It returns a framework-independent HTML body or `null`. It may also describe `title`, `description`, and `headTags`; the site document frame renders those values.
 
-Use a Page Type for a page such as a taxonomy listing or explorer. Use a renderer for an article embed such as Canvas, Bases, or Excalidraw. Plugins do not add HonoX route files or own the document frame.
+Use a [[glossary/page-type|Page Type]] for a page such as a taxonomy listing or explorer. Use a renderer for an article embed such as Canvas, Bases, or Excalidraw. Plugins do not add [[framework/honox-integration|HonoX]] route files or own the document frame.
 
 ```mermaid
 flowchart LR
@@ -155,7 +155,7 @@ return definePlugin({
 
 ## 3-11. CSS hooks
 
-Plugin CSS lives in the plugin package and reaches the browser through `assets`. When a plugin renders an independent, reusable feature, put a stable root hook on the outermost element.
+[[glossary/plugin|Plugin]] CSS lives in the plugin package and reaches the browser through `assets`. When a plugin renders an independent, reusable feature, put a stable root hook on the outermost element.
 
 - Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`, `rr-query`, `rr-code`, …). Below the root, use the BEM shape `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
 - Keep existing classes on the same element. `rr-` hooks are additions, so existing selectors and site overrides keep working.
@@ -224,7 +224,7 @@ addDiagnostics(context) {
 }
 ```
 
-Return diagnostics as structured data whenever possible. Use Diagnostics / Logger instead of `console.log` from the plugin.
+Return diagnostics as structured data whenever possible. Use Diagnostics / [[glossary/logger|Logger]] instead of `console.log` from the plugin.
 
 ## 3-15. Plugin cache
 

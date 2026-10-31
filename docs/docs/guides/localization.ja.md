@@ -4,9 +4,9 @@ title: 多言語サイト
 ---
 # 多言語サイト
 
-Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語サイトを構築できます。翻訳の対象はコンテンツです。Riebeckite 自身の画面に表示される文字列は翻訳しません。
+Riebeckite では、`@riebeckite/plugin-l10n` を使って多言語サイトを構築できます。[[glossary/translation|翻訳]]の対象はコンテンツです。Riebeckite 自身の画面に表示される文字列は翻訳しません。
 
-l10n プラグインは、コンテンツごとの言語を判定し、
+l10n [[glossary/plugin|プラグイン]]は、コンテンツごとの言語を判定し、
 
 - 言語ごとの URL
 - 同じコンテンツの翻訳版
@@ -28,7 +28,7 @@ flowchart LR
     L10n --> JA
 ```
 
-`showcase` プリセットでは、次の7言語が設定されます。
+`showcase` [[glossary/preset|プリセット]]では、次の7言語が設定されます。
 
 ```text
 en
@@ -40,7 +40,7 @@ fr
 ko
 ```
 
-`starter` はサイトのロケールに応じた1言語のページを生成し、`minimal` は英語のみです。翻訳済みのルートが必要になったら l10n を追加してください。すべての言語の記事を用意する必要はありません。実際に利用する言語に合わせて設定できます。
+`starter` はサイトの[[glossary/locale|ロケール]]に応じた1言語のページを生成し、`minimal` は英語のみです。翻訳済みのルートが必要になったら l10n を追加してください。すべての言語の記事を用意する必要はありません。実際に利用する言語に合わせて設定できます。
 
 ## 基本設定
 
@@ -144,7 +144,7 @@ docs/
 
 言語ごとにディレクトリを分ける構成（`en/note.md`、`ja/note.md`）は、言語判定には使われません。
 
-言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても WikiLink が一意に解決されます。言語はファイル名の接尾辞か、frontmatter の `lang` で指定してください。複数の判定材料が食い違う場合は `L10N_LANGUAGE_CONFLICT` が報告されます。`strict: true` を設定している場合、この警告はビルドの失敗になります。
+言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても [[glossary/wikilink|WikiLink]] が一意に解決されます。言語はファイル名の接尾辞か、frontmatter の `lang` で指定してください。複数の判定材料が食い違う場合は `L10N_LANGUAGE_CONFLICT` が報告されます。`strict: true` を設定している場合、この警告はビルドの失敗になります。
 
 ## 翻訳同士を対応付ける
 
@@ -283,7 +283,7 @@ l10n プラグインは既存の翻訳関係を扱いますが、コンテンツ
 
 l10n プラグインはコンテンツの言語情報を使って公開 URL を扱います。
 
-つまり、多言語化は単に画面へ言語名を表示するだけではなく、
+つまり、[[glossary/localization|多言語化]]は単に画面へ言語名を表示するだけではなく、
 
 ```text
 コンテンツ
@@ -324,7 +324,7 @@ flowchart LR
 
 これによって、記事本文のリンクだけ別言語のページへ戻ってしまう、といった問題を避けられます。
 
-コンテンツグラフを構築する前に、WikiLink のリンク先は、対応する翻訳が存在すればリンク元の記事と同じ言語へ切り替えられます。存在しなければ元のリンク先のままです。描画時には、Obsidian の WikiLink（`@riebeckite/plugin-obsidian-markdown` が解決した後）と Markdown リンクの両方が、現在のページと同じ言語の翻訳へ書き換えられます。クエリ文字列とフラグメントは保持されます。外部 URL、フラグメントだけのリンク、存在しないリンク先、アセットの URL は変更されません。
+[[glossary/content-graph|コンテンツグラフ]]を構築する前に、WikiLink のリンク先は、対応する翻訳が存在すればリンク元の記事と同じ言語へ切り替えられます。存在しなければ元のリンク先のままです。描画時には、Obsidian の WikiLink（`@riebeckite/plugin-obsidian-markdown` が解決した後）と Markdown リンクの両方が、現在のページと同じ言語の翻訳へ書き換えられます。クエリ文字列とフラグメントは保持されます。外部 URL、フラグメントだけのリンク、存在しないリンク先、アセットの URL は変更されません。
 
 ## 言語切り替え
 
@@ -344,7 +344,7 @@ translation: hello
 
 **実際に存在する翻訳だけが候補になります**。存在しない言語版のフォールバックページは自動生成されません。
 
-`l10n(...)` は既存の翻訳をグループ化し、`getLocalization(manifest, slug)` と `<LanguageSwitcher />` コンポーネントを公開します。サイトは好きな場所に切り替え UI を配置できます。l10n 専用の統合は必要ありません。実際の翻訳が2つ未満のページでは、このコンポーネントは何も描画しません。
+`l10n(...)` は既存の翻訳をグループ化し、`getLocalization(manifest, slug)` と `<LanguageSwitcher />` コンポーネントを公開します。サイトは好きな場所に切り替え [[glossary/ui|UI]] を配置できます。l10n 専用の統合は必要ありません。実際の翻訳が2つ未満のページでは、このコンポーネントは何も描画しません。
 
 ```tsx
 import { LanguageSwitcher, getLocalization } from "@riebeckite/plugin-l10n";
@@ -353,7 +353,7 @@ const localization = getLocalization(manifest, entry.slug);
 <LanguageSwitcher localization={localization} />;
 ```
 
-`SiteProvider` と、公開済みの `entry` を持つ `Article` がある場合、`<LanguageSwitcher />` は現在の多言語情報を自分で解決します。テーマは `.rr-l10n-switcher` ルートフックを通じて標準の言語切替 UI を調整できます。
+`SiteProvider` と、公開済みの `entry` を持つ `Article` がある場合、`<LanguageSwitcher />` は現在の多言語情報を自分で解決します。[[glossary/theme|テーマ]]は `.rr-l10n-switcher` ルートフックを通じて標準の言語切替 UI を調整できます。
 
 ## SEO
 

@@ -4,7 +4,7 @@ title: テーマ API
 ---
 # テーマ API
 
-テーマは呼び出し可能な定義です。設定スキーマを一度定義すると、設定、CSSへの反映、プレビュー、プリセット、検証が同じスキーマを利用します。
+[[glossary/theme|テーマ]]は呼び出し可能な定義です。設定スキーマを一度定義すると、設定、CSSへの反映、プレビュー、[[glossary/preset|プリセット]]、検証が同じスキーマを利用します。
 
 ```ts
 import { defineTheme, defineThemeSettings } from "@riebeckite/core";
@@ -54,4 +54,4 @@ export default defineConfig({
 
 解決順はスキーマの既定値、プリセット、明示した `settings` です。色・数値・スライダーは安全な `--rb-setting-*` カスタムプロパティとして、すべての設定は `data-rb-setting-*` 属性として反映されます。ルート属性は `data-rb-theme`、`data-rb-mode`、`data-rb-layout` です。
 
-テーマは意味的な `--rb-*` トークンを設定し、コンポーネントとプラグインはそれを参照します。テーマCSSはフレームワークとプラグインのCSSの後、`stylesheets` はサイト上書き用として最後に読み込まれます。
+テーマは意味的な `--rb-*` トークンを設定し、コンポーネントと[[glossary/plugin|プラグイン]]はそれを参照します。テーマCSSはフレームワークとプラグインのCSSの後、`stylesheets` はサイト上書き用として最後に読み込まれます。

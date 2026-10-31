@@ -7,11 +7,11 @@ sidebar:
 ---
 # テーマルートと属性
 
-このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、テーマルートとテーマ固有の属性を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/theme-root|テーマルート]]とテーマ固有の属性を扱います。
 
 ## 3-6. テーマルートセレクター
 
-組み込みテーマは、`:root` 単体を対象にしません。すべてのルールをテーマの識別名でスコープするため、同じスタイルシートを実際のドキュメントと埋め込みプレビューの両方に使えます。
+組み込み[[glossary/theme|テーマ]]は、`:root` 単体を対象にしません。すべてのルールをテーマの識別名でスコープするため、同じスタイルシートを実際のドキュメントと埋め込みプレビューの両方に使えます。
 
 ```css id="36j35i"
 :is(:root, .rb-theme-root)[data-rb-theme="<name>"]
@@ -71,7 +71,7 @@ flowchart TD
 }
 ```
 
-ライト、ダーク、システム、タイポグラフィ、テーマオプション、要素と疑似クラスのルールは、すべて同じ接頭辞を持ちます。
+ライト、ダーク、システム、[[glossary/typography|タイポグラフィ]]、テーマオプション、要素と疑似クラスのルールは、すべて同じ接頭辞を持ちます。
 
 ```css id="bsov79"
 /* Light */
@@ -158,7 +158,7 @@ lang
 
 ## テーマルートと themeRootAttributes
 
-フレームワークは `ThemeRoot` という UI プリミティブを提供しています。`<html>` 要素へのテーマ属性の設定を担当します。
+フレームワークは `ThemeRoot` という [[glossary/ui|UI]] プリミティブを提供しています。`<html>` 要素へのテーマ属性の設定を担当します。
 
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
@@ -185,7 +185,7 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 
 フレームワークは `themeRootAttributes(theme)` を使い、テーマ自身の `attributes` に予約属性を加えて出力します。
 
-- `data-rb-mode`: カラーモードの状態（`"light"` / `"dark"`。`"system"` のときは省略）
+- `data-rb-mode`: [[glossary/color-mode|カラーモード]]の状態（`"light"` / `"dark"`。`"system"` のときは省略）
 - `data-rb-theme`: テーマの識別子
 - `data-rb-setting-typography`: タイポグラフィプリセットの値
 - `data-rb-layout`: 記事レイアウトプリセットの値
@@ -206,4 +206,4 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 
 ただし、フレームワークが予約している `data-rb-mode`、`data-rb-theme`、`data-rb-setting-typography`、`data-rb-layout` は、テーマの `attributes` では上書きされません。
 
-プラグインやテーマが以前に独自の `themeAttributes()` を実装していた場合は、フレームワークが提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。これにより、フレームワークが所有する属性の名前空間と、テーマ固有の名前空間の分離が明確になります。
+[[glossary/plugin|プラグイン]]やテーマが以前に独自の `themeAttributes()` を実装していた場合は、フレームワークが提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。これにより、フレームワークが所有する属性の名前空間と、テーマ固有の名前空間の分離が明確になります。

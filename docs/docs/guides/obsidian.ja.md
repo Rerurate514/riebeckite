@@ -4,7 +4,7 @@ title: Obsidian のノートをサイトにする
 ---
 # Obsidian のノートをサイトにする
 
-Riebeckite では、普段使っている Obsidian Vault をそのまま記事の置き場所として利用できます。
+Riebeckite では、普段使っている [[glossary/obsidian-vault|Obsidian Vault]] をそのまま記事の置き場所として利用できます。
 
 既存の Vault を Riebeckite 用に作り直したり、Markdown を別の形式へ変換したりする必要はありません。
 
@@ -58,7 +58,7 @@ build
 
 ## Templater のテンプレートを除外する
 
-Vault で Obsidian Templater プラグインを設定している場合、Riebeckite は `.obsidian/plugins/templater-obsidian/data.json` を読み、設定された `templates_folder` を Markdown の走査や frontmatter の解析より前に除外します。そのため、テンプレートはコンテンツのマニフェスト、SSG、開発サーバーに入りません。
+Vault で Obsidian Templater [[glossary/plugin|プラグイン]]を設定している場合、Riebeckite は `.obsidian/plugins/templater-obsidian/data.json` を読み、設定された `templates_folder` を Markdown の走査や frontmatter の解析より前に除外します。そのため、テンプレートはコンテンツの[[glossary/manifest|マニフェスト]]、[[glossary/ssg|SSG]]、開発サーバーに入りません。
 
 Riebeckite は Templater のコードを実行しません。通常のノートに Templater の式が含まれていても、そのノートを除外することはありません。Templater の設定またはテンプレートフォルダを取得できない場合は自動では除外しません。フォルダを明示的に除外したい場合は `content.exclude` を使います。
 
@@ -236,13 +236,13 @@ publish: true
 さらに本文を書きます。
 ```
 
-Obsidian の WikiLink も利用できます。
+Obsidian の [[glossary/wikilink|WikiLink]] も利用できます。
 
 ```md id="5d4bby"
 詳しくは [[別の記事]] を参照してください。
 ```
 
-対応するプラグインが、Riebeckite のコンテンツ情報を使って公開先のリンクを解決します。
+対応するプラグインが、Riebeckite のコンテンツ情報を使って[[glossary/public-location|公開先]]のリンクを解決します。
 
 ## ファイル名と公開 URL は一致するとは限らない
 
@@ -333,7 +333,7 @@ private/
 
 ## 非公開のメモを同じ Vault に置く
 
-非公開のノートや下書きを同じ Vault に置く場合は、`publish: true` を付けません。
+非公開のノートや[[glossary/draft|下書き]]を同じ Vault に置く場合は、`publish: true` を付けません。
 
 ```md id="0n1eqs"
 ---
@@ -415,7 +415,7 @@ Vault の外にあるファイルは、ビルド時に見つからないこと�
 
 ## 名前が重複するとリンクが曖昧になる
 
-Riebeckite は `[[リンク]]` をノートのパス、エイリアス、添付ファイル名から解決します。同じ名前のノート、エイリアス、添付ファイルが複数あると、名前だけの `[[note]]` では対象を1つに特定できません。
+Riebeckite は `[[リンク]]` をノートのパス、[[glossary/alias|エイリアス]]、添付ファイル名から解決します。同じ名前のノート、エイリアス、添付ファイルが複数あると、名前だけの `[[note]]` では対象を1つに特定できません。
 
 このとき Riebeckite は推測せず、リンクを未解決のままにし、`doctor` が曖昧なリンクとして報告します。
 
@@ -508,7 +508,7 @@ flowchart TD
 
 つまり、普段の執筆方法はこれまでとほぼ同じです。Obsidian で書き、公開したいノートにだけ `publish: true` を付けます。
 
-Riebeckite は、その Vault を公開サイトのコンテンツソースとして利用します。
+Riebeckite は、その Vault を公開サイトの[[glossary/content-source|コンテンツソース]]として利用します。
 
 ## まとめ
 
@@ -545,7 +545,7 @@ my-site/
   → Riebeckite Site
 ```
 
-Vault の場所と公開範囲は分けて考えます。
+Vault の場所と[[glossary/visibility|公開範囲]]は分けて考えます。
 
 - `content.directory` → どの Vault を読むか
 - `exclude` → 何をコンテンツとして読み込まないか

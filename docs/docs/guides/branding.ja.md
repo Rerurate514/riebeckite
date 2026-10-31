@@ -4,7 +4,7 @@ title: サイトのアイコンとロゴ
 ---
 # サイトのアイコンとロゴ
 
-テーマは、色、タイポグラフィ、余白、レイアウトなど、Riebeckite サイトの見た目を決めます。一方、サイトをそのサイトらしくするアイコン、ヘッダーのロゴ、リンクプレビュー画像はテーマの外側にあります。このガイドでは、これらのアセットを差し替えます。サイト全体の見た目を変えたい場合は、[最初のテーマを変える](../getting-started/first-theme.ja.md)を参照してください。
+[[glossary/theme|テーマ]]は、色、[[glossary/typography|タイポグラフィ]]、余白、レイアウトなど、Riebeckite サイトの見た目を決めます。一方、サイトをそのサイトらしくするアイコン、ヘッダーのロゴ、リンクプレビュー画像はテーマの外側にあります。このガイドでは、これらのアセットを差し替えます。サイト全体の見た目を変えたい場合は、[最初のテーマを変える](../getting-started/first-theme.ja.md)を参照してください。
 
 ## サイトアイコン
 
@@ -24,7 +24,7 @@ PNG や SVG を使う場合は、ファイルを `public/` に置き、`href` �
 
 ## ヘッダーのロゴ
 
-`starter` と `showcase` のプリセットではヘッダーが表示されます。`app/components/site-header.tsx` は、28×28 のロゴの隣にサイト名を表示します。
+`starter` と `showcase` の[[glossary/preset|プリセット]]ではヘッダーが表示されます。`app/components/site-header.tsx` は、28×28 のロゴの隣にサイト名を表示します。
 
 ```tsx
 <img src="/riebeckite-logo.png" alt="" class="site-header__logo" width="28" height="28" />
@@ -48,7 +48,7 @@ site: {
 
 ファイルは `public/` に置きます（この例では `public/ogp.png` が `/ogp.png` で配信されます）。1200×630 の PNG または JPEG が一般的なサイズです。`site.baseUrl` を実際の公開 URL に設定しておくと、生成されるメタデータの画像 URL が正しくなります。
 
-ページごとに画像を上書きすることもできます。[SEO プラグイン](../plugins/seo.ja.md)は、フロントマターの `image` / `ogImage` を読み取り、なければ `site.defaultOgImage` を使います。
+ページごとに画像を上書きすることもできます。[SEO プラグイン](../plugins/seo.ja.md)は、[[glossary/frontmatter|フロントマター]]の `image` / `ogImage` を読み取り、なければ `site.defaultOgImage` を使います。
 
 ## タイトルと説明
 

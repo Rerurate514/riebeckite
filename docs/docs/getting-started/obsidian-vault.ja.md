@@ -4,7 +4,7 @@ title: Obsidian Vault を使う
 ---
 # Obsidian Vault を使う
 
-すでに Obsidian Vault がある場合は、Riebeckite からその Vault をサイトのコンテンツとして読むことができます。まずローカルで 1 つのノートを公開し、リンクと画像を確認してから、`dist/` をビルドします。
+すでに [[glossary/obsidian-vault|Obsidian Vault]] がある場合は、Riebeckite からその Vault をサイトのコンテンツとして読むことができます。まずローカルで 1 つのノートを公開し、リンクと画像を確認してから、`dist/` をビルドします。
 
 ## 始める前に
 
@@ -25,7 +25,7 @@ npx create-riebeckite my-site --preset starter
 cd my-site
 ```
 
-`starter` プリセットには、WikiLink、埋め込み、Callout、タグを扱う Obsidian Markdown プラグインが最初から入っています。
+`starter` [[glossary/preset|プリセット]]には、[[glossary/wikilink|WikiLink]]、埋め込み、Callout、タグを扱う Obsidian Markdown [[glossary/plugin|プラグイン]]が最初から入っています。
 
 ## 2. Vault を接続する
 
@@ -43,7 +43,7 @@ content: {
 
 Riebeckite は、既定では明示的に指定したノートだけを公開します。
 
-公開したいノートに、次のフロントマターを追加します。
+公開したいノートに、次の[[glossary/frontmatter|フロントマター]]を追加します。
 
 ```yaml
 ---
@@ -60,7 +60,7 @@ aliases:
 
 - `publish: true` のノートは公開ページとして生成されます。
 - `publish: false` のノートはビルド結果に含まれません。
-- `publish` がないノートは、既定の `starter` 構成では下書きとして扱われます。
+- `publish` がないノートは、既定の `starter` 構成では[[glossary/draft|下書き]]として扱われます。
 
 公開ノートから未公開のノートへリンクすると、リンク先のページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
 
@@ -126,7 +126,7 @@ npm exec riebeckite build
 | --- | --- |
 | Markdown | 標準の Markdown として対応 |
 | WikiLinks | starter の Obsidian Markdown プラグインで対応 |
-| WikiLink のエイリアス | `[[note|label]]` に対応 |
+| WikiLink の[[glossary/alias|エイリアス]] | `[[note|label]]` に対応 |
 | 見出しリンク | `[[note#Heading]]` に対応 |
 | 画像 | `![[sample.png]]` のように、公開ノートから参照される画像に対応 |
 | ノートの埋め込み | 公開 Markdown ノートの埋め込みに対応 |
@@ -138,7 +138,7 @@ npm exec riebeckite build
 | Canvas | `@riebeckite/plugin-canvas` が必要 |
 | Excalidraw | `@riebeckite/plugin-excalidraw` が必要 |
 | Bases | `@riebeckite/plugin-bases` が必要 |
-| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid-pele` などのレンダラーが必要。導入していない場合はコードブロックとして扱われる |
+| Mermaid | 図として描画するには `@riebeckite/plugin-mermaid-pele` などの[[glossary/renderer|レンダラー]]が必要。導入していない場合はコードブロックとして扱われる |
 | `.obsidian/` | Riebeckite には不要。自動的に無視される |
 
 ## Vault を別リポジトリで管理する

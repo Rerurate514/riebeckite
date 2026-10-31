@@ -54,7 +54,7 @@ export default defineConfig({
 
 Resolution order is schema defaults, then a preset, then explicit `settings`. Color, number, and slider settings are reflected as safe `--rb-setting-*` custom properties. Every setting is reflected as a `data-rb-setting-*` attribute. Roots use `data-rb-theme`, `data-rb-mode`, and `data-rb-layout`.
 
-Themes set semantic `--rb-*` tokens; components and plugins consume them. Theme CSS is loaded after framework and plugin CSS, while `stylesheets` load last for site overrides.
+Themes set semantic `--rb-*` tokens; components and plugins consume them. [[glossary/theme|Theme]] CSS is loaded after framework and plugin CSS, while `stylesheets` load last for site overrides.
 
 ```css
 :is(:root, .rb-theme-root)[data-rb-theme="my-theme"] {

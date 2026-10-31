@@ -10,7 +10,7 @@ sidebar:
 ---
 # プラグインの配布と検証
 
-このページは[プラグイン作成の詳細](../plugin-system.ja.md)の一部で、プラグインのパッケージ化、配布、検証を扱います。
+このページは[プラグイン作成の詳細](../plugin-system.ja.md)の一部で、[[glossary/plugin|プラグイン]]のパッケージ化、配布、検証を扱います。
 
 ## 4. 配布用にパッケージ化する
 
@@ -39,7 +39,7 @@ return definePlugin({
 });
 ```
 
-サイト内のプラグインも、公開されたプラグインと同じ取り決めを利用します。対象は依存関係の解決、パイプライン、フック、診断、レンダラー、ページ種別です。
+サイト内のプラグインも、公開されたプラグインと同じ取り決めを利用します。対象は依存関係の解決、[[glossary/pipeline|パイプライン]]、フック、診断、[[glossary/renderer|レンダラー]]、[[glossary/page-type|ページ種別]]です。
 
 `createStyleAsset()`と`createClientEntry()`には、パッケージのサブパスを明示して渡します。サイト内のプラグインでも、任意の名前で公開するパッケージでも、ホスト側のバンドラーが解決できるサブパスを指定してください。
 
@@ -84,13 +84,13 @@ riebeckite plugin verify ./packages/my-plugin
 riebeckite plugin verify ./packages/my-plugin --level full --json
 ```
 
-既定の`basic`は`package.json`、exports、型定義の参照先、公開したclient/CSSサブパスを確認します。`integration`は、パッケージ名とディレクトリが完全一致する信頼済みfixtureを実行します。fixtureは通常、パッケージをpackし、隔離したconsumerへinstallし、HonoXサイトをビルドして生成物を検証します。integrationはブラウザ検証を意味しません。`full`は登録されたブラウザfixtureも実行します。さらに`full`は`pnpm pack`を実行し、tarballに配布用manifestと`dist/`があることを確認します。結果は`FAIL`、`SKIP`、`UNSUPPORTED`、`UNVERIFIED`を区別します。実行して成功した検証だけが`PASS`です。
+既定の`basic`は`package.json`、exports、型定義の参照先、公開したclient/CSSサブパスを確認します。`integration`は、パッケージ名とディレクトリが完全一致する信頼済みfixtureを実行します。fixtureは通常、パッケージをpackし、隔離したconsumerへinstallし、HonoXサイトをビルドして[[glossary/generated-output|生成物]]を検証します。integrationはブラウザ検証を意味しません。`full`は登録されたブラウザfixtureも実行します。さらに`full`は`pnpm pack`を実行し、tarballに配布用manifestと`dist/`があることを確認します。結果は`FAIL`、`SKIP`、`UNSUPPORTED`、`UNVERIFIED`を区別します。実行して成功した検証だけが`PASS`です。
 
 実行できるのはこのリポジトリに登録されたfixtureだけで、パッケージ名と実パスの両方が一致する場合に限ります。パッケージ側から登録を有効にすることはできません。登録は`packages/cli/src/commands/plugin_contract_fixtures.ts`にあり、リポジトリ所有のrunnerと、パッケージ名・ディレクトリを指定するentryの両方が必要です。未登録のパッケージでintegrationまたはfullを指定すると`UNVERIFIED`になり、検証器は未登録プラグインのコードを実行しません。JSONの各結果には`executed`があり、レポートには`complete`があります。`complete`は`FAIL`、`UNVERIFIED`、`UNSUPPORTED`が1件もない場合だけtrueになり、不完全なレポートではコマンドは非ゼロで終了します。full fixtureの成功はそのfixtureが対象とする契約の証拠であって、完全な互換性の証明ではありません。
 
 `pnpm pack`はライフサイクルスクリプトとpnpmfileフックを無効にして実行し（`--config.ignore-scripts=true --config.ignore-pnpmfile=true`）、tarballは実行せず内容だけを確認します。一時ディレクトリはセキュリティsandboxではありません。ブラウザを起動するfixtureだけをブラウザfixtureとして扱い、ビルドだけのfixtureをブラウザ検証済みとは報告しません。
 
-Markdown変換、Plugin Runtimeとcapability解決、HonoX描画、公開境界、ブラウザのライフサイクルは、プラグインまたはサイトfixtureの対象を絞ったテストで確認してください。`tests/plugin-contracts/meta-bind`のfixtureは、Meta Bindのtarball、HonoX出力、clientの遅延読み込み、DOM操作、CSS、SPA再マウントを確認します。`tests/plugin-dx`は汎用のtarball consumer fixtureで、`@riebeckite/test/e2e`がpackと隔離installの再利用部品です。
+Markdown変換、Plugin Runtimeとcapability解決、HonoX描画、[[glossary/publication-boundary|公開境界]]、ブラウザのライフサイクルは、プラグインまたはサイトfixtureの対象を絞ったテストで確認してください。`tests/plugin-contracts/meta-bind`のfixtureは、Meta Bindのtarball、HonoX出力、clientの遅延読み込み、DOM操作、CSS、SPA再マウントを確認します。`tests/plugin-dx`は汎用のtarball consumer fixtureで、`@riebeckite/test/e2e`がpackと隔離installの再利用部品です。
 
 実装後は、小さい範囲から順番に確認します。
 
@@ -133,7 +133,7 @@ pnpm exec riebeckite build
 プラグインが解決されない場合は、まず`check`の出力から次の点を確認してください。
 
 - import時のエラー
-- 不足しているケイパビリティ
+- 不足している[[glossary/capability|ケイパビリティ]]
 - 重複した提供者
 - 依存関係の循環
 - 不正なオプション

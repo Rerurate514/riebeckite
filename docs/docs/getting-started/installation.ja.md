@@ -56,7 +56,7 @@ npx create-riebeckite my-site --preset starter
 ```
 
 - 既存のディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
-- 利用できるプリセットは `npx create-riebeckite --list-presets` で確認できます。
+- 利用できる[[glossary/preset|プリセット]]は `npx create-riebeckite --list-presets` で確認できます。
 
 プロンプトでインストールしなかった場合は、フォルダへ移動してパッケージを入れます。
 
@@ -71,7 +71,7 @@ npm install
 
 | ファイルやフォルダ | 役割 |
 | --- | --- |
-| `riebeckite.config.ts` | サイト名、URL、言語、テーマ、プラグインの設定。最初に編集するファイル |
+| `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
 | `public/` | favicon、ヘッダーのロゴ、リンクプレビュー画像など、そのまま配信する静的ファイル。差し替えは [サイトのアイコンとロゴ](../guides/branding.ja.md) |
@@ -127,7 +127,7 @@ site: {
 | --- | --- |
 | `title` | サイト名 |
 | `description` | SEO とフィードで使う概要 |
-| `baseUrl` | サイトを公開する URL。サイトマップやフィードに反映されるため、デプロイ後に実際の URL を設定する |
+| `baseUrl` | サイトを公開する URL。[[glossary/sitemap|サイトマップ]]やフィードに反映されるため、デプロイ後に実際の URL を設定する |
 | `locale` | サイトの言語（日本語なら `"ja"`、英語なら `"en"`） |
 
 生成された設定のうち `content`、`theme`、`plugins` は、すでにプリセットに合った値になっています。各フィールドの詳しい説明は [設定](../reference/configuration.ja.md) を参照してください。

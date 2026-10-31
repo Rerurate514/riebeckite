@@ -87,7 +87,7 @@ With this, you can split things like:
 | Attachments and images | `attachments/` and similar inside the vault |
 | Obsidian settings | `.obsidian/` inside the vault |
 | Site code and configuration | `site/` |
-| Theme and plugin settings | The site repository |
+| [[glossary/theme|Theme]] and plugin settings | The site repository |
 | Deployment settings | The site repository |
 | Notes you never publish | `private/` and similar inside the vault (excluded) |
 
@@ -380,11 +380,11 @@ When articles and the site are separate, be explicit about where the publication
 | `explicit` (default, recommended) | Only notes with `publish: true` | You want to opt articles in deliberately |
 | `selective` | Notes without `private: true` or `draft: true` | You publish almost everything and hide only exceptions |
 
-Frontmatter `visibility` and `publishAt` take precedence over the strategy.
+[[glossary/frontmatter|Frontmatter]] `visibility` and `publishAt` take precedence over the strategy.
 
 | Frontmatter | Result |
 | --- | --- |
-| `visibility: public` | Routable and discoverable |
+| `visibility: public` | [[glossary/routable|Routable]] and discoverable |
 | `visibility: unlisted` | Routable by direct URL, but excluded from discovery surfaces |
 | `visibility: draft` | Not routable and not discoverable |
 | `publishAt: 2026-01-01T00:00:00.000Z` | Hidden before the build time, public on the first build after that time |

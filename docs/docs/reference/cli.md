@@ -35,8 +35,8 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | Command | Purpose | Writes build state? |
 | --- | --- | --- |
 | `init` | scaffold a self-contained site from a preset | no |
-| `create` | choose a Site, Plugin, Theme, PageType, or Component generator | generator-dependent |
-| `theme preview` | run an isolated HonoX preview of a local Theme | temporary files only |
+| `create` | choose a Site, [[glossary/plugin|Plugin]], [[glossary/theme|Theme]], PageType, or Component generator | generator-dependent |
+| `theme preview` | run an isolated [[framework/honox-integration|HonoX]] preview of a local Theme | temporary files only |
 | `plugin dev` | run an isolated HonoX preview of a local Plugin | temporary files only |
 | `plugin verify` | check a distributable Plugin package boundary before adding it to a site | no |
 | `dev` | start the integration development workflow | integration-dependent |
@@ -355,7 +355,7 @@ flowchart LR
 
 `doctor` continues independent checks where possible and exits unsuccessfully when health checks fail.
 
-During `riebeckite dev`, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> outside editable controls to open the Development Inspector. It uses the same report as `doctor`, refreshes with Vite updates, and is not included in production client output or endpoints. Its Overview, Diagnostics, and Plugins tabs show the diagnostics report as soon as it is ready. The Dependencies and Output tabs load separately and read the current content and output plan without writing build state or building the site.
+During `riebeckite dev`, press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> outside editable controls to open the Development [[framework/inspector|Inspector]]. It uses the same report as `doctor`, refreshes with Vite updates, and is not included in production client output or endpoints. Its Overview, Diagnostics, and Plugins tabs show the diagnostics report as soon as it is ready. The Dependencies and Output tabs load separately and read the current content and output plan without writing build state or building the site.
 
 ## `build`
 
@@ -403,7 +403,7 @@ Use this to reproduce a build or to isolate problems with incremental behavior. 
 npm exec riebeckite clean
 ```
 
-With no options it removes the managed state root (`.riebeckite/` under the application directory), which holds the build state, plugin cache, persistent content cache, and SSG output cache.
+With no options it removes the managed state root (`.riebeckite/` under the application directory), which holds the build state, plugin cache, persistent content cache, and [[glossary/ssg|SSG]] output cache.
 
 To remove only the build output directory:
 
@@ -474,7 +474,7 @@ Run it after the first publish run, because it reads the existing Wrangler confi
 npm exec riebeckite profile
 ```
 
-It collects traces and displays a performance report covering build phases and plugin processing. The report separates Plugin cache activity from Content cache activity; the Content cache part also includes the reason for each miss or bypass, so you can see why an entry was not reused.
+It collects traces and displays a performance report covering build phases and plugin processing. The report separates [[glossary/plugin-cache|Plugin cache]] activity from Content cache activity; the Content cache part also includes the reason for each miss or bypass, so you can see why an entry was not reused.
 
 To measure without incremental reuse:
 

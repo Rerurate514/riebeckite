@@ -282,7 +282,7 @@ When implementing your own provider, use
 assertAnalyticsQuerySupported(provider, query);
 ```
 
-Capability and query helpers are exported from the package root.
+[[glossary/capability|Capability]] and query helpers are exported from the package root.
 
 ## Collecting events with a Cloudflare Worker
 

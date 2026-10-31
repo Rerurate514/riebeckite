@@ -4,16 +4,16 @@ title: ローカルプラグインの開発
 ---
 # ローカルプラグインの開発
 
-`riebeckite plugin dev` は、ローカルのプラグインパッケージを一時的な Riebeckite サイトで実行します。実際の PluginRuntime、HonoX、Vite を使うため、サイトと同じ Markdown パイプライン、CSS、クライアントエントリーを確認できます。
+`riebeckite plugin dev` は、ローカルのプラグインパッケージを一時的な Riebeckite サイトで実行します。実際の PluginRuntime、[[framework/honox-integration|HonoX]]、Vite を使うため、サイトと同じ Markdown [[glossary/pipeline|パイプライン]]、CSS、クライアントエントリーを確認できます。
 
 [English](./local-plugin-development.md)
 
 ## 使う場面
 
-プラグインの変換処理、スタイル、クライアントの挙動を変更し、ブラウザーで結果を確認したいときに使います。`theme preview` との違いは次のとおりです。
+[[glossary/plugin|プラグイン]]の変換処理、スタイル、クライアントの挙動を変更し、ブラウザーで結果を確認したいときに使います。`theme preview` との違いは次のとおりです。
 
 - `plugin dev` はローカルのパスから 1 つのプラグインを読み込み、そのクライアントエントリーを実行します。
-- `theme preview` は固定のテスト用コンテンツでテーマを確認します。`plugin dev` はプラグイン用の一時サイトを生成します。
+- `theme preview` は固定のテスト用コンテンツで[[glossary/theme|テーマ]]を確認します。`plugin dev` はプラグイン用の一時サイトを生成します。
 
 ## プレビューを開始する
 
@@ -38,7 +38,7 @@ riebeckite plugin dev ../my-plugin --port 4321 --no-open
 
 システムの一時ディレクトリに最小構成の HonoX サイトを作成し、ローカルプラグインをリンクしてからテスト用データのパスを表示します。テスト用データには見出しとタブ付きコードブロックを含む決定的な Markdown を書き込みます。設定済みの Vault、`riebeckite.config.ts`、ビルド出力は読み書きしません。
 
-生成するサイトでは既定のテーマと、Markdown、カラーモード、目次の標準プラグインを使い、その後にローカルプラグインを加えます。プロジェクトの設定をコピーせず、通常のサイトに近い構成で確認できます。
+生成するサイトでは既定のテーマと、Markdown、[[glossary/color-mode|カラーモード]]、目次の標準プラグインを使い、その後にローカルプラグインを加えます。プロジェクトの設定をコピーせず、通常のサイトに近い構成で確認できます。
 
 ## 編集中の更新
 

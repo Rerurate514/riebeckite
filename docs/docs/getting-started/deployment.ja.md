@@ -7,7 +7,7 @@ sidebar:
 ---
 # デプロイ
 
-Riebeckite は静的サイトを生成します。`npm exec riebeckite build` を実行すると、公開用のファイルが `dist/` に出力されます。デプロイとは、このフォルダを配信することです。標準的な公開先として、ここでは [Cloudflare Workers](https://workers.cloudflare.com/) の静的アセットを使います。
+Riebeckite は静的サイトを生成します。`npm exec riebeckite build` を実行すると、公開用のファイルが `dist/` に出力されます。デプロイとは、このフォルダを配信することです。標準的な[[glossary/public-location|公開先]]として、ここでは [Cloudflare Workers](https://workers.cloudflare.com/) の静的アセットを使います。
 
 デプロイには次の3つの方法があります。どれか1つを選ぶものではなく、必要に応じて後から追加できます。
 
@@ -55,7 +55,7 @@ Content Repository の分離
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
 
 ```bash
 npm exec riebeckite build
@@ -134,7 +134,7 @@ npm exec -- riebeckite doctor --github
 
 ## 3. 応用: コンテンツを別リポジトリに分ける
 
-サイトの実装と Markdown のコンテンツを別リポジトリで管理したい場合があります。既存の Obsidian Vault を別のリポジトリで管理している場合、編集者と開発者を分けたい場合、記事とサイト実装の更新サイクルを分けたい場合に有効です。
+サイトの実装と Markdown のコンテンツを別リポジトリで管理したい場合があります。既存の [[glossary/obsidian-vault|Obsidian Vault]] を別のリポジトリで管理している場合、編集者と開発者を分けたい場合、記事とサイト実装の更新サイクルを分けたい場合に有効です。
 
 最初のサイトでは必須ではありません。必要になったら、まず [Content Repositories](../guides/content-repositories.ja.md) を読んでください。具体的な GitHub Actions の構成は [Separate Content Repository](../guides/deployment/separate-content-repository.ja.md) にまとめています。
 

@@ -31,7 +31,7 @@ A [[glossary/theme|theme]] is the **presentation layer**. It changes tokens, sty
 | Declare theme-specific `data-*` attributes | Route additions |
 | Declare color mode / typography / layout presets | Adding or removing plugins |
 | Provide the final override through `stylesheets` | Client script execution |
-| Style stable hooks | DOM transformation, island registration, filesystem access, ContentManager access |
+| Style stable hooks | DOM transformation, island registration, filesystem access, [[glossary/content-manager|ContentManager]] access |
 
 If you are unsure, decide like this:
 

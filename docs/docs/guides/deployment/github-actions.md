@@ -439,7 +439,7 @@ npm ci
 
 ### 5. Restore Riebeckite build state
 
-The generated workflow restores everything incremental SSG needs between runs with a single `actions/cache` step:
+The generated workflow restores everything incremental [[glossary/ssg|SSG]] needs between runs with a single `actions/cache` step:
 
 - `.riebeckite/cache` — the Markdown and plugin processing cache
 - `.riebeckite/build/content-state.json` — incremental build state

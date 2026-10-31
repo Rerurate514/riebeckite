@@ -137,4 +137,4 @@ onPostProcessed
 onManifestCreated
 ```
 
-Use only the hooks you actually need. Do not reconstruct later-stage information in earlier stages. For example, avoid rebuilding information that already exists in the Manifest inside `onContentLoaded`.
+Use only the hooks you actually need. Do not reconstruct later-stage information in earlier stages. For example, avoid rebuilding information that already exists in the [[glossary/manifest|Manifest]] inside `onContentLoaded`.

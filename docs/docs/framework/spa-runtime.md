@@ -40,7 +40,7 @@ sequenceDiagram
 ```
 
 The order matters. Page-specific cleanup runs before the main element is
-replaced, and page initialization runs after HonoX hydrates the new islands.
+replaced, and page initialization runs after [[framework/honox-integration|HonoX]] hydrates the new islands.
 
 Starting a new navigation aborts the one in progress. An aborted navigation
 cannot update page metadata, the DOM, history, the page lifecycle, focus, the
@@ -123,7 +123,7 @@ The boundary between page-owned and persistent elements is explicit:
 
 - `data-riebeckite-head="page"` nodes are replaced.
 - `data-riebeckite-head="global"` and `"runtime"` nodes persist.
-- Plugin `meta` and `link` head tags are marked page-owned automatically.
+- [[glossary/plugin|Plugin]] `meta` and `link` head tags are marked page-owned automatically.
 - Plugin data scripts (`application/ld+json`, `application/json`) are also
   page-owned.
 - Executable plugin scripts are left unowned so they are neither cloned nor
@@ -260,7 +260,7 @@ infer resources created outside the initializer.
 
 ## Build and SSG impact
 
-The SPA runtime changes the client bundle, not the server renderer or SSG
+The SPA runtime changes the client bundle, not the server renderer or [[glossary/ssg|SSG]]
 output.
 
 - With `spa` omitted or `false`, the virtual module has no import of

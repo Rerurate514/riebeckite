@@ -42,7 +42,7 @@ Use the results in this order:
 2. `doctor` reports an unreadable or invalid filesystem content source.
 3. `inspect config` confirms the resolved directory.
 4. `inspect content --list` confirms the expected logical paths before you
-   diagnose a WikiLink or embed.
+   diagnose a [[glossary/wikilink|WikiLink]] or embed.
 5. `build` verifies the integration and route rendering.
 
 If `riebeckite.config.ts` intentionally lives outside the Vite application,

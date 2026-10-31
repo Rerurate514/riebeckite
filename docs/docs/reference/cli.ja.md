@@ -32,15 +32,15 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 
 ## 各コマンドの役割とビルド状態への影響
 
-| コマンド | 目的 | ビルド状態を書き込むか |
+| コマンド | 目的 | [[glossary/build-state|ビルド状態]]を書き込むか |
 | --- | --- | --- |
-| `init` | プリセットから自己完結したサイトを生成する | いいえ |
-| `create` | サイト、プラグイン、テーマ、PageType、コンポーネントのジェネレーターを選ぶ | ジェネレーターによる |
-| `theme preview` | ローカルのテーマを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `init` | [[glossary/preset|プリセット]]から自己完結したサイトを生成する | いいえ |
+| `create` | サイト、[[glossary/plugin|プラグイン]]、[[glossary/theme|テーマ]]、PageType、コンポーネントのジェネレーターを選ぶ | ジェネレーターによる |
+| `theme preview` | ローカルのテーマを隔離された [[framework/honox-integration|HonoX]] 環境でプレビューする | 一時ファイルのみ |
 | `plugin dev` | ローカルのプラグインを隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
 | `plugin verify` | サイトに追加する前に、配布可能なプラグインのパッケージ境界を検査する | いいえ |
 | `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
-| `check` | アプリの設定、コンテンツルートの可用性、プラグインオプション、ケイパビリティの解決を検証する | いいえ |
+| `check` | アプリの設定、コンテンツルートの可用性、[[glossary/plugin-options|プラグインオプション]]、[[glossary/capability|ケイパビリティ]]の解決を検証する | いいえ |
 | `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
 | `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
@@ -173,7 +173,7 @@ npm exec -- riebeckite init my-site --force
 npx create-riebeckite
 ```
 
-対話モードでは、コンテンツソースを尋ねたあと、デプロイ方法を尋ねます。
+対話モードでは、[[glossary/content-source|コンテンツソース]]を尋ねたあと、デプロイ方法を尋ねます。
 
 | 選択肢 | 生成されるもの |
 | --- | --- |
@@ -234,7 +234,7 @@ riebeckite plugin dev ../my-plugin --port 4321 --no-open
 
 パスにはプラグインのディレクトリ、またはその `package.json` を指定できます。ディレクトリには、サポートされるエントリポイントを持つ有効な `package.json` が必要です。エントリポイントとして使えるのは、`source`、`import`、`module`、`default` のいずれかの条件を持つ `exports["."]`、`main`、または慣例的な `index.ts` です。CLI は依存関係をインストールしません。プレビューを開始する前に、プラグイン側のプロジェクトで依存関係をインストールしてください。
 
-コマンドはシステムの一時ディレクトリに隔離されたフィクスチャサイトを作成し、ローカルのプラグインをそこにリンクして、フィクスチャのパスを表示します。設定済みの Vault、サイト設定、ビルド出力は読み取りも変更もしません。フィクスチャには毎回同じ内容の Markdown が含まれるため、コンテンツを編集せずにプラグインを確認できます。
+コマンドはシステムの一時ディレクトリに隔離されたフィクスチャサイトを作成し、ローカルのプラグインをそこにリンクして、フィクスチャのパスを表示します。設定済みの Vault、[[glossary/site-config|サイト設定]]、ビルド出力は読み取りも変更もしません。フィクスチャには毎回同じ内容の Markdown が含まれるため、コンテンツを編集せずにプラグインを確認できます。
 
 プレビュー中は、次のように変更が反映されます。
 
@@ -315,7 +315,7 @@ npm exec -- riebeckite doctor --json
 npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 ```
 
-`--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable・skipped・category・code ごとの件数も含まれます。`--code` は繰り返して診断コードを絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` はファイルを変更せずにそのことを確認します。
+`--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable・skipped・category・code ごとの件数も含まれます。`--code` は繰り返して[[glossary/diagnostic-code|診断コード]]を絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` はファイルを変更せずにそのことを確認します。
 
 `doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、利用不可として明示します。
 
@@ -388,7 +388,7 @@ npm exec -- riebeckite build --full
 npm exec riebeckite clean
 ```
 
-オプションを指定しない場合は、管理対象の状態ルート（アプリケーションディレクトリ配下の `.riebeckite/`）を削除します。この中には、ビルド状態、プラグインキャッシュ、永続コンテンツキャッシュ、SSG 出力キャッシュが含まれます。
+オプションを指定しない場合は、管理対象の状態ルート（アプリケーションディレクトリ配下の `.riebeckite/`）を削除します。この中には、ビルド状態、[[glossary/plugin-cache|プラグインキャッシュ]]、永続コンテンツキャッシュ、[[glossary/ssg|SSG]] [[glossary/output-cache|出力キャッシュ]]が含まれます。
 
 ビルド出力ディレクトリだけを削除するには、次のコマンドを実行します。
 
@@ -404,14 +404,14 @@ npm exec -- riebeckite clean --all
 
 出力の場所はハードコードではなくプロジェクト設定から解決されるため、統合が定義した場所もそのまま使われます。削除対象が存在しなくてもエラーにならないので、`clean` は CI やトラブルシューティング用スクリプトからの繰り返し実行にも安全です。コンテンツ、設定、テーマやプラグインのソース、`public/` のアセット、Git のメタデータを削除することはありません。アプリケーションディレクトリの外にあるものは削除しません。シンボリックリンクやジャンクションはリンクとして削除するため、リンク先が削除されることはありません。`app/.riebeckite/` 配下の生成ソースは、統合が次の `dev` または `build` で再生成するため、そのまま残します。
 
-インクリメンタルな状態、永続キャッシュ、以前の出力に依存せずにサイトを再現するには、コールドビルドを実行します。
+インクリメンタルな状態、[[glossary/persistent-cache|永続キャッシュ]]、以前の出力に依存せずにサイトを再現するには、コールドビルドを実行します。
 
 ```sh id="cln004"
 npm exec -- riebeckite clean --all
 npm exec riebeckite build
 ```
 
-ビルドが遅いときや、インクリメンタルな再利用が疑わしいときにも役立ちます。既定のレイアウトでは、これらのキャッシュは `.riebeckite/` 配下にあります。別の場所にキャッシュディレクトリを設定している場合、そのディレクトリは `clean` では削除されません。
+ビルドが遅いときや、インクリメンタルな再利用が疑わしいときにも役立ちます。既定のレイアウトでは、これらの[[glossary/cache|キャッシュ]]は `.riebeckite/` 配下にあります。別の場所にキャッシュディレクトリを設定している場合、そのディレクトリは `clean` では削除されません。
 
 ## `publish`
 
@@ -509,7 +509,7 @@ npm exec riebeckite inspect plugins
 npm exec -- riebeckite inspect content --list
 ```
 
-現在のコンテンツエントリと、解決済みの正規パーマリンクを表示します。特定の記事がどの URL として認識されているかを確認するのに役立ちます。
+現在の[[glossary/content-entry|コンテンツエントリ]]と、解決済みの正規パーマリンクを表示します。特定の記事がどの URL として認識されているかを確認するのに役立ちます。
 
 ### グラフ
 
@@ -517,7 +517,7 @@ npm exec -- riebeckite inspect content --list
 npm exec riebeckite inspect graph
 ```
 
-コンテンツグラフを表示します。WikiLinks、バックリンク、グラフ拡張を調査するときに使います。
+[[glossary/content-graph|コンテンツグラフ]]を表示します。WikiLinks、[[glossary/backlink|バックリンク]]、グラフ拡張を調査するときに使います。
 
 ### ビルド
 
@@ -541,7 +541,7 @@ Caused by:
 
 ## よく使うワークフロー
 
-壊れた WikiLink、参照先が見つからないアセット、公開境界の警告など、コンテンツの整合性に関する指摘は、ビルド経路または `@riebeckite/plugin-diagnostics` などのプラグインから得られます。Riebeckite が何を読み込んだかを確認するには `inspect content --list` と `inspect graph` を使い、描画後のコンテンツに関する問題には `build` または該当するプラグインの診断を実行してください。
+壊れた [[glossary/wikilink|WikiLink]]、参照先が見つからないアセット、[[glossary/publication-boundary|公開境界]]の警告など、コンテンツの整合性に関する指摘は、ビルド経路または `@riebeckite/plugin-diagnostics` などのプラグインから得られます。Riebeckite が何を読み込んだかを確認するには `inspect content --list` と `inspect graph` を使い、描画後のコンテンツに関する問題には `build` または該当するプラグインの診断を実行してください。
 
 ```sh
 pnpm exec riebeckite check

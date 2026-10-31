@@ -9,9 +9,9 @@ while Riebeckite runs.
 
 Riebeckite separates three mechanisms with different purposes:
 
-- **Logger** — know what happened.
+- **[[glossary/logger|Logger]]** — know what happened.
 - **Tracer** — record which work took how long.
-- **Profiler** — aggregate traces to see where a build should be investigated.
+- **[[glossary/profiler|Profiler]]** — aggregate traces to see where a build should be investigated.
 
 ```mermaid
 flowchart LR
@@ -214,7 +214,7 @@ flowchart TD
 
 When a build fails, use the Logger and Diagnostics; when a build is slow, use the
 Tracer and Profiler; when you want to check the incremental build state, combine
-them with the Inspector.
+them with the [[framework/inspector|Inspector]].
 
 Run `riebeckite profile [--full]` for CLI-driven reporting. Pair it with
 [Build system](./build-system.md) and [Diagnostics](./diagnostics.md) when

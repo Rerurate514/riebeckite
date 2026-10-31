@@ -4,7 +4,7 @@ title: Use Your Obsidian Vault
 ---
 # Use Your Obsidian Vault
 
-Already have an Obsidian Vault? Riebeckite can read that Vault as the site's content directory. Start locally first, publish one note, check links and images, then build `dist/`.
+Already have an [[glossary/obsidian-vault|Obsidian Vault]]? Riebeckite can read that Vault as the site's content directory. Start locally first, publish one note, check links and images, then build `dist/`.
 
 ## Before you start
 
@@ -126,13 +126,13 @@ The output is written to `dist/`.
 | --- | --- |
 | Markdown | Supported as core Markdown |
 | WikiLinks | Supported by the starter Obsidian Markdown plugin |
-| WikiLink aliases | Supported, including `[[note|label]]` |
+| [[glossary/wikilink|WikiLink]] aliases | Supported, including `[[note|label]]` |
 | Heading links | Supported, for example `[[note#Heading]]` |
 | Images | Supported for public referenced images such as `![[sample.png]]` |
 | Note embeds | Supported for published Markdown notes |
 | Callouts | Supported, for example `> [!NOTE]` |
 | Tags | Supported by the Obsidian Markdown plugin; tag pages are provided by the starter taxonomy plugin |
-| Frontmatter | Supported |
+| [[glossary/frontmatter|Frontmatter]] | Supported |
 | Obsidian aliases | Supported for WikiLink resolution through `aliases:` |
 | `publish` | Supported; `publish: true` is public, drafts are not built |
 | Canvas | Requires `@riebeckite/plugin-canvas` |

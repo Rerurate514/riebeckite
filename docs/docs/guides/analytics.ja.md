@@ -29,7 +29,7 @@ flowchart LR
 
 ### `@riebeckite/plugin-analytics`
 
-Riebeckiteのサイト側で動くプラグインです。主に次の機能を提供します。
+Riebeckiteのサイト側で動く[[glossary/plugin|プラグイン]]です。主に次の機能を提供します。
 
 - 計測対象のコンテンツを識別する
 - ブラウザから`page_view`を送信する
@@ -59,7 +59,7 @@ Analytics Worker
 
 ## 計測の仕組み
 
-ページビューは、コンテンツに付けた**安定したコンテンツID**を基準に記録します。URLは変更されることがありますが、同じ記事を同じコンテンツとして扱いたいためです。
+ページビューは、コンテンツに付けた**安定した[[glossary/content-id|コンテンツID]]**を基準に記録します。URLは変更されることがありますが、同じ記事を同じコンテンツとして扱いたいためです。
 
 ```mermaid id="n45z2c"
 sequenceDiagram
@@ -423,7 +423,7 @@ D1上でアトミックなカウンターを管理するため、複数のWorker
 
 ## プライバシー
 
-Analytics Workerは、Cookie、User-Agent、フィンガープリントを読み取ったり保存したりしません。
+Analytics Workerは、Cookie、User-Agent、[[glossary/fingerprint|フィンガープリント]]を読み取ったり保存したりしません。
 
 イベントに含まれる`path`と`lang`も補助情報であり、D1には保存されません。
 

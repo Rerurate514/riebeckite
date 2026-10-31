@@ -170,7 +170,7 @@ scan/read source
                         `--- plugin lifecycle/content hooks ---'
 ```
 
-Public locations are resolved before any content that needs a URL is processed, so a consumer never has to invent one. Plugin hooks observe or extend defined phases such as configuration resolution, content loaded, parsed/processed posts, manifest creation, and build start/end. Keep source I/O, semantic interpretation, and rendering distinct so a remote source can replace the filesystem source without changing Core policy.
+Public locations are resolved before any content that needs a URL is processed, so a consumer never has to invent one. [[glossary/plugin|Plugin]] hooks observe or extend defined phases such as configuration resolution, content loaded, parsed/processed posts, manifest creation, and build start/end. Keep source I/O, semantic interpretation, and rendering distinct so a remote source can replace the filesystem source without changing Core policy.
 
 ## Public location and URLs
 
@@ -255,7 +255,7 @@ by:
 - In-site links
 - Redirects
 - Sitemaps
-- Search indexes
+- [[glossary/search|Search]] indexes
 - The language switcher
 - The content graph
 
@@ -307,7 +307,7 @@ re-reading Markdown and recomputing the same information.
 
 ### Content graph
 
-The content graph represents relationships between content. A WikiLink such as
+The content graph represents relationships between content. A [[glossary/wikilink|WikiLink]] such as
 
 ```markdown
 [[Article B]]
@@ -337,8 +337,8 @@ such as:
 - WikiLinks
 - Markdown links
 - Backlinks
-- Taxonomy
-- Series
+- [[glossary/taxonomy|Taxonomy]]
+- [[glossary/series|Series]]
 - Related posts
 - Local graph
 - Garden explorer
@@ -494,8 +494,8 @@ flowchart LR
     Index --> Consumer
 ```
 
-**Source is how content is read, ContentManager is how content is resolved,
-Public Location is where it is published, and Manifest / Graph are the resolved
+**Source is how content is read, [[glossary/content-manager|ContentManager]] is how content is resolved,
+[[glossary/public-location|Public Location]] is where it is published, and [[glossary/manifest|Manifest]] / Graph are the resolved
 result.** Features should not re-read the filesystem or Markdown on their own;
 sharing the same resolved result through the Content System is the basis of
 Riebeckite's content architecture.

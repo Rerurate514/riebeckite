@@ -11,7 +11,7 @@ plugin.
 
 This guide collects recipes for the common discovery routes — featured content,
 recent posts, an all-posts index, tags, folders, series, and archive — and names
-the Plugin and option each one uses. Every recipe works with the public Plugin
+the [[glossary/plugin|Plugin]] and option each one uses. Every recipe works with the public Plugin
 API and Core config; none of them needs a new Core feature.
 
 ## One rule to remember

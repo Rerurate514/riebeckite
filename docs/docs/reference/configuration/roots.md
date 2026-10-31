@@ -24,7 +24,7 @@ flowchart TD
 
 | Name | Responsibility | Default / resolution base |
 | --- | --- | --- |
-| `appRoot` | The HonoX/Vite application: `app/`, `public/`, routes, generated styles, and build output configuration | Vite's `root` |
+| `appRoot` | The [[framework/honox-integration|HonoX]]/Vite application: `app/`, `public/`, routes, generated styles, and build output configuration | Vite's `root` |
 | `configRoot` | Directory containing `riebeckite.config.ts`, `.js`, or `.mjs` | `appRoot` |
 | `contentRoot` | Absolute filesystem root for the configured content directory or Obsidian vault | `path.resolve(appRoot, content.directory)` |
 

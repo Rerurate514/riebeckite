@@ -26,9 +26,9 @@ A plugin adds **features**: Markdown/HTML interpretation, reusable content trans
 **What does not go in a plugin:**
 
 - framework-wide content model → Core
-- the HonoX/Vite connection → Integration
+- the [[framework/honox-integration|HonoX]]/Vite connection → Integration
 - application-specific routes / layout → App
-- appearance-only changes → Theme ([Theme System](./theme-system.md))
+- appearance-only changes → [[glossary/theme|Theme]] ([Theme System](./theme-system.md))
 
 ```mermaid
 flowchart TD
@@ -108,18 +108,18 @@ flowchart TD
     Q -->|"Diagnostics"| Diagnostics["addDiagnostics"]
 ```
 
-UI and output have several extension points, and they are alternatives rather than a progression: Markdown/HTML transformation, renderers, Page Types, exported Hono JSX components, and client entries. To choose between them, see [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
+[[glossary/ui|UI]] and output have several extension points, and they are alternatives rather than a progression: Markdown/HTML transformation, renderers, Page Types, exported Hono JSX components, and client entries. To choose between them, see [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
 
 | Area | API |
 | --- | --- |
 | Identity | `name`, `enabled`, `order`, `options` |
 | Dependency | `provides`, `requires`, `optional` |
 | Validation | `validateOptions` |
-| Cache | `cacheVersion`, `context.cache` |
+| [[glossary/cache|Cache]] | `cacheVersion`, `context.cache` |
 | Lifecycle | `setup`, `buildStart`, `buildEnd`, `dispose` |
 | Content hooks | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
-| Public Location | `resolveContentLocations` |
-| Pipeline | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
+| [[glossary/public-location|Public Location]] | `resolveContentLocations` |
+| [[glossary/pipeline|Pipeline]] | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | Graph | `extendContentGraph` |
 | Diagnostics | `addDiagnostics` |
 | Rendering inside content | `renderers` |
@@ -153,8 +153,8 @@ flowchart TD
 
 Even after deciding on a plugin, it is important to **use only the extension
 points that feature actually needs**. Before rescanning the filesystem, check
-whether the Manifest or Content Graph can be used instead; before adding a
-custom route, check whether a Page Type can be used instead; before adding
+whether the [[glossary/manifest|Manifest]] or [[glossary/content-graph|Content Graph]] can be used instead; before adding a
+custom route, check whether a [[glossary/page-type|Page Type]] can be used instead; before adding
 client JavaScript, check whether SSR or build-time processing alone is enough.
 
 This keeps plugins small and avoids unnecessary coupling to Core, Integration,
@@ -167,5 +167,5 @@ and the Application.
 - [Plugin API](../reference/plugin-api.md) — the API contract
 - [Page System](./page-system.md) — standalone pages
 - [Content System](./content-system.md) — Manifest / Graph / pipeline contracts
-- [Architecture](./architecture.md) — responsibilities of Core / Plugin / Integration / Theme / App
+- [Architecture](./architecture.md) — responsibilities of Core / [[glossary/plugin|Plugin]] / Integration / Theme / App
 - [Framework Reference](../reference/README.md) — public APIs like `definePlugin`

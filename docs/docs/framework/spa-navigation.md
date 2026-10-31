@@ -16,7 +16,7 @@ Riebeckite keeps server rendering as the source of truth. SPA navigation is a
 browser enhancement:
 
 - Normal load: the browser requests a document, the server returns the full
-  page, and HonoX hydrates islands.
+  page, and [[framework/honox-integration|HonoX]] hydrates islands.
 - SPA transition: the browser fetches the next document, the runtime replaces
   the main element and matching named shell regions, HonoX hydrates new islands,
   and the rest of the shell stays.
@@ -93,7 +93,7 @@ the only place that connects the runtime to `createClient()` and
 
 | Scope | Root | Lifetime | Use for |
 | --- | --- | --- | --- |
-| `app` | `document` | First client initialization until disposal | Shell UI that survives navigation |
+| `app` | `document` | First client initialization until disposal | Shell [[glossary/ui|UI]] that survives navigation |
 | `page` | `main#main-content` | One page root | Content-specific behavior |
 
 `app` initializers mount once. `page` initializers unmount before the page root
@@ -154,7 +154,7 @@ reduced motion is requested, the commit runs without a transition.
   `global` or `runtime` persist. Legacy metadata selectors remain page-owned
   for compatibility. Executable scripts are never replaced or re-executed;
   scripts and styles without an ownership attribute persist.
-- Plugin head tags are emitted as page-owned automatically. Other plugin page
+- [[glossary/plugin|Plugin]] head tags are emitted as page-owned automatically. Other plugin page
   tags must opt in with the ownership attribute.
 - Plugin page entries must cooperate with the lifecycle: use the supplied root,
   register external resources through `scope` or return cleanup, and respect

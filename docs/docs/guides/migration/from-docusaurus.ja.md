@@ -9,7 +9,7 @@ sidebar:
 
 ## 概要
 
-このガイドは、単一バージョンのドキュメントサイトまたはコンテンツサイト を対象にします。これは設定ファイルを機械変換する手順ではなく、**コンテンツを安全に移す手順**です。Riebeckite は Markdown 中心の静的サイトフレームワークで、Plugin、Theme、HonoX アプリケーションを分離します。一方、Docusaurus 3.x には固有の実行環境と規約があります。コンテンツ中心のサイトは現実的に移行できますが、Docs Plugin、sidebar、MDX、versioning に依存するサイトは難易度が高くなります。
+このガイドは、単一バージョンのドキュメントサイトまたはコンテンツサイト を対象にします。これは設定ファイルを機械変換する手順ではなく、**コンテンツを安全に移す手順**です。Riebeckite は Markdown 中心の静的サイトフレームワークで、Plugin、Theme、[[framework/honox-integration|HonoX]] アプリケーションを分離します。一方、Docusaurus 3.x には固有の実行環境と規約があります。コンテンツ中心のサイトは現実的に移行できますが、Docs Plugin、sidebar、MDX、versioning に依存するサイトは難易度が高くなります。
 
 **根拠:** 移行元の仕様は 3.x 向けの [Docusaurus 公式ドキュメント](https://docusaurus.io/docs) で確認しています。実際に使っているバージョンと拡張機能のリリースノートも確認してください。
 
@@ -17,7 +17,7 @@ sidebar:
 
 - Git のバックアップ、公開済み URL の一覧、アセットのコピーを作成します。
 - Node.js LTS、ターミナル、移行元とは別の出力先を用意します。
-- 独自 Theme、拡張、生成ページ、リダイレクト、解析、認証、ホスト設定を棚卸しします。
+- 独自 Theme、拡張、生成ページ、[[glossary/redirect|リダイレクト]]、解析、認証、ホスト設定を棚卸しします。
 - React/MDX component、生成 ID、Docusaurus versioning は、別途維持するか作り直す必要があります。
 - このガイドは自動移行 CLI を提供せず、実際の Docusaurus サイトを使ったエンドツーエンド移行済みとは主張しません。
 
@@ -32,7 +32,7 @@ docs と blog の Markdown は分けて移し、単一の Riebeckite content tre
 | Markdown ページと Frontmatter | 設定した content root 配下に Markdown を置く | 対応済み |
 | Docs Plugin、sidebar、MDX、versioning | Plugin、Theme CSS、アプリケーションコードとして再実装する | 手作業での移行が必要 |
 | ナビゲーションとドキュメント階層 | Navigation / Docs Plugin と公開済みコンテンツ、sidebar Frontmatter を使う | 一部対応 |
-| 検索、backlinks、graph | 必要な Riebeckite Plugin を有効にする | 一部対応 |
+| [[glossary/search|検索]]、backlinks、graph | 必要な Riebeckite Plugin を有効にする | 一部対応 |
 | ホスト・デプロイ固有の動作 | 移行先のホストで別途設定する | 手作業での移行が必要 |
 | 未調査のサードパーティ拡張 | ソースを確認し、検証できた動作だけを再現する | 未検証 |
 
@@ -44,9 +44,9 @@ docs と blog の Markdown は分けて移し、単一の Riebeckite content tre
 4. **Frontmatter を正規化します**。 公開ページごとに `publish: true` を追加し、title、description、date、tags、image、canonical、lang を確認して引き継ぎます。
 5. **Markdown と埋め込みを確認します**。 標準的な Markdown が最も安全です。独自 directive、shortcode、MDX、テンプレート式は個別に置き換え、対応する Riebeckite Plugin だけを有効にします。
 6. **表示と拡張を作り直します**。 Preset/Theme を選び、公開済み Plugin を設定します。固有の route や component は生成された HonoX アプリケーションに実装します。移行元の Theme／拡張コードを設定としてコピーしません。
-7. **URL とナビゲーションを維持します**。 まずファイル名からの標準 URL を確認し、旧 URL が必要なページだけ Permalink Plugin の `permalink` と `redirect_from` を使います。階層には Docs の sidebar Frontmatter または Navigation 設定を使います。
+7. **URL とナビゲーションを維持します**。 まずファイル名からの標準 URL を確認し、旧 URL が必要なページだけ [[glossary/permalink|Permalink]] Plugin の `permalink` と `redirect_from` を使います。階層には Docs の sidebar Frontmatter または Navigation 設定を使います。
 8. **ローカルで検証・ビルドします**。 `npm exec riebeckite check`、`npm exec riebeckite doctor`、`npm exec riebeckite build` を実行します。
-9. **出力を確認します**。 `npm exec riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、翻訳、検索、feed を手動確認します。
+9. **出力を確認します**。 `npm exec riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、[[glossary/translation|翻訳]]、検索、feed を手動確認します。
 10. **ビルド済みサイトをデプロイします**。 Cloudflare Workers のガイドに従うか、`dist/` を配信するホストを使います。本番ビルド前に `site.baseUrl` を設定します。
 
 ## 設定対応

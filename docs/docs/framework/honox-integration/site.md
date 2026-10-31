@@ -7,7 +7,7 @@ sidebar:
 ---
 # Site application contract
 
-A Riebeckite site is a normal HonoX application. The integration supplies
+A Riebeckite site is a normal [[framework/honox-integration|HonoX]] application. The integration supplies
 content and build wiring; the application owns every user-facing decision.
 Keep the following source directories in the site, rather than in an
 integration, theme, or plugin. For a walkthrough of editing them with ordinary
@@ -30,7 +30,7 @@ flowchart TD
 | Directory | Site-owned responsibility |
 | --- | --- |
 | `app/routes/` | URL handling, page composition, redirects, and response metadata |
-| `app/components/` | Reusable site presentation and composition of the public UI primitives |
+| `app/components/` | Reusable site presentation and composition of the public [[glossary/ui|UI]] primitives |
 | `app/islands/` | Optional interactive UI and its client-side state |
 | `app/style.css` and local CSS | Visual tokens, layout, typography, and imports of generated extension styles |
 
@@ -162,7 +162,7 @@ Plugin-provided head tags continue to work through the existing `headTags` mecha
 
 Plugins contribute `headTags` and expose data helpers + JSX components. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one. Each plugin's data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model; the component is then rendered directly by the site's article layout or page template.
 
-Plugin UI is composed explicitly:
+[[glossary/plugin|Plugin]] UI is composed explicitly:
 
 ```tsx
 const view = createPublicContentView(manifest);
@@ -190,7 +190,7 @@ The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` de
 | `description` | `string \| undefined` | Site description meta tag |
 | `author` | `string \| undefined` | Author name, used in metadata |
 | `baseUrl` | `string \| undefined` | Base URL for the site (e.g., `https://example.com`) |
-| `locale` | `string \| undefined` | Locale code (e.g., `en`, `ja`) |
+| `locale` | `string \| undefined` | [[glossary/locale|Locale]] code (e.g., `en`, `ja`) |
 | `twitterSite` | `string \| undefined` | Twitter `@` handle for card attribution |
 | `defaultOgImage` | `string \| undefined` | Default Open Graph image URL |
 | `feed` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |

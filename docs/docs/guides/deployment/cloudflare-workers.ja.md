@@ -46,9 +46,9 @@ my-site/
 └─ package.json
 ```
 
-Cloudflare Workers に公開するのは、この `dist/` の中身です。`.riebeckite/` やプラグインのキャッシュなど、ビルド時の状態は公開されません。
+Cloudflare Workers に公開するのは、この `dist/` の中身です。`.riebeckite/` や[[glossary/plugin|プラグイン]]の[[glossary/cache|キャッシュ]]など、ビルド時の状態は公開されません。
 
-増分処理は、`riebeckite build` を実行するローカル環境または GitHub Actions のランナー上で行われます。Wrangler は新しく生成された `dist/` を Workers Static Assets としてアップロードするだけで、Workers 自体が増分ビルドを行うわけではありません。生成される GitHub Actions ワークフローは、このビルドのために `.riebeckite/cache` と `.riebeckite/build/content-state.json` を永続化します。`dist/` は永続化しません。
+増分処理は、`riebeckite build` を実行するローカル環境または GitHub Actions のランナー上で行われます。Wrangler は新しく生成された `dist/` を Workers Static Assets としてアップロードするだけで、Workers 自体が[[glossary/incremental-build|増分ビルド]]を行うわけではありません。生成される GitHub Actions ワークフローは、このビルドのために `.riebeckite/cache` と `.riebeckite/build/content-state.json` を永続化します。`dist/` は永続化しません。
 
 ## 1. Cloudflare アカウントを作成する
 
@@ -147,7 +147,7 @@ flowchart TD
     Deploy --> Workers
 ```
 
-デプロイが成功すると、Wrangler が公開先の URL を表示します。たとえば、次のような URL です。
+デプロイが成功すると、Wrangler が[[glossary/public-location|公開先]]の URL を表示します。たとえば、次のような URL です。
 
 ```text
 https://<name>.<account>.workers.dev
@@ -169,7 +169,7 @@ export default defineConfig({
 });
 ```
 
-`baseUrl` はサイトの公開 URL を表すため、実際に公開する URL と一致させてください。これにより、サイトマップやフィードの URL も公開先と一致します。
+`baseUrl` はサイトの公開 URL を表すため、実際に公開する URL と一致させてください。これにより、[[glossary/sitemap|サイトマップ]]やフィードの URL も公開先と一致します。
 
 設定を変更したら、もう一度ビルドしてデプロイします。
 

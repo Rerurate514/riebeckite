@@ -4,20 +4,20 @@ title: 公開ワークフロー
 ---
 # 公開ワークフロー
 
-Publication Workflow は、既存の静的ビルドに公開計画、予約公開、公開前検証、承認、デプロイ診断を追加します。従来の `push → build → deploy` という単純な経路もそのまま使えます。`riebeckite publish` を一度も実行しないサイトの挙動は変わりません。
+Publication Workflow は、既存の[[build-system|静的ビルド]]に公開計画、予約公開、公開前検証、承認、デプロイ診断を追加します。従来の `push → build → deploy` という単純な経路もそのまま使えます。`riebeckite publish` を一度も実行しないサイトの挙動は変わりません。
 
 仕組みは次の4つです。
 
-1. **Publication Planner** — 解決済みのコンテンツマニフェストから公開計画を作る Core API。
-2. **Workflow** — draft、review、approved、published、retracted の状態。承認は任意です。
-3. **Hosting adapter** — Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel のデプロイ方法と機能差。
-4. **Diagnostics** — ローカル検証、成果物の Fingerprint、公開履歴。
+1. **Publication Planner** — 解決済みの[[glossary/manifest|コンテンツマニフェスト]]から公開計画を作る Core API。
+2. **Workflow** — [[glossary/draft|draft]]、review、approved、published、retracted の状態。承認は任意です。
+3. **Hosting adapter** — [[guides/deployment/cloudflare-workers|Cloudflare Workers]]、Cloudflare Pages、GitHub Pages、Netlify、Vercel のデプロイ方法と機能差。
+4. **Diagnostics** — ローカル検証、成果物の[[glossary/fingerprint|Fingerprint]]、公開履歴。
 
-Riebeckite Core は GitHub や Cloudflare を直接呼びません。Adapter と履歴は CLI にあり、認証情報はデプロイするコマンドの環境変数の中にとどまります。
+Riebeckite Core は GitHub や Cloudflare を直接呼びません。Adapter と履歴は [[reference/cli|CLI]] にあり、認証情報はデプロイするコマンドの環境変数の中にとどまります。
 
 ## 公開計画は公開判定を二重実装しない
 
-Planner は `ContentManifestEntry.publishing` を読みます。これは既存の `resolvePublishingState` が生成した結果です。そのため Draft、Scheduled、Unlisted、Public の判定はビルド時に一度だけ行われ、Planner はその結果を参照するだけです。`manifest.publicRedirects` も読むので、公開されていないリダイレクト先が計画や成果物に入ることはありません。
+Planner は `ContentManifestEntry.publishing` を読みます。これは既存の `resolvePublishingState` が生成した結果です。そのため [[glossary/draft|Draft]]、Scheduled、[[glossary/unlisted|Unlisted]]、Public の判定はビルド時に一度だけ行われ、Planner はその結果を参照するだけです。`manifest.publicRedirects` も読むので、公開されていないリダイレクト先が計画や成果物に入ることはありません。
 
 | Visibility | ルーティング | 発見可能 | Planner の分類 |
 | --- | ---: | ---: | --- |
@@ -51,23 +51,23 @@ const plan = createPublicationPlan({
 - `targets.public`、`targets.unlisted`、`targets.scheduled`、`targets.drafts`
 - `nextPublicationAt` — 未来の `publishAt` のうち最も早いもの
 - `changes` — added、changed、removed、unchanged、`detected`
-- `publicationFingerprint` — 公開対象のエントリ、公開リダイレクト、生成出力（Derived View を含む）のハッシュ
+- `publicationFingerprint` — 公開対象のエントリ、公開リダイレクト、[[glossary/generated-output|生成出力]]（[[derived-data|Derived View]] を含む）のハッシュ
 - `workflow` と `approvals.pending`
 - `validation.issues`
 - `action` — `none`、`build-and-deploy`、`blocked`
 - `build` と `deploy` の真偽値、および `reasons`
 
-`createPublicationSnapshot(plan, { runId })` は、次回の比較に使う記録を作ります。スナップショットに入るのは公開対象のエントリ、Fingerprint、リダイレクトだけです。本文や認証情報は入りません。
+`createPublicationSnapshot(plan, { runId })` は、次回の比較に使う記録を作ります。スナップショットに入るのは公開対象のエントリ、Fingerprint、[[glossary/redirect|リダイレクト]]だけです。本文や認証情報は入りません。
 
 ## 予約公開
 
-予約されたノートは、`publishAt` より前はルーティング対象外としてビルドされます。時刻を過ぎると、次のビルドで public として解決されます。内容を編集していない予約公開も、Fingerprint の変化から Planner が build と deploy を計画するため、サイトに反映されます。既存のビルド状態は `nextPublishingChangeAt` を記録しており、その時刻を過ぎると出力の再利用を停止します。
+予約されたノートは、`publishAt` より前はルーティング対象外としてビルドされます。時刻を過ぎると、次のビルドで public として解決されます。内容を編集していない予約公開も、Fingerprint の変化から Planner が build と deploy を計画するため、サイトに反映されます。既存の[[glossary/build-state|ビルド状態]]は `nextPublishingChangeAt` を記録しており、その時刻を過ぎると[[glossary/output-cache|出力の再利用]]を停止します。
 
 Riebeckite がスケジューラーを持たない環境では、予約公開はベストエフォートで動作します。
 
 | Host | Scheduler | 意味 |
 | --- | --- | --- |
-| GitHub Pages | `ci-best-effort` | GitHub Actions のスケジュールがビルドを起動する。遅延し得る。 |
+| GitHub Pages | `ci-best-effort` | [[guides/deployment/github-actions|GitHub Actions]] のスケジュールがビルドを起動する。遅延し得る。 |
 | Cloudflare Workers / Pages | `none` | CI または手動で `publish run` を実行する。 |
 | Netlify / Vercel | `none` | Cloudflare と同じ。 |
 
@@ -102,7 +102,7 @@ riebeckite publish revoke <slug> [--all]
 riebeckite publish plan --require-approval
 ```
 
-承認記録はプロジェクトルートの `publication/approvals.json` に保存されます。各記録は slug と、そのノートのコンテンツ Fingerprint を結び付けます。Fingerprint には slug、permalink、title、レンダリング済み HTML、リダイレクトが含まれます。ノートを編集すると承認は無効になります。予約ノートの Fingerprint はスケジュール項目を含まないため、`publishAt` を迎えても再承認は不要です。
+承認記録はプロジェクトルートの `publication/approvals.json` に保存されます。各記録は [[glossary/slug|slug]] と、そのノートのコンテンツ Fingerprint を結び付けます。Fingerprint には slug、[[glossary/permalink|permalink]]、title、レンダリング済み HTML、リダイレクトが含まれます。ノートを編集すると承認は無効になります。予約ノートの Fingerprint はスケジュール項目を含まないため、`publishAt` を迎えても再承認は不要です。
 
 信頼できるのは、CI がチェックアウトするブランチにコミットされた承認ファイルだけです。CLI はファイルを書き出しますが、書き出したこと自体で信頼が生まれるわけではありません。ファイルに秘密情報は入りません。個人サイトではこの仕組みを使わなくても構いません。チームは `publication/approvals.json` を branch protection や CODEOWNERS で保護できます。`publish revoke` で記録を削除すると、次の計画は `review` に戻ります。
 
@@ -113,7 +113,7 @@ riebeckite publish plan --require-approval
 - `published` — 最後に成功したスナップショットが現在の計画と一致する。
 - `retracted` — 以前公開されていたノートが公開対象外になった。次のデプロイで削除される。
 
-公開の取り下げと再公開は、既存の Visibility に従います。`visibility: draft` にして（または `publish: true` を外して）デプロイすれば取り下げ、再び public にしてデプロイすれば再公開です。Planner は削除・追加されたエントリを報告します。
+公開の取り下げと再公開は、既存の [[glossary/visibility|Visibility]] に従います。`visibility: draft` にして（または `publish: true` を外して）デプロイすれば取り下げ、再び public にしてデプロイすれば再公開です。Planner は削除・追加されたエントリを報告します。
 
 ## CLI
 
@@ -164,7 +164,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 Provider の検出では、`wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で検出結果を上書きできます。必要な環境変数の**名前**は `publish status --json` が報告します。値は読み取りも記録も書き込みも行いません。
 
-GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。Adapter は Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
+GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。Adapter は Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
 
 ## CI
 
@@ -175,7 +175,7 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 - ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
 - `publish plan --json` がスケジュール実行の build/deploy 要否を決めます。push はアプリケーションコードが変わり得るため常にビルドします。
 - 計画は成果物としてアップロードされ、`publish validate` と `publish gate` がビルド出力を検査します。
-- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローが `publication/state.json` を `[skip ci]` 付きでコミットします。次回実行はキャッシュではなくこのコミット済み状態を読みます。
+- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローが `publication/state.json` を `[skip ci]` 付きでコミットします。次回実行は[[glossary/cache|キャッシュ]]ではなくこのコミット済み状態を読みます。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
 予約公開を使わないサイトでも、この参考ワークフローでは schedule が動きます。ただし計画に変更がなければ build と deploy は省略されます。定期チェック自体が不要なら、生成したサイトから `schedule` トリガーを削除してください。
@@ -197,7 +197,7 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 - 変更概要と次回予約公開
 - 最後に成功したスナップショット
 
-履歴は50実行までに制限され、環境変数の値やトークンを含みません。ローカルのビルド状態であり、コミットもされません。GitHub Actions のキャッシュは診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュが失われたり切り詰められたりしても、起きるのは全再デプロイだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
+履歴は50実行までに制限され、環境変数の値やトークンを含みません。ローカルの[[glossary/build-state|ビルド状態]]であり、コミットもされません。GitHub Actions の[[glossary/cache|キャッシュ]]は診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュが失われたり切り詰められたりしても、起きるのは全再デプロイだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
 
 ## Lock と clean
 
@@ -205,7 +205,7 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 
 ## Build Output Marker
 
-すべての SSG ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。このファイルは出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
+すべての [[glossary/ssg|SSG]] ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。このファイルは出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
 
 デプロイ前に、現在の計画と公開 Fingerprint が一致するマーカーを必須にします。CLI ビルドが成果物ハッシュを記録している場合は、`dist/` のファイルも一致しなければなりません。マーカーの欠損、破損、古い計画からコピーされたマーカーは、安全側に倒して失敗します。`publish validate` と `publish record` はマーカーの完了時刻を使うため、計画とビルドの数秒の時刻差で誤判定しません。
 
@@ -217,7 +217,7 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 
 ## この仕組みがしないこと
 
-- ホスティングの認証情報を Core、マニフェスト、静的出力に埋め込まない。
+- ホスティングの認証情報を Core、[[glossary/manifest|マニフェスト]]、静的出力に埋め込まない。
 - Core にデータベース、サーバー、スケジューラーを追加しない。
-- 2つ目の公開判定を導入しない。既存の frontmatter と `PublishStrategy` が引き続き唯一の判定です。
+- 2つ目の公開判定を導入しない。既存の [[glossary/frontmatter|frontmatter]] と [[glossary/publish-strategy|PublishStrategy]] が引き続き唯一の判定です。
 - `publish` を使わないサイトの挙動を変えない。

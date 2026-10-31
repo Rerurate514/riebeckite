@@ -9,7 +9,7 @@ sidebar:
 
 ## Overview
 
-This guide covers digital garden with Markdown content. It is a **content migration**, not a binary or configuration conversion. Riebeckite is a static, Markdown-first site framework with a plugin, theme, and HonoX application boundary; Quartz 4.x has its own runtime and conventions. Content-only sites are usually practical to migrate. The difficulty is moderate when URLs and Markdown are conventional, and high when the site depends on Transformer / Filter / Emitter / Component / Layout.
+This guide covers digital garden with Markdown content. It is a **content migration**, not a binary or configuration conversion. Riebeckite is a static, Markdown-first site framework with a plugin, theme, and [[framework/honox-integration|HonoX]] application boundary; Quartz 4.x has its own runtime and conventions. Content-only sites are usually practical to migrate. The difficulty is moderate when URLs and Markdown are conventional, and high when the site depends on Transformer / Filter / Emitter / Component / Layout.
 
 **Evidence basis:** source behavior is checked against the official Quartz documentation for 4.x: [official documentation](https://quartz.jzhao.xyz/configuration). Re-check release notes and installed extensions before acting on this guide.
 
@@ -23,7 +23,7 @@ This guide covers digital garden with Markdown content. It is a **content migrat
 
 ## Platform-specific notes
 
-Quartz pipeline concepts do not map one-for-one: Transformers change content, Filters select it, Emitters create output, and Components/Layouts render UI. In Riebeckite, use documented content/Plugin extension points for behavior, Theme CSS for presentation, and HonoX app code for routes or component structure.
+Quartz pipeline concepts do not map one-for-one: Transformers change content, Filters select it, Emitters create output, and Components/Layouts render [[glossary/ui|UI]]. In Riebeckite, use documented content/[[glossary/plugin|Plugin]] extension points for behavior, [[glossary/theme|Theme]] CSS for presentation, and HonoX app code for routes or component structure.
 
 ## Feature Mapping
 
@@ -32,7 +32,7 @@ Quartz pipeline concepts do not map one-for-one: Transformers change content, Fi
 | Markdown pages and frontmatter | Put Markdown below the configured content root | Supported |
 | Transformer / Filter / Emitter / Component / Layout | Rebuild with plugins, theme CSS, or application code | Manual Migration Required |
 | Navigation and documentation hierarchy | Use Navigation or Docs plugin with published content and sidebar frontmatter | Partially Supported |
-| Search, backlinks, graph | Enable the relevant Riebeckite plugins when needed | Partially Supported |
+| [[glossary/search|Search]], backlinks, graph | Enable the relevant Riebeckite plugins when needed | Partially Supported |
 | Hosted/deployment-specific behavior | Configure the target host separately | Manual Migration Required |
 | Unknown third-party extension behavior | Inspect its source and reproduce only verified behavior | Unverified |
 
@@ -44,7 +44,7 @@ Quartz pipeline concepts do not map one-for-one: Transformers change content, Fi
 4. **Normalize frontmatter.** Add `publish: true` to each public page. Preserve title, description, date, tags, image, canonical, and language fields after checking their values.
 5. **Review Markdown and embeds.** Plain CommonMark-style Markdown transfers most safely. Replace source-specific directives, shortcodes, MDX, and template expressions individually; enable only the Riebeckite plugins that document equivalent syntax.
 6. **Rebuild presentation and extensions.** Choose a preset/theme, use documented plugins, and implement genuinely site-specific routes or components in the generated HonoX app. Do not copy source theme or extension code as configuration.
-7. **Preserve URLs and navigation.** Start with the default file-to-URL mapping, then use the Permalink plugin's `permalink` and `redirect_from` frontmatter where a legacy path must remain. Use Docs sidebar frontmatter or Navigation configuration for hierarchy.
+7. **Preserve URLs and navigation.** Start with the default file-to-URL mapping, then use the [[glossary/permalink|Permalink]] plugin's `permalink` and `redirect_from` frontmatter where a legacy path must remain. Use Docs sidebar frontmatter or Navigation configuration for hierarchy.
 8. **Validate and build locally.** Run `npm exec riebeckite check`, `npm exec riebeckite doctor`, and `npm exec riebeckite build`.
 9. **Inspect output.** Use `npm exec riebeckite inspect content --list` and manually test links, assets, drafts, redirects, localized pages, search, and feeds.
 10. **Deploy the built site.** Follow the deployment guide for Cloudflare Workers or use the host that serves `dist/`. Set `site.baseUrl` before the production build.
@@ -91,7 +91,7 @@ Enable `@riebeckite/plugin-seo` for canonical metadata, sitemap, `robots.txt`, a
 - [ ] Every intended public page has `publish: true`.
 - [ ] `npm exec riebeckite check`, `doctor`, and `build` succeed.
 - [ ] Canonical URLs, redirects, navigation, links, images, feeds, sitemap, and robots output are checked locally and after deployment.
-- [ ] Draft/private content is absent from the production manifest and output.
+- [ ] [[glossary/draft|Draft]]/private content is absent from the production manifest and output.
 - [ ] Custom source features are either manually rebuilt, intentionally removed, or documented as unsupported.
 
 ## Related Documentation

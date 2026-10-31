@@ -14,7 +14,7 @@ sidebar:
 
 ## 3-1. 依存関係とケイパビリティ
 
-プラグイン同士に実際の依存関係がある場合は、ケイパビリティの取り決めを使用します。
+プラグイン同士に実際の依存関係がある場合は、[[glossary/capability|ケイパビリティ]]の取り決めを使用します。
 
 ```ts id="mdj2qn"
 definePlugin({
@@ -38,7 +38,7 @@ definePlugin({
 
 | フィールド | 意味 |
 | --- | --- |
-| `provides` | このプラグインが提供するケイパビリティ |
+| `provides` | この[[glossary/plugin|プラグイン]]が提供するケイパビリティ |
 | `requires` | 必須のケイパビリティ |
 | `optional` | あれば利用するケイパビリティ |
 
@@ -78,7 +78,7 @@ riebeckite check
 
 - ファイルシステムの走査
 - ビルド
-- キャッシュの書き込み
+- [[glossary/cache|キャッシュ]]の書き込み
 - 外部状態の変更
 
 問題は構造化された指摘として返し、設定の検証からまとめて表示できるようにします。
@@ -143,7 +143,7 @@ flowchart LR
     End --> Dispose
 ```
 
-`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`は、1つの`ContentManager`につき一度だけ実行されます。`buildEnd`は、診断の収集後に完成したマニフェストを受け取る唯一の終端フックです。`dispose`は確保したリソースの解放に使い、解決済みプラグインの逆順で実行されます。
+`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`は、1つの`ContentManager`につき一度だけ実行されます。`buildEnd`は、診断の収集後に完成した[[glossary/manifest|マニフェスト]]を受け取る唯一の終端フックです。`dispose`は確保したリソースの解放に使い、解決済みプラグインの逆順で実行されます。
 
 ライフサイクルの実行順は、解決済みプラグインの順序に従います。フックでエラーが発生した場合は、プラグイン名、フック名、元の原因が分かる形で上位へ伝播させてください。
 

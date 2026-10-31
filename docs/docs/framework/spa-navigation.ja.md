@@ -11,7 +11,7 @@ title: SPAナビゲーションの構成
 
 Riebeckiteは、サーバーでの描画を基準にします。SPAナビゲーションは、その仕組みを保ったままブラウザ側だけを強化する拡張です。
 
-- 通常の読み込みでは、ブラウザがHTML文書を要求し、サーバーがページ全体を返し、HonoXがislandをhydrateします。
+- 通常の読み込みでは、ブラウザがHTML文書を要求し、サーバーがページ全体を返し、[[framework/honox-integration|HonoX]]がislandをhydrateします。
 - SPAナビゲーションでは、ブラウザが次のHTML文書を取得し、ランタイムがmain要素と一致する名前付きシェルregionを置き換え、HonoXが新しいislandをhydrateします。それ以外のアプリケーションシェルは残ります。
 
 置き換える単位はページのルートであり、HTML文書全体ではありません。
@@ -65,7 +65,7 @@ SPAナビゲーションでは、次の順序で処理が進みます。
 
 | パッケージ | 責務 |
 | --- | --- |
-| `@riebeckite/core` | `spa` 設定の解決、`ClientLifecycle`、スコープ、クリーンアップの取り決め、Pluginのクライアントエントリのメタデータを提供する |
+| `@riebeckite/core` | `spa` 設定の解決、`ClientLifecycle`、スコープ、クリーンアップの取り決め、Pluginの[[glossary/client-entry|クライアントエントリ]]のメタデータを提供する |
 | `@riebeckite/honox` | `virtual:riebeckite/client` を生成し、SPAランタイムを条件付きで読み込み、ページのunmount・mountとislandのhydrationを接続する |
 | `@riebeckite/spa` | リンクの横取り、取得、mainの置き換え、headの更新、履歴、スクロール、フォーカス、通知、先読みを担当する |
 | サイトアプリケーション | 安定したページのルートとアプリケーションシェルを提供し、Pluginコンポーネントの配置とページ依存のシェル出力のregionを決める |
@@ -119,7 +119,7 @@ View Transitionは任意です。ブラウザがAPIに対応していない場�
 - 置き換わるシェルの出力を扱うクライアントエントリは、`app` scopeで実行し、`spa:navigation` の後に初期化し直すか、イベント委譲を使う必要があります。
 - `data-riebeckite-head="page"` を付けたhead要素は置き換えます。`global` と `runtime` を付けた要素は残します。互換性のため、従来のメタデータのセレクタもページ所有として扱います。
 - 実行可能な `<script>` は、ページ所有の属性が付いていても置き換えず、再実行しません。所有権を示す属性がない `<script>` と `<style>` は残ります。
-- Pluginが生成するheadタグには、ページ所有の属性が自動で付きます。それ以外のPluginのページタグは、属性を明示して対象に含めます。
+- Pluginが生成する[[glossary/head-tag|headタグ]]には、ページ所有の属性が自動で付きます。それ以外のPluginのページタグは、属性を明示して対象に含めます。
 - Pluginのページエントリは、ライフサイクルに合わせる必要があります。渡されたルートを使い、外部のリソースは `scope` に登録するかクリーンアップ関数で解放し、中断用の `signal` を尊重してください。
 - SPAを無効にしたビルドは、SPAパッケージを読み込みません。
 

@@ -70,8 +70,8 @@ appear in shared layouts. Explicit props remain the customization path and take
 precedence over context data. The exported pure data helpers remain available
 for advanced composition.
 
-The dependency direction is `plugin → @riebeckite/ui ← honox`; plugin UI is not
-re-exported by a HonoX barrel.
+The dependency direction is `plugin → @riebeckite/ui ← honox`; plugin [[glossary/ui|UI]] is not
+re-exported by a [[framework/honox-integration|HonoX]] barrel.
 
 ## Site ownership
 

@@ -69,7 +69,7 @@ publish: true
 ---
 ```
 
-is called **frontmatter**. Frontmatter describes the article, not the article content itself.
+is called **frontmatter**. [[glossary/frontmatter|Frontmatter]] describes the article, not the article content itself.
 
 ```text
 Markdown File
@@ -240,7 +240,7 @@ publish: true
 ---
 ```
 
-Draft:
+[[glossary/draft|Draft]]:
 
 ```md
 ---
@@ -490,7 +490,7 @@ To separate published articles from drafts, the first thing to remember is
 publish: true
 ```
 
-The final public URL of an article is determined by the **Public Location** that Riebeckite resolves. While writing ordinary articles you do not need to think too much about how URLs are produced.
+The final public URL of an article is determined by the **[[glossary/public-location|Public Location]]** that Riebeckite resolves. While writing ordinary articles you do not need to think too much about how URLs are produced.
 
 ## Next steps
 

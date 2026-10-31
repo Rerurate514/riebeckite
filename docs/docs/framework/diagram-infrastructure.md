@@ -13,7 +13,7 @@ This package is for plugin authors. It does not add a site feature by itself, an
 
 ## Boundaries
 
-The package depends on `@riebeckite/core`, but not on HonoX, a browser renderer, Puppeteer, or a diagram engine. A diagram plugin continues to own its engine, configuration, styles, and failure policy.
+The package depends on `@riebeckite/core`, but not on [[framework/honox-integration|HonoX]], a browser renderer, Puppeteer, or a diagram engine. A diagram plugin continues to own its engine, configuration, styles, and failure policy.
 
 `defineDiagramPlugin()` connects the common plugin shape to Core:
 

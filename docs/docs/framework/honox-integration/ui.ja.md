@@ -7,7 +7,7 @@ sidebar:
 ---
 # UIプリミティブ
 
-`@riebeckite/honox/ui` は UI フレームワークではありません。
+`@riebeckite/honox/ui` は [[glossary/ui|UI]] フレームワークではありません。
 
 サイトが独自のデザインを作りながら、Riebeckite と共通の HTML 構造を利用するための小さなプリミティブ群です。
 
@@ -40,7 +40,7 @@ sidebar:
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-`ArticleBody` はレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown のタイポグラフィはこのラッパーにのみ適用されます。プラグインコンポーネントの見出しはプラグイン自身が所有します。
+`ArticleBody` はレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown の[[glossary/typography|タイポグラフィ]]はこのラッパーにのみ適用されます。[[glossary/plugin-component|プラグインコンポーネント]]の見出しはプラグイン自身が所有します。
 
 プリミティブが担当するのは主に、
 
@@ -58,14 +58,14 @@ sidebar:
 - ナビゲーションの配置
 - カード
 - ページレイアウトの構成
-- アイランド
+- [[glossary/island|アイランド]]
 - サイト固有の視覚デザインと上書き
 
 はサイトアプリケーションが管理します。
 
 ## プラグイン UI の構成
 
-各コンポーネントはプラグインから直接インポートし、サイトが置きたい場所で描画します。`SiteProvider` と、公開 `entry` を渡した `Article` を使うと、コンポーネントは必要なプラグインデータを自動で解決します。配置、順序、表示条件は引き続きサイトが管理します。
+各コンポーネントは[[glossary/plugin|プラグイン]]から直接インポートし、サイトが置きたい場所で描画します。`SiteProvider` と、公開 `entry` を渡した `Article` を使うと、コンポーネントは必要なプラグインデータを自動で解決します。配置、順序、表示条件は引き続きサイトが管理します。
 
 ```tsx
 import { Article, ArticleBody } from "@riebeckite/honox/ui";
@@ -82,7 +82,7 @@ import { SiteProvider } from "@riebeckite/ui";
 
 `view` には `createPublicContentView(manifest)` で作成した値を渡します。必要なコンテキストがなければコンポーネントは何も描画しないため、共通レイアウトに置いても安全です。個別の props はカスタマイズ用として残り、コンテキストからの値より優先されます。高度な構成が必要なときは、従来どおり純粋なデータヘルパーを利用できます。
 
-依存方向は `plugin → @riebeckite/ui ← honox` です。プラグイン UI を HonoX のバレルから再エクスポートしません。
+依存方向は `plugin → @riebeckite/ui ← honox` です。プラグイン UI を [[framework/honox-integration|HonoX]] のバレルから再エクスポートしません。
 
 ## サイトが持つもの
 

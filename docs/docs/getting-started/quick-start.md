@@ -24,7 +24,7 @@ npx create-riebeckite
 Answer the prompts (recommended answers shown):
 
 - **Project name** — press Enter for the default `my-site`
-- **Preset** — keep `starter` when unsure; see [Presets](./presets.md)
+- **[[glossary/preset|Preset]]** — keep `starter` when unsure; see [Presets](./presets.md)
 - **Content source** — choose `This project` so Markdown stays inside the site
 - **Deployment** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
 
@@ -71,7 +71,7 @@ Served at `/hello`.
 
 ## 5. Link the pages
 
-Add `[[hello]]` (Obsidian WikiLink) to `content/index.md`. The starter preset enables `@riebeckite/plugin-obsidian-markdown`; the generated content itself uses `[[guide]]`, `[[examples]]`. Click through to verify the link works.
+Add `[[hello]]` (Obsidian [[glossary/wikilink|WikiLink]]) to `content/index.md`. The starter preset enables `@riebeckite/plugin-obsidian-markdown`; the generated content itself uses `[[guide]]`, `[[examples]]`. Click through to verify the link works.
 
 ## 6. Build the site
 

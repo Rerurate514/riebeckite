@@ -6,7 +6,7 @@ sidebar:
 ---
 # プラグイン作成の詳細
 
-このページは、Riebeckiteのプラグインを実際に設計・実装するときの詳細ガイドです。初めてプラグインを作る場合は、先に[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読んでください。
+このページは、Riebeckiteの[[glossary/plugin|プラグイン]]を実際に設計・実装するときの詳細ガイドです。初めてプラグインを作る場合は、先に[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読んでください。
 
 このページでは、その先に必要になる次の内容を扱います。
 
@@ -14,9 +14,9 @@ sidebar:
 - プラグイン同士の依存関係
 - ライフサイクル
 - コンテンツパイプライン
-- レンダラーとページ種別
+- [[glossary/renderer|レンダラー]]と[[glossary/page-type|ページ種別]]
 - CSSとブラウザ側の処理
-- キャッシュと診断
+- [[glossary/cache|キャッシュ]]と診断
 - パッケージとしての配布
 
 各型やフィールドの完全な定義は[プラグインAPI](../reference/plugin-api.ja.md)を参照してください。
@@ -174,9 +174,9 @@ flowchart TD
 | 設定の検証 | `validateOptions` |
 | キャッシュ | `cacheVersion`, `context.cache` |
 | ライフサイクル | `setup`, `buildStart`, `buildEnd`, `dispose` |
-| コンテンツフック | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
+| [[glossary/content-hook|コンテンツフック]] | `onConfigResolved`, `onContentLoaded`, `onPostParsed`, `onPostProcessed`, `onManifestCreated` |
 | 公開ロケーション | `resolveContentLocations` |
-| パイプライン | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
+| [[glossary/pipeline|パイプライン]] | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | グラフ | `extendContentGraph` |
 | 診断 | `addDiagnostics` |
 | 本文内の描画 | `renderers` |
@@ -187,7 +187,7 @@ flowchart TD
 
 すべてを実装する必要はありません。
 
-UIや出力の拡張ポイントは複数あり、優劣ではなく選択肢です。Markdown / HTMLの変換、レンダラー、ページ種別、公開するHono JSXコンポーネント、クライアントエントリがあります。どれを選ぶかは[UIや出力を追加する方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
+[[glossary/ui|UI]]や出力の拡張ポイントは複数あり、優劣ではなく選択肢です。Markdown / HTMLの変換、レンダラー、ページ種別、公開するHono JSXコンポーネント、[[glossary/client-entry|クライアントエントリ]]があります。どれを選ぶかは[UIや出力を追加する方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
 
 ## 実装前の確認
 
@@ -213,7 +213,7 @@ flowchart TD
 
 プラグインにすると決めた後も、**その機能に本当に必要な拡張ポイントだけを使う**ことが重要です。
 
-ファイルシステムを再走査する前に、マニフェストやコンテンツグラフを使えないか確認してください。独自のルートを追加する前に、ページ種別を使えないか確認してください。クライアントJavaScriptを追加する前に、SSRやビルド時だけで完結できないか確認してください。
+ファイルシステムを再走査する前に、[[glossary/manifest|マニフェスト]]や[[glossary/content-graph|コンテンツグラフ]]を使えないか確認してください。独自のルートを追加する前に、ページ種別を使えないか確認してください。クライアントJavaScriptを追加する前に、SSRやビルド時だけで完結できないか確認してください。
 
 これにより、プラグインを小さく保ち、Core、インテグレーション、アプリケーションとの不要な結合を避けられます。
 
@@ -224,5 +224,5 @@ flowchart TD
 - [[plugin-api|プラグインAPI]]：APIの取り決め
 - [[page-system|ページシステム]]：独立したページ
 - [[content-system|コンテンツシステム]]：マニフェスト、グラフ、パイプライン
-- [[architecture|アーキテクチャ]]：Core、プラグイン、インテグレーション、テーマ、アプリケーションの責務
+- [[architecture|アーキテクチャ]]：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
 - [[reference/README|フレームワークリファレンス]]：公開API

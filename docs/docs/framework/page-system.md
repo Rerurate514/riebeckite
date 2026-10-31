@@ -17,7 +17,7 @@ A plugin uses it when it wants to serve its own pages such as:
 ```
 
 Without the Page System, every plugin that provides a page would need its own
-HonoX route added to the site application. With the Page System, a plugin only
+[[framework/honox-integration|HonoX]] route added to the site application. With the Page System, a plugin only
 publishes "this URL provides this page"; the site owns the actual routing and
 document rendering.
 
@@ -37,7 +37,7 @@ flowchart LR
 
 ## When to use it
 
-Use a Page Type when a plugin provides a page with its own URL, for example:
+Use a [[glossary/page-type|Page Type]] when a plugin provides a page with its own URL, for example:
 
 - Garden Explorer
 - A plugin report screen
@@ -70,10 +70,10 @@ Features embedded inside an article, such as Canvas, Bases, and Excalidraw, use
 | Layer | Responsibility |
 | --- | --- |
 | Core | Page Type contract, validation, path enumeration, resolution, and conflicts |
-| Plugin | Page Type ID, public paths, and a framework-independent HTML body |
-| HonoX integration | Generic route resolver and SSG parameter helper |
+| [[glossary/plugin|Plugin]] | Page Type ID, public paths, and a framework-independent HTML body |
+| HonoX integration | Generic route resolver and [[glossary/ssg|SSG]] parameter helper |
 | Site application | Catch-all route, document frame, metadata, and safe HTML rendering |
-| Theme | Tokens and stable hooks; no knowledge of a Page Type ID is required |
+| [[glossary/theme|Theme]] | Tokens and stable hooks; no knowledge of a Page Type ID is required |
 
 A plugin does not own the whole page. The overall relationship looks like this:
 
@@ -326,7 +326,7 @@ paths: [
 
 To statically generate dynamic pages, derive the SSG paths from
 **`manifest.publicEntries`**. Do not scan the filesystem to build paths; use the
-publication state resolved by the Content System.
+publication state resolved by the [[framework/content-system|Content System]].
 
 ## Page Type conflicts
 

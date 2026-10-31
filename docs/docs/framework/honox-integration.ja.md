@@ -8,7 +8,7 @@ sidebar:
 
 `@riebeckite/honox` は、Riebeckite Core と HonoX / Vite を接続する統合パッケージです。
 
-Core はコンテンツとプラグインの処理を担当しますが、HonoX のルートや Vite のビルド方法については知りません。その間を接続するのが `@riebeckite/honox` です。
+Core はコンテンツと[[glossary/plugin|プラグイン]]の処理を担当しますが、HonoX のルートや Vite のビルド方法については知りません。その間を接続するのが `@riebeckite/honox` です。
 
 ```mermaid
 flowchart LR
@@ -24,9 +24,9 @@ flowchart LR
 
 - アプリケーションルートと設定の解決
 - Vite の開発とビルド
-- SSG の設定
-- プラグインとテーマのスタイルエントリ生成
-- クライアントエントリの生成
+- [[glossary/ssg|SSG]] の設定
+- プラグインと[[glossary/theme|テーマ]]のスタイルエントリ生成
+- [[glossary/client-entry|クライアントエントリ]]の生成
 - Riebeckite のコンテンツと HonoX アプリケーションの接続
 
 これにより、通常のサイトは Riebeckite 内部の Vite / HonoX 設定を毎回組み立てる必要がありません。
@@ -63,7 +63,7 @@ HonoX プラグイン、デプロイ用のビルドプラグイン、Tailwind �
 
 ## プラグイン UI コンポーネントを宣言的に配置する
 
-プラグインの UI コンポーネントは、それぞれのパッケージからインポートし、既定のデータは `@riebeckite/ui` のコンテキストから解決します。サイト側は配置を決めるだけでよく、通常の記事 UI のためにマニフェストを検索したり、プラグインヘルパーを呼び出したりする必要はありません。
+プラグインの [[glossary/ui|UI]] コンポーネントは、それぞれのパッケージからインポートし、既定のデータは `@riebeckite/ui` のコンテキストから解決します。サイト側は配置を決めるだけでよく、通常の記事 UI のために[[glossary/manifest|マニフェスト]]を[[glossary/search|検索]]したり、プラグインヘルパーを呼び出したりする必要はありません。
 
 ```tsx
 import { SiteProvider } from "@riebeckite/ui";
@@ -109,7 +109,7 @@ content: {
 
 ### `workspaceRoot`
 
-`workspaceRoot` は、Riebeckite 自体を monorepo で開発するときに、ソースパッケージのエイリアスを利用するための設定です。
+`workspaceRoot` は、Riebeckite 自体を monorepo で開発するときに、ソースパッケージの[[glossary/alias|エイリアス]]を利用するための設定です。
 
 npm から Riebeckite をインストールした通常のサイトでは必要ありません。その場合、パッケージはサイト自身の `node_modules` から解決されます。
 
@@ -135,7 +135,7 @@ flowchart LR
     C --> D
 ```
 
-`.riebeckite` は統合パッケージが管理する生成物です。
+`.riebeckite` は統合パッケージが管理する[[glossary/generated-output|生成物]]です。
 
 **サイトのソースコードとして直接編集しないでください**。
 
@@ -228,7 +228,7 @@ SSG のパラメータには、次のヘルパーを追加します。
 pluginPageSsgParams(content)
 ```
 
-生成されたサイトの catch-all ルートは、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。このヘルパーはコンテンツ、プラグインページ、リダイレクト、見つからないページを解決します。さらに `htmlLanguage` と `headTags` をコンテキストへ設定するため、サイトは返された結果を自身の構成に渡すだけで済みます。ルート `/` も、同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
+生成されたサイトの catch-all ルートは、これらをまとめた `resolveRiebeckiteContentRequest(c, content)` を使用します。このヘルパーはコンテンツ、プラグインページ、[[glossary/redirect|リダイレクト]]、見つからないページを解決します。さらに `htmlLanguage` と `headTags` をコンテキストへ設定するため、サイトは返された結果を自身の構成に渡すだけで済みます。ルート `/` も、同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` で解決します。
 
 ルートリゾルバーは次の順序で URL を解決します。
 
@@ -289,8 +289,8 @@ flowchart LR
     Plugin -. "提供した情報を<br/>サイトが配置" .-> Site
 ```
 
-HonoX、Vite、Cloudflare、ルーティングの API は、このパッケージか `apps/web` に置きます。Core は移植性を保ち、HonoX のルーティングを所有しません。プラグインはアセット、クライアントエントリ、エンドポイント、レンダラーを公開できますが、Core が HonoX のルーターになることはありません。具体的なルート構成やアイランドはアプリケーションが決めます。
+HonoX、Vite、Cloudflare、ルーティングの API は、このパッケージか `apps/web` に置きます。Core は移植性を保ち、HonoX のルーティングを所有しません。プラグインはアセット、クライアントエントリ、エンドポイント、[[glossary/renderer|レンダラー]]を公開できますが、Core が HonoX のルーターになることはありません。具体的なルート構成や[[glossary/island|アイランド]]はアプリケーションが決めます。
 
 **Core はコンテンツを扱い、統合パッケージは HonoX と接続し、プラグインは機能を提供し、サイトが最終的な表示を決める**、という境界を維持してください。
 
-ビルド状態の扱いについては [ビルドシステム](./build-system.ja.md)、パッケージごとの責務については [アーキテクチャ](./architecture.ja.md) を参照してください。
+[[glossary/build-state|ビルド状態]]の扱いについては [ビルドシステム](./build-system.ja.md)、パッケージごとの責務については [アーキテクチャ](./architecture.ja.md) を参照してください。

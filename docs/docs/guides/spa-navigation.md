@@ -94,7 +94,7 @@ Every page must render one main element with the exact ID `main-content`:
 <SiteFooter />
 ```
 
-Keep persistent UI outside this element. When shell output depends on the URL,
+Keep persistent [[glossary/ui|UI]] outside this element. When shell output depends on the URL,
 language, or page data, put it in a named region on every route that can
 navigate between it:
 

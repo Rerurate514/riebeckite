@@ -7,7 +7,7 @@ sidebar:
 ---
 # カラーモード
 
-このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、カラーモードを扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/color-mode|カラーモード]]を扱います。
 
 ## 3-1. カラーモード（colorMode）
 
@@ -24,7 +24,7 @@ type ThemeColorMode =
 | `dark` | ダーク配色 |
 | `system` | OSの設定に追従 |
 
-`"system"` はOSの設定に追従します。テーマは `data-rb-mode` 属性とセマンティックトークンを使い、個々のコンポーネントに色を直接埋め込まないようにします。
+`"system"` はOSの設定に追従します。[[glossary/theme|テーマ]]は `data-rb-mode` 属性と[[glossary/semantic-token|セマンティックトークン]]を使い、個々のコンポーネントに色を直接埋め込まないようにします。
 
 サーバーは、カラーモードが `"system"` でない限り `<html>` に `data-rb-mode` を出力します。
 
@@ -104,4 +104,4 @@ document.documentElement.dataset.theme = "";
 
 そのため、`:not([data-rb-mode])` が成立しなくなり、システム用のメディアクエリが機能しません。
 
-`@riebeckite/plugin-color-mode` はこの取り決めの参照実装です（パッケージのREADMEを参照）。レンダリング前に実行されるインラインスクリプト `ColorModeScript`、`ColorModeToggle` コントロール、選択内容を `localStorage` に保存する `initColorMode` クライアントエントリで構成されています。
+`@riebeckite/plugin-color-mode` はこの取り決めの参照実装です（パッケージのREADMEを参照）。レンダリング前に実行されるインラインスクリプト `ColorModeScript`、`ColorModeToggle` コントロール、選択内容を `localStorage` に保存する `initColorMode` [[glossary/client-entry|クライアントエントリ]]で構成されています。

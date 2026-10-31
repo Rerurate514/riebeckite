@@ -7,7 +7,7 @@ sidebar:
 ---
 # Presets
 
-`create-riebeckite` writes a complete site from a **preset**. A preset chooses the registered plugins, theme, generated content, and HonoX application files.
+`create-riebeckite` writes a complete site from a **preset**. A preset chooses the registered plugins, theme, generated content, and [[framework/honox-integration|HonoX]] application files.
 
 The interactive CLI asks you to choose a preset while it runs; `starter` is the recommendation when you are unsure. To choose one from the command line instead, use `--preset <name>` (default `starter`).
 
@@ -18,7 +18,7 @@ npx create-riebeckite --list-presets
 
 ## Which preset should I choose?
 
-| Goal | Preset |
+| Goal | [[glossary/preset|Preset]] |
 | --- | --- |
 | I want an Obsidian-style network of notes | `digital-garden` |
 | I want a publication with posts, tags, and series | `blog` |
@@ -33,7 +33,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 
 ## The presets
 
-| Preset | Theme | Languages | Contents | Representative features |
+| Preset | [[glossary/theme|Theme]] | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `digital-garden` | `default` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
@@ -97,7 +97,7 @@ A blank application shell with no plugins, theme, content, or components. Its fi
 
 ### Editing generated UI
 
-Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article UI, `app/components/site-header.tsx` to change the header and footer, and `app/style.css` for site CSS. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
+Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article [[glossary/ui|UI]], `app/components/site-header.tsx` to change the header and footer, and `app/style.css` for site CSS. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
 
 ## Generated configuration
 

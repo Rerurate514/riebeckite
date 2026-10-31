@@ -101,7 +101,7 @@ Inspector shows the finally resolved `/blog/hello/`. In other words, this
 information is about the **URL actually used by the site**, not the filesystem
 location.
 
-If a Public Location plugin provides identity metadata, it also shows the
+If a [[glossary/public-location|Public Location]] plugin provides identity metadata, it also shows the
 content ID and where that ID came from.
 
 To inspect one known entry without listing the vault, pass its source path or
@@ -170,7 +170,7 @@ the existing one.
 
 Inspection is factual and non-mutating. It must not run a build, write
 incremental state or plugin cache, emit assets, render special artifacts
-merely for display, invoke Vite/HonoX build work, or auto-fix configuration.
+merely for display, invoke Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration.
 If the requested information does not exist because no build has completed,
 report that condition plainly.
 

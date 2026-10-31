@@ -88,7 +88,7 @@ The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely
 
 ## Theme Root and themeRootAttributes
 
-The framework provides `ThemeRoot`, a UI primitive that handles setting theme attributes on the `<html>` element.
+The framework provides `ThemeRoot`, a [[glossary/ui|UI]] primitive that handles setting theme attributes on the `<html>` element.
 
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
@@ -115,9 +115,9 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 
 The framework uses `themeRootAttributes(theme)` to emit the theme's own `attributes` plus reserved attributes:
 
-- `data-rb-mode`: Color Mode state (`"light"` / `"dark"` / omitted for "system")
-- `data-rb-theme`: Theme identity name
-- `data-rb-setting-typography`: Typography preset value
+- `data-rb-mode`: [[glossary/color-mode|Color Mode]] state (`"light"` / `"dark"` / omitted for "system")
+- `data-rb-theme`: [[glossary/theme|Theme]] identity name
+- `data-rb-setting-typography`: [[glossary/typography|Typography]] preset value
 - `data-rb-layout`: Article layout preset value
 
 To add your own `<html>` attributes, use the `themeRootAttributes` helper directly instead of `ThemeRoot`:

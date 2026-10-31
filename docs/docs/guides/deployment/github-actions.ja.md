@@ -379,7 +379,7 @@ GitHub ランナー
 
 - Riebeckite の設定
 - アプリケーション
-- プラグイン／テーマの設定
+- [[glossary/plugin|プラグイン]]／[[glossary/theme|テーマ]]の設定
 - `package.json`
 - `package-lock.json`
 
@@ -431,11 +431,11 @@ npm ci
 
 ### 5. Riebeckite のビルド状態を復元する
 
-生成されるワークフローは、増分 SSG に必要な状態を1つの `actions/cache` 手順で復元します。
+生成されるワークフローは、増分 [[glossary/ssg|SSG]] に必要な状態を1つの `actions/cache` 手順で復元します。
 
 - `.riebeckite/cache`：Markdown とプラグインの処理キャッシュ
-- `.riebeckite/build/content-state.json`：増分ビルドの状態
-- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG 出力キャッシュ。描画済みのルートとファイル、およびそのエントリの blob を保持します
+- `.riebeckite/build/content-state.json`：[[glossary/incremental-build|増分ビルド]]の状態
+- `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG [[glossary/output-cache|出力キャッシュ]]。描画済みのルートとファイル、およびそのエントリの blob を保持します
 - `.riebeckite/ssg-output-cache.fast-path.json`：変更なしのファストパスを検証するためのサイドカー
 
 キャッシュキーは、ランナーの OS、Node.js のバージョン、`package-lock.json` のハッシュ、`riebeckite.config.ts` のハッシュで範囲を絞り、実行ごとの世代として保存します。
@@ -444,11 +444,11 @@ npm ci
 riebeckite-build-v2-<os>-node<node>-<lockfile hash>-<config hash>-<run id>-<run attempt>
 ```
 
-`restore-keys` は、互換性のある直近の世代へ2段階でフォールバックします。まず lockfile と config のハッシュが一致する世代、次に lockfile のハッシュだけが一致する世代です。lockfile のハッシュはインストールされる Riebeckite のバージョンを、config のハッシュはプリセットとプラグインの設定を反映します。どちらかが変わると新しいキャッシュ系列が始まりますが、実際に再利用するかどうかは Riebeckite 自身のフィンガープリント検証（スキーマバージョン、アプリ／パイプライン／コンテンツのフィンガープリント、プラグインの `cacheVersion`）が決めます。
+`restore-keys` は、互換性のある直近の世代へ2段階でフォールバックします。まず lockfile と config のハッシュが一致する世代、次に lockfile のハッシュだけが一致する世代です。lockfile のハッシュはインストールされる Riebeckite のバージョンを、config のハッシュは[[glossary/preset|プリセット]]とプラグインの設定を反映します。どちらかが変わると新しいキャッシュ系列が始まりますが、実際に再利用するかどうかは Riebeckite 自身のフィンガープリント検証（スキーマバージョン、アプリ／[[glossary/pipeline|パイプライン]]／コンテンツの[[glossary/fingerprint|フィンガープリント]]、プラグインの `cacheVersion`）が決めます。
 
-エントリがその場で上書きされることはありません。各実行が新しい世代を保存し、古い世代は GitHub が自動的に削除します。キャッシュは OS や Node.js のバージョンをまたいで共有されないため、環境が変われば互換性のないエントリを再利用せず、コールドビルドになります。`dist/` はキャッシュしません。
+エントリがその場で上書きされることはありません。各実行が新しい世代を保存し、古い世代は GitHub が自動的に削除します。[[glossary/cache|キャッシュ]]は OS や Node.js のバージョンをまたいで共有されないため、環境が変われば互換性のないエントリを再利用せず、コールドビルドになります。`dist/` はキャッシュしません。
 
-Riebeckite が復元した出力キャッシュを拒否した場合（キャッシュがない、キャッシュが壊れている、アプリケーションのフィンガープリントが変わった、`unknown` の出力依存関係がある、全体を再生成する必要がある、キャッシュされたエントリのない出力がある）は、すべての出力を描画し直して `dist/` を最初から書き直します。そのため、古いキャッシュや不完全なキャッシュがデプロイに混入することはありません。キャッシュミスは安全で、コールドビルドになるだけです。
+Riebeckite が復元した出力キャッシュを拒否した場合（キャッシュがない、キャッシュが壊れている、アプリケーションのフィンガープリントが変わった、`unknown` の[[glossary/output-dependency|出力依存関係]]がある、全体を再生成する必要がある、キャッシュされたエントリのない出力がある）は、すべての出力を描画し直して `dist/` を最初から書き直します。そのため、古いキャッシュや不完全なキャッシュがデプロイに混入することはありません。キャッシュミスは安全で、コールドビルドになるだけです。
 
 ビルド後は、新しいキャッシュ世代が自動的に保存されます。ビルドログの `Persistent content cache` 行にある `hits`、`misses`、`bypasses` はコンテンツ処理を再利用したかどうかを、`SSG outputs` 行の `rendered`、`reused`、`removed` は描画済み出力を再利用したかどうかを示します。
 
@@ -810,7 +810,7 @@ npx wrangler deploy --dry-run
 ## 運用上の注意点
 
 - **静的アセットだけで十分です。** Riebeckite はコンテンツのルートとプラグインのエンドポイントを事前レンダリングするため、`dist/` は実行時の `main` エントリなしで静的アセットとして配信されます。
-- **ビルド状態はビルド時に留まります。** `.riebeckite/` とプラグインのキャッシュは `dist/` に含まれず、Worker の実行環境に渡ることはありません。
+- **[[glossary/build-state|ビルド状態]]はビルド時に留まります。** `.riebeckite/` とプラグインのキャッシュは `dist/` に含まれず、Worker の実行環境に渡ることはありません。
 - **添付ファイルはサイト側で管理します。** 公開するつもりのファイルだけを、ビルド前の `prebuild` 手順でコピーしてください。
 
 ## 関連資料

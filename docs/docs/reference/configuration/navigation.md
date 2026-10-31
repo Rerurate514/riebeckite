@@ -172,10 +172,10 @@ The plugin derives links from the vault's discoverable entries. It does not surf
 
 For example, the following are not added automatically:
 
-- Search
+- [[glossary/search|Search]]
 - Tag / Folder indexes
-- Taxonomy pages
-- Plugin page types
+- [[glossary/taxonomy|Taxonomy]] pages
+- [[glossary/plugin|Plugin]] page types
 - Breadcrumbs
 - Backlinks
 - Related Posts

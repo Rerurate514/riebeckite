@@ -18,7 +18,7 @@ npm exec riebeckite doctor
 npm exec riebeckite build
 ```
 
-`check` は設定とプラグインの取り決めを検証します。`doctor` は実行環境、プロジェクトの検出、設定、プラグイン、コンテンツソース、ビルド状態を診断します。`build` はサイトを生成できるかを確認します。
+`check` は設定と[[glossary/plugin|プラグイン]]の取り決めを検証します。`doctor` は実行環境、プロジェクトの検出、設定、プラグイン、[[glossary/content-source|コンテンツソース]]、[[glossary/build-state|ビルド状態]]を診断します。`build` はサイトを生成できるかを確認します。
 
 ## 互換性に関する方針
 

@@ -71,7 +71,7 @@ This is my second page.
 
 ## 5. ページをリンクする
 
-`content/index.md` に `[[hello]]`（Obsidian WikiLink）を追加します。starter preset は `@riebeckite/plugin-obsidian-markdown` を有効にしています。生成されたコンテンツ自体が `[[guide]]`、`[[examples]]` を使しています。リンクをクリックして確認してください。
+`content/index.md` に `[[hello]]`（Obsidian [[glossary/wikilink|WikiLink]]）を追加します。starter preset は `@riebeckite/plugin-obsidian-markdown` を有効にしています。生成されたコンテンツ自体が `[[guide]]`、`[[examples]]` を使しています。リンクをクリックして確認してください。
 
 ## 6. サイトをビルドする
 
@@ -92,7 +92,7 @@ npm exec -- riebeckite publish run --execute
 
 `Deploy now?` で `Yes` を選んだ場合は、生成直後に build と deploy まで自動で実行され、`https://<name>.<account>.workers.dev` のような URL が表示されます。`Later` を選んだ場合や、後から更新を公開する場合は上の2コマンドを実行します。初回は Wrangler のログインがブラウザで開きます。`Not now` で生成した既存サイトでは、先に `npm install -D wrangler` を実行してください。
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、サイトマップなどに正しい URL が入ります。
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
 
 ```bash
 npm exec riebeckite build
@@ -108,5 +108,5 @@ push のたびに自動デプロイしたい場合は [Deployment](./deployment.
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説
 - [サイトのアイコンとロゴ →](../guides/branding.ja.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える
-- [Obsidian Vault →](../guides/obsidian.ja.md) - Obsidian Vault をコンテンツソースとして使う
+- [Obsidian Vault →](../guides/obsidian.ja.md) - [[glossary/obsidian-vault|Obsidian Vault]] を[[glossary/content-source|コンテンツソース]]として使う
 - [Separate Content Repository →](../guides/content-repositories.ja.md) - コンテンツを別リポジトリに分割

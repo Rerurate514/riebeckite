@@ -7,7 +7,7 @@ sidebar:
 ---
 # 最初のコンテンツ
 
-このページでは、Markdown をサイトに表示する方法を説明します。`starter` プリセットが生成したサンプルを編集しても、新しいファイルを作っても構いません。
+このページでは、Markdown をサイトに表示する方法を説明します。`starter` [[glossary/preset|プリセット]]が生成したサンプルを編集しても、新しいファイルを作っても構いません。
 
 ## コンテンツを置く場所
 
@@ -55,9 +55,9 @@ Hello from Riebeckite.
 
 `title` はページのタイトルです。`publish: true` は、そのページを公開対象にする指定です。ファイル名は URL の一部になります。`content/first-post.md` は `/first-post` で表示され、`index` 系のファイルはその階層のトップページになります。
 
-本文は通常の Markdown で書けます。`starter` プリセットには Obsidian 風の Markdown サポートも含まれているため、生成されたサンプルノートでは `[[planning]]` のような WikiLink も使えます。
+本文は通常の Markdown で書けます。`starter` プリセットには Obsidian 風の Markdown サポートも含まれているため、生成されたサンプルノートでは `[[planning]]` のような [[glossary/wikilink|WikiLink]] も使えます。
 
-frontmatter、下書き、画像、内部リンクの詳しい書き方は [Writing Content](../guides/writing-content.ja.md) を参照してください。
+frontmatter、[[glossary/draft|下書き]]、画像、内部リンクの詳しい書き方は [Writing Content](../guides/writing-content.ja.md) を参照してください。
 
 ## ビルドして公開用ファイルを出力する
 

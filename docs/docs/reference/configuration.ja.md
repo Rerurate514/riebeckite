@@ -6,7 +6,7 @@ sidebar:
 ---
 # 設定
 
-Riebeckite の設定は `riebeckite.config.ts` に記述します。`defineConfig()` で設定を宣言し、コンテンツやプラグインの処理が始まる前に、インテグレーションが設定を解決します。
+Riebeckite の設定は `riebeckite.config.ts` に記述します。`defineConfig()` で設定を宣言し、コンテンツや[[glossary/plugin|プラグイン]]の処理が始まる前に、インテグレーションが設定を解決します。
 
 基本的なサイトでは、次のように設定します。
 
@@ -42,7 +42,7 @@ export default defineConfig({
 | --- | --- |
 | `site` | サイトの基本情報 |
 | `content` | コンテンツの場所と公開条件 |
-| `theme` | テーマの設定 |
+| `theme` | [[glossary/theme|テーマ]]の設定 |
 | `plugins` | 使用するプラグイン |
 | `cache` | ビルドキャッシュの設定 |
 | `spa` | SPA ナビゲーションの設定 |

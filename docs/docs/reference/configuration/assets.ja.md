@@ -31,7 +31,7 @@ Markdown では、次のように参照できます。
 ![[media/interview.mp3]]
 ```
 
-`obsidianMarkdown()` は、これらを Vault からの相対的な論理パスとして扱います。
+`obsidianMarkdown()` は、これらを Vault からの相対的な[[glossary/logical-path|論理パス]]として扱います。
 
 `attachment()` と `media()` が、対応する埋め込みを描画します。`attachment()` は解決済みの Vault ルートから埋め込みファイルのサイズを読み取り、ルートの外を指すパスは拒否します。`media()` は対応する音声・動画形式を同じ論理パスで描画します。
 
@@ -103,7 +103,7 @@ assets/logo.png
 
 添付ファイルとメディアについては、URL を生成しただけでは実ファイルは公開されません。
 
-プラグインが、
+[[glossary/plugin|プラグイン]]が、
 
 ```text id="8m59d5"
 /assets/attachments/attachments/report.pdf

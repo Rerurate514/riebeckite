@@ -48,7 +48,7 @@ import { SiteNav } from "@riebeckite/plugin-navigation";
 
 **Riebeckite 専用の Vault ファイル（`navigation.md` など）も、必須の frontmatter も必要ありません**。
 
-導出は表示中の言語に追従します。`l10n` Plugin が付与する言語 metadata をもとに同じ翻訳の entry をひとつの項目へ集約し、現在の言語の `href` だけを使います。`/ja/guide/` を表示しているときに `/en/...` が混ざることはありません。`l10n` を使っていない Vault では、これまでどおり全 entry が対象になります。
+導出は表示中の言語に追従します。`l10n` Plugin が付与する言語 metadata をもとに同じ[[glossary/translation|翻訳]]の entry をひとつの項目へ集約し、現在の言語の `href` だけを使います。`/ja/guide/` を表示しているときに `/en/...` が混ざることはありません。`l10n` を使っていない Vault では、これまでどおり全 entry が対象になります。
 
 ## 手動リンクと補助リンク
 

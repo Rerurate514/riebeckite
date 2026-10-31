@@ -12,7 +12,7 @@ Markdown を HTML に変換するだけではありません。Riebeckite は次
 - 公開してよいか
 - どの URL で公開するか
 - 他の記事とどうつながっているか
-- プラグインが何を追加・変更したか
+- [[glossary/plugin|プラグイン]]が何を追加・変更したか
 
 コンテンツシステムはこれらの問いを解決し、サイト全体から同じ情報を利用できる状態にします。
 
@@ -67,7 +67,7 @@ content/
 
 ただし、コンテンツシステムは、コンテンツが必ずサイトリポジトリ内にあるとは想定していません。
 
-たとえば、サイトリポジトリ、外部リポジトリ、Obsidian Vault のいずれから取得する場合でも、最終的には同じ `ContentSource` インターフェースを通して `ContentManager` に渡します。
+たとえば、サイトリポジトリ、外部リポジトリ、[[glossary/obsidian-vault|Obsidian Vault]] のいずれから取得する場合でも、最終的には同じ `ContentSource` インターフェースを通して `ContentManager` に渡します。
 
 ```text id="eynh5j"
 Site Repository
@@ -102,8 +102,8 @@ flowchart LR
 | 種類 | 意味 |
 | --- | --- |
 | ファイルシステム上のパス | 実際にファイルが保存されている場所 |
-| 論理パス | コンテンツルートから見たコンテンツの識別子 |
-| 公開先 | Web サイト上の URL |
+| [[glossary/logical-path|論理パス]] | コンテンツルートから見たコンテンツの識別子 |
+| [[glossary/public-location|公開先]] | Web サイト上の URL |
 
 たとえば、`C:\projects\garden\content\posts\hello.md` というファイルがあっても、Riebeckite の内部では `posts/hello.md` という論理パスとして扱えます。
 
@@ -144,8 +144,8 @@ flowchart LR
 - slug、permalink、content ID を整理する
 - プラグインのフックを実行する
 - 公開先を解決する
-- マニフェストを生成する
-- コンテンツグラフを生成する
+- [[glossary/manifest|マニフェスト]]を生成する
+- [[glossary/content-graph|コンテンツグラフ]]を生成する
 - クエリ用のインデックスを用意する
 
 つまり、`ContentManager` はコンテンツシステムの中心で処理全体を統括するオーケストレーターです。
@@ -212,7 +212,7 @@ content ID
 
 ### 安定したコンテンツID
 
-コンテンツIDは、コンテンツの出所が任意で付ける安定した識別子です。`ContentManifestEntry.contentId` として公開され、`ContentManifest.byContentId` から引けます。slug や公開 URL とは独立しており、URL を変更しても同じコンテンツを指し続けます。URL が必要な場合は slug やファイルパスから組み立てず、`ContentManifestEntry.permalink`（`entry.publicLocation` でも参照できます）を読んでください。
+[[glossary/content-id|コンテンツID]]は、コンテンツの出所が任意で付ける安定した識別子です。`ContentManifestEntry.contentId` として公開され、`ContentManifest.byContentId` から引けます。slug や公開 URL とは独立しており、URL を変更しても同じコンテンツを指し続けます。URL が必要な場合は slug やファイルパスから組み立てず、`ContentManifestEntry.permalink`（`entry.publicLocation` でも参照できます）を読んでください。
 
 ### デフォルトの公開先
 
@@ -246,7 +246,7 @@ Article
 /blog/article/
 ```
 
-ただし、プラグインによって別名の URL やリダイレクトが追加される場合があります。
+ただし、プラグインによって別名の URL や[[glossary/redirect|リダイレクト]]が追加される場合があります。
 
 ```mermaid id="k15b5h"
 flowchart LR
@@ -261,7 +261,7 @@ flowchart LR
 
 - サイト内リンク
 - リダイレクト
-- サイトマップ
+- [[glossary/sitemap|サイトマップ]]
 - 検索インデックス
 - 言語切り替え
 - コンテンツグラフ
@@ -276,7 +276,7 @@ flowchart LR
 - メタデータ
 - 公開先
 - プラグインによる処理結果
-- 増分ビルドに必要な情報
+- [[glossary/incremental-build|増分ビルド]]に必要な情報
 
 ```mermaid id="s23io5"
 flowchart LR
@@ -295,7 +295,7 @@ flowchart LR
 
 ## コンテンツグラフ
 
-[[content-graph|コンテンツグラフ]]は、コンテンツ同士の関係を表します。たとえば、次の WikiLink があれば、記事 A から記事 B への関係が成り立ちます。
+[[content-graph|コンテンツグラフ]]は、コンテンツ同士の関係を表します。たとえば、次の [[glossary/wikilink|WikiLink]] があれば、記事 A から記事 B への関係が成り立ちます。
 
 ```markdown id="9o2p6a"
 [[Article B]]
@@ -306,7 +306,7 @@ graph LR
     A["記事 A"] --> B["記事 B"]
 ```
 
-この情報からバックリンクも扱えます。
+この情報から[[glossary/backlink|バックリンク]]も扱えます。
 
 ```mermaid id="8grb4h"
 graph LR
@@ -322,8 +322,8 @@ graph LR
 - WikiLink
 - Markdown リンク
 - バックリンク
-- タクソノミー
-- シリーズ
+- [[glossary/taxonomy|タクソノミー]]
+- [[glossary/series|シリーズ]]
 - 関連記事
 - ローカルグラフ
 - Garden Explorer
@@ -344,7 +344,7 @@ queryContentPage
 groupContentEntries
 ```
 
-これらは**ファイルを検索する API ではありません**。
+これらは**ファイルを[[glossary/search|検索]]する API ではありません**。
 
 ```mermaid id="bf0k8w"
 flowchart LR
@@ -419,7 +419,7 @@ flowchart LR
 
 実際の URL 形式は、プラグインや設定によって変わる場合があります。
 
-重要なのは、コンテンツルートの外にある任意のファイルを公開 URL に変換しないことです。コンテンツシステムの公開境界を通して、公開対象を安全に決定します。
+重要なのは、コンテンツルートの外にある任意のファイルを公開 URL に変換しないことです。コンテンツシステムの[[glossary/publication-boundary|公開境界]]を通して、公開対象を安全に決定します。
 
 ## コンテンツリポジトリを分離する場合
 
@@ -455,7 +455,7 @@ flowchart LR
 | 原則 | 理由 |
 | --- | --- |
 | `content.directory` は `appRoot` 基準で解決する | サイトごとに安定した基準を持つため |
-| プラグインはファイルシステムのパスに依存しない | コンテンツソースを交換可能にするため |
+| プラグインはファイルシステムのパスに依存しない | [[glossary/content-source|コンテンツソース]]を交換可能にするため |
 | 公開判定は `publishStrategy` と frontmatter に従う | 公開境界を一元化するため |
 | 公開先は `ContentPublicLocation` として登録する | 各機能が URL を独自に計算しないため |
 | 実行環境はビルド済みのインデックスを利用する | 実行環境をソースのファイルシステムから分離するため |

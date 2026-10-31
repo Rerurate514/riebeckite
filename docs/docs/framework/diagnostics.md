@@ -13,13 +13,13 @@ Instead of printing a message to the console, a diagnostic describes:
 - how important it is
 - how to fix it
 
-Core and plugins express problems in this shared form. The development diagnostics package maps those findings into a serializable report that `doctor` and the Development Inspector share.
+Core and plugins express problems in this shared form. The development diagnostics package maps those findings into a serializable report that `doctor` and the Development [[framework/inspector|Inspector]] share.
 
 ## Producers and consumers
 
 Plugins can provide diagnostics through `addDiagnostics`; Core and integrations combine them for commands such as `check` and `doctor`. A plugin should name the actionable condition, identify the relevant content/configuration when available, and make severity proportionate to whether output can remain correct. Prefer a diagnostic that says which setting is invalid and how to change it over one that only reports "invalid configuration".
 
-Use `check` for configuration/plugin validity and `doctor` for broader health. Doctor checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully. It reports unavailable observations explicitly and does not run a full build solely to diagnose the project. New findings have stable fingerprints; the JSON summary adds unavailable, skipped, category, and code counts without removing the existing severity counts.
+Use `check` for configuration/plugin validity and `doctor` for broader health. [[glossary/doctor|Doctor]] checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully. It reports unavailable observations explicitly and does not run a full build solely to diagnose the project. New findings have stable fingerprints; the JSON summary adds unavailable, skipped, category, and code counts without removing the existing severity counts.
 
 The Development Inspector is available only through the Vite development server and renders the same report in a Shadow DOM panel. It is omitted from production client modules and production endpoints. The panel shows diagnostics first and loads the Dependencies and Output tabs from a separate endpoint, so a large output plan does not delay the rest of the report. Diagnostics can be filtered by text, severity, category, and code. Current-page filtering uses the source-to-page mappings already present in the completed build snapshot; it does not parse Markdown again or run a separate build to infer them.
 

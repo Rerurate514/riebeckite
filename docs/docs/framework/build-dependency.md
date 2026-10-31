@@ -84,7 +84,7 @@ Declare them in the following places.
 
 Use `content`, `tag`, or `folder` when the scope is known, and `global` for a manifest-wide collection transform. Use `unknown` only when the input cannot be represented.
 
-`none`, `tracked`, `global`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental SSG for a full output render.
+`none`, `tracked`, `global`, and `unsafe` describe processed-content reuse, not output reuse. A plugin can safely use `none` while declaring a `global` output dependency, or use `tracked` while a generated output has a narrow `content` dependency. An incorrect output declaration can preserve a stale file, so use `unknown` whenever the output scope cannot be stated completely. `unknown` deliberately trades incremental [[glossary/ssg|SSG]] for a full output render.
 
 Core also marks a content output as affected when its entry's processed-content dependency fingerprint changed since the previous build (see [Content dependency](#content-dependency)). A plugin whose processed content depends on other content can therefore track that dependency per entry instead of declaring a `global` output dependency.
 

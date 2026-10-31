@@ -30,7 +30,7 @@ The resolution rules for `content.directory` in `riebeckite.config.ts`:
 
 | Name | Role | Default / resolution base |
 | --- | --- | --- |
-| `appRoot` | The HonoX/Vite application. Owns `app/`, `public/`, routes, generated styles, and build output | Vite's `root` |
+| `appRoot` | The [[framework/honox-integration|HonoX]]/Vite application. Owns `app/`, `public/`, routes, generated styles, and build output | Vite's `root` |
 | `configRoot` | The directory that contains `riebeckite.config.ts` | `appRoot` |
 | `contentRoot` | The absolute filesystem root of the configured content directory or Obsidian vault | `path.resolve(appRoot, content.directory)` |
 
@@ -151,7 +151,7 @@ notes-repo/
 └─ vault/               ← referenced by directory: "../vault"
 ```
 
-One repository and one history, with the locations split. Visibility is still per repository, as in A. The only change from A is `content.directory: "../vault"`.
+One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in A. The only change from A is `content.directory: "../vault"`.
 
 ### 2-3. Sharing one vault across several sites
 

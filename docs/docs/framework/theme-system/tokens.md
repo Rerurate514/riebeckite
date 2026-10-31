@@ -47,7 +47,7 @@ This is what lets a theme be swapped without touching components.
 | `success` | `--rb-color-success` |
 | `codeBackground` | `--rb-color-code-background` |
 
-**Typography:**
+**[[glossary/typography|Typography]]:**
 
 | Token | CSS variable |
 | --- | --- |

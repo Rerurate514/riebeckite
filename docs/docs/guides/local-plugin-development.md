@@ -4,7 +4,7 @@ title: Local Plugin Development
 ---
 # Local Plugin Development
 
-Use `riebeckite plugin dev` to run a local Plugin package through a temporary Riebeckite site. The preview uses the real PluginRuntime, HonoX, and Vite, so it exercises the same Markdown pipeline, CSS assets, and client entry that a site uses.
+Use `riebeckite plugin dev` to run a local [[glossary/plugin|Plugin]] package through a temporary Riebeckite site. The preview uses the real PluginRuntime, [[framework/honox-integration|HonoX]], and Vite, so it exercises the same Markdown pipeline, CSS assets, and client entry that a site uses.
 
 [日本語](./local-plugin-development.ja.md)
 
@@ -13,7 +13,7 @@ Use `riebeckite plugin dev` to run a local Plugin package through a temporary Ri
 Choose this command when you are changing a Plugin's transform, styles, or client behavior and want to see the result in a browser. It differs from `theme preview`:
 
 - `plugin dev` loads one Plugin from a local path and executes its client entry.
-- `theme preview` checks a Theme with fixed content fixtures. `plugin dev` checks a Plugin with its own temporary site.
+- `theme preview` checks a [[glossary/theme|Theme]] with fixed content fixtures. `plugin dev` checks a Plugin with its own temporary site.
 
 ## Start a preview
 

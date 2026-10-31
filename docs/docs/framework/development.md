@@ -4,7 +4,7 @@ title: Framework Development
 ---
 # Framework Development
 
-This page is for people developing Riebeckite itself: core, CLI, HonoX integration, official plugins, official themes, templates, or the reference app. It is intentionally separate from [Getting Started](../getting-started/README.md). Users who only want to publish a site should use `create-riebeckite` instead of cloning this monorepo.
+This page is for people developing Riebeckite itself: core, CLI, [[framework/honox-integration|HonoX]] integration, official plugins, official themes, templates, or the reference app. It is intentionally separate from [Getting Started](../getting-started/README.md). Users who only want to publish a site should use `create-riebeckite` instead of cloning this monorepo.
 
 Use this monorepo when you are changing things such as:
 
@@ -104,7 +104,7 @@ The commands you use most often during framework development are:
 | `pnpm test` | Run the tests. |
 | `pnpm typecheck` | Check TypeScript types. |
 | `pnpm check:docs` | Check the documentation. |
-| `pnpm docs:sync` | Generate Plugin and Theme package READMEs from canonical docs. |
+| `pnpm docs:sync` | Generate [[glossary/plugin|Plugin]] and [[glossary/theme|Theme]] package READMEs from canonical docs. |
 | `pnpm check:plugin-docs` | Verify Plugin docs and generated READMEs are synchronized. |
 | `pnpm check:theme-docs` | Verify Theme docs and generated READMEs are synchronized. |
 | `pnpm check:scaffold` | Check the generated sites. |

@@ -4,7 +4,7 @@ title: プラグインの独立ページ
 ---
 # プラグインの独立ページ
 
-プラグインが、サイトのルートを直接追加せずに独立したページを提供するための仕組みです。
+[[glossary/plugin|プラグイン]]が、サイトのルートを直接追加せずに独立したページを提供するための仕組みです。
 
 たとえば、次のようなページをプラグインから追加したいときに使います。
 
@@ -14,7 +14,7 @@ title: プラグインの独立ページ
 /tags/example
 ```
 
-この仕組みがなければ、独立ページを持つプラグインを追加するたびに、HonoX のルートをサイト側へ書き足す必要があります。プラグインとサイトの結び付きが強くなり、プラグインを配布しても、使う側が同じ変更をしないと動きません。
+この仕組みがなければ、独立ページを持つプラグインを追加するたびに、[[framework/honox-integration|HonoX]] のルートをサイト側へ書き足す必要があります。プラグインとサイトの結び付きが強くなり、プラグインを配布しても、使う側が同じ変更をしないと動きません。
 
 そこでプラグインは「このURLに、この内容を表示する」という情報だけを公開し、実際のルーティングやHTML文書の組み立てはサイトが担当します。
 
@@ -45,7 +45,7 @@ flowchart LR
 - プラグインが生成する一覧ページ
 - 独自の検索・閲覧ページ
 
-一方、記事本文の中へ何かを表示するだけなら、ページ種別は必要ありません。
+一方、記事本文の中へ何かを表示するだけなら、[[glossary/page-type|ページ種別]]は必要ありません。
 
 ```mermaid id="a1h3fe"
 flowchart TD
@@ -74,7 +74,7 @@ Canvas、Bases、Excalidraw のように記事本文へ埋め込む機能は `re
 | プラグイン | ページ種別ID、公開URL、フレームワークに依存しないHTML本文 |
 | HonoX Integration | 共通ルートの解決、SSGパラメータの生成 |
 | サイトアプリケーション | ルート、HTML文書の枠組み、メタデータ、HTMLの描画 |
-| テーマ | デザイントークンと安定したCSSフックによる見た目 |
+| [[glossary/theme|テーマ]] | [[glossary/design-token|デザイントークン]]と安定したCSSフックによる見た目 |
 
 全体では次のような関係になります。
 
@@ -160,7 +160,7 @@ flowchart LR
     Params --> Build
 ```
 
-たとえばプラグインが次のURLを提供していれば、そのURLをSSGの生成対象にできます。
+たとえばプラグインが次のURLを提供していれば、そのURLを[[glossary/ssg|SSG]]の生成対象にできます。
 
 ```text id="9ifm52"
 /report
@@ -238,7 +238,7 @@ export function report() {
 
 ## 公開済みコンテンツだけを参照する
 
-ページ種別の `resolve` には `PluginPageContext` が渡されます。その中の `PluginPageContext.manifest` は、解決済みのマニフェストです。
+ページ種別の `resolve` には `PluginPageContext` が渡されます。その中の `PluginPageContext.manifest` は、解決済みの[[glossary/manifest|マニフェスト]]です。
 
 ```ts id="dw2bby"
 PluginPageContext.manifest
@@ -260,7 +260,7 @@ flowchart LR
     Public --> Page
 ```
 
-ページ側で非公開コンテンツを独自に探して表示するのではなく、この公開境界を通してください。通常のページと同じ公開範囲を保てます。
+ページ側で非公開コンテンツを独自に探して表示するのではなく、この[[glossary/publication-boundary|公開境界]]を通してください。通常のページと同じ[[glossary/visibility|公開範囲]]を保てます。
 
 ## ページ種別の識別子
 
@@ -424,7 +424,7 @@ body: `<p>${untrustedRequestValue}</p>`
 example.report
 ```
 
-- セマンティックトークン
+- [[glossary/semantic-token|セマンティックトークン]]
 - 安定したCSSフック
 - `data-*` 属性
 - CSSのカスケード

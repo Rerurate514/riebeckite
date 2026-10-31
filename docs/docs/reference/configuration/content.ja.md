@@ -29,7 +29,7 @@ my-site/
 
 ## 除外するファイル
 
-`exclude` を使うと、コンテンツシステムに読み込ませないファイルを指定できます。
+`exclude` を使うと、[[framework/content-system|コンテンツシステム]]に読み込ませないファイルを指定できます。
 
 ```ts id="4kv6vn"
 content: {
@@ -41,7 +41,7 @@ content: {
 }
 ```
 
-`exclude` は論理パスに対して glob パターンで照合します。`*` は1つのパス要素内、`**` は複数のパス要素をまたいで一致し、`?` は1文字に一致します。
+`exclude` は[[glossary/logical-path|論理パス]]に対して glob パターンで照合します。`*` は1つのパス要素内、`**` は複数のパス要素をまたいで一致し、`?` は1文字に一致します。
 
 `exclude` に一致したファイルは、コンテンツとして処理される前に除外されます。内部では `isExcluded` がこの判定を行います。
 
@@ -57,7 +57,7 @@ content: {
 }
 ```
 
-公開判定にはフロントマターも利用されます。
+公開判定には[[glossary/frontmatter|フロントマター]]も利用されます。
 
 ```yaml id="osj0d5"
 ---
@@ -65,12 +65,12 @@ publish: true
 ---
 ```
 
-現在の公開状態は Core で一度だけ解決され、プラグインには次のマニフェストビューとして渡されます。
+現在の公開状態は Core で一度だけ解決され、[[glossary/plugin|プラグイン]]には次のマニフェストビューとして渡されます。
 
 | ビュー | 含まれるもの | 用途 |
 | --- | --- | --- |
-| `manifest.publicEntries` | ルーティングできるページ。`public` と `unlisted` | ページ表示、SSG のパス列挙 |
-| `manifest.discoverableEntries` | 発見可能な `public` ページだけ | ドキュメントのナビゲーション、検索、フィード、サイトマップ、taxonomy、グラフ、バックリンク、関連記事・最新記事 |
+| `manifest.publicEntries` | ルーティングできるページ。`public` と `unlisted` | ページ表示、[[glossary/ssg|SSG]] のパス列挙 |
+| `manifest.discoverableEntries` | 発見可能な `public` ページだけ | ドキュメントのナビゲーション、[[glossary/search|検索]]、フィード、[[glossary/sitemap|サイトマップ]]、taxonomy、グラフ、[[glossary/backlink|バックリンク]]、関連記事・最新記事 |
 
 フロントマターで明示的な公開状態を指定できます。
 
@@ -103,7 +103,7 @@ flowchart LR
     Publish -->|No| Private
 ```
 
-`exclude` は **コンテンツシステムに入れるか**、`publishStrategy` や `visibility` は **サイトでどう扱うか**を決めます。`exclude` されたファイルは、リンク解決やグラフ、診断にも現れません。一方、`draft`、`unlisted`、公開前の `publishAt` は生のマニフェストには残りますが、Core がルート用のビューと発見用のビューから適切に外します。
+`exclude` は **コンテンツシステムに入れるか**、`publishStrategy` や `visibility` は **サイトでどう扱うか**を決めます。`exclude` されたファイルは、リンク解決やグラフ、診断にも現れません。一方、`draft`、`unlisted`、公開前の `publishAt` は生の[[glossary/manifest|マニフェスト]]には残りますが、Core がルート用のビューと発見用のビューから適切に外します。
 
 ## ContentSource
 

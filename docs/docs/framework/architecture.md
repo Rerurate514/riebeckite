@@ -4,17 +4,17 @@ title: Architecture
 ---
 # Architecture
 
-Riebeckite is a pnpm workspace that separates Core from Plugin, Integration,
-Theme, and Application, with intentionally one-way dependencies.
+Riebeckite is a pnpm workspace that separates Core from [[glossary/plugin|Plugin]], Integration,
+[[glossary/theme|Theme]], and Application, with intentionally one-way dependencies.
 
 The guiding principle is that **an inner package does not know the
 implementation of an outer one**. Core provides the content-processing
 machinery, but it does not know:
 
-- how HonoX renders it,
+- how [[framework/honox-integration|HonoX]] renders it,
 - how Vite builds it,
 - which plugins are installed, or
-- what UI the site has.
+- what [[glossary/ui|UI]] the site has.
 
 ```mermaid
 flowchart BT
@@ -41,7 +41,7 @@ from Core to a plugin, integration, application, or theme.
 | Area | Owns | Must not own |
 | --- | --- | --- |
 | `packages/core` | portable contracts, configuration, content orchestration, manifests, graphs, pipelines, plugin runtime, observability, and theme contracts | HonoX/Vite APIs, a named plugin, or application UI |
-| `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, browser, and Page Type capabilities | application routes or framework-specific routing |
+| `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, browser, and [[glossary/page-type|Page Type]] capabilities | application routes or framework-specific routing |
 | `packages/integrations/*` | framework, bundler, and platform adapters | reusable domain policy already represented by Core |
 | `packages/themes/*` | presentation configuration and CSS | components, routes, plugins, or content loading |
 | `apps/web` | the concrete routes, islands, application components, and Worker deployment | reusable framework contracts |
@@ -266,7 +266,7 @@ Rather than adding an ad-hoc filesystem scan to `ContentManager`, use the
 ## Resolving public URLs
 
 A content URL is not guessed from a filesystem path or slug. Riebeckite
-explicitly resolves a **Public Location**. The basic flow is:
+explicitly resolves a **[[glossary/public-location|Public Location]]**. The basic flow is:
 
 ```mermaid
 flowchart LR
@@ -361,8 +361,8 @@ The following belong to build time:
 - `.riebeckite/build/content-state.json`
 - plugin caches
 - CLI
-- Doctor
-- Inspector
+- [[glossary/doctor|Doctor]]
+- [[framework/inspector|Inspector]]
 - profile / trace
 
 The Cloudflare Workers request runtime does not read or write these. Runtime

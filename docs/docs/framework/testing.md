@@ -163,7 +163,7 @@ flowchart LR
     Manifest --> Assert
 ```
 
-This exercises the Content System in a small scope. Do not assemble the whole
+This exercises the [[framework/content-system|Content System]] in a small scope. Do not assemble the whole
 application just for a test unless the problem needs a real site or a Vite build.
 
 ## Testing a plugin

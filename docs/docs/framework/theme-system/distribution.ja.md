@@ -7,7 +7,7 @@ sidebar:
 ---
 # テーマの配布と検証
 
-このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、テーマのパッケージ化、配布、検証を扱います。
+このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/theme|テーマ]]のパッケージ化、配布、検証を扱います。
 
 ## 8. 配布用にパッケージ化する
 
@@ -94,7 +94,7 @@ flowchart LR
     Dev --> Build
 ```
 
-まず、設定とプラグインの解決を検証します。
+まず、設定と[[glossary/plugin|プラグイン]]の解決を検証します。
 
 ```sh id="cb8y30"
 pnpm exec riebeckite check
@@ -112,7 +112,7 @@ pnpm exec riebeckite inspect config
 pnpm exec riebeckite dev
 ```
 
-最後に、生成物まで確認します。
+最後に、[[glossary/generated-output|生成物]]まで確認します。
 
 ```sh id="tsbdjv"
 pnpm exec riebeckite build
@@ -121,8 +121,8 @@ pnpm exec riebeckite build
 `check`、`doctor`、`inspect` はビルド出力を変更しません。テーマを交換しても、次のものは変わらないのが基本です。
 
 - ルート
-- マニフェスト
-- コンテンツグラフ
+- [[glossary/manifest|マニフェスト]]
+- [[glossary/content-graph|コンテンツグラフ]]
 - クライアントの動作
 
 表示が意図と違うときは、カスケードの順序（`stylesheets` が最後）と、`rr-*` と `rb-*` のどちらを対象にしているかを確認してください。

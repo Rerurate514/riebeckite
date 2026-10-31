@@ -36,7 +36,7 @@ flowchart TD
 
 For example, use `renderers` to show Canvas or Excalidraw inside an article,
 and `pageTypes` to provide a standalone page such as `/explore`. Needing a
-standalone screen does not mean adding a plugin-specific HonoX route.
+standalone screen does not mean adding a plugin-specific [[framework/honox-integration|HonoX]] route.
 
 ## Minimal plugin
 
@@ -71,11 +71,11 @@ export function example(options: ExampleOptions = {}) {
   Identity              `name`, `enabled`, `order`, `options`
   Dependencies          `provides`, `requires`, `optional`
   Validation            `validateOptions`
-  Cache                 `cacheVersion`, `context.cache`
+  [[glossary/cache|Cache]]                 `cacheVersion`, `context.cache`
   Lifecycle             `setup`, `buildStart`, `buildEnd`, `dispose`
   Content hooks         config/content/post/manifest hooks
   Public location       `resolveContentLocations`
-  Pipeline              remark/rehype declarations and extension hooks
+  [[glossary/pipeline|Pipeline]]              remark/rehype declarations and extension hooks
   Graph                 `extendContentGraph`
   Diagnostics           `addDiagnostics`
    Rendering             `renderers`
@@ -125,7 +125,7 @@ definePlugin({
 
 The resolver places providers before consumers and detects missing
 requirements, duplicate providers, and cycles while preserving the numeric
-precedence and unrelated input order where possible. Capability resolution failures throw
+precedence and unrelated input order where possible. [[glossary/capability|Capability]] resolution failures throw
 `PluginDependencyError` (importable from `@riebeckite/core`); `kind` and
 `pluginName` identify the cause.
 
@@ -150,7 +150,7 @@ validation can report them together.
 ## Plugin Context
 
 The base context contains resolved config when available, `contentIndex`,
-diagnostics, plugin-scoped cache, generated-output sink, Logger, Tracer, and
+diagnostics, plugin-scoped cache, generated-output sink, [[glossary/logger|Logger]], Tracer, and
 the content source when Core owns one.
 
 Specialized hooks add post, manifest, graph, location, or render data.
@@ -366,7 +366,7 @@ choose between three entry collections:
 
 - `manifest.entries` — the raw collection for every scanned source, including
   `draft`, `scheduled`, private, and other nonpublic entries. It is not a
-  publication view; never render it into a public page or discovery UI.
+  publication view; never render it into a public page or discovery [[glossary/ui|UI]].
 - `manifest.publicEntries` — routable entries: `public` and `unlisted`. Use for
   output that must cover every reachable URL, such as a sitemap. It still
   includes `unlisted` content.
@@ -383,7 +383,7 @@ already encodes the decision. The publish strategy is configured in
 ## Pages
 
 `pageTypes` supplies standalone pages without adding application routes. A page
-type declares its stable ID, SSG paths, optional priority, and a resolver. The
+type declares its stable ID, [[glossary/ssg|SSG]] paths, optional priority, and a resolver. The
 resolver receives the resolved manifest and a normalized request path, then
 returns HTML for the page body or `null`. The site still owns its document frame
 and theme. A page may also return `title`, `description`, `headTags`, and the
@@ -477,7 +477,7 @@ regeneration. Generated outputs without declared dependencies are `unknown`.
 
 ## Assets and client entries
 
-Plugin CSS remains in the plugin package and is declared through
+[[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through
 `assets`. Browser initialization is declared through `clientEntries`
 only when browser JavaScript is genuinely required. Do not copy plugin
 CSS into `apps/web` or expose `/node_modules` directly.
@@ -705,7 +705,7 @@ await context.tracer.span("plugin.example.work", { plugin: "example" }, async ()
 });
 ```
 
-The Profiler consumes structured tracing, so plugins do not need their own
+The [[glossary/profiler|Profiler]] consumes structured tracing, so plugins do not need their own
 timing/reporting system.
 
 ## Suggested package layout
@@ -904,7 +904,7 @@ Do not put in a plugin:
 - Framework-wide content model — belongs in Core.
 - HonoX/Vite connections — belong in the Integration.
 - Application-specific routes/layouts — belong in the App.
-- Appearance-only changes — belong in Theme.
+- Appearance-only changes — belong in [[glossary/theme|Theme]].
 
 ## ESM
 

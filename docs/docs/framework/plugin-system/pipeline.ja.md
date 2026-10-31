@@ -10,11 +10,11 @@ sidebar:
 ---
 # コンテンツ処理のパイプラインと拡張ポイント
 
-このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、コンテンツの処理と拡張ポイントを扱います。Markdown / HTML パイプライン、Content Graph、レンダラー、Page Type などを取り上げます。
+このページは [プラグイン作成の詳細](../plugin-system.ja.md) の一部で、コンテンツの処理と拡張ポイントを扱います。Markdown / HTML [[glossary/pipeline|パイプライン]]、Content Graph、[[glossary/renderer|レンダラー]]、Page Type などを取り上げます。
 
 ## 3-6. Markdown / HTML パイプライン
 
-Markdown や HTML の意味を変換する場合は remark / rehype を使います。単純なプラグインなら、変換関数を配列として宣言するだけで済みます。
+Markdown や HTML の意味を変換する場合は remark / rehype を使います。単純な[[glossary/plugin|プラグイン]]なら、変換関数を配列として宣言するだけで済みます。
 
 ```ts id="twapvp"
 definePlugin({
@@ -171,7 +171,7 @@ flowchart LR
 
 Page Type の `id` は実行時に検証されます。複数の Page Type が同じリクエストを解決した場合は、`priority` が最も大きいものが使われ、同点はエラーになります。
 
-Taxonomy の一覧や Explorer のような独立した画面には Page Type を使い、Canvas、Bases、Excalidraw のような記事本文への埋め込みにはレンダラーを使います。プラグインが HonoX のルートファイルや Document Frame を所有しないことが重要です。
+Taxonomy の一覧や Explorer のような独立した画面には Page Type を使い、Canvas、Bases、Excalidraw のような記事本文への埋め込みにはレンダラーを使います。プラグインが [[framework/honox-integration|HonoX]] のルートファイルや Document Frame を所有しないことが重要です。
 
 Page Type の詳しい仕組みは [Page System](../page-system.ja.md) を参照してください。
 
@@ -239,7 +239,7 @@ rr-search--loading
 | 名前空間 | 用途 |
 | --- | --- |
 | `rb-*` | フレームワークの構造フック |
-| `--rb-*` | フレームワークのセマンティックトークン |
+| `--rb-*` | フレームワークの[[glossary/semantic-token|セマンティックトークン]] |
 | `rr-*` | プラグイン / 機能のフック |
 | `--rr-*` | プラグイン固有のトークン |
 
@@ -252,7 +252,7 @@ rr-feature__*
 rr-feature--*
 ```
 
-テーマから装飾してよい子孫クラスだけを公開フックとして文書化してください。
+[[glossary/theme|テーマ]]から装飾してよい子孫クラスだけを公開フックとして文書化してください。
 
 ## 3-12. クライアントエントリ
 
@@ -328,7 +328,7 @@ addDiagnostics(context) {
 }
 ```
 
-診断は可能な限り構造化データとして返してください。プラグインから次のように独自の CLI 出力を作るのではなく、診断またはロガーを使ってください。
+診断は可能な限り構造化データとして返してください。プラグインから次のように独自の CLI 出力を作るのではなく、診断または[[glossary/logger|ロガー]]を使ってください。
 
 ```ts id="c4x89a"
 console.log(...)
@@ -336,7 +336,7 @@ console.log(...)
 
 ## 3-15. プラグインのキャッシュ
 
-`context.cache` はプラグインごとに分離された**ビルド時のキャッシュ**です。保存してよいのは、次の条件を満たす値だけです。
+`context.cache` はプラグインごとに分離された**ビルド時の[[glossary/cache|キャッシュ]]**です。保存してよいのは、次の条件を満たす値だけです。
 
 - 再生成できる
 - JSON にシリアライズできる

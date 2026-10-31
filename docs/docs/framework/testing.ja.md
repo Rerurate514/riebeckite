@@ -38,7 +38,7 @@ pnpm test:plugin-dx            # Public API だけで書いた Plugin の Unit T
 pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install して検証
 ```
 
-`test:plugin-dx:external` は `@riebeckite/core` と Fixture プラグインを `pnpm pack` し、monorepo の外にある隔離サイトへインストールします。公開済みパッケージだけでプラグインが動作することを確認するテストで、外部に配布するプラグインの回帰検知に使えます。
+`test:plugin-dx:external` は `@riebeckite/core` と Fixture [[glossary/plugin|プラグイン]]を `pnpm pack` し、monorepo の外にある隔離サイトへインストールします。公開済みパッケージだけでプラグインが動作することを確認するテストで、外部に配布するプラグインの回帰検知に使えます。
 
 ## テストを実行する
 
@@ -152,7 +152,7 @@ assert.match(html, /<aside class="rr-tip">/);
 
 ### Level 3: コンテンツとライフサイクル
 
-コンテンツの読み込み、フック、manifest、Page Type を検証する場合は、In-memory の `ContentSource` と `ContentManager` を使います。後述の「Content System をテストする」で示す形と同じです。`getProcessedContent()` はパイプラインとコンテンツフックを通した結果を返し、`getManifest()` は解決済みのプラグインを含む manifest を返します。
+コンテンツの読み込み、フック、manifest、Page Type を検証する場合は、In-memory の `ContentSource` と `ContentManager` を使います。後述の「Content System をテストする」で示す形と同じです。`getProcessedContent()` は[[glossary/pipeline|パイプライン]]と[[glossary/content-hook|コンテンツフック]]を通した結果を返し、`getManifest()` は解決済みのプラグインを含む manifest を返します。
 
 ### Level 4: 公開パッケージの境界
 
@@ -491,7 +491,7 @@ flowchart TD
     Site -->|Yes| E2E["External Site E2E"]
 ```
 
-単純なレンダラーの修正を確認するために External Site E2E を使う必要はありません。逆に、次のような問題は単体テストだけでは十分ではないため、External Site E2E で確認します。
+単純な[[glossary/renderer|レンダラー]]の修正を確認するために External Site E2E を使う必要はありません。逆に、次のような問題は単体テストだけでは十分ではないため、External Site E2E で確認します。
 
 - パッケージの配布形式
 - 外部の利用者からのインポート

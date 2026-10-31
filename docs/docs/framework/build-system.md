@@ -15,29 +15,29 @@ A normal build roughly performs the following work:
 4. Decide which pages and links are published
 5. Collect the information the whole site needs
 6. Emit assets such as images and browser-side code
-7. Build the web site with HonoX
+7. Build the web site with [[framework/honox-integration|HonoX]]
 
 Riebeckite also supports an [[incremental-build|incremental build]] that reuses the previous
 build result and processes only what changed.
 
 ## What a build owns
 
-An explicit build resolves configuration and plugins, reads content, runs content and plugin pipelines, creates the manifest and content graph, emits registered assets and client entries, and records successful incremental state. The HonoX integration then builds the application with the generated entries.
+An explicit build resolves configuration and plugins, reads content, runs content and [[glossary/plugin|plugin]] pipelines, creates the manifest and content graph, emits registered assets and client entries, and records successful incremental state. The HonoX integration then builds the application with the generated entries.
 
-Build state is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. State is saved only after a successful build, so a failure retains the prior valid state.
+[[glossary/build-state|Build state]] is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. State is saved only after a successful build, so a failure retains the prior valid state.
 
 ## Build provenance
 
 Successful builds store a versioned provenance snapshot in the build state. It
-uses the existing content graph, output dependency set, output change reasons,
+uses the existing [[content-graph|content graph]], [[glossary/output-dependency|output dependency]] set, output change reasons,
 and runtime measurements rather than calculating a second dependency graph.
 It records relative source paths and fingerprints; content processing; measured
-plugin hook order and duration; derived-view cache status; and generated,
+plugin hook order and duration; [[derived-data|derived-view]] cache status; and generated,
 reused, or removed output descriptors. A hook's effects stay opaque unless an
 existing dependency record proves a relationship. A cache hit is reuse, never
 execution.
 
-After HonoX finishes SSG, its final output inventory adds SHA-256 fingerprints
+After [[honox-integration|HonoX]] finishes [[glossary/ssg|SSG]], its final output inventory adds SHA-256 fingerprints
 of the actual output bytes. Artifacts without a Core output descriptor are
 explicitly `unmapped`; Core-only builds have no final-byte claim. Provenance is
 observability only: invalid, missing, or unwritable provenance state falls back
@@ -47,7 +47,7 @@ paths, or configuration secrets.
 Records distinguish `measured`, `deterministic`, and `unobservable` evidence.
 A derived-view cache hit is reported as reuse; an executed hook remains
 `opaque` unless existing dependency data proves its input and output. The
-Inspector reads only this persisted snapshot and the private endpoint: it does
+[[framework/inspector|Inspector]] reads only this persisted snapshot and the private endpoint: it does
 not rebuild content, resolve derived views, or mutate build state.
 
 The latest ten snapshots are retained for comparison. Use
@@ -56,7 +56,7 @@ The latest ten snapshots are retained for comparison. Use
 record. `--source <relative-path>` and `--output <path>` filter the latest
 snapshot; `--compare <build-id>` adds the deterministic record delta against a
 retained snapshot; if that build id is not retained, the JSON reports that the
-comparison is unavailable. The development Inspector's Provenance tab and
+comparison is unavailable. The development [[framework/inspector|Inspector]]'s Provenance tab and
 `/__riebeckite/inspector/provenance` endpoint expose the latest read-only
 snapshot through its authenticated private server. Set
 `provenance: { enabled: false }` to skip recording.
@@ -82,10 +82,10 @@ state serialization without changing build output.
 
 ## The build flow
 
-When a build runs, Riebeckite first resolves the configuration and the plugins
+When a build runs, Riebeckite first resolves the configuration and the [[glossary/plugin|plugins]]
 it will use.
 
-It then reads content such as Markdown from the ContentSource and runs the
+It then reads content such as Markdown from the [[glossary/content-source|ContentSource]] and runs the
 configured plugin transformations.
 
 At this point it decides not only how to convert Markdown to HTML but also:
@@ -109,7 +109,7 @@ as the site grows.
 Riebeckite therefore checks what changed since the previous build and processes
 only what is needed.
 
-The previous build information is stored in:
+The previous [[glossary/build-state|build information]] is stored in:
 
 ```text
 .riebeckite/build/content-state.json
@@ -195,7 +195,7 @@ needed.
 Adding or removing content can have a wider effect than editing an existing
 file.
 
-For example, suppose a WikiLink points to a page that does not exist yet, and
+For example, suppose a [[glossary/wikilink|WikiLink]] points to a page that does not exist yet, and
 that page is then added. Before it is added the link cannot resolve; after it is
 added the link resolves to the correct page.
 
@@ -207,7 +207,7 @@ processed.
 
 ## Incremental inputs
 
-`ContentSource` metadata may contain mtime, size, ETag, or a hash. Treat mtime as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. Plugin cache is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
+`ContentSource` metadata may contain mtime, size, ETag, or a hash. Treat mtime as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. [[glossary/plugin-cache|Plugin cache]] is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
 
 State tracks each entry's fingerprint together with its dependencies: the notes it links to (whose resolved permalink it may embed) and the assets it references (whose metadata, such as attachment size, it may render). A changed dependency invalidates the dependent entry and, transitively, its dependents. Added or removed entries change which link targets resolve, so entries that reference an affected target are invalidated as well. On the first build, or when no previous state is available, every note is processed. The `.riebeckite` state directory is build-time state, not content, and is never scanned.
 
@@ -215,7 +215,7 @@ State tracks each entry's fingerprint together with its dependencies: the notes 
 
 The processed Markdown result for each note is stored in `.riebeckite/cache/content/v5`. A build without an entry is a **cold build**. Restoring compatible entries before a later build makes it a **warm build**: unchanged notes can reuse their processed HTML and frontmatter while the normal build still generates `dist/`.
 
-An entry key includes its Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint. The fingerprint includes content-filter configuration, plugin configuration and order, plugin `cacheVersion` and processed-content cache contracts, and the Core compatibility version. Cached content also records logical content, file, and link dependencies; changed or missing dependencies are misses. Unsafe plugins bypass this cache. Cache data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
+An entry key includes its Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint. The fingerprint includes content-filter configuration, plugin configuration and order, plugin `cacheVersion` and processed-content cache contracts, and the Core compatibility version. Cached content also records logical content, file, and link dependencies; changed or missing dependencies are misses. Unsafe plugins bypass this cache. [[glossary/cache|Cache]] data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
 
 This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; a filesystem access failure still fails the build because it requires attention. The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`, plus a concise `Content` line (total, processed, and reused counts) and the total `Build complete` duration. A `Content processing` line reports the content phase's wall time and its inclusive span breakdown (scan, process, markdown, manifest, graph); because the spans overlap, they do not add up to the total.
 
@@ -247,7 +247,7 @@ was used:
 
 ### Caching in GitHub Actions
 
-For GitHub Actions, cache the incremental build state and the output cache — `.riebeckite/cache`, `.riebeckite/build/content-state.json`, `.riebeckite/ssg-output-cache.json`, its `.riebeckite/ssg-output-cache.entries` directory, and the `.riebeckite/ssg-output-cache.fast-path.json` sidecar — but not `dist/`. The generated Cloudflare workflow restores all of these between runs so CI gets the same incremental SSG as a local build. A restored output cache that fails its integrity or fingerprint checks is discarded and every output is re-rendered. See [GitHub Actions](../guides/deployment/github-actions.md).
+For [[guides/deployment/github-actions|GitHub Actions]], cache the incremental build state and the output cache — `.riebeckite/cache`, `.riebeckite/build/content-state.json`, `.riebeckite/ssg-output-cache.json`, its `.riebeckite/ssg-output-cache.entries` directory, and the `.riebeckite/ssg-output-cache.fast-path.json` sidecar — but not `dist/`. The generated Cloudflare workflow restores all of these between runs so CI gets the same incremental [[glossary/ssg|SSG]] as a local build. A restored output cache that fails its integrity or fingerprint checks is discarded and every output is re-rendered. See [GitHub Actions](../guides/deployment/github-actions.md).
 
 ## Output-level incremental SSG
 
@@ -257,13 +257,13 @@ The state and output cache are optimizations. A missing, incompatible, malformed
 
 ## Plugin cache
 
-Plugin cache is a mechanism for a plugin itself to store intermediate results
+[[glossary/plugin-cache|Plugin cache]] is a mechanism for a plugin itself to store intermediate results
 temporarily.
 
 For example, when the same computation does not need to run on every build, a
 plugin can store the result and reuse it on the next build.
 
-Plugin cache has the following characteristics:
+[[glossary/plugin|Plugin]] cache has the following characteristics:
 
 - stored separately per plugin
 - handles data that can be stored as JSON

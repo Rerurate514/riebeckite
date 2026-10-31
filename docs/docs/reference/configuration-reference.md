@@ -96,7 +96,7 @@ site: {
 | `directory` | `string` | `"content"` | Filesystem directory containing the content. |
 | `source` | `ContentSource` | `undefined` | Custom reader. Replaces the filesystem reader. |
 | `exclude` | `string[]` | `[]` | Glob patterns removed before content is processed. |
-| `filters.publishStrategy` | `"explicit"` \| `"selective"` | `"explicit"` | Default publishing policy. Frontmatter can override it per note. |
+| `filters.publishStrategy` | `"explicit"` \| `"selective"` | `"explicit"` | Default publishing policy. [[glossary/frontmatter|Frontmatter]] can override it per note. |
 
 ### content.directory
 

@@ -94,7 +94,7 @@ riebeckite plugin verify ./packages/my-plugin --level full --json
 `basic` (the default) checks `package.json`, exports, declaration targets, and
 declared client/CSS subpaths. `integration` runs a trusted fixture registered
 for the exact package name and directory. Such a fixture typically packs the
-package, installs it in an isolated consumer, builds a HonoX site, and asserts
+package, installs it in an isolated consumer, builds a [[framework/honox-integration|HonoX]] site, and asserts
 the generated output; integration does not imply browser verification. `full`
 also runs the registered browser fixture. `full` additionally runs `pnpm pack`
 and verifies the tarball contains the distribution manifest and `dist/`. The
@@ -118,7 +118,7 @@ is inspected rather than executed. A temporary directory is not a security
 sandbox. A fixture is marked as a browser fixture only when it launches a
 browser; a build-only fixture is never reported as browser-verified.
 
-For Markdown transforms, Plugin Runtime/capability resolution, HonoX rendering,
+For Markdown transforms, [[glossary/plugin|Plugin]] Runtime/capability resolution, HonoX rendering,
 publication boundaries, and browser lifecycle behavior, keep focused tests in
 the plugin or site fixture. The Meta Bind fixture under
 `tests/plugin-contracts/meta-bind` covers its tarball, HonoX output, client

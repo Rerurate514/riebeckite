@@ -143,6 +143,18 @@ export async function loadOutputCache(
   timingsMs?: Record<string, number>,
   log: (message: string) => void = () => {},
 ): Promise<(OutputCacheState & { fileSizeBytes?: number }) | undefined> {
+  const cache = await loadOutputCacheMetadata(path, timingsMs, log);
+  if (!cache) return undefined;
+  if (!(await validateOutputCache(cache, path, timingsMs, log)))
+    return undefined;
+  return cache;
+}
+
+export async function loadOutputCacheMetadata(
+  path: string,
+  timingsMs?: Record<string, number>,
+  log: (message: string) => void = () => {},
+): Promise<(OutputCacheState & { fileSizeBytes?: number }) | undefined> {
   if (!(await isSafeOutputCacheDirectory(dirname(path)))) {
     log("SSG output cache directory is unsafe and will be ignored.");
     return undefined;
@@ -181,18 +193,25 @@ export async function loadOutputCache(
     log("SSG output cache uses an unsupported format and will be rebuilt.");
     return undefined;
   }
-  const entriesAreValid = await measure(
-    timingsMs,
-    "outputCacheEntriesValidate",
-    () => validateOutputCacheEntries(path, parsed.outputs, timingsMs),
-  );
-  if (!entriesAreValid) {
-    log("SSG output cache entries are corrupted and will be rebuilt.");
-    return undefined;
-  }
   return timingsMs
     ? { ...parsed, fileSizeBytes: Buffer.byteLength(raw) }
     : parsed;
+}
+
+export async function validateOutputCache(
+  cache: OutputCacheState,
+  path: string,
+  timingsMs?: Record<string, number>,
+  log: (message: string) => void = () => {},
+): Promise<boolean> {
+  const entriesAreValid = await measure(
+    timingsMs,
+    "outputCacheEntriesValidate",
+    () => validateOutputCacheEntries(path, cache.outputs, timingsMs),
+  );
+  if (entriesAreValid) return true;
+  log("SSG output cache entries are corrupted and will be rebuilt.");
+  return false;
 }
 
 export async function saveOutputCache(

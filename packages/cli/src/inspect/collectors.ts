@@ -24,6 +24,7 @@ import type {
   ContentInspection,
   GraphInspection,
   PluginInspection,
+  ProvenanceInspection,
 } from "./types.js";
 
 export async function collectApplicationInspection(
@@ -201,6 +202,18 @@ export async function collectBuildInspection(
             : (cacheability.reason ?? "persistent content caching is disabled"),
         }),
   };
+}
+
+export async function collectProvenanceInspection(
+  project: RiebeckiteProject,
+): Promise<ProvenanceInspection> {
+  const config = await loadProjectConfig(project);
+  const statePath = resolveContentBuildStatePath(config, undefined);
+  const state = await loadContentBuildState(statePath);
+  if (!state) return { status: "unavailable", reason: "no valid build state" };
+  if (!state.provenance)
+    return { status: "unavailable", reason: "provenance was not recorded" };
+  return { status: "available", provenance: state.provenance };
 }
 
 function displayPath(value: string, invocationCwd: string): string {

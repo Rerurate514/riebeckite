@@ -72,6 +72,7 @@ export type Command =
       target?: InspectTarget;
       list: boolean;
       path?: string;
+      json: boolean;
     }
   | {
       name: "create-plugin";
@@ -583,9 +584,10 @@ function parseInitCommand(options: readonly string[]): Command {
 }
 
 function parseInspectCommand(options: readonly string[]): Command {
-  if (options.length === 0) return { name: "inspect", list: false };
+  if (options.length === 0)
+    return { name: "inspect", list: false, json: false };
   if (options.length === 1 && isInspectTarget(options[0])) {
-    return { name: "inspect", target: options[0], list: false };
+    return { name: "inspect", target: options[0], list: false, json: false };
   }
   if (options[0] === "content") {
     let list = false;
@@ -615,18 +617,34 @@ function parseInspectCommand(options: readonly string[]): Command {
       name: "inspect",
       target: "content",
       list,
+      json: false,
       ...(path ? { path } : {}),
     };
+  }
+
+  if (options[0] === "provenance") {
+    if (options.length === 1) {
+      return {
+        name: "inspect",
+        target: "provenance",
+        list: false,
+        json: false,
+      };
+    }
+    if (options.length === 2 && options[1] === "--json") {
+      return { name: "inspect", target: "provenance", list: false, json: true };
+    }
+    throw new CliUsageError("Usage: riebeckite inspect provenance [--json]");
   }
 
   const target = options[0] ?? "";
   if (target && !isInspectTarget(target)) {
     throw new CliUsageError(
-      `Unknown inspect target: ${target}\n\nAvailable:\n  config\n  plugins\n  content\n  graph\n  build`,
+      `Unknown inspect target: ${target}\n\nAvailable:\n  config\n  plugins\n  content\n  graph\n  build\n  provenance`,
     );
   }
   throw new CliUsageError(
-    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]",
+    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance [--json]]",
   );
 }
 
@@ -636,6 +654,7 @@ function isInspectTarget(value: string | undefined): value is InspectTarget {
     value === "plugins" ||
     value === "content" ||
     value === "graph" ||
-    value === "build"
+    value === "build" ||
+    value === "provenance"
   );
 }

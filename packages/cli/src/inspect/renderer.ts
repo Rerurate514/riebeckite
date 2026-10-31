@@ -5,6 +5,7 @@ import type {
   ContentInspection,
   GraphInspection,
   PluginInspection,
+  ProvenanceInspection,
 } from "./types.js";
 
 const buildStateInvalidReasonLabels = {
@@ -202,6 +203,25 @@ export function renderBuildInspection(inspection: BuildInspection): string {
     ...(inspection.status === "invalid"
       ? [field("Reason", buildStateInvalidReasonLabels[inspection.reason])]
       : []),
+  ].join("\n");
+}
+
+export function renderProvenanceInspection(
+  inspection: ProvenanceInspection,
+): string {
+  if (inspection.status === "unavailable") {
+    return ["Build Provenance", "", field("Status", inspection.reason)].join(
+      "\n",
+    );
+  }
+  const { provenance } = inspection;
+  return [
+    "Build Provenance",
+    "",
+    field("Build", provenance.buildId),
+    field("Sources", provenance.sources.length),
+    field("Transforms", provenance.transforms.length),
+    field("Outputs", provenance.outputs.length),
   ].join("\n");
 }
 

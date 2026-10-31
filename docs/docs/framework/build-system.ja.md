@@ -18,6 +18,12 @@ Riebeckite のビルドシステムは、Markdown などのコンテンツと設
 
 Riebeckite は、前回のビルド結果を利用して、変更された部分だけを処理する [[incremental-build|増分ビルド]]にも対応しています。
 
+## ビルド来歴
+
+正常に完了したビルドでは、バージョン付きの来歴スナップショットもビルド状態に保存します。相対パスとフィンガープリント、記録されたコンテンツ処理と Derived View のキャッシュ状態、既存の出力依存関係と変更理由を結び付けます。Markdown の本文、絶対パス、設定内の秘密情報は保存しません。
+
+`riebeckite inspect provenance` で要約を確認でき、`--json` を付けると保存済みの機械可読なスナップショットを出力します。開発 Inspector では、認証済みの private inspector server 経由で同じ読み取り専用データを `/__riebeckite/inspector/provenance` に公開します。記録を省略するには `provenance: { enabled: false }` を設定します。実行時に計測できないプラグインフックは不透明として扱い、キャッシュヒットは実行ではなく再利用として表示します。
+
 ## ビルドの流れ
 
 ビルドを実行すると、Riebeckite はまず設定と使用するプラグインを読み込みます。

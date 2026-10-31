@@ -39,6 +39,7 @@ const reportPath = "/__riebeckite/inspector/report";
 const outputPath = "/__riebeckite/inspector/output";
 const graphPath = "/__riebeckite/inspector/graph";
 const pluginsPath = "/__riebeckite/inspector/plugins";
+const provenancePath = "/__riebeckite/inspector/provenance";
 const bootstrapPath = "/__riebeckite/inspector/bootstrap";
 const inspectorTokenHeader = "x-riebeckite-inspector-token";
 const listedOutputLimit = 20;
@@ -376,12 +377,37 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_PLUGINS_FAILED" }));
         }
       };
+      const provenanceMiddleware = async (
+        _request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        try {
+          const application = getApplication();
+          const entry = inspectApplication(application, revision, server);
+          const snapshot = await entry.snapshot;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.end(
+            JSON.stringify({
+              version: 1,
+              revision: entry.revision,
+              generatedAt: new Date().toISOString(),
+              provenance: snapshot?.provenance ?? null,
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_PROVENANCE_FAILED" }));
+        }
+      };
       const privateServer = http.createServer((request, response) => {
         void handleInspectorRequest(request, response, token, {
           [reportPath]: reportMiddleware,
           [outputPath]: outputMiddleware,
           [graphPath]: graphMiddleware,
           [pluginsPath]: pluginsMiddleware,
+          [provenancePath]: provenanceMiddleware,
         });
       });
       const privateReady = new Promise<void>((resolve, reject) => {

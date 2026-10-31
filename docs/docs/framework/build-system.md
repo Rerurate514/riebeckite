@@ -26,6 +26,20 @@ An explicit build resolves configuration and plugins, reads content, runs conten
 
 Build state is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. State is saved only after a successful build, so a failure retains the prior valid state.
 
+## Build provenance
+
+Successful builds also store a versioned provenance snapshot in the build state.
+It connects relative source paths and fingerprints, recorded content processing and
+derived-view cache status, and the existing output dependency/change reasons. It
+does not include Markdown contents, absolute paths, or configuration secrets.
+
+Use `riebeckite inspect provenance` for a summary, or add `--json` for the
+persisted machine-readable snapshot. The development inspector exposes the same
+read-only data at `/__riebeckite/inspector/provenance` through its authenticated
+private inspector server. Set `provenance: { enabled: false }` to skip recording.
+Plugin hooks are deliberately reported as opaque unless the runtime has measured
+their result; a cache hit is reported as reuse, not execution.
+
 ## The build flow
 
 When a build runs, Riebeckite first resolves the configuration and the plugins

@@ -6,6 +6,7 @@ import {
   collectContentInspection,
   collectGraphInspection,
   collectPluginInspections,
+  collectProvenanceInspection,
 } from "../inspect/collectors.js";
 import {
   renderApplicationInspection,
@@ -15,6 +16,7 @@ import {
   renderContentInspection,
   renderGraphInspection,
   renderPluginInspections,
+  renderProvenanceInspection,
 } from "../inspect/renderer.js";
 import { loadProjectConfig } from "../load_config.js";
 
@@ -23,11 +25,17 @@ export type InspectTarget =
   | "plugins"
   | "content"
   | "graph"
-  | "build";
+  | "build"
+  | "provenance";
 
 export async function runInspect(
   project: RiebeckiteProject,
-  options: { target?: InspectTarget; list: boolean; path?: string },
+  options: {
+    target?: InspectTarget;
+    list: boolean;
+    path?: string;
+    json: boolean;
+  },
 ): Promise<void> {
   if (!options.target) {
     console.log(
@@ -64,6 +72,15 @@ export async function runInspect(
   }
   if (options.target === "graph") {
     console.log(renderGraphInspection(await collectGraphInspection(project)));
+    return;
+  }
+  if (options.target === "provenance") {
+    const inspection = await collectProvenanceInspection(project);
+    console.log(
+      options.json
+        ? JSON.stringify(inspection, undefined, 2)
+        : renderProvenanceInspection(inspection),
+    );
     return;
   }
 

@@ -259,7 +259,7 @@ import Backlinks from "@riebeckite/plugin-backlinks/components";
 
 プラグインのコンポーネントによっては、現在のページのデータを自分で解決します。`SiteProvider`と、公開された`entry`を持つ`Article`の内側ではコンテキストから読み取るため、サイトはデータを明示的に渡さずに描画できます。`props`を渡した場合は、常にコンテキストより優先されます。
 
-詳しくは[UIコンポーネント](../reference/plugin-api.ja.md#uiコンポーネント)と[UIの提供方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
+詳しくは[UIコンポーネント](../reference/plugin-api/ui-and-assets.ja.md#uiコンポーネント)と[UIの提供方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
 
 ## 操作できるUIを作る
 
@@ -289,7 +289,7 @@ Riebeckiteがプラグインやテーマから生成したCSSは、サイトのC
 
 `app/.riebeckite/`のファイルは自動生成されるため、直接編集しないでください。
 
-プラグインの見た目を上書きするときは`rr-<feature>`、RiebeckiteのUIプリミティブを調整するときは`rb-*`のCSSフックを利用できます。詳しくは[CSSフック](../reference/plugin-api.ja.md#cssフック)を参照してください。
+プラグインの見た目を上書きするときは`rr-<feature>`、RiebeckiteのUIプリミティブを調整するときは`rb-*`のCSSフックを利用できます。詳しくは[CSSフック](../reference/plugin-api/ui-and-assets.ja.md#cssフック)を参照してください。
 
 ## 迷ったときの目安
 

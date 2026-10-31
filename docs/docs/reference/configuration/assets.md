@@ -119,4 +119,4 @@ The build emits images
 referenced by published content. Attachment cards and audio/video embeds render
 URLs under `/assets/attachments/<logical path>`, and the site application must
 copy those files into `public/assets/attachments/` before build if you want them
-served after deployment. See [Separate Content Repository](../../guides/deployment/separate-content-repository.md#4-3-content-images-and-attachments-are-published-differently) for the detailed data flow.
+served after deployment. See [Separate Content Repository](../../guides/deployment/separate-content-repository/publishing.md#4-3-content-images-and-attachments-are-published-differently) for the detailed data flow.

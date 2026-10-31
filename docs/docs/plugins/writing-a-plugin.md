@@ -577,7 +577,7 @@ A package you distribute should be verified by packing its tarball and installin
 
 ## 4. Add a standalone page when needed
 
-Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api.md#manifest-collections-and-publication-safety).
+Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while the site's shared catch-all route applies the document frame and Theme. When a page lists entries, read `manifest.discoverableEntries`; reserve `manifest.publicEntries` (which includes `unlisted`) and `manifest.entries` (which includes `draft` and `scheduled`) for the cases that genuinely need them. See [Manifest collections and publication safety](../reference/plugin-api/content-processing.md#manifest-collections-and-publication-safety).
 
 Do not add Plugin-specific HonoX routes. Content embeds such as Canvas, Bases, and Excalidraw remain `renderers`.
 
@@ -585,9 +585,9 @@ See [Page System](../framework/page-system.md) for ownership, path resolution, a
 
 ## 5. Package it when needed
 
-Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api.md#distributing-a-plugin-outside-this-repository). Pass those exported subpaths explicitly to `createStyleAsset()` and `createClientEntry()`.
+Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository). Pass those exported subpaths explicitly to `createStyleAsset()` and `createClientEntry()`.
 
-For the directive plugin above, declare `@riebeckite/core` and `unist-util-visit` in `dependencies` and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api.md#distributing-a-plugin-outside-this-repository).
+For the directive plugin above, declare `@riebeckite/core` and `unist-util-visit` in `dependencies` and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository).
 
 ## 6. Validate it
 
@@ -631,7 +631,7 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [UI components](../reference/plugin-api.md#ui-components) for the helper and component contract.
+The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [UI components](../reference/plugin-api/ui-and-assets.md#ui-components) for the helper and component contract.
 
 ### Manual placement with a Hono JSX component
 
@@ -656,7 +656,7 @@ The deciding question is **who places it**. A JSX component lets the Site choose
 
 ### Browser enhancement and Islands
 
-Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry. For browser behavior, either contribute a `clientEntries` initializer that enhances the server-rendered DOM, or let the Site wrap the Plugin's component in its own HonoX Island when component state is needed. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Client entries](../reference/plugin-api.md#assets-and-client-entries).
+Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry. For browser behavior, either contribute a `clientEntries` initializer that enhances the server-rendered DOM, or let the Site wrap the Plugin's component in its own HonoX Island when component state is needed. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
 
 ## Related
 

@@ -482,4 +482,4 @@ HonoX Integration
 
 この境界があるため、プラグインはHonoXや特定のサイト構造に依存せず、インストールするだけで独立ページを提供できます。
 
-ページ種別の全フィールドと実行時検証については [プラグインAPI](../reference/plugin-api.ja.md#プラグインが提供する独立ページ)、サイトとの接続については [HonoXとの統合](./honox-integration.ja.md) を参照してください。
+ページ種別の全フィールドと実行時検証については [プラグインAPI](../reference/plugin-api/content-processing.ja.md#プラグインが提供する独立ページ)、サイトとの接続については [HonoXとの統合](./honox-integration.ja.md) を参照してください。

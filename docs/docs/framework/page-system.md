@@ -522,5 +522,5 @@ return HTML it is responsible for generating; an application must not treat
 untrusted request input as a page body.
 
 For the complete fields and runtime validation rules, see the
-[Plugin API](../reference/plugin-api.md#pages). For the site connection, see
+[Plugin API](../reference/plugin-api/content-processing.md#pages). For the site connection, see
 [HonoX Integration](./honox-integration.md).

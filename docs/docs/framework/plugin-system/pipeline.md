@@ -109,7 +109,7 @@ flowchart LR
     Integration --> Site
 ```
 
-Page Type IDs are validated at runtime and must be unique. If more than one type resolves a request, the greatest priority wins; a tie is an error. Use the resolved manifest passed to the resolver, reading `manifest.publicEntries` or `manifest.discoverableEntries` rather than `manifest.entries`. The application wires `resolveRiebeckiteRoute` and `pluginPageSsgParams` into its catch-all route; the scaffold does this already. See [Page System](../page-system.md) for the full rendering flow and [Plugin API](../../reference/plugin-api.md#pages) for the contract.
+Page Type IDs are validated at runtime and must be unique. If more than one type resolves a request, the greatest priority wins; a tie is an error. Use the resolved manifest passed to the resolver, reading `manifest.publicEntries` or `manifest.discoverableEntries` rather than `manifest.entries`. The application wires `resolveRiebeckiteRoute` and `pluginPageSsgParams` into its catch-all route; the scaffold does this already. See [Page System](../page-system.md) for the full rendering flow and [Plugin API](../../reference/plugin-api/content-processing.md#pages) for the contract.
 
 ## 3-10. Assets
 

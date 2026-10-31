@@ -71,7 +71,7 @@ import {
 
 すべてのプラグインに`client.ts`、`style.css`、`components/`が必要なわけではありません。実際に使うものだけを作成してください。
 
-公開するときは、ビルド済みのESMと型定義を公開し、`exports`をビルド成果物へ向けます。`prepack`スクリプトでビルドし、パッケージングと公開のたびに新しい成果物を含めます。リポジトリのビルドスクリプトは公開されないため、小さなビルドを用意してください。`esbuild`（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）でエントリをまとめ、`tsc --emitDeclarationOnly`で型定義を出力します。最小構成の`package.json`は[リポジトリ外へプラグインを配布する](../../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する)を参照してください。
+公開するときは、ビルド済みのESMと型定義を公開し、`exports`をビルド成果物へ向けます。`prepack`スクリプトでビルドし、パッケージングと公開のたびに新しい成果物を含めます。リポジトリのビルドスクリプトは公開されないため、小さなビルドを用意してください。`esbuild`（`format: "esm"`、`packages: "external"`、`external: ["@riebeckite/*"]`）でエントリをまとめ、`tsc --emitDeclarationOnly`で型定義を出力します。最小構成の`package.json`は[リポジトリ外へプラグインを配布する](../../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する)を参照してください。
 
 NodeNext / ESMのパッケージでは、ビルド後もNode.jsがimportを解決できる必要があります。開発時のTypeScriptローダーが拡張子なしのimportを解決できている状態に依存しないでください。パッケージの正しさはソースコードだけでなく、**ビルド後の配布形式でも確認する**必要があります。
 

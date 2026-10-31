@@ -76,7 +76,7 @@ import {
 Not every plugin needs `client.ts`, `style.css`, or `components/` — create only
 what it actually uses. For the package surface and current constraints, see "Public packages and import paths" in [Framework Reference](../../reference/README.md).
 
-Publish built ESM plus type declarations and point `exports` at the built files; build them in a `prepack` script so packing and publishing ship fresh output. The repository's build script is not published, so supply a small build: bundle the entry points with `esbuild` (`format: "esm"`, `packages: "external"`, `external: ["@riebeckite/*"]`) and emit declarations with `tsc --emitDeclarationOnly`. See [Distributing a Plugin outside this repository](../../reference/plugin-api.md#distributing-a-plugin-outside-this-repository) for a minimal manifest.
+Publish built ESM plus type declarations and point `exports` at the built files; build them in a `prepack` script so packing and publishing ship fresh output. The repository's build script is not published, so supply a small build: bundle the entry points with `esbuild` (`format: "esm"`, `packages: "external"`, `external: ["@riebeckite/*"]`) and emit declarations with `tsc --emitDeclarationOnly`. See [Distributing a Plugin outside this repository](../../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository) for a minimal manifest.
 
 In NodeNext/ESM packages, keep imports resolvable by Node after the build. Do not rely on the development TypeScript loader accidentally resolving extensionless imports. A package's correctness must be checked not only from its source code but also **from the built distribution form**.
 

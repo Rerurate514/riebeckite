@@ -657,7 +657,7 @@ const manifest = await manager.getManifest();
 
 ## 4. 独立したページを追加する（必要な場合）
 
-独立したページには `pageTypes` を使います。Page Type は HTML の body を返し、サイト共通の catch-all ルートがドキュメントの枠とテーマを適用します。ページでエントリを一覧するときは `manifest.discoverableEntries` を読んでください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft` や `scheduled` を含む）は、本当に必要な場面だけに取っておきます。詳しくは [Manifest のコレクションと公開境界](../reference/plugin-api.ja.md#マニフェストのコレクションと公開範囲) を参照してください。プラグイン固有の HonoX ルートは追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは、これまでどおり `renderers` で扱います。
+独立したページには `pageTypes` を使います。Page Type は HTML の body を返し、サイト共通の catch-all ルートがドキュメントの枠とテーマを適用します。ページでエントリを一覧するときは `manifest.discoverableEntries` を読んでください。`manifest.publicEntries`（`unlisted` を含む）と `manifest.entries`（`draft` や `scheduled` を含む）は、本当に必要な場面だけに取っておきます。詳しくは [Manifest のコレクションと公開境界](../reference/plugin-api/content-processing.ja.md#マニフェストのコレクションと公開範囲) を参照してください。プラグイン固有の HonoX ルートは追加しません。Canvas、Bases、Excalidraw のような記事本文への埋め込みは、これまでどおり `renderers` で扱います。
 
 ```ts
 pageTypes: [{
@@ -686,9 +686,9 @@ packages/plugins/backlinks/
 └─ README.md
 ```
 
-外部に配布するプラグインは `@riebeckite/core` だけに依存し、自パッケージのサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
+外部に配布するプラグインは `@riebeckite/core` だけに依存し、自パッケージのサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
 
-このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) にあります。
+このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) にあります。
 
 ## 6. 検証する
 
@@ -739,7 +739,7 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [UI コンポーネント](../reference/plugin-api.ja.md#uiコンポーネント) を参照してください。
+ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [UI コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#uiコンポーネント) を参照してください。
 
 ### Hono JSX コンポーネントで手動配置する
 
@@ -764,7 +764,7 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### ブラウザ側の強化と Island
 
-プラグインは `app/islands/` を所有しません。Riebeckite にもプラグイン用の Island レジストリはありません。ブラウザ側の動作が必要な場合は、サーバーで描画済みの DOM を強化する `clientEntries` の初期化関数を提供します。コンポーネントの状態が必要なら、サイト側がプラグインのコンポーネントを自分の HonoX Island で包みます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [クライアントエントリ](../reference/plugin-api.ja.md#クライアントエントリ) を参照してください。
+プラグインは `app/islands/` を所有しません。Riebeckite にもプラグイン用の Island レジストリはありません。ブラウザ側の動作が必要な場合は、サーバーで描画済みの DOM を強化する `clientEntries` の初期化関数を提供します。コンポーネントの状態が必要なら、サイト側がプラグインのコンポーネントを自分の HonoX Island で包みます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
 
 ## 関連資料
 

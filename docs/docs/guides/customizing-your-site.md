@@ -321,7 +321,7 @@ Some plugin components resolve the current page data themselves. Inside
 context, so the Site can render them without passing data explicitly. Explicit
 props always override the context.
 
-See [UI components](../reference/plugin-api.md#ui-components) and
+See [UI components](../reference/plugin-api/ui-and-assets.md#ui-components) and
 [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
 
 ## Building interactive UI
@@ -361,7 +361,7 @@ CSS:
 Do not edit files under `app/.riebeckite/`; they are generated. To override
 plugin appearance use the `rr-<feature>` root hook, and to adjust the Riebeckite
 UI primitives use the `rb-*` structural hooks. See
-[CSS hooks](../reference/plugin-api.md#css-hooks).
+[CSS hooks](../reference/plugin-api/ui-and-assets.md#css-hooks).
 
 ## Rules of thumb
 

@@ -4,20 +4,20 @@ title: 公開ワークフロー
 ---
 # 公開ワークフロー
 
-Publication Workflow は、既存の静的ビルドの上に、公開計画、予約公開、公開前検証、承認、デプロイ診断を追加します。`push → build → deploy` という単純な経路はそのまま動作します。`riebeckite publish` を一度も実行しないサイトの挙動は変わりません。
+Publication Workflow は、既存の静的ビルドに公開計画、予約公開、公開前検証、承認、デプロイ診断を追加します。従来の `push → build → deploy` という単純な経路もそのまま使えます。`riebeckite publish` を一度も実行しないサイトの挙動は変わりません。
 
-構成は4つです。
+仕組みは次の4つです。
 
 1. **Publication Planner** — 解決済みのコンテンツマニフェストから公開計画を作る Core API。
 2. **Workflow** — draft、review、approved、published、retracted の状態。承認は任意です。
 3. **Hosting adapter** — Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel のデプロイ方法と機能差。
 4. **Diagnostics** — ローカル検証、成果物の Fingerprint、公開履歴。
 
-Riebeckite Core は GitHub や Cloudflare を直接呼びません。Adapter と履歴は CLI にあり、認証情報はデプロイするコマンドの環境変数から出ません。
+Riebeckite Core は GitHub や Cloudflare を直接呼びません。Adapter と履歴は CLI にあり、認証情報はデプロイするコマンドの環境変数の中にとどまります。
 
 ## 公開計画は公開判定を二重実装しない
 
-Planner は `ContentManifestEntry.publishing` を読みます。これは既存の `resolvePublishingState` が生成した結果です。したがって Draft、Scheduled、Unlisted、Public の判定はビルド時に一度だけ行われ、Planner はその結果を観測するだけです。`manifest.publicRedirects` も読むため、公開されていないリダイレクト先が計画や成果物に入ることはありません。
+Planner は `ContentManifestEntry.publishing` を読みます。これは既存の `resolvePublishingState` が生成した結果です。そのため Draft、Scheduled、Unlisted、Public の判定はビルド時に一度だけ行われ、Planner はその結果を参照するだけです。`manifest.publicRedirects` も読むので、公開されていないリダイレクト先が計画や成果物に入ることはありません。
 
 | Visibility | ルーティング | 発見可能 | Planner の分類 |
 | --- | ---: | ---: | --- |
@@ -26,7 +26,7 @@ Planner は `ContentManifestEntry.publishing` を読みます。これは既存�
 | `scheduled` | `publishAt` までなし | なし | scheduled |
 | `draft` | なし | なし | draft |
 
-`publishAt` は境界を含みます。`publishAt: 2026-01-10T09:00:00+09:00` のノートは `2026-01-10T00:00:00.000Z` から公開されます。端末のローカルタイムではなく、指定されたオフセットで判定されます。
+`publishAt` はその時刻を含みます。`publishAt: 2026-01-10T09:00:00+09:00` のノートは `2026-01-10T00:00:00.000Z` から公開されます。判定には端末のローカルタイムではなく、指定されたオフセットを使います。
 
 ## Core API
 
@@ -46,7 +46,7 @@ const plan = createPublicationPlan({
 });
 ```
 
-計画は JSON にできます。内容は次のとおりです。
+計画は JSON にシリアライズできます。内容は次のとおりです。
 
 - `targets.public`、`targets.unlisted`、`targets.scheduled`、`targets.drafts`
 - `nextPublicationAt` — 未来の `publishAt` のうち最も早いもの
@@ -57,13 +57,13 @@ const plan = createPublicationPlan({
 - `action` — `none`、`build-and-deploy`、`blocked`
 - `build` と `deploy` の真偽値、および `reasons`
 
-`createPublicationSnapshot(plan, { runId })` は次回の比較に使う記録を作ります。スナップショットには公開対象のエントリ、Fingerprint、リダイレクトだけが入り、本文や認証情報は入りません。
+`createPublicationSnapshot(plan, { runId })` は、次回の比較に使う記録を作ります。スナップショットに入るのは公開対象のエントリ、Fingerprint、リダイレクトだけです。本文や認証情報は入りません。
 
 ## 予約公開
 
-予約されたノートは `publishAt` より前はルーティング対象外としてビルドされます。時刻を過ぎると、次のビルドで public として解決されます。Planner は Fingerprint の変化を見て build と deploy を計画するため、内容を編集していない予約公開もサイトに反映されます。既存のビルド状態は `nextPublishingChangeAt` を記録しており、その時刻を過ぎると出力の再利用を停止します。
+予約されたノートは、`publishAt` より前はルーティング対象外としてビルドされます。時刻を過ぎると、次のビルドで public として解決されます。内容を編集していない予約公開も、Fingerprint の変化から Planner が build と deploy を計画するため、サイトに反映されます。既存のビルド状態は `nextPublishingChangeAt` を記録しており、その時刻を過ぎると出力の再利用を停止します。
 
-Riebeckite がスケジューラーを持たない環境では、予約はベストエフォートです。
+Riebeckite がスケジューラーを持たない環境では、予約公開はベストエフォートで動作します。
 
 | Host | Scheduler | 意味 |
 | --- | --- | --- |
@@ -71,11 +71,11 @@ Riebeckite がスケジューラーを持たない環境では、予約はベス
 | Cloudflare Workers / Pages | `none` | CI または手動で `publish run` を実行する。 |
 | Netlify / Vercel | `none` | Cloudflare と同じ。 |
 
-遅延した実行が古い内容を公開することはありません。実行時に計画を再計算します。実行が抜けた場合も、次の成功した実行で回復します。
+遅延した実行が古い内容を公開することはありません。計画は実行時に再計算されます。実行が抜けても、次の成功した実行で回復します。
 
 ## 承認ワークフロー
 
-承認は任意です。既定では承認手続きのない単一の公開モデルです。
+承認は任意です。既定では、承認手続きのない単一の公開モデルを使います。
 
 ```ts
 export default defineConfig({
@@ -83,7 +83,7 @@ export default defineConfig({
 });
 ```
 
-計画、成果物、永続状態の検査は常に実行されます。その上で承認を追加するには次のように設定します。
+計画、成果物、永続状態の検査は常に実行されます。承認を追加する場合は、その上で次のように設定します。
 
 ```ts
 publication: {
@@ -92,7 +92,7 @@ publication: {
 },
 ```
 
-共通ゲート（`riebeckite publish gate`）は publish ワークフロー、`publish run`、Cloudflare のセットアップ補助で実行されます。`wrangler` を直接呼ぶ経路は Riebeckite の管理外なので、ワークフローファイルとリポジトリ設定も保護してください。
+共通ゲート（`riebeckite publish gate`）は、publish ワークフロー、`publish run`、Cloudflare のセットアップ補助で実行されます。`wrangler` を直接呼ぶ経路は Riebeckite の管理外なので、ワークフローファイルとリポジトリ設定も保護してください。
 
 レビューが必要な場合は設定の `requireApproval: true`、Core API の `workflow: "approved"`、または CLI の `--require-approval` を使います。
 
@@ -102,18 +102,18 @@ riebeckite publish revoke <slug> [--all]
 riebeckite publish plan --require-approval
 ```
 
-承認記録はプロジェクトルートの `publication/approvals.json` に保存されます。各記録は slug と、そのノートのコンテンツ Fingerprint（slug、permalink、title、レンダリング済み HTML、リダイレクト）を結び付けます。ノートを編集すると承認は無効になります。予約ノートは、Fingerprint がスケジュール項目を含まないため、`publishAt` を迎えても再承認は不要です。
+承認記録はプロジェクトルートの `publication/approvals.json` に保存されます。各記録は slug と、そのノートのコンテンツ Fingerprint を結び付けます。Fingerprint には slug、permalink、title、レンダリング済み HTML、リダイレクトが含まれます。ノートを編集すると承認は無効になります。予約ノートの Fingerprint はスケジュール項目を含まないため、`publishAt` を迎えても再承認は不要です。
 
-信頼できるのは、CI がチェックアウトするブランチにコミットされた承認ファイルだけです。CLI はファイルを書きますが、それ自体で信頼を付与することはなく、ファイルに秘密情報は入りません。個人サイトはこの仕組みを使わなくて構いません。チームは `publication/approvals.json` を branch protection や CODEOWNERS で保護できます。`publish revoke` は記録を削除し、次の計画は `review` に戻ります。
+信頼できるのは、CI がチェックアウトするブランチにコミットされた承認ファイルだけです。CLI はファイルを書き出しますが、書き出したこと自体で信頼が生まれるわけではありません。ファイルに秘密情報は入りません。個人サイトではこの仕組みを使わなくても構いません。チームは `publication/approvals.json` を branch protection や CODEOWNERS で保護できます。`publish revoke` で記録を削除すると、次の計画は `review` に戻ります。
 
-承認状態とサイトの公開状態は分けて扱います。
+承認状態とサイトの公開状態は別々に管理します。
 
 - `review` — 承認待ち。デプロイしない。
 - `approved` — 承認はあるが、新しい計画はまだデプロイされていない。
 - `published` — 最後に成功したスナップショットが現在の計画と一致する。
 - `retracted` — 以前公開されていたノートが公開対象外になった。次のデプロイで削除される。
 
-公開取り下げと再公開は既存の Visibility に従います。`visibility: draft` にする（または `publish: true` を外す）してデプロイすれば取り下げ、再び public にしてデプロイすれば再公開です。Planner は削除・追加されたエントリを報告します。
+公開の取り下げと再公開は、既存の Visibility に従います。`visibility: draft` にして（または `publish: true` を外して）デプロイすれば取り下げ、再び public にしてデプロイすれば再公開です。Planner は削除・追加されたエントリを報告します。
 
 ## CLI
 
@@ -128,7 +128,7 @@ riebeckite publish record    --provider <name> [--trigger <manual|scheduled|ci|c
 riebeckite publish gate      [--json] [--provider <name>]
 ```
 
-`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` を付けるまで Dry Run です。
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` を付けるまで Dry Run として動作します。
 
 ```sh
 # ネットワークに触れずに確認する
@@ -144,13 +144,13 @@ npm exec -- riebeckite publish run --execute --provider cloudflare-workers
 npm exec -- riebeckite publish run --execute --trigger scheduled
 ```
 
-`run --execute` は計画が必要とするときだけビルドします。`.riebeckite/build-output.json` に公開用メタデータを書き、現在の計画と Fingerprint が一致しない成果物のデプロイを拒否します。別の実行が `.riebeckite/publication/lock.json` を保持している場合は停止します。プロセスが終了しているロックや1時間以上前のロックは置き換えます。`--force` は変更がない計画でもデプロイできるようにします。
+`run --execute` は、計画が必要とするときだけビルドします。`.riebeckite/build-output.json` に公開用メタデータを書き、現在の計画と Fingerprint が一致しない成果物のデプロイを拒否します。別の実行が `.riebeckite/publication/lock.json` を保持している場合は停止します。プロセスが終了しているロックと1時間以上前のロックは置き換えます。`--force` を付けると、変更のない計画でもデプロイできます。
 
-`record` は外部の CI action が実行したデプロイ用です。ビルド済み成果物を現在の計画と照合し、デプロイせずに成功した実行とスナップショットを永続状態と履歴に記録します。`wrangler-action` や `actions/deploy-pages` の後に実行します。
+`record` は、外部の CI action が実行したデプロイのためのコマンドです。ビルド済み成果物を現在の計画と照合し、デプロイせずに成功した実行とスナップショットを永続状態と履歴に記録します。`wrangler-action` や `actions/deploy-pages` の後に実行します。
 
-`gate` は単一のデプロイ前チェックです。常に計画とビルド成果物を検証し、`requireApproval` が有効なときは現在のコンテンツが承認済みになるまで失敗します。`publish validate` も同じ規則です。
+`gate` はデプロイ前の単一のチェックです。常に計画とビルド成果物を検証し、`requireApproval` が有効なときは現在のコンテンツが承認済みになるまで失敗します。`publish validate` も同じ規則に従います。
 
-`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使ってください。`deploy setup` と `deploy domain` は Cloudflare の設定補助として残ります。
+`riebeckite deploy` はデプロイを実行しなくなりました。代わりに `riebeckite publish run --execute` を使ってください。`deploy setup` と `deploy domain` は Cloudflare の設定補助として残ります。
 
 ## Hosting adapter
 
@@ -162,31 +162,31 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 | `netlify` | ネイティブ | なし | `netlify deploy --prod` |
 | `vercel` | ネイティブ | なし | `vercel deploy --prod` |
 
-Provider の検出は `wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で上書きできます。必要な環境変数の**名前**は `publish status --json` が報告しますが、値は Riebeckite が読んだり記録したり書き込んだりすることはありません。
+Provider の検出では、`wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で検出結果を上書きできます。必要な環境変数の**名前**は `publish status --json` が報告します。値は読み取りも記録も書き込みも行いません。
 
-GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。Adapter は Core からアップロードせず、CLI は検証できないワークフローを起動しません。publish ワークフローが `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
+GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。Adapter は Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
 
 ## CI
 
 このリポジトリの `.github/workflows/publish.yml` が唯一の本番デプロイ経路です。
 
 - `push`（main）、`schedule`、`workflow_dispatch` がすべて同じ経路に入ります。
-- `riebeckite-production` concurrency group により同時デプロイは1つだけです。実行中のデプロイはキャンセルしません。
+- `riebeckite-production` concurrency group により、同時に実行できるデプロイは1つだけです。実行中のデプロイはキャンセルしません。
 - ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
 - `publish plan --json` がスケジュール実行の build/deploy 要否を決めます。push はアプリケーションコードが変わり得るため常にビルドします。
 - 計画は成果物としてアップロードされ、`publish validate` と `publish gate` がビルド出力を検査します。
 - 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローが `publication/state.json` を `[skip ci]` 付きでコミットします。次回実行はキャッシュではなくこのコミット済み状態を読みます。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
-予約公開を使わないサイトでもこの参考ワークフローでは schedule が動きますが、計画に変更がなければ build と deploy を省略します。定期チェック自体が不要なら、生成したサイトから `schedule` トリガーを削除してください。
+予約公開を使わないサイトでも、この参考ワークフローでは schedule が動きます。ただし計画に変更がなければ build と deploy は省略されます。定期チェック自体が不要なら、生成したサイトから `schedule` トリガーを削除してください。
 
-状態のコミットには `contents: write` と、ワークフローが push できるブランチが必要です。branch protection で push が拒否された場合、デプロイ自体は行われ、ジョブは失敗を報告し、永続スナップショットが更新されないため次回実行が安全に再デプロイします。永続状態がない runner はすべてのノートを新規追加とみなします。これは全再デプロイであり、公開の取りこぼしではありません。
+状態のコミットには `contents: write` と、ワークフローが push できるブランチが必要です。branch protection で push が拒否された場合も、デプロイ自体は行われます。ジョブは失敗を報告し、永続スナップショットは更新されないため、次回実行が安全に再デプロイします。永続状態がない runner は、すべてのノートを新規追加とみなします。これは全再デプロイであり、公開の取りこぼしではありません。
 
-スケジュール実行は runner の空き状況と GitHub のキューで遅延します。ワークフローは冪等です。遅れた実行は抜けたスケジュールを再生せず、現在の状態を計算します。再実行が古いコミットをチェックアウトした場合、ビルドマーカーがコミット済み状態より古いため、`record` は新しいスナップショットの上書きを拒否します。
+スケジュール実行は、runner の空き状況や GitHub のキューによって遅れます。ワークフローは冪等なので、遅れた実行は抜けたスケジュールを再生せず、現在の状態を計算します。再実行が古いコミットをチェックアウトした場合、ビルドマーカーがコミット済み状態より古いため、`record` は新しいスナップショットの上書きを拒否します。
 
 ## 履歴と診断
 
-永続的な公開状態はプロジェクトルートの `publication/state.json` です。最後に成功したスナップショットだけを含みます（run id、公開 Fingerprint、公開対象の slug、Fingerprint、リダイレクト、成果物 Fingerprint、provider）。サイトと一緒にコミットしてください。本文や認証情報は含まず、変更検出の信頼できる記録です。
+永続的な公開状態は、プロジェクトルートの `publication/state.json` です。最後に成功したスナップショットだけを含み、内訳は run id、公開 Fingerprint、公開対象の slug、Fingerprint、リダイレクト、成果物 Fingerprint、provider です。サイトと一緒にコミットしてください。本文や認証情報は含まず、変更検出の信頼できる記録になります。
 
 `.riebeckite/publication/history.json` は診断用の履歴です。
 
@@ -197,23 +197,23 @@ GitHub Pages では、ビルドに deploy プラグインの `.nojekyll` と `40
 - 変更概要と次回予約公開
 - 最後に成功したスナップショット
 
-履歴は50実行までで、環境変数の値やトークンを含みません。ローカルのビルド状態であり、コミットされません。GitHub Actions のキャッシュは診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュの消失や切り詰めは全再デプロイを招くだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
+履歴は50実行までに制限され、環境変数の値やトークンを含みません。ローカルのビルド状態であり、コミットもされません。GitHub Actions のキャッシュは診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュが失われたり切り詰められたりしても、起きるのは全再デプロイだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
 
 ## Lock と clean
 
-`.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID とホスト名を記録します。このホストでプロセスが生存しているロックは、経過時間や `--force` で削除されることはありません。プロセスが終了しているロック、またはローカル状態を所有しないホストのロックは回収します。`clean --all` と `clean --state` は、実行中の公開ロックがある間は拒否します。clean が削除するのは `.riebeckite` だけで、永続状態と承認記録は残ります。公開履歴と信頼はクリーンビルドを越えて保持されます。
+`.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID とホスト名を記録します。このホストでプロセスが生存しているロックは、経過時間や `--force` では削除されません。プロセスが終了しているロックや、ローカル状態を所有しないホストのロックは回収します。`clean --all` と `clean --state` は、実行中の公開ロックがある間は拒否されます。clean が削除するのは `.riebeckite` だけで、永続状態と承認記録は残ります。公開履歴と信頼は、クリーンビルドを越えて保持されます。
 
 ## Build Output Marker
 
-すべての SSG ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
+すべての SSG ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。このファイルは出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
 
-デプロイ前に、現在の計画と公開 Fingerprint が一致するマーカーを必須にします。CLI ビルドが成果物ハッシュを記録している場合は、`dist/` のファイルも一致しなければなりません。マーカーの欠損、破損、古い計画からコピーされたマーカーは安全側で失敗します。`publish validate` と `publish record` はマーカーの完了時刻を使うため、計画とビルドの数秒の時刻差で誤判定しません。
+デプロイ前に、現在の計画と公開 Fingerprint が一致するマーカーを必須にします。CLI ビルドが成果物ハッシュを記録している場合は、`dist/` のファイルも一致しなければなりません。マーカーの欠損、破損、古い計画からコピーされたマーカーは、安全側に倒して失敗します。`publish validate` と `publish record` はマーカーの完了時刻を使うため、計画とビルドの数秒の時刻差で誤判定しません。
 
 `publish status --json` は現在の計画、成果物の状態、provider の機能、必要な環境変数名、承認ファイル、永続状態、履歴をまとめて出力します。ネットワークがなくても動作し、認証情報が必要なのは実際のデプロイだけです。
 
 ## 検証状況
 
-ローカルの計画、承認、成果物、adapter、履歴の検査はパッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できないため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各 provider で信頼できる環境から `publish run --execute` を一度実行してください。
+ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各 provider で信頼できる環境から `publish run --execute` を一度実行してください。
 
 ## この仕組みがしないこと
 

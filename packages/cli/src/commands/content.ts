@@ -163,6 +163,7 @@ function print(json: boolean, value: unknown): void {
         afterFingerprint: string | null;
       }[];
       warnings: readonly { message: string }[];
+      conflicts: readonly { path: string; message: string }[];
     };
     console.log(`Plan ${plan.id}`);
     for (const change of plan.changes)
@@ -171,7 +172,13 @@ function print(json: boolean, value: unknown): void {
       );
     for (const warning of plan.warnings)
       console.log(`Warning: ${warning.message}`);
-    console.log("Dry run. Re-run with --apply to write changes.");
+    for (const conflict of plan.conflicts)
+      console.log(`Conflict: ${conflict.path}: ${conflict.message}`);
+    console.log(
+      plan.conflicts.length > 0
+        ? "The plan cannot be applied."
+        : "Dry run. Re-run with --apply to write changes.",
+    );
     return;
   }
   console.log(JSON.stringify(value, null, 2));

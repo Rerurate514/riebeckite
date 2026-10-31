@@ -35,6 +35,35 @@ test("retargeting reports links to deleted and missing content", () => {
   assert.equal(missing.conflicts[0]?.code, "link-target-missing");
 });
 
+test("retargeting does not guess between duplicate basenames", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["notes/a.md", "[[old]] [[notes/old]]"],
+      ["notes/old.md", "notes"],
+      ["archive/old.md", "archive"],
+      ["notes/new.md", "moved"],
+    ]),
+    retargets: [{ from: "notes/old.md", to: "notes/new.md" }],
+  });
+  assert.deepEqual(
+    [...result.updates],
+    [["notes/a.md", "[[old]] [[notes/new]]"]],
+  );
+  assert.deepEqual(result.conflicts, []);
+});
+
+test("deleting one of several duplicate basenames is not reported as broken", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["a.md", "[[old]]"],
+      ["archive/old.md", "archive"],
+    ]),
+    retargets: [{ from: "notes/old.md" }],
+  });
+  assert.equal(result.updates.size, 0);
+  assert.deepEqual(result.warnings, []);
+});
+
 test("retargeting ignores unrelated and external destinations", () => {
   const result = planContentLinkUpdates({
     files: new Map([

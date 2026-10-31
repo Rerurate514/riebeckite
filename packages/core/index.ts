@@ -136,6 +136,12 @@ export type {
 } from "./src/content/link_occurrences.js";
 export { extractLinkOccurrences } from "./src/content/link_occurrences.js";
 export type {
+  LinkOccurrenceTarget,
+  LinkResolutionContext,
+  ResolvedLinkOccurrence,
+} from "./src/content/link_resolution.js";
+export { resolveLinkOccurrences } from "./src/content/link_resolution.js";
+export type {
   OutputChangeReason,
   OutputChangeSet,
   OutputDescriptor,

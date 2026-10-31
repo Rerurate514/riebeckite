@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { extractLinkOccurrences } from "../index.js";
+import { extractLinkOccurrences, resolveLinkOccurrences } from "../index.js";
 
 test("link occurrences retain UTF-16 source slices and Markdown destinations", () => {
   const source =
@@ -46,4 +46,42 @@ test("link occurrences exclude code and distinguish reference occurrences", () =
 test("link occurrences ignore escaped and malformed WikiLinks", () => {
   const occurrences = extractLinkOccurrences("\\[[escaped]] [[unterminated");
   assert.deepEqual(occurrences, []);
+});
+
+test("link occurrences resolve only unique canonical targets", () => {
+  const occurrences = extractLinkOccurrences(
+    "[[Note]] [relative](child.md) [ref][label]\n\n[label]: target.md",
+    { sourcePath: "notes/source.md" },
+  );
+  const resolved = resolveLinkOccurrences(occurrences, {
+    contentIndex: new Map([
+      ["note", "notes/note"],
+      ["notes/child", "notes/child"],
+      ["notes/target", "notes/target"],
+    ]),
+  });
+  assert.deepEqual(
+    resolved.map((occurrence) => [
+      occurrence.resolution,
+      occurrence.target?.slug,
+    ]),
+    [
+      ["resolved", "notes/note"],
+      ["resolved", "notes/child"],
+      ["resolved", "notes/target"],
+      ["resolved", "notes/target"],
+    ],
+  );
+  const ambiguous = resolveLinkOccurrences(
+    extractLinkOccurrences("[[duplicate]]"),
+    {
+      contentIndex: new Map(),
+      contentIndexAmbiguities: new Map([["duplicate", ["a", "b"]]]),
+    },
+  )[0];
+  assert.equal(ambiguous?.resolution, "ambiguous");
+  assert.deepEqual(
+    ambiguous?.candidates?.map((candidate) => candidate.slug),
+    ["a", "b"],
+  );
 });

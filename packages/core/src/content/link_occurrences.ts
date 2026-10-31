@@ -24,6 +24,7 @@ export type LinkOccurrence = {
   readonly normalizedDestination: string;
   readonly fragment?: string;
   readonly alias?: string;
+  readonly referenceLabel?: string;
   readonly embed: boolean;
   readonly referenceDefinition: boolean;
   readonly resolution: "unresolved" | "resolved" | "ambiguous" | "unsupported";
@@ -115,6 +116,9 @@ function markdownOccurrences(
         rawDestination,
         normalizedDestination: node.url,
         fragment: fragmentOf(node.url),
+        ...(node.type === "definition" && typeof node.identifier === "string"
+          ? { referenceLabel: node.identifier }
+          : {}),
         embed: node.type === "image",
         referenceDefinition: node.type === "definition",
         resolution: "unresolved",
@@ -134,6 +138,7 @@ function markdownOccurrences(
         nodeRange: range,
         rawDestination: label,
         normalizedDestination: label,
+        referenceLabel: label,
         embed: node.type === "imageReference",
         referenceDefinition: false,
         resolution: "unresolved",

@@ -3,17 +3,22 @@ import { unified } from "unified";
 import type { ContentLink } from "../types/content_manifest.js";
 import { isAttachmentPath, isImagePath } from "./attachment.js";
 import { extractLinkOccurrences } from "./link_occurrences.js";
+import { resolveLinkOccurrences } from "./link_resolution.js";
 
 export function extractContentLinks(
   markdown: string,
   contentIndex: Map<string, string>,
+  contentIndexAmbiguities?: ReadonlyMap<string, readonly string[]>,
 ): ContentLink[] {
   const links: ContentLink[] = [];
-  for (const occurrence of extractLinkOccurrences(markdown)) {
+  for (const occurrence of resolveLinkOccurrences(
+    extractLinkOccurrences(markdown),
+    { contentIndex, contentIndexAmbiguities },
+  )) {
     if (occurrence.syntax !== "wikilink" && occurrence.syntax !== "wiki-embed")
       continue;
     const rawTarget = occurrence.normalizedDestination;
-    const resolved = contentIndex.get(rawTarget.toLowerCase()) ?? null;
+    const resolved = occurrence.target?.slug ?? null;
     links.push({
       raw: rawTarget,
       slug: resolved,

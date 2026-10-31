@@ -366,7 +366,24 @@ export class FileSystemContentMigration {
         conflicts: fresh.conflicts,
       };
 
-    const release = await this.acquireLock();
+    let release: () => Promise<void>;
+    try {
+      release = await this.acquireLock();
+    } catch (error) {
+      return {
+        applied: false,
+        skipped: false,
+        plan: fresh,
+        changedPaths: [],
+        conflicts: [
+          {
+            severity: "error",
+            code: "migration-locked",
+            message: errorMessage(error),
+          },
+        ],
+      };
+    }
     try {
       const state = await this.readState();
       const conflicts = this.preflight(fresh, state);
@@ -1724,6 +1741,8 @@ function sameMigrationPlan(
     left.baseContentFingerprint !== right.baseContentFingerprint ||
     left.mutationPlanFingerprint !== right.mutationPlanFingerprint ||
     left.planFingerprint !== right.planFingerprint ||
+    canonicalJson(left.operations) !== canonicalJson(right.operations) ||
+    canonicalJson(left.changes) !== canonicalJson(right.changes) ||
     left.migrations.length !== right.migrations.length
   )
     return false;

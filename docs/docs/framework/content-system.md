@@ -468,11 +468,13 @@ apply.
 
 Planning never writes content. Apply re-plans the stored operations, compares
 every file fingerprint, checks parent symlinks, and takes a lock before
-writing. Writes go through a journal, and recovery rolls back files that still
-match their intended after-state, including a write interrupted before its
-journal mark. Concurrent edits are reported instead of overwritten. Recovery
-validates every backup before restoring anything, and a file that matches
-neither side of the journal is reported as a conflict rather than overwritten.
+writing. Each write and deletion is checked against the planned fingerprint
+immediately before it happens. Writes go through a journal, and recovery rolls
+back files that still match their intended after-state, including a write
+interrupted before its journal mark. Concurrent edits are reported instead of
+overwritten. Recovery validates every backup before restoring anything, and a
+file that matches neither side of the journal is reported as a conflict rather
+than overwritten.
 The lock coordinates mutation processes; fingerprint checks detect an external
 edit, but they cannot exclude an editor that keeps writing without taking the
 lock.

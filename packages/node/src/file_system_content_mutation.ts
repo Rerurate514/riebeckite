@@ -169,7 +169,10 @@ export class FileSystemContentMutation {
         try {
           markdownFiles.set(
             filePath,
-            new TextDecoder("utf-8", { fatal: true }).decode(state.content),
+            new TextDecoder("utf-8", {
+              fatal: true,
+              ignoreBOM: true,
+            }).decode(state.content),
           );
         } catch {
           conflicts.push({
@@ -291,6 +294,7 @@ export class FileSystemContentMutation {
           await writeFileAtomically(
             await safeFilePath(root, change.path, true),
             change.content,
+            change.beforeFingerprint,
           );
           markApplied(journal, change.path);
           await writeJsonAtomically(journalPath, journal);
@@ -300,7 +304,10 @@ export class FileSystemContentMutation {
           (change) => change.content === null,
         )) {
           await this.options.beforeWrite?.(change.path);
-          await fs.rm(await safeFilePath(root, change.path, false));
+          const target = await safeFilePath(root, change.path, false);
+          if ((await fingerprintAt(target)) !== change.beforeFingerprint)
+            throw new Error(`Content changed during apply: ${change.path}`);
+          await fs.rm(target);
           markApplied(journal, change.path);
           await writeJsonAtomically(journalPath, journal);
           appliedPaths.push(change.path);
@@ -745,6 +752,7 @@ function validateLogicalPath(value: string): string {
           part === "." ||
           part === ".." ||
           hasForbiddenPathCharacter(part) ||
+          /[. ]$/.test(part) ||
           /^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/i.test(part),
       )
   )
@@ -969,6 +977,7 @@ function markApplied(journal: MutationJournal, filePath: string): void {
 async function writeFileAtomically(
   filePath: string,
   content: Uint8Array,
+  expectedFingerprint?: string | null,
 ): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   const temporary = path.join(
@@ -983,9 +992,25 @@ async function writeFileAtomically(
     } finally {
       await handle.close();
     }
+    if (
+      expectedFingerprint !== undefined &&
+      (await fingerprintAt(filePath)) !== expectedFingerprint
+    )
+      throw new Error(`Content changed during apply: ${filePath}`);
     await fs.rename(temporary, filePath);
   } finally {
     await fs.rm(temporary, { force: true });
+  }
+}
+async function fingerprintAt(filePath: string): Promise<string | null> {
+  try {
+    const stats = await fs.lstat(filePath);
+    if (!stats.isFile() || stats.isSymbolicLink())
+      throw new Error("Content path is not a regular file.");
+    return fingerprint(await fs.readFile(filePath));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
   }
 }
 async function writeJsonAtomically(
@@ -1011,20 +1036,33 @@ function parseJournal(value: string): MutationJournal {
   return journal as MutationJournal;
 }
 async function staleLockContent(lockPath: string): Promise<string | null> {
+  let content: string;
   try {
-    const content = await fs.readFile(lockPath, "utf8");
-    const value: unknown = JSON.parse(content);
-    const pid = isRecord(value) ? value.pid : undefined;
-    if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
-      return null;
-    try {
-      process.kill(pid, 0);
-      return null;
-    } catch (error) {
-      return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
-    }
+    content = await fs.readFile(lockPath, "utf8");
   } catch {
     return null;
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(content);
+  } catch {
+    return (await lockFileIsOld(lockPath)) ? content : null;
+  }
+  const pid = isRecord(value) ? value.pid : undefined;
+  if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
+    return (await lockFileIsOld(lockPath)) ? content : null;
+  try {
+    process.kill(pid, 0);
+    return null;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
+  }
+}
+async function lockFileIsOld(lockPath: string): Promise<boolean> {
+  try {
+    return Date.now() - (await fs.stat(lockPath)).mtimeMs > 5_000;
+  } catch {
+    return false;
   }
 }
 function serializePlan(plan: ContentMutationPlan): StoredMutationPlan {
@@ -1221,8 +1259,18 @@ function updateFrontmatter(
   set: Readonly<Record<string, unknown>> | undefined,
   remove: readonly string[] | undefined,
 ): FileState {
-  const text = Buffer.from(source.content).toString("utf8");
-  const match = /^(---\r?\n)([\s\S]*?)(\r?\n---(?:\r?\n|$))/.exec(text);
+  let text: string;
+  try {
+    text = new TextDecoder("utf-8", {
+      fatal: true,
+      ignoreBOM: true,
+    }).decode(source.content);
+  } catch {
+    throw new Error("The Markdown file is not valid UTF-8.");
+  }
+  const bom = text.startsWith("\uFEFF") ? "\uFEFF" : "";
+  const body = bom ? text.slice(1) : text;
+  const match = /^(---\r?\n)([\s\S]*?)(\r?\n---(?:\r?\n|$))/.exec(body);
   if (!match) throw new Error("The Markdown file has no YAML frontmatter.");
   const document = parseDocument(match[2]);
   if (document.errors.length > 0)
@@ -1231,6 +1279,6 @@ function updateFrontmatter(
     document.setIn(key.split("."), value);
   for (const key of remove ?? []) document.deleteIn(key.split("."));
   return stateOf(
-    `${match[1]}${document.toString().trimEnd()}${match[3]}${text.slice(match[0].length)}`,
+    `${bom}${match[1]}${document.toString().trimEnd()}${match[3]}${body.slice(match[0].length)}`,
   );
 }

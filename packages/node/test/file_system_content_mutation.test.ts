@@ -105,7 +105,7 @@ test("plans without writing and applies a batch including Markdown frontmatter",
   await assert.rejects(() => fs.readFile(path.join(root, "note.md")));
 });
 
-test("rejects a changed file before applying", async () => {
+test("refuses a changed file before applying", async () => {
   const root = await directory();
   await fs.writeFile(path.join(root, "note.md"), "first");
   const mutation = new FileSystemContentMutation(root);
@@ -119,6 +119,60 @@ test("rejects a changed file before applying", async () => {
   assert.equal(
     await fs.readFile(path.join(root, "note.md"), "utf8"),
     "concurrent",
+  );
+});
+
+test("refuses to overwrite a file changed after its backup", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root, {
+    beforeWrite: async (filePath) => {
+      if (filePath === "note.md")
+        await fs.writeFile(path.join(root, filePath), "external");
+    },
+  });
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  await assert.rejects(() => mutation.apply(plan), /changed during apply/);
+  assert.equal(
+    await fs.readFile(path.join(root, "note.md"), "utf8"),
+    "external",
+  );
+});
+
+test("refuses to overwrite a file created after backup", async () => {
+  const root = await directory();
+  const mutation = new FileSystemContentMutation(root, {
+    beforeWrite: async (filePath) => {
+      if (filePath === "note.md")
+        await fs.writeFile(path.join(root, filePath), "external");
+    },
+  });
+  const plan = await mutation.plan([
+    { kind: "create", path: "note.md", content: "planned" },
+  ]);
+  await assert.rejects(() => mutation.apply(plan), /changed during apply/);
+  assert.equal(
+    await fs.readFile(path.join(root, "note.md"), "utf8"),
+    "external",
+  );
+});
+
+test("refuses to delete a file changed after its backup", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root, {
+    beforeWrite: async (filePath) => {
+      if (filePath === "note.md")
+        await fs.writeFile(path.join(root, filePath), "external");
+    },
+  });
+  const plan = await mutation.plan([{ kind: "delete", path: "note.md" }]);
+  await assert.rejects(() => mutation.apply(plan), /changed during apply/);
+  assert.equal(
+    await fs.readFile(path.join(root, "note.md"), "utf8"),
+    "external",
   );
 });
 
@@ -190,6 +244,36 @@ test("refuses a lock owned by a live process", async () => {
     path.join(mutationRoot, "lock"),
     JSON.stringify({ pid: process.pid }),
   );
+  await assert.rejects(() => mutation.apply(plan), /already applying/);
+  assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "first");
+});
+
+test("reclaims an unreadable lock after a grace period", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const mutationRoot = path.join(root, ".riebeckite", "mutations");
+  await fs.mkdir(mutationRoot, { recursive: true });
+  const lockPath = path.join(mutationRoot, "lock");
+  await fs.writeFile(lockPath, "");
+  const old = new Date(Date.now() - 10_000);
+  await fs.utimes(lockPath, old, old);
+  assert.equal((await mutation.apply(plan)).applied, true);
+});
+
+test("does not reclaim a newly created empty lock", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const mutationRoot = path.join(root, ".riebeckite", "mutations");
+  await fs.mkdir(mutationRoot, { recursive: true });
+  await fs.writeFile(path.join(mutationRoot, "lock"), "");
   await assert.rejects(() => mutation.apply(plan), /already applying/);
   assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "first");
 });
@@ -455,6 +539,50 @@ test("refuses traversal and symbolic-link write paths", async (t) => {
   ]);
   const result = await mutation.apply(symlink);
   assert.equal(result.applied, false);
+});
+
+test("rejects trailing dots and spaces in path components", async () => {
+  const root = await directory();
+  const mutation = new FileSystemContentMutation(root);
+  for (const filePath of ["note.", "notes /note.md"]) {
+    const plan = await mutation.plan([
+      { kind: "create", path: filePath, content: "no" },
+    ]);
+    assert.equal(plan.conflicts[0]?.code, "invalid-operation");
+  }
+});
+
+test("rejects frontmatter updates on invalid UTF-8 Markdown", async () => {
+  const root = await directory();
+  const original = Buffer.concat([
+    Buffer.from("---\ntitle: Old\n---\n# Note\n"),
+    Buffer.from([0xff]),
+  ]);
+  await fs.writeFile(path.join(root, "note.md"), original);
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "frontmatter", path: "note.md", set: { title: "New" } },
+  ]);
+  assert.equal(plan.conflicts[0]?.code, "invalid-operation");
+  assert.match(plan.conflicts[0]?.message ?? "", /not valid UTF-8/);
+  assert.equal((await mutation.apply(plan)).applied, false);
+  assert.deepEqual(await fs.readFile(path.join(root, "note.md")), original);
+});
+
+test("preserves a UTF-8 BOM when rewriting links", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "target.md"), "# Target");
+  await fs.writeFile(path.join(root, "source.md"), "\uFEFF[target](target.md)");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "move", from: "target.md", to: "moved.md" },
+  ]);
+  assert.deepEqual(plan.conflicts, []);
+  assert.equal((await mutation.apply(plan)).applied, true);
+  assert.equal(
+    await fs.readFile(path.join(root, "source.md"), "utf8"),
+    "\uFEFF[target](moved.md)",
+  );
 });
 
 test("rewrites references when content moves and warns on deletion", async () => {

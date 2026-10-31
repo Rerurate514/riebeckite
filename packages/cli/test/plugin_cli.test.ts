@@ -74,6 +74,24 @@ async function withProject(
       pluginSource,
       "utf8",
     );
+    await fs.mkdir(path.join(cwd, "node_modules", "@acme", "cli-plugin"), {
+      recursive: true,
+    });
+    await fs.writeFile(
+      path.join(cwd, "node_modules", "@acme", "cli-plugin", "package.json"),
+      JSON.stringify({
+        name: "@acme/cli-plugin",
+        version: "1.0.0",
+        type: "module",
+        main: "./index.js",
+      }),
+      "utf8",
+    );
+    await fs.writeFile(
+      path.join(cwd, "node_modules", "@acme", "cli-plugin", "index.js"),
+      pluginSource,
+      "utf8",
+    );
     await fs.writeFile(path.join(cwd, "riebeckite.config.ts"), config, "utf8");
     await fs.writeFile(
       path.join(cwd, "vite.config.ts"),
@@ -106,11 +124,11 @@ async function run(
   return { code, stdout, stderr };
 }
 
-const enabledConfig = `import { acmePlugin } from "./plugins/acme";
+const enabledConfig = `import { acmePlugin } from "@acme/cli-plugin";
 export default { site: { title: "Plugin test" }, plugins: [acmePlugin] };
 `;
 
-test("runs commands registered by an enabled plugin", async () => {
+test("runs commands from an enabled Plugin package", async () => {
   await withProject(enabledConfig, async (cwd) => {
     const result = await run(cwd, "acme", "greet", "Ada", "--loud");
     assert.equal(result.code, 0, result.stderr);
@@ -195,7 +213,7 @@ test("reports plugin usage errors and handler failures", async () => {
 });
 
 test("ignores disabled plugins and does not load them for help", async () => {
-  const disabled = `import { acmePlugin } from "./plugins/acme";
+  const disabled = `import { acmePlugin } from "@acme/cli-plugin";
 export default {
   site: { title: "Plugin test" },
   plugins: [{ ...acmePlugin, enabled: false }],

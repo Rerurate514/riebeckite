@@ -152,6 +152,12 @@ export class ProfileTraceSink implements TraceSink {
   }
 
   onEvent(event: TraceEvent): void {
+    if (event.name === "integration.timing") {
+      const name = stringAttribute(event.attributes, "name");
+      const durationMs = numberAttribute(event, "durationMs");
+      if (name && durationMs >= 0)
+        addDuration(this.integrations, name, durationMs);
+    }
     if (event.name === "build.incremental") {
       this.incremental = {
         added: numberAttribute(event, "added"),
@@ -305,6 +311,8 @@ function isContentSpan(name: string): boolean {
   return (
     name === "content.scan" ||
     name === "content.process" ||
+    name.startsWith("content.process.") ||
+    name === "content.markdown" ||
     name === "content.manifest" ||
     name === "content.graph"
   );

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig, Tracer } from "@riebeckite/core";
 import { build, createServer } from "vite";
@@ -157,9 +158,56 @@ export async function buildHonoxApplication(
       build({ root, mode: "client" }),
     );
     await runTraced(options.tracer, "integration.honox.server_build", () =>
-      build({ root }),
+      buildServerWithMetrics(root, options.tracer),
     );
   });
+}
+
+async function buildServerWithMetrics(
+  root: string,
+  tracer: Tracer | undefined,
+): Promise<void> {
+  if (!tracer) {
+    await build({ root });
+    return;
+  }
+
+  const previousMetricsFile = process.env.RIEBECKITE_SSG_METRICS_FILE;
+  const metricsDirectory = previousMetricsFile
+    ? undefined
+    : await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-ssg-metrics-"));
+  const metricsFile =
+    previousMetricsFile ??
+    path.join(metricsDirectory as string, "metrics.json");
+  if (!previousMetricsFile)
+    process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
+  try {
+    await build({ root });
+    await reportSsgTimings(tracer, metricsFile);
+  } finally {
+    if (previousMetricsFile === undefined) {
+      delete process.env.RIEBECKITE_SSG_METRICS_FILE;
+    }
+    if (metricsDirectory)
+      await fs.rm(metricsDirectory, { recursive: true, force: true });
+  }
+}
+
+async function reportSsgTimings(tracer: Tracer, metricsFile: string) {
+  try {
+    const metrics: unknown = JSON.parse(await fs.readFile(metricsFile, "utf8"));
+    if (!metrics || typeof metrics !== "object") return;
+    const timings = (metrics as { timingsMs?: unknown }).timingsMs;
+    if (!timings || typeof timings !== "object") return;
+    for (const [name, durationMs] of Object.entries(timings)) {
+      if (typeof durationMs !== "number" || !Number.isFinite(durationMs))
+        continue;
+      tracer.event("integration.timing", {
+        name: `integration.honox.server_build.ssg.${name}`,
+        durationMs,
+      });
+    }
+  } catch {}
 }
 
 async function withWorkingDirectory<T>(

@@ -6,6 +6,14 @@ import type {
 const contentLabels: Readonly<Record<string, string>> = {
   "content.scan": "Scan",
   "content.process": "Process",
+  "content.process.inputs": "Inputs",
+  "content.process.cache-fingerprint": "Cache fingerprint",
+  "content.process.build-start": "Build start hooks",
+  "content.process.content-loaded": "Content loaded hooks",
+  "content.process.pipeline": "Pipeline",
+  "content.process.post-parsed": "Post-parsed hooks",
+  "content.process.post-processed": "Post-processed hooks",
+  "content.markdown": "Markdown rendering",
   "content.manifest": "Manifest",
   "content.graph": "Graph",
 };
@@ -48,7 +56,7 @@ function appendIntegrations(lines: string[], report: ProfileReport): void {
 
 function appendContent(lines: string[], report: ProfileReport): void {
   if (report.content.size === 0) return;
-  lines.push("", "Content");
+  lines.push("", "Content (inclusive; overlapping spans are not additive)");
   for (const name of Object.keys(contentLabels)) {
     const duration = report.content.get(name);
     if (!duration) continue;

@@ -35,6 +35,24 @@ test("profile retains inclusive stage durations", () => {
   assert.match(renderProfile(report), /overlapping spans are not additive/);
 });
 
+test("profile includes integration timings emitted as events", () => {
+  const sink = new ProfileTraceSink();
+  sink.onEvent(
+    event("integration.timing", {
+      name: "integration.honox.server_build.ssg.toSSG",
+      durationMs: 42,
+    }),
+  );
+
+  const report = sink.createReport();
+  assert.equal(
+    report.integrations.get("integration.honox.server_build.ssg.toSSG")
+      ?.cumulativeDurationMs,
+    42,
+  );
+  assert.match(renderProfile(report), /honox.server_build.ssg.toSSG/);
+});
+
 test("profile separates content cache from plugin cache", () => {
   const sink = new ProfileTraceSink();
   sink.onEvent(event("cache.hit", { plugin: "example" }));

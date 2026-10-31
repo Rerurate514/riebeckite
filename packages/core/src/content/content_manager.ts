@@ -273,18 +273,30 @@ export class ContentManager {
   }
 
   private async processContent(slug: string): Promise<PostContent> {
-    const [contentIndex, rawPost] = await Promise.all([
-      this.getContentIndex(),
-      this.getPost(slug),
-    ]);
-    this.getProcessedContentCacheFingerprint(slug, rawPost);
-
-    await this.pluginRuntime.startBuild(contentIndex);
-    await this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex);
-
-    const content = await (await this.getPipeline()).execute(rawPost, {
-      sourceSlug: slug,
+    const tracer = this.observability().tracer;
+    const [contentIndex, rawPost] = await tracer.span(
+      "content.process.inputs",
+      {},
+      async () =>
+        await Promise.all([this.getContentIndex(), this.getPost(slug)]),
+    );
+    await tracer.span("content.process.cache-fingerprint", {}, () => {
+      this.getProcessedContentCacheFingerprint(slug, rawPost);
     });
+
+    await tracer.span("content.process.build-start", {}, () =>
+      this.pluginRuntime.startBuild(contentIndex),
+    );
+    await tracer.span("content.process.content-loaded", {}, () =>
+      this.pluginRuntime.runContentLoaded(slug, rawPost, contentIndex),
+    );
+
+    const content = await tracer.span(
+      "content.process.pipeline",
+      {},
+      async () =>
+        (await this.getPipeline()).execute(rawPost, { sourceSlug: slug }),
+    );
     this.processedContentCount += 1;
     if (this.processedContentCount % 100 === 0) {
       this.observability().tracer.event("content.process.sample", {
@@ -292,19 +304,23 @@ export class ContentManager {
       });
     }
 
-    await this.pluginRuntime.runPostHook(
-      "onPostParsed",
-      slug,
-      rawPost,
-      content,
-      contentIndex,
+    await tracer.span("content.process.post-parsed", {}, () =>
+      this.pluginRuntime.runPostHook(
+        "onPostParsed",
+        slug,
+        rawPost,
+        content,
+        contentIndex,
+      ),
     );
-    await this.pluginRuntime.runPostHook(
-      "onPostProcessed",
-      slug,
-      rawPost,
-      content,
-      contentIndex,
+    await tracer.span("content.process.post-processed", {}, () =>
+      this.pluginRuntime.runPostHook(
+        "onPostProcessed",
+        slug,
+        rawPost,
+        content,
+        contentIndex,
+      ),
     );
 
     this.contentCache.set(slug, content);

@@ -306,13 +306,23 @@ function waitForConsumer(
       released = true;
       pending.consumers--;
       signal?.removeEventListener("abort", abort);
+      pending.controller.signal.removeEventListener("abort", abortShared);
       onRelease();
     };
     const abort = () => {
       release();
       reject(signal?.reason ?? new Error("Derived View aborted."));
     };
+    const abortShared = () => {
+      release();
+      reject(
+        pending.controller.signal.reason ?? new Error("Derived View aborted."),
+      );
+    };
     signal?.addEventListener("abort", abort, { once: true });
+    pending.controller.signal.addEventListener("abort", abortShared, {
+      once: true,
+    });
     void pending.promise.then(
       (value) => {
         release();

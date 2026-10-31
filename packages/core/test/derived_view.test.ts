@@ -189,6 +189,36 @@ test("derived view callers cancel independently and stop work only when unused",
   assert.equal(aborted, true);
 });
 
+test("derived view failure and disposal release every caller", async () => {
+  let reject: ((reason?: unknown) => void) | undefined;
+  const failing = defineDerivedView<string, number>({
+    id: "test.failure",
+    version: "1",
+    compute: () =>
+      new Promise<number>((_resolve, rejectCompute) => {
+        reject = rejectCompute;
+      }),
+  });
+  const registry = createDerivedViewRegistry();
+  registry.register(failing);
+  const first = registry.resolve(failing, "same");
+  const second = registry.resolve(failing, "same");
+  await waitFor(() => reject !== undefined);
+  reject?.(new Error("failed"));
+  await assert.rejects(first, /failed/);
+  await assert.rejects(second, /failed/);
+
+  const ignoringAbort = defineDerivedView<string, number>({
+    id: "test.dispose",
+    version: "1",
+    compute: () => new Promise<number>(() => {}),
+  });
+  registry.register(ignoringAbort);
+  const pending = registry.resolve(ignoringAbort, "same");
+  registry.dispose();
+  await assert.rejects(pending, /disposed/);
+});
+
 async function waitFor(predicate: () => boolean): Promise<void> {
   while (!predicate())
     await new Promise<void>((resolve) => queueMicrotask(resolve));

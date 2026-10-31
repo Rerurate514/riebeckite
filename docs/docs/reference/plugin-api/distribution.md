@@ -85,7 +85,7 @@ for CSS and client packaging, see [Assets and client entries](./ui-and-assets.md
 An external Plugin package depends only on `@riebeckite/core` and declares the
 subpaths it owns (`./client`, `./components`, `./style.css`) in its own `exports`
 map. Do not import `@riebeckite/core/src/**` or reference monorepo paths. See
-[Public packages and import paths](../README.md#public-packages-and-imports)
+[Public packages and import paths](../packages.md#public-packages-and-imports)
 for the supported package surface and current constraints.
 
 ### Package shape

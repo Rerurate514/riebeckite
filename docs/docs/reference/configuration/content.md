@@ -57,7 +57,7 @@ content.source     →  custom ContentSource
 
 Use one or the other. `content.source` is not a second reader for the same
 content; it stands in for the filesystem reader. The `ContentSource` contract is
-listed in the [Configuration reference](../configuration-reference.md#contentsource).
+listed in the [Configuration reference](../configuration-reference/site-and-content.md#contentsource).
 
 ## Publishing state
 

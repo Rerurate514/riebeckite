@@ -182,7 +182,7 @@ Plugin は Vault の discoverable entries からリンクを導出します。Pl
 
 Plugin が作るページを表示したい場合は、そのページへのリンクを `navigation({ items })` に追加してください。
 
-Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../../guides/customizing-your-site.ja.md#ナビゲーションを変える) を参照してください。
+Navigation と Plugin の役割の違いについては、[サイトのカスタマイズ](../../guides/customizing-your-site/pages-and-navigation.ja.md#ナビゲーションを変える) を参照してください。
 
 ## エクスポートされる helper と型
 

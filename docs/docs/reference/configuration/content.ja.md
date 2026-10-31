@@ -127,4 +127,4 @@ content.source
 
 同じコンテンツに対して2つのリーダーを動かすための設定ではありません。
 
-`content.source` を指定する場合は、標準のファイルシステムリーダーを置き換えるものとして扱います。`ContentSource` の取り決めは [設定リファレンス](../configuration-reference.ja.md#contentsource) にあります。
+`content.source` を指定する場合は、標準のファイルシステムリーダーを置き換えるものとして扱います。`ContentSource` の取り決めは [設定リファレンス](../configuration-reference/site-and-content.ja.md#contentsource) にあります。

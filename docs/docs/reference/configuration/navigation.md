@@ -183,7 +183,7 @@ For example, the following are not added automatically:
 
 To show a page a plugin provides, add a link to that page in `navigation({ items })`.
 
-For the division of responsibility between navigation and plugins, see [Customizing your site](../../guides/customizing-your-site.md#navigation).
+For the division of responsibility between navigation and plugins, see [Customizing your site](../../guides/customizing-your-site/pages-and-navigation.md#navigation).
 
 ## Exported helpers and types
 

@@ -292,25 +292,25 @@ function findChangedDerivedQuery(
   output: OutputDescriptor,
   previous: OutputDescriptor | undefined,
 ): OutputChangeReason | undefined {
-  const current = new Map(
-    output.dependencies
-      .filter(isDerivedQueryDependency)
-      .map((dependency) => [dependency.id, dependency.fingerprint]),
-  );
-  const previousQueries = new Map(
-    (previous?.dependencies ?? [])
-      .filter(isDerivedQueryDependency)
-      .map((dependency) => [dependency.id, dependency.fingerprint]),
-  );
-  for (const [id, fingerprint] of current) {
-    if (previousQueries.get(id) !== fingerprint) {
-      return { type: "derived-query", id };
-    }
+  const current = output.dependencies
+    .filter(isDerivedQueryDependency)
+    .map((dependency) => `${dependency.id}\0${dependency.fingerprint}`)
+    .sort();
+  const previousQueries = (previous?.dependencies ?? [])
+    .filter(isDerivedQueryDependency)
+    .map((dependency) => `${dependency.id}\0${dependency.fingerprint}`)
+    .sort();
+  if (
+    current.length === previousQueries.length &&
+    current.every((key, index) => key === previousQueries[index])
+  ) {
+    return undefined;
   }
-  for (const [id] of previousQueries) {
-    if (!current.has(id)) return { type: "derived-query", id };
-  }
-  return undefined;
+  const changed =
+    current.find((key, index) => key !== previousQueries[index]) ??
+    previousQueries[current.length];
+  const id = changed?.slice(0, changed.indexOf("\0")) ?? "unknown";
+  return { type: "derived-query", id };
 }
 
 function findOutputChangeReason(

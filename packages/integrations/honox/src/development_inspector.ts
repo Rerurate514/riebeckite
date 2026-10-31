@@ -388,6 +388,7 @@ export function riebeckiteDevelopmentInspector(
         privateServer.once("error", reject);
         privateServer.listen(0, "127.0.0.1", () => {
           privateServer.off("error", reject);
+          privateServer.on("error", () => privateServer.close());
           privateServer.unref();
           resolve();
         });

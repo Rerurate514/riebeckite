@@ -4,6 +4,7 @@ import type {
 } from "./profile_trace_sink.js";
 
 const contentLabels: Readonly<Record<string, string>> = {
+  "content.build": "Total",
   "content.scan": "Scan",
   "content.process": "Process",
   "content.process.inputs": "Inputs",
@@ -56,7 +57,15 @@ function appendIntegrations(lines: string[], report: ProfileReport): void {
 
 function appendContent(lines: string[], report: ProfileReport): void {
   if (report.content.size === 0) return;
-  lines.push("", "Content (inclusive; overlapping spans are not additive)");
+  const total = report.content.get("content.build");
+  const share =
+    total && report.totalDurationMs
+      ? ` · ${((total.cumulativeDurationMs / report.totalDurationMs) * 100).toFixed(1)}% of build`
+      : "";
+  lines.push(
+    "",
+    `Content (inclusive; overlapping spans are not additive${share})`,
+  );
   for (const name of Object.keys(contentLabels)) {
     const duration = report.content.get(name);
     if (!duration) continue;

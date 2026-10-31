@@ -13,6 +13,7 @@ const FAST_PATH_PLAN_SPANS: readonly string[] = [
 
 export class FastPathSpanCollector implements Tracer {
   private readonly durations = new Map<string, number>();
+  private readonly callCounts = new Map<string, number>();
 
   constructor(private readonly delegate: Tracer) {}
 
@@ -29,6 +30,7 @@ export class FastPathSpanCollector implements Tracer {
         name,
         (this.durations.get(name) ?? 0) + performance.now() - startedAt,
       );
+      this.callCounts.set(name, (this.callCounts.get(name) ?? 0) + 1);
     }
   }
 
@@ -38,6 +40,10 @@ export class FastPathSpanCollector implements Tracer {
 
   durationMs(name: string): number {
     return this.durations.get(name) ?? 0;
+  }
+
+  calls(name: string): number {
+    return this.callCounts.get(name) ?? 0;
   }
 
   planDurationMs(): number {

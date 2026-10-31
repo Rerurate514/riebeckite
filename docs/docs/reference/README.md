@@ -26,7 +26,8 @@ You do not have to read Reference from start to finish. When you want to check a
 | --- | --- |
 | [Configuration](./configuration.md) | `riebeckite.config.ts`, roots, content, theme, plugins |
 | [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
-| [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `upgrade`, `profile`, `inspect`, `theme preview`, `plugin dev`, `plugin verify` |
+| [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `publish`, `upgrade`, `profile`, `inspect`, `help`, `completion`, `theme preview`, `plugin dev`, `plugin verify` |
+| [CLI Extension API](./cli-extension.md) | Typed command definitions, Plugin CLI commands, JSON and error contracts, completion |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |
 | [Theme API](./theme-api.md) | `defineTheme`, CSS contract, tokens, color mode, package shape |
 | [Framework](../framework/README.md) | Riebeckite's internal structure |

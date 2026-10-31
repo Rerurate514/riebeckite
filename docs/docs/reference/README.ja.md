@@ -26,7 +26,8 @@ flowchart TD
 | --- | --- |
 | `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
-| `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`upgrade`、`profile`、`inspect`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
+| `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`publish`、`upgrade`、`profile`、`inspect`、`help`、`completion`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
+| 型付きコマンド定義、プラグインのCLIコマンド、JSONとエラーの取り決め、補完 | [CLI拡張API](./cli-extension.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
 | `defineTheme`、CSS の取り決め、トークン、カラーモード、パッケージの形 | [Theme API](./theme-api.ja.md) |
 | Riebeckite の内部構造 | [Framework](../framework/README.ja.md) |

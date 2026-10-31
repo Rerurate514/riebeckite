@@ -28,7 +28,11 @@ riebeckite deploy setup | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
+riebeckite help [command...]
+riebeckite completion <bash | zsh | powershell> [--project]
 ```
+
+コマンドは単一の型付きレジストリから解決します。`--help`、`help`、`completion` はコマンドのメタデータだけを読み、ハンドラーを実行しません。有効なプラグインは、既存の `cli` 定義を通じて名前空間付きのコマンドを追加できます。定義API、実行コンテキスト、JSONの取り決め、補完、セキュリティモデルは [CLI拡張API](./cli-extension.ja.md) を参照してください。
 
 ## 各コマンドの役割とビルド状態への影響
 

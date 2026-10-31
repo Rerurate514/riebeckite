@@ -458,6 +458,40 @@ and which site is generated. Because of this, `ContentManager` and plugins do no
 need to special-case the filesystem layout even when the content repository is
 separate.
 
+## Content mutation
+
+`riebeckite content` plans changes before writing. `create`, `edit`, `delete`,
+and `move` only print a plan; `--apply` writes it. `content plan` stores the
+plan (name it with `--out`), `content apply <plan> --apply` revalidates and
+applies it, and `content recover <journal> --apply` rolls back an interrupted
+apply.
+
+Planning never writes content. Apply re-plans the stored operations, compares
+every file fingerprint, checks parent symlinks, and takes a lock before
+writing. Writes go through a journal, and recovery restores only files whose
+after-state still matches, so concurrent edits are reported instead of
+overwritten.
+
+### Links
+
+Mutating a path updates the links that resolve to it. The system extracts link
+occurrences with exact UTF-16 source ranges, resolves them through the same
+content index and aliases used by the manifest, and rewrites only the
+destination range. It never replaces a whole Markdown document.
+
+- WikiLinks and embeds resolve independently of the source file location.
+- Relative Markdown links and images resolve from the source directory.
+- A short name shared by multiple files is ambiguous and is never rewritten.
+- Moving a file also re-relativizes its relative Markdown links for the new
+  location.
+- Deleting a linked file leaves a `broken-link` warning.
+- A mutation that would break a link or silently change its target is refused
+  with a conflict.
+
+Reference-style usages are not edited; the reference definition's destination
+is updated. Non-Markdown files are moved byte-for-byte and are link targets
+only, not mutation sources.
+
 ## Correctness rules
 
 - Preserve canonical content identity across source, manifest, and graph.

@@ -1,3 +1,5 @@
+import type { ClientRuntimeHost } from "./client_runtime.js";
+
 export type ClientLifecycleScope = "app" | "page";
 
 export type ClientCleanup = () => void | Promise<void>;
@@ -20,6 +22,7 @@ export type ClientInitializerContext<TRoot, TConfig> = {
   signal: AbortSignal;
   scope: ClientResourceScope;
   config: TConfig;
+  runtimes?: ClientRuntimeHost;
 };
 
 export type ClientInitializer<TRoot, TConfig> = (
@@ -42,11 +45,13 @@ export type ClientLifecycleMount<TRoot, TConfig> = {
   root: TRoot;
   config: TConfig;
   initialize: ClientInitializer<TRoot, TConfig>;
+  runtimes?: ClientRuntimeHost;
 };
 
 type MountedClientInitializer<TRoot> = {
   root: TRoot;
   resources: InitializerResources;
+  runtimes?: ClientRuntimeHost;
   cleanup: Promise<ClientCleanup | undefined>;
   ready: Promise<void>;
 };
@@ -87,7 +92,13 @@ export class ClientLifecycle<TRoot> {
     );
     const cleanup = this.initialize(mount, resources);
     const ready = cleanup.then(() => undefined);
-    const mounted = { root: mount.root, resources, cleanup, ready };
+    const mounted = {
+      root: mount.root,
+      resources,
+      runtimes: mount.runtimes,
+      cleanup,
+      ready,
+    };
     scoped.set(mount.name, mounted);
     return ready;
   }
@@ -138,10 +149,11 @@ export class ClientLifecycle<TRoot> {
         signal: resources.signal,
         scope: resources,
         config: mount.config,
+        runtimes: mount.runtimes,
       });
       return typeof result === "function" ? result : undefined;
     } catch (error) {
-      await resources.dispose();
+      await Promise.all([resources.dispose(), mount.runtimes?.dispose()]);
       this.report(error, {
         scope: mount.scope,
         name: mount.name,
@@ -159,6 +171,7 @@ export class ClientLifecycle<TRoot> {
     const [cleanup] = await Promise.all([
       mounted.cleanup,
       mounted.resources.dispose(),
+      mounted.runtimes?.dispose(),
     ]);
     try {
       await cleanup?.();

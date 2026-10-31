@@ -2,6 +2,12 @@ export type {
   ClientInitializerContext,
   ClientResourceScope,
 } from "./src/client_lifecycle.js";
+export type {
+  ClientRuntime,
+  ClientRuntimeCreateOptions,
+  ClientRuntimeHost,
+  ClientRuntimeInvokeOptions,
+} from "./src/client_runtime.js";
 export {
   defineConfig,
   isExcluded,

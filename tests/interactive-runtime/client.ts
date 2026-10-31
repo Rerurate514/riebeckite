@@ -2,6 +2,7 @@ import { ClientLifecycle } from "../../packages/core/client.js";
 import {
   type ClientRuntime,
   createClientRuntimeHost,
+  createWasmWorkerRuntime,
   createWorkerRuntime,
   defineInteractiveRuntime,
   InteractiveRuntimeRegistry,
@@ -26,8 +27,17 @@ type TestWindow = Window & {
     workerAbort: string | null;
     workerPending: string | null;
     workerCrash: string | null;
+    wasmInstances: ClientRuntime<number>[];
+    wasmReady: number;
+    wasmResults: number[];
+    wasmTrap: string | null;
+    wasmTrapFlag: boolean;
+    wasmMissing: string | null;
+    wasmMissingMessage: string | null;
     unmountPage(): Promise<void>;
     crashWorker(): Promise<void>;
+    testWasmTrap(): Promise<void>;
+    testWasmMissing(): Promise<void>;
   };
 };
 
@@ -74,6 +84,35 @@ registry.register(
     id: "worker",
     limits: { maxConcurrent: 4, invokeTimeoutMs: 5_000 },
     createWorker: () => new Worker("/runtime-worker.js", { type: "module" }),
+  }),
+);
+
+const wasmWorker = () => new Worker("/wasm-worker.js", { type: "module" });
+
+registry.register(
+  createWasmWorkerRuntime<readonly [number, number], number>({
+    id: "wasm",
+    wasmUrl: "/add.wasm",
+    exportName: "add",
+    limits: { invokeTimeoutMs: 5_000 },
+    createWorker: wasmWorker,
+  }),
+);
+registry.register(
+  createWasmWorkerRuntime<readonly [], never>({
+    id: "wasm-trap",
+    wasmUrl: "/add.wasm",
+    exportName: "trap",
+    limits: { invokeTimeoutMs: 5_000 },
+    createWorker: wasmWorker,
+  }),
+);
+registry.register(
+  createWasmWorkerRuntime<readonly [], never>({
+    id: "wasm-missing",
+    wasmUrl: "/add.wasm",
+    exportName: "missing",
+    createWorker: wasmWorker,
   }),
 );
 
@@ -146,6 +185,14 @@ async function mountPage(root: Element): Promise<void> {
         });
       }
       test.workerReady += 1;
+
+      const wasm = context.runtimes?.create<number>("wasm");
+      if (!wasm)
+        throw new Error("The lifecycle did not provide a runtime host.");
+      test.wasmInstances.push(wasm);
+      await wasm.mount();
+      test.wasmResults.push(await wasm.invoke([2, 3]));
+      test.wasmReady += 1;
     },
   });
 }
@@ -167,6 +214,43 @@ async function crashWorker(): Promise<void> {
   }
 }
 
+async function testWasmTrap(): Promise<void> {
+  const test = testWindow().__runtimeTest;
+  if (!test) throw new Error("The browser test state is missing.");
+  const host = createClientRuntimeHost({ registry, onError: () => {} });
+  try {
+    const runtime = host.create<never>("wasm-trap");
+    await runtime.mount();
+    try {
+      await runtime.invoke([]);
+      test.wasmTrap = "resolved";
+    } catch (error) {
+      test.wasmTrap = (error as Error).name;
+      test.wasmTrapFlag = (error as { trap?: boolean }).trap === true;
+    }
+  } finally {
+    await host.dispose();
+  }
+}
+
+async function testWasmMissing(): Promise<void> {
+  const test = testWindow().__runtimeTest;
+  if (!test) throw new Error("The browser test state is missing.");
+  const host = createClientRuntimeHost({ registry, onError: () => {} });
+  try {
+    const runtime = host.create<never>("wasm-missing");
+    try {
+      await runtime.mount();
+      test.wasmMissing = "resolved";
+    } catch (error) {
+      test.wasmMissing = (error as Error).name;
+      test.wasmMissingMessage = (error as Error).message;
+    }
+  } finally {
+    await host.dispose();
+  }
+}
+
 testWindow().__runtimeTest = {
   instances: [],
   workerInstances: [],
@@ -178,8 +262,17 @@ testWindow().__runtimeTest = {
   workerAbort: null,
   workerPending: null,
   workerCrash: null,
+  wasmInstances: [],
+  wasmReady: 0,
+  wasmResults: [],
+  wasmTrap: null,
+  wasmTrapFlag: false,
+  wasmMissing: null,
+  wasmMissingMessage: null,
   unmountPage: () => lifecycle.unmount("page"),
   crashWorker,
+  testWasmTrap,
+  testWasmMissing,
 };
 
 const main = document.querySelector("#main-content");

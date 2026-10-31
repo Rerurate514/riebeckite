@@ -4,6 +4,7 @@ import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import puppeteer, { type Browser, type Page } from "puppeteer";
+import { createAddWasm } from "../../packages/runtime/test/helpers/fake_worker.js";
 import { createRuntimeFixture, type RuntimeFixture } from "./fixture.js";
 
 type RuntimeTestWindow = Window & {
@@ -24,8 +25,20 @@ type RuntimeTestWindow = Window & {
     workerAbort: string | null;
     workerPending: string | null;
     workerCrash: string | null;
+    wasmInstances: Array<{
+      signal: AbortSignal;
+      invoke(input: readonly number[]): Promise<number>;
+    }>;
+    wasmReady: number;
+    wasmResults: number[];
+    wasmTrap: string | null;
+    wasmTrapFlag: boolean;
+    wasmMissing: string | null;
+    wasmMissingMessage: string | null;
     unmountPage(): Promise<void>;
     crashWorker(): Promise<void>;
+    testWasmTrap(): Promise<void>;
+    testWasmMissing(): Promise<void>;
   };
 };
 
@@ -62,10 +75,30 @@ before(async () => {
   });
   const workerBundle = workerResult.outputFiles?.[0]?.text;
   assert.ok(workerBundle);
+  const wasmResult = await build({
+    entryPoints: [
+      path.join(repositoryRoot, "tests/interactive-runtime/wasm-worker.ts"),
+    ],
+    bundle: true,
+    format: "esm",
+    platform: "browser",
+    target: "es2022",
+    write: false,
+  });
+  const wasmWorkerBundle = wasmResult.outputFiles?.[0]?.text;
+  assert.ok(wasmWorkerBundle);
   fixture = await createRuntimeFixture(bundle, {
     "/runtime-worker.js": {
       body: workerBundle,
       contentType: "text/javascript; charset=utf-8",
+    },
+    "/wasm-worker.js": {
+      body: wasmWorkerBundle,
+      contentType: "text/javascript; charset=utf-8",
+    },
+    "/add.wasm": {
+      body: createAddWasm(),
+      contentType: "application/wasm",
     },
   });
   browser = await puppeteer.launch({
@@ -93,7 +126,9 @@ async function open(pathname = "/a"): Promise<{
       test?.instances.at(-1)?.signal.aborted === false &&
       test.workerInstances.at(-1)?.signal.aborted === false &&
       test.workerReady === 1 &&
-      test.workerResults.length === 4
+      test.workerResults.length === 4 &&
+      test.wasmReady === 1 &&
+      test.wasmResults.length === 1
     );
   });
   return { page, errors };
@@ -141,6 +176,7 @@ test("page runtimes are disposed on navigation and recreated on return", async (
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
         document.querySelector("h1")?.textContent === "PAGE_B",
     );
     const second = await runtimeState(page);
@@ -155,7 +191,8 @@ test("page runtimes are disposed on navigation and recreated on return", async (
         (window as RuntimeTestWindow).__runtimeTest?.instances.length === 3 &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
-        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 3,
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 3 &&
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 3,
     );
     const back = await runtimeState(page);
     assert.equal(back.instances, 3);
@@ -210,6 +247,7 @@ test("worker runtimes isolate requests, cancel, crash and dispose", async () => 
         window.location.pathname === "/b" &&
         (window as RuntimeTestWindow).__runtimeTest?.workerPending !== null &&
         (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2 &&
         (window as RuntimeTestWindow).__runtimeTest?.workerInstances.at(-1)
           ?.signal.aborted === false,
     );
@@ -259,6 +297,81 @@ test("worker runtimes isolate requests, cancel, crash and dispose", async () => 
   }
 });
 
+test("WASM runtimes execute, trap, fail initialization and dispose", async () => {
+  const { page, errors } = await open();
+  try {
+    const initial = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return {
+        results: test?.wasmResults,
+        instances: test?.wasmInstances.length,
+      };
+    });
+    assert.deepEqual(initial.results, [5]);
+    assert.equal(initial.instances, 1);
+
+    await page.click('a[href="/b"]');
+    await page.waitForFunction(
+      () =>
+        window.location.pathname === "/b" &&
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2,
+    );
+    const navigated = await page.evaluate(async () => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      const previous = test?.wasmInstances.at(-2);
+      const current = test?.wasmInstances.at(-1);
+      let stale = "resolved";
+      try {
+        await previous?.invoke([1, 1]);
+      } catch (error) {
+        stale = (error as Error).name;
+      }
+      return {
+        previousAborted: previous?.signal.aborted,
+        stale,
+        current: await current?.invoke([4, 5]),
+        active: test?.wasmInstances.filter((runtime) => !runtime.signal.aborted)
+          .length,
+      };
+    });
+    assert.equal(navigated.previousAborted, true);
+    assert.equal(navigated.stale, "RuntimeStateError");
+    assert.equal(navigated.current, 9);
+    assert.equal(navigated.active, 1);
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testWasmTrap(),
+    );
+    const trapped = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return { name: test?.wasmTrap, trap: test?.wasmTrapFlag };
+    });
+    assert.equal(trapped.name, "RuntimeWasmError");
+    assert.equal(trapped.trap, true);
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testWasmMissing(),
+    );
+    const missing = await page.evaluate(() => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      return { name: test?.wasmMissing, message: test?.wasmMissingMessage };
+    });
+    assert.equal(missing.name, "RuntimeWasmError");
+    assert.match(missing.message ?? "", /missing/);
+
+    const afterFailures = await page.evaluate(async () => {
+      const runtime = (
+        window as RuntimeTestWindow
+      ).__runtimeTest?.wasmInstances.at(-1);
+      return runtime?.invoke([6, 7]);
+    });
+    assert.equal(afterFailures, 13);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("a fresh page mount owns a fresh runtime host", async () => {
   const { page, errors } = await open("/b");
   try {
@@ -268,7 +381,8 @@ test("a fresh page mount owns a fresh runtime host", async () => {
         window.location.pathname === "/c" &&
         (window as RuntimeTestWindow).__runtimeTest?.instances.at(-1)?.signal
           .aborted === false &&
-        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2,
+        (window as RuntimeTestWindow).__runtimeTest?.workerReady === 2 &&
+        (window as RuntimeTestWindow).__runtimeTest?.wasmReady === 2,
     );
     const state = await runtimeState(page);
     assert.equal(state.instances, 2);

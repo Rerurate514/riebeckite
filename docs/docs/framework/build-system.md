@@ -28,17 +28,57 @@ Build state is application-scoped at `.riebeckite/build/content-state.json`. It 
 
 ## Build provenance
 
-Successful builds also store a versioned provenance snapshot in the build state.
-It connects relative source paths and fingerprints, recorded content processing and
-derived-view cache status, and the existing output dependency/change reasons. It
-does not include Markdown contents, absolute paths, or configuration secrets.
+Successful builds store a versioned provenance snapshot in the build state. It
+uses the existing content graph, output dependency set, output change reasons,
+and runtime measurements rather than calculating a second dependency graph.
+It records relative source paths and fingerprints; content processing; measured
+plugin hook order and duration; derived-view cache status; and generated,
+reused, or removed output descriptors. A hook's effects stay opaque unless an
+existing dependency record proves a relationship. A cache hit is reuse, never
+execution.
 
-Use `riebeckite inspect provenance` for a summary, or add `--json` for the
-persisted machine-readable snapshot. The development inspector exposes the same
-read-only data at `/__riebeckite/inspector/provenance` through its authenticated
-private inspector server. Set `provenance: { enabled: false }` to skip recording.
-Plugin hooks are deliberately reported as opaque unless the runtime has measured
-their result; a cache hit is reported as reuse, not execution.
+After HonoX finishes SSG, its final output inventory adds SHA-256 fingerprints
+of the actual output bytes. Artifacts without a Core output descriptor are
+explicitly `unmapped`; Core-only builds have no final-byte claim. Provenance is
+observability only: invalid, missing, or unwritable provenance state falls back
+without affecting build output. It does not include Markdown contents, absolute
+paths, or configuration secrets.
+
+Records distinguish `measured`, `deterministic`, and `unobservable` evidence.
+A derived-view cache hit is reported as reuse; an executed hook remains
+`opaque` unless existing dependency data proves its input and output. The
+Inspector reads only this persisted snapshot and the private endpoint: it does
+not rebuild content, resolve derived views, or mutate build state.
+
+The latest ten snapshots are retained for comparison. Use
+`riebeckite inspect provenance` for a summary, or
+`riebeckite inspect provenance --json` for the persisted machine-readable
+record. `--source <relative-path>` and `--output <path>` filter the latest
+snapshot; `--compare <build-id>` adds the deterministic record delta against a
+retained snapshot; if that build id is not retained, the JSON reports that the
+comparison is unavailable. The development Inspector's Provenance tab and
+`/__riebeckite/inspector/provenance` endpoint expose the latest read-only
+snapshot through its authenticated private server. Set
+`provenance: { enabled: false }` to skip recording.
+
+### Provenance measurement cost
+
+`scripts/benchmark_large_vault.mjs` accepts
+`RIEBECKITE_BENCH_PROVENANCE=off|on` and uses median wall-clock time across
+repeated runs. One measured condition was a generated 1,000-note vault on
+Windows (win32), Node v24.22.0, 5 runs per scenario, with the default content
+and output caches enabled:
+
+| Scenario | Provenance off (median, min–max) | Provenance on (median, min–max) |
+| --- | --- | --- |
+| Cold build | 2,358 ms (2,306–3,119) | 2,422 ms (2,383–2,596) |
+| No-change warm build | 584 ms (531–933) | 747 ms (627–2,251) |
+| One independent note edit | 646 ms (585–670) | 741 ms (680–1,035) |
+
+These values describe this machine and content shape, not a performance
+guarantee. Provenance is an observability cost paid after the manifest and
+output plan are already known; disabling it removes recording, history, and
+state serialization without changing build output.
 
 ## The build flow
 

@@ -245,7 +245,9 @@ export async function collectProvenanceInspection(
     provenance,
     history,
     ...(prior === undefined
-      ? {}
+      ? options.compare === undefined
+        ? {}
+        : { comparisonUnavailable: "compare build was not found in history" }
       : { comparison: compareBuildProvenance(prior, state.provenance) }),
   };
 }

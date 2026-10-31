@@ -54,6 +54,35 @@ test("inspect content accepts an exact path or permalink", () => {
   assert.throws(() => parseCommand(["inspect", "content", "--path"]));
 });
 
+test("inspect provenance accepts shared state filters and JSON", () => {
+  assert.deepEqual(
+    parseCommand([
+      "inspect",
+      "provenance",
+      "--json",
+      "--source",
+      "notes/hello.md",
+      "--output",
+      "index.html",
+      "--compare",
+      "sha256:build",
+    ]),
+    {
+      name: "inspect",
+      target: "provenance",
+      list: false,
+      json: true,
+      source: "notes/hello.md",
+      output: "index.html",
+      compare: "sha256:build",
+    },
+  );
+  assert.throws(() => parseCommand(["inspect", "provenance", "--source"]));
+  assert.throws(() =>
+    parseCommand(["inspect", "provenance", "--output", "a", "--output", "b"]),
+  );
+});
+
 test("doctor rejects incompatible or unknown options", () => {
   assert.throws(() => parseCommand(["doctor", "--dry-run"]));
   assert.throws(() => parseCommand(["doctor", "--json", "--explain"]));

@@ -222,6 +222,23 @@ export function renderProvenanceInspection(
     field("Sources", provenance.sources.length),
     field("Transforms", provenance.transforms.length),
     field("Outputs", provenance.outputs.length),
+    field("Artifacts", provenance.artifacts?.length ?? 0),
+    field("History", inspection.history.length),
+    ...(inspection.comparison
+      ? [
+          field(
+            "Compared",
+            `${inspection.comparison.from} -> ${inspection.comparison.to}`,
+          ),
+          field(
+            "Delta",
+            `+${inspection.comparison.sources.added.length} -${inspection.comparison.sources.removed.length} ~${inspection.comparison.sources.changed.length} sources`,
+          ),
+        ]
+      : []),
+    ...(inspection.comparisonUnavailable
+      ? [field("Comparison", inspection.comparisonUnavailable)]
+      : []),
   ].join("\n");
 }
 

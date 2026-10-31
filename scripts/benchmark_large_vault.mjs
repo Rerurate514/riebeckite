@@ -148,6 +148,9 @@ async function measure(directory, cacheDirectory, scenario, pluginVersion) {
       site: { title: "Benchmark" },
       content: { directory, filters: { publishStrategy: "selective" } },
       cache: { enabled: true, directory: cacheDirectory },
+      provenance: {
+        enabled: process.env.RIEBECKITE_BENCH_PROVENANCE !== "off",
+      },
       plugins: [benchmarkPlugin(pluginVersion)],
     }),
   );

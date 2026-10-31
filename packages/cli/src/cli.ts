@@ -72,7 +72,7 @@ export type Command =
       target?: InspectTarget;
       list: boolean;
       path?: string;
-      json: boolean;
+      json?: boolean;
       source?: string;
       output?: string;
       compare?: string;
@@ -620,7 +620,6 @@ function parseInspectCommand(options: readonly string[]): Command {
       name: "inspect",
       target: "content",
       list,
-      json: false,
       ...(path ? { path } : {}),
     };
   }

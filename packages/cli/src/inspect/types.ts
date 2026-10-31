@@ -100,5 +100,6 @@ export type ProvenanceInspection =
       readonly provenance: BuildProvenance;
       readonly history: readonly BuildProvenance[];
       readonly comparison?: BuildProvenanceComparison;
+      readonly comparisonUnavailable?: string;
     }
   | { readonly status: "unavailable"; readonly reason: string };

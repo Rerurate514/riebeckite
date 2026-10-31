@@ -6,9 +6,9 @@ showcase_priority: low
 ---
 # プラグインの動作例
 
-プラグインの一覧は [プラグイン](./README.ja.md) にあります。このページでは、プラグインが実際に何を生成するかを確認できます。各項目では Markdown のソースと、Riebeckite 上での実行例を並べています。
+プラグインの一覧は [プラグイン](./README.ja.md) にあります。このページでは、プラグインが実際に何を生成するかを確認できます。各項目では Markdown のソースと Riebeckite 上での実行例を並べています。
 
-> 生成される `showcase` プリセットでは、ここにあるような例をローカルで確認できます。
+> `showcase` プリセットを生成すると、ここにあるような例をローカルで確認できます。
 
 ## Obsidian Markdown
 
@@ -76,7 +76,7 @@ showcase_priority: low
 
 ### Hard breaks：[`hard-breaks`](./hard-breaks.ja.md)
 
-`hardBreaks()` は単一の改行をすべて `<br>` に変換します。opt-in のプラグインで、このサイトでは有効にしていないため、次の 3 行は 1 つの段落として表示されます。
+`hardBreaks()` は単一の改行をすべて `<br>` に変換します。opt-in のプラグインであり、このサイトでは有効にしていないため、次の 3 行は 1 つの段落として表示されます。
 
 #### ソース
 
@@ -162,7 +162,7 @@ export function hello(name: string): string {
 
 ### Code tabs：[`code-tabs`](./code-tabs.ja.md)
 
-隣り合った `tab="..."` 付き code fence が、1 つの tab group になります。
+隣り合った `tab="..."` 付き code fence が 1 つの tab group になります。
 
 #### ソース
 
@@ -188,7 +188,7 @@ console.log("Hello from JavaScript");
 
 ### Code annotations：[`code-annotations`](./code-annotations.ja.md)
 
-`diff` フェンスに対象言語を指定して、追加行と削除行を表示します。
+`diff` フェンスに対象言語を指定すると、追加行と削除行が表示されます。
 
 #### ソース
 
@@ -248,7 +248,7 @@ const kept = true;
 
 ### Sidenotes：[`sidenotes`](./sidenotes.ja.md)
 
-脚注記法が、本文の横に並ぶ補足へ変換されます。
+脚注記法は、本文の横に並ぶ補足に変換されます。
 
 #### ソース
 
@@ -316,7 +316,7 @@ flowchart LR
 
 ### Mermaid（headless browser）：[`mermaid`](./mermaid.ja.md)
 
-`mermaid` プラグインは同じ `mermaid` フェンスを、ビルド時に headless browser で SVG に変換します。このサイトでは Chromium を必要としない Mermaid (Pele) を使っています。
+`mermaid` プラグインは同じ `mermaid` フェンスをビルド時に headless browser で SVG に変換します。このサイトでは Chromium を必要としない Mermaid (Pele) を使っています。
 
 ### D2：[`d2`](./d2.ja.md)
 
@@ -708,7 +708,7 @@ items:
 
 ### Excalidraw：[`excalidraw`](./excalidraw.ja.md)
 
-Excalidraw 形式のノートを埋め込むと、ブラウザ側で SVG に置き換わります。このサイトでは `assets/HW.md` の図を埋め込んでいます。
+Excalidraw 形式のノートを埋め込むと、ブラウザ上で SVG に置き換わります。このサイトでは `assets/HW.md` の図を埋め込んでいます。
 
 #### ソース
 
@@ -722,7 +722,7 @@ Excalidraw 形式のノートを埋め込むと、ブラウザ側で SVG に置�
 
 ### Responsive image：[`responsive-image`](./responsive-image.ja.md)
 
-画像を `![[...]]` で埋め込むと、対応する候補画像がある場合は `<picture>` と複数サイズの候補に展開されます。
+画像を `![[...]]` で埋め込むと、対応する候補画像があれば `<picture>` と複数サイズの候補に展開されます。
 
 #### ソース
 
@@ -932,7 +932,7 @@ VIEW[{showcase_priority}]
 
 ### Flashcards：[`flashcards`](./flashcards.ja.md)
 
-`front :: back` を並べた `flashcards` フェンスが、学習用のデッキになります。JavaScript が無効な環境でも静的なリストとして読めます。
+`front :: back` を並べた `flashcards` フェンスが学習用のデッキになります。JavaScript が無効な環境でも静的なリストとして読めます。
 
 #### ソース
 
@@ -954,7 +954,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 
 ### ExcaliBrain：[`excalibrain`](./excalibrain.ja.md)
 
-ノートごとの関係を 7 つの領域に分けて表示します。`excalibrain` フェンスの中身は読みません。フェンスは「ここに描画する」という位置だけを決め、マップの中身はそのページ自身のリンクから組み立てます。
+ノートごとの関係を 7 つの領域に分けて表示します。`excalibrain` フェンスの中身は読みません。フェンスは「ここに描画する」位置を決めるだけで、マップの中身はそのページ自身のリンクから組み立てます。
 
 #### ソース
 
@@ -968,7 +968,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 ```excalibrain
 ```
 
-上のマップには、このページの WikiLink から推論した関係が入ります。各 Plugin ページへは Markdown の相対リンクでリンクしているため、`child` に入るのは WikiLink で指定したページだけです。`parent` にはこのページへ WikiLink でリンクしているページが、`sibling` には `parent` が WikiLink でリンクしているページが並びます。
+上のマップには、このページの WikiLink から推論した関係が入ります。各 Plugin ページへは Markdown の相対リンクを使っているため、`child` に入るのは WikiLink で指定したページだけです。`parent` にはこのページへ WikiLink でリンクしているページが、`sibling` には `parent` が WikiLink でリンクしているページが並びます。
 
 ## ページやサイト全体に作用する Plugin
 
@@ -1025,7 +1025,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | [`image-optimizer`](./image-optimizer.ja.md) | Responsive Image が使う WebP / AVIF 派生画像 |
 | [`svg-optimizer`](./svg-optimizer.ja.md) | 同じパスで置き換える最適化済み SVG |
 
-実際の例は[プラグイン作成の詳細](/series/plugins-in-depth-ja)を参照してください。
+実際の例については[プラグイン作成の詳細](/series/plugins-in-depth-ja)を参照してください。
 
 ## 開発ツール
 

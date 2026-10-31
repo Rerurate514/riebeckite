@@ -22,7 +22,7 @@ flowchart LR
     Output --> Deploy
 ```
 
-**コンテンツの保存場所と Riebeckite アプリケーションは、別々の場所に置けます。**
+**コンテンツの保存場所と Riebeckite アプリケーションは、分けて置けます。**
 
 ## 1. なぜサイトの外に置いてもうまくいくのか
 
@@ -57,7 +57,7 @@ export default defineConfig({
 });
 ```
 
-この値は `process.cwd()` から組み立てないでください。`appRoot` を Vault に向けるのも避けます。Vault はソースデータであり、Vite アプリケーションのルートはサイトのままにします。
+この値は `process.cwd()` から組み立てないでください。`appRoot` を Vault に向けるのも避けてください。Vault はソースデータであり、Vite アプリケーションのルートはサイトのままにします。
 
 ### 1-1. ルートはどの順番で決まるか
 
@@ -65,7 +65,7 @@ export default defineConfig({
 
 1. **CLI** は作業ディレクトリから親方向へ `riebeckite.config.ts` / `.js` / `.mjs` を探します。最初に見つかったファイルのディレクトリが `configRoot` です。見つからなければ `Could not find riebeckite.config.*` で失敗します。
 2. **appRoot** は `configRoot` の下を走査して `vite.config.ts` / `.js` / `.mjs` を探して決まります（`node_modules`、`.git`、`tests` は除外）。見つからなくても、複数見つかってもエラーです。
-3. **contentRoot** は `path.resolve(appRoot, content.directory)` で解決します。`directory` が絶対パスでも、ここでたどり着く値は同じです。
+3. **contentRoot** は `path.resolve(appRoot, content.directory)` で解決します。`directory` が絶対パスでも、解決結果は同じです。
 
 ```mermaid
 flowchart TD
@@ -87,11 +87,11 @@ flowchart TD
 
 `riebeckite.config.ts` を意図的に Vite アプリケーションの外に置く場合は、`riebeckiteVite()` に `configRoot` と `appRoot` を渡してください。どちらの場合も、相対 `content.directory` の基準は `appRoot` のままです。
 
-つまり、「どこから実行しても同じ Vault を読む」というのは、設定がサイトの中（またはその親）にあり、`appRoot` が一意に決まる場合に限り成り立ちます。関係のないディレクトリから実行すれば設定ファイル自体が見つかりませんし、`vite.config.*` が複数あるモノレポでは `Found multiple Vite applications` で失敗します。どちらも、どのサイトの設定を使うべきかをツールが特定できなかった、という意味です。
+つまり、「どこから実行しても同じ Vault を読む」というのは、設定がサイトの中（またはその親）にあり、`appRoot` が一意に決まる場合に限り成り立ちます。関係のないディレクトリから実行すれば設定ファイル自体が見つかりませんし、`vite.config.*` が複数あるモノレポでは `Found multiple Vite applications` で失敗します。どちらも、どのサイトの設定を使うべきかをツールが特定できなかったという意味です。
 
 ### 1-2. アプリケーション側からコンテンツを読む
 
-統合側は、解決済みの設定と利用可能な `ContentManager` を、フレームワーク側が管理するモジュールとして公開しています。アプリケーションのコードは `riebeckite.config.ts` を読み直すのではなく、これらを import します。
+統合側は、解決済みの設定と、そのまま使える `ContentManager` を、フレームワーク側が管理するモジュールとして公開しています。アプリケーションのコードは `riebeckite.config.ts` を読み直すのではなく、これらを import します。
 
 ```ts
 import { config } from "virtual:riebeckite/config";
@@ -183,7 +183,7 @@ flowchart TD
 
 ## 3. C: リポジトリを分ける場合の詳細
 
-基本的な流れは [コンテンツとサイトを分ける](../content-repositories.ja.md) にあります。ここでは、その手順では触れていない点を補います。
+基本的な流れは [コンテンツとサイトを分ける](../content-repositories.ja.md) にあります。ここでは、その手順で触れていない点を補います。
 
 ### 3-1. Vault をプライベートリポジトリに置く
 
@@ -371,7 +371,7 @@ flowchart LR
     Publish -->|"いいえ"| NotPublic["非公開"]
 ```
 
-プライベート Vault では、既定の `explicit` が最も考えやすいモデルです。
+プライベート Vault では、既定の `explicit` が最も理解しやすいモデルです。
 
 ### 4-2. `exclude` はどう書くか
 

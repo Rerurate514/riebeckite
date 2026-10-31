@@ -73,7 +73,7 @@ export function example(
 }
 ```
 
-`definePlugin()` が、プラグイン共通の取り決めを提供します。
+`definePlugin()` がプラグイン共通の取り決めを提供します。
 
 ## プラグインが持てる機能
 
@@ -101,7 +101,7 @@ export function example(
 
 ## 開発時のルートマニフェスト
 
-開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインは、`entry.html === ""` でも処理が正しく、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行が必要な場合に限り `developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
+開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインでは、`entry.html === ""` でも正しく処理でき、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行する必要がある場合に限り、`developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
 
 ## プラグインを有効にする
 
@@ -129,7 +129,7 @@ enabled: false
 
 ## 実行順と依存関係
 
-`order` は、変換や[[glossary/renderer|レンダラー]]の優先順を決まったものにするための基本順です。プラグイン同士に機能の提供・利用関係がなく、パイプライン内の実行順だけを決めたい場合に使います。
+`order` は、変換や[[glossary/renderer|レンダラー]]の優先順を一定にするための基本順です。プラグイン同士に機能の提供・利用関係がなく、パイプライン内の実行順だけを決めたい場合に使います。
 
 一方、プラグイン同士に実際の提供・利用関係がある場合は、`order` ではなく**[[glossary/capability|ケイパビリティ]]**を使います。変換順を表すためだけのケイパビリティは作成しないでください。
 
@@ -157,7 +157,7 @@ definePlugin({
 | `requires` | 必ず必要な機能 |
 | `optional` | あれば利用する機能 |
 
-依存関係の解決処理は、提供側を利用側より前に置くよう実行順を決めます。
+依存関係の解決処理は、提供側が利用側より前に来るよう実行順を決めます。
 
 ```mermaid
 flowchart LR
@@ -211,7 +211,7 @@ type PluginContext = {
 };
 ```
 
-`isDevelopment` は Vite の開発ランタイムでのみ `true` です。開発サーバーが配信しない静的出力を、プラグインが遅延させるために使えます。
+`isDevelopment` は Vite の開発ランタイムでのみ `true` です。開発サーバーが配信しない静的出力をプラグインが遅延させるために使えます。
 
 フックによって、`slug`、`markdown`、`content`、`manifest`、`entries`、公開先を決めるための入力などが追加されます。
 
@@ -223,7 +223,7 @@ type PluginContext = {
 
 フレームワーク側の主なフックは `setup`、`buildStart`、`buildEnd` です。`dispose` は、プラグインが確保したリソースを解放するために使います。
 
-`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は、診断情報を集めたあとの完成したマニフェストを受け取る唯一の終了フックです。`dispose` は、解決済みプラグインの逆順で実行されます。
+`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は、診断情報を集めたあとに完成したマニフェストを受け取る唯一の終了フックです。`dispose` は、解決済みプラグインの逆順で実行されます。
 
 名前付きの[[glossary/lifecycle-hook|ライフサイクルフック]]や[[glossary/content-hook|コンテンツフック]]でエラーが起きた場合は、そのまま上位へ伝えます。エラーは `PluginHookError`（`@riebeckite/core` からインポート可能）です。`message` は `Plugin "<name>" failed during "<hook>"` の形式になり、元のエラーは `cause` に保持されます。コンテンツフックで起きた場合は、対象ファイルが `path`（例: `note.md`）として設定されます。
 
@@ -338,7 +338,7 @@ export function example() {
 export { MyComponent, getMyData };
 ```
 
-より整理された形にするなら、プラグインの `./components/` の下に置けます。
+より整理された構成にしたい場合は、プラグインの `./components/` の下に置けます。
 
 ```text
 packages/plugins/example/
@@ -364,7 +364,7 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 
 ### SPAナビゲーション時の配置
 
-コンポーネントはサーバーのリクエストに対して描画するもので、配置やブラウザ上でいつ置き換えるかは決めません。ページの内容に属するコンポーネントは、Siteが `main#main-content` に置きます。シェルの出力が現在のURL、言語、ページデータに依存する場合は、相互に遷移するすべてのルートで、安定して一意な `data-spa-region` で囲みます。
+コンポーネントはサーバーのリクエストに対して描画するもので、どこに配置するかや、ブラウザ上でいつ置き換えるかは決めません。ページの内容に属するコンポーネントは、Siteが `main#main-content` に置きます。シェルの出力が現在のURL、言語、ページデータに依存する場合は、相互に遷移するすべてのルートで、安定して一意な `data-spa-region` で囲みます。
 
 ```tsx
 <aside data-spa-region="docs-navigation">
@@ -372,7 +372,7 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 </aside>
 ```
 
-クライアントの動作はコンポーネントの所有者ではなくDOMの寿命に従います。`main` 内のコンテンツ用の[[glossary/client-entry|クライアントエントリ]]は既定の `page` scopeを使います。置き換わるシェルregion用のクライアントエントリは `app` scopeで実行し、`spa:navigation` の後に初期化し直すか、イベント委譲を使います。Pluginはコンポーネントがどちらに置かれるかを前提にしてはいけません。
+クライアントの動作はコンポーネントの所有ではなくDOMの寿命に従います。`main` 内のコンテンツ用の[[glossary/client-entry|クライアントエントリ]]は既定の `page` scopeを使います。置き換わるシェルregion用のクライアントエントリは `app` scopeで実行し、`spa:navigation` の後に初期化し直すか、イベント委譲を使います。Pluginはコンポーネントがどちらに置かれるかを前提にしてはいけません。
 
 [[framework/honox-integration|HonoX]]の描画プリミティブとして、`Article`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`ArticleFooter`、`Sidebar`、`ThemeRoot` があります。これらは記事の構造とレイアウトのための意味的な部品です。プラグインのコンポーネントはプラグインのパッケージに置き、モデルの型やヘルパーとともに公開エントリーポイントからエクスポートします。サイトのTSXはアプリケーションの `app/` に置きます。HonoXは描画のプリミティブだけを所有し、プラグインのコンポーネントを集めたり、順序を決めたりしません。
 
@@ -398,7 +398,7 @@ const backlinks = await getBacklinks({ view, slug });
 - `manifest.publicEntries`：到達可能なエントリ（`public` と `unlisted`）です。[[glossary/sitemap|サイトマップ]]など、到達可能なすべてのURLを網羅する出力に使います。`unlisted` が含まれる点に注意してください。
 - `manifest.discoverableEntries`：一覧に表示してよいエントリ（`public` のみ）です。関連記事、新着、タグページ、検索インデックスなど、読者が一覧から辿る[[glossary/ui|UI]]にはこちらを使います。
 
-`frontmatter` から公開状態を判定し直したり、`publishAt` の処理を独自に実装したりしないでください。フックで条件分岐が必要な場合は、解決済みの `entry.publishing`（`visibility`、`routable`、`discoverable`）を参照します。それ以外の場合は、判定結果を反映済みのコレクションを選んでください。公開方針は [設定](./configuration.ja.md) で指定します。
+`frontmatter` から公開状態を判定し直したり、`publishAt` の処理を独自に実装したりしないでください。フックで条件分岐が必要な場合は、解決済みの `entry.publishing`（`visibility`、`routable`、`discoverable`）を参照します。それ以外の場合は、判定結果が反映済みのコレクションを選んでください。公開方針は [設定](./configuration.ja.md) で指定します。
 
 ## プラグインが提供する独立ページ
 
@@ -466,7 +466,7 @@ processedContentCache: {
 - `global` は、Vault全体で解決した公開先に依存する変換に使います。Coreが公開先の集合を指紋化し、変化があったときはすべてのエントリを再処理します。
 - `unsafe` は、Git、ネットワーク、時刻、プロセスの状態など、Coreが追跡できない入力に使います。処理済みコンテンツの永続的な再利用を安全側で無効にします。
 
-`tracked` の依存関係は、コンテンツの処理中に記録します。Coreがコンテンツやファイルの識別情報を保存し、その逆引きインデックスから次回の[[glossary/incremental-build|増分ビルド]]で再処理が必要なコンテンツを決めます。この目的でVaultを独自に走査したり、プラグイン固有の増分ビルド状態を保存したりしないでください。フレームワークのAPIで依存関係を追跡できない場合は `unsafe` を使います。広い範囲の再処理は許容されますが、古い結果の再利用は許されません。
+`tracked` の依存関係は、コンテンツの処理中に記録します。Coreがコンテンツやファイルの識別情報を保存し、その逆引きインデックスを使って、次回の[[glossary/incremental-build|増分ビルド]]で再処理が必要なコンテンツを決めます。この目的でVaultを独自に走査したり、プラグイン固有の増分ビルド状態を保存したりしないでください。フレームワークのAPIで依存関係を追跡できない場合は `unsafe` を使います。広い範囲の再処理は許容されますが、古い結果の再利用は許されません。
 
 ## 出力の依存関係
 
@@ -488,13 +488,13 @@ pageTypes: [{
 }]
 ```
 
-`content-query` は、一覧に表示できるコンテンツの候補集合と、そこで読むfrontmatterや `file.*` のプロパティを表します。前回の条件に一致しなかったノートでも、追加、削除、公開状態の変化を検出できます。
+`content-query` は、一覧に表示できるコンテンツの候補集合と、そこで読むfrontmatterや `file.*` のプロパティを表します。前回の条件に一致しなかったノートについても、追加、削除、公開状態の変化を検出できます。
 
-対象を特定できる場合は `content`、`tag`、`folder` を使います。マニフェスト全体に依存する集合変換は `global` を使います。表現できない入力にだけ `unknown` を使ってください。`unknown` は安全側で再生成し、すべての出力の再生成を要求します。依存関係を宣言しない[[glossary/generated-output|生成出力]]も `unknown` として扱われます。
+対象を特定できる場合は `content`、`tag`、`folder` を使います。マニフェスト全体に依存する集合変換は `global` を使います。表現できない入力にだけ `unknown` を使ってください。`unknown` の場合は、安全側で再生成し、すべての出力の再生成を要求します。依存関係を宣言しない[[glossary/generated-output|生成出力]]も `unknown` として扱われます。
 
-生成出力のパスは、実際に書き出すファイルのパスです。コンテンツ、[[glossary/redirect|リダイレクト]]、プラグインページのルートと衝突させないでください。衝突した場合、ルートを上書きせず、Coreがビルドを失敗させます。
+生成出力のパスは、実際に書き出すファイルのパスです。コンテンツ、[[glossary/redirect|リダイレクト]]、プラグインページのルートと衝突させないでください。衝突した場合、Coreはルートを上書きせず、ビルドを失敗させます。
 
-`planGeneratedOutputs` は増分ビルドのたびに実行されるため、変更がないときの高速経路は使いません。任意のプランナー処理に未追跡の入力がないことをCoreは証明できないため、計画を再利用せずに毎回作り直します。
+`planGeneratedOutputs` は増分ビルドのたびに実行されるため、変更がないときの高速経路は使いません。Coreは、任意のプランナー処理に未追跡の入力がないことを証明できないため、計画を再利用せずに毎回作り直します。
 
 ## アセット
 
@@ -620,7 +620,7 @@ flowchart LR
     Integration --> Router
 ```
 
-HonoXなど特定のルーター実装をプラグイン本体へ直接埋め込まず、統合処理がエンドポイントの取り決めをホストのルーターへ接続します。
+HonoXなど特定のルーター実装をプラグイン本体へ直接埋め込まず、エンドポイントの取り決めは統合処理がホストのルーターへ接続します。
 
 ## SEO
 
@@ -650,7 +650,7 @@ addDiagnostics(context) {
 - JSONとして保存できる
 - プラグインの名前空間内で完結する
 
-`cacheVersion` を使うと、キャッシュ形式の互換性を管理できます。壊れたキャッシュは、安全にキャッシュの未命中として扱える設計にしてください。書き込みは不可分に行います。
+`cacheVersion` を使うと、キャッシュ形式の互換性を管理できます。壊れたキャッシュを安全にキャッシュの未命中として扱えるように設計してください。書き込みは不可分に行います。
 
 ```mermaid
 flowchart TD
@@ -667,7 +667,7 @@ flowchart TD
 
 ## ログとトレース
 
-プラグインからフレームワークの可観測性の仕組みを利用できます。
+プラグインは、フレームワークの可観測性の仕組みを利用できます。
 
 ```ts
 context.logger.info("...");
@@ -729,7 +729,7 @@ import {
 
 ## 推奨するパッケージ構成
 
-公開するパッケージでは、ビルド済みのESMと型定義を公開し、`exports` をそのビルド成果物へ向けます。最小構成の `package.json` は次のとおりです。
+配布するパッケージでは、ビルド済みのESMと型定義を公開し、`exports` をそのビルド成果物へ向けます。最小構成の `package.json` は次のとおりです。
 
 ```json
 {
@@ -811,7 +811,7 @@ await build({
 }
 ```
 
-`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` は常に最新の成果物を含めます。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。サイト側と同じインスタンスを共有したい場合は `peerDependencies` でもかまいません。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remarkやrehypeのパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` をTypeScriptのソース（`./index.ts`）へ向けないでください。
+`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` が常に最新の成果物を含むようになります。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。サイト側と同じインスタンスを共有したい場合は `peerDependencies` でもかまいません。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remarkやrehypeのパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` をTypeScriptのソース（`./index.ts`）へ向けないでください。
 
 公式のプラグインも、可能な限り同じ公開APIの利用者として実装します。
 

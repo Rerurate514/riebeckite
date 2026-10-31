@@ -8,7 +8,7 @@ Riebeckite のテストは、Node.js 組み込みのテストランナー（`nod
 
 手作業での確認が難しい大きな出力には **Golden File** を使います。期待する出力そのものをファイルとして保存しておけば、変更の影響を Pull Request の差分として確認できます。
 
-実際のサイトを生成して検証する End-to-End テストは別に用意していて、`tests/external-site` にあります。E2E を動かす再利用可能なエンジンは `@riebeckite/test/e2e` にあり、このリポジトリ固有の Fixture、テスト対象パッケージの一覧、リポジトリ固有のアサーションは `tests/external-site` に置きます。
+実際のサイトを生成して検証する End-to-End テストは別に用意していて、`tests/external-site` にあります。E2E を動かす再利用可能なエンジンは `@riebeckite/test/e2e` にあり、このリポジトリ固有の Fixture、テスト対象パッケージの一覧、アサーションは `tests/external-site` に置きます。
 
 ## テストの種類には何があるか
 
@@ -54,7 +54,7 @@ pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install し�
 | `pnpm test:plugin-dx:external` | packed tarball を隔離サイトへインストールしてプラグインを検証する |
 | `pnpm test:registry` | Scaffold のインストールの取り決めを npm で公開済みの artifact に対して実行する |
 
-Scaffold のインストールの取り決めは、既定では **workspace を `pnpm pack` した artifact** をインストールして検証します。そのため、新しいパッケージを追加したブランチでも公開前に検証できます。`pnpm test:registry` は同じ取り決めを npm からのインストールに切り替え、公開済みの artifact が解決できることを確認します。リリース後に実行してください。
+Scaffold のインストールの取り決めの検証では、既定で **workspace を `pnpm pack` した artifact** をインストールします。そのため、新しいパッケージを追加したブランチでも公開前に検証できます。`pnpm test:registry` は同じ取り決めを npm からのインストールに切り替え、公開済みの artifact が解決できることを確認します。リリース後に実行してください。
 
 通常は、変更した範囲に近いテストから実行します。たとえば TOC プラグインだけを変更した場合は次のとおりです。
 
@@ -148,7 +148,7 @@ const { html } = await pipeline.execute(":::tip\nSave often.\n:::");
 assert.match(html, /<aside class="rr-tip">/);
 ```
 
-`Pipeline` の第1引数は content index、第2引数は permalink の `Map` です。単一のドキュメントを変換するだけなら、どちらも空の `Map` で構いません。第3引数は、プラグインが embed など他のコンテンツを解決する場合にだけ必要です。プラグインのテストで最もよく使うレベルです。
+`Pipeline` の第1引数は content index、第2引数は permalink の `Map` です。単一のドキュメントを変換するだけなら、どちらも空の `Map` で構いません。第3引数は、プラグインが embed など他のコンテンツを解決する場合にだけ必要です。プラグインのテストでは、このレベルを最もよく使います。
 
 ### Level 3: コンテンツとライフサイクル
 
@@ -156,7 +156,7 @@ assert.match(html, /<aside class="rr-tip">/);
 
 ### Level 4: 公開パッケージの境界
 
-配布するパッケージは、`pnpm pack` した tarball を monorepo の外の隔離サイトへインストールして検証します。これにより、公開エクスポートの不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
+配布するパッケージは、`pnpm pack` した tarball を monorepo の外にある隔離サイトへインストールして検証します。これにより、公開エクスポートの不足、`@riebeckite/core/src/**` への誤った依存、`dependencies` の宣言漏れ、型定義の欠落を検出できます。
 
 このリポジトリでは `tests/plugin-dx` が実例で、`pnpm test:plugin-dx` と `pnpm test:plugin-dx:external` で実行します。
 

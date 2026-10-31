@@ -54,7 +54,7 @@ id: hello-world
 /n/hello-world
 ```
 
-frontmatter に ID がないコンテンツにも、既定の `frontmatter-or-hash` ならファイルパスから決定論的な ID が付きます。
+既定の `frontmatter-or-hash` なら、frontmatter に ID がないコンテンツにもファイルパスから決定論的な ID が付きます。
 
 そのため、既存の Obsidian Vault の全ファイルに `id` を追加する必要はありません。
 
@@ -92,7 +92,7 @@ ContentPublicLocation
 
 Core は、解決された `permalink` を canonical URL として扱います。
 
-同じ URL が、Wikilink、バックリンク、検索、コンテンツグラフなどから共通して参照されます。SEO の canonical、サイトマップ、RSS / Atom / JSON Feed も同じ URL を使います。
+同じ URL が Wikilink、バックリンク、検索、コンテンツグラフなどから共通して参照されます。SEO の canonical、サイトマップ、RSS / Atom / JSON Feed も同じ URL を使います。
 
 このプラグインを使わなくても、Core の resolver `resolveDefaultContentLocation` がすべての URL を解決します。`index` は `/`、それ以外は `/{slug}` です。これはフォールバックではなく、Core の正式な方針です。
 
@@ -128,7 +128,7 @@ permalink-id: hello-world
 
 ### permalink を直接指定する
 
-特定のコンテンツだけ、公開 URL を直接指定できます。
+特定のコンテンツに限り、公開 URL を直接指定できます。
 
 ```md
 ---
@@ -137,7 +137,7 @@ permalink: /about
 ---
 ```
 
-この場合、ID からの通常のパス生成より `/about` が優先されます。
+この場合、ID から通常どおり生成されるパスより `/about` が優先されます。
 
 `id` と公開 URL は別の概念であり、次のように扱います。
 
@@ -249,7 +249,7 @@ id: article-123
 ---
 ```
 
-ソースファイルを名前変更したり移動したりしても、`flat` モードなら ID と公開 URL は変わりません。
+ソースファイルの名前を変更したり移動したりしても、`flat` モードなら ID と公開 URL は変わりません。
 
 ---
 
@@ -409,7 +409,7 @@ path: {
 
 現在の実装では、`append` は `preserve` と同じパスを返します。
 
-将来、別の意味を持たせられるようにモードとして分けています。現行バージョンで `append` に `preserve` と異なる挙動を期待しないでください。
+将来、別の意味を持たせられるよう、モードとして分けています。現行バージョンで `append` に `preserve` と異なる挙動を期待しないでください。
 
 ---
 
@@ -445,7 +445,7 @@ ID が `hello-world` の場合、URL は次のようになります。
 
 組み込みの strategy では表せない URL 設計には、`resolveId` と `resolvePath` を使えます。
 
-通常のオプションで足りるなら、カスタム resolver は不要です。プロジェクト固有の ID や URL の設計に使います。
+通常のオプションで足りるなら、カスタム resolver は不要です。プロジェクト固有の ID や URL を設計するときに使います。
 
 ### `resolveId`
 
@@ -523,7 +523,7 @@ permalink({
 /articles/flutter-42
 ```
 
-カスタム resolver が読むプロジェクト固有の frontmatter の検証は、resolver の責任です。
+カスタム resolver が読むプロジェクト固有の frontmatter を検証するのは、resolver の責任です。
 
 ---
 
@@ -689,7 +689,7 @@ permalink: /about
 ---
 ```
 
-とした場合、次のように扱われます。
+この場合、次のように扱われます。
 
 ```text
 ID の候補

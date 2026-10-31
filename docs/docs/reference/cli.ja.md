@@ -42,7 +42,7 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
 | `check` | アプリの設定、コンテンツルートの可用性、[[glossary/plugin-options|プラグインオプション]]、[[glossary/capability|ケイパビリティ]]の解決を検証する | いいえ |
 | `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
-| `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
+| `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline ビルドと候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
 | `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加する。デプロイは行わない | いいえ |
@@ -94,9 +94,9 @@ pnpm exec riebeckite upgrade --check --to 0.0.33
 pnpm exec riebeckite upgrade --check --to latest --json
 ```
 
-レポートでは依存関係・peerDependencies・Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、フルの本番ビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
+レポートでは依存関係・peerDependencies・Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、本番のフルビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
 
-対応するのは `package-lock.json` または `pnpm-lock.yaml` の片方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越える代わりに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、未信頼のビルドコードを安全に実行できるわけではありません。
+対応するのは、`package-lock.json` と `pnpm-lock.yaml` のどちらか一方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越えずに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、信頼できないビルドコードを安全に実行できるわけではありません。
 
 ## `init`
 
@@ -214,14 +214,14 @@ riebeckite create --help
 
 ## `theme preview`
 
-通常のサイトが使う Riebeckite サイトと HonoX/Vite の経路をそのまま使って、生成済みのローカルのテーマをプレビューします。
+通常のサイトが使うのと同じ Riebeckite サイトと HonoX/Vite の経路を使って、生成済みのローカルのテーマをプレビューします。
 
 ```sh
 riebeckite theme preview my-theme
 riebeckite theme preview my-theme --port 4173 --no-open
 ```
 
-プレビューは `themes/` 配下の一時サイトから、毎回同じ内容の Home、Article、Documentation、Components のフィクスチャページを配信します。設定済みの Vault、ビルド出力、`riebeckite.config.ts` は読み取りも変更もしません。Ctrl+C で停止すると、一時サイトは削除されます。テーマの CSS は実際のテーマ定義を通じて読み込まれ、CSS の変更は Vite が反映します。`index.ts` を編集すると開発サーバーが再起動し、開いているページが再読み込みされます。レスポンシブな表示サイズとシステムの配色設定は、ブラウザの開発者ツールで確認してください。テーマは信頼済みのローカルアプリケーションコードです。プレビュー設定の読み込み中に、テーマのモジュールが実行されます。
+プレビューは `themes/` 配下の一時サイトから、Home、Article、Documentation、Components の各フィクスチャページを毎回同じ内容で配信します。設定済みの Vault、ビルド出力、`riebeckite.config.ts` は読み取りも変更もしません。Ctrl+C で停止すると、一時サイトは削除されます。テーマの CSS は実際のテーマ定義を通じて読み込まれ、CSS の変更は Vite が反映します。`index.ts` を編集すると開発サーバーが再起動し、開いているページが再読み込みされます。レスポンシブな表示サイズとシステムの配色設定は、ブラウザの開発者ツールで確認してください。テーマは信頼済みのローカルアプリケーションコードです。プレビュー設定の読み込み中に、テーマのモジュールが実行されます。
 
 ## `plugin dev`
 
@@ -298,11 +298,11 @@ flowchart LR
     Check --> Result{"有効か？"}
 ```
 
-`check` が確認するのはプロジェクトの基本的な妥当性であり、出力がビルド済みか、デプロイ済みかということではありません。`check` が保証するのは、設定が有効であることです。
+`check` が確認するのはプロジェクトの基本的な妥当性であり、出力がビルド済みかどうかや、デプロイ済みかどうかということではありません。`check` が保証するのは、設定が有効であることです。
 
 ### プラグインオプションの検証
 
-プラグインオプションの検証は `check` の一部として実行されます。各プラグインの `validateOptions` は設定の有効性に寄与します。たとえばアナリティクスプラグインは、プロバイダーとコレクター URL を検証します。そのため、プラグインの設定が不正であれば、ビルドが始まる前に `check` が失敗します。
+プラグインオプションの検証は `check` の一部として実行されます。各プラグインの `validateOptions` は、設定の有効性の判定に関わります。たとえばアナリティクスプラグインは、プロバイダーとコレクター URL を検証します。そのため、プラグインの設定が不正であれば、ビルドが始まる前に `check` が失敗します。
 
 ## `doctor`
 
@@ -315,7 +315,7 @@ npm exec -- riebeckite doctor --json
 npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 ```
 
-`--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable・skipped・category・code ごとの件数も含まれます。`--code` は繰り返して[[glossary/diagnostic-code|診断コード]]を絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` はファイルを変更せずにそのことを確認します。
+`--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable・skipped・category・code ごとの件数も含まれます。`--code` は繰り返して[[glossary/diagnostic-code|診断コード]]を絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` でファイルを変更せずにそのことを確認できます。
 
 `doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、利用不可として明示します。
 
@@ -338,7 +338,7 @@ flowchart LR
     Doctor --> Diagnostics["診断"]
 ```
 
-`doctor` は可能な限り独立したチェックを続行し、ヘルスチェックが失敗した場合は 0 以外の終了コードで終了します。
+`doctor` は独立したチェックをできる限り続行し、ヘルスチェックが失敗した場合は 0 以外の終了コードで終了します。
 
 `riebeckite dev` の実行中、編集可能なコントロールの外で <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>R</kbd> を押すと、Development Inspector が開きます。`doctor` と同じレポートを使い、Vite の更新に合わせて更新されます。本番のクライアント出力やエンドポイントには含まれません。Overview、Diagnostics、Plugins の各タブは、診断レポートの準備ができ次第、それを表示します。Dependencies と Output タブは別に読み込まれ、ビルド状態を書き込んだりサイトをビルドしたりせずに、現在のコンテンツと出力計画を読み取ります。
 
@@ -425,11 +425,11 @@ npm exec -- riebeckite publish run --execute --provider cloudflare-workers
 npm exec -- riebeckite publish approve <slug> --all
 ```
 
-`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。承認は `--require-approval` または設定で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。`--require-approval` または設定で承認を任意に有効化でき、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## `deploy setup` と `deploy domain`
 
-`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要ならビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は Cloudflare の設定補助2つの名前空間としてのみ残ります。
+`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は Cloudflare の設定補助2つの名前空間としてのみ残ります。
 
 ### `deploy setup`
 
@@ -449,7 +449,7 @@ Git リポジトリと GitHub のリモートを検出し、GitHub CLI（`gh`）
 npm exec riebeckite deploy domain
 ```
 
-最初の publish run の後に実行してください。サイト内の既存の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み取り、`custom_domain: true` を持つ宣言的な `routes` エントリを追加するためです。引数はありません。コマンドは `docs.example.com` のようなホスト名の入力を求め、変更予定の内容を表示して、書き込み前に確認を取ります。`wrangler.toml` は変更しません。Wrangler 設定が存在しない場合や、ターミナルが対話的でない場合は、ヒントを表示して停止します。書き込み後は `Deploy now?` を提示し、そうでなければ `npm exec -- riebeckite publish run --execute` コマンドを表示します。再実行すると、設定済みのドメインを検出して書き込みをスキップします。
+最初の publish run の後に実行してください。これは、サイト内の既存の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み取り、`custom_domain: true` を持つ宣言的な `routes` エントリを追加するためです。引数はありません。コマンドは `docs.example.com` のようなホスト名の入力を求め、変更予定の内容を表示して、書き込み前に確認を取ります。`wrangler.toml` は変更しません。Wrangler 設定が存在しない場合や、ターミナルが対話的でない場合は、ヒントを表示して停止します。書き込み後は `Deploy now?` を提示し、選ばなかった場合は `npm exec -- riebeckite publish run --execute` コマンドを表示します。再実行すると、設定済みのドメインを検出して書き込みをスキップします。
 
 ## `profile`
 
@@ -459,7 +459,7 @@ npm exec riebeckite deploy domain
 npm exec riebeckite profile
 ```
 
-トレースを収集し、ビルドのフェーズとプラグインの処理を対象とするパフォーマンスレポートを表示します。レポートはプラグインキャッシュの動作とコンテンツキャッシュの動作を分けて表示します。コンテンツキャッシュの部分には、ミスまたはバイパスごとの理由も含まれるため、エントリが再利用されなかった理由を確認できます。
+トレースを収集し、ビルドのフェーズとプラグインの処理に関するパフォーマンスレポートを表示します。レポートはプラグインキャッシュとコンテンツキャッシュの動作を分けて表示します。コンテンツキャッシュの部分には、ミスまたはバイパスごとの理由も含まれるため、エントリが再利用されなかった理由を確認できます。
 
 インクリメンタルな再利用なしで計測するには、次のコマンドを実行します。
 
@@ -525,7 +525,7 @@ npm exec riebeckite inspect graph
 npm exec riebeckite inspect build
 ```
 
-現在のインクリメンタルなビルド状態を表示します。状態が存在しない場合や壊れている場合でも、新しい状態を作成せず、その状態と理由を報告します。
+現在のインクリメンタルなビルド状態を表示します。状態が存在しない場合や壊れている場合でも、新しい状態を作成せず、状態とその理由を報告します。
 
 インスペクターの設計については [インスペクター](../framework/inspector.ja.md) を参照してください。
 

@@ -67,7 +67,7 @@ export function local(options: LocalOptions = {}) {
 
 ## 2. CSS を追加する
 
-プラグイン固有のスタイルシートは `assets` で宣言します。CSS をサイトへ手でコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグイン固有のスタイルシートは `assets` で宣言します。CSS をサイトへ手でコピーしたり、ブラウザに `/node_modules` を直接参照させたりしないでください。
 
 ```ts
 // extensions/local-plugin.ts
@@ -112,7 +112,7 @@ export function local() {
 
 処理の流れ自体を細かく組み立てたいときは、`extendMarkdownPipeline` / `extendHtmlPipeline` を使います。依存関係、ライフサイクルフック、レンダラー、エンドポイントなどの拡張ポイントは [Plugin API](../reference/plugin-api.ja.md) を参照してください。
 
-`remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-directive`、`remark-gfm` などの基本となるプラグインを、作成するプラグインより先に実行します。そのため、`:::tip` のようなディレクティブ記法や GFM はすでに AST ノードとして渡されます。これらを自分でインストールしたり登録したりする必要はありません。
+`remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-directive`、`remark-gfm` などの基本となるプラグインを、自分で作成するプラグインより先に実行します。そのため、`:::tip` のようなディレクティブ記法や GFM はすでに AST ノードとして渡されます。これらを自分でインストールしたり登録したりする必要はありません。
 
 コンテンツの変換に参加するプラグインは、`processedContentCache` も宣言してください。宣言がなくても動作はしますが、そのサイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。ほかのプラグインのコンテンツに依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、ほかのプラグインの出力に依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。
 
@@ -172,14 +172,14 @@ export function tip() {
 
 ここでやっていることは2つだけです。
 
-- `remarkTip` という Markdown の変換を加える
+- `remarkTip` という名前の Markdown 変換を加える
 - `/extensions/plugin.css` をスタイルシートとして読み込む
 
 `:::tip` を実際に `<aside>` へ変えるのが `remarkTip` です。
 
 #### `:::tip` を見つける
 
-import と、ディレクティブを扱うための型を追加します。
+import 文と、ディレクティブを扱うための型を追加します。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
@@ -196,7 +196,7 @@ type ContainerDirective = {
 
 この例では、AST ノードの型には `mdast`、ツリーの走査には `unist-util-visit` を使います。どちらも通常の npm パッケージとして自分のパッケージに追加してください。`@riebeckite/core` からは import しません。
 
-Riebeckite の Markdown パイプラインでは、`:::tip` のような記法がプラグインの実行前に解析済みです。`remark-directive` によって `containerDirective` ノードになります。
+Riebeckite の Markdown パイプラインでは、`:::tip` のような記法がプラグインの実行前に解析済みです。`remark-directive` によって `containerDirective` ノードになっています。
 
 そのため、プラグインが Markdown の文字列を自分で解析する必要はありません。
 
@@ -444,7 +444,7 @@ export function tip() {
 }
 ```
 
-> `extendMarkdownPipeline` は、Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では、ディレクティブから生成される HTML 構造そのものを変える必要があるため使っています。
+> `extendMarkdownPipeline` は、Markdown の AST を直接操作できる低レベルな拡張ポイントです。この例では、ディレクティブから生成される HTML 構造そのものを変える必要があるため、これを使っています。
 
 ### 手順 2: スタイルシートを追加する
 
@@ -486,7 +486,7 @@ var(--rb-color-accent)
 
 こうしておけば、利用するテーマが変わっても、そのテーマのアクセントカラーに追従できます。
 
-これがテーマ拡張の取り決めの基本です。プラグインは最外要素に安定したルートフック（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` のセマンティックトークンを使います。`--rb-*` はライト、明示的なダーク、システムのダークのいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-rb-mode]` を自分で分岐する必要はありません。`.dark` クラスには依存しないでください。ダーク専用の分岐が本当に必要な場合の書き方を含む詳細は [Theme API](../reference/theme-api.ja.md) を参照してください。
+これがテーマ拡張の取り決めの基本です。プラグインは最外要素に安定したルートフック（`rr-<feature>`。ここでは `rr-tip`）を付け、色や余白には `--rb-*` のセマンティックトークンを使います。`--rb-*` はライト、明示的なダーク、システムのダークのいずれでも解決されるため、通常は `prefers-color-scheme` や `[data-rb-mode]` を自分で分岐する必要はありません。`.dark` クラスには依存しないでください。ダーク専用の分岐が本当に必要な場合の書き方も含めて、詳細は [Theme API](../reference/theme-api.ja.md) を参照してください。
 
 ### 手順 3: プラグインを登録する
 
@@ -686,7 +686,7 @@ packages/plugins/backlinks/
 └─ README.md
 ```
 
-外部に配布するプラグインは `@riebeckite/core` だけに依存し、自分のサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
+外部に配布するプラグインは `@riebeckite/core` だけに依存し、自パッケージのサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
 
 このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api.ja.md#リポジトリ外へプラグインを配布する) にあります。
 
@@ -729,7 +729,7 @@ UI や出力を追加したい
 
 ### 記事レイアウトに自動で配置する
 
-出力の置き場所が決まっていて、プラグインを有効にすればすぐ表示したい場合は、データヘルパーと JSX コンポーネントを使います。プラグインは、型付きのモデルを返すデータヘルパーと、それを描画する JSX コンポーネントをエクスポートします。サイト側がヘルパーを呼び、自分のレイアウトにコンポーネントを置きます。
+出力の置き場所が決まっていて、プラグインを有効にすればすぐ表示されるようにしたい場合は、データヘルパーと JSX コンポーネントを使います。プラグインは、型付きのモデルを返すデータヘルパーと、それを描画する JSX コンポーネントをエクスポートします。サイト側がヘルパーを呼び、自分のレイアウトにコンポーネントを置きます。
 
 ```ts
 import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
@@ -745,7 +745,7 @@ return <Backlinks backlinks={backlinks} />;
 
 UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。コンポーネントレジストリやプラグイン固有のコンポーネント API はありません。ほかのコンポーネントと同じように import して組み合わせます。
 
-パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を保ちます。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
+パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を維持します。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
 
 ```ts
 import { Backlinks } from "@riebeckite/plugin-backlinks";

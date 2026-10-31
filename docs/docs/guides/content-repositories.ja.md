@@ -302,12 +302,12 @@ npm exec -- riebeckite inspect content --list
 
 - `check` は設定とプラグインの契約を検証します。
 - `doctor` は設定、プラグイン、コンテンツ、[[glossary/build-state|ビルド状態]]、環境を診断します。`--github` を付けると GitHub 関連の設定も確認します。
-- `inspect config` は解決済みの設定を表示します。コンテンツの `Source`、`Directory`、`Exclude`、`Publishing` を確認でき、`Directory` には絶対パスが出ます。意図した Vault を指しているか確認してください。
+- `inspect config` は解決済みの設定を表示します。コンテンツの `Source`、`Directory`、`Exclude`、`Publishing` を確認でき、`Directory` には絶対パスが表示されます。意図した Vault を指しているか確認してください。
 - `inspect content --list` は読み込んだノートを `PATH`、`ID`、`ID SOURCE`、`PERMALINK` の列で一覧表示します。`exclude` に一致したファイルは `EXCLUDED PATH` と `PATTERN` の表に出ます。
 
 `inspect content` だけを実行すると、[[glossary/content-source|コンテンツソース]]の種類、読み込み件数、除外件数、拡張子ごとの件数が分かります。
 
-記事が見つからない場合は、相対パスの `directory` を確認してください。読み込まれているのに表示されない場合は、`publish: true`、`visibility`、`publishAt` を確認します。
+記事が見つからない場合は、相対パスの `directory` を確認してください。読み込まれているのに表示されない場合は、`publish: true`、`visibility`、`publishAt` を確認してください。
 
 ### 5. チェックアウト・起動条件・シークレットを設定する
 
@@ -430,7 +430,7 @@ frontmatter の `visibility` と `publishAt` は、`publishStrategy` より優�
 
 非公開の Vault で `explicit` を使うのが最も安全です。公開し忘れることはあっても、意図しないノートが公開される可能性は低くなります。
 
-リポジトリの公開範囲と、Riebeckite の公開判定は別です。
+リポジトリの公開範囲と Riebeckite の公開判定は別です。
 
 ```mermaid
 flowchart TD
@@ -501,11 +501,11 @@ flowchart LR
 
 まずアセットの種類を確認します。画像が `404` なら、公開ページから実際に参照されているかを見てください。コンテンツ画像は、公開ページからの参照があるものだけがビルドの出力に含まれます。
 
-添付ファイルやメディアが `404` なら、`prebuild` のコピー処理を確認します。ビルドより前に実行され、`public/assets/attachments/` へコピーしている必要があります。
+添付ファイルやメディアが `404` なら、`prebuild` のコピー処理を確認します。ビルドより前に実行され、`public/assets/attachments/` へコピーされる必要があります。
 
 ### CI でだけ Vault が見つからない
 
-CI には、追加のチェックアウトかサブモジュール を設定しない限り Vault がありません。手順5の設定を確認し、相対パスの `directory` が CI 上の配置と一致しているかを見てください。たとえば CI で `content/` にチェックアウトするなら `directory: "content"`、`notes/` に置くなら `directory: "notes"` です。
+CI には、追加のチェックアウトかサブモジュールを設定しない限り Vault がありません。手順5の設定を確認し、相対パスの `directory` が CI 上の配置と一致しているかを見てください。たとえば CI で `content/` にチェックアウトするなら `directory: "content"`、`notes/` に置くなら `directory: "notes"` です。
 
 ### `publishAt` の時刻を過ぎたのに公開されない
 

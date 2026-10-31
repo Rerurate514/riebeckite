@@ -26,7 +26,7 @@ flowchart LR
 
 ## GitHub Actions を有効にしてサイトを作る
 
-対話形式の CLI では、セットアップの最後にデプロイ方法を尋ねられます。継続デプロイには `GitHub Actions` を選んでください。手元から最初の公開を行う場合は `Cloudflare Workers` を選びます。コマンドラインから GitHub Actions を指定する場合は次のとおりです。
+対話形式の CLI では、セットアップの最後にデプロイ方法を尋ねられます。継続デプロイには `GitHub Actions` を選んでください。手元から最初の公開を行う場合は `Cloudflare Workers` を選んでください。コマンドラインから GitHub Actions を指定する場合は次のとおりです。
 
 ```bash id="f10w6x"
 npx create-riebeckite my-site --preset starter --github-actions
@@ -63,11 +63,11 @@ npm exec riebeckite deploy setup
 
 1. Git リポジトリと GitHub のリモートを検出する
 2. GitHub CLI（`gh`）がインストール済みで、ログイン済みか確認する
-3. `.github/workflows/publish.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出したことを報告して、シークレットの登録に進む前に停止する
+3. `.github/workflows/publish.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出した旨を報告して、シークレットの登録に進む前に停止する
 4. Wrangler のログイン状態から Cloudflare アカウントを取得する。複数ある場合は選択する
 5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリシークレットとして登録する。トークンは入力内容が表示されないプロンプト、または非対話実行用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
 
-GitHub リポジトリの作成やプッシュは行いません。完了したら、次のコマンドでデプロイします。
+GitHub リポジトリの作成やプッシュは行いません。処理が完了したら、次のコマンドでデプロイします。
 
 ```sh
 git push
@@ -184,7 +184,7 @@ GitHub のサイトリポジトリで **Settings** → **Secrets and variables**
 
 `riebeckite deploy setup` を使うと、すでに Git リポジトリになっているサイトでこの2つの登録を自動化できます。Wrangler のログインからアカウントを取得し、トークンは入力内容が表示されないプロンプトに貼り付けます。シークレットを手動で登録したい場合や、CLI を使えない場合は、上記の手順をそのまま利用してください。
 
-ワークフローは、GitHub リポジトリの Actions からこれらのシークレットを参照します。
+ワークフローは、GitHub リポジトリの Actions に登録したこれらのシークレットを参照します。
 
 ```mermaid id="ngbty6"
 flowchart LR
@@ -438,7 +438,7 @@ npm ci
 - `.riebeckite/ssg-output-cache.json` と `.riebeckite/ssg-output-cache.entries`：SSG [[glossary/output-cache|出力キャッシュ]]。描画済みのルートとファイル、およびそのエントリの blob を保持します
 - `.riebeckite/ssg-output-cache.fast-path.json`：変更なしのファストパスを検証するためのサイドカー
 
-キャッシュキーは、ランナーの OS、Node.js のバージョン、`package-lock.json` のハッシュ、`riebeckite.config.ts` のハッシュで範囲を絞り、実行ごとの世代として保存します。
+キャッシュキーは、ランナーの OS、Node.js のバージョン、`package-lock.json` のハッシュ、`riebeckite.config.ts` のハッシュで範囲を絞り、実行ごとの世代として保存されます。
 
 ```text
 riebeckite-build-v2-<os>-node<node>-<lockfile hash>-<config hash>-<run id>-<run attempt>
@@ -458,7 +458,7 @@ Riebeckite が復元した出力キャッシュを拒否した場合（キャッ
 
 ### 6. サイトを検証する
 
-次に、次のコマンドを実行します。
+次のコマンドを実行します。
 
 ```sh id="e8v6ki"
 npm exec riebeckite check
@@ -711,7 +711,7 @@ package-lock.json
 RIEBECKITE_CONTENT_READ_TOKEN
 ```
 
-サイトリポジトリのワークフローが、そのトークンを使ってコンテンツリポジトリを読める必要があります。
+サイトリポジトリのワークフローが、そのトークンを使ってコンテンツリポジトリを読めるようにしておく必要があります。
 
 ## `check` が失敗する
 

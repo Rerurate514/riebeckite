@@ -58,7 +58,7 @@ build
 
 ## Templater のテンプレートを除外する
 
-Vault で Obsidian Templater [[glossary/plugin|プラグイン]]を設定している場合、Riebeckite は `.obsidian/plugins/templater-obsidian/data.json` を読み、設定された `templates_folder` を Markdown の走査や frontmatter の解析より前に除外します。そのため、テンプレートはコンテンツの[[glossary/manifest|マニフェスト]]、[[glossary/ssg|SSG]]、開発サーバーに入りません。
+Vault で Obsidian Templater [[glossary/plugin|プラグイン]]を設定している場合、Riebeckite は `.obsidian/plugins/templater-obsidian/data.json` を読み、設定された `templates_folder` を Markdown の走査や frontmatter の解析より前に除外します。そのため、テンプレートはコンテンツの[[glossary/manifest|マニフェスト]]に入らず、[[glossary/ssg|SSG]]や開発サーバーにも入りません。
 
 Riebeckite は Templater のコードを実行しません。通常のノートに Templater の式が含まれていても、そのノートを除外することはありません。Templater の設定またはテンプレートフォルダを取得できない場合は自動では除外しません。フォルダを明示的に除外したい場合は `content.exclude` を使います。
 
@@ -108,7 +108,7 @@ flowchart TD
 
 ## Vault をサイトの内外に置く
 
-Vault は、サイトの中に置く方法と、外に置く方法の2つから選べます。
+Vault は、サイトの中に置く方法と外に置く方法の2つから選べます。
 
 ### パターンA：サイトの `content/` を Vault にする
 
@@ -242,7 +242,7 @@ Obsidian の [[glossary/wikilink|WikiLink]] も利用できます。
 詳しくは [[別の記事]] を参照してください。
 ```
 
-対応するプラグインが、Riebeckite のコンテンツ情報を使って[[glossary/public-location|公開先]]のリンクを解決します。
+対応するプラグインが、Riebeckite のコンテンツ情報を使ってリンクを[[glossary/public-location|公開先]]へ解決します。
 
 ## ファイル名と公開 URL は一致するとは限らない
 
@@ -417,7 +417,7 @@ Vault の外にあるファイルは、ビルド時に見つからないこと�
 
 Riebeckite は `[[リンク]]` をノートのパス、[[glossary/alias|エイリアス]]、添付ファイル名から解決します。同じ名前のノート、エイリアス、添付ファイルが複数あると、名前だけの `[[note]]` では対象を1つに特定できません。
 
-このとき Riebeckite は推測せず、リンクを未解決のままにし、`doctor` が曖昧なリンクとして報告します。
+このとき Riebeckite は推測せず、リンクを未解決のまま残します。`doctor` は、そうしたリンクを曖昧なリンクとして報告します。
 
 ```text id="dup1aa"
 x/dup.md
@@ -448,7 +448,7 @@ npm exec riebeckite check
 npm exec riebeckite doctor
 ```
 
-Riebeckite が実際にどのコンテンツを認識しているか確認したい場合は、次のコマンドを利用できます。
+Riebeckite が実際にどのコンテンツを認識しているかを確認したい場合は、次のコマンドを利用できます。
 
 ```sh id="h7xl6g"
 npm exec -- riebeckite inspect content --list

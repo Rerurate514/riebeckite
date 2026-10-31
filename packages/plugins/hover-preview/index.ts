@@ -45,14 +45,15 @@ export function hoverPreview(options: HoverPreviewOptions = {}) {
       dependencyMode: "none",
     },
     options,
+    derivedViews: [runtime.view],
     validateOptions: validateHoverPreviewOptions,
     manifestHookCache: { version: "hover-preview-v1" },
     onManifestCreated: (context) => {
       const publicEntries = new Set(context.manifest.publicEntries);
       runtime.inject(context.manifest, (entry) => publicEntries.has(entry));
     },
-    planGeneratedOutputs: ({ manifest }) =>
-      runtime.plan(manifest.routableEntries),
+    planGeneratedOutputs: ({ manifest, derived }) =>
+      runtime.plan(manifest.routableEntries, derived),
     assets: [
       createStyleAsset(
         "hover-preview",

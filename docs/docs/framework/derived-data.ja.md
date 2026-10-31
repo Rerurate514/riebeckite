@@ -75,6 +75,8 @@ async planGeneratedOutputs({ derived }) {
 
 Core は、追跡された content・file・external・完全なプロパティ集合を持つ query・graph の依存関係を、既存の出力依存関係へ変換してから出力計画に保存します。完全なプロパティ集合を持たない query は `unknown` となり、安全側で再生成を要求します。View が追跡していない入力、たとえばシリアライズ結果を変えうる View 入力や site 設定がある場合は、明示的な `dependencies` を併用してください。
 
+同梱の `hover-preview` プラグインは、共有プレビュー索引を Derived View で解決します。明示的な global 出力依存関係はそのまま残すため、増分無効化とシリアライズ結果は変わりません。
+
 開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。
 
 ## トラブルシューティング

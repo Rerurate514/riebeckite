@@ -75,6 +75,8 @@ async planGeneratedOutputs({ derived }) {
 
 Core converts tracked content, file, external, qualified query, and graph dependencies to existing output dependencies before persisting the output plan. A query without its complete tracked property set becomes `unknown` and safely requires regeneration. Merge explicit `dependencies` when the output has inputs that the view did not track, including view input or site configuration that can change the serialized value.
 
+The bundled `hover-preview` plugin resolves its shared preview index through a derived view. It keeps its explicit global output dependency, so incremental invalidation and the serialized output are unchanged.
+
 In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. Reading this report never resolves a view or mutates build state.
 
 ## Troubleshooting

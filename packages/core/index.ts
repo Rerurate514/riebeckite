@@ -129,6 +129,13 @@ export {
 } from "./src/content/folder_entry.js";
 export { IMAGE_EXTENSIONS } from "./src/content/image_extensions.js";
 export type {
+  LinkOccurrence,
+  LinkOccurrenceOptions,
+  LinkSyntaxKind,
+  SourceRange,
+} from "./src/content/link_occurrences.js";
+export { extractLinkOccurrences } from "./src/content/link_occurrences.js";
+export type {
   OutputChangeReason,
   OutputChangeSet,
   OutputDescriptor,

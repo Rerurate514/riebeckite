@@ -90,6 +90,31 @@ const { entries, exclusions } = await source.scanWithExclusions();
 これらのヘルパーは絶対ファイルシステムパスではなく、`/` 区切りの論理コンテンツパスを
 対象にします。
 
+## コンテンツ変更
+
+`FileSystemContentMutation` は書き込み側のアダプターです。`ContentSource` や
+`ContentManager` とは分離されており、まず Plan を作成して警告・競合を確認し、明示的に
+Apply します。
+
+```ts
+import { FileSystemContentMutation } from "@riebeckite/node";
+
+const mutation = new FileSystemContentMutation("content");
+const plan = await mutation.plan([
+  { kind: "rename", from: "draft.md", to: "notes/published.md" },
+]);
+if (plan.conflicts.length === 0) await mutation.apply(plan);
+```
+
+Plan にはファイルの fingerprint が含まれ、Apply 前に変更されていれば拒否されます。
+create、update、delete、move、rename、frontmatter、batch、バイナリアセットを扱えます。
+中断した Apply に備えて `.riebeckite/mutations` に Journal と元ファイルの Backup を残します。
+`recover(journalPath)` は中断後に変更されたファイルを復旧せず、競合として返します。
+
+論理パスでは traversal、Windows の予約名、不正な文字、既存のシンボリックリンクを
+経由する親ディレクトリを拒否します。複数ファイルの Apply は staging と Journal を使いますが、
+ファイルシステム全体の原子性は保証しません。
+
 ## パッケージ境界
 
 `@riebeckite/core` は移植可能な `ContentSource` 契約とコンテンツパイプラインを

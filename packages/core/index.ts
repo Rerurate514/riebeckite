@@ -62,6 +62,17 @@ export type {
 } from "./src/content/content_manager.js";
 export { ContentManager } from "./src/content/content_manager.js";
 export { extractFrontmatterAliases } from "./src/content/content_metadata.js";
+export type {
+  ContentMutationContent,
+  ContentMutationFileChange,
+  ContentMutationIssue,
+  ContentMutationOperation,
+  ContentMutationPlan,
+  ContentMutationPrecondition,
+  ContentMutationRecoveryResult,
+  ContentMutationResult,
+} from "./src/content/content_mutation.js";
+export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
   computePipelineFingerprint,
   isPersistentlyCacheable,

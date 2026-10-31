@@ -365,7 +365,7 @@ function propertyChanged(
   );
 }
 
-function contentQueryValue(
+export function contentQueryValue(
   entry: ContentManifestEntry,
   property: string,
 ): unknown {

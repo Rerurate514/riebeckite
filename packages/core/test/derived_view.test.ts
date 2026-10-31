@@ -102,7 +102,7 @@ test("derived views reuse only current tracked dependencies", async () => {
       context.track({
         type: "content",
         id: "post",
-        fingerprint: fingerprints.get("post"),
+        fingerprint: "legacy-fingerprint",
       });
       return { value: calls };
     },

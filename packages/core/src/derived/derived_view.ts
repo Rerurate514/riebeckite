@@ -208,7 +208,17 @@ export function createDerivedViewRegistry(
         return dependencies;
       },
       track(dependency) {
-        const normalized = normalizeDependency(dependency);
+        const trackedDependency = normalizeDependency(dependency);
+        const normalized = {
+          ...trackedDependency,
+          fingerprint:
+            options.dependencyFingerprint?.({
+              type: trackedDependency.type,
+              id: trackedDependency.id,
+              property: trackedDependency.property,
+              properties: trackedDependency.properties,
+            }) ?? trackedDependency.fingerprint,
+        };
         const key = dependencyKey(normalized);
         if (!tracked.has(key)) {
           tracked.add(key);
@@ -363,7 +373,7 @@ export function derivedDependenciesToOutputDependencies(
         if (dependency.properties) {
           outputDependencies.push({
             type: "content-query",
-            properties: dependency.properties,
+            properties: [...dependency.properties].sort(),
           });
         } else {
           outputDependencies.push({ type: "unknown" });

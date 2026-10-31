@@ -1,7 +1,11 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import { fingerprintContent } from "../content/content_dependency_tracker.js";
 import { getContentSourceEntry } from "../content/content_source.js";
 import { fingerprintExternalValue } from "../content/external_fingerprint.js";
-import type { OutputDescriptor } from "../content/output_dependency.js";
+import {
+  contentQueryValue,
+  type OutputDescriptor,
+} from "../content/output_dependency.js";
 import {
   createDerivedViewRegistry,
   type DerivedViewRegistry,
@@ -88,6 +92,8 @@ export class PluginRuntime {
   private externalDependencies = new Map<string, ExternalDependencySnapshot>();
   private externalDependencyFailures: ExternalDependencyFailure[] = [];
   private externalDependenciesResolved = false;
+  private derivedFiles = new Map<string, string>();
+  private derivedManifest: ContentManifest | null = null;
   private readonly pageResolver: PluginPageResolver;
   private readonly manifestHooks: ManifestHookRunner;
   private pageMarkdownRenderer: ((markdown: string) => Promise<string>) | null =
@@ -105,6 +111,38 @@ export class PluginRuntime {
         }
         if (dependency.type === "external") {
           return this.externalDependencies.get(dependency.id)?.fingerprint;
+        }
+        if (dependency.type === "file") {
+          return this.derivedFiles.get(normalizeDerivedPath(dependency.id));
+        }
+        if (dependency.type === "frontmatter") {
+          const entry = this.derivedManifest?.bySlug.get(dependency.id);
+          if (!entry || !dependency.property) return undefined;
+          return fingerprintDerivedValue(
+            contentQueryValue(entry, dependency.property),
+          );
+        }
+        if (dependency.type === "query") {
+          if (!dependency.properties?.length || !this.derivedManifest)
+            return undefined;
+          return fingerprintDerivedValue(
+            this.derivedManifest.discoverableEntries
+              .map((entry) => ({
+                slug: entry.slug,
+                values: dependency.properties?.map((property) =>
+                  contentQueryValue(entry, property),
+                ),
+              }))
+              .toSorted((left, right) => left.slug.localeCompare(right.slug)),
+          );
+        }
+        if (dependency.type === "graph") {
+          if (!this.derivedManifest) return undefined;
+          return fingerprintDerivedValue(
+            [...this.derivedManifest.outgoingLinks.entries()]
+              .map(([slug, links]) => ({ slug, links }))
+              .toSorted((left, right) => left.slug.localeCompare(right.slug)),
+          );
         }
         return undefined;
       },
@@ -465,39 +503,49 @@ export class PluginRuntime {
   }
 
   async runGeneratedOutputPlans(manifest: ContentManifest): Promise<void> {
-    for (const plugin of this.plugins()) {
-      const hook = plugin.planGeneratedOutputs;
-      if (!hook) continue;
-      const outputs = await this.observability().tracer.span(
-        "plugin.planGeneratedOutputs",
-        { plugin: plugin.name, hook: "planGeneratedOutputs" },
-        () =>
-          hook(
-            freezeGeneratedOutputPlanContext({
-              manifest: {
-                discoverableEntries: manifest.discoverableEntries,
-                routableEntries: manifest.publicEntries,
-              },
-              site: this.pipelineOptions.config?.site,
-              derived: this.derivedViews,
-            }),
-          ),
-      );
-      const sink = this.generatedOutputs.sinkFor(plugin.name);
-      for (const output of outputs) {
-        const dependencies = [
-          ...(output.dependencies ?? []),
-          ...derivedDependenciesToOutputDependencies(
-            output.derivedDependencies ?? [],
-          ),
-        ];
-        if (dependencies.length === 0) {
-          throw new Error(
-            `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
-          );
+    const plugins = this.plugins().filter(
+      (plugin) => plugin.planGeneratedOutputs !== undefined,
+    );
+    if (plugins.length === 0) return;
+    this.derivedManifest = manifest;
+    await this.refreshDerivedFiles();
+    try {
+      for (const plugin of plugins) {
+        const hook = plugin.planGeneratedOutputs;
+        const outputs = await this.observability().tracer.span(
+          "plugin.planGeneratedOutputs",
+          { plugin: plugin.name, hook: "planGeneratedOutputs" },
+          () =>
+            hook(
+              freezeGeneratedOutputPlanContext({
+                manifest: {
+                  discoverableEntries: manifest.discoverableEntries,
+                  routableEntries: manifest.publicEntries,
+                },
+                site: this.pipelineOptions.config?.site,
+                derived: this.derivedViews,
+              }),
+            ),
+        );
+        const sink = this.generatedOutputs.sinkFor(plugin.name);
+        for (const output of outputs) {
+          const dependencies = [
+            ...(output.dependencies ?? []),
+            ...derivedDependenciesToOutputDependencies(
+              output.derivedDependencies ?? [],
+            ),
+          ];
+          if (dependencies.length === 0) {
+            throw new Error(
+              `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
+            );
+          }
+          sink.emit({ ...output, dependencies });
         }
-        sink.emit({ ...output, dependencies });
       }
+    } finally {
+      this.derivedManifest = null;
+      this.derivedFiles = new Map();
     }
   }
 
@@ -777,6 +825,36 @@ export class PluginRuntime {
     });
   }
 
+  private async refreshDerivedFiles(): Promise<void> {
+    const source = this.pipelineOptions.contentSource;
+    if (!source) {
+      this.derivedFiles = new Map();
+      return;
+    }
+    try {
+      const entries = await source.scan();
+      const fingerprints = await Promise.all(
+        entries.map(
+          async (entry) =>
+            [
+              normalizeDerivedPath(entry.path),
+              fingerprintContent(await source.read(entry)),
+            ] as const,
+        ),
+      );
+      this.derivedFiles = new Map(fingerprints);
+    } catch {
+      this.derivedFiles = new Map();
+      this.observability().logger.warn(
+        "Derived View file dependencies could not be refreshed.",
+        { source: "derived-view" },
+      );
+      this.observability().tracer.event("derived-view.file-dependencies-miss", {
+        source: "derived-view",
+      });
+    }
+  }
+
   private async runHook<TContext extends PluginContextBase>(
     hookName: string,
     hook: (
@@ -851,6 +929,29 @@ function deepFreeze<T>(value: T): T {
   if (value === null || typeof value !== "object") return value;
   Object.freeze(value);
   for (const property of Object.values(value)) deepFreeze(property);
+  return value;
+}
+
+function normalizeDerivedPath(path: string): string {
+  return path.replace(/\\/g, "/");
+}
+
+function fingerprintDerivedValue(value: unknown): string {
+  return fingerprintExternalValue(normalizeDerivedValue(value));
+}
+
+function normalizeDerivedValue(value: unknown): unknown {
+  if (value instanceof Date) return value.toISOString();
+  if (value === undefined) return null;
+  if (Array.isArray(value)) return value.map(normalizeDerivedValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [
+        key,
+        normalizeDerivedValue(child),
+      ]),
+    );
+  }
   return value;
 }
 

@@ -49,7 +49,7 @@ context.track({
 });
 ```
 
-`content` dependencies are rechecked against the runtime content index, and `external` dependencies are rechecked against resolved external snapshots. PluginRuntime currently treats `file` and `query` dependencies as cache misses; use `unknown` for them until their resolver is available. Use `unknown` for time, network access without an external snapshot, environment variables, randomness, or any input whose fingerprint cannot be proved. Unknown dependencies are never persisted.
+`content` and `external` dependencies are rechecked whenever a runtime snapshot is available. During `planGeneratedOutputs`, `file`, `frontmatter`, qualified `query`, and `graph` dependencies are also rechecked against that plan's build snapshot. Outside that planning phase, dependencies without a current snapshot safely miss the cache. For frontmatter, set `property`; for a query, declare every property that controls its result set. File additions, removals, and content changes; discoverable query membership changes; and graph edge changes invalidate cached values. An unqualified query is not cacheable. Use `unknown` for time, network access without an external snapshot, environment variables, randomness, or any input whose fingerprint cannot be proved. Unknown dependencies are never persisted.
 
 For a content query, fingerprint the complete public result set, not just entries read by the computation. That includes additions, removals, frontmatter fields used by filtering or sorting, and publication transitions.
 

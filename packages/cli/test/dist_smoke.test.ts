@@ -278,8 +278,15 @@ test("the built CLI scaffolds a deployment-enabled project", () => {
 });
 
 test("the built CLI bundle externalizes the scaffold instead of inlining templates", () => {
-  const bundle = fs.readFileSync(cliBundle, "utf8");
+  const bundle = fs
+    .readdirSync(path.join(packageRoot, "dist", "chunks"))
+    .map((name) =>
+      fs.readFileSync(path.join(packageRoot, "dist", "chunks", name), "utf8"),
+    )
+    .join("\n");
   assert.match(bundle, /create-riebeckite\/scaffold/);
+  const entry = fs.readFileSync(cliBundle, "utf8");
+  assert.doesNotMatch(entry, /from"vite"|from"honox"|from"esbuild"/);
   assert.doesNotMatch(bundle, /Riebeckite scaffold templates were not found/);
   assert.doesNotMatch(bundle, /templates\/scaffold/);
   assert.ok(!fs.existsSync(path.join(packageRoot, "dist", "templates")));

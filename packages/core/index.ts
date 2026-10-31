@@ -162,6 +162,7 @@ export type {
   DerivedSchema,
   DerivedView,
   DerivedViewContext,
+  DerivedViewExecution,
   DerivedViewOptions,
   DerivedViewRegistry,
   DerivedViewRegistryOptions,

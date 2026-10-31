@@ -29,7 +29,7 @@ export const example = definePlugin({
 
 ## 契約
 
-各 View には安定した `id`、必須の `version`、任意の `input` / `output` スキーマ、非同期の `compute(input, context)` を定義します。スキーマは `parse(value)` を持つ任意のオブジェクトです。Core が検証ライブラリに依存せず、既存のライブラリを使えます。
+各 View には安定した `id`、必須の `version`、任意の `input` / `output` スキーマ、非同期の `compute(input, context)` を定義します。スキーマは `parse(value)` を持つ任意のオブジェクトです。Core が検証ライブラリに依存せず、既存のライブラリを使えます。入力には `Date` を含められます。その他は決定的な JSON 相当の値、配列、プレーンオブジェクトに限ります。永続キャッシュされる結果は引き続き JSON に限られます。
 
 View はプラグインの `derivedViews` 配列に登録します。`context.derived.resolve(view, input)` は定義または ID から View を解決します。ID の重複はプラグイン解決時に失敗します。再帰呼び出しは循環経路を含めて失敗します。同じ View、バージョン、入力への同時要求は一つの計算を共有し、エラーはすべての呼び出し元へ伝播します。失敗結果を成功値として保持しません。
 
@@ -68,11 +68,14 @@ async planGeneratedOutputs({ derived }) {
     path: "data/recent.json",
     content: JSON.stringify(result.value),
     derivedDependencies: result.dependencies,
+    derivedViewIds: result.viewIds,
   }];
 }
 ```
 
 Core は、追跡された content・file・external・完全なプロパティ集合を持つ query・graph の依存関係を、既存の出力依存関係へ変換してから出力計画に保存します。完全なプロパティ集合を持たない query は `unknown` となり、安全側で再生成を要求します。View が追跡していない入力、たとえばシリアライズ結果を変えうる View 入力や site 設定がある場合は、明示的な `dependencies` を併用してください。
+
+開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。
 
 ## トラブルシューティング
 

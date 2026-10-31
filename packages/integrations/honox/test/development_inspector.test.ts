@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
-import { ContentManager, resolveConfig } from "@riebeckite/core";
+import {
+  ContentManager,
+  defineDerivedView,
+  resolveConfig,
+} from "@riebeckite/core";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
@@ -43,6 +47,21 @@ test("development inspector reports the output plan and dependencies", async () 
       markdown("# Home", { title: "Home", visibility: "public" }),
     );
     let manifestHookRuns = 0;
+    const titles = defineDerivedView<
+      readonly { readonly slug: string; readonly title: string }[],
+      readonly string[]
+    >({
+      id: "test.inspector-titles",
+      version: "1",
+      compute: (entries, context) => {
+        context.track({
+          type: "query",
+          id: "inspector-titles",
+          properties: ["title"],
+        });
+        return entries.map((entry) => entry.title);
+      },
+    });
     const config = resolveConfig({
       site: { title: "Test", locale: "en" },
       plugins: [
@@ -57,6 +76,27 @@ test("development inspector reports the output plan and dependencies", async () 
           enabled: false,
           onManifestCreated() {
             throw new Error("disabled plugin must not run");
+          },
+        },
+        {
+          name: "derived-inspector",
+          derivedViews: [titles],
+          async planGeneratedOutputs({ derived, manifest }) {
+            const result = await derived.resolveWithDependencies(
+              titles,
+              manifest.routableEntries.map((entry) => ({
+                slug: entry.slug,
+                title: entry.title,
+              })),
+            );
+            return [
+              {
+                path: "titles.json",
+                content: JSON.stringify(result.value),
+                derivedDependencies: result.dependencies,
+                derivedViewIds: result.viewIds,
+              },
+            ];
           },
         },
       ],
@@ -115,9 +155,22 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.equal(report.dependencies, undefined);
     assert.deepEqual(report.plugins, [
       { name: "manifest-counter", order: 1, enabled: true },
+      { name: "derived-inspector", order: 2, enabled: true },
     ]);
     assert.equal(report.themeConfig.name, report.theme);
     assert.equal(report.themeConfig.colorMode, "system");
+    assert.equal(report.derivedViews.length, 1);
+    assert.equal(report.derivedViews[0].id, "test.inspector-titles");
+    assert.equal(report.derivedViews[0].version, "1");
+    assert.deepEqual(report.derivedViews[0].dependencies[0], {
+      type: "query",
+      id: "inspector-titles",
+      fingerprint: report.derivedViews[0].dependencies[0].fingerprint,
+      properties: ["title"],
+    });
+    assert.match(report.derivedViews[0].cache, /^(hit|miss|bypass|not-run)$/);
+    assert.equal(typeof report.derivedViews[0].durationMs, "number");
+    assert.deepEqual(report.derivedViews[0].outputPaths, ["titles.json"]);
 
     const outputHandle = stack.find(
       (layer) => layer.route === "/__riebeckite/inspector/output",
@@ -227,8 +280,11 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.equal(execution.status, "available");
     assert.equal(execution.plugins[0].name, "manifest-counter");
     assert.equal(execution.plugins[0].order, 1);
-    assert.equal(execution.plugins[1].name, "disabled-plugin");
-    assert.equal(execution.plugins[1].enabled, false);
+    const disabledPlugin = execution.plugins.find(
+      (plugin: { name: string }) => plugin.name === "disabled-plugin",
+    );
+    assert.ok(disabledPlugin);
+    assert.equal(disabledPlugin?.enabled, false);
     assert.ok(execution.plugins[0].hookCount >= 1);
     assert.ok(
       execution.hooks.some(

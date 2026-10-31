@@ -26,6 +26,17 @@ export type DerivedDependency = {
 export type DerivedViewResolution<TResult> = {
   readonly value: TResult;
   readonly dependencies: readonly DerivedDependency[];
+  readonly viewIds: readonly string[];
+};
+
+export type DerivedViewExecution = {
+  readonly id: string;
+  readonly version: string;
+  readonly dependencies: readonly DerivedDependency[];
+  readonly cache: "hit" | "miss" | "bypass" | "not-run";
+  readonly recomputeReason?: string;
+  readonly durationMs: number;
+  readonly error?: "failed" | "cancelled";
 };
 
 export type DerivedViewContext = {
@@ -83,6 +94,7 @@ export type DerivedViewRegistry = {
     options?: { signal?: AbortSignal },
   ): Promise<DerivedViewResolution<TResult>>;
   status(): readonly DerivedViewStatus[];
+  inspect(): readonly DerivedViewExecution[];
   dispose(): void;
 };
 
@@ -131,6 +143,7 @@ export function createDerivedViewRegistry(
 ): DerivedViewRegistry {
   const views = new Map<string, DerivedView<unknown, unknown>>();
   const pending = new Map<string, PendingView>();
+  const executions = new Map<string, DerivedViewExecution>();
   let disposed = false;
 
   const resolveWithDependencies = async <TInput, TResult>(
@@ -190,17 +203,38 @@ export function createDerivedViewRegistry(
     signal: AbortSignal,
     stack: readonly string[],
   ): Promise<DerivedViewResolution<unknown>> => {
+    const startedAt = Date.now();
+    let cache: PluginCache | undefined;
+    try {
+      cache = options.cache?.();
+    } catch {}
+    let dependencies: DerivedDependency[] = [];
+    let cacheStatus: DerivedViewExecution["cache"] = cache ? "miss" : "bypass";
     if (signal.aborted)
       throw signal.reason ?? new Error("Derived View aborted.");
     const cacheKey = `derived-view:${view.id}:${inputFingerprint}`;
-    const cached = await readCache(cacheKey, view, inputFingerprint);
+    const cached = await readCache(cache, cacheKey, view, inputFingerprint);
     if (cached !== undefined) {
       if (signal.aborted)
         throw signal.reason ?? new Error("Derived View aborted.");
-      return { value: cached.value, dependencies: cached.dependencies };
+      cacheStatus = "hit";
+      dependencies = cached.dependencies;
+      const resolution = {
+        value: cached.value,
+        dependencies,
+        viewIds: viewIdsFor(view.id, dependencies),
+      };
+      executions.set(view.id, {
+        id: view.id,
+        version: view.version,
+        dependencies,
+        cache: cacheStatus,
+        durationMs: Date.now() - startedAt,
+      });
+      return resolution;
     }
 
-    const dependencies: DerivedDependency[] = [];
+    dependencies = [];
     const tracked = new Set<string>();
     const context: DerivedViewContext = {
       signal,
@@ -246,32 +280,59 @@ export function createDerivedViewRegistry(
         return resolved.value;
       }) as DerivedViewContext["resolve"],
     };
-    const computed = await view.compute(input, context);
-    if (signal.aborted)
-      throw signal.reason ?? new Error("Derived View aborted.");
-    const value = view.output ? view.output.parse(computed) : computed;
-    if (
-      !signal.aborted &&
-      isJsonValue(value) &&
-      dependencies.every(isCacheableDependency)
-    ) {
-      await writeCache(cacheKey, {
-        version: view.version,
-        input: inputFingerprint,
+    try {
+      const computed = await view.compute(input, context);
+      if (signal.aborted)
+        throw signal.reason ?? new Error("Derived View aborted.");
+      const value = view.output ? view.output.parse(computed) : computed;
+      if (
+        !signal.aborted &&
+        isJsonValue(value) &&
+        dependencies.every(isCacheableDependency)
+      ) {
+        await writeCache(cache, cacheKey, {
+          version: view.version,
+          input: inputFingerprint,
+          value,
+          dependencies: dependencies.map(toCachedDependency),
+        });
+      }
+      const resolution = {
         value,
-        dependencies: dependencies.map(toCachedDependency),
+        dependencies,
+        viewIds: viewIdsFor(view.id, dependencies),
+      };
+      executions.set(view.id, {
+        id: view.id,
+        version: view.version,
+        dependencies,
+        cache: cacheStatus,
+        recomputeReason: cache ? "cache-miss" : "cache-disabled",
+        durationMs: Date.now() - startedAt,
       });
+      return resolution;
+    } catch (error) {
+      executions.set(view.id, {
+        id: view.id,
+        version: view.version,
+        dependencies,
+        cache: cacheStatus,
+        recomputeReason: cache ? "cache-miss" : "cache-disabled",
+        durationMs: Date.now() - startedAt,
+        error: signal.aborted ? "cancelled" : "failed",
+      });
+      throw error;
     }
-    return { value, dependencies };
   };
 
   const readCache = async (
+    cache: PluginCache | undefined,
     key: string,
     view: DerivedView<unknown, unknown>,
     input: string,
   ): Promise<CacheEntry | undefined> => {
     try {
-      const entry = await options.cache?.().get<CacheEntry>(key);
+      const entry = await cache?.get<CacheEntry>(key);
       if (!isCacheEntry(entry, view, input)) return undefined;
       if (!entry.dependencies.every(isCurrentDependency)) return undefined;
       return entry;
@@ -280,9 +341,13 @@ export function createDerivedViewRegistry(
     }
   };
 
-  const writeCache = async (key: string, entry: CacheEntry): Promise<void> => {
+  const writeCache = async (
+    cache: PluginCache | undefined,
+    key: string,
+    entry: CacheEntry,
+  ): Promise<void> => {
     try {
-      await options.cache?.().set(key, entry);
+      await cache?.set(key, entry);
     } catch {
       return;
     }
@@ -340,6 +405,19 @@ export function createDerivedViewRegistry(
             key.startsWith(`${view.id}:`),
           ).length,
         }))
+        .sort((left, right) => left.id.localeCompare(right.id)),
+    inspect: () =>
+      [...views.values()]
+        .map(
+          (view) =>
+            executions.get(view.id) ?? {
+              id: view.id,
+              version: view.version,
+              dependencies: [],
+              cache: "not-run" as const,
+              durationMs: 0,
+            },
+        )
         .sort((left, right) => left.id.localeCompare(right.id)),
     dispose: () => {
       disposed = true;
@@ -480,6 +558,20 @@ function dependencyKey(dependency: DerivedDependency): string {
   });
 }
 
+function viewIdsFor(
+  id: string,
+  dependencies: readonly DerivedDependency[],
+): readonly string[] {
+  return [
+    ...new Set([
+      id,
+      ...dependencies
+        .filter((dependency) => dependency.type === "view")
+        .map((dependency) => dependency.id),
+    ]),
+  ].sort();
+}
+
 function isCacheEntry(
   value: unknown,
   view: DerivedView<unknown, unknown>,
@@ -529,12 +621,64 @@ function isCacheableDependency(
 }
 
 function fingerprint(value: unknown, label: string): string {
-  const hash = crypto.createHash("sha256");
-  if (value === undefined) return hash.update("undefined").digest("hex");
-  if (!isJsonValue(value)) {
+  return crypto
+    .createHash("sha256")
+    .update(serializeInput(value, label, new Set(), true))
+    .digest("hex");
+}
+
+function serializeInput(
+  value: unknown,
+  label: string,
+  seen: Set<object>,
+  allowUndefined: boolean,
+): string {
+  if (value === undefined) {
+    if (allowUndefined) return "undefined";
     throw new TypeError(`${label} must be JSON-serializable.`);
   }
-  return hash.update(stableStringify(value)).digest("hex");
+  if (value === null) return "null";
+  if (typeof value === "string") return `string:${JSON.stringify(value)}`;
+  if (typeof value === "boolean") return `boolean:${value}`;
+  if (typeof value === "number" && Number.isFinite(value))
+    return `number:${value}`;
+  if (value instanceof Date) {
+    if (Number.isNaN(value.valueOf())) {
+      throw new TypeError(`${label} must contain valid dates.`);
+    }
+    return `date:${value.toISOString()}`;
+  }
+  if (Array.isArray(value)) {
+    if (seen.has(value)) throw new TypeError(`${label} must not be cyclic.`);
+    seen.add(value);
+    const serialized = `[${value
+      .map((item) => serializeInput(item, label, seen, false))
+      .join(",")}]`;
+    seen.delete(value);
+    return serialized;
+  }
+  if (
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
+    if (seen.has(value)) throw new TypeError(`${label} must not be cyclic.`);
+    seen.add(value);
+    const serialized = `{${Object.keys(value)
+      .sort()
+      .map(
+        (key) =>
+          `${JSON.stringify(key)}:${serializeInput(
+            (value as Record<string, unknown>)[key],
+            label,
+            seen,
+            false,
+          )}`,
+      )
+      .join(",")}}`;
+    seen.delete(value);
+    return serialized;
+  }
+  throw new TypeError(`${label} must be JSON-serializable.`);
 }
 
 function isJsonValue(value: unknown): value is JsonValue {

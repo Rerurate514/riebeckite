@@ -29,7 +29,7 @@ export const example = definePlugin({
 
 ## Contract
 
-Every view has a stable `id`, a required `version`, optional `input` and `output` schemas, and an async `compute(input, context)` function. A schema is any object with `parse(value)`, so applications can use their existing validation library without Core depending on it.
+Every view has a stable `id`, a required `version`, optional `input` and `output` schemas, and an async `compute(input, context)` function. A schema is any object with `parse(value)`, so applications can use their existing validation library without Core depending on it. Inputs may contain `Date` values; other values must be deterministic JSON-like values, arrays, or plain objects. Results remain JSON-only for persistent caching.
 
 Register views with a plugin's `derivedViews` array. `context.derived.resolve(view, input)` resolves a view by definition or ID. Duplicate IDs fail during plugin resolution. Recursive calls fail with the full cycle path. Concurrent requests for the same view, version, and input share one in-flight computation; errors are propagated to every caller and are never retained as successful values.
 
@@ -68,11 +68,14 @@ async planGeneratedOutputs({ derived }) {
     path: "data/recent.json",
     content: JSON.stringify(result.value),
     derivedDependencies: result.dependencies,
+    derivedViewIds: result.viewIds,
   }];
 }
 ```
 
 Core converts tracked content, file, external, qualified query, and graph dependencies to existing output dependencies before persisting the output plan. A query without its complete tracked property set becomes `unknown` and safely requires regeneration. Merge explicit `dependencies` when the output has inputs that the view did not track, including view input or site configuration that can change the serialized value.
+
+In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. Reading this report never resolves a view or mutates build state.
 
 ## Troubleshooting
 

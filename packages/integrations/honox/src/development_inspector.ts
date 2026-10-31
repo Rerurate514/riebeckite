@@ -278,6 +278,7 @@ export function riebeckiteDevelopmentInspector(
                 order: index + 1,
                 enabled: plugin.enabled !== false,
               })),
+              derivedViews: snapshot?.derivedViews ?? [],
             }),
           );
         } catch {
@@ -876,7 +877,9 @@ function outputLookups(
     if (!selected) {
       lookups.output = { status: "not-found", target: query.output };
     } else {
-      const labels = new Set(selected.dependencies.map(dependencyLabel));
+      const labels = new Set<string>(
+        selected.dependencies.map(dependencyLabel),
+      );
       const related = allOutputs.filter(
         (output) =>
           output.path !== selected.path &&

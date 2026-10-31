@@ -8,6 +8,7 @@ import {
 } from "../content/output_dependency.js";
 import {
   createDerivedViewRegistry,
+  type DerivedViewExecution,
   type DerivedViewRegistry,
   derivedDependenciesToOutputDependencies,
 } from "../derived/derived_view.js";
@@ -79,6 +80,10 @@ export type {
   ManifestHookPluginMetrics,
 } from "./manifest_hooks.js";
 
+export type DerivedViewInspection = DerivedViewExecution & {
+  readonly outputPaths: readonly string[];
+};
+
 export class PluginRuntime {
   private buildLifecycle: Promise<void> | null = null;
   private disposed = false;
@@ -94,6 +99,7 @@ export class PluginRuntime {
   private externalDependenciesResolved = false;
   private derivedFiles = new Map<string, string>();
   private derivedManifest: ContentManifest | null = null;
+  private derivedOutputLinks = new Map<string, Set<string>>();
   private readonly pageResolver: PluginPageResolver;
   private readonly manifestHooks: ManifestHookRunner;
   private pageMarkdownRenderer: ((markdown: string) => Promise<string>) | null =
@@ -175,6 +181,14 @@ export class PluginRuntime {
 
   getDerivedViews(): DerivedViewRegistry {
     return this.derivedViews;
+  }
+
+  getDerivedViewInspection(): readonly DerivedViewInspection[] {
+    return this.derivedViews.inspect().map((view) => ({
+      ...view,
+      dependencies: [...view.dependencies],
+      outputPaths: [...(this.derivedOutputLinks.get(view.id) ?? [])].sort(),
+    }));
   }
 
   setPageMarkdownRenderer(
@@ -507,11 +521,13 @@ export class PluginRuntime {
       (plugin) => plugin.planGeneratedOutputs !== undefined,
     );
     if (plugins.length === 0) return;
+    this.derivedOutputLinks.clear();
     this.derivedManifest = manifest;
     await this.refreshDerivedFiles();
     try {
       for (const plugin of plugins) {
         const hook = plugin.planGeneratedOutputs;
+        if (!hook) continue;
         const outputs = await this.observability().tracer.span(
           "plugin.planGeneratedOutputs",
           { plugin: plugin.name, hook: "planGeneratedOutputs" },
@@ -541,6 +557,11 @@ export class PluginRuntime {
             );
           }
           sink.emit({ ...output, dependencies });
+          for (const viewId of output.derivedViewIds ?? []) {
+            const paths = this.derivedOutputLinks.get(viewId) ?? new Set();
+            paths.add(output.path);
+            this.derivedOutputLinks.set(viewId, paths);
+          }
         }
       }
     } finally {

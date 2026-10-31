@@ -53,7 +53,7 @@ test("derived views resolve typed references and deduplicate concurrent work", a
   assert.equal(calls, 1);
 });
 
-test("derived views accept an omitted input and reject unsupported input", async () => {
+test("derived views accept omitted and date inputs and reject unsupported input", async () => {
   const registry = createDerivedViewRegistry();
   const noInput = defineDerivedView<undefined, string>({
     id: "test.no-input",
@@ -61,11 +61,57 @@ test("derived views accept an omitted input and reject unsupported input", async
     compute: () => "ready",
   });
   registry.register(noInput);
+  const dateInput = defineDerivedView<Date, string>({
+    id: "test.date-input",
+    version: "1",
+    compute: (value) => value.toISOString(),
+  });
+  registry.register(dateInput);
   assert.equal(await registry.resolve(noInput, undefined), "ready");
+  assert.equal(
+    await registry.resolve(dateInput, new Date("2024-01-01T00:00:00.000Z")),
+    "2024-01-01T00:00:00.000Z",
+  );
   await assert.rejects(
-    registry.resolve(noInput, new Date() as unknown as undefined),
+    registry.resolve(noInput, new Map() as unknown as undefined),
     /must be JSON-serializable/,
   );
+  await assert.rejects(
+    registry.resolve(noInput, { value: undefined } as unknown as undefined),
+    /must be JSON-serializable/,
+  );
+});
+
+test("derived view inspection records failures without requiring a cache", async () => {
+  const registry = createDerivedViewRegistry({
+    cache: () => {
+      throw new Error("cache unavailable");
+    },
+  });
+  const failed = defineDerivedView<undefined, undefined>({
+    id: "test.inspection-failure",
+    version: "1",
+    compute: () => {
+      throw new Error("failed");
+    },
+  });
+  registry.register(failed);
+  assert.deepEqual(registry.inspect(), [
+    {
+      id: "test.inspection-failure",
+      version: "1",
+      dependencies: [],
+      cache: "not-run",
+      durationMs: 0,
+    },
+  ]);
+  await assert.rejects(registry.resolve(failed, undefined), /failed/);
+  const execution = registry.inspect()[0];
+  assert.equal(execution?.id, "test.inspection-failure");
+  assert.equal(execution?.cache, "bypass");
+  assert.equal(execution?.recomputeReason, "cache-disabled");
+  assert.equal(execution?.error, "failed");
+  assert.equal(typeof execution?.durationMs, "number");
 });
 
 test("derived views reject duplicate registration and cycles", async () => {
@@ -156,6 +202,10 @@ test("derived view resolutions retain child dependencies across cache hits", asy
     derivedDependenciesToOutputDependencies(resolved.dependencies),
     [{ slug: "note", type: "content" }],
   );
+  assert.deepEqual(resolved.viewIds, [
+    "test.child-dependencies",
+    "test.parent-dependencies",
+  ]);
   assert.equal(childCalls, 1);
   assert.equal(parentCalls, 1);
 
@@ -164,6 +214,7 @@ test("derived view resolutions retain child dependencies across cache hits", asy
   second.register(parent);
   const cached = await second.resolveWithDependencies(parent, "ready");
   assert.deepEqual(cached.dependencies, resolved.dependencies);
+  assert.deepEqual(cached.viewIds, resolved.viewIds);
   assert.equal(childCalls, 1);
   assert.equal(parentCalls, 1);
 });

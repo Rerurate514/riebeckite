@@ -156,6 +156,7 @@ export type PlannedGeneratedOutput = {
   readonly content: GeneratedOutputContent;
   readonly dependencies?: readonly OutputDependency[];
   readonly derivedDependencies?: readonly DerivedDependency[];
+  readonly derivedViewIds?: readonly string[];
 };
 
 export type PluginGeneratedOutputPlanContext = {

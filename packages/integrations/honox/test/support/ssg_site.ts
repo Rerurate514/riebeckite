@@ -427,6 +427,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
       '      path: "derived-public.json",',
       "      content: JSON.stringify(result.value),",
       "      derivedDependencies: result.dependencies,",
+      "      derivedViewIds: result.viewIds,",
       "    }];",
       "  },",
       "});",

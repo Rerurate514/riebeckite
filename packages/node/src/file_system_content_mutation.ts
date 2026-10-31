@@ -50,6 +50,8 @@ type JournalChange = {
 
 export type FileSystemContentMutationOptions = {
   readonly beforeWrite?: (path: string) => void | Promise<void>;
+  readonly beforeRecoveryRestore?: (path: string) => void | Promise<void>;
+  readonly afterRecoveryCapture?: (path: string) => void | Promise<void>;
 };
 
 export class FileSystemContentMutation {
@@ -328,9 +330,16 @@ export class FileSystemContentMutation {
     const mutationRoot = path.join(root, ".riebeckite", "mutations");
     if (!isWithin(mutationRoot, absoluteJournal))
       throw new Error("Journal path is outside the mutation directory.");
+    const journalDirectory = path.dirname(absoluteJournal);
     const release = await this.acquireLock(root);
     try {
       const journal = parseJournal(await fs.readFile(absoluteJournal, "utf8"));
+      if (
+        path.basename(absoluteJournal) !== "journal.json" ||
+        path.basename(journalDirectory) !== journal.id ||
+        path.basename(journalDirectory) === "plans"
+      )
+        throw new Error("Journal path does not belong to its mutation.");
       if (journal.state === "complete" || journal.state === "recovered")
         return {
           journalPath: absoluteJournal,
@@ -341,29 +350,70 @@ export class FileSystemContentMutation {
       const conflicts: ContentMutationIssue[] = [];
       const rollback: JournalChange[] = [];
       for (const change of journal.changes) {
-        const current =
-          (await readState(root, change.path))?.fingerprint ?? null;
-        if (change.status === "applied") {
-          if (current !== change.afterFingerprint) {
-            conflicts.push({
-              severity: "error",
-              code: "recovery-conflict",
-              path: change.path,
-              message: "The file changed after the interrupted mutation.",
-            });
-          } else rollback.push(change);
+        let current: string | null;
+        try {
+          current = (await readState(root, change.path))?.fingerprint ?? null;
+        } catch (error) {
+          conflicts.push({
+            severity: "error",
+            code: "recovery-conflict",
+            path: change.path,
+            message: error instanceof Error ? error.message : String(error),
+          });
           continue;
         }
-        if (current === change.afterFingerprint) {
-          rollback.push(change);
-          continue;
-        }
-        if (current !== change.beforeFingerprint) {
+        if (current === change.beforeFingerprint) continue;
+        if (current !== change.afterFingerprint) {
           conflicts.push({
             severity: "error",
             code: "recovery-conflict",
             path: change.path,
             message: "The file changed after the interrupted mutation.",
+          });
+          continue;
+        }
+        rollback.push(change);
+      }
+      if (conflicts.length > 0)
+        return {
+          journalPath: absoluteJournal,
+          recovered: false,
+          restoredPaths: [],
+          conflicts,
+        };
+      const backups = new Map<string, Uint8Array>();
+      for (const change of rollback) {
+        if (change.beforeFingerprint === null) continue;
+        if (!change.backupPath) {
+          conflicts.push({
+            severity: "error",
+            code: "recovery-backup-invalid",
+            path: change.path,
+            message: "The journal does not reference a backup.",
+          });
+          continue;
+        }
+        const backup = path.resolve(journalDirectory, change.backupPath);
+        if (!isWithin(journalDirectory, backup)) {
+          conflicts.push({
+            severity: "error",
+            code: "recovery-backup-invalid",
+            path: change.path,
+            message: "The backup path is outside the mutation journal.",
+          });
+          continue;
+        }
+        try {
+          const content = await fs.readFile(backup);
+          if (fingerprint(content) !== change.beforeFingerprint)
+            throw new Error("The backup fingerprint does not match.");
+          backups.set(change.path, content);
+        } catch (error) {
+          conflicts.push({
+            severity: "error",
+            code: "recovery-backup-invalid",
+            path: change.path,
+            message: error instanceof Error ? error.message : String(error),
           });
         }
       }
@@ -376,29 +426,25 @@ export class FileSystemContentMutation {
         };
       const restoredPaths: string[] = [];
       for (const change of rollback) {
-        const target = await safeFilePath(
+        const conflict = await this.restoreChange(
           root,
-          change.path,
-          change.beforeFingerprint !== null,
+          journalDirectory,
+          change,
+          backups.get(change.path),
         );
-        if (change.beforeFingerprint === null)
-          await fs.rm(target, { force: true });
-        else {
-          if (!change.backupPath)
-            throw new Error(`Missing backup for ${change.path}.`);
-          const backup = path.resolve(
-            path.dirname(absoluteJournal),
-            change.backupPath,
-          );
-          if (!isWithin(path.dirname(absoluteJournal), backup))
-            throw new Error("Backup path is invalid.");
-          const content = await fs.readFile(backup);
-          if (fingerprint(content) !== change.beforeFingerprint)
-            throw new Error(`Backup is corrupt for ${change.path}.`);
-          await writeFileAtomically(target, content);
+        if (conflict) {
+          conflicts.push(conflict);
+          break;
         }
         restoredPaths.push(change.path);
       }
+      if (conflicts.length > 0)
+        return {
+          journalPath: absoluteJournal,
+          recovered: false,
+          restoredPaths,
+          conflicts,
+        };
       journal.state = "recovered";
       await writeJsonAtomically(absoluteJournal, journal);
       return {
@@ -409,6 +455,80 @@ export class FileSystemContentMutation {
       };
     } finally {
       await release();
+    }
+  }
+
+  private async restoreChange(
+    root: string,
+    journalDirectory: string,
+    change: JournalChange,
+    backup: Uint8Array | undefined,
+  ): Promise<ContentMutationIssue | null> {
+    if (change.afterFingerprint === null) {
+      if (change.beforeFingerprint === null || !backup)
+        return recoveryConflict(
+          change.path,
+          "The deletion cannot be rolled back safely.",
+        );
+      const target = await safeFilePath(root, change.path, true);
+      try {
+        await writeFileExclusive(target, backup);
+        return null;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST")
+          return recoveryConflict(
+            change.path,
+            "A file appeared during recovery; it was not overwritten.",
+          );
+        throw error;
+      }
+    }
+    await this.options.beforeRecoveryRestore?.(change.path);
+    const target = await safeFilePath(root, change.path, false);
+    const captureDirectory = path.join(journalDirectory, "quarantine");
+    await fs.mkdir(captureDirectory, { recursive: true });
+    const captured = path.join(captureDirectory, `${randomUUID()}.capture`);
+    try {
+      await fs.rename(target, captured);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT")
+        return recoveryConflict(
+          change.path,
+          "The file disappeared before it could be verified.",
+        );
+      throw error;
+    }
+    const content = await fs.readFile(captured);
+    if (fingerprint(content) !== change.afterFingerprint) {
+      await restoreCapturedFile(target, captured);
+      return recoveryConflict(
+        change.path,
+        "The file changed after verification; its content was preserved and not overwritten.",
+      );
+    }
+    await this.options.afterRecoveryCapture?.(change.path);
+    if (change.beforeFingerprint === null) {
+      try {
+        await fs.lstat(target);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+        throw error;
+      }
+      return recoveryConflict(
+        change.path,
+        "A file appeared during recovery; it was not deleted.",
+      );
+    }
+    try {
+      await writeFileExclusive(target, backup as Uint8Array);
+      return null;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "EEXIST")
+        return recoveryConflict(
+          change.path,
+          "A file appeared during recovery; it was not overwritten.",
+        );
+      throw error;
     }
   }
 
@@ -794,6 +914,40 @@ function addCaseConflicts(
         message: `Path conflicts with ${previous} on a case-insensitive filesystem.`,
       });
     else seen.set(folded, filePath);
+  }
+}
+function recoveryConflict(
+  filePath: string,
+  message: string,
+): ContentMutationIssue {
+  return {
+    severity: "error",
+    code: "recovery-conflict",
+    path: filePath,
+    message,
+  };
+}
+async function writeFileExclusive(
+  filePath: string,
+  content: Uint8Array,
+): Promise<void> {
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  const handle = await fs.open(filePath, "wx");
+  try {
+    await handle.writeFile(content);
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+}
+async function restoreCapturedFile(
+  target: string,
+  captured: string,
+): Promise<void> {
+  try {
+    await writeFileExclusive(target, await fs.readFile(captured));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
   }
 }
 function markApplied(journal: MutationJournal, filePath: string): void {

@@ -10,6 +10,57 @@ async function directory(): Promise<string> {
   return await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-mutation-"));
 }
 
+type CrashChange = {
+  readonly path: string;
+  readonly before: string | null;
+  readonly after: string | null;
+  readonly status?: "pending" | "applied";
+};
+
+async function writeCrashJournal(
+  root: string,
+  id: string,
+  changes: readonly CrashChange[],
+): Promise<string> {
+  const journalDirectory = path.join(root, ".riebeckite", "mutations", id);
+  await fs.mkdir(path.join(journalDirectory, "backups"), { recursive: true });
+  const entries = [];
+  for (const change of changes) {
+    let backupPath: string | undefined;
+    if (change.before !== null) {
+      backupPath = `backups/${Buffer.from(change.path).toString("base64url")}`;
+      await fs.writeFile(
+        path.join(journalDirectory, backupPath),
+        change.before,
+      );
+    }
+    entries.push({
+      path: change.path,
+      beforeFingerprint:
+        change.before === null
+          ? null
+          : createHash("sha256").update(change.before).digest("hex"),
+      afterFingerprint:
+        change.after === null
+          ? null
+          : createHash("sha256").update(change.after).digest("hex"),
+      backupPath,
+      status: change.status ?? "pending",
+    });
+  }
+  const journalPath = path.join(journalDirectory, "journal.json");
+  await fs.writeFile(
+    journalPath,
+    JSON.stringify({
+      version: 1,
+      id,
+      state: "applying",
+      changes: entries,
+    }),
+  );
+  return journalPath;
+}
+
 test("plans without writing and applies a batch including Markdown frontmatter", async () => {
   const root = await directory();
   await fs.writeFile(
@@ -239,6 +290,150 @@ test("reports a recovery conflict when a file changed after the crash", async ()
   assert.equal(recovered.recovered, false);
   assert.equal(recovered.conflicts[0]?.code, "recovery-conflict");
   assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "third");
+});
+
+test("does not overwrite an external edit made before recovery capture", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "a0");
+  await fs.writeFile(path.join(root, "b.md"), "b0");
+  let writes = 0;
+  const mutation = new FileSystemContentMutation(root, {
+    beforeWrite: () => {
+      writes += 1;
+      if (writes === 2) throw new Error("injected failure");
+    },
+  });
+  const plan = await mutation.plan([
+    { kind: "update", path: "a.md", content: "a1" },
+    { kind: "update", path: "b.md", content: "b1" },
+  ]);
+  await assert.rejects(() => mutation.apply(plan), /injected failure/);
+  const journal = path.join(
+    root,
+    ".riebeckite",
+    "mutations",
+    plan.id,
+    "journal.json",
+  );
+  const recovered = await new FileSystemContentMutation(root, {
+    beforeRecoveryRestore: async (filePath) => {
+      if (filePath === "a.md")
+        await fs.writeFile(path.join(root, filePath), "external");
+    },
+  }).recover(journal);
+  assert.equal(recovered.recovered, false);
+  assert.equal(recovered.conflicts[0]?.code, "recovery-conflict");
+  assert.equal(await fs.readFile(path.join(root, "a.md"), "utf8"), "external");
+  assert.equal(await fs.readFile(path.join(root, "b.md"), "utf8"), "b0");
+  const journalValue = JSON.parse(await fs.readFile(journal, "utf8"));
+  assert.equal(journalValue.state, "failed");
+  assert.equal(
+    await fs.readFile(
+      path.join(
+        path.dirname(journal),
+        "backups",
+        Buffer.from("a.md").toString("base64url"),
+      ),
+      "utf8",
+    ),
+    "a0",
+  );
+});
+
+test("does not delete a file created during recovery", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "z.md"), "z0");
+  let writes = 0;
+  const mutation = new FileSystemContentMutation(root, {
+    beforeWrite: () => {
+      writes += 1;
+      if (writes === 2) throw new Error("injected failure");
+    },
+  });
+  const plan = await mutation.plan([
+    { kind: "create", path: "a.md", content: "created" },
+    { kind: "update", path: "z.md", content: "z1" },
+  ]);
+  await assert.rejects(() => mutation.apply(plan), /injected failure/);
+  const journal = path.join(
+    root,
+    ".riebeckite",
+    "mutations",
+    plan.id,
+    "journal.json",
+  );
+  const recovered = await new FileSystemContentMutation(root, {
+    afterRecoveryCapture: async (filePath) => {
+      if (filePath === "a.md")
+        await fs.writeFile(path.join(root, filePath), "external");
+    },
+  }).recover(journal);
+  assert.equal(recovered.recovered, false);
+  assert.equal(recovered.conflicts[0]?.code, "recovery-conflict");
+  assert.equal(await fs.readFile(path.join(root, "a.md"), "utf8"), "external");
+});
+
+test("validates every backup before restoring any file", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "a1");
+  await fs.writeFile(path.join(root, "b.md"), "b1");
+  const journal = await writeCrashJournal(root, "crash", [
+    { path: "a.md", before: "a0", after: "a1", status: "applied" },
+    { path: "b.md", before: "b0", after: "b1", status: "applied" },
+  ]);
+  await fs.writeFile(
+    path.join(
+      path.dirname(journal),
+      "backups",
+      Buffer.from("a.md").toString("base64url"),
+    ),
+    "corrupt",
+  );
+  const recovered = await new FileSystemContentMutation(root).recover(journal);
+  assert.equal(recovered.recovered, false);
+  assert.equal(recovered.conflicts[0]?.code, "recovery-backup-invalid");
+  assert.equal(await fs.readFile(path.join(root, "a.md"), "utf8"), "a1");
+  assert.equal(await fs.readFile(path.join(root, "b.md"), "utf8"), "b1");
+});
+
+test("resumes recovery after restoring only some files", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "a1");
+  await fs.writeFile(path.join(root, "b.md"), "b1");
+  const journal = await writeCrashJournal(root, "crash", [
+    { path: "a.md", before: "a0", after: "a1", status: "applied" },
+    { path: "b.md", before: "b0", after: "b1", status: "applied" },
+  ]);
+  await assert.rejects(
+    () =>
+      new FileSystemContentMutation(root, {
+        beforeRecoveryRestore: (filePath) => {
+          if (filePath === "b.md") throw new Error("injected failure");
+        },
+      }).recover(journal),
+    /injected failure/,
+  );
+  assert.equal(await fs.readFile(path.join(root, "a.md"), "utf8"), "a0");
+  assert.equal(await fs.readFile(path.join(root, "b.md"), "utf8"), "b1");
+  const recovered = await new FileSystemContentMutation(root).recover(journal);
+  assert.equal(recovered.recovered, true);
+  assert.deepEqual(recovered.restoredPaths, ["b.md"]);
+  assert.equal(await fs.readFile(path.join(root, "b.md"), "utf8"), "b0");
+});
+
+test("rejects a journal outside a mutation directory", async () => {
+  const root = await directory();
+  const nested = path.join(root, ".riebeckite", "mutations", "plans");
+  await fs.mkdir(nested, { recursive: true });
+  const journal = path.join(nested, "journal.json");
+  await fs.writeFile(
+    journal,
+    JSON.stringify({ version: 1, id: "plans", state: "failed", changes: [] }),
+  );
+  await assert.rejects(
+    () => new FileSystemContentMutation(root).recover(journal),
+    /does not belong/,
+  );
 });
 
 test("refuses traversal and symbolic-link write paths", async (t) => {

@@ -511,13 +511,14 @@ export class FileSystemContentMigration {
         };
       } catch (error) {
         const journal = await this.failedJournal(fresh);
+        const message = sanitizeErrorMessage(error, this.contentDirectory);
         nextState = this.stateWith(
           fresh,
           actionable,
           nextState,
           journal ? "recovery-required" : "failed",
           new Date(),
-          { journalPath: journal, error: errorMessage(error) },
+          { journalPath: journal, error: message },
         );
         await this.writeState(nextState);
         await this.appendHistory(
@@ -536,7 +537,7 @@ export class FileSystemContentMigration {
             {
               severity: "error",
               code: journal ? "recovery-required" : "apply-failed",
-              message: errorMessage(error),
+              message,
             },
           ],
         };
@@ -549,25 +550,35 @@ export class FileSystemContentMigration {
   async status(): Promise<ContentMigrationStatusReport> {
     const state = await this.readState();
     const history = await this.readHistory();
-    const reconciled: ContentMigrationRecord[] = [];
-    let changed = false;
+    const reconciled = new Map<string, ContentMigrationRecord>();
     for (const record of state.migrations) {
       const resolved = await this.reconcile(record);
-      if (resolved !== record) changed = true;
-      reconciled.push(resolved);
+      if (resolved !== record)
+        reconciled.set(`${record.id}@${record.version}`, resolved);
     }
-    const nextState: ContentMigrationState = changed
-      ? {
-          schemaVersion: 1,
-          updatedAt: new Date().toISOString(),
-          migrations: reconciled,
-        }
-      : state;
-    if (changed) {
+    let nextState = state;
+    if (reconciled.size > 0) {
       try {
         const release = await this.acquireLock();
         try {
-          await this.writeState(nextState);
+          const current = await this.readState();
+          let merged = current;
+          for (const record of current.migrations) {
+            const resolved = reconciled.get(`${record.id}@${record.version}`);
+            const original = state.migrations.find(
+              (entry) =>
+                entry.id === record.id && entry.version === record.version,
+            );
+            if (
+              resolved &&
+              original &&
+              record.status === original.status &&
+              record.updatedAt === original.updatedAt
+            )
+              merged = upsertContentMigrationRecord(merged, resolved);
+          }
+          if (merged !== current) await this.writeState(merged);
+          nextState = merged;
         } finally {
           await release();
         }
@@ -652,13 +663,28 @@ export class FileSystemContentMigration {
                   "journal.json",
                 )
               : undefined;
-        if (!resolved) continue;
+        if (!resolved || !(await exists(resolved))) continue;
         const records = journals.get(resolved) ?? [];
         records.push(record);
         journals.set(resolved, records);
       }
-      if (journalPath !== undefined && !journals.has(journalPath))
-        journals.set(journalPath, []);
+      if (journalPath !== undefined) {
+        if (!(await exists(journalPath)))
+          return {
+            recovered: false,
+            applied: false,
+            skipped: false,
+            restoredPaths: [],
+            conflicts: [
+              {
+                severity: "error",
+                code: "journal-missing",
+                message: "The mutation journal does not exist.",
+              },
+            ],
+          };
+        if (!journals.has(journalPath)) journals.set(journalPath, []);
+      }
       if (journals.size === 0)
         return {
           recovered: false,
@@ -716,7 +742,10 @@ export class FileSystemContentMigration {
             continue;
           }
           const snapshot = await readJournalSnapshot(journal);
-          if (snapshot?.state === "complete") {
+          if (
+            snapshot?.state === "complete" &&
+            (await journalMatchesApplied(this.contentDirectory, snapshot))
+          ) {
             applied = true;
             nextState = this.setStatuses(
               nextState,
@@ -878,7 +907,10 @@ export class FileSystemContentMigration {
           "recovery-required",
           new Date(),
           target.journalPath,
-          result.conflicts.map((issue) => issue.message).join(" "),
+          sanitizeErrorMessage(
+            result.conflicts.map((issue) => issue.message).join(" "),
+            this.contentDirectory,
+          ),
         );
         await this.writeState(nextState);
         await this.appendHistoryForRecords(
@@ -1201,11 +1233,12 @@ export class FileSystemContentMigration {
     const history = await this.readHistory();
     let next = history;
     for (const record of records) {
+      if (!record.planId) continue;
       const run: ContentMigrationHistoryRun = {
         id: record.id,
         version: record.version,
         at: new Date().toISOString(),
-        planId: record.planId ?? "",
+        planId: record.planId,
         mutationPlanId: record.mutationPlanId,
         planFingerprint: record.planFingerprint ?? "",
         contentFingerprint: record.contentFingerprint ?? "",
@@ -1330,16 +1363,43 @@ export class FileSystemContentMigration {
       "lock",
     );
     await fs.mkdir(path.dirname(lockPath), { recursive: true });
-    let handle: fs.FileHandle;
-    try {
-      handle = await fs.open(lockPath, "wx");
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "EEXIST")
-        throw new Error(
-          "Another migration is already applying or requires recovery.",
-        );
-      throw error;
+    let handle: fs.FileHandle | undefined;
+    for (let attempt = 0; attempt < 3 && !handle; attempt += 1) {
+      try {
+        handle = await fs.open(lockPath, "wx");
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+        const stale = await staleLockContent(lockPath);
+        if (stale === null)
+          throw new Error(
+            "Another migration is already applying or requires recovery.",
+          );
+        const quarantine = `${lockPath}.stale-${randomUUID()}`;
+        try {
+          await fs.rename(lockPath, quarantine);
+        } catch (renameError) {
+          if ((renameError as NodeJS.ErrnoException).code === "ENOENT")
+            continue;
+          throw renameError;
+        }
+        const quarantined = await fs.readFile(quarantine, "utf8");
+        if (quarantined !== stale) {
+          await fs.writeFile(lockPath, quarantined, { flag: "wx" }).then(
+            () => undefined,
+            () => undefined,
+          );
+          await fs.rm(quarantine, { force: true });
+          throw new Error(
+            "Another migration is already applying or requires recovery.",
+          );
+        }
+        await fs.rm(quarantine, { force: true });
+      }
     }
+    if (!handle)
+      throw new Error(
+        "Another migration is already applying or requires recovery.",
+      );
     const token = randomUUID();
     await handle.writeFile(
       JSON.stringify({
@@ -1595,11 +1655,7 @@ function fingerprintFiles(
   )) {
     hash.update(file.path);
     hash.update("\0");
-    hash.update(
-      typeof file.content === "string"
-        ? createHash("sha256").update(file.content).digest("hex")
-        : createHash("sha256").update(file.content).digest("hex"),
-    );
+    hash.update(createHash("sha256").update(file.content).digest("hex"));
     hash.update("\n");
   }
   return hash.digest("hex");
@@ -1696,8 +1752,8 @@ function changedFrontmatterKeys(
     ...Object.keys(file.originalFrontmatter),
   ])) {
     if (
-      JSON.stringify(file.frontmatter[key]) !==
-      JSON.stringify(file.originalFrontmatter[key])
+      canonicalJson(file.frontmatter[key]) !==
+      canonicalJson(file.originalFrontmatter[key])
     )
       keys.add(key);
   }
@@ -1832,8 +1888,59 @@ function isWithin(root: string, target: string): boolean {
   );
 }
 
+async function exists(file: string): Promise<boolean> {
+  try {
+    await fs.access(file);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function staleLockContent(lockPath: string): Promise<string | null> {
+  let content: string;
+  try {
+    content = await fs.readFile(lockPath, "utf8");
+  } catch {
+    return null;
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(content);
+  } catch {
+    return (await lockFileIsOld(lockPath)) ? content : null;
+  }
+  const pid = isRecord(value) ? value.pid : undefined;
+  if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
+    return (await lockFileIsOld(lockPath)) ? content : null;
+  try {
+    process.kill(pid, 0);
+    return null;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
+  }
+}
+
+async function lockFileIsOld(lockPath: string): Promise<boolean> {
+  try {
+    return Date.now() - (await fs.stat(lockPath)).mtimeMs > 5_000;
+  } catch {
+    return false;
+  }
+}
+
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+function sanitizeErrorMessage(
+  error: unknown,
+  contentDirectory: string,
+): string {
+  return errorMessage(error)
+    .split(contentDirectory)
+    .join("<content>")
+    .replace(/[A-Za-z]:[\\/][^\s'"]+/gu, "<path>");
 }
 
 function errorPath(error: unknown): string | undefined {

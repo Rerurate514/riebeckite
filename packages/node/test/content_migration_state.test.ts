@@ -69,7 +69,12 @@ test("applies once, records state and history, and skips duplicates", async () =
       path.join(root, ".riebeckite", "migrations", "history.json"),
       "utf8",
     );
+    const stateText = await fs.readFile(
+      path.join(root, ".riebeckite", "migrations", "state.json"),
+      "utf8",
+    );
     assert.equal(historyText.includes(root), false);
+    assert.equal(stateText.includes(root), false);
     assert.equal(historyText.includes("SECRET BODY"), false);
 
     const duplicate = await migration.apply();
@@ -270,6 +275,93 @@ test("reports journal corruption without touching content", async () => {
     assert.equal(
       await fs.readFile(path.join(root, "post.md"), "utf8"),
       afterApply,
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+test("skips recovery when a failed migration has no journal and can retry apply", async () => {
+  const { root, migration } = await fixture([legacy]);
+  try {
+    const statePath = path.join(
+      root,
+      ".riebeckite",
+      "migrations",
+      "state.json",
+    );
+    await fs.mkdir(path.dirname(statePath), { recursive: true });
+    const definition = createContentMigrationRegistry([legacy]).latest(
+      "legacy",
+    );
+    await fs.writeFile(
+      statePath,
+      JSON.stringify({
+        schemaVersion: 1,
+        updatedAt: new Date().toISOString(),
+        migrations: [
+          {
+            id: "legacy",
+            version: 1,
+            definitionFingerprint: definition?.fingerprint,
+            status: "failed",
+            mutationPlanId: "missing-journal",
+            changedPaths: ["post.md"],
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+      }),
+    );
+    const recovered = await migration.recover({ migrationId: "legacy" });
+    assert.equal(recovered.skipped, true);
+    assert.equal((await migration.status()).entries[0]?.status, "failed");
+    const applied = await migration.apply();
+    assert.equal(applied.applied, true);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
+test("recovers a stale migration lock from a dead process", async () => {
+  const { root, migration } = await fixture([legacy]);
+  try {
+    const lock = path.join(root, ".riebeckite", "migrations", "lock");
+    await fs.mkdir(path.dirname(lock), { recursive: true });
+    await fs.writeFile(lock, JSON.stringify({ pid: 99999999, token: "dead" }));
+    const applied = await migration.apply();
+    assert.equal(applied.applied, true);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
+test("does not mark a complete journal applied after external edits", async () => {
+  const { root, migration } = await fixture([legacy]);
+  try {
+    const result = await migration.apply();
+    const journal = result.journalPath as string;
+    await fs.writeFile(
+      path.join(root, "post.md"),
+      "---\nid: post\ntitle: Edited\n---\nEdited\n",
+    );
+    const statePath = path.join(
+      root,
+      ".riebeckite",
+      "migrations",
+      "state.json",
+    );
+    const state = JSON.parse(await fs.readFile(statePath, "utf8"));
+    state.migrations[0].status = "applying";
+    await fs.writeFile(statePath, JSON.stringify(state));
+    const recovered = await migration.recover({ journal });
+    assert.equal(recovered.applied, false);
+    assert.ok(
+      recovered.conflicts.some(
+        (entry) => entry.code === "journal-not-recoverable",
+      ),
+    );
+    assert.equal(
+      (await migration.status()).entries[0]?.status,
+      "recovery-required",
     );
   } finally {
     await fs.rm(root, { recursive: true, force: true });

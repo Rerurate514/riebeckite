@@ -109,7 +109,11 @@ export async function runMigrate(
       : undefined;
     if (!command.apply) {
       const plan = planPath
-        ? await migration.loadPlan(planPath)
+        ? await migration.plan({
+            ids: (await migration.loadPlan(planPath)).migrations.map(
+              (entry) => entry.id,
+            ),
+          })
         : await migration.plan({ ids: command.ids });
       print(command.json, plan, () => planSummary(plan));
       return plan.conflicts.length === 0;

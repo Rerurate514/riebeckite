@@ -55,7 +55,7 @@ Content Query では、実際に読んだエントリだけでなく公開結果
 
 ## 公開データと出力
 
-Derived View はビルド専用の値であり、自動ではシリアライズされず、Worker リクエストでは利用できません。プラグインは Generated Output を出力したり HonoX ページへ渡したりできますが、`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別する必要があります。公開境界が明示的でない限り、draft、scheduled、unlisted をシリアライズしてはいけません。
+Derived View は自動ではシリアライズされません。Worker リクエストからも解決できますが、リクエスト時の解決では永続キャッシュを使わないため、小さい処理にとどめてください。Generated Output の計画では `derived` コンテキストから解決できます。値を公開するプラグインは、`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別する必要があります。公開境界が明示的でない限り、draft、scheduled、unlisted をシリアライズしてはいけません。
 
 Generated Output には通常の `OutputDependency` が引き続き必要です。Derived View の追跡は値キャッシュ、Output Dependency は静的出力の無効化を担います。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
 
@@ -65,4 +65,4 @@ Generated Output には通常の `OutputDependency` が引き続き必要です�
 - **"cycle detected"**: View 呼び出しが有向非巡回グラフになるよう計算を分けます。
 - **毎回 Cache Miss になる**: Core が再照合できる fingerprint で依存関係を追跡し、JSON 互換の結果を返します。
 - **外部データが古い**: external-dependency 契約で解決し、その snapshot fingerprint を追跡します。通常の依存関係として手動で扱わないでください。
-- **リクエスト固有のデータが必要**: Worker handler で解決します。Derived View は意図的にビルド時専用です。
+- **リクエスト固有のデータが必要**: Worker handler で解決します。リクエスト時はキャッシュされないため、View は小さい処理にとどめます。

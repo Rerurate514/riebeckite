@@ -55,7 +55,7 @@ For a content query, fingerprint the complete public result set, not just entrie
 
 ## Public data and output
 
-Derived Views are build-only values. They are not serialized automatically and are unavailable in a Worker request. A plugin may emit a Generated Output or pass a value to a HonoX page, but it must select from `manifest.discoverableEntries` or `manifest.routableEntries` itself. Do not serialize drafts, scheduled entries, or unlisted entries unless the output has an explicit non-public boundary.
+Derived Views are not serialized automatically. They may be resolved from a Worker request, but request-time resolution does not use the persistent cache and should stay small. Generated Output plans can resolve views through their `derived` context. A plugin that publishes a value must select from `manifest.discoverableEntries` or `manifest.routableEntries` itself. Do not serialize drafts, scheduled entries, or unlisted entries unless the output has an explicit non-public boundary.
 
 Generated outputs must still declare normal `OutputDependency` values. Derived View tracking controls the value cache; output dependencies control static-output invalidation. This separation keeps incremental output planning and the development route-manifest fast path unchanged.
 
@@ -65,4 +65,4 @@ Generated outputs must still declare normal `OutputDependency` values. Derived V
 - **"cycle detected"**: split the computation so view calls form a directed acyclic graph.
 - **Cache misses every build**: track each dependency with a fingerprint that Core can recheck, and return JSON-compatible data.
 - **Stale external result**: resolve it through the external-dependency contract and track its snapshot fingerprint; do not mark it as a normal dependency by hand.
-- **Need request-specific data**: resolve it in your Worker handler. Derived Views are deliberately build-time only.
+- **Need request-specific data**: resolve it in your Worker handler, and keep the view small because request-time resolution is uncached.

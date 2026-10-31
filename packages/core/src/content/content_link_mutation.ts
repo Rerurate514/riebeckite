@@ -38,6 +38,10 @@ export function planContentLinkUpdates(
   const actualPaths = new Map<string, string>();
   for (const filePath of options.files.keys())
     actualPaths.set(normalizePath(filePath), filePath);
+  for (const filePath of index.values()) {
+    const key = normalizePath(filePath);
+    if (!actualPaths.has(key)) actualPaths.set(key, filePath);
+  }
   for (const retarget of options.retargets) {
     if (retarget.to) movedFrom.set(normalizePath(retarget.to), retarget.from);
     retargetsByFrom.set(normalizePath(retarget.from), retarget);

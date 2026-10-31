@@ -58,6 +58,20 @@ test("replacement destinations encode reserved path characters", () => {
   assert.deepEqual([...result.updates], [["a.md", "[x](new%20name.md)"]]);
 });
 
+test("retargeting rewrites assets that are not in the Markdown file map", () => {
+  const result = planContentLinkUpdates({
+    files: new Map([["a.md", "![[assets/old.svg]]"]]),
+    retargets: [{ from: "assets/old.svg", to: "assets/new.svg" }],
+    beforeIndex: new Map([["assets/old.svg", "assets/old.svg"]]),
+    afterIndex: new Map([
+      ["assets/new.svg", "assets/new.svg"],
+      ["a", "a.md"],
+    ]),
+  });
+  assert.deepEqual([...result.updates], [["a.md", "![[assets/new.svg]]"]]);
+  assert.deepEqual(result.conflicts, []);
+});
+
 test("retargeting reports links to deleted and missing content", () => {
   const deleted = planContentLinkUpdates({
     files: new Map([

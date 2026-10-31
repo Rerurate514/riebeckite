@@ -261,6 +261,25 @@ test("development inspector works in a real Vite dev server", async () => {
     );
 
     await clickShadow(page, "[data-tab='6']");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "Plugin hook execution",
+      30_000,
+    );
+    const provenanceSearch = await shadowElement(
+      page,
+      "[data-provenance-query]",
+    );
+    await provenanceSearch.click();
+    await page.keyboard.type("missing-provenance-record");
+    await waitForShadowText(
+      page,
+      "[role=tabpanel]",
+      "No matching sources.",
+      30_000,
+    );
+    await clickShadow(page, "[data-tab='7']");
     await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
     await waitForShadowText(
       page,

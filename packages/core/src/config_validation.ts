@@ -28,6 +28,7 @@ function validateConfigIssues(
   validateSite(value.site, issues);
   validateContent(value.content, issues);
   validateCache(value.cache, issues);
+  validateProvenance(value.provenance, issues);
   validatePublication(value.publication, issues);
   validateSpa(value.spa, issues);
   validateTheme(value.theme, issues);
@@ -135,6 +136,18 @@ function validateCache(value: unknown, issues: ConfigValidationIssue[]): void {
 
   validateOptionalBoolean(value.enabled, "cache.enabled", issues);
   validateOptionalString(value.directory, "cache.directory", issues);
+}
+
+function validateProvenance(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({ path: "provenance", message: "Expected an object." });
+    return;
+  }
+  validateOptionalBoolean(value.enabled, "provenance.enabled", issues);
 }
 
 function validatePublication(

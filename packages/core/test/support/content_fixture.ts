@@ -45,5 +45,6 @@ export function contentTestConfig(
     },
     plugins,
     cache: { enabled: true, directory },
+    provenance: { enabled: true },
   };
 }

@@ -72,6 +72,10 @@ export type Command =
       target?: InspectTarget;
       list: boolean;
       path?: string;
+      json?: boolean;
+      source?: string;
+      output?: string;
+      compare?: string;
     }
   | {
       name: "create-plugin";
@@ -583,9 +587,10 @@ function parseInitCommand(options: readonly string[]): Command {
 }
 
 function parseInspectCommand(options: readonly string[]): Command {
-  if (options.length === 0) return { name: "inspect", list: false };
+  if (options.length === 0)
+    return { name: "inspect", list: false, json: false };
   if (options.length === 1 && isInspectTarget(options[0])) {
-    return { name: "inspect", target: options[0], list: false };
+    return { name: "inspect", target: options[0], list: false, json: false };
   }
   if (options[0] === "content") {
     let list = false;
@@ -619,14 +624,57 @@ function parseInspectCommand(options: readonly string[]): Command {
     };
   }
 
+  if (options[0] === "provenance") {
+    let json = false;
+    let source: string | undefined;
+    let output: string | undefined;
+    let compare: string | undefined;
+    for (let index = 1; index < options.length; index += 1) {
+      const option = options[index];
+      if (option === "--json" && !json) {
+        json = true;
+        continue;
+      }
+      if (
+        option === "--source" ||
+        option === "--output" ||
+        option === "--compare"
+      ) {
+        const value = options[index + 1];
+        if (!value || value.startsWith("-")) {
+          throw new CliUsageError(`${option} requires a value.`);
+        }
+        if (option === "--source" && source === undefined) source = value;
+        else if (option === "--output" && output === undefined) output = value;
+        else if (option === "--compare" && compare === undefined)
+          compare = value;
+        else throw new CliUsageError(`Duplicate provenance option: ${option}.`);
+        index += 1;
+        continue;
+      }
+      throw new CliUsageError(
+        "Usage: riebeckite inspect provenance [--json] [--source <path>] [--output <path>] [--compare <build-id>]",
+      );
+    }
+    return {
+      name: "inspect",
+      target: "provenance",
+      list: false,
+      json,
+      ...(source === undefined ? {} : { source }),
+      ...(output === undefined ? {} : { output }),
+      ...(compare === undefined ? {} : { compare }),
+    };
+  }
+
   const target = options[0] ?? "";
   if (target && !isInspectTarget(target)) {
     throw new CliUsageError(
-      `Unknown inspect target: ${target}\n\nAvailable:\n  config\n  plugins\n  content\n  graph\n  build`,
+      `Unknown inspect target: ${target}\n\nAvailable:\n  config\n  plugins\n  content\n  graph\n  build\n  provenance`,
     );
   }
   throw new CliUsageError(
-    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]",
+    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance [--json] [--source <path>] [--output <path>] [--compare <build-id>]]",
   );
 }
 
@@ -636,6 +684,7 @@ function isInspectTarget(value: string | undefined): value is InspectTarget {
     value === "plugins" ||
     value === "content" ||
     value === "graph" ||
-    value === "build"
+    value === "build" ||
+    value === "provenance"
   );
 }

@@ -6,6 +6,7 @@ import {
   type CompletedContentBuildSnapshot,
   type ContentManifest,
   isPersistentlyCacheable,
+  loadContentBuildState,
   type OutputChangeReason,
   type OutputChangeSet,
   type OutputDependency,
@@ -39,6 +40,7 @@ const reportPath = "/__riebeckite/inspector/report";
 const outputPath = "/__riebeckite/inspector/output";
 const graphPath = "/__riebeckite/inspector/graph";
 const pluginsPath = "/__riebeckite/inspector/plugins";
+const provenancePath = "/__riebeckite/inspector/provenance";
 const bootstrapPath = "/__riebeckite/inspector/bootstrap";
 const inspectorTokenHeader = "x-riebeckite-inspector-token";
 const listedOutputLimit = 20;
@@ -376,12 +378,48 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_PLUGINS_FAILED" }));
         }
       };
+      const provenanceMiddleware = async (
+        _request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        try {
+          const application = getApplication();
+          const entry = inspectApplication(application, revision, server);
+          const snapshot = await entry.snapshot;
+          const snapshotProvenance = snapshot?.provenance;
+          const persisted = snapshotProvenance
+            ? await loadContentBuildState(
+                resolveContentBuildStatePath(application.config, undefined),
+              )
+            : undefined;
+          const persistedProvenance = persisted?.provenance;
+          const provenance =
+            persistedProvenance?.buildId === snapshotProvenance?.buildId
+              ? persistedProvenance
+              : snapshotProvenance;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.end(
+            JSON.stringify({
+              version: 1,
+              revision: entry.revision,
+              generatedAt: new Date().toISOString(),
+              provenance: provenance ?? null,
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_PROVENANCE_FAILED" }));
+        }
+      };
       const privateServer = http.createServer((request, response) => {
         void handleInspectorRequest(request, response, token, {
           [reportPath]: reportMiddleware,
           [outputPath]: outputMiddleware,
           [graphPath]: graphMiddleware,
           [pluginsPath]: pluginsMiddleware,
+          [provenancePath]: provenanceMiddleware,
         });
       });
       const privateReady = new Promise<void>((resolve, reject) => {
@@ -1253,6 +1291,7 @@ const reportEndpoint = ${JSON.stringify(reportPath)};
 const outputEndpoint = ${JSON.stringify(outputPath)};
 const graphEndpoint = ${JSON.stringify(graphPath)};
 const pluginsEndpoint = ${JSON.stringify(pluginsPath)};
+const provenanceEndpoint = ${JSON.stringify(provenancePath)};
 const bootstrapEndpoint = ${JSON.stringify(bootstrapPath)};
 const tokenHeader = ${JSON.stringify(inspectorTokenHeader)};
 const panelId = "riebeckite-development-inspector";
@@ -1284,10 +1323,13 @@ let pluginFilter = "all";
 let pluginSort = "duration";
 let pluginPage = 0;
 let pluginData;
+let provenanceData;
 let themeQuery = "";
 let themeKind = "all";
 let derivedQuery = "";
 let derivedStatus = "all";
+let provenanceQuery = "";
+let provenanceKind = "all";
 
 export function initDevelopmentInspector() {
   let panel;
@@ -1296,6 +1338,7 @@ export function initDevelopmentInspector() {
   let outputController;
   let graphController;
   let pluginController;
+  let provenanceController;
   let generation = 0;
   let report;
   let baseDiagnostics;
@@ -1304,7 +1347,7 @@ export function initDevelopmentInspector() {
   let pendingRefresh = false;
   let loadingTimer;
   let themeFrame = 0;
-  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Theme"];
+  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Provenance", "Theme"];
   const outputUrl = () => {
     const parameters = new URLSearchParams();
     if (outputQuery) parameters.set("q", outputQuery);
@@ -1380,10 +1423,12 @@ export function initDevelopmentInspector() {
       baseDiagnostics = next.diagnostics.slice();
       graphData = undefined;
       pluginData = undefined;
+      provenanceData = undefined;
       render();
       void loadOutput(current);
       if (activeTab === 2) void loadGraph(current);
       if (activeTab === 3) void loadPlugins(current);
+      if (activeTab === 6) void loadProvenance(current);
     } catch (error) {
       if (error.name === "AbortError" || current !== generation) return;
       clearInterval(loadingTimer);
@@ -1465,6 +1510,27 @@ export function initDevelopmentInspector() {
     pluginData = undefined;
     if (report && panel?.isConnected) void loadPlugins(generation);
   };
+  const loadProvenance = async (current) => {
+    if (!report || !panel?.isConnected) return;
+    provenanceController?.abort();
+    provenanceController = new AbortController();
+    try {
+      const response = await inspectorFetch(provenanceEndpoint, { cache: "no-store", signal: provenanceController.signal });
+      if (!response.ok) throw new Error("Inspector provenance is unavailable.");
+      const next = await response.json();
+      if (current !== generation || !panel?.isConnected) return;
+      provenanceData = next.provenance ? { status: "available", provenance: next.provenance } : { status: "unavailable", reason: "provenance was not recorded" };
+      render();
+    } catch (error) {
+      if (error.name === "AbortError" || current !== generation) return;
+      provenanceData = { status: "unavailable", reason: "provenance inspection failed" };
+      render();
+    }
+  };
+  const requestProvenance = () => {
+    provenanceData = undefined;
+    if (report && panel?.isConnected) void loadProvenance(generation);
+  };
   const open = () => {
     if (!panel) {
       panel = document.createElement("div");
@@ -1482,6 +1548,7 @@ export function initDevelopmentInspector() {
     outputController?.abort();
     graphController?.abort();
     pluginController?.abort();
+    provenanceController?.abort();
     clearInterval(loadingTimer);
     panel?.remove();
     launcher?.focus();
@@ -1518,7 +1585,7 @@ export function initDevelopmentInspector() {
   });
   import.meta.hot?.on("riebeckite:inspector", refresh);
   const refreshTheme = () => {
-    if (!panel?.isConnected || activeTab !== 6) return;
+    if (!panel?.isConnected || activeTab !== 7) return;
     cancelAnimationFrame(themeFrame);
     themeFrame = requestAnimationFrame(() => render());
   };
@@ -1571,7 +1638,7 @@ export function initDevelopmentInspector() {
     root.innerHTML = '<style>' + styles + extraStyles + '</style>' + sectionStart('rb-title') + '<header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R · drag the left edge to resize</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">' + (report.output ? "Inspector report updated" : "Inspector report updated · loading output plan…") + '</p></section>';
     root.querySelector("[data-close]").addEventListener("click", close);
     setupResize(root);
-    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 2 && !graphData) void loadGraph(generation); if (activeTab === 3 && !pluginData) void loadPlugins(generation); }));
+    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 2 && !graphData) void loadGraph(generation); if (activeTab === 3 && !pluginData) void loadPlugins(generation); if (activeTab === 6 && !provenanceData) void loadProvenance(generation); }));
     root.querySelectorAll("[data-diagnostic-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDiagnosticFilters(root); render(); }));
     root.querySelectorAll("[data-output-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readOutputFilters(root); outputPage = 0; render(); requestOutput(); }));
     root.querySelectorAll("[data-output-page]").forEach((button) => button.addEventListener("click", () => { outputPage = Math.max(0, outputPage + Number(button.dataset.outputPage)); render(); requestOutput(); }));
@@ -1586,6 +1653,7 @@ export function initDevelopmentInspector() {
     root.querySelectorAll("[data-plugin-page]").forEach((button) => button.addEventListener("click", () => { pluginPage = Math.max(0, pluginPage + Number(button.dataset.pluginPage)); render(); requestPlugins(); }));
     root.querySelectorAll("[data-theme-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readThemeFilters(root); render(); }));
     root.querySelectorAll("[data-derived-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDerivedFilters(root); render(); }));
+    root.querySelectorAll("[data-provenance-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readProvenanceFilters(root); render(); }));
     root.querySelectorAll("[data-output-graph]").forEach((button) => button.addEventListener("click", () => { graphSelected = "output:" + button.dataset.outputGraph; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; graphData = undefined; activeTab = 2; render(); requestGraph(); }));
     const lookupInput = root.querySelector("[data-output-lookup]");
     const lookupSubmit = root.querySelector("[data-output-lookup-submit]");
@@ -1617,6 +1685,7 @@ export function initDevelopmentInspector() {
     if (activeTab === 3) return pluginExecutionReport(pluginData);
     if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
     if (activeTab === 5) return derivedReport(report.derivedViews);
+    if (activeTab === 6) return provenanceReport(provenanceData);
     return themeReport(report.themeConfig);
   }
 }
@@ -1658,6 +1727,11 @@ function readPluginFilters(root) {
 function readThemeFilters(root) {
   themeQuery = root.querySelector("[data-theme-query]")?.value ?? themeQuery;
   themeKind = root.querySelector("[data-theme-kind]")?.value ?? themeKind;
+}
+
+function readProvenanceFilters(root) {
+  provenanceQuery = root.querySelector("[data-provenance-query]")?.value ?? provenanceQuery;
+  provenanceKind = root.querySelector("[data-provenance-kind]")?.value ?? provenanceKind;
 }
 
 function summarize(diagnostics) {
@@ -1850,6 +1924,40 @@ function expectedThemeTokens(config) {
     if (name.startsWith("data-rb-setting-")) expected.set("--rb-setting-" + name.slice("data-rb-setting-".length), config.settings.attributes[name]);
   }
   return expected;
+}
+
+function provenanceReport(data) {
+  if (!data) return '<p class="status" aria-live="polite">Loading build provenance…</p>';
+  if (data.status !== "available") return unavailable("Build provenance", data.reason);
+  const provenance = data.provenance;
+  const query = provenanceQuery.trim().toLowerCase();
+  const sources = provenance.sources.filter((source) =>
+    provenanceKind === "all" || provenanceKind === "source"
+      ? !query || [source.path, source.contentId, source.visibility].join(" ").toLowerCase().includes(query)
+      : false
+  );
+  const outputs = provenance.outputs.filter((output) =>
+    provenanceKind === "all" || provenanceKind === "output"
+      ? !query || [output.path, output.producer, output.status].join(" ").toLowerCase().includes(query)
+      : false
+  );
+  const hooks = provenance.transforms.filter((transform) =>
+    (provenanceKind === "all" || provenanceKind === "hook") &&
+    transform.type === "plugin-hook" &&
+    (!query || [transform.producer, transform.hook || "", transform.status].join(" ").toLowerCase().includes(query))
+  );
+  const artifacts = (provenance.artifacts || []).filter((artifact) =>
+    (provenanceKind === "all" || provenanceKind === "artifact") &&
+    (!query || [artifact.path, artifact.cache, artifact.descriptor].join(" ").toLowerCase().includes(query))
+  );
+  const outputSources = (output) => output.dependencies.filter((dependency) => dependency.type === "content").map((dependency) => dependency.slug).join(", ") || "not measured";
+  return '<dl><dt>Build</dt><dd><code>' + escapeHtml(provenance.buildId) + '</code></dd><dt>Sources</dt><dd>' + provenance.sources.length + '</dd><dt>Outputs</dt><dd>' + provenance.outputs.length + '</dd><dt>Final artifacts</dt><dd>' + (provenance.artifacts || []).length + '</dd></dl>' +
+    '<p class="partial">Dependencies and output reasons are deterministic build data. Hook effects are opaque unless an input/output relation was recorded by Core.</p>' +
+    '<div class="filters"><label>Search <input data-provenance-filter data-provenance-query data-focus-key="provenance-query" value="' + escapeHtml(provenanceQuery) + '"></label><label>Show <select data-provenance-filter data-provenance-kind data-focus-key="provenance-kind">' + options(["all", "source", "output", "hook", "artifact"], provenanceKind) + '</select></label></div>' +
+    '<h3>Sources</h3><ul>' + (sources.map((source) => '<li><code>' + escapeHtml(source.path) + '</code> <small>' + escapeHtml(source.visibility + " · " + source.evidence) + '</small></li>').join("") || '<li>No matching sources.</li>') + '</ul>' +
+    '<h3>Outputs</h3><ul>' + (outputs.map((output) => '<li><details data-detail-key="provenance-output-' + escapeHtml(output.path) + '"><summary><code>' + escapeHtml(output.path) + '</code> <small>' + escapeHtml(output.status + " · " + output.kind) + '</small></summary><dl><dt>Producer</dt><dd>' + escapeHtml(output.producer) + '</dd><dt>Content dependencies</dt><dd>' + escapeHtml(outputSources(output)) + '</dd><dt>Reason</dt><dd>' + escapeHtml(output.recomputeReason?.type || "not measured") + '</dd></dl></details></li>').join("") || '<li>No matching outputs.</li>') + '</ul>' +
+    '<h3>Plugin hook execution</h3><ul>' + (hooks.map((hook) => '<li><code>#' + hook.sequence + '</code> ' + escapeHtml(hook.producer) + ' <b>' + escapeHtml(hook.hook || "unknown") + '</b> <small>' + escapeHtml(hook.status + " · opaque · " + hook.evidence) + (hook.durationMs === undefined ? " · duration not measured" : " · " + hook.durationMs.toFixed(2) + " ms") + '</small></li>').join("") || '<li>No matching executed hooks.</li>') + '</ul>' +
+    '<h3>Final artifacts</h3><ul>' + (artifacts.map((artifact) => '<li><details data-detail-key="provenance-artifact-' + escapeHtml(artifact.path) + '"><summary><code>' + escapeHtml(artifact.path) + '</code> <small>' + escapeHtml(artifact.cache + " · " + artifact.descriptor) + '</small></summary><dl><dt>Byte fingerprint</dt><dd><code>' + escapeHtml(artifact.fingerprint) + '</code></dd><dt>Evidence</dt><dd>' + escapeHtml(artifact.evidence) + '</dd></dl></details></li>').join("") || '<li>Final artifacts were not measured for this build.</li>') + '</ul>';
 }
 
 function outputReport(output) {

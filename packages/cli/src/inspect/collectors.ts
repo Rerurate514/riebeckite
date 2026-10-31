@@ -2,6 +2,7 @@ import path from "node:path";
 import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   ContentManager,
+  compareBuildProvenance,
   computePipelineFingerprint,
   getResolvedPluginMetadata,
   isPersistentlyCacheable,
@@ -24,6 +25,7 @@ import type {
   ContentInspection,
   GraphInspection,
   PluginInspection,
+  ProvenanceInspection,
 } from "./types.js";
 
 export async function collectApplicationInspection(
@@ -200,6 +202,53 @@ export async function collectBuildInspection(
             ? "the resolved pipeline changed since the saved build state"
             : (cacheability.reason ?? "persistent content caching is disabled"),
         }),
+  };
+}
+
+export async function collectProvenanceInspection(
+  project: RiebeckiteProject,
+  options: {
+    readonly source?: string;
+    readonly output?: string;
+    readonly compare?: string;
+  } = {},
+): Promise<ProvenanceInspection> {
+  const config = await loadProjectConfig(project);
+  const statePath = resolveContentBuildStatePath(config, undefined);
+  const state = await loadContentBuildState(statePath);
+  if (!state) return { status: "unavailable", reason: "no valid build state" };
+  if (!state.provenance)
+    return { status: "unavailable", reason: "provenance was not recorded" };
+  const provenance = {
+    ...state.provenance,
+    ...(options.source === undefined
+      ? {}
+      : {
+          sources: state.provenance.sources.filter(
+            (source) => source.path === options.source,
+          ),
+        }),
+    ...(options.output === undefined
+      ? {}
+      : {
+          outputs: state.provenance.outputs.filter(
+            (output) => output.path === options.output,
+          ),
+        }),
+  };
+  const history = state.provenanceHistory ?? [state.provenance];
+  const prior = options.compare
+    ? history.find((entry) => entry.buildId === options.compare)
+    : undefined;
+  return {
+    status: "available",
+    provenance,
+    history,
+    ...(prior === undefined
+      ? options.compare === undefined
+        ? {}
+        : { comparisonUnavailable: "compare build was not found in history" }
+      : { comparison: compareBuildProvenance(prior, state.provenance) }),
   };
 }
 

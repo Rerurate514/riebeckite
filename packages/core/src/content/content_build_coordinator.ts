@@ -1,4 +1,9 @@
 import type { Observability } from "../observability.js";
+import {
+  appendProvenanceHistory,
+  attachProvenanceArtifacts,
+  type BuildProvenance,
+} from "../provenance/provenance.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -96,6 +101,7 @@ export class ContentBuildCoordinator {
     > = new Map(),
     manifestHookCache: readonly ManifestHookCacheEntry[] = [],
     publishingBuildTime: Date,
+    provenance?: BuildProvenance,
   ): Promise<void> {
     const entriesBySlug = new Map(
       manifest.entries.map((entry) => [entry.slug, entry]),
@@ -145,6 +151,18 @@ export class ContentBuildCoordinator {
         }),
       ),
       manifestHookCache,
+      ...(provenance === undefined ? {} : { provenance }),
+      ...(provenance === undefined
+        ? {}
+        : {
+            provenanceHistory: appendProvenanceHistory(
+              plan.previousState?.provenanceHistory ??
+                (plan.previousState?.provenance === undefined
+                  ? []
+                  : [plan.previousState.provenance]),
+              provenance,
+            ),
+          }),
       ...(nextChangeAt
         ? {
             nextPublishingChangeAt: nextChangeAt,
@@ -161,6 +179,36 @@ export class ContentBuildCoordinator {
           path: this.dependencies.buildStatePath,
           reason: error instanceof Error ? error.message : String(error),
         },
+      );
+    }
+  }
+
+  async attachFinalOutputArtifacts(
+    buildId: string,
+    fingerprints: Readonly<Record<string, string>>,
+    cacheHits: ReadonlySet<string>,
+  ): Promise<void> {
+    try {
+      const state = await loadContentBuildState(
+        this.dependencies.buildStatePath,
+      );
+      if (!state?.provenance || state.provenance.buildId !== buildId) return;
+      const provenance = attachProvenanceArtifacts(state.provenance, {
+        fingerprints,
+        cacheHits,
+      });
+      const provenanceHistory = (state.provenanceHistory ?? []).map((entry) =>
+        entry.buildId === buildId ? provenance : entry,
+      );
+      await saveContentBuildState(this.dependencies.buildStatePath, {
+        ...state,
+        provenance,
+        provenanceHistory,
+      });
+    } catch (error) {
+      this.dependencies.observability.logger.warn(
+        "Final output provenance could not be persisted.",
+        { reason: error instanceof Error ? error.message : String(error) },
       );
     }
   }

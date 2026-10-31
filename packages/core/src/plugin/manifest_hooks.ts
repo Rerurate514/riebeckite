@@ -47,6 +47,12 @@ type ManifestHookRunnerOptions = {
   ) => PluginContextWithCache<TContext>;
   readonly generatedOutputCount: () => number;
   readonly diagnosticCount: () => number;
+  readonly recordExecution: (
+    plugin: RiebeckitePlugin,
+    hook: string,
+    status: "executed" | "failed" | "reused",
+    durationMs: number,
+  ) => void;
 };
 
 export class ManifestHookRunner {
@@ -150,11 +156,16 @@ export class ManifestHookRunner {
           this.manifestHooksReused += 1;
           this.manifestHookCache.push(cached);
           this.recordManifestHookMetric(plugin.name, "reused", "cache-hit", 0);
+          this.options.recordExecution(
+            plugin,
+            "onManifestCreated",
+            "reused",
+            0,
+          );
           continue;
         }
       }
-      if (restored && restorePoint)
-        restoreManifestHookEntries(manifest, restorePoint);
+      if (restorePoint) restoreManifestHookEntries(manifest, restorePoint);
       const entriesBeforeHook = serializeManifestEntries(manifest.entries);
       const sideEffectsBefore = fingerprintManifestHookSideEffects(manifest);
       const outputCountBefore = this.options.generatedOutputCount();
@@ -197,6 +208,14 @@ export class ManifestHookRunner {
         this.options.createPluginContext(plugin, context),
         hook,
       );
+    } catch (error) {
+      this.options.recordExecution(
+        plugin,
+        "onManifestCreated",
+        "failed",
+        performance.now() - started,
+      );
+      throw error;
     } finally {
       const durationMs = performance.now() - started;
       this.manifestHookDurationMs += durationMs;
@@ -207,6 +226,12 @@ export class ManifestHookRunner {
         durationMs,
       );
     }
+    this.options.recordExecution(
+      plugin,
+      "onManifestCreated",
+      "executed",
+      performance.now() - started,
+    );
   }
 
   private recordManifestHookMetric(

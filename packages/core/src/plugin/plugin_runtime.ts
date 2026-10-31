@@ -62,13 +62,7 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin_cache.js";
-import {
-  runBuildEnd,
-  runBuildStart,
-  runDispose,
-  runPluginHook,
-  runSetup,
-} from "./plugin_lifecycle.js";
+import { runDispose, runPluginHook } from "./plugin_lifecycle.js";
 import { collectPageTypeOwners, PluginPageResolver } from "./plugin_pages.js";
 import type {
   PluginContextBase,
@@ -82,6 +76,14 @@ export type {
 
 export type DerivedViewInspection = DerivedViewExecution & {
   readonly outputPaths: readonly string[];
+};
+
+export type PluginHookExecution = {
+  readonly sequence: number;
+  readonly plugin: string;
+  readonly hook: string;
+  readonly status: "executed" | "failed" | "reused";
+  readonly durationMs: number;
 };
 
 export class PluginRuntime {
@@ -104,6 +106,8 @@ export class PluginRuntime {
   private readonly manifestHooks: ManifestHookRunner;
   private pageMarkdownRenderer: ((markdown: string) => Promise<string>) | null =
     null;
+  private hookSequence = 0;
+  private hookExecutions: PluginHookExecution[] = [];
 
   constructor(private pipelineOptions: PipelineOptions = {}) {
     this.derivedViews = createDerivedViewRegistry({
@@ -165,6 +169,8 @@ export class PluginRuntime {
         this.createPluginContext(plugin, context),
       generatedOutputCount: () => this.generatedOutputs.count(),
       diagnosticCount: () => this.diagnostics.length,
+      recordExecution: (plugin, hook, status, durationMs) =>
+        this.recordHookExecution(plugin, hook, status, durationMs),
     });
   }
 
@@ -218,6 +224,10 @@ export class PluginRuntime {
         .filter((plugin) => !resolvedNames.has(plugin.name))
         .map((plugin) => ({ ...plugin, enabled: false })),
     ];
+  }
+
+  getPluginHookExecutions(): readonly PluginHookExecution[] {
+    return [...this.hookExecutions];
   }
 
   getNoChangeFastPathBlockReason(
@@ -276,10 +286,10 @@ export class PluginRuntime {
     for (const plugin of this.plugins()) {
       const resolve = plugin.resolveExternalDependencies;
       if (!resolve) continue;
-      const results = await this.observability().tracer.span(
-        "plugin.resolveExternalDependencies",
-        { plugin: plugin.name, hook: "resolveExternalDependencies" },
-        () =>
+      const results = await this.observeHook(
+        plugin,
+        "resolveExternalDependencies",
+        async () =>
           resolve({
             config: this.pipelineOptions.config,
             contentIndex,
@@ -317,11 +327,16 @@ export class PluginRuntime {
         plugin.resolveContentLocations;
       if (!resolver) continue;
       const pluginContext = this.createPluginContext(plugin, context);
-      const resolved = await runPluginHook(
+      const resolved = await this.observeHook(
         plugin,
         "resolveContentLocations",
-        pluginContext,
-        resolver,
+        () =>
+          runPluginHook(
+            plugin,
+            "resolveContentLocations",
+            pluginContext,
+            resolver,
+          ),
       );
       locations.push(...resolved);
     }
@@ -480,10 +495,10 @@ export class PluginRuntime {
 
     for (const plugin of this.plugins()) {
       if (!plugin.transformAssets) continue;
-      const outputs = await this.observability().tracer.span(
-        "plugin.transformAssets",
-        { plugin: plugin.name, hook: "transformAssets" },
-        () =>
+      const outputs = await this.observeHook(
+        plugin,
+        "transformAssets",
+        async () =>
           plugin.transformAssets?.({
             assets,
             readAsset,
@@ -500,13 +515,10 @@ export class PluginRuntime {
     manifest: ContentManifest,
     contentIndex: Map<string, string>,
   ) {
-    const context = {
+    await this.runHook("buildEnd", (plugin) => plugin.buildEnd, {
       ...this.createContext(contentIndex),
       manifest,
-    };
-    await runBuildEnd(this.plugins(), (plugin) =>
-      this.createPluginContext(plugin, context),
-    );
+    });
   }
 
   async runGeneratedOutputPlans(manifest: ContentManifest): Promise<void> {
@@ -521,10 +533,10 @@ export class PluginRuntime {
       for (const plugin of plugins) {
         const hook = plugin.planGeneratedOutputs;
         if (!hook) continue;
-        const outputs = await this.observability().tracer.span(
-          "plugin.planGeneratedOutputs",
-          { plugin: plugin.name, hook: "planGeneratedOutputs" },
-          () =>
+        const outputs = await this.observeHook(
+          plugin,
+          "planGeneratedOutputs",
+          async () =>
             hook(
               freezeGeneratedOutputPlanContext({
                 manifest: {
@@ -738,11 +750,13 @@ export class PluginRuntime {
       for (const plugin of this.plugins()) {
         const hook = plugin.addDiagnostics;
         const diagnostics = hook
-          ? await runPluginHook(
-              plugin,
-              "addDiagnostics",
-              this.createPluginContext(plugin, context),
-              hook,
+          ? await this.observeHook(plugin, "addDiagnostics", () =>
+              runPluginHook(
+                plugin,
+                "addDiagnostics",
+                this.createPluginContext(plugin, context),
+                hook,
+              ),
             )
           : undefined;
         for (const diagnostic of diagnostics ?? []) {
@@ -766,11 +780,9 @@ export class PluginRuntime {
     contentIndex: Map<string, string>,
   ): Promise<void> {
     const context = this.createContext(contentIndex);
-    const createPluginContext = (plugin: RiebeckitePlugin) =>
-      this.createPluginContext(plugin, context);
     const stages: readonly (() => Promise<void>)[] = [
-      () => runSetup(this.plugins(), createPluginContext),
-      () => runBuildStart(this.plugins(), createPluginContext),
+      () => this.runHook("setup", (plugin) => plugin.setup, context),
+      () => this.runHook("buildStart", (plugin) => plugin.buildStart, context),
       () =>
         this.runHook(
           "onConfigResolved",
@@ -898,8 +910,55 @@ export class PluginRuntime {
       const pluginHook = hook(plugin);
       if (!pluginHook) continue;
       const pluginContext = this.createPluginContext(plugin, context);
-      await runPluginHook(plugin, hookName, pluginContext, pluginHook);
+      await this.observeHook(plugin, hookName, () =>
+        runPluginHook(plugin, hookName, pluginContext, pluginHook),
+      );
     }
+  }
+
+  private async observeHook<T>(
+    plugin: RiebeckitePlugin,
+    hook: string,
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    const sequence = ++this.hookSequence;
+    const startedAt = performance.now();
+    try {
+      const result = await operation();
+      this.recordHookExecution(
+        plugin,
+        hook,
+        "executed",
+        performance.now() - startedAt,
+        sequence,
+      );
+      return result;
+    } catch (error) {
+      this.recordHookExecution(
+        plugin,
+        hook,
+        "failed",
+        performance.now() - startedAt,
+        sequence,
+      );
+      throw error;
+    }
+  }
+
+  private recordHookExecution(
+    plugin: RiebeckitePlugin,
+    hook: string,
+    status: PluginHookExecution["status"],
+    durationMs: number,
+    sequence = ++this.hookSequence,
+  ): void {
+    this.hookExecutions.push({
+      sequence,
+      plugin: plugin.name,
+      hook,
+      status,
+      durationMs,
+    });
   }
 
   private observability(): Observability {

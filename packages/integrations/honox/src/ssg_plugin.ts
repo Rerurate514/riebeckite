@@ -111,6 +111,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           viteClientAssetPaths: ReadonlySet<string>;
           sitePublicAssetPaths: ReadonlySet<string>;
         };
+        provenance: ReturnType<
+          NonNullable<SsgModule["content"]>["getProvenance"]
+        >;
+        content: NonNullable<SsgModule["content"]> | undefined;
+        reusablePaths: ReadonlySet<string>;
       }
     | undefined;
   let clientBuildArtifacts: ClientBuildArtifacts | undefined;
@@ -539,6 +544,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             viteClientAssetPaths: new Set(viteClientAssetPaths),
             sitePublicAssetPaths: siteOwnedOutputPaths,
           },
+          provenance: module.content?.getProvenance(),
+          content: module.content,
+          reusablePaths: new Set(
+            [...reusablePaths].filter(
+              (path) => !siteOwnedOutputPaths.has(path),
+            ),
+          ),
         };
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
@@ -584,6 +596,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             () => fingerprintOutputDirectory(outputCache.outDir),
           );
           const finalOutputInventory = outputCache.state.finalOutputInventory;
+          if (outputCache.provenance && outputCache.content) {
+            await outputCache.content.attachFinalOutputArtifacts(
+              outputCache.provenance.buildId,
+              finalOutputInventory,
+              outputCache.reusablePaths,
+            );
+          }
           const outputPlanRssBefore = process.memoryUsage().rss;
           const outputPlan = measureSync(
             outputCache.timingsMs,

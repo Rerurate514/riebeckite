@@ -299,6 +299,25 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.equal(execution.trace.status, "available");
     assert.ok(execution.trace.wallClockMs > 0);
     assert.equal(manifestHookRuns, 1);
+    const provenanceResponse = await requestReport(
+      stack,
+      "/__riebeckite/inspector/provenance",
+    );
+    assert.equal(provenanceResponse.response.statusCode, 200);
+    const provenance = JSON.parse(provenanceResponse.body).provenance;
+    assert.equal(provenance.version, 1);
+    assert.ok(
+      provenance.sources.some(
+        (source: { path: string }) => source.path === "index.md",
+      ),
+    );
+    assert.ok(
+      provenance.transforms.some(
+        (transform: { hook?: string; effect?: string }) =>
+          transform.hook === "onManifestCreated" &&
+          transform.effect === "opaque",
+      ),
+    );
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
     );
@@ -734,6 +753,10 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /dependencyDescription/);
   assert.match(source as string, /not executed/);
   assert.match(source as string, /Recompute reason/);
+  assert.match(source as string, /Provenance/);
+  assert.match(source as string, /provenanceEndpoint/);
+  assert.match(source as string, /data-provenance-query/);
+  assert.match(source as string, /Final artifacts/);
 });
 
 function inspectorStack(

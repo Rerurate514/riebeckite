@@ -3,7 +3,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import type {
+  BuildProvenance,
+  ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import {
   CONTENT_BUILD_STATE_VERSION,
   computePipelineFingerprint,
@@ -13,6 +16,7 @@ import type { RiebeckiteProject } from "../src/application_root.js";
 import {
   collectBuildInspection,
   collectContentInspection,
+  collectProvenanceInspection,
 } from "../src/inspect/collectors.js";
 
 const baseConfig = {
@@ -78,6 +82,129 @@ test("inspect content reports excluded entries and their patterns", async () => 
   assert.deepEqual(inspection.excluded, [
     { path: "drafts/hidden.md", pattern: "drafts/**" },
   ]);
+});
+
+function provenance(buildId: string, slug: string): BuildProvenance {
+  return {
+    version: 1,
+    buildId,
+    sources: [
+      {
+        id: `source:${slug}.md`,
+        contentId: slug,
+        path: `${slug}.md`,
+        fingerprint: `sha256:${"a".repeat(64)}`,
+        type: "markdown",
+        visibility: "public",
+        evidence: "deterministic",
+      },
+    ],
+    transforms: [],
+    outputs: [
+      {
+        id: `output:${slug}.html`,
+        path: `${slug}.html`,
+        kind: "content",
+        producer: `content:${slug}`,
+        dependencies: [{ type: "content", slug }],
+        status: "generated",
+        evidence: "deterministic",
+        recomputeReason: { type: "new-output" },
+      },
+    ],
+  };
+}
+
+test("inspect provenance filters and compares shared persisted state", async () => {
+  const root = await makeContentRoot();
+  const config: ResolvedRiebeckiteConfig = {
+    ...baseConfig,
+    content: { ...baseConfig.content, directory: root },
+    provenance: { enabled: true },
+  };
+  const project = await makeProject(root);
+  project.config = config;
+  const first = provenance("a".repeat(64), "a");
+  const second = provenance("b".repeat(64), "b");
+  const statePath = resolveContentBuildStatePath(config, undefined);
+  await fs.mkdir(path.dirname(statePath), { recursive: true });
+  await fs.writeFile(
+    statePath,
+    JSON.stringify({
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      externalDependencies: [],
+      provenance: second,
+      provenanceHistory: [first, second],
+    }),
+  );
+
+  const all = await collectProvenanceInspection(project);
+  assert.equal(all.status, "available");
+  assert.equal(all.status === "available" && all.history.length, 2);
+
+  const filtered = await collectProvenanceInspection(project, {
+    source: "b.md",
+    output: "b.html",
+    compare: first.buildId,
+  });
+  assert.equal(filtered.status, "available");
+  if (filtered.status !== "available") return;
+  assert.deepEqual(
+    filtered.provenance.sources.map((source) => source.path),
+    ["b.md"],
+  );
+  assert.deepEqual(
+    filtered.provenance.outputs.map((output) => output.path),
+    ["b.html"],
+  );
+  assert.deepEqual(filtered.comparison?.sources.added, ["source:b.md"]);
+  assert.deepEqual(filtered.comparison?.sources.removed, ["source:a.md"]);
+
+  const unknown = await collectProvenanceInspection(project, {
+    compare: "c".repeat(64),
+  });
+  assert.equal(
+    unknown.status === "available" && unknown.comparisonUnavailable,
+    "compare build was not found in history",
+  );
+
+  await fs.writeFile(statePath, "{", "utf8");
+  assert.deepEqual(await collectProvenanceInspection(project), {
+    status: "unavailable",
+    reason: "no valid build state",
+  });
+});
+
+test("inspect provenance reports disabled and missing state", async () => {
+  const root = await makeContentRoot();
+  const config: ResolvedRiebeckiteConfig = {
+    ...baseConfig,
+    content: { ...baseConfig.content, directory: root },
+  };
+  const project = await makeProject(root);
+  project.config = config;
+  assert.deepEqual(await collectProvenanceInspection(project), {
+    status: "unavailable",
+    reason: "no valid build state",
+  });
+
+  const statePath = resolveContentBuildStatePath(config, undefined);
+  await fs.mkdir(path.dirname(statePath), { recursive: true });
+  await fs.writeFile(
+    statePath,
+    JSON.stringify({
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      externalDependencies: [],
+    }),
+  );
+  assert.deepEqual(await collectProvenanceInspection(project), {
+    status: "unavailable",
+    reason: "provenance was not recorded",
+  });
 });
 
 test("inspect build reports a missing state as not created", async () => {

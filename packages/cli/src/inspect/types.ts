@@ -1,4 +1,8 @@
-import type { ContentBuildStateInvalidReason } from "@riebeckite/core";
+import type {
+  BuildProvenance,
+  BuildProvenanceComparison,
+  ContentBuildStateInvalidReason,
+} from "@riebeckite/core";
 import type { ContentSourceExclusion } from "@riebeckite/node";
 
 export type ApplicationInspection = {
@@ -89,3 +93,13 @@ export type BuildInspection =
       readonly status: "invalid";
       readonly reason: ContentBuildStateInvalidReason;
     };
+
+export type ProvenanceInspection =
+  | {
+      readonly status: "available";
+      readonly provenance: BuildProvenance;
+      readonly history: readonly BuildProvenance[];
+      readonly comparison?: BuildProvenanceComparison;
+      readonly comparisonUnavailable?: string;
+    }
+  | { readonly status: "unavailable"; readonly reason: string };

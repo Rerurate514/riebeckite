@@ -117,7 +117,8 @@ export async function runCommand(command: Command): Promise<void> {
   }
   if (command.name === "profile")
     return runProfile(project, { full: command.full });
-  if (command.name === "inspect") return runInspect(project, command);
+  if (command.name === "inspect")
+    return runInspect(project, { ...command, json: command.json ?? false });
   if (command.name === "upgrade") {
     if (!(await runUpgradeCheck(project, command)) && process.exitCode !== 130)
       process.exitCode = 1;

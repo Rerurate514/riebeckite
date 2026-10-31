@@ -9,6 +9,10 @@ import {
   type DerivedViewInspection,
   PluginRuntime,
 } from "../plugin/plugin_runtime.js";
+import {
+  type BuildProvenance,
+  createBuildProvenance,
+} from "../provenance/provenance.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -88,6 +92,7 @@ export type CompletedContentBuildSnapshot = {
   readonly plugins: readonly ResolvedPluginMetadata[];
   readonly manifestHookMetrics: ManifestHookMetrics;
   readonly derivedViews: readonly DerivedViewInspection[];
+  readonly provenance?: BuildProvenance;
   readonly trace?: TraceSnapshot;
 };
 
@@ -133,6 +138,8 @@ export class ContentManager {
     string,
     string | undefined
   >();
+  private processedContentDurations = new Map<string, number>();
+  private provenance: BuildProvenance | undefined;
 
   constructor(
     content: ContentSource,
@@ -277,6 +284,7 @@ export class ContentManager {
   }
 
   private async processContent(slug: string): Promise<PostContent> {
+    const startedAt = performance.now();
     const tracer = this.observability().tracer;
     const [contentIndex, rawPost] = await tracer.span(
       "content.process.inputs",
@@ -328,6 +336,7 @@ export class ContentManager {
     );
 
     this.contentCache.set(slug, content);
+    this.processedContentDurations.set(slug, performance.now() - startedAt);
     return content;
   }
 
@@ -573,6 +582,24 @@ export class ContentManager {
         }
         this.manifest = manifest;
         this.cacheManifestEntries = cacheManifestEntries;
+        this.provenance = undefined;
+        if (this.pipelineOptions.config?.provenance?.enabled !== false) {
+          try {
+            this.provenance = createBuildProvenance({
+              plan,
+              manifest,
+              outputChanges: this.outputChangeSet,
+              pluginHooks: this.pluginRuntime.getPluginHookExecutions(),
+              derivedViews: this.pluginRuntime.getDerivedViewInspection(),
+              processed: this.processedContentDurations,
+            });
+          } catch {
+            this.provenance = undefined;
+            this.observability().logger.warn(
+              "Could not record build provenance.",
+            );
+          }
+        }
         await this.commitBuildState();
         this.completedBuildSnapshot = Object.freeze({
           manifest,
@@ -604,6 +631,9 @@ export class ContentManager {
               }),
             ),
           ),
+          ...(this.provenance === undefined
+            ? {}
+            : { provenance: this.provenance }),
           trace: this.pipelineOptions.traceRecorder?.snapshot(),
         });
         return manifest;
@@ -629,6 +659,23 @@ export class ContentManager {
 
   getCompletedBuildSnapshot(): CompletedContentBuildSnapshot | undefined {
     return this.completedBuildSnapshot ?? undefined;
+  }
+
+  getProvenance(): BuildProvenance | undefined {
+    return this.provenance;
+  }
+
+  async attachFinalOutputArtifacts(
+    buildId: string,
+    fingerprints: Readonly<Record<string, string>>,
+    cacheHits: ReadonlySet<string>,
+  ): Promise<void> {
+    if (this.provenance?.buildId !== buildId) return;
+    await this.buildCoordinator.attachFinalOutputArtifacts(
+      buildId,
+      fingerprints,
+      cacheHits,
+    );
   }
 
   async getNoChangeFastPathBlockReason(
@@ -849,6 +896,7 @@ export class ContentManager {
         this.processedContentCacheFingerprints,
         this.pluginRuntime.getManifestHookCache(),
         this.publishingBuildTime,
+        this.provenance,
       ),
     );
     this.buildStateCommitted = true;

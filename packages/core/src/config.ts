@@ -104,6 +104,9 @@ export function resolveConfig(
       enabled: config.cache?.enabled ?? true,
       directory: config.cache?.directory ?? "",
     },
+    provenance: {
+      enabled: config.provenance?.enabled ?? true,
+    },
     publication: resolvePublicationConfig(config.publication),
     ...(spa === undefined ? {} : { spa }),
   };

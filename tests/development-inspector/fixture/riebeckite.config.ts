@@ -11,11 +11,7 @@ const publicTitles = defineDerivedView<{ titles: readonly string[] }, string[]>(
     id: "e2e.public-titles",
     version: "1",
     compute({ titles }, context) {
-      context.track({
-        type: "query",
-        id: "public-titles",
-        properties: ["title"],
-      });
+      context.query("public-titles", {});
       return [...titles];
     },
   },
@@ -24,9 +20,6 @@ const publicTitles = defineDerivedView<{ titles: readonly string[] }, string[]>(
 const derivedFixture = definePlugin({
   name: "e2e-derived",
   derivedViews: [publicTitles],
-  async setup({ derived }) {
-    await derived.resolve(publicTitles, { titles: [] });
-  },
   async planGeneratedOutputs({ derived, manifest }) {
     const resolved = await derived.resolveWithDependencies(publicTitles, {
       titles: manifest.routableEntries.map((entry) => entry.title),

@@ -39,19 +39,27 @@ Use `context.resolve()` inside a view to call another view. Child dependencies a
 
 Views use the existing build-time PluginCache under a Core-owned namespace. Values are written only when the result is JSON and every dependency is tracked. Cache entries contain the view version, input fingerprint, result, and tracked dependency fingerprints. Malformed or unreadable entries are cache misses.
 
-Track every non-input dependency before returning:
+Use `context.track()` for non-input dependencies:
 
 ```ts
-context.track({
-  type: "content",
-  id: "notes/release",
-  fingerprint: sourceFingerprint,
+context.track({ type: "content", id: "notes/release" });
+```
+
+Core computes every fingerprint; callers never supply one. `content`, `external`, `file`, and `frontmatter` dependencies are rechecked against the runtime snapshot. During `planGeneratedOutputs`, `file`, `frontmatter`, and `query` dependencies are rechecked against that plan's build snapshot. Outside that phase, dependencies without a current snapshot safely miss the cache. A `content` id resolves through the content index and fingerprints its source Markdown, so body edits, renames, and retargeted aliases invalidate it. For frontmatter, set `property`. Use `unknown` for time, network access without an external snapshot, environment variables, randomness, or any input whose fingerprint cannot be proved. Unknown dependencies are never persisted.
+
+Content queries use the existing Content Query engine and record their own dependencies:
+
+```ts
+const entries = context.query("releases", {
+  pool: "discoverable",
+  filter: { tags: { any: ["release"] } },
+  sort: { field: "date", order: "desc" },
 });
 ```
 
-`content` and `external` dependencies are rechecked whenever a runtime snapshot is available. During `planGeneratedOutputs`, `file`, `frontmatter`, qualified `query`, and `graph` dependencies are also rechecked against that plan's build snapshot. Outside that planning phase, dependencies without a current snapshot safely miss the cache. A `content` id resolves through the content index and fingerprints its source Markdown, so body edits, renames, and retargeted aliases invalidate it. For frontmatter, set `property`; for a query, declare every property that controls its result set. File additions, removals, and content changes; query membership changes across all manifest entries, including unlisted and private ones, and publication state changes; and graph edge changes invalidate cached values. An unqualified query is not cacheable. Use `unknown` for time, network access without an external snapshot, environment variables, randomness, or any input whose fingerprint cannot be proved. Unknown dependencies are never persisted.
+The definition decides which filter and sort fields participate. Core runs the query and fingerprints the complete result set, so filter fields, sort fields, membership additions and removals, publication transitions, frontmatter, rendered body, links, and backlinks are covered without a property declaration. `pool` defaults to `discoverable`; use `routable` when the output may include unlisted pages. Results are not cached when the result set cannot be fingerprinted.
 
-For a content query, fingerprint the complete public result set, not just entries read by the computation. That includes additions, removals, frontmatter fields used by filtering or sorting, and publication transitions. Property names accepted by a query are the same names used by `content-query` output dependencies: `file.name`, `file.path`, `file.slug`, `file.folder`, `file.title`, `file.link`, `file.permalink`, `file.tags`, `file.size`, `file.ctime`, `file.mtime`, `file.links`, `file.backlinks`, `file.content`, or a frontmatter path. `file.content` fingerprints the rendered body, so a predicate that searches body text can be cached safely. Sort properties must be declared too. Core fingerprints every manifest entry regardless of publication state, so adding, removing, or editing an unlisted entry that a routable plan can see also invalidates the value. A predicate built from JavaScript state, configuration, or any property that is not declared is untrackable: declare `unknown` instead of under-declaring the query.
+A dynamic `where` predicate cannot be derived from the definition. Passing one tracks the result as `unknown`, so the value is never persisted and its generated outputs always regenerate. Express filters in the query definition instead.
 
 External dependencies use the existing `resolveExternalDependencies` hook. A view tracks a snapshot by ID; Core reuses the result only while the current snapshot has the same fingerprint. A changed fingerprint, a missing snapshot, an `unavailable` resolution, or a duplicate external ID makes the value a cache miss. The snapshot value is not serialized into the derived cache.
 
@@ -75,11 +83,11 @@ async planGeneratedOutputs({ derived }) {
 }
 ```
 
-Core converts tracked content, file, external, qualified query, and graph dependencies to existing output dependencies before persisting the output plan. A query without its complete tracked property set becomes `unknown` and safely requires regeneration. Merge explicit `dependencies` when the output has inputs that the view did not track, including view input or site configuration that can change the serialized value.
+Core converts tracked dependencies before persisting the output plan. Query dependencies become a fingerprinted `derived-query` output dependency, so any change to the query result regenerates the owning output; a query that cannot be fingerprinted becomes `unknown`. Merge explicit `dependencies` when the output has inputs that the view did not track, including view input or site configuration that can change the serialized value.
 
 The bundled `hover-preview` plugin resolves its shared preview index through a derived view. It keeps its explicit global output dependency, so incremental invalidation and the serialized output are unchanged.
 
-In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. The Derived tab renders this read-only data with search, status filtering, dependency and output details, and an explicit distinction between a view that has never run and one that ran without caching. Reading this report never resolves a view or mutates build state.
+In development, the Inspector report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. The Derived tab renders this read-only data with search, status filtering, dependency and output details, and an explicit distinction between a view that has never run and one that ran without caching. Reading this report never resolves a view or mutates build state. Inspector data endpoints listen on loopback only and require a per-session token; requests through non-loopback bindings, hosts, origins, peers, or forwarders are rejected. Inspector data is never emitted in production output.
 
 HonoX consumes the same generated outputs during SSG. A view-backed output participates in full, incremental, and no-change builds like any other generated output, and the emitted tree matches a clean build. The test suite covers derived SSG output that follows title changes and publication transitions, and the Inspector browser test covers the Derived tab.
 

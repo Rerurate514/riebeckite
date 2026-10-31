@@ -1,10 +1,34 @@
 import crypto from "node:crypto";
+import {
+  type ContentQueryFilter,
+  type ContentQuerySort,
+  queryContentEntries,
+} from "../content/content_query.js";
 import type { JsonValue, PluginCache } from "../plugin/plugin_cache.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
+import type { ContentManifestEntry } from "../types/content_manifest.js";
 import type { OutputDependency } from "../types/output_dependency.js";
 
 export type DerivedSchema<T> = {
   parse(value: unknown): T;
+};
+
+export type DerivedContentQuery = {
+  readonly pool?: "discoverable" | "routable";
+  readonly filter?: ContentQueryFilter;
+  readonly sort?: ContentQuerySort | readonly ContentQuerySort[];
+  readonly limit?: number;
+  readonly offset?: number;
+};
+
+export type DerivedQueryOptions = {
+  readonly where?: (entry: ContentManifestEntry) => boolean;
+};
+
+export type DerivedTrackedDependency = {
+  readonly type: "content" | "frontmatter" | "file" | "external" | "unknown";
+  readonly id: string;
+  readonly property?: string;
 };
 
 export type DerivedDependency = {
@@ -14,13 +38,12 @@ export type DerivedDependency = {
     | "file"
     | "external"
     | "query"
-    | "graph"
     | "view"
     | "unknown";
   readonly id: string;
   readonly fingerprint?: string;
   readonly property?: string;
-  readonly properties?: readonly string[];
+  readonly query?: DerivedContentQuery;
 };
 
 export type DerivedViewResolution<TResult> = {
@@ -42,7 +65,12 @@ export type DerivedViewExecution = {
 export type DerivedViewContext = {
   readonly signal: AbortSignal;
   readonly dependencies: readonly DerivedDependency[];
-  track(dependency: DerivedDependency): void;
+  track(dependency: DerivedTrackedDependency): void;
+  query(
+    id: string,
+    query: DerivedContentQuery,
+    options?: DerivedQueryOptions,
+  ): readonly ContentManifestEntry[];
   resolve<TResult>(view: string, input: unknown): Promise<TResult>;
   resolve<TInput, TResult>(
     view: DerivedView<TInput, TResult>,
@@ -111,7 +139,7 @@ type CachedDependency = {
   id: string;
   fingerprint: string;
   property?: string;
-  properties?: string[];
+  query?: DerivedContentQuery;
 };
 
 type PendingView = {
@@ -122,6 +150,9 @@ type PendingView = {
 
 export type DerivedViewRegistryOptions = {
   readonly cache?: () => PluginCache;
+  readonly queryEntries?: (
+    pool: "discoverable" | "routable",
+  ) => readonly ContentManifestEntry[];
   readonly dependencyFingerprint?: (
     dependency: Omit<DerivedDependency, "fingerprint">,
   ) => string | undefined;
@@ -237,28 +268,50 @@ export function createDerivedViewRegistry(
 
     dependencies = [];
     const tracked = new Set<string>();
+    const addDependency = (dependency: DerivedDependency) => {
+      const normalized = normalizeDependency(dependency);
+      const key = dependencyKey(normalized);
+      if (!tracked.has(key)) {
+        tracked.add(key);
+        dependencies.push(normalized);
+      }
+    };
     const context: DerivedViewContext = {
       signal,
       get dependencies() {
         return dependencies;
       },
       track(dependency) {
-        const trackedDependency = normalizeDependency(dependency);
-        const normalized = {
-          ...trackedDependency,
-          fingerprint:
-            options.dependencyFingerprint?.({
-              type: trackedDependency.type,
-              id: trackedDependency.id,
-              property: trackedDependency.property,
-              properties: trackedDependency.properties,
-            }) ?? trackedDependency.fingerprint,
-        };
-        const key = dependencyKey(normalized);
-        if (!tracked.has(key)) {
-          tracked.add(key);
-          dependencies.push(normalized);
+        addDependency({
+          ...dependency,
+          fingerprint: options.dependencyFingerprint?.({
+            type: dependency.type,
+            id: dependency.id,
+            property: dependency.property,
+          }),
+        });
+      },
+      query(id, definition, queryOptions = {}) {
+        const entries = options.queryEntries?.(
+          definition.pool ?? "discoverable",
+        );
+        if (!entries) {
+          throw new Error(
+            `Derived View "${view.id}" requested content query "${id}" outside a build plan.`,
+          );
         }
+        const result = queryContentEntries(entries, definition);
+        if (queryOptions.where) {
+          addDependency({ type: "unknown", id: `${id}:where` });
+          return result.filter(queryOptions.where);
+        }
+        addDependency({
+          type: "query",
+          id,
+          query: definition,
+          fingerprint: fingerprintQueryEntries(result),
+        });
+        return result;
       },
       resolve: (async <TInput, TResult>(
         child: DerivedView<TInput, TResult> | string,
@@ -272,8 +325,8 @@ export function createDerivedViewRegistry(
           stack,
         );
         for (const dependency of resolved.dependencies)
-          context.track(dependency);
-        context.track({
+          addDependency(dependency);
+        addDependency({
           type: "view",
           id: childView.id,
           fingerprint: childView.version,
@@ -333,7 +386,7 @@ export function createDerivedViewRegistry(
     input: string,
   ): Promise<CacheEntry | undefined> => {
     try {
-      const entry = await cache?.get<CacheEntry>(key);
+      const entry = await cache?.get(key);
       if (!isCacheEntry(entry, view, input)) return undefined;
       if (!entry.dependencies.every(isCurrentDependency)) return undefined;
       return entry;
@@ -348,7 +401,7 @@ export function createDerivedViewRegistry(
     entry: CacheEntry,
   ): Promise<void> => {
     try {
-      await cache?.set(key, entry);
+      await cache?.set(key, entry as unknown as JsonValue);
     } catch {
       return;
     }
@@ -360,11 +413,25 @@ export function createDerivedViewRegistry(
     if (dependency.type === "view") {
       return views.get(dependency.id)?.version === dependency.fingerprint;
     }
+    if (dependency.type === "query") {
+      if (!dependency.query || !options.queryEntries) return false;
+      try {
+        const entries = options.queryEntries(
+          dependency.query.pool ?? "discoverable",
+        );
+        return (
+          fingerprintQueryEntries(
+            queryContentEntries(entries, dependency.query),
+          ) === dependency.fingerprint
+        );
+      } catch {
+        return false;
+      }
+    }
     const current = options.dependencyFingerprint?.({
       type: dependency.type,
       id: dependency.id,
       property: dependency.property,
-      properties: dependency.properties,
     });
     return current === dependency.fingerprint;
   };
@@ -450,20 +517,15 @@ export function derivedDependenciesToOutputDependencies(
         outputDependencies.push({ type: "external", id: dependency.id });
         break;
       case "query":
-        if (dependency.properties) {
+        if (dependency.query && dependency.fingerprint) {
           outputDependencies.push({
-            type: "content-query",
-            properties: [...dependency.properties].sort(),
+            type: "derived-query",
+            id: dependency.id,
+            fingerprint: dependency.fingerprint,
           });
         } else {
           outputDependencies.push({ type: "unknown" });
         }
-        break;
-      case "graph":
-        outputDependencies.push({
-          type: "content-query",
-          properties: ["file.links"],
-        });
         break;
       case "unknown":
         outputDependencies.push({ type: "unknown" });
@@ -544,9 +606,7 @@ function toCachedDependency(dependency: DerivedDependency): CachedDependency {
     ...(dependency.property === undefined
       ? {}
       : { property: dependency.property }),
-    ...(dependency.properties === undefined
-      ? {}
-      : { properties: [...dependency.properties] }),
+    ...(dependency.query === undefined ? {} : { query: dependency.query }),
   };
 }
 
@@ -556,7 +616,7 @@ function dependencyKey(dependency: DerivedDependency): string {
     id: dependency.id,
     fingerprint: dependency.fingerprint,
     property: dependency.property,
-    properties: dependency.properties && [...dependency.properties].sort(),
+    query: dependency.query,
   });
 }
 
@@ -599,19 +659,66 @@ function isDependency(value: unknown): value is CachedDependency {
       dependency.type === "external" ||
       dependency.type === "query" ||
       dependency.type === "frontmatter" ||
-      dependency.type === "graph" ||
       dependency.type === "view" ||
       dependency.type === "unknown") &&
     typeof dependency.id === "string" &&
     typeof dependency.fingerprint === "string" &&
     (dependency.property === undefined ||
       typeof dependency.property === "string") &&
-    (dependency.properties === undefined ||
-      (Array.isArray(dependency.properties) &&
-        dependency.properties.every(
-          (property) => typeof property === "string",
-        )))
+    (dependency.query === undefined || isContentQuery(dependency.query))
   );
+}
+
+function isContentQuery(value: unknown): value is DerivedContentQuery {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const query = value as Partial<DerivedContentQuery>;
+  if (
+    query.pool !== undefined &&
+    query.pool !== "discoverable" &&
+    query.pool !== "routable"
+  ) {
+    return false;
+  }
+  if (
+    query.filter !== undefined &&
+    (typeof query.filter !== "object" || Array.isArray(query.filter))
+  ) {
+    return false;
+  }
+  if (query.sort !== undefined && !isQuerySort(query.sort)) return false;
+  if (
+    query.limit !== undefined &&
+    (typeof query.limit !== "number" || !Number.isFinite(query.limit))
+  ) {
+    return false;
+  }
+  if (
+    query.offset !== undefined &&
+    (typeof query.offset !== "number" || !Number.isFinite(query.offset))
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function isQuerySort(value: unknown): boolean {
+  if (Array.isArray(value)) return value.every(isQuerySort);
+  if (!value || typeof value !== "object") return false;
+  const sort = value as { readonly field?: unknown; readonly order?: unknown };
+  return (
+    (sort.field === undefined || typeof sort.field === "string") &&
+    (sort.order === undefined || sort.order === "asc" || sort.order === "desc")
+  );
+}
+
+function fingerprintQueryEntries(
+  entries: readonly ContentManifestEntry[],
+): string | undefined {
+  try {
+    return fingerprint(entries, "Derived View query result");
+  } catch {
+    return undefined;
+  }
 }
 
 function isCacheableDependency(

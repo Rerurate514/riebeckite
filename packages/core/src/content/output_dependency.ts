@@ -31,6 +31,7 @@ export type OutputChangeReason =
       readonly id: string;
       readonly version: string;
     }
+  | { readonly type: "derived-query"; readonly id: string }
   | { readonly type: "global" }
   | { readonly type: "content"; readonly slug: string }
   | { readonly type: "tag"; readonly tag: string }
@@ -121,6 +122,7 @@ export function determineOutputChanges(input: {
     const previousOutput = previous.get(output.path);
     const reason =
       findChangedDerivedView(output, previousOutput) ??
+      findChangedDerivedQuery(output, previousOutput) ??
       findOutputChangeReason(
         withPreviousDependencies(output, previousOutput),
         changedContent,
@@ -280,6 +282,37 @@ function findChangedDerivedView(
   return undefined;
 }
 
+function isDerivedQueryDependency(
+  dependency: OutputDependency,
+): dependency is Extract<OutputDependency, { type: "derived-query" }> {
+  return dependency.type === "derived-query";
+}
+
+function findChangedDerivedQuery(
+  output: OutputDescriptor,
+  previous: OutputDescriptor | undefined,
+): OutputChangeReason | undefined {
+  const current = new Map(
+    output.dependencies
+      .filter(isDerivedQueryDependency)
+      .map((dependency) => [dependency.id, dependency.fingerprint]),
+  );
+  const previousQueries = new Map(
+    (previous?.dependencies ?? [])
+      .filter(isDerivedQueryDependency)
+      .map((dependency) => [dependency.id, dependency.fingerprint]),
+  );
+  for (const [id, fingerprint] of current) {
+    if (previousQueries.get(id) !== fingerprint) {
+      return { type: "derived-query", id };
+    }
+  }
+  for (const [id] of previousQueries) {
+    if (!current.has(id)) return { type: "derived-query", id };
+  }
+  return undefined;
+}
+
 function findOutputChangeReason(
   output: OutputDescriptor,
   changedContent: ReadonlySet<string>,
@@ -300,8 +333,8 @@ function findOutputChangeReason(
     if (dependency.type === "unknown") return { type: "unknown-dependency" };
     if (dependency.type === "external" && changedExternal.has(dependency.id))
       return { type: "external", id: dependency.id };
-    if (dependency.type === "global")
-      return changedContent.size > 0 ? { type: "global" } : undefined;
+    if (dependency.type === "global" && changedContent.size > 0)
+      return { type: "global" };
     if (
       dependency.type === "content-query" &&
       isContentQueryAffected(dependency, previousEntries, currentEntries)

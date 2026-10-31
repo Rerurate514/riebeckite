@@ -232,6 +232,9 @@ function isOutputDependency(value: unknown): value is OutputDependency {
     (value.type === "derived-view" &&
       typeof value.id === "string" &&
       typeof value.version === "string") ||
+    (value.type === "derived-query" &&
+      typeof value.id === "string" &&
+      typeof value.fingerprint === "string") ||
     (value.type === "projection" &&
       (value.projection === "navigation" ||
         value.projection === "recent-posts" ||

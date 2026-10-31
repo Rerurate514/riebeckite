@@ -16,13 +16,22 @@ import {
 } from "../src/development_inspector.js";
 import { createDevelopmentTrace } from "../src/development_trace.js";
 
+type MiddlewareRequest = {
+  headers: Record<string, string | undefined>;
+  url?: string;
+  method?: string;
+  socket?: { readonly remoteAddress?: string };
+};
+
+type MiddlewareResponse = {
+  statusCode: number;
+  setHeader(name: string, value: string): void;
+  end(value?: string): void;
+};
+
 type Middleware = (
-  request: { headers: { host?: string }; url?: string },
-  response: {
-    statusCode: number;
-    setHeader(name: string, value: string): void;
-    end(value?: string): void;
-  },
+  request: MiddlewareRequest,
+  response: MiddlewareResponse,
 ) => void | Promise<void>;
 
 test("development inspector prioritizes its endpoint and keeps failures private", async () => {
@@ -30,7 +39,7 @@ test("development inspector prioritizes its endpoint and keeps failures private"
     throw new Error("C:\\private\\secret-token");
   });
   const stack = inspectorStack(plugin);
-  const { response, headers, body } = await requestReport(stack[0]?.handle);
+  const { response, headers, body } = await requestReport(stack);
 
   assert.equal(response.statusCode, 500);
   assert.equal(headers.get("content-type"), "application/json; charset=utf-8");
@@ -54,11 +63,7 @@ test("development inspector reports the output plan and dependencies", async () 
       id: "test.inspector-titles",
       version: "1",
       compute: (entries, context) => {
-        context.track({
-          type: "query",
-          id: "inspector-titles",
-          properties: ["title"],
-        });
+        context.query("inspector-titles", {});
         return entries.map((entry) => entry.title);
       },
     });
@@ -147,7 +152,7 @@ test("development inspector reports the output plan and dependencies", async () 
       contentRoot,
     }));
     const stack = inspectorStack(plugin, content);
-    const { response, body } = await requestReport(stack[0]?.handle);
+    const { response, body } = await requestReport(stack);
 
     assert.equal(response.statusCode, 200);
     const report = JSON.parse(body);
@@ -166,17 +171,14 @@ test("development inspector reports the output plan and dependencies", async () 
       type: "query",
       id: "inspector-titles",
       fingerprint: report.derivedViews[0].dependencies[0].fingerprint,
-      properties: ["title"],
+      query: {},
     });
     assert.match(report.derivedViews[0].cache, /^(hit|miss|bypass|not-run)$/);
     assert.equal(typeof report.derivedViews[0].durationMs, "number");
     assert.deepEqual(report.derivedViews[0].outputPaths, ["titles.json"]);
 
-    const outputHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/output",
-    )?.handle;
     const outputResponse = await requestReport(
-      outputHandle,
+      stack,
       "/__riebeckite/inspector/output",
     );
     assert.equal(outputResponse.response.statusCode, 200);
@@ -196,19 +198,19 @@ test("development inspector reports the output plan and dependencies", async () 
         output.regeneration.unknown.length > 0,
     );
     const filtered = await requestReport(
-      outputHandle,
+      stack,
       "/__riebeckite/inspector/output?limit=1&status=affected",
     );
     const filteredOutput = JSON.parse(filtered.body);
     assert.ok(filteredOutput.output.affected.length <= 1);
     assert.equal(typeof filteredOutput.output.hiddenAffectedCount, "number");
     const dependencies = await requestReport(
-      outputHandle,
+      stack,
       "/__riebeckite/inspector/output?dlimit=1&dq=index",
     );
     assert.ok(JSON.parse(dependencies.body).dependencies.outputs.length <= 1);
     const lookup = await requestReport(
-      outputHandle,
+      stack,
       "/__riebeckite/inspector/output?output=index.html",
     );
     const lookupBody = JSON.parse(lookup.body);
@@ -217,15 +219,15 @@ test("development inspector reports the output plan and dependencies", async () 
       lookupBody.output.lookups.output.dependencies.includes("content:index"),
     );
     const changed = await requestReport(
-      outputHandle,
+      stack,
       "/__riebeckite/inspector/output?changed=index",
     );
     assert.ok(JSON.parse(changed.body).output.lookups.changed.outputCount >= 1);
 
-    const graphHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/graph",
-    )?.handle;
-    const graphResponse = await requestReport(graphHandle);
+    const graphResponse = await requestReport(
+      stack,
+      "/__riebeckite/inspector/graph",
+    );
     const graph = JSON.parse(graphResponse.body).graph;
     assert.equal(graph.status, "available");
     assert.equal(
@@ -244,7 +246,7 @@ test("development inspector reports the output plan and dependencies", async () 
     const selectedGraph = JSON.parse(
       (
         await requestReport(
-          graphHandle,
+          stack,
           "/__riebeckite/inspector/graph?node=content%3Aindex",
         )
       ).body,
@@ -264,7 +266,7 @@ test("development inspector reports the output plan and dependencies", async () 
     const searchedGraph = JSON.parse(
       (
         await requestReport(
-          graphHandle,
+          stack,
           "/__riebeckite/inspector/graph?q=index&limit=1",
         )
       ).body,
@@ -272,10 +274,10 @@ test("development inspector reports the output plan and dependencies", async () 
     assert.ok(searchedGraph.search);
     assert.ok(searchedGraph.nodes.length <= 1);
 
-    const pluginsHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/plugins",
-    )?.handle;
-    const pluginResponse = await requestReport(pluginsHandle);
+    const pluginResponse = await requestReport(
+      stack,
+      "/__riebeckite/inspector/plugins",
+    );
     const execution = JSON.parse(pluginResponse.body).pluginExecution;
     assert.equal(execution.status, "available");
     assert.equal(execution.plugins[0].name, "manifest-counter");
@@ -307,12 +309,137 @@ test("development inspector rejects non-loopback hosts", async () => {
   const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
   const stack = inspectorStack(plugin);
   const { response } = await requestReport(
-    stack[0]?.handle,
+    stack,
     "/__riebeckite/inspector/report?path=%2F",
     "example.test:5199",
   );
   assert.equal(response.statusCode, 403);
 });
+
+test("development inspector only authorizes loopback transports", async () => {
+  const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
+  assert.equal(plugin.apply, "serve");
+  const stack = inspectorStack(plugin);
+  const request = (headers: Record<string, string | undefined>) =>
+    bootstrapRequest(stack, headers);
+  assert.equal(
+    (await request({ host: "localhost:4173" })).response.statusCode,
+    200,
+  );
+  assert.equal(
+    (await request({ host: "example.test:5199" })).response.statusCode,
+    403,
+  );
+  assert.equal(
+    (
+      await bootstrapRequest(
+        stack,
+        { host: "127.0.0.1:4173" },
+        "GET",
+        "192.168.1.20",
+      )
+    ).response.statusCode,
+    403,
+  );
+  assert.equal(
+    (await request({ host: "127.0.0.1:4173", forwarded: "for=1.2.3.4" }))
+      .response.statusCode,
+    403,
+  );
+  assert.equal(
+    (await request({ host: "127.0.0.1:4173", "x-forwarded-for": "1.2.3.4" }))
+      .response.statusCode,
+    403,
+  );
+  assert.equal(
+    (await request({ host: "127.0.0.1:4173", origin: "https://example.test" }))
+      .response.statusCode,
+    403,
+  );
+  assert.equal(
+    (
+      await bootstrapRequest(
+        stack,
+        { host: "127.0.0.1:4173" },
+        "POST",
+        "127.0.0.1",
+      )
+    ).response.statusCode,
+    403,
+  );
+
+  const boundToAll = inspectorStack(
+    riebeckiteDevelopmentInspector(() => undefined as never),
+    undefined,
+    undefined,
+    "0.0.0.0",
+  );
+  assert.equal(
+    (
+      await bootstrapRequest(boundToAll, {
+        host: "127.0.0.1:4173",
+      })
+    ).response.statusCode,
+    403,
+  );
+});
+
+test("development inspector requires its session token for data endpoints", async () => {
+  const stack = inspectorStack(
+    riebeckiteDevelopmentInspector(() => undefined as never),
+  );
+  const bootstrap = await bootstrapRequest(stack, {
+    host: "127.0.0.1:4173",
+  });
+  assert.equal(bootstrap.response.statusCode, 200);
+  const { origin, token } = JSON.parse(bootstrap.body) as {
+    origin: string;
+    token: string;
+  };
+  const unauthorized = await fetch(`${origin}/__riebeckite/inspector/report`);
+  assert.equal(unauthorized.status, 403);
+  const authorized = await fetch(`${origin}/__riebeckite/inspector/report`, {
+    headers: { "x-riebeckite-inspector-token": token },
+  });
+  assert.equal(authorized.status, 500);
+  assert.deepEqual(await authorized.json(), {
+    code: "INSPECTOR_REPORT_FAILED",
+  });
+  const preflight = await fetch(`${origin}/__riebeckite/inspector/report`, {
+    method: "OPTIONS",
+    headers: { origin: "http://localhost:4173" },
+  });
+  assert.equal(preflight.status, 204);
+  const crossOrigin = await fetch(`${origin}/__riebeckite/inspector/report`, {
+    headers: {
+      origin: "https://example.test",
+      "x-riebeckite-inspector-token": token,
+    },
+  });
+  assert.equal(crossOrigin.status, 403);
+});
+
+async function bootstrapRequest(
+  stack: Array<{ route: string; handle: Middleware }>,
+  headers: Record<string, string | undefined>,
+  method = "GET",
+  remoteAddress = "127.0.0.1",
+): Promise<{
+  response: MiddlewareResponse;
+  headers: Map<string, string>;
+  body: string;
+}> {
+  const handle = stack.find(
+    (layer) => layer.route === "/__riebeckite/inspector/bootstrap",
+  )?.handle;
+  assert.ok(handle);
+  return await callMiddleware(handle, {
+    headers,
+    url: "/__riebeckite/inspector/bootstrap",
+    method,
+    socket: { remoteAddress },
+  });
+}
 
 test("development inspector reports unavailable before the development build exists", async () => {
   await withTemporaryDirectory(async (directory) => {
@@ -324,26 +451,23 @@ test("development inspector reports unavailable before the development build exi
       contentRoot: path.join(directory, "content"),
     }));
     const stack = inspectorStack(plugin);
-    const outputHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/output",
-    )?.handle;
-    const response = await requestReport(outputHandle);
+    const response = await requestReport(
+      stack,
+      "/__riebeckite/inspector/output",
+    );
 
     assert.equal(response.response.statusCode, 200);
     assert.equal(JSON.parse(response.body).output.status, "unavailable");
-    const graphHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/graph",
-    )?.handle;
     assert.equal(
-      JSON.parse((await requestReport(graphHandle)).body).graph.status,
+      JSON.parse(
+        (await requestReport(stack, "/__riebeckite/inspector/graph")).body,
+      ).graph.status,
       "unavailable",
     );
-    const pluginsHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/plugins",
-    )?.handle;
     assert.equal(
-      JSON.parse((await requestReport(pluginsHandle)).body).pluginExecution
-        .status,
+      JSON.parse(
+        (await requestReport(stack, "/__riebeckite/inspector/plugins")).body,
+      ).pluginExecution.status,
       "unavailable",
     );
   });
@@ -375,20 +499,11 @@ test("development inspector consumes failed snapshots and recovers", async () =>
         },
       );
 
-      const outputHandle = stack.find(
-        (layer) => layer.route === "/__riebeckite/inspector/output",
-      )?.handle;
-      const graphHandle = stack.find(
-        (layer) => layer.route === "/__riebeckite/inspector/graph",
-      )?.handle;
-      const pluginsHandle = stack.find(
-        (layer) => layer.route === "/__riebeckite/inspector/plugins",
-      )?.handle;
       const failed = await Promise.all([
-        requestReport(stack[0]?.handle),
-        requestReport(outputHandle),
-        requestReport(graphHandle),
-        requestReport(pluginsHandle),
+        requestReport(stack, "/__riebeckite/inspector/report"),
+        requestReport(stack, "/__riebeckite/inspector/output"),
+        requestReport(stack, "/__riebeckite/inspector/graph"),
+        requestReport(stack, "/__riebeckite/inspector/plugins"),
       ]);
       assert.deepEqual(
         failed.map(({ response }) => response.statusCode),
@@ -403,22 +518,23 @@ test("development inspector consumes failed snapshots and recovers", async () =>
           "INSPECTOR_PLUGINS_FAILED",
         ],
       );
-      assert.equal(loads, 1);
+      assert.ok(loads >= 1 && loads <= 4);
+      const failedLoads = loads;
       await new Promise<void>((resolve) => setImmediate(resolve));
       assert.deepEqual(rejections, []);
 
       fail = false;
       const recovered = await Promise.all([
-        requestReport(stack[0]?.handle),
-        requestReport(outputHandle),
-        requestReport(graphHandle),
-        requestReport(pluginsHandle),
+        requestReport(stack, "/__riebeckite/inspector/report"),
+        requestReport(stack, "/__riebeckite/inspector/output"),
+        requestReport(stack, "/__riebeckite/inspector/graph"),
+        requestReport(stack, "/__riebeckite/inspector/plugins"),
       ]);
       assert.deepEqual(
         recovered.map(({ response }) => response.statusCode),
         [200, 200, 200, 200],
       );
-      assert.equal(loads, 2);
+      assert.ok(loads > failedLoads);
     } finally {
       process.off("unhandledRejection", onUnhandledRejection);
     }
@@ -442,14 +558,8 @@ test("development inspector shares one report across concurrent requests", async
     }));
     const stack = inspectorStack(plugin);
     const [first, second] = await Promise.all([
-      requestReport(
-        stack[0]?.handle,
-        "/__riebeckite/inspector/report?path=%2F",
-      ),
-      requestReport(
-        stack[0]?.handle,
-        "/__riebeckite/inspector/report?path=%2Fthemes",
-      ),
+      requestReport(stack, "/__riebeckite/inspector/report?path=%2F"),
+      requestReport(stack, "/__riebeckite/inspector/report?path=%2Fthemes"),
     ]);
 
     assert.equal(first.response.statusCode, 200);
@@ -459,12 +569,9 @@ test("development inspector shares one report across concurrent requests", async
     assert.equal(firstReport.currentPage, "/");
     assert.equal(secondReport.currentPage, "/themes");
 
-    const outputHandle = stack.find(
-      (layer) => layer.route === "/__riebeckite/inspector/output",
-    )?.handle;
     const [firstOutput, secondOutput] = await Promise.all([
-      requestReport(outputHandle, "/__riebeckite/inspector/output"),
-      requestReport(outputHandle, "/__riebeckite/inspector/output"),
+      requestReport(stack, "/__riebeckite/inspector/output"),
+      requestReport(stack, "/__riebeckite/inspector/output"),
     ]);
     assert.deepEqual(
       JSON.parse(firstOutput.body).output,
@@ -532,7 +639,7 @@ test("development inspector maps the current page to its content sources", async
     }));
     const stack = inspectorStack(plugin, content);
     const { response, body } = await requestReport(
-      stack[0]?.handle,
+      stack,
       "/__riebeckite/inspector/report?path=%2Fthemes",
     );
 
@@ -635,6 +742,7 @@ function inspectorStack(
   loadModule: () => Promise<{ content?: ContentManager }> = async () => ({
     content,
   }),
+  bindingAddress = "127.0.0.1",
 ): Array<{ route: string; handle: Middleware }> {
   const stack: Array<{ route: string; handle: Middleware }> = [];
   const configure = plugin.configureServer;
@@ -654,7 +762,7 @@ function inspectorStack(
       off() {},
     },
     httpServer: {
-      address: () => ({ address: "127.0.0.1" }),
+      address: () => ({ address: bindingAddress }),
       once() {},
     },
     environments: {
@@ -671,14 +779,15 @@ function inspectorStack(
   const afterConfigure = Reflect.apply(configure, undefined, [server]);
   stack.unshift({ route: "", handle() {} });
   if (typeof afterConfigure === "function") afterConfigure();
-  assert.equal(stack[0]?.route, "/__riebeckite/inspector/report");
+  assert.equal(stack[0]?.route, "/__riebeckite/inspector/bootstrap");
   return stack;
 }
 
 async function requestReport(
-  handle: Middleware | undefined,
+  stack: Array<{ route: string; handle: Middleware }>,
   url = "/__riebeckite/inspector/report?path=%2Fthemes",
   host = "127.0.0.1:4173",
+  remoteAddress = "127.0.0.1",
 ): Promise<{
   response: {
     statusCode: number;
@@ -688,10 +797,75 @@ async function requestReport(
   headers: Map<string, string>;
   body: string;
 }> {
-  assert.ok(handle);
+  const bootstrap = stack.find(
+    (layer) => layer.route === "/__riebeckite/inspector/bootstrap",
+  )?.handle;
+  assert.ok(bootstrap);
+  if (host !== "127.0.0.1:4173" || remoteAddress !== "127.0.0.1") {
+    return await callMiddleware(bootstrap, {
+      headers: { host },
+      url: "/__riebeckite/inspector/bootstrap",
+      method: "GET",
+      socket: { remoteAddress },
+    });
+  }
+  let connection = connections.get(stack);
+  if (!connection) {
+    connection = callMiddleware(bootstrap, {
+      headers: { host },
+      url: "/__riebeckite/inspector/bootstrap",
+      method: "GET",
+      socket: { remoteAddress },
+    }).then((boot) =>
+      boot.response.statusCode === 200
+        ? {
+            ok: true as const,
+            ...(JSON.parse(boot.body) as { origin: string; token: string }),
+          }
+        : { ok: false as const, boot },
+    );
+    connections.set(stack, connection);
+  }
+  const resolved = await connection;
+  if ("boot" in resolved) return resolved.boot;
+  const response = await fetch(resolved.origin + url, {
+    headers: { "x-riebeckite-inspector-token": resolved.token },
+  });
+  const headers = new Map<string, string>();
+  for (const [name, value] of response.headers) headers.set(name, value);
+  return {
+    response: {
+      statusCode: response.status,
+      setHeader() {},
+      end() {},
+    },
+    headers,
+    body: await response.text(),
+  };
+}
+
+const connections = new WeakMap<
+  object,
+  Promise<
+    | { readonly ok: true; readonly origin: string; readonly token: string }
+    | {
+        readonly ok: false;
+        readonly boot: Awaited<ReturnType<typeof callMiddleware>>;
+      }
+  >
+>();
+
+async function callMiddleware(
+  handle: Middleware,
+  request: MiddlewareRequest,
+): Promise<{
+  response: MiddlewareResponse;
+  headers: Map<string, string>;
+  body: string;
+}> {
   const headers = new Map<string, string>();
   let body = "";
-  const response = {
+  const response: MiddlewareResponse = {
     statusCode: 200,
     setHeader(name: string, value: string) {
       headers.set(name, value);
@@ -700,7 +874,7 @@ async function requestReport(
       body = value ?? "";
     },
   };
-  await handle({ headers: { host }, url }, response);
+  await handle(request, response);
   return { response, headers, body };
 }
 

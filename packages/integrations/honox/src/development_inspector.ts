@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+import http from "node:http";
 import path from "node:path";
 import {
   buildOutputPlan,
@@ -37,6 +39,8 @@ const reportPath = "/__riebeckite/inspector/report";
 const outputPath = "/__riebeckite/inspector/output";
 const graphPath = "/__riebeckite/inspector/graph";
 const pluginsPath = "/__riebeckite/inspector/plugins";
+const bootstrapPath = "/__riebeckite/inspector/bootstrap";
+const inspectorTokenHeader = "x-riebeckite-inspector-token";
 const listedOutputLimit = 20;
 const maximumListedOutputLimit = 100;
 const invalidationDelayMs = 150;
@@ -245,15 +249,11 @@ export function riebeckiteDevelopmentInspector(
       return id === resolvedClientModuleId ? inspectorClientModule() : null;
     },
     configureServer(server) {
+      const token = crypto.randomUUID();
       const reportMiddleware = async (
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -291,11 +291,6 @@ export function riebeckiteDevelopmentInspector(
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -323,11 +318,6 @@ export function riebeckiteDevelopmentInspector(
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -358,18 +348,10 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_GRAPH_FAILED" }));
         }
       };
-      server.middlewares.use(reportPath, reportMiddleware);
-      server.middlewares.use(outputPath, outputMiddleware);
-      server.middlewares.use(graphPath, graphMiddleware);
       const pluginsMiddleware = async (
         request: import("node:http").IncomingMessage,
         response: import("node:http").ServerResponse,
       ) => {
-        if (!isLocalRequest(request.headers.host, server)) {
-          response.statusCode = 403;
-          response.end();
-          return;
-        }
         try {
           const application = getApplication();
           const entry = inspectApplication(application, revision, server);
@@ -394,12 +376,56 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_PLUGINS_FAILED" }));
         }
       };
-      server.middlewares.use(pluginsPath, pluginsMiddleware);
+      const privateServer = http.createServer((request, response) => {
+        void handleInspectorRequest(request, response, token, {
+          [reportPath]: reportMiddleware,
+          [outputPath]: outputMiddleware,
+          [graphPath]: graphMiddleware,
+          [pluginsPath]: pluginsMiddleware,
+        });
+      });
+      const privateReady = new Promise<void>((resolve, reject) => {
+        privateServer.once("error", reject);
+        privateServer.listen(0, "127.0.0.1", () => {
+          privateServer.off("error", reject);
+          privateServer.unref();
+          resolve();
+        });
+      });
+      const bootstrapMiddleware = async (
+        request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        if (!isTrustedInspectorRequest(request, server)) {
+          response.statusCode = 403;
+          response.end();
+          return;
+        }
+        try {
+          await privateReady;
+          const address = privateServer.address();
+          if (!address || typeof address === "string") {
+            throw new Error("Inspector server address is unavailable.");
+          }
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.setHeader("vary", "Origin");
+          response.end(
+            JSON.stringify({
+              origin: `http://127.0.0.1:${address.port}`,
+              token,
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_BOOTSTRAP_FAILED" }));
+        }
+      };
+      server.middlewares.use(bootstrapPath, bootstrapMiddleware);
+      server.httpServer?.once("close", () => privateServer.close());
       return () => {
-        prioritizeMiddleware(server, pluginsMiddleware, pluginsPath);
-        prioritizeMiddleware(server, graphMiddleware, graphPath);
-        prioritizeMiddleware(server, outputMiddleware, outputPath);
-        prioritizeMiddleware(server, reportMiddleware, reportPath);
+        prioritizeMiddleware(server, bootstrapMiddleware, bootstrapPath);
         const handle = (file: string) => {
           let application: ResolvedHonoxApplication;
           try {
@@ -951,6 +977,8 @@ function reasonLabel(
       return `external:${reason.id} changed`;
     case "derived-view":
       return `derived-view:${reason.id} changed`;
+    case "derived-query":
+      return `derived-query:${reason.id} changed`;
     case "global":
       return "global dependency changed";
     case "content":
@@ -990,6 +1018,8 @@ function dependencyLabel(dependency: OutputDependency): string {
       return `external:${dependency.id}`;
     case "derived-view":
       return `derived-view:${dependency.id}@${dependency.version}`;
+    case "derived-query":
+      return `derived-query:${dependency.id}@${dependency.fingerprint.slice(0, 8)}`;
     case "content-query":
       return `content-query:${dependency.properties.join(",")}${
         dependency.unknown ? "?" : ""
@@ -1100,20 +1130,120 @@ function prioritizeMiddleware(
   if (index > 0 && stack) stack.unshift(...stack.splice(index, 1));
 }
 
-function isLocalRequest(
-  host: string | undefined,
+type InspectorHandler = (
+  request: import("node:http").IncomingMessage,
+  response: import("node:http").ServerResponse,
+) => void | Promise<void>;
+
+function handleInspectorRequest(
+  request: import("node:http").IncomingMessage,
+  response: import("node:http").ServerResponse,
+  token: string,
+  handlers: Readonly<Record<string, InspectorHandler | undefined>>,
+): void {
+  const origin = inspectorOrigin(request);
+  if (origin === false) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  if (origin !== undefined) {
+    response.setHeader("access-control-allow-origin", origin);
+    response.setHeader("access-control-allow-headers", inspectorTokenHeader);
+    response.setHeader("access-control-allow-methods", "GET, OPTIONS");
+    response.setHeader("vary", "Origin");
+  }
+  response.setHeader("cache-control", "no-store");
+  response.setHeader("x-content-type-options", "nosniff");
+  if (request.method === "OPTIONS") {
+    response.statusCode = 204;
+    response.end();
+    return;
+  }
+  if (request.method !== "GET") {
+    response.statusCode = 405;
+    response.end();
+    return;
+  }
+  if (request.headers[inspectorTokenHeader] !== token) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  const handler = handlers[requestPathname(request.url)];
+  if (!handler) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+  void handler(request, response);
+}
+
+function isTrustedInspectorRequest(
+  request: import("node:http").IncomingMessage,
   server: ViteDevServer,
 ): boolean {
-  if (!host) return false;
-  const hostname = host.replace(/:\d+$/, "").toLowerCase();
+  if (request.method !== undefined && request.method !== "GET") return false;
+  if (!isLoopbackAddress(request.socket?.remoteAddress)) return false;
+  const listening = server.httpServer?.address();
   if (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname === "[::1]"
-  )
-    return true;
-  const address = server.httpServer?.address();
-  return typeof address === "object" && address?.address === hostname;
+    !listening ||
+    typeof listening === "string" ||
+    !isLoopbackAddress(listening.address)
+  ) {
+    return false;
+  }
+  if (!isLoopbackHost(request.headers.host)) return false;
+  for (const header of [
+    "forwarded",
+    "x-forwarded-for",
+    "x-forwarded-host",
+    "x-forwarded-proto",
+    "x-real-ip",
+  ]) {
+    if (request.headers[header] !== undefined) return false;
+  }
+  return inspectorOrigin(request) !== false;
+}
+
+function inspectorOrigin(
+  request: import("node:http").IncomingMessage,
+): string | undefined | false {
+  const value = request.headers.origin;
+  if (value === undefined) return undefined;
+  if (Array.isArray(value)) return false;
+  try {
+    return isLoopbackAddress(new URL(value).hostname.replace(/^\[|\]$/g, ""))
+      ? value
+      : false;
+  } catch {
+    return false;
+  }
+}
+
+function isLoopbackHost(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    return isLoopbackAddress(
+      new URL(`http://${value}`).hostname.replace(/^\[|\]$/g, ""),
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isLoopbackAddress(value: string | undefined): boolean {
+  if (!value) return false;
+  const normalized = value.toLowerCase().replace(/^::ffff:/, "");
+  return (
+    normalized === "::1" ||
+    normalized === "localhost" ||
+    /^127\.\d+\.\d+\.\d+$/.test(normalized)
+  );
+}
+
+function requestPathname(url: string | undefined): string {
+  return new URL(url ?? "/", "http://127.0.0.1").pathname;
 }
 
 function inspectorClientModule(): string {
@@ -1122,6 +1252,8 @@ const reportEndpoint = ${JSON.stringify(reportPath)};
 const outputEndpoint = ${JSON.stringify(outputPath)};
 const graphEndpoint = ${JSON.stringify(graphPath)};
 const pluginsEndpoint = ${JSON.stringify(pluginsPath)};
+const bootstrapEndpoint = ${JSON.stringify(bootstrapPath)};
+const tokenHeader = ${JSON.stringify(inspectorTokenHeader)};
 const panelId = "riebeckite-development-inspector";
 const outputLimit = ${listedOutputLimit};
 ${diagnosticMatchesPage.toString()}
@@ -1206,6 +1338,28 @@ export function initDevelopmentInspector() {
     parameters.set("limit", "100");
     return pluginsEndpoint + "?" + parameters.toString();
   };
+  let inspectorConnection;
+  const connectInspector = async () => {
+    if (!inspectorConnection) {
+      inspectorConnection = fetch(bootstrapEndpoint, { cache: "no-store" })
+        .then(async (response) => {
+          if (!response.ok) throw new Error("Inspector access is unavailable.");
+          return await response.json();
+        })
+        .catch((error) => {
+          inspectorConnection = undefined;
+          throw error;
+        });
+    }
+    return await inspectorConnection;
+  };
+  const inspectorFetch = async (url, options = {}) => {
+    const connection = await connectInspector();
+    return await fetch(connection.origin + url, {
+      ...options,
+      headers: { ...(options.headers ?? {}), [tokenHeader]: connection.token },
+    });
+  };
   const refresh = async () => {
     if (!panel?.isConnected) return;
     if (refreshing) {
@@ -1217,7 +1371,7 @@ export function initDevelopmentInspector() {
     controller = new AbortController();
     const current = ++generation;
     try {
-      const response = await fetch(reportEndpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
+      const response = await inspectorFetch(reportEndpoint + "?path=" + encodeURIComponent(location.pathname), { cache: "no-store", signal: controller.signal });
       if (!response.ok) throw new Error("Inspector report is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1247,7 +1401,7 @@ export function initDevelopmentInspector() {
     outputController?.abort();
     outputController = new AbortController();
     try {
-      const response = await fetch(outputUrl(), { cache: "no-store", signal: outputController.signal });
+      const response = await inspectorFetch(outputUrl(), { cache: "no-store", signal: outputController.signal });
       if (!response.ok) throw new Error("Inspector output is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1273,7 +1427,7 @@ export function initDevelopmentInspector() {
     graphController?.abort();
     graphController = new AbortController();
     try {
-      const response = await fetch(graphUrl(), { cache: "no-store", signal: graphController.signal });
+      const response = await inspectorFetch(graphUrl(), { cache: "no-store", signal: graphController.signal });
       if (!response.ok) throw new Error("Inspector graph is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;
@@ -1290,7 +1444,7 @@ export function initDevelopmentInspector() {
     pluginController?.abort();
     pluginController = new AbortController();
     try {
-      const response = await fetch(pluginsUrl(), { cache: "no-store", signal: pluginController.signal });
+      const response = await inspectorFetch(pluginsUrl(), { cache: "no-store", signal: pluginController.signal });
       if (!response.ok) throw new Error("Inspector plugin execution is unavailable.");
       const next = await response.json();
       if (current !== generation || !panel?.isConnected) return;

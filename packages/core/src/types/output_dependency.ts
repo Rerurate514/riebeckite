@@ -19,6 +19,11 @@ export type OutputDependency =
       readonly version: string;
     }
   | {
+      readonly type: "derived-query";
+      readonly id: string;
+      readonly fingerprint: string;
+    }
+  | {
       readonly type: "content-query";
       readonly properties: readonly string[];
       readonly unknown?: boolean;

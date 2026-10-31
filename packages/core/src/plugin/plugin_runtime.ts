@@ -108,6 +108,17 @@ export class PluginRuntime {
   constructor(private pipelineOptions: PipelineOptions = {}) {
     this.derivedViews = createDerivedViewRegistry({
       cache: () => this.derivedCache(),
+      queryEntries: (pool) => {
+        const manifest = this.derivedManifest;
+        if (!manifest) {
+          throw new Error(
+            "Content queries are available only during generated output planning.",
+          );
+        }
+        return pool === "routable"
+          ? manifest.publicEntries
+          : manifest.discoverableEntries;
+      },
       dependencyFingerprint: (dependency) => {
         if (dependency.type === "content") {
           const target = this.contentIndex.get(dependency.id.toLowerCase());
@@ -130,31 +141,6 @@ export class PluginRuntime {
           if (!entry || !dependency.property) return undefined;
           return fingerprintDerivedValue(
             contentQueryValue(entry, dependency.property),
-          );
-        }
-        if (dependency.type === "query") {
-          if (!dependency.properties?.length || !this.derivedManifest)
-            return undefined;
-          const properties = [...dependency.properties].sort();
-          return fingerprintDerivedValue(
-            this.derivedManifest.entries
-              .map((entry) => ({
-                slug: entry.slug,
-                values: properties.map((property) =>
-                  contentQueryValue(entry, property),
-                ),
-                routable: entry.publishing.routable,
-                discoverable: entry.publishing.discoverable,
-              }))
-              .toSorted((left, right) => left.slug.localeCompare(right.slug)),
-          );
-        }
-        if (dependency.type === "graph") {
-          if (!this.derivedManifest) return undefined;
-          return fingerprintDerivedValue(
-            [...this.derivedManifest.outgoingLinks.entries()]
-              .map(([slug, links]) => ({ slug, links }))
-              .toSorted((left, right) => left.slug.localeCompare(right.slug)),
           );
         }
         return undefined;
@@ -859,7 +845,7 @@ export class PluginRuntime {
     if (!this.isBuildTime) return createUnavailablePluginCache();
     return createPluginCache({
       pluginName: "riebeckite-derived-data",
-      cacheVersion: "2",
+      cacheVersion: "3",
       cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
       logger: this.observability().logger.child({
         plugin: "riebeckite-derived-data",

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  type ContentManifestEntry,
   createDerivedViewRegistry,
   defineDerivedView,
   derivedDependenciesToOutputDependencies,
@@ -172,7 +173,6 @@ test("derived views reuse only current tracked dependencies", async () => {
       context.track({
         type: "content",
         id: "post",
-        fingerprint: "legacy-fingerprint",
       });
       return { value: calls };
     },
@@ -198,7 +198,6 @@ test("derived view resolutions retain child dependencies across cache hits", asy
       context.track({
         type: "content",
         id: "note",
-        fingerprint: fingerprints.get("note"),
       });
       return value;
     },
@@ -299,23 +298,122 @@ test("a removed child view invalidates a cached parent resolution", async () => 
   assert.equal(parentCalls, 2);
 });
 
-test("derived dependency output mapping retains query, graph, and unknown safety", () => {
+test("derived dependency output mapping retains query and unknown safety", () => {
+  const query = {
+    filter: { tags: { any: ["release"] } },
+    sort: { field: "date", order: "desc" as const },
+  };
   assert.deepEqual(
     derivedDependenciesToOutputDependencies([
       { type: "frontmatter", id: "note", property: "date" },
-      { type: "query", id: "recent", properties: ["date", "tags"] },
+      { type: "query", id: "recent", query, fingerprint: "query-fingerprint" },
       { type: "query", id: "unqualified" },
-      { type: "graph", id: "related" },
       { type: "unknown", id: "custom" },
     ]),
     [
       { slug: "note", type: "content" },
-      { properties: ["date", "tags"], type: "content-query" },
+      {
+        type: "derived-query",
+        id: "recent",
+        fingerprint: "query-fingerprint",
+      },
       { type: "unknown" },
-      { properties: ["file.links"], type: "content-query" },
     ],
   );
 });
+
+test("content queries fingerprint their complete result and refuse dynamic predicates", async () => {
+  const cache = memoryCache();
+  let entries = [
+    manifestEntry("a", "Alpha", ["x"]),
+    manifestEntry("b", "Beta", ["y"]),
+  ];
+  let calls = 0;
+  const view = defineDerivedView<null, string>({
+    id: "test.query-cache",
+    version: "1",
+    compute(_input, context) {
+      calls++;
+      const result = context.query("selected", {
+        filter: { tags: { any: ["x"] } },
+      });
+      return result.map((entry) => entry.title).join(",");
+    },
+  });
+  const create = () => {
+    const registry = createDerivedViewRegistry({
+      cache: () => cache,
+      queryEntries: () => entries,
+    });
+    registry.register(view);
+    return registry;
+  };
+
+  assert.equal(await create().resolve(view, null), "Alpha");
+  assert.equal(await create().resolve(view, null), "Alpha");
+  assert.equal(calls, 1);
+
+  entries = [
+    manifestEntry("a", "Alpha", ["x"]),
+    manifestEntry("b", "Beta", ["x"]),
+  ];
+  assert.equal(await create().resolve(view, null), "Alpha,Beta");
+  assert.equal(await create().resolve(view, null), "Alpha,Beta");
+  assert.equal(calls, 2);
+
+  let dynamicCalls = 0;
+  const dynamicView = defineDerivedView<null, string>({
+    id: "test.query-cache",
+    version: "2",
+    compute(_input, context) {
+      dynamicCalls++;
+      return context
+        .query(
+          "selected",
+          { filter: { tags: { any: ["x"] } } },
+          { where: () => true },
+        )
+        .map((entry) => entry.title)
+        .join(",");
+    },
+  });
+  const dynamicRegistry = createDerivedViewRegistry({
+    cache: () => cache,
+    queryEntries: () => entries,
+  });
+  dynamicRegistry.register(dynamicView);
+  assert.equal(await dynamicRegistry.resolve(dynamicView, null), "Alpha,Beta");
+  assert.equal(await dynamicRegistry.resolve(dynamicView, null), "Alpha,Beta");
+  assert.equal(dynamicCalls, 2);
+
+  const unavailable = createDerivedViewRegistry();
+  unavailable.register(view);
+  await assert.rejects(unavailable.resolve(view, null), /outside a build plan/);
+});
+
+function manifestEntry(
+  slug: string,
+  title: string,
+  tags: readonly string[],
+): ContentManifestEntry {
+  return {
+    slug,
+    permalink: `/${slug}`,
+    publicLocation: { permalink: `/${slug}` },
+    title,
+    frontmatter: { title, tags: [...tags] },
+    publishing: {
+      status: "public",
+      routable: true,
+      discoverable: true,
+    },
+    html: `<p>${title}</p>`,
+    tags: [...tags],
+    links: [],
+    backlinks: [],
+    assets: [],
+  } as unknown as ContentManifestEntry;
+}
 
 test("derived views ignore corrupted cache values and do not persist non-JSON output", async () => {
   const cache = memoryCache();

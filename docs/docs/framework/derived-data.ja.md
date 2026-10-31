@@ -39,19 +39,27 @@ View 内から別の View を呼ぶ場合は `context.resolve()` を使います
 
 View は既存の PluginCache を Core 専用の名前空間で利用します。結果が JSON であり、すべての依存関係を追跡できる場合だけ保存します。キャッシュには View のバージョン、入力 fingerprint、結果、追跡済み依存関係の fingerprint を保存します。壊れた、または読めないエントリは Cache Miss です。
 
-入力以外の依存関係は、結果を返す前に追跡します。
+入力以外の依存関係は `context.track()` で追跡します。
 
 ```ts
-context.track({
-  type: "content",
-  id: "notes/release",
-  fingerprint: sourceFingerprint,
+context.track({ type: "content", id: "notes/release" });
+```
+
+fingerprint はすべて Core が計算するため、呼び出し側は指定しません。`content`・`external`・`file`・`frontmatter` は runtime snapshot と照合します。`planGeneratedOutputs` 中は `file`・`frontmatter`・`query` も、その出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全に Cache Miss になります。`content` の id は content index で解決し、元の Markdown を fingerprint 化するため、本文編集・リネーム・alias の付け替えで無効になります。frontmatter には `property` を指定します。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
+
+Content Query は既存の Content Query エンジンを使い、依存関係を自身で記録します。
+
+```ts
+const entries = context.query("releases", {
+  pool: "discoverable",
+  filter: { tags: { any: ["release"] } },
+  sort: { field: "date", order: "desc" },
 });
 ```
 
-`content` と `external` は runtime snapshot を利用できるときに照合します。`planGeneratedOutputs` 中は、`file`・`frontmatter`・条件を明示した `query`・`graph` も、その出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全に Cache Miss になります。`content` の id は content index で解決し、元の Markdown を fingerprint 化するため、本文編集・リネーム・alias の付け替えで無効になります。frontmatter には `property` を、query には結果集合を決めるすべてのプロパティを指定してください。ファイルの追加・削除・内容変更、unlisted や private を含む全 manifest エントリの query メンバー変化と公開状態の変化、graph edge の変化はキャッシュ値を無効にします。条件を明示しない query はキャッシュされません。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
+どのフィルタ・ソート項目が参加するかは定義から決まります。Core がクエリを実行し、結果集合全体を fingerprint 化するため、フィルタ項目、ソート項目、メンバーの追加・削除、公開状態の遷移、frontmatter、レンダリング後の本文、links、backlinks をプロパティ宣言なしで網羅します。`pool` の既定値は `discoverable` です。unlisted を含みうる出力では `routable` を指定します。結果集合を fingerprint 化できない場合、値はキャッシュされません。
 
-Content Query では、実際に読んだエントリだけでなく公開結果集合全体を fingerprint 化してください。追加・削除・フィルタやソートに使う Frontmatter・公開状態の変更も含めます。query が受け付けるプロパティ名は `content-query` 出力依存関係と同じで、`file.name`・`file.path`・`file.slug`・`file.folder`・`file.title`・`file.link`・`file.permalink`・`file.tags`・`file.size`・`file.ctime`・`file.mtime`・`file.links`・`file.backlinks`・`file.content`、または frontmatter のパスです。`file.content` はレンダリング後の本文を fingerprint 化するため、本文検索を含む述語も安全にキャッシュできます。ソートに使うプロパティも必ず宣言してください。Core は公開状態にかかわらず全 manifest エントリを fingerprint 化するため、routable な計画から見える unlisted エントリの追加・削除・編集も値を無効にします。JavaScript の状態、設定、または宣言していないプロパティに依存する述語は追跡できません。query を過少に宣言せず `unknown` を使ってください。
+動的な `where` 述語は定義から導出できません。指定した結果は `unknown` として追跡され、値は保存されず、その生成出力は常に再生成されます。フィルタはクエリ定義で表現してください。
 
 External 依存関係は既存の `resolveExternalDependencies` フックを使います。View は snapshot を ID で追跡し、現在の snapshot の fingerprint が一致する間だけ結果を再利用します。fingerprint の変化、snapshot の欠損、`unavailable` の解決、external ID の重複は Cache Miss になります。snapshot の値そのものは派生キャッシュへ保存しません。
 
@@ -75,11 +83,11 @@ async planGeneratedOutputs({ derived }) {
 }
 ```
 
-Core は、追跡された content・file・external・完全なプロパティ集合を持つ query・graph の依存関係を、既存の出力依存関係へ変換してから出力計画に保存します。完全なプロパティ集合を持たない query は `unknown` となり、安全側で再生成を要求します。View が追跡していない入力、たとえばシリアライズ結果を変えうる View 入力や site 設定がある場合は、明示的な `dependencies` を併用してください。
+Core は追跡された依存関係を出力計画へ保存する前に変換します。Query 依存は fingerprint 付きの `derived-query` 出力依存関係になるため、クエリ結果が変われば所有出力は再生成されます。fingerprint 化できない query は `unknown` になります。View が追跡していない入力、たとえばシリアライズ結果を変えうる View 入力や site 設定がある場合は、明示的な `dependencies` を併用してください。
 
 同梱の `hover-preview` プラグインは、共有プレビュー索引を Derived View で解決します。明示的な global 出力依存関係はそのまま残すため、増分無効化とシリアライズ結果は変わりません。
 
-開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。Inspector の Derived タブはこの読み取り専用データを、検索、状態フィルタ、依存関係と出力の詳細、未実行とキャッシュなし実行の区別付きで表示します。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。
+開発時の Inspector レポートには、登録済み View ごとのバージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスが含まれます。Inspector の Derived タブはこの読み取り専用データを、検索、状態フィルタ、依存関係と出力の詳細、未実行とキャッシュなし実行の区別付きで表示します。このレポートの読み取りで View を解決したり、BuildState を変更したりすることはありません。Inspector のデータ Endpoint は loopback のみで待ち受け、セッションごとのトークンを要求します。loopback 以外の bind、Host、Origin、接続元、転送ヘッダーを経由した要求は拒否します。Inspector のデータが本番成果物へ出力されることはありません。
 
 HonoX の SSG も同じ生成出力を消費します。View を使う出力は通常の生成出力と同じく full・incremental・no-change ビルドに参加し、出力ツリーは clean ビルドと一致します。テストではタイトル変更と公開状態の遷移に追従する派生 SSG 出力、および Inspector のブラウザテストで Derived タブを検証します。
 

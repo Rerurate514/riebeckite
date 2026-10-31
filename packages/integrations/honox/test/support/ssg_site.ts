@@ -300,7 +300,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
           '  id: "test.public-titles",',
           '  version: "1",',
           "  compute: (entries, context) => {",
-          '    context.track({ type: "query", id: "public-titles", properties: ["title"] });',
+          '    context.query("public-titles", {});',
           "    return entries.map((entry) => ({ slug: entry.slug, title: entry.frontmatter.title }));",
           "  },",
           "});",

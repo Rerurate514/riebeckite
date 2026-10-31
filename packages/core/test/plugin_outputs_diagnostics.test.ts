@@ -56,7 +56,7 @@ test("generated output plans resolve registered derived views", async () => {
     id: "official.planned-summary",
     version: "1",
     compute: (value, context) => {
-      context.track({ type: "file", id: "source.md", fingerprint: "1" });
+      context.track({ type: "file", id: "source.md" });
       return value.toUpperCase();
     },
   });
@@ -593,101 +593,38 @@ test("external dependencies propagate through view chains and survive restarts",
   }
 });
 
-test("body-dependent queries invalidate through file.content", async () => {
+test("content queries invalidate on filter, sort, membership, and frontmatter changes", async () => {
   const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-derived-body-query-"),
+    path.join(os.tmpdir(), "riebeckite-derived-query-result-"),
   );
   try {
-    let body = "Alpha body";
+    let noteTitle = "Alpha";
+    let noteBody = "Body";
+    let noteTags = "[release]";
+    let otherTitle = "Beta";
+    let otherTags = "[misc]";
     let computed = "first";
     const statuses: (string | undefined)[] = [];
     const view = defineDerivedView<null, string>({
-      id: "test.body-query",
+      id: "test.query-result",
       version: "1",
       compute(_input, context) {
-        context.track({
-          type: "query",
-          id: "contains-footnote",
-          properties: ["file.content"],
+        const entries = context.query("releases", {
+          filter: { tags: { any: ["release"] } },
+          sort: { field: "title", order: "asc" },
         });
-        return computed;
+        return `${computed}:${entries.map((entry) => entry.title).join("|")}`;
       },
     });
     const plugin = definePlugin({
-      name: "body-query",
+      name: "query-result",
       derivedViews: [view],
       async planGeneratedOutputs({ derived }) {
         const resolved = await derived.resolveWithDependencies(view, null);
-        statuses.push(derived.inspect()[0]?.cache);
-        return [
-          {
-            path: "body.txt",
-            content: resolved.value,
-            derivedDependencies: resolved.dependencies,
-          },
-        ];
-      },
-    });
-    const build = async () => {
-      const manager = new ContentManager(
-        memorySource({
-          "note.md": `---\ntitle: Note\npublish: true\n---\n${body}\n`,
-        }),
-        [],
-        {
-          config: resolveConfig({
-            site: { title: "Test" },
-            content: { filters: { publishStrategy: "explicit" } },
-            cache: { enabled: true, directory: path.join(directory, "cache") },
-          }),
-          plugins: [plugin],
-        },
-      );
-      const manifest = await manager.getManifest();
-      return manifest.generatedOutputs[0];
-    };
-
-    assert.equal((await build())?.content, "first");
-    computed = "second";
-    assert.equal((await build())?.content, "first");
-    body = "Alpha body changed";
-    computed = "third";
-    assert.equal((await build())?.content, "third");
-    assert.equal((await build())?.content, "third");
-    assert.deepEqual(statuses, ["miss", "hit", "miss", "hit"]);
-  } finally {
-    await fs.rm(directory, { recursive: true, force: true });
-  }
-});
-
-test("query fingerprints cover declared filter and sort properties only", async () => {
-  const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-derived-query-properties-"),
-  );
-  try {
-    let tag = "alpha";
-    let otherTitle = "Other";
-    let body = "Stable body";
-    let computed = "first";
-    const statuses: (string | undefined)[] = [];
-    const view = defineDerivedView<null, string>({
-      id: "test.query-properties",
-      version: "1",
-      compute(_input, context) {
-        context.track({
-          type: "query",
-          id: "tagged-by-title",
-          properties: ["file.tags", "title"],
-        });
-        return computed;
-      },
-    });
-    const plugin = definePlugin({
-      name: "query-properties",
-      derivedViews: [view],
-      async planGeneratedOutputs({ derived }) {
-        const resolved = await derived.resolveWithDependencies(view, null);
-        statuses.push(derived.inspect()[0]?.cache);
+        statuses.push(
+          derived.inspect().find((execution) => execution.id === view.id)
+            ?.cache,
+        );
         return [
           {
             path: "query.txt",
@@ -697,11 +634,104 @@ test("query fingerprints cover declared filter and sort properties only", async 
         ];
       },
     });
+    const build = async (cacheDirectory = path.join(directory, "cache")) => {
+      const manager = new ContentManager(
+        memorySource({
+          "note.md": `---\ntitle: ${noteTitle}\ntags: ${noteTags}\npublish: true\n---\n${noteBody}\n`,
+          "other.md": `---\ntitle: ${otherTitle}\ntags: ${otherTags}\npublish: true\n---\n`,
+        }),
+        [],
+        {
+          config: resolveConfig({
+            site: { title: "Test" },
+            content: { filters: { publishStrategy: "explicit" } },
+            cache: { enabled: true, directory: cacheDirectory },
+          }),
+          plugins: [plugin],
+        },
+      );
+      const manifest = await manager.getManifest();
+      return String(manifest.generatedOutputs[0]?.content);
+    };
+
+    assert.equal(await build(), "first:Alpha");
+    computed = "second";
+    assert.equal(await build(), "first:Alpha");
+
+    otherTitle = "Gamma";
+    computed = "third";
+    assert.equal(await build(), "first:Alpha");
+
+    noteBody = "Changed body";
+    assert.equal(await build(), "third:Alpha");
+    noteTitle = "Aardvark";
+    assert.equal(await build(), "third:Aardvark");
+
+    otherTags = "[release]";
+    assert.equal(await build(), "third:Aardvark|Gamma");
+    noteTags = "[misc]";
+    assert.equal(await build(), "third:Gamma");
+
+    assert.equal(
+      await build(path.join(directory, "clean-cache")),
+      "third:Gamma",
+    );
+    assert.deepEqual(statuses, [
+      "miss",
+      "hit",
+      "hit",
+      "miss",
+      "miss",
+      "miss",
+      "miss",
+      "miss",
+    ]);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("dynamic query predicates are never persisted", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-dynamic-query-"),
+  );
+  try {
+    let computed = "first";
+    const statuses: (string | undefined)[] = [];
+    const view = defineDerivedView<null, string>({
+      id: "test.dynamic-query",
+      version: "1",
+      compute(_input, context) {
+        const entries = context.query(
+          "dynamic",
+          { filter: { tags: { any: ["release"] } } },
+          { where: (entry) => entry.title.length > 0 },
+        );
+        return `${computed}:${entries.length}`;
+      },
+    });
+    const plugin = definePlugin({
+      name: "dynamic-query",
+      derivedViews: [view],
+      async planGeneratedOutputs({ derived }) {
+        const resolved = await derived.resolveWithDependencies(view, null);
+        statuses.push(
+          derived.inspect().find((execution) => execution.id === view.id)
+            ?.cache,
+        );
+        return [
+          {
+            path: "dynamic.txt",
+            content: resolved.value,
+            derivedDependencies: resolved.dependencies,
+          },
+        ];
+      },
+    });
     const build = async () => {
       const manager = new ContentManager(
         memorySource({
-          "note.md": `---\ntitle: Note\ntags: [${tag}]\npublish: true\n---\n${body}\n`,
-          "other.md": `---\ntitle: ${otherTitle}\npublish: true\n---\nStable\n`,
+          "note.md": "---\ntitle: Note\ntags: [release]\npublish: true\n---\n",
         }),
         [],
         {
@@ -717,17 +747,14 @@ test("query fingerprints cover declared filter and sort properties only", async 
       return manifest.generatedOutputs[0];
     };
 
-    assert.equal((await build())?.content, "first");
-    otherTitle = "Renamed";
+    assert.equal((await build())?.content, "first:1");
     computed = "second";
-    assert.equal((await build())?.content, "second");
-    body = "Changed body";
+    assert.equal((await build())?.content, "second:1");
     computed = "third";
-    assert.equal((await build())?.content, "second");
-    tag = "beta";
-    computed = "fourth";
-    assert.equal((await build())?.content, "fourth");
-    assert.deepEqual(statuses, ["miss", "miss", "hit", "miss"]);
+    const third = await build();
+    assert.equal(third?.content, "third:1");
+    assert.deepEqual(third?.dependencies, [{ type: "unknown" }]);
+    assert.deepEqual(statuses, ["miss", "miss", "miss"]);
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }
@@ -816,11 +843,7 @@ test("derived dependencies are validated against the current build snapshot", as
       id: "test.query-dependency",
       version: "1",
       compute(_input, context) {
-        context.track({
-          type: "query",
-          id: "all-titles",
-          properties: ["title"],
-        });
+        context.query("all-titles", {});
         return computed;
       },
     });
@@ -884,15 +907,18 @@ test("derived dependencies are validated against the current build snapshot", as
       id: "test.graph-dependency",
       version: "1",
       compute(_input, context) {
-        context.track({ type: "graph", id: "all" });
-        return computed;
+        const entries = context.query("linked", {});
+        return `${computed}:${entries.reduce(
+          (count, entry) => count + entry.links.length,
+          0,
+        )}`;
       },
     });
     assert.equal(
       await build(graph, "graph-plan", {
         "note.md": "---\ntitle: One\npublish: true\n---\nNo links.\n",
       }),
-      "first",
+      "first:0",
     );
     computed = "second";
     assert.equal(
@@ -900,7 +926,7 @@ test("derived dependencies are validated against the current build snapshot", as
         "note.md": "---\ntitle: One\npublish: true\n---\n[[other]]\n",
         "other.md": "---\ntitle: Other\npublish: true\n---\n",
       }),
-      "second",
+      "second:1",
     );
     computed = "third";
     assert.equal(
@@ -908,7 +934,7 @@ test("derived dependencies are validated against the current build snapshot", as
         "note.md": "---\ntitle: One\npublish: true\n---\n[[other]]\n",
         "other.md": "---\ntitle: Other\npublish: true\n---\n",
       }),
-      "second",
+      "second:1",
     );
     assert.deepEqual(cacheStatuses.splice(0), ["miss", "miss", "hit"]);
 
@@ -1112,11 +1138,7 @@ test("query fingerprints cover unlisted entries that plans may resolve", async (
         id: "test.query-scope",
         version: "1",
         compute(_input, context) {
-          context.track({
-            type: "query",
-            id: "titles",
-            properties: ["title"],
-          });
+          context.query("titles", { pool: "routable" });
           return computed;
         },
       });

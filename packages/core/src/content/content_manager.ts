@@ -762,8 +762,8 @@ export class ContentManager {
 
   async dispose(): Promise<void> {
     this.entryReader.clearReadCache();
-    if (!this.contentIndex) return;
-    await this.pluginRuntime.dispose(this.contentIndex);
+    this.pipeline?.dispose();
+    if (this.contentIndex) await this.pluginRuntime.dispose(this.contentIndex);
   }
 
   async getContentLocations(): Promise<

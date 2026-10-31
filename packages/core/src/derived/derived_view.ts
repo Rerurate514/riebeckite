@@ -119,7 +119,10 @@ export function createDerivedViewRegistry(
       );
     }
     const parsedInput = view.input ? view.input.parse(input) : input;
-    const inputFingerprint = fingerprint(parsedInput);
+    const inputFingerprint = fingerprint(
+      parsedInput,
+      `Derived View "${view.id}" input`,
+    );
     const key = `${view.id}:${inputFingerprint}`;
     let inFlight = pending.get(key);
     if (!inFlight) {
@@ -381,11 +384,13 @@ function isCacheableDependency(
   );
 }
 
-function fingerprint(value: unknown): string {
-  return crypto
-    .createHash("sha256")
-    .update(stableStringify(value as JsonValue))
-    .digest("hex");
+function fingerprint(value: unknown, label: string): string {
+  const hash = crypto.createHash("sha256");
+  if (value === undefined) return hash.update("undefined").digest("hex");
+  if (!isJsonValue(value)) {
+    throw new TypeError(`${label} must be JSON-serializable.`);
+  }
+  return hash.update(stableStringify(value)).digest("hex");
 }
 
 function isJsonValue(value: unknown): value is JsonValue {

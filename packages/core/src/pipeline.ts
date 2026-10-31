@@ -323,6 +323,10 @@ export class Pipeline {
     );
   }
 
+  dispose(): void {
+    this.derivedViews.dispose();
+  }
+
   private async executeWithEmbedState(
     markDownContent: string,
     context: MarkdownExecutionContext,

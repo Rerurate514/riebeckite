@@ -52,6 +52,21 @@ test("derived views resolve typed references and deduplicate concurrent work", a
   assert.equal(calls, 1);
 });
 
+test("derived views accept an omitted input and reject unsupported input", async () => {
+  const registry = createDerivedViewRegistry();
+  const noInput = defineDerivedView<undefined, string>({
+    id: "test.no-input",
+    version: "1",
+    compute: () => "ready",
+  });
+  registry.register(noInput);
+  assert.equal(await registry.resolve(noInput, undefined), "ready");
+  await assert.rejects(
+    registry.resolve(noInput, new Date() as unknown as undefined),
+    /must be JSON-serializable/,
+  );
+});
+
 test("derived views reject duplicate registration and cycles", async () => {
   const registry = createDerivedViewRegistry();
   const first = defineDerivedView<number, number>({

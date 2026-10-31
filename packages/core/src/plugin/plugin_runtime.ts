@@ -502,6 +502,7 @@ export class PluginRuntime {
     if (this.disposed) return;
 
     this.disposed = true;
+    await this.buildLifecycle?.catch(() => undefined);
     if (this.buildLifecycle === null) {
       this.derivedViews.dispose();
       return;

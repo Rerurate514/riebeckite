@@ -1,3 +1,4 @@
+import type { DerivedView } from "../derived/derived_view.js";
 import { resolvePluginDependencies } from "../plugin/plugin_dependency.js";
 import type { PluginOptionsValidator } from "./config_validation.js";
 import type {
@@ -56,6 +57,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
    */
   optional?: string[];
   cacheVersion?: string;
+  derivedViews?: readonly DerivedView<unknown, unknown>[];
   contentFileMetadata?: boolean;
   developmentRouteManifest?: true;
   /**

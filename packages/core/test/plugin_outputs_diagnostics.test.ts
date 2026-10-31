@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { assertGoldenJson } from "@riebeckite/test";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
+import { defineDerivedView } from "../src/derived/derived_view.js";
 import { definePlugin } from "../src/types/plugin.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
@@ -19,6 +20,28 @@ function memorySource(files: Record<string, string>): ContentSource {
 const oneNote = {
   "note.md": "---\ntitle: Note\npublish: true\n---\n\n# Note\n",
 };
+
+test("plugins resolve registered derived views through the runtime context", async () => {
+  const summary = defineDerivedView<string, string>({
+    id: "official.summary",
+    version: "1",
+    compute: (value) => value.toUpperCase(),
+  });
+  let result = "";
+  const plugin = definePlugin({
+    name: "derived-example",
+    derivedViews: [summary],
+    async setup(context) {
+      result = await context.derived.resolve(summary, "ready");
+    },
+  });
+  const manager = new ContentManager(memorySource(oneNote), [], {
+    plugins: [plugin],
+  });
+
+  await manager.getManifest();
+  assert.equal(result, "READY");
+});
 
 test("manifest collects plugin diagnostics with owner attribution", async () => {
   const checker = definePlugin({

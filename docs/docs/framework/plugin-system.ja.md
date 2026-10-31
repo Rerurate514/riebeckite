@@ -26,6 +26,7 @@ sidebar:
 - [プラグインの依存関係とライフサイクル](./plugin-system/lifecycle.ja.md)
 - [コンテンツ処理のパイプラインと拡張ポイント](./plugin-system/pipeline.ja.md)
 - [ダイアグラムプラグインの基盤](./diagram-infrastructure.ja.md)
+- [派生データ](./derived-data.ja.md)
 - [プラグインの配布と検証](./plugin-system/distribution.ja.md)
 
 ## 1. プラグインが担う機能

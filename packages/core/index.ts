@@ -158,6 +158,20 @@ export {
 } from "./src/content/publishing.js";
 export { readOnlyContentGraph } from "./src/content/read_only_content_graph.js";
 export type {
+  DerivedDependency,
+  DerivedSchema,
+  DerivedView,
+  DerivedViewContext,
+  DerivedViewOptions,
+  DerivedViewRegistry,
+  DerivedViewRegistryOptions,
+  DerivedViewStatus,
+} from "./src/derived/derived_view.js";
+export {
+  createDerivedViewRegistry,
+  defineDerivedView,
+} from "./src/derived/derived_view.js";
+export type {
   BuildTraceRecorder,
   LogContext,
   Logger,

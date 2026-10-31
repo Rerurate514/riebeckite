@@ -1,4 +1,5 @@
 import type { ContentSource } from "../content/content_source.js";
+import type { DerivedViewRegistry } from "../derived/derived_view.js";
 import type { Logger, Tracer } from "../observability.js";
 import type { PluginCache } from "../plugin/plugin_cache.js";
 import type {
@@ -19,6 +20,7 @@ export type PluginContext = {
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  derived?: DerivedViewRegistry;
   /**
    * Registers a file to be written to the build output directory. Available
    * during build lifecycle hooks; the integration layer forwards each entry to
@@ -31,7 +33,9 @@ export type PluginContext = {
   externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
 };
 
-export type PluginLifecycleContext = PluginContext;
+export type PluginLifecycleContext = PluginContext & {
+  derived: DerivedViewRegistry;
+};
 
 export type PluginContentContext = PluginContext & {
   slug: string;

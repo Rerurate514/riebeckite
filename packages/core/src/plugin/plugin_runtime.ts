@@ -1,6 +1,11 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
 import { getContentSourceEntry } from "../content/content_source.js";
+import { fingerprintExternalValue } from "../content/external_fingerprint.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
+import {
+  createDerivedViewRegistry,
+  type DerivedViewRegistry,
+} from "../derived/derived_view.js";
 import type { Observability } from "../observability.js";
 import { noopObservability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
@@ -74,6 +79,8 @@ export class PluginRuntime {
   private disposed = false;
   private diagnostics: PluginContext["diagnostics"] = [];
   private pluginCaches = new Map<string, PluginCache>();
+  private readonly derivedViews: DerivedViewRegistry;
+  private contentIndex = new Map<string, string>();
   private generatedOutputs = new GeneratedOutputRegistry();
   private isBuildTime = false;
   private resolvedPlugins: RiebeckitePlugin[] | null = null;
@@ -86,6 +93,21 @@ export class PluginRuntime {
     null;
 
   constructor(private pipelineOptions: PipelineOptions = {}) {
+    this.derivedViews = createDerivedViewRegistry({
+      cache: () => this.derivedCache(),
+      dependencyFingerprint: (dependency) => {
+        if (dependency.type === "content") {
+          const content = this.contentIndex.get(dependency.id);
+          return content === undefined
+            ? undefined
+            : fingerprintExternalValue(content);
+        }
+        if (dependency.type === "external") {
+          return this.externalDependencies.get(dependency.id)?.fingerprint;
+        }
+        return undefined;
+      },
+    });
     this.pageResolver = new PluginPageResolver({
       plugins: () => this.plugins(),
       createContext: (contentIndex) => this.createContext(contentIndex),
@@ -110,6 +132,10 @@ export class PluginRuntime {
 
   getDiagnostics(): Diagnostic[] {
     return this.diagnostics;
+  }
+
+  getDerivedViews(): DerivedViewRegistry {
+    return this.derivedViews;
   }
 
   setPageMarkdownRenderer(
@@ -472,13 +498,21 @@ export class PluginRuntime {
   }
 
   async dispose(contentIndex: Map<string, string>) {
-    if (this.disposed || this.buildLifecycle === null) return;
+    if (this.disposed) return;
 
     this.disposed = true;
+    if (this.buildLifecycle === null) {
+      this.derivedViews.dispose();
+      return;
+    }
     const context = this.createContext(contentIndex);
-    await runDispose(this.plugins(), (plugin) =>
-      this.createPluginContext(plugin, context),
-    );
+    try {
+      await runDispose(this.plugins(), (plugin) =>
+        this.createPluginContext(plugin, context),
+      );
+    } finally {
+      this.derivedViews.dispose();
+    }
   }
 
   collectAssets() {
@@ -665,6 +699,7 @@ export class PluginRuntime {
   }
 
   private createContext(contentIndex: Map<string, string>): PluginContextBase {
+    this.contentIndex = contentIndex;
     return {
       config: this.pipelineOptions.config,
       isDevelopment: this.pipelineOptions.isDevelopment,
@@ -683,6 +718,7 @@ export class PluginRuntime {
     return {
       ...context,
       cache: this.cacheFor(plugin),
+      derived: this.derivedViews,
       output: this.generatedOutputSinkFor(plugin),
       logger: observability.logger.child({ plugin: plugin.name }),
       tracer: observability.tracer,
@@ -719,6 +755,19 @@ export class PluginRuntime {
     return cache;
   }
 
+  private derivedCache(): PluginCache {
+    if (!this.isBuildTime) return createUnavailablePluginCache();
+    return createPluginCache({
+      pluginName: "riebeckite-derived-data",
+      cacheVersion: "1",
+      cacheDirectory: resolvePluginCacheDirectory(this.pipelineOptions.config),
+      logger: this.observability().logger.child({
+        plugin: "riebeckite-derived-data",
+      }),
+      tracer: this.observability().tracer,
+    });
+  }
+
   private async runHook<TContext extends PluginContextBase>(
     hookName: string,
     hook: (
@@ -745,9 +794,31 @@ export class PluginRuntime {
     if (this.resolvedPlugins === null) {
       const resolved = resolvePlugins(this.pipelineOptions.plugins);
       collectPageTypeOwners(resolved);
+      assertUniqueDerivedViewIds(resolved);
+      for (const plugin of resolved) {
+        for (const view of plugin.derivedViews ?? [])
+          this.derivedViews.register(view);
+      }
       this.resolvedPlugins = resolved;
     }
     return this.resolvedPlugins;
+  }
+}
+
+function assertUniqueDerivedViewIds(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  const owners = new Map<string, string>();
+  for (const plugin of plugins) {
+    for (const view of plugin.derivedViews ?? []) {
+      const previous = owners.get(view.id);
+      if (previous) {
+        throw new Error(
+          `Derived View "${view.id}" is declared by both "${previous}" and "${plugin.name}".`,
+        );
+      }
+      owners.set(view.id, plugin.name);
+    }
   }
 }
 

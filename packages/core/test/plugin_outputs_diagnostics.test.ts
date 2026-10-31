@@ -1056,3 +1056,85 @@ test("query fingerprints cover unlisted entries that plans may resolve", async (
     await fs.rm(directory, { recursive: true, force: true });
   }
 });
+
+test("views can feed multiple outputs and combine into one output", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-derived-output-fan-"),
+  );
+  try {
+    const contentView = defineDerivedView<null, string>({
+      id: "test.fan-content",
+      version: "1",
+      compute(_input, context) {
+        context.track({ type: "content", id: "note" });
+        return "content";
+      },
+    });
+    const fileView = defineDerivedView<null, string>({
+      id: "test.fan-file",
+      version: "1",
+      compute(_input, context) {
+        context.track({ type: "file", id: "note.md" });
+        return "file";
+      },
+    });
+    const plugin = definePlugin({
+      name: "fan-out-plan",
+      derivedViews: [contentView, fileView],
+      async planGeneratedOutputs({ derived }) {
+        const content = await derived.resolveWithDependencies(
+          contentView,
+          null,
+        );
+        const file = await derived.resolveWithDependencies(fileView, null);
+        return [
+          {
+            path: "a.txt",
+            content: content.value,
+            derivedDependencies: content.dependencies,
+            derivedViewIds: content.viewIds,
+          },
+          {
+            path: "a-copy.txt",
+            content: content.value,
+            derivedDependencies: content.dependencies,
+            derivedViewIds: content.viewIds,
+          },
+          {
+            path: "combined.txt",
+            content: `${content.value}:${file.value}`,
+            derivedDependencies: [
+              ...content.dependencies,
+              ...file.dependencies,
+            ],
+            derivedViewIds: [...content.viewIds, ...file.viewIds],
+          },
+        ];
+      },
+    });
+    const manager = new ContentManager(memorySource(oneNote), [], {
+      config: contentTestConfig(directory),
+      plugins: [plugin],
+    });
+    const manifest = await manager.build({ incremental: true });
+    await manager.dispose();
+    const outputs = new Map(
+      manifest.generatedOutputs.map((output) => [output.path, output]),
+    );
+    assert.equal(outputs.get("a.txt")?.content, "content");
+    assert.equal(outputs.get("a-copy.txt")?.content, "content");
+    assert.equal(outputs.get("combined.txt")?.content, "content:file");
+    assert.deepEqual(outputs.get("a.txt")?.dependencies, [
+      { type: "content", slug: "note" },
+      { type: "derived-view", id: "test.fan-content", version: "1" },
+    ]);
+    assert.deepEqual(outputs.get("combined.txt")?.dependencies, [
+      { type: "content", slug: "note" },
+      { type: "file", path: "note.md" },
+      { type: "derived-view", id: "test.fan-content", version: "1" },
+      { type: "derived-view", id: "test.fan-file", version: "1" },
+    ]);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});

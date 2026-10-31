@@ -73,6 +73,9 @@ export type Command =
       list: boolean;
       path?: string;
       json: boolean;
+      source?: string;
+      output?: string;
+      compare?: string;
     }
   | {
       name: "create-plugin";
@@ -623,18 +626,46 @@ function parseInspectCommand(options: readonly string[]): Command {
   }
 
   if (options[0] === "provenance") {
-    if (options.length === 1) {
-      return {
-        name: "inspect",
-        target: "provenance",
-        list: false,
-        json: false,
-      };
+    let json = false;
+    let source: string | undefined;
+    let output: string | undefined;
+    let compare: string | undefined;
+    for (let index = 1; index < options.length; index += 1) {
+      const option = options[index];
+      if (option === "--json" && !json) {
+        json = true;
+        continue;
+      }
+      if (
+        option === "--source" ||
+        option === "--output" ||
+        option === "--compare"
+      ) {
+        const value = options[index + 1];
+        if (!value || value.startsWith("-")) {
+          throw new CliUsageError(`${option} requires a value.`);
+        }
+        if (option === "--source" && source === undefined) source = value;
+        else if (option === "--output" && output === undefined) output = value;
+        else if (option === "--compare" && compare === undefined)
+          compare = value;
+        else throw new CliUsageError(`Duplicate provenance option: ${option}.`);
+        index += 1;
+        continue;
+      }
+      throw new CliUsageError(
+        "Usage: riebeckite inspect provenance [--json] [--source <path>] [--output <path>] [--compare <build-id>]",
+      );
     }
-    if (options.length === 2 && options[1] === "--json") {
-      return { name: "inspect", target: "provenance", list: false, json: true };
-    }
-    throw new CliUsageError("Usage: riebeckite inspect provenance [--json]");
+    return {
+      name: "inspect",
+      target: "provenance",
+      list: false,
+      json,
+      ...(source === undefined ? {} : { source }),
+      ...(output === undefined ? {} : { output }),
+      ...(compare === undefined ? {} : { compare }),
+    };
   }
 
   const target = options[0] ?? "";
@@ -644,7 +675,7 @@ function parseInspectCommand(options: readonly string[]): Command {
     );
   }
   throw new CliUsageError(
-    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance [--json]]",
+    "Usage: riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance [--json] [--source <path>] [--output <path>] [--compare <build-id>]]",
   );
 }
 

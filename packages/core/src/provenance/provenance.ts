@@ -5,11 +5,14 @@ import type {
   OutputChangeSet,
   OutputDescriptor,
 } from "../content/output_dependency.js";
-import type { DerivedViewInspection } from "../plugin/plugin_runtime.js";
+import type {
+  DerivedViewInspection,
+  PluginHookExecution,
+} from "../plugin/plugin_runtime.js";
 import type { ContentManifest } from "../types/content_manifest.js";
-import type { ResolvedPluginMetadata } from "../types/plugin.js";
 
 export const PROVENANCE_VERSION = 1;
+export const MAX_PROVENANCE_HISTORY = 10;
 
 export type ProvenanceSource = {
   readonly id: string;
@@ -23,6 +26,7 @@ export type ProvenanceSource = {
     | "scheduled"
     | "unlisted"
     | "unknown";
+  readonly evidence: "deterministic";
 };
 
 export type ProvenanceTransform = {
@@ -32,6 +36,10 @@ export type ProvenanceTransform = {
   readonly inputs: readonly string[];
   readonly outputs: readonly string[];
   readonly status: "executed" | "reused" | "not-executed" | "opaque" | "failed";
+  readonly evidence: "measured" | "deterministic" | "unobservable";
+  readonly sequence?: number;
+  readonly hook?: string;
+  readonly effect?: "opaque";
   readonly durationMs?: number;
 };
 
@@ -42,6 +50,7 @@ export type ProvenanceOutput = {
   readonly producer: string;
   readonly dependencies: readonly OutputDescriptor["dependencies"][number][];
   readonly status: "generated" | "reused" | "removed";
+  readonly evidence: "deterministic";
   readonly recomputeReason?: OutputChangeReason;
 };
 
@@ -53,11 +62,25 @@ export type BuildProvenance = {
   readonly outputs: readonly ProvenanceOutput[];
 };
 
+export type BuildProvenanceComparison = {
+  readonly from: string;
+  readonly to: string;
+  readonly sources: ProvenanceDelta;
+  readonly transforms: ProvenanceDelta;
+  readonly outputs: ProvenanceDelta;
+};
+
+export type ProvenanceDelta = {
+  readonly added: readonly string[];
+  readonly removed: readonly string[];
+  readonly changed: readonly string[];
+};
+
 export function createBuildProvenance(input: {
   readonly plan: ContentBuildPlan;
   readonly manifest: ContentManifest;
   readonly outputChanges: OutputChangeSet;
-  readonly plugins: readonly ResolvedPluginMetadata[];
+  readonly pluginHooks: readonly PluginHookExecution[];
   readonly derivedViews: readonly DerivedViewInspection[];
   readonly processed: ReadonlyMap<string, number>;
 }): BuildProvenance {
@@ -76,6 +99,7 @@ export function createBuildProvenance(input: {
         fingerprint,
         type: entry.path.endsWith(".md") ? "markdown" : "file",
         visibility: visibilityBySlug.get(slug) ?? "unknown",
+        evidence: "deterministic",
       } satisfies ProvenanceSource;
     })
     .sort(byId);
@@ -97,16 +121,22 @@ export function createBuildProvenance(input: {
                 ? "not-executed"
                 : "reused"
               : "executed",
+          evidence: durationMs === undefined ? "deterministic" : "measured",
           ...(durationMs === undefined ? {} : { durationMs }),
         } satisfies ProvenanceTransform;
       }),
-    ...input.plugins.map((plugin) => ({
-      id: `transform:plugin:${plugin.name}`,
+    ...input.pluginHooks.map((hook) => ({
+      id: `transform:plugin:${hook.sequence}`,
       type: "plugin-hook" as const,
-      producer: `plugin:${plugin.name}`,
+      producer: `plugin:${hook.plugin}`,
       inputs: [],
       outputs: [],
-      status: "opaque" as const,
+      status: hook.status,
+      evidence: "measured" as const,
+      sequence: hook.sequence,
+      hook: hook.hook,
+      effect: "opaque" as const,
+      durationMs: hook.durationMs,
     })),
     ...input.derivedViews.map((view) => derivedTransform(view)),
   ].sort(byId);
@@ -141,6 +171,29 @@ export function createBuildProvenance(input: {
   };
 }
 
+export function compareBuildProvenance(
+  from: BuildProvenance,
+  to: BuildProvenance,
+): BuildProvenanceComparison {
+  return {
+    from: from.buildId,
+    to: to.buildId,
+    sources: compareRecords(from.sources, to.sources),
+    transforms: compareRecords(from.transforms, to.transforms),
+    outputs: compareRecords(from.outputs, to.outputs),
+  };
+}
+
+export function appendProvenanceHistory(
+  previous: readonly BuildProvenance[],
+  provenance: BuildProvenance,
+): readonly BuildProvenance[] {
+  return [
+    ...previous.filter((entry) => entry.buildId !== provenance.buildId),
+    provenance,
+  ].slice(-MAX_PROVENANCE_HISTORY);
+}
+
 function derivedTransform(view: DerivedViewInspection): ProvenanceTransform {
   const status: ProvenanceTransform["status"] =
     view.error === "failed"
@@ -159,6 +212,7 @@ function derivedTransform(view: DerivedViewInspection): ProvenanceTransform {
     ),
     outputs: view.outputPaths.map((path) => `output:${path}`),
     status,
+    evidence: "measured",
     durationMs: view.durationMs,
   };
 }
@@ -175,6 +229,7 @@ function outputRecord(
     producer: output.producer,
     dependencies: output.dependencies,
     status,
+    evidence: "deterministic",
     ...(recomputeReason === undefined ? {} : { recomputeReason }),
   };
 }
@@ -188,4 +243,25 @@ function hash(value: unknown): string {
     .createHash("sha256")
     .update(JSON.stringify(value))
     .digest("hex");
+}
+
+function compareRecords<T extends { id: string }>(
+  from: readonly T[],
+  to: readonly T[],
+): ProvenanceDelta {
+  const previous = new Map(from.map((entry) => [entry.id, entry]));
+  const current = new Map(to.map((entry) => [entry.id, entry]));
+  return {
+    added: [...current.keys()].filter((id) => !previous.has(id)).sort(),
+    removed: [...previous.keys()].filter((id) => !current.has(id)).sort(),
+    changed: [...current.entries()]
+      .filter(([id, entry]) => {
+        const prior = previous.get(id);
+        return (
+          prior !== undefined && JSON.stringify(prior) !== JSON.stringify(entry)
+        );
+      })
+      .map(([id]) => id)
+      .sort(),
+  };
 }

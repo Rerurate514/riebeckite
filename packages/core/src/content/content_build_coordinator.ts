@@ -1,5 +1,8 @@
 import type { Observability } from "../observability.js";
-import type { BuildProvenance } from "../provenance/provenance.js";
+import {
+  appendProvenanceHistory,
+  type BuildProvenance,
+} from "../provenance/provenance.js";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -148,6 +151,17 @@ export class ContentBuildCoordinator {
       ),
       manifestHookCache,
       ...(provenance === undefined ? {} : { provenance }),
+      ...(provenance === undefined
+        ? {}
+        : {
+            provenanceHistory: appendProvenanceHistory(
+              plan.previousState?.provenanceHistory ??
+                (plan.previousState?.provenance === undefined
+                  ? []
+                  : [plan.previousState.provenance]),
+              provenance,
+            ),
+          }),
       ...(nextChangeAt
         ? {
             nextPublishingChangeAt: nextChangeAt,

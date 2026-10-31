@@ -583,13 +583,13 @@ export class ContentManager {
         this.manifest = manifest;
         this.cacheManifestEntries = cacheManifestEntries;
         this.provenance = undefined;
-        if (this.pipelineOptions.config?.provenance.enabled !== false) {
+        if (this.pipelineOptions.config?.provenance?.enabled !== false) {
           try {
             this.provenance = createBuildProvenance({
               plan,
               manifest,
               outputChanges: this.outputChangeSet,
-              plugins: this.pluginRuntime.getPluginInventory(),
+              pluginHooks: this.pluginRuntime.getPluginHookExecutions(),
               derivedViews: this.pluginRuntime.getDerivedViewInspection(),
               processed: this.processedContentDurations,
             });

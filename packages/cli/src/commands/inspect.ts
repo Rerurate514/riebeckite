@@ -35,6 +35,9 @@ export async function runInspect(
     list: boolean;
     path?: string;
     json: boolean;
+    source?: string;
+    output?: string;
+    compare?: string;
   },
 ): Promise<void> {
   if (!options.target) {
@@ -75,7 +78,7 @@ export async function runInspect(
     return;
   }
   if (options.target === "provenance") {
-    const inspection = await collectProvenanceInspection(project);
+    const inspection = await collectProvenanceInspection(project, options);
     console.log(
       options.json
         ? JSON.stringify(inspection, undefined, 2)

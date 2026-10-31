@@ -2,6 +2,7 @@ import path from "node:path";
 import type { ContentSource, ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   ContentManager,
+  compareBuildProvenance,
   computePipelineFingerprint,
   getResolvedPluginMetadata,
   isPersistentlyCacheable,
@@ -206,6 +207,11 @@ export async function collectBuildInspection(
 
 export async function collectProvenanceInspection(
   project: RiebeckiteProject,
+  options: {
+    readonly source?: string;
+    readonly output?: string;
+    readonly compare?: string;
+  } = {},
 ): Promise<ProvenanceInspection> {
   const config = await loadProjectConfig(project);
   const statePath = resolveContentBuildStatePath(config, undefined);
@@ -213,7 +219,35 @@ export async function collectProvenanceInspection(
   if (!state) return { status: "unavailable", reason: "no valid build state" };
   if (!state.provenance)
     return { status: "unavailable", reason: "provenance was not recorded" };
-  return { status: "available", provenance: state.provenance };
+  const provenance = {
+    ...state.provenance,
+    ...(options.source === undefined
+      ? {}
+      : {
+          sources: state.provenance.sources.filter(
+            (source) => source.path === options.source,
+          ),
+        }),
+    ...(options.output === undefined
+      ? {}
+      : {
+          outputs: state.provenance.outputs.filter(
+            (output) => output.path === options.output,
+          ),
+        }),
+  };
+  const history = state.provenanceHistory ?? [state.provenance];
+  const prior = options.compare
+    ? history.find((entry) => entry.buildId === options.compare)
+    : undefined;
+  return {
+    status: "available",
+    provenance,
+    history,
+    ...(prior === undefined
+      ? {}
+      : { comparison: compareBuildProvenance(prior, state.provenance) }),
+  };
 }
 
 function displayPath(value: string, invocationCwd: string): string {

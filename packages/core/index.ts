@@ -218,12 +218,16 @@ export {
 } from "./src/project/project_layout.js";
 export type {
   BuildProvenance,
+  BuildProvenanceComparison,
   ProvenanceOutput,
   ProvenanceSource,
   ProvenanceTransform,
 } from "./src/provenance/provenance.js";
 export {
+  appendProvenanceHistory,
+  compareBuildProvenance,
   createBuildProvenance,
+  MAX_PROVENANCE_HISTORY,
   PROVENANCE_VERSION,
 } from "./src/provenance/provenance.js";
 export type {

@@ -361,8 +361,6 @@ function applyPathRenameRule(
   if (input.path === from) input.path = to;
   else if (input.path.startsWith(`${from}/`))
     input.path = `${to}${input.path.slice(from.length)}`;
-  else return;
-  appendUnique(input.frontmatter, "redirect_from", `/${from}`);
 }
 
 function appendUnique(

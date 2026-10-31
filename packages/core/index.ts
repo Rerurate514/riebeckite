@@ -237,6 +237,17 @@ export type {
   VisibilityRule,
 } from "./src/migration/migration_rules.js";
 export type {
+  MigrationContentApplication,
+  MigrationContentState,
+  ParsedMigrationContent,
+} from "./src/migration/migration_transform.js";
+export {
+  applyContentMigration,
+  diffFrontmatter,
+  isSafeContentPath,
+  parseMigrationContent,
+} from "./src/migration/migration_transform.js";
+export type {
   ContentMigration,
   ContentMigrationDefinition,
   ContentMigrationDiagnostic,

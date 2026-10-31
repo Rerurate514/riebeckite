@@ -73,6 +73,12 @@ type CachedDependency = {
   fingerprint: string;
 };
 
+type PendingView = {
+  readonly controller: AbortController;
+  readonly promise: Promise<unknown>;
+  consumers: number;
+};
+
 export type DerivedViewRegistryOptions = {
   readonly cache?: () => PluginCache;
   readonly dependencyFingerprint?: (
@@ -96,7 +102,7 @@ export function createDerivedViewRegistry(
   options: DerivedViewRegistryOptions = {},
 ): DerivedViewRegistry {
   const views = new Map<string, DerivedView<unknown, unknown>>();
-  const pending = new Map<string, Promise<unknown>>();
+  const pending = new Map<string, PendingView>();
   let disposed = false;
 
   const resolve = async <TInput, TResult>(
@@ -115,41 +121,58 @@ export function createDerivedViewRegistry(
     const parsedInput = view.input ? view.input.parse(input) : input;
     const inputFingerprint = fingerprint(parsedInput);
     const key = `${view.id}:${inputFingerprint}`;
-    const inFlight = pending.get(key);
-    if (inFlight) return (await inFlight) as TResult;
-
-    const run = execute(
-      view,
-      parsedInput,
-      inputFingerprint,
-      resolveOptions.signal,
-      [...stack, view.id],
-    );
-    pending.set(key, run);
-    try {
-      return (await run) as TResult;
-    } finally {
-      if (pending.get(key) === run) pending.delete(key);
+    let inFlight = pending.get(key);
+    if (!inFlight) {
+      const controller = new AbortController();
+      const run = execute(
+        view,
+        parsedInput,
+        inputFingerprint,
+        controller.signal,
+        [...stack, view.id],
+      );
+      inFlight = { controller, promise: run, consumers: 0 };
+      pending.set(key, inFlight);
+      void run.then(
+        () => {
+          if (pending.get(key) === inFlight) pending.delete(key);
+        },
+        () => {
+          if (pending.get(key) === inFlight) pending.delete(key);
+        },
+      );
     }
+    return (await waitForConsumer(inFlight, resolveOptions.signal, () => {
+      if (pending.get(key) === inFlight && inFlight.consumers === 0) {
+        pending.delete(key);
+        inFlight.controller.abort(
+          new Error("All Derived View consumers aborted."),
+        );
+      }
+    })) as TResult;
   };
 
   const execute = async (
     view: DerivedView<unknown, unknown>,
     input: unknown,
     inputFingerprint: string,
-    signal: AbortSignal | undefined,
+    signal: AbortSignal,
     stack: readonly string[],
   ): Promise<unknown> => {
-    if (signal?.aborted)
+    if (signal.aborted)
       throw signal.reason ?? new Error("Derived View aborted.");
     const cacheKey = `derived-view:${view.id}:${inputFingerprint}`;
     const cached = await readCache(cacheKey, view, inputFingerprint);
-    if (cached !== undefined) return cached;
+    if (cached !== undefined) {
+      if (signal.aborted)
+        throw signal.reason ?? new Error("Derived View aborted.");
+      return cached;
+    }
 
     const dependencies: DerivedDependency[] = [];
     const tracked = new Set<string>();
     const context: DerivedViewContext = {
-      signal: signal ?? new AbortController().signal,
+      signal,
       get dependencies() {
         return dependencies;
       },
@@ -174,8 +197,14 @@ export function createDerivedViewRegistry(
       }) as DerivedViewContext["resolve"],
     };
     const computed = await view.compute(input, context);
+    if (signal.aborted)
+      throw signal.reason ?? new Error("Derived View aborted.");
     const value = view.output ? view.output.parse(computed) : computed;
-    if (isJsonValue(value) && dependencies.every(isCacheableDependency)) {
+    if (
+      !signal.aborted &&
+      isJsonValue(value) &&
+      dependencies.every(isCacheableDependency)
+    ) {
       await writeCache(cacheKey, {
         version: view.version,
         input: inputFingerprint,
@@ -252,9 +281,49 @@ export function createDerivedViewRegistry(
         .sort((left, right) => left.id.localeCompare(right.id)),
     dispose: () => {
       disposed = true;
+      for (const entry of pending.values()) {
+        entry.controller.abort(
+          new Error("Derived View registry has been disposed."),
+        );
+      }
       pending.clear();
     },
   };
+}
+
+function waitForConsumer(
+  pending: PendingView,
+  signal: AbortSignal | undefined,
+  onRelease: () => void,
+): Promise<unknown> {
+  if (signal?.aborted)
+    return Promise.reject(signal.reason ?? new Error("Derived View aborted."));
+  pending.consumers++;
+  return new Promise((resolve, reject) => {
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      pending.consumers--;
+      signal?.removeEventListener("abort", abort);
+      onRelease();
+    };
+    const abort = () => {
+      release();
+      reject(signal?.reason ?? new Error("Derived View aborted."));
+    };
+    signal?.addEventListener("abort", abort, { once: true });
+    void pending.promise.then(
+      (value) => {
+        release();
+        resolve(value);
+      },
+      (error: unknown) => {
+        release();
+        reject(error);
+      },
+    );
+  });
 }
 
 function normalizeDependency(dependency: DerivedDependency): DerivedDependency {

@@ -138,3 +138,58 @@ test("derived views ignore corrupted cache values and do not persist non-JSON ou
   corrupted.register(recovered);
   assert.equal(await corrupted.resolve(recovered, "input"), 1);
 });
+
+test("derived view callers cancel independently and stop work only when unused", async () => {
+  let complete: ((value: number) => void) | undefined;
+  let aborted = false;
+  const view = defineDerivedView<string, number>({
+    id: "test.abort",
+    version: "1",
+    compute: (_input, context) =>
+      new Promise<number>((resolve, reject) => {
+        complete = resolve;
+        context.signal.addEventListener(
+          "abort",
+          () => {
+            aborted = true;
+            reject(context.signal.reason);
+          },
+          { once: true },
+        );
+      }),
+  });
+  const registry = createDerivedViewRegistry();
+  registry.register(view);
+  const first = new AbortController();
+  const second = new AbortController();
+  const firstResult = registry.resolve(view, "same", { signal: first.signal });
+  const secondResult = registry.resolve(view, "same", {
+    signal: second.signal,
+  });
+  await waitFor(() => complete !== undefined);
+
+  first.abort(new Error("first"));
+  await assert.rejects(firstResult, /first/);
+  assert.equal(aborted, false);
+  complete?.(2);
+  assert.equal(await secondResult, 2);
+
+  const third = new AbortController();
+  const fourth = new AbortController();
+  complete = undefined;
+  const thirdResult = registry.resolve(view, "next", { signal: third.signal });
+  const fourthResult = registry.resolve(view, "next", {
+    signal: fourth.signal,
+  });
+  await waitFor(() => complete !== undefined);
+  third.abort();
+  fourth.abort();
+  await assert.rejects(thirdResult);
+  await assert.rejects(fourthResult);
+  assert.equal(aborted, true);
+});
+
+async function waitFor(predicate: () => boolean): Promise<void> {
+  while (!predicate())
+    await new Promise<void>((resolve) => queueMicrotask(resolve));
+}

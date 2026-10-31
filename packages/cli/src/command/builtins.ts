@@ -1136,8 +1136,15 @@ function helpCommand(): CliCommandDefinition {
         );
         return;
       }
-      const registry = await registryFor(context);
-      context.output.writeLine(formatPathHelp(registry, path, helpOptions()));
+      try {
+        context.output.writeLine(
+          formatPathHelp(context.registry, path, helpOptions()),
+        );
+      } catch (error) {
+        if (!(error instanceof CliUsageError)) throw error;
+        const registry = await registryFor(context);
+        context.output.writeLine(formatPathHelp(registry, path, helpOptions()));
+      }
     },
   });
 }

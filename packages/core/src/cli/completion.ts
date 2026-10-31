@@ -100,10 +100,31 @@ function wordsForPath(registry: CliCommandRegistry, path: string): string[] {
       if (option.hidden) continue;
       for (const word of optionWords(option)) words.add(word);
     }
+    if (command.supportsJson === true && !hasJsonOption(command)) {
+      words.add("--json");
+    }
     words.add("--help");
   }
-  if (!path) words.add("--version");
+  if (!path) {
+    words.add("--help");
+    words.add("--version");
+  }
   return [...words].sort();
+}
+
+function hasJsonOption(command: CliCommandDefinition): boolean {
+  return (command.options ?? []).some((option) => option.name === "json");
+}
+
+function allPaths(registry: CliCommandRegistry): string[] {
+  const paths = new Set([""]);
+  for (const transition of transitions(registry)) {
+    paths.add(transition.from);
+    paths.add(transition.to);
+  }
+  return [...paths].sort((left, right) =>
+    left === "" ? -1 : right === "" ? 1 : left.localeCompare(right),
+  );
 }
 
 function enumValueCases(
@@ -181,51 +202,65 @@ function zshCompletion(
   registry: CliCommandRegistry,
   commandName: string,
 ): string {
-  const commands = visibleCommands(registry)
-    .filter((command) => !command.id.includes(" "))
+  const transitionCases = transitions(registry)
     .map(
-      (command) =>
-        `    ${shellSingleQuote(`${command.id}:${sanitizeDescription(command.summary)}`)}`,
+      (transition) =>
+        `      ${shellSingleQuote(`${transition.from} ${transition.token}`)}) path=${shellSingleQuote(
+          transition.to,
+        )};;`,
     )
     .join("\n");
-  const pathCases = [
-    ...new Set(visibleCommands(registry).map((command) => command.id)),
-  ]
+  const pathCases = allPaths(registry)
     .map((path) => {
-      const words = wordsForPath(registry, path).filter(
-        (word) => !word.startsWith("-"),
-      );
-      const options = wordsForPath(registry, path).filter((word) =>
-        word.startsWith("-"),
-      );
-      const values = [
-        ...words.map((word) => shellSingleQuote(word)),
-        ...options.map((word) => shellSingleQuote(word)),
-      ].join(" ");
-      return `    ${shellSingleQuote(path)}) _values 'completion' ${values};;`;
+      const words = wordsForPath(registry, path).map((word) => {
+        const command = commandAt(
+          registry,
+          path === "" ? word : `${path} ${word}`,
+        );
+        return command
+          ? `${word}:${sanitizeDescription(command.summary)}`
+          : word;
+      });
+      return `    ${shellSingleQuote(path)}) _values 'completion' ${words
+        .map((word) => shellSingleQuote(word))
+        .join(" ")};;`;
     })
+    .join("\n");
+  const enumCases = new Map<string, Set<string>>();
+  for (const command of visibleCommands(registry)) {
+    for (const option of command.options ?? []) {
+      if (option.type !== "enum" || !option.values) continue;
+      const values = enumCases.get(option.name) ?? new Set<string>();
+      for (const value of option.values) values.add(value);
+      enumCases.set(option.name, values);
+    }
+  }
+  const enumValueCases = [...enumCases.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(
+      ([option, values]) =>
+        `    --${option}) _values 'value' ${[...values]
+          .sort()
+          .map((value) => shellSingleQuote(value))
+          .join(" ")}; return;;`,
+    )
     .join("\n");
 
   return `#compdef ${commandName}
 _${commandName}() {
-  local -a commands
-  commands=(
-${commands}
-  )
-  _arguments -C '1:command:->command' '*::argument:->args'
-  case $state in
-    command)
-      _describe 'command' commands
-      ;;
-    args)
-      local path="$words[1]"
-      if (( $#words >= 3 )); then
-        path="$words[1] $words[2]"
-      fi
-      case "$path" in
+  local path="" i cur prev
+  cur="$words[CURRENT]"
+  prev="$words[CURRENT-1]"
+  for ((i=2; i<CURRENT; i++)); do
+    case "$path $words[i]" in
+${transitionCases}
+    esac
+  done
+  case "$prev" in
+${enumValueCases}
+  esac
+  case "$path" in
 ${pathCases}
-      esac
-      ;;
   esac
 }
 _${commandName} "$@"

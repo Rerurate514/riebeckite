@@ -27,6 +27,10 @@ export function formatRootHelp(
   lines.push("Commands:");
   lines.push(...formatNodes(registry.nodes, "", width, options.color === true));
   lines.push("");
+  lines.push("Options:");
+  lines.push("  -h, --help     Show help.");
+  lines.push("  -v, --version  Show the CLI version.");
+  lines.push("");
   lines.push("Run 'riebeckite help <command>' for details.");
   return lines.join("\n");
 }

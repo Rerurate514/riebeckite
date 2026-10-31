@@ -7,7 +7,7 @@ sidebar:
 ---
 # How it works
 
-## 1. Why "outside the site" works
+## Why "outside the site" works
 
 The resolution rules for `content.directory` in `riebeckite.config.ts`:
 
@@ -42,7 +42,7 @@ export default defineConfig({
 
 Do not assemble the value from `process.cwd()`, and do not point `appRoot` at the vault. The vault is source data; the Vite application root stays the site.
 
-### 1-1. How the roots are determined
+### How the roots are determined
 
 Walking through the order reveals the common pitfalls.
 
@@ -72,7 +72,7 @@ If you intentionally keep `riebeckite.config.ts` outside the Vite application, p
 
 In other words, "the same vault from anywhere" holds as long as **the config is inside (or above) the site and `appRoot` is unambiguous**. Running from an unrelated directory finds no config at all, and a monorepo with multiple `vite.config.*` files fails with `Found multiple Vite applications`. Both mean the tool could not pin down which site's config applies.
 
-### 1-2. Reading content from the application side
+### Reading content from the application side
 
 The integration exposes the resolved config and a ready `ContentManager` as
 framework-owned modules, so application code imports them rather than
@@ -88,7 +88,7 @@ another base is a common source of errors. A script that runs outside Vite can
 resolve the same values with `resolveHonoxConfig` from
 `@riebeckite/honox/runtime`.
 
-### 1-3. What not to do
+### What not to do
 
 - Build `content.directory` from `process.cwd()`. The result changes with where you run.
 - Point `appRoot` (Vite's `root`) at the vault. That moves the site's `app/`, `public/`, and build output.
@@ -104,7 +104,7 @@ Base
   → appRoot
 ```
 
-## 2. The three patterns
+## The three patterns
 
 | Pattern | Layout | Choose it when | Deployment consideration |
 | --- | --- | --- | --- |
@@ -112,7 +112,7 @@ Base
 | B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | You share history but want locations and visibility apart | Set `content.directory: "../vault"` on the site side |
 | C. Separate repositories (recommended) | Articles private, site public | You want articles private or updates decoupled | CI needs setup to fetch the articles repository |
 
-### 2-1. Pattern A layout
+### Pattern A layout
 
 ```text
 blog/
@@ -125,7 +125,7 @@ blog/
 
 The simplest option, and exactly what `create-riebeckite` generates. Article visibility matches the repository.
 
-### 2-2. Pattern B layout
+### Pattern B layout
 
 ```text
 notes-repo/
@@ -136,7 +136,7 @@ notes-repo/
 
 One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in A. The only change from A is `content.directory: "../vault"`.
 
-### 2-3. Sharing one vault across several sites
+### Sharing one vault across several sites
 
 An extension of C: keep the vault in its own place and have several sites reference it.
 
@@ -147,7 +147,7 @@ workspace/
 └─ docs/            ← site 2 (directory: "../notes")
 ```
 
-Treat the vault as read-only source data and vary `exclude`, `publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout from section 3-2.
+Treat the vault as read-only source data and vary `exclude`, `publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Fetching content is separate from triggering a deployment](./repository-split.md#fetching-content-is-separate-from-triggering-a-deployment).
 
 ```mermaid
 flowchart TD
@@ -162,9 +162,9 @@ flowchart TD
 
 Each site can set `exclude`, `publishStrategy`, plugins, theme, and deployment independently, so the same note can have a different publication range and presentation per site.
 
-### 2-4. Decision flow
+### Decision flow
 
 1. You want articles private, or updates decoupled → **C**.
 2. Articles and site can share visibility → next.
 3. You only want locations and settings apart → **B**. You want one repository → **A**.
-4. You want one vault for several sites → **C + shared vault** (2-3).
+4. You want one vault for several sites → **C + shared vault**.

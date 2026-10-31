@@ -7,7 +7,7 @@ sidebar:
 ---
 # Troubleshooting
 
-## 6. Troubleshooting (in depth)
+## Troubleshooting (in depth)
 
 | Symptom | Fix |
 | --- | --- |
@@ -23,9 +23,9 @@ sidebar:
 | Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |
 | An image exists in the vault but is not copied | Confirm the referencing note is published (`publish: true`) and that the reference is collected as a `link.kind` |
 | Works locally but the path differs in CI | Check the CI working directory and the relative base (appRoot). `../notes` vs `notes` is a common source of drift |
-| An excluded folder is still loaded | Remember patterns are anchored; add `**/` if needed (4-2) |
+| An excluded folder is still loaded | Remember patterns are anchored; add `**/` if needed |
 
-### 6-1. Common path problems
+### Common path problems
 
 When content is not found, do not start with "where am I running the command from" but with "which `appRoot` did Riebeckite resolve":
 
@@ -46,7 +46,7 @@ appRoot
   ○
 ```
 
-### 6-2. Common CI problems
+### Common CI problems
 
 Split the problem first into "the workflow did not start" versus "the workflow started but there is no content":
 
@@ -65,7 +65,7 @@ flowchart TD
 
 These are two separate mechanisms, so isolate which one is failing.
 
-## 7. Summary
+## Summary
 
 Separating content from the site is easier to reason about when you keep four boundaries apart:
 

@@ -7,7 +7,7 @@ sidebar:
 ---
 # Cloudflare Worker
 
-## Cloudflare Workerで収集する
+## イベントを収集する
 
 Cloudflareでイベントを収集する場合は、`@riebeckite/analytics-cloudflare`を使用します。このパッケージは`createWorker(options)`とストレージアダプターを提供します。
 

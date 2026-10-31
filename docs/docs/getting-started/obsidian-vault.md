@@ -6,6 +6,8 @@ title: Use Your Obsidian Vault
 
 Already have an [[glossary/obsidian-vault|Obsidian Vault]]? Riebeckite can read that Vault as the site's content directory. Start locally first, publish one note, check links and images, then build `dist/`.
 
+For publication rules and day-to-day operation, see [Publishing Obsidian notes](../guides/obsidian.md).
+
 ## Before you start
 
 You need:

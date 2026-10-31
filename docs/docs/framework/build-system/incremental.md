@@ -7,7 +7,7 @@ sidebar:
 ---
 # Incremental builds
 
-## Incremental build
+## How incremental builds work
 
 Processing every piece of content from scratch on every run makes builds slower
 as the site grows.

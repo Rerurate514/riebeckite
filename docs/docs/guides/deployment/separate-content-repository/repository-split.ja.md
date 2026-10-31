@@ -7,18 +7,18 @@ sidebar:
 ---
 # リポジトリ分離
 
-## 3. C: リポジトリを分ける場合の詳細
+## C: リポジトリを分ける場合の詳細
 
 基本的な流れは [コンテンツとサイトを分ける](../../content-repositories.ja.md) にあります。ここでは、その手順で触れていない点を補います。
 
-### 3-1. Vault をプライベートリポジトリに置く
+### Vault をプライベートリポジトリに置く
 
 - `git init` の後、最初の push より前に GitHub に**プライベート**リポジトリを作ります。
 - `.obsidian/` は Obsidian が Vault を開いたときに生成されます。push してしまっても、`content.exclude` に `.obsidian/**` を入れればサイトのビルドには含まれません。Git で追跡したくない場合は、`.obsidian/workspace*.json` だけを gitignore する折衷案もあります。
 - 非公開ノートの基本は `publish: true` を付けないことです。さらに、`content.exclude` で非公開フォルダ（例: `private/**`）を除外し、読み込み自体を防ぐ二重の対策を取ります。
 - `publishStrategy` は既定の `explicit` のままにします。`selective` は「ほぼすべてを公開し、例外だけ隠す」モデルで、非公開の Vault ではリスクが高くなります。
 
-### 3-2. コンテンツの取得とデプロイの起動は別に考える
+### コンテンツの取得とデプロイの起動は別に考える
 
 `--github-actions` で生成される既定のデプロイワークフローは、**サイトリポジトリだけ**をチェックアウトします。
 
@@ -114,7 +114,7 @@ git commit -m "update articles"
 
 記事の更新が多いなら方法1が扱いやすく、サイト側で履歴を固定したいなら方法2が向いています。
 
-### 3-3. CI からプライベートリポジトリを読むための認証
+### CI からプライベートリポジトリを読むための認証
 
 - `github.token` の権限は現在のリポジトリに限定されます。別の**公開** GitHub リポジトリは読めますが、別のプライベートまたは内部リポジトリは読めません。
 - Vault がプライベートまたは内部にある場合は、サイトリポジトリに `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。Vault だけに権限を絞った fine-grained PAT に **Contents: read** を付けるか、同等の読み取り専用 GitHub App インストールトークンを使います。
@@ -162,7 +162,7 @@ PAT は [GitHub の Settings → Developer settings → Personal access tokens](
     path: notes
 ```
 
-### 3-4. ローカルと CI でディレクトリ構成を揃える
+### ローカルと CI でディレクトリ構成を揃える
 
 相対 `directory` は `appRoot` 基準なので、ローカルと CI で構成が違えば解決先も変わります。
 

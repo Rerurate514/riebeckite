@@ -8,6 +8,8 @@ Riebeckite can use your everyday Obsidian vault as the place where articles
 live. You do not have to rebuild an existing vault for Riebeckite, or convert
 your Markdown into another format.
 
+To connect a vault and publish your first note, start with [Use Your Obsidian Vault](../getting-started/obsidian-vault.md).
+
 The basic flow is:
 
 ```mermaid

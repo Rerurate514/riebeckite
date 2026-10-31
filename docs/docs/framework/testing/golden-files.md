@@ -7,8 +7,6 @@ sidebar:
 ---
 # Golden files
 
-## Golden files
-
 `@riebeckite/test` provides two helpers for large or structured output:
 
 - `assertGolden(actual, goldenUrl)` for text (HTML, Markdown, serialized JSON).

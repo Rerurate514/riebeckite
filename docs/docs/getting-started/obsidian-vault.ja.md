@@ -6,6 +6,8 @@ title: Obsidian Vault を使う
 
 すでに [[glossary/obsidian-vault|Obsidian Vault]] がある場合は、Riebeckite からその Vault をサイトのコンテンツとして読むことができます。まずローカルで 1 つのノートを公開し、リンクと画像を確認してから、`dist/` をビルドします。
 
+Vault の公開範囲や日々の運用まで踏み込む場合は、[Obsidian のノートをサイトにする](../guides/obsidian.ja.md) を参照してください。
+
 ## 始める前に
 
 必要なものは次の3つです。

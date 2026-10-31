@@ -7,7 +7,7 @@ sidebar:
 ---
 # Where to put the vault
 
-## Where to put the vault
+## Two layout patterns
 
 There are two broad ways to place the vault.
 

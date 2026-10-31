@@ -7,7 +7,7 @@ sidebar:
 ---
 # Cloudflare Worker
 
-## Collecting events with a Cloudflare Worker
+## Collecting events
 
 To collect events on Cloudflare, use `@riebeckite/analytics-cloudflare`. The
 package exposes
@@ -19,14 +19,14 @@ createWorker(options)
 and storage adapters. There is no default storage: **choose exactly one of D1 or
 KV explicitly.**
 
-### D1 and KV
+## D1 and KV
 
 | Storage | Event capture | Total page views | Popular ranking | Time range |
 | --- | --- | --- | --- | --- |
 | D1 | Yes | Yes | Yes | Yes |
 | KV | Yes | No | No | No |
 
-#### D1
+### D1
 
 For D1, use
 
@@ -45,7 +45,7 @@ page view events**. This makes the following available:
 
 Use this if you want to make real use of aggregated analytics.
 
-#### KV
+### KV
 
 For KV, use
 
@@ -64,7 +64,7 @@ popular_content
 
 Using those APIs returns HTTP `501`.
 
-### D1 Worker example
+## D1 Worker example
 
 ```ts
 import { createWorker, d1Storage } from "@riebeckite/analytics-cloudflare";
@@ -96,7 +96,7 @@ createWorker(...)
 
 Do not try to read `env` at module top level.
 
-### Worker endpoints
+## Worker endpoints
 
 The analytics Worker provides the following endpoints.
 
@@ -106,7 +106,7 @@ The analytics Worker provides the following endpoints.
 | `GET /content/:contentId/page-views` | Total page views for a content entry. |
 | `GET /popular` | Popular content. |
 
-#### `POST /events`
+### `POST /events`
 
 Accepts a JSON `page_view` payload. The maximum body size is 8 KiB. On success it
 returns
@@ -125,7 +125,7 @@ Invalid requests are rejected.
 | Body larger than 8 KiB | `413` |
 | Rate limit exceeded | `429` |
 
-#### Page view API
+### Page view API
 
 ```text
 GET /content/:contentId/page-views?from=&to=
@@ -133,7 +133,7 @@ GET /content/:contentId/page-views?from=&to=
 
 Returns the total page views for one content entry.
 
-#### Popular API
+### Popular API
 
 ```text
 GET /popular?limit=&from=&to=
@@ -144,7 +144,7 @@ Returns popular content.
 Read APIs are available only when the storage adapter advertises the
 corresponding capability.
 
-### CORS
+## CORS
 
 Origins are denied by default, so you normally name the site's origin explicitly.
 
@@ -162,7 +162,7 @@ To allow every origin, specify
 
 Use that only when you deliberately expose a public collector.
 
-### CORS is not authentication
+## CORS is not authentication
 
 Setting `allowedOrigins` does not make analytics events trustworthy. `Origin` is
 not authentication, so a third party can impersonate an allowed origin and send
@@ -185,7 +185,7 @@ flowchart LR
 
 Treat collected page views as **untrusted measurement data**.
 
-### Rate limiting
+## Rate limiting
 
 To reduce abuse, you can optionally set `rateLimit`. It limits the number of
 requests per connecting IP in a fixed window. When the limit is exceeded it
@@ -195,7 +195,7 @@ returns
 429 Too Many Requests
 ```
 
-#### D1 rate limiter
+### D1 rate limiter
 
 For production, use
 
@@ -217,13 +217,13 @@ migrations/0002_analytics_rate_limits.sql
 
 before deploying.
 
-#### Memory rate limiter
+### Memory rate limiter
 
 `MemoryAnalyticsRateLimiter` is for tests and local development. It only holds
 process-local counters, so it is not shared across short-lived Worker isolates
 and is not suitable for limiting distributed production traffic.
 
-### Limits of rate limiting
+## Limits of rate limiting
 
 Rate limiting is not authentication. It can mainly
 
@@ -238,7 +238,7 @@ legitimate-looking page views. That is why it matters to
 **treat analytics data itself as untrusted even when CORS and rate limiting are
 configured.**
 
-### Privacy
+## Privacy
 
 The analytics Worker does not read or store
 

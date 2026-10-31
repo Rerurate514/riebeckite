@@ -7,9 +7,9 @@ sidebar:
 ---
 # Publication and verification
 
-## 4. Publication rules and assets
+## Publication rules and assets
 
-### 4-1. How publication is decided
+### How publication is decided
 
 `content.filters.publishStrategy` takes two values.
 
@@ -32,7 +32,7 @@ flowchart LR
 
 For a private vault, the default `explicit` is the easier model to reason about.
 
-### 4-2. How to write `exclude`
+### How to write `exclude`
 
 `exclude` matches glob patterns against the path relative to contentRoot (normalized to `/` separators). Note that patterns are **anchored to the whole path**.
 
@@ -48,7 +48,7 @@ For a private vault, the default `explicit` is the easier model to reason about.
 
 `exclude` filters before loading, so excluded notes never appear in link resolution or the graph. For notes you want private, in addition to leaving off `publish: true`, exclude the whole folder where possible.
 
-### 4-3. Content images and attachments are published differently
+### Content images and attachments are published differently
 
 Vault files fall into three kinds, and each one is published by a different owner:
 
@@ -101,7 +101,7 @@ flowchart TD
 
 In short, the rule is "copy because a **published note references it**", not "copy because it exists in the vault". Do not take the shortcut of copying the entire vault. It risks leaking private notes, images referenced only from non-public pages, unreferenced attachments, and `.obsidian` metadata. Content images are already filtered and emitted by the build; attachment and media publishing stays the site application's responsibility, so copy only the files a **published** note references. To detect a published note that crosses the boundary by linking to an unpublished one, run `riebeckite-diagnostics` from `@riebeckite/plugin-diagnostics`; it reports those references as `publish-boundary` warnings, and `runDiagnostics()` produces the same result programmatically. See [Diagnostics](../../../plugins/diagnostics.md).
 
-### 4-4. The generated URL
+### The generated URL
 
 A content image keeps its logical path from the vault:
 
@@ -134,7 +134,7 @@ Public URL:
 
 Keeping the physical location under `public/` consistent with the visible URL reduces post-build 404s.
 
-### 4-5. Repository visibility vs. publication boundary
+### Repository visibility vs. publication boundary
 
 Making a repository private and deciding what Riebeckite publishes are separate concerns:
 
@@ -156,9 +156,9 @@ publishStrategy
 asset copy that targets only published notes
 ```
 
-In particular, do not copy the whole vault into `public/`. See [4-3](#4-3-content-images-and-attachments-are-published-differently) for how the prebuild copy selects referenced assets.
+In particular, do not copy the whole vault into `public/`. The prebuild copy selects only referenced assets, as described above.
 
-## 5. Verification
+## Verification
 
 You can confirm roots and publication boundaries before building, with the CLI. Run it from a nested directory to prove the working directory does not matter.
 
@@ -197,7 +197,7 @@ flowchart LR
     Graph --> Build
 ```
 
-### 5-1. Confirming the working directory does not matter
+### Confirming the working directory does not matter
 
 To investigate root-resolution problems, run the CLI not only from the site root but also from a nested directory:
 

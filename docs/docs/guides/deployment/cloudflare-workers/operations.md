@@ -7,7 +7,7 @@ sidebar:
 ---
 # Operations
 
-## 8. Redeploying an updated site
+## Redeploying an updated site
 
 After a site is published, the steps to update articles or configuration are the same.
 
@@ -28,7 +28,7 @@ Deploy
 
 `riebeckite publish run --execute` only tells Wrangler to publish `dist/`; it does not rebuild Riebeckite content. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first.
 
-## 9. Pre-deploy checklist
+## Pre-deploy checklist
 
 Before deploying to production, you can verify in this order.
 

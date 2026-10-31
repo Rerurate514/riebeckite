@@ -8,6 +8,8 @@ Riebeckite では、普段使っている [[glossary/obsidian-vault|Obsidian Vau
 
 既存の Vault を Riebeckite 用に作り直したり、Markdown を別の形式へ変換したりする必要はありません。
 
+まず Vault をつないで1ページ公開するところから始める場合は、[Obsidian Vault を使う](../getting-started/obsidian-vault.ja.md) を参照してください。
+
 基本的な流れは次のとおりです。
 
 ```mermaid id="4iixgb"

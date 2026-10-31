@@ -711,12 +711,21 @@ export class FileSystemContentMutation {
         "Another content mutation is already applying or requires recovery.",
       );
     }
+    const token = randomUUID();
     await handle.writeFile(
-      JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }),
+      JSON.stringify({
+        pid: process.pid,
+        token,
+        startedAt: new Date().toISOString(),
+      }),
     );
     return async () => {
       await handle.close();
-      await fs.rm(lockPath, { force: true });
+      try {
+        const current = JSON.parse(await fs.readFile(lockPath, "utf8"));
+        if (isRecord(current) && current.token === token)
+          await fs.rm(lockPath, { force: true });
+      } catch {}
     };
   }
 }

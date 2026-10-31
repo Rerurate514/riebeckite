@@ -435,7 +435,7 @@ test("removed generated outputs disappear on the next build", async () => {
           {
             path: "first.txt",
             content: resolved.value,
-            dependencies: [{ type: "global" }],
+            dependencies: [{ type: "global" as const }],
             derivedViewIds: resolved.viewIds,
           },
           ...(emitSecond
@@ -443,7 +443,7 @@ test("removed generated outputs disappear on the next build", async () => {
                 {
                   path: "second.txt",
                   content: resolved.value,
-                  dependencies: [{ type: "global" }],
+                  dependencies: [{ type: "global" as const }],
                   derivedViewIds: resolved.viewIds,
                 },
               ]
@@ -458,7 +458,6 @@ test("removed generated outputs disappear on the next build", async () => {
           site: { title: "Test" },
           content: { filters: { publishStrategy: "explicit" } },
           cache: { enabled: true, directory: path.join(directory, "cache") },
-          buildDirectory: path.join(directory, "build"),
         }),
         plugins: [plugin],
       });
@@ -512,8 +511,8 @@ test("external dependencies propagate through view chains and survive restarts",
     const plugin = definePlugin({
       name: "external-derived",
       derivedViews: [child, parent],
-      resolveExternalDependencies: () =>
-        available
+      async resolveExternalDependencies() {
+        return available
           ? [
               {
                 kind: "resolved" as const,
@@ -530,7 +529,8 @@ test("external dependencies propagate through view chains and survive restarts",
                 kind: "unavailable" as const,
                 failure: { id: "cms", reason: "missing" },
               },
-            ],
+            ];
+      },
       async planGeneratedOutputs({ derived }) {
         const resolved = await derived.resolveWithDependencies(parent, null);
         statuses.push(

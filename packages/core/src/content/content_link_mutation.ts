@@ -26,7 +26,7 @@ export function planContentLinkUpdates(
   const updates = new Map<string, string>();
   const warnings: ContentMutationIssue[] = [];
   const conflicts: ContentMutationIssue[] = [];
-  if (options.retargets.length === 0) return { updates, warnings, conflicts };
+  if (options.files.size === 0) return { updates, warnings, conflicts };
   const index = options.afterIndex ?? buildIndex([...options.files.keys()]);
   const beforeIndex =
     options.beforeIndex ?? buildBeforeIndex(options.files, options.retargets);
@@ -42,41 +42,65 @@ export function planContentLinkUpdates(
       const retarget = options.retargets.find((candidate) =>
         refersTo(occurrence, candidate.from, beforeIndex),
       );
-      if (!retarget) continue;
-      if (!retarget.to) {
-        warnings.push({
-          severity: "warning",
-          code: "broken-link",
-          path: filePath,
-          message: `A link to deleted content remains: ${occurrence.rawDestination}`,
+      if (retarget) {
+        if (!retarget.to) {
+          warnings.push({
+            severity: "warning",
+            code: "broken-link",
+            path: filePath,
+            message: `A link to deleted content remains: ${occurrence.rawDestination}`,
+          });
+          continue;
+        }
+        const replacement = replacementDestination(
+          occurrence.syntax,
+          retarget.to,
+          filePath,
+          occurrence.fragment,
+        );
+        if (replacement === null || replacement === occurrence.rawDestination)
+          continue;
+        if (!index.has(normalizePath(retarget.to))) {
+          conflicts.push({
+            severity: "error",
+            code: "link-target-missing",
+            path: filePath,
+            message: `The link target is missing from the mutation: ${retarget.to}`,
+          });
+          continue;
+        }
+        rewrites.push({
+          range: occurrence.destinationRange,
+          expected: source.slice(
+            occurrence.destinationRange.start,
+            occurrence.destinationRange.end,
+          ),
+          replacement,
         });
         continue;
       }
-      const replacement = replacementDestination(
-        occurrence.syntax,
-        retarget.to,
-        filePath,
-        occurrence.fragment,
-      );
-      if (replacement === null || replacement === occurrence.rawDestination)
-        continue;
-      if (!index.has(normalizePath(retarget.to))) {
+      if (occurrence.syntax === "reference-link") continue;
+      const key = referenceKey(occurrence);
+      const before = key ? beforeIndex.get(key) : undefined;
+      if (!before) continue;
+      const after = key ? index.get(key) : undefined;
+      if (!after) {
         conflicts.push({
           severity: "error",
-          code: "link-target-missing",
+          code: "link-broken",
           path: filePath,
-          message: `The link target is missing from the mutation: ${retarget.to}`,
+          message: `The link no longer resolves after the mutation: ${occurrence.rawDestination}`,
         });
         continue;
       }
-      rewrites.push({
-        range: occurrence.destinationRange,
-        expected: source.slice(
-          occurrence.destinationRange.start,
-          occurrence.destinationRange.end,
-        ),
-        replacement,
-      });
+      if (normalizePath(after) !== normalizePath(before)) {
+        conflicts.push({
+          severity: "error",
+          code: "link-target-changed",
+          path: filePath,
+          message: `The link target changes without a rewrite: ${occurrence.rawDestination}`,
+        });
+      }
     }
     if (rewrites.length === 0) continue;
     const rewritten = rewriteLinkDestinations(source, rewrites);

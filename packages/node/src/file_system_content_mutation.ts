@@ -156,7 +156,9 @@ export class FileSystemContentMutation {
     }
 
     addCaseConflicts(files, conflicts);
-    if (retargets.length > 0) {
+    const beforeIndex = buildContentIndex(initial).index;
+    const afterIndex = buildContentIndex(files).index;
+    if (retargets.length > 0 || !sameContentIndex(beforeIndex, afterIndex)) {
       const markdownFiles = new Map<string, string>();
       for (const [filePath, state] of files) {
         if (!filePath.toLowerCase().endsWith(".md")) continue;
@@ -177,8 +179,8 @@ export class FileSystemContentMutation {
       const linkPlan = planContentLinkUpdates({
         files: markdownFiles,
         retargets,
-        beforeIndex: buildContentIndex(initial).index,
-        afterIndex: buildContentIndex(files).index,
+        beforeIndex,
+        afterIndex,
       });
       for (const [filePath, content] of linkPlan.updates) {
         const existing = files.get(filePath);
@@ -684,6 +686,16 @@ function buildContentIndex(
       );
   }
   return ContentIndexBuilder.buildFromAliases(entries, aliasesByPath);
+}
+function sameContentIndex(
+  left: ReadonlyMap<string, string>,
+  right: ReadonlyMap<string, string>,
+): boolean {
+  if (left.size !== right.size) return false;
+  for (const [key, value] of left) {
+    if (right.get(key) !== value) return false;
+  }
+  return true;
 }
 function isWithin(parent: string, child: string): boolean {
   const relative = path.relative(parent, child);

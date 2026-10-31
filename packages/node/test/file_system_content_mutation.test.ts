@@ -225,3 +225,13 @@ test("uses content aliases when deciding which links to rewrite", async () => {
     false,
   );
 });
+
+test("refuses a creation that makes existing links ambiguous", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "# Note");
+  await fs.writeFile(path.join(root, "source.md"), "[[note]]");
+  const plan = await new FileSystemContentMutation(root).plan([
+    { kind: "create", path: "other/note.md", content: "# Other" },
+  ]);
+  assert.equal(plan.conflicts[0]?.code, "link-broken");
+});

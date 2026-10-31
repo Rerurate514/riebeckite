@@ -64,6 +64,24 @@ test("deleting one of several duplicate basenames is not reported as broken", ()
   assert.deepEqual(result.warnings, []);
 });
 
+test("retargeting reports links whose resolution changes without a rewrite", () => {
+  const ambiguous = planContentLinkUpdates({
+    files: new Map([["a.md", "[[note]]"]]),
+    retargets: [],
+    beforeIndex: new Map([["note", "note"]]),
+    afterIndex: new Map([["other/note", "other/note"]]),
+  });
+  assert.equal(ambiguous.conflicts[0]?.code, "link-broken");
+
+  const repointed = planContentLinkUpdates({
+    files: new Map([["a.md", "[[note]]"]]),
+    retargets: [],
+    beforeIndex: new Map([["note", "note"]]),
+    afterIndex: new Map([["note", "other/note"]]),
+  });
+  assert.equal(repointed.conflicts[0]?.code, "link-target-changed");
+});
+
 test("retargeting ignores unrelated and external destinations", () => {
   const result = planContentLinkUpdates({
     files: new Map([

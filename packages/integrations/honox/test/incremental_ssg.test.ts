@@ -345,6 +345,76 @@ test("incremental SSG matches a clean cold build", async (t) => {
   assert.ok(Object.hasOwn(finalSnapshot, "custom.json"));
 });
 
+test("SSG incrementally emits public derived generated output", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "derived-output-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const site = path.join(root, "site");
+  const sources: SiteSources = {
+    title: "Derived output",
+    renderTag: "v1",
+    noteCount: 2,
+    editedNotes: [],
+    derivedOutput: true,
+  };
+  await createSite(site, sources);
+
+  await buildSite(site, "cold", leanBuildOptions);
+  const outputPath = path.join(distPath(site), "derived-public.json");
+  assert.deepEqual(JSON.parse(await readFile(outputPath, "utf8")), [
+    { slug: "notes/note-0", title: "Note 0" },
+    { slug: "notes/note-1", title: "Note 1" },
+  ]);
+
+  await writeFile(
+    notePath(site, 0),
+    (await readFile(notePath(site, 0), "utf8")).replace(
+      "title: Note 0",
+      "title: Renamed note",
+    ),
+  );
+  const titleMetrics = await incrementalBuild(
+    site,
+    "derived-title",
+    leanBuildOptions,
+  );
+  assert.equal(titleMetrics.fullRegenerationRequired, false);
+  assert.deepEqual(JSON.parse(await readFile(outputPath, "utf8")), [
+    { slug: "notes/note-0", title: "Renamed note" },
+    { slug: "notes/note-1", title: "Note 1" },
+  ]);
+
+  await writeFile(
+    notePath(site, 1),
+    (await readFile(notePath(site, 1), "utf8")).replace(
+      "visibility: public",
+      "visibility: draft",
+    ),
+  );
+  const visibilityMetrics = await incrementalBuild(
+    site,
+    "derived-visibility",
+    leanBuildOptions,
+  );
+  assert.equal(visibilityMetrics.fullRegenerationRequired, false);
+  assert.deepEqual(JSON.parse(await readFile(outputPath, "utf8")), [
+    { slug: "notes/note-0", title: "Renamed note" },
+  ]);
+
+  const incremental = await snapshotTree(distPath(site));
+  await rm(path.join(site, ".riebeckite"), { recursive: true, force: true });
+  await rm(path.join(site, "vault", ".riebeckite"), {
+    recursive: true,
+    force: true,
+  });
+  await rm(distPath(site), { recursive: true, force: true });
+  await buildSite(site, "derived-clean", leanBuildOptions);
+  assert.deepEqual(
+    diffSnapshotKeys(incremental, await snapshotTree(distPath(site))),
+    [],
+  );
+});
+
 test("Bases incremental SSG output matches an independent clean build", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "bases-ssg-test-"));

@@ -34,9 +34,10 @@ import {
 import {
   decideOutputCacheRejection,
   decodeOutput,
-  loadOutputCache,
+  loadOutputCacheMetadata,
   type OutputCacheState,
   saveOutputCache,
+  validateOutputCache,
 } from "./ssg/output_cache.js";
 import {
   measure,
@@ -215,7 +216,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           ".riebeckite",
           "ssg-output-cache.json",
         );
-        const previousOutputCache = await loadOutputCache(
+        let previousOutputCache = await loadOutputCacheMetadata(
           outputCachePath,
           timingsMs,
           (message) => this.warn(message),
@@ -246,7 +247,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 !previousOutputCache?.outputs[output.path],
             ).length
           : 0;
-        const outputCacheDecision: OutputCacheDecision = {
+        let outputCacheDecision: OutputCacheDecision = {
           changeSetPresent: outputChangeSet !== undefined,
           changeSetRequiresFullRegeneration:
             outputChangeSet?.fullRegenerationRequired ?? true,
@@ -258,8 +259,26 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             clientBuildArtifacts?.manifestFingerprint,
           uncoveredUnchangedCount,
         };
-        const outputCacheRejectionReason =
+        let outputCacheRejectionReason =
           decideOutputCacheRejection(outputCacheDecision);
+        if (
+          outputCacheRejectionReason === undefined &&
+          previousOutputCache &&
+          !(await validateOutputCache(
+            previousOutputCache,
+            outputCachePath,
+            timingsMs,
+            (message) => this.warn(message),
+          ))
+        ) {
+          previousOutputCache = undefined;
+          outputCacheDecision = {
+            ...outputCacheDecision,
+            outputCacheLoaded: false,
+          };
+          outputCacheRejectionReason =
+            decideOutputCacheRejection(outputCacheDecision);
+        }
         const canUseIncremental = outputCacheRejectionReason === undefined;
         const reusablePaths = new Set<string>(
           canUseIncremental

@@ -4,6 +4,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import {
+  loadOutputCacheMetadata,
+  validateOutputCache,
+} from "../src/ssg/output_cache.js";
 import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
   createNoChangeFastPathOutputMetrics,
@@ -238,6 +242,35 @@ test("SSG output cache falls back when a cached entry is corrupted", async () =>
     "corrupted",
   );
 
+  assert.equal(await loadOutputCache(cachePath), undefined);
+});
+
+test("output cache metadata can be inspected before entry validation", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  await fs.mkdir(output, { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "original");
+  await saveOutputCache(
+    cachePath,
+    {
+      version: 4,
+      outputs: { "index.html": { cachePath: "", checksum: "" } },
+    },
+    output,
+  );
+  const entryPath = path.join(
+    directory,
+    "ssg-output-cache.entries",
+    createHash("sha256").update("index.html").digest("hex"),
+  );
+  await fs.writeFile(entryPath, "corrupted");
+
+  const cache = await loadOutputCacheMetadata(cachePath);
+  assert.ok(cache);
+  assert.equal(await validateOutputCache(cache, cachePath), false);
   assert.equal(await loadOutputCache(cachePath), undefined);
 });
 

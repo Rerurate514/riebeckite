@@ -1,63 +1,72 @@
+import type { ContentMutationOperation } from "@riebeckite/core";
 import { FileSystemContentMutation } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../application_root.js";
 import { CliUsageError } from "../cli_usage_error.js";
 
 const USAGE =
-  "Usage: riebeckite content <create <path> [--body <text>] | edit <path> --body <text> | delete <path> | move <from> <to> | recover <journal>> [--apply] [--json]";
+  "Usage: riebeckite content <create|edit|delete|move> ... [--apply] [--json] | content plan <create|edit|delete|move> ... [--out <name>] [--json] | content apply <plan> --apply [--json] | content recover <journal> --apply [--json]";
+
+type ContentAction = "create" | "edit" | "delete" | "move";
+
+type ParsedCommand = {
+  readonly action: ContentAction | "apply" | "recover";
+  readonly values: readonly string[];
+  readonly apply: boolean;
+  readonly json: boolean;
+  readonly save: boolean;
+  readonly output?: string;
+};
 
 export async function runContentMutation(
   project: RiebeckiteProject,
   arguments_: readonly string[],
 ): Promise<boolean> {
-  const { action, values, apply, json } = parse(arguments_);
-  const first = values[0];
-  if (first === undefined) throw new CliUsageError(USAGE);
+  const command = parse(arguments_);
   const mutation = new FileSystemContentMutation(project.contentRoot);
-  if (action === "recover") {
-    if (!apply) throw new CliUsageError("content recover requires --apply.");
-    const result = await mutation.recover(first);
-    print(json, result);
+  if (command.action === "apply") {
+    if (!command.apply)
+      throw new CliUsageError("content apply requires --apply.");
+    const result = await mutation.apply(
+      await mutation.loadPlan(valueAt(command.values, 0)),
+    );
+    print(command.json, result);
+    return result.applied;
+  }
+  if (command.action === "recover") {
+    if (!command.apply)
+      throw new CliUsageError("content recover requires --apply.");
+    const result = await mutation.recover(valueAt(command.values, 0));
+    print(command.json, result);
     return result.recovered || result.conflicts.length === 0;
   }
-  const operation =
-    action === "create"
-      ? { kind: "create" as const, path: first, content: values[1] ?? "" }
-      : action === "edit"
-        ? { kind: "update" as const, path: first, content: secondValue(values) }
-        : action === "delete"
-          ? { kind: "delete" as const, path: first }
-          : { kind: "move" as const, from: first, to: secondValue(values) };
-  const plan = await mutation.plan([operation]);
+  const plan = await mutation.plan([operationFor(command)]);
+  if (command.save) {
+    const planPath = await mutation.savePlan(plan, command.output);
+    print(command.json, { planPath, plan });
+    return plan.conflicts.length === 0;
+  }
   if (plan.conflicts.length > 0) {
-    print(json, plan);
+    print(command.json, plan);
     return false;
   }
-  if (!apply) {
-    print(json, plan);
+  if (!command.apply) {
+    print(command.json, plan);
     return true;
   }
   const result = await mutation.apply(plan);
-  print(json, result);
+  print(command.json, result);
   return result.applied;
 }
 
-function parse(arguments_: readonly string[]): {
-  action: "create" | "edit" | "delete" | "move" | "recover";
-  values: string[];
-  apply: boolean;
-  json: boolean;
-} {
-  const [action, ...rest] = arguments_;
-  if (
-    action !== "create" &&
-    action !== "edit" &&
-    action !== "delete" &&
-    action !== "move" &&
-    action !== "recover"
-  )
+function parse(arguments_: readonly string[]): ParsedCommand {
+  const [first, ...rest] = arguments_;
+  const save = first === "plan";
+  const action = save ? rest.shift() : first;
+  if (!isAction(action) && action !== "apply" && action !== "recover")
     throw new CliUsageError(USAGE);
   let apply = false;
   let json = false;
+  let output: string | undefined;
   const values: string[] = [];
   for (let index = 0; index < rest.length; index += 1) {
     const value = rest[index];
@@ -71,10 +80,19 @@ function parse(arguments_: readonly string[]): {
       json = true;
       continue;
     }
+    if (value === "--out") {
+      if (!save || output !== undefined || rest[index + 1] === undefined)
+        throw new CliUsageError(
+          "--out is only available for content plan and requires a path.",
+        );
+      output = rest[index + 1];
+      index += 1;
+      continue;
+    }
     if (value === "--body") {
-      const body = rest[index + 1];
-      if (body === undefined) throw new CliUsageError("--body requires text.");
-      values.push(body);
+      if (rest[index + 1] === undefined)
+        throw new CliUsageError("--body requires text.");
+      values.push(rest[index + 1]);
       index += 1;
       continue;
     }
@@ -82,20 +100,51 @@ function parse(arguments_: readonly string[]): {
       throw new CliUsageError(`Unknown content option: ${value}`);
     if (value !== undefined) values.push(value);
   }
-  const count =
-    action === "create" || action === "edit" || action === "recover"
-      ? action === "edit"
-        ? 2
-        : 1
-      : action === "delete"
-        ? 1
-        : 2;
-  if (values.length !== count) throw new CliUsageError(USAGE);
-  return { action, values, apply, json };
+  const validValues =
+    action === "create"
+      ? values.length === 1 || values.length === 2
+      : action === "edit" || action === "move"
+        ? values.length === 2
+        : values.length === 1;
+  if (!validValues || (save && apply)) throw new CliUsageError(USAGE);
+  return { action, values, apply, json, save, output };
 }
 
-function secondValue(values: readonly string[]): string {
-  const value = values[1];
+function isAction(value: string | undefined): value is ContentAction {
+  return (
+    value === "create" ||
+    value === "edit" ||
+    value === "delete" ||
+    value === "move"
+  );
+}
+
+function operationFor(command: ParsedCommand): ContentMutationOperation {
+  if (command.action === "create")
+    return {
+      kind: "create",
+      path: valueAt(command.values, 0),
+      content: command.values[1] ?? "",
+    };
+  if (command.action === "edit")
+    return {
+      kind: "update",
+      path: valueAt(command.values, 0),
+      content: command.values[1] ?? "",
+    };
+  if (command.action === "delete")
+    return { kind: "delete", path: valueAt(command.values, 0) };
+  if (command.action === "move")
+    return {
+      kind: "move",
+      from: valueAt(command.values, 0),
+      to: valueAt(command.values, 1),
+    };
+  throw new CliUsageError(USAGE);
+}
+
+function valueAt(values: readonly string[], index: number): string {
+  const value = values[index];
   if (value === undefined) throw new CliUsageError(USAGE);
   return value;
 }

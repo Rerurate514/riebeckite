@@ -48,6 +48,7 @@ export type ContentMutationIssue = {
 };
 
 export type ContentMutationPlan = {
+  readonly schemaVersion: 1;
   readonly id: string;
   readonly operations: readonly ContentMutationOperation[];
   readonly changes: readonly ContentMutationFileChange[];

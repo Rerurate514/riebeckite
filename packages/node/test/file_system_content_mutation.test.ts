@@ -70,6 +70,61 @@ test("rejects a changed file before applying", async () => {
   );
 });
 
+test("persists a plan, revalidates it, and refuses a duplicate apply", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const planPath = await mutation.savePlan(plan, "note-update.json");
+  const restored = await mutation.loadPlan(planPath);
+  assert.deepEqual(
+    restored.changes.map(({ content, ...change }) => ({
+      ...change,
+      content: content && Buffer.from(content).toString("base64"),
+    })),
+    plan.changes.map(({ content, ...change }) => ({
+      ...change,
+      content: content && Buffer.from(content).toString("base64"),
+    })),
+  );
+  assert.equal((await mutation.apply(restored)).applied, true);
+  const duplicate = await mutation.apply(restored);
+  assert.equal(duplicate.applied, false);
+  assert.equal(duplicate.conflicts[0]?.code, "concurrent-modification");
+});
+
+test("rejects a persisted plan after its source changes", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const planPath = await mutation.savePlan(plan);
+  await fs.writeFile(path.join(root, "note.md"), "concurrent");
+  const result = await mutation.apply(await mutation.loadPlan(planPath));
+  assert.equal(result.applied, false);
+  assert.equal(result.conflicts[0]?.code, "concurrent-modification");
+});
+
+test("releases a lock owned by a dead process", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "first");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const mutationRoot = path.join(root, ".riebeckite", "mutations");
+  await fs.mkdir(mutationRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(mutationRoot, "lock"),
+    JSON.stringify({ pid: 2_147_483_647 }),
+  );
+  assert.equal((await mutation.apply(plan)).applied, true);
+});
+
 test("recovers only files whose applied fingerprint still matches", async () => {
   const root = await directory();
   await fs.writeFile(path.join(root, "note.md"), "original");

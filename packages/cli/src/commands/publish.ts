@@ -119,9 +119,10 @@ async function createPublishContext(
 ): Promise<PublishContext> {
   const provider = await resolveProvider(project, options.provider);
   const workflow =
-    project.config.publication?.mode === "managed"
+    project.config.publication?.requireApproval === true ||
+    options.workflow === "approved"
       ? "approved"
-      : (options.workflow ?? "direct");
+      : "direct";
   return await inspectPublication(project, {
     ...(provider === undefined ? {} : { provider }),
     ...(options.at === undefined ? {} : { at: options.at }),
@@ -240,7 +241,7 @@ async function runPublication(
     run = { ...run, status: "deploying" };
     history = replaceRun(history, run);
     const deployStartedAt = Date.now();
-    const deployment = await executeHostingDeployment(
+    await executeHostingDeployment(
       project,
       context.provider,
       hostingPlan,
@@ -248,33 +249,22 @@ async function runPublication(
     );
     run = {
       ...run,
-      status: deployment.confirmed ? "deployed" : "dispatched",
+      status: "deployed",
       finishedAt: new Date().toISOString(),
       artifactFingerprint: artifact.artifactFingerprint,
       deploy: { status: "succeeded", durationMs: Date.now() - deployStartedAt },
     };
     history = replaceRun(history, run);
-    if (deployment.confirmed) {
-      const snapshot = createPublicationSnapshot(plan, {
-        runId: run.id,
-        artifactFingerprint: artifact.artifactFingerprint,
-        provider: context.provider,
-      });
-      history = recordPublicationSuccess(history, snapshot);
-      await writePublicationHistory(project, history);
-      await writePublicationState(project, snapshot);
-    } else {
-      await writePublicationHistory(project, history);
-    }
+    const snapshot = createPublicationSnapshot(plan, {
+      runId: run.id,
+      artifactFingerprint: artifact.artifactFingerprint,
+      provider: context.provider,
+    });
+    await writePublicationState(project, snapshot);
+    history = recordPublicationSuccess(history, snapshot);
+    await writePublicationHistory(project, history);
     if (options.json) printJson({ ...context, run }, "run", project);
-    else {
-      printRunResult(run, project);
-      if (!deployment.confirmed) {
-        console.log(
-          "Deployment dispatched. Run `riebeckite publish record` after the workflow finishes to store the successful snapshot.",
-        );
-      }
-    }
+    else printRunResult(run, project);
     return true;
   } catch (error) {
     run = {
@@ -294,31 +284,17 @@ async function runGate(
   project: RiebeckiteProject,
   options: PublishCommandOptions,
 ): Promise<boolean> {
-  const enabled = project.config.publication?.mode === "managed";
-  if (!enabled) {
-    if (options.json) {
-      console.log(JSON.stringify({ command: "gate", enabled: false }, null, 2));
-    } else {
-      console.log(
-        "Publication gate: disabled (publication.mode is not managed).",
-      );
-    }
-    return true;
-  }
-
-  const context = await createPublishContext(project, {
-    ...options,
-    workflow: "approved",
-  });
-  const gate = evaluatePublicationGate(project, context);
+  const context = await createPublishContext(project, options);
+  const gate = evaluatePublicationGate(context);
   if (options.json) {
     console.log(
       JSON.stringify(
         {
           command: "gate",
-          enabled: gate.enabled,
           allowed: gate.allowed,
           reasons: gate.reasons,
+          approvalRequired:
+            project.config.publication?.requireApproval === true,
           plan: context.plan,
           artifactIssues: context.artifactIssues,
           durableState: context.durableState,
@@ -328,9 +304,7 @@ async function runGate(
       ),
     );
   } else {
-    console.log(
-      `Publication gate: ${gate.allowed ? "allowed" : "blocked"} (managed mode).`,
-    );
+    console.log(`Publication gate: ${gate.allowed ? "allowed" : "blocked"}.`);
     printPlan(context);
     for (const reason of gate.reasons) console.log(`  reason: ${reason}`);
   }
@@ -383,12 +357,12 @@ async function runRecord(
   );
   let history: PublicationHistory;
   try {
+    await writePublicationState(project, snapshot);
     history = recordPublicationSuccess(
       appendPublicationRun(await readPublicationHistory(project), run),
       snapshot,
     );
     await writePublicationHistory(project, history);
-    await writePublicationState(project, snapshot);
   } finally {
     await releasePublicationLock(project, lock);
   }

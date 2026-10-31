@@ -83,7 +83,7 @@ test("local-first scaffold adds wrangler and no GitHub Actions workflow", async 
 
     assert.equal(manifest.devDependencies?.wrangler, WRANGLER_VERSION);
     assert.equal(
-      await fileExists(targetDirectory, ".github/workflows/deploy.yml"),
+      await fileExists(targetDirectory, ".github/workflows/publish.yml"),
       false,
     );
     assert.equal(

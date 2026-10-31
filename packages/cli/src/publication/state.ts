@@ -146,10 +146,14 @@ export type PublicationLock = {
   readonly pid: number;
   readonly hostname: string;
   readonly startedAt: string;
+  readonly heartbeatAt: string;
   readonly planFingerprint: string;
 };
 
 const LOCK_STALE_MS = 60 * 60 * 1000;
+const LOCK_HEARTBEAT_MS = 30 * 1000;
+const heartbeatTimers = new Map<string, NodeJS.Timeout>();
+const releasedLocks = new Set<string>();
 
 export async function acquirePublicationLock(
   project: RiebeckiteProject,
@@ -161,6 +165,7 @@ export async function acquirePublicationLock(
     pid: process.pid,
     hostname: os.hostname(),
     startedAt: new Date().toISOString(),
+    heartbeatAt: new Date().toISOString(),
     planFingerprint,
   };
   await fs.mkdir(path.dirname(file), { recursive: true });
@@ -170,6 +175,7 @@ export async function acquirePublicationLock(
         encoding: "utf8",
         flag: "wx",
       });
+      startHeartbeat(project, lock);
       return lock;
     } catch (error) {
       if (!isAlreadyExists(error)) throw error;
@@ -181,15 +187,7 @@ export async function acquirePublicationLock(
       await fs.rm(file, { force: true });
       continue;
     }
-    const startedAt =
-      typeof existing.startedAt === "string"
-        ? Date.parse(existing.startedAt)
-        : NaN;
-    if (
-      Number.isFinite(startedAt) &&
-      Date.now() - startedAt < LOCK_STALE_MS &&
-      isLockOwnerAlive(existing)
-    ) {
+    if (isLockLive(existing)) {
       throw new PublicationStateError(
         `Another publication run has held the lock since ${existing.startedAt}. Retry after it finishes.`,
       );
@@ -205,6 +203,8 @@ export async function releasePublicationLock(
   project: RiebeckiteProject,
   lock: PublicationLock,
 ): Promise<void> {
+  releasedLocks.add(lock.id);
+  clearHeartbeat(lock.id);
   const file = resolvePublicationLockPath(project);
   const existing = (await readJson(file)) as
     | Partial<PublicationLock>
@@ -226,16 +226,7 @@ export async function readLivePublicationLock(
   const lock = (await readJson(resolvePublicationLockPath(project))) as
     | Partial<PublicationLock>
     | undefined;
-  if (lock === undefined) return undefined;
-  const startedAt =
-    typeof lock.startedAt === "string" ? Date.parse(lock.startedAt) : NaN;
-  if (
-    !Number.isFinite(startedAt) ||
-    Date.now() - startedAt >= LOCK_STALE_MS ||
-    !isLockOwnerAlive(lock)
-  ) {
-    return undefined;
-  }
+  if (lock === undefined || !isLockLive(lock)) return undefined;
   return lock as PublicationLock;
 }
 
@@ -294,11 +285,59 @@ function isAlreadyExists(error: unknown): boolean {
   );
 }
 
-function isLockOwnerAlive(lock: Partial<PublicationLock>): boolean {
-  if (typeof lock.hostname === "string" && lock.hostname !== os.hostname()) {
-    return false;
+function isLockLive(lock: Partial<PublicationLock>): boolean {
+  const heartbeat =
+    typeof lock.heartbeatAt === "string"
+      ? Date.parse(lock.heartbeatAt)
+      : typeof lock.startedAt === "string"
+        ? Date.parse(lock.startedAt)
+        : NaN;
+  if (!Number.isFinite(heartbeat)) return false;
+  if (lock.hostname !== os.hostname()) {
+    return Date.now() - heartbeat < LOCK_STALE_MS;
   }
-  const pid = lock.pid;
+  return isPidAlive(lock.pid) && Date.now() - heartbeat < LOCK_STALE_MS;
+}
+
+function startHeartbeat(
+  project: RiebeckiteProject,
+  lock: PublicationLock,
+): void {
+  const timer = setInterval(() => {
+    void touchPublicationLock(project, lock).catch(() => undefined);
+  }, LOCK_HEARTBEAT_MS);
+  timer.unref();
+  heartbeatTimers.set(lock.id, timer);
+}
+
+function clearHeartbeat(id: string): void {
+  const timer = heartbeatTimers.get(id);
+  if (!timer) return;
+  clearInterval(timer);
+  heartbeatTimers.delete(id);
+}
+
+async function touchPublicationLock(
+  project: RiebeckiteProject,
+  lock: PublicationLock,
+): Promise<void> {
+  if (releasedLocks.has(lock.id)) return;
+  const file = resolvePublicationLockPath(project);
+  const existing = (await readJson(file)) as
+    | Partial<PublicationLock>
+    | undefined;
+  if (existing?.id !== lock.id) {
+    clearHeartbeat(lock.id);
+    return;
+  }
+  if (releasedLocks.has(lock.id)) return;
+  await writeJsonAtomic(file, {
+    ...lock,
+    heartbeatAt: new Date().toISOString(),
+  });
+}
+
+function isPidAlive(pid: unknown): boolean {
   if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0) {
     return false;
   }

@@ -12,6 +12,7 @@ import {
   type PublicationRedirect,
   parseBuildOutputMarker,
   parsePublicationApprovals,
+  parsePublicationHistory,
   publicationEntriesFromManifest,
   publicationRedirectsFromManifest,
   resolveConfig,
@@ -387,9 +388,9 @@ test("the build output marker round-trips with its publication fingerprint", () 
   );
 });
 
-test("publication control defaults to direct and validates its mode", () => {
+test("publication approval defaults off and validates its flag", () => {
   const resolved = resolveConfig({ site: { title: "Test" } });
-  assert.equal(resolved.publication?.mode, "direct");
+  assert.equal(resolved.publication?.requireApproval, false);
   assert.equal(
     resolved.publication?.approvalFile,
     "publication/approvals.json",
@@ -397,14 +398,43 @@ test("publication control defaults to direct and validates its mode", () => {
   assert.equal(
     resolveConfig({
       site: { title: "Test" },
-      publication: { mode: "managed" },
-    }).publication?.mode,
-    "managed",
+      publication: { requireApproval: true },
+    }).publication?.requireApproval,
+    true,
   );
   assert.throws(() =>
     resolveConfig({
       site: { title: "Test" },
-      publication: { mode: "other" as never },
+      publication: { requireApproval: "yes" as never },
     }),
+  );
+});
+
+test("history parsing drops invalid runs without discarding valid ones", () => {
+  const valid = {
+    id: "run-1",
+    startedAt: "2026-01-10T00:00:00.000Z",
+    status: "deployed",
+    trigger: "ci",
+    dryRun: false,
+    planFingerprint: "fingerprint",
+    workflow: "approved",
+    action: "build-and-deploy",
+    changes: {
+      detected: true,
+      added: ["a"],
+      changed: [],
+      removed: [],
+      unchanged: [],
+    },
+  };
+  const parsed = parsePublicationHistory({
+    version: 1,
+    runs: [valid, { id: "old", status: "dispatched" }],
+  });
+  assert.ok(parsed);
+  assert.deepEqual(
+    parsed.runs.map((run) => run.id),
+    ["run-1"],
   );
 });

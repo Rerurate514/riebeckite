@@ -75,27 +75,26 @@ A delayed run never publishes stale content: the plan is recomputed at run time.
 
 ## Approval workflow
 
-Approval is opt-in. Personal sites keep the default and need no extra file:
+Approval is opt-in. The default is a single publication model with no approval step:
 
 ```ts
 export default defineConfig({
   site: { title: "My notes" },
-  publication: { mode: "direct" },
 });
 ```
 
-To require approval for every deploy path, including the normal push workflow:
+The planning, artifact, and durable-state checks always run. To add approval on top of that single model:
 
 ```ts
 publication: {
-  mode: "managed",
+  requireApproval: true,
   approvalFile: "publication/approvals.json", // optional
 },
 ```
 
-In managed mode the shared gate (`riebeckite publish gate`) runs in `deploy.yml`, `publish.yml`, `publish run`, and `riebeckite deploy`. A direct `wrangler` call is outside Riebeckite's control, so protect the workflow files and repository settings as well.
+The shared gate (`riebeckite publish gate`) runs in the publish workflow, `publish run`, and the Cloudflare setup helpers. A direct `wrangler` call is outside Riebeckite's control, so protect the workflow files and repository settings as well.
 
-For review, use `workflow: "approved"` in the Core API or `--require-approval` on the CLI:
+For review, use `requireApproval: true` in the configuration, `workflow: "approved"` in the Core API, or `--require-approval` on the CLI:
 
 ```sh
 riebeckite publish approve <slug> [--all] [--by "editor"]
@@ -133,31 +132,31 @@ riebeckite publish gate      [--json] [--provider <name>]
 
 ```sh
 # Inspect without touching the network
-npm exec riebeckite publish plan --json
+npm exec -- riebeckite publish plan --json
 
 # Confirm that dist/ is the artifact this plan describes
-npm exec riebeckite publish validate
+npm exec -- riebeckite publish validate
 
 # Build and deploy explicitly
-npm exec riebeckite publish run --execute --provider cloudflare-workers
+npm exec -- riebeckite publish run --execute --provider cloudflare-workers
 
 # CI: scheduled trigger
-npm exec riebeckite publish run --execute --trigger scheduled
+npm exec -- riebeckite publish run --execute --trigger scheduled
 ```
 
 `run --execute` builds only when the plan needs it. It writes `publication` metadata into `.riebeckite/build-output.json` and refuses to deploy an artifact whose publication fingerprint differs from the current plan. If another live run holds `.riebeckite/publication/lock.json`, the command stops; a lock whose process is gone or that is older than an hour is replaced. `--force` allows a deploy when the plan reports no changes.
 
 `record` is for a deployment performed by an external CI action. It validates the built artifact against the current plan, then writes a successful run and snapshot to the durable state and history without deploying. Use it after `wrangler-action` or `actions/deploy-pages`.
 
-`gate` is the shared pre-deploy check. In direct mode it succeeds without reading content, so existing sites keep their current behavior. In managed mode it fails unless the current content is approved and the build artifact matches the plan. `publish validate` also fails when the plan is blocked by approval.
+`gate` is the single pre-deploy check. It always verifies the plan and build artifact; when `requireApproval` is enabled it also fails until the current content is approved. `publish validate` follows the same rule.
 
-The old `riebeckite deploy` command is unchanged. `publish run` uses it for Cloudflare Workers.
+`riebeckite deploy` no longer executes a deployment. Use `riebeckite publish run --execute`. The `deploy setup` and `deploy domain` commands remain Cloudflare configuration helpers.
 
 ## Hosting adapters
 
 | Provider | Redirects | Scheduler | Deploy path |
 | --- | --- | --- | --- |
-| `github-pages` | static stubs | CI best effort | `gh workflow run` or the current GitHub Actions job |
+| `github-pages` | static stubs | CI best effort | `actions/deploy-pages` in the publish workflow |
 | `cloudflare-workers` | native | none | `wrangler deploy` |
 | `cloudflare-pages` | native | none | `wrangler pages deploy` |
 | `netlify` | native | none | `netlify deploy --prod` |
@@ -165,19 +164,21 @@ The old `riebeckite deploy` command is unchanged. `publish run` uses it for Clou
 
 Provider detection checks `wrangler.jsonc|json|toml`, `.github/workflows` for Pages actions, `vercel.json`, and `netlify.toml`. `--provider` overrides detection. Required environment variable **names** are reported by `publish status --json`; values are never read, recorded, or written by Riebeckite.
 
-For GitHub Pages, the build must include the deploy plugin's `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core. A GitHub Actions job deploys the artifact with `actions/deploy-pages` and then calls `publish record --provider github-pages`. Outside CI, `publish run --execute --provider github-pages` dispatches the deploy workflow with `gh workflow run`; because dispatch does not prove the deployment succeeded, it does not record the successful snapshot. Run `publish record` after the workflow completes.
+For GitHub Pages, the build must include the deploy plugin's `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core and the CLI does not dispatch an unverified workflow. The publish workflow runs `publish gate --provider github-pages`, deploys with `actions/deploy-pages`, and then calls `publish record --provider github-pages`.
 
 ## CI
 
-`.github/workflows/publish.yml` in this repository is a working reference:
+`.github/workflows/publish.yml` is the single production deploy path:
 
-- `schedule` runs every 15 minutes and `workflow_dispatch` allows a manual run.
-- `deploy.yml` and `publish.yml` share the `riebeckite-production` concurrency group, so two workflows cannot deploy at the same time. Neither cancels an in-flight deployment.
-- Both workflows fetch the branch head and stop when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
-- `publish plan --json` decides whether a build and deploy are needed. A run with no changes performs neither.
-- The plan is uploaded as an artifact, then `publish validate` and the managed publication gate check the built output.
+- `push` to `main`, `schedule`, and `workflow_dispatch` all enter the same workflow.
+- The `riebeckite-production` concurrency group allows one deploy at a time and never cancels an in-flight deployment.
+- The workflow fetches the branch head and stops when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
+- `publish plan --json` decides whether a scheduled run needs a build and deploy. A push always builds because application code may have changed.
+- The plan is uploaded as an artifact, then `publish validate` and `publish gate` check the built output.
 - Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot, and the workflow commits `publication/state.json` with `[skip ci]`. The next run reads that committed state, not the cache.
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
+
+A site that does not use scheduled publication still runs the schedule in this reference workflow, but the plan reports no changes and the workflow skips build and deploy. Remove the `schedule` trigger from generated sites that do not use `publishAt` if the periodic check itself is unwanted.
 
 The state commit requires `contents: write` and a branch that the workflow may push to. If branch protection forbids the push, the deployment still happens, the job reports the failure, and the next run safely redeploys because the durable snapshot was not updated. Without any durable snapshot a runner treats every note as newly added; that is a full redeploy, never a skipped publication.
 
@@ -200,9 +201,7 @@ History is bounded to 50 runs and contains no environment values or tokens. It i
 
 ## Lock and clean
 
-`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock is considered stale when its process is gone or it is older than one hour; a live lock is never removed by `--force`.
-
-`clean --all` and `clean --state` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build. An abnormally terminated run is recovered by the next run or by `clean` once the lock is stale.
+`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock whose process is alive on this host is never removed by elapsed time or `--force`; a lock whose process is gone (or whose host no longer owns the local state) is recovered. `clean --all` and `clean --state` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build.
 
 ## Build output marker
 

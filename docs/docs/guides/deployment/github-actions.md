@@ -38,7 +38,7 @@ With `--github-actions`, the generator adds two things to the site:
 my-site/
 ├─ .github/
 │  └─ workflows/
-│     └─ deploy.yml
+│     └─ publish.yml
 │
 ├─ wrangler.jsonc
 └─ ...
@@ -47,7 +47,7 @@ my-site/
 | File | Role |
 | --- | --- |
 | `wrangler.jsonc` | Cloudflare Workers deployment settings |
-| `.github/workflows/deploy.yml` | The GitHub Actions build/deploy workflow |
+| `.github/workflows/publish.yml` | The GitHub Actions build/deploy workflow |
 
 Normally you use the generated workflow as your starting point.
 
@@ -63,7 +63,7 @@ The command:
 
 1. Detects the Git repository and the GitHub remote.
 2. Checks that the GitHub CLI (`gh`) is installed and logged in.
-3. Creates `.github/workflows/deploy.yml` from the same template when it does not exist. An existing non-Riebeckite workflow is reported and never overwritten; the command then stops before registering secrets.
+3. Creates `.github/workflows/publish.yml` from the same template when it does not exist. An existing non-Riebeckite workflow is reported and never overwritten; the command then stops before registering secrets.
 4. Reads the Cloudflare account from your Wrangler login, asking you to choose when there is more than one.
 5. Registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt, or from `CLOUDFLARE_API_TOKEN` in the environment for non-interactive use.
 
@@ -229,7 +229,7 @@ my-site/
 ├─ riebeckite.config.ts
 └─ .github/
    └─ workflows/
-      └─ deploy.yml
+      └─ publish.yml
 ```
 
 Because the articles and the site live in the same repository:
@@ -237,7 +237,7 @@ Because the articles and the site live in the same repository:
 ```mermaid
 flowchart LR
     Push["push to main"]
-    Workflow["deploy.yml"]
+    Workflow["publish.yml"]
     Build["Build"]
     Deploy["Cloudflare"]
 
@@ -266,7 +266,7 @@ A push to the content repository **does not start the site repository's workflow
 flowchart LR
     Content["Content repository"]
     Site["Site repository"]
-    Workflow["Site deploy.yml"]
+    Workflow["Site publish.yml"]
 
     Content -.->|"a push alone does not start it"| Workflow
     Site -->|"push"| Workflow
@@ -296,7 +296,7 @@ flowchart LR
     Notify["notify-site.yml"]
     Dispatch["repository_dispatch<br/>content-updated"]
     Site["Site repository"]
-    Workflow["deploy.yml"]
+    Workflow["publish.yml"]
     Build["Build"]
     Deploy["Cloudflare"]
 
@@ -325,7 +325,7 @@ notify the site repository
 "the content was updated"
 ```
 
-The site repository's `deploy.yml`, on receiving that notification, runs the build and deploy.
+The site repository's `publish.yml`, on receiving that notification, runs the build and deploy.
 
 ## `SITE_DISPATCH_TOKEN`
 
@@ -601,7 +601,7 @@ Site repository
       ↓
 push to main
       ↓
-deploy.yml
+publish.yml
       ↓
 check out content
       ↓
@@ -623,7 +623,7 @@ notify-site.yml
       ↓
 repository_dispatch
       ↓
-Site deploy.yml
+Site publish.yml
       ↓
 check out content
       ↓

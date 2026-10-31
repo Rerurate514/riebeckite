@@ -235,16 +235,16 @@ and the [Plugin system](./plugin-api.md).
 
 ## publication
 
-`publication` controls the deploy gate. It is optional and defaults to `direct`, which preserves the existing build-and-deploy behavior.
+`publication` adds optional approval to the single publication model. Planning, artifact verification, and durable-state checks always run; approval defaults to off.
 
 | Field | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `mode` | `"direct" \| "managed"` | `"direct"` | `managed` requires current approval records and a matching build artifact on every Riebeckite deploy path. |
+| `requireApproval` | `boolean` | `false` | Require current approval records for every Riebeckite deploy path. |
 | `approvalFile` | `string` | `"publication/approvals.json"` | Project-relative path to the committed approval records. |
 
 ```ts
 publication: {
-  mode: "managed",
+  requireApproval: true,
   approvalFile: "publication/approvals.json",
 }
 ```

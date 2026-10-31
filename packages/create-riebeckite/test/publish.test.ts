@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { packageManagerCommands } from "../src/package-manager.js";
 import {
-  buildAndDeploy,
   DeploymentFailure,
+  deploySite,
   formatCloudflareNextSteps,
   formatDeploymentFailure,
   installDependencies,
@@ -42,15 +42,18 @@ test("installDependencies runs the package manager install command in the projec
   ]);
 });
 
-test("buildAndDeploy builds before deploying", async () => {
+test("deploySite runs the unified publish command", async () => {
   const commands = packageManagerCommands("npm");
   const { calls, run } = createSequenceRunner([]);
 
-  await buildAndDeploy("C:/site", commands, run);
+  await deploySite("C:/site", commands, run);
 
   assert.deepEqual(calls, [
-    { command: "npm", args: ["run", "build"], cwd: "C:/site" },
-    { command: "npm", args: ["exec", "riebeckite", "deploy"], cwd: "C:/site" },
+    {
+      command: "npm",
+      args: ["exec", "riebeckite", "publish", "run", "--execute"],
+      cwd: "C:/site",
+    },
   ]);
 });
 
@@ -68,62 +71,46 @@ test("a failed install reports the install phase", async () => {
   );
 });
 
-test("a failed build is reported and stops before deploy", async () => {
+test("a failed publish reports the deploy phase", async () => {
   const commands = packageManagerCommands("npm");
   const { calls, run } = createSequenceRunner([1]);
 
   await assert.rejects(
-    () => buildAndDeploy("C:/site", commands, run),
-    (error: unknown) => {
-      assert.ok(error instanceof DeploymentFailure);
-      assert.equal(error.phase, "build");
-      return true;
-    },
-  );
-  assert.equal(calls.length, 1);
-});
-
-test("a failed deploy reports the deploy phase", async () => {
-  const commands = packageManagerCommands("npm");
-  const { calls, run } = createSequenceRunner([0, 1]);
-
-  await assert.rejects(
-    () => buildAndDeploy("C:/site", commands, run),
+    () => deploySite("C:/site", commands, run),
     (error: unknown) => {
       assert.ok(error instanceof DeploymentFailure);
       assert.equal(error.phase, "deploy");
       return true;
     },
   );
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, 1);
 });
 
-test("a thrown runner error becomes a phase failure", async () => {
+test("a thrown runner error becomes a deploy failure", async () => {
   const commands = packageManagerCommands("npm");
   const run: CommandRunner = async () => {
     throw new Error("spawn failed");
   };
 
   await assert.rejects(
-    () => buildAndDeploy("C:/site", commands, run),
+    () => deploySite("C:/site", commands, run),
     (error: unknown) => {
       assert.ok(error instanceof DeploymentFailure);
-      assert.equal(error.phase, "build");
+      assert.equal(error.phase, "deploy");
       assert.equal(error.message, "spawn failed");
       return true;
     },
   );
 });
 
-test("formatCloudflareNextSteps prints build then deploy commands", () => {
+test("formatCloudflareNextSteps prints the publish command", () => {
   const commands = packageManagerCommands("npm");
   assert.equal(
     formatCloudflareNextSteps("my-site", commands),
     [
       "Next steps:",
       "  cd my-site",
-      "  npm run build",
-      "  npm exec riebeckite deploy",
+      "  npm exec riebeckite publish run --execute",
     ].join("\n"),
   );
 });
@@ -132,20 +119,20 @@ test("formatCloudflareNextSteps omits cd for the current directory", () => {
   const commands = packageManagerCommands("pnpm");
   assert.equal(
     formatCloudflareNextSteps(".", commands),
-    ["Next steps:", "  pnpm build", "  pnpm exec riebeckite deploy"].join("\n"),
+    ["Next steps:", "  pnpm exec riebeckite publish run --execute"].join("\n"),
   );
 });
 
 test("packageManagerCommands maps npm and pnpm without hardcoding", () => {
   assert.deepEqual(packageManagerCommands("pnpm").deploy, {
     command: "pnpm",
-    args: ["exec", "riebeckite", "deploy"],
-    label: "pnpm exec riebeckite deploy",
+    args: ["exec", "riebeckite", "publish", "run", "--execute"],
+    label: "pnpm exec riebeckite publish run --execute",
   });
-  assert.deepEqual(packageManagerCommands("npm").build, {
+  assert.deepEqual(packageManagerCommands("npm").deploy, {
     command: "npm",
-    args: ["run", "build"],
-    label: "npm run build",
+    args: ["exec", "riebeckite", "publish", "run", "--execute"],
+    label: "npm exec riebeckite publish run --execute",
   });
 });
 
@@ -165,28 +152,7 @@ test("formatDeploymentFailure distinguishes a created project from a failed inst
       "You can retry with:",
       "  cd my-site",
       "  npm install",
-      "  npm run build",
-      "  npm exec riebeckite deploy",
-    ].join("\n"),
-  );
-});
-
-test("formatDeploymentFailure reports a build failure with build and deploy retries", () => {
-  const commands = packageManagerCommands("pnpm");
-  const failure = new DeploymentFailure(
-    "build",
-    "pnpm build exited with code 2.",
-  );
-
-  assert.equal(
-    formatDeploymentFailure(".", commands, failure),
-    [
-      "Project created successfully.",
-      "Build failed.",
-      "pnpm build exited with code 2.",
-      "You can retry with:",
-      "  pnpm build",
-      "  pnpm exec riebeckite deploy",
+      "  npm exec riebeckite publish run --execute",
     ].join("\n"),
   );
 });
@@ -195,7 +161,7 @@ test("formatDeploymentFailure reports a deploy failure without an install retry"
   const commands = packageManagerCommands("npm");
   const failure = new DeploymentFailure(
     "deploy",
-    "npm exec riebeckite deploy exited with code 1.",
+    "npm exec riebeckite publish run --execute exited with code 1.",
   );
 
   assert.equal(
@@ -203,10 +169,9 @@ test("formatDeploymentFailure reports a deploy failure without an install retry"
     [
       "Project created successfully.",
       "Deployment failed.",
-      "npm exec riebeckite deploy exited with code 1.",
+      "npm exec riebeckite publish run --execute exited with code 1.",
       "You can retry with:",
-      "  npm run build",
-      "  npm exec riebeckite deploy",
+      "  npm exec riebeckite publish run --execute",
     ].join("\n"),
   );
 });

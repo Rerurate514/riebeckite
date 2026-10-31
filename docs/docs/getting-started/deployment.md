@@ -48,10 +48,10 @@ This is the fastest path to a public site.
 
    ```sh
    npm run build
-   npm exec riebeckite deploy
+   npm exec -- riebeckite publish run --execute
    ```
 
-3. `riebeckite deploy` publishes `dist/` to Cloudflare Workers and opens the Wrangler login in a browser on the first run. It does not build, so create `dist/` with `riebeckite build` first. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
+3. `riebeckite publish run --execute` plans, builds when needed, validates `dist/`, and publishes it to Cloudflare Workers. It opens the Wrangler login in a browser on the first run. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
 
 4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
@@ -59,7 +59,7 @@ After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to t
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 ### Add a Custom Domain
@@ -80,7 +80,7 @@ Enter the apex domain such as `example.com`, or a subdomain such as `docs.exampl
 }
 ```
 
-Choose **Deploy now** to use the normal `riebeckite deploy` flow. Otherwise, deploy later with `npm exec riebeckite deploy`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
+Choose **Deploy now** to use the normal `riebeckite publish run --execute` flow. Otherwise, deploy later with `npm exec -- riebeckite publish run --execute`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
 
 The command leaves `wrangler.toml` unchanged. Add the equivalent configuration manually when you use TOML:
 
@@ -105,7 +105,7 @@ npx create-riebeckite my-site --github-actions
 This adds:
 
 - `wrangler.jsonc`
-- `.github/workflows/deploy.yml`
+- `.github/workflows/publish.yml`
 
 The generated workflow installs dependencies with `npm ci`, runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
 
@@ -124,7 +124,7 @@ If you already published from your machine, you do not need to recreate the site
 npm exec riebeckite deploy setup
 ```
 
-The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
+The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/publish.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
 
 To inspect the GitHub workflow, access, and deployment secrets without changing them, run:
 

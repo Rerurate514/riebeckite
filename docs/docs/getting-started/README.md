@@ -60,7 +60,7 @@ Open the local URL printed in the terminal. Edit Markdown in `content/`, make su
 npm exec riebeckite build
 ```
 
-To publish the build output as-is, install Wrangler and run `npm exec riebeckite deploy`; login and `wrangler.jsonc` generation are automatic. See [Deployment](./deployment.md) for details.
+To publish the build output as-is, install Wrangler and run `npm exec -- riebeckite publish run --execute`; login and `wrangler.jsonc` generation are automatic. See [Deployment](./deployment.md) for details.
 
 If you are unsure which preset to choose, use the `starter` preset.
 

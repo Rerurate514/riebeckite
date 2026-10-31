@@ -373,16 +373,16 @@ plugins: [
 
 ## publication
 
-`publication` はデプロイゲートを制御します。省略可能で、既定は `direct` です。既存の build-and-deploy の挙動を維持します。
+`publication` は単一の公開モデルに任意の承認を追加します。計画、成果物検証、永続状態の検査は常に実行され、承認は既定で無効です。
 
 | 設定 | 型 | 既定値 | 用途 |
 | --- | --- | --- | --- |
-| `mode` | `"direct" \| "managed"` | `"direct"` | `managed` では、すべての Riebeckite のデプロイ経路で現在の承認記録と一致するビルド成果物を必須にします。 |
+| `requireApproval` | `boolean` | `false` | すべての Riebeckite のデプロイ経路で現在の承認記録を必須にします。 |
 | `approvalFile` | `string` | `"publication/approvals.json"` | コミットする承認記録のプロジェクト相対パス。 |
 
 ```ts
 publication: {
-  mode: "managed",
+  requireApproval: true,
   approvalFile: "publication/approvals.json",
 }
 ```

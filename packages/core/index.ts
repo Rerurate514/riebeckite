@@ -206,12 +206,10 @@ export type {
 export { validatePublicationArtifact } from "./src/publication/artifact.js";
 export type {
   PublicationConfig,
-  PublicationMode,
   ResolvedPublicationConfig,
 } from "./src/publication/config.js";
 export {
   DEFAULT_PUBLICATION_APPROVAL_FILE,
-  publicationWorkflowForMode,
   resolvePublicationConfig,
 } from "./src/publication/config.js";
 export type {

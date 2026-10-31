@@ -269,7 +269,7 @@ test("the built CLI scaffolds a deployment-enabled project", () => {
       "wrangler.jsonc must be generated",
     );
     assert.ok(
-      fs.existsSync(path.join(siteDir, ".github", "workflows", "deploy.yml")),
+      fs.existsSync(path.join(siteDir, ".github", "workflows", "publish.yml")),
       "the deployment workflow must be generated",
     );
   } finally {

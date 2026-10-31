@@ -11,8 +11,8 @@ import {
   resolveHostingCapabilities,
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../application_root.js";
-import { resolveWranglerEntry, runDeploy } from "../commands/deploy.js";
 import { resolvePublicationOutputDirectory } from "./artifact.js";
+import { runWranglerDeployment } from "./wrangler.js";
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
@@ -85,7 +85,7 @@ export async function planHostingDeployment(
         kind: "ci",
         provider,
         description:
-          "GitHub Pages deploys from the repository workflow; trigger it with `gh workflow run deploy.yml`.",
+          "GitHub Pages deploys from the repository publish workflow; run `riebeckite publish gate` and `actions/deploy-pages` there.",
       };
     case "netlify":
       return {
@@ -134,67 +134,35 @@ export async function executeHostingDeployment(
   provider: HostingProvider,
   plan: HostingPlan,
   artifact: PublicationArtifactState,
-): Promise<{ readonly confirmed: boolean }> {
+): Promise<void> {
   if (!artifact.exists) {
     throw new HostingDeployError("The build output directory does not exist.");
   }
   if (provider === "cloudflare-workers") {
-    await runDeploy(project, { dryRun: false, skipPublicationGate: true });
-    return { confirmed: true };
+    await runWranglerDeployment(project, {
+      provider: "cloudflare-workers",
+      dryRun: false,
+      skipPublicationGate: true,
+    });
+    return;
   }
   if (plan.kind === "ci") {
-    if (project.config.publication?.mode === "managed") {
-      throw new HostingDeployError(
-        "Managed mode does not dispatch GitHub Pages deployments because the target workflow cannot be verified.",
-        "Add `riebeckite publish gate --provider github-pages` to the Pages workflow, deploy with actions/deploy-pages, then run `riebeckite publish record --provider github-pages`.",
-      );
-    }
-    if (process.env.GITHUB_ACTIONS === "true") {
-      throw new HostingDeployError(
-        "GitHub Pages is deployed by the workflow, not by publish run.",
-        "Deploy with actions/deploy-pages and then run `riebeckite publish record --provider github-pages` in the same job.",
-      );
-    }
-    const workflow = process.env.RIEBECKITE_GITHUB_WORKFLOW ?? "deploy.yml";
-    const branch =
-      process.env.GITHUB_REF_NAME ??
-      (await resolveCurrentBranch(project.projectRoot));
-    if (!branch) {
-      throw new HostingDeployError(
-        "Could not determine the branch to trigger for GitHub Pages.",
-        "Run from a git branch or set GITHUB_REF_NAME.",
-      );
-    }
-    const exitCode = await runProcess(
-      "gh",
-      ["workflow", "run", workflow, "--ref", branch],
-      project.projectRoot,
+    throw new HostingDeployError(
+      "GitHub Pages deploys from a workflow, not from the CLI.",
+      "Run `riebeckite publish gate --provider github-pages` in that workflow, deploy with actions/deploy-pages, then run `riebeckite publish record --provider github-pages`.",
     );
-    if (exitCode !== 0) {
-      throw new HostingDeployError(
-        `gh workflow run ${workflow} exited with code ${exitCode}.`,
-        "Authenticate the GitHub CLI with `gh auth login`.",
-      );
-    }
-    return { confirmed: false };
   }
   if (plan.kind !== "command") {
     throw new HostingDeployError(plan.reason);
   }
 
   if (provider === "cloudflare-pages") {
-    const entry = await resolveWranglerEntry(project.appRoot);
-    const exitCode = await runProcess(
-      process.execPath,
-      [entry, ...plan.args],
-      plan.cwd,
-    );
-    if (exitCode !== 0) {
-      throw new HostingDeployError(
-        `wrangler pages deploy exited with code ${exitCode}.`,
-      );
-    }
-    return { confirmed: true };
+    await runWranglerDeployment(project, {
+      provider: "cloudflare-pages",
+      dryRun: false,
+      skipPublicationGate: true,
+    });
+    return;
   }
 
   const exitCode = await runProcess(plan.executable, plan.args, plan.cwd);
@@ -204,7 +172,7 @@ export async function executeHostingDeployment(
       missingExecutableHint(provider),
     );
   }
-  return { confirmed: true };
+  return;
 }
 
 export function hostingCapabilities(provider: HostingProvider | undefined) {
@@ -262,24 +230,6 @@ async function hasGithubPagesWorkflow(
     }
   }
   return false;
-}
-
-async function resolveCurrentBranch(cwd: string): Promise<string | undefined> {
-  return new Promise((resolve) => {
-    const child = spawn("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
-      cwd,
-      stdio: ["ignore", "pipe", "ignore"],
-    });
-    let output = "";
-    child.stdout.on("data", (chunk: Buffer) => {
-      output += chunk.toString();
-    });
-    child.on("error", () => resolve(undefined));
-    child.on("exit", (code) => {
-      const branch = output.trim();
-      resolve(code === 0 && branch && branch !== "HEAD" ? branch : undefined);
-    });
-  });
 }
 
 function runProcess(

@@ -8,8 +8,8 @@ on:
     types: [content-updated]
 
 concurrency:
-  group: riebeckite-deploy
-  cancel-in-progress: true
+  group: riebeckite-production
+  cancel-in-progress: false
 
 env:
   NODE_VERSION: "22"
@@ -18,7 +18,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Check out the site repository
         uses: actions/checkout@v4
@@ -29,6 +29,14 @@ jobs:
           repository: octo-org/notes
           token: ${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}
           path: content
+
+      - name: Verify latest revision
+        run: |
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "This run is for an older revision; stop so the current branch head can publish."
+            exit 1
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -74,6 +82,9 @@ jobs:
         run: |
           echo "Riebeckite cache to save: $(du -sb .riebeckite | cut -f1) bytes"
 
+      - name: Validate the built artifact
+        run: npm exec riebeckite publish validate
+
       - name: Publication gate
         run: npm exec riebeckite publish gate --provider cloudflare-workers
 
@@ -83,3 +94,21 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+
+      - name: Record publication state
+        run: npm exec riebeckite publish record --provider cloudflare-workers --trigger ci
+
+      - name: Persist publication state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add publication/state.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "公開状態を更新 [skip ci]"
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD^)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "The branch advanced during this run; the newer run will record its own state."
+            exit 0
+          fi
+          git push
+

@@ -68,7 +68,7 @@ wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
 ## 3. Add wrangler.jsonc
 
-`npm exec riebeckite deploy` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
+`npm exec -- riebeckite publish run --execute` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
 
 ```text
 my-site/
@@ -105,7 +105,7 @@ publishes dist/ as Static Assets
 
 ## 4. Log in to Cloudflare
 
-`riebeckite deploy` opens the browser and asks you to log in on the first run. To log in ahead of time, or if you run Wrangler directly, use:
+`riebeckite publish run --execute` opens the browser and asks you to log in on the first run. To log in ahead of time, or if you run Wrangler directly, use:
 
 ```sh
 npx wrangler login
@@ -116,16 +116,16 @@ A browser window opens. Log in to Cloudflare and grant access.
 ## 5. Deploy
 
 ```sh
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
-`riebeckite deploy` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
+`riebeckite publish run --execute` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
 
 ```mermaid
 flowchart TD
     Build["npm exec riebeckite build"]
     Dist["dist/"]
-    Deploy["npm exec riebeckite deploy"]
+    Deploy["npm exec -- riebeckite publish run --execute"]
     Workers["Cloudflare Workers"]
 
     Build --> Dist
@@ -149,7 +149,7 @@ Then build and deploy again.
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 This makes sitemap and feed URLs match the public site.
@@ -200,7 +200,7 @@ Check the Cloudflare serving state
   → wrangler dev
 
 Publish for real
-  → riebeckite deploy
+  → riebeckite publish run --execute
 ```
 
 ## 8. Redeploying an updated site
@@ -209,7 +209,7 @@ After a site is published, the steps to update articles or configuration are the
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 ```text
@@ -222,7 +222,7 @@ Update dist/
 Deploy
 ```
 
-`riebeckite deploy` only tells Wrangler to publish `dist/`; it does not rebuild Riebeckite content. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first.
+`riebeckite publish run --execute` only tells Wrangler to publish `dist/`; it does not rebuild Riebeckite content. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first.
 
 ## 9. Pre-deploy checklist
 
@@ -232,8 +232,8 @@ Before deploying to production, you can verify in this order.
 npm exec riebeckite check
 npm exec riebeckite doctor
 npm exec riebeckite build
-npm exec -- riebeckite deploy --dry-run
-npm exec riebeckite deploy
+npm exec -- riebeckite publish validate
+npm exec -- riebeckite publish run --execute
 ```
 
 Each command has a role:
@@ -243,8 +243,8 @@ Each command has a role:
 | `riebeckite check` | Validate config and plugins |
 | `riebeckite doctor` | Diagnose site-wide problems |
 | `riebeckite build` | Generate `dist/` |
-| `riebeckite deploy --dry-run` | Check what will be deployed (calls Wrangler internally) |
-| `riebeckite deploy` | Publish to Cloudflare Workers |
+| `riebeckite publish validate` | Check what will be deployed (calls Wrangler internally) |
+| `riebeckite publish run --execute` | Publish to Cloudflare Workers |
 
 When something fails, separate which stage is failing.
 
@@ -274,11 +274,11 @@ Wrangler
   → publishes the generated site to Cloudflare
 ```
 
-So if `npm exec riebeckite build` fails, look at the Riebeckite side; if `npm exec riebeckite deploy` fails, look at the Cloudflare / Wrangler side. Separating these boundaries makes deployment problems easier to investigate.
+So if `npm exec riebeckite build` fails, look at the Riebeckite side; if `npm exec -- riebeckite publish run --execute` fails, look at the Cloudflare / Wrangler side. Separating these boundaries makes deployment problems easier to investigate.
 
 ## Automated deployment with GitHub Actions
 
-Instead of running `npm exec riebeckite deploy` manually, you can deploy when you push to GitHub.
+Instead of running `npm exec -- riebeckite publish run --execute` manually, you can deploy when you push to GitHub.
 
 ```mermaid
 flowchart LR
@@ -298,7 +298,7 @@ If the site is already published from your machine, promote it from the site fol
 npm exec riebeckite deploy setup
 ```
 
-This creates `.github/workflows/deploy.yml` and registers `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then waits for you to push.
+This creates `.github/workflows/publish.yml` and registers `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then waits for you to push.
 
 ### When the site and content are in the same repository
 
@@ -366,7 +366,7 @@ Run `npm exec riebeckite build` first. Cloudflare Workers publishes the Static A
 
 ### The published content is stale after updating the site
 
-Run `npm exec riebeckite build` and `npm exec riebeckite deploy` again after the change. `riebeckite deploy` does not replace Riebeckite's build.
+Run `npm exec riebeckite build` and `npm exec -- riebeckite publish run --execute` again after the change. `riebeckite publish run --execute` does not replace Riebeckite's build.
 
 ### The URL is wrong after publishing
 
@@ -386,7 +386,7 @@ The minimal steps to publish a Riebeckite site to Cloudflare Workers are:
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run it first.
@@ -412,7 +412,7 @@ riebeckite build
 wrangler dev
   → checks Cloudflare serving locally
 
-riebeckite deploy
+riebeckite publish run --execute
   → publishes dist/ to Cloudflare Workers
 ```
 

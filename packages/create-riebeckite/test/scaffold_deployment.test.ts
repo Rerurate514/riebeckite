@@ -26,7 +26,7 @@ test("every scaffold preset inherits the same-repository GitHub Actions workflow
         deployment: { type: "github-actions", content: { type: "local" } },
       });
       const workflow = await fs.readFile(
-        path.join(targetDirectory, ".github/workflows/deploy.yml"),
+        path.join(targetDirectory, ".github/workflows/publish.yml"),
         "utf8",
       );
       assertWorkflowContract(workflow);
@@ -44,7 +44,7 @@ test("every scaffold preset omits deployment files until GitHub Actions is reque
       const targetDirectory = path.join(directory, preset);
       await scaffoldRiebeckiteSite({ targetDirectory, preset });
       await assertFileIsAbsent(
-        path.join(targetDirectory, ".github/workflows/deploy.yml"),
+        path.join(targetDirectory, ".github/workflows/publish.yml"),
       );
       await assertFileIsAbsent(
         path.join(targetDirectory, "github/notify-site.yml"),
@@ -70,7 +70,7 @@ test("every scaffold preset supports external content and content-push dispatch"
         },
       });
       const workflow = await fs.readFile(
-        path.join(targetDirectory, ".github/workflows/deploy.yml"),
+        path.join(targetDirectory, ".github/workflows/publish.yml"),
         "utf8",
       );
       const notify = await fs.readFile(
@@ -159,13 +159,13 @@ test("scaffold validates external repository format", async () => {
 
 test("the generated workflow is rendered from the packaged deployment template", () => {
   const template = new TextDecoder()
-    .decode(readTemplate("deployment/github-actions/deploy.yml"))
+    .decode(readTemplate("deployment/github-actions/publish.yml"))
     .replaceAll("\r\n", "\n");
   const files = deploymentTemplateFiles({ type: "local" });
   const workflow = files.find(
-    (file) => file.path === ".github/workflows/deploy.yml",
+    (file) => file.path === ".github/workflows/publish.yml",
   );
-  assert.ok(workflow, "deploymentTemplateFiles must include deploy.yml");
+  assert.ok(workflow, "deploymentTemplateFiles must include publish.yml");
   const generated = workflow.content;
   const generatedText =
     typeof generated === "string"
@@ -206,10 +206,10 @@ test("the external-content workflow and notify template render without leaking p
     siteRepository: "octo-org/site",
   });
   const workflow = files.find(
-    (file) => file.path === ".github/workflows/deploy.yml",
+    (file) => file.path === ".github/workflows/publish.yml",
   );
   const notify = files.find((file) => file.path === "github/notify-site.yml");
-  assert.ok(workflow, "deploymentTemplateFiles must include deploy.yml");
+  assert.ok(workflow, "deploymentTemplateFiles must include publish.yml");
   assert.ok(notify, "deploymentTemplateFiles must include notify-site.yml");
   const workflowText =
     typeof workflow.content === "string"
@@ -245,10 +245,14 @@ function assertWorkflowContract(workflow: string): void {
     "repository_dispatch:",
     "types: [content-updated]",
     "concurrency:",
-    "contents: read",
+    "contents: write",
     "actions/cache@v4",
     "npm exec riebeckite check",
     "npm exec riebeckite build",
+    "npm exec riebeckite publish validate",
+    "npm exec riebeckite publish gate --provider cloudflare-workers",
+    "npm exec riebeckite publish record --provider cloudflare-workers",
+    "git add publication/state.json",
   ]) {
     assert.ok(workflow.includes(value), `workflow is missing ${value}`);
   }

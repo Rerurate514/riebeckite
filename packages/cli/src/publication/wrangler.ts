@@ -4,11 +4,7 @@ import path from "node:path";
 import { resolveBuildOutputDirectory } from "@riebeckite/core";
 import { wranglerConfigForDirectory } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
-import { readBuildOutputMarker } from "../build_output.js";
-import {
-  evaluatePublicationGate,
-  inspectPublication,
-} from "../publication/inspection.js";
+import { assertPublicationGate } from "./inspection.js";
 
 const WRANGLER_CONFIG_FILES = [
   "wrangler.jsonc",
@@ -16,13 +12,14 @@ const WRANGLER_CONFIG_FILES = [
   "wrangler.toml",
 ] as const;
 
-type DeployOptions = {
-  readonly dryRun: boolean;
-  readonly skipPublicationGate?: boolean;
-};
+export class MissingBuildOutputError extends Error {
+  readonly hint: string;
 
-export function resolveDeployRoot(project: RiebeckiteProject): string {
-  return project.appRoot;
+  constructor(message: string) {
+    super(message);
+    this.name = "MissingBuildOutputError";
+    this.hint = "Run: npm exec riebeckite build";
+  }
 }
 
 class WranglerNotFoundError extends Error {
@@ -35,16 +32,6 @@ class WranglerNotFoundError extends Error {
   }
 }
 
-export class MissingBuildOutputError extends Error {
-  readonly hint: string;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "MissingBuildOutputError";
-    this.hint = "Run: npm exec riebeckite build";
-  }
-}
-
 class DeployError extends Error {
   constructor(message: string) {
     super(message);
@@ -52,60 +39,57 @@ class DeployError extends Error {
   }
 }
 
-export class PublicationGateError extends Error {
-  readonly hint: string;
+export type WranglerProvider = "cloudflare-workers" | "cloudflare-pages";
 
-  constructor(message: string) {
-    super(message);
-    this.name = "PublicationGateError";
-    this.hint =
-      "Approve the current content with `riebeckite publish approve`, rebuild, and rerun the publication gate.";
-  }
+export function resolveDeployRoot(project: RiebeckiteProject): string {
+  return project.appRoot;
 }
 
-async function assertPublicationGate(
+export async function runWranglerDeployment(
   project: RiebeckiteProject,
+  options: {
+    readonly provider: WranglerProvider;
+    readonly dryRun: boolean;
+    readonly skipPublicationGate?: boolean;
+  },
 ): Promise<void> {
-  if (project.config.publication?.mode !== "managed") return;
-  const inspection = await inspectPublication(project, {
-    provider: "cloudflare-workers",
-    workflow: "approved",
-    useBuildTime: true,
-  });
-  const gate = evaluatePublicationGate(project, inspection);
-  if (gate.allowed) return;
-  throw new PublicationGateError(
-    `Publication gate blocked the deploy: ${gate.reasons.join(", ")}.`,
-  );
-}
-
-export async function runDeploy(
-  project: RiebeckiteProject,
-  options: DeployOptions,
-): Promise<void> {
-  const deployRoot = resolveDeployRoot(project);
-  const configPath = await ensureWranglerConfig(deployRoot);
-  await assertBuildOutput(
-    project,
-    resolveBuildOutputDirectory(project.config) ??
-      path.join(deployRoot, "dist"),
-  );
+  const root = resolveDeployRoot(project);
+  const configPath = await ensureWranglerConfig(root);
+  await assertBuildOutput(project, root);
   if (!options.skipPublicationGate) {
-    await assertPublicationGate(project);
+    await assertPublicationGate(project, options.provider);
   }
-  const wranglerEntry = await resolveWranglerEntry(deployRoot);
+  const entry = await resolveWranglerEntry(root);
   if (!options.dryRun) {
-    await ensureAuthenticated(wranglerEntry, deployRoot);
+    await ensureAuthenticated(entry, root);
   }
 
-  const arguments_ = ["deploy", "--config", configPath];
-  if (options.dryRun) arguments_.push("--dry-run");
-  const exitCode = await runNode(wranglerEntry, arguments_, {
-    cwd: deployRoot,
+  const args =
+    options.provider === "cloudflare-workers"
+      ? ["deploy", "--config", configPath]
+      : [
+          "pages",
+          "deploy",
+          resolveBuildOutputDirectory(project.config) ??
+            path.join(root, "dist"),
+          ...(process.env.RIEBECKITE_CLOUDFLARE_PAGES_PROJECT
+            ? [
+                "--project-name",
+                process.env.RIEBECKITE_CLOUDFLARE_PAGES_PROJECT,
+              ]
+            : []),
+        ];
+  if (options.dryRun && options.provider === "cloudflare-workers") {
+    args.push("--dry-run");
+  }
+  const exitCode = await runNode(entry, args, {
+    cwd: root,
     stdio: "inherit",
   });
   if (exitCode !== 0) {
-    throw new DeployError(`wrangler deploy exited with code ${exitCode}.`);
+    throw new DeployError(
+      `${options.provider === "cloudflare-workers" ? "wrangler deploy" : "wrangler pages deploy"} exited with code ${exitCode}.`,
+    );
   }
 }
 
@@ -132,8 +116,10 @@ async function ensureWranglerConfig(root: string): Promise<string> {
 
 async function assertBuildOutput(
   project: RiebeckiteProject,
-  outputDirectory: string,
+  root: string,
 ): Promise<void> {
+  const outputDirectory =
+    resolveBuildOutputDirectory(project.config) ?? path.join(root, "dist");
   let isDirectory = false;
   try {
     isDirectory = (await fs.stat(outputDirectory)).isDirectory();
@@ -143,15 +129,6 @@ async function assertBuildOutput(
   if (!isDirectory) {
     throw new MissingBuildOutputError(
       `Could not find the build output at ${outputDirectory}.`,
-    );
-  }
-
-  const marker = await readBuildOutputMarker(project);
-  const enforceMarker =
-    resolveBuildOutputDirectory(project.config) !== undefined;
-  if (enforceMarker && !marker) {
-    throw new MissingBuildOutputError(
-      `The build output at ${outputDirectory} is not from a completed build.`,
     );
   }
 }

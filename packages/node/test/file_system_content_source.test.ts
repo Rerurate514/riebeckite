@@ -15,7 +15,7 @@ test("isIgnoredContentPath covers internal metadata and user excludes", () => {
   assert.equal(isIgnoredContentPath("attachments/sample.png"), false);
   assert.equal(isIgnoredContentPath(".obsidian/workspace.json"), true);
   assert.equal(isIgnoredContentPath(".git/config"), true);
-  assert.equal(isIgnoredContentPath(".github/workflows/deploy.yml"), true);
+  assert.equal(isIgnoredContentPath(".github/workflows/publish.yml"), true);
   assert.equal(isIgnoredContentPath("node_modules/pkg/index.md"), true);
   assert.equal(isIgnoredContentPath(".DS_Store"), true);
   assert.equal(isIgnoredContentPath("nested/Thumbs.db"), true);
@@ -38,7 +38,7 @@ test("file-system content source skips internal metadata and tool directories", 
     "RIEBECKITE_OBSIDIAN_PRIVATE_TEST",
   );
   await writeFile(root, ".git/config", "[remote]\nurl = private");
-  await writeFile(root, ".github/workflows/deploy.yml", "secret-ish workflow");
+  await writeFile(root, ".github/workflows/publish.yml", "secret-ish workflow");
   await writeFile(root, "node_modules/pkg/index.md", "# dependency");
   await writeFile(root, ".DS_Store", "metadata");
   await writeFile(root, "nested/Thumbs.db", "metadata");

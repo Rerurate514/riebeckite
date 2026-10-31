@@ -15,7 +15,6 @@ import type { RiebeckiteProject } from "../src/application_root.js";
 import { writeBuildOutputMarker } from "../src/build_output.js";
 import { parseCommand } from "../src/cli.js";
 import { runClean } from "../src/commands/clean.js";
-import { runDeploy } from "../src/commands/deploy.js";
 import { runPublish } from "../src/commands/publish.js";
 import { readPublicationArtifact } from "../src/publication/artifact.js";
 import {
@@ -32,8 +31,10 @@ import {
   resolvePublicationApprovalPath,
   resolvePublicationDurableStatePath,
   resolvePublicationHistoryPath,
+  resolvePublicationLockPath,
   writePublicationHistory,
 } from "../src/publication/state.js";
+import { runWranglerDeployment } from "../src/publication/wrangler.js";
 
 const BUILD_TIME = "2026-01-10T00:00:00.000Z";
 
@@ -55,7 +56,7 @@ async function makeRoot(): Promise<string> {
 function makeProject(
   root: string,
   source: ContentSource,
-  publication?: { mode?: "direct" | "managed"; approvalFile?: string },
+  publication?: { requireApproval?: boolean; approvalFile?: string },
 ): RiebeckiteProject {
   const config = resolveConfig({
     site: { title: "Test", baseUrl: "https://example.com" },
@@ -389,6 +390,32 @@ test("corrupt local state files recover instead of wedging publication", async (
   await releasePublicationLock(project, lock);
 });
 
+test("a stale heartbeat releases a reused PID but a heartbeating live owner keeps the lock", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root, memorySource({}));
+  const lockPath = resolvePublicationLockPath(project);
+  await fs.mkdir(path.dirname(lockPath), { recursive: true });
+  await fs.writeFile(
+    lockPath,
+    JSON.stringify({
+      id: "stale",
+      pid: process.pid,
+      hostname: os.hostname(),
+      startedAt: "2020-01-01T00:00:00.000Z",
+      heartbeatAt: "2020-01-01T00:00:00.000Z",
+      planFingerprint: "old",
+    }),
+  );
+  const lock = await acquirePublicationLock(project, "fingerprint");
+  assert.notEqual(lock.id, "stale");
+  await assert.rejects(
+    acquirePublicationLock(project, "other"),
+    /held the lock/,
+  );
+  await releasePublicationLock(project, lock);
+});
+
 test("durable state stays at the config root when the app lives in a subdirectory", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
@@ -403,13 +430,13 @@ test("durable state stays at the config root when the app lives in a subdirector
   );
 });
 
-test("managed mode blocks the shared deploy gate until approval and artifact are current", async (t) => {
+test("approval requirement blocks the shared deploy gate until approval and artifact are current", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const source = memorySource({
     "public.md": "---\npublish: true\n---\n\nPublic.\n",
   });
-  const project = makeProject(root, source, { mode: "managed" });
+  const project = makeProject(root, source, { requireApproval: true });
 
   assert.equal(
     await silently(() => runPublish(project, options("gate"))),
@@ -463,13 +490,13 @@ test("clean --all refuses to remove state while a publication run holds the lock
   await runClean(project, { scope: "all" });
 });
 
-test("managed mode also gates the existing deploy command", async (t) => {
+test("Cloudflare deployment execution uses the shared gate", async (t) => {
   const root = await makeRoot();
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const project = makeProject(
     root,
     memorySource({ "public.md": "---\npublish: true\n---\n\nPublic.\n" }),
-    { mode: "managed" },
+    { requireApproval: true },
   );
   const inspection = await inspectPublication(project, {
     provider: "cloudflare-workers",
@@ -482,7 +509,10 @@ test("managed mode also gates the existing deploy command", async (t) => {
     completedAt: BUILD_TIME,
   });
   await assert.rejects(
-    runDeploy(project, { dryRun: true }),
+    runWranglerDeployment(project, {
+      provider: "cloudflare-workers",
+      dryRun: true,
+    }),
     /Publication gate blocked/,
   );
 });

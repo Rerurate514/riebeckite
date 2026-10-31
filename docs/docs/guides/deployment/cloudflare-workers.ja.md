@@ -72,7 +72,7 @@ Wrangler は Cloudflare Workers の開発とデプロイに使う公式 CLI で�
 
 Cloudflare Workers に何をデプロイするかは `wrangler.jsonc` で設定します。
 
-`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec riebeckite deploy` も、ファイルがなければサイトのフォルダ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
+`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec -- riebeckite publish run --execute` も、ファイルがなければサイトのフォルダ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
 
 手動で作成する場合は、サイトのルートに `wrangler.jsonc` を置きます。サイトの構成は次のとおりです。
 
@@ -111,7 +111,7 @@ dist/ を Static Assets として公開
 
 ## 4. Cloudflare にログインする
 
-`riebeckite deploy` は、初回の実行時にブラウザを開いて Cloudflare へのログインを求めます。事前にログインしておきたい場合や、Wrangler を直接使う場合は、次のコマンドでもログインできます。
+`riebeckite publish run --execute` は、初回の実行時にブラウザを開いて Cloudflare へのログインを求めます。事前にログインしておきたい場合や、Wrangler を直接使う場合は、次のコマンドでもログインできます。
 
 ```sh
 npx wrangler login
@@ -130,16 +130,16 @@ npm exec riebeckite build
 続いてデプロイします。
 
 ```sh
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
-`riebeckite deploy` は Wrangler を呼び出して `dist/` を公開します。ログインが必要なら先にブラウザでログインし、`wrangler.jsonc` がなければ自動で作成します。`create-riebeckite` で `Cloudflare Workers` を選び、`Deploy now?` に `Yes` と答えた場合は、生成直後にこのビルドとデプロイが自動で実行されます。Wrangler を直接使うなら `npx wrangler deploy` でも同じです。
+`riebeckite publish run --execute` は Wrangler を呼び出して `dist/` を公開します。ログインが必要なら先にブラウザでログインし、`wrangler.jsonc` がなければ自動で作成します。`create-riebeckite` で `Cloudflare Workers` を選び、`Deploy now?` に `Yes` と答えた場合は、生成直後にこのビルドとデプロイが自動で実行されます。Wrangler を直接使うなら `npx wrangler deploy` でも同じです。
 
 ```mermaid
 flowchart TD
     Build["npm exec riebeckite build"]
     Dist["dist/"]
-    Deploy["npm exec riebeckite deploy"]
+    Deploy["npm exec -- riebeckite publish run --execute"]
     Workers["Cloudflare Workers"]
 
     Build --> Dist
@@ -175,7 +175,7 @@ export default defineConfig({
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 最初の公開は、次のような流れになります。
@@ -226,7 +226,7 @@ Cloudflare での配信状態を確認
   → wrangler dev
 
 実際に公開
-  → riebeckite deploy
+  → riebeckite publish run --execute
 ```
 
 ## 8. 更新したサイトを再デプロイする
@@ -235,7 +235,7 @@ Cloudflare での配信状態を確認
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 ```text
@@ -248,7 +248,7 @@ dist/ を更新
 デプロイ
 ```
 
-`riebeckite deploy` は Wrangler に `dist/` を公開させるだけで、Riebeckite のコンテンツを再ビルドしません。そのため、Riebeckite 側を変更した場合は先に次のコマンドを実行します。
+`riebeckite publish run --execute` は Wrangler に `dist/` を公開させるだけで、Riebeckite のコンテンツを再ビルドしません。そのため、Riebeckite 側を変更した場合は先に次のコマンドを実行します。
 
 ```sh
 npm exec riebeckite build
@@ -262,8 +262,8 @@ npm exec riebeckite build
 npm exec riebeckite check
 npm exec riebeckite doctor
 npm exec riebeckite build
-npm exec -- riebeckite deploy --dry-run
-npm exec riebeckite deploy
+npm exec -- riebeckite publish validate
+npm exec -- riebeckite publish run --execute
 ```
 
 各コマンドの役割は次のとおりです。
@@ -273,8 +273,8 @@ npm exec riebeckite deploy
 | `riebeckite check` | 設定やプラグインを検証する |
 | `riebeckite doctor` | サイト全体の問題を診断する |
 | `riebeckite build` | `dist/` を生成する |
-| `riebeckite deploy --dry-run` | デプロイ内容を確認する（内部で Wrangler を呼び出します） |
-| `riebeckite deploy` | Cloudflare Workers へ公開する |
+| `riebeckite publish validate` | デプロイ内容を確認する（内部で Wrangler を呼び出します） |
+| `riebeckite publish run --execute` | Cloudflare Workers へ公開する |
 
 問題が起きた場合は、どの段階で失敗しているかを切り分けます。
 
@@ -304,11 +304,11 @@ Wrangler
   → 生成されたサイトを Cloudflare へ公開する
 ```
 
-つまり、`npm exec riebeckite build` が失敗する場合は Riebeckite 側を、`npm exec riebeckite deploy` が失敗する場合は Cloudflare / Wrangler 側を確認します。この境界を意識すると、デプロイの問題を調査しやすくなります。
+つまり、`npm exec riebeckite build` が失敗する場合は Riebeckite 側を、`npm exec -- riebeckite publish run --execute` が失敗する場合は Cloudflare / Wrangler 側を確認します。この境界を意識すると、デプロイの問題を調査しやすくなります。
 
 ## GitHub Actions で自動デプロイする
 
-毎回 `npm exec riebeckite build` と `npm exec riebeckite deploy` を手元で実行する代わりに、GitHub Actions から自動でデプロイすることもできます。
+毎回 `npm exec riebeckite build` と `npm exec -- riebeckite publish run --execute` を手元で実行する代わりに、GitHub Actions から自動でデプロイすることもできます。
 
 ```mermaid
 flowchart LR
@@ -330,7 +330,7 @@ flowchart LR
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは `.github/workflows/deploy.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリシークレットとして登録したうえで、プッシュを待ちます。
+このコマンドは `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリシークレットとして登録したうえで、プッシュを待ちます。
 
 ### サイトとコンテンツが同じリポジトリにある場合
 
@@ -418,10 +418,10 @@ Cloudflare Workers に公開する Static Assets は `dist/` に生成されま�
 
 ```sh
 npm exec riebeckite build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
-`riebeckite deploy` は Riebeckite のビルドの代わりにはなりません。
+`riebeckite publish run --execute` は Riebeckite のビルドの代わりにはなりません。
 
 ### 公開後の URL が正しくない
 
@@ -467,7 +467,7 @@ Riebeckite のサイトを Cloudflare Workers へ公開する最小手順は、�
 ```sh
 npm exec riebeckite build
 
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 `create-riebeckite` で `Cloudflare Workers` を選んだサイトには Wrangler が含まれているため、`npm install -D wrangler` は不要です。`Not now` で生成した既存のサイトでは、先に実行してください。
@@ -493,7 +493,7 @@ riebeckite build
 wrangler dev
   → Cloudflare での配信を手元で確認する
 
-riebeckite deploy
+riebeckite publish run --execute
   → dist/ を Cloudflare Workers へ公開する
 ```
 

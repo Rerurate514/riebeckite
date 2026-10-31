@@ -109,7 +109,6 @@ export async function inspectPublication(
 }
 
 export type PublicationGateResult = {
-  readonly enabled: boolean;
   readonly allowed: boolean;
   readonly reasons: readonly string[];
   readonly stateIsNewer: boolean;
@@ -117,23 +116,12 @@ export type PublicationGateResult = {
 };
 
 /**
- * Managed publication is blocked unless approvals are current and the built
- * artifact matches the plan. Direct mode intentionally has no gate.
+ * Every deploy path uses this gate. Approval is an optional additional check;
+ * planning, artifact freshness, and durable-state ordering always apply.
  */
 export function evaluatePublicationGate(
-  project: RiebeckiteProject,
   inspection: PublicationInspection,
 ): PublicationGateResult {
-  const enabled = project.config.publication?.mode === "managed";
-  if (!enabled) {
-    return {
-      enabled: false,
-      allowed: true,
-      reasons: ["publication-control-disabled"],
-      stateIsNewer: false,
-      artifactErrors: 0,
-    };
-  }
   const reasons: string[] = [];
   if (inspection.plan.action === "blocked") {
     reasons.push(...inspection.plan.reasons);
@@ -145,7 +133,6 @@ export function evaluatePublicationGate(
   const stateIsNewer = durableStateIsNewer(inspection);
   if (stateIsNewer) reasons.push("state-newer-than-artifact");
   return {
-    enabled,
     allowed: reasons.length === 0,
     reasons,
     stateIsNewer,
@@ -162,5 +149,41 @@ export function durableStateIsNewer(
     published !== undefined &&
     completed !== undefined &&
     Date.parse(published) > Date.parse(completed)
+  );
+}
+
+export class PublicationGateError extends Error {
+  readonly hint: string;
+
+  constructor(message: string, hint?: string) {
+    super(message);
+    this.name = "PublicationGateError";
+    this.hint =
+      hint ??
+      "Approve the current content with `riebeckite publish approve`, rebuild, and rerun the publication gate.";
+  }
+}
+
+export async function assertPublicationGate(
+  project: RiebeckiteProject,
+  provider?: HostingProvider,
+): Promise<void> {
+  const inspection = await inspectPublication(project, {
+    ...(provider === undefined ? {} : { provider }),
+    workflow: project.config.publication?.requireApproval
+      ? "approved"
+      : "direct",
+    useBuildTime: true,
+  });
+  const gate = evaluatePublicationGate(inspection);
+  if (gate.allowed) return;
+  const hint = gate.reasons.includes("artifact-invalid")
+    ? "Rebuild the site so the output matches the current plan, then rerun the publication gate."
+    : gate.reasons.includes("state-newer-than-artifact")
+      ? "Check out the latest publication state or rebuild before deploying."
+      : undefined;
+  throw new PublicationGateError(
+    `Publication gate blocked the deploy: ${gate.reasons.join(", ")}.`,
+    hint,
   );
 }

@@ -1,6 +1,8 @@
 name: Publish
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
@@ -31,7 +33,7 @@ jobs:
         run: |
           git fetch --depth=1 origin "$GITHUB_REF_NAME"
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
-            echo "This run is for an older revision; the current branch head will deploy instead."
+            echo "This run is for an older revision; stop so the current branch head can publish."
             exit 1
           fi
 
@@ -72,19 +74,19 @@ jobs:
           if-no-files-found: error
 
       - name: Build the documentation site
-        if: steps.plan.outputs.build == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.build == 'true' || inputs.force
         run: pnpm --filter @riebeckite/web build
 
       - name: Validate the built artifact
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         run: pnpm --filter @riebeckite/web exec riebeckite publish validate
 
       - name: Publication gate
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         run: pnpm --filter @riebeckite/web exec riebeckite publish gate --provider cloudflare-workers
 
       - name: Deploy the built assets
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -94,14 +96,14 @@ jobs:
           command: deploy
 
       - name: Record the successful deployment
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         run: >
           pnpm --filter @riebeckite/web exec riebeckite publish record
           --provider cloudflare-workers --trigger ci --json
           > "$RUNNER_TEMP/publication-record.json"
 
       - name: Persist publication state
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -116,7 +118,7 @@ jobs:
           git push
 
       - name: Capture publication status
-        if: steps.plan.outputs.deploy == 'true' || inputs.force
+        if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
         run: |
           pnpm --filter @riebeckite/web exec riebeckite publish status --json > "$RUNNER_TEMP/publication-status.json"
 

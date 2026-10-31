@@ -39,7 +39,6 @@ export type Command =
   | { name: "dev" }
   | { name: "build"; full: boolean }
   | { name: "clean"; scope: CleanScope }
-  | { name: "deploy"; dryRun: boolean }
   | {
       name: "publish";
       options: import("./commands/publish.js").PublishCommandOptions;
@@ -163,10 +162,6 @@ export function parseCommand(arguments_: readonly string[]): Command {
     }
   }
   if (name === "deploy") {
-    if (options.length === 0) return { name, dryRun: false };
-    if (options.length === 1 && options[0] === "--dry-run") {
-      return { name, dryRun: true };
-    }
     if (options.length === 1 && options[0] === "setup") {
       return { name: "deploy-setup" };
     }
@@ -188,7 +183,7 @@ export function parseCommand(arguments_: readonly string[]): Command {
   }
 
   throw new CliUsageError(
-    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy [--dry-run | setup | domain] | publish <plan | status | validate | run | approve | revoke | record | gate> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
+    "Usage: riebeckite <create [site | plugin | theme | page-type | component] | theme preview <name> [--port <port>] [--no-open] | plugin dev <path> [--port <port>] [--no-open] | plugin verify <path> [--level basic|integration|full] [--json] | init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>] | dev | build [--full] | clean [--output | --all] | deploy setup | deploy domain | publish <plan | status | validate | run | approve | revoke | record | gate> [options] | check | doctor [--explain | --json | --fix [--dry-run] | --fail-on <severity> | --code <code>] | upgrade --check --to <version|latest> [--json] | profile [--full] | inspect [config | plugins | content [--list] | graph | build]>",
   );
 }
 
@@ -272,15 +267,6 @@ function parsePublishCommand(options: readonly string[]): Command {
     }
     if (option === "--require-approval") {
       workflow = "approved";
-      continue;
-    }
-    if (option === "--workflow") {
-      const value = rest[index + 1];
-      if (value !== "direct" && value !== "approved") {
-        throw new CliUsageError("--workflow requires direct or approved.");
-      }
-      workflow = value;
-      index += 1;
       continue;
     }
     if (option === "--execute") {

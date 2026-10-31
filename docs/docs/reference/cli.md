@@ -24,7 +24,7 @@ riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|war
 riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
-riebeckite deploy [--dry-run | setup | domain]
+riebeckite deploy setup | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
@@ -45,7 +45,7 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | `upgrade --check` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
-| `deploy` | publish the existing build output to Cloudflare Workers via Wrangler; `--dry-run` validates without uploading; `setup` prepares GitHub Actions continuous deployment; `domain` adds a Cloudflare Workers Custom Domain | no |
+| `deploy` | Cloudflare configuration helpers only: `setup` prepares the publish workflow and secrets; `domain` adds a Workers Custom Domain. It does not deploy. | no |
 | `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
@@ -193,14 +193,14 @@ In interactive mode it asks for the content source and then for the deployment:
 | Choice | What is generated |
 | --- | --- |
 | `Cloudflare Workers` | the Wrangler dependency and `wrangler.jsonc`; after installing dependencies it offers `Deploy now?` |
-| `GitHub Actions` | `wrangler.jsonc` and `.github/workflows/deploy.yml` |
+| `GitHub Actions` | `wrangler.jsonc` and `.github/workflows/publish.yml` |
 | `Not now` | no deployment files |
 
-Choosing `Yes` at `Deploy now?` runs the build and `riebeckite deploy` right after scaffolding. Choosing `Later` only generates the site; publish it with:
+Choosing `Yes` at `Deploy now?` runs the build and `riebeckite publish run --execute` right after scaffolding. Choosing `Later` only generates the site; publish it with:
 
 ```sh
 npm run build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 After generating the site, install dependencies and verify the setup:
@@ -433,30 +433,18 @@ This is also useful when the build is slow or incremental reuse is suspect. In t
 `publish` adds planning, scheduled publication, approval, artifact validation, and deploy diagnostics without changing `build` or `deploy`.
 
 ```sh
-npm exec riebeckite publish plan --json
-npm exec riebeckite publish status
-npm exec riebeckite publish validate
-npm exec riebeckite publish run --execute --provider cloudflare-workers
-npm exec riebeckite publish approve <slug> --all
+npm exec -- riebeckite publish plan --json
+npm exec -- riebeckite publish status
+npm exec -- riebeckite publish validate
+npm exec -- riebeckite publish run --execute --provider cloudflare-workers
+npm exec -- riebeckite publish approve <slug> --all
 ```
 
-`plan` and `status` are read-only. `validate` exits non-zero when the plan has an error, approval is pending, or the build artifact does not match the plan. `run` does not build or deploy unless `--execute` is present. `record` records an external CI deployment without deploying again. `gate` is the shared pre-deploy check; it does nothing in direct mode and enforces approval plus artifact freshness when `publication.mode` is `managed`. Approval is opt-in with `--require-approval`, `--workflow approved`, or the configuration; records live in `publication/approvals.json` and only a committed file on the deployed branch is trusted. See [Publication workflow](../guides/deployment/publication-workflow.md) for scheduling, hosting adapters, history, and CI.
+`plan` and `status` are read-only. `validate` exits non-zero when the plan has an error, approval is pending, or the build artifact does not match the plan. `run` does not build or deploy unless `--execute` is present. `record` records an external CI deployment without deploying again. `gate` is the single pre-deploy check; it always verifies the plan and artifact, and adds the approval check when `publication.requireApproval` is enabled. Approval is opt-in with `--require-approval` or the configuration; records live in `publication/approvals.json` and only a committed file on the deployed branch is trusted. See [Publication workflow](../guides/deployment/publication-workflow.md) for scheduling, hosting adapters, history, and CI.
 
-## `deploy`
+## `deploy setup` and `deploy domain`
 
-`deploy` publishes the `dist/` produced by `build` to Cloudflare Workers by invoking Wrangler. It creates `wrangler.jsonc` from the site folder name when the file is missing, opens the Wrangler login on the first run, and forwards `--dry-run` for validation without uploading.
-
-`deploy` never rebuilds content, so run `npm exec riebeckite build` first.
-
-To validate the configuration and assets without connecting to Cloudflare:
-
-```sh
-npm exec -- riebeckite deploy --dry-run
-```
-
-Because `npm` consumes a bare `--dry-run`, pass it as `npm exec -- riebeckite deploy --dry-run`. A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes the Wrangler dependency and `wrangler.jsonc`.
-
-To deploy automatically on every push, use GitHub Actions. See [Deployment](../guides/deployment/README.md).
+`riebeckite deploy` no longer deploys. Use `riebeckite publish run --execute`, which plans, builds if needed, validates the artifact, runs the publication gate, and deploys through the hosting adapter. `deploy` remains only as the namespace for two Cloudflare configuration helpers.
 
 ### `deploy setup`
 
@@ -466,17 +454,17 @@ To deploy automatically on every push, use GitHub Actions. See [Deployment](../g
 npm exec riebeckite deploy setup
 ```
 
-It detects the Git repository and the GitHub remote, checks the GitHub CLI (`gh`) and Wrangler logins, creates `.github/workflows/deploy.yml` from the same template used by `create-riebeckite`, reads the Cloudflare account from your Wrangler login (asking you to choose when there is more than one), and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt or from `CLOUDFLARE_API_TOKEN` in the environment and is sent to `gh secret set` through standard input; it is never passed as a command argument or written to disk. The command does not create a GitHub repository and does not push. An existing non-Riebeckite workflow is reported and left unchanged, and the command stops before registering any secrets. Wrangler must be installed in the site (Local-first sites already have it). Run it again any time: a matching workflow and existing secrets are detected and skipped, so only the remaining steps run. If a different deployment workflow already exists, replace or remove it before running `deploy setup` again.
+It detects the Git repository and the GitHub remote, checks the GitHub CLI (`gh`) and Wrangler logins, creates `.github/workflows/publish.yml` from the same template used by `create-riebeckite`, reads the Cloudflare account from your Wrangler login (asking you to choose when there is more than one), and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt or from `CLOUDFLARE_API_TOKEN` in the environment and is sent to `gh secret set` through standard input; it is never passed as a command argument or written to disk. The command does not create a GitHub repository and does not push. An existing non-Riebeckite workflow is reported and left unchanged, and the command stops before registering any secrets. Wrangler must be installed in the site (Local-first sites already have it). Run it again any time: a matching workflow and existing secrets are detected and skipped, so only the remaining steps run. If a different deployment workflow already exists, replace or remove it before running `deploy setup` again.
 
 ### `deploy domain`
 
-`deploy domain` configures a Cloudflare Workers Custom Domain for the Worker that `deploy` publishes.
+`deploy domain` configures a Cloudflare Workers Custom Domain for the Worker used by `publish run`.
 
 ```sh
 npm exec riebeckite deploy domain
 ```
 
-Run it after the first `deploy`, because it reads the existing Wrangler configuration (`wrangler.jsonc` or `wrangler.json`) in the site and adds a declarative `routes` entry with `custom_domain: true`. It takes no arguments: the command prompts for a hostname such as `docs.example.com`, shows the planned change, and asks for confirmation before writing. A `wrangler.toml` is left unchanged, and the command stops with a hint when no Wrangler configuration exists or the terminal is not interactive. After writing, it offers `Deploy now?` and otherwise prints the `npm exec riebeckite deploy` command. Running it again detects an already-configured domain and skips the write.
+Run it after the first publish run, because it reads the existing Wrangler configuration (`wrangler.jsonc` or `wrangler.json`) in the site and adds a declarative `routes` entry with `custom_domain: true`. It takes no arguments: the command prompts for a hostname such as `docs.example.com`, shows the planned change, and asks for confirmation before writing. A `wrangler.toml` is left unchanged, and the command stops with a hint when no Wrangler configuration exists or the terminal is not interactive. After writing, it offers `Deploy now?` and otherwise prints the `npm exec -- riebeckite publish run --execute` command. Running it again detects an already-configured domain and skips the write.
 
 ## `profile`
 
@@ -575,7 +563,7 @@ pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 pnpm exec riebeckite inspect plugins
 pnpm exec riebeckite build
-pnpm exec riebeckite deploy
+pnpm exec -- riebeckite publish run --execute
 ```
 
 For a new site, the flow looks like this:
@@ -596,7 +584,7 @@ flowchart LR
     Build --> Deploy
 ```
 
-After `build`, publish the output with `npm exec riebeckite deploy`.
+After `build`, publish the output with `npm exec -- riebeckite publish run --execute`.
 
 When a problem occurs, use `doctor`, `inspect`, or `profile` depending on the goal:
 

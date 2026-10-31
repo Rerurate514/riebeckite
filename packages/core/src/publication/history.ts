@@ -13,7 +13,6 @@ export type PublicationRunStatus =
   | "building"
   | "built"
   | "deploying"
-  | "dispatched"
   | "deployed"
   | "skipped"
   | "failed";
@@ -95,12 +94,13 @@ export function parsePublicationHistory(
   const runs: PublicationRunRecord[] = [];
   for (const run of value.runs) {
     const parsed = parseRunRecord(run);
-    if (parsed === undefined) return undefined;
-    runs.push(parsed);
+    if (parsed !== undefined) runs.push(parsed);
   }
   if (value.lastSuccess !== undefined) {
     const snapshot = parsePublicationSnapshot(value.lastSuccess);
-    if (snapshot === undefined) return undefined;
+    if (snapshot === undefined) {
+      return { version: PUBLICATION_HISTORY_VERSION, runs };
+    }
   }
   return {
     version: PUBLICATION_HISTORY_VERSION,
@@ -136,7 +136,6 @@ function isRunStatus(value: unknown): value is PublicationRunStatus {
     value === "building" ||
     value === "built" ||
     value === "deploying" ||
-    value === "dispatched" ||
     value === "deployed" ||
     value === "skipped" ||
     value === "failed"

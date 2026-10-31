@@ -11,7 +11,6 @@ export type PackageManagerCommand = {
 export type PackageManagerCommands = {
   readonly name: PackageManagerName;
   readonly install: PackageManagerCommand;
-  readonly build: PackageManagerCommand;
   readonly deploy: PackageManagerCommand;
 };
 
@@ -22,11 +21,10 @@ export function packageManagerCommands(
     return {
       name,
       install: { command: "pnpm", args: ["install"], label: "pnpm install" },
-      build: { command: "pnpm", args: ["build"], label: "pnpm build" },
       deploy: {
         command: "pnpm",
-        args: ["exec", "riebeckite", "deploy"],
-        label: "pnpm exec riebeckite deploy",
+        args: ["exec", "riebeckite", "publish", "run", "--execute"],
+        label: "pnpm exec riebeckite publish run --execute",
       },
     };
   }
@@ -34,11 +32,10 @@ export function packageManagerCommands(
   return {
     name: "npm",
     install: { command: "npm", args: ["install"], label: "npm install" },
-    build: { command: "npm", args: ["run", "build"], label: "npm run build" },
     deploy: {
       command: "npm",
-      args: ["exec", "riebeckite", "deploy"],
-      label: "npm exec riebeckite deploy",
+      args: ["exec", "riebeckite", "publish", "run", "--execute"],
+      label: "npm exec riebeckite publish run --execute",
     },
   };
 }

@@ -25,7 +25,6 @@ import {
   runCreateTheme,
   runInteractiveCreateTheme,
 } from "./commands/create_theme.js";
-import { runDeploy } from "./commands/deploy.js";
 import { runDeployDomain } from "./commands/deploy_domain.js";
 import { runDeploySetup } from "./commands/deploy_setup.js";
 import { runDev } from "./commands/dev.js";
@@ -106,8 +105,6 @@ export async function runCommand(command: Command): Promise<void> {
     return runBuild(project, { full: command.full });
   if (command.name === "clean")
     return runClean(project, { scope: command.scope });
-  if (command.name === "deploy")
-    return runDeploy(project, { dryRun: command.dryRun });
   if (command.name === "publish") {
     if (!(await runPublish(project, command.options))) process.exitCode = 1;
     return;

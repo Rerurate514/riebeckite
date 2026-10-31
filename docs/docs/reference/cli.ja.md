@@ -24,7 +24,7 @@ riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|war
 riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
-riebeckite deploy [--dry-run | setup | domain]
+riebeckite deploy setup | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite profile [--full]
 riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
@@ -45,7 +45,7 @@ riebeckite inspect [config | plugins | content [--list] [--path <path-or-permali
 | `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
-| `deploy` | 既存のビルド出力を Wrangler 経由で Cloudflare Workers に公開する。`--dry-run` はアップロードせずに検証する。`setup` は GitHub Actions による継続的デプロイを準備する。`domain` は Cloudflare Workers の Custom Domain を追加する | いいえ |
+| `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加する。デプロイは行わない | いいえ |
 | `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
@@ -178,14 +178,14 @@ npx create-riebeckite
 | 選択肢 | 生成されるもの |
 | --- | --- |
 | `Cloudflare Workers` | Wrangler の依存関係と `wrangler.jsonc`。依存関係のインストール後、`Deploy now?` を尋ねる |
-| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/deploy.yml` |
+| `GitHub Actions` | `wrangler.jsonc` と `.github/workflows/publish.yml` |
 | `Not now` | デプロイ用のファイルを生成しない |
 
-`Deploy now?` で `Yes` を選ぶと、雛形の生成直後にビルドと `riebeckite deploy` が実行されます。`Later` を選ぶとサイトの生成だけを行い、次のコマンドで公開します。
+`Deploy now?` で `Yes` を選ぶと、雛形の生成直後にビルドと `riebeckite publish run --execute` が実行されます。`Later` を選ぶとサイトの生成だけを行い、次のコマンドで公開します。
 
 ```sh
 npm run build
-npm exec riebeckite deploy
+npm exec -- riebeckite publish run --execute
 ```
 
 サイトを生成したら、依存関係をインストールして設定を確認します。
@@ -418,30 +418,18 @@ npm exec riebeckite build
 `publish` は、`build` と `deploy` を変えずに、公開計画、予約公開、承認、成果物検証、デプロイ診断を追加します。
 
 ```sh
-npm exec riebeckite publish plan --json
-npm exec riebeckite publish status
-npm exec riebeckite publish validate
-npm exec riebeckite publish run --execute --provider cloudflare-workers
-npm exec riebeckite publish approve <slug> --all
+npm exec -- riebeckite publish plan --json
+npm exec -- riebeckite publish status
+npm exec -- riebeckite publish validate
+npm exec -- riebeckite publish run --execute --provider cloudflare-workers
+npm exec -- riebeckite publish approve <slug> --all
 ```
 
-`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は共通のデプロイ前チェックで、direct モードでは何もせず、`publication.mode` が `managed` のときに承認と成果物の鮮度を強制します。承認は `--require-approval`、`--workflow approved`、または設定で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。承認は `--require-approval` または設定で任意に有効化し、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) を参照してください。
 
-## `deploy`
+## `deploy setup` と `deploy domain`
 
-`deploy` は、`build` が生成した `dist/` を、Wrangler を呼び出して Cloudflare Workers に公開します。`wrangler.jsonc` がない場合はサイトのフォルダー名から作成し、初回実行時には Wrangler のログインを開きます。`--dry-run` はそのまま渡され、アップロードせずに検証が行われます。
-
-`deploy` はコンテンツを再ビルドしないため、先に `npm exec riebeckite build` を実行してください。
-
-Cloudflare に接続せずに設定とアセットを検証するには、次のコマンドを実行します。
-
-```sh
-npm exec -- riebeckite deploy --dry-run
-```
-
-`npm` はオプション区切りを付けない `--dry-run` を自身のオプションとして解釈するため、`npm exec -- riebeckite deploy --dry-run` のように渡してください。`create-riebeckite` の `Cloudflare Workers` を選んで生成したサイトには、Wrangler の依存関係と `wrangler.jsonc` がすでに含まれています。
-
-push のたびに自動でデプロイするには、GitHub Actions を使います。詳しくは [デプロイ](../guides/deployment/README.ja.md) を参照してください。
+`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要ならビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は Cloudflare の設定補助2つの名前空間としてのみ残ります。
 
 ### `deploy setup`
 
@@ -451,17 +439,17 @@ push のたびに自動でデプロイするには、GitHub Actions を使いま
 npm exec riebeckite deploy setup
 ```
 
-Git リポジトリと GitHub のリモートを検出し、GitHub CLI（`gh`）と Wrangler のログインを確認します。`create-riebeckite` と同じテンプレートから `.github/workflows/deploy.yml` を作成し、Wrangler のログイン情報から Cloudflare アカウントを読み取ります（複数ある場合は選択を求めます）。そして、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。トークンは非表示のプロンプト、または環境変数 `CLOUDFLARE_API_TOKEN` から読み取られ、標準入力経由で `gh secret set` に渡されます。コマンドの引数として渡されたり、ディスクに書き込まれたりすることはありません。コマンドは GitHub リポジトリを作成せず、push もしません。Riebeckite 以外のワークフローが既にある場合は、その旨を報告して変更せず、シークレットを登録する前に停止します。Wrangler はサイトにインストールされている必要があります（Local-first のサイトにはすでに含まれています）。いつでも再実行できます。一致するワークフローと既存のシークレットは検出されてスキップされるため、残りの手順だけが実行されます。別のデプロイワークフローがすでにある場合は、`deploy setup` を再度実行する前に置き換えるか削除してください。
+Git リポジトリと GitHub のリモートを検出し、GitHub CLI（`gh`）と Wrangler のログインを確認します。`create-riebeckite` と同じテンプレートから `.github/workflows/publish.yml` を作成し、Wrangler のログイン情報から Cloudflare アカウントを読み取ります（複数ある場合は選択を求めます）。そして、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。トークンは非表示のプロンプト、または環境変数 `CLOUDFLARE_API_TOKEN` から読み取られ、標準入力経由で `gh secret set` に渡されます。コマンドの引数として渡されたり、ディスクに書き込まれたりすることはありません。コマンドは GitHub リポジトリを作成せず、push もしません。Riebeckite 以外のワークフローが既にある場合は、その旨を報告して変更せず、シークレットを登録する前に停止します。Wrangler はサイトにインストールされている必要があります（Local-first のサイトにはすでに含まれています）。いつでも再実行できます。一致するワークフローと既存のシークレットは検出されてスキップされるため、残りの手順だけが実行されます。別のデプロイワークフローがすでにある場合は、`deploy setup` を再度実行する前に置き換えるか削除してください。
 
 ### `deploy domain`
 
-`deploy domain` は、`deploy` が公開する Worker に Cloudflare Workers の Custom Domain を設定します。
+`deploy domain` は、`publish run` が使用する Worker に Cloudflare Workers の Custom Domain を設定します。
 
 ```sh id="d0main"
 npm exec riebeckite deploy domain
 ```
 
-最初の `deploy` の後に実行してください。サイト内の既存の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み取り、`custom_domain: true` を持つ宣言的な `routes` エントリを追加するためです。引数はありません。コマンドは `docs.example.com` のようなホスト名の入力を求め、変更予定の内容を表示して、書き込み前に確認を取ります。`wrangler.toml` は変更しません。Wrangler 設定が存在しない場合や、ターミナルが対話的でない場合は、ヒントを表示して停止します。書き込み後は `Deploy now?` を提示し、そうでなければ `npm exec riebeckite deploy` コマンドを表示します。再実行すると、設定済みのドメインを検出して書き込みをスキップします。
+最初の publish run の後に実行してください。サイト内の既存の Wrangler 設定（`wrangler.jsonc` または `wrangler.json`）を読み取り、`custom_domain: true` を持つ宣言的な `routes` エントリを追加するためです。引数はありません。コマンドは `docs.example.com` のようなホスト名の入力を求め、変更予定の内容を表示して、書き込み前に確認を取ります。`wrangler.toml` は変更しません。Wrangler 設定が存在しない場合や、ターミナルが対話的でない場合は、ヒントを表示して停止します。書き込み後は `Deploy now?` を提示し、そうでなければ `npm exec -- riebeckite publish run --execute` コマンドを表示します。再実行すると、設定済みのドメインを検出して書き込みをスキップします。
 
 ## `profile`
 
@@ -560,7 +548,7 @@ pnpm exec riebeckite check
 pnpm exec riebeckite doctor
 pnpm exec riebeckite inspect plugins
 pnpm exec riebeckite build
-pnpm exec riebeckite deploy
+pnpm exec -- riebeckite publish run --execute
 ```
 
 新しいサイトでは、次のような流れになります。
@@ -581,7 +569,7 @@ flowchart LR
     Build --> Deploy
 ```
 
-`build` の後は、`npm exec riebeckite deploy` で出力を公開します。
+`build` の後は、`npm exec -- riebeckite publish run --execute` で出力を公開します。
 
 問題が発生したときは、目的に応じて `doctor`、`inspect`、`profile` を使います。
 

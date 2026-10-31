@@ -147,13 +147,12 @@ function validatePublication(
     return;
   }
   if (
-    value.mode !== undefined &&
-    value.mode !== "direct" &&
-    value.mode !== "managed"
+    value.requireApproval !== undefined &&
+    typeof value.requireApproval !== "boolean"
   ) {
     issues.push({
-      path: "publication.mode",
-      message: 'Expected "direct" or "managed".',
+      path: "publication.requireApproval",
+      message: "Expected a boolean.",
     });
   }
   validateOptionalString(

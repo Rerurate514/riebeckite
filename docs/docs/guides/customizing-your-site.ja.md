@@ -276,7 +276,7 @@ initRiebeckiteClient();
 
 ## CSSを変更する
 
-サイトのデザインは、`app/style.css`や各コンポーネントのCSSから変更できます。通常のCSSやTailwindを利用できます。
+サイトのデザインは、`app/style.css`や各コンポーネントのCSSから変更できます。生成されるプリセットでは、サイトのCSSを`app/styles/`に分割し、`app/style.css`から読み込みます。通常のCSSやTailwindを利用できます。
 
 Riebeckiteがプラグインやテーマから生成したCSSは、サイトのCSSから一度だけ読み込みます。
 
@@ -305,7 +305,7 @@ Riebeckiteがプラグインやテーマから生成したCSSは、サイトのC
 | 404ページを変えたい | `app/routes/_404.tsx` |
 | 独自のコンポーネントを作りたい | `app/components/` |
 | 操作できるUIを作りたい | `app/islands/` |
-| 色や余白を変えたい | `app/style.css` |
+| 色や余白を変えたい | `app/style.css`、`app/styles/` |
 | プラグインのUIを配置したい | プラグインのコンポーネント |
 
 Riebeckiteがコンテンツとプラグインをサイトへ接続し、**最終的なページの見た目と構成はサイトが決める**というのが基本的な考え方です。

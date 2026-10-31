@@ -1,0 +1,38 @@
+.site-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  gap: var(--rb-space-3, 1.5rem);
+  padding-inline: clamp(1rem, 4vw, var(--rb-space-3, 1.5rem));
+  border-bottom: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface);
+}
+
+.site-header__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: auto;
+  color: var(--rb-color-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-header__navigation {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .site-header__navigation {
+    display: block;
+  }
+}
+
+.site-header__logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+}

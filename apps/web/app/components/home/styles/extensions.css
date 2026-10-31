@@ -1,0 +1,22 @@
+.rb-home__application-example {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr);
+  gap: clamp(1.75rem, 5vw, 5rem);
+  align-items: start;
+}
+.rb-home__application-copy > p {
+  margin: 0;
+  color: var(--rb-color-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.rb-home__application-example {
+  margin-top: var(--rb-space-5);
+}
+.rb-home__configuration {
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--rb-color-surface-hover);
+}
+.rb-home__application-example {
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.8fr);
+}

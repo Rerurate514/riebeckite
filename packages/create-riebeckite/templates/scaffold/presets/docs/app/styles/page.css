@@ -1,0 +1,6 @@
+.riebeckite-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+}

@@ -1,0 +1,11 @@
+.site-article {
+  display: block;
+  width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  padding-block: 2rem;
+  margin: 0 auto;
+}
+
+.rb-article-body {
+  min-width: 0;
+  padding-inline: var(--rb-space-2, 1rem);
+}

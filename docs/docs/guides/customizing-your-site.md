@@ -345,7 +345,8 @@ behavior lives in the plugin, keeping the responsibilities separate.
 ## Changing CSS
 
 You can change the site design from `app/style.css` and each component's CSS.
-Plain CSS and Tailwind both work.
+Generated presets keep the site styles in `app/styles/`; `app/style.css` only
+imports them. Plain CSS and Tailwind both work.
 
 Import the CSS Riebeckite generates from plugins and themes once from the site
 CSS:
@@ -376,7 +377,7 @@ If you are unsure where to make a change, this usually helps:
 | Change the 404 screen | `app/routes/_404.tsx` |
 | Create a custom component | `app/components/` |
 | Build interactive UI | `app/islands/` |
-| Change color or spacing | `app/style.css` |
+| Change color or spacing | `app/style.css`, `app/styles/` |
 | Place plugin UI | plugin component |
 
 The basic idea is that Riebeckite connects content and plugins to the site, and

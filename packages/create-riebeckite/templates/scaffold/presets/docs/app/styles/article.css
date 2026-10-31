@@ -1,0 +1,7 @@
+.site-article {
+  width: 100%;
+}
+
+.site-article__footer {
+  min-width: 0;
+}

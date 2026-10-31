@@ -1,0 +1,55 @@
+.rb-home__recipes {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rb-home__recipe-links {
+  display: grid;
+  counter-reset: recipe;
+  border-block: 1px solid var(--rb-color-border-strong);
+}
+.rb-home__recipe-links a {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 0.8fr) minmax(12rem, 1.2fr) 1.5rem;
+  column-gap: 1rem;
+  align-items: center;
+  min-height: 5.75rem;
+  padding: 1rem 0;
+  color: var(--rb-color-ink);
+  text-decoration: none;
+}
+.rb-home__recipe-links a + a {
+  border-top: 1px solid var(--rb-color-border);
+}
+.rb-home__recipe-links a::before {
+  counter-increment: recipe;
+  content: "0" counter(recipe);
+  color: var(--rb-color-accent);
+  font-family: var(--rb-font-mono);
+  font-size: 0.78rem;
+}
+.rb-home__recipe-links a::after {
+  content: "↗";
+  color: var(--rb-color-accent);
+  font-size: 1.1rem;
+  text-align: right;
+  transition: transform 160ms ease;
+}
+.rb-home__recipe-links strong {
+  font-family: var(--rb-font-heading);
+  font-size: 1.15rem;
+}
+.rb-home__recipe-links span {
+  color: var(--rb-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.rb-home__recipe-links a:hover,
+.rb-home__recipe-links a:focus-visible {
+  background: var(--rb-color-surface-hover);
+}
+.rb-home__recipe-links a:hover::after,
+.rb-home__recipe-links a:focus-visible::after {
+  transform: translate(0.2rem, -0.2rem);
+}

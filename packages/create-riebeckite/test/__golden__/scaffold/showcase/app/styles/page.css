@@ -1,0 +1,26 @@
+.riebeckite-page {
+  --site-toc-sticky-top: var(--rb-space-3, 1.5rem);
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  padding-block: var(--rb-space-8, 4rem);
+}
+
+.riebeckite-main {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.riebeckite-main:has(> .not-found) {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 30rem) {
+  .riebeckite-page {
+    padding-block: var(--rb-space-3, 1.5rem);
+  }
+}

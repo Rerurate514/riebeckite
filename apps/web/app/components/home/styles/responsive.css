@@ -1,0 +1,61 @@
+@media (max-width: 52rem) {
+  .rb-home__hero,
+  .rb-home__explore,
+  .rb-home__conversion-flow,
+  .rb-home__application-example,
+  .rb-home__recipes,
+  .rb-home__project,
+  .rb-home__workflow {
+    grid-template-columns: 1fr;
+  }
+  .rb-home__published-example {
+    max-width: 34rem;
+  }
+  .rb-home__conversion-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+  .rb-home__site-preview {
+    max-width: 40rem;
+  }
+  .rb-home__project-tree {
+    max-width: 34rem;
+  }
+  .rb-home__workflow-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 32rem) {
+  .rb-home {
+    width: min(100% - 1.25rem, 76rem);
+  }
+  .rb-home h1 {
+    font-size: clamp(2.55rem, 13vw, 3.4rem);
+  }
+  .rb-home__actions {
+    align-items: stretch;
+  }
+  .rb-home__cta {
+    flex: 1 1 auto;
+  }
+  .rb-home__configuration {
+    padding: 1.25rem;
+  }
+  .rb-home__preview-layout {
+    grid-template-columns: 1fr;
+  }
+  .rb-home__preview-layout nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-right: 0;
+    border-bottom: 1px solid var(--rb-color-border);
+  }
+  .rb-home__preview-layout nav p {
+    grid-column: 1 / -1;
+  }
+  .rb-home__recipe-links,
+  .rb-home__workflow-list,
+  .rb-home__gallery-links {
+    grid-template-columns: 1fr;
+  }
+}

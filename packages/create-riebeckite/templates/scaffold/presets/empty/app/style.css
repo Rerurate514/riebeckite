@@ -1,18 +1,3 @@
 @import "./.riebeckite/framework-styles.css";
-
-.riebeckite-empty {
-  max-width: 48rem;
-  padding: 4rem 1rem;
-  margin: 0 auto;
-}
-
-.not-found {
-  max-width: 48rem;
-  padding: 4rem 1rem;
-  margin: 0 auto;
-}
-
-.not-found__status {
-  margin: 0;
-  font-weight: 700;
-}
+@import "./styles/page.css";
+@import "./styles/not-found.css";

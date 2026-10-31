@@ -218,10 +218,16 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
         ),
       "generated assets must come from the installed create-riebeckite templates",
     );
+    const generatedStyles = [
+      path.join(siteDir, "app", "style.css"),
+      ...fs
+        .readdirSync(path.join(siteDir, "app", "styles"))
+        .map((file) => path.join(siteDir, "app", "styles", file)),
+    ];
     assert.ok(
-      !fs
-        .readFileSync(path.join(siteDir, "app", "style.css"), "utf8")
-        .includes("{{reader-layout}}"),
+      generatedStyles.every(
+        (file) => !fs.readFileSync(file, "utf8").includes("{{reader-layout}}"),
+      ),
       "the installed create-riebeckite package must expand the shared reader layout",
     );
 

@@ -71,6 +71,37 @@ test("build provenance can be disabled", async (t) => {
   await manager.dispose();
 });
 
+test("disabling provenance does not change the generated manifest", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-provenance-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const config = contentTestConfig(directory);
+  const source = {
+    "index.md": "---\ntitle: Home\nvisibility: public\n---\n# Home",
+    "notes/private.md": "---\nvisibility: draft\n---\n# Private",
+  };
+  const build = async (enabled: boolean) => {
+    const manager = new ContentManager(memoryContentSource(source), [], {
+      config: { ...config, provenance: { enabled } },
+      plugins: config.plugins,
+      commitBuildState: false,
+    });
+    const manifest = await manager.build();
+    await manager.dispose();
+    return manifest;
+  };
+
+  const projection = (manifest: Awaited<ReturnType<typeof build>>) =>
+    JSON.stringify({
+      entries: manifest.entries,
+      publicEntries: manifest.publicEntries,
+      pagePaths: manifest.pagePaths,
+      generatedOutputs: manifest.generatedOutputs,
+    });
+  assert.equal(projection(await build(true)), projection(await build(false)));
+});
+
 test("build provenance records only executed plugin hooks", async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-provenance-"),

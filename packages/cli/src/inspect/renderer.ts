@@ -1,4 +1,5 @@
 import type {
+  ApiInspection,
   ApplicationInspection,
   AssetInspection,
   BuildInspection,
@@ -60,6 +61,60 @@ export function renderApplicationInspection(
     "  riebeckite inspect graph",
     "  riebeckite inspect build",
     "  riebeckite inspect assets",
+    "  riebeckite inspect api",
+  ].join("\n");
+}
+
+export function renderApiInspection(
+  inspection: ApiInspection,
+  options: { deprecatedOnly: boolean },
+): string {
+  const entries = options.deprecatedOnly
+    ? inspection.deprecated
+    : inspection.entries;
+  const used = new Set(inspection.usedIds);
+  return [
+    "API Lifecycle",
+    "",
+    field("APIs", inspection.entries.length),
+    field("Deprecated", inspection.deprecated.length),
+    field("Registry issues", inspection.issues.length),
+    ...(inspection.issues.length > 0
+      ? [
+          "",
+          "Issues",
+          ...inspection.issues.map(
+            (entry) =>
+              `  ${entry.apiId ?? "-"}  ${entry.code}  ${entry.message}`,
+          ),
+        ]
+      : []),
+    "",
+    entries.length === 0
+      ? options.deprecatedOnly
+        ? "No deprecated APIs are registered."
+        : "No lifecycle-managed APIs are registered."
+      : "APIs",
+    ...entries.flatMap((entry) => [
+      "",
+      `  ${entry.id}`,
+      ...(entry.summary ? [field("Summary", entry.summary)] : []),
+      field("Status", entry.status),
+      field("Kind", entry.kind),
+      field("Package", entry.package ?? entry.id.split("#")[0]),
+      ...(entry.deprecatedSince
+        ? [field("Deprecated since", entry.deprecatedSince)]
+        : []),
+      ...(entry.replacement ? [field("Replacement", entry.replacement)] : []),
+      ...(entry.removalVersion ? [field("Removal", entry.removalVersion)] : []),
+      ...(entry.migrationGuide
+        ? [field("Migration guide", entry.migrationGuide)]
+        : []),
+      ...(entry.reason ? [field("Reason", entry.reason)] : []),
+      ...(entry.status === "deprecated"
+        ? [field("Used", used.has(entry.id) ? "yes" : "not detected")]
+        : []),
+    ]),
   ].join("\n");
 }
 

@@ -49,7 +49,7 @@ export function initDevelopmentInspector() {
   let pendingRefresh = false;
   let loadingTimer;
   let themeFrame = 0;
-  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Provenance", "Assets", "Theme"];
+  const tabs = ["Overview", "Diagnostics", "API", "Dependencies", "Plugins", "Output", "Derived", "Provenance", "Assets", "Theme"];
   const tabLabel = (tab) => t(tab);
   const outputUrl = () => {
     const parameters = new URLSearchParams();
@@ -130,10 +130,10 @@ export function initDevelopmentInspector() {
       assetsData = undefined;
       render();
       void loadOutput(current);
-      if (activeTab === 2) void loadGraph(current);
-      if (activeTab === 3) void loadPlugins(current);
-      if (activeTab === 6) void loadProvenance(current);
-      if (activeTab === 7) void loadAssets(current);
+      if (activeTab === 3) void loadGraph(current);
+      if (activeTab === 4) void loadPlugins(current);
+      if (activeTab === 7) void loadProvenance(current);
+      if (activeTab === 8) void loadAssets(current);
     } catch (error) {
       if (error.name === "AbortError" || current !== generation) return;
       clearInterval(loadingTimer);
@@ -308,7 +308,7 @@ export function initDevelopmentInspector() {
   });
   import.meta.hot?.on("riebeckite:inspector", refresh);
   const refreshTheme = () => {
-    if (!panel?.isConnected || activeTab !== 8) return;
+    if (!panel?.isConnected || activeTab !== 9) return;
     cancelAnimationFrame(themeFrame);
     themeFrame = requestAnimationFrame(() => render());
   };
@@ -367,7 +367,7 @@ export function initDevelopmentInspector() {
       render();
     });
     setupResize(root);
-    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 2 && !graphData) void loadGraph(generation); if (activeTab === 3 && !pluginData) void loadPlugins(generation); if (activeTab === 6 && !provenanceData) void loadProvenance(generation); if (activeTab === 7 && !assetsData) void loadAssets(generation); }));
+    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 3 && !graphData) void loadGraph(generation); if (activeTab === 4 && !pluginData) void loadPlugins(generation); if (activeTab === 7 && !provenanceData) void loadProvenance(generation); if (activeTab === 8 && !assetsData) void loadAssets(generation); }));
     root.querySelectorAll("[data-diagnostic-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDiagnosticFilters(root); render(); }));
     root.querySelectorAll("[data-output-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readOutputFilters(root); outputPage = 0; render(); requestOutput(); }));
     root.querySelectorAll("[data-output-page]").forEach((button) => button.addEventListener("click", () => { outputPage = Math.max(0, outputPage + Number(button.dataset.outputPage)); render(); requestOutput(); }));
@@ -376,14 +376,14 @@ export function initDevelopmentInspector() {
     root.querySelectorAll("[data-graph-page]").forEach((button) => button.addEventListener("click", () => { graphPage = Math.max(0, graphPage + Number(button.dataset.graphPage)); render(); requestGraph(); }));
     root.querySelectorAll("[data-graph-selected]").forEach((button) => button.addEventListener("click", () => { graphSelected = button.dataset.graphSelected; graphPage = 0; render(); requestGraph(); }));
     root.querySelector("[data-graph-clear]")?.addEventListener("click", () => { graphSelected = ""; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; render(); requestGraph(); });
-    root.querySelectorAll("[data-graph-output]").forEach((button) => button.addEventListener("click", () => { outputLookup = button.dataset.graphOutput; outputPage = 0; activeTab = 4; render(); requestOutput(); }));
-    root.querySelectorAll("[data-graph-content]").forEach((button) => button.addEventListener("click", () => { outputChanged = button.dataset.graphContent; outputPage = 0; activeTab = 4; render(); requestOutput(); }));
+    root.querySelectorAll("[data-graph-output]").forEach((button) => button.addEventListener("click", () => { outputLookup = button.dataset.graphOutput; outputPage = 0; activeTab = 5; render(); requestOutput(); }));
+    root.querySelectorAll("[data-graph-content]").forEach((button) => button.addEventListener("click", () => { outputChanged = button.dataset.graphContent; outputPage = 0; activeTab = 5; render(); requestOutput(); }));
     root.querySelectorAll("[data-plugin-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readPluginFilters(root); pluginPage = 0; render(); requestPlugins(); }));
     root.querySelectorAll("[data-plugin-page]").forEach((button) => button.addEventListener("click", () => { pluginPage = Math.max(0, pluginPage + Number(button.dataset.pluginPage)); render(); requestPlugins(); }));
     root.querySelectorAll("[data-theme-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readThemeFilters(root); render(); }));
     root.querySelectorAll("[data-derived-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDerivedFilters(root); render(); }));
     root.querySelectorAll("[data-provenance-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readProvenanceFilters(root); render(); }));
-    root.querySelectorAll("[data-output-graph]").forEach((button) => button.addEventListener("click", () => { graphSelected = "output:" + button.dataset.outputGraph; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; graphData = undefined; activeTab = 2; render(); requestGraph(); }));
+    root.querySelectorAll("[data-output-graph]").forEach((button) => button.addEventListener("click", () => { graphSelected = "output:" + button.dataset.outputGraph; graphQuery = ""; graphKind = "all"; graphDirection = "both"; graphPage = 0; graphData = undefined; activeTab = 3; render(); requestGraph(); }));
     const lookupInput = root.querySelector("[data-output-lookup]");
     const lookupSubmit = root.querySelector("[data-output-lookup-submit]");
     lookupSubmit?.addEventListener("click", () => { outputLookup = lookupInput?.value.trim() ?? ""; outputPage = 0; render(); requestOutput(); });
@@ -410,12 +410,13 @@ export function initDevelopmentInspector() {
   function panelContent() {
     if (activeTab === 0) return '<dl><dt>' + t("Page") + '</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>' + t("Theme") + '</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>' + t("Revision") + '</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
     if (activeTab === 1) return diagnosticList(report.diagnostics, report);
-    if (activeTab === 2) return graphReport(graphData) + dependencyReport(report.dependencies);
-    if (activeTab === 3) return pluginExecutionReport(pluginData);
-    if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
-    if (activeTab === 5) return derivedReport(report.derivedViews);
-    if (activeTab === 6) return provenanceReport(provenanceData);
-    if (activeTab === 7) return assetsReport(assetsData);
+    if (activeTab === 2) return apiLifecycleReport(report.apiLifecycle, report.diagnostics);
+    if (activeTab === 3) return graphReport(graphData) + dependencyReport(report.dependencies);
+    if (activeTab === 4) return pluginExecutionReport(pluginData);
+    if (activeTab === 5) return outputReport(report.output) + regenerationReport(report.regeneration);
+    if (activeTab === 6) return derivedReport(report.derivedViews);
+    if (activeTab === 7) return provenanceReport(provenanceData);
+    if (activeTab === 8) return assetsReport(assetsData);
     return themeReport(report.themeConfig);
   }
 }

@@ -10,8 +10,10 @@ import {
   loadContentBuildState,
   readContentBuildStateStatus,
   readOnlyContentGraph,
+  resolveApiLifecycle,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
+import { collectApiLifecycleDiagnostics } from "@riebeckite/diagnostics";
 import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../application_root.js";
 import {
@@ -20,6 +22,7 @@ import {
 } from "../content_source.js";
 import { loadProjectConfig } from "../load_config.js";
 import type {
+  ApiInspection,
   ApplicationInspection,
   AssetInspection,
   BuildInspection,
@@ -90,6 +93,28 @@ export async function collectPluginInspections(
     requires: sorted(plugin.requires),
     optional: sorted(plugin.optional),
   }));
+}
+
+export async function collectApiInspection(
+  project: RiebeckiteProject,
+): Promise<ApiInspection> {
+  const config = await loadProjectConfig(project);
+  const registry = resolveApiLifecycle(config);
+  const usedIds = collectApiLifecycleDiagnostics(config)
+    .filter(
+      (diagnostic) =>
+        diagnostic.category === "api" && diagnostic.severity === "warning",
+    )
+    .map((diagnostic) => diagnostic.subject.value)
+    .filter((value): value is string => value !== undefined);
+  return {
+    entries: registry.entries,
+    issues: registry.issues,
+    deprecated: registry.deprecated(),
+    usedIds: [...new Set(usedIds)].sort((left, right) =>
+      left.localeCompare(right),
+    ),
+  };
 }
 
 export async function collectContentInspection(

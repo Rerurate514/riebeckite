@@ -1,11 +1,10 @@
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
   appendContentMigrationHistory,
   ContentManager,
   type ContentManifest,
-  type ContentManifestEntry,
   type ContentMigrationBatch,
   type ContentMigrationDiagnostic,
   type ContentMigrationHistory,
@@ -14,7 +13,6 @@ import {
   type ContentMigrationListEntry,
   type ContentMigrationRecord,
   type ContentMigrationRecoveryState,
-  type ContentMigrationRegistry,
   type ContentMigrationState,
   type ContentMigrationStatus,
   type ContentMutationFileChange,
@@ -34,124 +32,60 @@ import {
   publicationFingerprint,
   publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
-  type ResolvedRiebeckiteConfig,
-  type RiebeckitePlugin,
   sanitizeContentMigrationPath,
   upsertContentMigrationRecord,
 } from "@riebeckite/core";
+import {
+  changedFrontmatterKeys,
+  diagnosticKey,
+  errorMessage,
+  errorPath,
+  exists,
+  findEntry,
+  fingerprintFiles,
+  fingerprintMutationPlan,
+  fingerprintPlan,
+  isAppliedRecord,
+  isRecord,
+  isWithin,
+  journalMatchesApplied,
+  mutationIssue,
+  readJournalSnapshot,
+  redirectFieldFromConfig,
+  sameMigrationPlan,
+  sanitizeErrorMessage,
+  staleLockContent,
+} from "./file_system_content_migration_helpers.js";
+import type {
+  ContentMigrationApplyOptions,
+  ContentMigrationApplyResult,
+  ContentMigrationPlan,
+  ContentMigrationRecoverOptions,
+  ContentMigrationRecoveryResult,
+  ContentMigrationRollbackOptions,
+  ContentMigrationRollbackOutcome,
+  ContentMigrationStatusReport,
+  FileSystemContentMigrationOptions,
+  FutureContentSource,
+} from "./file_system_content_migration_types.js";
 import { FileSystemContentMutation } from "./file_system_content_mutation.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
 
-export type FutureContentSource = ContentSource & {
-  readonly changes: ReadonlyMap<string, Uint8Array | null>;
-};
-
-export type ContentMigrationPlanFile = {
-  readonly path: string;
-  readonly beforeFingerprint: string | null;
-  readonly afterFingerprint: string | null;
-};
-
-export type ContentMigrationVerification = {
-  readonly beforeFiles: number;
-  readonly afterFiles: number;
-  readonly beforePublicationFingerprint: string;
-  readonly afterPublicationFingerprint: string;
-  readonly derivedViews: number;
-};
-
-export type ContentMigrationPlan = {
-  readonly schemaVersion: 1;
-  readonly id: string;
-  readonly createdAt: string;
-  readonly migrations: readonly {
-    readonly id: string;
-    readonly version: number;
-    readonly fingerprint: string;
-  }[];
-  readonly baseContentFingerprint: string;
-  readonly mutationPlanId: string;
-  readonly mutationPlanFingerprint: string;
-  readonly planFingerprint: string;
-  readonly operations: readonly ContentMutationOperation[];
-  readonly changes: readonly ContentMigrationPlanFile[];
-  readonly diagnostics: readonly ContentMigrationDiagnostic[];
-  readonly conflicts: readonly ContentMigrationDiagnostic[];
-  readonly selections: ContentMigrationBatch["selections"];
-  readonly skipped: ContentMigrationBatch["skipped"];
-  readonly impact: ContentMigrationBatch["impact"];
-  readonly verification: ContentMigrationVerification;
-};
-
-export type FileSystemContentMigrationOptions = {
-  readonly contentDirectory: string;
-  readonly registry: ContentMigrationRegistry;
-  readonly config?: ResolvedRiebeckiteConfig;
-  readonly plugins?: readonly RiebeckitePlugin[];
-  readonly buildTime?: Date;
-  readonly exclude?: readonly string[];
-  readonly redirectField?: string;
-};
-
-export type ContentMigrationApplyOptions = {
-  readonly planPath?: string;
-  readonly ids?: readonly string[];
-};
-
-export type ContentMigrationApplyResult = {
-  readonly applied: boolean;
-  readonly skipped: boolean;
-  readonly plan: ContentMigrationPlan;
-  readonly journalPath?: string;
-  readonly changedPaths: readonly string[];
-  readonly conflicts: readonly ContentMigrationDiagnostic[];
-};
-
-export type ContentMigrationStatusEntry = {
-  readonly id: string;
-  readonly version: number;
-  readonly latestVersion?: number;
-  readonly status: ContentMigrationStatus;
-  readonly definitionMatches: boolean;
-  readonly planId?: string;
-  readonly appliedAt?: string;
-  readonly updatedAt: string;
-  readonly journal?: string;
-  readonly error?: string;
-};
-
-export type ContentMigrationStatusReport = {
-  readonly schemaVersion: 1;
-  readonly updatedAt: string;
-  readonly entries: readonly ContentMigrationStatusEntry[];
-  readonly migrations: readonly ContentMigrationListEntry[];
-  readonly historyCount: number;
-};
-
-export type ContentMigrationRecoverOptions = {
-  readonly journal?: string;
-  readonly migrationId?: string;
-};
-
-export type ContentMigrationRecoveryResult = {
-  readonly recovered: boolean;
-  readonly applied: boolean;
-  readonly skipped: boolean;
-  readonly restoredPaths: readonly string[];
-  readonly conflicts: readonly ContentMigrationDiagnostic[];
-};
-
-export type ContentMigrationRollbackOptions = {
-  readonly planId?: string;
-  readonly migrationId?: string;
-};
-
-export type ContentMigrationRollbackOutcome = {
-  readonly rolledBack: boolean;
-  readonly skipped: boolean;
-  readonly restoredPaths: readonly string[];
-  readonly conflicts: readonly ContentMigrationDiagnostic[];
-};
+export type {
+  ContentMigrationApplyOptions,
+  ContentMigrationApplyResult,
+  ContentMigrationPlan,
+  ContentMigrationPlanFile,
+  ContentMigrationRecoverOptions,
+  ContentMigrationRecoveryResult,
+  ContentMigrationRollbackOptions,
+  ContentMigrationRollbackOutcome,
+  ContentMigrationStatusEntry,
+  ContentMigrationStatusReport,
+  ContentMigrationVerification,
+  FileSystemContentMigrationOptions,
+  FutureContentSource,
+} from "./file_system_content_migration_types.js";
 
 export class FileSystemContentMigration {
   private readonly mutation: FileSystemContentMutation;
@@ -1644,23 +1578,6 @@ export function createFutureContentSource(
   };
 }
 
-// shortcut: only the official permalink plugin declares the frontmatter redirect field; other redirect producers must pass redirectField explicitly.
-function redirectFieldFromConfig(
-  config: ResolvedRiebeckiteConfig | undefined,
-): string {
-  const options = config?.plugins.find((plugin) => plugin.name === "permalink")
-    ?.options as
-    | { readonly redirects?: { readonly frontmatter?: unknown } }
-    | undefined;
-  const field = options?.redirects?.frontmatter;
-  if (field === undefined) return "redirect_from";
-  if (typeof field !== "string" || field.trim() === "")
-    throw new Error(
-      "The permalink redirects.frontmatter option must be a non-empty string.",
-    );
-  return field;
-}
-
 export function fingerprintContentFiles(
   files: readonly {
     readonly path: string;
@@ -1668,311 +1585,4 @@ export function fingerprintContentFiles(
   }[],
 ): string {
   return fingerprintFiles(files);
-}
-
-function fingerprintFiles(
-  files: readonly {
-    readonly path: string;
-    readonly content: string | Uint8Array;
-  }[],
-): string {
-  const hash = createHash("sha256");
-  for (const file of [...files].sort((left, right) =>
-    left.path.localeCompare(right.path),
-  )) {
-    hash.update(file.path);
-    hash.update("\0");
-    hash.update(createHash("sha256").update(file.content).digest("hex"));
-    hash.update("\n");
-  }
-  return hash.digest("hex");
-}
-
-function fingerprintMutationPlan(
-  operations: readonly ContentMutationOperation[],
-  changes: readonly ContentMutationFileChange[],
-): string {
-  return createHash("sha256")
-    .update(
-      canonicalJson({
-        operations,
-        changes: changes.map((change) => ({
-          path: change.path,
-          beforeFingerprint: change.beforeFingerprint,
-          afterFingerprint: change.afterFingerprint,
-        })),
-      }),
-    )
-    .digest("hex");
-}
-
-function fingerprintPlan(input: {
-  readonly migrations: readonly {
-    readonly id: string;
-    readonly version: number;
-    readonly fingerprint: string;
-  }[];
-  readonly baseContentFingerprint: string;
-  readonly mutationPlanFingerprint: string;
-  readonly operations: readonly ContentMutationOperation[];
-  readonly diagnostics: readonly ContentMigrationDiagnostic[];
-  readonly conflicts: readonly ContentMigrationDiagnostic[];
-}): string {
-  return createHash("sha256")
-    .update(
-      canonicalJson({
-        migrations: input.migrations.map((migration) => ({
-          id: migration.id,
-          version: migration.version,
-          fingerprint: migration.fingerprint,
-        })),
-        baseContentFingerprint: input.baseContentFingerprint,
-        mutationPlanFingerprint: input.mutationPlanFingerprint,
-        operations: input.operations,
-        diagnostics: input.diagnostics.map((diagnostic) => ({
-          severity: diagnostic.severity,
-          code: diagnostic.code,
-          path: diagnostic.path,
-        })),
-        conflicts: input.conflicts.map((conflict) => ({
-          code: conflict.code,
-          path: conflict.path,
-        })),
-      }),
-    )
-    .digest("hex");
-}
-
-function canonicalJson(value: unknown): string {
-  return JSON.stringify(sortValue(value));
-}
-
-function sortValue(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sortValue);
-  if (isRecord(value)) {
-    const sorted: Record<string, unknown> = {};
-    for (const key of Object.keys(value).sort())
-      sorted[key] = sortValue(value[key]);
-    return sorted;
-  }
-  return value;
-}
-
-function findEntry(
-  manifest: ContentManifest,
-  contentPath: string,
-): ContentManifestEntry | undefined {
-  const base = contentPath.replace(/\.md$/i, "");
-  return (
-    manifest.bySlug.get(base) ??
-    manifest.bySlug.get(`${base}/index`) ??
-    manifest.bySlug.get(base.replace(/\/index$/i, ""))
-  );
-}
-
-function changedFrontmatterKeys(
-  file: ContentMigrationBatch["files"][number],
-): Set<string> {
-  const keys = new Set<string>();
-  for (const key of new Set([
-    ...Object.keys(file.frontmatter),
-    ...Object.keys(file.originalFrontmatter),
-  ])) {
-    if (
-      canonicalJson(file.frontmatter[key]) !==
-      canonicalJson(file.originalFrontmatter[key])
-    )
-      keys.add(key);
-  }
-  return keys;
-}
-
-function diagnosticKey(diagnostic: {
-  readonly code: string;
-  readonly filePath?: string;
-  readonly target?: string;
-}): string {
-  return `${diagnostic.code}\0${diagnostic.filePath ?? ""}\0${diagnostic.target ?? ""}`;
-}
-
-function mutationIssue(
-  issue: {
-    readonly severity: "warning" | "error";
-    readonly code: string;
-    readonly message: string;
-    readonly path?: string;
-  },
-  severity: "warning" | "error",
-): ContentMigrationDiagnostic {
-  return {
-    severity,
-    code: issue.code,
-    message: issue.message,
-    path: issue.path,
-  };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function sameMigrationPlan(
-  left: ContentMigrationPlan,
-  right: ContentMigrationPlan,
-): boolean {
-  if (
-    left.baseContentFingerprint !== right.baseContentFingerprint ||
-    left.mutationPlanFingerprint !== right.mutationPlanFingerprint ||
-    left.planFingerprint !== right.planFingerprint ||
-    canonicalJson(left.operations) !== canonicalJson(right.operations) ||
-    canonicalJson(left.changes) !== canonicalJson(right.changes) ||
-    left.migrations.length !== right.migrations.length
-  )
-    return false;
-  return left.migrations.every(
-    (migration, index) =>
-      migration.id === right.migrations[index]?.id &&
-      migration.version === right.migrations[index]?.version &&
-      migration.fingerprint === right.migrations[index]?.fingerprint,
-  );
-}
-
-function isAppliedRecord(
-  record: ContentMigrationRecord | undefined,
-  fingerprint: string,
-): boolean {
-  return (
-    record?.status === "applied" && record.definitionFingerprint === fingerprint
-  );
-}
-
-type JournalSnapshot = {
-  readonly state: string;
-  readonly changes: readonly {
-    readonly path: string;
-    readonly afterFingerprint: string | null;
-  }[];
-};
-
-async function readJournalSnapshot(
-  journalPath: string,
-): Promise<JournalSnapshot | undefined> {
-  try {
-    const value = JSON.parse(await fs.readFile(journalPath, "utf8")) as unknown;
-    if (
-      !isRecord(value) ||
-      typeof value.state !== "string" ||
-      !Array.isArray(value.changes)
-    )
-      return undefined;
-    const changes: { path: string; afterFingerprint: string | null }[] = [];
-    for (const change of value.changes) {
-      if (
-        !isRecord(change) ||
-        typeof change.path !== "string" ||
-        !(
-          change.afterFingerprint === null ||
-          typeof change.afterFingerprint === "string"
-        )
-      )
-        return undefined;
-      changes.push({
-        path: change.path,
-        afterFingerprint: change.afterFingerprint as string | null,
-      });
-    }
-    return { state: value.state, changes };
-  } catch {
-    return undefined;
-  }
-}
-
-async function journalMatchesApplied(
-  contentDirectory: string,
-  journal: JournalSnapshot,
-): Promise<boolean> {
-  for (const change of journal.changes) {
-    const target = path.resolve(contentDirectory, change.path);
-    if (!isWithin(contentDirectory, target)) return false;
-    let actual: string | null = null;
-    try {
-      actual = createHash("sha256")
-        .update(await fs.readFile(target))
-        .digest("hex");
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") return false;
-    }
-    if (actual !== change.afterFingerprint) return false;
-  }
-  return true;
-}
-
-function isWithin(root: string, target: string): boolean {
-  const relative = path.relative(path.resolve(root), path.resolve(target));
-  return (
-    relative === "" ||
-    (!relative.startsWith("..") && !path.isAbsolute(relative))
-  );
-}
-
-async function exists(file: string): Promise<boolean> {
-  try {
-    await fs.access(file);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function staleLockContent(lockPath: string): Promise<string | null> {
-  let content: string;
-  try {
-    content = await fs.readFile(lockPath, "utf8");
-  } catch {
-    return null;
-  }
-  let value: unknown;
-  try {
-    value = JSON.parse(content);
-  } catch {
-    return (await lockFileIsOld(lockPath)) ? content : null;
-  }
-  const pid = isRecord(value) ? value.pid : undefined;
-  if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
-    return (await lockFileIsOld(lockPath)) ? content : null;
-  try {
-    process.kill(pid, 0);
-    return null;
-  } catch (error) {
-    return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
-  }
-}
-
-async function lockFileIsOld(lockPath: string): Promise<boolean> {
-  try {
-    return Date.now() - (await fs.stat(lockPath)).mtimeMs > 5_000;
-  } catch {
-    return false;
-  }
-}
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
-function sanitizeErrorMessage(
-  error: unknown,
-  contentDirectory: string,
-): string {
-  return errorMessage(error)
-    .split(contentDirectory)
-    .join("<content>")
-    .replace(/[A-Za-z]:[\\/][^\s'"]+/gu, "<path>");
-}
-
-function errorPath(error: unknown): string | undefined {
-  if (!isRecord(error) || typeof error.path !== "string") return undefined;
-  const value = error.path.replace(/\\/gu, "/");
-  if (value.startsWith("/") || /^[A-Za-z]:\//u.test(value)) return undefined;
-  return value;
 }

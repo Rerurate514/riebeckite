@@ -254,7 +254,155 @@ type GateResult = {
   artifactIssues?: readonly { code: string }[];
 };
 
+type FoundationDocumentation = {
+  readonly name: string;
+  readonly en: string;
+  readonly ja: string;
+  readonly api: readonly string[];
+  readonly navEn: string;
+  readonly navJa: string;
+};
+
+const foundationDocumentation: readonly FoundationDocumentation[] = [
+  {
+    name: "Derived Data",
+    en: "docs/docs/framework/derived-data.md",
+    ja: "docs/docs/framework/derived-data.ja.md",
+    api: ["defineDerivedView", "resolveWithDependencies", "registry.inspect"],
+    navEn: "./derived-data.md",
+    navJa: "./derived-data.ja.md",
+  },
+  {
+    name: "Publication Workflow",
+    en: "docs/docs/guides/deployment/publication-workflow.md",
+    ja: "docs/docs/guides/deployment/publication-workflow.ja.md",
+    api: ["createPublicationPlan", "requireApproval", "publish gate"],
+    navEn: "./publication-workflow.md",
+    navJa: "./publication-workflow.ja.md",
+  },
+  {
+    name: "Data Provenance",
+    en: "docs/docs/framework/build-system/provenance.md",
+    ja: "docs/docs/framework/build-system/provenance.ja.md",
+    api: [
+      "createBuildProvenance",
+      "compareBuildProvenance",
+      "attachProvenanceArtifacts",
+      "appendProvenanceHistory",
+    ],
+    navEn: "./build-system/provenance.md",
+    navJa: "./build-system/provenance.ja.md",
+  },
+  {
+    name: "Content Mutation",
+    en: "docs/docs/framework/content-mutation.md",
+    ja: "docs/docs/framework/content-mutation.ja.md",
+    api: [
+      "ContentMutationOperation",
+      "FileSystemContentMutation",
+      "ContentMutationResult",
+      "recover",
+    ],
+    navEn: "./content-mutation.md",
+    navJa: "./content-mutation.ja.md",
+  },
+  {
+    name: "Content Migration",
+    en: "docs/docs/framework/content-migration.md",
+    ja: "docs/docs/framework/content-migration.ja.md",
+    api: [
+      "defineContentMigration",
+      "createContentMigrationRegistry",
+      "FileSystemContentMigration",
+    ],
+    navEn: "./content-migration.md",
+    navJa: "./content-migration.ja.md",
+  },
+  {
+    name: "Interactive Runtime",
+    en: "docs/docs/framework/interactive-runtime.md",
+    ja: "docs/docs/framework/interactive-runtime.ja.md",
+    api: [
+      "defineInteractiveRuntime",
+      "createWorkerRuntime",
+      "createIframeRuntime",
+      "RuntimeWasmError",
+    ],
+    navEn: "./interactive-runtime.md",
+    navJa: "./interactive-runtime.ja.md",
+  },
+  {
+    name: "CLI Extension",
+    en: "docs/docs/reference/cli-extension.md",
+    ja: "docs/docs/reference/cli-extension.ja.md",
+    api: [
+      "defineCliCommand",
+      "CliCommandContext",
+      "registerPluginCliExtension",
+    ],
+    navEn: "./cli-extension.md",
+    navJa: "./cli-extension.ja.md",
+  },
+];
+
+function checkFoundationDocumentation() {
+  const read = (relative: string) =>
+    fs.readFileSync(path.join(repoRoot, relative), "utf8");
+  const navigationEn = [
+    "docs/docs/framework/README.md",
+    "docs/docs/guides/deployment/README.md",
+    "docs/docs/reference/README.md",
+  ]
+    .map(read)
+    .join("\n");
+  const navigationJa = [
+    "docs/docs/framework/README.ja.md",
+    "docs/docs/guides/deployment/README.ja.md",
+    "docs/docs/reference/README.ja.md",
+  ]
+    .map(read)
+    .join("\n");
+  for (const doc of foundationDocumentation) {
+    const en = read(doc.en);
+    const ja = read(doc.ja);
+    for (const [label, text] of [
+      ["EN", en],
+      ["JA", ja],
+    ] as const) {
+      assert.ok(text.length > 4_000, `${doc.name} ${label} is too short`);
+      for (const api of doc.api) {
+        assert.ok(
+          text.includes(api),
+          `${doc.name} ${label} does not document ${api}`,
+        );
+      }
+    }
+    assert.ok(
+      navigationEn.includes(doc.navEn),
+      `${doc.name} is not linked from an EN index`,
+    );
+    assert.ok(
+      navigationJa.includes(doc.navJa),
+      `${doc.name} is not linked from a JA index`,
+    );
+  }
+  const crossLinks: readonly (readonly [string, string])[] = [
+    ["docs/docs/framework/content-mutation.md", "[[content-migration"],
+    ["docs/docs/framework/content-migration.md", "[[content-mutation"],
+    ["docs/docs/framework/derived-data.md", "[[build-system/provenance"],
+    ["docs/docs/framework/interactive-runtime.md", "[[plugin-system"],
+    [
+      "docs/docs/guides/deployment/publication-workflow.md",
+      "[[guides/deployment/",
+    ],
+  ];
+  for (const [file, link] of crossLinks) {
+    assert.ok(read(file).includes(link), `${file} is missing ${link}`);
+  }
+}
+
 async function main() {
+  checkFoundationDocumentation();
   fs.rmSync(sandbox, { recursive: true, force: true });
   fs.cpSync(path.join(here, "fixture", "site"), site, { recursive: true });
   fs.cpSync(path.join(here, "fixture", "vault"), vault, { recursive: true });

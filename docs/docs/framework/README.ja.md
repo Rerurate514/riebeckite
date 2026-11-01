@@ -47,6 +47,7 @@ flowchart LR
 | ビルドの入力、変換、出力がどこから来たか | [データ来歴](./build-system/provenance.ja.md) |
 | デプロイ前の計画、承認、ゲート、履歴 | [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) |
 | プラグインがどう動くか | [プラグインシステム](./plugin-system.ja.md) |
+| プラグインがビルド時の計算値を共有する仕組み | [派生データ](./derived-data.ja.md) |
 | 型付きコマンド定義とプラグインの CLI コマンド | [CLI Extension API](../reference/cli-extension.ja.md) |
 | ダイアグラムプラグインの共有ユーティリティと契約 | [ダイアグラムプラグイン基盤](./diagram-infrastructure.ja.md) |
 | プラグインが独立したページを提供する仕組み | [ページシステム](./page-system.ja.md) |

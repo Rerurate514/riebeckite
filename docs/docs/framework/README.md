@@ -43,6 +43,7 @@ flowchart LR
 | Where build inputs, transforms, and outputs came from | [Data Provenance](./build-system/provenance.md) |
 | Pre-deploy planning, approvals, gates, and history | [Publication workflow](../guides/deployment/publication-workflow.md) |
 | How plugins are resolved and run | [Plugin system](./plugin-system.md) |
+| How plugins share computed build-time values | [Derived Data](./derived-data.md) |
 | Typed command definitions and Plugin CLI commands | [CLI Extension API](../reference/cli-extension.md) |
 | Shared utilities and contracts for diagram plugins | [Diagram plugin infrastructure](./diagram-infrastructure.md) |
 | How plugins provide standalone pages | [Page system](./page-system.md) |

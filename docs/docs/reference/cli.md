@@ -32,7 +32,7 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name> [--state-file <path>]
+riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
@@ -45,6 +45,8 @@ riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
 Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata and never run a command handler. Enabled Plugins can add namespaced commands through their existing `cli` definition. See [CLI Extension API](./cli-extension.md) for the definition API, context, JSON contract, completion, and security model.
+
+Every `publish` action also accepts `--state-file <path>` (or the `RIEBECKITE_PUBLICATION_STATE` environment variable) to override the durable publication state file.
 
 ## Command contracts
 

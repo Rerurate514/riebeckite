@@ -149,6 +149,19 @@ test("keeps interactive and PDF elements added by Markdown plugins", async () =>
   );
 });
 
+test("only keeps local PDF objects from Markdown", async () => {
+  const { html } = await new Pipeline().execute(
+    '<object data="https://example.com/embed.html" type="text/html"></object><object data="/report.pdf" type="application/pdf"></object>',
+  );
+
+  assert.doesNotMatch(html, /https:\/\/example\.com/);
+  assert.doesNotMatch(html, /text\/html/);
+  assert.match(
+    html,
+    /<object data="\/report\.pdf" type="application\/pdf"><\/object>/,
+  );
+});
+
 test("frontmatter-only content produces no body html", async () => {
   const { frontmatter, html } = await createPipeline().execute(
     "---\ntitle: Only\n---\n",

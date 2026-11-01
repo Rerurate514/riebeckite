@@ -70,6 +70,12 @@ function sanitizeMarkdownStyles() {
   };
 }
 
+function sanitizeMarkdownObjects() {
+  return (tree: Node) => {
+    removeUnsafeMarkdownObjects(tree as HtmlNode);
+  };
+}
+
 const footnoteClobberPrefix = /^user-content-((?:fn|fnref|footnote-label).*)$/;
 
 function dedupeFootnoteClobberPrefix() {
@@ -103,6 +109,28 @@ function removeUnsafeMarkdownStyles(node: HtmlNode): void {
   for (const child of node.children ?? []) {
     removeUnsafeMarkdownStyles(child as HtmlNode);
   }
+}
+
+function removeUnsafeMarkdownObjects(node: HtmlNode): void {
+  if (node.tagName === "object") {
+    const data = node.properties?.data;
+    const type = node.properties?.type;
+    if (
+      typeof data !== "string" ||
+      !isLocalUrl(data) ||
+      type !== "application/pdf"
+    ) {
+      delete node.properties?.data;
+      delete node.properties?.type;
+    }
+  }
+  for (const child of node.children ?? []) {
+    removeUnsafeMarkdownObjects(child as HtmlNode);
+  }
+}
+
+function isLocalUrl(value: string): boolean {
+  return !value.startsWith("//") && !/^[a-z][a-z\d+.-]*:/i.test(value);
 }
 
 export interface PipelineOptions {
@@ -380,6 +408,7 @@ export class Pipeline {
     this.use(processor, dedupeFootnoteClobberPrefix);
     this.use(processor, rehypeSanitize, markdownSanitizeSchema);
     this.use(processor, sanitizeMarkdownStyles);
+    this.use(processor, sanitizeMarkdownObjects);
 
     for (const plugin of plugins) {
       for (const rehypePlugin of plugin.rehypePlugins ?? []) {

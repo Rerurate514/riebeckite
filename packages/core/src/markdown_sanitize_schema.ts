@@ -76,7 +76,7 @@ export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
     ],
     button: ["type", "disabled"],
     input: ["type", "value", "min", "max", "step", "placeholder", "checked"],
-    object: ["data", "type"],
+    object: ["data", ["type", "application/pdf"]],
     option: ["value", "selected"],
     svg: ["xmlns", "viewBox", "width", "height", "role", "focusable"],
     circle: ["cx", "cy", "r"],

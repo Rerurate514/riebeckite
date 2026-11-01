@@ -37,9 +37,11 @@ export async function runPluginDev(options: PluginDevOptions): Promise<void> {
   process.once("SIGTERM", shutdown);
   try {
     await scaffoldPreviewSite(previewRoot, `${plugin.name} preview`);
-    const dependencies = await linkPreviewDependencies(previewRoot, [
-      { name: plugin.name, directory: plugin.root },
-    ]);
+    const dependencies = await linkPreviewDependencies(
+      previewRoot,
+      [{ name: plugin.name, directory: plugin.root }],
+      plugin.dependencies,
+    );
     await writePreviewViteConfig(
       previewRoot,
       [

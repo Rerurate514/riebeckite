@@ -8,6 +8,7 @@ import {
   writePluginDevFixture,
 } from "../src/plugin_dev/fixtures.js";
 import { loadLocalPlugin } from "../src/plugin_dev/local_plugin.js";
+import { resolvePreviewPackageAliases } from "../src/preview_site.js";
 import { resolveInput } from "./command_fixture.js";
 
 async function createPlugin(
@@ -157,6 +158,13 @@ test("reads direct Riebeckite dependencies for preview resolution", async () => 
         "@riebeckite/ui",
       ]);
     },
+  );
+});
+
+test("reports an unavailable preview dependency", async () => {
+  await assert.rejects(
+    () => resolvePreviewPackageAliases(["@riebeckite/not-installed"]),
+    /@riebeckite\/not-installed.*cannot be resolved/,
   );
 });
 

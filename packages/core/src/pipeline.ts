@@ -130,7 +130,10 @@ function removeUnsafeMarkdownObjects(node: HtmlNode): void {
 }
 
 function isLocalUrl(value: string): boolean {
-  return !value.startsWith("//") && !/^[a-z][a-z\d+.-]*:/i.test(value);
+  const normalized = value.trim();
+  return (
+    !normalized.startsWith("//") && !/^[a-z][a-z\d+.-]*:/i.test(normalized)
+  );
 }
 
 export interface PipelineOptions {

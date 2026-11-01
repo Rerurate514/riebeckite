@@ -31,6 +31,7 @@ export async function scaffoldPreviewSite(
 export async function linkPreviewDependencies(
   previewRoot: string,
   extraPackages: readonly PreviewPackage[] = [],
+  dependencyNames: readonly string[] = [],
 ): Promise<string[]> {
   const packages = new Map<string, string>();
   for (const [name, specifier] of [
@@ -56,6 +57,18 @@ export async function linkPreviewDependencies(
     );
     packages.set(name, packageDirectory);
   }
+  for (const name of dependencyNames) {
+    try {
+      packages.set(
+        name,
+        await findPackageDirectory(await resolveModuleSpecifier(name)),
+      );
+    } catch {
+      throw new Error(
+        `Plugin dependency "${name}" cannot be resolved for the preview.`,
+      );
+    }
+  }
   for (const extra of extraPackages) packages.set(extra.name, extra.directory);
 
   await Promise.all(
@@ -73,9 +86,16 @@ export async function resolvePreviewPackageAliases(
 ): Promise<readonly PreviewAlias[]> {
   const aliases: PreviewAlias[] = [];
   for (const name of names) {
-    const directory = await findPackageDirectory(
-      await resolveModuleSpecifier(name),
-    );
+    let directory: string;
+    try {
+      directory = await findPackageDirectory(
+        await resolveModuleSpecifier(name),
+      );
+    } catch {
+      throw new Error(
+        `Plugin dependency "${name}" cannot be resolved for the preview.`,
+      );
+    }
     const packageJson = await readPackageJson(directory);
     const exportsValue = packageJson.exports;
     if (!isRecord(exportsValue)) continue;

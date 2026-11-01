@@ -1,0 +1,269 @@
+✔ standalone project uses its own directory as the application root (47.2625ms)
+✔ monorepo project resolves the invoked application, not its siblings (25.4547ms)
+✔ invocation from a descendant resolves the enclosing application root (52.7718ms)
+✔ ambiguous config root without an invocation application fails closed (7.1602ms)
+✔ missing configuration fails closed (4.0382ms)
+Riebeckite check
+
+✓ Configuration
+✓ Content directory
+
+No problems found.
+✔ check passes for the resolved application in a monorepo (39.062ms)
+Riebeckite check
+
+✓ Configuration
+✗ Content directory
+
+Could not find:
+  C:\Users\rerur\.wk\others\riebeckite-final-foundations\packages\cli\test\project-w0NRYB\apps\web\content
+
+Check `content.directory` in your Riebeckite configuration.
+✔ check reports a missing content directory for the resolved application (40.9277ms)
+Cleaned Riebeckite state.
+✔ clean removes managed state and keeps output and user files (9.8576ms)
+Cleaned build output.
+✔ clean --output removes output and keeps managed state (3.6333ms)
+Cleaned Riebeckite state and build output.
+✔ clean --all removes managed state and output (5.2438ms)
+Cleaned Riebeckite state and build output.
+Cleaned Riebeckite state and build output.
+✔ clean succeeds when the targets do not exist (0.9126ms)
+Cleaned build output.
+✔ clean resolves the configured output directory (1.4834ms)
+Cleaned build output.
+✔ clean does nothing for output when no output directory is configured (0.6636ms)
+✔ removeManagedPath rejects paths outside the application boundary (1.1181ms)
+✔ removeManagedPath rejects the application root itself (0.4421ms)
+Cleaned Riebeckite state.
+✔ clean removes a junction without touching its target (1.4524ms)
+Cleaned Riebeckite state.
+✔ clean removes a nested junction without touching its target (2.6791ms)
+Cleaned build output.
+✔ clean removes a symlinked output directory without touching its target (1.4131ms)
+Cleaned Riebeckite state and build output.
+✔ clean keeps user-authored files and repository metadata (6.5888ms)
+Cleaned Riebeckite state and build output.
+✔ clean regenerates managed state on the next build (30.9705ms)
+✔ clean prints the scope-specific message (1.3125ms)
+✔ the registry accepts the clean scopes (13.6879ms)
+✔ the registry rejects unknown or conflicting clean options (3.5449ms)
+✔ the root help lists the clean options (1.939ms)
+✔ completion covers nested commands, options, enums, and JSON (14.5158ms)
+✔ completion rejects unsafe command names (2.2598ms)
+✔ bash completion parses (2046.646ms)
+✔ PowerShell completion parses (325.596ms)
+✔ parses content mutations without making them implicit writes (17.9546ms)
+✔ a plan that breaks links reports its conflicts and writes nothing (12.4426ms)
+✔ writes logs and diagnostics without corrupting JSON stdout (1.4434ms)
+✔ loads the project once and exposes it on the context (0.3351ms)
+✔ runs cleanup handlers in reverse order even when one fails (1.1383ms)
+✔ parses unified create targets without changing generator commands (16.1502ms)
+✔ parses theme preview options (6.5953ms)
+✔ parses plugin dev options (9.9695ms)
+✔ parses component options (12.4356ms)
+✔ typechecks the generated Plugin Component (680.5537ms)
+Created site component in app\components\note-card.tsx
+✔ creates isolated Site Component files (8.6962ms)
+Created plugin component in extensions\notes\components\note-card.tsx
+✔ exports a Plugin Component and rejects Theme ownership (8.0432ms)
+✔ finds local Plugins and rejects a missing entry point (6.4114ms)
+✔ does not overwrite an existing component stylesheet (3.5455ms)
+✔ parses PageType options (12.7329ms)
+✔ typechecks the generated PageType module (643.8627ms)
+Created PageType Plugin in extensions\glossary
+✔ creates a public PageType Plugin with a routable page (5.8699ms)
+Added PageType to extensions/example
+✔ adds a PageType without replacing a recognized Plugin (7.2364ms)
+Added PageType to extensions/example
+✔ registers an existing PageType Plugin only in a recognized config array (5.8258ms)
+✔ does not update a Plugin when its PageType test already exists (3.5027ms)
+✔ parses create plugin features (14.2275ms)
+✔ typechecks a plugin composed from every feature (776.6131ms)
+Created plugin in extensions\example
+✔ creates atomically without overwriting an existing directory (8.6268ms)
+Created plugin in extensions\example-plugin
+✔ registers a generated plugin only in a recognized config array (7.2625ms)
+✔ rejects paths outside extensions (0.278ms)
+✔ parses create theme options and lists templates (15.677ms)
+✔ typechecks a generated theme (737.8028ms)
+Created theme in themes\example-theme
+✔ creates a local theme atomically and registers a recognized theme field (8.6401ms)
+✔ rejects theme paths outside themes (0.2074ms)
+Theme was created. Register it manually in riebeckite.config.ts.
+Created theme in themes\example
+✔ does not alter a theme configuration that is not safe to replace (5.5809ms)
+✔ resolveDeployRoot targets the app directory (0.6889ms)
+✔ wranglerConfigForDirectory normalizes directory names into Worker names (0.3872ms)
+✔ wranglerConfigForDirectory falls back when nothing usable remains (0.1497ms)
+✔ wranglerConfigForDirectory caps the name at 63 characters (0.1323ms)
+✔ wranglerConfigForDirectory produces valid JSON with the Worker name (0.1224ms)
+✔ normalizeCustomDomain accepts apex, subdomain, and international domains (5.0091ms)
+✔ normalizeCustomDomain rejects URLs, routes, wildcards, whitespace, and IPs (0.3559ms)
+✔ addCustomDomainToJsonc preserves JSONC comments and existing settings (1.5567ms)
+✔ addCustomDomainToJsonc appends to an empty routes array and preserves CRLF (0.2219ms)
+✔ addCustomDomainToJsonc is idempotent and protects conflicting routes (0.6095ms)
+✔ addCustomDomainToJsonc refuses malformed and incompatible configuration (0.1327ms)
+✔ runDeployDomain writes configuration, then uses the canonical deploy callback (8.3249ms)
+
+Configuration
+  Domain: docs.example.com
+  Config: wrangler.json
+  Action: Add Workers Custom Domain
+No changes were made.
+✔ runDeployDomain leaves configuration unchanged when declined or TOML is used (3.3379ms)
+✔ runDeployDomain requires a configuration file and an interactive terminal (1.8024ms)
+
+Configuration
+  Domain: docs.example.com
+  Config: wrangler.json
+  Action: Add Workers Custom Domain
+✓ wrangler.json updated
+✔ runDeployDomain preserves the deployment failure after saving configuration (2.9285ms)
+
+Configuration
+  Domain: docs.example.com
+  Config: wrangler.json
+  Action: Add Workers Custom Domain
+✓ wrangler.json updated
+
+✓ Custom Domain configured.
+
+Deploy when ready:
+  npm exec riebeckite publish run --execute
+✔ runDeployDomain reads the Wrangler config from appRoot, not projectRoot (4.1871ms)
+✔ the build output marker lives under managed state (0.8861ms)
+✔ the build output marker round-trips and rejects a mismatched output directory (10.2535ms)
+✔ the build output marker records the publication fingerprint (2.758ms)
+Created wrangler.jsonc.
+✔ the shared deploy gate refuses build output that is not from a completed build (10.6262ms)
+Created wrangler.jsonc.
+✔ deploy stops when dist is missing (2.1887ms)
+✔ parseGitRemoteUrl recognizes GitHub remotes only (1.2819ms)
+✔ parseCloudflareAccounts reads logged-in accounts (0.7985ms)
+✔ parseSecretNames reads secret names only (0.1936ms)
+✔ looksLikeRiebeckiteWorkflow and normalizeWorkflow (5.9844ms)
+✔ setup fails when the project is not a Git repository (8.2212ms)
+✔ setup fails when there is no GitHub remote (1.2946ms)
+✔ setup fails when the only remote is not GitHub (1.1395ms)
+✔ setup reports a missing GitHub CLI (1.0167ms)
+✔ setup reports unauthenticated GitHub CLI (0.9973ms)
+✔ setup reports an inaccessible GitHub repository (1.0365ms)
+✔ setup asks which GitHub repository to use when there are several (9.7598ms)
+✔ setup writes the workflow and registers both secrets (15.6859ms)
+✔ setup leaves a matching workflow unchanged and skips existing secrets (15.3002ms)
+✔ setup never overwrites an unknown workflow (9.9482ms)
+✔ setup detects an older Riebeckite workflow and leaves it alone (8.8396ms)
+✔ setup resumes after a partial failure (14.7242ms)
+✔ setup reports unauthenticated Wrangler (8.317ms)
+✔ setup rejects Wrangler output without accounts (8.8914ms)
+✔ setup reports Wrangler that exited zero while logged out (8.5219ms)
+✔ setup asks which Cloudflare account to use when several exist (6.9989ms)
+✔ setup honors CLOUDFLARE_ACCOUNT_ID without prompting (5.2076ms)
+✔ setup requires CLOUDFLARE_ACCOUNT_ID when non-interactive with several accounts (5.4592ms)
+✔ setup reads the API token through a hidden prompt (5.3975ms)
+✔ setup requires CLOUDFLARE_API_TOKEN when non-interactive without a token (5.2182ms)
+✔ setup keeps the token out of argv, output, and files (6.3877ms)
+✔ setup keeps the token out of error output when registration fails (5.2712ms)
+✔ setup refuses to run from a subdirectory of the Git repository (1.1314ms)
+✔ setup requires an interactive terminal for several GitHub remotes (0.5459ms)
+✔ setup reports a failure to list repository secrets (0.7126ms)
+✔ setup reports when GitHub Actions is disabled (5.7639ms)
+✔ setup notes when the default branch is not main (5.2626ms)
+✔ setup does not prompt for a token that is already configured (5.47ms)
+✔ the built CLI bundle starts without unresolved dynamic imports (189.7301ms)
+✔ the published bin wrapper starts the built CLI bundle (80.7183ms)
+✔ doctor JSON output is machine-readable and does not expose execution details (626.6994ms)
+✔ the built CLI scaffolds a project through the external create-riebeckite package (197.1916ms)
+✔ the built CLI previews an isolated local Theme (18283.2448ms)
+✔ the built CLI scaffolds a deployment-enabled project (119.7327ms)
+✔ the built CLI bundle externalizes the scaffold instead of inlining templates (10.8195ms)
+✔ doctor accepts diagnostic output options (12.0537ms)
+✔ doctor accepts exit thresholds and diagnostic code filters (1.7402ms)
+✔ inspect content accepts an exact path or permalink (3.1837ms)
+✔ inspect provenance accepts shared state filters and JSON (6.122ms)
+✔ doctor rejects incompatible or unknown options (6.261ms)
+✔ upgrade accepts only the check-only contract (5.9306ms)
+✔ doctor renderer marks unavailable observations as skipped (0.7242ms)
+✔ doctor renderer describes a non-mutating fix request (0.1147ms)
+✔ init defaults the directory and leaves preset defaults to the generator (11.9682ms)
+✔ init reads the GitHub Actions deployment options (1.8934ms)
+✔ init reads project file selection and feature packs (3.0678ms)
+✔ init accepts the local Cloudflare Workers deployment (4.7882ms)
+✔ inspect content reports excluded entries and their patterns (16.0188ms)
+✔ inspect provenance filters and compares shared persisted state (5.2182ms)
+✔ inspect provenance reports disabled and missing state (2.8037ms)
+✔ inspect build reports a missing state as not created (1.3345ms)
+✔ inspect build reports reuse when the pipeline fingerprint matches (2.6299ms)
+✔ inspect build reports reuse as unavailable when a content transform bypasses the cache (2.7692ms)
+✔ inspect config lists exclude patterns and persistent cache bypass reason (0.713ms)
+✔ inspect config reports a cacheable persistent cache without a reason (0.1275ms)
+✔ inspect config reports no excludes as a dash (0.0956ms)
+✔ inspect content reports excluded count and reasons in list mode (1.1792ms)
+✔ inspect content hides exclusion details outside list mode (0.1455ms)
+✔ inspect content renders an exact entry with its resolved identity (0.1411ms)
+✔ inspect build reports whether the state is reusable (0.1074ms)
+✔ inspect build reports the invalid reason (0.0818ms)
+✔ inspect application overview includes build reuse (0.1616ms)
+✔ migrate runs every action through the command registry (904.1908ms)
+✔ migrate help and completion list every action (9.3913ms)
+✔ runs commands from an enabled Plugin package (483.691ms)
+✔ passes typed arguments, options, and JSON mode to plugin handlers (25.9525ms)
+✔ generates plugin help and completion without running handlers (57.637ms)
+✔ loads project context for plugin commands that require it (36.443ms)
+✔ reports plugin usage errors and handler failures (70.2666ms)
+✔ ignores disabled plugins and does not load them for help (70.8826ms)
+✔ isolates duplicate and built-in namespace conflicts (65.2963ms)
+✔ registers the Meta Bind fixture from the enclosing repository (5.3477ms)
+✔ does not register fixtures outside a repository or without a fixture (2.6886ms)
+✔ loads a local plugin from a directory and resolves export aliases (15.3565ms)
+✔ parses plugin contract verification options (16.3058ms)
+✔ accepts a package.json path and falls back to index.ts (18.0736ms)
+✔ resolves conventional client and style aliases without exports (11.5675ms)
+✔ resolves a plugin path relative to the current directory (2.1391ms)
+✔ rejects missing paths and non-plugin directories (1.026ms)
+✔ rejects invalid package metadata (7.3111ms)
+✔ writes a deterministic fixture and replaces stale content (3.9771ms)
+✔ rejects missing, outside, and unsupported entry points (21.5603ms)
+﹣ rejects an entry symlink that resolves outside the plugin directory (0.1928ms) # SKIP
+✔ profile retains inclusive stage durations (0.8468ms)
+✔ profile reports content total and its share of build time (5.5265ms)
+✔ profile includes integration timings emitted as events (0.2811ms)
+✔ profile separates content cache from plugin cache (0.6296ms)
+✔ profile omits the content cache section without content cache events (0.1189ms)
+✔ profile reports fast path metrics from the build.fast-path event (0.1504ms)
+✔ profile reports a fast path block reason on fallback (0.091ms)
+✔ publish CLI syntax is parsed explicitly (10.8605ms)
+✔ authorization and history live outside the build cache and round-trip (17.2326ms)
+✔ hosting detection prefers wrangler and can plan each provider (4.6066ms)
+✔ plan, approve, status, and validate follow the workflow boundary (60.6672ms)
+✔ publish run without --execute never builds or deploys (7.2066ms)
+✔ publish record closes the loop for an external CI deployment (28.0152ms)
+Ignoring unreadable JSON at C:\Users\rerur\AppData\Local\Temp\riebeckite-publish-cli-mmQnDE\.riebeckite\publication\history.json; publication state falls back to a full redeploy.
+Ignoring unreadable JSON at C:\Users\rerur\AppData\Local\Temp\riebeckite-publish-cli-mmQnDE\publication\state.json; publication state falls back to a full redeploy.
+Ignoring unreadable JSON at C:\Users\rerur\AppData\Local\Temp\riebeckite-publish-cli-mmQnDE\.riebeckite\publication\lock.json; publication state falls back to a full redeploy.
+✔ corrupt local state files recover instead of wedging publication (8.5233ms)
+✔ a stale heartbeat releases a reused PID but a heartbeating live owner keeps the lock (5.6717ms)
+✔ durable state stays at the config root when the app lives in a subdirectory (1.2347ms)
+✔ approval requirement blocks the shared deploy gate until approval and artifact are current (37.7866ms)
+Cleaned Riebeckite state and build output.
+✔ clean --all refuses to remove state while a publication run holds the lock (5.9931ms)
+Created wrangler.jsonc.
+✔ Cloudflare deployment execution uses the shared gate (20.6196ms)
+✔ publish plan --json emits only parseable JSON (19.6263ms)
+✔ derived generated outputs gate deployment against the current build marker (33.924ms)
+✔ publish.yml is the single production deploy path (5.9875ms)
+✔ root help, version, and unknown commands stay lightweight (19.8547ms)
+✔ help output is generated from registry metadata (3.4867ms)
+✔ maps command results and failures to exit codes (1.341ms)
+✔ does not initialize a project for commands that do not need one (3.9664ms)
+✔ upgrade blocks a project without one supported lockfile (18.5561ms)
+✔ upgrade leaves external content sources unverified (3.2437ms)
+ℹ tests 194
+ℹ suites 0
+ℹ pass 193
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 59583.1956

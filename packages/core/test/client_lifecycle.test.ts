@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { ClientLifecycle } from "../src/client_lifecycle.js";
+import type { ClientRuntimeHost } from "../src/client_runtime.js";
 
 test("mounts an initializer once for the same scope, name, and root", async () => {
   const lifecycle = new ClientLifecycle<object>();
@@ -215,4 +216,74 @@ test("runs an initializer cleanup once when unmounted twice", async () => {
   await lifecycle.unmount("page");
 
   assert.equal(cleanups, 1);
+});
+
+test("provides a runtime host to initializers and disposes it with the scope", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  let disposed = 0;
+  const host: ClientRuntimeHost = {
+    has: () => true,
+    ids: () => ["example"],
+    create: () => ({
+      id: "example",
+      instanceId: "instance",
+      signal: new AbortController().signal,
+      mount: async () => {},
+      invoke: async () => undefined,
+      dispose: async () => {},
+    }),
+    dispose: async () => {
+      disposed += 1;
+    },
+  };
+  let received: ClientRuntimeHost | undefined;
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "runtime",
+    root: {},
+    config: undefined,
+    runtimes: host,
+    initialize: (context) => {
+      received = context.runtimes;
+      return undefined;
+    },
+  });
+
+  assert.equal(received, host);
+  await lifecycle.unmount("page");
+  assert.equal(disposed, 1);
+});
+
+test("disposes a runtime host when its initializer fails", async () => {
+  const lifecycle = new ClientLifecycle<object>({ onError: () => {} });
+  let disposed = 0;
+  const host: ClientRuntimeHost = {
+    has: () => true,
+    ids: () => [],
+    create: () => ({
+      id: "example",
+      instanceId: "instance",
+      signal: new AbortController().signal,
+      mount: async () => {},
+      invoke: async () => undefined,
+      dispose: async () => {},
+    }),
+    dispose: async () => {
+      disposed += 1;
+    },
+  };
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "failing",
+    root: {},
+    config: undefined,
+    runtimes: host,
+    initialize: () => {
+      throw new Error("initialization");
+    },
+  });
+
+  assert.equal(disposed, 1);
 });

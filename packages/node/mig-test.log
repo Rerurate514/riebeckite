@@ -1,0 +1,108 @@
+✔ plans a batch without touching files and verifies the future manifest (78.7011ms)
+✔ reports conflicts for invalid frontmatter without planning writes (7.5018ms)
+✔ uses the redirect field configured on the permalink plugin (21.1969ms)
+{
+  "files": 100,
+  "registry": {
+    "median": 0.07630000000006021,
+    "min": 0.055099999999924876,
+    "max": 0.4438000000000102
+  },
+  "transform": {
+    "median": 7.275199999999927,
+    "min": 6.747500000000059,
+    "max": 18.08420000000001
+  },
+  "plan": {
+    "median": 384.45270000000005,
+    "min": 320.7629000000002,
+    "max": 520.4103
+  },
+  "apply": {
+    "median": 1154.6547999999998,
+    "min": 1154.6547999999998,
+    "max": 1154.6547999999998
+  },
+  "history": {
+    "median": 0.5358999999998559,
+    "min": 0.5358999999998559,
+    "max": 0.5358999999998559
+  },
+  "resume": {
+    "median": 44.520300000000134,
+    "min": 44.520300000000134,
+    "max": 44.520300000000134
+  },
+  "rollback": {
+    "median": 578.6974,
+    "min": 578.6974,
+    "max": 578.6974
+  },
+  "rssDeltaMb": 50.8
+}
+✔ measures plans, applies, history and rollback for 100 files (3132.8462ms)
+{
+  "files": 1000,
+  "registry": {
+    "median": 0.09290000000055443,
+    "min": 0.0874999999996362,
+    "max": 0.13509999999951106
+  },
+  "transform": {
+    "median": 89.14009999999962,
+    "min": 81.64009999999962,
+    "max": 97.75969999999961
+  },
+  "plan": {
+    "median": 5788.5634,
+    "min": 5720.463,
+    "max": 5927.981600000001
+  },
+  "apply": {
+    "median": 21965.856699999997,
+    "min": 21965.856699999997,
+    "max": 21965.856699999997
+  },
+  "history": {
+    "median": 1.0579999999972642,
+    "min": 1.0579999999972642,
+    "max": 1.0579999999972642
+  },
+  "resume": {
+    "median": 523.1628000000055,
+    "min": 523.1628000000055,
+    "max": 523.1628000000055
+  },
+  "rollback": {
+    "median": 5724.147799999999,
+    "min": 5724.147799999999,
+    "max": 5724.147799999999
+  },
+  "rssDeltaMb": 68.1
+}
+✔ measures plans, applies, history and rollback for 1000 files (46856.8124ms)
+✔ concurrent applies apply once and reject the other (79.7283ms)
+✔ rejects tampered plans, fingerprints, versions and operation paths (40.3481ms)
+✔ rejects path traversal in migration definitions (0.3507ms)
+✔ does not follow symlinked content (13.2329ms)
+✔ a stale migration lock blocks apply without writing (11.2145ms)
+✔ migrates a real fixture and keeps build, publication and localization stable (562.0074ms)
+✔ applies once, records state and history, and skips duplicates (94.3693ms)
+✔ rejects a stale saved plan without writing (23.1324ms)
+✔ supersedes older versions and rejects definition changes (74.9191ms)
+✔ rolls back a completed batch and treats a rerun as skipped (48.7972ms)
+✔ refuses rollback after external edits and preserves the edit (38.9343ms)
+✔ reconciles an interrupted apply from a complete journal (49.9708ms)
+✔ recovers a failed mutation journal to the previous content (63.5626ms)
+✔ reports journal corruption without touching content (50.3928ms)
+✔ skips recovery when a failed migration has no journal and can retry apply (51.6944ms)
+✔ recovers a stale migration lock from a dead process (41.331ms)
+✔ does not mark a complete journal applied after external edits (42.7074ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 55553.0346

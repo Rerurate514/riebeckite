@@ -337,6 +337,19 @@ test("computePipelineFingerprint changes with plugin config", () => {
   assert.notEqual(fp1, fp2);
 });
 
+test("computePipelineFingerprint changes with the sanitize contract", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, []);
+  const current = computePipelineFingerprint(config);
+  const changed = computePipelineFingerprint(
+    config,
+    undefined,
+    "different-sanitize-contract",
+  );
+
+  assert.notEqual(current, changed);
+  assert.equal(current, computePipelineFingerprint(config, undefined));
+});
+
 test("computePipelineFingerprint changes with plugin ordering", () => {
   const first = contentTestConfig(TEST_CACHE_DIR, [
     { name: "first-plugin" },

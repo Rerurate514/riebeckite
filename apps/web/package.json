@@ -26,6 +26,7 @@
     "@riebeckite/plugin-bases": "workspace:*",
     "@riebeckite/plugin-breadcrumbs": "workspace:*",
     "@riebeckite/plugin-canvas": "workspace:*",
+    "@riebeckite/plugin-calculator": "workspace:*",
     "@riebeckite/plugin-changelog": "workspace:*",
     "@riebeckite/plugin-chartjs": "workspace:*",
     "@riebeckite/plugin-citations": "workspace:*",

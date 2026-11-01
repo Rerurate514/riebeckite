@@ -166,6 +166,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Quality](./quality.md) | Static quality and accessibility inspection |
 | [Diagnostics](./diagnostics.md) | Content diagnostics for Riebeckite and Obsidian vaults |
 | [Docs](./docs.md) | Docs sidebar and previous/next navigation |
+| [Calculator](./calculator.md) | Interactive arithmetic code blocks with a static fallback |
 | [Canvas](./canvas.md) | Obsidian Canvas diagram rendering |
 | [Discord Embed](./discord-embed.md) | Discord link preview metadata |
 

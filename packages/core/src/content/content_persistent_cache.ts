@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
+import { markdownSanitizeFingerprint } from "../markdown_sanitize_schema.js";
 import type { Logger, Tracer } from "../observability.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
 import type { ContentPublicLocation } from "../types/content_manifest.js";
@@ -300,11 +301,13 @@ function normalizeFrontmatterForCache(
 export function computePipelineFingerprint(
   config: ResolvedRiebeckiteConfig,
   contentScopeFingerprint?: string,
+  sanitizeFingerprint: string = markdownSanitizeFingerprint,
 ): string {
   const plugins = config.plugins;
 
   const fingerprintData = {
     compatibilityVersion: CONTENT_CACHE_COMPATIBILITY_VERSION,
+    sanitize: sanitizeFingerprint,
     plugins: plugins.map((p) => pluginFingerprint(p)),
     content: {
       filters: config.content.filters,

@@ -165,6 +165,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Quality](./quality.ja.md) | HTML の品質とアクセシビリティの静的検査 |
 | [Diagnostics](./diagnostics.ja.md) | Riebeckite と Obsidian vault のコンテンツ診断 |
 | [Docs](./docs.ja.md) | Docs のサイドバーと previous/next |
+| [Calculator](./calculator.ja.md) | 静的なフォールバック付きの対話的な計算コードブロック |
 | [Canvas](./canvas.ja.md) | Obsidian Canvas の描画 |
 | [Discord Embed](./discord-embed.ja.md) | Discord のリンクプレビューメタデータ |
 

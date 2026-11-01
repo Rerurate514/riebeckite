@@ -32,8 +32,37 @@ function createClientModule(
   const imports: string[] = [];
   const appInitializers: string[] = [];
   const pageInitializers: string[] = [];
+  const clientEntries = config.plugins.flatMap(
+    (plugin) => plugin.clientEntries ?? [],
+  );
+  const runtimeEntries = new Map<
+    string,
+    {
+      moduleSpecifier: string;
+      exportName?: string;
+      options: unknown;
+    }
+  >();
+  for (const entry of clientEntries) {
+    for (const runtime of entry.runtimeEntries ?? []) {
+      if (runtimeEntries.has(runtime.id)) {
+        throw new Error(`Duplicate plugin runtime id: ${runtime.id}`);
+      }
+      runtimeEntries.set(runtime.id, {
+        moduleSpecifier: runtime.moduleSpecifier,
+        exportName: runtime.exportName,
+        options: runtime.options,
+      });
+    }
+  }
+  const hasRuntimes = runtimeEntries.size > 0;
 
   imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
+  if (hasRuntimes) {
+    imports.push(
+      'import { createClientRuntimeHost, InteractiveRuntimeRegistry } from "@riebeckite/runtime/client";',
+    );
+  }
   if (config.spa !== undefined) {
     imports.push('import { createClient } from "honox/client";');
     imports.push('import { startSpaNavigation } from "@riebeckite/spa";');
@@ -46,10 +75,12 @@ function createClientModule(
     appInitializers.push("initDevelopmentInspector()");
   }
 
-  for (const [index, entry] of config.plugins
-    .flatMap((plugin) => plugin.clientEntries ?? [])
-    .entries()) {
+  for (const [index, entry] of clientEntries.entries()) {
     const localName = `pluginClientInitializer${index}`;
+    const runtimeIds = (entry.runtimeEntries ?? []).map(
+      (runtime) => runtime.id,
+    );
+    const serializedRuntimeIds = serializePublicClientConfig(runtimeIds);
     const importTarget = entry.exportName
       ? `{ ${entry.exportName} as ${localName} }`
       : localName;
@@ -69,11 +100,22 @@ function createClientModule(
         : entry.initializerArguments === "root"
           ? `${localName}(context.root)`
           : `${localName}(context.config)`;
+    const ensureRuntimes =
+      runtimeIds.length > 0
+        ? `await ensurePluginRuntimes(${serializedRuntimeIds}); `
+        : "";
+    const initializerWrapper =
+      runtimeIds.length > 0
+        ? `async (context) => { ${ensureRuntimes}return ${initializer}; }`
+        : `(context) => ${initializer}`;
+    const runtimeArguments = hasRuntimes
+      ? `${serializedRuntimeIds}, ${initializerWrapper}`
+      : initializerWrapper;
     const initializers =
       entry.scope === "app" ? appInitializers : pageInitializers;
     if (entry.presenceSelector === undefined) {
       initializers.push(
-        `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, (context) => ${initializer})`,
+        `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${runtimeArguments})`,
       );
       continue;
     }
@@ -83,25 +125,70 @@ function createClientModule(
         : entry.initializerArguments === "root"
           ? `initializer(context.root)`
           : `initializer(context.config)`;
+    const dynamicWrapper =
+      runtimeIds.length > 0
+        ? `async (context) => { ${ensureRuntimes}return ${dynamicInitializer}; }`
+        : `(context) => ${dynamicInitializer}`;
     initializers.push(
-      `mountConditionalPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${JSON.stringify(entry.presenceSelector)}, async () => { const { ${entry.exportName ?? "default"}: initializer } = await import(${JSON.stringify(entry.moduleSpecifier)}); return (context) => ${dynamicInitializer}; })`,
+      `mountConditionalPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${JSON.stringify(entry.presenceSelector)}, ${hasRuntimes ? `${serializedRuntimeIds}, ` : ""}async () => { const { ${entry.exportName ?? "default"}: initializer } = await import(${JSON.stringify(entry.moduleSpecifier)}); return ${dynamicWrapper}; })`,
     );
   }
+
+  const runtimeSupport = hasRuntimes
+    ? `const pluginRuntimeRegistry = new InteractiveRuntimeRegistry();
+const pluginRuntimeLoads = new Map();
+const pluginRuntimeEntries = {
+${[...runtimeEntries.entries()]
+  .map(
+    ([id, runtime]) =>
+      `  ${JSON.stringify(id)}: { moduleSpecifier: ${JSON.stringify(runtime.moduleSpecifier)}, exportName: ${JSON.stringify(runtime.exportName ?? "default")}, load: () => import(${JSON.stringify(runtime.moduleSpecifier)})${runtime.options === undefined ? "" : `, options: ${serializePublicClientConfig(runtime.options)}`} }`,
+  )
+  .join(",\n")}
+};
+
+async function ensurePluginRuntimes(ids) {
+  await Promise.all(ids.map(async (id) => {
+    let load = pluginRuntimeLoads.get(id);
+    if (!load) {
+      const entry = pluginRuntimeEntries[id];
+      if (!entry) throw new Error("Unknown plugin runtime: " + id);
+      load = entry.load().then((module) => {
+        const factory = module[entry.exportName];
+        if (typeof factory !== "function") throw new Error("Plugin runtime \\"" + id + "\\" did not export a factory.");
+        const definition = factory(entry.options);
+        if (!definition || definition.id !== id) throw new Error("Plugin runtime \\"" + id + "\\" returned a mismatched definition.");
+        pluginRuntimeRegistry.register(definition);
+      }).catch((error) => {
+        pluginRuntimeLoads.delete(id);
+        throw error;
+      });
+      pluginRuntimeLoads.set(id, load);
+    }
+    await load;
+  }));
+}
+
+function createPluginRuntimeHost(root, ids) {
+  if (ids.length === 0) return undefined;
+  return createClientRuntimeHost({ registry: pluginRuntimeRegistry, root });
+}
+`
+    : "";
 
   return `${imports.join("\n")}
 
 const lifecycle = new ClientLifecycle();
-let stopSpaNavigation;
+${runtimeSupport}let stopSpaNavigation;
 
-function mountPluginClientInitializer(scope, name, root, config, initialize) {
-  void lifecycle.mount({ scope, name, root, config, initialize });
+function mountPluginClientInitializer(scope, name, root, config, ${hasRuntimes ? "runtimeIds, " : ""}initialize) {
+  void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
 }
 
-function mountConditionalPluginClientInitializer(scope, name, root, config, presenceSelector, load) {
+function mountConditionalPluginClientInitializer(scope, name, root, config, presenceSelector, ${hasRuntimes ? "runtimeIds, " : ""}load) {
   if (!root.querySelector(presenceSelector)) return;
   void load().then((initialize) => {
     if ("isConnected" in root && !root.isConnected) return;
-    void lifecycle.mount({ scope, name, root, config, initialize });
+    void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
   }, (error) => console.error("[riebeckite] Client initializer module failed: " + name, error));
 }
 

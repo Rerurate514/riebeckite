@@ -6,6 +6,7 @@ import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 import { backlinks } from "@riebeckite/plugin-backlinks";
 import { bases } from "@riebeckite/plugin-bases";
 import { breadcrumbs } from "@riebeckite/plugin-breadcrumbs";
+import { calculator } from "@riebeckite/plugin-calculator";
 import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { citations } from "@riebeckite/plugin-citations";
@@ -143,6 +144,7 @@ export default defineConfig({
     }),
     excalidraw(),
     canvas(),
+    calculator(),
     richEmbed(),
     autoCardLink(),
     highlight(),

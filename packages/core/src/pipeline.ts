@@ -1,7 +1,7 @@
 import rehypeFormat from "rehype-format";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import remarkDirective from "remark-directive";
@@ -42,6 +42,10 @@ import {
   normalizeMarkdownLinks,
   resolveLinkDependencyValue,
 } from "./markdown_links.js";
+import {
+  markdownSanitizeSchema,
+  safeMarkdownStyle,
+} from "./markdown_sanitize_schema.js";
 import type { Observability } from "./observability.js";
 import { noopObservability } from "./observability.js";
 import type { PluginCache } from "./plugin/plugin_cache.js";
@@ -59,115 +63,6 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
-
-const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
-  ...defaultSchema,
-  tagNames: [
-    ...(defaultSchema.tagNames ?? []),
-    "aside",
-    "button",
-    "figcaption",
-    "figure",
-    "object",
-    "option",
-    "output",
-    "mark",
-    "select",
-    "svg",
-    "g",
-    "path",
-    "circle",
-    "ellipse",
-    "line",
-    "polyline",
-    "polygon",
-    "rect",
-    "title",
-    "desc",
-    "defs",
-    "linearGradient",
-    "radialGradient",
-    "stop",
-    "math",
-    "semantics",
-    "mrow",
-    "msup",
-    "mi",
-    "mn",
-    "mo",
-    "mfrac",
-    "msqrt",
-    "mroot",
-    "mtext",
-    "annotation",
-  ],
-  attributes: {
-    ...defaultSchema.attributes,
-    a: [
-      ...(defaultSchema.attributes?.a ?? []).filter(
-        (attribute) =>
-          attribute !== "className" &&
-          (!Array.isArray(attribute) || attribute[0] !== "className"),
-      ),
-      "className",
-      "download",
-    ],
-    "*": [
-      ...(defaultSchema.attributes?.["*"] ?? []),
-      "className",
-      "data*",
-      "role",
-      "ariaControls",
-      "ariaDescribedBy",
-      "ariaExpanded",
-      "ariaHidden",
-      "ariaLabel",
-      "ariaLabelledBy",
-      "ariaSelected",
-      "style",
-      "tabIndex",
-      "tabindex",
-    ],
-    button: ["type", "disabled"],
-    input: ["type", "value", "min", "max", "step", "placeholder", "checked"],
-    object: ["data", "type"],
-    option: ["value", "selected"],
-    svg: ["xmlns", "viewBox", "width", "height", "role", "focusable"],
-    circle: ["cx", "cy", "r"],
-    ellipse: ["cx", "cy", "rx", "ry"],
-    line: ["x1", "y1", "x2", "y2"],
-    rect: ["x", "y", "width", "height", "rx", "ry"],
-    polyline: ["points"],
-    polygon: ["points"],
-    path: ["d", "pathLength"],
-    g: ["clipPath", "mask"],
-    linearGradient: [
-      "id",
-      "gradientUnits",
-      "gradientTransform",
-      "x1",
-      "y1",
-      "x2",
-      "y2",
-    ],
-    radialGradient: [
-      "id",
-      "gradientUnits",
-      "gradientTransform",
-      "cx",
-      "cy",
-      "r",
-      "fx",
-      "fy",
-    ],
-    stop: ["offset", "stopColor", "stopOpacity"],
-    math: ["xmlns"],
-    annotation: ["encoding"],
-  },
-};
-
-const safeMarkdownStyle =
-  /^(?:--shiki-(?:light|dark):#[\da-f]{3,8};?)+$|^height:\d+(?:\.\d+)?px$|^--rb-(?:qr-size:\d+(?:\.\d+)?px|rich-embed-aspect:\d+(?:\.\d+)?)$/i;
 
 function sanitizeMarkdownStyles() {
   return (tree: Node) => {

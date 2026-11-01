@@ -49,6 +49,7 @@ flowchart LR
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
 | How SPA navigation keeps the shell and replaces the page | [SPA Navigation](./spa-navigation.md) |
 | The SPA transaction, cancellation, and lifecycle constraints | [SPA Runtime Internals](./spa-runtime.md) |
+| Browser runtime adapters and plugin lifecycle integration | [Interactive Runtime](./interactive-runtime.md) |
 | Diagnostics and Doctor | [Diagnostics](./diagnostics.md) |
 | Read-only inspection commands | [Inspector](./inspector.md) |
 | Logger, Tracer, and Profiler | [Observability](./observability.md) |

@@ -5,6 +5,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/cli",
   "packages/core",
   "packages/node",
+  "packages/graph",
   "packages/diagram",
   "packages/diagnostics",
   "packages/git-history",
@@ -146,6 +147,11 @@ const packagePublishingMetadata = {
   "packages/node": {
     description: "Node.js adapters for Riebeckite.",
     keywords: ["riebeckite", "node", "content-source", "filesystem"],
+  },
+  "packages/graph": {
+    description:
+      "Shared force-directed graph engine, filters, groups, and settings for Riebeckite.",
+    keywords: ["riebeckite", "graph", "force", "canvas", "obsidian"],
   },
   "packages/diagram": {
     description: "Shared diagram infrastructure for Riebeckite plugins.",
@@ -695,6 +701,19 @@ export function expectedPackageMetadata(directory) {
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (directory === "packages/graph") {
+    return {
+      ...publishingMetadata(directory, ["./style.css"]),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        benchmark: "node --import tsx benchmark/run.ts",
         prepack: "pnpm run build",
       },
     };

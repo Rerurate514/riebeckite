@@ -23,6 +23,7 @@ export type PublicContentEntry = DeepReadonly<{
   title: string;
   aliases?: readonly string[];
   icon?: ContentIcon;
+  date?: string | null;
   publishing: ResolvedPublishingState;
   tags: string[];
   links: ContentLink[];
@@ -112,6 +113,7 @@ function copyEntry(
       title: entry.title,
       ...(entry.aliases === undefined ? {} : { aliases: entry.aliases }),
       ...(entry.icon === undefined ? {} : { icon: entry.icon }),
+      date: resolveEntryDate(entry.frontmatter),
       publishing: {
         visibility: entry.publishing.visibility,
         routable: entry.publishing.routable,
@@ -127,6 +129,21 @@ function copyEntry(
       assets: entry.assets,
     }),
   );
+}
+
+function resolveEntryDate(frontmatter: {
+  published?: unknown;
+  date?: unknown;
+  created?: unknown;
+}): string | null {
+  const value =
+    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString();
+  }
+  if (typeof value !== "string" || value.trim().length === 0) return null;
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }
 
 function createAliasIndex(

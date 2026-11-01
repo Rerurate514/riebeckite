@@ -10,6 +10,9 @@
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
       "@riebeckite/core/client": ["packages/core/client.ts"],
+      "@riebeckite/graph": ["packages/graph/index.ts"],
+      "@riebeckite/graph/client": ["packages/graph/client.ts"],
+      "@riebeckite/graph/ui": ["packages/graph/ui.tsx"],
       "@riebeckite/node": ["packages/node/index.ts"],
       "@riebeckite/diagnostics": ["packages/diagnostics/index.ts"],
       "@riebeckite/preview": ["packages/preview/index.ts"],

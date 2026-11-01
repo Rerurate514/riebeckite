@@ -10,6 +10,9 @@
     "baseUrl": "../..",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/graph": ["packages/graph/index.ts"],
+      "@riebeckite/graph/client": ["packages/graph/client.ts"],
+      "@riebeckite/graph/ui": ["packages/graph/ui.tsx"],
       "@riebeckite/node": ["packages/node/index.ts"],
       "@riebeckite/diagnostics": ["packages/diagnostics/index.ts"],
       "@riebeckite/honox": ["packages/integrations/honox/index.ts"],

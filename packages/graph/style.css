@@ -1,0 +1,393 @@
+.rr-graph {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  border-radius: var(--rb-radius-md, 6px);
+  background: var(--rb-color-paper, #ffffff);
+  color: var(--rb-color-ink, #1f2937);
+  overflow: hidden;
+}
+
+.rr-graph__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+}
+
+.rr-graph__title {
+  margin: 0;
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.rr-graph__count,
+.rr-graph__status,
+.rr-graph__help {
+  color: var(--rb-color-muted, #6b7280);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.rr-graph__help {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.rr-graph__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+  border-bottom: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  background: var(--rb-color-surface, #f7f7f5);
+}
+
+.rr-graph__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.rr-graph__warning {
+  color: var(--rb-color-warning, #a16207);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.rr-graph__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rr-graph__actions button,
+.rr-graph__menu button,
+.rr-graph__settings button,
+.rr-graph__groups button,
+.rr-graph__animate-actions button {
+  appearance: none;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  border-radius: var(--rb-radius-sm, 4px);
+  background: var(--rb-color-paper, #ffffff);
+  color: var(--rb-color-ink, #1f2937);
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+}
+
+.rr-graph__actions button:hover,
+.rr-graph__menu button:hover,
+.rr-graph__settings button:hover,
+.rr-graph__groups button:hover,
+.rr-graph__animate-actions button:hover {
+  border-color: var(--rb-color-border-strong, #9ca3af);
+  background: var(--rb-color-surface, #f7f7f5);
+}
+
+.rr-graph__actions button:disabled,
+.rr-graph__settings button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.rr-graph__settings-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rr-graph__stage {
+  position: relative;
+  flex: 1;
+  min-height: 18rem;
+  height: min(58vh, 34rem);
+  background: var(--rb-color-paper, #ffffff);
+}
+
+.rr-graph__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+}
+
+.rr-graph__canvas:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--rb-color-focus, #2563eb);
+}
+
+.rr-graph__fallback {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  font-size: 0.8rem;
+  columns: 2;
+}
+
+.rr-graph__fallback a {
+  color: var(--rb-color-link, #2563eb);
+}
+
+.rr-graph__menu {
+  position: fixed;
+  z-index: 60;
+  width: 13rem;
+  padding: 0.35rem;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border-strong, #9ca3af);
+  border-radius: var(--rb-radius-sm, 4px);
+  background: var(--rb-color-paper, #ffffff);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.16);
+}
+
+.rr-graph__menu-title {
+  margin: 0;
+  padding: 0.35rem 0.5rem 0.45rem;
+  border-bottom: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  color: var(--rb-color-muted, #6b7280);
+  font-size: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rr-graph__menu button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+}
+
+.rr-graph__settings {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 50;
+  width: min(19rem, calc(100% - 1rem));
+  overflow-y: auto;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border-strong, #9ca3af);
+  border-radius: var(--rb-radius-md, 6px);
+  background: var(--rb-color-paper, #ffffff);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.14);
+  font-size: 0.75rem;
+}
+
+.rr-graph__settings-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-bottom: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  background: var(--rb-color-paper, #ffffff);
+}
+
+.rr-graph__settings-header h3 {
+  margin: 0;
+  font-family: var(--rb-font-heading, inherit);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rr-graph__settings details {
+  border-bottom: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  padding: 0.5rem 0.75rem 0.65rem;
+}
+
+.rr-graph__settings summary {
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--rb-color-muted, #6b7280);
+  padding: 0.2rem 0;
+}
+
+.rr-graph__settings details[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+.rr-graph__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.rr-graph__field label {
+  font-size: 0.7rem;
+  color: var(--rb-color-muted, #6b7280);
+}
+
+.rr-graph__field input[type="search"],
+.rr-graph__field input[type="text"],
+.rr-graph__group input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  border-radius: var(--rb-radius-sm, 4px);
+  background: var(--rb-color-surface, #f7f7f5);
+  color: var(--rb-color-ink, #1f2937);
+  font: inherit;
+  font-size: 0.72rem;
+  padding: 0.35rem 0.45rem;
+}
+
+.rr-graph__field input:focus-visible,
+.rr-graph__group input:focus-visible {
+  outline: 2px solid var(--rb-color-focus, #2563eb);
+  outline-offset: 1px;
+}
+
+.rr-graph__check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.18rem 0;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.rr-graph__range {
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.rr-graph__range > span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--rb-color-muted, #6b7280);
+  font-size: 0.7rem;
+}
+
+.rr-graph__range output {
+  color: var(--rb-color-ink, #1f2937);
+  font-variant-numeric: tabular-nums;
+}
+
+.rr-graph__range input[type="range"] {
+  width: 100%;
+  margin: 0.3rem 0 0;
+  accent-color: var(--rb-color-accent, #2563eb);
+}
+
+.rr-graph__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rr-graph__group {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr) repeat(3, 1.4rem);
+  gap: 0.2rem;
+  align-items: center;
+}
+
+.rr-graph__group input[type="color"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: var(--rb-rule-width, 1px) solid var(--rb-color-border, #d8d8d8);
+  border-radius: var(--rb-radius-sm, 4px);
+  background: none;
+  cursor: pointer;
+}
+
+.rr-graph__group button {
+  padding: 0.25rem;
+  font-size: 0.7rem;
+}
+
+.rr-graph__groups > button {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+}
+
+.rr-graph__animate-actions {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.4rem 0;
+}
+
+.rr-graph__selection {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  color: var(--rb-color-muted, #6b7280);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+.rr-graph--expanded {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  border: 0;
+  border-radius: 0;
+  background: var(--rb-color-paper, #ffffff);
+}
+
+.rr-graph--expanded .rr-graph__stage {
+  height: auto;
+  min-height: 0;
+}
+
+.rr-graph--expanded .rr-graph__canvas {
+  height: 100%;
+}
+
+@media (max-width: 40rem) {
+  .rr-graph__stage {
+    height: 64vh;
+    min-height: 20rem;
+  }
+
+  .rr-graph__settings {
+    inset: 0;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .rr-graph__toolbar {
+    flex-wrap: wrap;
+  }
+
+  .rr-graph__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .rr-graph__fallback {
+    columns: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rr-graph * {
+    scroll-behavior: auto;
+  }
+}

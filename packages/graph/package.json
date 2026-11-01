@@ -1,0 +1,75 @@
+{
+  "name": "@riebeckite/graph",
+  "version": "0.0.35",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "import": "./dist/ui.js",
+      "source": "./ui.tsx",
+      "default": "./dist/ui.js"
+    },
+    "./style.css": "./style.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "dist",
+    "style.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  },
+  "scripts": {
+    "build": "node ../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "benchmark": "node --import tsx benchmark/run.ts",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/graph"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Shared force-directed graph engine, filters, groups, and settings for Riebeckite.",
+  "keywords": [
+    "riebeckite",
+    "graph",
+    "force",
+    "canvas",
+    "obsidian"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": [
+    "./style.css"
+  ]
+}

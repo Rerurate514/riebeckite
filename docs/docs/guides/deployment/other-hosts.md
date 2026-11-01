@@ -75,6 +75,58 @@ The build writes `vercel.json` instead of requiring hand-written redirects. Use 
 
 GitHub Pages does not understand `_redirects`. Redirects become HTML pages that use a meta refresh, and redirects from `/` are not generated.
 
+## Publishing from CI
+
+In CI, `deploy()` still only writes files, so the build step is followed by uploading `dist/` to the host. Keep credentials in repository secrets.
+
+### GitHub Pages
+
+Configure `deploy({ provider: "github-pages" })` and publish with this workflow:
+
+```yaml
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+```
+
+### Netlify
+
+For hosts other than GitHub Pages, replace the steps after the build. With the Netlify CLI, add `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` to repository secrets.
+
+```yaml
+      - run: npm ci
+      - run: npm run build
+      - run: npx netlify deploy --dir=dist --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+### Vercel
+
+The simplest setup for Vercel is its Git integration. Set the output directory to `dist` and generate `vercel.json` with `deploy({ provider: "vercel" })`.
+
 ## Common notes
 
 - Set `site.baseUrl` to the public URL before building.

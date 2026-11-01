@@ -29,6 +29,8 @@ External plugins and themes should depend on public packages and public exports 
 | `@riebeckite/plugin-*` | Plugin factory and documented subpath exports |
 | `@riebeckite/theme-*` | Theme factory and CSS exports |
 
+`@riebeckite/diagnostics`, `@riebeckite/node`, and `@riebeckite/git-history` are shared by official plugins and framework internals. They do not have separate API pages; the pages that use them describe the relevant exports, such as [ContentSource](../framework/content-system/sources.md).
+
 The dependencies are roughly as follows.
 
 ```mermaid

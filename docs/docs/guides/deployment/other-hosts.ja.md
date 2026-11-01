@@ -75,6 +75,58 @@ npx netlify deploy --dir=dist --prod
 
 GitHub Pages は `_redirects` を解釈しません。リダイレクトはメタリフレッシュを使う HTML になり、`/` からのリダイレクトは生成されません。
 
+## CI から公開する
+
+CI でも `deploy()` はファイルを書き出すだけなので、ビルド後に `dist/` をホストへアップロードします。認証情報はリポジトリのシークレットに置きます。
+
+### GitHub Pages
+
+`deploy({ provider: "github-pages" })` を設定し、次のワークフローで公開できます。
+
+```yaml
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+```
+
+### Netlify
+
+GitHub Pages 以外では、ビルド後のステップだけを差し替えます。Netlify CLI を使う場合は、`NETLIFY_AUTH_TOKEN` と `NETLIFY_SITE_ID` をリポジトリのシークレットに登録してください。
+
+```yaml
+      - run: npm ci
+      - run: npm run build
+      - run: npx netlify deploy --dir=dist --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+```
+
+### Vercel
+
+Vercel はリポジトリの Git 連携でビルドする構成が簡単です。出力ディレクトリを `dist` に設定し、`deploy({ provider: "vercel" })` で `vercel.json` を生成しておきます。
+
 ## 共通の注意点
 
 - どのホストでも、`site.baseUrl` を公開 URL に合わせてからビルドします。

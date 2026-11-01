@@ -122,6 +122,19 @@ Obsidian Vault などのコンテンツとサイトを別リポジトリで管�
 
 `dist/` を Netlify、Vercel、GitHub Pages へ配信する手順と、Deploy プラグインが生成するファイルを説明します。
 
+## 公開したサイトを元に戻す
+
+公開後に問題が見つかった場合は、問題のないコミットへ戻して、もう一度ビルドと公開を行います。
+
+1. 変更前に公開していたコミットを確認します。
+2. そのコミットをチェックアウトするか、変更を戻します。
+3. `npm exec riebeckite check` と `npm exec riebeckite build` を実行します。
+4. 生成した `dist/` を公開します。
+
+Cloudflare Workers では、ダッシュボードのデプロイ履歴から以前のバージョンを選んで再公開することもできます。`site.baseUrl` や設定を変更した直後なら、それらの値も元に戻してください。
+
+公開前の差分は `publish plan` で確認できます。詳しくは [公開ワークフロー](./publication-workflow.ja.md) を参照してください。
+
 ## まとめ
 
 Riebeckite のデプロイは、

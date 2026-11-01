@@ -13,7 +13,7 @@ This page takes you from an empty machine to a running site. It assumes nothing 
 
 | Item | Why | Where |
 | --- | --- | --- |
-| Node.js (LTS) | Runs the Riebeckite commands | [nodejs.org](https://nodejs.org/) |
+| Node.js | Runs the Riebeckite commands. Requires `^20.19.0` or `>=22.12.0` | [nodejs.org](https://nodejs.org/) |
 | A terminal | Where you type commands | **PowerShell** on Windows, **Terminal** on macOS |
 | Git | Manages the site as a repository | [git-scm.com](https://git-scm.com/) |
 | A GitHub account | Used for automatic deployment with GitHub Actions | [github.com](https://github.com/) |
@@ -29,7 +29,7 @@ npm -v
 git --version
 ```
 
-Each should print a version such as `v22.0.0`. If a command is not found, install that tool and reopen the terminal.
+`node -v` must report `v20.19` or later, or `v22.12` or later. Update Node.js if it is older. If a command is not found, install that tool and reopen the terminal.
 
 ## Create a site
 

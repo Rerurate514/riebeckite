@@ -33,7 +33,7 @@ If you are unsure where to make a change, this usually helps:
 | Change the site-wide shell | `app/routes/_renderer.tsx` |
 | Change the article page structure | `app/components/article.tsx` |
 | Add a custom page | `app/routes/` |
-| Change the 404 screen | `app/routes/_404.tsx` |
+| Change the 404 screen | `app/routes/_404.tsx` in [Pages and navigation](./customizing-your-site/pages-and-navigation.md) |
 | Create a custom component | `app/components/` |
 | Build interactive UI | `app/islands/` |
 | Change color or spacing | `app/style.css`, `app/styles/` |

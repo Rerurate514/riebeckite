@@ -31,7 +31,7 @@ Riebeckite が主に担当するのは、次の部分です。
 | サイト全体の外枠を変えたい | `app/routes/_renderer.tsx` |
 | 記事ページの構成を変えたい | `app/components/article.tsx` |
 | 独自のページを追加したい | `app/routes/` |
-| 404ページを変えたい | `app/routes/_404.tsx` |
+| 404ページを変えたい | [ページとナビゲーション](./customizing-your-site/pages-and-navigation.ja.md) の `app/routes/_404.tsx` |
 | 独自のコンポーネントを作りたい | `app/components/` |
 | 操作できる UI を作りたい | `app/islands/` |
 | 色や余白を変えたい | `app/style.css`、`app/styles/` |

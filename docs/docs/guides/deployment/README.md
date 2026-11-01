@@ -129,9 +129,22 @@ Managing content such as an Obsidian vault and the site in separate repositories
 
 How to serve `dist/` from Netlify, Vercel, or GitHub Pages, and which files the Deploy plugin generates.
 
+## Rolling back a published site
+
+If something is wrong with the published site, return to a known-good commit and build and publish again.
+
+1. Find the commit that was published before the change.
+2. Check out that commit, or revert the change.
+3. Run `npm exec riebeckite check` and `npm exec riebeckite build`.
+4. Publish the generated `dist/`.
+
+On Cloudflare Workers, you can also open the deployment history in the dashboard and redeploy an earlier version. If you changed `site.baseUrl` or other settings, restore those values as well.
+
+`publish plan` shows the difference before publishing. See [Publication workflow](./publication-workflow.md).
+
 ## Summary
 
-riebeckite publish run --execute is enough to think of as:
+Deployment boils down to:
 
 ```text
 Content

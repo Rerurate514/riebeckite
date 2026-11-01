@@ -29,6 +29,8 @@ sidebar:
 | `@riebeckite/plugin-*` | プラグインのファクトリと、ドキュメント化された subpath エクスポート |
 | `@riebeckite/theme-*` | テーマのファクトリと CSS エクスポート |
 
+`@riebeckite/diagnostics`、`@riebeckite/node`、`@riebeckite/git-history` は、公式プラグインとフレームワーク内部で共有するパッケージです。個別の API ページはなく、使う場所は各機能のページ（たとえば [ContentSource](../framework/content-system/sources.ja.md)）で説明します。
+
 依存関係は概ね次のようになります。
 
 ```mermaid id="65lzss"

@@ -663,6 +663,7 @@ Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry.
 - [Plugin API](../reference/plugin-api.md)
 - [Plugin System](../framework/plugin-system.md)
 - [Testing](../framework/testing.md)
+- [Preview API](../reference/preview.md)
 - [Theme API](../reference/theme-api.md)
 - [Customizing Your Site](../guides/customizing-your-site.md)
 - [Architecture](../framework/architecture.md)

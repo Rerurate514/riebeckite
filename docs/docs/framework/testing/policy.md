@@ -3,7 +3,7 @@ date: 2026-10-06
 title: Policy
 sidebar:
   label: Policy
-  order: 40
+  order: 50
 ---
 # Policy
 

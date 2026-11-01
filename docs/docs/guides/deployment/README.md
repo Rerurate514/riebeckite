@@ -34,6 +34,7 @@ generates the publishable site into `dist/`. For a normal static site, that `dis
 | Deploy automatically from GitHub | [GitHub Actions](./github-actions.md) |
 | Plan, schedule, approve, and validate publications | [Publication workflow](./publication-workflow.md) |
 | Read articles from a separate repository in CI | [Separate content repository](./separate-content-repository.md) |
+| Deploy to Netlify, Vercel, or GitHub Pages | [Other hosts](./other-hosts.md) |
 | Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 
 Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm exec -- riebeckite publish run --execute`. It plans, builds when needed, creates `wrangler.jsonc` when missing, opens the Wrangler login on the first run, and uploads the validated `dist/`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares the publish workflow, including the two repository secrets.
@@ -122,6 +123,12 @@ Automating the build and the Cloudflare Workers deployment on a push to the site
 
 Managing content such as an Obsidian vault and the site in separate repositories. This also covers authentication for a private content repository and starting the site deployment from a content update.
 
+### Other hosts
+
+[Other hosts](./other-hosts.md)
+
+How to serve `dist/` from Netlify, Vercel, or GitHub Pages, and which files the Deploy plugin generates.
+
 ## Summary
 
 riebeckite publish run --execute is enough to think of as:
@@ -139,6 +146,7 @@ Cloudflare Workers
 - Publish manually → [Cloudflare Workers](./cloudflare-workers.md)
 - Publish automatically on push → [GitHub Actions](./github-actions.md)
 - Separate the content repository → [Separate content repository](./separate-content-repository.md)
+- Use another host → [Other hosts](./other-hosts.md)
 
 ## See also
 

@@ -138,6 +138,10 @@ Some teams keep the site implementation and Markdown content in separate reposit
 
 You do not need this for your first site. When you do, start with [Content Repositories](../guides/content-repositories.md). The GitHub Actions automation details live in [Separate Content Repository](../guides/deployment/separate-content-repository.md).
 
+## Other hosts
+
+For Netlify, Vercel, or GitHub Pages, the upload steps differ. See [Deploy to other hosts](../guides/deployment/other-hosts.md).
+
 ## Next
 
 - [Guides →](../guides/README.md) — writing content, Obsidian, localization, and deployment in depth

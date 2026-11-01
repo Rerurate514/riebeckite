@@ -771,6 +771,7 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 - [[plugin-system|プラグイン作成の詳細]]：この入門の詳細編（拡張ポイント・capability・ライフサイクル・配布）
 - [[plugin-api|Plugin API]]：すべての拡張ポイントの詳細
 - [[testing|テスト]]：プラグインのテスト戦略と外部パッケージの検証
+- [[preview|プレビュー API]]：プラグインのプレビュー用フィクスチャとランタイム
 - [[theme-api|Theme API]]：テーマ拡張の取り決めとセマンティックトークン
 - [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
 - [[reference/README|Framework Reference]]：`definePlugin` などの公開 API

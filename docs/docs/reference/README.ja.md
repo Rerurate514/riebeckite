@@ -24,6 +24,7 @@ flowchart TD
 
 - [公開パッケージ](./packages.ja.md)
 - [Core API](./core-api.ja.md)
+- [プレビュー API](./preview.ja.md)
 
 ## 調べたいことからページを選ぶ
 
@@ -33,6 +34,7 @@ flowchart TD
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
 | `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`upgrade`、`profile`、`inspect`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
+| プレビューの実行、フィクスチャ、埋め込み | [プレビュー API](./preview.ja.md) |
 | `defineTheme`、CSS の取り決め、トークン、カラーモード、パッケージの形 | [Theme API](./theme-api.ja.md) |
 | Riebeckite の内部構造 | [Framework](../framework/README.ja.md) |
 | テーマの作り方 | [テーマ](../themes/README.ja.md) |

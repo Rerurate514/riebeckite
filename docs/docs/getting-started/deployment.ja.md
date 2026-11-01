@@ -138,6 +138,10 @@ npm exec -- riebeckite doctor --github
 
 最初のサイトでは必須ではありません。必要になったら、まず [Content Repositories](../guides/content-repositories.ja.md) を読んでください。具体的な GitHub Actions の構成は [Separate Content Repository](../guides/deployment/separate-content-repository.ja.md) にまとめています。
 
+## Cloudflare 以外のホスト
+
+Netlify、Vercel、GitHub Pages へ置く場合は、`dist/` を配信する手順が異なります。[Cloudflare 以外のホストに公開する](../guides/deployment/other-hosts.ja.md) を参照してください。
+
 ## 次に読むページ
 
 - [ガイド →](../guides/README.ja.md)：コンテンツ、Obsidian、多言語、デプロイの詳しいガイド

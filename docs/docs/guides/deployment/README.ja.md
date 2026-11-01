@@ -38,6 +38,7 @@ npm exec riebeckite build
 | GitHub への Push から自動公開したい | [GitHub Actions](./github-actions.ja.md) |
 | 公開計画、予約公開、承認、公開前検証を行いたい | [公開ワークフロー](./publication-workflow.ja.md) |
 | コンテンツとサイトを別リポジトリで運用したい | [コンテンツとサイトを分ける](./separate-content-repository.ja.md) |
+| Cloudflare 以外のホストへ公開したい | [Cloudflare 以外のホスト](./other-hosts.ja.md) |
 
 初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec -- riebeckite publish run --execute` で手元から公開できます。このコマンドは計画し、必要ならビルドし、検証済みの `dist/` をアップロードします。すでに手元から公開しているサイトは、`npm exec riebeckite deploy setup` で publish ワークフローを準備できます。
 
@@ -115,6 +116,12 @@ Obsidian Vault などのコンテンツとサイトを別リポジトリで管�
 
 プライベートなコンテンツリポジトリの認証や、コンテンツ更新からサイトのデプロイを起動する方法もこちらで扱います。
 
+### Cloudflare 以外のホスト
+
+[Cloudflare 以外のホスト](./other-hosts.ja.md)
+
+`dist/` を Netlify、Vercel、GitHub Pages へ配信する手順と、Deploy プラグインが生成するファイルを説明します。
+
 ## まとめ
 
 Riebeckite のデプロイは、
@@ -134,3 +141,4 @@ Cloudflare Workers
 - 手動で公開する → [Cloudflare Workers](./cloudflare-workers.ja.md)
 - Push から自動公開する → [GitHub Actions](./github-actions.ja.md)
 - コンテンツリポジトリを分ける → [コンテンツとサイトを分ける](./separate-content-repository.ja.md)
+- Cloudflare 以外へ置く → [Cloudflare 以外のホスト](./other-hosts.ja.md)

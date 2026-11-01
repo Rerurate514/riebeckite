@@ -15,6 +15,7 @@ Riebeckite のテストは、Node.js 組み込みのテストランナー（`nod
 - [実行](./testing/running.ja.md)
 - [プラグイン](./testing/plugins.ja.md)
 - [Golden File](./testing/golden-files.ja.md)
+- [外部サイトの E2E](./testing/external-site.ja.md)
 - [方針](./testing/policy.ja.md)
 
 

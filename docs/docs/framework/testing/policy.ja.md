@@ -3,7 +3,7 @@ date: 2026-10-08
 title: 方針
 sidebar:
   label: 方針
-  order: 40
+  order: 50
 ---
 # 方針
 

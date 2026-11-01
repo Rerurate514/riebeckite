@@ -24,6 +24,7 @@ You do not have to read Reference from start to finish. When you want to check a
 
 - [Packages](./packages.md)
 - [Core API](./core-api.md)
+- [Preview API](./preview.md)
 
 ## Reference pages
 
@@ -33,6 +34,7 @@ You do not have to read Reference from start to finish. When you want to check a
 | [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
 | [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `upgrade`, `profile`, `inspect`, `theme preview`, `plugin dev`, `plugin verify` |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |
+| [Preview API](./preview.md) | Preview runtime, fixtures, embedding |
 | [Theme API](./theme-api.md) | `defineTheme`, CSS contract, tokens, color mode, package shape |
 | [Framework](../framework/README.md) | Riebeckite's internal structure |
 | [Themes](../themes/README.md) | How to build a theme |

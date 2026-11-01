@@ -20,6 +20,7 @@ repository-specific fixture, package list, and assertions stay in
 - [Running](./testing/running.md)
 - [Plugins](./testing/plugins.md)
 - [Golden files](./testing/golden-files.md)
+- [External-site E2E](./testing/external-site.md)
 - [Policy](./testing/policy.md)
 
 

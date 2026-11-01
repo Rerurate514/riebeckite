@@ -1,5 +1,7 @@
 ---
 date: 2026-11-01
+created: 2026-11-01
+modified: 2026-11-01
 title: Vault Heatmap
 ---
 # Vault Heatmap
@@ -56,6 +58,26 @@ export default defineConfig({
 | `title` | `string` | プラグインオプションを上書き |
 | `weekStart` | `"sunday" \| "monday"` | プラグインオプションを上書き |
 | `end` | `string` | 範囲の最終日を `YYYY-MM-DD` で指定。既定は最新のアクティビティ日 |
+
+## 使用例
+
+````markdown
+```vault-heatmap
+---
+weeks: 26
+title: ドキュメントの更新状況
+weekStart: monday
+---
+```
+````
+
+```vault-heatmap
+---
+weeks: 26
+title: ドキュメントの更新状況
+weekStart: monday
+---
+```
 
 ## 出力とアクセシビリティ
 

@@ -96,11 +96,9 @@ function planCommand(): CliCommandDefinition {
       const migration = await createMigration(project, presetIds);
       const plan = await migration.plan({ ids: presetIds });
       let planPath: string | undefined;
-      if (readString(input, "out")) {
-        planPath = path.resolve(
-          project.invocationCwd,
-          readString(input, "out"),
-        );
+      const out = readString(input, "out");
+      if (out) {
+        planPath = path.resolve(project.invocationCwd, out);
         await migration.savePlan(plan, planPath);
       }
       if (!context.json) context.output.writeLine(planSummary(plan));
@@ -134,8 +132,9 @@ function applyCommand(): CliCommandDefinition {
     async handler(context, input) {
       const project = await context.loadProject();
       const presetIds = readPresets(input);
-      const planPath = readString(input, "plan")
-        ? path.resolve(project.invocationCwd, readString(input, "plan"))
+      const planInput = readString(input, "plan");
+      const planPath = planInput
+        ? path.resolve(project.invocationCwd, planInput)
         : undefined;
       const migration = await createMigration(
         project,

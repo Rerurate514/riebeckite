@@ -1,5 +1,7 @@
 ---
 date: 2026-11-01
+created: 2026-11-01
+modified: 2026-11-01
 title: Vault Heatmap
 ---
 # Vault Heatmap
@@ -66,6 +68,26 @@ for the heatmap's data.
 | `title` | `string` | Overrides the plugin option |
 | `weekStart` | `"sunday" \| "monday"` | Overrides the plugin option |
 | `end` | `string` | Last day of the range as `YYYY-MM-DD`. Defaults to the latest activity date |
+
+## Example
+
+````markdown
+```vault-heatmap
+---
+weeks: 26
+title: Documentation activity
+weekStart: monday
+---
+```
+````
+
+```vault-heatmap
+---
+weeks: 26
+title: Documentation activity
+weekStart: monday
+---
+```
 
 ## Output and accessibility
 

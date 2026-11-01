@@ -56,6 +56,41 @@ export default defineConfig({
 | `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | スライダーの軸 |
 | `label` | `string` | - | 比較の下に出すキャプション |
 
+## 使用例
+
+````markdown
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: ライトモードの Default テーマ
+afterAlt: ダークモードの Default テーマ
+label: Default テーマのライト表示とダーク表示
+---
+```
+````
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: ライトモードの Default テーマ
+afterAlt: ダークモードの Default テーマ
+label: Default テーマのライト表示とダーク表示
+---
+```
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: ライトモードの Default テーマ
+afterAlt: ダークモードの Default テーマ
+orientation: vertical
+label: 縦方向の比較
+---
+```
+
 ## 出力とアクセシビリティ
 
 静的な figure には 2 枚の画像と Before / After のラベルを表示します。JavaScript が動くと静的な一覧を隠し、操作可能なステージを表示します。range input はステージ全体を覆い、ネイティブのキーボード操作を保ち、フォーカス時はステージに輪郭を出します。変更後の画像は `clip-path` で切り抜くため、ドラッグ中に画像の位置や縮尺は変わりません。

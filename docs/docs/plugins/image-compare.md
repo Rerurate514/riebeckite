@@ -63,6 +63,41 @@ emitted when the plugin is disabled.
 | `orientation` | `"horizontal" \| "vertical"` | `"horizontal"` | Slider axis |
 | `label` | `string` | - | Caption below the comparison |
 
+## Example
+
+````markdown
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: Default theme in light mode
+afterAlt: Default theme in dark mode
+label: Default theme, light to dark
+---
+```
+````
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: Default theme in light mode
+afterAlt: Default theme in dark mode
+label: Default theme, light to dark
+---
+```
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: Default theme in light mode
+afterAlt: Default theme in dark mode
+orientation: vertical
+label: Vertical comparison
+---
+```
+
 ## Output and accessibility
 
 The static figure lists both images with visible Before and After labels. When

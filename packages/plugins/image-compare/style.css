@@ -90,6 +90,7 @@
   opacity: 0;
   background: transparent;
   appearance: none;
+  touch-action: none;
   cursor: ew-resize;
 }
 

@@ -18,9 +18,11 @@ const packageLinks: Record<string, string> = {
   node: "packages/node",
   honox: "packages/integrations/honox",
   spa: "packages/spa",
+  runtime: "packages/runtime",
   ui: "packages/ui",
   "theme-default": "packages/themes/default",
   "plugin-alias": "packages/plugins/alias",
+  "plugin-calculator": "packages/plugins/calculator",
   "plugin-hover-preview": "packages/plugins/hover-preview",
   "plugin-l10n": "packages/plugins/l10n",
   "plugin-obsidian-markdown": "packages/plugins/obsidian-markdown",
@@ -66,6 +68,16 @@ function runCliJson(
     `${result.stdout}\n${result.stderr}`.trim(),
   );
   return JSON.parse(result.stdout) as unknown;
+}
+
+function runCliText(...arguments_: string[]) {
+  const result = spawnSync(process.execPath, [cli, ...arguments_], {
+    cwd: site,
+    encoding: "utf8",
+    env: process.env,
+  });
+  assert.equal(result.status, 0, result.stderr);
+  return result.stdout;
 }
 
 function link(target: string, linkPath: string) {
@@ -264,6 +276,32 @@ async function main() {
   assert.ok(exists("dist/old-legacy.html"));
   assert.match(read("dist/n/home.html"), /href="\/notes\/legacy"/);
   assert.match(read("dist/notes/legacy.html"), /ja\/n\/legacy/);
+  assert.match(read("dist/n/calculator.html"), /data-calculator/);
+  assert.match(
+    read("dist/n/calculator.html"),
+    /data-calculator-output="" aria-live="polite">14</,
+  );
+  assert.equal(
+    read("dist/notes/other.html").includes("data-calculator"),
+    false,
+  );
+  assert.equal(read("dist/n/home.html").includes("data-calculator"), false);
+
+  console.log("Plugin CLI extension");
+  const echoed = runCliJson([
+    "fixture",
+    "echo",
+    "--message",
+    "hello",
+    "--json",
+  ]) as { message: string; length: number };
+  assert.equal(echoed.message, "hello");
+  assert.equal(echoed.length, 5);
+  assert.equal(
+    runCliText("fixture", "echo", "--message", "hi").trim(),
+    "fixture echo: hi",
+  );
+  assert.match(runCliText("completion", "bash", "--project"), /fixture echo/);
 
   runCli("build", "--full");
   assert.equal(
@@ -275,8 +313,8 @@ async function main() {
   console.log("Migration plan and dry run");
   const plan = runCliJson(["migrate", "plan", "--json"]) as MigrationPlan;
   assert.deepEqual(plan.conflicts, []);
-  assert.equal(plan.impact.moved, 3);
-  assert.ok(plan.impact.frontmatter >= 3);
+  assert.equal(plan.impact.moved, 4);
+  assert.ok(plan.impact.frontmatter >= 4);
   assert.ok(plan.verification.derivedViews >= 1);
   const vaultBeforeDryRun = hashTree(vault);
   const dryRun = runCliJson(["migrate", "apply", "--json"]) as MigrationPlan;
@@ -318,6 +356,9 @@ async function main() {
   assert.match(read("dist/guides/legacy.html"), /\/notes\/other/);
   assert.ok(exists("dist/ja/n/legacy.html"));
   assert.match(read("dist/ja/n/legacy.html"), /\/ja\/n\/legacy/);
+  assert.ok(vaultExists("guides/calculator.md"));
+  assert.ok(exists("dist/n/calculator.html"));
+  assert.match(read("dist/n/calculator.html"), /data-calculator/);
   const incrementalPreview = previewSlugs();
   assert.ok(incrementalPreview.has("guides/legacy"));
   assert.ok(incrementalPreview.has("unlisted"));

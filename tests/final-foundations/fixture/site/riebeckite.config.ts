@@ -1,9 +1,11 @@
 import { defineConfig } from "@riebeckite/core";
 import { alias } from "@riebeckite/plugin-alias";
+import { calculator } from "@riebeckite/plugin-calculator";
 import { hoverPreview } from "@riebeckite/plugin-hover-preview";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { permalink } from "@riebeckite/plugin-permalink";
+import { fixtureCli } from "./plugins/fixture_cli.js";
 
 export default defineConfig({
   site: {
@@ -25,5 +27,7 @@ export default defineConfig({
     hoverPreview(),
     permalink({ redirects: { frontmatter: "previous_urls" } }),
     alias(),
+    calculator(),
+    fixtureCli(),
   ],
 });

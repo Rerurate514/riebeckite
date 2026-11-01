@@ -36,6 +36,26 @@ want to make public.
 - [Writing notes](./obsidian/writing.md)
 - [Troubleshooting](./obsidian/troubleshooting.md)
 
+## Compatibility at a glance
+
+Riebeckite reads the vault's Markdown instead of asking you to convert it. The
+supported range is:
+
+| Area | Support | Details |
+| --- | --- | --- |
+| Markdown | Full | GFM, frontmatter, tables, math, footnotes |
+| WikiLinks | Full | Notes, aliases, folders, headings, block ids, and same-page links. See [Wikilinks](../plugins/obsidian-markdown.md). |
+| Note embeds | Partial | Whole notes, headings, and block ids; nested embeds stop at depth 3. |
+| Images | Full | `![[image.png]]`, `![[image.png|300]]`, `![[image.png|300x200]]`, and `![[image.png|Alt text]]`. |
+| PDF and media | Partial | PDF page/height fragments and video/audio start times. Browser codec support determines playback. |
+| Callouts | Partial | Standard and nested callouts, custom titles, and folding markers; folding is not scripted. |
+| Comments | Full | `%% ... %%` spans are removed; code spans and fences are preserved. |
+| Dataview | Partial | DQL `LIST`, `TABLE`, `TASK`, `CALENDAR`, inline fields, `FLATTEN`, and per-task filtering. No DataviewJS. See [Dataview](../plugins/dataview.md). |
+| Bases | Partial | Table, cards, and list views with filters, formulas, summaries, and grouping. Kanban and map render a notice. See [Bases](../plugins/bases.md). |
+
+These tables describe the verified behavior, not an aspiration. Each plugin page
+lists its own compatibility matrix and the limits that remain.
+
 ## Check before publishing
 
 ```sh

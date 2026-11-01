@@ -113,4 +113,3 @@ test("returns the full note without a fragment and null when missing", () => {
     null,
   );
 });
-

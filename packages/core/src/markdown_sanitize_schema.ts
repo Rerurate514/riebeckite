@@ -6,6 +6,7 @@ import type { JsonValue } from "./types/json_value.js";
 
 export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
   ...defaultSchema,
+  required: {},
   tagNames: [
     ...(defaultSchema.tagNames ?? []),
     "aside",

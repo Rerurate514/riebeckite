@@ -142,6 +142,7 @@ test("keeps interactive and PDF elements added by Markdown plugins", async () =>
 
   assert.match(html, /data-meta-bind="input"/);
   assert.match(html, /<input[^>]*type="range"[^>]*value="2"/);
+  assert.doesNotMatch(html, /<input[^>]*disabled/);
   assert.match(html, /<output data-meta-bind="view">2<\/output>/);
   assert.match(
     html,

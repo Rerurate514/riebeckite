@@ -94,3 +94,7 @@ UI フレームワーク、スケジューラ、サーバーサイドレンダ�
 しません。ページやアプリケーションのライフサイクルから `dispose()` を呼ぶ
 必要があり、WASM アセットは互換性のある Content-Type と CSP で配信する必要が
 あります。
+
+ライフサイクル、アダプタ、Plugin 連携、セキュリティの詳細は
+[Interactive Runtime ガイド](../../docs/docs/framework/interactive-runtime.ja.md)
+を参照してください。

@@ -52,6 +52,7 @@ flowchart LR
 | Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.ja.md) |
 | SPAナビゲーションがシェルを残してページを置き換える仕組み | [SPAナビゲーションの構成](./spa-navigation.ja.md) |
 | ページ移動の処理、中断、ライフサイクルの制約 | [SPAランタイムの内部実装](./spa-runtime.ja.md) |
+| ブラウザー Runtime アダプタと Plugin ライフサイクル連携 | [Interactive Runtime](./interactive-runtime.ja.md) |
 | 設定や Content の問題を調べる | [Diagnostics](./diagnostics.ja.md) |
 | 解決済みの設定や状態を確認する | [Inspector](./inspector.ja.md) |
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |

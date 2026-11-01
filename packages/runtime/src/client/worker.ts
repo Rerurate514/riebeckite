@@ -73,8 +73,8 @@ export type WorkerRuntimeOptions<TInput, TOutput> = {
   readonly mapResult?: (payload: unknown) => TOutput;
 };
 
-type PendingRequest = {
-  readonly resolve: (value: unknown) => void;
+type PendingRequest<TOutput> = {
+  readonly resolve: (value: TOutput | RuntimeDriverResult<TOutput>) => void;
   readonly reject: (error: unknown) => void;
   readonly unlink: () => void;
 };
@@ -97,7 +97,7 @@ export function createWorkerRuntime<TInput, TOutput>(
       let failed: RuntimeFailureError | undefined;
       let stopped = false;
       let counted = false;
-      const pending = new Map<number, PendingRequest>();
+      const pending = new Map<number, PendingRequest<TOutput>>();
 
       const post = (message: RuntimeMessage, transfer?: Transferable[]) => {
         worker?.postMessage(message, transfer);
@@ -325,10 +325,10 @@ export function createWorkerRuntime<TInput, TOutput>(
   });
 }
 
-function takePending(
-  pending: Map<number, PendingRequest>,
+function takePending<TOutput>(
+  pending: Map<number, PendingRequest<TOutput>>,
   requestId: number | undefined,
-): PendingRequest | undefined {
+): PendingRequest<TOutput> | undefined {
   if (requestId === undefined) return undefined;
   const request = pending.get(requestId);
   if (!request) return undefined;

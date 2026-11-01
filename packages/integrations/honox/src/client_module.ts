@@ -111,9 +111,6 @@ function createClientModule(
     const runtimeArguments = hasRuntimes
       ? `${serializedRuntimeIds}, ${initializerWrapper}`
       : initializerWrapper;
-    const runtimeHost = hasRuntimes
-      ? `runtimes: createPluginRuntimeHost(root, ${serializedRuntimeIds}), `
-      : "";
     const initializers =
       entry.scope === "app" ? appInitializers : pageInitializers;
     if (entry.presenceSelector === undefined) {
@@ -184,14 +181,14 @@ const lifecycle = new ClientLifecycle();
 ${runtimeSupport}let stopSpaNavigation;
 
 function mountPluginClientInitializer(scope, name, root, config, ${hasRuntimes ? "runtimeIds, " : ""}initialize) {
-  void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize });
+  void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
 }
 
 function mountConditionalPluginClientInitializer(scope, name, root, config, presenceSelector, ${hasRuntimes ? "runtimeIds, " : ""}load) {
   if (!root.querySelector(presenceSelector)) return;
   void load().then((initialize) => {
     if ("isConnected" in root && !root.isConnected) return;
-    void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize });
+    void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
   }, (error) => console.error("[riebeckite] Client initializer module failed: " + name, error));
 }
 

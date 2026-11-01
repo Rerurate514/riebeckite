@@ -39,8 +39,8 @@ type IframeMessage = {
   readonly error?: RuntimeErrorWire;
 };
 
-type PendingRequest = {
-  readonly resolve: (value: unknown) => void;
+type PendingRequest<TOutput> = {
+  readonly resolve: (value: TOutput | RuntimeDriverResult<TOutput>) => void;
   readonly reject: (error: unknown) => void;
   readonly unlink: () => void;
 };
@@ -80,7 +80,7 @@ export function createIframeRuntime<TInput, TOutput>(
       let stopped = false;
       let failed: RuntimeFailureError | undefined;
       let counted = false;
-      const pending = new Map<number, PendingRequest>();
+      const pending = new Map<number, PendingRequest<TOutput>>();
       const expectedOrigin = options.expectedOrigin ?? "null";
       const targetOrigin = expectedOrigin === "null" ? "*" : expectedOrigin;
 
@@ -129,8 +129,8 @@ export function createIframeRuntime<TInput, TOutput>(
             const transfer = message.transfer;
             request.resolve(
               transfer && transfer.length > 0
-                ? transferOutput(message.payload, transfer)
-                : message.payload,
+                ? transferOutput(message.payload as TOutput, transfer)
+                : (message.payload as TOutput),
             );
             break;
           }

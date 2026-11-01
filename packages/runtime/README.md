@@ -93,3 +93,6 @@ The runtime package does not provide a UI framework, a scheduler, or automatic
 server-side rendering. Hosts must call `dispose()` from their page or
 application lifecycle, and must serve WASM assets with a compatible content type
 and CSP.
+
+See the [Interactive Runtime guide](../../docs/docs/framework/interactive-runtime.md)
+for lifecycle, adapter, plugin, and security details.

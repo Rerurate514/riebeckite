@@ -5,7 +5,7 @@ import {
   RuntimeUnsupportedError,
   RuntimeWasmError,
 } from "./src/core/errors.js";
-import { isRuntimeTransfer } from "./src/core/outcome.js";
+import { isRuntimeTransfer, type RuntimeTransfer } from "./src/core/outcome.js";
 import { assertPayloadSize } from "./src/core/payload.js";
 import {
   isRuntimeMessage,
@@ -42,7 +42,10 @@ export type WorkerRuntimeHandler<TInput, TOutput> = {
       readonly signal: AbortSignal;
       readonly capability?: RuntimeCapability;
     },
-  ): TOutput | Promise<TOutput>;
+  ):
+    | TOutput
+    | RuntimeTransfer<TOutput>
+    | Promise<TOutput | RuntimeTransfer<TOutput>>;
   dispose?(): void | Promise<void>;
 };
 

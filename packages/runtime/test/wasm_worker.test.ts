@@ -9,7 +9,7 @@ function wasmWorker(exportName: string) {
   const factory = createFakeWorker((scope) =>
     serveWasmWorkerRuntime(scope, {
       fetch: async () =>
-        new Response(createAddWasm(), {
+        new Response(createAddWasm() as unknown as BodyInit, {
           status: 200,
           headers: { "content-type": "application/wasm" },
         }),

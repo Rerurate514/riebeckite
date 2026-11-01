@@ -4,25 +4,26 @@ title: Local Graph
 ---
 # Local Graph
 
-Local (nearby notes) graph rendering: a compact radial graph of a note's
-outgoing links and backlinks.
+Interactive local graph of the current note and its neighborhood.
 
 [日本語](./local-graph.ja.md)
 
 ## Live example
 
-Open [Backlink](/docs/glossary/backlink) to see the local graph at the bottom of the article, centered on that page and its neighbors.
+Open [Backlink](/docs/glossary/backlink) to see the local graph at the bottom of
+the article.
 
 ## Recommended placement
 
 `localGraph()` provides a `LocalGraph` component that renders the current note
-plus its direct links as an SVG radial graph. `getLocalGraph()` collects the
-note's outgoing links and backlinks from the manifest, keeps only published
-neighbors, and caps each direction at `MAX_NEIGHBORS_PER_DIRECTION` (10) notes.
+and its surrounding notes with the shared
+[`@riebeckite/graph`](https://github.com/Rerurate514/riebeckite/tree/main/packages/graph)
+engine. The Site places `<LocalGraph />` itself, normally once after article
+content. An isolated note still shows its own node.
 
-The Site places the `<LocalGraph />` component itself, normally once after
-article content. The component renders nothing when there is no published
-neighbor.
+The server embeds at most three hops and 320 nodes into the page. The Depth
+slider is capped at three for Local Graph, and a notice appears when the
+neighborhood was truncated. Use the Explorer for the complete network.
 
 ## Quick Start
 
@@ -36,9 +37,47 @@ export default defineConfig({
 });
 ```
 
-`localGraph()` registers the plugin and bundles `style.css` into the app
-stylesheet. The Site renders `<LocalGraph />` component itself, normally once
-after article content, to display the graph output.
+`localGraph()` registers the plugin, the graph stylesheet, and the client entry
+that hydrates the graph after the page loads.
+
+## Interaction
+
+- Wheel or pinch to zoom around the pointer.
+- Drag the background to pan and drag a node to pin it while neighbors react.
+- Hover a node to highlight its direct connections.
+- Click a note to open it. Right-click for open, copy link, new tab, and Explorer
+  actions.
+- Use `+`/`-` to zoom, arrow keys to pan (`Shift` for faster pan), `n`/`p` to
+  move through nodes, `Enter` to open, and `Escape` to clear the selection while
+  the graph is focused.
+- The Expand button opens the graph full screen.
+
+## Settings
+
+The gear button opens the same Filters, Groups, Display, and Forces sections used
+by the Global Graph.
+
+- **Filters** — search, tags, attachments, existing files only, orphans, and
+  Local Graph depth.
+- **Search** supports `file:`, `path:`, `tag:`, quoted phrases, and `-` negation.
+  Unsupported operators are reported instead of silently matching everything.
+- **Groups** — ordered color rules. The first matching group wins.
+- **Display** — arrows, text fade threshold, node size, link thickness, and
+  animation. Animation uses frontmatter dates when available; undated notes are
+  revealed in stable order and no dates are invented.
+- **Forces** — center, repel, link force, and link distance update the running
+  simulation immediately. Restore defaults resets the graph.
+
+Settings are stored in `localStorage` under
+`riebeckite-local-graph-settings` and restored on the next visit.
+
+## Data and public boundary
+
+`getLocalGraph()` uses `PublicContentView` and `manifest.discoverableEntries`.
+Only public notes become note nodes. Resolved links to private or draft notes are
+dropped by the public view, so browser data does not reveal their existence.
+Unresolved links, attachments, and tags come from the public manifest and are
+shown only when the corresponding filter is enabled.
 
 ## Advanced customization
 
@@ -57,36 +96,22 @@ const graph = getLocalGraph({
   resolveTitle: getArticleTitle,
 });
 
-// ...in your route
-return (
-  <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>
-);
+return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 ```
-
-Render the component once per article. Remove the element to remove the UI.
-
-## Configuration
-
-There are no plugin options for `localGraph`. The `LocalGraph` component
-accepts `graph` as a required prop.
-
-## Graph layout
-
-Node positions come from `layoutRadialGraph()`: the center node sits at the
-middle, neighbors are arranged around it by link count; node radius grows with
-the number of links. Edges are computed by `buildGraphEdges()`. Node links use
-each node's resolved `permalink`; the header opens the full explorer through the
-internal selection key `/explore?note=<slug>`.
 
 ## Exports
 
 - `localGraph()` — plugin factory
-- `LocalGraph` — SVG graph component (default export of `components/local-graph.tsx`)
-- `getLocalGraph({ manifest, config, slug, resolveTitle })` — builds nearby-note
-  data for a slug (`null` when the note is absent or unpublished)
-- `buildGraphEdges(nodes, visibleSlugs?)` — pure edge builder
-- `layoutRadialGraph(nodes, options)` — pure radial layout
-- Types: `LocalGraphData`, `LocalGraphNode`
+- `LocalGraph` — server component with embedded graph data
+- `LocalGraphView` — presentational client component used by hydration
+- `getLocalGraph({ manifest, config, slug, resolveTitle })` — public graph data
+  (`null` when the note is absent or unpublished)
+- `buildLocalGraph({ manifest, config, slug, resolveTitle })` — manifest-based
+  graph data
+- Types: `LocalGraphData`, `LocalGraphNode`, `LocalGraphViewProps`
+- Legacy exports `buildGraphEdges()` and `layoutRadialGraph()` remain available
+  from `@riebeckite/core/client`; the Local Graph UI no longer uses a fixed
+  radial layout.
 
 ## See also
 

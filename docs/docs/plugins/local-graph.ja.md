@@ -4,17 +4,21 @@ title: Local Graph
 ---
 # Local Graph
 
-現在のノートと、そこから直接つながるノート（リンク先と被リンク元）を小さな放射状グラフで表示するプラグインです。
+現在のノートとその周辺を表示するインタラクティブなローカルグラフです。
 
 [English](./local-graph.md)
 
 ## 実行例
 
-[Backlink](/ja/docs/glossary/backlink) を開くと、そのページと隣接ページを中心としたローカルグラフが記事の末尾に表示されます。
+[Backlink](/ja/docs/glossary/backlink) を開くと、記事末尾にローカルグラフが表示されます。
 
 ## 推奨配置
 
-`getLocalGraph()` はマニフェストからリンク先と被リンク元を集め、公開済みノートだけを残します。リンク先と被リンク元はそれぞれ最大 10 件です。`LocalGraph` はそのデータを SVG として描画し、周辺ノートがなければ何も表示しません。Site は `<LocalGraph />` コンポーネントを記事の後などに配置します。
+`localGraph()` が提供する `LocalGraph` は、共通の
+[`@riebeckite/graph`](https://github.com/Rerurate514/riebeckite/tree/main/packages/graph)
+エンジンで現在のノートと周辺ノートを描画します。Site が `<LocalGraph />` を記事の後などに一度配置してください。リンクのないノートでも自身のノードは表示されます。
+
+サーバーは最大3ホップ・320ノードまでをページに埋め込みます。Local Graph の Depth スライダーは3までで、切り詰めが起きたときは案内を表示します。ネットワーク全体を見るには Explorer を使ってください。
 
 ## クイックスタート
 
@@ -25,30 +29,55 @@ import { localGraph } from "@riebeckite/plugin-local-graph";
 export default defineConfig({ plugins: [localGraph()] });
 ```
 
-記事レイアウトで `<LocalGraph />` コンポーネントを一度描画します。
+`localGraph()` はプラグイン、グラフのスタイルシート、ページ読み込み後にグラフをハイドレートするクライアントエントリを登録します。
+
+## 操作
+
+- ホイールまたはピンチでポインター位置を中心にズームします。
+- 背景をドラッグしてパン、ノードをドラッグすると固定され、周囲のノードが反応します。
+- ノードにホバーすると直接つながるノードが強調されます。
+- ノートをクリックすると開きます。右クリックでは、開く・リンクをコピー・新しいタブ・Explorer の操作を選べます。
+- グラフにフォーカスがあるとき、`+`/`-` でズーム、矢印キーでパン（`Shift` で高速）、`n`/`p` でノード移動、`Enter` で開く、`Escape` で選択解除できます。
+- Expand ボタンで全画面表示になります。
 
 ## 設定
 
-`localGraph()` にはプラグイン用のオプションがありません。`LocalGraph` コンポーネントは必須プロップ `graph` を受け取ります。
+歯車ボタンから、Global Graph と同じ Filters / Groups / Display / Forces を開けます。
+
+- **Filters** — 検索、タグ、添付ファイル、既存ファイルのみ、孤立ノート、Local Graph の深さ。
+- **検索** は `file:`、`path:`、`tag:`、引用符、`-` による否定に対応します。未対応の演算子は、全件一致として扱わず画面に表示します。
+- **Groups** — 順序付きの色分けルールです。最初に一致したグループが優先されます。
+- **Display** — 矢印、ラベルのフェードしきい値、ノードサイズ、リンク太さ、アニメーション。アニメーションは frontmatter の日付を使い、日付のないノートは安定した順序で表示します。架空の日付は作りません。
+- **Forces** — Center / Repel / Link force / Link distance は実行中のシミュレーションへ即時反映されます。Restore defaults で初期値に戻ります。
+
+設定は `localStorage` の `riebeckite-local-graph-settings` に保存され、再訪問時に復元されます。
+
+## データと公開境界
+
+`getLocalGraph()` は `PublicContentView` と `manifest.discoverableEntries` を使います。ノートノードになるのは公開ノートだけです。非公開・下書きノートへの解決済みリンクは公開ビューで除外されるため、ブラウザ上のデータから存在を知ることはできません。未解決リンク、添付ファイル、タグは公開マニフェストの情報だけを使い、対応するフィルターが有効なときだけ表示します。
 
 ## 高度なカスタマイズ
 
-サイト側で配置を決めるには、`getLocalGraph` を使ってデータを取得し、`<LocalGraph graph={...} />` コンポーネントを一度だけ描画してください。グラフの生成と、公開済みの近傍だけを残す絞り込みは維持されます。
-
 ```tsx
-import LocalGraph, { getLocalGraph } from "@riebeckite/plugin-local-graph";
-const graph = getLocalGraph({ manifest: await content.getManifest(), config, slug, resolveTitle });
+import { LocalGraph, getLocalGraph } from "@riebeckite/plugin-local-graph";
+import { content } from "virtual:riebeckite/content";
+import { getArticleTitle } from "../lib/article-title";
+
+const manifest = await content.getManifest();
+const graph = getLocalGraph({ manifest, config, slug, resolveTitle: getArticleTitle });
+
 return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 ```
 
-グラフのノード位置は `layoutRadialGraph()`、辺は `buildGraphEdges()` が計算します。各ノードのリンクは解決済みの `permalink` を使い、ヘッダーは内部セレクションキー `/explore?note=<slug>` で Explorer を開きます。
-
 ## 公開 API
 
-- `localGraph()`、`LocalGraph`
-- `getLocalGraph({ manifest, config, slug, resolveTitle })`
-- `buildGraphEdges(nodes, visibleSlugs?)`、`layoutRadialGraph(nodes, options)`
-- `LocalGraphData`、`LocalGraphNode`
+- `localGraph()` — プラグインファクトリ
+- `LocalGraph` — グラフデータを埋め込むサーバーコンポーネント
+- `LocalGraphView` — ハイドレーションで使う表示コンポーネント
+- `getLocalGraph({ manifest, config, slug, resolveTitle })` — 公開グラフデータ（ノートがない、または非公開なら `null`）
+- `buildLocalGraph({ manifest, config, slug, resolveTitle })` — マニフェストから構築するグラフデータ
+- 型: `LocalGraphData`、`LocalGraphNode`、`LocalGraphViewProps`
+- 旧 API の `buildGraphEdges()` と `layoutRadialGraph()` は `@riebeckite/core/client` から引き続き利用できます。Local Graph の UI は固定放射状レイアウトを使いません。
 
 ## 関連資料
 

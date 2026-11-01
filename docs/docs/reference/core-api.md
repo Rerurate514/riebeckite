@@ -13,6 +13,7 @@ sidebar:
 ### Important core exports
 
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
+- API lifecycle: `defineApiLifecycle`, `createApiLifecycleRegistry`, `resolveApiLifecycle`
 - Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `ContentQuery`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
 - Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `createPluginMemo`, `stableStringify`
 - Themes: `defineTheme`, `ThemeDefinition`, `semantic tokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
@@ -31,6 +32,20 @@ isExcluded
 ```
 
 Used to declare and resolve config and for publication policy. See [Configuration](./configuration.md) for details.
+
+### API lifecycle
+
+```text
+defineApiLifecycle
+validateApiLifecycleDefinition
+createApiLifecycleRegistry
+collectApiLifecycleDefinitions
+resolveApiLifecycle
+API_LIFECYCLE_DIAGNOSTIC_CODE
+API_LIFECYCLE_METADATA_DIAGNOSTIC_CODE
+```
+
+Used to record deprecated APIs and validate their metadata. See [API lifecycle](./api-lifecycle.md).
 
 ### Content
 

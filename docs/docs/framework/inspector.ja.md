@@ -173,7 +173,7 @@ flowchart TD
 
 ## Development Inspector のタブ
 
-パネルには Overview、Diagnostics、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
+パネルには Overview、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
 
 ## 読み取り専用の保証
 

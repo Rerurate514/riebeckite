@@ -76,6 +76,7 @@ export function example(options: ExampleOptions = {}) {
   [[glossary/pipeline|Pipeline]]              remark/rehype declarations and extension hooks
   Graph                 `extendContentGraph`
   Diagnostics           `addDiagnostics`
+  API lifecycle         `apiLifecycle`
    Rendering             `renderers`
    Pages                 `pageTypes`
   Browser integration   `assets`, `clientEntries`
@@ -83,6 +84,8 @@ export function example(options: ExampleOptions = {}) {
   SEO                   `seo`
 
 Use only the extension points a plugin actually needs.
+
+Declare deprecated plugin options and hooks with `apiLifecycle` so `check`, `doctor`, and the Inspector can report them. See [API lifecycle](../api-lifecycle.md).
 
 ## Development route manifests
 

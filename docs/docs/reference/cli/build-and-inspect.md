@@ -157,6 +157,16 @@ Markdown: total size, usage, formats, unused and possibly unused assets, SHA-256
 duplicate groups, and optimization candidates. Use `--list` to include every
 asset, or `--json` for the structured report. Nothing is deleted or rewritten.
 
+### API lifecycle
+
+```sh
+npm exec riebeckite inspect api --deprecated
+```
+
+Shows the registered lifecycle metadata. Use `--deprecated` to list only
+deprecated APIs, or `--json` for the structured inspection. This reads the
+registry and does not change the configuration or build state.
+
 ### Build
 
 ```sh

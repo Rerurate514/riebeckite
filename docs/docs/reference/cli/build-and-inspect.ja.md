@@ -154,6 +154,14 @@ npm exec -- riebeckite inspect assets
 
 コンテンツルート直下の Markdown 以外のファイルを、読み取り専用で一覧表示します。合計サイズ、使用状況、形式、未使用・未使用の可能性があるアセット、SHA-256 による重複グループ、最適化候補を表示します。`--list` ですべてのアセットを、`--json` で構造化レポートを出力します。ファイルの削除や書き換えは行いません。
 
+### API ライフサイクル
+
+```sh id="rb-api-lifecycle"
+npm exec riebeckite inspect api --deprecated
+```
+
+登録済みのライフサイクルメタデータを表示します。`--deprecated` で非推奨 API だけに絞り、`--json` で構造化された検査結果を出力します。レジストリを読むだけで、設定やビルド状態は変更しません。
+
 ### ビルド
 
 ```sh id="y2uc9f"

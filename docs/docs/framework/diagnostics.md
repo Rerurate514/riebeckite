@@ -65,6 +65,19 @@ Integrity checks use the public content and public paths that Riebeckite has alr
 
 Diagnostics own site-wide reference and structure integrity. Per-page HTML quality, such as whether an image has an appropriate `alt` attribute, whether the heading structure is correct, or whether the generated HTML has problems, remains the responsibility of `@riebeckite/plugin-quality`.
 
+## Deprecated APIs
+
+API lifecycle metadata declares deprecated public APIs. Diagnostics report the metadata itself and, when the metadata identifies a configuration path or plugin option, whether the current configuration uses it.
+
+| Code | Default severity | Condition |
+| --- | --- | --- |
+| `RB-API-001` | `warning` | a deprecated API is used in the configuration |
+| `RB-API-002` | `error` | API lifecycle metadata is invalid |
+
+`RB-API-001` includes the API ID, package, deprecated-since version, replacement, removal version (or `not confirmed`), migration guide, reason, and detection source. `RB-API-002` reports the invalid field and why it failed validation.
+
+Deprecation warnings do not fail `check` or `doctor` by default. Use `doctor --fail-on warning` to make them fail a CI check. Invalid metadata is an error because the registry cannot describe the API reliably. See [API lifecycle](../reference/api-lifecycle.md) for the metadata fields and removal policy.
+
 ## Publishing pages and assets from a plugin
 
 When a plugin publishes its own pages, generated files, or assets, register them through the corresponding Riebeckite mechanism. Correctly registered public targets are recognized by diagnostics too. If a plugin officially publishes a page at `/explore`, for example, a link to

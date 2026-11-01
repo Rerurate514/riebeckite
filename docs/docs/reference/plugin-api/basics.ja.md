@@ -77,6 +77,7 @@ export function example(
 | Markdown / HTML | `remarkPlugins`, `rehypePlugins`, `extendMarkdownPipeline`, `extendHtmlPipeline` |
 | グラフ | `extendContentGraph` |
 | 診断 | `addDiagnostics` |
+| API ライフサイクル | `apiLifecycle` |
 | 埋め込み表示 | `renderers` |
 | 独立ページ | `pageTypes` |
 | ブラウザ | `assets`, `clientEntries` |
@@ -84,6 +85,8 @@ export function example(
 | SEO | `seo` |
 
 この中から、**必要なものだけ**を使ってください。
+
+非推奨のプラグインオプションやフックは `apiLifecycle` で宣言すると、`check`、`doctor`、インスペクターから報告できます。詳しくは [API ライフサイクル](../api-lifecycle.ja.md) を参照してください。
 
 ## 開発時のルートマニフェスト
 

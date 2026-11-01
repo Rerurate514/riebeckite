@@ -24,6 +24,7 @@ flowchart TD
 
 - [公開パッケージ](./packages.ja.md)
 - [Core API](./core-api.ja.md)
+- [API ライフサイクル](./api-lifecycle.ja.md)
 - [プレビュー API](./preview.ja.md)
 
 ## 調べたいことからページを選ぶ

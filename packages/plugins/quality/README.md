@@ -48,6 +48,31 @@ export default defineConfig({
 | `quality:html-lang-missing` | warning | `<html>` without a non-empty `lang` attribute (full documents only). |
 | `quality:table-no-header` | warning | `<table>` with data cells but no `<th>`, `scope`, or `headers`. |
 
+## Example output
+
+`inspectHtml` is a pure function, so you can check a fragment without running a build:
+
+```ts
+import { inspectHtml } from "@riebeckite/plugin-quality";
+
+inspectHtml('<img src="x.png">');
+```
+
+```json
+[
+  {
+    "code": "quality:img-alt-missing",
+    "severity": "warning",
+    "message": "<img> is missing an alt attribute.",
+    "pluginName": "quality",
+    "target": "img",
+    "suggestion": "Add alt=\"...\" describing the image, or alt=\"\" for decorative images."
+  }
+]
+```
+
+During a build, the Plugin reports the same diagnostics for generated pages. With `failOn: "error"`, an error-severity diagnostic stops the build.
+
 ## API
 
 - `quality(options?)` — plugin factory.

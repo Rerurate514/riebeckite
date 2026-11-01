@@ -37,6 +37,60 @@ riebeckite frontmatter rollback <plan-id> --apply
 `--apply` prints the same plan summary without writing files. Repeat
 `--preset` to combine presets in one plan.
 
+## Before and after
+
+Given this frontmatter:
+
+```yaml
+---
+title: "  Writing guide  "
+tags: "#guides, setup, guides"
+description: "  "
+---
+```
+
+run:
+
+```sh
+riebeckite frontmatter apply --preset normalize-tags --preset trim-text
+```
+
+The plan reports one changed file. Re-run with `--apply` to write it:
+
+```sh
+riebeckite frontmatter apply --preset normalize-tags --preset trim-text --apply
+```
+
+The result is:
+
+```yaml
+---
+title: Writing guide
+tags:
+  - guides
+  - setup
+---
+```
+
+`normalize-tags` removes the leading `#`, splits on commas, and removes
+duplicates. `trim-text` trims `title` and removes the empty `description`.
+YAML key order and formatting may change when the file is rewritten.
+
+Example plan output (the plan ID varies):
+
+```text
+Migration plan <plan-id>
+Presets: normalize-tags@1, trim-text@1
+Changed files: 1
+Created: 0, moved: 0, frontmatter: 1
+```
+
+Example apply output (the journal path varies):
+
+```text
+Applied 1 file change(s); mutation journal .riebeckite/migrations/<plan-id>/journal.json.
+```
+
 ## Presets
 
 | Preset | Description |

@@ -36,6 +36,12 @@ Markdown と frontmatter を中心に、Riebeckite で記事を書くための�
 
 既存の Obsidian Vault を Riebeckite のコンテンツとして使う方法を説明します。
 
+### 複数のノートをまとめて変更する
+
+[コンテンツ変更](../framework/content-mutation.ja.md) と [コンテンツ移行](../framework/content-migration.ja.md)
+
+ノートの作成・編集・移動・削除を安全に行いたい場合はコンテンツ変更を、バージョン付きのルールで多数のファイルを一括変換したい場合はコンテンツ移行を使います。frontmatter の正規化だけなら、[frontmatter-transformer](../plugins/frontmatter-transformer.ja.md) プラグインに用意されたプリセットを利用できます。
+
 ## サイトを構成する
 
 ### コンテンツとサイトを分ける

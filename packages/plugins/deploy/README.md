@@ -8,6 +8,22 @@ It does not upload anything and never writes to the filesystem.
 
 [日本語](./README_ja.md)
 
+## What it does
+
+- Generates provider-specific redirect and header files during `riebeckite build`.
+- Reads redirects only from `manifest.publicRedirects`.
+- Supports Cloudflare Pages, Cloudflare Workers, Netlify, Vercel, and GitHub
+  Pages.
+
+## What it does not do
+
+- It does not upload files, authenticate with a provider, or invalidate caches.
+- It does not deploy the site. Upload the build output with your provider's
+  normal deploy step, or use the publication workflow's `publish run --execute`
+  when your site is configured for it.
+- `riebeckite deploy setup` is a separate CLI helper that prepares Cloudflare
+  configuration. It also does not upload anything.
+
 ## Overview
 
 `deploy()` reads public redirects from the content manifest and plans the
@@ -52,6 +68,22 @@ Worker code.
 GitHub Pages has no `_redirects` syntax, so every redirect becomes an HTML stub
 with a meta refresh and a `<link rel="canonical">`. A redirect from `/` is
 skipped because the root cannot be stubbed.
+
+## Deploying the generated files
+
+Run the normal build:
+
+```sh
+npm exec riebeckite build
+```
+
+The files are written into the build output (for example `dist/_redirects`).
+Upload that directory with your provider's deploy step. This plugin stops at
+file generation; it has no credentials and performs no upload.
+
+If your site uses the publication workflow, `publish run --execute` performs
+the configured publication step. `deploy setup` only prepares Cloudflare
+configuration.
 
 ## Public API
 

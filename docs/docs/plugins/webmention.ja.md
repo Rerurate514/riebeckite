@@ -8,14 +8,74 @@ Webmention を受信し、送信元ドキュメントが本当にターゲット
 
 [English](./webmention.md)
 
-## 設計
+## できること
+
+- `POST /webmentions` で Webmention を受け付けます。
+- 送信元ページを取得し、ターゲットへのリンクを確認してから保存します。
+- プロバイダー経由でメンションを保存します。既定はインメモリです。
+- `GET /webmentions` で JSON フィードを返します。
+- `WebmentionSection` で検証済みメンションを表示します。
+
+読者が自分のサイトから記事へリンクし、そのメンションを自分のサイトに集めたいときに使います。送信側が Webmention に対応している必要があり、このプラグインがメンションを自動 discovery することはありません。
+
+## クイックスタート
+
+1. プラグインをインストールします。
+
+```sh
+npm install @riebeckite/plugin-webmention
+```
+
+2. プラグインを有効にします。
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { webmention } from "@riebeckite/plugin-webmention";
+
+export default defineConfig({
+  plugins: [webmention()],
+});
+```
+
+プロバイダーを省略するとメンションはインメモリに保存されます。ローカルでエンドポイントを試すには十分ですが、プロセスを再起動すると失われます。
+
+3. エンドポイントをマウントします。スキャフォールドの `app/server.ts` はすでに `mountRiebeckiteEndpoints` を呼んでいます。独自のサーバーを使う場合は、プラグインのエンドポイントをそこへマウントしてください。[HTTP エンドポイントの追加](./recipes/endpoints.ja.md) を参照してください。
+
+4. 開発サーバーを起動し、フィードを確認します。
+
+```sh
+npm exec riebeckite dev
+curl http://localhost:5173/webmentions
+```
+
+ポートは `dev` が表示します。メンションがない場合、フィードは `count: 0` の封筒を返します。
+
+5. 記事へリンクしているページから Webmention を送ります。手動の `curl` はエラー応答の確認には便利ですが、送信元ページが実際にターゲットへリンクしていない限り拒否されます。
+
+```sh
+curl -i -X POST http://localhost:5173/webmentions \
+  -H "Content-Type: application/json" \
+  -d '{"source":"https://example.com/post","target":"https://example.com/your-article"}'
+```
+
+6. 記事の近くにメンションを表示します。後述の「記事近くのメンション表示」を参照してください。
+
+## 仕組み
 
 - `WebmentionProvider` がストレージとランタイムの境界です。`store` / `query` のケイパビリティを公開し、`store(mention)` と `query(query)` を持ちます。認証情報・データベースハンドル・実行時バインディングはアダプター内に留まり、プラグインの options や生成物へ漏れません。
 - `MemoryWebmentionProvider` はテスト・ローカルプレビュー・プロバイダーの実装例として同梱されています。プロセスや isolate をまたいで永続化はしません。
 - プラグインは `endpoints` を宣言します。`POST {endpoint}` が Webmention を受信し、`GET {endpoint}` が検証済みメンションのフィードを返します。ルートフレームワークの詳細はこのパッケージへ入りません。HonoX 連携（`mountRiebeckiteEndpoints`）がエンドポイントをホストルーターへマウントします。
 - 検証は注入可能な `WebmentionSourceFetcher` を通じて送信元を取得し、ターゲットへの発リンクを確認したうえで、軽量な引用メタデータ（title・excerpt・author・公開日・`rel` 由来の種別）を記録します。既定のフェッチャーはループバックとプライベートネットワーク宛てを拒否し、本文サイズを制限し、タイムアウトします。
 
-## 使い方
+## 本番用のストレージ
+
+インメモリのプロバイダーは永続化しません。本番では Cloudflare アダプターを使い、デプロイ前に D1 スキーマを適用してください。
+
+```sh
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+```
+
+次の `env` バインディングは Worker ランタイムが提供します。完全な配線は [Cloudflare 連携の README](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照してください。
 
 ```ts
 import { webmention } from "@riebeckite/plugin-webmention";

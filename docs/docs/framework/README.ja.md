@@ -10,6 +10,8 @@ sidebar:
 
 この章では、**Riebeckite 自体がどのように動いているか**を説明します。
 
+この章のうち次の 3 ページは、利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md) は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md) はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md) はブラウザー側の Plugin UI を扱います。概要を読んだあと、必要なら内部実装へ進んでください。
+
 対象となるのは、
 
 - Riebeckite の内部構造を理解したい人
@@ -42,8 +44,8 @@ flowchart LR
 | --- | --- |
 | Riebeckite 全体の構造 | [アーキテクチャ](./architecture.ja.md) |
 | Markdown やコンテンツがどう処理されるか | [コンテンツシステム](./content-system.ja.md) |
-| コンテンツの書き込みをどう計画し、ジャーナルと復旧を扱うか | [コンテンツ変更](./content-mutation.ja.md) |
-| バージョン付きのコンテンツ変更をどう計画・適用するか | [コンテンツ移行](./content-migration.ja.md) |
+| コンテンツを安全に作成・編集・移動・削除する方法と、書き込みの計画・ジャーナル・復旧 | [コンテンツ変更](./content-mutation.ja.md) |
+| バージョン付きのコンテンツ変更を定義・適用する方法と、計画・適用の仕組み | [コンテンツ移行](./content-migration.ja.md) |
 | ビルドの入力、変換、出力がどこから来たか | [データ来歴](./build-system/provenance.ja.md) |
 | デプロイ前の計画、承認、ゲート、履歴 | [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) |
 | プラグインがどう動くか | [プラグインシステム](./plugin-system.ja.md) |
@@ -58,7 +60,7 @@ flowchart LR
 | Riebeckite と HonoX / Vite の接続 | [HonoX との統合](./honox-integration.ja.md) |
 | SPA ナビゲーションがシェルを残してページを置き換える仕組み | [SPA ナビゲーションの構成](./spa-navigation.ja.md) |
 | ページ移動の処理、中断、ライフサイクルの制約 | [SPA ランタイムの内部実装](./spa-runtime.ja.md) |
-| ブラウザーのランタイムアダプタとプラグインのライフサイクル連携 | [Interactive Runtime](./interactive-runtime.ja.md) |
+| プラグインがブラウザーで何を動かせるかと、ランタイムアダプタの仕組み | [Interactive Runtime](./interactive-runtime.ja.md) |
 | 設定や Content の問題を調べる | [Diagnostics](./diagnostics.ja.md) |
 | 解決済みの設定や状態を確認する | [Inspector](./inspector.ja.md) |
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |

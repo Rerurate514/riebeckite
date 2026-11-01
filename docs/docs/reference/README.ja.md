@@ -32,7 +32,7 @@ flowchart TD
 | --- | --- |
 | `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
-| `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`publish`、`upgrade`、`profile`、`inspect`、`help`、`completion`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
+| `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`publish`、`content`、`migrate`、`upgrade`、`profile`、`inspect`、`help`、`completion`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
 | 型付きコマンド定義、プラグインのCLIコマンド、JSONとエラーの取り決め、補完 | [CLI拡張API](./cli-extension.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
 | プレビューの実行、フィクスチャ、埋め込み | [プレビュー API](./preview.ja.md) |
@@ -70,9 +70,14 @@ upgrade --check
 build
 clean
 deploy
+publish
+content
+migrate
 profile
 inspect
 ```
+
+コンテンツを安全に書き込む方法と、バージョン付きの一括変更については、[コンテンツ変更](../framework/content-mutation.ja.md) と [コンテンツ移行](../framework/content-migration.ja.md) を参照してください。
 
 ### プラグインの公開 API を調べる
 

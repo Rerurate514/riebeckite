@@ -2,11 +2,27 @@
 
 <!-- Generated from docs/docs/plugins/calculator.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-The Calculator plugin turns a `calc` code block into a small interactive
-arithmetic example. The server evaluates the expression for the static page and
-the browser re-evaluates it through the Riebeckite Interactive Runtime.
+The Calculator plugin evaluates a fixed arithmetic expression written in a
+`calc` code block. The server renders the result for the static page and the
+browser re-evaluates the same expression through the Riebeckite Interactive
+Runtime.
 
 [日本語](./README_ja.md)
+
+## What it does
+
+- Renders a `calc` block as a result on the server.
+- Re-evaluates the same expression in the browser through the Interactive
+  Runtime.
+- Keeps the server result as a fallback when JavaScript or the runtime is
+  unavailable.
+
+## What it is not
+
+This is not an input-driven calculator. The expression is fixed in the Markdown
+source at build time; readers cannot type numbers or change the expression. An
+input-driven widget needs a custom plugin that reads form state and calls a
+runtime, which this plugin does not implement.
 
 ## Install
 

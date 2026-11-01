@@ -11,7 +11,67 @@ vendor code** and depends only on `@riebeckite/core`.
 
 [日本語](./webmention.ja.md)
 
-## Design
+## What it does
+
+- Accepts Webmentions at `POST /webmentions`.
+- Fetches the source page and checks for a link to the target before storing.
+- Stores mentions through a provider; the default is in-memory.
+- Returns a JSON feed at `GET /webmentions`.
+- Renders verified mentions with `WebmentionSection`.
+
+Use it when readers can link to your articles from their own sites and you want
+those mentions collected on your site. The sender must support Webmention; this
+plugin does not discover mentions on its own.
+
+## Quick start
+
+1. Install the plugin:
+
+```sh
+npm install @riebeckite/plugin-webmention
+```
+
+2. Enable it:
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { webmention } from "@riebeckite/plugin-webmention";
+
+export default defineConfig({
+  plugins: [webmention()],
+});
+```
+
+Without a provider, mentions are stored in memory. This is enough to try the
+endpoint locally, but mentions are lost when the process restarts.
+
+3. Mount the endpoint. The scaffold's `app/server.ts` already calls
+   `mountRiebeckiteEndpoints`. If you use a custom server, mount the plugin's
+   endpoints there; see [Add an HTTP Endpoint](./recipes/endpoints.md).
+
+4. Start the dev server and check the feed:
+
+```sh
+npm exec riebeckite dev
+curl http://localhost:5173/webmentions
+```
+
+The port is printed by `dev`. An empty feed returns the feed envelope with
+`count: 0`.
+
+5. Send a Webmention from a page that links to your article. A manual `curl`
+   request is useful for checking error responses, but it is rejected unless
+   the source page really links to the target:
+
+```sh
+curl -i -X POST http://localhost:5173/webmentions \
+  -H "Content-Type: application/json" \
+  -d '{"source":"https://example.com/post","target":"https://example.com/your-article"}'
+```
+
+6. Display mentions near an article. See [Rendering](#rendering) below.
+
+## How it works
 
 - `WebmentionProvider` is the storage/runtime seam: it advertises
   `store` / `query` capabilities and exposes `store(mention)` and
@@ -29,7 +89,18 @@ vendor code** and depends only on `@riebeckite/core`.
   date, and `rel`-derived type). The default fetcher blocks loopback and
   private-network hosts, caps the response size, and times out.
 
-## Usage
+## Production storage
+
+The in-memory provider is not durable. For production, use the Cloudflare
+adapter and apply its D1 schema before deploying:
+
+```sh
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+```
+
+The `env` binding below is provided by your Worker runtime. See the
+[Cloudflare integration README](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README.md)
+for the complete wiring.
 
 ```ts
 import { webmention } from "@riebeckite/plugin-webmention";

@@ -2,105 +2,114 @@
 
 <!-- Generated from docs/docs/plugins/garden-explorer.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-ノート一覧、検索、タグ・フォルダーによる絞り込み、Local / Global Graph、詳細パネルを一画面にまとめる探索 UI です。公開済みのノートだけを対象にするため、そのまま公開サイトの `/explore` などに置けます。
+ローカル／グローバルのコンテンツグラフ、検索、タグ・フォルダーフィルター、ノート詳細を1ページにまとめたインタラクティブな探索画面です。
 
 [English](./README.md)
 
-## 用意される画面
+## 概要
 
-`gardenExplorer()` は、次の三つの領域を持つ `GardenExplorer` コンポーネントとスタイルを提供します。
+`gardenExplorer()` は3つのパネルを持つ `GardenExplorer` を提供します。
 
-- **一覧**: キーワード検索、任意表示のタグ・フォルダーフィルター、該当ノートの一覧
-- **グラフ**: 公開ノートと内部リンクを表示する SVG グラフ。Local / Global の切り替え、Force / Radial レイアウト、ホバー時の隣接ノート強調、ノードのドラッグ、ホイール / ボタンによるズームに対応します。キャンバスのパン、リセット、クリックでの記事移動にも対応します
-- **詳細**: 選択したノートのリンク、タグ、抜粋、関連ノート
+- **Explorer** — 検索欄、タグ・フォルダーの絞り込み（件数付き）、ノート一覧
+- **Graph** — 公開ノートの Canvas 強制志向グラフ。ローカル／グローバル、ホバー強調、ノードドラッグ、ホイール／ピンチズーム、パン、クリックで開く操作に対応
+- **Details** — 選択ノートのリンク、タグ、抜粋、関連ノート
 
-選択状態は `?note=`、`?tag=`、`?folder=` として URL に反映されます。表示中の状態をそのまま共有できます。
+選択状態は URL のクエリ（`?note=`、`?tag=`、`?folder=`）に反映され、共有できます。
 
-`getGardenExplorerData()` は `manifest.discoverableEntries` と `manifest.graph` から表示データを作ります。見出し、本文テキストの先頭 4,000 文字、タグ、フォルダー、外向きリンク、被リンクを含みます。グラフのノードは公開・発見可能なページと解決済みのノートリンクだけなので、未公開・除外・存在しないページは表示されません。
+## ローカル／グローバルグラフ
 
-一覧パネルに表示するノートは、UI 性能のため先頭 80 件に制限します。Global Graph は絞り込み後の全ノートを使用します。URL で選択されたノートが先頭 80 件の外にある場合、Global Graph で保持されます。
+- **Local graph** は選択ノートからリンク先・被リンクをたどり、Depth の深さまで表示します。Depth 0 では選択ノートだけを表示します。
+- **Global graph** は現在のフィルターに一致する公開ノート全体を表示します。
 
-## Local Graph と Global Graph
+どちらも共通の `@riebeckite/graph` エンジンを使います。固定レイアウトではなく継続的な強制シミュレーションで、Barnes-Hut 方式の四分木により数千ノードでも反発力を実用的に計算します。安定するとシミュレーションは停止し、描画フレームの要求も止まります。ドラッグや力の変更時には再開します。
 
-- **Local Graph** は選択中のノートを起点に、`depth` で指定したホップ数までの隣接ノートを表示します。既定値は `depth: 1` で、Obsidian / Quartz と同じく直接の外向きリンクと被リンクを見る用途に合わせています。`depth: 0` では選択中のノートだけを表示します。
-- **Global Graph** は現在の検索・タグ・フォルダー条件で絞り込まれた公開ノート全体と、その公開内部リンクを表示します。
+## グラフ設定
 
-操作感は Obsidian の Graph View に寄せています。ただし、ブラウザで Vault を走査し直すことはありません。代わりに、Riebeckite の Page System、公開マニフェスト、パーマリンク、Content Graph をそのまま使います。
+歯車ボタンから Filters / Groups / Display / Forces を開けます。
 
-## レイアウト
+- **Filters** — 検索、タグ、添付ファイル、既存ファイルのみ、孤立ノート、深さ。検索は `file:`、`path:`、`tag:`、引用符、`-` 否定に対応し、未対応の演算子は画面に表示します。
+- **Groups** — 順序付きの色分けルールです。最初に一致したグループが優先され、追加・削除・並べ替えができます。
+- **Display** — 矢印、ラベルのフェードしきい値、ノードサイズ、リンク太さ、アニメーション。日付は frontmatter の実データだけを使い、架空の日付は作りません。
+- **Forces** — Center / Repel / Link force / Link distance は即時反映されます。Restore default settings で初期値に戻ります。
 
-- **Force レイアウト**（`layout: "force"`、既定）: 小さな組み込み実装です。反発力、リンク距離、中心化、減衰、安定化を計算します。重い依存は追加していません。大きなグラフ（300 ノード以上）では Force レイアウトの計算時間が目立つようになり、ツールバーに警告が表示されます。大きな Global Graph には Radial レイアウトの使用を推奨します。500 ノード以上では、ユーザーの明示的な承認なしに Force レイアウトは実行されません。
-- **Radial レイアウト**（`layout: "radial"`）: 既存の Riebeckite の放射状レイアウトを使います。コンパクトで決定的な見た目にしたい場合に使えます。近似線形時間で動作し、数千ノードでも瞬時に描画できます。
+設定は `localStorage` の `riebeckite-garden-graph-settings` に保存されます。Explorer の検索欄とグラフ検索は同期します。
 
-## 設定とページへの配置
+## 操作
+
+ホイールまたはピンチでポインター位置を中心にズームします。背景ドラッグでパン、ノードドラッグで固定し、周囲のノードが反応します。ホバーで直接の接続が強調され、クリックでノートを開きます。右クリックでは、開く・リンクをコピー・新しいタブ・ローカルグラフ・フィルターなどの操作を選べます。
+
+キャンバスにフォーカスがあるとき、`+`/`-` でズーム、矢印キーでパン（`Shift` で高速）、`n`/`p` でノード移動、`Enter` で開く、`Escape` で選択解除できます。
+
+## 公開データ
+
+`getGardenExplorerData()` は `manifest.discoverableEntries` からノートとグラフを構築するため、unlisted・非公開・下書き・予約公開のノートは表示されません。見出し、本文プレーンテキスト（4,000文字まで）、タグ、フォルダー、リンク先、被リンクは公開マニフェストの情報だけを使います。グラフには、対応するフィルターが有効なときだけ未解決リンク、公開添付ファイル、タグを加えます。非公開ノートへのリンクは公開ビューで除外され、リンク先の存在も漏れません。
+
+一覧は UI 性能のため絞り込み後の先頭80件を表示します。Global Graph は絞り込み後の全ノートを使います。
+
+## 使い方
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { gardenExplorer } from "@riebeckite/plugin-garden-explorer";
 
-export default defineConfig({
-  // ...
-  plugins: [gardenExplorer()],
-});
+export default defineConfig({ plugins: [gardenExplorer()] });
 ```
 
-設定例は次のとおりです。
+設定例:
 
 ```ts
 plugins: [
   gardenExplorer({
-    layout: "force",
     depth: 1,
     showTags: true,
     showFolders: false,
     nodeSize: 1,
-    linkDistance: 84,
-    repulsion: 1800,
-    showLabels: true,
+    linkDistance: 100,
+    repulsion: 600,
   }),
 ];
 ```
 
-`gardenExplorer()` は `/explore` の Page Type、スタイル、クライアント側のハイドレーターを登録します。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う共通 catch-all ルートが表示と SSG を担当します。そのため、プラグイン固有のルートは不要です。ページはまずサーバーで描画し、読み込み後に登録済みのクライアントエントリがグラフ、フィルター、URL 状態をハイドレーションします。
+旧オプションの `layout` と `showLabels` は互換性のため受け付けますが、グラフは常に継続的な強制シミュレーションを使い、ラベルは固定のオン／オフではなく Display のフェードしきい値で制御します。
 
-コンポーネントを別のサイトが用意するコンポーネントに埋め込む場合だけ、マニフェストから表示用データを作って渡します。
+`gardenExplorer()` は `/explore` ページタイプを登録し、`style.css` とクライアントハイドレーターをバンドルします。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う catch-all ルートが描画・生成するため、プラグイン専用のアプリルートは不要です。ページはサーバー描画後にハイドレートされます。
+
+### コンポーネントを別の場所に埋め込む
 
 ```tsx
 import GardenExplorer, {
   getGardenExplorerData,
 } from "@riebeckite/plugin-garden-explorer";
 
-const manifest = await content.getManifest();
 const data = getGardenExplorerData({
   manifest,
   config,
   resolveTitle: getArticleTitle,
-  options: { layout: "radial", depth: 2 },
+  options: { depth: 2 },
 });
 
 return <GardenExplorer data={data} />;
 ```
 
-`GardenExplorer` はブラウザで操作するクライアントコンポーネントです。サーバー描画時にも、周辺の一覧・詳細パネルはセマンティックなリンク一覧として読み取れる構造を残します。
+## データ
 
-## データに含まれる範囲
+`getGardenExplorerData()` は `GardenExplorerData` を返します。
 
-`getGardenExplorerData()` は公開済みエントリーから、見出し、本文テキストの先頭 4,000 文字、タグ、フォルダー、外向きリンク、被リンクを集めます。本文全体をクライアントへ渡さないため、検索用のデータ量を抑えられます。
+- `notes` — 公開ノート。検索対象フィールド、`folder`、`outgoing`、`backlinks` を含む
+- `edges` — 公開ノート間のノートリンク
+- `graph` — Canvas エンジンが使う共通グラフドキュメント
+- `tags` — タグと件数（多い順）
+- `folders` — フォルダーと件数（アルファベット順、ルートは `"Root"`）
+- `options` — 解決済みのグラフオプション
 
-- `notes`: タイトル順の公開ノート。フォルダー、外向きリンク、被リンクを含む
-- `edges`: 公開ノート間のグラフの辺
-- `tags`: 件数の多い順のタグ
-- `folders`: 名前順のフォルダー。ルート直下のノートは `Root`
-- `options`: ハイドレーション後のコンポーネントが使う解決済みグラフ設定
+## 公開 API
 
-探索画面の検索はプラグイン内で完結しており、`@riebeckite/plugin-search` は不要です。
-
-## 主なエクスポート
-
-- `gardenExplorer(options?)`: プラグインを作成する
-- `GardenExplorer`: 探索画面のコンポーネント
-- `getGardenExplorerData({ manifest, config, resolveTitle, options? })`: 表示データを構築する
-- 型: `GardenExplorerData`、`GardenExplorerEdge`、`GardenExplorerFolder`、`GardenExplorerGraphLayout`、`GardenExplorerGraphMode`、`GardenExplorerNote`、`GardenExplorerOptions`、`GardenExplorerPluginOptions`、`GardenExplorerTag`
+- `gardenExplorer(options?)` — プラグインファクトリ
+- `GardenExplorer` — インタラクティブな探索コンポーネント
+- `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — データ構築
+- 型: `GardenExplorerData`、`GardenExplorerEdge`、`GardenExplorerFolder`、
+  `GardenExplorerGraphLayout`、`GardenExplorerGraphMode`、`GardenExplorerNote`、
+  `GardenExplorerOptions`、`GardenExplorerPluginOptions`、`GardenExplorerTag`
 
 ## 関連資料
 

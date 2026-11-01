@@ -84,10 +84,15 @@ flowchart TD
     Q -->|"Investigate a problem"| Doctor["doctor"]
     Q -->|"Generate the site"| Build["build"]
     Q -->|"Remove generated output"| Clean["clean"]
-    Q -->|"Publish"| Deploy["deploy"]
+    Q -->|"Publish"| Publish["publish"]
+    Q -->|"Prepare deploy configuration"| Deploy["deploy"]
+    Q -->|"Change content files safely"| Content["content"]
+    Q -->|"Apply versioned content rules"| Migrate["migrate"]
     Q -->|"The build is slow"| Profile["profile"]
     Q -->|"See the current state"| Inspect["inspect"]
 ```
+
+`deploy` prepares provider configuration and workflow files; it does not upload the site. Use `publish run --execute` to deploy. For safe content writes and versioned bulk changes, see [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md).
 
 `check`, `doctor`, `inspect`, and `build` are especially easy to confuse. A simple split:
 

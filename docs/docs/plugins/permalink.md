@@ -10,6 +10,35 @@ Instead of coupling public URLs directly to the filesystem layout, this plugin c
 
 [日本語](./permalink.ja.md)
 
+**Contents**
+
+- [Start here](#start-here)
+- [Basic usage](#basic-usage)
+- [How it works](#how-it-works)
+- [Frontmatter](#frontmatter)
+- [Options](#options)
+- [ID strategies](#id-strategies)
+- [URL path modes](#url-path-modes)
+- [Rename and move behavior](#rename-and-move-behavior)
+- [Validation](#validation)
+- [Collision detection](#collision-detection)
+- [Inspecting resolved URLs](#inspecting-resolved-urls)
+- [Configuration examples](#configuration-examples)
+
+## Start here
+
+The smallest setup uses the defaults:
+
+```ts
+import { permalink } from "@riebeckite/plugin-permalink";
+
+export default {
+  plugins: [permalink()],
+};
+```
+
+With `id: hello-world` in a page's frontmatter, that page is published at `/n/hello-world`. The defaults use the `id` frontmatter field, fall back to a path-derived hash when `id` is missing, and place the result under the `/n` prefix in `flat` mode.
+
 ## Basic usage
 
 ```ts

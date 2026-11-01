@@ -44,6 +44,31 @@ export default defineConfig({
 | `quality:html-lang-missing` | warning | 空でない `lang` を持たない `<html>`（完全な文書のみ）。 |
 | `quality:table-no-header` | warning | データセルはあるが `<th>`・`scope`・`headers` がない `<table>`。 |
 
+## 出力例
+
+`inspectHtml` は純粋関数なので、ビルドを実行せずに断片を検査できます。
+
+```ts
+import { inspectHtml } from "@riebeckite/plugin-quality";
+
+inspectHtml('<img src="x.png">');
+```
+
+```json
+[
+  {
+    "code": "quality:img-alt-missing",
+    "severity": "warning",
+    "message": "<img> is missing an alt attribute.",
+    "pluginName": "quality",
+    "target": "img",
+    "suggestion": "Add alt=\"...\" describing the image, or alt=\"\" for decorative images."
+  }
+]
+```
+
+ビルド時には、生成されたページに対しても同じ診断が報告されます。`failOn: "error"` を指定すると、error の診断でビルドが停止します。
+
 ## API
 
 - `quality(options?)`：プラグインファクトリ。

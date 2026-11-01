@@ -10,6 +10,20 @@ The Plugin catalog lives in [Plugins](./README.md). This page shows what each Pl
 
 > The generated `showcase` preset lets you try examples like these locally.
 
+**Contents**
+
+- [Obsidian Markdown](#obsidian-markdown)
+- [Generated pages](#generated-pages)
+- [Code](#code)
+- [Inline](#inline)
+- [Diagrams](#diagrams)
+- [Media](#media)
+- [Knowledge and data](#knowledge-and-data)
+- [Plugins that act on the page or site](#plugins-that-act-on-the-page-or-site)
+- [Plugins that act at build time or on metadata](#plugins-that-act-at-build-time-or-on-metadata)
+- [Developer tools](#developer-tools)
+- [Related](#related)
+
 ## Obsidian Markdown
 
 ### Callouts — [`obsidian-markdown`](./obsidian-markdown.md)

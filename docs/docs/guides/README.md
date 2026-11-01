@@ -25,6 +25,7 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 | I want to… | Guide |
 | --- | --- |
 | Write and organize articles | [Writing content](./writing-content.md) |
+| Change many notes or frontmatter fields safely | [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md) |
 | Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
 | Keep the shell while navigating between pages | [SPA Navigation](./spa-navigation.md) |
 | Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
@@ -36,6 +37,8 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 | Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
 | Upgrade Riebeckite or read migration notes | [Upgrading](./upgrading.md) |
+
+Bulk content changes have two entry points. Use [Content mutation](../framework/content-mutation.md) for individual create, edit, move, and delete operations with link rewriting and recovery. Use [Content migration](../framework/content-migration.md) for versioned rules that transform many files. If you only need to normalize frontmatter, the [frontmatter-transformer](../plugins/frontmatter-transformer.md) Plugin ships ready-made presets.
 
 ## What each guide covers
 

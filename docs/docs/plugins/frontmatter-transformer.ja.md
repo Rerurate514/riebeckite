@@ -32,6 +32,58 @@ riebeckite frontmatter rollback <plan-id> --apply
 
 `plan` と `apply` は `--apply` を渡さない限りドライランです。`apply` はファイルを書き換えずに計画の要約を表示します。`--preset` を複数回指定すると、1 つの計画にまとめて変換できます。
 
+## 変更前と変更後
+
+次の frontmatter があるとします。
+
+```yaml
+---
+title: "  Writing guide  "
+tags: "#guides, setup, guides"
+description: "  "
+---
+```
+
+次のコマンドを実行します。
+
+```sh
+riebeckite frontmatter apply --preset normalize-tags --preset trim-text
+```
+
+計画には変更ファイルが 1 件と表示されます。書き込むには `--apply` を付けます。
+
+```sh
+riebeckite frontmatter apply --preset normalize-tags --preset trim-text --apply
+```
+
+結果は次のようになります。
+
+```yaml
+---
+title: Writing guide
+tags:
+  - guides
+  - setup
+---
+```
+
+`normalize-tags` は先頭の `#` を除き、カンマで分割し、重複を削除します。`trim-text` は `title` の前後の空白を削除し、空になった `description` を削除します。ファイルを書き換えると YAML のキー順や書式が変わる場合があります。
+
+計画の出力例（計画 ID は変わります）。
+
+```text
+Migration plan <plan-id>
+Presets: normalize-tags@1, trim-text@1
+Changed files: 1
+Created: 0, moved: 0, frontmatter: 1
+```
+
+適用の出力例（ジャーナルのパスは変わります）。
+
+```text
+Applied 1 file change(s); mutation journal .riebeckite/migrations/<plan-id>/journal.json.
+```
+
 ## プリセット
 
 | プリセット | 説明 |

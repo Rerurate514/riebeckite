@@ -10,6 +10,13 @@ sidebar:
 
 Framework documentation is for people who want to understand or develop Riebeckite itself. If you only want to build a site, start with [Getting Started](../getting-started/README.md) and use [Reference](../reference/README.md) when you need exact fields or commands.
 
+Three pages in this chapter begin with a user-facing overview and are useful
+without reading the rest of Framework: [Content mutation](./content-mutation.md)
+for safe content writes, [Content migration](./content-migration.md) for
+versioned bulk changes, and [Interactive Runtime](./interactive-runtime.md) for
+browser-side plugin UI. Read the overview, then continue into the internals only
+if you need them.
+
 This chapter is for:
 
 - People who want to understand Riebeckite's internal structure.
@@ -38,8 +45,8 @@ flowchart LR
 | --- | --- |
 | Package ownership and dependency direction | [Architecture](./architecture.md) |
 | How Markdown and assets become pages | [Content system](./content-system.md) |
-| How content writes are planned, journaled, and recovered | [Content mutation](./content-mutation.md) |
-| How versioned content changes are planned and applied | [Content migration](./content-migration.md) |
+| How to create, edit, move, and delete content safely; how writes are planned, journaled, and recovered | [Content mutation](./content-mutation.md) |
+| How to define and apply versioned content changes; how they are planned and applied | [Content migration](./content-migration.md) |
 | Where build inputs, transforms, and outputs came from | [Data Provenance](./build-system/provenance.md) |
 | Pre-deploy planning, approvals, gates, and history | [Publication workflow](../guides/deployment/publication-workflow.md) |
 | How plugins are resolved and run | [Plugin system](./plugin-system.md) |
@@ -54,7 +61,7 @@ flowchart LR
 | The HonoX/Vite adapter boundary | [HonoX integration](./honox-integration.md) |
 | How SPA navigation keeps the shell and replaces the page | [SPA Navigation](./spa-navigation.md) |
 | The SPA transaction, cancellation, and lifecycle constraints | [SPA Runtime Internals](./spa-runtime.md) |
-| Browser runtime adapters and plugin lifecycle integration | [Interactive Runtime](./interactive-runtime.md) |
+| What plugins can run in the browser and how runtime adapters work | [Interactive Runtime](./interactive-runtime.md) |
 | Diagnostics and Doctor | [Diagnostics](./diagnostics.md) |
 | Read-only inspection commands | [Inspector](./inspector.md) |
 | Logger, Tracer, and Profiler | [Observability](./observability.md) |

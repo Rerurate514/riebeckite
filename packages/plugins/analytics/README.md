@@ -2,12 +2,75 @@
 
 <!-- Generated from docs/docs/plugins/analytics.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Storage-independent analytics primitives and browser page-view tracking for
-Riebeckite. It contains no Cloudflare, Worker, database, or vendor code.
+Track page views for published articles and query the results. The plugin runs
+on the site, sends one `page_view` event per document, and leaves storage to an
+analytics provider. It contains no Cloudflare, Worker, database, or vendor code.
 
 [日本語](./README_ja.md)
 
-## Design
+## What it does
+
+- Sends a `page_view` when a reader opens a published article.
+- Identifies the article by its stable frontmatter `id`, not by its URL.
+- Sends the event to the `collectorUrl` you configure.
+- Provides a provider contract for reading page views and popular content.
+
+Use it when you want to know which articles are read. You need two pieces: this
+plugin on the site, and a collector that accepts JSON `POST` requests. The
+collector can be the Cloudflare Worker described in
+[Analytics setup](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/analytics/setup.md), or your own endpoint.
+
+## Quick start
+
+1. Install the plugin:
+
+```sh
+npm install @riebeckite/plugin-analytics
+```
+
+2. Give each article you want to measure a stable `id`:
+
+```yaml
+---
+id: guide-1
+---
+```
+
+3. Enable the plugin and point it at a collector:
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";
+
+export default defineConfig({
+  plugins: [
+    analytics({
+      provider: new MemoryAnalyticsProvider(),
+      publicConfig: { collectorUrl: "/analytics/events" },
+    }),
+  ],
+});
+```
+
+4. Build the site and open a published article. The browser sends the
+   `page_view` shown under "Browser behavior" below.
+
+5. Verify the setup:
+
+```sh
+npm exec riebeckite check
+npm exec riebeckite doctor
+```
+
+`check` validates the plugin options. `doctor` reports `analytics-untracked`
+for published content without a stable `id`. In the browser's Network panel,
+confirm a `POST` to `collectorUrl`. Without a collector, the request fails; the
+plugin does not store events itself.
+
+`MemoryAnalyticsProvider` is for local tests. It does not persist events. Use a
+real provider in production.
+
+## How it works
 
 - `AnalyticsEvent` includes a typed `page_view` event and can be extended with
   provider-specific event unions.
@@ -19,7 +82,7 @@ Riebeckite. It contains no Cloudflare, Worker, database, or vendor code.
 - Provider runtime configuration (credentials, storage, bindings) stays inside
   the provider. The browser receives only `AnalyticsPublicConfig`.
 
-## Usage
+## Configuration
 
 ```ts
 import { analytics, MemoryAnalyticsProvider } from "@riebeckite/plugin-analytics";

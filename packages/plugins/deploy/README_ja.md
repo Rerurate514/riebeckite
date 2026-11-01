@@ -7,6 +7,18 @@ Riebeckite の静的ホスティング向けの出力ヘルパーです。デプ
 
 [English](./README.md)
 
+## できること
+
+- `riebeckite build` の実行中に、プロバイダ固有のリダイレクトファイルとヘッダーファイルを生成します。
+- リダイレクトは `manifest.publicRedirects` からのみ読み取ります。
+- Cloudflare Pages、Cloudflare Workers、Netlify、Vercel、GitHub Pages に対応します。
+
+## できないこと
+
+- ファイルのアップロード、プロバイダ認証、キャッシュ無効化は行いません。
+- サイトをデプロイしません。ビルド出力をプロバイダの通常のデプロイ手順でアップロードするか、設定済みなら公開ワークフローの `publish run --execute` を使ってください。
+- `riebeckite deploy setup` は Cloudflare の設定を準備する別の CLI ヘルパーです。これもアップロードは行いません。
+
 ## 概要
 
 `deploy()` はコンテンツマニフェストの公開リダイレクトを読み、
@@ -51,6 +63,18 @@ Static Assets が `_redirects` と `_headers` の両方を読むためです。�
 GitHub Pages には `_redirects` 構文がないため、各リダイレクトはメタリフレッシュと
 `<link rel="canonical">` を持つ HTML スタブになります。`/` からのリダイレクトは
 ルートをスタブ化できないためスキップします。
+
+## 生成したファイルのデプロイ
+
+通常どおりビルドします。
+
+```sh
+npm exec riebeckite build
+```
+
+ファイルはビルド出力（たとえば `dist/_redirects`）へ書き込まれます。そのディレクトリをプロバイダのデプロイ手順でアップロードしてください。このプラグインはファイル生成までを担当し、認証情報を持たず、アップロードも行いません。
+
+サイトが公開ワークフローを使っている場合、`publish run --execute` が設定済みの公開処理を実行します。`deploy setup` は Cloudflare の設定を準備するだけです。
 
 ## 公開 API
 

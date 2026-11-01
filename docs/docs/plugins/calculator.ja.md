@@ -4,11 +4,24 @@ title: Calculator
 ---
 # Calculator
 
-Calculator Plugin は `calc` コードブロックを小さな対話的な計算例に変換します。
-サーバーが静的ページ用に式を評価し、ブラウザーが Riebeckite の Interactive
-Runtime 経由で再評価します。
+Calculator Plugin は `calc` コードブロックに書かれた固定の算術式を評価します。
+サーバーが静的ページ用に結果を描画し、ブラウザーが同じ式を Riebeckite の
+Interactive Runtime 経由で再評価します。
 
 [English](./calculator.md)
+
+## できること
+
+- `calc` ブロックをサーバー側で結果として描画します。
+- 同じ式をブラウザーで Interactive Runtime 経由で再評価します。
+- JavaScript や Runtime が使えない場合は、サーバーの結果をフォールバックとして残します。
+
+## これは何ではないか
+
+入力に応じて結果が変わる計算機ではありません。式はビルド時に Markdown の
+ソースへ固定され、読者が数値を入力したり式を変更したりすることはできません。
+入力駆動のウィジェットには、フォームの状態を読み取って Runtime を呼び出す
+独自の Plugin が必要です。この Plugin はそれを実装していません。
 
 ## インストール
 

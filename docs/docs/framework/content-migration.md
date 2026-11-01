@@ -4,15 +4,200 @@ title: Content Migration System
 ---
 # Content Migration System
 
-The Content Migration System applies versioned, declarative changes to content.
-It owns the question of **what to change**. The [[content-mutation|Content Mutation
-system]] owns **how to write the change safely**.
+Content Migration applies versioned, declarative rules to many content files at
+once. It is for site authors and teams that need to change the structure of a
+site — renaming a Frontmatter key, normalizing tags, changing how publication is
+expressed, or moving a directory — and want a record of what was applied and a
+way to roll it back.
 
-A migration never writes files directly. It produces a Content Mutation plan,
-verifies the future content manifest, and delegates the actual write,
-conflict detection, journal, backups, and recovery to Content Mutation.
+Think of it as a database migration for Markdown. You define a numbered change,
+preview the diff, apply it, and keep history. Unlike find-and-replace, rules
+operate on parsed Frontmatter and logical paths, not raw text, and the result is
+verified against the future site manifest before anything is written.
 
-## Architecture
+Core has **no built-in migration presets**. You define migrations as project code
+in `migrations/index.mjs`. If you only need common Frontmatter cleanups, the
+[Frontmatter Transformer](../plugins/frontmatter-transformer.md) plugin ships
+ready-made presets on top of the same engine.
+
+Content Migration owns **what to change**. The
+[[content-mutation|Content Mutation system]] owns **how to write the change
+safely**, and is the only component that writes files.
+
+## What you can do
+
+| Task | Supported |
+| --- | --- |
+| Rename a Frontmatter key | `frontmatter-rename` |
+| Set, remove, or append a Frontmatter value | `frontmatter-set`, `frontmatter-remove`, `frontmatter-append` |
+| Transform a value with a function | `frontmatter-map` |
+| Normalize tags or other string lists | `frontmatter-normalize-list` |
+| Change publication visibility | `visibility` (public, unlisted, draft) |
+| Assign a stable content ID | `content-id` |
+| Set a permalink and preserve the old URL | `permalink` |
+| Move a file or a directory prefix | `path-rename` |
+| Limit which files a rule touches | `select`, or `when` on any rule |
+| Order migrations and share dependencies | `dependsOn` |
+| Preview, save, apply, inspect, roll back, recover | CLI and API |
+
+What it cannot do:
+
+- **Rewrite arbitrary Markdown body text.** Rules change Frontmatter and paths.
+  There is no regex or find-and-replace rule. A `path-rename` can make Content
+  Mutation retarget links, but the body is otherwise left alone.
+- **Provide built-in presets in core.** Presets belong to the Frontmatter
+  Transformer plugin.
+- **Import an Obsidian vault or a Quartz site.** There is no importer. You can
+  express Frontmatter conventions as rules, but format and body conversion are
+  out of scope.
+- **Run automatically during a build.** Migration is an explicit CLI or API call.
+- **Merge conflicting edits.** A changed file or definition is a conflict.
+
+## Before and after: rename a key and normalize tags
+
+Before, `notes/getting-started.md` uses a legacy `category` key and a boolean
+`published` flag:
+
+```md
+---
+title: Getting started
+category: "#guides, setup"
+published: true
+---
+# Getting started
+```
+
+Define the migration in `migrations/index.mjs` at the project root:
+
+```js
+import { defineContentMigration } from "@riebeckite/core";
+
+export default [
+  defineContentMigration({
+    id: "legacy-frontmatter",
+    version: 1,
+    description: "Normalize legacy frontmatter.",
+    rules: [
+      { kind: "frontmatter-map", key: "category", map: (value) => [value] },
+      { kind: "frontmatter-rename", from: "category", to: "tags" },
+      { kind: "frontmatter-normalize-list", key: "tags" },
+      {
+        kind: "frontmatter-set",
+        key: "visibility",
+        value: "public",
+        when: (content) =>
+          content.frontmatter.published === true &&
+          content.frontmatter.visibility === undefined,
+      },
+      { kind: "frontmatter-remove", key: "published" },
+    ],
+  }),
+];
+```
+
+Preview the result:
+
+```sh
+riebeckite migrate plan
+```
+
+```text
+Migration plan <plan-id>
+Migrations: legacy-frontmatter@1
+Changed files: 1
+Created: 0, moved: 0, frontmatter: 1
+```
+
+Nothing has been written yet. Apply it:
+
+```sh
+riebeckite migrate apply --apply
+```
+
+```text
+Applied 1 file change(s); mutation journal <path>.
+```
+
+After:
+
+```md
+---
+title: Getting started
+tags:
+  - guides
+  - setup
+visibility: public
+---
+# Getting started
+```
+
+The body is unchanged. The `category` value became a list, the key became `tags`,
+the `#` prefix and comma separator were normalized away, `published: true` became
+`visibility: public`, and the old key was removed. YAML serialization may change
+key order or quoting; the values are what matter.
+
+## Quick start
+
+1. Create `migrations/index.mjs` with the definition above.
+2. List what the CLI can see:
+
+   ```sh
+   riebeckite migrate list
+   ```
+
+   ```text
+   legacy-frontmatter@1 pending
+   ```
+
+3. Preview:
+
+   ```sh
+   riebeckite migrate plan
+   ```
+
+4. Apply explicitly:
+
+   ```sh
+   riebeckite migrate apply --apply
+   ```
+
+5. Confirm the recorded state:
+
+   ```sh
+   riebeckite migrate status
+   ```
+
+   ```text
+   legacy-frontmatter@1 applied
+   History runs: 1
+   ```
+
+6. Inspect or undo:
+
+   ```sh
+   riebeckite migrate history
+   riebeckite migrate rollback legacy-frontmatter --apply
+   ```
+
+`migrate plan` is always a dry run. `migrate apply`, `rollback`, and `recover`
+are dry runs until `--apply` is passed. A saved plan can be applied later:
+
+```sh
+riebeckite migrate plan --out migration-plan.json
+riebeckite migrate apply --plan migration-plan.json --apply
+```
+
+If you do not want to write migration code for common Frontmatter cleanup, install
+the [Frontmatter Transformer](../plugins/frontmatter-transformer.md) plugin and
+use its presets:
+
+```sh
+riebeckite frontmatter presets
+riebeckite frontmatter plan --preset normalize-tags
+riebeckite frontmatter apply --preset normalize-tags --apply
+```
+
+## How it works
 
 ```mermaid
 flowchart TD
@@ -44,10 +229,100 @@ The layers have separate responsibilities:
 | Migration state | Record which migration version was applied |
 | Migration history | Record plan identity, result, counts, and journal reference |
 
+`plan()` performs a dry run:
+
+1. Read the current content source.
+2. Apply the selected migrations in dependency order in memory.
+3. Convert the final state into Content Mutation operations.
+4. Build the future content manifest through a virtual ContentSource.
+5. Verify content IDs, permalinks, redirects, links, visibility, publication
+   fingerprints, and derived data.
+6. Record the input content fingerprint, mutation fingerprint, plan fingerprint,
+   diagnostics, conflicts, and estimated impact.
+
+Planning does not modify user files. A plan conflict means the change is not safe
+to apply.
+
+Apply revalidates the plan against the current content and the current registry
+before writing. It then calls the Content Mutation executor with a mutation plan
+whose fingerprint must match the migration plan. The migration is marked
+`applied` only after the mutation reports success.
+
 Migration metadata is stored under the content directory's internal
 `.riebeckite/migrations` directory. It is not written to the build output.
+`state.json` records the latest applied identity, plan and content fingerprints,
+mutation plan identity, journal location, changed paths, and timestamps.
+`history.json` records completed runs with migration ID/version, plan identity,
+counts, result, recovery state, and a journal reference. History is bounded and
+contains no content bodies, secrets, or absolute paths.
 
-## Migration Definition
+The mutation journal is the transaction record. Migration state only describes
+which migration produced the journal and whether the migration succeeded.
+
+## Relationship to other features
+
+- [[content-mutation|Content Mutation]] is the only write path. Migration adds
+  versioned intent, declarative rules, dependency ordering, future-manifest
+  verification, and transaction history above it. There is no second backup
+  engine, file writer, or content parser.
+- **Ordinary find-and-replace** works on text. It does not parse Frontmatter,
+  retarget links, verify the future manifest, or keep a journal. Use it for body
+  text; use Migration for structural Frontmatter and path changes.
+- The [Frontmatter Transformer](../plugins/frontmatter-transformer.md) plugin is
+  the no-code path for common Frontmatter cleanup. Its presets are versioned
+  Content Migration definitions, not a separate engine.
+- **Obsidian and Quartz** have their own conventions. Riebeckite can express
+  Frontmatter rules that match those conventions, but there is no automated
+  vault or site importer.
+
+## Limitations
+
+- Rules change Frontmatter and paths only. Arbitrary Markdown body rewriting is
+  not supported.
+- Core ships no presets. Use the Frontmatter Transformer plugin or write a
+  definition.
+- There is no Obsidian or Quartz importer.
+- A migration never writes files directly; if the change cannot be expressed as a
+  safe mutation, it reports a conflict instead of applying it.
+- Applying the same ID, version, and definition fingerprint twice is skipped.
+  Change the version when the definition changes.
+- Rollback requires an applied migration with a completed journal and unchanged
+  current files. External edits, missing backups, or a corrupt journal produce a
+  conflict and leave content untouched.
+- Migration code is trusted project code. It is not sandboxed.
+- There is no scheduler or automatic build integration. Run the CLI explicitly.
+- `transform` receives a snapshot and may return Frontmatter changes, a path, and
+  diagnostics. It cannot return a new Markdown body.
+
+## CLI reference
+
+```sh
+riebeckite migrate list [--json]
+riebeckite migrate plan [--id <migration>] [--out <path>] [--json]
+riebeckite migrate apply [--plan <path>] [--id <migration>] [--apply] [--json]
+riebeckite migrate status [--json]
+riebeckite migrate history [--limit <n>] [--json]
+riebeckite migrate rollback <planId|migrationId> --apply [--json]
+riebeckite migrate recover [--journal <path>] [--id <migration>] --apply [--json]
+```
+
+`plan` and `apply` are dry runs unless `--apply` is passed to `apply`. The CLI
+prints conflicts and exits with a non-zero status. JSON output is a single object.
+
+Migration modules live at `<project>/migrations/index.mjs` (or `.js`, `.mts`,
+`.ts` under a TypeScript runner). They export an array or `{ migrations }`. Only
+project code is executed. Markdown and Frontmatter are data and are never
+evaluated as JavaScript.
+
+`migrate` is registered in the same typed [[reference/cli-extension|CLI command
+registry]] as the built-in commands. Each action has its own definition, help
+metadata, JSON support, and exit code; there is no separate migration parser or
+dispatcher branch. `runMigrate` remains the implementation behind those
+definitions.
+
+## API reference
+
+### Definition
 
 Call `defineContentMigration` and register the result with
 `createContentMigrationRegistry`.
@@ -100,7 +375,32 @@ Multiple versions of the same ID may coexist. Applying a newer version marks the
 older applied version as `superseded`. Applying the same version with a different
 definition fingerprint is rejected; bump the version instead.
 
-## API reference
+### Transformation rules
+
+Rules operate on parsed Frontmatter and the logical content path. Markdown is
+never rewritten with a broad regular expression.
+
+| Rule | Effect |
+| --- | --- |
+| `frontmatter-set` | Set a key; a function may compute the value |
+| `frontmatter-remove` | Remove a key |
+| `frontmatter-rename` | Move a value to another key |
+| `frontmatter-normalize-list` | Split strings and deduplicate arrays |
+| `frontmatter-map` | Replace an existing value with a function result |
+| `frontmatter-append` | Add one value or array entry |
+| `visibility` | Set `visibility` to public, unlisted, or draft |
+| `content-id` | Set the stable content ID |
+| `permalink` | Set an explicit permalink and preserve the previous one |
+| `path-rename` | Move a file or directory prefix |
+
+Every rule accepts an optional `when` predicate. A rule that would produce the
+same value performs no operation. Selectors and predicates run again on later
+plans, so an applied migration is a no-op when re-evaluated.
+
+Invalid YAML, non-mapping Frontmatter, unsafe paths, unknown selectors, and rule
+failures become diagnostics. They are not guessed into a successful transform.
+
+### API
 
 The definition and planning API is exported from `@riebeckite/core`:
 
@@ -143,68 +443,6 @@ const migration = new FileSystemContentMigration({
 `buildTime`, `exclude`, and `redirectField` when the future manifest must match
 a custom build.
 
-## Transformation Rules
-
-Rules operate on parsed frontmatter and the logical content path. Markdown is
-never rewritten with a broad regular expression.
-
-| Rule | Effect |
-| --- | --- |
-| `frontmatter-set` | Set a key; a function may compute the value |
-| `frontmatter-remove` | Remove a key |
-| `frontmatter-rename` | Move a value to another key |
-| `frontmatter-normalize-list` | Split strings and deduplicate arrays |
-| `frontmatter-map` | Replace an existing value with a function result |
-| `frontmatter-append` | Add one value or array entry |
-| `visibility` | Set `visibility` to public, unlisted, or draft |
-| `content-id` | Set the stable content ID |
-| `permalink` | Set an explicit permalink and preserve the previous one |
-| `path-rename` | Move a file or directory prefix |
-
-Every rule accepts an optional `when` predicate. A rule that would produce the
-same value performs no operation. Selectors and predicates run again on later
-plans, so an applied migration is a no-op when re-evaluated.
-
-Invalid YAML, non-mapping frontmatter, unsafe paths, unknown selectors, and rule
-failures become diagnostics. They are not guessed into a successful transform.
-
-## Plan and Apply
-
-`FileSystemContentMigration.plan()` performs a dry run:
-
-1. Read the current content source.
-2. Apply the selected migrations in dependency order in memory.
-3. Convert the final state into Content Mutation operations.
-4. Build the future content manifest through a virtual ContentSource.
-5. Verify content IDs, permalinks, redirects, links, visibility, publication
-   fingerprints, and derived data.
-6. Record the input content fingerprint, mutation fingerprint, plan fingerprint,
-   diagnostics, conflicts, and estimated impact.
-
-Planning does not modify user files. A plan conflict means the change is not
-safe to apply.
-
-Apply revalidates the plan against the current content and the current registry
-before writing. It then calls the Content Mutation executor with a mutation plan
-whose fingerprint must match the migration plan. The migration is marked
-`applied` only after the mutation reports success.
-
-## State and History
-
-Migration states are:
-
-`pending`, `planned`, `applying`, `applied`, `failed`,
-`recovery-required`, `rolled-back`, and `superseded`.
-
-`state.json` records the latest applied identity, plan and content fingerprints,
-mutation plan identity, journal location, changed paths, and timestamps.
-`history.json` records completed runs with migration ID/version, plan identity,
-counts, result, recovery state, and a journal reference. History is bounded and
-contains no content bodies, secrets, or absolute paths.
-
-The mutation journal is the transaction record. Migration state only describes
-which migration produced the journal and whether the migration succeeded.
-
 ## Idempotency
 
 A migration that has already been applied with the same version and definition
@@ -214,7 +452,7 @@ operations because every rule compares the desired value with the current value.
 Do not use a predicate that depends on time or external mutable state unless the
 version and definition fingerprint change when that state changes.
 
-## Resume and Rollback
+## Resume and rollback
 
 If the process stops while applying, `status` reconciles the migration record
 with the mutation journal:
@@ -233,31 +471,8 @@ external edit, missing backup, or corrupt journal produces a conflict and leaves
 the content untouched. Rollback is not a general undo system for edits made
 outside the journal.
 
-## CLI
-
-```sh
-riebeckite migrate list [--json]
-riebeckite migrate plan [--id <migration>] [--out <path>] [--json]
-riebeckite migrate apply [--plan <path>] [--id <migration>] [--apply] [--json]
-riebeckite migrate status [--json]
-riebeckite migrate history [--limit <n>] [--json]
-riebeckite migrate rollback <planId|migrationId> --apply [--json]
-riebeckite migrate recover [--journal <path>] [--id <migration>] --apply [--json]
-```
-
-`plan` and `apply` are dry runs unless `--apply` is passed to `apply`. The CLI
-prints conflicts and exits with a non-zero status. JSON output is a single object.
-
-Migration modules live at `<project>/migrations/index.mjs` (or `.js`, `.mts`,
-`.ts` under a TypeScript runner). They export an array or `{ migrations }`.
-Only project code is executed. Markdown and frontmatter are data and are never
-evaluated as JavaScript.
-
-`migrate` is registered in the same typed [[reference/cli-extension|CLI command
-registry]] as the built-in commands. Each action has its own definition, help
-metadata, JSON support, and exit code; there is no separate migration parser or
-dispatcher branch. `runMigrate` remains the implementation behind those
-definitions.
+Migration states are `pending`, `planned`, `applying`, `applied`, `failed`,
+`recovery-required`, `rolled-back`, and `superseded`.
 
 ## Safety
 
@@ -289,6 +504,9 @@ definitions.
   inspect the conflict path.
 - **A saved plan cannot be applied**: plans are bound to the content and registry
   fingerprint at planning time. Re-plan instead of editing the JSON.
+- **A rule has no effect**: check `select` and `when`, and confirm the file
+  actually has the key. A rule that produces the same value is a no-op by design.
+- **YAML changed shape**: serialization is not byte-preserving. Review the diff.
 
 ## Performance
 
@@ -298,13 +516,3 @@ run, 100 files planned in about 0.5 seconds and applied in about 2.7 seconds.
 applied in about 19 seconds, and rolled back in about 7.7 seconds. These numbers
 include the normal manifest pipeline and Content Mutation journal writes; they
 are not a promise for every machine.
-
-## Relationship to Content Mutation
-
-Content Mutation remains the only write path. Migration adds versioned intent,
-declarative rules, dependency ordering, future-manifest verification, and
-transaction history above it. There is no second backup engine, file writer, or
-content parser. If a change cannot be expressed safely as a mutation, the
-migration reports a conflict instead of applying it. See
-[[content-mutation|Content Mutation System]] for the plan, journal, lock,
-recovery, and rollback contract.

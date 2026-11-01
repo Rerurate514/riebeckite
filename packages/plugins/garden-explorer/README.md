@@ -14,48 +14,65 @@ three panels:
 
 - **Explorer** — search box plus optional tag and folder filter chips (with
   counts) and a filtered note list
-- **Graph** — an SVG graph of published notes and internal links with local and
-  global modes, force or radial layout, hover neighbor emphasis, node drag,
-  wheel/button zoom, canvas pan, reset, and click-to-open navigation
+- **Graph** — a Canvas force-directed graph of published notes with local and
+  global modes, hover emphasis, node drag, wheel/pinch zoom, pan, and
+  click-to-open navigation
 - **Details** — the selected note's links, tags, excerpt, and related notes
 
 Selection state is mirrored to the URL query (`?note=`, `?tag=`, `?folder=`),
 so the view is shareable and the filter list adapts to the current selection.
 
-`getGardenExplorerData()` builds the note set from `manifest.discoverableEntries`
-and `manifest.graph`, including headings, a plain-text body (truncated to 4,000
-chars), tags, folders, outgoing links, and backlinks. The graph only contains
-published/discoverable notes and resolved note links, so unpublished, excluded,
-or missing pages do not appear as graph nodes.
-
-The note list in the Explorer panel shows the first 80 filtered notes for UI
-performance. The Global Graph uses all filtered notes. If a URL-selected note
-falls outside the first 80, it is preserved in the Global Graph.
-
 ## Local and global graph
 
-- **Local graph** starts at the selected note and shows neighbors up to `depth`
-  hops. The default is `depth: 1`, matching the common Obsidian/Quartz model of
-  direct backlinks and outgoing links. Use `depth: 0` to show only the selected
-  note.
-- **Global graph** shows all currently filtered public notes and their published
-  internal links.
+- **Local graph** starts at the selected note and expands through outgoing and
+  incoming links up to the Depth setting. Depth 0 shows only the selected note.
+- **Global graph** shows all currently filtered public notes.
 
-This is intentionally close to Obsidian's exploration model, but it uses
-Riebeckite's Page System, public manifest, permalinks, and content graph instead
-of rescanning the vault in the browser.
+Both modes use the same `@riebeckite/graph` engine. The graph is a continuous
+force simulation, not a fixed layout. A Barnes-Hut-style quadtree keeps
+repulsion practical for thousands of nodes, the simulation settles and stops
+requesting animation frames, and dragging or changing a force reheats it.
 
-## Layouts
+## Graph settings
 
-- **Force layout** (`layout: "force"`, default) uses a small deterministic
-  built-in simulation: repulsion, link distance, centering, damping, and bounded
-  stabilization. It adds no large dependency. With large graphs (>300 nodes) the
-  force layout computation becomes noticeable; a warning is shown in the toolbar.
-  For large Global Graphs, consider using the radial layout. Above 500 nodes,
-  explicit user approval is required before the force layout runs.
-- **Radial layout** (`layout: "radial"`) keeps the existing Riebeckite radial
-  layout available for compact or deterministic presentations. It runs in
-  near-linear time and handles thousands of nodes instantly.
+The gear button in the graph opens Filters, Groups, Display, and Forces.
+
+- **Filters** — search, tags, attachments, existing files only, orphans, depth.
+  Search supports `file:`, `path:`, `tag:`, quoted phrases, and `-` negation.
+  Unsupported operators are reported.
+- **Groups** — ordered color rules, first match wins. Groups can be added,
+  removed, and reordered.
+- **Display** — arrows, text fade threshold, node size, link thickness, and
+  animation. Animation uses real frontmatter dates and never fabricates them.
+- **Forces** — center, repel, link force, and link distance update immediately;
+  Restore default settings resets the graph.
+
+Settings are stored in `localStorage` under
+`riebeckite-garden-graph-settings`. The Explorer search box remains synchronized
+with the graph search.
+
+## Interaction
+
+Wheel or pinch zooms around the pointer. Dragging the background pans, dragging
+a node pins it while neighbors react. Hovering highlights direct connections.
+Clicking a note opens it. Right-click offers open, copy link, new tab, local
+graph, and filter actions depending on the node type.
+
+While the canvas has focus, `+`/`-` zoom, arrow keys pan (`Shift` for faster),
+`n`/`p` cycle nodes, `Enter` opens, and `Escape` clears the selection.
+
+## Public data
+
+`getGardenExplorerData()` builds notes and graph data from
+`manifest.discoverableEntries`, so unlisted, private, draft, and scheduled notes
+do not appear. Headings, plain-text bodies (truncated to 4,000 characters),
+tags, folders, outgoing links, and backlinks come from the public manifest. The
+graph adds unresolved links, public attachments, and tags when the
+corresponding filters are enabled. Links to non-public notes are dropped by the
+public view and do not reveal that the target exists.
+
+The note list shows the first 80 filtered notes for UI performance. The Global
+Graph uses all filtered notes.
 
 ## Usage
 
@@ -74,24 +91,24 @@ With configuration:
 ```ts
 plugins: [
   gardenExplorer({
-    layout: "force",
     depth: 1,
     showTags: true,
     showFolders: false,
     nodeSize: 1,
-    linkDistance: 84,
-    repulsion: 1800,
-    showLabels: true,
+    linkDistance: 100,
+    repulsion: 600,
   }),
 ];
 ```
 
-`gardenExplorer()` registers the `/explore` page type and bundles
-`style.css` and its client hydrator into the app. A catch-all route using
-`resolveRiebeckiteRoute()` and `pluginPageSsgParams()` renders and emits it;
-no plugin-specific application route is needed. The page is server-rendered
-first, then the registered client entry hydrates its graph, filters, and URL
-state after loading.
+The legacy `layout` and `showLabels` options are still accepted for
+compatibility. The graph always uses the continuous force engine, and labels
+fade with zoom via the Display setting instead of a fixed on/off layout.
+
+`gardenExplorer()` registers the `/explore` page type and bundles `style.css`
+and its client hydrator. A catch-all route using `resolveRiebeckiteRoute()` and
+`pluginPageSsgParams()` renders and emits it; no plugin-specific application
+route is needed. The page is server-rendered first, then hydrated after loading.
 
 ### Embed the component elsewhere
 
@@ -99,25 +116,16 @@ state after loading.
 import GardenExplorer, {
   getGardenExplorerData,
 } from "@riebeckite/plugin-garden-explorer";
-import { config } from "../config";
-import { content } from "../content";
-import { getArticleTitle } from "../lib/article-title";
 
-const manifest = await content.getManifest();
 const data = getGardenExplorerData({
   manifest,
   config,
   resolveTitle: getArticleTitle,
-  options: { layout: "radial", depth: 2 },
+  options: { depth: 2 },
 });
 
-// ...in a site-owned component
 return <GardenExplorer data={data} />;
 ```
-
-The component is client-side interactive and expects `window` to be available in
-the browser. The server-rendered fallback still exposes the surrounding
-explorer/detail structure and links in semantic lists.
 
 ## Data
 
@@ -126,6 +134,7 @@ explorer/detail structure and links in semantic lists.
 - `notes` — published notes sorted by title, with searchable fields plus
   `folder`, `outgoing`, and `backlinks`
 - `edges` — note-to-note graph edges between published notes
+- `graph` — the shared graph document used by the Canvas engine
 - `tags` — tag counts, most frequent first
 - `folders` — folder counts, alphabetical; root-level notes are `"Root"`
 - `options` — resolved graph options used by the hydrated component
@@ -133,8 +142,7 @@ explorer/detail structure and links in semantic lists.
 ## Exports
 
 - `gardenExplorer(options?)` — plugin factory
-- `GardenExplorer` — interactive explorer component (default export of
-  `components/garden-explorer.tsx`)
+- `GardenExplorer` — interactive explorer component
 - `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — builds
   the explorer dataset
 - Types: `GardenExplorerData`, `GardenExplorerEdge`, `GardenExplorerFolder`,

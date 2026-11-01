@@ -84,10 +84,15 @@ flowchart TD
     Q -->|"問題を調べたい"| Doctor["doctor"]
     Q -->|"サイトを生成したい"| Build["build"]
     Q -->|"生成物を削除したい"| Clean["clean"]
-    Q -->|"公開したい"| Deploy["deploy"]
+    Q -->|"公開したい"| Publish["publish"]
+    Q -->|"デプロイ設定を用意したい"| Deploy["deploy"]
+    Q -->|"コンテンツを安全に変更したい"| Content["content"]
+    Q -->|"バージョン付きのルールで一括変換したい"| Migrate["migrate"]
     Q -->|"ビルドが遅い"| Profile["profile"]
     Q -->|"現在の状態を知りたい"| Inspect["inspect"]
 ```
+
+`deploy` はプロバイダーの設定とワークフローファイルを用意するだけで、サイトはアップロードしません。デプロイには `publish run --execute` を使います。コンテンツの安全な書き込みとバージョン付きの一括変更については、[コンテンツ変更](../framework/content-mutation.ja.md) と [コンテンツ移行](../framework/content-migration.ja.md) を参照してください。
 
 `check`、`doctor`、`inspect`、`build` はとくに混同しやすいコマンドです。役割は次のように分かれます。
 

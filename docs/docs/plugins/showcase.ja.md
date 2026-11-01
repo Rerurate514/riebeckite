@@ -10,6 +10,20 @@ showcase_priority: low
 
 > `showcase` プリセットを生成すると、ここにあるような例をローカルで確認できます。
 
+**目次**
+
+- [Obsidian Markdown](#obsidian-markdown)
+- [生成ページ](#生成ページ)
+- [Code](#code)
+- [インライン表現](#インライン表現)
+- [図表](#図表)
+- [Media](#media)
+- [ナレッジとデータ](#ナレッジとデータ)
+- [ページやサイト全体に作用する Plugin](#ページやサイト全体に作用する-plugin)
+- [ビルド時・メタデータに作用する Plugin](#ビルド時メタデータに作用する-plugin)
+- [開発ツール](#開発ツール)
+- [関連](#関連)
+
 ## Obsidian Markdown
 
 ### Callouts：[`obsidian-markdown`](./obsidian-markdown.ja.md)

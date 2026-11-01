@@ -10,6 +10,35 @@ Riebeckite のコンテンツに、安定した公開 URL（permalink）を与�
 
 [English](./README.md)
 
+**目次**
+
+- [まずはここから](#まずはここから)
+- [基本的な使い方](#基本的な使い方)
+- [URL が決まるまで](#url-が決まるまで)
+- [frontmatter で指定する](#frontmatter-で指定する)
+- [オプション](#オプション)
+- [ID の解決方法（`id.strategy`）](#id-の解決方法idstrategy)
+- [URL への配置方法（`path.mode`）](#url-への配置方法pathmode)
+- [名前変更や移動で URL はどう変わるか](#名前変更や移動で-url-はどう変わるか)
+- [検証される値](#検証される値)
+- [衝突の検出](#衝突の検出)
+- [解決結果を確認する](#解決結果を確認する)
+- [設定例](#設定例)
+
+## まずはここから
+
+最小構成では既定値を使います。
+
+```ts
+import { permalink } from "@riebeckite/plugin-permalink";
+
+export default {
+  plugins: [permalink()],
+};
+```
+
+ページの frontmatter に `id: hello-world` があれば、そのページは `/n/hello-world` で公開されます。既定では `id` フィールドを使い、`id` がない場合はパスから導いたハッシュを使い、`flat` モードで `/n` の下に配置します。
+
 ## 基本的な使い方
 
 ```ts
@@ -635,13 +664,7 @@ resolvePath を使う
 resolveId + resolvePath を使う
 ```
 
-たとえば、
-
-```text
-/n/{id}
-```
-
-を作るだけなら、カスタム resolver は要りません。
+たとえば、`/n/{id}` を作るだけなら、カスタム resolver は要りません。
 
 ```ts
 permalink({

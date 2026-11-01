@@ -8,6 +8,7 @@ import {
   type RiebeckiteConfigLoaderOptions,
   resolveHonoxConfig,
 } from "./config_loader.js";
+import { verifyClientBuildArtifacts } from "./ssg/build_output.js";
 import { computeBundleFingerprint } from "./ssg/inventory.js";
 import { loadOutputCacheMetadata } from "./ssg/output_cache.js";
 
@@ -177,15 +178,16 @@ export async function canReuseClientBuild(input: {
     path.join(root, ".riebeckite", "ssg-output-cache.json"),
   );
   if (!cache?.bundleFingerprint || !cache.configFile) return false;
-  try {
-    await fs.access(path.join(input.outputDirectory, ".vite", "manifest.json"));
-  } catch {
+  if (
+    cache.bundleFingerprint !==
+    (await computeBundleFingerprint(root, cache.configFile))
+  ) {
     return false;
   }
-  return (
-    cache.bundleFingerprint ===
-    (await computeBundleFingerprint(root, cache.configFile))
-  );
+  return await verifyClientBuildArtifacts({
+    outDir: input.outputDirectory,
+    expectedInventory: cache.finalOutputInventory ?? {},
+  });
 }
 
 async function buildServerWithMetrics(

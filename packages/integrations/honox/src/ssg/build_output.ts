@@ -152,6 +152,38 @@ export async function collectBuildOutputPaths(
   return paths.sort();
 }
 
+export async function verifyClientBuildArtifacts(input: {
+  readonly outDir: string;
+  readonly expectedInventory: Readonly<Record<string, string>>;
+}): Promise<boolean> {
+  const manifestPath = ".vite/manifest.json";
+  let manifestSource: string;
+  try {
+    manifestSource = await readFile(
+      resolveBuildArtifactPath(input.outDir, manifestPath),
+      "utf8",
+    );
+  } catch {
+    return false;
+  }
+  const paths = [manifestPath, ...collectClientAssetPaths(manifestSource)];
+  for (const relativePath of paths) {
+    const expectedChecksum = input.expectedInventory[relativePath];
+    if (!expectedChecksum) return false;
+    try {
+      const actualChecksum = createHash("sha256")
+        .update(
+          await readFile(resolveBuildArtifactPath(input.outDir, relativePath)),
+        )
+        .digest("hex");
+      if (actualChecksum !== expectedChecksum) return false;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}
+
 function collectClientAssetPaths(manifestSource: string): string[] {
   let manifest: unknown;
   try {

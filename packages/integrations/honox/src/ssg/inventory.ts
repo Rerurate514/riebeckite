@@ -53,7 +53,11 @@ export async function computeBundleFingerprint(
 ): Promise<string> {
   const hash = createHash("sha256");
   hash.update(await computeAppFingerprint(root, configFile));
-  for (const file of await findBundleInputFiles(root)) {
+  const files = [
+    ...(await findBundleInputFiles(root)),
+    ...(await findLocalPackageInputFiles(root)),
+  ].sort();
+  for (const file of files) {
     try {
       hash
         .update(file)
@@ -168,4 +172,111 @@ async function findBundleInputFiles(root: string): Promise<string[]> {
     const parent = dirname(directory);
     if (parent === directory) return files;
   }
+}
+
+async function findLocalPackageInputFiles(root: string): Promise<string[]> {
+  const packageFile = join(root, "package.json");
+  let packageSource: string;
+  try {
+    packageSource = await readFile(packageFile, "utf8");
+  } catch {
+    return [];
+  }
+  let packageJson: unknown;
+  try {
+    packageJson = JSON.parse(packageSource);
+  } catch {
+    return [];
+  }
+  if (!packageJson || typeof packageJson !== "object") return [];
+  const files: string[] = [];
+  const workspaceDependencies = new Set<string>();
+  for (const dependencyGroup of [
+    "dependencies",
+    "devDependencies",
+    "optionalDependencies",
+  ]) {
+    const dependencies = (packageJson as Record<string, unknown>)[
+      dependencyGroup
+    ];
+    if (!dependencies || typeof dependencies !== "object") continue;
+    for (const [name, specifier] of Object.entries(dependencies)) {
+      if (typeof specifier !== "string") continue;
+      const directory = localPackageDirectory(root, specifier);
+      if (directory) {
+        await collectPackageFiles(directory, files);
+        continue;
+      }
+      if (specifier.startsWith("workspace:")) workspaceDependencies.add(name);
+    }
+  }
+  const workspaceRoot = await findWorkspaceRoot(root);
+  if (workspaceRoot && workspaceDependencies.size > 0) {
+    for (const directory of await findWorkspacePackageDirectories(
+      workspaceRoot,
+      workspaceDependencies,
+    )) {
+      await collectPackageFiles(directory, files);
+    }
+  }
+  return files;
+}
+
+function localPackageDirectory(
+  root: string,
+  specifier: string,
+): string | undefined {
+  if (specifier.startsWith("file:")) return join(root, specifier.slice(5));
+  if (specifier.startsWith("link:")) return join(root, specifier.slice(5));
+  return undefined;
+}
+
+async function findWorkspaceRoot(root: string): Promise<string | undefined> {
+  for (let directory = root; ; directory = dirname(directory)) {
+    try {
+      await readFile(join(directory, "pnpm-workspace.yaml"));
+      return directory;
+    } catch {}
+    const parent = dirname(directory);
+    if (parent === directory) return undefined;
+  }
+}
+
+async function findWorkspacePackageDirectories(
+  directory: string,
+  names: ReadonlySet<string>,
+): Promise<string[]> {
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    () => [],
+  );
+  const matches: string[] = [];
+  for (const entry of entries) {
+    if (
+      !entry.isDirectory() ||
+      APP_FINGERPRINT_IGNORED_DIRECTORIES.has(entry.name)
+    )
+      continue;
+    const child = join(directory, entry.name);
+    try {
+      const packageJson = JSON.parse(
+        await readFile(join(child, "package.json"), "utf8"),
+      ) as {
+        name?: unknown;
+      };
+      if (typeof packageJson.name === "string" && names.has(packageJson.name)) {
+        matches.push(child);
+        continue;
+      }
+    } catch {}
+    matches.push(...(await findWorkspacePackageDirectories(child, names)));
+  }
+  return matches;
+}
+
+async function collectPackageFiles(
+  directory: string,
+  files: string[],
+): Promise<void> {
+  files.push(join(directory, "package.json"));
+  await collectAppFiles(directory, files);
 }

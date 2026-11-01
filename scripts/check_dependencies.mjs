@@ -220,6 +220,37 @@ function isRiebeckitePackage(name) {
   return name.startsWith("@riebeckite/") || name === "create-riebeckite";
 }
 
+// Tooling dependencies that are consumed by generated projects, externalized
+// bundles, or JSX runtime resolution rather than by an import statement in
+// this package. Keep each entry tied to a reason.
+const nonImportedDependencies = new Map([
+  [
+    "@riebeckite/cli",
+    new Set([
+      "@hono/vite-build", // generated vite.config for new sites
+      "esbuild", // external at bundle time, used by build tooling
+      "hono", // generated app routes and types
+      "honox", // generated app routes and vite plugin
+      "vite", // loaded from the user's site at dev/build time
+    ]),
+  ],
+  ["@riebeckite/plugin-d2", new Set(["@d2lang/d2"])], // WASM engine loaded by module name
+  ["@riebeckite/plugin-diff", new Set(["hono"])], // JSX runtime via jsxImportSource
+  ["@riebeckite/plugin-excalidraw", new Set(["lz-string"])], // browser module loaded by name
+  ["@riebeckite/plugin-icons", new Set(["lucide-static"])], // icon files read from the package
+  [
+    "@riebeckite/plugin-markmap",
+    new Set(["markmap-lib", "markmap-view"]), // client renderer loaded by name
+  ],
+  ["@riebeckite/plugin-mermaid", new Set(["mermaid"])], // client renderer loaded by name
+  ["@riebeckite/plugin-qr-code", new Set(["qrcode"])], // encoder loaded by name
+  ["@riebeckite/plugin-search", new Set(["hono"])], // JSX runtime via jsxImportSource
+]);
+
+function isIntentionalNonImport(ownerName, dependencyName) {
+  return nonImportedDependencies.get(ownerName)?.has(dependencyName) ?? false;
+}
+
 function isTestFile(relativeFile) {
   return (
     /(^|\/)(test|tests|__tests__|spec)(\/|$)/.test(relativeFile) ||
@@ -447,6 +478,7 @@ export function analyzeWorkspace(options = {}) {
       if (!isRiebeckitePackage(dependency)) {
         const used = usage.get(pkg.name);
         if (used?.has(dependency)) continue;
+        if (isIntentionalNonImport(pkg.name, dependency)) continue;
         if (dependency.startsWith("@types/")) {
           const base = dependency.slice("@types/".length).replace("__", "/");
           if (used?.has(base)) continue;

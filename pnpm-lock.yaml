@@ -381,9 +381,6 @@ importers:
       honox:
         specifier: 0.1.56
         version: 0.1.56(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
-      slugify:
-        specifier: ^1.6.9
-        version: 1.6.9
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20260420.1
@@ -487,9 +484,6 @@ importers:
       '@types/unist':
         specifier: 'catalog:'
         version: 3.0.3
-      extend:
-        specifier: ^3.0.2
-        version: 3.0.2
       rehype-format:
         specifier: ^5.0.1
         version: 5.0.1

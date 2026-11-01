@@ -150,7 +150,7 @@ test("keeps interactive and PDF elements added by Markdown plugins", async () =>
 });
 
 test("only keeps local PDF objects from Markdown", async () => {
-  const { html } = await new Pipeline().execute(
+  const { html } = await new Pipeline(new Map(), new Map()).execute(
     '<object data=" https://example.com/embed.html" type="text/html"></object><object data="/report.pdf" type="application/pdf"></object>',
   );
 

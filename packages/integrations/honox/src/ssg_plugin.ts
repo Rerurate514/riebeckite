@@ -11,7 +11,7 @@ import {
   publicationRedirectsFromManifest,
   serializeBuildOutputMarker,
 } from "@riebeckite/core";
-import { toSSG } from "hono/ssg";
+import type { toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
   createServer,
@@ -38,6 +38,7 @@ import {
 } from "./ssg/diagnostics.js";
 import {
   computeAppFingerprint,
+  computeBundleFingerprint,
   fingerprintDirectory,
   fingerprintOutputDirectory,
 } from "./ssg/inventory.js";
@@ -49,12 +50,12 @@ import {
   saveOutputCache,
   validateOutputCache,
 } from "./ssg/output_cache.js";
+import { runSsg } from "./ssg/runner.js";
 import {
   measure,
   measureSync,
   writeSsgOutputMetrics,
 } from "./ssg/runtime_metrics.js";
-import { runSsg } from "./ssg/runner.js";
 import type {
   GeneratedOutputAsset,
   OutputCacheDecision,
@@ -228,6 +229,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         const appFingerprint = await measure(timingsMs, "appFingerprint", () =>
           computeAppFingerprint(config.root, config.configFile),
         );
+        const bundleFingerprint = await measure(
+          timingsMs,
+          "bundleFingerprint",
+          () => computeBundleFingerprint(config.root, config.configFile),
+        );
         const outputCachePath = join(
           config.root,
           ".riebeckite",
@@ -322,6 +328,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         const nextOutputCache: OutputCacheState = {
           version: 4,
           appFingerprint,
+          bundleFingerprint,
           clientManifestFingerprint: clientBuildArtifacts?.manifestFingerprint,
           outputs: {},
           configFile: config.configFile,
@@ -380,40 +387,37 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             plugins: options.plugins,
             extensionMap: options.extensionMap,
             write: async (filePath, data) => {
-                  const fileName = relative(outDir, filePath).replaceAll(
-                    "\\",
-                    "/",
-                  );
-                  if (!inventoryPaths.has(fileName)) {
-                    honoStaticRoutePaths.add(fileName);
-                  }
-                  if (siteOwnedOutputPaths.has(fileName)) {
-                    shadowedOutputs.add(fileName);
-                    return;
-                  }
-                  if (canUseIncremental && reusablePaths.has(fileName)) {
-                    return;
-                  }
-                  if (fileName.endsWith(".html") && typeof data === "string") {
-                    metrics.renderedOutputCount += 1;
-                    metrics.renderedRouteCount += 1;
-                    metrics.htmlOutputCount += 1;
-                    generatedHtml.push({ path: fileName, html: data });
-                  } else {
-                    metrics.assetOutputCount += 1;
-                  }
-                  measureSync(timingsMs, "outputWrite", () =>
-                    this.emitFile({
-                      type: "asset",
-                      fileName,
-                      source: data,
-                    }),
-                  );
-                  metrics.emittedOutputCount += 1;
-                  nextOutputCache.outputs[fileName] = {
-                    cachePath: "",
-                    checksum: "",
-                  };
+              const fileName = relative(outDir, filePath).replaceAll("\\", "/");
+              if (!inventoryPaths.has(fileName)) {
+                honoStaticRoutePaths.add(fileName);
+              }
+              if (siteOwnedOutputPaths.has(fileName)) {
+                shadowedOutputs.add(fileName);
+                return;
+              }
+              if (canUseIncremental && reusablePaths.has(fileName)) {
+                return;
+              }
+              if (fileName.endsWith(".html") && typeof data === "string") {
+                metrics.renderedOutputCount += 1;
+                metrics.renderedRouteCount += 1;
+                metrics.htmlOutputCount += 1;
+                generatedHtml.push({ path: fileName, html: data });
+              } else {
+                metrics.assetOutputCount += 1;
+              }
+              measureSync(timingsMs, "outputWrite", () =>
+                this.emitFile({
+                  type: "asset",
+                  fileName,
+                  source: data,
+                }),
+              );
+              metrics.emittedOutputCount += 1;
+              nextOutputCache.outputs[fileName] = {
+                cachePath: "",
+                checksum: "",
+              };
             },
           }),
         );

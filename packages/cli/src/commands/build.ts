@@ -16,6 +16,7 @@ import {
 import type { NoChangeFastPathOutputMetrics } from "@riebeckite/honox";
 import {
   buildHonoxApplication,
+  canReuseClientBuild,
   createNoChangeFastPathOutputMetrics,
   fingerprintDirectory,
   verifyNoChangeFastPath,
@@ -180,9 +181,19 @@ export async function runBuild(
       observability.logger.info("No-change fast path: Vite and SSG skipped.");
     } else {
       await clearBuildOutputMarker(project);
+      const reuseClientBuild =
+        !options.full &&
+        manifest !== null &&
+        (await canReuseClientBuild({
+          root: project.appRoot,
+          outputDirectory:
+            project.config.outputDirectory ??
+            path.join(project.appRoot, "dist"),
+        }));
       await buildHonoxApplication({
         root: project.appRoot,
         tracer: observability.tracer,
+        reuseClientBuild,
       });
       await writeBuildOutputMarker(project, {
         completedAt: new Date(),

@@ -39,6 +39,7 @@ type OutputCacheEntry = {
 export type OutputCacheState = {
   version: 4;
   appFingerprint?: string;
+  bundleFingerprint?: string;
   clientManifestFingerprint?: string;
   outputs: Record<string, OutputCacheEntry>;
   finalOutputInventory?: Record<string, string>;
@@ -277,6 +278,7 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
   const candidate = value as {
     version?: unknown;
     appFingerprint?: unknown;
+    bundleFingerprint?: unknown;
     clientManifestFingerprint?: unknown;
     outputs?: unknown;
     finalOutputInventory?: unknown;
@@ -288,6 +290,8 @@ function isOutputCacheState(value: unknown): value is OutputCacheState {
     candidate.version === 4 &&
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
+    (candidate.bundleFingerprint === undefined ||
+      typeof candidate.bundleFingerprint === "string") &&
     (candidate.clientManifestFingerprint === undefined ||
       typeof candidate.clientManifestFingerprint === "string") &&
     isOutputCacheEntries(candidate.outputs) &&

@@ -8,6 +8,8 @@ import {
   type RiebeckiteConfigLoaderOptions,
   resolveHonoxConfig,
 } from "./config_loader.js";
+import { computeBundleFingerprint } from "./ssg/inventory.js";
+import { loadOutputCacheMetadata } from "./ssg/output_cache.js";
 
 type HonoxApplicationOptions = {
   root: string;
@@ -19,6 +21,7 @@ type HonoxApplicationOptions = {
   };
   onServerReady?: (urls: readonly string[]) => void | Promise<void>;
   restartOnChange?: readonly string[];
+  reuseClientBuild?: boolean;
 };
 
 export type ResolvedHonoxApplication = {
@@ -154,13 +157,35 @@ export async function buildHonoxApplication(
 ): Promise<void> {
   const root = path.resolve(options.root);
   await withWorkingDirectory(root, async () => {
-    await runTraced(options.tracer, "integration.honox.client_build", () =>
-      build({ root, mode: "client" }),
-    );
+    if (!options.reuseClientBuild) {
+      await runTraced(options.tracer, "integration.honox.client_build", () =>
+        build({ root, mode: "client" }),
+      );
+    }
     await runTraced(options.tracer, "integration.honox.server_build", () =>
       buildServerWithMetrics(root, options.tracer),
     );
   });
+}
+
+export async function canReuseClientBuild(input: {
+  readonly root: string;
+  readonly outputDirectory: string;
+}): Promise<boolean> {
+  const root = path.resolve(input.root);
+  const cache = await loadOutputCacheMetadata(
+    path.join(root, ".riebeckite", "ssg-output-cache.json"),
+  );
+  if (!cache?.bundleFingerprint || !cache.configFile) return false;
+  try {
+    await fs.access(path.join(input.outputDirectory, ".vite", "manifest.json"));
+  } catch {
+    return false;
+  }
+  return (
+    cache.bundleFingerprint ===
+    (await computeBundleFingerprint(root, cache.configFile))
+  );
 }
 
 async function buildServerWithMetrics(

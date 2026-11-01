@@ -37,6 +37,7 @@ export type {
 } from "./src/vite_runner.js";
 export {
   buildHonoxApplication,
+  canReuseClientBuild,
   resolveHonoxApplication,
   resolveHonoxApplicationRoot,
   startHonoxDevServer,

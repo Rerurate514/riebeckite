@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { performance } from "node:perf_hooks";
 import { isMissingDirectoryError } from "./file_system.js";
 import type { NoChangeFastPathOutputMetrics } from "./types.js";
@@ -43,6 +43,29 @@ export async function computeAppFingerprint(
     hash.update("\0");
     hash.update(content);
     hash.update("\0");
+  }
+  return hash.digest("hex");
+}
+
+export async function computeBundleFingerprint(
+  root: string,
+  configFile: string | undefined,
+): Promise<string> {
+  const hash = createHash("sha256");
+  hash.update(await computeAppFingerprint(root, configFile));
+  for (const file of await findBundleInputFiles(root)) {
+    try {
+      hash
+        .update(file)
+        .update("\0")
+        .update(await readFile(file))
+        .update("\0");
+    } catch {}
+  }
+  for (const [name, value] of Object.entries(process.env)
+    .filter(([name]) => name === "NODE_ENV" || name.startsWith("VITE_"))
+    .sort(([left], [right]) => left.localeCompare(right))) {
+    hash.update(name).update("\0").update(value).update("\0");
   }
   return hash.digest("hex");
 }
@@ -128,5 +151,21 @@ async function collectAppFiles(
     } else if (entry.isFile()) {
       files.push(full);
     }
+  }
+}
+
+async function findBundleInputFiles(root: string): Promise<string[]> {
+  const files: string[] = [];
+  for (let directory = root; ; directory = dirname(directory)) {
+    for (const name of [
+      "package.json",
+      "pnpm-lock.yaml",
+      "package-lock.json",
+      "yarn.lock",
+    ]) {
+      files.push(join(directory, name));
+    }
+    const parent = dirname(directory);
+    if (parent === directory) return files;
   }
 }

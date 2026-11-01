@@ -104,7 +104,10 @@ The static figure lists both images with visible Before and After labels. When
 JavaScript runs, the plugin hides the static list and exposes the interactive
 stage. The range input covers the stage, keeps its native keyboard behavior,
 and shows a focus outline on the stage. The after image is clipped with
-`clip-path`, so neither image is repositioned or rescaled while dragging.
+`clip-path`, so neither image is repositioned or rescaled while dragging. Each
+image keeps its natural aspect ratio and the stage grows to the taller image.
+Give both screenshots the same width so their content lines up at the split;
+different heights are fine.
 
 Styles use the existing `--rb-color-*` theme tokens and work in Default, Light,
 and Dark themes. No gradients, glass effects, excessive rounding, or animations

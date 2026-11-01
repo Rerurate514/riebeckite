@@ -37,7 +37,7 @@
 }
 
 .rr-image-compare[data-enhanced="true"] .rr-image-compare__stage {
-  display: block;
+  display: grid;
 }
 
 .rr-image-compare__image {
@@ -46,15 +46,17 @@
   height: auto;
 }
 
-.rr-image-compare__image--after {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  object-fit: cover;
+.rr-image-compare__image--before,
+.rr-image-compare__layer {
+  grid-area: 1 / 1;
+}
+
+.rr-image-compare__layer {
+  align-self: stretch;
   clip-path: inset(0 0 0 var(--rr-image-compare-position));
 }
 
-.rr-image-compare[data-orientation="vertical"] .rr-image-compare__image--after {
+.rr-image-compare[data-orientation="vertical"] .rr-image-compare__layer {
   clip-path: inset(var(--rr-image-compare-position) 0 0 0);
 }
 

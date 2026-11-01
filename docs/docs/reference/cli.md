@@ -33,8 +33,13 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
+riebeckite content create | edit | delete | move ... [--apply] [--json]
+riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
+riebeckite content apply <plan> --apply [--json]
+riebeckite content recover <journal> --apply [--json]
+riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
@@ -58,6 +63,8 @@ Commands are resolved from one typed registry. `--help`, `help`, and `completion
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | Cloudflare configuration helpers only: `setup` prepares the publish workflow and secrets; `domain` adds a Workers Custom Domain. It does not deploy. | no |
 | `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |
+| `content` | plan explicit content mutations and write them with a journal; `--apply` is required to write | no |
+| `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
 

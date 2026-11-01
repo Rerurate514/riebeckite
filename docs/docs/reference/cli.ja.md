@@ -33,8 +33,13 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
+riebeckite content create | edit | delete | move ... [--apply] [--json]
+riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
+riebeckite content apply <plan> --apply [--json]
+riebeckite content recover <journal> --apply [--json]
+riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
@@ -58,6 +63,8 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
 | `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加する。デプロイは行わない | いいえ |
 | `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |
+| `content` | 明示的なコンテンツ変更を計画し、ジャーナル付きで書き込む。書き込みには `--apply` が必要 | いいえ |
+| `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
 

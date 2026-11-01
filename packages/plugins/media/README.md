@@ -51,10 +51,30 @@ Audio uses the native browser player. Video uses the same embed form with a vide
 
 ## Timestamp fragments
 
-When a renderer receives fragments such as `#t=10` or `#10,20`, they are kept on
-the media source URL. The current Obsidian wikilink pipeline does not pass
-attachment fragments to renderers, so full `![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md#t=10)` support requires
-a future pipeline extension.
+Obsidian's time fragments are forwarded to the media source:
+
+```md
+![[movie.mp4#t=10]]
+![[movie.mp4#t=10,20]]
+```
+
+- `t=10` (or `start=10`) starts playback at 10 seconds; `t=10,20` selects the
+  range from 10 to 20 seconds
+- Values may be seconds (`90`) or `m:ss` / `h:mm:ss`
+- The fragment is validated and normalized before it is appended to the source
+  URL; invalid parameters are ignored
+- `@riebeckite/plugin-obsidian-markdown` passes the fragment to attachment
+  renderers, so no extra configuration is needed
+
+## Compatibility
+
+| Feature | Obsidian Support | Riebeckite Support | Notes |
+| --- | --- | --- | --- |
+| `![movie.mp4](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md)` | Supported | Full | |
+| `![music.mp3](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/music.mp3.md)` | Supported | Full | |
+| `![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md#t=10)` | Supported | Full | |
+| `![movie.mp4#t=10,20](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.md#t=10,20)` | Supported | Full | |
+| Browser codec support | — | Partial | playback depends on the browser; unsupported formats fall back to the attachment card |
 
 ## Exports
 

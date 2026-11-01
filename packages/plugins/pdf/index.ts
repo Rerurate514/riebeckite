@@ -43,7 +43,7 @@ export function pdf(options: PdfOptions = {}) {
     name: PDF_PLUGIN_NAME,
     order: -20,
     processedContentCache: {
-      version: "pdf-v1",
+      version: "pdf-v2",
       dependencyMode: "tracked",
     },
     options,

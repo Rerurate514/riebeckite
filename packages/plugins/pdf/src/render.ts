@@ -1,9 +1,11 @@
 import {
+  type EmbedFragmentParameters,
   escapeHtml,
   escapeHtmlAttribute,
   getContentSourceEntrySize,
   getExtension,
   type PluginRenderContext,
+  parseEmbedFragmentParameters,
 } from "@riebeckite/core";
 import type { ResolvedPdfOptions } from "./types.js";
 
@@ -27,20 +29,30 @@ export function isPdfRenderTarget(context: PluginRenderContext): boolean {
 
 /**
  * Builds the viewer URL: the attachment URL plus the native PDF viewer
- * controls encoded as a URL fragment (`#page=2&toolbar=0`).
+ * controls encoded as a URL fragment (`#page=2&toolbar=0`). Embed fragment
+ * parameters (`#page=3&height=400`) take precedence over plugin options.
  */
 export function buildPdfViewerUrl(
   url: string,
   options: ResolvedPdfOptions,
+  embed: EmbedFragmentParameters = {},
 ): string {
   const params: string[] = [];
-  if (options.initialPage > 1) params.push(`page=${options.initialPage}`);
+  const page = embed.page ?? options.initialPage;
+  if (page > 1) params.push(`page=${page}`);
   if (!options.toolbar) params.push("toolbar=0");
   if (params.length === 0) return url;
 
   const fragmentStart = url.indexOf("#");
   const base = fragmentStart === -1 ? url : url.slice(0, fragmentStart);
   return `${base}#${params.join("&")}`;
+}
+
+function resolveEmbedHeight(
+  options: ResolvedPdfOptions,
+  embed: EmbedFragmentParameters,
+): string {
+  return embed.height === undefined ? options.height : `${embed.height}px`;
 }
 
 /**
@@ -56,8 +68,10 @@ export async function renderPdf(
   if (!context.embed) return null;
   if (!isPdfRenderTarget(context)) return null;
 
+  const embed = parseEmbedFragmentParameters(context.fragment);
   const fileName = getFileName(context.path);
-  const viewerUrl = buildPdfViewerUrl(context.url, options);
+  const viewerUrl = buildPdfViewerUrl(context.url, options, embed);
+  const height = resolveEmbedHeight(options, embed);
   const size = options.showMetadata ? await getAttachmentSize(context) : null;
   const sizeHtml = size
     ? `\n    <span class="rr-pdf__size">${escapeHtml(size)}</span>`
@@ -67,7 +81,7 @@ export async function renderPdf(
     <span class="rr-pdf__name">${escapeHtml(fileName)}</span>${sizeHtml}`
     : "";
 
-  return `<figure class="rr-pdf" ${PDF_ATTRIBUTE}="${escapeHtmlAttribute(context.path)}" style="--rr-pdf-height: ${escapeHtmlAttribute(options.height)}">
+  return `<figure class="rr-pdf" ${PDF_ATTRIBUTE}="${escapeHtmlAttribute(context.path)}" style="--rr-pdf-height: ${escapeHtmlAttribute(height)}">
   <object class="rr-pdf__viewer" data="${escapeHtmlAttribute(viewerUrl)}" type="application/pdf" aria-label="${escapeHtmlAttribute(fileName)}">
     <a class="rr-pdf__fallback" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(options.downloadLabel)}</a>
   </object>

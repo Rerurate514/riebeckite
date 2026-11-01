@@ -7,3 +7,22 @@ test("rejects invalid options", () => {
     { path: "initialPage", message: "Expected a positive integer." },
   ]);
 });
+
+test("honours Obsidian page and height fragments", async () => {
+  const render = pdf().renderers?.[0]?.render;
+  assert.ok(render);
+
+  const html = await render({
+    kind: "attachment",
+    path: "doc.pdf",
+    url: "/assets/attachments/doc.pdf",
+    raw: "doc.pdf",
+    label: "doc.pdf",
+    embed: true,
+    fragment: "page=3&height=400",
+  } as never);
+
+  assert.ok(typeof html === "string");
+  assert.match(html, /data="\/assets\/attachments\/doc\.pdf#page=3"/);
+  assert.match(html, /--rr-pdf-height: 400px/);
+});

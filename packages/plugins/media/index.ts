@@ -4,6 +4,7 @@ import {
   escapeHtmlAttribute,
   getExtension,
   type PluginRenderContext,
+  parseEmbedFragmentParameters,
 } from "@riebeckite/core";
 
 export type MediaPreload = "none" | "metadata" | "auto";
@@ -47,7 +48,7 @@ export function media(options: MediaOptions = {}) {
     name: PLUGIN_NAME,
     order: -10,
     processedContentCache: {
-      version: "media-v1",
+      version: "media-v2",
       dependencyMode: "none",
     },
     options,
@@ -167,9 +168,19 @@ function renderActions(
 }
 
 function buildMediaSourceUrl(context: PluginRenderContext): string {
-  const urlFragment = getUrlFragment(context.url);
-  const pathFragment = getUrlFragment(context.path);
-  const fragment = normalizeMediaFragment(urlFragment ?? pathFragment);
+  const parameters = parseEmbedFragmentParameters(context.fragment);
+  if (parameters.startTime !== undefined) {
+    const time =
+      parameters.endTime === undefined
+        ? `${parameters.startTime}`
+        : `${parameters.startTime},${parameters.endTime}`;
+    return `${stripUrlHash(context.url)}#t=${time}`;
+  }
+
+  const fragment =
+    normalizeMediaFragment(context.fragment ?? null) ??
+    normalizeMediaFragment(getUrlFragment(context.url)) ??
+    normalizeMediaFragment(getUrlFragment(context.path));
   if (!fragment) return context.url;
   return `${stripUrlHash(context.url)}#${fragment}`;
 }

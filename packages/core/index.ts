@@ -33,11 +33,13 @@ export {
 export {
   ATTACHMENTS_BASE_PATH,
   attachmentUrl,
+  type EmbedFragmentParameters,
   getExtension,
   isAttachmentPath,
   isImagePath,
   isMarkdownPath,
   normalizeContentPath,
+  parseEmbedFragmentParameters,
 } from "./src/content/attachment.js";
 export type {
   ContentBuildState,

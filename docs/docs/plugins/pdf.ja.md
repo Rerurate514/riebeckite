@@ -52,6 +52,29 @@ export default defineConfig({
 
 `initialPage` と `toolbar` はビューア URL のフラグメント（`#page=2&toolbar=0`）としてエンコードします。これはブラウザ間で共通の慣習ですが、一部のビューアは解釈しないことがあります。通常のリンク（`[[report.pdf]]`）は `@riebeckite/plugin-attachment`（または Markdown のフォールバック）に委ねます。
 
+## フラグメントによる指定
+
+Obsidian の埋め込みフラグメントで、ページとビューアの高さを指定できます。
+
+```md
+![[report.pdf#page=3]]
+![[report.pdf#page=3&height=400]]
+```
+
+- `page` はその埋め込みだけ `initialPage` を上書きし、ビューア URL に書き込みます
+- `height`（正の整数、px）はその埋め込みのビューアの高さになります
+- 不明なパラメータや不正な値は無視し、フラグメントの生文字列から URL を組み立てることはありません
+
+## 互換性
+
+| 機能 | Obsidian | Riebeckite | 補足 |
+| --- | --- | --- | --- |
+| `![[report.pdf]]` | 対応 | 完全 | ブラウザ標準ビューア、ダウンロードのフォールバック付き |
+| `![[report.pdf#page=3]]` | 対応 | 完全 | |
+| `![[report.pdf#page=3&height=400]]` | 対応 | 完全 | |
+| `[[report.pdf]]` リンク | 対応 | 完全 | 添付プラグインが処理 |
+| ビューア UI | 対応 | 一部 | ブラウザの PDF ビューアに依存 |
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

@@ -49,7 +49,27 @@ export default defineConfig({
 
 ## 時刻指定について
 
-レンダラーへ渡された `#t=10` や `#10,20` はメディアフラグメントとして URL に残します。ただし、現在の Obsidian ウィキリンク処理は添付ファイルのフラグメントをレンダラーへ渡しません。`![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md#t=10)` を完全に扱うには、処理パイプライン側の拡張が必要です。
+Obsidian の時刻フラグメントは、そのままメディアのソース URL に引き継がれます。
+
+```md
+![[movie.mp4#t=10]]
+![[movie.mp4#t=10,20]]
+```
+
+- `t=10`（または `start=10`）は 10 秒から再生し、`t=10,20` は 10〜20 秒の範囲を指定します
+- 値は秒（`90`）のほか、`m:ss` や `h:mm:ss` でも指定できます
+- フラグメントは検証・正規化してから URL に付加し、不正なパラメータは無視します
+- `@riebeckite/plugin-obsidian-markdown` が添付レンダラーへフラグメントを渡すため、追加の設定は不要です
+
+## 互換性
+
+| 機能 | Obsidian | Riebeckite | 補足 |
+| --- | --- | --- | --- |
+| `![movie.mp4](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md)` | 対応 | 完全 | |
+| `![music.mp3](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/music.mp3.ja.md)` | 対応 | 完全 | |
+| `![movie.mp4#t=10](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md#t=10)` | 対応 | 完全 | |
+| `![movie.mp4#t=10,20](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/movie.mp4.ja.md#t=10,20)` | 対応 | 完全 | |
+| ブラウザのコーデック対応 | — | 一部 | 再生可否はブラウザ依存。非対応形式は添付カードにフォールバック |
 
 ## 公開 API
 

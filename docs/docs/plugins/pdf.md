@@ -63,6 +63,30 @@ be read. The embed carries the stable `rr-pdf` root hook that themes may target.
 viewers may ignore parts of it. Plain links (`[[report.pdf]]`) are left to
 `@riebeckite/plugin-attachment` (or the Markdown fallback).
 
+## Fragment parameters
+
+Obsidian's embed fragment selects the page and viewer height:
+
+```md
+![[report.pdf#page=3]]
+![[report.pdf#page=3&height=400]]
+```
+
+- `page` overrides `initialPage` for that embed and is written to the viewer URL
+- `height` (a positive integer, in pixels) sizes that embed's viewer
+- Unknown or invalid parameters are ignored, and the URL is never built from
+  raw fragment text
+
+## Compatibility
+
+| Feature | Obsidian Support | Riebeckite Support | Notes |
+| --- | --- | --- | --- |
+| `![[report.pdf]]` | Supported | Full | browser-native viewer, download fallback |
+| `![[report.pdf#page=3]]` | Supported | Full | |
+| `![[report.pdf#page=3&height=400]]` | Supported | Full | |
+| `[[report.pdf]]` link | Supported | Full | handled by the attachment plugin |
+| Viewer UI | Supported | Partial | depends on the browser's PDF viewer |
+
 ## Options
 
 | Option          | Type               | Default          | Description                                                       |

@@ -30,3 +30,32 @@ test("renders supported attachments and ignores other files", async () => {
     null,
   );
 });
+
+test("forwards Obsidian time fragments to the media source", async () => {
+  const render = media().renderers?.[0]?.render;
+  assert.ok(render);
+
+  const video = await render({
+    kind: "attachment",
+    path: "clip.mp4",
+    url: "/assets/attachments/clip.mp4",
+    raw: "clip.mp4",
+    label: "clip.mp4",
+    embed: true,
+    fragment: "t=10",
+  } as never);
+  assert.ok(typeof video === "string");
+  assert.match(video, /<source src="\/assets\/attachments\/clip\.mp4#t=10"/);
+
+  const audio = await render({
+    kind: "attachment",
+    path: "voice.mp3",
+    url: "/assets/attachments/voice.mp3",
+    raw: "voice.mp3",
+    label: "voice.mp3",
+    embed: true,
+    fragment: "start=5,12",
+  } as never);
+  assert.ok(typeof audio === "string");
+  assert.match(audio, /<source src="\/assets\/attachments\/voice\.mp3#t=5,12"/);
+});

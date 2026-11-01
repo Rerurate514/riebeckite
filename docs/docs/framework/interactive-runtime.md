@@ -89,11 +89,21 @@ await instance.dispose();
 
 A definition declares `id`, `kind`, `capabilities`, optional `limits`, and a
 `create(context)` factory. The factory receives `instanceId`, `signal`,
-resolved `limits`, and the opaque `root` supplied by the host.
+resolved `limits`, and the opaque `root` supplied by the host. Duplicate or empty
+IDs and duplicate capabilities are rejected. `createInteractiveRuntime(definition, options)`
+creates an instance without a registry, and `registry.create(id, options)` does
+the same after a lookup.
 
 Limits default to 4 MiB input, 16 MiB output, 16 concurrent invocations, no
 invocation timeout, and a 15 second start timeout. Adapters may set stricter
-timeouts.
+timeouts: the worker adapter defaults to a 30 second invocation timeout and the
+iframe adapter to 10 seconds.
+
+`invoke(input, options)` accepts an optional `signal`, `timeoutMs`,
+`capability`, and `transfer` list. `timeoutMs` overrides the instance limit for
+that call; `capability` rejects the invocation when the runtime does not declare
+it. `onStateChange(listener)` returns an unsubscribe function. Instances expose
+`id`, `instanceId`, `kind`, `capabilities`, `state`, and `signal`.
 
 ## Main thread adapter
 
@@ -192,7 +202,8 @@ matches `presenceSelector`. Disabled plugins emit no client code.
 
 Runtime modules receive no build-time plugin options unless they are explicitly
 declared as JSON `options`; plugin options are not copied into the client
-bundle automatically.
+bundle automatically. For the authoring flow, see [[plugin-system|Plugin System]]
+and [Writing a Plugin](../plugins/writing-a-plugin.md).
 
 ## SSR and SSG
 
@@ -263,6 +274,62 @@ These numbers are environment-specific. Bundle size and startup are checked by
 the runtime performance test; the worker and iframe budgets are enforced by
 unit and browser tests.
 
+## Error handling
+
+```ts
+import {
+  RuntimeAbortError,
+  RuntimeConcurrencyError,
+  RuntimeFailureError,
+  RuntimeIframeError,
+  RuntimePayloadError,
+  RuntimeStateError,
+  RuntimeTimeoutError,
+  RuntimeUnsupportedError,
+  RuntimeWasmError,
+  RuntimeWorkerError,
+} from "@riebeckite/runtime";
+```
+
+| Error | When it is raised |
+| --- | --- |
+| `RuntimeStateError` | Invalid state transition, duplicate registration, or missing runtime |
+| `RuntimeFailureError` | Terminal start or runtime failure |
+| `RuntimeAbortError` | Instance or invocation signal aborted |
+| `RuntimeTimeoutError` | Start or invocation exceeded its timeout |
+| `RuntimePayloadError` | Input or output exceeded its byte limit |
+| `RuntimeConcurrencyError` | More than `maxConcurrent` invocations are active |
+| `RuntimeWorkerError` | Worker crash, protocol error, or remote failure |
+| `RuntimeWasmError` | WASM load failure, missing export, or trap (`trap` is true) |
+| `RuntimeIframeError` | Sandbox validation, handshake, navigation, or remote failure |
+| `RuntimeUnsupportedError` | The browser lacks a required capability |
+
+Ordinary invocation errors leave the instance reusable. A start failure or fatal
+runtime failure is terminal; create a new instance. A terminating instance rejects
+pending invocations instead of leaving them pending. `onError` on
+`RuntimeInstanceOptions` receives the error and phase (`start`, `invoke`, `stop`,
+`state-change`).
+
+## Security model
+
+- The main-thread adapter executes trusted first-party code in the page. It is
+  not an isolation boundary.
+- Workers isolate the global scope, not the network. Origin, CORS, and CSP still
+  determine what a worker can fetch.
+- WebAssembly is not a sandbox. The WASM adapter isolates execution in a worker
+  but trusts the module code.
+- The iframe adapter is the only adapter intended for untrusted markup. It
+  accepts only `allow-scripts` and `allow-forms`, rejects `allow-same-origin` and
+  unknown tokens, and applies a default-deny CSP with no network, forms, or top
+  navigation.
+- Iframe messages must match the source window, origin, protocol version,
+  session ID, message kind, and request ID. A post-handshake navigation fails the
+  instance.
+- Runtime code never receives build-time plugin options unless they are declared
+  as JSON `options`. Draft and scheduled content never enters the client bundle.
+- Host termination is authoritative. A guest cleanup handler runs only if its
+  disposal message is processed before termination.
+
 ## Limitations
 
 - The runtime is not a general-purpose sandbox for arbitrary scripts. Use the
@@ -276,6 +343,26 @@ unit and browser tests.
   worker or iframe processes the disposal message before termination.
 - A worker crash with no in-flight request surfaces on the next invocation.
 - Browser E2E depends on a locally installed Chrome or Chromium.
+
+## Troubleshooting
+
+- **Nothing mounts**: the plugin client entry is loaded only when the page
+  matches `presenceSelector`, and `mount()` is only called from a client
+  initializer. Check the marker and the initializer.
+- **Worker fails before the first result**: module workers are required. Confirm
+  the worker URL is same-origin and served with a JavaScript MIME type.
+- **`RuntimeUnsupportedError`**: the browser lacks module workers, WebAssembly,
+  or `srcdoc` support. Show the static fallback instead of retrying.
+- **Iframe request is ignored**: an unmatched origin, session, protocol version,
+  or source window is dropped by design. Check `expectedOrigin`; opaque sandboxed
+  content uses `"null"`.
+- **Iframe navigation fails the instance**: the guest navigated after the
+  handshake. Keep the guest document stable or create a new instance.
+- **Approval/content leaks into the client bundle**: runtime modules receive only
+  explicitly declared JSON `options`. Review the client entry and plugin config.
+- **A crashed worker is not noticed until the next call**: a crash with no
+  in-flight request surfaces on the next invocation. Register `onError` and
+  present the fallback.
 
 ## Examples
 

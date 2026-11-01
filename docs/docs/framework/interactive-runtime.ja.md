@@ -89,11 +89,22 @@ await instance.dispose();
 
 定義は `id`、`kind`、`capabilities`、任意の `limits`、`create(context)` を
 持ちます。ファクトリは `instanceId`、`signal`、解決済みの `limits`、ホストが
-渡す不透明な `root` を受け取ります。
+渡す不透明な `root` を受け取ります。空の ID や重複した ID、重複した
+capability は拒否されます。`createInteractiveRuntime(definition, options)` は
+レジストリを介さずにインスタンスを作り、`registry.create(id, options)` は
+ID を解決してから同じように作ります。
 
 上限の既定値は入力 4 MiB、出力 16 MiB、同時呼び出し 16、呼び出しタイムアウト
 なし、起動タイムアウト 15 秒です。アダプタはより厳しいタイムアウトを設定
-できます。
+できます。Worker アダプタの呼び出しタイムアウトは既定で 30 秒、iframe
+アダプタは 10 秒です。
+
+`invoke(input, options)` は任意の `signal`、`timeoutMs`、`capability`、
+`transfer` リストを受け取ります。`timeoutMs` はその呼び出しだけインスタンスの
+上限を上書きします。`capability` は、Runtime がその capability を宣言して
+いなければ呼び出しを拒否します。`onStateChange(listener)` は解除関数を返します。
+インスタンスは `id`、`instanceId`、`kind`、`capabilities`、`state`、`signal` を
+公開します。
 
 ## メインスレッドアダプタ
 
@@ -196,7 +207,9 @@ HonoX のクライアントモジュールは静的な `import()` 式で Runtime
 
 Runtime モジュールは、JSON の `options` として明示的に宣言しない限り、
 ビルド時の Plugin オプションを受け取りません。Plugin のオプションが
-クライアントバンドルへ自動的にコピーされることはありません。
+クライアントバンドルへ自動的にコピーされることはありません。作成手順は
+[[plugin-system|プラグインシステム]]と
+[プラグインを書く](../plugins/writing-a-plugin.ja.md)を参照してください。
 
 ## SSR と SSG
 
@@ -267,6 +280,61 @@ Windows の Chrome headless shell 155 で、リポジトリのブラウザーフ
 数値は環境に依存します。バンドルサイズと起動時間は Runtime の性能テストで
 確認し、Worker と iframe の予算は単体テストとブラウザーテストで検証します。
 
+## エラー処理
+
+```ts
+import {
+  RuntimeAbortError,
+  RuntimeConcurrencyError,
+  RuntimeFailureError,
+  RuntimeIframeError,
+  RuntimePayloadError,
+  RuntimeStateError,
+  RuntimeTimeoutError,
+  RuntimeUnsupportedError,
+  RuntimeWasmError,
+  RuntimeWorkerError,
+} from "@riebeckite/runtime";
+```
+
+| エラー | 発生条件 |
+| --- | --- |
+| `RuntimeStateError` | 不正な状態遷移、重複登録、未登録の Runtime |
+| `RuntimeFailureError` | 終端となる起動失敗または実行時失敗 |
+| `RuntimeAbortError` | インスタンスまたは呼び出しのシグナル中断 |
+| `RuntimeTimeoutError` | 起動または呼び出しがタイムアウトした |
+| `RuntimePayloadError` | 入力または出力がバイト上限を超えた |
+| `RuntimeConcurrencyError` | 同時呼び出しが `maxConcurrent` を超えた |
+| `RuntimeWorkerError` | Worker のクラッシュ、プロトコル違反、リモート失敗 |
+| `RuntimeWasmError` | WASM の読み込み失敗、エクスポート欠損、トラップ（`trap` が true） |
+| `RuntimeIframeError` | サンドボックス検証、ハンドシェイク、遷移、リモート失敗 |
+| `RuntimeUnsupportedError` | ブラウザーに必要な機能がない |
+
+通常の呼び出しエラーではインスタンスを再利用できます。起動失敗または致命的な
+Runtime 失敗は終端なので、新しいインスタンスを作ります。終了中のインスタンスは
+保留中の呼び出しを放置せず拒否します。`RuntimeInstanceOptions` の `onError` は
+エラーとフェーズ（`start`、`invoke`、`stop`、`state-change`）を受け取ります。
+
+## セキュリティモデル
+
+- メインスレッドアダプタは信頼済みのファーストパーティコードをページ内で実行
+  します。隔離境界ではありません。
+- Worker が隔離するのはグローバルスコープであり、ネットワークではありません。
+  Origin、CORS、CSP が Worker の取得先を決めます。
+- WebAssembly はサンドボックスではありません。WASM アダプタは Worker 内で
+  実行しますが、モジュールコードは信頼します。
+- 未信頼のマークアップに使えるのは iframe アダプタだけです。`allow-scripts` と
+  `allow-forms` だけを受け付け、`allow-same-origin` と未知のトークンを拒否し、
+  ネットワーク、フォーム、トップナビゲーションを許可しない既定の CSP を適用します。
+- iframe のメッセージは、送信元ウィンドウ、Origin、プロトコルバージョン、
+  セッション ID、メッセージ種別、リクエスト ID が一致しなければ受け付けません。
+  ハンドシェイク後の遷移はインスタンスを失敗させます。
+- Runtime コードは、JSON の `options` として明示しない限りビルド時のプラグイン
+  オプションを受け取りません。下書きや予約コンテンツはクライアントバンドルへ
+  入りません。
+- ホストによる終了が最終的な扱いです。ゲストのクリーンアップハンドラーは、終了
+  前に破棄メッセージが処理された場合だけ実行されます。
+
 ## 制限
 
 - Runtime は任意のスクリプト向けの汎用サンドボックスではありません。未信頼
@@ -280,6 +348,30 @@ Windows の Chrome headless shell 155 で、リポジトリのブラウザーフ
 - 進行中のリクエストがない Worker クラッシュは、次回の呼び出し時に表面化します。
 - ブラウザー E2E はローカルにインストールされた Chrome または Chromium に
   依存します。
+
+## トラブルシューティング
+
+- **何もマウントされない**: プラグインのクライアントエントリは、ページが
+  `presenceSelector` に一致した場合だけ読み込まれ、`mount()` はクライアント
+  イニシャライザーからしか呼ばれません。マーカーとイニシャライザーを確認して
+  ください。
+- **Worker が最初の結果を返す前に失敗する**: モジュール Worker が必要です。
+  Worker の URL が同一 Origin で、JavaScript の MIME タイプで配信されていることを
+  確認してください。
+- **`RuntimeUnsupportedError`**: ブラウザーにモジュール Worker、WebAssembly、
+  `srcdoc` のいずれかがありません。再試行せず、静的フォールバックを表示して
+  ください。
+- **iframe の要求が無視される**: Origin、セッション、プロトコルバージョン、
+  送信元ウィンドウのいずれかが一致しないためです。`expectedOrigin` を確認して
+  ください。不透明なサンドボックスコンテンツでは `"null"` を使います。
+- **iframe の遷移でインスタンスが失敗する**: ゲストがハンドシェイク後に遷移して
+  います。ゲスト文書を安定させるか、新しいインスタンスを作ってください。
+- **承認情報やコンテンツがクライアントバンドルへ漏れる**: Runtime モジュールが
+  受け取るのは明示的に宣言した JSON の `options` だけです。クライアント
+  エントリとプラグイン設定を確認してください。
+- **Worker のクラッシュが次の呼び出しまで分からない**: 進行中の要求がない
+  クラッシュは次回の呼び出しで表面化します。`onError` を登録し、フォールバックを
+  表示してください。
 
 ## 例
 

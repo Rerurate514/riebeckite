@@ -7,7 +7,7 @@ sidebar:
 
 # 派生データ
 
-Derived View は、ビルド中に[[glossary/plugin|プラグイン]]間で共有できる、名前付き・型付きの非同期計算です。Markdown の入力ではなく、[[content-graph|Content Graph]] にノードも追加しません。
+Derived View は、ビルド中に[[glossary/plugin|プラグイン]]間で共有できる、名前付き・型付きの非同期計算です。Markdown の入力ではなく、[[glossary/content-graph|Content Graph]] にノードも追加しません。
 
 ```ts
 import { defineDerivedView, definePlugin } from "@riebeckite/core";
@@ -34,6 +34,33 @@ export const example = definePlugin({
 View は[[glossary/plugin|プラグイン]]の `derivedViews` 配列に登録します。`context.derived.resolve(view, input)` は、定義または ID から View を解決します。ID が重複していると、プラグインの解決時に失敗します。再帰呼び出しは、循環経路の全体を示して失敗します。同じ View、バージョン、入力への同時要求は1つの計算を共有し、エラーはすべての呼び出し元へ伝播します。失敗した結果を成功値として保持することはありません。
 
 View の中から別の View を呼ぶ場合は `context.resolve()` を使います。子 View の依存関係とバージョンは、キャッシュヒット時も含めて親 View へ伝播します。子 View のバージョンが変わると、[[glossary/cache|キャッシュ]]された親 View は無効になります。
+
+## API リファレンス
+
+```ts
+import {
+  createDerivedViewRegistry,
+  defineDerivedView,
+  derivedDependenciesToOutputDependencies,
+  type DerivedViewRegistry,
+} from "@riebeckite/core";
+```
+
+| API | 用途 |
+| --- | --- |
+| `defineDerivedView<TInput, TResult>({ id, version, input?, output?, compute })` | View を宣言する。`version` は必須で、キャッシュキーと出力依存関係に含まれる。 |
+| `createDerivedViewRegistry(options?)` | レジストリを作る。PluginCache、クエリ対象、依存関係のフィンガープリント、親リゾルバーを渡す。 |
+| `registry.register(view)` | View を登録する。ID が重複すると例外になる。 |
+| `registry.resolve(view, input, { signal? })` | 定義または ID で解決し、値を返す。 |
+| `registry.resolveWithDependencies(view, input)` | 出力計画用に `{ value, dependencies, viewIds }` を返す。 |
+| `registry.versionOf(id)` | 登録済みのバージョン、または `undefined` を返す。 |
+| `registry.inspect()` | View を再実行せず、直近の実行記録を返す。 |
+| `registry.status()` | View ごとに `{ id, version, pending }` を返す。 |
+| `registry.dispose()` | 進行中の処理を中断し、待機中の利用者を解放する。 |
+| `derivedDependenciesToOutputDependencies(deps)` | 追跡した依存関係を通常の出力依存関係へ変換する。 |
+
+`context.derived` は `setup` と生成出力の計画で、同じ `resolve` と
+`resolveWithDependencies` を公開します。
 
 ## 依存関係とキャッシュ
 
@@ -69,7 +96,9 @@ External 依存関係には、既存の `resolveExternalDependencies` フック�
 
 Derived View は自動ではシリアライズされません。Worker リクエストからも解決できますが、リクエスト時の解決では[[glossary/persistent-cache|永続キャッシュ]]を使わないため、小さい処理にとどめてください。[[glossary/generated-output|Generated Output]] の計画では、`derived` コンテキストから View を解決できます。値を公開するプラグインは、`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別する必要があります。[[glossary/publication-boundary|公開境界]]が明示的でない限り、[[glossary/draft|draft]]、scheduled、[[glossary/unlisted|unlisted]] をシリアライズしてはいけません。
 
-Generated Output には、View のトレース外にある入力のために通常の [[glossary/output-dependency|OutputDependency]] を宣言できます。Derived View の追跡は値キャッシュを、Output Dependency は静的出力の無効化を担います。Core は、解決した View ID ごとにバージョン付きの `derived-view` [[glossary/output-dependency|出力依存関係]]を付与します。そのため、プリミティブな Content 依存が変わらなくても、定義や子 View のバージョン変化で所有出力が再生成されます。重複した View ID は重複排除され、未登録の View を参照した出力計画は、バージョンなしの依存関係を出さずに失敗します。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
+Generated Output には、View のトレース外にある入力のために通常の [[glossary/output-dependency|OutputDependency]] を宣言できます。Derived View の追跡は値キャッシュを、Output Dependency は静的出力の無効化を担います。Core は、解決した View ID ごとにバージョン付きの `derived-view` [[glossary/output-dependency|出力依存関係]]を付与します。そのため、プリミティブな Content 依存が変わらなくても、定義や子 View のバージョン変化で所有出力が再生成されます。`derivedViewIds` 内の重複 ID は重複排除されます。同じ ID の View を 2 つ登録すると、
+プラグインの解決時に失敗します。未登録の View を参照した出力計画は、バージョンなしの
+依存関係を出さずに失敗します。この分離により、incremental output planning と開発時 Route Manifest の高速経路は変わりません。
 
 Generated Output が View の値を使う場合は、依存関係のトレースを保持したまま出力へ渡します。
 
@@ -92,6 +121,8 @@ Core は、追跡された依存関係を出力計画へ保存する前に変換
 開発時の [[framework/inspector|Inspector]] レポートには、登録済み View ごとの状態が含まれます。内訳は、バージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスです。Inspector の Derived タブは、この読み取り専用データを表示します。[[glossary/search|検索]]、状態フィルタ、依存関係と出力の詳細、未実行とキャッシュなし実行の区別を備えています。このレポートを読んでも、View が解決されたり [[glossary/build-state|BuildState]] が変更されたりすることはありません。Inspector のデータ Endpoint は loopback のみで待ち受け、セッションごとのトークンを要求します。loopback 以外の bind、Host、Origin、接続元、転送ヘッダーを経由した要求は拒否します。Inspector のデータが本番成果物へ出力されることはありません。
 
 [[honox-integration|HonoX]] の [[glossary/ssg|SSG]] も同じ生成出力を消費します。View を使う出力は、通常の生成出力と同じく full ・[[glossary/incremental-build|incremental]]・ no-change ビルドに参加し、出力ツリーはクリーンビルドと一致します。テストでは、タイトル変更と公開状態の遷移に追従する派生 [[glossary/ssg|SSG]] 出力を検証します。Inspector のブラウザテストでは Derived タブを検証します。
+
+同じビルドのスナップショットは[[build-system/provenance|データ来歴]]にも渡されます。来歴には、各 View のバージョン、依存関係、キャッシュ状態が、ソースや出力と一緒に保存されます。ビルド単位の記録は `riebeckite inspect provenance`、開発中の対話的な確認は Inspector を使います。
 
 ## プラットフォームと性能
 

@@ -234,6 +234,38 @@ Before this change, a Plugin could not contribute a CLI command, and a dispatche
 
 The internal `parseCommand`, `Command` union, and central dispatcher APIs were removed. They are not compatibility shims. Code that imported them must move to `defineCliCommand`, `createCliCommandRegistry`, `registerCliCommand`, or `registerPluginCliExtension`.
 
+## Limitations
+
+- Commands are trusted project code. The registry does not sandbox a handler.
+- Only enabled Plugins in the resolved configuration contribute commands.
+  Riebeckite never scans content, Markdown, or arbitrary directories for
+  executable commands.
+- A `raw` command such as `content` performs its own argument parsing, so its
+  inner flags are not validated by the shared parser or shown in completion.
+- Completion is generated from definition metadata. It cannot complete dynamic
+  values such as filesystem paths or provider state.
+- Help and completion never execute a handler, so they cannot validate that a
+  referenced external tool is installed.
+- The JSON envelope covers failures. Successful command output remains
+  command-specific and is not normalized by the CLI.
+
+## Troubleshooting
+
+- **"Unknown command"**: check the canonical path with
+  `riebeckite help <command>`; Plugin commands need an enabled Plugin and the
+  `--project` flag for completion.
+- **A Plugin command is missing**: confirm the Plugin is in the resolved
+  `plugins` array and is not `enabled: false`. Registration failures are reported
+  on stderr without stopping other commands.
+- **"command ... conflicts"**: choose a namespace and command ID that do not
+  shadow a built-in path or another Plugin.
+- **stdout is not valid JSON**: use `context.output.json` and `context.logger`.
+  Logger output and warnings go to stderr in JSON mode.
+- **`--json` is rejected**: declare `supportsJson: true` and either declare a
+  `json` option or rely on the built-in acceptance.
+- **A handler did not run**: argument, option, and command-level validation run
+  first. A usage error exits with code 2 before the handler is called.
+
 ## See also
 
 - [CLI](./cli.md)

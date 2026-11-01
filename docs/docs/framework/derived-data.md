@@ -7,7 +7,7 @@ sidebar:
 
 # Derived Data
 
-Derived Views are named, typed asynchronous computations shared by [[glossary/plugin|plugins]] during a build. They are not Markdown sources and do not add nodes to the [[content-graph|Content Graph]].
+Derived Views are named, typed asynchronous computations shared by [[glossary/plugin|plugins]] during a build. They are not Markdown sources and do not add nodes to the [[glossary/content-graph|Content Graph]].
 
 ```ts
 import { defineDerivedView, definePlugin } from "@riebeckite/core";
@@ -34,6 +34,33 @@ Every view has a stable `id`, a required `version`, optional `input` and `output
 Register views with a plugin's `derivedViews` array. `context.derived.resolve(view, input)` resolves a view by definition or ID. Duplicate IDs fail during plugin resolution. Recursive calls fail with the full cycle path. Concurrent requests for the same view, version, and input share one in-flight computation; errors are propagated to every caller and are never retained as successful values.
 
 Use `context.resolve()` inside a view to call another view. Child dependencies and its version are propagated to the parent, including through a cache hit. A changed child version invalidates a cached parent.
+
+## API reference
+
+```ts
+import {
+  createDerivedViewRegistry,
+  defineDerivedView,
+  derivedDependenciesToOutputDependencies,
+  type DerivedViewRegistry,
+} from "@riebeckite/core";
+```
+
+| API | Purpose |
+| --- | --- |
+| `defineDerivedView<TInput, TResult>({ id, version, input?, output?, compute })` | Declare a view. The version is required and participates in cache keys and output dependencies. |
+| `createDerivedViewRegistry(options?)` | Create a registry. Options supply the PluginCache, query entries, dependency fingerprinting, and the parent resolver. |
+| `registry.register(view)` | Register a view. A duplicate ID throws. |
+| `registry.resolve(view, input, { signal? })` | Resolve by definition or ID and return the value. |
+| `registry.resolveWithDependencies(view, input)` | Return `{ value, dependencies, viewIds }` for output planning. |
+| `registry.versionOf(id)` | Return the registered version, or `undefined`. |
+| `registry.inspect()` | Return the latest execution records without re-running a view. |
+| `registry.status()` | Return `{ id, version, pending }` for each view. |
+| `registry.dispose()` | Abort pending work and clear pending consumers. |
+| `derivedDependenciesToOutputDependencies(deps)` | Convert tracked dependencies into normal output dependencies. |
+
+`context.derived` exposes the same `resolve` and `resolveWithDependencies`
+functions inside `setup` and generated-output planning.
 
 ## Dependencies and cache
 
@@ -67,7 +94,9 @@ External dependencies use the existing `resolveExternalDependencies` hook. A vie
 
 Derived Views are not serialized automatically. They may be resolved from a Worker request, but request-time resolution does not use the persistent cache and should stay small. [[glossary/generated-output|Generated Output]] plans can resolve views through their `derived` context. A plugin that publishes a value must select from `manifest.discoverableEntries` or `manifest.routableEntries` itself. Do not serialize [[glossary/draft|drafts]], scheduled entries, or [[glossary/unlisted|unlisted]] entries unless the output has an explicit non-public boundary.
 
-Generated outputs may declare normal [[glossary/output-dependency|OutputDependency]] values for inputs outside a view trace. Derived View tracking controls the value cache; output dependencies control static-output invalidation. Core also attaches one `derived-view` output dependency per resolved view ID with its version, so a definition or child version change marks the owning output for regeneration even when primitive content dependencies are unchanged. Duplicate view IDs are deduplicated; referencing a view that is not registered fails the plan instead of emitting an unversioned dependency. This separation keeps incremental output planning and the development route-manifest fast path unchanged.
+Generated outputs may declare normal [[glossary/output-dependency|OutputDependency]] values for inputs outside a view trace. Derived View tracking controls the value cache; output dependencies control static-output invalidation. Core also attaches one `derived-view` output dependency per resolved view ID with its version, so a definition or child version change marks the owning output for regeneration even when primitive content dependencies are unchanged. Duplicate IDs within `derivedViewIds` are deduplicated; registering two views
+with the same ID fails during plugin resolution. Referencing a view that is not
+registered fails the plan instead of emitting an unversioned dependency. This separation keeps incremental output planning and the development route-manifest fast path unchanged.
 
 When a generated output is based on a view, retain its dependency trace and attach it to that output:
 
@@ -88,6 +117,8 @@ Core converts tracked dependencies before persisting the output plan. Query depe
 The bundled [[plugins/hover-preview|hover-preview]] plugin resolves its shared preview index through a derived view. It keeps its explicit global output dependency, so incremental invalidation and the serialized output are unchanged.
 
 In development, the [[framework/inspector|Inspector]] report includes each registered view's version, latest dependencies, cache state, recompute reason, duration, failure or cancellation state, and the generated output paths declared with `derivedViewIds`. The Derived tab renders this read-only data with search, status filtering, dependency and output details, and an explicit distinction between a view that has never run and one that ran without caching. Reading this report never resolves a view or mutates [[glossary/build-state|build state]]. [[framework/inspector|Inspector]] data endpoints listen on loopback only and require a per-session token; requests through non-loopback bindings, hosts, origins, peers, or forwarders are rejected. Inspector data is never emitted in production output.
+
+The same build snapshot feeds [[build-system/provenance|Data Provenance]], which persists each view's version, dependencies, and cache status alongside sources and outputs. Use `riebeckite inspect provenance` for the build-level record; the Inspector is the interactive development view.
 
 [[honox-integration|HonoX]] consumes the same generated outputs during [[glossary/ssg|SSG]]. A view-backed output participates in full, [[glossary/incremental-build|incremental]], and no-change builds like any other generated output, and the emitted tree matches a clean build. The test suite covers derived [[glossary/ssg|SSG]] output that follows title changes and publication transitions, and the Inspector browser test covers the Derived tab.
 

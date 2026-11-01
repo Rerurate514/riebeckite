@@ -22,7 +22,7 @@ build result and processes only what changed.
 
 ## In this section
 
-- [Provenance](./build-system/provenance.md)
+- [Data provenance](./build-system/provenance.md)
 - [Incremental builds](./build-system/incremental.md)
 - [Cache and commands](./build-system/cache-and-commands.md)
 

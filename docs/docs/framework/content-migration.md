@@ -5,8 +5,8 @@ title: Content Migration System
 # Content Migration System
 
 The Content Migration System applies versioned, declarative changes to content.
-It owns the question of **what to change**. The Content Mutation system owns
-**how to write the change safely**.
+It owns the question of **what to change**. The [[content-mutation|Content Mutation
+system]] owns **how to write the change safely**.
 
 A migration never writes files directly. It produces a Content Mutation plan,
 verifies the future content manifest, and delegates the actual write,
@@ -99,6 +99,49 @@ is deterministic: dependencies first, then ID and version.
 Multiple versions of the same ID may coexist. Applying a newer version marks the
 older applied version as `superseded`. Applying the same version with a different
 definition fingerprint is rejected; bump the version instead.
+
+## API reference
+
+The definition and planning API is exported from `@riebeckite/core`:
+
+| API | Purpose |
+| --- | --- |
+| `defineContentMigration(definition)` | Validate and normalize one migration definition. |
+| `createContentMigrationRegistry(migrations)` | Check duplicates, dependencies, cycles, and deterministic order. |
+| `migrationKey(id, version)` | Stable key used by state and history. |
+| `fingerprintContentMigrationDefinition(definition)` | Fingerprint the definition for revalidation. |
+| `planContentMigrationBatch({ migrations, files, ... })` | Apply definitions in memory and produce the planned batch. |
+| `applyContentMigration(content, migration)` | Apply one transformation to parsed content. |
+| `parseMigrationContent(path, markdown)` | Parse Markdown and Frontmatter for a migration. |
+| `diffFrontmatter(before, after)` | Compare two Frontmatter maps. |
+| `isSafeContentPath(path)` | Apply the shared logical-path rules. |
+| `appendContentMigrationHistory` / `parseContentMigrationState` / `parseContentMigrationHistory` | Validate and bound persisted state. |
+
+The filesystem executor is exported from `@riebeckite/node`:
+
+```ts
+import { FileSystemContentMigration } from "@riebeckite/node";
+
+const migration = new FileSystemContentMigration({
+  contentDirectory,
+  registry,
+});
+```
+
+| Method | Behavior |
+| --- | --- |
+| `plan({ ids? })` | Dry run: read, transform, build the future manifest, verify, and return a plan. |
+| `savePlan(plan, path?)` / `loadPlan(path)` | Persist or load a plan. |
+| `apply({ planPath?, ids? })` | Revalidate and apply through Content Mutation. |
+| `status()` | Reconcile state with the mutation journal and return per-migration status. |
+| `list()` | List definitions with their applied status. |
+| `history({ limit? })` | Return bounded run history. |
+| `rollback({ planId?, migrationId? })` | Roll back an applied migration through Content Mutation. |
+| `recover({ journal?, migrationId? })` | Recover an interrupted mutation journal. |
+
+`FileSystemContentMigrationOptions` also accepts `config`, `plugins`,
+`buildTime`, `exclude`, and `redirectField` when the future manifest must match
+a custom build.
 
 ## Transformation Rules
 
@@ -210,9 +253,11 @@ Migration modules live at `<project>/migrations/index.mjs` (or `.js`, `.mts`,
 Only project code is executed. Markdown and frontmatter are data and are never
 evaluated as JavaScript.
 
-The CLI adds a narrow `migrate` branch to the existing dispatcher. It does not
-create a command registry or depend on the parallel CLI Extension API. A later
-integration only needs to forward `migrate` arguments to `runMigrate`.
+`migrate` is registered in the same typed [[reference/cli-extension|CLI command
+registry]] as the built-in commands. Each action has its own definition, help
+metadata, JSON support, and exit code; there is no separate migration parser or
+dispatcher branch. `runMigrate` remains the implementation behind those
+definitions.
 
 ## Safety
 
@@ -227,6 +272,23 @@ integration only needs to forward `migrate` arguments to `runMigrate`.
 - Draft, unlisted, and scheduled visibility is preserved unless a migration
   explicitly changes it.
 - Migration code is trusted project code; content is not trusted code.
+
+## Troubleshooting
+
+- **`migrate list` shows nothing**: the loader reads `migrations/index.mjs`,
+  `.js`, `.mts`, or `.ts` from the project root. Confirm the file exports an array
+  or `{ migrations }`.
+- **"definition changed" in `status`**: the registered definition fingerprint no
+  longer matches the applied record. Restore the definition or bump `version`.
+- **Apply is skipped**: the same ID, version, and definition fingerprint was
+  already applied. Bump the version for a new change.
+- **`recovery-required`**: the mutation journal was interrupted. Run
+  `migrate recover --apply` before another apply.
+- **Rollback reports a conflict**: a file changed after the migration, a backup is
+  missing, or the journal is corrupt. Rollback leaves the content untouched;
+  inspect the conflict path.
+- **A saved plan cannot be applied**: plans are bound to the content and registry
+  fingerprint at planning time. Re-plan instead of editing the JSON.
 
 ## Performance
 
@@ -243,4 +305,6 @@ Content Mutation remains the only write path. Migration adds versioned intent,
 declarative rules, dependency ordering, future-manifest verification, and
 transaction history above it. There is no second backup engine, file writer, or
 content parser. If a change cannot be expressed safely as a mutation, the
-migration reports a conflict instead of applying it.
+migration reports a conflict instead of applying it. See
+[[content-mutation|Content Mutation System]] for the plan, journal, lock,
+recovery, and rollback contract.

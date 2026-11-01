@@ -118,17 +118,19 @@ Retraction and republication use the existing [[glossary/visibility|visibility]]
 ## CLI
 
 ```text
-riebeckite publish plan      [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--require-approval]
-riebeckite publish status    [--json] ...
-riebeckite publish validate  [--json] ...
-riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] ...
+riebeckite publish plan      [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--state-file <path>] [--require-approval]
+riebeckite publish status    [--json] [--state-file <path>] ...
+riebeckite publish validate  [--json] [--state-file <path>] ...
+riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] [--state-file <path>] ...
 riebeckite publish approve   <slug...> [--all] [--by <name>]
 riebeckite publish revoke    <slug...> [--all]
-riebeckite publish record    --provider <name> [--trigger <manual|scheduled|ci|cli>]
-riebeckite publish gate      [--json] [--provider <name>]
+riebeckite publish record    --provider <name> [--state-file <path>]
+riebeckite publish gate      [--json] [--provider <name>] [--state-file <path>]
 ```
 
 `plan` and `status` are read-only. `validate` exits non-zero when the plan has an error or when the build artifact does not match the plan. `run` is a dry run unless `--execute` is present.
+
+`--state-file <path>`, or the `RIEBECKITE_PUBLICATION_STATE` environment variable, overrides `publication/state.json`. This is for a site that keeps its durable state outside the checked-out tree. A missing file at an explicit path is a cold start; malformed state at an explicit path is an error, not a silent reset.
 
 ```sh
 # Inspect without touching the network
@@ -175,18 +177,29 @@ For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s 
 - The workflow fetches the branch head and stops when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
 - `publish plan --json` decides whether a scheduled run needs a build and deploy. A push always builds because application code may have changed.
 - The plan is uploaded as an artifact, then `publish validate` and `publish gate` check the built output.
-- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot, and the workflow commits `publication/state.json` with `[skip ci]`. The next run reads that committed state, not the [[glossary/cache|cache]].
+- Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot to `RIEBECKITE_PUBLICATION_STATE` outside the worktree, and the workflow stores it on the `publication-state` branch with Git plumbing. The source branch is never committed to or pushed.
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
 
 A site that does not use scheduled publication still runs the schedule in this reference workflow, but the plan reports no changes and the workflow skips build and deploy. Remove the `schedule` trigger from generated sites that do not use `publishAt` if the periodic check itself is unwanted.
 
-The state commit requires `contents: write` and a branch that the workflow may push to. If branch protection forbids the push, the deployment still happens, the job reports the failure, and the next run safely redeploys because the durable snapshot was not updated. Without any durable snapshot a runner treats every note as newly added; that is a full redeploy, never a skipped publication.
+Publication state lives on a dedicated `publication-state` branch with its own history. The workflow restores it into the runner's temporary directory before planning and pushes one new commit after a successful deploy. It needs `contents: write`, and nothing beyond the standard `GITHUB_TOKEN`. If the branch moves during the run, the workflow fails instead of overwriting the newer state; the site is already deployed, and rerunning records the current state. If the branch does not exist, the run starts from `publication/state.json` when that legacy file is still committed, otherwise from scratch. A corrupt state file fails the run instead of silently redeploying everything.
+
+### Moving existing state off the source branch
+
+Older Riebeckite releases committed `publication/state.json` to the source branch. To migrate:
+
+1. Update `.github/workflows/publish.yml` from the current template and keep the existing `publication/state.json` committed for one run.
+2. Push, or run the workflow manually. It reads the legacy file and creates the `publication-state` branch.
+3. Delete `publication/state.json` from the repository in a normal commit and keep it in `.gitignore`. The workflow never recreates it on a development branch.
+4. Do not merge `publication-state` into a development branch. It is operational state with an independent history.
+
+If the legacy file is deleted before the first run, that run performs one full redeploy. Nothing is lost, and the next successful run initializes the branch. Never force-push the branch to recover it: delete it only when you accept a full redeploy, or restore it from its own history.
 
 A scheduled job is delayed by runner availability and GitHub's queue. The workflow is idempotent: a late run computes the current state instead of replaying the missed schedule. If a re-run checks out an older commit, its build marker is older than the committed state and `record` refuses to overwrite the newer snapshot.
 
 ## History and diagnostics
 
-The durable publication state is `publication/state.json` at the project root. It contains only the last successful snapshot: run id, publication fingerprint, routable slugs, fingerprints, redirects, artifact fingerprint, and provider. Commit it with the site. It has no content bodies or credentials and is the authoritative record for change detection.
+The durable publication state is the `state.json` file on the `publication-state` branch. CI restores it through `RIEBECKITE_PUBLICATION_STATE` and never writes it into the checked-out source tree. The local CLI uses `publication/state.json` at the project root by default; that file is ignored by Git, because the branch is the CI authority. `--state-file <path>` selects another location, and an explicitly selected file fails closed when it is malformed. The snapshot contains only the last successful snapshot: run id, publication fingerprint, routable slugs, fingerprints, redirects, artifact fingerprint, and provider. It has no content bodies or credentials and is the authoritative record for change detection.
 
 `.riebeckite/publication/history.json` is the diagnostic history:
 
@@ -211,11 +224,48 @@ Before deploying, Riebeckite requires a marker whose publication fingerprint mat
 
 `publish status --json` combines the current plan, the artifact state, provider capabilities, required environment variable names, approval file path, durable state, and history. It works without network access; only an actual deployment needs credentials.
 
+## Security and trust
+
+- Core and the planner never read, store, or write hosting credentials.
+  `publish status` reports required environment variable names, not values.
+- An approval is trusted only when `publication/approvals.json` is committed on
+  the branch that CI checks out. A local file grants nothing by itself.
+- Approval records contain no secret. They bind a slug to the current content
+  fingerprint, so editing the note invalidates the approval.
+- A deploy requires a build marker whose publication fingerprint matches the
+  current plan, and the artifact files must match the recorded artifact hash when
+  one exists. Missing or copied markers fail closed.
+- The lock prevents two local runs from deploying at once. It does not coordinate
+  with a direct `wrangler` call or another machine.
+- Direct provider actions and manual `wrangler` runs are outside Riebeckite's
+  control. Protect workflow files, repository settings, and provider credentials
+  separately.
+
+## Troubleshooting
+
+- **`publish validate` fails with an artifact mismatch**: rebuild with the current
+  plan. A copied `dist/` or an older build marker cannot be deployed.
+- **`publish run --execute` says the durable state is newer**: the state file
+  belongs to a newer deployment. Restore the latest `publication-state` branch in
+  CI, or refresh the local state file, then rebuild before publishing.
+- **Approval is required but `publish approve` does not help**: approvals bind to
+  the current content fingerprint. Rebuild and approve the new content; editing a
+  note invalidates its approval.
+- **A scheduled note did not publish**: the planner is best effort. Run
+  `publish plan` to confirm the `publishAt` time, then run `publish run --execute`
+  or wait for the next scheduled job.
+- **The gate passes locally but CI blocks**: CI checks the committed approval file
+  and the current artifact. A local uncommitted approval file is not trusted.
+- **A provider is not detected**: pass `--provider`, and confirm the hosting
+  configuration file exists. Credentials are read only by the deploying command.
+
 ## Verification notes
 
 Local plan, approval, artifact, adapter, and history checks run in the package test suites. Real uploads to Cloudflare Workers, Cloudflare Pages, GitHub Pages, Netlify, and Vercel require credentials that are not available in this repository's tests; those paths are **UNVERIFIED** in automated tests. Run `publish run --execute` once per provider in a trusted environment before relying on the workflow.
 
 ## What this does not do
+
+This section is the limitation list, not a roadmap.
 
 - It does not embed hosting credentials in Core, the manifest, or the static output.
 - It does not add a database, server, or scheduler inside Core.

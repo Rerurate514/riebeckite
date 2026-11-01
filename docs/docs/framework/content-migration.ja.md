@@ -6,7 +6,7 @@ title: コンテンツ移行システム
 
 コンテンツ移行システムは、バージョン付きの宣言的な変更をコンテンツへ適用します。
 **何を変更するか**は移行が担当し、**どう安全に書き込むか**は
-コンテンツ変更システム（Content Mutation）が担当します。
+[[content-mutation|コンテンツ変更システム]]が担当します。
 
 移行がファイルを直接書き換えることはありません。移行はコンテンツ変更の計画を
 作り、変更後のマニフェストを検証し、実際の書き込み、競合検出、ジャーナル、
@@ -99,6 +99,49 @@ const registry = createContentMigrationRegistry([legacy]);
 同じ ID の複数バージョンを共存させられます。新しいバージョンを適用すると、
 適用済みの古いバージョンは `superseded` になります。同じバージョンで定義の
 指紋が変わった場合は拒否されるため、バージョンを上げてください。
+
+## API リファレンス
+
+定義と計画の API は `@riebeckite/core` からエクスポートされます。
+
+| API | 用途 |
+| --- | --- |
+| `defineContentMigration(definition)` | 1 つの移行定義を検証して正規化する。 |
+| `createContentMigrationRegistry(migrations)` | 重複、依存関係、循環、決定的な順序を検査する。 |
+| `migrationKey(id, version)` | 状態と履歴が使う安定キー。 |
+| `fingerprintContentMigrationDefinition(definition)` | 再検証用に定義をフィンガープリント化する。 |
+| `planContentMigrationBatch({ migrations, files, ... })` | 定義をメモリ上で適用し、計画済みバッチを作る。 |
+| `applyContentMigration(content, migration)` | 1 つの変換を解析済みコンテンツへ適用する。 |
+| `parseMigrationContent(path, markdown)` | 移行用に Markdown とフロントマターを解析する。 |
+| `diffFrontmatter(before, after)` | 2 つのフロントマターを比較する。 |
+| `isSafeContentPath(path)` | 共通の論理パス規則を適用する。 |
+| `appendContentMigrationHistory` / `parseContentMigrationState` / `parseContentMigrationHistory` | 保存状態を検証し、上限内に収める。 |
+
+ファイルシステム実行層は `@riebeckite/node` からエクスポートされます。
+
+```ts
+import { FileSystemContentMigration } from "@riebeckite/node";
+
+const migration = new FileSystemContentMigration({
+  contentDirectory,
+  registry,
+});
+```
+
+| メソッド | 動作 |
+| --- | --- |
+| `plan({ ids? })` | ドライラン。読み込み、変換、変更後マニフェストの構築、検証を行い、計画を返す。 |
+| `savePlan(plan, path?)` / `loadPlan(path)` | 計画を保存または読み込む。 |
+| `apply({ planPath?, ids? })` | 再検証し、コンテンツ変更経由で適用する。 |
+| `status()` | 状態と変更ジャーナルを突き合わせ、移行ごとの状態を返す。 |
+| `list()` | 定義と適用状態の一覧を返す。 |
+| `history({ limit? })` | 上限付きの実行履歴を返す。 |
+| `rollback({ planId?, migrationId? })` | 適用済みの移行をコンテンツ変更経由で巻き戻す。 |
+| `recover({ journal?, migrationId? })` | 中断した変更ジャーナルを復旧する。 |
+
+`FileSystemContentMigrationOptions` は、変更後マニフェストを独自ビルドに
+合わせるための `config`、`plugins`、`buildTime`、`exclude`、`redirectField` も
+受け取ります。
 
 ## 変換ルール
 
@@ -207,9 +250,10 @@ CLI は競合を表示し、終了コードを非ゼロにします。JSON 出�
 エクスポートします。実行されるのはプロジェクトのコードだけです。Markdown と
 フロントマターはデータであり、JavaScript として評価されません。
 
-CLI は既存ディスパッチャーに限定した `migrate` 分岐を追加します。コマンド
-レジストリを作らず、並行開発中の CLI Extension API にも依存しません。後の
-統合では `migrate` の引数を `runMigrate` へ渡すだけで済みます。
+`migrate` は組み込みコマンドと同じ型付きの[[reference/cli-extension|CLI コマンド
+レジストリ]]に登録されます。各アクションが独自の定義、ヘルプ、JSON 対応、終了
+コードを持ち、移行専用のパーサーやディスパッチャーの分岐はありません。
+`runMigrate` はそれらの定義の実装です。
 
 ## 安全性
 
@@ -225,6 +269,23 @@ CLI は既存ディスパッチャーに限定した `migrate` 分岐を追加�
 - Draft、Unlisted、Scheduled の公開範囲は、移行が明示的に変えない限り維持する。
 - 移行コードは信頼されたプロジェクトコードであり、コンテンツはコードではない。
 
+## トラブルシューティング
+
+- **`migrate list` に何も出ない**: ローダーはプロジェクトルートの
+  `migrations/index.mjs`、`.js`、`.mts`、`.ts` を読みます。配列または
+  `{ migrations }` をエクスポートしているか確認してください。
+- **`status` に「definition changed」と出る**: 登録済み定義のフィンガープリントが
+  適用済み記録と一致していません。定義を戻すか、`version` を上げてください。
+- **適用がスキップされる**: 同じ ID、バージョン、定義フィンガープリントが適用済み
+  です。新しい変更にはバージョンを上げてください。
+- **`recovery-required` になる**: 変更ジャーナルが中断しています。次の適用の前に
+  `migrate recover --apply` を実行してください。
+- **巻き戻しが競合を報告する**: 移行後にファイルが変わった、バックアップがない、
+  またはジャーナルが壊れています。巻き戻しはコンテンツを変更しないので、競合した
+  パスを確認してください。
+- **保存した計画を適用できない**: 計画は作成時のコンテンツとレジストリの
+  フィンガープリントに結び付いています。JSON を編集せず、計画し直してください。
+
 ## 性能
 
 テストスイートは Windows 上で 100 ファイルと 1,000 ファイルを計測します。
@@ -239,4 +300,5 @@ CLI は既存ディスパッチャーに限定した `migrate` 分岐を追加�
 バージョン付きの意図、宣言的ルール、依存順序、変更後マニフェストの検証、
 トランザクション履歴を追加します。2 つ目のバックアップ機構、ファイル書き込み、
 コンテンツパーサーは作りません。安全に変更として表現できない場合は、適用せず
-競合として報告します。
+競合として報告します。計画、ジャーナル、ロック、復旧、巻き戻しの契約は
+[[content-mutation|コンテンツ変更システム]]を参照してください。

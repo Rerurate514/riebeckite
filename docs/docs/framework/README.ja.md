@@ -42,8 +42,12 @@ flowchart LR
 | --- | --- |
 | Riebeckite 全体の構造 | [アーキテクチャ](./architecture.ja.md) |
 | Markdown やコンテンツがどう処理されるか | [コンテンツシステム](./content-system.ja.md) |
+| コンテンツの書き込みをどう計画し、ジャーナルと復旧を扱うか | [コンテンツ変更](./content-mutation.ja.md) |
 | バージョン付きのコンテンツ変更をどう計画・適用するか | [コンテンツ移行](./content-migration.ja.md) |
+| ビルドの入力、変換、出力がどこから来たか | [データ来歴](./build-system/provenance.ja.md) |
+| デプロイ前の計画、承認、ゲート、履歴 | [公開ワークフロー](../guides/deployment/publication-workflow.ja.md) |
 | プラグインがどう動くか | [プラグインシステム](./plugin-system.ja.md) |
+| 型付きコマンド定義とプラグインの CLI コマンド | [CLI Extension API](../reference/cli-extension.ja.md) |
 | ダイアグラムプラグインの共有ユーティリティと契約 | [ダイアグラムプラグイン基盤](./diagram-infrastructure.ja.md) |
 | プラグインが独立したページを提供する仕組み | [ページシステム](./page-system.ja.md) |
 | テーマが見た目を変更する仕組み | [テーマシステム](./theme-system.ja.md) |

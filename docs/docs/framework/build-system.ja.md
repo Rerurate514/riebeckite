@@ -20,7 +20,7 @@ Riebeckite は、前回のビルド結果を利用して、変更された部分
 
 ## このページの構成
 
-- [ビルド来歴](./build-system/provenance.ja.md)
+- [データ来歴](./build-system/provenance.ja.md)
 - [増分ビルド](./build-system/incremental.ja.md)
 - [キャッシュとコマンド](./build-system/cache-and-commands.ja.md)
 

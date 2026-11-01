@@ -118,17 +118,22 @@ riebeckite publish plan --require-approval
 ## CLI
 
 ```text
-riebeckite publish plan      [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--require-approval]
-riebeckite publish status    [--json] ...
-riebeckite publish validate  [--json] ...
-riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] ...
+riebeckite publish plan      [--json] [--at <iso>] [--provider <name>] [--approvals <path>] [--state-file <path>] [--require-approval]
+riebeckite publish status    [--json] [--state-file <path>] ...
+riebeckite publish validate  [--json] [--state-file <path>] ...
+riebeckite publish run       [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] [--state-file <path>] ...
 riebeckite publish approve   <slug...> [--all] [--by <name>]
 riebeckite publish revoke    <slug...> [--all]
-riebeckite publish record    --provider <name> [--trigger <manual|scheduled|ci|cli>]
-riebeckite publish gate      [--json] [--provider <name>]
+riebeckite publish record    --provider <name> [--state-file <path>]
+riebeckite publish gate      [--json] [--provider <name>] [--state-file <path>]
 ```
 
 `plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` を付けるまで Dry Run として動作します。
+
+`--state-file <path>` または環境変数 `RIEBECKITE_PUBLICATION_STATE` は
+`publication/state.json` を上書きします。永続状態をチェックアウトしたツリーの外に
+置くサイト向けです。明示したパスにファイルがなければコールドスタートとなり、
+明示したパスの状態が壊れていれば、黙ってリセットせずエラーになります。
 
 ```sh
 # ネットワークに触れずに確認する
@@ -175,18 +180,29 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 - ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
 - `publish plan --json` がスケジュール実行の build/deploy 要否を決めます。push はアプリケーションコードが変わり得るため常にビルドします。
 - 計画は成果物としてアップロードされ、`publish validate` と `publish gate` がビルド出力を検査します。
-- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットを書き、ワークフローが `publication/state.json` を `[skip ci]` 付きでコミットします。次回実行は[[glossary/cache|キャッシュ]]ではなくこのコミット済み状態を読みます。
+- 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットをワークツリー外の `RIEBECKITE_PUBLICATION_STATE` に書き、ワークフローが Git plumbing で `publication-state` ブランチに保存します。ソースブランチへのコミットや push は行いません。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
 予約公開を使わないサイトでも、この参考ワークフローでは schedule が動きます。ただし計画に変更がなければ build と deploy は省略されます。定期チェック自体が不要なら、生成したサイトから `schedule` トリガーを削除してください。
 
-状態のコミットには `contents: write` と、ワークフローが push できるブランチが必要です。branch protection で push が拒否された場合も、デプロイ自体は行われます。ジョブは失敗を報告し、永続スナップショットは更新されないため、次回実行が安全に再デプロイします。永続状態がない runner は、すべてのノートを新規追加とみなします。これは全再デプロイであり、公開の取りこぼしではありません。
+公開状態は、独立した履歴を持つ専用の `publication-state` ブランチに置きます。ワークフローは計画の前に runner の一時ディレクトリへ状態を復元し、デプロイ成功後に1つのコミットだけを push します。必要な権限は `contents: write` だけで、標準の `GITHUB_TOKEN` 以外は要求しません。実行中にブランチが進んだ場合は、新しい状態を上書きせずに失敗します。サイトはすでにデプロイ済みなので、再実行すれば現在の状態を記録できます。ブランチが存在しない場合は、旧 `publication/state.json` がまだコミットされていればそれを引き継ぎ、なければ最初から公開します。状態ファイルが壊れている場合は、黙って全再デプロイせず失敗します。
+
+### 既存の状態をソースブランチから移行する
+
+以前の Riebeckite は `publication/state.json` をソースブランチにコミットしていました。移行手順は次のとおりです。
+
+1. `.github/workflows/publish.yml` を現在のテンプレートに更新し、既存の `publication/state.json` は1回の実行分だけコミットしたまま残します。
+2. push するか、ワークフローを手動実行します。旧ファイルを読み取り、`publication-state` ブランチを作成します。
+3. 通常のコミットで `publication/state.json` をリポジトリから削除し、`.gitignore` に残します。ワークフローが開発ブランチに再生成することはありません。
+4. `publication-state` を開発ブランチへマージしないでください。独立した履歴を持つ運用状態です。
+
+最初の実行前に旧ファイルを削除した場合、その1回だけ全再デプロイになります。失われるものはなく、次の成功実行でブランチが初期化されます。復旧のためにブランチを force push しないでください。全再デプロイを受け入れる場合に限り削除するか、ブランチ自身の履歴から復元してください。
 
 スケジュール実行は、runner の空き状況や GitHub のキューによって遅れます。ワークフローは冪等なので、遅れた実行は抜けたスケジュールを再生せず、現在の状態を計算します。再実行が古いコミットをチェックアウトした場合、ビルドマーカーがコミット済み状態より古いため、`record` は新しいスナップショットの上書きを拒否します。
 
 ## 履歴と診断
 
-永続的な公開状態は、プロジェクトルートの `publication/state.json` です。最後に成功したスナップショットだけを含み、内訳は run id、公開 Fingerprint、公開対象の slug、Fingerprint、リダイレクト、成果物 Fingerprint、provider です。サイトと一緒にコミットしてください。本文や認証情報は含まず、変更検出の信頼できる記録になります。
+永続的な公開状態は、`publication-state` ブランチ上の `state.json` です。CI は `RIEBECKITE_PUBLICATION_STATE` を通して復元し、チェックアウトしたソースツリーには書き込みません。ローカル CLI は既定でプロジェクトルートの `publication/state.json` を使います。このファイルは Git の追跡対象外です。CI の正本はブランチだからです。`--state-file <path>` で別の場所を指定でき、明示したファイルが壊れている場合は安全側に倒して失敗します。スナップショットには最後に成功した状態だけが入り、内訳は run id、公開 Fingerprint、公開対象の slug、Fingerprint、リダイレクト、成果物 Fingerprint、provider です。本文や認証情報は含まず、変更検出の信頼できる記録になります。
 
 `.riebeckite/publication/history.json` は診断用の履歴です。
 
@@ -211,11 +227,48 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 
 `publish status --json` は現在の計画、成果物の状態、provider の機能、必要な環境変数名、承認ファイル、永続状態、履歴をまとめて出力します。ネットワークがなくても動作し、認証情報が必要なのは実際のデプロイだけです。
 
+## セキュリティと信頼境界
+
+- Core とプランナーは、ホスティングの認証情報を読む、保存する、書き込むことを
+  しません。`publish status` が報告するのは必要な環境変数の名前で、値ではありません。
+- 承認が信頼されるのは、CI がチェックアウトするブランチに
+  `publication/approvals.json` がコミットされている場合だけです。ローカルの
+  ファイルだけでは何も許可されません。
+- 承認記録に秘密情報はありません。slug を現在のコンテンツフィンガープリントに
+  結び付けるため、ノートを編集すると承認は無効になります。
+- デプロイには、現在の計画と公開フィンガープリントが一致するビルドマーカーが
+  必要です。成果物ハッシュが記録されていれば、`dist/` のファイルも一致しなければ
+  なりません。欠損したマーカーやコピーされたマーカーは安全側に倒して失敗します。
+- ロックはローカルの 2 つの実行が同時にデプロイするのを防ぎます。`wrangler` の
+  直接実行や別マシンとは調整しません。
+- provider の直接操作や手動の `wrangler` 実行は Riebeckite の管理外です。
+  ワークフローファイル、リポジトリ設定、provider の認証情報は別途保護してください。
+
+## トラブルシューティング
+
+- **`publish validate` が成果物の不一致で失敗する**: 現在の計画でビルドし直して
+  ください。コピーした `dist/` や古いビルドマーカーはデプロイできません。
+- **`publish run --execute` が永続状態の方が新しいと報告する**: 状態ファイルが
+  より新しいデプロイのものです。CI では最新の `publication-state` ブランチを
+  復元し、ローカルでは状態ファイルを更新してから、ビルドし直して公開してください。
+- **承認が必要なのに `publish approve` で解決しない**: 承認は現在のコンテンツ
+  フィンガープリントに結び付きます。新しいコンテンツでビルドし直して承認して
+  ください。ノートを編集すると承認は無効になります。
+- **予約したノートが公開されない**: スケジューラーはベストエフォートです。
+  `publish plan` で `publishAt` を確認し、`publish run --execute` を実行するか、
+  次のスケジュール実行を待ってください。
+- **ローカルではゲートが通るのに CI で止まる**: CI はコミット済みの承認ファイルと
+  現在の成果物を検査します。ローカルの未コミットの承認ファイルは信頼されません。
+- **provider が検出されない**: `--provider` を渡し、ホスティング設定ファイルが
+  あることを確認してください。認証情報を読むのはデプロイするコマンドだけです。
+
 ## 検証状況
 
 ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各プロバイダーで信頼できる環境から `publish run --execute` を一度実行してください。
 
 ## この仕組みがしないこと
+
+この節は制約の一覧であり、ロードマップではありません。
 
 - ホスティングの認証情報を Core、[[glossary/manifest|マニフェスト]]、静的出力に埋め込まない。
 - Core にデータベース、サーバー、スケジューラーを追加しない。

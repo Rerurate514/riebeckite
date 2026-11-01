@@ -38,8 +38,12 @@ flowchart LR
 | --- | --- |
 | Package ownership and dependency direction | [Architecture](./architecture.md) |
 | How Markdown and assets become pages | [Content system](./content-system.md) |
+| How content writes are planned, journaled, and recovered | [Content mutation](./content-mutation.md) |
 | How versioned content changes are planned and applied | [Content migration](./content-migration.md) |
+| Where build inputs, transforms, and outputs came from | [Data Provenance](./build-system/provenance.md) |
+| Pre-deploy planning, approvals, gates, and history | [Publication workflow](../guides/deployment/publication-workflow.md) |
 | How plugins are resolved and run | [Plugin system](./plugin-system.md) |
+| Typed command definitions and Plugin CLI commands | [CLI Extension API](../reference/cli-extension.md) |
 | Shared utilities and contracts for diagram plugins | [Diagram plugin infrastructure](./diagram-infrastructure.md) |
 | How plugins provide standalone pages | [Page system](./page-system.md) |
 | How themes interact with CSS and plugin output | [Theme system](./theme-system.md) |

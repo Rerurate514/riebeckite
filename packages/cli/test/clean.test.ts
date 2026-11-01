@@ -5,17 +5,21 @@ import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
+  formatPathHelp,
+  formatRootHelp,
   type ResolvedRiebeckiteConfig,
+  resolveCliCommand,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
 import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../src/application_root.js";
-import { parseCommand } from "../src/cli.js";
+import { createBuiltinRegistry } from "../src/command/builtins.js";
 import {
   removeManagedPath,
   runClean,
   UnsafeCleanPathError,
 } from "../src/commands/clean.js";
+import { resolveInput } from "./command_fixture.js";
 
 function makeConfig(root: string): ResolvedRiebeckiteConfig {
   return {
@@ -357,31 +361,34 @@ test("clean prints the scope-specific message", async () => {
   assert.deepEqual(allLogs, ["Cleaned Riebeckite state and build output."]);
 });
 
-test("parseCommand accepts the clean scopes", () => {
-  assert.deepEqual(parseCommand(["clean"]), { name: "clean", scope: "state" });
-  assert.deepEqual(parseCommand(["clean", "--output"]), {
-    name: "clean",
-    scope: "output",
+test("the registry accepts the clean scopes", () => {
+  assert.deepEqual(resolveInput(["clean"]).options, {
+    output: false,
+    all: false,
   });
-  assert.deepEqual(parseCommand(["clean", "--all"]), {
-    name: "clean",
-    scope: "all",
+  assert.deepEqual(resolveInput(["clean", "--output"]).options, {
+    output: true,
+    all: false,
+  });
+  assert.deepEqual(resolveInput(["clean", "--all"]).options, {
+    output: false,
+    all: true,
   });
 });
 
-test("parseCommand rejects unknown clean options", () => {
-  assert.throws(() => parseCommand(["clean", "--force"]), /Usage: riebeckite/);
+test("the registry rejects unknown or conflicting clean options", () => {
+  assert.throws(() => resolveInput(["clean", "--force"]), /Unknown option/);
   assert.throws(
-    () => parseCommand(["clean", "--output", "--all"]),
-    /Usage: riebeckite/,
+    () => resolveInput(["clean", "--output", "--all"]),
+    /Use either --output or --all/,
   );
 });
 
-test("the usage message lists the clean options", () => {
-  try {
-    parseCommand(["--help"]);
-    assert.fail("expected a usage error");
-  } catch (error) {
-    assert.match(String(error), /clean \[--output \| --all\]/);
-  }
+test("the root help lists the clean options", () => {
+  const registry = createBuiltinRegistry();
+  assert.equal(resolveCliCommand(registry, ["--help"]).kind, "root-help");
+  assert.match(formatRootHelp(registry), /clean/);
+  const help = formatPathHelp(registry, "clean");
+  assert.match(help, /--output/);
+  assert.match(help, /--all/);
 });

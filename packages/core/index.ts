@@ -437,6 +437,7 @@ export {
   getResolvedPluginMetadata,
   resolvePlugins,
 } from "./src/types/plugin.js";
+export * from "./src/cli/index.js";
 export type {
   PluginAsset,
   PluginAssetKind,

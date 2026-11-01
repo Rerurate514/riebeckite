@@ -5,38 +5,32 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseCommand } from "../src/cli.js";
 import { runCreatePlugin } from "../src/commands/create_plugin.js";
 import { PLUGIN_FEATURE_IDS } from "../src/plugin_generator/registry.js";
 import { renderPluginIndex } from "../src/plugin_generator/templates.js";
+import { resolveInput } from "./command_fixture.js";
 
 test("parses create plugin features", () => {
-  assert.deepEqual(
-    parseCommand([
-      "create",
-      "plugin",
-      "my-plugin",
-      "--features",
-      "transform,diagnostics,cache",
-    ]),
-    {
-      name: "create-plugin",
-      pluginName: "my-plugin",
-      directory: "extensions/my-plugin",
-      features: ["transform", "diagnostics", "cache"],
-      tests: true,
-      documentation: true,
-      register: false,
-    },
-  );
+  const input = resolveInput([
+    "create",
+    "plugin",
+    "my-plugin",
+    "--features",
+    "transform,diagnostics,cache",
+  ]);
+  assert.deepEqual(input.arguments, { name: "my-plugin" });
+  assert.equal(input.options.features, "transform,diagnostics,cache");
+  assert.equal(input.options.tests, true);
+  assert.equal(input.options.docs, true);
+  assert.equal(input.options.register, false);
   assert.throws(
     () =>
-      parseCommand(["create", "plugin", "Bad_Name", "--template", "transform"]),
+      resolveInput(["create", "plugin", "Bad_Name", "--template", "transform"]),
     /kebab-case/,
   );
   assert.throws(
     () =>
-      parseCommand(["create", "plugin", "example", "--template", "unknown"]),
+      resolveInput(["create", "plugin", "example", "--template", "unknown"]),
     /Unknown plugin feature/,
   );
 });

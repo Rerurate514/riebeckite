@@ -1,62 +1,61 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseCommand } from "../src/cli.js";
+import { resolveInput } from "./command_fixture.js";
 
 test("doctor accepts diagnostic output options", () => {
-  assert.deepEqual(parseCommand(["doctor"]), {
-    name: "doctor",
+  assert.deepEqual(resolveInput(["doctor"]).options, {
     explain: false,
     json: false,
     fix: false,
     dryRun: false,
     failOn: undefined,
-    codes: [],
+    code: [],
   });
   assert.deepEqual(
-    parseCommand(["doctor", "--explain", "--fix", "--dry-run"]),
+    resolveInput(["doctor", "--explain", "--fix", "--dry-run"]).options,
     {
-      name: "doctor",
       explain: true,
       json: false,
       fix: true,
       dryRun: true,
       failOn: undefined,
-      codes: [],
+      code: [],
     },
   );
 });
 
 test("doctor accepts exit thresholds and diagnostic code filters", () => {
   assert.deepEqual(
-    parseCommand(["doctor", "--fail-on", "warning", "--code", "CONTENT_X"]),
+    resolveInput(["doctor", "--fail-on", "warning", "--code", "CONTENT_X"])
+      .options,
     {
-      name: "doctor",
       explain: false,
       json: false,
       fix: false,
       dryRun: false,
       failOn: "warning",
-      codes: ["CONTENT_X"],
+      code: ["CONTENT_X"],
     },
   );
 });
 
 test("inspect content accepts an exact path or permalink", () => {
   assert.deepEqual(
-    parseCommand(["inspect", "content", "--path", "/notes/hello/"]),
+    resolveInput(["inspect", "content", "--path", "/notes/hello/"]).options,
     {
-      name: "inspect",
-      target: "content",
       list: false,
       path: "/notes/hello/",
     },
   );
-  assert.throws(() => parseCommand(["inspect", "content", "--path"]));
+  assert.throws(
+    () => resolveInput(["inspect", "content", "--path"]),
+    /requires a value/,
+  );
 });
 
 test("inspect provenance accepts shared state filters and JSON", () => {
   assert.deepEqual(
-    parseCommand([
+    resolveInput([
       "inspect",
       "provenance",
       "--json",
@@ -66,40 +65,50 @@ test("inspect provenance accepts shared state filters and JSON", () => {
       "index.html",
       "--compare",
       "sha256:build",
-    ]),
+    ]).options,
     {
-      name: "inspect",
-      target: "provenance",
-      list: false,
       json: true,
       source: "notes/hello.md",
       output: "index.html",
       compare: "sha256:build",
     },
   );
-  assert.throws(() => parseCommand(["inspect", "provenance", "--source"]));
-  assert.throws(() =>
-    parseCommand(["inspect", "provenance", "--output", "a", "--output", "b"]),
+  assert.throws(
+    () => resolveInput(["inspect", "provenance", "--source"]),
+    /requires a value/,
+  );
+  assert.throws(
+    () =>
+      resolveInput(["inspect", "provenance", "--output", "a", "--output", "b"]),
+    /Duplicate option/,
   );
 });
 
 test("doctor rejects incompatible or unknown options", () => {
-  assert.throws(() => parseCommand(["doctor", "--dry-run"]));
-  assert.throws(() => parseCommand(["doctor", "--json", "--explain"]));
-  assert.throws(() => parseCommand(["doctor", "--json", "--fix"]));
-  assert.throws(() => parseCommand(["doctor", "--github"]));
+  assert.throws(() => resolveInput(["doctor", "--dry-run"]), /--dry-run/);
+  assert.throws(
+    () => resolveInput(["doctor", "--json", "--explain"]),
+    /--json/,
+  );
+  assert.throws(() => resolveInput(["doctor", "--json", "--fix"]), /--json/);
+  assert.throws(() => resolveInput(["doctor", "--github"]), /Unknown option/);
 });
 
 test("upgrade accepts only the check-only contract", () => {
   assert.deepEqual(
-    parseCommand(["upgrade", "--check", "--to", "latest", "--json"]),
+    resolveInput(["upgrade", "--check", "--to", "latest", "--json"]).options,
     {
-      name: "upgrade",
       check: true,
       to: "latest",
       json: true,
     },
   );
-  assert.throws(() => parseCommand(["upgrade", "--to", "latest"]));
-  assert.throws(() => parseCommand(["upgrade", "--check", "--to"]));
+  assert.throws(
+    () => resolveInput(["upgrade", "--to", "latest"]),
+    /Missing required option: --check/,
+  );
+  assert.throws(
+    () => resolveInput(["upgrade", "--check", "--to"]),
+    /requires a value/,
+  );
 });

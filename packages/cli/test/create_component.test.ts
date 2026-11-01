@@ -5,39 +5,32 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { parseCommand } from "../src/cli.js";
 import { runCreateComponent } from "../src/commands/create_component.js";
 import { renderComponent } from "../src/component_generator/templates.js";
 import { listLocalPlugins } from "../src/local_plugins.js";
+import { resolveInput } from "./command_fixture.js";
 
 test("parses component options", () => {
-  assert.deepEqual(
-    parseCommand([
-      "create",
-      "component",
-      "note-card",
-      "--target",
-      "plugin",
-      "--plugin",
-      "notes",
-      "--with-tests",
-      "--with-styles",
-    ]),
-    {
-      name: "create-component",
-      options: {
-        name: "note-card",
-        target: "plugin",
-        plugin: "notes",
-        theme: undefined,
-        tests: true,
-        styles: true,
-      },
-    },
-  );
+  const input = resolveInput([
+    "create",
+    "component",
+    "note-card",
+    "--target",
+    "plugin",
+    "--plugin",
+    "notes",
+    "--with-tests",
+    "--with-styles",
+  ]);
+  assert.equal(input.arguments.name, "note-card");
+  assert.equal(input.options.target, "plugin");
+  assert.equal(input.options.plugin, "notes");
+  assert.equal(input.options.theme, undefined);
+  assert.equal(input.options.withTests, true);
+  assert.equal(input.options.withStyles, true);
   assert.throws(
     () =>
-      parseCommand(["create", "component", "note-card", "--target", "plugin"]),
+      resolveInput(["create", "component", "note-card", "--target", "plugin"]),
     /--plugin is required/,
   );
 });

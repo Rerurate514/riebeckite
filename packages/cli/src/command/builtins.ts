@@ -656,7 +656,7 @@ function createPluginCommand(): CliCommandDefinition {
         ? "create plugin requires --template or --features outside an interactive terminal."
         : undefined;
     },
-    async handler(context, input) {
+    async handler(_context, input) {
       if (input.arguments.name === undefined) {
         const { runInteractiveCreatePlugin } = await import(
           "../commands/create_plugin.js"
@@ -803,7 +803,7 @@ function createPageTypeCommand(): CliCommandDefinition {
         ? undefined
         : "create page-type requires a PageType name outside an interactive terminal.";
     },
-    async handler(context, input) {
+    async handler(_context, input) {
       if (input.arguments.name === undefined) {
         const { runInteractiveCreatePageType } = await import(
           "../commands/create_page_type.js"
@@ -867,7 +867,7 @@ function createComponentCommand(): CliCommandDefinition {
         ? undefined
         : "create component requires a component name outside an interactive terminal.";
     },
-    async handler(context, input) {
+    async handler(_context, input) {
       if (input.arguments.name === undefined) {
         const { runInteractiveCreateComponent } = await import(
           "../commands/create_component.js"

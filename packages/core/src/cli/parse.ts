@@ -93,7 +93,7 @@ function commandPaths(registry: CliCommandRegistry): string[] {
   for (const registration of registry.registrations) {
     paths.add(registration.command.id);
   }
-  for (const [alias, target] of registry.aliases) paths.add(alias);
+  for (const alias of registry.aliases.keys()) paths.add(alias);
   return [...paths].sort();
 }
 

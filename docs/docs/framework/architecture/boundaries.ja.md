@@ -99,4 +99,10 @@ Site
 
 Core は `@riebeckite/core`（全契約）、`@riebeckite/core/client`（ブラウザ向けクライアント）、`@riebeckite/core/cli`（プラグイン CLI 拡張 API）を公開します。`packages/core/api.json` がレビュー済みの公開範囲です。
 
+### ルート CLI エクスポートからの移行
+
+以前の `0.0.x` では、すべての CLI ヘルパーをパッケージルートから再エクスポートしていました。コマンド定義の契約とビルダーは `@riebeckite/core` に残ります。パーサー、ヘルプ、補完の内部ヘルパーは `@riebeckite/core/cli` からのみ利用できます: `argumentValueKey`、`commandPathSegments`、`findCommandByPath`、`formatCommandHelp`、`formatPathHelp`、`formatRootHelp`、`formatUnknownCommand`、`generateCompletion`、`normalizeCommandId`、`optionValueKey`、`parseCliShell`、`readArgument`、`readOption`、`ROOT_USAGE`、`suggest`、`toArgumentKey`、`toOptionKey`。CLI の型はすべてルートのエントリーポイントに残ります。
+
+`@riebeckite/test/plugin-contract` は削除しました。代わりに `riebeckite plugin verify <path>` を使用してください。検証器は製品の CLI 機能であり、そのエンジンはプログラム向けの公開 API ではありません。
+
 関連する設計については、[Content System](../content-system.ja.md)、[Plugin System](../plugin-system.ja.md)、[Theme System](../theme-system.ja.md)、[HonoX Integration](../honox-integration.ja.md) を参照してください。

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "ab1ecce1-6565-4799-985f-f38efd401532",
-    "publishedAt": "2026-11-01T00:19:14.581Z",
-    "publicationFingerprint": "3dc67362f2dc8ef4df66ab665bb036749a0ad7ed547428a8fa93d82febb3e3ae",
+    "runId": "215e86f6-6881-46cd-84a5-d12e0fb191be",
+    "publishedAt": "2026-11-01T03:09:24.815Z",
+    "publicationFingerprint": "bfb34f0f2997f4369f85caef6cf0103326cb3ff277e4776f242c59118e23d1f2",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -722,16 +722,32 @@
         "permalink": "/docs/framework/testing",
         "title": "Testing",
         "visibility": "public",
-        "fingerprint": "35e68ecab532098b4c9a8580fae363055a2ae228c83d5950b993cd5db066facd",
-        "contentFingerprint": "97ae304f4e5996b470ce98846d4b675010968fe70252484fda3cce0b64e48ad0"
+        "fingerprint": "3a0e086a66450f7cbd35d028134fcb13ac428c929e02149e82199bc0f2786f2d",
+        "contentFingerprint": "1f2355eb651f2513ddd5296e00c03431cb9b967f078438b76ab54bec5323dc67"
       },
       {
         "slug": "docs/framework/testing.ja",
         "permalink": "/ja/docs/framework/testing",
         "title": "テスト",
         "visibility": "public",
-        "fingerprint": "6dbb6ff98761b1355c5f6439f3bf7ccaf3cf19669f0c7954dd22a7023408db3f",
-        "contentFingerprint": "b741b9735dde4aedaf1e2397637bd2ba65f506516058140daeb9c788787a0ddd"
+        "fingerprint": "749769e70f68f39362a25d7f898b580577bb5c232d96c11a9e77c3edbc51e754",
+        "contentFingerprint": "de877c9ecf13d2b8b57d2ff63a252e0dcddfa671890f508d2e4b1cabf930e802"
+      },
+      {
+        "slug": "docs/framework/testing/external-site",
+        "permalink": "/docs/framework/testing/external-site",
+        "title": "External-site E2E",
+        "visibility": "public",
+        "fingerprint": "cb628bdc145ba5fe1f570d4aa0a3e5d3e9293e065eef1787d52cc7d5b71d6db2",
+        "contentFingerprint": "aaf2f88049118ce871af00e4423bfaab23c094e7793a23aa2a86834510290b64"
+      },
+      {
+        "slug": "docs/framework/testing/external-site.ja",
+        "permalink": "/ja/docs/framework/testing/external-site",
+        "title": "外部サイトの E2E",
+        "visibility": "public",
+        "fingerprint": "8dd4ff2630da3b019253fcc0be529d054a38c1995bcde719566f602a60467d21",
+        "contentFingerprint": "8d84fa361ad81a5d9dbab4c7b8fd56d7e6176c6bd41c20ca636245f63d416e1a"
       },
       {
         "slug": "docs/framework/testing/golden-files",
@@ -930,16 +946,16 @@
         "permalink": "/docs/getting-started/deployment",
         "title": "Deployment",
         "visibility": "public",
-        "fingerprint": "60a661983442d67cbdb6f5b30f091ca66959cbbee8d1b6a429f7a3b8fd6fa8f1",
-        "contentFingerprint": "5fa9cc401f46dabbc5a8a77152c812f843be904a6de4d32fcc585485f6edb1c1"
+        "fingerprint": "faab7c19603de94a2c092d89c1e988da5afdafc7257aab963671910f733bbf74",
+        "contentFingerprint": "553944ca262b85b65b7bd9d1366a49643d072ee298144a89d0b9c2138f785c61"
       },
       {
         "slug": "docs/getting-started/deployment.ja",
         "permalink": "/ja/docs/getting-started/deployment",
         "title": "デプロイ",
         "visibility": "public",
-        "fingerprint": "bc25600724af1555ab88451a4db823efa4461ac48d221b2d7ad1c8b8f60e76ab",
-        "contentFingerprint": "08bd01035b3d09c73881be6527668914a4adc394db38e9dbcc29d3837b631237"
+        "fingerprint": "b607f2ded112a5e78d4508bcdfb675a927ffc59ef2f50992b2f1d5ceb40d9972",
+        "contentFingerprint": "f6b2a57f455b4db4c6d44e967e0a9e7b83f8aaaa06a3fb40fed0f18514b4170e"
       },
       {
         "slug": "docs/getting-started/first-content",
@@ -994,16 +1010,16 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "e7701df015c8d57cf0cbc384c730abcb949f921a53325b09b826fcdc1c79c944",
-        "contentFingerprint": "85347867d836c1b5f68b8302a189eb357b0e73a3025bb4322176c27b0c30ddf2"
+        "fingerprint": "d1876b0435d3b92f0901f15c3fcfbb2ce1a6f287b2cce90b931ba2833c7a8536",
+        "contentFingerprint": "2ec283051fee8b15a064ecb668669b8183bfa7641f0350c1cf18e391047b5ab5"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "b43e2bc3d1373f009b6e8a70d6e00f7307a95cc0585ee5c7d5743b65cbc98cbf",
-        "contentFingerprint": "9459243ef1385f44b2e2305513a453b16b9c64c6052cc026b659d6199c3dcbda"
+        "fingerprint": "d2dbe9d4348cadeb69df276cc2baaa4ab36de1922379d0e1cb180b912a21de92",
+        "contentFingerprint": "cd0efde233e27f55f96040f22b74baa23c218bc3095a95a929447d1654bbdb03"
       },
       {
         "slug": "docs/getting-started/obsidian-vault",
@@ -3042,16 +3058,16 @@
         "permalink": "/docs/guides/customizing-your-site",
         "title": "Customizing Your Site",
         "visibility": "public",
-        "fingerprint": "a9b8c5857dc4a28c80ea650a297b7c08dbcd6294621974e1361b2ee196def070",
-        "contentFingerprint": "d7ebcd0aa1e6fa5fc62b8ad8a9796c4822ec907ec85624c47d04d9306ba578df"
+        "fingerprint": "ea4ceba4f2f2af3ebcfac8053fb471df18c0a63228de7d870461df1fb816994f",
+        "contentFingerprint": "af969918ae521203850ded0b5de43de08c683bfae8bd0c9e265136a7bfa33b29"
       },
       {
         "slug": "docs/guides/customizing-your-site.ja",
         "permalink": "/ja/docs/guides/customizing-your-site",
         "title": "サイトのカスタマイズ",
         "visibility": "public",
-        "fingerprint": "110b61d10f7239712dd8d6eb15367ca09367380efa71f0982f97e63b4d86d84a",
-        "contentFingerprint": "36354f497b15c3e437a33bc1473b2f769c56f5bf3649a548ceefdaf95ce3daab"
+        "fingerprint": "ebeb9de7b55465fdf43257d6acca6415bb0495881ca9408256bcf2e61167e799",
+        "contentFingerprint": "e12a2d6e7436cc1c4f8a348dde7c3e6ac7f4a7b8a440d9d53851f8afbd27e310"
       },
       {
         "slug": "docs/guides/customizing-your-site/layout",
@@ -3230,6 +3246,22 @@
         "contentFingerprint": "ac0eb96cb9935bc8fa391fb0bcc737627557650c85518ec0be8c0dee481bc53f"
       },
       {
+        "slug": "docs/guides/deployment/other-hosts",
+        "permalink": "/docs/guides/deployment/other-hosts",
+        "title": "Deploy to other hosts",
+        "visibility": "public",
+        "fingerprint": "8cb974d820e768608b02e5a1f20b4d098745d4bf183cd582d9ac86f0caba0954",
+        "contentFingerprint": "5116d34cfac0bdc3bf19b3c4cab6a462d16877953e13300f083ba29bcb1edb97"
+      },
+      {
+        "slug": "docs/guides/deployment/other-hosts.ja",
+        "permalink": "/ja/docs/guides/deployment/other-hosts",
+        "title": "Cloudflare 以外のホストに公開する",
+        "visibility": "public",
+        "fingerprint": "381925882b63294042d127c3d563549feb05f7749232758699ba8a615533c08b",
+        "contentFingerprint": "9a03376763ea3c8fa68bb717dd3c697057ffcd20d6097338e6b3935107a4dd90"
+      },
+      {
         "slug": "docs/guides/deployment/publication-workflow",
         "permalink": "/docs/guides/deployment/publication-workflow",
         "title": "Publication Workflow",
@@ -3250,16 +3282,16 @@
         "permalink": "/docs/guides/deployment/",
         "title": "Deployment",
         "visibility": "public",
-        "fingerprint": "5a0d53f378a8840dac58090227756b66b26418f74f1c5bc2ccb8afa03a99d3c0",
-        "contentFingerprint": "1d70ded95625ae13f9a3f99437311f4950afa01f646808a499d9266de2a2c3f9"
+        "fingerprint": "ba69116dd8ec18ef38c22adaf6eb07df51ba71745efb5f69a0d501939a417425",
+        "contentFingerprint": "548c6a771e19f50f15aa78d908da7fd34a727956669a4f77ea025df75f817779"
       },
       {
         "slug": "docs/guides/deployment/README.ja",
         "permalink": "/ja/docs/guides/deployment/",
         "title": "デプロイガイド",
         "visibility": "public",
-        "fingerprint": "4f271b97c954c8a81ebc782982dc712f02aa018ab18449588a292aa59505c18a",
-        "contentFingerprint": "2c45535db68d1d8bac6110ef4cbd7b3a9f3afcf0591b9d32a0a2296df4799455"
+        "fingerprint": "23eaf6c75edcf4b2a5afc0a17f1cdadde8954723b967ac046ec592c0c73cdf77",
+        "contentFingerprint": "743909833fdf79946bc162570a7237667a2c4b8634a328c4589f29130b1351bb"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository",
@@ -5218,16 +5250,16 @@
         "permalink": "/docs/plugins/writing-a-plugin",
         "title": "Writing Your First Plugin",
         "visibility": "public",
-        "fingerprint": "e09a02ba55fc64aa8f5c4468156074b243cdf385dbf01244ef3e0174190f385b",
-        "contentFingerprint": "799168a5e5c7977867af813f9954b088f0495acf30d7575bee89bcf00114ba69"
+        "fingerprint": "8b218751a5854d6c7c22c308e57a70d8988bc71180c36122db58eec491de9b16",
+        "contentFingerprint": "8ef42a1a94d888c0f50df5556384fcba6ab72dd8167fb9c3bcde8351a0946fff"
       },
       {
         "slug": "docs/plugins/writing-a-plugin.ja",
         "permalink": "/ja/docs/plugins/writing-a-plugin",
         "title": "はじめてのプラグイン作成",
         "visibility": "public",
-        "fingerprint": "b20f31b687ceda283db651486cf71060417ad932a1e4698f807de6135ec2a472",
-        "contentFingerprint": "9f0a61d49893fc7073ea5c54e2028c058978f70e625f9228c4aea15613ad9c34"
+        "fingerprint": "7b93446c6fb30393ec5a3353cb2c0b9907ebcfb54f05fb42dc3106923debad74",
+        "contentFingerprint": "3fff45637dfd6c07a42f2db033db8ddeed7ea1501e04d93e0b29840e89b472e5"
       },
       {
         "slug": "docs/README",
@@ -5554,16 +5586,16 @@
         "permalink": "/docs/reference/packages",
         "title": "Packages",
         "visibility": "public",
-        "fingerprint": "5df4924e5d91fbd9582d5b4dd10305d9fbd58482d0030f9601460425bfde000e",
-        "contentFingerprint": "ca1991c4c0c4dc047e821fea1af673c0188b774945267ebdb606c4ce627c5424"
+        "fingerprint": "521c2f7c031c7d7bd8f7d50a4d394a302997c25be3f5bbe656f85457ff53adfc",
+        "contentFingerprint": "8b586398ea319327a94646d35c2e5af8588196c9b9a4467d38bc748012635f36"
       },
       {
         "slug": "docs/reference/packages.ja",
         "permalink": "/ja/docs/reference/packages",
         "title": "公開パッケージ",
         "visibility": "public",
-        "fingerprint": "506f5a8c3ccad73db67f9c0588883974b88590bfb7adf2bfd073dec9e24a7314",
-        "contentFingerprint": "0759b3f375f9a71030c2be2369741e5917f2dbdf3d33f59b77fbe453d6d70537"
+        "fingerprint": "349b2656ff53c2ee8f195d622aa24abdbb7d4fddc45b6c99ba9008d6817968e2",
+        "contentFingerprint": "a355324abb752c0b87700f8574d26b3679def9bc825769aacb6a07d461ab5bf8"
       },
       {
         "slug": "docs/reference/plugin-api",
@@ -5646,20 +5678,36 @@
         "contentFingerprint": "25472df41a70e1aab3ae77d23485a832071b4f62cd3be40c23f1f84601d2bcc0"
       },
       {
+        "slug": "docs/reference/preview",
+        "permalink": "/docs/reference/preview",
+        "title": "Preview API",
+        "visibility": "public",
+        "fingerprint": "ec6328e70b558c58b6d6846772bcda97d28c26b9ebe2d986bb9d212acfa02eee",
+        "contentFingerprint": "b3cabf80fa664d27f507f8ae63bb298ae9114159facbe6cf974d6405f9020d83"
+      },
+      {
+        "slug": "docs/reference/preview.ja",
+        "permalink": "/ja/docs/reference/preview",
+        "title": "プレビュー API",
+        "visibility": "public",
+        "fingerprint": "0265ba40afbbedd5e6d1696c047bc85fccacfb1313929178619b4d8fc768372f",
+        "contentFingerprint": "28e8bb2d06f165b54fceb04f3e578d94f818fe7435b3f60dc5278b2107d9ab4d"
+      },
+      {
         "slug": "docs/reference/README",
         "permalink": "/docs/reference/",
         "title": "Reference",
         "visibility": "public",
-        "fingerprint": "ff73af272f7e01c9459ecb0ebb43fc405ed97fb41a5e9e77643a065a110b2e5c",
-        "contentFingerprint": "5bcef00ec35227c74173a44d5292cfa318d4b40f4e52212a4fa56b5b76b7cd4b"
+        "fingerprint": "16d8cf43ccdfe05f915e1c37f2457bfdcc672e2bdbc66de20409e01c34bae5d0",
+        "contentFingerprint": "a7a0b0a987c2611342cb82c3c3819ba67aa18be95369c97c4d955c26e2884713"
       },
       {
         "slug": "docs/reference/README.ja",
         "permalink": "/ja/docs/reference/",
         "title": "リファレンス",
         "visibility": "public",
-        "fingerprint": "ef0a48de2c2402b77b7875feb7d69384528aba198230216d2d1c38c9e440f6ed",
-        "contentFingerprint": "ee4109186e6775ececfabbdd4345114ad8dfd0daa246ffcfac719261539bf276"
+        "fingerprint": "5ae9a3cd5962aa7c9747a5cdfb0f3d97b6cff620cb0fb4379a1c4e64ad90cfea",
+        "contentFingerprint": "f9d622fbd223d228c4b769a1a690baa3106ad65c3b724cab4e76f58c629d8d8c"
       },
       {
         "slug": "docs/reference/theme-api",
@@ -6100,7 +6148,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "2f826b67314dc52d74ff917e73d77d30af6b84218f2f5b0cd3a40edf0e8b7d6b",
+    "artifactFingerprint": "e7d67709e2a2419ea259420e3c3bbce17c76e51100deab0d1b178f353e344177",
     "provider": "cloudflare-workers"
   }
 }

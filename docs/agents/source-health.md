@@ -199,6 +199,13 @@ point back to shared helpers.
 | `packages/plugins/garden-explorer/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
 | `packages/plugins/related-posts/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
 
+The wildcard export warnings on `packages/core/cli.ts`,
+`packages/core/src/cli/index.ts`, `packages/runtime/client.ts`, and
+`packages/runtime/index.ts` are intentional barrel entry points. The Core CLI
+surface is constrained by `packages/core/api.json`; the runtime barrels are the
+public client API. File and function size signals are review inputs, not
+failures.
+
 Biome also reports eight `lint/complexity/noBannedTypes` warnings and one
 `lint/suspicious/noConfusingVoidType` warning in the Core CLI generic defaults
 (`{}` for "no options" and `void` in `CliCommandResult`). Both are intentional:

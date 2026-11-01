@@ -23,7 +23,7 @@ publication: {
 }
 ```
 
-永続スナップショットは `publication/state.json` に書かれます。両方をコミットしてください。詳しくは [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
+永続スナップショットはローカル実行では `publication/state.json` に書かれ、CI では `publication-state` ブランチに保存されます。`publication/state.json` は Git にコミットしないでください。詳しくは [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## cache
 

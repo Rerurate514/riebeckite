@@ -192,6 +192,10 @@ CLOUDFLARE_ACCOUNT_ID
 
 are used.
 
+## Publication state
+
+The workflow stores the last successful publication snapshot on a dedicated `publication-state` branch, not on `main`. Before the build it copies that branch's `state.json` into the runner's temporary directory and points `RIEBECKITE_PUBLICATION_STATE` there. After a successful deploy it pushes one commit to the branch; a failed deploy writes nothing. The source branch is never advanced by the workflow, so your next `git push` does not need a pull or rebase. Do not merge `publication-state` into a development branch. If you migrate from an older workflow that committed `publication/state.json`, see [Publication workflow](../publication-workflow.md).
+
 ## Using a private content repository
 
 Checkout authentication differs between a public and a private content repository.

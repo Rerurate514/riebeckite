@@ -23,7 +23,7 @@ publication: {
 }
 ```
 
-The durable snapshot is written to `publication/state.json`. Commit both files. See [Publication workflow](../../guides/deployment/publication-workflow.md).
+The durable snapshot is written to `publication/state.json` for local runs and stored on the `publication-state` branch by CI. Keep `publication/state.json` out of Git. See [Publication workflow](../../guides/deployment/publication-workflow.md).
 
 ## cache
 

@@ -194,6 +194,10 @@ CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 ```
 
+## 公開状態
+
+ワークフローは、最後に成功した公開スナップショットを `main` ではなく専用の `publication-state` ブランチに保存します。ビルド前にそのブランチの `state.json` を runner の一時ディレクトリへコピーし、`RIEBECKITE_PUBLICATION_STATE` をそこへ向けます。デプロイ成功後にだけ1つのコミットをブランチへ push し、失敗時は何も書きません。ワークフローがソースブランチを進めることはないため、次の `git push` に pull や rebase は不要です。`publication-state` を開発ブランチへマージしないでください。`publication/state.json` をコミットしていた旧ワークフローからの移行は [公開ワークフロー](../publication-workflow.ja.md) を参照してください。
+
 ## プライベートなコンテンツリポジトリを使う
 
 コンテンツリポジトリがパブリックかプライベートかで、チェックアウト時の認証方法が異なります。

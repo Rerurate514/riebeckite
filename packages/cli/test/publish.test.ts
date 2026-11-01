@@ -6,6 +6,7 @@ import { test } from "node:test";
 import {
   type ContentSource,
   createPublicationPlan,
+  createPublicationSnapshot,
   defineDerivedView,
   definePlugin,
   parsePublicationApprovals,
@@ -25,6 +26,7 @@ import {
 import { inspectPublication } from "../src/publication/inspection.js";
 import {
   acquirePublicationLock,
+  publicationStateFile,
   readPublicationHistory,
   readPublicationLock,
   readPublicationState,
@@ -34,6 +36,7 @@ import {
   resolvePublicationHistoryPath,
   resolvePublicationLockPath,
   writePublicationHistory,
+  writePublicationState,
 } from "../src/publication/state.js";
 import { runWranglerDeployment } from "../src/publication/wrangler.js";
 import { resolveInput } from "./command_fixture.js";
@@ -143,6 +146,11 @@ test("publish CLI syntax is parsed explicitly", () => {
   assert.equal(run.options.force, false);
   assert.equal(run.options.trigger, "scheduled");
   assert.equal(run.options.provider, "github-pages");
+  assert.equal(
+    resolveInput(["publish", "plan", "--state-file", "ci/state.json"]).options
+      .stateFile,
+    "ci/state.json",
+  );
   assert.throws(
     () => resolveInput(["publish", "run", "--all"]),
     /Unknown option/,
@@ -359,6 +367,89 @@ test("publish record closes the loop for an external CI deployment", async (t) =
     runPublish(project, options("record", { provider: "cloudflare-workers" })),
     /newer than the build output/,
   );
+});
+
+test("an explicit state file is isolated and fails closed when malformed", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(
+    root,
+    memorySource({ "public.md": "---\npublish: true\n---\n\nPublic.\n" }),
+  );
+  const stateFile = path.join(root, "ci", "state.json");
+  await fs.mkdir(path.dirname(stateFile), { recursive: true });
+
+  const first = await inspectPublication(project, {
+    workflow: "direct",
+    stateFile,
+  });
+  assert.equal(first.stateFile, stateFile);
+  assert.equal(first.durableState.lastSuccess, undefined);
+  assert.equal(first.plan.action, "build-and-deploy");
+
+  await writePublicationHistory(project, {
+    version: 1,
+    runs: [],
+    lastSuccess: createPublicationSnapshot(first.plan, {
+      runId: "previous",
+      publishedAt: BUILD_TIME,
+    }),
+  });
+  assert.equal(
+    (await inspectPublication(project, { workflow: "direct" })).plan.action,
+    "none",
+  );
+  assert.equal(
+    (await inspectPublication(project, { workflow: "direct", stateFile })).plan
+      .action,
+    "build-and-deploy",
+  );
+
+  await fs.writeFile(stateFile, "{truncated");
+  await assert.rejects(
+    inspectPublication(project, { workflow: "direct", stateFile }),
+    /contains invalid JSON/,
+  );
+  await assert.rejects(
+    runPublish(project, options("plan", { stateFile })),
+    /contains invalid JSON/,
+  );
+
+  await fs.writeFile(stateFile, JSON.stringify({ version: 1 }));
+  await writePublicationState(
+    project,
+    {
+      runId: "ci-run",
+      publishedAt: BUILD_TIME,
+      publicationFingerprint: "fingerprint",
+      entries: [],
+      redirects: [],
+    },
+    stateFile,
+  );
+  const restored = await readPublicationState(project, stateFile);
+  assert.equal(restored.lastSuccess?.runId, "ci-run");
+  assert.equal(
+    resolvePublicationDurableStatePath(project),
+    path.join(root, "publication", "state.json"),
+  );
+});
+
+test("an environment state file selects the durable state location", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(root, memorySource({}));
+  const stateFile = path.join(root, "runner", "state.json");
+  process.env.RIEBECKITE_PUBLICATION_STATE = stateFile;
+  try {
+    assert.deepEqual(publicationStateFile(project), {
+      file: stateFile,
+      explicit: true,
+    });
+    assert.equal(resolvePublicationDurableStatePath(project), stateFile);
+  } finally {
+    delete process.env.RIEBECKITE_PUBLICATION_STATE;
+  }
 });
 
 test("corrupt local state files recover instead of wedging publication", async (t) => {

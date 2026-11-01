@@ -42,7 +42,6 @@ import {
   readPublicationApprovals,
   readPublicationHistory,
   releasePublicationLock,
-  resolvePublicationDurableStatePath,
   resolvePublicationHistoryPath,
   writePublicationApprovals,
   writePublicationHistory,
@@ -66,6 +65,7 @@ export type PublishCommandOptions = {
   readonly at?: string;
   readonly provider?: HostingProvider;
   readonly approvals?: string;
+  readonly stateFile?: string;
   readonly workflow?: PublicationWorkflowMode;
   readonly execute: boolean;
   readonly force: boolean;
@@ -129,6 +129,9 @@ async function createPublishContext(
     ...(options.approvals === undefined
       ? {}
       : { approvals: options.approvals }),
+    ...(options.stateFile === undefined
+      ? {}
+      : { stateFile: options.stateFile }),
     workflow,
     useBuildTime:
       options.action === "validate" ||
@@ -190,7 +193,7 @@ async function runPublication(
   }
   if (durableStateIsNewer(context) && !(options.force && artifactCurrent)) {
     throw new PublicationStateError(
-      `Publication state at ${resolvePublicationDurableStatePath(project)} is newer than the build output. Check out the latest state or rebuild before publishing.`,
+      `Publication state at ${context.stateFile} is newer than the build output. Check out the latest state or rebuild before publishing.`,
     );
   }
 
@@ -260,7 +263,7 @@ async function runPublication(
       artifactFingerprint: artifact.artifactFingerprint,
       provider: context.provider,
     });
-    await writePublicationState(project, snapshot);
+    await writePublicationState(project, snapshot, options.stateFile);
     history = recordPublicationSuccess(history, snapshot);
     await writePublicationHistory(project, history);
     if (options.json) printJson({ ...context, run }, "run", project);
@@ -336,7 +339,7 @@ async function runRecord(
   }
   if (durableStateIsNewer(context)) {
     throw new PublicationStateError(
-      `Publication state at ${resolvePublicationDurableStatePath(project)} is newer than the build output. Check out the latest state or rebuild before recording.`,
+      `Publication state at ${context.stateFile} is newer than the build output. Check out the latest state or rebuild before recording.`,
     );
   }
   const run: PublicationRunRecord = {
@@ -357,7 +360,7 @@ async function runRecord(
   );
   let history: PublicationHistory;
   try {
-    await writePublicationState(project, snapshot);
+    await writePublicationState(project, snapshot, options.stateFile);
     history = recordPublicationSuccess(
       appendPublicationRun(await readPublicationHistory(project), run),
       snapshot,
@@ -549,7 +552,7 @@ function printJson(
         artifactIssues: context.artifactIssues,
         approvalsFile: context.approvalFile,
         durableState: context.durableState,
-        durableStateFile: resolvePublicationDurableStatePath(project),
+        durableStateFile: context.stateFile,
         history: context.history,
         historyFile: resolvePublicationHistoryPath(project),
         ...(context.run === undefined ? {} : { run: context.run }),
@@ -602,7 +605,7 @@ function printStatus(
     console.log("  Last success: none");
   }
   console.log(
-    `  Durable state: ${resolvePublicationDurableStatePath(project)}${context.durableState.lastSuccess ? "" : " (snapshot missing)"}`,
+    `  Durable state: ${context.stateFile}${context.durableState.lastSuccess ? "" : " (snapshot missing)"}`,
   );
   const latest = context.history.runs[0];
   console.log(

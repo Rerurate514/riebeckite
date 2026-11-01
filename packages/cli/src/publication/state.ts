@@ -19,6 +19,8 @@ import type { RiebeckiteProject } from "../application_root.js";
 
 const STATE_DIRECTORY = "publication";
 const DEFAULT_APPROVAL_FILE = "publication/approvals.json";
+const DEFAULT_DURABLE_STATE_FILE = "publication/state.json";
+const DURABLE_STATE_ENV = "RIEBECKITE_PUBLICATION_STATE";
 
 export class PublicationStateError extends Error {
   constructor(message: string) {
@@ -46,20 +48,42 @@ export function resolvePublicationLockPath(project: RiebeckiteProject): string {
   return path.join(resolvePublicationStateDirectory(project), "lock.json");
 }
 
+export type PublicationStateFile = {
+  readonly file: string;
+  readonly explicit: boolean;
+};
+
+export function publicationStateFile(
+  project: RiebeckiteProject,
+  override?: string,
+): PublicationStateFile {
+  const requested = override ?? process.env[DURABLE_STATE_ENV];
+  return {
+    file: path.resolve(
+      project.projectRoot,
+      requested ?? DEFAULT_DURABLE_STATE_FILE,
+    ),
+    explicit: requested !== undefined,
+  };
+}
+
 export function resolvePublicationDurableStatePath(
   project: RiebeckiteProject,
 ): string {
-  return path.join(project.projectRoot, "publication", "state.json");
+  return publicationStateFile(project).file;
 }
 
 export async function readPublicationState(
   project: RiebeckiteProject,
+  override?: string,
 ): Promise<PublicationState> {
-  const file = resolvePublicationDurableStatePath(project);
-  const parsed = await readJson(file);
+  const { file, explicit } = publicationStateFile(project, override);
+  const parsed = await readJson(file, { strict: explicit });
   if (parsed === undefined) return emptyPublicationState();
   const state = parsePublicationState(parsed);
   if (!state) {
+    const message = `${file} is not a valid publication state (expected {"version":1,...}).`;
+    if (explicit) throw new PublicationStateError(message);
     console.warn(
       `Ignoring malformed durable publication state at ${file}; the next run publishes from scratch.`,
     );
@@ -71,8 +95,9 @@ export async function readPublicationState(
 export async function writePublicationState(
   project: RiebeckiteProject,
   snapshot: PublicationSnapshot,
+  override?: string,
 ): Promise<void> {
-  await writeJsonAtomic(resolvePublicationDurableStatePath(project), {
+  await writeJsonAtomic(publicationStateFile(project, override).file, {
     version: 1,
     lastSuccess: snapshot,
   });

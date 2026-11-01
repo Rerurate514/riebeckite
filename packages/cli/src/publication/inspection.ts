@@ -17,6 +17,7 @@ import type { RiebeckiteProject } from "../application_root.js";
 import { readPublicationArtifact } from "./artifact.js";
 import { loadPublicationManifest } from "./manifest.js";
 import {
+  publicationStateFile,
   readPublicationApprovals,
   readPublicationHistory,
   readPublicationState,
@@ -29,6 +30,7 @@ export type PublicationInspection = {
   readonly artifact: PublicationArtifactState;
   readonly history: PublicationHistory;
   readonly durableState: PublicationState;
+  readonly stateFile: string;
   readonly approvals: PublicationApprovals;
   readonly approvalFile: string;
   readonly artifactIssues: ReturnType<typeof validatePublicationArtifact>;
@@ -38,6 +40,7 @@ export type PublicationInspectionOptions = {
   readonly provider?: HostingProvider;
   readonly at?: string;
   readonly approvals?: string;
+  readonly stateFile?: string;
   readonly workflow: PublicationWorkflowMode;
   /** Use the build marker completion time instead of the current time. */
   readonly useBuildTime?: boolean;
@@ -67,18 +70,22 @@ export async function inspectPublication(
       : resolvePublishingBuildTime(options.at));
   const manifest = await loadPublicationManifest(project, buildTime);
   const history = await readPublicationHistory(project);
-  const durableState = await readPublicationState(project);
+  const durableState = await readPublicationState(project, options.stateFile);
+  const stateLocation = publicationStateFile(project, options.stateFile);
   const { approvals, file } = await readPublicationApprovals(
     project,
     options.approvals,
   );
-  const previous = durableState.lastSuccess ?? history.lastSuccess;
+  const previous =
+    durableState.lastSuccess ??
+    (stateLocation.explicit ? undefined : history.lastSuccess);
   if (
+    !stateLocation.explicit &&
     durableState.lastSuccess === undefined &&
     history.lastSuccess !== undefined
   ) {
     console.warn(
-      "Publication state is missing; using the local history snapshot. Commit publication/state.json for durable change detection.",
+      "Publication state is missing; using the local history snapshot. Restore the publication state branch for durable change detection.",
     );
   }
   const plan = createPublicationPlan({
@@ -100,6 +107,7 @@ export async function inspectPublication(
     artifact,
     history,
     durableState,
+    stateFile: stateLocation.file,
     approvals,
     approvalFile: file,
     artifactIssues: validatePublicationArtifact({

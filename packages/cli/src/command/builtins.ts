@@ -84,6 +84,10 @@ const PUBLISH_APPROVALS = cliString("approvals", {
 const PUBLISH_REQUIRE_APPROVAL = cliBoolean("require-approval", {
   description: "Record the workflow as approved before running.",
 });
+const PUBLISH_STATE_FILE = cliString("state-file", {
+  description: "Durable publication state path.",
+  valueName: "path",
+});
 const PUBLISH_SLUGS = cliVariadicArgument("slug", {
   description: "Publication slugs.",
 });
@@ -1124,6 +1128,7 @@ function publishActionCommand(action: PublishAction): CliCommandDefinition {
     PUBLISH_PROVIDER,
     PUBLISH_APPROVALS,
     PUBLISH_REQUIRE_APPROVAL,
+    PUBLISH_STATE_FILE,
   ];
   const options: readonly CliOptionDefinition[] =
     action === "run"
@@ -1132,6 +1137,7 @@ function publishActionCommand(action: PublishAction): CliCommandDefinition {
           PUBLISH_PROVIDER,
           PUBLISH_APPROVALS,
           PUBLISH_REQUIRE_APPROVAL,
+          PUBLISH_STATE_FILE,
           cliBoolean("execute", { description: "Execute the publication." }),
           cliBoolean("force", { description: "Force the publication." }),
           cliEnum("trigger", ["manual", "scheduled", "ci", "cli"], {
@@ -1184,6 +1190,7 @@ function publishOptions(
   const at = input.options.at as string | undefined;
   const provider = input.options.provider as PublishCommandOptions["provider"];
   const approvals = input.options.approvals as string | undefined;
+  const stateFile = input.options.stateFile as string | undefined;
   const requireApproval = input.options.requireApproval === true;
   return {
     action,
@@ -1191,6 +1198,7 @@ function publishOptions(
     ...(at === undefined ? {} : { at }),
     ...(provider === undefined ? {} : { provider }),
     ...(approvals === undefined ? {} : { approvals }),
+    ...(stateFile === undefined ? {} : { stateFile }),
     ...(requireApproval ? { workflow: "approved" as const } : {}),
     execute: input.options.execute === true,
     force: input.options.force === true,

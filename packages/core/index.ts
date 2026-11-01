@@ -1,22 +1,3 @@
-export {
-  CliAbortError,
-  CliCommandConflictError,
-  CliCommandError,
-  CliUsageError,
-  cliArgument,
-  cliBoolean,
-  cliEnum,
-  cliExample,
-  cliNumber,
-  cliString,
-  cliStringWithDefault,
-  cliVariadicArgument,
-  createCliCommandRegistry,
-  defineCliCommand,
-  registerCliCommand,
-  registerPluginCliExtension,
-  resolveCliCommand,
-} from "./src/cli/index.js";
 export type {
   CliArgumentDefinition,
   CliArgumentOptions,
@@ -55,6 +36,25 @@ export type {
   CliTypedCommandInput,
   HelpOptions,
   PluginCliExtension,
+} from "./src/cli/index.js";
+export {
+  CliAbortError,
+  CliCommandConflictError,
+  CliCommandError,
+  CliUsageError,
+  cliArgument,
+  cliBoolean,
+  cliEnum,
+  cliExample,
+  cliNumber,
+  cliString,
+  cliStringWithDefault,
+  cliVariadicArgument,
+  createCliCommandRegistry,
+  defineCliCommand,
+  registerCliCommand,
+  registerPluginCliExtension,
+  resolveCliCommand,
 } from "./src/cli/index.js";
 export type {
   ClientInitializerContext,

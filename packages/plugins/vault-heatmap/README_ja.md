@@ -2,6 +2,8 @@
 
 Riebeckite の Vault アクティビティをカレンダーヒートマップで表示するプラグインです。公開対象コンテンツの frontmatter にある `created`、`modified`、`updated` を読み取り、ビルド時に `vault-heatmap` のフェンスコードブロックを描画します。
 
+[English](./README.md)
+
 ````markdown
 ```vault-heatmap
 weeks: 26
@@ -10,7 +12,7 @@ weekStart: monday
 ```
 ````
 
-集計対象は public と unlisted のコンテンツだけです。draft、一覧に出さない unlisted、公開予定の scheduled は含まれません。終了日は既定で最新のアクティビティ日になるため、変更がない限り同じビルド結果になります。
+集計対象は公開一覧に出る public コンテンツだけです。draft、unlisted、公開予定の scheduled は含まれません。終了日は既定で最新のアクティビティ日になるため、変更がない限り同じビルド結果になります。
 
 ```ts
 import { vaultHeatmap } from "@riebeckite/plugin-vault-heatmap";

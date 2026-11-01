@@ -2,6 +2,8 @@
 
 Calendar heatmap of dated vault activity for Riebeckite. The plugin reads `created`, `modified`, and `updated` frontmatter from discoverable content and renders a fenced `vault-heatmap` block at build time.
 
+[日本語](./README_ja.md)
+
 ````markdown
 ```vault-heatmap
 weeks: 26
@@ -10,7 +12,7 @@ weekStart: monday
 ```
 ````
 
-Only public and unlisted content contributes; drafts, unlisted entries in discovery surfaces, and scheduled content stay out of the aggregate. The default end date is the latest activity date, so repeated builds without activity changes produce identical output.
+Only discoverable public content contributes; drafts, unlisted, and scheduled content stay out of the aggregate. The default end date is the latest activity date, so repeated builds without activity changes produce identical output.
 
 ```ts
 import { vaultHeatmap } from "@riebeckite/plugin-vault-heatmap";

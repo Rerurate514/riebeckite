@@ -2,6 +2,8 @@
 
 Before/after image comparison for Riebeckite. Write a fenced `image-compare` block and the plugin renders a slider with a static no-JavaScript fallback.
 
+[日本語](./README_ja.md)
+
 ````markdown
 ```image-compare
 before: ./before.png

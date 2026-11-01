@@ -2,6 +2,8 @@
 
 Riebeckite のフロントマターを安全に一括変換するプラグインです。名前空間付きの CLI コマンドを追加し、既存の Content Migration の計画、ミューテーションジャーナル、履歴、ロールバックをそのまま利用します。独自のマイグレーションエンジンは実装していません。
 
+[English](./README.md)
+
 ```ts
 import { frontmatterTransformer } from "@riebeckite/plugin-frontmatter-transformer";
 

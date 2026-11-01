@@ -49,6 +49,7 @@ flowchart LR
 | `riebeckite inspect content --path <path-or-permalink>` | 1件のコンテンツの解決済み識別情報 |
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | インクリメンタルビルドの状態 |
+| `riebeckite inspect assets` | コンテンツアセットの一覧、使用状況、重複、最適化候補 |
 
 ### 設定を確認する
 
@@ -169,6 +170,10 @@ flowchart TD
 ```
 
 状態が壊れていても、インスペクターが新しい状態を作ったり、既存の状態を書き換えたりすることはありません。
+
+## Development Inspector のタブ
+
+パネルには Overview、Diagnostics、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
 
 ## 読み取り専用の保証
 

@@ -39,7 +39,7 @@ riebeckite content apply <plan> --apply [--json]
 riebeckite content recover <journal> --apply [--json]
 riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | provenance]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```

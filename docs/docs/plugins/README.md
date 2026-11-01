@@ -104,6 +104,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [SVG Optimizer](./svg-optimizer.md) | Reduce public SVG size while keeping structure and accessibility |
 | [Responsive Image](./responsive-image.md) | Responsive image markup and lazy loading |
 | [Gallery](./gallery.md) | Markdown-driven card galleries |
+| [Image Compare](./image-compare.md) | Before/after image sliders with a no-JavaScript fallback |
 | [Lightbox](./lightbox.md) | Click-to-zoom image lightboxes |
 | [Icons](./icons.md) | Obsidian Iconize and Iconic icons across the site |
 | [PDF](./pdf.md) | Inline PDF attachment viewing |
@@ -165,6 +166,8 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Localization](./l10n.md) | Content localization, localized URLs, and translation metadata |
 | [Quality](./quality.md) | Static quality and accessibility inspection |
 | [Diagnostics](./diagnostics.md) | Content diagnostics for Riebeckite and Obsidian vaults |
+| [Frontmatter Transformer](./frontmatter-transformer.md) | Safe bulk frontmatter transforms through the migration engine |
+| [Vault Heatmap](./vault-heatmap.md) | Calendar heatmap of dated vault activity |
 | [Docs](./docs.md) | Docs sidebar and previous/next navigation |
 | [Calculator](./calculator.md) | Interactive arithmetic code blocks with a static fallback |
 | [Canvas](./canvas.md) | Obsidian Canvas diagram rendering |

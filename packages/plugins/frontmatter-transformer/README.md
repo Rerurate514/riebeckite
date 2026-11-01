@@ -2,6 +2,8 @@
 
 Safe bulk frontmatter transformations for Riebeckite. The plugin adds namespaced CLI commands that reuse the existing Content Migration planner, mutation journal, history, and rollback. It does not implement a separate migration engine.
 
+[日本語](./README_ja.md)
+
 ```ts
 import { frontmatterTransformer } from "@riebeckite/plugin-frontmatter-transformer";
 

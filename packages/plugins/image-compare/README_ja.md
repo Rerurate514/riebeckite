@@ -2,6 +2,8 @@
 
 Riebeckite のためのビフォー・アフター画像比較プラグインです。`image-compare` のフェンスコードブロックを書くと、スライダー付きの比較表示に変換されます。JavaScript がなくても2枚の画像を並べて表示します。
 
+[English](./README.md)
+
 ````markdown
 ```image-compare
 before: ./before.png

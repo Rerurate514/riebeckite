@@ -146,6 +146,17 @@ npm exec riebeckite inspect graph
 
 Shows the content graph. Use it when investigating WikiLinks, backlinks, or graph extensions.
 
+### Assets
+
+```sh
+npm exec -- riebeckite inspect assets
+```
+
+Shows a read-only inventory of files under the content root that are not
+Markdown: total size, usage, formats, unused and possibly unused assets, SHA-256
+duplicate groups, and optimization candidates. Use `--list` to include every
+asset, or `--json` for the structured report. Nothing is deleted or rewritten.
+
 ### Build
 
 ```sh

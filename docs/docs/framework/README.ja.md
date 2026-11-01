@@ -42,6 +42,7 @@ flowchart LR
 | --- | --- |
 | Riebeckite 全体の構造 | [アーキテクチャ](./architecture.ja.md) |
 | Markdown やコンテンツがどう処理されるか | [コンテンツシステム](./content-system.ja.md) |
+| バージョン付きのコンテンツ変更をどう計画・適用するか | [コンテンツ移行](./content-migration.ja.md) |
 | プラグインがどう動くか | [プラグインシステム](./plugin-system.ja.md) |
 | ダイアグラムプラグインの共有ユーティリティと契約 | [ダイアグラムプラグイン基盤](./diagram-infrastructure.ja.md) |
 | プラグインが独立したページを提供する仕組み | [ページシステム](./page-system.ja.md) |

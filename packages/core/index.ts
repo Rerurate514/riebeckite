@@ -79,6 +79,7 @@ export type {
   ContentMutationPrecondition,
   ContentMutationRecoveryResult,
   ContentMutationResult,
+  ContentMutationRollbackResult,
 } from "./src/content/content_mutation.js";
 export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
@@ -214,6 +215,85 @@ export {
   defineDerivedView,
   derivedDependenciesToOutputDependencies,
 } from "./src/derived/derived_view.js";
+export type {
+  ContentMigrationBatch,
+  ContentMigrationFileDiff,
+  ContentMigrationPlannedFile,
+  ContentMigrationPlannerFile,
+  ContentMigrationPlannerOptions,
+  ContentMigrationSelection,
+  ContentMigrationSkip,
+} from "./src/migration/migration_planner.js";
+export { planContentMigrationBatch } from "./src/migration/migration_planner.js";
+export type { ContentMigrationRegistry } from "./src/migration/migration_registry.js";
+export {
+  ContentMigrationRegistryError,
+  createContentMigrationRegistry,
+  defineContentMigration,
+  fingerprintContentMigrationDefinition,
+  migrationKey,
+} from "./src/migration/migration_registry.js";
+export type {
+  ContentIdRule,
+  ContentMigrationRule,
+  ContentMigrationRuleCondition,
+  ContentMigrationRuleValue,
+  FrontmatterAppendRule,
+  FrontmatterMapRule,
+  FrontmatterNormalizeListRule,
+  FrontmatterRemoveRule,
+  FrontmatterRenameRule,
+  FrontmatterSetRule,
+  PathRenameRule,
+  PermalinkRule,
+  VisibilityRule,
+} from "./src/migration/migration_rules.js";
+export type {
+  ContentMigrationHistory,
+  ContentMigrationHistoryRun,
+  ContentMigrationHistoryStatus,
+  ContentMigrationListEntry,
+  ContentMigrationRecord,
+  ContentMigrationRecoveryState,
+  ContentMigrationState,
+  ContentMigrationStatus,
+} from "./src/migration/migration_state.js";
+export {
+  appendContentMigrationHistory,
+  CONTENT_MIGRATION_HISTORY_LIMIT,
+  ContentMigrationStateError,
+  emptyContentMigrationHistory,
+  emptyContentMigrationState,
+  findContentMigrationRecord,
+  listContentMigrationEntries,
+  parseContentMigrationHistory,
+  parseContentMigrationState,
+  sanitizeContentMigrationPath,
+  sanitizeContentMigrationPaths,
+  upsertContentMigrationRecord,
+} from "./src/migration/migration_state.js";
+export type {
+  MigrationContentApplication,
+  MigrationContentState,
+  ParsedMigrationContent,
+} from "./src/migration/migration_transform.js";
+export {
+  applyContentMigration,
+  diffFrontmatter,
+  isSafeContentPath,
+  parseMigrationContent,
+} from "./src/migration/migration_transform.js";
+export type {
+  ContentMigration,
+  ContentMigrationDefinition,
+  ContentMigrationDiagnostic,
+  ContentMigrationReversible,
+  ContentMigrationSelector,
+  ContentMigrationTransform,
+  ContentMigrationTransformResult,
+  ContentMigrationValidator,
+  MigrationContent,
+} from "./src/migration/migration_types.js";
 export type {
   BuildTraceRecorder,
   LogContext,

@@ -47,6 +47,7 @@ export function permalink(options: PermalinkOptions = {}) {
   const resolved = resolveOptions(options);
   return definePlugin({
     name: "permalink",
+    options,
     resolveContentLocations: ({ entries }) => {
       const contents = entries.map((entry) => ({
         ...entry,

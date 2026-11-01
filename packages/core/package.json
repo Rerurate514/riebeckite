@@ -18,6 +18,12 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.js",
+      "source": "./cli.ts",
+      "default": "./dist/cli.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [

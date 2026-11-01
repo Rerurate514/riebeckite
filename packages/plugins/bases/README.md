@@ -55,8 +55,9 @@ views:
 ```
 
 The same YAML may be placed in a fenced `base` block or in a `.base` file.
-Top-level and view-local `filters` are combined with AND. Table and cards are
-rendered at build time; all dynamic values are escaped before HTML output.
+Top-level and view-local `filters` are combined with AND. Table, cards, and list
+views are rendered at build time; all dynamic values are escaped before HTML
+output.
 
 ## Live example
 
@@ -80,8 +81,8 @@ references. Compatibility is deliberately scoped to deterministic static output.
 | --- | --- | --- |
 | Root `filters`, `formulas`, `properties`, `summaries`, and `views` | Supported | Recursive `and`/`or`/`not` filters and `displayName` are accepted. |
 | View `type`, `name`, `limit`, `filters`, `order`, `sort`, `groupBy`, `groupOrder`, and `summaries` | Supported | `groupOrder` is exclusive: an empty list hides all groups, and listed missing values create empty groups. |
-| Table and cards layouts | Supported | Generated semantic HTML has no runtime evaluator. |
-| List, kanban, and map layouts | Unsupported | Their interactive and spatial behavior cannot be represented by this static renderer. |
+| Table, cards, and list layouts | Supported | Generated semantic HTML has no runtime evaluator. |
+| Kanban and map layouts | Unsupported | The rest of the Base still renders; the unsupported view is replaced by a short notice. Their interactive and spatial behavior cannot be represented by this static renderer. |
 | Editing, property menus, resize, drag-and-drop, and collapse controls | Out of Scope | Bases is rendered during the site build. |
 
 ## Expression and formula subset
@@ -155,7 +156,7 @@ the static, no-JavaScript output model.
 | Obsidian Base feature | Status | Notes |
 | --- | --- | --- |
 | YAML root, `filters`, `properties`, `formulas`, `summaries`, `views` | Supported | Invalid YAML/specs produce a diagnostic. |
-| Table and cards | Supported | Other view types are not rendered. |
+| Table, cards, and list | Supported | Other view types render a static notice instead of failing the Base. |
 | AST filters and formulas | Supported subset | See the function list above. |
 | Formula sorting and multiple stable sort keys | Supported | Empty values sort last. |
 | `groupBy` and `groupOrder` | Supported | Formula properties, ordered empty groups, table, and cards are supported. Interactive collapse is not. |

@@ -122,7 +122,11 @@ function renderView(
   const body =
     view.type === "cards"
       ? renderCards(view, groups, spec, className, index)
-      : renderTable(view, groups, spec, className);
+      : view.type === "list"
+        ? renderList(view, groups, className)
+        : view.type === "table"
+          ? renderTable(view, groups, spec, className)
+          : renderUnsupportedView(view, className);
 
   return `<section class="${escapeHtmlAttribute(className)}__view" data-bases-view="${view.type}" aria-label="${escapeHtmlAttribute(view.name ?? `${view.type} view ${index + 1}`)}">${name}${count}${body}</section>`;
 }
@@ -227,6 +231,33 @@ function renderCards(
     .join("");
 
   return cards;
+}
+
+function renderUnsupportedView(view: BasesView, className: string): string {
+  return `<p class="${escapeHtmlAttribute(className)}__unsupported">${escapeHtml(`${view.type} views are not available in a static build.`)}</p>`;
+}
+
+function renderList(
+  view: BasesView,
+  groups: readonly BasesGroup[],
+  className: string,
+): string {
+  if (groups.length === 0) return renderEmpty(className);
+
+  return groups
+    .map((group) => {
+      const heading = view.groupBy
+        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title">${escapeHtml(formatValue(group.key) || "No value")} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></h4>`
+        : "";
+      const items = group.entries
+        .map(
+          (entry) =>
+            `<li class="${escapeHtmlAttribute(className)}__list-item"><a class="${escapeHtmlAttribute(className)}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`,
+        )
+        .join("");
+      return `${heading}<ul class="${escapeHtmlAttribute(className)}__list">${items}</ul>`;
+    })
+    .join("");
 }
 
 function renderEmpty(className: string): string {

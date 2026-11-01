@@ -1,5 +1,5 @@
-/** View kinds supported by the MVP renderer. */
-export type BasesViewType = "table" | "cards";
+/** View kinds supported by the static renderer. */
+export type BasesViewType = "table" | "cards" | "list" | "map" | "kanban";
 
 /** Scalar literal that can appear on the right-hand side of a comparison. */
 export type BasesLiteral = string | number | boolean | null;

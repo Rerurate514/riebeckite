@@ -455,8 +455,17 @@ function parseView(
 function parseViewType(value: unknown, path: string): Result<BasesViewType> {
   if (value === undefined || value === null) return ok("table");
   const text = String(value).trim().toLowerCase();
-  if (text === "table" || text === "cards") return ok(text);
-  return fail(`${path}.type must be "table" or "cards".`);
+  if (
+    text === "table" ||
+    text === "cards" ||
+    text === "list" ||
+    text === "map" ||
+    text === "kanban"
+  )
+    return ok(text);
+  return fail(
+    `${path}.type must be "table", "cards", "list", "map", or "kanban".`,
+  );
 }
 
 function parseColumns(

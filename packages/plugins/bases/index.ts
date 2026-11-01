@@ -57,7 +57,7 @@ export function bases(options: BasesOptions = {}) {
     resolveContentOutputDependencies: ({ entry }) =>
       runtime.dependenciesFor(entry.slug),
     processedContentCache: {
-      version: "bases-v3",
+      version: "bases-v4",
       dependencyMode: "none",
     },
     options,

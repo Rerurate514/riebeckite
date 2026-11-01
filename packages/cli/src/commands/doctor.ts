@@ -167,6 +167,13 @@ async function collectDoctorReport(
       config: project.config,
       content,
     });
+    if (
+      report.diagnostics.some(
+        (diagnostic) => diagnostic.code === "CONTENT_INSPECTION_FAILED",
+      )
+    ) {
+      return report;
+    }
     let assets: ContentAssetInspection;
     try {
       assets = await inspectContentAssets(await content.getManifest(), source);

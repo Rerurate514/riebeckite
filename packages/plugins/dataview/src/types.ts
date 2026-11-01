@@ -5,14 +5,18 @@ export type DataviewSortOrder = "asc" | "desc";
 export type DataviewSort = {
   field: string;
   order: DataviewSortOrder;
+  expression?: DataviewExpression;
 };
 
 export type DataviewColumn = {
   field: string;
+  expression?: DataviewExpression;
   label?: string;
 };
 
 export type DataviewComparisonOperator = "=" | "!=" | ">" | "<" | ">=" | "<=";
+
+export type DataviewArithmeticOperator = "+" | "-" | "*" | "/" | "%";
 
 export type DataviewSource =
   | { kind: "tag"; value: string }
@@ -28,9 +32,17 @@ export type DataviewFrom =
 export type DataviewExpression =
   | { kind: "literal"; value: string | number | boolean | null }
   | { kind: "field"; path: readonly string[] }
+  | { kind: "list"; items: readonly DataviewExpression[] }
   | { kind: "not"; operand: DataviewExpression }
   | { kind: "and"; left: DataviewExpression; right: DataviewExpression }
   | { kind: "or"; left: DataviewExpression; right: DataviewExpression }
+  | { kind: "unary"; operator: "-"; operand: DataviewExpression }
+  | {
+      kind: "arithmetic";
+      operator: DataviewArithmeticOperator;
+      left: DataviewExpression;
+      right: DataviewExpression;
+    }
   | {
       kind: "compare";
       operator: DataviewComparisonOperator;
@@ -38,6 +50,19 @@ export type DataviewExpression =
       right: DataviewExpression;
     }
   | { kind: "call"; name: string; args: readonly DataviewExpression[] };
+
+export type DataviewCommand =
+  | { kind: "from"; from: DataviewFrom }
+  | { kind: "where"; expression: DataviewExpression }
+  | { kind: "flatten"; expression: DataviewExpression; label?: string }
+  | {
+      kind: "groupBy";
+      expression: DataviewExpression;
+      field: string;
+      label?: string;
+    }
+  | { kind: "sort"; sort: readonly DataviewSort[] }
+  | { kind: "limit"; limit: number };
 
 export type DataviewSpec = {
   type: DataviewQueryType;
@@ -48,6 +73,12 @@ export type DataviewSpec = {
   sort: readonly DataviewSort[];
   groupBy: string | null;
   limit: number | null;
+  withoutId?: boolean;
+  commands?: readonly DataviewCommand[];
+  groupExpression?: DataviewExpression;
+  groupLabel?: string;
+  listExpression?: DataviewExpression;
+  calendarExpression?: DataviewExpression;
 };
 
 export type DataviewParseResult =

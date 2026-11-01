@@ -8,18 +8,35 @@ import { createDataviewRuntime } from "./src/runtime.js";
 import type { DataviewOptions } from "./src/types.js";
 
 export {
+  type DataviewEvaluateOptions,
   DataviewEvaluationError,
   type DataviewGroup,
+  type DataviewNote,
+  type DataviewRow,
   type DataviewScope,
   type DataviewSelection,
   evaluateDataviewExpression,
+  formatGroupKey,
   isTruthy,
+  loadDataviewNotes,
   matchesDataviewFrom,
   readDataviewField,
   selectDataviewEntries,
   toDataviewTime,
 } from "./src/evaluate.js";
-export { DataviewParseError, parseDataview } from "./src/parse.js";
+export {
+  type InlineFields,
+  normalizeFieldKey,
+  parseInlineFields,
+  parseInlineFieldText,
+  parseInlineValue,
+  stripInlineFieldMarkup,
+} from "./src/inline_fields.js";
+export {
+  DataviewParseError,
+  parseDataview,
+  parseExpression,
+} from "./src/parse.js";
 export {
   createDataviewPlaceholder,
   createDataviewPlaceholderPattern,
@@ -28,7 +45,13 @@ export {
 export { type RemarkDataviewOptions, remarkDataview } from "./src/remark.js";
 export { renderDataview, renderDataviewError } from "./src/render.js";
 export {
+  type DataviewTask,
+  parseDataviewTasks,
+} from "./src/tasks.js";
+export {
+  type DataviewArithmeticOperator,
   type DataviewColumn,
+  type DataviewCommand,
   type DataviewComparisonOperator,
   type DataviewExpression,
   type DataviewFrom,
@@ -52,7 +75,7 @@ export function dataview(options: DataviewOptions = {}) {
   return definePlugin({
     name: "dataview",
     processedContentCache: {
-      version: "dataview-v1",
+      version: "dataview-v2",
       dependencyMode: "none",
     },
     contentOutputDependencies: [{ type: "global" }],
@@ -62,8 +85,11 @@ export function dataview(options: DataviewOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkDataview, { language });
     },
-    onManifestCreated: (context) => {
-      runtime.resolve(context.manifest, context.diagnostics);
+    onManifestCreated: async (context) => {
+      await runtime.resolve(context.manifest, context.diagnostics, {
+        contentSource: context.contentSource,
+        buildTime: context.buildTime,
+      });
     },
     assets: [
       createStyleAsset("dataview", "@riebeckite/plugin-dataview/style.css"),

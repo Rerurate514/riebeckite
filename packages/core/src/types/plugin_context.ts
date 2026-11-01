@@ -17,6 +17,11 @@ import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   isDevelopment?: boolean;
+  /**
+   * Deterministic build clock. Publishing, scheduling, and time-dependent
+   * plugin output share this value so one build always agrees with itself.
+   */
+  buildTime?: Date;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;

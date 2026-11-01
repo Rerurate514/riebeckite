@@ -801,6 +801,9 @@ export class PluginRuntime {
     return {
       config: this.pipelineOptions.config,
       isDevelopment: this.pipelineOptions.isDevelopment,
+      buildTime: this.pipelineOptions.publishingBuildTime
+        ? new Date(this.pipelineOptions.publishingBuildTime)
+        : undefined,
       contentIndex,
       contentSource: this.pipelineOptions.contentSource,
       diagnostics: this.diagnostics,

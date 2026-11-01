@@ -18,6 +18,8 @@ export function splitTopLevel(text: string, separator: string): string[] {
     }
     if (char === "(") depth += 1;
     if (char === ")") depth = Math.max(0, depth - 1);
+    if (char === "[") depth += 1;
+    if (char === "]") depth = Math.max(0, depth - 1);
     if (char === separator && depth === 0) {
       parts.push(current.trim());
       current = "";

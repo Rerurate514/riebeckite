@@ -1,9 +1,15 @@
-import type {
-  ContentManifest,
-  ContentManifestEntry,
-  Diagnostic,
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  type ContentSource,
+  type Diagnostic,
+  normalizeContentPath,
 } from "@riebeckite/core";
-import { selectDataviewEntries } from "./evaluate.js";
+import {
+  type DataviewNote,
+  loadDataviewNotes,
+  selectDataviewEntries,
+} from "./evaluate.js";
 import { parseDataview } from "./parse.js";
 import {
   createDataviewPlaceholderPattern,
@@ -17,12 +23,22 @@ import {
   resolveDataviewOptions,
 } from "./types.js";
 
+export type DataviewRuntimeContext = {
+  readonly contentSource?: ContentSource;
+  readonly buildTime?: Date;
+};
+
 type DataviewRuntime = {
-  resolve(manifest: ContentManifest, diagnostics: Diagnostic[]): void;
+  resolve(
+    manifest: ContentManifest,
+    diagnostics: Diagnostic[],
+    context?: DataviewRuntimeContext,
+  ): Promise<void>;
 };
 
 const DATAVIEWJS_MARKER = "language-dataviewjs";
 const PLUGIN_NAME = "dataview";
+const MARKDOWN_PATH = /^(.*)\.(md|markdown)$/i;
 
 export function createDataviewRuntime(
   options: DataviewOptions = {},
@@ -30,11 +46,24 @@ export function createDataviewRuntime(
   const resolved = resolveDataviewOptions(options);
 
   return {
-    resolve(manifest, diagnostics) {
+    async resolve(manifest, diagnostics, context = {}) {
+      const hasBlocks = manifest.entries.some(
+        (entry) =>
+          entry.html.includes(DATAVIEW_ATTRIBUTE) ||
+          entry.html.includes(DATAVIEWJS_MARKER),
+      );
+      if (!hasBlocks) return;
+
       const view: ContentManifest = {
         ...manifest,
         entries: manifest.discoverableEntries,
       };
+      const notes = await loadNotes(
+        context.contentSource,
+        manifest.discoverableEntries,
+      );
+      const buildTime = context.buildTime ?? new Date();
+
       for (const entry of manifest.entries) {
         if (
           !entry.html.includes(DATAVIEW_ATTRIBUTE) &&
@@ -43,7 +72,14 @@ export function createDataviewRuntime(
           continue;
         }
 
-        const html = replacePlaceholders(entry, view, resolved, diagnostics);
+        const html = replacePlaceholders(
+          entry,
+          view,
+          resolved,
+          diagnostics,
+          notes,
+          buildTime,
+        );
         if (html === entry.html) continue;
 
         entry.html = html;
@@ -52,11 +88,37 @@ export function createDataviewRuntime(
   };
 }
 
+async function loadNotes(
+  source: ContentSource | undefined,
+  entries: readonly ContentManifestEntry[],
+): Promise<ReadonlyMap<string, DataviewNote>> {
+  if (!source) return new Map();
+
+  const scanned = await source.scan();
+  const bySlug = new Map<string, string>();
+  for (const entry of scanned) {
+    const match = MARKDOWN_PATH.exec(entry.path);
+    if (!match) continue;
+    bySlug.set(normalizeContentPath(match[1] ?? ""), entry.path);
+  }
+
+  return loadDataviewNotes(entries, async (entry) => {
+    const path = bySlug.get(normalizeContentPath(entry.slug));
+    if (!path) return null;
+    const content = await source.read({ path });
+    return typeof content === "string"
+      ? content
+      : new TextDecoder().decode(content);
+  });
+}
+
 function replacePlaceholders(
   entry: ContentManifestEntry,
   manifest: ContentManifest,
   options: ResolvedDataviewOptions,
   diagnostics: Diagnostic[],
+  notes: ReadonlyMap<string, DataviewNote>,
+  buildTime: Date,
 ): string {
   if (entry.html.includes(DATAVIEWJS_MARKER)) {
     diagnostics.push({
@@ -94,8 +156,12 @@ function replacePlaceholders(
         parsed.spec,
         manifest,
         options.limit,
+        { notes, buildTime },
       );
-      return renderDataview(selection, parsed.spec, options, source);
+      return renderDataview(selection, parsed.spec, options, source, {
+        manifest,
+        buildTime,
+      });
     } catch (error) {
       const message = `Dataview block in \`${entry.slug}\` is unsupported: ${formatError(error)}`;
       reportInvalid(entry, diagnostics, message);

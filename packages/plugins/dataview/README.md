@@ -22,10 +22,11 @@ LIMIT 10
 ```
 ````
 
-and renders them from the manifest using each public note's frontmatter, tags,
-links, and permalink. Unlisted, draft, and scheduled notes are excluded from
-queries. DataviewJS (`dataviewjs`) is **not** supported: those blocks stay
-code blocks and produce a diagnostic.
+Blocks are rendered from the public manifest plus each note's Markdown source:
+frontmatter, inline fields, tasks, tags, links, file metadata, and permalink.
+Unlisted, draft, and scheduled notes are excluded from queries and their inline
+fields and tasks are never read. DataviewJS (`dataviewjs`) is **not**
+supported: those blocks stay code blocks and produce a diagnostic.
 
 ## Usage
 
@@ -42,19 +43,26 @@ export default defineConfig({
 ## Query syntax
 
 A block starts with a query type (`LIST`, `TABLE`, `TASK`, or `CALENDAR`)
-followed by optional clauses:
+followed by clauses:
 
 ```
 LIST|TABLE|TASK|CALENDAR [expression or columns]
 FROM <source expression>
 WHERE <boolean expression>
-SORT <field> [asc|desc][, ...]
-GROUP BY <field>
+FLATTEN <expression> [AS name]
+SORT <expression> [asc|desc][, ...]
+GROUP BY <expression> [AS name]
 LIMIT <n>
 ```
 
-Clauses are case-insensitive. Each clause starts on its own line, but a clause
-body may span multiple lines.
+Clauses are case-insensitive and each starts on its own line; a clause body may
+span multiple lines. Commands run **in the order they are written**, and the
+same command may appear more than once, matching Dataview:
+
+```
+LIMIT 5
+SORT priority desc
+```
 
 ### `LIST`
 
@@ -69,29 +77,33 @@ SORT file.date desc
 
 ### `TABLE`
 
-`TABLE` renders a table. When no columns are given, a single `file.link` column
-is used. Columns are field paths, optionally renamed with `AS`:
+`TABLE` renders a table. The first column is always the file link unless the
+query starts with `WITHOUT ID`. Each further column is an expression renamed
+with `AS`:
 
 ```dataview
-TABLE file.name AS "Name", status, priority
+TABLE WITHOUT ID file.name AS "Name", status, priority * 2 AS "Score"
 FROM #project
 ```
 
 ### `TASK`
 
-`TASK` extracts the task list items (`- [ ]` / `- [x]`) from every matching
-note and renders them as `<ul class="rb-dataview__tasks">`. `FROM` and `WHERE`
-select the **pages**, not individual tasks:
+`TASK` renders one row per task (`- [ ]` / `- [x]`) instead of one row per note.
+`FROM` selects notes, then `WHERE`, `FLATTEN`, `SORT`, and `GROUP BY` run on
+**individual tasks**:
 
 ```dataview
 TASK
 FROM #project
+WHERE !completed and due >= date("2026-01-01")
+SORT line asc
 ```
 
 ### `CALENDAR`
 
 `CALENDAR` renders a month grid. The optional trailing expression selects the
-date field (default `date`). The month of the most recent matched date is shown:
+date expression (default `date`). The month of the most recent matched date is
+shown:
 
 ```dataview
 CALENDAR date
@@ -106,8 +118,9 @@ FROM #project
 
 | Source | Meaning |
 | ------ | ------- |
-| `#tag` | Has the tag |
+| `#tag` | Has the tag or one of its subtags |
 | `"folder"` | Slug is the folder or lives under it |
+| `"notes/note.md"` | Exact note path |
 | `[note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/note.md)` | Links to `note` (incoming links) |
 
 Combine sources with `and` / `or`, negate with `!` or `-`, and group with
@@ -119,30 +132,45 @@ FROM (#project or #area) and "notes" and !#archive
 
 ### `WHERE`
 
-`WHERE` filters notes with a boolean expression over `file.*` and frontmatter
-fields.
+`WHERE` filters rows with a boolean expression over the row fields.
 
 | Feature | Examples |
 | ------- | -------- |
-| Comparison | `status = "active"`, `priority > 2`, `date <= "2026-12-31"` |
-| Boolean | `status = "active" and !draft`, `a or b` |
+| Comparison | `status = "active"`, `priority > 2`, `due <= date("2026-12-31")` |
+| Boolean | `status = "active" and !draft`, `a or b`, `&&` / `\|\|` |
+| Arithmetic | `priority * 2 > 4`, `(a + b) / 2` |
+| List literal | `contains(["a", "b"], status)` |
+| String | `startswith(file.name, "2026")`, `lower(status) = "done"` |
 | `contains()` | `contains(file.tags, "#project")`, `contains(tags, "project")` |
-| `date()` | `date(due) >= date("2026-01-01")` |
-| `number()` / `string()` | `number(weight) > 3` |
+| `date()` / `dateformat()` | `date(due) >= date("2026-01-01")` |
+| Aggregation | `length(tags) > 1`, `min(priority)`, `sum(points)` |
 
-String `=`/`!=` comparisons and `contains()` are case-insensitive. `date()`
-returns a millisecond timestamp (or `null`), so `date(a) < date(b)` compares
-chronologically. `null`/missing values never satisfy `<`/`>` comparisons.
+String `=`/`!=` comparisons and `contains()` are case-insensitive. `+` adds
+numbers or concatenates strings. Division by zero and unsupported operations
+evaluate to `null`. `null`/missing values never satisfy `<`/`>` comparisons.
 
-`file.*` fields: `file.name`, `file.title`, `file.slug`, `file.path`,
-`file.folder`, `file.link`, `file.permalink`, `file.url`, `file.tags`,
-`file.date`, `file.created`, `file.updated`, `file.published`. Other frontmatter
-keys are read directly by name (`status`, `priority`, `due`, ...).
+Supported functions: `contains`, `date`, `dateformat`, `number`, `string`,
+`length`, `lower`, `upper`, `trim`, `round`, `floor`, `ceil`, `min`, `max`,
+`sum`, `average`, `startswith`, `endswith`, `join`, `reverse`, `sort`,
+`default`, `nonnull`, `choice`. Unknown functions render an error block and emit
+a diagnostic.
+
+### `FLATTEN`
+
+`FLATTEN` expands an array-valued expression into one row per item. An alias
+stored with `AS` is available to later commands and columns:
+
+```dataview
+TABLE WITHOUT ID author
+FROM #literature
+FLATTEN authors AS author
+SORT author asc
+```
 
 ### `SORT`
 
-`SORT` accepts a comma-separated list of fields with an optional direction
-(`asc`, the default, or `desc`). Notes with a missing field sort last.
+`SORT` accepts a comma-separated list of expressions with an optional direction
+(`asc`, the default, or `desc`). Rows with a missing field sort last.
 
 ```text
 SORT priority desc, file.name asc
@@ -150,14 +178,78 @@ SORT priority desc, file.name asc
 
 ### `GROUP BY`
 
-`GROUP BY <field>` groups the matched notes. Each group is headed by the group
-value; `LIST` and `TASK` render one list per group, and `TABLE` inserts a group
-row. Groups keep the order established by `SORT`.
+`GROUP BY <expression> [AS name]` groups the rows. Each group is headed by the
+group value; `LIST` and `TASK` render one list per group, and `TABLE` inserts a
+group row. Groups keep the order established by the preceding commands.
 
 ### `LIMIT`
 
-`LIMIT <n>` caps the number of rendered notes (before grouping). It can also be
-set for every block with the `limit` option.
+`LIMIT <n>` caps the number of rows at the point where the command appears. It
+can also be set for every block with the `limit` option, which then applies when
+a block has no `LIMIT`.
+
+## Inline fields
+
+Dataview inline fields are read from each note's Markdown source, so the vault
+does not need to change:
+
+```md
+status:: active
+priority:: 3
+due:: 2026-11-10
+```
+
+Bracketed fields attach metadata to the surrounding sentence, list item, or
+task:
+
+```md
+I would rate this a [rating:: 9]!
+- [ ] Send the invoice [due:: 2026-11-10].
+```
+
+Values follow YAML-like typing: `true`/`false` become booleans, numbers become
+numbers, `YYYY-MM-DD` becomes a date, `[a, b]` becomes a list, and quoted values
+stay strings. Inline fields take precedence over frontmatter with the same
+name, and a later inline field overrides an earlier one. Field names are
+queryable with their sanitized form (lowercase, spaces replaced by `-`).
+
+## Task fields
+
+Task rows expose Dataview's implicit fields: `status`, `checked`, `completed`,
+`fullyCompleted`, `text`, `visual`, `line`, `lineCount`, `path`, `section`,
+`tags`, `outlinks`, `children`, `link`, `task`, `annotated`, `parent`, and
+`blockId`. Tasks inherit page fields and may add bracketed inline fields.
+
+Tasks plugin date shorthands (`🗓️`, `✅`, `➕`, `🛫`, `⏳`) are read into `due`,
+`completion`, `created`, `start`, and `scheduled`. Priorities and recurrence
+are not supported.
+
+## Fields
+
+`file.*` fields: `file.name` (file name), `file.title`, `file.slug`,
+`file.path`, `file.folder`, `file.link`, `file.permalink`, `file.url`,
+`file.tags`, `file.etags`, `file.inlinks`, `file.outlinks`, `file.size`,
+`file.ctime`, `file.mtime`, `file.date`, `file.created`, `file.updated`, and
+`file.published`. Frontmatter keys are read directly by name (`status`,
+`priority`, `due`, ...).
+
+## Static build time
+
+`today` and `now` use the build clock. One build resolves it once, so every
+block in that build agrees. `today` is midnight UTC of the build time. Pass
+`publishingBuildTime` to `ContentManager` (or set it in the build pipeline) for
+reproducible output:
+
+```ts
+new ContentManager(source, [], {
+  config,
+  plugins: [dataview()],
+  publishingBuildTime: "2026-11-01T00:00:00.000Z",
+});
+```
+
+Results are fixed at build time. Links produced by a dataview block are not
+added to the content graph (backlinks).
 
 ## Options
 
@@ -195,36 +287,48 @@ with `hideFallback`.
   emit a `dataview-invalid` **error** diagnostic. Unsupported syntax is also
   reported through `file.message` while the markdown is parsed.
 
-## Limitations
+## Compatibility
 
-- **No DataviewJS.** `dataviewjs` is intentionally unsupported.
-- **No inline fields** (`field:: value`). Only frontmatter is read.
-- **`TABLE` columns are field paths**, not arbitrary expressions. Rename with
-  `AS "Label"`; computed columns (for example `file.size / 1024`) are not
-  supported.
-- **`TASK` filters pages, not tasks.** `WHERE`/`FROM` apply to the notes that
-  contain tasks.
-- **`CALENDAR` shows one month** — the month of the most recent matched date.
-- `file.size`, `file.mtime`, and `file.ctime` are not available from the
-  manifest and evaluate to `undefined`.
-- Results are fixed at build time and links produced by a dataview block are not
-  added to the content graph (backlinks). A full build always recomputes
-  correctly.
+| Feature | Obsidian support | Riebeckite support | Notes |
+| ------- | ---------------- | ------------------ | ----- |
+| `LIST`, `TABLE`, `TASK`, `CALENDAR` | Supported | Full | |
+| `FROM` by tag, folder, link | Supported | Full | Tags include subtags |
+| `FROM` by file path | Supported | Full | |
+| `WHERE` boolean/comparison | Supported | Full | |
+| Arithmetic and list literals | Supported | Full | |
+| Core functions | Supported | Partial | Common numeric, string, list, and date functions; no lambdas |
+| Inline fields | Supported | Full | `Key:: value`, `[Key:: value]`, `(Key:: value)` |
+| Frontmatter fields | Supported | Full | |
+| `TASK` per-task filtering | Supported | Full | |
+| `TASK` field shorthands | Supported | Partial | Date shorthands only; no priority or recurrence |
+| `FLATTEN` | Supported | Full | |
+| `WITHOUT ID` | Supported | Full | |
+| Command order and duplicates | Supported | Full | |
+| `SORT` / `GROUP BY` expressions | Supported | Full | |
+| `rows` field swizzling | Supported | Unsupported | Not exposed to expressions |
+| DataviewJS | Supported | Unsupported | Intentional |
+| Inline field rendering | Obsidian renders the value | Different | Riebeckite leaves the source text as Markdown |
+| `file.tags`-style implicit lists | Supported | Partial | `file.tasks`, `file.lists`, and similar are not populated |
 
 ## Exports
 
-- `dataview(options?)` / `dataview(options?)` — plugin factory
+- `dataview(options?)` — plugin factory
 - `remarkDataview(options?)` — remark transform usable on its own
 - `parseDataview(source)` — parse a block body into a `DataviewSpec`
-- `selectDataviewEntries(spec, manifest, defaultLimit)` — matching engine
+- `parseExpression(source)` — parse a standalone DQL expression
+- `parseInlineFields(markdown)` / `parseInlineFieldText(text)` — inline fields
+- `parseDataviewTasks(markdown)` — task extraction
+- `selectDataviewEntries(spec, manifest, defaultLimit, options?)` — matching engine
 - `evaluateDataviewExpression(expression, scope)` and
   `matchesDataviewFrom(from, entry, manifest)` — expression helpers
-- `renderDataview(selection, spec, options, source)` — HTML renderer
+- `renderDataview(selection, spec, options, source, context?)` — HTML renderer
 - `resolveDataviewOptions(options?)` — normalise plugin options
 - `DATAVIEW_ATTRIBUTE` — placeholder attribute name
 - Types: `DataviewOptions`, `DataviewSpec`, `DataviewQueryType`,
-  `DataviewExpression`, `DataviewFrom`, and friends
+  `DataviewExpression`, `DataviewFrom`, `DataviewRow`, `DataviewTask`, and
+  friends
 
 ## See also
 
 - [Plugin guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.md)
+- [Obsidian Dataview documentation](https://blacksmithgu.github.io/obsidian-dataview/)

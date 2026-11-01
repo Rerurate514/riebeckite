@@ -161,6 +161,10 @@ export class ContentManager {
     this.publishingBuildTime = resolvePublishingBuildTime(
       pipelineOptions.publishingBuildTime,
     );
+    this.pipelineOptions = {
+      ...this.pipelineOptions,
+      publishingBuildTime: this.publishingBuildTime,
+    };
     this.source = cacheContentSource(content);
     this.pipelineOptions = {
       ...this.pipelineOptions,

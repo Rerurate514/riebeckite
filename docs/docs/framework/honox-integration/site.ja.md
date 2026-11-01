@@ -1,15 +1,15 @@
 ---
 date: 2026-10-08
-title: Site Application の責務
+title: サイトアプリケーションの責務
 sidebar:
-  label: Site Application の責務
+  label: サイトアプリケーションの責務
   order: 20
 ---
-# Site Application の責務
+# サイトアプリケーションの責務
 
-Riebeckite Site は、最終的には通常の [[framework/honox-integration|HonoX]] application です。
+Riebeckite のサイトは、最終的には通常の [[framework/honox-integration|HonoX]] アプリケーションです。
 
-`@riebeckite/honox` は content と build を接しますが、実際にユーザーが見る [[glossary/ui|UI]] の設計は Site が管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
+`@riebeckite/honox` はコンテンツとビルドをつなぎますが、実際にユーザーが見る [[glossary/ui|UI]] の設計はサイトが管理します。通常の HonoX で編集する手順は [サイトのカスタマイズ](../../guides/customizing-your-site.ja.md) を参照してください。
 
 ```mermaid
 flowchart TD
@@ -27,49 +27,47 @@ flowchart TD
 
 ### ディレクトリの責務
 
-| ディレクトリ | Site が持つ責務 |
+| ディレクトリ | サイトが持つ責務 |
 | --- | --- |
-| `app/routes/` | URL処理、ページ構成、redirect、response metadata |
-| `app/components/` | Site 固有の UI |
-| `app/islands/` | 対話 UI と client-side state |
-| `app/style.css` | 色、layout、typography、extension style |
+| `app/routes/` | URL 処理、ページ構成、リダイレクト、レスポンスメタデータ |
+| `app/components/` | サイト固有の UI |
+| `app/islands/` | 対話 UI とクライアント側の状態 |
+| `app/style.css` | 色、レイアウト、タイポグラフィ、拡張スタイル |
 
-`app/routes/_renderer.tsx` は Site 全体の shell です。
+`app/routes/_renderer.tsx` はサイト全体のシェルです。
 
 ここでは主に、
 
-- document head
-- navigation
-- page chrome
-- application client entry
+- ドキュメントの head
+- ナビゲーション
+- ページ全体の枠
+- アプリケーションのクライアントエントリ
 
 を管理します。
 
-Route は `ContentManager` からコンテンツを取得し、
+ルートは `ContentManager` からコンテンツを取得し、
 
 ```ts
 resolveRiebeckiteRoute(content, c.req.path)
 ```
 
-で request URL を解決します。
+でリクエスト URL を解決します。
 
-その結果をどの component tree で表示するかは Site が決定します。
+その結果をどのコンポーネントツリーで表示するかは、サイトが決めます。
 
-Riebeckite repository にある `apps/web` は実装例の1つであり、外部 Site が同じ layout を使う必要はありません。
+Riebeckite リポジトリにある `apps/web` は実装例の 1 つであり、外部のサイトが同じレイアウトを使う必要はありません。
 
-## headタグ
+## head タグ
 
-Plugin が document head に情報を追加したい場合は、
+プラグインがドキュメントの head に情報を追加したい場合は、
 
 ```ts
 ContentManifestEntry.headTags
 ```
 
-へ `meta` / `link` / `script` を記述します。
+へ `meta` / `link` / `script` を記述します。プラグイン自身が `<head>` を描画するわけではありません。
 
-Plugin 自身が `<head>` を描画するわけではありません。
-
-`resolveRiebeckiteContentRequest` / `resolveRiebeckiteHomeRequest` が、解決した entry の `headTags` を route context へ設定します。`_renderer.tsx` がそれを読み取って描画します。
+`resolveRiebeckiteContentRequest` / `resolveRiebeckiteHomeRequest` が、解決したエントリの `headTags` をルートのコンテキストへ設定します。`_renderer.tsx` がそれを読み取って描画します。
 
 ```tsx
 import { PluginHeadTags } from "@riebeckite/honox/ui";
@@ -95,13 +93,11 @@ _renderer.tsx
 
 という関係です。
 
-たとえば `@riebeckite/plugin-discord-embed` は、この仕組みを使って `theme-color` を提供します。
-
-Plugin は `<head>` 自体や tag の並び順を所有しません。
+たとえば `@riebeckite/plugin-discord-embed` は、この仕組みを使って `theme-color` を提供します。プラグインは `<head>` 自体やタグの並び順を所有しません。
 
 ### RiebeckiteHead と PluginHeadTags
 
-`@riebeckite/honox/ui` より公開される 2 つの primitive は、head composition の責務分離を明確にします。
+`@riebeckite/honox/ui` から公開される 2 つのプリミティブは、head の組み立てにおける責務を分けます。
 
 #### `RiebeckiteHead`
 
@@ -111,19 +107,19 @@ import { RiebeckiteHead } from "@riebeckite/honox/ui";
 <RiebeckiteHead title="My Site" headTags={[]} />
 ```
 
-Framework が次の標準的な head contents を描画します。
+フレームワークが次の標準的な head 要素を描画します。
 
 - `<meta charset="utf-8">`
 - `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-- `<title>`（title prop が提供する値）
-- `<link rel="icon" href="/favicon.ico">`（faviconHref プロップで上書き可能、null で省略可）
-- `<ColorModeScript />`（colorModeScript プロップで制御、default true）
-- stylesheet entries（stylesheets プロップ、default `["/app/style.css"]`）
-- client script entry（clientSrc プロップ、default `"/app/client.ts"`、null で省略可）
-- `PluginHeadTag` values の変換（headTags プロップ）
-- 子要素（children prop）は標準の後に追加
+- `<title>`（title プロパティが提供する値）
+- `<link rel="icon" href="/favicon.ico">`（faviconHref プロパティで上書き可能。null で省略可）
+- `<ColorModeScript />`（colorModeScript プロパティで制御。既定は true）
+- スタイルシートのエントリ（stylesheets プロパティ。既定は `["/app/style.css"]`）
+- クライアントスクリプトのエントリ（clientSrc プロパティ。既定は `"/app/client.ts"`、null で省略可）
+- `PluginHeadTag` の値の変換（headTags プロパティ）
+- 子要素（children プロパティ）は標準要素の後に追加
 
-`RiebeckiteHead` は `<head>` 要素自身を描画しません。Site は `<head>` の ownership を保持し、その中に `RiebeckiteHead` を配置できます。
+`RiebeckiteHead` は `<head>` 要素そのものを描画しません。サイトが `<head>` の所有権を保持し、その中に `RiebeckiteHead` を配置できます。
 
 #### `PluginHeadTags`
 
@@ -133,11 +129,11 @@ import { PluginHeadTags } from "@riebeckite/honox/ui";
 <PluginHeadTags tags={headTagsFromManifest} />
 ```
 
-`PluginHeadTag` values (meta / link / script) を JSX 要素に変換します。`RiebeckiteHead` を使わず、Site が自分で head を組み立てる際に使用します。
+`PluginHeadTag` の値（meta / link / script）を JSX 要素に変換します。`RiebeckiteHead` を使わず、サイトが自分で head を組み立てるときに使います。
 
 #### 使用例
 
-Site が `<head>` 所有権を維持しつつ標準 head をFrameworkに任せる場合：
+サイトが `<head>` の所有権を保ちながら、標準の head をフレームワークに任せる場合：
 
 ```tsx
 import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
@@ -158,15 +154,15 @@ export default jsxRenderer(({ children }, c) => (
 ));
 ```
 
-Frameworkは標準 head rendering メカニクスと theme-root attribute 導出を担当します。head rendering メカニクスには charset、viewport、default title、favicon wiring、color-mode bootstrap が含まれます。stylesheet/client entry wiring、PluginHeadTag 変換も含まれます。Site は `<head>`/`<body>` 構成とカスタム meta/link/script の所有権を保持します。favicon FILE (`/public/favicon.ico`) は Site-owned のまま、default link wiring にのみ Framework が所有権を持ちます。
+フレームワークは、標準的な head の描画と theme-root 属性の導出を担当します。head の描画には、charset、viewport、既定の title、favicon の配線、カラーモードの初期化が含まれます。スタイルシートとクライアントエントリの配線、PluginHeadTag の変換も含まれます。サイトは `<head>` と `<body>` の構成、およびカスタムの meta / link / script の所有権を保持します。favicon のファイル（`/public/favicon.ico`）はサイトが所有し、既定の link の配線だけをフレームワークが担います。
 
-Plugin が head tags を提供する場合は、既存の `headTags` メカニズムはそのまま機能します。`RiebeckiteHead` と `headTags` は併用可能です。
+プラグインが head タグを提供する場合も、既存の `headTags` の仕組みはそのまま機能します。`RiebeckiteHead` と `headTags` は併用できます。
 
-## Plugin UI 組み立て
+## プラグイン UI の組み立て
 
-Plugin は `headTags` を貢献し、データヘルパーと JSX コンポーネントを公開します。Site は自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各 Plugin のデータヘルパーは `PublicContentView`（または同様のフィルタされたファサード）を受け取り、型付き model を返します。その後、component はサイトの[[glossary/article-layout|記事レイアウト]]やページテンプレートで直接描画されます。
+プラグインは `headTags` を提供し、データヘルパーと JSX コンポーネントを公開します。サイトは自分の TSX でこれらのコンポーネントを組み立て、それぞれの表示有無、位置、頻度を決めます。各プラグインのデータヘルパーは `PublicContentView`（または同様にフィルタされたファサード）を受け取り、型付きのモデルを返します。その後、コンポーネントはサイトの[[glossary/article-layout|記事レイアウト]]やページテンプレートで直接描画されます。
 
-Plugin UI は明示的に composition します：
+プラグイン UI は明示的に組み立てます。
 
 ```tsx
 const view = createPublicContentView(manifest);
@@ -182,32 +178,33 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 <Properties data={data} />
 ```
 
-Site はレイアウトの配置を決定します。Plugin コンポーネントは選択的な CSS と client entry をエクスポートでき、integration を通じて登録されます。
+サイトがレイアウトの配置を決めます。プラグインのコンポーネントは、選択的な CSS とクライアントエントリをエクスポートでき、インテグレーションを通じて登録されます。
 
-## SiteConfig 構造
+## SiteConfig の構造
 
-`packages/core/src/types/site_config.ts` から全 `SiteConfig` インターフェースはサイトのメタデータを定義します：
+`packages/core/src/types/site_config.ts` の `SiteConfig` インターフェースは、サイトのメタデータを定義します。
 
 | フィールド | タイプ | 説明 |
 | --- | --- | --- |
 | `title` | `string` | `<title>` と見出しで使用されます |
-| `description` | `string \| undefined` | site description meta tag |
+| `description` | `string \| undefined` | サイトの説明のメタタグ |
 | `author` | `string \| undefined` | メタデータの著者名 |
-| `baseUrl` | `string \| undefined` | サイトの基本URL（例：`https://example.com`） |
+| `baseUrl` | `string \| undefined` | サイトの基本 URL（例：`https://example.com`） |
 | `locale` | `string \| undefined` | ロケールコード（例：`en`、`ja`） |
-| `twitterSite` | `string \| undefined` | Twitter `@` ハンドル カード帰属 |
-| `defaultOgImage` | `string \| undefined` | ページごとの image が提供されない場合の `og:image` のデフォルト値 |
-| `feed` | `feed \| undefined` | RSS/Atom フィードの設定（title、description、language） |
+| `twitterSite` | `string \| undefined` | Twitter カードの帰属を示す `@` ハンドル |
+| `defaultOgImage` | `string \| undefined` | ページごとの画像がない場合の `og:image` の既定値 |
+| `feed` | `feed \| undefined` | RSS / Atom フィードの設定（title、description、language） |
 
-各フィールドは以下のように使用されます：
-- **title**: 文書 `<title>` とページ見出しでレンダリングされます
+各フィールドは次のように使われます。
+
+- **title**: 文書の `<title>` とページ見出しに使われます
 - **description**: `<meta name="description">` タグとして追加されます
-- **author**: 著者メタデータと schema.org マークアップに追加されます
-- **baseUrl**: 正規URLとsitemapの生成に使用されます
-- **locale**: `<html>` の `lang` 属性を設定し、フォーマットに影響を与えます
-- **twitterSite**: Twitter card メタデータに追加されます
-- **defaultOgImage**: ページごとの image が提供されない場合の `og:image` のデフォルト値として使用されます
-- **feed**: サイトの RSS/Atom フィードを生成するために使用されます
+- **author**: 著者メタデータと schema.org のマークアップに追加されます
+- **baseUrl**: 正規 URL とサイトマップの生成に使われます
+- **locale**: `<html>` の `lang` 属性を設定し、書式に影響します
+- **twitterSite**: Twitter カードのメタデータに追加されます
+- **defaultOgImage**: ページごとの画像がない場合の `og:image` の既定値として使われます
+- **feed**: サイトの RSS / Atom フィードの生成に使われます
 
 ```ts
 export interface SiteConfig {
@@ -226,9 +223,9 @@ export interface SiteConfig {
 }
 ```
 
-## フィールドのサイト全体での使用
+## フィールドがサイト全体で使われる流れ
 
-上記のフィールドは、`@riebeckite/honox` integration (`packages/core/src/`) を通じて最終的な公開 UI を組み立てるために流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響を与えます。
+上記のフィールドは、`@riebeckite/honox` インテグレーション（`packages/core/src/`）を通じて最終的な公開 UI の組み立てに流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響します。
 
 ## 関連用語
 

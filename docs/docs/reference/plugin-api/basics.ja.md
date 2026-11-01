@@ -26,7 +26,7 @@ flowchart TD
     Q -->|"問題の報告"| Diagnostics["addDiagnostics"]
 ```
 
-たとえば、CanvasやExcalidrawを記事内へ表示するなら `renderers`、`/explore` のような独立したページを提供するなら `pageTypes` を使います。独立した画面が必要だからといって、プラグイン固有のHonoXルートを追加するわけではありません。
+たとえば、Canvas や Excalidraw を記事内へ表示するなら `renderers`、`/explore` のような独立したページを提供するなら `pageTypes` を使います。独立した画面が必要だからといって、プラグイン固有の HonoX ルートを追加するわけではありません。
 
 ## 最小のプラグイン
 
@@ -65,7 +65,7 @@ export function example(
 
 `RiebeckitePlugin` には、主に次の拡張ポイントがあります。
 
-| 分類 | 主なAPI |
+| 分類 | 主な API |
 | --- | --- |
 | 基本情報 | `name`, `enabled`, `order`, `options` |
 | 依存関係 | `provides`, `requires`, `optional` |
@@ -87,7 +87,7 @@ export function example(
 
 ## 開発時のルートマニフェスト
 
-開発時は、記事HTMLを処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインでは、`entry.html === ""` でも正しく処理でき、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行する必要がある場合に限り、`developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
+開発時は、記事 HTML を処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインでは、`entry.html === ""` でも正しく処理でき、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行する必要がある場合に限り、`developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
 
 ## プラグインを有効にする
 
@@ -163,7 +163,7 @@ flowchart LR
 
 ## オプションの検証
 
-TypeScriptの型だけでは、実行時に渡される設定値が必ず正しいとは限りません。必要なプラグインは `validateOptions` を実装できます。
+TypeScript の型だけでは、実行時に渡される設定値が必ず正しいとは限りません。必要なプラグインは `validateOptions` を実装できます。
 
 検証は、次の流れで行われます。
 
@@ -177,7 +177,7 @@ validateOptions
 設定の検証
 ```
 
-検証処理では、**設定の確認だけ**を行ってください。ファイルシステムの走査、ビルド、キャッシュへの書き込み、外部状態の変更などは行いません。問題は構造化された値として返し、Riebeckiteの設定検証がまとめて表示できるようにします。
+検証処理では、**設定の確認だけ**を行ってください。ファイルシステムの走査、ビルド、キャッシュへの書き込み、外部状態の変更などは行いません。問題は構造化された値として返し、Riebeckite の設定検証がまとめて表示できるようにします。
 
 ## プラグインに渡されるコンテキスト
 

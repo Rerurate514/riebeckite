@@ -7,11 +7,11 @@ sidebar:
 
 # フォルダーページ（Folder Page）
 
-単一のファイルではなくフォルダーを表すページで、folder-pagesプラグインが扱います。ディレクトリにエントリと公開URLを与えつつ、配下のページはそれぞれのパスを保ちます。
+単一のファイルではなくフォルダーを表すページで、folder-pages プラグインが扱います。ディレクトリにエントリと公開 URL を与えつつ、配下のページはそれぞれのパスを保ちます。
 
 ## 何をするか
 
-indexノートを持つフォルダーは、そのフォルダーのURLにあるページになります。配下のページはそのフォルダーの下で引き続き参照できます。これにより、ディレクトリをランディングページとして使えます。
+index ノートを持つフォルダーは、そのフォルダーの URL にあるページになります。配下のページはそのフォルダーの下で引き続き参照できます。これにより、ディレクトリをランディングページとして使えます。
 
 ## URL
 
@@ -19,14 +19,14 @@ indexノートを持つフォルダーは、そのフォルダーのURLにある
 
 ## folder-pagesプラグイン
 
-フォルダーページは`folder-pages`プラグイン（`packages/plugins/folder-pages/src/folder_pages.ts`）が構築します。`buildFolderPages`関数は`ContentManifest`を受け取り、`FolderPagesModel`を生成します。これには`paths`（生成されたフォルダーページのURL）と`byPath`（パス名から`FolderPage`へのマップ）が含まれます。
+フォルダーページは `folder-pages` プラグイン（`packages/plugins/folder-pages/src/folder_pages.ts`）が構築します。`buildFolderPages` 関数は `ContentManifest` を受け取り、`FolderPagesModel` を生成します。これには `paths`（生成されたフォルダーページの URL）と `byPath`（パス名から `FolderPage` へのマップ）が含まれます。
 
 主な動作：
 
-- `index`または`README`ノートを持つフォルダーは、そのフォルダーのURLにあるページになります
+- `index` または `README` ノートを持つフォルダーは、そのフォルダーの URL にあるページになります
 - フォルダーの配下のページはそれぞれのパーマリンクを保ち、フォルダーページの下に平坦化されません
-- `isNavigable`のチェックが、オーナーの有無、ルーティング対象のページ、一覧に載るサブフォルダーに基づいて、フォルダーにページを生成するかを決めます
-- 生成されたパスは`@riebeckite/core`の`resolveGeneratedFolderLocation`が解決します
+- `isNavigable` のチェックが、オーナーの有無、ルーティング対象のページ、一覧に載るサブフォルダーに基づいて、フォルダーにページを生成するかを決めます
+- 生成されたパスは `@riebeckite/core` の `resolveGeneratedFolderLocation` が解決します
 
 ```ts
 // From packages/plugins/folder-pages/src/types.ts
@@ -46,4 +46,4 @@ export type FolderPage = {
 };
 ```
 
-オーナーのいないフォルダー（indexノートがないフォルダー）でも、ルーティング対象のページや一覧に載るサブフォルダーがあればページが生成されます。
+オーナーのいないフォルダー（index ノートがないフォルダー）でも、ルーティング対象のページや一覧に載るサブフォルダーがあればページが生成されます。

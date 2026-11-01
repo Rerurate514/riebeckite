@@ -13,20 +13,20 @@ sidebar:
 
 | 戦略 | 挙動 |
 | --- | --- |
-| all | frontmatterで除外しない限り公開 |
+| all | frontmatter で除外しない限り公開 |
 | selective | 公開指定のあるコンテンツだけを公開 |
 
 ## frontmatterとの関係
 
-戦略が既定を決め、`published` などのfrontmatterがそれを調整します。両者で[公開境界](./publication-boundary.md)を構成します。
+戦略が既定を決め、`published` などの frontmatter がそれを調整します。両者で[公開境界](./publication-boundary.md)を構成します。
 
 ## 戦略の解決
-戦略は[解決済みのRiebeckite設定](../framework/honox-integration/site.md)の `config.content.filters.publishStrategy` から解決されます。値は `"explicit"` か `"selective"` で、`PublishStrategy` として保存されます。
+戦略は[解決済みの Riebeckite 設定](../framework/honox-integration/site.md)の `config.content.filters.publishStrategy` から解決されます。値は `"explicit"` か `"selective"` で、`PublishStrategy` として保存されます。
 
 ## explicitとselective
-`packages/core/src/types/publish_strategy.ts` によると、2つの戦略はfrontmatterフィールドが公開をどう決めるかを規定します。
+`packages/core/src/types/publish_strategy.ts` によると、2つの戦略は frontmatter フィールドが公開をどう決めるかを規定します。
 
-- **explicit**：`publish === true`。frontmatterに `publish: true` があるノートだけが公開され、それ以外は除外されます。
+- **explicit**：`publish === true`。frontmatter に `publish: true` があるノートだけが公開され、それ以外は除外されます。
 - **selective**：`private === true` でも `draft === true` でもない。`private: true` か `draft: true` を付けない限り、ノートは既定で公開されます。
 
 ```ts
@@ -52,7 +52,7 @@ import { isPublished } from "@riebeckite/core";
 const published = isPublished(config, frontmatter, { buildTime: new Date() });
 ```
 
-戦略が `"explicit"` なら、frontmatterに `publish: true` があるノートだけが公開されます。`"selective"` なら、frontmatterに `private: true` か `draft: true` があるノートを除いて公開されます。この関数はビルドパイプラインで、出力生成前にコンテンツを絞り込むために呼ばれます。
+戦略が `"explicit"` なら、frontmatter に `publish: true` があるノートだけが公開されます。`"selective"` なら、frontmatter に `private: true` か `draft: true` があるノートを除いて公開されます。この関数はビルドパイプラインで、出力生成前にコンテンツを絞り込むために呼ばれます。
 
 ## 関連用語
 

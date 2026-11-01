@@ -13,7 +13,7 @@ sidebar:
 
 ### ビルド時
 
-ビルド時には、プラグインが提供するページ種別から、静的に生成するURLを集めます。
+ビルド時には、プラグインが提供するページ種別から、静的に生成する URL を集めます。
 
 ```mermaid id="4b2b3j"
 flowchart LR
@@ -27,7 +27,7 @@ flowchart LR
     Params --> Build
 ```
 
-たとえばプラグインが次のURLを提供していれば、そのURLを[[glossary/ssg|SSG]]の生成対象にできます。
+たとえばプラグインが次の URL を提供していれば、その URL を[[glossary/ssg|SSG]]の生成対象にできます。
 
 ```text id="9ifm52"
 /report
@@ -52,7 +52,7 @@ flowchart TD
     Q -->|"なし"| NotFound["404"]
 ```
 
-プラグインページが見つかった場合は、その本文をサイトのHTML文書の枠組みの中へ描画します。
+プラグインページが見つかった場合は、その本文をサイトの HTML 文書の枠組みの中へ描画します。
 
 ```mermaid id="brt8r0"
 flowchart LR
@@ -101,7 +101,7 @@ export function report() {
 
 この例では、プラグインが `/report` というページを提供します。ページ本文には、公開されている記事の数を表示しています。
 
-プラグインがHonoXのコンポーネントやルートファイルを作る必要はありません。
+プラグインが HonoX のコンポーネントやルートファイルを作る必要はありません。
 
 ## 公開済みコンテンツだけを参照する
 
@@ -113,7 +113,7 @@ PluginPageContext.manifest
 
 `entries` には `draft` と `scheduled` も含まれるため、ページの出力には使わないでください。
 
-公開URLをすべて列挙する場合は `publicEntries`（`public` と `unlisted`）を、読者へ一覧として見せる場合は `discoverableEntries`（`public` のみ）を使います。記事ごとに分岐が必要な場合だけ、解決済みの `entry.publishing` を読みます。
+公開 URL をすべて列挙する場合は `publicEntries`（`public` と `unlisted`）を、読者へ一覧として見せる場合は `discoverableEntries`（`public` のみ）を使います。記事ごとに分岐が必要な場合だけ、解決済みの `entry.publishing` を読みます。
 
 ```mermaid id="s4t3xz"
 flowchart LR
@@ -131,13 +131,13 @@ flowchart LR
 
 ## ページ種別の識別子
 
-各ページ種別にはIDが必要です。
+各ページ種別には ID が必要です。
 
 ```ts id="0evifc"
 id: "example.report"
 ```
 
-IDは、すべてのプラグインを通して一意でなければなりません。次のように、プラグインや用途が分かる名前空間を付けると衝突を避けやすくなります。
+ID は、すべてのプラグインを通して一意でなければなりません。次のように、プラグインや用途が分かる名前空間を付けると衝突を避けやすくなります。
 
 ```text id="tvplf6"
 riebeckite.garden-explorer
@@ -147,7 +147,7 @@ example.search
 
 ## 公開するURL
 
-静的なページは、`paths` に公開URLを指定します。
+静的なページは、`paths` に公開 URL を指定します。
 
 ```ts id="7rvyz2"
 paths: ["/report"]
@@ -162,11 +162,11 @@ paths: [
 ]
 ```
 
-動的ページを静的生成する場合は、SSGのURLを **`manifest.publicEntries` から導出**します。ファイルシステムを独自に走査してURLを作るのではなく、Content Systemが解決した公開状態を利用してください。
+動的ページを静的生成する場合は、SSG の URL を **`manifest.publicEntries` から導出**します。ファイルシステムを独自に走査して URL を作るのではなく、Content System が解決した公開状態を利用してください。
 
 ## 同じURLに複数のページが一致する場合
 
-複数のページ種別が同じURLに一致することがあります。その場合は `priority` で優先順位を決めます。
+複数のページ種別が同じ URL に一致することがあります。その場合は `priority` で優先順位を決めます。
 
 ```mermaid id="q0v69g"
 flowchart TD

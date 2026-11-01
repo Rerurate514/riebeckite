@@ -7,11 +7,11 @@ sidebar:
 
 # ルーティング対象（Routable）
 
-URLで提供するエントリを示す公開ビューで、非公開（unlisted）のエントリも含みます。ルーティングと出力生成は、検出可能ビューではなくこのビューを使います。
+URL で提供するエントリを示す公開ビューで、非公開（unlisted）のエントリも含みます。ルーティングと出力生成は、検出可能ビューではなくこのビューを使います。
 
 ## ビューに含まれるもの
 
-URLと出力を受け取るすべてのエントリです。[非公開（unlisted）](./unlisted.md)のページもルーティング対象で、一覧からは外しつつURLでは提供します。
+URL と出力を受け取るすべてのエントリです。[非公開（unlisted）](./unlisted.md)のページもルーティング対象で、一覧からは外しつつ URL では提供します。
 
 ## 使う側
 
@@ -21,11 +21,11 @@ URLと出力を受け取るすべてのエントリです。[非公開（unliste
 
 `ContentManifest` はエントリの主要なビューを3つ持ちます。
 
-- `publicEntries` — 公開境界がpublicまたはunlistedと判定したすべてのエントリ
-- `byRoutablePermalink` — ルーティング対象のエントリだけ（publicとunlisted。draftと予約公開前を除く）の `permalink => entry` マップ
+- `publicEntries` — 公開境界が public または unlisted と判定したすべてのエントリ
+- `byRoutablePermalink` — ルーティング対象のエントリだけ（public と unlisted。draft と予約公開前を除く）の `permalink => entry` マップ
 - `byPermalink` — 下書きと予約公開も含む完全なマップ
 
-ルーティング処理は `byRoutablePermalink` から読むため、非公開（unlisted）のページはURLで提供されつつ、検出の対象からは外れます。`discoverableEntries` ビューはさらに、一覧やフィードに載せてよいエントリへ絞り込みます。そのため非公開（unlisted）のページはルーティング対象ですが、検出可能ではありません。
+ルーティング処理は `byRoutablePermalink` から読むため、非公開（unlisted）のページは URL で提供されつつ、検出の対象からは外れます。`discoverableEntries` ビューはさらに、一覧やフィードに載せてよいエントリへ絞り込みます。そのため非公開（unlisted）のページはルーティング対象ですが、検出可能ではありません。
 
 ```ts
 // From packages/core/src/types/content_manifest.ts

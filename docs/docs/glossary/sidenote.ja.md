@@ -7,11 +7,11 @@ sidebar:
 
 # サイドノート（Sidenote）
 
-既定ではGFMの脚注定義を記事末尾に保つ脚注スタイルです。`placement: "margin"` を指定すると、定義は参照の横にTufte風のマージンノートとして表示されます。
+既定では GFM の脚注定義を記事末尾に保つ脚注スタイルです。`placement: "margin"` を指定すると、定義は参照の横に Tufte 風のマージンノートとして表示されます。
 
 ## 脚注の記法
 
-通常のGFMの脚注を書きます。
+通常の GFM の脚注を書きます。
 
 ```md
 Riebeckite keeps notes at the end of the article.[^1]
@@ -22,7 +22,7 @@ Riebeckite keeps notes at the end of the article.[^1]
 ## サイドノートの描画
 
 - 既定（`placement: "end"`）：各参照の `sup` に `rr-sidenotes__ref`、リンクに `rr-sidenotes__toggle` が付きます。文末の `<section data-footnotes>` には `.rr-sidenotes__footnotes` が付き、画面幅にかかわらず表示されます。元の `href`、`id`、バックリンクは保持されます。
-- `placement: "margin"`：各定義が、最も近いブロックの後ろの `.rr-sidenotes__note` のasideになります。
+- `placement: "margin"`：各定義が、最も近いブロックの後ろの `.rr-sidenotes__note` の aside になります。
   - 既定では本文フロー内のインラインノート
   - 記事のレールを置ける幅（`@media (min-width: 88rem)`）ではスティッキーなマージンノート
   - 文末の脚注定義セクションは非表示

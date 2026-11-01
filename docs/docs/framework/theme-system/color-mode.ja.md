@@ -22,9 +22,9 @@ type ThemeColorMode =
 | --- | --- |
 | `light` | ライト配色 |
 | `dark` | ダーク配色 |
-| `system` | OSの設定に追従 |
+| `system` | OS の設定に追従 |
 
-`"system"` はOSの設定に追従します。[[glossary/theme|テーマ]]は `data-rb-mode` 属性と[[glossary/semantic-token|セマンティックトークン]]を使い、個々のコンポーネントに色を直接埋め込まないようにします。
+`"system"` は OS の設定に追従します。[[glossary/theme|テーマ]]は `data-rb-mode` 属性と[[glossary/semantic-token|セマンティックトークン]]を使い、個々のコンポーネントに色を直接埋め込まないようにします。
 
 サーバーは、カラーモードが `"system"` でない限り `<html>` に `data-rb-mode` を出力します。
 
@@ -41,7 +41,7 @@ type ThemeColorMode =
 <html data-rb-theme="example">
 ```
 
-この違いは重要です。実行時の配色は、次の3つのCSS状態で決まります。
+この違いは重要です。実行時の配色は、次の3つの CSS 状態で決まります。
 
 ```css id="m87m0s"
 /* Light */
@@ -104,4 +104,4 @@ document.documentElement.dataset.theme = "";
 
 そのため、`:not([data-rb-mode])` が成立しなくなり、システム用のメディアクエリが機能しません。
 
-`@riebeckite/plugin-color-mode` はこの取り決めの参照実装です（パッケージのREADMEを参照）。レンダリング前に実行されるインラインスクリプト `ColorModeScript`、`ColorModeToggle` コントロール、選択内容を `localStorage` に保存する `initColorMode` [[glossary/client-entry|クライアントエントリ]]で構成されています。
+`@riebeckite/plugin-color-mode` はこの取り決めの参照実装です（パッケージの README を参照）。レンダリング前に実行されるインラインスクリプト `ColorModeScript`、`ColorModeToggle` コントロール、選択内容を `localStorage` に保存する `initColorMode` [[glossary/client-entry|クライアントエントリ]]で構成されています。

@@ -7,7 +7,7 @@ sidebar:
 
 # エイリアス（Alias）
 
-ノートに付ける別名で、マニフェストには追加の検索キーとして記録されます。エイリアスを使うと、slugやpermalinkを変えずにWikiLinkを同じノートへ解決できます。同じ名前を2つのノートで使うと、そのキーは曖昧になります。
+ノートに付ける別名で、マニフェストには追加の検索キーとして記録されます。エイリアスを使うと、slug や permalink を変えずに WikiLink を同じノートへ解決できます。同じ名前を2つのノートで使うと、そのキーは曖昧になります。
 
 ## エイリアスの設定
 
@@ -23,7 +23,7 @@ aliases: [Getting Started, Quick Start]
 
 ## コンテンツインデックスへの登録
 
-エイリアスはfrontmatterから`extractFrontmatterAliases`（`packages/core/src/content/content_metadata.ts`）で抽出され、`ContentManifest.byAlias`に登録されます。`contentIndex`はキーを小文字化して検索し、エイリアスも同じ小文字化の規則に従います。複数のエントリが同じエイリアスキーを持つ場合、そのキーは`contentIndexAmbiguities`へ移され、通常のインデックスからは意図的に外されます。そのため、そのキーを使うリンクは検出順で対象を選ぶのではなく、未解決のまま残ります。
+エイリアスは frontmatter から `extractFrontmatterAliases`（`packages/core/src/content/content_metadata.ts`）で抽出され、`ContentManifest.byAlias` に登録されます。`contentIndex` はキーを小文字化して検索し、エイリアスも同じ小文字化の規則に従います。複数のエントリが同じエイリアスキーを持つ場合、そのキーは `contentIndexAmbiguities` へ移され、通常のインデックスからは意図的に外されます。そのため、そのキーを使うリンクは検出順で対象を選ぶのではなく、未解決のまま残ります。
 
 ```ts
 // From packages/core/src/content/content_metadata.ts
@@ -39,4 +39,4 @@ interface ContentManifest {
 }
 ```
 
-エイリアスが曖昧な場合、`[[alias-name]]`を使ったWikiLinkは解決されず、診断として報告されます。単一のエイリアスキーは通常どおり対象のノートへ解決されます。
+エイリアスが曖昧な場合、`[[alias-name]]` を使った WikiLink は解決されず、診断として報告されます。単一のエイリアスキーは通常どおり対象のノートへ解決されます。

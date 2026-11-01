@@ -9,7 +9,7 @@ sidebar:
 
 ## プラグインのコンポーネントを使う
 
-プラグインによっては、サイトから直接利用できるHono JSXコンポーネントを提供しています。たとえば、バックリンクや目次をサイトの好きな場所へ配置できます。
+プラグインによっては、サイトから直接利用できる Hono JSX コンポーネントを提供しています。たとえば、バックリンクや目次をサイトの好きな場所へ配置できます。
 
 ```tsx
 import { Backlinks } from "@riebeckite/plugin-backlinks";
@@ -25,38 +25,38 @@ export function ArticleAside({ items, backlinks }: Props) {
 }
 ```
 
-利用できるコンポーネントや`props`は、それぞれのプラグインのページやパッケージのREADMEを確認してください。多くのコンポーネントは`./components`からdefault importすることもできます。
+利用できるコンポーネントや `props` は、それぞれのプラグインのページやパッケージの README を確認してください。多くのコンポーネントは `./components` から default import することもできます。
 
 ```tsx
 import Backlinks from "@riebeckite/plugin-backlinks/components";
 ```
 
-`color-mode`は例外で、`ColorModeScript`と`ColorModeToggle`をパッケージのルートから公開しています。
+`color-mode` は例外で、`ColorModeScript` と `ColorModeToggle` をパッケージのルートから公開しています。
 
 ### ページの情報を参照するコンポーネント
 
-プラグインのコンポーネントによっては、現在のページのデータを自分で解決します。`SiteProvider`と、公開された`entry`を持つ`Article`の内側ではコンテキストから読み取るため、サイトはデータを明示的に渡さずに描画できます。`props`を渡した場合は、常にコンテキストより優先されます。
+プラグインのコンポーネントによっては、現在のページのデータを自分で解決します。`SiteProvider` と、公開された `entry` を持つ `Article` の内側ではコンテキストから読み取るため、サイトはデータを明示的に渡さずに描画できます。`props` を渡した場合は、常にコンテキストより優先されます。
 
-詳しくは[UIコンポーネント](../../reference/plugin-api/ui-and-assets.ja.md#uiコンポーネント)と[UIの提供方法](../../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
+詳しくは[UI コンポーネント](../../reference/plugin-api/ui-and-assets.ja.md#ui コンポーネント)と[UI の提供方法](../../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
 
 ## 操作できるUIを作る
 
-クリックや状態管理など、ブラウザ側の処理が必要なUIは`app/islands/`に作ります。これは通常のHonoXの[[glossary/island|アイランド]]と同じです。作成したアイランドをルートやコンポーネントからimportして利用します。Riebeckite専用のアイランドの仕組みがあるわけではありません。
+クリックや状態管理など、ブラウザ側の処理が必要な UI は `app/islands/` に作ります。これは通常の HonoX の[[glossary/island|アイランド]]と同じです。作成したアイランドをルートやコンポーネントから import して利用します。Riebeckite 専用のアイランドの仕組みがあるわけではありません。
 
-`app/client.ts`では、次の2つを初期化します。
+`app/client.ts` では、次の2つを初期化します。
 
 ```ts
 createClient();
 initRiebeckiteClient();
 ```
 
-`createClient()`はサイトのクライアント処理を初期化します。`initRiebeckiteClient()`は、プラグインやテーマが提供するブラウザ側の処理を起動します。サイトのアイランドは`app/islands/`、プラグインのブラウザ側処理はプラグイン側というように、責務が分かれています。
+`createClient()` はサイトのクライアント処理を初期化します。`initRiebeckiteClient()` は、プラグインやテーマが提供するブラウザ側の処理を起動します。サイトのアイランドは `app/islands/`、プラグインのブラウザ側処理はプラグイン側というように、責務が分かれています。
 
 ## CSSを変更する
 
-サイトのデザインは、`app/style.css`や各コンポーネントのCSSから変更できます。生成されるプリセットでは、サイトのCSSを`app/styles/`に分割し、`app/style.css`から読み込みます。通常のCSSやTailwindを利用できます。
+サイトのデザインは、`app/style.css` や各コンポーネントの CSS から変更できます。生成されるプリセットでは、サイトの CSS を `app/styles/` に分割し、`app/style.css` から読み込みます。通常の CSS や Tailwind を利用できます。
 
-Riebeckiteがプラグインやテーマから生成したCSSは、サイトのCSSから一度だけ読み込みます。
+Riebeckite がプラグインやテーマから生成した CSS は、サイトの CSS から一度だけ読み込みます。
 
 ```css
 /* app/style.css */
@@ -65,6 +65,6 @@ Riebeckiteがプラグインやテーマから生成したCSSは、サイトのC
 @import "./.riebeckite/theme-styles.css";
 ```
 
-`app/.riebeckite/`のファイルは自動生成されるため、直接編集しないでください。
+`app/.riebeckite/` のファイルは自動生成されるため、直接編集しないでください。
 
-プラグインの見た目を上書きするときは`rr-<feature>`、RiebeckiteのUIプリミティブを調整するときは`rb-*`のCSSフックを利用できます。詳しくは[CSSフック](../../reference/plugin-api/ui-and-assets.ja.md#cssフック)を参照してください。
+プラグインの見た目を上書きするときは `rr-<feature>`、Riebeckite の UI プリミティブを調整するときは `rb-*` の CSS フックを利用できます。詳しくは[CSS フック](../../reference/plugin-api/ui-and-assets.ja.md#css フック)を参照してください。

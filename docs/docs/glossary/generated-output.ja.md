@@ -11,22 +11,22 @@ sidebar:
 
 ## 所有者と依存関係
 
-各生成物は`producer`（例：`plugin:${output.owner}`）と、`OutputDependency`型の`dependencies`の一覧を持ちます。依存関係を宣言していない生成物は`unknown`となり、出力全体の再生成を引き起こします。
+各生成物は `producer`（例：`plugin:${output.owner}`）と、`OutputDependency` 型の `dependencies` の一覧を持ちます。依存関係を宣言していない生成物は `unknown` となり、出力全体の再生成を引き起こします。
 
 ## 生成物の依存関係の種類
 
-各生成物は`producer`（例：`plugin:${output.owner}`）と、`OutputDependency`型の`dependencies`の一覧を持ちます。依存関係の種類と意味は次のとおりです。
+各生成物は `producer`（例：`plugin:${output.owner}`）と、`OutputDependency` 型の `dependencies` の一覧を持ちます。依存関係の種類と意味は次のとおりです。
 
 - `content { slug }` — そのコンテンツが変わった。
 - `tag { tag }` — そのタグを持つコンテンツが変わった。
 - `folder { folder }` — そのフォルダー内のコンテンツが変わった。
 - `global` — どのコンテンツかが変わった。
-- `unknown` — 常に出力全体の再生成を引き起こす。依存関係を宣言していない生成物は`unknown`になる。
+- `unknown` — 常に出力全体の再生成を引き起こす。依存関係を宣言していない生成物は `unknown` になる。
 
 ## コンテンツの出力との比較
 
-コンテンツの出力はコンテンツエントリが所有し、`content`型の依存関係を持ちます。
-生成物はプラグインが所有し、任意の種類の依存関係を持てます。この違いは増分SSGで重要です。コンテンツの出力は`content`依存関係に基づいて選択的に無効化できますが、`unknown`の依存関係を持つ生成物は出力全体の再生成を強制します。
+コンテンツの出力はコンテンツエントリが所有し、`content` 型の依存関係を持ちます。
+生成物はプラグインが所有し、任意の種類の依存関係を持てます。この違いは増分 SSG で重要です。コンテンツの出力は `content` 依存関係に基づいて選択的に無効化できますが、`unknown` の依存関係を持つ生成物は出力全体の再生成を強制します。
 
 生成物の依存関係の宣言例：
 

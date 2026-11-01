@@ -7,11 +7,11 @@ sidebar:
 
 # リダイレクト（Redirect）
 
-ノートの正規permalinkを指す追加のURLで、通常は古いアドレスを生かすために使います。リダイレクトは解決済みの公開先の一部で、permalinkを置き換えません。
+ノートの正規 permalink を指す追加の URL で、通常は古いアドレスを生かすために使います。リダイレクトは解決済みの公開先の一部で、permalink を置き換えません。
 
 ## リダイレクトが生まれるとき
 
-[permalink](./permalink.md)プラグイン、名前変更、ロケールの規則がリダイレクトを追加できます。ノートは正規のpermalinkを1つ保ち、リダイレクトはいくつでも持てます。リダイレクトは解決済みの公開先の一部で、permalinkを置き換えません。
+[permalink](./permalink.md)プラグイン、名前変更、ロケールの規則がリダイレクトを追加できます。ノートは正規の permalink を1つ保ち、リダイレクトはいくつでも持てます。リダイレクトは解決済みの公開先の一部で、permalink を置き換えません。
 
 ## リダイレクトの型と構造
 
@@ -33,4 +33,4 @@ permalink: "/docs/notes/hello/",
 redirects: ["/docs/hello/", "/hello/"],
 ```
 
-リダイレクトは、permalinkプラグインが `resolveContentLocations` フックを通じて生成するほか、コンテンツファイルの名前変更時に自動で生成されます（古いパスから新しいpermalinkへのリダイレクトが付きます）。
+リダイレクトは、permalink プラグインが `resolveContentLocations` フックを通じて生成するほか、コンテンツファイルの名前変更時に自動で生成されます（古いパスから新しい permalink へのリダイレクトが付きます）。

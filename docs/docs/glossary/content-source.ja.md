@@ -7,13 +7,13 @@ sidebar:
 
 # ContentSource（コンテンツソース）
 
-パイプラインのほかの部分のためにコンテンツを見つけて読み取る抽象です。標準の実装はファイルシステムやObsidian vaultを読み取るため、ContentManagerがファイルシステムを直接たどることはありません。
+パイプラインのほかの部分のためにコンテンツを見つけて読み取る抽象です。標準の実装はファイルシステムや Obsidian vault を読み取るため、ContentManager がファイルシステムを直接たどることはありません。
 
 ## パイプラインの読み取り側
 
 コンテンツソースは走査と読み取りを担います。パスとバイト列を持つ生のエントリを返し、解析と公開先の解決は後段で行います。
 
-読み取りがインターフェースの背後にあるため、ContentManagerを変えずに、ローカルのディレクトリ、Obsidian vault、その他のソースを同じビルドで扱えます。
+読み取りがインターフェースの背後にあるため、ContentManager を変えずに、ローカルのディレクトリ、Obsidian vault、その他のソースを同じビルドで扱えます。
 
 ## 分離している理由
 
@@ -28,12 +28,12 @@ Node.js 向けの標準実装は、`@riebeckite/node` の `FileSystemContentSour
 Obsidian vault、クラウドストレージ、その他のファイルシステムに似たソースから
 読み取れます。
 
-`ContentSource`インターフェース（`packages/core/src/content/content_source.ts`）は次を定義します。
+`ContentSource` インターフェース（`packages/core/src/content/content_source.ts`）は次を定義します。
 
-- **`scan()`** — `Promise<readonly ContentSourceEntry[]>`を返す。各エントリは`path`と任意の`metadata`（modified、size、etag、hash）を持つ
-- **`read(entry)`** — `Promise<ContentSourceContent>`を返す。生のファイルのバイト列またはテキスト
+- **`scan()`** — `Promise<readonly ContentSourceEntry[]>` を返す。各エントリは `path` と任意の `metadata`（modified、size、etag、hash）を持つ
+- **`read(entry)`** — `Promise<ContentSourceContent>` を返す。生のファイルのバイト列またはテキスト
 
-`ContentSourceEntry`の例：
+`ContentSourceEntry` の例：
 
 ```ts
 {

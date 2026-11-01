@@ -7,7 +7,7 @@ sidebar:
 
 # コンテンツコレクション（Content Collection）
 
-クエリ用に作られるコンテンツエントリのまとまりで、タグ、フォルダー、日付、frontmatterのフィールドなどの種類で定義します。タクソノミーページ、アーカイブ、シリーズの一覧はコレクションから作られます。
+クエリ用に作られるコンテンツエントリのまとまりで、タグ、フォルダー、日付、frontmatter のフィールドなどの種類で定義します。タクソノミーページ、アーカイブ、シリーズの一覧はコレクションから作られます。
 
 ## 種類
 
@@ -16,7 +16,7 @@ sidebar:
 - `tags` — 同じタグを持つエントリ。
 - `folder` — あるディレクトリ配下のエントリ。
 - `date` — 年、月、日でまとめたエントリ。
-- frontmatterのフィールド — 同じ値を持つエントリ。シリーズで使われる形です。
+- frontmatter のフィールド — 同じ値を持つエントリ。シリーズで使われる形です。
 
 ## エントリの選び方
 
@@ -31,9 +31,9 @@ sidebar:
 
 ## コンテンツコレクションの定義
 
-`ContentCollection`は`ContentCollectionDefinition`で定義し、`kind`と任意の`filter`、`sort`、`order`を指定します。`buildContentCollections`関数（`packages/core/src/content/content_collection.ts`）がマニフェストのエントリをタクソノミー・日付・フォルダーベースの一覧にまとめ、ページネーション、並べ替え、フィルターに対応します。
+`ContentCollection` は `ContentCollectionDefinition` で定義し、`kind` と任意の `filter`、`sort`、`order` を指定します。`buildContentCollections` 関数（`packages/core/src/content/content_collection.ts`）がマニフェストのエントリをタクソノミー・日付・フォルダーベースの一覧にまとめ、ページネーション、並べ替え、フィルターに対応します。
 
-`ContentCollectionDefinition`の例：
+`ContentCollectionDefinition` の例：
 
 ```ts
 {
@@ -57,4 +57,4 @@ sidebar:
 - `tags` — 同じタグを持つエントリ
 - `folder` — あるディレクトリ配下のエントリ
 - `date` — 年、月、日でまとめたエントリ
-- frontmatterのフィールド — 同じ値を持つエントリ。シリーズで使われる形です。
+- frontmatter のフィールド — 同じ値を持つエントリ。シリーズで使われる形です。

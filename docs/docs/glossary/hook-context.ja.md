@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # フックコンテキスト（Hook Context）
-フックに渡されるプラグインのコンテキストには`config`、`isDevelopment`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer`が含まれ、任意で`contentSource`も渡されます。グローバルなシングルトンより、フレームワークのサービスを優先してください。
+フックに渡されるプラグインのコンテキストには `config`、`isDevelopment`、`contentIndex`、`diagnostics`、`cache`、`output`、`logger`、`tracer` が含まれ、任意で `contentSource` も渡されます。グローバルなシングルトンより、フレームワークのサービスを優先してください。
 
 ## PluginContextの形
 ```ts
@@ -24,7 +24,7 @@ type PluginContext = {
 ```
 
 ## フックごとの追加
-フックによっては`slug`、`markdown`、`content`、`manifest`、`entries`、公開先の入力などのフィールドが追加されます。フックごとの追加は次の表のとおりです。
+フックによっては `slug`、`markdown`、`content`、`manifest`、`entries`、公開先の入力などのフィールドが追加されます。フックごとの追加は次の表のとおりです。
 
 | フック | 追加フィールド |
 |---|---|

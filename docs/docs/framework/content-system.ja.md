@@ -19,7 +19,7 @@ Markdown を HTML に変換するだけではありません。Riebeckite は次
 ## このページの構成
 
 - [ソースと管理](./content-system/sources.ja.md)
-- [IDとURL](./content-system/identity.ja.md)
+- [ID と URL](./content-system/identity.ja.md)
 - [マニフェスト](./content-system/manifest.ja.md)
 - [運用](./content-system/operations.ja.md)
 

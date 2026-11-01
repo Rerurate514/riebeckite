@@ -6,10 +6,10 @@ sidebar:
 ---
 # stylesheets（追加スタイルシート）
 
-CSSカスケードで最後に読み込まれる追加スタイルシートで、テーマをフォークせずに、サイト作者がテーマの外観を最終調整できます。stylesheetsはテーマCSS、プラグインCSS、設定のトークンスタイルに優先します。
+CSS カスケードで最後に読み込まれる追加スタイルシートで、テーマをフォークせずに、サイト作者がテーマの外観を最終調整できます。stylesheets はテーマ CSS、プラグイン CSS、設定のトークンスタイルに優先します。
 
 ## カスケードの位置
-読み込み順は、フレームワークCSS → プラグインCSS → テーマCSS → 設定のトークンインラインスタイル → stylesheets です。stylesheetsは最後の上書きで、サイト固有の小さな調整に向きます。
+読み込み順は、フレームワーク CSS → プラグイン CSS → テーマ CSS → 設定のトークンインラインスタイル → stylesheets です。stylesheets は最後の上書きで、サイト固有の小さな調整に向きます。
 
 ```ts
 export default defineConfig({
@@ -27,7 +27,7 @@ export default defineConfig({
 - 特定の要素のテキストサイズを変える
 - サイト固有の装飾を追加する
 
-調整にはstylesheetsを使い、変更が大きくなったらテーマへ移してください。
+調整には stylesheets を使い、変更が大きくなったらテーマへ移してください。
 
 ## 関連用語
 - [[glossary/theme|Theme]]

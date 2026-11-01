@@ -6,7 +6,7 @@ sidebar:
 ---
 # テーマ作成の詳細
 
-このページは、Riebeckiteの[[glossary/theme|テーマ]]を実際に設計・実装するときの詳細ガイドです。初めてテーマを作る場合は、先に[はじめてのテーマ作成](../themes/writing-a-theme.ja.md)を読んでください。
+このページは、Riebeckite の[[glossary/theme|テーマ]]を実際に設計・実装するときの詳細ガイドです。初めてテーマを作る場合は、先に[はじめてのテーマ作成](../themes/writing-a-theme.ja.md)を読んでください。
 
 ここでは、その次の段階で必要になる次の内容を扱います。
 
@@ -16,9 +16,9 @@ sidebar:
 - [[glossary/typography|タイポグラフィ]]
 - レイアウト
 - [[glossary/design-token|デザイントークン]]
-- 安定したCSSフック
+- 安定した CSS フック
 - テーマ固有のオプション
-- CSSのカスケード
+- CSS のカスケード
 - パッケージとしての配布
 
 各型やフィールドの完全な定義を確認したい場合は [Theme API](../reference/theme-api.ja.md) を参照してください。
@@ -30,7 +30,7 @@ sidebar:
 - [タイポグラフィと記事レイアウト](./theme-system/typography.ja.md)
 - [デザイントークン](./theme-system/tokens.ja.md)
 - [テーマのルートと属性](./theme-system/theme-root.ja.md)
-- [安定したCSSフックとカスケード](./theme-system/css.ja.md)
+- [安定した CSS フックとカスケード](./theme-system/css.ja.md)
 - [テーマの配布と検証](./theme-system/distribution.ja.md)
 
 ## 1. テーマで変えてよいもの
@@ -40,11 +40,11 @@ sidebar:
 | テーマでできること | テーマでしないこと |
 | --- | --- |
 | トークンの上書き・追加 | コンポーネントの置き換え |
-| CSSルールの定義 | JSXの注入 |
+| CSS ルールの定義 | JSX の注入 |
 | テーマ固有の `data-*` 属性 | ルートの追加 |
 | カラーモードの宣言 | [[glossary/plugin|プラグイン]]の追加・削除 |
 | タイポグラフィの宣言 | クライアントスクリプトの実行 |
-| レイアウトプリセットの宣言 | DOMの変換 |
+| レイアウトプリセットの宣言 | DOM の変換 |
 | 安定したフックへのスタイル指定 | [[glossary/island|アイランド]]の登録 |
 | `stylesheets` による最終的な上書き | ファイルシステムや[[glossary/content-manager|ContentManager]]へのアクセス |
 
@@ -146,11 +146,11 @@ export function exampleTheme() {
 }
 ```
 
-`styles[].moduleSpecifier` には、ホスト側のバンドラーが解決できるモジュール指定子を書きます。CSSファイルをアプリケーションのディレクトリへコピーするためのパスではありません。
+`styles[].moduleSpecifier` には、ホスト側のバンドラーが解決できるモジュール指定子を書きます。CSS ファイルをアプリケーションのディレクトリへコピーするためのパスではありません。
 
 ## 4. サイト内だけで使うテーマ
 
-テーマは、npmパッケージとして公開しなくても利用できます。たとえば、次のようにサイト内へ置けます。
+テーマは、npm パッケージとして公開しなくても利用できます。たとえば、次のようにサイト内へ置けます。
 
 ```text id="10b70z"
 site/
@@ -219,7 +219,7 @@ export function newspaperTheme(
 }
 ```
 
-このオプションはCoreの `ThemeOptions` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
+このオプションは Core の `ThemeOptions` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
 
 ```text id="2cqt02"
 newspaper の density
@@ -260,7 +260,7 @@ flowchart LR
 CSSのカスケード
 ```
 
-テーマ固有の設定はテーマのパッケージ内に閉じ込め、Coreへ漏らさないでください。また、テーマを変更しても次のものが変わらない状態を保ちます。
+テーマ固有の設定はテーマのパッケージ内に閉じ込め、Core へ漏らさないでください。また、テーマを変更しても次のものが変わらない状態を保ちます。
 
 ```text id="e6c5sk"
 コンテンツ
@@ -278,4 +278,4 @@ Content Graph
 - [[writing-a-theme|はじめてのテーマ作成]]：最初のテーマを作る
 - [[theme-system|テーマシステム]]：テーマシステム全体の考え方
 - [[plugin-system|プラグインシステム]]：プラグインとの責務の違い
-- [[reference/README|フレームワークリファレンス]]：`defineTheme` などの公開API
+- [[reference/README|フレームワークリファレンス]]：`defineTheme` などの公開 API

@@ -11,7 +11,7 @@ sidebar:
 
 ## 検索インデックス
 
-検索インデックスはビルド時にマニフェストから生成され、slug、permalink、title、body、tags、headingsを持つエントリを含みます。読み手は検索プラグインでインデックスを照会でき、テキスト検索と、タグ、言語、パスによる絞り込みに対応します。
+検索インデックスはビルド時にマニフェストから生成され、slug、permalink、title、body、tags、headings を持つエントリを含みます。読み手は検索プラグインでインデックスを照会でき、テキスト検索と、タグ、言語、パスによる絞り込みに対応します。
 
 ```ts
 import { searchItems } from "@riebeckite/plugin-search";
@@ -22,10 +22,10 @@ const results = searchItems(manifest.entries, "plugin");
 ## 検索インデックスの生成
 検索インデックスはビルド時に検索プラグイン（`packages/plugins/search/`）が生成します。マニフェストから作られ、各エントリの `slug`、`permalink`、`title`、`body`、`tags`、`headings` を含みます。インデックスは `searchItems` 関数で生成され、次のことができます。
 
-- **テキスト検索**：エントリのbodyとheadingsに対する全文検索
-- **タグフィルタ**：frontmatterで指定されたタグによる結果の絞り込み
+- **テキスト検索**：エントリの body と headings に対する全文検索
+- **タグフィルタ**：frontmatter で指定されたタグによる結果の絞り込み
 - **言語フィルタ**：エントリのロケールによる結果の絞り込み
-- **パスフィルタ**：URLパスによる結果の絞り込み
+- **パスフィルタ**：URL パスによる結果の絞り込み
 
 ```ts
 import { searchItems } from "@riebeckite/plugin-search";
@@ -35,7 +35,7 @@ const results = searchItems(manifest.entries, "plugin", { tags: ["plugin"] });
 const results = searchItems(manifest.entries, "plugin", { lang: "ja" });
 ```
 
-検索プラグインはサイトのセットアップ時に登録され、検索UIとの統合を提供します。結果は関連性で並べ替えられ、タグの一致、言語の優先度、パスの近さが考慮されます。
+検索プラグインはサイトのセットアップ時に登録され、検索 UI との統合を提供します。結果は関連性で並べ替えられ、タグの一致、言語の優先度、パスの近さが考慮されます。
 
 ## 関連用語
 

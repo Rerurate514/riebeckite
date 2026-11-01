@@ -7,11 +7,11 @@ sidebar:
 
 # タクソノミー（Taxonomy）
 
-タグ、フォルダ、日付でコンテンツをまとめ、/tags/ のような一覧ページにする仕組みです。タクソノミーページはコンテンツコレクションから作られ、リンクにはpermalinkを使います。
+タグ、フォルダ、日付でコンテンツをまとめ、/tags/ のような一覧ページにする仕組みです。タクソノミーページはコンテンツコレクションから作られ、リンクには permalink を使います。
 
 ## 軸
 
-- `tags`：frontmatterの `tags` フィールドから。
+- `tags`：frontmatter の `tags` フィールドから。
 - `folder`：ディレクトリ構造から。
 - `date`：年、月、日で。
 
@@ -28,7 +28,7 @@ sidebar:
 - `related`（既定：`true`）：タグのタームに関連タームのナビゲーションを表示するか
 - `relatedLimit`（既定：`8`）：タグあたりの関連タームの最大数
 - `feeds`：形式ごとのフィード生成（RSS、Atom、JSON）
-- `dataEndpoint`（既定：`"/taxonomy/index.json"`）：アプリのルート向けJSONデータエンドポイント
+- `dataEndpoint`（既定：`"/taxonomy/index.json"`）：アプリのルート向け JSON データエンドポイント
 
 ```ts
 // From packages/plugins/taxonomy/src/types.ts

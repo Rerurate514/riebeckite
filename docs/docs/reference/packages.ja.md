@@ -21,8 +21,8 @@ sidebar:
 | `@riebeckite/preview` | 安全な Markdown プレビューランタイム |
 | `@riebeckite/spa` | 任意で有効にする SPA ナビゲーションランタイム |
 | `@riebeckite/ui` | integration とプラグインが共有する宣言的 UI コンテキスト |
-| `@riebeckite/analytics-cloudflare` | analytics 用の Cloudflare Workers・D1・KV ランタイム |
-| `@riebeckite/webmention-cloudflare` | Webmention 用の Cloudflare Workers・D1・KV ランタイム |
+| `@riebeckite/analytics-cloudflare` | analytics 用の Cloudflare Workers ・ D1・ KV ランタイム |
+| `@riebeckite/webmention-cloudflare` | Webmention 用の Cloudflare Workers ・ D1・ KV ランタイム |
 | `@riebeckite/test` | テストヘルパー（`assertGolden`、`assertGoldenJson`）。`e2e` subpath に packed tarball の外部サイトエンジン |
 | `@riebeckite/node` | Node.js 向けアダプター。ファイルシステムから読み込む `FileSystemContentSource` とパス用ヘルパー |
 | `@riebeckite/git-history` | プラグインが共有する Git リポジトリへのアクセス。`test-support` subpath にテスト用の使い捨てリポジトリ |

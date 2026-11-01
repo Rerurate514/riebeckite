@@ -17,27 +17,27 @@ Riebeckite は、**自分で管理しているコンテンツを公開する静�
 
 一方、外部サイトから取得したデータや、ブラウザから送られてくる入力は信頼できるとは限りません。
 
-このページでは、Riebeckiteがどこまで安全性を保証し、どこから利用者やPlugin側で確認する必要があるかを説明します。
+このページでは、Riebeckite がどこまで安全性を保証し、どこから利用者や Plugin 側で確認する必要があるかを説明します。
 
 ## 基本的な考え方
 
-Riebeckiteでは、データを大きく次のように扱います。
+Riebeckite では、データを大きく次のように扱います。
 
 | 種類 | 扱い |
 | --- | --- |
 | サイト設定 | 信頼する |
-| インストールしたTheme / Plugin | 信頼する |
-| ローカルのMarkdown / frontmatter | 信頼する |
+| インストールした Theme / Plugin | 信頼する |
+| ローカルの Markdown / frontmatter | 信頼する |
 | 外部サイトから取得したデータ | 内容を確認して扱う |
 | ブラウザやネットワークからの入力 | 信頼せず検証する |
 
-つまり、Riebeckiteは**不特定多数のユーザーが自由にHTMLを投稿するサービス向けのフレームワークではありません**。
+つまり、Riebeckite は**不特定多数のユーザーが自由に HTML を投稿するサービス向けのフレームワークではありません**。
 
-自分のObsidian VaultやMarkdownリポジトリなど、管理しているコンテンツを公開する用途を想定しています。
+自分の Obsidian Vault や Markdown リポジトリなど、管理しているコンテンツを公開する用途を想定しています。
 
 ## Markdown内のHTML
 
-Riebeckiteでは、MarkdownにHTMLを直接書けます。
+Riebeckite では、Markdown に HTML を直接書けます。
 
 たとえば次のような記述もそのまま利用できます。
 
@@ -48,7 +48,7 @@ Riebeckiteでは、MarkdownにHTMLを直接書けます。
 </details>
 ```
 
-これはObsidianとの互換性や、Markdownだけでは表現できない内容を記述できるようにするためです。
+これは Obsidian との互換性や、Markdown だけでは表現できない内容を記述できるようにするためです。
 
 ### Markdown パイプライン
 
@@ -60,64 +60,64 @@ Core のパイプラインは、意図的に raw HTML を有効にしていま�
 
 これはサニタイザーではなく、信頼できる Vault のための互換性と執筆機能です。信頼できないユーザーのコンテンツをビルドする場合は、Riebeckite へ渡す前にサニタイズするか拒否してください。
 
-その代わり、RiebeckiteはMarkdown内のHTMLを自動的には無害化しません。
+その代わり、Riebeckite は Markdown 内の HTML を自動的には無害化しません。
 
-そのため、**信頼できない人が作成したMarkdownをそのまま公開しないでください**。
+そのため、**信頼できない人が作成した Markdown をそのまま公開しないでください**。
 
-外部から受け取ったMarkdownを公開する場合は、Riebeckiteへ渡す前に内容を検証する必要があります。
+外部から受け取った Markdown を公開する場合は、Riebeckite へ渡す前に内容を検証する必要があります。
 
 ## ThemeとPlugin
 
-インストールしたThemeやPluginは、Riebeckiteの中でプログラムとして動作します。
+インストールした Theme や Plugin は、Riebeckite の中でプログラムとして動作します。
 
-Pluginは、たとえば次のようなことができます。
+Plugin は、たとえば次のようなことができます。
 
-- HTMLを生成する
-- JavaScriptをブラウザで実行する
+- HTML を生成する
+- JavaScript をブラウザで実行する
 - 外部サイトへアクセスする
 - 独自ページを追加する
-- endpointを追加する
+- endpoint を追加する
 - ファイルを生成する
 
-そのため、Pluginは一般的なnpm packageと同じように、**信頼できるものだけをインストールしてください**。
+そのため、Plugin は一般的な npm package と同じように、**信頼できるものだけをインストールしてください**。
 
-RiebeckiteがPluginの処理内容を自動的に安全化することはありません。
+Riebeckite が Plugin の処理内容を自動的に安全化することはありません。
 
 `inspectGeneratedHtml` は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
 
 ## 外部サイトのデータ
 
-一部のPluginは外部サービスを利用します。
+一部の Plugin は外部サービスを利用します。
 
 たとえば、
 
-- Webページの情報取得
-- iframeによる埋め込み
+- Web ページの情報取得
+- iframe による埋め込み
 - 外部画像
-- Diagram生成サービス
+- Diagram 生成サービス
 - Webmention
 
 などです。
 
-外部から取得したデータは、ローカルMarkdownとは異なり、信頼できるとは限りません。
+外部から取得したデータは、ローカル Markdown とは異なり、信頼できるとは限りません。
 
-そのためRiebeckiteの公式Pluginでは、それぞれの用途に応じてURLやレスポンスを検証します。
+そのため Riebeckite の公式 Plugin では、それぞれの用途に応じて URL やレスポンスを検証します。
 
-たとえばRich Embedでは、安全でないURLを拒否し、任意のサイトをiframeとして表示する場合には許可するホストを明示する必要があります。
+たとえば Rich Embed では、安全でない URL を拒否し、任意のサイトを iframe として表示する場合には許可するホストを明示する必要があります。
 
 ## Pluginを作る場合
 
-Pluginで外部データやユーザー入力を扱う場合は、その値をそのままHTMLへ埋め込まないでください。
+Plugin で外部データやユーザー入力を扱う場合は、その値をそのまま HTML へ埋め込まないでください。
 
 特に次の点に注意してください。
 
-- 外部から取得した文字列をHTMLへ入れる場合はescapeする
-- URLは用途に応じて安全なものか確認する
+- 外部から取得した文字列を HTML へ入れる場合は escape する
+- URL は用途に応じて安全なものか確認する
 - `<script>` にデータを埋め込む場合は `escapeScriptJson` を利用する
-- secretやtokenをHTMLやブラウザ側の設定へ含めない
-- endpointで受け取ったデータは利用前に検証する
+- secret や token を HTML やブラウザ側の設定へ含めない
+- endpoint で受け取ったデータは利用前に検証する
 
-Riebeckite Coreには、HTMLを生成するときに利用できる次のhelperがあります。
+Riebeckite Core には、HTML を生成するときに利用できる次の helper があります。
 
 ```ts
 escapeHtml(...)
@@ -125,15 +125,15 @@ escapeHtmlAttribute(...)
 escapeScriptJson(...)
 ```
 
-これらは文字列を適切にescapeするためのものです。
+これらは文字列を適切に escape するためのものです。
 
-任意のHTMLを安全なHTMLへ変換したり、URLそのものが安全かどうかを判定したりするものではありません。
+任意の HTML を安全な HTML へ変換したり、URL そのものが安全かどうかを判定したりするものではありません。
 
 ## エンドポイント
 
-Pluginは独自のendpointを提供できます。
+Plugin は独自の endpoint を提供できます。
 
-ブラウザやネットワークからendpointへ送られてくるデータは、信頼できない入力として扱ってください。
+ブラウザやネットワークから endpoint へ送られてくるデータは、信頼できない入力として扱ってください。
 
 必要に応じて、
 
@@ -146,11 +146,11 @@ Pluginは独自のendpointを提供できます。
 
 などを確認してください。
 
-Riebeckiteはendpointを登録してrequestをPluginへ渡しますが、そのデータがPluginの用途に適しているかどうかはPlugin側で判断します。
+Riebeckite は endpoint を登録して request を Plugin へ渡しますが、そのデータが Plugin の用途に適しているかどうかは Plugin 側で判断します。
 
 ## 組み込みPluginの対策
 
-Riebeckiteの公式Pluginでも、外部データを扱うものには用途に応じた制限があります。
+Riebeckite の公式 Plugin でも、外部データを扱うものには用途に応じた制限があります。
 
 たとえば、
 
@@ -162,27 +162,27 @@ Riebeckiteの公式Pluginでも、外部データを扱うものには用途に�
 
 といった対策を行っています。
 
-外部サービスを利用するPluginでは、そのサービス自体も信頼できるものを設定してください。
+外部サービスを利用する Plugin では、そのサービス自体も信頼できるものを設定してください。
 
 ## Riebeckiteが自動的に行わないこと
 
-Riebeckiteは、すべての入力を自動的に安全なHTMLへ変換する仕組みではありません。
+Riebeckite は、すべての入力を自動的に安全な HTML へ変換する仕組みではありません。
 
 特に、
 
-- Markdown内のraw HTML
-- Pluginが生成したHTML
-- インストールしたPluginのJavaScript
+- Markdown 内の raw HTML
+- Plugin が生成した HTML
+- インストールした Plugin の JavaScript
 
 などは、自動的には無害化されません。
 
-これは、自分で管理しているMarkdownやObsidian Vaultをできるだけそのまま公開できるようにするための設計です。
+これは、自分で管理している Markdown や Obsidian Vault をできるだけそのまま公開できるようにするための設計です。
 
 **自分で管理しているコンテンツを公開する場合は、そのまま利用できます。外部から受け取ったコンテンツを公開する場合は、事前に検証してください**。
 
 ## 脆弱性を見つけた場合
 
-Riebeckiteにセキュリティ上の問題を見つけた場合は、公開Issueではなく、GitHubのSecurity機能を利用して報告してください。
+Riebeckite にセキュリティ上の問題を見つけた場合は、公開 Issue ではなく、GitHub の Security 機能を利用して報告してください。
 
 報告には問題を再現するために必要な情報を含めてください。
 

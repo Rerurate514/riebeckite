@@ -6,7 +6,7 @@ sidebar:
 ---
 # プラグイン作成の詳細
 
-このページは、Riebeckiteの[[glossary/plugin|プラグイン]]を実際に設計・実装するときの詳細ガイドです。初めてプラグインを作る場合は、先に[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読んでください。
+このページは、Riebeckite の[[glossary/plugin|プラグイン]]を実際に設計・実装するときの詳細ガイドです。初めてプラグインを作る場合は、先に[はじめてのプラグイン作成](../plugins/writing-a-plugin.ja.md)を読んでください。
 
 このページでは、その先に必要になる次の内容を扱います。
 
@@ -15,11 +15,11 @@ sidebar:
 - ライフサイクル
 - コンテンツパイプライン
 - [[glossary/renderer|レンダラー]]と[[glossary/page-type|ページ種別]]
-- CSSとブラウザ側の処理
+- CSS とブラウザ側の処理
 - [[glossary/cache|キャッシュ]]と診断
 - パッケージとしての配布
 
-各型やフィールドの完全な定義は[プラグインAPI](../reference/plugin-api.ja.md)を参照してください。
+各型やフィールドの完全な定義は[プラグイン API](../reference/plugin-api.ja.md)を参照してください。
 
 ## このページの構成
 
@@ -31,14 +31,14 @@ sidebar:
 
 ## 1. プラグインが担う機能
 
-プラグインは、**Riebeckiteに再利用可能な機能を追加する仕組み**です。たとえば、次のような機能を実装できます。
+プラグインは、**Riebeckite に再利用可能な機能を追加する仕組み**です。たとえば、次のような機能を実装できます。
 
-- Markdown / HTMLの解釈
+- Markdown / HTML の解釈
 - コンテンツの変換
 - 独自形式のレンダラー
 - ブラウザ上の動作
 - 診断
-- HTTPエンドポイント
+- HTTP エンドポイント
 - SEO
 - 独立したページ
 
@@ -75,7 +75,7 @@ HonoX / Viteとの接続
 
 ## 2. 最小のプラグイン
 
-プラグインは`definePlugin()`で定義します。
+プラグインは `definePlugin()` で定義します。
 
 ```ts id="sf8rf2"
 import { definePlugin } from "@riebeckite/core";
@@ -87,7 +87,7 @@ export function example() {
 }
 ```
 
-サイトでは`riebeckite.config.ts`の`plugins`に追加します。
+サイトでは `riebeckite.config.ts` の `plugins` に追加します。
 
 ```ts id="32z2wh"
 export default defineConfig({
@@ -138,7 +138,7 @@ plugins: [
 ]
 ```
 
-`false`、`null`、`undefined`は、プラグインの入力解決時に除外されます。また、`enabled: false`のプラグインも実行されません。
+`false`、`null`、`undefined` は、プラグインの入力解決時に除外されます。また、`enabled: false` のプラグインも実行されません。
 
 ```ts id="3ud7ge"
 enabled: false
@@ -187,7 +187,7 @@ flowchart TD
 
 すべてを実装する必要はありません。
 
-[[glossary/ui|UI]]や出力の拡張ポイントは複数あり、優劣ではなく選択肢です。Markdown / HTMLの変換、レンダラー、ページ種別、公開するHono JSXコンポーネント、[[glossary/client-entry|クライアントエントリ]]があります。どれを選ぶかは[UIや出力を追加する方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
+[[glossary/ui|UI]]や出力の拡張ポイントは複数あり、優劣ではなく選択肢です。Markdown / HTML の変換、レンダラー、ページ種別、公開する Hono JSX コンポーネント、[[glossary/client-entry|クライアントエントリ]]があります。どれを選ぶかは[UI や出力を追加する方法](../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
 
 ## 実装前の確認
 
@@ -213,7 +213,7 @@ flowchart TD
 
 プラグインにすると決めた後も、**その機能に本当に必要な拡張ポイントだけを使う**ことが重要です。
 
-ファイルシステムを再走査する前に、[[glossary/manifest|マニフェスト]]や[[glossary/content-graph|コンテンツグラフ]]を使えないか確認してください。独自のルートを追加する前に、ページ種別を使えないか確認してください。クライアントJavaScriptを追加する前に、SSRやビルド時だけで完結できないか確認してください。
+ファイルシステムを再走査する前に、[[glossary/manifest|マニフェスト]]や[[glossary/content-graph|コンテンツグラフ]]を使えないか確認してください。独自のルートを追加する前に、ページ種別を使えないか確認してください。クライアント JavaScript を追加する前に、SSR やビルド時だけで完結できないか確認してください。
 
 これにより、プラグインを小さく保ち、Core、インテグレーション、アプリケーションとの不要な結合を避けられます。
 
@@ -221,8 +221,8 @@ flowchart TD
 
 - [[writing-a-plugin|はじめてのプラグイン作成]]：最初のプラグインを作る
 - [[plugin-system|プラグインシステム]]：プラグインシステム全体の考え方
-- [[plugin-api|プラグインAPI]]：APIの取り決め
+- [[plugin-api|プラグイン API]]：API の取り決め
 - [[page-system|ページシステム]]：独立したページ
 - [[content-system|コンテンツシステム]]：マニフェスト、グラフ、パイプライン
 - [[architecture|アーキテクチャ]]：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
-- [[reference/README|フレームワークリファレンス]]：公開API
+- [[reference/README|フレームワークリファレンス]]：公開 API

@@ -29,11 +29,11 @@ sidebar:
 | 名前 | 種類 | インライン | 属性 | 出力 |
 |------|------|--------|------------|--------|
 | `badge` | leaf | 可 | label, variant/type/color, title | インラインバッジ |
-| `kbd` | leaf | 可 | labelまたは`keys` | `<kbd>`要素 |
-| `note` / `callout` | leaf / container | – | labelまたは`title`、`type`/`variant` | コールアウトボックス |
-| `details` | container | – | labelまたは`summary` | `<details>`の開閉表示 |
-| `youtube` | leaf | – | `id`または`url` | プライバシーに配慮した埋め込み |
-| `figure` | leaf / container | – | `src`/`url`、`alt`、`caption` | 画像付きの`<figure>` |
+| `kbd` | leaf | 可 | label または `keys` | `<kbd>` 要素 |
+| `note` / `callout` | leaf / container | – | label または `title`、`type`/`variant` | コールアウトボックス |
+| `details` | container | – | label または `summary` | `<details>` の開閉表示 |
+| `youtube` | leaf | – | `id` または `url` | プライバシーに配慮した埋め込み |
+| `figure` | leaf / container | – | `src`/`url`、`alt`、`caption` | 画像付きの `<figure>` |
 
 ## 使い方
 

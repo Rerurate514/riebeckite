@@ -7,7 +7,7 @@ sidebar:
 
 # ルート（Route）
 
-インテグレーションがページへ解決するURLパスで、ページの公開パスから作られ、フレームワーク（HonoX）が描画します。
+インテグレーションがページへ解決する URL パスで、ページの公開パスから作られ、フレームワーク（HonoX）が描画します。
 
 ## ルート解決
 
@@ -15,8 +15,8 @@ sidebar:
 
 1. **プラグインページ**：そのパスにプラグインのページ種別があるか確認する
 2. **コンテンツ**：マニフェストから `publicLocation` を使ってコンテンツを解決する
-3. **リダイレクト**：permalinkを指す追加URLを確認する
-4. **404**：見つからなければnot-foundを返す
+3. **リダイレクト**：permalink を指す追加 URL を確認する
+4. **404**：見つからなければ not-found を返す
 
 ```ts
 import { resolveRiebeckiteRoute } from "@riebeckite/honox";
@@ -24,7 +24,7 @@ import { resolveRiebeckiteRoute } from "@riebeckite/honox";
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 
-この解決順序により、プラグインが提供するページが優先され、次にコンテンツページ、その後リダイレクト、一致しないパスは404になります。`resolveRiebeckiteRoute` 関数が解決パイプライン全体を処理し、ページ本文とheadタグを含む解決済みのルート結果を返します。
+この解決順序により、プラグインが提供するページが優先され、次にコンテンツページ、その後リダイレクト、一致しないパスは404になります。`resolveRiebeckiteRoute` 関数が解決パイプライン全体を処理し、ページ本文と head タグを含む解決済みのルート結果を返します。
 
 ## 関連用語
 

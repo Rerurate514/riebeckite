@@ -7,7 +7,7 @@ sidebar:
 
 # 非公開（unlisted）
 
-URLでは提供しつつ、一覧やフィードには載せない公開状態です。ルーティング対象だが検出可能ではないため、共有リンクや下書きに近いページに向きます。
+URL では提供しつつ、一覧やフィードには載せない公開状態です。ルーティング対象だが検出可能ではないため、共有リンクや下書きに近いページに向きます。
 
 ## 設定
 
@@ -23,12 +23,12 @@ visibility: unlisted
 
 ## 公開状態
 
-非公開（unlisted）は `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。frontmatterで `visibility: unlisted` を設定すると、`resolvePublishingState` は `routable: true, discoverable: false` を返します。つまり次のようになります。
+非公開（unlisted）は `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。frontmatter で `visibility: unlisted` を設定すると、`resolvePublishingState` は `routable: true, discoverable: false` を返します。つまり次のようになります。
 
-- ページはURLで提供され、出力も生成される
+- ページは URL で提供され、出力も生成される
 - `discoverableEntries` ビューから除外される
 - 一覧、フィード、タクソノミーのタームページには表示されない
-- 直接のURLやWikiLinkからは参照できる
+- 直接の URL や WikiLink からは参照できる
 
 ```ts
 // From packages/core/src/content/publishing.ts
@@ -42,4 +42,4 @@ export type ResolvedPublishingState = {
 
 ## 下書きとの関係
 
-`draft` のvisibilityとは異なり、非公開（unlisted）のページは公開済みかつルーティング対象とみなされます。下書き（`published: false` または `visibility: draft`）はルーティングから完全に除外され、公開されるまで公開出力を作りません。
+`draft` の visibility とは異なり、非公開（unlisted）のページは公開済みかつルーティング対象とみなされます。下書き（`published: false` または `visibility: draft`）はルーティングから完全に除外され、公開されるまで公開出力を作りません。

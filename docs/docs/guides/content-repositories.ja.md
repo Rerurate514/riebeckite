@@ -48,6 +48,6 @@ flowchart LR
 
 - [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md)：ルート解決、CI 認証、アセット、GitHub Actions、トラブル対応
 - [Content の設定](../reference/configuration/content.ja.md)：`content.directory`、`exclude`、公開条件、`content.source`
-- [Attachment・Media と公開](../reference/configuration/assets.ja.md)：3種類のアセットと公開方法
+- [Attachment ・ Media と公開](../reference/configuration/assets.ja.md)：3種類のアセットと公開方法
 - [Configuration](../reference/configuration.ja.md)：`appRoot` / `configRoot` / `contentRoot`
 - [Guides](./README.ja.md)：その他の利用ガイド

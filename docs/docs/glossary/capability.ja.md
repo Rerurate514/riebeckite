@@ -17,9 +17,9 @@ sidebar:
 
 ## 解決
 
-プラグインのリゾルバーは、すべての`requires`に対応する`provides`が別のプラグインにあることを検証します。提供側の重複は失敗します。循環も失敗します。必須の要求が欠けている場合は`PluginDependencyError`を投げます。
+プラグインのリゾルバーは、すべての `requires` に対応する `provides` が別のプラグインにあることを検証します。提供側の重複は失敗します。循環も失敗します。必須の要求が欠けている場合は `PluginDependencyError` を投げます。
 
-プラグインのリゾルバー（`packages/core/src/plugin/plugin_dependency.ts`の`resolvePluginDependencies`）は、ケイパビリティ名を検証し、提供側を集め、重複があれば失敗させ、トポロジカルソートで依存関係を解決します。必須のケイパビリティが欠けている場合は`kind: "missing-capability"`の`PluginDependencyError`を投げます。自己依存は`kind: "self-dependency"`、循環は`kind: "cycle"`として投げられ、ケイパビリティ名とプラグインの連鎖を含みます。`CapabilityDeclaration`型は`"provides" | "requires" | "optional"`で、`packages/core/src/plugin/plugin_dependency_error.ts`での名前の検証に使われます。
+プラグインのリゾルバー（`packages/core/src/plugin/plugin_dependency.ts` の `resolvePluginDependencies`）は、ケイパビリティ名を検証し、提供側を集め、重複があれば失敗させ、トポロジカルソートで依存関係を解決します。必須のケイパビリティが欠けている場合は `kind: "missing-capability"` の `PluginDependencyError` を投げます。自己依存は `kind: "self-dependency"`、循環は `kind: "cycle"` として投げられ、ケイパビリティ名とプラグインの連鎖を含みます。`CapabilityDeclaration` 型は `"provides" | "requires" | "optional"` で、`packages/core/src/plugin/plugin_dependency_error.ts` での名前の検証に使われます。
 
 ## 関連用語
 

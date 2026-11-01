@@ -19,7 +19,7 @@ sidebar:
 
 ## スパンの構造
 
-トレーススパンは `TraceSpan` 型で表され、name、startTime、durationMs、status、任意のattributesを持ちます。
+トレーススパンは `TraceSpan` 型で表され、name、startTime、durationMs、status、任意の attributes を持ちます。
 
 ```ts
 type TraceSpan = Readonly<{

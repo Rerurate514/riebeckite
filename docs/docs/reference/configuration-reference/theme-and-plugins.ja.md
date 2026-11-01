@@ -23,12 +23,12 @@ sidebar:
 | 設定 | 型 | 既定値 | 用途 |
 | --- | --- | --- | --- |
 | `name` | `string` | `"riebeckite"` | Theme の識別名。`data-rb-theme` に設定される。 |
-| `colorMode` | `"light"` \| `"dark"` \| `"system"` | `"system"` | 明るい表示・暗い表示・OS設定への追従を選ぶ。 |
+| `colorMode` | `"light"` \| `"dark"` \| `"system"` | `"system"` | 明るい表示・暗い表示・ OS 設定への追従を選ぶ。 |
 | `typography` | `"system"` \| `"serif"` \| `"sans"` | `"system"` | 使用するフォントの種類を選ぶ。 |
 | `layout` | `"article"` \| `"sidebar"` \| `"full-width"` | `"article"` | 記事ページのレイアウトを選ぶ。 |
 | `tokens` | `semantic tokens` | `{}` | 色、フォント、幅などの共通デザイン値を変更する。 |
 | `attributes` | ``Record<`data-${string}`, string \| undefined>`` | `{}` | 独自の `data-*` 属性を追加する。 |
-| `stylesheets` | `string[]` | `[]` | 独自のCSSファイルを追加する。 |
+| `stylesheets` | `string[]` | `[]` | 独自の CSS ファイルを追加する。 |
 
 `colorMode: "system"` の場合は `data-rb-mode` を設定せず、OS の設定に従います。
 
@@ -101,9 +101,9 @@ theme: {
 }
 ```
 
-`stylesheets` には、ブラウザからアクセスできるCSSファイルのパスを指定します。
+`stylesheets` には、ブラウザからアクセスできる CSS ファイルのパスを指定します。
 
-指定したCSSは Theme のCSSより後に読み込まれるため、Theme のスタイルを上書きできます。
+指定した CSS は Theme の CSS より後に読み込まれるため、Theme のスタイルを上書きできます。
 
 ### Theme パッケージを使う
 

@@ -28,7 +28,7 @@ sidebar:
 - `data-rb-layout`：記事レイアウトのプリセット値
 
 ## ThemeRootのUIコンポーネント
-フレームワークは `@riebeckite/honox/ui` のUIプリミティブ `ThemeRoot` を提供し、`<html>` 要素へのテーマ属性の設定を担います。使い方は次のとおりです。
+フレームワークは `@riebeckite/honox/ui` の UI プリミティブ `ThemeRoot` を提供し、`<html>` 要素へのテーマ属性の設定を担います。使い方は次のとおりです。
 ```tsx
 import { ThemeRoot } from "@riebeckite/honox/ui";
 <ThemeRoot

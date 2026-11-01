@@ -7,7 +7,7 @@ sidebar:
 
 # プラグイン（Plugin）
 
-Riebeckiteのプラグインは、定められた契約を通じて、コンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
+Riebeckite のプラグインは、定められた契約を通じて、コンテンツの解釈、変換、描画、診断、ビルド時の処理、エンドポイント、ブラウザでの動作を拡張します。
 
 ## 拡張ポイント
 
@@ -22,7 +22,7 @@ definePlugin({
 });
 ```
 
-Coreの拡張ポイントには、remark/rehypeパイプライン、コンテンツフック、レンダラー、ページ種別、アセット、クライアントエントリ、エンドポイント、診断があります。
+Core の拡張ポイントには、remark/rehype パイプライン、コンテンツフック、レンダラー、ページ種別、アセット、クライアントエントリ、エンドポイント、診断があります。
 
 ## ライフサイクル
 
@@ -47,11 +47,11 @@ definePlugin({
 - **`requires`**：このプラグインが依存するケイパビリティ。解決は各提供者をこのプラグインより前に並べ、提供者がいない場合は診断を出して失敗します。
 - **`optional`**：利用可能なら使うケイパビリティ。提供者がいなくても無視され、存在する提供者はこのプラグインより前に並べられます。
 
-`getResolvedPluginMetadata` ユーティリティは、各プラグインの解決済みのprovides/requires/optionalを `ResolvedPluginMetadata` として公開し、パイプラインが順序決定と診断に使います。
+`getResolvedPluginMetadata` ユーティリティは、各プラグインの解決済みの provides/requires/optional を `ResolvedPluginMetadata` として公開し、パイプラインが順序決定と診断に使います。
 
 ## アセットとクライアントエントリ
 
-CSSは `assets`、ブラウザ向けJavaScriptは `clientEntries` で宣言します。宣言するのは本当に必要な場合だけにしてください。
+CSS は `assets`、ブラウザ向け JavaScript は `clientEntries` で宣言します。宣言するのは本当に必要な場合だけにしてください。
 
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],

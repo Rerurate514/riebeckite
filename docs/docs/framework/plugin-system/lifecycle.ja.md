@@ -58,11 +58,11 @@ flowchart LR
 - 提供者が重複している
 - 依存関係に循環がある
 
-`order`は依存解決前の基本順序です。実際の依存関係を表現するために`order`を使わないでください。
+`order` は依存解決前の基本順序です。実際の依存関係を表現するために `order` を使わないでください。
 
 ## 3-2. `validateOptions` で設定を検証する
 
-TypeScriptの型だけでは、実行時の値が正しいことを完全には保証できません。必要なプラグインは`validateOptions`を実装します。
+TypeScript の型だけでは、実行時の値が正しいことを完全には保証できません。必要なプラグインは `validateOptions` を実装します。
 
 ```text id="09xj48"
 オプション
@@ -85,7 +85,7 @@ riebeckite check
 
 ## 3-3. プラグインコンテキスト
 
-プラグインは、フレームワークのサービスを`PluginContext`から受け取ります。基本的なコンテキストは概念的に次のような形です。
+プラグインは、フレームワークのサービスを `PluginContext` から受け取ります。基本的なコンテキストは概念的に次のような形です。
 
 ```ts id="jrp2vo"
 type PluginContext = {
@@ -143,7 +143,7 @@ flowchart LR
     End --> Dispose
 ```
 
-`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd`は、1つの`ContentManager`につき一度だけ実行されます。`buildEnd`は、診断の収集後に完成した[[glossary/manifest|マニフェスト]]を受け取る唯一の終端フックです。`dispose`は確保したリソースの解放に使い、解決済みプラグインの逆順で実行されます。
+`setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は、診断の収集後に完成した[[glossary/manifest|マニフェスト]]を受け取る唯一の終端フックです。`dispose` は確保したリソースの解放に使い、解決済みプラグインの逆順で実行されます。
 
 ライフサイクルの実行順は、解決済みプラグインの順序に従います。フックでエラーが発生した場合は、プラグイン名、フック名、元の原因が分かる形で上位へ伝播させてください。
 
@@ -169,7 +169,7 @@ flowchart TD
     Graph --> Manifest
 ```
 
-全体の順序は、`setup` → `buildStart` → `onConfigResolved` → 公開ロケーションの解決 → `onContentLoaded` → Markdown / HTMLパイプライン → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → 診断 → `buildEnd`です。
+全体の順序は、`setup` → `buildStart` → `onConfigResolved` → 公開ロケーションの解決 → `onContentLoaded` → Markdown / HTML パイプライン → `onPostParsed` → `onPostProcessed` → `extendContentGraph` → `onManifestCreated` → 診断 → `buildEnd` です。
 
 代表的なフックは次のとおりです。
 
@@ -181,4 +181,4 @@ onPostProcessed
 onManifestCreated
 ```
 
-必要な段階のフックだけを使用してください。たとえば、マニフェストにすでに存在する情報を`onContentLoaded`で独自に再構築するような実装は避けます。
+必要な段階のフックだけを使用してください。たとえば、マニフェストにすでに存在する情報を `onContentLoaded` で独自に再構築するような実装は避けます。

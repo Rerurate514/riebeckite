@@ -13,7 +13,7 @@ sidebar:
 対象となるのは、
 
 - Riebeckite の内部構造を理解したい人
-- Plugin や Theme の仕組みを詳しく知りたい人
+- プラグインやテーマの仕組みを詳しく知りたい人
 - Riebeckite 本体を開発・変更したい人
 
 です。
@@ -40,18 +40,18 @@ flowchart LR
 
 | 知りたいこと | ページ |
 | --- | --- |
-| Riebeckite 全体の構造 | [Architecture](./architecture.ja.md) |
-| Markdown や Content がどう処理されるか | [Content System](./content-system.ja.md) |
-| Plugin がどう動くか | [Plugin System](./plugin-system.ja.md) |
-| Diagram Plugin の共有 utility と契約 | [Diagram Plugin Infrastructure](./diagram-infrastructure.ja.md) |
-| Plugin が独立したページを提供する仕組み | [Page System](./page-system.ja.md) |
-| Theme が見た目を変更する仕組み | [Theme System](./theme-system.ja.md) |
+| Riebeckite 全体の構造 | [アーキテクチャ](./architecture.ja.md) |
+| Markdown やコンテンツがどう処理されるか | [コンテンツシステム](./content-system.ja.md) |
+| プラグインがどう動くか | [プラグインシステム](./plugin-system.ja.md) |
+| ダイアグラムプラグインの共有ユーティリティと契約 | [ダイアグラムプラグイン基盤](./diagram-infrastructure.ja.md) |
+| プラグインが独立したページを提供する仕組み | [ページシステム](./page-system.ja.md) |
+| テーマが見た目を変更する仕組み | [テーマシステム](./theme-system.ja.md) |
 | 任意で利用する UI プリミティブとアクセシビリティ動作 | [UI](./ui.ja.md) |
-| Build と Incremental Build の仕組み | [Build System](./build-system.ja.md) |
-| Plugin が build dependency を宣言する仕組み | [Build Dependency の取り決め](./build-dependency.ja.md) |
-| Riebeckite と HonoX / Vite の接続 | [HonoX Integration](./honox-integration.ja.md) |
-| SPAナビゲーションがシェルを残してページを置き換える仕組み | [SPAナビゲーションの構成](./spa-navigation.ja.md) |
-| ページ移動の処理、中断、ライフサイクルの制約 | [SPAランタイムの内部実装](./spa-runtime.ja.md) |
+| ビルドと増分ビルドの仕組み | [ビルドシステム](./build-system.ja.md) |
+| プラグインがビルド依存関係を宣言する仕組み | [ビルド依存関係の取り決め](./build-dependency.ja.md) |
+| Riebeckite と HonoX / Vite の接続 | [HonoX との統合](./honox-integration.ja.md) |
+| SPA ナビゲーションがシェルを残してページを置き換える仕組み | [SPA ナビゲーションの構成](./spa-navigation.ja.md) |
+| ページ移動の処理、中断、ライフサイクルの制約 | [SPA ランタイムの内部実装](./spa-runtime.ja.md) |
 | 設定や Content の問題を調べる | [Diagnostics](./diagnostics.ja.md) |
 | 解決済みの設定や状態を確認する | [Inspector](./inspector.ja.md) |
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |
@@ -106,21 +106,21 @@ Riebeckite を使ってサイトを作る
     → Getting Started
 ```
 
-`apps/web` は Riebeckite の Documentation / Reference Application です。
+`apps/web` は Riebeckite のドキュメントとリファレンスのアプリケーションです。
 
-一般ユーザーが Riebeckite を使うために `apps/web` をコピーしたり、Riebeckite monorepo を clone したりする必要はありません。
+一般ユーザーが Riebeckite を使うために `apps/web` をコピーしたり、Riebeckite monorepo をクローンしたりする必要はありません。
 
 ## この章の境界
 
-Framework 章では、Riebeckite の**内部設計と Framework 開発**を扱います。
+この章では、Riebeckite の**内部設計とフレームワーク開発**を扱います。
 
 一方、
 
-- Site の作成
-- Content の追加
-- Plugin / Theme の設定
-- Deploy
+- サイトの作成
+- コンテンツの追加
+- プラグイン / テーマの設定
+- デプロイ
 
 といった通常の利用方法は [Getting Started](../getting-started/README.ja.md) や Guides で説明します。
 
-この境界を分けることで、Riebeckite を使うだけの人が Framework 内部の知識を覚えなくてもサイトを作れるようにしています。
+この境界を分けることで、Riebeckite を使うだけの人が フレームワーク内部の知識を覚えなくてもサイトを作れるようにしています。

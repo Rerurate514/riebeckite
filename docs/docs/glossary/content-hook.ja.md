@@ -7,7 +7,7 @@ sidebar:
 
 # コンテンツフック（Content Hook）
 
-コンテンツフックは、コンテンツ処理の名前付きの段階をつなぎます。設定の解決から、コンテンツの読み込み、post parsed、post processed、コンテンツグラフ、マニフェストの作成、診断までが対象です。
+コンテンツフックは、コンテンツ処理の名前付きの段階をつなぎます。設定の解決から、コンテンツの読み込み、パース後、処理後、コンテンツグラフ、マニフェストの作成、診断までが対象です。
 
 ## 処理の段階
 
@@ -15,7 +15,7 @@ sidebar:
 
 ## フックの使い方
 
-本当に必要な段階にだけフックを使ってください。後の段階の情報を前の段階で作り直すのは避けてください。たとえば`onContentLoaded`の中でマニフェストの情報を組み立て直さないでください。各フックが受け取るデータは段階ごとに増えます。`onConfigResolved`は`config`を、`onContentLoaded`は生のコンテンツを、`onPostParsed`は解析済みのASTを、`onPostProcessed`は処理済みのHTMLを受け取り、`onManifestCreated`は完全なマニフェストにアクセスできます。
+本当に必要な段階にだけフックを使ってください。後の段階の情報を前の段階で作り直すのは避けてください。たとえば `onContentLoaded` の中でマニフェストの情報を組み立て直さないでください。各フックが受け取るデータは段階ごとに増えます。`onConfigResolved` は `config` を、`onContentLoaded` は生のコンテンツを、`onPostParsed` は解析済みの AST を、`onPostProcessed` は処理済みの HTML を受け取り、`onManifestCreated` は完全なマニフェストにアクセスできます。
 
 ## 関連用語
 - [[plugin|Plugin]]

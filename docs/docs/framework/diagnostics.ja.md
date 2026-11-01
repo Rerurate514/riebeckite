@@ -44,7 +44,7 @@ title: 診断
 
 問題が見つかった場合、コマンドは非ゼロの終了コードで終了します。
 
-観測できない項目は推測せず、利用できないことを明示します。診断のためだけに[[glossary/full-build|フルビルド]]は実行しません。新しく収集する診断には安定した fingerprint が付き、JSON の summary には既存の severity 件数を維持したまま unavailable・skipped・category・code ごとの件数が追加されます。
+観測できない項目は推測せず、利用できないことを明示します。診断のためだけに[[glossary/full-build|フルビルド]]は実行しません。新しく収集する診断には安定した fingerprint が付き、JSON の summary には既存の severity 件数を維持したまま unavailable ・ skipped ・ category ・ code ごとの件数が追加されます。
 
 開発用インスペクターは Vite の開発サーバーからだけ利用でき、同じレポートを Shadow DOM のパネルに表示します。本番のクライアントモジュールやエンドポイントには含まれません。パネルはまず診断を表示し、「依存関係」と「出力」のタブは別のエンドポイントから読み込みます。そのため、大きな出力計画が他のタブの表示を遅らせません。診断はテキスト、severity、category、code で絞り込めます。現在ページによる絞り込みには、完了済みビルドスナップショットに含まれる source-to-page mapping を使います。推測のために Markdown を再解析したり、別のビルドを実行したりはしません。
 

@@ -7,13 +7,13 @@ sidebar:
 
 # 公開（Publish）
 
-コンテンツを公開サイトに含めるかどうかの判定で、公開戦略と `published` や `visibility` などのfrontmatterで制御します。公開されたコンテンツは公開境界のビューに入ります。
+コンテンツを公開サイトに含めるかどうかの判定で、公開戦略と `published` や `visibility` などの frontmatter で制御します。公開されたコンテンツは公開境界のビューに入ります。
 
 ## 判定の入力
 
 - 設定された公開戦略。
-- `published` frontmatterフィールド。
-- `visibility` frontmatterフィールド。
+- `published` frontmatter フィールド。
+- `visibility` frontmatter フィールド。
 
 ## 結果
 
@@ -21,13 +21,13 @@ sidebar:
 
 ## 公開判定の流れ
 
-公開の判定は `resolvePublishingState`（`packages/core/src/content/publishing.ts`）が行い、公開戦略とfrontmatterフィールドの両方を考慮します。この関数は `ResolvedPublishingState` を返し、`visibility`、`routable`、`discoverable` フィールドを持ちます。
+公開の判定は `resolvePublishingState`（`packages/core/src/content/publishing.ts`）が行い、公開戦略と frontmatter フィールドの両方を考慮します。この関数は `ResolvedPublishingState` を返し、`visibility`、`routable`、`discoverable` フィールドを持ちます。
 
-- 明示的なvisibilityが `"draft"` の場合 → 下書き状態。ルーティング対象でも検出可能でもない
+- 明示的な visibility が `"draft"` の場合 → 下書き状態。ルーティング対象でも検出可能でもない
 - `publishAt` が設定されていて未来の場合 → 予約状態。ルーティング対象でも検出可能でもない
-- 明示的なvisibilityが `"unlisted"` の場合 → 非公開（unlisted）状態。ルーティング対象だが検出可能ではない
-- 明示的なvisibilityが `"public"` の場合、または `publishAt` が設定されている場合 → 公開状態。ルーティング対象で検出可能
-- それ以外 → 戦略を渡して `isPublishable` を呼ぶ。trueなら公開、falseなら下書き
+- 明示的な visibility が `"unlisted"` の場合 → 非公開（unlisted）状態。ルーティング対象だが検出可能ではない
+- 明示的な visibility が `"public"` の場合、または `publishAt` が設定されている場合 → 公開状態。ルーティング対象で検出可能
+- それ以外 → 戦略を渡して `isPublishable` を呼ぶ。true なら公開、false なら下書き
 
 ```ts
 // From packages/core/src/content/publishing.ts
@@ -41,7 +41,7 @@ export function resolvePublishingState(
 
 ## 公開戦略の設定
 
-公開戦略はサイトごとに設定し、既定は `"selective"` です。`explicit` 戦略では、frontmatterに `publish: true` があるノートだけが公開されます。`selective` モード（既定）では、`private: true` か `draft: true` が設定されていない限り、ノートは公開されます。
+公開戦略はサイトごとに設定し、既定は `"selective"` です。`explicit` 戦略では、frontmatter に `publish: true` があるノートだけが公開されます。`selective` モード（既定）では、`private: true` か `draft: true` が設定されていない限り、ノートは公開されます。
 
 ```ts
 // From packages/core/src/types/publish_strategy.ts
@@ -61,7 +61,7 @@ export type PublishFrontmatter = {
 
 ## isPublishableのロジック
 `isPublishable` 関数（`packages/core/src/types/publish_strategy.ts`）は2つの戦略を実装します。
-- **explicit**：`frontmatter.publish === true`。明示的にopt-inしたノートだけが公開されます。
+- **explicit**：`frontmatter.publish === true`。明示的に opt-in したノートだけが公開されます。
 - **selective**：`private === true` でも `draft === true` でもない。明示的に隠さない限り、ノートは公開されます。
 
 ```ts

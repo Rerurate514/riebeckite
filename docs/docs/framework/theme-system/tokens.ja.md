@@ -11,7 +11,7 @@ sidebar:
 
 ## 3-4. デザイントークン（tokens）
 
-Coreの `semantic tokens` は、次のセマンティックなグループに分かれています。スタイルシートでは、これらを `--rb-*` というセマンティックなCSSカスタムプロパティとして扱います。
+Core の `semantic tokens` は、次のセマンティックなグループに分かれています。スタイルシートでは、これらを `--rb-*` というセマンティックな CSS カスタムプロパティとして扱います。
 
 コンポーネントや[[glossary/plugin|プラグイン]]は、「この[[glossary/theme|テーマ]]の黒」「このテーマの灰色」のようなテーマ固有の値ではなく、**意味**を参照します。本文色、背景、アクセント、ボーダーなどがその例です。
 
@@ -31,7 +31,7 @@ flowchart LR
 
 ### 色
 
-| トークン | CSS変数 |
+| トークン | CSS 変数 |
 | --- | --- |
 | `paper` | `--rb-color-paper` |
 | `ink` | `--rb-color-ink` |
@@ -48,7 +48,7 @@ flowchart LR
 
 ### タイポグラフィ
 
-| トークン | CSS変数 |
+| トークン | CSS 変数 |
 | --- | --- |
 | `bodyFont` | `--rb-font-body` |
 | `headingFont` | `--rb-font-heading` |
@@ -56,14 +56,14 @@ flowchart LR
 
 ### レイアウト
 
-| トークン | CSS変数 |
+| トークン | CSS 変数 |
 | --- | --- |
 | `pageMaxWidth` | `--rb-layout-page-max` |
 | `articleMaxWidth` | `--rb-layout-article-max` |
 | `sidebarWidth` | `--rb-layout-sidebar` |
 | `contentGap` | `--rb-layout-gap` |
 
-CSSでは次のように定義します。
+CSS では次のように定義します。
 
 ```css id="u6csj3"
 @layer base {
@@ -80,7 +80,7 @@ CSSでは次のように定義します。
 }
 ```
 
-CSS変数名は、トークン名をケバブケースにしたものです。指定するトークン名とCSS変数名は異なります。
+CSS 変数名は、トークン名をケバブケースにしたものです。指定するトークン名と CSS 変数名は異なります。
 
 ```text id="avjyrb"
 borderStrong

@@ -9,7 +9,7 @@ sidebar:
 
 ## サイト内だけで使うプラグイン
 
-プラグインはnpmパッケージとして公開する必要はありません。サイト内にプラグインを作ることもできます。
+プラグインは npm パッケージとして公開する必要はありません。サイト内にプラグインを作ることもできます。
 
 ```ts
 // site/extensions/local-plugin.ts
@@ -36,7 +36,7 @@ return definePlugin({
 
 ## リポジトリ外へプラグインを配布する
 
-外部のプラグインは、Riebeckiteのmonorepo内部のパスに依存しないようにします。基本的には `@riebeckite/core` の公開APIを利用してください。
+外部のプラグインは、Riebeckite の monorepo 内部のパスに依存しないようにします。基本的には `@riebeckite/core` の公開 API を利用してください。
 
 プラグイン自身が提供する `./client`、`./components`、`./style.css` などは、そのパッケージの `package.json` にある `exports` で公開します。次のようなインポートは避けてください。
 
@@ -46,13 +46,13 @@ import {
 } from "@riebeckite/core/src/...";
 ```
 
-`src/**` は公開APIではありません。また、Riebeckiteのmonorepo内にしか存在しない相対パスへ依存しないでください。
+`src/**` は公開 API ではありません。また、Riebeckite の monorepo 内にしか存在しない相対パスへ依存しないでください。
 
-公式のプラグインも、可能な限り同じ公開APIの利用者として実装します。
+公式のプラグインも、可能な限り同じ公開 API の利用者として実装します。
 
 ## 推奨するパッケージ構成
 
-配布するパッケージでは、ビルド済みのESMと型定義を公開し、`exports` をそのビルド成果物へ向けます。最小構成の `package.json` は次のとおりです。
+配布するパッケージでは、ビルド済みの ESM と型定義を公開し、`exports` をそのビルド成果物へ向けます。最小構成の `package.json` は次のとおりです。
 
 ```json
 {
@@ -93,7 +93,7 @@ import {
 
 `client.ts` や `style.css` を持たないプラグインでは、そのサブパスと `files` の項目を削除します。
 
-JavaScriptのエントリーポイントは `esbuild` でバンドルし、型定義は `tsc` で出力します。どちらも一般的なツールであり、Riebeckite固有のビルドスクリプトは必要ありません。
+JavaScript のエントリーポイントは `esbuild` でバンドルし、型定義は `tsc` で出力します。どちらも一般的なツールであり、Riebeckite 固有のビルドスクリプトは必要ありません。
 
 `build.mjs` の例です。
 
@@ -134,13 +134,13 @@ await build({
 }
 ```
 
-`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` が常に最新の成果物を含むようになります。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。サイト側と同じインスタンスを共有したい場合は `peerDependencies` でもかまいません。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remarkやrehypeのパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` をTypeScriptのソース（`./index.ts`）へ向けないでください。
+`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` が常に最新の成果物を含むようになります。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。サイト側と同じインスタンスを共有したい場合は `peerDependencies` でもかまいません。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remark や rehype のパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` を TypeScript のソース（`./index.ts`）へ向けないでください。
 
-公式のプラグインも、可能な限り同じ公開APIの利用者として実装します。
+公式のプラグインも、可能な限り同じ公開 API の利用者として実装します。
 
 ## プラグインに置くもの
 
-プラグインに置くのは、**Riebeckiteのサイト間で再利用できる機能**です。
+プラグインに置くのは、**Riebeckite のサイト間で再利用できる機能**です。
 
 ```mermaid
 flowchart TD
@@ -154,19 +154,19 @@ flowchart TD
 
 プラグインに向いているのは、次のような機能です。
 
-- MarkdownやHTMLの解釈
+- Markdown や HTML の解釈
 - 再利用できるコンテンツの変換
 - プラグイン固有のレンダラー
 - 再利用できるブラウザ上の動作
 - プラグイン固有の診断
 - プラグイン固有のエンドポイント
-- SEOの拡張
+- SEO の拡張
 - 独立したプラグインページ
 
-一方、フレームワーク全体のコンテンツモデルはCoreへ、HonoXやViteとの接続は統合処理へ、アプリケーション固有のルートやレイアウトはサイトアプリケーションへ、見た目だけの変更はテーマへ置きます。
+一方、フレームワーク全体のコンテンツモデルは Core へ、HonoX や Vite との接続は統合処理へ、アプリケーション固有のルートやレイアウトはサイトアプリケーションへ、見た目だけの変更はテーマへ置きます。
 
 ## ESM
 
-Riebeckiteのパッケージは、NodeNextとESMを前提とします。ビルド後にNode.jsが実際に解決できるインポートを維持してください。
+Riebeckite のパッケージは、NodeNext と ESM を前提とします。ビルド後に Node.js が実際に解決できるインポートを維持してください。
 
-開発時のTypeScriptローダーが、拡張子のないインポートなどを偶然解決できている状態に依存しないことが重要です。
+開発時の TypeScript ローダーが、拡張子のないインポートなどを偶然解決できている状態に依存しないことが重要です。

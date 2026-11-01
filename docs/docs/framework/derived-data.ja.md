@@ -45,7 +45,7 @@ View は、既存の [[glossary/plugin-cache|PluginCache]] を Core 専用の名
 context.track({ type: "content", id: "notes/release" });
 ```
 
-fingerprint はすべて Core が計算するため、呼び出し側が指定することはありません。`content`・`external`・`file`・`frontmatter` は runtime snapshot と照合します。`planGeneratedOutputs` の実行中は、`file`・`frontmatter`・`query` もその出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全にキャッシュミスになります。
+fingerprint はすべて Core が計算するため、呼び出し側が指定することはありません。`content` ・ `external` ・ `file` ・ `frontmatter` は runtime snapshot と照合します。`planGeneratedOutputs` の実行中は、`file` ・ `frontmatter` ・ `query` もその出力計画の build snapshot と照合します。計画段階以外では、現在の snapshot がない依存関係は安全にキャッシュミスになります。
 
 `content` の id は [[glossary/content-index|content index]] で解決し、元の Markdown を fingerprint 化します。そのため、本文の編集、リネーム、alias の付け替えで無効になります。[[glossary/frontmatter|frontmatter]] には `property` を指定します。時計、snapshot を持たないネットワーク、環境変数、乱数など、fingerprint を証明できない入力には `unknown` を使います。`unknown` を含む結果は保存されません。
 
@@ -91,13 +91,13 @@ Core は、追跡された依存関係を出力計画へ保存する前に変換
 
 開発時の [[framework/inspector|Inspector]] レポートには、登録済み View ごとの状態が含まれます。内訳は、バージョン、直近の依存関係、キャッシュ状態、再計算理由、実行時間、失敗またはキャンセル状態、`derivedViewIds` で宣言した生成出力のパスです。Inspector の Derived タブは、この読み取り専用データを表示します。[[glossary/search|検索]]、状態フィルタ、依存関係と出力の詳細、未実行とキャッシュなし実行の区別を備えています。このレポートを読んでも、View が解決されたり [[glossary/build-state|BuildState]] が変更されたりすることはありません。Inspector のデータ Endpoint は loopback のみで待ち受け、セッションごとのトークンを要求します。loopback 以外の bind、Host、Origin、接続元、転送ヘッダーを経由した要求は拒否します。Inspector のデータが本番成果物へ出力されることはありません。
 
-[[honox-integration|HonoX]] の [[glossary/ssg|SSG]] も同じ生成出力を消費します。View を使う出力は、通常の生成出力と同じく full・[[glossary/incremental-build|incremental]]・no-change ビルドに参加し、出力ツリーはクリーンビルドと一致します。テストでは、タイトル変更と公開状態の遷移に追従する派生 [[glossary/ssg|SSG]] 出力を検証します。Inspector のブラウザテストでは Derived タブを検証します。
+[[honox-integration|HonoX]] の [[glossary/ssg|SSG]] も同じ生成出力を消費します。View を使う出力は、通常の生成出力と同じく full ・[[glossary/incremental-build|incremental]]・ no-change ビルドに参加し、出力ツリーはクリーンビルドと一致します。テストでは、タイトル変更と公開状態の遷移に追従する派生 [[glossary/ssg|SSG]] 出力を検証します。Inspector のブラウザテストでは Derived タブを検証します。
 
 ## プラットフォームと性能
 
 依存関係の snapshot はパスを正規化するため、ファイル依存と Content 依存は Windows と Linux で同じように動作します。CI は Core、[[framework/honox-integration|HonoX]]、CLI、型検査を両プラットフォームで実行します。
 
-キャッシュヒット時は、追跡済み依存関係の再照合だけを行い、`compute` を省略します。値キャッシュはビルド時の PluginCache に保存され、再起動をまたいで共有されます。キャッシュミス時は、入力 fingerprint、`compute`、1回のキャッシュ書き込みが加わります。`benchmarks/` のベンチマークは、1,000 エントリの Vault とエントリごとの Content 依存 1 件を測定します。変更を比較するときは同じ条件を使ってください。生成出力の計画時には、ファイル fingerprint のために [[glossary/content-source|Content Source]] を一度走査します。そのため、任意ファイルを必要としない View では、Content・Frontmatter・Query 依存を優先してください。
+キャッシュヒット時は、追跡済み依存関係の再照合だけを行い、`compute` を省略します。値キャッシュはビルド時の PluginCache に保存され、再起動をまたいで共有されます。キャッシュミス時は、入力 fingerprint、`compute`、1回のキャッシュ書き込みが加わります。`benchmarks/` のベンチマークは、1,000 エントリの Vault とエントリごとの Content 依存 1 件を測定します。変更を比較するときは同じ条件を使ってください。生成出力の計画時には、ファイル fingerprint のために [[glossary/content-source|Content Source]] を一度走査します。そのため、任意ファイルを必要としない View では、Content ・ Frontmatter ・ Query 依存を優先してください。
 
 ## トラブルシューティング
 

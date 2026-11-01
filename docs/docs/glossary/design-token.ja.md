@@ -7,13 +7,13 @@ sidebar:
 
 # デザイントークン（Design Token）
 
-色、余白、フォントなどの名前付きの値で、CSSカスタムプロパティ（`--rb-*`）として公開します。カスケードを通じて流れるため、コンポーネントとテーマが安定した語彙を共有できます。
+色、余白、フォントなどの名前付きの値で、CSS カスタムプロパティ（`--rb-*`）として公開します。カスケードを通じて流れるため、コンポーネントとテーマが安定した語彙を共有できます。
 
 ## トークンのグループ
 
-Coreの`semantic tokens`は、色、タイポグラフィ、レイアウトの意味のグループを定義します。
+Core の `semantic tokens` は、色、タイポグラフィ、レイアウトの意味のグループを定義します。
 
-| 色 | CSS変数 |
+| 色 | CSS 変数 |
 | ---------------- | --------------------- |
 | `paper`          | `--rb-color-paper`    |
 | `ink`            | `--rb-color-ink`      |
@@ -28,13 +28,13 @@ Coreの`semantic tokens`は、色、タイポグラフィ、レイアウトの�
 | `success`        | `--rb-color-success`  |
 | `codeBackground` | `--rb-color-code-background` |
 
-| タイポグラフィ | CSS変数 |
+| タイポグラフィ | CSS 変数 |
 | ---------------- | --------------------- |
 | `bodyFont`       | `--rb-font-body`      |
 | `headingFont`    | `--rb-font-heading`   |
 | `monoFont`       | `--rb-font-mono`      |
 
-| レイアウト | CSS変数 |
+| レイアウト | CSS 変数 |
 | ---------------- | --------------------- |
 | `pageMaxWidth`   | `--rb-layout-page-max` |
 | `articleMaxWidth`| `--rb-layout-article-max` |
@@ -61,18 +61,18 @@ Coreの`semantic tokens`は、色、タイポグラフィ、レイアウトの�
 ```
 
 ## トークンの定義
-トークンの分類は`packages/core/src/types/theme_config.ts`の`semantic tokens`型で定義されています。トークンは色、タイポグラフィ、レイアウトの3つのカテゴリに分かれ、それぞれがCSSカスタムプロパティ（`--rb-*`）に対応します。
+トークンの分類は `packages/core/src/types/theme_config.ts` の `semantic tokens` 型で定義されています。トークンは色、タイポグラフィ、レイアウトの3つのカテゴリに分かれ、それぞれが CSS カスタムプロパティ（`--rb-*`）に対応します。
 
-| カテゴリ | サブグループ | CSS変数の例 |
+| カテゴリ | サブグループ | CSS 変数の例 |
 | --- | --- | --- |
 | **色** | paper, ink, muted, accent, border, borderStrong, surface, surfaceHover, overlay, danger, success, codeBackground | `--rb-color-ink`, `--rb-color-surface` |
 | **タイポグラフィ** | bodyFont, headingFont, monoFont | `--rb-font-body`, `--rb-font-heading`, `--rb-font-mono` |
 | **レイアウト** | pageMaxWidth, articleMaxWidth, sidebarWidth, contentGap | `--rb-layout-page-max`, `--rb-layout-sidebar` |
 
-トークンはテーマごとに定義し、実行環境でコンポーネントのスタイルから`var(--rb-*)`として解決します。これにより、コードを変えずにテーマを入れ替えられます。
+トークンはテーマごとに定義し、実行環境でコンポーネントのスタイルから `var(--rb-*)` として解決します。これにより、コードを変えずにテーマを入れ替えられます。
 
 ## CSSカスタムプロパティの適応
-テーマを切り替えると、テーマシステムが`--rb-*`のカスタムプロパティを新しいカラーパレットとタイポグラフィのフォントに合わせて書き換えます。意味でトークンを参照するコンポーネント（`--rb-color-ink`など）は自動的に適応します。同じCSSカスタムプロパティ名がテーマごとに異なる値へ解決されるため、有効なテーマが変わってもコンポーネントを変更する必要はありません。
+テーマを切り替えると、テーマシステムが `--rb-*` のカスタムプロパティを新しいカラーパレットとタイポグラフィのフォントに合わせて書き換えます。意味でトークンを参照するコンポーネント（`--rb-color-ink` など）は自動的に適応します。同じ CSS カスタムプロパティ名がテーマごとに異なる値へ解決されるため、有効なテーマが変わってもコンポーネントを変更する必要はありません。
 
 ## 関連用語
 

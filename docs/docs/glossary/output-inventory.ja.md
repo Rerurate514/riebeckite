@@ -18,7 +18,7 @@ sidebar:
 
 `manifest.publicEntries` から生成されます。各コンテンツ出力は次のとおりです。
 - `kind`: `"content"`
-- `path`: permalinkから解決されたHTML出力パス
+- `path`: permalink から解決された HTML 出力パス
 - `producer`: `content:${slug}`
 - `dependencies`: `[{ type: "content", slug: "<entry-slug>" }]` に加え、プラグインが宣言した出力依存関係
 
@@ -26,7 +26,7 @@ sidebar:
 
 `manifest.publicRedirects` から生成されます。各リダイレクト出力は次のとおりです。
 - `kind`: `"redirect"`
-- `path`: リダイレクト先のHTMLパス
+- `path`: リダイレクト先の HTML パス
 - `producer`: `content:${redirect.slug}:redirect`
 - `dependencies`: `[{ type: "content", slug: redirect.slug }]`
 
@@ -34,7 +34,7 @@ sidebar:
 
 プラグインページの定義（`pageTypes`）から生成されます。各プラグインページ出力は次のとおりです。
 - `kind`: `"plugin-page"`
-- `path`: HTML出力パス
+- `path`: HTML 出力パス
 - `producer`: `plugin:${plugin.name}`
 - `dependencies`: `pageTypes[].outputDependencies` または `context.output.emit(..., { dependencies })` で宣言
 

@@ -6,17 +6,17 @@ sidebar:
 ---
 # CSSの取り決め（CSS Contract）
 
-コンポーネントが依存してよい、安定したCSSのフックとカスケードの順序です。テーマは文書化されたフック（`rb-*`と`rr-*`）を公開するため、コンポーネントは特定のテーマを前提にせずにスタイルを当てられます。
+コンポーネントが依存してよい、安定した CSS のフックとカスケードの順序です。テーマは文書化されたフック（`rb-*` と `rr-*`）を公開するため、コンポーネントは特定のテーマを前提にせずにスタイルを当てられます。
 
 ## 安定したフック
 クラス名の名前空間は2つあります。
-- `rb-*` — フレームワークが提供する構造のフックとセマンティックデザイントークン（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body`など）
-- `rr-<feature>` — プラグインが描画する最も外側の要素に付くルートフック（`.rr-search`、`.rr-callout`など）
+- `rb-*` — フレームワークが提供する構造のフックとセマンティックデザイントークン（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body` など）
+- `rr-<feature>` — プラグインが描画する最も外側の要素に付くルートフック（`.rr-search`、`.rr-callout` など）
 
 ## カスケード順
-読み込み順は、テーマのCSSがプラグインの既定スタイルに勝ち、`stylesheets`が最後の上書きになることを保証します。
+読み込み順は、テーマの CSS がプラグインの既定スタイルに勝ち、`stylesheets` が最後の上書きになることを保証します。
 
-フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → stylesheets
+フレームワークの構造 CSS → base/app の構造 CSS → プラグインの既定 CSS → テーマの CSS → 設定のトークンによるインラインスタイル → stylesheets
 
 ```mermaid
 flowchart TD
@@ -32,10 +32,10 @@ flowchart TD
 ```
 
 ## カスケード順の検証
-保証されるカスケード順は、フレームワークの構造CSS → base/appの構造CSS → プラグインの既定CSS → テーマのCSS → 設定のトークンによるインラインスタイル → stylesheetsです。この順序は`@riebeckite/honox`が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`stylesheets`は最後の上書きで、サイト固有の小さな調整に適しています。
+保証されるカスケード順は、フレームワークの構造 CSS → base/app の構造 CSS → プラグインの既定 CSS → テーマの CSS → 設定のトークンによるインラインスタイル → stylesheets です。この順序は `@riebeckite/honox` が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`stylesheets` は最後の上書きで、サイト固有の小さな調整に適しています。
 
 ## テーマCSSの書き方
-テーマは安定したフックと、文書化された子孫要素にだけスタイルを当ててください。新しい`rb-*`/`rr-*`のクラス名を考案しないでください。対象にするのは`.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-content`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、および各プラグインが文書化した`rr-*`のルートフックだけです。BEMの要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
+テーマは安定したフックと、文書化された子孫要素にだけスタイルを当ててください。新しい `rb-*`/`rr-*` のクラス名を考案しないでください。対象にするのは `.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-content`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、および各プラグインが文書化した `rr-*` のルートフックだけです。BEM の要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
 
 ## 関連用語
 - [[glossary/theme|Theme]]

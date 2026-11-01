@@ -7,7 +7,7 @@ sidebar:
 
 # WikiLink（ノート間リンク）
 
-ノート同士をつなぎ、コンテンツグラフに関係を作る `[[link]]` 記法です。Riebeckiteはコンテンツインデックスを通じて解決し、解決できないリンクは診断として残します。
+ノート同士をつなぎ、コンテンツグラフに関係を作る `[[link]]` 記法です。Riebeckite はコンテンツインデックスを通じて解決し、解決できないリンクは診断として残します。
 
 ## 記法
 
@@ -24,7 +24,7 @@ sidebar:
 
 ## エイリアスとコンテンツインデックスによる解決
 
-WikiLinkの解決は `ContentManifest` の `contentIndex`（`packages/core/src/types/content_manifest.ts`）を通じて行われます。インデックスは `ContentIndexBuilder` が構築し、すべてのキーを小文字化します。`byAlias` に登録されたエイリアスも参照時に解決されるため、slugやpermalinkを変えずにエイリアスからノートを指せます。複数のエントリが同じエイリアスキーを共有すると、そのキーは曖昧になり、それを使うリンクは `contentIndexAmbiguities` の診断として報告されます。
+WikiLink の解決は `ContentManifest` の `contentIndex`（`packages/core/src/types/content_manifest.ts`）を通じて行われます。インデックスは `ContentIndexBuilder` が構築し、すべてのキーを小文字化します。`byAlias` に登録されたエイリアスも参照時に解決されるため、slug や permalink を変えずにエイリアスからノートを指せます。複数のエントリが同じエイリアスキーを共有すると、そのキーは曖昧になり、それを使うリンクは `contentIndexAmbiguities` の診断として報告されます。
 
 ```ts
 // From packages/core/src/types/content_manifest.ts

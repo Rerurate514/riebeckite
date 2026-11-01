@@ -7,17 +7,17 @@ sidebar:
 
 # バックリンク（Backlink）
 
-公開済みのどのノートが現在のノートにリンクしているかを示す、バックリンクの一覧表示です。`getPublishedBacklinks()`がコンテンツマニフェストから被リンクを解決し、公開されて検出可能なノートだけに絞り込んで、マニフェストの順序で並べます。
+公開済みのどのノートが現在のノートにリンクしているかを示す、バックリンクの一覧表示です。`getPublishedBacklinks()` がコンテンツマニフェストから被リンクを解決し、公開されて検出可能なノートだけに絞り込んで、マニフェストの順序で並べます。
 
 ## 推奨する配置
 
-`backlinks()`がデータソースを登録します。一覧を置きたい場所に`<Backlinks />`を描画します。通常は記事本文のあとに1回だけ置きます。`SiteProvider`と、公開された`entry`を持つ`Article`の内側では、コンポーネントが被リンクを自分で解決します。
+`backlinks()` がデータソースを登録します。一覧を置きたい場所に `<Backlinks />` を描画します。通常は記事本文のあとに1回だけ置きます。`SiteProvider` と、公開された `entry` を持つ `Article` の内側では、コンポーネントが被リンクを自分で解決します。
 
 被リンクがない場合（または公開された被リンクが1つもない場合）、コンポーネントは何も描画しません。
 
 ## 高度なカスタマイズ
 
-`backlinks`でデータを明示的に渡します。`getBacklinks({ view, slug })`で解決できます。
+`backlinks` でデータを明示的に渡します。`getBacklinks({ view, slug })` で解決できます。
 
 ```tsx
 import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
@@ -37,17 +37,17 @@ return (
 plugins: [backlinks()];
 ```
 
-プラグインを有効にし、コンポーネントを1回描画します。UIをなくすには要素を取り除きます。
+プラグインを有効にし、コンポーネントを1回描画します。UI をなくすには要素を取り除きます。
 
 ## バックリンクデータの解決
-`getPublishedBacklinks()`関数は、コンテンツマニフェストから被リンクを解決します。次のオプションを受け取ります。
+`getPublishedBacklinks()` 関数は、コンテンツマニフェストから被リンクを解決します。次のオプションを受け取ります。
 
-- **manifest**：コンテンツシンクから得た`ContentManifest`
-- **config**：解決済みの`ResolvedRiebeckiteConfig`
-- **slug**：現在のノートのslug
-- **resolveTitle**：エントリのタイトルを解決する関数`(slug: string, title: unknown) => string`
+- **manifest**：コンテンツシンクから得た `ContentManifest`
+- **config**：解決済みの `ResolvedRiebeckiteConfig`
+- **slug**：現在のノートの slug
+- **resolveTitle**：エントリのタイトルを解決する関数 `(slug: string, title: unknown) => string`
 
-戻り値は`ArticleBacklink[]`で、各要素は`slug`、`permalink`、`title`を持ちます。リンクは公開されて検出可能なエントリだけに絞り込まれ、マニフェストの順序で並びます。
+戻り値は `ArticleBacklink[]` で、各要素は `slug`、`permalink`、`title` を持ちます。リンクは公開されて検出可能なエントリだけに絞り込まれ、マニフェストの順序で並びます。
 
 ```ts
 import { getPublishedBacklinks, content } from "@riebeckite/plugin-backlinks";

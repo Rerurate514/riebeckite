@@ -23,7 +23,7 @@ export function example(options: ExampleOptions = {}) {
 ```
 
 ## バリデータの契約
-バリデータに副作用を持たせてはいけません。ファイルシステムの走査、ビルド、キャッシュへの書き込み、外部状態の変更は行いません。問題は構造化されたissueとして返します。バリデータの型は `PluginOptionsValidator<TOptions>` で、`options` を受け取って `readonly Issue[] | void` を返します。
+バリデータに副作用を持たせてはいけません。ファイルシステムの走査、ビルド、キャッシュへの書き込み、外部状態の変更は行いません。問題は構造化された issue として返します。バリデータの型は `PluginOptionsValidator<TOptions>` で、`options` を受け取って `readonly Issue[] | void` を返します。
 
 ## 関連用語
 - [[config|Config]]

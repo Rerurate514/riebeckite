@@ -18,7 +18,7 @@ sidebar:
 | `title` | `string` | 必須 | サイト名。ページタイトル、`og:site_name`、JSON-LD の `publisher.name` などに使われる。 |
 | `description` | `string` | `""` | サイトの説明。`<meta name="description">`、`og:description`、JSON-LD などに使われる。 |
 | `author` | `string` | `""` | サイトの作者。`<meta name="author">` と JSON-LD の `author` に使われる。 |
-| `baseUrl` | `string` | `""` | サイトの公開URL。canonical URL、Open Graph、Feed、Webmention などのURL生成に使われる。 |
+| `baseUrl` | `string` | `""` | サイトの公開 URL。canonical URL、Open Graph、Feed、Webmention などの URL 生成に使われる。 |
 | `locale` | `string` | `"en"` | サイトの言語。`<html lang>` や `og:locale` に使われる。 |
 | `twitterSite` | `string` | `""` | `<meta name="twitter:site">` に設定する値。 |
 | `defaultOgImage` | `string` | `""` | `og:image` や `twitter:image` に使う既定の画像。 |
@@ -26,7 +26,7 @@ sidebar:
 
 `title` には空でない文字列を指定する必要があります。
 
-`baseUrl` を指定する場合は、`https://example.com` のような完全な HTTP(S) URLを指定してください。
+`baseUrl` を指定する場合は、`https://example.com` のような完全な HTTP(S) URL を指定してください。
 
 それ以外の文字列は、省略または空文字にできます。
 
@@ -147,7 +147,7 @@ content: {
 
 これは `draft` や `unlisted` とは異なります。
 
-`draft` や `unlisted` はRiebeckiteにコンテンツとして読み込まれたうえで、公開ページや一覧などから除外されます。
+`draft` や `unlisted` は Riebeckite にコンテンツとして読み込まれたうえで、公開ページや一覧などから除外されます。
 
 詳しくは [公開条件](../configuration/content.ja.md#公開条件) を参照してください。
 

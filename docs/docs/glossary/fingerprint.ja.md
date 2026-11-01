@@ -16,9 +16,9 @@ sidebar:
 
 ## 種類
 
-コンテンツのフィンガープリント：ソース、frontmatter、パイプラインのフィンガープリント、キャッシュスキーマ、プラグインのcacheVersionを含みます。コンテンツのフィンガープリントは、Markdownのソース、解析済みのfrontmatter、キャッシュスキーマのバージョン（`CONTENT_CACHE_SCHEMA_VERSION`、現在は5）、およびプラグインの設定・コンテンツフィルター・プラグインの`cacheVersion`の値を取り込んだパイプラインのフィンガープリントから計算します。
+コンテンツのフィンガープリント：ソース、frontmatter、パイプラインのフィンガープリント、キャッシュスキーマ、プラグインの cacheVersion を含みます。コンテンツのフィンガープリントは、Markdown のソース、解析済みの frontmatter、キャッシュスキーマのバージョン（`CONTENT_CACHE_SCHEMA_VERSION`、現在は5）、およびプラグインの設定・コンテンツフィルター・プラグインの `cacheVersion` の値を取り込んだパイプラインのフィンガープリントから計算します。
 
-パイプラインのフィンガープリント：プラグインのフィンガープリント、コンテンツフィルター、互換性バージョンを含みます。パイプラインのフィンガープリント（`packages/core/src/content/content_persistent_cache.ts`の`computePipelineFingerprint`）は、プラグインのフィンガープリント（`pluginFingerprint`から）、コンテンツフィルター（`config.content.filters`）、互換性バージョン（`CONTENT_CACHE_COMPATIBILITY_VERSION`、現在は3）を取り込みます。処理パイプラインが変わったか、コンテンツの再処理が必要かを判断するために使います。
+パイプラインのフィンガープリント：プラグインのフィンガープリント、コンテンツフィルター、互換性バージョンを含みます。パイプラインのフィンガープリント（`packages/core/src/content/content_persistent_cache.ts` の `computePipelineFingerprint`）は、プラグインのフィンガープリント（`pluginFingerprint` から）、コンテンツフィルター（`config.content.filters`）、互換性バージョン（`CONTENT_CACHE_COMPATIBILITY_VERSION`、現在は3）を取り込みます。処理パイプラインが変わったか、コンテンツの再処理が必要かを判断するために使います。
 
 ## 関連用語
 

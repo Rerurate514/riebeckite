@@ -7,13 +7,13 @@ sidebar:
 
 # 永続キャッシュ（Persistent Cache）
 
-コンテンツごとのキャッシュで、処理済みのMarkdown結果をビルド間で `.riebeckite/cache/content/vN` に保存します。キャッシュに当たればウォームビルドになり、外れれば再処理が必要です。
+コンテンツごとのキャッシュで、処理済みの Markdown 結果をビルド間で `.riebeckite/cache/content/vN` に保存します。キャッシュに当たればウォームビルドになり、外れれば再処理が必要です。
 
 ## キャッシュの内容
 
 `.riebeckite/cache/content/v5` に保存されます。
-エントリのキーには、Markdownソース、パース済みfrontmatter、キャッシュスキーマ、処理パイプラインのフィンガープリントが含まれます。
-キャッシュされたコンテンツは、ワークスペースのパスではなく論理slugと正規化したソースパスを記録するため、同じオペレーティングシステム上の別のランナーやワークスペースへコピーできます。
+エントリのキーには、Markdown ソース、パース済み frontmatter、キャッシュスキーマ、処理パイプラインのフィンガープリントが含まれます。
+キャッシュされたコンテンツは、ワークスペースのパスではなく論理 slug と正規化したソースパスを記録するため、同じオペレーティングシステム上の別のランナーやワークスペースへコピーできます。
 
 ## ヒット、ミス、バイパス
 
@@ -23,13 +23,13 @@ sidebar:
 
 ## キャッシュキーの構造
 
-コンテンツキャッシュのキーは、`CacheKeyInputs` 型で定義された4つの入力から計算したSHA-256ハッシュです。このキーによって、キャッシュ済みエントリをビルド間で再利用できるかが決まります。
+コンテンツキャッシュのキーは、`CacheKeyInputs` 型で定義された4つの入力から計算した SHA-256ハッシュです。このキーによって、キャッシュ済みエントリをビルド間で再利用できるかが決まります。
 
 | 入力 | 説明 |
 | --- | --- |
-| `slug` | コンテンツソースのslug（例：`"getting-started"`）。 |
-| `source` | 衝突回避に使う生のMarkdownソーステキスト。 |
-| `frontmatter` | パース済みfrontmatter。`Date` 値はISO文字列に正規化されます。 |
+| `slug` | コンテンツソースの slug（例：`"getting-started"`）。 |
+| `source` | 衝突回避に使う生の Markdown ソーステキスト。 |
+| `frontmatter` | パース済み frontmatter。`Date` 値は ISO 文字列に正規化されます。 |
 | `pipelineFingerprint` | プラグイン、コンテンツフィルタ、パイプライン設定のハッシュ。 |
 
 静的関数 `computeContentCacheKey` は `CacheKeyInputs` オブジェクトを受け取り、16進数のダイジェストを返します。
@@ -54,7 +54,7 @@ const key = computeContentCacheKey({
   └─ <sha256-hex-digest>.json
 ```
 
-各JSONファイルは `PersistentContentCacheEntry` として `.riebeckite/cache/content/v5/<hash>.json` に書き込まれます。
+各 JSON ファイルは `PersistentContentCacheEntry` として `.riebeckite/cache/content/v5/<hash>.json` に書き込まれます。
 
 ```json
 {

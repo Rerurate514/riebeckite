@@ -89,7 +89,7 @@ flowchart LR
 
 公開する添付ファイルやメディアだけを `public/assets/attachments/` へコピーする `prebuild` 処理を、サイト側に用意してください。Vault 全体を `public/` へコピーすると、非公開記事や未参照のファイルまで公開される可能性があります。
 
-参照実装は Riebeckite リポジトリの `apps/web/scripts/build_images.ts` にあります。アセットの種類と公開方法の詳細は [Attachment・Media と公開](../../reference/configuration/assets.ja.md) を参照してください。
+参照実装は Riebeckite リポジトリの `apps/web/scripts/build_images.ts` にあります。アセットの種類と公開方法の詳細は [Attachment ・ Media と公開](../../reference/configuration/assets.ja.md) を参照してください。
 
 ## よくある質問
 

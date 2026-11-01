@@ -26,15 +26,15 @@ sidebar:
 
 | ビュー | 内容 | 典型的な用途 |
 | --- | --- | --- |
-| `bySlug` | `Map<string, ContentManifestEntry>` | slugでエントリを引く。 |
-| `byPermalink` | `Map<string, ContentManifestEntry>` | permalink URLでエントリを引く。 |
+| `bySlug` | `Map<string, ContentManifestEntry>` | slug でエントリを引く。 |
+| `byPermalink` | `Map<string, ContentManifestEntry>` | permalink URL でエントリを引く。 |
 | `byAlias` | `Map<string, ContentManifestEntry[]>` | エイリアス/リダイレクトパスでエントリを探す。 |
-| `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | ルーティング対象のエントリ（public + unlisted、draft/scheduledを除く）だけを引く。 |
+| `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | ルーティング対象のエントリ（public + unlisted、draft/scheduled を除く）だけを引く。 |
 | `byTag` | `Map<string, ContentManifestEntry[]>` | タクソノミーページ用にタグでエントリをグループ化する。 |
 | `byAsset` | `Map<string, ContentManifestEntry[]>` | アセットマニフェスト生成用にアセットでエントリをグループ化する。 |
-| `publicRedirects` | `Map<string, ContentRedirect & { slug: string }>` | 所有エントリのslug付きの公開リダイレクト。 |
+| `publicRedirects` | `Map<string, ContentRedirect & { slug: string }>` | 所有エントリの slug 付きの公開リダイレクト。 |
 
-これらのビューはビルド時に生成され、**純粋な射影**です。ファイルシステムにアクセスせず、マニフェスト上のエントリデータを読みます。たとえばpermalinkでエントリを引くには、次のようにします。
+これらのビューはビルド時に生成され、**純粋な射影**です。ファイルシステムにアクセスせず、マニフェスト上のエントリデータを読みます。たとえば permalink でエントリを引くには、次のようにします。
 
 ```ts
 const entry = manifest.byPermalink.get("/blog/my-post/");

@@ -23,12 +23,12 @@ published: false
 
 ## 公開状態
 
-下書きは`PublishingVisibility`の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに`published: false`または`visibility: draft`があると、`resolvePublishingState`は`routable: false, discoverable: false`を返します。つまり：
+下書きは `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに `published: false` または `visibility: draft` があると、`resolvePublishingState` は `routable: false, discoverable: false` を返します。つまり：
 
-- ノートは`publicEntries`と`byRoutablePermalink`から除外されます
+- ノートは `publicEntries` と `byRoutablePermalink` から除外されます
 - 公開出力を生成しません
 - プレビューのために解析し、内部リンクを張ることはできます
-- 公開後に既存のコンテンツとリンクが保たれるよう、`entries`マニフェスト全体には残ります
+- 公開後に既存のコンテンツとリンクが保たれるよう、`entries` マニフェスト全体には残ります
 
 ```ts
 // From packages/core/src/content/publishing.ts

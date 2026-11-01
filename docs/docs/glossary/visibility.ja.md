@@ -7,11 +7,11 @@ sidebar:
 
 # 公開範囲（Visibility）
 
-公開したページの見せ方を調整するfrontmatterフィールドです。ページを下書きにせず、一覧に載せるページと非公開（unlisted）のページを分けます。
+公開したページの見せ方を調整する frontmatter フィールドです。ページを下書きにせず、一覧に載せるページと非公開（unlisted）のページを分けます。
 
 ## 値
 
-| 値 | URLでの提供 | 一覧への掲載 |
+| 値 | URL での提供 | 一覧への掲載 |
 | --- | --- | --- |
 | listed（既定） | あり | あり |
 | unlisted | あり | なし |
@@ -22,7 +22,7 @@ sidebar:
 
 ## 公開状態との統合
 
-frontmatterの `visibility` フィールドは、`resolvePublishingState`（`packages/core/src/content/publishing.ts`）への入力の1つです。公開戦略と `published` フィールドとともに、最終的な `ResolvedPublishingState` を決めます。
+frontmatter の `visibility` フィールドは、`resolvePublishingState`（`packages/core/src/content/publishing.ts`）への入力の1つです。公開戦略と `published` フィールドとともに、最終的な `ResolvedPublishingState` を決めます。
 
 - `visibility: "listed"`（既定）＋ `published: true` → `visibility: "public", routable: true, discoverable: true`
 - `visibility: "unlisted"` ＋ `published: true` → `visibility: "unlisted", routable: true, discoverable: false`

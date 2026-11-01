@@ -12,7 +12,7 @@ title: Configuration リファレンス
 
 - [サイトとコンテンツ](./configuration-reference/site-and-content.ja.md)
 - [テーマとプラグイン](./configuration-reference/theme-and-plugins.ja.md)
-- [公開設定・キャッシュ・SPA](./configuration-reference/publication-cache-spa.ja.md)
+- [公開設定・キャッシュ・ SPA](./configuration-reference/publication-cache-spa.ja.md)
 
 ## config ファイルの書き方
 
@@ -47,10 +47,10 @@ CLI から実行した場合は、現在のディレクトリから親ディレ�
 
 | 設定 | 必須 | 用途 |
 | --- | --- | --- |
-| `site` | はい | サイト名やURLなどの基本情報 |
+| `site` | はい | サイト名や URL などの基本情報 |
 | `content` | いいえ | コンテンツの読み込み元や公開条件 |
 | `theme` | いいえ | サイトの見た目 |
-| `plugins` | いいえ | Riebeckiteに追加する機能 |
+| `plugins` | いいえ | Riebeckite に追加する機能 |
 | `cache` | いいえ | ビルド結果の[[glossary/cache|キャッシュ]] |
 | `publication` | いいえ | 公開承認モードと永続状態 |
 | `spa` | いいえ | クライアントサイドのページ遷移、プリフェッチ、スクロール復元、ビュー遷移 |

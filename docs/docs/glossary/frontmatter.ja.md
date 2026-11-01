@@ -7,7 +7,7 @@ sidebar:
 
 # フロントマター（frontmatter）
 
-コンテンツファイルの先頭にあるYAMLのブロックで、タイトル、日付、タグ、公開範囲などの型付きメタデータに解析されます。slugとは独立にノートを識別する安定したidもここに置きます。
+コンテンツファイルの先頭にある YAML のブロックで、タイトル、日付、タグ、公開範囲などの型付きメタデータに解析されます。slug とは独立にノートを識別する安定した id もここに置きます。
 
 ## よく使うフィールド
 
@@ -18,23 +18,23 @@ sidebar:
 | `tags` | タクソノミーの値 |
 | `series` | シリーズへの所属 |
 | `published` | 公開の判定 |
-| `visibility` | 一覧に載せるかunlistedか |
+| `visibility` | 一覧に載せるか unlisted か |
 | `aliases` | 追加のリンクキー |
-| `id` | 安定したコンテンツID |
+| `id` | 安定したコンテンツ ID |
 
 ## 解析
 
-frontmatterはMarkdownの本文より先に解析されるため、フックと公開先の解決はメタデータを先に読めます。未知のフィールドはプラグイン用にそのまま残ります。
+frontmatter は Markdown の本文より先に解析されるため、フックと公開先の解決はメタデータを先に読めます。未知のフィールドはプラグイン用にそのまま残ります。
 
 ## 公開を決めるfrontmatterのフィールド
 
-frontmatterには、ノートの公開方法を決める3つの安定したフィールドがあり、`explicit`と`selective`の公開戦略で共通です。
+frontmatter には、ノートの公開方法を決める3つの安定したフィールドがあり、`explicit` と `selective` の公開戦略で共通です。
 
-- **`publish`**：戦略が`explicit`のときは、`publish: true`のノートだけが公開されます。`selective`のときは無視されます。
-- **`private`**：戦略が`selective`のときは、`private: true`のノートが公開出力から除外されます。`explicit`のときは無視されます。
-- **`draft`**：戦略が`selective`のときは、`draft: true`のノートが公開出力から除外されます。`explicit`のときは無視されます。
+- **`publish`**：戦略が `explicit` のときは、`publish: true` のノートだけが公開されます。`selective` のときは無視されます。
+- **`private`**：戦略が `selective` のときは、`private: true` のノートが公開出力から除外されます。`explicit` のときは無視されます。
+- **`draft`**：戦略が `selective` のときは、`draft: true` のノートが公開出力から除外されます。`explicit` のときは無視されます。
 
-公開の判定は`packages/core/src/types/publish_strategy.ts`の`isPublishable(strategy, frontmatter)`が行います。
+公開の判定は `packages/core/src/types/publish_strategy.ts` の `isPublishable(strategy, frontmatter)` が行います。
 
 ```ts
 export function isPublishable(
@@ -48,7 +48,7 @@ export function isPublishable(
 }
 ```
 
-`PublishFrontmatter`型は次のとおりです。
+`PublishFrontmatter` 型は次のとおりです。
 
 ```ts
 export type PublishFrontmatter = {
@@ -60,7 +60,7 @@ export type PublishFrontmatter = {
 
 ## frontmatterの解析
 
-frontmatterはMarkdownの本文より先に解析されるため、フックと公開先の解決はメタデータを先に読めます。未知のフィールドはプラグイン用にそのまま残ります。解析されたfrontmatterは`PostFrontmatter`型に格納され、`ContentManifestEntry`（`packages/core/src/types/content_manifest.ts`）の`frontmatter`フィールドになります。`resolvePublishingState`が公開状態を決めるのにも使われます。
+frontmatter は Markdown の本文より先に解析されるため、フックと公開先の解決はメタデータを先に読めます。未知のフィールドはプラグイン用にそのまま残ります。解析された frontmatter は `PostFrontmatter` 型に格納され、`ContentManifestEntry`（`packages/core/src/types/content_manifest.ts`）の `frontmatter` フィールドになります。`resolvePublishingState` が公開状態を決めるのにも使われます。
 
 ```ts
 // From packages/core/src/types/post_content.ts

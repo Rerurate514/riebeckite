@@ -8,12 +8,12 @@ Publication Workflow は、既存の[[build-system|静的ビルド]]に公開計
 
 仕組みは次の4つです。
 
-1. **Publication Planner** — 解決済みの[[glossary/manifest|コンテンツマニフェスト]]から公開計画を作る Core API。
-2. **Workflow** — [[glossary/draft|draft]]、review、approved、published、retracted の状態。承認は任意です。
-3. **Hosting adapter** — [[guides/deployment/cloudflare-workers|Cloudflare Workers]]、Cloudflare Pages、GitHub Pages、Netlify、Vercel のデプロイ方法と機能差。
-4. **Diagnostics** — ローカル検証、成果物の[[glossary/fingerprint|Fingerprint]]、公開履歴。
+1. **Publication Planner**：解決済みの[[glossary/manifest|コンテンツマニフェスト]]から公開計画を作る Core API。
+2. **Workflow**：[[glossary/draft|draft]]、review、approved、published、retracted の状態。承認は任意です。
+3. **Hosting adapter**：[[guides/deployment/cloudflare-workers|Cloudflare Workers]]、Cloudflare Pages、GitHub Pages、Netlify、Vercel のデプロイ方法と機能差。
+4. **Diagnostics**：ローカル検証、成果物の[[glossary/fingerprint|Fingerprint]]、公開履歴。
 
-Riebeckite Core は GitHub や Cloudflare を直接呼びません。Adapter と履歴は [[reference/cli|CLI]] にあり、認証情報はデプロイするコマンドの環境変数の中にとどまります。
+Riebeckite Core は GitHub や Cloudflare を直接呼びません。アダプターと履歴は [[reference/cli|CLI]] にあり、認証情報はデプロイするコマンドの環境変数の中にとどまります。
 
 ## 公開計画は公開判定を二重実装しない
 
@@ -152,7 +152,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 `riebeckite deploy` はデプロイを実行しなくなりました。代わりに `riebeckite publish run --execute` を使ってください。`deploy setup` と `deploy domain` は Cloudflare の設定補助として残ります。
 
-## Hosting adapter
+## ホスティングアダプター
 
 | Provider | Redirect | Scheduler | デプロイ経路 |
 | --- | --- | --- | --- |
@@ -162,9 +162,9 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 | `netlify` | ネイティブ | なし | `netlify deploy --prod` |
 | `vercel` | ネイティブ | なし | `vercel deploy --prod` |
 
-Provider の検出では、`wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で検出結果を上書きできます。必要な環境変数の**名前**は `publish status --json` が報告します。値は読み取りも記録も書き込みも行いません。
+プロバイダーの検出では、`wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で検出結果を上書きできます。必要な環境変数の**名前**は `publish status --json` が報告します。値は読み取りも記録も書き込みも行いません。
 
-GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。Adapter は Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
+GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。アダプターは Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
 
 ## CI
 
@@ -203,7 +203,7 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 
 `.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID とホスト名を記録します。このホストでプロセスが生存しているロックは、経過時間や `--force` では削除されません。プロセスが終了しているロックや、ローカル状態を所有しないホストのロックは回収します。`clean --all` と `clean --state` は、実行中の公開ロックがある間は拒否されます。clean が削除するのは `.riebeckite` だけで、永続状態と承認記録は残ります。公開履歴と信頼は、クリーンビルドを越えて保持されます。
 
-## Build Output Marker
+## ビルド出力マーカー
 
 すべての [[glossary/ssg|SSG]] ビルドは、ビルド状態の隣に `.riebeckite/build-output.json` を書き出します。このファイルは出力ディレクトリ、公開 Fingerprint、完了時刻を記録します。CLI ビルドは成果物ハッシュも記録します。マーカーは内部状態であり、`dist/` には入らず、認証情報も含みません。
 
@@ -213,7 +213,7 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 
 ## 検証状況
 
-ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各 provider で信頼できる環境から `publish run --execute` を一度実行してください。
+ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各プロバイダーで信頼できる環境から `publish run --execute` を一度実行してください。
 
 ## この仕組みがしないこと
 

@@ -31,7 +31,7 @@ Riebeckite に Vault の場所を指定し、公開したいノートだけに `
 ## このページの構成
 
 - [セットアップ](./obsidian/setup.ja.md)
-- [Vaultの置き場所](./obsidian/placement.ja.md)
+- [Vault の置き場所](./obsidian/placement.ja.md)
 - [記事の書き方](./obsidian/writing.ja.md)
 - [トラブルシューティング](./obsidian/troubleshooting.ja.md)
 

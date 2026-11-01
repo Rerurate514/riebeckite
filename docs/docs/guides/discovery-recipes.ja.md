@@ -4,13 +4,13 @@ title: 発見導線のレシピ
 ---
 # 発見導線のレシピ
 
-Riebeckite には「homepage 専用の framework」はありません。Homepage と、読者がサイトを見て回るためのページは、既存の Plugin が提供する Page Type で作ります。Markdown ブロック、`navigation` plugin の組み合わせでページを作成します。
+Riebeckite には「ホームページ専用のフレームワーク」はありません。ホームページと、読者がサイトを見て回るためのページは、既存のプラグインが提供するページ種別で作ります。Markdown ブロックと `navigation` プラグインを組み合わせてページを作成します。
 
-このガイドでは、Featured、最新記事、全記事一覧、Tag、Folder、Series、Archive といったよくある発見導線のレシピを集めます。それぞれが使う Plugin とオプションを対応づけます。どのレシピも公開されている Plugin API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
+このガイドでは、注目記事、最新記事、全記事一覧、タグ、フォルダー、シリーズ、アーカイブといったよくある発見導線のレシピを集めます。それぞれが使うプラグインとオプションを対応づけます。どのレシピも公開されているプラグイン API と Core の設定だけで成立し、新しい Core 機能は必要ありません。
 
 ## 覚えておくこと
 
-Plugin を有効にするとページは登録されますが、Header や Footer にリンクは追加されません。リンクは `navigation({ items })` に自分で追加します。
+プラグインを有効にするとページは登録されますが、ヘッダーやフッターにリンクは追加されません。リンクは `navigation({ items })` に自分で追加します。
 
 ```ts
 navigation({
@@ -21,23 +21,23 @@ navigation({
 })
 ```
 
-Route は定数ではなく設定です。Tags の一覧、Series の一覧、Archive にはそれぞれ base path のオプションがあり、以下の例のパスは既定値であって固定値ではありません。Header / Footer の考え方は [サイトのカスタマイズ](./customizing-your-site.ja.md) を参照してください。
+ルートは定数ではなく設定です。タグの一覧、シリーズの一覧、アーカイブにはそれぞれベースパスのオプションがあり、以下の例のパスは既定値であって固定値ではありません。ヘッダー / フッターの考え方は [サイトのカスタマイズ](./customizing-your-site.ja.md) を参照してください。
 
 ## starter が最初から用意しているもの
 
-`starter` preset は、多くのサイトが必要とする部品をすでに登録しています。
+`starter` プリセットは、多くのサイトが必要とする部品をすでに登録しています。
 
-- 生成される Homepage の **最新記事**（`recent-posts`）
+- 生成されるホームページの **最新記事**（`recent-posts`）
 - `taxonomy` による **Tag / Folder** の一覧ページ（既定は `/tags` と `/folders`）
-- `folder-pages` による **Folder landing page** と `README.md` / `index.md` の本文
+- `folder-pages` による **フォルダーのランディングページ** と `README.md` / `index.md` の本文
 - 記事ヘッダーの **パンくず**（`breadcrumbs`）
-- `hover-preview` による公開済み内部リンクの **リンク preview**
+- `hover-preview` による公開済み内部リンクの **リンクプレビュー**
 
-`query`、`dataview`、`archive`、`series` は package としては利用できますが、`starter` には登録されていません。レシピで必要になった時点で追加します。各 preset の構成は [Presets](../getting-started/presets.ja.md) を参照してください。
+`query`、`dataview`、`archive`、`series` はパッケージとしては利用できますが、`starter` には登録されていません。レシピで必要になった時点で追加します。各プリセットの構成は [プリセット](../getting-started/presets.ja.md) を参照してください。
 
 ## 最新記事
 
-これは既定で有効です。生成される `app/routes/index.tsx` が最新記事を集め、Homepage の本文の後に描画します。
+これは既定で有効です。生成される `app/routes/index.tsx` が最新記事を集め、ホームページの本文の後に描画します。
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -46,7 +46,7 @@ import { content } from "../content";
 const recentPosts = getRecentPosts({ manifest: await content.getManifest() });
 ```
 
-`getRecentPosts()` は既定で 5 件を返し、`manifest.discoverableEntries` を読みます。unlisted・draft・予約公開のノートと `index` ノートは対象外で、`date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合は route を編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、Site が配置する component です。
+`getRecentPosts()` は既定で 5 件を返し、`manifest.discoverableEntries` を読みます。unlisted 、 draft 、予約公開のノートと `index` ノートは対象外で、`date`（無ければ `created`）で並べます。件数や表示位置を変えたい場合はルートを編集します。`limit` を渡すと既定値を上書きできます。日付を解釈できないノートは除外されます。`recent-posts` の Markdown ブロックはなく、サイトが配置するコンポーネントです。
 
 ## 注目記事
 
@@ -59,7 +59,7 @@ featured: true
 ---
 ```
 
-Homepage には `query` ブロックで描画します。まず `@riebeckite/plugin-query` を install して登録します（`starter` には含まれません）。
+ホームページには `query` ブロックで描画します。まず `@riebeckite/plugin-query` をインストールして登録します（`starter` には含まれません）。
 
 ```ts
 plugins: [query()],
@@ -108,7 +108,7 @@ LIMIT 3
 
 ## 全記事一覧
 
-全記事一覧は、フィルタの無い `query` です。専用のノートを用意し、たとえば `content/posts.md` に書いて `navigation` plugin からリンクします。
+全記事一覧は、フィルタの無い `query` です。専用のノートを用意し、たとえば `content/posts.md` に書いて `navigation` プラグインからリンクします。
 
 ````md
 ---
@@ -162,7 +162,7 @@ taxonomy({ tagsBasePath: "/topics" }),
 Folder の形をした導線は2つあり、併用できます。
 
 - `taxonomy` は `foldersBasePath`（既定 `/folders`）に Folder ごとのノート一覧を生成し、Folder ごとのページを作ります。
-- `folder-pages` は各 Folder を、その Folder のパス（たとえば `/notes/`）の landing ページにします。Folder 内の `README.md` や `index.md` はその landing ページへ集約します。
+- `folder-pages` は各フォルダーを、そのフォルダーのパス（たとえば `/notes/`）のランディングページにします。フォルダー内の `README.md` や `index.md` はそのランディングページへ集約します。
 
 Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加します。
 
@@ -170,11 +170,11 @@ Folder 一覧を使う場合は、taxonomy のパスを Navigation に追加し�
 navigation({ secondary: [{ label: "Folders", href: "/folders" }] })
 ```
 
-prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効です。そのため、公開対象を含む Folder ごとに landing page が作られ、Folder 内の `README.md` や `index.md` はその本文になります。taxonomy の一覧を読者に見せる場合は `/folders` を Navigation に追加します。コンテンツから組み立てる Navigation は公開済みノートと Folder owner をたどります。
+prefix は `taxonomy({ foldersBasePath: "/directories" })` で変更できます。`starter` では `folder-pages` も有効です。そのため、公開対象を含むフォルダーごとにランディングページが作られ、フォルダー内の `README.md` や `index.md` はその本文になります。タクソノミーの一覧を読者に見せる場合は `/folders` をナビゲーションに追加します。コンテンツから組み立てるナビゲーションは公開済みノートとフォルダーの所有者をたどります。
 
 ## シリーズ
 
-Series は `series` frontmatter キーを共有するノートの集まりです。次のものが必要な場合は、`@riebeckite/plugin-series` を install して登録します。各パートの前後ナビ、`basePath`（既定 `/series`）の一覧、`basePath/<name>` の Series ごとの landing ページです。
+シリーズは `series` frontmatter キーを共有するノートの集まりです。次のものが必要な場合は、`@riebeckite/plugin-series` をインストールして登録します。各パートの前後ナビ、`basePath`（既定 `/series`）の一覧、`basePath/<name>` のシリーズごとのランディングページです。
 
 ```ts
 import { series } from "@riebeckite/plugin-series";
@@ -190,7 +190,7 @@ series_order: 1
 ---
 ```
 
-一覧を `navigation` plugin からリンクします。
+一覧を `navigation` プラグインからリンクします。
 
 ```ts
 navigation({ secondary: [{ label: "Series", href: "/series" }] })
@@ -200,7 +200,7 @@ prefix は `series({ basePath: "/guides" })` で変更できます。`basePath: 
 
 ## アーカイブ
 
-`archive` は `basePath/<yyyy>/<mm>`（既定 `/archive`）に月ごとの一覧ページを、ページネーション付きで生成します。Plugin を追加します。
+`archive` は `basePath/<yyyy>/<mm>`（既定 `/archive`）に月ごとの一覧ページを、ページネーション付きで生成します。プラグインを追加します。
 
 ```ts
 plugins: [archive()],
@@ -216,22 +216,22 @@ navigation({ secondary: [{ label: "Archive", href: "/archive" }] })
 
 ## 組み合わせる
 
-ブログ風の Homepage は、これらをいくつか組み合わせます。
+ブログ風のホームページは、これらをいくつか組み合わせます。
 
 1. `content/index.md` の導入文。
 2. Featured ノートの `query` ブロック。
-3. 生成される Homepage route の `<RecentPosts />`。
+3. 生成されるホームページのルートにある `<RecentPosts />`。
 4. `/tags` や `/archive` など、有効にした発見導線への Navigation リンク。
 
-Docs 風のサイトでは、starter に含まれる `folder-pages` を section の landing に使い、順序付きガイドには `series` を追加できます。ネストした Folder が少ない Vault なら Folder ページを外してもかまいません。手持ちのコンテンツに合う部品を選んでください。
+ドキュメント風のサイトでは、starter に含まれる `folder-pages` をセクションのランディングに使い、順序付きガイドには `series` を追加できます。ネストしたフォルダーが少ない Vault ならフォルダーページを外してもかまいません。手持ちのコンテンツに合う部品を選んでください。
 
 ## このガイドで必要としないもの
 
-ここで挙げたレシピは、新しい抽象化を意図的に避けています。Homepage framework も Featured API も Core の Discovery registry もありません。Featured、全記事一覧、Archive はすべて既存 Plugin、Markdown ブロック、`navigation` plugin の組み合わせです。
+ここで挙げたレシピは、新しい抽象化を意図的に避けています。ホームページ用のフレームワークも、注目記事の API も、Core の Discovery レジストリもありません。注目記事、全記事一覧、アーカイブはすべて既存のプラグイン、Markdown ブロック、`navigation` プラグインの組み合わせです。
 
 ## 次に読むページ
 
-- [サイトのカスタマイズ](./customizing-your-site.ja.md)：Header / Footer と Plugin Component の考え方
-- [Presets](../getting-started/presets.ja.md)：各 preset が登録する Plugin
-- [Plugins](../plugins/README.ja.md)：Plugin カタログ
-- [Plugin API](../reference/plugin-api.ja.md)：Page Type、Plugin Component、CSS Hook
+- [サイトのカスタマイズ](./customizing-your-site.ja.md)：ヘッダー / フッターとプラグインコンポーネントの考え方
+- [プリセット](../getting-started/presets.ja.md)：各プリセットが登録するプラグイン
+- [プラグイン](../plugins/README.ja.md)：プラグインの一覧
+- [プラグイン API](../reference/plugin-api.ja.md)：ページ種別、プラグインコンポーネント、CSS フック

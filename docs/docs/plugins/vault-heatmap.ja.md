@@ -39,14 +39,14 @@ export default defineConfig({
 });
 ```
 
-プラグインは `vault-heatmap.activity` という派生ビューを登録し、マニフェスト生成時にブロックを描画します。ヒートマップのデータ用にクライアント JavaScript やスタイルシートを読み込むことはありません。
+プラグインは `vault-heatmap.activity` という派生ビューを登録し、マニフェスト生成時にブロックを描画します。ヒートマップのデータ用にクライアント JavaScript は読み込みません。
 
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
 | `weeks` | `number` | `52` | 週数（1〜104） |
-| `title` | `string` | - | グリッド上のキャプション |
+| `title` | `string` | `Vault activity` | グリッド上のキャプション |
 | `weekStart` | `"sunday" \| "monday"` | `"sunday"` | 各週の開始曜日 |
 | `language` | `string` | `"vault-heatmap"` | フェンスコードブロックの言語 |
 

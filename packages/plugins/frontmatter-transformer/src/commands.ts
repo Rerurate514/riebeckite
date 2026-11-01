@@ -103,7 +103,7 @@ function planCommand(): CliCommandDefinition {
       }
       if (!context.json) context.output.writeLine(planSummary(plan));
       return {
-        exitCode: plan.conflicts.length === 0 ? 0 : 1,
+        exitCode: planSucceeded(plan) ? 0 : 1,
         json: planPath ? { planPath, plan } : plan,
       };
     },
@@ -122,6 +122,9 @@ function applyCommand(): CliCommandDefinition {
     validate(input) {
       if (!readPresetsInput(input).length && !readString(input, "plan")) {
         return "Pass at least one --preset or a --plan.";
+      }
+      if (readPresetsInput(input).length && readString(input, "plan")) {
+        return "Use either --preset or --plan, not both.";
       }
       return undefined;
     },
@@ -149,7 +152,7 @@ function applyCommand(): CliCommandDefinition {
             })
           : await migration.plan({ ids: presetIds });
         if (!context.json) context.output.writeLine(planSummary(plan));
-        return { exitCode: plan.conflicts.length === 0 ? 0 : 1, json: plan };
+        return { exitCode: planSucceeded(plan) ? 0 : 1, json: plan };
       }
       throwIfAborted(context.signal);
       const result = await migration.apply({ planPath, ids: presetIds });
@@ -282,6 +285,13 @@ function readString(input: CliCommandInput, name: string): string | undefined {
 function throwIfAborted(signal: AbortSignal): void {
   if (signal.aborted)
     throw new Error("The frontmatter transformation was aborted.");
+}
+
+function planSucceeded(plan: ContentMigrationPlan): boolean {
+  return (
+    plan.conflicts.length === 0 &&
+    !plan.diagnostics.some((diagnostic) => diagnostic.severity === "error")
+  );
 }
 
 function planSummary(plan: ContentMigrationPlan): string {

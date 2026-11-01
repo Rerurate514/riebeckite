@@ -48,15 +48,14 @@ export default defineConfig({
 ```
 
 The plugin registers a derived view, `vault-heatmap.activity`, and renders the
-block during the manifest phase. No client JavaScript or stylesheet is loaded
-for the heatmap's data.
+block during the manifest phase. No client JavaScript is loaded for the heatmap.
 
 ## Options
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `weeks` | `number` | `52` | Number of weeks, 1–104 |
-| `title` | `string` | - | Caption above the grid |
+| `title` | `string` | `Vault activity` | Caption above the grid |
 | `weekStart` | `"sunday" \| "monday"` | `"sunday"` | First day of each week |
 | `language` | `string` | `"vault-heatmap"` | Fenced code block language |
 

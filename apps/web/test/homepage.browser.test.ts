@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import path from "node:path";
 import { after, before, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { renderToString } from "hono/jsx/dom/server";
@@ -10,8 +11,17 @@ import { renderHomeRuntime } from "../app/lib/home-runtime";
 const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
+const readWithImports = (relativePath: string): string =>
+  read(relativePath).replaceAll(
+    /@import\s+"(\.\/[^"]+)";/g,
+    (_, imported: string) =>
+      readWithImports(
+        path.posix.join(path.posix.dirname(relativePath), imported),
+      ),
+  );
+
 const styles = [
-  read("../app/components/home/style.css"),
+  readWithImports("../app/components/home/style.css"),
   read("../../../packages/themes/default/styles/theme.css"),
   read("../../../packages/plugins/code-enhance/style.css"),
   read("../../../packages/plugins/color-mode/style.css"),

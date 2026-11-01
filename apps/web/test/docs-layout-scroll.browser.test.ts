@@ -8,7 +8,8 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 const styles = [
   read("../../../packages/ui/styles/drawer.css"),
-  read("../app/styles/shell.css"),
+  read("../app/styles/site-layout.css"),
+  read("../app/styles/site-footer.css"),
 ].join("\n");
 let browser: Browser | null = null;
 

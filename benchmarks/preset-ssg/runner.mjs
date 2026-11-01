@@ -299,10 +299,9 @@ async function linkWorkspacePackages(siteRoot) {
     if (dependency.name === "@riebeckite") continue;
     const source = path.join(appRoot, "node_modules", dependency.name);
     if (!dependency.name.startsWith("@")) {
-      await fs.symlink(
-        await fs.realpath(source),
+      await linkJunctionIfAbsent(
+        source,
         path.join(nodeModulesDirectory, dependency.name),
-        "junction",
       );
       continue;
     }
@@ -314,11 +313,9 @@ async function linkWorkspacePackages(siteRoot) {
     for (const scopedDependency of scopedDependencies) {
       if (!scopedDependency.isDirectory() && !scopedDependency.isSymbolicLink())
         continue;
-      const scopedSource = path.join(source, scopedDependency.name);
-      await fs.symlink(
-        await fs.realpath(scopedSource),
+      await linkJunctionIfAbsent(
+        path.join(source, scopedDependency.name),
         path.join(scopeDirectory, scopedDependency.name),
-        "junction",
       );
     }
   }

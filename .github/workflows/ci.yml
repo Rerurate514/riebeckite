@@ -114,7 +114,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
-          browsers: chrome-headless-shell
+          browsers: chrome,chrome-headless-shell
       - uses: actions/download-artifact@v4
         with:
           name: package-dist-${{ github.sha }}
@@ -127,11 +127,10 @@ jobs:
 
   cross-platform:
     name: cross-platform (${{ matrix.os }})
-    needs: changes
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
@@ -139,10 +138,9 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
-      - run: pnpm --filter @riebeckite/core... run build
+      - run: pnpm build:packages
       - run: pnpm --filter @riebeckite/core test
-      - run: pnpm --filter @riebeckite/honox... run build
-      - run: pnpm --filter @riebeckite/honox test
+      - run: pnpm --filter @riebeckite/honox exec node --import tsx --test --test-concurrency=1 "test/*.test.ts"
 
   integration-e2e:
     name: integration-e2e

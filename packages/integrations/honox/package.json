@@ -41,7 +41,7 @@
   "dependencies": {
     "@babel/parser": "^7.29.3",
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/diagnostics": "workspace:*",
+    "@riebeckite/honox-inspector": "workspace:*",
     "@riebeckite/node": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",
     "@riebeckite/spa": "workspace:*",

@@ -1,10 +1,10 @@
 import path from "node:path";
+import { isAttachmentPath, isImagePath } from "@riebeckite/core";
 import {
-  isAttachmentPath,
-  isImagePath,
-  normalizeContentPath,
-} from "@riebeckite/core";
-import { isIgnoredContentPath } from "@riebeckite/node";
+  isIgnoredContentPath,
+  isPathInsideDirectory,
+  toLogicalPath,
+} from "@riebeckite/node";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
@@ -76,22 +76,6 @@ export function isSiteAssetPath(logicalPath: string): boolean {
   return isImagePath(logicalPath) || isAttachmentPath(logicalPath);
 }
 
-export function isPathInsideDirectory(
-  directory: string,
-  file: string,
-): boolean {
-  const root = normalizeForCompare(directory).replace(/\/+$/, "");
-  if (!root) return false;
-  const target = normalizeForCompare(file);
-  return target === root || target.startsWith(`${root}/`);
-}
-
-export function toLogicalPath(directory: string, file: string): string {
-  return normalizeContentPath(
-    path.relative(normalizeContentPath(directory), normalizeContentPath(file)),
-  );
-}
-
 export function invalidateApplicationRuntime(
   server: Pick<ViteDevServer, "environments">,
   appRoot: string,
@@ -136,9 +120,4 @@ function suppressRestartOnContentEvents(
       });
     }
   }
-}
-
-function normalizeForCompare(value: string): string {
-  const normalized = normalizeContentPath(value);
-  return process.platform === "win32" ? normalized.toLowerCase() : normalized;
 }

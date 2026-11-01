@@ -2,13 +2,12 @@ import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { isPathInsideDirectory, toLogicalPath } from "@riebeckite/node";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import {
   invalidateApplicationRuntime,
-  isPathInsideDirectory,
   isSiteAssetPath,
   riebeckiteContentWatch,
-  toLogicalPath,
 } from "../src/content_watch.js";
 
 type FakeModule = { file: string; id?: string };

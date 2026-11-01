@@ -7,6 +7,7 @@ import {
   defineDerivedView,
   resolveConfig,
 } from "@riebeckite/core";
+import { createDevelopmentTrace } from "@riebeckite/honox/runtime";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
@@ -14,7 +15,6 @@ import {
   diagnosticMatchesPage,
   riebeckiteDevelopmentInspector,
 } from "../src/development_inspector.js";
-import { createDevelopmentTrace } from "../src/development_trace.js";
 
 type MiddlewareRequest = {
   headers: Record<string, string | undefined>;

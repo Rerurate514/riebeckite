@@ -9,6 +9,7 @@ import {
   diagnoseOutputPlan,
 } from "@riebeckite/diagnostics";
 import { FileSystemContentSource } from "@riebeckite/node";
+import type { ResolvedHonoxApplication } from "./application.js";
 import {
   dependencyLabel,
   dependencyMatches,
@@ -25,7 +26,6 @@ import type {
   OutputQuery,
   OutputResult,
 } from "./development_inspector_types.js";
-import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 export async function inspectContentOutputs(
   snapshot: CompletedContentBuildSnapshot,

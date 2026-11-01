@@ -4,11 +4,11 @@ import {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
+import type { ResolvedHonoxApplication } from "./application.js";
 import type {
   RegenerationInspection,
   RegenerationReason,
 } from "./development_inspector_types.js";
-import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 export async function inspectRegeneration(
   application: ResolvedHonoxApplication,

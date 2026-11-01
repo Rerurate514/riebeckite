@@ -8,7 +8,7 @@ import type {
   collectDevelopmentDiagnostics,
   DevelopmentDiagnostic,
 } from "@riebeckite/diagnostics";
-import type { ResolvedHonoxApplication } from "./vite_runner.js";
+import type { ResolvedHonoxApplication } from "./application.js";
 
 export type ListedOutput = {
   readonly path: string;

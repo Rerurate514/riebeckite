@@ -1,9 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { isImagePath, normalizeContentPath } from "@riebeckite/core";
-import { isIgnoredContentPath } from "@riebeckite/node";
+import { isIgnoredContentPath, isPathInsideDirectory } from "@riebeckite/node";
 import type { Plugin } from "vite";
-import { isPathInsideDirectory } from "./content_watch.js";
 
 type RiebeckiteContentAssetsOptions = {
   appRoot: () => string;

@@ -10,9 +10,13 @@ import {
   collectDevelopmentDiagnostics,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
-import { isIgnoredContentPath } from "@riebeckite/node";
+import {
+  isIgnoredContentPath,
+  isPathInsideDirectory,
+  toLogicalPath,
+} from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
-import { isPathInsideDirectory, toLogicalPath } from "./content_watch.js";
+import type { ResolvedHonoxApplication } from "./application.js";
 import { inspectorClientModule } from "./development_inspector_client.js";
 import {
   graphQueryFromRequest,
@@ -53,7 +57,6 @@ import type {
   CachedInspection,
   ContentAppModule,
 } from "./development_inspector_types.js";
-import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 const clientModuleId = "virtual:riebeckite/development-inspector";
 const resolvedClientModuleId = `\0${clientModuleId}`;

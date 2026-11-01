@@ -30,3 +30,4 @@ export {
   isIgnoredContentPath,
   matchContentExcludePattern,
 } from "./src/file_system_content_source.js";
+export { isPathInsideDirectory, toLogicalPath } from "./src/path_helpers.js";

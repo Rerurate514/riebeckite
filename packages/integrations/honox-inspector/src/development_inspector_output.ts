@@ -8,7 +8,7 @@ import {
   type DevelopmentDiagnostic,
   diagnoseOutputPlan,
 } from "@riebeckite/diagnostics";
-import { FileSystemContentSource } from "@riebeckite/node";
+import { createContentSource } from "@riebeckite/node";
 import type { ResolvedHonoxApplication } from "./application.js";
 import {
   dependencyLabel,
@@ -96,12 +96,10 @@ export async function inspectAssets(
   application: ResolvedHonoxApplication,
 ): Promise<AssetResult> {
   try {
-    const source =
-      application.config.content.source ??
-      new FileSystemContentSource(
-        application.contentRoot,
-        application.config.content.exclude,
-      );
+    const source = createContentSource(
+      application.config.content,
+      application.contentRoot,
+    );
     return {
       status: "available",
       inspection: await inspectContentAssets(snapshot.manifest, source),

@@ -8,6 +8,8 @@ export {
   sortDevelopmentDiagnostics,
   summarizeDevelopmentDiagnostics,
 } from "./src/collect.js";
+export type { DevelopmentTrace } from "./src/development_trace.js";
+export { createDevelopmentTrace } from "./src/development_trace.js";
 export type {
   DevelopmentDiagnostic,
   DevelopmentDiagnosticCategory,

@@ -20,7 +20,6 @@
     "vite": "catalog:"
   },
   "devDependencies": {
-    "@riebeckite/honox": "workspace:*",
     "@riebeckite/test": "workspace:*",
     "tsx": "^4.22.4"
   },

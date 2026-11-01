@@ -279,7 +279,7 @@ test("development inspector works in a real Vite dev server", async () => {
       "No matching sources.",
       30_000,
     );
-    await clickShadow(page, "[data-tab='7']");
+    await clickShadow(page, "[data-tab='8']");
     await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
     await waitForShadowText(
       page,
@@ -355,6 +355,22 @@ test("development inspector works in a real Vite dev server", async () => {
       }),
       "none",
     );
+    const forcedScrollbar = await page.addStyleTag({
+      content: "::-webkit-scrollbar { width: 17px; height: 17px; }",
+    });
+    await page.waitForFunction(
+      () => {
+        const host = document.getElementById(
+          "riebeckite-development-inspector",
+        );
+        const section = host?.shadowRoot?.querySelector("section");
+        if (!section) return false;
+        const rectangle = section.getBoundingClientRect();
+        return rectangle.left >= 0 && rectangle.right <= window.innerWidth;
+      },
+      { timeout: 10_000 },
+    );
+    await forcedScrollbar.evaluate((element) => element.remove());
     await page.setViewport({ width: 820, height: 1180 });
     await page.waitForFunction(
       () => {

@@ -185,6 +185,27 @@ Docs and share components imported their own package entry, creating a runtime
 cycle between the component and the plugin factory. Their data helpers now live
 in `src/data.ts`, and the entries re-export the same public symbols.
 
+## Known accepted warnings
+
+The directory cycle check reports five advisory cycles. The module graph is
+acyclic for each of them; the edges are registration or barrel imports that
+point back to shared helpers.
+
+| Cycle | Why it is accepted |
+| --- | --- |
+| `packages/cli/src` ↔ `src/command` | The command registry imports command implementations, and those implementations import shared runner/output helpers from `src`. |
+| `packages/core/src` → `content` → `derived` → `plugin` → `types` → `src` | Content builds derived views, derived views use plugin contracts, and the type barrels re-export shared types. No runtime module cycle exists. |
+| `packages/plugins/diagnostics/src` ↔ `src/checks` | The checks registry imports checks, and checks use the shared diagnostics runner and output types. |
+| `packages/plugins/garden-explorer/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
+| `packages/plugins/related-posts/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
+
+Biome also reports eight `lint/complexity/noBannedTypes` warnings and one
+`lint/suspicious/noConfusingVoidType` warning in the Core CLI generic defaults
+(`{}` for "no options" and `void` in `CliCommandResult`). Both are intentional:
+`{}` is the empty option object used by inference, and `void` lets handlers
+return nothing. The three `lint/complexity/noUselessStringRaw` infos embed
+client scripts and styles, where `String.raw` preserves escapes.
+
 ## Next review order
 
 1. `content_manager.ts`: if the next change touches entry assembly, extract that

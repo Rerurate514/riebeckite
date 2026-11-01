@@ -164,6 +164,8 @@ export type {
   LinkRewriteResult,
 } from "./src/content/link_rewrite.js";
 export { rewriteLinkDestinations } from "./src/content/link_rewrite.js";
+export type { MarkdownImage } from "./src/content/markdown_image.js";
+export { resolveContentAssetUrl } from "./src/content/markdown_image.js";
 export type {
   OutputChangeReason,
   OutputChangeSet,

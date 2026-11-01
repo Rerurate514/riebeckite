@@ -172,15 +172,15 @@ For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s 
 
 `.github/workflows/publish.yml` is the single production deploy path:
 
-- `push` to `main`, `schedule`, and `workflow_dispatch` all enter the same workflow.
+- `push` to `main` and `workflow_dispatch` enter the same workflow. Add a `schedule` trigger when the site uses `publishAt`.
 - The `riebeckite-production` concurrency group allows one deploy at a time and never cancels an in-flight deployment.
 - The workflow fetches the branch head and stops when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
-- `publish plan --json` decides whether a scheduled run needs a build and deploy. A push always builds because application code may have changed.
+- `publish plan --json` decides whether a non-push run needs a build and deploy. A push always builds because application code may have changed.
 - The plan is uploaded as an artifact, then `publish validate` and `publish gate` check the built output.
 - Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot to `RIEBECKITE_PUBLICATION_STATE` outside the worktree, and the workflow stores it on the `publication-state` branch with Git plumbing. The source branch is never committed to or pushed.
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
 
-A site that does not use scheduled publication still runs the schedule in this reference workflow, but the plan reports no changes and the workflow skips build and deploy. Remove the `schedule` trigger from generated sites that do not use `publishAt` if the periodic check itself is unwanted.
+The reference workflow does not run on a schedule. A site that uses `publishAt` must add a `schedule` trigger, for example `*/15 * * * *`; without one, a scheduled note is published by the next push or manual run.
 
 Publication state lives on a dedicated `publication-state` branch with its own history. The workflow restores it into the runner's temporary directory before planning and pushes one new commit after a successful deploy. It needs `contents: write`, and nothing beyond the standard `GITHUB_TOKEN`. If the branch moves during the run, the workflow fails instead of overwriting the newer state; the site is already deployed, and rerunning records the current state. If the branch does not exist, the run starts from `publication/state.json` when that legacy file is still committed, otherwise from scratch. A corrupt state file fails the run instead of silently redeploying everything.
 

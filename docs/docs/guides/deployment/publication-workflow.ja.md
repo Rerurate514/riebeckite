@@ -175,15 +175,15 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 
 このリポジトリの `.github/workflows/publish.yml` が唯一の本番デプロイ経路です。
 
-- `push`（main）、`schedule`、`workflow_dispatch` がすべて同じ経路に入ります。
+- `push`（main）と `workflow_dispatch` が同じ経路に入ります。予約公開を使う場合は `schedule` トリガーを追加します。
 - `riebeckite-production` concurrency group により、同時に実行できるデプロイは1つだけです。実行中のデプロイはキャンセルしません。
 - ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
-- `publish plan --json` がスケジュール実行の build/deploy 要否を決めます。push はアプリケーションコードが変わり得るため常にビルドします。
+- `publish plan --json` が push 以外の実行で build/deploy が必要かを決めます。push はアプリケーションコードが変わり得るため常にビルドします。
 - 計画は成果物としてアップロードされ、`publish validate` と `publish gate` がビルド出力を検査します。
 - 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットをワークツリー外の `RIEBECKITE_PUBLICATION_STATE` に書き、ワークフローが Git plumbing で `publication-state` ブランチに保存します。ソースブランチへのコミットや push は行いません。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
-予約公開を使わないサイトでも、この参考ワークフローでは schedule が動きます。ただし計画に変更がなければ build と deploy は省略されます。定期チェック自体が不要なら、生成したサイトから `schedule` トリガーを削除してください。
+参考ワークフローは schedule では実行しません。`publishAt` を使うサイトは `schedule` トリガー（例: `*/15 * * * *`）を追加してください。追加しない場合、予約されたノートは次回の push または手動実行まで公開されません。
 
 公開状態は、独立した履歴を持つ専用の `publication-state` ブランチに置きます。ワークフローは計画の前に runner の一時ディレクトリへ状態を復元し、デプロイ成功後に1つのコミットだけを push します。必要な権限は `contents: write` だけで、標準の `GITHUB_TOKEN` 以外は要求しません。実行中にブランチが進んだ場合は、新しい状態を上書きせずに失敗します。サイトはすでにデプロイ済みなので、再実行すれば現在の状態を記録できます。ブランチが存在しない場合は、旧 `publication/state.json` がまだコミットされていればそれを引き継ぎ、なければ最初から公開します。状態ファイルが壊れている場合は、黙って全再デプロイせず失敗します。
 

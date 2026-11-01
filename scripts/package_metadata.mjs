@@ -46,6 +46,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/excalidraw",
   "packages/plugins/flashcards",
   "packages/plugins/folder-pages",
+  "packages/plugins/frontmatter-transformer",
   "packages/plugins/gallery",
   "packages/plugins/garden-explorer",
   "packages/plugins/glossary",
@@ -54,6 +55,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/highlight",
   "packages/plugins/hover-preview",
   "packages/plugins/icons",
+  "packages/plugins/image-compare",
   "packages/plugins/image-optimizer",
   "packages/plugins/kanban",
   "packages/plugins/l10n",
@@ -93,6 +95,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/timeline",
   "packages/plugins/toc",
   "packages/plugins/ux",
+  "packages/plugins/vault-heatmap",
   "packages/plugins/vega-lite",
   "packages/plugins/wavedrom",
   "packages/plugins/webmention",
@@ -336,6 +339,10 @@ const packagePublishingMetadata = {
       "Folder entry pages and generated folder listings for Riebeckite.",
     keywords: ["riebeckite", "plugin", "folder", "navigation"],
   },
+  "packages/plugins/frontmatter-transformer": {
+    description: "Safe bulk frontmatter transformations for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "frontmatter", "migration", "cli"],
+  },
   "packages/plugins/gallery": {
     description: "Markdown-driven card galleries for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "gallery", "cards", "markdown"],
@@ -364,6 +371,11 @@ const packagePublishingMetadata = {
   "packages/plugins/hover-preview": {
     description: "Popover previews for internal Riebeckite links.",
     keywords: ["riebeckite", "plugin", "link-preview", "obsidian"],
+  },
+  "packages/plugins/image-compare": {
+    description:
+      "Before/after image comparison sliders for Riebeckite code blocks.",
+    keywords: ["riebeckite", "plugin", "image", "comparison", "slider"],
   },
   "packages/plugins/image-optimizer": {
     description: "Sharp-backed responsive image transforms for Riebeckite.",
@@ -542,6 +554,11 @@ const packagePublishingMetadata = {
       "progressive-enhancement",
     ],
   },
+  "packages/plugins/vault-heatmap": {
+    description:
+      "Calendar heatmaps of dated vault activity for Riebeckite code blocks.",
+    keywords: ["riebeckite", "plugin", "vault", "heatmap", "activity"],
+  },
   "packages/plugins/vega-lite": {
     description: "Vega-Lite chart rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "vega-lite", "charts"],
@@ -648,7 +665,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
-          "esbuild index.ts --bundle --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:@riebeckite/node=../node/index.ts --outfile=dist/cli.js",
+          "esbuild index.ts --bundle --splitting --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:@riebeckite/node=../node/index.ts --outdir=dist --entry-names=cli --chunk-names=chunks/[name]-[hash]",
         prepack: "node ../../scripts/copy_license.mjs && pnpm run build",
       },
     };
@@ -838,11 +855,13 @@ export function expectedPackageMetadata(directory) {
       "docs",
       "excalibrain",
       "folder-pages",
+      "frontmatter-transformer",
       "gallery",
       "hard-breaks",
       "highlight",
       "hover-preview",
       "icons",
+      "image-compare",
       "image-optimizer",
       "l10n",
       "local-graph",
@@ -867,6 +886,7 @@ export function expectedPackageMetadata(directory) {
       "taxonomy",
       "text-fragment",
       "toc",
+      "vault-heatmap",
       "webmention",
     ].includes(pluginName);
     const testCommand =

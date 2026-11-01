@@ -43,6 +43,7 @@ type RuntimeTestWindow = Window & {
     iframeResults: number[];
     iframeAbort: string | null;
     iframeBadSandbox: string | null;
+    iframeOrigin: string | null;
     iframeNavigation: string | null;
     iframeAfterNavigation: number | null;
     unmountPage(): Promise<void>;
@@ -50,7 +51,11 @@ type RuntimeTestWindow = Window & {
     testWasmTrap(): Promise<void>;
     testWasmMissing(): Promise<void>;
     testIframeBadSandbox(): Promise<void>;
+    testIframeOrigin(): Promise<void>;
     testIframeNavigation(): Promise<void>;
+    testFallbackError(): void;
+    measureRuntimePerformance(): Promise<Record<string, number>>;
+    churnRuntime(count?: number): Promise<void>;
   };
 };
 
@@ -115,7 +120,11 @@ before(async () => {
   });
   browser = await puppeteer.launch({
     headless: "shell",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--enable-precise-memory-info",
+    ],
   });
 });
 
@@ -401,6 +410,10 @@ test("iframe runtimes sandbox guests and reject malformed or foreign messages", 
         instances: test?.iframeInstances.length,
         frames: document.querySelectorAll("iframe").length,
         sandbox: document.querySelector("iframe")?.getAttribute("sandbox"),
+        csp: document
+          .querySelector("iframe")
+          ?.getAttribute("srcdoc")
+          ?.includes("default-src 'none'"),
       };
     });
     assert.deepEqual(initial.results, [12]);
@@ -408,6 +421,7 @@ test("iframe runtimes sandbox guests and reject malformed or foreign messages", 
     assert.equal(initial.instances, 1);
     assert.equal(initial.frames, 1);
     assert.equal(initial.sandbox, "allow-scripts");
+    assert.equal(initial.csp, true);
 
     await page.click('a[href="/b"]');
     await page.waitForFunction(
@@ -461,6 +475,16 @@ test("iframe runtimes sandbox guests and reject malformed or foreign messages", 
         () => (window as RuntimeTestWindow).__runtimeTest?.iframeBadSandbox,
       ),
       "RuntimeIframeError",
+    );
+
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.testIframeOrigin(),
+    );
+    assert.equal(
+      await page.evaluate(
+        () => (window as RuntimeTestWindow).__runtimeTest?.iframeOrigin,
+      ),
+      "RuntimeTimeoutError",
     );
 
     await page.evaluate(() =>
@@ -556,6 +580,50 @@ test("the hydration fallback switches to loading, ready and error states", async
     assert.equal(failed.errorHidden, false);
     assert.equal(failed.errorRole, "alert");
     assert.equal(failed.message, "Interactive runtime failed.");
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
+test("runtime lifecycle stays bounded under repeated mounts", async () => {
+  const { page, errors } = await open();
+  try {
+    const timings = await page.evaluate(async () => {
+      const test = (window as RuntimeTestWindow).__runtimeTest;
+      if (!test) throw new Error("The browser test state is missing.");
+      return test.measureRuntimePerformance();
+    });
+    console.log(`[runtime-performance] ${JSON.stringify(timings)}`);
+    for (const [name, value] of Object.entries(timings)) {
+      assert.equal(Number.isFinite(value), true, name);
+      assert.ok(value >= 0, name);
+    }
+    assert.ok(timings.mainMountMs < 1_000);
+    assert.ok(timings.workerStartMs < 5_000);
+    assert.ok(timings.workerAverageRoundtripMs < 500);
+    assert.ok(timings.wasmStartMs < 5_000);
+    assert.ok(timings.iframeStartMs < 5_000);
+    assert.ok(timings.disposeMs < 5_000);
+
+    const cdp = await page.createCDPSession();
+    await cdp.send("HeapProfiler.enable");
+    await cdp.send("HeapProfiler.collectGarbage");
+    const before = (await cdp.send("Runtime.getHeapUsage")) as {
+      usedSize: number;
+    };
+    await page.evaluate(() =>
+      (window as RuntimeTestWindow).__runtimeTest?.churnRuntime(30),
+    );
+    await cdp.send("HeapProfiler.collectGarbage");
+    const after = (await cdp.send("Runtime.getHeapUsage")) as {
+      usedSize: number;
+    };
+    const growth = after.usedSize - before.usedSize;
+    console.log(
+      `[runtime-memory] before=${before.usedSize} after=${after.usedSize} growth=${growth}`,
+    );
+    assert.ok(growth < 8 * 1024 * 1024);
     assert.deepEqual(errors, []);
   } finally {
     await page.close();

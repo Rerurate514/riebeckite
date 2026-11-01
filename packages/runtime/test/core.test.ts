@@ -147,6 +147,26 @@ test("payload size and concurrency limits are enforced", async () => {
   await slowInstance.dispose();
 });
 
+test("undeclared capabilities are rejected before invoking the driver", async () => {
+  let invoked = 0;
+  const runtime = createMainRuntime<number, number>({
+    id: "main.capability",
+    capabilities: ["dom"],
+    invoke: (input) => {
+      invoked += 1;
+      return input;
+    },
+  });
+  const instance = createInteractiveRuntime(runtime);
+  await instance.mount();
+  await assert.rejects(
+    instance.invoke(1, { capability: "network" }),
+    RuntimeStateError,
+  );
+  assert.equal(invoked, 0);
+  await instance.dispose();
+});
+
 test("an external signal disposes the instance and aborts invocations", async () => {
   const runtime = createMainRuntime<number, number>({
     id: "main.signal",

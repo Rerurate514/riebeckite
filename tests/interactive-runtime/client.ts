@@ -54,6 +54,7 @@ type TestWindow = Window & {
     iframeResults: number[];
     iframeAbort: string | null;
     iframeBadSandbox: string | null;
+    iframeOrigin: string | null;
     iframeNavigation: string | null;
     iframeAfterNavigation: number | null;
     unmountPage(): Promise<void>;
@@ -61,8 +62,11 @@ type TestWindow = Window & {
     testWasmTrap(): Promise<void>;
     testWasmMissing(): Promise<void>;
     testIframeBadSandbox(): Promise<void>;
+    testIframeOrigin(): Promise<void>;
     testIframeNavigation(): Promise<void>;
     testFallbackError(): void;
+    measureRuntimePerformance(): Promise<Record<string, number>>;
+    churnRuntime(count?: number): Promise<void>;
   };
 };
 
@@ -154,6 +158,14 @@ registry.register(
     id: "iframe-bad",
     html: IFRAME_HTML,
     sandbox: ["allow-scripts", "allow-same-origin"],
+  }),
+);
+registry.register(
+  createIframeRuntime<WorkerInput, number>({
+    id: "iframe-origin",
+    html: IFRAME_HTML,
+    expectedOrigin: "https://example.com",
+    limits: { startTimeoutMs: 300, invokeTimeoutMs: 300 },
   }),
 );
 
@@ -342,6 +354,23 @@ async function testIframeBadSandbox(): Promise<void> {
   }
 }
 
+async function testIframeOrigin(): Promise<void> {
+  const test = testWindow().__runtimeTest;
+  if (!test) throw new Error("The browser test state is missing.");
+  const host = createClientRuntimeHost({ registry, onError: () => {} });
+  try {
+    const runtime = host.create<number>("iframe-origin");
+    try {
+      await runtime.mount();
+      test.iframeOrigin = "resolved";
+    } catch (error) {
+      test.iframeOrigin = (error as Error).name;
+    }
+  } finally {
+    await host.dispose();
+  }
+}
+
 async function testIframeNavigation(): Promise<void> {
   const test = testWindow().__runtimeTest;
   if (!test) throw new Error("The browser test state is missing.");
@@ -376,6 +405,74 @@ function testFallbackError(): void {
   pageFallback?.showError(new Error("Interactive runtime failed."));
 }
 
+async function measureRuntimePerformance(): Promise<Record<string, number>> {
+  const root = document.createElement("div");
+  document.body.append(root);
+  const host = createClientRuntimeHost({
+    registry,
+    root,
+    onError: () => {},
+  });
+  const timings: Record<string, number> = {};
+  try {
+    const dom = host.create<number>("dom");
+    let started = performance.now();
+    await dom.mount();
+    timings.mainMountMs = performance.now() - started;
+    started = performance.now();
+    await dom.invoke({ value: 2 });
+    timings.mainInvokeMs = performance.now() - started;
+
+    const worker = host.create<number>("worker");
+    started = performance.now();
+    await worker.mount();
+    timings.workerStartMs = performance.now() - started;
+    started = performance.now();
+    await worker.invoke({ value: 2 });
+    timings.workerRoundtripMs = performance.now() - started;
+    started = performance.now();
+    for (let index = 0; index < 30; index += 1) {
+      await worker.invoke({ value: index });
+    }
+    timings.workerAverageRoundtripMs = (performance.now() - started) / 30;
+
+    const wasm = host.create<number>("wasm");
+    started = performance.now();
+    await wasm.mount();
+    timings.wasmStartMs = performance.now() - started;
+    started = performance.now();
+    await wasm.invoke([2, 3]);
+    timings.wasmInvokeMs = performance.now() - started;
+
+    const frame = host.create<number>("iframe");
+    started = performance.now();
+    await frame.mount();
+    timings.iframeStartMs = performance.now() - started;
+    started = performance.now();
+    await frame.invoke({ value: 2 });
+    timings.iframeRoundtripMs = performance.now() - started;
+  } finally {
+    const started = performance.now();
+    await host.dispose();
+    timings.disposeMs = performance.now() - started;
+    root.remove();
+  }
+  return timings;
+}
+
+async function churnRuntime(count = 20): Promise<void> {
+  for (let index = 0; index < count; index += 1) {
+    const host = createClientRuntimeHost({
+      registry,
+      root: document.createElement("div"),
+    });
+    const runtime = host.create<number>("dom");
+    await runtime.mount();
+    await runtime.invoke({ value: index });
+    await host.dispose();
+  }
+}
+
 testWindow().__runtimeTest = {
   instances: [],
   workerInstances: [],
@@ -399,6 +496,7 @@ testWindow().__runtimeTest = {
   iframeResults: [],
   iframeAbort: null,
   iframeBadSandbox: null,
+  iframeOrigin: null,
   iframeNavigation: null,
   iframeAfterNavigation: null,
   unmountPage: () => lifecycle.unmount("page"),
@@ -406,8 +504,11 @@ testWindow().__runtimeTest = {
   testWasmTrap,
   testWasmMissing,
   testIframeBadSandbox,
+  testIframeOrigin,
   testIframeNavigation,
   testFallbackError,
+  measureRuntimePerformance,
+  churnRuntime,
 };
 
 const main = document.querySelector("#main-content");

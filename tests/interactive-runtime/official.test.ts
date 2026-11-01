@@ -146,6 +146,7 @@ test("SPA navigation unmounts and remounts the official runtime", async () => {
   const { page, errors } = await open("/docs/plugins/calculator");
   try {
     await waitForCalculator(page);
+    const navigationStarted = Date.now();
     await page.evaluate(() => {
       const link = document.querySelector<HTMLAnchorElement>(
         'a[href="/docs/plugins/flashcards"]',
@@ -158,6 +159,9 @@ test("SPA navigation unmounts and remounts the official runtime", async () => {
         document.querySelector("h1")?.textContent?.includes("Flashcards") ===
           true,
     );
+    const navigationMs = Date.now() - navigationStarted;
+    console.log(`[runtime-navigation] spaNavigationMs=${navigationMs}`);
+    assert.ok(navigationMs < 5_000);
     assert.equal(
       await page.evaluate(
         () => document.querySelectorAll("[data-calculator]").length,

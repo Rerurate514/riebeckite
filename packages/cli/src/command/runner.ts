@@ -61,11 +61,7 @@ export async function runCli(options: RunCliOptions): Promise<number> {
   try {
     resolution = resolveCliCommand(registry, argv);
   } catch (error) {
-    if (
-      !(error instanceof CliUsageError) ||
-      !isUnknownCommand(error) ||
-      (error.suggestions?.length ?? 0) > 0
-    ) {
+    if (!(error instanceof CliUsageError) || !isUnknownCommand(error)) {
       return reportFailure(error, { stderr, json });
     }
     const discovered = await tryDiscover(loadProject, registry);

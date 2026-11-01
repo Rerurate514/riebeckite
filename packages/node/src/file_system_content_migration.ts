@@ -634,6 +634,13 @@ export class FileSystemContentMigration {
         options.journal !== undefined
           ? this.absoluteFromContent(options.journal)
           : undefined;
+      if (
+        journalPath !== undefined &&
+        !isWithin(this.contentDirectory, journalPath)
+      )
+        throw new Error(
+          `The migration journal "${options.journal}" is outside the content directory.`,
+        );
       const targets = state.migrations.filter((record) => {
         if (options.journal !== undefined)
           return (

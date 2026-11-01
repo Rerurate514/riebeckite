@@ -171,3 +171,15 @@ test("a stale migration lock blocks apply without writing", async () => {
     await fs.rm(root, { recursive: true, force: true });
   }
 });
+
+test("rejects a journal outside the content directory", async () => {
+  const { root, migration } = await fixture();
+  try {
+    await assert.rejects(
+      () => migration().recover({ journal: "../../escape/journal.json" }),
+      /outside the content directory/,
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});

@@ -65,15 +65,12 @@ export const acmePlugin = definePlugin({
 async function withProject(
   config: string,
   task: (cwd: string) => Promise<void>,
+  source: string = pluginSource,
 ): Promise<void> {
   const cwd = await fs.mkdtemp(path.join(packageRoot, "test", "plugin-cli-"));
   try {
     await fs.mkdir(path.join(cwd, "plugins"), { recursive: true });
-    await fs.writeFile(
-      path.join(cwd, "plugins", "acme.ts"),
-      pluginSource,
-      "utf8",
-    );
+    await fs.writeFile(path.join(cwd, "plugins", "acme.ts"), source, "utf8");
     await fs.mkdir(path.join(cwd, "node_modules", "@acme", "cli-plugin"), {
       recursive: true,
     });
@@ -89,7 +86,7 @@ async function withProject(
     );
     await fs.writeFile(
       path.join(cwd, "node_modules", "@acme", "cli-plugin", "index.js"),
-      pluginSource,
+      source,
       "utf8",
     );
     await fs.writeFile(path.join(cwd, "riebeckite.config.ts"), config, "utf8");
@@ -135,6 +132,22 @@ test("runs commands from an enabled Plugin package", async () => {
     assert.equal(result.stdout, "HELLO, ADA!\n");
     assert.equal(result.stderr, "");
   });
+});
+
+const nearBuiltinSource = pluginSource
+  .replace('name: "acme"', 'name: "conten"')
+  .replace('namespace: "acme"', 'namespace: "conten"');
+
+test("resolves plugin commands whose namespace resembles a builtin", async () => {
+  await withProject(
+    enabledConfig,
+    async (cwd) => {
+      const result = await run(cwd, "conten", "greet", "World");
+      assert.equal(result.code, 0, result.stderr);
+      assert.equal(result.stdout, "Hello, World!\n");
+    },
+    nearBuiltinSource,
+  );
 });
 
 test("passes typed arguments, options, and JSON mode to plugin handlers", async () => {

@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { Hono } from "hono";
 import {
   loadOutputCacheMetadata,
   validateOutputCache,
@@ -19,6 +20,23 @@ import {
   shouldApplyRiebeckiteSsg,
   verifyNoChangeFastPath,
 } from "../src/ssg_plugin.js";
+import { runSsg } from "../src/ssg/runner.js";
+
+test("SSG runner renders without Vite lifecycle state", async () => {
+  const output = new Map<string, string | Uint8Array>();
+  const app = new Hono();
+  app.get("/", (context) => context.html("<h1>ok</h1>"));
+
+  const result = await runSsg({
+    app,
+    outDir: "/virtual-output",
+    incremental: false,
+    write: async (file, content) => output.set(file, content),
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(output.get("/virtual-output/index.html"), "<h1>ok</h1>");
+});
 
 test("output cache reuse is rejected whenever a safety condition fails", () => {
   const reusable: OutputCacheDecision = {

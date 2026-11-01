@@ -11,7 +11,7 @@ import {
   publicationRedirectsFromManifest,
   serializeBuildOutputMarker,
 } from "@riebeckite/core";
-import { defaultExtensionMap, redirectPlugin, toSSG } from "hono/ssg";
+import { toSSG } from "hono/ssg";
 import {
   type ConfigEnv,
   createServer,
@@ -54,6 +54,7 @@ import {
   measureSync,
   writeSsgOutputMetrics,
 } from "./ssg/runtime_metrics.js";
+import { runSsg } from "./ssg/runner.js";
 import type {
   GeneratedOutputAsset,
   OutputCacheDecision,
@@ -371,12 +372,14 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outputCacheRejectionReason: outputCacheRejectionReason ?? null,
           timingsMs: timingsMs ?? {},
         };
-        const result = await withSsgRenderEnvironment(canUseIncremental, () =>
-          measure(timingsMs, "toSSG", () =>
-            toSSG(
-              app,
-              {
-                writeFile: async (filePath, data) => {
+        const result = await measure(timingsMs, "toSSG", () =>
+          runSsg({
+            app,
+            outDir,
+            incremental: canUseIncremental,
+            plugins: options.plugins,
+            extensionMap: options.extensionMap,
+            write: async (filePath, data) => {
                   const fileName = relative(outDir, filePath).replaceAll(
                     "\\",
                     "/",
@@ -411,16 +414,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                     cachePath: "",
                     checksum: "",
                   };
-                },
-                async mkdir() {},
-              },
-              {
-                dir: outDir,
-                plugins: [redirectPlugin(), ...(options.plugins ?? [])],
-                extensionMap: options.extensionMap ?? defaultExtensionMap,
-              },
-            ),
-          ),
+            },
+          }),
         );
         metrics.enumeratedRouteCount = result.files.length;
         if (!result.success) throw result.error;
@@ -698,36 +693,6 @@ export function findBuildOutputSiteCollisions(
     if (siteOwnedOutputPaths.has(path)) collisions.add(path);
   }
   return [...collisions].sort();
-}
-
-async function withSsgRenderEnvironment<T>(
-  canUseIncremental: boolean,
-  operation: () => Promise<T>,
-): Promise<T> {
-  const previousFullRegeneration = process.env.RIEBECKITE_SSG_FULL_REGENERATION;
-  const previousSkipUnchanged = process.env.RIEBECKITE_SSG_SKIP_UNCHANGED;
-  process.env.RIEBECKITE_SSG_FULL_REGENERATION = canUseIncremental ? "" : "1";
-  process.env.RIEBECKITE_SSG_SKIP_UNCHANGED = canUseIncremental ? "1" : "";
-  try {
-    return await operation();
-  } finally {
-    restoreEnvironmentVariable(
-      "RIEBECKITE_SSG_FULL_REGENERATION",
-      previousFullRegeneration,
-    );
-    restoreEnvironmentVariable(
-      "RIEBECKITE_SSG_SKIP_UNCHANGED",
-      previousSkipUnchanged,
-    );
-  }
-}
-
-function restoreEnvironmentVariable(
-  name: string,
-  value: string | undefined,
-): void {
-  if (value === undefined) delete process.env[name];
-  else process.env[name] = value;
 }
 
 /**

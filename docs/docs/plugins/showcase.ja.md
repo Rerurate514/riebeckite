@@ -772,6 +772,36 @@ description: Markdown から静的サイトを作るツール
 host: example.com
 ```
 
+### 画像比較：[`image-compare`](./image-compare.ja.md)
+
+`image-compare` フェンスは 2 枚の画像をドラッグ可能な境界で比較します。JavaScript がない場合も Before / After ラベル付きで両方の画像を表示します。
+
+#### ソース
+
+````md
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: ライトモードの Default テーマ
+afterAlt: ダークモードの Default テーマ
+label: Default テーマのライト表示とダーク表示
+---
+```
+````
+
+#### 表示
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: ライトモードの Default テーマ
+afterAlt: ダークモードの Default テーマ
+label: Default テーマのライト表示とダーク表示
+---
+```
+
 ## ナレッジとデータ
 
 ### Citations：[`citations`](./citations.ja.md)
@@ -898,6 +928,32 @@ VIEW[{showcase_priority}]
 ```meta-bind
 INPUT[select(option(low), option(medium), option(high)):showcase_priority]
 VIEW[{showcase_priority}]
+```
+
+### Vault ヒートマップ：[`vault-heatmap`](./vault-heatmap.ja.md)
+
+`vault-heatmap` ブロックは公開対象コンテンツの `created` と `modified` をカレンダーに集計します。下書き、予約投稿、unlisted のノートは除外されます。
+
+#### ソース
+
+````md
+```vault-heatmap
+---
+weeks: 26
+title: ドキュメントの更新状況
+weekStart: monday
+---
+```
+````
+
+#### 表示
+
+```vault-heatmap
+---
+weeks: 26
+title: ドキュメントの更新状況
+weekStart: monday
+---
 ```
 
 ### Kanban boards：[`kanban`](./kanban.ja.md)
@@ -1036,6 +1092,7 @@ Riebeckite とは？ :: Markdown から静的サイトを作るツール
 | [`generator`](./generator.ja.md) | `riebeckite create plugin` でローカル Plugin を作成 |
 | [`page-type-generator`](./page-type-generator.ja.md) | Plugin の `pageTypes` API 経由で単独ページを作成 |
 | [`component-generator`](./component-generator.ja.md) | 型付き Hono JSX コンポーネントを作成 |
+| [`frontmatter-transformer`](./frontmatter-transformer.ja.md) | Content Migration 基盤で安全なフロントマター一括変換を計画・適用 |
 
 ## 関連
 

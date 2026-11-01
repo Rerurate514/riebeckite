@@ -772,6 +772,36 @@ description: A tool that builds a static site from Markdown
 host: example.com
 ```
 
+### Image comparison — [`image-compare`](./image-compare.md)
+
+A fenced `image-compare` block shows two images with a draggable divider. Without JavaScript, both images stay visible with Before and After labels.
+
+#### Source
+
+````md
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: Default theme in light mode
+afterAlt: Default theme in dark mode
+label: Default theme, light to dark
+---
+```
+````
+
+#### Rendered
+
+```image-compare
+---
+before: ../../assets/themes/theme-default-light.png
+after: ../../assets/themes/theme-default-dark.png
+beforeAlt: Default theme in light mode
+afterAlt: Default theme in dark mode
+label: Default theme, light to dark
+---
+```
+
 ## Knowledge and data
 
 ### Citations — [`citations`](./citations.md)
@@ -898,6 +928,32 @@ Double progress: `VIEW[{showcase_progress} * 2]`
 ```meta-bind
 INPUT[select(option(low), option(medium), option(high)):showcase_priority]
 VIEW[{showcase_priority}]
+```
+
+### Vault heatmap — [`vault-heatmap`](./vault-heatmap.md)
+
+A `vault-heatmap` block aggregates `created` and `modified` dates from discoverable content into a calendar. Drafts, scheduled notes, and unlisted notes are excluded.
+
+#### Source
+
+````md
+```vault-heatmap
+---
+weeks: 26
+title: Documentation activity
+weekStart: monday
+---
+```
+````
+
+#### Rendered
+
+```vault-heatmap
+---
+weeks: 26
+title: Documentation activity
+weekStart: monday
+---
 ```
 
 ### Kanban boards — [`kanban`](./kanban.md)
@@ -1036,6 +1092,7 @@ These Plugins support authoring rather than rendering.
 | [`generator`](./generator.md) | Creates a local Plugin with `riebeckite create plugin` |
 | [`page-type-generator`](./page-type-generator.md) | Creates a standalone page through a Plugin's `pageTypes` API |
 | [`component-generator`](./component-generator.md) | Creates a typed Hono JSX component |
+| [`frontmatter-transformer`](./frontmatter-transformer.md) | Plans and applies safe bulk frontmatter changes through the Content Migration engine |
 
 ## Related
 

@@ -10,7 +10,7 @@
     justify-content: space-between;
     align-items: end;
     gap: var(--rb-space-2);
-    margin-bottom: var(--rb-space-1);
+    margin-bottom: var(--rb-space-2);
   }
 
   .rr-local-graph__eyebrow {
@@ -37,113 +37,25 @@
     border-bottom: var(--rb-rule-width) solid currentColor;
   }
 
-  .rr-local-graph__explorer-link:focus-visible,
-  .rr-local-graph__node a:focus-visible {
+  .rr-local-graph__explorer-link:hover {
+    color: var(--rb-color-accent);
+  }
+
+  .rr-local-graph__explorer-link:focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
 
-  .rr-local-graph__canvas {
-    display: block;
-    width: 100%;
-    min-height: 16rem;
-    border: var(--rb-rule-width) solid var(--rb-color-border);
-    background-image:
-      linear-gradient(var(--rb-color-border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--rb-color-border) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .rr-local-graph__edge {
-    stroke: var(--rb-color-border);
-    stroke-width: 1.2;
-  }
-
-  .rr-local-graph__edge[data-direction="backlink"] {
-    stroke-dasharray: 4 4;
-  }
-
-  .rr-local-graph__node a {
-    color: var(--rb-color-ink);
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  .rr-local-graph__node circle {
-    fill: var(--rb-color-paper);
-    stroke: var(--rb-color-ink);
-    stroke-width: 1.5;
-  }
-
-  .rr-local-graph__node[data-relation="current"] circle {
-    fill: var(--rb-color-accent);
-    stroke: var(--rb-color-accent);
-  }
-
-  .rr-local-graph__node[data-relation="backlink"] circle {
-    stroke-dasharray: 3 3;
-  }
-
-  .rr-local-graph__node[data-relation="both"] circle {
-    fill: color-mix(in srgb, var(--rb-color-accent) 18%, var(--rb-color-paper));
-  }
-
-  .rr-local-graph__node text {
-    fill: currentColor;
-    font-size: 0.78rem;
-    font-weight: 600;
-    pointer-events: none;
-  }
-
-  .rr-local-graph__explorer-link:hover,
-  .rr-local-graph__node a:hover text {
-    color: var(--rb-color-accent);
-    fill: var(--rb-color-accent);
-  }
-
-  .rr-local-graph__legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--rb-space-1);
-    margin-top: var(--rb-space-1);
+  .rr-local-graph__note {
+    margin: var(--rb-space-1) 0 0;
     color: var(--rb-color-muted);
     font-size: 0.8rem;
-  }
-
-  .rr-local-graph__legend span {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .rr-local-graph__legend i {
-    width: 0.75rem;
-    height: 0.75rem;
-    border: var(--rb-rule-width) solid var(--rb-color-ink);
-    border-radius: 999px;
-  }
-
-  .rr-local-graph__legend i[data-kind="current"] {
-    background: var(--rb-color-accent);
-    border-color: var(--rb-color-accent);
-  }
-
-  .rr-local-graph__legend i[data-kind="backlink"] {
-    border-style: dashed;
   }
 
   @media (max-width: 640px) {
     .rr-local-graph__header {
       display: grid;
       align-items: start;
-    }
-
-    .rr-local-graph__canvas {
-      min-height: 13rem;
-    }
-
-    .rr-local-graph__node text {
-      font-size: 0.68rem;
     }
   }
 }

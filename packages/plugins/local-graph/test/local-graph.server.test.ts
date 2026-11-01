@@ -52,43 +52,46 @@ test("builds a local graph with current, outgoing, backlink and both nodes", asy
     resolveTitle,
   });
 
-  assert.deepEqual(graph, {
-    currentSlug: "alpha",
-    nodes: [
-      {
-        slug: "alpha",
-        permalink: "/alpha",
-        title: "Alpha",
-        relation: "current",
-        outgoing: ["beta", "delta"],
-        backlinks: ["beta", "gamma"],
-      },
-      {
-        slug: "beta",
-        permalink: "/beta",
-        title: "Beta",
-        relation: "both",
-        outgoing: ["alpha"],
-        backlinks: ["alpha"],
-      },
-      {
-        slug: "delta",
-        permalink: "/delta",
-        title: "Delta",
-        relation: "outgoing",
-        outgoing: [],
-        backlinks: ["alpha"],
-      },
-      {
-        slug: "gamma",
-        permalink: "/gamma",
-        title: "Gamma",
-        relation: "backlink",
-        outgoing: ["alpha"],
-        backlinks: [],
-      },
-    ],
-  });
+  assert.ok(graph);
+  assert.deepEqual(graph.nodes, [
+    {
+      slug: "alpha",
+      permalink: "/alpha",
+      title: "Alpha",
+      relation: "current",
+      outgoing: ["beta", "delta"],
+      backlinks: ["beta", "gamma"],
+    },
+    {
+      slug: "beta",
+      permalink: "/beta",
+      title: "Beta",
+      relation: "both",
+      outgoing: ["alpha"],
+      backlinks: ["alpha"],
+    },
+    {
+      slug: "delta",
+      permalink: "/delta",
+      title: "Delta",
+      relation: "outgoing",
+      outgoing: [],
+      backlinks: ["alpha"],
+    },
+    {
+      slug: "gamma",
+      permalink: "/gamma",
+      title: "Gamma",
+      relation: "backlink",
+      outgoing: ["alpha"],
+      backlinks: [],
+    },
+  ]);
+  assert.deepEqual(
+    graph.document.nodes.map((node) => node.id),
+    ["alpha", "beta", "delta", "gamma"],
+  );
+  assert.equal(graph.truncated, false);
 });
 
 test("builds local graphs for connected pages only", async () => {
@@ -164,7 +167,7 @@ test("returns null for missing or unpublished notes", async () => {
   );
 });
 
-test("caps visible neighbours at ten per direction", async () => {
+test("includes every direct neighbour instead of a fixed per-direction limit", async () => {
   const files: Record<string, string> = {
     "hub.md": `---\npublish: true\ntitle: Hub\n---\n\n${Array.from(
       { length: 12 },
@@ -188,9 +191,9 @@ test("caps visible neighbours at ten per direction", async () => {
   });
 
   assert.ok(graph);
-  assert.equal(graph.nodes.length, 11);
-  assert.equal(graph.nodes.at(-1)?.slug, "n9");
-  assert.deepEqual(graph.nodes[0]?.outgoing.length, 10);
+  assert.equal(graph.nodes.length, 13);
+  assert.equal(graph.nodes[0]?.slug, "hub");
+  assert.equal(graph.nodes[0]?.outgoing.length, 12);
 });
 
 test("matches a structured local graph", async () => {

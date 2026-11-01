@@ -1,12 +1,15 @@
-import { definePlugin } from "@riebeckite/core";
+import { createClientEntry, definePlugin } from "@riebeckite/core";
 import { buildGraphEdges, layoutRadialGraph } from "@riebeckite/core/client";
 
-export type { LocalGraphProps } from "./components/local-graph.js";
-export { default as LocalGraph } from "./components/local-graph.js";
+export {
+  default as LocalGraph,
+  LocalGraphView,
+} from "./components/local-graph.js";
 export type {
   LocalGraphData,
   LocalGraphNode,
   LocalGraphNodeRelation,
+  LocalGraphViewProps,
 } from "./src/local-graph.js";
 export {
   buildLocalGraph,
@@ -27,6 +30,22 @@ export function localGraph(options: LocalGraphOptions = {}) {
         kind: "style",
         moduleSpecifier: "@riebeckite/plugin-local-graph/style.css",
       },
+      {
+        pluginName: "local-graph",
+        kind: "style",
+        moduleSpecifier: "@riebeckite/graph/style.css",
+      },
+    ],
+    clientEntries: [
+      createClientEntry(
+        "local-graph",
+        "@riebeckite/plugin-local-graph/client",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "[data-riebeckite-local-graph]",
+      ),
     ],
   });
 }

@@ -18,10 +18,17 @@
       "source": "./components/local-graph.tsx",
       "default": "./dist/components/local-graph.js"
     },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.tsx",
+      "default": "./dist/client.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/graph": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
   },

@@ -2,18 +2,6 @@
   "currentSlug": "beta",
   "nodes": [
     {
-      "slug": "beta",
-      "permalink": "/beta",
-      "title": "Beta",
-      "relation": "current",
-      "outgoing": [
-        "alpha"
-      ],
-      "backlinks": [
-        "alpha"
-      ]
-    },
-    {
       "slug": "alpha",
       "permalink": "/alpha",
       "title": "Alpha",
@@ -24,6 +12,82 @@
       "backlinks": [
         "beta"
       ]
+    },
+    {
+      "slug": "beta",
+      "permalink": "/beta",
+      "title": "Beta",
+      "relation": "current",
+      "outgoing": [
+        "alpha"
+      ],
+      "backlinks": [
+        "alpha"
+      ]
     }
-  ]
+  ],
+  "document": {
+    "nodes": [
+      {
+        "id": "alpha",
+        "kind": "note",
+        "slug": "alpha",
+        "title": "Alpha",
+        "permalink": "/alpha",
+        "path": "alpha",
+        "tags": [],
+        "date": null
+      },
+      {
+        "id": "beta",
+        "kind": "note",
+        "slug": "beta",
+        "title": "Beta",
+        "permalink": "/beta",
+        "path": "beta",
+        "tags": [],
+        "date": null
+      },
+      {
+        "id": "delta",
+        "kind": "note",
+        "slug": "delta",
+        "title": "Delta",
+        "permalink": "/delta",
+        "path": "delta",
+        "tags": [],
+        "date": null
+      },
+      {
+        "id": "gamma",
+        "kind": "note",
+        "slug": "gamma",
+        "title": "Gamma",
+        "permalink": "/gamma",
+        "path": "gamma",
+        "tags": [],
+        "date": null
+      }
+    ],
+    "links": [
+      {
+        "source": "alpha",
+        "target": "beta"
+      },
+      {
+        "source": "alpha",
+        "target": "delta"
+      },
+      {
+        "source": "beta",
+        "target": "alpha"
+      },
+      {
+        "source": "gamma",
+        "target": "alpha"
+      }
+    ],
+    "centerId": "beta"
+  },
+  "truncated": false
 }

@@ -1,3 +1,5 @@
+import type { GraphDocument } from "@riebeckite/graph";
+
 export type LocalGraphNodeRelation =
   | "current"
   | "outgoing"
@@ -16,4 +18,10 @@ export type LocalGraphNode = {
 export type LocalGraphData = {
   currentSlug: string;
   nodes: LocalGraphNode[];
+  document?: GraphDocument;
+  truncated?: boolean;
+};
+
+export type LocalGraphViewProps = {
+  graph: LocalGraphData;
 };

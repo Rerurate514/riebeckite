@@ -11,21 +11,29 @@ function bodies with the TypeScript AST, follows runtime imports, and reports:
 
 - files at or above 400 lines (800+ requires a split review)
 - functions at or above 80 lines
-- runtime import cycles
-- Core / Plugin / Integration dependency violations
+- runtime import cycles (module level, failures)
+- directory dependency cycles (advisory)
+- Core / Plugin / Integration / Theme dependency violations
+- Node builtins and Node-only packages imported from Browser/Worker entries
 - wildcard exports
 
 Generated files, fixtures, snapshots, migrations, tests, templates, and build
 output are excluded. Line counts are advisory and never fail the check. Runtime
-cycles, cross-layer dependencies, and wildcard exports do.
+cycles, cross-layer dependencies, the browser/Node boundary, and wildcard
+exports do.
+
+Browser/Worker entries are files under a `client` or `browser` directory and
+files named `*.client.*`, `*.browser.*`, or `worker.*`. They must not import
+`node:` builtins, `fs`/`path`/`os`, `@riebeckite/node`, `@riebeckite/cli`, or
+`@riebeckite/preview`.
 
 ## Current snapshot
 
 Run `pnpm check:source-health` for the current source counts and structural
 findings. Counts are intentionally not stored here because ordinary source
 changes make a checked-in snapshot stale. The command fails only for runtime
-cycles, cross-layer dependency violations, and wildcard exports; size signals
-remain review inputs, not split targets.
+cycles, cross-layer dependency violations, the browser/Node boundary, and
+wildcard exports; size signals remain review inputs, not split targets.
 
 ## Classification
 

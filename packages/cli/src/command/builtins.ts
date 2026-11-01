@@ -14,11 +14,13 @@ import {
   cliVariadicArgument,
   createCliCommandRegistry,
   defineCliCommand,
+  registerCliCommand,
+} from "@riebeckite/core";
+import {
   formatPathHelp,
   formatRootHelp,
   generateCompletion,
-  registerCliCommand,
-} from "@riebeckite/core";
+} from "@riebeckite/core/cli";
 import type { RiebeckiteProject } from "../application_root.js";
 import type { MigrateAction } from "../commands/migrate.js";
 import type {

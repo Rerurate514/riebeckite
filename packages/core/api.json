@@ -26,11 +26,6 @@
       "type": false
     },
     {
-      "name": "argumentValueKey",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "AssetTransformInput",
       "value": false,
       "type": true
@@ -377,11 +372,6 @@
     },
     {
       "name": "cliVariadicArgument",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "commandPathSegments",
       "value": true,
       "type": false
     },
@@ -1221,11 +1211,6 @@
       "type": false
     },
     {
-      "name": "findCommandByPath",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "findContentMigrationRecord",
       "value": true,
       "type": false
@@ -1286,26 +1271,6 @@
       "type": true
     },
     {
-      "name": "formatCommandHelp",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "formatPathHelp",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "formatRootHelp",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "formatUnknownCommand",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "FrontmatterAppendRule",
       "value": false,
       "type": true
@@ -1334,11 +1299,6 @@
       "name": "FrontmatterSetRule",
       "value": false,
       "type": true
-    },
-    {
-      "name": "generateCompletion",
-      "value": true,
-      "type": false
     },
     {
       "name": "GeneratedOutput",
@@ -1631,11 +1591,6 @@
       "type": true
     },
     {
-      "name": "normalizeCommandId",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "normalizeContentAssetOutputPath",
       "value": true,
       "type": false
@@ -1664,11 +1619,6 @@
       "name": "ObservabilityValue",
       "value": false,
       "type": true
-    },
-    {
-      "name": "optionValueKey",
-      "value": true,
-      "type": false
     },
     {
       "name": "OutputChangeReason",
@@ -1737,11 +1687,6 @@
     },
     {
       "name": "parseBuildOutputMarker",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "parseCliShell",
       "value": true,
       "type": false
     },
@@ -2316,11 +2261,6 @@
       "type": false
     },
     {
-      "name": "readArgument",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "readContentBuildStateStatus",
       "value": true,
       "type": false
@@ -2332,11 +2272,6 @@
     },
     {
       "name": "readOnlyContentGraph",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "readOption",
       "value": true,
       "type": false
     },
@@ -2551,11 +2486,6 @@
       "type": true
     },
     {
-      "name": "ROOT_USAGE",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "sanitizeContentMigrationPath",
       "value": true,
       "type": false
@@ -2621,11 +2551,6 @@
       "type": false
     },
     {
-      "name": "suggest",
-      "value": true,
-      "type": false
-    },
-    {
       "name": "ThemeColorMode",
       "value": false,
       "type": true
@@ -2679,16 +2604,6 @@
       "name": "ThemeStyle",
       "value": false,
       "type": true
-    },
-    {
-      "name": "toArgumentKey",
-      "value": true,
-      "type": false
-    },
-    {
-      "name": "toOptionKey",
-      "value": true,
-      "type": false
     },
     {
       "name": "TraceAttributes",

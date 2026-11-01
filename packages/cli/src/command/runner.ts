@@ -5,10 +5,12 @@ import {
   type CliJsonErrorEnvelope,
   type CliProjectContext,
   CliUsageError,
-  formatPathHelp,
-  formatRootHelp,
   resolveCliCommand,
 } from "@riebeckite/core";
+import {
+  formatPathHelp,
+  formatRootHelp,
+} from "@riebeckite/core/cli";
 import { renderCliError } from "../error_renderer.js";
 import { createBuiltinRegistry } from "./builtins.js";
 import { createCliCommandContext } from "./context.js";

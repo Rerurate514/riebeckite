@@ -58,7 +58,13 @@ Core は Plugin の rehype 変換より前に、Markdown 由来の HTML をサ�
 ### Client
 
 - `@riebeckite/core/client` はグラフレイアウトのヘルパーを公開します
-- `@riebeckite/node` は `FileSystemContentSource` を公開します
+- `@riebeckite/node` は `FileSystemContentSource` と、設定済みソースを組み立てる
+  `createContentSource` を公開します
+
+### CLI拡張
+
+- `@riebeckite/core/cli` はPlugin CLI拡張の契約と、コマンド定義・引数/オプション
+  ビルダー・レジストリ・ヘルプ・補完のユーティリティを公開します
 
 ### Plugin
 

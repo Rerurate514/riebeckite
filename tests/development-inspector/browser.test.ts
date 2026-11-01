@@ -66,6 +66,43 @@ test("development inspector works in a real Vite dev server", async () => {
       120_000,
     );
 
+    const scrollStyles = await page.evaluate(() => {
+      const host = document.getElementById("riebeckite-development-inspector");
+      const section = host?.shadowRoot?.querySelector("section");
+      if (!section) return undefined;
+      const style = getComputedStyle(section);
+      return { overflowY: style.overflowY, gutter: style.scrollbarGutter };
+    });
+    assert.equal(scrollStyles?.overflowY, "scroll");
+    assert.equal(scrollStyles?.gutter, "stable");
+
+    await page.evaluate(() => {
+      const host = document.getElementById("riebeckite-development-inspector");
+      const select = host?.shadowRoot?.querySelector("[data-language]");
+      if (select) {
+        select.value = "ja";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+    await waitForShadowText(
+      page,
+      "[role=tablist] [aria-selected='true']",
+      "概要",
+    );
+    await page.evaluate(() => {
+      const host = document.getElementById("riebeckite-development-inspector");
+      const select = host?.shadowRoot?.querySelector("[data-language]");
+      if (select) {
+        select.value = "en";
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
+    await waitForShadowText(
+      page,
+      "[role=tablist] [aria-selected='true']",
+      "Overview",
+    );
+
     const layout = await shadowLayout(page);
     assert.ok(Math.abs(layout.right - layout.innerWidth) <= 2);
     assert.ok(Math.abs(layout.top) <= 1);

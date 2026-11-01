@@ -55,6 +55,7 @@ test("development inspector reports the output plan and dependencies", async () 
       path.join(contentRoot, "index.md"),
       markdown("# Home", { title: "Home", visibility: "public" }),
     );
+    await fs.writeFile(path.join(contentRoot, "a.png"), "asset-bytes");
     let manifestHookRuns = 0;
     const titles = defineDerivedView<
       readonly { readonly slug: string; readonly title: string }[],
@@ -318,6 +319,16 @@ test("development inspector reports the output plan and dependencies", async () 
           transform.effect === "opaque",
       ),
     );
+    const assetsResponse = await requestReport(
+      stack,
+      "/__riebeckite/inspector/assets",
+    );
+    assert.equal(assetsResponse.response.statusCode, 200);
+    const assets = JSON.parse(assetsResponse.body).assets;
+    assert.equal(assets.status, "available");
+    assert.equal(assets.inspection.totals.assets, 1);
+    assert.equal(assets.inspection.totals.unused, 1);
+    assert.deepEqual(assets.inspection.assets[0].path, "a.png");
     await assert.rejects(
       fs.access(path.join(contentRoot, ".riebeckite", "content-state.json")),
     );
@@ -757,6 +768,9 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /provenanceEndpoint/);
   assert.match(source as string, /data-provenance-query/);
   assert.match(source as string, /Final artifacts/);
+  assert.match(source as string, /"Assets"/);
+  assert.match(source as string, /assetsEndpoint/);
+  assert.match(source as string, /Duplicate groups/);
 });
 
 function inspectorStack(

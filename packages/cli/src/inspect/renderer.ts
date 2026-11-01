@@ -1,5 +1,6 @@
 import type {
   ApplicationInspection,
+  AssetInspection,
   BuildInspection,
   ConfigInspection,
   ContentInspection,
@@ -58,6 +59,7 @@ export function renderApplicationInspection(
     "  riebeckite inspect content",
     "  riebeckite inspect graph",
     "  riebeckite inspect build",
+    "  riebeckite inspect assets",
   ].join("\n");
 }
 
@@ -240,6 +242,97 @@ export function renderProvenanceInspection(
       ? [field("Comparison", inspection.comparisonUnavailable)]
       : []),
   ].join("\n");
+}
+
+export function renderAssetInspection(
+  inspection: AssetInspection,
+  options: { list: boolean },
+): string {
+  const { report } = inspection;
+  const unused = report.assets.filter((asset) => asset.usage === "unused");
+  const possiblyUnused = report.assets.filter(
+    (asset) => asset.usage === "possibly-unused",
+  );
+  return [
+    "Asset Inspector",
+    "",
+    field("Source", inspection.source),
+    field("Assets", report.totals.assets),
+    field("Size", formatBytes(report.totals.bytes)),
+    field("Used", report.totals.used),
+    field("Possibly unused", report.totals.possiblyUnused),
+    field(
+      "Unused",
+      `${report.totals.unused} (${formatBytes(report.totals.unusedBytes)})`,
+    ),
+    field("Duplicate groups", report.totals.duplicates),
+    field("Redundant bytes", formatBytes(report.totals.duplicateBytes)),
+    field("Large threshold", formatBytes(report.largeThresholdBytes)),
+    "",
+    "Formats",
+    ...report.formats.map((entry) =>
+      field(
+        `${entry.kind}/${entry.extension}`,
+        `${entry.count} (${formatBytes(entry.bytes)})`,
+      ),
+    ),
+    ...(unused.length > 0
+      ? [
+          "",
+          "Unused assets",
+          ...unused.map(
+            (asset) =>
+              `  ${asset.path}  ${formatBytes(asset.size)}  ${asset.reasons.join("; ")}`,
+          ),
+        ]
+      : []),
+    ...(possiblyUnused.length > 0
+      ? [
+          "",
+          "Possibly unused assets",
+          ...possiblyUnused.map(
+            (asset) =>
+              `  ${asset.path}  ${formatBytes(asset.size)}  ${asset.reasons.join("; ")}`,
+          ),
+        ]
+      : []),
+    ...(report.duplicates.length > 0
+      ? [
+          "",
+          "Duplicate assets",
+          ...report.duplicates.flatMap((group) => [
+            `  ${formatBytes(group.size)} each, ${group.hash.slice(0, 12)}`,
+            ...group.paths.map((assetPath) => `    ${assetPath}`),
+          ]),
+        ]
+      : []),
+    ...(report.optimizations.length > 0
+      ? [
+          "",
+          "Optimization candidates",
+          ...report.optimizations.map(
+            (entry) =>
+              `  ${entry.path}  ${formatBytes(entry.size)}  ${entry.recommendation}`,
+          ),
+        ]
+      : []),
+    ...(options.list
+      ? [
+          "",
+          "PATH  SIZE  USAGE  REFERENCES",
+          ...report.assets.map(
+            (asset) =>
+              `  ${asset.path}  ${formatBytes(asset.size)}  ${asset.usage}  ${asset.references.join(", ") || "-"}`,
+          ),
+        ]
+      : []),
+  ].join("\n");
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 }
 
 function field(label: string, value: string | number): string {

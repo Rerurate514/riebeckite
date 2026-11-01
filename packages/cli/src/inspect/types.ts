@@ -1,6 +1,7 @@
 import type {
   BuildProvenance,
   BuildProvenanceComparison,
+  ContentAssetInspection,
   ContentBuildStateInvalidReason,
 } from "@riebeckite/core";
 import type { ContentSourceExclusion } from "@riebeckite/node";
@@ -69,6 +70,11 @@ export type ContentInspection = {
     readonly idSource?: string;
     readonly permalink?: string;
   }[];
+};
+
+export type AssetInspection = {
+  readonly source: string;
+  readonly report: ContentAssetInspection;
 };
 
 export type GraphInspection = {

@@ -53,6 +53,20 @@ test("inspect content accepts an exact path or permalink", () => {
   );
 });
 
+test("inspect assets accepts list and JSON output", () => {
+  assert.deepEqual(resolveInput(["inspect", "assets"]).options, {
+    list: false,
+    json: false,
+  });
+  assert.deepEqual(
+    resolveInput(["inspect", "assets", "--list", "--json"]).options,
+    {
+      list: true,
+      json: true,
+    },
+  );
+});
+
 test("inspect provenance accepts shared state filters and JSON", () => {
   assert.deepEqual(
     resolveInput([

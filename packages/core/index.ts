@@ -17,6 +17,19 @@ export {
   resolveConfigModule,
 } from "./src/config.js";
 export { ConfigValidationError } from "./src/config_validation.js";
+export type {
+  ContentAssetDuplicateGroup,
+  ContentAssetFormatSummary,
+  ContentAssetInspection,
+  ContentAssetInspectionEntry,
+  ContentAssetInspectionOptions,
+  ContentAssetOptimization,
+  ContentAssetUsage,
+} from "./src/content/asset_inspection.js";
+export {
+  DEFAULT_LARGE_ASSET_BYTES,
+  inspectContentAssets,
+} from "./src/content/asset_inspection.js";
 export {
   ATTACHMENTS_BASE_PATH,
   attachmentUrl,

@@ -13,6 +13,8 @@ type PreviewAlias = {
   readonly replacement: string;
 };
 
+const exportConditions = ["source", "import", "module", "default"] as const;
+
 export async function scaffoldPreviewSite(
   root: string,
   title: string,
@@ -64,6 +66,30 @@ export async function linkPreviewDependencies(
     }),
   );
   return [...packages.values()];
+}
+
+export async function resolvePreviewPackageAliases(
+  names: readonly string[],
+): Promise<readonly PreviewAlias[]> {
+  const aliases: PreviewAlias[] = [];
+  for (const name of names) {
+    const directory = await findPackageDirectory(
+      await resolveModuleSpecifier(name),
+    );
+    const packageJson = await readPackageJson(directory);
+    const exportsValue = packageJson.exports;
+    if (!isRecord(exportsValue)) continue;
+    for (const [key, value] of Object.entries(exportsValue)) {
+      if (key !== "." && !key.startsWith("./")) continue;
+      const target = exportTarget(value);
+      if (target === undefined) continue;
+      aliases.push({
+        find: key === "." ? name : `${name}/${key.slice(2)}`,
+        replacement: path.resolve(directory, target),
+      });
+    }
+  }
+  return aliases;
 }
 
 export async function writePreviewViteConfig(
@@ -125,6 +151,28 @@ async function findPackageDirectory(file: string): Promise<string> {
       throw new Error("Could not resolve preview dependencies.");
     current = parent;
   }
+}
+
+async function readPackageJson(root: string): Promise<Record<string, unknown>> {
+  const value: unknown = JSON.parse(
+    await fs.readFile(path.join(root, "package.json"), "utf8"),
+  );
+  if (!isRecord(value)) throw new Error(`Invalid package.json in ${root}.`);
+  return value;
+}
+
+function exportTarget(value: unknown): string | undefined {
+  if (typeof value === "string") return value;
+  if (!isRecord(value)) return undefined;
+  for (const condition of exportConditions) {
+    const target = value[condition];
+    if (typeof target === "string") return target;
+  }
+  return undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function escapeRegExp(value: string): string {

@@ -6,6 +6,7 @@ export type LocalPluginPackage = {
   readonly name: string;
   readonly entry: string;
   readonly aliases: readonly LocalPluginAlias[];
+  readonly dependencies: readonly string[];
 };
 
 type LocalPluginAlias = {
@@ -36,8 +37,9 @@ export async function loadLocalPlugin(
   const name = readPackageName(packageJson, root);
   const entry = await resolveEntry(root, packageJson);
   const aliases = await resolveAliases(root, name, packageJson);
+  const dependencies = readRiebeckiteDependencies(packageJson);
 
-  return { root, name, entry, aliases };
+  return { root, name, entry, aliases, dependencies };
 }
 
 async function resolvePluginRoot(target: string): Promise<string> {
@@ -199,4 +201,18 @@ async function isFile(target: string): Promise<boolean> {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function readRiebeckiteDependencies(
+  packageJson: Record<string, unknown>,
+): readonly string[] {
+  const names = new Set<string>();
+  for (const field of ["dependencies", "peerDependencies"] as const) {
+    const dependencies = packageJson[field];
+    if (!isRecord(dependencies)) continue;
+    for (const name of Object.keys(dependencies)) {
+      if (name.startsWith("@riebeckite/")) names.add(name);
+    }
+  }
+  return [...names].sort();
 }

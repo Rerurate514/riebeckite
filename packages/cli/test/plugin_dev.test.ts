@@ -80,6 +80,7 @@ test("loads a local plugin from a directory and resolves export aliases", async 
           replacement: path.join(root, "style.css"),
         },
       ]);
+      assert.deepEqual(plugin.dependencies, []);
     },
   );
 });
@@ -111,6 +112,7 @@ test("accepts a package.json path and falls back to index.ts", async () => {
       assert.equal(plugin.root, root);
       assert.equal(plugin.entry, path.join(root, "index.ts"));
       assert.deepEqual(plugin.aliases, []);
+      assert.deepEqual(plugin.dependencies, []);
     },
   );
 });
@@ -135,6 +137,24 @@ test("resolves conventional client and style aliases without exports", async () 
           find: "demo-plugin/style.css",
           replacement: path.join(root, "style.css"),
         },
+      ]);
+    },
+  );
+});
+
+test("reads direct Riebeckite dependencies for preview resolution", async () => {
+  await withPlugin(
+    {
+      name: "demo-plugin",
+      dependencies: { "@riebeckite/ui": "workspace:*", vite: "^8.0.0" },
+      peerDependencies: { "@riebeckite/core": "workspace:*" },
+    },
+    { "index.ts": "export function demo() {}" },
+    async (root) => {
+      const plugin = await loadLocalPlugin(root);
+      assert.deepEqual(plugin.dependencies, [
+        "@riebeckite/core",
+        "@riebeckite/ui",
       ]);
     },
   );

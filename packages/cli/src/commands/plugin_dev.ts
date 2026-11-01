@@ -9,6 +9,7 @@ import { loadLocalPlugin } from "../plugin_dev/local_plugin.js";
 import {
   linkPreviewDependencies,
   resolveModuleSpecifier,
+  resolvePreviewPackageAliases,
   scaffoldPreviewSite,
   writePreviewViteConfig,
 } from "../preview_site.js";
@@ -44,6 +45,7 @@ export async function runPluginDev(options: PluginDevOptions): Promise<void> {
       [
         { find: plugin.name, replacement: plugin.entry },
         ...plugin.aliases,
+        ...(await resolvePreviewPackageAliases(plugin.dependencies)),
         {
           find: "@riebeckite/core",
           replacement: await resolveModuleSpecifier("@riebeckite/core"),

@@ -1,3 +1,4 @@
+import { attachApiLifecycleConfigSource } from "./api_lifecycle.js";
 import { validateConfig } from "./config_validation.js";
 import {
   resolvePublishingBuildTime,
@@ -65,7 +66,7 @@ export function resolveConfig(
   const theme = resolveThemeConfig(config.theme);
   const spa = resolveSpaConfig(config.spa);
 
-  return {
+  const resolved: ResolvedRiebeckiteConfig = {
     site: {
       title: config.site?.title ?? "",
       description: config.site?.description ?? "",
@@ -110,6 +111,8 @@ export function resolveConfig(
     publication: resolvePublicationConfig(config.publication),
     ...(spa === undefined ? {} : { spa }),
   };
+  attachApiLifecycleConfigSource(resolved, config);
+  return resolved;
 }
 
 function resolveSpaConfig(spa: RiebeckiteConfig["spa"]): SpaConfig | undefined {

@@ -1,10 +1,12 @@
 import {
+  type ApiLifecycleDefinition,
   buildOutputPlan,
   type ContentManager,
   compareOutputPlan,
   type Diagnostic,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { collectApiLifecycleDiagnostics } from "./api.js";
 import type {
   DevelopmentDiagnostic,
   DevelopmentDiagnosticCategory,
@@ -24,6 +26,7 @@ export type DevelopmentDiagnosticsInput = {
   readonly actualOutputPaths?: Iterable<string>;
   readonly revision?: number;
   readonly includeOutput?: boolean;
+  readonly apiLifecycle?: readonly ApiLifecycleDefinition[];
 };
 
 export async function collectDevelopmentDiagnostics(
@@ -34,6 +37,7 @@ export async function collectDevelopmentDiagnostics(
     ...configurationDiagnostics(input.config),
     ...pluginDiagnostics(input.config),
     ...themeDiagnostics(input.config),
+    ...collectApiLifecycleDiagnostics(input.config, input.apiLifecycle),
   ];
   if (input.contentDiagnostics) {
     diagnostics.push(...input.contentDiagnostics.map(fromCoreDiagnostic));

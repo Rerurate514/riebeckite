@@ -1,3 +1,4 @@
+import type { ApiLifecycleDefinition } from "../api_lifecycle.js";
 import type { PluginCliExtension } from "../cli/types.js";
 import type {
   DerivedDependency,
@@ -146,6 +147,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   /** Framework-independent page types contributed by this plugin. */
   pageTypes?: PluginPageType[];
   cli?: PluginCliExtension;
+  /** Public API contracts managed by this plugin. */
+  apiLifecycle?: readonly ApiLifecycleDefinition[];
 };
 
 export type ContentOutputDependencyResolver = (context: {

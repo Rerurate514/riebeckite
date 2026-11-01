@@ -1,3 +1,25 @@
+export type {
+  ApiLifecycleConfig,
+  ApiLifecycleDefinition,
+  ApiLifecycleKind,
+  ApiLifecycleRegistry,
+  ApiLifecycleStatus,
+  ApiLifecycleValidationIssue,
+} from "./src/api_lifecycle.js";
+export {
+  API_LIFECYCLE_DIAGNOSTIC_CODE,
+  API_LIFECYCLE_METADATA_DIAGNOSTIC_CODE,
+  ApiLifecycleValidationError,
+  attachApiLifecycleConfigSource,
+  builtInApiLifecycle,
+  collectApiLifecycleDefinitions,
+  createApiLifecycleRegistry,
+  defineApiLifecycle,
+  getApiLifecycleConfigSource,
+  hasApiLifecycleConfigPath,
+  resolveApiLifecycle,
+  validateApiLifecycleDefinition,
+} from "./src/api_lifecycle.js";
 export * from "./src/cli/index.js";
 export type {
   ClientInitializerContext,

@@ -15,13 +15,21 @@ sidebar:
 | --- | --- | --- | --- |
 | `requireApproval` | `boolean` | `false` | Require current approval records for every Riebeckite deploy path. |
 | `approvalFile` | `string` | `"publication/approvals.json"` | Project-relative path to the committed approval records. |
+| `schedule.enabled` | `boolean` | `false` | Run the deploy workflow on a schedule for `publishAt`. |
+| `schedule.intervalMinutes` | `number` | `15` | Maximum minutes between scheduled runs. Integer from 5 to 59. |
 
 ```ts
 publication: {
   requireApproval: true,
   approvalFile: "publication/approvals.json",
+  schedule: {
+    enabled: true,
+    intervalMinutes: 30,
+  },
 }
 ```
+
+`schedule` is written into the generated GitHub Actions workflow by `riebeckite deploy workflow`. The reference workflow is unscheduled by default. GitHub Actions does not run sub-hourly schedules more often than every 5 minutes.
 
 The durable snapshot is written to `publication/state.json` for local runs and stored on the `publication-state` branch by CI. Keep `publication/state.json` out of Git. See [Publication workflow](../../guides/deployment/publication-workflow.md).
 

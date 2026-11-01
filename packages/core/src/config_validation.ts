@@ -182,6 +182,38 @@ function validatePublication(
       message: "Expected a non-empty path.",
     });
   }
+  validatePublicationSchedule(value.schedule, issues);
+}
+
+function validatePublicationSchedule(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({
+      path: "publication.schedule",
+      message: "Expected an object.",
+    });
+    return;
+  }
+  validateOptionalBoolean(
+    value.enabled,
+    "publication.schedule.enabled",
+    issues,
+  );
+  if (value.intervalMinutes === undefined) return;
+  if (
+    typeof value.intervalMinutes !== "number" ||
+    !Number.isInteger(value.intervalMinutes) ||
+    value.intervalMinutes < 5 ||
+    value.intervalMinutes > 59
+  ) {
+    issues.push({
+      path: "publication.schedule.intervalMinutes",
+      message: "Expected an integer between 5 and 59.",
+    });
+  }
 }
 
 function validateSpa(value: unknown, issues: ConfigValidationIssue[]): void {

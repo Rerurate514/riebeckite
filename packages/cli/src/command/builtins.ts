@@ -145,6 +145,7 @@ function definitions(): readonly CliCommandDefinition[] {
     ...PUBLISH_ACTIONS.map(publishActionCommand),
     deployGroupCommand(),
     deploySetupCommand(),
+    deployWorkflowCommand(),
     deployDomainCommand(),
     helpCommand(),
     completionCommand(),
@@ -1250,6 +1251,28 @@ function deploySetupCommand(): CliCommandDefinition {
     async handler(context) {
       const { runDeploySetup } = await import("../commands/deploy_setup.js");
       await runDeploySetup(await project(context));
+    },
+  });
+}
+
+function deployWorkflowCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "deploy workflow",
+    summary: "Update the deployment workflow from project configuration.",
+    requiresProject: true,
+    options: [
+      cliBoolean("check", {
+        description: "Report whether the workflow is current.",
+      }),
+    ],
+    examples: [cliExample("riebeckite deploy workflow")],
+    async handler(context, input) {
+      const { runDeployWorkflow } = await import(
+        "../commands/deploy_workflow.js"
+      );
+      await runDeployWorkflow(await project(context), {
+        check: input.options.check === true,
+      });
     },
   });
 }

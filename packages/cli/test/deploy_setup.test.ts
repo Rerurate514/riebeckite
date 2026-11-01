@@ -196,10 +196,16 @@ async function setup(
   handlers: readonly Handler[],
   prompts: SetupPrompts,
   env: NodeJS.ProcessEnv = {},
+  schedule?: { enabled: boolean; intervalMinutes: number },
 ): Promise<SetupResult> {
   const { runner, calls } = createRunner(handlers);
   const lines: string[] = [];
-  const project = { projectRoot: repoRoot } as unknown as RiebeckiteProject;
+  const project = {
+    projectRoot: repoRoot,
+    ...(schedule === undefined
+      ? {}
+      : { config: { publication: { schedule } } }),
+  } as unknown as RiebeckiteProject;
   await runDeploySetup(project, {
     runner,
     prompts,
@@ -484,6 +490,29 @@ test("setup writes the workflow and registers both secrets", async () => {
     );
     assert.equal(setCalls[0]?.input, "acct-1");
     assert.equal(setCalls[1]?.input, "env-token");
+  } finally {
+    await removeRepo(repoRoot);
+  }
+});
+
+test("setup creates the workflow with the configured schedule", async () => {
+  const repoRoot = await makeRepo();
+  try {
+    const { prompts } = createPrompts();
+    const schedule = { enabled: true, intervalMinutes: 30 };
+    await setup(
+      repoRoot,
+      baseHandlers(repoRoot),
+      prompts,
+      { CLOUDFLARE_API_TOKEN: "env-token" },
+      schedule,
+    );
+    const workflow = await fs.readFile(
+      path.join(repoRoot, WORKFLOW_RELATIVE_PATH),
+      "utf8",
+    );
+    assert.equal(workflow, deploymentWorkflow(undefined, schedule));
+    assert.match(workflow, /schedule:\n {4}- cron: "\*\/30 \* \* \* \*"/);
   } finally {
     await removeRepo(repoRoot);
   }

@@ -15,13 +15,21 @@ sidebar:
 | --- | --- | --- | --- |
 | `requireApproval` | `boolean` | `false` | すべての Riebeckite のデプロイ経路で現在の承認記録を必須にします。 |
 | `approvalFile` | `string` | `"publication/approvals.json"` | コミットする承認記録のプロジェクト相対パス。 |
+| `schedule.enabled` | `boolean` | `false` | `publishAt` のためにデプロイワークフローを定期実行します。 |
+| `schedule.intervalMinutes` | `number` | `15` | 定期実行の最大間隔（分）。5〜59 の整数。 |
 
 ```ts
 publication: {
   requireApproval: true,
   approvalFile: "publication/approvals.json",
+  schedule: {
+    enabled: true,
+    intervalMinutes: 30,
+  },
 }
 ```
+
+`schedule` は `riebeckite deploy workflow` が生成する GitHub Actions ワークフローに反映されます。参考ワークフローは既定では定期実行しません。GitHub Actions の1時間未満のスケジュールは5分より短くできません。
 
 永続スナップショットはローカル実行では `publication/state.json` に書かれ、CI では `publication-state` ブランチに保存されます。`publication/state.json` は Git にコミットしないでください。詳しくは [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
 

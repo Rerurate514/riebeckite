@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   deploymentWorkflow,
   GITHUB_ACTIONS_SECRETS,
+  type ScaffoldPublicationSchedule,
 } from "create-riebeckite/scaffold";
 import type { RiebeckiteProject } from "../application_root.js";
 import { type CommandRunner, createProcessRunner } from "../process_runner.js";
@@ -221,7 +222,11 @@ export async function runDeploySetup(
     confirmedRepository,
   );
 
-  const workflowReady = await ensureDeploymentWorkflow(repoRoot, writeLine);
+  const workflowReady = await ensureDeploymentWorkflow(
+    repoRoot,
+    writeLine,
+    project.config?.publication?.schedule,
+  );
   if (!workflowReady) {
     return;
   }
@@ -454,6 +459,7 @@ async function detectActionsEnabled(
 async function ensureDeploymentWorkflow(
   repoRoot: string,
   writeLine: (line: string) => void,
+  schedule?: ScaffoldPublicationSchedule,
 ): Promise<boolean> {
   const workflowPath = path.join(
     repoRoot,
@@ -461,7 +467,7 @@ async function ensureDeploymentWorkflow(
     "workflows",
     "publish.yml",
   );
-  const expected = expectedWorkflow();
+  const expected = expectedWorkflow(schedule);
   const existing = await readTextFile(workflowPath);
 
   if (existing === undefined) {
@@ -484,8 +490,8 @@ async function ensureDeploymentWorkflow(
   return false;
 }
 
-function expectedWorkflow(): string {
-  return deploymentWorkflow();
+function expectedWorkflow(schedule?: ScaffoldPublicationSchedule): string {
+  return deploymentWorkflow(undefined, schedule);
 }
 
 async function selectCloudflareAccount(

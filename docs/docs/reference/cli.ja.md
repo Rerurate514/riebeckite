@@ -31,7 +31,7 @@ riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|war
 riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
-riebeckite deploy setup | deploy domain
+riebeckite deploy setup | deploy workflow [--check] | deploy domain
 riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]

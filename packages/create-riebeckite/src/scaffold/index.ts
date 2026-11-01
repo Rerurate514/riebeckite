@@ -19,6 +19,7 @@ import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
 
 export {
   deploymentWorkflow,
+  type ScaffoldPublicationSchedule,
   scaffoldDeploymentFromFlags,
 } from "./deployment.js";
 export {

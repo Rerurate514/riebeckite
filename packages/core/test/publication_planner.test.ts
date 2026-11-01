@@ -455,6 +455,42 @@ test("publication approval defaults off and validates its flag", () => {
   );
 });
 
+test("publication schedule defaults off and validates its interval", () => {
+  const resolved = resolveConfig({ site: { title: "Test" } });
+  assert.deepEqual(resolved.publication?.schedule, {
+    enabled: false,
+    intervalMinutes: 15,
+  });
+
+  const enabled = resolveConfig({
+    site: { title: "Test" },
+    publication: { schedule: { enabled: true, intervalMinutes: 30 } },
+  });
+  assert.deepEqual(enabled.publication?.schedule, {
+    enabled: true,
+    intervalMinutes: 30,
+  });
+
+  for (const intervalMinutes of [4, 60, 15.5]) {
+    assert.throws(
+      () =>
+        resolveConfig({
+          site: { title: "Test" },
+          publication: { schedule: { enabled: true, intervalMinutes } },
+        }),
+      /publication\.schedule\.intervalMinutes/,
+    );
+  }
+  assert.throws(
+    () =>
+      resolveConfig({
+        site: { title: "Test" },
+        publication: { schedule: { enabled: "yes" as never } },
+      }),
+    /publication\.schedule\.enabled/,
+  );
+});
+
 test("history parsing drops invalid runs without discarding valid ones", () => {
   const valid = {
     id: "run-1",

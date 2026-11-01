@@ -40,6 +40,7 @@ const ALLOWED_CLI_IMPORTS = new Set([
   "ScaffoldNextStepsOptions",
   "ScaffoldPresetName",
   "ScaffoldPresetSummary",
+  "ScaffoldPublicationSchedule",
   "ScaffoldSiteError",
   "ScaffoldSiteMetadata",
   "ScaffoldSiteOptions",

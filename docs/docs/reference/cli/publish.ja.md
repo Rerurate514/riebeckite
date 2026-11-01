@@ -21,9 +21,9 @@ npm exec -- riebeckite publish approve <slug> --all
 
 `plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。`--require-approval` または設定で承認を任意に有効化でき、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。`--state-file <path>`（または `RIEBECKITE_PUBLICATION_STATE`）は、CI と同じく永続状態ファイルをプロジェクト外に置きます。明示したファイルが壊れている場合は、黙って最初からやり直さずエラーになります。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
 
-## `deploy setup` と `deploy domain`
+## `deploy setup`、`deploy workflow`、`deploy domain`
 
-`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は Cloudflare の設定補助2つの名前空間としてのみ残ります。
+`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は3つのデプロイ補助コマンドの名前空間としてのみ残ります。
 
 ### `deploy setup`
 
@@ -34,6 +34,16 @@ npm exec riebeckite deploy setup
 ```
 
 Git リポジトリと GitHub のリモートを検出し、GitHub CLI（`gh`）と Wrangler のログインを確認します。`create-riebeckite` と同じテンプレートから `.github/workflows/publish.yml` を作成し、Wrangler のログイン情報から Cloudflare アカウントを読み取ります（複数ある場合は選択を求めます）。そして、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。トークンは非表示のプロンプト、または環境変数 `CLOUDFLARE_API_TOKEN` から読み取られ、標準入力経由で `gh secret set` に渡されます。コマンドの引数として渡されたり、ディスクに書き込まれたりすることはありません。コマンドは GitHub リポジトリを作成せず、push もしません。Riebeckite 以外のワークフローが既にある場合は、その旨を報告して変更せず、シークレットを登録する前に停止します。Wrangler はサイトにインストールされている必要があります（Local-first のサイトにはすでに含まれています）。いつでも再実行できます。一致するワークフローと既存のシークレットは検出されてスキップされるため、残りの手順だけが実行されます。別のデプロイワークフローがすでにある場合は、`deploy setup` を再度実行する前に置き換えるか削除してください。
+
+### `deploy workflow`
+
+`deploy workflow` は `publication.schedule` を `.github/workflows/publish.yml` に反映します。
+
+```sh
+npm exec riebeckite deploy workflow
+```
+
+ワークフローがない場合は作成します。既にある場合は `schedule` トリガーだけを変更し、外部コンテンツのチェックアウトを含む他の部分は保持します。Riebeckite のワークフローに見えないファイルは変更しません。`--check` は差分がある場合に書き込まず非ゼロで終了します。
 
 ### `deploy domain`
 

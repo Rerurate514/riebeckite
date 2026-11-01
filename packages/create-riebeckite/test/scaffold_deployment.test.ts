@@ -6,6 +6,7 @@ import { test } from "node:test";
 import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import {
   deploymentTemplateFiles,
+  deploymentWorkflow,
   scaffoldDeploymentFromFlags,
 } from "../src/scaffold/deployment.js";
 import {
@@ -174,6 +175,7 @@ test("the generated workflow is rendered from the packaged deployment template",
   const normalized = generatedText.replaceAll("\r\n", "\n");
   const expected = template
     .replace("{{contentCheckout}}", "")
+    .replace("{{schedule}}", "")
     .replaceAll(
       "{{cloudflareApiToken}}",
       GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN,
@@ -189,6 +191,7 @@ test("the generated workflow is rendered from the packaged deployment template",
   );
   for (const placeholder of [
     "{{contentCheckout}}",
+    "{{schedule}}",
     "{{cloudflareApiToken}}",
     "{{cloudflareAccountId}}",
   ]) {
@@ -197,6 +200,28 @@ test("the generated workflow is rendered from the packaged deployment template",
       `the generated workflow must not leak ${placeholder}`,
     );
   }
+});
+
+test("the deployment workflow renders the configured schedule", () => {
+  const enabled = deploymentWorkflow(
+    { type: "local" },
+    {
+      enabled: true,
+      intervalMinutes: 30,
+    },
+  );
+  assert.match(
+    enabled,
+    /on:\n {2}push:\n {4}branches: \[main\]\n {2}schedule:\n {4}- cron: "\*\/30 \* \* \* \*"\n {2}workflow_dispatch:/,
+  );
+  const disabled = deploymentWorkflow(
+    { type: "local" },
+    {
+      enabled: false,
+      intervalMinutes: 30,
+    },
+  );
+  assert.ok(!disabled.includes("schedule:"));
 });
 
 test("the external-content workflow and notify template render without leaking placeholders", () => {

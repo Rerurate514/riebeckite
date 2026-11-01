@@ -3,7 +3,7 @@ name: Deploy to Cloudflare Workers
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+{{schedule}}  workflow_dispatch:
   repository_dispatch:
     types: [content-updated]
 

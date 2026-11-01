@@ -88,21 +88,36 @@ function contentCheckoutStep(contentRepository: string): string {
   return `\n${fragment.split("{{contentRepository}}").join(contentRepository)}\n`;
 }
 
-function renderDeployWorkflow(contentRepository?: string): string {
+export type ScaffoldPublicationSchedule = {
+  readonly enabled: boolean;
+  readonly intervalMinutes: number;
+};
+
+function renderDeployWorkflow(
+  contentRepository?: string,
+  schedule?: ScaffoldPublicationSchedule,
+): string {
   const contentCheckout =
     contentRepository === undefined
       ? ""
       : contentCheckoutStep(contentRepository);
-  return substituteSecrets(readDeploymentTemplate("publish.yml")).replace(
-    "{{contentCheckout}}",
-    contentCheckout,
-  );
+  return substituteSecrets(readDeploymentTemplate("publish.yml"))
+    .replace("{{contentCheckout}}", contentCheckout)
+    .replace("{{schedule}}", renderSchedule(schedule));
 }
 
-export function deploymentWorkflow(content?: ScaffoldContentSource): string {
+function renderSchedule(schedule?: ScaffoldPublicationSchedule): string {
+  if (schedule?.enabled !== true) return "";
+  return `  schedule:\n    - cron: "*/${schedule.intervalMinutes} * * * *"\n`;
+}
+
+export function deploymentWorkflow(
+  content?: ScaffoldContentSource,
+  schedule?: ScaffoldPublicationSchedule,
+): string {
   const contentRepository =
     content?.type === "external" ? content.contentRepository : undefined;
-  return renderDeployWorkflow(contentRepository);
+  return renderDeployWorkflow(contentRepository, schedule);
 }
 
 function notifySiteWorkflow(siteRepository: string): string {
@@ -125,6 +140,7 @@ function wranglerJsoncFile(workerName: string): SiteTemplateFile {
 
 export function deploymentTemplateFiles(
   content: ScaffoldContentSource,
+  schedule?: ScaffoldPublicationSchedule,
 ): readonly SiteTemplateFile[] {
   if (content.type === "external") {
     assertGitHubRepository(content.contentRepository, "--content-repository");
@@ -135,7 +151,7 @@ export function deploymentTemplateFiles(
     wranglerJsoncFile(DEFAULT_WORKER_NAME),
     {
       path: ".github/workflows/publish.yml",
-      content: deploymentWorkflow(content),
+      content: deploymentWorkflow(content, schedule),
     },
   ];
 

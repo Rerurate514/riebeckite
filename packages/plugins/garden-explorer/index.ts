@@ -24,11 +24,21 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
         kind: "style",
         moduleSpecifier: "@riebeckite/plugin-garden-explorer/style.css",
       },
+      {
+        pluginName: "garden-explorer",
+        kind: "style",
+        moduleSpecifier: "@riebeckite/graph/style.css",
+      },
     ],
     clientEntries: [
       createClientEntry(
         "garden-explorer",
         "@riebeckite/plugin-garden-explorer/client",
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        "[data-riebeckite-garden-explorer]",
       ),
     ],
     pageTypes: [

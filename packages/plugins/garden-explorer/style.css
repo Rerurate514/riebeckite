@@ -1,6 +1,7 @@
 @layer components {
   .rr-garden-explorer-page {
-    width: min(100%, 96rem);
+    width: min(calc(100vw - 2 * var(--rb-space-2)), 96rem);
+    margin-inline: calc(50% - 50vw + var(--rb-space-2));
     padding-inline: var(--rb-space-2);
   }
 
@@ -86,8 +87,7 @@
   }
 
   .rr-garden-explorer__search input:focus,
-  .rr-garden-explorer button:focus-visible,
-  .garden-graph a:focus-visible {
+  .rr-garden-explorer button:focus-visible {
     outline: 2px solid var(--rb-color-accent);
     outline-offset: 2px;
   }
@@ -213,69 +213,27 @@
     padding: 0.35rem 0.55rem;
   }
 
-  .garden-graph {
-    display: block;
-    width: 100%;
-    min-height: 38rem;
-    touch-action: none;
-    background-image:
-      linear-gradient(var(--rb-color-border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--rb-color-border) 1px, transparent 1px);
-    background-size: 48px 48px;
+  .rr-garden-explorer__panel--graph {
+    display: flex;
+    flex-direction: column;
+    min-height: 42rem;
+    overflow: hidden;
   }
 
-  .garden-graph__edge {
-    stroke: var(--rb-color-border);
-    stroke-width: 1.2;
-    transition:
-      opacity 120ms ease,
-      stroke 120ms ease,
-      stroke-width 120ms ease;
+  .rr-garden-explorer__graph-host {
+    flex: 1;
+    min-height: 0;
   }
 
-  .garden-graph__edge[data-muted="true"] {
-    opacity: 0.18;
+  .rr-garden-explorer__graph-host .rr-graph {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
   }
 
-  .garden-graph__edge[data-emphasized="true"] {
-    stroke: var(--rb-color-accent);
-    stroke-width: 1.8;
-  }
-
-  .garden-graph__node circle {
-    fill: var(--rb-color-paper);
-    stroke: var(--rb-color-ink);
-    stroke-width: 1.5;
-    transition:
-      fill 120ms ease,
-      stroke 120ms ease;
-  }
-
-  .garden-graph__node[data-muted="true"] {
-    opacity: 0.28;
-  }
-
-  .garden-graph__node circle[data-selected="true"] {
-    fill: var(--rb-color-accent);
-    stroke: var(--rb-color-accent);
-  }
-
-  .garden-graph__node text {
-    fill: var(--rb-color-ink);
-    font-size: 0.8rem;
-    pointer-events: none;
-  }
-
-  .garden-graph__node a {
-    cursor: pointer;
-  }
-
-  .garden-graph__node circle {
-    cursor: grab;
-  }
-
-  .garden-graph__node circle:active {
-    cursor: grabbing;
+  .rr-garden-explorer__graph-host .rr-graph__stage {
+    height: 100%;
+    min-height: 30rem;
   }
 
   .rr-garden-explorer__details h2 {
@@ -309,9 +267,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .garden-graph__edge,
-    .garden-graph__node circle {
-      transition: none;
+    .rr-graph * {
+      scroll-behavior: auto;
     }
   }
 
@@ -339,17 +296,24 @@
     }
 
     .rr-garden-explorer__panel--active {
-      display: block;
+      display: flex;
     }
 
     .rr-garden-explorer__panel--explorer,
     .rr-garden-explorer__panel--details {
+      display: none;
       max-height: none;
       border: var(--rb-rule-width) solid var(--rb-color-border);
     }
 
-    .garden-graph {
-      min-height: 28rem;
+    .rr-garden-explorer__panel--explorer.rr-garden-explorer__panel--active,
+    .rr-garden-explorer__panel--details.rr-garden-explorer__panel--active {
+      display: block;
+    }
+
+    .rr-garden-explorer__graph-host .rr-graph__stage {
+      height: 70vh;
+      min-height: 26rem;
     }
   }
 }

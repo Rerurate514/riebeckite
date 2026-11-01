@@ -235,6 +235,7 @@ test("garden explorer page renders an English description", () => {
     {
       notes: [],
       edges: [],
+      graph: { nodes: [], links: [], centerId: null },
       tags: [],
       folders: [],
       options: resolveGardenExplorerOptions(),

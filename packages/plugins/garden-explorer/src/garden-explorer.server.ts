@@ -4,6 +4,7 @@ import type {
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { buildGraphEdges } from "@riebeckite/core/client";
+import { buildGraphDocument } from "@riebeckite/graph";
 import type {
   GardenExplorerData,
   GardenExplorerFolder,
@@ -36,6 +37,17 @@ export function getGardenExplorerData(args: {
   return {
     notes,
     edges: buildGraphEdges(notes, publishedSlugs),
+    graph: buildGraphDocument(
+      publishedEntries.map((entry) => ({
+        slug: entry.slug,
+        title: args.resolveTitle(entry.slug, entry.frontmatter.title),
+        permalink: entry.permalink,
+        tags: entry.tags,
+        links: entry.links,
+        assets: entry.assets,
+        date: getEntryDate(entry.frontmatter),
+      })),
+    ),
     tags: buildTags(notes),
     folders: buildFolders(notes),
     options: resolveGardenExplorerOptions(args.options),

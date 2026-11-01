@@ -1,4 +1,5 @@
 import type { GraphEdge } from "@riebeckite/core/client";
+import type { GraphDocument } from "@riebeckite/graph";
 
 type GardenExplorerSearchFields = {
   slug: string;
@@ -49,6 +50,7 @@ export type GardenExplorerFolder = {
 export type GardenExplorerData = {
   notes: GardenExplorerNote[];
   edges: GardenExplorerEdge[];
+  graph?: GraphDocument;
   tags: GardenExplorerTag[];
   folders: GardenExplorerFolder[];
   options: GardenExplorerOptions;

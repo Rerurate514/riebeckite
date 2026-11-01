@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
+    "@riebeckite/graph": "workspace:*",
     "hono": "catalog:"
   },
   "publishConfig": {

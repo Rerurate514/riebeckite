@@ -18,6 +18,7 @@ concurrency:
 
 env:
   PNPM_VERSION: 11.5.3
+  PUBLICATION_STATE_BRANCH: publication-state
 
 jobs:
   publish:
@@ -45,6 +46,36 @@ jobs:
 
       - name: Build the packages
         run: pnpm build:packages
+
+      - name: Restore publication state
+        id: publication-state
+        shell: bash
+        run: |
+          set -euo pipefail
+          state_file="$RUNNER_TEMP/publication-state/state.json"
+          echo "RIEBECKITE_PUBLICATION_STATE=$state_file" >> "$GITHUB_ENV"
+          mkdir -p "$(dirname "$state_file")"
+          branch_status=0
+          git ls-remote --exit-code --heads origin "$PUBLICATION_STATE_BRANCH" > /dev/null 2>&1 || branch_status=$?
+          if [ "$branch_status" -eq 0 ]; then
+            git fetch --depth=1 origin "$PUBLICATION_STATE_BRANCH"
+            sha="$(git rev-parse FETCH_HEAD)"
+            if ! git cat-file -e "$sha:state.json" 2>/dev/null; then
+              echo "::error::The $PUBLICATION_STATE_BRANCH branch exists but has no state.json. Restore or delete the branch before publishing."
+              exit 1
+            fi
+            git show "$sha:state.json" > "$state_file"
+            echo "sha=$sha" >> "$GITHUB_OUTPUT"
+            echo "Restored publication state from $PUBLICATION_STATE_BRANCH at $sha."
+          elif [ "$branch_status" -eq 2 ] && [ -f publication/state.json ]; then
+            cp publication/state.json "$state_file"
+            echo "Migrated legacy publication/state.json; the next successful run creates $PUBLICATION_STATE_BRANCH."
+          elif [ "$branch_status" -eq 2 ]; then
+            echo "No $PUBLICATION_STATE_BRANCH branch yet; this run publishes from scratch."
+          else
+            echo "::error::Could not query $PUBLICATION_STATE_BRANCH (git ls-remote exited $branch_status). Refusing to treat a read failure as a first run."
+            exit 1
+          fi
 
       - name: Restore publication history
         uses: actions/cache@v4
@@ -104,18 +135,55 @@ jobs:
 
       - name: Persist publication state
         if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force
+        shell: bash
+        env:
+          PUBLICATION_STATE_SHA: ${{ steps.publication-state.outputs.sha }}
         run: |
+          set -euo pipefail
+          state_file="$RIEBECKITE_PUBLICATION_STATE"
+          if [ ! -f "$state_file" ]; then
+            echo "::error::Deployment succeeded but publish record wrote no state to $state_file. Rerun the workflow to recover."
+            exit 1
+          fi
+
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse FETCH_HEAD)" ]; then
+            echo "::error::The source branch advanced during this run. The deployed revision is no longer current, so its publication state was not saved. Rerun against the current revision."
+            exit 1
+          fi
+
+          branch_status=0
+          git ls-remote --exit-code --heads origin "$PUBLICATION_STATE_BRANCH" > /dev/null 2>&1 || branch_status=$?
+          case "$branch_status" in
+            0)
+              git fetch --depth=1 origin "$PUBLICATION_STATE_BRANCH"
+              remote_sha="$(git rev-parse FETCH_HEAD)"
+              ;;
+            2)
+              remote_sha=""
+              ;;
+            *)
+              echo "::error::Could not query $PUBLICATION_STATE_BRANCH (git ls-remote exited $branch_status). The site was deployed; rerun to record its state."
+              exit 1
+              ;;
+          esac
+
+          if [ "$remote_sha" != "${PUBLICATION_STATE_SHA:-}" ]; then
+            echo "::error::The $PUBLICATION_STATE_BRANCH branch moved during this run (expected '${PUBLICATION_STATE_SHA:-<none>}', found '${remote_sha:-<none>}'). Refusing to overwrite newer state. The site was deployed; rerun to record the current state."
+            exit 1
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add publication/state.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "公開状態を更新 [skip ci]"
-          git fetch --depth=1 origin "$GITHUB_REF_NAME"
-          if [ "$(git rev-parse HEAD^)" != "$(git rev-parse FETCH_HEAD)" ]; then
-            echo "The branch advanced during this run; the newer run will record its own state."
-            exit 0
+          blob="$(git hash-object -w "$state_file")"
+          tree="$(printf '100644 blob %s\tstate.json\n' "$blob" | git mktree)"
+          if [ -n "$remote_sha" ]; then
+            commit="$(git commit-tree "$tree" -p "$remote_sha" -m "公開状態を更新")"
+          else
+            commit="$(git commit-tree "$tree" -m "公開状態を更新")"
           fi
-          git push
+          git push origin "$commit:refs/heads/$PUBLICATION_STATE_BRANCH"
+          echo "Saved publication state to $PUBLICATION_STATE_BRANCH at $commit."
 
       - name: Capture publication status
         if: github.event_name == 'push' || steps.plan.outputs.deploy == 'true' || inputs.force

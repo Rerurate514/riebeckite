@@ -252,10 +252,16 @@ function assertWorkflowContract(workflow: string): void {
     "npm exec riebeckite publish validate",
     "npm exec riebeckite publish gate --provider cloudflare-workers",
     "npm exec riebeckite publish record --provider cloudflare-workers",
-    "git add publication/state.json",
+    "Restore publication state",
+    "Persist publication state",
+    "refs/heads/$PUBLICATION_STATE_BRANCH",
   ]) {
     assert.ok(workflow.includes(value), `workflow is missing ${value}`);
   }
+  assert.ok(
+    !workflow.includes("git add publication/state.json"),
+    "the workflow must not commit publication state to the source branch",
+  );
   assertBuildStateCacheContract(workflow);
 }
 

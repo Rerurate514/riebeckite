@@ -12,10 +12,7 @@ test("publish.yml is the single production deploy path", async () => {
   assert.match(workflow, /push:\s*\n\s*branches: \[main\]/u);
   assert.match(workflow, /publish gate --provider cloudflare-workers/u);
   assert.match(workflow, /publish record/u);
-  assert.match(workflow, /git add publication\/state\.json/u);
   assert.doesNotMatch(workflow, /apps\/web\/publication\/state\.json/u);
-  assert.match(workflow, /\[skip ci\]/u);
-  assert.match(workflow, /The branch advanced/u);
   assert.ok(
     workflow.indexOf("Publication gate") <
       workflow.indexOf("Deploy the built assets"),
@@ -23,5 +20,26 @@ test("publish.yml is the single production deploy path", async () => {
   await assert.rejects(
     fs.stat(new URL("deploy.yml", workflows)),
     "the separate deploy workflow must not exist",
+  );
+});
+
+test("publish.yml stores publication state on a dedicated branch", async () => {
+  const workflow = await fs.readFile(new URL("publish.yml", workflows), "utf8");
+  assert.match(workflow, /PUBLICATION_STATE_BRANCH: publication-state/u);
+  assert.match(workflow, /RIEBECKITE_PUBLICATION_STATE/u);
+  assert.match(workflow, /Restore publication state/u);
+  assert.match(workflow, /Persist publication state/u);
+  assert.match(workflow, /refs\/heads\/\$PUBLICATION_STATE_BRANCH/u);
+  assert.match(workflow, /git push origin "\$commit:refs\/heads\//u);
+  assert.doesNotMatch(workflow, /git add publication\/state\.json/u);
+  assert.doesNotMatch(workflow, /git commit -m/u);
+  assert.doesNotMatch(workflow, /\[skip ci\]/u);
+  assert.ok(
+    workflow.indexOf("Restore publication state") <
+      workflow.indexOf("Plan publication"),
+  );
+  assert.ok(
+    workflow.indexOf("Record the successful deployment") <
+      workflow.indexOf("Persist publication state"),
   );
 });

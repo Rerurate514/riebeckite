@@ -4,3 +4,4 @@ dist/
 app/.riebeckite/
 .wrangler/
 .dev.vars
+publication/state.json

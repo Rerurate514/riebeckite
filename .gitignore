@@ -9,6 +9,7 @@ packages/**/LICENSE
 .ci-build-metadata.json
 tests/plugin-dx/**/dist/
 .riebeckite/
+publication/state.json
 tests/visual/report/
 
 .obsidian

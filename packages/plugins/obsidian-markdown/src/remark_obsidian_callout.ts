@@ -58,10 +58,14 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
           ? node.children.slice(1)
           : node.children;
 
+        const foldable = fold !== undefined;
+        const titleTag = foldable ? "summary" : "div";
+        const titleChildTag = foldable ? "span" : "div";
+
         const titleNode = {
           type: "paragraph",
           data: {
-            hName: "div",
+            hName: titleTag,
             hProperties: {
               className: ["rr-callout__title"],
             },
@@ -70,7 +74,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
             {
               type: "paragraph",
               data: {
-                hName: "div",
+                hName: titleChildTag,
                 hProperties: { className: ["rr-callout__icon"] },
               },
               children: [],
@@ -78,7 +82,7 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
             {
               type: "paragraph",
               data: {
-                hName: "div",
+                hName: titleChildTag,
                 hProperties: { className: ["rr-callout__title-inner"] },
               },
               children: [{ type: "text", value: resolvedTitle }],
@@ -101,11 +105,12 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
 
         node.data = {
           ...node.data,
-          hName: "div",
+          hName: foldable ? "details" : "div",
           hProperties: {
             className,
             "data-callout": type,
             ...(fold ? { "data-callout-fold": fold } : {}),
+            ...(fold === "+" ? { open: true } : {}),
           },
         };
 

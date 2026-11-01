@@ -250,3 +250,54 @@ test("resolves Japanese and spaced note names", async () => {
     /<a href="\/%E6%97%A5%E6%9C%AC%E8%AA%9E%20%E3%83%8E%E3%83%BC%E3%83%88#%E7%AF%80" class="rr-obsidian-wikilink">日本語 ノート > 節<\/a>/,
   );
 });
+
+test("renders foldable callouts as details elements", async () => {
+  const html = await render({
+    "index.md":
+      "---\npublish: true\n---\n\n> [!note]- Collapsed\n> Body\n\n> [!tip]+ Expanded\n> Body\n",
+  });
+
+  assert.match(
+    html,
+    /<details class="rr-callout rr-callout--note rr-callout--collapsible rr-callout--collapsed" data-callout="note" data-callout-fold="-">/,
+  );
+  assert.match(
+    html,
+    /<details class="rr-callout rr-callout--tip rr-callout--collapsible" data-callout="tip" data-callout-fold="\+" open>/,
+  );
+  assert.match(html, /<summary class="rr-callout__title">/);
+  assert.match(html, /<span class="rr-callout__title-inner">Collapsed<\/span>/);
+});
+
+test("keeps plain callouts as divs and supports nested foldables", async () => {
+  const html = await render({
+    "index.md":
+      "---\npublish: true\n---\n\n> [!warning] Plain\n> Outer body\n>\n> > [!note]- Nested\n> > Inner body with [[other]]\n",
+    "other.md": "---\npublish: true\n---\n\n# Other\n",
+  });
+
+  assert.match(
+    html,
+    /<div class="rr-callout rr-callout--warning" data-callout="warning">/,
+  );
+  assert.match(html, /<div class="rr-callout__title">/);
+  assert.match(
+    html,
+    /<details class="rr-callout rr-callout--note rr-callout--collapsible rr-callout--collapsed" data-callout="note" data-callout-fold="-">/,
+  );
+  assert.match(
+    html,
+    /Inner body with <a href="\/other" class="rr-obsidian-wikilink">other<\/a>/,
+  );
+});
+
+test("keeps block markup inside foldable callout bodies", async () => {
+  const html = await render({
+    "index.md":
+      "---\npublish: true\n---\n\n> [!example]- Details\n> - one\n> - two\n>\n> ```js\n> const x = 1;\n> ```\n",
+  });
+
+  assert.match(html, /<summary class="rr-callout__title">/);
+  assert.match(html, /<ul>\s*<li>one<\/li>\s*<li>two<\/li>\s*<\/ul>/);
+  assert.match(html, /<pre><code class="language-js">/);
+});

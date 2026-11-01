@@ -46,7 +46,7 @@ callout: {
 ```
 
 ## Obsidian Markdown callout integration
-The `@riebeckite/plugin-obsidian-markdown` plugin also parses Obsidian-style callout blockquotes (`> [!NOTE]`, `> [!WARNING]`, etc.) and converts them to the same `rr-callout` CSS classes. This allows callouts written in Obsidian Markdown to render identically in Riebeckite without using the shortcode syntax.
+The `@riebeckite/plugin-obsidian-markdown` plugin also parses Obsidian-style callout blockquotes (`> [!NOTE]`, `> [!WARNING]`, etc.) and converts them to the same `rr-callout` CSS classes. This allows callouts written in Obsidian Markdown to render identically in Riebeckite without using the shortcode syntax. A `+` or `-` marker renders the callout as a native `details` element, so readers can collapse it without client JavaScript.
 
 ## Related terms
 - [[glossary/obsidian-vault|Obsidian Vault]]

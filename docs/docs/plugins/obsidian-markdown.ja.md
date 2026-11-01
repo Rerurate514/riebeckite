@@ -47,6 +47,8 @@ export default defineConfig({
 
 `id` は HTML のサニタイズ後に付与するため、アンカーは `#block-id` のまま解決できます。同じ文書内で ID が重複した場合は連番の接尾辞を付けます。
 
+`+` または `-` を付けたコールアウトは `details.rr-callout.rr-callout--collapsible` と `summary.rr-callout__title` で出力します。`+` は `open` 属性を付け、`-` は閉じた状態で開始します。開閉は `details` 要素の標準動作なので、クライアントスクリプトは追加しません。
+
 テーマは `rr-callout` のルート要素に `--rr-callout-title-color`、
 `--rr-callout-title-font-family`、`--rr-callout-title-font-size`、
 `--rr-callout-title-font-weight`、`--rr-callout-title-letter-spacing`、
@@ -72,7 +74,7 @@ export default defineConfig({
 | `![[#見出し]]` | 対応 | 完全 | 同一ノートの埋め込み |
 | `%% コメント %%` | 対応 | 完全 | 複数行対応、コード内は保持 |
 | コールアウト | 対応 | 完全 | |
-| 折りたたみコールアウト | 対応 | 一部 | 折りたたみ状態は描画するが、開閉スクリプトは追加しない |
+| 折りたたみコールアウト | 対応 | 完全 | `details` / `summary` の標準動作。クライアントスクリプトなし |
 | ネストしたコールアウト | 対応 | 完全 | |
 | コールアウトのアイコン | 対応 | 一部 | 種類ごとの色付けのみで、Obsidian のアイコン群とは異なる |
 | 埋め込みの深さ | 対応 | 一部 | 3 階層まで |

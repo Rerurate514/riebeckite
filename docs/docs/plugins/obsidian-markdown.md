@@ -79,9 +79,12 @@ Obsidian.
 > More content.
 ```
 
-Output: `div.rr-callout.rr-callout--{type}` with `data-callout`, plus
-`rr-callout--collapsible` / `rr-callout--collapsed` for `+` / `-` markers. Titles fall back to
-built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`, ...).
+Output: `div.rr-callout.rr-callout--{type}` with `data-callout`. A `+` or `-`
+marker renders `details.rr-callout.rr-callout--collapsible` with a
+`summary.rr-callout__title`; `+` adds the `open` attribute and `-` starts
+collapsed. Folding uses the native `details` element, so no client script is
+loaded. Titles fall back to built-in defaults (`note`, `tip`, `warning`,
+`danger`, `bug`, `quote`, ...).
 
 Themes can customize a callout from its `rr-callout` root with
 `--rr-callout-title-color`, `--rr-callout-title-font-family`,
@@ -123,7 +126,7 @@ Themes can customize a callout from its `rr-callout` root with
 | `![[#Heading]]` | Supported | Full | same-note embed |
 | `%% comment %%` | Supported | Full | multi-line supported, code preserves it |
 | Callouts | Supported | Full | |
-| Collapsible callouts | Supported | Partial | fold markers are rendered, but the HTML page does not add fold scripts |
+| Collapsible callouts | Supported | Full | native `details` / `summary`, no client script |
 | Nested callouts | Supported | Full | |
 | Callout icons | Supported | Partial | typed color styling, not the Obsidian icon set |
 | Embed depth | Supported | Partial | limited to 3 levels |

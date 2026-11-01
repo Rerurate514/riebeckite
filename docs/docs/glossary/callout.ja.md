@@ -46,7 +46,7 @@ callout: {
 ```
 
 ## Obsidian Markdownのコールアウトとの統合
-`@riebeckite/plugin-obsidian-markdown` プラグインは、Obsidian 形式のコールアウトブロッククォート（`> [!NOTE]`、`> [!WARNING]` など）も解析し、同じ `rr-callout` の CSS クラスに変換します。これにより、ショートコードを使わずに Obsidian Markdown で書いたコールアウトも、Riebeckite で同じように描画されます。
+`@riebeckite/plugin-obsidian-markdown` プラグインは、Obsidian 形式のコールアウトブロッククォート（`> [!NOTE]`、`> [!WARNING]` など）も解析し、同じ `rr-callout` の CSS クラスに変換します。これにより、ショートコードを使わずに Obsidian Markdown で書いたコールアウトも、Riebeckite で同じように描画されます。`+` または `-` を付けると `details` 要素で出力され、クライアント JavaScript なしで開閉できます。
 
 ## 関連用語
 - [[glossary/obsidian-vault|Obsidian Vault]]

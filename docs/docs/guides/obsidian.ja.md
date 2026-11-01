@@ -46,7 +46,7 @@ Riebeckite は Vault の Markdown をそのまま読み、別形式への変換�
 | ノート埋め込み | 一部 | ノート全体・見出し・ブロック ID。ネストした埋め込みは深さ 3 まで。 |
 | 画像 | 完全 | `![[image.png]]`、`![[image.png|300]]`、`![[image.png|300x200]]`、`![[image.png|代替テキスト]]`。 |
 | PDF とメディア | 一部 | PDF のページ・高さ指定、動画・音声の再生開始位置。再生可否はブラウザのコーデックに依存します。 |
-| Callout | 一部 | 標準・ネストした Callout、独自タイトル、折りたたみ指定。折りたたみのスクリプト動作はありません。 |
+| Callout | 完全 | 標準・ネストした Callout、独自タイトル、`details` による折りたたみ。クライアントスクリプトなし。 |
 | コメント | 完全 | `%% ... %%` を除去。コードスパンとフェンスは保持します。 |
 | Dataview | 一部 | DQL の `LIST`・`TABLE`・`TASK`・`CALENDAR`、インラインフィールド、`FLATTEN`、タスク単位の絞り込み。DataviewJS は未対応。[Dataview](../plugins/dataview.ja.md) を参照。 |
 | Bases | 一部 | 表・カード・リストと、filters・formulas・summaries・grouping。kanban と map は案内を描画します。[Bases](../plugins/bases.ja.md) を参照。 |

@@ -2,7 +2,7 @@ import {
   formatPluginContractReport,
   type PluginContractLevel,
   verifyPluginContract,
-} from "@riebeckite/test/plugin-contract";
+} from "./plugin_contract.js";
 import { repositoryPluginContractFixtures } from "./plugin_contract_fixtures.js";
 
 type PluginVerifyOptions = {

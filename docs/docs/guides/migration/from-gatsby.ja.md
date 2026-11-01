@@ -17,7 +17,7 @@ sidebar:
 
 - Git のバックアップ、公開済み URL の一覧、アセットのコピーを作成します。
 - Node.js LTS、ターミナル、移行元とは別の出力先を用意します。
-- 独自 Theme、拡張、生成ページ、[[glossary/redirect|リダイレクト]]、解析、認証、ホスト設定を棚卸しします。
+- 独自テーマ、拡張、生成ページ、[[glossary/redirect|リダイレクト]]、解析、認証、ホスト設定を棚卸しします。
 - GraphQL query、React template、source Plugin、client runtime の動作は移植できません。
 - このガイドは自動移行 CLI を提供せず、実際の Gatsby サイトを使ったエンドツーエンド移行済みとは主張しません。
 
@@ -30,9 +30,9 @@ Gatsby の GraphQL layer とは独立に、元の Markdown と static asset を 
 | 移行元の機能 | Riebeckite での方法 | 対応状況 |
 | --- | --- | --- |
 | Markdown ページと Frontmatter | 設定した content root 配下に Markdown を置く | 対応済み |
-| GraphQL data layer、MDX、page、Plugin、React template | Plugin、Theme CSS、アプリケーションコードとして再実装する | 手作業での移行が必要 |
-| ナビゲーションとドキュメント階層 | Navigation / Docs Plugin と公開済みコンテンツ、sidebar Frontmatter を使う | 一部対応 |
-| [[glossary/search|検索]]、backlinks、graph | 必要な Riebeckite Plugin を有効にする | 一部対応 |
+| GraphQL data layer、MDX、page、Plugin、React template | プラグイン、テーマ CSS、アプリケーションコードとして再実装する | 手作業での移行が必要 |
+| ナビゲーションとドキュメント階層 | ナビゲーション / Docs プラグインと公開済みコンテンツ、サイドバー Frontmatter を使う | 一部対応 |
+| [[glossary/search|検索]]、backlinks、graph | 必要な Riebeckite プラグインを有効にする | 一部対応 |
 | ホスト・デプロイ固有の動作 | 移行先のホストで別途設定する | 手作業での移行が必要 |
 | 未調査のサードパーティ拡張 | ソースを確認し、検証できた動作だけを再現する | 未検証 |
 
@@ -55,9 +55,9 @@ Gatsby の GraphQL layer とは独立に、元の Markdown と static asset を 
 | --- | --- | --- |
 | src/、gatsby-config.*、gatsby-node.* | `riebeckite.config.ts` と `content/` | 設定ファイルを機械変換しません。 |
 | site title/base URL | `site.title`、`site.baseUrl` | 最終公開 URL を本番ビルド前に設定します。 |
-| navigation/sidebar | Navigation Plugin または Docs Plugin | Docs は公開 Markdown と `sidebar` Frontmatter を使います。 |
-| theme/layout | Theme CSS または生成された HonoX アプリ | Theme は見た目のみです。route/component はアプリに置きます。 |
-| extensions/plugins | 公開済み Riebeckite Plugin | 機能ごとに明示して導入します。 |
+| ナビゲーション / サイドバー | Navigation プラグインまたは Docs プラグイン | Docs は公開 Markdown と `sidebar` Frontmatter を使います。 |
+| テーマ / レイアウト | テーマ CSS または生成された HonoX アプリ | テーマは見た目のみです。ルートやコンポーネントはアプリに置きます。 |
+| 拡張 / プラグイン | 公開済み Riebeckite プラグイン | 機能ごとに明示して導入します。 |
 
 最小構成の例です。
 
@@ -81,7 +81,7 @@ Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の UR
 
 - **ページが表示されない:** `publish: true`、`content.directory`、exclude を確認し、`npm exec riebeckite inspect content --list` を実行します。
 - **旧 URL が変わった:** 明示的な `permalink` または `redirect_from` を使います。rename 検出を使う場合は ID を安定させます。
-- **テンプレート構文がそのまま見える:** 移行元固有の構文です。Markdown、公開済み Plugin、アプリコードに置き換えます。
+- **テンプレート構文がそのまま見える:** 移行元固有の構文です。Markdown、公開済みのプラグイン、アプリコードに置き換えます。
 - **sidebar の順番が違う:** `sidebar.label` と `sidebar.order` を指定し、Docs root を確認します。
 - **アセットが壊れる:** Markdown を一括置換する前に、大文字小文字、URL base、相対パス、コピーしたファイルを確認します。
 
@@ -101,6 +101,6 @@ Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の UR
 - [[obsidian|Obsidian Vault]]
 - [[configuration|設定]]
 - [[cli|CLI リファレンス]]
-- [[plugins/permalink|Permalink Plugin]]
-- [[seo|SEO Plugin]]
+- [[plugins/permalink|Permalink プラグイン]]
+- [[seo|SEO プラグイン]]
 - [[guides/deployment/README|デプロイ]]

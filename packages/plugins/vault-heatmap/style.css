@@ -1,0 +1,116 @@
+.rr-vault-heatmap {
+  --rr-vault-heatmap-cell: 0.75rem;
+  --rr-vault-heatmap-gap: 3px;
+  --rr-vault-heatmap-empty: color-mix(
+    in srgb,
+    var(--rb-color-muted, #69645c) 16%,
+    transparent
+  );
+
+  margin-block: 1.5rem;
+}
+
+.rr-vault-heatmap__title {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rr-vault-heatmap__grid {
+  display: flex;
+  gap: var(--rr-vault-heatmap-gap);
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.rr-vault-heatmap__week {
+  display: grid;
+  flex: none;
+  grid-template-rows: repeat(7, var(--rr-vault-heatmap-cell));
+  gap: var(--rr-vault-heatmap-gap);
+}
+
+.rr-vault-heatmap__day {
+  display: block;
+  width: var(--rr-vault-heatmap-cell);
+  height: var(--rr-vault-heatmap-cell);
+  border-radius: 2px;
+  background: var(--rr-vault-heatmap-empty);
+}
+
+.rr-vault-heatmap__day[data-level="1"] {
+  background: color-mix(
+    in srgb,
+    var(--rb-color-success, #39734a) 24%,
+    transparent
+  );
+}
+
+.rr-vault-heatmap__day[data-level="2"] {
+  background: color-mix(
+    in srgb,
+    var(--rb-color-success, #39734a) 44%,
+    transparent
+  );
+}
+
+.rr-vault-heatmap__day[data-level="3"] {
+  background: color-mix(
+    in srgb,
+    var(--rb-color-success, #39734a) 68%,
+    transparent
+  );
+}
+
+.rr-vault-heatmap__day[data-level="4"] {
+  background: var(--rb-color-success, #39734a);
+}
+
+.rr-vault-heatmap__day[data-future="true"] {
+  background: transparent;
+}
+
+.rr-vault-heatmap__day:hover {
+  outline: 1px solid var(--rb-color-ink, #1c1a17);
+  outline-offset: 1px;
+}
+
+.rr-vault-heatmap__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  color: var(--rb-color-muted, #69645c);
+  font-size: 0.8125rem;
+}
+
+.rr-vault-heatmap__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rr-vault-heatmap-gap);
+  margin-left: auto;
+}
+
+.rr-vault-heatmap__legend .rr-vault-heatmap__day {
+  --rr-vault-heatmap-cell: 0.625rem;
+}
+
+.rr-vault-heatmap__empty {
+  padding: 0.75rem 0;
+  color: var(--rb-color-muted, #69645c);
+  font-size: 0.9375rem;
+}
+
+.rr-vault-heatmap--error {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rb-color-border, #d0d0d0);
+  border-left: 3px solid var(--rb-color-danger, #b3261e);
+  font-size: 0.9375rem;
+}
+
+@media (prefers-contrast: more) {
+  .rr-vault-heatmap__day {
+    box-shadow: inset 0 0 0 1px var(--rb-color-border-strong, #9a9a9a);
+  }
+}

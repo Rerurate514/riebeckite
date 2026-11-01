@@ -103,6 +103,7 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [SVG Optimizer](./svg-optimizer.ja.md) | 公開 SVG を構造とアクセシビリティを保ったまま軽量化 |
 | [Responsive Image](./responsive-image.ja.md) | レスポンシブ画像と遅延読み込み |
 | [Gallery](./gallery.ja.md) | Markdown で書くカードギャラリー |
+| [Image Compare](./image-compare.ja.md) | JavaScript なしでも表示できるビフォー・アフター画像比較 |
 | [Lightbox](./lightbox.ja.md) | クリックで拡大する画像表示 |
 | [Icons](./icons.ja.md) | Obsidian の Iconize・Iconic アイコンをサイト全体に表示 |
 | [PDF](./pdf.ja.md) | PDF 添付のインライン表示 |
@@ -164,6 +165,8 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Localization](./l10n.ja.md) | コンテンツの多言語化、ローカライズ URL、翻訳メタデータ |
 | [Quality](./quality.ja.md) | HTML の品質とアクセシビリティの静的検査 |
 | [Diagnostics](./diagnostics.ja.md) | Riebeckite と Obsidian vault のコンテンツ診断 |
+| [Frontmatter Transformer](./frontmatter-transformer.ja.md) | マイグレーション基盤を使う安全なフロントマター一括変換 |
+| [Vault Heatmap](./vault-heatmap.ja.md) | 日付付き Vault アクティビティのカレンダーヒートマップ |
 | [Docs](./docs.ja.md) | Docs のサイドバーと previous/next |
 | [Calculator](./calculator.ja.md) | 静的なフォールバック付きの対話的な計算コードブロック |
 | [Canvas](./canvas.ja.md) | Obsidian Canvas の描画 |

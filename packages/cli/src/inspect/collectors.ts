@@ -5,6 +5,7 @@ import {
   compareBuildProvenance,
   computePipelineFingerprint,
   getResolvedPluginMetadata,
+  inspectContentAssets,
   isPersistentlyCacheable,
   loadContentBuildState,
   readContentBuildStateStatus,
@@ -20,6 +21,7 @@ import {
 import { loadProjectConfig } from "../load_config.js";
 import type {
   ApplicationInspection,
+  AssetInspection,
   BuildInspection,
   ConfigInspection,
   ContentInspection,
@@ -121,6 +123,20 @@ export async function collectContentInspection(
     excluded,
     extensions,
     paths: await inspectPaths(config, source, paths),
+  };
+}
+
+export async function collectAssetInspection(
+  project: RiebeckiteProject,
+): Promise<AssetInspection> {
+  const config = await loadProjectConfig(project);
+  const source = resolveProjectContentSource(config, project);
+  const manifest = await new ContentManager(source, [], {
+    config,
+  }).getManifest();
+  return {
+    source: contentSourceName(config),
+    report: await inspectContentAssets(manifest, source),
   };
 }
 

@@ -14,6 +14,7 @@ import {
 } from "@riebeckite/core";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import {
+  collectAssetInspection,
   collectBuildInspection,
   collectContentInspection,
   collectProvenanceInspection,
@@ -66,6 +67,48 @@ async function makeContentRoot(): Promise<string> {
   await fs.writeFile(path.join(root, "drafts", "hidden.md"), "# Hidden");
   return root;
 }
+
+test("inspect assets reports usage, duplicates, and formats", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-assets-"));
+  try {
+    await fs.writeFile(
+      path.join(root, "index.md"),
+      "---\npublish: true\n---\n![A](a.png)\n",
+    );
+    await fs.writeFile(path.join(root, "a.png"), "same-bytes");
+    await fs.writeFile(path.join(root, "b.png"), "same-bytes");
+    await fs.writeFile(path.join(root, "c.bin"), "unused");
+    const config: ResolvedRiebeckiteConfig = {
+      ...baseConfig,
+      content: { ...baseConfig.content, directory: root },
+    };
+    const inspection = await collectAssetInspection({
+      ...(await makeProject(root)),
+      config,
+    });
+
+    assert.equal(inspection.report.totals.assets, 3);
+    assert.equal(inspection.report.totals.used, 1);
+    assert.equal(inspection.report.totals.unused, 2);
+    assert.deepEqual(
+      inspection.report.duplicates.map((group) => group.paths),
+      [["a.png", "b.png"]],
+    );
+    assert.deepEqual(
+      inspection.report.formats.map((format) => [
+        format.kind,
+        format.extension,
+        format.count,
+      ]),
+      [
+        ["asset", "bin", 1],
+        ["image", "png", 2],
+      ],
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
 
 test("inspect content reports excluded entries and their patterns", async () => {
   const root = await makeContentRoot();

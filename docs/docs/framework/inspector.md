@@ -50,6 +50,7 @@ Inspector has a command for each target you want to inspect:
 | `riebeckite inspect content --path <path-or-permalink>` | One content entry's resolved identity |
 | `riebeckite inspect graph` | Relationships between content |
 | `riebeckite inspect build` | Incremental build state |
+| `riebeckite inspect assets` | Content asset inventory, usage, duplicates, and optimization candidates |
 
 ## Inspecting the config
 
@@ -165,6 +166,10 @@ flowchart TD
 
 Even if the state is broken, Inspector never creates a new state or rewrites
 the existing one.
+
+## Development Inspector tabs
+
+The panel has tabs for Overview, Diagnostics, Dependencies, Plugins, Output, Derived, Provenance, Assets, and Theme. The Assets tab lists content assets with their usage, size, duplicate groups, and optimization candidates. It reads the same read-only asset report as `riebeckite inspect assets` and never deletes or rewrites files.
 
 ## Read-only guarantee
 

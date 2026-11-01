@@ -4,7 +4,7 @@ import type { Node } from "unist";
 import { splitOnce } from "../utils/markdown.js";
 import { isImagePath, normalizeContentPath } from "./attachment.js";
 
-type MarkdownImage = {
+export type MarkdownImage = {
   readonly path: string;
   readonly url: string;
 };
@@ -77,6 +77,13 @@ export function normalizeMarkdownImages(sourceSlug: string) {
       if (image) definition.url = image.url;
     }
   };
+}
+
+export function resolveContentAssetUrl(
+  input: string,
+  sourceSlug: string,
+): MarkdownImage | null {
+  return resolveMarkdownImage(input, sourceSlug);
 }
 
 function resolveMarkdownImage(

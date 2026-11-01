@@ -146,6 +146,14 @@ npm exec riebeckite inspect graph
 
 [[glossary/content-graph|コンテンツグラフ]]を表示します。WikiLinks、[[glossary/backlink|バックリンク]]、グラフ拡張を調査するときに使います。
 
+### アセット
+
+```sh id="rb-assets"
+npm exec -- riebeckite inspect assets
+```
+
+コンテンツルート直下の Markdown 以外のファイルを、読み取り専用で一覧表示します。合計サイズ、使用状況、形式、未使用・未使用の可能性があるアセット、SHA-256 による重複グループ、最適化候補を表示します。`--list` ですべてのアセットを、`--json` で構造化レポートを出力します。ファイルの削除や書き換えは行いません。
+
 ### ビルド
 
 ```sh id="y2uc9f"

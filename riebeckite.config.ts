@@ -24,11 +24,13 @@ import { excaliBrain } from "@riebeckite/plugin-excalibrain";
 import { excalidraw } from "@riebeckite/plugin-excalidraw";
 import { flashcards } from "@riebeckite/plugin-flashcards";
 import { folderPages } from "@riebeckite/plugin-folder-pages";
+import { frontmatterTransformer } from "@riebeckite/plugin-frontmatter-transformer";
 import { gallery } from "@riebeckite/plugin-gallery";
 import { glossary } from "@riebeckite/plugin-glossary";
 import { graphviz } from "@riebeckite/plugin-graphviz";
 import { highlight } from "@riebeckite/plugin-highlight";
 import { hoverPreview } from "@riebeckite/plugin-hover-preview";
+import { imageCompare } from "@riebeckite/plugin-image-compare";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { l10n } from "@riebeckite/plugin-l10n";
 import { lightbox } from "@riebeckite/plugin-lightbox";
@@ -63,6 +65,7 @@ import { textFragment } from "@riebeckite/plugin-text-fragment";
 import { timeline } from "@riebeckite/plugin-timeline";
 import { toc } from "@riebeckite/plugin-toc";
 import { ux } from "@riebeckite/plugin-ux";
+import { vaultHeatmap } from "@riebeckite/plugin-vault-heatmap";
 import { vegaLite } from "@riebeckite/plugin-vega-lite";
 import { wavedrom } from "@riebeckite/plugin-wavedrom";
 import { webmention } from "@riebeckite/plugin-webmention";
@@ -165,6 +168,7 @@ export default defineConfig({
     colorMode(),
     codeAnnotations(),
     lightbox(),
+    imageCompare(),
     search(),
     toc(),
     backlinks(),
@@ -220,6 +224,7 @@ export default defineConfig({
     taxonomy(),
     textFragment(),
     timeline(),
+    vaultHeatmap(),
     archive(),
     quality(),
     deploy({ provider: "cloudflare-pages" }),
@@ -227,5 +232,6 @@ export default defineConfig({
       reportUnusedAssets: true,
       reportOrphans: true,
     }),
+    frontmatterTransformer(),
   ],
 });

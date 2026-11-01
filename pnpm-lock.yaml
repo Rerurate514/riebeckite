@@ -1119,6 +1119,19 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/plugins/frontmatter-transformer:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../node
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/gallery:
     dependencies:
       '@riebeckite/core':
@@ -1234,6 +1247,25 @@ importers:
       unified:
         specifier: 'catalog:'
         version: 11.0.5
+
+  packages/plugins/image-compare:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+      vfile-matter:
+        specifier: 'catalog:'
+        version: 5.0.1
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/image-optimizer:
     dependencies:
@@ -1803,6 +1835,25 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/vault-heatmap:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@types/mdast':
+        specifier: 'catalog:'
+        version: 4.0.4
+      unist-util-visit:
+        specifier: 'catalog:'
+        version: 5.1.0
+      vfile-matter:
+        specifier: 'catalog:'
+        version: 5.0.1
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/vega-lite:
     dependencies:

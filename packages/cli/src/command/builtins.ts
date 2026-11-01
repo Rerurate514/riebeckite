@@ -126,6 +126,7 @@ function definitions(): readonly CliCommandDefinition[] {
     inspectContentCommand(),
     inspectGraphCommand(),
     inspectBuildCommand(),
+    inspectAssetsCommand(),
     inspectProvenanceCommand(),
     createCommand(),
     createSiteCommand(),
@@ -443,7 +444,7 @@ function inspectCommand(): CliCommandDefinition {
     id: "inspect",
     summary: "Inspect the resolved project.",
     description:
-      "Inspect configuration, plugins, content, the content graph, build output, or provenance. Use an inspect subcommand to narrow the report.",
+      "Inspect configuration, plugins, content, the content graph, build output, assets, or provenance. Use an inspect subcommand to narrow the report.",
     requiresProject: true,
     async handler(context) {
       const { runInspect } = await import("../commands/inspect.js");
@@ -508,6 +509,27 @@ function inspectContentCommand(): CliCommandDefinition {
         list: input.options.list as boolean,
         path: input.options.path as string | undefined,
         json: false,
+      });
+    },
+  });
+}
+
+function inspectAssetsCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "inspect assets",
+    summary: "Inspect content assets and duplicates.",
+    requiresProject: true,
+    supportsJson: true,
+    options: [
+      cliBoolean("list", { description: "List every asset." }),
+      cliBoolean("json", { description: "Print the report as JSON." }),
+    ],
+    async handler(context, input) {
+      const { runInspect } = await import("../commands/inspect.js");
+      await runInspect(await project(context), {
+        target: "assets",
+        list: input.options.list as boolean,
+        json: input.options.json as boolean,
       });
     },
   });

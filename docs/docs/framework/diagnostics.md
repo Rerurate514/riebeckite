@@ -75,6 +75,12 @@ When a plugin publishes its own pages, generated files, or assets, register them
 
 is not reported as a missing page.
 
+## Asset health
+
+`doctor` also performs a read-only asset inspection of the content root. It hashes non-Markdown files with SHA-256, counts references from resolved content, and reports unused or possibly unused assets, duplicate groups, large files, and legacy image formats. These findings use the `ASSET_*` codes and the `content` category. Asset diagnostics never delete files; remediation always requires a person to review the referenced paths and decide what to keep.
+
+The same inspection is available through `riebeckite inspect assets` and the Inspector's Assets tab. The existing image-only `unused-asset` check remains authoritative for images referenced by notes, so `ASSET_UNUSED` skips paths that check already reported.
+
 ## Authoring rules
 
 - Validate options with a pure validator; do not read files, mutate state, or start work while validating.

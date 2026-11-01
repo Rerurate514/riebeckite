@@ -1,6 +1,7 @@
 import type { RiebeckiteProject } from "../application_root.js";
 import {
   collectApplicationInspection,
+  collectAssetInspection,
   collectBuildInspection,
   collectConfigInspection,
   collectContentInspection,
@@ -10,6 +11,7 @@ import {
 } from "../inspect/collectors.js";
 import {
   renderApplicationInspection,
+  renderAssetInspection,
   renderBuildInspection,
   renderConfigInspection,
   renderContentEntryInspection,
@@ -26,6 +28,7 @@ export type InspectTarget =
   | "content"
   | "graph"
   | "build"
+  | "assets"
   | "provenance";
 
 export async function runInspect(
@@ -75,6 +78,15 @@ export async function runInspect(
   }
   if (options.target === "graph") {
     console.log(renderGraphInspection(await collectGraphInspection(project)));
+    return;
+  }
+  if (options.target === "assets") {
+    const inspection = await collectAssetInspection(project);
+    console.log(
+      options.json
+        ? JSON.stringify(inspection, undefined, 2)
+        : renderAssetInspection(inspection, { list: options.list }),
+    );
     return;
   }
   if (options.target === "provenance") {

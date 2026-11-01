@@ -4,7 +4,9 @@ import path from "node:path";
 import {
   buildOutputPlan,
   type CompletedContentBuildSnapshot,
+  type ContentAssetInspection,
   type ContentManifest,
+  inspectContentAssets,
   isPersistentlyCacheable,
   loadContentBuildState,
   type OutputChangeReason,
@@ -20,7 +22,10 @@ import {
   diagnoseOutputPlan,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
-import { isIgnoredContentPath } from "@riebeckite/node";
+import {
+  FileSystemContentSource,
+  isIgnoredContentPath,
+} from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
 import { isPathInsideDirectory, toLogicalPath } from "./content_watch.js";
 import {
@@ -41,6 +46,7 @@ const outputPath = "/__riebeckite/inspector/output";
 const graphPath = "/__riebeckite/inspector/graph";
 const pluginsPath = "/__riebeckite/inspector/plugins";
 const provenancePath = "/__riebeckite/inspector/provenance";
+const assetsPath = "/__riebeckite/inspector/assets";
 const bootstrapPath = "/__riebeckite/inspector/bootstrap";
 const inspectorTokenHeader = "x-riebeckite-inspector-token";
 const listedOutputLimit = 20;
@@ -132,6 +138,13 @@ type DependencyInspection =
     }
   | { readonly status: "unavailable"; readonly reason: string };
 
+type AssetResult =
+  | {
+      readonly status: "available";
+      readonly inspection: ContentAssetInspection;
+    }
+  | { readonly status: "unavailable"; readonly reason: string };
+
 type OutputResult = {
   readonly output: OutputInspection;
   readonly dependencies: DependencyInspection;
@@ -165,6 +178,7 @@ type CachedInspection = {
     Awaited<ReturnType<typeof collectDevelopmentDiagnostics>>
   >;
   readonly output: Promise<OutputResult>;
+  readonly assets: Promise<AssetResult>;
   readonly settlement: Promise<void>;
 };
 
@@ -219,13 +233,17 @@ export function riebeckiteDevelopmentInspector(
         ? inspectContentOutputs(build, application)
         : unavailableOutputResult(),
     );
+    const assets = snapshot.then((build) =>
+      build ? inspectAssets(build, application) : unavailableAssetResult(),
+    );
     const entry: CachedInspection = {
       application,
       revision: currentRevision,
       snapshot,
       report,
       output,
-      settlement: Promise.allSettled([snapshot, report, output]).then(
+      assets,
+      settlement: Promise.allSettled([snapshot, report, output, assets]).then(
         (results) => {
           const [snapshotResult] = results;
           if (
@@ -413,6 +431,30 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_PROVENANCE_FAILED" }));
         }
       };
+      const assetsMiddleware = async (
+        _request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        try {
+          const application = getApplication();
+          const entry = inspectApplication(application, revision, server);
+          const result = await entry.assets;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          response.end(
+            JSON.stringify({
+              version: 1,
+              revision: entry.revision,
+              generatedAt: new Date().toISOString(),
+              assets: result,
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_ASSETS_FAILED" }));
+        }
+      };
       const privateServer = http.createServer((request, response) => {
         void handleInspectorRequest(request, response, token, {
           [reportPath]: reportMiddleware,
@@ -420,6 +462,7 @@ export function riebeckiteDevelopmentInspector(
           [graphPath]: graphMiddleware,
           [pluginsPath]: pluginsMiddleware,
           [provenancePath]: provenanceMiddleware,
+          [assetsPath]: assetsMiddleware,
         });
       });
       const privateReady = new Promise<void>((resolve, reject) => {
@@ -577,6 +620,33 @@ function unavailableOutputResult(): OutputResult {
     unchanged: [],
     removed: [],
     reasons: new Map(),
+  };
+}
+
+async function inspectAssets(
+  snapshot: CompletedContentBuildSnapshot,
+  application: ResolvedHonoxApplication,
+): Promise<AssetResult> {
+  try {
+    const source =
+      application.config.content.source ??
+      new FileSystemContentSource(
+        application.contentRoot,
+        application.config.content.exclude,
+      );
+    return {
+      status: "available",
+      inspection: await inspectContentAssets(snapshot.manifest, source),
+    };
+  } catch {
+    return { status: "unavailable", reason: "asset inspection failed" };
+  }
+}
+
+function unavailableAssetResult(): AssetResult {
+  return {
+    status: "unavailable",
+    reason: "no completed development build is available for this revision",
   };
 }
 
@@ -1292,6 +1362,7 @@ const outputEndpoint = ${JSON.stringify(outputPath)};
 const graphEndpoint = ${JSON.stringify(graphPath)};
 const pluginsEndpoint = ${JSON.stringify(pluginsPath)};
 const provenanceEndpoint = ${JSON.stringify(provenancePath)};
+const assetsEndpoint = ${JSON.stringify(assetsPath)};
 const bootstrapEndpoint = ${JSON.stringify(bootstrapPath)};
 const tokenHeader = ${JSON.stringify(inspectorTokenHeader)};
 const panelId = "riebeckite-development-inspector";
@@ -1324,6 +1395,7 @@ let pluginSort = "duration";
 let pluginPage = 0;
 let pluginData;
 let provenanceData;
+let assetsData;
 let themeQuery = "";
 let themeKind = "all";
 let derivedQuery = "";
@@ -1339,6 +1411,7 @@ export function initDevelopmentInspector() {
   let graphController;
   let pluginController;
   let provenanceController;
+  let assetsController;
   let generation = 0;
   let report;
   let baseDiagnostics;
@@ -1347,7 +1420,7 @@ export function initDevelopmentInspector() {
   let pendingRefresh = false;
   let loadingTimer;
   let themeFrame = 0;
-  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Provenance", "Theme"];
+  const tabs = ["Overview", "Diagnostics", "Dependencies", "Plugins", "Output", "Derived", "Provenance", "Assets", "Theme"];
   const outputUrl = () => {
     const parameters = new URLSearchParams();
     if (outputQuery) parameters.set("q", outputQuery);
@@ -1424,11 +1497,13 @@ export function initDevelopmentInspector() {
       graphData = undefined;
       pluginData = undefined;
       provenanceData = undefined;
+      assetsData = undefined;
       render();
       void loadOutput(current);
       if (activeTab === 2) void loadGraph(current);
       if (activeTab === 3) void loadPlugins(current);
       if (activeTab === 6) void loadProvenance(current);
+      if (activeTab === 7) void loadAssets(current);
     } catch (error) {
       if (error.name === "AbortError" || current !== generation) return;
       clearInterval(loadingTimer);
@@ -1531,6 +1606,23 @@ export function initDevelopmentInspector() {
     provenanceData = undefined;
     if (report && panel?.isConnected) void loadProvenance(generation);
   };
+  const loadAssets = async (current) => {
+    if (!report || !panel?.isConnected) return;
+    assetsController?.abort();
+    assetsController = new AbortController();
+    try {
+      const response = await inspectorFetch(assetsEndpoint, { cache: "no-store", signal: assetsController.signal });
+      if (!response.ok) throw new Error("Inspector assets are unavailable.");
+      const next = await response.json();
+      if (current !== generation || !panel?.isConnected) return;
+      assetsData = next.assets;
+      render();
+    } catch (error) {
+      if (error.name === "AbortError" || current !== generation) return;
+      assetsData = { status: "unavailable", reason: "asset inspection failed" };
+      render();
+    }
+  };
   const open = () => {
     if (!panel) {
       panel = document.createElement("div");
@@ -1549,6 +1641,7 @@ export function initDevelopmentInspector() {
     graphController?.abort();
     pluginController?.abort();
     provenanceController?.abort();
+    assetsController?.abort();
     clearInterval(loadingTimer);
     panel?.remove();
     launcher?.focus();
@@ -1585,7 +1678,7 @@ export function initDevelopmentInspector() {
   });
   import.meta.hot?.on("riebeckite:inspector", refresh);
   const refreshTheme = () => {
-    if (!panel?.isConnected || activeTab !== 7) return;
+    if (!panel?.isConnected || activeTab !== 8) return;
     cancelAnimationFrame(themeFrame);
     themeFrame = requestAnimationFrame(() => render());
   };
@@ -1638,7 +1731,7 @@ export function initDevelopmentInspector() {
     root.innerHTML = '<style>' + styles + extraStyles + '</style>' + sectionStart('rb-title') + '<header><div><strong id="rb-title">Riebeckite Inspector</strong><p>Ctrl+Alt+R · drag the left edge to resize</p></div><button type="button" data-close aria-label="Close inspector">Close</button></header><div class="summary"><b>' + report.summary.errors + '</b> errors <b>' + report.summary.warnings + '</b> warnings <b>' + report.summary.info + '</b> info</div><div role="tablist" aria-label="Inspector sections">' + tabs.map((tab, index) => '<button id="rb-tab-' + index + '" role="tab" aria-controls="rb-panel-' + index + '" aria-selected="' + (index === activeTab) + '" tabindex="' + (index === activeTab ? 0 : -1) + '" data-tab="' + index + '">' + tab + '</button>').join("") + '</div><div id="rb-panel-' + activeTab + '" role="tabpanel" aria-labelledby="rb-tab-' + activeTab + '" tabindex="0">' + panelContent() + '</div><p class="status" aria-live="polite">' + (report.output ? "Inspector report updated" : "Inspector report updated · loading output plan…") + '</p></section>';
     root.querySelector("[data-close]").addEventListener("click", close);
     setupResize(root);
-    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 2 && !graphData) void loadGraph(generation); if (activeTab === 3 && !pluginData) void loadPlugins(generation); if (activeTab === 6 && !provenanceData) void loadProvenance(generation); }));
+    root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = Number(button.dataset.tab); render(); if (activeTab === 2 && !graphData) void loadGraph(generation); if (activeTab === 3 && !pluginData) void loadPlugins(generation); if (activeTab === 6 && !provenanceData) void loadProvenance(generation); if (activeTab === 7 && !assetsData) void loadAssets(generation); }));
     root.querySelectorAll("[data-diagnostic-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDiagnosticFilters(root); render(); }));
     root.querySelectorAll("[data-output-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readOutputFilters(root); outputPage = 0; render(); requestOutput(); }));
     root.querySelectorAll("[data-output-page]").forEach((button) => button.addEventListener("click", () => { outputPage = Math.max(0, outputPage + Number(button.dataset.outputPage)); render(); requestOutput(); }));
@@ -1686,6 +1779,7 @@ export function initDevelopmentInspector() {
     if (activeTab === 4) return outputReport(report.output) + regenerationReport(report.regeneration);
     if (activeTab === 5) return derivedReport(report.derivedViews);
     if (activeTab === 6) return provenanceReport(provenanceData);
+    if (activeTab === 7) return assetsReport(assetsData);
     return themeReport(report.themeConfig);
   }
 }
@@ -1833,6 +1927,37 @@ function pluginExecutionReport(execution) {
     ).join("") + '</ul>') +
     (execution.hiddenHookCount > 0 ? '<p class="more">' + execution.hiddenHookCount + ' more hooks not shown.</p>' : "") +
     '<p class="actions"><button type="button" data-plugin-page="-1" data-focus-key="plugin-previous"' + (execution.page === 0 ? " disabled" : "") + '>Previous</button><span>Page ' + (execution.page + 1) + '</span><button type="button" data-plugin-page="1" data-focus-key="plugin-next"' + (execution.hiddenHookCount === 0 ? " disabled" : "") + '>Next</button></p>';
+}
+
+function assetsReport(data) {
+  if (!data) return '<p class="status" aria-live="polite">Loading asset inspection…</p>';
+  if (data.status !== "available") return unavailable("Assets", data.reason);
+  const report = data.inspection;
+  const unused = report.assets.filter((asset) => asset.usage === "unused");
+  const possiblyUnused = report.assets.filter((asset) => asset.usage === "possibly-unused");
+  const assetList = (assets, empty) => assets.length === 0
+    ? '<p class="more">' + escapeHtml(empty) + '</p>'
+    : '<ul>' + assets.map((asset) => '<li><code>' + escapeHtml(asset.path) + '</code> <small>' + escapeHtml(assetBytes(asset.size) + " · " + asset.usage) + '</small>' + (asset.reasons.length ? '<div class="reason">' + escapeHtml(asset.reasons.join("; ")) + '</div>' : "") + '</li>').join("") + '</ul>';
+  return '<dl>' +
+    '<dt>Assets</dt><dd>' + report.totals.assets + '</dd>' +
+    '<dt>Total size</dt><dd>' + escapeHtml(assetBytes(report.totals.bytes)) + '</dd>' +
+    '<dt>Used</dt><dd>' + report.totals.used + '</dd>' +
+    '<dt>Possibly unused</dt><dd>' + report.totals.possiblyUnused + '</dd>' +
+    '<dt>Unused</dt><dd>' + report.totals.unused + ' · ' + escapeHtml(assetBytes(report.totals.unusedBytes)) + '</dd>' +
+    '<dt>Duplicate groups</dt><dd>' + report.totals.duplicates + ' · ' + escapeHtml(assetBytes(report.totals.duplicateBytes)) + ' redundant</dd>' +
+    '</dl>' +
+    '<p class="partial">This report is read-only. Duplicate detection uses SHA-256 and never deletes files.</p>' +
+    '<h3>Formats</h3><ul>' + report.formats.map((format) => '<li><code>' + escapeHtml(format.kind + "/" + format.extension) + '</code> <small>' + format.count + ' · ' + escapeHtml(assetBytes(format.bytes)) + '</small></li>').join("") + '</ul>' +
+    '<h3>Unused assets</h3>' + assetList(unused, "No unused assets.") +
+    '<h3>Possibly unused assets</h3>' + assetList(possiblyUnused, "No possibly unused assets.") +
+    '<h3>Duplicates</h3>' + (report.duplicates.length === 0 ? '<p class="more">No duplicate assets.</p>' : '<ul>' + report.duplicates.map((group) => '<li><small>' + escapeHtml(assetBytes(group.size) + " each · SHA-256 " + group.hash.slice(0, 12)) + '</small><ul>' + group.paths.map((assetPath) => '<li><code>' + escapeHtml(assetPath) + '</code></li>').join("") + '</ul></li>').join("") + '</ul>') +
+    '<h3>Optimization candidates</h3>' + (report.optimizations.length === 0 ? '<p class="more">No optimization candidates.</p>' : '<ul>' + report.optimizations.map((entry) => '<li><code>' + escapeHtml(entry.path) + '</code> <small>' + escapeHtml(assetBytes(entry.size) + " · " + entry.kind) + '</small><div class="reason">' + escapeHtml(entry.recommendation) + '</div></li>').join("") + '</ul>');
+}
+
+function assetBytes(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KiB";
+  return (bytes / 1048576).toFixed(1) + " MiB";
 }
 
 function themeReport(config) {

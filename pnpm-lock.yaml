@@ -1119,6 +1119,19 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/plugins/frontmatter-transformer:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../../node
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/gallery:
     dependencies:
       '@riebeckite/core':

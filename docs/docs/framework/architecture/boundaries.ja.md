@@ -89,4 +89,14 @@ Site
   → 最終的な document を描画
 ```
 
-この境界を維持することで、Core やプラグインを特定のサイト、フレームワーク、プラットフォームに固定せずに再利用できます。関連する設計については、[Content System](../content-system.ja.md)、[Plugin System](../plugin-system.ja.md)、[Theme System](../theme-system.ja.md)、[HonoX Integration](../honox-integration.ja.md) を参照してください。
+この境界を維持することで、Core やプラグインを特定のサイト、フレームワーク、プラットフォームに固定せずに再利用できます。
+
+## CI で検査する依存ルール
+
+`pnpm check:dependencies` は全 workspace パッケージを対象に、未宣言の import、公開されていない subpath、実行時の workspace 循環、禁止された依存方向を検査します。型だけの import は開発依存から参照でき、実行時の依存エッジには数えません。動的な `import()` と `require()` は実行時の依存として扱います。
+
+`pnpm check:source-health` はさらに、Browser/Worker のエントリで Node 組み込みモジュールや Node 専用パッケージを参照していないこと検査し、ディレクトリ単位の循環を警告として報告します。テーマが依存できるのは Core だけです。プラグインは CLI、HonoX、Preview、テーマに依存できず、プラグイン同士の依存は `scripts/check_dependencies.mjs` に記載したレビュー済みの組だけに限定します。
+
+Core は `@riebeckite/core`（全契約）、`@riebeckite/core/client`（ブラウザ向けクライアント）、`@riebeckite/core/cli`（プラグイン CLI 拡張 API）を公開します。`packages/core/api.json` がレビュー済みの公開範囲です。
+
+関連する設計については、[Content System](../content-system.ja.md)、[Plugin System](../plugin-system.ja.md)、[Theme System](../theme-system.ja.md)、[HonoX Integration](../honox-integration.ja.md) を参照してください。

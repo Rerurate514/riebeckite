@@ -22,9 +22,13 @@ export default defineConfig({
 
 ## 主な記法
 
-- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`：対象の解決済み canonical permalink へのリンクです（クラスは `rr-obsidian-wikilink`）。見出しやブロック ID のフラグメントも扱います。対象は slug で検索し、`href` には解決済みの permalink を使います
+- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.ja.md)`：対象の解決済み canonical permalink へのリンクです（クラスは `rr-obsidian-wikilink`）。対象はコンテンツインデックスで検索し、`href` には解決済みの permalink を使います
+- 同一ページのフラグメント `[#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#見出し)`、`[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#^block-id)` は現在のノート内へのリンクです。ノート参照とは別の経路で解決し、現在のノートの permalink を保ちます
+- ノートをまたぐフラグメント `[Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)`、`[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)` に対応します。別名がない場合のリンク文字列は Obsidian と同じく `Note > 見出し` になります
 - `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`：ノートの埋め込みです。最大 3 階層まで、循環を避けながら再帰的に描画します
-- `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)`：`assetBase` 配下の画像になります。`[file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.ja.md)` は添付ファイル用のレンダラー、またはダウンロードリンクになります
+- `![Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)`、`![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)`：見出し配下またはブロックだけを埋め込みます。見出しは同じか上位の次の見出しまで、ブロックは Obsidian と同じ境界規則（単独行のマーカーは直前のブロック、リスト項目直後のマーカーはその項目）で切り出します。`![#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#見出し)` は現在のノートの一部を埋め込みます
+- `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)`：`assetBase` 配下の画像になります。`![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` と `![300x200](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` は幅・高さに、`![説明](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` は代替テキストになります。寸法は正の整数だけを受け付けます
+- `[file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.ja.md)` は添付ファイル用のレンダラー、またはダウンロードリンクになります
 - `> [!note]`：コールアウトです。`+` と `-` で折りたたみ状態を指定できます
 - `#tag`、`#nested/tag`：タグページへのリンクになります
 - 段落末尾の `^block-id`：要素の `id` と `data-block-id` になります
@@ -33,11 +37,43 @@ export default defineConfig({
 
 ノート・画像・未解決の埋め込みには、プラグインが既定の CSS を提供します。ノート埋め込みには、生成コンテンツではなく実際の DOM テキストとして `Embedded: <slug>` を表示し、支援技術からもラベルを読めるようにします。
 
+### コメント
+
+`%% コメント %%` は出力から削除されます。複数行にまたがるコメントにも対応します。Obsidian と同じく、インラインコードとフェンスコードブロック内のコメントはそのまま残します。
+
+### ブロック参照
+
+`id` は HTML のサニタイズ後に付与するため、アンカーは `#block-id` のまま解決できます。同じ文書内で ID が重複した場合は連番の接尾辞を付けます。
+
 テーマは `rr-callout` のルート要素に `--rr-callout-title-color`、
 `--rr-callout-title-font-family`、`--rr-callout-title-font-size`、
 `--rr-callout-title-font-weight`、`--rr-callout-title-letter-spacing`、
 `--rr-callout-title-text-transform`、`--rr-callout-icon-color` を指定して見た目を
 調整できます。コールアウトの子要素は選択しないでください。
+
+## 互換性
+
+| 機能 | Obsidian | Riebeckite | 補足 |
+| --- | --- | --- | --- |
+| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note/.ja.md)` | 対応 | 完全 | |
+| `[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.ja.md)` | 対応 | 完全 | コンテンツインデックスで解決 |
+| `[Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)` | 対応 | 完全 | |
+| `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)` | 対応 | 完全 | |
+| `[#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#見出し)`、`[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#^block-id)` | 対応 | 完全 | 同一ノートへのリンク |
+| リンク文字列 `Note > 見出し` | 対応 | 完全 | 別名が優先 |
+| `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` | 対応 | 完全 | |
+| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.ja.md)`、`\|300x200` | 対応 | 完全 | 正の整数のみ |
+| `![説明](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.ja.md)` | 対応 | 完全 | 代替テキスト |
+| `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)` | 対応 | 完全 | |
+| `![Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)` | 対応 | 完全 | 同じか上位の次の見出しまで |
+| `![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)` | 対応 | 完全 | |
+| `![#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#見出し)` | 対応 | 完全 | 同一ノートの埋め込み |
+| `%% コメント %%` | 対応 | 完全 | 複数行対応、コード内は保持 |
+| コールアウト | 対応 | 完全 | |
+| 折りたたみコールアウト | 対応 | 一部 | 折りたたみ状態は描画するが、開閉スクリプトは追加しない |
+| ネストしたコールアウト | 対応 | 完全 | |
+| コールアウトのアイコン | 対応 | 一部 | 種類ごとの色付けのみで、Obsidian のアイコン群とは異なる |
+| 埋め込みの深さ | 対応 | 一部 | 3 階層まで |
 
 ## 実行例
 

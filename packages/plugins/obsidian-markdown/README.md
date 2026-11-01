@@ -29,16 +29,28 @@ export default defineConfig({
 
 ### Wikilinks
 
-- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` → link to the target's resolved canonical permalink
-  (`ContentManifestEntry.permalink`) with class `rr-obsidian-wikilink`. Alias
-  with `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`. The target is looked up by slug; the `href` is the
-  resolved permalink
-- Fragments: `[Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` → `#heading-slug`,
-  `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` → `#block-id`
+- `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`, `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`, `[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.md)` → link to the target's
+  resolved canonical permalink (`ContentManifestEntry.permalink`) with class
+  `rr-obsidian-wikilink`. The target is looked up in the content index; the
+  `href` is the resolved permalink
+- Same-page fragments: `[#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#Heading)` and `[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#^block-id)` link within the
+  current note. They are resolved independently from note targets and keep the
+  current note's permalink
+- Cross-note fragments: `[Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` → `#heading-slug`,
+  `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` → `#block-id`, `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` keeps the alias.
+  Without an alias the link text follows Obsidian: `Note > Heading`
 - `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` → note embed. The core pipeline renders the target note
   recursively (max depth 3, cycle-safe). Unresolved embeds render a
   placeholder link or text
+- `![Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` / `![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` → embed only that section or
+  block. Heading sections run until the next heading of the same or higher
+  level; block boundaries follow Obsidian (a marker on its own line belongs to
+  the preceding block, a marker directly after a list item belongs to that
+  item). `![#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#Heading)` embeds a section of the current note
 - `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → `<img>` under `assetBase`
+- `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` / `![300x200](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → width and height
+  attributes; `![Description](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → alt text. Only positive integers
+  are accepted as dimensions
 - `[image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` → link to the asset URL
 - `[file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.md)` / `![file.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/file.pdf.md)` → rendered by a plugin that provides
   `renderAttachment` (see `@riebeckite/plugin-attachment`), otherwise a plain
@@ -48,6 +60,12 @@ export default defineConfig({
 Embedded notes, images, and unresolved embeds receive default Plugin CSS. Note
 embeds include visible `Embedded: <slug>` text rather than generated content so
 the label is available to assistive technology.
+
+### Comments
+
+`%% comment %%` is removed from the output, also when the comment spans several
+lines. Comments inside inline code and fenced code blocks are preserved, as in
+Obsidian.
 
 ### Callouts
 
@@ -80,6 +98,33 @@ Themes can customize a callout from its `rr-callout` root with
 
 - A trailing `^block-id` on a block is removed from the text and applied to
   the element as `id` and `data-block-id`
+- The `id` is assigned after HTML sanitization so anchors stay stable:
+  `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` resolves to `#block-id`. Duplicate ids in one document
+  receive numeric suffixes
+
+## Compatibility
+
+| Feature | Obsidian Support | Riebeckite Support | Notes |
+| --- | --- | --- | --- |
+| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`, `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note/.md)` | Supported | Full | |
+| `[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.md)` | Supported | Full | resolved through the content index |
+| `[Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` | Supported | Full | |
+| `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` | Supported | Full | |
+| `[#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#Heading)`, `[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#^block-id)` | Supported | Full | same-note links |
+| Link text `Note > Heading` | Supported | Full | alias overrides it |
+| `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` | Supported | Full | |
+| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.md)`, `\|300x200` | Supported | Full | positive integers only |
+| `![Description](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.md)` | Supported | Full | alt text |
+| `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` | Supported | Full | |
+| `![Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` | Supported | Full | section until the next peer heading |
+| `![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` | Supported | Full | |
+| `![#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#Heading)` | Supported | Full | same-note embed |
+| `%% comment %%` | Supported | Full | multi-line supported, code preserves it |
+| Callouts | Supported | Full | |
+| Collapsible callouts | Supported | Partial | fold markers are rendered, but the HTML page does not add fold scripts |
+| Nested callouts | Supported | Full | |
+| Callout icons | Supported | Partial | typed color styling, not the Obsidian icon set |
+| Embed depth | Supported | Partial | limited to 3 levels |
 
 ## Live example
 

@@ -22,7 +22,6 @@ export function remarkObsidianBlockReference() {
         ...node.data,
         hProperties: {
           ...node.data?.hProperties,
-          id: blockId,
           "data-block-id": blockId,
         },
       };

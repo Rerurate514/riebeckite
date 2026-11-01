@@ -376,6 +376,7 @@ export class Pipeline {
         embedDepth,
         embedTrail,
         dependencyTracker,
+        context.sourceSlug,
       ),
       renderContent: this.createContentRenderer(effectiveContentSource),
       contentSource: effectiveContentSource,
@@ -597,6 +598,7 @@ export class Pipeline {
     embedDepth: number,
     embedTrail: ReadonlySet<string>,
     dependencyTracker: ContentDependencyTracker | null,
+    currentSlug: string | undefined,
   ): MarkdownPipelineContext["renderNoteEmbed"] {
     if (!this.getMarkdownBySlug || embedDepth >= 3) return undefined;
 
@@ -604,7 +606,11 @@ export class Pipeline {
       if (this.options.isRoutable && !this.options.isRoutable(slug)) {
         return null;
       }
-      if (embedTrail.has(slug)) return null;
+      // A same-note embed is safe only for a fragment: the embed trail already
+      // contains the note, and the depth limit stops a section that contains its
+      // own embed from recursing.
+      const selfEmbed = slug === currentSlug && fragment !== null;
+      if (embedTrail.has(slug) && !selfEmbed) return null;
 
       const sourceMarkdown = await this.getMarkdownBySlug?.(slug);
       const markdown = sourceMarkdown

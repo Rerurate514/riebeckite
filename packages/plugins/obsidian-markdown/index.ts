@@ -1,9 +1,11 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import { rehypeObsidianBlockIds } from "./src/rehype_obsidian_block_ids.js";
 import { remarkObsidianBlockReference } from "./src/remark_obsidian_block_reference.js";
 import {
   type CalloutOptions,
   remarkObsidianCallout,
 } from "./src/remark_obsidian_callout.js";
+import { remarkObsidianComment } from "./src/remark_obsidian_comment.js";
 import {
   remarkObsidianTag,
   type TagOptions,
@@ -30,7 +32,7 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
     name: PLUGIN_NAME,
     order: -20,
     processedContentCache: {
-      version: "obsidian-markdown-v4",
+      version: "obsidian-markdown-v5",
       dependencyMode: "tracked",
     },
     options,
@@ -41,17 +43,22 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
       ),
     ],
     extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(remarkObsidianComment);
       pipeline.use(remarkObsidianBlockReference);
       pipeline.use(remarkObsidianWikilink, {
         contentIndex: context.contentIndex,
         resolvePermalink: context.resolvePermalink,
         isRoutable: context.isRoutable,
         assetBase: options.assetBase,
+        sourceSlug: context.sourceSlug,
         renderNoteEmbed: context.renderNoteEmbed,
         renderContent: context.renderContent,
       });
       pipeline.use(remarkObsidianCallout, options.callout);
       pipeline.use(remarkObsidianTag, options.tag);
+    },
+    extendHtmlPipeline: (pipeline) => {
+      pipeline.use(rehypeObsidianBlockIds);
     },
   });
 }

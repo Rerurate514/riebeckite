@@ -13,6 +13,7 @@ export interface WikilinkOptions {
   resolvePermalink: (slug: string) => string;
   isRoutable?: (slug: string) => boolean;
   assetBase?: string;
+  sourceSlug?: string;
   renderNoteEmbed?: (
     slug: string,
     fragment: WikilinkFragment | null,
@@ -33,7 +34,7 @@ export type WikilinkFragment =
   | { kind: "block"; value: string };
 
 const WIKILINK_PATTERN =
-  "(!)?\\[\\[([^\\]|#]+)(?:#(\\^[^\\]|]+|[^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
+  "(!)?\\[\\[([^\\]|#]*)(?:#([^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
 const WIKILINK_CLASS = "rr-obsidian-wikilink";
 const BROKEN_WIKILINK_CLASS = `${WIKILINK_CLASS} rr-obsidian-wikilink--broken`;
 
@@ -41,6 +42,7 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
   const {
     contentIndex,
     assetBase = "/",
+    sourceSlug,
     renderNoteEmbed,
     renderContent,
     resolvePermalink,
@@ -85,6 +87,21 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
     ) {
       const [full, embedMark, rawTarget, rawFragment, alias] = match;
       const start = match.index;
+      const target = rawTarget?.trim() ?? "";
+      const fragment = parseFragment(rawFragment);
+      const aliasText = alias?.trim();
+      const isEmbed = embedMark === "!";
+
+      if (!target && !fragment) {
+        continue;
+      }
+
+      const rawDestination = `${target}${rawFragment ? `#${rawFragment}` : ""}`;
+      const resolved = resolveTarget(target, contentIndex, sourceSlug);
+      const routable =
+        resolved?.kind === "note" && isRoutable && !isRoutable(resolved.value)
+          ? null
+          : resolved;
 
       if (start > lastIndex) {
         newNodes.push({
@@ -92,53 +109,35 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           value: node.value.slice(lastIndex, start),
         });
       }
+      lastIndex = start + full.length;
 
-      const target = rawTarget?.trim();
-      const isEmbed = embedMark === "!";
-      const targetResolved = resolveTarget(target, contentIndex);
-      const resolved =
-        targetResolved?.kind === "note" &&
-        isRoutable &&
-        !isRoutable(targetResolved.value)
-          ? null
-          : targetResolved;
-      const fragment = parseFragment(rawFragment);
-
-      if (isEmbed && resolved?.kind === "image") {
+      if (isEmbed && routable?.kind === "image") {
         newNodes.push(
           createImageEmbedNode(
-            buildAssetsUrl(resolved.value, assetBase),
-            alias?.trim() ?? target,
+            buildAssetsUrl(routable.value, assetBase),
+            aliasText,
+            target,
           ),
         );
-      } else if (isEmbed && resolved?.kind === "note") {
-        const html = await renderNoteEmbed?.(resolved.value, fragment);
+      } else if (isEmbed && routable?.kind === "note") {
+        const html = await renderNoteEmbed?.(routable.value, fragment);
 
         if (html) {
-          newNodes.push(createNoteEmbedNode(resolved.value, fragment, html));
+          newNodes.push(createNoteEmbedNode(routable.value, fragment, html));
         } else {
-          newNodes.push({
-            type: "link",
-            url: resolvePermalink(resolved.value),
-            data: {
-              hProperties: {
-                class: "rr-obsidian-wikilink-embed-unresolved",
-              },
-            },
-            children: [
-              {
-                type: "text",
-                value: `[[Unresolved embed: ${target}]]`,
-              },
-            ],
-          });
+          newNodes.push(
+            createUnresolvedEmbedNode(
+              rawDestination,
+              resolvePermalink(routable.value),
+            ),
+          );
         }
-      } else if (isEmbed && resolved?.kind === "attachment") {
-        const label = alias?.trim() ?? target;
-        const url = attachmentUrl(resolved.value);
+      } else if (isEmbed && routable?.kind === "attachment") {
+        const label = aliasText ?? target;
+        const url = attachmentUrl(routable.value);
         const html = await renderContent?.({
           kind: "attachment",
-          path: resolved.value,
+          path: routable.value,
           raw: target,
           label,
           url,
@@ -149,36 +148,47 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         newNodes.push(
           html
             ? { type: "html", value: html }
-            : createAttachmentFallbackLink(resolved.value, label, url),
+            : createAttachmentFallbackLink(routable.value, label, url),
         );
       } else if (isEmbed) {
         newNodes.push({
           type: "text",
-          value: `[[Unresolved embed: ${target}]]`,
+          value: `[[Unresolved embed: ${rawDestination}]]`,
         });
-      } else if (resolved?.kind === "note") {
-        const label = alias?.trim() ?? target;
+      } else if (routable?.kind === "note") {
+        const fragmentLabel = fragment
+          ? fragment.kind === "block"
+            ? `^${fragment.value}`
+            : fragment.value
+          : "";
+        const label =
+          aliasText ??
+          (target
+            ? fragmentLabel
+              ? `${target} > ${fragmentLabel}`
+              : target
+            : fragmentLabel);
         const anchor = fragment ? `#${slugifyFragment(fragment)}` : "";
         newNodes.push({
           type: "link",
-          url: `${resolvePermalink(resolved.value)}${anchor}`,
+          url: `${resolvePermalink(routable.value)}${anchor}`,
           data: { hProperties: { class: WIKILINK_CLASS } },
           children: [{ type: "text", value: label }],
         });
-      } else if (resolved?.kind === "image") {
-        const label = alias?.trim() ?? target;
+      } else if (routable?.kind === "image") {
+        const label = aliasText ?? target;
         newNodes.push({
           type: "link",
-          url: buildAssetsUrl(resolved.value, assetBase),
+          url: buildAssetsUrl(routable.value, assetBase),
           data: { hProperties: { class: WIKILINK_CLASS } },
           children: [{ type: "text", value: label }],
         });
-      } else if (resolved?.kind === "attachment") {
-        const label = alias?.trim() ?? target;
-        const url = attachmentUrl(resolved.value);
+      } else if (routable?.kind === "attachment") {
+        const label = aliasText ?? target;
+        const url = attachmentUrl(routable.value);
         const html = await renderContent?.({
           kind: "attachment",
-          path: resolved.value,
+          path: routable.value,
           raw: target,
           label,
           url,
@@ -189,10 +199,10 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
         newNodes.push(
           html
             ? { type: "html", value: html }
-            : createAttachmentFallbackLink(resolved.value, label, url),
+            : createAttachmentFallbackLink(routable.value, label, url),
         );
       } else {
-        const label = alias?.trim() ?? target;
+        const label = aliasText ?? rawDestination;
         newNodes.push({
           type: "link",
           url: "#",
@@ -200,8 +210,6 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
           children: [{ type: "text", value: label }],
         });
       }
-
-      lastIndex = start + full.length;
     }
 
     if (lastIndex < node.value.length) {
@@ -217,11 +225,34 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
   }
 }
 
-function createImageEmbedNode(url: string, alt: string): Html {
+function createImageEmbedNode(
+  url: string,
+  alias: string | undefined,
+  target: string,
+): Html {
+  const size = parseImageSize(alias);
+  const alt = size ? target : (alias ?? target);
+  const dimensions = size
+    ? `${size.width ? ` width="${size.width}"` : ""}${size.height ? ` height="${size.height}"` : ""}`
+    : "";
   return {
     type: "html",
-    value: `<div class="rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}" /></div>`,
+    value: `<div class="rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}"${dimensions} loading="lazy" decoding="async" /></div>`,
   };
+}
+
+function parseImageSize(
+  alias: string | undefined,
+): { width?: number; height?: number } | null {
+  const match = alias?.trim().match(/^(\d+)(?:x(\d+))?$/);
+  if (!match) return null;
+  const width = Number(match[1]);
+  const height = match[2] ? Number(match[2]) : undefined;
+  if (!Number.isSafeInteger(width) || width <= 0) return null;
+  if (height !== undefined && (!Number.isSafeInteger(height) || height <= 0)) {
+    return null;
+  }
+  return height === undefined ? { width } : { width, height };
 }
 
 function splitParagraphEmbeds(tree: Root): void {
@@ -266,6 +297,7 @@ function splitParagraphContent(paragraph: Paragraph): Content[] | null {
   const blocks: Content[] = [];
   for (const segment of segments) {
     if (segment.length === 0) continue;
+    if (segment.every(isBlankContent)) continue;
     if (segment.length === 1 && isBlockEmbedHtml(segment[0])) {
       blocks.push(segment[0]);
     } else {
@@ -277,6 +309,10 @@ function splitParagraphContent(paragraph: Paragraph): Content[] | null {
   }
 
   return blocks.length > 0 ? blocks : null;
+}
+
+function isBlankContent(child: Content): boolean {
+  return child.type === "text" && child.value.trim() === "";
 }
 
 function isBlockEmbedHtml(child: Content): child is Html {
@@ -296,7 +332,7 @@ function createNoteEmbedNode(
   html: string,
 ): Html {
   const fragmentAttribute = fragment
-    ? ` data-wikilink-fragment="${escapeHtmlAttribute(fragment.value)}"`
+    ? ` data-wikilink-fragment="${escapeHtmlAttribute(fragment.kind === "block" ? `^${fragment.value}` : fragment.value)}"`
     : "";
   return {
     type: "html",
@@ -304,14 +340,42 @@ function createNoteEmbedNode(
   };
 }
 
-type Resolved = { kind: "note" | "image" | "attachment"; value: string };
+function createUnresolvedEmbedNode(
+  rawDestination: string,
+  url: string,
+): Content {
+  return {
+    type: "link",
+    url,
+    data: {
+      hProperties: {
+        class: "rr-obsidian-wikilink-embed-unresolved",
+      },
+    },
+    children: [
+      {
+        type: "text",
+        value: `[[Unresolved embed: ${rawDestination}]]`,
+      },
+    ],
+  };
+}
+
+type Resolved = {
+  kind: "note" | "image" | "attachment";
+  value: string;
+};
 
 function resolveTarget(
   target: string,
   contentIndex: Map<string, string>,
+  sourceSlug: string | undefined,
 ): Resolved | null {
-  const key = target.toLowerCase();
-  const value = contentIndex.get(key);
+  if (!target) {
+    return sourceSlug ? { kind: "note", value: sourceSlug } : null;
+  }
+
+  const value = contentIndex.get(target.toLowerCase());
   if (!value) return null;
 
   const kind = isImagePath(value)

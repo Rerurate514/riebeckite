@@ -56,7 +56,9 @@ Public content URLs come from the resolved `ContentPublicLocation` (`resolveDefa
 `@riebeckite/core` is the plugin, content, migration, publication, derived
 data, provenance, and host contract. Its root barrel is explicit; new public
 symbols must be added there deliberately, and `packages/core/api.json` records
-the reviewed surface (550 symbols at the 2026-11 audit).
+the reviewed surface (533 symbols after the 2026-11 review; the 550-symbol
+pre-review surface included 17 internal CLI helpers now available only from
+`@riebeckite/core/cli`).
 
 `@riebeckite/core/cli` is the CLI extension API used by Plugin CLI extensions
 and by the CLI itself. `@riebeckite/core/client` is the browser/runtime-safe

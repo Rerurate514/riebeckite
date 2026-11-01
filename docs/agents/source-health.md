@@ -55,6 +55,33 @@ wildcard exports; size signals remain review inputs, not split targets.
 
 ## Completed structural changes
 
+### Mutation and Migration
+
+`file_system_content_mutation.ts` kept plan/apply/rollback plus journal
+serialization. Journal parsing and plan serialization now live in
+`mutation_journal.ts`. `file_system_content_migration.ts` keeps the migration
+lifecycle; migration state/history/lock persistence now lives in
+`migration_state_store.ts`. Both files keep their public classes and behavior.
+
+### Content source creation
+
+The repeated `config.content.source ?? new FileSystemContentSource(directory,
+exclude)` rule now lives in `createContentSource` in `@riebeckite/node`. CLI,
+HonoX generated runtime modules, Inspector, Diagnostics, and the web asset
+script call the factory; each keeps its own directory override.
+
+### Plugin contract verification
+
+The verifier moved from `@riebeckite/test/plugin-contract` to the CLI command
+implementation because `riebeckite plugin verify` is a production CLI feature.
+`@riebeckite/test` is now a dev-only test package; CLI no longer depends on it.
+
+### Development trace
+
+`createDevelopmentTrace` moved from HonoX to `@riebeckite/diagnostics`. HonoX
+continues to re-export it from `@riebeckite/honox/runtime`, but the move removes
+the Inspector test's dev dependency on HonoX and the package-level cycle.
+
 ### HonoX SSG
 
 `ssg_plugin.ts` mixed Vite orchestration, output cache persistence, fast-path

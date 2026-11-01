@@ -498,12 +498,9 @@ test("component rendering uses the documented docs sidebar DOM contract", async 
   );
   assert.match(html, /rb-sidebar-navigation__list/);
   assert.match(html, /rb-sidebar-navigation__section/);
-  assert.match(
-    html,
-    /<details class="rb-sidebar-navigation__details" open="">/,
-  );
+  assert.match(html, /<details class="rb-sidebar-navigation__details">/);
   assert.match(html, /aria-current="page"/);
-  assert.match(html, /data-sidebar-expanded="true"/);
+  assert.match(html, /data-sidebar-expanded="false"/);
 });
 
 test("resolves the current docs entry from the site path outside an article", async () => {

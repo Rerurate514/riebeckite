@@ -47,7 +47,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
       label={label}
       searchable
       nativeDetails
-      autoExpandActive
+      autoExpandActive={false}
       stateKey={
         options ? `docs:${options.root}:${site?.language ?? ""}` : undefined
       }
@@ -67,7 +67,7 @@ function toNavigationItems(
   return items.map((item) => ({
     label: item.title,
     ...(item.href ? { href: item.href } : {}),
-    ...(item.collapsed === undefined ? {} : { collapsed: item.collapsed }),
+    collapsed: item.collapsed ?? true,
     children: toNavigationItems(item.children),
   }));
 }

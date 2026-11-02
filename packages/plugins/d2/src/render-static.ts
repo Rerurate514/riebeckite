@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import type { D2BuildRenderResult, D2Layout } from "./types.js";
 
 const RENDER_TIMEOUT_MS = 30_000;
+const STALL_TOLERANCE_MS = 500;
 const D2_PACKAGE = "@d2lang/d2";
 
 type D2Renderer = {
@@ -172,13 +173,30 @@ function resolveD2From(base: string): string | null {
   }
 }
 
-function withTimeout<T>(promise: Promise<T>, message: string): Promise<T> {
+export function withTimeout<T>(
+  promise: Promise<T>,
+  message: string,
+): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
-    timer = setTimeout(
-      () => reject(new D2TimeoutError(message)),
-      RENDER_TIMEOUT_MS,
-    );
+    let deadline = Date.now() + RENDER_TIMEOUT_MS;
+    const schedule = () => {
+      timer = setTimeout(
+        () => {
+          const now = Date.now();
+          if (now - deadline > STALL_TOLERANCE_MS) {
+            // A blocked main thread delays the timer without advancing the
+            // render, so give starved renders a fresh window.
+            deadline = now + RENDER_TIMEOUT_MS;
+            schedule();
+            return;
+          }
+          reject(new D2TimeoutError(message));
+        },
+        Math.max(0, deadline - Date.now()),
+      );
+    };
+    schedule();
   });
 
   return Promise.race([promise, timeout]).finally(() => {

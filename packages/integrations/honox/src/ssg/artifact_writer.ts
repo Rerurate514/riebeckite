@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
+import { constants } from "node:fs";
 import {
+  copyFile,
   cp,
   lstat,
   mkdir,
@@ -14,6 +16,7 @@ import { resolveWithinDirectory } from "./file_system.js";
 export type BuildArtifactWriter = {
   readonly directory: string;
   copyFrom(source: string): Promise<void>;
+  copyFileFrom(source: string, path: string): Promise<void>;
   remove(path: string): Promise<void>;
   write(path: string, data: string | Uint8Array): Promise<void>;
   publish(): Promise<void>;
@@ -63,6 +66,13 @@ export async function createBuildArtifactWriter(input: {
       const target = resolveArtifactPath(stagingDirectory, path);
       await mkdir(dirname(target), { recursive: true });
       await writeFile(target, data);
+    },
+    async copyFileFrom(source, path) {
+      ensureOpen(completed);
+      const target = resolveArtifactPath(stagingDirectory, path);
+      await mkdir(dirname(target), { recursive: true });
+      await rm(target, { force: true });
+      await copyFile(source, target, constants.COPYFILE_FICLONE);
     },
     async publish() {
       ensureOpen(completed);

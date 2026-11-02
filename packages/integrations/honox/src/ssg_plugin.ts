@@ -44,9 +44,9 @@ import {
 } from "./ssg/inventory.js";
 import {
   decideOutputCacheRejection,
-  decodeOutput,
   loadOutputCacheMetadata,
   type OutputCacheState,
+  resolveOutputCacheEntryPath,
   saveOutputCache,
   validateOutputCache,
 } from "./ssg/output_cache.js";
@@ -511,8 +511,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 );
               }
               const writer = artifactWriter;
-              await measure(timingsMs, "outputWrite", async () =>
-                writer.write(path, await decodeOutput(outputCachePath, cached)),
+              await measure(timingsMs, "outputWrite", () =>
+                writer.copyFileFrom(
+                  resolveOutputCacheEntryPath(outputCachePath, cached),
+                  path,
+                ),
               );
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;

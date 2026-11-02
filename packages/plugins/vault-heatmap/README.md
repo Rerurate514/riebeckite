@@ -19,10 +19,11 @@ end: 2026-10-31
 ```
 ````
 
-The plugin reads `created`, `modified`, and `updated` from each entry's
-frontmatter. `created` counts on the creation date; `modified` counts on
-`modified`, falling back to `updated`. Entries without a valid date contribute
-nothing.
+The plugin reads frontmatter date properties from each entry. By default,
+`created` (falling back to `date` and `published`) counts on the creation date,
+and `modified` (falling back to `updated`) counts on the modification date. Use
+`createdFields` and `modifiedFields` to choose different properties; the first
+valid date in each list wins. Entries without a valid date contribute nothing.
 
 Only discoverable public content contributes. Drafts, unlisted entries, and
 scheduled content that has not reached its publication time stay out of the
@@ -39,7 +40,12 @@ import { vaultHeatmap } from "@riebeckite/plugin-vault-heatmap";
 
 export default defineConfig({
   // ...
-  plugins: [vaultHeatmap()],
+  plugins: [
+    vaultHeatmap({
+      createdFields: ["created", "date", "published", "posted"],
+      modifiedFields: ["modified", "updated"],
+    }),
+  ],
 });
 ```
 
@@ -54,6 +60,8 @@ block during the manifest phase. No client JavaScript is loaded for the heatmap.
 | `title` | `string` | `Vault activity` | Caption above the grid |
 | `weekStart` | `"sunday" \| "monday"` | `"sunday"` | First day of each week |
 | `language` | `string` | `"vault-heatmap"` | Fenced code block language |
+| `createdFields` | `string[]` | `["created", "date", "published"]` | Creation date properties, in fallback order |
+| `modifiedFields` | `string[]` | `["modified", "updated"]` | Modification date properties, in fallback order |
 
 ## Block fields
 

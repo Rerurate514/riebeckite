@@ -12,30 +12,26 @@ export const vaultActivityView = defineDerivedView<
   VaultActivity
 >({
   id: VAULT_HEATMAP_VIEW_ID,
-  version: "vault-heatmap-v1",
+  version: "vault-heatmap-v2",
   compute(input, context) {
     const days = new Map<string, { created: number; modified: number }>();
+    const tracked = new Set([
+      ...input.fields.created,
+      ...input.fields.modified,
+    ]);
 
     for (const entry of input.entries) {
       context.track({ type: "content", id: entry.slug });
-      context.track({
-        type: "frontmatter",
-        id: entry.slug,
-        property: "created",
-      });
-      context.track({
-        type: "frontmatter",
-        id: entry.slug,
-        property: "modified",
-      });
-      context.track({
-        type: "frontmatter",
-        id: entry.slug,
-        property: "updated",
-      });
+      for (const property of tracked) {
+        context.track({
+          type: "frontmatter",
+          id: entry.slug,
+          property,
+        });
+      }
 
-      const created = dateKey(entry.created);
-      const modified = dateKey(entry.modified) ?? dateKey(entry.updated);
+      const created = firstDate(entry.dates, input.fields.created);
+      const modified = firstDate(entry.dates, input.fields.modified);
       if (created) increment(days, created, "created");
       if (modified) increment(days, modified, "modified");
     }
@@ -83,6 +79,17 @@ function validDateKey(year: string, month: string, day: string): string | null {
     return null;
   }
   return `${year}-${month}-${day}`;
+}
+
+function firstDate(
+  dates: Readonly<Record<string, string>>,
+  fields: readonly string[],
+): string | null {
+  for (const field of fields) {
+    const value = dateKey(dates[field]);
+    if (value) return value;
+  }
+  return null;
 }
 
 function increment(

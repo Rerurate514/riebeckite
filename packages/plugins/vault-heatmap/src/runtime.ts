@@ -36,9 +36,20 @@ export function createVaultHeatmapRuntime(
 
       let activity: VaultActivity;
       try {
+        const fields = [
+          ...new Set([...options.createdFields, ...options.modifiedFields]),
+        ];
         const resolution = await derived.resolveWithDependencies(
           vaultActivityView,
-          { entries: manifest.discoverableEntries.map(activityInput) },
+          {
+            fields: {
+              created: options.createdFields,
+              modified: options.modifiedFields,
+            },
+            entries: manifest.discoverableEntries.map((entry) =>
+              activityInput(entry, fields),
+            ),
+          },
         );
         activity = resolution.value;
       } catch (error) {
@@ -63,16 +74,14 @@ export function createVaultHeatmapRuntime(
 
 function activityInput(
   entry: ContentManifestEntry,
+  fields: readonly string[],
 ): VaultHeatmapInput["entries"][number] {
-  const created = dateKey(entry.frontmatter.created);
-  const modified = dateKey(entry.frontmatter.modified);
-  const updated = dateKey(entry.frontmatter.updated);
-  return {
-    slug: entry.slug,
-    ...(created === null ? {} : { created }),
-    ...(modified === null ? {} : { modified }),
-    ...(updated === null ? {} : { updated }),
-  };
+  const dates: Record<string, string> = {};
+  for (const field of fields) {
+    const value = dateKey(entry.frontmatter[field]);
+    if (value !== null) dates[field] = value;
+  }
+  return { slug: entry.slug, dates };
 }
 
 function resolveBlock(

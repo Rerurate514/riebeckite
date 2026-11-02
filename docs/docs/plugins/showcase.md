@@ -946,7 +946,7 @@ VIEW[{showcase_priority}]
 
 ### Vault heatmap — [`vault-heatmap`](./vault-heatmap.md)
 
-A `vault-heatmap` block aggregates `created` and `modified` dates from discoverable content into a calendar. Drafts, scheduled notes, and unlisted notes are excluded.
+A `vault-heatmap` block aggregates `created` (or `date` / `published` when absent), `modified`, and `updated` dates from discoverable content into a calendar. Drafts, scheduled notes, and unlisted notes are excluded.
 
 #### Source
 

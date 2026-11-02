@@ -946,7 +946,7 @@ VIEW[{showcase_priority}]
 
 ### Vault ヒートマップ：[`vault-heatmap`](./vault-heatmap.ja.md)
 
-`vault-heatmap` ブロックは公開対象コンテンツの `created` と `modified` をカレンダーに集計します。下書き、予約投稿、unlisted のノートは除外されます。
+`vault-heatmap` ブロックは公開対象コンテンツの `created`（なければ `date` / `published`）、`modified`、`updated` をカレンダーに集計します。下書き、予約投稿、unlisted のノートは除外されます。
 
 #### ソース
 

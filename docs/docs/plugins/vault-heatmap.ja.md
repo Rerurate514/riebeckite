@@ -21,7 +21,7 @@ end: 2026-10-31
 ```
 ````
 
-各エントリの frontmatter にある `created`、`modified`、`updated` を読みます。`created` は作成日に、`modified` は `modified`（なければ `updated`）の日に数えます。有効な日付がないエントリは集計に含みません。
+各エントリの frontmatter から日付プロパティを読みます。既定では `created`（なければ `date`、`published`）を作成日、`modified`（なければ `updated`）を変更日として数えます。`createdFields` と `modifiedFields` でプロパティを変更でき、各リストで最初に見つかった有効な日付を使います。有効な日付がないエントリは集計に含みません。
 
 集計対象は公開一覧に出る public コンテンツだけです。draft、unlisted、公開時刻に達していない scheduled は含まれないため、未公開の活動がヒートマップから分かることはありません。
 
@@ -35,7 +35,12 @@ import { vaultHeatmap } from "@riebeckite/plugin-vault-heatmap";
 
 export default defineConfig({
   // ...
-  plugins: [vaultHeatmap()],
+  plugins: [
+    vaultHeatmap({
+      createdFields: ["created", "date", "published", "posted"],
+      modifiedFields: ["modified", "updated"],
+    }),
+  ],
 });
 ```
 
@@ -49,6 +54,8 @@ export default defineConfig({
 | `title` | `string` | `Vault activity` | グリッド上のキャプション |
 | `weekStart` | `"sunday" \| "monday"` | `"sunday"` | 各週の開始曜日 |
 | `language` | `string` | `"vault-heatmap"` | フェンスコードブロックの言語 |
+| `createdFields` | `string[]` | `["created", "date", "published"]` | 作成日として使うプロパティ（フォールバック順） |
+| `modifiedFields` | `string[]` | `["modified", "updated"]` | 変更日として使うプロパティ（フォールバック順） |
 
 ## ブロックのフィールド
 

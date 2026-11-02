@@ -528,6 +528,7 @@ function canAffectProcessedContent(
   return Boolean(
     plugin.remarkPlugins?.length ||
       plugin.rehypePlugins?.length ||
+      plugin.preprocessMarkdown ||
       plugin.extendMarkdownPipeline ||
       plugin.extendHtmlPipeline ||
       plugin.renderers?.length ||

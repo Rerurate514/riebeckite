@@ -86,6 +86,19 @@ test("resolves cross-note heading and block links with aliases", async () => {
   assert.match(noteHtml, /<p data-block-id="blk" id="blk">Block<\/p>/);
 });
 
+test("resolves wikilinks with aliases in table cells", async () => {
+  const html = await render({
+    "index.md":
+      "---\npublish: true\n---\n\n| Related |\n| --- |\n| [[note|Note]] |\n",
+    "note.md": "---\npublish: true\n---\n\n# Note\n",
+  });
+
+  assert.match(
+    html,
+    /<td><a href="\/note" class="rr-obsidian-wikilink">Note<\/a><\/td>/,
+  );
+});
+
 test("applies Obsidian image size aliases and keeps alt text distinct", async () => {
   const image = new Uint8Array([137, 80, 78, 71]);
   const html = await render({

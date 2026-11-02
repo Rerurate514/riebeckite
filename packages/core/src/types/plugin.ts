@@ -100,6 +100,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     context: ExternalDependencyContext,
   ): Promise<readonly ExternalDependencyResolution[]>;
   validateOptions?: PluginOptionsValidator<TOptions>;
+  preprocessMarkdown?(markdown: string): string;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
   setup?(context: PluginLifecycleContext): void | Promise<void>;

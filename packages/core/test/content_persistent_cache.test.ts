@@ -570,6 +570,19 @@ test("isPersistentlyCacheable treats renderers as processed content transformers
   assert.match(result.reason ?? "", /processedContentCache contract/);
 });
 
+test("isPersistentlyCacheable treats Markdown preprocessors as transformers", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "markdown-preprocessor",
+      preprocessMarkdown: (markdown) => markdown,
+    },
+  ]);
+  const result = isPersistentlyCacheable("test", config);
+
+  assert.equal(result.cacheable, false);
+  assert.match(result.reason ?? "", /processedContentCache contract/);
+});
+
 test("isPersistentlyCacheable allows renderer plugins with none processed content cache contract", () => {
   const config = contentTestConfig(TEST_CACHE_DIR, [
     {

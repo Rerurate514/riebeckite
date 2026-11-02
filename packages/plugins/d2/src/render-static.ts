@@ -126,7 +126,7 @@ async function importD2Module(): Promise<D2RendererModule> {
       `Could not resolve ${D2_PACKAGE} from the site or its config.`,
     );
   }
-  return normalizeD2Module(await import(specifier));
+  return normalizeD2Module(await import(/* @vite-ignore */ specifier));
 }
 
 function resolveD2ModuleUrl(): string | null {

@@ -111,6 +111,7 @@ export async function buildImages(options: BuildImagesOptions = {}) {
   if (failed > 0) {
     process.exitCode = 1;
   }
+  return { copied, skipped, removed, failed };
 }
 
 async function copyIfChanged(
@@ -123,7 +124,7 @@ async function copyIfChanged(
   if (
     targetStats !== null &&
     sourceStats.size === targetStats.size &&
-    sourceStats.mtimeMs === targetStats.mtimeMs
+    Math.abs(sourceStats.mtimeMs - targetStats.mtimeMs) < 1
   ) {
     return "skipped";
   }

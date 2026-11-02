@@ -49,6 +49,9 @@ test("buildImages copies only public referenced assets and removes stale outputs
     "export const source = true;",
   );
 
+  const repeated = await buildImages({ contentDir, assetsRoot, exclude: [] });
+  assert.deepEqual(repeated, { copied: 0, skipped: 3, removed: 0, failed: 0 });
+
   await writeFixture(contentDir, "images/live.png", "LIVE-V2");
   await writeFixture(contentDir, "index.md", publishedNote("images/added.png"));
   await writeFixture(contentDir, "images/added.png", "ADDED");

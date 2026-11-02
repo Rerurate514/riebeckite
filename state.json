@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "25f6e1aa-5ab1-4c2d-9e6c-bf622008fa94",
-    "publishedAt": "2026-11-02T07:38:49.141Z",
-    "publicationFingerprint": "8ad67b8b8d47c746143e46c719e4e544e824d57e687fc47d43135e370f4acfed",
+    "runId": "9e15eb61-cdfa-4f53-83ad-76239c17655c",
+    "publishedAt": "2026-11-02T07:55:38.172Z",
+    "publicationFingerprint": "8cb0e989be842ef868000b0c498c2eea10c8a909eaad914942d8575667e8806b",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3714,16 +3714,16 @@
         "permalink": "/ja/docs/philosophy-details",
         "title": "設計思想の詳細",
         "visibility": "public",
-        "fingerprint": "dcff1f3066dfb2cd16b17168195f9ba54be3ed75898c0604dcc19fc4b55f841a",
-        "contentFingerprint": "8d855abdb7d11f6a2e2ab68783ce0726fad62dd9e0ffe505619462cc1e3f1edf"
+        "fingerprint": "602149a41ff173ab7c86ad56f14d3cee552851de4ab3ffcaab68053ef5d8ffef",
+        "contentFingerprint": "81989ffe91c7b3b99d6209fe7c421218e27d51ba98719ec81c3fd4d1494bf6fe"
       },
       {
         "slug": "docs/philosophy.ja",
         "permalink": "/ja/docs/philosophy",
         "title": "設計思想",
         "visibility": "public",
-        "fingerprint": "febd1d92d29ad012a130d8d70395a63d3b14edbb4aa9e3068395a03d02850f9b",
-        "contentFingerprint": "f00b6eeb1ff937f7327d0d4db01559cb0182a4b20989a3a127252614484e0b3d"
+        "fingerprint": "3bfa501ff7dbbd9c78933a6c2330819ffc215cfcc7d8c3fcad94941c4daae28f",
+        "contentFingerprint": "fffa875c8ab825f933eb43ff850ac51b47804016dd4dd1c55d7854154e6cb246"
       },
       {
         "slug": "docs/plugins/alias",
@@ -6340,7 +6340,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "1243116eda58ded7aa0974b2df31924001c362296fd1e8ce13ebfbeba1993e9b",
+    "artifactFingerprint": "5f45c21cce3cafbd454426ef4b0868af9aea088844a471b1a4974edaf35e5ee7",
     "provider": "cloudflare-workers"
   }
 }

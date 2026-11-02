@@ -220,12 +220,12 @@ async function addPageTypeToPlugin(
       `Could not find Plugin entry point: ${indexPath}. Create the Plugin first with \`riebeckite create plugin\`.`,
     );
   });
-  const pagePath = normalizePageTypePath(options.path);
+  const normalizedPagePath = normalizePageTypePath(options.path);
   if (
     source.includes(`"${options.path}"`) ||
-    source.includes(`"${pagePath}"`) ||
+    source.includes(`"${normalizedPagePath}"`) ||
     (await pluginUsesPath(pluginRoot, options.path)) ||
-    (await pluginUsesPath(pluginRoot, pagePath))
+    (await pluginUsesPath(pluginRoot, normalizedPagePath))
   )
     throw new Error(
       `PageType path already exists in this Plugin: ${options.path}`,

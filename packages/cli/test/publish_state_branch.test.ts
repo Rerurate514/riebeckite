@@ -53,7 +53,7 @@ function git(args: string[], cwd: string, input?: string): string {
 
 test("the persist step pushes publication state to a dedicated branch", async (t) => {
   const workflow = await fsp.readFile(workflowUrl, "utf8");
-  assert.doesNotMatch(workflow, /--force/u);
+  assert.match(workflow, /inputs\.force/u);
   assert.match(workflow, /hash-object -w/u);
   assert.match(workflow, /mktree/u);
   assert.match(workflow, /commit-tree/u);

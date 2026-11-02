@@ -207,9 +207,8 @@ async function runPublication(
     history = appendPublicationRun(await readPublicationHistory(project), run);
     await writePublicationHistory(project, history);
     const buildStartedAt = Date.now();
-    const staleArtifact = !artifactCurrent;
     await runBuild(project, {
-      full: staleArtifact,
+      full: false,
       publishingBuildTime: plan.buildTime,
       observability: {
         logger: new NoopLogger(),

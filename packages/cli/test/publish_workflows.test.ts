@@ -10,13 +10,14 @@ test("publish.yml is the single production deploy path", async () => {
   assert.match(workflow, /cancel-in-progress: false/u);
   assert.match(workflow, /Verify latest revision/u);
   assert.match(workflow, /push:\s*\n\s*branches: \[main\]/u);
-  assert.match(workflow, /publish gate --provider cloudflare-workers/u);
-  assert.match(workflow, /publish record/u);
-  assert.doesNotMatch(workflow, /apps\/web\/publication\/state\.json/u);
-  assert.ok(
-    workflow.indexOf("Publication gate") <
-      workflow.indexOf("Deploy the built assets"),
+  assert.match(workflow, /publish run/u);
+  assert.match(
+    workflow,
+    /--execute --provider cloudflare-workers --trigger ci/u,
   );
+  assert.doesNotMatch(workflow, /apps\/web\/publication\/state\.json/u);
+  assert.match(workflow, /Restore incremental site build cache/u);
+  assert.match(workflow, /Restore package build cache/u);
   await assert.rejects(
     fs.stat(new URL("deploy.yml", workflows)),
     "the separate deploy workflow must not exist",
@@ -36,10 +37,10 @@ test("publish.yml stores publication state on a dedicated branch", async () => {
   assert.doesNotMatch(workflow, /\[skip ci\]/u);
   assert.ok(
     workflow.indexOf("Restore publication state") <
-      workflow.indexOf("Plan publication"),
+      workflow.indexOf("Publish the documentation site"),
   );
   assert.ok(
-    workflow.indexOf("Record the successful deployment") <
+    workflow.indexOf("Publish the documentation site") <
       workflow.indexOf("Persist publication state"),
   );
 });

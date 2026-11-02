@@ -39,6 +39,7 @@ export async function loadStandaloneSsgBundle(input: {
                 plugin.name !== "riebeckite-ssr-externals" &&
                 !plugin.name.startsWith("@hono/vite-build/"),
             ),
+            createRuntimeExternalPlugin(),
             ...(input.clientOutputDirectory
               ? [createClientManifestPlugin(root, input.clientOutputDirectory)]
               : []),
@@ -67,6 +68,22 @@ export async function loadStandaloneSsgBundle(input: {
     throw new Error(`Failed to find a default export from ${input.entry}.`);
   }
   return { app: module.default, module };
+}
+
+const runtimeExternalPackages = new Set(["@d2lang/d2", "@marp-team/marp-core"]);
+
+function createRuntimeExternalPlugin(): Plugin {
+  return {
+    name: "riebeckite-ssg-runtime-externals",
+    enforce: "pre",
+    async resolveId(source, importer) {
+      if (!runtimeExternalPackages.has(source)) return undefined;
+      const resolved = await this.resolve(source, importer, { skipSelf: true });
+      return resolved
+        ? { id: pathToFileURL(resolved.id).href, external: true }
+        : undefined;
+    },
+  };
 }
 
 function createClientManifestPlugin(

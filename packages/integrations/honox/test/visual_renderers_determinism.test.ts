@@ -61,6 +61,7 @@ test("D2 and Marp outputs stay equal across cold and incremental SSG builds", as
     "utf8",
   );
   assert.match(noteHtml, /<svg/u);
+  assert.match(noteHtml, /data-d2="rendered"/u);
   assert.match(noteHtml, /rb-marp/u);
   assert.match(
     await readFile(path.join(distPath(site), "search-data.json"), "utf8"),

@@ -120,17 +120,12 @@ export async function renderD2StaticSvg(
  * package is resolved from the process working directory instead.
  */
 async function importD2Module(): Promise<D2RendererModule> {
-  const importModule = new Function(
-    "specifier",
-    "return import(specifier)",
-  ) as (specifier: string) => Promise<unknown>;
-
   try {
-    return normalizeD2Module(await importModule(D2_PACKAGE));
+    return normalizeD2Module(await import("@d2lang/d2"));
   } catch (error) {
     const fallback = resolveD2FromWorkingDirectory();
     if (!fallback) throw error;
-    return normalizeD2Module(await importModule(fallback));
+    return normalizeD2Module(await import(fallback));
   }
 }
 

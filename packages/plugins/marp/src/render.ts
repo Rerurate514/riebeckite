@@ -100,12 +100,8 @@ async function loadMarpCore(): Promise<MarpCoreConstructor> {
  * fails at runtime.
  */
 async function importMarpCore(): Promise<MarpCoreModule> {
-  const importModule = new Function(
-    "specifier",
-    "return import(specifier)",
-  ) as (specifier: string) => Promise<MarpCoreModule>;
   try {
-    return await importModule("@marp-team/marp-core");
+    return (await import("@marp-team/marp-core")) as MarpCoreModule;
   } catch {
     const require = createRequire(path.join(process.cwd(), "package.json"));
     return require("@marp-team/marp-core") as MarpCoreModule;

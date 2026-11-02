@@ -329,6 +329,19 @@ test("a prefetched page is reused by navigation", async () => {
   }
 });
 
+test("intent prefetches a focused link", async () => {
+  fixture.resetRequests();
+  const { page, errors } = await open();
+  try {
+    await page.focus('a[href="/c-fast"]');
+    await waitForRequest(fixture, "/c-fast");
+    assert.equal(fixture.requests("/c-fast"), 1);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 async function waitForRequest(
   spaFixture: SpaFixture,
   pathname: string,

@@ -71,8 +71,9 @@ Focus and announcement:
 
 ## Prefetch
 
-`prefetch: "hover"` adds a `pointerover` listener. It uses the same link
-eligibility rules as click navigation and ignores hash-only links.
+`prefetch: "hover"` adds a `pointerover` listener. `prefetch: "intent"` also
+adds `focusin`, `pointerdown`, and `touchstart` listeners. They use the same link
+eligibility rules as click navigation and ignore hash-only links.
 
 The cache:
 

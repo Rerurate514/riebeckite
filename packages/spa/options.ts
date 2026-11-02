@@ -1,5 +1,5 @@
 export type SpaOptions = {
-  prefetch?: false | "hover";
+  prefetch?: false | "hover" | "intent";
   scrollRestoration?: boolean;
   viewTransitions?: boolean;
 };
@@ -30,9 +30,10 @@ export function validateSpaOptions(options: SpaOptions): void {
   if (
     options.prefetch !== undefined &&
     options.prefetch !== false &&
-    options.prefetch !== "hover"
+    options.prefetch !== "hover" &&
+    options.prefetch !== "intent"
   ) {
-    throw new TypeError('SPA prefetch must be false or "hover".');
+    throw new TypeError('SPA prefetch must be false, "hover", or "intent".');
   }
   if (
     options.scrollRestoration !== undefined &&

@@ -33,6 +33,9 @@ Release history in this file begins with the first release after the change-entr
 - Fix CLI usage error reporting so content usage errors use the shared `CLI_USAGE` contract, raw commands honor a leading `--help`, and JSON errors include the command. `upgrade --check` is now optional, and a typo with a built-in suggestion no longer loads the project.
   Packages: `@riebeckite/cli`, `@riebeckite/core`
 
+- Keep both images of an image comparison stacked in the same grid cell when the lightbox plugin wraps them in links, so the before and after images overlay instead of appearing one below the other.
+  Packages: `@riebeckite/plugin-image-compare`
+
 - Stop reporting spurious D2 render timeouts during development when the dev server blocks the event loop longer than the render timeout. The timeout now starts a fresh window instead of failing a render that could not make progress.
   Packages: `@riebeckite/plugin-d2`
 

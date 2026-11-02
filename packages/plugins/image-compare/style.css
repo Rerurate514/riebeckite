@@ -120,17 +120,21 @@
   height: auto;
 }
 
-.rr-image-compare__image--before,
 .rr-image-compare__layer {
   grid-area: 1 / 1;
+  align-self: stretch;
 }
 
-.rr-image-compare__layer {
-  align-self: stretch;
+.rr-image-compare .rr-image-compare__layer > * {
+  display: block;
+}
+
+.rr-image-compare__layer--after {
   clip-path: inset(0 0 0 var(--rr-image-compare-position));
 }
 
-.rr-image-compare[data-orientation="vertical"] .rr-image-compare__layer {
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__layer--after {
   clip-path: inset(var(--rr-image-compare-position) 0 0 0);
 }
 

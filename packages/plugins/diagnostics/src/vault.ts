@@ -4,7 +4,7 @@ import {
   isExcluded,
   isPublishable,
 } from "@riebeckite/core";
-import { FileSystemContentSource } from "@riebeckite/node";
+import { createContentSource } from "@riebeckite/node";
 import { type ParsedFrontmatter, parseFrontmatter } from "./frontmatter.js";
 import type { AnalyzerContentConfig } from "./types.js";
 
@@ -57,9 +57,7 @@ type WikilinkMatch = {
 export async function scanVault(
   config: AnalyzerContentConfig,
 ): Promise<ScanResult> {
-  const source =
-    config.source ??
-    new FileSystemContentSource(config.directory, config.exclude);
+  const source = createContentSource(config);
   const targetIndex = new Map<string, ResolvedTarget>();
   const filePaths = new Set<string>();
   const noteSlugs = new Set<string>();

@@ -1,0 +1,3148 @@
+{
+  ".": [
+    {
+      "name": "appendContentMigrationHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "appendProvenanceHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "appendPublicationRun",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "applyContentMigration",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "approveEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "AssetTransformInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "AssetTransformOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "attachErrorPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ATTACHMENTS_BASE_PATH",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "attachmentUrl",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "attachProvenanceArtifacts",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "BUILD_OUTPUT_MARKER_FILE",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "BUILD_OUTPUT_MARKER_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "buildContentCollections",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "buildOutputInventory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "BuildOutputMarker",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "buildOutputPlan",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "BuildProvenance",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "BuildProvenanceComparison",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "BuildTraceRecorder",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cacheContentSource",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "calculateReadingTime",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliAbortError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "cliArgument",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliArgumentDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentsOf",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliBoolean",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliBooleanOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandConflictError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "CliCommandContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "CliCommandHandler",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandRegistration",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandRegistry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandSource",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandSpec",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnostic",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnosticSeverity",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnosticSink",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientInitializerContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientResourceScope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntime",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeCreateOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeHost",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeInvokeOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliEnum",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliEnumOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliExample",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliExample",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliJsonEnvelope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliJsonErrorEnvelope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliLogger",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliNumber",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliNumberOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionsOf",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionType",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliProjectContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliShell",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliString",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliStringOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliStringWithDefault",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliTypedCommand",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliTypedCommandInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliUsageError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "cliVariadicArgument",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "compareBuildProvenance",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "compareOutputPlan",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CompletedContentBuildSnapshot",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CompositeTraceSink",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "computePipelineFingerprint",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ConfigValidationError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ConfigValidationIssue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ConsoleLogger",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "CONTENT_BUILD_STATE_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CONTENT_MIGRATION_HISTORY_LIMIT",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ContentAsset",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetDuplicateGroup",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetFormatSummary",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetInspection",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetInspectionEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetInspectionOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetOptimization",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetOutputInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentAssetUsage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentBuildOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentBuildState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentBuildStateInvalidReason",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentBuildStateStatus",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentCollection",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentCollectionContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentCollectionDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentCollectionPage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFileMetadata",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentGraph",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentGraphNeighbors",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentIcon",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentIconRegistry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentIdRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentIndexBuild",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentIndexBuilder",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ContentInspection",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLink",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLinkKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLinkMutationPlan",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLinkRetarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocationInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentManager",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ContentManifest",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentManifestEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentManifestPluginClientEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigration",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationBatch",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationDiagnostic",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationFileDiff",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationHistory",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationHistoryRun",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationHistoryStatus",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationListEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationPlannedFile",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationPlannerFile",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationPlannerOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRecord",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRecoveryState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRegistry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRegistryError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationReversible",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRuleCondition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationRuleValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationSelection",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationSelector",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationSkip",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationStateError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationStatus",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationTransform",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationTransformResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMigrationValidator",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationFileChange",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationIssue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationOperation",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationPlan",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationPrecondition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationRecoveryResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentMutationRollbackResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentOutputDependencyResolver",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentPublicLocation",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryDateFilter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryDateGranularity",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryFilter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryFrontmatterFilter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryGroup",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryGroupBy",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryGroupOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryPage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryPagination",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryScalar",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQuerySort",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQuerySortOrder",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQuerySpec",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentQueryTagFilter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentRedirect",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentSource",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentSourceContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentSourceEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentSourceMetadata",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "createApproval",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createBuildOutputMarker",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createBuildProvenance",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createCliCommandRegistry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createClientEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentGraph",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentMigrationRegistry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createDerivedViewRegistry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginMemo",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CreatePluginMemoOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "createPublicationPlan",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPublicationSnapshot",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPublicContentView",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createRuntimeEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createStyleAsset",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createUnavailableGeneratedOutputSink",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "DEFAULT_LARGE_ASSET_BYTES",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "DEFAULT_PUBLICATION_APPROVAL_FILE",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineContentMigration",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineDerivedView",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineEndpoint",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "definePlugin",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineTheme",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineThemeSettings",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "derivedDependenciesToOutputDependencies",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "DerivedDependency",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedSchema",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedView",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewExecution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewRegistry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewRegistryOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DerivedViewStatus",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "describeSchedulerGuarantee",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "detectHostingProvider",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "determineOutputChanges",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "Diagnostic",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DiagnosticCode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "DiagnosticSeverity",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "diffFrontmatter",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "EmbedFragmentParameters",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "emptyContentMigrationHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "emptyContentMigrationState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "emptyPublicationApprovals",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "emptyPublicationHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "emptyPublicationState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "escapeHtml",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "escapeHtmlAttribute",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "escapeRegExp",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "escapeScriptJson",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ExternalDependencyContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ExternalDependencyFailure",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ExternalDependencyResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ExternalDependencyScope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ExternalDependencySnapshot",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "extractContentLinks",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "extractFrontmatterAliases",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "extractLinkOccurrences",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "extractMarkdownLinkUrls",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "findContentMigrationRecord",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "fingerprintContentEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "fingerprintContentMigrationDefinition",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "FingerprintedContentEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "fingerprintExternalValue",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "flattenContentMutationOperations",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "FolderEntryCandidate",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FolderEntryKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FolderEntryResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FolderEntryScope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FolderLocation",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FolderLocationResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterAppendRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterMapRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterNormalizeListRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterRemoveRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterRenameRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FrontmatterSetRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GeneratedOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GeneratedOutputContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GeneratedOutputInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GeneratedOutputSink",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "getContentSourceEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "getContentSourceEntrySize",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "getEntryLanguage",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "getExtension",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "getResolvedPluginMetadata",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "groupContentEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "HelpOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "HOSTING_ADAPTERS",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "HostingAdapterDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "HostingCapabilities",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "HostingDetectionInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "HostingProvider",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "HostingSchedulerGuarantee",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "htmlOutputPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "HtmlPipeline",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "IMAGE_EXTENSIONS",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "inspectContentAssets",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isApprovalCurrent",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isAttachmentPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isDeployableEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isExcluded",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isImagePath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isMarkdownPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isPersistentlyCacheable",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isPublishable",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isPublished",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isSafeContentPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "JsonValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkOccurrence",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkOccurrenceOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkOccurrenceTarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkResolutionContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "linkResolutionKey",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "LinkRewrite",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkRewriteResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LinkSyntaxKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "listContentMigrationEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "loadContentBuildState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "LogContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "Logger",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "LogLevel",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownEmbedFragment",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownExecutionContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownFenceLine",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownImage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownPipeline",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MarkdownPipelineContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MAX_PROVENANCE_HISTORY",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "MigrationContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MigrationContentApplication",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "MigrationContentState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "migrationKey",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "NoopLogger",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "NoopTracer",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "normalizeContentAssetOutputPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "normalizeContentPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "normalizeGeneratedOutputPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "normalizeTag",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "Observability",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ObservabilityValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputChangeReason",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputChangeSet",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputDependency",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputDescriptor",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlan",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanAction",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanComparison",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanConflict",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "OutputPlanOwner",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "parseBuildOutputMarker",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parseContentMigrationHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parseContentMigrationState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ParsedMigrationContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "parseEmbedFragmentParameters",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parseMigrationContent",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parsePublicationApprovals",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parsePublicationHistory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parsePublicationSnapshot",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parsePublicationState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PathRenameRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "pendingApprovalEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PermalinkRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "Pipeline",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "PipelineOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PipelinePlugin",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "planContentLinkUpdates",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "planContentMigrationBatch",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PlannedGeneratedOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginAsset",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginAssetKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginAssetTransformContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginCache",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginClientEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginCliExtension",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginComponent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContentContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContentLocationAugmentContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContentLocationContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContentLocationResolver",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContentRenderer",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginDataHelper",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginDependencyError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "PluginDependencyErrorKind",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginDiagnostic",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginDiagnosticLevel",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpoint",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpointContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpointMethod",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpointOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpointRequest",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginEndpointResponse",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginGeneratedHtml",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginGeneratedHtmlInspector",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginGeneratedOutputPlanContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginGraphContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHeadTag",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHookError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "PluginInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginLifecycleContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginManifestContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginMemo",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginOptionsValidator",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPageContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPagePath",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPageRoute",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPageType",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPostContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginRenderContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginRenderInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginRenderTarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginRuntime",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "PluginRuntimeEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginSeoExtension",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PostContent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PostFrontmatter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PROVENANCE_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ProvenanceArtifact",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ProvenanceOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ProvenanceSource",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ProvenanceTransform",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PUBLICATION_APPROVALS_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PUBLICATION_HISTORY_LIMIT",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PUBLICATION_HISTORY_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PUBLICATION_STATE_VERSION",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PublicationAction",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationApproval",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationApprovals",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationApprovalState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationArtifactIssue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationArtifactState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationChanges",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "publicationEntriesFromManifest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PublicationEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "publicationEntryFromManifestEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "publicationFingerprint",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PublicationHistory",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "publicationOutputsFromManifest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PublicationPlan",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationPlannerInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationPlanTarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationRedirect",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "publicationRedirectsFromManifest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PublicationRunRecord",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationRunStatus",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationRunStep",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationRunTrigger",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationSnapshot",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationValidation",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationValidationIssue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationWorkflowMode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicationWorkflowState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicContentEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublicContentView",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublishFrontmatter",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublishingResolutionOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublishingVisibility",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PublishStrategy",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "queryContentEntries",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "queryContentPage",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "readContentBuildStateStatus",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "readContentSourceEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "readOnlyContentGraph",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "recordPublicationSuccess",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "reflectThemeSettings",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "registerCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "registerPluginCliExtension",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "RenderableFeedEntry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "replacePublicationRun",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveApprovalState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveBuildOutputDirectory",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveConfigModule",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveContentAssetUrl",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveContentBuildStatePath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveContentQueryPagination",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveContentStableId",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveDefaultContentLocation",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ResolvedLinkOccurrence",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedPluginMetadata",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedPluginPage",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedPublicationConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedPublishingState",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedRiebeckiteConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedTheme",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ResolvedThemeSettings",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "resolveFolderEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ResolveFolderEntryOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "resolveFolderLocation",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveGeneratedFolderLocation",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveHostingCapabilities",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveLinkOccurrences",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveManagedStateRoot",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePlugins",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePublicationConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePublicationWorkflowState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePublicFolderLocation",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePublishingBuildTime",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolvePublishingState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveSeoProvider",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveTheme",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "rewriteLinkDestinations",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "RiebeckiteConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RiebeckitePlugin",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "sanitizeContentMigrationPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "sanitizeContentMigrationPaths",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "scanMarkdownFenceLines",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "selectEntriesByLanguage",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "SeoMetadata",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "serializeBuildOutputMarker",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "serializePublicClientConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "SinkTracer",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "SiteConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "SourceRange",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "SpaConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "stableStringify",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "stripHtml",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ThemeColorMode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeInstance",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemePreset",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeSetting",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeSettings",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeSettingsSchema",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeSettingsValidationError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ThemeStyle",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "TraceAttributes",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "TraceEvent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "Tracer",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "TraceSink",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "TraceSnapshot",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "TraceSpan",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "uniqueStrings",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "upsertContentMigrationRecord",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "validatePublicationArtifact",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "validateThemeSettings",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "VisibilityRule",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "WebsiteSeoInput",
+      "value": false,
+      "type": true
+    }
+  ],
+  "./client": [
+    {
+      "name": "buildGraphEdges",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ClientCleanup",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientInitializer",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientInitializerContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientLifecycle",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "ClientLifecycleErrorContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientLifecycleMount",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientLifecycleOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientLifecycleScope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientResourceScope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntime",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeCreateOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeHost",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ClientRuntimeInvokeOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "FORCE_LAYOUT_CONFIRM_NODE_COUNT",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ForceGraphLayoutOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ForceLayoutGuardOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GraphEdge",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GraphLayoutNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "layoutForceGraph",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "layoutRadialGraph",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "LinkableGraphNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RadialGraphLayoutOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "shouldGuardForceLayout",
+      "value": true,
+      "type": false
+    }
+  ],
+  "./cli": [
+    {
+      "name": "argumentValueKey",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliAbortError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "cliArgument",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliArgumentDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentsOf",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliArgumentValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliBoolean",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliBooleanOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandConflictError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "CliCommandContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "CliCommandHandler",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandRegistration",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandRegistry",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandResolution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandResult",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandSource",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliCommandSpec",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnostic",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnosticSeverity",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliDiagnosticSink",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliEnum",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliEnumOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliExample",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliExample",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliJsonEnvelope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliJsonErrorEnvelope",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliLogger",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliNumber",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliNumberOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionDefinition",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionsOf",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionType",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOptionValue",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliOutput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliProjectContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliShell",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliString",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliStringOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "cliStringWithDefault",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "CliTypedCommand",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliTypedCommandInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "CliUsageError",
+      "value": true,
+      "type": true
+    },
+    {
+      "name": "cliVariadicArgument",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "commandPathSegments",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createCliCommandRegistry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "findCommandByPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "formatCommandHelp",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "formatPathHelp",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "formatRootHelp",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "formatUnknownCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "generateCompletion",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "HelpOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "normalizeCommandId",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "optionValueKey",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parseCliShell",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "PluginCliExtension",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "readArgument",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "readOption",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "registerCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "registerPluginCliExtension",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveCliCommand",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "ROOT_USAGE",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "suggest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "toArgumentKey",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "toOptionKey",
+      "value": true,
+      "type": false
+    }
+  ]
+}

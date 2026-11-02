@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
+      "@riebeckite/core/cli": ["packages/core/cli.ts"],
       "@riebeckite/core/client": ["packages/core/client.ts"],
       "@riebeckite/graph": ["packages/graph/index.ts"],
       "@riebeckite/graph/client": ["packages/graph/client.ts"],

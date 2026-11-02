@@ -76,7 +76,14 @@ remain trusted extension boundaries and are not sanitized by this pipeline.
 ### Client
 
 - `@riebeckite/core/client` exports graph layout helpers
-- `@riebeckite/node` exports `FileSystemContentSource`
+- `@riebeckite/node` exports `FileSystemContentSource` and
+  `createContentSource`, the shared configured-source factory
+
+### CLI extensions
+
+- `@riebeckite/core/cli` exports the Plugin CLI extension contract and command
+  helpers (`defineCliCommand`, argument/option builders, registry, help, and
+  completion utilities)
 
 ### Plugins
 

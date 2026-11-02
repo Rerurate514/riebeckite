@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { PluginContractFixture } from "@riebeckite/test/plugin-contract";
+import type { PluginContractFixture } from "./plugin_contract.js";
 
 export function repositoryPluginContractFixtures(
   cwd: string,

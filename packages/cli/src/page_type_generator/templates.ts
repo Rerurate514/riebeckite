@@ -1,13 +1,14 @@
 export function renderPageTypeModule(name: string, path: string): string {
   const identifier = toIdentifier(name);
+  const pagePath = normalizePagePath(path);
   return `import { escapeHtml, escapeHtmlAttribute, type PluginPageType } from "@riebeckite/core";
 
 export const ${identifier}PageType: PluginPageType = {
   id: "${name}-index",
-  paths: ["${path}"],
+  paths: ["${pagePath}"],
   outputDependencies: [{ type: "global" }],
   resolve: ({ manifest, pathname }) => {
-    if (pathname !== "${path}") return null;
+    if (pathname !== "${pagePath}") return null;
     const items = manifest.discoverableEntries
       .map((entry) => \`<li><a href="\${escapeHtmlAttribute(entry.permalink)}">\${escapeHtml(entry.title)}</a></li>\`)
       .join("");
@@ -24,13 +25,14 @@ export const ${identifier}PageType: PluginPageType = {
 
 export function renderPageTypeTest(name: string, path: string): string {
   const identifier = toIdentifier(name);
+  const pagePath = normalizePagePath(path);
   return `import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ${identifier}PageType } from "../page_types/${name}.js";
 
 test("resolves the ${name} page from discoverable entries", () => {
   const page = ${identifier}PageType.resolve({
-    pathname: "${path}",
+    pathname: "${pagePath}",
     manifest: { discoverableEntries: [{ title: "Public note", permalink: "/notes/public/" }] },
   } as never);
   assert.ok(page);
@@ -44,6 +46,11 @@ function toIdentifier(value: string): string {
     letter.toUpperCase(),
   );
   return `${identifier.slice(0, 1).toUpperCase()}${identifier.slice(1)}`;
+}
+
+function normalizePagePath(value: string): string {
+  const path = `/${value.split("/").filter(Boolean).join("/")}`;
+  return path === "/" ? path : path.replace(/\/$/, "");
 }
 
 function toTitle(value: string): string {

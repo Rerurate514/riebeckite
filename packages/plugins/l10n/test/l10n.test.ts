@@ -422,6 +422,40 @@ test("tracks localized Markdown links with named character references", async ()
   );
 });
 
+test("tracks WikiLink translation changes without Markdown links", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-wikilink-"),
+  );
+  const files: Record<string, string> = {
+    "source.ja.md": "---\ntranslation: source\n---\n[[target_en]]",
+    "target_en.md": "---\ntranslation: target\n---\n# English",
+  };
+
+  await manager(files, {}, [obsidianMarkdown()], directory).build({
+    incremental: true,
+  });
+
+  files["target_ja.md"] = "---\ntranslation: target\n---\n# Japanese";
+  const incremental = await manager(
+    files,
+    {},
+    [obsidianMarkdown()],
+    directory,
+  ).build({ incremental: true });
+  const cold = await manager(files, {}, [obsidianMarkdown()]).build({
+    incremental: false,
+  });
+
+  assert.equal(
+    incremental.bySlug.get("source.ja")?.html,
+    cold.bySlug.get("source.ja")?.html,
+  );
+  assert.match(
+    incremental.bySlug.get("source.ja")?.html ?? "",
+    /href="\/target"/,
+  );
+});
+
 test("keeps removed, relabeled, regrouped, and moved translations equivalent to a cold build", async () => {
   const source = "---\ntranslation: source\n---\n[Target](/en/target#section)";
   const targetEn = "---\ntranslation: target\n---\n# English";

@@ -127,11 +127,23 @@ function referencedPermalinks(
   markdown: string,
   slugsByPermalink: ReadonlyMap<string, string>,
 ): string[] {
-  if (slugsByPermalink.size === 0) return [];
+  if (slugsByPermalink.size === 0 || !containsMarkdownLinkSyntax(markdown))
+    return [];
   const found = new Set<string>();
   for (const url of extractMarkdownLinkUrls(markdown)) {
     const { permalink } = splitLinkUrl(url);
     if (slugsByPermalink.has(permalink)) found.add(permalink);
   }
   return [...found].sort();
+}
+
+function containsMarkdownLinkSyntax(markdown: string): boolean {
+  for (let index = 0; index < markdown.length; index++) {
+    const character = markdown[index];
+    if (character === "<") return true;
+    if (character !== "[") continue;
+    if (markdown[index + 1] !== "[") return true;
+    index++;
+  }
+  return false;
 }

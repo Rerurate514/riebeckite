@@ -4,9 +4,11 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import {
+  type CliArgumentValue,
   type CliCommandContext,
   type CliCommandDefinition,
   type CliCommandInput,
+  type CliOptionValue,
   createCliCommandRegistry,
   resolveConfig,
 } from "@riebeckite/core";
@@ -71,8 +73,8 @@ function command(id: string): CliCommandDefinition {
 
 function input(
   definition: CliCommandDefinition,
-  options: Record<string, unknown> = {},
-  args: Record<string, unknown> = {},
+  options: Readonly<Record<string, CliOptionValue>> = {},
+  args: Readonly<Record<string, CliArgumentValue>> = {},
 ): CliCommandInput {
   return {
     command: definition,
@@ -176,7 +178,7 @@ test("rejects unknown and missing presets", async () => {
     const ctx = context(root);
     const applyCommand = command("apply");
     await assert.rejects(
-      () =>
+      async () =>
         applyCommand.handler(
           ctx,
           input(applyCommand, { preset: ["unknown"], apply: true }),

@@ -31,6 +31,7 @@ You do not have to read Reference from start to finish. When you want to check a
 
 | Page | Use it for |
 | --- | --- |
+| [Design Philosophy](../philosophy.md) | Why Riebeckite is designed this way |
 | [Configuration](./configuration.md) | `riebeckite.config.ts`, roots, content, theme, plugins |
 | [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
 | [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `publish`, `content`, `migrate`, `upgrade`, `profile`, `inspect`, `help`, `completion`, `theme preview`, `plugin dev`, `plugin verify` |
@@ -108,7 +109,7 @@ In [Theme API](./theme-api.md) you can check the public contracts a theme can us
 - CSS contract
 - Theme package
 
-To understand the design philosophy and mechanics of themes, see [Theme System](../framework/theme-system.md).
+To understand the design and mechanics of themes, see [Theme System](../framework/theme-system.md).
 
 ## Which documentation should you read?
 
@@ -145,4 +146,4 @@ Want to understand Riebeckite's internals
   → Framework
 ```
 
-Reference is an **index for looking up how to use the API**, while design philosophy and internal implementation live in Framework, and concrete procedures live in Guides.
+Reference is an **index for looking up how to use the API**. Design principles live in [Design Philosophy](../philosophy.md), internal implementation lives in [Framework](../framework/README.md), and concrete procedures live in [Guides](../guides/README.md).

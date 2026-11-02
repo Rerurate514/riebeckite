@@ -6,6 +6,8 @@ title: アーキテクチャ
 
 Riebeckite は、Core を中心に[[glossary/plugin|プラグイン]]、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションを分離した pnpm workspace です。依存関係は意図的に一方向に保っています。
 
+このページでは構造を説明します。背景にある原則とトレードオフは [設計思想](../philosophy.ja.md) にあります。
+
 重要な原則は、**内側のパッケージが外側の実装を知らないこと**です。たとえば Core はコンテンツ処理の仕組みを提供しますが、次のことは知りません。
 
 - [[framework/honox-integration|HonoX]] がどう表示するか

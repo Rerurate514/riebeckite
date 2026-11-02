@@ -48,7 +48,7 @@
     "@riebeckite/ui": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:",
-    "honox": "0.1.56",
+    "honox": "0.1.62",
     "vite": "catalog:"
   },
   "devDependencies": {

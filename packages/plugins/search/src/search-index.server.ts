@@ -32,7 +32,11 @@ export function buildSearchItems(args: {
     };
   });
 
-  return items.sort((a, b) => a.title.localeCompare(b.title, "ja"));
+  return items.sort(
+    (a, b) =>
+      a.title.localeCompare(b.title, "ja") ||
+      a.permalink.localeCompare(b.permalink, "en"),
+  );
 }
 
 function getDefaultArticleTitle(slug: string, title: unknown): string {

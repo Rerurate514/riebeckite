@@ -25,6 +25,8 @@ sidebar:
 
 Riebeckite は、Markdown や Obsidian 形式のノートを高速な静的サイトに変換します。`content/` に Markdown を書き、ローカルで表示を確認し、`dist/` にビルドして公開します。
 
+Riebeckite がこの形を選んだ理由は [設計思想](../philosophy.ja.md) にあります。この章を進めるだけなら読む必要はありません。
+
 Riebeckite を使うために、このリポジトリを clone する必要はありません。[`create-riebeckite`](https://www.npmjs.com/package/create-riebeckite) が、サイトに必要なファイル一式を生成します。
 
 ## この章で学ぶこと

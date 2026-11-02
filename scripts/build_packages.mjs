@@ -91,7 +91,7 @@ function getConcurrencyLimit() {
     return parsed;
   }
 
-  return Math.max(1, Math.min(6, availableParallelism() - 1));
+  return Math.max(1, Math.min(2, availableParallelism() - 1));
 }
 
 function runBuild(directory, manifest) {

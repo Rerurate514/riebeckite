@@ -270,6 +270,7 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       .readFileSync(installedDeployTemplate, "utf8")
       .replaceAll("\r\n", "\n")
       .replace("{{contentCheckout}}", "")
+      .replace("{{schedule}}", "")
       .replaceAll(
         "{{cloudflareApiToken}}",
         GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN,

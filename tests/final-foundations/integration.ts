@@ -416,7 +416,7 @@ async function main() {
   const baselinePreview = previewSlugs();
   assert.ok(baselinePreview.has("notes/legacy"));
   assert.ok(baselinePreview.has("notes/other"));
-  assert.ok(baselinePreview.has("unlisted"));
+  assert.equal(baselinePreview.has("unlisted"), false);
   assert.equal(baselinePreview.has("draft"), false);
   assert.ok(exists("dist/notes/legacy.html"));
   assert.ok(exists("dist/notes/other.html"));
@@ -509,7 +509,7 @@ async function main() {
   assert.match(read("dist/n/calculator.html"), /data-calculator/);
   const incrementalPreview = previewSlugs();
   assert.ok(incrementalPreview.has("guides/legacy"));
-  assert.ok(incrementalPreview.has("unlisted"));
+  assert.equal(incrementalPreview.has("unlisted"), false);
   assert.equal(incrementalPreview.has("draft"), false);
   assert.equal(incrementalPreview.has("scheduled"), false);
   const rendered = outputText();

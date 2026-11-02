@@ -13,11 +13,12 @@ sidebar:
 
 公開境界は公開可否の判定を一箇所に集め、チェックを散在させません。詳細は次のとおりです。
 
-- **公開戦略** `selective`：公開指定のあるコンテンツだけが公開されます。`ResolvedRiebeckiteConfig`（`packages/core/src/types/resolved_riebeckite_config.ts`）の `content.filters.publishStrategy` で制御します。
-- **Frontmatter `published: false`**：ノートを公開集合から外します。URL を知っていれば直接アクセスできますが、ナビゲーション、検索、フィード、サイトマップには表示されません。
-- **Frontmatter `visibility: unlisted`**：索引に載せずにノートを配信します。permalink からは公開アクセスできますが、タクソノミー一覧、検索結果、サイトマップには表示されません。
+- **公開戦略** `explicit`（既定）：`publish: true` を持つノートだけが公開されます。`ResolvedRiebeckiteConfig`（`packages/core/src/types/resolved_riebeckite_config.ts`）の `content.filters.publishStrategy` で制御します。
+- **公開戦略** `selective`：`private: true` または `draft: true` が無いノートを公開します。
+- **Frontmatter `visibility: draft`**：routable にも discoverable にも含めません。ページは生成されません。
+- **Frontmatter `visibility: unlisted`**：permalink では配信しますが、ナビゲーション、タクソノミー、検索、フィード、サイトマップ、グラフ、Hover Preview の索引には含めません。
 
-`selective` 公開戦略を使う設定の例：
+既定の `explicit` 公開戦略を明示する設定の例：
 
 ```ts
 // riebeckite.config.ts
@@ -25,20 +26,22 @@ export default {
   content: {
     directory: "content",
     filters: {
-      publishStrategy: "selective",
+      publishStrategy: "explicit",
     },
   },
 };
 ```
 
-公開を制御する frontmatter の例：
+公開するノートを指定する frontmatter の例：
 
 ```yaml
 ---
-title: "Draft note"
-published: false
+title: "Public note"
+publish: true
 ---
 ```
+
+`selective` でノートを除外する場合は `private: true` または `draft: true` を使います。
 
 unlisted にする frontmatter の例：
 

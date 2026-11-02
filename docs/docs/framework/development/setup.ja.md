@@ -81,6 +81,9 @@ flowchart TD
 | `pnpm test` | テストを実行する |
 | `pnpm typecheck` | TypeScript の型を検査する |
 | `pnpm check:docs` | ドキュメントを検査する |
+| `pnpm changes:new` | 利用者に影響する変更のエントリを作成する |
+| `pnpm changelog` | 変更履歴とリリースノートページを再生成する |
+| `pnpm check:changes` | 変更エントリと生成ファイルを検証する |
 | `pnpm docs:sync` | 原本のプラグイン / テーマのドキュメントからパッケージ README を生成する |
 | `pnpm check:plugin-docs` | プラグインのドキュメントと生成した README の同期を検査する |
 | `pnpm check:theme-docs` | テーマのドキュメントと生成した README の同期を検査する |

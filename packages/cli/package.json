@@ -36,7 +36,7 @@
     "create-riebeckite": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:",
-    "honox": "0.1.56",
+    "honox": "0.1.62",
     "jsonc-parser": "^3.3.1",
     "vite": "catalog:"
   },

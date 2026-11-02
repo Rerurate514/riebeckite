@@ -7,8 +7,10 @@ sidebar:
 ---
 # Documentation
 
-Start with [Getting Started](./getting-started/README.md) to create and publish a Riebeckite site. Use the sections below to explore the framework, extend it with plugins, and customize its appearance.
+Start with [Design Philosophy](./philosophy.md) to understand why Riebeckite is built the way it is, then use [Getting Started](./getting-started/README.md) to create and publish a site. Use the sections below to explore the framework, extend it with plugins, and customize its appearance.
 
+- [Design Philosophy](./philosophy.md)
+- [Release Notes](./releases.md)
 - [Getting Started](./getting-started/README.md)
 - [Guides](./guides/README.md)
 - [Framework](./framework/README.md)

@@ -16,6 +16,7 @@ Read the documents that match the change before editing. These rules supplement,
 |Theme CSS, tokens, markup hooks, or presentation change|[Theme System Rules](./theme-system.md)|
 |Build state, cache, CLI, diagnostics, profiler, tracer, doctor, or inspector change|[Build and CLI Rules](./build-and-cli.md)|
 |File split, merge, size review, or dependency-boundary change|[Source Health](./source-health.md)|
+|Public contract, architecture boundary, design-principle exception, or release policy change|[Architecture Decision Records](./adr/README.md)|
 
 When a task spans categories, read every corresponding document. For public API behavior, configuration, or user-facing commands, also consult the matching human documentation under `../en/` or `../ja/` so implementation and documentation remain aligned.
 
@@ -32,7 +33,11 @@ apps/
   web/                  concrete application: routes, islands, site UI
 docs/
   agents/               this rule-oriented guide
+  agents/adr/           architecture decision records
   en/, ja/              human-facing documentation
+changes/
+  unreleased/           pending user-facing change entries
+  released/<version>/   archived entries and release notes
 ```
 
 The intended dependency direction is:
@@ -66,7 +71,8 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 2. Trace the existing contract and at least one comparable implementation before changing behavior.
 3. Make the smallest change that preserves the ownership and runtime boundaries.
 4. Update the applicable human documentation when configuration, CLI behavior, public contracts, or user-observable behavior changes.
-5. Run the narrowest relevant checks, then inspect the final diff for unintended cross-package effects.
+5. Record a user-visible change under `changes/unreleased/` and run `pnpm changelog`. Record an important decision under `docs/agents/adr/` instead of adding a note to `history/`.
+6. Run the narrowest relevant checks, then inspect the final diff for unintended cross-package effects.
 
 ## Useful human references
 

@@ -260,6 +260,8 @@ export {
   defineDerivedView,
   derivedDependenciesToOutputDependencies,
 } from "./src/derived/derived_view.js";
+export type { DevelopmentTrace } from "./src/development_trace.js";
+export { createDevelopmentTrace } from "./src/development_trace.js";
 export type {
   ContentMigrationBatch,
   ContentMigrationFileDiff,

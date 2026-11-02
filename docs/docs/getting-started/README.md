@@ -25,6 +25,8 @@ Deployment
 
 Riebeckite turns Markdown, including Obsidian-style notes, into a fast static site. You write Markdown in `content/`, run a local preview, build the output into `dist/`, and deploy that folder.
 
+The [Design Philosophy](../philosophy.md) explains why Riebeckite makes these choices. You do not need it to finish this chapter.
+
 You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`](https://www.npmjs.com/package/create-riebeckite) generator creates a self-contained site for you.
 
 ## Pages in this section

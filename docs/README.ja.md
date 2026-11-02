@@ -72,6 +72,7 @@ deploy
 
 | 目的 | 読むページ |
 | --- | --- |
+| Riebeckite の設計方針を知る | [設計思想](./docs/philosophy.ja.md) |
 | 初めて Riebeckite を使う | [クイックスタート](./docs/getting-started/quick-start.ja.md) |
 | インストール方法を確認する | [インストール](./docs/getting-started/installation.ja.md) |
 | 最初の記事を書く | [最初の記事](./docs/getting-started/first-content.ja.md) |
@@ -105,6 +106,7 @@ Riebeckite のドキュメントは、目的ごとに分かれています。
 flowchart TD
     Docs["Riebeckite Docs"]
 
+    Docs --> Philosophy["Design Philosophy<br/>設計思想"]
     Docs --> Getting["Getting Started<br/>使い始める"]
     Docs --> Guides["Guides<br/>具体的な作業"]
     Docs --> Plugins["Plugins<br/>機能を追加する"]
@@ -114,6 +116,10 @@ flowchart TD
 
     Framework --> Development["Development<br/>本体開発"]
 ```
+
+### 設計思想
+
+Riebeckite の境界の背景にある原則、原則どうしのトレードオフ、プロジェクトが担わない範囲を説明します。フレームワークを変更する前や、設計判断に迷ったときに読んでください。
 
 ### はじめに
 

@@ -56,6 +56,7 @@ import {
   measureSync,
   writeSsgOutputMetrics,
 } from "./ssg/runtime_metrics.js";
+import { isStandaloneSsgMode } from "./ssg/standalone.js";
 import type {
   GeneratedOutputAsset,
   OutputCacheDecision,
@@ -685,7 +686,11 @@ export function shouldApplyRiebeckiteSsg(
   _config: unknown,
   env: ConfigEnv,
 ): boolean {
-  return env.command === "build" && env.mode !== "client";
+  return (
+    env.command === "build" &&
+    env.mode !== "client" &&
+    !isStandaloneSsgMode(env.mode)
+  );
 }
 
 export function findBuildOutputSiteCollisions(

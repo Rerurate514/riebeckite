@@ -36,7 +36,7 @@ import { defineConfig } from "@riebeckite/core";
 export default defineConfig({
   site: { title: "My site", baseUrl: "https://example.com" },
   spa: {
-    prefetch: "hover",
+    prefetch: "intent",
     viewTransitions: true,
   },
 });
@@ -103,13 +103,13 @@ region 名は文書内で一意にし、現在のページと取得したペー�
 
 | 設定キー | 型 | 既定値 | 効果 |
 | --- | --- | --- | --- |
-| `prefetch` | `false \| "hover"` | `false` | リンクにポインターが入ったとき、同一オリジンのページを先に取得する |
+| `prefetch` | `false \| "hover" \| "intent"` | `false` | `"hover"` はポインターがリンクに入ったとき、`"intent"` はさらにフォーカスまたは押下時に同一オリジンのページを取得する |
 | `scrollRestoration` | `boolean` | `true` | 履歴の項目ごとにスクロール位置を保存・復元する |
 | `viewTransitions` | `boolean` | `false` | 利用可能で、動きが許可されている場合に View Transitions API を使う |
 
 不正な値は、ランタイムの開始時に例外になります。
 
-`prefetch: "hover"` は、必ず成功するとは限りません。ランタイムはデータ節約設定や低速接続（2G 以下）では実行せず、同じ URL へのリクエストを重複排除します。完了したページを最大20件、30秒間保持し、ランタイムの停止時には進行中の取得を中断します。ページ移動を中断しても、共有されている先読みのリクエストは中断しません。リンクが多いページで余分なリクエストを避けたい場合は `prefetch: false` にします。
+`prefetch: "hover"` と `prefetch: "intent"` は、必ず成功するとは限りません。`intent` は hover の `pointerover` に加え、`focusin`、`pointerdown`、`touchstart` でも取得します。ランタイムはデータ節約設定や低速接続（2G 以下）では実行せず、同じ URL へのリクエストを重複排除します。完了したページを最大20件、30秒間保持し、ランタイムの停止時には進行中の取得を中断します。ページ移動を中断しても、共有されている先読みのリクエストは中断しません。リンクが多いページで余分なリクエストを避けたい場合は `prefetch: false` にします。
 
 ## ページのスクリプトとisland
 

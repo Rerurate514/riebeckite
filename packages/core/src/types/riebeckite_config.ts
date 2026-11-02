@@ -6,7 +6,7 @@ import type { SiteConfig } from "./site_config.js";
 import type { ThemeInput } from "./theme_config.js";
 
 export type SpaConfig = {
-  prefetch?: false | "hover";
+  prefetch?: false | "hover" | "intent";
   scrollRestoration?: boolean;
   viewTransitions?: boolean;
 };

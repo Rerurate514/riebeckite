@@ -67,8 +67,16 @@ class SpaNavigation {
     this.scroll.start();
     document.addEventListener("click", this.onClick);
     window.addEventListener("popstate", this.onPopState);
-    if (this.options.prefetch === "hover") {
-      document.addEventListener("pointerover", this.onPointerOver);
+    if (
+      this.options.prefetch === "hover" ||
+      this.options.prefetch === "intent"
+    ) {
+      document.addEventListener("pointerover", this.onPrefetchIntent);
+    }
+    if (this.options.prefetch === "intent") {
+      document.addEventListener("focusin", this.onPrefetchIntent);
+      document.addEventListener("pointerdown", this.onPrefetchIntent);
+      document.addEventListener("touchstart", this.onPrefetchIntent);
     }
     return () => this.stop();
   }
@@ -80,7 +88,10 @@ class SpaNavigation {
     this.scroll.stop();
     document.removeEventListener("click", this.onClick);
     window.removeEventListener("popstate", this.onPopState);
-    document.removeEventListener("pointerover", this.onPointerOver);
+    document.removeEventListener("pointerover", this.onPrefetchIntent);
+    document.removeEventListener("focusin", this.onPrefetchIntent);
+    document.removeEventListener("pointerdown", this.onPrefetchIntent);
+    document.removeEventListener("touchstart", this.onPrefetchIntent);
   }
 
   private readonly onClick = (event: MouseEvent): void => {
@@ -101,7 +112,7 @@ class SpaNavigation {
     void this.navigate(new URL(window.location.href), true);
   };
 
-  private readonly onPointerOver = (event: PointerEvent): void => {
+  private readonly onPrefetchIntent = (event: Event): void => {
     const anchor = (event.target as Element | null)?.closest<HTMLAnchorElement>(
       "a[href]",
     );

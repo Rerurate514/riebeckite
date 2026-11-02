@@ -40,7 +40,7 @@ import { defineConfig } from "@riebeckite/core";
 export default defineConfig({
   site: { title: "My site", baseUrl: "https://example.com" },
   spa: {
-    prefetch: "hover",
+    prefetch: "intent",
     viewTransitions: true,
   },
 });
@@ -116,18 +116,19 @@ it when missing, but rendering it explicitly keeps the intent clear.
 
 | Option | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `prefetch` | `false \| "hover"` | `false` | Fetches a same-origin page when the pointer enters its link. |
+| `prefetch` | `false \| "hover" \| "intent"` | `false` | `"hover"` fetches when the pointer enters a link; `"intent"` also fetches on focus and press. |
 | `scrollRestoration` | `boolean` | `true` | Saves and restores scroll positions for history entries. |
 | `viewTransitions` | `boolean` | `false` | Uses the browser View Transitions API when available and motion is allowed. |
 
 Invalid option values throw when the runtime starts.
 
-`prefetch: "hover"` is best-effort. The runtime skips data-saving and slow
-connections (2G and below), deduplicates requests, keeps up to 20 completed
-least-recently-used pages for 30 seconds, and aborts pending fetches when the
-runtime stops. Cancelling one navigation does not cancel its shared prefetch
-request. Use `prefetch: false` if a page has many links and you want to avoid
-extra requests.
+`prefetch: "hover"` and `prefetch: "intent"` are best-effort. Intent adds
+`focusin`, `pointerdown`, and `touchstart` to hover's `pointerover` trigger.
+The runtime skips data-saving and slow connections (2G and below), deduplicates
+requests, keeps up to 20 completed least-recently-used pages for 30 seconds, and
+aborts pending fetches when the runtime stops. Cancelling one navigation does
+not cancel its shared prefetch request. Use `prefetch: false` if a page has many
+links and you want to avoid extra requests.
 
 ## Page scripts and islands
 

@@ -56,7 +56,7 @@ sidebar:
 
 ## リンク先の先読み
 
-`prefetch: "hover"` を指定すると、`pointerover` のリスナーが追加されます。対象になるリンクの条件はクリック時と同じで、ハッシュだけのリンクは無視します。
+`prefetch: "hover"` を指定すると、`pointerover` のリスナーが追加されます。`prefetch: "intent"` はさらに `focusin`、`pointerdown`、`touchstart` のリスナーを追加します。対象になるリンクの条件はクリック時と同じで、ハッシュだけのリンクは無視します。
 
 先読みしたページは、URL をキーにした[[glossary/cache|キャッシュ]]で管理します。
 

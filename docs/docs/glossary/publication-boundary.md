@@ -13,11 +13,12 @@ The rule that decides which content is safe to publish. Riebeckite applies the p
 
 The publication boundary centralizes publish decisions rather than scattering checks. Detailed information:
 
-- **Publish strategy** `selective`: Only content marked for publishing is public. Controlled by `content.filters.publishStrategy` in `ResolvedRiebeckiteConfig` (`packages/core/src/types/resolved_riebeckite_config.ts`).
-- **Frontmatter `published: false`**: Keeps a note out of the public set. The note is still available through direct URL if known, but does not appear in navigation, search, feeds, or sitemaps.
-- **Frontmatter `visibility: unlisted`**: Serves the note without listing it in indexes. The note is publicly accessible via its permalink but does not appear in taxonomy lists, search results, or sitemaps.
+- **Publish strategy** `explicit` (default): Only notes with `publish: true` are public. Controlled by `content.filters.publishStrategy` in `ResolvedRiebeckiteConfig` (`packages/core/src/types/resolved_riebeckite_config.ts`).
+- **Publish strategy** `selective`: Notes are public unless they set `private: true` or `draft: true`.
+- **Frontmatter `visibility: draft`**: Keeps a note out of both the routable and discoverable sets. Nothing is generated for it.
+- **Frontmatter `visibility: unlisted`**: Serves the note at its permalink but does not include it in navigation, taxonomy, search, feeds, sitemaps, graphs, or the hover-preview index.
 
-Example config with `selective` publish strategy:
+Example config with the default `explicit` publish strategy (shown for clarity):
 
 ```ts
 // riebeckite.config.ts
@@ -25,20 +26,22 @@ export default {
   content: {
     directory: "content",
     filters: {
-      publishStrategy: "selective",
+      publishStrategy: "explicit",
     },
   },
 };
 ```
 
-Example frontmatter to control publication:
+Example frontmatter to opt a note in:
 
 ```yaml
 ---
-title: "Draft note"
-published: false
+title: "Public note"
+publish: true
 ---
 ```
+
+To keep a note out under `selective`, use `private: true` or `draft: true`.
 
 Example frontmatter for unlisted:
 

@@ -245,6 +245,7 @@ const nonImportedDependencies = new Map([
   ["@riebeckite/plugin-mermaid", new Set(["mermaid"])], // client renderer loaded by name
   ["@riebeckite/plugin-qr-code", new Set(["qrcode"])], // encoder loaded by name
   ["@riebeckite/plugin-search", new Set(["hono"])], // JSX runtime via jsxImportSource
+  ["@riebeckite/web", new Set(["lz-string", "slugify"])], // Vite SSR externals resolved by package name
 ]);
 
 function isIntentionalNonImport(ownerName, dependencyName) {

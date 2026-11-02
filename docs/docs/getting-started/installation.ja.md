@@ -9,6 +9,8 @@ sidebar:
 
 このページでは、何も入っていない状態から Riebeckite のサイトを起動するまでを説明します。Riebeckite の知識は前提にしません。Riebeckite のリポジトリを clone する必要もありません。
 
+> **ドキュメントのバージョン:** このサイトは `main` ブランチを説明しています。npm の `latest` タグは古い場合があります。`npx create-riebeckite` と `npm exec riebeckite` が導入するバージョンは `npm view @riebeckite/cli version` で確認してください。ここに書かれた機能が見つからない場合、公開済みパッケージがその機能より前のものです。次のリリースを待つか、ソースからビルドしてください。
+
 ## 必要なもの
 
 | 項目 | 用途 |

@@ -4,6 +4,7 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { collectChanges, finalizeRelease } from "./changelog.mjs";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
@@ -190,7 +191,27 @@ export const runtime = {
   sleep: (milliseconds) =>
     new Promise((resolve) => setTimeout(resolve, milliseconds)),
   now: () => Date.now(),
+  today: () => new Date().toISOString().slice(0, 10),
+  validateChanges: () => collectChanges(repositoryRoot),
+  finalizeChanges: (version, date) =>
+    finalizeRelease({ root: repositoryRoot, version, date }),
 };
+
+function validateChangeEntries() {
+  try {
+    return runtime.validateChanges();
+  } catch (error) {
+    throw new ReleaseError(error.message ?? String(error), error.status ?? 1);
+  }
+}
+
+function finalizeChangeEntries(version, date) {
+  try {
+    return runtime.finalizeChanges(version, date);
+  } catch (error) {
+    throw new ReleaseError(error.message ?? String(error), error.status ?? 1);
+  }
+}
 
 function runChecks() {
   runtime.runStep("check:packages", "pnpm", ["run", "check:packages"]);
@@ -198,6 +219,8 @@ function runChecks() {
   runtime.runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
 
   runtime.runStep("check:docs", "pnpm", ["run", "check:docs"]);
+
+  runtime.runStep("check:changes", "pnpm", ["run", "check:changes"]);
 }
 
 function readPackageManifests() {
@@ -1371,6 +1394,10 @@ function commitAndTag(version) {
     ...manifests,
     scaffoldVersionFile,
     scaffoldGoldenDirectory,
+    "CHANGELOG.md",
+    "changes",
+    "docs/docs/releases.md",
+    "docs/docs/releases.ja.md",
   ];
 
   runtime.runStep("git add", "git", ["add", "--", ...releaseFiles]);
@@ -1476,6 +1503,20 @@ export async function runRelease(rawArguments) {
     ensureTagDoesNotExist(version);
   }
 
+  const changes = validateChangeEntries();
+
+  console.log(
+    `\n[change entries] ${changes.unreleased.length} pending, ` +
+      `${changes.releases.length} recorded release(s).`,
+  );
+
+  if (changes.unreleased.length === 0) {
+    console.log(
+      "[change entries] no user-facing changes are pending; " +
+        "the release notes will record none.",
+    );
+  }
+
   const bumpArgs = ["scripts/bump_version.mjs", version];
 
   if (dryRun) {
@@ -1529,6 +1570,16 @@ export async function runRelease(rawArguments) {
   const verified = await verifyPublishedPackages(manifests, version);
 
   assertReleaseComplete(verified, version);
+
+  const finalized = finalizeChangeEntries(version, runtime.today());
+
+  console.log(
+    `\n[changelog] archived ${finalized.moved} change entr${
+      finalized.moved === 1 ? "y" : "ies"
+    } for v${version}; ${finalized.entryCount} entr${
+      finalized.entryCount === 1 ? "y" : "ies"
+    } in the release notes.`,
+  );
 
   commitAndTag(version);
 

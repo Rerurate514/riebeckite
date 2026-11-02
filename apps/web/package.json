@@ -108,7 +108,9 @@
     "@riebeckite/theme-tokyonight": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "^4.12.25",
-    "honox": "0.1.56"
+    "honox": "0.1.62",
+    "lz-string": "^1.5.0",
+    "slugify": "^1.6.9"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260420.1",

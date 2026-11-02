@@ -3,6 +3,7 @@ import type { PackageSpec } from "@riebeckite/test/e2e";
 export const PACKAGES: PackageSpec[] = [
   { directory: "packages/core", name: "@riebeckite/core" },
   { directory: "packages/node", name: "@riebeckite/node" },
+  { directory: "packages/diagnostics", name: "@riebeckite/diagnostics" },
   { directory: "packages/ui", name: "@riebeckite/ui" },
   { directory: "packages/cli", name: "@riebeckite/cli" },
   {
@@ -10,6 +11,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/analytics-cloudflare",
   },
   { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
+  {
+    directory: "packages/integrations/honox-inspector",
+    name: "@riebeckite/honox-inspector",
+  },
   { directory: "packages/spa", name: "@riebeckite/spa" },
   { directory: "packages/themes/default", name: "@riebeckite/theme-default" },
   {

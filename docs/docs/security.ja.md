@@ -27,7 +27,7 @@ Riebeckite では、データを大きく次のように扱います。
 | --- | --- |
 | サイト設定 | 信頼する |
 | インストールした Theme / Plugin | 信頼する |
-| ローカルの Markdown / frontmatter | 信頼する |
+| ローカルの Markdown / frontmatter | 信頼する。本文の raw HTML は Core の許可リストで除去される |
 | 外部サイトから取得したデータ | 内容を確認して扱う |
 | ブラウザやネットワークからの入力 | 信頼せず検証する |
 
@@ -52,19 +52,17 @@ Riebeckite では、Markdown に HTML を直接書けます。
 
 ### Markdown パイプライン
 
-Core のパイプラインは、意図的に raw HTML を有効にしています。
+Core のパイプラインは raw HTML を受け取り、その後にサニタイズします。
 
 - Markdown は `remark-rehype` で変換し、`allowDangerousHtml: true` を指定します。
 - raw HTML は `rehype-raw` で解析します。
+- `rehype-sanitize` が `packages/core/src/markdown_sanitize_schema.ts` の許可リストでツリーを絞り込みます。
+- インライン style は安全な最小限の書式に限定し、`object` はローカルの PDF だけに制限します。
 - HTML は `rehype-stringify` でシリアライズし、`allowDangerousHtml: true` を指定します。
 
-これはサニタイザーではなく、信頼できる Vault のための互換性と執筆機能です。信頼できないユーザーのコンテンツをビルドする場合は、Riebeckite へ渡す前にサニタイズするか拒否してください。
+許可リストには、Obsidian のノートでよく使う `details`、`summary`、figure、メディア要素、SVG の一部、KaTeX のマークアップが含まれます。許可リスト外のタグや属性は escape されるのではなく削除されます。Markdown 内の `<script>`、`onclick` 属性、`javascript:` URL は生成ページに残りません。
 
-その代わり、Riebeckite は Markdown 内の HTML を自動的には無害化しません。
-
-そのため、**信頼できない人が作成した Markdown をそのまま公開しないでください**。
-
-外部から受け取った Markdown を公開する場合は、Riebeckite へ渡す前に内容を検証する必要があります。
+そのため、**信頼できない人が作成した Markdown でも HTML がそのまま実行されることはありません**。ただし、サニタイザーは内容の正確さやリンク先の妥当性を審査するものではありません。外部から受け取った Markdown を公開する場合は、内容とリンク先を確認してください。
 
 ## ThemeとPlugin
 
@@ -81,7 +79,7 @@ Plugin は、たとえば次のようなことができます。
 
 そのため、Plugin は一般的な npm package と同じように、**信頼できるものだけをインストールしてください**。
 
-Riebeckite が Plugin の処理内容を自動的に安全化することはありません。
+Plugin が生成する HTML は Markdown のサニタイザー通過後に追加されるため、Core による自動的な無害化の対象外です。Plugin は自分が受け取った値を自分で escape してください。Riebeckite が Plugin の処理内容を自動的に安全化することはありません。
 
 `inspectGeneratedHtml` は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
 

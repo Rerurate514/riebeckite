@@ -1001,6 +1001,11 @@
       "type": false
     },
     {
+      "name": "createDevelopmentTrace",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createPluginMemo",
       "value": true,
       "type": false
@@ -1164,6 +1169,11 @@
       "name": "determineOutputChanges",
       "value": true,
       "type": false
+    },
+    {
+      "name": "DevelopmentTrace",
+      "value": false,
+      "type": true
     },
     {
       "name": "Diagnostic",

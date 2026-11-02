@@ -53,7 +53,7 @@ export function hoverPreview(options: HoverPreviewOptions = {}) {
       runtime.inject(context.manifest, (entry) => publicEntries.has(entry));
     },
     planGeneratedOutputs: ({ manifest, derived }) =>
-      runtime.plan(manifest.routableEntries, derived),
+      runtime.plan(manifest.discoverableEntries, derived),
     assets: [
       createStyleAsset(
         "hover-preview",

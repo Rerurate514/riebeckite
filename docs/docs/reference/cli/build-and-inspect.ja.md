@@ -157,7 +157,7 @@ npm exec -- riebeckite inspect assets
 ### API ライフサイクル
 
 ```sh id="rb-api-lifecycle"
-npm exec riebeckite inspect api --deprecated
+npm exec -- riebeckite inspect api --deprecated
 ```
 
 登録済みのライフサイクルメタデータを表示します。`--deprecated` で非推奨 API だけに絞り、`--json` で構造化された検査結果を出力します。レジストリを読むだけで、設定やビルド状態は変更しません。

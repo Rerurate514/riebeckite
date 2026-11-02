@@ -78,7 +78,7 @@ implementation because `riebeckite plugin verify` is a production CLI feature.
 
 ### Development trace
 
-`createDevelopmentTrace` moved from HonoX to `@riebeckite/diagnostics`. HonoX
+`createDevelopmentTrace` moved from HonoX to `@riebeckite/core`. HonoX
 continues to re-export it from `@riebeckite/honox/runtime`, but the move removes
 the Inspector test's dev dependency on HonoX and the package-level cycle.
 

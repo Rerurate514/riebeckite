@@ -6,7 +6,7 @@ import {
   type TraceEvent,
   type TraceSnapshot,
   type TraceSpan,
-} from "@riebeckite/core";
+} from "./observability.js";
 
 export type DevelopmentTrace = {
   readonly observability: Observability;

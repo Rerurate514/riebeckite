@@ -10,6 +10,8 @@ sidebar:
 
 この章では、**Riebeckite 自体がどのように動いているか**を説明します。
 
+この章で説明する境界の背景にある原則は [設計思想](../philosophy.ja.md) にあります。この章は現在の実装を、設計思想はなぜそうするのかを説明します。
+
 この章のうち次の 3 ページは、利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md) は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md) はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md) はブラウザー側の Plugin UI を扱います。概要を読んだあと、必要なら内部実装へ進んでください。
 
 対象となるのは、
@@ -42,6 +44,7 @@ flowchart LR
 
 | 知りたいこと | ページ |
 | --- | --- |
+| フレームワークがなぜこの形なのか | [設計思想](../philosophy.ja.md) |
 | Riebeckite 全体の構造 | [アーキテクチャ](./architecture.ja.md) |
 | Markdown やコンテンツがどう処理されるか | [コンテンツシステム](./content-system.ja.md) |
 | コンテンツを安全に作成・編集・移動・削除する方法と、書き込みの計画・ジャーナル・復旧 | [コンテンツ変更](./content-mutation.ja.md) |
@@ -66,6 +69,7 @@ flowchart LR
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |
 | Riebeckite のテストを書く・実行する | [Testing](./testing.ja.md) |
 | Riebeckite 本体を開発する | [Development](./development.ja.md) |
+| 変更エントリ、リリース手順、GitHub Releases | [リリース作業](./release.ja.md) |
 
 ## 最初に内部構造を理解したい場合
 

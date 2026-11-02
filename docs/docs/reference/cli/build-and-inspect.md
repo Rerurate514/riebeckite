@@ -160,7 +160,7 @@ asset, or `--json` for the structured report. Nothing is deleted or rewritten.
 ### API lifecycle
 
 ```sh
-npm exec riebeckite inspect api --deprecated
+npm exec -- riebeckite inspect api --deprecated
 ```
 
 Shows the registered lifecycle metadata. Use `--deprecated` to list only

@@ -15,7 +15,7 @@
     "@riebeckite/honox": "^0.0.35",
     "@riebeckite/ui": "^0.0.35",
     "hono": "^4.12.25",
-    "honox": "0.1.56",
+    "honox": "0.1.62",
     "@riebeckite/plugin-obsidian-markdown": "^0.0.35",
     "@riebeckite/theme-minimal": "^0.0.35"
   },

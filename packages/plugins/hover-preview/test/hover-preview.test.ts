@@ -125,10 +125,13 @@ test("shared preview index preserves publication boundary and custom locations",
   ) as HoverPreviewIndex;
   assert.equal(index["/ja/custom-target"]?.title, "対象");
   assert.equal(index["/ja/custom-target"]?.slug, "localized/target");
-  assert.equal(index["/unlisted"]?.title, "Unlisted");
+  assert.equal(index["/unlisted"], undefined);
   assert.equal(index["/draft"], undefined);
   assert.equal(index["/private"], undefined);
   assert.equal(index["/future"], undefined);
+  assert.equal(content.byRoutablePermalink.get("/unlisted")?.title, "Unlisted");
+  assert.equal(content.byRoutablePermalink.has("/draft"), false);
+  assert.equal(content.byRoutablePermalink.has("/future"), false);
 });
 
 test("resolves the preview index through its registered derived view", async () => {

@@ -128,6 +128,7 @@ function definitions(): readonly CliCommandDefinition[] {
     inspectBuildCommand(),
     inspectAssetsCommand(),
     inspectProvenanceCommand(),
+    inspectApiCommand(),
     createCommand(),
     createSiteCommand(),
     createPluginCommand(),
@@ -444,7 +445,7 @@ function inspectCommand(): CliCommandDefinition {
     id: "inspect",
     summary: "Inspect the resolved project.",
     description:
-      "Inspect configuration, plugins, content, the content graph, build output, assets, or provenance. Use an inspect subcommand to narrow the report.",
+      "Inspect configuration, plugins, content, the content graph, build output, assets, provenance, or managed APIs. Use an inspect subcommand to narrow the report.",
     requiresProject: true,
     async handler(context) {
       const { runInspect } = await import("../commands/inspect.js");
@@ -565,6 +566,30 @@ function inspectProvenanceCommand(): CliCommandDefinition {
         source: input.options.source as string | undefined,
         output: input.options.output as string | undefined,
         compare: input.options.compare as string | undefined,
+      });
+    },
+  });
+}
+
+function inspectApiCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "inspect api",
+    summary: "Inspect managed API lifecycle metadata.",
+    requiresProject: true,
+    supportsJson: true,
+    options: [
+      cliBoolean("deprecated", {
+        description: "List deprecated APIs only.",
+      }),
+      cliBoolean("json", { description: "Print the report as JSON." }),
+    ],
+    async handler(context, input) {
+      const { runInspect } = await import("../commands/inspect.js");
+      await runInspect(await project(context), {
+        target: "api",
+        list: false,
+        json: input.options.json as boolean,
+        deprecatedOnly: input.options.deprecated as boolean,
       });
     },
   });

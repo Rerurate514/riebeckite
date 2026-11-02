@@ -1,4 +1,6 @@
 import type {
+  ApiLifecycleDefinition,
+  ApiLifecycleValidationIssue,
   BuildProvenance,
   BuildProvenanceComparison,
   ContentAssetInspection,
@@ -99,6 +101,13 @@ export type BuildInspection =
       readonly status: "invalid";
       readonly reason: ContentBuildStateInvalidReason;
     };
+
+export type ApiInspection = {
+  readonly entries: readonly ApiLifecycleDefinition[];
+  readonly issues: readonly ApiLifecycleValidationIssue[];
+  readonly deprecated: readonly ApiLifecycleDefinition[];
+  readonly usedIds: readonly string[];
+};
 
 export type ProvenanceInspection =
   | {

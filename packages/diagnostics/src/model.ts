@@ -6,7 +6,8 @@ export type DevelopmentDiagnosticCategory =
   | "content"
   | "output"
   | "theme"
-  | "environment";
+  | "environment"
+  | "api";
 
 export type DevelopmentDiagnosticStatus =
   | "pass"
@@ -29,7 +30,8 @@ export type DevelopmentDiagnosticSubject = {
     | "content"
     | "output"
     | "theme"
-    | "environment";
+    | "environment"
+    | "api";
   readonly value?: string;
 };
 

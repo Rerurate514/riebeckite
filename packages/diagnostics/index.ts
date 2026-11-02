@@ -1,3 +1,4 @@
+export { collectApiLifecycleDiagnostics } from "./src/api.js";
 export type { DevelopmentDiagnosticsInput } from "./src/collect.js";
 export {
   collectDevelopmentDiagnostics,

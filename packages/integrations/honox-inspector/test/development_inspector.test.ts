@@ -757,6 +757,10 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /data-theme-query/);
   assert.match(source as string, /collectThemeTokens/);
   assert.match(source as string, /--\(rb\|rr\)-/);
+  assert.match(source as string, /"API"/);
+  assert.match(source as string, /apiLifecycleReport/);
+  assert.match(source as string, /report\.apiLifecycle/);
+  assert.match(source as string, /Deprecated since/);
   assert.match(source as string, /report\.derivedViews/);
   assert.match(source as string, /data-derived-query/);
   assert.match(source as string, /data-derived-status/);

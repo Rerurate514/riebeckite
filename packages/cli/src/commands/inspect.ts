@@ -1,5 +1,6 @@
 import type { RiebeckiteProject } from "../application_root.js";
 import {
+  collectApiInspection,
   collectApplicationInspection,
   collectAssetInspection,
   collectBuildInspection,
@@ -10,6 +11,7 @@ import {
   collectProvenanceInspection,
 } from "../inspect/collectors.js";
 import {
+  renderApiInspection,
   renderApplicationInspection,
   renderAssetInspection,
   renderBuildInspection,
@@ -29,7 +31,8 @@ export type InspectTarget =
   | "graph"
   | "build"
   | "assets"
-  | "provenance";
+  | "provenance"
+  | "api";
 
 export async function runInspect(
   project: RiebeckiteProject,
@@ -41,6 +44,7 @@ export async function runInspect(
     source?: string;
     output?: string;
     compare?: string;
+    deprecatedOnly?: boolean;
   },
 ): Promise<void> {
   if (!options.target) {
@@ -86,6 +90,17 @@ export async function runInspect(
       options.json
         ? JSON.stringify(inspection, undefined, 2)
         : renderAssetInspection(inspection, { list: options.list }),
+    );
+    return;
+  }
+  if (options.target === "api") {
+    const inspection = await collectApiInspection(project);
+    console.log(
+      options.json
+        ? JSON.stringify(inspection, undefined, 2)
+        : renderApiInspection(inspection, {
+            deprecatedOnly: options.deprecatedOnly ?? false,
+          }),
     );
     return;
   }

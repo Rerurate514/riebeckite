@@ -13,6 +13,7 @@ sidebar:
 ### 主なエクスポート
 
 - 設定: `defineConfig`、`resolveConfig`、`resolveConfigModule`、`isPublished`、`isExcluded`
+- API ライフサイクル: `defineApiLifecycle`、`createApiLifecycleRegistry`、`resolveApiLifecycle`
 - コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`ContentQuery`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
 - プラグイン: `definePlugin`、`resolvePlugins`、`defineEndpoint`、`createStyleAsset`、`createClientEntry`、`createPluginMemo`、`stableStringify`
 - テーマ: `defineTheme`、`ThemeDefinition`、`semantic tokens`、`ThemeColorMode`、`ThemeTypographyPreset`、`ThemeArticleLayoutPreset`
@@ -31,6 +32,20 @@ isExcluded
 ```
 
 設定の宣言と解決、公開ポリシーに使用します。詳しくは [設定](./configuration.ja.md) を参照してください。
+
+### API ライフサイクル
+
+```text
+defineApiLifecycle
+validateApiLifecycleDefinition
+createApiLifecycleRegistry
+collectApiLifecycleDefinitions
+resolveApiLifecycle
+API_LIFECYCLE_DIAGNOSTIC_CODE
+API_LIFECYCLE_METADATA_DIAGNOSTIC_CODE
+```
+
+非推奨 API の記録とメタデータの検証に使用します。詳しくは [API ライフサイクル](./api-lifecycle.ja.md) を参照してください。
 
 ### コンテンツ
 

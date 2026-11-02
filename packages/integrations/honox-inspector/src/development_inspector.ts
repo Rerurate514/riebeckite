@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   type CompletedContentBuildSnapshot,
   loadContentBuildState,
+  resolveApiLifecycle,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
 import {
@@ -175,6 +176,7 @@ export function riebeckiteDevelopmentInspector(
                 enabled: plugin.enabled !== false,
               })),
               derivedViews: snapshot?.derivedViews ?? [],
+              apiLifecycle: resolveApiLifecycle(application.config),
             }),
           );
         } catch {

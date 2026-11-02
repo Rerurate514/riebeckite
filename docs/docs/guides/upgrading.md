@@ -24,10 +24,21 @@ build state. `build` verifies that the site can be generated.
 
 ## Compatibility policy
 
-Riebeckite currently does not provide runtime warnings or compatibility layers
-for deprecated APIs by default. Breaking changes are communicated through
-versions, change history, and migration guides when needed. This policy does
-not prevent a future release from introducing a deprecation period.
+Riebeckite records deprecated public APIs in API lifecycle metadata and marks
+TypeScript declarations with `@deprecated`. `check`, `doctor`, and the
+Development Inspector's API tab report deprecated configuration keys and plugin
+options that the project still uses, including the replacement, removal version,
+and migration guide when they are known. These warnings explain how to migrate;
+they do not add a compatibility layer and do not fail a build by default. Use
+`doctor --fail-on warning` when a CI check should treat them as failures.
+
+Usage detection is limited to lifecycle metadata that names a configuration path
+or plugin option. Deprecated APIs without that metadata still appear in
+`inspect api` and the Inspector, but are not reported as used.
+
+Breaking changes are communicated through versions, change history, lifecycle
+metadata, and migration guides when needed. This policy does not require a
+deprecation period before every removal.
 
 Before 1.0, minor releases can contain breaking changes. From 1.0 onward,
 breaking changes follow semantic versioning. Read the [release notes](https://github.com/Rerurate514/riebeckite/releases) before

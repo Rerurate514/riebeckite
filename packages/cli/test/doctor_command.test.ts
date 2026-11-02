@@ -98,6 +98,20 @@ test("inspect provenance accepts shared state filters and JSON", () => {
   );
 });
 
+test("inspect api accepts deprecated filtering and JSON output", () => {
+  assert.deepEqual(resolveInput(["inspect", "api"]).options, {
+    deprecated: false,
+    json: false,
+  });
+  assert.deepEqual(
+    resolveInput(["inspect", "api", "--deprecated", "--json"]).options,
+    {
+      deprecated: true,
+      json: true,
+    },
+  );
+});
+
 test("doctor rejects incompatible or unknown options", () => {
   assert.throws(() => resolveInput(["doctor", "--dry-run"]), /--dry-run/);
   assert.throws(

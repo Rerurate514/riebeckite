@@ -78,6 +78,51 @@ function detail(label, value, kind) {
   return value ? '<dt>' + escapeHtml(t(label, { kind })) + '</dt><dd>' + escapeHtml(value) + '</dd>' : "";
 }
 
+function apiLifecycleReport(apiLifecycle, diagnostics) {
+  if (!apiLifecycle) return '<p class="status" aria-live="polite">' + t("API lifecycle metadata is unavailable.") + '</p>';
+  const entries = Array.isArray(apiLifecycle.entries) ? apiLifecycle.entries : [];
+  const issues = Array.isArray(apiLifecycle.issues) ? apiLifecycle.issues : [];
+  const deprecated = entries.filter((entry) => entry.status === "deprecated");
+  const apiDiagnostics = diagnostics.filter((diagnostic) => diagnostic.category === "api");
+  const used = new Set(apiDiagnostics.filter((diagnostic) => diagnostic.severity === "warning").map((diagnostic) => diagnostic.subject.value).filter(Boolean));
+  const issueList = issues.length > 0
+    ? '<h3>' + t("Registry issues") + '</h3><ul>' + issues.map((issue) => '<li><b>' + escapeHtml(issue.apiId || "api-lifecycle") + '</b> <code>' + escapeHtml(issue.code) + '</code> ' + escapeHtml(issue.message) + '</li>').join("") + '</ul>'
+    : '<p class="more">' + t("No API lifecycle issues.") + '</p>';
+  const entryList = entries.length > 0
+    ? '<ul>' + entries.map((entry) => {
+      const diagnostic = apiDiagnostics.find((candidate) => candidate.subject.value === entry.id);
+      return '<li><details data-detail-key="' + escapeHtml("api-" + entry.id) + '"><summary><b>' + escapeHtml(entry.id) + '</b> <small>' + escapeHtml(t(entry.status)) + '</small></summary><dl>' +
+        detail("Status", entry.status) +
+        detail("Kind", entry.kind) +
+        detail("Package", entry.package || entry.id.split("#")[0]) +
+        detail("Deprecated since", entry.deprecatedSince) +
+        detail("Replacement", entry.replacement) +
+        detail("Removal", entry.removalVersion || (entry.status === "deprecated" ? t("not confirmed") : undefined)) +
+        detail("Migration guide", entry.migrationGuide) +
+        detail("Reason", entry.reason) +
+        detail("Summary", entry.summary) +
+        (entry.status === "deprecated" ? detail("Usage", used.has(entry.id) ? "detected" : "not detected") : "") +
+        detail(
+          "Location",
+          diagnostic?.location?.file
+            ? diagnostic.location.file +
+                (diagnostic.location.line ? ":" + diagnostic.location.line : "")
+            : undefined,
+        ) +
+        '</dl></details></li>';
+    }).join("") + '</ul>'
+    : '<p class="more">' + t("No lifecycle-managed APIs are registered.") + '</p>';
+  return '<dl>' +
+    '<dt>' + t("Managed APIs") + '</dt><dd>' + entries.length + '</dd>' +
+    '<dt>' + t("Deprecated APIs") + '</dt><dd>' + deprecated.length + '</dd>' +
+    '<dt>' + t("Registry issues") + '</dt><dd>' + issues.length + '</dd>' +
+    '</dl>' +
+    issueList +
+    '<h3>' + t("API lifecycle") + '</h3>' +
+    entryList +
+    '<p class="partial">' + t("API lifecycle metadata is read-only.") + '</p>';
+}
+
 function graphReport(graph) {
   if (!graph) return '<p class="status" aria-live="polite">' + t("Loading dependency graph…") + '</p>';
   if (graph.status !== "available") return unavailable("Dependency graph", graph.reason);

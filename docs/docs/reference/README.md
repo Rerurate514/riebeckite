@@ -24,6 +24,7 @@ You do not have to read Reference from start to finish. When you want to check a
 
 - [Packages](./packages.md)
 - [Core API](./core-api.md)
+- [API lifecycle](./api-lifecycle.md)
 - [Preview API](./preview.md)
 
 ## Reference pages

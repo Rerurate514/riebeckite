@@ -32,21 +32,21 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
 riebeckite content recover <journal> --apply [--json]
 riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance | api [--deprecated] [--json]]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance [--json] [--source <path>] [--output <path>] [--compare <path>] | api [--deprecated] [--json]]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
 Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata and never run a command handler. Enabled Plugins can add namespaced commands through their existing `cli` definition. See [CLI Extension API](./cli-extension.md) for the definition API, context, JSON contract, completion, and security model.
 
-Every `publish` action also accepts `--state-file <path>` (or the `RIEBECKITE_PUBLICATION_STATE` environment variable) to override the durable publication state file.
+The `publish` actions that read or write durable publication state (`plan`, `status`, `validate`, `run`, `record`, and `gate`) accept `--state-file <path>` (or the `RIEBECKITE_PUBLICATION_STATE` environment variable) to override the state file. `approve` and `revoke` operate on `publication/approvals.json` and accept `--approvals <path>` instead.
 
 ## Command contracts
 

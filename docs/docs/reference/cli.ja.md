@@ -32,21 +32,21 @@ riebeckite upgrade --check --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
 riebeckite content recover <journal> --apply [--json]
 riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance | api [--deprecated] [--json]]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance [--json] [--source <path>] [--output <path>] [--compare <path>] | api [--deprecated] [--json]]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
 コマンドは単一の型付きレジストリから解決します。`--help`、`help`、`completion` はコマンドのメタデータだけを読み、ハンドラーを実行しません。有効なプラグインは、既存の `cli` 定義を通じて名前空間付きのコマンドを追加できます。定義API、実行コンテキスト、JSONの取り決め、補完、セキュリティモデルは [CLI拡張API](./cli-extension.ja.md) を参照してください。
 
-`publish` の各アクションは、永続公開状態ファイルを上書きする `--state-file <path>`（または環境変数 `RIEBECKITE_PUBLICATION_STATE`）も受け付けます。
+永続公開状態を読み書きする `publish` のアクション（`plan`、`status`、`validate`、`run`、`record`、`gate`）は、状態ファイルを上書きする `--state-file <path>`（または環境変数 `RIEBECKITE_PUBLICATION_STATE`）を受け付けます。`approve` と `revoke` は `publication/approvals.json` を操作するため、代わりに `--approvals <path>` を受け付けます。
 
 ## 各コマンドの役割とビルド状態への影響
 

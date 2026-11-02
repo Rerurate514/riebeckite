@@ -6,8 +6,15 @@ title: Build and CLI Rules for Agents
 Use the CLI from the application directory:
 
 ```text
-init [directory] [--force] | dev | check | doctor | build [--full] | profile [--full]
-inspect [config | plugins | content [--list] | graph | build]
+init [directory] [--force] | create [site | plugin | theme | page-type | component]
+dev | check | doctor | build [--full] | clean [--output | --all] | profile [--full]
+inspect [config | plugins | content [--list] | graph | build | assets | provenance | api]
+upgrade --to <version|latest> [--json] | deploy setup | deploy workflow [--check] | deploy domain
+publish plan | status | validate | run | approve | revoke | record | gate
+content create | edit | delete | move | plan | apply | recover
+migrate list | plan | apply | status | history | rollback | recover
+plugin dev <path> | plugin verify <path> [--json] | theme preview <name>
+completion <bash | zsh | powershell> [--project]
 ```
 
 `check` validates resolved configuration, enabled plugins, and capabilities; it is not a build. `doctor` reports environment/config/plugin/content/diagnostic/build-state health and continues independent checks where possible. A failed doctor result must produce a failing exit status.

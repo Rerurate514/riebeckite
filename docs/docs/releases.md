@@ -31,3 +31,6 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 - Fix mobile navigation and client-side regressions: keep the drawer above page controls, re-enable the color-mode toggle after SPA navigation, restore the theme preview in development, show an open link instead of an inline PDF on narrow screens, overlay image-comparison fallbacks, and hide the Explorer link unless the garden-explorer plugin is enabled.
   Packages: `@riebeckite/core`, `@riebeckite/ui`, `@riebeckite/plugin-color-mode`, `@riebeckite/plugin-image-compare`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-pdf`
+
+- Fix CLI usage error reporting so content usage errors use the shared `CLI_USAGE` contract, raw commands honor a leading `--help`, and JSON errors include the command. `upgrade --check` is now optional, and a typo with a built-in suggestion no longer loads the project.
+  Packages: `@riebeckite/cli`, `@riebeckite/core`

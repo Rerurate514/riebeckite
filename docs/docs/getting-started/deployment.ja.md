@@ -126,10 +126,11 @@ npm exec riebeckite deploy setup
 
 このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みのシークレットは検出され、そのまま維持されます。
 
-GitHub のワークフロー、アクセス、デプロイ用シークレットを変更せずに確認するには、次を実行します。
+生成されたワークフローは `.github/workflows/publish.yml` で確認できます。GitHub CLI のログインとリポジトリのシークレットを変更せずに確認するには、次を実行します。
 
 ```bash
-npm exec -- riebeckite doctor --github
+gh auth status
+gh secret list
 ```
 
 ## 3. 応用: コンテンツを別リポジトリに分ける

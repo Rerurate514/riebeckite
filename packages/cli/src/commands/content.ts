@@ -1,7 +1,6 @@
-import type { ContentMutationOperation } from "@riebeckite/core";
+import { CliUsageError, type ContentMutationOperation } from "@riebeckite/core";
 import { FileSystemContentMutation } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../application_root.js";
-import { CliUsageError } from "../cli_usage_error.js";
 
 const USAGE =
   "Usage: riebeckite content <create|edit|delete|move> ... [--apply] [--json] | content plan <create|edit|delete|move> ... [--out <name>] [--json] | content apply <plan> --apply [--json] | content recover <journal> --apply [--json]";

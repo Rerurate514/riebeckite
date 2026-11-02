@@ -166,7 +166,7 @@ npm exec -- riebeckite inspect content --list
 ```
 
 - `check` は設定とプラグインの契約を検証します。
-- `doctor` は設定、プラグイン、コンテンツ、[[glossary/build-state|ビルド状態]]、環境を診断します。`--github` を付けると GitHub 関連の設定も確認します。
+- `doctor` は設定、プラグイン、コンテンツ、[[glossary/build-state|ビルド状態]]、環境を診断します。
 - `inspect config` は解決済みの設定を表示します。コンテンツの `Source`、`Directory`、`Exclude`、`Publishing` を確認でき、`Directory` には絶対パスが表示されます。意図した Vault を指しているか確認してください。
 - `inspect content --list` は読み込んだノートを `PATH`、`ID`、`ID SOURCE`、`PERMALINK` の列で一覧表示します。`exclude` に一致したファイルは `EXCLUDED PATH` と `PATTERN` の表に出ます。
 

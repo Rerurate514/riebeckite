@@ -171,6 +171,7 @@ function parseCommandInput(
 ): ParseResult {
   const command = registration.command;
   if (command.raw) {
+    if (tokens[0] === "--help" || tokens[0] === "-h") return { kind: "help" };
     return {
       kind: "parsed",
       input: {

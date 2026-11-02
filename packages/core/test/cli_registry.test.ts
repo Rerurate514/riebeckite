@@ -268,6 +268,15 @@ test("raw commands keep their arguments untouched", () => {
   ]);
 });
 
+test("raw commands honor leading help without consuming later help", () => {
+  const registry = registerCliCommand(
+    createCliCommandRegistry(),
+    command("content", { raw: true }),
+  );
+  assert.equal(resolveCliCommand(registry, ["content", "--help"]).kind, "help");
+  assert.equal(resolveCliCommand(registry, ["content", "-h"]).kind, "help");
+});
+
 test("invalid arguments and options report useful errors", () => {
   const registry = registerCliCommand(
     createCliCommandRegistry(),

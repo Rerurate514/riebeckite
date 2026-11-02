@@ -143,10 +143,8 @@ The public l10n exports remain available from `l10n.ts`.
 ### CLI interactive parsing
 
 `cli.ts` keeps command dispatch and its error boundary. Interactive command
-argument parsing and usage errors now live in:
-
-- `interactive_command_parser.ts` — page, component, plugin, theme, preview, dev, and verify arguments
-- `cli_usage_error.ts` — shared CLI usage error
+argument parsing and usage errors now live in the shared CLI registry under
+`packages/core/src/cli/`.
 
 ### Icon packs
 

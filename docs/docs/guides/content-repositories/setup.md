@@ -159,7 +159,7 @@ npm exec -- riebeckite inspect content --list
 ```
 
 - `check` validates the configuration and plugin contracts.
-- `doctor` diagnoses configuration, plugins, content, build state, and the environment; `--github` adds GitHub checks.
+- `doctor` diagnoses configuration, plugins, content, build state, and the environment.
 - `inspect config` prints the resolved content `Source`, `Directory`, `Exclude`, and `Publishing` (the resolved strategy). `Directory` is absolute; confirm it points at the intended vault.
 - `inspect content --list` lists every loaded note with `PATH`, `ID`, `ID SOURCE`, and `PERMALINK`. Files matched by `exclude` appear in the `EXCLUDED PATH` / `PATTERN` table. Use it to confirm how `exclude` is taking effect and whether you are loading starter content or the real content repository.
 

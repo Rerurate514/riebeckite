@@ -63,6 +63,9 @@ export async function runCli(options: RunCliOptions): Promise<number> {
     if (!(error instanceof CliUsageError) || !isUnknownCommand(error)) {
       return reportFailure(error, { stderr, json });
     }
+    if (error.suggestions !== undefined && error.suggestions.length > 0) {
+      return reportFailure(error, { stderr, json });
+    }
     const discovered = await tryDiscover(loadProject, registry);
     registry = discovered.registry;
     for (const failure of discovered.failures) {
@@ -83,13 +86,23 @@ export async function runCli(options: RunCliOptions): Promise<number> {
     return 0;
   }
   if (resolution.kind === "root-help") {
-    stdout(`${formatRootHelp(registry, { width: terminalWidth() })}\n`);
+    stdout(
+      `${formatRootHelp(registry, {
+        width: terminalWidth(),
+        version: options.version,
+        color: process.stdout.isTTY === true,
+      })}\n`,
+    );
     return 0;
   }
   if (resolution.kind === "help") {
     const help =
       resolution.path === undefined
-        ? formatRootHelp(registry, { width: terminalWidth() })
+        ? formatRootHelp(registry, {
+            width: terminalWidth(),
+            version: options.version,
+            color: process.stdout.isTTY === true,
+          })
         : formatPathHelp(registry, resolution.path, { width: terminalWidth() });
     stdout(`${help}\n`);
     return 0;
@@ -187,13 +200,16 @@ function reportFailure(
   },
 ): number {
   const exitCode = readExitCode(error);
+  const command =
+    options.command ??
+    (error instanceof CliUsageError ? error.commandPath : undefined);
   if (options.json) {
     const envelope: CliJsonErrorEnvelope = {
       ok: false,
       error: {
         code: readCode(error),
         message: error instanceof Error ? error.message : String(error),
-        ...(options.command === undefined ? {} : { command: options.command }),
+        ...(command === undefined ? {} : { command }),
         exitCode,
         ...(error instanceof CliUsageError && error.suggestions !== undefined
           ? { suggestions: error.suggestions }

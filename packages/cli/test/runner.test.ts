@@ -55,6 +55,7 @@ test("root help, version, and unknown commands stay lightweight", async () => {
   try {
     const help = await run(["--help"], { cwd });
     assert.equal(help.code, 0);
+    assert.match(help.stdout, /Riebeckite CLI 1\.2\.3/);
     assert.match(help.stdout, /Usage: riebeckite <command> \[options\]/);
     assert.match(help.stdout, /-v, --version/);
 
@@ -126,6 +127,18 @@ test("maps command results and failures to exit codes", async () => {
   const usage = await run(["usage"], { registry });
   assert.equal(usage.code, 2);
   assert.match(usage.stderr, /Bad input/);
+
+  const usageJson = await run(["command", "--wat", "--json"], { registry });
+  assert.equal(usageJson.code, 2);
+  assert.deepEqual(JSON.parse(usageJson.stderr), {
+    ok: false,
+    error: {
+      code: "CLI_USAGE",
+      message: "Unknown option: --wat.",
+      command: "command",
+      exitCode: 2,
+    },
+  });
 
   const command = await run(["command"], { registry });
   assert.equal(command.code, 1);

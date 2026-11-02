@@ -126,10 +126,11 @@ npm exec riebeckite deploy setup
 
 The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/publish.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
 
-To inspect the GitHub workflow, access, and deployment secrets without changing them, run:
+Review the generated workflow in `.github/workflows/publish.yml`. To check the GitHub CLI login and repository secrets without changing them, run:
 
 ```sh
-npm exec -- riebeckite doctor --github
+gh auth status
+gh secret list
 ```
 
 ## 3. Advanced: separate content repository

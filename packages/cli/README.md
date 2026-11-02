@@ -32,28 +32,51 @@ In a pnpm project, use `pnpm exec riebeckite`.
 ## Usage
 
 ```text
+riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets]
+riebeckite create [site | plugin | theme | page-type | component]
+riebeckite theme preview <name> [--port <port>] [--no-open]
+riebeckite plugin dev <path> [--port <port>] [--no-open]
+riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
+riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
+riebeckite deploy setup | deploy workflow [--check] | deploy domain
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
+riebeckite content create | edit | delete | move ... [--apply] [--json]
+riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
+riebeckite content apply <plan> --apply [--json]
+riebeckite content recover <journal> --apply [--json]
+riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
-riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance | api [--deprecated] [--json]]
+riebeckite help [command...]
+riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
 ## Commands
 
 | Command | Purpose | Writes build state? |
 | --- | --- | --- |
+| `init` | Scaffold a self-contained site from a preset | no |
+| `create` | Run a Site, Plugin, Theme, PageType, or Component generator | generator-dependent |
+| `theme preview` | Run an isolated HonoX preview of a local Theme | temporary files only |
+| `plugin dev` | Run an isolated HonoX preview of a local Plugin | temporary files only |
+| `plugin verify` | Check a distributable Plugin before adding it to a site | no |
 | `dev` | Start the integration development workflow | integration-dependent |
 | `check` | Validate app configuration, plugins, and capability resolution | no |
 | `doctor` | Report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
+| `upgrade` | Compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
+| `deploy` | Prepare Cloudflare workflow and domain configuration; it does not deploy | no |
+| `publish` | Plan, inspect, validate, approve, and explicitly execute publication | yes, after an executed build |
+| `content` | Plan explicit content mutations and write them with a journal | no |
+| `migrate` | Plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |
-| `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`) | no |
-| `create theme` | Generate a local Theme from the public Theme API | writes local files |
+| `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`, `assets`, `provenance`, `api`) | no |
 
 `doctor` continues independent checks where possible and exits unsuccessfully
 when health checks fail. `inspect` is deliberately read-only and never triggers

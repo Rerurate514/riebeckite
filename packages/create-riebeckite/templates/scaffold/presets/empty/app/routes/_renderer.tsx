@@ -1,5 +1,10 @@
 import { createPublicContentView } from "@riebeckite/core";
-import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+import {
+  getThemeStyle,
+  getThemeStylesheets,
+  RiebeckiteHead,
+  ThemeRoot,
+} from "@riebeckite/honox/ui";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { content } from "virtual:riebeckite/content";
@@ -11,6 +16,7 @@ export const __importing_islands = true;
 
 export default jsxRenderer(async ({ children }, c) => {
   const manifest = await content.getManifest();
+  const themeStyle = getThemeStyle(config.theme);
 
   return (
     <SiteProvider
@@ -23,7 +29,11 @@ export default jsxRenderer(async ({ children }, c) => {
     >
       <ThemeRoot>
         <head>
-          <RiebeckiteHead colorModeScript={false} />
+          <RiebeckiteHead
+            colorModeScript={false}
+            themeStyle={themeStyle}
+            themeStylesheets={getThemeStylesheets(config.theme.stylesheets)}
+          />
         </head>
         <body class="riebeckite-page rb-site">
           <main id="main-content" tabindex={-1} class="riebeckite-main">

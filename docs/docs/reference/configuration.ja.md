@@ -27,16 +27,13 @@ export default defineConfig({
     },
   },
 
-  theme: {
-    colorMode: "system",
-    layout: "article",
-  },
+  theme: defaultTheme({ colorMode: "system" }),
 
   plugins: [],
 });
 ```
 
-必須は `site` だけです。`content`、`theme`、`plugins`、`cache`、`spa` は必要に応じて設定します。
+必須は `site` だけです。`content`、`theme`、`plugins`、`cache`、`publication`、`provenance`、`spa` は必要に応じて設定します。
 
 | フィールド | 用途 |
 | --- | --- |
@@ -45,9 +42,13 @@ export default defineConfig({
 | `theme` | [[glossary/theme|テーマ]]の設定 |
 | `plugins` | 使用するプラグイン |
 | `cache` | ビルドキャッシュの設定 |
+| `publication` | 公開承認モードと永続状態 |
+| `provenance` | ビルド来歴の記録 |
 | `spa` | SPA ナビゲーションの設定 |
 
 `spa` はクライアント側のページ遷移を有効にします。`true`、`false`、またはオプションオブジェクトを指定できます。動作とオプションは [SPA ナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
+
+`publication` は公開承認モードと永続状態を設定します。`provenance` はビルド来歴の記録を制御します。詳しくは[データ来歴](../framework/build-system/provenance.ja.md)を参照してください。
 
 ## 関連ページから詳細を調べる
 

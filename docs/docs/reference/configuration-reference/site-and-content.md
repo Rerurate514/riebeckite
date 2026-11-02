@@ -82,6 +82,7 @@ type ContentSource = {
 type ContentSourceEntry = {
   path: string;
   metadata?: {
+    createdAt?: number;
     modifiedAt?: number;
     size?: number;
     etag?: string;
@@ -95,7 +96,7 @@ a string or bytes. Metadata is optional and used by the cache.
 
 ### content.exclude
 
-Patterns match logical paths.
+Patterns match logical paths (e.g., `exclude: ["drafts"]` matches `drafts.md`).
 
 | Symbol | Meaning |
 | --- | --- |

@@ -51,8 +51,7 @@ not registered by `starter`. Add the Plugin when a recipe needs it; see
 
 ## Recent posts
 
-This one is on by default. The generated `app/routes/index.tsx` collects the
-latest posts and renders them after the homepage body:
+This one is on by default. The generated `app/routes/index.tsx` uses `createHomeRoute` only. `RecentPosts` lives in `app/components/article.tsx`.
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";

@@ -162,7 +162,7 @@ flowchart LR
 - 同じケイパビリティを複数のプラグインが提供している
 - 依存関係が循環している
 
-解決に失敗した場合は、`PluginDependencyError`（`@riebeckite/core` からインポート可能）を投げます。`kind` と `pluginName` から原因を特定できます。依存関係のないプラグインについては、入力順をできるだけ維持します。
+解決に失敗した場合は、`PluginDependencyError`（`@riebeckite/core` からインポート可能）を投げます。`kind` と `pluginName` は原因を特定できますが、`duplicate-provider` や `cycle` の場合は `pluginName` が設定されておらず、`pluginNames` / `chain` を使って原因を特定してください。依存関係のないプラグインについては、入力順をできるだけ維持します。
 
 ## オプションの検証
 
@@ -190,9 +190,21 @@ validateOptions
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   isDevelopment?: boolean;
+  /**
+   * Deterministic build clock. Publishing, scheduling, and time-dependent
+   * plugin output share this value so one build always agrees with itself.
+   */
+  buildTime?: Date;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  derived?: DerivedViewRegistry;
+  /**
+   * Registers a file to be written to the build output directory. Available
+   * during build lifecycle hooks; the integration layer forwards each entry to
+   * the build tool.
+   */
+  externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
   output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;

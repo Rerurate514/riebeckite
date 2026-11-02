@@ -65,7 +65,7 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 
 ```tsx
 // サイト route にある最小 UI composition
-import { getBacklinks } from "@riebeckite/core";
+import { getBacklinks } from "@riebeckite/plugin-backlinks";
 import { MyComponent } from "@riebeckite/plugin-example";
 
 const view = createPublicContentView(manifest);
@@ -73,7 +73,6 @@ const entry = view.findRoutableBySlug(slug);
 const backlinks = await getBacklinks({ view, slug });
 <article>
   <MyComponent backlinks={backlinks} />
-  <ArticleBody html={entry.html} />
 </article>
 ```
 

@@ -103,7 +103,7 @@ Command names use lowercase kebab-case. Nested commands form a tree. A command m
 
 Options support long names, short flags, `--name=value`, repeatable values, required values, hidden metadata, defaults, and a `validate` callback. Arguments support required, variadic, enum, default, hidden, and validation metadata.
 
-The parser handles `--`, quoted arguments already split by the shell, clustered boolean short flags, and `--no-*` negation. It rejects unknown options, missing values, duplicate non-repeatable options, missing required arguments, extra positional arguments, and invalid enum or number values.
+The parser handles `--`, quoted arguments already split by the shell, clustered boolean short flags, and `--no-*` negation. It rejects unknown options, missing values, duplicate non-repeatable options (except repeatable flags), missing required arguments, extra positional arguments, and invalid enum or number values.
 
 ## Command context
 

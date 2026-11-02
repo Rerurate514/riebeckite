@@ -49,7 +49,7 @@ import {
 | API | Purpose |
 | --- | --- |
 | `defineDerivedView<TInput, TResult>({ id, version, input?, output?, compute })` | Declare a view. The version is required and participates in cache keys and output dependencies. |
-| `createDerivedViewRegistry(options?)` | Create a registry. Options supply the PluginCache, query entries, dependency fingerprinting, and the parent resolver. |
+| `createDerivedViewRegistry(options?)` | Create a registry. Options supply the PluginCache, query entries, and dependency fingerprint. Parent resolution is internal via `context.resolve`. |
 | `registry.register(view)` | Register a view. A duplicate ID throws. |
 | `registry.resolve(view, input, { signal? })` | Resolve by definition or ID and return the value. |
 | `registry.resolveWithDependencies(view, input)` | Return `{ value, dependencies, viewIds }` for output planning. |

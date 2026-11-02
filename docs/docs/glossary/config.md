@@ -7,40 +7,38 @@ sidebar:
 
 # Config
 
-The Riebeckite configuration object that controls content, publishing, plugins, themes, and cache behavior. It is validated and resolved before the build uses it.
+The Riebeckite configuration object that controls content, publishing, plugins, themes, cache, provenance, and SPA behavior. It is validated and resolved before the build uses it.
 
 ## What it controls
 
 | Setting | Purpose |
 | --- | --- |
+| `site` | Site identity and SEO defaults |
 | `content.directory` | Where content is read from |
 | `content.filters.publishStrategy` | The default [publish strategy](./publish-strategy.md) |
 | `plugins` | Which plugins run and their options |
 | `theme` | The theme and its options |
 | `cache.enabled` | Whether the build caches |
+| `publication` | Approval mode and durable publication state |
+| `provenance` | Whether build provenance is recorded |
+| `spa` | Client-side navigation behavior |
 
 ## Validated then resolved
 
 The raw config is validated, then resolved into the form the build uses. Failures are reported before any content is processed, so misconfiguration does not corrupt output.
 
-## Resolution pipeline
+## Resolution
 
-The configuration goes through three stages before the build uses it:
+`resolveConfig` in `packages/core/src/config.ts` performs the resolution:
 
-1. **`validateConfig`** — Checks that all required fields are present and that values conform to expected types/enums. Reports errors before any content processing begins.
+1. **`validateConfig`** — Checks required fields and value types/enums before any content processing begins.
+2. **`resolveTheme`** — Resolves the theme instance's `colorMode`, `layout`, `preset`, `settings`, `stylesheets`, and styles against its definition.
+3. **The remaining sections** — Resolves plugins, publication config, SPA options, and defaults for `site`, `content`, `cache`, and `provenance`.
 
-2. **`resolveThemeOptions`** — Resolves the theme configuration. If the theme input is a `ThemeDefinition`, it extracts `name`, `config`, `styles`, `attributes`, and `stylesheets`. If it is a plain `ThemeOptions`, it is used as-is with defaults applied for missing fields. The result is merged into the resolved config under the `theme` key.
-
-3. **`resolveConfig`** — The final resolution step that combines all pieces. It:
-   - Calls `validateConfig` on the raw `RiebeckiteConfig`.
-   - Calls `resolveThemeOptions` to resolve the theme.
-   - Resolves plugins via `resolvePlugins`.
-   - Sets default values for `site`, `content`, `cache`, and `theme` fields.
-   - Produces a `ResolvedRiebeckiteConfig` that the pipeline and content managers use.
-
-The resolved config lives at `.riebeckite/` during the build and includes `site`, `content`, `theme`, `plugins`, and `cache` sections. For example, the `cache` section defaults to `enabled: true` and optionally a custom `directory`. The `theme` section includes `colorMode`, `typography`, `layout`, `tokens`, and `attributes`.
+The result is a `ResolvedRiebeckiteConfig` used in memory by the pipeline and content managers. Build state and caches are files under `.riebeckite/`; the resolved config itself is not stored there.
 
 ## RiebeckiteConfig interface
+
 The config shape is defined in `packages/core/src/types/riebeckite_config.ts`:
 
 ```ts
@@ -60,19 +58,19 @@ export interface RiebeckiteConfig {
     enabled?: boolean;
     directory?: string;
   };
+  provenance?: {
+    enabled?: boolean;
+  };
+  publication?: PublicationConfig;
+  spa?: boolean | SpaConfig;
 }
 ```
 
 Required top-level field is `site`; all other sections are optional. `SiteConfig` lives in `packages/core/src/types/site_config.ts` and includes `title`, `description`, `author`, `baseUrl`, `locale`, `twitterSite`, `defaultOgImage`, and `feed`.
 
-## Config resolution pipeline
-The raw config passes through three resolution stages before the build uses it, defined in `packages/core/src/config.ts`:
+## Resolved config
 
-1. **`validateConfig`** — Checks that all required fields are present and that values conform to expected types/enums. Reports errors before any content processing begins.
-2. **`resolveThemeOptions`** — Resolves the theme configuration. If the theme input is a `ThemeDefinition`, it extracts `name`, `config`, `styles`, `attributes`, and `stylesheets`. If it is a plain `ThemeOptions`, it is used as-is with defaults applied for missing fields.
-3. **`resolveConfig`** — The final resolution step that combines all pieces. It calls `validateConfig` on the raw `RiebeckiteConfig`, calls `resolveThemeOptions` to resolve the theme, resolves plugins via `resolvePlugins`, sets default values for `site`, `content`, `cache`, and `theme` fields, and produces a `ResolvedRiebeckiteConfig` that the pipeline and content managers use.
-
-The resolved config includes `site` with `title`, `description`, `author`, `baseUrl`, `locale`, `twitterSite`, `defaultOgImage`, and `feed`; `content` with `directory`, `source`, `exclude`, and `filters.publishStrategy`; `theme` with resolved color mode, typography, article layout, tokens, and attributes; `plugins` resolved from the config list; and `cache` with `enabled` and `directory`.
+The resolved config includes `site` with its normalized identity and feed fields; `content` with `directory`, `source`, `exclude`, and `filters.publishStrategy`; `theme` with its resolved name, color mode, layout, styles, stylesheets, and settings; resolved `plugins`; `cache` with `enabled` and `directory`; `provenance.enabled`; optional `publication`; and optional `spa`.
 
 ## Related terms
 

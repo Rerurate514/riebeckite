@@ -13,7 +13,7 @@ sidebar:
 | --- | --- | --- |
 | `onConfigResolved` | 設定が解決され、公開 URL を決める前 | `site.baseUrl`、ロケール、オプションを取得 |
 | `onContentLoaded` | Markdown を読み込み、解析する前 | 生のソースを検証 |
-| `onPostParsed` | frontmatter と Markdown を解析した後 | 解析済みの投稿を調整 |
+| `onPostParsed` | Markdown / HTML パイプラインの後（`onPostProcessed` と同一の段階） | 解析済みの投稿を調整 |
 | `onPostProcessed` | Markdown / HTML パイプラインの後 | 最終的な投稿 HTML を変更 |
 | `onManifestCreated` | エントリ、リンク、ページが揃った後 | headタグを追加、サイト全体を検査 |
 

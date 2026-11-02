@@ -51,6 +51,7 @@ If the file lives elsewhere or has a different name, pass `configRoot` and
 | `plugins` | No | Content, rendering, and discovery features |
 | `cache` | No | Persistent build cache |
 | `publication` | No | Publication approval mode and durable state |
+| `provenance` | No | Build provenance recording |
 | `spa` | No | Client-side navigation, prefetch, scroll restoration, and view transitions |
 
 Only `site` is required. Every other section falls back to the default in its

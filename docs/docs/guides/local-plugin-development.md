@@ -17,7 +17,7 @@ Choose this command when you are changing a Plugin's transform, styles, or clien
 
 ## Start a preview
 
-Run the command from the Plugin package or pass a path:
+Run the command from a Plugin package directory and pass a path:
 
 ```sh
 riebeckite plugin dev ./extensions/my-plugin

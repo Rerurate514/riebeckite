@@ -64,7 +64,7 @@ aliases:
 - `publish: false` のノートはビルド結果に含まれません。
 - `publish` がないノートは、既定の `starter` 構成では[[glossary/draft|下書き]]として扱われます。
 
-公開ノートから未公開のノートへリンクすると、リンク先のページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
+公開ノートから未公開のノートへリンクすると、リンク先のページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`@riebeckite/plugin-diagnostics` をインストールした後、 `riebeckite-diagnostics` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
 
 ## 4. Riebeckite を起動する
 

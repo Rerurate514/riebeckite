@@ -46,7 +46,7 @@ Inspector has a command for each target you want to inspect:
 | --- | --- |
 | `riebeckite inspect config` | Resolved configuration |
 | `riebeckite inspect plugins` | Enabled plugins |
-| `riebeckite inspect content --list` | Published content and URLs |
+| `riebeckite inspect content --list` | All scanned content entries (including drafts, private, scheduled) |
 | `riebeckite inspect content --path <path-or-permalink>` | One content entry's resolved identity |
 | `riebeckite inspect graph` | Relationships between content |
 | `riebeckite inspect build` | Incremental build state |

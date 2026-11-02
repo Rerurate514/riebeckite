@@ -45,7 +45,7 @@ flowchart LR
 | --- | --- |
 | `riebeckite inspect config` | 解決済みの設定 |
 | `riebeckite inspect plugins` | 有効になっているプラグイン |
-| `riebeckite inspect content --list` | 公開コンテンツと URL |
+| `riebeckite inspect content --list` | スキャンしたすべてのコンテンツエントリ（下書き・非公開・予約投稿含む） |
 | `riebeckite inspect content --path <path-or-permalink>` | 1件のコンテンツの解決済み識別情報 |
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | インクリメンタルビルドの状態 |

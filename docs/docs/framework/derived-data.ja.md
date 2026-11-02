@@ -49,7 +49,7 @@ import {
 | API | 用途 |
 | --- | --- |
 | `defineDerivedView<TInput, TResult>({ id, version, input?, output?, compute })` | View を宣言する。`version` は必須で、キャッシュキーと出力依存関係に含まれる。 |
-| `createDerivedViewRegistry(options?)` | レジストリを作る。PluginCache、クエリ対象、依存関係のフィンガープリント、親リゾルバーを渡す。 |
+| `createDerivedViewRegistry(options?)` | レジストリを作る。PluginCache、クエリ対象、依存関係のフィンガープリントを渡します。親リゾルバーは `context.resolve` 内部で処理されます。 |
 | `registry.register(view)` | View を登録する。ID が重複すると例外になる。 |
 | `registry.resolve(view, input, { signal? })` | 定義または ID で解決し、値を返す。 |
 | `registry.resolveWithDependencies(view, input)` | 出力計画用に `{ value, dependencies, viewIds }` を返す。 |

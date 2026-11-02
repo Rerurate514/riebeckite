@@ -8,7 +8,6 @@ sidebar:
 # UIプリミティブ
 
 `@riebeckite/honox/ui` は [[glossary/ui|UI]] フレームワークではありません。
-
 サイトが独自のデザインを作りながら、Riebeckite と共通の HTML 構造を利用するための小さなプリミティブ群です。
 
 公開されているコンポーネントは次のとおりです。
@@ -22,6 +21,10 @@ sidebar:
 - `ArticleMeta`
 - `ArticleFooter`
 - `Sidebar`
+- `HtmlFragment`
+- `ThemeRoot`
+- `PluginHeadTags`
+- `RiebeckiteHead`
 
 対応する `*Props` 型も公開されています。
 

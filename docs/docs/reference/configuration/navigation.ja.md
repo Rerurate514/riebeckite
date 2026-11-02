@@ -83,6 +83,8 @@ navigation({
 | `href` | `string` | 遷移先の path または URL |
 | `children` | `NavigationItem[]` | 子項目。サブメニューとして表示されます |
 | `external` | `boolean` | `true` の場合は別タブで開きます |
+| `icon` | `string` | オプションのアイコン名または URL |
+| `collapsed` | `boolean` | サイドバーで初期的に折りたたまれる状態 |
 
 手動指定の item では `label` と `href` が必須です。index ノートを持たない導出 folder は label のみで描画されるため、導出モデルでは `href` は省略可能です。
 
@@ -144,7 +146,7 @@ navigation({
 
 active なリンクには `aria-current="page"` が付きます。
 
-外部 URL など `/` から始まらない `href` と、`external: true` の項目は active 判定の対象になりません。
+外部 URL など `/` から始まらない `href` は active 判定の対象になりません。`external` オプションはリンクの動作（新しいタブで開くかどうか）を制御しますが、active 状態には影響しません。
 
 ## モバイルでの表示
 

@@ -8,10 +8,12 @@ sidebar:
 # UI primitives
 
 `@riebeckite/honox/ui` is deliberately a small structural contract, not a
-component framework. Its complete public component surface is:
+component framework. Its public component surface is:
 
 - `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
-  `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter` for an article page;
+  `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter`, `Sidebar`,
+  `HtmlFragment`, `ThemeRoot`, `PluginHeadTags`, `RiebeckiteHead` for page head
+  and metadata;
 - `Sidebar` for complementary content.
 
 The corresponding `*Props` types are public.

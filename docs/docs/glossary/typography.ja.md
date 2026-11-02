@@ -6,42 +6,28 @@ sidebar:
 ---
 # タイポグラフィ（Typography）
 
-フォントファミリ、サイズ、行間といったサイトの組版設定です。テーマルートの `data-rb-setting-typography` 属性を通じて、テーマのプリセット（`system`、`serif`、`sans`）で適用します。
+タイポグラフィは、フォントファミリ、サイズ、行間といったテーマの組版設定です。テーマが `typography` 設定を宣言し、セマンティックなフォントトークンへ対応付けます。Core の型でも `ThemeOptions` のフィールドでもありません。
 
-## プリセット
-`system`、`serif`、`sans` の3つのタイポグラフィプリセットがあります。プリセットはセマンティックなフォントトークン（`--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`）に反映されます。プリセットを変えると、`:root[data-rb-setting-typography=...]` の CSS ルールでフォントファミリが変わります。
+## テーマ設定
 
-## 記事レイアウト
-タイポグラフィと記事レイアウトは連携してテキストの見せ方を決めます。`data-rb-setting-typography` 属性はテーマルート（`[data-theme-root]` または `<html>`）に適用します。`data-rb-layout` と組み合わせると、記事全体の見せ方が決まります。
-
-## タイポグラフィプリセットの種類
-`system`、`serif`、`sans` の3つのプリセットがあります。プリセットはセマンティックなフォントトークン（`--rb-font-body`、`--rb-font-heading`、`--rb-font-mono`）に反映されます。フォントファミリの選択は、テーマ設定のプリセット（`packages/core/src/types/theme_config.ts` の `ThemeTypographyPreset` 型）で定義されます。
-
-- `system` — OS/システムの既定フォントを使う
-- `serif` — セリフフォントファミリを使う（例：Georgia、Libre Baskerville）
-- `sans` — サンセリフフォントファミリを使う（例：system-ui、Inter）
-
-プリセットはテーマルートの `:root[data-rb-setting-typography=...]` CSS ルールでフォントファミリを変えます。
-
-## テーマ設定からCSSへのトークンの流れ
-タイポグラフィのトークンは、テーマ設定からテーマルートの `data-rb-setting-typography` 属性を通じて CSS へ流れます。プリセットが選ばれると、CSS ルール `[data-rb-setting-typography="serif"]`（または `system`/`sans`）がテーマルートを対象にし、フォントファミリの値を入れ替えます。コンポーネントの CSS を変えずに表示を変更でき、トークン名（`--rb-font-body` など）はそのままで、変わるのはフォントのマッピングだけです。
-
-```css
-/* Example: serif preset applies */
-:root[data-rb-setting-typography="serif"] {
-  --rb-font-body: Georgia, serif;
-  --rb-font-heading: "Libre Baskerville", serif;
-  --rb-font-mono: "Source Code Pro", monospace;
-}
+```ts
+settings: defineThemeSettings({
+  typography: {
+    type: "select",
+    label: "Typography",
+    default: "system",
+    options: [
+      { value: "system", label: "System" },
+      { value: "serif", label: "Serif" },
+      { value: "sans", label: "Sans" },
+    ],
+  },
+}),
 ```
 
-`data-rb-layout` と組み合わせると、記事全体の見せ方が決まります。
+解決された値は、テーマルート（`.rb-theme-root` または `<html>`）の `data-rb-setting-typography` 属性として反映されます。
 
-## ThemeTypographyPreset型
-`packages/core/src/types/theme_config.ts` の `ThemeTypographyPreset` 型は `"system" | "serif" | "sans"` のユニオン型です。この型は `ThemeOptions` で使い、テーマルートでのフォントファミリのマッピングを決めるタイポグラフィプリセットを選びます。
-
-## テーマルートのタイポグラフィCSS
-プリセットは、テーマルートの `data-rb-setting-typography` 属性を使った CSS ルールに反映されます。`:is(:root, .rb-theme-root)[data-rb-setting-typography="serif"]` が、セマンティックトークン `--rb-font-body`、`--rb-font-heading`、`--rb-font-mono` のフォントファミリを入れ替えます。プリセットの変更は表示だけにとどまり、トークン名はそのままで、変わるのはフォントのマッピングだけです。
+## CSS への対応付け
 
 ```css
 :is(:root, .rb-theme-root)[data-rb-setting-typography="serif"] {
@@ -50,6 +36,8 @@ sidebar:
   --rb-font-mono: "Source Code Pro", monospace;
 }
 ```
+
+テーマのプリセットから同じ設定を指定することもできます。`data-rb-layout` と組み合わせると、タイポグラフィと記事レイアウトで記事全体の見せ方が決まります。
 
 ## 関連用語
 - [[glossary/theme|Theme]]

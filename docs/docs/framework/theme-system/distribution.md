@@ -42,16 +42,14 @@ packages/themes/minimal/
 ```ts
 import { defineTheme } from "@riebeckite/core";
 
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
-    styles: [
-      {
-        moduleSpecifier: "@riebeckite/theme-example/style.css",
-      },
-    ],
-  });
-}
+export const exampleTheme = defineTheme({
+  name: "example",
+  styles: [
+    {
+      moduleSpecifier: "@riebeckite/theme-example/style.css",
+    },
+  ],
+});
 ```
 
 `package.json` exports the stylesheet as `./style.css`.

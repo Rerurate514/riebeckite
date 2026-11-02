@@ -36,18 +36,15 @@ packages/themes/minimal
 ```ts id="lhhz91"
 import { defineTheme } from "@riebeckite/core";
 
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
-
-    styles: [
-      {
-        moduleSpecifier:
-          "@riebeckite/theme-example/style.css",
-      },
-    ],
-  });
-}
+export const exampleTheme = defineTheme({
+  name: "example",
+  styles: [
+    {
+      moduleSpecifier:
+        "@riebeckite/theme-example/style.css",
+    },
+  ],
+});
 ```
 
 `package.json` では、スタイルシートを `./style.css` としてエクスポートします。
@@ -62,13 +59,23 @@ export function exampleTheme() {
 @riebeckite/core
 ```
 
-次のような内部インポートは避けてください。
+次に、内部インポートは避けてください。
 
 ```ts id="0q5wfe"
 import {
   something,
 } from "@riebeckite/core/src/...";
 ```
+
+また、次のような monorepo 内部のパスにも依存させないでください。
+
+```text id="mpy5js"
+../../../../packages/core/...
+```
+
+次のような内部インポートは避けてください。
+
+テーマのスタイルシートも、パッケージ自身のエクスポートとして公開します。
 
 また、次のような monorepo 内部のパスにも依存させないでください。
 

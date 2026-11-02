@@ -24,35 +24,30 @@ The server emits `data-rb-mode` on `<html>` for `light` or `dark`; the attribute
 <html data-rb-theme="example">
 ```
 
-At runtime: set `document.documentElement.dataset.theme = "dark"` to force dark, or remove the attribute for system.
+At runtime: set `document.documentElement.dataset.rbMode = "dark"` to force dark, or remove the attribute for system.
 
 ## Runtime switching
 
-Set `document.documentElement.dataset.theme = "light"` or `"dark"` to switch modes.
+Set `document.documentElement.dataset.rbMode = "light"` or `"dark"` to switch modes.
 Remove the `data-rb-mode` attribute for `system` mode so the OS media query takes over.
 
 ```ts
-document.documentElement.dataset.theme = "dark";
-delete document.documentElement.dataset.theme;
+document.documentElement.dataset.rbMode = "dark";
+delete document.documentElement.dataset.rbMode;
 ```
 
 Do not set `data-rb-mode=""` — an empty attribute matches `[data-rb-mode]`, breaking the system media query.
 
 ## Theme Config
-The `colorMode` option in the theme config (`packages/core/src/types/theme_config.ts`) resolves to one of `light`, `dark`, or `system`. This option is typically set in the Vite config or theme file:
+The `colorMode` option in the theme config (`packages/core/src/types/theme_config.ts`) resolves to one of `light`, `dark`, or `system`. This option is typically set in the site config:
 
 ```ts
-// vite.config.ts
-import { defineConfig } from 'vite'
-import { reiebeckite } from '@riebeckite/honox'
-
 export default defineConfig({
-  plugins: [
-    reiebeckite({
-      colorMode: 'dark', // or 'light' or 'system'
-    }),
-  ],
-})
+  theme: defaultTheme({
+    colorMode: "system",
+  }),
+});
+```
 ```
 
 The resolved value drives the `data-rb-mode` attribute on `<html>` and the corresponding `--rb-*` CSS variable overrides.

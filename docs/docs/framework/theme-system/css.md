@@ -102,7 +102,7 @@ structure, or behavior.
 
 ## 6. CSS cascade
 
-Load order is a key contract for presentation extensions.
+Load order is a key convention for presentation extensions.
 
 ```text
 framework structural CSS
@@ -113,34 +113,7 @@ framework structural CSS
 → stylesheets
 ```
 
-This order is guaranteed, not incidental. `@riebeckite/honox` generates `.riebeckite/framework-styles.css` (framework structural CSS), `.riebeckite/plugin-styles.css` (plugin styles in resolved plugin order), and `.riebeckite/theme-styles.css` (theme styles). The site imports the framework stylesheet before the plugin stylesheet, and the plugin stylesheet before the theme stylesheet, so theme CSS always overrides plugin defaults and `stylesheets` is the final override.
-
-```mermaid
-flowchart TD
-    Base["Base / Application<br/>Structural CSS"]
-    Plugin["Plugin Default CSS"]
-    Theme["Theme CSS"]
-    Token["Config Token<br/>Inline Style"]
-    User["stylesheets"]
-
-    Base --> Plugin
-    Plugin --> Theme
-    Theme --> Token
-    Token --> User
-```
-
-The resulting relationship is:
-
-```text
-Plugin
-  → standard appearance
-
-Theme
-  → changes the plugin's appearance
-
-stylesheets
-  → the site author's final adjustment
-```
+This order is a convention used by `@riebeckite/honox`, not an absolute guarantee. The generated stylesheets note their cascade position in header comments, but the actual import order in the application determines the effective cascade. `stylesheets` is intended as the final override — ideal for small site-specific tweaks.
 
 Do not reorder these imports or edit the generated files. Each generated file notes its cascade position in a header comment. The cascade usually does not depend on `!important`.
 

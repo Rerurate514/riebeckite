@@ -14,9 +14,9 @@ sidebar:
 
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
 - API lifecycle: `defineApiLifecycle`, `createApiLifecycleRegistry`, `resolveApiLifecycle`
-- Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `ContentQuery`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
+- Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `queryContentEntries`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
 - Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `createPluginMemo`, `stableStringify`
-- Themes: `defineTheme`, `ThemeDefinition`, `semantic tokens`, `ThemeColorMode`, `ThemeTypographyPreset`, `ThemeArticleLayoutPreset`
+- Themes: `defineTheme`, `defineThemeSettings`, `ThemeDefinition`, `ThemeOptions`, `ThemeColorMode`
 - Pipeline: `Pipeline`, `MarkdownPipeline`, `HtmlPipeline`
 - Utilities: `escapeHtml`, `escapeHtmlAttribute`, `normalizeTag`, `calculateReadingTime`, `stripHtml`
 - Observability: `Logger`, `Tracer`, `TraceSpan`, `TraceSink`
@@ -79,11 +79,10 @@ Used to define and resolve plugins, endpoints, and more. To build a plugin, see 
 
 ```text
 defineTheme
+defineThemeSettings
 ThemeDefinition
-semantic tokens
+ThemeOptions
 ThemeColorMode
-ThemeTypographyPreset
-ThemeArticleLayoutPreset
 ```
 
 Used to define themes and the presentation contract. To build a theme, see [Theme API](./theme-api.md) and [Themes in Depth](../framework/theme-system.md).

@@ -41,10 +41,10 @@ sidebar:
 | --- | --- |
 | トークンの上書き・追加 | コンポーネントの置き換え |
 | CSS ルールの定義 | JSX の注入 |
-| テーマ固有の `data-*` 属性 | ルートの追加 |
+| テーマ固有の設定を `data-rb-setting-*` 属性として宣言 | ルートの追加 |
 | カラーモードの宣言 | [[glossary/plugin|プラグイン]]の追加・削除 |
-| タイポグラフィの宣言 | クライアントスクリプトの実行 |
-| レイアウトプリセットの宣言 | DOM の変換 |
+| タイポグラフィ設定の宣言 | クライアントスクリプトの実行 |
+| レイアウトの宣言 | DOM の変換 |
 | 安定したフックへのスタイル指定 | [[glossary/island|アイランド]]の登録 |
 | `stylesheets` による最終的な上書き | ファイルシステムや[[glossary/content-manager|ContentManager]]へのアクセス |
 
@@ -82,8 +82,7 @@ flowchart TD
 ```ts id="yplspq"
 import { defineTheme } from "@riebeckite/core";
 
-export function exampleTheme() {
-  return defineTheme({
+export const exampleTheme = defineTheme({
     name: "example",
 
     styles: [
@@ -92,8 +91,7 @@ export function exampleTheme() {
           "@riebeckite/theme-example/style.css",
       },
     ],
-  });
-}
+
 ```
 
 サイトの設定では、`theme` に指定します。
@@ -109,42 +107,51 @@ export default defineConfig({
 
 ## 3. `defineTheme` の取り決め
 
-テーマが扱う主な項目は次のとおりです。
+テーマ定義は、次の4つの部分から成ります。
 
 | 領域 | 内容 |
 | --- | --- |
 | 基本情報 | `name` |
-| テーマ固有の設定 | `options` |
 | CSS | `styles[].moduleSpecifier` |
-| 共通設定 | `colorMode`, `typography`, `layout`, `tokens`, `stylesheets` |
-| 属性 | 安全な `data-*` 属性 |
+| 設定 | 任意の `settings` スキーマ |
+| プリセット | 任意の名前付き設定プリセット |
 
 たとえば、次のように定義できます。
 
 ```ts id="k0nh8m"
-import { defineTheme } from "@riebeckite/core";
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
 
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
+export const exampleTheme = defineTheme({
+  name: "example",
 
-    options: {
-      // テーマ固有のオプション
+  styles: [
+    {
+      moduleSpecifier:
+        "@riebeckite/theme-example/style.css",
     },
+  ],
 
-    styles: [
-      {
-        moduleSpecifier:
-          "@riebeckite/theme-example/style.css",
-      },
-    ],
-
-    attributes: {
-      "data-example-flag": "on",
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
     },
-  });
-}
+  }),
+
+  presets: {
+    compact: {
+      label: "Compact",
+      settings: { density: "compact" },
+    },
+  
 ```
+
+テーマは呼び出し可能な定義です。サイト設定では、`ThemeOptions`（`colorMode`、`layout`、`preset`、`settings`、`stylesheets`）を渡して使います。解決順は、スキーマの既定値、プリセット、明示的な `settings` の順です。
 
 `styles[].moduleSpecifier` には、ホスト側のバンドラーが解決できるモジュール指定子を書きます。CSS ファイルをアプリケーションのディレクトリへコピーするためのパスではありません。
 
@@ -164,8 +171,7 @@ site/
 
 import { defineTheme } from "@riebeckite/core";
 
-export function localTheme() {
-  return defineTheme({
+export const localTheme = defineTheme({
     name: "site-local",
 
     styles: [
@@ -175,58 +181,57 @@ export function localTheme() {
       },
     ],
 
-    attributes: {
-      "data-site-local": "on",
-    },
-  });
-}
 ```
 
-サイト内に置いたテーマでも、`name`、`styles`、`attributes`、`tokens` は公開パッケージのテーマと同じく `resolveThemeOptions` で解決され、無害化されたうえで適用されます。
+サイト内に置いたテーマも、公開パッケージのテーマと同じ `defineTheme` の定義と解決経路を使います。
 
-## 5. テーマ固有のオプション
+## 5. テーマ固有の設定
 
-テーマ固有の機能は、ファクトリのオプションとして定義します。
+テーマ固有の項目は、Core の `ThemeOptions` に追加せず、テーマの設定スキーマに宣言します。
 
 ```ts id="94pd1f"
-type NewspaperOptions = {
-  density?:
-    | "compact"
-    | "comfortable";
-};
+export const newspaperTheme = defineTheme({
+  name: "newspaper",
 
-export function newspaperTheme(
-  options: NewspaperOptions = {},
-) {
-  return defineTheme({
-    name: "newspaper",
-
-    options,
-
-    attributes: {
-      "data-newspaper-density":
-        options.density
-        ?? "comfortable",
+  styles: [
+    {
+      moduleSpecifier:
+        "@riebeckite/theme-newspaper/style.css",
     },
+  ],
 
-    styles: [
-      {
-        moduleSpecifier:
-          "@riebeckite/theme-newspaper/style.css",
-      },
-    ],
-  });
-}
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
+    },
+  }),
+});
 ```
 
-このオプションは Core の `ThemeOptions` には追加しません。テーマ固有の概念は、そのテーマのパッケージ内で完結させます。
+テーマを選ぶときに設定を指定します。
+
+```ts
+export default defineConfig({
+  theme: newspaperTheme({
+    settings: { density: "compact" },
+  }),
+});
+```
+
+設定は `data-rb-setting-*` 属性として反映され、色と数値の設定は `--rb-setting-*` カスタムプロパティにも反映されます。テーマ固有の設定が Core や他のテーマへ漏れることはありません。
 
 ```text id="2cqt02"
 newspaper の density
-  → newspaperTheme が所有
+  → newspaperTheme の設定スキーマが所有
 
 tokyonight の neon
-  → tokyonightTheme が所有
+  → tokyonightTheme の設定スキーマが所有
 ```
 
 ## 6. テーマを作るときの基本方針

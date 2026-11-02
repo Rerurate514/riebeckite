@@ -1,29 +1,28 @@
 ---
 date: 2026-10-14
-title: CSSの取り決め（CSS Contract）
+title: CSS Contract
 sidebar:
   hidden: true
 ---
-# CSSの取り決め（CSS Contract）
+# CSS Contract
 
-コンポーネントが依存してよい、安定した CSS のフックとカスケードの順序です。テーマは文書化されたフック（`rb-*` と `rr-*`）を公開するため、コンポーネントは特定のテーマを前提にせずにスタイルを当てられます。
+安定した CSS フックとコンポーネントが依存できるカスケード順序。テーマは documentd hooks (rb-* と rr-*) を公開するため、コンポーネントは特定のテーマをハードコードせずにスタイルできます。
 
-## 安定したフック
-クラス名の名前空間は2つあります。
-- `rb-*` — フレームワークが提供する構造のフックとセマンティックデザイントークン（`.rb-theme-root`、`.rb-site`、`.rb-article`、`.rb-article-body` など）
-- `rr-<feature>` — プラグインが描画する最も外側の要素に付くルートフック（`.rr-search`、`.rr-callout` など）
+## Stable hooks
+2つのクラス名前空間が提供されます：
+- `rb-*` — フレームワークが提供する構造フックとセマンティックデザイントークン（'.rb-theme-root', '.rb-site', '.rb-article', '.rb-article-body', など）
+- `rr-<feature>` — プラグインによって描画された最も外側の要素に付くルートフック（'.rr-search', '.rr-callout', など）
 
-## カスケード順
-読み込み順は、テーマの CSS がプラグインの既定スタイルに勝ち、`stylesheets` が最後の上書きになることを保証します。
+## Cascade order
 
-フレームワークの構造 CSS → base/app の構造 CSS → プラグインの既定 CSS → テーマの CSS → 設定のトークンによるインラインスタイル → stylesheets
+推奨されるカスケード順序は：framework structural CSS → base/app structural CSS → Plugin default CSS → Theme CSS → config token inline style → stylesheetsです。これは `@riebeckite/honox` が使用する典型的な順序ですが、絶対的な保証ではありません - アプリケーションでの実際のインポート順序が実効的なカスケードを決定します。`stylesheets` は小さなサイト固有の調整のための最終的な上書きとして意図されています。
 
 ```mermaid
 flowchart TD
-  Base[base/appの構造CSS]
-  Plugin[プラグインの既定CSS]
-  Theme[テーマのCSS]
-  Token[設定トークンのインラインスタイル]
+  Base[ベース / アプリケーション構造 CSS]
+  Plugin[プラグインの既定 CSS]
+  Theme[テーマ CSS]
+  Token[設定トークン インラインスタイル]
   User[stylesheets]
   Base --> Plugin
   Plugin --> Theme
@@ -31,11 +30,13 @@ flowchart TD
   Token --> User
 ```
 
-## カスケード順の検証
-保証されるカスケード順は、フレームワークの構造 CSS → base/app の構造 CSS → プラグインの既定 CSS → テーマの CSS → 設定のトークンによるインラインスタイル → stylesheets です。この順序は `@riebeckite/honox` が強制し、レイヤーごとに別々のスタイルシートを生成して、ヘッダーのコメントでカスケード上の位置を示します。`stylesheets` は最後の上書きで、サイト固有の小さな調整に適しています。
+## カスケード順序確認
 
-## テーマCSSの書き方
-テーマは安定したフックと、文書化された子孫要素にだけスタイルを当ててください。新しい `rb-*`/`rr-*` のクラス名を考案しないでください。対象にするのは `.rb-site`、`.rb-article`、`.rb-article-layout`、`.rb-article-header`、`.rb-article-body`、`.rb-article-content`、`.rb-article-meta`、`.rb-article-footer`、`.rb-sidebar`、および各プラグインが文書化した `rr-*` のルートフックだけです。BEM の要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
+典型的なカスケード順序は：framework structural CSS → base/app structural CSS → Plugin default CSS → Theme CSS → config token inline style → stylesheetsです。この順序は、各レイヤーでヘッダーコメントでカスケード位置を記す `@riebeckite/honox` がデフォルトで使用する順序です。`stylesheets` は小さなサイト固有の調整のための最終的な上書きとして意図されています。
+
+## テーマ CSS 作成ガイドライン
+
+テーマは安定したフックと文書化された子孫要素だけをスタイル対象とします。新しい `rb-*` / `rr-*` クラス名を発明しないでください。`.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`, `.rb-sidebar` および各プラグインが文書化した `rr-*` プラグインルートのみを対象とします。BEM 要素（`__…`）と修飾子（`--…`）は内部実装の詳細です。
 
 ## 関連用語
 - [[glossary/theme|Theme]]
@@ -43,5 +44,5 @@ flowchart TD
 - [[glossary/typography|Typography]]
 - [[glossary/color-mode|Color Mode]]
 
-## さらに詳しく
-- [CSS](../framework/theme-system/css.ja.md)
+## 参考文献
+- [CSS](../framework/theme-system/css.md)

@@ -10,7 +10,7 @@ sidebar:
 The presentation layer is the theme's responsibility — colors, fonts, spacing, layout, and article style. It does not include content semantics, routes, manifests, plugin behavior, or client scripts.
 
 ## What a theme can do
-Override or add tokens, define stylesheet rules, declare theme-specific data attributes, provide color mode / typography / layout presets, and override through `stylesheets` (loads last in the cascade).
+Override or add tokens, define stylesheet rules, declare theme settings reflected as `data-rb-setting-*` attributes, choose color mode and layout options, and override through `stylesheets` (loads last in the cascade).
 
 ## Theme and Color Mode Interaction
 Themes interact with color mode through the `data-rb-mode` attribute and semantic tokens. When `colorMode` is `"system"`, the `data-rb-mode` attribute is omitted and the OS preference is detected via `@media (prefers-color-scheme: dark)` query. Themes should not hardcode colors for individual components — instead, use semantic tokens (e.g. `--rb-color-ink`) that resolve appropriately in each color mode.

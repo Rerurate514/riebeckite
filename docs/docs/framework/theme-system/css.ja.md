@@ -176,8 +176,6 @@ CSS では相対 URL を使います。
 
 キャラクターレイヤーも表示専用です。コンテンツ、構造、振る舞いを変更してはいけません。
 
-## 6. CSS のカスケード
-
 読み込み順は、表示拡張のための重要な取り決めです。
 
 ```text id="jz92ku"
@@ -194,6 +192,8 @@ Config Token Inline Style
 stylesheets
 ```
 
+この順序は `@riebeckite/honox` がデフォルトで使用する規約です。保証されているわけではありませんが、ほとんどのケースでこの順序でファイルが生成されます。`stylesheets` は小さなサイト固有の調整のための最終的な上書きとして意図されています。
+
 ```mermaid id="e5j94x"
 flowchart TD
     Base["ベース / アプリケーション<br/>構造 CSS"]
@@ -207,18 +207,6 @@ flowchart TD
     Theme --> Token
     Token --> User
 ```
-
-この順番は偶然ではなく、保証されています。`@riebeckite/honox` は次のファイルを生成します。
-
-```text id="i2y97j"
-.riebeckite/framework-styles.css
-.riebeckite/plugin-styles.css
-.riebeckite/theme-styles.css
-```
-
-`.riebeckite/framework-styles.css` はフレームワークの構造 CSS、`.riebeckite/plugin-styles.css` は解決されたプラグイン順のプラグインスタイル、`.riebeckite/theme-styles.css` はテーマスタイルです。サイトは、フレームワークのスタイルシートをプラグインのスタイルシートより先に、プラグインのスタイルシートをテーマのスタイルシートより先に読み込みます。そのため、テーマ CSS は常にプラグインの既定を上書きし、`stylesheets` が最終的な上書きになります。
-
-その結果、次の関係になります。
 
 ```text id="4w8d9d"
 Plugin

@@ -11,18 +11,18 @@ A theme controls the presentation layer of a Riebeckite site — colors, typogra
 
 ## Theme contract
 
-A theme is created with `defineTheme` from `@riebeckite/core` and exposes five areas: identity, factory options, styles, common config (`colorMode`, `typography`, `layout`, `tokens`, `stylesheets`), and safe data attributes.
+A theme is created with `defineTheme` from `@riebeckite/core`. A definition has an identity (`name`), styles (`styles`), an optional settings schema (`settings`), and optional named presets (`presets`).
 
 ```ts
-import { defineTheme } from "@riebeckite/core";
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
-    options: {},
-    styles: [{ moduleSpecifier: "@riebeckite/theme-example/style.css" }],
-    attributes: { "data-example-flag": "on" },
-  });
-}
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+
+export const exampleTheme = defineTheme({
+  name: "example",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-example/style.css" }],
+  settings: defineThemeSettings({
+    accent: { type: "color", label: "Accent", default: "#176b5a" },
+  }),
+});
 ```
 
 ## Color mode
@@ -30,7 +30,7 @@ export function exampleTheme() {
 Themes support three color modes: `light`, `dark`, and `system`.
 `system` follows the OS preference and omits the `data-rb-mode` attribute.
 The server emits `data-rb-mode` on `<html>` for `light` or `dark` modes.
-At runtime, set `document.documentElement.dataset.theme = "dark"` or remove the attribute for `system`.
+At runtime, set `document.documentElement.dataset.rbMode = "dark"` or remove the attribute for `system`.
 
 Do not set `data-rb-mode=""` — an empty attribute breaks the system media query.
 
@@ -42,18 +42,18 @@ Swapping themes must not affect content, routes, or plugin behavior.
 
 ## Theme configuration resolution
 
-The theme configuration is resolved through `resolveThemeOptions` in `packages/core/src/config.ts`. The function handles two theme input forms:
+The theme configuration is resolved by `resolveTheme` in `packages/core/src/types/theme_config.ts`. `resolveConfig` calls it with the configured theme instance and a fallback definition. Resolution:
 
-- **`ThemeDefinition`** (with `styles`, `config`, `attributes`): Extracts `name`, spreads `config` for `colorMode`, `typography`, `layout`, `tokens`, and merges `attributes`. Styles are taken from the `styles` array.
-- **`ThemeOptions`** (plain object): Used as-is with defaults applied for missing fields. Defaults include `colorMode: "system"`, `typography: "system"`, `layout: "article"`, `tokens: {}`, and `styles: [defaultThemeStyle]`.
+- looks up `options.preset` and rejects an unknown name
+- merges preset settings with explicit `settings`
+- validates the result against the theme's settings schema and applies defaults
+- resolves `colorMode` (default `system`), `layout` (default `article`), `styles`, and `stylesheets`
 
-The resolved theme is stored in the resolved config under the `theme` key and includes `name`, `colorMode`, `typography`, `layout`, `tokens`, `attributes` (sanitized to allow only `data-*` attributes not reserved), and `stylesheets`. This resolved theme is then consumed by the pipeline and CSS/HTML generators to produce the final presentation.
+The resolved theme is stored under the `theme` key of the resolved config. It contains `name`, `colorMode`, `layout`, `styles`, `stylesheets`, and `settings`. The `settings` object holds the resolved `values`, reflected `attributes`, and generated `style`.
 
 ## Theme Name and CSS Scoping
-The theme's `name` field propagates as the `data-rb-theme` attribute on `<html>`, which CSS uses to scope rules via the selector `:is(:root, .rb-theme-root)[data-rb-theme="<name>"]`. This enables multiple themes to render side by side in preview environments without style leakage.
 
-## Resolved Theme Structure
-The resolved theme object from `resolveThemeOptions` in `packages/core/src/config.ts` contains `name`, `colorMode`, `typography`, `layout`, `tokens`, `attributes`, `stylesheets`, and `styles`. This resolved theme is stored under the `theme` key in the overall resolved config and consumed by the pipeline and CSS/HTML generators.
+The theme's `name` field propagates as the `data-rb-theme` attribute on `<html>`, which CSS uses to scope rules via the selector `:is(:root, .rb-theme-root)[data-rb-theme="<name>"]`. This enables multiple themes to render side by side in preview environments without style leakage.
 
 ## Related terms
 

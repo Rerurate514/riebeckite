@@ -11,7 +11,7 @@ A named value such as a color, spacing, or font exposed as a CSS custom property
 
 ## Token groups
 
-Core's semantic tokens define semantic groups for color, typography, and layout:
+Themes define semantic tokens in three groups: color, typography, and layout:
 
 | Color            | CSS variable          |
 | ---------------- | --------------------- |
@@ -40,6 +40,12 @@ Core's semantic tokens define semantic groups for color, typography, and layout:
 | `articleMaxWidth`| `--rb-layout-article-max` |
 | `sidebarWidth`   | `--rb-layout-sidebar` |
 | `contentGap`     | `--rb-layout-gap`     |
+| `space`          | `--rb-space-*`       |
+| `radius`         | `--rb-radius-*`      |
+| `ruleWidth`      | `--rb-rule-width`    |
+| `motion`         | `--rb-motion-*`      |
+| `control`        | `--rb-control-*`     |
+| `nav`            | `--rb-nav-*`         |
 
 ## Semantic purpose
 
@@ -61,13 +67,13 @@ This enables theme swapping without touching component code — the same token r
 ```
 
 ## Token Definition
-The token taxonomy is defined by the `semantic tokens` type in `packages/core/src/types/theme_config.ts`. Tokens are grouped into three categories — color, typography, and layout — each mapping to CSS custom properties (`--rb-*`):
+Tokens are authored in each theme's stylesheet as CSS custom properties with stable semantic names. Components consume those `--rb-*` names; Core does not define a token type. Tokens are grouped into three categories — color, typography, and layout — each mapping to CSS custom properties (`--rb-*`):
 
 | Category | Sub-groups | Example CSS variable |
 | --- | --- | --- |
 | **Color** | paper, ink, muted, accent, border, borderStrong, surface, surfaceHover, overlay, danger, success, codeBackground | `--rb-color-ink`, `--rb-color-surface` |
 | **Typography** | bodyFont, headingFont, monoFont | `--rb-font-body`, `--rb-font-heading`, `--rb-font-mono` |
-| **Layout** | pageMaxWidth, articleMaxWidth, sidebarWidth, contentGap | `--rb-layout-page-max`, `--rb-layout-sidebar` |
+| **Layout** | pageMaxWidth, articleMaxWidth, sidebarWidth, contentGap, space, radius, ruleWidth, motion, control, nav | `--rb-layout-page-max`, `--rb-layout-sidebar`, `--rb-space-*`, `--rb-radius-*`, `--rb-rule-width`, `--rb-motion-*`, `--rb-control-*`, `--rb-nav-*` |
 
 Tokens are authored per-theme and resolved at runtime via `var(--rb-*)` in component styles, enabling theme swapping without code changes.
 

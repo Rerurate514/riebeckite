@@ -98,7 +98,7 @@ After reading Architecture, move on to Content System, Plugin System, Theme Syst
 
 - **Core** owns content-processing contracts and orchestration. It does not depend on HonoX, Vite, a specific plugin, or a theme.
 - **Plugins** extend Markdown, HTML, metadata, assets, client behavior, endpoints, SEO, diagnostics, and graph behavior.
-- **Themes** own appearance: tokens, CSS, stable-hook styling, and safe theme attributes.
+- **Themes** own appearance: tokens, CSS, stable-hook styling, and theme settings reflected as `data-rb-setting-*` attributes.
 - **Integrations** connect Core to a web framework and bundler. The current supported adapter is HonoX/Vite.
 - **Applications** hold site-specific routes, components, and islands.
 - **CLI** is build-time tooling. Runtime Cloudflare Workers code must not access build state or filesystem caches.

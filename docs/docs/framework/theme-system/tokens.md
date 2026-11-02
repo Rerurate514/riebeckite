@@ -12,7 +12,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers design tok
 
 ## 3-4. tokens
 
-Core's `semantic tokens` has the following semantic groups. In stylesheets they are handled as `--rb-*` semantic CSS custom properties.
+Themes define the following semantic groups as `--rb-*` CSS custom properties. Core does not define a token type; the names are the stable contract.
 
 Components and plugins reference a **meaning** such as body color, background, accent, or border, rather than a theme-specific value such as "this theme's black" or "this theme's gray".
 
@@ -76,7 +76,7 @@ This is what lets a theme be swapped without touching components.
 }
 ```
 
-Note that the CSS variable names are kebab-case versions of the token names (`borderStrong` → `--rb-color-border-strong`, and so on); the input token name and the CSS variable differ.
+Note that CSS variable names are kebab-case versions of token names: `borderStrong` becomes `--rb-color-border-strong`, `bodyFont` becomes `--rb-font-body`, and so on. Typography tokens follow the pattern `--rb-font-<token>` (e.g., `--rb-font-body`, `--rb-font-heading`, `--rb-font-mono`) without a group prefix, while color and layout tokens use the `--rb-<group>-<token>` pattern.
 
 **Why semantic tokens**: if components or plugins reference a specific theme's color names directly, the theme can no longer be swapped.
 

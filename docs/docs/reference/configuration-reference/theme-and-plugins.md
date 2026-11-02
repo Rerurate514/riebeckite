@@ -20,9 +20,7 @@ owns its styles, settings schema, and presets.
 | `settings` | inferred from the schema | schema defaults |
 | `stylesheets` | `string[]` | `[]` |
 
-Unknown settings and invalid values fail resolution. Core resolves defaults,
-then the preset, then explicit settings, and reflects the result through
-`data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and `data-rb-setting-*`.
+Core validates that the theme is an instance. Unknown settings are resolved through defaults, preset, and explicit settings, and reflected through `data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and `data-rb-setting-*`.
 
 ### Declared themes
 

@@ -9,18 +9,18 @@ sidebar:
 
 ## テーマの契約
 
-テーマは `@riebeckite/core` の `defineTheme` で作成し、5つの領域を公開します。識別情報、ファクトリのオプション、スタイル、共通設定（`colorMode`、`typography`、`layout`、`tokens`、`stylesheets`）、安全なデータ属性です。
+テーマは `@riebeckite/core` の `defineTheme` で作成します。定義は、識別情報（`name`）、スタイル（`styles`）、任意の設定スキーマ（`settings`）、任意の名前付きプリセット（`presets`）から成ります。
 
 ```ts
-import { defineTheme } from "@riebeckite/core";
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
-    options: {},
-    styles: [{ moduleSpecifier: "@riebeckite/theme-example/style.css" }],
-    attributes: { "data-example-flag": "on" },
-  });
-}
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
+
+export const exampleTheme = defineTheme({
+  name: "example",
+  styles: [{ moduleSpecifier: "@riebeckite/theme-example/style.css" }],
+  settings: defineThemeSettings({
+    accent: { type: "color", label: "Accent", default: "#176b5a" },
+  }),
+});
 ```
 
 ## カラーモード
@@ -28,7 +28,7 @@ export function exampleTheme() {
 テーマは `light`、`dark`、`system` の3つのカラーモードに対応します。
 `system` は OS の設定に従い、`data-rb-mode` 属性を省略します。
 サーバーは `light` と `dark` の場合に `<html>` へ `data-rb-mode` を出力します。
-実行時は `document.documentElement.dataset.theme = "dark"` を設定するか、`system` なら属性を削除します。
+実行時は `document.documentElement.dataset.rbMode = "dark"` を設定するか、`system` なら属性を削除します。
 
 `data-rb-mode=""` を設定しないでください。空の属性は system のメディアクエリを壊します。
 
@@ -40,18 +40,18 @@ export function exampleTheme() {
 
 ## テーマ設定の解決
 
-テーマ設定は `packages/core/src/config.ts` の `resolveThemeOptions` で解決されます。この関数は2つのテーマ入力形式を扱います。
+テーマ設定は `packages/core/src/types/theme_config.ts` の `resolveTheme` で解決されます。`resolveConfig` が、設定されたテーマインスタンスとフォールバック定義を渡して呼び出します。解決では次の処理を行います。
 
-- **`ThemeDefinition`**（`styles`、`config`、`attributes` を持つ）：`name` を取り出し、`colorMode`、`typography`、`layout`、`tokens` のために `config` を展開し、`attributes` をマージします。スタイルは `styles` 配列から取ります。
-- **`ThemeOptions`**（プレーンオブジェクト）：そのまま使い、不足するフィールドには既定値を適用します。既定値は `colorMode: "system"`、`typography: "system"`、`layout: "article"`、`tokens: {}`、`styles: [defaultThemeStyle]` です。
+- `options.preset` を参照し、未知の名前ならエラーにする
+- プリセットの設定と明示的な `settings` をマージする
+- テーマの設定スキーマに対して検証し、既定値を適用する
+- `colorMode`（既定 `system`）、`layout`（既定 `article`）、`styles`、`stylesheets` を解決する
 
-解決されたテーマは、解決済み設定の `theme` キーに保存され、`name`、`colorMode`、`typography`、`layout`、`tokens`、`attributes`（予約されていない `data-*` 属性だけを許可するようサニタイズ済み）、`stylesheets` を含みます。この解決済みテーマをパイプラインと CSS/HTML 生成器が使い、最終的な表示を生成します。
+解決済みテーマは解決済み設定の `theme` キーに保存され、`name`、`colorMode`、`layout`、`styles`、`stylesheets`、`settings` を含みます。`settings` には解決済みの `values`、反映用の `attributes`、生成された `style` が入ります。
 
 ## テーマ名とCSSスコープ
-テーマの `name` フィールドは `<html>` の `data-rb-theme` 属性として伝播し、CSS は `:is(:root, .rb-theme-root)[data-rb-theme="<name>"]` セレクタでルールをスコープします。これにより、プレビュー環境で複数のテーマをスタイルの漏れなく並べて描画できます。
 
-## 解決済みテーマの構造
-`packages/core/src/config.ts` の `resolveThemeOptions` が返す解決済みテーマオブジェクトには、`name`、`colorMode`、`typography`、`layout`、`tokens`、`attributes`、`stylesheets`、`styles` が含まれます。解決済みテーマは全体の解決済み設定の `theme` キーに保存され、パイプラインと CSS/HTML 生成器が使います。
+テーマの `name` フィールドは `<html>` の `data-rb-theme` 属性として伝播し、CSS は `:is(:root, .rb-theme-root)[data-rb-theme="<name>"]` セレクタでルールをスコープします。これにより、プレビュー環境で複数のテーマをスタイルの漏れなく並べて描画できます。
 
 ## 関連用語
 

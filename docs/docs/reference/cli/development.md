@@ -103,7 +103,7 @@ Plugin option validation runs as part of `check`. Each plugin's `validateOptions
 
 ## `doctor`
 
-`doctor` reports a deterministic, shared development diagnostic report. It does not build the site or alter build state.
+`doctor` reports a deterministic, shared development diagnostic report. It does not emit a site build or alter persisted build state; content may be processed in memory for diagnostics.
 
 ```sh
 npm exec riebeckite doctor

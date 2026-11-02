@@ -53,7 +53,7 @@ Used to record deprecated APIs and validate their metadata. See [API lifecycle](
 ContentManager
 ContentCollection
 ContentGraph
-ContentQuery
+ContentQuerySpec
 buildContentCollections
 fingerprintContentEntries
 resolveDefaultContentLocation

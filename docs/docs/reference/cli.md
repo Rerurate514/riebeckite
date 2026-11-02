@@ -65,7 +65,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `upgrade --check` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
-| `deploy` | Cloudflare configuration helpers only: `setup` prepares the publish workflow and secrets; `domain` adds a Workers Custom Domain and prompts to deploy via `wrangler deploy`. Use `publish run --execute` to deploy. | no |
+| `deploy` | Cloudflare configuration helpers: `setup` and `workflow` prepare files and secrets; `domain` adds a Workers Custom Domain and can run `wrangler deploy` after confirmation. Use `publish run --execute` for the normal publication flow. | no |
 | `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |
 | `content` | plan explicit content mutations and write them with a journal; `--apply` is required to write | no |
 | `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
@@ -94,7 +94,7 @@ flowchart TD
     Q -->|"See the current state"| Inspect["inspect"]
 ```
 
-`deploy` prepares provider configuration and workflow files; it does not upload the site. Use `publish run --execute` to deploy. For safe content writes and versioned bulk changes, see [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md).
+`deploy setup` and `deploy workflow` prepare provider configuration and workflow files; they do not upload the site. `deploy domain` writes the Custom Domain configuration and can run `wrangler deploy` after confirmation, without recording publication state or history. Use `publish run --execute` for the normal publication flow. For safe content writes and versioned bulk changes, see [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md).
 
 `check`, `doctor`, `inspect`, and `build` are especially easy to confuse. A simple split:
 

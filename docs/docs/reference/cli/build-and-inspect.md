@@ -104,9 +104,8 @@ npm exec -- riebeckite profile --full
 npm exec riebeckite inspect plugins
 ```
 
-The inspector is deliberately read-only: it must not trigger a build, write caches/assets/state, invoke Vite/HonoX builds, render special artifacts, or auto-fix problems. In particular, running it does not perform:
+The inspector is deliberately read-only: it must not persist build state or caches, emit assets, invoke Vite/HonoX builds, render special artifacts, or auto-fix problems. Content may be processed in memory to resolve locations. In particular, running it does not perform:
 
-- a build
 - build state writes
 - plugin cache writes
 - asset emission

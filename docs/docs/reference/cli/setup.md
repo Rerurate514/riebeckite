@@ -9,10 +9,7 @@ sidebar:
 
 ## `upgrade --check`
 
-Upgrade Lab is a check-only preflight that has no effect; the handler always runs the check.
-`node_modules`, `dist`, or `.riebeckite`. It copies the project twice into a temporary
-directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the
-current dependency set with the requested Riebeckite version.
+Upgrade Lab is a check-only preflight: it does not modify the project, `node_modules`, `dist`, or `.riebeckite`. The `--check` flag is accepted for compatibility, but `upgrade` always runs the check, so it can be omitted. It copies the project twice into a temporary directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the current dependency set with the requested Riebeckite version.
 
 ```sh
 npm exec -- riebeckite upgrade --to 0.0.35
@@ -27,10 +24,11 @@ output-file change was found. `REVIEW REQUIRED` means the candidate differs or f
 means the baseline failed or a check could not safely run.
 
 Only npm and pnpm projects with exactly one of `package-lock.json` or `pnpm-lock.yaml`
-are supported. Symlinks and content roots outside the project are not copied: the
-command returns `UNVERIFIED` rather than crossing that boundary. Symlinks and content roots outside the project are not copied: symlinked content roots throw and become `BLOCKED`, while outside-project content roots return `UNVERIFIED`.
-install scripts, pnpmfiles, deployment, or browser E2E tests. A temporary directory is
-not a security sandbox; builds still execute the site's own configuration and plugins.
+are supported. Symlinks and content roots outside the project are not copied: symlinked
+content roots throw and become `BLOCKED`, while outside-project content roots return
+`UNVERIFIED`. It does not run install scripts, pnpmfiles, deployment, or browser E2E
+tests. A temporary directory is not a security sandbox; builds still execute the site's
+own configuration and plugins.
 Child processes receive only the path, temporary-directory, and temporary user-home variables needed
 to run, plus an isolated npm cache and user configuration. This reduces accidental environment-secret
 exposure but does not make untrusted build code safe to execute.

@@ -65,7 +65,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline ビルドと候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
-| `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加し、デプロイを促します。デプロイには `publish run --execute` を使います。 | いいえ |
+| `deploy` | Cloudflare の設定補助。`setup` と `workflow` はファイルとシークレットを準備し、`domain` は Workers の Custom Domain を追加したうえで確認後に `wrangler deploy` を実行できます。通常の公開フローには `publish run --execute` を使います。 | いいえ |
 | `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |
 | `content` | 明示的なコンテンツ変更を計画し、ジャーナル付きで書き込む。書き込みには `--apply` が必要 | いいえ |
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
@@ -94,7 +94,7 @@ flowchart TD
     Q -->|"現在の状態を知りたい"| Inspect["inspect"]
 ```
 
-`deploy` はプロバイダーの設定とワークフローファイルを用意するだけで、サイトはアップロードしません。デプロイには `publish run --execute` を使います。コンテンツの安全な書き込みとバージョン付きの一括変更については、[コンテンツ変更](../framework/content-mutation.ja.md) と [コンテンツ移行](../framework/content-migration.ja.md) を参照してください。
+`deploy setup` と `deploy workflow` はプロバイダーの設定とワークフローファイルを用意するだけで、サイトはアップロードしません。`deploy domain` は Custom Domain の設定を書き込み、確認後に `wrangler deploy` を実行できますが、公開状態や履歴は記録しません。通常の公開フローには `publish run --execute` を使います。コンテンツの安全な書き込みとバージョン付きの一括変更については、[コンテンツ変更](../framework/content-mutation.ja.md) と [コンテンツ移行](../framework/content-migration.ja.md) を参照してください。
 
 `check`、`doctor`、`inspect`、`build` はとくに混同しやすいコマンドです。役割は次のように分かれます。
 

@@ -23,7 +23,7 @@ npm exec -- riebeckite publish approve <slug> --all
 
 ## `deploy setup`、`deploy workflow`、`deploy domain`
 
-`riebeckite deploy` ではデプロイを実行しません。`deploy setup` と `deploy workflow` は設定を準備します。`deploy domain` は Custom Domain を追加し、`wrangler deploy` でデプロイするか確認を促します。デプロイには `riebeckite publish run --execute` を使います。
+`deploy setup` と `deploy workflow` は設定を準備します。`deploy domain` は Custom Domain を追加し、確認後に `wrangler deploy` を実行できます。`deploy` は公開状態や履歴を記録しません。通常の公開フローには `riebeckite publish run --execute` を使います。
 
 ### `deploy setup`
 

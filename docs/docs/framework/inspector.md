@@ -35,8 +35,9 @@ flowchart LR
     I --> F["Display information only"]
 ```
 
-Inspector only reads this information. It does not build, and it does not
-change your configuration.
+Inspector only reads this information. It may process content in memory to resolve
+locations, but it does not persist build state or cache, and it does not change your
+configuration.
 
 ## Basic usage
 
@@ -173,9 +174,10 @@ The panel has tabs for Overview, Diagnostics, API, Dependencies, Plugins, Output
 
 ## Read-only guarantee
 
-Inspection is factual and non-mutating. It must not run a build, write
-incremental state or plugin cache, emit assets, render special artifacts
-merely for display, invoke Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration.
+Inspection is factual and non-mutating. It must not write incremental state or
+plugin cache, emit assets, render special artifacts merely for display, invoke
+Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration.
+Content may be processed in memory to resolve paths and permalinks.
 If the requested information does not exist because no build has completed,
 report that condition plainly.
 

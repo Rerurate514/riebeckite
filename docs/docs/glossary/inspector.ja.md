@@ -18,13 +18,13 @@ sidebar:
 
 `riebeckite inspect config` — 解決済みの設定。
 `riebeckite inspect plugins` — 有効なプラグイン。
-`riebeckite inspect content --list` — 公開されたコンテンツと URL。
+`riebeckite inspect content --list` — スキャンしたコンテンツのパスと解決済み URL。
 `riebeckite inspect graph` — コンテンツグラフの関係。
 `riebeckite inspect build` — 増分ビルドの状態。
 
 ## 検査の内容
 
-各 inspect コマンドは、ビルドの処理を一切起こさずに解決済みの状態を読み取ります。
+各 inspect コマンドは、ビルド状態やキャッシュを保存せずに解決済みの状態を読み取ります。位置の解決のためにコンテンツをメモリ上で処理することはあります。
 
 - **`riebeckite inspect config`** は、既定値と処理が適用されたあとに Riebeckite が実際に使う解決済みの設定を表示します。設定ファイルに書かれた生の値ではありません。
 
@@ -38,7 +38,7 @@ sidebar:
 
 ### 読み取り専用の保証の実際
 
-Inspector は意図的に読み取り専用です。ビルドの実行、増分ビルドの状態やプラグインキャッシュへの書き込み、アセットの出力、特別な成果物の描画、Vite/HonoX のビルド処理の呼び出し、問題の自動修正を行いません。この性質により、Inspector は開発中だけでなく CI でも安全に使えます。
+Inspector は意図的に読み取り専用です。増分ビルドの状態やプラグインキャッシュへの書き込み、アセットの出力、特別な成果物の描画、Vite/HonoX のビルド処理の呼び出し、問題の自動修正を行いません。位置の解決のためにコンテンツをメモリ上で処理することはあります。この性質により、Inspector は開発中だけでなく CI でも安全に使えます。
 
 ### 例
 

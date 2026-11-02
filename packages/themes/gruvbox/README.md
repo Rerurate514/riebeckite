@@ -64,7 +64,9 @@ Resolution order is schema defaults, then the selected preset, then explicit `se
 
 ## Presets
 
-This theme does not define presets.
+| Preset | Label | Applied settings |
+| --- | --- | --- |
+| `reading` | Reading | `{ typography: "serif" }` |
 
 ## CSS and attributes
 

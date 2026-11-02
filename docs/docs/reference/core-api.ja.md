@@ -53,7 +53,7 @@ API_LIFECYCLE_METADATA_DIAGNOSTIC_CODE
 ContentManager
 ContentCollection
 ContentGraph
-ContentQuery
+ContentQuerySpec
 buildContentCollections
 fingerprintContentEntries
 resolveDefaultContentLocation

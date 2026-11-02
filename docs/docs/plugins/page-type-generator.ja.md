@@ -12,7 +12,7 @@ riebeckite create page-type glossary --path /reference/glossary/ --with-tests --
 riebeckite create page-type glossary --plugin reference-pages --path /glossary/
 ```
 
-`--plugin` を指定しない場合、既存の Plugin Generator の `pages` テンプレート、README、必要に応じてテストを使って `extensions/<name>/` を作成します。`--plugin` を指定した場合は `page_types/<name>.ts` を作成し、認識できる `pageTypes: []` 配列にエクスポート済みの PageType を追加します。対話形式で Existing Plugin を選ぶと、エントリーポイントを持つローカルプラグインの一覧から選択できます。ほかのフックはそのまま残し、構造を認識できない場合、ID やプラグイン内のパスが重複する場合、既存ファイルがある場合は何も変更しません。その場合は手動で登録してください。
+`--plugin` を指定しない場合、既存の Plugin Generator の `pages` テンプレート、README、必要に応じてテストを使って `extensions/<name>/` を作成します。`--plugin` を指定した場合は `page_types/<name>.ts` を作成し、認識できる `pageTypes: []` 配列にエクスポート済みの PageType を追加します。対話形式で Existing Plugin を選ぶと、エントリーポイントを持つローカルプラグインの一覧から選択できます。ほかのフックはそのまま残し、構造を認識できない場合、プラグイン内のパスが重複する場合、既存ファイルがある場合は何も変更しません。その場合は手動で登録してください。PageType ID の重複はジェネレーターでは拒否されず、プラグイン解決時に検証されます。
 
 生成されたページは `manifest.discoverableEntries` だけを列挙するため、Draft、Private、Scheduled、Unlisted のコンテンツは公開されません。パスは末尾が `/` の正規化された絶対 URL パスである必要があり、トラバーサルや不正なパスは拒否します。
 

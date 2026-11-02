@@ -23,7 +23,7 @@ npm exec -- riebeckite publish approve <slug> --all
 
 ## `deploy setup`, `deploy workflow`, and `deploy domain`
 
-`riebeckite deploy` no longer performs deployment itself. `deploy setup` and `deploy workflow` prepare configuration; `deploy domain` adds a Custom Domain and prompts to deploy via `wrangler deploy`. Use `riebeckite publish run --execute` to deploy.
+`deploy setup` and `deploy workflow` prepare configuration; `deploy domain` adds a Custom Domain and can run `wrangler deploy` after confirmation. `deploy` does not record publication state or history. Use `riebeckite publish run --execute` for the normal publication flow.
 
 ### `deploy setup`
 

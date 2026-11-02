@@ -9,7 +9,7 @@ sidebar:
 
 ## `upgrade --check`
 
-Upgrade Lab はチェック専用の事前検証で、効果はありません。ハンドラーは常にチェックを実行します。
+Upgrade Lab はチェック専用の事前検証で、プロジェクト、`node_modules`、`dist`、`.riebeckite` を変更しません。`--check` は互換性のために受け付けられますが、`upgrade` は常にチェックを実行するため省略できます。
 
 ```sh
 npm exec -- riebeckite upgrade --to 0.0.35
@@ -18,7 +18,7 @@ npm exec -- riebeckite upgrade --to latest --json
 
 レポートでは依存関係・ peerDependencies ・ Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、本番のフルビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
 
-対応するのは、`package-lock.json` と `pnpm-lock.yaml` のどちらか一方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越えずに `UNVERIFIED` を返します。symlink の content root は例外となり例外となり `BLOCKED` になります。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、信頼できないビルドコードを安全に実行できるわけではありません。
+対応するのは、`package-lock.json` と `pnpm-lock.yaml` のどちらか一方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製しません。プロジェクト外の content root は境界を越えずに `UNVERIFIED` を返し、symlink の content root は例外となり `BLOCKED` になります。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、信頼できないビルドコードを安全に実行できるわけではありません。
 
 ## `init`
 

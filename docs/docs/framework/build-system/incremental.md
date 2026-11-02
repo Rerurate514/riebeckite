@@ -58,18 +58,17 @@ produce successful output.
 flowchart TD
     A["Previous successful state"] --> B["Build starts: buildManifest()"]
     B --> C{buildManifest succeeded?}
-    C -->|Yes| D["SSG/Output runs"]
     C -->|No| E["Do not save state; keep previous"]
+    C -->|Yes| D["Save new state, then run SSG/Output"]
 
     D --> F{SSG succeeded?}
-    F -->|Yes| G["Save the new state"]
-    F -->|No|  H["Keep the previous successful state (state was already committed before SSG)"]
+    F -->|Yes| G["Build succeeds"]
+    F -->|No| H["New state remains even though output failed"]
 ```
 
-If the manifest build succeeds but SSG/output fails, the new build state from
-`buildManifest()` may already be committed. The previous valid state is retained
-only if the overall build (including SSG) does not succeed. A partial failure
-can overwrite valid state because commit happens partway through the build flow.
+If `buildManifest()` fails, the previous state is kept. If it succeeds, the new state
+is committed immediately; a later SSG/output failure does not restore the previous
+state, so the next build may reuse state that was never paired with successful output.
 
 ## When related pages change
 

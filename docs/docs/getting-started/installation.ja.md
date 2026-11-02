@@ -46,10 +46,11 @@ npx create-riebeckite
 
 1. **Project name**：作るフォルダ名。既定値は `my-riebeckite-site`。好みで `my-site` などに変えられます
 2. **Preset**：サイトの構成。迷ったら `starter` のまま。比較は [プリセット](./presets.ja.md)
-3. **追加のプロジェクトファイルのカスタマイズ**：任意です。エディタやツール用の生成ファイルを変える必要がなければ、既定値のまま進めます。
+3. **Extra project files**：任意です。エディタやツール用の生成ファイルを変える必要がなければ、既定値のまま進めます。
 4. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
-5. **デプロイ設定**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
-6. **依存パッケージを今すぐインストール**：既定は yes です。生成したプロジェクトを確認してからインストールしたいときは no を選びます。
+5. **Deployment設定**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
+6. **Add optional feature packs?**：機能パックを選んで追加のプラグインを追加できます。非対話で追加する場合は `--features <names>` を使用します。[プリセット](./presets.ja.md) で利用可能な packs を参照してください
+7. **Install dependencies now**：既定は yes です。生成したプロジェクトを確認してからインストールしたいときは no を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
@@ -57,7 +58,8 @@ npx create-riebeckite
 npx create-riebeckite my-site --preset starter
 ```
 
-- 既存のディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
+- 生成されたトップレベルの名前が既存のエントリと衝突する場合、コマンドは停止します。上書きしたい場合は `--force` を追加してください。
+- ターゲットフォルダにあるその他のファイルは `--force` なしで許可されます。
 - 利用できる[[glossary/preset|プリセット]]は `npx create-riebeckite --list-presets` で確認できます。
 - フォルダ名を渡すと非対話で実行されます。プリセット、コンテンツの取得元、デプロイ、インストールの質問は省略され、依存関係もインストールされません。`dev` の前に、フォルダ内で `npm install` を実行してください（下記参照）。
 
@@ -79,7 +81,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
-| `public/` | favicon、ヘッダーのロゴ、リンクプレビュー画像など、そのまま配信する静的ファイル。差し替えは [サイトのアイコンとロゴ](../guides/branding.ja.md) |
+| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。ヘッダーのロゴやリンクプレビュー画像はデフォルトでは生成されません。[サイトのアイコンとロゴ](../guides/branding.ja.md) で追加してください。なお `defaultOgImage` は現在 `/ogp.png` を指していますが、これらは生成されませんので存在すると主張しないでください。
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
 | `README.md` | 生成されたサイト向けの短い説明 |

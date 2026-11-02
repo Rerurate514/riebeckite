@@ -28,23 +28,25 @@ riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
-riebeckite upgrade --check --to <version|latest> [--json]
+riebeckite upgrade --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] | gate [--provider <name>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
 riebeckite content recover <journal> --apply [--json]
 riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance [--json] [--source <path>] [--output <path>] [--compare <path>] | api [--deprecated] [--json]]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance [--json] [--source <path>] [--output <path>] [--compare <revision>] | api [--deprecated] [--json]]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-コマンドは単一の型付きレジストリから解決します。`--help`、`help`、`completion` はコマンドのメタデータだけを読み、ハンドラーを実行しません。有効なプラグインは、既存の `cli` 定義を通じて名前空間付きのコマンドを追加できます。定義API、実行コンテキスト、JSONの取り決め、補完、セキュリティモデルは [CLI拡張API](./cli-extension.ja.md) を参照してください。
+`plugin verify` の `--level` は既定で `basic` です。`theme preview` と `plugin dev` は既定でブラウザーを開きます。無効にするには `--no-open` を指定します。
+
+コマンドは単一の型付きレジストリから解決されます。`--help`、`help`、`completion` はコマンドのメタデータを読みます。`--help` はraw コマンドの先頭トークンとしてのみ介入し、一部のコマンド（例: `riebeckite content create --help`）はハンドラーに入ります。有効なプラグインは、既存の `cli` 定義を通じて名前空間付きのコマンドを追加できます。定義API、実行コンテキスト、JSONの取り決め、補完、セキュリティモデルは [CLI拡張API](./cli-extension.ja.md) を参照してください。
 
 永続公開状態を読み書きする `publish` のアクション（`plan`、`status`、`validate`、`run`、`record`、`gate`）は、状態ファイルを上書きする `--state-file <path>`（または環境変数 `RIEBECKITE_PUBLICATION_STATE`）を受け付けます。`approve` と `revoke` は `publication/approvals.json` を操作するため、代わりに `--approvals <path>` を受け付けます。
 
@@ -63,7 +65,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `upgrade --check` | Riebeckite パッケージを更新する前に、隔離した baseline ビルドと候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
-| `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加する。デプロイは行わない | いいえ |
+| `deploy` | Cloudflare の設定補助のみ。`setup` は publish ワークフローとシークレットを準備し、`domain` は Workers の Custom Domain を追加し、デプロイを促します。デプロイには `publish run --execute` を使います。 | いいえ |
 | `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |
 | `content` | 明示的なコンテンツ変更を計画し、ジャーナル付きで書き込む。書き込みには `--apply` が必要 | いいえ |
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |

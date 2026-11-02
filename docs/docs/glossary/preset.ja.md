@@ -7,27 +7,47 @@ sidebar:
 
 # プリセット（Preset）
 
-よくある構成をまかなうために、設定へ適用する準備済みのオプション群です。プリセットはよく使うプラグイン、テーマ、設定をまとめ、サイトがわずかな設定で採用できるようにします。
+よくある構成をまかなうために用意されたオプション群です。Riebeckite では2つの場面で使います。
 
-## プリセットがまとめるもの
+## スキャフォールドプリセット
 
-- ブログやドキュメントサイトなど、用途に応じたプラグインの組。
-- 既定のテーマ。
-- よく使う設定。サイト側は必要な分だけ上書きします。
+`create-riebeckite` と `riebeckite init` は、スキャフォールドプリセットから完全なサイトを生成します。プリセットは、プラグイン、テーマ、生成されるコンテンツ、アプリケーションファイルを選びます。
 
-## プリセットの種類とソース
-プリセットは、インポート時に設定を返すプラグインとして定義されます。通常は `PluginInput` 型に適合する関数を公開する npm パッケージです。プリセット関数はユーザーの部分的な設定を受け取り、マージ済みの設定を返します。
+利用できるプリセットは `empty`、`minimal`、`starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`showcase` で、既定は `starter` です。`--preset <name>` で選び、`--list-presets` で一覧を表示できます。
 
-プリセットは順番に適用されます。ユーザーの設定が最後に展開されるため、ユーザーのオプションは常にプリセットのオプションを上書きします。つまり、プリセットは妥当な既定値を提供しつつ、サイト所有者があらゆる設定について最終的な決定権を持ちます。
+```sh
+npx create-riebeckite my-site --preset blog
+```
 
-## プリセットの使い方
-プリセットは[設定](./config.md)に展開して使います。サイト自身のオプションがプリセットの後に適用されるため、最終的な設定はサイト側が決めます。
+各プリセットの内容は[プリセット](../getting-started/presets.ja.md)を参照してください。
+
+## テーマプリセット
+
+テーマは `defineTheme` で名前付きプリセットを宣言できます。テーマプリセットは、`preset` オプションで選ぶテーマ設定の部分集合です。
 
 ```ts
-import { riibook } from "@riebeckite/preset-riibook";
-export default defineConfig({
-  plugins: [riibook()],
+export const myTheme = defineTheme({
+  name: "my-theme",
+  styles: [{ moduleSpecifier: "/themes/my-theme.css" }],
+  presets: {
+    compact: { label: "Compact", settings: { density: "compact" } },
+  },
 });
 ```
 
-プリセットプラグインは設定だけでなく、エンドポイント、コンテンツタイプ、UI コンポーネントなどを追加してサイトの機能を拡張することもできます。プラグインがサイトとどう統合されるかの詳細は[プラグイン API](../reference/plugin-api.ja.md)を参照してください。
+```ts
+theme: myTheme({ preset: "compact" })
+```
+
+解決順は、スキーマの既定値、プリセット、明示的な `settings` の順で、明示的な設定が優先されます。詳しくは [Theme API](../reference/theme-api.ja.md) を参照してください。
+
+## 関連用語
+
+- [[glossary/theme|Theme]]
+- [[glossary/config|Config]]
+- [[glossary/plugin|Plugin]]
+
+## さらに詳しく
+
+- [プリセット](../getting-started/presets.ja.md)
+- [Theme API](../reference/theme-api.ja.md)

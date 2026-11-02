@@ -16,7 +16,7 @@ riebeckite theme preview my-theme
 riebeckite theme preview my-theme --port 4173 --no-open
 ```
 
-The preview serves deterministic Home, Article, Documentation, and Components fixture pages from a temporary site under `themes/`. It does not read or change the configured Vault, build output, or `riebeckite.config.ts`; the temporary site is removed when you stop it with Ctrl+C. Theme CSS is imported through the actual Theme definition and Vite updates CSS changes; editing `index.ts` restarts the dev server and reloads the open page. Use browser developer tools for responsive sizes and system color preference. A Theme is trusted local application code: its module executes while the preview configuration is loaded.
+The preview opens a browser by default; pass `--no-open` to disable it. It serves deterministic Home, Article, Documentation, and Components fixture pages from a temporary site under `themes/`. It does not read or change the configured Vault, build output, or `riebeckite.config.ts`; the temporary site is removed when you stop it with Ctrl+C. Theme CSS is imported through the actual Theme definition and Vite updates CSS changes; editing `index.ts` restarts the dev server and reloads the open page. Use browser developer tools for responsive sizes and system color preference. A Theme is trusted local application code: its module executes while the preview configuration is loaded.
 
 ## `plugin dev`
 
@@ -27,7 +27,7 @@ riebeckite plugin dev ./extensions/my-plugin
 riebeckite plugin dev ../my-plugin --port 4321 --no-open
 ```
 
-The path can point to a Plugin directory or its `package.json`. The directory must contain a valid `package.json` with a supported entry point: `exports["."]` with a `source`, `import`, `module`, or `default` condition, `main`, or a conventional `index.ts`. The CLI does not install dependencies. Install the Plugin's dependencies in its own project before starting the preview.
+The preview opens a browser by default; pass `--no-open` to disable it. The path can point to a Plugin directory or its `package.json`. The directory must contain a valid `package.json` with a supported entry point: `exports["."]` with a `source`, `import`, `module`, or `default` condition, `main`, or a conventional `index.ts`. The CLI does not install dependencies. Install the Plugin's dependencies in its own project before starting the preview.
 
 The command creates an isolated fixture site in the system temporary directory, links the local Plugin into it, and prints the fixture path. It does not read or change the configured Vault, site configuration, or build output. The fixture contains deterministic Markdown so the Plugin can be checked without editing your content.
 

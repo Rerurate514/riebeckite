@@ -41,10 +41,10 @@ Content Repository の分離
 2. デプロイ先に `Cloudflare Workers` を選んで、サイトを生成します。
 
    ```bash
-   npx create-riebeckite my-site
+   npx create-riebeckite --cloudflare-workers my-site
    ```
 
-   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれます。依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場でビルドとデプロイまで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
+   `--cloudflare-workers` フラグを渡すとデプロイ選択を Cloudflare Workers に非対話的に設定します。ディレクトリ引数なしでは CLI が対話的にデプロイについて尋ねます。`--cloudflare-workers` を指定すると既定でその選択になります。
 
    ```bash
    npm exec riebeckite build

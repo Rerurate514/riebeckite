@@ -100,7 +100,12 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-`Deploy now?` で `Yes` を選んだ場合は、生成直後に build と deploy まで自動で実行され、`https://<name>.<account>.workers.dev` のような URL が表示されます。`Later` を選んだ場合や、後から更新を公開する場合は上の2コマンドを実行します。初回は Wrangler のログインがブラウザで開きます。`Not now` で生成した既存サイトでは、先に `npm install -D wrangler` を実行してください。
+`Deploy now?` で `Yes` を選んだ場合は、生成直後に build と deploy まで自動で実行され、`https://<name>.<account>.workers.dev` のような URL が表示されます。`Later` を選んだ場合や、後から更新を公開する場合は次のコマンドを実行してください。
+
+```bash
+npm exec riebeckite build
+npm exec -- riebeckite publish run --execute
+```
 
 公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
 

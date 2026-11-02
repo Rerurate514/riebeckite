@@ -19,11 +19,11 @@ npm exec -- riebeckite publish run --execute --provider cloudflare-workers
 npm exec -- riebeckite publish approve <slug> --all
 ```
 
-`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。`--require-approval` または設定で承認を任意に有効化でき、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。`--state-file <path>`（または `RIEBECKITE_PUBLICATION_STATE`）は、CI と同じく永続状態ファイルをプロジェクト外に置きます。明示したファイルが壊れている場合は、黙って最初からやり直さずエラーになります。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
+`plan` と `status` は読み取り専用です。`validate` は計画にエラーがある場合、承認待ちの場合、またはビルド成果物が計画と一致しない場合に非ゼロで終了します。`run` は `--execute` がない限りビルドもデプロイも行いません。`--execute` を使用すると、Cloudflare Workers などのホストングアダプタが CLI でデプロイされます。GitHub Pages は独自のワークフロー（`deploy({ provider: "github-pages" })`）によってデプロイする必要があります。`publish run` ではデプロイできません。`record` は外部 CI のデプロイを再デプロイせずに記録します。`gate` は単一のデプロイ前チェックで、常に計画と成果物を検証し、`publication.requireApproval` が有効なときに承認を要求します。`--require-approval` または設定で承認を任意に有効化でき、記録は `publication/approvals.json` に保存されます。デプロイ対象ブランチにコミットされたファイルだけが信頼されます。承認ストレージは `publication.approvalFile` で設定可能で、 `publication/approvals.json` は既定値です。`--state-file <path>`（または `RIEBECKITE_PUBLICATION_STATE`）は、CI と同じく永続状態ファイルをプロジェクト外に置きます。明示したファイルが壊れている場合は、黙って最初からやり直さずエラーになります。予約公開、Hosting adapter、履歴、CI については [公開ワークフロー](../../guides/deployment/publication-workflow.ja.md) を参照してください。
 
 ## `deploy setup`、`deploy workflow`、`deploy domain`
 
-`riebeckite deploy` はデプロイを実行しなくなりました。`riebeckite publish run --execute` を使います。計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを一括で行います。`deploy` は3つのデプロイ補助コマンドの名前空間としてのみ残ります。
+`riebeckite deploy` ではデプロイを実行しません。`deploy setup` と `deploy workflow` は設定を準備します。`deploy domain` は Custom Domain を追加し、`wrangler deploy` でデプロイするか確認を促します。デプロイには `riebeckite publish run --execute` を使います。
 
 ### `deploy setup`
 

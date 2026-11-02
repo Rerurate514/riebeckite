@@ -9,14 +9,14 @@ sidebar:
 
 ## `upgrade --check`
 
-Upgrade Lab is a check-only preflight. It never updates the project, its lockfile,
+Upgrade Lab is a check-only preflight that has no effect; the handler always runs the check.
 `node_modules`, `dist`, or `.riebeckite`. It copies the project twice into a temporary
 directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the
 current dependency set with the requested Riebeckite version.
 
 ```sh
-npm exec -- riebeckite upgrade --check --to 0.0.33
-npm exec -- riebeckite upgrade --check --to latest --json
+npm exec -- riebeckite upgrade --to 0.0.35
+npm exec -- riebeckite upgrade --to latest --json
 ```
 
 The report compares dependency/peer/Node-engine resolution, TypeScript checking when
@@ -28,7 +28,7 @@ means the baseline failed or a check could not safely run.
 
 Only npm and pnpm projects with exactly one of `package-lock.json` or `pnpm-lock.yaml`
 are supported. Symlinks and content roots outside the project are not copied: the
-command returns `UNVERIFIED` rather than crossing that boundary. It does not run package
+command returns `UNVERIFIED` rather than crossing that boundary. Symlinks and content roots outside the project are not copied: symlinked content roots throw and become `BLOCKED`, while outside-project content roots return `UNVERIFIED`.
 install scripts, pnpmfiles, deployment, or browser E2E tests. A temporary directory is
 not a security sandbox; builds still execute the site's own configuration and plugins.
 Child processes receive only the path, temporary-directory, and temporary user-home variables needed
@@ -67,7 +67,7 @@ npm exec -- riebeckite init --list-presets
 
 ### Adding feature packs
 
-Use `--features <names>` for a comma-separated set of optional packs: `knowledge`, `diagrams`, `media`, and `i18n`. `none` adds no pack. A pack that duplicates a plugin already selected by the preset is rejected.
+Use `--features <names>` for a comma-separated set of optional packs: `knowledge`, `diagrams`, `media`, and `i18n`. `none` adds no pack. A pack that duplicates a plugin already selected by the preset is ignored/skipped.
 
 ```sh
 npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
@@ -149,3 +149,5 @@ riebeckite create --help
 ```
 
 In scripts, select a target explicitly. `create site` passes its arguments to `create-riebeckite`; `create plugin` and `create theme` retain their existing options and non-TTY validation. `create page-type` creates a Plugin PageType; `create component` respects the Site, Plugin, and Theme ownership boundary.
+
+`create theme` defaults to `--template minimal` with dark mode, tests, and documentation enabled; use `--no-dark-mode`, `--no-tests`, or `--no-docs` to disable them. `create component` defaults to `--target site`.

@@ -26,7 +26,7 @@ Update dist/
 Deploy
 ```
 
-`riebeckite publish run --execute` only tells Wrangler to publish `dist/`; it does not rebuild Riebeckite content. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first.
+`riebeckite publish run --execute` plans, builds if needed, validates the artifact, runs the publication gate, and deploys through the hosting adapter. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first to ensure content is up to date.
 
 ## Pre-deploy checklist
 
@@ -47,7 +47,7 @@ Each command has a role:
 | `riebeckite check` | Validate config and plugins |
 | `riebeckite doctor` | Diagnose site-wide problems |
 | `riebeckite build` | Generate `dist/` |
-| `riebeckite publish validate` | Check what will be deployed (calls Wrangler internally) |
+| `riebeckite publish validate` | Check what will be deployed (reads plan/artifact/state) |
 | `riebeckite publish run --execute` | Publish to Cloudflare Workers |
 
 When something fails, separate which stage is failing.

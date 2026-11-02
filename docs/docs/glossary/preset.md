@@ -7,31 +7,47 @@ sidebar:
 
 # Preset
 
-A prepared set of options applied to a config to cover a common setup. Presets bundle common plugins, themes, and settings so a site can opt in with little configuration.
+A prepared set of options for a common setup. Riebeckite uses presets in two places.
 
-## What a preset bundles
+## Scaffold presets
 
-- A set of plugins for a use case, such as a blog or a docs site.
-- A default theme.
-- Common settings, so the site only overrides what it needs.
+`create-riebeckite` and `riebeckite init` use scaffold presets to generate a complete site. A preset chooses the plugins, theme, generated content, and application files.
 
-## Using one
+The available presets are `empty`, `minimal`, `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, and `showcase`; `starter` is the default. Choose one with `--preset <name>` and list them with `--list-presets`.
 
-A preset is spread into the [config](./config.md). The site keeps the last word, because its own options are applied after the preset.
+```sh
+npx create-riebeckite my-site --preset blog
+```
 
-## Preset types and sources
-A preset is defined as a plugin that returns configuration when imported. Presets are typically npm packages that export a function conforming to the `PluginInput` type. The preset function receives the user's partial config and returns merged configuration.
+See [Presets](../getting-started/presets.md) for what each preset includes.
 
-Presets are applied in order: user config is spread last, so user options always override preset options. This means a preset can provide sensible defaults, but the site owner retains final control over all settings.
+## Theme presets
 
-## Using a preset
-A preset is spread into the [config](./config.md). The site keeps the last word, because its own options are applied after the preset.
+A theme can declare named presets in `defineTheme`. A theme preset is a partial set of theme settings selected with the `preset` option:
 
 ```ts
-import { riibook } from "@riebeckite/preset-riibook";
-export default defineConfig({
-  plugins: [riibook()],
+export const myTheme = defineTheme({
+  name: "my-theme",
+  styles: [{ moduleSpecifier: "/themes/my-theme.css" }],
+  presets: {
+    compact: { label: "Compact", settings: { density: "compact" } },
+  },
 });
 ```
 
-Preset plugins can also extend the site's capabilities beyond config, such as adding endpoints, content types, or UI components. See the [plugin API](../reference/plugin-api.md) for details on how plugins integrate with the site.
+```ts
+theme: myTheme({ preset: "compact" })
+```
+
+Resolution order is schema defaults, then the preset, then explicit `settings`; explicit settings win. See [Theme API](../reference/theme-api.md).
+
+## Related terms
+
+- [[glossary/theme|Theme]]
+- [[glossary/config|Config]]
+- [[glossary/plugin|Plugin]]
+
+## Learn more
+
+- [Presets](../getting-started/presets.md)
+- [Theme API](../reference/theme-api.md)

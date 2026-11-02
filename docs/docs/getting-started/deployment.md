@@ -41,10 +41,10 @@ This is the fastest path to a public site.
 2. Scaffold a site with `Cloudflare Workers` as the deployment choice:
 
    ```sh
-   npx create-riebeckite my-site
+   npx create-riebeckite --cloudflare-workers my-site
    ```
 
-   Choosing `Cloudflare Workers` includes the Wrangler dependency and `wrangler.jsonc` in the generated site, then asks `Deploy now?` after installing dependencies. `Yes` builds and deploys right away; `Later` finishes the scaffold and you run these commands afterwards:
+   Passing `--cloudflare-workers` sets the deployment choice to Cloudflare Workers non-interactively. Without a directory argument the CLI is interactive and asks about deployment; with `--cloudflare-workers` it defaults to that choice. Run these commands afterwards:
 
    ```sh
    npm exec riebeckite build

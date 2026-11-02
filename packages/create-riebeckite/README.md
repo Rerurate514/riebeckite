@@ -29,10 +29,10 @@ The prompts ask, in order:
 | Prompt | Options | Recommendation |
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
-| Preset | `starter`, `minimal`, `showcase`, `empty` | `starter` for most sites |
+| Preset | `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, `minimal`, `showcase`, `empty` | `starter` for most sites |
 | Project files | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json`, `.npmrc`, `.vscode/settings.json` | the recommended set is pre-selected |
 | Content source | `This project`, `Separate GitHub repository` | `This project` to start |
-| Deployment | `GitHub Actions + Cloudflare Workers`, `Not now` | `Not now` for local development |
+| Deployment | `Cloudflare Workers`, `GitHub Actions`, `Not now` | `Not now` for local development |
 
 `Separate GitHub repository` also asks for the content and site repositories,
 and GitHub Actions deployment is then configured for you. That setup is covered
@@ -50,6 +50,8 @@ Deployment can be added later, described in
 | `--force` | Scaffold even when the target directory is not empty |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
+| `--cloudflare-workers` | Generate the Cloudflare Workers deployment configuration |
+| `--features <names>` | Comma-separated feature pack names to add extra plugins |
 | `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |
 | `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
 
@@ -112,17 +114,25 @@ Every preset is a self-contained starter description:
 
 | Preset | Purpose |
 | --- | --- |
-| `starter` | Recommended for most sites |
-| `minimal` | Small Markdown site with minimal configuration |
-| `showcase` | Explore Riebeckite features and plugins with rendered examples and local fixtures |
-| `empty` | Blank shell for custom setups |
+| `starter` | Recommended default: a practical Markdown garden with search, navigation, and reading essentials. |
+| `digital-garden` | An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph. |
+| `blog` | A publishing-focused blog with tags, series, related posts, sharing, and feeds. |
+| `docs` | A documentation site with an automatic sidebar, table of contents, and previous/next navigation. |
+| `portfolio` | A calm portfolio for projects and contact details, with image and media support when you add it. |
+| `minimal` | The smallest readable site, for learning how a Riebeckite site is assembled. |
+| `showcase` | A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples and references. |
+| `empty` | A blank canvas with only the Riebeckite wiring. Add the theme, plugins, and content yourself. |
 
 Each preset has a one-line description, shown by `--list-presets`:
 
-- `starter` — Recommended for most sites: practical Markdown publishing, search, and discovery.
-- `minimal` — The smallest useful site: Obsidian Markdown, the minimal theme, and one page.
-- `showcase` — The complete plugin catalog with rendered examples, local fixtures, and reference pages.
-- `empty` — A blank application shell: no plugins, theme, content, or components.
+- `starter` — Recommended default: a practical Markdown garden with search, navigation, and reading essentials.
+- `digital-garden` — An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.
+- `blog` — A publishing-focused blog with tags, series, related posts, sharing, and feeds.
+- `docs` — A documentation site with an automatic sidebar, table of contents, and previous/next navigation.
+- `portfolio` — A calm portfolio for projects and contact details, with image and media support when you add it.
+- `minimal` — The smallest readable site, for learning how a Riebeckite site is assembled.
+- `showcase` — A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples and references.
+- `empty` — A blank canvas with only the Riebeckite wiring. Add the theme, plugins, and content yourself.
 
 Presets are defined in `create-riebeckite/scaffold` and can be imported into
 your own tooling:

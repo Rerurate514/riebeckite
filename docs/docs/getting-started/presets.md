@@ -36,10 +36,10 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | Preset | [[glossary/theme|Theme]] | Languages | Contents | Representative features |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
-| `digital-garden` | `default` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
-| `blog` | `default` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, search, table of contents |
-| `docs` | `default` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
-| `portfolio` | `default` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
+| `digital-garden` | `garden` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
+| `blog` | `editorial` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, search, table of contents |
+| `docs` | `technical` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
+| `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
@@ -81,7 +81,7 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 | `media` | Embedded audio/video, responsive images, and lightbox |
 | `i18n` | English and Japanese localization support for content you add |
 
-Packs that repeat a preset's plugin are rejected rather than silently generating duplicate imports. Use `none` to make `--features` explicit without adding a pack.
+Packs that repeat a preset's plugin are silently ignored, not rejected. Use `none` to make `--features` explicit without adding a pack.
 
 ### `minimal`
 

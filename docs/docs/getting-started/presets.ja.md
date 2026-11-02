@@ -36,10 +36,10 @@ npx create-riebeckite --list-presets
 | プリセット | テーマ | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | サイトの[[glossary/locale|ロケール]]に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、[[glossary/search|検索]]、コンテンツから生成するナビゲーション、パンくず、[[glossary/backlink|バックリンク]]、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
-| `digital-garden` | `default` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
-| `blog` | `default` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
-| `docs` | `default` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
-| `portfolio` | `default` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
+| `digital-garden` | `garden` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
+| `blog` | `editorial` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
+| `docs` | `technical` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
+| `portfolio` | `folio` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | すべてのプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | なし | なし | 空のアプリケーションシェル |
@@ -81,7 +81,7 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 | `media` | 音声・動画の埋め込み、レスポンシブ画像、lightbox |
 | `i18n` | 追加するコンテンツ向けの英語・日本語ローカライズ対応 |
 
-プリセットに含まれる Plugin と重複する Pack は、重複した import を生成せずエラーにします。Pack を追加しないことを明示する場合は `--features none` を使えます。
+プリセットに含まれる Plugin と重複する Pack は、重複した import を生成せずに無視されます。Pack を追加しないことを明示する場合は `--features none` を使えます。
 
 ### `minimal`
 

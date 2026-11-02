@@ -1,4 +1,5 @@
-﻿import { mkdir, rm, writeFile } from "node:fs/promises";
+﻿import { randomUUID } from "node:crypto";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
   BUILD_OUTPUT_MARKER_FILE,
@@ -12,12 +13,7 @@ import {
   serializeBuildOutputMarker,
 } from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
-import {
-  type ConfigEnv,
-  createServer,
-  type Plugin,
-  type ResolvedConfig,
-} from "vite";
+import type { ConfigEnv, Plugin, ResolvedConfig } from "vite";
 import { collectSiteOwnedOutputPaths } from "./content_assets.js";
 import {
   CLOUDFLARE_WORKER_ASSET_LIMIT,
@@ -56,7 +52,10 @@ import {
   measureSync,
   writeSsgOutputMetrics,
 } from "./ssg/runtime_metrics.js";
-import { isStandaloneSsgMode } from "./ssg/standalone.js";
+import {
+  isStandaloneSsgMode,
+  loadStandaloneSsgBundle,
+} from "./ssg/standalone.js";
 import type {
   GeneratedOutputAsset,
   OutputCacheDecision,
@@ -180,31 +179,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       const outDir = resolve(config.root, config.build.outDir);
       let viteClientAssetPaths: string[] = [];
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
-      const server = await measure(timingsMs, "ssgSetup", () =>
-        createServer({
-          root: config.root,
-          define: config.define,
-          resolve: {
-            ...config.resolve,
-            builtins: [...config.resolve.builtins, /^node:/],
-          },
-          plugins: [
-            {
-              name: "riebeckite-ssg-package-resolution",
-              enforce: "post",
-              configResolved(runtimeConfig) {
-                runtimeConfig.resolve.alias = [];
-              },
-            },
-          ],
-          build: { ssr: true },
-          oxc: { jsx: { runtime: "automatic", importSource: "hono/jsx" } },
-          environments: {
-            ssr: { resolve: { noExternal: [/^honox(?:\/.*)?$/] } },
-          },
-          mode: config.mode,
-          server: { watch: null },
-        }),
+      const bundleDirectory = join(
+        config.root,
+        ".riebeckite",
+        `ssg-bundle-${randomUUID()}`,
       );
 
       try {
@@ -214,13 +192,14 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
         );
-        const module = (await measure(timingsMs, "ssrModuleLoad", () =>
-          server.ssrLoadModule(entry),
-        )) as SsgModule;
-        const app = module.default;
-        if (!app) {
-          throw new Error(`Failed to find a default export from ${entry}.`);
-        }
+        const { app, module } = await measure(timingsMs, "ssrModuleLoad", () =>
+          loadStandaloneSsgBundle({
+            root: config.root,
+            entry,
+            outputDirectory: bundleDirectory,
+            config,
+          }),
+        );
 
         const outputChangeSet = await measure<SsgOutputChangeSet | undefined>(
           timingsMs,
@@ -561,7 +540,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         });
         logGeneratedHtmlAssetDiagnostics(this, generatedHtml);
       } finally {
-        await server.close();
+        await rm(bundleDirectory, { recursive: true, force: true });
         await discardClientBuildArtifacts(clientBuildArtifacts);
         clientBuildArtifacts = undefined;
       }

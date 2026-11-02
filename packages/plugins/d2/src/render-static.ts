@@ -115,18 +115,35 @@ export async function renderD2StaticSvg(
  * the browser client. The indirection keeps the specifier out of static
  * analysis while still resolving through normal Node ESM resolution.
  *
- * When a host bundles the Riebeckite config into a temporary module, the bare
+ * When a host bundles the Riebeckite config into a temporary module, the
  * specifier no longer resolves from that temporary location. In that case the
- * package is resolved from the process working directory instead.
+ * package is resolved from the configured plugin package instead.
  */
 async function importD2Module(): Promise<D2RendererModule> {
-  try {
-    return normalizeD2Module(await import("@d2lang/d2"));
-  } catch (error) {
-    const fallback = resolveD2FromWorkingDirectory();
-    if (!fallback) throw error;
-    return normalizeD2Module(await import(fallback));
+  const specifier = resolveD2ModuleUrl();
+  if (!specifier) {
+    throw new Error(
+      `Could not resolve ${D2_PACKAGE} from the site or its config.`,
+    );
   }
+  return normalizeD2Module(await import(specifier));
+}
+
+function resolveD2ModuleUrl(): string | null {
+  const bases = [import.meta.url];
+  try {
+    const projectRequire = createRequire(join(process.cwd(), "package.json"));
+    bases.push(
+      pathToFileURL(projectRequire.resolve("@riebeckite/plugin-d2")).href,
+    );
+  } catch {
+    bases.push(pathToFileURL(join(process.cwd(), "package.json")).href);
+  }
+  for (const base of bases) {
+    const resolved = resolveD2From(base);
+    if (resolved) return resolved;
+  }
+  return null;
 }
 
 function normalizeD2Module(value: unknown): D2RendererModule {
@@ -141,9 +158,9 @@ function normalizeD2Module(value: unknown): D2RendererModule {
   return { D2: D2 as D2RendererModule["D2"] };
 }
 
-function resolveD2FromWorkingDirectory(): string | null {
+function resolveD2From(base: string): string | null {
   try {
-    const require = createRequire(join(process.cwd(), "package.json"));
+    const require = createRequire(base);
     const resolved = require.resolve(D2_PACKAGE);
     const esm = resolved
       .replace(/dist[\\/]node-cjs[\\/]index\.js$/, "dist/node-esm/index.js")

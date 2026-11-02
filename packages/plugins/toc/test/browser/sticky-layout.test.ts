@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
+import { mkdtemp, rm } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -19,6 +19,18 @@ function sampleToc(itemCount = 80) {
     (_, index) =>
       `<li><a class="rr-table-of-contents__link" href="#section-${index}">Section ${index}</a></li>`,
   ).join("");
+}
+
+function readStyleSheet(file: string, seen = new Set<string>()): string {
+  if (seen.has(file)) return "";
+  seen.add(file);
+  return readFileSync(file, "utf8").replace(
+    /@import\s+"(\.[^"]+)";/g,
+    (_statement, specifier: string) => {
+      const target = path.join(path.dirname(file), specifier);
+      return existsSync(target) ? readStyleSheet(target, seen) : "";
+    },
+  );
 }
 
 before(async () => {
@@ -41,10 +53,12 @@ before(async () => {
     targetDirectory: showcaseDirectory,
     preset: "showcase",
   });
-  const [starterStyle, showcaseStyle] = await Promise.all([
-    readFile(path.join(starterDirectory, "app/style.css"), "utf8"),
-    readFile(path.join(showcaseDirectory, "app/style.css"), "utf8"),
-  ]);
+  const starterStyle = readStyleSheet(
+    path.join(starterDirectory, "app/style.css"),
+  );
+  const showcaseStyle = readStyleSheet(
+    path.join(showcaseDirectory, "app/style.css"),
+  );
   const renderSitePage = (siteStyle: string, includeToc = true) =>
     `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
   server = createServer((request, response) => {

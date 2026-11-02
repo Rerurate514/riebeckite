@@ -1,5 +1,6 @@
 import { SiteNav } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { SearchBar } from "@riebeckite/plugin-search";
 import {
   Drawer,
   DrawerTrigger,
@@ -27,6 +28,7 @@ export function SiteHeader() {
           <SiteNav placement="primary" omitHome />
         </nav>
         <div class="site-header__actions">
+          <SearchBar class="rr-search-bar--header" />
           <ColorModeToggle />
           <DrawerTrigger
             controls="site-navigation"

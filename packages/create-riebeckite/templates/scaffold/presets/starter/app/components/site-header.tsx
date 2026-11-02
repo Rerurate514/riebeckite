@@ -1,5 +1,6 @@
 import { MobileSiteNav, SiteNav } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { SearchBar } from "@riebeckite/plugin-search";
 import { useSiteContext } from "@riebeckite/ui";
 
 export function SiteHeader() {
@@ -23,6 +24,7 @@ export function SiteHeader() {
       <div class="site-header__mobile-navigation">
         <MobileSiteNav placement="primary" omitHome />
       </div>
+      <SearchBar class="rr-search-bar--header" />
       <ColorModeToggle />
     </header>
   );

@@ -89,12 +89,12 @@ The commands you use most often during framework development are:
 | `pnpm docs:sync` | Generate [[glossary/plugin|Plugin]] and [[glossary/theme|Theme]] package READMEs from canonical docs. |
 | `pnpm check:plugin-docs` | Verify Plugin docs and generated READMEs are synchronized. |
 | `pnpm check:theme-docs` | Verify Theme docs and generated READMEs are synchronized. |
-| `pnpm check:scaffold` | Check the generated sites. |
+| `pnpm check:scaffold` | Check the generated `starter`, `minimal`, `showcase`, and `empty` presets. |
 
 Use targeted commands when possible:
 
 - `pnpm check:docs` validates Markdown links and docs structure.
-- `pnpm check:scaffold` validates generated scaffold output.
+- `pnpm check:scaffold` validates the `starter`, `minimal`, `showcase`, and `empty` scaffold output.
 - `pnpm typecheck` checks packages.
 - `pnpm --filter <package> test` runs a package test when available.
 
@@ -138,7 +138,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-This validates that the generated Riebeckite site has the correct structure. It matters when you change things such as:
+This validates that the generated `starter`, `minimal`, `showcase`, and `empty` presets have the correct structure. It checks the generated configuration and files without an install or a build, so it does not cover the other four presets (`digital-garden`, `blog`, `docs`, `portfolio`). It matters when you change things such as:
 
 - the scaffold generator
 - a preset

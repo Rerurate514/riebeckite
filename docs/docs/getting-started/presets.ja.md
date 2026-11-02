@@ -9,7 +9,7 @@ sidebar:
 
 `create-riebeckite` は**[[glossary/preset|プリセット]]**をもとに、[[glossary/plugin|プラグイン]]、[[glossary/theme|テーマ]]、初期コンテンツ、[[framework/honox-integration|HonoX]] アプリケーションのファイルを選び、サイト一式を生成します。既定値は `starter` です。
 
-対話式の CLI は、実行中にプリセットの選択を求めます。迷ったら `starter` を選んでください。コマンドラインから指定する場合は `--preset <name>` を使います（既定は `starter`）。
+対話式の CLI は、実行中にプリセットの選択を求めます。迷ったら `starter` を選んでください。記事、タグ、シリーズを持つメディアを作る場合は、この質問で `blog` を選んでください。`starter` に後から blog 用のプラグインを追加するより簡単です。コマンドラインから指定する場合は `--preset <name>` を使います（既定は `starter`）。
 
 ```sh
 npx create-riebeckite my-site --preset starter

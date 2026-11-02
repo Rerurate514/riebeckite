@@ -43,7 +43,7 @@ npx create-riebeckite
 
 `npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
 
-1. **Project name** — the folder to create, for example `my-site`
+1. **Project name** — the folder to create. The default is `my-riebeckite-site`; use `my-site` or another name if you prefer
 2. **[[glossary/preset|Preset]]** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
 3. **Customize extra project files** — optional. Keep the defaults unless you need to change generated editor or tool files.
 4. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
@@ -58,6 +58,7 @@ npx create-riebeckite my-site --preset starter
 
 - If the target folder already has files, the command stops instead of overwriting. Add `--force` only when you really want to overwrite.
 - List the available presets with `npx create-riebeckite --list-presets`.
+- Passing a directory makes the command non-interactive: it skips the preset, content, deployment, and install prompts, and it does not install dependencies. Run `npm install` in the folder before `dev` (see below).
 
 When you choose not to install dependencies in the prompt, move into the folder and install the packages:
 
@@ -66,7 +67,7 @@ cd my-site
 npm install
 ```
 
-The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute.
+The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute. If npm reports vulnerabilities, review them with `npm audit`; many come from transitive build dependencies. Avoid `npm audit fix --force` unless you have checked the version changes it would make.
 
 ## What gets generated
 
@@ -127,19 +128,20 @@ The rest of the generated config (`content`, `theme`, `plugins`) already matches
 npm exec riebeckite dev
 ```
 
-The terminal prints a URL such as `http://localhost:5173`. Open it in a browser; Markdown and application edits are picked up while the server runs. Press `Ctrl + C` to stop.
+The terminal prints a URL such as `http://localhost:5173`. Open it in a browser; Markdown and application edits are picked up while the server runs. The dev server reads `content/` and does not create `dist/`; the build output appears only after `build`. Press `Ctrl + C` to stop. If the server fails to start, run `npm exec riebeckite doctor` and see the [CLI reference](../reference/cli.md).
 
 ## Everyday commands
 
 Run these from inside the site folder:
 
 ```sh
+npm exec riebeckite check         # validate the configuration
 npm exec riebeckite dev           # start the development server
 npm exec riebeckite build         # write the publishable files to dist/
 npm exec -- riebeckite build --full  # rebuild without incremental reuse
 ```
 
-For the first successful run, `dev` and `build` are enough. If something looks wrong later, the CLI also has read-only diagnostic commands such as `check`, `doctor`, and `inspect`; see the [CLI reference](../reference/cli.md).
+For the first successful run, `check`, `dev`, and `build` are enough. If something looks wrong later, the CLI also has read-only diagnostic commands such as `check`, `doctor`, and `inspect`; see the [CLI reference](../reference/cli.md).
 
 ## Next
 

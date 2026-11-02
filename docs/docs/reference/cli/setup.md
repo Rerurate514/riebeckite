@@ -110,6 +110,8 @@ The `create-riebeckite` package runs the same generator through `npx create-rieb
 npx create-riebeckite
 ```
 
+Passing a directory, for example `npx create-riebeckite my-site --preset starter`, skips the prompts and does not install dependencies; run `npm install` in the generated folder before `check` and `build`.
+
 In interactive mode it asks for the content source and then for the deployment:
 
 | Choice | What is generated |
@@ -125,10 +127,9 @@ npm run build
 npm exec -- riebeckite publish run --execute
 ```
 
-After generating the site, install dependencies and verify the setup:
+After generating the site, verify the setup. The interactive flow installs dependencies by default; if you answered `No` to the install prompt, run `npm install` first:
 
 ```sh
-npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```

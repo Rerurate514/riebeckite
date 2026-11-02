@@ -44,7 +44,7 @@ npx create-riebeckite
 
 `npx` は `create-riebeckite` をダウンロードして一度だけ実行するため、グローバルには何もインストールしません。CLI は次の順に確認します。
 
-1. **Project name**：作るフォルダ名。例: `my-site`
+1. **Project name**：作るフォルダ名。既定値は `my-riebeckite-site`。好みで `my-site` などに変えられます
 2. **Preset**：サイトの構成。迷ったら `starter` のまま。比較は [プリセット](./presets.ja.md)
 3. **追加のプロジェクトファイルのカスタマイズ**：任意です。エディタやツール用の生成ファイルを変える必要がなければ、既定値のまま進めます。
 4. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
@@ -59,6 +59,7 @@ npx create-riebeckite my-site --preset starter
 
 - 既存のディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
 - 利用できる[[glossary/preset|プリセット]]は `npx create-riebeckite --list-presets` で確認できます。
+- フォルダ名を渡すと非対話で実行されます。プリセット、コンテンツの取得元、デプロイ、インストールの質問は省略され、依存関係もインストールされません。`dev` の前に、フォルダ内で `npm install` を実行してください（下記参照）。
 
 プロンプトでインストールしなかった場合は、フォルダへ移動してパッケージを入れます。
 
@@ -67,7 +68,7 @@ cd my-site
 npm install
 ```
 
-`@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。
+`@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。npm が脆弱性を報告した場合は `npm audit` で内容を確認してください。ビルド用の推移的依存関係に由来するものも多く含まれます。`npm audit fix --force` は、変更されるバージョンを確認してからでないと実行しないでください。
 
 ## 生成されるファイル
 
@@ -140,20 +141,21 @@ site: {
 npm exec riebeckite dev
 ```
 
-ターミナルに `http://localhost:5173` のような URL が表示されます。ブラウザで開いてください。サーバーの起動中は Markdown とアプリケーションの編集が反映されます。止めるときは `Ctrl + C` を押します。
+ターミナルに `http://localhost:5173` のような URL が表示されます。ブラウザで開いてください。サーバーの起動中は Markdown とアプリケーションの編集が反映されます。開発サーバーは `content/` を読み込み、`dist/` は作りません。ビルド出力は `build` の実行後にだけ作られます。止めるときは `Ctrl + C` を押します。起動しない場合は `npm exec riebeckite doctor` を実行し、[CLI リファレンス](../reference/cli.ja.md) を参照してください。
 
 ## 日常的に使うコマンド
 
 サイトのフォルダ内で実行します。
 
 ```bash
+npm exec riebeckite check  # 設定を検証する
 npm exec riebeckite dev    # 開発サーバーを起動する
 npm exec riebeckite build  # 公開用ファイルを dist/ に出力する
 ```
 
 増分キャッシュを使わずに作り直す場合は、`npm exec -- riebeckite build --full` を実行します。
 
-最初に動作を確認するだけなら、`dev` と `build` で足ります。あとから問題が見つかった場合は、`check`、`doctor`、`inspect` などの読み取り専用の診断コマンドも使えます。詳しくは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
+最初に動作を確認するだけなら、`check`、`dev`、`build` で足ります。あとから問題が見つかった場合は、`check`、`doctor`、`inspect` などの読み取り専用の診断コマンドも使えます。詳しくは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
 
 ## 次に読むページ
 

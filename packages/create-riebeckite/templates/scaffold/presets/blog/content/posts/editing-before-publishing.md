@@ -1,5 +1,6 @@
 ---
 title: Editing before publishing
+publish: true
 date: 2026-10-26
 tags: [writing, editing]
 series: Publishing notes

@@ -1,5 +1,6 @@
 ---
 title: How this garden works
+publish: true
 aliases: [Garden guide]
 tags: [garden, notes]
 ---

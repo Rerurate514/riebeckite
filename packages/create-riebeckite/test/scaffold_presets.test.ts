@@ -132,6 +132,27 @@ test("portfolio registers every plugin used by its article layout", async () => 
   });
 });
 
+test("every generated Markdown sample opts into publishing", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of SCAFFOLD_PRESET_NAMES) {
+      if (preset === "empty") continue;
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const contentDirectory = path.join(targetDirectory, "content");
+      for (const file of await fs.readdir(contentDirectory, {
+        recursive: true,
+      })) {
+        if (!file.endsWith(".md")) continue;
+        const markdown = await fs.readFile(
+          path.join(contentDirectory, file),
+          "utf8",
+        );
+        assert.match(markdown, /^publish: true$/m, `${preset}: ${file}`);
+      }
+    }
+  });
+});
+
 test("preset declarations reject conflicting generated imports", () => {
   assert.throws(
     () =>

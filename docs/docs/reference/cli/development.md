@@ -66,6 +66,8 @@ npm exec riebeckite dev
 
 It starts the site through the Riebeckite integration's development workflow. The actual development server and how build state is handled depend on the integration in use. For an ordinary HonoX site, use this command to preview pages while developing.
 
+On Windows, save related edits together and wait for the server to finish restarting before reloading. Saving several files in quick succession can restart the Vite server repeatedly and briefly show `transport was disconnected`; reload after the restart to clear it.
+
 ## `check`
 
 `check` validates that the configuration, plugins, and capabilities are set up correctly.

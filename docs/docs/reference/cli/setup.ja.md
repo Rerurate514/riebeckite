@@ -95,6 +95,8 @@ npm exec -- riebeckite init my-site --force
 npx create-riebeckite
 ```
 
+フォルダ名を渡すと（例: `npx create-riebeckite my-site --preset starter`）、質問は省略され、依存関係もインストールされません。生成したフォルダで `npm install` を実行してから `check` と `build` を使ってください。
+
 対話モードでは、[[glossary/content-source|コンテンツソース]]を尋ねたあと、デプロイ方法を尋ねます。
 
 | 選択肢 | 生成されるもの |
@@ -110,10 +112,9 @@ npm run build
 npm exec -- riebeckite publish run --execute
 ```
 
-サイトを生成したら、依存関係をインストールして設定を確認します。
+サイトを生成したら、設定を確認します。対話式では既定で依存関係がインストールされます。インストールの質問で `No` を選んだ場合は、先に `npm install` を実行してください。
 
 ```sh id="gzg1my"
-npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```

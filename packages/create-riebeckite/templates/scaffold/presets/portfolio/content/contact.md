@@ -1,5 +1,6 @@
 ---
 title: Contact
+publish: true
 ---
 
 # Contact

@@ -36,7 +36,7 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 | [Quick Start](./quick-start.md) | Create, run, edit Markdown, preview, and build in one short path |
 | [Installation](./installation.md) | Check requirements and understand the generated files |
 | [First Content](./first-content.md) | Write or edit your first published Markdown page |
-| [Presets](./presets.md) | Compare `starter`, `minimal`, `showcase`, and `empty` |
+| [Presets](./presets.md) | Compare presets such as `starter`, `blog`, `docs`, and `minimal` |
 | [Deployment](./deployment.md) | Publish locally, then automate with GitHub Actions if needed |
 | [Use Your Obsidian Vault](./obsidian-vault.md) | Connect an existing Obsidian Vault and publish selected notes |
 | [Add Your First Plugin](./first-plugin.md) | Install a plugin and see `==highlight==` syntax work |
@@ -48,13 +48,15 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 npx create-riebeckite
 ```
 
-The CLI asks for the project name, preset, content source, and deployment. Keep `starter`, `This project`, and `Not now` to start locally, then:
+The CLI asks for the project name, preset, content source, deployment, and whether to install dependencies. The default project folder is `my-riebeckite-site`. Keep `starter`, `This project`, `Not now`, and the default install answer (`Yes`) to start locally, then:
 
 ```sh
-cd my-site
-npm install
+cd my-riebeckite-site
+npm exec riebeckite check
 npm exec riebeckite dev
 ```
+
+If you answered `No` to the install prompt, run `npm install` in the folder first.
 
 Open the local URL printed in the terminal. Edit Markdown in `content/`, make sure published pages have `publish: true`, then build:
 
@@ -64,7 +66,7 @@ npm exec riebeckite build
 
 To publish the build output as-is, install Wrangler and run `npm exec -- riebeckite publish run --execute`; login and `wrangler.jsonc` generation are automatic. See [Deployment](./deployment.md) for details.
 
-If you are unsure which preset to choose, use the `starter` preset.
+If you are unsure which preset to choose, use the `starter` preset. For a publication with posts, tags, and series, choose `blog` at the preset prompt, or run `npx create-riebeckite my-blog --preset blog`.
 
 > **Developing Riebeckite itself?** Start with [Framework / Development](../framework/development.md) instead.
 

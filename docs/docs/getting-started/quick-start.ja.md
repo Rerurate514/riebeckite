@@ -23,31 +23,41 @@ npx create-riebeckite
 
 プロンプトに次のように答えます（推奨される回答）。
 
-- **Project name**：既定値の `my-site` のまま Enter を押します
-- **Preset**：迷ったら `starter` のまま。[Presets](./presets.ja.md) を参照
+- **Project name**：既定値の `my-riebeckite-site` のまま Enter を押します
+- **Preset**：迷ったら `starter` のまま。記事、タグ、シリーズを公開するなら `blog` を選びます。[Presets](./presets.ja.md) を参照
 - **Content source**：`This project` を選んで Markdown をサイトのフォルダ内に残します
 - **Deployment**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.ja.md) を参照
+- **Install dependencies now?**：既定値の `Yes` のまま Enter を押すと、生成されたサイトの package もインストールされます
 
-成功すると `Created a starter Riebeckite site in my-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。既定値の `Not now` では、外部への公開も依存関係のインストールも行いません。フォルダへ移動して package を入れます。
+成功すると `Created a starter Riebeckite site in my-riebeckite-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。インストールの質問に既定値の `Yes` で答えた場合、package はインストール済みです。フォルダへ移動します。
 
 ```bash
-cd my-site
-npm install
+cd my-riebeckite-site
 ```
 
-`npm install` は、生成されたサイトの package を入れます。生成されるサイトは、まずは1つのリポジトリとして考えれば十分です。`@riebeckite/*` パッケージは npm から入るので、これだけで足ります。
+`No` を選んだ場合は、先にそのフォルダで `npm install` を実行してください。`npm install` は、生成されたサイトの package を入れます。生成されるサイトは、まずは1つのリポジトリとして考えれば十分です。`@riebeckite/*` パッケージは npm から入るので、これだけで足ります。
 
 最初に触ることが多いファイルは、本文を書く `content/index.md` と、`site.title`、`site.baseUrl`、`content.directory` を設定する `riebeckite.config.ts` です。
 
 ## 2. 開発を開始する
 
+まず、生成された設定を検証します。
+
+```bash
+npm exec riebeckite check
+```
+
+次に、開発サーバーを起動します。
+
 ```bash
 npm exec riebeckite dev
 ```
 
-生成されたアプリによって開発サーバーが起動します。 **ターミナルに表示されたローカル URL をブラウザで開いてください**。 Riebeckite のサイトが表示されれば成功です。
+生成されたアプリによって開発サーバーが起動します。 **ターミナルに表示されたローカル URL をブラウザで開いてください**。 Riebeckite のサイトが表示されれば成功です。開発サーバーは `content/` を読み込み、`dist/` は作りません。ビルド出力は `build` の実行後にだけ作られます。起動しない場合は `npm exec riebeckite doctor` を実行してください。
 
 編集中はこのコマンドを起動したままにします。止めるときは `Ctrl + C` を押します。
+
+Windows では、関連する編集をまとめて保存し、サーバーの再起動が終わってから再読み込みしてください。複数のファイルを続けて保存すると Vite のサーバーが何度も再起動し、一時的に `transport was disconnected` と表示されることがあります。再起動後に再読み込みすれば解消します。
 
 ## 3. 最初のページを編集
 
@@ -104,7 +114,7 @@ push のたびに自動デプロイしたい場合は [Deployment](./deployment.
 ## 次に読むページ
 
 - [Deployment](./deployment.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
-- [Presets](./presets.ja.md) - `starter`、`minimal`、`showcase`、`empty` を比較する
+- [Presets](./presets.ja.md) - `starter`、`blog`、`docs`、`minimal`、`showcase`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説
 - [サイトのアイコンとロゴ →](../guides/branding.ja.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える

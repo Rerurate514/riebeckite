@@ -1,5 +1,6 @@
 ---
 title: Welcome to {{title}}
+publish: true
 tags: [garden, welcome]
 ---
 

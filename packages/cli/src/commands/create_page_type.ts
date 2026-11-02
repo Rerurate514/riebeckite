@@ -12,6 +12,7 @@ import {
 } from "@clack/prompts";
 import { listLocalPlugins } from "../local_plugins.js";
 import {
+  normalizePageTypePath,
   renderPageTypeModule,
   renderPageTypeTest,
 } from "../page_type_generator/templates.js";
@@ -219,9 +220,12 @@ async function addPageTypeToPlugin(
       `Could not find Plugin entry point: ${indexPath}. Create the Plugin first with \`riebeckite create plugin\`.`,
     );
   });
+  const pagePath = normalizePageTypePath(options.path);
   if (
     source.includes(`"${options.path}"`) ||
-    (await pluginUsesPath(pluginRoot, options.path))
+    source.includes(`"${pagePath}"`) ||
+    (await pluginUsesPath(pluginRoot, options.path)) ||
+    (await pluginUsesPath(pluginRoot, pagePath))
   )
     throw new Error(
       `PageType path already exists in this Plugin: ${options.path}`,

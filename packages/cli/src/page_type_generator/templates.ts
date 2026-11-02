@@ -1,6 +1,6 @@
 export function renderPageTypeModule(name: string, path: string): string {
   const identifier = toIdentifier(name);
-  const pagePath = normalizePagePath(path);
+  const pagePath = normalizePageTypePath(path);
   return `import { escapeHtml, escapeHtmlAttribute, type PluginPageType } from "@riebeckite/core";
 
 export const ${identifier}PageType: PluginPageType = {
@@ -25,7 +25,7 @@ export const ${identifier}PageType: PluginPageType = {
 
 export function renderPageTypeTest(name: string, path: string): string {
   const identifier = toIdentifier(name);
-  const pagePath = normalizePagePath(path);
+  const pagePath = normalizePageTypePath(path);
   return `import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ${identifier}PageType } from "../page_types/${name}.js";
@@ -48,7 +48,7 @@ function toIdentifier(value: string): string {
   return `${identifier.slice(0, 1).toUpperCase()}${identifier.slice(1)}`;
 }
 
-function normalizePagePath(value: string): string {
+export function normalizePageTypePath(value: string): string {
   const path = `/${value.split("/").filter(Boolean).join("/")}`;
   return path === "/" ? path : path.replace(/\/$/, "");
 }

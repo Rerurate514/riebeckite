@@ -156,13 +156,21 @@ export async function collectAssetInspection(
 ): Promise<AssetInspection> {
   const config = await loadProjectConfig(project);
   const source = resolveProjectContentSource(config, project);
-  const manifest = await new ContentManager(source, [], {
-    config,
-  }).getManifest();
+  const manifest = await readOnlyContentManager(source, config).getManifest();
   return {
     source: contentSourceName(config),
     report: await inspectContentAssets(manifest, source),
   };
+}
+
+function readOnlyContentManager(
+  source: ContentSource,
+  config: ResolvedRiebeckiteConfig,
+): ContentManager {
+  return new ContentManager(source, [], {
+    config: { ...config, cache: { ...config.cache, enabled: false } },
+    commitBuildState: false,
+  });
 }
 
 async function inspectPaths(
@@ -170,9 +178,10 @@ async function inspectPaths(
   source: ContentSource,
   paths: readonly string[],
 ): Promise<ContentInspection["paths"]> {
-  const locations = await new ContentManager(source, [], {
+  const locations = await readOnlyContentManager(
+    source,
     config,
-  }).getContentLocations();
+  ).getContentLocations();
   return paths.map((path) => {
     if (!path.endsWith(".md")) return { path };
     const location = locations.get(path.replace(/\.md$/, ""));
@@ -190,9 +199,10 @@ export async function collectGraphInspection(
 ): Promise<GraphInspection> {
   const config = await loadProjectConfig(project);
   const source = resolveProjectContentSource(config, project);
-  const locations = await new ContentManager(source, [], {
+  const locations = await readOnlyContentManager(
+    source,
     config,
-  }).getContentLocations();
+  ).getContentLocations();
   const graph = await readOnlyContentGraph(source, locations);
   const nodes = graph.nodes();
   const mostLinked = nodes

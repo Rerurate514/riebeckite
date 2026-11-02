@@ -69,7 +69,7 @@ export async function computeBundleFingerprint(
   for (const [name, value] of Object.entries(process.env)
     .filter(([name]) => name === "NODE_ENV" || name.startsWith("VITE_"))
     .sort(([left], [right]) => left.localeCompare(right))) {
-    hash.update(name).update("\0").update(value).update("\0");
+    hash.update(name).update("\0").update(value ?? "").update("\0");
   }
   return hash.digest("hex");
 }

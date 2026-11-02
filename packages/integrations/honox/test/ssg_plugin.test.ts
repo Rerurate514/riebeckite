@@ -31,7 +31,9 @@ test("SSG runner renders without Vite lifecycle state", async () => {
     app,
     outDir: "/virtual-output",
     incremental: false,
-    write: async (file, content) => output.set(file, content),
+    write: async (file, content) => {
+      output.set(file, content);
+    },
   });
 
   assert.equal(result.success, true);

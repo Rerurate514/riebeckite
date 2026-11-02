@@ -7,6 +7,8 @@ import {
   type CliCommandContext,
   type CliCommandDefinition,
   type CliCommandInput,
+  type CliArgumentValue,
+  type CliOptionValue,
   createCliCommandRegistry,
   resolveConfig,
 } from "@riebeckite/core";
@@ -71,8 +73,8 @@ function command(id: string): CliCommandDefinition {
 
 function input(
   definition: CliCommandDefinition,
-  options: Record<string, unknown> = {},
-  args: Record<string, unknown> = {},
+  options: Record<string, CliOptionValue | undefined> = {},
+  args: Record<string, CliArgumentValue | undefined> = {},
 ): CliCommandInput {
   return {
     command: definition,
@@ -176,11 +178,12 @@ test("rejects unknown and missing presets", async () => {
     const ctx = context(root);
     const applyCommand = command("apply");
     await assert.rejects(
-      () =>
-        applyCommand.handler(
+      async () => {
+        await applyCommand.handler(
           ctx,
           input(applyCommand, { preset: ["unknown"], apply: true }),
-        ),
+        );
+      },
       /Unknown frontmatter preset/,
     );
 

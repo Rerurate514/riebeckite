@@ -37,11 +37,7 @@ function getPackageGraph() {
   for (const directory of PACKAGE_DIRECTORIES) {
     const manifest = manifests.get(directory);
     const dependencies = new Set();
-    for (const section of [
-      "dependencies",
-      "devDependencies",
-      "peerDependencies",
-    ]) {
+    for (const section of ["dependencies", "optionalDependencies"]) {
       for (const dependencyName of Object.keys(manifest[section] ?? {})) {
         const dependencyDirectory = nameToDirectory.get(dependencyName);
         if (dependencyDirectory && dependencyDirectory !== directory) {

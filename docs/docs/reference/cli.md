@@ -124,12 +124,14 @@ The goal is not merely to say "it failed" but to make clear what failed and wher
 
 Broken WikiLinks, missing referenced assets, publish-boundary warnings, and other content-integrity findings come from the build path or from plugins such as `@riebeckite/plugin-diagnostics`. Use `inspect content --list` and `inspect graph` to confirm what Riebeckite loaded, then run `build` or the relevant plugin diagnostics for rendered-content problems.
 
+These examples use npm. When a command has its own options, put `--` before the command name so npm passes them through, as in `npm exec -- riebeckite build --full`. Without options, `npm exec riebeckite build` is enough.
+
 ```sh
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect plugins
-pnpm exec riebeckite build
-pnpm exec -- riebeckite publish run --execute
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect plugins
+npm exec riebeckite build
+npm exec -- riebeckite publish run --execute
 ```
 
 For a new site, the flow looks like this:

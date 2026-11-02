@@ -47,7 +47,7 @@ Content Repository の分離
    `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれます。依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場でビルドとデプロイまで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
 
    ```bash
-   npm run build
+   npm exec riebeckite build
    npm exec -- riebeckite publish run --execute
    ```
 

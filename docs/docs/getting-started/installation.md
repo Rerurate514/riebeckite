@@ -69,6 +69,8 @@ npm install
 
 The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute. If npm reports vulnerabilities, review them with `npm audit`; many come from transitive build dependencies. Avoid `npm audit fix --force` unless you have checked the version changes it would make.
 
+These instructions use npm. If you use pnpm 10 or later, `pnpm install` can report ignored build scripts. Run `pnpm approve-builds`, review the packages, and approve the ones you trust before starting `dev`.
+
 ## What gets generated
 
 | File or folder | Role |

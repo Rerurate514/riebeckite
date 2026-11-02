@@ -124,12 +124,14 @@ Caused by:
 
 壊れた [[glossary/wikilink|WikiLink]]、参照先が見つからないアセット、[[glossary/publication-boundary|公開境界]]の警告など、コンテンツの整合性に関する指摘は、ビルド経路または `@riebeckite/plugin-diagnostics` などのプラグインから得られます。Riebeckite が何を読み込んだかを確認するには `inspect content --list` と `inspect graph` を使い、描画後のコンテンツに関する問題には `build` または該当するプラグインの診断を実行してください。
 
+この例では npm を使います。コマンド自身のオプションを渡す場合は、`npm exec -- riebeckite build --full` のようにコマンド名の前に `--` を置き、npm がオプションを消費しないようにします。オプションがない場合は `npm exec riebeckite build` で足ります。
+
 ```sh
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect plugins
-pnpm exec riebeckite build
-pnpm exec -- riebeckite publish run --execute
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect plugins
+npm exec riebeckite build
+npm exec -- riebeckite publish run --execute
 ```
 
 新しいサイトでは、次のような流れになります。

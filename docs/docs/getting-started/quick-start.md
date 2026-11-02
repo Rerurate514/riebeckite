@@ -96,7 +96,7 @@ A successful build writes the publishable static output to `dist/`. Deployment m
 A site generated with `Cloudflare Workers` already includes the Wrangler dependency and `wrangler.jsonc`, so no extra setup is needed. Build and publish:
 
 ```sh
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 

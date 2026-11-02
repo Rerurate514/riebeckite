@@ -47,7 +47,7 @@ This is the fastest path to a public site.
    Choosing `Cloudflare Workers` includes the Wrangler dependency and `wrangler.jsonc` in the generated site, then asks `Deploy now?` after installing dependencies. `Yes` builds and deploys right away; `Later` finishes the scaffold and you run these commands afterwards:
 
    ```sh
-   npm run build
+   npm exec riebeckite build
    npm exec -- riebeckite publish run --execute
    ```
 

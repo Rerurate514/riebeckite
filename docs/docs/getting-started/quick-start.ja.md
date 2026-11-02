@@ -96,7 +96,7 @@ npm exec riebeckite build
 生成時に `Cloudflare Workers` を選んだサイトには Wrangler の依存と `wrangler.jsonc` がすでに含まれているため、追加の準備は要りません。ビルドして公開します。
 
 ```bash
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 

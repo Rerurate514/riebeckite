@@ -12,8 +12,8 @@ sidebar:
 Upgrade Lab は更新前の check-only 検証です。プロジェクト、lockfile、`node_modules`、`dist`、`.riebeckite` は更新しません。プロジェクトを一時ディレクトリへ二つ複製し、ライフサイクルスクリプトと pnpmfile を無効にして、現行の依存関係と指定した Riebeckite バージョンを比較します。
 
 ```sh
-pnpm exec riebeckite upgrade --check --to 0.0.33
-pnpm exec riebeckite upgrade --check --to latest --json
+npm exec -- riebeckite upgrade --check --to 0.0.33
+npm exec -- riebeckite upgrade --check --to latest --json
 ```
 
 レポートでは依存関係・ peerDependencies ・ Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、本番のフルビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
@@ -108,7 +108,7 @@ npx create-riebeckite
 `Deploy now?` で `Yes` を選ぶと、雛形の生成直後にビルドと `riebeckite publish run --execute` が実行されます。`Later` を選ぶとサイトの生成だけを行い、次のコマンドで公開します。
 
 ```sh
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 

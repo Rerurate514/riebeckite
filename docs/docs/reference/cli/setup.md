@@ -15,8 +15,8 @@ directory, installs with lifecycle scripts and pnpmfiles disabled, then compares
 current dependency set with the requested Riebeckite version.
 
 ```sh
-pnpm exec riebeckite upgrade --check --to 0.0.33
-pnpm exec riebeckite upgrade --check --to latest --json
+npm exec -- riebeckite upgrade --check --to 0.0.33
+npm exec -- riebeckite upgrade --check --to latest --json
 ```
 
 The report compares dependency/peer/Node-engine resolution, TypeScript checking when
@@ -123,7 +123,7 @@ In interactive mode it asks for the content source and then for the deployment:
 Choosing `Yes` at `Deploy now?` runs the build and `riebeckite publish run --execute` right after scaffolding. Choosing `Later` only generates the site; publish it with:
 
 ```sh
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 

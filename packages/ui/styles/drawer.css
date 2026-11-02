@@ -42,7 +42,7 @@
 
   .rb-drawer__backdrop {
     position: fixed;
-    z-index: 29;
+    z-index: 60;
     inset: 0;
     display: none;
     border: 0;
@@ -52,7 +52,7 @@
   .rb-drawer__panel {
     box-sizing: border-box;
     position: fixed;
-    z-index: 30;
+    z-index: 61;
     inset: var(--rb-drawer-inset-block-start, 0) 0 0 auto;
     display: none;
     width: min(var(--rb-drawer-width, 22rem), calc(100vw - 2rem));
@@ -61,8 +61,9 @@
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
     padding: var(--rb-drawer-padding, var(--rb-space-3, 1.5rem));
-    border: 1px solid var(--rb-color-border);
-    background: var(--rb-drawer-background, var(--rb-color-surface));
+    border: 1px solid var(--rb-color-border, CanvasText);
+    background: var(--rb-drawer-background, var(--rb-color-surface, Canvas));
+    color: var(--rb-color-ink, CanvasText);
   }
 
   .rb-drawer[data-rb-drawer-open="true"] > .rb-drawer__panel,

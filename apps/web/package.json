@@ -51,6 +51,7 @@
     "@riebeckite/plugin-graphviz": "workspace:*",
     "@riebeckite/plugin-highlight": "workspace:*",
     "@riebeckite/plugin-hover-preview": "workspace:*",
+    "@riebeckite/plugin-image-compare": "workspace:*",
     "@riebeckite/plugin-hard-breaks": "workspace:*",
     "@riebeckite/plugin-kanban": "workspace:*",
     "@riebeckite/plugin-l10n": "workspace:*",

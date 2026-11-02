@@ -24,5 +24,9 @@ test("honours Obsidian page and height fragments", async () => {
 
   assert.ok(typeof html === "string");
   assert.match(html, /data="\/assets\/attachments\/doc\.pdf#page=3"/);
+  assert.match(
+    html,
+    /class="rr-pdf__open" href="\/assets\/attachments\/doc\.pdf#page=3"/,
+  );
   assert.match(html, /--rr-pdf-height: 400px/);
 });

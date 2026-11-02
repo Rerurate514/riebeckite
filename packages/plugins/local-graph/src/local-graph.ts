@@ -24,4 +24,5 @@ export type LocalGraphData = {
 
 export type LocalGraphViewProps = {
   graph: LocalGraphData;
+  showExplorerLink?: boolean;
 };

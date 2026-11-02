@@ -53,7 +53,9 @@ The following source is rendered on this page with the browser-native PDF viewer
 ![[pdf-example.pdf]]
 
 The `<object>` uses the browser's built-in PDF viewer; its nested download link
-is the graceful fallback for clients without PDF support. A visible download
+is the graceful fallback for clients without PDF support. On narrow screens,
+where browsers commonly refuse to render PDFs inline, the embed swaps the
+viewer for an open link instead. A visible download
 link and the format badge, file name, and size are available below the viewer.
 Size is read from `config.content.directory` and omitted when the file cannot
 be read. The embed carries the stable `rr-pdf` root hook that themes may target.

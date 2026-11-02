@@ -149,8 +149,8 @@ export default jsxRenderer(async ({ children }, c) => {
             <>
               <SiteNavigationHeader>
                 <div data-spa-region="site-header" class="site-header__region">
-                  <SearchBar class="rr-search-bar--header" />
                   <ColorModeToggle />
+                  <SearchBar class="rr-search-bar--header" />
                   <DrawerTrigger
                     controls="site-navigation"
                     label="Menu"

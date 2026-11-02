@@ -5,24 +5,98 @@
 }
 
 .rr-image-compare__static {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 0.5rem;
+  grid-template-areas: "compare";
+  overflow: hidden;
+  border: 1px solid var(--rb-color-border, #d0d0d0);
+  background: var(--rb-color-surface, transparent);
+}
+
+.rr-image-compare__static::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--rb-color-paper, #fff);
+  box-shadow: 0 0 0 1px var(--rb-color-border-strong, #9a9a9a);
+  content: "";
+  pointer-events: none;
+}
+
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__static::after {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: auto;
+  height: 1px;
 }
 
 .rr-image-compare__static-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  color: var(--rb-color-muted, #69645c);
-  font-size: 0.8125rem;
+  position: relative;
+  display: block;
+  grid-area: compare;
 }
 
 .rr-image-compare__static-item img {
   display: block;
   width: 100%;
-  height: auto;
-  border: 1px solid var(--rb-color-border, #d0d0d0);
+  height: 100%;
+  object-fit: cover;
+}
+
+.rr-image-compare__static-item:first-child img {
+  clip-path: inset(0 50% 0 0);
+}
+
+.rr-image-compare__static-item:last-child img {
+  clip-path: inset(0 0 0 50%);
+}
+
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__static-item:first-child
+  img {
+  clip-path: inset(0 0 50% 0);
+}
+
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__static-item:last-child
+  img {
+  clip-path: inset(50% 0 0 0);
+}
+
+.rr-image-compare__static-item span {
+  position: absolute;
+  bottom: 0.5rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.125rem;
+  background: var(--rb-color-surface, #fff);
+  color: var(--rb-color-muted, #69645c);
+  font-size: 0.75rem;
+}
+
+.rr-image-compare__static-item:first-child span {
+  left: 0.5rem;
+}
+
+.rr-image-compare__static-item:last-child span {
+  right: 0.5rem;
+}
+
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__static-item:first-child
+  span {
+  bottom: auto;
+  top: 0.5rem;
+}
+
+.rr-image-compare[data-orientation="vertical"]
+  .rr-image-compare__static-item:last-child
+  span {
+  bottom: 0.5rem;
 }
 
 .rr-image-compare__stage {

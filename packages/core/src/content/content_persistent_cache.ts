@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { VFile } from "vfile";
 import { matter } from "vfile-matter";
-import { markdownSanitizeFingerprint } from "../markdown_sanitize_schema.js";
+import { computeMarkdownSanitizeFingerprint } from "../markdown_sanitize_schema.js";
 import type { Logger, Tracer } from "../observability.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
 import type { ContentPublicLocation } from "../types/content_manifest.js";
@@ -301,7 +301,7 @@ function normalizeFrontmatterForCache(
 export function computePipelineFingerprint(
   config: ResolvedRiebeckiteConfig,
   contentScopeFingerprint?: string,
-  sanitizeFingerprint: string = markdownSanitizeFingerprint,
+  sanitizeFingerprint: string = computeMarkdownSanitizeFingerprint(),
 ): string {
   const plugins = config.plugins;
 

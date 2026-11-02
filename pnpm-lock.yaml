@@ -213,6 +213,9 @@ importers:
       '@riebeckite/plugin-hover-preview':
         specifier: workspace:*
         version: link:../../packages/plugins/hover-preview
+      '@riebeckite/plugin-image-compare':
+        specifier: workspace:*
+        version: link:../../packages/plugins/image-compare
       '@riebeckite/plugin-kanban':
         specifier: workspace:*
         version: link:../../packages/plugins/kanban

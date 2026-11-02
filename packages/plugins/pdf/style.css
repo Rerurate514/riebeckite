@@ -19,6 +19,25 @@
   font-weight: 700;
 }
 
+.rr-pdf__open {
+  display: none;
+  width: fit-content;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--rb-color-border, currentColor);
+  border-radius: 0.25rem;
+  font-weight: 700;
+}
+
+@media (max-width: 48rem) {
+  .rr-pdf__viewer {
+    display: none;
+  }
+
+  .rr-pdf__open {
+    display: inline-flex;
+  }
+}
+
 .rr-pdf__meta {
   display: flex;
   flex-wrap: wrap;

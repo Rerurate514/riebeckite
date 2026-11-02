@@ -32,6 +32,7 @@ Getting a first site running goes: **Quick Start → Installation → First Cont
 | Change the look of my site | [Themes](./docs/themes/README.ja.md) |
 | Keep the site usable for more people | [Accessibility](./docs/accessibility.ja.md) |
 | Understand the trust model | [Security model](./docs/security.ja.md) |
+| Read what changed in each release | [Release Notes](./docs/releases.ja.md) |
 | Look up configuration, CLI, or an API | [Reference](./docs/reference/README.ja.md) |
 | Understand how Riebeckite works inside | [Framework](./docs/framework/README.ja.md) |
 | Contribute to Riebeckite itself | [Framework / Development](./docs/framework/development.ja.md) |

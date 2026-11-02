@@ -69,6 +69,8 @@ Start from the page closest to your goal.
 
 | Goal | Page |
 | --- | --- |
+| Understand why Riebeckite is designed this way | [Design Philosophy](./docs/philosophy.md) |
+| Read what changed in each release | [Release Notes](./docs/releases.md) |
 | Use Riebeckite for the first time | [Quick Start](./docs/getting-started/quick-start.md) |
 | Check how to install | [Installation](./docs/getting-started/installation.md) |
 | Write your first content | [First Content](./docs/getting-started/first-content.md) |
@@ -102,6 +104,7 @@ Riebeckite's documentation is split by purpose.
 flowchart TD
     Docs["Riebeckite Docs"]
 
+    Docs --> Philosophy["Design Philosophy"]
     Docs --> Getting["Getting Started"]
     Docs --> Guides["Guides"]
     Docs --> Plugins["Plugins"]
@@ -111,6 +114,10 @@ flowchart TD
 
     Framework --> Development["Development"]
 ```
+
+### Design Philosophy
+
+Explains the principles behind Riebeckite's boundaries, the trade-offs between them, and what the project does not intend to own. Read it before changing the framework, or when a design decision is unclear.
 
 ### Getting Started
 

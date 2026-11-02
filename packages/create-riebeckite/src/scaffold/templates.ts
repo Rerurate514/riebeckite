@@ -128,7 +128,7 @@ function packageJson(
     "@riebeckite/honox": RIEBECKITE_VERSION,
     "@riebeckite/ui": RIEBECKITE_VERSION,
     hono: "^4.12.25",
-    honox: "0.1.56",
+    honox: "0.1.62",
   };
   for (const plugin of preset.plugins) {
     dependencies[plugin.package] = RIEBECKITE_VERSION;

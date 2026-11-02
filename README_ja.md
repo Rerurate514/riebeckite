@@ -117,12 +117,15 @@ Plugin は `plugins` 配列に追加する関数、Theme は `theme` に渡す�
 ## ドキュメントとコミュニティ
 
 - [ドキュメント](https://riebeckite.dev/ja/docs/) — ガイド、リファレンス、フレームワークの内部
+- [設計思想](https://riebeckite.dev/ja/docs/philosophy) — Riebeckite の設計方針
+- [リリースノート](https://riebeckite.dev/ja/docs/releases)と[変更履歴](./CHANGELOG.md) — バージョンごとの変更点
 - [Getting Started](https://riebeckite.dev/ja/docs/getting-started/) — 空のフォルダから公開まで
 - [Plugin カタログ](https://riebeckite.dev/ja/docs/plugins/)と[テーマ](https://riebeckite.dev/ja/docs/themes/)
 - [設定](https://riebeckite.dev/ja/docs/reference/configuration)と [CLI リファレンス](https://riebeckite.dev/ja/docs/reference/cli)
 - [GitHub Issues](https://github.com/Rerurate514/riebeckite/issues) — 不具合報告と機能要望
 - [GitHub Discussions](https://github.com/Rerurate514/riebeckite/discussions) — 質問とアイデア
 - [セキュリティポリシー](./SECURITY.md)
+- [コントリビュート](./CONTRIBUTING.ja.md)
 
 大きな変更を始める前に、Issue か Discussion で相談してください。
 

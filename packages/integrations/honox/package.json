@@ -41,7 +41,6 @@
   "dependencies": {
     "@babel/parser": "^7.29.3",
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/honox-inspector": "workspace:*",
     "@riebeckite/node": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",
@@ -49,7 +48,7 @@
     "@riebeckite/ui": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:",
-    "honox": "0.1.56",
+    "honox": "0.1.62",
     "vite": "catalog:"
   },
   "devDependencies": {
@@ -68,7 +67,7 @@
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
-    "test": "node --import tsx --test --test-concurrency=1 \"test/*.test.ts\"",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {

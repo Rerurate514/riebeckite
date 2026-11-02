@@ -82,9 +82,16 @@ function createHarness({
   hasStagedChanges = true,
   interactive = true,
   propagation = 0,
+  validateFails = false,
+  finalizeFails = false,
 } = {}) {
   const state = {
     version: VERSION,
+    validateFails,
+    finalizeFails,
+    changelogValidated: false,
+    finalized: null,
+    events: [],
     published: new Set(published),
     registry: new Set(published),
     publishedAfterInitialInspection: new Set(publishedAfterInitialInspection),
@@ -286,6 +293,29 @@ function createHarness({
 
   const runStep = (label, command, args) => {
     state.steps.push({ label, command, args });
+    state.events.push(`step:${label}`);
+  };
+
+  const validateChanges = () => {
+    state.changelogValidated = true;
+    state.events.push("validate");
+
+    if (state.validateFails) {
+      throw new ReleaseError("invalid change entry");
+    }
+
+    return { unreleased: [], releases: [] };
+  };
+
+  const finalizeChanges = (version, date) => {
+    state.events.push("finalize");
+    state.finalized = { version, date };
+
+    if (state.finalizeFails) {
+      throw new ReleaseError("changelog finalization failed");
+    }
+
+    return { version, date, moved: 0, entryCount: 0 };
   };
 
   const sleep = async (milliseconds) => {
@@ -311,6 +341,9 @@ function createHarness({
       isInteractive: () => state.interactive,
       sleep,
       now: () => state.now,
+      today: () => "2026-11-02",
+      validateChanges,
+      finalizeChanges,
     },
   };
 }
@@ -324,6 +357,9 @@ async function withHarness(harness, run) {
     isInteractive: runtime.isInteractive,
     sleep: runtime.sleep,
     now: runtime.now,
+    today: runtime.today,
+    validateChanges: runtime.validateChanges,
+    finalizeChanges: runtime.finalizeChanges,
   };
 
   Object.assign(runtime, harness.runtime);
@@ -417,6 +453,66 @@ test("fresh release publishes directly, verifies every package, then commits and
   assert.ok(output.some((line) => line.includes("RELEASE COMPLETE")));
 });
 
+test("change entries are validated before publishing and finalized after verification", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  const validateIndex = harness.state.events.indexOf("validate");
+  const finalizeIndex = harness.state.events.indexOf("finalize");
+  const firstPublishIndex = harness.state.events.indexOf("step:git commit");
+
+  assert.ok(validateIndex >= 0, "change entries must be validated");
+  assert.ok(finalizeIndex >= 0, "change entries must be finalized");
+  assert.ok(
+    validateIndex < harness.state.events.indexOf("step:version bump"),
+    "validation happens before the release steps",
+  );
+  assert.ok(
+    finalizeIndex < firstPublishIndex,
+    "finalization happens before the release commit",
+  );
+  assert.deepEqual(harness.state.finalized, {
+    version: VERSION,
+    date: "2026-11-02",
+  });
+});
+
+test("dry-run validates change entries but does not finalize them", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION, "--dry-run"]));
+
+  assert.equal(harness.state.changelogValidated, true);
+  assert.equal(harness.state.finalized, null);
+});
+
+test("invalid change entries stop the release before publishing", async () => {
+  const harness = createHarness({ validateFails: true });
+
+  await assert.rejects(
+    () => withHarness(harness, () => runRelease([VERSION])),
+    ReleaseError,
+  );
+
+  assert.equal(publishCalls(harness.state).length, 0);
+  assert.equal(interactivePublishCalls(harness.state).length, 0);
+  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
+test("changelog finalization failure prevents the commit and tag", async () => {
+  const harness = createHarness({ finalizeFails: true });
+
+  await assert.rejects(
+    () => withHarness(harness, () => runRelease([VERSION])),
+    ReleaseError,
+  );
+
+  assert.equal(harness.state.published.size, ALL_PACKAGES.length);
+  assert.equal(stepLabels(harness.state).includes("git commit"), false);
+  assert.equal(stepLabels(harness.state).includes("git tag"), false);
+});
+
 test("release regenerates the scaffold golden snapshots before committing", async () => {
   const harness = createHarness();
 
@@ -455,6 +551,33 @@ test("release regenerates the scaffold golden snapshots before committing", asyn
     commitStep.args.includes(goldenDirectory),
     "git commit must include the scaffold golden directory",
   );
+});
+
+test("the release commit includes the changelog, release notes, and change entries", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  const addStep = harness.state.steps.find((step) => step.label === "git add");
+  const commitStep = harness.state.steps.find(
+    (step) => step.label === "git commit",
+  );
+
+  for (const relativePath of [
+    "CHANGELOG.md",
+    "changes",
+    "docs/docs/releases.md",
+    "docs/docs/releases.ja.md",
+  ]) {
+    assert.ok(
+      addStep.args.includes(relativePath),
+      `git add must include ${relativePath}`,
+    );
+    assert.ok(
+      commitStep.args.includes(relativePath),
+      `git commit must include ${relativePath}`,
+    );
+  }
 });
 
 test("dry-run does not regenerate or stage the scaffold golden snapshots", async () => {

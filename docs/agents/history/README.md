@@ -12,4 +12,4 @@ This directory preserves records that no longer describe current behavior but re
 |`notes/`|Personal image notes and an empty backlog table|repository root|
 |`architecture/`|Asset pipeline phase 2-3 verification report|`docs/architecture/`|
 
-Treat every file as read-only context. Do not update it to match new behavior; add a new report instead.
+Treat every file as read-only context. Do not update it to match new behavior; add a new report instead. New design decisions belong in [`../adr/`](../adr/README.md), not here.

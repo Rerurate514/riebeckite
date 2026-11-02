@@ -17,7 +17,12 @@ async function workspacePluginPackages(): Promise<ReadonlySet<string>> {
   const entries = await fs.readdir(pluginsDirectory, { withFileTypes: true });
   const names = await Promise.all(
     entries
-      .filter((entry) => entry.isDirectory())
+      .filter(
+        (entry) =>
+          entry.isDirectory() &&
+          entry.name !== "node_modules" &&
+          !entry.name.startsWith("."),
+      )
       .map(async (entry) => {
         const manifest = JSON.parse(
           await fs.readFile(

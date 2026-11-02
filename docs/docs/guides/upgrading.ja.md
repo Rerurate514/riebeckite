@@ -9,7 +9,7 @@ title: Riebeckite をアップグレードする
 1. インストール済みのパッケージを確認する
 2. サイトが利用する Riebeckite のパッケージをまとめて更新する
 3. 検証とビルドを実行する
-4. 対象バージョンの[リリースノート](https://github.com/Rerurate514/riebeckite/releases)を確認する
+4. 対象バージョンの[リリースノート](https://riebeckite.dev/ja/docs/releases)または [GitHub Releases](https://github.com/Rerurate514/riebeckite/releases)を確認する
 
 ```sh
 npm ls @riebeckite/core @riebeckite/cli @riebeckite/honox
@@ -24,7 +24,7 @@ npm exec riebeckite build
 
 現在の Riebeckite は、非推奨 API に対する実行時の警告や互換レイヤーを標準では提供していません。破壊的変更は、バージョン、変更履歴、必要に応じて移行ガイドで案内します。この方針は、将来のリリースで非推奨期間を設けることを妨げるものではありません。
 
-1.0 より前は、マイナーリリースに破壊的変更が含まれることがあります。1.0 以降はセマンティックバージョニングに従います。マイナーまたはメジャーバージョンをまたいで更新するときは、[リリースノート](https://github.com/Rerurate514/riebeckite/releases)を確認してください。
+1.0 より前は、マイナーリリースに破壊的変更が含まれることがあります。1.0 以降はセマンティックバージョニングに従います。マイナーまたはメジャーバージョンをまたいで更新するときは、[リリースノート](https://riebeckite.dev/ja/docs/releases)を確認してください。
 
 ## 更新に失敗したとき
 

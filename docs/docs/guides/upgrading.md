@@ -9,7 +9,7 @@ Use this guide when updating an existing site to a newer Riebeckite version.
 1. Check the installed packages.
 2. Update the Riebeckite packages used by the site together.
 3. Run validation and build the site.
-4. Review the [release notes](https://github.com/Rerurate514/riebeckite/releases) for the target version.
+4. Review the [release notes](https://riebeckite.dev/docs/releases) or [GitHub Releases](https://github.com/Rerurate514/riebeckite/releases) for the target version.
 
 ```sh
 npm ls @riebeckite/core @riebeckite/cli @riebeckite/honox
@@ -30,7 +30,7 @@ versions, change history, and migration guides when needed. This policy does
 not prevent a future release from introducing a deprecation period.
 
 Before 1.0, minor releases can contain breaking changes. From 1.0 onward,
-breaking changes follow semantic versioning. Read the [release notes](https://github.com/Rerurate514/riebeckite/releases) before
+breaking changes follow semantic versioning. Read the [release notes](https://riebeckite.dev/docs/releases) before
 upgrading across a minor or major version.
 
 ## When an upgrade fails

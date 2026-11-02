@@ -37,7 +37,11 @@ function getPackageGraph() {
   for (const directory of PACKAGE_DIRECTORIES) {
     const manifest = manifests.get(directory);
     const dependencies = new Set();
-    for (const section of ["dependencies", "optionalDependencies"]) {
+    for (const section of [
+      "dependencies",
+      "devDependencies",
+      "peerDependencies",
+    ]) {
       for (const dependencyName of Object.keys(manifest[section] ?? {})) {
         const dependencyDirectory = nameToDirectory.get(dependencyName);
         if (dependencyDirectory && dependencyDirectory !== directory) {
@@ -87,7 +91,7 @@ function getConcurrencyLimit() {
     return parsed;
   }
 
-  return Math.max(1, Math.min(6, availableParallelism() - 1));
+  return Math.max(1, Math.min(2, availableParallelism() - 1));
 }
 
 function runBuild(directory, manifest) {

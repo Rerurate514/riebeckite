@@ -83,6 +83,9 @@ The commands you use most often during framework development are:
 | `pnpm test` | Run the tests. |
 | `pnpm typecheck` | Check TypeScript types. |
 | `pnpm check:docs` | Check the documentation. |
+| `pnpm changes:new` | Create a change entry for a user-facing change. |
+| `pnpm changelog` | Regenerate the changelog and release notes pages. |
+| `pnpm check:changes` | Validate change entries and generated files. |
 | `pnpm docs:sync` | Generate [[glossary/plugin|Plugin]] and [[glossary/theme|Theme]] package READMEs from canonical docs. |
 | `pnpm check:plugin-docs` | Verify Plugin docs and generated READMEs are synchronized. |
 | `pnpm check:theme-docs` | Verify Theme docs and generated READMEs are synchronized. |

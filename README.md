@@ -117,12 +117,15 @@ Plugins are functions in the `plugins` array. Themes are values passed to `theme
 ## Documentation and community
 
 - [Documentation](https://riebeckite.dev/docs/) — guides, reference, and framework internals
+- [Design Philosophy](https://riebeckite.dev/docs/philosophy) — why Riebeckite is built this way
+- [Release Notes](https://riebeckite.dev/docs/releases) and [Changelog](./CHANGELOG.md) — what changed in each version
 - [Getting Started](https://riebeckite.dev/docs/getting-started/) — from an empty folder to a published site
 - [Plugin catalog](https://riebeckite.dev/docs/plugins/) and [themes](https://riebeckite.dev/docs/themes/)
 - [Configuration](https://riebeckite.dev/docs/reference/configuration) and [CLI reference](https://riebeckite.dev/docs/reference/cli)
 - [GitHub Issues](https://github.com/Rerurate514/riebeckite/issues) for bugs and feature requests
 - [GitHub Discussions](https://github.com/Rerurate514/riebeckite/discussions) for questions and ideas
 - [Security policy](./SECURITY.md)
+- [Contributing](./CONTRIBUTING.md)
 
 For larger changes, open an issue or start a discussion before you begin.
 

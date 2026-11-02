@@ -167,16 +167,15 @@ async function collectDoctorReport(
       config: project.config,
       content,
     });
-    if (
-      report.diagnostics.some(
-        (diagnostic) => diagnostic.code === "CONTENT_INSPECTION_FAILED",
-      )
-    ) {
+    let manifest: Awaited<ReturnType<ContentManager["getManifest"]>>;
+    try {
+      manifest = await content.getManifest();
+    } catch {
       return report;
     }
     let assets: ContentAssetInspection;
     try {
-      assets = await inspectContentAssets(await content.getManifest(), source);
+      assets = await inspectContentAssets(manifest, source);
     } catch (error) {
       const diagnostic = createDiagnosticFromError(
         "content",

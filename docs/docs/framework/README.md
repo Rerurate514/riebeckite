@@ -10,6 +10,8 @@ sidebar:
 
 Framework documentation is for people who want to understand or develop Riebeckite itself. If you only want to build a site, start with [Getting Started](../getting-started/README.md) and use [Reference](../reference/README.md) when you need exact fields or commands.
 
+For the principles behind these boundaries, read [Design Philosophy](../philosophy.md). This chapter explains how the current implementation works; Design Philosophy explains why.
+
 Three pages in this chapter begin with a user-facing overview and are useful
 without reading the rest of Framework: [Content mutation](./content-mutation.md)
 for safe content writes, [Content migration](./content-migration.md) for
@@ -43,6 +45,7 @@ flowchart LR
 
 | I want to understand… | Page |
 | --- | --- |
+| Why the framework is designed this way | [Design Philosophy](../philosophy.md) |
 | Package ownership and dependency direction | [Architecture](./architecture.md) |
 | How Markdown and assets become pages | [Content system](./content-system.md) |
 | How to create, edit, move, and delete content safely; how writes are planned, journaled, and recovered | [Content mutation](./content-mutation.md) |
@@ -67,6 +70,7 @@ flowchart LR
 | Logger, Tracer, and Profiler | [Observability](./observability.md) |
 | Test layout and golden files | [Testing](./testing.md) |
 | The monorepo development workflow | [Development](./development.md) |
+| Change entries, release steps, and GitHub Releases | [Release Operations](./release.md) |
 
 ## Where to start
 

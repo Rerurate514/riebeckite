@@ -36,6 +36,11 @@ test("plugin dev previews a real local plugin", async () => {
       await waitForOutput(running, /Plugin preview: (http:\/\/\S+)/)
     )[1];
     assert.ok(url);
+    await waitForHttp(
+      url,
+      (body) => body.includes("PLUGIN_DEV_FIXTURE_MARKER"),
+      60_000,
+    );
 
     browser = await launchBrowser();
     const page = await browser.newPage();

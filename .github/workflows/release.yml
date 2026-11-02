@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    name: github-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tagged revision
+        uses: actions/checkout@v4
+
+      - name: Verify the release notes exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          notes="changes/released/${version}/release-notes.md"
+          if [ ! -f "$notes" ]; then
+            echo "::error::$notes is missing. Run pnpm release ${version} before pushing the tag."
+            exit 1
+          fi
+
+      - name: Create the GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          notes="changes/released/${version}/release-notes.md"
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            echo "GitHub Release $GITHUB_REF_NAME already exists; leaving it unchanged."
+            exit 0
+          fi
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Riebeckite $GITHUB_REF_NAME" \
+            --notes-file "$notes" \
+            --verify-tag

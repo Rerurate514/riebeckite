@@ -101,7 +101,7 @@ async function renderAttachment(
     if (raw === null) return null;
     if (!isExcalidrawDocument(context.path, raw)) return null;
 
-    const parsed = parseExcalidrawScene(raw, context.path);
+    const parsed = await parseExcalidrawScene(raw, context.path);
     const scene = await mergeEmbeddedFiles({
       scene: parsed.scene,
       embeddedFiles: parsed.embeddedFiles,
@@ -216,7 +216,7 @@ async function resolveExcalidrawDocument(
     const raw = await readText(context.contentSource, sourcePath);
     if (raw === null) return null;
 
-    const parsed = parseExcalidrawScene(raw, sourcePath);
+    const parsed = await parseExcalidrawScene(raw, sourcePath);
     const scene = await mergeEmbeddedFiles({
       scene: parsed.scene,
       embeddedFiles: parsed.embeddedFiles,
@@ -375,7 +375,7 @@ async function renderExcalidrawMarkdownEmbed(input: {
   if (raw === null) return null;
   if (!isObsidianExcalidrawMarkdown(raw)) return null;
 
-  const parsed = parseExcalidrawScene(raw, input.path);
+  const parsed = await parseExcalidrawScene(raw, input.path);
   const scene = await mergeEmbeddedFiles({
     scene: parsed.scene,
     embeddedFiles: parsed.embeddedFiles,

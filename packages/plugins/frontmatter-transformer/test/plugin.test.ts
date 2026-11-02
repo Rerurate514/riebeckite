@@ -73,8 +73,8 @@ function command(id: string): CliCommandDefinition {
 
 function input(
   definition: CliCommandDefinition,
-  options: Record<string, CliOptionValue | undefined> = {},
-  args: Record<string, CliArgumentValue | undefined> = {},
+  options: Readonly<Record<string, CliOptionValue>> = {},
+  args: Readonly<Record<string, CliArgumentValue>> = {},
 ): CliCommandInput {
   return {
     command: definition,
@@ -177,12 +177,14 @@ test("rejects unknown and missing presets", async () => {
   try {
     const ctx = context(root);
     const applyCommand = command("apply");
-    await assert.rejects(async () => {
-      await applyCommand.handler(
-        ctx,
-        input(applyCommand, { preset: ["unknown"], apply: true }),
-      );
-    }, /Unknown frontmatter preset/);
+    await assert.rejects(
+      async () =>
+        applyCommand.handler(
+          ctx,
+          input(applyCommand, { preset: ["unknown"], apply: true }),
+        ),
+      /Unknown frontmatter preset/,
+    );
 
     const planCommand = command("plan");
     assert.equal(

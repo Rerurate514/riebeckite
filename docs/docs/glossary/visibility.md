@@ -7,28 +7,33 @@ sidebar:
 
 # Visibility
 
-A frontmatter field that refines how a published page is exposed. It separates a listed page from an unlisted one without turning the page into a draft.
+A frontmatter field that refines how a published page is exposed. It separates a listed page from an unlisted one, or forces a page to stay a draft.
 
 ## Values
 
 | Value | Served at URL | In listings |
 | --- | --- | --- |
-| listed (default) | Yes | Yes |
+| public (default) | Yes | Yes |
 | unlisted | Yes | No |
+| draft | No | No |
 
-## Not the same as published
+`visibility` accepts `public`, `unlisted`, or `draft`. Any other value fails the build.
 
-`visibility` fine-tunes exposure; `published` decides whether the page is public at all. An [unlisted](./unlisted.md) page is published but hidden from listings.
+## Not the same as publish
+
+`visibility` fine-tunes exposure. Whether a note is published at all is decided by the publish strategy and the `publish`, `private`, and `draft` frontmatter fields. `published` is a date field, not a publication switch.
 
 ## Publishing state integration
 
-The `visibility` frontmatter field is one of the inputs to `resolvePublishingState` (`packages/core/src/content/publishing.ts`). Together with the publish strategy and `published` field, it determines the final `ResolvedPublishingState`:
+`resolvePublishingState` (`packages/core/src/content/publishing.ts`) combines `visibility`, `publishAt`, and the configured publish strategy:
 
-- `visibility: "listed"` (default) + `published: true` → `visibility: "public", routable: true, discoverable: true`
-- `visibility: "unlisted"` + `published: true` → `visibility: "unlisted", routable: true, discoverable: false`
-- `visibility: "public"` or `visibility: "unlisted"` with `published: false` → `visibility: "draft", routable: false, discoverable: false`
+- `visibility: "draft"` → `visibility: "draft", routable: false, discoverable: false`
+- A future `publishAt` → `visibility: "scheduled", routable: false, discoverable: false`
+- `visibility: "unlisted"` → `visibility: "unlisted", routable: true, discoverable: false`
+- `visibility: "public"` or a `publishAt` that has passed → `visibility: "public", routable: true, discoverable: true`
+- Otherwise the strategy decides. `explicit` publishes only `publish: true`; `selective` publishes unless `private: true` or `draft: true` is set.
 
-This means `visibility` controls whether a published page appears in listings, while `published` controls whether it is public at all.
+`visibility: "public"` is an explicit override: it publishes the note even when the `explicit` strategy would otherwise require `publish: true`.
 
 ```ts
 // From packages/core/src/content/publishing.ts

@@ -30,6 +30,7 @@ flowchart TD
 
 | 知りたいこと | ページ |
 | --- | --- |
+| Riebeckite の設計方針 | [設計思想](../philosophy.ja.md) |
 | `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
 | `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`publish`、`content`、`migrate`、`upgrade`、`profile`、`inspect`、`help`、`completion`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
@@ -107,7 +108,7 @@ inspect
 - CSS の取り決め
 - テーマパッケージ
 
-テーマの設計思想や仕組みを理解したい場合は [Theme System](../framework/theme-system.ja.md) を参照してください。
+テーマの設計と仕組みを理解したい場合は [Theme System](../framework/theme-system.ja.md) を参照してください。
 
 ## どのドキュメントを読むべきか
 
@@ -144,4 +145,4 @@ Riebeckiteの内部構造を理解したい
   → Framework
 ```
 
-リファレンスは **API の使い方を調べるための索引**です。設計思想や内部実装は Framework、実際の作業手順はガイドが担当します。
+リファレンスは **API の使い方を調べるための索引**です。設計原則は [設計思想](../philosophy.ja.md)、内部実装は [Framework](../framework/README.ja.md)、実際の作業手順は [ガイド](../guides/README.ja.md) が担当します。

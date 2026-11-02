@@ -92,7 +92,9 @@ for (const preset of presets) {
         continue;
       }
       if (!workspaceBuilt) {
-        await buildWorkspacePackages();
+        if (process.env.RIEBECKITE_BENCHMARK_SKIP_BUILD !== "1") {
+          await buildWorkspacePackages();
+        }
         workspaceBuilt = true;
       }
       const result = await runScenario({ preset, size, scenario, runs });

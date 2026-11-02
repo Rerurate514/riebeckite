@@ -1,22 +1,21 @@
 import { createRequire } from "node:module";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import type {
   ExcalidrawScene,
   ObsidianEmbeddedFile,
   ParsedExcalidrawDocument,
 } from "./types.js";
 
-const require = createRequire(import.meta.url);
-const lzString = loadLzString();
-
 const EXCALIDRAW_FRONTMATTER_RE =
   /^---\s*\r?\n[\s\S]*?^excalidraw-plugin:\s*parsed\s*$[\s\S]*?^---\s*$/im;
 
-export function parseExcalidrawScene(
+export async function parseExcalidrawScene(
   raw: string,
   _filePath: string,
-): ParsedExcalidrawDocument {
+): Promise<ParsedExcalidrawDocument> {
   const isObsidianMarkdown = isObsidianExcalidrawMarkdown(raw);
-  const source = isObsidianMarkdown ? extractObsidianDrawing(raw) : raw;
+  const source = isObsidianMarkdown ? await extractObsidianDrawing(raw) : raw;
   const scene = JSON.parse(source) as Partial<ExcalidrawScene>;
 
   if (!Array.isArray(scene.elements)) {
@@ -38,7 +37,7 @@ export function isObsidianExcalidrawMarkdown(raw: string): boolean {
   return EXCALIDRAW_FRONTMATTER_RE.test(raw);
 }
 
-function extractObsidianDrawing(markdown: string): string {
+async function extractObsidianDrawing(markdown: string): Promise<string> {
   const fence = markdown.match(
     /## Drawing\s*\r?\n```(json|compressed-json)\s*\r?\n([\s\S]*?)\r?\n```/i,
   );
@@ -50,7 +49,7 @@ function extractObsidianDrawing(markdown: string): string {
   const body = fence[2].trim();
   if (kind === "json") return body;
 
-  const decompressed = decompressCompressedJson(body);
+  const decompressed = await decompressCompressedJson(body);
   if (!decompressed) {
     throw new Error(
       "Obsidian Excalidraw compressed-json could not be decompressed.",
@@ -59,40 +58,51 @@ function extractObsidianDrawing(markdown: string): string {
   return decompressed;
 }
 
-function decompressCompressedJson(value: string): string | null {
+async function decompressCompressedJson(value: string): Promise<string | null> {
   const normalized = value.replace(/\s+/g, "");
+  const lzString = loadLzString();
   return (
-    decompressFromBase64(normalized) ??
-    decompressFromEncodedURIComponent(normalized) ??
+    lzString.decompressFromBase64(normalized) ??
+    lzString.decompressFromEncodedURIComponent(normalized) ??
     null
   );
 }
 
-function decompressFromBase64(value: string): string | null {
-  return lzString.decompressFromBase64(value);
-}
-
-function decompressFromEncodedURIComponent(value: string): string | null {
-  return lzString.decompressFromEncodedURIComponent(value);
-}
+let lzString: LzStringExports | undefined;
 
 function loadLzString(): LzStringExports {
-  const loaded = require(getLzStringPackageName()) as unknown;
-  const candidate = selectLzStringExports(loaded);
+  if (lzString) return lzString;
 
-  if (!candidate) {
-    throw new Error("Invalid lz-string module shape.");
+  const cwdBase = pathToFileURL(path.join(process.cwd(), "package.json")).href;
+  const bases = [import.meta.url, cwdBase];
+  try {
+    const pluginEntry = createRequire(cwdBase).resolve(
+      "@riebeckite/plugin-excalidraw",
+    );
+    bases.push(pathToFileURL(pluginEntry).href);
+  } catch {}
+
+  for (const base of bases) {
+    try {
+      const candidate = selectLzString(createRequire(base)("lz-string"));
+      if (candidate) {
+        lzString = candidate;
+        return candidate;
+      }
+    } catch {}
   }
 
-  return candidate;
+  throw new Error("lz-string is not available.");
 }
 
-function selectLzStringExports(value: unknown): LzStringExports | null {
-  if (isLzStringExports(value)) return value;
-  if (!value || typeof value !== "object") return null;
-
-  const module = value as { default?: unknown };
-  return isLzStringExports(module.default) ? module.default : null;
+function selectLzString(value: unknown): LzStringExports | null {
+  let candidate: unknown = value;
+  for (let depth = 0; depth < 4; depth += 1) {
+    if (isLzStringExports(candidate)) return candidate;
+    if (!candidate || typeof candidate !== "object") return null;
+    candidate = (candidate as { default?: unknown }).default;
+  }
+  return null;
 }
 
 function isLzStringExports(value: unknown): value is LzStringExports {
@@ -102,10 +112,6 @@ function isLzStringExports(value: unknown): value is LzStringExports {
     typeof candidate.decompressFromBase64 === "function" &&
     typeof candidate.decompressFromEncodedURIComponent === "function"
   );
-}
-
-function getLzStringPackageName(): string {
-  return "lz-string";
 }
 
 type LzStringExports = {

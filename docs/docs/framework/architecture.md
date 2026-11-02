@@ -7,6 +7,9 @@ title: Architecture
 Riebeckite is a pnpm workspace that separates Core from [[glossary/plugin|Plugin]], Integration,
 [[glossary/theme|Theme]], and Application, with intentionally one-way dependencies.
 
+This page describes the structure. The principles and trade-offs behind it are in
+[Design Philosophy](../philosophy.md).
+
 The guiding principle is that **an inner package does not know the
 implementation of an outer one**. Core provides the content-processing
 machinery, but it does not know:

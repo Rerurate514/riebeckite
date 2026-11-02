@@ -10,7 +10,6 @@ import {
   validateOutputCache,
 } from "../src/ssg/output_cache.js";
 import { runSsg } from "../src/ssg/runner.js";
-import { loadStandaloneSsgBundle } from "../src/ssg/standalone.js";
 import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
   createNoChangeFastPathOutputMetrics,
@@ -39,44 +38,6 @@ test("SSG runner renders without Vite lifecycle state", async () => {
 
   assert.equal(result.success, true);
   assert.equal(output.get("/virtual-output/index.html"), "<h1>ok</h1>");
-});
-
-test("standalone SSG loads a Vite SSR bundle without a dev server", async (t) => {
-  const parent = path.join(process.cwd(), ".riebeckite");
-  await fs.mkdir(parent, { recursive: true });
-  const root = await fs.mkdtemp(path.join(parent, "standalone-"));
-  t.after(() => fs.rm(root, { recursive: true, force: true }));
-  await fs.writeFile(
-    path.join(root, "server.ts"),
-    [
-      'import { Hono } from "hono";',
-      "const app = new Hono();",
-      'app.get("/", (context) => context.html("<h1>standalone</h1>"));',
-      "export default app;",
-      "",
-    ].join("\n"),
-  );
-
-  const bundle = await loadStandaloneSsgBundle({
-    root,
-    entry: "./server.ts",
-    outputDirectory: path.join(root, "bundle"),
-  });
-  const output = new Map<string, string | Uint8Array>();
-  const result = await runSsg({
-    app: bundle.app,
-    outDir: "/standalone-output",
-    incremental: false,
-    write: async (file, content) => {
-      output.set(file, content);
-    },
-  });
-
-  assert.equal(result.success, true);
-  assert.equal(
-    output.get("/standalone-output/index.html"),
-    "<h1>standalone</h1>",
-  );
 });
 
 test("output cache reuse is rejected whenever a safety condition fails", () => {

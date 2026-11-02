@@ -155,6 +155,31 @@ test("buildSearchItems falls back to the slug and accepts a title resolver", () 
   assert.equal(overridden[0]?.title, "[guides/setup]");
 });
 
+test("buildSearchItems is deterministic for duplicate titles", () => {
+  const entries = [
+    entry("z/page", { publish: true, title: "Same" }, "<p>Z</p>"),
+    entry("a/page", { publish: true, title: "Same" }, "<p>A</p>"),
+  ];
+
+  const first = buildSearchItems({
+    config: explicit,
+    manifest: manifestOf(entries),
+  });
+  const second = buildSearchItems({
+    config: explicit,
+    manifest: manifestOf([...entries].reverse()),
+  });
+
+  assert.deepEqual(
+    first.map((item) => item.permalink),
+    second.map((item) => item.permalink),
+  );
+  assert.deepEqual(
+    first.map((item) => item.permalink),
+    ["/a/page", "/z/page"],
+  );
+});
+
 test("the selective strategy keeps notes without a publish flag", () => {
   const selective = resolveConfig({
     site: { title: "Test" },

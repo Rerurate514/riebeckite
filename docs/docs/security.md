@@ -16,23 +16,25 @@ This page describes the security contract that Plugin authors and site owners sh
 | Surface | Trust level | Contract |
 | --- | --- | --- |
 | Site configuration, Theme code, and installed Plugin code | Trusted site-owner controlled code | May produce HTML, CSS, JavaScript, endpoints, assets, client entries, and generated files. Review Plugins like application code before installing them. |
-| Local Markdown content and frontmatter | Trusted content | Markdown may contain raw HTML. Riebeckite parses and emits that HTML; it does not sanitize tags, attributes, URL schemes, inline event handlers, iframes, SVG, or scripts. |
-| Plugin-generated article HTML and standalone page bodies | Trusted generated HTML | Core and HonoX render these strings into the document. Plugins must escape untrusted text and validate context-specific URLs before creating HTML. |
+| Local Markdown content and frontmatter | Trusted content | Raw HTML is parsed and filtered by the Core sanitizer allowlist. Scripts, event handlers, disallowed tags and attributes, and unsafe URL schemes are removed. |
+| Plugin-generated article HTML and standalone page bodies | Trusted generated HTML | Core and HonoX render these strings into the document after Markdown sanitization. Plugins must escape untrusted text and validate context-specific URLs before creating HTML. |
 | External URLs and embed providers | Context-specific external input | Each Plugin owns the policy for its URL context: links, images, iframes, API endpoints, webhook sources, and diagram servers are not interchangeable. |
 | Plugin endpoint requests | Untrusted browser/network input | HonoX mounts declared endpoints and snapshots request data. Endpoint handlers must validate method-specific bodies, content type, size, query values, auth, CORS, and rate limits where needed. |
 | Browser-side data | Untrusted unless it came from trusted serialized config | Treat query strings, location, postMessage data, form input, and remote responses as untrusted in client code. |
 
 ## Markdown and HTML pipeline
 
-The Core pipeline intentionally enables raw HTML:
+The Core pipeline accepts raw HTML and then sanitizes it:
 
 - Markdown is converted with `remark-rehype` using `allowDangerousHtml: true`.
 - Raw HTML is parsed by `rehype-raw`.
+- The tree is filtered by `rehype-sanitize` with the allowlist in `packages/core/src/markdown_sanitize_schema.ts`.
+- Inline styles are reduced to a small safe subset, and `object` elements are limited to local PDF files.
 - HTML is serialized with `rehype-stringify` using `allowDangerousHtml: true`.
 
-This is not a sanitizer. It is a compatibility and authoring feature for trusted vaults. If a site builds content from untrusted users, sanitize or reject that content before it enters Riebeckite.
+The allowlist keeps the HTML that Obsidian notes commonly use, including `details`, `summary`, figures, media elements, a subset of SVG, and KaTeX markup. Tags and attributes outside the allowlist are removed rather than escaped. A `<script>` element, an `onclick` attribute, and a `javascript:` URL in Markdown do not reach the generated page.
 
-Raw HTML in Markdown is emitted as written. For example, this note stays intact:
+For example, this note stays intact:
 
 ```html
 <details>
@@ -41,7 +43,7 @@ Raw HTML in Markdown is emitted as written. For example, this note stays intact:
 </details>
 ```
 
-Riebeckite enables this for Obsidian compatibility and to allow content that Markdown alone cannot express. It never sanitizes that HTML automatically, so do not publish Markdown written by people you do not trust without validating it first.
+Riebeckite enables this for Obsidian compatibility and to allow content that Markdown alone cannot express. The sanitizer is a defense against accidental or malicious HTML in note bodies; it is not a review of the content itself. Do not publish Markdown written by people you do not trust without reviewing what it says and where it links.
 
 `escapeHtml`, `escapeHtmlAttribute`, and `escapeScriptJson` are escaping utilities for Plugin-generated strings. They do not make arbitrary HTML safe, and they do not validate URL schemes.
 
@@ -70,7 +72,12 @@ Plugins can expose their own endpoints. Treat everything a browser or network se
 
 ## What Riebeckite does not do automatically
 
-Riebeckite does not convert every input into safe HTML. In particular, raw HTML in Markdown, Plugin-generated HTML, and installed Plugin JavaScript are not sanitized automatically. This is deliberate: it lets a site owner publish their own Markdown and Obsidian vault as written. Content received from other people must be validated before it enters Riebeckite.
+Markdown raw HTML is sanitized before it is emitted. Two boundaries remain outside that protection:
+
+- Plugin-generated HTML runs after the Markdown sanitizer and is trusted as application code. A Plugin must escape its own inputs.
+- Installed Plugin and Theme JavaScript is trusted code and is never sandboxed by Core.
+
+Content received from other people still needs review for accuracy, links, and policy, even though its HTML is filtered.
 
 ## Current built-in policies
 

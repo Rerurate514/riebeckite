@@ -163,7 +163,7 @@ test("development inspector works in a real Vite dev server", async () => {
     ]);
     assert.equal((await shadowLayout(page)).background, "rgb(23, 23, 23)");
 
-    await clickShadow(page, "[data-tab='1']");
+    await clickTab(page, "Diagnostics");
     await waitForShadow(page, "[data-diagnostic-query]");
     const search = await shadowElement(page, "[data-diagnostic-query]");
     await search.click();
@@ -195,7 +195,7 @@ test("development inspector works in a real Vite dev server", async () => {
       true,
     );
 
-    await clickShadow(page, "[data-tab='4']");
+    await clickTab(page, "Output");
     await waitForShadowText(
       page,
       "[role=tabpanel]",
@@ -217,13 +217,13 @@ test("development inspector works in a real Vite dev server", async () => {
           "riebeckite-development-inspector",
         );
         const text =
-          host?.shadowRoot?.querySelector("#rb-panel-4")?.textContent ?? "";
+          host?.shadowRoot?.querySelector("[role=tabpanel]")?.textContent ?? "";
         return text.includes("about.html") && !text.includes("index.html");
       },
       { timeout: 30_000 },
     );
 
-    await clickShadow(page, "[data-tab='2']");
+    await clickTab(page, "Dependencies");
     await waitForShadow(page, "[data-dependency-kind]");
     const kindSelect = await shadowElement(page, "[data-dependency-kind]");
     await kindSelect.select("content");
@@ -250,7 +250,7 @@ test("development inspector works in a real Vite dev server", async () => {
       30_000,
     );
 
-    await clickShadow(page, "[data-tab='3']");
+    await clickTab(page, "Plugins");
     await waitForShadowText(
       page,
       "[role=tabpanel]",
@@ -271,7 +271,7 @@ test("development inspector works in a real Vite dev server", async () => {
     );
     await waitForShadowText(page, "[role=tabpanel]", "#1", 30_000);
 
-    await clickShadow(page, "[data-tab='5']");
+    await clickTab(page, "Derived");
     await waitForShadowText(
       page,
       "[role=tabpanel]",
@@ -297,7 +297,7 @@ test("development inspector works in a real Vite dev server", async () => {
       30_000,
     );
 
-    await clickShadow(page, "[data-tab='6']");
+    await clickTab(page, "Provenance");
     await waitForShadowText(
       page,
       "[role=tabpanel]",
@@ -316,7 +316,7 @@ test("development inspector works in a real Vite dev server", async () => {
       "No matching sources.",
       30_000,
     );
-    await clickShadow(page, "[data-tab='8']");
+    await clickTab(page, "Theme");
     await waitForShadowText(page, "[role=tabpanel]", "CSS tokens", 30_000);
     await waitForShadowText(
       page,
@@ -466,7 +466,7 @@ test("development inspector works in a real Vite dev server", async () => {
       "Inspector report updated",
       120_000,
     );
-    await clickShadow(page, "[data-tab='1']");
+    await clickTab(page, "Diagnostics");
     await page.evaluate(() => {
       const host = document.getElementById("riebeckite-development-inspector");
       const input = host?.shadowRoot?.querySelector<HTMLInputElement>(
@@ -514,7 +514,7 @@ test("development inspector works in a real Vite dev server", async () => {
     await waitForMissingPanel(page, 120_000);
     await loadSite(baseUrl);
     await openInspector(page);
-    await clickShadow(page, "[data-tab='1']");
+    await clickTab(page, "Diagnostics");
     await page.evaluate(() => {
       const host = document.getElementById("riebeckite-development-inspector");
       const input = host?.shadowRoot?.querySelector<HTMLInputElement>(
@@ -771,6 +771,20 @@ async function clickShadow(page: Page, selector: string): Promise<void> {
         new MouseEvent("click", { bubbles: true, composed: true }),
       );
   }, selector);
+}
+
+async function clickTab(page: Page, label: string): Promise<void> {
+  const clicked = await page.evaluate((value) => {
+    const host = document.getElementById("riebeckite-development-inspector");
+    const button = Array.from(
+      host?.shadowRoot?.querySelectorAll("[role=tab]") ?? [],
+    ).find((candidate) => candidate.textContent?.trim() === value);
+    button?.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, composed: true }),
+    );
+    return Boolean(button);
+  }, label);
+  assert.ok(clicked, `Missing inspector tab: ${label}`);
 }
 
 async function waitForShadow(

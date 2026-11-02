@@ -14,7 +14,7 @@
 
 ビルド時に `hoverPreview()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。
 
-抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` を指定するとページごとのデータ量を抑えられます。
+索引に含めるのは discoverable なページだけです。unlisted のノートは permalink から直接閲覧できますが、タイトルと抜粋は共有プレビュー索引に書き込みません。draft と予約公開のノートも除外されます。抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` を指定するとページごとのデータ量を抑えられます。
 
 ## 使い方
 

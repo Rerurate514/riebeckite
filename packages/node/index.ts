@@ -1,3 +1,5 @@
+export type { ContentSourceConfig } from "./src/content_source_factory.js";
+export { createContentSource } from "./src/content_source_factory.js";
 export type {
   ContentMigrationApplyOptions,
   ContentMigrationApplyResult,

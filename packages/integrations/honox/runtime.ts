@@ -1,5 +1,5 @@
 export {
   createDevelopmentTrace,
   type DevelopmentTrace,
-} from "./src/development_trace.js";
+} from "@riebeckite/diagnostics";
 export { resolveHonoxConfig } from "./src/resolved_config.js";

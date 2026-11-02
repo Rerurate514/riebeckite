@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
-import { cp, lstat, mkdir, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import {
+  cp,
+  lstat,
+  mkdir,
+  readFile,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
 import { resolveWithinDirectory } from "./file_system.js";
 
 export type BuildArtifactWriter = {
@@ -14,13 +22,26 @@ export type BuildArtifactWriter = {
 
 export async function createBuildArtifactWriter(input: {
   readonly outputDirectory: string;
+  readonly stagingDirectory?: string;
+  readonly clearStagingDirectory?: boolean;
 }): Promise<BuildArtifactWriter> {
   const outputDirectory = input.outputDirectory;
-  const stagingDirectory = join(
-    dirname(outputDirectory),
-    ".riebeckite",
-    `build-output-${randomUUID()}`,
-  );
+  await recoverPendingPublication(outputDirectory);
+  const stagingDirectory =
+    input.stagingDirectory ??
+    join(
+      dirname(outputDirectory),
+      ".riebeckite",
+      `build-output-${randomUUID()}`,
+    );
+  if (resolve(stagingDirectory) === resolve(outputDirectory)) {
+    throw new Error(
+      "Build artifact staging directory must differ from output.",
+    );
+  }
+  if (input.clearStagingDirectory !== false) {
+    await rm(stagingDirectory, { force: true, recursive: true });
+  }
   await mkdir(stagingDirectory, { recursive: true });
   let completed = false;
 
@@ -75,20 +96,101 @@ async function publishDirectory(
   );
   const previousOutputExists = await isDirectory(outputDirectory);
   let previousOutputMoved = false;
+  const journalPath = publicationJournalPath(outputDirectory);
+  await writeJournal(journalPath, {
+    backupDirectory,
+    outputDirectory,
+    stagingDirectory,
+    state: "staged",
+  });
   try {
     if (previousOutputExists) {
       await moveWithRetry(outputDirectory, backupDirectory);
       previousOutputMoved = true;
+      await writeJournal(journalPath, {
+        backupDirectory,
+        outputDirectory,
+        stagingDirectory,
+        state: "previous-output-moved",
+      });
     }
     await moveWithRetry(stagingDirectory, outputDirectory);
+    await writeJournal(journalPath, {
+      backupDirectory,
+      outputDirectory,
+      stagingDirectory,
+      state: "published",
+    });
   } catch (error) {
     if (previousOutputMoved) {
       await rm(outputDirectory, { force: true, recursive: true });
       await moveWithRetry(backupDirectory, outputDirectory);
     }
+    await rm(journalPath, { force: true });
     throw error;
   }
   await rm(backupDirectory, { force: true, recursive: true });
+  await rm(journalPath, { force: true });
+}
+
+type PublicationJournal = {
+  readonly backupDirectory: string;
+  readonly outputDirectory: string;
+  readonly stagingDirectory: string;
+  readonly state: "staged" | "previous-output-moved" | "published";
+};
+
+function publicationJournalPath(outputDirectory: string): string {
+  return join(dirname(outputDirectory), ".riebeckite", "build-output.json");
+}
+
+async function writeJournal(
+  path: string,
+  journal: PublicationJournal,
+): Promise<void> {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, JSON.stringify(journal));
+}
+
+async function recoverPendingPublication(
+  outputDirectory: string,
+): Promise<void> {
+  const path = publicationJournalPath(outputDirectory);
+  let journal: PublicationJournal;
+  try {
+    journal = JSON.parse(await readFile(path, "utf8")) as PublicationJournal;
+  } catch (error) {
+    if (isNotFoundError(error)) return;
+    await rm(path, { force: true });
+    return;
+  }
+  if (
+    journal.outputDirectory !== outputDirectory ||
+    !isPublicationJournalState(journal.state)
+  ) {
+    await rm(path, { force: true });
+    return;
+  }
+  if (
+    journal.state === "previous-output-moved" &&
+    !(await isDirectory(outputDirectory)) &&
+    (await isDirectory(journal.backupDirectory))
+  ) {
+    await moveWithRetry(journal.backupDirectory, outputDirectory);
+  }
+  await rm(journal.backupDirectory, { force: true, recursive: true });
+  await rm(journal.stagingDirectory, { force: true, recursive: true });
+  await rm(path, { force: true });
+}
+
+function isPublicationJournalState(
+  value: unknown,
+): value is PublicationJournal["state"] {
+  return (
+    value === "staged" ||
+    value === "previous-output-moved" ||
+    value === "published"
+  );
 }
 
 async function isDirectory(path: string): Promise<boolean> {

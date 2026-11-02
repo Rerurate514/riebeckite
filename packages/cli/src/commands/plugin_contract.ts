@@ -1,7 +1,39 @@
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { run } from "./e2e/index.js";
+
+const MAX_BUFFER = 128 * 1024 * 1024;
+
+function quote(value: unknown): string {
+  const text = String(value);
+  return /[\s"]/.test(text) ? `"${text.replace(/"/g, '\\"')}"` : text;
+}
+
+function run(
+  command: string,
+  args: readonly string[],
+  options: { cwd?: string; allowFailure?: boolean } = {},
+): { status: number | null; stdout: string; stderr: string } {
+  const line = [command, ...args].map(quote).join(" ");
+  const result = spawnSync(line, {
+    shell: true,
+    cwd: options.cwd ?? process.cwd(),
+    encoding: "utf8",
+    maxBuffer: MAX_BUFFER,
+  });
+  if (result.error) {
+    throw new Error(`Failed to run ${command}: ${result.error.message}`);
+  }
+  const stdout = result.stdout ?? "";
+  const stderr = result.stderr ?? "";
+  if (result.status !== 0 && !options.allowFailure) {
+    throw new Error(
+      `Command failed (exit ${result.status}): ${command}\n${stdout}\n${stderr}`,
+    );
+  }
+  return { status: result.status, stdout, stderr };
+}
 
 export type PluginContractLevel = "basic" | "integration" | "full";
 export type PluginContractStatus =

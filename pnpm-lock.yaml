@@ -493,9 +493,6 @@ importers:
       '@types/unist':
         specifier: 'catalog:'
         version: 3.0.3
-      extend:
-        specifier: ^3.0.2
-        version: 3.0.2
       rehype-format:
         specifier: ^5.0.1
         version: 5.0.1
@@ -625,6 +622,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagnostics':
+        specifier: workspace:*
+        version: link:../../diagnostics
       '@riebeckite/honox-inspector':
         specifier: workspace:*
         version: link:../honox-inspector

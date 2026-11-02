@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { generateCompletion } from "@riebeckite/core";
+import { generateCompletion } from "@riebeckite/core/cli";
 import { createBuiltinRegistry } from "../src/command/builtins.js";
 
 const registry = createBuiltinRegistry();

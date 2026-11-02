@@ -68,30 +68,24 @@ export const config = resolveHonoxConfig(
 function createContentModule(development: boolean): string {
   if (!development) {
     return `import { ContentManager } from "@riebeckite/core";
-import { FileSystemContentSource } from "@riebeckite/node";
+import { createContentSource } from "@riebeckite/node";
 import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 
 export const content = new ContentManager(
-  config.content.source ?? new FileSystemContentSource(
-    config.content.directory,
-    config.content.exclude,
-  ),
+  createContentSource(config.content),
   [],
   { config, plugins: config.plugins, isDevelopment: import.meta.env.DEV },
 );
 `;
   }
   return `import { ContentManager } from "@riebeckite/core";
-import { FileSystemContentSource } from "@riebeckite/node";
+import { createContentSource } from "@riebeckite/node";
 import { createDevelopmentTrace } from "@riebeckite/honox/runtime";
 import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 
 const trace = createDevelopmentTrace();
 export const content = new ContentManager(
-  config.content.source ?? new FileSystemContentSource(
-    config.content.directory,
-    config.content.exclude,
-  ),
+  createContentSource(config.content),
   [],
   {
     config,

@@ -4,7 +4,7 @@ import type {
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { definePlugin } from "@riebeckite/core";
-import { FileSystemContentSource } from "@riebeckite/node";
+import { createContentSource } from "@riebeckite/node";
 import { analyzeContent } from "./src/analyze.js";
 import { buildReport, DiagnosticsFailure } from "./src/report.js";
 import { checkSiteIntegrity } from "./src/site_integrity.js";
@@ -130,12 +130,7 @@ function toAnalyzerConfig(
   }
   return {
     directory: target.content.directory,
-    source:
-      target.content.source ??
-      new FileSystemContentSource(
-        target.content.directory,
-        target.content.exclude,
-      ),
+    source: createContentSource(target.content),
     exclude: [...target.content.exclude, ...(options.exclude ?? [])],
     publishStrategy: target.content.filters.publishStrategy,
     languages: resolveLanguages(target),

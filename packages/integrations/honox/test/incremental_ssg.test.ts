@@ -75,6 +75,33 @@ test("SSG adapter preserves client assets without treating them as routes", asyn
   );
 });
 
+test("a failed SSG build leaves the published output untouched", async (t) => {
+  await mkdir(workParent, { recursive: true });
+  const root = await mkdtemp(path.join(workParent, "transactional-ssg-test-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+
+  const site = path.join(root, "site");
+  await createSite(site, {
+    title: "Transactional",
+    renderTag: "v1",
+    noteCount: 1,
+    editedNotes: [],
+  });
+  await buildSite(site, "cold", leanBuildOptions);
+  const published = await snapshotTree(distPath(site));
+
+  await writeFile(
+    path.join(site, "app", "server.ts"),
+    'import "./missing-server-module.js";\n',
+  );
+
+  await assert.rejects(buildSite(site, "failed", leanBuildOptions));
+  assert.deepEqual(await snapshotTree(distPath(site)), published);
+  await assert.rejects(
+    readFile(path.join(site, ".riebeckite", "build-output", "index.html")),
+  );
+});
+
 test("SSG output links the manifest-resolved stylesheet on regular and README pages", async (t) => {
   await mkdir(workParent, { recursive: true });
   const root = await mkdtemp(path.join(workParent, "stylesheet-ssg-test-"));

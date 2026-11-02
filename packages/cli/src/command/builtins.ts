@@ -90,6 +90,14 @@ const PUBLISH_STATE_FILE = cliString("state-file", {
   description: "Durable publication state path.",
   valueName: "path",
 });
+const PUBLISH_TRIGGER = cliEnum(
+  "trigger",
+  ["manual", "scheduled", "ci", "cli"],
+  {
+    description: "Publication trigger.",
+    default: "cli",
+  },
+);
 const PUBLISH_SLUGS = cliVariadicArgument("slug", {
   description: "Publication slugs.",
 });
@@ -1190,26 +1198,25 @@ function publishActionCommand(action: PublishAction): CliCommandDefinition {
           PUBLISH_STATE_FILE,
           cliBoolean("execute", { description: "Execute the publication." }),
           cliBoolean("force", { description: "Force the publication." }),
-          cliEnum("trigger", ["manual", "scheduled", "ci", "cli"], {
-            description: "Publication trigger.",
-            default: "cli",
-          }),
+          PUBLISH_TRIGGER,
         ]
-      : action === "approve" || action === "revoke"
-        ? [
-            PUBLISH_JSON,
-            PUBLISH_AT,
-            PUBLISH_APPROVALS,
-            PUBLISH_REQUIRE_APPROVAL,
-            cliBoolean("all", {
-              description: `Apply to all pending ${action === "approve" ? "publications" : "approvals"}.`,
-            }),
-            cliString("by", {
-              description: "Approver name.",
-              valueName: "name",
-            }),
-          ]
-        : common;
+      : action === "record"
+        ? [...common, PUBLISH_TRIGGER]
+        : action === "approve" || action === "revoke"
+          ? [
+              PUBLISH_JSON,
+              PUBLISH_AT,
+              PUBLISH_APPROVALS,
+              PUBLISH_REQUIRE_APPROVAL,
+              cliBoolean("all", {
+                description: `Apply to all pending ${action === "approve" ? "publications" : "approvals"}.`,
+              }),
+              cliString("by", {
+                description: "Approver name.",
+                valueName: "name",
+              }),
+            ]
+          : common;
   return defineCliCommand({
     id: `publish ${action}`,
     summary: publishSummary(action),

@@ -146,6 +146,10 @@ test("publish CLI syntax is parsed explicitly", () => {
   assert.equal(run.options.force, false);
   assert.equal(run.options.trigger, "scheduled");
   assert.equal(run.options.provider, "github-pages");
+
+  const record = resolveInput(["publish", "record", "--trigger", "ci"]);
+  assert.equal(record.command.id, "publish record");
+  assert.equal(record.options.trigger, "ci");
   assert.equal(
     resolveInput(["publish", "plan", "--state-file", "ci/state.json"]).options
       .stateFile,

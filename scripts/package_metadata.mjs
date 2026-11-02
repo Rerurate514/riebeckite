@@ -676,7 +676,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "bin", "dist"],
       scripts: {
         build:
-          "esbuild index.ts --bundle --splitting --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:@riebeckite/node=../node/index.ts --outdir=dist --entry-names=cli --chunk-names=chunks/[name]-[hash]",
+          "esbuild index.ts --bundle --splitting --platform=node --format=esm --minify --main-fields=module,main --banner:js=\"import{createRequire as __createRequire}from'node:module';const require=__createRequire(import.meta.url);\" --external:esbuild --external:vite --external:create-riebeckite --alias:@riebeckite/core/cli=../core/cli.ts --alias:@riebeckite/core=../core/index.ts --alias:@riebeckite/diagnostics=../diagnostics/index.ts --alias:@riebeckite/honox=../integrations/honox/index.ts --alias:@riebeckite/node=../node/index.ts --outdir=dist --entry-names=cli --chunk-names=chunks/[name]-[hash]",
         prepack: "node ../../scripts/copy_license.mjs && pnpm run build",
       },
     };
@@ -837,7 +837,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        test: 'node --import tsx --test "test/*.test.ts"',
+        test: 'node --import tsx --test --test-concurrency=1 "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };

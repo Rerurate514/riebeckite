@@ -21,12 +21,8 @@ import {
   type ContentMutationRollbackResult,
   type ContentSource,
   type ContentSourceEntry,
-  emptyContentMigrationHistory,
-  emptyContentMigrationState,
   findContentMigrationRecord,
   listContentMigrationEntries,
-  parseContentMigrationHistory,
-  parseContentMigrationState,
   planContentMigrationBatch,
   publicationEntriesFromManifest,
   publicationFingerprint,
@@ -70,6 +66,13 @@ import type {
 } from "./file_system_content_migration_types.js";
 import { FileSystemContentMutation } from "./file_system_content_mutation.js";
 import { FileSystemContentSource } from "./file_system_content_source.js";
+import {
+  migrationLockPath,
+  readMigrationHistory,
+  readMigrationState,
+  writeMigrationHistory,
+  writeMigrationState,
+} from "./migration_state_store.js";
 
 export type {
   ContentMigrationApplyOptions,
@@ -1234,57 +1237,19 @@ export class FileSystemContentMigration {
   }
 
   private async readState(): Promise<ContentMigrationState> {
-    try {
-      return parseContentMigrationState(
-        JSON.parse(await fs.readFile(this.statePath(), "utf8")) as unknown,
-      );
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT")
-        return emptyContentMigrationState();
-      throw error;
-    }
+    return readMigrationState(this.contentDirectory);
   }
 
   private async writeState(state: ContentMigrationState): Promise<void> {
-    const target = this.statePath();
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+    return writeMigrationState(this.contentDirectory, state);
   }
 
   private async readHistory(): Promise<ContentMigrationHistory> {
-    try {
-      return parseContentMigrationHistory(
-        JSON.parse(await fs.readFile(this.historyPath(), "utf8")) as unknown,
-      );
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "ENOENT")
-        return emptyContentMigrationHistory();
-      throw error;
-    }
+    return readMigrationHistory(this.contentDirectory);
   }
 
   private async writeHistory(history: ContentMigrationHistory): Promise<void> {
-    const target = this.historyPath();
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, `${JSON.stringify(history, null, 2)}\n`, "utf8");
-  }
-
-  private statePath(): string {
-    return path.join(
-      this.contentDirectory,
-      ".riebeckite",
-      "migrations",
-      "state.json",
-    );
-  }
-
-  private historyPath(): string {
-    return path.join(
-      this.contentDirectory,
-      ".riebeckite",
-      "migrations",
-      "history.json",
-    );
+    return writeMigrationHistory(this.contentDirectory, history);
   }
 
   private relativeToContent(target: string): string {
@@ -1300,12 +1265,7 @@ export class FileSystemContentMigration {
   }
 
   private async acquireLock(): Promise<() => Promise<void>> {
-    const lockPath = path.join(
-      this.contentDirectory,
-      ".riebeckite",
-      "migrations",
-      "lock",
-    );
+    const lockPath = migrationLockPath(this.contentDirectory);
     await fs.mkdir(path.dirname(lockPath), { recursive: true });
     let handle: fs.FileHandle | undefined;
     for (let attempt = 0; attempt < 3 && !handle; attempt += 1) {

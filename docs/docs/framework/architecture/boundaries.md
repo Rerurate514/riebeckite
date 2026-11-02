@@ -98,4 +98,37 @@ Site
 Keeping this boundary lets Core and plugins be reused without being tied to a
 specific site, framework, or platform.
 
+## Dependency rules enforced in CI
+
+`pnpm check:dependencies` checks every workspace package for undeclared
+imports, non-exported subpaths, runtime workspace cycles, and forbidden
+direction. Type-only imports are allowed from dev dependencies and do not count
+as runtime edges; dynamic `import()` and `require()` do.
+
+`pnpm check:source-health` additionally rejects Node builtins and Node-only
+packages in Browser/Worker entries and reports directory-level cycles as
+advisory findings. Themes may depend only on Core. Plugins may not depend on the
+CLI, HonoX, Preview, or Themes, and Plugin-to-Plugin edges are limited to the
+reviewed pairs in `scripts/check_dependencies.mjs`.
+
+Core exposes `@riebeckite/core` (all contracts), `@riebeckite/core/client`
+(browser-safe client utilities), and `@riebeckite/core/cli` (Plugin CLI
+extension API). `packages/core/api.json` is the reviewed public surface.
+
+### Migration from the root CLI exports
+
+Earlier `0.0.x` releases re-exported every CLI helper from the package root.
+The command authoring contract and its builders remain in `@riebeckite/core`.
+Parser, help, and completion internals are available only from
+`@riebeckite/core/cli`: `argumentValueKey`, `commandPathSegments`,
+`findCommandByPath`, `formatCommandHelp`, `formatPathHelp`, `formatRootHelp`,
+`formatUnknownCommand`, `generateCompletion`, `normalizeCommandId`,
+`optionValueKey`, `parseCliShell`, `readArgument`, `readOption`, `ROOT_USAGE`,
+`suggest`, `toArgumentKey`, and `toOptionKey`. All CLI types remain in the root
+entry point.
+
+The `@riebeckite/test/plugin-contract` export has been removed. Use
+`riebeckite plugin verify <path>` instead; the verifier is a production CLI
+feature and its engine is not a supported programmatic API.
+
 See [Content system](../content-system.md), [Plugin system](../plugin-system.md), [Theme system](../theme-system.md), and [HonoX integration](../honox-integration.md) before changing a boundary.

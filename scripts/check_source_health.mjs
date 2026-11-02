@@ -180,11 +180,23 @@ function resolveLocalImport(file, specifier, fileSet) {
   return candidates.find((candidate) => fileSet.has(candidate));
 }
 
-function packageRootFor(file) {
-  const relative = toPosix(path.relative(repositoryRoot, file));
+function addDirectoryEdge(graph, from, to) {
+  const fromDirectory = path.dirname(from);
+  const toDirectory = path.dirname(to);
+  if (fromDirectory === toDirectory) return;
+  if (!graph.has(fromDirectory)) graph.set(fromDirectory, new Set());
+  graph.get(fromDirectory).add(toDirectory);
+}
+
+function packageRootFor(file, root = repositoryRoot) {
+  const relative = toPosix(path.relative(root, file));
   const parts = relative.split("/");
   if (parts[0] === "packages") {
-    if (parts[1] === "plugins" || parts[1] === "integrations") {
+    if (
+      parts[1] === "plugins" ||
+      parts[1] === "integrations" ||
+      parts[1] === "themes"
+    ) {
       return parts.length >= 3
         ? `${parts[0]}/${parts[1]}/${parts[2]}`
         : undefined;
@@ -234,6 +246,38 @@ function forbiddenIntegrationImport(specifier) {
   );
 }
 
+function forbiddenThemeImport(specifier) {
+  if (!specifier.startsWith("@riebeckite/")) return false;
+  return specifier !== "@riebeckite/core";
+}
+
+function isBrowserFile(relative) {
+  return (
+    /(^|\/)(client|browser)(\/|\.)/i.test(relative) ||
+    /\.(client|browser)\.[^/]+$/i.test(relative) ||
+    /(^|\/)worker\.[^/]+$/i.test(relative)
+  );
+}
+
+function nodeBuiltinSpecifier(specifier) {
+  if (specifier === "fs" || specifier === "path" || specifier === "os") {
+    return true;
+  }
+  return specifier.startsWith("node:");
+}
+
+function forbiddenBrowserImport(specifier) {
+  return (
+    nodeBuiltinSpecifier(specifier) ||
+    specifier === "@riebeckite/node" ||
+    specifier.startsWith("@riebeckite/node/") ||
+    specifier === "@riebeckite/cli" ||
+    specifier.startsWith("@riebeckite/cli/") ||
+    specifier === "@riebeckite/preview" ||
+    specifier.startsWith("@riebeckite/preview/")
+  );
+}
+
 function findCycles(graph) {
   const indexByNode = new Map();
   const lowLink = new Map();
@@ -268,7 +312,7 @@ function findCycles(graph) {
     } while (current !== node);
 
     const selfCycle =
-      component.length === 1 && (graph.get(node) ?? []).includes(node);
+      component.length === 1 && [...(graph.get(node) ?? [])].includes(node);
     if (component.length > 1 || selfCycle) {
       component.sort();
       cycles.push(
@@ -287,16 +331,17 @@ function formatFinding(kind, message) {
   return `[${kind}] ${message}`;
 }
 
-function analyze(files) {
+function analyze(files, root = repositoryRoot) {
   const fileSet = new Set(files);
   const records = [];
   const functions = [];
   const graph = new Map();
+  const directoryGraph = new Map();
   const errors = [];
   const warnings = [];
 
   for (const file of files) {
-    const relative = toPosix(path.relative(repositoryRoot, file));
+    const relative = toPosix(path.relative(root, file));
     const text = fs.readFileSync(file, "utf8");
     const sourceFile = ts.createSourceFile(
       relative,
@@ -323,10 +368,13 @@ function analyze(files) {
       if (!specifier) continue;
       if (!isTypeOnly(statement)) {
         const target = resolveLocalImport(file, specifier, fileSet);
-        if (target) localImports.push(target);
+        if (target) {
+          localImports.push(target);
+          addDirectoryEdge(directoryGraph, file, target);
+        }
       }
       if (isPackageSpecifier(specifier)) {
-        const packageRoot = packageRootFor(file);
+        const packageRoot = packageRootFor(file, root);
         if (packageRoot === "packages/core" && forbiddenCoreImport(specifier)) {
           errors.push(
             formatFinding(
@@ -357,12 +405,34 @@ function analyze(files) {
             ),
           );
         }
+        if (
+          packageRoot?.startsWith("packages/themes/") &&
+          forbiddenThemeImport(specifier)
+        ) {
+          errors.push(
+            formatFinding(
+              "error",
+              `${relative}: Theme must not depend on "${specifier}"`,
+            ),
+          );
+        }
+        if (isBrowserFile(relative) && forbiddenBrowserImport(specifier)) {
+          errors.push(
+            formatFinding(
+              "error",
+              `${relative}: Browser/Worker code must not depend on "${specifier}"`,
+            ),
+          );
+        }
       }
     }
 
     for (const specifier of collectDynamicSpecifiers(sourceFile)) {
       const target = resolveLocalImport(file, specifier, fileSet);
-      if (target) localImports.push(target);
+      if (target) {
+        localImports.push(target);
+        addDirectoryEdge(directoryGraph, file, target);
+      }
     }
 
     const functionNames = new Map();
@@ -397,6 +467,21 @@ function analyze(files) {
       formatFinding(
         "error",
         `runtime circular import: ${cycle.join(" -> ")} -> ${cycle[0]}`,
+      ),
+    );
+  }
+
+  // Module-level cycles are errors. Directory-level cycles are advisory: two
+  // collaborating subsystems can reference each other through distinct modules
+  // while the module graph stays acyclic.
+  for (const cycle of findCycles(directoryGraph)) {
+    const relative = cycle.map((directory) =>
+      toPosix(path.relative(root, directory)),
+    );
+    warnings.push(
+      formatFinding(
+        "warning",
+        `directory dependency cycle: ${relative.join(" -> ")} -> ${relative[0]}`,
       ),
     );
   }
@@ -446,9 +531,14 @@ function reportSizes(records, functions, errors, warnings) {
   }
 }
 
-const files = collectSourceFiles();
-const { records, functions, errors, warnings } = analyze(files);
+export { analyze, isBrowserFile };
 
-reportSizes(records, functions, errors, warnings);
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+if (invokedPath === path.resolve(fileURLToPath(import.meta.url))) {
+  const files = collectSourceFiles();
+  const { records, functions, errors, warnings } = analyze(files);
 
-if (errors.length > 0) process.exitCode = 1;
+  reportSizes(records, functions, errors, warnings);
+
+  if (errors.length > 0) process.exitCode = 1;
+}

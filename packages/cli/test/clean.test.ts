@@ -5,12 +5,11 @@ import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
-  formatPathHelp,
-  formatRootHelp,
   type ResolvedRiebeckiteConfig,
   resolveCliCommand,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
+import { formatPathHelp, formatRootHelp } from "@riebeckite/core/cli";
 import { FileSystemContentSource } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import { createBuiltinRegistry } from "../src/command/builtins.js";

@@ -6,7 +6,7 @@ import test from "node:test";
 import {
   formatPluginContractReport,
   verifyPluginContract,
-} from "../plugin-contract.js";
+} from "../src/commands/plugin_contract.js";
 
 function fixture(manifest: object, files: Record<string, string>): string {
   const root = fs.mkdtempSync(

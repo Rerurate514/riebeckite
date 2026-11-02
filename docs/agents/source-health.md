@@ -11,21 +11,29 @@ function bodies with the TypeScript AST, follows runtime imports, and reports:
 
 - files at or above 400 lines (800+ requires a split review)
 - functions at or above 80 lines
-- runtime import cycles
-- Core / Plugin / Integration dependency violations
+- runtime import cycles (module level, failures)
+- directory dependency cycles (advisory)
+- Core / Plugin / Integration / Theme dependency violations
+- Node builtins and Node-only packages imported from Browser/Worker entries
 - wildcard exports
 
 Generated files, fixtures, snapshots, migrations, tests, templates, and build
 output are excluded. Line counts are advisory and never fail the check. Runtime
-cycles, cross-layer dependencies, and wildcard exports do.
+cycles, cross-layer dependencies, the browser/Node boundary, and wildcard
+exports do.
+
+Browser/Worker entries are files under a `client` or `browser` directory and
+files named `*.client.*`, `*.browser.*`, or `worker.*`. They must not import
+`node:` builtins, `fs`/`path`/`os`, `@riebeckite/node`, `@riebeckite/cli`, or
+`@riebeckite/preview`.
 
 ## Current snapshot
 
 Run `pnpm check:source-health` for the current source counts and structural
 findings. Counts are intentionally not stored here because ordinary source
 changes make a checked-in snapshot stale. The command fails only for runtime
-cycles, cross-layer dependency violations, and wildcard exports; size signals
-remain review inputs, not split targets.
+cycles, cross-layer dependency violations, the browser/Node boundary, and
+wildcard exports; size signals remain review inputs, not split targets.
 
 ## Classification
 
@@ -46,6 +54,33 @@ remain review inputs, not split targets.
 | `packages/plugins/docs/index.ts`, `packages/plugins/share/index.ts` | plugin entry plus data helpers | C | Fixed: public data helpers moved to `src/data.ts`; components no longer import the package entry. |
 
 ## Completed structural changes
+
+### Mutation and Migration
+
+`file_system_content_mutation.ts` kept plan/apply/rollback plus journal
+serialization. Journal parsing and plan serialization now live in
+`mutation_journal.ts`. `file_system_content_migration.ts` keeps the migration
+lifecycle; migration state/history/lock persistence now lives in
+`migration_state_store.ts`. Both files keep their public classes and behavior.
+
+### Content source creation
+
+The repeated `config.content.source ?? new FileSystemContentSource(directory,
+exclude)` rule now lives in `createContentSource` in `@riebeckite/node`. CLI,
+HonoX generated runtime modules, Inspector, Diagnostics, and the web asset
+script call the factory; each keeps its own directory override.
+
+### Plugin contract verification
+
+The verifier moved from `@riebeckite/test/plugin-contract` to the CLI command
+implementation because `riebeckite plugin verify` is a production CLI feature.
+`@riebeckite/test` is now a dev-only test package; CLI no longer depends on it.
+
+### Development trace
+
+`createDevelopmentTrace` moved from HonoX to `@riebeckite/diagnostics`. HonoX
+continues to re-export it from `@riebeckite/honox/runtime`, but the move removes
+the Inspector test's dev dependency on HonoX and the package-level cycle.
 
 ### HonoX SSG
 
@@ -149,6 +184,34 @@ generation, localized demo data, and option rendering. It is now split into:
 Docs and share components imported their own package entry, creating a runtime
 cycle between the component and the plugin factory. Their data helpers now live
 in `src/data.ts`, and the entries re-export the same public symbols.
+
+## Known accepted warnings
+
+The directory cycle check reports five advisory cycles. The module graph is
+acyclic for each of them; the edges are registration or barrel imports that
+point back to shared helpers.
+
+| Cycle | Why it is accepted |
+| --- | --- |
+| `packages/cli/src` ↔ `src/command` | The command registry imports command implementations, and those implementations import shared runner/output helpers from `src`. |
+| `packages/core/src` → `content` → `derived` → `plugin` → `types` → `src` | Content builds derived views, derived views use plugin contracts, and the type barrels re-export shared types. No runtime module cycle exists. |
+| `packages/plugins/diagnostics/src` ↔ `src/checks` | The checks registry imports checks, and checks use the shared diagnostics runner and output types. |
+| `packages/plugins/garden-explorer/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
+| `packages/plugins/related-posts/components` ↔ `src` | The package entry exports the component, and the component imports its data helpers from `src`. |
+
+The wildcard export warnings on `packages/core/cli.ts`,
+`packages/core/src/cli/index.ts`, `packages/runtime/client.ts`, and
+`packages/runtime/index.ts` are intentional barrel entry points. The Core CLI
+surface is constrained by `packages/core/api.json`; the runtime barrels are the
+public client API. File and function size signals are review inputs, not
+failures.
+
+Biome also reports eight `lint/complexity/noBannedTypes` warnings and one
+`lint/suspicious/noConfusingVoidType` warning in the Core CLI generic defaults
+(`{}` for "no options" and `void` in `CliCommandResult`). Both are intentional:
+`{}` is the empty option object used by inference, and `void` lets handlers
+return nothing. The three `lint/complexity/noUselessStringRaw` infos embed
+client scripts and styles, where `String.raw` preserves escapes.
 
 ## Next review order
 

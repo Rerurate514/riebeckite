@@ -7,7 +7,7 @@ import {
   defineDerivedView,
   resolveConfig,
 } from "@riebeckite/core";
-import { createDevelopmentTrace } from "@riebeckite/honox/runtime";
+import { createDevelopmentTrace } from "@riebeckite/diagnostics";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";

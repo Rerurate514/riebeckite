@@ -34,6 +34,34 @@ test("build artifact writer publishes a complete replacement", async () => {
   }
 });
 
+test("build artifact writer leaves the published output untouched until publish", async () => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-artifacts-"),
+  );
+  const outputDirectory = path.join(root, "dist");
+  const stagingDirectory = path.join(root, ".riebeckite", "build-output");
+  try {
+    await fs.mkdir(outputDirectory);
+    await fs.writeFile(path.join(outputDirectory, "index.html"), "old");
+    const writer = await createBuildArtifactWriter({
+      outputDirectory,
+      stagingDirectory,
+    });
+    await writer.write("index.html", "new");
+    assert.equal(
+      await fs.readFile(path.join(outputDirectory, "index.html"), "utf8"),
+      "old",
+    );
+    await writer.publish();
+    assert.equal(
+      await fs.readFile(path.join(outputDirectory, "index.html"), "utf8"),
+      "new",
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test("build artifact writer rejects paths outside its staging directory", async () => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-artifacts-"),

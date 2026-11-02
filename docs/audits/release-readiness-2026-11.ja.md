@@ -11,6 +11,8 @@ private: true
 
 **CONDITIONAL**（初回監査は NOT READY）。
 
+統合ブランチでは Client / SSG の成果物を Artifact Writer に段階出力し、最後に公開先を置換する経路へ統合しました。失敗した SSG が公開済み出力を変えない結合テスト、114/114 パッケージビルド、依存グラフ、文書チェック、release テスト、1,000 ノート Core 等価性、外部 tarball E2E は確認済みです。visual は指定 Chrome が未設定です。3 回の 1,000 ノート full SSG 計測と typecheck の親プロセスは Windows native crash（`0xC0000005`）で完走していないため、未検証として扱います。
+
 P1 のコード欠陥 9 件のうち 8 件は修正・検証済みです。残る P1 は npm 0.0.35 と HEAD の差（RR-008）で、本作業では publish が禁止されているため未解消です。追加で発見した HonoX 0.1.56 の registry テスト crash（RR-026）と、HonoX バージョン分裂による外部サイトの `No context found`（RR-028）は、0.1.62 への統一で解消しました。視覚回帰、5,000 ノート SSG、Linux 実機が未検証または失敗のままです。
 
 ## 解消した P1

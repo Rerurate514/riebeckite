@@ -375,6 +375,23 @@ function createPackage(root, directory) {
   };
 }
 
+export function collectTargetPackages(
+  targets,
+  packages,
+  root = repositoryRoot,
+) {
+  const workspacePackages = new Map(
+    packages.map((pkg) => [path.resolve(pkg.directory), pkg]),
+  );
+  return targets.map((target) => {
+    const directory = path.resolve(root, target);
+    const workspacePackage = workspacePackages.get(directory);
+    if (workspacePackage) return workspacePackage;
+    if (!fs.existsSync(path.join(directory, "package.json"))) return undefined;
+    return createPackage(root, directory);
+  });
+}
+
 export function analyzeWorkspace(options = {}) {
   const root = options.root ?? repositoryRoot;
   const rootManifestPath = path.join(root, "package.json");
@@ -525,26 +542,20 @@ function main() {
   const allPackages = collectWorkspacePackages(repositoryRoot);
   const selected =
     targets.length > 0
-      ? allPackages.filter((pkg) =>
-          targets.some((target) => {
-            const resolved = path.resolve(repositoryRoot, target);
-            return (
-              resolved === pkg.directory ||
-              toPosix(path.relative(repositoryRoot, pkg.directory)) ===
-                toPosix(target)
-            );
-          }),
-        )
+      ? collectTargetPackages(targets, allPackages)
       : allPackages;
-  if (targets.length > 0 && selected.length !== targets.length) {
-    console.error("Some targets are not workspace packages.");
+  if (selected.some((pkg) => pkg === undefined)) {
+    console.error("Some targets do not contain a package.json.");
     process.exitCode = 1;
     return;
   }
 
   const { findings } = analyzeWorkspace({
     root: repositoryRoot,
-    packages: allPackages,
+    packages: [
+      ...allPackages,
+      ...selected.filter((pkg) => !allPackages.includes(pkg)),
+    ],
   });
   const directorySet = new Set(selected.map((pkg) => pkg.name));
   const selectedFindings = findings.filter((finding) =>

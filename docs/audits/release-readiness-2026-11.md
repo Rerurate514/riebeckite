@@ -17,6 +17,8 @@ private: true
 
 > **更新（2026-11-02 修正後再監査）**: 初回監査の判定は **NOT READY**。修正と再検証の結果、P1 のコード欠陥は解消しましたが、npm 公開、可視回帰、5,000 ノート SSG、Linux、一部ブラウザ検証が未完了のため、最終判定は **CONDITIONAL** です。Finding ごとの修正・検証は「H. 修正後の再監査」を参照してください。
 
+> **Integration branch update (2026-11-02):** `integration/release-transactional-performance` stages Client and SSG output through the Artifact Writer before publication. The 114-package build, dependency graph, documentation checks, release tests, 1,000-note Core equivalence, atomic SSG failure test, and external tarball E2E passed. Visual testing could not start because the required Chrome is not configured. Three-run 1,000-note full-SSG measurement and the typecheck parent process did not complete because of a Windows native crash (`0xC0000005`); these remain unverified.
+
 ## 0. 監査スコープと方法
 
 ### 0.1 対象

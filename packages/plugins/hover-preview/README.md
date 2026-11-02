@@ -21,10 +21,13 @@ every page that contains internal links as an inert
 entry `initHoverPreview` reads that payload and attaches hover, focus, and touch
 handlers to the matching links.
 
-The excerpt is plain text extracted from the rendered HTML: tags are stripped,
-whitespace is collapsed, and the result is truncated to `excerptLength`
-characters. Pages without internal links are left untouched, and the payload is
-bounded by `maxEntries` when set.
+The index contains only discoverable entries. Unlisted notes stay reachable at
+their permalink, but their titles and excerpts are not written to the shared
+preview index. Drafts and scheduled notes are excluded as well. The excerpt is
+plain text extracted from the rendered HTML: tags are stripped, whitespace is
+collapsed, and the result is truncated to `excerptLength` characters. Pages
+without internal links are left untouched, and the payload is bounded by
+`maxEntries` when set.
 
 ## Usage
 

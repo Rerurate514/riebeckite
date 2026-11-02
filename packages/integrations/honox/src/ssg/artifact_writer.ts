@@ -8,7 +8,7 @@ import {
   rm,
   writeFile,
 } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { resolveWithinDirectory } from "./file_system.js";
 
 export type BuildArtifactWriter = {
@@ -22,14 +22,26 @@ export type BuildArtifactWriter = {
 
 export async function createBuildArtifactWriter(input: {
   readonly outputDirectory: string;
+  readonly stagingDirectory?: string;
+  readonly clearStagingDirectory?: boolean;
 }): Promise<BuildArtifactWriter> {
   const outputDirectory = input.outputDirectory;
   await recoverPendingPublication(outputDirectory);
-  const stagingDirectory = join(
-    dirname(outputDirectory),
-    ".riebeckite",
-    `build-output-${randomUUID()}`,
-  );
+  const stagingDirectory =
+    input.stagingDirectory ??
+    join(
+      dirname(outputDirectory),
+      ".riebeckite",
+      `build-output-${randomUUID()}`,
+    );
+  if (resolve(stagingDirectory) === resolve(outputDirectory)) {
+    throw new Error(
+      "Build artifact staging directory must differ from output.",
+    );
+  }
+  if (input.clearStagingDirectory !== false) {
+    await rm(stagingDirectory, { force: true, recursive: true });
+  }
   await mkdir(stagingDirectory, { recursive: true });
   let completed = false;
 

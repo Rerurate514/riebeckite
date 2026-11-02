@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { build, type ResolvedConfig } from "vite";
+import { build, type Plugin, type ResolvedConfig } from "vite";
 import type { SsgModule } from "./types.js";
 
 const standaloneSsgMode = "riebeckite-ssr";
@@ -15,6 +15,7 @@ export async function loadStandaloneSsgBundle(input: {
   readonly root: string;
   readonly entry: string;
   readonly outputDirectory: string;
+  readonly clientOutputDirectory?: string;
   readonly config?: Pick<
     ResolvedConfig,
     "define" | "oxc" | "plugins" | "resolve"
@@ -31,12 +32,17 @@ export async function loadStandaloneSsgBundle(input: {
       ? {
           define: input.config.define,
           oxc: input.config.oxc,
-          plugins: input.config.plugins.filter(
-            (plugin) =>
-              plugin.name !== "riebeckite-ssg" &&
-              plugin.name !== "riebeckite-ssr-externals" &&
-              !plugin.name.startsWith("@hono/vite-build/"),
-          ),
+          plugins: [
+            ...input.config.plugins.filter(
+              (plugin) =>
+                plugin.name !== "riebeckite-ssg" &&
+                plugin.name !== "riebeckite-ssr-externals" &&
+                !plugin.name.startsWith("@hono/vite-build/"),
+            ),
+            ...(input.clientOutputDirectory
+              ? [createClientManifestPlugin(root, input.clientOutputDirectory)]
+              : []),
+          ],
           resolve: {
             ...input.config.resolve,
             external: [],
@@ -46,7 +52,7 @@ export async function loadStandaloneSsgBundle(input: {
     build: {
       emptyOutDir: false,
       outDir: outputDirectory,
-      ssr: { noExternal: true },
+      ssr: true,
       rollupOptions: {
         input: input.entry,
         output: { entryFileNames: "ssg-server.mjs", format: "es" },
@@ -61,6 +67,22 @@ export async function loadStandaloneSsgBundle(input: {
     throw new Error(`Failed to find a default export from ${input.entry}.`);
   }
   return { app: module.default, module };
+}
+
+function createClientManifestPlugin(
+  root: string,
+  clientOutputDirectory: string,
+): Plugin {
+  const manifestPath = `/${relative(root, clientOutputDirectory).replaceAll("\\", "/")}/.vite/manifest.json`;
+  return {
+    name: "riebeckite-client-manifest",
+    enforce: "pre",
+    transform(code, id) {
+      return id.includes("honox/dist/server/components/")
+        ? code.replaceAll("/dist/.vite/manifest.json", manifestPath)
+        : undefined;
+    },
+  };
 }
 
 export function isStandaloneSsgMode(mode: string): boolean {

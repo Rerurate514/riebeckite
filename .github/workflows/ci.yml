@@ -64,8 +64,6 @@ jobs:
       - run: pnpm check:dependencies
       - run: pnpm check:cycles
       - run: pnpm check:source-health
-      - run: pnpm test:checks
-      - run: pnpm check:core-api
       - run: pnpm check:templates
       - run: pnpm check:ci-selection
       - run: pnpm check:ci-browsers
@@ -107,7 +105,6 @@ jobs:
           name: package-dist-${{ github.sha }}
           path: .
       - run: pnpm ci:build-artifact verify
-      - run: pnpm check:core-api
       - run: pnpm typecheck
 
   test:

@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   analyzeWorkspace,
+  collectTargetPackages,
   collectWorkspacePackages,
 } from "./check_dependencies.mjs";
 
@@ -80,6 +81,19 @@ test("fails on an undeclared import", () => {
   const findings = analyze(root);
   assert.equal(findings[0].kind, "undeclared-import");
   assert.equal(findings[0].specifier, "hoisted-package");
+});
+
+test("accepts an external package target", () => {
+  const root = createWorkspace([
+    [
+      "site",
+      packageAt("external-site"),
+      { "index.ts": 'import "declared";\n' },
+    ],
+  ]);
+  const target = collectTargetPackages(["site"], [], root);
+  assert.equal(target.length, 1);
+  assert.equal(target[0]?.name, "external-site");
 });
 
 test("fails on an unexported subpath", () => {

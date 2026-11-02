@@ -1,4 +1,5 @@
-﻿import { mkdir, rm, writeFile } from "node:fs/promises";
+﻿import { randomUUID } from "node:crypto";
+import { lstat, mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
   BUILD_OUTPUT_MARKER_FILE,
@@ -12,13 +13,12 @@ import {
   serializeBuildOutputMarker,
 } from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
-import {
-  type ConfigEnv,
-  createServer,
-  type Plugin,
-  type ResolvedConfig,
-} from "vite";
+import type { ConfigEnv, Plugin, ResolvedConfig } from "vite";
 import { collectSiteOwnedOutputPaths } from "./content_assets.js";
+import {
+  type BuildArtifactWriter,
+  createBuildArtifactWriter,
+} from "./ssg/artifact_writer.js";
 import {
   CLOUDFLARE_WORKER_ASSET_LIMIT,
   type ClientBuildArtifacts,
@@ -56,6 +56,10 @@ import {
   measureSync,
   writeSsgOutputMetrics,
 } from "./ssg/runtime_metrics.js";
+import {
+  isStandaloneSsgMode,
+  loadStandaloneSsgBundle,
+} from "./ssg/standalone.js";
 import type {
   GeneratedOutputAsset,
   OutputCacheDecision,
@@ -94,6 +98,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   const resolvedVirtualId = `\0${virtualId}`;
   const entry = options.entry ?? defaultEntry;
   let resolvedConfig: ResolvedConfig | undefined;
+  let publicationOutputDirectory: string | undefined;
+  let clientOutputDirectory: string | undefined;
+  let artifactWriter: BuildArtifactWriter | undefined;
   let pendingOutputCache:
     | {
         path: string;
@@ -124,32 +131,60 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
 
   return {
     name: "riebeckite-ssg",
-    apply: shouldApplyRiebeckiteSsg,
+    apply: (_config, env) => env.command === "build",
     enforce: "post",
-    config() {
+    config(config, env) {
+      const root = resolve(config.root ?? process.cwd());
+      publicationOutputDirectory = resolve(
+        root,
+        config.build?.outDir ?? "dist",
+      );
+      clientOutputDirectory = join(root, ".riebeckite", "build-output-client");
       return {
         build: {
-          rollupOptions: {
-            input: [virtualId],
-          },
+          outDir:
+            env.mode === "client"
+              ? clientOutputDirectory
+              : join(root, ".riebeckite", "build-output"),
+          ...(env.mode === "client"
+            ? {}
+            : { rollupOptions: { input: [virtualId] } }),
         },
       };
     },
     configResolved(config) {
       resolvedConfig = config;
+      if (config.mode === "client") {
+        clientOutputDirectory = resolve(config.root, config.build.outDir);
+      }
     },
     async buildStart() {
       const config = resolvedConfig;
-      if (!config) return;
-      if (
-        !config.plugins.some((plugin) =>
-          plugin.name.startsWith("@hono/vite-build/"),
-        )
-      ) {
+      if (!config || config.mode === "client") return;
+      if (!publicationOutputDirectory) {
+        throw new Error(
+          "Riebeckite SSG could not resolve the publication output directory.",
+        );
+      }
+      artifactWriter = await createBuildArtifactWriter({
+        outputDirectory: publicationOutputDirectory,
+        stagingDirectory: resolve(config.root, config.build.outDir),
+      });
+      const outDir = resolve(config.root, config.build.outDir);
+      clientBuildArtifacts = clientOutputDirectory
+        ? await preserveClientBuildArtifacts(clientOutputDirectory)
+        : undefined;
+      if (!clientBuildArtifacts) {
+        clientBuildArtifacts = await preserveClientBuildArtifacts(
+          publicationOutputDirectory,
+        );
+      }
+      if (!clientBuildArtifacts) {
+        if (await isDirectory(publicationOutputDirectory)) {
+          await artifactWriter.copyFrom(publicationOutputDirectory);
+        }
         return;
       }
-      const outDir = resolve(config.root, config.build.outDir);
-      clientBuildArtifacts = await preserveClientBuildArtifacts(outDir);
       logSsgDiagnostics(
         this,
         `client manifest ${clientBuildArtifacts ? `preserved (${clientBuildArtifacts.paths.length} files)` : "not found"}`,
@@ -166,6 +201,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     },
     async generateBundle(_outputOptions, bundle) {
       const config = resolvedConfig;
+      if (config?.mode === "client") return;
       if (!config) {
         throw new Error(
           "Riebeckite SSG could not resolve the Vite configuration.",
@@ -179,31 +215,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       const outDir = resolve(config.root, config.build.outDir);
       let viteClientAssetPaths: string[] = [];
       removeVirtualEntryChunk(bundle, resolvedVirtualId);
-      const server = await measure(timingsMs, "ssgSetup", () =>
-        createServer({
-          root: config.root,
-          define: config.define,
-          resolve: {
-            ...config.resolve,
-            builtins: [...config.resolve.builtins, /^node:/],
-          },
-          plugins: [
-            {
-              name: "riebeckite-ssg-package-resolution",
-              enforce: "post",
-              configResolved(runtimeConfig) {
-                runtimeConfig.resolve.alias = [];
-              },
-            },
-          ],
-          build: { ssr: true },
-          oxc: { jsx: { runtime: "automatic", importSource: "hono/jsx" } },
-          environments: {
-            ssr: { resolve: { noExternal: [/^honox(?:\/.*)?$/] } },
-          },
-          mode: config.mode,
-          server: { watch: null },
-        }),
+      const bundleDirectory = join(
+        config.root,
+        ".riebeckite",
+        `ssg-bundle-${randomUUID()}`,
       );
 
       try {
@@ -213,13 +228,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
         );
-        const module = (await measure(timingsMs, "ssrModuleLoad", () =>
-          server.ssrLoadModule(entry),
-        )) as SsgModule;
-        const app = module.default;
-        if (!app) {
-          throw new Error(`Failed to find a default export from ${entry}.`);
-        }
+        const { app, module } = await measure(timingsMs, "ssrModuleLoad", () =>
+          loadStandaloneSsgBundle({
+            root: config.root,
+            entry,
+            outputDirectory: bundleDirectory,
+            clientOutputDirectory: outDir,
+            config,
+          }),
+        );
 
         const outputChangeSet = await measure<SsgOutputChangeSet | undefined>(
           timingsMs,
@@ -406,12 +423,14 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               } else {
                 metrics.assetOutputCount += 1;
               }
-              measureSync(timingsMs, "outputWrite", () =>
-                this.emitFile({
-                  type: "asset",
-                  fileName,
-                  source: data,
-                }),
+              if (!artifactWriter) {
+                throw new Error(
+                  "Riebeckite SSG artifact writer was not initialized.",
+                );
+              }
+              const writer = artifactWriter;
+              await measure(timingsMs, "outputWrite", () =>
+                writer.write(fileName, data),
               );
               metrics.emittedOutputCount += 1;
               nextOutputCache.outputs[fileName] = {
@@ -446,9 +465,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           () =>
             emitGeneratedOutputs(
               module,
-              (asset) => {
-                measureSync(timingsMs, "outputWrite", () =>
-                  this.emitFile(asset),
+              async (asset) => {
+                if (!artifactWriter) {
+                  throw new Error(
+                    "Riebeckite SSG artifact writer was not initialized.",
+                  );
+                }
+                const writer = artifactWriter;
+                await measure(timingsMs, "outputWrite", () =>
+                  writer.write(asset.fileName, asset.source),
                 );
                 metrics.emittedOutputCount += 1;
                 nextOutputCache.outputs[asset.fileName] = {
@@ -480,11 +505,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               }
               const cached = previousOutputCache.outputs[path];
               if (!cached) continue;
-              this.emitFile({
-                type: "asset",
-                fileName: path,
-                source: await decodeOutput(outputCachePath, cached),
-              });
+              if (!artifactWriter) {
+                throw new Error(
+                  "Riebeckite SSG artifact writer was not initialized.",
+                );
+              }
+              const writer = artifactWriter;
+              await measure(timingsMs, "outputWrite", async () =>
+                writer.write(path, await decodeOutput(outputCachePath, cached)),
+              );
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;
               nextOutputCache.outputs[path] = cached;
@@ -494,9 +523,12 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         if (outputChangeSet) {
           for (const output of outputChangeSet.removed) {
             if (siteOwnedOutputPaths.has(output.path)) continue;
-            await rm(join(outDir, output.path), {
-              force: true,
-            });
+            if (!artifactWriter) {
+              throw new Error(
+                "Riebeckite SSG artifact writer was not initialized.",
+              );
+            }
+            await artifactWriter.remove(output.path);
             metrics.deletedOutputCount += 1;
           }
         }
@@ -560,8 +592,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         });
         logGeneratedHtmlAssetDiagnostics(this, generatedHtml);
       } finally {
-        await server.close();
+        await rm(bundleDirectory, { recursive: true, force: true });
         await discardClientBuildArtifacts(clientBuildArtifacts);
+        if (clientOutputDirectory) {
+          await rm(clientOutputDirectory, { recursive: true, force: true });
+        }
         clientBuildArtifacts = undefined;
       }
     },
@@ -569,6 +604,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       order: "post",
       async handler() {
         if (!resolvedConfig) return;
+        if (resolvedConfig.mode === "client") return;
+        const outputDirectory = publicationOutputDirectory;
+        if (!outputDirectory) {
+          throw new Error(
+            "Riebeckite SSG could not resolve the publication output directory.",
+          );
+        }
 
         const outDir = resolve(
           resolvedConfig.root,
@@ -582,13 +624,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         }
         const outputCache = pendingOutputCache;
         if (!outputCache) return;
-        await writePublicationMarker({
-          root: resolvedConfig.root,
-          outputDirectory: outDir,
-          publicationFingerprint: outputCache.publicationFingerprint,
-          warn: (message) => this.warn(message),
-        });
+        let published = false;
         try {
+          if (!artifactWriter) {
+            throw new Error(
+              "Riebeckite SSG artifact writer was not initialized.",
+            );
+          }
           outputCache.state.finalOutputInventory = await measure(
             outputCache.timingsMs,
             "outputInventory",
@@ -661,23 +703,41 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 fingerprintDirectory(resolve(publicDir)),
               )
             : undefined;
-          await saveOutputCache(
-            outputCache.path,
-            outputCache.state,
-            outputCache.outDir,
-            outputCache.timingsMs,
-          );
-        } catch (error) {
-          this.warn(
-            `SSG output cache could not be saved; the next build regenerates every output. ${
-              error instanceof Error ? error.message : String(error)
-            }`,
-          );
+          try {
+            await saveOutputCache(
+              outputCache.path,
+              outputCache.state,
+              outputCache.outDir,
+              outputCache.timingsMs,
+            );
+          } catch (error) {
+            this.warn(
+              `SSG output cache could not be saved; the next build regenerates every output. ${
+                error instanceof Error ? error.message : String(error)
+              }`,
+            );
+          }
+          await artifactWriter.publish();
+          published = true;
+          await writePublicationMarker({
+            root: resolvedConfig.root,
+            outputDirectory,
+            publicationFingerprint: outputCache.publicationFingerprint,
+            warn: (message) => this.warn(message),
+          });
         } finally {
+          if (!published) await artifactWriter?.discard();
           await writeSsgOutputMetrics(outputCache.metrics);
           pendingOutputCache = undefined;
+          artifactWriter = undefined;
         }
       },
+    },
+    async buildEnd(error) {
+      if (!error || !artifactWriter) return;
+      await artifactWriter.discard();
+      artifactWriter = undefined;
+      pendingOutputCache = undefined;
     },
   };
 }
@@ -685,7 +745,27 @@ export function shouldApplyRiebeckiteSsg(
   _config: unknown,
   env: ConfigEnv,
 ): boolean {
-  return env.command === "build" && env.mode !== "client";
+  return (
+    env.command === "build" &&
+    env.mode !== "client" &&
+    !isStandaloneSsgMode(env.mode)
+  );
+}
+
+async function isDirectory(path: string): Promise<boolean> {
+  try {
+    return (await lstat(path)).isDirectory();
+  } catch (error) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code?: unknown }).code === "ENOENT"
+    ) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 export function findBuildOutputSiteCollisions(
@@ -699,13 +779,9 @@ export function findBuildOutputSiteCollisions(
   return [...collisions].sort();
 }
 
-/**
- * Forwards plugin-generated files (registered through the Core output sink)
- * into the Vite build output. Plugins never write to disk themselves.
- */
 async function emitGeneratedOutputs(
   module: SsgModule,
-  emit: (asset: GeneratedOutputAsset) => void,
+  emit: (asset: GeneratedOutputAsset) => Promise<void>,
   affectedPaths?: ReadonlySet<string>,
   shadowedPaths?: ReadonlySet<string>,
   onShadowed?: (path: string) => void,
@@ -722,7 +798,7 @@ async function emitGeneratedOutputs(
       onShadowed?.(output.path);
       continue;
     }
-    emit({
+    await emit({
       type: "asset",
       fileName: output.path,
       source: output.content,

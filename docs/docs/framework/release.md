@@ -55,6 +55,10 @@ The documentation site is built from `main`, while the npm `latest` tag changes 
 
 The release script never implements its own authentication or one-time-password prompt. It delegates to the npm and pnpm CLI, so your existing npm login, security key, passkey, or OTP configuration is used as-is.
 
+## Transactional site output
+
+Production HonoX builds stage client assets and generated SSG output under `.riebeckite/`. The final `build.outDir` is replaced only after the complete staged output and its cache inventory have been written. A failed build discards the staged directory and leaves the last published output in place. Do not deploy `.riebeckite/build-output` directly; deploy only the configured `build.outDir` after the build succeeds.
+
 ## Normal release
 
 ```mermaid

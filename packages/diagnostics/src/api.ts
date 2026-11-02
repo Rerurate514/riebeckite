@@ -7,7 +7,7 @@ import {
   type ResolvedRiebeckiteConfig,
   resolveApiLifecycle,
 } from "@riebeckite/core";
-import { createDiagnosticFingerprint } from "./collect.js";
+import { createDiagnosticFingerprint } from "./fingerprint.js";
 import type { DevelopmentDiagnostic } from "./model.js";
 
 export function collectApiLifecycleDiagnostics(

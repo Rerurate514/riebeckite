@@ -64,13 +64,13 @@ cache: {
 
 | 設定 | 型 | 既定値 | 用途 |
 | --- | --- | --- | --- |
-| `prefetch` | `false` \| `"hover"` | `false` | リンクにポインターが乗ったとき、同一オリジンのページを先読みする。 |
+| `prefetch` | `false` \| `"hover"` \| `"intent"` | `false` | `"hover"` はポインターがリンクに乗ったとき、`"intent"` はさらにフォーカスまたは押下時に同一オリジンのページを先読みする。 |
 | `scrollRestoration` | `boolean` | `true` | 履歴ごとのスクロール位置を保存し、復元する。 |
 | `viewTransitions` | `boolean` | `false` | 利用可能で、モーションが許可されている場合に View Transitions API を使う。 |
 
 ```ts
 spa: {
-  prefetch: "hover",
+  prefetch: "intent",
   viewTransitions: true,
 }
 ```

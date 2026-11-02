@@ -185,7 +185,7 @@ function html(route: Route, pathname: string, bundle: string): string {
     window.__pageCommits = window.__pageCommits || [];
     window.__pageUnmounts = window.__pageUnmounts || 0;
     window.stopSpa = RiebeckiteSpa.startSpaNavigation({
-      prefetch: "hover",
+      prefetch: "intent",
       scrollRestoration: true,
       viewTransitions: true,
       onBeforePageCommit(signal) {

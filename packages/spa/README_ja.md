@@ -28,7 +28,7 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  spa: { prefetch: "hover", viewTransitions: true },
+  spa: { prefetch: "intent", viewTransitions: true },
 });
 ```
 
@@ -42,7 +42,7 @@ export default defineConfig({
 
 ## 先読み
 
-`prefetch: "hover"` は、成功したページのレスポンスを30秒間再利用し、完了した項目を最近使った順に最大20件保持します。同じURLへの同時リクエストは重複排除されます。ブラウザがデータ節約設定や2G以下の接続を報告している場合は、先読みしません。
+`prefetch: "hover"` はポインターがリンクに入ったときに取得します。`prefetch: "intent"` はリンクへのフォーカスと押下時にも取得します。成功したページのレスポンスは30秒間再利用し、完了した項目を最近使った順に最大20件保持します。同じURLへの同時リクエストは重複排除されます。ブラウザがデータ節約設定や2G以下の接続を報告している場合は、先読みしません。
 
 ## 公開API
 

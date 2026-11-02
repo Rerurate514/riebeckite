@@ -31,7 +31,7 @@ instead of `true` to customize the runtime:
 
 ```ts
 export default defineConfig({
-  spa: { prefetch: "hover", viewTransitions: true },
+  spa: { prefetch: "intent", viewTransitions: true },
 });
 ```
 
@@ -55,10 +55,11 @@ cloned or re-run.
 
 ## Prefetch
 
-`prefetch: "hover"` reuses successful page responses for 30 seconds and keeps at
-most 20 completed least-recently-used entries. Concurrent requests for the same
-URL are deduplicated. Prefetch is skipped when the browser reports data saving
-or a connection at 2G or slower.
+`prefetch: "hover"` fetches when a pointer enters a link. `prefetch: "intent"`
+also fetches when a link receives focus or is pressed. Successful page responses
+are reused for 30 seconds, with at most 20 completed least-recently-used entries.
+Concurrent requests for the same URL are deduplicated. Prefetch is skipped when
+the browser reports data saving or a connection at 2G or slower.
 
 ## Public API
 

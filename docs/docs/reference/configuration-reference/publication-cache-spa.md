@@ -59,13 +59,13 @@ navigation.
 
 | Field | Type | Default | Effect |
 | --- | --- | --- | --- |
-| `prefetch` | `false` \| `"hover"` | `false` | Fetches a same-origin page when the pointer enters its link. |
+| `prefetch` | `false` \| `"hover"` \| `"intent"` | `false` | `"hover"` fetches when the pointer enters a link; `"intent"` also fetches on focus and press. |
 | `scrollRestoration` | `boolean` | `true` | Saves and restores scroll positions for history entries. |
 | `viewTransitions` | `boolean` | `false` | Uses the browser View Transitions API when available and motion is allowed. |
 
 ```ts
 spa: {
-  prefetch: "hover",
+  prefetch: "intent",
   viewTransitions: true,
 }
 ```

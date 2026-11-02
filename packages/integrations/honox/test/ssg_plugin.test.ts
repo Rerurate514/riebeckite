@@ -9,6 +9,7 @@ import {
   loadOutputCacheMetadata,
   validateOutputCache,
 } from "../src/ssg/output_cache.js";
+import { runSsg } from "../src/ssg/runner.js";
 import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
   createNoChangeFastPathOutputMetrics,
@@ -20,7 +21,6 @@ import {
   shouldApplyRiebeckiteSsg,
   verifyNoChangeFastPath,
 } from "../src/ssg_plugin.js";
-import { runSsg } from "../src/ssg/runner.js";
 
 test("SSG runner renders without Vite lifecycle state", async () => {
   const output = new Map<string, string | Uint8Array>();

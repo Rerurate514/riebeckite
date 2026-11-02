@@ -4,10 +4,10 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import {
+  type CliArgumentValue,
   type CliCommandContext,
   type CliCommandDefinition,
   type CliCommandInput,
-  type CliArgumentValue,
   type CliOptionValue,
   createCliCommandRegistry,
   resolveConfig,
@@ -177,15 +177,12 @@ test("rejects unknown and missing presets", async () => {
   try {
     const ctx = context(root);
     const applyCommand = command("apply");
-    await assert.rejects(
-      async () => {
-        await applyCommand.handler(
-          ctx,
-          input(applyCommand, { preset: ["unknown"], apply: true }),
-        );
-      },
-      /Unknown frontmatter preset/,
-    );
+    await assert.rejects(async () => {
+      await applyCommand.handler(
+        ctx,
+        input(applyCommand, { preset: ["unknown"], apply: true }),
+      );
+    }, /Unknown frontmatter preset/);
 
     const planCommand = command("plan");
     assert.equal(

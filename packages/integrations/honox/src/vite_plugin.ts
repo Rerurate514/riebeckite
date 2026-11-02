@@ -1,6 +1,6 @@
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
-import { riebeckiteDevelopmentInspector } from "@riebeckite/honox-inspector";
+import { riebeckiteDevelopmentInspector } from "@riebeckite/dev-inspector";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";

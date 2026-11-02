@@ -1,5 +1,5 @@
 {
-  "name": "@riebeckite/honox-inspector",
+  "name": "@riebeckite/dev-inspector",
   "version": "0.0.35",
   "license": "Apache-2.0",
   "type": "module",
@@ -33,23 +33,22 @@
     "dist"
   ],
   "scripts": {
-    "build": "node ../../../scripts/build_package.mjs",
+    "build": "node ../../scripts/build_package.mjs",
     "test": "node --import tsx --test \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/Rerurate514/riebeckite.git",
-    "directory": "packages/integrations/honox-inspector"
+    "directory": "packages/dev-inspector"
   },
   "homepage": "https://github.com/Rerurate514/riebeckite#readme",
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Development inspector overlay for Riebeckite HonoX sites.",
+  "description": "Development inspector overlay for Riebeckite sites.",
   "keywords": [
     "riebeckite",
-    "honox",
     "vite",
     "inspector",
     "development"

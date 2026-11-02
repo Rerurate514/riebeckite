@@ -1,6 +1,6 @@
-# @riebeckite/honox-inspector
+# @riebeckite/dev-inspector
 
-HonoX と Vite で構築した Riebeckite サイト向けの、開発時専用インスペクターです。
+Vite で構築した Riebeckite サイト向けの、開発時専用インスペクターです。
 
 [English](./README.md)
 

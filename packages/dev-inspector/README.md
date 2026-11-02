@@ -1,6 +1,6 @@
-# @riebeckite/honox-inspector
+# @riebeckite/dev-inspector
 
-Development-only inspector overlay for Riebeckite sites built with HonoX and Vite.
+Development-only inspector overlay for Riebeckite sites built with Vite.
 
 [日本語](./README_ja.md)
 

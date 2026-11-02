@@ -9,7 +9,7 @@ import {
   diagnoseOutputPlan,
 } from "@riebeckite/diagnostics";
 import { createContentSource } from "@riebeckite/node";
-import type { ResolvedHonoxApplication } from "./application.js";
+import type { ResolvedInspectorApplication } from "./application.js";
 import {
   dependencyLabel,
   dependencyMatches,
@@ -29,7 +29,7 @@ import type {
 
 export async function inspectContentOutputs(
   snapshot: CompletedContentBuildSnapshot,
-  application: ResolvedHonoxApplication,
+  application: ResolvedInspectorApplication,
 ): Promise<OutputResult> {
   try {
     const changes = snapshot.outputChangeSet;
@@ -93,7 +93,7 @@ export function unavailableOutputResult(): OutputResult {
 
 export async function inspectAssets(
   snapshot: CompletedContentBuildSnapshot,
-  application: ResolvedHonoxApplication,
+  application: ResolvedInspectorApplication,
 ): Promise<AssetResult> {
   try {
     const source = createContentSource(

@@ -16,7 +16,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
-  "packages/integrations/honox-inspector",
+  "packages/dev-inspector",
   "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
@@ -208,9 +208,9 @@ const packagePublishingMetadata = {
     description: "HonoX and Vite integration for building Riebeckite sites.",
     keywords: ["riebeckite", "honox", "vite", "static-site-generator"],
   },
-  "packages/integrations/honox-inspector": {
-    description: "Development inspector overlay for Riebeckite HonoX sites.",
-    keywords: ["riebeckite", "honox", "vite", "inspector", "development"],
+  "packages/dev-inspector": {
+    description: "Development inspector overlay for Riebeckite sites.",
+    keywords: ["riebeckite", "vite", "inspector", "development"],
   },
   "packages/integrations/analytics-cloudflare": {
     description:
@@ -843,12 +843,12 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
-  if (directory === "packages/integrations/honox-inspector") {
+  if (directory === "packages/dev-inspector") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
       scripts: {
-        build: "node ../../../scripts/build_package.mjs",
+        build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },

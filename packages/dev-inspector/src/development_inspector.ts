@@ -17,7 +17,7 @@ import {
   toLogicalPath,
 } from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
-import type { ResolvedHonoxApplication } from "./application.js";
+import type { ResolvedInspectorApplication } from "./application.js";
 import { inspectorClientModule } from "./development_inspector_client.js";
 import {
   graphQueryFromRequest,
@@ -66,7 +66,7 @@ const invalidationDelayMs = 150;
 export { diagnosticMatchesPage } from "./development_inspector_query.js";
 
 export function riebeckiteDevelopmentInspector(
-  getApplication: () => ResolvedHonoxApplication,
+  getApplication: () => ResolvedInspectorApplication,
 ): Plugin {
   let revision = 0;
   let invalidatedAt = 0;
@@ -82,7 +82,7 @@ export function riebeckiteDevelopmentInspector(
     }, invalidationDelayMs);
   };
   const inspectApplication = (
-    application: ResolvedHonoxApplication,
+    application: ResolvedInspectorApplication,
     currentRevision: number,
     server: ViteDevServer,
   ): CachedInspection => {
@@ -387,7 +387,7 @@ export function riebeckiteDevelopmentInspector(
       return () => {
         prioritizeMiddleware(server, bootstrapMiddleware, bootstrapPath);
         const handle = (file: string) => {
-          let application: ResolvedHonoxApplication;
+          let application: ResolvedInspectorApplication;
           try {
             application = getApplication();
           } catch {
@@ -406,7 +406,7 @@ export function riebeckiteDevelopmentInspector(
       };
     },
     handleHotUpdate({ file, server }) {
-      let application: ResolvedHonoxApplication | undefined;
+      let application: ResolvedInspectorApplication | undefined;
       try {
         application = getApplication();
       } catch {
@@ -419,7 +419,7 @@ export function riebeckiteDevelopmentInspector(
 }
 
 async function completedBuildSnapshot(
-  application: ResolvedHonoxApplication,
+  application: ResolvedInspectorApplication,
   server: ViteDevServer,
 ): Promise<CompletedContentBuildSnapshot | undefined> {
   const entry = path.join(application.appRoot, "app", "server.ts");
@@ -438,7 +438,7 @@ async function completedBuildSnapshot(
 }
 
 function shouldInvalidateInspection(
-  application: ResolvedHonoxApplication | undefined,
+  application: ResolvedInspectorApplication | undefined,
   file: string,
 ): boolean {
   if (!application) return true;
@@ -450,7 +450,7 @@ function shouldInvalidateInspection(
 }
 
 function isContentWatchTarget(
-  application: ResolvedHonoxApplication,
+  application: ResolvedInspectorApplication,
   file: string,
 ): boolean {
   if (!isPathInsideDirectory(application.contentRoot, file)) return false;

@@ -4,14 +4,14 @@ import {
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
 } from "@riebeckite/core";
-import type { ResolvedHonoxApplication } from "./application.js";
+import type { ResolvedInspectorApplication } from "./application.js";
 import type {
   RegenerationInspection,
   RegenerationReason,
 } from "./development_inspector_types.js";
 
 export async function inspectRegeneration(
-  application: ResolvedHonoxApplication,
+  application: ResolvedInspectorApplication,
   changes: OutputChangeSet,
   buildReasons: readonly string[],
 ): Promise<RegenerationInspection> {

@@ -1,6 +1,6 @@
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 
-export type ResolvedHonoxApplication = {
+export type ResolvedInspectorApplication = {
   config: ResolvedRiebeckiteConfig;
   configRoot: string;
   configFile: string;

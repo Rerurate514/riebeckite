@@ -8,7 +8,7 @@ import type {
   collectDevelopmentDiagnostics,
   DevelopmentDiagnostic,
 } from "@riebeckite/diagnostics";
-import type { ResolvedHonoxApplication } from "./application.js";
+import type { ResolvedInspectorApplication } from "./application.js";
 
 export type ListedOutput = {
   readonly path: string;
@@ -128,7 +128,7 @@ export type OutputQuery = {
 };
 
 export type CachedInspection = {
-  readonly application: ResolvedHonoxApplication;
+  readonly application: ResolvedInspectorApplication;
   readonly revision: number;
   readonly snapshot: Promise<CompletedContentBuildSnapshot | undefined>;
   readonly report: Promise<

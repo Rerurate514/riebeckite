@@ -36,3 +36,15 @@ for (const preset of ["card", "minimal", "editorial"] as const) {
     assert.equal(metadata.height, OG_IMAGE_HEIGHT);
   });
 }
+
+test("legacy SVG layouts embed the Japanese font", async () => {
+  const image = await renderOgImage(
+    () =>
+      '<text x="80" y="160" fill="white" font-size="64">日本語のカスタムレイアウト</text>',
+    input,
+  );
+  const metadata = await sharp(image).metadata();
+
+  assert.equal(metadata.width, OG_IMAGE_WIDTH);
+  assert.equal(metadata.height, OG_IMAGE_HEIGHT);
+});

@@ -1,3 +1,7 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { createElement, type ReactNode } from "react";
+import satori from "satori";
 import sharp from "sharp";
 
 export const OG_IMAGE_HEIGHT = 630;
@@ -39,7 +43,8 @@ export type OgLayoutInput = Readonly<{
   content: OgContent;
 }>;
 
-export type OgLayout = (input: OgLayoutInput) => string;
+export type OgLayoutResult = ReactNode | string;
+export type OgLayout = (input: OgLayoutInput) => OgLayoutResult;
 export type OgPreset = "card" | "minimal" | "editorial";
 
 export function defineOgLayout(layout: OgLayout): OgLayout {
@@ -48,25 +53,74 @@ export function defineOgLayout(layout: OgLayout): OgLayout {
 
 export function presetLayout(preset: OgPreset): OgLayout {
   return ({ content, page, palette, site }) => {
-    const siteName = content.showSiteName ? escapeXml(site.title) : "";
-    const title = titleLines(page.title, preset === "editorial" ? 22 : 26)
-      .map(
-        (line, index) =>
-          `<tspan x="${preset === "editorial" ? 120 : preset === "minimal" ? 72 : 96}" dy="${index === 0 ? 0 : 82}">${escapeXml(line)}</tspan>`,
-      )
-      .join("");
-    const attribution = attributionText(content, page);
-    const footer = attribution
-      ? `<text x="${preset === "editorial" ? 120 : preset === "minimal" ? 72 : 96}" y="540" fill="${palette.foreground}" fill-opacity="0.72" font-size="26">${escapeXml(attribution)}</text>`
-      : "";
-
-    if (preset === "minimal") {
-      return `<rect width="1200" height="630" fill="${palette.background}"/><text x="72" y="96" fill="${palette.accent}" font-size="28">${siteName}</text><text x="72" y="280" fill="${palette.foreground}" font-size="64" font-weight="700">${title}</text>${footer}`;
-    }
+    const padding =
+      preset === "editorial" ? 120 : preset === "minimal" ? 72 : 96;
+    const titleSize =
+      preset === "editorial" ? 72 : preset === "minimal" ? 64 : 68;
+    const children: ReactNode[] = [];
     if (preset === "editorial") {
-      return `<rect width="1200" height="630" fill="${palette.background}"/><rect x="72" y="72" width="14" height="486" fill="${palette.accent}"/><text x="120" y="128" fill="${palette.foreground}" font-size="28">${siteName}</text><text x="120" y="280" fill="${palette.foreground}" font-size="72" font-weight="700">${title}</text>${footer}`;
+      children.push(
+        createElement("div", {
+          key: "accent",
+          style: { backgroundColor: palette.accent, height: "100%", width: 14 },
+        }),
+      );
     }
-    return `<rect width="1200" height="630" fill="${palette.background}"/><rect x="48" y="48" width="1104" height="534" rx="32" fill="#ffffff" fill-opacity="0.1"/><text x="96" y="128" fill="${palette.accent}" font-size="28">${siteName}</text><text x="96" y="280" fill="${palette.foreground}" font-size="68" font-weight="700">${title}</text>${footer}`;
+    children.push(
+      createElement(
+        "div",
+        {
+          key: "content",
+          style: {
+            display: "flex",
+            flex: 1,
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-between",
+            padding: preset === "card" ? 48 : 0,
+          },
+        },
+        content.showSiteName
+          ? createElement(
+              "div",
+              { style: { color: palette.accent, fontSize: 28 } },
+              site.title,
+            )
+          : createElement("div"),
+        createElement(
+          "div",
+          {
+            style: {
+              color: palette.foreground,
+              fontSize: titleSize,
+              fontWeight: 700,
+              lineHeight: 1.2,
+              maxHeight: 260,
+              overflow: "hidden",
+            },
+          },
+          page.title || "Untitled",
+        ),
+        createElement(
+          "div",
+          { style: { color: palette.foreground, fontSize: 26, opacity: 0.72 } },
+          attributionText(content, page),
+        ),
+      ),
+    );
+    return createElement(
+      "div",
+      {
+        style: {
+          backgroundColor: palette.background,
+          display: "flex",
+          height: "100%",
+          padding,
+          width: "100%",
+        },
+      },
+      children,
+    );
   };
 }
 
@@ -74,7 +128,15 @@ export async function renderOgImage(
   layout: OgLayout,
   input: OgLayoutInput,
 ): Promise<Uint8Array> {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}"><style>text{font-family:"Noto Sans CJK JP","Noto Sans JP",sans-serif}</style>${layout(input)}</svg>`;
+  const result = layout(input);
+  const svg =
+    typeof result === "string"
+      ? `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}"><style>${fontFaceCss}text{font-family:"Noto Sans JP",sans-serif}</style>${result}</svg>`
+      : await satori(toReactNode(result), {
+          width: OG_IMAGE_WIDTH,
+          height: OG_IMAGE_HEIGHT,
+          fonts: notoSansJpFonts,
+        });
   const png = await sharp(Buffer.from(svg), { limitInputPixels: false })
     .png()
     .toBuffer();
@@ -90,54 +152,51 @@ export async function renderOgImage(
 }
 
 function attributionText(content: OgContent, page: OgPageMetadata): string {
-  const values = [
+  return [
     ...(content.showAuthor && page.author ? [page.author] : []),
     ...(content.showTags ? page.tags.slice(0, 3) : []),
-  ];
-  return values.join(" · ");
+  ].join(" · ");
 }
 
-function titleLines(title: string, maximumCharacters: number): string[] {
-  const words = title.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return ["Untitled"];
-  const lines: string[] = [];
-  let line = "";
-  for (const word of words) {
-    const candidate = line ? `${line} ${word}` : word;
-    if (line && characterLength(candidate) > maximumCharacters) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = candidate;
-    }
+const notoSansJpFontData = ([400, 700] as const).map(
+  (weight) =>
+    [
+      weight,
+      readFileSync(
+        fileURLToPath(
+          new URL(
+            `./fonts/noto-sans-jp-japanese-${weight}-normal.woff`,
+            import.meta.url,
+          ),
+        ),
+      ),
+    ] as const,
+);
+const notoSansJpFonts = notoSansJpFontData.map(([weight, data]) => ({
+  data,
+  name: "Noto Sans JP",
+  weight,
+}));
+const fontFaceCss = notoSansJpFontData
+  .map(
+    ([weight, data]) =>
+      `@font-face{font-family:"Noto Sans JP";font-style:normal;font-weight:${weight};src:url(data:font/woff;base64,${data.toString("base64")}) format("woff")}`,
+  )
+  .join("");
+
+function toReactNode(value: unknown): ReactNode {
+  if (Array.isArray(value)) return value.map(toReactNode);
+  if (!value || typeof value !== "object") return value as ReactNode;
+  const node = value as {
+    tag?: unknown;
+    props?: Record<string, unknown>;
+    children?: unknown[];
+  };
+  if (!node.tag) return value as ReactNode;
+  const children = node.children ?? [];
+  const props = { ...node.props };
+  if (typeof node.tag === "function") {
+    return toReactNode(node.tag({ ...props, children }));
   }
-  if (line) lines.push(line);
-  return lines
-    .slice(0, 3)
-    .map((value, index, values) =>
-      index === values.length - 1 && lines.length > 3
-        ? `${value.slice(0, Math.max(0, maximumCharacters - 1))}…`
-        : value,
-    );
-}
-
-function characterLength(value: string): number {
-  return [...value].reduce((length, character) => {
-    const codePoint = character.codePointAt(0);
-    return length + (codePoint !== undefined && codePoint <= 0xff ? 1 : 2);
-  }, 0);
-}
-
-function escapeXml(value: string): string {
-  return value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&apos;",
-      })[character] ?? character,
-  );
+  return createElement(node.tag as string, props, ...children.map(toReactNode));
 }

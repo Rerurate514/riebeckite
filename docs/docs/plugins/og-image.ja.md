@@ -18,7 +18,7 @@ export default defineConfig({
 });
 ```
 
-`card`、`minimal`、`editorial` のプリセットを使えます。レンダラーは Sharp と SVG テキストを使い、適切なシステムフォントが利用できる環境では日本語も描画します。
+`card`、`minimal`、`editorial` のプリセットを使えます。レイアウトには Satori、PNG 化には Sharp を使います。Noto Sans JP（OFL-1.1）を同梱しているため、対応 OS ではシステムフォントの有無にかかわらず日本語を決定的に描画します。
 
 ## 優先順位と出力
 
@@ -30,14 +30,36 @@ frontmatter で `ogImage` または `image` を明示した場合、その値は
 
 レンダラーは SSG の出力プランが PNG を変更ありと判定した後にだけ実行します。キャッシュ済みで変更のない出力は Sharp を実行せず再利用されます。出力フィンガープリントにはページ識別子、外観・表示設定、レンダラーバージョンが含まれます。
 
-## カスタムレイアウト
+## TSX レイアウト
 
-SVG 本体を返す関数を渡せます。関数を変更したら更新するバージョン値として、`layoutFingerprint` も指定してください。
+TSX ファイルのパスを指定してカスタムレイアウトを使えます。ビルド時にソースファイルをバンドルし、変更時は影響する画像だけをキャッシュ無効化します。
 
 ```ts
 ogImage({
-  layoutFingerprint: "brand-layout-v2",
-  layout: ({ page, palette }) =>
-    `<rect width="1200" height="630" fill="${palette.background}"/><text x="80" y="240" fill="${palette.foreground}" font-size="72">${page.title}</text>`,
+  layout: "./og-layout.tsx",
 });
 ```
+
+```tsx
+import { defineOgLayout } from "@riebeckite/og-image";
+
+export default defineOgLayout(({ page, palette, site }) => (
+  <div
+    style={{
+      backgroundColor: palette.background,
+      color: palette.foreground,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      justifyContent: "space-between",
+      padding: 64,
+      width: "100%",
+    }}
+  >
+    <div>{site.title}</div>
+    <div style={{ fontSize: 68, fontWeight: 700 }}>{page.title}</div>
+  </div>
+));
+```
+
+レイアウトは default export が必要です。サイトで設定した Hono JSX runtime と、Satori が対応する Flexbox CSS の範囲で記述します。SVG を返す関数も継続して使えますが、キャッシュ無効化のため `layoutFingerprint` が必要です。

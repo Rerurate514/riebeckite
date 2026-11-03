@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { rm } from "node:fs/promises";
+import { resolve } from "node:path";
 import test from "node:test";
 import { ogImage, validateOgImageOptions } from "../index.js";
 
@@ -31,6 +33,28 @@ test("requires a fingerprint for a custom layout", () => {
   assert.deepEqual(validateOgImageOptions({ layout: () => "" }), [
     { path: "layoutFingerprint", message: "Required when layout is provided." },
   ]);
+});
+
+test("loads a TSX layout and renders it through the production renderer", async () => {
+  const plugin = ogImage({ layout: "test/tsx-layout.tsx" });
+  const generated = entry({});
+  plugin.onManifestCreated?.({
+    manifest: { publicEntries: [generated] },
+  } as never);
+  const outputs = await plugin.planDeferredOutputs?.({
+    manifest: { routableEntries: [generated] },
+    site: { title: "Riebeckite" },
+    derived: {},
+  } as never);
+  try {
+    const image = await outputs?.[0]?.generate();
+    assert.deepEqual(
+      [...(image?.slice(0, 8) ?? [])],
+      [137, 80, 78, 71, 13, 10, 26, 10],
+    );
+  } finally {
+    await rm(resolve("test", ".riebeckite"), { force: true, recursive: true });
+  }
 });
 
 function entry(frontmatter: Record<string, unknown>) {

@@ -1,4 +1,7 @@
 import { createHash } from "node:crypto";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   type ConfigValidationIssue,
   definePlugin,
@@ -12,6 +15,7 @@ import {
   presetLayout,
   renderOgImage,
 } from "@riebeckite/og-image";
+import { buildSync } from "esbuild";
 
 const PLUGIN_NAME = "og-image";
 const RENDERER_VERSION = "1";
@@ -31,17 +35,28 @@ export type OgImageOptions = {
   preset?: OgPreset;
   appearance?: Partial<OgPalette>;
   content?: Partial<OgContent>;
-  layout?: OgLayout;
+  layout?: OgLayout | string;
   layoutFingerprint?: string;
 };
 
 export function ogImage(options: OgImageOptions = {}) {
+  const customLayout =
+    typeof options.layout === "string"
+      ? compileLayout(options.layout)
+      : undefined;
   const palette = { ...defaultPalette, ...options.appearance };
   const content = { ...defaultContent, ...options.content };
-  const layout = options.layout ?? presetLayout(options.preset ?? "card");
+  const layout =
+    typeof options.layout === "function"
+      ? options.layout
+      : (customLayout?.load ?? presetLayout(options.preset ?? "card"));
   const configurationFingerprint = hash({
     content,
-    layout: options.layoutFingerprint ?? options.preset ?? "card",
+    layout:
+      customLayout?.fingerprint ??
+      options.layoutFingerprint ??
+      options.preset ??
+      "card",
     palette,
     renderer: RENDERER_VERSION,
   });
@@ -90,8 +105,8 @@ export function ogImage(options: OgImageOptions = {}) {
             path: path.slice(1),
             dependencies,
             fingerprint,
-            generate: () =>
-              renderOgImage(layout, {
+            generate: async () =>
+              renderOgImage(await layout, {
                 page: {
                   title: entry.title,
                   description: stringValue(entry.frontmatter.description),
@@ -130,7 +145,10 @@ export function validateOgImageOptions(
       message: "Expected card, minimal, or editorial.",
     });
   }
-  if (options.layout && !stringValue(options.layoutFingerprint)) {
+  if (
+    typeof options.layout === "function" &&
+    !stringValue(options.layoutFingerprint)
+  ) {
     issues.push({
       path: "layoutFingerprint",
       message: "Required when layout is provided.",
@@ -145,6 +163,47 @@ export function validateOgImageOptions(
     }
   }
   return issues;
+}
+
+function compileLayout(path: string): {
+  fingerprint: string;
+  load: Promise<OgLayout>;
+} {
+  const entryPoint = resolve(path);
+  const result = buildSync({
+    absWorkingDir: process.cwd(),
+    bundle: true,
+    entryPoints: [entryPoint],
+    format: "esm",
+    jsx: "automatic",
+    jsxImportSource: "hono/jsx",
+    metafile: true,
+    packages: "external",
+    platform: "node",
+    write: false,
+  });
+  const sourceFingerprint = hash(
+    Object.keys(result.metafile.inputs)
+      .sort()
+      .map((input) => [input, readFileSync(resolve(input), "utf8")]),
+  );
+  const outputPath = resolve(
+    dirname(entryPoint),
+    ".riebeckite",
+    "og-layouts",
+    `${sourceFingerprint}.mjs`,
+  );
+  mkdirSync(resolve(outputPath, ".."), { recursive: true });
+  writeFileSync(outputPath, result.outputFiles[0]?.text ?? "", "utf8");
+  const load = import(
+    `${pathToFileURL(outputPath).href}?v=${sourceFingerprint}`
+  ).then((module) => {
+    if (typeof module.default !== "function") {
+      throw new Error(`OG layout "${path}" must have a default export.`);
+    }
+    return module.default as OgLayout;
+  });
+  return { fingerprint: sourceFingerprint, load };
 }
 
 function generatedImagePath(

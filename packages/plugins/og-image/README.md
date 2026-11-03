@@ -17,8 +17,8 @@ export default defineConfig({
 ```
 
 `card`, `minimal`, and `editorial` presets are available. The renderer uses
-Sharp and SVG text, including Japanese text when an appropriate system font is
-available.
+Satori for layout and Sharp for PNG encoding. It bundles Noto Sans JP (OFL-1.1)
+for deterministic Japanese rendering on every supported operating system.
 
 ## Precedence and output
 
@@ -37,15 +37,39 @@ unchanged cached output is reused without running Sharp. The output fingerprint
 includes the page identity, selected appearance/content settings, and renderer
 version.
 
-## Custom layout
+## TSX layout
 
-Pass a function that returns SVG body markup. Supply `layoutFingerprint` with a
-version that you change whenever that function changes.
+Pass a TSX file path to use a custom layout. Its source files are bundled during
+the build and their fingerprint invalidates only the affected image outputs.
 
 ```ts
 ogImage({
-  layoutFingerprint: "brand-layout-v2",
-  layout: ({ page, palette }) =>
-    `<rect width="1200" height="630" fill="${palette.background}"/><text x="80" y="240" fill="${palette.foreground}" font-size="72">${page.title}</text>`,
+  layout: "./og-layout.tsx",
 });
 ```
+
+```tsx
+import { defineOgLayout } from "@riebeckite/og-image";
+
+export default defineOgLayout(({ page, palette, site }) => (
+  <div
+    style={{
+      backgroundColor: palette.background,
+      color: palette.foreground,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+      justifyContent: "space-between",
+      padding: 64,
+      width: "100%",
+    }}
+  >
+    <div>{site.title}</div>
+    <div style={{ fontSize: 68, fontWeight: 700 }}>{page.title}</div>
+  </div>
+));
+```
+
+The layout must have a default export. It uses the site's configured Hono JSX
+runtime and Satori's supported flexbox CSS subset. A function layout returning
+SVG remains supported and requires `layoutFingerprint` for cache invalidation.

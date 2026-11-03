@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/og-image": "workspace:*"
+    "@riebeckite/og-image": "workspace:*",
+    "esbuild": "catalog:",
+    "hono": "catalog:"
   },
   "files": [
     "LICENSE",

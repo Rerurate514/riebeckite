@@ -127,6 +127,11 @@ test("rewrites documentation links and leaves fenced links untouched", () => {
     ),
   );
   assert.ok(rewritten.includes("[日本語](./shortcodes.ja.md)"));
+  assert.ok(
+    rewriteDocumentLinks("| `[[Note\\|Alias]]` |", options).includes(
+      "[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)",
+    ),
+  );
 });
 
 test("is idempotent and labels generated READMEs", () => {

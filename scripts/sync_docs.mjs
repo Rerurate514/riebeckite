@@ -181,6 +181,9 @@ export function rewriteDocumentLinks(text, options) {
       }
       if (openFence !== null) return line;
       return line
+        .replace(/\[\[[^\]]*\]\]/g, (wikilink) =>
+          wikilink.replaceAll("\\|", "|"),
+        )
         .replace(
           LINK_PATTERN,
           (_match, bang, text, rawTarget, title = "") =>

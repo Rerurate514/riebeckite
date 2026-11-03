@@ -28,6 +28,8 @@
   },
   "files": [
     "LICENSE",
+    "BRIDGE.md",
+    "BRIDGE_ja.md",
     "README.md",
     "README_ja.md",
     "dist"

@@ -32,6 +32,7 @@ import type {
   PluginPostContext,
 } from "./plugin_context.js";
 import type { PluginEndpoint } from "./plugin_endpoint.js";
+import type { PluginInspectorExtension } from "./plugin_inspector.js";
 import type { PluginPageType } from "./plugin_page.js";
 import type {
   HtmlPipeline,
@@ -140,6 +141,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
   endpoints?: PluginEndpoint[];
+  inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];

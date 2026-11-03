@@ -9,6 +9,10 @@ test("inspector client offers an English and Japanese interface", () => {
   assert.match(module, /<option value="ja"/);
   assert.match(module, /"Overview": "概要"/);
   assert.match(module, /"Close": "閉じる"/);
+  assert.match(module, /id: "overview"/);
+  assert.match(module, /"plugin:" \+ tab\.id/);
+  assert.match(module, /renderPluginTabData/);
+  assert.match(module, /"Plugin tab does not export mount\(\)\."/);
 });
 
 test("inspector client reserves its vertical scrollbar gutter", () => {

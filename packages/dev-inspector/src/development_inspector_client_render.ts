@@ -499,4 +499,23 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
 }
 
+function pluginTabValue(value) {
+  if (value === null || value === undefined) return "";
+  if (typeof value === "object") return '<code>' + escapeHtml(JSON.stringify(value)) + '</code>';
+  return escapeHtml(String(value));
+}
+
+function renderPluginTabData(data) {
+  if (!data) return '<p class="status">' + t("This tab has no data.") + '</p>';
+  if (data.kind === "error") return '<p class="failure">' + escapeHtml(data.message) + '</p>';
+  if (data.kind === "key-value") {
+    return '<dl>' + (data.items ?? []).map((item) => '<dt>' + escapeHtml(localizedText(item.key)) + '</dt><dd>' + pluginTabValue(item.value) + '</dd>').join("") + '</dl>';
+  }
+  if (data.kind === "table") {
+    const columns = data.columns ?? [];
+    return '<table><thead><tr>' + columns.map((column) => '<th>' + escapeHtml(localizedText(column)) + '</th>').join("") + '</tr></thead><tbody>' + (data.rows ?? []).map((row) => '<tr>' + (Array.isArray(row) ? row : []).map((cell) => '<td>' + pluginTabValue(cell) + '</td>').join("") + '</tr>').join("") + '</tbody></table>';
+  }
+  return '<pre>' + escapeHtml(JSON.stringify(data.kind === "json" ? data.value : data, null, 2)) + '</pre>';
+}
+
 `;

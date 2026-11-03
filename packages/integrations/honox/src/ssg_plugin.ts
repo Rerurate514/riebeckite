@@ -589,10 +589,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
         );
-        inspectGeneratedHtmlPages(module, generatedHtml, {
-          warn: (message) => this.warn(message),
-          info: (message) => this.info(message),
-        });
+        const generatedHtmlDiagnostics = inspectGeneratedHtmlPages(
+          module,
+          generatedHtml,
+          {
+            warn: (message) => this.warn(message),
+            info: (message) => this.info(message),
+          },
+        );
+        module.content?.recordFinalHtmlDiagnostics?.(generatedHtmlDiagnostics);
         logGeneratedHtmlAssetDiagnostics(this, generatedHtml);
       } finally {
         await rm(bundleDirectory, { recursive: true, force: true });

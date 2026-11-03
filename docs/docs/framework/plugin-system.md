@@ -127,6 +127,7 @@ flowchart TD
 | Browser integration | `assets`, `clientEntries` |
 | HTTP integration | `endpoints` |
 | SEO | `seo` |
+| Inspector tabs | `inspector` |
 
 ## Before you implement
 

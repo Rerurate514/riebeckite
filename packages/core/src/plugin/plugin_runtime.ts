@@ -48,6 +48,7 @@ import type {
   PluginContentLocationResolver,
   PluginContext,
 } from "../types/plugin_context.js";
+import type { InspectorTabSnapshot } from "../types/plugin_inspector.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
@@ -228,6 +229,80 @@ export class PluginRuntime {
 
   getPluginHookExecutions(): readonly PluginHookExecution[] {
     return [...this.hookExecutions];
+  }
+
+  async collectInspectorTabs(): Promise<readonly InspectorTabSnapshot[]> {
+    const tabs: InspectorTabSnapshot[] = [];
+    const ids = new Set<string>();
+    const context = this.createContext(this.contentIndex);
+    for (const plugin of this.plugins()) {
+      const extension = plugin.inspector;
+      if (!extension) continue;
+      if (extension.apiVersion !== 1) {
+        this.observability().logger.warn(
+          `Plugin "${plugin.name}" declares an unsupported Inspector API version.`,
+        );
+        continue;
+      }
+      for (const tab of extension.tabs) {
+        if (!/^[a-z0-9][a-z0-9._-]*$/i.test(tab.id)) {
+          this.observability().logger.warn(
+            `Plugin "${plugin.name}" declares an invalid Inspector tab id "${tab.id}".`,
+          );
+          continue;
+        }
+        if (ids.has(tab.id)) {
+          this.observability().logger.warn(
+            `Plugin "${plugin.name}" declares duplicate Inspector tab id "${tab.id}".`,
+          );
+          continue;
+        }
+        ids.add(tab.id);
+        const pluginContext = this.createPluginContext(plugin, context);
+        const collect = tab.collect;
+        try {
+          const data = collect
+            ? await this.observeHook(plugin, `inspector.${tab.id}`, () =>
+                runPluginHook(
+                  plugin,
+                  `inspector.${tab.id}`,
+                  pluginContext,
+                  () => collect(pluginContext),
+                ),
+              )
+            : undefined;
+          tabs.push({
+            plugin: plugin.name,
+            id: tab.id,
+            title: tab.title,
+            description: tab.description,
+            order: tab.order ?? 0,
+            client: tab.client,
+            data,
+          });
+        } catch (error) {
+          const cause =
+            error instanceof Error
+              ? (error as Error & { cause?: unknown }).cause
+              : undefined;
+          tabs.push({
+            plugin: plugin.name,
+            id: tab.id,
+            title: tab.title,
+            description: tab.description,
+            order: tab.order ?? 0,
+            client: tab.client,
+            error:
+              cause instanceof Error
+                ? cause.message
+                : error instanceof Error
+                  ? error.message
+                  : String(error),
+          });
+        }
+      }
+    }
+    return tabs;
   }
 
   getNoChangeFastPathBlockReason(

@@ -82,6 +82,7 @@ export function example(options: ExampleOptions = {}) {
   Browser integration   `assets`, `clientEntries`
   HTTP integration      `endpoints`
   SEO                   `seo`
+  Inspector tabs        `inspector`
 
 Use only the extension points a plugin actually needs.
 

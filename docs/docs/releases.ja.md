@@ -14,10 +14,16 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
 ### Added
 
 - Add change entries, ADRs, and generated release notes so user-facing changes are recorded before release and published consistently to the changelog, the documentation site, and GitHub Releases.
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261102-143500-release-change-management-b2c3d4.md
+
+- **Breaking:** Add an `inspector` plugin extension for Development Inspector tabs. Plugins can contribute build-time data tabs or a custom client module, and Inspector now addresses tabs by stable ids instead of numeric indexes.
+  Packages: `@riebeckite/core`, `@riebeckite/dev-inspector`
+  Migration: If you construct CompletedContentBuildSnapshot yourself, add the new inspectorTabs and finalHtmlDiagnostics fields.
 
 ### Changed
 
@@ -40,6 +46,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Stop reporting spurious D2 render timeouts during development when the dev server blocks the event loop longer than the render timeout. The timeout now starts a fresh window instead of failing a render that could not make progress.
   Packages: `@riebeckite/plugin-d2`
+
+- Record diagnostics from `inspectGeneratedHtml` on the completed build snapshot instead of only writing them to the build log. Snapshot consumers such as the Development Inspector can now read them.
+  Packages: `@riebeckite/honox`, `@riebeckite/dev-inspector`
 
 ### Security
 

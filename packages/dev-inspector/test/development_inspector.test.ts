@@ -335,6 +335,125 @@ test("development inspector reports the output plan and dependencies", async () 
   });
 });
 
+test("development inspector exposes plugin tabs", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const contentRoot = path.join(directory, "content");
+    await fs.mkdir(contentRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(contentRoot, "index.md"),
+      markdown("# Home", { title: "Home", visibility: "public" }),
+    );
+    await fs.writeFile(
+      path.join(directory, "inspector-client.js"),
+      "export function mount() {}",
+    );
+    let collected = 0;
+    const config = resolveConfig({
+      site: { title: "Test", locale: "en" },
+      plugins: [
+        {
+          name: "tab-plugin",
+          inspector: {
+            apiVersion: 1,
+            tabs: [
+              {
+                id: "sample",
+                title: { en: "Sample", ja: "サンプル" },
+                order: 5,
+                collect() {
+                  collected += 1;
+                  return {
+                    kind: "key-value",
+                    items: [{ key: "Entries", value: 1 }],
+                  };
+                },
+              },
+              {
+                id: "custom",
+                title: "Custom",
+                client: "./inspector-client.js",
+              },
+              {
+                id: "broken",
+                title: "Broken",
+                collect() {
+                  throw new Error("tab failed");
+                },
+              },
+              { id: "sample", title: "Duplicate" },
+              { id: "bad id", title: "Invalid" },
+            ],
+          },
+        },
+      ],
+    });
+    const content = new ContentManager(
+      new FileSystemContentSource(contentRoot),
+      [],
+      { config, commitBuildState: false, isDevelopment: true },
+    );
+    await content.getOutputChangeSet();
+    const completed = content.getCompletedBuildSnapshot();
+    assert.ok(completed);
+    assert.equal(collected, 1);
+    assert.equal(completed.inspectorTabs.length, 3);
+    assert.equal(completed.inspectorTabs[0]?.data?.kind, "key-value");
+    assert.equal(completed.inspectorTabs[2]?.error, "tab failed");
+    assert.ok(Object.isFrozen(completed.inspectorTabs));
+    content.recordFinalHtmlDiagnostics([
+      {
+        code: "generated-html-alt",
+        severity: "warning",
+        message: "Missing alt",
+        pluginName: "tab-plugin",
+        filePath: "index.html",
+      },
+    ]);
+    assert.equal(completed.finalHtmlDiagnostics.length, 1);
+
+    const plugin = riebeckiteDevelopmentInspector(() => ({
+      config,
+      configRoot: directory,
+      configFile: path.join(directory, "riebeckite.config.ts"),
+      appRoot: directory,
+      contentRoot,
+    }));
+    const stack = inspectorStack(plugin, content);
+    const report = JSON.parse((await requestReport(stack)).body);
+    assert.deepEqual(
+      report.inspectorTabs.map((tab: { id: string }) => tab.id),
+      ["sample", "custom", "broken"],
+    );
+    assert.equal(report.inspectorTabs[0].hasData, true);
+    assert.equal(report.inspectorTabs[1].hasClient, true);
+    assert.ok(
+      report.diagnostics.some(
+        (diagnostic: { code: string }) =>
+          diagnostic.code === "GENERATED_HTML_ALT",
+      ),
+    );
+
+    const listed = JSON.parse(
+      (await requestReport(stack, "/__riebeckite/inspector/tabs")).body,
+    );
+    assert.equal(listed.tabs.length, 3);
+    const data = JSON.parse(
+      (await requestReport(stack, "/__riebeckite/inspector/tabs/sample")).body,
+    ).tab;
+    assert.equal(data.data.kind, "key-value");
+    assert.equal(data.data.items[0].value, 1);
+    const client = JSON.parse(
+      (await requestReport(stack, "/__riebeckite/inspector/tabs/custom")).body,
+    ).tab;
+    assert.match(client.clientUrl, /inspector-client\.js$/);
+    const missing = await requestReport(
+      stack,
+      "/__riebeckite/inspector/tabs/missing",
+    );
+    assert.equal(missing.response.statusCode, 404);
+  });
+});
+
 test("development inspector rejects non-loopback hosts", async () => {
   const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
   const stack = inspectorStack(plugin);

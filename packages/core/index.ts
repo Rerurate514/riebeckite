@@ -670,6 +670,13 @@ export type {
 export { defineEndpoint } from "./src/types/plugin_endpoint.js";
 export type { PluginHeadTag } from "./src/types/plugin_head.js";
 export type {
+  InspectorTabData,
+  InspectorTabSnapshot,
+  InspectorText,
+  PluginInspectorExtension,
+  PluginInspectorTab,
+} from "./src/types/plugin_inspector.js";
+export type {
   PluginPage,
   PluginPageContext,
   PluginPagePath,

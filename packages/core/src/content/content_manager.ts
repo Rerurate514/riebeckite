@@ -20,6 +20,7 @@ import type {
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
 import type { ResolvedPluginMetadata } from "../types/plugin.js";
+import type { InspectorTabSnapshot } from "../types/plugin_inspector.js";
 import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent, PostFrontmatter } from "../types/post_content.js";
 import type { PublishStrategy } from "../types/publish_strategy.js";
@@ -92,6 +93,8 @@ export type CompletedContentBuildSnapshot = {
   readonly plugins: readonly ResolvedPluginMetadata[];
   readonly manifestHookMetrics: ManifestHookMetrics;
   readonly derivedViews: readonly DerivedViewInspection[];
+  readonly inspectorTabs: readonly InspectorTabSnapshot[];
+  readonly finalHtmlDiagnostics: readonly Diagnostic[];
   readonly provenance?: BuildProvenance;
   readonly trace?: TraceSnapshot;
 };
@@ -126,6 +129,7 @@ export class ContentManager {
   private reusedContentCount = 0;
   private outputChangeSet: OutputChangeSet | null = null;
   private completedBuildSnapshot: CompletedContentBuildSnapshot | null = null;
+  private finalHtmlDiagnostics: Diagnostic[] = [];
   private buildSession: ContentBuildSession;
   private buildStateCommitRequested = false;
   private buildStateCommitted = false;
@@ -607,6 +611,14 @@ export class ContentManager {
           }
         }
         await this.commitBuildState();
+        this.finalHtmlDiagnostics = [];
+        const inspectorTabs = Object.freeze(
+          this.pipelineOptions.isDevelopment
+            ? (await this.pluginRuntime.collectInspectorTabs()).map((tab) =>
+                Object.freeze({ ...tab }),
+              )
+            : [],
+        );
         this.completedBuildSnapshot = Object.freeze({
           manifest,
           outputChangeSet: freezeOutputChangeSet(this.outputChangeSet),
@@ -637,6 +649,8 @@ export class ContentManager {
               }),
             ),
           ),
+          inspectorTabs,
+          finalHtmlDiagnostics: this.finalHtmlDiagnostics,
           ...(this.provenance === undefined
             ? {}
             : { provenance: this.provenance }),
@@ -665,6 +679,14 @@ export class ContentManager {
 
   getCompletedBuildSnapshot(): CompletedContentBuildSnapshot | undefined {
     return this.completedBuildSnapshot ?? undefined;
+  }
+
+  recordFinalHtmlDiagnostics(diagnostics: readonly Diagnostic[]): void {
+    this.finalHtmlDiagnostics.splice(
+      0,
+      this.finalHtmlDiagnostics.length,
+      ...diagnostics,
+    );
   }
 
   getProvenance(): BuildProvenance | undefined {

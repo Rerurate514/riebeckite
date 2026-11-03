@@ -56,11 +56,16 @@ export const vaultActivityView = defineDerivedView<
   },
 });
 
+const dateKeyCache = new Map<string, string | null>();
+
 export function dateKey(value: unknown): string | null {
   if (typeof value === "string") {
-    const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s]|$)/.exec(value.trim());
-    if (!match) return null;
-    return validDateKey(match[1], match[2], match[3]);
+    const key = value.trim();
+    if (dateKeyCache.has(key)) return dateKeyCache.get(key) ?? null;
+    const match = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s]|$)/.exec(key);
+    const result = match ? validDateKey(match[1], match[2], match[3]) : null;
+    dateKeyCache.set(key, result);
+    return result;
   }
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
     return value.toISOString().slice(0, 10);

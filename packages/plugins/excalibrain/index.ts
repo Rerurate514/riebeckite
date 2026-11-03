@@ -78,9 +78,12 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
       _config?: ResolvedRiebeckiteConfig,
     ): void {
       for (const entry of manifest.publicEntries) {
+        const hasFence = hasExcaliBrainPlaceholder(entry.html);
+        if (!hasFence && !resolved.auto) continue;
+        if (!hasFence && entry.html.includes(SECTION_ATTRIBUTE)) continue;
+
         const note = notes.get(entry.slug);
         const markdown = note?.markdown ?? "";
-
         const graph = buildExcaliBrainGraph({
           slug: entry.slug,
           frontmatter: entry.frontmatter,
@@ -90,12 +93,8 @@ function createExcaliBrainRuntime(options: ExcaliBrainOptions) {
           isRoutable: (candidate) =>
             manifest.bySlug.get(candidate)?.publishing.routable ?? false,
         });
+        if (!hasFence && graph.nodes.length === 0) continue;
         const layout = layoutExcaliBrain(graph, options);
-        const hasNeighbour = graph.nodes.length > 0;
-        const hasFence = hasExcaliBrainPlaceholder(entry.html);
-
-        if (!hasFence && !(resolved.auto && hasNeighbour)) continue;
-        if (!hasFence && entry.html.includes(SECTION_ATTRIBUTE)) continue;
 
         const section = renderExcaliBrainSection({
           graph,

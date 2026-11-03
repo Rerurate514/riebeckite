@@ -8,6 +8,7 @@ import {
 import {
   type DataviewNote,
   loadDataviewNotes,
+  matchesDataviewFrom,
   selectDataviewEntries,
 } from "./evaluate.js";
 import { parseDataview } from "./parse.js";
@@ -19,6 +20,7 @@ import {
 import { renderDataview, renderDataviewError } from "./render.js";
 import {
   type DataviewOptions,
+  type DataviewSpec,
   type ResolvedDataviewOptions,
   resolveDataviewOptions,
 } from "./types.js";
@@ -60,7 +62,7 @@ export function createDataviewRuntime(
       };
       const notes = await loadNotes(
         context.contentSource,
-        manifest.discoverableEntries,
+        dataviewNoteEntries(manifest),
       );
       const buildTime = context.buildTime ?? new Date();
 
@@ -88,11 +90,40 @@ export function createDataviewRuntime(
   };
 }
 
+function dataviewNoteEntries(
+  manifest: ContentManifest,
+): readonly ContentManifestEntry[] {
+  const all = manifest.discoverableEntries;
+  const matched = new Set<ContentManifestEntry>();
+  for (const entry of manifest.entries) {
+    if (!entry.html.includes(DATAVIEW_ATTRIBUTE)) continue;
+    const pattern = createDataviewPlaceholderPattern();
+    for (const match of entry.html.matchAll(pattern)) {
+      let spec: DataviewSpec;
+      try {
+        const parsed = parseDataview(decodeDataviewSource(match[1] ?? ""));
+        if (parsed.status !== "ok") continue;
+        spec = parsed.spec;
+      } catch {
+        continue;
+      }
+      const first = spec.commands?.[0];
+      if (first?.kind !== "from") return all;
+      for (const candidate of all) {
+        if (matchesDataviewFrom(first.from, candidate, manifest)) {
+          matched.add(candidate);
+        }
+      }
+    }
+  }
+  return all.filter((entry) => matched.has(entry));
+}
+
 async function loadNotes(
   source: ContentSource | undefined,
   entries: readonly ContentManifestEntry[],
 ): Promise<ReadonlyMap<string, DataviewNote>> {
-  if (!source) return new Map();
+  if (!source || entries.length === 0) return new Map();
 
   const scanned = await source.scan();
   const bySlug = new Map<string, string>();

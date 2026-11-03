@@ -52,6 +52,8 @@ const NAMED_ENTITIES: Record<string, string> = {
 const TAG_PATTERN =
   /<([a-zA-Z][a-zA-Z0-9-]*)((?:[^>"']|"[^"]*"|'[^']*')*?)(\/?)>/g;
 
+const CLOSING_TAG_PATTERN = /<\/([a-zA-Z][a-zA-Z0-9-]*)\s*>/g;
+
 const ATTRIBUTE_PATTERN =
   /([^\s"'=<>`/]+)(?:\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
 
@@ -74,18 +76,26 @@ export function maskIgnoredRegions(html: string): string {
  */
 export function scanElements(document: string): HtmlElement[] {
   const elements: HtmlElement[] = [];
+  const closing = closingTagPositions(document);
   const pattern = new RegExp(TAG_PATTERN.source, "g");
   for (const match of document.matchAll(pattern)) {
     const tag = (match[1] ?? "").toLowerCase();
     const selfClosing = match[3] === "/" || VOID_ELEMENTS.has(tag);
     const end = match.index + match[0].length;
+    let content: string | undefined;
     elements.push({
       tag,
       attributes: parseAttributes(match[2] ?? ""),
       raw: match[0],
       start: match.index,
       end,
-      content: selfClosing ? "" : innerContent(document, tag, end),
+      get content(): string {
+        if (selfClosing) return "";
+        if (content === undefined) {
+          content = innerContent(document, closing.get(tag), end);
+        }
+        return content;
+      },
     });
   }
   return elements;
@@ -145,9 +155,38 @@ function decodeHtmlEntities(value: string): string {
   );
 }
 
-function innerContent(document: string, tag: string, from: number): string {
-  const pattern = new RegExp(`</${tag}\\s*>`, "gi");
-  pattern.lastIndex = from;
-  const match = pattern.exec(document);
-  return match ? document.slice(from, match.index) : "";
+function closingTagPositions(document: string): Map<string, number[]> {
+  const positions = new Map<string, number[]>();
+  const pattern = new RegExp(CLOSING_TAG_PATTERN.source, "g");
+  for (const match of document.matchAll(pattern)) {
+    const tag = (match[1] ?? "").toLowerCase();
+    const list = positions.get(tag);
+    if (list) {
+      list.push(match.index);
+    } else {
+      positions.set(tag, [match.index]);
+    }
+  }
+  return positions;
+}
+
+function innerContent(
+  document: string,
+  positions: readonly number[] | undefined,
+  from: number,
+): string {
+  if (!positions) return "";
+  let low = 0;
+  let high = positions.length;
+  while (low < high) {
+    const middle = (low + high) >>> 1;
+    const position = positions[middle];
+    if (position !== undefined && position < from) {
+      low = middle + 1;
+    } else {
+      high = middle;
+    }
+  }
+  const close = positions[low];
+  return close === undefined ? "" : document.slice(from, close);
 }

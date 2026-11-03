@@ -69,7 +69,7 @@ README.
 | [`@riebeckite/plugin-ux`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/ux/README.md) | `ux` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
 | [`@riebeckite/plugin-daily-notes`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/daily-notes/README.md) | `dailyNotes` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
 | [`@riebeckite/plugin-rename`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/rename/README.md) | `rename` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
-| [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragment` | `{ prefix: "showcase: " }` |
+| [`@riebeckite/plugin-text-fragment`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/text-fragment/README.md) | `textFragment` | — |
 | [`@riebeckite/plugin-timeline`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/timeline/README.md) | `timeline` | — |
 | [`@riebeckite/plugin-quality`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/quality/README.md) | `quality` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
 | [`@riebeckite/plugin-deploy`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/deploy/README.md) | `deploy` | `{ provider: "cloudflare-pages" }` |

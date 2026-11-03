@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Fixed
+
+- Stop emitting the unsupported `prefix` option for `textFragment` in the `showcase` preset. The option was silently ignored, so generated sites now register `textFragment` without options. Generated site configurations are also typechecked against the plugin option types during scaffold validation.
+  Packages: `create-riebeckite`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.37...HEAD
 

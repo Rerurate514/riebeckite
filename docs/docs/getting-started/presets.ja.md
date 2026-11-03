@@ -27,7 +27,7 @@ npx create-riebeckite --list-presets
 | アプリケーションを自分で組み立てたい | `empty` |
 | 公開できる最小の Markdown サイトがほしい | `minimal` |
 | 実用的なデジタルガーデンやブログを始めたい | `starter`（既定） |
-| プラグインのカタログ全体、描画例、リファレンスを確認したい | `showcase` |
+| 幅広いプラグインカタログ、描画例、リファレンスを確認したい | `showcase` |
 
 迷ったら `starter` を選んでください。必要なプラグインは後から `riebeckite.config.ts` に追加できます。
 
@@ -41,7 +41,7 @@ npx create-riebeckite --list-presets
 | `docs` | `technical` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
 | `portfolio` | `folio` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
-| `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | すべてのプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
+| `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | 幅広いプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
 | `empty` | なし | なし | なし | 空のアプリケーションシェル |
 
 `showcase` の7言語は、英語、日本語、簡体字中国語、スペイン語、ドイツ語、フランス語、韓国語です。`starter` はサイトのロケールから1言語を選んでページを生成します。翻訳済みのルートが必要になったら l10n を追加してください。`minimal` は英語のみで、`empty` にはテーマ、プラグイン、コンテンツがありません。
@@ -89,7 +89,7 @@ Obsidian Markdown、`minimal` テーマ、英語の1ページだけを含む構�
 
 ### `showcase`
 
-自己完結したリファレンスサイトです。すべてのプラグインを有効にし、図表・チャート・コードの描画例、プラグインとテーマのリファレンス、SVG ・ PDF ・ Excalidraw ・ Canvas のローカル fixture を含みます。`content/Daily/` のサンプルノートは、ホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
+自己完結したリファレンスサイトです。公開されているプラグインの大部分を有効にし、図表・チャート・コードの描画例、プラグインとテーマのリファレンス、SVG ・ PDF ・ Excalidraw ・ Canvas のローカル fixture を含みます。追加のインフラ、専用の fixture、サイト全体の URL 変更を必要とするプラグインは有効にせず、テンプレートを自己完結に保っています。`content/Daily/` のサンプルノートは、ホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
 
 ### `empty`
 

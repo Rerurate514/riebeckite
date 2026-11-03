@@ -137,7 +137,7 @@ export default defineConfig({
     ux({ progress: true, backToTop: true, tocScrollSpy: true }),
     dailyNotes({ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }),
     rename({ enabled: true, status: 308, onUnexpectedRemoval: "warning" }),
-    textFragment({ prefix: "showcase-ja: " }),
+    textFragment(),
     timeline(),
     quality({ a11y: { enabled: true }, ignoreRules: [] }),
     deploy({ provider: "cloudflare-pages" }),

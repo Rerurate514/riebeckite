@@ -27,7 +27,7 @@ npx create-riebeckite --list-presets
 | I will assemble the application myself | `empty` |
 | I want the smallest publishable Markdown site | `minimal` |
 | I want the recommended starting point for a real garden or blog | `starter` (default) |
-| I want to explore the complete plugin catalog, rendered examples, and references | `showcase` |
+| I want to explore a broad plugin catalog, rendered examples, and references | `showcase` |
 
 If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`.
 
@@ -41,7 +41,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | `docs` | `technical` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
 | `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
-| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Complete plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
+| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Broad plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
 
 The seven showcase languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `starter` uses one page language selected from the site locale; add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
@@ -89,7 +89,7 @@ Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a sm
 
 ### `showcase`
 
-The self-contained reference site. It enables the complete plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
+The self-contained reference site. It enables most of the published plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Plugins that need extra infrastructure, dedicated fixtures, or site-wide URL changes are not enabled, so the template stays self-contained. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
 
 ### `empty`
 

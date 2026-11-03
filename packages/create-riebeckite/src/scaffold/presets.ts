@@ -519,11 +519,7 @@ const rename = np(
   "rename",
   `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }`,
 );
-const textFragment = np(
-  "@riebeckite/plugin-text-fragment",
-  "textFragment",
-  (context) => `{ prefix: ${JSON.stringify(`${context.variables.title}: `)} }`,
-);
+const textFragment = np("@riebeckite/plugin-text-fragment", "textFragment");
 const timeline = np("@riebeckite/plugin-timeline", "timeline");
 const quality = np(
   "@riebeckite/plugin-quality",

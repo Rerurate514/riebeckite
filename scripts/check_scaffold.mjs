@@ -111,7 +111,7 @@ async function main() {
       "index.js",
     ),
   ).href;
-  const { scaffoldRiebeckiteSite } = await import(distUrl);
+  const { scaffoldRiebeckiteSite, SCAFFOLD_PRESETS } = await import(distUrl);
 
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), "check-scaffold-"));
   try {
@@ -120,10 +120,17 @@ async function main() {
     await checkMinimal(scaffoldRiebeckiteSite, tmpRoot);
     await checkShowcase(scaffoldRiebeckiteSite, tmpRoot);
     await checkEmpty(scaffoldRiebeckiteSite, tmpRoot);
+    await checkGeneratedConfigTypes(
+      scaffoldRiebeckiteSite,
+      SCAFFOLD_PRESETS,
+      tmpRoot,
+    );
   } finally {
     fs.rmSync(tmpRoot, { recursive: true, force: true });
   }
 }
+
+const generatedRoots = new Map();
 
 async function generate(scaffoldRiebeckiteSite, tmpRoot, name, options) {
   const target = path.join(tmpRoot, name);
@@ -134,7 +141,63 @@ async function generate(scaffoldRiebeckiteSite, tmpRoot, name, options) {
   });
   checkGeneratedCommands(target, name);
   expectConfigPassesBiome(target, name);
+  generatedRoots.set(name, target);
   return target;
+}
+
+async function checkGeneratedConfigTypes(
+  scaffoldRiebeckiteSite,
+  presets,
+  tmpRoot,
+) {
+  for (const { name } of presets) {
+    if (generatedRoots.has(name)) continue;
+    await generate(scaffoldRiebeckiteSite, tmpRoot, name, {
+      preset: name,
+      site: {
+        title: "Preset Type Check",
+        baseUrl: "https://example.com",
+        locale: "en",
+      },
+    });
+  }
+
+  const configs = [...generatedRoots.values()]
+    .map((root) =>
+      path
+        .relative(tmpRoot, path.join(root, "riebeckite.config.ts"))
+        .split(path.sep)
+        .join("/"),
+    )
+    .filter((config) => fs.existsSync(path.join(tmpRoot, config)));
+  const tsconfigPath = path.join(tmpRoot, "tsconfig.json");
+  fs.writeFileSync(
+    tsconfigPath,
+    JSON.stringify(
+      {
+        extends: path.join(repositoryRoot, "tsconfig.json"),
+        compilerOptions: {
+          noEmit: true,
+          skipLibCheck: true,
+          typeRoots: [path.join(repositoryRoot, "node_modules", "@types")],
+        },
+        include: configs,
+      },
+      null,
+      2,
+    ),
+  );
+
+  try {
+    execSync(`npx --no-install tsc -p "${tsconfigPath}"`, {
+      cwd: repositoryRoot,
+      stdio: "inherit",
+    });
+  } catch {
+    errors.push(
+      "generated riebeckite.config.ts files must typecheck against the plugin option types",
+    );
+  }
 }
 
 // Every generated site must teach the local CLI (`npm exec riebeckite …`), not
@@ -308,8 +371,8 @@ async function checkShowcase(scaffoldRiebeckiteSite, tmpRoot) {
       "showcase: deploy must configure a provider",
     );
     expect(
-      config.includes('textFragment({ prefix: "私のブログ: " })'),
-      "showcase: textFragment prefix must follow the site title",
+      config.includes("textFragment()"),
+      "showcase: textFragment must be registered without options",
     );
     expect(
       config.includes("reportUnusedAssets: true"),

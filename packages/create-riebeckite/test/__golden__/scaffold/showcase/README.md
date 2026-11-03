@@ -76,7 +76,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-ux` | `ux` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
 | `@riebeckite/plugin-daily-notes` | `dailyNotes` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
 | `@riebeckite/plugin-rename` | `rename` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
-| `@riebeckite/plugin-text-fragment` | `textFragment` | `{ prefix: "showcase: " }` |
+| `@riebeckite/plugin-text-fragment` | `textFragment` | — |
 | `@riebeckite/plugin-timeline` | `timeline` | — |
 | `@riebeckite/plugin-quality` | `quality` | `{ a11y: { enabled: true }, ignoreRules: [] }` |
 | `@riebeckite/plugin-deploy` | `deploy` | `{ provider: "cloudflare-pages" }` |

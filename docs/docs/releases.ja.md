@@ -14,6 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.0.36 - 2026-11-03
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -21,12 +25,13 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Add change entries, ADRs, and generated release notes so user-facing changes are recorded before release and published consistently to the changelog, the documentation site, and GitHub Releases.
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261102-143500-release-change-management-b2c3d4.md
 
-- Add static PNG Open Graph image generation with deferred, cache-aware output rendering for public content.
-  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/og-image`, `@riebeckite/plugin-og-image`
-  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261103-deferred-og-image-outputs.md
 - **Breaking:** Add an `inspector` plugin extension for Development Inspector tabs. Plugins can contribute build-time data tabs or a custom client module, and Inspector now addresses tabs by stable ids instead of numeric indexes.
   Packages: `@riebeckite/core`, `@riebeckite/dev-inspector`
   Migration: If you construct CompletedContentBuildSnapshot yourself, add the new inspectorTabs and finalHtmlDiagnostics fields.
+
+- Add static PNG Open Graph image generation with deferred, cache-aware output rendering for public content.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/og-image`, `@riebeckite/plugin-og-image`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261103-deferred-og-image-outputs.md
 
 ### Changed
 
@@ -57,3 +62,5 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Harden the framework against request and network abuse: cap plugin endpoint request bodies at 1 MiB, make Webmention source verification fail closed and pin the validated DNS address, add a best-effort receive rate limit and a bounded memory store, require HTTPS for analytics collectors except on localhost, sandbox rich-embed iframes, compare the development inspector token in constant time, and pin GitHub Actions to commit SHAs. Update `@hono/node-server` to 2.1.3 and `minimatch` to 11.0.1.
   Packages: `@riebeckite/honox`, `@riebeckite/plugin-webmention`, `@riebeckite/plugin-analytics`, `@riebeckite/plugin-rich-embed`, `@riebeckite/dev-inspector`, `create-riebeckite`
+
+[比較](https://github.com/Rerurate514/riebeckite/releases/tag/v0.0.36)

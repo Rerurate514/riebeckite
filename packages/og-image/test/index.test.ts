@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createElement } from "hono/jsx";
 import sharp from "sharp";
 import {
   OG_IMAGE_HEIGHT,
@@ -36,6 +37,29 @@ for (const preset of ["card", "minimal", "editorial"] as const) {
     assert.equal(metadata.height, OG_IMAGE_HEIGHT);
   });
 }
+
+test("Hono JSX layouts render a valid PNG", async () => {
+  const image = await renderOgImage(
+    () =>
+      createElement(
+        "div",
+        {
+          style: {
+            color: "black",
+            display: "flex",
+            fontSize: 48,
+          },
+        },
+        input.page.title,
+      ),
+    input,
+  );
+  const metadata = await sharp(image).metadata();
+
+  assert.equal(metadata.format, "png");
+  assert.equal(metadata.width, OG_IMAGE_WIDTH);
+  assert.equal(metadata.height, OG_IMAGE_HEIGHT);
+});
 
 test("legacy SVG layouts embed the Japanese font", async () => {
   const image = await renderOgImage(

@@ -25,6 +25,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - `create-riebeckite` now prints usage for `--help` and unknown options, explains the non-interactive command when no interactive terminal is available, and omits `npm install` from the post-install next steps when dependencies are already installed.
   Packages: `create-riebeckite`
 
+- `@riebeckite/og-image` now renders Hono JSX layouts without React.
+  Packages: `@riebeckite/og-image`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.37...HEAD
 
 ## [0.0.37] - 2026-11-03

@@ -14,7 +14,7 @@
     }
   },
   "dependencies": {
-    "react": "^19.3.1",
+    "hono": "catalog:",
     "satori": "^0.25.0",
     "sharp": "^0.35.5"
   },
@@ -45,7 +45,6 @@
     "og-image"
   ],
   "devDependencies": {
-    "@types/react": "^19.3.0",
     "tsx": "^4.22.4"
   },
   "publishConfig": {

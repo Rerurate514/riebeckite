@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { createElement, type ReactNode } from "react";
+import { type Child, createElement } from "hono/jsx";
 import satori from "satori";
 import sharp from "sharp";
 
@@ -43,7 +43,7 @@ export type OgLayoutInput = Readonly<{
   content: OgContent;
 }>;
 
-export type OgLayoutResult = ReactNode | string;
+export type OgLayoutResult = Child;
 export type OgLayout = (input: OgLayoutInput) => OgLayoutResult;
 export type OgPreset = "card" | "minimal" | "editorial";
 
@@ -57,7 +57,7 @@ export function presetLayout(preset: OgPreset): OgLayout {
       preset === "editorial" ? 120 : preset === "minimal" ? 72 : 96;
     const titleSize =
       preset === "editorial" ? 72 : preset === "minimal" ? 64 : 68;
-    const children: ReactNode[] = [];
+    const children: Child[] = [];
     if (preset === "editorial") {
       children.push(
         createElement("div", {
@@ -86,7 +86,7 @@ export function presetLayout(preset: OgPreset): OgLayout {
               { style: { color: palette.accent, fontSize: 28 } },
               site.title,
             )
-          : createElement("div"),
+          : createElement("div", null),
         createElement(
           "div",
           {
@@ -132,7 +132,7 @@ export async function renderOgImage(
   const svg =
     typeof result === "string"
       ? `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}"><style>${fontFaceCss}text{font-family:"Noto Sans JP",sans-serif}</style>${result}</svg>`
-      : await satori(toReactNode(result), {
+      : await satori(toSatoriNode(result) as Parameters<typeof satori>[0], {
           width: OG_IMAGE_WIDTH,
           height: OG_IMAGE_HEIGHT,
           fonts: notoSansJpFonts,
@@ -184,19 +184,27 @@ const fontFaceCss = notoSansJpFontData
   )
   .join("");
 
-function toReactNode(value: unknown): ReactNode {
-  if (Array.isArray(value)) return value.map(toReactNode);
-  if (!value || typeof value !== "object") return value as ReactNode;
+function toSatoriNode(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(toSatoriNode);
+  if (!value || typeof value !== "object") return value;
   const node = value as {
     tag?: unknown;
+    type?: unknown;
     props?: Record<string, unknown>;
     children?: unknown[];
   };
-  if (!node.tag) return value as ReactNode;
+  if (node.type !== undefined) return value;
+  if (!node.tag) return value;
   const children = node.children ?? [];
   const props = { ...node.props };
-  if (typeof node.tag === "function") {
-    return toReactNode(node.tag({ ...props, children }));
+  if (children.length > 0) {
+    props.children =
+      children.length === 1
+        ? toSatoriNode(children[0])
+        : children.map(toSatoriNode);
   }
-  return createElement(node.tag as string, props, ...children.map(toReactNode));
+  if (typeof node.tag === "function") {
+    return toSatoriNode(node.tag(props));
+  }
+  return { type: node.tag, props };
 }

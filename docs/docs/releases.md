@@ -27,6 +27,9 @@ The Unreleased section lists changes that are merged but not yet published to np
 - `create-riebeckite` now prints usage for `--help` and unknown options, explains the non-interactive command when no interactive terminal is available, and omits `npm install` from the post-install next steps when dependencies are already installed.
   Packages: `create-riebeckite`
 
+- `@riebeckite/og-image` now renders Hono JSX layouts without React.
+  Packages: `@riebeckite/og-image`
+
 ## 0.0.37 - 2026-11-03
 
 No user-facing changes recorded.

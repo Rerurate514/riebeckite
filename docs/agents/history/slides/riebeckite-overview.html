@@ -1767,7 +1767,7 @@ h2 {
     <p class="lead">ApplicationはIntegrationへ、Integration・Plugin・ThemeはCoreへ依存する。<br class="br-desktop">CLIはIntegrationとCoreを使う。Coreから外側への依存は作らない。</p>
     <div class="arch">
       <div class="arch-box">
-        <div class="name">Application<span>apps/web</span></div>
+        <div class="name">Application<span>website</span></div>
         <p>routes · components · islands · site shell</p>
       </div>
       <div class="arch-arrow">depends on</div>
@@ -2093,12 +2093,12 @@ h2 {
 │  ├─ plugins/           <span class="c">72 official plugins</span>
 │  ├─ themes/            <span class="c">default · minimal · gruvbox · ...</span>
 │  └─ create-riebeckite/ <span class="c">site generator</span>
-├─ apps/web/             <span class="c">公式サイト / 参照アプリ</span>
+├─ website/              <span class="c">公式サイト / 参照アプリ</span>
 ├─ docs/                 <span class="c">ドキュメントの原本</span>
 ├─ templates/            <span class="c">デプロイ用テンプレート</span>
 └─ riebeckite.config.ts  <span class="c">サイト設定</span></pre>
       <aside class="repo-note">
-        <strong>apps/webも、参照アプリのひとつ。</strong>
+        <strong>websiteも、参照アプリのひとつ。</strong>
         Core、Plugin、Theme、Integrationが正しく組み合わさることを確認する。公式ドキュメントサイトを兼ねている。
       </aside>
     </div>

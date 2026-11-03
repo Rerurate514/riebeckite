@@ -17,7 +17,7 @@ environment, so no speculative test-stability change was made.
 ## Showcase results
 
 The final run is recorded in
-`apps/web/.riebeckite/phase2gv-final-scenarios.json/2026-10-19T19-57-16-339Z-preset-ssg.md`.
+`website/.riebeckite/phase2gv-final-scenarios.json/2026-10-19T19-57-16-339Z-preset-ssg.md`.
 All twelve conditions were equivalent.
 
 | Size | Cold | No change | Body edit | Link edit | Add | Delete |
@@ -117,7 +117,7 @@ READY。Showcase / 1000 の no-change 不一致を修正し、従来の
 ## Showcase の結果
 
 最終計測は
-`apps/web/.riebeckite/phase2gv-final-scenarios.json/2026-10-19T19-57-16-339Z-preset-ssg.md`
+`website/.riebeckite/phase2gv-final-scenarios.json/2026-10-19T19-57-16-339Z-preset-ssg.md`
 に保存した。12 条件すべてで一致した。
 
 | Size | Cold | no-change | 本文編集 | リンク編集 | 追加 | 削除 |

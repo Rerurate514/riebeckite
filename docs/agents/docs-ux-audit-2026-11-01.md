@@ -205,7 +205,7 @@ input widget would require new plugin code.
   Interactive Runtime page contains `data-calculator`, the static `Result: 14`,
   and the live output element. The new Showcase, Permalink, and Quality anchors
   resolve in both locales.
-- Real-browser check: PASS with headless Edge against `apps/web/dist`. The
+- Real-browser check: PASS with headless Edge against `website/dist`. The
   runtime demo showed the live output `14`, hid the loading and fallback
   elements, reported no page errors, and had no broken in-page anchors. With
   JavaScript disabled, the static `Result: 14` remained and the live output

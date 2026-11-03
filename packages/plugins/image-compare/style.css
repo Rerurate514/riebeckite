@@ -133,8 +133,7 @@
   clip-path: inset(0 0 0 var(--rr-image-compare-position));
 }
 
-.rr-image-compare[data-orientation="vertical"]
-  .rr-image-compare__layer--after {
+.rr-image-compare[data-orientation="vertical"] .rr-image-compare__layer--after {
   clip-path: inset(var(--rr-image-compare-position) 0 0 0);
 }
 

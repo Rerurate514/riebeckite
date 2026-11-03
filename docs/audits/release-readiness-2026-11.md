@@ -27,7 +27,7 @@ private: true
 - 15 個の公式テーマ
 - 4 個の integration（HonoX、Inspector、Analytics Cloudflare、Webmention Cloudflare）
 - CLI、Core、Node、Runtime、Preview、SPA、Graph、UI、Diagnostics、Test、Create
-- `apps/web`（riebeckite.dev の実サイト）
+- `website`（riebeckite.dev の実サイト）
 - CI（`.github/workflows/ci.yml`）、公開（`publish.yml`）、リリーススクリプト
 - 人間向けドキュメント（英語・日本語）、`docs/agents/**` の設計規約
 
@@ -624,7 +624,7 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 - `docs/agents/architecture.md` の依存方向（App → Integration → Core、Plugin → Core、Theme → Core）と実際の package.json 依存に、今回の走査では違反は見つからなかった。
 - `check:source-health` は実行時 import cycle と Core/Plugin/Integration の越境を検出し、exit 0。実際に循環しているのは **ビルド順序の devDependency** であり、実行時 import ではない。
 - ContentSource（scan/read）と ContentManager（解釈・pipeline・manifest・graph）の責務分離は維持されている。
-- Build-time の `.riebeckite` と Worker runtime は分離されている。`apps/web/dist/worker.js` に `node:fs` は含まれていない。
+- Build-time の `.riebeckite` と Worker runtime は分離されている。`website/dist/worker.js` に `node:fs` は含まれていない。
 - Mutation が書き込みを所有し、Migration が「何を変えるか」を持つ分担は、final-foundations の統合テストで機能している。
 - Theme は presentation-only の契約を守り、テーマパッケージに ContentManager への依存はない。
 
@@ -926,8 +926,8 @@ Hover Preview (final-foundations .work):
 #### RR-007: `lz-string` の設定読込失敗
 
 - **根本原因**: `packages/plugins/excalidraw/src/parse.ts` が `createRequire(import.meta.url)` だけで `lz-string` を解決していた。CLI の設定ローダーがプラグインを esbuild で一時 `.riebeckite-config-*/config.mjs` に inline すると `import.meta.url` が一時ディレクトリを指し、pnpm の hoist されていない `lz-string` を解決できなかった。
-- **修正内容**: 解決基準を `import.meta.url`、プロジェクト cwd、`@riebeckite/plugin-excalidraw` の実エントリの順にフォールバックするローダーへ変更。`createRequire` は維持し、Vite SSR が CJS の `module.exports` を正しく返す経路を壊さない。`apps/web` には source 条件ビルド用に `lz-string` を明示依存として追加。dist ではプラグイン自身の依存として解決する。
-- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`apps/web/package.json`、`pnpm-lock.yaml`
+- **修正内容**: 解決基準を `import.meta.url`、プロジェクト cwd、`@riebeckite/plugin-excalidraw` の実エントリの順にフォールバックするローダーへ変更。`createRequire` は維持し、Vite SSR が CJS の `module.exports` を正しく返す経路を壊さない。`website` には source 条件ビルド用に `lz-string` を明示依存として追加。dist ではプラグイン自身の依存として解決する。
+- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`website/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: CLI の `inspect config` / `doctor` 実行、`packages/plugins/excalidraw/test/*.test.ts`、`pnpm --filter @riebeckite/web build`。
 - **検証結果**: `node packages/cli/dist/cli.js inspect config` が lz-string エラーなしで成功（exit 0）。Excalidraw テスト 5/5。`pnpm --filter @riebeckite/web build` が client / SSR とも成功（SSR 25.9s）。
 - **コミット**: なし。
@@ -1050,7 +1050,7 @@ Hover Preview (final-foundations .work):
 - 公開境界: `discoverableEntries` への変更は Hover Preview のみ。Search / Sitemap / Feed / Graph / Backlinks / Taxonomy / Recent / Related は既に discoverable を使用しており、変更していない。final-foundations で unlisted の直接ページが残ることを確認。
 - 依存方向: `createDevelopmentTrace` の Core 移動は Core 内で完結し、Core が HonoX / Inspector に依存しないことを `check:cycles` で確認。
 - HonoX バージョン: `@riebeckite/honox`、CLI、web、外部 fixture、scaffold テンプレート / golden を 0.1.62 に統一。重複 `contextStorage` を解消し、external E2E で確認。
-- 設定ローダー: `lz-string` は `createRequire` の解決基準を cwd / プラグイン実エントリへ拡張。`inspect config` と `apps/web` の本番ビルドで確認。Excalidraw の dist は依存を external のまま維持し、利用側の解決に委ねる。
+- 設定ローダー: `lz-string` は `createRequire` の解決基準を cwd / プラグイン実エントリへ拡張。`inspect config` と `website` の本番ビルドで確認。Excalidraw の dist は依存を external のまま維持し、利用側の解決に委ねる。
 - テストの弱体化: 期待値の変更は RR-004 の重複診断の解消と RR-010 のテンプレート変数置換のみ。skip の追加・テスト削除・型チェック緩和は行っていない。`pnpm check` の warnings は元から存在するもので、抑制していない。
 - 未コミット: 本作業の変更はすべて作業ツリーにあり、commit / push / publish は行っていない。HEAD は並行作業により `bb126fa6` まで進んだ。
 
@@ -1069,7 +1069,7 @@ Hover Preview (final-foundations .work):
 - **Confidence**: High（再現・修正版の差分・テストで確認）
 - **根本原因**: `honox@0.1.56` の `dist/vite/inject-importing-islands.js` にある `walkDependencyTree` が import グラフを再帰走査する際に visited set を持たず、循環または共有依存で同じノードを繰り返し展開していた。V8 の AsyncHook が `Map` 上限に達し、テストプロセスが crash した。
 - **修正内容**: `honox` を `0.1.62` に更新。0.1.62 では `visited` Set、`depTreeCache`、`node_modules` skip が入っていることを `npm pack` した実物で確認した。
-- **変更ファイル**: `apps/web/package.json`、`packages/cli/package.json`、`packages/integrations/honox/package.json`、`pnpm-lock.yaml`
+- **変更ファイル**: `website/package.json`、`packages/cli/package.json`、`packages/integrations/honox/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: `pnpm --filter @riebeckite/honox test`、`pnpm test:registry`。
 - **検証結果**: honox 194/194 pass（83.6s）。`pnpm test:registry` 194/194 pass（90.3s）。以前 crash した `incremental_ssg` / `output_collision` / `svg_optimizer` の 3 ファイルも 13/13 pass。
 - **コミット**: なし。
@@ -1081,8 +1081,8 @@ Hover Preview (final-foundations .work):
 - **重要度**: P2（修正中に発見。ビルドを塞いだが P1 の RR-007 と同一原因）
 - **Confidence**: High（web build の失敗・成功とテストで確認）
 - **根本原因**: Vite SSR は `lz-string` を external 化し、CJS の `module.exports` を ESM namespace へ変換する。動的 import の戻り値は空 namespace になり、静的 namespace import も同じ理由で関数を持たなかった。一方、CLI の設定バンドルは `import.meta.url` が一時ディレクトリを指す。
-- **修正内容**: `createRequire` を維持し、`import.meta.url` → cwd → `@riebeckite/plugin-excalidraw` 実エントリの順で解決するフォールバックを実装。`apps/web` に source 条件用の明示依存を追加。dist は external 依存のまま。
-- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`apps/web/package.json`、`pnpm-lock.yaml`
+- **修正内容**: `createRequire` を維持し、`import.meta.url` → cwd → `@riebeckite/plugin-excalidraw` 実エントリの順で解決するフォールバックを実装。`website` に source 条件用の明示依存を追加。dist は external 依存のまま。
+- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`website/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: `pnpm --filter @riebeckite/plugin-excalidraw test`、`pnpm --filter @riebeckite/web build`、`inspect config`。
 - **検証結果**: Excalidraw 5/5、web build 成功、`inspect config` 成功。
 - **コミット**: なし。

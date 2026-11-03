@@ -10,6 +10,7 @@ import {
 } from "./development_inspector_security.js";
 
 const bridgePath = "/__riebeckite/bridge/v1";
+const bridgePagePath = "/__riebeckite/bridge/v1/page";
 const bridgeBootstrapPath = "/__riebeckite/bridge/bootstrap";
 const bridgeProtocolVersion = 1;
 const bridgeTokenHeader = "x-riebeckite-bridge-token";
@@ -21,6 +22,7 @@ const riebeckiteVersion = (
 
 export type RiebeckiteBridgeOptions = {
   token?: string;
+  publicOrigin?: string;
   getSnapshot: (
     server: ViteDevServer,
   ) =>
@@ -54,7 +56,11 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
           response.end();
           return;
         }
-        if (request.url !== bridgePath) {
+        const requestUrl = new URL(request.url ?? "/", "http://localhost");
+        if (
+          requestUrl.pathname !== bridgePath &&
+          requestUrl.pathname !== bridgePagePath
+        ) {
           response.statusCode = 404;
           response.end();
           return;
@@ -78,19 +84,23 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
           response.setHeader("cache-control", "no-store");
           response.setHeader("x-content-type-options", "nosniff");
           response.end(
-            JSON.stringify({
-              protocolVersion: bridgeProtocolVersion,
-              server: { id: serverId, version: riebeckiteVersion },
-              capabilities: ["status"],
-              development: {
-                available: true,
-                revision,
-                build: snapshot
-                  ? { status: "ready", completedAt: snapshot.completedAt }
-                  : { status: "unavailable" },
-              },
-              inspection: { available: snapshot !== undefined },
-            }),
+            JSON.stringify(
+              requestUrl.pathname === bridgePagePath
+                ? resolvePage(snapshot, requestUrl, options.publicOrigin)
+                : {
+                    protocolVersion: bridgeProtocolVersion,
+                    server: { id: serverId, version: riebeckiteVersion },
+                    capabilities: ["status", "page-resolution", "preview"],
+                    development: {
+                      available: true,
+                      revision,
+                      build: snapshot
+                        ? { status: "ready", completedAt: snapshot.completedAt }
+                        : { status: "unavailable" },
+                    },
+                    inspection: { available: snapshot !== undefined },
+                  },
+            ),
           );
         } catch {
           response.statusCode = 503;
@@ -147,6 +157,65 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
       });
     },
   };
+}
+
+function resolvePage(
+  snapshot: CompletedContentBuildSnapshot | undefined,
+  requestUrl: URL,
+  publicOrigin: string | undefined,
+): Record<string, unknown> {
+  const source = requestUrl.searchParams.get("source");
+  if (!source || !isContentPath(source)) {
+    return { status: "invalid-source" };
+  }
+  if (!snapshot) return { status: "unavailable" };
+
+  const sourceKey = source
+    .replace(/\\/g, "/")
+    .replace(/\.md$/i, "")
+    .toLowerCase();
+  const slug = snapshot.manifest.contentIndex.get(sourceKey);
+  if (!slug) return { status: "not-found", source };
+  const entry = snapshot.manifest.bySlug.get(slug);
+  if (!entry) return { status: "not-found", source };
+
+  const productionUrl = resolvePublicUrl(publicOrigin, entry.permalink);
+  return {
+    status: "resolved",
+    source,
+    page: entry.permalink,
+    visibility: entry.publishing.visibility,
+    routable: entry.publishing.routable,
+    discoverable: entry.publishing.discoverable,
+    locale: entry.publicLocation.language ?? null,
+    publishAt: entry.publishing.publishAt?.toISOString() ?? null,
+    revision: snapshot.completedAt,
+    productionUrl,
+  };
+}
+
+function resolvePublicUrl(
+  origin: string | undefined,
+  page: string,
+): string | null {
+  if (!origin) return null;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? new URL(page, url).toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function isContentPath(value: string): boolean {
+  return !(
+    value.startsWith("/") ||
+    value.startsWith("\\") ||
+    /^[a-zA-Z]:[\\/]/.test(value) ||
+    value.split(/[\\/]+/).some((part) => part === ".." || part === "")
+  );
 }
 
 function isTrustedBridgeRequest(

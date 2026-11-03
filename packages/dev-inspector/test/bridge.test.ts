@@ -36,7 +36,7 @@ test("serves authenticated status from its private loopback listener", async (t)
     {
       protocolVersion: 1,
       server: { version: "0.0.38" },
-      capabilities: ["status"],
+      capabilities: ["status", "page-resolution", "preview"],
       development: {
         available: true,
         revision: 0,
@@ -80,13 +80,65 @@ test("does not enable the Bridge with a short token", () => {
     token: "short",
     getSnapshot: () => undefined,
   });
-  const configure = plugin.configureServer;
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   const stack: unknown[] = [];
   configure({
     middlewares: { use: (...arguments_) => stack.push(arguments_) },
   } as unknown as ViteDevServer);
   assert.deepEqual(stack, []);
+});
+
+test("resolves a source through the content manifest without exposing drafts as routes", async (t) => {
+  const snapshot = {
+    completedAt: 42,
+    manifest: {
+      contentIndex: new Map([["notes/hello", "notes/hello"]]),
+      bySlug: new Map([
+        [
+          "notes/hello",
+          {
+            permalink: "/custom/hello/",
+            publishing: {
+              visibility: "draft",
+              routable: false,
+              discoverable: false,
+            },
+            publicLocation: { language: "ja" },
+          },
+        ],
+      ]),
+    },
+  };
+  const { bootstrap, close } = bridge(snapshot);
+  t.after(close);
+  const boot = await callBootstrap(bootstrap, {
+    host: "127.0.0.1:3000",
+    token,
+  });
+  const { origin } = JSON.parse(boot.body) as { origin: string };
+
+  const response = await fetch(
+    `${origin}/__riebeckite/bridge/v1/page?source=notes%2Fhello.md`,
+    {
+      headers: {
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+    },
+  );
+  assert.deepEqual(await response.json(), {
+    status: "resolved",
+    source: "notes/hello.md",
+    page: "/custom/hello/",
+    visibility: "draft",
+    routable: false,
+    discoverable: false,
+    locale: "ja",
+    publishAt: null,
+    revision: 42,
+    productionUrl: null,
+  });
 });
 
 test("rejects forwarded and cross-origin private requests", async (t) => {
@@ -109,14 +161,17 @@ test("rejects forwarded and cross-origin private requests", async (t) => {
   }
 });
 
-function bridge(): {
+function bridge(snapshot?: unknown): {
   bootstrap: (request: unknown, response: unknown) => Promise<void>;
   close: () => void;
 } {
   const stack: Array<{ route: string; handle: unknown }> = [];
   let close: (() => void) | undefined;
-  const plugin = riebeckiteBridge({ token, getSnapshot: () => undefined });
-  const configure = plugin.configureServer;
+  const plugin = riebeckiteBridge({
+    token,
+    getSnapshot: () => snapshot as never,
+  });
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   configure({
     middlewares: {

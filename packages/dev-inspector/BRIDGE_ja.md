@@ -14,12 +14,16 @@ riebeckite dev --bridge-token <token>
 
 応答にはProtocol Version、サーバーIDとRiebeckite Version、実装済みCapabilities、開発ビルドの
 revisionと状態、Inspectionの利用可否が含まれます。ビルド完了前の `build` は
-`{ "status": "unavailable" }` です。v1が返すCapabilityは `status` だけです。トークン不正は403、
+`{ "status": "unavailable" }` です。v1は `status`、`page-resolution`、`preview` を返します。
+`GET /__riebeckite/bridge/v1/page?source=<Vaultからの相対Markdownパス>` は完了済みContent Manifestを
+正本として、解決済みpermalink、公開状態、routable、discoverable、locale、revisionを返します。`site.baseUrl`
+が設定されている場合だけ本番URLも返します。HTMLやトークンは返しません。トークン不正は403、
 Protocol非互換は `INCOMPATIBLE_PROTOCOL` を含む426です。
 
 プライベートリスナーは `127.0.0.1` にだけbindし、非loopbackのHost・接続、`Origin`、転送ヘッダーを
-拒否します。CORSは有効にしません。コンテンツ、Diagnostics、書き換え、公開、Preview、ファイル操作、
-コマンド実行のendpointはありません。トークンをAPI応答に含めることもありません。
+拒否します。CORSは有効にしません。パスは相対パスだけを受け付け、content root外へは移動できません。
+コンテンツHTML、Diagnostics、書き換え、公開、ファイル操作、コマンド実行のendpointはありません。
+トークンをAPI応答に含めることもありません。
 
 将来の互換変更では任意フィールドとCapabilityだけを追加します。v1のフィールドを変更・削除する変更は
 新しいProtocol Versionとendpointを使います。

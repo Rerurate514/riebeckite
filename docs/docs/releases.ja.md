@@ -14,6 +14,11 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+### Changed
+
+- The development Bridge now serves the Obsidian-compatible `/__riebeckite/bridge/v1/page` endpoint from the same source and publication resolution used by `/source`, `/preview`, and `/publication`. Source paths resolve through one shared manifest lookup, every endpoint reports the same Bridge revision, and ambiguous sources are reported instead of being silently treated as missing.
+  Packages: `@riebeckite/dev-inspector`
+
 ### Fixed
 
 - Generated sites render page-specific titles, descriptions, canonical URLs, and Open Graph tags through the SEO plugin. The generated configuration no longer points at a missing `/ogp.png`, the `portfolio` preset generates its `/projects/` listing, and the `empty` preset explains how to add a theme and plugins. Scaffold next steps quote the project directory, and the docs preset samples use the documented sidebar order and table of contents headings.

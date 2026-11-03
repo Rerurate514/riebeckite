@@ -31,7 +31,7 @@ const riebeckiteVersion = (
 export type RiebeckiteBridgeOptions = {
   token?: string;
   contentRoot?: string | (() => string);
-  publicOrigin?: string;
+  publicOrigin?: string | (() => string | undefined);
   getSnapshot: (
     server: ViteDevServer,
   ) =>
@@ -208,6 +208,10 @@ function bridgeResponse(input: {
     typeof options.contentRoot === "function"
       ? options.contentRoot()
       : options.contentRoot;
+  const publicOrigin =
+    typeof options.publicOrigin === "function"
+      ? options.publicOrigin()
+      : options.publicOrigin;
   const base = {
     protocolVersion: bridgeProtocolVersion,
     server: { id: serverId, version: riebeckiteVersion },
@@ -233,22 +237,18 @@ function bridgeResponse(input: {
     inspection: { available: snapshot !== undefined },
   };
   if (requestUrl.pathname === bridgePagePath) {
-    return inspectBridgePage(
-      snapshot,
-      requestUrl.searchParams.get("source"),
-      {
-        revision,
-        publicOrigin: options.publicOrigin,
-        developmentOrigin: server.resolvedUrls?.local[0],
-      },
-    );
+    return inspectBridgePage(snapshot, requestUrl.searchParams.get("source"), {
+      revision,
+      publicOrigin,
+      developmentOrigin: server.resolvedUrls?.local[0],
+    });
   }
   if (!contentRoot || requestUrl.pathname === bridgePath) return base;
   const inspection = {
     contentRoot,
     revision,
     developmentOrigin: server.resolvedUrls?.local[0],
-    publicOrigin: options.publicOrigin,
+    publicOrigin,
   };
   const source = requestUrl.searchParams.get("path");
   if (requestUrl.pathname === `${bridgePath}/source`)

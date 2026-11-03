@@ -28,7 +28,10 @@ export function resolveBridgeSource(
   const indexKeys = [
     ...new Set(
       [lookup, logicalPath]
-        .filter((key): key is string => Boolean(key) && isContentPath(key))
+        .filter(
+          (key): key is string =>
+            typeof key === "string" && key.length > 0 && isContentPath(key),
+        )
         .map(normalizeSourceKey),
     ),
   ];
@@ -45,7 +48,9 @@ export function resolveBridgeSource(
     redirectEntry(snapshot, lookup),
     ...(snapshot.manifest.byAlias?.get(lookup ?? "") ?? []),
   ].filter((entry): entry is ContentManifestEntry => entry !== undefined);
-  const unique = [...new Map(entries.map((entry) => [entry.slug, entry])).values()];
+  const unique = [
+    ...new Map(entries.map((entry) => [entry.slug, entry])).values(),
+  ];
   if (unique.length > 1)
     return {
       status: "unsupported",
@@ -86,8 +91,7 @@ export function inspectBridgePage(
 ): Record<string, unknown> {
   if (!input || !isContentPath(input)) return { status: "invalid-source" };
   const resolved = resolveBridgeSource(snapshot, input, options);
-  if (resolved.status === "unavailable")
-    return { status: "unavailable" };
+  if (resolved.status === "unavailable") return { status: "unavailable" };
   if (resolved.status === "unsupported")
     return {
       status: "unsupported",

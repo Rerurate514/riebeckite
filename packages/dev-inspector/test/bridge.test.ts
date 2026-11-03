@@ -285,29 +285,38 @@ test("resolves a suffix and a content ID through the shared source resolution", 
     revision: 4,
     developmentOrigin: "http://127.0.0.1:5173/",
   };
-  assert.deepEqual(resolveBridgeSource(snapshot, "/vault/notes/hello.md", options), {
-    status: "resolved",
-    entry: {
-      slug: "notes/hello",
-      contentId: "hello-id",
-      source: { path: "notes/hello.md" },
-      permalink: "/ja/hello/",
-      locale: "ja",
-      visibility: "public",
-      routable: true,
-      discoverable: true,
-      redirects: [],
+  assert.deepEqual(
+    resolveBridgeSource(snapshot, "/vault/notes/hello.md", options),
+    {
+      status: "resolved",
+      entry: {
+        slug: "notes/hello",
+        contentId: "hello-id",
+        source: { path: "notes/hello.md" },
+        permalink: "/ja/hello/",
+        locale: "ja",
+        visibility: "public",
+        routable: true,
+        discoverable: true,
+        redirects: [],
+      },
+      revision: 4,
     },
-    revision: 4,
-  });
+  );
   assert.equal(
-    (resolveBridgeSource(snapshot, "hello.md", options).entry as { slug: string })
-      .slug,
+    (
+      resolveBridgeSource(snapshot, "hello.md", options).entry as {
+        slug: string;
+      }
+    ).slug,
     "notes/hello",
   );
   assert.equal(
-    (resolveBridgeSource(snapshot, "hello-id", options).entry as { slug: string })
-      .slug,
+    (
+      resolveBridgeSource(snapshot, "hello-id", options).entry as {
+        slug: string;
+      }
+    ).slug,
     "notes/hello",
   );
   assert.deepEqual(resolveBridgeSource(snapshot, "../secret.md", options), {
@@ -325,15 +334,21 @@ test("does not offer a preview for non-routable pages", () => {
     developmentOrigin: "http://127.0.0.1:5173/",
     publicOrigin: "https://example.com",
   };
-  assert.deepEqual(inspectBridgePreview(snapshot, "notes/hello.md", options).preview, {
-    available: true,
-    developmentUrl: "http://127.0.0.1:5173/ja/hello/",
-    productionUrl: "https://example.com/ja/hello/",
-  });
-  assert.deepEqual(inspectBridgePreview(snapshot, "notes/draft.md", options).preview, {
-    available: false,
-    reason: "NOT_PUBLICLY_ROUTABLE",
-  });
+  assert.deepEqual(
+    inspectBridgePreview(snapshot, "notes/hello.md", options).preview,
+    {
+      available: true,
+      developmentUrl: "http://127.0.0.1:5173/ja/hello/",
+      productionUrl: "https://example.com/ja/hello/",
+    },
+  );
+  assert.deepEqual(
+    inspectBridgePreview(snapshot, "notes/draft.md", options).preview,
+    {
+      available: false,
+      reason: "NOT_PUBLICLY_ROUTABLE",
+    },
+  );
   assert.deepEqual(
     inspectBridgePreview(snapshot, "notes/hello.md", {
       ...options,
@@ -346,11 +361,8 @@ test("does not offer a preview for non-routable pages", () => {
 test("reports publication state without treating drafts as routable", () => {
   const snapshot = fixtureSnapshot();
   const options = { contentRoot: "/vault", revision: 4 };
-  const draft = inspectBridgePublication(
-    snapshot,
-    "notes/draft.md",
-    options,
-  ).publication as Record<string, unknown>;
+  const draft = inspectBridgePublication(snapshot, "notes/draft.md", options)
+    .publication as Record<string, unknown>;
   assert.equal(draft.visibility, "draft");
   assert.equal(draft.routable, false);
   assert.deepEqual(draft.reasons, ["visibility is draft"]);
@@ -376,9 +388,11 @@ test("returns content diagnostics and last-build impact", () => {
     },
   );
   assert.equal(
-    (inspectBridgeImpact(snapshot, "notes/hello.md", options).impact as {
-      completeness: string;
-    }).completeness,
+    (
+      inspectBridgeImpact(snapshot, "notes/hello.md", options).impact as {
+        completeness: string;
+      }
+    ).completeness,
     "complete",
   );
 });
@@ -397,12 +411,18 @@ test("streams the State and content.changed event schema", async (t) => {
     signal: controller.signal,
   });
   assert.equal(response.status, 200);
-  assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
+  assert.match(
+    response.headers.get("content-type") ?? "",
+    /text\/event-stream/,
+  );
   const reader = response.body?.getReader();
   assert.ok(reader);
   const first = await reader.read();
   const text = new TextDecoder().decode(first.value);
-  assert.match(text, /^event: state\ndata: \{"revision":0,"build":"ready"\}\n\n$/);
+  assert.match(
+    text,
+    /^event: state\ndata: \{"revision":0,"build":"ready"\}\n\n$/,
+  );
 });
 
 function fixtureSnapshot(): CompletedContentBuildSnapshot {
@@ -462,9 +482,7 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
         ["hello", "notes/hello"],
         ["notes/draft", "notes/draft"],
       ]),
-      contentIndexAmbiguities: new Map([
-        ["shared", ["a/shared", "b/shared"]],
-      ]),
+      contentIndexAmbiguities: new Map([["shared", ["a/shared", "b/shared"]]]),
       redirects: new Map(),
       diagnostics: [],
     },

@@ -375,6 +375,16 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/og-image:
+    dependencies:
+      sharp:
+        specifier: ^0.35.5
+        version: 0.35.5(@types/node@24.13.6)
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/alias:
     dependencies:
       '@riebeckite/core':
@@ -1188,6 +1198,19 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
+
+  packages/plugins/og-image:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/og-image':
+        specifier: workspace:*
+        version: link:../../og-image
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/pdf:
     dependencies:

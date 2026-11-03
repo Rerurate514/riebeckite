@@ -594,6 +594,7 @@ export type {
 } from "./src/types/external_dependency.js";
 export type {
   ContentAssetOutputInput,
+  DeferredGeneratedOutputInput,
   GeneratedOutput,
   GeneratedOutputContent,
   GeneratedOutputInput,
@@ -601,6 +602,7 @@ export type {
 } from "./src/types/generated_output.js";
 export {
   createUnavailableGeneratedOutputSink,
+  isDeferredGeneratedOutput,
   normalizeContentAssetOutputPath,
   normalizeGeneratedOutputPath,
 } from "./src/types/generated_output.js";
@@ -610,6 +612,7 @@ export type {
   AssetTransformInput,
   AssetTransformOutput,
   ContentOutputDependencyResolver,
+  PlannedDeferredOutput,
   PlannedGeneratedOutput,
   PluginAssetTransformContext,
   PluginGeneratedOutputPlanContext,

@@ -523,7 +523,9 @@ export class PluginRuntime {
 
   async runGeneratedOutputPlans(manifest: ContentManifest): Promise<void> {
     const plugins = this.plugins().filter(
-      (plugin) => plugin.planGeneratedOutputs !== undefined,
+      (plugin) =>
+        plugin.planGeneratedOutputs !== undefined ||
+        plugin.planDeferredOutputs !== undefined,
     );
     if (plugins.length === 0) return;
     this.derivedOutputLinks.clear();
@@ -531,25 +533,30 @@ export class PluginRuntime {
     await this.refreshDerivedFiles();
     try {
       for (const plugin of plugins) {
-        const hook = plugin.planGeneratedOutputs;
-        if (!hook) continue;
-        const outputs = await this.observeHook(
-          plugin,
-          "planGeneratedOutputs",
-          async () =>
-            hook(
-              freezeGeneratedOutputPlanContext({
-                manifest: {
-                  discoverableEntries: manifest.discoverableEntries,
-                  routableEntries: manifest.publicEntries,
-                },
-                site: this.pipelineOptions.config?.site,
-                derived: this.derivedViews,
-              }),
-            ),
-        );
+        const context = freezeGeneratedOutputPlanContext({
+          manifest: {
+            discoverableEntries: manifest.discoverableEntries,
+            routableEntries: manifest.publicEntries,
+          },
+          site: this.pipelineOptions.config?.site,
+          derived: this.derivedViews,
+        });
+        const outputs = plugin.planGeneratedOutputs
+          ? await this.observeHook(
+              plugin,
+              "planGeneratedOutputs",
+              async () => plugin.planGeneratedOutputs?.(context) ?? [],
+            )
+          : [];
+        const deferredOutputs = plugin.planDeferredOutputs
+          ? await this.observeHook(
+              plugin,
+              "planDeferredOutputs",
+              async () => plugin.planDeferredOutputs?.(context) ?? [],
+            )
+          : [];
         const sink = this.generatedOutputs.sinkFor(plugin.name);
-        for (const output of outputs) {
+        for (const output of [...outputs, ...deferredOutputs]) {
           const viewIds = [...new Set(output.derivedViewIds ?? [])];
           const viewDependencies = viewIds.map((id) => {
             const version = this.derivedViews.versionOf(id);
@@ -572,11 +579,17 @@ export class PluginRuntime {
               `Generated output plan from "${plugin.name}" must declare at least one dependency.`,
             );
           }
-          sink.emit({
-            ...output,
-            dependencies,
-            ...(viewIds.length === 0 ? {} : { derivedViewIds: viewIds }),
-          });
+          if ("generate" in output) {
+            sink.emitDeferred({
+              ...output,
+              dependencies,
+            });
+          } else {
+            sink.emit({
+              ...output,
+              dependencies,
+            });
+          }
           for (const viewId of viewIds) {
             const paths = this.derivedOutputLinks.get(viewId) ?? new Set();
             paths.add(output.path);

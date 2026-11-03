@@ -19,6 +19,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 - Add change entries, ADRs, and generated release notes so user-facing changes are recorded before release and published consistently to the changelog, the documentation site, and GitHub Releases.
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261102-143500-release-change-management-b2c3d4.md
 
+- Add static PNG Open Graph image generation with deferred, cache-aware output rendering for public content.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/og-image`, `@riebeckite/plugin-og-image`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261103-deferred-og-image-outputs.md
+
 ### Changed
 
 - Update the generated docs preset guide to include `check`, `build`, and a clearer link to the configuration page.

@@ -7,6 +7,7 @@ import {
   compareOutputPlan,
   createBuildOutputMarker,
   publicationFingerprint as fingerprintPublication,
+  isDeferredGeneratedOutput,
   publicationEntriesFromManifest,
   publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
@@ -801,10 +802,13 @@ async function emitGeneratedOutputs(
       onShadowed?.(output.path);
       continue;
     }
+    const source = isDeferredGeneratedOutput(output)
+      ? await output.generate()
+      : output.content;
     await emit({
       type: "asset",
       fileName: output.path,
-      source: output.content,
+      source,
     });
     count += 1;
   }

@@ -9,6 +9,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/diagram",
   "packages/diagnostics",
   "packages/git-history",
+  "packages/og-image",
   "packages/preview",
   "packages/spa",
   "packages/runtime",
@@ -72,6 +73,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/mermaid-pele",
   "packages/plugins/navigation",
   "packages/plugins/obsidian-markdown",
+  "packages/plugins/og-image",
   "packages/plugins/pdf",
   "packages/plugins/permalink",
   "packages/plugins/plantuml",
@@ -643,6 +645,14 @@ const packagePublishingMetadata = {
   "packages/themes/tokyonight": {
     description: "A Tokyo Night CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "tokyo-night"],
+  },
+  "packages/og-image": {
+    description: "Static PNG Open Graph image renderer for Riebeckite.",
+    keywords: ["riebeckite", "open-graph", "og-image"],
+  },
+  "packages/plugins/og-image": {
+    description: "Static PNG Open Graph image generation for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "open-graph", "og-image"],
   },
 };
 

@@ -31,10 +31,19 @@ export type SsgModule = {
   content?: {
     getManifest(): Promise<
       ContentManifest & {
-        generatedOutputs?: readonly {
-          path: string;
-          content: string | Uint8Array;
-        }[];
+        generatedOutputs?: readonly (
+          | {
+              path: string;
+              content: string | Uint8Array;
+            }
+          | {
+              path: string;
+              generate: () =>
+                | string
+                | Uint8Array
+                | Promise<string | Uint8Array>;
+            }
+        )[];
       }
     >;
     getProcessedContentCount(): number;

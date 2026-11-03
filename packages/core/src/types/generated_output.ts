@@ -6,6 +6,13 @@ const STATIC_ASSETS_DIR = "assets";
 
 export type GeneratedOutputContent = string | Uint8Array;
 
+export type DeferredGeneratedOutputInput = {
+  path: string;
+  dependencies?: readonly OutputDependency[];
+  fingerprint: string;
+  generate: () => GeneratedOutputContent | Promise<GeneratedOutputContent>;
+};
+
 /**
  * A file a plugin wants written to the build output directory. Content is kept
  * in memory until the integration layer forwards it to the build tool, so
@@ -21,10 +28,22 @@ export type GeneratedOutputInput = {
   dependencies?: readonly OutputDependency[];
 };
 
-export type GeneratedOutput = GeneratedOutputInput & {
-  /** Name of the plugin that registered the output. */
-  owner: string;
-};
+export type GeneratedOutput =
+  | (GeneratedOutputInput & {
+      owner: string;
+      generate?: undefined;
+      fingerprint?: undefined;
+    })
+  | (DeferredGeneratedOutputInput & {
+      owner: string;
+      content?: undefined;
+    });
+
+export function isDeferredGeneratedOutput(
+  output: GeneratedOutput,
+): output is Extract<GeneratedOutput, { generate: NonNullable<unknown> }> {
+  return output.generate !== undefined;
+}
 
 export type ContentAssetOutputInput = {
   path: string;
@@ -34,6 +53,7 @@ export type ContentAssetOutputInput = {
 
 export type GeneratedOutputSink = {
   emit(output: GeneratedOutputInput): void;
+  emitDeferred(output: DeferredGeneratedOutputInput): void;
   emitAsset(output: ContentAssetOutputInput): void;
 };
 
@@ -45,6 +65,7 @@ export function createUnavailableGeneratedOutputSink(): GeneratedOutputSink {
   };
   return {
     emit: unavailable,
+    emitDeferred: unavailable,
     emitAsset: unavailable,
   };
 }

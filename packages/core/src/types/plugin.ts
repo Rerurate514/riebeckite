@@ -16,7 +16,10 @@ import type {
   ExternalDependencyContext,
   ExternalDependencyResolution,
 } from "./external_dependency.js";
-import type { GeneratedOutputContent } from "./generated_output.js";
+import type {
+  DeferredGeneratedOutputInput,
+  GeneratedOutputContent,
+} from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
@@ -114,6 +117,11 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   ):
     | readonly PlannedGeneratedOutput[]
     | Promise<readonly PlannedGeneratedOutput[]>;
+  planDeferredOutputs?(
+    context: PluginGeneratedOutputPlanContext,
+  ):
+    | readonly PlannedDeferredOutput[]
+    | Promise<readonly PlannedDeferredOutput[]>;
   dispose?(context: PluginLifecycleContext): void | Promise<void>;
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
@@ -161,6 +169,11 @@ export type PlannedGeneratedOutput = {
   readonly path: string;
   readonly content: GeneratedOutputContent;
   readonly dependencies?: readonly OutputDependency[];
+  readonly derivedDependencies?: readonly DerivedDependency[];
+  readonly derivedViewIds?: readonly string[];
+};
+
+export type PlannedDeferredOutput = DeferredGeneratedOutputInput & {
   readonly derivedDependencies?: readonly DerivedDependency[];
   readonly derivedViewIds?: readonly string[];
 };

@@ -66,6 +66,45 @@ export function ogImage(options: OgImageOptions = {}) {
     cacheVersion: configurationFingerprint,
     options,
     validateOptions: validateOgImageOptions,
+    inspector: {
+      apiVersion: 1,
+      tabs: [
+        {
+          id: "og-image",
+          title: { en: "OG images", ja: "OG画像" },
+          description: {
+            en: "Static Open Graph image configuration.",
+            ja: "静的 Open Graph 画像の設定です。",
+          },
+          collect: () => ({
+            kind: "key-value",
+            items: [
+              {
+                key: { en: "Preset", ja: "プリセット" },
+                value: options.preset ?? "card",
+              },
+              {
+                key: { en: "Layout", ja: "レイアウト" },
+                value:
+                  typeof options.layout === "string"
+                    ? options.layout
+                    : typeof options.layout === "function"
+                      ? "SVG function"
+                      : "preset",
+              },
+              {
+                key: { en: "Output prefix", ja: "出力プレフィックス" },
+                value: generatedPathPrefix,
+              },
+              {
+                key: { en: "Palette", ja: "配色" },
+                value: palette,
+              },
+            ],
+          }),
+        },
+      ],
+    },
     onManifestCreated: ({ manifest }) => {
       for (const entry of manifest.publicEntries) {
         if (

@@ -75,3 +75,9 @@ export default defineOgLayout(({ page, palette, site }) => (
 The layout must have a default export. It uses the site's configured Hono JSX
 runtime and Satori's supported flexbox CSS subset. A function layout returning
 SVG remains supported and requires `layoutFingerprint` for cache invalidation.
+
+## Development Inspector
+
+In development, the **OG images** tab shows the active preset, layout source,
+output prefix, and resolved palette. Image output remains deferred until the
+static build needs it.

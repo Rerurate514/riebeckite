@@ -61,3 +61,7 @@ export default defineOgLayout(({ page, palette, site }) => (
 ```
 
 レイアウトは default export が必要です。サイトで設定した Hono JSX runtime と、Satori が対応する Flexbox CSS の範囲で記述します。SVG を返す関数も継続して使えますが、キャッシュ無効化のため `layoutFingerprint` が必要です。
+
+## Development Inspector
+
+開発中は **OG画像** タブに、使用中のプリセット、レイアウトのソース、出力プレフィックス、解決済みの配色を表示します。画像の出力は、静的ビルドで必要になるまで遅延したままです。

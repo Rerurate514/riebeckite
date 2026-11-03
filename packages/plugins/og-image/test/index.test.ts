@@ -35,6 +35,40 @@ test("requires a fingerprint for a custom layout", () => {
   ]);
 });
 
+test("exposes its configuration in Development Inspector", async () => {
+  const plugin = ogImage({
+    appearance: { accent: "#f97316" },
+    layout: "test/tsx-layout.tsx",
+  });
+  const tab = plugin.inspector?.tabs[0];
+
+  assert.equal(tab?.id, "og-image");
+  const data = await tab?.collect?.({} as never);
+  assert.deepEqual(data, {
+    kind: "key-value",
+    items: [
+      { key: { en: "Preset", ja: "プリセット" }, value: "card" },
+      {
+        key: { en: "Layout", ja: "レイアウト" },
+        value: "test/tsx-layout.tsx",
+      },
+      {
+        key: { en: "Output prefix", ja: "出力プレフィックス" },
+        value: "/_og/",
+      },
+      {
+        key: { en: "Palette", ja: "配色" },
+        value: {
+          background: "#18212f",
+          foreground: "#f8fafc",
+          accent: "#f97316",
+        },
+      },
+    ],
+  });
+  await rm(resolve("test", ".riebeckite"), { force: true, recursive: true });
+});
+
 test("loads a TSX layout and renders it through the production renderer", async () => {
   const plugin = ogImage({ layout: "test/tsx-layout.tsx" });
   const generated = entry({});

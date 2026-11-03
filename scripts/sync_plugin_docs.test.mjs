@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import {
   buildDesiredReadmes,
+  collectManifestSlugs,
   generatedMarker,
   planSync,
   rewriteDocumentLinks,
@@ -143,6 +144,12 @@ test("is idempotent and labels generated READMEs", () => {
 test("every official plugin has paired canonical docs and generated READMEs", () => {
   const { readmes, errors } = buildDesiredReadmes();
   assert.deepEqual(errors, []);
-  assert.equal(readmes.length, 166);
+  const pluginRoot = path.resolve(
+    import.meta.dirname,
+    "..",
+    "packages",
+    "plugins",
+  );
+  assert.equal(readmes.length, collectManifestSlugs(pluginRoot).length * 2);
   assert.deepEqual(planSync(readmes), []);
 });

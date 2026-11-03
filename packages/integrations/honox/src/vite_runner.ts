@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig, Tracer } from "@riebeckite/core";
-import { build, createServer } from "vite";
+import { build, createServer, type Plugin } from "vite";
 import {
   loadRiebeckiteConfig,
   type RiebeckiteConfigLoaderOptions,
@@ -11,6 +11,7 @@ import {
 import { verifyClientBuildArtifacts } from "./ssg/build_output.js";
 import { computeBundleFingerprint } from "./ssg/inventory.js";
 import { loadOutputCacheMetadata } from "./ssg/output_cache.js";
+import { createClientManifestPlugin } from "./ssg/standalone.js";
 
 type HonoxApplicationOptions = {
   root: string;
@@ -23,6 +24,7 @@ type HonoxApplicationOptions = {
   onServerReady?: (urls: readonly string[]) => void | Promise<void>;
   restartOnChange?: readonly string[];
   reuseClientBuild?: boolean;
+  outputDirectory?: string;
 };
 
 export type ResolvedHonoxApplication = {
@@ -158,13 +160,45 @@ export async function buildHonoxApplication(
 ): Promise<void> {
   const root = path.resolve(options.root);
   await withWorkingDirectory(root, async () => {
+    const clientOutputDirectory = path.join(
+      root,
+      ".riebeckite",
+      "build-output-client",
+    );
     if (!options.reuseClientBuild) {
       await runTraced(options.tracer, "integration.honox.client_build", () =>
         build({ root, mode: "client" }),
       );
     }
+    const stableClientDirectory = path.join(
+      root,
+      ".riebeckite",
+      "client-build",
+    );
+    await fs.rm(stableClientDirectory, { recursive: true, force: true });
+    const sourceManifest = options.reuseClientBuild
+      ? path.join(
+          path.resolve(options.outputDirectory ?? path.join(root, "dist")),
+          ".vite",
+          "manifest.json",
+        )
+      : path.join(clientOutputDirectory, ".vite", "manifest.json");
+    try {
+      await fs.mkdir(path.join(stableClientDirectory, ".vite"), {
+        recursive: true,
+      });
+      await fs.copyFile(
+        sourceManifest,
+        path.join(stableClientDirectory, ".vite", "manifest.json"),
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      await fs.rm(stableClientDirectory, { recursive: true, force: true });
+    }
     await runTraced(options.tracer, "integration.honox.server_build", () =>
-      buildServerWithMetrics(root, options.tracer),
+      buildServerWithMetrics(root, options.tracer, [
+        createClientManifestPlugin(root, stableClientDirectory),
+      ]),
     );
   });
 }
@@ -193,9 +227,10 @@ export async function canReuseClientBuild(input: {
 async function buildServerWithMetrics(
   root: string,
   tracer: Tracer | undefined,
+  plugins: Plugin[] = [],
 ): Promise<void> {
   if (!tracer) {
-    await build({ root });
+    await build({ root, plugins });
     return;
   }
 
@@ -209,7 +244,7 @@ async function buildServerWithMetrics(
   if (!previousMetricsFile)
     process.env.RIEBECKITE_SSG_METRICS_FILE = metricsFile;
   try {
-    await build({ root });
+    await build({ root, plugins });
     await reportSsgTimings(tracer, metricsFile);
   } finally {
     if (previousMetricsFile === undefined) {

@@ -86,7 +86,7 @@ function createRuntimeExternalPlugin(): Plugin {
   };
 }
 
-function createClientManifestPlugin(
+export function createClientManifestPlugin(
   root: string,
   clientOutputDirectory: string,
 ): Plugin {

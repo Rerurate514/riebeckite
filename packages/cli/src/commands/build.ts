@@ -194,6 +194,8 @@ export async function runBuild(
         root: project.appRoot,
         tracer: observability.tracer,
         reuseClientBuild,
+        outputDirectory:
+          project.config.outputDirectory ?? path.join(project.appRoot, "dist"),
       });
       await writeBuildOutputMarker(project, {
         completedAt: new Date(),

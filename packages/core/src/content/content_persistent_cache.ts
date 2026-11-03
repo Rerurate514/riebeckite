@@ -354,22 +354,9 @@ function pluginFingerprint(
   return fingerprint;
 }
 
-const functionSourceFingerprints = new Map<string, string>();
-
-function fingerprintFunctionSource(value: (...args: never[]) => unknown) {
-  const source = Function.prototype.toString.call(value);
-  const cached = functionSourceFingerprints.get(source);
-  if (cached !== undefined) return cached;
-  const fingerprint = `fn:${hash(source)}`;
-  functionSourceFingerprints.set(source, fingerprint);
-  return fingerprint;
-}
-
 function sanitizeForFingerprint(value: unknown): unknown {
   if (value === null || value === undefined) return value;
-  if (typeof value === "function") {
-    return fingerprintFunctionSource(value as (...args: never[]) => unknown);
-  }
+  if (typeof value === "function") return "[Function]";
   if (typeof value === "symbol") return "[Symbol]";
   if (Array.isArray(value)) return value.map(sanitizeForFingerprint);
   if (value instanceof Map || value instanceof Set)

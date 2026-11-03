@@ -325,6 +325,26 @@ test("computePipelineFingerprint is stable", () => {
   assert.equal(fp1.length, 64);
 });
 
+test("computePipelineFingerprint is stable across plugin function representations", () => {
+  const first = contentTestConfig(TEST_CACHE_DIR, [
+    definePlugin({
+      name: "plugin",
+      onManifestCreated: function first() {},
+    }),
+  ]);
+  const second = contentTestConfig(TEST_CACHE_DIR, [
+    definePlugin({
+      name: "plugin",
+      onManifestCreated: function second() {},
+    }),
+  ]);
+
+  assert.equal(
+    computePipelineFingerprint(first),
+    computePipelineFingerprint(second),
+  );
+});
+
 test("computePipelineFingerprint changes with plugin config", () => {
   const config1 = contentTestConfig(TEST_CACHE_DIR, []);
   const config2 = contentTestConfig(TEST_CACHE_DIR, [

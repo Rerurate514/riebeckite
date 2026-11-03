@@ -201,6 +201,11 @@ const blogSeo = np(
   "seo",
   `{ sitemap: true, robots: true, feed: { rss: true, atom: true, json: true } }`,
 );
+const blogOgImage = np(
+  "@riebeckite/plugin-og-image",
+  "ogImage",
+  `{ preset: "editorial" }`,
+);
 const toc = np("@riebeckite/plugin-toc", "toc");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
@@ -661,6 +666,7 @@ export const blog: ScaffoldPreset = {
   plugins: [
     ...readingPlugins,
     blogSeo,
+    blogOgImage,
     properties,
     backlinks,
     relatedPosts,

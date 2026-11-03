@@ -37,7 +37,7 @@ npx create-riebeckite --list-presets
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | サイトの[[glossary/locale|ロケール]]に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、[[glossary/search|検索]]、コンテンツから生成するナビゲーション、パンくず、[[glossary/backlink|バックリンク]]、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
 | `digital-garden` | `garden` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
-| `blog` | `editorial` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、検索、目次 |
+| `blog` | `editorial` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、OG画像の自動生成、検索、目次 |
 | `docs` | `technical` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
 | `portfolio` | `folio` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
@@ -56,7 +56,7 @@ Obsidian を意識した、相互リンクするノートのための構成で�
 
 ### `blog`
 
-記事の公開を中心にした構成です。記事、タグ、シリーズ、関連記事と最新記事、共有操作、検索、目次を含みます。生成される設定では RSS、Atom、JSON feed を明示的に有効にし、サンプル記事でシリーズナビゲーションと taxonomy を確認できます。
+記事の公開を中心にした構成です。記事、タグ、シリーズ、関連記事と最新記事、共有操作、検索、目次を含みます。生成される設定では RSS、Atom、JSON feed を明示的に有効にし、公開ページごとに Open Graph 画像を生成します。サンプル記事でシリーズナビゲーションと taxonomy を確認できます。
 
 ### `docs`
 

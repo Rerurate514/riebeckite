@@ -37,7 +37,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `digital-garden` | `garden` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
-| `blog` | `editorial` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, search, table of contents |
+| `blog` | `editorial` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, generated Open Graph images, search, table of contents |
 | `docs` | `technical` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
 | `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
@@ -56,7 +56,7 @@ An Obsidian-oriented site for linked notes. The generated content demonstrates f
 
 ### `blog`
 
-A publication-focused starting point with posts, tags, series, related and recent posts, sharing controls, search, and a table of contents. Its generated configuration explicitly enables RSS, Atom, and JSON feeds, while the sample articles demonstrate series navigation and taxonomy.
+A publication-focused starting point with posts, tags, series, related and recent posts, sharing controls, search, and a table of contents. Its generated configuration explicitly enables RSS, Atom, and JSON feeds and generates an Open Graph image for every public page, while the sample articles demonstrate series navigation and taxonomy.
 
 ### `docs`
 

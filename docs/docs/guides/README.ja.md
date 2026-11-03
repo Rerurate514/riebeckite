@@ -74,6 +74,12 @@ Riebeckite のサイトに Analytics を導入する方法を説明します。
 
 ローカルのプラグインを、実際の HonoX/Vite 開発サーバーで確認する方法を説明します。
 
+### ローカルのエディタツールを連携する
+
+[エディタ連携](./editor-integration.ja.md)
+
+エディタ拡張などのローカルツールを、読み取り専用の開発用 Bridge に接続する方法を説明します。
+
 ### アイコンやロゴを差し替える
 
 [サイトのアイコンとロゴ](./branding.ja.md)
@@ -133,6 +139,7 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | Obsidian Vault を公開する | [Obsidian のノートをサイトにする](./obsidian.ja.md) |
 | コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./content-repositories.ja.md) |
 | 多言語サイトにする | [多言語サイト](./localization.ja.md) |
+| ローカルのエディタツールを連携する | [エディタ連携](./editor-integration.ja.md) |
 | Analytics を導入する | [アクセス解析](./analytics.ja.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.ja.md) |
 | サイトの UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |

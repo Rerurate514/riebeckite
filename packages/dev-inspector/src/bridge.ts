@@ -4,6 +4,13 @@ import { createRequire } from "node:module";
 import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { Plugin, ViteDevServer } from "vite";
 import {
+  inspectBridgeDiagnostics,
+  inspectBridgeImpact,
+  inspectBridgePreview,
+  inspectBridgePublication,
+  resolveBridgeSource,
+} from "./bridge_inspection.js";
+import {
   isLoopbackAddress,
   isLoopbackHost,
   isTrustedInspectorRequest,
@@ -21,6 +28,7 @@ const riebeckiteVersion = (
 
 export type RiebeckiteBridgeOptions = {
   token?: string;
+  contentRoot?: string | (() => string);
   getSnapshot: (
     server: ViteDevServer,
   ) =>
@@ -42,6 +50,7 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
       if (!token || token.length < 32) return;
 
       let revision = 0;
+      const eventClients = new Set<http.ServerResponse>();
       const serverId = crypto.randomUUID();
       const privateServer = http.createServer(async (request, response) => {
         if (!isTrustedBridgeRequest(request, token)) {
@@ -54,7 +63,8 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
           response.end();
           return;
         }
-        if (request.url !== bridgePath) {
+        const requestUrl = new URL(request.url ?? "/", "http://127.0.0.1");
+        if (!isBridgePath(requestUrl.pathname)) {
           response.statusCode = 404;
           response.end();
           return;
@@ -74,23 +84,34 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
         }
         try {
           const snapshot = await options.getSnapshot(server);
+          if (requestUrl.pathname === `${bridgePath}/events`) {
+            response.writeHead(200, {
+              "content-type": "text/event-stream; charset=utf-8",
+              "cache-control": "no-store",
+              connection: "keep-alive",
+              "x-content-type-options": "nosniff",
+            });
+            response.write(
+              `event: state\ndata: ${JSON.stringify({ revision, build: snapshot ? "ready" : "unavailable" })}\n\n`,
+            );
+            eventClients.add(response);
+            request.once("close", () => eventClients.delete(response));
+            return;
+          }
           response.setHeader("content-type", "application/json; charset=utf-8");
           response.setHeader("cache-control", "no-store");
           response.setHeader("x-content-type-options", "nosniff");
           response.end(
-            JSON.stringify({
-              protocolVersion: bridgeProtocolVersion,
-              server: { id: serverId, version: riebeckiteVersion },
-              capabilities: ["status"],
-              development: {
-                available: true,
+            JSON.stringify(
+              bridgeResponse({
+                requestUrl,
+                snapshot,
+                server,
+                options,
                 revision,
-                build: snapshot
-                  ? { status: "ready", completedAt: snapshot.completedAt }
-                  : { status: "unavailable" },
-              },
-              inspection: { available: snapshot !== undefined },
-            }),
+                serverId,
+              }),
+            ),
           );
         } catch {
           response.statusCode = 503;
@@ -140,13 +161,90 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
       server.middlewares.use(bridgeBootstrapPath, bootstrap);
       invalidators.set(server, () => {
         revision += 1;
+        for (const client of eventClients) {
+          client.write(
+            `event: content.changed\ndata: ${JSON.stringify({ revision })}\n\n`,
+          );
+        }
       });
       server.httpServer?.once("close", () => {
         invalidators.delete(server);
+        for (const client of eventClients) client.end();
+        eventClients.clear();
         privateServer.close();
       });
     },
   };
+}
+
+function isBridgePath(pathname: string): boolean {
+  return (
+    pathname === bridgePath ||
+    [
+      "source",
+      "preview",
+      "publication",
+      "diagnostics",
+      "impact",
+      "events",
+    ].some((name) => pathname === `${bridgePath}/${name}`)
+  );
+}
+
+function bridgeResponse(input: {
+  requestUrl: URL;
+  snapshot: CompletedContentBuildSnapshot | undefined;
+  server: ViteDevServer;
+  options: RiebeckiteBridgeOptions;
+  revision: number;
+  serverId: string;
+}): Record<string, unknown> {
+  const { requestUrl, snapshot, server, options, revision, serverId } = input;
+  const base = {
+    protocolVersion: bridgeProtocolVersion,
+    server: { id: serverId, version: riebeckiteVersion },
+    capabilities: options.contentRoot
+      ? [
+          "status",
+          "source-resolution",
+          "preview",
+          "events",
+          "diagnostics",
+          "publication",
+          "build-impact",
+        ]
+      : ["status"],
+    development: {
+      available: true,
+      revision,
+      build: snapshot
+        ? { status: "ready", completedAt: snapshot.completedAt }
+        : { status: "unavailable" },
+    },
+    inspection: { available: snapshot !== undefined },
+  };
+  const contentRoot =
+    typeof options.contentRoot === "function"
+      ? options.contentRoot()
+      : options.contentRoot;
+  if (!contentRoot || requestUrl.pathname === bridgePath) return base;
+  const inspection = {
+    contentRoot,
+    revision,
+    developmentOrigin: server.resolvedUrls?.local[0],
+  };
+  const source = requestUrl.searchParams.get("path");
+  if (requestUrl.pathname === `${bridgePath}/source`)
+    return resolveBridgeSource(snapshot, source, inspection);
+  if (requestUrl.pathname === `${bridgePath}/preview`)
+    return inspectBridgePreview(snapshot, source, inspection);
+  if (requestUrl.pathname === `${bridgePath}/publication`)
+    return inspectBridgePublication(snapshot, source, inspection);
+  if (requestUrl.pathname === `${bridgePath}/diagnostics`)
+    return inspectBridgeDiagnostics(snapshot, source, inspection);
+  if (requestUrl.pathname === `${bridgePath}/impact`)
+    return inspectBridgeImpact(snapshot, source, inspection);
+  return base;
 }
 
 function isTrustedBridgeRequest(

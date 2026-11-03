@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import { riebeckiteBridge } from "../src/bridge.js";
+import {
+  inspectBridgeImpact,
+  inspectBridgePreview,
+  inspectBridgePublication,
+  resolveBridgeSource,
+} from "../src/bridge_inspection.js";
 
 const token = "a".repeat(32);
 
@@ -109,13 +116,159 @@ test("rejects forwarded and cross-origin private requests", async (t) => {
   }
 });
 
-function bridge(): {
+test("serves a source resolution through the authenticated Bridge endpoint", async (t) => {
+  const { bootstrap, close } = bridge({
+    contentRoot: "/vault",
+    getSnapshot: fixtureSnapshot,
+  });
+  t.after(close);
+  const boot = await callBootstrap(bootstrap, {
+    host: "127.0.0.1:3000",
+    token,
+  });
+  const { origin } = JSON.parse(boot.body) as { origin: string };
+
+  const response = await fetch(
+    `${origin}/__riebeckite/bridge/v1/source?path=notes/hello.md`,
+    {
+      headers: {
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+    },
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), {
+    status: "resolved",
+    entry: {
+      slug: "notes/hello",
+      contentId: "hello-id",
+      source: { path: "notes/hello.md" },
+      permalink: "/ja/hello/",
+      locale: "ja",
+      visibility: "public",
+      routable: true,
+      discoverable: true,
+      redirects: [],
+    },
+    revision: 0,
+  });
+});
+
+test("resolves manifest entries without exposing an absolute source path", () => {
+  const snapshot = fixtureSnapshot();
+  const options = {
+    contentRoot: "/vault",
+    revision: 4,
+    developmentOrigin: "http://127.0.0.1:5173/",
+  };
+  assert.deepEqual(
+    resolveBridgeSource(snapshot, "/vault/notes/hello.md", options),
+    {
+      status: "resolved",
+      entry: {
+        slug: "notes/hello",
+        contentId: "hello-id",
+        source: { path: "notes/hello.md" },
+        permalink: "/ja/hello/",
+        locale: "ja",
+        visibility: "public",
+        routable: true,
+        discoverable: true,
+        redirects: [],
+      },
+      revision: 4,
+    },
+  );
+  assert.deepEqual(resolveBridgeSource(snapshot, "../secret.md", options), {
+    status: "unsupported",
+    reason: "INVALID_SOURCE_PATH",
+    revision: 4,
+  });
+  assert.deepEqual(
+    inspectBridgePreview(snapshot, "notes/hello.md", options).preview,
+    {
+      available: true,
+      developmentUrl: "http://127.0.0.1:5173/ja/hello/",
+      productionUrl: undefined,
+    },
+  );
+  assert.equal(
+    (
+      inspectBridgePublication(snapshot, "notes/hello.md", options)
+        .publication as { visibility: string }
+    ).visibility,
+    "public",
+  );
+  assert.equal(
+    (
+      inspectBridgeImpact(snapshot, "notes/hello.md", options).impact as {
+        completeness: string;
+      }
+    ).completeness,
+    "complete",
+  );
+});
+
+function fixtureSnapshot(): CompletedContentBuildSnapshot {
+  const entry = {
+    slug: "notes/hello",
+    contentId: "hello-id",
+    permalink: "/ja/hello/",
+    publicLocation: {
+      slug: "notes/hello",
+      permalink: "/ja/hello/",
+      language: "ja",
+    },
+    title: "Hello",
+    frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    html: "",
+    tags: [],
+    links: [],
+    backlinks: [],
+    assets: [],
+  };
+  return {
+    manifest: {
+      bySlug: new Map([[entry.slug, entry]]),
+      redirects: new Map(),
+      diagnostics: [],
+      finalHtmlDiagnostics: [],
+    },
+    finalHtmlDiagnostics: [],
+    outputChangeSet: {
+      affected: [
+        {
+          kind: "content",
+          path: "ja/hello/index.html",
+          producer: "content:notes/hello",
+          dependencies: [{ type: "content", slug: "notes/hello" }],
+        },
+      ],
+      unchanged: [],
+      removed: [],
+      fullRegenerationRequired: false,
+      reasons: new Map(),
+    },
+  } as unknown as CompletedContentBuildSnapshot;
+}
+
+function bridge(input?: {
+  contentRoot?: string;
+  getSnapshot?: () => CompletedContentBuildSnapshot | undefined;
+}): {
   bootstrap: (request: unknown, response: unknown) => Promise<void>;
   close: () => void;
 } {
   const stack: Array<{ route: string; handle: unknown }> = [];
   let close: (() => void) | undefined;
-  const plugin = riebeckiteBridge({ token, getSnapshot: () => undefined });
+  const plugin = riebeckiteBridge({
+    token,
+    contentRoot: input?.contentRoot,
+    getSnapshot: input?.getSnapshot ?? (() => undefined),
+  });
   const configure = plugin.configureServer;
   assert.equal(typeof configure, "function");
   configure({

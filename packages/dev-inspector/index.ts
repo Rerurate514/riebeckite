@@ -4,6 +4,10 @@ export {
   invalidateRiebeckiteBridge,
   riebeckiteBridge,
 } from "./src/bridge.js";
+export {
+  approveBridgeMutationPlan,
+  reviewBridgeMutationPlan,
+} from "./src/bridge_mutation.js";
 export type { DevelopmentInspectorOptions } from "./src/development_inspector.js";
 export {
   invalidateDevelopmentInspector,

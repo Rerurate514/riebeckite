@@ -104,18 +104,27 @@ or wrong token is 403. An unsupported protocol is 426 with
 `INCOMPATIBLE_PROTOCOL` and the supported versions. Tokens are never returned by
 the API.
 
-Mutation is disabled unless `--bridge-mutation-token <at-least-32-character-token>`
-is supplied in addition to the read token. This is a separate capability: the
-read token can create a plan but cannot approve or apply it. `POST
+Mutation is disabled unless both `RIEBECKITE_BRIDGE_MUTATION_TOKEN` and
+`RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` are set to separate values of at
+least 32 characters before starting the development server. They are environment
+variables rather than command-line options, so they are not exposed in process
+arguments. This is a separate capability: the read token can create a plan; the
+mutation token can apply an already approved plan but cannot approve one. `POST
 /__riebeckite/bridge/v1/mutations/plan` accepts existing content mutation
-operations and returns the unmodified `ContentMutationPlan`; `POST
-/mutations/<plan-id>/approve` requires the mutation token and issues a one-time
-approval valid for five minutes; `POST /mutations/<plan-id>/apply` requires both
-the mutation token and that approval. Plans stay server-side, and apply uses the
-existing fingerprint, lock, journal, backup, and path validation implementation.
+operations and returns the unmodified `ContentMutationPlan`. A human must review
+the persisted plan in an interactive terminal with `riebeckite bridge approve
+<plan-id>` before `POST /mutations/<plan-id>/apply` can succeed. Approval is
+signed with the approval token and binds the plan ID and content hash; the server
+checks that binding, five-minute expiry, and one-time use before applying. Neither
+the approval token nor a bearer approval ID crosses HTTP, appears in URLs, or is
+returned by the API. Plans stay server-side, and apply uses the existing
+fingerprint, lock, journal, backup, and path validation implementation.
 
-Recovery and rollback are intentionally not exposed by Bridge yet. They remain
-CLI-only until they have their own destructive-operation approval contract.
+Recovery and rollback intentionally remain CLI-only. They operate on journals
+and backups and can restore or delete content; exposing their journal selection
+to the editor capability would create a second destructive API. The existing
+`riebeckite content recover <journal> --apply` path retains its engine-level
+journal, backup, fingerprint, path, and conflict validation.
 
 Future compatible versions may add optional response fields and capabilities.
 They must not change or remove v1 fields. Incompatible changes require a new

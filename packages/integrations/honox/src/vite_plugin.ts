@@ -29,7 +29,6 @@ export type RiebeckiteIntegrationOptions = {
   appRoot?: string;
   configFile?: string;
   bridgeToken?: string;
-  bridgeMutationToken?: string;
 };
 
 /**
@@ -146,9 +145,9 @@ export function riebeckite(
     }),
     riebeckiteBridge({
       token: options.bridgeToken ?? process.env.RIEBECKITE_BRIDGE_TOKEN,
-      mutationToken:
-        options.bridgeMutationToken ??
-        process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN,
+      mutationToken: process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN,
+      mutationApprovalToken:
+        process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN,
       contentRoot: () => requireApplication(application).contentRoot,
       publicOrigin: () => getConfig().site.baseUrl || undefined,
       async getSnapshot(server) {

@@ -6,11 +6,15 @@ import type { Plugin, ViteDevServer } from "vite";
 import {
   inspectBridgeDiagnostics,
   inspectBridgeImpact,
-  inspectBridgePage,
   inspectBridgePreview,
   inspectBridgePublication,
   resolveBridgeSource,
 } from "./bridge_inspection.js";
+import {
+  type BridgeMutationStore,
+  createBridgeMutationStore,
+  isMutationOperations,
+} from "./bridge_mutation.js";
 import {
   isLoopbackAddress,
   isLoopbackHost,
@@ -18,11 +22,11 @@ import {
 } from "./development_inspector_security.js";
 
 const bridgePath = "/__riebeckite/bridge/v1";
-const bridgePagePath = "/__riebeckite/bridge/v1/page";
 const bridgeBootstrapPath = "/__riebeckite/bridge/bootstrap";
 const bridgeProtocolVersion = 1;
 const bridgeTokenHeader = "x-riebeckite-bridge-token";
 const bridgeProtocolHeader = "x-riebeckite-bridge-protocol";
+const bridgeMutationTokenHeader = "x-riebeckite-bridge-mutation-token";
 const invalidators = new WeakMap<ViteDevServer, () => void>();
 const riebeckiteVersion = (
   createRequire(import.meta.url)("../package.json") as { version: string }
@@ -30,8 +34,9 @@ const riebeckiteVersion = (
 
 export type RiebeckiteBridgeOptions = {
   token?: string;
+  mutationToken?: string;
+  mutationApprovalToken?: string;
   contentRoot?: string | (() => string);
-  publicOrigin?: string | (() => string | undefined);
   getSnapshot: (
     server: ViteDevServer,
   ) =>
@@ -53,6 +58,7 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
       if (!token || token.length < 32) return;
 
       let revision = 0;
+      let mutations: BridgeMutationStore | undefined;
       const eventClients = new Set<http.ServerResponse>();
       const serverId = crypto.randomUUID();
       const privateServer = http.createServer(async (request, response) => {
@@ -61,7 +67,7 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
           response.end();
           return;
         }
-        if (request.method !== "GET") {
+        if (request.method !== "GET" && request.method !== "POST") {
           response.statusCode = 405;
           response.end();
           return;
@@ -87,6 +93,42 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
         }
         try {
           const snapshot = await options.getSnapshot(server);
+          if (request.method === "POST") {
+            if (
+              !options.mutationToken ||
+              options.mutationToken.length < 32 ||
+              !options.mutationApprovalToken ||
+              options.mutationApprovalToken.length < 32 ||
+              options.mutationToken === options.mutationApprovalToken
+            ) {
+              response.statusCode = 404;
+              response.end();
+              return;
+            }
+            const contentRoot =
+              typeof options.contentRoot === "function"
+                ? options.contentRoot()
+                : options.contentRoot;
+            if (!contentRoot) {
+              response.statusCode = 503;
+              response.end(
+                JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }),
+              );
+              return;
+            }
+            mutations ??= createBridgeMutationStore(
+              contentRoot,
+              options.mutationApprovalToken,
+            );
+            await bridgeMutationResponse(
+              request,
+              response,
+              requestUrl,
+              mutations,
+              options.mutationToken,
+            );
+            return;
+          }
           if (requestUrl.pathname === `${bridgePath}/events`) {
             response.writeHead(200, {
               "content-type": "text/event-stream; charset=utf-8",
@@ -183,7 +225,7 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
 function isBridgePath(pathname: string): boolean {
   return (
     pathname === bridgePath ||
-    pathname === bridgePagePath ||
+    pathname.startsWith(`${bridgePath}/mutations/`) ||
     [
       "source",
       "preview",
@@ -195,6 +237,76 @@ function isBridgePath(pathname: string): boolean {
   );
 }
 
+async function bridgeMutationResponse(
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  requestUrl: URL,
+  mutations: BridgeMutationStore,
+  mutationToken: string,
+): Promise<void> {
+  if (request.headers["content-type"] !== "application/json") {
+    response.statusCode = 415;
+    response.end();
+    return;
+  }
+  const body = await readJson(request);
+  if (!body) {
+    response.statusCode = 400;
+    response.end(JSON.stringify({ code: "INVALID_REQUEST" }));
+    return;
+  }
+  const path = requestUrl.pathname;
+  if (path === `${bridgePath}/mutations/plan`) {
+    if (!isMutationOperations(body.operations)) {
+      response.statusCode = 400;
+      response.end(JSON.stringify({ code: "INVALID_OPERATIONS" }));
+      return;
+    }
+    response.setHeader("content-type", "application/json; charset=utf-8");
+    response.end(JSON.stringify(await mutations.plan(body.operations)));
+    return;
+  }
+  if (
+    !matchesToken(request.headers[bridgeMutationTokenHeader], mutationToken)
+  ) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  const match = /^\/__riebeckite\/bridge\/v1\/mutations\/([^/]+)\/apply$/.exec(
+    path,
+  );
+  if (!match) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+  const [, planId] = match;
+  const result = await mutations.apply(planId);
+  response.setHeader("content-type", "application/json; charset=utf-8");
+  response.end(JSON.stringify(result));
+}
+
+async function readJson(
+  request: http.IncomingMessage,
+): Promise<Record<string, unknown> | undefined> {
+  const chunks: Buffer[] = [];
+  let size = 0;
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > 1024 * 1024) return undefined;
+    chunks.push(chunk);
+  }
+  try {
+    const parsed: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function bridgeResponse(input: {
   requestUrl: URL;
   snapshot: CompletedContentBuildSnapshot | undefined;
@@ -204,29 +316,20 @@ function bridgeResponse(input: {
   serverId: string;
 }): Record<string, unknown> {
   const { requestUrl, snapshot, server, options, revision, serverId } = input;
-  const contentRoot =
-    typeof options.contentRoot === "function"
-      ? options.contentRoot()
-      : options.contentRoot;
-  const publicOrigin =
-    typeof options.publicOrigin === "function"
-      ? options.publicOrigin()
-      : options.publicOrigin;
   const base = {
     protocolVersion: bridgeProtocolVersion,
     server: { id: serverId, version: riebeckiteVersion },
-    capabilities: contentRoot
+    capabilities: options.contentRoot
       ? [
           "status",
           "source-resolution",
-          "page-resolution",
           "preview",
           "events",
           "diagnostics",
           "publication",
           "build-impact",
         ]
-      : ["status", "page-resolution"],
+      : ["status"],
     development: {
       available: true,
       revision,
@@ -236,19 +339,15 @@ function bridgeResponse(input: {
     },
     inspection: { available: snapshot !== undefined },
   };
-  if (requestUrl.pathname === bridgePagePath) {
-    return inspectBridgePage(snapshot, requestUrl.searchParams.get("source"), {
-      revision,
-      publicOrigin,
-      developmentOrigin: server.resolvedUrls?.local[0],
-    });
-  }
+  const contentRoot =
+    typeof options.contentRoot === "function"
+      ? options.contentRoot()
+      : options.contentRoot;
   if (!contentRoot || requestUrl.pathname === bridgePath) return base;
   const inspection = {
     contentRoot,
     revision,
     developmentOrigin: server.resolvedUrls?.local[0],
-    publicOrigin,
   };
   const source = requestUrl.searchParams.get("path");
   if (requestUrl.pathname === `${bridgePath}/source`)

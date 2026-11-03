@@ -218,8 +218,6 @@ export class ContentManager {
       computePipelineFingerprint: (locations) =>
         (this.pipelineFingerprint = this.computePipelineFingerprint(locations)),
       getPipelineFingerprint: () => this.getPipelineFingerprint(),
-      buildStateEnabled: () =>
-        this.pipelineOptions.config?.cache?.enabled !== false,
       requiresFullContentRegeneration: () =>
         this.requiresFullContentRegeneration(),
       pluginRuntime: this.pluginRuntime,
@@ -898,7 +896,6 @@ export class ContentManager {
 
   private requestBuildStateCommit(options?: ContentBuildOptions): void {
     if (this.pipelineOptions.commitBuildState === false) return;
-    if (this.pipelineOptions.config?.cache?.enabled === false) return;
     if (options?.incremental !== false) this.buildStateCommitRequested = true;
   }
 

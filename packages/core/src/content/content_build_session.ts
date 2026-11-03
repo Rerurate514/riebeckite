@@ -18,7 +18,6 @@ type ContentBuildSessionDependencies = {
     locations?: ReadonlyMap<string, ContentPublicLocation>,
   ) => string;
   readonly getPipelineFingerprint: () => string | undefined;
-  readonly buildStateEnabled: () => boolean;
   readonly requiresFullContentRegeneration: () => boolean;
   readonly pluginRuntime: PluginRuntime;
   readonly buildCoordinator: ContentBuildCoordinator;
@@ -61,7 +60,7 @@ export class ContentBuildSession {
         dependencies.pluginRuntime.resolveExternalDependencies(contentIndex),
     );
     return dependencies.buildCoordinator.getPlan(
-      dependencies.buildStateEnabled() && options?.incremental !== false,
+      options?.incremental !== false,
       dependencies.getPipelineFingerprint(),
       dependencies.requiresFullContentRegeneration(),
       external.snapshots,

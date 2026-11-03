@@ -65,6 +65,11 @@ export async function runPluginDev(options: PluginDevOptions): Promise<void> {
       root: previewRoot,
       server: { host: "127.0.0.1", open: options.open, port: options.port },
       restartOnChange: [plugin.entry],
+      onRestart: () =>
+        fs.rm(path.join(previewRoot, ".riebeckite"), {
+          recursive: true,
+          force: true,
+        }),
       onServerReady: async (urls) => {
         const url =
           urls.find((candidate) => candidate.startsWith("http://127.0.0.1")) ??

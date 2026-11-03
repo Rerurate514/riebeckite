@@ -20,6 +20,7 @@ import { isPathInsideDirectory } from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedInspectorApplication } from "./application.js";
 import { inspectorClientModule } from "./development_inspector_client.js";
+import { inspectContentInventory } from "./development_inspector_content.js";
 import {
   inspectAssets,
   inspectContentOutputs,
@@ -37,6 +38,7 @@ import {
   reportPath,
   tabsPath,
 } from "./development_inspector_paths.js";
+import { inspectBuildPerformance } from "./development_inspector_performance.js";
 import {
   currentPageFromRequest,
   currentPageSourceSlugs,
@@ -190,6 +192,10 @@ export function riebeckiteDevelopmentInspector(
                 inspectorTabMetadata,
               ),
               apiLifecycle: resolveApiLifecycle(application.config),
+              content: inspectContentInventory(snapshot),
+              performance: snapshot
+                ? inspectBuildPerformance(snapshot)
+                : undefined,
             }),
           );
         } catch {

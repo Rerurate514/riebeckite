@@ -11,6 +11,85 @@ function readDiagnosticFilters(root) {
   diagnosticCurrentPage = root.querySelector("[data-diagnostic-current-page]")?.checked ?? false;
 }
 
+function readContentFilters(root) {
+  contentQuery = root.querySelector("[data-content-query]")?.value ?? contentQuery;
+  contentVisibility = root.querySelector("[data-content-visibility]")?.value ?? contentVisibility;
+  contentStatus = root.querySelector("[data-content-status]")?.value ?? contentStatus;
+}
+
+function formatDuration(milliseconds) {
+  return milliseconds < 1000 ? Math.round(milliseconds) + " ms" : (milliseconds / 1000).toFixed(2) + " s";
+}
+
+function overviewReport(report) {
+  const base = '<dl><dt>' + t("Page") + '</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>' + t("Theme") + '</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>' + t("Revision") + '</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>';
+  const performance = report.performance;
+  if (!performance) return base + '<p class="more">' + t("Build performance is unavailable.") + '</p>';
+  const slowest = Array.isArray(performance.slowestPlugins) && performance.slowestPlugins.length > 0
+    ? '<h3>' + t("Slowest plugins") + '</h3><ul>' + performance.slowestPlugins.map((plugin) =>
+      '<li><b>' + escapeHtml(plugin.name) + '</b> <small>' + escapeHtml(formatDuration(plugin.durationMs)) + ' · ' + plugin.executed + ' / ' + plugin.reused + ' ' + t("executed / reused") + '</small></li>'
+    ).join("") + '</ul>'
+    : "";
+  return base +
+    '<h3>' + t("Build performance") + '</h3><dl>' +
+    '<dt>' + t("Build duration") + '</dt><dd>' + escapeHtml(formatDuration(performance.durationMs)) + '</dd>' +
+    '<dt>' + t("Manifest hooks") + '</dt><dd>' + performance.manifestHooksExecuted + ' / ' + performance.manifestHooksReused + ' ' + t("executed / reused") + '</dd>' +
+    '<dt>' + t("Hook duration") + '</dt><dd>' + escapeHtml(formatDuration(performance.manifestHookDurationMs)) + '</dd>' +
+    '<dt>' + t("Cache hits") + '</dt><dd>' + performance.manifestHookCacheHit + '</dd>' +
+    '<dt>' + t("Cache misses") + '</dt><dd>' + performance.manifestHookCacheMiss + '</dd>' +
+    '</dl>' + slowest;
+}
+
+function contentReport(data) {
+  if (!data || data.status === "unavailable") return '<p class="status" aria-live="polite">' + t("Content inventory is unavailable.") + '</p>';
+  const counts = data.counts;
+  const orphanSlugs = new Set((data.orphans || []).map((orphan) => orphan.slug));
+  const query = contentQuery.trim().toLowerCase();
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+  const filtered = entries.filter((entry) => {
+    if (contentVisibility !== "all" && entry.visibility !== contentVisibility) return false;
+    if (contentStatus === "routable" && !entry.routable) return false;
+    if (contentStatus === "discoverable" && !entry.discoverable) return false;
+    if (contentStatus === "orphan" && !orphanSlugs.has(entry.slug)) return false;
+    if (!query) return true;
+    return [entry.title, entry.slug, entry.permalink]
+      .concat(entry.aliases || [], (entry.redirects || []).flatMap((redirect) => [redirect.from, redirect.to]))
+      .join(" ")
+      .toLowerCase()
+      .includes(query);
+  });
+  const listed = filtered.slice(0, 200);
+  const rows = listed.map((entry) => {
+    const aliases = (entry.aliases || []).map(escapeHtml).join("<br>");
+    const redirects = (entry.redirects || []).map((redirect) => escapeHtml(redirect.from) + " → " + escapeHtml(redirect.to)).join("<br>");
+    return '<tr><td><strong>' + escapeHtml(entry.title) + '</strong><br><small>' + escapeHtml(entry.slug) + '</small></td><td><code>' + escapeHtml(entry.permalink) + '</code>' + (entry.language ? '<br><small>' + escapeHtml(entry.language) + '</small>' : '') + '</td><td>' + escapeHtml(t(entry.visibility)) + (entry.routable ? '' : '<br><small>' + t("not routable") + '</small>') + '</td><td>' + entry.incomingLinks + '</td><td>' + entry.unresolvedLinks.length + '</td><td>' + aliases + '</td><td>' + redirects + '</td></tr>';
+  }).join("");
+  const unresolved = (data.unresolved || []).slice(0, 100).map((link) => '<li><code>' + escapeHtml(link.source) + '</code> → <code>' + escapeHtml(link.raw) + '</code></li>').join("");
+  const ambiguities = (data.ambiguities || []).slice(0, 50).map((target) => '<li><code>' + escapeHtml(target.key) + '</code> <small>' + escapeHtml(target.candidates.join(", ")) + '</small></li>').join("");
+  const orphans = (data.orphans || []).slice(0, 100).map((entry) => '<li><b>' + escapeHtml(entry.title) + '</b> <code>' + escapeHtml(entry.permalink) + '</code></li>').join("");
+  return '<dl>' +
+    '<dt>' + t("Entries") + '</dt><dd>' + counts.entries + '</dd>' +
+    '<dt>' + t("Public") + '</dt><dd>' + counts.public + '</dd>' +
+    '<dt>' + t("Unlisted") + '</dt><dd>' + counts.unlisted + '</dd>' +
+    '<dt>' + t("Draft") + '</dt><dd>' + counts.draft + '</dd>' +
+    '<dt>' + t("Scheduled") + '</dt><dd>' + counts.scheduled + '</dd>' +
+    '<dt>' + t("Routable") + '</dt><dd>' + counts.routable + '</dd>' +
+    '<dt>' + t("Discoverable") + '</dt><dd>' + counts.discoverable + '</dd>' +
+    '<dt>' + t("Orphan pages") + '</dt><dd>' + counts.orphans + '</dd>' +
+    '<dt>' + t("Unresolved links") + '</dt><dd>' + counts.unresolvedLinks + '</dd>' +
+    '<dt>' + t("Ambiguous targets") + '</dt><dd>' + counts.ambiguousKeys + '</dd>' +
+    '</dl>' +
+    '<div class="filters"><label>' + t("Search") + ' <input data-content-filter data-content-query data-focus-key="content-query" value="' + escapeHtml(contentQuery) + '" placeholder="' + escapeHtml(t("Title, path, alias, or redirect")) + '"></label><label>' + t("Visibility") + ' <select data-content-filter data-content-visibility data-focus-key="content-visibility">' + options(["all", "public", "unlisted", "draft", "scheduled"], contentVisibility) + '</select></label><label>' + t("Status") + ' <select data-content-filter data-content-status data-focus-key="content-status">' + options(["all", "routable", "discoverable", "orphan"], contentStatus) + '</select></label></div>' +
+    (listed.length > 0
+      ? '<table><thead><tr><th>' + t("Title") + '</th><th>' + t("Path") + '</th><th>' + t("Visibility") + '</th><th>' + t("Incoming links") + '</th><th>' + t("Unresolved links") + '</th><th>' + t("Aliases") + '</th><th>' + t("Redirects") + '</th></tr></thead><tbody>' + rows + '</tbody></table>'
+      : '<p class="more">' + t("No matching content.") + '</p>') +
+    (filtered.length > listed.length ? '<p class="more">' + t("{count} more not shown.", { count: filtered.length - listed.length }) + '</p>' : '') +
+    '<h3>' + t("Unresolved links") + '</h3>' + (unresolved ? '<ul>' + unresolved + '</ul>' : '<p class="more">' + t("No unresolved links.") + '</p>') +
+    ((data.unresolved || []).length > 100 ? '<p class="more">' + t("{count} more not shown.", { count: data.unresolved.length - 100 }) + '</p>' : '') +
+    '<h3>' + t("Ambiguous targets") + '</h3>' + (ambiguities ? '<ul>' + ambiguities + '</ul>' : '<p class="more">' + t("No ambiguous targets.") + '</p>') +
+    '<h3>' + t("Orphan pages") + '</h3>' + (orphans ? '<ul>' + orphans + '</ul>' : '<p class="more">' + t("No orphan pages.") + '</p>');
+}
+
 function readOutputFilters(root) {
   outputQuery = root.querySelector("[data-output-query]")?.value ?? outputQuery;
   outputKind = root.querySelector("[data-output-kind]")?.value ?? outputKind;

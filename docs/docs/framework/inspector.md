@@ -170,7 +170,7 @@ the existing one.
 
 ## Development Inspector tabs
 
-The panel has tabs for Overview, Diagnostics, API, Dependencies, Plugins, Output, Derived, Provenance, Assets, and Theme. The API tab lists the resolved API lifecycle registry, including deprecated-since versions, replacements, removal versions, migration guides, and whether the current configuration uses a deprecated entry. It reads the same registry as `riebeckite inspect api` and is read-only. The Assets tab lists content assets with their usage, size, duplicate groups, and optimization candidates. It reads the same read-only asset report as `riebeckite inspect assets` and never deletes or rewrites files.
+The panel has tabs for Overview, Content, Diagnostics, API, Dependencies, Plugins, Output, Derived, Provenance, Assets, and Theme. Overview summarizes build duration, manifest hook timing, cache use, and the slowest plugins. Content lists scanned entries with their visibility, aliases, redirects, incoming links, unresolved links, ambiguous targets, and orphan pages. The API tab lists the resolved API lifecycle registry, including deprecated-since versions, replacements, removal versions, migration guides, and whether the current configuration uses a deprecated entry. It reads the same registry as `riebeckite inspect api` and is read-only. The Assets tab lists content assets with their usage, size, duplicate groups, and optimization candidates. It reads the same read-only asset report as `riebeckite inspect assets` and never deletes or rewrites files.
 
 Plugins can add tabs after the built-in tabs through the `inspector` field:
 

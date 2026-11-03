@@ -448,3 +448,40 @@ function source(files: Record<string, string | Uint8Array>): ContentSource {
     },
   };
 }
+
+test("exposes optimization statistics in Development Inspector", async () => {
+  const cacheDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-inspector-svg-"),
+  );
+  const content = new ContentManager(
+    source({
+      "post.md": "---\npublish: true\n---\n![diagram](inspector-diagram.svg)",
+      "inspector-diagram.svg": SVG_BYTES,
+    }),
+    [],
+    {
+      config: resolveConfig({
+        site: { title: "Test" },
+        cache: { directory: cacheDirectory },
+      }),
+      isDevelopment: true,
+      plugins: [svgOptimizer()],
+    },
+  );
+  await content.getManifest();
+  const data = content
+    .getCompletedBuildSnapshot()
+    ?.inspectorTabs.find((tab) => tab.id === "svg-optimizer")?.data;
+
+  assert.equal(data?.kind, "key-value");
+  if (data?.kind !== "key-value") return;
+  const value = (key: string) =>
+    data.items.find(
+      (item) => (typeof item.key === "string" ? item.key : item.key.en) === key,
+    )?.value;
+  assert.equal(value("Inputs"), 1);
+  assert.equal(value("Optimized"), 1);
+  assert.equal(value("Cache misses"), 1);
+  assert.equal(value("Skipped"), 0);
+  assert.match(String(value("Saved")), /B$/);
+});

@@ -173,7 +173,7 @@ flowchart TD
 
 ## Development Inspector のタブ
 
-パネルには Overview、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
+パネルには Overview、Content、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。Overview はビルド時間、マニフェストフックの所要時間、キャッシュ利用、遅いプラグインを要約します。Content はスキャンしたエントリの公開状態、エイリアス、リダイレクト、被リンク、未解決リンク、曖昧なリンク先、孤立ページを一覧表示します。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
 
 プラグインは `inspector` フィールドで組み込みタブの後ろにタブを追加できます。
 

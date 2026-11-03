@@ -20,3 +20,11 @@ test("inspector client reserves its vertical scrollbar gutter", () => {
 
   assert.match(module, /overflow-y:scroll;scrollbar-gutter:stable/);
 });
+
+test("inspector client is syntactically valid JavaScript", () => {
+  const source = inspectorClientModule()
+    .replace(/^export /gm, "")
+    .replace(/import\.meta/g, "({})");
+
+  assert.doesNotThrow(() => new Function(source));
+});

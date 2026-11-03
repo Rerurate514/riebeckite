@@ -65,6 +65,7 @@ export function rename(
   const enabled = options.enabled ?? true;
   const status = options.status ?? 308;
   const onUnexpectedRemoval = options.onUnexpectedRemoval ?? "warning";
+  let activeRedirects: RouteLock["redirects"] = [];
 
   if (!([301, 302, 307, 308] as const).includes(status)) {
     throw new Error(`Rename plugin: invalid redirect status ${status}.`);
@@ -127,6 +128,7 @@ export function rename(
       logger,
       externalDependencies,
     }) => {
+      activeRedirects = [];
       if (!enabled) return;
       if (!config) {
         logger.warn(
@@ -148,7 +150,48 @@ export function rename(
       }
 
       applyRouteRedirects(manifest, result.lock.redirects);
+      activeRedirects = result.lock.redirects;
       await writeLock(cache, result.lock, logger);
+    },
+    inspector: {
+      apiVersion: 1,
+      tabs: [
+        {
+          id: "rename",
+          title: { en: "Renames", ja: "リネーム" },
+          description: {
+            en: "Redirects kept in the persisted route lock.",
+            ja: "永続化されたルートロック内のリダイレクトを表示します。",
+          },
+          order: 24,
+          collect: () =>
+            enabled
+              ? {
+                  kind: "table",
+                  columns: [
+                    { en: "From", ja: "変更前" },
+                    { en: "To", ja: "変更後" },
+                    { en: "Status", ja: "ステータス" },
+                    { en: "Reason", ja: "理由" },
+                  ],
+                  rows: activeRedirects.map((redirect) => [
+                    redirect.from,
+                    redirect.to,
+                    redirect.status,
+                    redirect.reason,
+                  ]),
+                }
+              : {
+                  kind: "key-value",
+                  items: [
+                    {
+                      key: { en: "Status", ja: "状態" },
+                      value: "disabled",
+                    },
+                  ],
+                },
+        },
+      ],
     },
   });
 }

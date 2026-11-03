@@ -24,6 +24,9 @@ let graphDirection = "both";
 let graphPage = 0;
 let graphSelected = "";
 let graphData;
+let contentQuery = "";
+let contentVisibility = "all";
+let contentStatus = "all";
 let pluginQuery = "";
 let pluginFilter = "all";
 let pluginSort = "duration";
@@ -60,7 +63,8 @@ export function initDevelopmentInspector() {
   let pluginCleanup = null;
   let pluginMount = 0;
   const builtInTabs = [
-    { id: "overview", label: "Overview", render: () => '<dl><dt>' + t("Page") + '</dt><dd>' + escapeHtml(report.currentPage) + '</dd><dt>' + t("Theme") + '</dt><dd>' + escapeHtml(report.theme) + '</dd><dt>' + t("Revision") + '</dt><dd>' + escapeHtml(report.revision) + '</dd></dl>' },
+    { id: "overview", label: "Overview", render: () => overviewReport(report) },
+    { id: "content", label: "Content", render: () => contentReport(report.content) },
     { id: "diagnostics", label: "Diagnostics", render: () => diagnosticList(report.diagnostics, report) },
     { id: "api", label: "API", render: () => apiLifecycleReport(report.apiLifecycle, report.diagnostics) },
     { id: "dependencies", label: "Dependencies", load: (current) => { if (!graphData) void loadGraph(current); }, render: () => graphReport(graphData) + dependencyReport(report.dependencies) },
@@ -462,6 +466,7 @@ export function initDevelopmentInspector() {
     setupResize(root);
     root.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => { activeTab = button.dataset.tab; render(); loadActiveTab(generation); }));
     root.querySelectorAll("[data-diagnostic-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readDiagnosticFilters(root); render(); }));
+    root.querySelectorAll("[data-content-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readContentFilters(root); render(); }));
     root.querySelectorAll("[data-output-filter]").forEach((input) => input.addEventListener(input.tagName === "SELECT" ? "change" : "input", () => { readOutputFilters(root); outputPage = 0; render(); requestOutput(); }));
     root.querySelectorAll("[data-output-page]").forEach((button) => button.addEventListener("click", () => { outputPage = Math.max(0, outputPage + Number(button.dataset.outputPage)); render(); requestOutput(); }));
     root.querySelectorAll("[data-dependency-page]").forEach((button) => button.addEventListener("click", () => { dependencyPage = Math.max(0, dependencyPage + Number(button.dataset.dependencyPage)); render(); requestOutput(); }));

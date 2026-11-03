@@ -43,6 +43,7 @@ function manager(
   buildDirectory?: string,
 ) {
   return new ContentManager(source(files), [], {
+    isDevelopment: true,
     config: {
       ...resolveConfig({
         site: { title: "Test" },
@@ -772,4 +773,32 @@ test("keeps localized private Markdown images out of generated outputs", async (
     manifest.generatedOutputs.map((output) => [output.path, output.content]),
     [["guide.png", "PUBLIC"]],
   );
+});
+
+test("exposes translation coverage in Development Inspector", async () => {
+  const content = manager({
+    "note.md": "---\npublish: true\n---\n# Note",
+    "note.en.md": "---\npublish: true\n---\n# Note",
+  });
+  await content.getManifest();
+  const tabs = content.getCompletedBuildSnapshot()?.inspectorTabs ?? [];
+  const summary = tabs.find((tab) => tab.id === "l10n")?.data;
+  const translations = tabs.find((tab) => tab.id === "l10n-translations")?.data;
+
+  assert.equal(summary?.kind, "key-value");
+  if (summary?.kind !== "key-value") return;
+  const value = (key: string) =>
+    summary.items.find(
+      (item) => (typeof item.key === "string" ? item.key : item.key.en) === key,
+    )?.value;
+  assert.equal(value("Entries"), 2);
+  assert.equal(value("Translation groups"), 1);
+  assert.equal(value("Missing translations"), 2);
+  assert.equal(value("Conflicts"), 0);
+
+  assert.equal(translations?.kind, "table");
+  if (translations?.kind !== "table") return;
+  assert.deepEqual(translations.rows, [
+    ["note", "ja, en", "en-US, zh-CN", "no"],
+  ]);
 });

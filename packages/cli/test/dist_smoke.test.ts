@@ -179,8 +179,10 @@ export const sampleTheme = defineTheme({
   });
 
   try {
-    await waitFor(() =>
-      output.includes(`Theme preview: http://127.0.0.1:${port}/`),
+    await waitFor(
+      () => output.includes(`Theme preview: http://127.0.0.1:${port}/`),
+      () => child.exitCode,
+      () => output,
     );
     const [home, article, stylesheet] = await Promise.all(
       ["/", "/article", "/app/style.css"].map(async (pathname) => {
@@ -229,11 +231,19 @@ async function reservePort(): Promise<number> {
   return port;
 }
 
-async function waitFor(predicate: () => boolean): Promise<void> {
+async function waitFor(
+  predicate: () => boolean,
+  exitCode: () => number | null,
+  detail: () => string,
+): Promise<void> {
   const deadline = Date.now() + 30_000;
   while (!predicate()) {
+    if (exitCode() !== null)
+      throw new Error(
+        `Theme preview server exited with code ${exitCode()}.\n${detail()}`,
+      );
     if (Date.now() > deadline)
-      throw new Error("Theme preview server did not start.");
+      throw new Error(`Theme preview server did not start.\n${detail()}`);
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
 }

@@ -24,9 +24,11 @@ npx create-riebeckite
 Answer the prompts (recommended answers shown):
 
 - **Project name** — press Enter for the default `my-riebeckite-site`
-- **[[glossary/preset|Preset]]** — keep `starter` when unsure. Choose `blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
-- **Content source** — choose `This project` so Markdown stays inside the site
-- **Deployment** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
+- **What would you like to build?** ([[glossary/preset|preset]]) — keep `Starter site` (the `starter` preset) when unsure. Choose `Blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
+- **Add optional feature packs?** — press Enter for `No`
+- **Customize extra project files?** — press Enter for `No`; the default project files are still generated
+- **Where will you write content?** — choose `This project` so Markdown stays inside the site
+- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages
 
 When it succeeds, it prints `Created a starter Riebeckite site in my-riebeckite-site` and a short "Next steps" list. If you kept the default install answer, the packages are already installed; move into the folder:

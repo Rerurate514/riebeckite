@@ -75,7 +75,7 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 
-既定値は `gitignore,editorconfig,gitattributes,biome` で、`none` を指定すると何も書き込みません。対話モードでは、`Extra project files` の質問で既定のセットがあらかじめ選択されています。
+既定値は `gitignore,editorconfig,gitattributes,biome` で、`none` を指定すると何も書き込みません。対話モードでは、`Customize extra project files?` で `Yes` を選ぶと、`Extra project files` の質問で既定のセットを個別に切り替えられます。
 
 ### 生成先にファイルがすでにある場合
 

@@ -13,6 +13,7 @@ export type ScaffoldNextStepsOptions = {
   readonly editFile?: string;
   /** The site keeps its content in a separate repository. */
   readonly externalContent?: boolean;
+  readonly dependenciesInstalled?: boolean;
 };
 
 export function formatScaffoldNextSteps(
@@ -23,7 +24,9 @@ export function formatScaffoldNextSteps(
   if (relativeDirectory !== ".") {
     lines.push(`  cd ${relativeDirectory}`);
   }
-  lines.push("  npm install");
+  if (options.dependenciesInstalled !== true) {
+    lines.push("  npm install");
+  }
   lines.push("  npm exec riebeckite check");
   lines.push("  npm exec riebeckite dev");
   lines.push("  npm exec riebeckite build");

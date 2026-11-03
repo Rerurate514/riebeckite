@@ -49,6 +49,19 @@ test("next steps skip the edit hint when the scaffold wrote no index page", () =
   );
 });
 
+test("next steps skip npm install when dependencies are already installed", () => {
+  assert.equal(
+    formatScaffoldNextSteps("my-site", { dependenciesInstalled: true }),
+    [
+      "Next steps:",
+      "  cd my-site",
+      "  npm exec riebeckite check",
+      "  npm exec riebeckite dev",
+      "  npm exec riebeckite build",
+    ].join("\n"),
+  );
+});
+
 test("external content keeps the workflow copy instruction and lists the secrets", () => {
   const output = formatScaffoldNextSteps("my-site", {
     externalContent: true,

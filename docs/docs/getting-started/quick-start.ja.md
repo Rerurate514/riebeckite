@@ -24,9 +24,11 @@ npx create-riebeckite
 プロンプトに次のように答えます（推奨される回答）。
 
 - **Project name**：既定値の `my-riebeckite-site` のまま Enter を押します
-- **Preset**：迷ったら `starter` のまま。記事、タグ、シリーズを公開するなら `blog` を選びます。[Presets](./presets.ja.md) を参照
-- **Content source**：`This project` を選んで Markdown をサイトのフォルダ内に残します
-- **Deployment**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.ja.md) を参照
+- **What would you like to build?**（[[glossary/preset|プリセット]]）：迷ったら `Starter site`（`starter` プリセット）のまま。記事、タグ、シリーズを公開するなら `Blog` を選びます。[Presets](./presets.ja.md) を参照
+- **Add optional feature packs?**：追加したい機能パックがなければ、`No` のまま Enter を押します
+- **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
+- **Where will you write content?**：`This project` を選んで Markdown をサイトのフォルダ内に残します
+- **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.ja.md) を参照
 - **Install dependencies now?**：既定値の `Yes` のまま Enter を押すと、生成されたサイトの package もインストールされます
 
 成功すると `Created a starter Riebeckite site in my-riebeckite-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。インストールの質問に既定値の `Yes` で答えた場合、package はインストール済みです。フォルダへ移動します。

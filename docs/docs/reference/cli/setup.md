@@ -88,7 +88,7 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 
-The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt pre-selects the default set.
+The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode, choose `Yes` for `Customize extra project files?` to open the `Extra project files` prompt, which pre-selects the default set.
 
 ### When files already exist
 

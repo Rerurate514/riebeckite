@@ -105,7 +105,7 @@ Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `
 
 ## Project files
 
-Presets do not control project files. `create-riebeckite` writes an independent set selected with `--utilities <names>`: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`. The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode the `Extra project files` prompt lets you toggle each one. See the [CLI reference](../reference/cli.md) for the files each name writes.
+Presets do not control project files. `create-riebeckite` writes an independent set selected with `--utilities <names>`: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`. The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode, choose `Yes` for `Customize extra project files?` to toggle each one in the `Extra project files` prompt. See the [CLI reference](../reference/cli.md) for the files each name writes.
 
 ## Next
 

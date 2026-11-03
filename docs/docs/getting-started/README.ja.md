@@ -48,7 +48,7 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 npx create-riebeckite
 ```
 
-CLI は、プロジェクト名、プリセット、コンテンツの取得元、デプロイ設定、依存関係をインストールするかどうかの順に確認します。プロジェクトのフォルダ名は既定で `my-riebeckite-site` です。手元で試すだけなら、`starter`、`This project`、`Not now`、インストールの既定値 `Yes` のまま進めてください。
+CLI は、プロジェクト名、プリセット、機能パック、追加のプロジェクトファイル、コンテンツの取得元、デプロイ設定、依存関係をインストールするかどうかの順に確認します。プロジェクトのフォルダ名は既定で `my-riebeckite-site` です。手元で試すだけなら、`Starter site`（`starter` プリセット）、機能パックなし、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、インストールの既定値 `Yes` のまま進めてください。
 
 ```bash
 cd my-riebeckite-site

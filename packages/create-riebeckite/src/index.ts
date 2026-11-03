@@ -3,6 +3,7 @@ import {
   type CreateRiebeckiteOptions,
   parseArguments,
   printPresets,
+  printUsage,
 } from "./arguments.js";
 import {
   interactiveAnswersToOptions,
@@ -35,6 +36,11 @@ type ResolvedOptions = {
 export async function runCreateRiebeckite(
   arguments_: readonly string[],
 ): Promise<void> {
+  if (arguments_.includes("--help") || arguments_.includes("-h")) {
+    printUsage();
+    return;
+  }
+
   const resolved = await resolveOptions(arguments_);
   if (resolved === null) return;
   const { options, installDependencies: shouldInstallDependencies } = resolved;
@@ -80,6 +86,20 @@ async function resolveOptions(
   arguments_: readonly string[],
 ): Promise<ResolvedOptions | null> {
   if (arguments_.length === 0) {
+    if (process.stdin.isTTY !== true) {
+      console.error(
+        "create-riebeckite needs an interactive terminal to ask setup questions.",
+      );
+      console.error("");
+      console.error("Run it without prompts instead:");
+      console.error("  npx create-riebeckite my-site --preset starter");
+      console.error("");
+      console.error("List the available presets:");
+      console.error("  npx create-riebeckite --list-presets");
+      process.exitCode = 1;
+      return null;
+    }
+
     const answers = await promptInteractiveAnswers();
     if (answers === null) {
       console.log("Operation cancelled.");
@@ -94,7 +114,9 @@ async function resolveOptions(
   try {
     return { options: parseArguments(arguments_), installDependencies: false };
   } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message);
+    if (!message.includes("Usage:")) printUsage();
     process.exitCode = 1;
     return null;
   }
@@ -120,20 +142,27 @@ async function prepareInteractiveSite(
     await publishCloudflareSite(targetDirectory, relative, false);
     return;
   }
-  printScaffoldNextSteps(options, result, relative);
+  printScaffoldNextSteps(options, result, relative, true);
 }
 
 function printScaffoldNextSteps(
   options: CreateRiebeckiteOptions,
   result: ScaffoldSiteResult,
   relative: string,
+  dependenciesInstalled = false,
 ): void {
   const externalContent = isExternalContent(options.deployment);
   const editFile =
     !externalContent && result.files.includes("content/index.md")
       ? "content/index.md"
       : undefined;
-  console.log(formatScaffoldNextSteps(relative, { editFile, externalContent }));
+  console.log(
+    formatScaffoldNextSteps(relative, {
+      editFile,
+      externalContent,
+      dependenciesInstalled,
+    }),
+  );
 }
 
 function isExternalContent(

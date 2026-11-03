@@ -44,12 +44,12 @@ npx create-riebeckite
 `npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
 
 1. **Project name** — the folder to create. The default is `my-riebeckite-site`; use `my-site` or another name if you prefer
-2. **[[glossary/preset|Preset]]** — the site's composition; keep `starter` when unsure. See [Presets](./presets.md)
-3. **Extra project files** — optional. Keep the defaults unless you need to change generated editor or tool files.
-4. **Content source** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
-5. **Deployment** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)
-6. **Add optional feature packs?** — you may select feature packs to add extra plugins. Use `--features <names>` to add them non-interactively. See [Presets](./presets.md) for available packs
-7. **Install dependencies now** — defaults to yes. Choose no when you need to inspect or install the generated project later.
+2. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
+3. **Add optional feature packs?** — choose `Yes` to select feature packs that add extra plugins. The default is `No`. Use `--features <names>` to add them non-interactively. See [Presets](./presets.md) for available packs
+4. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
+5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
+6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push. `Not now` skips deployment setup; see [Deployment](./deployment.md)
+7. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
 
 To script the same setup instead of answering prompts, pass arguments, for example:
 

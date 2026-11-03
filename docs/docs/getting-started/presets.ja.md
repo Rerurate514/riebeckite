@@ -105,7 +105,7 @@ Obsidian Markdown、`minimal` テーマ、英語の1ページだけを含む構�
 
 ## プロジェクトファイルを別に選ぶ
 
-プリセットはプロジェクトファイルを制御しません。`create-riebeckite` は `--utilities <names>` で選んだプロジェクトファイルを別途生成します。指定できる名前は `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` です。既定は `gitignore,editorconfig,gitattributes,biome` です。`none` を指定するとプロジェクトファイルを生成しません。対話式では `Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
+プリセットはプロジェクトファイルを制御しません。`create-riebeckite` は `--utilities <names>` で選んだプロジェクトファイルを別途生成します。指定できる名前は `gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode` です。既定は `gitignore,editorconfig,gitattributes,biome` です。`none` を指定するとプロジェクトファイルを生成しません。対話式では `Customize extra project files?` で `Yes` を選ぶと、`Extra project files` の質問で個別に切り替えられます。各名前が生成するファイルは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
 
 ## 次に読むページ
 

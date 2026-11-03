@@ -24,6 +24,9 @@ The Unreleased section lists changes that are merged but not yet published to np
 - Stop emitting the unsupported `prefix` option for `textFragment` in the `showcase` preset. The option was silently ignored, so generated sites now register `textFragment` without options. Generated site configurations are also typechecked against the plugin option types during scaffold validation.
   Packages: `create-riebeckite`
 
+- `create-riebeckite` now prints usage for `--help` and unknown options, explains the non-interactive command when no interactive terminal is available, and omits `npm install` from the post-install next steps when dependencies are already installed.
+  Packages: `create-riebeckite`
+
 ## 0.0.37 - 2026-11-03
 
 No user-facing changes recorded.

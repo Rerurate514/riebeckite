@@ -7,7 +7,8 @@ Create a new Riebeckite site from an official starter preset.
 ## Usage
 
 Interactive (recommended): run without arguments and answer the prompts for
-the project name, preset, project files, content source, and deployment.
+the project name, preset, optional feature packs, extra project files, content
+source, deployment, and dependency installation.
 
 ```sh
 npx create-riebeckite
@@ -29,10 +30,12 @@ The prompts ask, in order:
 | Prompt | Options | Recommendation |
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
-| Preset | `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, `minimal`, `showcase`, `empty` | `starter` for most sites |
-| Project files | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json`, `.npmrc`, `.vscode/settings.json` | the recommended set is pre-selected |
-| Content source | `This project`, `Separate GitHub repository` | `This project` to start |
-| Deployment | `Cloudflare Workers`, `GitHub Actions`, `Not now` | `Not now` for local development |
+| What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Docs`, `Portfolio`, `Minimal`, `Showcase`, `Empty` | `Starter site` (`starter`) for most sites |
+| Add optional feature packs? | `Yes` or `No`; `Yes` then selects feature packs | `No` |
+| Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
+| Where will you write content? | `This project`, `Separate GitHub repository` | `This project` to start |
+| Set up deployment? | `Cloudflare Workers`, `GitHub Actions`, `Not now` | `Not now` for local development |
+| Install dependencies now? | `Yes` or `No` | `Yes` |
 
 `Separate GitHub repository` also asks for the content and site repositories,
 and GitHub Actions deployment is then configured for you. That setup is covered
@@ -45,6 +48,7 @@ Deployment can be added later, described in
 | Option | Description |
 | --- | --- |
 | `[directory]` | Directory to scaffold into (default: the current directory) |
+| `--help`, `-h` | Print usage and exit |
 | `--preset <name>` | Starter composition, e.g. `showcase` (default: `starter`) |
 | `--utilities <names>` | Comma-separated project files to generate: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `gitignore,editorconfig,gitattributes,biome`) |
 | `--force` | Scaffold even when the target directory is not empty |
@@ -63,10 +67,10 @@ npx create-riebeckite my-site --preset showcase
 
 ## Project files
 
-Alongside the preset, `create-riebeckite` writes optional project files. In
-interactive mode the `Extra project files` prompt pre-selects the recommended
-set; toggle any of them there. Non-interactive runs select them with a
-comma-separated `--utilities` value.
+Alongside the preset, `create-riebeckite` writes optional project files. The
+`Customize extra project files?` prompt defaults to `No` and generates the
+recommended set; choose `Yes` to toggle individual files. Non-interactive runs
+select them with a comma-separated `--utilities` value.
 
 | Name | File | Default |
 | --- | --- | --- |

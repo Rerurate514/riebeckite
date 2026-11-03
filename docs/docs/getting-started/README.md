@@ -48,7 +48,7 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 npx create-riebeckite
 ```
 
-The CLI asks for the project name, preset, content source, deployment, and whether to install dependencies. The default project folder is `my-riebeckite-site`. Keep `starter`, `This project`, `Not now`, and the default install answer (`Yes`) to start locally, then:
+The CLI asks for the project name, preset, optional feature packs, extra project files, content source, deployment, and whether to install dependencies. The default project folder is `my-riebeckite-site`. Keep `Starter site` (the `starter` preset), no optional feature packs, no extra project file changes, `This project`, `Not now`, and the default install answer (`Yes`) to start locally, then:
 
 ```sh
 cd my-riebeckite-site

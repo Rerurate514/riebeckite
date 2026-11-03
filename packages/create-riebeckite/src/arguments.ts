@@ -26,6 +26,9 @@ export type CreateRiebeckiteOptions = {
   readonly deployment: ScaffoldDeployment;
 };
 
+export const CREATE_RIEBECKITE_USAGE =
+  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force] [-h | --help]";
+
 export function parseArguments(
   arguments_: readonly string[],
 ): CreateRiebeckiteOptions {
@@ -109,9 +112,7 @@ export function parseArguments(
       throw new Error(`Unknown option: ${argument}`);
     }
     if (directory !== undefined) {
-      throw new Error(
-        "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force]",
-      );
+      throw new Error(CREATE_RIEBECKITE_USAGE);
     }
     directory = argument;
   }
@@ -130,6 +131,10 @@ export function parseArguments(
       siteRepository,
     }),
   };
+}
+
+export function printUsage(): void {
+  console.log(CREATE_RIEBECKITE_USAGE);
 }
 
 export function printPresets(): void {

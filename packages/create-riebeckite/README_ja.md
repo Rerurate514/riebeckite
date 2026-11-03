@@ -8,7 +8,8 @@ CLI ツールです。
 ## 使い方
 
 対話モード（推奨）: 引数なしで実行すると、プロジェクト名・preset・
-プロジェクトファイル・コンテンツの格納場所・デプロイについて順に確認します。
+機能パック・プロジェクトファイル・コンテンツの格納場所・デプロイ・
+依存関係のインストールについて順に確認します。
 
 ```sh
 npx create-riebeckite
@@ -30,10 +31,12 @@ npm exec riebeckite build
 | 質問 | 選択肢 | 推奨 |
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
-| Preset | `starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`minimal`、`showcase`、`empty` | 大半のサイトは `starter` |
-| Project files | `.gitignore`、`.editorconfig`、`.gitattributes`、`biome.json`、`.npmrc`、`.vscode/settings.json` | 推奨セットをあらかじめ選択 |
-| Content source | `This project`、`Separate GitHub repository` | 最初は `This project` |
-| デプロイ設定 | `Cloudflare Workers`、`GitHub Actions`、`Not now` | 手元で試すなら `Not now` |
+| What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Docs`、`Portfolio`、`Minimal`、`Showcase`、`Empty` | 大半のサイトは `Starter site`（`starter`） |
+| Add optional feature packs? | `Yes` または `No`。`Yes` なら機能パックを選択 | `No` |
+| Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
+| Where will you write content? | `This project`、`Separate GitHub repository` | 最初は `This project` |
+| Set up deployment? | `Cloudflare Workers`、`GitHub Actions`、`Not now` | 手元で試すなら `Not now` |
+| Install dependencies now? | `Yes` または `No` | `Yes` |
 
 `Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/docs/guides/content-repositories.ja.md)に、デプロイの追加方法は [Deployment](../../docs/docs/getting-started/deployment.ja.md) にあります。
 
@@ -42,6 +45,7 @@ npm exec riebeckite build
 | オプション | 説明 |
 | --- | --- |
 | `[directory]` | 生成先ディレクトリ（既定はカレントディレクトリ） |
+| `--help`、`-h` | 使い方を表示して終了する |
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
 | `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `gitignore,editorconfig,gitattributes,biome`） |
 | `--force` | 空でないディレクトリにも展開する |
@@ -61,8 +65,8 @@ npx create-riebeckite my-site --preset showcase
 ## Project files
 
 preset とは別に、`create-riebeckite` は任意のプロジェクトファイルを生成します。
-対話モードでは `Extra project files` の質問で推奨セットがあらかじめ選択されて
-いるので、そこから個別に切り替えられます。非対話で実行する場合は、
+`Customize extra project files?` の質問は既定が `No` で、推奨セットを生成します。
+`Yes` を選ぶと個別に切り替えられます。非対話で実行する場合は、
 カンマ区切りの `--utilities` で選択します。
 
 | 名前 | ファイル | 既定 |

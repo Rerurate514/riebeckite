@@ -56,7 +56,7 @@ Obsidian 形式の Markdown が、ページ、ナビゲーション、検索、�
 npx create-riebeckite
 ```
 
-初めて試すなら、`starter`、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。既定のフォルダ名は `my-riebeckite-site` です。続けて:
+初めて試すなら、`Starter site`（`starter` プリセット）、機能パックなし、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。既定のフォルダ名は `my-riebeckite-site` です。続けて:
 
 ```bash
 cd my-riebeckite-site
@@ -74,7 +74,7 @@ npm exec riebeckite build
 
 質問を省略する場合は、フォルダ名とプリセットを渡します（例: `npx create-riebeckite my-site --preset starter`）。この方法では依存関係がインストールされないため、`dev` の前にフォルダ内で `npm install` を実行してください。
 
-Riebeckite には Node.js LTS と npm が必要です（npm は Node.js に同梱されています）。ローカルでの開発に Git は不要です。Git と GitHub アカウントは、GitHub を使うデプロイの設定にだけ必要です。
+Riebeckite には Node.js `^20.19.0` または `>=22.12.0` と npm が必要です（npm は Node.js に同梱されています）。ローカルでの開発に Git は不要です。Git と GitHub アカウントは、GitHub を使うデプロイの設定にだけ必要です。
 
 必要な環境、公開手順、生成されるプロジェクトの構成は [Getting Started](https://riebeckite.dev/ja/docs/getting-started/) を参照してください。
 

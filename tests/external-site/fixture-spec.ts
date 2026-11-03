@@ -3,6 +3,7 @@ import type { PackageSpec } from "@riebeckite/test/e2e";
 export const PACKAGES: PackageSpec[] = [
   { directory: "packages/core", name: "@riebeckite/core" },
   { directory: "packages/node", name: "@riebeckite/node" },
+  { directory: "packages/diagram", name: "@riebeckite/diagram" },
   { directory: "packages/diagnostics", name: "@riebeckite/diagnostics" },
   { directory: "packages/ui", name: "@riebeckite/ui" },
   { directory: "packages/cli", name: "@riebeckite/cli" },
@@ -102,6 +103,10 @@ export const PACKAGES: PackageSpec[] = [
   {
     directory: "packages/plugins/diagnostics",
     name: "@riebeckite/plugin-diagnostics",
+  },
+  {
+    directory: "packages/plugins/docs",
+    name: "@riebeckite/plugin-docs",
   },
   {
     directory: "packages/plugins/plantuml",

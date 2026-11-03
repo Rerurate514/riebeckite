@@ -105,6 +105,8 @@ flowchart LR
 
 `exclude` は **コンテンツシステムに入れるか**、`publishStrategy` や `visibility` は **サイトでどう扱うか**を決めます。`exclude` されたファイルは、リンク解決やグラフ、診断にも現れません。一方、`draft`、`unlisted`、公開前の `publishAt` は生の[[glossary/manifest|マニフェスト]]には残りますが、Core がルート用のビューと発見用のビューから適切に外します。
 
+⚠️ `content.source` が設定されている場合、`exclude` パターンは適用されません。カスタムソースが直接使用されるためです。
+
 ## ContentSource
 
 通常は `content.directory` を使用しますが、独自の読み込み元を使用する場合は `content.source` を指定できます。

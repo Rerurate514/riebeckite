@@ -222,7 +222,7 @@ History is bounded to 50 runs and contains no environment values or tokens. It i
 
 ## Lock and clean
 
-`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock whose process is alive on this host is never removed by elapsed time or `--force`; a lock whose process is gone (or whose host no longer owns the local state) is recovered. `clean --all` and `clean --state` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build.
+`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock whose process is alive on this host is never removed by elapsed time or `--force`; a lock whose process is gone (or whose host no longer owns the local state) is recovered. `clean` and `clean --all` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build.
 
 ## Build output marker
 

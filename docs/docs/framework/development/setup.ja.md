@@ -26,9 +26,9 @@ pnpm build
 pnpm dev
 ```
 
-`apps/web` の参照アプリを使うと、Riebeckite への変更を実際のサイトとして確認できます。
+`website` の参照アプリを使うと、Riebeckite への変更を実際のサイトとして確認できます。
 
-`apps/web` は単なるデモではありません。フレームワーク開発時に、Core、[[glossary/plugin|プラグイン]]、テーマ、インテグレーションが正しく組み合わさることを確認するための参照アプリでもあります。
+`website` は単なるデモではありません。フレームワーク開発時に、Core、[[glossary/plugin|プラグイン]]、テーマ、インテグレーションが正しく組み合わさることを確認するための参照アプリでもあります。
 
 ## リポジトリの構成
 
@@ -39,7 +39,7 @@ flowchart TD
     Repo["riebeckite/"]
 
     Repo --> Packages["packages/"]
-    Repo --> Apps["apps/"]
+    Repo --> Website["website/"]
     Repo --> Docs["docs/"]
     Repo --> Templates["templates/"]
 
@@ -50,7 +50,7 @@ flowchart TD
     Packages --> Plugins["plugins/*<br/>公式プラグイン"]
     Packages --> Themes["themes/*<br/>公式テーマ"]
 
-    Apps --> Web["web<br/>ドキュメント / 参照アプリ"]
+    Website --> Web["app/<br/>ドキュメント / 参照アプリ"]
     Docs --> DocSource["ドキュメントソース"]
     Templates --> Analytics["analytics-cloudflare<br/>Analytics デプロイテンプレート"]
 ```
@@ -63,7 +63,7 @@ flowchart TD
 | `packages/create-riebeckite` | サイト作成用の公開エントリーポイント |
 | `packages/plugins/*` | 公式プラグイン |
 | `packages/themes/*` | 公式テーマ |
-| `apps/web` | 公式ドキュメントサイトを兼ねたフレームワーク開発用の参照アプリ |
+| `website` | 公式ドキュメントサイトを兼ねたフレームワーク開発用の参照アプリ |
 | `docs/` | 公式ドキュメントアプリが読み込むドキュメントソース |
 | `templates/analytics-cloudflare` | Analytics Worker のデプロイ用テンプレート |
 
@@ -87,12 +87,12 @@ flowchart TD
 | `pnpm docs:sync` | 原本のプラグイン / テーマのドキュメントからパッケージ README を生成する |
 | `pnpm check:plugin-docs` | プラグインのドキュメントと生成した README の同期を検査する |
 | `pnpm check:theme-docs` | テーマのドキュメントと生成した README の同期を検査する |
-| `pnpm check:scaffold` | 生成されるサイトを検査する |
+| `pnpm check:scaffold` | 生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットを検査する |
 
 対象を絞れる場合は、次のように限定的なコマンドを使います。
 
 - `pnpm check:docs` は Markdown のリンクとドキュメントの構造を検査します。
-- `pnpm check:scaffold` は生成されたスキャフォールドの出力を検査します。
+- `pnpm check:scaffold` は `starter`、`minimal`、`showcase`、`empty` の各プリセットが生成するスキャフォールドの出力を検査します。
 - `pnpm typecheck` はパッケージの型を検査します。
 - `pnpm --filter <package> test` は、テストがある場合にそのパッケージのテストを実行します。
 
@@ -136,7 +136,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-生成される Riebeckite サイトが正しい構成になっているかを検査します。次のようなものを変更した場合に重要です。
+生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットが正しい構成になっているかを検査します。生成された設定とファイルだけを確認し、インストールとビルドは実行しないため、残り4つのプリセット（`digital-garden`、`blog`、`docs`、`portfolio`）は対象外です。次のようなものを変更した場合に重要です。
 
 - スキャフォールドジェネレーター
 - [[glossary/preset|プリセット]]

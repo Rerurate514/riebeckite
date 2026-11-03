@@ -21,11 +21,19 @@ sidebar:
 
 ```text id="l0yyse"
 riebeckite
-minimal
+editorial
+fieldnotes
+folio
+garden
 gruvbox
-sakura
-tokyonight
+minimal
+module
 rerurate
+sakura
+signal
+technical
+terminal
+tokyonight
 ```
 
 実際のサイトでは、アプリが `<html>` にテーマ名を付けます。
@@ -103,10 +111,10 @@ flowchart TD
   /* ... */
 }
 
-/* Theme Option */
+/* Theme Setting */
 :is(:root, .rb-theme-root)
 [data-rb-theme="<name>"]
-[data-example-option="on"] {
+[data-rb-setting-density="compact"] {
   /* ... */
 }
 
@@ -120,41 +128,46 @@ flowchart TD
 
 `data-rb-theme` はアプリが出力します。プレビューのコンテナに必要なのは、`.rb-theme-root` フックと一致するテーマ名だけです。
 
-## 4. カラーモード・属性・オプションの詳細
+## 4. カラーモード・設定・属性の詳細
 
-3-1 で説明した取り決めに加えて、テーマ固有のオプションは安全な `data-*` 属性を通じて CSS へ渡せます。
+テーマ固有のオプションは、`defineTheme` に任意の属性として渡すのではなく、テーマの設定スキーマに宣言します。
 
 ```ts id="ylx4jp"
-return defineTheme({
+export const newspaperTheme = defineTheme({
   name: "newspaper",
 
-  attributes: {
-    "data-newspaper-density":
-      "compact",
-  },
+  styles: [
+    {
+      moduleSpecifier:
+        "@riebeckite/theme-newspaper/style.css",
+    },
+  ],
+
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
+    },
+  }),
 });
 ```
 
-その属性は、CSS から次のように対象にできます。
+解決された設定は、テーマルートに安全な `data-rb-setting-*` 属性として反映されます。
 
 ```css id="4evhcs"
 :is(:root, .rb-theme-root)
 [data-rb-theme="newspaper"]
-[data-newspaper-density="compact"] {
+[data-rb-setting-density="compact"] {
   /* ... */
 }
 ```
 
-テーマ API は、`class`、`style`、`id`、`lang` を自由に変更できるようには設計されていません。
-
-```text id="cn9sza"
-class
-style
-id
-lang
-```
-
-フレームワークが所有する属性の名前空間と、テーマ固有の属性の名前空間を分けて保ちます。
+テーマ API は、`class`、`style`、`id`、`lang` を自由に変更できるようには設計されていません。`data-rb-theme`、`data-rb-mode`、`data-rb-layout` はフレームワークが所有し、テーマ設定は `data-rb-setting-*` という別の名前空間を使います。
 
 ## テーマルートと themeRootAttributes
 
@@ -183,12 +196,12 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 >
 ```
 
-フレームワークは `themeRootAttributes(theme)` を使い、テーマ自身の `attributes` に予約属性を加えて出力します。
+フレームワークは `themeRootAttributes(theme)` を使い、解決された設定に予約属性を加えて出力します。
 
 - `data-rb-mode`: [[glossary/color-mode|カラーモード]]の状態（`"light"` / `"dark"`。`"system"` のときは省略）
 - `data-rb-theme`: テーマの識別子
-- `data-rb-setting-typography`: タイポグラフィプリセットの値
-- `data-rb-layout`: 記事レイアウトプリセットの値
+- `data-rb-setting-*`: 解決された各テーマ設定（例：`data-rb-setting-typography`）
+- `data-rb-layout`: 記事レイアウトの値
 
 `<html>` に独自の属性を追加したい場合は、`ThemeRoot` の代わりに `themeRootAttributes` ヘルパーを直接使います。
 
@@ -204,6 +217,6 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-ただし、フレームワークが予約している `data-rb-mode`、`data-rb-theme`、`data-rb-setting-typography`、`data-rb-layout` は、テーマの `attributes` では上書きされません。
+テーマ設定が、フレームワーク予約の `data-rb-mode`、`data-rb-theme`、`data-rb-layout` を上書きすることはありません。
 
 [[glossary/plugin|プラグイン]]やテーマが以前に独自の `themeAttributes()` を実装していた場合は、フレームワークが提供する `ThemeRoot` / `themeRootAttributes()` への移行を検討してください。これにより、フレームワークが所有する属性の名前空間と、テーマ固有の名前空間の分離が明確になります。

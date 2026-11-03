@@ -49,22 +49,26 @@ or for comparing build times.
 
 ### When a build fails
 
-The previous build information is **updated only when the build completes
-successfully**.
+Build state is committed after `buildManifest()` completes but **before** HonoX/SSG runs.
+The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or
+output failure can leave new build state behind even if the overall build does not
+produce successful output.
 
 ```mermaid
 flowchart TD
-    A["Previous successful state"] --> B["Build starts"]
-    B --> C{"Build succeeded?"}
+    A["Previous successful state"] --> B["Build starts: buildManifest()"]
+    B --> C{buildManifest succeeded?}
+    C -->|No| E["Do not save state; keep previous"]
+    C -->|Yes| D["Save new state, then run SSG/Output"]
 
-    C -->|Yes| D["Save the new state"]
-    C -->|No| E["Do not save the new state"]
-
-    E --> F["Keep the previous successful state"]
+    D --> F{SSG succeeded?}
+    F -->|Yes| G["Build succeeds"]
+    F -->|No| H["New state remains even though output failed"]
 ```
 
-Even if a new build fails partway through, the information from the previous
-successful build remains. A partial failure never overwrites a valid state.
+If `buildManifest()` fails, the previous state is kept. If it succeeds, the new state
+is committed immediately; a later SSG/output failure does not restore the previous
+state, so the next build may reuse state that was never paired with successful output.
 
 ## When related pages change
 
@@ -113,7 +117,7 @@ processed.
 
 ## Incremental inputs
 
-`ContentSource` metadata may contain mtime, size, ETag, or a hash. Treat mtime as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. [[glossary/plugin-cache|Plugin cache]] is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
+`ContentSource` metadata may contain `createdAt`, `modifiedAt`, `size`, `etag`, or a hash. Treat `createdAt` as a hint only: timestamp-only comparisons are not sufficient for correctness when metadata can be unreliable. [[glossary/plugin-cache|Plugin cache]] is separate from build state, plugin-scoped, JSON-serializable, regenerable build-time data. Neither may be required at Workers request time.
 
 State tracks each entry's fingerprint together with its dependencies: the notes it links to (whose resolved permalink it may embed) and the assets it references (whose metadata, such as attachment size, it may render). A changed dependency invalidates the dependent entry and, transitively, its dependents. Added or removed entries change which link targets resolve, so entries that reference an affected target are invalidated as well. On the first build, or when no previous state is available, every note is processed. The `.riebeckite` state directory is build-time state, not content, and is never scanned.
 
@@ -123,7 +127,7 @@ The processed Markdown result for each note is stored in `.riebeckite/cache/cont
 
 An entry key includes its Markdown source, parsed frontmatter, the cache schema, and the processing-pipeline fingerprint. The fingerprint includes content-filter configuration, plugin configuration and order, plugin `cacheVersion` and processed-content cache contracts, and the Core compatibility version. Cached content also records logical content, file, and link dependencies; changed or missing dependencies are misses. Unsafe plugins bypass this cache. [[glossary/cache|Cache]] data contains logical slugs and normalized source paths rather than workspace paths, so it can be copied to a different runner or workspace on the same operating system.
 
-This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; a filesystem access failure still fails the build because it requires attention. The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`, plus a concise `Content` line (total, processed, and reused counts) and the total `Build complete` duration. A `Content processing` line reports the content phase's wall time and its inclusive span breakdown (scan, process, markdown, manifest, graph); because the spans overlap, they do not add up to the total.
+This cache is an optimization, never a correctness dependency. Missing entries, incompatible versions, malformed metadata, fingerprint or dependency mismatches, and corrupted JSON are safe misses. Delete `.riebeckite/cache` to force cold processing; **a filesystem access failure does not fail the build - it is logged as a warning and treated as a miss, consistent with the test `failure_recovery.test.ts:275-313` which asserts a blocked disposable cache must not fail the build.** The build log reports one `Persistent content cache` line with `hits`, `misses`, and `bypasses`, plus a concise `Content` line (total, processed, and reused counts) and the total `Build complete` duration. A `Content processing` line reports the content phase's wall time and its inclusive span breakdown (scan, process, markdown, manifest, graph); because the spans overlap, they do not add up to the total.
 
 ### When the cache has problems
 

@@ -36,7 +36,7 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 | [クイックスタート](./quick-start.ja.md) | 作成、起動、Markdown の編集、確認、ビルドを短い手順で試す |
 | [インストール](./installation.ja.md) | 必要な環境と、生成されるファイルを確認する |
 | [最初のコンテンツ](./first-content.ja.md) | 最初の公開ページを書く、またはサンプルを編集する |
-| [プリセット](./presets.ja.md) | `starter`、`minimal`、`showcase`、`empty` を比較する |
+| [プリセット](./presets.ja.md) | `starter`、`blog`、`docs`、`minimal` などのプリセットを比較する |
 | [デプロイ](./deployment.ja.md) | 手元から公開し、必要なら GitHub Actions で自動化する |
 | [Obsidian Vault を使う](./obsidian-vault.ja.md) | 既存の Obsidian Vault を接続し、選んだノートを公開する |
 | [最初のプラグインを追加する](./first-plugin.ja.md) | プラグインを入れて `==ハイライト==` 構文が効くことを確認する |
@@ -48,13 +48,15 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 npx create-riebeckite
 ```
 
-CLI は、プロジェクト名、プリセット、コンテンツの取得元、デプロイ設定の順に確認します。手元で試すだけなら、`starter`、`This project`、`Not now` のまま進めてください。
+CLI は、プロジェクト名、プリセット、コンテンツの取得元、デプロイ設定、依存関係をインストールするかどうかの順に確認します。プロジェクトのフォルダ名は既定で `my-riebeckite-site` です。手元で試すだけなら、`starter`、`This project`、`Not now`、インストールの既定値 `Yes` のまま進めてください。
 
 ```bash
-cd my-site
-npm install
+cd my-riebeckite-site
+npm exec riebeckite check
 npm exec riebeckite dev
 ```
+
+インストールの質問で `No` を選んだ場合は、先にフォルダ内で `npm install` を実行してください。
 
 ターミナルに表示されたローカル URL をブラウザで開きます。`content/` の Markdown を編集し、公開するページに `publish: true` を付けてから、最後にビルドします。
 
@@ -64,7 +66,7 @@ npm exec riebeckite build
 
 ビルド結果をそのまま公開する場合は、Wrangler をインストールして `npm exec -- riebeckite publish run --execute` を実行します。ログインと `wrangler.jsonc` の生成は自動です。詳しくは [デプロイ](./deployment.ja.md) を参照してください。
 
-プリセットで迷ったら、既定の `starter` を使ってください。
+プリセットで迷ったら、既定の `starter` を使ってください。記事、タグ、シリーズを持つメディアを作る場合は、プリセットの質問で `blog` を選ぶか、`npx create-riebeckite my-blog --preset blog` を実行します。
 
 > **Riebeckite 本体を開発する場合**は [Framework / Development](../framework/development.ja.md) へ進んでください。
 

@@ -98,7 +98,7 @@ After reading Architecture, move on to Content System, Plugin System, Theme Syst
 
 - **Core** owns content-processing contracts and orchestration. It does not depend on HonoX, Vite, a specific plugin, or a theme.
 - **Plugins** extend Markdown, HTML, metadata, assets, client behavior, endpoints, SEO, diagnostics, and graph behavior.
-- **Themes** own appearance: tokens, CSS, stable-hook styling, and safe theme attributes.
+- **Themes** own appearance: tokens, CSS, stable-hook styling, and theme settings reflected as `data-rb-setting-*` attributes.
 - **Integrations** connect Core to a web framework and bundler. The current supported adapter is HonoX/Vite.
 - **Applications** hold site-specific routes, components, and islands.
 - **CLI** is build-time tooling. Runtime Cloudflare Workers code must not access build state or filesystem caches.
@@ -113,7 +113,7 @@ Development covers, among other things:
 - `pnpm install`
 - the root `pnpm` commands
 - the layout of `packages/*`
-- `apps/web`
+- `website`
 - per-package tests
 - scaffold and external-site verification
 
@@ -125,7 +125,7 @@ Build a site with Riebeckite
     → Getting Started
 ```
 
-`apps/web` is Riebeckite's documentation and reference application. General users do not need to copy `apps/web` or clone the Riebeckite monorepo to use Riebeckite.
+`website` is Riebeckite's documentation and reference application. General users do not need to copy `website` or clone the Riebeckite monorepo to use Riebeckite.
 
 ## The boundary of this chapter
 

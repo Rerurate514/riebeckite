@@ -26,7 +26,7 @@ verification fixes recorded with this report.
   (338 tests) and image-optimizer tests passed (4 tests).
 - After building packages on the original branch and its merge-base baseline,
   `pnpm typecheck` reported the same pre-existing `TS2502` in
-  `apps/web/scripts/build_images.ts`. The integrated candidate subsequently
+  `website/scripts/build_images.ts`. The integrated candidate subsequently
   passed typecheck with no errors in all three projects.
 
 ## Boundaries and residual risk

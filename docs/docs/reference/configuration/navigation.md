@@ -84,6 +84,8 @@ Each link is a `NavigationItem`.
 | `href` | `string` | Destination path or URL |
 | `children` | `NavigationItem[]` | Child items, shown as a submenu |
 | `external` | `boolean` | When `true`, opens in a new tab |
+| `icon` | `string` | Optional icon name or URL |
+| `collapsed` | `boolean` | When `true`, the item is initially collapsed in the sidebar |
 
 `label` and `href` are required on authored items. A derived folder group that has no index note renders as a label only, so `href` is optional in the derived model.
 
@@ -145,7 +147,7 @@ Trailing slashes and a leading locale are normalized during matching, so you do 
 
 An active link gets `aria-current="page"`.
 
-An `href` that does not start with `/` (such as an external URL) and items with `external: true` are never treated as active.
+An `href` that does not start with `/` (such as an external URL) is never treated as active. The `external` option controls link behavior (opening in a new tab) but does not affect the active state.
 
 ## On mobile
 

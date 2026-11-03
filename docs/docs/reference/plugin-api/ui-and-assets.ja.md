@@ -65,7 +65,7 @@ const model = getMyData({ view, frontmatter: entry.frontmatter });
 
 ```tsx
 // サイト route にある最小 UI composition
-import { getBacklinks } from "@riebeckite/core";
+import { getBacklinks } from "@riebeckite/plugin-backlinks";
 import { MyComponent } from "@riebeckite/plugin-example";
 
 const view = createPublicContentView(manifest);
@@ -73,7 +73,6 @@ const entry = view.findRoutableBySlug(slug);
 const backlinks = await getBacklinks({ view, slug });
 <article>
   <MyComponent backlinks={backlinks} />
-  <ArticleBody html={entry.html} />
 </article>
 ```
 
@@ -92,7 +91,7 @@ assets: [
 ]
 ```
 
-プラグインの CSS を `apps/web` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグインの CSS を `website` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
 `createStyleAsset()` と `createClientEntry()` には、プラグイン名と、パッケージが `exports` で公開するモジュール指定子を明示します。そのため、`@riebeckite/plugin-<name>`、サイト内のプラグイン、任意の名前の第三者パッケージで同じ API を利用できます。
 

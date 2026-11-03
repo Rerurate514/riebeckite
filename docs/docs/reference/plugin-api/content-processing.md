@@ -71,7 +71,7 @@ observed through the framework API, use `unsafe`; a broad rebuild is correct,
 where a stale result is not.
 
 This is separate from output dependencies. `pageTypes[].outputDependencies`
-and `context.output.emit(..., { dependencies })` declare which rendered pages
+and `context.output.emit({ path, content, dependencies })` declare which rendered pages
 or generated files require regeneration. Use `content`, `tag`, `folder`,
 `global`, or `unknown` there; `unknown` safely requests full output
 regeneration.
@@ -80,9 +80,9 @@ Generated output paths are physical output paths. A generated output must not
 collide with a content, redirect, or plugin page route; Core fails the build
 instead of overwriting the route.
 
-`planGeneratedOutputs` runs on each incremental build and therefore disables
-the no-change fast path. Core cannot prove that arbitrary planner code has no
-untracked inputs, so it regenerates the plan rather than reusing it.
+`planGeneratedOutputs` runs on each incremental build. When dependencies are known
+(no `unknown` dependencies in generated outputs), the no-change fast path may still
+be used. Core only skips the fast path when untracked inputs might exist.
 
 ## Renderers
 
@@ -103,7 +103,7 @@ flowchart LR
 
 ## Manifest collections and publication safety
 
-Hooks that receive the manifest (`onManifestCreated`, page resolvers, renderers)
+Hooks that receive the manifest (`onManifestCreated`, page resolvers)
 choose between three entry collections:
 
 - `manifest.entries` — the raw collection for every scanned source, including

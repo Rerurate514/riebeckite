@@ -34,9 +34,7 @@ export default defineConfig({
     locale: "en",
     twitterSite: "@example",
     defaultOgImage: "/og-image.png",
-    feed: {
-      type: "rss",
-    },
+    feed: {},
   },
 });
 ```

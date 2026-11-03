@@ -21,7 +21,7 @@ machinery, but it does not know:
 
 ```mermaid
 flowchart BT
-    App["Application<br/>apps/web"]
+    App["Application<br/>website"]
     Integration["Integration<br/>packages/integrations/*"]
     CLI["CLI<br/>packages/cli"]
     Plugin["Plugin<br/>packages/plugins/*"]

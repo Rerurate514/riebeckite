@@ -161,7 +161,11 @@ async function collectDoctorReport(
   try {
     const source = resolveProjectContentSource(project.config, project);
     const content = new ContentManager(source, project.config.content.exclude, {
-      config: project.config,
+      config: {
+        ...project.config,
+        cache: { ...project.config.cache, enabled: false },
+      },
+      commitBuildState: false,
     });
     const report = await collectDevelopmentDiagnostics({
       config: project.config,

@@ -103,7 +103,7 @@ Command names use lowercase kebab-case. Nested commands form a tree. A command m
 
 Options support long names, short flags, `--name=value`, repeatable values, required values, hidden metadata, defaults, and a `validate` callback. Arguments support required, variadic, enum, default, hidden, and validation metadata.
 
-The parser handles `--`, quoted arguments already split by the shell, clustered boolean short flags, and `--no-*` negation. It rejects unknown options, missing values, duplicate non-repeatable options, missing required arguments, extra positional arguments, and invalid enum or number values.
+The parser handles `--`, quoted arguments already split by the shell, clustered boolean short flags, and `--no-*` negation. It rejects unknown options, missing values, duplicate non-repeatable options (boolean flags may repeat), missing required arguments, extra positional arguments, and invalid enum or number values.
 
 ## Command context
 
@@ -163,7 +163,7 @@ Plugin registration failures are isolated. One broken Plugin does not prevent ot
 
 ## Help and completion
 
-`riebeckite --help`, `riebeckite help <command>`, `riebeckite <command> --help`, and `riebeckite completion <shell>` read registry metadata. They do not call command handlers.
+`riebeckite --help`, `riebeckite help <command>`, and `riebeckite completion <shell>` read registry metadata without calling command handlers. `riebeckite <command> --help` does the same for typed commands, but raw commands intercept `--help` only as a leading token; for example, `riebeckite content create --help` still enters the handler.
 
 - Root help and built-in command help do not load the project.
 - `help <plugin-command>` and `completion <shell> --project` load configuration and enabled Plugin commands.

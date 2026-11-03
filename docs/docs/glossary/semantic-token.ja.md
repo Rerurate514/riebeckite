@@ -35,7 +35,7 @@ flowchart LR
 ```
 
 ## トークンのCSS変数名
-トークン名は kebab-case の CSS 変数に変換されます。`borderStrong` は `--rb-color-border-strong`、`bodyFont` は `--rb-font-body` のようになります。CSS カスタムプロパティ名は `--rb-<group>-<token>` の形で、group は `color`、`typography`、`layout` のいずれかです。
+トークン名は kebab-case の CSS 変数に変換されます。`borderStrong` は `--rb-color-border-strong`、`bodyFont` は `--rb-font-body` のようになります。CSS カスタムプロパティ名は `--rb-<group>-<token>` の形で、group は `color`、`layout` のいずれかです。タイポグラフィトークンは `--rb-font-<token>` のパターンを使用します（例：`--rb-font-body`, `--rb-font-heading`, `--rb-font-mono`）（グループプレフィックスは含まれません）。
 
 ## 関連用語
 - [[design-token|Design Token]]

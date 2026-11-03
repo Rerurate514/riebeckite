@@ -18,13 +18,13 @@ If the requested information does not exist, report that condition plainly.
 
 `riebeckite inspect config` — resolved configuration.
 `riebeckite inspect plugins` — enabled plugins.
-`riebeckite inspect content --list` — published content and URLs.
+`riebeckite inspect content --list` — scanned content paths and resolved URLs.
 `riebeckite inspect graph` — content graph relationships.
 `riebeckite inspect build` — incremental build state.
 
 ## Inspection Details
 
-Each inspect command reads resolved state without triggering any build work:
+Each inspect command reads resolved state without persisting build state or cache. Content may be processed in memory to resolve locations:
 
 - **`riebeckite inspect config`** shows the resolved configuration that Riebeckite actually uses after defaults and processing are applied. This is not the raw values written in the config file.
 
@@ -38,7 +38,7 @@ Each inspect command reads resolved state without triggering any build work:
 
 ### Read-only guarantee in practice
 
-Inspector is deliberately read-only: it must not run a build, write incremental state or plugin cache, emit assets, render special artifacts, invoke Vite/HonoX build work, or auto-fix problems. This property makes Inspector safe to use not only during development but also in CI.
+Inspector is deliberately read-only: it must not write incremental state or plugin cache, emit assets, render special artifacts, invoke Vite/HonoX build work, or auto-fix problems. Content may be processed in memory to resolve locations. This property makes Inspector safe to use not only during development but also in CI.
 
 ### Example
 

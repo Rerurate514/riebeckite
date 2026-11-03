@@ -24,35 +24,29 @@ sidebar:
 <html data-rb-theme="example">
 ```
 
-実行時に `document.documentElement.dataset.theme = "dark"` を設定するとダークを強制でき、属性を削除すると `system` に戻ります。
+実行時に `document.documentElement.dataset.rbMode = "dark"` を設定するとダークを強制でき、属性を削除すると `system` に戻ります。
 
 ## 実行時の切り替え
 
-`document.documentElement.dataset.theme` に `"light"` または `"dark"` を設定してモードを切り替えます。
+`document.documentElement.dataset.rbMode` に `"light"` または `"dark"` を設定してモードを切り替えます。
 `system` にするときは `data-rb-mode` 属性を削除し、OS のメディアクエリに任せます。
 
 ```ts
-document.documentElement.dataset.theme = "dark";
-delete document.documentElement.dataset.theme;
+document.documentElement.dataset.rbMode = "dark";
+delete document.documentElement.dataset.rbMode;
 ```
 
 `data-rb-mode=""` は設定しないでください。空の属性は `[data-rb-mode]` に一致し、`system` のメディアクエリを壊します。
 
 ## テーマ設定
-テーマ設定の `colorMode` オプション（`packages/core/src/types/theme_config.ts`）は、`light`、`dark`、`system` のいずれかに解決されます。このオプションは通常、Vite の設定またはテーマファイルで設定します。
+テーマ設定の `colorMode` オプション（`packages/core/src/types/theme_config.ts`）は、`light`、`dark`、`system` のいずれかに解決されます。このオプションは通常、サイト設定で設定します。
 
 ```ts
-// vite.config.ts
-import { defineConfig } from 'vite'
-import { reiebeckite } from '@riebeckite/honox'
-
 export default defineConfig({
-  plugins: [
-    reiebeckite({
-      colorMode: 'dark', // or 'light' or 'system'
-    }),
-  ],
-})
+  theme: defaultTheme({
+    colorMode: "system",
+  }),
+});
 ```
 
 解決された値が `<html>` の `data-rb-mode` 属性と、対応する `--rb-*` の CSS 変数の上書きを決めます。

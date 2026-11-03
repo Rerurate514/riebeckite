@@ -13,44 +13,19 @@ let started = false;
 
 /**
  * Wires up color-mode toggling on the page: applies the persisted mode and
- * binds every `ColorModeToggle` root. Safe to call more than once and a no-op
- * when the DOM is already initialized.
+ * delegates clicks from every `ColorModeToggle` root. Safe to call more than
+ * once and a no-op when the DOM is already initialized.
  */
 export function initColorMode(): void {
   if (started) return;
   started = true;
 
   const run = () => {
-    const roots = Array.from(
-      document.querySelectorAll<HTMLElement>(`[${COLOR_MODE_ROOT_ATTRIBUTE}]`),
-    );
+    apply(getCurrentMode(getRoots()));
 
-    apply(getCurrentMode(roots));
-
-    if (roots.length === 0) return;
-
-    for (const root of roots) {
-      const storageKey = readStorageKey(root);
-      for (const button of root.querySelectorAll<HTMLButtonElement>(
-        `[${COLOR_MODE_BUTTON_ATTRIBUTE}]`,
-      )) {
-        button.addEventListener("click", () => {
-          const mode = parseColorMode(
-            button.getAttribute(COLOR_MODE_BUTTON_ATTRIBUTE),
-          );
-          if (mode === null) return;
-          writeStoredMode(storageKey, mode);
-          apply(mode);
-        });
-      }
-    }
-
-    const storageKeys = new Set(roots.map(readStorageKey));
-    window.addEventListener("storage", (event) => {
-      if (event.key !== null && storageKeys.has(event.key)) {
-        apply(getCurrentMode(roots));
-      }
-    });
+    document.addEventListener("click", onClick);
+    document.addEventListener("spa:navigation", onNavigation);
+    window.addEventListener("storage", onStorage);
   };
 
   if (document.readyState === "loading") {
@@ -58,6 +33,38 @@ export function initColorMode(): void {
   } else {
     run();
   }
+}
+
+function getRoots(): HTMLElement[] {
+  return Array.from(
+    document.querySelectorAll<HTMLElement>(`[${COLOR_MODE_ROOT_ATTRIBUTE}]`),
+  );
+}
+
+function onClick(event: MouseEvent): void {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+  const button = target.closest<HTMLButtonElement>(
+    `[${COLOR_MODE_BUTTON_ATTRIBUTE}]`,
+  );
+  if (!button) return;
+  const root = button.closest<HTMLElement>(`[${COLOR_MODE_ROOT_ATTRIBUTE}]`);
+  if (!root) return;
+  const mode = parseColorMode(button.getAttribute(COLOR_MODE_BUTTON_ATTRIBUTE));
+  if (mode === null) return;
+  writeStoredMode(readStorageKey(root), mode);
+  apply(mode);
+}
+
+function onStorage(event: StorageEvent): void {
+  if (event.key === null) return;
+  const roots = getRoots();
+  if (!roots.some((root) => readStorageKey(root) === event.key)) return;
+  apply(getCurrentMode(roots));
+}
+
+function onNavigation(): void {
+  apply(getCurrentMode(getRoots()));
 }
 
 /** Applies a mode to the document and keeps every button in sync. */

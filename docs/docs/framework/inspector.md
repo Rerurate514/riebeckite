@@ -35,8 +35,9 @@ flowchart LR
     I --> F["Display information only"]
 ```
 
-Inspector only reads this information. It does not build, and it does not
-change your configuration.
+Inspector only reads this information. It may process content in memory to resolve
+locations, but it does not persist build state or cache, and it does not change your
+configuration.
 
 ## Basic usage
 
@@ -46,7 +47,7 @@ Inspector has a command for each target you want to inspect:
 | --- | --- |
 | `riebeckite inspect config` | Resolved configuration |
 | `riebeckite inspect plugins` | Enabled plugins |
-| `riebeckite inspect content --list` | Published content and URLs |
+| `riebeckite inspect content --list` | All scanned content entries (including drafts, private, scheduled) |
 | `riebeckite inspect content --path <path-or-permalink>` | One content entry's resolved identity |
 | `riebeckite inspect graph` | Relationships between content |
 | `riebeckite inspect build` | Incremental build state |
@@ -169,13 +170,73 @@ the existing one.
 
 ## Development Inspector tabs
 
-The panel has tabs for Overview, Diagnostics, API, Dependencies, Plugins, Output, Derived, Provenance, Assets, and Theme. The API tab lists the resolved API lifecycle registry, including deprecated-since versions, replacements, removal versions, migration guides, and whether the current configuration uses a deprecated entry. It reads the same registry as `riebeckite inspect api` and is read-only. The Assets tab lists content assets with their usage, size, duplicate groups, and optimization candidates. It reads the same read-only asset report as `riebeckite inspect assets` and never deletes or rewrites files.
+The panel has tabs for Overview, Content, Diagnostics, API, Dependencies, Plugins, Output, Derived, Provenance, Assets, and Theme. Overview summarizes build duration, manifest hook timing, cache use, and the slowest plugins. Content lists scanned entries with their visibility, aliases, redirects, incoming links, unresolved links, ambiguous targets, and orphan pages. The API tab lists the resolved API lifecycle registry, including deprecated-since versions, replacements, removal versions, migration guides, and whether the current configuration uses a deprecated entry. It reads the same registry as `riebeckite inspect api` and is read-only. The Assets tab lists content assets with their usage, size, duplicate groups, and optimization candidates. It reads the same read-only asset report as `riebeckite inspect assets` and never deletes or rewrites files.
+
+Plugins can add tabs after the built-in tabs through the `inspector` field:
+
+```ts
+export default defineConfig({
+  plugins: [
+    {
+      name: "my-plugin",
+      inspector: {
+        apiVersion: 1,
+        tabs: [
+          {
+            id: "my-plugin.overview",
+            title: { en: "My plugin", ja: "マイプラグイン" },
+            order: 100,
+            collect: () => ({
+              kind: "key-value",
+              items: [{ key: "Status", value: "ready" }],
+            }),
+          },
+        ],
+      },
+    },
+  ],
+});
+```
+
+`collect` runs once when a completed development build snapshot is created, not
+on every Inspector request. Return one of these data shapes:
+
+- `{ kind: "key-value", items }`
+- `{ kind: "table", columns, rows }`
+- `{ kind: "json", value }`
+- `{ kind: "error", message }`
+
+Values in these shapes must be JSON-serializable. Tab ids must match `^[a-z0-9][a-z0-9._-]*$` and be unique across plugins. Tabs
+are sorted by `order`, then by id; built-in tabs always come first. A failing
+`collect` is shown as an error tab and does not affect other tabs.
+
+For custom rendering, set `client` to a module specifier resolvable from the
+app root. The module must export `mount(root, { data, locale })` and may return
+a cleanup function:
+
+```ts
+export function mount(root: HTMLElement, { data, locale }: { data: unknown; locale: "en" | "ja" }) {
+  root.textContent = JSON.stringify(data);
+  return () => {};
+}
+```
+
+Inspector imports the client through the Vite development server. The client
+runs in the page, so plugins are trusted code. The mount root lives inside the
+Inspector shadow root, so the client must bring its own styles. Inspector never
+passes its private access token to the client, and the client must not read the
+inspector endpoints directly.
+
+`inspector` is unrelated to the plugin `endpoints` field. `endpoints` publishes
+HTTP routes on the generated site; `inspector` only contributes tabs to the
+development-only panel.
 
 ## Read-only guarantee
 
-Inspection is factual and non-mutating. It must not run a build, write
-incremental state or plugin cache, emit assets, render special artifacts
-merely for display, invoke Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration.
+Inspection is factual and non-mutating. It must not write incremental state or
+plugin cache, emit assets, render special artifacts merely for display, invoke
+Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration.
+Content may be processed in memory to resolve paths and permalinks.
 If the requested information does not exist because no build has completed,
 report that condition plainly.
 

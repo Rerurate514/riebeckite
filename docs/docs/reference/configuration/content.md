@@ -44,6 +44,8 @@ flowchart LR
     Publish -->|No| Private
 ```
 
+⚠️ When `content.source` is configured, the `exclude` patterns are not applied, as the custom source is used directly.
+
 ## ContentSource
 
 `content.directory` selects the default filesystem reader. Set `content.source`

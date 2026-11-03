@@ -103,7 +103,7 @@ export const readingTime = defineCliCommand({
 
 オプションは長い名前、短いフラグ、`--name=value`、繰り返し、必須値、非表示、既定値、`validate` コールバックに対応します。引数は必須、可変長、列挙、既定値、非表示、検証メタデータに対応します。
 
-パーサーは `--`、シェルが分割済みの引用引数、短い真偽値フラグの連結、`--no-*` の否定を扱います。未知のオプション、値の欠落、繰り返し不可のオプションの重複、必須引数の欠落、余分な位置引数、不正な列挙値や数値はエラーにします。
+パーサーは `--`、シェルが分割済みの引用引数、短い真偽値フラグの連結、`--no-*` の否定を扱います。未知のオプション、値の欠落、繰り返し不可のオプションの重複（真偽値フラグの重複は許可）、必須引数の欠落、余分な位置引数、不正な列挙値や数値はエラーにします。
 
 ## 実行コンテキスト
 
@@ -163,7 +163,7 @@ export const acme = definePlugin({
 
 ## ヘルプと補完
 
-`riebeckite --help`、`riebeckite help <command>`、`riebeckite <command> --help`、`riebeckite completion <shell>` はレジストリのメタデータを読みます。コマンドのハンドラーは実行しません。
+`riebeckite --help`、`riebeckite help <command>`、`riebeckite completion <shell>` はレジストリのメタデータを読み、コマンドのハンドラーを実行しません。`riebeckite <command> --help` は型付きコマンドでは同様に動作しますが、raw コマンドは先頭トークンの `--help` だけを横取りします。たとえば `riebeckite content create --help` はハンドラーに入ります。
 
 - ルートのヘルプと組み込みコマンドのヘルプは、プロジェクトを読み込みません。
 - `help <plugin-command>` と `completion <shell> --project` は設定と有効なプラグインのコマンドを読み込みます。

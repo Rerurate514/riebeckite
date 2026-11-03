@@ -49,12 +49,14 @@ The client entry points at a package subpath. Declare it in the package `exports
 ```json
 {
   "exports": {
-    ".": "./index.ts",
-    "./client": "./client.ts",
+    ".": "./dist/index.js",
+    "./client": "./dist/client.js",
     "./style.css": "./style.css"
   }
 }
 ```
+
+For local development, you can point exports at TypeScript source files. For published packages, exports must point at build output (see [Distribution](../../reference/plugin-api/distribution.md)).
 
 The initializer is a normal browser function. It must tolerate being loaded more than once.
 

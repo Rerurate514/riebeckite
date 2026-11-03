@@ -3,6 +3,7 @@ import path from "node:path";
 import { isImagePath, normalizeContentPath } from "@riebeckite/core";
 import { isIgnoredContentPath, isPathInsideDirectory } from "@riebeckite/node";
 import type { Plugin } from "vite";
+import { loadContentModule } from "./content_module.js";
 
 type RiebeckiteContentAssetsOptions = {
   appRoot: () => string;
@@ -13,10 +14,6 @@ type ContentAssetEntry = { assets?: ReadonlyArray<{ path: string }> };
 
 type PublicContentManifest = {
   publicEntries?: ReadonlyArray<ContentAssetEntry>;
-};
-
-type ContentAppModule = {
-  content?: { getManifest: () => Promise<unknown> };
 };
 
 type AssetRequest = {
@@ -55,15 +52,14 @@ export function riebeckiteContentAssets(
     enforce: "pre",
     configureServer(server) {
       const contentRoot = options.contentRoot();
-      const entry = path.join(options.appRoot(), "app", "server.ts");
       const base = server.config.base;
       const publicDir = server.config.publicDir;
       let cachedManifest: unknown;
       let cachedPaths = new Set<string>();
 
       const resolvePublicImagePaths = async (): Promise<Set<string>> => {
-        const module = (await server.ssrLoadModule(entry)) as ContentAppModule;
-        const manifest = (await module.content?.getManifest()) as
+        const module = await loadContentModule(server, options.appRoot());
+        const manifest = (await module.content?.getManifest?.()) as
           | PublicContentManifest
           | undefined;
         if (!manifest) return new Set();

@@ -271,7 +271,7 @@ function assertWorkflowContract(workflow: string): void {
     "types: [content-updated]",
     "concurrency:",
     "contents: write",
-    "actions/cache@v4",
+    "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830",
     "npm exec riebeckite check",
     "npm exec riebeckite build",
     "npm exec riebeckite publish validate",
@@ -291,7 +291,9 @@ function assertWorkflowContract(workflow: string): void {
 }
 
 function assertBuildStateCacheContract(workflow: string): void {
-  const cacheStepStart = workflow.indexOf("actions/cache@v4");
+  const cacheStepStart = workflow.indexOf(
+    "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830",
+  );
   assert.ok(cacheStepStart >= 0, "workflow must restore a Actions cache");
   const cacheStepEnd = workflow.indexOf("\n\n", cacheStepStart);
   const cacheStep = workflow.slice(
@@ -379,7 +381,9 @@ function assertBuildStateCacheContract(workflow: string): void {
   );
 
   const installIndex = workflow.indexOf("npm ci");
-  const restoreIndex = workflow.indexOf("actions/cache@v4");
+  const restoreIndex = workflow.indexOf(
+    "actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830",
+  );
   const checkIndex = workflow.indexOf("npm exec riebeckite check");
   const buildIndex = workflow.indexOf("npm exec riebeckite build");
   const deployIndex = workflow.indexOf("cloudflare/wrangler-action");

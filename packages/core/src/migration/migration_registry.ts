@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import type { ContentMigrationRule } from "./migration_rules.js";
 import type {
   ContentMigration,
@@ -143,7 +143,8 @@ export function createContentMigrationRegistry(
 export function fingerprintContentMigrationDefinition(
   definition: ContentMigrationDefinition,
 ): string {
-  return createHash("sha256")
+  return crypto
+    .createHash("sha256")
     .update(
       stableSerialize({
         id: definition.id,

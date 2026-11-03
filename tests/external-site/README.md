@@ -130,7 +130,7 @@ so they are documented here instead of being hidden with `skipLibCheck`.
   global script the declaration *overrides* the real module, and written in a
   module it reports `Duplicate identifier 'Env'`. The fixture does not need
   custom bindings, so it only declares the virtual `virtual:riebeckite/client`
-  module. (`apps/web/app/global.d.ts` still contains the invalid augmentation,
+  module. (`website/app/global.d.ts` still contains the invalid augmentation,
   masked there by `skipLibCheck: true`.)
 - **CommonJS deps must stay external in the SSR build.** `riebeckiteVite()`
   supplies `environments.ssr.resolve.external` (`defaultSsrExternals`); without

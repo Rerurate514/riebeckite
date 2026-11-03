@@ -22,9 +22,13 @@ const LocalGraph = (async (props: Readonly<LocalGraphProps>) => {
       : null);
   if (!graph) return html``;
 
+  const showExplorerLink =
+    site?.config.plugins.some((plugin) => plugin.name === "garden-explorer") ??
+    false;
+
   return (
     <>
-      <LocalGraphView graph={graph} />
+      <LocalGraphView graph={graph} showExplorerLink={showExplorerLink} />
       <script
         id="riebeckite-local-graph-data"
         type="application/json"

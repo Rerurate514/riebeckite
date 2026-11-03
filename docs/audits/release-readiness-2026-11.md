@@ -12,6 +12,7 @@ private: true
 - 修正後再監査時 HEAD: `bb126fa6`（成果物の安全な置換ライターを追加）
 - ブランチ: `main`
 - 作業ツリー: 修正内容は未コミット（本作業では commit / push を行わない）。並行して追加された release workflow / changelog の変更も同じ作業ツリーに含まれる。
+- 更新: 2026-11-03 に RR-016（依存更新）と RR-017（Actions SHA 固定）を修正。
 
 監査中に外部プロセス（ユーザーまたは別エージェント）が `005784e1` を作成しました。差分を確認した結果、`edb56e39..005784e1` のコード差分はなく、変更は `docs/**`、プラグイン README、`scripts/sync_plugin_docs.test.mjs` のみです。本レポートのコードに関する知見は両 HEAD に共通します。
 
@@ -27,7 +28,7 @@ private: true
 - 15 個の公式テーマ
 - 4 個の integration（HonoX、Inspector、Analytics Cloudflare、Webmention Cloudflare）
 - CLI、Core、Node、Runtime、Preview、SPA、Graph、UI、Diagnostics、Test、Create
-- `apps/web`（riebeckite.dev の実サイト）
+- `website`（riebeckite.dev の実サイト）
 - CI（`.github/workflows/ci.yml`）、公開（`publish.yml`）、リリーススクリプト
 - 人間向けドキュメント（英語・日本語）、`docs/agents/**` の設計規約
 
@@ -466,32 +467,36 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 
 - **Severity**: P2
 - **Confidence**: High（実行結果）
+- **状態**: 修正済み（2026-11-03）
 - **問題**: `@hono/node-server` の `serveStatic` パス二重デコード（GHSA-rmxm-3fg6-px4f、patched >=2.1.3）と `minimatch` の ReDoS（GHSA-g3hv-75wg-m249、patched >=11.0.1）。
 - **影響範囲**: 開発サーバー / Node アダプタの静的配信、ビルド時の glob。Cloudflare 本番のリクエスト経路とは限らない。
 - **発生条件**: 該当依存を使う開発・ビルド時。
 - **ファイルと箇所**: `pnpm-lock.yaml`（honox → @hono/vite-dev-server → @hono/node-server、honox → precinct → minimatch）
 - **再現手順**: `pnpm audit --prod`
-- **観測結果**: `2 vulnerabilities found / Severity: 2 moderate`。
+- **監査時の観測結果**: `2 vulnerabilities found / Severity: 2 moderate`。
 - **期待結果**: high/critical なし、moderate も解消または許容理由を記録。
 - **根本原因**: HonoX 0.1.56 の推移依存が古い。overrides で未解消。
 - **修正方針**: `pnpm.overrides` で patched 版へ上げるか、HonoX 側の更新を待つ。dev 専用なら SECURITY.md に許容理由を書く。
+- **対応**: `pnpm-workspace.yaml` の overrides を `@hono/node-server@<2.1.3` → `2.1.3`、`minimatch@<11.0.1` → `11.0.1` に変更した。`website/package.json` と scaffold の直接依存も `@hono/node-server` 2.1.3 系へ更新した。2026-11-03 の `pnpm audit --prod` は `No known vulnerabilities found`。`serveStatic` は公開ファイルだけを配信する構成で、認証付きパスはない。
 - **回帰テスト**: CI で `pnpm audit --prod --audit-level high` を実行し、moderate はレポートのみ。
-- **完了条件**: high/critical 0、moderate の扱いが文書化されている。
+- **完了条件**: high/critical 0、moderate も 0。
 - **依存関係**: なし。
 
 #### RR-017: GitHub Actions がタグ固定で、SHA 固定ではない
 
 - **Severity**: P2
 - **Confidence**: High（workflow 読解）
+- **状態**: 修正済み（2026-11-03）
 - **問題**: `actions/checkout@v4`、`pnpm/action-setup@v4`、`actions/setup-node@v4`、`actions/cache@v4`、`cloudflare/wrangler-action@v3` がタグ固定。タグの付け替えによる supply-chain リスクがある。
 - **影響範囲**: CI / 本番デプロイのサプライチェーン。
 - **発生条件**: 上流アクションのタグが侵害・付け替えされたとき。
-- **ファイルと箇所**: `.github/workflows/ci.yml`、`.github/workflows/publish.yml`、`.github/actions/setup/action.yml`
+- **ファイルと箇所**: `.github/workflows/ci.yml`、`.github/workflows/publish.yml`、`.github/actions/setup/action.yml`、`packages/create-riebeckite/templates/scaffold/deployment/github-actions/*.yml`
 - **再現手順**: workflow を読む。
-- **観測結果**: すべて `@vN`。
+- **監査時の観測結果**: すべて `@vN`。
 - **期待結果**: 主要アクションは commit SHA 固定 + コメントでバージョン表示。
 - **根本原因**: 一般的なタグ固定の慣習。
 - **修正方針**: Dependabot / Renovate で SHA を更新する運用にする。
+- **対応**: すべての third-party action を commit SHA に固定し、`# v4.x.y` コメントを付けた（`benchmark.yml`、`ci.yml`、`publish.yml`、`registry-e2e.yml`、`release.yml`、`.github/actions/setup/action.yml`）。生成サイト向けの GitHub Actions テンプレート（`publish.yml`、`notify-site.yml`、`content-checkout.yml`）も同じ方針で SHA 固定した。
 - **回帰テスト**: CI の workflow lint（`actionlint` 等）で SHA 固定を検査。
 - **完了条件**: すべての third-party action が SHA 固定。
 - **依存関係**: なし。
@@ -624,7 +629,7 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 - `docs/agents/architecture.md` の依存方向（App → Integration → Core、Plugin → Core、Theme → Core）と実際の package.json 依存に、今回の走査では違反は見つからなかった。
 - `check:source-health` は実行時 import cycle と Core/Plugin/Integration の越境を検出し、exit 0。実際に循環しているのは **ビルド順序の devDependency** であり、実行時 import ではない。
 - ContentSource（scan/read）と ContentManager（解釈・pipeline・manifest・graph）の責務分離は維持されている。
-- Build-time の `.riebeckite` と Worker runtime は分離されている。`apps/web/dist/worker.js` に `node:fs` は含まれていない。
+- Build-time の `.riebeckite` と Worker runtime は分離されている。`website/dist/worker.js` に `node:fs` は含まれていない。
 - Mutation が書き込みを所有し、Migration が「何を変えるか」を持つ分担は、final-foundations の統合テストで機能している。
 - Theme は presentation-only の契約を守り、テーマパッケージに ContentManager への依存はない。
 
@@ -685,8 +690,6 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 - RR-013 `content --help`
 - RR-014 フル SSG 性能
 - RR-015 visibility docs
-- RR-016 moderate 依存
-- RR-017 Actions SHA 固定
 - RR-018 テストマトリクス
 - RR-019 a11y の主張と検証
 
@@ -739,7 +742,6 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 9. RR-005: hover-preview を `discoverableEntries` に限定するか、unlisted を含める明確な非公開境界を設計する。デフォルトは除外。
 10. RR-006: security.md / ja を sanitizer の実装に合わせて書き直す。
 11. RR-015: visibility docs を `publish` / `visibility` / `publishAt` に統一。
-12. RR-016 / RR-017: 依存更新と Actions SHA 固定。
 
 ### Step 4: 決定性と性能
 
@@ -926,8 +928,8 @@ Hover Preview (final-foundations .work):
 #### RR-007: `lz-string` の設定読込失敗
 
 - **根本原因**: `packages/plugins/excalidraw/src/parse.ts` が `createRequire(import.meta.url)` だけで `lz-string` を解決していた。CLI の設定ローダーがプラグインを esbuild で一時 `.riebeckite-config-*/config.mjs` に inline すると `import.meta.url` が一時ディレクトリを指し、pnpm の hoist されていない `lz-string` を解決できなかった。
-- **修正内容**: 解決基準を `import.meta.url`、プロジェクト cwd、`@riebeckite/plugin-excalidraw` の実エントリの順にフォールバックするローダーへ変更。`createRequire` は維持し、Vite SSR が CJS の `module.exports` を正しく返す経路を壊さない。`apps/web` には source 条件ビルド用に `lz-string` を明示依存として追加。dist ではプラグイン自身の依存として解決する。
-- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`apps/web/package.json`、`pnpm-lock.yaml`
+- **修正内容**: 解決基準を `import.meta.url`、プロジェクト cwd、`@riebeckite/plugin-excalidraw` の実エントリの順にフォールバックするローダーへ変更。`createRequire` は維持し、Vite SSR が CJS の `module.exports` を正しく返す経路を壊さない。`website` には source 条件ビルド用に `lz-string` を明示依存として追加。dist ではプラグイン自身の依存として解決する。
+- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`website/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: CLI の `inspect config` / `doctor` 実行、`packages/plugins/excalidraw/test/*.test.ts`、`pnpm --filter @riebeckite/web build`。
 - **検証結果**: `node packages/cli/dist/cli.js inspect config` が lz-string エラーなしで成功（exit 0）。Excalidraw テスト 5/5。`pnpm --filter @riebeckite/web build` が client / SSR とも成功（SSR 25.9s）。
 - **コミット**: なし。
@@ -966,8 +968,8 @@ Hover Preview (final-foundations .work):
 | RR-013 | P2 | 未修正 | `riebeckite content --help` が usage error。グループ help の実装が必要 |
 | RR-014 | P2 | 未修正（計測更新） | 1,000 ノート full SSG は cold 102s / no-change 31s。履歴の 66.8s no-change より改善したが、依然重い |
 | RR-015 | P2 | 修正済み | `visibility` / `publish` / `publishAt` / `published` の glossary を実装に合わせて EN/JA 修正 |
-| RR-016 | P2 | 未修正 | `pnpm audit --prod` の moderate 2 件（`@hono/node-server`、`minimatch`） |
-| RR-017 | P2 | 未修正 | GitHub Actions はタグ固定のまま。SHA 固定ではない |
+| RR-016 | P2 | 修正済み | `pnpm audit --prod` は 0 件。`@hono/node-server` 2.1.3 / `minimatch` 11.0.1 へ override し、scaffold と website の直接依存も更新 |
+| RR-017 | P2 | 修正済み | すべての third-party GitHub Actions を commit SHA 固定（`# v4.x.y` コメント付き） |
 | RR-018 | P2 | 未修正 / 失敗 | 15 テーマにテストディレクトリなし。`test:visual` は 36 画像差分で失敗（ベースライン未更新）。CI にも未組み込み |
 | RR-019 | P2 | 未修正 | アクセシビリティ「audited」の主張に対する axe / Lighthouse 証拠なし |
 | RR-020 | P3 | 未修正 | 相対 content directory で missing-directory ヒントが出ない |
@@ -1019,11 +1021,9 @@ Hover Preview (final-foundations .work):
 **SHOULD FIX**
 
 1. RR-013 `content --help`。
-2. RR-016 moderate 2 件の依存更新。
-3. RR-017 Actions の SHA 固定。
-4. RR-011 stale lock flaky の仕様化。
-5. RR-018 テーマ視覚回帰の CI 組み込み。
-6. 5,000 ノート full SSG の計測。
+2. RR-011 stale lock flaky の仕様化。
+3. RR-018 テーマ視覚回帰の CI 組み込み。
+4. 5,000 ノート full SSG の計測。
 
 **CAN DEFER**
 
@@ -1050,7 +1050,7 @@ Hover Preview (final-foundations .work):
 - 公開境界: `discoverableEntries` への変更は Hover Preview のみ。Search / Sitemap / Feed / Graph / Backlinks / Taxonomy / Recent / Related は既に discoverable を使用しており、変更していない。final-foundations で unlisted の直接ページが残ることを確認。
 - 依存方向: `createDevelopmentTrace` の Core 移動は Core 内で完結し、Core が HonoX / Inspector に依存しないことを `check:cycles` で確認。
 - HonoX バージョン: `@riebeckite/honox`、CLI、web、外部 fixture、scaffold テンプレート / golden を 0.1.62 に統一。重複 `contextStorage` を解消し、external E2E で確認。
-- 設定ローダー: `lz-string` は `createRequire` の解決基準を cwd / プラグイン実エントリへ拡張。`inspect config` と `apps/web` の本番ビルドで確認。Excalidraw の dist は依存を external のまま維持し、利用側の解決に委ねる。
+- 設定ローダー: `lz-string` は `createRequire` の解決基準を cwd / プラグイン実エントリへ拡張。`inspect config` と `website` の本番ビルドで確認。Excalidraw の dist は依存を external のまま維持し、利用側の解決に委ねる。
 - テストの弱体化: 期待値の変更は RR-004 の重複診断の解消と RR-010 のテンプレート変数置換のみ。skip の追加・テスト削除・型チェック緩和は行っていない。`pnpm check` の warnings は元から存在するもので、抑制していない。
 - 未コミット: 本作業の変更はすべて作業ツリーにあり、commit / push / publish は行っていない。HEAD は並行作業により `bb126fa6` まで進んだ。
 
@@ -1069,7 +1069,7 @@ Hover Preview (final-foundations .work):
 - **Confidence**: High（再現・修正版の差分・テストで確認）
 - **根本原因**: `honox@0.1.56` の `dist/vite/inject-importing-islands.js` にある `walkDependencyTree` が import グラフを再帰走査する際に visited set を持たず、循環または共有依存で同じノードを繰り返し展開していた。V8 の AsyncHook が `Map` 上限に達し、テストプロセスが crash した。
 - **修正内容**: `honox` を `0.1.62` に更新。0.1.62 では `visited` Set、`depTreeCache`、`node_modules` skip が入っていることを `npm pack` した実物で確認した。
-- **変更ファイル**: `apps/web/package.json`、`packages/cli/package.json`、`packages/integrations/honox/package.json`、`pnpm-lock.yaml`
+- **変更ファイル**: `website/package.json`、`packages/cli/package.json`、`packages/integrations/honox/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: `pnpm --filter @riebeckite/honox test`、`pnpm test:registry`。
 - **検証結果**: honox 194/194 pass（83.6s）。`pnpm test:registry` 194/194 pass（90.3s）。以前 crash した `incremental_ssg` / `output_collision` / `svg_optimizer` の 3 ファイルも 13/13 pass。
 - **コミット**: なし。
@@ -1081,8 +1081,8 @@ Hover Preview (final-foundations .work):
 - **重要度**: P2（修正中に発見。ビルドを塞いだが P1 の RR-007 と同一原因）
 - **Confidence**: High（web build の失敗・成功とテストで確認）
 - **根本原因**: Vite SSR は `lz-string` を external 化し、CJS の `module.exports` を ESM namespace へ変換する。動的 import の戻り値は空 namespace になり、静的 namespace import も同じ理由で関数を持たなかった。一方、CLI の設定バンドルは `import.meta.url` が一時ディレクトリを指す。
-- **修正内容**: `createRequire` を維持し、`import.meta.url` → cwd → `@riebeckite/plugin-excalidraw` 実エントリの順で解決するフォールバックを実装。`apps/web` に source 条件用の明示依存を追加。dist は external 依存のまま。
-- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`apps/web/package.json`、`pnpm-lock.yaml`
+- **修正内容**: `createRequire` を維持し、`import.meta.url` → cwd → `@riebeckite/plugin-excalidraw` 実エントリの順で解決するフォールバックを実装。`website` に source 条件用の明示依存を追加。dist は external 依存のまま。
+- **変更ファイル**: `packages/plugins/excalidraw/src/parse.ts`、`website/package.json`、`pnpm-lock.yaml`
 - **回帰テスト**: `pnpm --filter @riebeckite/plugin-excalidraw test`、`pnpm --filter @riebeckite/web build`、`inspect config`。
 - **検証結果**: Excalidraw 5/5、web build 成功、`inspect config` 成功。
 - **コミット**: なし。

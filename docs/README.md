@@ -207,13 +207,13 @@ In that case you work with:
 - the monorepo
 - root `pnpm` commands
 - `packages/*`
-- `apps/web`
+- `website`
 - framework tests
 - external site E2E
 
 See [Framework Development](./docs/framework/development.md) for details.
 
-`apps/web` is Riebeckite's documentation and reference app. It is not a template for users building sites.
+`website` is Riebeckite's documentation and reference app. It is not a template for users building sites.
 
 ## When in doubt
 

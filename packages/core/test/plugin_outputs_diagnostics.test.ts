@@ -89,6 +89,33 @@ test("generated output plans resolve registered derived views", async () => {
   ]);
 });
 
+test("deferred generated output plans do not execute their renderer", async () => {
+  let renderCount = 0;
+  const plugin = definePlugin({
+    name: "deferred-plan-example",
+    planDeferredOutputs: () => [
+      {
+        path: "image.png",
+        dependencies: [{ type: "global", id: "site" }],
+        fingerprint: "renderer-v1",
+        generate: () => {
+          renderCount += 1;
+          return new Uint8Array([1]);
+        },
+      },
+    ],
+  });
+  const manager = new ContentManager(memorySource(oneNote), [], {
+    plugins: [plugin],
+  });
+
+  const manifest = await manager.getManifest();
+
+  assert.equal(renderCount, 0);
+  assert.equal(manifest.generatedOutputs[0]?.path, "image.png");
+  assert.equal(manifest.generatedOutputs[0]?.fingerprint, "renderer-v1");
+});
+
 test("manifest collects plugin diagnostics with owner attribution", async () => {
   const checker = definePlugin({
     name: "checker",

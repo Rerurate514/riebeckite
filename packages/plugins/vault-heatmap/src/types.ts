@@ -9,6 +9,10 @@ export type VaultHeatmapOptions = {
   title?: string;
   /** First day of each week column. */
   weekStart?: VaultHeatmapWeekStart;
+  /** Frontmatter properties counted as creation dates, in fallback order. */
+  createdFields?: readonly string[];
+  /** Frontmatter properties counted as modification dates, in fallback order. */
+  modifiedFields?: readonly string[];
 };
 
 export type VaultHeatmapSpec = {
@@ -32,11 +36,13 @@ export type VaultActivity = {
 };
 
 export type VaultHeatmapInput = {
+  readonly fields: {
+    readonly created: readonly string[];
+    readonly modified: readonly string[];
+  };
   readonly entries: readonly {
     readonly slug: string;
-    readonly created?: string;
-    readonly modified?: string;
-    readonly updated?: string;
+    readonly dates: Readonly<Record<string, string>>;
   }[];
 };
 

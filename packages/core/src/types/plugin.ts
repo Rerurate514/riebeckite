@@ -16,7 +16,10 @@ import type {
   ExternalDependencyContext,
   ExternalDependencyResolution,
 } from "./external_dependency.js";
-import type { GeneratedOutputContent } from "./generated_output.js";
+import type {
+  DeferredGeneratedOutputInput,
+  GeneratedOutputContent,
+} from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
@@ -32,6 +35,7 @@ import type {
   PluginPostContext,
 } from "./plugin_context.js";
 import type { PluginEndpoint } from "./plugin_endpoint.js";
+import type { PluginInspectorExtension } from "./plugin_inspector.js";
 import type { PluginPageType } from "./plugin_page.js";
 import type {
   HtmlPipeline,
@@ -100,6 +104,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     context: ExternalDependencyContext,
   ): Promise<readonly ExternalDependencyResolution[]>;
   validateOptions?: PluginOptionsValidator<TOptions>;
+  preprocessMarkdown?(markdown: string): string;
   remarkPlugins?: PipelinePlugin[];
   rehypePlugins?: PipelinePlugin[];
   setup?(context: PluginLifecycleContext): void | Promise<void>;
@@ -113,6 +118,11 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   ):
     | readonly PlannedGeneratedOutput[]
     | Promise<readonly PlannedGeneratedOutput[]>;
+  planDeferredOutputs?(
+    context: PluginGeneratedOutputPlanContext,
+  ):
+    | readonly PlannedDeferredOutput[]
+    | Promise<readonly PlannedDeferredOutput[]>;
   dispose?(context: PluginLifecycleContext): void | Promise<void>;
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
@@ -139,6 +149,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
   endpoints?: PluginEndpoint[];
+  inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
   extendContentGraph?(context: PluginGraphContext): void | Promise<void>;
   renderers?: PluginContentRenderer[];
@@ -160,6 +171,11 @@ export type PlannedGeneratedOutput = {
   readonly path: string;
   readonly content: GeneratedOutputContent;
   readonly dependencies?: readonly OutputDependency[];
+  readonly derivedDependencies?: readonly DerivedDependency[];
+  readonly derivedViewIds?: readonly string[];
+};
+
+export type PlannedDeferredOutput = DeferredGeneratedOutputInput & {
   readonly derivedDependencies?: readonly DerivedDependency[];
   readonly derivedViewIds?: readonly string[];
 };

@@ -52,7 +52,7 @@ fenced block、figure、ブラウザでのレンダリングを共有する Diag
 
 ## 3-7. Content Graph と公開ロケーション
 
-Content Graph を拡張する場合は `extendContentGraph` を使います。Backlinks などグラフ系の機能を実装するためにファイルシステムを再走査せず、すでに解決済みの manifest / Content Graph を利用してください。
+`extendContentGraph` は `manifestAssembler.build` の前に実行されます。ビルド後の拡張はオプションではありません。Backlinks などグラフ系の機能を実装するためにファイルシステムを再走査せず、すでに解決済みの manifest / Content Graph を利用してください。
 
 ```mermaid id="kjw3kt"
 flowchart LR
@@ -204,7 +204,7 @@ flowchart LR
     Integration --> Browser
 ```
 
-プラグイン固有の CSS を `apps/web` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグイン固有の CSS を `website` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
 ## 3-11. CSS フック
 

@@ -28,7 +28,7 @@ type RunningServer = {
 test("development inspector works in a real Vite dev server", async () => {
   let browser: Browser | undefined;
   let running: RunningServer | undefined;
-  const fixtureRoot = path.join(repoRoot, "apps/web", "inspector-e2e-fixture");
+  const fixtureRoot = path.join(repoRoot, "website", "inspector-e2e-fixture");
   try {
     await fs.rm(fixtureRoot, { recursive: true, force: true });
     await fs.cp(fixtureSource, fixtureRoot, {
@@ -707,7 +707,7 @@ function spawnVite(fixtureRoot: string, port: number): RunningServer {
   const child = spawn(
     process.execPath,
     [
-      path.join(repoRoot, "apps/web/node_modules/vite/bin/vite.js"),
+      path.join(repoRoot, "website/node_modules/vite/bin/vite.js"),
       "--host",
       "127.0.0.1",
       "--port",
@@ -718,7 +718,7 @@ function spawnVite(fixtureRoot: string, port: number): RunningServer {
       cwd: fixtureRoot,
       env: {
         ...process.env,
-        NODE_PATH: path.join(repoRoot, "apps/web/node_modules"),
+        NODE_PATH: path.join(repoRoot, "website/node_modules"),
         RIEBECKITE_REQUIRE_BROWSER: "1",
       },
       stdio: ["ignore", "pipe", "pipe"],

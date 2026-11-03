@@ -16,7 +16,7 @@ riebeckite create theme --list
 
 標準のテンプレートは `minimal`、標準の生成先は `themes/my-theme/` です。生成されたファクトリは、サイトのバンドラーが解決するローカルのモジュール指定子 `/themes/my-theme/styles/theme.css` を参照します。既存のディレクトリは上書きしません。
 
-テンプレートは `minimal`、`blog`、`documentation`、`portfolio`、`digital-garden`、`blank` です。最初の5つには、用途に応じた見た目のレシピが含まれます。`blank` には、公開ファクトリとスコープされたトークン宣言だけが入り、コンポーネントのスタイルは含まれません。
+テンプレートは `minimal`、`blog`、`documentation`、`portfolio`、`digital-garden`、`blank` です。最初の5つには、用途に応じた見た目のレシピが含まれます。すべてのテンプレートでタイポグラフィの設定と `reading` プリセットが生成され、 `blank` も背景、色、フォントファミリの値を出力します。
 
 追加できる機能は `typography`、`code-blocks`、`callouts`、`cards`、`toc`、`responsive`、`animations`、`print-styles` です。いずれも公開フックだけをスタイル対象にします。ダークモードはテーマの契約の一部なので、既定で生成されます。単一のカラーモードを意図する場合だけ `--no-dark-mode` を使ってください。
 

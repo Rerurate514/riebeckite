@@ -51,20 +51,20 @@ That difference matters. At runtime the palette is decided by three CSS states.
 
 The server emits `data-rb-mode` on `<html>` unless the theme's `colorMode` is `"system"`, in which case the attribute is omitted and the media query decides.
 
-**Runtime switching contract**: set `document.documentElement.dataset.theme` to `"light"` or `"dark"`, or **remove the attribute** for `"system"`:
+**Runtime switching contract**: set `document.documentElement.dataset.rbMode` to `"light"` or `"dark"`, or **remove the attribute** for `"system"`:
 
 ```ts
-document.documentElement.dataset.theme = "dark";
+document.documentElement.dataset.rbMode = "dark";
 ```
 
 ```ts
-delete document.documentElement.dataset.theme;
+delete document.documentElement.dataset.rbMode;
 ```
 
 Do not set `data-rb-mode=""`:
 
 ```ts
-document.documentElement.dataset.theme = "";
+document.documentElement.dataset.rbMode = "";
 ```
 
 An empty attribute still matches `[data-rb-mode]`, so `:not([data-rb-mode])` no longer holds and the system media query breaks.

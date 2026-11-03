@@ -64,7 +64,7 @@ type ThemeColorMode =
 
 `colorMode` が `"system"` のとき、サーバーはこの属性を出力せず、メディアクエリが配色を決めます。
 
-**実行時の切り替えの取り決め**：`document.documentElement.dataset.theme` に `"light"` または `"dark"` を設定するか、`"system"` にする場合は属性を削除します。
+**実行時の切り替えの取り決め**：`document.documentElement.dataset.rbMode` に `"light"` または `"dark"` を設定するか、`"system"` にする場合は属性を削除します。
 
 ```text id="h03gwl"
 light
@@ -80,20 +80,20 @@ system
 ダークへ切り替えるには、次のように設定します。
 
 ```ts id="iyf9ao"
-document.documentElement.dataset.theme =
+document.documentElement.dataset.rbMode =
   "dark";
 ```
 
 システムへ戻すときは、属性を削除します。
 
 ```ts id="6t0p0r"
-delete document.documentElement.dataset.theme;
+delete document.documentElement.dataset.rbMode;
 ```
 
 `data-rb-mode=""` のように空文字を設定してはいけません。
 
 ```ts id="o2i8bp"
-document.documentElement.dataset.theme = "";
+document.documentElement.dataset.rbMode = "";
 ```
 
 空の属性でも `[data-rb-mode]` に一致します。

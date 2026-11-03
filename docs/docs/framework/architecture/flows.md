@@ -48,9 +48,10 @@ read". It supplies source information such as:
 - scan
 - read
 - content identity
-- `mtime`
+- `createdAt`
+- `modifiedAt`
 - size
-- ETag
+- etag
 - hash
 
 A filesystem-backed content source reads files, but `ContentManager` itself

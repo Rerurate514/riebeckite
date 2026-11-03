@@ -14,9 +14,9 @@ sidebar:
 
 - 設定: `defineConfig`、`resolveConfig`、`resolveConfigModule`、`isPublished`、`isExcluded`
 - API ライフサイクル: `defineApiLifecycle`、`createApiLifecycleRegistry`、`resolveApiLifecycle`
-- コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`ContentQuery`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
+- コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`queryContentEntries`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
 - プラグイン: `definePlugin`、`resolvePlugins`、`defineEndpoint`、`createStyleAsset`、`createClientEntry`、`createPluginMemo`、`stableStringify`
-- テーマ: `defineTheme`、`ThemeDefinition`、`semantic tokens`、`ThemeColorMode`、`ThemeTypographyPreset`、`ThemeArticleLayoutPreset`
+- テーマ: `defineTheme`、`defineThemeSettings`、`ThemeDefinition`、`ThemeOptions`、`ThemeColorMode`
 - パイプライン: `Pipeline`、`MarkdownPipeline`、`HtmlPipeline`
 - ユーティリティ: `escapeHtml`、`escapeHtmlAttribute`、`normalizeTag`、`calculateReadingTime`、`stripHtml`
 - 可観測性: `Logger`、`Tracer`、`TraceSpan`、`TraceSink`
@@ -53,7 +53,7 @@ API_LIFECYCLE_METADATA_DIAGNOSTIC_CODE
 ContentManager
 ContentCollection
 ContentGraph
-ContentQuery
+ContentQuerySpec
 buildContentCollections
 fingerprintContentEntries
 resolveDefaultContentLocation
@@ -79,11 +79,10 @@ stableStringify
 
 ```text
 defineTheme
+defineThemeSettings
 ThemeDefinition
-semantic tokens
+ThemeOptions
 ThemeColorMode
-ThemeTypographyPreset
-ThemeArticleLayoutPreset
 ```
 
 テーマの定義とプレゼンテーションの取り決めに使用します。テーマを作成する場合は [Theme API](./theme-api.ja.md) と [テーマ作成の詳細](../framework/theme-system.ja.md) を参照してください。

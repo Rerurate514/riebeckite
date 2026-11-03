@@ -37,7 +37,7 @@ navigation({
 
 ## 最新記事
 
-これは既定で有効です。生成される `app/routes/index.tsx` が最新記事を集め、ホームページの本文の後に描画します。
+これは既定で有効です。生成される `app/routes/index.tsx` は `createHomeRoute` のみを使用します。`RecentPosts` は `app/components/article.tsx` にあります。
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";

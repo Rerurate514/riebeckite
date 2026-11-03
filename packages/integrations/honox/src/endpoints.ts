@@ -26,13 +26,17 @@ type HonoLikeApp = {
 
 type HonoLikeHeaders = {
   forEach(callback: (value: string, key: string) => void): void;
+  get?(name: string): string | null;
 };
 
 type HonoLikeRequest = {
   method: string;
   url: string;
   path: string;
-  raw: { headers: HonoLikeHeaders };
+  raw: {
+    headers: HonoLikeHeaders;
+    body?: ReadableStream<Uint8Array> | null;
+  };
   query(): Record<string, string>;
   text(): Promise<string>;
 };
@@ -65,11 +69,17 @@ export function mountRiebeckiteEndpoints(
   for (const endpoint of endpoints) {
     const method: PluginEndpointMethod = endpoint.method ?? "GET";
     const handler = async (context: HonoLikeContext): Promise<unknown> => {
+      const body = await readEndpointBody(context.req);
+      if (body === null) {
+        return context.text("Payload Too Large", 413, {
+          "content-type": "text/plain; charset=utf-8",
+        });
+      }
+      const request = toPluginEndpointRequest(context, method, body);
       const manifest =
         endpoint.requiresManifest === false
           ? undefined
           : await options.content.getManifest();
-      const request = await toPluginEndpointRequest(context, method);
       const response = await endpoint.handler({
         config: options.config,
         manifest: manifest as ContentManifest,
@@ -136,10 +146,55 @@ function validateEndpointPath(path: string): void {
   }
 }
 
-async function toPluginEndpointRequest(
+const MAX_ENDPOINT_BODY_BYTES = 1024 * 1024;
+
+async function readEndpointBody(
+  request: HonoLikeRequest,
+): Promise<string | null> {
+  const declared = request.raw.headers.get?.("content-length");
+  if (declared !== null && declared !== undefined) {
+    const length = Number(declared);
+    if (Number.isFinite(length) && length > MAX_ENDPOINT_BODY_BYTES) {
+      return null;
+    }
+  }
+
+  const body = request.raw.body;
+  if (!body) return "";
+
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value === undefined) continue;
+      total += value.byteLength;
+      if (total > MAX_ENDPOINT_BODY_BYTES) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(merged);
+}
+
+function toPluginEndpointRequest(
   context: HonoLikeContext,
   method: PluginEndpointMethod,
-): Promise<PluginEndpointRequest> {
+  body: string,
+): PluginEndpointRequest {
   const headers: Record<string, string> = {};
   context.req.raw.headers.forEach((value, key) => {
     headers[key.toLowerCase()] = value;
@@ -151,7 +206,7 @@ async function toPluginEndpointRequest(
     path: context.req.path,
     query: context.req.query(),
     headers,
-    body: await context.req.text(),
+    body,
   };
 }
 

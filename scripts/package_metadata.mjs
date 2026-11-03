@@ -9,6 +9,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/diagram",
   "packages/diagnostics",
   "packages/git-history",
+  "packages/og-image",
   "packages/preview",
   "packages/spa",
   "packages/runtime",
@@ -16,7 +17,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
   "packages/integrations/honox",
-  "packages/integrations/honox-inspector",
+  "packages/dev-inspector",
   "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
@@ -72,6 +73,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/mermaid-pele",
   "packages/plugins/navigation",
   "packages/plugins/obsidian-markdown",
+  "packages/plugins/og-image",
   "packages/plugins/pdf",
   "packages/plugins/permalink",
   "packages/plugins/plantuml",
@@ -208,9 +210,9 @@ const packagePublishingMetadata = {
     description: "HonoX and Vite integration for building Riebeckite sites.",
     keywords: ["riebeckite", "honox", "vite", "static-site-generator"],
   },
-  "packages/integrations/honox-inspector": {
-    description: "Development inspector overlay for Riebeckite HonoX sites.",
-    keywords: ["riebeckite", "honox", "vite", "inspector", "development"],
+  "packages/dev-inspector": {
+    description: "Development inspector overlay for Riebeckite sites.",
+    keywords: ["riebeckite", "vite", "inspector", "development"],
   },
   "packages/integrations/analytics-cloudflare": {
     description:
@@ -644,6 +646,14 @@ const packagePublishingMetadata = {
     description: "A Tokyo Night CSS theme for Riebeckite sites.",
     keywords: ["riebeckite", "theme", "css", "tokyo-night"],
   },
+  "packages/og-image": {
+    description: "Static PNG Open Graph image renderer for Riebeckite.",
+    keywords: ["riebeckite", "open-graph", "og-image"],
+  },
+  "packages/plugins/og-image": {
+    description: "Static PNG Open Graph image generation for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "open-graph", "og-image"],
+  },
 };
 
 function publishingMetadata(directory, sideEffects) {
@@ -755,6 +765,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/og-image") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs && node copy_fonts.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (
     directory === "packages/preview" ||
     directory === "packages/spa" ||
@@ -843,12 +865,12 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
-  if (directory === "packages/integrations/honox-inspector") {
+  if (directory === "packages/dev-inspector") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],
       scripts: {
-        build: "node ../../../scripts/build_package.mjs",
+        build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',
         prepack: "pnpm run build",
       },

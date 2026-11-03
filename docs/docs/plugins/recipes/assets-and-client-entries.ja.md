@@ -49,12 +49,14 @@ export function copyCode(options: CopyCodeOptions = {}) {
 ```json
 {
   "exports": {
-    ".": "./index.ts",
-    "./client": "./client.ts",
+    ".": "./dist/index.js",
+    "./client": "./dist/client.js",
     "./style.css": "./style.css"
   }
 }
 ```
+
+配布するパッケージでは、`exports` を実際に同梱するファイルへ向けてください。生成されたクライアントモジュールは名前付き export を import し、`publicConfig` を渡して呼び出します。それ以外のオプションは渡しません。ローカル開発では `exports` を TypeScript ソースへ向けることができますが、配布するパッケージの `exports` はビルド出力を指す必要があります（[リポジトリ外へプラグインを配布する](../../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) を参照してください）。
 
 初期化関数は普通のブラウザ関数です。複数回読み込まれても壊れないようにします。
 

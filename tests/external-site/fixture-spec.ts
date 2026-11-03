@@ -12,8 +12,8 @@ export const PACKAGES: PackageSpec[] = [
   },
   { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
   {
-    directory: "packages/integrations/honox-inspector",
-    name: "@riebeckite/honox-inspector",
+    directory: "packages/dev-inspector",
+    name: "@riebeckite/dev-inspector",
   },
   { directory: "packages/spa", name: "@riebeckite/spa" },
   { directory: "packages/themes/default", name: "@riebeckite/theme-default" },

@@ -28,25 +28,27 @@ riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
-riebeckite upgrade --check --to <version|latest> [--json]
+riebeckite upgrade --to <version|latest> [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] | revoke <slug...> [--all] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] | gate [--provider <name>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
 riebeckite content recover <journal> --apply [--json]
 riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance | api [--deprecated] [--json]]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance [--json] [--source <path>] [--output <path>] [--compare <revision>] | api [--deprecated] [--json]]
 riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata and never run a command handler. Enabled Plugins can add namespaced commands through their existing `cli` definition. See [CLI Extension API](./cli-extension.md) for the definition API, context, JSON contract, completion, and security model.
+`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it.
 
-Every `publish` action also accepts `--state-file <path>` (or the `RIEBECKITE_PUBLICATION_STATE` environment variable) to override the durable publication state file.
+Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata. `--help` is intercepted only as a leading token for raw commands; some commands such as `riebeckite content create --help` still enter the handler.
+
+The `publish` actions that read or write durable publication state (`plan`, `status`, `validate`, `run`, `record`, and `gate`) accept `--state-file <path>` (or the `RIEBECKITE_PUBLICATION_STATE` environment variable) to override the state file. `approve` and `revoke` operate on `publication/approvals.json` and accept `--approvals <path>` instead. Approval storage is configurable via `publication.approvalFile`; `publication/approvals.json` is only the default.
 
 ## Command contracts
 
@@ -63,7 +65,7 @@ Every `publish` action also accepts `--state-file <path>` (or the `RIEBECKITE_PU
 | `upgrade --check` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
-| `deploy` | Cloudflare configuration helpers only: `setup` prepares the publish workflow and secrets; `domain` adds a Workers Custom Domain. It does not deploy. | no |
+| `deploy` | Cloudflare configuration helpers: `setup` and `workflow` prepare files and secrets; `domain` adds a Workers Custom Domain and can run `wrangler deploy` after confirmation. Use `publish run --execute` for the normal publication flow. | no |
 | `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |
 | `content` | plan explicit content mutations and write them with a journal; `--apply` is required to write | no |
 | `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
@@ -92,7 +94,7 @@ flowchart TD
     Q -->|"See the current state"| Inspect["inspect"]
 ```
 
-`deploy` prepares provider configuration and workflow files; it does not upload the site. Use `publish run --execute` to deploy. For safe content writes and versioned bulk changes, see [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md).
+`deploy setup` and `deploy workflow` prepare provider configuration and workflow files; they do not upload the site. `deploy domain` writes the Custom Domain configuration and can run `wrangler deploy` after confirmation, without recording publication state or history. Use `publish run --execute` for the normal publication flow. For safe content writes and versioned bulk changes, see [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md).
 
 `check`, `doctor`, `inspect`, and `build` are especially easy to confuse. A simple split:
 
@@ -124,12 +126,14 @@ The goal is not merely to say "it failed" but to make clear what failed and wher
 
 Broken WikiLinks, missing referenced assets, publish-boundary warnings, and other content-integrity findings come from the build path or from plugins such as `@riebeckite/plugin-diagnostics`. Use `inspect content --list` and `inspect graph` to confirm what Riebeckite loaded, then run `build` or the relevant plugin diagnostics for rendered-content problems.
 
+These examples use npm. When a command has its own options, put `--` before the command name so npm passes them through, as in `npm exec -- riebeckite build --full`. Without options, `npm exec riebeckite build` is enough.
+
 ```sh
-pnpm exec riebeckite check
-pnpm exec riebeckite doctor
-pnpm exec riebeckite inspect plugins
-pnpm exec riebeckite build
-pnpm exec -- riebeckite publish run --execute
+npm exec riebeckite check
+npm exec riebeckite doctor
+npm exec riebeckite inspect plugins
+npm exec riebeckite build
+npm exec -- riebeckite publish run --execute
 ```
 
 For a new site, the flow looks like this:

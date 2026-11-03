@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import crypto from "node:crypto";
 import type {
   ContentManifest,
   ContentManifestEntry,
@@ -100,7 +100,7 @@ export async function inspectContentAssets(
       size: bytes.byteLength,
       extension,
       kind: isImagePath(path) ? "image" : "asset",
-      hash: createHash("sha256").update(bytes).digest("hex"),
+      hash: crypto.createHash("sha256").update(bytes).digest("hex"),
       references: referencing.map((entry) => entry.slug),
       usage: usage.usage,
       reasons: usage.reasons,

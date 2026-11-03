@@ -5,8 +5,8 @@ export const IMAGE_COMPARE_CLASS = "rr-image-compare";
 
 export function renderImageCompare(spec: ResolvedImageCompareSpec): string {
   const label = spec.label ?? "Image comparison";
-  const before = `<img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--before" src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="lazy" decoding="async">`;
-  const after = `<div class="${IMAGE_COMPARE_CLASS}__layer"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--after" src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="lazy" decoding="async"></div>`;
+  const before = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--before"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--before" src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="eager" decoding="async"></div>`;
+  const after = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--after"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--after" src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="eager" decoding="async"></div>`;
 
   return [
     `<figure class="${IMAGE_COMPARE_CLASS}" data-rr-image-compare data-orientation="${spec.orientation}" style="--rr-image-compare-position:50%" aria-label="${escapeHtmlAttribute(label)}">`,

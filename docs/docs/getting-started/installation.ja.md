@@ -44,12 +44,13 @@ npx create-riebeckite
 
 `npx` は `create-riebeckite` をダウンロードして一度だけ実行するため、グローバルには何もインストールしません。CLI は次の順に確認します。
 
-1. **Project name**：作るフォルダ名。例: `my-site`
+1. **Project name**：作るフォルダ名。既定値は `my-riebeckite-site`。好みで `my-site` などに変えられます
 2. **Preset**：サイトの構成。迷ったら `starter` のまま。比較は [プリセット](./presets.ja.md)
-3. **追加のプロジェクトファイルのカスタマイズ**：任意です。エディタやツール用の生成ファイルを変える必要がなければ、既定値のまま進めます。
+3. **Extra project files**：任意です。エディタやツール用の生成ファイルを変える必要がなければ、既定値のまま進めます。
 4. **Content source**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
-5. **デプロイ設定**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
-6. **依存パッケージを今すぐインストール**：既定は yes です。生成したプロジェクトを確認してからインストールしたいときは no を選びます。
+5. **Deployment設定**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
+6. **Add optional feature packs?**：機能パックを選んで追加のプラグインを追加できます。非対話で追加する場合は `--features <names>` を使用します。[プリセット](./presets.ja.md) で利用可能な packs を参照してください
+7. **Install dependencies now**：既定は yes です。生成したプロジェクトを確認してからインストールしたいときは no を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
@@ -57,8 +58,10 @@ npx create-riebeckite
 npx create-riebeckite my-site --preset starter
 ```
 
-- 既存のディレクトリへ生成する場合、既存ファイルと衝突すると停止します。上書きしてよいと分かっている場合だけ `--force` を使います。
+- 生成されたトップレベルの名前が既存のエントリと衝突する場合、コマンドは停止します。上書きしたい場合は `--force` を追加してください。
+- ターゲットフォルダにあるその他のファイルは `--force` なしで許可されます。
 - 利用できる[[glossary/preset|プリセット]]は `npx create-riebeckite --list-presets` で確認できます。
+- フォルダ名を渡すと非対話で実行されます。プリセット、コンテンツの取得元、デプロイ、インストールの質問は省略され、依存関係もインストールされません。`dev` の前に、フォルダ内で `npm install` を実行してください（下記参照）。
 
 プロンプトでインストールしなかった場合は、フォルダへ移動してパッケージを入れます。
 
@@ -67,7 +70,9 @@ cd my-site
 npm install
 ```
 
-`@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。
+`@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。npm が脆弱性を報告した場合は `npm audit` で内容を確認してください。ビルド用の推移的依存関係に由来するものも多く含まれます。`npm audit fix --force` は、変更されるバージョンを確認してからでないと実行しないでください。
+
+この手順では npm を使います。pnpm 10 以降を使う場合、`pnpm install` がビルドスクリプトの無視を報告することがあります。`pnpm approve-builds` を実行し、内容を確認して信頼できる package を承認してから `dev` を起動してください。
 
 ## 生成されるファイル
 
@@ -76,7 +81,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
-| `public/` | favicon、ヘッダーのロゴ、リンクプレビュー画像など、そのまま配信する静的ファイル。差し替えは [サイトのアイコンとロゴ](../guides/branding.ja.md) |
+| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。ヘッダーのロゴやリンクプレビュー画像はデフォルトでは生成されません。[サイトのアイコンとロゴ](../guides/branding.ja.md) で追加してください。なお `defaultOgImage` は現在 `/ogp.png` を指していますが、これらは生成されませんので存在すると主張しないでください。
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
 | `README.md` | 生成されたサイト向けの短い説明 |
@@ -140,20 +145,21 @@ site: {
 npm exec riebeckite dev
 ```
 
-ターミナルに `http://localhost:5173` のような URL が表示されます。ブラウザで開いてください。サーバーの起動中は Markdown とアプリケーションの編集が反映されます。止めるときは `Ctrl + C` を押します。
+ターミナルに `http://localhost:5173` のような URL が表示されます。ブラウザで開いてください。サーバーの起動中は Markdown とアプリケーションの編集が反映されます。開発サーバーは `content/` を読み込み、`dist/` は作りません。ビルド出力は `build` の実行後にだけ作られます。止めるときは `Ctrl + C` を押します。起動しない場合は `npm exec riebeckite doctor` を実行し、[CLI リファレンス](../reference/cli.ja.md) を参照してください。
 
 ## 日常的に使うコマンド
 
 サイトのフォルダ内で実行します。
 
 ```bash
+npm exec riebeckite check  # 設定を検証する
 npm exec riebeckite dev    # 開発サーバーを起動する
 npm exec riebeckite build  # 公開用ファイルを dist/ に出力する
 ```
 
 増分キャッシュを使わずに作り直す場合は、`npm exec -- riebeckite build --full` を実行します。
 
-最初に動作を確認するだけなら、`dev` と `build` で足ります。あとから問題が見つかった場合は、`check`、`doctor`、`inspect` などの読み取り専用の診断コマンドも使えます。詳しくは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
+最初に動作を確認するだけなら、`check`、`dev`、`build` で足ります。あとから問題が見つかった場合は、`check`、`doctor`、`inspect` などの読み取り専用の診断コマンドも使えます。詳しくは [CLI リファレンス](../reference/cli.ja.md) を参照してください。
 
 ## 次に読むページ
 

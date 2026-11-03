@@ -1,6 +1,7 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
 import { detectContents, throwForStrictDiagnostics } from "./detection.js";
 import { addLocalizationHeadTags } from "./head_tags.js";
+import { l10nInspectorTabs } from "./inspector.js";
 import { resolveOptions, validateOptions } from "./options.js";
 import {
   getLanguageFromPath,
@@ -97,6 +98,10 @@ export function l10n(options: L10nOptions) {
       addLocalizationHeadTags(manifest, state);
     },
     addDiagnostics: () => state.diagnostics,
+    inspector: {
+      apiVersion: 1,
+      tabs: l10nInspectorTabs(() => state, resolved),
+    },
   });
 }
 

@@ -276,7 +276,7 @@ flowchart LR
     Plugin -. "provided information is<br/>placed by the Site" .-> Site
 ```
 
-Keep HonoX, Vite, Cloudflare, and route APIs in this package or `apps/web`;
+Keep HonoX, Vite, Cloudflare, and route APIs in this package or `website`;
 Core remains portable. Core does not own HonoX routing. A plugin can expose
 assets, client entries, endpoints, and renderers, but Core does not become a
 HonoX router. The application decides concrete route composition and islands.

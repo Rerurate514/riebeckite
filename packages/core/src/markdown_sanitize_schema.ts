@@ -137,13 +137,15 @@ export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
 export const safeMarkdownStyle =
   /^(?:--shiki-(?:light|dark):#[\da-f]{3,8};?)+$|^height:\d+(?:\.\d+)?px$|^--rb-(?:qr-size:\d+(?:\.\d+)?px|rich-embed-aspect:\d+(?:\.\d+)?)$/i;
 
-export const markdownSanitizeFingerprint = crypto
-  .createHash("sha256")
-  .update(
-    stableStringify({
-      schema: markdownSanitizeSchema as unknown as JsonValue,
-      style: safeMarkdownStyle.source,
-      styleFlags: safeMarkdownStyle.flags,
-    }),
-  )
-  .digest("hex");
+export function computeMarkdownSanitizeFingerprint(): string {
+  return crypto
+    .createHash("sha256")
+    .update(
+      stableStringify({
+        schema: markdownSanitizeSchema as unknown as JsonValue,
+        style: safeMarkdownStyle.source,
+        styleFlags: safeMarkdownStyle.flags,
+      }),
+    )
+    .digest("hex");
+}

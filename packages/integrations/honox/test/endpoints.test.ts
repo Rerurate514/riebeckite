@@ -57,3 +57,60 @@ test("an endpoint without a manifest does not initialize content", async () => {
   assert.equal(response, "User-agent: *");
   assert.equal(manifestRequests, 0);
 });
+
+test("rejects endpoint request bodies above the size limit", async () => {
+  let handler: ((context: never) => Promise<unknown>) | undefined;
+  let endpointCalled = false;
+  mountRiebeckiteEndpoints(
+    {
+      get: () => {},
+      post: (_path, registered) => {
+        handler = registered as typeof handler;
+      },
+    },
+    {
+      config: {
+        plugins: [
+          {
+            name: "upload-endpoint",
+            endpoints: [
+              {
+                path: "/upload",
+                method: "POST",
+                requiresManifest: false,
+                handler: () => {
+                  endpointCalled = true;
+                  return { body: "ok" };
+                },
+              },
+            ],
+          },
+        ],
+      } as unknown as ResolvedRiebeckiteConfig,
+      content: {} as ContentManager,
+    },
+  );
+
+  const body = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array(1024 * 1024 + 1));
+      controller.close();
+    },
+  });
+  const response = (await handler?.({
+    req: {
+      method: "POST",
+      url: "http://localhost/upload",
+      path: "/upload",
+      raw: { headers: { forEach: () => {} }, body },
+      query: () => ({}),
+      text: async () => "",
+    },
+    body: (value: string) => value,
+    json: () => "",
+    text: (value: string, status?: number) => ({ value, status }),
+  } as never)) as { status?: number } | undefined;
+
+  assert.equal(response?.status, 413);
+  assert.equal(endpointCalled, false);
+});

@@ -1,5 +1,6 @@
 ---
 title: {{title}}
+publish: true
 description: A focused portfolio for work that matters.
 ---
 

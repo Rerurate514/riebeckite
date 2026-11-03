@@ -36,9 +36,10 @@ flowchart LR
 - scan
 - read
 - content identity
-- `mtime`
+- `createdAt`
+- `modifiedAt`
 - size
-- ETag
+- etag
 - hash
 
 たとえば、ファイルシステムを扱う[[glossary/content-source|コンテンツソース]]はファイルを読み込みますが、`ContentManager` 自身がファイルシステムを直接走査することはありません。新しいコンテンツソースを追加するときも、この取り決めに従います。

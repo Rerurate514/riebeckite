@@ -141,10 +141,13 @@ Plugin は独自の endpoint を提供できます。
 - データサイズ
 - 認証
 - CORS
+- レート制限
 
 などを確認してください。
 
 Riebeckite は endpoint を登録して request を Plugin へ渡しますが、そのデータが Plugin の用途に適しているかどうかは Plugin 側で判断します。
+
+HonoX は request body を 1 MiB まで読み取り、それを超える場合は endpoint を呼び出さずに `413 Payload Too Large` を返します。これは無制限のバッファリングを防ぐためのもので、Plugin 側のサイズ検証・認証・レート制限を置き換えるものではありません。
 
 ## 組み込みPluginの対策
 
@@ -152,9 +155,9 @@ Riebeckite の公式 Plugin でも、外部データを扱うものには用途�
 
 たとえば、
 
-- Rich Embed は `https:` のプロバイダー URL だけを受け付け、既知のプロバイダーを制御された iframe URL へ変換します。汎用 iframe はホストの明示的な許可リストが必要です。
-- Webmention の取得元は HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、既定でプライベートホストを拒否します。
-- Analytics の収集 URL はサイト相対または HTTP(S) に限られ、Cloudflare Worker 連携は JSON の形と本文サイズを検証します。
+- Rich Embed は `https:` のプロバイダー URL だけを受け付け、既知のプロバイダーを sandbox 付きの iframe URL へ変換します。汎用 iframe はホストの明示的な許可リストが必要です。
+- Webmention の取得元は HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、DNS 解決後にプライベートホストを拒否します。DNS 解決に失敗した場合は取得を拒否し、検証済みのアドレスを接続に固定します。DNS モジュールを持たないランタイムでは、ホスト名とリテラル IP の検査のみが適用されます。受信 endpoint にはクライアント単位のベストエフォートなレート制限があり、既定のインメモリプロバイダーは最大 1,000 件のメンションを保持します。
+- Analytics の収集 URL はサイト相対または HTTPS に限られ、平文 HTTP は localhost だけで許可されます。Cloudflare Worker 連携は JSON の形と本文サイズを検証します。
 - Autocard のメタデータリンクと画像はエスケープされ、相対 URL、`http:`、`https:` に制限されます。
 - Diagram とメディアの Plugin は、設定された外部プロバイダーをブラウザに読み込ませることがあります。その URL は信頼できる設定として扱ってください。
 

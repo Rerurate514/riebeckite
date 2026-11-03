@@ -1,5 +1,6 @@
 ---
 title: About
+publish: true
 ---
 
 # About

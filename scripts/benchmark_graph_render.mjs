@@ -11,8 +11,7 @@ const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const outputDirectory = path.join(
   scriptDirectory,
   "..",
-  "apps",
-  "web",
+  "website",
   ".riebeckite",
   "graph-render-benchmark",
 );

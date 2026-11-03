@@ -566,6 +566,16 @@ export async function decodeOutput(
   return content;
 }
 
+export function resolveOutputCacheEntryPath(
+  outputCachePath: string,
+  entry: OutputCacheEntry,
+): string {
+  return resolveOutputCacheFile(
+    outputCacheEntriesPath(outputCachePath),
+    entry.cachePath,
+  );
+}
+
 function resolveOutputCacheFile(
   directory: string,
   relativePath: string,

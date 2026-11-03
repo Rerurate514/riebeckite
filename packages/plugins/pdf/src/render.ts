@@ -85,6 +85,7 @@ export async function renderPdf(
   <object class="rr-pdf__viewer" data="${escapeHtmlAttribute(viewerUrl)}" type="application/pdf" aria-label="${escapeHtmlAttribute(fileName)}">
     <a class="rr-pdf__fallback" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(options.downloadLabel)}</a>
   </object>
+  <a class="rr-pdf__open" href="${escapeHtmlAttribute(viewerUrl)}">Open PDF</a>
   <figcaption class="rr-pdf__meta">${metaHtml}
     <a class="rr-pdf__download" href="${escapeHtmlAttribute(context.url)}" download>${escapeHtml(options.downloadLabel)}</a>
   </figcaption>

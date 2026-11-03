@@ -55,7 +55,7 @@ resolveRiebeckiteRoute(content, c.req.path)
 
 その結果をどのコンポーネントツリーで表示するかは、サイトが決めます。
 
-Riebeckite リポジトリにある `apps/web` は実装例の 1 つであり、外部のサイトが同じレイアウトを使う必要はありません。
+Riebeckite リポジトリにある `website` は実装例の 1 つであり、外部のサイトが同じレイアウトを使う必要はありません。
 
 ## head タグ
 

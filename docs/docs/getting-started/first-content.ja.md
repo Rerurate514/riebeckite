@@ -14,11 +14,11 @@ sidebar:
 生成されたサイトは、既定では `content/` の Markdown を読み込みます。
 
 ```text
-my-site/
+my-riebeckite-site/
 ├─ content/
 │  ├─ index.md
-│  ├─ guide.en.md
-│  ├─ examples.en.md
+│  ├─ guide.md
+│  ├─ examples.md
 │  └─ notes/
 │     ├─ planning.md
 │     └─ writing.md
@@ -26,7 +26,7 @@ my-site/
 └─ package.json
 ```
 
-`starter` プリセットでは、最初からサンプルのコンテンツが生成されます。編集が機能することを確かめるだけなら、新しいページを作らず、まずこれらのファイルを編集してください。
+`starter` プリセットでは、最初からサンプルのコンテンツが生成されます。編集が機能することを確かめるだけなら、新しいページを作らず、まずこれらのファイルを編集してください。`starter` のような1言語のプリセットでは言語の接尾辞が付かないファイル名になり、`showcase` のような多言語のプリセットではデフォルト言語以外のファイルに `.en.md` や `.ja.md` のような接尾辞が残ります。
 
 既定では公開は明示的です。frontmatter に `publish: true` がある Markdown だけがサイトに表示されます。
 

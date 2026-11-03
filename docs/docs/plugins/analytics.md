@@ -101,9 +101,10 @@ export default {
 };
 ```
 
-`collectorUrl` is intentionally public. It is a relative path or an HTTP(S)
-URL for a collector that accepts a JSON `POST` body. A future provider package
-can expose a collector backed by its own private runtime configuration.
+`collectorUrl` is intentionally public. It is a relative path or an HTTPS URL
+for a collector that accepts a JSON `POST` body; plain HTTP is accepted only
+for localhost. A future provider package can expose a collector backed by its
+own private runtime configuration.
 
 ## Browser behavior
 

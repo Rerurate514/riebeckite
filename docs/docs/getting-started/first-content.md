@@ -14,11 +14,11 @@ This page shows how to make Markdown appear on your site. You can either edit th
 Generated sites read Markdown from `content/` by default.
 
 ```text
-my-site/
+my-riebeckite-site/
 ├─ content/
 │  ├─ index.md
-│  ├─ guide.en.md
-│  ├─ examples.en.md
+│  ├─ guide.md
+│  ├─ examples.md
 │  └─ notes/
 │     ├─ planning.md
 │     └─ writing.md
@@ -26,7 +26,7 @@ my-site/
 └─ package.json
 ```
 
-The `starter` preset already creates sample content. You can edit one of those files first; you do not have to create a new page just to verify that editing works.
+The `starter` preset already creates sample content. You can edit one of those files first; you do not have to create a new page just to verify that editing works. Single-language presets such as `starter` generate file names without a language suffix; multilingual presets such as `showcase` keep suffixes such as `.en.md` and `.ja.md` only for non-default languages.
 
 By default, publishing is explicit: a Markdown file appears on the site only when its frontmatter has `publish: true`.
 

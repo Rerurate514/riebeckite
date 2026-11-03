@@ -32,7 +32,8 @@ export function validateAnalyticsOptions(
   ) {
     issues.push({
       path: "publicConfig.collectorUrl",
-      message: "Expected a non-empty absolute URL or site-relative path.",
+      message:
+        "Expected a site-relative path or an HTTPS URL (HTTP is allowed only for localhost).",
     });
   }
   return issues;
@@ -61,8 +62,18 @@ function isCollectorUrl(value: unknown): value is string {
   if (value.startsWith("/")) return !value.startsWith("//");
   try {
     const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
+    if (url.protocol === "https:") return true;
+    return url.protocol === "http:" && isLoopbackHostname(url.hostname);
   } catch {
     return false;
   }
+}
+
+function isLoopbackHostname(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  return (
+    host === "localhost" ||
+    host === "::1" ||
+    /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host)
+  );
 }

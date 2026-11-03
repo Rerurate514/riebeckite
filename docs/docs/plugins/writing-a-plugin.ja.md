@@ -114,7 +114,7 @@ export function local() {
 
 `remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-directive`、`remark-gfm` などの基本となるプラグインを、自分で作成するプラグインより先に実行します。そのため、`:::tip` のようなディレクティブ記法や GFM はすでに AST ノードとして渡されます。これらを自分でインストールしたり登録したりする必要はありません。
 
-コンテンツの変換に参加するプラグインは、`processedContentCache` も宣言してください。宣言がなくても動作はしますが、そのサイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。ほかのプラグインのコンテンツに依存しない単独の変換なら `{ version: "1", dependencyMode: "none" }`、ほかのプラグインの出力に依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。
+コンテンツの変換に参加するプラグインは、`processedContentCache` も宣言してください。宣言がなくても動作はしますが、そのサイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。単独の変換なら `{ version: "1", dependencyMode: "none" }`、Core のコンテンツ API を通じた依存なら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。
 
 ## 実践: ディレクティブプラグインを最後まで作る
 
@@ -598,7 +598,7 @@ definePlugin({
 
 `extendMarkdownPipeline` は remark と mdast を直接扱う低レベルな API です。独自の Markdown 構文や複雑な変換が必要なときに使います。
 
-この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、ほかのプラグインの出力に依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換の意味が変わったときに上げてください。プラグインの `options` と変換関数の内容もパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
+この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、Core のコンテンツ API を通じてコンテンツやファイルに依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換の意味が変わったときに上げてください。プラグインの `options` と変換関数の内容もパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
 
 ## プラグインをテストする
 

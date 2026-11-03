@@ -62,6 +62,29 @@ test("build artifact writer leaves the published output untouched until publish"
   }
 });
 
+test("build artifact writer preserves copied cache files when another output is written", async () => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-artifacts-"),
+  );
+  const outputDirectory = path.join(root, "dist");
+  const cachedOutput = path.join(root, "cache.html");
+  try {
+    await fs.writeFile(cachedOutput, "cached");
+    const writer = await createBuildArtifactWriter({ outputDirectory });
+    await writer.copyFileFrom(cachedOutput, "index.html");
+    await writer.write("index.html", "generated");
+    await writer.publish();
+
+    assert.equal(await fs.readFile(cachedOutput, "utf8"), "cached");
+    assert.equal(
+      await fs.readFile(path.join(outputDirectory, "index.html"), "utf8"),
+      "generated",
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test("build artifact writer rejects paths outside its staging directory", async () => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-artifacts-"),

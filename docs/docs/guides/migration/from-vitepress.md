@@ -46,7 +46,7 @@ Map `themeConfig.nav` and `themeConfig.sidebar` to Navigation or Docs plugin dat
 6. **Rebuild presentation and extensions.** Choose a preset/theme, use documented plugins, and implement genuinely site-specific routes or components in the generated HonoX app. Do not copy source theme or extension code as configuration.
 7. **Preserve URLs and navigation.** Start with the default file-to-URL mapping, then use the [[glossary/permalink|Permalink]] plugin's `permalink` and `redirect_from` frontmatter where a legacy path must remain. Use Docs sidebar frontmatter or Navigation configuration for hierarchy.
 8. **Validate and build locally.** Run `npm exec riebeckite check`, `npm exec riebeckite doctor`, and `npm exec riebeckite build`.
-9. **Inspect output.** Use `npm exec riebeckite inspect content --list` and manually test links, assets, drafts, redirects, localized pages, search, and feeds.
+9. **Inspect output.** Use `npm exec -- riebeckite inspect content --list` and manually test links, assets, drafts, redirects, localized pages, search, and feeds.
 10. **Deploy the built site.** Follow the deployment guide for Cloudflare Workers or use the host that serves `dist/`. Set `site.baseUrl` before the production build.
 
 ## Configuration Mapping
@@ -79,7 +79,7 @@ Enable `@riebeckite/plugin-seo` for canonical metadata, sitemap, `robots.txt`, a
 
 ## Common Issues
 
-- **A page is absent:** add `publish: true`, verify `content.directory` and exclusions, then run `npm exec riebeckite inspect content --list`.
+- **A page is absent:** add `publish: true`, verify `content.directory` and exclusions, then run `npm exec -- riebeckite inspect content --list`.
 - **An old URL changed:** use explicit `permalink` or `redirect_from`; keep an ID stable when using rename detection.
 - **Raw template syntax appears:** it is source-specific; replace it with Markdown, a documented plugin, or application code.
 - **Sidebar order differs:** add `sidebar.label` and `sidebar.order` frontmatter and ensure the Docs root is correct.

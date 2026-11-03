@@ -7,6 +7,8 @@ import {
 import type { WebmentionQuery, WebmentionQueryResult } from "./query.js";
 import { urlComparisonKey } from "./url.js";
 
+const MAX_MEMORY_MENTIONS = 1000;
+
 /**
  * In-memory provider for tests, local previews, and provider contract
  * examples. State lives for the lifetime of the process/isolate only.
@@ -17,12 +19,24 @@ export class MemoryWebmentionProvider implements WebmentionProvider {
 
   constructor(initialMentions: readonly WebmentionMention[] = []) {
     for (const mention of initialMentions) {
-      this.#mentions.set(webmentionKey(mention), mention);
+      this.#set(mention);
     }
   }
 
   async store(mention: WebmentionMention): Promise<void> {
-    this.#mentions.set(webmentionKey(mention), mention);
+    this.#set(mention);
+  }
+
+  #set(mention: WebmentionMention): void {
+    const key = webmentionKey(mention);
+    if (
+      !this.#mentions.has(key) &&
+      this.#mentions.size >= MAX_MEMORY_MENTIONS
+    ) {
+      const oldest = this.#mentions.keys().next().value;
+      if (oldest !== undefined) this.#mentions.delete(oldest);
+    }
+    this.#mentions.set(key, mention);
   }
 
   async query(query: WebmentionQuery): Promise<WebmentionQueryResult> {

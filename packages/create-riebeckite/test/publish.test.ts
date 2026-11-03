@@ -51,7 +51,7 @@ test("deploySite runs the unified publish command", async () => {
   assert.deepEqual(calls, [
     {
       command: "npm",
-      args: ["exec", "riebeckite", "publish", "run", "--execute"],
+      args: ["exec", "--", "riebeckite", "publish", "run", "--execute"],
       cwd: "C:/site",
     },
   ]);
@@ -110,7 +110,7 @@ test("formatCloudflareNextSteps prints the publish command", () => {
     [
       "Next steps:",
       "  cd my-site",
-      "  npm exec riebeckite publish run --execute",
+      "  npm exec -- riebeckite publish run --execute",
     ].join("\n"),
   );
 });
@@ -131,8 +131,8 @@ test("packageManagerCommands maps npm and pnpm without hardcoding", () => {
   });
   assert.deepEqual(packageManagerCommands("npm").deploy, {
     command: "npm",
-    args: ["exec", "riebeckite", "publish", "run", "--execute"],
-    label: "npm exec riebeckite publish run --execute",
+    args: ["exec", "--", "riebeckite", "publish", "run", "--execute"],
+    label: "npm exec -- riebeckite publish run --execute",
   });
 });
 
@@ -152,7 +152,7 @@ test("formatDeploymentFailure distinguishes a created project from a failed inst
       "You can retry with:",
       "  cd my-site",
       "  npm install",
-      "  npm exec riebeckite publish run --execute",
+      "  npm exec -- riebeckite publish run --execute",
     ].join("\n"),
   );
 });
@@ -161,7 +161,7 @@ test("formatDeploymentFailure reports a deploy failure without an install retry"
   const commands = packageManagerCommands("npm");
   const failure = new DeploymentFailure(
     "deploy",
-    "npm exec riebeckite publish run --execute exited with code 1.",
+    "npm exec -- riebeckite publish run --execute exited with code 1.",
   );
 
   assert.equal(
@@ -169,9 +169,9 @@ test("formatDeploymentFailure reports a deploy failure without an install retry"
     [
       "Project created successfully.",
       "Deployment failed.",
-      "npm exec riebeckite publish run --execute exited with code 1.",
+      "npm exec -- riebeckite publish run --execute exited with code 1.",
       "You can retry with:",
-      "  npm exec riebeckite publish run --execute",
+      "  npm exec -- riebeckite publish run --execute",
     ].join("\n"),
   );
 });

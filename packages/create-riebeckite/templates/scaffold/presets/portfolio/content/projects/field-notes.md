@@ -1,5 +1,6 @@
 ---
 title: Field notes
+publish: true
 summary: A project page ready for the problem, process, and outcome.
 tags:
   - project

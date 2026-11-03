@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # Asset
-Plugin assets are stylesheets or other static resources declared through the `assets` array; they reach the browser through the integration's stylesheet pipeline and are not copied into `apps/web` directly.
+Plugin assets are stylesheets or other static resources declared through the `assets` array; they reach the browser through the integration's stylesheet pipeline and are not copied into `website` directly.
 
 ## Asset declaration
 ```ts

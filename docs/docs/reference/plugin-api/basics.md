@@ -82,6 +82,7 @@ export function example(options: ExampleOptions = {}) {
   Browser integration   `assets`, `clientEntries`
   HTTP integration      `endpoints`
   SEO                   `seo`
+  Inspector tabs        `inspector`
 
 Use only the extension points a plugin actually needs.
 
@@ -128,7 +129,7 @@ The resolver places providers before consumers and detects missing
 requirements, duplicate providers, and cycles while preserving the numeric
 precedence and unrelated input order where possible. [[glossary/capability|Capability]] resolution failures throw
 `PluginDependencyError` (importable from `@riebeckite/core`); `kind` and
-`pluginName` identify the cause.
+`pluginName` identify the cause, but for `duplicate-provider` and `cycle`, `pluginName` is not set — use `pluginNames` or `chain` instead.
 
 ## Option validation
 
@@ -160,9 +161,12 @@ Specialized hooks add post, manifest, graph, location, or render data.
 type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
   isDevelopment?: boolean;
+  buildTime?: Date;
   contentIndex: Map<string, string>;
   diagnostics: Diagnostic[];
   cache: PluginCache;
+  derived?: DerivedViewRegistry;
+  externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
   output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;

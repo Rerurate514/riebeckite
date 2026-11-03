@@ -111,6 +111,7 @@ id: note-7f4e9b
 ---
 ```
 
-Values must be non-empty, trimmed strings, and each explicit ID must be unique
-within a manifest; invalid or duplicate IDs fail the manifest build rather than
-silently selecting an identity.
+Values must be non-empty, trimmed strings of at most 160 characters, without
+control characters, and each explicit ID must be unique within a manifest;
+invalid or duplicate IDs fail the manifest build rather than silently selecting
+an identity.

@@ -158,7 +158,7 @@ PAT は [GitHub の Settings → Developer settings → Personal access tokens](
   uses: actions/checkout@v4
   with:
     repository: <you>/notes
-    token: ${{ secrets.NOTES_READ_TOKEN }}
+    token: ${{ secrets.RIEBECKITE_CONTENT_READ_TOKEN || github.token }}
     path: notes
 ```
 

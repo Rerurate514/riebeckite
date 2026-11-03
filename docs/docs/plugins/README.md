@@ -150,6 +150,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | Plugin | What it does |
 | --- | --- |
 | [SEO](./seo.md) | Metadata, sitemaps, feeds, and robots.txt |
+| [OG Image](./og-image.md) | Static PNG Open Graph images for public content |
 | [Article Metadata](./article-metadata.md) | Publication dates, reading time, and taxonomy tags for a post |
 | [Deploy](./deploy.md) | Static hosting deployment output |
 | [Permalink](./permalink.md) | Stable, configurable content permalinks |

@@ -9,10 +9,10 @@ const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const staticRoot = path.join(repositoryRoot, "apps/web/dist/static");
+const staticRoot = path.join(repositoryRoot, "website/dist/static");
 const pagePath = path.join(
   repositoryRoot,
-  "apps/web/dist/docs/plugins/calculator.html",
+  "website/dist/docs/plugins/calculator.html",
 );
 
 test("the official runtime keeps its bundle split", async () => {

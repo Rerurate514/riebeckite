@@ -202,3 +202,45 @@ function source(files: Record<string, string | Uint8Array>): ContentSource {
     },
   };
 }
+
+test("exposes transform statistics in Development Inspector", async () => {
+  const cacheDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-inspector-image-"),
+  );
+  const input = await sharp({
+    create: { width: 1000, height: 500, channels: 3, background: "red" },
+  })
+    .png()
+    .toBuffer();
+  const content = new ContentManager(
+    source({
+      "post.md":
+        "---\npublish: true\n---\n![image](images/inspector-photo.png)",
+      "images/inspector-photo.png": input,
+    }),
+    [],
+    {
+      config: resolveConfig({
+        site: { title: "Test" },
+        cache: { directory: cacheDirectory },
+      }),
+      isDevelopment: true,
+      plugins: [imageOptimizer({ widths: [640], formats: ["webp"] })],
+    },
+  );
+  await content.getManifest();
+  const data = content
+    .getCompletedBuildSnapshot()
+    ?.inspectorTabs.find((tab) => tab.id === "image-optimizer")?.data;
+
+  assert.equal(data?.kind, "key-value");
+  if (data?.kind !== "key-value") return;
+  const value = (key: string) =>
+    data.items.find(
+      (item) => (typeof item.key === "string" ? item.key : item.key.en) === key,
+    )?.value;
+  assert.equal(value("Inputs"), 1);
+  assert.equal(value("Generated variants"), 1);
+  assert.equal(value("Cache misses"), 1);
+  assert.equal(value("Skipped"), 0);
+});

@@ -1,8 +1,12 @@
-import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
+import {
+  getThemeStyle,
+  getThemeStylesheets,
+  RiebeckiteHead,
+  ThemeRoot,
+} from "@riebeckite/honox/ui";
 import { createPublicContentView } from "@riebeckite/core";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
-import { SearchBar } from "@riebeckite/plugin-search";
 import { SiteFooter } from "../components/site-header";
 import { content } from "virtual:riebeckite/content";
 import { config } from "virtual:riebeckite/config";
@@ -13,6 +17,7 @@ export const __importing_islands = true;
 
 export default jsxRenderer(async ({ children }, c) => {
   const manifest = await content.getManifest();
+  const themeStyle = getThemeStyle(config.theme);
 
   return (
     <SiteProvider
@@ -25,11 +30,13 @@ export default jsxRenderer(async ({ children }, c) => {
     >
       <ThemeRoot>
         <head>
-          <RiebeckiteHead />
+          <RiebeckiteHead 
+            themeStyle={themeStyle}
+            themeStylesheets={getThemeStylesheets(config.theme.stylesheets)}
+          />
         </head>
         <body class="riebeckite-page rb-site">
           <a class="rb-skip-link" href="#main-content">Skip to main content</a>
-          <SearchBar />
           {children}
           <SiteFooter />
         </body>

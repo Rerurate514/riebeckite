@@ -1,0 +1,11 @@
+export const reportPath = "/__riebeckite/inspector/report";
+export const outputPath = "/__riebeckite/inspector/output";
+export const graphPath = "/__riebeckite/inspector/graph";
+export const pluginsPath = "/__riebeckite/inspector/plugins";
+export const provenancePath = "/__riebeckite/inspector/provenance";
+export const assetsPath = "/__riebeckite/inspector/assets";
+export const tabsPath = "/__riebeckite/inspector/tabs";
+export const bootstrapPath = "/__riebeckite/inspector/bootstrap";
+export const inspectorTokenHeader = "x-riebeckite-inspector-token";
+export const listedOutputLimit = 20;
+export const maximumListedOutputLimit = 100;

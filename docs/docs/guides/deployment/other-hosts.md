@@ -9,7 +9,7 @@ sidebar:
 
 `riebeckite build` writes static files to `dist/`. Any host can serve that folder.
 
-`riebeckite publish run` and `deploy setup` are Cloudflare-only. For other hosts, build `dist/` and upload it yourself.
+`deploy setup` is Cloudflare-specific. `riebeckite publish run` supports Netlify, Vercel, and GitHub Pages.
 
 ## Generate host-specific files
 

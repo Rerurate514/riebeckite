@@ -84,38 +84,48 @@ export function createWebmentionSourceFetcher(
     try {
       let currentUrl = url;
       for (let redirects = 0; ; redirects += 1) {
-        if (
-          !allowPrivateHosts &&
-          (await isBlockedSourceUrl(currentUrl, resolveHostname))
-        ) {
-          return null;
+        const decision: SourceUrlDecision = allowPrivateHosts
+          ? { blocked: false }
+          : await resolveSourceUrl(currentUrl, resolveHostname);
+        if (decision.blocked) return null;
+
+        const dispatcher = await createPinnedDispatcher(decision.pin);
+        try {
+          const response = await globalThis.fetch(currentUrl, {
+            redirect: "manual",
+            signal: controller.signal,
+            headers: {
+              accept: "text/html,application/xhtml+xml",
+              "user-agent": userAgent,
+            },
+            ...(dispatcher === undefined ? {} : { dispatcher }),
+          } as RequestInit);
+
+          if (REDIRECT_STATUSES.has(response.status)) {
+            const location = response.headers.get("location");
+            await cancelBody(response);
+            if (location === null || redirects >= MAX_REDIRECTS) return null;
+            const next = resolveRedirectUrl(location, currentUrl);
+            if (next === null) return null;
+            currentUrl = next;
+            continue;
+          }
+
+          if (!response.ok) {
+            await cancelBody(response);
+            return null;
+          }
+          const contentType = response.headers.get("content-type") ?? "";
+          if (contentType !== "" && !isHtmlContentType(contentType)) {
+            await cancelBody(response);
+            return null;
+          }
+          const html = await readBodyWithinLimit(response, maxBytes);
+          if (html === null) return null;
+          return { url: response.url || currentUrl, html };
+        } finally {
+          await dispatcher?.close().catch(() => undefined);
         }
-
-        const response = await globalThis.fetch(currentUrl, {
-          redirect: "manual",
-          signal: controller.signal,
-          headers: {
-            accept: "text/html,application/xhtml+xml",
-            "user-agent": userAgent,
-          },
-        });
-
-        if (REDIRECT_STATUSES.has(response.status)) {
-          const location = response.headers.get("location");
-          await cancelBody(response);
-          if (location === null || redirects >= MAX_REDIRECTS) return null;
-          const next = resolveRedirectUrl(location, currentUrl);
-          if (next === null) return null;
-          currentUrl = next;
-          continue;
-        }
-
-        if (!response.ok) return null;
-        const contentType = response.headers.get("content-type") ?? "";
-        if (contentType !== "" && !isHtmlContentType(contentType)) return null;
-        const html = await readBodyWithinLimit(response, maxBytes);
-        if (html === null) return null;
-        return { url: response.url || currentUrl, html };
       }
     } catch {
       return null;
@@ -174,35 +184,84 @@ export async function verifyWebmention(input: {
   };
 }
 
+class WebmentionDnsUnavailableError extends Error {}
+
 const defaultResolveHostname: WebmentionHostResolver = async (hostname) => {
-  const { lookup } = await import("node:dns/promises");
-  const records = await lookup(hostname, { all: true });
+  const dns = await import("node:dns/promises").catch(() => null);
+  if (dns === null) throw new WebmentionDnsUnavailableError();
+  const records = await dns.lookup(hostname, { all: true });
   return records.map((record) => record.address);
 };
 
+type SourceAddress = Readonly<{ address: string; family: 4 | 6 }>;
+type SourceUrlDecision = Readonly<{
+  blocked: boolean;
+  pin?: SourceAddress;
+}>;
+
 /**
- * Returns `true` when a source URL must not be fetched because its host is
- * explicitly local, is a disallowed literal address, or resolves to one.
+ * Decides whether a source URL may be fetched and, when DNS was involved, the
+ * address the connection must be pinned to.
  */
-async function isBlockedSourceUrl(
+async function resolveSourceUrl(
   url: string,
   resolveHostname: WebmentionHostResolver,
-): Promise<boolean> {
+): Promise<SourceUrlDecision> {
   const hostname = new URL(url).hostname;
-  if (isDisallowedHostname(hostname)) return true;
+  if (isDisallowedHostname(hostname)) return { blocked: true };
 
   const host = normalizeHostname(hostname);
-  if (isIpAddressLiteral(host)) return false;
+  if (isIpAddressLiteral(host)) {
+    return {
+      blocked: false,
+      pin: { address: host, family: host.includes(":") ? 6 : 4 },
+    };
+  }
 
   let addresses: readonly string[];
   try {
     addresses = await resolveHostname(host);
-  } catch {
-    // No DNS available in this runtime. The hostname check already ran and the
-    // platform may enforce its own egress restrictions.
-    return false;
+  } catch (error) {
+    if (error instanceof WebmentionDnsUnavailableError) {
+      return { blocked: false };
+    }
+    return { blocked: true };
   }
-  return addresses.some((address) => isDisallowedIpAddress(address));
+  if (addresses.length === 0) return { blocked: true };
+  if (addresses.some((address) => isDisallowedIpAddress(address))) {
+    return { blocked: true };
+  }
+
+  const address = addresses[0];
+  if (address === undefined) return { blocked: true };
+  return {
+    blocked: false,
+    pin: { address, family: address.includes(":") ? 6 : 4 },
+  };
+}
+
+type PinnedDispatcher = Readonly<{ close(): Promise<void> }>;
+
+async function createPinnedDispatcher(
+  pin: SourceAddress | undefined,
+): Promise<PinnedDispatcher | undefined> {
+  if (pin === undefined) return undefined;
+  try {
+    const { Agent } = await import("undici");
+    return new Agent({
+      connect: {
+        lookup: (_hostname, options, callback) => {
+          if (options.all) {
+            callback(null, [{ address: pin.address, family: pin.family }]);
+            return;
+          }
+          callback(null, pin.address, pin.family);
+        },
+      },
+    });
+  } catch {
+    return undefined;
+  }
 }
 
 /**

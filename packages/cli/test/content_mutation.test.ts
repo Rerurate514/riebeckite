@@ -3,7 +3,20 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { CliUsageError } from "@riebeckite/core";
 import { runContentMutation } from "../src/commands/content.js";
+
+test("content usage errors use the shared CLI contract", async () => {
+  await assert.rejects(
+    () => runContentMutation({ contentRoot: "." } as never, []),
+    (error: unknown) => {
+      assert.ok(error instanceof CliUsageError);
+      assert.equal(error.code, "CLI_USAGE");
+      assert.equal(error.exitCode, 2);
+      return true;
+    },
+  );
+});
 
 test("a plan that breaks links reports its conflicts and writes nothing", async () => {
   const root = await fs.mkdtemp(

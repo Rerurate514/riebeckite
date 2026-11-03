@@ -12,6 +12,16 @@ import type { ResolvedWebmentionOptions } from "./types.js";
 import { verifyWebmention } from "./verify.js";
 
 const MAX_REQUEST_BODY_BYTES = 64 * 1024;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 30;
+const RATE_LIMIT_MAX_KEYS = 10_000;
+
+type RateLimitBucket = {
+  startedAt: number;
+  count: number;
+};
+
+const rateLimitBuckets = new Map<string, RateLimitBucket>();
 
 type WebmentionRequestBody = Readonly<{
   source?: string;
@@ -33,6 +43,9 @@ export function createWebmentionReceiveHandler(
     }
 
     const { body, headers } = context.request;
+    if (!withinRateLimit(headers)) {
+      return errorResponse(429, "rate_limited", { "retry-after": "60" });
+    }
     if (new TextEncoder().encode(body).byteLength > MAX_REQUEST_BODY_BYTES) {
       return errorResponse(413, "payload_too_large");
     }
@@ -75,6 +88,42 @@ export function createWebmentionReceiveHandler(
  * `application/json` body. Returns `null` for malformed JSON; missing fields
  * are reported separately by the caller.
  */
+function withinRateLimit(headers: Readonly<Record<string, string>>): boolean {
+  const now = Date.now();
+  const key = rateLimitKey(headers);
+  const bucket = rateLimitBuckets.get(key);
+  if (bucket === undefined || now - bucket.startedAt >= RATE_LIMIT_WINDOW_MS) {
+    rateLimitBuckets.set(key, { startedAt: now, count: 1 });
+    if (rateLimitBuckets.size > RATE_LIMIT_MAX_KEYS) pruneRateLimit(now);
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT_MAX_REQUESTS) return false;
+  bucket.count += 1;
+  return true;
+}
+
+function rateLimitKey(headers: Readonly<Record<string, string>>): string {
+  const value =
+    headers["cf-connecting-ip"] ??
+    headers["x-real-ip"] ??
+    headers["x-forwarded-for"];
+  const first = value?.split(",")[0]?.trim();
+  return first === undefined || first === "" ? "unknown" : first;
+}
+
+function pruneRateLimit(now: number): void {
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (now - bucket.startedAt >= RATE_LIMIT_WINDOW_MS) {
+      rateLimitBuckets.delete(key);
+    }
+  }
+  while (rateLimitBuckets.size > RATE_LIMIT_MAX_KEYS) {
+    const oldest = rateLimitBuckets.keys().next().value;
+    if (oldest === undefined) break;
+    rateLimitBuckets.delete(oldest);
+  }
+}
+
 export function parseWebmentionRequestBody(
   body: string,
   headers: Readonly<Record<string, string>>,

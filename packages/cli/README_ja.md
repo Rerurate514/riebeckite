@@ -25,28 +25,51 @@ pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。
 ## 使い方
 
 ```text
+riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets]
+riebeckite create [site | plugin | theme | page-type | component]
+riebeckite theme preview <name> [--port <port>] [--no-open]
+riebeckite plugin dev <path> [--port <port>] [--no-open]
+riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
+riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
+riebeckite deploy setup | deploy workflow [--check] | deploy domain
+riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
+riebeckite content create | edit | delete | move ... [--apply] [--json]
+riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
+riebeckite content apply <plan> --apply [--json]
+riebeckite content recover <journal> --apply [--json]
+riebeckite migrate list | plan [--id <migration>] [--out <path>] | apply [--plan <path>] [--id <migration>] [--apply] | status | history [--limit <n>] | rollback <planId | migrationId> --apply | recover [--journal <path>] --apply [--json]
 riebeckite profile [--full]
-riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build]
-riebeckite create theme [<name>] [--template <id>] [--features <ids>] [--list]
+riebeckite inspect [config | plugins | content [--list] [--path <path-or-permalink>] | graph | build | assets [--list] [--json] | provenance | api [--deprecated] [--json]]
+riebeckite help [command...]
+riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
 ## コマンド
 
 | コマンド | 目的 | ビルド状態を書くか |
 | --- | --- | --- |
+| `init` | プリセットから自己完結したサイトを生成する | いいえ |
+| `create` | サイト、Plugin、Theme、PageType、Component のジェネレーターを実行する | ジェネレーターによる |
+| `theme preview` | ローカルの Theme を隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `plugin dev` | ローカルの Plugin を隔離された HonoX 環境でプレビューする | 一時ファイルのみ |
+| `plugin verify` | サイトに追加する前に、配布可能な Plugin を検査する | いいえ |
 | `dev` | integration の開発ワークフローを起動する | integration による |
 | `check` | アプリの設定、Plugin、capability の解決を検証する | いいえ |
 | `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | いいえ |
+| `upgrade` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` は差分の再利用を行わない | 成功時に書く |
 | `clean` | 管理対象の状態（`.riebeckite/`）を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | いいえ |
+| `deploy` | Cloudflare のワークフローとドメイン設定を用意する。デプロイは行わない | いいえ |
+| `publish` | 公開の計画、状態確認、検証、承認、明示的な実行を行う | 実行を伴うビルドの後で書く |
+| `content` | 明示的なコンテンツ変更を計画し、ジャーナル付きで書き込む | いいえ |
+| `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
-| `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`） | いいえ |
-| `create theme` | 公開 Theme API に沿ったローカル Theme を生成する | ローカルファイルを書き込む |
+| `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`、`assets`、`provenance`、`api`） | いいえ |
 
 `doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) と [Framework Inspector](../../docs/docs/framework/inspector.ja.md) を参照してください。
 

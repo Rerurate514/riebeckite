@@ -25,12 +25,14 @@ export function LocalGraphView(props: LocalGraphViewProps) {
           <p class="rr-local-graph__eyebrow">Local Graph</p>
           <h2>Nearby Notes</h2>
         </div>
-        <a
-          class="rr-local-graph__explorer-link"
-          href={`/explore?note=${encodeURIComponent(graph.currentSlug)}`}
-        >
-          Open in Explorer →
-        </a>
+        {props.showExplorerLink ? (
+          <a
+            class="rr-local-graph__explorer-link"
+            href={`/explore?note=${encodeURIComponent(graph.currentSlug)}`}
+          >
+            Open in Explorer →
+          </a>
+        ) : null}
       </div>
       <GraphView
         document={document}
@@ -45,8 +47,10 @@ export function LocalGraphView(props: LocalGraphViewProps) {
       />
       {graph.truncated ? (
         <p class="rr-local-graph__note">
-          This neighbourhood is large, so the graph stops after 320 nodes. Use
-          the Explorer for the full network.
+          This neighbourhood is large, so the graph stops after 320 nodes.
+          {props.showExplorerLink
+            ? " Use the Explorer for the full network."
+            : null}
         </p>
       ) : null}
     </section>

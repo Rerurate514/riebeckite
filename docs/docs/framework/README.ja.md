@@ -105,7 +105,7 @@ Development では、
 - `pnpm install`
 - root の `pnpm` コマンド
 - `packages/*` の構成
-- `apps/web`
+- `website`
 - Package ごとのテスト
 - Scaffold / External Site の検証
 
@@ -119,9 +119,9 @@ Riebeckite を使ってサイトを作る
     → Getting Started
 ```
 
-`apps/web` は Riebeckite のドキュメントとリファレンスのアプリケーションです。
+`website` は Riebeckite のドキュメントとリファレンスのアプリケーションです。
 
-一般ユーザーが Riebeckite を使うために `apps/web` をコピーしたり、Riebeckite monorepo をクローンしたりする必要はありません。
+一般ユーザーが Riebeckite を使うために `website` をコピーしたり、Riebeckite monorepo をクローンしたりする必要はありません。
 
 ## この章の境界
 

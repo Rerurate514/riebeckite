@@ -7,6 +7,7 @@ import {
   compareOutputPlan,
   createBuildOutputMarker,
   publicationFingerprint as fingerprintPublication,
+  isDeferredGeneratedOutput,
   publicationEntriesFromManifest,
   publicationOutputsFromManifest,
   publicationRedirectsFromManifest,
@@ -44,9 +45,9 @@ import {
 } from "./ssg/inventory.js";
 import {
   decideOutputCacheRejection,
-  decodeOutput,
   loadOutputCacheMetadata,
   type OutputCacheState,
+  resolveOutputCacheEntryPath,
   saveOutputCache,
   validateOutputCache,
 } from "./ssg/output_cache.js";
@@ -511,8 +512,11 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 );
               }
               const writer = artifactWriter;
-              await measure(timingsMs, "outputWrite", async () =>
-                writer.write(path, await decodeOutput(outputCachePath, cached)),
+              await measure(timingsMs, "outputWrite", () =>
+                writer.copyFileFrom(
+                  resolveOutputCacheEntryPath(outputCachePath, cached),
+                  path,
+                ),
               );
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;
@@ -586,10 +590,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         this.info(
           `SSG outputs: ${metrics.renderedOutputCount} rendered · ${metrics.reusedOutputCount} reused · ${metrics.deletedOutputCount} removed`,
         );
-        inspectGeneratedHtmlPages(module, generatedHtml, {
-          warn: (message) => this.warn(message),
-          info: (message) => this.info(message),
-        });
+        const generatedHtmlDiagnostics = inspectGeneratedHtmlPages(
+          module,
+          generatedHtml,
+          {
+            warn: (message) => this.warn(message),
+            info: (message) => this.info(message),
+          },
+        );
+        module.content?.recordFinalHtmlDiagnostics?.(generatedHtmlDiagnostics);
         logGeneratedHtmlAssetDiagnostics(this, generatedHtml);
       } finally {
         await rm(bundleDirectory, { recursive: true, force: true });
@@ -798,10 +807,13 @@ async function emitGeneratedOutputs(
       onShadowed?.(output.path);
       continue;
     }
+    const source = isDeferredGeneratedOutput(output)
+      ? await output.generate()
+      : output.content;
     await emit({
       type: "asset",
       fileName: output.path,
-      source: output.content,
+      source,
     });
     count += 1;
   }

@@ -238,6 +238,24 @@ test("memory provider upserts and queries mentions", async () => {
   assert.equal(all.mentions.length, 2);
 });
 
+test("memory provider bounds its stored mentions", async () => {
+  const provider = new MemoryWebmentionProvider();
+  for (let index = 0; index < 1001; index += 1) {
+    await provider.store(
+      makeMention({ source: `https://source.example/${index}` }),
+    );
+  }
+
+  const all = await provider.query({ type: "all_mentions" });
+  assert.equal(all.mentions.length, 1000);
+  assert.equal(
+    all.mentions.some(
+      (mention) => mention.source === "https://source.example/0",
+    ),
+    false,
+  );
+});
+
 test("receive handler stores a verified mention and returns 202", async () => {
   const provider = new MemoryWebmentionProvider();
   const options = resolveWebmentionOptions({
@@ -332,6 +350,40 @@ test("receive handler reports unavailable storage without store support", async 
     },
   });
   assert.equal(response.status, 503);
+});
+
+test("receive handler rate limits repeated requests", async () => {
+  const provider = new MemoryWebmentionProvider();
+  const options = resolveWebmentionOptions({ provider });
+  const handler = createWebmentionReceiveHandler(options, provider);
+  const request = {
+    method: "POST" as const,
+    url: "https://target.example/webmentions",
+    path: "/webmentions",
+    query: {},
+    headers: {
+      "content-type": "application/x-www-form-urlencoded",
+      "x-forwarded-for": "198.51.100.77",
+    },
+    body: `source=${SOURCE_URL}&target=https://target.example/missing`,
+  };
+
+  for (let index = 0; index < 30; index += 1) {
+    const response = await handler({
+      config: makeConfig(),
+      manifest: makeManifest([makeEntry()]),
+      request,
+    });
+    assert.equal(response.status, 400);
+  }
+
+  const limited = await handler({
+    config: makeConfig(),
+    manifest: makeManifest([makeEntry()]),
+    request,
+  });
+  assert.equal(limited.status, 429);
+  assert.equal(limited.headers?.["retry-after"], "60");
 });
 
 test("feed handler returns mentions with entry summaries", async () => {

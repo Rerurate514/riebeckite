@@ -48,7 +48,7 @@ Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can b
 
 For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.md).
 
-Plugins that participate in content transformation should also declare `processedContentCache`. Without it a plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `{ version: "1", dependencyMode: "none" }` for a standalone transform and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately).
+Plugins that participate in content transformation should also declare `processedContentCache`. Without it a plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `{ version: "1", dependencyMode: "none" }` for a standalone transform and `tracked` when the output depends on content or files through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately).
 
 ## Hands-on: Build a directive plugin from start to finish
 
@@ -518,7 +518,7 @@ definePlugin({
 
 `extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
-This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on other plugins (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
+This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on content or files read through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
 
 ## Testing a plugin
 

@@ -20,9 +20,7 @@
       "@riebeckite/honox": ["packages/integrations/honox/index.ts"],
       "@riebeckite/honox/server": ["packages/integrations/honox/server.ts"],
       "@riebeckite/honox/runtime": ["packages/integrations/honox/runtime.ts"],
-      "@riebeckite/honox-inspector": [
-        "packages/integrations/honox-inspector/index.ts"
-      ],
+      "@riebeckite/dev-inspector": ["packages/dev-inspector/index.ts"],
       "@riebeckite/honox/ui": [
         "packages/integrations/honox/src/ui/primitives.tsx"
       ],
@@ -45,5 +43,5 @@
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]
     }
   },
-  "include": ["./riebeckite.config.ts"]
+  "include": []
 }

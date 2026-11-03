@@ -289,7 +289,7 @@ flowchart LR
     Plugin -. "提供した情報を<br/>サイトが配置" .-> Site
 ```
 
-HonoX、Vite、Cloudflare、ルーティングの API は、このパッケージか `apps/web` に置きます。Core は移植性を保ち、HonoX のルーティングを所有しません。プラグインはアセット、クライアントエントリ、エンドポイント、[[glossary/renderer|レンダラー]]を公開できますが、Core が HonoX のルーターになることはありません。具体的なルート構成や[[glossary/island|アイランド]]はアプリケーションが決めます。
+HonoX、Vite、Cloudflare、ルーティングの API は、このパッケージか `website` に置きます。Core は移植性を保ち、HonoX のルーティングを所有しません。プラグインはアセット、クライアントエントリ、エンドポイント、[[glossary/renderer|レンダラー]]を公開できますが、Core が HonoX のルーターになることはありません。具体的なルート構成や[[glossary/island|アイランド]]はアプリケーションが決めます。
 
 **Core はコンテンツを扱い、統合パッケージは HonoX と接続し、プラグインは機能を提供し、サイトが最終的な表示を決める**、という境界を維持してください。
 

@@ -356,6 +356,10 @@ export class Pipeline {
 
     const processor = unified();
     const plugins = this.resolvePlugins();
+    const markdown = plugins.reduce(
+      (value, plugin) => plugin.preprocessMarkdown?.(value) ?? value,
+      markDownContent,
+    );
     this.use(processor, remarkParse);
     this.use(processor, remarkDirective);
     this.use(processor, remarkFrontmatter, ["yaml", "toml"]);
@@ -437,7 +441,7 @@ export class Pipeline {
     ).tracer.span(
       "content.markdown",
       { embedded: embedDepth > 0 },
-      async () => await processor.process(markDownContent.trim()),
+      async () => await processor.process(markdown.trim()),
     );
 
     const result = {

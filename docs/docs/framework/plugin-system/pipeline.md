@@ -45,7 +45,7 @@ Diagram plugins that share fenced-block, figure, and browser-rendering concerns 
 
 ## 3-7. Content graph and public locations
 
-`extendContentGraph` extends the graph before or after construction within the framework contract. For backlinks or graph features, do not rescan the filesystem yourself — use the existing [[glossary/content-graph|Content Graph]] / [[glossary/manifest|Manifest]] contract.
+`extendContentGraph` extends the graph before `manifestAssembler.build` within the framework contract. There is no "after construction" option. For backlinks or graph features, do not rescan the filesystem yourself — use the existing [[glossary/content-graph|Content Graph]] / [[glossary/manifest|Manifest]] contract.
 
 ```mermaid
 flowchart LR
@@ -123,7 +123,7 @@ assets: [{
 }]
 ```
 
-Do not copy plugin CSS into `apps/web`, and never reference `/node_modules` directly from the browser. The integration resolves the module specifier and delivers it to the browser:
+Do not copy plugin CSS into `website`, and never reference `/node_modules` directly from the browser. The integration resolves the module specifier and delivers it to the browser:
 
 ```mermaid
 flowchart LR

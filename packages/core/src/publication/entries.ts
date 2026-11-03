@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import type { PublishingVisibility } from "../content/publishing.js";
 import type { ContentManifest } from "../types/content_manifest.js";
+import { isDeferredGeneratedOutput } from "../types/generated_output.js";
 
 export type PublicationEntry = {
   readonly slug: string;
@@ -83,7 +84,11 @@ export function publicationOutputsFromManifest(
       path: output.path,
       fingerprint: crypto
         .createHash("sha256")
-        .update(output.content)
+        .update(
+          isDeferredGeneratedOutput(output)
+            ? output.fingerprint
+            : output.content,
+        )
         .digest("hex"),
     }))
     .sort((left, right) => left.path.localeCompare(right.path));

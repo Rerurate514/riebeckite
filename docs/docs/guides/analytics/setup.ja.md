@@ -161,7 +161,7 @@ publicConfig: {
 }
 ```
 
-指定できるのは、サイトからの相対パスか、JSON の `POST` を受け付ける HTTP(S) URL です。
+指定できるのは、サイトからの相対パスか、JSON の `POST` を受け付ける HTTPS URL です。平文 HTTP は localhost だけで許可されます。
 
 `publicConfig` は名前のとおりブラウザへ公開されます。秘密情報を含めないでください。
 

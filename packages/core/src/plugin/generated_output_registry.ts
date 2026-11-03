@@ -1,5 +1,6 @@
 import type {
   ContentAssetOutputInput,
+  DeferredGeneratedOutputInput,
   GeneratedOutput,
   GeneratedOutputInput,
   GeneratedOutputSink,
@@ -17,7 +18,10 @@ export class GeneratedOutputRegistry {
   sinkFor(pluginName: string): GeneratedOutputSink {
     const register = (
       path: string,
-      output: GeneratedOutputInput | ContentAssetOutputInput,
+      output:
+        | GeneratedOutputInput
+        | DeferredGeneratedOutputInput
+        | ContentAssetOutputInput,
     ) => {
       const owner = this.owners.get(path);
       if (owner) {
@@ -28,13 +32,18 @@ export class GeneratedOutputRegistry {
       this.owners.set(path, pluginName);
       this.outputs.push({
         path,
-        content: output.content,
+        ...("generate" in output
+          ? { fingerprint: output.fingerprint, generate: output.generate }
+          : { content: output.content }),
         dependencies: output.dependencies,
         owner: pluginName,
       });
     };
     return {
       emit: (output: GeneratedOutputInput) => {
+        register(normalizeGeneratedOutputPath(output.path), output);
+      },
+      emitDeferred: (output: DeferredGeneratedOutputInput) => {
         register(normalizeGeneratedOutputPath(output.path), output);
       },
       emitAsset: (output: ContentAssetOutputInput) => {

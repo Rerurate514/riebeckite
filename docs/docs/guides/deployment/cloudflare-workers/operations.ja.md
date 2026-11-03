@@ -26,7 +26,7 @@ dist/ を更新
 デプロイ
 ```
 
-`riebeckite publish run --execute` は Wrangler に `dist/` を公開させるだけで、Riebeckite のコンテンツを再ビルドしません。そのため、Riebeckite 側を変更した場合は先に次のコマンドを実行します。
+`riebeckite publish run --execute` は、計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを行います。Riebeckite 側を変更した場合は、まず `npm exec riebeckite build` を実行してコンテンツが最新であることを確認してください。
 
 ```sh
 npm exec riebeckite build
@@ -51,7 +51,7 @@ npm exec -- riebeckite publish run --execute
 | `riebeckite check` | 設定やプラグインを検証する |
 | `riebeckite doctor` | サイト全体の問題を診断する |
 | `riebeckite build` | `dist/` を生成する |
-| `riebeckite publish validate` | デプロイ内容を確認する（内部で Wrangler を呼び出します） |
+| `riebeckite publish validate` | デプロイ内容を確認する |
 | `riebeckite publish run --execute` | Cloudflare Workers へ公開する |
 
 問題が起きた場合は、どの段階で失敗しているかを切り分けます。

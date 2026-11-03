@@ -41,13 +41,13 @@ This is the fastest path to a public site.
 2. Scaffold a site with `Cloudflare Workers` as the deployment choice:
 
    ```sh
-   npx create-riebeckite my-site
+   npx create-riebeckite --cloudflare-workers my-site
    ```
 
-   Choosing `Cloudflare Workers` includes the Wrangler dependency and `wrangler.jsonc` in the generated site, then asks `Deploy now?` after installing dependencies. `Yes` builds and deploys right away; `Later` finishes the scaffold and you run these commands afterwards:
+   Passing `--cloudflare-workers` sets the deployment choice to Cloudflare Workers non-interactively. Without a directory argument the CLI is interactive and asks about deployment; with `--cloudflare-workers` it defaults to that choice. Run these commands afterwards:
 
    ```sh
-   npm run build
+   npm exec riebeckite build
    npm exec -- riebeckite publish run --execute
    ```
 
@@ -126,10 +126,11 @@ npm exec riebeckite deploy setup
 
 The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/publish.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
 
-To inspect the GitHub workflow, access, and deployment secrets without changing them, run:
+Review the generated workflow in `.github/workflows/publish.yml`. To check the GitHub CLI login and repository secrets without changing them, run:
 
 ```sh
-npm exec -- riebeckite doctor --github
+gh auth status
+gh secret list
 ```
 
 ## 3. Advanced: separate content repository

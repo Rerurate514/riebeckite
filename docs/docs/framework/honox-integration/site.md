@@ -41,7 +41,7 @@ request with `resolveRiebeckiteContentRequest(c, content)` from
 context — then chooses its own component tree. When a route needs only route
 resolution, without context assignment or loading the processed content, use the
 lower-level `resolveRiebeckiteRoute(content, c.req.path)`. The reference
-application in `apps/web` is one implementation, not a required layout.
+application in `website` is one implementation, not a required layout.
 
 Plugins provide information and UI fragments; the site decides where they are
 rendered:

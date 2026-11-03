@@ -1,5 +1,6 @@
 ---
 title: Small tools
+publish: true
 summary: A second project with room for details.
 tags:
   - project

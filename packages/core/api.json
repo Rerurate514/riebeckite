@@ -1496,6 +1496,21 @@
       "type": false
     },
     {
+      "name": "InspectorTabData",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "InspectorTabSnapshot",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "InspectorText",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "isApprovalCurrent",
       "value": true,
       "type": false
@@ -2022,6 +2037,16 @@
     },
     {
       "name": "PluginInput",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginInspectorExtension",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginInspectorTab",
       "value": false,
       "type": true
     },

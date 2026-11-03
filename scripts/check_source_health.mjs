@@ -12,7 +12,7 @@ const repositoryRoot = path.resolve(
   "..",
 );
 
-const sourceRoots = ["packages", "apps", "scripts"];
+const sourceRoots = ["packages", "website", "scripts"];
 const sourceExtensions = new Set([
   ".ts",
   ".tsx",
@@ -203,8 +203,8 @@ function packageRootFor(file, root = repositoryRoot) {
     }
     return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : undefined;
   }
-  if (parts[0] === "apps") {
-    return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : undefined;
+  if (parts[0] === "website") {
+    return "website";
   }
   return undefined;
 }
@@ -242,7 +242,7 @@ function forbiddenIntegrationImport(specifier) {
   return (
     specifier === "@riebeckite/cli" ||
     specifier.startsWith("@riebeckite/cli/") ||
-    specifier.startsWith("apps/")
+    specifier === "@riebeckite/web"
   );
 }
 

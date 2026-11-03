@@ -9,16 +9,16 @@ sidebar:
 
 ## `upgrade --check`
 
-Upgrade Lab は更新前の check-only 検証です。プロジェクト、lockfile、`node_modules`、`dist`、`.riebeckite` は更新しません。プロジェクトを一時ディレクトリへ二つ複製し、ライフサイクルスクリプトと pnpmfile を無効にして、現行の依存関係と指定した Riebeckite バージョンを比較します。
+Upgrade Lab はチェック専用の事前検証で、プロジェクト、`node_modules`、`dist`、`.riebeckite` を変更しません。`--check` は互換性のために受け付けられますが、`upgrade` は常にチェックを実行するため省略できます。
 
 ```sh
-pnpm exec riebeckite upgrade --check --to 0.0.33
-pnpm exec riebeckite upgrade --check --to latest --json
+npm exec -- riebeckite upgrade --to 0.0.35
+npm exec -- riebeckite upgrade --to latest --json
 ```
 
 レポートでは依存関係・ peerDependencies ・ Node engines の解決、`tsconfig.json` がある場合の TypeScript 検査、`riebeckite check`、diagnostics、本番のフルビルド、生成 URL、出力ファイルを比較します。`READY` は両環境が成功し、URL と出力ファイルに差分がない状態です。候補版の失敗または差分は `REVIEW REQUIRED`、隔離した依存関係の解決失敗は `BLOCKED`、baseline の失敗や安全に実行できない検査は `UNVERIFIED` です。
 
-対応するのは、`package-lock.json` と `pnpm-lock.yaml` のどちらか一方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製せず、境界を越えずに `UNVERIFIED` を返します。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、信頼できないビルドコードを安全に実行できるわけではありません。
+対応するのは、`package-lock.json` と `pnpm-lock.yaml` のどちらか一方だけがある npm / pnpm プロジェクトです。symlink とプロジェクト外の content root は複製しません。プロジェクト外の content root は境界を越えずに `UNVERIFIED` を返し、symlink の content root は例外となり `BLOCKED` になります。install scripts、pnpmfile、デプロイ、ブラウザー E2E は実行しません。一時ディレクトリはセキュリティ sandbox ではなく、ビルドはサイト自身の設定とプラグインを実行します。子プロセスには実行に必要な PATH、OS の一時ディレクトリ変数、一時的なホームディレクトリ変数、および隔離した npm cache と user config だけを渡します。これにより環境変数の秘密情報が意図せず渡ることは抑えられますが、信頼できないビルドコードを安全に実行できるわけではありません。
 
 ## `init`
 
@@ -52,7 +52,7 @@ npm exec -- riebeckite init --list-presets
 
 ### Feature Packを追加する
 
-`--features <names>` には、任意の Pack をカンマ区切りで指定します。指定できるのは `knowledge`、`diagrams`、`media`、`i18n` です。`none` は Pack を追加しません。プリセットがすでに選んだ Plugin と重複する Pack はエラーになります。
+`--features <names>` には、任意の Pack をカンマ区切りで指定します。指定できるのは `knowledge`、`diagrams`、`media`、`i18n` です。`none` は Pack を追加しません。プリセットがすでに選んだ Plugin と重複する Pack は無視されます。
 
 ```sh
 npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
@@ -95,6 +95,8 @@ npm exec -- riebeckite init my-site --force
 npx create-riebeckite
 ```
 
+フォルダ名を渡すと（例: `npx create-riebeckite my-site --preset starter`）、質問は省略され、依存関係もインストールされません。生成したフォルダで `npm install` を実行してから `check` と `build` を使ってください。
+
 対話モードでは、[[glossary/content-source|コンテンツソース]]を尋ねたあと、デプロイ方法を尋ねます。
 
 | 選択肢 | 生成されるもの |
@@ -106,14 +108,13 @@ npx create-riebeckite
 `Deploy now?` で `Yes` を選ぶと、雛形の生成直後にビルドと `riebeckite publish run --execute` が実行されます。`Later` を選ぶとサイトの生成だけを行い、次のコマンドで公開します。
 
 ```sh
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-サイトを生成したら、依存関係をインストールして設定を確認します。
+サイトを生成したら、設定を確認します。対話式では既定で依存関係がインストールされます。インストールの質問で `No` を選んだ場合は、先に `npm install` を実行してください。
 
 ```sh id="gzg1my"
-npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```
@@ -133,3 +134,5 @@ riebeckite create --help
 ```
 
 スクリプトからは対象を明示してください。`create site` は引数を `create-riebeckite` に渡します。`create plugin` と `create theme` は既存のオプションと非 TTY での検証を維持します。`create page-type` はプラグインの PageType を作成し、`create component` はサイト、プラグイン、テーマの責務境界を守ります。
+
+`create theme` は既定で `--template minimal` を使い、ダークモード、テスト、ドキュメントを有効にします。無効にするには `--no-dark-mode`、`--no-tests`、`--no-docs` を指定します。`create component` の `--target` は既定で `site` です。

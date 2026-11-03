@@ -9,14 +9,11 @@ sidebar:
 
 ## `upgrade --check`
 
-Upgrade Lab is a check-only preflight. It never updates the project, its lockfile,
-`node_modules`, `dist`, or `.riebeckite`. It copies the project twice into a temporary
-directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the
-current dependency set with the requested Riebeckite version.
+Upgrade Lab is a check-only preflight: it does not modify the project, `node_modules`, `dist`, or `.riebeckite`. The `--check` flag is accepted for compatibility, but `upgrade` always runs the check, so it can be omitted. It copies the project twice into a temporary directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the current dependency set with the requested Riebeckite version.
 
 ```sh
-pnpm exec riebeckite upgrade --check --to 0.0.33
-pnpm exec riebeckite upgrade --check --to latest --json
+npm exec -- riebeckite upgrade --to 0.0.35
+npm exec -- riebeckite upgrade --to latest --json
 ```
 
 The report compares dependency/peer/Node-engine resolution, TypeScript checking when
@@ -27,10 +24,11 @@ output-file change was found. `REVIEW REQUIRED` means the candidate differs or f
 means the baseline failed or a check could not safely run.
 
 Only npm and pnpm projects with exactly one of `package-lock.json` or `pnpm-lock.yaml`
-are supported. Symlinks and content roots outside the project are not copied: the
-command returns `UNVERIFIED` rather than crossing that boundary. It does not run package
-install scripts, pnpmfiles, deployment, or browser E2E tests. A temporary directory is
-not a security sandbox; builds still execute the site's own configuration and plugins.
+are supported. Symlinks and content roots outside the project are not copied: symlinked
+content roots throw and become `BLOCKED`, while outside-project content roots return
+`UNVERIFIED`. It does not run install scripts, pnpmfiles, deployment, or browser E2E
+tests. A temporary directory is not a security sandbox; builds still execute the site's
+own configuration and plugins.
 Child processes receive only the path, temporary-directory, and temporary user-home variables needed
 to run, plus an isolated npm cache and user configuration. This reduces accidental environment-secret
 exposure but does not make untrusted build code safe to execute.
@@ -67,7 +65,7 @@ npm exec -- riebeckite init --list-presets
 
 ### Adding feature packs
 
-Use `--features <names>` for a comma-separated set of optional packs: `knowledge`, `diagrams`, `media`, and `i18n`. `none` adds no pack. A pack that duplicates a plugin already selected by the preset is rejected.
+Use `--features <names>` for a comma-separated set of optional packs: `knowledge`, `diagrams`, `media`, and `i18n`. `none` adds no pack. A pack that duplicates a plugin already selected by the preset is ignored/skipped.
 
 ```sh
 npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
@@ -110,6 +108,8 @@ The `create-riebeckite` package runs the same generator through `npx create-rieb
 npx create-riebeckite
 ```
 
+Passing a directory, for example `npx create-riebeckite my-site --preset starter`, skips the prompts and does not install dependencies; run `npm install` in the generated folder before `check` and `build`.
+
 In interactive mode it asks for the content source and then for the deployment:
 
 | Choice | What is generated |
@@ -121,14 +121,13 @@ In interactive mode it asks for the content source and then for the deployment:
 Choosing `Yes` at `Deploy now?` runs the build and `riebeckite publish run --execute` right after scaffolding. Choosing `Later` only generates the site; publish it with:
 
 ```sh
-npm run build
+npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-After generating the site, install dependencies and verify the setup:
+After generating the site, verify the setup. The interactive flow installs dependencies by default; if you answered `No` to the install prompt, run `npm install` first:
 
 ```sh
-npm install
 npm exec riebeckite check
 npm exec riebeckite build
 ```
@@ -148,3 +147,5 @@ riebeckite create --help
 ```
 
 In scripts, select a target explicitly. `create site` passes its arguments to `create-riebeckite`; `create plugin` and `create theme` retain their existing options and non-TTY validation. `create page-type` creates a Plugin PageType; `create component` respects the Site, Plugin, and Theme ownership boundary.
+
+`create theme` defaults to `--template minimal` with dark mode, tests, and documentation enabled; use `--no-dark-mode`, `--no-tests`, or `--no-docs` to disable them. `create component` defaults to `--target site`.

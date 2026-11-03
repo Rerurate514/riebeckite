@@ -6,7 +6,7 @@ title: Source Health Audit
 ## Method
 
 `pnpm check:source-health` parses every non-test TypeScript and JavaScript source
-file under `packages`, `apps`, and `scripts`. It measures physical lines and
+file under `packages`, `website`, and `scripts`. It measures physical lines and
 function bodies with the TypeScript AST, follows runtime imports, and reports:
 
 - files at or above 400 lines (800+ requires a split review)
@@ -143,10 +143,8 @@ The public l10n exports remain available from `l10n.ts`.
 ### CLI interactive parsing
 
 `cli.ts` keeps command dispatch and its error boundary. Interactive command
-argument parsing and usage errors now live in:
-
-- `interactive_command_parser.ts` — page, component, plugin, theme, preview, dev, and verify arguments
-- `cli_usage_error.ts` — shared CLI usage error
+argument parsing and usage errors now live in the shared CLI registry under
+`packages/core/src/cli/`.
 
 ### Icon packs
 

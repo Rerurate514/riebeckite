@@ -7,7 +7,7 @@ sidebar:
 
 # Theme Root
 
-The theme root selector (`[data-theme-root]` or `<html>`) that scopes token and attribute rules to the whole page. Color mode and typography attributes are applied here so the cascade reaches all elements.
+The theme root selector (`.rb-theme-root` or `<html>`) that scopes token and attribute rules to the whole page. Color mode and theme settings are reflected here so the cascade reaches all elements.
 
 ## Selector
 
@@ -24,8 +24,8 @@ ThemeRoot emits the following attributes on `<html>`:
 
 - `data-rb-theme`: Theme identity name (e.g. "riebeckite", "minimal")
 - `data-rb-mode`: Color mode state ("light" / "dark" / omitted for "system")
-- `data-rb-setting-typography`: Typography preset value
-- `data-rb-layout`: Article layout preset value
+- `data-rb-setting-*`: Each resolved theme setting, for example `data-rb-setting-typography`
+- `data-rb-layout`: Article layout value
 
 ## Theme Root UI Component
 The framework provides `ThemeRoot`, a UI primitive from `@riebeckite/honox/ui` that handles setting theme attributes on the `<html>` element. Usage:
@@ -38,10 +38,10 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
   {children}
 </ThemeRoot>
 ```
-`ThemeRoot` renders the `<html>` element with the following attributes: `lang`, `data-rb-theme`, `data-rb-mode`, `data-rb-setting-typography`, and `data-rb-layout`.
+`ThemeRoot` renders the `<html>` element with `lang`, `data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and the resolved `data-rb-setting-*` attributes.
 
 ## Reserved Attributes on `<html>`
-The framework-reserved attributes `data-rb-mode`, `data-rb-theme`, `data-rb-setting-typography`, and `data-rb-layout` cannot be overwritten by the theme's `attributes`. To add custom `<html>` attributes, use the `themeRootAttributes` helper directly:
+Theme settings cannot overwrite the framework-reserved `data-rb-mode`, `data-rb-theme`, and `data-rb-layout`. To add custom `<html>` attributes, use the `themeRootAttributes` helper directly:
 ```tsx
 import { themeRootAttributes } from "@riebeckite/honox/ui";
 <html

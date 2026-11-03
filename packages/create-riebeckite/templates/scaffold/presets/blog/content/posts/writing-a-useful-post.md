@@ -1,5 +1,6 @@
 ---
 title: Writing a useful post
+publish: true
 date: 2026-10-25
 tags: [writing, publishing]
 series: Publishing notes

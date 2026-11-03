@@ -46,7 +46,7 @@ sidebar:
 6. **表示と拡張を作り直します**。 Preset/Theme を選び、公開済み Plugin を設定します。固有の route や component は生成された HonoX アプリケーションに実装します。移行元の Theme／拡張コードを設定としてコピーしません。
 7. **URL とナビゲーションを維持します**。 まずファイル名からの標準 URL を確認し、旧 URL が必要なページだけ [[glossary/permalink|Permalink]] Plugin の `permalink` と `redirect_from` を使います。階層には Docs の sidebar Frontmatter または Navigation 設定を使います。
 8. **ローカルで検証・ビルドします**。 `npm exec riebeckite check`、`npm exec riebeckite doctor`、`npm exec riebeckite build` を実行します。
-9. **出力を確認します**。 `npm exec riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、[[glossary/translation|翻訳]]、検索、feed を手動確認します。
+9. **出力を確認します**。 `npm exec -- riebeckite inspect content --list` を使い、リンク、アセット、draft、redirect、[[glossary/translation|翻訳]]、検索、feed を手動確認します。
 10. **ビルド済みサイトをデプロイします**。 Cloudflare Workers のガイドに従うか、`dist/` を配信するホストを使います。本番ビルド前に `site.baseUrl` を設定します。
 
 ## 設定対応
@@ -79,7 +79,7 @@ Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の UR
 
 ## よくある問題
 
-- **ページが表示されない:** `publish: true`、`content.directory`、exclude を確認し、`npm exec riebeckite inspect content --list` を実行します。
+- **ページが表示されない:** `publish: true`、`content.directory`、exclude を確認し、`npm exec -- riebeckite inspect content --list` を実行します。
 - **旧 URL が変わった:** 明示的な `permalink` または `redirect_from` を使います。rename 検出を使う場合は ID を安定させます。
 - **テンプレート構文がそのまま見える:** 移行元固有の構文です。Markdown、公開済みのプラグイン、アプリコードに置き換えます。
 - **sidebar の順番が違う:** `sidebar.label` と `sidebar.order` を指定し、Docs root を確認します。

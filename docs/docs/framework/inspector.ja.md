@@ -35,7 +35,7 @@ flowchart LR
     I --> F["情報を表示するだけ"]
 ```
 
-インスペクターはこれらの情報を**確認するだけ**で、ビルドや設定の変更は行いません。
+インスペクターはこれらの情報を**確認するだけ**です。位置の解決のためにコンテンツをメモリ上で処理することはありますが、ビルド状態やキャッシュを保存せず、設定も変更しません。
 
 ## 基本的な使い方
 
@@ -45,7 +45,7 @@ flowchart LR
 | --- | --- |
 | `riebeckite inspect config` | 解決済みの設定 |
 | `riebeckite inspect plugins` | 有効になっているプラグイン |
-| `riebeckite inspect content --list` | 公開コンテンツと URL |
+| `riebeckite inspect content --list` | スキャンしたすべてのコンテンツエントリ（下書き・非公開・予約投稿含む） |
 | `riebeckite inspect content --path <path-or-permalink>` | 1件のコンテンツの解決済み識別情報 |
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | インクリメンタルビルドの状態 |
@@ -173,17 +173,64 @@ flowchart TD
 
 ## Development Inspector のタブ
 
-パネルには Overview、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
+パネルには Overview、Content、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。Overview はビルド時間、マニフェストフックの所要時間、キャッシュ利用、遅いプラグインを要約します。Content はスキャンしたエントリの公開状態、エイリアス、リダイレクト、被リンク、未解決リンク、曖昧なリンク先、孤立ページを一覧表示します。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
+
+プラグインは `inspector` フィールドで組み込みタブの後ろにタブを追加できます。
+
+```ts
+export default defineConfig({
+  plugins: [
+    {
+      name: "my-plugin",
+      inspector: {
+        apiVersion: 1,
+        tabs: [
+          {
+            id: "my-plugin.overview",
+            title: { en: "My plugin", ja: "マイプラグイン" },
+            order: 100,
+            collect: () => ({
+              kind: "key-value",
+              items: [{ key: "Status", value: "ready" }],
+            }),
+          },
+        ],
+      },
+    },
+  ],
+});
+```
+
+`collect` は完了した開発ビルドのスナップショット作成時に一度だけ実行され、インスペクターのリクエストごとには実行されません。返せるデータ形式は次のとおりです。
+
+- `{ kind: "key-value", items }`
+- `{ kind: "table", columns, rows }`
+- `{ kind: "json", value }`
+- `{ kind: "error", message }`
+
+これらの形式に含める値は JSON でシリアライズできる必要があります。タブ ID は `^[a-z0-9][a-z0-9._-]*$` に一致し、プラグイン全体で一意である必要があります。タブは `order`、次に ID の順で並び、組み込みタブが常に先頭になります。`collect` が失敗したタブはエラーとして表示され、他のタブには影響しません。
+
+独自の UI を描画する場合は、アプリのルートから解決できるモジュール指定子を `client` に設定します。モジュールは `mount(root, { data, locale })` をエクスポートし、クリーンアップ関数を返せます。
+
+```ts
+export function mount(root: HTMLElement, { data, locale }: { data: unknown; locale: "en" | "ja" }) {
+  root.textContent = JSON.stringify(data);
+  return () => {};
+}
+```
+
+インスペクターは Vite 開発サーバー経由でクライアントを読み込みます。クライアントはページ上で動作するため、プラグインは信頼されたコードとして扱われます。描画先はインスペクターのシャドウルート内にあるため、クライアント側でスタイルを用意してください。インスペクターは専用のアクセストークンをクライアントへ渡しません。クライアントからインスペクターのエンドポイントを直接読み取らないでください。
+
+`inspector` はプラグインの `endpoints` とは無関係です。`endpoints` は生成サイトに HTTP ルートを公開し、`inspector` は開発時だけのパネルにタブを追加します。
 
 ## 読み取り専用の保証
 
 インスペクターは**読み取り専用**です。
 
-インスペクターの実行によってプロジェクトの状態が変わってはいけません。
+位置の解決のためにコンテンツをメモリ上で処理することはありますが、インスペクターの実行によってプロジェクトの永続的な状態が変わってはいけません。
 
 具体的には、次の処理を行いません。
 
-- ビルドの開始
 - インクリメンタル状態の書き込み
 - [[glossary/plugin-cache|プラグインキャッシュ]]の書き込み
 - アセットの生成

@@ -9,9 +9,7 @@ import { gzipSync } from "node:zlib";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const execFileAsync = promisify(execFile);
-const appRequire = createRequire(
-  path.join(root, "apps", "web", "package.json"),
-);
+const appRequire = createRequire(path.join(root, "website", "package.json"));
 const { build, defineConfig } = await import(
   pathToFileURL(appRequire.resolve("vite")).href
 );
@@ -22,8 +20,7 @@ const { default: viteBuild } = await import(
   pathToFileURL(
     path.join(
       root,
-      "apps",
-      "web",
+      "website",
       "node_modules",
       "@hono",
       "vite-build",
@@ -41,8 +38,7 @@ const { riebeckiteVite } = await import(
 );
 const workRoot = path.join(
   root,
-  "apps",
-  "web",
+  "website",
   ".riebeckite",
   "ssg-large-vault-benchmark",
 );

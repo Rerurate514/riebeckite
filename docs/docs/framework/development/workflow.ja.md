@@ -15,7 +15,7 @@ sidebar:
 flowchart TD
     Change["コードを変更"]
     Focus["対象パッケージのテスト / 型検査"]
-    Related["関連するインテグレーション / アプリを確認"]
+    Related["関連するインテグレーション / サイトを確認"]
     Check["pnpm check"]
     Build["pnpm build"]
 
@@ -46,7 +46,7 @@ flowchart TD
     Q -->|"再利用可能な機能"| Plugin["packages/plugins/*"]
     Q -->|"HonoX / Vite との接続"| Integration["packages/integrations/honox"]
     Q -->|"見た目 / CSS"| Theme["packages/themes/*"]
-    Q -->|"ルート / アイランド / サイト UI"| App["apps/web"]
+    Q -->|"ルート / アイランド / サイト UI"| App["website"]
     Q -->|"サイト生成"| Scaffold["create-riebeckite / scaffold"]
 ```
 
@@ -90,7 +90,7 @@ flowchart BT
 特に重要なのは、Core から外側への逆依存を作らないことです。たとえば、Core を次のような具体的な実装に依存させてはいけません。
 
 ```text id="7nxphg"
-apps/web
+website
 packages/plugins/*
 HonoX
 Vite

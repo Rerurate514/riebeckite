@@ -17,7 +17,7 @@ Riebeckite は、Core を中心に[[glossary/plugin|プラグイン]]、イン�
 
 ```mermaid id="p4fcge"
 flowchart BT
-    App["アプリケーション<br/>apps/web"]
+    App["アプリケーション<br/>website"]
     Integration["インテグレーション<br/>packages/integrations/*"]
     CLI["CLI<br/>packages/cli"]
     Plugin["プラグイン<br/>packages/plugins/*"]

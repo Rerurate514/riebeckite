@@ -168,7 +168,8 @@ test("option validation accepts absolute URLs and site-relative paths", () => {
   const provider = new MemoryAnalyticsProvider();
   for (const collectorUrl of [
     "https://analytics.example.com/events",
-    "http://analytics.example.com/events",
+    "http://localhost:8787/events",
+    "http://127.0.0.1:8787/events",
     "/analytics/events",
     "/events",
   ]) {
@@ -187,6 +188,7 @@ test("option validation rejects missing or unsafe collector URLs", () => {
     " /events",
     "trailing-space/ ",
     "//analytics.example.com/events",
+    "http://analytics.example.com/events",
     "ftp://analytics.example.com/events",
     "javascript:alert(1)",
   ]) {

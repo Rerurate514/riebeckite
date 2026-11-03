@@ -122,7 +122,7 @@ test("doctor rejects incompatible or unknown options", () => {
   assert.throws(() => resolveInput(["doctor", "--github"]), /Unknown option/);
 });
 
-test("upgrade accepts only the check-only contract", () => {
+test("upgrade accepts an optional check flag and a required target", () => {
   assert.deepEqual(
     resolveInput(["upgrade", "--check", "--to", "latest", "--json"]).options,
     {
@@ -131,9 +131,14 @@ test("upgrade accepts only the check-only contract", () => {
       json: true,
     },
   );
+  assert.deepEqual(resolveInput(["upgrade", "--to", "latest"]).options, {
+    check: false,
+    to: "latest",
+    json: false,
+  });
   assert.throws(
-    () => resolveInput(["upgrade", "--to", "latest"]),
-    /Missing required option: --check/,
+    () => resolveInput(["upgrade"]),
+    /Missing required option: --to/,
   );
   assert.throws(
     () => resolveInput(["upgrade", "--check", "--to"]),

@@ -73,7 +73,7 @@ HonoX primitives such as `Article`, `ArticleHeader`, `ArticleContent`, `ArticleB
 
 ```tsx
 // Minimal UI composition in a site route
-import { getBacklinks } from "@riebeckite/core";
+import { getBacklinks } from "@riebeckite/plugin-backlinks";
 import { MyComponent } from "@riebeckite/plugin-example";
 
 const view = createPublicContentView(manifest);
@@ -81,7 +81,6 @@ const entry = view.findRoutableBySlug(slug);
 const backlinks = await getBacklinks({ view, slug });
 <article>
   <MyComponent backlinks={backlinks} />
-  <ArticleBody html={entry.html} />
 </article>
 ```
 
@@ -90,7 +89,7 @@ const backlinks = await getBacklinks({ view, slug });
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through
 `assets`. Browser initialization is declared through `clientEntries`
 only when browser JavaScript is genuinely required. Do not copy plugin
-CSS into `apps/web` or expose `/node_modules` directly.
+CSS into `website` or expose `/node_modules` directly.
 
 Use the Core helpers to register the plugin name and the package exports
 together. The module specifier is explicit, so the same API works for official,
@@ -145,15 +144,16 @@ flowchart LR
     Integration --> Browser
 ```
 
-The module specifier must be a subpath exposed by the plugin package's `exports`
-map. For example, a third-party package can use
-`createStyleAsset("example", "@example/plugin/style.css")` and
-`createClientEntry("example", "@example/plugin/client", ...)`. See
-[Distributing a Plugin outside this repository](./distribution.md#distributing-a-plugin-outside-this-repository).
+The module specifier is resolved by the host bundler. It can be a subpath exposed
+by the plugin package's `exports` map, a site-local absolute path (e.g.
+`/extensions/plugin.css`), or a path the bundler can resolve. For example, a
+third-party package can use `createStyleAsset("example", "@example/plugin/style.css")`
+and `createClientEntry("example", "@example/plugin/client", ...)`.
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
 entry's export name is optional and defaults to the module default export. Its
-third argument is an optional JSON value passed to that initializer. It is the
+third argument is an optional export name passed to that initializer. Its
+fourth argument is an optional JSON value passed to that initializer. It is the
 only plugin configuration exposed to browser code (and recorded in the
 manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service

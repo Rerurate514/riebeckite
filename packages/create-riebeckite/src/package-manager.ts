@@ -34,8 +34,8 @@ export function packageManagerCommands(
     install: { command: "npm", args: ["install"], label: "npm install" },
     deploy: {
       command: "npm",
-      args: ["exec", "riebeckite", "publish", "run", "--execute"],
-      label: "npm exec riebeckite publish run --execute",
+      args: ["exec", "--", "riebeckite", "publish", "run", "--execute"],
+      label: "npm exec -- riebeckite publish run --execute",
     },
   };
 }

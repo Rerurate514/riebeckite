@@ -319,12 +319,11 @@ function profileCommand(): CliCommandDefinition {
 function upgradeCommand(): CliCommandDefinition {
   return defineCliCommand({
     id: "upgrade",
-    summary: "Check the installed Riebeckite version.",
+    summary: "Check the installed Riebeckite version against a target.",
     requiresProject: true,
     options: [
       cliBoolean("check", {
         description: "Check for an available upgrade.",
-        required: true,
       }),
       cliString("to", {
         description: "Target version or latest.",

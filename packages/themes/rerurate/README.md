@@ -44,7 +44,7 @@ export default defineConfig({
 | --- | --- | --- |
 | `colorMode` | `"light"`, `"dark"`, `"system"` | Chooses the color mode. `"system"` follows the browser preference. |
 | `layout` | `"article"`, `"sidebar"`, `"full-width"` | Chooses the page layout. |
-| `preset` | — | This theme does not define presets. |
+| `preset` | `reading` | Applies a named set of theme settings before explicit `settings`. |
 | `settings` | object | Overrides the settings listed below. Unknown keys and invalid values are rejected. |
 | `stylesheets` | string array | Loads site-owned stylesheets after the theme CSS. |
 
@@ -67,7 +67,9 @@ Resolution order is schema defaults, then the selected preset, then explicit `se
 
 ## Presets
 
-This theme does not define presets.
+| Preset | Label | Applied settings |
+| --- | --- | --- |
+| `reading` | Reading | `{ typography: "serif" }` |
 
 ## CSS and attributes
 

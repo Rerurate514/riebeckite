@@ -5,7 +5,8 @@
 Receive Webmentions, verify that the source document really links to the
 target, store them through a pluggable provider, and render verified mentions
 near articles. The core plugin contains **no Cloudflare, Worker, database, or
-vendor code** and depends only on `@riebeckite/core`.
+vendor code**; it uses `@riebeckite/core`, `@riebeckite/ui`, and `hono`, plus
+`undici` for pinned DNS connections on Node.
 
 [日本語](./README_ja.md)
 
@@ -76,7 +77,8 @@ curl -i -X POST http://localhost:5173/webmentions \
   `query(query)`. Credentials, database handles, and runtime bindings stay
   inside the adapter and never reach plugin options or generated output.
 - `MemoryWebmentionProvider` is included for tests, local previews, and as a
-  provider contract example. It does not persist across processes/isolates.
+  provider contract example. It does not persist across processes/isolates and
+  keeps at most 1,000 mentions, evicting the oldest first.
 - The plugin declares `endpoints`: `POST {endpoint}` receives a Webmention and
   `GET {endpoint}` returns the verified-mention feed. Route-framework details
   never enter this package; the HonoX integration
@@ -84,8 +86,11 @@ curl -i -X POST http://localhost:5173/webmentions \
 - Verification fetches the source through an injectable
   `WebmentionSourceFetcher`, checks for an outbound link to the target, and
   records lightweight citation metadata (title, excerpt, author, publication
-  date, and `rel`-derived type). The default fetcher blocks loopback and
-  private-network hosts, caps the response size, and times out.
+  date, and `rel`-derived type). The default fetcher accepts only HTTP(S),
+  rejects credentials, limits redirects and response size, times out, rejects
+  loopback and private-network hosts after DNS resolution, fails closed when DNS
+  resolution fails, and pins the validated address for the connection. On
+  runtimes without a DNS module, hostname and literal-IP checks still apply.
 
 ## Production storage
 
@@ -126,6 +131,13 @@ for production.
 Rejection codes: `invalid_request`, `missing_source_or_target`,
 `target_not_found`, `invalid_source`, `invalid_target`, `source_unreachable`,
 `no_link_found`.
+
+`POST` returns `413` with `payload_too_large` for bodies over 64 KiB. The
+endpoint also allows 30 requests per minute per client, using the first
+available proxy header (`cf-connecting-ip`, `x-real-ip`, or `x-forwarded-for`)
+or a shared `unknown` bucket, and returns `429` with `Retry-After: 60` beyond
+that. The limit is per process/isolate and is only a best-effort defense; add
+authentication or edge rate limiting for public deployments.
 
 ## Rendering
 

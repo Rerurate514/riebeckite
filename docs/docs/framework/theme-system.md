@@ -22,14 +22,14 @@ If you are new, read [your first theme](../themes/writing-a-theme.md) first, and
 
 ## 1. What a theme can and cannot do
 
-A [[glossary/theme|theme]] is the **presentation layer**. It changes tokens, stylesheet rules, and theme-specific `data-*` attributes. It does not change content semantics or application structure.
+A [[glossary/theme|theme]] is the **presentation layer**. It changes tokens, stylesheet rules, and theme settings reflected as `data-rb-setting-*` attributes. It does not change content semantics or application structure.
 
 | Can | Cannot |
 | --- | --- |
 | Override or add tokens | Component replacement |
 | Define stylesheet rules | JSX injection |
-| Declare theme-specific `data-*` attributes | Route additions |
-| Declare color mode / typography / layout presets | Adding or removing plugins |
+| Declare theme-specific settings as `data-rb-setting-*` attributes | Route additions |
+| Declare color mode and layout options | Adding or removing plugins |
 | Provide the final override through `stylesheets` | Client script execution |
 | Style stable hooks | DOM transformation, island registration, filesystem access, [[glossary/content-manager|ContentManager]] access |
 
@@ -62,29 +62,38 @@ Keep the boundary: do not write a plugin just to change appearance, and do not e
 
 ## 2. The defineTheme contract
 
-`defineTheme` is imported from `@riebeckite/core`. A theme's main contract has five areas.
+`defineTheme` is imported from `@riebeckite/core`. A theme definition has four parts.
 
 | Area | Contents |
 | --- | --- |
 | Identity | `name` |
-| Factory options | `options` |
 | Styles | `styles[].moduleSpecifier` |
-| Common config | `colorMode`, `typography`, `layout`, `tokens`, `stylesheets` |
-| Attributes | safe `data-*` attributes |
+| Settings | optional `settings` schema |
+| Presets | optional named setting presets |
 
 ```ts
-import { defineTheme } from "@riebeckite/core";
+import { defineTheme, defineThemeSettings } from "@riebeckite/core";
 
-export function exampleTheme() {
-  return defineTheme({
-    name: "example",
-    options: { /* theme-specific options */ },
-    styles: [
-      { moduleSpecifier: "@riebeckite/theme-example/style.css" },
-    ],
-    attributes: { "data-example-flag": "on" },
-  });
-}
+export const exampleTheme = defineTheme({
+  name: "example",
+  styles: [
+    { moduleSpecifier: "@riebeckite/theme-example/style.css" },
+  ],
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
+    },
+  }),
+  presets: {
+    compact: { label: "Compact", settings: { density: "compact" } },
+  },
+});
 ```
 
 `styles[].moduleSpecifier` is a module specifier resolved by the host bundler. It is not a contract for copying filesystem paths into the application.
@@ -93,11 +102,11 @@ Pass it to `theme` in the site config:
 
 ```ts
 export default defineConfig({
-  theme: exampleTheme(),
+  theme: exampleTheme({ colorMode: "system", layout: "article" }),
 });
 ```
 
-That is the minimal setup.
+The call accepts `ThemeOptions`: `colorMode`, `layout`, `preset`, `settings`, and `stylesheets`. Resolution order is schema defaults, then a preset, then explicit settings.
 
 ### 2-1. In-site themes
 
@@ -114,50 +123,56 @@ site/
 // site/extensions/local-theme.ts
 import { defineTheme } from "@riebeckite/core";
 
-export function localTheme() {
-  return defineTheme({
-    name: "site-local",
-    styles: [
-      { moduleSpecifier: "/extensions/theme.css" },
-    ],
-    attributes: { "data-site-local": "on" },
-  });
-}
+export const localTheme = defineTheme({
+  name: "site-local",
+  styles: [
+    { moduleSpecifier: "/extensions/theme.css" },
+  ],
+});
 ```
 
-An in-site theme's `name`, `styles`, `attributes`, and `tokens` go through the same `resolveThemeOptions` path (resolution, sanitization, application) as a published theme.
+An in-site theme uses the same `defineTheme` definition and resolution path as a published theme.
 
-## 7. Theme factory options
+## 7. Theme-specific settings
 
-Resolve theme-specific options inside the theme package. Do not grow Core's `ThemeOptions` with them.
+Do not grow Core's `ThemeOptions` with theme-specific fields. Declare them in the theme's settings schema instead.
 
 ```ts
-type NewspaperOptions = {
-  density?: "compact" | "comfortable";
-};
-
-export function newspaperTheme(options: NewspaperOptions = {}) {
-  return defineTheme({
-    name: "newspaper",
-    options,
-    attributes: {
-      "data-newspaper-density": options.density ?? "comfortable",
+export const newspaperTheme = defineTheme({
+  name: "newspaper",
+  styles: [
+    { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
+  ],
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
     },
-    styles: [
-      { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
-    ],
-  });
-}
+  }),
+});
 ```
 
-Theme-specific options matter only when that theme is selected; they never leak into Core or other themes.
+Use the setting when selecting the theme:
+
+```ts
+export default defineConfig({
+  theme: newspaperTheme({ settings: { density: "compact" } }),
+});
+```
+
+Settings are reflected as `data-rb-setting-*` attributes and, for color and numeric settings, as `--rb-setting-*` custom properties. Theme-specific settings never leak into Core or other themes.
 
 ```text
 newspaper density
-  -> owned by newspaperTheme
+  -> owned by newspaperTheme's settings schema
 
 tokyonight neon
-  -> owned by tokyonightTheme
+  -> owned by tokyonightTheme's settings schema
 ```
 
 ## Principles for building a theme

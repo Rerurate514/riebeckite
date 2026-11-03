@@ -46,7 +46,7 @@ export default defineConfig({
 | --- | --- | --- |
 | `colorMode` | `"light"`、`"dark"`、`"system"` | カラーモードを選びます。`"system"` はブラウザの設定に従います。 |
 | `layout` | `"article"`、`"sidebar"`、`"full-width"` | ページレイアウトを選びます。 |
-| `preset` | — | このテーマにはプリセットがありません。 |
+| `preset` | `reading` | 明示した `settings` より先に、名前付きのテーマ設定セットを適用します。 |
 | `settings` | object | 下記の設定を上書きします。不明なキーや不正な値は拒否されます。 |
 | `stylesheets` | string array | テーマ CSS の後にサイト固有のスタイルシートを読み込みます。 |
 
@@ -66,7 +66,9 @@ export default defineConfig({
 
 ## プリセット
 
-このテーマにはプリセットがありません。
+| プリセット | ラベル | 適用する設定 |
+| --- | --- | --- |
+| `reading` | Reading | `{ typography: "serif" }` |
 
 ## CSS と属性
 

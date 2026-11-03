@@ -411,6 +411,22 @@ test("manifest generated outputs contribute stable fingerprints", () => {
   );
 });
 
+test("deferred generated outputs use their plan fingerprint", () => {
+  const outputs = publicationOutputsFromManifest({
+    generatedOutputs: [
+      {
+        path: "image.png",
+        fingerprint: "stable-render-plan",
+        generate: () => new Uint8Array(),
+        owner: "plugin",
+      },
+    ],
+  } as never);
+
+  assert.equal(outputs[0]?.path, "image.png");
+  assert.notEqual(outputs[0]?.fingerprint, "stable-render-plan");
+});
+
 test("the build output marker round-trips with its publication fingerprint", () => {
   const marker = createBuildOutputMarker({
     outputDirectory: "/site/dist",

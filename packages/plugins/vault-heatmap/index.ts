@@ -39,6 +39,9 @@ export type {
 
 export const VAULT_HEATMAP_PLUGIN_NAME = "vault-heatmap";
 
+const DEFAULT_CREATED_FIELDS = ["created", "date", "published"] as const;
+const DEFAULT_MODIFIED_FIELDS = ["modified", "updated"] as const;
+
 export function vaultHeatmap(options: VaultHeatmapOptions = {}) {
   const resolved = resolveVaultHeatmapOptions(options);
   const runtime = createVaultHeatmapRuntime(resolved);
@@ -81,8 +84,17 @@ function resolveVaultHeatmapOptions({
   weeks = 52,
   title = "Vault activity",
   weekStart = "sunday",
+  createdFields = DEFAULT_CREATED_FIELDS,
+  modifiedFields = DEFAULT_MODIFIED_FIELDS,
 }: VaultHeatmapOptions): Required<VaultHeatmapOptions> {
-  return { language, weeks, title, weekStart };
+  return {
+    language,
+    weeks,
+    title,
+    weekStart,
+    createdFields: [...createdFields],
+    modifiedFields: [...modifiedFields],
+  };
 }
 
 function validateVaultHeatmapOptions(
@@ -131,6 +143,29 @@ function validateVaultHeatmapOptions(
       message: 'must be "sunday" or "monday"',
     });
   }
+  validateFields("createdFields", options.createdFields, issues);
+  validateFields("modifiedFields", options.modifiedFields, issues);
 
   return issues;
+}
+
+function validateFields(
+  path: "createdFields" | "modifiedFields",
+  value: readonly string[] | undefined,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!Array.isArray(value)) {
+    issues.push({ path, message: "must be an array of property names" });
+    return;
+  }
+  if (
+    value.some((field) => typeof field !== "string" || !field.trim()) ||
+    new Set(value).size !== value.length
+  ) {
+    issues.push({
+      path,
+      message: "must contain unique, non-empty property names",
+    });
+  }
 }

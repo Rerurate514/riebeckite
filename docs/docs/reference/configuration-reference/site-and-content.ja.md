@@ -100,6 +100,7 @@ type ContentSource = {
 type ContentSourceEntry = {
   path: string;
   metadata?: {
+    createdAt?: number;
     modifiedAt?: number;
     size?: number;
     etag?: string;
@@ -140,6 +141,7 @@ content: {
 | `*` | 1つのパス区間の中で複数文字に一致 |
 | `**` | ディレクトリをまたいで一致 |
 | `?` | 任意の1文字に一致 |
+| | `exclude: ["drafts"]` は `drafts.md` と一致します |
 
 `exclude` で除外されたファイルは、Riebeckite のコンテンツ処理そのものに入りません。
 

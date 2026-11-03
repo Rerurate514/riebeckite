@@ -41,13 +41,13 @@ Content Repository の分離
 2. デプロイ先に `Cloudflare Workers` を選んで、サイトを生成します。
 
    ```bash
-   npx create-riebeckite my-site
+   npx create-riebeckite --cloudflare-workers my-site
    ```
 
-   `Cloudflare Workers` を選ぶと、生成されるサイトに Wrangler の依存と `wrangler.jsonc` が含まれます。依存関係のインストール後に `Deploy now?` と確認されます。`Yes` ならその場でビルドとデプロイまで実行されます。`Later` の場合は生成だけを終え、後から次を実行します。
+   `--cloudflare-workers` フラグを渡すとデプロイ選択を Cloudflare Workers に非対話的に設定します。ディレクトリ引数なしでは CLI が対話的にデプロイについて尋ねます。`--cloudflare-workers` を指定すると既定でその選択になります。
 
    ```bash
-   npm run build
+   npm exec riebeckite build
    npm exec -- riebeckite publish run --execute
    ```
 
@@ -126,10 +126,11 @@ npm exec riebeckite deploy setup
 
 このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みのシークレットは検出され、そのまま維持されます。
 
-GitHub のワークフロー、アクセス、デプロイ用シークレットを変更せずに確認するには、次を実行します。
+生成されたワークフローは `.github/workflows/publish.yml` で確認できます。GitHub CLI のログインとリポジトリのシークレットを変更せずに確認するには、次を実行します。
 
 ```bash
-npm exec -- riebeckite doctor --github
+gh auth status
+gh secret list
 ```
 
 ## 3. 応用: コンテンツを別リポジトリに分ける

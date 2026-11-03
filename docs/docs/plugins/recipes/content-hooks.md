@@ -13,7 +13,7 @@ Content hooks let a plugin observe or modify the build without replacing the Mar
 | --- | --- | --- |
 | `onConfigResolved` | After the site config is resolved, before locations | Read `site.baseUrl`, locale, or options |
 | `onContentLoaded` | After a Markdown file is read, before parsing | Validate raw source |
-| `onPostParsed` | After frontmatter and Markdown are parsed | Adjust the parsed post |
+| `onPostParsed` | After the Markdown/HTML pipeline (same phase as `onPostProcessed`) | Adjust the parsed post |
 | `onPostProcessed` | After the Markdown/HTML pipeline | Modify final post HTML |
 | `onManifestCreated` | After entries, links, and pages are assembled | Add head tags, inspect the whole site |
 

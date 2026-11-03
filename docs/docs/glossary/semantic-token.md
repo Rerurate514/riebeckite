@@ -35,7 +35,7 @@ Plugin-specific meaning tokens use the `--rr-` prefix and fall back to `--rb-` w
 ```
 
 ## Token CSS Variable Naming
-Token names are converted to kebab-case CSS variables: `borderStrong` becomes `--rb-color-border-strong`, `bodyFont` becomes `--rb-font-body`, and so on. The CSS custom property name follows the pattern `--rb-<group>-<token>` where group is one of `color`, `typography`, or `layout`.
+Token names are converted to kebab-case CSS variables: `borderStrong` becomes `--rb-color-border-strong`, `bodyFont` becomes `--rb-font-body`, and so on. The CSS custom property name follows the pattern `--rb-<group>-<token>` where group is `color` or `layout`. Typography tokens use the pattern `--rb-font-<token>` (e.g., `--rb-font-body`, `--rb-font-heading`, `--rb-font-mono`), without a group prefix.
 
 ## Related terms
 - [[design-token|Design Token]]

@@ -23,12 +23,12 @@ test("renders a static fallback and the comparison stage", () => {
   assert.ok(html.includes('class="rr-image-compare__stage"'));
   assert.ok(
     html.includes(
-      'class="rr-image-compare__image rr-image-compare__image--before"',
+      'class="rr-image-compare__layer rr-image-compare__layer--before"><img class="rr-image-compare__image rr-image-compare__image--before" src="/before.png" alt="Before &lt;state&gt;" loading="eager"',
     ),
   );
   assert.ok(
     html.includes(
-      'class="rr-image-compare__layer"><img class="rr-image-compare__image rr-image-compare__image--after"',
+      'class="rr-image-compare__layer rr-image-compare__layer--after"><img class="rr-image-compare__image rr-image-compare__image--after" src="/after.png" alt="After" loading="eager"',
     ),
   );
   assert.ok(html.includes('type="range"'));

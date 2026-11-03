@@ -10,7 +10,10 @@ import {
   remarkObsidianTag,
   type TagOptions,
 } from "./src/remark_obsidian_tag.js";
-import { remarkObsidianWikilink } from "./src/remark_obsidian_wikilink.js";
+import {
+  escapeWikilinkAliasPipesInTables,
+  remarkObsidianWikilink,
+} from "./src/remark_obsidian_wikilink.js";
 
 export type { CalloutOptions } from "./src/remark_obsidian_callout.js";
 export type { TagOptions } from "./src/remark_obsidian_tag.js";
@@ -32,10 +35,11 @@ export function obsidianMarkdown(options: ObsidianMarkdownOptions = {}) {
     name: PLUGIN_NAME,
     order: -20,
     processedContentCache: {
-      version: "obsidian-markdown-v5",
+      version: "obsidian-markdown-v6",
       dependencyMode: "tracked",
     },
     options,
+    preprocessMarkdown: escapeWikilinkAliasPipesInTables,
     assets: [
       createStyleAsset(
         PLUGIN_NAME,

@@ -21,7 +21,9 @@ an embedded preview:
 ```
 
 `<name>` is the theme's identity name: `riebeckite` for the default theme,
-otherwise one of `minimal`, `gruvbox`, `sakura`, `tokyonight`, `rerurate`.
+otherwise one of `editorial`, `fieldnotes`, `folio`, `garden`, `gruvbox`,
+`minimal`, `module`, `rerurate`, `sakura`, `signal`, `technical`, `terminal`,
+or `tokyonight`.
 
 - On a real site the app sets `data-rb-theme` on `<html>`, so the `:root`
   branch matches the document root.
@@ -56,35 +58,46 @@ carry the same prefix:
   :is(:root, .rb-theme-root)[data-rb-theme="<name>"]:not([data-rb-mode]) { /* system */ }
 }
 :is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-setting-typography="serif"] { /* typography */ }
-:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-tokyonight-neon="on"] { /* theme option */ }
+:is(:root, .rb-theme-root)[data-rb-theme="<name>"][data-rb-setting-neon="true"] { /* theme setting */ }
 :is(:root, .rb-theme-root)[data-rb-theme="<name>"] :focus-visible { /* element/pseudo */ }
 ```
 
 The app provides `data-rb-theme`; a preview container only needs the
 `.rb-theme-root` hook and the matching name.
 
-## 4. Color mode, attributes, and options in detail
+## 4. Theme settings and attributes
 
-Beyond the contract in 3-1, theme-specific options can be passed to CSS through safe `data-*` attributes.
+Theme-specific options are declared in the theme's settings schema; they are not passed as arbitrary attributes in `defineTheme`.
 
 ```ts
-return defineTheme({
+export const newspaperTheme = defineTheme({
   name: "newspaper",
-  attributes: {
-    "data-newspaper-density": "compact",
-  },
+  styles: [
+    { moduleSpecifier: "@riebeckite/theme-newspaper/style.css" },
+  ],
+  settings: defineThemeSettings({
+    density: {
+      type: "select",
+      label: "Density",
+      default: "comfortable",
+      options: [
+        { value: "comfortable", label: "Comfortable" },
+        { value: "compact", label: "Compact" },
+      ],
+    },
+  }),
 });
 ```
 
-The attribute can then be targeted from CSS:
+The resolved settings are reflected on the theme root as safe `data-rb-setting-*` attributes:
 
 ```css
-:is(:root, .rb-theme-root)[data-rb-theme="newspaper"][data-newspaper-density="compact"] {
+:is(:root, .rb-theme-root)[data-rb-theme="newspaper"][data-rb-setting-density="compact"] {
   /* ... */
 }
 ```
 
-The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely. It keeps the namespace of framework-owned attributes separate from theme-specific ones.
+The theme API is not designed to modify `class`, `style`, `id`, or `lang` freely. The framework owns `data-rb-theme`, `data-rb-mode`, and `data-rb-layout`; theme settings use the separate `data-rb-setting-*` namespace.
 
 ## Theme Root and themeRootAttributes
 
@@ -113,12 +126,12 @@ import { ThemeRoot } from "@riebeckite/honox/ui";
 >
 ```
 
-The framework uses `themeRootAttributes(theme)` to emit the theme's own `attributes` plus reserved attributes:
+The framework uses `themeRootAttributes(theme)` to emit the resolved settings plus reserved attributes:
 
 - `data-rb-mode`: [[glossary/color-mode|Color Mode]] state (`"light"` / `"dark"` / omitted for "system")
 - `data-rb-theme`: [[glossary/theme|Theme]] identity name
-- `data-rb-setting-typography`: [[glossary/typography|Typography]] preset value
-- `data-rb-layout`: Article layout preset value
+- `data-rb-setting-*`: each resolved theme setting, for example `data-rb-setting-typography`
+- `data-rb-layout`: Article layout value
 
 To add your own `<html>` attributes, use the `themeRootAttributes` helper directly instead of `ThemeRoot`:
 
@@ -134,6 +147,6 @@ import { themeRootAttributes } from "@riebeckite/honox/ui";
 </html>
 ```
 
-However, the framework-reserved `data-rb-mode`, `data-rb-theme`, `data-rb-setting-typography`, and `data-rb-layout` cannot be overwritten by the theme's `attributes`.
+Theme settings cannot overwrite the framework-reserved `data-rb-mode`, `data-rb-theme`, or `data-rb-layout`.
 
 If a plugin or theme previously implemented its own `themeAttributes()`, consider migrating to the framework-provided `ThemeRoot` / `themeRootAttributes()`. This clarifies the separation between framework-owned and theme-specific attribute namespaces.

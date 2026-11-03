@@ -6,6 +6,7 @@ import {
   assertDeclaredDependencies,
   assertIsolatedInstall,
   assertNoMonorepoEscapeHatches,
+  assertPackedInstall,
   assertPublishedArtifacts,
   type RequiredInstallPath,
 } from "./assertions.js";
@@ -184,6 +185,11 @@ export async function runExternalSiteE2E(
     });
     assertPublishedArtifacts(siteDir, {
       repoRoot: config.repoRoot,
+      scope: config.scope,
+      logger,
+    });
+    assertPackedInstall(siteDir, {
+      packed,
       scope: config.scope,
       logger,
     });

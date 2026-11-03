@@ -13,10 +13,12 @@ export {
   type AssertDeclaredDependenciesOptions,
   type AssertIsolatedInstallOptions,
   type AssertNoMonorepoEscapeHatchesOptions,
+  type AssertPackedInstallOptions,
   type AssertPublishedArtifactsOptions,
   assertDeclaredDependencies,
   assertIsolatedInstall,
   assertNoMonorepoEscapeHatches,
+  assertPackedInstall,
   assertPublishedArtifacts,
   type RequiredInstallPath,
 } from "./assertions.js";

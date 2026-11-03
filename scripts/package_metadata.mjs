@@ -765,6 +765,18 @@ export function expectedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/og-image") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs && node copy_fonts.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (
     directory === "packages/preview" ||
     directory === "packages/spa" ||

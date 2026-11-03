@@ -35,6 +35,7 @@ const riebeckiteVersion = (
 export type RiebeckiteBridgeOptions = {
   token?: string;
   mutationToken?: string;
+  mutationApprovalToken?: string;
   contentRoot?: string | (() => string);
   getSnapshot: (
     server: ViteDevServer,
@@ -93,7 +94,13 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
         try {
           const snapshot = await options.getSnapshot(server);
           if (request.method === "POST") {
-            if (!options.mutationToken || options.mutationToken.length < 32) {
+            if (
+              !options.mutationToken ||
+              options.mutationToken.length < 32 ||
+              !options.mutationApprovalToken ||
+              options.mutationApprovalToken.length < 32 ||
+              options.mutationToken === options.mutationApprovalToken
+            ) {
               response.statusCode = 404;
               response.end();
               return;
@@ -109,7 +116,10 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
               );
               return;
             }
-            mutations ??= createBridgeMutationStore(contentRoot);
+            mutations ??= createBridgeMutationStore(
+              contentRoot,
+              options.mutationApprovalToken,
+            );
             await bridgeMutationResponse(
               request,
               response,
@@ -263,28 +273,16 @@ async function bridgeMutationResponse(
     response.end();
     return;
   }
-  const match =
-    /^\/__riebeckite\/bridge\/v1\/mutations\/([^/]+)\/(approve|apply)$/.exec(
-      path,
-    );
+  const match = /^\/__riebeckite\/bridge\/v1\/mutations\/([^/]+)\/apply$/.exec(
+    path,
+  );
   if (!match) {
     response.statusCode = 404;
     response.end();
     return;
   }
-  const [, planId, action] = match;
-  const result =
-    action === "approve"
-      ? mutations.approve(planId)
-      : await mutations.apply(
-          planId,
-          typeof body.approvalId === "string" ? body.approvalId : "",
-        );
-  if (!result) {
-    response.statusCode = 409;
-    response.end(JSON.stringify({ code: "PLAN_NOT_APPROVABLE" }));
-    return;
-  }
+  const [, planId] = match;
+  const result = await mutations.apply(planId);
   response.setHeader("content-type", "application/json; charset=utf-8");
   response.end(JSON.stringify(result));
 }

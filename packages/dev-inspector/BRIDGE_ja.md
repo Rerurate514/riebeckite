@@ -29,8 +29,8 @@ Preview は公開境界を越えません。公開可能な経路を持たない
 
 プライベートリスナーは `127.0.0.1` だけに bind し、非 loopback の Host・接続、`Origin`、転送ヘッダーを拒否します。CORS は有効にしません。トークンを API 応答に含めることもありません。トークン不正は 403、Protocol 非互換は `INCOMPATIBLE_PROTOCOL` と対応 Version を含む 426 です。
 
-変更APIは、読み取りトークンに加えて32文字以上の `--bridge-mutation-token` を明示した場合だけ有効です。読み取りトークンはPlanの作成にしか使えず、承認・適用には使えません。Planはサーバー内に固定され、Mutationトークンで承認すると5分間だけ一回限りの承認IDが発行されます。Applyは既存のfingerprint、lock、journal、backup、パス検証を利用します。
+変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。読み取りトークンは Plan を作成できるだけです。Mutation Token は承認済み Plan を適用できますが、承認できません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。
 
-RecoveryとRollbackは、破壊操作用の独立した承認契約が未完成のためBridgeには公開せず、CLI専用のままです。
+Recovery と Rollback は CLI 専用のままです。journal と backup を使ってコンテンツを復元・削除する破壊操作であり、エディタ Capability に journal 選択を公開すると別の破壊 API になります。既存の `riebeckite content recover <journal> --apply` は Engine 側の journal、backup、fingerprint、パス、競合検証を維持します。
 
 将来の互換変更では任意フィールドと Capability だけを追加します。v1 のフィールドを変更・削除する変更は、新しい Protocol Version と endpoint を使います。

@@ -151,6 +151,7 @@ function definitions(): readonly CliCommandDefinition[] {
     pluginDevCommand(),
     pluginVerifyCommand(),
     contentCommand(),
+    bridgeApproveCommand(),
     migrateGroupCommand(),
     ...MIGRATE_ACTIONS.map(migrateActionCommand),
     publishGroupCommand(),
@@ -174,26 +175,18 @@ function devCommand(): CliCommandDefinition {
         description:
           "Enable the local Bridge API with this pairing token (at least 32 characters).",
       }),
-      cliString("bridge-mutation-token", {
-        description:
-          "Enable explicitly approved Bridge content mutations with a separate token (at least 32 characters).",
-      }),
     ],
     examples: [cliExample("riebeckite dev")],
     validate(input) {
       const token = input.options.bridgeToken;
-      const mutationToken = input.options.bridgeMutationToken;
       return typeof token === "string" && token.length < 32
         ? "--bridge-token must be at least 32 characters."
-        : typeof mutationToken === "string" && mutationToken.length < 32
-          ? "--bridge-mutation-token must be at least 32 characters."
-          : undefined;
+        : undefined;
     },
     async handler(context, input) {
       const { runDev } = await import("../commands/dev.js");
       await runDev(await project(context), {
         bridgeToken: input.options.bridgeToken,
-        bridgeMutationToken: input.options.bridgeMutationToken,
       });
     },
   });
@@ -1063,6 +1056,24 @@ function contentCommand(): CliCommandDefinition {
     async handler(context, input) {
       const { runContentMutation } = await import("../commands/content.js");
       return runContentMutation(await project(context), input.rawArguments);
+    },
+  });
+}
+
+function bridgeApproveCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "bridge approve",
+    summary: "Interactively approve a pending Bridge content mutation.",
+    requiresProject: true,
+    arguments: [
+      cliArgument("plan", {
+        description: "Bridge mutation plan ID.",
+        required: true,
+      }),
+    ],
+    async handler(context, input) {
+      const { runBridgeApproval } = await import("../commands/bridge.js");
+      return runBridgeApproval(await project(context), input.arguments.plan);
     },
   });
 }

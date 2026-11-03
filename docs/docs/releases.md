@@ -16,6 +16,12 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 No user-facing changes recorded.
 
+## 0.0.37 - 2026-11-03
+
+No user-facing changes recorded.
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.0.36...v0.0.37)
+
 ## 0.0.36 - 2026-11-03
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

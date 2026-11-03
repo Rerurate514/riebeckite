@@ -14,7 +14,13 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 No user-facing changes recorded.
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.36...HEAD
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.37...HEAD
+
+## [0.0.37] - 2026-11-03
+
+No user-facing changes recorded.
+
+[0.0.37]: https://github.com/Rerurate514/riebeckite/compare/v0.0.36...v0.0.37
 
 ## [0.0.36] - 2026-11-03
 

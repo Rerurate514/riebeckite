@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "16eb3eb1-3229-46e7-a65b-93fe82cea0c0",
-    "publishedAt": "2026-11-03T10:39:58.038Z",
-    "publicationFingerprint": "ecb09db7dfa249fac40b52e2145b1d6758f5b0ba1cc9014680e419a90a97a233",
+    "runId": "f01ec136-5ad0-4e06-9b6c-12aac7c45976",
+    "publishedAt": "2026-11-03T17:01:54.382Z",
+    "publicationFingerprint": "42be827524853c5ba2c56226912374853719e5e6cdecbd288ae289a5dbac8bd7",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -482,16 +482,16 @@
         "permalink": "/docs/framework/inspector",
         "title": "Inspector",
         "visibility": "public",
-        "fingerprint": "9b6eaf8a39d53a5ce9854c2c8ed9dcebca0ed3ea142ab8348b578693778add7c",
-        "contentFingerprint": "ad53a561a8c6c6f378e726bbdf68261b1e2a0e519729eb415a999011f69bf610"
+        "fingerprint": "2f6adfe0b617d7c4da49ddac6755b3789c4bfe82174546d328218eb2a189dd09",
+        "contentFingerprint": "fe6537d104c55ab7b5ae25ac9518d444234a2f664111b021462d6248a3fb0e17"
       },
       {
         "slug": "docs/framework/inspector.ja",
         "permalink": "/ja/docs/framework/inspector",
         "title": "インスペクター",
         "visibility": "public",
-        "fingerprint": "4950f1cc15d1b422a47efd27ca50fba08f1dc23e73db7c17608a46d6ecd8f3e2",
-        "contentFingerprint": "5dd2144ad904aea8793df5c1438209652126659e45aa86631dde657b0ea5d3b7"
+        "fingerprint": "fd2ddb4b7c07dbc17e50f24ba6d64b0211f1dd1179a296d33b46d207b33026cc",
+        "contentFingerprint": "5b2d19541cc82ef68c029ce8e9338ba0d37f1aa95f0c4488ef00fce03180d5d2"
       },
       {
         "slug": "docs/framework/interactive-runtime",
@@ -1058,16 +1058,16 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "a584ef112ed5dd38de80b15b00c1c90b2e412e25505b201e60e854d528a4ec97",
-        "contentFingerprint": "8120bd0c60cee7e01acd6a6708d30755d828f7e45a9bd2b75106808c463d4645"
+        "fingerprint": "6c4459bf0bfa4a79636566db73cd0bb8df972c3e3e16232e965f6b1227670c1c",
+        "contentFingerprint": "7fb5aef444cf9a32091ae09f5fecbdaf63a2b2fde94411c8278927d5447ab2f4"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "5fb9d6d609e70ce3bcf80f74e317ee522b5e92283437123100b9b1fe05bc3828",
-        "contentFingerprint": "2ce355bed400414a357ebec5f81586d8740e378ae17bcb92fee2bdace16f7efa"
+        "fingerprint": "eb8c81fc05509ad27b40376f0f2fa8e621c32397b71059ed9959b5a1479ea091",
+        "contentFingerprint": "1db84ad34b5e3b845188a71473c7148d6ce236f0af436f121112189097a618cb"
       },
       {
         "slug": "docs/getting-started/obsidian-vault",
@@ -1090,48 +1090,48 @@
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "7c442a1c33b4c2ddecde5de2b264d44f473a8d05850462b15d3b68501e7bd79f",
-        "contentFingerprint": "2d0b5766a95e80b85aa4c7382b8f124008e07289da32e07193f368f760435b31"
+        "fingerprint": "5dc34d98c4dce5a49c159261e19c7dc1639e56150cdc404db0cbd4e27b496ebd",
+        "contentFingerprint": "4cb949341a8c127f811c5af8a873e16b37221db5dee7775a79dc18950da2e72d"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "398533bdacc3717bb6f91d4fc2a4ad4d67cd9b65ad7ee9299efb5d26d15be0f0",
-        "contentFingerprint": "9574c30cbe4a84769ec8a071d0d6b2f131de687226a03cd9aa9d1a6c250df4fd"
+        "fingerprint": "9f449155956a57ccbc04f3ef8ba4a3ab5ddd1590b9d2670cbd490d56fa0499cd",
+        "contentFingerprint": "36237d05d342580d6be806e95591419c18359c918d592b2754515ea2ec091135"
       },
       {
         "slug": "docs/getting-started/quick-start",
         "permalink": "/docs/getting-started/quick-start",
         "title": "Quick Start",
         "visibility": "public",
-        "fingerprint": "2adafb3f69812fa2dda61a6e7bd0ccf0a587bc1c189b05f3690f9aba2e1fdce9",
-        "contentFingerprint": "31bcdbb209736602202eb2c55135520fa44baa3ca0968cd8661d50eb3b866412"
+        "fingerprint": "f5f47e25a3de5bc4cce7f2f6dcfe91f37032d814f097a2f913e326ce25489628",
+        "contentFingerprint": "3a7fee0ae8520ef41832c7581ac234d38011ba1fa1ea700693a8ecc0d24dd884"
       },
       {
         "slug": "docs/getting-started/quick-start.ja",
         "permalink": "/ja/docs/getting-started/quick-start",
         "title": "クイックスタート",
         "visibility": "public",
-        "fingerprint": "616813bfb5bcfcff914195dce8f155fe2208e580cc4c1ec3b273f30464ad8627",
-        "contentFingerprint": "78d45f0875feb3bb9ece026beb490cc47e3f19cb97e13d0e2eb2449edba431b4"
+        "fingerprint": "498d7b171bc13b48b16b2ea68a713abf8a95f5deb5be11c2ff0cca7b3dd7ca9c",
+        "contentFingerprint": "df5a67c03412cae9a37e133b91e93dd8e2f1c4278da7dd01ebb79471d38329ed"
       },
       {
         "slug": "docs/getting-started/README",
         "permalink": "/docs/getting-started/",
         "title": "Getting Started",
         "visibility": "public",
-        "fingerprint": "f577c3ce3ce2f2347b7f67ac0adbdcc3eac0fb1e24afd36146efd73ab7f0300c",
-        "contentFingerprint": "8bb314ec5d8ad7fe59622d3ad5be1dfee7ff2191271374c016b20883985a17b4"
+        "fingerprint": "b0e4ee3a222c66a6fe694a33a0ac8c463fe34a599ad391ccb15f7ac83d9d58b5",
+        "contentFingerprint": "2c50c216a539a1dcb83a321f9e29ac5324b5c0dab5ce084cc4715db67b50d92d"
       },
       {
         "slug": "docs/getting-started/README.ja",
         "permalink": "/ja/docs/getting-started/",
         "title": "はじめに",
         "visibility": "public",
-        "fingerprint": "d90c827d8885ede4bf3808c609af97052a322fc90c9bbce526f0241fa882050b",
-        "contentFingerprint": "5bee62eb8cec8b293b3cefbf34a9e31c24ba502c5a0659ae7b14ace2079f0eaf"
+        "fingerprint": "4c620deb5208e9b951ce77faf2517cdbea0103d0f33e6c289ded51dcd8f56e2a",
+        "contentFingerprint": "097f45b19529e34674b7d5f2bc6de14cc14febedfa5b10f1a50acc00b5b8950f"
       },
       {
         "slug": "docs/glossary/alias",
@@ -5522,16 +5522,16 @@
         "permalink": "/docs/reference/cli/setup",
         "title": "Setup and creation",
         "visibility": "public",
-        "fingerprint": "db15fd1de2ae34e4ad89918c81813b50f3a57e554671751ff81ec5905cdccb08",
-        "contentFingerprint": "b31edc57b1a7e15133ff7ef54b0951041afc1561b0d13b0d389e693c367a158c"
+        "fingerprint": "0ab2b2c53aec8ee5eef6fe1867ffdfa18b854dab9e5633c34fc5280c3582d27d",
+        "contentFingerprint": "36043cd21950cb96a4e898d198cf79b023bef553f95c9ecd7d3ff9cc92672c6f"
       },
       {
         "slug": "docs/reference/cli/setup.ja",
         "permalink": "/ja/docs/reference/cli/setup",
         "title": "セットアップと作成",
         "visibility": "public",
-        "fingerprint": "c191626435d1df652201e92d6d4ce4be04f7b1bc5a446d1a7e2be9620dec791b",
-        "contentFingerprint": "fd8faeb848757ea1ef24de9421b04e04646dedb70f3b1927c6cd92e5d64b9f92"
+        "fingerprint": "d6ac1fdd507b0a67d84279a2781799a6d8eae8ab8ed2d271a5983e5279fd08d6",
+        "contentFingerprint": "33d74f0c203288dda3eb482dba32002bbb7f60f474b25d343dd72a060935e9cb"
       },
       {
         "slug": "docs/reference/configuration",
@@ -5906,16 +5906,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "57f0b55a61ab7b3ba65bd4cdc80322dc3c25d37458dbe5418b13df390f3ef184",
-        "contentFingerprint": "0af179599c07a592639ebb29990af68635228dbba6f756ef65375892fcec5542"
+        "fingerprint": "8cf47808bd5e429b2651b527a2faf78dd21be07d7b63c5b0dd0003a2f12443dd",
+        "contentFingerprint": "6eeb760d992665742f990c535ce8967244bf5bb900d04d65bbcda29f2d07e5de"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "dffec4c313ecb42a03d3bda27f98bcae973a8ac39075e21e85b9cab338c359ea",
-        "contentFingerprint": "b20984b13082cadc67531e642df783fd46293a54393d96588b20b967beb29d92"
+        "fingerprint": "413ebabadfce1309eaefd23cba227eb81428f3799a6a36564cf965bb23acb1af",
+        "contentFingerprint": "5bff98aa5ed2846e64c0f83d0a2308e52ea1d9a72ace61dbd63429e41dfe64a2"
       },
       {
         "slug": "docs/security",
@@ -6340,7 +6340,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "41fe52f5e64fef27e1cdd038a723df6d31ae559b3057ee4ab0e16cd751fb900a",
+    "artifactFingerprint": "6c71cb4f40443209ec1a5e848a15ce44525874013ae0f4b3b46b1343c5187930",
     "provider": "cloudflare-workers"
   }
 }

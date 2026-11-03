@@ -59,7 +59,10 @@ export function handleInspectorRequest(
     response.end();
     return;
   }
-  const handler = handlers[requestPathname(request.url)];
+  const pathname = requestPathname(request.url);
+  const handler =
+    handlers[pathname] ??
+    handlers[pathname.slice(0, pathname.lastIndexOf("/") + 1)];
   if (!handler) {
     response.statusCode = 404;
     response.end();

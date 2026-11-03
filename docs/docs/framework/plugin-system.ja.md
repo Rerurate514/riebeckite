@@ -184,6 +184,7 @@ flowchart TD
 | ブラウザ | `assets`, `clientEntries` |
 | HTTP | `endpoints` |
 | SEO | `seo` |
+| インスペクターのタブ | `inspector` |
 
 すべてを実装する必要はありません。
 

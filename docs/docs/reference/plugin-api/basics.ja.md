@@ -83,6 +83,7 @@ export function example(
 | ブラウザ | `assets`, `clientEntries` |
 | HTTP | `endpoints` |
 | SEO | `seo` |
+| インスペクターのタブ | `inspector` |
 
 この中から、**必要なものだけ**を使ってください。
 

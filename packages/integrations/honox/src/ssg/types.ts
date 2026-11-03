@@ -1,6 +1,7 @@
 import type {
   BuildProvenance,
   ContentManifest,
+  Diagnostic,
   OutputDescriptor,
 } from "@riebeckite/core";
 import type { toSSG } from "hono/ssg";
@@ -77,6 +78,7 @@ export type SsgModule = {
       unchangedOutputCount: number;
     }>;
     getProvenance(): BuildProvenance | undefined;
+    recordFinalHtmlDiagnostics?(diagnostics: readonly Diagnostic[]): void;
     attachFinalOutputArtifacts(
       buildId: string,
       fingerprints: Readonly<Record<string, string>>,

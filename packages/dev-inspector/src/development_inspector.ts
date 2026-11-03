@@ -1,8 +1,10 @@
 import crypto from "node:crypto";
 import http from "node:http";
+import { createRequire } from "node:module";
 import path from "node:path";
 import {
   type CompletedContentBuildSnapshot,
+  type InspectorTabSnapshot,
   loadContentBuildState,
   resolveApiLifecycle,
   resolveContentBuildStatePath,
@@ -38,6 +40,7 @@ import {
   pluginsPath,
   provenancePath,
   reportPath,
+  tabsPath,
 } from "./development_inspector_paths.js";
 import {
   inspectPluginExecution,
@@ -52,6 +55,7 @@ import {
   handleInspectorRequest,
   isTrustedInspectorRequest,
   prioritizeMiddleware,
+  requestPathname,
 } from "./development_inspector_security.js";
 import { inspectThemeConfig } from "./development_inspector_theme.js";
 import type {
@@ -100,7 +104,9 @@ export function riebeckiteDevelopmentInspector(
     const report = snapshot.then((build) =>
       collectDevelopmentDiagnostics({
         config: application.config,
-        contentDiagnostics: build?.manifest.diagnostics,
+        contentDiagnostics: build
+          ? [...build.manifest.diagnostics, ...build.finalHtmlDiagnostics]
+          : undefined,
         revision: currentRevision,
         includeOutput: false,
       }),
@@ -176,6 +182,9 @@ export function riebeckiteDevelopmentInspector(
                 enabled: plugin.enabled !== false,
               })),
               derivedViews: snapshot?.derivedViews ?? [],
+              inspectorTabs: (snapshot?.inspectorTabs ?? []).map(
+                inspectorTabMetadata,
+              ),
               apiLifecycle: resolveApiLifecycle(application.config),
             }),
           );
@@ -333,6 +342,62 @@ export function riebeckiteDevelopmentInspector(
           response.end(JSON.stringify({ code: "INSPECTOR_ASSETS_FAILED" }));
         }
       };
+      const tabsMiddleware = async (
+        request: import("node:http").IncomingMessage,
+        response: import("node:http").ServerResponse,
+      ) => {
+        try {
+          const application = getApplication();
+          const entry = inspectApplication(application, revision, server);
+          const snapshot = await entry.snapshot;
+          const pathname = requestPathname(request.url);
+          const id =
+            pathname === tabsPath
+              ? undefined
+              : decodeURIComponent(pathname.slice(tabsPath.length + 1));
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.setHeader("cache-control", "no-store");
+          if (id === undefined) {
+            response.end(
+              JSON.stringify({
+                version: 1,
+                revision: entry.revision,
+                generatedAt: new Date().toISOString(),
+                tabs: (snapshot?.inspectorTabs ?? []).map(inspectorTabMetadata),
+              }),
+            );
+            return;
+          }
+          const tab = snapshot?.inspectorTabs.find(
+            (candidate) => candidate.id === id,
+          );
+          if (!tab) {
+            response.statusCode = 404;
+            response.end(JSON.stringify({ code: "INSPECTOR_TAB_NOT_FOUND" }));
+            return;
+          }
+          const client = tab.client
+            ? resolveInspectorClientUrl(application.appRoot, tab.client)
+            : {};
+          response.end(
+            JSON.stringify({
+              version: 1,
+              revision: entry.revision,
+              generatedAt: new Date().toISOString(),
+              tab: {
+                ...inspectorTabMetadata(tab),
+                data: tab.data,
+                clientUrl: client.url,
+                clientError: client.error,
+              },
+            }),
+          );
+        } catch {
+          response.statusCode = 500;
+          response.setHeader("content-type", "application/json; charset=utf-8");
+          response.end(JSON.stringify({ code: "INSPECTOR_TAB_FAILED" }));
+        }
+      };
       const privateServer = http.createServer((request, response) => {
         void handleInspectorRequest(request, response, token, {
           [reportPath]: reportMiddleware,
@@ -341,6 +406,8 @@ export function riebeckiteDevelopmentInspector(
           [pluginsPath]: pluginsMiddleware,
           [provenancePath]: provenanceMiddleware,
           [assetsPath]: assetsMiddleware,
+          [tabsPath]: tabsMiddleware,
+          [`${tabsPath}/`]: tabsMiddleware,
         });
       });
       const privateReady = new Promise<void>((resolve, reject) => {
@@ -416,6 +483,39 @@ export function riebeckiteDevelopmentInspector(
       invalidateInspection(server);
     },
   };
+}
+
+function inspectorTabMetadata(tab: InspectorTabSnapshot) {
+  return {
+    id: tab.id,
+    plugin: tab.plugin,
+    title: tab.title,
+    description: tab.description,
+    order: tab.order,
+    hasClient: tab.client !== undefined,
+    hasData: tab.data !== undefined,
+    error: tab.error,
+  };
+}
+
+function resolveInspectorClientUrl(
+  appRoot: string,
+  specifier: string,
+): { url?: string; error?: string } {
+  try {
+    const require = createRequire(path.join(appRoot, "package.json"));
+    const resolved = require.resolve(specifier);
+    if (!path.isAbsolute(resolved)) {
+      throw new Error(`Inspector client "${specifier}" is not a file.`);
+    }
+    return {
+      url: encodeURI(`/@fs/${resolved.replace(/\\/g, "/")}`),
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 async function completedBuildSnapshot(

@@ -1,3 +1,4 @@
+import type { Diagnostic } from "@riebeckite/core";
 import type { SsgModule } from "./types.js";
 
 export function formatSsrNoExternal(): string {
@@ -55,7 +56,8 @@ export function inspectGeneratedHtmlPages(
   module: SsgModule,
   pages: readonly { path: string; html: string }[],
   log: { warn: (message: string) => void; info: (message: string) => void },
-): void {
+): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
   const plugins = module.config?.plugins ?? [];
   for (const plugin of plugins) {
     const inspector = plugin.inspectGeneratedHtml;
@@ -66,7 +68,15 @@ export function inspectGeneratedHtmlPages(
         const label = `[${plugin.name ?? "plugin"}] ${page.path}: ${diagnostic.message}`;
         if (diagnostic.severity === "info") log.info(label);
         else log.warn(label);
+        diagnostics.push({
+          code: diagnostic.code ?? "generated-html",
+          severity: diagnostic.severity,
+          message: diagnostic.message,
+          pluginName: plugin.name,
+          filePath: diagnostic.filePath ?? page.path,
+        });
       }
     }
   }
+  return diagnostics;
 }

@@ -175,6 +175,54 @@ flowchart TD
 
 パネルには Overview、Diagnostics、API、Dependencies、Plugins、Output、Derived、Provenance、Assets、Theme のタブがあります。API タブは解決済みの API ライフサイクルレジストリを一覧表示し、非推奨になったバージョン、代替 API、削除バージョン、移行ガイド、現在の設定で非推奨項目を使っているかどうかを示します。`riebeckite inspect api` と同じレジストリを読み取り専用で表示します。Assets タブはコンテンツアセットの使用状況、サイズ、重複グループ、最適化候補を一覧表示します。`riebeckite inspect assets` と同じ読み取り専用のアセットレポートを使い、ファイルの削除や書き換えは行いません。
 
+プラグインは `inspector` フィールドで組み込みタブの後ろにタブを追加できます。
+
+```ts
+export default defineConfig({
+  plugins: [
+    {
+      name: "my-plugin",
+      inspector: {
+        apiVersion: 1,
+        tabs: [
+          {
+            id: "my-plugin.overview",
+            title: { en: "My plugin", ja: "マイプラグイン" },
+            order: 100,
+            collect: () => ({
+              kind: "key-value",
+              items: [{ key: "Status", value: "ready" }],
+            }),
+          },
+        ],
+      },
+    },
+  ],
+});
+```
+
+`collect` は完了した開発ビルドのスナップショット作成時に一度だけ実行され、インスペクターのリクエストごとには実行されません。返せるデータ形式は次のとおりです。
+
+- `{ kind: "key-value", items }`
+- `{ kind: "table", columns, rows }`
+- `{ kind: "json", value }`
+- `{ kind: "error", message }`
+
+これらの形式に含める値は JSON でシリアライズできる必要があります。タブ ID は `^[a-z0-9][a-z0-9._-]*$` に一致し、プラグイン全体で一意である必要があります。タブは `order`、次に ID の順で並び、組み込みタブが常に先頭になります。`collect` が失敗したタブはエラーとして表示され、他のタブには影響しません。
+
+独自の UI を描画する場合は、アプリのルートから解決できるモジュール指定子を `client` に設定します。モジュールは `mount(root, { data, locale })` をエクスポートし、クリーンアップ関数を返せます。
+
+```ts
+export function mount(root: HTMLElement, { data, locale }: { data: unknown; locale: "en" | "ja" }) {
+  root.textContent = JSON.stringify(data);
+  return () => {};
+}
+```
+
+インスペクターは Vite 開発サーバー経由でクライアントを読み込みます。クライアントはページ上で動作するため、プラグインは信頼されたコードとして扱われます。描画先はインスペクターのシャドウルート内にあるため、クライアント側でスタイルを用意してください。インスペクターは専用のアクセストークンをクライアントへ渡しません。クライアントからインスペクターのエンドポイントを直接読み取らないでください。
+
+`inspector` はプラグインの `endpoints` とは無関係です。`endpoints` は生成サイトに HTTP ルートを公開し、`inspector` は開発時だけのパネルにタブを追加します。
+
 ## 読み取り専用の保証
 
 インスペクターは**読み取り専用**です。

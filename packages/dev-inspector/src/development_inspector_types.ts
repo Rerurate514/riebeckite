@@ -3,6 +3,7 @@ import type {
   ContentAssetInspection,
   OutputChangeReason,
   OutputDescriptor,
+  RegenerationInspection,
 } from "@riebeckite/core";
 import type {
   collectDevelopmentDiagnostics,
@@ -60,21 +61,6 @@ export type OutputLookups = {
     readonly hiddenOutputCount: number;
   };
 };
-
-export type RegenerationReason = {
-  readonly kind: string;
-  readonly source: string;
-  readonly detail?: string;
-};
-
-export type RegenerationInspection =
-  | {
-      readonly status: "available";
-      readonly required: boolean;
-      readonly reasons: readonly RegenerationReason[];
-      readonly unknown: readonly string[];
-    }
-  | { readonly status: "unavailable"; readonly reason: string };
 
 export type DependencyInspection =
   | {
@@ -137,10 +123,4 @@ export type CachedInspection = {
   readonly output: Promise<OutputResult>;
   readonly assets: Promise<AssetResult>;
   readonly settlement: Promise<void>;
-};
-
-export type ContentAppModule = {
-  readonly content?: {
-    getCompletedBuildSnapshot(): CompletedContentBuildSnapshot | undefined;
-  };
 };

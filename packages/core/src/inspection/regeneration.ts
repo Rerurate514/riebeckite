@@ -1,27 +1,35 @@
 import {
-  isPersistentlyCacheable,
-  type OutputChangeSet,
   readContentBuildStateStatus,
   resolveContentBuildStatePath,
-} from "@riebeckite/core";
-import type { ResolvedInspectorApplication } from "./application.js";
-import type {
-  RegenerationInspection,
-  RegenerationReason,
-} from "./development_inspector_types.js";
+} from "../content/content_build_state_store.js";
+import { isPersistentlyCacheable } from "../content/content_persistent_cache.js";
+import type { OutputChangeSet } from "../content/output_dependency.js";
+import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
+
+export type RegenerationReason = {
+  readonly kind: string;
+  readonly source: string;
+  readonly detail?: string;
+};
+
+export type RegenerationInspection =
+  | {
+      readonly status: "available";
+      readonly required: boolean;
+      readonly reasons: readonly RegenerationReason[];
+      readonly unknown: readonly string[];
+    }
+  | { readonly status: "unavailable"; readonly reason: string };
 
 export async function inspectRegeneration(
-  application: ResolvedInspectorApplication,
+  config: ResolvedRiebeckiteConfig,
   changes: OutputChangeSet,
   buildReasons: readonly string[],
 ): Promise<RegenerationInspection> {
   try {
-    const statePath = resolveContentBuildStatePath(
-      application.config,
-      undefined,
-    );
+    const statePath = resolveContentBuildStatePath(config, undefined);
     const stateStatus = await readContentBuildStateStatus(statePath);
-    const cacheability = isPersistentlyCacheable("", application.config);
+    const cacheability = isPersistentlyCacheable("", config);
     const reasons: RegenerationReason[] = [];
     const unknown: string[] = [];
     for (const reason of new Set(buildReasons)) {

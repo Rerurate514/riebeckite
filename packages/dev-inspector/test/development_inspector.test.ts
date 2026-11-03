@@ -11,6 +11,7 @@ import {
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
 import type { ViteDevServer } from "vite";
+import type { ResolvedInspectorApplication } from "../src/application.js";
 import {
   diagnosticMatchesPage,
   riebeckiteDevelopmentInspector,
@@ -35,7 +36,7 @@ type Middleware = (
 ) => void | Promise<void>;
 
 test("development inspector prioritizes its endpoint and keeps failures private", async () => {
-  const plugin = riebeckiteDevelopmentInspector(() => {
+  const plugin = inspector(() => {
     throw new Error("C:\\private\\secret-token");
   });
   const stack = inspectorStack(plugin);
@@ -145,14 +146,17 @@ test("development inspector reports the output plan and dependencies", async () 
       await content.getOutputChangeSet(),
       completed.outputChangeSet,
     );
-    const plugin = riebeckiteDevelopmentInspector(() => ({
-      config,
-      configRoot: directory,
-      configFile: path.join(directory, "riebeckite.config.ts"),
-      appRoot: directory,
-      contentRoot,
-    }));
-    const stack = inspectorStack(plugin, content);
+    const plugin = inspector(
+      () => ({
+        config,
+        configRoot: directory,
+        configFile: path.join(directory, "riebeckite.config.ts"),
+        appRoot: directory,
+        contentRoot,
+      }),
+      content,
+    );
+    const stack = inspectorStack(plugin);
     const { response, body } = await requestReport(stack);
 
     assert.equal(response.statusCode, 200);
@@ -411,14 +415,17 @@ test("development inspector exposes plugin tabs", async () => {
     ]);
     assert.equal(completed.finalHtmlDiagnostics.length, 1);
 
-    const plugin = riebeckiteDevelopmentInspector(() => ({
-      config,
-      configRoot: directory,
-      configFile: path.join(directory, "riebeckite.config.ts"),
-      appRoot: directory,
-      contentRoot,
-    }));
-    const stack = inspectorStack(plugin, content);
+    const plugin = inspector(
+      () => ({
+        config,
+        configRoot: directory,
+        configFile: path.join(directory, "riebeckite.config.ts"),
+        appRoot: directory,
+        contentRoot,
+      }),
+      content,
+    );
+    const stack = inspectorStack(plugin);
     const report = JSON.parse((await requestReport(stack)).body);
     assert.deepEqual(
       report.inspectorTabs.map((tab: { id: string }) => tab.id),
@@ -455,7 +462,7 @@ test("development inspector exposes plugin tabs", async () => {
 });
 
 test("development inspector rejects non-loopback hosts", async () => {
-  const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
+  const plugin = inspector(() => undefined as never);
   const stack = inspectorStack(plugin);
   const { response } = await requestReport(
     stack,
@@ -466,7 +473,7 @@ test("development inspector rejects non-loopback hosts", async () => {
 });
 
 test("development inspector only authorizes loopback transports", async () => {
-  const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
+  const plugin = inspector(() => undefined as never);
   assert.equal(plugin.apply, "serve");
   const stack = inspectorStack(plugin);
   const request = (headers: Record<string, string | undefined>) =>
@@ -518,9 +525,7 @@ test("development inspector only authorizes loopback transports", async () => {
   );
 
   const boundToAll = inspectorStack(
-    riebeckiteDevelopmentInspector(() => undefined as never),
-    undefined,
-    undefined,
+    inspector(() => undefined as never),
     "0.0.0.0",
   );
   assert.equal(
@@ -534,9 +539,7 @@ test("development inspector only authorizes loopback transports", async () => {
 });
 
 test("development inspector requires its session token for data endpoints", async () => {
-  const stack = inspectorStack(
-    riebeckiteDevelopmentInspector(() => undefined as never),
-  );
+  const stack = inspectorStack(inspector(() => undefined as never));
   const bootstrap = await bootstrapRequest(stack, {
     host: "127.0.0.1:4173",
   });
@@ -592,7 +595,7 @@ async function bootstrapRequest(
 
 test("development inspector reports unavailable before the development build exists", async () => {
   await withTemporaryDirectory(async (directory) => {
-    const plugin = riebeckiteDevelopmentInspector(() => ({
+    const plugin = inspector(() => ({
       config: resolveConfig({ site: { title: "Test", locale: "en" } }),
       configRoot: directory,
       configFile: path.join(directory, "riebeckite.config.ts"),
@@ -637,16 +640,15 @@ test("development inspector consumes failed snapshots and recovers", async () =>
         appRoot: directory,
         contentRoot: path.join(directory, "content"),
       };
-      const plugin = riebeckiteDevelopmentInspector(() => application);
-      const stack = inspectorStack(
-        plugin,
-        Object.create(null) as ContentManager,
-        async () => {
+      const failingContent = {
+        getCompletedBuildSnapshot() {
           loads += 1;
           if (fail) throw new Error("SSR module failed");
-          return { content: undefined };
+          return undefined;
         },
-      );
+      } as unknown as ContentManager;
+      const plugin = inspector(() => application, failingContent);
+      const stack = inspectorStack(plugin);
 
       const failed = await Promise.all([
         requestReport(stack, "/__riebeckite/inspector/report"),
@@ -698,7 +700,7 @@ test("development inspector shares one report across concurrent requests", async
       path.join(contentRoot, "index.md"),
       markdown("# Home", { title: "Home", visibility: "public" }),
     );
-    const plugin = riebeckiteDevelopmentInspector(() => ({
+    const plugin = inspector(() => ({
       config: resolveConfig({ site: { title: "Test", locale: "en" } }),
       configRoot: directory,
       configFile: path.join(directory, "riebeckite.config.ts"),
@@ -779,14 +781,17 @@ test("development inspector maps the current page to its content sources", async
       manifestReads += 1;
       return await getManifest(options);
     };
-    const plugin = riebeckiteDevelopmentInspector(() => ({
-      config,
-      configRoot: directory,
-      configFile: path.join(directory, "riebeckite.config.ts"),
-      appRoot: directory,
-      contentRoot,
-    }));
-    const stack = inspectorStack(plugin, content);
+    const plugin = inspector(
+      () => ({
+        config,
+        configRoot: directory,
+        configFile: path.join(directory, "riebeckite.config.ts"),
+        appRoot: directory,
+        contentRoot,
+      }),
+      content,
+    );
+    const stack = inspectorStack(plugin);
     const { response, body } = await requestReport(
       stack,
       "/__riebeckite/inspector/report?path=%2Fthemes",
@@ -817,7 +822,7 @@ test("development inspector maps the current page to its content sources", async
 });
 
 test("development inspector client provides accessible panels and safe refreshes", () => {
-  const plugin = riebeckiteDevelopmentInspector(() => undefined as never);
+  const plugin = inspector(() => undefined as never);
   const load = hookHandler(plugin.load);
   const source = Reflect.apply(load, undefined, [
     "\0virtual:riebeckite/development-inspector",
@@ -896,12 +901,17 @@ test("development inspector client provides accessible panels and safe refreshes
   assert.match(source as string, /Duplicate groups/);
 });
 
+function inspector(
+  getApplication: () => ResolvedInspectorApplication,
+  content?: Pick<ContentManager, "getCompletedBuildSnapshot">,
+): ReturnType<typeof riebeckiteDevelopmentInspector> {
+  return riebeckiteDevelopmentInspector(getApplication, {
+    getSnapshot: async () => content?.getCompletedBuildSnapshot(),
+  });
+}
+
 function inspectorStack(
   plugin: ReturnType<typeof riebeckiteDevelopmentInspector>,
-  content?: ContentManager,
-  loadModule: () => Promise<{ content?: ContentManager }> = async () => ({
-    content,
-  }),
   bindingAddress = "127.0.0.1",
 ): Array<{ route: string; handle: Middleware }> {
   const stack: Array<{ route: string; handle: Middleware }> = [];
@@ -925,16 +935,6 @@ function inspectorStack(
       address: () => ({ address: bindingAddress }),
       once() {},
     },
-    environments: {
-      ssr: {
-        moduleGraph: {
-          getModuleById() {
-            return content ? Object.create(null) : undefined;
-          },
-        },
-      },
-    },
-    ssrLoadModule: loadModule,
   });
   const afterConfigure = Reflect.apply(configure, undefined, [server]);
   stack.unshift({ route: "", handle() {} });

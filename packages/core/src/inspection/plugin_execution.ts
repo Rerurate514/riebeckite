@@ -1,11 +1,5 @@
-import type {
-  CompletedContentBuildSnapshot,
-  TraceEvent,
-  TraceSpan,
-} from "@riebeckite/core";
-
-const maximumLimit = 100;
-const defaultLimit = 100;
+import type { CompletedContentBuildSnapshot } from "../content/content_manager.js";
+import type { TraceEvent, TraceSpan } from "../observability.js";
 
 export type PluginExecutionQuery = {
   readonly query: string;
@@ -61,25 +55,6 @@ export type PluginExecution = {
 export type PluginExecutionResult =
   | ({ readonly status: "available" } & PluginExecution)
   | { readonly status: "unavailable"; readonly reason: string };
-
-export function pluginExecutionQueryFromRequest(
-  url: string | undefined,
-): PluginExecutionQuery {
-  const parameters = new URL(
-    url ?? "/__riebeckite/inspector/plugins",
-    "http://localhost",
-  ).searchParams;
-  return {
-    query: parameters.get("q") ?? "",
-    plugin: parameters.get("plugin") ?? undefined,
-    sort: parameters.get("sort") === "name" ? "name" : "duration",
-    page: nonNegativeInteger(parameters.get("page"), 0),
-    limit: Math.min(
-      maximumLimit,
-      Math.max(1, nonNegativeInteger(parameters.get("limit"), defaultLimit)),
-    ),
-  };
-}
 
 export function inspectPluginExecution(
   snapshot: CompletedContentBuildSnapshot | undefined,
@@ -231,10 +206,4 @@ function traceWindow(spans: readonly TraceSpan[]): number | null {
 
 function countEvents(events: readonly TraceEvent[], name: string): number {
   return events.filter((event) => event.name === name).length;
-}
-
-function nonNegativeInteger(value: string | null, fallback: number): number {
-  if (!value) return fallback;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }

@@ -320,6 +320,27 @@ export {
 export type { DevelopmentTrace } from "./src/development_trace.js";
 export { createDevelopmentTrace } from "./src/development_trace.js";
 export type {
+  DependencyGraphResult,
+  GraphEdge,
+  GraphNode,
+  GraphQuery,
+} from "./src/inspection/graph.js";
+export { inspectDependencyGraph } from "./src/inspection/graph.js";
+export type {
+  PluginExecution,
+  PluginExecutionQuery,
+  PluginExecutionResult,
+  PluginHookExecution,
+} from "./src/inspection/plugin_execution.js";
+export { inspectPluginExecution } from "./src/inspection/plugin_execution.js";
+export type {
+  RegenerationInspection,
+  RegenerationReason,
+} from "./src/inspection/regeneration.js";
+export { inspectRegeneration } from "./src/inspection/regeneration.js";
+export type { ThemeConfigInspection } from "./src/inspection/theme.js";
+export { inspectThemeConfig } from "./src/inspection/theme.js";
+export type {
   ContentMigrationBatch,
   ContentMigrationFileDiff,
   ContentMigrationPlannedFile,

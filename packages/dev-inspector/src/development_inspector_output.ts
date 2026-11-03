@@ -2,6 +2,7 @@ import {
   buildOutputPlan,
   type CompletedContentBuildSnapshot,
   inspectContentAssets,
+  inspectRegeneration,
   type OutputChangeSet,
 } from "@riebeckite/core";
 import {
@@ -18,7 +19,6 @@ import {
   outputMatches,
   pageOf,
 } from "./development_inspector_query.js";
-import { inspectRegeneration } from "./development_inspector_regeneration.js";
 import type {
   AssetResult,
   DependencyInspection,
@@ -44,7 +44,7 @@ export async function inspectContentOutputs(
       dependencies: inspectDependencies(changes),
       diagnostics: diagnoseOutputPlan(plan),
       regeneration: await inspectRegeneration(
-        application,
+        application.config,
         changes,
         snapshot.fullRegenerationReasons,
       ),

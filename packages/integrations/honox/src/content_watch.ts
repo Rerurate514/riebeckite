@@ -12,6 +12,7 @@ type RiebeckiteContentWatchOptions = {
   appRoot: () => string;
   contentRoot: () => string;
   exclude: () => readonly string[];
+  onInvalidate?: (server: ViteDevServer) => void;
 };
 
 type ContentEvent = "add" | "change" | "unlink";
@@ -45,6 +46,7 @@ export function riebeckiteContentWatch(
         timer = setTimeout(() => {
           timer = undefined;
           invalidateApplicationRuntime(server, appRoot);
+          options.onInvalidate?.(server);
           server.hot.send({ type: "full-reload" });
         }, CONTENT_RELOAD_DEBOUNCE_MS);
       };

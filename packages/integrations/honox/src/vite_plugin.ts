@@ -1,10 +1,14 @@
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
-import { riebeckiteDevelopmentInspector } from "@riebeckite/dev-inspector";
+import {
+  invalidateDevelopmentInspector,
+  riebeckiteDevelopmentInspector,
+} from "@riebeckite/dev-inspector";
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
+import { isContentModuleLoaded, loadContentModule } from "./content_module.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
 import { riebeckiteRuntimeModules } from "./runtime_modules.js";
 import { siteRiebeckiteExternals } from "./site_externals.js";
@@ -119,8 +123,16 @@ export function riebeckite(
       appRoot: () => requireApplication(application).appRoot,
       contentRoot: () => requireApplication(application).contentRoot,
       exclude: () => getConfig().content.exclude ?? [],
+      onInvalidate: invalidateDevelopmentInspector,
     }),
-    riebeckiteDevelopmentInspector(() => requireApplication(application)),
+    riebeckiteDevelopmentInspector(() => requireApplication(application), {
+      async getSnapshot(server) {
+        const { appRoot } = requireApplication(application);
+        if (!isContentModuleLoaded(server, appRoot)) return undefined;
+        const module = await loadContentModule(server, appRoot);
+        return module.content?.getCompletedBuildSnapshot?.();
+      },
+    }),
   ];
 }
 

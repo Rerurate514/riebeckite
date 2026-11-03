@@ -1,4 +1,4 @@
-import type { ResolvedTheme } from "@riebeckite/core";
+import type { ResolvedTheme } from "../types/theme_config.js";
 
 export type ThemeConfigInspection = {
   readonly name: string;

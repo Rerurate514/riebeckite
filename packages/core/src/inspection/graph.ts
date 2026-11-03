@@ -1,12 +1,10 @@
+import type { CompletedContentBuildSnapshot } from "../content/content_manager.js";
 import type {
-  CompletedContentBuildSnapshot,
   OutputChangeReason,
-  OutputDependency,
   OutputDescriptor,
-} from "@riebeckite/core";
+} from "../content/output_dependency.js";
+import type { OutputDependency } from "../types/output_dependency.js";
 
-const maximumGraphLimit = 100;
-const defaultGraphLimit = 40;
 const graphCache = new WeakMap<CompletedContentBuildSnapshot, GraphIndex>();
 
 export type GraphQuery = {
@@ -58,31 +56,6 @@ export type DependencyGraphResult =
       readonly search: boolean;
     }
   | { readonly status: "unavailable"; readonly reason: string };
-
-export function graphQueryFromRequest(url: string | undefined): GraphQuery {
-  const parameters = new URL(
-    url ?? "/__riebeckite/inspector/graph",
-    "http://localhost",
-  ).searchParams;
-  return {
-    node: parameters.get("node") ?? undefined,
-    query: parameters.get("q") ?? "",
-    kind: parameters.get("kind") ?? undefined,
-    direction:
-      parameters.get("direction") === "in" ||
-      parameters.get("direction") === "out"
-        ? (parameters.get("direction") as "in" | "out")
-        : "both",
-    page: nonNegativeInteger(parameters.get("page"), 0),
-    limit: Math.min(
-      maximumGraphLimit,
-      Math.max(
-        1,
-        nonNegativeInteger(parameters.get("limit"), defaultGraphLimit),
-      ),
-    ),
-  };
-}
 
 export function inspectDependencyGraph(
   snapshot: CompletedContentBuildSnapshot,
@@ -395,10 +368,4 @@ function adjacency(
 
 function statusRank(node: GraphNode): number {
   return node.status === "affected" ? 0 : node.status === "unchanged" ? 1 : 2;
-}
-
-function nonNegativeInteger(value: string | null, fallback: number): number {
-  if (!value) return fallback;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }

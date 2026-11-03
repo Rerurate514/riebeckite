@@ -5,6 +5,9 @@ import path from "node:path";
 import {
   type CompletedContentBuildSnapshot,
   type InspectorTabSnapshot,
+  inspectDependencyGraph,
+  inspectPluginExecution,
+  inspectThemeConfig,
   loadContentBuildState,
   resolveApiLifecycle,
   resolveContentBuildStatePath,
@@ -13,18 +16,10 @@ import {
   collectDevelopmentDiagnostics,
   sortDevelopmentDiagnostics,
 } from "@riebeckite/diagnostics";
-import {
-  isIgnoredContentPath,
-  isPathInsideDirectory,
-  toLogicalPath,
-} from "@riebeckite/node";
+import { isPathInsideDirectory } from "@riebeckite/node";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedInspectorApplication } from "./application.js";
 import { inspectorClientModule } from "./development_inspector_client.js";
-import {
-  graphQueryFromRequest,
-  inspectDependencyGraph,
-} from "./development_inspector_graph.js";
 import {
   inspectAssets,
   inspectContentOutputs,
@@ -43,13 +38,11 @@ import {
   tabsPath,
 } from "./development_inspector_paths.js";
 import {
-  inspectPluginExecution,
-  pluginExecutionQueryFromRequest,
-} from "./development_inspector_plugins.js";
-import {
   currentPageFromRequest,
   currentPageSourceSlugs,
+  graphQueryFromRequest,
   outputQueryFromRequest,
+  pluginExecutionQueryFromRequest,
 } from "./development_inspector_query.js";
 import {
   handleInspectorRequest,
@@ -57,20 +50,31 @@ import {
   prioritizeMiddleware,
   requestPathname,
 } from "./development_inspector_security.js";
-import { inspectThemeConfig } from "./development_inspector_theme.js";
-import type {
-  CachedInspection,
-  ContentAppModule,
-} from "./development_inspector_types.js";
+import type { CachedInspection } from "./development_inspector_types.js";
 
 const clientModuleId = "virtual:riebeckite/development-inspector";
 const resolvedClientModuleId = `\0${clientModuleId}`;
 const invalidationDelayMs = 150;
+const invalidators = new WeakMap<ViteDevServer, () => void>();
+
+export function invalidateDevelopmentInspector(server: ViteDevServer): void {
+  invalidators.get(server)?.();
+}
 
 export { diagnosticMatchesPage } from "./development_inspector_query.js";
 
+export type DevelopmentInspectorOptions = {
+  getSnapshot: (
+    server: ViteDevServer,
+  ) =>
+    | CompletedContentBuildSnapshot
+    | undefined
+    | Promise<CompletedContentBuildSnapshot | undefined>;
+};
+
 export function riebeckiteDevelopmentInspector(
   getApplication: () => ResolvedInspectorApplication,
+  options: DevelopmentInspectorOptions,
 ): Plugin {
   let revision = 0;
   let invalidatedAt = 0;
@@ -97,7 +101,7 @@ export function riebeckiteDevelopmentInspector(
       return inspection;
     }
     if (inspection) inspection = null;
-    const snapshot = completedBuildSnapshot(application, server).then(
+    const snapshot = Promise.resolve(options.getSnapshot(server)).then(
       (build) =>
         build && build.completedAt >= invalidatedAt ? build : undefined,
     );
@@ -451,25 +455,13 @@ export function riebeckiteDevelopmentInspector(
       };
       server.middlewares.use(bootstrapPath, bootstrapMiddleware);
       server.httpServer?.once("close", () => privateServer.close());
+      invalidators.set(server, () => invalidateInspection(server));
+      server.httpServer?.once("close", () => {
+        if (invalidationTimer) clearTimeout(invalidationTimer);
+        invalidators.delete(server);
+      });
       return () => {
         prioritizeMiddleware(server, bootstrapMiddleware, bootstrapPath);
-        const handle = (file: string) => {
-          let application: ResolvedInspectorApplication;
-          try {
-            application = getApplication();
-          } catch {
-            return;
-          }
-          if (!isContentWatchTarget(application, file)) return;
-          invalidateInspection(server);
-        };
-        server.watcher.on("add", handle);
-        server.watcher.on("unlink", handle);
-        server.httpServer?.once("close", () => {
-          if (invalidationTimer) clearTimeout(invalidationTimer);
-          server.watcher.off("add", handle);
-          server.watcher.off("unlink", handle);
-        });
       };
     },
     handleHotUpdate({ file, server }) {
@@ -518,25 +510,6 @@ function resolveInspectorClientUrl(
   }
 }
 
-async function completedBuildSnapshot(
-  application: ResolvedInspectorApplication,
-  server: ViteDevServer,
-): Promise<CompletedContentBuildSnapshot | undefined> {
-  const entry = path.join(application.appRoot, "app", "server.ts");
-  const moduleGraph = server.environments?.ssr?.moduleGraph;
-  const entryLoaded =
-    moduleGraph?.getModuleById(entry) ??
-    [...(moduleGraph?.idToModuleMap?.values() ?? [])].find(
-      (module) =>
-        module.file && path.resolve(module.file) === path.resolve(entry),
-    );
-  if (!entryLoaded) {
-    return undefined;
-  }
-  const module = (await server.ssrLoadModule(entry)) as ContentAppModule;
-  return module.content?.getCompletedBuildSnapshot();
-}
-
 function shouldInvalidateInspection(
   application: ResolvedInspectorApplication | undefined,
   file: string,
@@ -546,16 +519,5 @@ function shouldInvalidateInspection(
     !isPathInsideDirectory(application.appRoot, file) ||
     isPathInsideDirectory(application.contentRoot, file) ||
     file === application.configFile
-  );
-}
-
-function isContentWatchTarget(
-  application: ResolvedInspectorApplication,
-  file: string,
-): boolean {
-  if (!isPathInsideDirectory(application.contentRoot, file)) return false;
-  return !isIgnoredContentPath(
-    toLogicalPath(application.contentRoot, file),
-    application.config.content.exclude ?? [],
   );
 }

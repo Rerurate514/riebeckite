@@ -7,6 +7,7 @@ import {
 import type { Plugin } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
+import { riebeckiteConfigTemporaryDirectory } from "./config_loader.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
 import { isContentModuleLoaded, loadContentModule } from "./content_module.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
@@ -102,7 +103,10 @@ export function riebeckite(
           },
           server: {
             watch: {
-              ignored: ["**/.riebeckite/**"],
+              ignored: [
+                "**/.riebeckite/**",
+                `**/${riebeckiteConfigTemporaryDirectory}*/**`,
+              ],
             },
           },
           resolve: {

@@ -140,6 +140,25 @@ test("no-change rebuild reuses every manifest entry without processing content",
   assert.equal(second.reused, 2);
 });
 
+test("disabled cache ignores persisted build state", async () => {
+  const directory = await tempDirectory("incremental-cache-disabled");
+  const files = {
+    "a.md": "---\ntitle: A\n---\n\n# A",
+  };
+
+  await build(files, directory);
+  const config = testConfig(directory);
+  const manager = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, cache: { ...config.cache, enabled: false } },
+    plugins: config.plugins,
+  });
+  await manager.build({ incremental: true });
+
+  assert.equal(manager.getProcessedContentCount(), 1);
+  assert.equal(manager.getReusedContentCount(), 0);
+  await manager.dispose();
+});
+
 test("incremental build diagnostics report cache validity and fallback reasons", async () => {
   const directory = await tempDirectory("incremental-build-diagnostics");
   const events: { name: string; attributes?: Record<string, unknown> }[] = [];

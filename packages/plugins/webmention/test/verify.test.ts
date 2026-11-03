@@ -121,6 +121,32 @@ test("rejects a source whose own host resolves to a private address", async (t) 
   assert.equal(calls.length, 0);
 });
 
+test("fails closed when DNS resolution fails", async (t) => {
+  const calls = installFetch(t, async () => htmlResponse(TARGET_LINK_HTML));
+  const fetcher = createWebmentionSourceFetcher({
+    resolveHostname: async () => {
+      throw new Error("SERVFAIL");
+    },
+  });
+
+  assert.equal(await fetcher(SOURCE_URL), null);
+  assert.equal(calls.length, 0);
+});
+
+test("pins the validated address on the fetch request", async (t) => {
+  let dispatcher: unknown;
+  installFetch(t, async (_input, init) => {
+    dispatcher = (init as RequestInit & { dispatcher?: unknown }).dispatcher;
+    return htmlResponse(TARGET_LINK_HTML);
+  });
+  const fetcher = createWebmentionSourceFetcher({
+    resolveHostname: publicResolver,
+  });
+
+  assert.equal((await fetcher(SOURCE_URL))?.html, TARGET_LINK_HTML);
+  assert.ok(dispatcher);
+});
+
 test("stops reading a body that exceeds maxBytes and cancels it", async (t) => {
   let cancelled = false;
   const stream = new ReadableStream<Uint8Array>({

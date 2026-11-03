@@ -19,7 +19,7 @@ This page describes the security contract that Plugin authors and site owners sh
 | Local Markdown content and frontmatter | Trusted content | Raw HTML is parsed and filtered by the Core sanitizer allowlist. Scripts, event handlers, disallowed tags and attributes, and unsafe URL schemes are removed. |
 | Plugin-generated article HTML and standalone page bodies | Trusted generated HTML | Core and HonoX render these strings into the document after Markdown sanitization. Plugins must escape untrusted text and validate context-specific URLs before creating HTML. |
 | External URLs and embed providers | Context-specific external input | Each Plugin owns the policy for its URL context: links, images, iframes, API endpoints, webhook sources, and diagram servers are not interchangeable. |
-| Plugin endpoint requests | Untrusted browser/network input | HonoX mounts declared endpoints and snapshots request data. Endpoint handlers must validate method-specific bodies, content type, size, query values, auth, CORS, and rate limits where needed. |
+| Plugin endpoint requests | Untrusted browser/network input | HonoX mounts declared endpoints, buffers at most 1 MiB of request body, and returns `413` for larger requests. Endpoint handlers must still validate method-specific bodies, content type, query values, auth, CORS, and rate limits where needed. |
 | Browser-side data | Untrusted unless it came from trusted serialized config | Treat query strings, location, postMessage data, form input, and remote responses as untrusted in client code. |
 
 ## Markdown and HTML pipeline
@@ -70,6 +70,8 @@ Plugins that generate HTML must:
 
 Plugins can expose their own endpoints. Treat everything a browser or network sends to an endpoint as untrusted input, and validate the request body, query parameters, `Content-Type`, size, authentication, CORS, and rate limits where needed. Riebeckite mounts the endpoint and passes the request to the Plugin; it does not decide whether the data is appropriate for the Plugin's purpose.
 
+HonoX reads the request body through a 1 MiB cap and returns `413 Payload Too Large` before calling the endpoint when the cap is exceeded. This protects the process from unbounded buffering, but it does not replace the Plugin's own size check, authentication, or rate limiting.
+
 ## What Riebeckite does not do automatically
 
 Markdown raw HTML is sanitized before it is emitted. Two boundaries remain outside that protection:
@@ -81,9 +83,9 @@ Content received from other people still needs review for accuracy, links, and p
 
 ## Current built-in policies
 
-- Rich embeds accept only `https:` provider URLs. Known providers are converted to controlled iframe URLs, and generic iframes require an explicit host allow-list.
-- Webmention source fetching accepts only HTTP(S), rejects credentials, limits redirects and body size, and rejects private hosts by default.
-- Analytics collector URLs must be site-relative or HTTP(S), and the Cloudflare worker integration validates JSON shape and body size.
+- Rich embeds accept only `https:` provider URLs. Known providers are converted to sandboxed iframe URLs, and generic iframes require an explicit host allow-list.
+- Webmention source fetching accepts only HTTP(S), rejects credentials, limits redirects and body size, rejects private hosts after DNS resolution, fails closed when DNS resolution fails, and pins the validated address for the connection; on runtimes without a DNS module, hostname and literal-IP checks still apply. The receive endpoint applies a best-effort per-client rate limit, and the default memory provider keeps at most 1,000 mentions.
+- Analytics collector URLs must be site-relative or HTTPS; plain HTTP is accepted only for localhost. The Cloudflare worker integration validates JSON shape and body size.
 - Autocard metadata links and images are escaped and restricted to relative, `http:`, or `https:` URLs.
 - Diagram and media Plugins may cause the browser to load configured external providers. Treat those provider URLs as trusted configuration.
 

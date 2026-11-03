@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import type { ViteDevServer } from "vite";
 import { inspectorTokenHeader } from "./development_inspector_paths.js";
 
@@ -53,7 +54,7 @@ export function handleInspectorRequest(
     response.end();
     return;
   }
-  if (request.headers[inspectorTokenHeader] !== token) {
+  if (!matchesInspectorToken(request.headers[inspectorTokenHeader], token)) {
     response.statusCode = 403;
     response.end();
     return;
@@ -127,6 +128,19 @@ export function isLoopbackAddress(value: string | undefined): boolean {
     normalized === "::1" ||
     normalized === "localhost" ||
     /^127\.\d+\.\d+\.\d+$/.test(normalized)
+  );
+}
+
+function matchesInspectorToken(
+  provided: string | string[] | undefined,
+  expected: string,
+): boolean {
+  if (typeof provided !== "string") return false;
+  const providedBytes = Buffer.from(provided);
+  const expectedBytes = Buffer.from(expected);
+  return (
+    providedBytes.length === expectedBytes.length &&
+    timingSafeEqual(providedBytes, expectedBytes)
   );
 }
 

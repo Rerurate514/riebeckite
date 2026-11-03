@@ -66,6 +66,8 @@ function buildFigure(
             src: resolution.src,
             loading: "lazy",
             allowFullscreen: true,
+            sandbox:
+              "allow-scripts allow-same-origin allow-popups allow-presentation",
             referrerPolicy: "strict-origin-when-cross-origin",
             title: resolution.title,
           }),

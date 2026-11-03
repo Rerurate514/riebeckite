@@ -16,6 +16,14 @@ export function jsonResponse(
 export function errorResponse(
   status: number,
   error: string,
+  headers: Readonly<Record<string, string>> = {},
 ): PluginEndpointResponse {
-  return jsonResponse(status, { error });
+  return {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      ...headers,
+    },
+    json: { error },
+  };
 }

@@ -40,3 +40,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Stop reporting spurious D2 render timeouts during development when the dev server blocks the event loop longer than the render timeout. The timeout now starts a fresh window instead of failing a render that could not make progress.
   Packages: `@riebeckite/plugin-d2`
+
+### Security
+
+- Harden the framework against request and network abuse: cap plugin endpoint request bodies at 1 MiB, make Webmention source verification fail closed and pin the validated DNS address, add a best-effort receive rate limit and a bounded memory store, require HTTPS for analytics collectors except on localhost, sandbox rich-embed iframes, compare the development inspector token in constant time, and pin GitHub Actions to commit SHAs. Update `@hono/node-server` to 2.1.3 and `minimatch` to 11.0.1.
+  Packages: `@riebeckite/honox`, `@riebeckite/plugin-webmention`, `@riebeckite/plugin-analytics`, `@riebeckite/plugin-rich-embed`, `@riebeckite/dev-inspector`, `create-riebeckite`

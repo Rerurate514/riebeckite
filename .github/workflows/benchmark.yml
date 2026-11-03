@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
@@ -36,7 +36,7 @@ jobs:
       - run: pnpm benchmark:presets -- --presets starter,showcase --sizes 1000,10000 --runs 3 --metrics --out benchmark-results/preset-ssg.json
       - if: inputs.baseline-path != ''
         run: node scripts/ci/compare_benchmark.mjs benchmark-results/preset-ssg.json "${{ inputs.baseline-path }}"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
           name: preset-ssg-benchmark-${{ github.run_id }}

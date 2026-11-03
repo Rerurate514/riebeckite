@@ -12,6 +12,7 @@ private: true
 - 修正後再監査時 HEAD: `bb126fa6`（成果物の安全な置換ライターを追加）
 - ブランチ: `main`
 - 作業ツリー: 修正内容は未コミット（本作業では commit / push を行わない）。並行して追加された release workflow / changelog の変更も同じ作業ツリーに含まれる。
+- 更新: 2026-11-03 に RR-016（依存更新）と RR-017（Actions SHA 固定）を修正。
 
 監査中に外部プロセス（ユーザーまたは別エージェント）が `005784e1` を作成しました。差分を確認した結果、`edb56e39..005784e1` のコード差分はなく、変更は `docs/**`、プラグイン README、`scripts/sync_plugin_docs.test.mjs` のみです。本レポートのコードに関する知見は両 HEAD に共通します。
 
@@ -466,32 +467,36 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 
 - **Severity**: P2
 - **Confidence**: High（実行結果）
+- **状態**: 修正済み（2026-11-03）
 - **問題**: `@hono/node-server` の `serveStatic` パス二重デコード（GHSA-rmxm-3fg6-px4f、patched >=2.1.3）と `minimatch` の ReDoS（GHSA-g3hv-75wg-m249、patched >=11.0.1）。
 - **影響範囲**: 開発サーバー / Node アダプタの静的配信、ビルド時の glob。Cloudflare 本番のリクエスト経路とは限らない。
 - **発生条件**: 該当依存を使う開発・ビルド時。
 - **ファイルと箇所**: `pnpm-lock.yaml`（honox → @hono/vite-dev-server → @hono/node-server、honox → precinct → minimatch）
 - **再現手順**: `pnpm audit --prod`
-- **観測結果**: `2 vulnerabilities found / Severity: 2 moderate`。
+- **監査時の観測結果**: `2 vulnerabilities found / Severity: 2 moderate`。
 - **期待結果**: high/critical なし、moderate も解消または許容理由を記録。
 - **根本原因**: HonoX 0.1.56 の推移依存が古い。overrides で未解消。
 - **修正方針**: `pnpm.overrides` で patched 版へ上げるか、HonoX 側の更新を待つ。dev 専用なら SECURITY.md に許容理由を書く。
+- **対応**: `pnpm-workspace.yaml` の overrides を `@hono/node-server@<2.1.3` → `2.1.3`、`minimatch@<11.0.1` → `11.0.1` に変更した。`website/package.json` と scaffold の直接依存も `@hono/node-server` 2.1.3 系へ更新した。2026-11-03 の `pnpm audit --prod` は `No known vulnerabilities found`。`serveStatic` は公開ファイルだけを配信する構成で、認証付きパスはない。
 - **回帰テスト**: CI で `pnpm audit --prod --audit-level high` を実行し、moderate はレポートのみ。
-- **完了条件**: high/critical 0、moderate の扱いが文書化されている。
+- **完了条件**: high/critical 0、moderate も 0。
 - **依存関係**: なし。
 
 #### RR-017: GitHub Actions がタグ固定で、SHA 固定ではない
 
 - **Severity**: P2
 - **Confidence**: High（workflow 読解）
+- **状態**: 修正済み（2026-11-03）
 - **問題**: `actions/checkout@v4`、`pnpm/action-setup@v4`、`actions/setup-node@v4`、`actions/cache@v4`、`cloudflare/wrangler-action@v3` がタグ固定。タグの付け替えによる supply-chain リスクがある。
 - **影響範囲**: CI / 本番デプロイのサプライチェーン。
 - **発生条件**: 上流アクションのタグが侵害・付け替えされたとき。
-- **ファイルと箇所**: `.github/workflows/ci.yml`、`.github/workflows/publish.yml`、`.github/actions/setup/action.yml`
+- **ファイルと箇所**: `.github/workflows/ci.yml`、`.github/workflows/publish.yml`、`.github/actions/setup/action.yml`、`packages/create-riebeckite/templates/scaffold/deployment/github-actions/*.yml`
 - **再現手順**: workflow を読む。
-- **観測結果**: すべて `@vN`。
+- **監査時の観測結果**: すべて `@vN`。
 - **期待結果**: 主要アクションは commit SHA 固定 + コメントでバージョン表示。
 - **根本原因**: 一般的なタグ固定の慣習。
 - **修正方針**: Dependabot / Renovate で SHA を更新する運用にする。
+- **対応**: すべての third-party action を commit SHA に固定し、`# v4.x.y` コメントを付けた（`benchmark.yml`、`ci.yml`、`publish.yml`、`registry-e2e.yml`、`release.yml`、`.github/actions/setup/action.yml`）。生成サイト向けの GitHub Actions テンプレート（`publish.yml`、`notify-site.yml`、`content-checkout.yml`）も同じ方針で SHA 固定した。
 - **回帰テスト**: CI の workflow lint（`actionlint` 等）で SHA 固定を検査。
 - **完了条件**: すべての third-party action が SHA 固定。
 - **依存関係**: なし。
@@ -685,8 +690,6 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 - RR-013 `content --help`
 - RR-014 フル SSG 性能
 - RR-015 visibility docs
-- RR-016 moderate 依存
-- RR-017 Actions SHA 固定
 - RR-018 テストマトリクス
 - RR-019 a11y の主張と検証
 
@@ -739,7 +742,6 @@ Riebeckite の Core は良質で、公開境界・サニタイザー・増分キ
 9. RR-005: hover-preview を `discoverableEntries` に限定するか、unlisted を含める明確な非公開境界を設計する。デフォルトは除外。
 10. RR-006: security.md / ja を sanitizer の実装に合わせて書き直す。
 11. RR-015: visibility docs を `publish` / `visibility` / `publishAt` に統一。
-12. RR-016 / RR-017: 依存更新と Actions SHA 固定。
 
 ### Step 4: 決定性と性能
 
@@ -966,8 +968,8 @@ Hover Preview (final-foundations .work):
 | RR-013 | P2 | 未修正 | `riebeckite content --help` が usage error。グループ help の実装が必要 |
 | RR-014 | P2 | 未修正（計測更新） | 1,000 ノート full SSG は cold 102s / no-change 31s。履歴の 66.8s no-change より改善したが、依然重い |
 | RR-015 | P2 | 修正済み | `visibility` / `publish` / `publishAt` / `published` の glossary を実装に合わせて EN/JA 修正 |
-| RR-016 | P2 | 未修正 | `pnpm audit --prod` の moderate 2 件（`@hono/node-server`、`minimatch`） |
-| RR-017 | P2 | 未修正 | GitHub Actions はタグ固定のまま。SHA 固定ではない |
+| RR-016 | P2 | 修正済み | `pnpm audit --prod` は 0 件。`@hono/node-server` 2.1.3 / `minimatch` 11.0.1 へ override し、scaffold と website の直接依存も更新 |
+| RR-017 | P2 | 修正済み | すべての third-party GitHub Actions を commit SHA 固定（`# v4.x.y` コメント付き） |
 | RR-018 | P2 | 未修正 / 失敗 | 15 テーマにテストディレクトリなし。`test:visual` は 36 画像差分で失敗（ベースライン未更新）。CI にも未組み込み |
 | RR-019 | P2 | 未修正 | アクセシビリティ「audited」の主張に対する axe / Lighthouse 証拠なし |
 | RR-020 | P3 | 未修正 | 相対 content directory で missing-directory ヒントが出ない |
@@ -1019,11 +1021,9 @@ Hover Preview (final-foundations .work):
 **SHOULD FIX**
 
 1. RR-013 `content --help`。
-2. RR-016 moderate 2 件の依存更新。
-3. RR-017 Actions の SHA 固定。
-4. RR-011 stale lock flaky の仕様化。
-5. RR-018 テーマ視覚回帰の CI 組み込み。
-6. 5,000 ノート full SSG の計測。
+2. RR-011 stale lock flaky の仕様化。
+3. RR-018 テーマ視覚回帰の CI 組み込み。
+4. 5,000 ノート full SSG の計測。
 
 **CAN DEFER**
 

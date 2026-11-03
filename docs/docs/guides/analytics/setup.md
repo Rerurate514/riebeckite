@@ -182,9 +182,9 @@ publicConfig: {
 }
 ```
 
-It can be either a site-relative path or an HTTP(S) URL that accepts a JSON
-`POST` body. `publicConfig` is, as the name says, exposed to the browser — never
-put secrets in it.
+It can be either a site-relative path or an HTTPS URL that accepts a JSON
+`POST` body; plain HTTP is accepted only for localhost. `publicConfig` is, as
+the name says, exposed to the browser — never put secrets in it.
 
 ### `MemoryAnalyticsProvider`
 

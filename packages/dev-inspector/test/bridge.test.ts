@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import test from "node:test";
 import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
@@ -9,6 +12,7 @@ import {
   inspectBridgePublication,
   resolveBridgeSource,
 } from "../src/bridge_inspection.js";
+import { createBridgeMutationStore } from "../src/bridge_mutation.js";
 
 const token = "a".repeat(32);
 
@@ -87,7 +91,7 @@ test("does not enable the Bridge with a short token", () => {
     token: "short",
     getSnapshot: () => undefined,
   });
-  const configure = plugin.configureServer;
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   const stack: unknown[] = [];
   configure({
@@ -211,6 +215,27 @@ test("resolves manifest entries without exposing an absolute source path", () =>
   );
 });
 
+test("requires a one-time approval before applying a planned mutation", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const mutations = createBridgeMutationStore(root);
+  const plan = await mutations.plan([
+    { kind: "create", path: "notes/hello.md", content: "Hello" },
+  ]);
+  const rejected = await mutations.apply(plan.id, "missing");
+  assert.equal((rejected as { applied: boolean }).applied, false);
+  const approval = mutations.approve(plan.id);
+  assert.ok(approval);
+  const applied = await mutations.apply(plan.id, approval.approvalId);
+  assert.equal((applied as { applied: boolean }).applied, true);
+  const replay = await mutations.apply(plan.id, approval.approvalId);
+  assert.equal((replay as { applied: boolean }).applied, false);
+  assert.equal(
+    await fs.readFile(path.join(root, "notes/hello.md"), "utf8"),
+    "Hello",
+  );
+});
+
 function fixtureSnapshot(): CompletedContentBuildSnapshot {
   const entry = {
     slug: "notes/hello",
@@ -269,7 +294,7 @@ function bridge(input?: {
     contentRoot: input?.contentRoot,
     getSnapshot: input?.getSnapshot ?? (() => undefined),
   });
-  const configure = plugin.configureServer;
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   configure({
     middlewares: {

@@ -17,25 +17,61 @@ export function resolveBridgeSource(
 ): Record<string, unknown> {
   if (!snapshot) return unavailable(options.revision);
   const logicalPath = toLogicalPath(input, options.contentRoot);
-  if (!logicalPath)
+  const lookup = input?.trim();
+  if (
+    !logicalPath &&
+    (!lookup || lookup.includes("\0") || lookup.startsWith(".."))
+  )
     return {
       status: "unsupported",
       reason: "INVALID_SOURCE_PATH",
       revision: options.revision,
     };
-  const slug = logicalPath.replace(/\.md$/i, "");
-  const entry = snapshot.manifest.bySlug.get(slug);
+  if (!logicalPath && !lookup)
+    return {
+      status: "unsupported",
+      reason: "INVALID_SOURCE_PATH",
+      revision: options.revision,
+    };
+  const slug = logicalPath?.replace(/\.md$/i, "");
+  const entries = [
+    ...(slug ? [snapshot.manifest.bySlug.get(slug)] : []),
+    snapshot.manifest.byContentId?.get(lookup ?? ""),
+    snapshot.manifest.byPermalink?.get(lookup ?? ""),
+    redirectEntry(snapshot, lookup),
+    ...(snapshot.manifest.byAlias?.get(lookup ?? "") ?? []),
+  ].filter((entry): entry is ContentManifestEntry => entry !== undefined);
+  const unique = [
+    ...new Map(entries.map((entry) => [entry.slug, entry])).values(),
+  ];
+  if (unique.length > 1)
+    return {
+      status: "unsupported",
+      reason: "AMBIGUOUS_SOURCE",
+      candidates: unique.map((entry) => entry.slug).toSorted(),
+      revision: options.revision,
+    };
+  const entry = unique[0];
   if (!entry)
     return {
       status: "not-found",
-      source: { path: logicalPath },
+      source: logicalPath ? { path: logicalPath } : undefined,
       revision: options.revision,
     };
   return {
     status: "resolved",
-    entry: serializeEntry(entry, logicalPath),
+    entry: serializeEntry(entry, logicalPath ?? `${entry.slug}.md`),
     revision: options.revision,
   };
+}
+
+function redirectEntry(
+  snapshot: CompletedContentBuildSnapshot,
+  input: string | undefined,
+): ContentManifestEntry | undefined {
+  if (!input) return undefined;
+  const redirect = snapshot.manifest.redirects.get(input);
+  return redirect ? snapshot.manifest.bySlug.get(redirect.slug) : undefined;
 }
 
 export function inspectBridgePublication(

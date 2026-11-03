@@ -24,6 +24,7 @@ type HonoxApplicationOptions = {
   restartOnChange?: readonly string[];
   reuseClientBuild?: boolean;
   bridgeToken?: string;
+  bridgeMutationToken?: string;
 };
 
 export type ResolvedHonoxApplication = {
@@ -123,9 +124,14 @@ export async function startHonoxDevServer(
   const root = path.resolve(options.root);
   await withWorkingDirectory(root, async () => {
     const previousBridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
+    const previousBridgeMutationToken =
+      process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN;
     if (options.bridgeToken) {
       process.env.RIEBECKITE_BRIDGE_TOKEN = options.bridgeToken;
     }
+    if (options.bridgeMutationToken)
+      process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN =
+        options.bridgeMutationToken;
     const server = await (async () => {
       try {
         return await createServer({ root, server: options.server });
@@ -135,6 +141,11 @@ export async function startHonoxDevServer(
         } else {
           process.env.RIEBECKITE_BRIDGE_TOKEN = previousBridgeToken;
         }
+        if (previousBridgeMutationToken === undefined)
+          delete process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN;
+        else
+          process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN =
+            previousBridgeMutationToken;
       }
     })();
     const restartFiles = new Set(

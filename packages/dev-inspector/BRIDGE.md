@@ -1,7 +1,8 @@
 # Riebeckite Bridge Protocol v1
 
-The Bridge is a development-only, read-only API for editor integrations. It is
-disabled by default. Start a site with an explicit pairing token:
+The Bridge is a development-only editor integration API. Its read capability is
+disabled by default; mutations require a separate explicit capability. Start a
+site with an explicit pairing token:
 
 ```sh
 riebeckite dev --bridge-token <at-least-32-character-token>
@@ -50,9 +51,18 @@ transports, `Origin`, and forwarded headers, and does not enable CORS. Tokens
 are never returned by the API. A missing or wrong token is 403; an unsupported
 protocol is 426 with `INCOMPATIBLE_PROTOCOL` and supported versions.
 
-There are no mutation, filesystem, command execution, or production endpoints.
-The existing content mutation APIs require a separate server-side authorization
-and approval model before any write endpoint can be exposed.
+Mutation is disabled unless `--bridge-mutation-token <at-least-32-character-token>`
+is supplied in addition to the read token. This is a separate capability: the
+read token can create a plan but cannot approve or apply it. `POST
+/__riebeckite/bridge/v1/mutations/plan` accepts existing content mutation
+operations and returns the unmodified `ContentMutationPlan`; `POST
+/mutations/<plan-id>/approve` requires the mutation token and issues a one-time
+approval valid for five minutes; `POST /mutations/<plan-id>/apply` requires both
+the mutation token and that approval. Plans stay server-side, and apply uses the
+existing fingerprint, lock, journal, backup, and path validation implementation.
+
+Recovery and rollback are intentionally not exposed by Bridge yet. They remain
+CLI-only until they have their own destructive-operation approval contract.
 
 Future compatible versions may add optional response fields and capabilities.
 They must not change or remove v1 fields. Incompatible changes require a new

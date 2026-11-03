@@ -174,18 +174,26 @@ function devCommand(): CliCommandDefinition {
         description:
           "Enable the local Bridge API with this pairing token (at least 32 characters).",
       }),
+      cliString("bridge-mutation-token", {
+        description:
+          "Enable explicitly approved Bridge content mutations with a separate token (at least 32 characters).",
+      }),
     ],
     examples: [cliExample("riebeckite dev")],
     validate(input) {
       const token = input.options.bridgeToken;
+      const mutationToken = input.options.bridgeMutationToken;
       return typeof token === "string" && token.length < 32
         ? "--bridge-token must be at least 32 characters."
-        : undefined;
+        : typeof mutationToken === "string" && mutationToken.length < 32
+          ? "--bridge-mutation-token must be at least 32 characters."
+          : undefined;
     },
     async handler(context, input) {
       const { runDev } = await import("../commands/dev.js");
       await runDev(await project(context), {
         bridgeToken: input.options.bridgeToken,
+        bridgeMutationToken: input.options.bridgeMutationToken,
       });
     },
   });

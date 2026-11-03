@@ -28,6 +28,7 @@ export type RiebeckiteIntegrationOptions = {
   appRoot?: string;
   configFile?: string;
   bridgeToken?: string;
+  bridgeMutationToken?: string;
 };
 
 /**
@@ -141,6 +142,9 @@ export function riebeckite(
     }),
     riebeckiteBridge({
       token: options.bridgeToken ?? process.env.RIEBECKITE_BRIDGE_TOKEN,
+      mutationToken:
+        options.bridgeMutationToken ??
+        process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN,
       contentRoot: () => requireApplication(application).contentRoot,
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);

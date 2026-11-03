@@ -1,6 +1,6 @@
 # Riebeckite Bridge Protocol v1
 
-Bridge はエディタ連携用の開発時限定・読み取り専用 API です。標準では無効です。32 文字以上のペアリングトークンを明示してサイトを起動してください。
+Bridge はエディタ連携用の開発時限定 API です。読み取り機能は標準で無効で、変更機能には別の明示的なCapabilityが必要です。32文字以上のペアリングトークンを明示してサイトを起動してください。
 
 ```sh
 riebeckite dev --bridge-token <at-least-32-character-token>
@@ -29,6 +29,8 @@ Preview は公開境界を越えません。公開可能な経路を持たない
 
 プライベートリスナーは `127.0.0.1` だけに bind し、非 loopback の Host・接続、`Origin`、転送ヘッダーを拒否します。CORS は有効にしません。トークンを API 応答に含めることもありません。トークン不正は 403、Protocol 非互換は `INCOMPATIBLE_PROTOCOL` と対応 Version を含む 426 です。
 
-書き換え、ファイル操作、コマンド実行、本番向けのエンドポイントはありません。既存のコンテンツ変更 API をネットワークに公開するには、別途サーバー側の認可と承認モデルが必要です。
+変更APIは、読み取りトークンに加えて32文字以上の `--bridge-mutation-token` を明示した場合だけ有効です。読み取りトークンはPlanの作成にしか使えず、承認・適用には使えません。Planはサーバー内に固定され、Mutationトークンで承認すると5分間だけ一回限りの承認IDが発行されます。Applyは既存のfingerprint、lock、journal、backup、パス検証を利用します。
+
+RecoveryとRollbackは、破壊操作用の独立した承認契約が未完成のためBridgeには公開せず、CLI専用のままです。
 
 将来の互換変更では任意フィールドと Capability だけを追加します。v1 のフィールドを変更・削除する変更は、新しい Protocol Version と endpoint を使います。

@@ -12,12 +12,29 @@ It requires `x-riebeckite-bridge-token` and returns a loopback-only private
 origin. Clients then make requests to that origin with both
 `x-riebeckite-bridge-token` and `x-riebeckite-bridge-protocol: 1`.
 
-`GET /__riebeckite/bridge/v1` remains the v1 status endpoint. It reports the
-server identity, protocol version, capabilities, current revision, and the last
-completed build state. Existing clients can continue to use it unchanged.
+`GET /__riebeckite/bridge/v1` is the v1 status endpoint:
+
+```json
+{
+  "protocolVersion": 1,
+  "server": { "id": "uuid", "version": "0.0.38" },
+  "capabilities": ["status", "page-resolution"],
+  "development": {
+    "available": true,
+    "revision": 0,
+    "build": { "status": "unavailable" }
+  },
+  "inspection": { "available": false }
+}
+```
+
+`build` is `{ "status": "unavailable" }` until a completed development build
+exists. `revision` is the Bridge state revision: it increases whenever content
+changes invalidate the Bridge, and the same value is reported by every endpoint.
+`build.completedAt` is the build timestamp and is not the Bridge revision.
 
 When the HonoX development integration supplies a content root, the following
-read-only endpoints are advertised as optional capabilities:
+read-only endpoints are advertised as additional capabilities:
 
 | Endpoint | Query | Purpose |
 | --- | --- | --- |
@@ -27,28 +44,64 @@ read-only endpoints are advertised as optional capabilities:
 | `/__riebeckite/bridge/v1/diagnostics` | `path` | Return existing content diagnostics related to the source. |
 | `/__riebeckite/bridge/v1/impact` | `path` | Return the relevant outputs from the last completed build. |
 | `/__riebeckite/bridge/v1/events` | — | Open an authenticated server-sent event stream. |
+| `/__riebeckite/bridge/v1/page` | `source` | Protocol v1 compatibility alias for a single-page summary. |
 
 `path` identifies a Markdown source beneath the configured content root. An
 absolute path is accepted only when it resolves beneath that root; all responses
-use a root-relative path and never expose an absolute filesystem path. A source
-response is `resolved`, `not-found`, `unsupported` for an invalid path, or
-`unavailable` while no completed build exists.
+use a root-relative path and never expose an absolute filesystem path. The
+source lookup is shared by every endpoint: it matches the path, the path without
+its `.md` extension, a manifest alias, a content ID, a permalink, and a unique
+suffix such as `hello.md`. A match that is ambiguous is reported as
+`unsupported` with `AMBIGUOUS_SOURCE`; it is never resolved by discovery order.
+
+A source response is `resolved`, `not-found`, `unsupported` for an invalid or
+ambiguous path, or `unavailable` while no completed build exists. An unavailable
+manifest is not the same as a missing page.
+
+`GET /__riebeckite/bridge/v1/page?source=<vault-relative-markdown-path>` is the
+Protocol v1 compatibility endpoint used by the Obsidian client. It uses the same
+source resolution as `/source` and returns a flat summary:
+
+```json
+{
+  "status": "resolved",
+  "source": "notes/hello.md",
+  "page": "/ja/hello/",
+  "visibility": "public",
+  "routable": true,
+  "discoverable": true,
+  "locale": "ja",
+  "publishAt": null,
+  "revision": 0,
+  "productionUrl": null
+}
+```
+
+The compatibility states are `resolved`, `unavailable`, `not-found`, and
+`invalid-source`. An ambiguous source returns `unsupported` with its reason. The
+endpoint is kept for the lifetime of Protocol v1 and will be removed only with a
+future incompatible protocol version, after clients migrate to `/source`,
+`/publication`, and `/preview`. It shares their resolution code and does not
+duplicate manifest logic.
 
 Preview does not bypass publishing boundaries. Draft and scheduled entries that
 are not publicly routable return `NOT_PUBLICLY_ROUTABLE`. The Bridge reports a
-local development URL only; it does not infer or fabricate a production URL.
-Diagnostics include only positions supplied by Riebeckite. Build impact is a
-last-build result, not a dry-run prediction; `completeness` is `unknown` when a
-full regeneration was required.
+local development URL only. A production URL is resolved only from the
+configured `site.baseUrl`; it is never inferred or fabricated. Diagnostics
+include only positions supplied by Riebeckite. Build impact is a last-build
+result, not a dry-run prediction; `completeness` is `unknown` when a full
+regeneration was required.
 
-The event stream first sends `state`, then sends `content.changed` with an
-increasing revision whenever the development content watcher invalidates the
-Bridge. Re-fetch the relevant endpoint after an event.
+The event stream first sends `state` with the current revision and build status,
+then sends `content.changed` with an increasing revision whenever the
+development content watcher invalidates the Bridge. Re-fetch the relevant
+endpoint after an event.
 
 The private listener binds to `127.0.0.1`, rejects non-loopback hosts and
-transports, `Origin`, and forwarded headers, and does not enable CORS. Tokens
-are never returned by the API. A missing or wrong token is 403; an unsupported
-protocol is 426 with `INCOMPATIBLE_PROTOCOL` and supported versions.
+transports, `Origin`, and forwarded headers, and does not enable CORS. A missing
+or wrong token is 403. An unsupported protocol is 426 with
+`INCOMPATIBLE_PROTOCOL` and the supported versions. Tokens are never returned by
+the API.
 
 There are no mutation, filesystem, command execution, or production endpoints.
 The existing content mutation APIs require a separate server-side authorization

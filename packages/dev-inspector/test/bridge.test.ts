@@ -5,6 +5,7 @@ import type { ViteDevServer } from "vite";
 import { riebeckiteBridge } from "../src/bridge.js";
 import {
   inspectBridgeImpact,
+  inspectBridgePage,
   inspectBridgePreview,
   inspectBridgePublication,
   resolveBridgeSource,
@@ -43,7 +44,7 @@ test("serves authenticated status from its private loopback listener", async (t)
     {
       protocolVersion: 1,
       server: { version: "0.0.38" },
-      capabilities: ["status"],
+      capabilities: ["status", "page-resolution"],
       development: {
         available: true,
         revision: 0,
@@ -52,6 +53,25 @@ test("serves authenticated status from its private loopback listener", async (t)
       inspection: { available: false },
     },
   );
+});
+
+test("advertises inspection capabilities when a content root is supplied", async (t) => {
+  const { bootstrap, close } = bridge({ contentRoot: "/vault" });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+  const response = await bridgeRequest(origin, "/__riebeckite/bridge/v1");
+  assert.equal(response.status, 200);
+  const body = (await response.json()) as { capabilities: string[] };
+  assert.deepEqual(body.capabilities, [
+    "status",
+    "source-resolution",
+    "page-resolution",
+    "preview",
+    "events",
+    "diagnostics",
+    "publication",
+    "build-impact",
+  ]);
 });
 
 test("rejects invalid pairings and incompatible protocols", async (t) => {
@@ -64,11 +84,7 @@ test("rejects invalid pairings and incompatible protocols", async (t) => {
   });
   assert.equal(rejected.statusCode, 403);
 
-  const boot = await callBootstrap(bootstrap, {
-    host: "127.0.0.1:3000",
-    token,
-  });
-  const { origin } = JSON.parse(boot.body) as { origin: string };
+  const { origin } = await bootstrapOrigin(bootstrap);
   const response = await fetch(`${origin}/__riebeckite/bridge/v1`, {
     headers: {
       "x-riebeckite-bridge-token": token,
@@ -87,7 +103,7 @@ test("does not enable the Bridge with a short token", () => {
     token: "short",
     getSnapshot: () => undefined,
   });
-  const configure = plugin.configureServer;
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   const stack: unknown[] = [];
   configure({
@@ -99,11 +115,7 @@ test("does not enable the Bridge with a short token", () => {
 test("rejects forwarded and cross-origin private requests", async (t) => {
   const { bootstrap, close } = bridge();
   t.after(close);
-  const boot = await callBootstrap(bootstrap, {
-    host: "127.0.0.1:3000",
-    token,
-  });
-  const { origin } = JSON.parse(boot.body) as { origin: string };
+  const { origin } = await bootstrapOrigin(bootstrap);
 
   for (const headers of [
     { origin: "http://127.0.0.1:3000" },
@@ -116,30 +128,164 @@ test("rejects forwarded and cross-origin private requests", async (t) => {
   }
 });
 
-test("serves a source resolution through the authenticated Bridge endpoint", async (t) => {
+test("rejects unsupported methods and unknown paths", async (t) => {
+  const { bootstrap, close } = bridge();
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+
+  const post = await fetch(`${origin}/__riebeckite/bridge/v1`, {
+    method: "POST",
+    headers: {
+      "x-riebeckite-bridge-token": token,
+      "x-riebeckite-bridge-protocol": "1",
+    },
+  });
+  assert.equal(post.status, 405);
+  const unknown = await bridgeRequest(origin, "/__riebeckite/bridge/v1/nope");
+  assert.equal(unknown.status, 404);
+});
+
+test("resolves a public page through the Obsidian page endpoint", async (t) => {
   const { bootstrap, close } = bridge({
-    contentRoot: "/vault",
+    publicOrigin: "https://example.com",
     getSnapshot: fixtureSnapshot,
   });
   t.after(close);
-  const boot = await callBootstrap(bootstrap, {
-    host: "127.0.0.1:3000",
-    token,
-  });
-  const { origin } = JSON.parse(boot.body) as { origin: string };
+  const { origin } = await bootstrapOrigin(bootstrap);
 
-  const response = await fetch(
-    `${origin}/__riebeckite/bridge/v1/source?path=notes/hello.md`,
-    {
-      headers: {
-        "x-riebeckite-bridge-token": token,
-        "x-riebeckite-bridge-protocol": "1",
-      },
-    },
+  const response = await bridgeRequest(
+    origin,
+    "/__riebeckite/bridge/v1/page?source=notes%2Fhello.md",
   );
-
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), {
+    status: "resolved",
+    source: "notes/hello.md",
+    page: "/ja/hello/",
+    visibility: "public",
+    routable: true,
+    discoverable: true,
+    locale: "ja",
+    publishAt: null,
+    revision: 0,
+    productionUrl: "https://example.com/ja/hello/",
+  });
+});
+
+test("never reports a draft as public and never infers a production URL", async (t) => {
+  const { bootstrap, close } = bridge({ getSnapshot: fixtureSnapshot });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+
+  const response = await bridgeRequest(
+    origin,
+    "/__riebeckite/bridge/v1/page?source=notes%2Fdraft.md",
+  );
+  assert.deepEqual(await response.json(), {
+    status: "resolved",
+    source: "notes/draft.md",
+    page: "/ja/draft/",
+    visibility: "draft",
+    routable: false,
+    discoverable: false,
+    locale: "ja",
+    publishAt: "2026-11-05T00:00:00.000Z",
+    revision: 0,
+    productionUrl: null,
+  });
+});
+
+test("distinguishes an unavailable manifest from a missing page", async (t) => {
+  const unavailable = bridge();
+  t.after(unavailable.close);
+  const { origin: unavailableOrigin } = await bootstrapOrigin(
+    unavailable.bootstrap,
+  );
+  assert.deepEqual(
+    await (
+      await bridgeRequest(
+        unavailableOrigin,
+        "/__riebeckite/bridge/v1/page?source=notes%2Fhello.md",
+      )
+    ).json(),
+    { status: "unavailable" },
+  );
+
+  const ready = bridge({ getSnapshot: fixtureSnapshot });
+  t.after(ready.close);
+  const { origin: readyOrigin } = await bootstrapOrigin(ready.bootstrap);
+  const missing = await bridgeRequest(
+    readyOrigin,
+    "/__riebeckite/bridge/v1/page?source=notes%2Fmissing.md",
+  );
+  assert.deepEqual(await missing.json(), {
+    status: "not-found",
+    source: "notes/missing.md",
+  });
+});
+
+test("rejects invalid page sources and reports ambiguous sources honestly", async (t) => {
+  const { bootstrap, close } = bridge({ getSnapshot: fixtureSnapshot });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+
+  for (const source of ["..%2Fsecret.md", "%2Fetc%2Fpasswd.md", ""]) {
+    const response = await bridgeRequest(
+      origin,
+      `/__riebeckite/bridge/v1/page?source=${source}`,
+    );
+    assert.deepEqual(await response.json(), { status: "invalid-source" });
+  }
+  const ambiguous = await bridgeRequest(
+    origin,
+    "/__riebeckite/bridge/v1/page?source=shared.md",
+  );
+  assert.deepEqual(await ambiguous.json(), {
+    status: "unsupported",
+    source: "shared.md",
+    reason: "AMBIGUOUS_SOURCE",
+    candidates: ["a/shared", "b/shared"],
+  });
+});
+
+test("resolves the same source through both page and source endpoints", async (t) => {
+  const { bootstrap, close } = bridge({
+    contentRoot: "/vault",
+    publicOrigin: "https://example.com",
+    getSnapshot: fixtureSnapshot,
+  });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+
+  const page = (await (
+    await bridgeRequest(
+      origin,
+      "/__riebeckite/bridge/v1/page?source=notes%2Fhello.md",
+    )
+  ).json()) as Record<string, unknown>;
+  const source = (await (
+    await bridgeRequest(
+      origin,
+      "/__riebeckite/bridge/v1/source?path=notes%2Fhello.md",
+    )
+  ).json()) as { entry: Record<string, unknown>; revision: number };
+
+  assert.equal(page.status, "resolved");
+  assert.equal(page.page, source.entry.permalink);
+  assert.equal(page.visibility, source.entry.visibility);
+  assert.equal(page.routable, source.entry.routable);
+  assert.equal(page.locale, source.entry.locale);
+  assert.equal(page.revision, source.revision);
+});
+
+test("resolves a suffix and a content ID through the shared source resolution", () => {
+  const snapshot = fixtureSnapshot();
+  const options = {
+    contentRoot: "/vault",
+    revision: 4,
+    developmentOrigin: "http://127.0.0.1:5173/",
+  };
+  assert.deepEqual(resolveBridgeSource(snapshot, "/vault/notes/hello.md", options), {
     status: "resolved",
     entry: {
       slug: "notes/hello",
@@ -152,63 +298,111 @@ test("serves a source resolution through the authenticated Bridge endpoint", asy
       discoverable: true,
       redirects: [],
     },
-    revision: 0,
-  });
-});
-
-test("resolves manifest entries without exposing an absolute source path", () => {
-  const snapshot = fixtureSnapshot();
-  const options = {
-    contentRoot: "/vault",
     revision: 4,
-    developmentOrigin: "http://127.0.0.1:5173/",
-  };
-  assert.deepEqual(
-    resolveBridgeSource(snapshot, "/vault/notes/hello.md", options),
-    {
-      status: "resolved",
-      entry: {
-        slug: "notes/hello",
-        contentId: "hello-id",
-        source: { path: "notes/hello.md" },
-        permalink: "/ja/hello/",
-        locale: "ja",
-        visibility: "public",
-        routable: true,
-        discoverable: true,
-        redirects: [],
-      },
-      revision: 4,
-    },
+  });
+  assert.equal(
+    (resolveBridgeSource(snapshot, "hello.md", options).entry as { slug: string })
+      .slug,
+    "notes/hello",
+  );
+  assert.equal(
+    (resolveBridgeSource(snapshot, "hello-id", options).entry as { slug: string })
+      .slug,
+    "notes/hello",
   );
   assert.deepEqual(resolveBridgeSource(snapshot, "../secret.md", options), {
     status: "unsupported",
     reason: "INVALID_SOURCE_PATH",
     revision: 4,
   });
+});
+
+test("does not offer a preview for non-routable pages", () => {
+  const snapshot = fixtureSnapshot();
+  const options = {
+    contentRoot: "/vault",
+    revision: 4,
+    developmentOrigin: "http://127.0.0.1:5173/",
+    publicOrigin: "https://example.com",
+  };
+  assert.deepEqual(inspectBridgePreview(snapshot, "notes/hello.md", options).preview, {
+    available: true,
+    developmentUrl: "http://127.0.0.1:5173/ja/hello/",
+    productionUrl: "https://example.com/ja/hello/",
+  });
+  assert.deepEqual(inspectBridgePreview(snapshot, "notes/draft.md", options).preview, {
+    available: false,
+    reason: "NOT_PUBLICLY_ROUTABLE",
+  });
   assert.deepEqual(
-    inspectBridgePreview(snapshot, "notes/hello.md", options).preview,
+    inspectBridgePreview(snapshot, "notes/hello.md", {
+      ...options,
+      developmentOrigin: undefined,
+    }).preview,
+    { available: false, reason: "DEVELOPMENT_SERVER_URL_UNAVAILABLE" },
+  );
+});
+
+test("reports publication state without treating drafts as routable", () => {
+  const snapshot = fixtureSnapshot();
+  const options = { contentRoot: "/vault", revision: 4 };
+  const draft = inspectBridgePublication(
+    snapshot,
+    "notes/draft.md",
+    options,
+  ).publication as Record<string, unknown>;
+  assert.equal(draft.visibility, "draft");
+  assert.equal(draft.routable, false);
+  assert.deepEqual(draft.reasons, ["visibility is draft"]);
+  const page = inspectBridgePage(snapshot, "notes/hello.md", options);
+  assert.equal(page.visibility, "public");
+  assert.equal(page.routable, true);
+});
+
+test("returns content diagnostics and last-build impact", () => {
+  const snapshot = fixtureSnapshot();
+  const options = { contentRoot: "/vault", revision: 4 };
+  const diagnostics = resolveBridgeSource(snapshot, "notes/hello.md", options);
+  assert.equal(diagnostics.status, "resolved");
+  assert.deepEqual(
+    inspectBridgePreview(snapshot, "notes/hello.md", {
+      ...options,
+      developmentOrigin: "http://127.0.0.1:5173/",
+    }).preview,
     {
       available: true,
       developmentUrl: "http://127.0.0.1:5173/ja/hello/",
-      productionUrl: undefined,
+      productionUrl: null,
     },
   );
   assert.equal(
-    (
-      inspectBridgePublication(snapshot, "notes/hello.md", options)
-        .publication as { visibility: string }
-    ).visibility,
-    "public",
-  );
-  assert.equal(
-    (
-      inspectBridgeImpact(snapshot, "notes/hello.md", options).impact as {
-        completeness: string;
-      }
-    ).completeness,
+    (inspectBridgeImpact(snapshot, "notes/hello.md", options).impact as {
+      completeness: string;
+    }).completeness,
     "complete",
   );
+});
+
+test("streams the State and content.changed event schema", async (t) => {
+  const { bootstrap, close } = bridge({ getSnapshot: fixtureSnapshot });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+  const controller = new AbortController();
+  t.after(() => controller.abort());
+  const response = await fetch(`${origin}/__riebeckite/bridge/v1/events`, {
+    headers: {
+      "x-riebeckite-bridge-token": token,
+      "x-riebeckite-bridge-protocol": "1",
+    },
+    signal: controller.signal,
+  });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type") ?? "", /text\/event-stream/);
+  const reader = response.body?.getReader();
+  assert.ok(reader);
+  const first = await reader.read();
+  const text = new TextDecoder().decode(first.value);
+  assert.match(text, /^event: state\ndata: \{"revision":0,"build":"ready"\}\n\n$/);
 });
 
 function fixtureSnapshot(): CompletedContentBuildSnapshot {
@@ -220,22 +414,59 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
       slug: "notes/hello",
       permalink: "/ja/hello/",
       language: "ja",
+      redirects: [],
     },
     title: "Hello",
     frontmatter: {},
-    publishing: { visibility: "public", routable: true, discoverable: true },
+    publishing: {
+      visibility: "public",
+      routable: true,
+      discoverable: true,
+    },
     html: "",
     tags: [],
     links: [],
     backlinks: [],
     assets: [],
   };
+  const draft = {
+    ...entry,
+    slug: "notes/draft",
+    contentId: "draft-id",
+    permalink: "/ja/draft/",
+    publicLocation: {
+      slug: "notes/draft",
+      permalink: "/ja/draft/",
+      language: "ja",
+      redirects: [],
+    },
+    publishing: {
+      visibility: "draft",
+      routable: false,
+      discoverable: false,
+      publishAt: new Date("2026-11-05T00:00:00.000Z"),
+    },
+  };
   return {
+    completedAt: 42,
     manifest: {
-      bySlug: new Map([[entry.slug, entry]]),
+      bySlug: new Map([
+        [entry.slug, entry],
+        [draft.slug, draft],
+      ]),
+      byContentId: new Map([[entry.contentId, entry]]),
+      byAlias: new Map(),
+      byPermalink: new Map([[entry.permalink, entry]]),
+      contentIndex: new Map([
+        ["notes/hello", "notes/hello"],
+        ["hello", "notes/hello"],
+        ["notes/draft", "notes/draft"],
+      ]),
+      contentIndexAmbiguities: new Map([
+        ["shared", ["a/shared", "b/shared"]],
+      ]),
       redirects: new Map(),
       diagnostics: [],
-      finalHtmlDiagnostics: [],
     },
     finalHtmlDiagnostics: [],
     outputChangeSet: {
@@ -257,6 +488,7 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
 
 function bridge(input?: {
   contentRoot?: string;
+  publicOrigin?: string;
   getSnapshot?: () => CompletedContentBuildSnapshot | undefined;
 }): {
   bootstrap: (request: unknown, response: unknown) => Promise<void>;
@@ -267,14 +499,16 @@ function bridge(input?: {
   const plugin = riebeckiteBridge({
     token,
     contentRoot: input?.contentRoot,
+    publicOrigin: input?.publicOrigin,
     getSnapshot: input?.getSnapshot ?? (() => undefined),
   });
-  const configure = plugin.configureServer;
+  const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   configure({
     middlewares: {
       use: (route: string, handle: unknown) => stack.push({ route, handle }),
     },
+    resolvedUrls: { local: ["http://127.0.0.1:5173/"] },
     httpServer: {
       address: () => ({ address: "127.0.0.1" }),
       once: (_event: string, handler: () => void) => (close = handler),
@@ -291,6 +525,26 @@ function bridge(input?: {
     ) => Promise<void>,
     close: () => close?.(),
   };
+}
+
+async function bootstrapOrigin(
+  bootstrap: (request: unknown, response: unknown) => Promise<void>,
+): Promise<{ origin: string }> {
+  const boot = await callBootstrap(bootstrap, {
+    host: "127.0.0.1:3000",
+    token,
+  });
+  assert.equal(boot.statusCode, 200);
+  return JSON.parse(boot.body) as { origin: string };
+}
+
+function bridgeRequest(origin: string, path: string): Promise<Response> {
+  return fetch(`${origin}${path}`, {
+    headers: {
+      "x-riebeckite-bridge-token": token,
+      "x-riebeckite-bridge-protocol": "1",
+    },
+  });
 }
 
 async function callBootstrap(

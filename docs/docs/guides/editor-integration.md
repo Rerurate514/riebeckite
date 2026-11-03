@@ -16,7 +16,7 @@ riebeckite dev --bridge-token <at-least-32-character-token>
 
 The Bridge is disabled without this token. First request `GET /__riebeckite/bridge/bootstrap` from the development server with `x-riebeckite-bridge-token`. Use the returned loopback origin for all Bridge requests, adding both that token and `x-riebeckite-bridge-protocol: 1`.
 
-Use `GET /__riebeckite/bridge/v1` to detect supported capabilities. Editor tools can then resolve a source with `/source?path=notes/example.md`, fetch preview, publication, diagnostics, or last-build impact for that source, and subscribe to `/events` to refresh after content changes.
+Use `GET /__riebeckite/bridge/v1` to detect supported capabilities. Editor tools can then resolve a source with `/source?path=notes/example.md`, fetch preview, publication, diagnostics, or last-build impact for that source, and subscribe to `/events` to refresh after content changes. The `/page?source=notes/example.md` endpoint is kept as a Protocol v1 compatibility alias for the Obsidian client, and shares its resolution code with `/source`. New integrations should use `/source`, `/publication`, and `/preview`.
 
 The Bridge is intentionally read-only. It never exposes absolute source paths, does not provide private previews for non-routable content, and does not infer production URLs. Content edits and bulk mutations remain local CLI or application operations until a server-side authorization and approval model exists.
 

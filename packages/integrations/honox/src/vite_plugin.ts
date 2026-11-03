@@ -142,6 +142,7 @@ export function riebeckite(
     riebeckiteBridge({
       token: options.bridgeToken ?? process.env.RIEBECKITE_BRIDGE_TOKEN,
       contentRoot: () => requireApplication(application).contentRoot,
+      publicOrigin: getConfig().site.baseUrl || undefined,
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;

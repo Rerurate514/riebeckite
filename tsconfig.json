@@ -43,5 +43,5 @@
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]
     }
   },
-  "include": ["./riebeckite.config.ts"]
+  "include": []
 }

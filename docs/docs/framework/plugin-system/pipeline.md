@@ -123,7 +123,7 @@ assets: [{
 }]
 ```
 
-Do not copy plugin CSS into `apps/web`, and never reference `/node_modules` directly from the browser. The integration resolves the module specifier and delivers it to the browser:
+Do not copy plugin CSS into `website`, and never reference `/node_modules` directly from the browser. The integration resolves the module specifier and delivers it to the browser:
 
 ```mermaid
 flowchart LR

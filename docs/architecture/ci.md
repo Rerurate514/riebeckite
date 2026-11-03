@@ -15,7 +15,7 @@ Tier 2 is selected from the changed paths. A selector failure, an empty comparis
 | `packages/core/**`, `packages/cli/**`, integrations | external consumer, fast path, fingerprint, preset fast path |
 | plugins and themes | plugin DX, external consumer, fast path, preset fast path |
 | `packages/create-riebeckite/**` | scaffold golden, external consumer, fast path, preset fast path |
-| `apps/web/**` | browser and production asset integrity |
+| `website/**` | browser and production asset integrity |
 | documentation only | none; Tier 1 documentation contract remains required |
 | shared, unknown, cache/build configuration | every Tier 2 contract |
 

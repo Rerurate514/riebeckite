@@ -8,8 +8,8 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
 const styles = [
-  read("../../../packages/integrations/honox/style.css"),
-  read("../../../packages/themes/default/styles/theme.css"),
+  read("../../packages/integrations/honox/style.css"),
+  read("../../packages/themes/default/styles/theme.css"),
 ].join("\n");
 
 let browser: Browser | null = null;

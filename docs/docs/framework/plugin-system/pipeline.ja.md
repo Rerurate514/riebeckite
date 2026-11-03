@@ -204,7 +204,7 @@ flowchart LR
     Integration --> Browser
 ```
 
-プラグイン固有の CSS を `apps/web` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグイン固有の CSS を `website` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
 ## 3-11. CSS フック
 

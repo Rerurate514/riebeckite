@@ -8,9 +8,9 @@ const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../../..",
 );
-export const workParent = path.join(repoRoot, "apps", "web", ".riebeckite");
+export const workParent = path.join(repoRoot, "website", ".riebeckite");
 const appRequire = createRequire(
-  path.join(repoRoot, "apps", "web", "package.json"),
+  path.join(repoRoot, "website", "package.json"),
 );
 
 type ViteLogger = {
@@ -37,8 +37,7 @@ const { default: viteBuild } = (await import(
   pathToFileURL(
     path.join(
       repoRoot,
-      "apps",
-      "web",
+      "website",
       "node_modules",
       "@hono",
       "vite-build",

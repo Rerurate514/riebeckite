@@ -73,7 +73,7 @@ The rule of thumb is:
 - Add a portable type or lifecycle contract to **Core**.
 - Add reusable content behavior to a **plugin**.
 - Add Vite, HonoX, or platform glue to an **integration**.
-- Add a route, page composition, or island to **`apps/web`**.
+- Add a route, page composition, or island to **`website`**.
 - Add visual tokens and CSS only to a **theme**.
 
 If you are unsure, put the feature in **the innermost package that can support

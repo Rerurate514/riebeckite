@@ -89,12 +89,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            apps/web/.riebeckite/cache
-            apps/web/.riebeckite/ssg-output-cache.json
-            apps/web/.riebeckite/ssg-output-cache.entries
-            apps/web/.riebeckite/ssg-output-cache.fast-path.json
-            apps/web/.riebeckite/build-output.json
-            apps/web/dist
+            website/.riebeckite/cache
+            website/.riebeckite/ssg-output-cache.json
+            website/.riebeckite/ssg-output-cache.entries
+            website/.riebeckite/ssg-output-cache.fast-path.json
+            website/.riebeckite/build-output.json
+            website/dist
           key: site-build-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.run_id }}
           restore-keys: |
             site-build-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-

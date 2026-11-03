@@ -15,7 +15,7 @@ sidebar:
 | `packages/plugins/*` | reusable Markdown, HTML, metadata, asset, diagnostic, browser, and [[glossary/page-type|Page Type]] capabilities | application routes or framework-specific routing |
 | `packages/integrations/*` | framework, bundler, and platform adapters | reusable domain policy already represented by Core |
 | `packages/themes/*` | presentation configuration and CSS | components, routes, plugins, or content loading |
-| `apps/web` | the concrete routes, islands, application components, and Worker deployment | reusable framework contracts |
+| `website` | the concrete routes, islands, application components, and Worker deployment | reusable framework contracts |
 | `packages/cli` | Node-oriented commands and build tooling | request-time application behavior |
 
 ```text
@@ -124,10 +124,10 @@ A theme owns presentation, but not the site's structure. A theme never owns:
 ## Site Application
 
 ```text
-apps/web
+website
 ```
 
-`apps/web` is the concrete Riebeckite site application. It owns:
+`website` is the concrete Riebeckite site application. It owns:
 
 - routes
 - application components

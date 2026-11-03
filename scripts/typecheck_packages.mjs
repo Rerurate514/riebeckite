@@ -5,13 +5,13 @@
 // verify types across the whole workspace without paying for esbuild bundling.
 //
 // Coverage is deliberately wider than `build_package.mjs`. It used to omit
-// `strict`, skip test trees entirely and ignore `apps/web`, which is how the
+// `strict`, skip test trees entirely and ignore `website`, which is how the
 // twelve real errors already present in production sources went unnoticed. The
 // check now runs two workspace-wide tiers plus the app:
 //
 //   sources: every non-test file under `strict`
 //   tests:   test files under `strict` with the fixture-shaped flags relaxed
-//   web:     `apps/web` with its own DOM, worker and client typings
+//   web:     `website` with its own DOM, worker and client typings
 //
 // Each tier is a single program. Per-package programs re-parsed and re-checked
 // the same dependency graph (most packages import `@riebeckite/core`) dozens of
@@ -163,7 +163,7 @@ if (testFiles.length > 0) {
   checked += 1;
 }
 
-const webConfigPath = path.join(repositoryRoot, "apps/web/tsconfig.json");
+const webConfigPath = path.join(repositoryRoot, "website/tsconfig.json");
 if (fs.existsSync(webConfigPath)) {
   const webConfig = ts.getParsedCommandLineOfConfigFile(
     webConfigPath,
@@ -177,7 +177,7 @@ if (fs.existsSync(webConfigPath)) {
   );
   if (webConfig) {
     totalErrors += reportErrors(
-      "apps/web",
+      "website",
       ts.createProgram({
         rootNames: webConfig.fileNames,
         options: { ...webConfig.options, noEmit: true },

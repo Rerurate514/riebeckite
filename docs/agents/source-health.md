@@ -6,7 +6,7 @@ title: Source Health Audit
 ## Method
 
 `pnpm check:source-health` parses every non-test TypeScript and JavaScript source
-file under `packages`, `apps`, and `scripts`. It measures physical lines and
+file under `packages`, `website`, and `scripts`. It measures physical lines and
 function bodies with the TypeScript AST, follows runtime imports, and reports:
 
 - files at or above 400 lines (800+ requires a split review)

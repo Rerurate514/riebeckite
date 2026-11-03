@@ -22,9 +22,9 @@ const readWithImports = (relativePath: string): string =>
 
 const styles = [
   readWithImports("../app/components/home/style.css"),
-  read("../../../packages/themes/default/styles/theme.css"),
-  read("../../../packages/plugins/code-enhance/style.css"),
-  read("../../../packages/plugins/color-mode/style.css"),
+  read("../../packages/themes/default/styles/theme.css"),
+  read("../../packages/plugins/code-enhance/style.css"),
+  read("../../packages/plugins/color-mode/style.css"),
 ].join("\n");
 
 let browser: Browser | null = null;

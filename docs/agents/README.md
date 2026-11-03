@@ -29,8 +29,7 @@ packages/
   integrations/*/       framework, bundler, and platform bridges
   themes/*/             presentation-only packages
   cli/                  Node.js build-time tooling
-apps/
-  web/                  concrete application: routes, islands, site UI
+website/                concrete application: routes, islands, site UI
 docs/
   agents/               this rule-oriented guide
   agents/adr/           architecture decision records
@@ -49,7 +48,7 @@ Theme → Core theme contract
 CLI → Core + Integration where required
 ```
 
-Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugin, Theme, or CLI. Keep site-specific behavior in `apps/web`, and keep HonoX/Vite behavior in `packages/integrations/*`.
+Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugin, Theme, or CLI. Keep site-specific behavior in `website`, and keep HonoX/Vite behavior in `packages/integrations/*`.
 
 ## Global invariants
 

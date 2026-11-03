@@ -20,7 +20,7 @@ const root = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const appRoot = path.join(root, "apps", "web");
+const appRoot = path.join(root, "website");
 const appRequire = createRequire(path.join(appRoot, "package.json"));
 const execFileAsync = promisify(execFile);
 const args = parseArgs(process.argv.slice(2));

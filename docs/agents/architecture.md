@@ -11,7 +11,7 @@ title: Architecture Rules for Agents
 | `packages/plugins/*` | reusable content, HTML, assets, diagnostics, and browser behavior |
 | `packages/integrations/*` | framework/bundler/platform glue; HonoX/Vite is here |
 | `packages/themes/*` | presentation-only CSS/configuration |
-| `apps/web` | concrete routes, islands, components, and deployment integration |
+| `website` | concrete routes, islands, components, and deployment integration |
 | `packages/cli` | Node/build-time commands |
 
 ```text
@@ -114,7 +114,7 @@ pnpm test:checks           # regression fixtures for both checkers
 pnpm check:core-api        # reviewed Core public surface
 ```
 
-`check:dependencies` covers every workspace package, not only `apps/web`.
+`check:dependencies` covers every workspace package, not only `website`.
 `check:core-api` also verifies runtime value exports from `dist` when the
 package has been built.
 

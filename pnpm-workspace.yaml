@@ -3,7 +3,7 @@ packages:
   - 'packages/integrations/*'
   - 'packages/plugins/*'
   - 'packages/themes/*'
-  - 'apps/*'
+  - 'website'
   - '!tests/**'
   - '!tests/external-site/**'
 catalog:

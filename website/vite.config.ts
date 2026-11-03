@@ -12,7 +12,7 @@ import honox from "honox/vite";
 import { defineConfig } from "vite";
 
 const appRoot = fileURLToPath(new URL(".", import.meta.url));
-const workspaceRoot = path.resolve(appRoot, "../..");
+const workspaceRoot = path.resolve(appRoot, "..");
 
 export default defineConfig({
   server: {
@@ -50,7 +50,6 @@ export default defineConfig({
     tailwindcss(),
     ...riebeckiteVite({
       appRoot,
-      configRoot: workspaceRoot,
       workspaceRoot,
     }),
     build(),

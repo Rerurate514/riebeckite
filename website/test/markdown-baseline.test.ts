@@ -7,7 +7,7 @@ const read = (relativePath: string) =>
   readFileSync(fileURLToPath(new URL(relativePath, import.meta.url)), "utf8");
 
 const styleCss = read("../app/style.css");
-const markdownCss = read("../../../packages/integrations/honox/style.css");
+const markdownCss = read("../../packages/integrations/honox/style.css");
 
 test("the Markdown baseline lives in the Honox integration", () => {
   assert.doesNotMatch(styleCss, /@tailwindcss\/typography/);

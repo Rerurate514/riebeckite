@@ -23,11 +23,11 @@ function tokenPairs(body: string): string[] {
 }
 
 function themeStyleFiles(): Array<{ name: string; relative: string }> {
-  const themesDir = new URL("../../../packages/themes/", import.meta.url);
+  const themesDir = new URL("../../packages/themes/", import.meta.url);
   const themes: Array<{ name: string; relative: string }> = [];
   for (const entry of readdirSync(themesDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const relative = `../../../packages/themes/${entry.name}/styles/theme.css`;
+    const relative = `../../packages/themes/${entry.name}/styles/theme.css`;
     if (!existsSync(new URL(relative, import.meta.url))) continue;
     const css = read(relative);
     const name = /data-rb-theme="([^"]+)"/.exec(css)?.[1];
@@ -53,11 +53,11 @@ const PUBLIC_COLOR_TOKENS = [
 test("A7: dark mode has a single mechanism, no .dark class", () => {
   const relativePaths = [
     ...themeStyleFiles().map((theme) => theme.relative),
-    ...readdirSync(new URL("../../../packages/plugins/", import.meta.url), {
+    ...readdirSync(new URL("../../packages/plugins/", import.meta.url), {
       withFileTypes: true,
     })
       .filter((entry) => entry.isDirectory())
-      .map((entry) => `../../../packages/plugins/${entry.name}/style.css`)
+      .map((entry) => `../../packages/plugins/${entry.name}/style.css`)
       .filter((relative) => existsSync(new URL(relative, import.meta.url))),
   ];
 
@@ -136,12 +136,12 @@ const THEME_ROOT_SCOPE = ":is(:root, .rb-theme-root)";
 const PORTALED_DARK_PLUGINS = new Set(["hover-preview"]);
 
 test("P2-A2: plugin dark overrides are scoped to the theme root, not just the document root", () => {
-  const pluginsDir = new URL("../../../packages/plugins/", import.meta.url);
+  const pluginsDir = new URL("../../packages/plugins/", import.meta.url);
   const documentRootOnly =
     /^\s*(?:html|:root)(?:\[data-rb-mode="dark"\]|:not\(\[data-rb-mode\]\))/;
   for (const entry of readdirSync(pluginsDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
-    const relative = `../../../packages/plugins/${entry.name}/style.css`;
+    const relative = `../../packages/plugins/${entry.name}/style.css`;
     if (!existsSync(new URL(relative, import.meta.url))) continue;
     const css = read(relative);
 

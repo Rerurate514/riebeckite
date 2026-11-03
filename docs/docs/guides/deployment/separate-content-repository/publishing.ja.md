@@ -76,7 +76,7 @@ flowchart LR
 ![[attachments/report.pdf]]
 ```
 
-URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `apps/web/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
+URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
 
 この実装の流れは次のとおりです。
 

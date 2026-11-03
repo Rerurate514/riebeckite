@@ -29,7 +29,7 @@ const EXCLUDED_SEGMENTS = new Set([
 
 const EXCLUDED_PREFIXES = [
   "tests/external-site/fixture",
-  "apps/web/content",
+  "website/content",
   "packages/create-riebeckite/test/__golden__",
 ];
 

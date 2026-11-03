@@ -91,7 +91,7 @@ assets: [
 ]
 ```
 
-プラグインの CSS を `apps/web` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
+プラグインの CSS を `website` へコピーしたり、ブラウザから `/node_modules` を直接参照させたりしないでください。
 
 `createStyleAsset()` と `createClientEntry()` には、プラグイン名と、パッケージが `exports` で公開するモジュール指定子を明示します。そのため、`@riebeckite/plugin-<name>`、サイト内のプラグイン、任意の名前の第三者パッケージで同じ API を利用できます。
 

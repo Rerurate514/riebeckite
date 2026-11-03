@@ -76,7 +76,7 @@ Attachments and media are different. An embed such as:
 ![[attachments/report.pdf]]
 ```
 
-produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `apps/web/scripts/build_images.ts` (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
 
 That implementation works like this:
 

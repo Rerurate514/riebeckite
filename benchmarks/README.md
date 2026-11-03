@@ -82,7 +82,7 @@ path. This is reported rather than bypassed. Output files are written as
 `benchmarks/results/<timestamp>-preset-ssg.{json,md}` and are single-sample
 measurements unless the harness is run repeatedly.
 Its disposable generated sites live under
-`apps/web/.riebeckite/preset-ssg-benchmark` by default so they resolve the
+`website/.riebeckite/preset-ssg-benchmark` by default so they resolve the
 workspace's built packages without changing a generated site's configuration.
 
 ## Fast path CLI harness

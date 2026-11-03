@@ -244,4 +244,4 @@ jobs:
           path: .
       - run: pnpm ci:build-artifact verify
       - run: pnpm --filter @riebeckite/web build
-      - run: node scripts/check_production_asset_integrity.mjs apps/web
+      - run: node scripts/check_production_asset_integrity.mjs website

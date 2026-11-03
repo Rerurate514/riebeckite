@@ -15,7 +15,7 @@ Tier 2 は変更されたパスから選択します。選択に失敗した場�
 | `packages/core/**`、`packages/cli/**`、インテグレーション | 外部コンシューマ、Fast Path、Fingerprint、Preset Fast Path、Fault Recovery Smoke |
 | プラグインとテーマ | プラグイン DX、外部コンシューマ、Fast Path、Preset Fast Path |
 | `packages/create-riebeckite/**` | Scaffold Golden、外部コンシューマ、Fast Path、Preset Fast Path |
-| `apps/web/**` | ブラウザー、Production Asset Integrity |
+| `website/**` | ブラウザー、Production Asset Integrity |
 | ドキュメントのみ | Tier 2 なし。Tier 1 のドキュメント検証は必須 |
 | 共通設定、不明なパス、キャッシュ/ビルド設定 | Tier 2 の検証項目をすべて実行 |
 

@@ -84,7 +84,7 @@ export function selectChecks(files) {
       ]);
       continue;
     }
-    if (file.startsWith("apps/web/")) {
+    if (file.startsWith("website/")) {
       setChecks(selection, ["browser", "productionAssets"]);
       continue;
     }

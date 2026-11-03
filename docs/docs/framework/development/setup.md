@@ -26,9 +26,9 @@ You can now develop the packages in the workspace.
 pnpm dev
 ```
 
-The reference app in `apps/web` lets you see Riebeckite changes as a real site.
+The reference app in `website` lets you see Riebeckite changes as a real site.
 
-`apps/web` is not just a demo: it is also the reference application used during framework development to confirm that Core, plugins, themes, and the integration combine correctly.
+`website` is not just a demo: it is also the reference application used during framework development to confirm that Core, plugins, themes, and the integration combine correctly.
 
 ## Repository layout
 
@@ -41,7 +41,7 @@ flowchart TD
     Repo["riebeckite/"]
 
     Repo --> Packages["packages/"]
-    Repo --> Apps["apps/"]
+    Repo --> Website["website/"]
     Repo --> Docs["docs/"]
     Repo --> Templates["templates/"]
 
@@ -52,7 +52,7 @@ flowchart TD
     Packages --> Plugins["plugins/*<br/>Official plugins"]
     Packages --> Themes["themes/*<br/>Official themes"]
 
-    Apps --> Web["web<br/>Docs / reference app"]
+    Website --> Web["app/<br/>Official docs / reference app"]
     Docs --> DocSource["Documentation source"]
     Templates --> Analytics["analytics-cloudflare<br/>Analytics deployment template"]
 ```
@@ -65,7 +65,7 @@ flowchart TD
 | `packages/create-riebeckite` | public site scaffolding entrypoint |
 | `packages/plugins/*` | official plugins |
 | `packages/themes/*` | official themes |
-| `apps/web` | official documentation app and framework-development reference application |
+| `website` | official documentation app and framework-development reference application |
 | `docs/` | documentation source read by the official docs app |
 | `templates/analytics-cloudflare` | Analytics Worker deployment templates |
 

@@ -86,7 +86,7 @@ export default defineConfig({
     },
   },
   content: {
-    directory: "../../docs",
+    directory: "../docs",
     exclude: ["agents/**", "**/templates/**", "**/private/**"],
     filters: {
       publishStrategy: "selective",

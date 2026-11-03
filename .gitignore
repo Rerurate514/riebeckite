@@ -1,9 +1,10 @@
 node_modules/
 .env
 /content/
-apps/web/content/
-apps/web/app/.riebeckite/
-apps/web/.riebeckite/
+website/content/
+website/app/.riebeckite/
+website/.riebeckite/
+.riebeckite-config-*/
 packages/**/dist/
 packages/**/LICENSE
 .ci-build-metadata.json

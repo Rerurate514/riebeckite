@@ -8,7 +8,7 @@ function read(relativePath: string): string {
 
 const notFound = read("../app/routes/_404.tsx");
 const errorPage = read("../app/routes/_error.tsx");
-const searchCss = read("../../../packages/plugins/search/style.css");
+const searchCss = read("../../packages/plugins/search/style.css");
 
 test("the canonical 404 route delegates its surface to the search plugin", () => {
   assert.match(

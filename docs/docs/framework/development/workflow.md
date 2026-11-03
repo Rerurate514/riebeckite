@@ -15,7 +15,7 @@ The checks you need depend on the change, but the basic approach is to **verify 
 flowchart TD
     Change["Change the code"]
     Focus["Target package test / typecheck"]
-    Related["Check related integrations / apps"]
+    Related["Check related integrations / site"]
     Check["pnpm check"]
     Build["pnpm build"]
 
@@ -46,7 +46,7 @@ flowchart TD
     Q -->|"Reusable feature"| Plugin["packages/plugins/*"]
     Q -->|"HonoX / Vite connection"| Integration["packages/integrations/honox"]
     Q -->|"Appearance / CSS"| Theme["packages/themes/*"]
-    Q -->|"Route / island / site UI"| App["apps/web"]
+    Q -->|"Route / island / site UI"| App["website"]
     Q -->|"Site generation"| Scaffold["create-riebeckite / scaffold"]
 ```
 
@@ -90,7 +90,7 @@ flowchart BT
 In particular, do not create a reverse dependency from Core to the outside. For example, Core must not depend on concrete implementations such as:
 
 ```text
-apps/web
+website
 packages/plugins/*
 HonoX
 Vite

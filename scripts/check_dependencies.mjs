@@ -39,7 +39,7 @@ const workspacePatterns = [
   "packages/integrations/*",
   "packages/plugins/*",
   "packages/themes/*",
-  "apps/*",
+  "website",
 ];
 
 const sourceExtensions = new Set([
@@ -212,7 +212,7 @@ function packageKind(pkg) {
   if (pkg.relative.startsWith("packages/plugins/")) return "plugin";
   if (pkg.relative.startsWith("packages/themes/")) return "theme";
   if (pkg.relative.startsWith("packages/integrations/")) return "integration";
-  if (pkg.relative.startsWith("apps/")) return "app";
+  if (pkg.relative === "website") return "app";
   return "library";
 }
 
@@ -291,7 +291,7 @@ function forbiddenDependency(kind, dependencyName, ownerName) {
   if (kind === "integration") {
     if (
       dependencyName === "@riebeckite/cli" ||
-      dependencyName.startsWith("apps/")
+      dependencyName === "@riebeckite/web"
     ) {
       return "Integrations must not depend on the CLI or the application";
     }

@@ -26,9 +26,9 @@ pnpm build
 pnpm dev
 ```
 
-`apps/web` の参照アプリを使うと、Riebeckite への変更を実際のサイトとして確認できます。
+`website` の参照アプリを使うと、Riebeckite への変更を実際のサイトとして確認できます。
 
-`apps/web` は単なるデモではありません。フレームワーク開発時に、Core、[[glossary/plugin|プラグイン]]、テーマ、インテグレーションが正しく組み合わさることを確認するための参照アプリでもあります。
+`website` は単なるデモではありません。フレームワーク開発時に、Core、[[glossary/plugin|プラグイン]]、テーマ、インテグレーションが正しく組み合わさることを確認するための参照アプリでもあります。
 
 ## リポジトリの構成
 
@@ -39,7 +39,7 @@ flowchart TD
     Repo["riebeckite/"]
 
     Repo --> Packages["packages/"]
-    Repo --> Apps["apps/"]
+    Repo --> Website["website/"]
     Repo --> Docs["docs/"]
     Repo --> Templates["templates/"]
 
@@ -50,7 +50,7 @@ flowchart TD
     Packages --> Plugins["plugins/*<br/>公式プラグイン"]
     Packages --> Themes["themes/*<br/>公式テーマ"]
 
-    Apps --> Web["web<br/>ドキュメント / 参照アプリ"]
+    Website --> Web["app/<br/>ドキュメント / 参照アプリ"]
     Docs --> DocSource["ドキュメントソース"]
     Templates --> Analytics["analytics-cloudflare<br/>Analytics デプロイテンプレート"]
 ```
@@ -63,7 +63,7 @@ flowchart TD
 | `packages/create-riebeckite` | サイト作成用の公開エントリーポイント |
 | `packages/plugins/*` | 公式プラグイン |
 | `packages/themes/*` | 公式テーマ |
-| `apps/web` | 公式ドキュメントサイトを兼ねたフレームワーク開発用の参照アプリ |
+| `website` | 公式ドキュメントサイトを兼ねたフレームワーク開発用の参照アプリ |
 | `docs/` | 公式ドキュメントアプリが読み込むドキュメントソース |
 | `templates/analytics-cloudflare` | Analytics Worker のデプロイ用テンプレート |
 

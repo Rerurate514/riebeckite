@@ -113,7 +113,7 @@ Development covers, among other things:
 - `pnpm install`
 - the root `pnpm` commands
 - the layout of `packages/*`
-- `apps/web`
+- `website`
 - per-package tests
 - scaffold and external-site verification
 
@@ -125,7 +125,7 @@ Build a site with Riebeckite
     → Getting Started
 ```
 
-`apps/web` is Riebeckite's documentation and reference application. General users do not need to copy `apps/web` or clone the Riebeckite monorepo to use Riebeckite.
+`website` is Riebeckite's documentation and reference application. General users do not need to copy `website` or clone the Riebeckite monorepo to use Riebeckite.
 
 ## The boundary of this chapter
 

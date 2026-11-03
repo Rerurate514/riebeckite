@@ -11,7 +11,7 @@ const repositoryRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const siteRoot = path.join(repositoryRoot, "apps/web/dist");
+const siteRoot = path.join(repositoryRoot, "website/dist");
 
 const contentTypes: Readonly<Record<string, string>> = {
   ".css": "text/css; charset=utf-8",

@@ -433,7 +433,7 @@ function stripJsonComments(source) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const siteRoot = process.argv[2] ?? path.join(repositoryRoot, "apps", "web");
+  const siteRoot = process.argv[2] ?? path.join(repositoryRoot, "website");
   try {
     const result = await checkProductionAssetIntegrity({ siteRoot });
     console.log(

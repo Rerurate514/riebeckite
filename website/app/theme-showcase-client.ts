@@ -195,7 +195,7 @@ async function loadThemeStyle(id: string): Promise<string> {
       "source-serif-4-latin-wght-normal.woff2",
       (
         await import(
-          "../../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline"
+          "../../packages/themes/sakura/styles/fonts/source-serif-4-latin-wght-normal.woff2?inline"
         )
       ).default,
     );
@@ -205,7 +205,7 @@ async function loadThemeStyle(id: string): Promise<string> {
       "jetbrains-mono-latin-wght-normal.woff2",
       (
         await import(
-          "../../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline"
+          "../../packages/themes/tokyonight/styles/fonts/jetbrains-mono-latin-wght-normal.woff2?inline"
         )
       ).default,
     );

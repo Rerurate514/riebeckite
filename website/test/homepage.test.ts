@@ -50,8 +50,8 @@ test("homepage copy avoids unsupported marketing claims", () => {
 
 test("site metadata and homepage sources avoid performance claims", () => {
   const forbidden = /\bfast\b|高速/i;
-  assert.doesNotMatch(read("../../../riebeckite.config.ts"), forbidden);
-  for (const file of ["../../../docs/index.md", "../../../docs/index.ja.md"]) {
+  assert.doesNotMatch(read("../riebeckite.config.ts"), forbidden);
+  for (const file of ["../../docs/index.md", "../../docs/index.ja.md"]) {
     assert.doesNotMatch(read(file), forbidden);
   }
 });
@@ -179,7 +179,7 @@ for (const locale of locales) {
 }
 
 test("both homepage sources are paired for hreflang", () => {
-  for (const file of ["../../../docs/index.md", "../../../docs/index.ja.md"]) {
+  for (const file of ["../../docs/index.md", "../../docs/index.ja.md"]) {
     const source = read(file);
     assert.match(source, /^translation: home$/m);
     assert.match(source, /^homepage: true$/m);

@@ -89,7 +89,7 @@ const backlinks = await getBacklinks({ view, slug });
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through
 `assets`. Browser initialization is declared through `clientEntries`
 only when browser JavaScript is genuinely required. Do not copy plugin
-CSS into `apps/web` or expose `/node_modules` directly.
+CSS into `website` or expose `/node_modules` directly.
 
 Use the Core helpers to register the plugin name and the package exports
 together. The module specifier is explicit, so the same API works for official,

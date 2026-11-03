@@ -91,346 +91,6 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
-  apps/web:
-    dependencies:
-      '@riebeckite/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@riebeckite/honox':
-        specifier: workspace:*
-        version: link:../../packages/integrations/honox
-      '@riebeckite/node':
-        specifier: workspace:*
-        version: link:../../packages/node
-      '@riebeckite/plugin-alias':
-        specifier: workspace:*
-        version: link:../../packages/plugins/alias
-      '@riebeckite/plugin-analytics':
-        specifier: workspace:*
-        version: link:../../packages/plugins/analytics
-      '@riebeckite/plugin-archive':
-        specifier: workspace:*
-        version: link:../../packages/plugins/archive
-      '@riebeckite/plugin-article-metadata':
-        specifier: workspace:*
-        version: link:../../packages/plugins/article-metadata
-      '@riebeckite/plugin-attachment':
-        specifier: workspace:*
-        version: link:../../packages/plugins/attachment
-      '@riebeckite/plugin-autocardlink':
-        specifier: workspace:*
-        version: link:../../packages/plugins/autocardlink
-      '@riebeckite/plugin-backlinks':
-        specifier: workspace:*
-        version: link:../../packages/plugins/backlinks
-      '@riebeckite/plugin-bases':
-        specifier: workspace:*
-        version: link:../../packages/plugins/bases
-      '@riebeckite/plugin-breadcrumbs':
-        specifier: workspace:*
-        version: link:../../packages/plugins/breadcrumbs
-      '@riebeckite/plugin-calculator':
-        specifier: workspace:*
-        version: link:../../packages/plugins/calculator
-      '@riebeckite/plugin-canvas':
-        specifier: workspace:*
-        version: link:../../packages/plugins/canvas
-      '@riebeckite/plugin-changelog':
-        specifier: workspace:*
-        version: link:../../packages/plugins/changelog
-      '@riebeckite/plugin-chartjs':
-        specifier: workspace:*
-        version: link:../../packages/plugins/chartjs
-      '@riebeckite/plugin-citations':
-        specifier: workspace:*
-        version: link:../../packages/plugins/citations
-      '@riebeckite/plugin-code-annotations':
-        specifier: workspace:*
-        version: link:../../packages/plugins/code-annotations
-      '@riebeckite/plugin-code-enhance':
-        specifier: workspace:*
-        version: link:../../packages/plugins/code-enhance
-      '@riebeckite/plugin-code-tabs':
-        specifier: workspace:*
-        version: link:../../packages/plugins/code-tabs
-      '@riebeckite/plugin-color-mode':
-        specifier: workspace:*
-        version: link:../../packages/plugins/color-mode
-      '@riebeckite/plugin-d2':
-        specifier: workspace:*
-        version: link:../../packages/plugins/d2
-      '@riebeckite/plugin-daily-notes':
-        specifier: workspace:*
-        version: link:../../packages/plugins/daily-notes
-      '@riebeckite/plugin-dataview':
-        specifier: workspace:*
-        version: link:../../packages/plugins/dataview
-      '@riebeckite/plugin-deploy':
-        specifier: workspace:*
-        version: link:../../packages/plugins/deploy
-      '@riebeckite/plugin-diagnostics':
-        specifier: workspace:*
-        version: link:../../packages/plugins/diagnostics
-      '@riebeckite/plugin-diff':
-        specifier: workspace:*
-        version: link:../../packages/plugins/diff
-      '@riebeckite/plugin-discord-embed':
-        specifier: workspace:*
-        version: link:../../packages/plugins/discord-embed
-      '@riebeckite/plugin-docs':
-        specifier: workspace:*
-        version: link:../../packages/plugins/docs
-      '@riebeckite/plugin-excalibrain':
-        specifier: workspace:*
-        version: link:../../packages/plugins/excalibrain
-      '@riebeckite/plugin-excalidraw':
-        specifier: workspace:*
-        version: link:../../packages/plugins/excalidraw
-      '@riebeckite/plugin-flashcards':
-        specifier: workspace:*
-        version: link:../../packages/plugins/flashcards
-      '@riebeckite/plugin-folder-pages':
-        specifier: workspace:*
-        version: link:../../packages/plugins/folder-pages
-      '@riebeckite/plugin-gallery':
-        specifier: workspace:*
-        version: link:../../packages/plugins/gallery
-      '@riebeckite/plugin-garden-explorer':
-        specifier: workspace:*
-        version: link:../../packages/plugins/garden-explorer
-      '@riebeckite/plugin-glossary':
-        specifier: workspace:*
-        version: link:../../packages/plugins/glossary
-      '@riebeckite/plugin-graphviz':
-        specifier: workspace:*
-        version: link:../../packages/plugins/graphviz
-      '@riebeckite/plugin-hard-breaks':
-        specifier: workspace:*
-        version: link:../../packages/plugins/hard-breaks
-      '@riebeckite/plugin-highlight':
-        specifier: workspace:*
-        version: link:../../packages/plugins/highlight
-      '@riebeckite/plugin-hover-preview':
-        specifier: workspace:*
-        version: link:../../packages/plugins/hover-preview
-      '@riebeckite/plugin-image-compare':
-        specifier: workspace:*
-        version: link:../../packages/plugins/image-compare
-      '@riebeckite/plugin-kanban':
-        specifier: workspace:*
-        version: link:../../packages/plugins/kanban
-      '@riebeckite/plugin-l10n':
-        specifier: workspace:*
-        version: link:../../packages/plugins/l10n
-      '@riebeckite/plugin-lightbox':
-        specifier: workspace:*
-        version: link:../../packages/plugins/lightbox
-      '@riebeckite/plugin-local-graph':
-        specifier: workspace:*
-        version: link:../../packages/plugins/local-graph
-      '@riebeckite/plugin-map':
-        specifier: workspace:*
-        version: link:../../packages/plugins/map
-      '@riebeckite/plugin-markmap':
-        specifier: workspace:*
-        version: link:../../packages/plugins/markmap
-      '@riebeckite/plugin-marp':
-        specifier: workspace:*
-        version: link:../../packages/plugins/marp
-      '@riebeckite/plugin-media':
-        specifier: workspace:*
-        version: link:../../packages/plugins/media
-      '@riebeckite/plugin-mermaid-pele':
-        specifier: workspace:*
-        version: link:../../packages/plugins/mermaid-pele
-      '@riebeckite/plugin-meta-bind':
-        specifier: workspace:*
-        version: link:../../packages/plugins/meta-bind
-      '@riebeckite/plugin-navigation':
-        specifier: workspace:*
-        version: link:../../packages/plugins/navigation
-      '@riebeckite/plugin-obsidian-markdown':
-        specifier: workspace:*
-        version: link:../../packages/plugins/obsidian-markdown
-      '@riebeckite/plugin-pdf':
-        specifier: workspace:*
-        version: link:../../packages/plugins/pdf
-      '@riebeckite/plugin-plantuml':
-        specifier: workspace:*
-        version: link:../../packages/plugins/plantuml
-      '@riebeckite/plugin-properties':
-        specifier: workspace:*
-        version: link:../../packages/plugins/properties
-      '@riebeckite/plugin-qr-code':
-        specifier: workspace:*
-        version: link:../../packages/plugins/qr-code
-      '@riebeckite/plugin-quality':
-        specifier: workspace:*
-        version: link:../../packages/plugins/quality
-      '@riebeckite/plugin-query':
-        specifier: workspace:*
-        version: link:../../packages/plugins/query
-      '@riebeckite/plugin-recent-posts':
-        specifier: workspace:*
-        version: link:../../packages/plugins/recent-posts
-      '@riebeckite/plugin-related-posts':
-        specifier: workspace:*
-        version: link:../../packages/plugins/related-posts
-      '@riebeckite/plugin-rename':
-        specifier: workspace:*
-        version: link:../../packages/plugins/rename
-      '@riebeckite/plugin-responsive-image':
-        specifier: workspace:*
-        version: link:../../packages/plugins/responsive-image
-      '@riebeckite/plugin-rich-embed':
-        specifier: workspace:*
-        version: link:../../packages/plugins/rich-embed
-      '@riebeckite/plugin-search':
-        specifier: workspace:*
-        version: link:../../packages/plugins/search
-      '@riebeckite/plugin-seo':
-        specifier: workspace:*
-        version: link:../../packages/plugins/seo
-      '@riebeckite/plugin-series':
-        specifier: workspace:*
-        version: link:../../packages/plugins/series
-      '@riebeckite/plugin-share':
-        specifier: workspace:*
-        version: link:../../packages/plugins/share
-      '@riebeckite/plugin-shortcodes':
-        specifier: workspace:*
-        version: link:../../packages/plugins/shortcodes
-      '@riebeckite/plugin-sidenotes':
-        specifier: workspace:*
-        version: link:../../packages/plugins/sidenotes
-      '@riebeckite/plugin-source-files':
-        specifier: workspace:*
-        version: link:../../packages/plugins/source-files
-      '@riebeckite/plugin-taxonomy':
-        specifier: workspace:*
-        version: link:../../packages/plugins/taxonomy
-      '@riebeckite/plugin-text-fragment':
-        specifier: workspace:*
-        version: link:../../packages/plugins/text-fragment
-      '@riebeckite/plugin-timeline':
-        specifier: workspace:*
-        version: link:../../packages/plugins/timeline
-      '@riebeckite/plugin-toc':
-        specifier: workspace:*
-        version: link:../../packages/plugins/toc
-      '@riebeckite/plugin-ux':
-        specifier: workspace:*
-        version: link:../../packages/plugins/ux
-      '@riebeckite/plugin-vega-lite':
-        specifier: workspace:*
-        version: link:../../packages/plugins/vega-lite
-      '@riebeckite/plugin-wavedrom':
-        specifier: workspace:*
-        version: link:../../packages/plugins/wavedrom
-      '@riebeckite/plugin-webmention':
-        specifier: workspace:*
-        version: link:../../packages/plugins/webmention
-      '@riebeckite/preview':
-        specifier: workspace:*
-        version: link:../../packages/preview
-      '@riebeckite/theme-default':
-        specifier: workspace:*
-        version: link:../../packages/themes/default
-      '@riebeckite/theme-editorial':
-        specifier: workspace:*
-        version: link:../../packages/themes/editorial
-      '@riebeckite/theme-fieldnotes':
-        specifier: workspace:*
-        version: link:../../packages/themes/fieldnotes
-      '@riebeckite/theme-folio':
-        specifier: workspace:*
-        version: link:../../packages/themes/folio
-      '@riebeckite/theme-garden':
-        specifier: workspace:*
-        version: link:../../packages/themes/garden
-      '@riebeckite/theme-gruvbox':
-        specifier: workspace:*
-        version: link:../../packages/themes/gruvbox
-      '@riebeckite/theme-minimal':
-        specifier: workspace:*
-        version: link:../../packages/themes/minimal
-      '@riebeckite/theme-module':
-        specifier: workspace:*
-        version: link:../../packages/themes/module
-      '@riebeckite/theme-rerurate':
-        specifier: workspace:*
-        version: link:../../packages/themes/rerurate
-      '@riebeckite/theme-sakura':
-        specifier: workspace:*
-        version: link:../../packages/themes/sakura
-      '@riebeckite/theme-signal':
-        specifier: workspace:*
-        version: link:../../packages/themes/signal
-      '@riebeckite/theme-technical':
-        specifier: workspace:*
-        version: link:../../packages/themes/technical
-      '@riebeckite/theme-terminal':
-        specifier: workspace:*
-        version: link:../../packages/themes/terminal
-      '@riebeckite/theme-tokyonight':
-        specifier: workspace:*
-        version: link:../../packages/themes/tokyonight
-      '@riebeckite/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      hono:
-        specifier: ^4.12.25
-        version: 4.13.12
-      honox:
-        specifier: 0.1.62
-        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
-      lz-string:
-        specifier: ^1.5.0
-        version: 1.5.0
-      slugify:
-        specifier: ^1.6.9
-        version: 1.6.9
-    devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^4.20260420.1
-        version: 4.20260621.1
-      '@hono/node-server':
-        specifier: 1.19.17
-        version: 1.19.17(hono@4.13.12)
-      '@hono/vite-build':
-        specifier: ^1.11.1
-        version: 1.11.1(hono@4.13.12)
-      '@hono/vite-dev-server':
-        specifier: ^0.25.2
-        version: 0.25.3(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
-      '@riebeckite/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
-      '@tailwindcss/vite':
-        specifier: ^4.2.2
-        version: 4.3.1(vite@8.3.5(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
-      '@types/node':
-        specifier: 'catalog:'
-        version: 24.13.6
-      esbuild:
-        specifier: ^0.28.2
-        version: 0.28.2
-      puppeteer:
-        specifier: ^25.16.0
-        version: 25.16.0
-      tailwindcss:
-        specifier: ^4.2.2
-        version: 4.3.1
-      tsx:
-        specifier: ^4.22.4
-        version: 4.22.4
-      vite:
-        specifier: ^8.3.5
-        version: 8.3.5(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
-      wrangler:
-        specifier: ^4.83.0
-        version: 4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6)
-
   packages/cli:
     dependencies:
       '@clack/prompts':
@@ -2090,6 +1750,346 @@ importers:
       hono:
         specifier: 'catalog:'
         version: 4.13.12
+
+  website:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@riebeckite/honox':
+        specifier: workspace:*
+        version: link:../packages/integrations/honox
+      '@riebeckite/node':
+        specifier: workspace:*
+        version: link:../packages/node
+      '@riebeckite/plugin-alias':
+        specifier: workspace:*
+        version: link:../packages/plugins/alias
+      '@riebeckite/plugin-analytics':
+        specifier: workspace:*
+        version: link:../packages/plugins/analytics
+      '@riebeckite/plugin-archive':
+        specifier: workspace:*
+        version: link:../packages/plugins/archive
+      '@riebeckite/plugin-article-metadata':
+        specifier: workspace:*
+        version: link:../packages/plugins/article-metadata
+      '@riebeckite/plugin-attachment':
+        specifier: workspace:*
+        version: link:../packages/plugins/attachment
+      '@riebeckite/plugin-autocardlink':
+        specifier: workspace:*
+        version: link:../packages/plugins/autocardlink
+      '@riebeckite/plugin-backlinks':
+        specifier: workspace:*
+        version: link:../packages/plugins/backlinks
+      '@riebeckite/plugin-bases':
+        specifier: workspace:*
+        version: link:../packages/plugins/bases
+      '@riebeckite/plugin-breadcrumbs':
+        specifier: workspace:*
+        version: link:../packages/plugins/breadcrumbs
+      '@riebeckite/plugin-calculator':
+        specifier: workspace:*
+        version: link:../packages/plugins/calculator
+      '@riebeckite/plugin-canvas':
+        specifier: workspace:*
+        version: link:../packages/plugins/canvas
+      '@riebeckite/plugin-changelog':
+        specifier: workspace:*
+        version: link:../packages/plugins/changelog
+      '@riebeckite/plugin-chartjs':
+        specifier: workspace:*
+        version: link:../packages/plugins/chartjs
+      '@riebeckite/plugin-citations':
+        specifier: workspace:*
+        version: link:../packages/plugins/citations
+      '@riebeckite/plugin-code-annotations':
+        specifier: workspace:*
+        version: link:../packages/plugins/code-annotations
+      '@riebeckite/plugin-code-enhance':
+        specifier: workspace:*
+        version: link:../packages/plugins/code-enhance
+      '@riebeckite/plugin-code-tabs':
+        specifier: workspace:*
+        version: link:../packages/plugins/code-tabs
+      '@riebeckite/plugin-color-mode':
+        specifier: workspace:*
+        version: link:../packages/plugins/color-mode
+      '@riebeckite/plugin-d2':
+        specifier: workspace:*
+        version: link:../packages/plugins/d2
+      '@riebeckite/plugin-daily-notes':
+        specifier: workspace:*
+        version: link:../packages/plugins/daily-notes
+      '@riebeckite/plugin-dataview':
+        specifier: workspace:*
+        version: link:../packages/plugins/dataview
+      '@riebeckite/plugin-deploy':
+        specifier: workspace:*
+        version: link:../packages/plugins/deploy
+      '@riebeckite/plugin-diagnostics':
+        specifier: workspace:*
+        version: link:../packages/plugins/diagnostics
+      '@riebeckite/plugin-diff':
+        specifier: workspace:*
+        version: link:../packages/plugins/diff
+      '@riebeckite/plugin-discord-embed':
+        specifier: workspace:*
+        version: link:../packages/plugins/discord-embed
+      '@riebeckite/plugin-docs':
+        specifier: workspace:*
+        version: link:../packages/plugins/docs
+      '@riebeckite/plugin-excalibrain':
+        specifier: workspace:*
+        version: link:../packages/plugins/excalibrain
+      '@riebeckite/plugin-excalidraw':
+        specifier: workspace:*
+        version: link:../packages/plugins/excalidraw
+      '@riebeckite/plugin-flashcards':
+        specifier: workspace:*
+        version: link:../packages/plugins/flashcards
+      '@riebeckite/plugin-folder-pages':
+        specifier: workspace:*
+        version: link:../packages/plugins/folder-pages
+      '@riebeckite/plugin-gallery':
+        specifier: workspace:*
+        version: link:../packages/plugins/gallery
+      '@riebeckite/plugin-garden-explorer':
+        specifier: workspace:*
+        version: link:../packages/plugins/garden-explorer
+      '@riebeckite/plugin-glossary':
+        specifier: workspace:*
+        version: link:../packages/plugins/glossary
+      '@riebeckite/plugin-graphviz':
+        specifier: workspace:*
+        version: link:../packages/plugins/graphviz
+      '@riebeckite/plugin-hard-breaks':
+        specifier: workspace:*
+        version: link:../packages/plugins/hard-breaks
+      '@riebeckite/plugin-highlight':
+        specifier: workspace:*
+        version: link:../packages/plugins/highlight
+      '@riebeckite/plugin-hover-preview':
+        specifier: workspace:*
+        version: link:../packages/plugins/hover-preview
+      '@riebeckite/plugin-image-compare':
+        specifier: workspace:*
+        version: link:../packages/plugins/image-compare
+      '@riebeckite/plugin-kanban':
+        specifier: workspace:*
+        version: link:../packages/plugins/kanban
+      '@riebeckite/plugin-l10n':
+        specifier: workspace:*
+        version: link:../packages/plugins/l10n
+      '@riebeckite/plugin-lightbox':
+        specifier: workspace:*
+        version: link:../packages/plugins/lightbox
+      '@riebeckite/plugin-local-graph':
+        specifier: workspace:*
+        version: link:../packages/plugins/local-graph
+      '@riebeckite/plugin-map':
+        specifier: workspace:*
+        version: link:../packages/plugins/map
+      '@riebeckite/plugin-markmap':
+        specifier: workspace:*
+        version: link:../packages/plugins/markmap
+      '@riebeckite/plugin-marp':
+        specifier: workspace:*
+        version: link:../packages/plugins/marp
+      '@riebeckite/plugin-media':
+        specifier: workspace:*
+        version: link:../packages/plugins/media
+      '@riebeckite/plugin-mermaid-pele':
+        specifier: workspace:*
+        version: link:../packages/plugins/mermaid-pele
+      '@riebeckite/plugin-meta-bind':
+        specifier: workspace:*
+        version: link:../packages/plugins/meta-bind
+      '@riebeckite/plugin-navigation':
+        specifier: workspace:*
+        version: link:../packages/plugins/navigation
+      '@riebeckite/plugin-obsidian-markdown':
+        specifier: workspace:*
+        version: link:../packages/plugins/obsidian-markdown
+      '@riebeckite/plugin-pdf':
+        specifier: workspace:*
+        version: link:../packages/plugins/pdf
+      '@riebeckite/plugin-plantuml':
+        specifier: workspace:*
+        version: link:../packages/plugins/plantuml
+      '@riebeckite/plugin-properties':
+        specifier: workspace:*
+        version: link:../packages/plugins/properties
+      '@riebeckite/plugin-qr-code':
+        specifier: workspace:*
+        version: link:../packages/plugins/qr-code
+      '@riebeckite/plugin-quality':
+        specifier: workspace:*
+        version: link:../packages/plugins/quality
+      '@riebeckite/plugin-query':
+        specifier: workspace:*
+        version: link:../packages/plugins/query
+      '@riebeckite/plugin-recent-posts':
+        specifier: workspace:*
+        version: link:../packages/plugins/recent-posts
+      '@riebeckite/plugin-related-posts':
+        specifier: workspace:*
+        version: link:../packages/plugins/related-posts
+      '@riebeckite/plugin-rename':
+        specifier: workspace:*
+        version: link:../packages/plugins/rename
+      '@riebeckite/plugin-responsive-image':
+        specifier: workspace:*
+        version: link:../packages/plugins/responsive-image
+      '@riebeckite/plugin-rich-embed':
+        specifier: workspace:*
+        version: link:../packages/plugins/rich-embed
+      '@riebeckite/plugin-search':
+        specifier: workspace:*
+        version: link:../packages/plugins/search
+      '@riebeckite/plugin-seo':
+        specifier: workspace:*
+        version: link:../packages/plugins/seo
+      '@riebeckite/plugin-series':
+        specifier: workspace:*
+        version: link:../packages/plugins/series
+      '@riebeckite/plugin-share':
+        specifier: workspace:*
+        version: link:../packages/plugins/share
+      '@riebeckite/plugin-shortcodes':
+        specifier: workspace:*
+        version: link:../packages/plugins/shortcodes
+      '@riebeckite/plugin-sidenotes':
+        specifier: workspace:*
+        version: link:../packages/plugins/sidenotes
+      '@riebeckite/plugin-source-files':
+        specifier: workspace:*
+        version: link:../packages/plugins/source-files
+      '@riebeckite/plugin-taxonomy':
+        specifier: workspace:*
+        version: link:../packages/plugins/taxonomy
+      '@riebeckite/plugin-text-fragment':
+        specifier: workspace:*
+        version: link:../packages/plugins/text-fragment
+      '@riebeckite/plugin-timeline':
+        specifier: workspace:*
+        version: link:../packages/plugins/timeline
+      '@riebeckite/plugin-toc':
+        specifier: workspace:*
+        version: link:../packages/plugins/toc
+      '@riebeckite/plugin-ux':
+        specifier: workspace:*
+        version: link:../packages/plugins/ux
+      '@riebeckite/plugin-vega-lite':
+        specifier: workspace:*
+        version: link:../packages/plugins/vega-lite
+      '@riebeckite/plugin-wavedrom':
+        specifier: workspace:*
+        version: link:../packages/plugins/wavedrom
+      '@riebeckite/plugin-webmention':
+        specifier: workspace:*
+        version: link:../packages/plugins/webmention
+      '@riebeckite/preview':
+        specifier: workspace:*
+        version: link:../packages/preview
+      '@riebeckite/theme-default':
+        specifier: workspace:*
+        version: link:../packages/themes/default
+      '@riebeckite/theme-editorial':
+        specifier: workspace:*
+        version: link:../packages/themes/editorial
+      '@riebeckite/theme-fieldnotes':
+        specifier: workspace:*
+        version: link:../packages/themes/fieldnotes
+      '@riebeckite/theme-folio':
+        specifier: workspace:*
+        version: link:../packages/themes/folio
+      '@riebeckite/theme-garden':
+        specifier: workspace:*
+        version: link:../packages/themes/garden
+      '@riebeckite/theme-gruvbox':
+        specifier: workspace:*
+        version: link:../packages/themes/gruvbox
+      '@riebeckite/theme-minimal':
+        specifier: workspace:*
+        version: link:../packages/themes/minimal
+      '@riebeckite/theme-module':
+        specifier: workspace:*
+        version: link:../packages/themes/module
+      '@riebeckite/theme-rerurate':
+        specifier: workspace:*
+        version: link:../packages/themes/rerurate
+      '@riebeckite/theme-sakura':
+        specifier: workspace:*
+        version: link:../packages/themes/sakura
+      '@riebeckite/theme-signal':
+        specifier: workspace:*
+        version: link:../packages/themes/signal
+      '@riebeckite/theme-technical':
+        specifier: workspace:*
+        version: link:../packages/themes/technical
+      '@riebeckite/theme-terminal':
+        specifier: workspace:*
+        version: link:../packages/themes/terminal
+      '@riebeckite/theme-tokyonight':
+        specifier: workspace:*
+        version: link:../packages/themes/tokyonight
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../packages/ui
+      hono:
+        specifier: ^4.12.25
+        version: 4.13.12
+      honox:
+        specifier: 0.1.62
+        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
+      lz-string:
+        specifier: ^1.5.0
+        version: 1.5.0
+      slugify:
+        specifier: ^1.6.9
+        version: 1.6.9
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260420.1
+        version: 4.20260621.1
+      '@hono/node-server':
+        specifier: 1.19.17
+        version: 1.19.17(hono@4.13.12)
+      '@hono/vite-build':
+        specifier: ^1.11.1
+        version: 1.11.1(hono@4.13.12)
+      '@hono/vite-dev-server':
+        specifier: ^0.25.2
+        version: 0.25.3(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
+      '@riebeckite/cli':
+        specifier: workspace:*
+        version: link:../packages/cli
+      '@tailwindcss/vite':
+        specifier: ^4.2.2
+        version: 4.3.1(vite@8.3.5(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.13.6
+      esbuild:
+        specifier: ^0.28.2
+        version: 0.28.2
+      puppeteer:
+        specifier: ^25.16.0
+        version: 25.16.0
+      tailwindcss:
+        specifier: ^4.2.2
+        version: 4.3.1
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+      vite:
+        specifier: ^8.3.5
+        version: 8.3.5(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
+      wrangler:
+        specifier: ^4.83.0
+        version: 4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6)
 
 packages:
 

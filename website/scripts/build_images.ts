@@ -11,7 +11,7 @@ import {
 } from "@riebeckite/core";
 import { resolveHonoxConfig } from "@riebeckite/honox/runtime";
 import { createContentSource } from "@riebeckite/node";
-import * as rawConfigModule from "../../../riebeckite.config";
+import * as rawConfigModule from "../riebeckite.config";
 
 const appRoot = fileURLToPath(new URL("../", import.meta.url));
 const config = resolveHonoxConfig(

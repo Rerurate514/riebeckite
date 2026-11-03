@@ -1,9 +1,16 @@
 ---
 title: Configuration
 publish: true
-order: 2
+sidebar:
+  order: 2
 ---
 
 # Configuration
 
-Edit `riebeckite.config.ts` to set your site metadata and registered plugins.
+## Site metadata
+
+Edit `riebeckite.config.ts` to set your site title, URL, and other site metadata.
+
+## Plugins
+
+Add the plugins you need to the `plugins` array in `riebeckite.config.ts`.

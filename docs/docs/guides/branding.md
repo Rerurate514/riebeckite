@@ -8,7 +8,7 @@ A theme controls how every Riebeckite site looks — colors, typography, spacing
 
 ## Site icon
 
-Generated sites ship `public/favicon.ico` and reference it from `app/routes/_renderer.tsx`:
+Generated sites ship a placeholder `public/favicon.ico` and reference it from `app/routes/_renderer.tsx`:
 
 ```tsx
 <link rel="icon" href="/favicon.ico" />

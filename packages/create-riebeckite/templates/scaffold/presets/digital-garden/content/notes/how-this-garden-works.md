@@ -9,4 +9,4 @@ tags: [garden, notes]
 
 Every Markdown file is a note. Link ideas with `[[wiki links]]`, then use backlinks and the local graph to find the connections.
 
-This note begins at [[Welcome to {{title}}]] and points to [[seed-idea]].
+This note begins at [[index|Welcome to {{title}}]] and points to [[seed-idea]].

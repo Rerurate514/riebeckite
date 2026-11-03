@@ -704,6 +704,7 @@ export const portfolio: ScaffoldPreset = {
     backlinks,
     relatedPosts,
     recentPosts,
+    folderPages,
     responsiveImage,
     lightbox,
     media,

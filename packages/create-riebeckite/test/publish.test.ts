@@ -109,7 +109,7 @@ test("formatCloudflareNextSteps prints the publish command", () => {
     formatCloudflareNextSteps("my-site", commands),
     [
       "Next steps:",
-      "  cd my-site",
+      '  cd "my-site"',
       "  npm exec -- riebeckite publish run --execute",
     ].join("\n"),
   );
@@ -150,7 +150,7 @@ test("formatDeploymentFailure distinguishes a created project from a failed inst
       "Installing dependencies failed.",
       "npm install exited with code 1.",
       "You can retry with:",
-      "  cd my-site",
+      '  cd "my-site"',
       "  npm install",
       "  npm exec -- riebeckite publish run --execute",
     ].join("\n"),

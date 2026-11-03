@@ -64,7 +64,32 @@ A documentation site with a generated sidebar, responsive table of contents, and
 
 ### `portfolio`
 
-A restrained starting point for selected projects, an introduction, and contact details. Project pages stay useful without images, while responsive images, lightbox, embedded media, and Markdown galleries are ready when visual material helps explain the work. It makes no claims about your experience, clients, or results.
+A restrained starting point for selected projects, an introduction, and contact details. Project pages stay useful without images, while responsive images, lightbox, embedded media, and Markdown galleries are ready when visual material helps explain the work. Responsive images reuse the variants that already exist; add the `imageOptimizer` plugin when you want WebP or AVIF conversion. It makes no claims about your experience, clients, or results.
+
+## Where content lives
+
+Each preset expects Markdown in a different folder and lists it in its own way:
+
+| Preset | Main folder | Notes |
+| --- | --- | --- |
+| `starter` | `content/` | The home page and sample notes live at the top level and under `content/notes/` |
+| `digital-garden` | `content/` | Notes live under `content/notes/`; wiki links connect them |
+| `blog` | `content/posts/` | Each post becomes an article; tags and series are read from frontmatter |
+| `docs` | `content/docs/` | Pages are grouped by folder. Set the sidebar position with nested `sidebar.order`, and use `##` headings for the table of contents |
+| `portfolio` | `content/projects/` | A `/projects/` listing is generated, and each Markdown file becomes a project page |
+| `minimal` | `content/` | A single `content/index.md` page |
+| `showcase` | `content/` | Examples and references live in several folders below `content/` |
+
+The docs preset reads the sidebar order from frontmatter, not from a top-level `order` field:
+
+```yaml
+---
+title: Getting started
+publish: true
+sidebar:
+  order: 1
+---
+```
 
 ## Optional feature packs
 

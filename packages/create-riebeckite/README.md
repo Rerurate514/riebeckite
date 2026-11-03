@@ -74,6 +74,7 @@ select them with a comma-separated `--utilities` value.
 
 | Name | File | Default |
 | --- | --- | --- |
+| `gitignore` | `.gitignore` | yes |
 | `editorconfig` | `.editorconfig` | yes |
 | `gitattributes` | `.gitattributes` | yes |
 | `biome` | `biome.json` | yes |

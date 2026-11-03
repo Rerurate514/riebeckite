@@ -64,7 +64,32 @@ Obsidian を意識した、相互リンクするノートのための構成で�
 
 ### `portfolio`
 
-選んだプロジェクト、自己紹介、連絡先を載せるための控えめな構成です。画像がなくてもプロジェクトページを読めるようにしつつ、必要になればレスポンシブ画像、lightbox、メディア埋め込み、Markdown の gallery を使えます。経歴、顧客、成果について、テンプレートが事実でない主張をすることはありません。
+選んだプロジェクト、自己紹介、連絡先を載せるための控えめな構成です。画像がなくてもプロジェクトページを読めるようにしつつ、必要になればレスポンシブ画像、lightbox、メディア埋め込み、Markdown の gallery を使えます。レスポンシブ画像は既存の画像バリアントを再利用するため、WebP や AVIF への変換が必要なら `imageOptimizer` プラグインを追加してください。経歴、顧客、成果について、テンプレートが事実でない主張をすることはありません。
+
+## コンテンツを置く場所
+
+プリセットごとに Markdown を置くフォルダと一覧の作り方が異なります。
+
+| プリセット | 主なフォルダ | 補足 |
+| --- | --- | --- |
+| `starter` | `content/` | ホームページとサンプルノートが直下および `content/notes/` にあります |
+| `digital-garden` | `content/` | ノートは `content/notes/` にあり、wiki link でつながります |
+| `blog` | `content/posts/` | 各記事が 1 ページになります。タグとシリーズは frontmatter から読み取ります |
+| `docs` | `content/docs/` | フォルダ単位でページをまとめます。サイドバーの位置はネストした `sidebar.order` で指定し、`##` 見出しが目次になります |
+| `portfolio` | `content/projects/` | `/projects/` の一覧が生成され、各 Markdown ファイルがプロジェクトページになります |
+| `minimal` | `content/` | `content/index.md` の 1 ページだけです |
+| `showcase` | `content/` | 描画例とリファレンスが `content/` 配下の複数フォルダに分かれています |
+
+docs プリセットはトップレベルの `order` ではなく、frontmatter のサイドバー設定から並び順を読み取ります。
+
+```yaml
+---
+title: Getting started
+publish: true
+sidebar:
+  order: 1
+---
+```
 
 ## 任意の Feature Pack
 

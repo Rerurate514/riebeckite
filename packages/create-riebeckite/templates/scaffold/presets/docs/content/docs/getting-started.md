@@ -1,10 +1,13 @@
 ---
 title: Getting started
 publish: true
-order: 1
+sidebar:
+  order: 1
 ---
 
 # Getting started
+
+## Install and run
 
 Install dependencies, validate the configuration, and start the development server:
 
@@ -13,6 +16,8 @@ npm install
 npm exec riebeckite check
 npm exec riebeckite dev
 ```
+
+## Build
 
 When you are ready to publish, build the static site:
 

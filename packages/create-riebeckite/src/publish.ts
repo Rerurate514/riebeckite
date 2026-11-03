@@ -38,7 +38,7 @@ export function formatCloudflareNextSteps(
 ): string {
   const lines = ["Next steps:"];
   if (relativeDirectory !== ".") {
-    lines.push(`  cd ${relativeDirectory}`);
+    lines.push(`  cd "${relativeDirectory}"`);
   }
   lines.push(`  ${commands.deploy.label}`);
   return lines.join("\n");
@@ -56,7 +56,7 @@ export function formatDeploymentFailure(
     "You can retry with:",
   ];
   if (relativeDirectory !== ".") {
-    lines.push(`  cd ${relativeDirectory}`);
+    lines.push(`  cd "${relativeDirectory}"`);
   }
   if (failure.phase === "install") {
     lines.push(`  ${commands.install.label}`);

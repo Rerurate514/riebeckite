@@ -5,6 +5,7 @@ import type {
   ContentManifest,
   PluginHeadTag,
   ResolvedRiebeckiteConfig,
+  SeoMetadata,
 } from "@riebeckite/core";
 import { createPublicContentView, resolveConfig } from "@riebeckite/core";
 import { SiteProvider } from "@riebeckite/ui";
@@ -102,6 +103,27 @@ test("RiebeckiteHead renders the standard head elements in order", () => {
 
 test("RiebeckiteHead renders the default title", () => {
   assert.match(renderHead({ title: "My Blog" }), /<title>My Blog<\/title>/);
+});
+
+test("RiebeckiteHead renders page SEO instead of the default title", () => {
+  const seo: SeoMetadata = {
+    title: "Post | Site",
+    description: "Post description",
+    canonicalUrl: "https://example.com/post/",
+    imageUrl: "https://example.com/og.png",
+    type: "article",
+    noindex: false,
+    tags: [],
+  };
+  const html = renderHead({ seo });
+
+  assert.match(html, /<title>Post \| Site<\/title>/);
+  assert.match(html, /<meta name="description" content="Post description"/);
+  assert.match(
+    html,
+    /property="og:image" content="https:\/\/example.com\/og.png"/,
+  );
+  assert.doesNotMatch(html, /<title>Site Title<\/title>/);
 });
 
 test("RiebeckiteHead renders a custom favicon path", () => {

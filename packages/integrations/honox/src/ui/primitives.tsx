@@ -274,6 +274,7 @@ function isDataScript(tag: PluginHeadTag): boolean {
 
 type RiebeckiteHeadProps = {
   title?: string;
+  seo?: SeoMetadata;
   headTags?: readonly PluginHeadTag[];
   faviconHref?: string | null;
   colorModeScript?: boolean;
@@ -305,7 +306,17 @@ export function RiebeckiteHead(props: RiebeckiteHeadProps) {
     <>
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>{props.title ?? site?.config.site.title}</title>
+      {props.seo ? (
+        <SeoHead
+          seo={props.seo}
+          siteTitle={site?.config.site.title ?? ""}
+          author={site?.config.site.author}
+          ogLocale={ogLocale(site?.config.site.locale)}
+          twitterSite={site?.config.site.twitterSite}
+        />
+      ) : (
+        <title>{props.title ?? site?.config.site.title}</title>
+      )}
       {faviconHref ? <link rel="icon" href={faviconHref} /> : null}
       {colorModeScript ? <ColorModeScript /> : null}
       {stylesheets.map((href) => (
@@ -322,6 +333,13 @@ export function RiebeckiteHead(props: RiebeckiteHeadProps) {
       {props.children}
     </>
   );
+}
+
+function ogLocale(locale: string | undefined): string | undefined {
+  if (!locale) return undefined;
+  if (/^ja(?:$|[-_])/i.test(locale)) return "ja_JP";
+  if (/^en(?:$|[-_])/i.test(locale)) return "en_US";
+  return locale.replace("-", "_");
 }
 
 type SeoHeadProps = {

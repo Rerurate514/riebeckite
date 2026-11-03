@@ -10,6 +10,7 @@ import type { Child } from "hono/jsx";
 import { createRoute } from "honox/factory";
 import {
   contentRouteSsgParams,
+  type ResolvedContentRequest,
   resolveRiebeckiteContentRequest,
   resolveRiebeckiteHomeRequest,
   riebeckiteSsgParams,
@@ -56,6 +57,7 @@ export function createContentRoute(options: ContentRouteOptions) {
         parameter,
       );
       if (resolved.kind === "response") return resolved.response;
+      applySeoContext(c, options.config, resolved);
       if (resolved.kind === "page")
         return c.render(<PageBody html={resolved.page.body} />);
       return renderContent(c, options, resolved.entry, resolved.post);
@@ -67,10 +69,46 @@ export function createHomeRoute(options: HomeRouteOptions) {
   return createRoute(async (c) => {
     const resolved = await resolveRiebeckiteHomeRequest(c, options.content);
     if (resolved.kind === "response") return resolved.response;
+    applySeoContext(c, options.config, resolved);
     if (resolved.kind === "page")
       return c.render(<PageBody html={resolved.page.body} />);
     return renderContent(c, options, resolved.entry, resolved.post);
   });
+}
+
+function applySeoContext(
+  c: Context,
+  config: ResolvedRiebeckiteConfig,
+  resolved: Exclude<ResolvedContentRequest, { kind: "response" }>,
+): void {
+  const provider = config.plugins.find((plugin) => plugin.seo)?.seo;
+  if (!provider) return;
+  if (resolved.kind === "content") {
+    c.set(
+      "seo",
+      provider.buildArticleSeo(
+        config,
+        resolved.entry.permalink,
+        resolved.post,
+        c.get("headTags"),
+        c.get("htmlLanguage"),
+      ),
+    );
+    return;
+  }
+  c.set(
+    "seo",
+    provider.buildWebsiteSeo(
+      config,
+      {
+        title: resolved.page.title ?? config.site.title,
+        description: resolved.page.description,
+        path: resolved.page.pathname,
+      },
+      resolved.page.headTags,
+      resolved.page.language,
+    ),
+  );
 }
 
 async function renderContent(

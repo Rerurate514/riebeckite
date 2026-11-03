@@ -7,7 +7,7 @@ test("next steps install, start the dev server, and point at the index page", ()
     formatScaffoldNextSteps("my-site", { editFile: "content/index.md" }),
     [
       "Next steps:",
-      "  cd my-site",
+      '  cd "my-site"',
       "  npm install",
       "  npm exec riebeckite check",
       "  npm exec riebeckite dev",
@@ -40,7 +40,7 @@ test("next steps skip the edit hint when the scaffold wrote no index page", () =
     formatScaffoldNextSteps("my-site"),
     [
       "Next steps:",
-      "  cd my-site",
+      '  cd "my-site"',
       "  npm install",
       "  npm exec riebeckite check",
       "  npm exec riebeckite dev",
@@ -54,7 +54,7 @@ test("next steps skip npm install when dependencies are already installed", () =
     formatScaffoldNextSteps("my-site", { dependenciesInstalled: true }),
     [
       "Next steps:",
-      "  cd my-site",
+      '  cd "my-site"',
       "  npm exec riebeckite check",
       "  npm exec riebeckite dev",
       "  npm exec riebeckite build",

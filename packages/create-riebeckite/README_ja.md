@@ -71,6 +71,7 @@ preset とは別に、`create-riebeckite` は任意のプロジェクトファ�
 
 | 名前 | ファイル | 既定 |
 | --- | --- | --- |
+| `gitignore` | `.gitignore` | 生成する |
 | `editorconfig` | `.editorconfig` | 生成する |
 | `gitattributes` | `.gitattributes` | 生成する |
 | `biome` | `biome.json` | 生成する |

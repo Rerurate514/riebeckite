@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Fixed
+
+- Generated sites render page-specific titles, descriptions, canonical URLs, and Open Graph tags through the SEO plugin. The generated configuration no longer points at a missing `/ogp.png`, the `portfolio` preset generates its `/projects/` listing, and the `empty` preset explains how to add a theme and plugins. Scaffold next steps quote the project directory, and the docs preset samples use the documented sidebar order and table of contents headings.
+  Packages: `create-riebeckite`, `@riebeckite/honox`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.38...HEAD
 

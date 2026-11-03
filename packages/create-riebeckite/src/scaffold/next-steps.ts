@@ -22,7 +22,7 @@ export function formatScaffoldNextSteps(
 ): string {
   const lines = ["Next steps:"];
   if (relativeDirectory !== ".") {
-    lines.push(`  cd ${relativeDirectory}`);
+    lines.push(`  cd "${relativeDirectory}"`);
   }
   if (options.dependenciesInstalled !== true) {
     lines.push("  npm install");

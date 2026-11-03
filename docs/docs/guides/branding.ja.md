@@ -8,7 +8,7 @@ title: サイトのアイコンとロゴ
 
 ## サイトアイコン
 
-生成されたサイトには `public/favicon.ico` が含まれ、`app/routes/_renderer.tsx` から参照されています。
+生成されたサイトにはプレースホルダーの `public/favicon.ico` が含まれ、`app/routes/_renderer.tsx` から参照されています。
 
 ```tsx
 <link rel="icon" href="/favicon.ico" />

@@ -12,6 +12,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.38...HEAD
+
+## [0.0.38] - 2026-11-03
+
 ### Added
 
 - Generate static Open Graph images for public pages in the `blog` preset, using the editorial layout that matches its theme.
@@ -28,7 +34,7 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - `@riebeckite/og-image` now renders Hono JSX layouts without React.
   Packages: `@riebeckite/og-image`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.37...HEAD
+[0.0.38]: https://github.com/Rerurate514/riebeckite/compare/v0.0.37...v0.0.38
 
 ## [0.0.37] - 2026-11-03
 

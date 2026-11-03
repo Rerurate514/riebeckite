@@ -8,7 +8,6 @@ export default defineConfig({
     description: "",
     baseUrl: "",
     locale: "en",
-    defaultOgImage: "/ogp.png",
   },
   content: {
     directory: "content",

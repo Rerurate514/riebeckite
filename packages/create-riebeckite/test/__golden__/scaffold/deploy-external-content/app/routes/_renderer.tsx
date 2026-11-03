@@ -30,6 +30,7 @@ export default jsxRenderer(async ({ children }, c) => {
       <ThemeRoot>
         <head>
           <RiebeckiteHead
+            seo={c.get("seo")}
             colorModeScript={false}
             themeStyle={themeStyle}
             themeStylesheets={getThemeStylesheets(config.theme.stylesheets)}

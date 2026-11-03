@@ -71,7 +71,6 @@ export default defineConfig({
     description: "",
     baseUrl: "",
     locale: "ja_JP",
-    defaultOgImage: "/ogp.png",
   },
   content: {
     directory: "content",

@@ -14,6 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.0.38 - 2026-11-03
+
 ### Added
 
 - Generate static Open Graph images for public pages in the `blog` preset, using the editorial layout that matches its theme.
@@ -29,6 +33,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - `@riebeckite/og-image` now renders Hono JSX layouts without React.
   Packages: `@riebeckite/og-image`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.37...v0.0.38)
 
 ## 0.0.37 - 2026-11-03
 

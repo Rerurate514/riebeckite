@@ -35,8 +35,8 @@ Generated from `manifest.publicRedirects`. Each redirect output has:
 Generated from plugin page definitions (`pageTypes`). Each plugin-page output has:
 - `kind`: `"plugin-page"`
 - `path`: HTML output path
-- `producer`: `plugin:${plugin.name}`
-- `dependencies`: declared via `pageTypes[].outputDependencies` or `context.output.emit(..., { dependencies })`
+- `producer`: `plugin:${plugin.name}:page:${pageType.id}`
+- `dependencies`: declared via `pageTypes[].outputDependencies`
 
 ### Generated Outputs
 

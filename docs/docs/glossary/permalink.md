@@ -21,7 +21,7 @@ The permalink is typed as `string` on `ContentManifestEntry` (`packages/core/src
 
 Key aspects:
 
-- **Resolution**: Generated during location resolution via `ContentLocationResolver` (`packages/core/src/content/content_location_resolver.ts`), which may call plugin `resolveContentLocations` hooks; the default resolver in `content_location.ts` returns `/{slug}`
+- **Resolution**: Generated during location resolution via `ContentLocationResolver` (`packages/core/src/content/content_location_resolver.ts`), which may call plugin `resolveContentLocations` hooks; the default resolver in `content_location.ts` returns `/` for `index` and `/{slug}` for every other entry
 - **Stability**: Once set, the permalink should not be recomputed from the slug or file path
 - **Read, do not rebuild**: Links, feeds, sitemaps, and metadata should read the permalink from the resolved entry. Rebuilding a URL from the slug or the file path skips redirects and localization and can produce a 404
 

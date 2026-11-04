@@ -30,7 +30,7 @@ my-riebeckite-site/
 
 プリセットによってサンプル記事の置き場所が異なります。`blog` は `content/posts/`、`docs` は `content/docs/`、`portfolio` は `content/projects/` に記事を置きますが、`content.directory` を変更しない限り、サイトが読み込むのは `content/` です。以下のツリーと例は `starter` の構成です。一覧は[プリセット](./presets.ja.md)を参照してください。
 
-既定では公開は明示的です。frontmatter に `publish: true` がある Markdown だけがサイトに表示されます。
+既定では公開は明示的です。既定の `explicit` 戦略では、frontmatter に `publish: true` がない Markdown は下書きとして扱われ、サイトに表示されません。明示的な `visibility`（例: `visibility: public`）または過去の `publishAt` がある場合は、この判定より優先されます。
 
 ## サンプルを編集して表示を確認する
 

@@ -46,11 +46,11 @@ A theme is not limited to tokens. Within the theme boundary it may style the
 stable hooks directly to give a site a visual character.
 
 - Put token definitions inside `@layer base`; put visual character rules
-  **unlayered**. Plugin CSS is unlayered, so unlayered theme rules win over
-  plugin defaults without `!important`. Generated app styles load after theme
-  CSS, so a site rule of equal specificity can override a theme rule; keep theme
-  selectors specific enough or make site overrides intentional. Never use
-  `!important`.
+  **unlayered**. Some built-in plugin CSS is layered (`@layer components` or
+  `@layer utilities`) and some is unlayered; unlayered theme rules win over both
+  without `!important`. Generated app styles load after theme CSS, so a site rule
+  of equal specificity can override a theme rule; keep theme selectors specific
+  enough or make site overrides intentional. Never use `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
   `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
   `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin

@@ -30,7 +30,7 @@ The `starter` preset already creates sample content. You can edit one of those f
 
 Other presets place their sample articles in different folders: `blog` uses `content/posts/`, `docs` uses `content/docs/`, and `portfolio` uses `content/projects/`. In every case the site still reads `content/` unless you change `content.directory`. The tree and examples below use the `starter` layout; see [Presets](./presets.md#where-content-lives) for the full list.
 
-By default, publishing is explicit: a Markdown file appears on the site only when its frontmatter has `publish: true`.
+By default, publishing is explicit. Under the default `explicit` strategy, a Markdown file without `publish: true` is a draft, so it does not appear on the site. An explicit `visibility` (for example `visibility: public`) or a past `publishAt` overrides that rule.
 
 ## Edit an existing sample
 

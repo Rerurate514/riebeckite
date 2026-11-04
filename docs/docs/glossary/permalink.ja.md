@@ -21,7 +21,7 @@ permalink は `ContentManifestEntry`（`packages/core/src/types/content_manifest
 
 主なポイント：
 
-- **解決**：公開先の解決時に `ContentLocationResolver`（`packages/core/src/content/content_location_resolver.ts`）が生成し、プラグインの `resolveContentLocations` フックを呼ぶ場合があります。既定のリゾルバーは `content_location.ts` にあり、`/{slug}` を返します
+- **解決**：公開先の解決時に `ContentLocationResolver`（`packages/core/src/content/content_location_resolver.ts`）が生成し、プラグインの `resolveContentLocations` フックを呼ぶ場合があります。既定のリゾルバーは `content_location.ts` にあり、`index` には `/`、それ以外のエントリには `/{slug}` を返します
 - **安定性**：一度決まった permalink は、slug やファイルパスから再計算しないでください
 - **読み取るだけで組み直さない**：リンク、フィード、サイトマップ、メタデータは、解決済みエントリから permalink を読むべきです。slug やファイルパスから URL を組み直すとリダイレクトや多言語化を飛ばし、404を生むことがあります
 

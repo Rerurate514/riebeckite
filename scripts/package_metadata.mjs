@@ -859,7 +859,7 @@ export function expectedPackageMetadata(directory) {
       files: ["LICENSE", "README.md", "README_ja.md", "dist", "style.css"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
-        test: 'node --import tsx --test --test-concurrency=1 "test/*.test.ts"',
+        test: 'node --max-old-space-size=4096 --import tsx --test --test-concurrency=1 "test/*.test.ts"',
         prepack: "pnpm run build",
       },
     };
@@ -868,7 +868,14 @@ export function expectedPackageMetadata(directory) {
   if (directory === "packages/dev-inspector") {
     return {
       ...publishingMetadata(directory, false),
-      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
+      files: [
+        "LICENSE",
+        "BRIDGE.md",
+        "BRIDGE_ja.md",
+        "README.md",
+        "README_ja.md",
+        "dist",
+      ],
       scripts: {
         build: "node ../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',

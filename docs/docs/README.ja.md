@@ -13,6 +13,7 @@ sidebar:
 - [リリースノート](./releases.ja.md)
 - [はじめに](./getting-started/README.ja.md)
 - [ガイド](./guides/README.ja.md)
+- [Obsidianプラグイン](./obsidian-plugin/README.ja.md)
 - [フレームワーク](./framework/README.ja.md)
 - [プラグイン](./plugins/README.ja.md)
 - [テーマ](./themes/README.ja.md)

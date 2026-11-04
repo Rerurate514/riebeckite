@@ -113,4 +113,5 @@ Obsidian vault while publishing only the articles you want with Riebeckite.
 
 - [Writing content](./writing-content.md)
 - [Separating content from the site](./content-repositories.md)
+- [Riebeckite for Obsidian](../obsidian-plugin/README.md) (currently settings only)
 - [Content System](../framework/content-system.md)

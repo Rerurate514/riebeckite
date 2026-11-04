@@ -197,7 +197,7 @@ test("resolves manifest entries without exposing an absolute source path", () =>
     {
       available: true,
       developmentUrl: "http://127.0.0.1:5173/ja/hello/",
-      productionUrl: undefined,
+      productionUrl: null,
     },
   );
   assert.equal(
@@ -270,6 +270,34 @@ test("requires distinct mutation and approval tokens", async (t) => {
     },
   );
   assert.equal(response.status, 404);
+});
+
+test("requires the mutation token before creating a mutation plan", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const instance = bridge({
+    contentRoot: root,
+    mutationToken,
+    mutationApprovalToken: approvalToken,
+  });
+  t.after(instance.close);
+  const response = await fetch(
+    `${await privateOrigin(instance.bootstrap)}/__riebeckite/bridge/v1/mutations/plan`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+      body: JSON.stringify({
+        operations: [
+          { kind: "create", path: "notes/denied.md", content: "no" },
+        ],
+      }),
+    },
+  );
+  assert.equal(response.status, 403);
 });
 
 test("preserves frontmatter objects while persisting mutation plans", async (t) => {

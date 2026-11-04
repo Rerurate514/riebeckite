@@ -147,7 +147,8 @@ export function inspectBridgePublication(
       discoverable: entry.publishing.discoverable,
       publishAt: entry.publishing.publishAt?.toISOString(),
       publicLocation: entry.publicLocation,
-      canonicalUrl: undefined,
+      canonicalUrl: resolvePublicUrl(options.publicOrigin, entry.permalink),
+      seo: publicationSeo(entry, options.publicOrigin),
       redirects: redirects(snapshot, entry),
       reasons: publicationReasons(entry),
     },
@@ -349,4 +350,42 @@ function publicationReasons(entry: ContentManifestEntry): readonly string[] {
   if (entry.publishing.visibility === "unlisted")
     return ["visibility is unlisted"];
   return ["content is publishable at the build time"];
+}
+
+function publicationSeo(
+  entry: ContentManifestEntry,
+  publicOrigin: string | undefined,
+): Record<string, unknown> {
+  const description =
+    typeof entry.frontmatter.description === "string"
+      ? entry.frontmatter.description
+      : null;
+  const indexable =
+    entry.publishing.discoverable && entry.publishing.visibility === "public";
+  const issues = [
+    ...(description?.trim()
+      ? []
+      : [{ code: "MISSING_DESCRIPTION", message: "Description is missing." }]),
+    ...(description !== null && description.length > 120
+      ? [
+          {
+            code: "DESCRIPTION_TOO_LONG",
+            message: "Description exceeds 120 characters.",
+          },
+        ]
+      : []),
+    ...(entry.title.length > 60
+      ? [{ code: "TITLE_TOO_LONG", message: "Title exceeds 60 characters." }]
+      : []),
+    ...(indexable
+      ? []
+      : [{ code: "NOT_INDEXABLE", message: "Content is not indexable." }]),
+  ];
+  return {
+    title: entry.title,
+    description,
+    canonicalUrl: resolvePublicUrl(publicOrigin, entry.permalink),
+    indexable,
+    issues,
+  };
 }

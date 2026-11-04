@@ -365,6 +365,7 @@ function bridgeResponse(input: {
           "events",
           "diagnostics",
           "publication",
+          "seo",
           "build-impact",
         ]
       : ["status", "page-resolution"],

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import test from "node:test";
+import test, { type TestContext } from "node:test";
 import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import { riebeckiteBridge } from "../src/bridge.js";
@@ -795,6 +795,93 @@ test("rejects unsafe and stale mutations through the private HTTP listener", asy
   }
 });
 
+test("rejects an unapproved mutation with approval-required", async (t) => {
+  const fixture = await mutationFixture(t);
+  const plan = await fixture.plan();
+  assert.equal(await fixture.reject(plan.id, "original"), "approval-required");
+});
+
+test("rejects a missing plan with plan-not-found", async (t) => {
+  const fixture = await mutationFixture(t);
+  assert.equal(
+    await fixture.reject("00000000-0000-0000-0000-000000000000", "original"),
+    "plan-not-found",
+  );
+});
+
+test("rejects an expired approval with approval-expired", async (t) => {
+  const fixture = await mutationFixture(t);
+  const plan = await fixture.plan();
+  assert.ok(
+    await approveBridgeMutationPlan(fixture.root, plan.id, approvalToken),
+  );
+  const originalNow = Date.now;
+  Date.now = () => originalNow() + 6 * 60 * 1000;
+  try {
+    assert.equal(await fixture.reject(plan.id, "original"), "approval-expired");
+  } finally {
+    Date.now = originalNow;
+  }
+});
+
+test("rejects a consumed approval with approval-used", async (t) => {
+  const fixture = await mutationFixture(t);
+  const plan = await fixture.plan();
+  assert.ok(
+    await approveBridgeMutationPlan(fixture.root, plan.id, approvalToken),
+  );
+  const applied = await mutationApply(fixture.origin, plan.id);
+  assert.equal(((await applied.json()) as { applied: boolean }).applied, true);
+  await fs.writeFile(fixture.target, "sentinel");
+  assert.equal(await fixture.reject(plan.id, "sentinel"), "approval-used");
+});
+
+test("rejects a tampered approval with approval-invalid", async (t) => {
+  const fixture = await mutationFixture(t);
+  const plan = await fixture.plan();
+  assert.ok(
+    await approveBridgeMutationPlan(fixture.root, plan.id, approvalToken),
+  );
+  const file = path.join(
+    fixture.root,
+    ".riebeckite",
+    "bridge",
+    "approvals",
+    `${plan.id}.json`,
+  );
+  const approval = JSON.parse(await fs.readFile(file, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  await fs.writeFile(
+    file,
+    JSON.stringify({ ...approval, signature: "0".repeat(64) }),
+  );
+  assert.equal(await fixture.reject(plan.id, "original"), "approval-invalid");
+});
+
+test("rejects a concurrently claimed approval with approval-claim-conflict", async (t) => {
+  const fixture = await mutationFixture(t);
+  const plan = await fixture.plan();
+  assert.ok(
+    await approveBridgeMutationPlan(fixture.root, plan.id, approvalToken),
+  );
+  await fs.writeFile(
+    path.join(
+      fixture.root,
+      ".riebeckite",
+      "bridge",
+      "approvals",
+      `${plan.id}.json.used`,
+    ),
+    "",
+  );
+  assert.equal(
+    await fixture.reject(plan.id, "original"),
+    "approval-claim-conflict",
+  );
+});
+
 test("does not expose self-approval, recovery, or rollback endpoints", async (t) => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
@@ -1007,6 +1094,47 @@ async function mutationPlan(
   );
   assert.equal(response.status, 200);
   return response.json() as Promise<{ id: string; conflicts: unknown[] }>;
+}
+
+async function mutationFixture(t: TestContext): Promise<{
+  root: string;
+  origin: string;
+  target: string;
+  plan: () => Promise<{ id: string; conflicts: unknown[] }>;
+  reject: (planId: string, expectedContent: string) => Promise<string>;
+}> {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  await fs.mkdir(path.join(root, "notes"));
+  const target = path.join(root, "notes", "guarded.md");
+  await fs.writeFile(target, "original");
+  const instance = bridge({
+    contentRoot: root,
+    mutationToken,
+    mutationApprovalToken: approvalToken,
+  });
+  t.after(instance.close);
+  const origin = await privateOrigin(instance.bootstrap);
+  return {
+    root,
+    origin,
+    target,
+    plan: () =>
+      mutationPlan(origin, [
+        { kind: "update", path: "notes/guarded.md", content: "changed" },
+      ]),
+    reject: async (planId, expectedContent) => {
+      const response = await mutationApply(origin, planId);
+      assert.equal(response.status, 409);
+      const body = (await response.json()) as {
+        applied: boolean;
+        conflicts: Array<{ code: string }>;
+      };
+      assert.equal(body.applied, false);
+      assert.equal(await fs.readFile(target, "utf8"), expectedContent);
+      return body.conflicts[0]?.code ?? "";
+    },
+  };
 }
 
 function mutationApply(origin: string, planId: string): Promise<Response> {

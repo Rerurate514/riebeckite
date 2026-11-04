@@ -85,7 +85,18 @@ Publication 応答では、`entry` と `publication` の両方に `publishAt` �
 
 プライベートリスナーは `127.0.0.1` だけに bind し、非 loopback の Host・接続、`Origin`、転送ヘッダーを拒否します。CORS は有効にしません。トークン不正は 403、Protocol 非互換は `INCOMPATIBLE_PROTOCOL` と対応 Version を含む 426 です。トークンを API 応答に含めることもありません。
 
-変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。読み取りトークンは Plan を作成できるだけです。Mutation Token は承認済み Plan を適用できますが、承認できません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。承認または fingerprint の検証で Apply が拒否された場合は、既存の conflict 結果とともに HTTP 409 を返します。
+変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。読み取りトークンは Plan を作成できるだけです。Mutation Token は承認済み Plan を適用できますが、承認できません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。承認または fingerprint の検証で Apply が拒否された場合は、`applied: false` と既存の `conflicts` 形式、HTTP 409 を返します。承認による拒否は次のコードで区別します。
+
+| コード | 条件 | 復旧手順 |
+| --- | --- | --- |
+| `plan-not-found` | 永続化された Plan が存在しない、壊れている、または記録した ID・ハッシュと一致しません。 | Plan を作り直し、確認してから承認します。 |
+| `approval-required` | Plan に対する承認がありません。 | `riebeckite bridge approve <plan-id>` を実行してから再度 Apply します。 |
+| `approval-invalid` | 承認がこの Plan に紐付いていない、または署名を検証できません。 | 新しい Plan を作成して承認します。検証に失敗する承認を再利用しないでください。 |
+| `approval-used` | 承認は既に Apply で使用済みです。 | 新しい Plan を作成して承認します。承認は一回限りです。 |
+| `approval-expired` | 5分の承認期限を過ぎています。 | 新しい Plan を作成して承認し、期限内に Apply します。 |
+| `approval-claim-conflict` | 同じ承認を別の Apply が同時に確保しました。 | 同時 Apply の結果を確認し、適用されていない場合だけ新しい Plan を作成します。 |
+
+Mutation Engine の fingerprint またはパス検証で拒否された場合も HTTP 409 を返し、その場合は Engine 側の conflict コードになります。いずれの拒否でもコンテンツは変更されません。
 
 Recovery と Rollback は CLI 専用のままです。journal と backup を使ってコンテンツを復元・削除する破壊操作であり、エディタ Capability に journal 選択を公開すると別の破壊 API になります。既存の `riebeckite content recover <journal> --apply` は Engine 側の journal、backup、fingerprint、パス、競合検証を維持します。
 

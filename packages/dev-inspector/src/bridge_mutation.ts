@@ -54,7 +54,6 @@ export function createBridgeMutationStore(
     },
     async apply(planId) {
       const stored = await readPlan(contentRoot, planId);
-      const approval = await readApproval(contentRoot, planId);
       const plan = stored
         ? (decode(stored.plan) as ContentMutationPlan)
         : undefined;
@@ -62,17 +61,20 @@ export function createBridgeMutationStore(
         !stored ||
         !plan ||
         plan.id !== planId ||
-        hashPlan(plan) !== stored.hash ||
-        !approval ||
-        approval.planId !== planId ||
-        approval.planHash !== stored.hash ||
-        approval.used ||
-        approval.expiresAt <= Date.now() ||
-        !validSignature(approval, approvalSecret)
+        hashPlan(plan) !== stored.hash
       )
-        return rejected(planId, "approval-required");
+        return rejected(planId, "plan-not-found");
+      const approval = await readApproval(contentRoot, planId);
+      if (!approval) return rejected(planId, "approval-required");
+      if (approval.planId !== planId || approval.planHash !== stored.hash)
+        return rejected(planId, "approval-invalid");
+      if (approval.used) return rejected(planId, "approval-used");
+      if (approval.expiresAt <= Date.now())
+        return rejected(planId, "approval-expired");
+      if (!validSignature(approval, approvalSecret))
+        return rejected(planId, "approval-invalid");
       if (!(await claimApproval(contentRoot, planId)))
-        return rejected(planId, "approval-required");
+        return rejected(planId, "approval-claim-conflict");
       await writeJson(approvalPath(contentRoot, planId), {
         ...approval,
         used: true,

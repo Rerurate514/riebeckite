@@ -145,8 +145,22 @@ checks that binding, five-minute expiry, and one-time use before applying. Neith
 the approval token nor a bearer approval ID crosses HTTP, appears in URLs, or is
 returned by the API. Plans stay server-side, and apply uses the existing
 fingerprint, lock, journal, backup, and path validation implementation.
-An apply rejected by approval or fingerprint validation returns HTTP 409 with the
-existing conflict result.
+An apply rejected by approval or fingerprint validation returns HTTP 409 with
+`applied: false` and the existing `conflicts` shape. An approval rejection
+carries one of these codes:
+
+| Code | Condition | Recovery |
+| --- | --- | --- |
+| `plan-not-found` | The persisted plan is missing, damaged, or does not match its recorded ID and hash. | Create the plan again, then review and approve it. |
+| `approval-required` | No approval is stored for the plan. | Run `riebeckite bridge approve <plan-id>`, then apply again. |
+| `approval-invalid` | The approval is not bound to this plan, or its signature does not verify. | Create a new plan and approve it; never reuse an approval that fails verification. |
+| `approval-used` | The approval was already consumed by an apply. | Create a new plan and approve it; an approval is one-time. |
+| `approval-expired` | The five-minute approval lifetime has passed. | Create a new plan, approve it, and apply before the lifetime ends. |
+| `approval-claim-conflict` | Another apply claimed the same approval concurrently. | Read the outcome of the concurrent apply, and create a new plan only if it was not applied. |
+
+An apply rejected by the mutation engine's fingerprint or path validation also
+returns HTTP 409, with the engine's own conflict code. Every rejection leaves
+the content unchanged.
 
 Recovery and rollback intentionally remain CLI-only. They operate on journals
 and backups and can restore or delete content; exposing their journal selection

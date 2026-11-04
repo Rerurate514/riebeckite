@@ -28,6 +28,7 @@ Third-party plugin authoring and packaging are exercised from an external
 package's perspective in `tests/plugin-dx` (its own pnpm workspace):
 
 ```sh
+pnpm --dir tests/plugin-dx install --frozen-lockfile
 pnpm test:plugin-dx            # unit tests for plugins that use only public APIs
 pnpm test:plugin-dx:external   # pack tarballs, install into an isolated site, verify
 ```

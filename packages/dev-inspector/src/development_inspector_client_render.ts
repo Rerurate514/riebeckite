@@ -1,4 +1,4 @@
-export const inspectorClientRender = String.raw`function readDerivedFilters(root) {
+export const inspectorClientRender = `function readDerivedFilters(root) {
   derivedQuery = root.querySelector("[data-derived-query]").value;
   derivedStatus = root.querySelector("[data-derived-status]").value;
 }

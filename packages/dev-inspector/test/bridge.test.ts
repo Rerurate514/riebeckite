@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import type http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -112,7 +111,9 @@ test("serves stable opaque site and content-root identities", async (t) => {
   t.after(first.close);
   t.after(second.close);
 
-  const identity = async (bootstrap: http.Server) => {
+  const identity = async (
+    bootstrap: (request: unknown, response: unknown) => Promise<void>,
+  ) => {
     const origin = await privateOrigin(bootstrap);
     const response = await fetch(`${origin}/__riebeckite/bridge/v1`, {
       headers: {

@@ -38,6 +38,8 @@ HonoX の開発連携がコンテンツルートを提供する場合、次の�
 | `/__riebeckite/bridge/v1/events` | なし | 認証済み Server-Sent Events ストリームを開きます。 |
 | `/__riebeckite/bridge/v1/page` | `source` | 1 ページ分の要約を返す Protocol v1 互換エイリアスです。 |
 
+コンテンツルートを持つ場合の Capability には `seo` を含みます。これは publication 応答に、以下で説明する任意の `seo` ブロックが含まれることを示します。
+
 `path` は設定済みコンテンツルート配下の Markdown ソースを指定します。絶対パスはそのルート配下に解決される場合だけ受け付けます。応答は常にルート相対パスを使い、絶対ファイルシステムパスは返しません。解決処理はすべてのエンドポイントで共通です。パス、`.md` を除いたパス、Manifest の alias、content ID、permalink、`hello.md` のような一意な末尾一致を照合します。複数候補に一致した場合は `AMBIGUOUS_SOURCE` を伴う `unsupported` を返し、探索順で勝手に確定しません。
 
 Source の状態は `resolved`、`not-found`、不正または曖昧なパスの `unsupported`、完了済みビルドがない場合の `unavailable` です。Manifest が未取得であることは、ページが存在しないことと同じではありません。
@@ -62,6 +64,22 @@ Source の状態は `resolved`、`not-found`、不正または曖昧なパスの
 互換状態は `resolved`、`unavailable`、`not-found`、`invalid-source` です。曖昧なソースは理由付きの `unsupported` を返します。このエンドポイントは Protocol v1 の存続期間中は維持し、クライアントが `/source`、`/publication`、`/preview` へ移行した後の将来の非互換 Protocol Version でのみ削除します。Manifest の解決処理は共通化しており、重複実装はありません。
 
 Preview は公開境界を越えません。公開可能な経路を持たない draft と scheduled は `NOT_PUBLICLY_ROUTABLE` を返します。Bridge が返すのはローカル開発 URL だけです。本番 URL は設定済みの `site.baseUrl` から解決する場合だけ返し、推測・生成はしません。Diagnostics の位置情報は Riebeckite が保持するものだけです。Build impact は dry-run の予測ではなく最後のビルド結果です。完全再生成が必要だった場合、`completeness` は `unknown` になります。
+
+Publication 応答には、設定済みの `site.baseUrl` とエントリの permalink から解決した `canonicalUrl` を含めます。有効な public origin がない場合は `null` です。任意の `seo` ブロックは、解決済みコンテンツ Manifest のエントリだけから導出します。
+
+```json
+{
+  "seo": {
+    "title": "Hello",
+    "description": "A short description.",
+    "canonicalUrl": "https://example.com/ja/hello/",
+    "indexable": true,
+    "issues": []
+  }
+}
+```
+
+`indexable` は discoverable かつ公開済みのコンテンツだけで `true` です。`issues` は安定した順序で返し、`MISSING_DESCRIPTION`、`DESCRIPTION_TOO_LONG`（120文字超）、`TITLE_TOO_LONG`（60文字超）、`NOT_INDEXABLE` を含む場合があります。
 
 イベントストリームは最初に現在の revision とビルド状態を含む `state` を送り、開発時のコンテンツ監視が Bridge を無効化するたびに revision を増やした `content.changed` を送ります。イベント後は必要なエンドポイントを再取得してください。
 

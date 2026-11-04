@@ -77,6 +77,7 @@ test("advertises inspection capabilities when a content root is supplied", async
     "events",
     "diagnostics",
     "publication",
+    "seo",
     "build-impact",
   ]);
 });
@@ -404,7 +405,7 @@ test("does not offer a preview for non-routable pages", () => {
   );
 });
 
-test("reports publication state without treating drafts as routable", () => {
+test("reports publication state and SEO without treating drafts as routable", () => {
   const snapshot = fixtureSnapshot();
   const options = { contentRoot: "/vault", revision: 4 };
   const draft = inspectBridgePublication(snapshot, "notes/draft.md", options)
@@ -412,9 +413,47 @@ test("reports publication state without treating drafts as routable", () => {
   assert.equal(draft.visibility, "draft");
   assert.equal(draft.routable, false);
   assert.deepEqual(draft.reasons, ["visibility is draft"]);
+  assert.equal(draft.canonicalUrl, null);
+  assert.deepEqual(draft.seo, {
+    title: "Hello",
+    description: null,
+    canonicalUrl: null,
+    indexable: false,
+    issues: [
+      { code: "MISSING_DESCRIPTION", message: "Description is missing." },
+      { code: "NOT_INDEXABLE", message: "Content is not indexable." },
+    ],
+  });
   const page = inspectBridgePage(snapshot, "notes/hello.md", options);
   assert.equal(page.visibility, "public");
   assert.equal(page.routable, true);
+});
+
+test("reports canonical URLs and SEO length issues", () => {
+  const snapshot = fixtureSnapshot();
+  const entry = snapshot.manifest.bySlug.get("notes/hello");
+  assert.ok(entry);
+  entry.title = "t".repeat(61);
+  entry.frontmatter.description = "d".repeat(121);
+  const publication = inspectBridgePublication(snapshot, "notes/hello.md", {
+    contentRoot: "/vault",
+    publicOrigin: "https://example.com",
+    revision: 4,
+  }).publication as Record<string, unknown>;
+  assert.equal(publication.canonicalUrl, "https://example.com/ja/hello/");
+  assert.deepEqual(publication.seo, {
+    title: "t".repeat(61),
+    description: "d".repeat(121),
+    canonicalUrl: "https://example.com/ja/hello/",
+    indexable: true,
+    issues: [
+      {
+        code: "DESCRIPTION_TOO_LONG",
+        message: "Description exceeds 120 characters.",
+      },
+      { code: "TITLE_TOO_LONG", message: "Title exceeds 60 characters." },
+    ],
+  });
 });
 
 test("returns content diagnostics and last-build impact", () => {

@@ -47,6 +47,9 @@ read-only endpoints are advertised as additional capabilities:
 | `/__riebeckite/bridge/v1/events` | — | Open an authenticated server-sent event stream. |
 | `/__riebeckite/bridge/v1/page` | `source` | Protocol v1 compatibility alias for a single-page summary. |
 
+The content-root capabilities include `seo`. It indicates that publication
+responses include the optional `seo` block described below.
+
 `path` identifies a Markdown source beneath the configured content root. An
 absolute path is accepted only when it resolves beneath that root; all responses
 use a root-relative path and never expose an absolute filesystem path. The
@@ -92,6 +95,28 @@ configured `site.baseUrl`; it is never inferred or fabricated. Diagnostics
 include only positions supplied by Riebeckite. Build impact is a last-build
 result, not a dry-run prediction; `completeness` is `unknown` when a full
 regeneration was required.
+
+Publication responses include a `canonicalUrl` resolved from the configured
+`site.baseUrl` and the entry permalink, or `null` when no valid public origin is
+configured. Their optional `seo` block is derived only from the resolved content
+manifest entry:
+
+```json
+{
+  "seo": {
+    "title": "Hello",
+    "description": "A short description.",
+    "canonicalUrl": "https://example.com/ja/hello/",
+    "indexable": true,
+    "issues": []
+  }
+}
+```
+
+`indexable` is true only for discoverable published content. `issues` are in a
+stable order and can contain `MISSING_DESCRIPTION`, `DESCRIPTION_TOO_LONG` (more
+than 120 characters), `TITLE_TOO_LONG` (more than 60 characters), and
+`NOT_INDEXABLE`.
 
 The event stream first sends `state` with the current revision and build status,
 then sends `content.changed` with an increasing revision whenever the

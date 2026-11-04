@@ -794,6 +794,31 @@ test("plugin pages replace content routes they shadow", () => {
   );
 });
 
+test("a plugin page taking over a content route affects the output without removing it", () => {
+  const previous = manifest([entry("timeline")]);
+  const current = manifest([entry("timeline")]);
+  const result = changes(
+    previous,
+    current,
+    { changed: ["timeline.md"] },
+    [pluginPage("timeline", [])],
+    [],
+    [],
+  );
+
+  assert.deepEqual(paths(result.removed), []);
+  assert.deepEqual(
+    result.affected
+      .filter((output) => output.path === "timeline.html")
+      .map((output) => output.kind),
+    ["plugin-page"],
+  );
+  assert.deepEqual(result.reasons?.get("timeline.html"), {
+    type: "kind-changed",
+    previousKind: "content",
+  });
+});
+
 test("redirects and plugin pages cannot overwrite each other", () => {
   assert.throws(
     () =>
@@ -835,6 +860,7 @@ function changes(
   contentOutputDependencies:
     | readonly OutputDependency[]
     | ContentOutputDependencyResolver = [],
+  previousPluginPageOutputs: readonly OutputDescriptor[] = pluginPageOutputs,
 ) {
   const previousState: ContentBuildState = {
     version: CONTENT_BUILD_STATE_VERSION,
@@ -865,7 +891,7 @@ function changes(
           direct: new Set(previousManifest.entries.map((item) => item.slug)),
           dependent: new Set(),
         },
-        pluginPageOutputs,
+        pluginPageOutputs: previousPluginPageOutputs,
         contentOutputDependencies,
       }).affected,
     ],

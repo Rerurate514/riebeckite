@@ -5,6 +5,8 @@ import { build as buildWithEsbuild } from "esbuild";
 import { siteRiebeckiteExternals } from "./site_externals.js";
 import { workspacePackageResolver } from "./workspace_packages.js";
 
+export const riebeckiteConfigTemporaryDirectory = ".riebeckite-config-";
+
 export type RiebeckiteConfigLoaderOptions = {
   configRoot: string;
   configFile?: string;
@@ -16,7 +18,7 @@ export async function loadRiebeckiteConfig(
 ): Promise<ResolvedRiebeckiteConfig> {
   const configFile = options.configFile ?? "riebeckite.config.ts";
   const temporaryDirectory = await fs.mkdtemp(
-    path.join(options.configRoot, ".riebeckite-config-"),
+    path.join(options.configRoot, riebeckiteConfigTemporaryDirectory),
   );
   const outputFile = path.join(temporaryDirectory, "config.mjs");
 

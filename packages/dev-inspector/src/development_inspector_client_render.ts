@@ -52,7 +52,7 @@ function contentReport(data) {
     if (contentStatus === "discoverable" && !entry.discoverable) return false;
     if (contentStatus === "orphan" && !orphanSlugs.has(entry.slug)) return false;
     if (!query) return true;
-    return [entry.title, entry.slug, entry.permalink]
+    return [entry.title, entry.slug, entry.permalink, entry.id, entry.idSource]
       .concat(entry.aliases || [], (entry.redirects || []).flatMap((redirect) => [redirect.from, redirect.to]))
       .join(" ")
       .toLowerCase()
@@ -62,7 +62,8 @@ function contentReport(data) {
   const rows = listed.map((entry) => {
     const aliases = (entry.aliases || []).map(escapeHtml).join("<br>");
     const redirects = (entry.redirects || []).map((redirect) => escapeHtml(redirect.from) + " → " + escapeHtml(redirect.to)).join("<br>");
-    return '<tr><td><strong>' + escapeHtml(entry.title) + '</strong><br><small>' + escapeHtml(entry.slug) + '</small></td><td><code>' + escapeHtml(entry.permalink) + '</code>' + (entry.language ? '<br><small>' + escapeHtml(entry.language) + '</small>' : '') + '</td><td>' + escapeHtml(t(entry.visibility)) + (entry.routable ? '' : '<br><small>' + t("not routable") + '</small>') + '</td><td>' + entry.incomingLinks + '</td><td>' + entry.unresolvedLinks.length + '</td><td>' + aliases + '</td><td>' + redirects + '</td></tr>';
+    const id = entry.id ? '<br><small>' + escapeHtml(entry.id) + (entry.idSource ? ' (' + escapeHtml(entry.idSource) + ')' : '') + '</small>' : '';
+    return '<tr><td><strong>' + escapeHtml(entry.title) + '</strong><br><small>' + escapeHtml(entry.slug) + '</small></td><td><code>' + escapeHtml(entry.permalink) + '</code>' + id + (entry.language ? '<br><small>' + escapeHtml(entry.language) + '</small>' : '') + '</td><td>' + escapeHtml(t(entry.visibility)) + (entry.routable ? '' : '<br><small>' + t("not routable") + '</small>') + '</td><td>' + entry.incomingLinks + '</td><td>' + entry.unresolvedLinks.length + '</td><td>' + aliases + '</td><td>' + redirects + '</td></tr>';
   }).join("");
   const unresolved = (data.unresolved || []).slice(0, 100).map((link) => '<li><code>' + escapeHtml(link.source) + '</code> → <code>' + escapeHtml(link.raw) + '</code></li>').join("");
   const ambiguities = (data.ambiguities || []).slice(0, 50).map((target) => '<li><code>' + escapeHtml(target.key) + '</code> <small>' + escapeHtml(target.candidates.join(", ")) + '</small></li>').join("");
@@ -79,7 +80,7 @@ function contentReport(data) {
     '<dt>' + t("Unresolved links") + '</dt><dd>' + counts.unresolvedLinks + '</dd>' +
     '<dt>' + t("Ambiguous targets") + '</dt><dd>' + counts.ambiguousKeys + '</dd>' +
     '</dl>' +
-    '<div class="filters"><label>' + t("Search") + ' <input data-content-filter data-content-query data-focus-key="content-query" value="' + escapeHtml(contentQuery) + '" placeholder="' + escapeHtml(t("Title, path, alias, or redirect")) + '"></label><label>' + t("Visibility") + ' <select data-content-filter data-content-visibility data-focus-key="content-visibility">' + options(["all", "public", "unlisted", "draft", "scheduled"], contentVisibility) + '</select></label><label>' + t("Status") + ' <select data-content-filter data-content-status data-focus-key="content-status">' + options(["all", "routable", "discoverable", "orphan"], contentStatus) + '</select></label></div>' +
+    '<div class="filters"><label>' + t("Search") + ' <input data-content-filter data-content-query data-focus-key="content-query" value="' + escapeHtml(contentQuery) + '" placeholder="' + escapeHtml(t("Title, path, ID, alias, or redirect")) + '"></label><label>' + t("Visibility") + ' <select data-content-filter data-content-visibility data-focus-key="content-visibility">' + options(["all", "public", "unlisted", "draft", "scheduled"], contentVisibility) + '</select></label><label>' + t("Status") + ' <select data-content-filter data-content-status data-focus-key="content-status">' + options(["all", "routable", "discoverable", "orphan"], contentStatus) + '</select></label></div>' +
     (listed.length > 0
       ? '<table><thead><tr><th>' + t("Title") + '</th><th>' + t("Path") + '</th><th>' + t("Visibility") + '</th><th>' + t("Incoming links") + '</th><th>' + t("Unresolved links") + '</th><th>' + t("Aliases") + '</th><th>' + t("Redirects") + '</th></tr></thead><tbody>' + rows + '</tbody></table>'
       : '<p class="more">' + t("No matching content.") + '</p>') +

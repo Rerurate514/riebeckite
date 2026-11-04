@@ -4,6 +4,8 @@ export type ContentInventoryEntry = {
   slug: string;
   title: string;
   permalink: string;
+  id?: string;
+  idSource?: string;
   language?: string;
   visibility: string;
   routable: boolean;
@@ -85,6 +87,8 @@ export function inspectContentInventory(
         slug: entry.slug,
         title: entry.title,
         permalink: entry.permalink,
+        id: entry.publicLocation.metadata?.id,
+        idSource: entry.publicLocation.metadata?.idSource,
         language: entry.publicLocation.language,
         visibility: entry.publishing.visibility,
         routable: entry.publishing.routable,

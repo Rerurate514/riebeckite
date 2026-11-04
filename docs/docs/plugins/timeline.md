@@ -84,6 +84,7 @@ The supported Obsidian options are `line-2` through `line-5`, `body-2` through `
 | `key` | `string` | `"timeline"` | Legacy explicit boolean marker key. |
 | `title` | `string` | `"Timeline"` | Page heading and title. |
 | `className` | `string` | `"rb-timeline"` | Additional root CSS class for the generated page. |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for the timeline page. |
 
 ## Live example
 

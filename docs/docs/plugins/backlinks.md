@@ -20,7 +20,9 @@ backlinks={...} />` component that renders a `<footer class="rr-backlinks">` wit
 an eyebrow label and a list of links. The Site places the `<Backlinks />`
 component itself, normally once after article content. `getBacklinks()` resolves
 the incoming links of a note from the content manifest, keeps only publicly
-discoverable notes, and returns them sorted in manifest order.
+discoverable notes, and returns them sorted in manifest order. Backlinks are
+scoped to the note's language; a translated note does not list the other
+language's backlinks.
 
 Without incoming links (or when none of them are published), the component
 renders nothing.

@@ -53,3 +53,4 @@ definition: デプロイ前に HTML を生成する方式です。
 | `definitionKey` | `string` | `"definition"` | 任意の短い定義のキー。 |
 | `title` | `string` | `"Glossary"` | ページ見出しと title。 |
 | `className` | `string` | `"rb-glossary"` | ルート CSS クラス。 |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | 用語集ページに表示する言語の選択。 |

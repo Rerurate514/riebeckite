@@ -56,3 +56,4 @@ active theme's color and typography tokens.
 | `definitionKey` | `string` | `"definition"` | Optional short definition key. |
 | `title` | `string` | `"Glossary"` | Page heading and title. |
 | `className` | `string` | `"rb-glossary"` | Root CSS class. |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for the glossary page. |

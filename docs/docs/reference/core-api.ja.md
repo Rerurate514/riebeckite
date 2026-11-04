@@ -14,7 +14,7 @@ sidebar:
 
 - 設定: `defineConfig`、`resolveConfig`、`resolveConfigModule`、`isPublished`、`isExcluded`
 - API ライフサイクル: `defineApiLifecycle`、`createApiLifecycleRegistry`、`resolveApiLifecycle`
-- コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`queryContentEntries`、`buildContentCollections`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
+- コンテンツ: `ContentManager`、`ContentCollection`、`ContentGraph`、`queryContentEntries`、`buildContentCollections`、`selectLocalizedEntries`、`resolvePageLocale`、`localizedPagePaths`、`fingerprintContentEntries`、`resolveDefaultContentLocation`
 - プラグイン: `definePlugin`、`resolvePlugins`、`defineEndpoint`、`createStyleAsset`、`createClientEntry`、`createPluginMemo`、`stableStringify`
 - テーマ: `defineTheme`、`defineThemeSettings`、`ThemeDefinition`、`ThemeOptions`、`ThemeColorMode`
 - パイプライン: `Pipeline`、`MarkdownPipeline`、`HtmlPipeline`

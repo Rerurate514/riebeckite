@@ -84,6 +84,7 @@ content:
 | `key` | `string` | `"timeline"` | 旧来の明示真偽値マーカーのキー。 |
 | `title` | `string` | `"Timeline"` | ページ見出しと title。 |
 | `className` | `string` | `"rb-timeline"` | 生成ページのルートに追加する CSS class。 |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | タイムラインに表示する言語の選択。 |
 
 ## 実行例
 

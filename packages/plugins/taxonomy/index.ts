@@ -383,30 +383,75 @@ function createTaxonomyEndpoints(
       resolved.dataEndpoint,
       ({ manifest, config, request }) => {
         const models = taxonomyModels(manifest, resolved, config);
-        const requested =
-          request.query.locale ??
-          parseAcceptLanguage(request.headers["accept-language"]) ??
-          manifest.localization?.defaultLocale;
-        const model =
-          models.find(
-            (candidate) =>
-              candidate.locale.toLowerCase() === requested?.toLowerCase(),
-          ) ?? models[0];
+        const model = selectTaxonomyModel(models, request);
         return model
-          ? { json: serializeTaxonomyIndex(model.index) }
-          : { json: { tags: [], folders: [] } };
+          ? {
+              json: serializeTaxonomyIndex(model.index),
+              headers: { Vary: "Accept-Language" },
+            }
+          : {
+              json: { tags: [], folders: [] },
+              headers: { Vary: "Accept-Language" },
+            };
       },
       { cacheControl: "public, max-age=300" },
     ),
   ];
 }
 
-function parseAcceptLanguage(value: string | undefined): string | undefined {
-  if (!value) return undefined;
+export function selectTaxonomyModel(
+  models: readonly { locale: string; index: TaxonomyIndex }[],
+  request: {
+    query: Readonly<Record<string, string>>;
+    headers: Readonly<Record<string, string>>;
+  },
+): { locale: string; index: TaxonomyIndex } | undefined {
+  const requested = request.query.locale;
+  if (requested) {
+    const exact = findLocaleModel(models, requested);
+    if (exact) return exact;
+  }
+  for (const language of parseAcceptLanguage(
+    request.headers["accept-language"],
+  )) {
+    const match = findLocaleModel(models, language);
+    if (match) return match;
+  }
+  return models[0];
+}
+
+function findLocaleModel(
+  models: readonly { locale: string; index: TaxonomyIndex }[],
+  language: string,
+): { locale: string; index: TaxonomyIndex } | undefined {
+  const value = language.toLowerCase().replace(/_/g, "-");
+  return (
+    models.find((candidate) => candidate.locale.toLowerCase() === value) ??
+    models.find((candidate) => {
+      const locale = candidate.locale.toLowerCase();
+      return locale.startsWith(`${value}-`) || value.startsWith(`${locale}-`);
+    })
+  );
+}
+
+function parseAcceptLanguage(value: string | undefined): string[] {
+  if (!value) return [];
   return value
     .split(",")
-    .map((part) => part.split(";")[0]?.trim())
-    .find((part) => Boolean(part));
+    .flatMap((part) => {
+      const [locale, ...parameters] = part.trim().split(";");
+      if (!locale) return [];
+      const quality = parameters
+        .map((parameter) => parameter.trim())
+        .find((parameter) => parameter.startsWith("q="));
+      const weight = quality ? Number(quality.slice(2)) : 1;
+      return [
+        { locale: locale.trim(), weight: Number.isFinite(weight) ? weight : 0 },
+      ];
+    })
+    .filter((entry) => entry.locale !== "" && entry.weight > 0)
+    .sort((left, right) => right.weight - left.weight)
+    .map((entry) => entry.locale);
 }
 
 function enabledFormats(

@@ -14,6 +14,7 @@ import {
 import {
   buildTaxonomyIndex,
   resolveTaxonomyOptions,
+  selectTaxonomyModel,
   taxonomy,
 } from "../index.js";
 
@@ -45,6 +46,34 @@ function config(): ResolvedRiebeckiteConfig {
     plugins: [taxonomy()],
   });
 }
+
+test("negotiates taxonomy data by locale query and Accept-Language", () => {
+  const models = [
+    { locale: "ja", index: { tags: [], folders: [] } },
+    { locale: "en", index: { tags: [], folders: [] } },
+  ];
+  assert.equal(
+    selectTaxonomyModel(models, {
+      query: { locale: "en" },
+      headers: {},
+    })?.locale,
+    "en",
+  );
+  assert.equal(
+    selectTaxonomyModel(models, {
+      query: {},
+      headers: { "accept-language": "en-US,en;q=0.8,ja;q=0.6" },
+    })?.locale,
+    "en",
+  );
+  assert.equal(
+    selectTaxonomyModel(models, {
+      query: {},
+      headers: { "accept-language": "fr-FR,en;q=0.2,ja;q=0.9" },
+    })?.locale,
+    "ja",
+  );
+});
 
 test("validates fallback locale handling in localized taxonomy terms", () => {
   const entry = (

@@ -1,4 +1,4 @@
-export const inspectorClientCore = String.raw`function localizedText(value) {
+export const inspectorClientCore = `function localizedText(value) {
   if (typeof value === "string") return value;
   if (!value || typeof value !== "object") return "";
   return value[inspectorLanguage] || value.en || "";

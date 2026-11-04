@@ -3,6 +3,8 @@ import {
   type ContentManifest,
   createStyleAsset,
   definePlugin,
+  localizedPagePath,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import {
   collectSeriesDiagnostics,
@@ -40,10 +42,12 @@ export type {
 
 type SeriesPageModel = {
   resolved: ResolvedSeriesOptions;
-  view: ContentManifest;
-  listPath: string;
-  landingPaths: readonly string[];
-  byPath: Map<string, SeriesIndex>;
+  views: Map<string, ContentManifest>;
+  listPaths: Map<string, string>;
+  byPath: Map<
+    string,
+    { index: SeriesIndex; locale: string; view: ContentManifest }
+  >;
 };
 
 /**
@@ -62,29 +66,58 @@ export function series(options: SeriesOptions = {}) {
     if (cached) return cached;
 
     const resolved = resolveSeriesOptions(options);
-    const view: ContentManifest = {
-      ...manifest,
-      entries: manifest.discoverableEntries,
-    };
-    const byPath = new Map<string, SeriesIndex>();
-    const landingPaths: string[] = [];
+    const localization = manifest.localization;
+    const locales = localization
+      ? resolved.localeMode === "all"
+        ? [localization.defaultLocale]
+        : localization.locales
+      : [undefined];
+    const views = new Map<string, ContentManifest>();
+    const listPaths = new Map<string, string>();
+    const byPath = new Map<
+      string,
+      { index: SeriesIndex; locale: string; view: ContentManifest }
+    >();
     if (resolved.basePath !== "") {
-      for (const index of collectSeriesIndexes(view, options)) {
-        const path = seriesLandingPath(index.name, options);
-        if (path === "" || byPath.has(path)) continue;
-        byPath.set(path, index);
-        landingPaths.push(path);
+      for (const locale of locales) {
+        const entries = localization
+          ? selectLocalizedEntries(manifest.discoverableEntries, {
+              mode: resolved.localeMode,
+              locale,
+              ...(localization.fallbackLocale
+                ? { fallbackLocale: localization.fallbackLocale }
+                : {}),
+            })
+          : manifest.discoverableEntries;
+        const view: ContentManifest = { ...manifest, entries: [...entries] };
+        const viewKey = locale ?? "";
+        views.set(viewKey, view);
+        const path = localizedPagePath(
+          localization,
+          resolved.basePath,
+          locale ?? localization?.defaultLocale ?? "",
+        );
+        let hasLanding = false;
+        for (const index of collectSeriesIndexes(view, options)) {
+          const landing = localizedPagePath(
+            localization,
+            seriesLandingPath(index.name, options),
+            locale ?? localization?.defaultLocale ?? "",
+          );
+          if (landing === "" || byPath.has(landing)) continue;
+          byPath.set(landing, { index, locale: locale ?? "", view });
+          hasLanding = true;
+        }
+        if (hasLanding && !listPaths.has(path)) {
+          listPaths.set(path, viewKey);
+        }
       }
     }
 
     const model: SeriesPageModel = {
       resolved,
-      view,
-      listPath:
-        resolved.basePath !== "" && landingPaths.length > 0
-          ? resolved.basePath
-          : "",
-      landingPaths,
+      views,
+      listPaths,
       byPath,
     };
     models.set(manifest, model);
@@ -106,66 +139,71 @@ export function series(options: SeriesOptions = {}) {
     pageTypes: [
       {
         id: "series-list",
-        paths: ({ manifest }) => {
-          const listPath = modelFor(manifest).listPath;
-          return listPath === "" ? [] : [listPath];
-        },
+        paths: ({ manifest }) => [...modelFor(manifest).listPaths.keys()],
         outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname }) => {
           const model = modelFor(manifest);
-          if (model.listPath === "" || pathname !== model.listPath) return null;
-          const body = renderSeriesList(model.view, options);
+          const viewKey = model.listPaths.get(pathname);
+          if (viewKey === undefined) return null;
+          const view = model.views.get(viewKey);
+          if (!view) return null;
+          const body = renderSeriesList(view, options);
           if (body === "") return null;
           return {
             type: "series-list",
             pathname,
             title: "Series",
             body,
+            ...(viewKey ? { language: viewKey } : {}),
           };
         },
         resolveRoute: ({ manifest, pathname }) => {
           const model = modelFor(manifest);
-          if (model.listPath === "" || pathname !== model.listPath) return null;
-          const body = renderSeriesList(model.view, options);
+          const viewKey = model.listPaths.get(pathname);
+          if (viewKey === undefined) return null;
+          const view = model.views.get(viewKey);
+          if (!view) return null;
+          const body = renderSeriesList(view, options);
           if (body === "") return null;
           return {
             type: "series-list",
             pathname,
             title: "Series",
             body,
+            ...(viewKey ? { language: viewKey } : {}),
           };
         },
       },
       {
         id: "series-index",
-        paths: ({ manifest }) => modelFor(manifest).landingPaths,
+        paths: ({ manifest }) => [...modelFor(manifest).byPath.keys()],
         outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname }) => {
           const model = modelFor(manifest);
-          const index = model.byPath.get(pathname);
-          if (!index) return null;
-          const body = renderSeriesIndex(model.view, index.name, options);
+          const entry = model.byPath.get(pathname);
+          if (!entry) return null;
+          const body = renderSeriesIndex(entry.view, entry.index.name, options);
           if (body === "") return null;
           return {
             type: "series-index",
             pathname,
-            title: index.title,
+            title: entry.index.title,
             body,
-            ...(index.language ? { language: index.language } : {}),
+            ...(entry.locale ? { language: entry.locale } : {}),
           };
         },
         resolveRoute: ({ manifest, pathname }) => {
           const model = modelFor(manifest);
-          const index = model.byPath.get(pathname);
-          if (!index) return null;
-          const body = renderSeriesIndex(model.view, index.name, options);
+          const entry = model.byPath.get(pathname);
+          if (!entry) return null;
+          const body = renderSeriesIndex(entry.view, entry.index.name, options);
           if (body === "") return null;
           return {
             type: "series-index",
             pathname,
-            title: index.title,
+            title: entry.index.title,
             body,
-            ...(index.language ? { language: index.language } : {}),
+            ...(entry.locale ? { language: entry.locale } : {}),
           };
         },
       },
@@ -199,6 +237,17 @@ function validateSeriesOptions(
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }
+  }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
+    });
   }
   return issues;
 }

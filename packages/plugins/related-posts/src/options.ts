@@ -23,6 +23,10 @@ export function resolveRelatedPostsOptions(
     className: normalizeClassName(options.className),
     useTags: options.useTags ?? true,
     useBacklinks: options.useBacklinks ?? true,
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }
 

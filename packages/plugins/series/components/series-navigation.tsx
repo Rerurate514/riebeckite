@@ -1,4 +1,5 @@
 import type { PluginComponent } from "@riebeckite/core";
+import { selectLocalizedEntries } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { collectSeriesIndexes, getSeriesNavigation } from "../src/series.js";
@@ -27,7 +28,23 @@ const SeriesNavigation = (async ({
   const sourceIndex =
     explicitIndex ??
     (site && article?.entry
-      ? (collectSeriesIndexes(site.manifest, configured).find((candidate) =>
+      ? (collectSeriesIndexes(
+          {
+            ...site.manifest,
+            entries: [
+              ...selectLocalizedEntries(site.manifest.discoverableEntries, {
+                mode: "current",
+                locale: article.entry.publicLocation.language,
+                ...(site.manifest.localization?.fallbackLocale
+                  ? {
+                      fallbackLocale: site.manifest.localization.fallbackLocale,
+                    }
+                  : {}),
+              }),
+            ],
+          },
+          configured,
+        ).find((candidate) =>
           candidate.members.some(
             (member) => member.slug === article.entry?.slug,
           ),

@@ -1,10 +1,12 @@
 import {
   type ConfigValidationIssue,
+  type ContentManifest,
   createStyleAsset,
   definePlugin,
+  localizedPagePath,
   type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { buildArchiveCollections } from "./src/collections.js";
+import { buildArchivePages } from "./src/collections.js";
 import {
   buildArchiveDescription,
   normalizeArchiveLocale,
@@ -17,6 +19,7 @@ export {
   ARCHIVE_COLLECTION_KIND,
   archiveDefinitions,
   buildArchiveCollections,
+  buildArchivePages,
 } from "./src/collections.js";
 export {
   archivePaginationLabels,
@@ -51,52 +54,59 @@ export function archive(options: ArchiveOptions = {}) {
     pageTypes: [
       {
         id: "archive",
-        paths: ({ manifest, config }) =>
-          buildArchiveCollections(
-            manifest.discoverableEntries,
-            resolved,
-            resolveLocale(config, resolved),
-          ).map((collection) => collection.path),
+        paths: ({ manifest, config }) => [
+          ...archivePageModels(manifest, config, resolved).keys(),
+        ],
         outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname, config }) => {
           if (resolved.basePath === "") return null;
-          const locale = resolveLocale(config, resolved);
-          const collection = buildArchiveCollections(
-            manifest.discoverableEntries,
+          const model = archivePageModels(manifest, config, resolved).get(
+            pathname,
+          );
+          if (!model) return null;
+          const page = renderArchivePage(
+            model.collection,
             resolved,
-            locale,
-          ).find((candidate) => candidate.path === pathname);
-          if (!collection) return null;
-          const page = renderArchivePage(collection, resolved, locale);
+            model.locale,
+          );
           return {
             type: "archive",
-            pathname: collection.path,
+            pathname,
             title: page.title,
             description: config
-              ? buildArchiveDescription(config.site.title, page.title, locale)
+              ? buildArchiveDescription(
+                  config.site.title,
+                  page.title,
+                  model.locale,
+                )
               : undefined,
-            language: normalizeArchiveLocale(locale),
+            language: normalizeArchiveLocale(model.locale),
             body: page.html,
           };
         },
         resolveRoute: ({ manifest, pathname, config }) => {
           if (resolved.basePath === "") return null;
-          const locale = resolveLocale(config, resolved);
-          const collection = buildArchiveCollections(
-            manifest.discoverableEntries,
+          const model = archivePageModels(manifest, config, resolved).get(
+            pathname,
+          );
+          if (!model) return null;
+          const page = renderArchivePage(
+            model.collection,
             resolved,
-            locale,
-          ).find((candidate) => candidate.path === pathname);
-          if (!collection) return null;
-          const page = renderArchivePage(collection, resolved, locale);
+            model.locale,
+          );
           return {
             type: "archive",
-            pathname: collection.path,
+            pathname,
             title: page.title,
             description: config
-              ? buildArchiveDescription(config.site.title, page.title, locale)
+              ? buildArchiveDescription(
+                  config.site.title,
+                  page.title,
+                  model.locale,
+                )
               : undefined,
-            language: normalizeArchiveLocale(locale),
+            language: normalizeArchiveLocale(model.locale),
             body: page.html,
           };
         },
@@ -110,6 +120,43 @@ function resolveLocale(
   options: ResolvedArchiveOptions,
 ): string {
   return options.locale ?? config?.site.locale ?? "en";
+}
+
+function archivePageModels(
+  manifest: ContentManifest,
+  config: ResolvedRiebeckiteConfig | undefined,
+  options: ResolvedArchiveOptions,
+): Map<
+  string,
+  {
+    collection: ReturnType<
+      typeof buildArchivePages
+    >[number]["collections"][number];
+    locale: string;
+  }
+> {
+  const models = new Map<
+    string,
+    {
+      collection: ReturnType<
+        typeof buildArchivePages
+      >[number]["collections"][number];
+      locale: string;
+    }
+  >();
+  for (const { locale, collections } of buildArchivePages(
+    manifest,
+    options,
+    resolveLocale(config, options),
+  )) {
+    for (const collection of collections) {
+      models.set(
+        localizedPagePath(manifest.localization, collection.path, locale),
+        { collection, locale },
+      );
+    }
+  }
+  return models;
 }
 
 function validateArchiveOptions(
@@ -138,6 +185,17 @@ function validateArchiveOptions(
     issues.push({
       path: "pageSize",
       message: "Expected a non-negative integer.",
+    });
+  }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
     });
   }
   return issues;

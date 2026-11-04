@@ -5,11 +5,17 @@ import path from "node:path";
 import { test } from "node:test";
 import {
   ContentManager,
+  type ContentManifestEntry,
   type ContentSource,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
-import { taxonomy } from "../index.js";
+import {
+  buildTaxonomyIndex,
+  resolveTaxonomyOptions,
+  taxonomy,
+} from "../index.js";
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -39,6 +45,54 @@ function config(): ResolvedRiebeckiteConfig {
     plugins: [taxonomy()],
   });
 }
+
+test("validates fallback locale handling in localized taxonomy terms", () => {
+  const entry = (
+    slug: string,
+    language: string,
+    translationId: string,
+  ): ContentManifestEntry => ({
+    slug,
+    permalink: language === "ja" ? `/${slug}` : `/${language}/${slug}`,
+    publicLocation: {
+      slug,
+      permalink: language === "ja" ? `/${slug}` : `/${language}/${slug}`,
+      language,
+      metadata: { "l10n.translationId": translationId },
+    },
+    title: slug,
+    frontmatter: {},
+    publishing: { visibility: "public", routable: true, discoverable: true },
+    html: "",
+    tags: ["featured"],
+    links: [],
+    backlinks: [],
+    assets: [],
+  });
+  const index = buildTaxonomyIndex(
+    selectLocalizedEntries(
+      [
+        entry("a", "ja", "a"),
+        entry("a.en", "en", "a"),
+        entry("b.en", "en", "b"),
+      ],
+      { mode: "current", locale: "en" },
+    ),
+    resolveTaxonomyOptions(),
+    undefined,
+    {
+      locale: "en",
+      localization: { defaultLocale: "ja", locales: ["ja", "en"] },
+    },
+  );
+  assert.deepEqual(
+    index.tags.map((term) => [
+      term.path,
+      term.entries.map((item) => item.slug),
+    ]),
+    [["/en/tags/featured", ["a.en", "b.en"]]],
+  );
+});
 
 test("emits one feed per term and format into the manifest", async () => {
   const manifest = await manager(config()).getManifest();

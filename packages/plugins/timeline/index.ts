@@ -6,7 +6,7 @@ import {
 import { rehypeTimeline } from "./src/rehype.js";
 import { remarkTimeline } from "./src/remark.js";
 import {
-  buildTimeline,
+  buildTimelinePages,
   renderTimelinePage,
   resolveTimelineOptions,
 } from "./src/timeline.js";
@@ -16,6 +16,7 @@ export { rehypeTimeline } from "./src/rehype.js";
 export { parseInlineTimeline, remarkTimeline } from "./src/remark.js";
 export {
   buildTimeline,
+  buildTimelinePages,
   DEFAULT_TIMELINE_BASE_PATH,
   DEFAULT_TIMELINE_CLASS_NAME,
   DEFAULT_TIMELINE_KEY,
@@ -57,44 +58,48 @@ export function timeline(options: TimelineOptions = {}) {
       {
         id: "timeline",
         paths: ({ manifest, contentIndex }) =>
-          resolved.basePath === "" ||
-          buildTimeline(manifest.discoverableEntries, resolved, contentIndex)
-            .length === 0
-            ? []
-            : [resolved.basePath],
+          buildTimelinePages(manifest, resolved, contentIndex).map(
+            (page) => page.pathname,
+          ),
         outputDependencies: [{ type: "global" }],
         resolve: ({ manifest, pathname, contentIndex }) => {
-          if (pathname !== resolved.basePath || resolved.basePath === "")
-            return null;
-          const entries = buildTimeline(
-            manifest.discoverableEntries,
+          const page = buildTimelinePages(
+            manifest,
             resolved,
             contentIndex,
+          ).find((candidate) => candidate.pathname === pathname);
+          if (!page) return null;
+          const rendered = renderTimelinePage(
+            page.entries,
+            resolved,
+            page.locale,
           );
-          if (entries.length === 0) return null;
-          const page = renderTimelinePage(entries, resolved);
           return {
             type: "timeline",
-            pathname,
-            title: page.title,
-            body: page.html,
+            pathname: page.pathname,
+            title: rendered.title,
+            body: rendered.html,
+            ...(page.locale ? { language: page.locale } : {}),
           };
         },
         resolveRoute: ({ manifest, pathname, contentIndex }) => {
-          if (pathname !== resolved.basePath || resolved.basePath === "")
-            return null;
-          const entries = buildTimeline(
-            manifest.discoverableEntries,
+          const page = buildTimelinePages(
+            manifest,
             resolved,
             contentIndex,
+          ).find((candidate) => candidate.pathname === pathname);
+          if (!page) return null;
+          const rendered = renderTimelinePage(
+            page.entries,
+            resolved,
+            page.locale,
           );
-          if (entries.length === 0) return null;
-          const page = renderTimelinePage(entries, resolved);
           return {
             type: "timeline",
-            pathname,
-            title: page.title,
-            body: page.html,
+            pathname: page.pathname,
+            title: rendered.title,
+            body: rendered.html,
+            ...(page.locale ? { language: page.locale } : {}),
           };
         },
       },
@@ -124,6 +129,17 @@ function validateTimelineOptions(
     issues.push({
       path: "selection",
       message: 'Expected "automatic" or "marked".',
+    });
+  }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
     });
   }
   for (const key of ["include", "exclude"] as const) {

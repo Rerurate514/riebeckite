@@ -3,6 +3,7 @@ export type ArchiveOptions = {
   pageSize?: number;
   locale?: string;
   className?: string;
+  localeMode?: "current" | "fallback" | "all";
 };
 
 export type ResolvedArchiveOptions = {
@@ -10,6 +11,7 @@ export type ResolvedArchiveOptions = {
   pageSize: number;
   locale: string | null;
   className: string;
+  localeMode: "current" | "fallback" | "all";
 };
 
 export type ArchivePage = {

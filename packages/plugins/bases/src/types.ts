@@ -144,6 +144,8 @@ export type BasesOptions = {
   limit?: number;
   /** Render the raw Base definition in a `<details>` fallback. Defaults to `true`. */
   showFallback?: boolean;
+  /** Locale selection for Base rows. Defaults to `"current"`. */
+  localeMode?: "current" | "fallback" | "all";
   /**
    * Name of the single view to render when a Base defines several. When unset,
    * every view is rendered as a labelled section.

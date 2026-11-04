@@ -14,7 +14,14 @@ export default async function RecentPosts(props: Props) {
   const site = useSiteContext();
   const posts =
     props.posts ??
-    (site ? await getRecentPosts({ manifest: site.manifest }) : []);
+    (site
+      ? await getRecentPosts({
+          manifest: site.manifest,
+          ...(site.language
+            ? { locale: { mode: "current" as const, locale: site.language } }
+            : {}),
+        })
+      : []);
   if (posts.length === 0) return html``;
   const variant = props.variant ?? "default";
 
@@ -32,7 +39,7 @@ export default async function RecentPosts(props: Props) {
         {posts.map((post) => {
           const formattedDate = formatPostedDate(
             post.postedAt,
-            props.locale ?? "en-US",
+            props.locale ?? site?.language ?? "en-US",
           );
 
           return (

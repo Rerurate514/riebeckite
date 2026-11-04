@@ -7,6 +7,7 @@ import type {
   PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { selectLocalizedEntries } from "@riebeckite/core";
 import type {
   RelatedPostsEntry,
   ResolvedRelatedPostsOptions,
@@ -41,6 +42,15 @@ export function buildRelatedPosts(
 ): RelatedPostsEntry[] {
   const { manifest, entry, options } = args;
   const scores = new Map<string, number>();
+  const allowed = new Set(
+    selectLocalizedEntries(manifest.discoverableEntries, {
+      mode: options.localeMode,
+      locale: entry.publicLocation.language,
+      ...(manifest.localization?.fallbackLocale
+        ? { fallbackLocale: manifest.localization.fallbackLocale }
+        : {}),
+    }).map((candidate) => candidate.slug),
+  );
 
   const outgoingTargets = collectNoteTargets(
     manifest.outgoingLinks.get(entry.slug) ?? [],
@@ -77,6 +87,7 @@ export function buildRelatedPosts(
     if (score < options.minScore) continue;
     const candidate = manifest.bySlug.get(slug);
     if (!candidate) continue;
+    if (!allowed.has(candidate.slug)) continue;
     if (!isEligibleRelatedEntry(candidate, manifest, args.config)) continue;
     candidates.push({
       slug: candidate.slug,
@@ -106,8 +117,18 @@ export const getRelatedPosts: PluginDataHelper<
     heading: true,
     headingText: "Related posts",
     className: "rr-related-posts",
+    localeMode: "current",
   };
   const scores = new Map<string, number>();
+  const allowed = new Set(
+    selectLocalizedEntries(view.discoverableEntries, {
+      mode: resolved.localeMode,
+      locale: entry.publicLocation.language,
+      ...(view.localization?.fallbackLocale
+        ? { fallbackLocale: view.localization.fallbackLocale }
+        : {}),
+    }).map((candidate) => candidate.slug),
+  );
   const outgoing = new Set(
     entry.links.flatMap((link) =>
       link.kind === "note" && link.slug ? [link.slug] : [],
@@ -142,7 +163,7 @@ export const getRelatedPosts: PluginDataHelper<
   return [...scores]
     .flatMap(([slug, score]) => {
       const candidate = view.findDiscoverableBySlug(slug);
-      return candidate && score >= resolved.minScore
+      return candidate && allowed.has(slug) && score >= resolved.minScore
         ? [
             {
               slug,

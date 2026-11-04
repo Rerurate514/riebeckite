@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   ContentManager,
   type ContentSource,
+  definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
@@ -35,6 +36,58 @@ function manager(files: Record<string, string>) {
 function resolveTitle(slug: string, title: unknown): string {
   return typeof title === "string" ? title : slug;
 }
+
+function localizedManager(files: Record<string, string>) {
+  return new ContentManager(source(files), [], {
+    config: explicitConfig,
+    plugins: [
+      definePlugin({
+        name: "test-localization",
+        resolveContentLocations: ({ entries }) =>
+          entries.map((entry) => {
+            const english = entry.path.endsWith("-en.md");
+            const base = entry.slug.replace(/-(en|ja)$/, "");
+            return {
+              slug: entry.slug,
+              permalink: english ? `/en/${base}` : `/${base}`,
+              language: english ? "en" : "ja",
+              metadata: { "l10n.translationId": base },
+            };
+          }),
+      }),
+    ],
+  });
+}
+
+test("keeps backlinks scoped to the note language", async () => {
+  const manifest = await localizedManager({
+    "alpha-ja.md": "---\npublish: true\ntitle: Alpha\n---\n# Alpha",
+    "alpha-en.md": "---\npublish: true\ntitle: Alpha EN\n---\n# Alpha",
+    "beta-ja.md":
+      "---\npublish: true\ntitle: Beta\n---\n# Beta\n\nSee [[alpha-ja]].",
+    "beta-en.md":
+      "---\npublish: true\ntitle: Beta EN\n---\n# Beta\n\nSee [[alpha-en]].",
+  }).getManifest();
+
+  assert.deepEqual(
+    getPublishedBacklinks({
+      manifest,
+      config: explicitConfig,
+      slug: "alpha-ja",
+      resolveTitle,
+    }).map((entry) => entry.slug),
+    ["beta-ja"],
+  );
+  assert.deepEqual(
+    getPublishedBacklinks({
+      manifest,
+      config: explicitConfig,
+      slug: "alpha-en",
+      resolveTitle,
+    }).map((entry) => entry.slug),
+    ["beta-en"],
+  );
+});
 
 test("returns published incoming entries with resolved titles", async () => {
   const manifest = await manager({

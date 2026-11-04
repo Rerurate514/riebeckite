@@ -130,5 +130,16 @@ function validateDataviewOptions(
       message: "Expected a non-negative finite number.",
     });
   }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
+    });
+  }
   return issues;
 }

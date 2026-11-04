@@ -12,6 +12,10 @@ export function resolveArchiveOptions(
     pageSize: normalizePageSize(options.pageSize ?? DEFAULT_ARCHIVE_PAGE_SIZE),
     locale: options.locale?.trim() ? options.locale.trim() : null,
     className: options.className?.trim() || DEFAULT_ARCHIVE_CLASS_NAME,
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }
 

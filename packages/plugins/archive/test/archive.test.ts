@@ -58,6 +58,7 @@ test("resolveArchiveOptions applies defaults and overrides", () => {
     pageSize: 10,
     locale: null,
     className: "rb-archive",
+    localeMode: "current",
   });
   assert.deepEqual(
     resolveArchiveOptions({
@@ -71,6 +72,7 @@ test("resolveArchiveOptions applies defaults and overrides", () => {
       pageSize: 0,
       locale: "ja",
       className: "custom",
+      localeMode: "current",
     },
   );
 });

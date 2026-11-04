@@ -5,6 +5,7 @@ import type {
   OutputDependency,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { selectLocalizedEntries } from "@riebeckite/core";
 import { analyzeBasesDependencies } from "./dependencies.js";
 import {
   BASES_ATTRIBUTE,
@@ -39,7 +40,13 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
 
         const resolved = replacePlaceholders(
           entry,
-          entries,
+          selectLocalizedEntries(entries, {
+            mode: options.localeMode ?? "current",
+            locale: entry.publicLocation.language,
+            ...(manifest.localization?.fallbackLocale
+              ? { fallbackLocale: manifest.localization.fallbackLocale }
+              : {}),
+          }),
           options,
           diagnostics,
         );

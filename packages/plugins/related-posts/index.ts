@@ -96,5 +96,16 @@ function validateRelatedPostsOptions(
   ) {
     issues.push({ path: "useBacklinks", message: "Expected a boolean." });
   }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
+    });
+  }
   return issues;
 }

@@ -5,6 +5,7 @@ export type GlossaryOptions = {
   termKey?: string;
   definitionKey?: string;
   title?: string;
+  localeMode?: "current" | "fallback" | "all";
 };
 
 export type ResolvedGlossaryOptions = Required<GlossaryOptions>;

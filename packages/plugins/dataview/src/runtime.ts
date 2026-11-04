@@ -4,6 +4,7 @@ import {
   type ContentSource,
   type Diagnostic,
   normalizeContentPath,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import {
   type DataviewNote,
@@ -56,10 +57,6 @@ export function createDataviewRuntime(
       );
       if (!hasBlocks) return;
 
-      const view: ContentManifest = {
-        ...manifest,
-        entries: manifest.discoverableEntries,
-      };
       const notes = await loadNotes(
         context.contentSource,
         dataviewNoteEntries(manifest),
@@ -76,7 +73,18 @@ export function createDataviewRuntime(
 
         const html = replacePlaceholders(
           entry,
-          view,
+          {
+            ...manifest,
+            entries: [
+              ...selectLocalizedEntries(manifest.discoverableEntries, {
+                mode: resolved.localeMode,
+                locale: entry.publicLocation.language,
+                ...(manifest.localization?.fallbackLocale
+                  ? { fallbackLocale: manifest.localization.fallbackLocale }
+                  : {}),
+              }),
+            ],
+          },
           resolved,
           diagnostics,
           notes,

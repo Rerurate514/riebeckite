@@ -70,7 +70,7 @@ target.
 | ------ | ---- | ------- | ----------- |
 | `manifest` | `Pick<ContentManifest, "discoverableEntries">` | — | Source of candidate posts |
 | `limit` | `number` | `5` | Maximum number of posts to return |
-
+| `locale` | `ContentLocalePolicy` | なし | Optional locale policy for the returned posts |
 ## Exports
 
 - `recentPosts()` — plugin factory

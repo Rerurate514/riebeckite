@@ -7,6 +7,7 @@ import {
   type PluginDataHelper,
   type PublicContentEntry,
   type PublicContentView,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import type {
   ResolvedSeriesOptions,
@@ -31,6 +32,10 @@ export function resolveSeriesOptions(
     className: options.className ?? DEFAULT_SERIES_CLASS_NAME,
     positionLabel: options.positionLabel ?? false,
     basePath: normalizeBasePath(options.basePath ?? DEFAULT_SERIES_BASE_PATH),
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }
 
@@ -105,8 +110,18 @@ export const getSeriesNavigation: PluginDataHelper<
   SeriesIndex | null
 > = ({ view, entry, index }) => {
   if (!index || !view.findDiscoverableBySlug(entry.slug)) return null;
-  const members = index.members.filter((member) =>
-    view.findDiscoverableBySlug(member.slug),
+  const allowed = new Set(
+    selectLocalizedEntries(view.discoverableEntries, {
+      mode: "current",
+      locale: entry.publicLocation.language,
+      ...(view.localization?.fallbackLocale
+        ? { fallbackLocale: view.localization.fallbackLocale }
+        : {}),
+    }).map((candidate) => candidate.slug),
+  );
+  const members = index.members.filter(
+    (member) =>
+      allowed.has(member.slug) && view.findDiscoverableBySlug(member.slug),
   );
   return members.some((member) => member.slug === entry.slug)
     ? { ...index, members }

@@ -4,6 +4,7 @@ import { type ContentManifestEntry, Pipeline } from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
   buildTimeline,
+  buildTimelinePages,
   parseInlineTimeline,
   renderTimelinePage,
   resolveTimelineOptions,
@@ -14,11 +15,22 @@ function entry(
   slug: string,
   frontmatter: Record<string, unknown>,
   tags: string[] = [],
+  language?: string,
+  translationId?: string,
 ): ContentManifestEntry {
   return {
     slug,
-    permalink: `/${slug}`,
-    publicLocation: { slug, permalink: `/${slug}` },
+    permalink:
+      language && language !== "ja" ? `/${language}/${slug}` : `/${slug}`,
+    publicLocation: {
+      slug,
+      permalink:
+        language && language !== "ja" ? `/${language}/${slug}` : `/${slug}`,
+      ...(language ? { language } : {}),
+      ...(translationId
+        ? { metadata: { "l10n.translationId": translationId } }
+        : {}),
+    },
     title: slug,
     frontmatter,
     html: "",
@@ -175,4 +187,68 @@ test("timeline page escapes content", () => {
   );
   assert.match(page.html, /href="\/a\?x=1&amp;y=2"/);
   assert.match(page.html, /A &lt; B/);
+});
+
+test("localized timelines select one language per page and expose fallback badges", () => {
+  const manifest = {
+    discoverableEntries: [
+      entry("guide", { date: "2025-01-01" }, [], "ja", "guide"),
+      entry("guide.en", { date: "2025-01-01" }, [], "en", "guide"),
+      entry("only-en", { date: "2025-01-02" }, [], "en", "only-en"),
+    ],
+    localization: {
+      defaultLocale: "ja",
+      locales: ["ja", "en"],
+      fallbackLocale: "en",
+    },
+  } as never;
+
+  const current = buildTimelinePages(
+    manifest,
+    resolveTimelineOptions({ localeMode: "current" }),
+  );
+  assert.deepEqual(
+    current.map((page) => ({
+      pathname: page.pathname,
+      titles: page.entries.map((item) => item.title),
+    })),
+    [
+      { pathname: "/timeline", titles: ["guide"] },
+      { pathname: "/en/timeline", titles: ["guide.en", "only-en"] },
+    ],
+  );
+
+  const fallback = buildTimelinePages(
+    manifest,
+    resolveTimelineOptions({ localeMode: "fallback" }),
+  );
+  assert.deepEqual(
+    fallback[0]?.entries.map((item) => item.title),
+    ["guide", "only-en"],
+  );
+  assert.match(
+    renderTimelinePage(
+      fallback[0]?.entries ?? [],
+      resolveTimelineOptions({ localeMode: "fallback" }),
+      fallback[0]?.locale,
+    ).html,
+    /rr-language-badge/,
+  );
+
+  const all = buildTimelinePages(
+    manifest,
+    resolveTimelineOptions({ localeMode: "all" }),
+  );
+  assert.deepEqual(
+    all.map((page) => ({
+      pathname: page.pathname,
+      titles: page.entries.map((item) => item.title),
+    })),
+    [
+      {
+        pathname: "/timeline",
+        titles: ["guide", "guide.en", "only-en"],
+      },
+    ],
+  );
 });

@@ -23,6 +23,10 @@ export function resolveGlossaryOptions(
     termKey: options.termKey?.trim() || "term",
     definitionKey: options.definitionKey?.trim() || "definition",
     title: options.title?.trim() || "Glossary",
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }
 

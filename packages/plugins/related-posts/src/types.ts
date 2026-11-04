@@ -14,6 +14,8 @@ export type RelatedPostsOptions = {
   useTags?: boolean;
   /** Use direct links (outgoing and incoming) as a relatedness signal. Defaults to `true`. */
   useBacklinks?: boolean;
+  /** Locale selection for related candidates. Defaults to `"current"`. */
+  localeMode?: "current" | "fallback" | "all";
 };
 
 /** `RelatedPostsOptions` with every default applied. */
@@ -25,6 +27,7 @@ export type ResolvedRelatedPostsOptions = {
   className: string;
   useTags: boolean;
   useBacklinks: boolean;
+  localeMode: "current" | "fallback" | "all";
 };
 
 /** A single ranked related entry, ready to render. */

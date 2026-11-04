@@ -109,15 +109,15 @@ Themes can customize a callout from its `rr-callout` root with
 
 | Feature | Obsidian Support | Riebeckite Support | Notes |
 | --- | --- | --- | --- |
-| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`, `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note/.md)` | Supported | Full | |
+| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)`, `[Alias](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` | Supported | Full | |
 | `[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.md)` | Supported | Full | resolved through the content index |
 | `[Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` | Supported | Full | |
 | `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` | Supported | Full | |
 | `[#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#Heading)`, `[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.md#^block-id)` | Supported | Full | same-note links |
 | Link text `Note > Heading` | Supported | Full | alias overrides it |
 | `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` | Supported | Full | |
-| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.md)`, `\|300x200` | Supported | Full | positive integers only |
-| `![Description](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.md)` | Supported | Full | alt text |
+| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)`, `\|300x200` | Supported | Full | positive integers only |
+| `![Description](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.md)` | Supported | Full | alt text |
 | `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md)` | Supported | Full | |
 | `![Note#Heading](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#Heading)` | Supported | Full | section until the next peer heading |
 | `![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.md#^block-id)` | Supported | Full | |

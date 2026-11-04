@@ -53,6 +53,7 @@ export default defineConfig({
     locale: "en",
   },
   content: { directory: "content" },
+  cache: { enabled: false },
   theme: defaultTheme(),
   plugins: [obsidianMarkdown(), colorMode(), toc(), plugin],
 });

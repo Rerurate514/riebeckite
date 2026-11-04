@@ -22,6 +22,7 @@ type HonoxApplicationOptions = {
     port?: number;
   };
   onServerReady?: (urls: readonly string[]) => void | Promise<void>;
+  onRestart?: () => void | Promise<void>;
   restartOnChange?: readonly string[];
   reuseClientBuild?: boolean;
   bridgeToken?: string;
@@ -145,7 +146,11 @@ export async function startHonoxDevServer(
     if (restartFiles.size > 0) {
       server.watcher.add([...restartFiles]);
       server.watcher.on("change", (file) => {
-        if (restartFiles.has(path.resolve(file))) void server.restart();
+        if (!restartFiles.has(path.resolve(file))) return;
+        void (async () => {
+          await options.onRestart?.();
+          await server.restart();
+        })();
       });
     }
     await server.listen(options.server?.port);

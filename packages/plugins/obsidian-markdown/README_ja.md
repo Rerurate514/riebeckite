@@ -57,15 +57,15 @@ export default defineConfig({
 
 | 機能 | Obsidian | Riebeckite | 補足 |
 | --- | --- | --- | --- |
-| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note/.ja.md)` | 対応 | 完全 | |
+| `[Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)`、`[別名](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)` | 対応 | 完全 | |
 | `[folder/Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/folder/Note.ja.md)` | 対応 | 完全 | コンテンツインデックスで解決 |
 | `[Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)` | 対応 | 完全 | |
 | `[Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)` | 対応 | 完全 | |
 | `[#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#見出し)`、`[#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/.ja.md#^block-id)` | 対応 | 完全 | 同一ノートへのリンク |
 | リンク文字列 `Note > 見出し` | 対応 | 完全 | 別名が優先 |
 | `![image.png](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` | 対応 | 完全 | |
-| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.ja.md)`、`\|300x200` | 対応 | 完全 | 正の整数のみ |
-| `![説明](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png/.ja.md)` | 対応 | 完全 | 代替テキスト |
+| `![300](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)`、`\|300x200` | 対応 | 完全 | 正の整数のみ |
+| `![説明](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/image.png.ja.md)` | 対応 | 完全 | 代替テキスト |
 | `![Note](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md)` | 対応 | 完全 | |
 | `![Note#見出し](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#見出し)` | 対応 | 完全 | 同じか上位の次の見出しまで |
 | `![Note#^block-id](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/Note.ja.md#^block-id)` | 対応 | 完全 | |

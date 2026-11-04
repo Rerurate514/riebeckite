@@ -277,6 +277,13 @@ async function bridgeMutationResponse(
     return;
   }
   const path = requestUrl.pathname;
+  if (
+    !matchesToken(request.headers[bridgeMutationTokenHeader], mutationToken)
+  ) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
   if (path === `${bridgePath}/mutations/plan`) {
     if (!isMutationOperations(body.operations)) {
       response.statusCode = 400;
@@ -285,13 +292,6 @@ async function bridgeMutationResponse(
     }
     response.setHeader("content-type", "application/json; charset=utf-8");
     response.end(JSON.stringify(await mutations.plan(body.operations)));
-    return;
-  }
-  if (
-    !matchesToken(request.headers[bridgeMutationTokenHeader], mutationToken)
-  ) {
-    response.statusCode = 403;
-    response.end();
     return;
   }
   const match = /^\/__riebeckite\/bridge\/v1\/mutations\/([^/]+)\/apply$/.exec(

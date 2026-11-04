@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import type http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -71,6 +70,7 @@ test("advertises inspection capabilities when a content root is supplied", async
   const body = (await response.json()) as { capabilities: string[] };
   assert.deepEqual(body.capabilities, [
     "status",
+    "site-identity",
     "source-resolution",
     "page-resolution",
     "preview",
@@ -128,7 +128,9 @@ test("serves stable opaque site and content-root identities", async (t) => {
   t.after(first.close);
   t.after(second.close);
 
-  const identity = async (bootstrap: http.Server) => {
+  const identity = async (
+    bootstrap: (request: unknown, response: unknown) => Promise<void>,
+  ) => {
     const origin = await privateOrigin(bootstrap);
     const response = await fetch(`${origin}/__riebeckite/bridge/v1`, {
       headers: {
@@ -540,6 +542,31 @@ test("rejects mutation endpoints for read-only Bridge clients", async (t) => {
     },
   );
   assert.equal(response.status, 404);
+});
+
+test("requires a mutation token to create mutation plans", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const instance = bridge({
+    contentRoot: root,
+    mutationToken,
+    mutationApprovalToken: approvalToken,
+  });
+  t.after(instance.close);
+
+  const response = await fetch(
+    `${await privateOrigin(instance.bootstrap)}/__riebeckite/bridge/v1/mutations/plan`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+      body: JSON.stringify({ operations: [] }),
+    },
+  );
+  assert.equal(response.status, 403);
 });
 
 test("preserves frontmatter objects while persisting mutation plans", async (t) => {

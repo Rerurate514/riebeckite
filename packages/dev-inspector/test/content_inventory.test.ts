@@ -13,6 +13,10 @@ test("reports content visibility, redirects, orphans, and unresolved links", () 
     embed: false,
   });
   note.aliases = ["/old-note"];
+  note.publicLocation.metadata = {
+    id: "note-id",
+    idSource: "frontmatter",
+  };
   const inventory = inspectContentInventory({
     manifest: {
       entries: [note, draft],
@@ -35,6 +39,8 @@ test("reports content visibility, redirects, orphans, and unresolved links", () 
   assert.deepEqual(inventory.entries[1]?.redirects, [
     { from: "/old", to: "/note", status: 308 },
   ]);
+  assert.equal(inventory.entries[1]?.id, "note-id");
+  assert.equal(inventory.entries[1]?.idSource, "frontmatter");
   assert.deepEqual(inventory.unresolved, [
     { source: "note", raw: "[[missing]]" },
   ]);
@@ -62,7 +68,11 @@ function entry(
     slug,
     title: slug,
     permalink,
-    publicLocation: { slug, permalink },
+    publicLocation: {
+      slug,
+      permalink,
+      metadata: undefined as Record<string, string> | undefined,
+    },
     frontmatter: {},
     publishing: {
       visibility,

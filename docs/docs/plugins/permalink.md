@@ -12,7 +12,8 @@ Instead of coupling public URLs directly to the filesystem layout, this plugin c
 
 **Contents**
 
-- [Start here](#start-here)
+- [Quick start](#quick-start)
+- [Everyday use](#everyday-use)
 - [Basic usage](#basic-usage)
 - [How it works](#how-it-works)
 - [Frontmatter](#frontmatter)
@@ -25,19 +26,63 @@ Instead of coupling public URLs directly to the filesystem layout, this plugin c
 - [Inspecting resolved URLs](#inspecting-resolved-urls)
 - [Configuration examples](#configuration-examples)
 
-## Start here
+## Quick start
 
-The smallest setup uses the defaults:
+Install the plugin:
 
-```ts
-import { permalink } from "@riebeckite/plugin-permalink";
-
-export default {
-  plugins: [permalink()],
-};
+```sh
+npm install @riebeckite/plugin-permalink
 ```
 
-With `id: hello-world` in a page's frontmatter, that page is published at `/n/hello-world`. The defaults use the `id` frontmatter field, fall back to a path-derived hash when `id` is missing, and place the result under the `/n` prefix in `flat` mode.
+Register it in `riebeckite.config.ts`:
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { permalink } from "@riebeckite/plugin-permalink";
+
+export default defineConfig({
+  plugins: [permalink()],
+});
+```
+
+Publish a page:
+
+```md
+---
+publish: true
+id: hello-world
+---
+
+# Hello
+```
+
+The page is published at `/n/hello-world`. Pages without an `id` receive a path-derived hash instead.
+
+Build the site and confirm the resolved URLs:
+
+```sh
+npm exec riebeckite build
+npm exec -- riebeckite inspect content --list
+```
+
+`inspect content --list` prints the ID, ID source, and permalink for every entry. Check these values before the first deployment.
+
+### Choose the URL shape first
+
+Decide the URL shape before you publish. Changing it later breaks links unless you add redirects.
+
+- Use a frontmatter `id` for URLs that should stay readable and stable, such as `/n/hello-world`.
+- Leave `id` out for notes where a path-derived hash is acceptable. Japanese and other non-ASCII file names stay out of the URL, but moving the file changes the URL.
+- Change `path.prefix` when `/n` is not what you want. `/notes` is readable; `""` removes the prefix. Check that the prefix does not collide with `/tags`, `/folders`, or other generated pages.
+- Use `permalink` for one-off URLs such as `/about`.
+
+## Everyday use
+
+- Add a new page with `publish: true`. Add `id` only when the URL matters.
+- Rename or move a page: keep its `id`. In `flat` mode the URL does not change.
+- Change an `id` or `permalink`: add the old URL to `redirect_from` before publishing.
+- Never reuse an `id` for different content. The build fails on duplicate IDs and URLs instead of choosing one silently.
+- Before publishing, run `npm exec -- riebeckite inspect content --list` and check the final URLs.
 
 ## Basic usage
 

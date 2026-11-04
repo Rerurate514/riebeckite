@@ -302,7 +302,7 @@ const inspectorTranslations = {
   "Incoming links": "被リンク",
   "Aliases": "エイリアス",
   "Redirects": "リダイレクト",
-  "Title, path, alias, or redirect": "タイトル、パス、エイリアス、リダイレクト",
+  "Title, path, ID, alias, or redirect": "タイトル、パス、ID、エイリアス、リダイレクト",
   "No matching content.": "一致するコンテンツはありません。",
   "No unresolved links.": "未解決リンクはありません。",
   "No ambiguous targets.": "曖昧なリンク先はありません。",

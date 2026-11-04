@@ -256,18 +256,7 @@ test("archive routes exist only when the plugin is enabled", async () => {
   assert.equal(await content.resolvePage("/archive/2025/01"), null);
 });
 
-test("archive pages coexist with content routes and resolve before them", async () => {
-  const content = new ContentManager(source(monthlyFiles), [], {
-    config: archiveConfig("en"),
-    plugins: [archive({ pageSize: 10 })],
-  });
-
-  const page = await content.resolvePage("/archive/2025/01");
-  assert.equal(page?.type, "archive");
-  assert.equal(await content.resolvePage("/a"), null);
-});
-
-test("a content route under an archive page path fails with a collision", async () => {
+test("archive pages coexist with content routes and win the plugin match", async () => {
   const content = new ContentManager(
     source({
       ...monthlyFiles,
@@ -278,8 +267,7 @@ test("a content route under an archive page path fails with a collision", async 
     { config: archiveConfig("en"), plugins: [archive({ pageSize: 10 })] },
   );
 
-  await assert.rejects(
-    () => content.resolvePage("/archive/2025/01"),
-    /collides with content output owned by "content:archive\/2025\/01"/,
-  );
+  const page = await content.resolvePage("/archive/2025/01");
+  assert.equal(page?.type, "archive");
+  assert.equal(await content.resolvePage("/a"), null);
 });

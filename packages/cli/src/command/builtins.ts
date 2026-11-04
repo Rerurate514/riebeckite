@@ -151,6 +151,7 @@ function definitions(): readonly CliCommandDefinition[] {
     pluginDevCommand(),
     pluginVerifyCommand(),
     contentCommand(),
+    bridgeApproveCommand(),
     migrateGroupCommand(),
     ...MIGRATE_ACTIONS.map(migrateActionCommand),
     publishGroupCommand(),
@@ -1055,6 +1056,24 @@ function contentCommand(): CliCommandDefinition {
     async handler(context, input) {
       const { runContentMutation } = await import("../commands/content.js");
       return runContentMutation(await project(context), input.rawArguments);
+    },
+  });
+}
+
+function bridgeApproveCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "bridge approve",
+    summary: "Interactively approve a pending Bridge content mutation.",
+    requiresProject: true,
+    arguments: [
+      cliArgument("plan", {
+        description: "Bridge mutation plan ID.",
+        required: true,
+      }),
+    ],
+    async handler(context, input) {
+      const { runBridgeApproval } = await import("../commands/bridge.js");
+      return runBridgeApproval(await project(context), input.arguments.plan);
     },
   });
 }

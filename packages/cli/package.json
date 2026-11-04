@@ -24,6 +24,7 @@
     "@hono/vite-build": "^1.11.1",
     "@riebeckite/core": "workspace:*",
     "@riebeckite/diagnostics": "workspace:*",
+    "@riebeckite/dev-inspector": "workspace:*",
     "@riebeckite/honox": "workspace:*",
     "@riebeckite/node": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",

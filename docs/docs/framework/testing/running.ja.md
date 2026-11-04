@@ -31,6 +31,7 @@ pnpm test:e2e:external
 また、第三者プラグインを外部パッケージの立場で検証する Fixture は `tests/plugin-dx` にあります（独立した pnpm workspace です）。
 
 ```sh
+pnpm --dir tests/plugin-dx install --frozen-lockfile
 pnpm test:plugin-dx            # Public API だけで書いた Plugin の Unit Test
 pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install して検証
 ```

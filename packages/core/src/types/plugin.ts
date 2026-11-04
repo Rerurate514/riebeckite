@@ -1,5 +1,6 @@
 import type { ApiLifecycleDefinition } from "../api_lifecycle.js";
 import type { PluginCliExtension } from "../cli/types.js";
+import type { ContentLocalization } from "../content/content_language.js";
 import type {
   DerivedDependency,
   DerivedView,
@@ -127,6 +128,10 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onConfigResolved?(context: PluginContext): void | Promise<void>;
   onContentLoaded?(context: PluginContentContext): void | Promise<void>;
   resolveContentLocations?: PluginContentLocationResolver;
+  /** Resolves the site-wide localization contract before generated page paths. */
+  resolveContentLocalization?(
+    context: PluginManifestContext,
+  ): ContentLocalization | undefined | Promise<ContentLocalization | undefined>;
   extendContentLocations?(
     context: PluginContentLocationAugmentContext,
   ): void | Promise<void>;
@@ -184,6 +189,7 @@ export type PluginGeneratedOutputPlanContext = {
   readonly manifest: Readonly<{
     readonly discoverableEntries: readonly ContentManifestEntry[];
     readonly routableEntries: readonly ContentManifestEntry[];
+    readonly localization?: ContentManifest["localization"];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
   readonly derived: DerivedViewRegistry;

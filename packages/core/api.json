@@ -486,6 +486,11 @@
       "type": false
     },
     {
+      "name": "CONTENT_TRANSLATION_ID_METADATA_KEY",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "ContentAsset",
       "value": false,
       "type": true
@@ -632,6 +637,21 @@
     },
     {
       "name": "ContentLinkRetarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalePolicy",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalization",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalizationMode",
       "value": false,
       "type": true
     },
@@ -1056,6 +1076,11 @@
       "type": false
     },
     {
+      "name": "DeferredGeneratedOutputInput",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "defineApiLifecycle",
       "value": true,
       "type": false
@@ -1099,6 +1124,11 @@
       "name": "defineThemeSettings",
       "value": true,
       "type": false
+    },
+    {
+      "name": "DependencyGraphResult",
+      "value": false,
+      "type": true
     },
     {
       "name": "derivedDependenciesToOutputDependencies",
@@ -1421,6 +1451,11 @@
       "type": false
     },
     {
+      "name": "getEntryTranslationId",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "getExtension",
       "value": true,
       "type": false
@@ -1429,6 +1464,21 @@
       "name": "getResolvedPluginMetadata",
       "value": true,
       "type": false
+    },
+    {
+      "name": "GraphEdge",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GraphNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "GraphQuery",
+      "value": false,
+      "type": true
     },
     {
       "name": "groupContentEntries",
@@ -1496,6 +1546,11 @@
       "type": false
     },
     {
+      "name": "inspectDependencyGraph",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "InspectorTabData",
       "value": false,
       "type": true
@@ -1511,12 +1566,32 @@
       "type": true
     },
     {
+      "name": "inspectPluginExecution",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "inspectRegeneration",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "inspectThemeConfig",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "isApprovalCurrent",
       "value": true,
       "type": false
     },
     {
       "name": "isAttachmentPath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isDeferredGeneratedOutput",
       "value": true,
       "type": false
     },
@@ -1612,6 +1687,16 @@
     },
     {
       "name": "loadContentBuildState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "localizedPagePath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "localizedPagePaths",
       "value": true,
       "type": false
     },
@@ -1881,6 +1966,11 @@
       "type": false
     },
     {
+      "name": "PlannedDeferredOutput",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PlannedGeneratedOutput",
       "value": false,
       "type": true
@@ -2006,6 +2096,21 @@
       "type": true
     },
     {
+      "name": "PluginExecution",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginExecutionQuery",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginExecutionResult",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginGeneratedHtml",
       "value": false,
       "type": true
@@ -2033,6 +2138,11 @@
     {
       "name": "PluginHookError",
       "value": true,
+      "type": true
+    },
+    {
+      "name": "PluginHookExecution",
+      "value": false,
       "type": true
     },
     {
@@ -2401,6 +2511,16 @@
       "type": false
     },
     {
+      "name": "RegenerationInspection",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RegenerationReason",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "registerCliCommand",
       "value": true,
       "type": false
@@ -2551,6 +2671,11 @@
       "type": false
     },
     {
+      "name": "resolvePageLocale",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolvePlugins",
       "value": true,
       "type": false
@@ -2626,6 +2751,11 @@
       "type": false
     },
     {
+      "name": "selectLocalizedEntries",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "SeoMetadata",
       "value": false,
       "type": true
@@ -2672,6 +2802,11 @@
     },
     {
       "name": "ThemeColorMode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ThemeConfigInspection",
       "value": false,
       "type": true
     },

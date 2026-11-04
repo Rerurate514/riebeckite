@@ -33,6 +33,7 @@ export type PublicContentEntry = DeepReadonly<{
 export type PublicContentView = {
   readonly routableEntries: readonly PublicContentEntry[];
   readonly discoverableEntries: readonly PublicContentEntry[];
+  readonly localization?: ContentManifest["localization"];
   findRoutableBySlug(slug: string): PublicContentEntry | undefined;
   findDiscoverableBySlug(slug: string): PublicContentEntry | undefined;
   findRoutableByAlias(alias: string): readonly PublicContentEntry[];
@@ -85,6 +86,7 @@ export function createPublicContentView(
   return Object.freeze({
     routableEntries: Object.freeze(routableCopies),
     discoverableEntries: Object.freeze(discoverableCopies),
+    ...(manifest.localization ? { localization: manifest.localization } : {}),
     findRoutableBySlug: (slug) => copiesBySlug.get(slug),
     findDiscoverableBySlug: (slug) =>
       discoverableSlugs.has(slug) ? copiesBySlug.get(slug) : undefined,

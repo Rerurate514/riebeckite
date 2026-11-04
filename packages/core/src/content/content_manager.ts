@@ -546,6 +546,11 @@ export class ContentManager {
           this.publishStrategy(),
           this.publishingBuildTime,
         );
+        manifest.localization =
+          (await this.pluginRuntime.resolveContentLocalization(
+            manifest,
+            contentIndex,
+          )) ?? manifest.localization;
         manifest.pagePaths = [
           ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
         ];

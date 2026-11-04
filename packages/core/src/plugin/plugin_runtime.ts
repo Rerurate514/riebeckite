@@ -612,6 +612,9 @@ export class PluginRuntime {
           manifest: {
             discoverableEntries: manifest.discoverableEntries,
             routableEntries: manifest.publicEntries,
+            ...(manifest.localization
+              ? { localization: manifest.localization }
+              : {}),
           },
           site: this.pipelineOptions.config?.site,
           derived: this.derivedViews,
@@ -802,6 +805,27 @@ export class PluginRuntime {
     contentIndex: Map<string, string>,
   ): Promise<readonly string[]> {
     return await this.pageResolver.getPagePaths(manifest, contentIndex);
+  }
+
+  async resolveContentLocalization(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ContentManifest["localization"] | undefined> {
+    const context = {
+      ...this.createContext(contentIndex),
+      manifest,
+    };
+    for (const plugin of this.plugins()) {
+      const hook = plugin.resolveContentLocalization;
+      if (!hook) continue;
+      const localization = await this.observeHook(
+        plugin,
+        "resolveContentLocalization",
+        async () => await hook(this.createPluginContext(plugin, context)),
+      );
+      if (localization) return localization;
+    }
+    return undefined;
   }
 
   async getPageRoutes(

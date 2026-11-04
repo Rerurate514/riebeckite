@@ -1,4 +1,5 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
+import type { ContentLocalePolicy } from "./content_language.js";
 import {
   type ContentQueryFilter,
   type ContentQueryGroupBy,
@@ -32,6 +33,8 @@ export type ContentCollectionDefinition = {
   basePath: string;
   /** Optional filter applied before grouping. */
   filter?: ContentQueryFilter;
+  /** Optional locale selection applied before grouping. */
+  locale?: ContentLocalePolicy;
   /** Optional sort applied before grouping and inside each listing. */
   sort?: ContentQuerySort | readonly ContentQuerySort[];
   /** Optional ordering of the generated group keys. Defaults to ascending. */
@@ -99,6 +102,7 @@ export function buildContentCollections(
       filter: definition.filter,
       sort: definition.sort,
       order: definition.order,
+      ...(definition.locale ? { locale: definition.locale } : {}),
     });
 
     for (const group of groups) {

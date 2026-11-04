@@ -232,6 +232,33 @@ test("rejects an empty translation key configuration", () => {
   );
 });
 
+test("rejects a fallback locale outside the configured languages", () => {
+  assert.throws(
+    () =>
+      l10n({
+        defaultLang: "ja",
+        languages: ["ja", "en"],
+        fallbackLocale: "fr",
+      }),
+    /fallbackLocale must be included/,
+  );
+});
+
+test("publishes the resolved localization contract on the manifest", async () => {
+  const content = manager(
+    { "guide.ja.md": "# ガイド" },
+    {
+      fallbackLocale: "en",
+    },
+  );
+  const manifest = await content.getManifest();
+  assert.deepEqual(manifest.localization, {
+    defaultLocale: "ja",
+    locales: ["ja", "en", "en-US", "zh-CN"],
+    fallbackLocale: "en",
+  });
+});
+
 test("does not invent missing translations and adds hreflang only for existing variants", async () => {
   const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",

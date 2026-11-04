@@ -9,6 +9,9 @@ export function resolveOptions(options: L10nOptions): ResolvedL10nOptions {
   return {
     defaultLang: canonicalLanguage(options.defaultLang),
     languages,
+    ...(options.fallbackLocale
+      ? { fallbackLocale: canonicalLanguage(options.fallbackLocale) }
+      : {}),
     languageByLowercase: new Map(
       languages.map((language) => [language.toLowerCase(), language]),
     ),
@@ -43,6 +46,16 @@ export function validateOptions(options: L10nOptions): string[] {
   }
   if (new Set(languages).size !== languages.length) {
     errors.push("l10n.languages must not contain duplicate language tags.");
+  }
+  if (options.fallbackLocale !== undefined) {
+    try {
+      const fallbackLocale = canonicalLanguage(options.fallbackLocale);
+      if (!languages.includes(fallbackLocale)) {
+        errors.push("l10n.fallbackLocale must be included in l10n.languages.");
+      }
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : String(error));
+    }
   }
   if (options.strict !== undefined && typeof options.strict !== "boolean") {
     errors.push("l10n.strict must be a boolean.");

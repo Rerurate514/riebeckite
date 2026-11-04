@@ -1,3 +1,4 @@
+import { resolvePageLocale } from "../content/content_language.js";
 import type { OutputDescriptor } from "../content/output_dependency.js";
 import type {
   ContentManifest,
@@ -54,6 +55,7 @@ export class PluginPageResolver {
           ...this.options.createContext(contentIndex),
           manifest,
           pathname: pagePathname,
+          locale: resolvePageLocale(manifest, pagePathname),
           renderMarkdown: this.options.renderMarkdown,
         };
         const page = await pageType.resolve(
@@ -113,6 +115,7 @@ export class PluginPageResolver {
         ...this.options.createContext(contentIndex),
         manifest,
         pathname: pagePathname,
+        locale: resolvePageLocale(manifest, pagePathname),
         renderMarkdown: this.options.renderMarkdown,
       };
       const page = await resolveRoute(
@@ -185,6 +188,7 @@ export class PluginPageResolver {
             ...this.options.createContext(contentIndex),
             manifest,
             pathname,
+            locale: resolvePageLocale(manifest, pathname),
             renderMarkdown: this.options.renderMarkdown,
           };
           const dependencies = pageType.outputDependencies

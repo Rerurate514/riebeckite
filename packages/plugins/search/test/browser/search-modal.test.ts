@@ -35,7 +35,7 @@ const SEARCH_ITEMS = [
     body: "Beta body content about zettelkasten.",
     excerpt: "Beta excerpt about zettelkasten.",
     tags: ["zettel"],
-    language: "ja",
+    language: "en",
     date: null,
   },
 ];

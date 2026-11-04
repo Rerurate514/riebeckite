@@ -36,7 +36,7 @@ The stored state includes:
 
 | Field | Description |
 | --- | --- |
-| `version` | Build state schema version (currently `19`). |
+| `version` | Build state schema version (currently `24`). |
 | `entries` | `Record<string, ContentBuildEntry>` — per-entry fingerprint and dependency info. |
 | `pipelineFingerprint` | Hash of the content pipeline (plugins, filters, etc.). |
 | `outputs` | `OutputDescriptor[]` — the last inventory of generated outputs. |

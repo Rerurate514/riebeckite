@@ -18,12 +18,12 @@ The package that connects Core's content and pages to a rendering and deployment
 ## Integration responsibilities in detail
 The integration acts as the bridge between Riebeckite Core and the host framework (e.g., HonoX + Vite). Its key responsibilities include:
 
-- **Route resolution**: Resolves incoming request paths to pages using `resolveRiebeckiteRoute` (`@riebeckite/honox`). The resolution order is: plugin page check → content resolution via `publicLocation` → redirect check → 404.
+- **Route resolution**: Resolves incoming request paths to pages using `resolveRiebeckiteRoute` (`@riebeckite/honox/server`). The resolution order is: plugin page check → content resolution via `publicLocation` → redirect check → 404.
 - **Output generation**: Renders page HTML and writes generated files (sitemap, robots, feeds) through the SEO plugin.
 - **Deployment connection**: Connects the built output to a hosting target, such as Cloudflare Workers. The integration does not own content interpretation — Core handles content processing and location resolution, while the integration connects to delivery.
 
 ```ts
-import { resolveRiebeckiteRoute } from "@riebeckite/honox";
+import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 

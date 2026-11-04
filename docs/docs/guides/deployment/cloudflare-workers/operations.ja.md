@@ -26,11 +26,7 @@ dist/ を更新
 デプロイ
 ```
 
-`riebeckite publish run --execute` は、計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを行います。Riebeckite 側を変更した場合は、まず `npm exec riebeckite build` を実行してコンテンツが最新であることを確認してください。
-
-```sh
-npm exec riebeckite build
-```
+`riebeckite publish run --execute` は、計画、必要に応じたビルド、成果物検証、Hosting adapter 経由のデプロイを行います。`site.baseUrl` やテーマなど設定だけを変更した場合は、先にビルドし、`--force` を付けます。計画はコンテンツを比較するため、設定だけの変更では「Publication is up to date.」と表示されてデプロイされません。
 
 ## デプロイ前のチェックリスト
 
@@ -116,9 +112,11 @@ GitHub Actions を有効にしてサイトを生成します。
 
 ```sh
 npx create-riebeckite my-site --github-actions
+cd my-site
+npm install
 ```
 
-これにより、Cloudflare Workers 用の `wrangler.jsonc` とデプロイワークフローが生成されます。以降は、サイトリポジトリの `main` へプッシュすると自動でビルドとデプロイが実行されます。
+これにより、Cloudflare Workers 用の `wrangler.jsonc` とデプロイワークフローが生成されます。コマンドライン形式ではプロンプトが表示されず、依存関係もインストールされません。ワークフローは `npm ci` を使い、コミット済みの `package-lock.json` を必要とするため、コミット前に `npm install` を実行してください。以降は、サイトリポジトリの `main` へプッシュすると自動でビルドとデプロイが実行されます。
 
 ### コンテンツを別リポジトリに置く場合
 
@@ -128,6 +126,8 @@ npx create-riebeckite my-site --github-actions
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
   --site-repository OWNER/my-site
+cd my-site
+npm install
 ```
 
 この構成では、次の2つのリポジトリに分かれます。

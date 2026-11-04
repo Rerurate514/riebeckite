@@ -60,7 +60,7 @@ The full `SiteConfig` interface from `packages/core/src/types/site_config.ts` de
 | `baseUrl` | `string \| undefined` | Base URL for the site (e.g., `https://example.com`) |
 | `locale` | `string \| undefined` | Locale code (e.g., `en`, `ja`) |
 | `twitterSite` | `string \| undefined` | Twitter `@` handle for card attribution |
-| `defaultOgImage` | `feed \| undefined` | RSS/Atom feed configuration (title, description, language) |
+| `defaultOgImage` | `string \| undefined` | Default Open Graph image used when an entry has no image |
 
 Each field is used as follows:
 - **title**: Rendered in the document `<title>` and page headers

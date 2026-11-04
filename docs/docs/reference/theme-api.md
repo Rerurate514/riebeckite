@@ -39,7 +39,10 @@ export const myTheme = defineTheme({
 Use the theme by calling it:
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
+
 export default defineConfig({
+  site: { title: "My site" },
   theme: myTheme({
     colorMode: "system",
     layout: "article",
@@ -52,7 +55,7 @@ export default defineConfig({
 
 `settings` accepts `color`, `boolean`, `number`, `slider`, `select`, and `text`. Every setting has a label and default; it may also have a description, section, group, light/dark values, numeric range, and select options. Settings are checked at runtime. Unknown keys and invalid values are rejected.
 
-Resolution order is schema defaults, then a preset, then explicit `settings`. Color, number, and slider settings are reflected as safe `--rb-setting-*` custom properties. Every setting is reflected as a `data-rb-setting-*` attribute. Roots use `data-rb-theme`, `data-rb-mode`, and `data-rb-layout`.
+Resolution order is schema defaults, then a preset, then explicit `settings`. Color, number, and slider settings are reflected as safe `--rb-setting-*` custom properties. Every setting is reflected as a `data-rb-setting-*` attribute. Roots use `data-rb-theme` and `data-rb-layout`. `data-rb-mode` is emitted only for an explicit light or dark choice; in the default `system` mode it is omitted.
 
 Themes set semantic `--rb-*` tokens; components and plugins consume them. [[glossary/theme|Theme]] CSS is loaded after framework and plugin CSS, while `stylesheets` load last for site overrides.
 

@@ -53,7 +53,7 @@ Wrangler は Cloudflare Workers の開発とデプロイに使う公式 CLI で�
 
 Cloudflare Workers に何をデプロイするかは `wrangler.jsonc` で設定します。
 
-`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec -- riebeckite publish run --execute` も、ファイルがなければサイトのフォルダ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
+`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec -- riebeckite publish run --execute` も、ファイルがなければアプリのルートディレクトリ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
 
 手動で作成する場合は、サイトのルートに `wrangler.jsonc` を置きます。サイトの構成は次のとおりです。
 
@@ -152,11 +152,11 @@ export default defineConfig({
 
 `baseUrl` はサイトの公開 URL を表すため、実際に公開する URL と一致させてください。これにより、[[glossary/sitemap|サイトマップ]]やフィードの URL も公開先と一致します。
 
-設定を変更したら、もう一度ビルドしてデプロイします。
+設定を変更したら、もう一度ビルドしてデプロイします。`baseUrl` はコンテンツの計画に含まれないため、設定だけを変えた再デプロイには `--force` が必要です。
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 最初の公開は、次のような流れになります。

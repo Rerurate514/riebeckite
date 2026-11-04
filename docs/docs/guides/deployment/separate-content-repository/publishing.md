@@ -44,7 +44,7 @@ For a private vault, the default `explicit` is the easier model to reason about.
 | `**/Templates/**` | both of the above | — |
 | `private/**` | `private/secret.md` | `notes/private/secret.md` |
 
-`*` stays within one segment; `**` crosses segments. If a folder of the same name can appear in subfolders, prefix `**/` to be safe. That is why the scaffold defaults use `**/templates/**` and `**/private/**`.
+`*` stays within one segment; `**` crosses segments. If a folder of the same name can appear in subfolders, prefix `**/` to be safe. The scaffold does not set these patterns, so add `**/templates/**` and `**/private/**` explicitly when you need them.
 
 `exclude` filters before loading, so excluded notes never appear in link resolution or the graph. For notes you want private, in addition to leaving off `publish: true`, exclude the whole folder where possible.
 
@@ -76,7 +76,7 @@ Attachments and media are different. An embed such as:
 ![[attachments/report.pdf]]
 ```
 
-produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx --conditions=source scripts/build_images.ts`, copying into `public/assets/attachments/`).
 
 That implementation works like this:
 

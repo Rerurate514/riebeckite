@@ -49,7 +49,7 @@ wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
 ## 3. Add wrangler.jsonc
 
-`npm exec -- riebeckite publish run --execute` creates `wrangler.jsonc` from the site folder name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
+`npm exec -- riebeckite publish run --execute` creates `wrangler.jsonc` from the app root directory name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
 
 ```text
 my-site/
@@ -126,11 +126,11 @@ site: {
 },
 ```
 
-Then build and deploy again.
+Then build and deploy again. Because `baseUrl` is not part of the content plan, `--force` is required for this config-only redeploy.
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 This makes sitemap and feed URLs match the public site.

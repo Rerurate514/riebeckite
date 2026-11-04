@@ -59,11 +59,11 @@ Content Repository の分離
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。`baseUrl` はコンテンツの計画に含まれないため、この設定だけの変更には `--force` を付けます。
 
 ```bash
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 ### 独自ドメインを割り当てる
@@ -84,7 +84,7 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと、通常の `riebeckite publish run --execute` の流れで公開します。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行してください。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
+`Deploy now` を選ぶと `wrangler deploy` を直接実行します。設定を確認して `dist/` をアップロードしますが、計画、ビルド、公開状態の記録は行いません。公開の一連の流れが必要な場合は `npm exec -- riebeckite publish run --execute` を使ってください。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行します。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
 
 このコマンドは `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
 

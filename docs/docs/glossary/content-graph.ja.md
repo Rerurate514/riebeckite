@@ -33,14 +33,20 @@ graph.neighbors(slug);  // both directions
 
 ## `extendContentGraph`による拡張
 
-プラグインは `extendContentGraph` を実装することで、Core を変更せずに独自の関係を追加できます。コールバックは `PluginGraphContext` を受け取り、マニフェストの `outgoingLinks` や `incomingLinks` のマップへリンク参照を追加できます。プラグインが追加した辺は `createContentGraph` の呼び出し時に自動的に含まれ、「関連記事」、被引用グラフ、目次の相互参照といった機能を実現できます。
+プラグインは `definePlugin` の `extendContentGraph` を実装して関係を追加します。コールバックはマニフェストの `entries` と `contentIndex` を持つ `PluginGraphContext` を受け取り、各エントリへノートリンクを追加できます。追加したリンクは `createContentGraph` の実行時にグラフの辺となり、「関連記事」、被引用グラフ、目次の相互参照といった機能を実現できます。
 
 ```ts
-// Example plugin adding a "cites" relationship
-context.extendContentGraph?.({
-  pluginName: "my-plugin",
-  outgoing: {
-    "post-a": ["post-b", "post-c"], // post-a cites post-b and post-c
+import { definePlugin } from "@riebeckite/core";
+
+export const cites = definePlugin({
+  name: "my-plugin",
+  extendContentGraph({ entries, contentIndex }) {
+    for (const entry of entries) {
+      const target = contentIndex.get("post-b");
+      if (target && !entry.links.some((link) => link.slug === target)) {
+        entry.links.push({ raw: "post-b", slug: target, kind: "note", embed: false });
+      }
+    }
   },
 });
 ```

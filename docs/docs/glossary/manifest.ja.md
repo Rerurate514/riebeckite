@@ -28,7 +28,7 @@ sidebar:
 | --- | --- | --- |
 | `bySlug` | `Map<string, ContentManifestEntry>` | slug でエントリを引く。 |
 | `byPermalink` | `Map<string, ContentManifestEntry>` | permalink URL でエントリを引く。 |
-| `byAlias` | `Map<string, ContentManifestEntry[]>` | エイリアス/リダイレクトパスでエントリを探す。 |
+| `byAlias` | `Map<string, ContentManifestEntry[]>` | frontmatter のエイリアスパスでエントリを探す。 |
 | `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | ルーティング対象のエントリ（public + unlisted、draft/scheduled を除く）だけを引く。 |
 | `byTag` | `Map<string, ContentManifestEntry[]>` | タクソノミーページ用にタグでエントリをグループ化する。 |
 | `byAsset` | `Map<string, ContentManifestEntry[]>` | アセットマニフェスト生成用にアセットでエントリをグループ化する。 |
@@ -44,7 +44,7 @@ const entry = manifest.byPermalink.get("/blog/my-post/");
 
 `graph` フィールドは `ContentGraph` インスタンスを保持し、`graph.outgoing(slug)`、`graph.incoming(slug)`、`graph.neighbors(slug)` などのクエリを可能にします。バックリンク表示、関連リンクのセクション、内部リンクの検証で使われます。
 
-`diagnostics` フィールドは、コンテンツ処理中に収集された `Diagnostic` オブジェクトの配列です。各診断には `level`（`info`、`warn`、`error`）、`source`、`message`、`range`（ソース位置）が含まれます。下流の消費者（ページ生成、実行時のクエリ、インスペクション）はマニフェストだけを読み、ファイルシステムに触れる必要はありません。
+`diagnostics` フィールドは、コンテンツ処理中に収集された `Diagnostic` オブジェクトの配列です。各診断には `code`、`severity`（`info`、`warning`、`error`）、`message` が含まれ、任意で `pluginName`、`filePath`、`slug`、`line`、`column` などを持ちます。下流の消費者（ページ生成、実行時のクエリ、インスペクション）はマニフェストだけを読み、ファイルシステムに触れる必要はありません。
 
 ---
 

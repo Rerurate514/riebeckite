@@ -6,10 +6,11 @@ Riebeckite パッケージ共通のテストユーティリティと、汎用の
 
 ## 概要
 
-`@riebeckite/test` には 2 つのエントリポイントがあります。
+`@riebeckite/test` には 3 つのエントリポイントがあります。
 
 - `@riebeckite/test` — パッケージの単体テスト向けの依存ゼロ helper。
 - `@riebeckite/test/e2e` — ビルド済みサイトを公開 tarball に対して end-to-end で検証する再利用可能な engine。Riebeckite モノレポを一切知りません。リポジトリルート、パッケージ一覧、fixture、コンテンツのアサーションはすべて呼び出し側が渡します。
+- `@riebeckite/test/fixtures` — Markdown の fixture と一時ディレクトリを作る helper。
 
 ## インストール
 

@@ -11,7 +11,7 @@ Each plugin gets a per-plugin, regenerable build-time cache via `context.cache`;
 
 ## Purpose and scope
 
-The plugin cache is isolated per plugin and exists only for the duration of a build. It is not a persistent database or Cloudflare Workers storage.
+The plugin cache is isolated per plugin and stored on disk under the plugin namespace and version, so later builds can reuse it. It is regenerable build state, not a database or Cloudflare Workers storage, and it is not available at request time.
 
 ```ts
 context.cache.set("key", value)

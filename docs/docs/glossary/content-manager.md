@@ -33,7 +33,7 @@ The `ContentManager` class (`packages/core/src/content/content_manager.ts`) is t
 - **`getContentGraph()`** — returns a `ContentGraph` for querying incoming/outgoing/neighbor links
 - **`getBacklinks(targetSlug)`** — returns backlinks to a given entry
 - **`inspect()`** — returns an `ContentInspection` with entries, content index, and diagnostics
-- **`getPagePaths()`** and **`getPageRoutes()`** — returns declared plugin page paths and routes
+- **`getPagePaths()`** — returns declared plugin page paths; page routes are available on `manifest.pageRoutes`
 
 Example manifest entry excerpt visible through `getManifest()`:
 
@@ -43,7 +43,7 @@ Example manifest entry excerpt visible through `getManifest()`:
   permalink: "/docs/notes/hello/",
   contentId: "abc123",
   frontmatter: { id: "abc123", title: "Hello", tags: [] },
-  publishing: { routable: true, discoverable: true, status: "published" },
+  publishing: { visibility: "public", routable: true, discoverable: true },
   html: "<p>Hello world</p>",
   tags: [],
   links: [],

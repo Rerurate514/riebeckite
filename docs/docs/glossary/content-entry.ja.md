@@ -32,14 +32,14 @@ slug はビルドの内部でエントリを識別し、permalink は公開 URL 
 | `permalink` | `string` | 解決済みの公開 URL（例：`/blog/my-post/`）。 |
 | `publicLocation` | `ContentPublicLocation` | このエントリの slug、permalink、言語、リダイレクト、メタデータ。 |
 | `title` | `string` | ページのタイトル。 |
-| `aliases` | `readonly string[]` | 明示的なリダイレクトのエイリアス。 |
+| `aliases` | `readonly string[]` | WikiLink の検索キーに使う frontmatter のエイリアスパス。リダイレクトではない。 |
 | `frontmatter` | `PostFrontmatter` | 解析済みの frontmatter メタデータ。 |
 | `publishing` | `ResolvedPublishingState` | 公開状態（`published`、`unlisted`、`draft`、`scheduled` など）。 |
 | `html` | `string` | 描画済みの HTML 本文。 |
 | `tags` | `string[]` | このエントリに関連付けられたタグ。 |
 | `links` | `ContentLink[]` | コンテンツ内で解決された Markdown リンク/WikiLink の参照。 |
 | `backlinks` | `string[]` | コンテンツグラフから自動計算されるバックリンク。 |
-| `assets` | `ContentAsset[]` | このエントリに対してプラグインが宣言したアセット。 |
+| `assets` | `ContentAsset[]` | このエントリが参照するコンテンツの画像と添付ファイル。 |
 
 利用側は通常、リンクには `permalink`、メタデータには `frontmatter`、レイアウトの構成にはプラグインが提供するデータを使います。
 
@@ -52,7 +52,7 @@ slug はビルドの内部でエントリを識別し、permalink は公開 URL 
 - **パーマリンクの解決**：`entry.permalink` を直接読むか、slug から URL を引く `byPermalink` マップを使う。
 - **frontmatter**：ページ単位のメタデータ（タイトル、日付、タグなど）に `entry.frontmatter` でアクセスする。
 - **head タグ**：プラグインが `entry.headTags` を提供し、サイトのシェルが `<head>` 内に描画する。
-- **アセット**：`entry.assets` にはプラグインが宣言した `ContentAsset` が入る。サイトは出力時にコピーするか参照する。
+- **アセット**：`entry.assets` にはこのエントリに関連するコンテンツの画像と添付ファイルが入る。サイトは出力時にコピーするか参照する。
 
 サイトのテンプレートでのエントリ参照の例：
 

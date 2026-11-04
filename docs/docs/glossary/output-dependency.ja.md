@@ -19,7 +19,7 @@ sidebar:
 
 ## 宣言
 
-プラグインページでは `pageTypes[].outputDependencies`、ルートの `outputDependencies`、または `context.output.emit(..., { dependencies })` で宣言します。依存関係は可能な限り狭くし、`unknown` は範囲を特定できない場合にだけ使います。
+プラグインページでは `pageTypes[].outputDependencies`、ルートの `contentOutputDependencies`、または `context.output.emit(..., { dependencies })` で宣言します。依存関係は可能な限り狭くし、`unknown` は範囲を特定できない場合にだけ使います。
 
 ## 宣言の詳細
 

@@ -33,7 +33,7 @@ ContentManager はファイルを読みません。それは ContentSource の�
 - **`getContentGraph()`** — 被リンク・発リンク・隣接リンクを問い合わせる `ContentGraph` を返す
 - **`getBacklinks(targetSlug)`** — 指定したエントリへのバックリンクを返す
 - **`inspect()`** — エントリ、コンテンツインデックス、診断を持つ `ContentInspection` を返す
-- **`getPagePaths()`**と**`getPageRoutes()`** — 宣言されたプラグインページのパスとルートを返す
+- **`getPagePaths()`** — 宣言されたプラグインページのパスを返す。ページルートは `manifest.pageRoutes` から取得する
 
 `getManifest()` で見えるマニフェストエントリの抜粋例：
 
@@ -43,7 +43,7 @@ ContentManager はファイルを読みません。それは ContentSource の�
   permalink: "/docs/notes/hello/",
   contentId: "abc123",
   frontmatter: { id: "abc123", title: "Hello", tags: [] },
-  publishing: { routable: true, discoverable: true, status: "published" },
+  publishing: { visibility: "public", routable: true, discoverable: true },
   html: "<p>Hello world</p>",
   tags: [],
   links: [],

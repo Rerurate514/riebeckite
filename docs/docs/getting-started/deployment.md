@@ -59,11 +59,11 @@ This is the fastest path to a public site.
 
 4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
-After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. `baseUrl` is not part of the content plan, so add `--force` to deploy this config-only change.
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 ### Add a Custom Domain
@@ -84,7 +84,7 @@ Enter the apex domain such as `example.com`, or a subdomain such as `docs.exampl
 }
 ```
 
-Choose **Deploy now** to use the normal `riebeckite publish run --execute` flow. Otherwise, deploy later with `npm exec -- riebeckite publish run --execute`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
+Choose **Deploy now** to run `wrangler deploy` directly. That confirms the configuration and uploads `dist/`, but it does not plan, build, or record publication state. Use `npm exec -- riebeckite publish run --execute` when you need the full publication flow. Otherwise, deploy later with `npm exec -- riebeckite publish run --execute`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
 
 The command leaves `wrangler.toml` unchanged. Add the equivalent configuration manually when you use TOML:
 

@@ -213,7 +213,7 @@ root hook on its outermost element:
 
 Themes target these root hooks. Plugin default CSS loads before theme CSS, so
 a theme restyles a feature without editing the plugin. See
-[Theme System](../theme-api.md#stable-css-hooks).
+[Stable CSS hooks](../../framework/theme-system/css.md#stable-css-hooks-and-the-cascade).
 
 For dark mode, consume the semantic `--rb-*` tokens: they resolve correctly in
 light, explicit dark, and system dark. Only when a plugin must branch on the

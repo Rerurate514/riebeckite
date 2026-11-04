@@ -105,10 +105,10 @@ longer need `app/config.ts`, `app/content.ts`, or `app/constants/paths.ts`.
 ### `@riebeckite/honox/ui`
 
 Structural composition primitives only: `Article`, `ArticleLayout`,
-`ArticleHeader`, `ArticleContent`, `ArticleMeta`, `ArticleFooter`, `Sidebar`,
-and their public `*Props` types. They provide semantic HTML, stable `rb-*`
-styling hooks, and `class`/`className` composition; the site owns content,
-layout, islands, and CSS.
+`ArticleHeader`, `ArticleContent`, `ArticleMeta`, `ArticleFooter`, `Sidebar`.
+They provide semantic HTML, stable `rb-*` styling hooks, and
+`class`/`className` composition; the site owns content, layout, islands, and
+CSS. The `*Props` types are internal.
 
 ## See also
 

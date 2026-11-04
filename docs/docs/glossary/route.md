@@ -19,13 +19,13 @@ The integration resolves routes in this order:
 4. **404**: return not-found
 
 ```ts
-import { resolveRiebeckiteRoute } from "@riebeckite/honox";
+import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 
 ## Route resolution order
-The integration resolves routes in this specific order, defined in `@riebeckite/honox`:
+The integration resolves routes in this specific order, defined in `@riebeckite/honox/server`:
 
 1. **Plugin page**: Check if a plugin provides a page type for the path
 2. **Content**: Resolve content from the manifest using `publicLocation`

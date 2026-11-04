@@ -16,7 +16,7 @@ sidebar:
 addDiagnostics(context) {
   return [
     {
-      id: "duplicate-content-id",
+      code: "duplicate-content-id",
       severity: "error",
       message: "Multiple articles share the same content ID",
     },
@@ -25,10 +25,10 @@ addDiagnostics(context) {
 ```
 
 ## 診断のフィールド
-- `id`：安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
-- `severity`：`error`、`warn`、`info` のいずれか
+- `code`：安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
+- `severity`：`error`、`warning`、`info` のいずれか
 - `message`：問題を人間が読める形で説明したもの
-- `cause`：診断の原因となった元のエラー（任意）
+- `pluginName`、`filePath`、`slug`、`line`、`column`、`target`、`suggestion`、`meta`：任意のコンテキストフィールド
 
 ## 関連用語
 - [[diagnostic-code|Diagnostic code]]

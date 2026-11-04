@@ -29,7 +29,7 @@ The previous build information is stored in `.riebeckite/build/content-state.jso
 
 Build state is application-scoped at `.riebeckite/build/content-state.json`.
 It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path.
-State is saved only after a successful build, so a failure retains the prior valid state.
+State is committed after the content manifest is built and before HonoX/SSG runs. A manifest-build failure retains the prior valid state; a later SSG or output failure can leave the new state behind.
 
 ## Pipeline stages and output generation
 

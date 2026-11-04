@@ -19,10 +19,10 @@ Dependencies feed [cache invalidation](./cache-invalidation.md). When a note's c
 
 Example dependency tracking flow:
 
-1. Entry A is edited and contains a WikiLink to entry B
-2. The content dependency tracker records B as a dependent of A
-3. On next build, entry A's fingerprint changes
-4. The build coordinator marks entry B as invalidated
-5. Entry B's content is re-processed, ensuring derived content stays correct
+1. Entry B is edited
+2. Entry A contains a WikiLink to entry B, so the content dependency tracker records that A depends on B
+3. On next build, entry B's fingerprint changes
+4. The build coordinator marks entry A as invalidated
+5. Entry A's content is re-processed, so its rendered link and other derived content stay correct
 
 Plugins can also create dependencies by reading other entries via `extendContentGraph` or custom hooks, which are then tracked alongside core-resolved dependencies.

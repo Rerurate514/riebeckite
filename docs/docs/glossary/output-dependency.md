@@ -19,7 +19,7 @@ Output dependencies decide which emitted files are affected by content changes a
 
 ## Declaration
 
-Declared in `pageTypes[].outputDependencies` for a plugin page, root `outputDependencies`, or `context.output.emit(..., { dependencies })`. Use narrow dependencies when possible; use `unknown` only when scope cannot be stated.
+Declared in `pageTypes[].outputDependencies` for a plugin page, root `contentOutputDependencies`, or `context.output.emit(..., { dependencies })`. Use narrow dependencies when possible; use `unknown` only when scope cannot be stated.
 
 ## Declaration Details
 

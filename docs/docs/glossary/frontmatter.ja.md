@@ -17,7 +17,10 @@ sidebar:
 | `date` | 公開日や並べ替えの日付 |
 | `tags` | タクソノミーの値 |
 | `series` | シリーズへの所属 |
-| `published` | 公開の判定 |
+| `published` | 公開日・フィード用の日付（`string` または `Date`）。公開の可否を決めるスイッチではない |
+| `publish` | `explicit` 戦略で公開するためのフラグ |
+| `private` | `selective` 戦略で公開から外すフラグ |
+| `draft` | `selective` 戦略で下書きにするフラグ |
 | `visibility` | 一覧に載せるか unlisted か |
 | `aliases` | 追加のリンクキー |
 | `id` | 安定したコンテンツ ID |

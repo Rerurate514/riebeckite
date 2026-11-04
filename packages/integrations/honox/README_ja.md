@@ -86,7 +86,7 @@ Plugin は generated Site が import する bootstrap module も提供します�
 
 ### `@riebeckite/honox/ui`
 
-構造を組み立てるための primitive のみを公開します。`Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleMeta`、`ArticleFooter`、`Sidebar` と、対応する公開 `*Props` 型です。semantic な HTML、安定した `rb-*` のスタイルフック、`class` / `className` の合成だけを提供し、コンテンツ、レイアウト、island、CSS はサイトが所有します。
+構造を組み立てるための primitive のみを公開します。`Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleMeta`、`ArticleFooter`、`Sidebar` です。semantic な HTML、安定した `rb-*` のスタイルフック、`class` / `className` の合成だけを提供し、コンテンツ、レイアウト、island、CSS はサイトが所有します。`*Props` 型は内部向けです。
 
 ## 関連資料
 

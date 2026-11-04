@@ -17,7 +17,10 @@ The YAML block at the top of a content file, parsed into typed metadata such as 
 | `date` | Publish or sort date |
 | `tags` | [Taxonomy](./taxonomy.md) values |
 | `series` | [Series](./series.md) membership |
-| `published` | Publish decision |
+| `published` | Publication or feed date (`string` or `Date`); not a publish switch |
+| `publish` | Opt-in flag for the `explicit` strategy |
+| `private` | Opt-out flag for the `selective` strategy |
+| `draft` | Draft flag for the `selective` strategy |
 | `visibility` | Listed or [unlisted](./unlisted.md) |
 | `aliases` | Extra link keys |
 | `id` | Stable [content id](./content-id.md) |

@@ -28,7 +28,7 @@ my-riebeckite-site/
 
 The `starter` preset already creates sample content. You can edit one of those files first; you do not have to create a new page just to verify that editing works. Single-language presets such as `starter` generate file names without a language suffix; multilingual presets such as `showcase` keep suffixes such as `.en.md` and `.ja.md` only for non-default languages.
 
-Other presets use different folders: `blog` reads `content/posts/`, `docs` reads `content/docs/`, and `portfolio` reads `content/projects/`. The tree and examples below use the `starter` layout; see [Presets](./presets.md#where-content-lives) for the full list.
+Other presets place their sample articles in different folders: `blog` uses `content/posts/`, `docs` uses `content/docs/`, and `portfolio` uses `content/projects/`. In every case the site still reads `content/` unless you change `content.directory`. The tree and examples below use the `starter` layout; see [Presets](./presets.md#where-content-lives) for the full list.
 
 By default, publishing is explicit: a Markdown file appears on the site only when its frontmatter has `publish: true`.
 

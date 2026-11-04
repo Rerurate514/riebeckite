@@ -13,12 +13,12 @@ The configuration value that decides how content becomes public, such as publish
 
 | Strategy | Behavior |
 | --- | --- |
-| all | Content is public unless frontmatter opts out |
-| selective | Only content marked for publishing is public |
+| `explicit` (default) | Only content with `publish: true` is public |
+| `selective` | Content is public unless `private: true` or `draft: true` |
 
 ## Interaction with frontmatter
 
-The strategy sets the default, and frontmatter such as `published` refines it. Together they form the [publication boundary](./publication-boundary.md).
+The strategy sets the default, and frontmatter such as `publish`, `private`, and `draft` refines it. Together they form the [publication boundary](./publication-boundary.md).
 
 ## Strategy Resolution
 The strategy is resolved from `config.content.filters.publishStrategy` in the [resolved Riebeckite config](../framework/honox-integration/site.md). The value is either `"explicit"` or `"selective"`, stored as `PublishStrategy`.

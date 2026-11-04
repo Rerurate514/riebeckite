@@ -33,11 +33,11 @@ Set `provider` to one of the following.
 
 | Host | `provider` | Generated files |
 | --- | --- | --- |
-| Cloudflare Pages | `cloudflare-pages` | `_redirects`, `_headers` |
-| Cloudflare Workers | `cloudflare-workers` | `_redirects`, `_headers` |
-| Netlify | `netlify` | `_redirects`, `_headers` |
+| Cloudflare Pages | `cloudflare-pages` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| Cloudflare Workers | `cloudflare-workers` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| Netlify | `netlify` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
 | Vercel | `vercel` | `vercel.json` |
-| GitHub Pages | `github-pages` | `.nojekyll`, `404.html`, `CNAME`, HTML redirect stubs |
+| GitHub Pages | `github-pages` | `.nojekyll`, `404.html`, `CNAME` (when `cname` is set), HTML redirect stubs |
 
 You can target several hosts at once. If two providers plan different content for the same path, the build fails.
 

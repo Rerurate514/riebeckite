@@ -45,14 +45,12 @@ Cloudflare Workers に公開する Static Assets は `dist/` に生成されま�
 
 ### サイトを更新したのに公開内容が古い
 
-変更後に、もう一度次のコマンドを実行します。
+変更後に、もう一度次のコマンドを実行します。コンテンツが変わっていれば `publish run` がビルドしますが、設定だけの変更は計画に含まれないため `--force` が必要です。
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
-
-`riebeckite publish run --execute` は Riebeckite のビルドの代わりにはなりません。
 
 ### 公開後の URL が正しくない
 
@@ -64,7 +62,7 @@ site: {
 },
 ```
 
-変更した場合は、再度ビルドしてデプロイしてください。
+変更した場合は、再度ビルドし、`--force` を付けてデプロイしてください。
 
 ### Riebeckite のビルドが失敗する
 

@@ -28,7 +28,7 @@ The `ContentManifest` provides several specialized views for different access pa
 | --- | --- | --- |
 | `bySlug` | `Map<string, ContentManifestEntry>` | Look up an entry by its slug. |
 | `byPermalink` | `Map<string, ContentManifestEntry>` | Look up an entry by its permalink URL. |
-| `byAlias` | `Map<string, ContentManifestEntry[]>` | Find entries by their alias/redirect paths. |
+| `byAlias` | `Map<string, ContentManifestEntry[]>` | Find entries by their frontmatter alias paths. |
 | `byRoutablePermalink` | `Map<string, ContentManifestEntry>` | Look up only routable entries (public + unlisted, excluding draft/scheduled). |
 | `byTag` | `Map<string, ContentManifestEntry[]>` | Group entries by tag for taxonomy pages. |
 | `byAsset` | `Map<string, ContentManifestEntry[]>` | Group entries by asset for asset manifest generation. |
@@ -44,7 +44,7 @@ const entry = manifest.byPermalink.get("/blog/my-post/");
 
 The `graph` field holds a `ContentGraph` instance, enabling queries such as `graph.outgoing(slug)`, `graph.incoming(slug)`, and `graph.neighbors(slug)`. This is used by backlink displays, related-links sections, and internal link validation.
 
-The `diagnostics` field is an array of `Diagnostic` objects collected during content processing. Each diagnostic includes a `level` (`info`, `warn`, `error`), `source`, `message`, and `range` (source position). Downstream consumers (page generation, runtime queries, inspection) read from the manifest exclusively — nothing downstream needs to touch the filesystem.
+The `diagnostics` field is an array of `Diagnostic` objects collected during content processing. Each diagnostic has a `code`, a `severity` (`info`, `warning`, or `error`), and a `message`, plus optional fields such as `pluginName`, `filePath`, `slug`, `line`, and `column`. Downstream consumers (page generation, runtime queries, inspection) read from the manifest exclusively — nothing downstream needs to touch the filesystem.
 
 ---
 

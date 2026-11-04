@@ -46,8 +46,7 @@ const key = computeContentCacheKey({
 });
 ```
 
-This key is then hashed again (with the schema version) to produce the final cache key
-used for file storage under `.riebeckite/cache/content/v5`.
+The result of `computeContentCacheKey` is the entry's `key`. It already includes the cache schema version. The file name is a separate SHA-256 hash of that key, under `.riebeckite/cache/content/v5`.
 
 ## Content Cache Directory
 
@@ -77,8 +76,7 @@ Each JSON file is a `PersistentContentCacheEntry` written to
 }
 ```
 
-The `key` field stores the intermediate cache key (before the final schema-version hash),
-enabling diagnostics and key-mismatch detection during lookup.
+The `key` field stores the entry's computed cache key, enabling diagnostics and key-mismatch detection during lookup. The file name is a separate hash of this key.
 
 ## `createPluginCache` vs `createUnavailablePluginCache`
 

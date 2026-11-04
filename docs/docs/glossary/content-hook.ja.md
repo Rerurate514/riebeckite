@@ -15,7 +15,7 @@ sidebar:
 
 ## フックの使い方
 
-本当に必要な段階にだけフックを使ってください。後の段階の情報を前の段階で作り直すのは避けてください。たとえば `onContentLoaded` の中でマニフェストの情報を組み立て直さないでください。各フックが受け取るデータは段階ごとに増えます。`onConfigResolved` は `config` を、`onContentLoaded` は生のコンテンツを、`onPostParsed` は解析済みの AST を、`onPostProcessed` は処理済みの HTML を受け取り、`onManifestCreated` は完全なマニフェストにアクセスできます。
+本当に必要な段階にだけフックを使ってください。後の段階の情報を前の段階で作り直すのは避けてください。たとえば `onContentLoaded` の中でマニフェストの情報を組み立て直さないでください。各フックが受け取るデータは段階ごとに増えます。`onConfigResolved` は `config` を、`onContentLoaded` は `slug` と生の `markdown` を、`onPostParsed` と `onPostProcessed` は `slug`、`markdown`、処理済みの `content` を、`onManifestCreated` は完全なマニフェストを受け取ります。
 
 ## 関連用語
 - [[plugin|Plugin]]

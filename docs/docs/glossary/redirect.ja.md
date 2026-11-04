@@ -30,7 +30,10 @@ sidebar:
 
 ```ts
 permalink: "/docs/notes/hello/",
-redirects: ["/docs/hello/", "/hello/"],
+redirects: [
+  { path: "/docs/hello/", status: 301 },
+  { path: "/hello/", status: 301 },
+],
 ```
 
 リダイレクトは、permalink プラグインが `resolveContentLocations` フックを通じて生成するほか、コンテンツファイルの名前変更時に自動で生成されます（古いパスから新しい permalink へのリダイレクトが付きます）。

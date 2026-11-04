@@ -32,7 +32,7 @@ Output dependencies are separate from content dependencies. Each type reacts to 
 Output dependencies can be declared in the following places:
 
 - `pageTypes[].outputDependencies` for a plugin page.
-- Root `outputDependencies` for a plugin that updates existing manifest entry HTML in `onManifestCreated`. Core adds them to every content output.
+- Root `contentOutputDependencies` for a plugin that updates existing manifest entry HTML in `onManifestCreated`. Core adds them to every content output.
 - `context.output.emit(..., { dependencies })` for a generated output. Without declared dependencies, a generated output is `unknown`, which triggers full output regeneration.
 
 The dependency types and their effects are:

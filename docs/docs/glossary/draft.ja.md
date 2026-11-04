@@ -13,9 +13,11 @@ sidebar:
 
 ```yaml
 ---
-published: false
+publish: false
 ---
 ```
+
+既定の `explicit` 戦略では `publish: true` を付けないか `publish: false` にします。`selective` では `private: true`、`draft: true`、または `visibility: draft` を設定します。
 
 ## それでも起きること
 
@@ -23,7 +25,7 @@ published: false
 
 ## 公開状態
 
-下書きは `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに `published: false` または `visibility: draft` があると、`resolvePublishingState` は `routable: false, discoverable: false` を返します。つまり：
+下書きは `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに `publish: false`、`private: true`、`draft: true`、または `visibility: draft` があると、有効な戦略に応じて `resolvePublishingState` は `routable: false, discoverable: false` を返します。つまり：
 
 - ノートは `publicEntries` と `byRoutablePermalink` から除外されます
 - 公開出力を生成しません

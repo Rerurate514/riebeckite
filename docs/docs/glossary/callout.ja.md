@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # コールアウト（Callout）
-コンテナショートコードの `:::callout[Title]{type=warning}` または `:::note[Title]{type=info}` で作るコールアウトボックスです。`rr-callout rr-callout--{type}` の CSS クラスを持つ `div` として描画され、組み込みの既定タイトルを持ちます。
+ショートコードプラグインのコンテナ記法 `:::callout[Title]{type=warning}` または `:::note[Title]{type=info}` で作るコールアウトボックスです。出力は `div.rb-shortcode.rb-shortcode--callout` のラッパーと、その中の `div.rb-shortcode__note.rb-shortcode__note--{type}` です。
 
 ## コールアウトの記法
 ```md
@@ -20,29 +20,25 @@ More content.
 This is a note callout.
 :::
 ```
-出力は `data-callout` を持つ `div.rr-callout.rr-callout--note` です。
-タイトルを省略した場合は、組み込みの既定値（`note`、`tip`、`warning`、`danger`、`bug`、`quote`）が使われます。
+ラベル（または `title` 属性）は `rb-shortcode__note-title` になります。指定しない場合、タイトルは描画されません。
 
 ## コールアウトの種類
-組み込みのコールアウトの種類と既定タイトルです。
-
-- `note` → 既定タイトル "Note"
-- `tip` → 既定タイトル "Tip"
-- `warning` → 既定タイトル "Warning"
-- `danger` → 既定タイトル "Danger"
-- `bug` → 既定タイトル "Bug"
-- `quote` → 既定タイトル "Quote"
+`type` は `rb-shortcode__note--{type}` クラスに使われる自由なトークンで、ショートコードプラグインは固定の一覧や種類ごとの既定タイトルを定義しません。よく使う値は `note`、`tip`、`warning`、`danger`、`bug`、`quote` です。
 
 ## タイトルとスタイルのカスタマイズ
 ショートコードに任意のタイトルを渡せます：`:::callout[My Title]{type=warning}`。
 
-プラグインの登録時に `callout.defaultTitles` オプションで既定タイトルを上書きできます。
+Obsidian Markdown プラグインは、自前のコールアウトの既定タイトルを上書きできます。
 ```ts
-callout: {
-  defaultTitles: {
-    warning: "注意",
-  },
-}
+plugins: [
+  obsidianMarkdown({
+    callout: {
+      defaultTitles: {
+        warning: "注意",
+      },
+    },
+  }),
+],
 ```
 
 ## Obsidian Markdownのコールアウトとの統合

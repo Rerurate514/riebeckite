@@ -19,7 +19,7 @@ sidebar:
 4. **404**：見つからなければ not-found を返す
 
 ```ts
-import { resolveRiebeckiteRoute } from "@riebeckite/honox";
+import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```

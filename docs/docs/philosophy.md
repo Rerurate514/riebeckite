@@ -92,7 +92,7 @@ These are how the core principles hold in the implementation. See [Architecture]
 
 **Small core, explicit contracts.** Core owns shared, framework-independent contracts and orchestration. Plugins own content behavior, themes own appearance, integrations connect Core to HonoX and Vite, and applications own routes and components. Dependencies point inward, and a contract belongs in Core only when more than one outer layer needs it. Official plugins and themes use the same public contracts as external packages.
 
-**Correctness before optimization.** A correct full build is the baseline. Caches, incremental builds, and output reuse are optimizations that must preserve the same published site. Missing, incompatible, malformed, or uncertain state causes a safe fallback to full work. Build state is written only after a successful build, and uncertain reuse rebuilds.
+**Correctness before optimization.** A correct full build is the baseline. Caches, incremental builds, and output reuse are optimizations that must preserve the same published site. Missing, incompatible, malformed, or uncertain state causes a safe fallback to full work. Build state is committed after the content manifest is built and before HonoX/SSG runs, and uncertain reuse rebuilds.
 
 **Security at trust boundaries.** Riebeckite trusts the site owner, plugins, themes, and local content. It does not trust external input, third-party content, or browser data. Markdown-authored HTML is filtered by Core's allowlist sanitizer before plugin HTML transforms. Plugin-generated HTML is trusted application code, and Core does not sandbox it. The publication boundary is resolved at build time; unlisted content is routable but not discoverable. Secrets and absolute local paths must not appear in public output, client entries, logs, or provenance.
 
@@ -191,7 +191,7 @@ In practice:
 
 - Runtime code reads generated application output and stable content data. It does not re-parse Markdown, re-run localization detection, or re-resolve publish strategies.
 - `.riebeckite/` is build-time state. It is not a runtime dependency, and a Worker request must not read or write it.
-- A failed build does not replace the previous valid output. Incremental state is updated only after a successful build.
+- A failed build does not replace the previous valid output. Incremental state is committed after the content manifest is built and before HonoX/SSG runs.
 
 The boundary: request-time endpoints and the SPA runtime exist. They may compute request-specific responses, but they must not re-interpret content or depend on local files that do not exist in the runtime. "The build is the source of truth" does not mean "there is no server".
 
@@ -215,7 +215,7 @@ A correct full build is the baseline. Caches, incremental builds, and output reu
 In practice:
 
 - Missing, incompatible, malformed, or uncertain state causes a safe fallback to full work. `--full` is always available.
-- Build state is written only after a successful build. A failed build keeps the previous valid state.
+- Build state is committed after the content manifest is built and before HonoX/SSG runs. A failed manifest build keeps the previous valid state; a later SSG or output failure can leave the new state behind.
 - Cache keys include the inputs, versions, and contracts that affect the result. Plugins with unknown or unsafe dependencies bypass reuse.
 - When it is unclear whether reuse is correct, rebuild. Speed never justifies publishing the wrong page or leaking unpublished content.
 
@@ -284,7 +284,7 @@ The principles are not a total order. These rules say which side wins by default
 
 **Evidence required.** A cold-build comparison, tests for missing and corrupt state, the cache-key inputs, and benchmark conditions. "It feels faster" is not evidence.
 
-**Example.** The content cache bypasses plugins with unsafe dependencies. Incremental state is updated only after success. The output-level SSG cache reuses routes only when their dependencies are known.
+**Example.** The content cache bypasses plugins with unsafe dependencies. Incremental state is committed after the content manifest is built. The output-level SSG cache reuses routes only when their dependencies are known.
 
 #### Extensibility vs. Core simplicity
 

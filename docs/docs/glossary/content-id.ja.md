@@ -19,7 +19,7 @@ frontmatter に書く安定した識別子で、slug や permalink とは独立�
 
 ## コンテンツIDの解決
 
-frontmatter の `contentId` フィールド（`packages/core/src/types/post_content.ts`）は、slug や permalink とは独立した安定した識別子を提供します。frontmatter に `id` がある場合、それはマニフェストエントリ（`packages/core/src/types/content_manifest.ts`）の `contentId` として保存され、マニフェスト（`packages/core/src/types/resolved_riebeckite_config.ts`）の `byContentId` マップを通じて公開されます。
+frontmatter の `id` フィールド（`packages/core/src/types/post_content.ts`）は、slug や permalink とは独立した安定した識別子を提供します。frontmatter に `id` がある場合、それはマニフェストエントリの `contentId` として保存され、`ContentManifest`（`packages/core/src/types/content_manifest.ts`）の `byContentId` マップを通じて公開されます。
 
 `contentId` の用途：
 

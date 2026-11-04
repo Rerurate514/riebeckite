@@ -7,12 +7,12 @@ sidebar:
 
 # Publish
 
-The decision to include content in the published site, controlled by the publish strategy and frontmatter such as published and visibility. Published content enters the publication boundary views.
+The decision to include content in the published site, controlled by the publish strategy and frontmatter such as `publish`, `private`, `draft`, and `visibility`. Published content enters the publication boundary views.
 
 ## Inputs to the decision
 
 - The configured publish strategy.
-- The `published` frontmatter field.
+- The `publish`, `private`, and `draft` frontmatter fields.
 - The `visibility` frontmatter field.
 
 ## Result
@@ -41,7 +41,7 @@ export function resolvePublishingState(
 
 ## Publish strategy configuration
 
-The publish strategy is configured per-site and defaults to `"selective"`. In `explicit` strategy mode, only notes with `publish: true` in frontmatter are public. In `selective` mode (the default), notes are public unless `private: true` or `draft: true` is set.
+The publish strategy is configured per-site and defaults to `"explicit"`. In `explicit` strategy mode, only notes with `publish: true` in frontmatter are public. In `selective` mode, notes are public unless `private: true` or `draft: true` is set.
 
 ```ts
 // From packages/core/src/types/publish_strategy.ts

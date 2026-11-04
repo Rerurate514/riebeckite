@@ -32,14 +32,14 @@ Each `ContentManifestEntry` carries the following fields, all of which are popul
 | `permalink` | `string` | The resolved public URL (e.g. `/blog/my-post/`). |
 | `publicLocation` | `ContentPublicLocation` | The slug, permalink, language, redirects, and metadata for this entry. |
 | `title` | `string` | The page title. |
-| `aliases` | `readonly string[]` | Explicit redirect aliases. |
+| `aliases` | `readonly string[]` | Frontmatter alias paths used as WikiLink lookup keys, not redirects. |
 | `frontmatter` | `PostFrontmatter` | Parsed frontmatter metadata. |
 | `publishing` | `ResolvedPublishingState` | The publishing state (e.g. `published`, `unlisted`, `draft`, `scheduled`). |
 | `html` | `string` | The rendered HTML body. |
 | `tags` | `string[]` | Tags associated with this entry. |
 | `links` | `ContentLink[]` | Resolved markdown/wikilink references within the content. |
 | `backlinks` | `string[]` | Auto-computed backlinks from the content graph. |
-| `assets` | `ContentAsset[]` | Assets declared by plugins for this entry. |
+| `assets` | `ContentAsset[]` | Content images and attachments referenced by this entry. |
 
 Consumers typically access `permalink` for links, `frontmatter` for metadata, and plugin-contributed data for layout composition.
 
@@ -52,7 +52,7 @@ Pages and templates access entry data through the manifest's lookup maps. The mo
 - **Permalink resolution**: Read `entry.permalink` directly, or use `byPermalink` map for slug-to-URL lookups.
 - **Frontmatter**: Access `entry.frontmatter` for page-level metadata (title, date, tags, etc.).
 - **Head tags**: Plugins provide `entry.headTags`; the site shell renders them in the `<head>`.
-- **Assets**: `entry.assets` contains `ContentAsset` entries declared by plugins; the site copies or references them during output.
+- **Assets**: `entry.assets` contains the content images and attachments associated with the entry; the site copies or references them during output.
 
 Example entry access in a site template:
 

@@ -19,12 +19,12 @@ Core のコンテンツとページを、HonoX や Vite などの描画・配信
 
 インテグレーションは、Riebeckite Core とホストのフレームワーク（例：HonoX + Vite）の間の橋渡しをします。主な責務は次のとおりです。
 
-- **ルートの解決**：`resolveRiebeckiteRoute`（`@riebeckite/honox`）を使って、受信したリクエストのパスをページに対応付けます。解決の順序は、プラグインページの確認 → `publicLocation` によるコンテンツの解決 → リダイレクトの確認 → 404です。
+- **ルートの解決**：`resolveRiebeckiteRoute`（`@riebeckite/honox/server`）を使って、受信したリクエストのパスをページに対応付けます。解決の順序は、プラグインページの確認 → `publicLocation` によるコンテンツの解決 → リダイレクトの確認 → 404です。
 - **出力の生成**：ページの HTML を描画し、サイトマップ、robots、フィードなどの生成ファイルを SEO プラグインを通じて書き出します。
 - **デプロイとの接続**：ビルド済みの出力を Cloudflare Workers などのホスティング先につなぎます。インテグレーションはコンテンツの解釈を持ちません。コンテンツの処理と公開先の解決は Core が担い、インテグレーションは配信につなぎます。
 
 ```ts
-import { resolveRiebeckiteRoute } from "@riebeckite/honox";
+import { resolveRiebeckiteRoute } from "@riebeckite/honox/server";
 const result = resolveRiebeckiteRoute(content, requestPath);
 ```
 

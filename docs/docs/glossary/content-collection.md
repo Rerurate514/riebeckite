@@ -22,22 +22,25 @@ A collection selects entries by one dimension:
 
 ```ts
 {
-  kind: "tags",
-  filter: (entry) => entry.frontmatter.published !== false,
-  sort: "date",
-  order: "desc",
+  kind: "notes",
+  groupBy: { by: "tags" },
+  basePath: "/tags",
+  filter: { tags: { any: ["notes"] } },
+  sort: { field: "date", order: "desc" },
 }
 ```
 
 ## Content collection definition
 
-A `ContentCollection` is defined by a `ContentCollectionDefinition` which specifies the `kind` and optional `filter`, `sort`, and `order` options. The `buildContentCollections` function (`packages/core/src/content/content_collection.ts`) groups manifest entries into taxonomy/date/folder-based listings with pagination, sort, and filter support.
+A `ContentCollection` is defined by a `ContentCollectionDefinition`. `kind` is a stable identifier, `groupBy` selects the grouping dimension, and `basePath` is the site-local path prefix for the generated listings. `filter`, `sort`, `order`, and `locale` are optional. `filter` is a `ContentQueryFilter` object, not a predicate function. The `buildContentCollections` function (`packages/core/src/content/content_collection.ts`) groups manifest entries into listings with pagination, sort, and filter support.
 
 Example `ContentCollectionDefinition`:
 
 ```ts
 {
   kind: "tags",
+  groupBy: { by: "tags" },
+  basePath: "/tags",
 }
 ```
 
@@ -45,18 +48,19 @@ Example with filter and sort:
 
 ```ts
 {
-  kind: "date",
-  filter: (entry) => entry.frontmatter.published !== false,
-  sort: "date",
-  order: "desc",
+  kind: "archive",
+  groupBy: { by: "date", granularity: "month" },
+  basePath: "/archive",
+  filter: { date: { from: "2026-01-01" } },
+  sort: { field: "date", order: "desc" },
 }
 ```
 
-Available kinds:
+Grouping dimensions (`groupBy.by`):
 
 - `tags` — entries sharing a tag
 - `folder` — entries under a directory
 - `date` — entries grouped by year, month, or day
-- a frontmatter field — entries sharing a value, as used by series
+- `frontmatter` — entries sharing a frontmatter field value, as used by series
 
 ## Related terms

@@ -24,15 +24,15 @@ type PluginContext = {
 ```
 
 ## Per-hook additions
-Depending on the hook, additional fields such as `slug`, `markdown`, `content`, `manifest`, `entries`, and location input are added. The following table shows per-hook additions:
+Depending on the hook, additional fields such as `slug`, `markdown`, `content`, `manifest`, and location input are added. The following table shows per-hook additions:
 
 | Hook | Additional Fields |
 |---|---|
 | `onConfigResolved` | `config` |
-| `onContentLoaded` | `slug`, `content` |
-| `onPostParsed` | `markdown`, `slug` |
-| `onPostProcessed` | `markdown`, `slug`, `content` |
-| `onManifestCreated` | `manifest`, `entries` |
+| `onContentLoaded` | `slug`, `markdown` |
+| `onPostParsed` | `slug`, `markdown`, `content` |
+| `onPostProcessed` | `slug`, `markdown`, `content` |
+| `onManifestCreated` | `manifest` |
 
 Always prefer receiving framework services from the context over creating global singletons.
 

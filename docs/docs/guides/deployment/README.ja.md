@@ -55,6 +55,16 @@ flowchart TD
     Separate -->|"Yes"| Content["Separate Content Repository"]
 ```
 
+## 方法の選択
+
+| 方法 | 記事の push でデプロイ | 必要なシークレット |
+| --- | ---: | --- |
+| 同じリポジトリ + `push` | はい | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
+| 別リポジトリ + `repository_dispatch` | はい | 上記 + `SITE_DISPATCH_TOKEN`（コンテンツリポジトリ）と、非公開なら `RIEBECKITE_CONTENT_READ_TOKEN`（サイトリポジトリ） |
+| 別リポジトリ + `schedule` | 遅延あり | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`、非公開なら `RIEBECKITE_CONTENT_READ_TOKEN`（サイトリポジトリ） |
+| 手動実行 | いいえ | `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID` |
+| 手元から実行（`npm exec -- riebeckite publish run --execute`） | いいえ | Cloudflare Workers は不要（Wrangler OAuth）。Netlify は `NETLIFY_AUTH_TOKEN` と `NETLIFY_SITE_ID`、Vercel は `VERCEL_TOKEN` |
+
 ## ビルドとデプロイ
 
 Riebeckite では、ビルドとデプロイは別の処理です。

@@ -11,7 +11,7 @@ The path portion of a note's public URL, before the site origin is added. It is 
 
 ## Public path
 
-For the permalink `https://example.com/docs/hello/`, the public path is `/docs/hello/`. The [permalink](./permalink.md) is the full value; the public path is its path part.
+For the permalink `/docs/hello`, the public path is `/docs/hello`. The [permalink](./permalink.md) is stored as a site-local path; the site origin is added only when emitting feeds, sitemaps, and canonical metadata.
 
 ## Where it appears
 
@@ -23,7 +23,7 @@ The public path is the path portion of a note's public URL, before the site orig
 
 Key properties:
 
-- **Source**: Computed from the resolved permalink by stripping the site origin (e.g., for `https://example.com/docs/hello/`, the public path is `/docs/hello/`)
+- **Source**: The resolved permalink is already site-local (e.g., `/docs/hello`); the origin is added only for absolute URLs in feeds, sitemaps, and canonical metadata
 - **Usage**: Used by routing rules, sitemap generation, and internal link generation. The integration renders links using the public path after the permalink has been resolved.
 - **Propagation**: A change in URL rules (permalink plugin, config change) propagates to all public paths without requiring content file edits
 

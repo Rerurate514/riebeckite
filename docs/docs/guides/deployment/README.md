@@ -58,9 +58,9 @@ flowchart TD
 | --- | ---: | --- |
 | Same repository + `push` | Yes | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
 | Separate repository + `repository_dispatch` | Yes | Above + `SITE_DISPATCH_TOKEN` (content repo) and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
-| Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
+| Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
 | Manual dispatch | No | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
-| Local, from your machine (`npm exec -- riebeckite publish run --execute`) | No | None (Wrangler OAuth) |
+| Local, from your machine (`npm exec -- riebeckite publish run --execute`) | No | None for Cloudflare Workers (Wrangler OAuth); Netlify needs `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`, Vercel needs `VERCEL_TOKEN` |
 
 ## What the build produces
 

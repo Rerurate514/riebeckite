@@ -82,7 +82,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
-| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon はプレースホルダーなので、サイトのブランドに合わせて置き換えてください。ヘッダーのロゴやリンクプレビュー画像はデフォルトでは生成されません。[サイトのアイコンとロゴ](../guides/branding.ja.md) で追加してください |
+| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。リンクプレビュー（OG）画像はデフォルトでは生成されません。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
 | `README.md` | 生成されたサイト向けの短い説明 |

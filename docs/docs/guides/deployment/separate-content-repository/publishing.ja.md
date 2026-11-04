@@ -44,7 +44,7 @@ flowchart LR
 | `**/Templates/**` | 上記の両方 | — |
 | `private/**` | `private/secret.md` | `notes/private/secret.md` |
 
-`*` は1つのセグメント内にとどまり、`**` はセグメントをまたぎます。同名のフォルダがサブフォルダにも現れる可能性があるなら、`**/` を付けると安全です。スキャフォールドの既定値が `**/templates/**` と `**/private/**` になっているのはそのためです。
+`*` は1つのセグメント内にとどまり、`**` はセグメントをまたぎます。同名のフォルダがサブフォルダにも現れる可能性があるなら、`**/` を付けると安全です。スキャフォールドはこれらのパターンを設定しないため、必要なら `**/templates/**` と `**/private/**` を自分で追加してください。
 
 `exclude` は読み込み前に絞り込むため、除外されたノートはリンク解決やグラフに現れません。非公開にしたいノートは、`publish: true` を付けないことに加えて、可能ならフォルダごと除外してください。
 
@@ -76,7 +76,7 @@ flowchart LR
 ![[attachments/report.pdf]]
 ```
 
-URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
+URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx --conditions=source scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
 
 この実装の流れは次のとおりです。
 

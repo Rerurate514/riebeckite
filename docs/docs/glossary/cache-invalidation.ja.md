@@ -20,7 +20,7 @@ sidebar:
 
 - コンテンツ依存関係のフィンガープリントが変わったとき：永続コンテンツキャッシュのエントリの依存関係が現在のコンテンツと照合されます。`CachedContentDependency` のフィンガープリントが変わっていれば（`packages/core/src/pipeline.ts` の `findInvalidDependency` など）、そのエントリは無効化されます。
 - プラグインの processedContentCache の取り決めに反したとき：プラグインの `dependencyMode` が `tracked` で、前回のビルド以降に変わったコンテンツやファイルを Core の API 経由で読み込んだ場合、処理済みコンテンツキャッシュのエントリは無効化されます。
-- キャッシュのバージョンやスキーマが一致しないとき：キャッシュの検索中に `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`（現在は5）であれば、そのエントリは `schema-miss` として扱われ、最初から再処理されます。
+- キャッシュのバージョンやスキーマが一致しないとき：キャッシュの検索中に `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`（現在は5）であれば、そのエントリは `schema-mismatch` として扱われ、最初から再処理されます。
 - 外部依存関係が変わったとき：外部依存関係のフィンガープリントやスコープが変わると、対応するキャッシュエントリが無効化されます。
 
 ## 関連用語

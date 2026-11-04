@@ -39,7 +39,7 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
     name: PLUGIN_NAME,
     order: -21,
     processedContentCache: {
-      version: "excalidraw-v1",
+      version: "excalidraw-v2",
       dependencyMode: "tracked",
     },
     options,

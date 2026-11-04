@@ -35,7 +35,7 @@ export function renderExcalidrawPlaceholder(input: {
   const error = input.error
     ? `<p class="rr-excalidraw__error">${escapeHtml(input.error)}</p>`
     : "";
-  const payload = input.scene ? renderPayloadScript(input.scene) : "";
+  const payload = input.scene ? renderPayload(input.scene) : "";
   const state = input.error ? "error" : "pending";
   const lazy = input.lazy === false ? "false" : "true";
 
@@ -46,13 +46,13 @@ export function renderExcalidrawPlaceholder(input: {
 </figure>`;
 }
 
-function renderPayloadScript(scene: ExcalidrawScene): string {
+function renderPayload(scene: ExcalidrawScene): string {
   const payload: ExcalidrawPayload = {
     elements: scene.elements,
     appState: scene.appState ?? {},
     files: scene.files ?? {},
   };
-  return `<script type="application/json" class="rr-excalidraw__payload">${escapeScriptJson(JSON.stringify(payload))}</script>`;
+  return `<pre hidden class="rr-excalidraw__payload">${escapeScriptJson(JSON.stringify(payload))}</pre>`;
 }
 
 function renderSizeStyle(

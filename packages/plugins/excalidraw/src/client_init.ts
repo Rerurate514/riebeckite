@@ -47,13 +47,13 @@ async function renderFigure(
   signal?: AbortSignal,
 ): Promise<void> {
   const canvas = figure.querySelector<HTMLElement>(".rr-excalidraw__canvas");
-  const payloadScript = figure.querySelector<HTMLScriptElement>(
+  const payloadElement = figure.querySelector<HTMLElement>(
     ".rr-excalidraw__payload",
   );
-  if (!canvas || !payloadScript?.textContent) return;
+  if (!canvas || !payloadElement?.textContent) return;
 
   try {
-    const payload = JSON.parse(payloadScript.textContent) as ExcalidrawPayload;
+    const payload = JSON.parse(payloadElement.textContent) as ExcalidrawPayload;
     const { exportToSvg } = await import("@excalidraw/excalidraw");
     const svg = await exportToSvg({
       elements: payload.elements as never,

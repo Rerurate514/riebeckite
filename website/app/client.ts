@@ -7,16 +7,18 @@ let themeShowcaseModule:
   | Promise<typeof import("./theme-showcase-client")>
   | undefined;
 
-createClient();
-document.addEventListener("click", disableSpaAcrossShells, { capture: true });
-document.addEventListener("pointerover", disableSpaAcrossShells, {
-  capture: true,
-});
+if (typeof document !== "undefined") {
+  createClient();
+  document.addEventListener("click", disableSpaAcrossShells, { capture: true });
+  document.addEventListener("pointerover", disableSpaAcrossShells, {
+    capture: true,
+  });
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initPage, { once: true });
-} else {
-  initPage();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPage, { once: true });
+  } else {
+    initPage();
+  }
 }
 
 function initPage() {

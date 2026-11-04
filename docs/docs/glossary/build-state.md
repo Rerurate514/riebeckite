@@ -17,7 +17,7 @@ The next build reads it to compute an incremental change set.
 
 ## Version and validity
 
-Version is `CONTENT_BUILD_STATE_VERSION` (currently 24). A missing, incompatible, or malformed state causes a full build path. State is committed after the manifest build and before HonoX/SSG runs, so a later SSG or output failure can leave the new state behind. Changing the stored shape raises the version, so a state written by an older version is ignored and the build falls back to the full path.
+Version is `CONTENT_BUILD_STATE_VERSION` (currently 24). A missing, incompatible, or malformed state causes a full build path. State is committed after the manifest build and before page output is written, so a failure after the state commit, such as during page rendering or output writing, can leave the new state behind. Changing the stored shape raises the version, so a state written by an older version is ignored and the build falls back to the full path.
 
 ## Build State Structure
 
@@ -42,7 +42,7 @@ Version is `CONTENT_BUILD_STATE_VERSION` (currently 24). A missing, incompatible
 - `kind`: `"content"` or `"file"`
 - `id`: string — content slug or file path
 
-On a later build, the previous state is read to compute an incremental change set. The pipeline fingerprint comparison (`previousState.pipelineFingerprint !== pipelineFingerprint`) triggers a full rebuild if the pipeline configuration has changed. State is committed after a successful manifest build, before HonoX/SSG, so an SSG or output failure can leave the new state; a failure during the manifest build keeps the previous state.
+On a later build, the previous state is read to compute an incremental change set. The pipeline fingerprint comparison (`previousState.pipelineFingerprint !== pipelineFingerprint`) triggers a full rebuild if the pipeline configuration has changed. State is committed after a successful manifest build, before page output is written, so a failure after the state commit, such as during page rendering or output writing, can leave the new state; a failure during the manifest build keeps the previous state.
 
 ## Related terms
 

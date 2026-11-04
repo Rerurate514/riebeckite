@@ -81,6 +81,6 @@ CSS:
 ```
 
 Do not edit files under `app/.riebeckite/`; they are generated. To override
-plugin appearance use the `rr-<feature>` root hook, and to adjust the Riebeckite
+plugin appearance use the plugin's documented root hook (usually `rr-<feature>`; some built-in plugins use `rb-*`), and to adjust the Riebeckite
 UI primitives use the `rb-*` structural hooks. See
 [CSS hooks](../../reference/plugin-api/ui-and-assets.md#css-hooks).

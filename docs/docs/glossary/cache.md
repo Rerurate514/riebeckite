@@ -18,7 +18,7 @@ All three are safe to persist between CI runs, and the generated GitHub Actions 
 
 ## A cache is not a source of truth
 
-A missing, incompatible, or unsafe cache entry causes a full build path, not an error. State is committed after the content manifest is built and before HonoX/SSG runs. A manifest-build failure keeps the previous valid state, but a later SSG or output failure can leave the new state behind.
+A missing, incompatible, or unsafe cache entry causes a full build path, not an error. State is committed after the content manifest is built and before page output is written. A manifest-build failure keeps the previous valid state, but a failure after the state commit, such as during page rendering or output writing, can leave the new state behind.
 
 ## Configuration
 

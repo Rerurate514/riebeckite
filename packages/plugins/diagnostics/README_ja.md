@@ -85,15 +85,17 @@ Riebeckite のプラグインとして使う場合、リンク関係の検査は
 設定を読み込んで実行する場合は、次のようにします。
 
 ```bash
-riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
+riebeckite-diagnostics --config riebeckite.config.ts
 ```
+
+`--config` は TypeScript の設定ファイルをネイティブの動的 import で読み込みます。そのため `.ts` を import できる実行環境（Node 22.18 以降、または TypeScript ローダー）が必要です。対応する古い Node では `--content` を使い、必要なオプションを明示してください。
 
 `--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。`exclude` の一覧は統合されます。
 
 | オプション | 内容 |
 | --- | --- |
-| `--config <path>` | `riebeckite.config.ts` のパス（tsx で読み込む） |
+| `--config <path>` | `riebeckite.config.ts` のパス（Node 22.18 以降または TypeScript ローダーが必要） |
 | `--content <dir>` | 解析するコンテンツディレクトリ（既定: `.`） |
 | `--exclude <glob>` | 追加の除外 glob（複数指定可） |
 | `--publish-strategy <mode>` | `explicit` \| `selective`（既定: `selective`） |

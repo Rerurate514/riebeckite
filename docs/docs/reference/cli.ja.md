@@ -22,7 +22,7 @@ npm exec riebeckite <command>
 ```text id="7uw50m"
 riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
-riebeckite create plugin <name> [options]
+riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
 riebeckite create page-type [name] [options]
 riebeckite create component [name] [options]

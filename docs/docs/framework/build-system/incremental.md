@@ -49,7 +49,7 @@ or for comparing build times.
 
 ### When a build fails
 
-Build state is committed after `buildManifest()` completes but **before** HonoX/SSG runs.
+Build state is committed during the SSG phase after `buildManifest()` completes and **before** page output is written.
 The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or
 output failure can leave new build state behind even if the overall build does not
 produce successful output.

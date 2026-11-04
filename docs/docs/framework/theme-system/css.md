@@ -25,7 +25,7 @@ theme: defaultTheme({
 Themes target documented stable hooks, not internal markup. There are two class namespaces.
 
 - **`rb-*`** — structural hooks and semantic design tokens provided by the framework. Structural hooks: `.rb-theme-root` (the theme root container), `.rb-site`, `.rb-article`, `.rb-article-layout`, `.rb-article-header`, `.rb-article-body`, `.rb-article-content`, `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`.
-- **`rr-<feature>`** — the root hook on the outermost element rendered by a plugin or feature. Examples: `.rr-search`, `.rr-callout`, `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`, `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`, `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`, `.rr-media`, `.rr-recent-posts`, `.rr-garden-explorer`.
+- **`rr-<feature>`** — the root hook on the outermost element rendered by a new plugin or feature. Examples: `.rr-search`, `.rr-callout`, `.rr-table-of-contents`, `.rr-backlinks`, `.rr-local-graph`, `.rr-code`, `.rr-code-tabs`, `.rr-lightbox`, `.rr-excalidraw`, `.rr-mermaid`, `.rr-query`, `.rr-cardlink`, `.rr-diff-history`, `.rr-attachment`, `.rr-media`, `.rr-recent-posts`, `.rr-garden-explorer`. Some built-in plugins still document `rb-*` roots; follow each plugin's documentation.
 
 A theme should style only these root hooks and the descendants a plugin documents. BEM elements (`__…`) and modifiers (`--…`) are internal implementation details. For example, a plugin may internally use:
 
@@ -36,7 +36,7 @@ A theme should style only these root hooks and the descendants a plugin document
 .rr-search--loading
 ```
 
-The public hook is `.rr-search`; `__input`, `__result`, and `--loading` are treated as internal implementation unless the plugin explicitly documents them as public hooks. Generic helpers such as `.sr-only` are not plugin hooks. [[glossary/plugin|Plugin]] output uses `rr-*` hooks only; target those hooks from themes.
+The public hook is `.rr-search`; `__input`, `__result`, and `--loading` are treated as internal implementation unless the plugin explicitly documents them as public hooks. Generic helpers such as `.sr-only` are not plugin hooks. [[glossary/plugin|Plugin]] roots use either `rr-*` or `rb-*` hooks depending on the plugin; target the root hook that plugin documents.
 
 Framework CSS owns the reset and base contracts. Site CSS owns page structure and placement, including positioning a documented plugin root in a site layout. Plugin CSS owns its internal [[glossary/ui|UI]] and interactions. Theme CSS owns shared tokens and visual expression; it does not take over site layout or undocumented plugin internals.
 
@@ -46,8 +46,10 @@ A theme is not limited to tokens. Within the theme boundary it may style the
 stable hooks directly to give a site a visual character.
 
 - Put token definitions inside `@layer base`; put visual character rules
-  **unlayered**. The app's structural CSS and plugin CSS are unlayered, so
-  unlayered theme rules win over them without `!important`. Never use
+  **unlayered**. Plugin CSS is unlayered, so unlayered theme rules win over
+  plugin defaults without `!important`. Generated app styles load after theme
+  CSS, so a site rule of equal specificity can override a theme rule; keep theme
+  selectors specific enough or make site overrides intentional. Never use
   `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
   `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
@@ -84,7 +86,7 @@ styles/
   }
 }
 
-/* Character rules are unlayered, so they beat app and plugin CSS. */
+/* Character rules are unlayered, so they beat plugin CSS. */
 :is(:root, .rb-theme-root)[data-rb-theme="example"] .rb-article-header {
   border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
 }
@@ -106,14 +108,14 @@ Load order is a key convention for presentation extensions.
 
 ```text
 framework structural CSS
-→ base / app structural CSS
 → Plugin default CSS
 → Theme CSS
-→ config token inline style
-→ stylesheets
+→ app / site structural CSS
 ```
 
-This order is a convention used by `@riebeckite/honox`, not an absolute guarantee. The generated stylesheets note their cascade position in header comments, but the actual import order in the application determines the effective cascade. `stylesheets` is intended as the final override — ideal for small site-specific tweaks.
+Config token inline styles and `stylesheets` come later as overrides.
+
+This order matches the imports in generated `app/style.css`, and is a convention used by `@riebeckite/honox`, not an absolute guarantee. The generated stylesheets note their cascade position in header comments, but the actual import order in the application determines the effective cascade. `stylesheets` is intended as the final override — ideal for small site-specific tweaks.
 
 Do not reorder these imports or edit the generated files. Each generated file notes its cascade position in a header comment. The cascade usually does not depend on `!important`.
 

@@ -105,13 +105,15 @@ from the manifest.
 ## CLI
 
 ```bash
-riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
+riebeckite-diagnostics --config riebeckite.config.ts
 ```
+
+`--config` loads a TypeScript config with a native dynamic import. It therefore needs a runtime that can import `.ts` files (Node 22.18 or later, or a TypeScript loader); on older supported Node versions, use `--content` and pass the applicable options explicitly.
 
 | Option | Description |
 | ------ | ----------- |
-| `--config <path>` | Path to `riebeckite.config.ts` (loaded under tsx) |
+| `--config <path>` | Path to `riebeckite.config.ts` (requires Node 22.18+ or a TypeScript loader) |
 | `--content <dir>` | Content directory to analyze (default: `.`) |
 | `--exclude <glob>` | Extra exclude glob (repeatable) |
 | `--publish-strategy <mode>` | `explicit` \| `selective` (default: `selective`) |

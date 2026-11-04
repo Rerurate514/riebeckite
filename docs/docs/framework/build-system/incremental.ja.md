@@ -41,7 +41,7 @@ pnpm exec riebeckite build --full
 
 ### ビルドに失敗した場合
 
-ビルド状態は `buildManifest()` の完了後、HonoX/SSG の実行前にコミットされます。
+ビルド状態は SSG フェーズで `buildManifest()` が完了した後、ページ出力の書き込み前にコミットされます。
 SSG 側の `ContentManager` は `commitBuildState:false` を渡さないため、SSG や出力の
 失敗後も新しいビルド状態が残ることがあります。
 

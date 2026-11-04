@@ -50,7 +50,7 @@ comparison data, and Inspector provenance data. It does not change build output.
 
 An explicit build resolves configuration and plugins, reads content, runs content and [[glossary/plugin|plugin]] pipelines, creates the manifest and content graph, emits registered assets and client entries, and records successful incremental state. The HonoX integration then builds the application with the generated entries.
 
-[[glossary/build-state|Build state]] is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. **Build state is committed after `buildManifest()` completes and before HonoX/SSG runs. The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or output failure can leave new state behind. A failure during `buildManifest()` keeps the previous state.**
+[[glossary/build-state|Build state]] is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. **Build state is committed during the SSG phase after `buildManifest()` completes and before page output is written. The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or output failure can leave new state behind. A failure during `buildManifest()` keeps the previous state.**
 
 ## Build provenance
 
@@ -159,8 +159,8 @@ The record types are `BuildProvenance`, `ProvenanceSource`,
 
 The latest record and history live inside
 `.riebeckite/build/content-state.json` as the `provenance` and
-`provenanceHistory` fields. Build state is written after the manifest build and
-before SSG, so a later SSG or output failure can leave the new record behind.
+`provenanceHistory` fields. Build state is written during the SSG phase after the manifest build and
+before page output, so a later rendering or output failure can leave the new record behind.
 A failure during the manifest build keeps the previous record.
 
 Provenance is intentionally not a separate artifact:
@@ -280,8 +280,7 @@ control and must not be used to decide whether content may be published.
   retained records, or the build state was deleted.
 - **A plugin hook looks opaque**: that is expected unless an output dependency
   already proves the relationship. Do not infer a dependency from timing.
-- **Provenance looks stale after a failed build**: state is only replaced on
-  success. The last successful record is intentionally retained.
+- **Provenance looks stale after a failed build**: a failed manifest build keeps the previous record; a failure after the state commit can leave the new record.
 
 ## The build flow
 

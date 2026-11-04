@@ -67,4 +67,4 @@ Riebeckite がプラグインやテーマから生成した CSS は、サイト�
 
 `app/.riebeckite/` のファイルは自動生成されるため、直接編集しないでください。
 
-プラグインの見た目を上書きするときは `rr-<feature>`、Riebeckite の UI プリミティブを調整するときは `rb-*` の CSS フックを利用できます。詳しくは[CSS フック](../../reference/plugin-api/ui-and-assets.ja.md#css フック)を参照してください。
+プラグインの見た目を上書きするときは、各プラグインが文書化しているルートフック（通常は `rr-<feature>`、一部の組み込みプラグインは `rb-*`）、Riebeckite の UI プリミティブを調整するときは `rb-*` の CSS フックを利用できます。詳しくは[CSS フック](../../reference/plugin-api/ui-and-assets.ja.md#cssフック)を参照してください。

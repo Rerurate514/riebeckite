@@ -170,24 +170,10 @@ function devCommand(): CliCommandDefinition {
     id: "dev",
     summary: "Start the development server.",
     requiresProject: true,
-    options: [
-      cliString("bridge-token", {
-        description:
-          "Enable the local Bridge API with this pairing token (at least 32 characters).",
-      }),
-    ],
     examples: [cliExample("riebeckite dev")],
-    validate(input) {
-      const token = input.options.bridgeToken;
-      return typeof token === "string" && token.length < 32
-        ? "--bridge-token must be at least 32 characters."
-        : undefined;
-    },
-    async handler(context, input) {
+    async handler(context, _input) {
       const { runDev } = await import("../commands/dev.js");
-      await runDev(await project(context), {
-        bridgeToken: input.options.bridgeToken,
-      });
+      await runDev(await project(context));
     },
   });
 }

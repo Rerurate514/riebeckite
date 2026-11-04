@@ -13,6 +13,7 @@ Start with [Design Philosophy](./philosophy.md) to understand why Riebeckite is 
 - [Release Notes](./releases.md)
 - [Getting Started](./getting-started/README.md)
 - [Guides](./guides/README.md)
+- [Obsidian Plugin](./obsidian-plugin/README.md)
 - [Framework](./framework/README.md)
 - [Plugins](./plugins/README.md)
 - [Themes](./themes/README.md)

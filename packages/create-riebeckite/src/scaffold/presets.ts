@@ -432,11 +432,7 @@ const discordEmbed = np("@riebeckite/plugin-discord-embed", "discordEmbed", {
   imageAlt: { depth: 3, value: "true" },
   imageDimensions: { depth: 3, value: "true" },
 });
-const excalidraw = np(
-  "@riebeckite/plugin-excalidraw",
-  "excalidraw",
-  `{ lazy: true }`,
-);
+const excalidraw = np("@riebeckite/plugin-excalidraw", "excalidraw");
 const excaliBrain = np("@riebeckite/plugin-excalibrain", "excaliBrain", {
   render: { depth: 2, value: '"build"' },
   auto: { depth: 2, value: "true" },

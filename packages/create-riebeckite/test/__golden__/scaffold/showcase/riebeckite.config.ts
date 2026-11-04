@@ -122,7 +122,7 @@ export default defineConfig({
     marp({ theme: "default", allowHtml: true, math: true, caption: true }),
     qrCode({ level: "M", margin: 1, width: 160, dark: "#000000", light: "#ffffff", caption: true, className: "rb-qr" }),
     discordEmbed({ themeColor: "#5865F2", imageAlt: true, imageDimensions: true }),
-    excalidraw({ lazy: true }),
+    excalidraw(),
     excaliBrain({ render: "build", auto: true, heading: true, infer: true, siblings: true, headingText: "ExcaliBrain", width: 720, height: 480 }),
     canvas({ language: "canvas", render: "both", className: "rb-canvas" }),
     bases({ language: "base", limit: 100, className: "rb-bases", showFallback: true }),

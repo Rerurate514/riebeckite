@@ -1,58 +1,38 @@
-import {
-  escapeHtml,
-  escapeHtmlAttribute,
-  escapeScriptJson,
-} from "@riebeckite/core";
-import type { ExcalidrawPayload, ExcalidrawScene } from "./types.js";
+import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 
 export function renderExcalidrawPage(input: {
   title: string;
-  scene?: ExcalidrawScene;
-  lazy?: boolean;
+  svg?: string;
+  size?: { width?: number; height?: number };
   error?: string;
 }): string {
   const heading = input.title
     ? `<h1 class="rr-excalidraw-page__title">${escapeHtml(input.title)}</h1>`
     : "";
-  return `<main class="rr-excalidraw-page">${heading}${renderExcalidrawPlaceholder(
-    {
-      title: input.title,
-      scene: input.scene,
-      lazy: input.lazy,
-      error: input.error,
-    },
+  return `<main class="rr-excalidraw-page">${heading}${renderExcalidrawFigure(
+    input,
   )}</main>`;
 }
 
-export function renderExcalidrawPlaceholder(input: {
+export function renderExcalidrawFigure(input: {
   title: string;
-  scene?: ExcalidrawScene;
+  svg?: string;
   size?: { width?: number; height?: number };
-  lazy?: boolean;
   error?: string;
 }): string {
   const style = renderSizeStyle(input.size);
   const error = input.error
     ? `<p class="rr-excalidraw__error">${escapeHtml(input.error)}</p>`
     : "";
-  const payload = input.scene ? renderPayloadScript(input.scene) : "";
-  const state = input.error ? "error" : "pending";
-  const lazy = input.lazy === false ? "false" : "true";
+  const state = input.error ? "error" : "ready";
+  const label = input.svg
+    ? ` role="img" aria-label="${escapeHtmlAttribute(input.title)}"`
+    : "";
 
-  return `<figure class="rr-excalidraw" data-excalidraw="${state}" data-excalidraw-lazy="${lazy}"${style}>
-  <div class="rr-excalidraw__canvas" role="img" aria-label="${escapeHtmlAttribute(input.title)}"></div>
+  return `<figure class="rr-excalidraw" data-excalidraw="${state}"${style}>
+  <div class="rr-excalidraw__canvas"${label}>${input.svg ?? ""}</div>
   ${error}
-  ${payload}
 </figure>`;
-}
-
-function renderPayloadScript(scene: ExcalidrawScene): string {
-  const payload: ExcalidrawPayload = {
-    elements: scene.elements,
-    appState: scene.appState ?? {},
-    files: scene.files ?? {},
-  };
-  return `<script type="application/json" class="rr-excalidraw__payload">${escapeScriptJson(JSON.stringify(payload))}</script>`;
 }
 
 function renderSizeStyle(

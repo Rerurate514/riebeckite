@@ -20,10 +20,9 @@ export default defineConfig({
   },
   build: {
     // The warning targets lazily loaded vendor chunks that cannot be split:
-    // excalidraw ships its font-subsetting WebAssembly as one base64 module
-    // (~1.8 MB) plus its own pre-bundled editor, and mermaid ships its shared
-    // parser chunk. All of them are behind dynamic imports, so a tighter limit
-    // would only hide the size of code the initial route never downloads.
+    // mermaid ships its shared parser chunk. It is behind a dynamic import, so
+    // a tighter limit would only hide the size of code the initial route never
+    // downloads.
     chunkSizeWarningLimit: 2048,
     rolldownOptions: {
       checks: {

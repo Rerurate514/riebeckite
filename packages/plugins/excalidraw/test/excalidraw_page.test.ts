@@ -17,7 +17,7 @@ function drawingMarkdown(): string {
 
 function source(): ContentSource {
   const files: Record<string, string> = {
-    "index.md": "---\npublish: true\n---\n# Home",
+    "index.md": "---\npublish: true\n---\n# Home\n\n![[note]]",
     "drawing.excalidraw.md": drawingMarkdown(),
     "note.md": drawingMarkdown(),
     "plain.md": "---\npublish: true\n---\n# Plain",
@@ -72,7 +72,8 @@ test("excalidraw documents resolve to a plugin page", async () => {
   assert.equal(page?.pathname, "/note");
   assert.equal(page?.title, "note");
   assert.match(page?.body ?? "", /class="rr-excalidraw-page"/);
-  assert.match(page?.body ?? "", /class="rr-excalidraw__payload"/);
+  assert.match(page?.body ?? "", /data-excalidraw="ready"/);
+  assert.match(page?.body ?? "", /<svg /);
 });
 
 test("a .excalidraw.md permalink is stripped of its extension", async () => {
@@ -88,4 +89,14 @@ test("plain markdown is not claimed as an excalidraw page", async () => {
   const manager = createManager();
 
   assert.equal(await manager.resolvePage("/plain"), null);
+});
+
+test("excalidraw embeds replace sanitized placeholders with SVG", async () => {
+  const manager = createManager();
+  const { html } = await manager.getProcessedContent("index");
+
+  assert.match(html, /class="rr-excalidraw"/);
+  assert.match(html, /data-excalidraw="ready"/);
+  assert.match(html, /<svg /);
+  assert.doesNotMatch(html, /data-excalidraw-embed/);
 });

@@ -25,7 +25,7 @@ Declared in `pageTypes[].outputDependencies` for a plugin page, root `contentOut
 
 ### Content Dependency (`content { slug }`)
 
-When a content entry identified by `slug` changes, all outputs with a `content` dependency on that slug are marked as affected. The slug matches the content's permalink-derived slug. This is the most common dependency type and enables fine-grained invalidation when specific pages change.
+When a content entry identified by `slug` changes, all outputs with a `content` dependency on that slug are marked as affected. The slug is the internal logical-path key, resolved separately from the entry's permalink. This is the most common dependency type and enables fine-grained invalidation when specific pages change.
 
 ### Tag Dependency (`tag { tag }`)
 

@@ -91,7 +91,7 @@ const cache = createPluginCache({
 const unavailable = createUnavailablePluginCache();
 ```
 
-`createPluginCache` は `PluginCache` インスタンスを返し、プラグイン名と `cacheVersion` をキーにした `get`、`set`、`invalidate` 操作に対応します。`createUnavailablePluginCache` は常にミスを報告するスタブを返し、ビルドのたびに再計算を強制します。どちらを使うかは `packages/core/src/pipeline.ts` の `options.isBuildTime`（`cacheFor` メソッド、533〜543行）で決まります。
+`createPluginCache` は `PluginCache` インスタンスを返し、プラグイン名と `cacheVersion` をキーにした `get`、`set`、`delete`、`clear` 操作に対応します。`createUnavailablePluginCache` は、明示的なビルドコンテキスト外では操作が例外を投げるスタブを返します。どちらを使うかは `packages/core/src/pipeline.ts` の `options.isBuildTime`（`cacheFor` メソッド）で決まります。キャッシュの実装は `packages/core/src/plugin/plugin_cache.ts` にあります。
 
 ## 関連用語
 

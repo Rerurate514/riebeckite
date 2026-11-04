@@ -95,15 +95,16 @@ const cache = createPluginCache({
   logger,
 });
 
-// Runtime / test: no-op cache that always misses
+// Runtime / test: access throws
 const unavailable = createUnavailablePluginCache();
 ```
 
 The `createPluginCache` returns a `PluginCache` instance that
-supports `get`, `set`, and `invalidate` operations keyed by plugin name and
-`cacheVersion`. The `createUnavailablePluginCache` returns a stub
-that always reports a miss, forcing recomputation on every build. The choice is determined
-by `options.isBuildTime` in `packages/core/src/pipeline.ts` (`cacheFor` method, line 533–543).
+supports `get`, `set`, `delete`, and `clear` operations keyed by plugin name and
+`cacheVersion`. The `createUnavailablePluginCache` returns a stub whose
+operations throw, because the plugin cache is available only through an explicit build context. The choice is determined
+by `options.isBuildTime` in `packages/core/src/pipeline.ts` (`cacheFor` method).
+The cache implementations live in `packages/core/src/plugin/plugin_cache.ts`.
 
 ## Related terms
 

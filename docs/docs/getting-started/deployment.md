@@ -59,7 +59,7 @@ This is the fastest path to a public site.
 
 4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 
-After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. `baseUrl` is not part of the content plan, so add `--force` to deploy this config-only change.
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. The publication plan tracks content, redirects, and generated outputs; add `--force` when a config-only change is not detected.
 
 ```sh
 npm exec riebeckite build

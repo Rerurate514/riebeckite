@@ -138,7 +138,7 @@ async planGeneratedOutputs({ derived }) {
 `resolveWithDependencies` returns `{ value, dependencies, viewIds }`. Pass that trace through to the output; do not rebuild it by hand.
 
 :::callout[Warning]{type=warning}
-A Derived View does not filter by publication state. Select entries from `manifest.discoverableEntries` or `manifest.routableEntries` yourself. Do not serialize [[glossary/draft|drafts]], scheduled entries, or [[glossary/unlisted|unlisted]] entries unless the output has an explicit non-public boundary.
+A Derived View does not filter by publication state. Select entries from `manifest.discoverableEntries` or `manifest.publicEntries` yourself. Do not serialize [[glossary/draft|drafts]], scheduled entries, or [[glossary/unlisted|unlisted]] entries unless the output has an explicit non-public boundary.
 :::
 
 ### Output dependencies

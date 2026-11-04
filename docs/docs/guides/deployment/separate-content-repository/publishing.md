@@ -58,7 +58,7 @@ Vault files fall into three kinds, and each one is published by a different owne
 |Attachment / Media|A file that is neither Markdown nor an image|`/assets/attachments/<relative logical path from the vault>`|A prebuild step on the site side|
 |Static asset|A file the site application owns|anywhere under `/`|Vite's `public/` directory|
 
-Content images need nothing from the site side: `obsidianMarkdown()` writes every image referenced from a published page into the build output, keeping its logical path, and the development server serves the same logical path straight from the content. Images that nothing references, or that only non-public pages reference, are not written.
+Content images need nothing from the site side: the core build writes every image referenced from a published page into the build output, keeping its logical path, and `obsidianMarkdown()` resolves Obsidian image and embed syntax into those references. The development server serves the same logical path straight from the content. Images that nothing references, or that only non-public pages reference, are not written.
 
 ```mermaid
 flowchart LR

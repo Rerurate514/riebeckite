@@ -29,6 +29,7 @@ riebeckite create component [name] [options]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
+riebeckite bridge approve <plan>
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]

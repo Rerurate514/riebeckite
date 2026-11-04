@@ -26,7 +26,7 @@ Update dist/
 Deploy
 ```
 
-`riebeckite publish run --execute` plans, builds if needed, validates the artifact, and deploys through the hosting adapter. If you changed only configuration, such as `site.baseUrl` or the theme, build first and add `--force`; the plan compares content, so a config-only change otherwise reports “Publication is up to date.”
+`riebeckite publish run --execute` plans, builds if needed, validates the artifact, and deploys through the hosting adapter. If you changed only configuration, such as `site.baseUrl` or the theme, build first and add `--force` when the plan reports no change; the plan tracks content, redirects, and generated outputs, so some configuration changes are detected while others are not.
 
 ## Pre-deploy checklist
 
@@ -78,7 +78,7 @@ Wrangler
   → publishes the generated site to Cloudflare
 ```
 
-So if `npm exec riebeckite build` fails, look at the Riebeckite side; if `npm exec -- riebeckite publish run --execute` fails, look at the Cloudflare / Wrangler side. Separating these boundaries makes deployment problems easier to investigate.
+So if `npm exec riebeckite build` fails, look at the Riebeckite build side. `publish run --execute` can then fail during its plan or approval gate, artifact validation, or the Wrangler upload, so read the reported stage before assuming the Cloudflare side is at fault. Separating these boundaries makes deployment problems easier to investigate.
 
 ## Automated deployment with GitHub Actions
 

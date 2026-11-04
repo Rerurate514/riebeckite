@@ -41,7 +41,7 @@ The `processedContentCache` contract on a plugin definition (`plugin.processedCo
 
 | Mode | Description |
 | --- | --- |
-| `none` | Processed HTML depends only on the current content source, frontmatter, and plugin options. No dependency fingerprints are recorded; every build treats the content as potentially changed. |
+| `none` | Processed HTML depends only on the current content source, frontmatter, and plugin options. No dependency fingerprints are recorded; reuse is safe while source, frontmatter, plugin options, contract version, and pipeline fingerprint are unchanged. |
 | `tracked` | External content and file inputs are read **only** through framework-owned APIs that record dependency fingerprints (via `CachedContentDependency`). The cache can prove what inputs affected the output, enabling precise invalidation. |
 | `global` | Processed HTML depends on the resolved content-location set (all entries' permalinks and languages). Dependency fingerprints are recorded for the entire content set, not per-entry. |
 | `unsafe` | The plugin cannot prove what it affects; the persistent content cache must bypass this plugin entirely. `requiresFullContentRegeneration` will return `true` if any plugin has `dependencyMode: "unsafe"` without `appliesToContent`. |
@@ -83,10 +83,10 @@ The tracking is enforced through the pipeline's dependency tracker, which is pas
 
 It is important to distinguish two version fields:
 
-- **`cacheVersion`** (plugin definition field, type `string`): Versions the per-plugin, ephemeral runtime cache. Managed by `createPluginCache` / `createUnavailablePluginCache` in `packages/core/src/pipeline.ts`. Changes to this version invalidate the plugin's local cache.
+- **`cacheVersion`** (plugin definition field, type `string`): Versions the per-plugin, ephemeral runtime cache. Managed by `createPluginCache` / `createUnavailablePluginCache` in `packages/core/src/plugin/plugin_cache.ts`. Changes to this version invalidate the plugin's local cache.
 - **`processedContentCache.version`** (contract field, type `string`): Versions the persistent processed-content cache contract. Changes invalidate all content cache entries affected by plugins that use this contract.
 
-The choice between `createPluginCache` and `createUnavailablePluginCache` (determined by `options.isBuildTime` in `packages/core/src/pipeline.ts`, `cacheFor` method, line 533–543) controls whether a per-plugin cache is available at all.
+The choice between `createPluginCache` and `createUnavailablePluginCache` (determined by `options.isBuildTime` in `packages/core/src/pipeline.ts`, `cacheFor` method) controls whether a per-plugin cache is available at all.
 
 ## Related terms
 

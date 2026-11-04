@@ -59,7 +59,7 @@ Content Repository の分離
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。`baseUrl` はコンテンツの計画に含まれないため、この設定だけの変更には `--force` を付けます。
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。公開計画はコンテンツ、リダイレクト、生成出力を追跡します。設定だけの変更が検出されない場合は `--force` を付けます。
 
 ```bash
 npm exec riebeckite build

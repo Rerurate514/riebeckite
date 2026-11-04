@@ -48,12 +48,14 @@ flowchart TD
 
 - `site`
 - `content`
-- `markdown`
 - `theme`
 - `plugins`
-- `appRoot`
-- `configRoot`
-- `contentRoot`
+- `cache`
+- `provenance`
+- `publication`
+- `spa`
+
+`appRoot`、`configRoot`、`contentRoot` は設定キーではなく解決の概念です。詳しくは [ルート](./configuration/roots.ja.md) を参照してください。
 
 ### CLI コマンドを調べる
 

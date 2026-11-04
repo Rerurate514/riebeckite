@@ -126,7 +126,7 @@ site: {
 },
 ```
 
-Then build and deploy again. Because `baseUrl` is not part of the content plan, `--force` is required for this config-only redeploy.
+Then build and deploy again. The publication plan tracks content, redirects, and generated outputs; add `--force` when a config-only change is not detected.
 
 ```sh
 npm exec riebeckite build

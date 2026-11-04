@@ -6,7 +6,7 @@ Riebeckite のコマンドラインインターフェースです。プロジェ
 
 ## 概要
 
-`@riebeckite/cli` は `riebeckite` バイナリを提供します。カレントディレクトリからアプリケーションルートを解決し、コマンドの失敗は非ゼロの終了コードで安全に報告します。`check`、`doctor`、`inspect`、`profile` は読み取り専用です。出力を書き換えたりサーバーを起動するのは `build` と `dev`、Riebeckite が管理する状態や Build 出力を削除するのは `clean` です。
+`@riebeckite/cli` は `riebeckite` バイナリを提供します。カレントディレクトリからアプリケーションルートを解決し、コマンドの失敗は非ゼロの終了コードで安全に報告します。`check`、`doctor`、`inspect` は読み取り専用です。`profile` はトレース付きでビルドを実行し、Build 出力を書き込みます。`build` は出力を書き込み、`dev` はサーバーを起動し、`clean` は Riebeckite が管理する状態や Build 出力を削除します。
 
 ## インストール
 
@@ -64,7 +64,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `upgrade` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` は差分の再利用を行わない | 成功時に書く |
 | `clean` | 管理対象の状態（`.riebeckite/`）を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | いいえ |
-| `deploy` | Cloudflare のワークフローとドメイン設定を用意する。デプロイは行わない | いいえ |
+| `deploy` | Cloudflare のワークフローとドメイン設定を用意する。`deploy domain` は確認後にアップロードできる | いいえ |
 | `publish` | 公開の計画、状態確認、検証、承認、明示的な実行を行う | 実行を伴うビルドの後で書く |
 | `content` | 明示的なコンテンツ変更を計画し、ジャーナル付きで書き込む | いいえ |
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |

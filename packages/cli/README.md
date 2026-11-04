@@ -10,9 +10,10 @@ the site.
 
 `@riebeckite/cli` provides the `riebeckite` binary. It resolves the application
 root from the current working directory and reports command failures safely with
-a non-zero exit code. `check`, `doctor`, `inspect`, and `profile` are read-only;
-`build` and `dev` write output or start a server, and `clean` removes
-Riebeckite-managed state and build output.
+a non-zero exit code. `check`, `doctor`, and `inspect` are read-only; `profile`
+runs the build path with tracing and writes build output. `build` writes output
+and `dev` starts a server, and `clean` removes Riebeckite-managed state and build
+output.
 
 ## Installation
 
@@ -71,7 +72,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `upgrade` | Compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
-| `deploy` | Prepare Cloudflare workflow and domain configuration; it does not deploy | no |
+| `deploy` | Prepare Cloudflare workflow and domain configuration; `deploy domain` can upload after confirmation | no |
 | `publish` | Plan, inspect, validate, approve, and explicitly execute publication | yes, after an executed build |
 | `content` | Plan explicit content mutations and write them with a journal | no |
 | `migrate` | Plan and apply versioned content migrations, then inspect, roll back, or recover them | no |

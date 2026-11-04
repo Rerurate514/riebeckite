@@ -6,12 +6,13 @@ Audit worktree: `C:/Users/rerur/.wk/program/riebeckite-audit-rr-2026-11`
 
 ## Status
 
-Verdict: **CONDITIONAL**. No P0 or open P1 finding remains. Four P1 defects
-were reproduced and fixed with regression tests, and the full workspace suite,
-published-artifact E2E, three deployment layouts, browser suites, and
-documentation gates pass. Visual baselines are stale (AUD-009), and the
-release process still has unpublished documentation on `main` (AUD-004), so
-the repository is not marked READY.
+Verdict: **CONDITIONAL**. No P0 or open P1 finding remains on the audit
+branch. Five P1 defects were reproduced and fixed with regression tests, and
+the full workspace suite, published-artifact E2E, three deployment layouts,
+browser suites, and documentation gates pass. Visual baselines are stale
+(AUD-009), the release process still has unpublished documentation on `main`
+(AUD-004), and `main` advanced during the audit without all branch fixes
+(AUD-013), so the repository is not marked READY.
 
 ## Files
 

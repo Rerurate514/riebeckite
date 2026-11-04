@@ -277,3 +277,41 @@ P3 (minor), UNVERIFIED, FALSE POSITIVE.
   served `/`, and reflected a content edit on reload.
 - **Remediation commit**: `d8986a55`.
 - **Independent re-audit**: PASS (focused reviewer; ordinary and managed paths, behavior preservation, minimal diff; two Low notes: token-without-managed self-check is skipped, success path lacks a unit stub).
+
+## AUD-013 ? `main` diverged and lacks several audit fixes
+
+- **Severity**: P2 (release process)
+- **Confidence**: High (compared `7a031ca..main` and `7a031ca..HEAD`)
+- **Files**: branch-wide integration state
+- **Observed**: during the audit, a parallel session advanced `main` from
+  `7a031ca` to `54f726f3` with separate commits. Those commits contain the
+  package metadata update, the plugin-page takeover, the folder-index inventory
+  suppression, and a different search-fixture change, but they do not contain:
+  - the real-SSG self-redirect suppression in
+    `packages/integrations/honox/src/content_route.ts`;
+  - the scaffold declarations for `@riebeckite/node`, `@riebeckite/runtime`,
+    and `@riebeckite/spa` in
+    `packages/create-riebeckite/src/scaffold/templates.ts`;
+  - the ordinary `riebeckite dev` fix in
+    `packages/cli/src/commands/dev.ts`;
+  - the inspector E2E workspace-root fix.
+  `main` also has a mobile documentation drawer feature that this branch does
+  not contain.
+- **Impact**: releasing 0.0.39 from the current `main` would ship three known
+  P1 blockers: the folder page overwritten by its own redirect, pnpm/Yarn PnP
+  scaffold install failure, and `riebeckite dev` exiting immediately.
+- **Root cause**: parallel development continued on `main` while the audit ran
+  on an isolated branch. The shared fixes were applied independently and did
+  not all reach `main`.
+- **Fix**: not performed here because direct changes to `main`, merges into
+  `main`, and pushes are prohibited. The audit branch is the merge candidate.
+- **Merge notes**: `git merge-tree --write-tree main HEAD` reports conflicts in
+  `packages/core/src/content/output_dependency.ts`,
+  `packages/core/test/output_dependency.test.ts`, and
+  `packages/plugins/search/test/browser/search-modal.test.ts`. The remaining
+  changed files merge automatically.
+- **Required regression after merge**: `core` output_dependency, `honox`
+  content_route and folder-pages SSG, `create-riebeckite` golden,
+  `cli` managed_dev, `plugin-folder-pages`, `plugin-archive`, and
+  `plugin-excalidraw` suites; then a full build and test run.
+- **Status**: unresolved by design; must be resolved before publishing.

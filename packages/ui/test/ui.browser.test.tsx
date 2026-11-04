@@ -240,6 +240,38 @@ test("Drawer keeps focus, scroll lock, dismissal, and reinitialization", async (
   await page.close();
 });
 
+test("Drawer keeps navigation scroll position across SPA navigation", async (t) => {
+  if (!browser) return t.skip("Puppeteer browser is unavailable");
+  const page = await openPage(375, [{ name: "drawer", source: drawerJs }]);
+  await page.evaluate(() => RbDrawer.initDrawers());
+  const trigger = "#drawer-trigger";
+  await page.click(trigger);
+  assert.equal(
+    await page.evaluate(() => {
+      const panel = document.querySelector<HTMLElement>("#navigation");
+      if (!panel) throw new Error("Missing drawer panel");
+      panel.style.height = "100px";
+      const spacer = document.createElement("div");
+      spacer.style.height = "1000px";
+      panel.append(spacer);
+      panel.scrollTop = 180;
+      return panel.scrollTop;
+    }),
+    180,
+  );
+  await page.evaluate(() =>
+    document.dispatchEvent(new Event("spa:navigation")),
+  );
+  await page.click(trigger);
+  assert.equal(
+    await page.evaluate(
+      () => document.querySelector<HTMLElement>("#navigation")?.scrollTop,
+    ),
+    180,
+  );
+  await page.close();
+});
+
 test("Drawer without JavaScript falls back to :target", async (t) => {
   if (!browser) return t.skip("Puppeteer browser is unavailable");
   const page = await openPage(375);

@@ -15,7 +15,7 @@ export function focusFirst(container: HTMLElement | Document): void {
   const target =
     getFocusable(container)[0] ??
     (container instanceof HTMLElement ? container : null);
-  target?.focus();
+  target?.focus({ preventScroll: true });
 }
 
 export function trapFocus(event: KeyboardEvent, container: HTMLElement): void {

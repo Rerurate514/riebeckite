@@ -23,6 +23,20 @@ export default defineConfig({
 
 `defaultLang` is also used when a content's language cannot be determined by any other method.
 
+### Fallback for listing pages
+
+Generated listings default to the current page language. If a note exists only in another language, set `fallbackLocale` to let those listings use it:
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  fallbackLocale: "en",
+});
+```
+
+The fallback is applied per translation group, never by matching titles or dates. The fallback note keeps its own language and URL.
+
 ## How a note's language is detected
 
 The plugin looks for four signals, in this precedence order:

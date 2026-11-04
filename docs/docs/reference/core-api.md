@@ -14,7 +14,7 @@ sidebar:
 
 - Config: `defineConfig`, `resolveConfig`, `resolveConfigModule`, `isPublished`, `isExcluded`
 - API lifecycle: `defineApiLifecycle`, `createApiLifecycleRegistry`, `resolveApiLifecycle`
-- Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `queryContentEntries`, `buildContentCollections`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
+- Content: `ContentManager`, `ContentCollection`, `ContentGraph`, `queryContentEntries`, `buildContentCollections`, `selectLocalizedEntries`, `resolvePageLocale`, `localizedPagePaths`, `fingerprintContentEntries`, `resolveDefaultContentLocation`
 - Plugins: `definePlugin`, `resolvePlugins`, `defineEndpoint`, `createStyleAsset`, `createClientEntry`, `createPluginMemo`, `stableStringify`
 - Themes: `defineTheme`, `defineThemeSettings`, `ThemeDefinition`, `ThemeOptions`, `ThemeColorMode`
 - Pipeline: `Pipeline`, `MarkdownPipeline`, `HtmlPipeline`

@@ -102,6 +102,15 @@ export type ContentLocationInput = {
 
 export type ContentManifest = {
   /**
+   * Resolved localization contract supplied by the l10n plugin. Absent when
+   * the site does not localize content.
+   */
+  localization?: {
+    defaultLocale: string;
+    locales: readonly string[];
+    fallbackLocale?: string;
+  };
+  /**
    * Raw entries for every scanned content source, including drafts, scheduled,
    * private, and otherwise nonpublic entries. This is not a publication view.
    */

@@ -1,11 +1,12 @@
-import type {
-  ContentLocationInput,
-  ContentPublicLocation,
-  Diagnostic,
-  PostFrontmatter,
+import {
+  CONTENT_TRANSLATION_ID_METADATA_KEY,
+  type ContentLocationInput,
+  type ContentPublicLocation,
+  type Diagnostic,
+  type PostFrontmatter,
 } from "@riebeckite/core";
 
-export const TRANSLATION_METADATA_KEY = "l10n.translationId";
+export const TRANSLATION_METADATA_KEY = CONTENT_TRANSLATION_ID_METADATA_KEY;
 
 export type L10nContent = {
   readonly path: string;
@@ -25,6 +26,7 @@ export type L10nDetectorResult = {
 export type L10nOptions = {
   defaultLang: string;
   languages: readonly string[];
+  fallbackLocale?: string;
   strict?: boolean;
   translationKey?: string;
   detect?: (content: L10nDetectorContext) => L10nDetectorResult | undefined;
@@ -61,6 +63,7 @@ export type L10nState = {
 export type ResolvedL10nOptions = {
   readonly defaultLang: string;
   readonly languages: readonly string[];
+  readonly fallbackLocale?: string;
   readonly languageByLowercase: ReadonlyMap<string, string>;
   readonly strict: boolean;
   readonly translationKey: string;

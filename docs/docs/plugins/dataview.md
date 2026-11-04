@@ -261,6 +261,7 @@ added to the content graph (backlinks).
 | `language` | `string` | `"dataview"` | Fence language to target |
 | `hideFallback` | `boolean` | `false` | Hide the raw-query `<details>` fallback |
 | `limit` | `number` | none | Default `LIMIT` when a block omits one |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for query rows |
 
 ## Rendering
 

@@ -1,4 +1,8 @@
-import { createClientEntry, definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  definePlugin,
+  localizedPagePaths,
+} from "@riebeckite/core";
 import type { GardenExplorerPluginOptions } from "./src/garden-explorer.js";
 import { getGardenExplorerData } from "./src/garden-explorer.server.js";
 import { renderGardenExplorerPage } from "./src/garden-explorer-page.js";
@@ -44,10 +48,14 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
     pageTypes: [
       {
         id: "garden-explorer",
-        paths: ["/explore"],
+        paths: ({ manifest }) => localizedPagePaths(manifest, "/explore"),
         outputDependencies: [{ type: "global" }],
-        resolve: ({ pathname, manifest, config }) => {
-          if (pathname !== "/explore" || !config) return null;
+        resolve: ({ pathname, manifest, config, locale }) => {
+          if (
+            !localizedPagePaths(manifest, "/explore").includes(pathname) ||
+            !config
+          )
+            return null;
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
@@ -55,10 +63,12 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
             title: "Garden Explorer",
             description:
               "Explore notes through links, backlinks, tags, and folders.",
+            ...(locale ? { language: locale } : {}),
             body: renderGardenExplorerPage(
               getGardenExplorerData({
                 manifest,
                 config,
+                locale,
                 resolveTitle: (slug, title) =>
                   typeof title === "string" && title.trim() ? title : slug,
                 options,
@@ -67,8 +77,12 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
             ),
           };
         },
-        resolveRoute: ({ pathname, manifest, config }) => {
-          if (pathname !== "/explore" || !config) return null;
+        resolveRoute: ({ pathname, manifest, config, locale }) => {
+          if (
+            !localizedPagePaths(manifest, "/explore").includes(pathname) ||
+            !config
+          )
+            return null;
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
@@ -76,10 +90,12 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
             title: "Garden Explorer",
             description:
               "Explore notes through links, backlinks, tags, and folders.",
+            ...(locale ? { language: locale } : {}),
             body: renderGardenExplorerPage(
               getGardenExplorerData({
                 manifest,
                 config,
+                locale,
                 resolveTitle: (slug, title) =>
                   typeof title === "string" && title.trim() ? title : slug,
                 options,

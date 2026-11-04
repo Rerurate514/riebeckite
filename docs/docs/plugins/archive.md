@@ -65,6 +65,7 @@ recomputing the period.
 | `pageSize` | `number` | `10` | Entries per page. `0` keeps a single page. |
 | `locale` | `string` | `site.locale` | Locale used for the period and pagination labels. |
 | `className` | `string` | `"rb-archive"` | Root CSS class for the rendered fragment. |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for archive entries and generated pages. |
 
 ## Exports
 

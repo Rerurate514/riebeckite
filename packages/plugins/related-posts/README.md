@@ -72,6 +72,7 @@ Render the component once per article. Remove the element to remove the UI.
 | `className` | `string` | `"rb-related-posts"` | Root CSS class |
 | `useTags` | `boolean` | `true` | Include the shared-tag signal |
 | `useBacklinks` | `boolean` | `true` | Include the direct-link signal |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for related candidates |
 
 ```ts
 relatedPosts({

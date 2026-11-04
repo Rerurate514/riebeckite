@@ -5,6 +5,7 @@ import {
   escapeHtml,
   type PluginPage,
   readContentSourceEntry,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import { analyzeBasesDependencies } from "./dependencies.js";
 import { parseBases } from "./parse.js";
@@ -78,6 +79,7 @@ export async function resolveBaseDocument(
     readonly manifest: ContentManifest;
     readonly contentSource?: ContentSource;
     readonly pathname: string;
+    readonly locale?: string;
     readonly diagnostics: Diagnostic[];
   },
   options: BasesOptions,
@@ -105,7 +107,13 @@ export async function resolveBaseDocument(
     body = renderBases(
       parsed.value,
       options,
-      input.manifest.discoverableEntries,
+      selectLocalizedEntries(input.manifest.discoverableEntries, {
+        mode: options.localeMode ?? "current",
+        locale: input.locale,
+        ...(input.manifest.localization?.fallbackLocale
+          ? { fallbackLocale: input.manifest.localization.fallbackLocale }
+          : {}),
+      }),
       source,
     );
   } catch (error) {

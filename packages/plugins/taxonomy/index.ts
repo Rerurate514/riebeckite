@@ -1,13 +1,17 @@
 import {
   type ConfigValidationIssue,
+  type ContentManifest,
+  type ContentManifestEntry,
   createStyleAsset,
   defineEndpoint,
   definePlugin,
+  localizedPagePath,
   type OutputDependency,
   type PlannedGeneratedOutput,
   type PluginEndpoint,
   type ResolvedRiebeckiteConfig,
   resolvePlugins,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import {
   buildTaxonomyIndex,
@@ -19,8 +23,10 @@ import { renderTaxonomyIndexPage, renderTaxonomyPage } from "./src/pages.js";
 import type {
   ResolvedTaxonomyOptions,
   TaxonomyFeedFormat,
+  TaxonomyIndex,
   TaxonomyKind,
   TaxonomyOptions,
+  TaxonomyTerm,
 } from "./src/types.js";
 
 export {
@@ -87,59 +93,66 @@ export function taxonomy(options: TaxonomyOptions = {}) {
     pageTypes: [
       {
         id: "taxonomy-term",
-        paths: ({ manifest }) =>
-          taxonomyPagePaths(manifest.discoverableEntries, resolved),
-        outputDependencies: ({ manifest, pathname }) => {
-          const term = findTaxonomyTerm(
-            manifest.discoverableEntries,
-            resolved,
+        paths: ({ manifest, config }) =>
+          taxonomyModels(manifest, resolved, config).flatMap((model) =>
+            [...model.index.tags, ...model.index.folders].map(
+              (term) => term.path,
+            ),
+          ),
+        outputDependencies: ({ manifest, pathname, config }) => {
+          const model = findTaxonomyModel(
+            taxonomyModels(manifest, resolved, config),
             pathname,
-            manifest.icons,
           );
-          return term
-            ? taxonomyPageOutputDependencies(term, resolved.related)
+          return model?.term
+            ? taxonomyPageOutputDependencies(model.term, resolved.related)
             : [{ type: "unknown" }];
         },
-        resolve: ({ manifest, pathname }) => {
-          const term = findTaxonomyTerm(
-            manifest.discoverableEntries,
-            resolved,
+        resolve: ({ manifest, pathname, config }) => {
+          const model = findTaxonomyModel(
+            taxonomyModels(manifest, resolved, config),
             pathname,
-            manifest.icons,
           );
-          if (!term) return null;
-          const page = renderTaxonomyPage(term, resolved);
+          if (!model?.term) return null;
+          const page = renderTaxonomyPage(model.term, resolved);
           return {
             type: "taxonomy-term",
-            pathname: term.path,
+            pathname: model.term.path,
             title: page.title,
             body: page.html,
             headTags: page.headTags,
+            language: model.model.locale,
           };
         },
-        resolveRoute: ({ manifest, pathname }) => {
-          const term = findTaxonomyTerm(
-            manifest.discoverableEntries,
-            resolved,
+        resolveRoute: ({ manifest, pathname, config }) => {
+          const model = findTaxonomyModel(
+            taxonomyModels(manifest, resolved, config),
             pathname,
-            manifest.icons,
           );
-          if (!term) return null;
-          const page = renderTaxonomyPage(term, resolved);
+          if (!model?.term) return null;
+          const page = renderTaxonomyPage(model.term, resolved);
           return {
             type: "taxonomy-term",
-            pathname: term.path,
+            pathname: model.term.path,
             title: page.title,
             body: page.html,
             headTags: page.headTags,
+            language: model.model.locale,
           };
         },
       },
       {
         id: "taxonomy-index",
-        paths: () => taxonomyIndexPagePaths(resolved),
-        outputDependencies: ({ pathname }) => {
-          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+        paths: ({ manifest, config }) =>
+          taxonomyModels(manifest, resolved, config).flatMap((model) => [
+            ...(model.tagIndexPath ? [model.tagIndexPath] : []),
+            ...(model.folderIndexPath ? [model.folderIndexPath] : []),
+          ]),
+        outputDependencies: ({ pathname, manifest, config }) => {
+          const kind = resolveTaxonomyIndexPath(
+            pathname,
+            taxonomyModels(manifest, resolved, config),
+          );
           const dependency: OutputDependency | undefined =
             kind === "tag"
               ? { type: "projection" as const, projection: "taxonomy-tags" }
@@ -153,17 +166,19 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             ? [...pageProjectionDependencies, dependency]
             : [{ type: "unknown" }];
         },
-        resolve: ({ manifest, pathname }) => {
-          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+        resolve: ({ manifest, pathname, config }) => {
+          const models = taxonomyModels(manifest, resolved, config);
+          const kind = resolveTaxonomyIndexPath(pathname, models);
           if (!kind) return null;
-          const index = buildTaxonomyIndex(
-            manifest.discoverableEntries,
-            resolved,
-            manifest.icons,
+          const model = models.find((candidate) =>
+            kind === "tag"
+              ? candidate.tagIndexPath === pathname
+              : candidate.folderIndexPath === pathname,
           );
+          if (!model) return null;
           const page = renderTaxonomyIndexPage(
             kind,
-            kind === "tag" ? index.tags : index.folders,
+            kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
           );
           return {
@@ -171,19 +186,22 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             pathname,
             title: page.title,
             body: page.html,
+            language: model.locale,
           };
         },
-        resolveRoute: ({ manifest, pathname }) => {
-          const kind = resolveTaxonomyIndexPath(pathname, resolved);
+        resolveRoute: ({ manifest, pathname, config }) => {
+          const models = taxonomyModels(manifest, resolved, config);
+          const kind = resolveTaxonomyIndexPath(pathname, models);
           if (!kind) return null;
-          const index = buildTaxonomyIndex(
-            manifest.discoverableEntries,
-            resolved,
-            manifest.icons,
+          const model = models.find((candidate) =>
+            kind === "tag"
+              ? candidate.tagIndexPath === pathname
+              : candidate.folderIndexPath === pathname,
           );
+          if (!model) return null;
           const page = renderTaxonomyIndexPage(
             kind,
-            kind === "tag" ? index.tags : index.folders,
+            kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
           );
           return {
@@ -191,30 +209,32 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             pathname,
             title: page.title,
             body: page.html,
+            language: model.locale,
           };
         },
       },
     ],
     planGeneratedOutputs(context) {
       if (!context.site) return [];
-      const index = buildTaxonomyIndex(
-        context.manifest.discoverableEntries,
-        resolved,
-      );
+      const models = taxonomyModels(context.manifest, resolved, {
+        site: context.site,
+      });
       const outputs: PlannedGeneratedOutput[] = [];
-      for (const term of [...index.tags, ...index.folders]) {
-        for (const format of enabledFormats(resolved)) {
-          const path = feedFilePath(term.path, format);
-          outputs.push({
-            path,
-            content: renderTermFeed(
-              { site: context.site },
-              term,
-              format,
-              resolved.feedLimit,
-            ),
-            dependencies: taxonomyOutputDependencies(term),
-          });
+      for (const model of models) {
+        for (const term of [...model.index.tags, ...model.index.folders]) {
+          for (const format of enabledFormats(resolved)) {
+            const path = feedFilePath(term.path, format);
+            outputs.push({
+              path,
+              content: renderTermFeed(
+                { site: context.site },
+                term,
+                format,
+                resolved.feedLimit,
+              ),
+              dependencies: taxonomyOutputDependencies(term),
+            });
+          }
         }
       }
       return outputs;
@@ -228,12 +248,81 @@ export function taxonomy(options: TaxonomyOptions = {}) {
   });
 }
 
-function taxonomyPagePaths(
-  entries: Parameters<typeof buildTaxonomyIndex>[0],
+type TaxonomyModel = {
+  readonly locale: string;
+  readonly index: TaxonomyIndex;
+  readonly tagIndexPath: string | null;
+  readonly folderIndexPath: string | null;
+};
+
+type TaxonomySource = {
+  readonly discoverableEntries: readonly ContentManifestEntry[];
+  readonly localization?: ContentManifest["localization"];
+  readonly icons?: ContentManifest["icons"];
+};
+
+function taxonomyModels(
+  source: TaxonomySource,
   options: ResolvedTaxonomyOptions,
-): readonly string[] {
-  const index = buildTaxonomyIndex(entries, options);
-  return [...index.tags, ...index.folders].map((term) => term.path);
+  config?: Pick<ResolvedRiebeckiteConfig, "site"> | undefined,
+): readonly TaxonomyModel[] {
+  const localization = source.localization;
+  const locales = localization
+    ? options.localeMode === "all"
+      ? [localization.defaultLocale]
+      : localization.locales
+    : [config?.site.locale ?? "en"];
+  return locales.map((locale) => {
+    const entries = localization
+      ? selectLocalizedEntries(source.discoverableEntries, {
+          mode: options.localeMode,
+          locale,
+          ...(localization.fallbackLocale
+            ? { fallbackLocale: localization.fallbackLocale }
+            : {}),
+        })
+      : source.discoverableEntries;
+    return {
+      locale,
+      index: buildTaxonomyIndex(
+        entries,
+        options,
+        source.icons,
+        localization ? { locale, localization } : undefined,
+      ),
+      tagIndexPath:
+        options.tags && options.tagsBasePath !== ""
+          ? localizedPagePath(localization, options.tagsBasePath, locale)
+          : null,
+      folderIndexPath:
+        options.folders && options.foldersBasePath !== ""
+          ? localizedPagePath(localization, options.foldersBasePath, locale)
+          : null,
+    };
+  });
+}
+
+function findTaxonomyModel(
+  models: readonly TaxonomyModel[],
+  pathname: string,
+): { model: TaxonomyModel; term: TaxonomyTerm } | null {
+  for (const model of models) {
+    for (const term of [...model.index.tags, ...model.index.folders]) {
+      if (term.path === pathname) return { model, term };
+    }
+  }
+  return null;
+}
+
+function resolveTaxonomyIndexPath(
+  pathname: string,
+  models: readonly TaxonomyModel[],
+): TaxonomyKind | null {
+  for (const model of models) {
+    if (model.tagIndexPath === pathname) return "tag";
+    if (model.folderIndexPath === pathname) return "folder";
+  }
+  return null;
 }
 
 function taxonomyOutputDependencies(term: {
@@ -267,52 +356,6 @@ const pageProjectionDependencies: readonly OutputDependency[] = [
   { type: "projection" as const, projection: "recent-posts" },
 ];
 
-function findTaxonomyTerm(
-  entries: Parameters<typeof buildTaxonomyIndex>[0],
-  options: ResolvedTaxonomyOptions,
-  pathname: string,
-  icons?: Parameters<typeof buildTaxonomyIndex>[2],
-) {
-  const index = buildTaxonomyIndex(entries, options, icons);
-  return [...index.tags, ...index.folders].find(
-    (term) => term.path === pathname,
-  );
-}
-
-function taxonomyIndexPagePaths(
-  options: ResolvedTaxonomyOptions,
-): readonly string[] {
-  const paths: string[] = [];
-  if (options.tags && options.tagsBasePath !== "") {
-    paths.push(options.tagsBasePath);
-  }
-  if (options.folders && options.foldersBasePath !== "") {
-    paths.push(options.foldersBasePath);
-  }
-  return [...new Set(paths)];
-}
-
-function resolveTaxonomyIndexPath(
-  pathname: string,
-  options: ResolvedTaxonomyOptions,
-): TaxonomyKind | null {
-  if (
-    options.tags &&
-    options.tagsBasePath !== "" &&
-    pathname === options.tagsBasePath
-  ) {
-    return "tag";
-  }
-  if (
-    options.folders &&
-    options.foldersBasePath !== "" &&
-    pathname === options.foldersBasePath
-  ) {
-    return "folder";
-  }
-  return null;
-}
-
 /**
  * Reads the taxonomy plugin's resolved options back from a Riebeckite config.
  *
@@ -338,18 +381,77 @@ function createTaxonomyEndpoints(
   return [
     defineEndpoint(
       resolved.dataEndpoint,
-      ({ manifest }) => ({
-        json: serializeTaxonomyIndex(
-          buildTaxonomyIndex(
-            manifest.discoverableEntries,
-            resolved,
-            manifest.icons,
-          ),
-        ),
-      }),
+      ({ manifest, config, request }) => {
+        const models = taxonomyModels(manifest, resolved, config);
+        const model = selectTaxonomyModel(models, request);
+        return model
+          ? {
+              json: serializeTaxonomyIndex(model.index),
+              headers: { Vary: "Accept-Language" },
+            }
+          : {
+              json: { tags: [], folders: [] },
+              headers: { Vary: "Accept-Language" },
+            };
+      },
       { cacheControl: "public, max-age=300" },
     ),
   ];
+}
+
+export function selectTaxonomyModel(
+  models: readonly { locale: string; index: TaxonomyIndex }[],
+  request: {
+    query: Readonly<Record<string, string>>;
+    headers: Readonly<Record<string, string>>;
+  },
+): { locale: string; index: TaxonomyIndex } | undefined {
+  const requested = request.query.locale;
+  if (requested) {
+    const exact = findLocaleModel(models, requested);
+    if (exact) return exact;
+  }
+  for (const language of parseAcceptLanguage(
+    request.headers["accept-language"],
+  )) {
+    const match = findLocaleModel(models, language);
+    if (match) return match;
+  }
+  return models[0];
+}
+
+function findLocaleModel(
+  models: readonly { locale: string; index: TaxonomyIndex }[],
+  language: string,
+): { locale: string; index: TaxonomyIndex } | undefined {
+  const value = language.toLowerCase().replace(/_/g, "-");
+  return (
+    models.find((candidate) => candidate.locale.toLowerCase() === value) ??
+    models.find((candidate) => {
+      const locale = candidate.locale.toLowerCase();
+      return locale.startsWith(`${value}-`) || value.startsWith(`${locale}-`);
+    })
+  );
+}
+
+function parseAcceptLanguage(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .flatMap((part) => {
+      const [locale, ...parameters] = part.trim().split(";");
+      if (!locale) return [];
+      const quality = parameters
+        .map((parameter) => parameter.trim())
+        .find((parameter) => parameter.startsWith("q="));
+      const weight = quality ? Number(quality.slice(2)) : 1;
+      return [
+        { locale: locale.trim(), weight: Number.isFinite(weight) ? weight : 0 },
+      ];
+    })
+    .filter((entry) => entry.locale !== "" && entry.weight > 0)
+    .sort((left, right) => right.weight - left.weight)
+    .map((entry) => entry.locale);
 }
 
 function enabledFormats(
@@ -442,6 +544,17 @@ function validateTaxonomyOptions(
     typeof options.resolveTitle !== "function"
   ) {
     issues.push({ path: "resolveTitle", message: "Expected a function." });
+  }
+  if (
+    options.localeMode !== undefined &&
+    options.localeMode !== "current" &&
+    options.localeMode !== "fallback" &&
+    options.localeMode !== "all"
+  ) {
+    issues.push({
+      path: "localeMode",
+      message: 'Expected "current", "fallback", or "all".',
+    });
   }
 
   return issues;

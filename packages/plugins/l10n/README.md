@@ -55,6 +55,22 @@ l10n({
 
 With this option, `translationId: getting-started` replaces `translation: getting-started`. The default is `translation`.
 
+## Listing pages
+
+Content pages keep their language, but generated listing pages such as Timeline, Archive, tags, and Series need an explicit policy. Riebeckite uses `current`, `fallback`, and `all` from Core instead of plugin-local filters.
+
+`current` is the default: `/timeline` shows the default language and `/en/timeline` shows English. `fallback` uses `fallbackLocale` only when a translation group has no entry in the page language. `all` keeps every language without deduplicating.
+
+```ts
+l10n({
+  defaultLang: "ja",
+  languages: ["ja", "en"],
+  fallbackLocale: "en",
+});
+```
+
+`fallbackLocale` must be included in `languages`. The resolved contract is available as `manifest.localization`, and plugins use `selectLocalizedEntries()` / `queryContentEntries({ filter: { locale } })` to apply it. A fallback entry keeps its own language and URL; listing UIs mark it with `.rr-language-badge`.
+
 ## URLs and missing translations
 
 The default language keeps Core's resolved URL (`/about`); other languages are prefixed (`/en/about`). The plugin augments the existing content-location resolver, so it works with other URL plugins rather than creating a router. Different source paths or a permalink plugin can provide different resolved URLs for translations.

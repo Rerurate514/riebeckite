@@ -45,11 +45,24 @@ export type Smart404Candidate = Pick<SearchItem, "permalink" | "title">;
 export function searchItems<T extends SearchItem>(
   items: T[],
   query: string,
+  options: { language?: string } = {},
 ): SearchResult<T>[] {
   const parsed = parseSearchQuery(query);
   if (parsed.text.length === 0 && parsed.filters.length === 0) return [];
 
-  return items
+  const hasLanguageFilter = parsed.filters.some(
+    (filter) => filter.field === "lang",
+  );
+  const pool =
+    options.language && !hasLanguageFilter
+      ? items.filter(
+          (item) =>
+            item.language === undefined ||
+            matchesLanguage(item.language, options.language as string),
+        )
+      : items;
+
+  return pool
     .filter((item) => matchesSearchFilters(item, parsed.filters))
     .map((item) =>
       parsed.text.length > 0
@@ -214,7 +227,7 @@ function matchesSearchFilters(
     if (filter.field === "lang") {
       return (
         item.language !== undefined &&
-        normalizeSearchQuery(item.language) === filter.value
+        matchesLanguage(item.language, filter.value)
       );
     }
     const path = normalizeSearchPath(item.slug);
@@ -226,6 +239,16 @@ function normalizeSearchPath(value: string): string {
   return normalizeSearchQuery(value.replace(/\\/g, "/"))
     .replace(/^\/+|\/+$/g, "")
     .replace(/\/{2,}/g, "/");
+}
+
+function matchesLanguage(language: string, requested: string): boolean {
+  const left = normalizeSearchQuery(language).replace(/_/g, "-");
+  const right = normalizeSearchQuery(requested).replace(/_/g, "-");
+  return (
+    left === right ||
+    left.startsWith(`${right}-`) ||
+    right.startsWith(`${left}-`)
+  );
 }
 
 function scoreField(

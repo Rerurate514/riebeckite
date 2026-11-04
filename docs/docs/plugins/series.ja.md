@@ -61,6 +61,7 @@ series_order: 2
 | `className` | `string` | `"rb-series"` | 生成する HTML の基準クラス名。 |
 | `positionLabel` | `boolean` | `false` | 現在の記事に「Part N of M」を付ける。 |
 | `basePath` | `string` | `"/series"` | 生成するページの基準パス。空文字にすると生成しない。 |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | シリーズページに表示する言語の選択。 |
 
 ## 記事に差し込まれるシリーズナビゲーション
 

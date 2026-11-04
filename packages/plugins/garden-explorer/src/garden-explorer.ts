@@ -35,7 +35,9 @@ export type GardenExplorerOptions = {
   showLabels: boolean;
 };
 
-export type GardenExplorerPluginOptions = Partial<GardenExplorerOptions>;
+export type GardenExplorerPluginOptions = Partial<GardenExplorerOptions> & {
+  localeMode?: "current" | "fallback" | "all";
+};
 
 export type GardenExplorerTag = {
   name: string;

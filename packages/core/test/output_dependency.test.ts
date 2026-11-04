@@ -766,7 +766,7 @@ test("generated output colliding with a content route fails the inventory", () =
 
   assert.throws(
     () => buildOutputInventory(current),
-    /Generated output path "note\.html" collides with content output owned by "content:note" and generated output owned by "plugin:rogue"/,
+    /Output path "note\.html" collides with content output owned by "content:note" and generated output owned by "plugin:rogue"/,
   );
 });
 
@@ -777,7 +777,45 @@ test("generated output colliding with a plugin page fails the inventory", () => 
 
   assert.throws(
     () => buildOutputInventory(current, [pluginPage("explore", [])]),
-    /Generated output path "explore\.html" collides with plugin-page output/,
+    /Output path "explore\.html" collides with plugin-page output/,
+  );
+});
+
+test("content, redirects, and plugin pages cannot overwrite each other", () => {
+  assert.throws(
+    () =>
+      buildOutputInventory(manifest([entry("timeline")]), [
+        pluginPage("timeline", []),
+      ]),
+    /Output path "timeline\.html" collides with content output owned by "content:timeline" and plugin-page output owned by "plugin:test:page"/,
+  );
+  assert.throws(
+    () =>
+      buildOutputInventory(
+        manifest([
+          entry("note", { redirects: [{ path: "/timeline", status: 308 }] }),
+        ]),
+        [pluginPage("timeline", [])],
+      ),
+    /Output path "timeline\.html" collides with redirect output owned by "content:note:redirect" and plugin-page output owned by "plugin:test:page"/,
+  );
+});
+
+test("equivalent public paths share one output on Windows and POSIX", () => {
+  assert.throws(
+    () =>
+      buildOutputInventory(manifest([entry("timeline")]), [
+        pluginPage("\\timeline.html", []),
+      ]),
+    /Output path "timeline\.html" collides with content output/,
+  );
+  assert.throws(
+    () =>
+      buildOutputInventory(manifest([]), [
+        pluginPage("guide/", []),
+        { ...pluginPage("guide/index", []), producer: "plugin:other:page" },
+      ]),
+    /Output path "guide\/index\.html" collides with plugin-page output/,
   );
 });
 

@@ -6,6 +6,7 @@ export type TimelineOptions = {
   include?: TimelineSelector;
   exclude?: TimelineSelector;
   selection?: "automatic" | "marked";
+  localeMode?: "current" | "fallback" | "all";
 };
 
 export type TimelineSelector = {
@@ -21,6 +22,7 @@ export type ResolvedTimelineOptions = {
   include?: ResolvedTimelineSelector;
   exclude?: ResolvedTimelineSelector;
   selection: "automatic" | "marked";
+  localeMode: "current" | "fallback" | "all";
 };
 
 export type ResolvedTimelineSelector = {
@@ -32,6 +34,7 @@ export type TimelineEntry = {
   date: string;
   permalink: string;
   title: string;
+  language?: string;
 };
 
 export type InlineTimelineEvent = {

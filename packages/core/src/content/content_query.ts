@@ -1,4 +1,8 @@
 import type { ContentManifestEntry } from "../types/content_manifest.js";
+import {
+  type ContentLocalePolicy,
+  selectLocalizedEntries,
+} from "./content_language.js";
 
 export type ContentQueryScalar = string | number | boolean;
 
@@ -24,6 +28,7 @@ export type ContentQueryFilter = {
   folder?: string | readonly string[];
   frontmatter?: ContentQueryFrontmatterFilter;
   date?: ContentQueryDateFilter;
+  locale?: ContentLocalePolicy;
 };
 
 export type ContentQuerySortOrder = "asc" | "desc";
@@ -80,6 +85,7 @@ export type ContentQueryGroup = {
 
 export type ContentQueryGroupOptions = {
   filter?: ContentQueryFilter;
+  locale?: ContentLocalePolicy;
   sort?: ContentQuerySort | readonly ContentQuerySort[];
   order?: ContentQuerySortOrder;
 };
@@ -89,7 +95,10 @@ export function queryContentEntries(
   spec: ContentQuerySpec = {},
 ): ContentManifestEntry[] {
   const filter = spec.filter ?? {};
-  const matched = entries.filter((entry) => matchesFilter(entry, filter));
+  const localized = filter.locale
+    ? selectLocalizedEntries(entries, filter.locale)
+    : entries;
+  const matched = localized.filter((entry) => matchesFilter(entry, filter));
   const sorted = applySort(matched, spec.sort);
   return applyPagination(sorted, spec.offset, spec.limit);
 }
@@ -378,7 +387,9 @@ export function groupContentEntries(
   options: ContentQueryGroupOptions = {},
 ): ContentQueryGroup[] {
   const matched = queryContentEntries(entries, {
-    filter: options.filter,
+    filter: options.locale
+      ? { ...options.filter, locale: options.locale }
+      : options.filter,
     sort: options.sort,
   });
   const groups = new Map<string, ContentManifestEntry[]>();

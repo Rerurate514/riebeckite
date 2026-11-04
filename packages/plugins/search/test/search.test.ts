@@ -38,6 +38,25 @@ test("normalizeSearchQuery strips leading hashes after normalization", () => {
   assert.equal(normalizeSearchQuery("#"), "");
 });
 
+test("scopes results to the page language unless a lang filter is explicit", () => {
+  const items = [
+    item({ slug: "en/apple", title: "Apple", language: "en-US" }),
+    item({ slug: "ja/apple", title: "Apple", language: "ja" }),
+    item({ slug: "neutral-apple", title: "Apple" }),
+  ];
+
+  assert.deepEqual(
+    searchItems(items, "apple", { language: "ja" }).map(
+      (result) => result.slug,
+    ),
+    ["ja/apple", "neutral-apple"],
+  );
+  assert.deepEqual(
+    searchItems(items, "lang:en apple").map((result) => result.slug),
+    ["en/apple"],
+  );
+});
+
 test("parseSearchQuery separates supported filters from text", () => {
   assert.deepEqual(parseSearchQuery("riverpod tag:flutter lang:ja"), {
     raw: "riverpod tag:flutter lang:ja",

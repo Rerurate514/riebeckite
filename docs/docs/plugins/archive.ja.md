@@ -66,6 +66,7 @@ export default {
 | `pageSize` | `number` | `10` | 1 ページあたりのエントリ数。`0` で単一ページにします。 |
 | `locale` | `string` | `site.locale` | 期間・ページネーションのラベルに使うロケール。 |
 | `className` | `string` | `"rb-archive"` | 描画フラグメントのルート CSS クラス。 |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | アーカイブの記事と言語別ページの選択。 |
 
 ## エクスポート
 

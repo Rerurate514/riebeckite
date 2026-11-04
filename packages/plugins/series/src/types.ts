@@ -13,6 +13,8 @@ export type SeriesOptions = {
   /** Render a `Part N of M` label for the current note. Defaults to `false`. */
   positionLabel?: boolean;
   basePath?: string;
+  /** Locale selection for series pages. Defaults to `"current"`. */
+  localeMode?: "current" | "fallback" | "all";
 };
 
 /** Options after defaults have been applied. */
@@ -24,6 +26,7 @@ export type ResolvedSeriesOptions = {
   className: string;
   positionLabel: boolean;
   basePath: string;
+  localeMode: "current" | "fallback" | "all";
 };
 
 /** A single note that belongs to a series. */

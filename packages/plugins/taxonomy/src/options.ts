@@ -41,6 +41,10 @@ export function resolveTaxonomyOptions(
     feedLimit: normalizeCount(options.feedLimit, DEFAULT_TAXONOMY_FEED_LIMIT),
     className: normalizeClassName(options.className),
     dataEndpoint: normalizeDataEndpoint(options.dataEndpoint),
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
     resolveTitle: options.resolveTitle,
   };
 }

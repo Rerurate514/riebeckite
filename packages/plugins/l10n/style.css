@@ -50,6 +50,26 @@
   text-decoration: underline;
 }
 
+.rr-language-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.25rem;
+  padding: 0 0.375rem;
+  border: 1px solid
+    var(--rb-color-border, color-mix(in srgb, currentColor 24%, transparent));
+  border-radius: 999px;
+  color: var(
+    --rb-color-muted,
+    color-mix(in srgb, currentColor 64%, transparent)
+  );
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
 @media (max-width: 48rem) {
   .rr-l10n-switcher {
     min-width: 0;

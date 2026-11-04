@@ -45,6 +45,8 @@ export type TaxonomyOptions = {
   className?: string;
   /** JSON data endpoint served for app routes and clients. Defaults to `"/taxonomy/index.json"`. */
   dataEndpoint?: string;
+  /** Locale selection for generated terms and entries. Defaults to `"current"`. */
+  localeMode?: "current" | "fallback" | "all";
 };
 
 /** `TaxonomyOptions` with every default resolved. */
@@ -61,6 +63,7 @@ export type ResolvedTaxonomyOptions = {
   feedLimit: number;
   className: string;
   dataEndpoint: string;
+  localeMode: "current" | "fallback" | "all";
   resolveTitle?: (context: TaxonomyTermContext) => string;
 };
 

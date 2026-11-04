@@ -4,8 +4,10 @@ import {
   type ContentCollectionDefinition,
   type ContentIcon,
   type ContentIconRegistry,
+  type ContentLocalization,
   type ContentManifestEntry,
   type ContentQueryGroupBy,
+  localizedPagePath,
   stripHtml,
 } from "@riebeckite/core";
 import { slugifyTaxonomyValue } from "./slug.js";
@@ -33,11 +35,16 @@ export function buildTaxonomyIndex(
   entries: readonly ContentManifestEntry[],
   options: ResolvedTaxonomyOptions,
   icons?: ContentIconRegistry,
+  localization?: { locale: string; localization: ContentLocalization },
 ): TaxonomyIndex {
   const tags = options.tags
     ? buildTerms(entries, {
         kind: "tag",
-        basePath: options.tagsBasePath,
+        basePath: localizedPagePath(
+          localization?.localization,
+          options.tagsBasePath,
+          localization?.locale ?? "",
+        ),
         groupBy: { by: "tags" },
         options,
         icon: findRegistryIcon(icons?.tags),
@@ -46,7 +53,11 @@ export function buildTaxonomyIndex(
   const folders = options.folders
     ? buildTerms(entries, {
         kind: "folder",
-        basePath: options.foldersBasePath,
+        basePath: localizedPagePath(
+          localization?.localization,
+          options.foldersBasePath,
+          localization?.locale ?? "",
+        ),
         groupBy:
           options.folderDepth > 0
             ? { by: "folder", depth: options.folderDepth }

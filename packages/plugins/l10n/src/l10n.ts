@@ -94,8 +94,27 @@ export function l10n(options: L10nOptions) {
         });
       }
     },
+    resolveContentLocalization: () => ({
+      defaultLocale: resolved.defaultLang,
+      locales: resolved.languages,
+      ...(resolved.fallbackLocale
+        ? { fallbackLocale: resolved.fallbackLocale }
+        : {}),
+    }),
     onManifestCreated: ({ manifest }) => {
       addLocalizationHeadTags(manifest, state);
+      for (const route of manifest.pageRoutes) {
+        const slug = state.slugsByPermalink.get(route.pathname);
+        if (!slug) continue;
+        state.diagnostics.push({
+          code: "L10N_PAGE_PATH_CONFLICT",
+          severity: "warning",
+          pluginName: route.pluginName,
+          slug,
+          message: `Generated page ${route.pathname} collides with the permalink of ${slug}.`,
+          meta: { pathname: route.pathname, slug, plugin: route.pluginName },
+        });
+      }
     },
     addDiagnostics: () => state.diagnostics,
     inspector: {

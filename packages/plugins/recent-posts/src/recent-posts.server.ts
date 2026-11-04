@@ -1,4 +1,5 @@
-import type { ContentManifest } from "@riebeckite/core";
+import type { ContentLocalePolicy, ContentManifest } from "@riebeckite/core";
+import { selectLocalizedEntries } from "@riebeckite/core";
 import type { RecentPost } from "./recent-posts.js";
 
 const DEFAULT_RECENT_POSTS_LIMIT = 5;
@@ -13,11 +14,21 @@ const DEFAULT_RECENT_POSTS_LIMIT = 5;
  * title so a Site only decides whether and where to render the list.
  */
 export function getRecentPosts(args: {
-  manifest: Pick<ContentManifest, "discoverableEntries">;
+  manifest: Pick<ContentManifest, "discoverableEntries" | "localization">;
   limit?: number;
+  locale?: ContentLocalePolicy;
 }): RecentPost[] {
   const limit = Math.max(0, args.limit ?? DEFAULT_RECENT_POSTS_LIMIT);
-  return args.manifest.discoverableEntries
+  const entries = args.locale
+    ? selectLocalizedEntries(args.manifest.discoverableEntries, {
+        ...args.locale,
+        ...(args.locale.fallbackLocale === undefined &&
+        args.manifest.localization?.fallbackLocale
+          ? { fallbackLocale: args.manifest.localization.fallbackLocale }
+          : {}),
+      })
+    : args.manifest.discoverableEntries;
+  return entries
     .filter((entry) => entry.slug !== "index")
     .flatMap((entry) => {
       const postedAt = parseFrontmatterDate(

@@ -90,6 +90,7 @@ export type DataviewOptions = {
   language?: string;
   hideFallback?: boolean;
   limit?: number;
+  localeMode?: "current" | "fallback" | "all";
 };
 
 export type ResolvedDataviewOptions = {
@@ -97,6 +98,7 @@ export type ResolvedDataviewOptions = {
   language: string;
   hideFallback: boolean;
   limit: number | null;
+  localeMode: "current" | "fallback" | "all";
 };
 
 export const DEFAULT_DATAVIEW_CLASS_NAME = "rb-dataview";
@@ -117,5 +119,9 @@ export function resolveDataviewOptions(
       typeof limit === "number" && Number.isFinite(limit) && limit >= 0
         ? Math.floor(limit)
         : null,
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }

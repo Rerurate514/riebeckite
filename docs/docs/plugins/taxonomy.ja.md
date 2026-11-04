@@ -58,6 +58,7 @@ export default defineConfig({
 | `resolveTitle` | `(context) => string` | `#value` / パス | タームの表示タイトル |
 | `className` | `string` | `"rr-taxonomy"` | ページ断片のルート CSS クラス |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON データのエンドポイント |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | タームと言語別ページの選択 |
 
 ## データエンドポイント
 
@@ -65,7 +66,10 @@ export default defineConfig({
 
 ```
 GET /taxonomy/index.json
+GET /taxonomy/index.json?locale=ja
 ```
+
+ペイロードは要求されたロケール、次にマニフェストの既定ロケール、最後に `Accept-Language` の順で絞り込まれます。言語別のタームページが混在した件数へリンクしないようにするためです。既定以外のロケール向けにリンクを組み立てるクライアントは `?locale=ja` を付けます。
 
 ```json
 {

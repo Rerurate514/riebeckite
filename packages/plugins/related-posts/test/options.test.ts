@@ -11,6 +11,7 @@ test("applies the documented defaults", () => {
     className: "rb-related-posts",
     useTags: true,
     useBacklinks: true,
+    localeMode: "current",
   });
 });
 
@@ -33,6 +34,7 @@ test("honours explicit overrides, including falsy values", () => {
       className: "my-related",
       useTags: false,
       useBacklinks: false,
+      localeMode: "current",
     },
   );
 });

@@ -28,6 +28,8 @@ export type PluginPageContext = PluginContext & {
   manifest: ContentManifest;
   /** Request pathname, normalized to an absolute path. */
   pathname: string;
+  /** Resolved page locale, or undefined when the site does not localize. */
+  locale?: string;
   renderMarkdown(markdown: string): Promise<string>;
 };
 

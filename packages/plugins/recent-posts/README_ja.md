@@ -39,6 +39,7 @@ return <RecentPosts posts={posts} />;
 | --- | --- | --- | --- |
 | `manifest` | `Pick<ContentManifest, "discoverableEntries">` | 必須 | 候補ノートの取得元（`discoverableEntries`） |
 | `limit` | `number` | `5` | 返す記事数の上限 |
+| `locale` | `ContentLocalePolicy` | なし | 返す記事に適用する言語ポリシー |
 
 ## 公開 API
 

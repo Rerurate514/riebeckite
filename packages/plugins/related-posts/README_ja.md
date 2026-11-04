@@ -58,6 +58,7 @@ const entries = buildRelatedPosts({ manifest, entry, options, config });
 | `className` | `string` | `"rb-related-posts"` | ルート要素の CSS クラス |
 | `useTags` | `boolean` | `true` | タグ共有のシグナルを使う |
 | `useBacklinks` | `boolean` | `true` | 直接リンクのシグナルを使う |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | 関連記事に含める言語の選択 |
 
 ```ts
 relatedPosts({

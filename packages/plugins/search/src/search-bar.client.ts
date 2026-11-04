@@ -60,10 +60,9 @@ export function initSearch(context: SearchInitContext = {}): () => void {
       return;
     }
 
-    currentResults = searchContentItems(searchItems ?? [], query).slice(
-      0,
-      MAX_RESULTS,
-    );
+    currentResults = searchContentItems(searchItems ?? [], query, {
+      language: document.documentElement.lang || undefined,
+    }).slice(0, MAX_RESULTS);
 
     results.replaceChildren(
       ...currentResults.map((result) =>

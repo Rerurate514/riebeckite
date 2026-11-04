@@ -77,6 +77,11 @@ return (
 The modal fetches `/search-data.json` (an array of `SearchItem`) on first open
 and shows up to 8 results.
 
+The index keeps every language and each item carries its `language`. The modal
+filters results to the current document language by default, so a Japanese page
+searches Japanese notes. Add `lang:en` (or `lang:ja`) to a query to search a
+specific language explicitly; the filter is not removed by the default scope.
+
 Themes can set `--rr-search-modal-panel-border-radius` and
 `--rr-search-modal-panel-shadow` on either `rr-search` root to customize the
 modal panel without selecting its descendants.

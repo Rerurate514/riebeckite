@@ -486,6 +486,11 @@
       "type": false
     },
     {
+      "name": "CONTENT_TRANSLATION_ID_METADATA_KEY",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "ContentAsset",
       "value": false,
       "type": true
@@ -632,6 +637,21 @@
     },
     {
       "name": "ContentLinkRetarget",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalePolicy",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalization",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentLocalizationMode",
       "value": false,
       "type": true
     },
@@ -1431,6 +1451,11 @@
       "type": false
     },
     {
+      "name": "getEntryTranslationId",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "getExtension",
       "value": true,
       "type": false
@@ -1662,6 +1687,16 @@
     },
     {
       "name": "loadContentBuildState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "localizedPagePath",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "localizedPagePaths",
       "value": true,
       "type": false
     },
@@ -2636,6 +2671,11 @@
       "type": false
     },
     {
+      "name": "resolvePageLocale",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolvePlugins",
       "value": true,
       "type": false
@@ -2707,6 +2747,11 @@
     },
     {
       "name": "selectEntriesByLanguage",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "selectLocalizedEntries",
       "value": true,
       "type": false
     },

@@ -3,6 +3,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { selectLocalizedEntries } from "@riebeckite/core";
 import { buildGraphEdges } from "@riebeckite/core/client";
 import { buildGraphDocument } from "@riebeckite/graph";
 import type {
@@ -23,9 +24,19 @@ export function getGardenExplorerData(args: {
   config: ResolvedRiebeckiteConfig;
   resolveTitle: TitleResolver;
   options?: GardenExplorerPluginOptions;
+  locale?: string;
 }): GardenExplorerData {
   const graph = args.manifest.graph;
-  const publishedEntries = args.manifest.discoverableEntries;
+  const publishedEntries = selectLocalizedEntries(
+    args.manifest.discoverableEntries,
+    {
+      mode: args.options?.localeMode ?? "current",
+      locale: args.locale,
+      ...(args.manifest.localization?.fallbackLocale
+        ? { fallbackLocale: args.manifest.localization.fallbackLocale }
+        : {}),
+    },
+  );
   const publishedSlugs = new Set(publishedEntries.map((entry) => entry.slug));
 
   const notes = publishedEntries

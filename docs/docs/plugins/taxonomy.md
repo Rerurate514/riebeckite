@@ -65,6 +65,7 @@ export default defineConfig({
 | `resolveTitle` | `(context) => string` | `#value` / path | Custom term title |
 | `className` | `string` | `"rr-taxonomy"` | Root CSS class of page fragments |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON data endpoint path |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for terms and generated pages |
 
 ## Data endpoint
 
@@ -73,7 +74,13 @@ HonoX integration, so it never contains framework routing itself):
 
 ```
 GET /taxonomy/index.json
+GET /taxonomy/index.json?locale=ja
 ```
+
+The payload is scoped to the requested locale, then to the manifest default
+locale, then to `Accept-Language`. This keeps localized term pages from linking
+to mixed-language counts. Add `?locale=ja` when a client builds links for a
+non-default locale.
 
 ```json
 {

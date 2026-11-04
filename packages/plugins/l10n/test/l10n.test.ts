@@ -232,6 +232,33 @@ test("rejects an empty translation key configuration", () => {
   );
 });
 
+test("rejects a fallback locale outside the configured languages", () => {
+  assert.throws(
+    () =>
+      l10n({
+        defaultLang: "ja",
+        languages: ["ja", "en"],
+        fallbackLocale: "fr",
+      }),
+    /fallbackLocale must be included/,
+  );
+});
+
+test("publishes the resolved localization contract on the manifest", async () => {
+  const content = manager(
+    { "guide.ja.md": "# ガイド" },
+    {
+      fallbackLocale: "en",
+    },
+  );
+  const manifest = await content.getManifest();
+  assert.deepEqual(manifest.localization, {
+    defaultLocale: "ja",
+    locales: ["ja", "en", "en-US", "zh-CN"],
+    fallbackLocale: "en",
+  });
+});
+
 test("does not invent missing translations and adds hreflang only for existing variants", async () => {
   const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
@@ -471,6 +498,7 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
     },
     {
       name: "frontmatter language changed",
+      expectsOutputCollision: true,
       next: {
         "source.ja.md": source,
         "target.en.md": targetEn,
@@ -505,6 +533,22 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
       "target.ja.md": targetJa,
     };
     await manager(initial, {}, [], directory).build({ incremental: true });
+    if ("expectsOutputCollision" in scenario) {
+      await assert.rejects(
+        () =>
+          manager(scenario.next, {}, [], directory).build({
+            incremental: true,
+          }),
+        /Output path "en\/target\.html" collides/,
+        scenario.name,
+      );
+      await assert.rejects(
+        () => manager(scenario.next).build({ incremental: false }),
+        /Output path "en\/target\.html" collides/,
+        scenario.name,
+      );
+      continue;
+    }
     const incremental = await manager(scenario.next, {}, [], directory).build({
       incremental: true,
     });

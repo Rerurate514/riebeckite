@@ -210,6 +210,7 @@ new ContentManager(source, [], {
 | `language` | `string` | `"dataview"` | 対象とするフェンス言語 |
 | `hideFallback` | `boolean` | `false` | 生クエリの `<details>` を隠す |
 | `limit` | `number` | なし | `LIMIT` のないブロックに使う既定値 |
+| `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | クエリ行に含める言語の選択 |
 
 ## 描画
 

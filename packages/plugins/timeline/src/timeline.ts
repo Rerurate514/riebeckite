@@ -1,8 +1,10 @@
+import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
 import {
-  type ContentManifestEntry,
   escapeHtml,
   escapeHtmlAttribute,
+  localizedPagePath,
   normalizeTag,
+  selectLocalizedEntries,
 } from "@riebeckite/core";
 import type {
   ResolvedTimelineOptions,
@@ -26,6 +28,10 @@ export function resolveTimelineOptions(
     include: resolveSelector(options.include),
     exclude: resolveSelector(options.exclude),
     selection: options.selection === "marked" ? "marked" : "automatic",
+    localeMode:
+      options.localeMode === "all" || options.localeMode === "fallback"
+        ? options.localeMode
+        : "current",
   };
 }
 
@@ -39,7 +45,16 @@ export function buildTimeline(
     .flatMap((entry) => {
       const date = timelineDate(entry);
       return date
-        ? [{ date, permalink: entry.permalink, title: entry.title }]
+        ? [
+            {
+              date,
+              permalink: entry.permalink,
+              title: entry.title,
+              ...(entry.publicLocation.language
+                ? { language: entry.publicLocation.language }
+                : {}),
+            },
+          ]
         : [];
     })
     .toSorted(
@@ -66,17 +81,66 @@ export function selectTimelineEntry(
     : true;
 }
 
+export function buildTimelinePages(
+  manifest: ContentManifest,
+  options: ResolvedTimelineOptions,
+  contentIndex: ReadonlyMap<string, string> = new Map(),
+): { pathname: string; locale?: string; entries: TimelineEntry[] }[] {
+  if (options.basePath === "") return [];
+  const localization = manifest.localization;
+  if (!localization) {
+    const entries = buildTimeline(
+      manifest.discoverableEntries,
+      options,
+      contentIndex,
+    );
+    return entries.length === 0
+      ? []
+      : [{ pathname: options.basePath, entries }];
+  }
+  const locales =
+    options.localeMode === "all"
+      ? [localization.defaultLocale]
+      : localization.locales;
+  return locales.flatMap((locale) => {
+    const entries = buildTimeline(
+      selectLocalizedEntries(manifest.discoverableEntries, {
+        mode: options.localeMode,
+        locale,
+        ...(localization.fallbackLocale
+          ? { fallbackLocale: localization.fallbackLocale }
+          : {}),
+      }),
+      options,
+      contentIndex,
+    );
+    return entries.length === 0
+      ? []
+      : [
+          {
+            pathname: localizedPagePath(localization, options.basePath, locale),
+            locale,
+            entries,
+          },
+        ];
+  });
+}
+
 export function renderTimelinePage(
   entries: readonly TimelineEntry[],
   options: ResolvedTimelineOptions,
+  locale?: string,
 ) {
   const className = escapeHtmlAttribute(options.className);
   const rootClassName = `${DEFAULT_TIMELINE_CLASS_NAME} ${className}`;
   const items = entries
-    .map(
-      (entry) =>
-        `<li class="${DEFAULT_TIMELINE_CLASS_NAME}__item"><time class="${DEFAULT_TIMELINE_CLASS_NAME}__date" datetime="${escapeHtmlAttribute(entry.date)}">${escapeHtml(entry.date)}</time><a class="${DEFAULT_TIMELINE_CLASS_NAME}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`,
-    )
+    .map((entry) => {
+      const badge =
+        entry.language && entry.language !== locale
+          ? `<span class="rr-language-badge" lang="${escapeHtmlAttribute(entry.language)}" aria-label="Language: ${escapeHtmlAttribute(entry.language)}">${escapeHtml(entry.language)}</span> `
+          : "";
+      return `<li class="${DEFAULT_TIMELINE_CLASS_NAME}__item"><time class="${DEFAULT_TIMELINE_CLASS_NAME}__date" datetime="${escapeHtmlAttribute(entry.date)}">${escapeHtml(entry.date)}</time>${badge}<a class="${DEFAULT_TIMELINE_CLASS_NAME}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`;
+    })
     .join("");
   return {
     title: options.title,

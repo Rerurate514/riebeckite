@@ -533,7 +533,7 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
       "target.ja.md": targetJa,
     };
     await manager(initial, {}, [], directory).build({ incremental: true });
-    if (scenario.expectsOutputCollision) {
+    if ("expectsOutputCollision" in scenario) {
       await assert.rejects(
         () =>
           manager(scenario.next, {}, [], directory).build({

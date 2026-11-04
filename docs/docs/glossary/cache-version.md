@@ -50,7 +50,7 @@ The persistent content cache entry (`PersistentContentCacheEntry` type in `packa
 }
 ```
 
-The entry includes `schemaVersion` (currently 5), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-miss`.
+The entry includes `schemaVersion` (currently 5), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-mismatch`.
 
 ## Related terms
 

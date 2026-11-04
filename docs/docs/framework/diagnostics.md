@@ -17,7 +17,7 @@ Core and plugins express problems in this shared form. The development diagnosti
 
 ## Producers and consumers
 
-Plugins can provide diagnostics through `addDiagnostics`; Core and integrations combine them for commands such as `check` and `doctor`. A plugin should name the actionable condition, identify the relevant content/configuration when available, and make severity proportionate to whether output can remain correct. Prefer a diagnostic that says which setting is invalid and how to change it over one that only reports "invalid configuration".
+Plugins can provide diagnostics through `addDiagnostics`; Core and integrations combine them for `doctor` and the Development Inspector. `check` validates configuration, the content root, and API lifecycle metadata instead. A plugin should name the actionable condition, identify the relevant content/configuration when available, and make severity proportionate to whether output can remain correct. Prefer a diagnostic that says which setting is invalid and how to change it over one that only reports "invalid configuration".
 
 Use `check` for configuration/plugin validity and `doctor` for broader health. [[glossary/doctor|Doctor]] checks independent areas where possible, so one broken optional area should not conceal another finding. A failing doctor result exits unsuccessfully. It reports unavailable observations explicitly and does not run a full site build solely to diagnose the project. New findings have stable fingerprints; the JSON summary adds unavailable, skipped, category, and code counts without removing the existing severity counts.
 

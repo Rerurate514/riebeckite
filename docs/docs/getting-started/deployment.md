@@ -84,7 +84,7 @@ Enter the apex domain such as `example.com`, or a subdomain such as `docs.exampl
 }
 ```
 
-Choose **Deploy now** to run `wrangler deploy` directly. That confirms the configuration and uploads `dist/`, but it does not plan, build, or record publication state. Use `npm exec -- riebeckite publish run --execute` when you need the full publication flow. Otherwise, deploy later with `npm exec -- riebeckite publish run --execute`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
+Choose **Deploy now** to run `wrangler deploy` directly. That runs the publication gate, confirms the configuration, and uploads `dist/`, but it does not build or record publication state. Use `npm exec -- riebeckite publish run --execute` when you need the full publication flow. Otherwise, deploy later with `npm exec -- riebeckite publish run --execute`. Cloudflare Workers creates the DNS record and TLS certificate for a Custom Domain in a zone active in your Cloudflare account. This is different from a Worker Route: use a Custom Domain when the Worker is the origin for the site.
 
 The command leaves `wrangler.toml` unchanged. Add the equivalent configuration manually when you use TOML:
 

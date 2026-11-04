@@ -152,8 +152,8 @@ that may not support all queries.
 
 `@riebeckite/plugin-diagnostics` reports an `analytics-untracked` finding for
 published content without a stable content ID when the site enables this
-plugin, so tracking gaps are visible in `check`, `doctor`, and build
-diagnostics.
+plugin, so tracking gaps are visible in `doctor` and the Development
+Inspector.
 
 ## Exports
 

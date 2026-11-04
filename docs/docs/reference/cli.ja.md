@@ -37,7 +37,7 @@ riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
 riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] [--trigger <manual|scheduled|ci|cli>] | gate [--provider <name>]
-riebeckite publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>]
+riebeckite publish run [--provider <name>] [--execute] [--force] [--trigger <manual|scheduled|ci|cli>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]

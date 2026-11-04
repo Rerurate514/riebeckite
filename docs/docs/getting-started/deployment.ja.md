@@ -84,7 +84,7 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと `wrangler deploy` を直接実行します。設定を確認して `dist/` をアップロードしますが、計画、ビルド、公開状態の記録は行いません。公開の一連の流れが必要な場合は `npm exec -- riebeckite publish run --execute` を使ってください。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行します。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
+`Deploy now` を選ぶと `wrangler deploy` を直接実行します。公開ゲートを実行して設定を確認し、`dist/` をアップロードしますが、ビルドと公開状態の記録は行いません。公開の一連の流れが必要な場合は `npm exec -- riebeckite publish run --execute` を使ってください。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行します。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
 
 このコマンドは `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
 

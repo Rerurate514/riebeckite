@@ -50,7 +50,7 @@ sidebar:
 }
 ```
 
-エントリは `schemaVersion`（現在は5）、`key`（slug、source、frontmatter、パイプラインのフィンガープリントから `computeContentCacheKey` で計算）、`dependencies`（`CachedContentDependency` レコードの配列）、`value`（frontmatter と HTML）を含みます。検索中に `entry.key !== key` であれば、エントリは `key-miss` として扱われます。
+エントリは `schemaVersion`（現在は5）、`key`（slug、source、frontmatter、パイプラインのフィンガープリントから `computeContentCacheKey` で計算）、`dependencies`（`CachedContentDependency` レコードの配列）、`value`（frontmatter と HTML）を含みます。検索中に `entry.key !== key` であれば、エントリは `key-mismatch` として扱われます。
 
 ## 関連用語
 

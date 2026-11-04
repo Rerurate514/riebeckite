@@ -99,6 +99,9 @@ jobs:
           restore-keys: |
             site-build-v1-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
 
+      - name: Build content assets
+        run: pnpm --filter @riebeckite/web run prebuild
+
       - name: Publish the documentation site
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

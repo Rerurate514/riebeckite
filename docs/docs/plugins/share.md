@@ -111,7 +111,7 @@ the optional `className` is added to the root without replacing them.
 - `initShare()` — client initializer (also via
   `@riebeckite/plugin-share/client`)
 - Constants: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
-  `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`, `DEFAULT_SHARE_PLACEMENT`
+  `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`
 - Types: `ShareOptions`, `ResolvedShareOptions`, `ShareService`,
   `ShareLink`, `ShareTarget`
 

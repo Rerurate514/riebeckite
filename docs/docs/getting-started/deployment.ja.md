@@ -14,7 +14,7 @@ Riebeckite は静的サイトを生成します。`npm exec riebeckite build` �
 | 方法 | 向いているケース |
 | --- | --- |
 | Local-first（手元から公開） | 最短で初回公開したい |
-| GitHub Actions | push のたびに自動デプロイしたい |
+| GitHub Actions | `main` への push のたびに自動デプロイしたい |
 | Content Repository の分離 | Vault とサイトを別リポジトリで管理したい |
 
 Local-first は GitHub Actions の代わりではありません。自動化したくなったら GitHub Actions を追加します。
@@ -96,11 +96,11 @@ custom_domain = true
 
 デプロイ前に、ドメインが同じアカウントの有効な Cloudflare zone にあることを確認してください。既存の CNAME レコードがある場合、zone が別アカウントにある場合、同じホスト名に Custom Domain 以外の Worker Route がある場合は、先に解消が必要です。ワイルドカードドメインと URL パスは Custom Domain に使えません。`workers.dev` の URL も残したい場合は、必要に応じて TOML では `workers_dev = true`、JSON では `"workers_dev": true` を明示します。
 
-Cloudflare でホスト名が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex ドメインの URL に変更します。その後、もう一度ビルドとデプロイを実行してください。ドメインの設定はバージョン管理に残るため、GitHub Actions でも push のたびに同じ Worker の設定をデプロイできます。
+Cloudflare でホスト名が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex ドメインの URL に変更します。その後、もう一度ビルドとデプロイを実行してください。ドメインの設定はバージョン管理に残るため、GitHub Actions でも `main` への push のたびに同じ Worker の設定をデプロイできます。
 
 ## 2. GitHub Actions で自動デプロイする
 
-push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
+`main` への push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
 
 ```bash
 npx create-riebeckite my-site --github-actions

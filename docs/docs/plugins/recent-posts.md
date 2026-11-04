@@ -21,7 +21,8 @@ The Recent posts list on the [home page](/) is rendered by this plugin from the 
 excluded. It derives a date from the frontmatter (`date` falling back to
 `created`), sorts newest first, and truncates to `limit` items. Notes without a
 parseable date are dropped. Official `starter` and `showcase` sites place the
-list explicitly in their homepage route after the page content.
+list in the shared `app/components/article.tsx`, so it appears on the home page
+and on content pages.
 
 With no posts, the component renders nothing.
 
@@ -39,7 +40,8 @@ export default defineConfig({
 
 `recentPosts()` registers the plugin in the plugin list and bundles
 `style.css` into the app stylesheet; it never renders UI itself. The generated
-`starter` and `showcase` demonstrate the recommended homepage placement.
+`starter` and `showcase` demonstrate the recommended placement in the shared
+`app/components/article.tsx`.
 
 ### Custom placement
 
@@ -54,9 +56,9 @@ return <RecentPosts posts={recentPosts} />;
 ```
 
 `getRecentPosts()` filters out the `index` note before collecting posts.
-To disable the generated homepage list, remove its `RecentPosts` import and
-element from the homepage route. To reposition it, move that same element to
-another route or layout.
+To disable the generated list, remove its `RecentPosts` import and element from
+`app/components/article.tsx`. To reposition it, move that same element to
+another component, route, or layout.
 
 ## Component
 

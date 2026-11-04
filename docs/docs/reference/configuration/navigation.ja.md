@@ -83,7 +83,7 @@ navigation({
 | `href` | `string` | 遷移先の path または URL |
 | `children` | `NavigationItem[]` | 子項目。サブメニューとして表示されます |
 | `external` | `boolean` | `true` の場合は別タブで開きます |
-| `icon` | `string` | オプションのアイコン名または URL |
+| `icon` | `ContentIcon` | オプションの解決済みアイコンオブジェクト |
 | `collapsed` | `boolean` | サイドバーで初期的に折りたたまれる状態 |
 
 手動指定の item では `label` と `href` が必須です。index ノートを持たない導出 folder は label のみで描画されるため、導出モデルでは `href` は省略可能です。

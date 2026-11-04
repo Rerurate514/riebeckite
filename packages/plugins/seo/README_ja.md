@@ -58,7 +58,6 @@ export default defineConfig({
 - `seo(options?)`: プラグインを作成する
 - `buildArticleSeo`、`buildWebsiteSeo`: ページの SEO 情報を構築する
 - `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed`: 公開用ファイルを描画する
-- `calculateReadingTime`: 読了時間を計算する
 - URL・本文・フィードの補助: `buildAbsoluteUrl`、`buildPostUrl`、`getDescription`、`filterFeedEntries`、`getEntryPublishedTime`、`getEntryUpdatedTime`、`getHtmlLanguage`
 - 型: `SeoPluginOptions`、`FeedOptions`、`SeoMetadata`、`WebsiteSeoInput`、`RenderableFeedEntry`
 

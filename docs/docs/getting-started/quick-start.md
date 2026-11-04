@@ -28,7 +28,7 @@ Answer the prompts (recommended answers shown):
 - **Add optional feature packs?** — press Enter for `No`
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
 - **Where will you write content?** — choose `This project` so Markdown stays inside the site
-- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
+- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](./deployment.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages
 
 When it succeeds, it prints `Created a starter Riebeckite site in my-riebeckite-site` and a short "Next steps" list. If you kept the default install answer, the packages are already installed; move into the folder:
@@ -117,7 +117,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute --force
 ```
 
-To deploy automatically on every push, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
+To deploy automatically on every push to `main`, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
 
 ## Next
 

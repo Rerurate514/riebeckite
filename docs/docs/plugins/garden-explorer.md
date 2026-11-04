@@ -148,8 +148,8 @@ return <GardenExplorer data={data} />;
 - `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — builds
   the explorer dataset
 - Types: `GardenExplorerData`, `GardenExplorerEdge`, `GardenExplorerFolder`,
-  `GardenExplorerGraphLayout`, `GardenExplorerGraphMode`, `GardenExplorerNote`,
-  `GardenExplorerOptions`, `GardenExplorerPluginOptions`, `GardenExplorerTag`
+  `GardenExplorerNote`, `GardenExplorerOptions`, `GardenExplorerPluginOptions`,
+  `GardenExplorerTag`
 
 ## See also
 

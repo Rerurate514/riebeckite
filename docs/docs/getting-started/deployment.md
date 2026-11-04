@@ -14,7 +14,7 @@ There are three deployment methods, and they are options you add over time rathe
 | Method | Choose it when |
 | --- | --- |
 | Local-first (publish from your machine) | You want the fastest first publish |
-| GitHub Actions | You want to deploy on every push |
+| GitHub Actions | You want to deploy on every push to `main` |
 | Content Repository split | You want the vault and site in separate repositories |
 
 Local-first does not replace GitHub Actions. Add GitHub Actions when you want automation.
@@ -96,11 +96,11 @@ custom_domain = true
 
 Before deploying, ensure the domain is in an active Cloudflare zone in the same account. A hostname with an existing CNAME record, a zone outside the account, or a non-Custom-Domain Worker Route for the hostname must be resolved first. Wildcard domains and URL paths are not Custom Domains. You can keep the `workers.dev` URL available by explicitly setting `workers_dev = true` (TOML) or `"workers_dev": true` (JSON) when your configuration needs it.
 
-After Cloudflare has activated the hostname, change `site.baseUrl` to `https://docs.example.com` (or your apex domain), build, and deploy again. The domain configuration stays in version control, so GitHub Actions deploys the same Worker configuration on every push.
+After Cloudflare has activated the hostname, change `site.baseUrl` to `https://docs.example.com` (or your apex domain), build, and deploy again. The domain configuration stays in version control, so GitHub Actions deploys the same Worker configuration on every push to `main`.
 
 ## 2. Automatic deploy with GitHub Actions
 
-If you want deploys to run on every push, choose `GitHub Actions` when the CLI asks for the deployment. From the command line, the same choice is:
+If you want deploys to run on every push to `main`, choose `GitHub Actions` when the CLI asks for the deployment. From the command line, the same choice is:
 
 ```sh
 npx create-riebeckite my-site --github-actions

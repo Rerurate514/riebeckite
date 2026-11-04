@@ -86,7 +86,7 @@ import "@riebeckite/plugin-share/style.css";
 - `initShare()`：ブラウザ初期化関数（`@riebeckite/plugin-share/client` からも
   読み込める）
 - 定数: `SHARE_SERVICES`, `SHARE_ATTRIBUTE`, `SHARE_ROOT_CLASS`,
-  `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`, `DEFAULT_SHARE_PLACEMENT`
+  `DEFAULT_SHARE_SERVICES`, `DEFAULT_SHARE_LABELS`
 - 型: `ShareOptions`, `ResolvedShareOptions`, `ShareService`,
   `ShareLink`, `ShareTarget`
 

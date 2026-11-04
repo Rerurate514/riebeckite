@@ -151,8 +151,8 @@ matched with `.rb-series__item a[aria-current="page"]`.
 ## Limitations
 
 - A note belongs to exactly one series.
-- A series of one note produces no navigation block on the note, but it still
-  gets a list entry and a landing page.
+- A series of one note still renders its navigation block with a single item and
+  no previous/next links, and it also gets a list entry and a landing page.
 - `series_order` must be a finite number; numeric strings are not coerced.
 - Series names that slugify to the same segment share the first landing page.
 - Generated pages use `/series` by default; change `basePath` to avoid clashes

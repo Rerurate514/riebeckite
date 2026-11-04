@@ -25,11 +25,16 @@ pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。
 ## 使い方
 
 ```text
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets]
-riebeckite create [site | plugin | theme | page-type | component]
+riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite create site [create-riebeckite options]
+riebeckite create plugin [name] [options]
+riebeckite create theme [name] [options]
+riebeckite create page-type [name] [options]
+riebeckite create component [name] [options]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
+riebeckite bridge approve <plan>
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -37,7 +42,8 @@ riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> [--trigger <manual|scheduled|ci|cli>] | gate --provider <name>
+riebeckite publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] [--provider <name>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]

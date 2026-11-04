@@ -180,7 +180,7 @@ test("a generated output may not overwrite a content route", async (t) => {
 
   await assert.rejects(
     () => buildSite(site, "route-collision"),
-    /Generated output path "notes\/note-0\.html" collides with content output/,
+    /Output path "notes\/note-0\.html" collides with content output/,
   );
   const snapshot = await snapshotTree(distPath(site));
   if (Object.hasOwn(snapshot, "notes/note-0.html")) {

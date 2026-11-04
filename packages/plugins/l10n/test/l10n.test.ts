@@ -498,6 +498,7 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
     },
     {
       name: "frontmatter language changed",
+      expectsOutputCollision: true,
       next: {
         "source.ja.md": source,
         "target.en.md": targetEn,
@@ -532,6 +533,22 @@ test("keeps removed, relabeled, regrouped, and moved translations equivalent to 
       "target.ja.md": targetJa,
     };
     await manager(initial, {}, [], directory).build({ incremental: true });
+    if (scenario.expectsOutputCollision) {
+      await assert.rejects(
+        () =>
+          manager(scenario.next, {}, [], directory).build({
+            incremental: true,
+          }),
+        /Output path "en\/target\.html" collides/,
+        scenario.name,
+      );
+      await assert.rejects(
+        () => manager(scenario.next).build({ incremental: false }),
+        /Output path "en\/target\.html" collides/,
+        scenario.name,
+      );
+      continue;
+    }
     const incremental = await manager(scenario.next, {}, [], directory).build({
       incremental: true,
     });

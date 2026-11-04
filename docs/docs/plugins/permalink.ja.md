@@ -14,7 +14,8 @@ Riebeckite のコンテンツに、安定した公開 URL（permalink）を与�
 
 **目次**
 
-- [まずはここから](#まずはここから)
+- [クイックスタート](#クイックスタート)
+- [日々の運用](#日々の運用)
 - [基本的な使い方](#基本的な使い方)
 - [URL が決まるまで](#url-が決まるまで)
 - [frontmatter で指定する](#frontmatter-で指定する)
@@ -27,19 +28,63 @@ Riebeckite のコンテンツに、安定した公開 URL（permalink）を与�
 - [解決結果を確認する](#解決結果を確認する)
 - [設定例](#設定例)
 
-## まずはここから
+## クイックスタート
 
-最小構成では既定値を使います。
+プラグインをインストールします。
 
-```ts
-import { permalink } from "@riebeckite/plugin-permalink";
-
-export default {
-  plugins: [permalink()],
-};
+```sh
+npm install @riebeckite/plugin-permalink
 ```
 
-ページの frontmatter に `id: hello-world` があれば、そのページは `/n/hello-world` で公開されます。既定では `id` フィールドを使い、`id` がない場合はパスから導いたハッシュを使い、`flat` モードで `/n` の下に配置します。
+`riebeckite.config.ts` に登録します。
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { permalink } from "@riebeckite/plugin-permalink";
+
+export default defineConfig({
+  plugins: [permalink()],
+});
+```
+
+ページを公開します。
+
+```md
+---
+publish: true
+id: hello-world
+---
+
+# Hello
+```
+
+このページは `/n/hello-world` で公開されます。`id` がないページには、ファイルパスからハッシュ ID が付きます。
+
+ビルドして、解決された URL を確認します。
+
+```sh
+npm exec riebeckite build
+npm exec -- riebeckite inspect content --list
+```
+
+`inspect content --list` は、各エントリの ID、ID の由来、permalink を表示します。初回公開の前にここで URL を確認してください。
+
+### 先に URL の形を決める
+
+公開後に URL を変えるとリンクが切れるため、URL の形は最初に決めます。
+
+- URL を読める形で安定させたいページには、frontmatter の `id` を付けます（`/n/hello-world`）。
+- パス由来のハッシュでもよいノートには `id` を付けません。日本語などのファイル名は URL に出ませんが、ファイルを移動すると URL が変わります。
+- `/n` を変えたいときは `path.prefix` を変更します。`/notes` は意味が通ります。`""` にするとプレフィックスがなくなります。`/tags` や `/folders` など、他の生成ページと衝突しないか確認してください。
+- `/about` のような一度きりの URL には `permalink` を使います。
+
+## 日々の運用
+
+- 新しいページは `publish: true` を付けて追加します。`id` は URL を固定したいときだけ付けます。
+- ページ名を変更・移動しても `id` は変えません。`flat` モードなら URL は変わりません。
+- `id` や `permalink` を変えたときは、公開前に旧 URL を `redirect_from` に追加します。
+- 同じ `id` を別のコンテンツに使い回しません。ID や URL が重複すると、ビルドはどちらかを黙って選ばずに失敗します。
+- 公開前に `npm exec -- riebeckite inspect content --list` を実行し、最終 URL を確認します。
 
 ## 基本的な使い方
 

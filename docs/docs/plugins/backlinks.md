@@ -57,10 +57,13 @@ import Backlinks, { getBacklinks } from "@riebeckite/plugin-backlinks";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 
 function ArticleFooter() {
-  const { view } = useSiteContext();
-  const { entry } = useArticleContext();
-  if (!view || !entry) return null;
-  const backlinks = getBacklinks({ view, slug: entry.slug });
+  const site = useSiteContext();
+  const article = useArticleContext();
+  if (!site || !article?.entry) return null;
+  const backlinks = getBacklinks({
+    view: site.view,
+    slug: article.entry.slug,
+  });
   return (
     <aside><Backlinks backlinks={backlinks} /></aside>
   );

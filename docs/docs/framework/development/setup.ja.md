@@ -12,7 +12,7 @@ sidebar:
 Riebeckite 本体を開発する場合は、リポジトリをクローンして依存関係をインストールします。
 
 ```bash id="vmx4gu"
-git clone https://github.com/rerurate/riebeckite.git
+git clone https://github.com/Rerurate514/riebeckite.git
 cd riebeckite
 pnpm install
 pnpm build
@@ -87,12 +87,12 @@ flowchart TD
 | `pnpm docs:sync` | 原本のプラグイン / テーマのドキュメントからパッケージ README を生成する |
 | `pnpm check:plugin-docs` | プラグインのドキュメントと生成した README の同期を検査する |
 | `pnpm check:theme-docs` | テーマのドキュメントと生成した README の同期を検査する |
-| `pnpm check:scaffold` | 生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットを検査する |
+| `pnpm check:scaffold` | 生成されるプリセットの構造を検査し、8種類すべての設定を型検査する |
 
 対象を絞れる場合は、次のように限定的なコマンドを使います。
 
 - `pnpm check:docs` は Markdown のリンクとドキュメントの構造を検査します。
-- `pnpm check:scaffold` は `starter`、`minimal`、`showcase`、`empty` の各プリセットが生成するスキャフォールドの出力を検査します。
+- `pnpm check:scaffold` は生成されるプリセットの構造を検査し、8種類すべての設定を型検査します。
 - `pnpm typecheck` はパッケージの型を検査します。
 - `pnpm --filter <package> test` は、テストがある場合にそのパッケージのテストを実行します。
 
@@ -136,7 +136,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットが正しい構成になっているかを検査します。生成された設定とファイルだけを確認し、インストールとビルドは実行しないため、残り4つのプリセット（`digital-garden`、`blog`、`docs`、`portfolio`）は対象外です。次のようなものを変更した場合に重要です。
+生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットが正しい構成になっているかを検査します。残り4つのプリセット（`digital-garden`、`blog`、`docs`、`portfolio`）も生成し、8種類すべての生成設定を型検査します。インストールとビルドは実行しません。次のようなものを変更した場合に重要です。
 
 - スキャフォールドジェネレーター
 - [[glossary/preset|プリセット]]

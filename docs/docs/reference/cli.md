@@ -36,7 +36,7 @@ riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] | gate [--provider <name>]
+riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] [--trigger <manual|scheduled|ci|cli>] | gate [--provider <name>]
 riebeckite publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
@@ -49,7 +49,7 @@ riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it. `--execute`, `--force`, and `--trigger` apply only to `publish run`.
+`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it. `--execute` and `--force` apply only to `publish run`; `--trigger` applies to `publish run` and `publish record`.
 
 Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata. `--help` is intercepted only as a leading token for raw commands; some commands such as `riebeckite content create --help` still enter the handler.
 

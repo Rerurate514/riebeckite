@@ -25,7 +25,7 @@ publish: false
 
 ## 公開状態
 
-下書きは `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。ノートに `publish: false`、`private: true`、`draft: true`、または `visibility: draft` があると、有効な戦略に応じて `resolvePublishingState` は `routable: false, discoverable: false` を返します。つまり：
+下書きは `PublishingVisibility` の値の1つです（`packages/core/src/content/publishing.ts`）。`explicit` では `publish: true` を省略するか `publish: false` を指定すると下書きになります。`selective` では `private: true` または `draft: true` で下書きになります。`visibility: draft` は常に下書きです。いずれの場合も `resolvePublishingState` は `routable: false, discoverable: false` を返します。つまり：
 
 - ノートは `publicEntries` と `byRoutablePermalink` から除外されます
 - 公開出力を生成しません

@@ -25,7 +25,7 @@ A draft can still be parsed and linked internally, so you can preview and cross-
 
 ## Publishing state
 
-Draft is one of the `PublishingVisibility` values (`packages/core/src/content/publishing.ts`). When a note has `publish: false`, `private: true`, `draft: true`, or `visibility: draft`, `resolvePublishingState` returns `routable: false, discoverable: false` according to the active strategy. This means:
+Draft is one of the `PublishingVisibility` values (`packages/core/src/content/publishing.ts`). Under `explicit`, omitting `publish: true` or setting `publish: false` makes a note a draft. Under `selective`, `private: true` or `draft: true` makes it a draft. `visibility: draft` always does. In each case `resolvePublishingState` returns `routable: false, discoverable: false`. This means:
 
 - The note is excluded from `publicEntries` and `byRoutablePermalink`
 - It will not produce any public output

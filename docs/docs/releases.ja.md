@@ -14,6 +14,14 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
+### Changed
+
+- **Breaking:** Render Excalidraw drawings to inline SVG during the build and remove the client-side renderer and the `lazy` option.
+  Packages: `@riebeckite/plugin-excalidraw`
+  Migration: Call `excalidraw()` without options, and run `puppeteer browsers install chrome-headless-shell` if the build reports a missing browser.
+
 ### Fixed
 
 - Generated sites render page-specific titles, descriptions, canonical URLs, and Open Graph tags through the SEO plugin. The generated configuration no longer points at a missing `/ogp.png`, the `portfolio` preset generates its `/projects/` listing, and the `empty` preset explains how to add a theme and plugins. Scaffold next steps quote the project directory, and the docs preset samples use the documented sidebar order and table of contents headings.

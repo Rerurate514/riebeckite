@@ -62,7 +62,7 @@ A feature-rich example that demonstrates the Riebeckite plugin ecosystem with re
 | `@riebeckite/plugin-marp` | `marp` | `{ theme: "default", allowHtml: true, math: true, caption: true }` |
 | `@riebeckite/plugin-qr-code` | `qrCode` | `{ level: "M", margin: 1, width: 160, dark: "#000000", light: "#ffffff", caption: true, className: "rb-qr" }` |
 | `@riebeckite/plugin-discord-embed` | `discordEmbed` | `{ themeColor: "#5865F2", imageAlt: true, imageDimensions: true }` |
-| `@riebeckite/plugin-excalidraw` | `excalidraw` | `{ lazy: true }` |
+| `@riebeckite/plugin-excalidraw` | `excalidraw` | — |
 | `@riebeckite/plugin-excalibrain` | `excaliBrain` | `{ render: "build", auto: true, heading: true, infer: true, siblings: true, headingText: "ExcaliBrain", width: 720, height: 480 }` |
 | `@riebeckite/plugin-canvas` | `canvas` | `{ language: "canvas", render: "both", className: "rb-canvas" }` |
 | `@riebeckite/plugin-bases` | `bases` | `{ language: "base", limit: 100, className: "rb-bases", showFallback: true }` |

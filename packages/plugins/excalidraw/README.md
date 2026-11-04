@@ -10,9 +10,8 @@ Excalidraw drawing rendering for Obsidian wikilinks.
 
 `excalidraw()` provides the `renderAttachment` hook that
 `@riebeckite/plugin-obsidian-markdown` uses when an embedded wikilink
-(`![drawing.excalidraw](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)`) resolves to an Excalidraw file. The plugin emits a
-placeholder figure carrying the drawing payload, and the client entry renders
-it to SVG.
+(`![drawing.excalidraw](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)`) resolves to an Excalidraw file. The plugin renders
+the drawing to an inline SVG at build time.
 
 ## Usage
 
@@ -27,8 +26,10 @@ export default defineConfig({
 });
 ```
 
-The plugin registers `style.css` and a client entry (`initExcalidraw`) that
-the app calls on page initialization.
+The plugin registers `style.css`. Rendering launches
+`chrome-headless-shell` through Puppeteer; install it with
+`puppeteer browsers install chrome-headless-shell` if the build reports a
+missing browser.
 
 ## Supported formats
 
@@ -51,30 +52,24 @@ fenced code block is extracted and supports both `json` and lz-string
   `.excalidraw` or `.excalidraw.md`; everything else returns `null` and falls
   through to the attachment plugin
 - Reads the file under `config.content.directory` (path-traversal safe)
-- Parses the scene before rendering it.
+- Parses the scene and renders it to SVG in a headless browser with
+  `exportToSvg` from `@excalidraw/excalidraw`
+- Inlines the fonts used by the drawing into the SVG; font files are fetched
+  during the build
 - Wikilink aliases can set a size: `![800](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)` (width) or
   `![800x600](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)` (width x height)
 - Missing files, invalid scenes, or out-of-directory paths render an error
-  placeholder and log to the console
+  figure and log to the console
 
 #### Live example
 
-The following source is rendered as an SVG drawing on this page.
+The following source is rendered to an inline SVG at build time.
 
 ````md
 ![[HW]]
 ````
 
 ![HW](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/HW.md)
-
-### Client (`initExcalidraw`)
-
-- Renders pending figures to SVG with `exportToSvg` from
-  `@excalidraw/excalidraw`
-- Figures marked `data-excalidraw-lazy="false"` render immediately; the rest
-  render when they scroll into view (`IntersectionObserver`, 200px margin)
-- Success → `data-excalidraw="ready"` (the SVG replaces the empty canvas)
-- Failure → `data-excalidraw="error"` plus a placeholder message
 
 ## Standalone pages
 
@@ -88,21 +83,14 @@ instead of a plain Markdown page. The plugin registers a page type
 - `drawing.excalidraw.md` (permalink `/drawing.excalidraw`) is served at
   `/drawing`
 - The page body provides its own `<main>` and `<h1>`, and reuses the same
-  placeholder figure and `initExcalidraw` client as embedded wikilinks
+  build-time SVG rendering as embedded wikilinks
 
 The page type resolves before normal content routing, so no extra app route is
 required. Only public entries are listed.
 
-## Options
-
-| Option | Type | Default | Description |
-| ------ | ---- | ------- | ----------- |
-| `lazy` | `boolean` | `true` | Render lazily in the browser (as the figure enters the viewport) instead of immediately |
-
 ## Exports
 
-- `excalidraw(options?)` / `excalidraw` — plugin factory
-- Type: `ExcalidrawOptions`
+- `excalidraw()` — plugin factory
 
 ## See also
 

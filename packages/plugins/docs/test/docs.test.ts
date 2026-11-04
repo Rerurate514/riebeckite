@@ -538,6 +538,50 @@ test("resolves the current docs entry from the site path outside an article", as
   assert.match(html, /<a[^>]*href="\/docs\/guide"[^>]*aria-current="page"/);
 });
 
+test("renders localized docs navigation outside documentation pages", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [localizedLocationPlugin, docs({ root: "docs" })],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "docs/index.md": "---\ntitle: English Home\npublish: true\n---\n# Home\n",
+      "docs/install.md": "---\ntitle: Install\npublish: true\n---\n# Install\n",
+      "docs/index.ja.md":
+        "---\ntitle: 日本語 Home\npublish: true\n---\n# Home\n",
+      "docs/install.ja.md":
+        "---\ntitle: インストール\npublish: true\n---\n# Install\n",
+    }),
+    [],
+    { config },
+  );
+  const manifest = await manager.getManifest();
+
+  for (const [language, expected, unexpected] of [
+    ["en", /English Home/, /日本語 Home/],
+    ["ja", /日本語 Home/, /English Home/],
+  ] as const) {
+    const html = await new Response(
+      await renderToReadableStream(
+        createElement(
+          SiteProvider,
+          {
+            config,
+            manifest,
+            view: createPublicContentView(manifest),
+            path: language === "ja" ? "/ja" : "/",
+            language,
+          },
+          createElement(DocsSidebar, {}),
+        ),
+      ),
+    ).text();
+
+    assert.match(html, expected);
+    assert.doesNotMatch(html, unexpected);
+  }
+});
+
 test("keeps the current branch expanded when a section is collapsed", async () => {
   const manager = createManager({
     "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",

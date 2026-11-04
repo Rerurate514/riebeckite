@@ -161,6 +161,7 @@ export default jsxRenderer(async ({ children }, c) => {
               <Drawer id="site-navigation" label="Navigation">
                 <div data-spa-region="site-navigation">
                   <SiteDrawerNavigation />
+                  <DocsSidebar />
                 </div>
               </Drawer>
               <main id="main-content" tabindex={-1}>

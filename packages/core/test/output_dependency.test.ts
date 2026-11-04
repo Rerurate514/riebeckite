@@ -671,6 +671,29 @@ test("alias and redirect outputs follow public redirect lifecycle", () => {
   assert.deepEqual(paths(result.removed), ["old.html"]);
 });
 
+test("a folder index redirect shares its canonical content output", () => {
+  const outputs = buildOutputInventory(
+    manifest([
+      entry("folder/index", {
+        permalink: "/folder/",
+        redirects: [{ path: "/folder/index", status: 301 }],
+      }),
+    ]),
+  );
+
+  assert.deepEqual(
+    outputs.filter((output) => output.path === "folder/index.html"),
+    [
+      {
+        kind: "content",
+        path: "folder/index.html",
+        producer: "content:folder/index",
+        dependencies: [{ type: "content", slug: "folder/index" }],
+      },
+    ],
+  );
+});
+
 test("page type dependencies can narrow affected plugin pages", () => {
   const previous = manifest([entry("a"), entry("b")]);
   const current = manifest([entry("a", { title: "A2" }), entry("b")]);
@@ -968,15 +991,16 @@ function entry(
     title?: string;
     tags?: readonly string[];
     links?: readonly string[];
+    permalink?: string;
     redirects?: readonly ContentRedirect[];
   } = {},
 ): ContentManifestEntry {
   return {
     slug,
-    permalink: `/${slug}`,
+    permalink: options.permalink ?? `/${slug}`,
     publicLocation: {
       slug,
-      permalink: `/${slug}`,
+      permalink: options.permalink ?? `/${slug}`,
       redirects: options.redirects,
     },
     title: options.title ?? slug,

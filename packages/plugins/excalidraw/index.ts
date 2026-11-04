@@ -8,7 +8,6 @@ import type {
   PluginRenderContext,
 } from "@riebeckite/core";
 import {
-  createClientEntry,
   createStyleAsset,
   definePlugin,
   IMAGE_EXTENSIONS,
@@ -20,40 +19,46 @@ import {
   isObsidianExcalidrawMarkdown,
   parseExcalidrawScene,
 } from "./src/parse.js";
-import {
-  renderExcalidrawPage,
-  renderExcalidrawPlaceholder,
-} from "./src/render.js";
-import type {
-  ExcalidrawOptions,
-  ExcalidrawScene,
-  ObsidianEmbeddedFile,
-} from "./src/types.js";
+import { createExcalidrawRehypePlugin } from "./src/rehype_embeds.js";
+import { renderExcalidrawFigure, renderExcalidrawPage } from "./src/render.js";
+import { createExcalidrawRenderSession } from "./src/render-static.js";
+import type { ExcalidrawScene, ObsidianEmbeddedFile } from "./src/types.js";
 
 const PLUGIN_NAME = "excalidraw";
+const EMPTY_SCENE_SVG = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
 
-export type { ExcalidrawOptions } from "./src/types.js";
+type ExcalidrawSession = ReturnType<typeof createExcalidrawRenderSession>;
 
-export function excalidraw(options: ExcalidrawOptions = {}) {
+export function excalidraw() {
+  const session = createExcalidrawRenderSession();
+  const embeds = new Map<string, string>();
+  let embedSequence = 0;
+  const storeEmbed = (html: string): string => {
+    const id = `excalidraw-${++embedSequence}`;
+    embeds.set(id, html);
+    return id;
+  };
+
   return definePlugin({
     name: PLUGIN_NAME,
     order: -21,
     processedContentCache: {
-      version: "excalidraw-v2",
+      version: "excalidraw-v3",
       dependencyMode: "tracked",
     },
-    options,
     extendMarkdownPipeline: (pipeline, context) => {
       pipeline.use(remarkExcalidrawMarkdownEmbed, {
         contentIndex: context.contentIndex,
         contentSource: context.contentSource,
-        options,
+        session,
+        storeEmbed,
       });
     },
+    rehypePlugins: [createExcalidrawRehypePlugin(embeds)],
     renderers: [
       {
         name: "excalidraw-embed",
-        render: async (context) => renderAttachment(context, options),
+        render: async (context) => renderAttachment(context, session),
       },
     ],
     pageTypes: [
@@ -61,36 +66,42 @@ export function excalidraw(options: ExcalidrawOptions = {}) {
         id: "excalidraw-document",
         paths: ({ manifest }) => listExcalidrawDocumentPaths(manifest),
         outputDependencies: [{ type: "global" }],
-        resolve: (context) => resolveExcalidrawDocument(context, options),
-        resolveRoute: (context) => resolveExcalidrawDocument(context, options),
+        resolve: (context) => resolveExcalidrawDocument(context, session),
+        resolveRoute: (context) => resolveExcalidrawDocument(context, session),
       },
     ],
+    buildEnd: async () => {
+      embeds.clear();
+      await session.dispose();
+    },
+    dispose: async () => {
+      embeds.clear();
+      await session.dispose();
+    },
     assets: [
       createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-excalidraw/style.css"),
-    ],
-    clientEntries: [
-      createClientEntry(
-        PLUGIN_NAME,
-        "@riebeckite/plugin-excalidraw/client",
-        "initExcalidraw",
-        undefined,
-        undefined,
-        "context",
-      ),
     ],
   });
 }
 
+async function renderSceneSvg(
+  session: ExcalidrawSession,
+  scene: ExcalidrawScene,
+): Promise<string> {
+  if (scene.elements.length === 0) return EMPTY_SCENE_SVG;
+  return session.render(scene);
+}
+
 async function renderAttachment(
   context: PluginRenderContext,
-  options: ExcalidrawOptions,
+  session: ExcalidrawSession,
 ): Promise<string | null> {
   if (context.kind !== "attachment") return null;
   if (!isExcalidrawPath(context.path)) return null;
   if (!context.embed) return null;
 
   if (!context.contentSource) {
-    return renderExcalidrawPlaceholder({
+    return renderExcalidrawFigure({
       title: getFileName(context.path),
       error: "Content source is not available.",
     });
@@ -108,18 +119,17 @@ async function renderAttachment(
       contentSource: context.contentSource,
       contentIndex: context.contentIndex,
     });
-    return renderExcalidrawPlaceholder({
+    return renderExcalidrawFigure({
       title: getFileName(context.path),
-      scene,
+      svg: await renderSceneSvg(session, scene),
       size: parseSize(context.label),
-      lazy: options.lazy !== false,
     });
   } catch (error) {
     console.error("[plugin-excalidraw] Failed to render Excalidraw", {
       path: context.path,
       error,
     });
-    return renderExcalidrawPlaceholder({
+    return renderExcalidrawFigure({
       title: getFileName(context.path),
       error: "Excalidraw could not be rendered.",
     });
@@ -185,7 +195,7 @@ function findExcalidrawEntry(
 
 async function resolveExcalidrawDocument(
   context: PluginPageContext,
-  options: ExcalidrawOptions,
+  session: ExcalidrawSession,
 ): Promise<PluginPage | null> {
   const entry = findExcalidrawEntry(context.manifest, context.pathname);
   if (!entry) return null;
@@ -195,7 +205,6 @@ async function resolveExcalidrawDocument(
     typeof entry.frontmatter.description === "string"
       ? entry.frontmatter.description
       : undefined;
-  const lazy = options.lazy !== false;
 
   if (!context.contentSource) {
     return {
@@ -205,7 +214,6 @@ async function resolveExcalidrawDocument(
       description,
       body: renderExcalidrawPage({
         title,
-        lazy,
         error: "Content source is not available.",
       }),
     };
@@ -229,7 +237,10 @@ async function resolveExcalidrawDocument(
       pathname: context.pathname,
       title,
       description,
-      body: renderExcalidrawPage({ title, scene, lazy }),
+      body: renderExcalidrawPage({
+        title,
+        svg: await renderSceneSvg(session, scene),
+      }),
     };
   } catch (error) {
     console.error("[plugin-excalidraw] Failed to render Excalidraw page", {
@@ -243,7 +254,6 @@ async function resolveExcalidrawDocument(
       description,
       body: renderExcalidrawPage({
         title,
-        lazy,
         error: "Excalidraw could not be rendered.",
       }),
     };
@@ -292,7 +302,8 @@ function resolveMarkdownTarget(
 function remarkExcalidrawMarkdownEmbed(input: {
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;
-  options: ExcalidrawOptions;
+  session: ExcalidrawSession;
+  storeEmbed: (html: string) => string;
 }) {
   return async (tree: Root) => {
     const replacements: { node: Text; index: number; parent: Parent }[] = [];
@@ -314,7 +325,8 @@ async function replaceExcalidrawMarkdownEmbeds(
   input: {
     contentIndex: Map<string, string>;
     contentSource?: ContentSource;
-    options: ExcalidrawOptions;
+    session: ExcalidrawSession;
+    storeEmbed: (html: string) => string;
   },
 ) {
   const nodes: Content[] = [];
@@ -337,7 +349,7 @@ async function replaceExcalidrawMarkdownEmbeds(
           label,
           contentIndex: input.contentIndex,
           contentSource: input.contentSource,
-          options: input.options,
+          session: input.session,
         })
       : null;
 
@@ -349,7 +361,11 @@ async function replaceExcalidrawMarkdownEmbeds(
         value: replacement.node.value.slice(lastIndex, start),
       });
     }
-    nodes.push({ type: "html", value: html } satisfies Html);
+    const id = input.storeEmbed(html);
+    nodes.push({
+      type: "html",
+      value: `<span data-excalidraw-embed="${id}"></span>`,
+    } satisfies Html);
     lastIndex = start + full.length;
   }
 
@@ -368,27 +384,37 @@ async function renderExcalidrawMarkdownEmbed(input: {
   label: string;
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;
-  options: ExcalidrawOptions;
+  session: ExcalidrawSession;
 }): Promise<string | null> {
   if (!input.contentSource) return null;
   const raw = await readText(input.contentSource, input.path);
   if (raw === null) return null;
   if (!isObsidianExcalidrawMarkdown(raw)) return null;
 
-  const parsed = await parseExcalidrawScene(raw, input.path);
-  const scene = await mergeEmbeddedFiles({
-    scene: parsed.scene,
-    embeddedFiles: parsed.embeddedFiles,
-    contentSource: input.contentSource,
-    contentIndex: input.contentIndex,
-  });
+  try {
+    const parsed = await parseExcalidrawScene(raw, input.path);
+    const scene = await mergeEmbeddedFiles({
+      scene: parsed.scene,
+      embeddedFiles: parsed.embeddedFiles,
+      contentSource: input.contentSource,
+      contentIndex: input.contentIndex,
+    });
 
-  return renderExcalidrawPlaceholder({
-    title: getFileName(input.path),
-    scene,
-    size: parseSize(input.label),
-    lazy: input.options.lazy !== false,
-  });
+    return renderExcalidrawFigure({
+      title: getFileName(input.path),
+      svg: await renderSceneSvg(input.session, scene),
+      size: parseSize(input.label),
+    });
+  } catch (error) {
+    console.error("[plugin-excalidraw] Failed to render Excalidraw embed", {
+      path: input.path,
+      error,
+    });
+    return renderExcalidrawFigure({
+      title: getFileName(input.path),
+      error: "Excalidraw could not be rendered.",
+    });
+  }
 }
 
 async function mergeEmbeddedFiles(input: {

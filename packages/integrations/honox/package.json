@@ -69,7 +69,7 @@
   ],
   "scripts": {
     "build": "node ../../../scripts/build_package.mjs",
-    "test": "node --import tsx --test --test-concurrency=1 \"test/*.test.ts\"",
+    "test": "node --max-old-space-size=4096 --import tsx --test --test-concurrency=1 \"test/*.test.ts\"",
     "prepack": "pnpm run build"
   },
   "repository": {

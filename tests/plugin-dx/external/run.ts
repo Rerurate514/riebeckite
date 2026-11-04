@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import {
   assertIsolatedInstall,
   assertNoMonorepoEscapeHatches,
+  assertPackedInstall,
   createLogger,
   packPackages,
   run,
@@ -63,6 +64,8 @@ try {
 
   assertIsolatedInstall(siteDir, tempRoot, { repoRoot, logger });
   assertNoMonorepoEscapeHatches(siteDir, { logger });
+  assertPackedInstall(siteDir, { packed, scope: "@riebeckite", logger });
+  assertPackedInstall(siteDir, { packed, scope: "@plugin-dx", logger });
 
   logger.step("verifying the packed plugins from a Riebeckite config");
   run(process.execPath, ["verify.mjs"], { cwd: siteDir });

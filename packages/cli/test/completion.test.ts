@@ -40,15 +40,32 @@ test("completion rejects unsafe command names", () => {
   assert.doesNotMatch(script, /rm -rf/);
 });
 
-test("bash completion parses", () => {
+test("bash completion parses", (t) => {
+  const bash = resolveBash();
+  if (bash === undefined) {
+    t.skip(
+      "No native Bash is available; WSL's bash.exe is not a usable host for this check.",
+    );
+    return;
+  }
   const script = generateCompletion(registry, "bash");
-  const result = spawnSync("bash", ["-n"], {
+  const result = spawnSync(bash, ["-n"], {
     input: script,
     encoding: "utf8",
   });
-  if (result.error) return;
   assert.equal(result.status, 0, result.stderr);
 });
+
+function resolveBash(): string | undefined {
+  if (process.platform !== "win32") return "bash";
+  return [
+    process.env.RIEBECKITE_BASH,
+    "C:\\Program Files\\Git\\bin\\bash.exe",
+    "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+  ].find((candidate): candidate is string =>
+    Boolean(candidate && fs.existsSync(candidate)),
+  );
+}
 
 test("PowerShell completion parses", () => {
   const script = generateCompletion(registry, "powershell");

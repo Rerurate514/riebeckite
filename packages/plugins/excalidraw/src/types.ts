@@ -1,7 +1,3 @@
-export type ExcalidrawOptions = {
-  lazy?: boolean;
-};
-
 export type ExcalidrawScene = {
   type?: string;
   version?: number;
@@ -19,10 +15,4 @@ export type ObsidianEmbeddedFile = {
 export type ParsedExcalidrawDocument = {
   scene: ExcalidrawScene;
   embeddedFiles: readonly ObsidianEmbeddedFile[];
-};
-
-export type ExcalidrawPayload = {
-  elements: readonly Record<string, unknown>[];
-  appState: Record<string, unknown>;
-  files: Record<string, Record<string, unknown>>;
 };

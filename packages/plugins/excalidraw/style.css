@@ -37,10 +37,8 @@
   font-size: 0.875rem;
 }
 
-.rr-excalidraw[data-excalidraw="pending"] .rr-excalidraw__canvas:empty::before,
-.rr-excalidraw[data-excalidraw="error"] .rr-excalidraw__canvas:empty::before {
-  content: "Drawing could not be rendered.";
-  color: var(--rr-excalidraw-muted);
+.rr-excalidraw[data-excalidraw="error"] .rr-excalidraw__canvas {
+  min-height: 0;
 }
 
 :is(:root, .rb-theme-root)[data-rb-mode="dark"] .rr-excalidraw {

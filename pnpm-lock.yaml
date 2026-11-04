@@ -103,6 +103,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../core
+      '@riebeckite/dev-inspector':
+        specifier: workspace:*
+        version: link:../dev-inspector
       '@riebeckite/diagnostics':
         specifier: workspace:*
         version: link:../diagnostics
@@ -124,9 +127,6 @@ importers:
       '@riebeckite/plugin-toc':
         specifier: workspace:*
         version: link:../plugins/toc
-      '@riebeckite/test':
-        specifier: workspace:*
-        version: link:../test
       '@riebeckite/theme-default':
         specifier: workspace:*
         version: link:../themes/default
@@ -795,9 +795,15 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      esbuild:
+        specifier: 'catalog:'
+        version: 0.28.2
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
+      puppeteer:
+        specifier: ^25.16.0
+        version: 25.16.0
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.1.0

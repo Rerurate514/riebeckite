@@ -55,7 +55,7 @@ README.
 | [`@riebeckite/plugin-marp`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/marp/README.md) | `marp` | `{ theme: "default", allowHtml: true, math: true, caption: true }` |
 | [`@riebeckite/plugin-qr-code`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/qr-code/README.md) | `qrCode` | `{ level: "M", margin: 1, width: 160, dark: "#000000", light: "#ffffff", caption: true, className: "rb-qr" }` |
 | [`@riebeckite/plugin-discord-embed`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/discord-embed/README.md) | `discordEmbed` | `{ themeColor: "#5865F2", imageAlt: true, imageDimensions: true }` |
-| [`@riebeckite/plugin-excalidraw`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/excalidraw/README.md) | `excalidraw` | `{ lazy: true }` |
+| [`@riebeckite/plugin-excalidraw`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/excalidraw/README.md) | `excalidraw` | — |
 | [`@riebeckite/plugin-excalibrain`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/excalibrain/README.md) | `excaliBrain` | `{ render: "build", auto: true, heading: true, infer: true, siblings: true, headingText: "ExcaliBrain", width: 720, height: 480 }` |
 | [`@riebeckite/plugin-canvas`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/canvas/README.md) | `canvas` | `{ language: "canvas", render: "both", className: "rb-canvas" }` |
 | [`@riebeckite/plugin-bases`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/bases/README.md) | `bases` | `{ language: "base", limit: 100, className: "rb-bases", showFallback: true }` |

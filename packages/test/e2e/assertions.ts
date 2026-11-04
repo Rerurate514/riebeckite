@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { walkFiles } from "./files.js";
 import type { Logger } from "./logger.js";
+import type { PackedPackages } from "./pack.js";
 import { run } from "./process.js";
 
 /** True when `child` is `parent` or lives underneath it. */
@@ -219,6 +220,64 @@ export function assertPublishedArtifacts(
       );
     }
     console.log(`  ${scope}/${entry} -> ${real}`);
+  }
+}
+
+export interface AssertPackedInstallOptions {
+  packed: PackedPackages;
+  scope: string;
+  logger: Logger;
+}
+
+export function assertPackedInstall(
+  siteDir: string,
+  options: AssertPackedInstallOptions,
+): void {
+  const { packed, scope, logger } = options;
+  logger.step(`verifying ${scope}/* installs come from packed tarballs`);
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(siteDir, "package.json"), "utf8"),
+  ) as {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+    overrides?: Record<string, string>;
+  };
+  const declared = {
+    ...manifest.dependencies,
+    ...manifest.devDependencies,
+  };
+  const overrides = manifest.overrides ?? {};
+  for (const name of packed.keys()) {
+    for (const [label, spec] of [
+      ["dependency", declared[name]],
+      ["override", overrides[name]],
+    ] as const) {
+      if (typeof spec !== "string" || !spec.startsWith("file:")) {
+        logger.fail(
+          `${name} must use a file: ${label} so it cannot fall back to the public registry`,
+        );
+      }
+    }
+  }
+
+  const scopeDir = path.join(siteDir, "node_modules", ...scope.split("/"));
+  if (!fs.existsSync(scopeDir)) return;
+  for (const entry of fs.readdirSync(scopeDir)) {
+    const name = `${scope}/${entry}`;
+    const artifact = packed.get(name);
+    if (!artifact) {
+      logger.fail(
+        `${name} was installed but is not part of the packed workspace; it would come from the public registry`,
+      );
+    }
+    const installed = JSON.parse(
+      fs.readFileSync(path.join(scopeDir, entry, "package.json"), "utf8"),
+    ) as { version?: unknown };
+    if (installed.version !== artifact.version) {
+      logger.fail(
+        `${name}@${String(installed.version)} does not match the packed ${artifact.version}`,
+      );
+    }
   }
 }
 

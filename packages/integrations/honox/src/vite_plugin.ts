@@ -2,6 +2,8 @@ import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   invalidateDevelopmentInspector,
+  invalidateRiebeckiteBridge,
+  riebeckiteBridge,
   riebeckiteDevelopmentInspector,
 } from "@riebeckite/dev-inspector";
 import type { Plugin } from "vite";
@@ -26,6 +28,7 @@ export type RiebeckiteIntegrationOptions = {
   workspaceRoot?: string;
   appRoot?: string;
   configFile?: string;
+  bridgeToken?: string;
 };
 
 /**
@@ -127,9 +130,26 @@ export function riebeckite(
       appRoot: () => requireApplication(application).appRoot,
       contentRoot: () => requireApplication(application).contentRoot,
       exclude: () => getConfig().content.exclude ?? [],
-      onInvalidate: invalidateDevelopmentInspector,
+      onInvalidate(server) {
+        invalidateDevelopmentInspector(server);
+        invalidateRiebeckiteBridge(server);
+      },
     }),
     riebeckiteDevelopmentInspector(() => requireApplication(application), {
+      async getSnapshot(server) {
+        const { appRoot } = requireApplication(application);
+        if (!isContentModuleLoaded(server, appRoot)) return undefined;
+        const module = await loadContentModule(server, appRoot);
+        return module.content?.getCompletedBuildSnapshot?.();
+      },
+    }),
+    riebeckiteBridge({
+      token: options.bridgeToken ?? process.env.RIEBECKITE_BRIDGE_TOKEN,
+      mutationToken: process.env.RIEBECKITE_BRIDGE_MUTATION_TOKEN,
+      mutationApprovalToken:
+        process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN,
+      contentRoot: () => requireApplication(application).contentRoot,
+      publicOrigin: () => getConfig().site.baseUrl || undefined,
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;

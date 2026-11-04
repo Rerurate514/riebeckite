@@ -44,7 +44,7 @@ P2:
 - Content repositories: `content.directory` accepts absolute paths.
 - Starter preset: only home/examples are locale-selected; guide and notes remain English.
 - Build state: committed before SSG, so later failure can leave new state.
-- Cache hits skip content hooks.
+- Manifest-entry reuse skips content hooks; a processed-content cache hit still runs them.
 - HonoX UI prop types are internal.
 - HonoX package is not the scaffold generator.
 - Source pipeline hook order corrected.

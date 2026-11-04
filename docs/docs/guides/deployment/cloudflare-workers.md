@@ -62,7 +62,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run `npm install -D wrangler` first.
+A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run `npm install -D wrangler` first and add `--provider cloudflare-workers` to `publish run`, because there is no Wrangler configuration to detect yet.
 
 After the first deployment gives you the public URL:
 

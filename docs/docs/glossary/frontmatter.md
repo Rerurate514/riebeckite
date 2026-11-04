@@ -72,8 +72,8 @@ export type PostFrontmatter = {
   date?: string | Date;
   tags?: string[];
   series?: string;
-  published?: boolean;
-  visibility?: "public" | "unlisted" | "draft" | "scheduled";
+  published?: string | Date;
+  visibility?: "public" | "unlisted" | "draft";
   aliases?: string[];
   id?: string;
 };

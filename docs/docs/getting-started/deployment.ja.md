@@ -55,7 +55,7 @@ Content Repository の分離
    npm exec -- riebeckite publish run --execute
    ```
 
-3. `riebeckite publish run --execute` は計画し、必要ならビルドし、`dist/` を検証してから Cloudflare Workers へ公開します。初回は Wrangler のログインをブラウザで開きます。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行してください。
+3. `riebeckite publish run --execute` は計画し、必要ならビルドし、`dist/` を検証してから Cloudflare Workers へ公開します。初回は Wrangler のログインをブラウザで開きます。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行し、検出できる Wrangler 設定がないため `npm exec -- riebeckite publish run --execute --provider cloudflare-workers` のようにプロバイダーを指定してください。
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 

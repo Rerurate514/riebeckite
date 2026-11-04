@@ -108,7 +108,7 @@ Choosing `Yes` at `Deploy now?` runs the build and deploy immediately after scaf
 npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
-The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
+The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`, then pass the provider because no `wrangler.jsonc` exists yet: `npm exec -- riebeckite publish run --execute --provider cloudflare-workers`.
 
 After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. The publication plan only tracks content, so a config-only change needs `--force` to deploy.
 

@@ -109,7 +109,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-`Not now` で生成したサイトでは、先に `npm install -D wrangler` を実行してください。
+`Not now` で生成したサイトでは、先に `npm install -D wrangler` を実行し、`wrangler.jsonc` がまだないため `npm exec -- riebeckite publish run --execute --provider cloudflare-workers` のようにプロバイダーを指定してください。
 
 公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。公開計画はコンテンツだけを追跡するため、設定だけを変えた場合は `--force` が必要です。
 

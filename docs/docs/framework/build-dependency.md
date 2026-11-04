@@ -34,7 +34,7 @@ A content-affecting plugin that declares no contract is treated as `unsafe`.
 
 `version` names the contract. Core also includes the resolved plugin configuration in the cache key, so a change to the options, hooks, or version invalidates the cached entries.
 
-Use `global` only when a content transform depends on location metadata for the whole vault. Core fingerprints the resolved locations, including slugs, permalinks, redirects, languages, and metadata. Manifest-only hooks do not require this mode: they run on every build over the current manifest without invalidating processed content.
+Use `global` only when a content transform depends on location metadata for the whole vault. Core fingerprints the resolved locations, including slugs, permalinks, redirects, languages, and metadata. Manifest-only hooks do not require this mode: they operate on the current manifest without invalidating processed content, and Core may reuse their result when the persisted snapshot is valid.
 
 ### What Core records
 

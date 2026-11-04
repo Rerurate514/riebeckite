@@ -175,8 +175,7 @@ For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s 
 - `push` to `main` and `workflow_dispatch` enter the same workflow. Add `publication.schedule` to run it for `publishAt`.
 - The `riebeckite-production` concurrency group allows one deploy at a time and never cancels an in-flight deployment.
 - The workflow fetches the branch head and stops when the checked-out commit is older, so a queued run cannot overwrite a newer deployment with stale content.
-- `publish plan --json` decides whether a non-push run needs a build and deploy. A push always builds because application code may have changed.
-- The plan is uploaded as an artifact, then `publish validate` and `publish gate` check the built output.
+- The generated workflow checks configuration, builds, and then runs `publish validate` and `publish gate` against the built output. It does not run a separate `publish plan` step or upload a plan artifact; a push always builds because application code may have changed, and scheduled or manual runs use the same workflow.
 - Actual uploads use the host's action (`cloudflare/wrangler-action` here). `publish record` writes the successful snapshot to `RIEBECKITE_PUBLICATION_STATE` outside the worktree, and the workflow stores it on the `publication-state` branch with Git plumbing. The source branch is never committed to or pushed.
 - The same shape works with `actions/upload-pages-artifact` and `actions/deploy-pages` for GitHub Pages.
 
@@ -218,11 +217,11 @@ The durable publication state is the `state.json` file on the `publication-state
 - change summary and next scheduled publication
 - the last successful snapshot
 
-History is bounded to 50 runs and contains no environment values or tokens. It is local build state and is not committed. The GitHub Actions cache restores it to make diagnostics continuous, but it is never the only source of truth: losing or truncating the cache causes a full redeploy, not a wrong publication. A malformed history is ignored with a warning.
+History is bounded to 50 runs and contains no environment values or tokens. It is local build state and is not committed. The generated workflow cache does not include it, so CI diagnostics start empty; publication decisions still use the durable state on the `publication-state` branch. A malformed history is ignored with a warning.
 
 ## Lock and clean
 
-`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock whose process is alive on this host is never removed by elapsed time or `--force`; a lock whose process is gone (or whose host no longer owns the local state) is recovered. `clean` and `clean --all` refuse to run while a live publication lock exists. Cleaning removes only `.riebeckite`, not the durable state or approvals, so publication history and trust survive a clean build.
+`.riebeckite/publication/lock.json` is created with exclusive creation, so two local runs cannot both acquire it. The lock records the process id and hostname. A lock whose process is alive on this host is never removed by elapsed time or `--force`; a lock whose process is gone (or whose host no longer owns the local state) is recovered. `clean` and `clean --all` refuse to run while a live publication lock exists. Cleaning removes `.riebeckite`, including the diagnostic history, but not the durable state or approvals stored outside it, so publication trust survives a clean build.
 
 ## Build output marker
 

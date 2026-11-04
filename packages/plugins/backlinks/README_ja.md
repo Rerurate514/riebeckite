@@ -26,21 +26,21 @@ export default defineConfig({
 });
 ```
 
-プラグインを有効にすると、公開済みの被リンクがある記事で `getBacklinks()` が一覧を返すようになります。記事レイアウトで `<Backlinks backlinks={getBacklinks({ view, slug })} />` を一度描画してください。公式 Starter はこのコンポーネントをすでに描画しています。
+プラグインを有効にすると、`<Backlinks />` コンポーネントと `getBacklinks()` ヘルパーが使えるようになります。記事レイアウトで `<Backlinks />` を一度描画してください。`backlinks` プロップを省略すると、Site と Article のコンテキストから一覧を解決します。公式 Starter はこのコンポーネントをすでに描画しています。
 
 ## 高度なカスタマイズ
 
-アプリ側で表示位置を決める場合は、`getBacklinks({ view, slug })` を呼び出してデータを取得し、`<Backlinks backlinks={...} />` コンポーネントを一度だけ描画してください。被リンクのデータと公開範囲のフィルタリングは変わりません。
+アプリ側で表示位置を決める場合は、その場所で `<Backlinks />` を描画するか、非同期コンポーネントで `getBacklinks({ view, slug })` を await し、結果を省略可能な `backlinks` プロップとして一度だけ渡してください。被リンクのデータと公開範囲のフィルタリングは変わりません。
 
 ```tsx
-import Backlinks, { getBacklinks } from "@riebeckite/plugin-backlinks";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 
-function ArticleFooter() {
+async function ArticleFooter() {
   const site = useSiteContext();
   const article = useArticleContext();
   if (!site || !article?.entry) return null;
-  const items = getBacklinks({
+  const items = await getBacklinks({
     view: site.view,
     slug: article.entry.slug,
   });
@@ -52,13 +52,13 @@ function ArticleFooter() {
 
 ## 設定
 
-`backlinks()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントは `backlinks` 必須プロップを受け取ります。
+`backlinks()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントの `backlinks` プロップは省略可能で、省略時はコンテキストから一覧を解決します。
 
 ## 公開 API
 
 - `backlinks()`：プラグインファクトリ
-- `Backlinks`：被リンク一覧コンポーネント
-- `getBacklinks({ view, slug })`：公開済みの被リンクを解決する関数
+- `Backlinks`：被リンク一覧コンポーネント（名前付きエクスポート）
+- `getBacklinks({ view, slug })`：公開済みの被リンクを解決する関数。Promise を返す場合があります
 - `ArticleBacklink`：`{ slug, permalink, title }` の型。`permalink` は解決済みの正規 URL
 
 ## 関連資料

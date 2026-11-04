@@ -49,7 +49,7 @@ riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-`plugin verify` の `--level` は既定で `basic` です。`theme preview` と `plugin dev` は既定でブラウザーを開きます。無効にするには `--no-open` を指定します。`--execute` と `--force` は `publish run` でのみ使えます。`--trigger` は `publish run` と `publish record` で使えます。
+`plugin verify` の `--level` は既定で `basic` です。`theme preview` と `plugin dev` は既定でブラウザーを開きます。無効にするには `--no-open` を指定します。`publish` の各アクションでは、`--execute` と `--force` は `publish run` でのみ使えます。`--trigger` は `publish run` と `publish record` で使えます。別コマンドの `init` にも独自の `--force` があります。
 
 コマンドは単一の型付きレジストリから解決されます。`--help`、`help`、`completion` はコマンドのメタデータを読みます。`--help` はraw コマンドの先頭トークンとしてのみ介入し、一部のコマンド（例: `riebeckite content create --help`）はハンドラーに入ります。有効なプラグインは、既存の `cli` 定義を通じて名前空間付きのコマンドを追加できます。定義API、実行コンテキスト、JSONの取り決め、補完、セキュリティモデルは [CLI拡張API](./cli-extension.ja.md) を参照してください。
 

@@ -64,7 +64,7 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
-ビルド結果をそのまま公開する場合は、Wrangler をインストールして `npm exec -- riebeckite publish run --execute` を実行します。ログインと `wrangler.jsonc` の生成は自動です。詳しくは [デプロイ](./deployment.ja.md) を参照してください。
+ビルド結果をそのまま公開する場合は、Wrangler をインストールして `npm exec -- riebeckite publish run --execute` を実行します。Wrangler の設定ファイルがないサイトでは `--provider cloudflare-workers` を付けます。ログインと `wrangler.jsonc` の生成は自動です。詳しくは [デプロイ](./deployment.ja.md) を参照してください。
 
 プリセットで迷ったら、既定の `starter` を使ってください。記事、タグ、シリーズを持つメディアを作る場合は、プリセットの質問で `blog` を選ぶか、`npx create-riebeckite my-blog --preset blog` を実行します。
 

@@ -40,7 +40,7 @@ npm exec riebeckite build
 | コンテンツとサイトを別リポジトリで運用したい | [コンテンツとサイトを分ける](./separate-content-repository.ja.md) |
 | Cloudflare 以外のホストへ公開したい | [Cloudflare 以外のホスト](./other-hosts.ja.md) |
 
-初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec -- riebeckite publish run --execute` で手元から公開できます。このコマンドは計画し、必要ならビルドし、検証済みの `dist/` をアップロードします。すでに手元から公開しているサイトは、`npm exec riebeckite deploy setup` で publish ワークフローを準備できます。
+初めて公開する場合は、まず [Cloudflare Workers](./cloudflare-workers.ja.md) を読むのがおすすめです。`create-riebeckite` で `Cloudflare Workers` を選ぶと Wrangler の依存と `wrangler.jsonc` が生成され、`npm exec -- riebeckite publish run --execute` で手元から公開できます。このコマンドは計画し、必要ならビルドし、検証済みの `dist/` をアップロードします。Wrangler の設定がないサイトでは `--provider cloudflare-workers` を付けます。すでに手元から公開しているサイトは、`npm exec riebeckite deploy setup` で publish ワークフローを準備できます。
 
 ```mermaid
 flowchart TD
@@ -110,7 +110,7 @@ npm exec riebeckite build
 
 [Cloudflare Workers](./cloudflare-workers.ja.md)
 
-`dist/` を Cloudflare Workers へ手元から公開する方法を説明します。`npm exec -- riebeckite publish run --execute` がログインと `wrangler.jsonc` の生成を行います。
+`dist/` を Cloudflare Workers へ手元から公開する方法を説明します。`npm exec -- riebeckite publish run --execute` がログインと `wrangler.jsonc` の生成を行います。Wrangler の設定がないサイトでは `--provider cloudflare-workers` を付けます。
 
 ### GitHub Actions
 

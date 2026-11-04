@@ -49,7 +49,7 @@ riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it. `--execute` and `--force` apply only to `publish run`; `--trigger` applies to `publish run` and `publish record`.
+`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it. Within the `publish` actions, `--execute` and `--force` apply only to `publish run`; `--trigger` applies to `publish run` and `publish record`. The separate `init` command also has its own `--force`.
 
 Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata. `--help` is intercepted only as a leading token for raw commands; some commands such as `riebeckite content create --help` still enter the handler.
 

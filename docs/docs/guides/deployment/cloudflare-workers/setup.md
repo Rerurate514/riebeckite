@@ -49,7 +49,7 @@ wrangler is the official command-line tool for deploying to Cloudflare Workers.
 
 ## 3. Add wrangler.jsonc
 
-`npm exec -- riebeckite publish run --execute` creates `wrangler.jsonc` from the app root directory name when the file is missing, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
+`npm exec -- riebeckite publish run --execute --provider cloudflare-workers` creates `wrangler.jsonc` from the app root directory name when the file is missing and the provider is known, so this step is only needed when you want to review or customize it. To create it yourself, add a `wrangler.jsonc` in the site root:
 
 ```text
 my-site/
@@ -100,7 +100,7 @@ A browser window opens. Log in to Cloudflare and grant access.
 npm exec -- riebeckite publish run --execute
 ```
 
-`riebeckite publish run --execute` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
+`riebeckite publish run --execute` calls Wrangler to publish `dist/`. It logs you in first when needed and creates `wrangler.jsonc` when it is missing, provided a provider is detected or passed with `--provider cloudflare-workers`. Choosing `Cloudflare Workers` in `create-riebeckite` and answering `Yes` to `Deploy now?` runs this build and deploy immediately after scaffolding. To run Wrangler directly instead, use `npx wrangler deploy`.
 
 ```mermaid
 flowchart TD

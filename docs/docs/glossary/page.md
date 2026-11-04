@@ -15,7 +15,7 @@ Most pages come from Markdown. A [page type](./page-type.md) lets a plugin contr
 
 ## Rendering details
 
-The integration resolves a request through the page type resolver (`packages/core/src/plugin/plugin_runtime.ts`), while `getPagePaths` and `getPageRoutes` enumerate static output. The application assembles the final HTML. The plugin supplies the body HTML, not the site shell.
+The integration resolves a request through the page type resolver (`packages/core/src/plugin/plugin_runtime.ts`), while `getPagePaths` and `manifest.pageRoutes` describe static output. The application assembles the final HTML. The plugin supplies the body HTML, not the site shell.
 
 For plugin page types, the `PluginPageType` (`packages/core/src/types/plugin_page.ts`) provides a `resolve` method that takes a `PluginPageContext` and returns a `PluginPage` with `pathname` and `body`. The integration then renders this through the site's document frame. A page type can also provide `resolveRoute` when it can resolve requests from route metadata alone. Development requests use that opt-in method without building the full static manifest; if any enabled page type omits it, Riebeckite safely uses the full manifest instead.
 

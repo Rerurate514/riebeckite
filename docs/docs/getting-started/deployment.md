@@ -55,7 +55,7 @@ This is the fastest path to a public site.
    npm exec -- riebeckite publish run --execute
    ```
 
-3. `riebeckite publish run --execute` plans, builds when needed, validates `dist/`, and publishes it to Cloudflare Workers. It opens the Wrangler login in a browser on the first run. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
+3. `riebeckite publish run --execute` plans, builds when needed, validates `dist/`, and publishes it to Cloudflare Workers. It opens the Wrangler login in a browser on the first run. Change the Worker name by editing `name` in the generated `wrangler.jsonc`. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`, then pass the provider because the site has no Wrangler configuration to detect: `npm exec -- riebeckite publish run --execute --provider cloudflare-workers`.
 
 4. Open the URL printed by Wrangler, such as `https://<name>.<account>.workers.dev`. If your Riebeckite site loads, the first deploy succeeded.
 

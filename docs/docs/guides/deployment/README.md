@@ -37,7 +37,7 @@ generates the publishable site into `dist/`. For a normal static site, that `dis
 | Deploy to Netlify, Vercel, or GitHub Pages | [Other hosts](./other-hosts.md) |
 | Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 
-Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm exec -- riebeckite publish run --execute`. It plans, builds when needed, creates `wrangler.jsonc` when missing, opens the Wrangler login on the first run, and uploads the validated `dist/`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares the publish workflow, including the two repository secrets.
+Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm exec -- riebeckite publish run --execute`. It plans, builds when needed, creates `wrangler.jsonc` when missing, opens the Wrangler login on the first run, and uploads the validated `dist/`. For a site without a Wrangler configuration, add `--provider cloudflare-workers`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares the publish workflow, including the two repository secrets.
 
 ```mermaid
 flowchart TD
@@ -109,7 +109,7 @@ Once `build` succeeds, deploy the generated `dist/`.
 
 [Cloudflare Workers](./cloudflare-workers.md)
 
-Publishing `dist/` to Cloudflare Workers from your machine. `npm exec -- riebeckite publish run --execute` handles the login and generates `wrangler.jsonc`.
+Publishing `dist/` to Cloudflare Workers from your machine. `npm exec -- riebeckite publish run --execute` handles the login and generates `wrangler.jsonc`; add `--provider cloudflare-workers` when the site has no Wrangler configuration.
 
 ### GitHub Actions
 

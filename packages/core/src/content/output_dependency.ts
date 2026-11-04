@@ -209,9 +209,11 @@ export function buildOutputInventory(
     });
   }
   for (const output of pluginPageOutputs) {
+    const path = htmlOutputPath(output.path);
+    if (outputs.get(path)?.kind === "content") outputs.delete(path);
     addOutput(outputs, {
       ...output,
-      path: htmlOutputPath(output.path),
+      path,
     });
   }
   for (const output of manifest.generatedOutputs) {

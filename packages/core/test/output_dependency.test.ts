@@ -781,14 +781,20 @@ test("generated output colliding with a plugin page fails the inventory", () => 
   );
 });
 
-test("content, redirects, and plugin pages cannot overwrite each other", () => {
-  assert.throws(
-    () =>
-      buildOutputInventory(manifest([entry("timeline")]), [
-        pluginPage("timeline", []),
-      ]),
-    /Output path "timeline\.html" collides with content output owned by "content:timeline" and plugin-page output owned by "plugin:test:page"/,
+test("plugin pages replace content routes they shadow", () => {
+  const outputs = buildOutputInventory(manifest([entry("timeline")]), [
+    pluginPage("timeline", []),
+  ]);
+
+  assert.deepEqual(
+    outputs
+      .filter((output) => output.path === "timeline.html")
+      .map((output) => output.kind),
+    ["plugin-page"],
   );
+});
+
+test("redirects and plugin pages cannot overwrite each other", () => {
   assert.throws(
     () =>
       buildOutputInventory(
@@ -802,12 +808,14 @@ test("content, redirects, and plugin pages cannot overwrite each other", () => {
 });
 
 test("equivalent public paths share one output on Windows and POSIX", () => {
-  assert.throws(
-    () =>
-      buildOutputInventory(manifest([entry("timeline")]), [
-        pluginPage("\\timeline.html", []),
-      ]),
-    /Output path "timeline\.html" collides with content output/,
+  const shadowed = buildOutputInventory(manifest([entry("timeline")]), [
+    pluginPage("\\timeline.html", []),
+  ]);
+  assert.deepEqual(
+    shadowed
+      .filter((output) => output.path === "timeline.html")
+      .map((output) => output.kind),
+    ["plugin-page"],
   );
   assert.throws(
     () =>

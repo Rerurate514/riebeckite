@@ -76,7 +76,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `check` | Validate app configuration, plugins, and capability resolution | no |
 | `doctor` | Report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
 | `upgrade` | Compare isolated baseline and candidate builds before updating Riebeckite packages | no |
-| `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `build` | Run the build path; `--full` bypasses incremental reuse | yes; committed before output rendering, so a later failure can leave the new state |
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
 | `deploy` | Prepare Cloudflare workflow and domain configuration; `deploy domain` can upload after confirmation | no |
 | `publish` | Plan, inspect, validate, approve, and explicitly execute publication | yes, after an executed build |

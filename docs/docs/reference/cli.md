@@ -69,7 +69,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
 | `upgrade` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
-| `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `build` | run the build path; `--full` bypasses incremental reuse | yes; committed before output rendering, so a later failure can leave the new state |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | Cloudflare configuration helpers: `setup` and `workflow` prepare files and secrets; `domain` adds a Workers Custom Domain and can run `wrangler deploy` after confirmation. Use `publish run --execute` for the normal publication flow. | no |
 | `publish` | plan, inspect, validate, approve, and explicitly execute publication; `run` is a dry run without `--execute` | yes, after an executed build |

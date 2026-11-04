@@ -15,7 +15,7 @@ Plugins declare capabilities via `provides`, `requires`, and `optional` to opt i
 
 ```ts
 definePlugin({
-  name: "example
+  name: "example",
   provides: ["content.graph"],
   requires: ["cache"],
   optional: ["example.optional"],

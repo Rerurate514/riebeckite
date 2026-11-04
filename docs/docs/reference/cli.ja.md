@@ -69,7 +69,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `check` | アプリの設定、コンテンツルートの可用性、[[glossary/plugin-options|プラグインオプション]]、[[glossary/capability|ケイパビリティ]]の解決を検証する | いいえ |
 | `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
 | `upgrade` | Riebeckite パッケージを更新する前に、隔離した baseline ビルドと候補版のビルドを比較する | いいえ |
-| `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 成功時に書き込む |
+| `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 書き込む。出力描画前にコミットするため、その後の失敗で新しい状態が残ることがある |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
 | `deploy` | Cloudflare の設定補助。`setup` と `workflow` はファイルとシークレットを準備し、`domain` は Workers の Custom Domain を追加したうえで確認後に `wrangler deploy` を実行できます。通常の公開フローには `publish run --execute` を使います。 | いいえ |
 | `publish` | 公開計画の作成、状態確認、検証、承認、明示的な実行を行う。`run` は `--execute` がない限り Dry Run | 実行を伴うビルドの後で書き込む |

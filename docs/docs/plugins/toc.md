@@ -46,9 +46,7 @@ links, and scroll-spy state.
 ### Render the component
 
 ```tsx
-import TableOfContents, {
-  extractTableOfContents,
-} from "@riebeckite/plugin-toc";
+import { TableOfContents, extractTableOfContents } from "@riebeckite/plugin-toc";
 
 const items = extractTableOfContents(post.html ?? "");
 

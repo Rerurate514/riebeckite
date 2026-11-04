@@ -34,7 +34,7 @@ slug はビルドの内部でエントリを識別し、permalink は公開 URL 
 | `title` | `string` | ページのタイトル。 |
 | `aliases` | `readonly string[]` | WikiLink の検索キーに使う frontmatter のエイリアスパス。リダイレクトではない。 |
 | `frontmatter` | `PostFrontmatter` | 解析済みの frontmatter メタデータ。 |
-| `publishing` | `ResolvedPublishingState` | 公開状態（`published`、`unlisted`、`draft`、`scheduled` など）。 |
+| `publishing` | `ResolvedPublishingState` | 公開状態。`visibility` は `public`、`unlisted`、`draft`、`scheduled` のいずれか。 |
 | `html` | `string` | 描画済みの HTML 本文。 |
 | `tags` | `string[]` | このエントリに関連付けられたタグ。 |
 | `links` | `ContentLink[]` | コンテンツ内で解決された Markdown リンク/WikiLink の参照。 |

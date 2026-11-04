@@ -68,7 +68,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `check` | アプリの設定、Plugin、capability の解決を検証する | いいえ |
 | `doctor` | environment、設定、Plugin、content、output、Theme の共通診断を報告する | いいえ |
 | `upgrade` | Riebeckite パッケージを更新する前に、隔離した baseline と候補版のビルドを比較する | いいえ |
-| `build` | ビルドを実行する。`--full` は差分の再利用を行わない | 成功時に書く |
+| `build` | ビルドを実行する。`--full` は差分の再利用を行わない | 書く。出力描画前にコミットするため、その後の失敗で新しい状態が残ることがある |
 | `clean` | 管理対象の状態（`.riebeckite/`）を削除する。`--output` は Build 出力のみ、`--all` は両方を削除する | いいえ |
 | `deploy` | Cloudflare のワークフローとドメイン設定を用意する。`deploy domain` は確認後にアップロードできる | いいえ |
 | `publish` | 公開の計画、状態確認、検証、承認、明示的な実行を行う | 実行を伴うビルドの後で書く |

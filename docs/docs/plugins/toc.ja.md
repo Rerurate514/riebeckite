@@ -33,9 +33,7 @@ UI は自動配置されません。サイトが見出しを抽出してコン�
 記事 HTML から項目を取り出し、`TableOfContents` に渡します。
 
 ```tsx
-import TableOfContents, {
-  extractTableOfContents,
-} from "@riebeckite/plugin-toc";
+import { TableOfContents, extractTableOfContents } from "@riebeckite/plugin-toc";
 
 const items = extractTableOfContents(post.html ?? "");
 

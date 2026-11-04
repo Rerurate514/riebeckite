@@ -481,9 +481,7 @@ path: {
 }
 ```
 
-現在の実装では、`append` は `preserve` と同じパスを返します。
-
-将来、別の意味を持たせられるよう、モードとして分けています。現行バージョンで `append` に `preserve` と異なる挙動を期待しないでください。
+`append` は ID の前にソースファイルのスラッグを残します。`notes/flutter/hello.md` に `id: hello-world`、`prefix: "/n"` を指定すると `/n/notes/flutter/hello/hello-world` になり、`preserve` なら `/n/notes/flutter/hello-world` になります。
 
 ---
 

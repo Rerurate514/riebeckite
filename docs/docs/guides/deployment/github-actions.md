@@ -95,7 +95,7 @@ npx wrangler deploy --dry-run
 
 ## Notes
 
-- **Static assets are enough.** Riebeckite pre-renders content routes and plugin endpoints, so `dist/` is served as static assets with no runtime `main` entry.
+- **Static assets are enough for content and GET endpoints.** Riebeckite pre-renders content routes and GET plugin endpoint responses, so `dist/` is served as static assets with no runtime `main` entry. A `POST` endpoint such as a Webmention receiver needs a runtime Worker or server with a `main` entry.
 - **Build state stays at build time.** `.riebeckite/` and plugin caches are not part of `dist/` and never reach the Worker runtime.
 - **Attachments are site-owned.** Copy only the files you intend to publish in a `prebuild` step before the build.
 

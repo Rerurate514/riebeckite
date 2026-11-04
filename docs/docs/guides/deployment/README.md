@@ -64,7 +64,7 @@ flowchart TD
 
 ## What the build produces
 
-Riebeckite pre-renders content routes and plugin endpoints during the build. The generated `dist/` is therefore deployed as **static assets**, with no runtime `main` entry.
+Riebeckite pre-renders content routes and GET plugin endpoint responses during the build. The generated `dist/` is therefore deployed as **static assets**, with no runtime `main` entry. Endpoints that need `POST`, such as a Webmention receiver, are not served by a static-only Worker and need a runtime Worker or server with a `main` entry.
 
 Build state (`.riebeckite/`, plugin caches) stays at build time and never reaches the Worker runtime.
 

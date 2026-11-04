@@ -34,7 +34,7 @@ Each `ContentManifestEntry` carries the following fields, all of which are popul
 | `title` | `string` | The page title. |
 | `aliases` | `readonly string[]` | Frontmatter alias paths used as WikiLink lookup keys, not redirects. |
 | `frontmatter` | `PostFrontmatter` | Parsed frontmatter metadata. |
-| `publishing` | `ResolvedPublishingState` | The publishing state (e.g. `published`, `unlisted`, `draft`, `scheduled`). |
+| `publishing` | `ResolvedPublishingState` | The publishing state. Its `visibility` is `public`, `unlisted`, `draft`, or `scheduled`. |
 | `html` | `string` | The rendered HTML body. |
 | `tags` | `string[]` | Tags associated with this entry. |
 | `links` | `ContentLink[]` | Resolved markdown/wikilink references within the content. |

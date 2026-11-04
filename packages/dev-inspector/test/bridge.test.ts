@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
+import type http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -100,6 +101,43 @@ test("does not enable the Bridge with a short token", () => {
     middlewares: { use: (...arguments_) => stack.push(arguments_) },
   } as unknown as ViteDevServer);
   assert.deepEqual(stack, []);
+});
+
+test("serves stable opaque site and content-root identities", async (t) => {
+  const first = bridge({ contentRoot: "/vault", getSnapshot: fixtureSnapshot });
+  const second = bridge({
+    contentRoot: "/vault",
+    getSnapshot: fixtureSnapshot,
+  });
+  t.after(first.close);
+  t.after(second.close);
+
+  const identity = async (bootstrap: http.Server) => {
+    const origin = await privateOrigin(bootstrap);
+    const response = await fetch(`${origin}/__riebeckite/bridge/v1`, {
+      headers: {
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+    });
+    return (await response.json()) as {
+      identity: {
+        siteId: string;
+        siteName: string;
+        contentRootId: string;
+        contentSourceKind: string;
+      };
+    };
+  };
+  const [one, two] = await Promise.all([
+    identity(first.bootstrap),
+    identity(second.bootstrap),
+  ]);
+  assert.deepEqual(one.identity, two.identity);
+  assert.equal(one.identity.siteName, "Riebeckite site");
+  assert.equal(one.identity.contentSourceKind, "integrated");
+  assert.doesNotMatch(one.identity.siteId, /vault/i);
+  assert.doesNotMatch(one.identity.contentRootId, /vault/i);
 });
 
 test("rejects forwarded and cross-origin private requests", async (t) => {

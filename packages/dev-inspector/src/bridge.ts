@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import http from "node:http";
 import { createRequire } from "node:module";
+import path from "node:path";
 import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { Plugin, ViteDevServer } from "vite";
 import {
@@ -39,6 +40,14 @@ export type RiebeckiteBridgeOptions = {
   mutationToken?: string;
   mutationApprovalToken?: string;
   contentRoot?: string | (() => string);
+  siteId?: string | (() => string | undefined);
+  siteName?: string | (() => string | undefined);
+  contentRootId?: string | (() => string | undefined);
+  contentSourceKind?:
+    | "integrated"
+    | "separate-local"
+    | "separate-git"
+    | "custom-mapping";
   publicOrigin?: string | (() => string | undefined);
   getSnapshot: (
     server: ViteDevServer,
@@ -349,6 +358,7 @@ function bridgeResponse(input: {
     capabilities: contentRoot
       ? [
           "status",
+          "site-identity",
           "source-resolution",
           "page-resolution",
           "preview",
@@ -366,6 +376,17 @@ function bridgeResponse(input: {
         : { status: "unavailable" },
     },
     inspection: { available: snapshot !== undefined },
+    identity: contentRoot
+      ? {
+          siteId:
+            optionValue(options.siteId) ?? stableIdentity("site", contentRoot),
+          siteName: optionValue(options.siteName) ?? "Riebeckite site",
+          contentRootId:
+            optionValue(options.contentRootId) ??
+            stableIdentity("content-root", contentRoot),
+          contentSourceKind: options.contentSourceKind ?? "integrated",
+        }
+      : undefined,
   };
   if (requestUrl.pathname === bridgePagePath) {
     return inspectBridgePage(snapshot, requestUrl.searchParams.get("source"), {
@@ -393,6 +414,19 @@ function bridgeResponse(input: {
   if (requestUrl.pathname === `${bridgePath}/impact`)
     return inspectBridgeImpact(snapshot, source, inspection);
   return base;
+}
+
+function optionValue(
+  value: string | (() => string | undefined) | undefined,
+): string | undefined {
+  return typeof value === "function" ? value() : value;
+}
+
+function stableIdentity(kind: string, value: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(`${kind}\0${path.resolve(value)}`)
+    .digest("base64url");
 }
 
 function isTrustedBridgeRequest(

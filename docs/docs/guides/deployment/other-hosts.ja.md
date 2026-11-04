@@ -9,7 +9,7 @@ sidebar:
 
 `riebeckite build` は `dist/` に静的ファイルを出力します。どのホストでも、この `dist/` を配信すればサイトを公開できます。
 
-`deploy setup` は Cloudflare 向けです。`riebeckite publish run` は Netlify、Vercel、GitHub Pages に対応します。
+`deploy setup` は Cloudflare 向けです。`riebeckite publish run` でデプロイできるのは Netlify と Vercel です。GitHub Pages は専用のワークフローでデプロイする必要があります。
 
 ## ホスト向けのファイルを生成する
 

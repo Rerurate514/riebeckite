@@ -34,11 +34,15 @@ export default defineConfig({
 
 ```tsx
 import Backlinks, { getBacklinks } from "@riebeckite/plugin-backlinks";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 
-const manifest = await content.getManifest();
-const items = getBacklinks({ manifest, config, slug, resolveTitle });
-
-return <Article footerContent={<Backlinks backlinks={items} />} />;
+function ArticleFooter() {
+  const { view } = useSiteContext();
+  const { entry } = useArticleContext();
+  if (!view || !entry) return null;
+  const items = getBacklinks({ view, slug: entry.slug });
+  return <Backlinks backlinks={items} />;
+}
 ```
 
 `<Backlinks />` を複数回描画すると、同じ一覧が重複して表示されます。

@@ -152,7 +152,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 `gate` is the single pre-deploy check. It always verifies the plan and build artifact; when `requireApproval` is enabled it also fails until the current content is approved. `publish validate` follows the same rule.
 
-`riebeckite deploy` no longer executes a deployment. Use `riebeckite publish run --execute`. The `deploy setup` and `deploy domain` commands remain Cloudflare configuration helpers.
+`riebeckite deploy setup` and `deploy workflow` only prepare Cloudflare configuration and do not deploy. `deploy domain` adds a Custom Domain and then asks whether to run `wrangler deploy`; choose No to configure without deploying. Use `riebeckite publish run --execute` for the normal publication flow.
 
 ## Hosting adapters
 
@@ -269,7 +269,7 @@ Before deploying, Riebeckite requires a marker whose publication fingerprint mat
 
 ## Verification notes
 
-Local plan, approval, artifact, adapter, and history checks run in the package test suites. Real uploads to Cloudflare Workers, Cloudflare Pages, GitHub Pages, Netlify, and Vercel require credentials that are not available in this repository's tests; those paths are **UNVERIFIED** in automated tests. Run `publish run --execute` once per provider in a trusted environment before relying on the workflow.
+Local plan, approval, artifact, adapter, and history checks run in the package test suites. Real uploads to Cloudflare Workers, Cloudflare Pages, GitHub Pages, Netlify, and Vercel require credentials that are not available in this repository's tests; those paths are **UNVERIFIED** in automated tests. Before relying on the workflow, run `publish run --execute` once per provider it deploys, and exercise the GitHub Pages workflow separately because `publish run` cannot deploy it.
 
 ## What this does not do
 

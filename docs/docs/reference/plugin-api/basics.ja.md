@@ -200,12 +200,12 @@ type PluginContext = {
   diagnostics: Diagnostic[];
   cache: PluginCache;
   derived?: DerivedViewRegistry;
+  externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
   /**
    * Registers a file to be written to the build output directory. Available
    * during build lifecycle hooks; the integration layer forwards each entry to
    * the build tool.
    */
-  externalDependencies?: ReadonlyMap<string, ExternalDependencySnapshot>;
   output: GeneratedOutputSink;
   logger: Logger;
   tracer: Tracer;

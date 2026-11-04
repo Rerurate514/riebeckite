@@ -66,7 +66,7 @@ Riebeckite build combines both to produce the final site.
 
 ## The idea: articles can live outside the site
 
-`content.directory` in `riebeckite.config.ts` is a **relative path from the site root (appRoot)** and can point at a folder outside it. Articles do not have to live inside the site.
+`content.directory` in `riebeckite.config.ts` is resolved against the site root (`appRoot`). It can be a relative path, including `../vault`, or an absolute path; relative paths are usually recommended because they behave the same on other machines and in CI. Articles do not have to live inside the site.
 
 ```ts
 // site/riebeckite.config.ts

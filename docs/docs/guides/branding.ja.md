@@ -8,7 +8,7 @@ title: サイトのアイコンとロゴ
 
 ## サイトアイコン
 
-生成されたサイトにはプレースホルダーの `public/favicon.ico` が含まれ、`app/routes/_renderer.tsx` から参照されています。
+生成されたサイトにはプレースホルダーの `public/favicon.ico` が含まれます。`app/routes/_renderer.tsx` の `RiebeckiteHead` が、既定で次のリンクを追加します。
 
 ```tsx
 <link rel="icon" href="/favicon.ico" />
@@ -16,11 +16,18 @@ title: サイトのアイコンとロゴ
 
 この構成のまま使う場合は、`public/favicon.ico` を同じ名前の ICO ファイルで置き換えます。コードの変更は不要です。
 
-PNG や SVG を使う場合は、ファイルを `public/` に置き、`href` を変更します。URL から形式が分からない場合は、`type` も指定します。
+PNG や SVG を使う場合は、ファイルを `public/` に置き、そのパスを `RiebeckiteHead` に渡します。
 
 ```tsx
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<RiebeckiteHead
+  faviconHref="/favicon.svg"
+  seo={c.get("seo")}
+  themeStyle={themeStyle}
+  themeStylesheets={getThemeStylesheets(config.theme.stylesheets)}
+/>
 ```
+
+ブラウザーはファイル拡張子から形式を判断します。`type` 属性を明示する必要がある場合は、`faviconHref={null}` で既定のリンクを無効にし、同じ `<head>` 内に独自の `<link>` を追加します。
 
 ## ヘッダーのロゴ
 

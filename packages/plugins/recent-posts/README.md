@@ -60,9 +60,9 @@ another route or layout.
 
 `RecentPosts({ posts })` renders a
 `<section class="rr-recent-posts">` with a heading and an ordered
-list. Each item links to the post and shows its date formatted for the
-`en-US` locale. The `rr-recent-posts` root hook is the stable class themes may
-target.
+list. Each item links to the post and shows its date formatted for the Site
+language (`site.language`), falling back to `en-US`. The `rr-recent-posts` root
+hook is the stable class themes may target.
 
 ## Options
 

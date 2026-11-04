@@ -101,7 +101,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-`create-riebeckite` で `Cloudflare Workers` を選んだサイトには Wrangler が含まれているため、`npm install -D wrangler` は不要です。`Not now` で生成した既存のサイトでは、先に実行してください。
+`create-riebeckite` で `Cloudflare Workers` を選んだサイトには Wrangler が含まれているため、`npm install -D wrangler` は不要です。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行してください。
 
 最初のデプロイで公開 URL がわかったら、次の流れで設定を反映します。
 

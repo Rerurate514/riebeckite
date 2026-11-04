@@ -119,7 +119,7 @@ A complete, copyable manifest:
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.35",
+    "@riebeckite/core": "^0.0.38",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

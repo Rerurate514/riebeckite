@@ -21,18 +21,23 @@ npm exec riebeckite <command>
 
 ```text
 riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
-riebeckite create [site | plugin | theme | page-type | component]
+riebeckite create site [create-riebeckite options]
+riebeckite create plugin <name> [options]
+riebeckite create theme [name] [options]
+riebeckite create page-type [name] [options]
+riebeckite create component [name] [options]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
-riebeckite upgrade --to <version|latest> [--json]
+riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] | gate [--provider <name>]
+riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] | gate [--provider <name>]
+riebeckite publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
@@ -44,7 +49,7 @@ riebeckite help [command...]
 riebeckite completion <bash | zsh | powershell> [--project]
 ```
 
-`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it.
+`plugin verify` defaults to `--level basic`. `theme preview` and `plugin dev` open a browser by default; pass `--no-open` to disable it. `--execute`, `--force`, and `--trigger` apply only to `publish run`.
 
 Commands are resolved from one typed registry. `--help`, `help`, and `completion` read command metadata. `--help` is intercepted only as a leading token for raw commands; some commands such as `riebeckite content create --help` still enter the handler.
 
@@ -62,7 +67,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
 | `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
-| `upgrade --check` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
+| `upgrade` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes, on success |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
 | `deploy` | Cloudflare configuration helpers: `setup` and `workflow` prepare files and secrets; `domain` adds a Workers Custom Domain and can run `wrangler deploy` after confirmation. Use `publish run --execute` for the normal publication flow. | no |

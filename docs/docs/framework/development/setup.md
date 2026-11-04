@@ -61,7 +61,7 @@ flowchart TD
 | --- | --- |
 | `packages/core` | public config, content, pipeline, plugin, theme, diagnostics, observability APIs |
 | `packages/cli` | `riebeckite` command |
-| `packages/integrations/honox` | HonoX integration and scaffold generator |
+| `packages/integrations/honox` | HonoX / Vite integration |
 | `packages/create-riebeckite` | public site scaffolding entrypoint |
 | `packages/plugins/*` | official plugins |
 | `packages/themes/*` | official themes |

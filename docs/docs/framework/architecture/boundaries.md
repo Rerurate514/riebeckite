@@ -43,7 +43,7 @@ writable `.riebeckite` directory.
 
 The CLI, Inspector, Doctor, profiler traces, incremental state at `.riebeckite/build/content-state.json`, and filesystem plugin caches belong to Node/build time. They are not mutable dependencies of the Cloudflare Workers request runtime.
 
-This boundary keeps deployments reproducible: a failed build does not mutate the previous valid state, and a request cannot depend on local files that do not exist in a Worker.
+This boundary keeps deployments reproducible: a failed manifest build keeps the previous state, and a request cannot depend on local files that do not exist in a Worker. A later SSG or output failure can still leave new build state behind; see [[build-system/incremental|Incremental builds]].
 
 ## Choosing a location
 

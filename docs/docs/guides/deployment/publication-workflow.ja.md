@@ -155,7 +155,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 `gate` はデプロイ前の単一のチェックです。常に計画とビルド成果物を検証し、`requireApproval` が有効なときは現在のコンテンツが承認済みになるまで失敗します。`publish validate` も同じ規則に従います。
 
-`riebeckite deploy` はデプロイを実行しなくなりました。代わりに `riebeckite publish run --execute` を使ってください。`deploy setup` と `deploy domain` は Cloudflare の設定補助として残ります。
+`riebeckite deploy setup` と `deploy workflow` は Cloudflare の設定を準備するだけで、デプロイは行いません。`deploy domain` は Custom Domain を追加したあと、`wrangler deploy` を実行するか尋ねます。設定だけ行う場合は「いいえ」を選んでください。通常の公開フローには `riebeckite publish run --execute` を使います。
 
 ## ホスティングアダプター
 
@@ -272,7 +272,7 @@ publication: {
 
 ## 検証状況
 
-ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各プロバイダーで信頼できる環境から `publish run --execute` を一度実行してください。
+ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、`publish run` がデプロイする各プロバイダーで `publish run --execute` を一度実行し、GitHub Pages は `publish run` でデプロイできないため専用ワークフローを別途実行してください。
 
 ## この仕組みがしないこと
 

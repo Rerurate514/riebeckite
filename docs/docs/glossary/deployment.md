@@ -27,7 +27,7 @@ The CLI provides several deployment methods:
 | `riebeckite build` | Builds the site, writing output to `dist/` |
 | `riebeckite publish run --execute` | Deploys `dist/` to a Cloudflare Worker. Requires `wrangler` and a generated `wrangler.jsonc`. Can include a custom domain. |
 | `riebeckite deploy setup` | Sets up GitHub Actions workflow for automatic deploys on push. Registers Cloudflare API secrets. |
-| `riebeckite deploy domain` | Configures a custom domain for the deployed Worker. Updates `wrangler.jsonc` or `wrangler.toml`. |
+| `riebeckite deploy domain` | Adds a Custom Domain to the deployed Worker in `wrangler.jsonc` or `wrangler.json` after confirmation, then offers to deploy. A `wrangler.toml` is left unchanged for manual editing. |
 
 On first deploy, run `npm exec riebeckite build` to generate `dist/`, then `npm exec -- riebeckite publish run --execute` to publish. After setting a custom domain, update `site.baseUrl` in `riebeckite.config.ts` so that generated URLs (sitemap, feed, hreflang) use the final address.
 

@@ -48,12 +48,10 @@ No stable content ID
 analytics-untracked
 ```
 
-This makes tracking gaps visible directly in
+This makes tracking gaps visible in `riebeckite doctor` and the Development Inspector:
 
 ```sh
-pnpm exec riebeckite check
 pnpm exec riebeckite doctor
-pnpm exec riebeckite build
 ```
 
 It never modifies content. See

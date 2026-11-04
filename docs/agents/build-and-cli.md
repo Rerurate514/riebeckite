@@ -9,7 +9,7 @@ Use the CLI from the application directory:
 init [directory] [--force] | create [site | plugin | theme | page-type | component]
 dev | check | doctor | build [--full] | clean [--output | --all] | profile [--full]
 inspect [config | plugins | content [--list] | graph | build | assets | provenance | api]
-upgrade --to <version|latest> [--json] | deploy setup | deploy workflow [--check] | deploy domain
+upgrade --to <version|latest> [--check] [--json] | deploy setup | deploy workflow [--check] | deploy domain
 publish plan | status | validate | run | approve | revoke | record | gate
 content create | edit | delete | move | plan | apply | recover
 migrate list | plan | apply | status | history | rollback | recover

@@ -79,15 +79,15 @@ shown only when the corresponding filter is enabled.
 
 ## Advanced customization
 
-Resolve the graph with the public data helper and pass it to the component:
+Resolve the graph from the public view with the data helper, or from a manifest with `buildLocalGraph`:
 
 ```tsx
-import { LocalGraph, getLocalGraph } from "@riebeckite/plugin-local-graph";
+import { LocalGraph, buildLocalGraph } from "@riebeckite/plugin-local-graph";
 import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
-const graph = getLocalGraph({
+const graph = buildLocalGraph({
   manifest,
   config,
   slug,
@@ -102,7 +102,7 @@ return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 - `localGraph()` — plugin factory
 - `LocalGraph` — server component with embedded graph data
 - `LocalGraphView` — presentational client component used by hydration
-- `getLocalGraph({ manifest, config, slug, resolveTitle })` — public graph data
+- `getLocalGraph({ view, slug })` — public graph data from the Site's public view
   (`null` when the note is absent or unpublished)
 - `buildLocalGraph({ manifest, config, slug, resolveTitle })` — manifest-based
   graph data

@@ -109,6 +109,8 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
+`Not now` で生成したサイトでは、先に `npm install -D wrangler` を実行してください。
+
 公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
 
 ```bash

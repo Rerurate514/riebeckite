@@ -32,6 +32,8 @@ my-site/
 | `wrangler.jsonc` | Cloudflare Workers deployment settings |
 | `.github/workflows/publish.yml` | The GitHub Actions build/deploy workflow |
 
+The command-line form skips the prompts and does not install dependencies. Run `cd my-site` and `npm install` before continuing, so `package-lock.json` exists for the workflow's `npm ci`.
+
 Normally you use the generated workflow as your starting point.
 
 ## Add it to an existing site

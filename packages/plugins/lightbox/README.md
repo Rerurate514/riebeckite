@@ -25,8 +25,9 @@ export default defineConfig({
 });
 ```
 
-The plugin registers `style.css` and a client entry (`initLightbox`), which
-the app calls on page initialization.
+The plugin registers `style.css` and a client entry
+(`initLightboxFromOptions`), which the app calls on page initialization. That
+entry reads the plugin options and wraps the exported `initLightbox()`.
 
 ## Live example
 

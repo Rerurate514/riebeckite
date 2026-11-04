@@ -59,7 +59,7 @@ flowchart TD
 | --- | --- |
 | `packages/core` | 設定、コンテンツ、[[glossary/pipeline|パイプライン]]、プラグイン、テーマ、診断、可観測性などの共通基盤 |
 | `packages/cli` | `riebeckite` CLI |
-| `packages/integrations/honox` | HonoX / Vite インテグレーションとスキャフォールドジェネレーター |
+| `packages/integrations/honox` | HonoX / Vite インテグレーション |
 | `packages/create-riebeckite` | サイト作成用の公開エントリーポイント |
 | `packages/plugins/*` | 公式プラグイン |
 | `packages/themes/*` | 公式テーマ |

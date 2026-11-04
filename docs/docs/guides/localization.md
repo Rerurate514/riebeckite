@@ -32,7 +32,7 @@ fr
 ko
 ```
 
-`starter` uses a single page language selected from the site locale; `minimal` is English-only. Add l10n only when the site needs translated routes. You do not need articles in every language; configure only the languages you actually use.
+`starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. `minimal` is English-only. Add l10n only when the site needs translated routes. You do not need articles in every language; configure only the languages you actually use.
 
 ## In this section
 
@@ -131,7 +131,7 @@ queryContentEntries(entries, {
 });
 ```
 
-Built-in listing plugins expose a `localeMode` option where the choice is meaningful. Their default is `current`, so a multilingual site no longer shows both versions of a note in Timeline, Archive, tags, search, Related Posts, or Backlinks. Search keeps its explicit `lang:` filter, so searching across all languages remains possible.
+Timeline, Archive, tags, and Related Posts expose a `localeMode` option; their default is `current`. Backlinks always uses the current page language. A multilingual site therefore no longer shows both versions of a note in these listings. Search keeps its explicit `lang:` filter, so searching across all languages remains possible.
 
 Set `fallbackLocale` on the l10n plugin when a page language may be empty:
 
@@ -143,7 +143,7 @@ l10n({
 });
 ```
 
-A fallback entry is still rendered with its own language and URL. Listing UIs add the shared `.rr-language-badge` marker when they show a language different from the page language.
+A fallback entry is still rendered with its own language and URL. Timeline marks such an entry with the shared `.rr-language-badge` marker when it shows a language different from the page language.
 
 Graphs are different. Local Graph and graph views keep links between languages because the graph is the Obsidian-compatible relationship surface; filtering nodes would hide real links. Use a listing plugin when you want a language-scoped list.
 

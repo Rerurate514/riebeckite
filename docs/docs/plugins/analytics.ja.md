@@ -90,7 +90,7 @@ export default {
 
 ## ブラウザでの計測
 
-Core の安定コンテンツ ID（frontmatter の `id`）を持つ公開コンテンツにだけ、コンテンツ ID を示すマーカーを出力します。汎用の `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
+Core の安定コンテンツ ID（frontmatter の `id`）を持つマニフェストエントリには、その HTML が描画されるときにコンテンツ ID を示すマーカーを追加します。汎用の `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
 
 ```json
 {
@@ -120,7 +120,7 @@ const result = await provider.query({
 
 ## 診断
 
-`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定コンテンツ ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けは `check` / `doctor` / ビルドの診断で確認できます。
+`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定コンテンツ ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けは `doctor` と Development Inspector で確認できます。
 
 ## 主なエクスポート
 

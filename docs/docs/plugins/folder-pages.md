@@ -12,7 +12,7 @@ entry note.
 
 ## Live example
 
-The generated [folders](/folders) index is a Folder Page tree built from the site's folder structure.
+The generated [folders](/folders) index comes from the taxonomy plugin. Folder Pages supplies the folder landing pages that the index links to.
 
 ## Installation
 

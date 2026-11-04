@@ -7,9 +7,9 @@ sidebar:
 ---
 # セットアップと作成
 
-## `upgrade --check`
+## `upgrade`
 
-Upgrade Lab はチェック専用の事前検証で、プロジェクト、`node_modules`、`dist`、`.riebeckite` を変更しません。`--check` は互換性のために受け付けられますが、`upgrade` は常にチェックを実行するため省略できます。
+Upgrade Lab はチェック専用の事前検証で、プロジェクト、`node_modules`、`dist`、`.riebeckite` を変更しません。`--to` は必須です。`--check` は互換性のために受け付けられますが、`upgrade` は常にチェックを実行するため省略できます。
 
 ```sh
 npm exec -- riebeckite upgrade --to 0.0.35

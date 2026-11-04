@@ -50,7 +50,7 @@ comparison data, and Inspector provenance data. It does not change build output.
 
 An explicit build resolves configuration and plugins, reads content, runs content and [[glossary/plugin|plugin]] pipelines, creates the manifest and content graph, emits registered assets and client entries, and records successful incremental state. The HonoX integration then builds the application with the generated entries.
 
-[[glossary/build-state|Build state]] is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. **Build state is committed after `buildManifest()` completes and before HonoX/SSG runs. The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or output failure can leave new state behind. State is saved only after the full build completes successfully, so a failure at any point may retain or replace the prior state depending on where the failure occurs.**
+[[glossary/build-state|Build state]] is application-scoped at `.riebeckite/build/content-state.json`. It is an optimization, not a source of truth. A missing, incompatible, or unsafe state causes an initial/full path; `--full` requests that path explicitly. **Build state is committed after `buildManifest()` completes and before HonoX/SSG runs. The SSG `ContentManager` does not pass `commitBuildState:false`, so a later SSG or output failure can leave new state behind. A failure during `buildManifest()` keeps the previous state.**
 
 ## Build provenance
 
@@ -159,8 +159,9 @@ The record types are `BuildProvenance`, `ProvenanceSource`,
 
 The latest record and history live inside
 `.riebeckite/build/content-state.json` as the `provenance` and
-`provenanceHistory` fields. Build state is written only after a successful
-build, so a failed build does not replace the previous record.
+`provenanceHistory` fields. Build state is written after the manifest build and
+before SSG, so a later SSG or output failure can leave the new record behind.
+A failure during the manifest build keeps the previous record.
 
 Provenance is intentionally not a separate artifact:
 

@@ -59,9 +59,7 @@ table.
 
 ## Validation
 
-An invalid configuration throws `ConfigValidationError`, which lists each
-offending path and message. Do not catch and ignore it. Run `check` after any
-change:
+An invalid configuration section throws `ConfigValidationError`; an invalid theme preset or setting throws `ThemeSettingsValidationError`. Both list each offending path and message. Do not catch and ignore them. Run `check` after any change:
 
 ```sh
 npm exec riebeckite check

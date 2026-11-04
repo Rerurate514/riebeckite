@@ -4,9 +4,9 @@ title: Breadcrumbs
 ---
 # Breadcrumbs
 
-Build-time breadcrumb navigation derived from the note's slug hierarchy. For
-every published entry the plugin inserts a `<nav>` at the top of the rendered
-HTML and enriches the page with a hierarchical BreadcrumbList JSON-LD schema.
+Build-time breadcrumb navigation derived from the note's public URL hierarchy.
+The plugin provides the trail data and a `<Breadcrumbs />` component for the
+Site, and enriches the page with a hierarchical BreadcrumbList JSON-LD schema.
 No client-side JavaScript is required.
 
 [日本語](./breadcrumbs.ja.md)
@@ -28,9 +28,9 @@ has an index note of its own (a note with the folder slug), that note's title
 is used for the crumb, otherwise the segment is title-cased. The final crumb is
 the note itself and links to its permalink.
 
-The plugin injects the nav into the manifest entry's HTML. Core synchronizes
-that HTML with the content the route renders, so the nav appears on generated
-pages and in feeds.
+The plugin does not modify the entry's HTML. The reference Site renders
+`<Breadcrumbs />` above the article; the component reads the current entry and
+builds the same trail at render time. Feeds keep the article body unchanged.
 
 ## JSON-LD
 
@@ -78,7 +78,7 @@ breadcrumbs({
 
 ## Display
 
-Breadcrumbs are rendered above the article on every eligible page. This page shows the live navigation for its own path.
+When the Site renders `<Breadcrumbs />` above the article, the trail appears on every eligible page. This page shows the live navigation for its own path.
 
 ## Style
 
@@ -91,12 +91,15 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 ## Exports
 
 - `breadcrumbs(options?)` — plugin factory
-- `breadcrumbs` — alias of `breadcrumbs`
+- `Breadcrumbs` — Site component for the trail
+- `getBreadcrumbs(...)` — data helper for the current entry
 - `resolveBreadcrumbsOptions(options?)` — apply option defaults
 - `buildBreadcrumbItems({ manifest, entry, config, homeLabel })` — build the trail
 - `renderBreadcrumbNav(items, options)` — render the navigation HTML
+- `buildBreadcrumbHeadTag(schema)` / `hasBreadcrumbHeadTag(headTags)` — head-tag helpers
 - `buildBreadcrumbJsonLd(config, items)` — build the JSON-LD object
-- Types: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
+- `BREADCRUMBS_ATTRIBUTE` / `BREADCRUMBS_PLUGIN_NAME` — constants
+- Types: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`, `BreadcrumbsProps`
 
 ## Limitations
 

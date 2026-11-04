@@ -42,9 +42,13 @@ This is the fastest path to a public site.
 
    ```sh
    npx create-riebeckite --cloudflare-workers my-site
+   cd my-site
+   npm install
    ```
 
-   Passing `--cloudflare-workers` sets the deployment choice to Cloudflare Workers non-interactively. Without a directory argument the CLI is interactive and asks about deployment; with `--cloudflare-workers` it defaults to that choice. Run these commands afterwards:
+   Passing `--cloudflare-workers` selects Cloudflare Workers non-interactively and skips the remaining prompts, but it does not install dependencies. Change into the generated directory and run `npm install` before the next step.
+
+   Then build and publish:
 
    ```sh
    npm exec riebeckite build
@@ -106,6 +110,13 @@ This adds:
 
 - `wrangler.jsonc`
 - `.github/workflows/publish.yml`
+
+The command-line form skips the prompts and does not install dependencies. Before your first commit, run:
+
+```sh
+cd my-site
+npm install
+```
 
 The generated workflow installs dependencies with `npm ci`, runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
 

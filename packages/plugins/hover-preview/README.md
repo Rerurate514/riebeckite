@@ -14,20 +14,20 @@ Hover over this link to [Plugin API](https://github.com/Rerurate514/riebeckite/b
 
 ## Overview
 
-At build time `hoverPreview()` builds a preview index from the content
-manifest (`permalink` → `{ title, excerpt, slug }`) and injects it once into
-every page that contains internal links as an inert
-`<script type="application/json" data-rb-hover-preview>` block. The client
-entry `initHoverPreview` reads that payload and attaches hover, focus, and touch
-handlers to the matching links.
+At build time `hoverPreview()` writes a preview index from the content manifest
+(`permalink` → `{ title, excerpt, slug }`) as a generated JSON file and injects
+a small pointer `<script type="application/json" data-rb-hover-preview>` block
+once into every page that contains internal links. The client entry
+`initHoverPreview` reads the block, fetches the index, and attaches hover, focus,
+and touch handlers to the matching links.
 
 The index contains only discoverable entries. Unlisted notes stay reachable at
 their permalink, but their titles and excerpts are not written to the shared
 preview index. Drafts and scheduled notes are excluded as well. The excerpt is
 plain text extracted from the rendered HTML: tags are stripped, whitespace is
 collapsed, and the result is truncated to `excerptLength` characters. Pages
-without internal links are left untouched, and the payload is bounded by
-`maxEntries` when set.
+without internal links are left untouched, and `maxEntries` limits how many
+entries are written to the generated index.
 
 ## Usage
 
@@ -54,7 +54,7 @@ called without options.
 | --------------- | -------------- | ------------------------------------------------------ |
 | `delay`         | `120`          | Milliseconds before the popover appears.               |
 | `excerptLength` | `160`          | Maximum excerpt length in characters.                  |
-| `maxEntries`    | unset          | Upper bound on entries stored in the page payload.     |
+| `maxEntries`    | unset          | Upper bound on entries in the generated index.         |
 | `selector`      | `a[href^="/"]` | Selector for internal links that receive a preview.    |
 | `className`     | `rb-hover-preview` | Base class of the popover element.                 |
 | `includeTitles` | `true`         | Whether the popover shows the target entry title.      |

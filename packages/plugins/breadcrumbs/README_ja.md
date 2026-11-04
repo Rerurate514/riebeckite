@@ -2,9 +2,9 @@
 
 <!-- Generated from docs/docs/plugins/breadcrumbs.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-ノートのスラッグ階層からパンくずナビゲーションをビルド時に生成する
-プラグインです。公開対象の各エントリについて、記事上部に `<nav>` を挿入し、
-階層構造を反映した BreadcrumbList の JSON-LD も出力します。クライアント側
+ノートの公開 URL 階層からパンくずナビゲーションをビルド時に生成する
+プラグインです。パンくず列のデータとサイト用の `<Breadcrumbs />` コンポーネントを
+提供し、階層構造を反映した BreadcrumbList の JSON-LD も出力します。クライアント側
 JavaScript は不要です。
 
 [English](./README.md)
@@ -26,9 +26,9 @@ JavaScript は不要です。
 タイトルを使い、なければセグメントをタイトルケース（先頭を大文字にする）にして
 代用します。最後のパンくずはそのノート自身で、パーマリンクへリンクします。
 
-マニフェストエントリの HTML にナビゲーションを挿入します。Core がその HTML を
-コンテンツルートの描画 HTML と同期するため、生成ページとフィードの両方に
-ナビゲーションが反映されます。
+プラグインはエントリの HTML を変更しません。リファレンスサイトが記事の上に
+`<Breadcrumbs />` を描画し、コンポーネントが現在のエントリから同じパンくず列を
+組み立てます。フィードの本文は変更されません。
 
 ## JSON-LD
 
@@ -75,7 +75,7 @@ breadcrumbs({
 
 ## 表示
 
-パンくずは対象ページの記事上部に描画されます。このページでも、自身のパスに対応するナビゲーションを確認できます。
+サイトが記事の上に `<Breadcrumbs />` を描画すると、対象ページにパンくずが表示されます。このページでも、自身のパスに対応するナビゲーションを確認できます。
 
 ## スタイル
 
@@ -88,12 +88,15 @@ import "@riebeckite/plugin-breadcrumbs/style.css";
 ## エクスポート
 
 - `breadcrumbs(options?)`：プラグインファクトリ
-- `breadcrumbs`：`breadcrumbs` のエイリアス
+- `Breadcrumbs`：パンくず列を描画するサイト用コンポーネント
+- `getBreadcrumbs(...)`：現在のエントリ用のデータヘルパー
 - `resolveBreadcrumbsOptions(options?)`：オプションの既定値を適用する
 - `buildBreadcrumbItems({ manifest, entry, config, homeLabel })`：パンくず列を組み立てる
 - `renderBreadcrumbNav(items, options)`：ナビゲーション HTML を生成する
+- `buildBreadcrumbHeadTag(schema)` / `hasBreadcrumbHeadTag(headTags)`：head タグ用ヘルパー
 - `buildBreadcrumbJsonLd(config, items)`：JSON-LD オブジェクトを生成する
-- 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`
+- `BREADCRUMBS_ATTRIBUTE` / `BREADCRUMBS_PLUGIN_NAME`：定数
+- 型: `BreadcrumbsOptions`, `ResolvedBreadcrumbsOptions`, `BreadcrumbItem`, `BreadcrumbsProps`
 
 ## 制約
 

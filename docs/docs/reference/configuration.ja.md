@@ -12,6 +12,7 @@ Riebeckite の設定は `riebeckite.config.ts` に記述します。`defineConfi
 
 ```ts id="vps2rj"
 import { defineConfig } from "@riebeckite/core";
+import { defaultTheme } from "@riebeckite/theme-default";
 
 export default defineConfig({
   site: {
@@ -63,7 +64,7 @@ export default defineConfig({
 
 ## 設定を検証する
 
-設定に問題がある場合は `ConfigValidationError` として報告されます。不正な設定を無視してそのまま起動するのではなく、早い段階で失敗させてください。
+通常の設定セクションに問題がある場合は `ConfigValidationError` として報告されます。テーマのプリセットや設定が不正な場合は `ThemeSettingsValidationError` が発生します。どちらも `@riebeckite/core` から公開されています。不正な設定を無視してそのまま起動するのではなく、早い段階で失敗させてください。
 
 設定を変更した後は、次を実行してください。
 

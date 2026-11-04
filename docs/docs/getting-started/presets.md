@@ -44,7 +44,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Broad plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
 
-The seven showcase languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `starter` uses one page language selected from the site locale; add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
+The seven showcase languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. Add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
 
 ### `starter`
 

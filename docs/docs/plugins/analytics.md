@@ -108,9 +108,10 @@ own private runtime configuration.
 
 ## Browser behavior
 
-For every published content entry with Core's source-authored stable `id`, the
-plugin places a small content-ID marker in rendered HTML and registers
-`initAnalytics` with the generic public-config client mechanism.
+For every manifest entry with Core's source-authored stable `id`, the plugin
+appends a small content-ID marker to the entry's rendered HTML when that HTML is
+rendered, and registers `initAnalytics` with the generic public-config client
+mechanism.
 
 In a browser, the initializer sends exactly one event per document:
 

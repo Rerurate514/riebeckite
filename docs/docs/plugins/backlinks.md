@@ -39,10 +39,11 @@ export default defineConfig({
 });
 ```
 
-`backlinks()` adds backlinks for every public entry with published
-incoming links and bundles `style.css` into the app stylesheet. Render
-`<Backlinks backlinks={getBacklinks({ view, slug })} />` once in the article
-layout to display it. The official Starter already renders this component.
+`backlinks()` provides the `getBacklinks({ view, slug })` helper and the
+`<Backlinks backlinks={...} />` component, and bundles `style.css` into the app
+stylesheet. Render `<Backlinks backlinks={getBacklinks({ view, slug })} />` once
+in the article layout to display it. The official Starter already renders this
+component.
 
 ## Advanced customization
 
@@ -53,15 +54,17 @@ filtering.
 
 ```tsx
 import Backlinks, { getBacklinks } from "@riebeckite/plugin-backlinks";
-import { content } from "virtual:riebeckite/content";
-import { getArticleTitle } from "../lib/article-title";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 
-const manifest = await content.getManifest();
-const backlinks = getBacklinks({ view, slug, resolveTitle: getArticleTitle });
-
-return (
-  <aside><Backlinks backlinks={backlinks} /></aside>
-);
+function ArticleFooter() {
+  const { view } = useSiteContext();
+  const { entry } = useArticleContext();
+  if (!view || !entry) return null;
+  const backlinks = getBacklinks({ view, slug: entry.slug });
+  return (
+    <aside><Backlinks backlinks={backlinks} /></aside>
+  );
+}
 ```
 
 ## Configuration

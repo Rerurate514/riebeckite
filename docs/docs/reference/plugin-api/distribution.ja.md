@@ -13,19 +13,20 @@ sidebar:
 
 ```ts
 // site/extensions/local-plugin.ts
+import { definePlugin } from "@riebeckite/core";
 
-return definePlugin({
-  name: "site-local",
-
-  assets: [
-    {
-      pluginName: "site-local",
-      kind: "style",
-      moduleSpecifier:
-        "/extensions/plugin.css",
-    },
-  ],
-};
+export function localPlugin() {
+  return definePlugin({
+    name: "site-local",
+    assets: [
+      {
+        pluginName: "site-local",
+        kind: "style",
+        moduleSpecifier: "/extensions/plugin.css",
+      },
+    ],
+  });
+}
 ```
 
 作成したプラグインは、`riebeckite.config.ts` の `plugins` へ追加します。
@@ -80,7 +81,7 @@ import {
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.35",
+    "@riebeckite/core": "^0.0.38",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

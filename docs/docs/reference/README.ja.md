@@ -68,7 +68,7 @@ plugin verify
 dev
 check
 doctor
-upgrade --check
+upgrade
 build
 clean
 deploy

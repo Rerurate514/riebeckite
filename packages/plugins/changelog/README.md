@@ -2,10 +2,10 @@
 
 <!-- Generated from docs/docs/plugins/changelog.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Build-time change history derived from local Git history. For every published
-note the plugin adds a "change history" section with commit dates, subjects,
-and authors, and it can build a site-wide changelog dataset from the notes'
-commits. No client-side JavaScript is required.
+Build-time change history derived from local Git history. The plugin reads
+commit dates, subjects, and authors for notes, renders change history sections,
+and can build a site-wide changelog dataset from the notes' commits. The Site
+decides where to render each section. No client-side JavaScript is required.
 
 [日本語](./README_ja.md)
 

@@ -56,13 +56,15 @@ export default defineConfig({ plugins: [localGraph()] });
 
 ## 高度なカスタマイズ
 
+公開ビューからはデータヘルパーで、マニフェストからは `buildLocalGraph` でグラフを解決し、コンポーネントへ渡します。
+
 ```tsx
-import { LocalGraph, getLocalGraph } from "@riebeckite/plugin-local-graph";
+import { LocalGraph, buildLocalGraph } from "@riebeckite/plugin-local-graph";
 import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();
-const graph = getLocalGraph({ manifest, config, slug, resolveTitle: getArticleTitle });
+const graph = buildLocalGraph({ manifest, config, slug, resolveTitle: getArticleTitle });
 
 return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 ```
@@ -72,7 +74,7 @@ return <aside>{graph ? <LocalGraph graph={graph} /> : null}</aside>;
 - `localGraph()` — プラグインファクトリ
 - `LocalGraph` — グラフデータを埋め込むサーバーコンポーネント
 - `LocalGraphView` — ハイドレーションで使う表示コンポーネント
-- `getLocalGraph({ manifest, config, slug, resolveTitle })` — 公開グラフデータ（ノートがない、または非公開なら `null`）
+- `getLocalGraph({ view, slug })` — Site の公開ビューから取得する公開グラフデータ（ノートがない、または非公開なら `null`）
 - `buildLocalGraph({ manifest, config, slug, resolveTitle })` — マニフェストから構築するグラフデータ
 - 型: `LocalGraphData`、`LocalGraphNode`、`LocalGraphViewProps`
 - 旧 API の `buildGraphEdges()` と `layoutRadialGraph()` は `@riebeckite/core/client` から引き続き利用できます。Local Graph の UI は固定放射状レイアウトを使いません。

@@ -42,9 +42,13 @@ Content Repository の分離
 
    ```bash
    npx create-riebeckite --cloudflare-workers my-site
+   cd my-site
+   npm install
    ```
 
-   `--cloudflare-workers` フラグを渡すとデプロイ選択を Cloudflare Workers に非対話的に設定します。ディレクトリ引数なしでは CLI が対話的にデプロイについて尋ねます。`--cloudflare-workers` を指定すると既定でその選択になります。
+   `--cloudflare-workers` を渡すと、対話形式の残りの質問をスキップして Cloudflare Workers を選びます。ただし依存パッケージはインストールされません。生成されたディレクトリへ移動し、次の手順の前に `npm install` を実行してください。
+
+   その後、ビルドして公開します。
 
    ```bash
    npm exec riebeckite build
@@ -106,6 +110,13 @@ npx create-riebeckite my-site --github-actions
 
 - `wrangler.jsonc`
 - `.github/workflows/publish.yml`
+
+コマンドライン形式では対話形式の質問をスキップするため、依存パッケージはインストールされません。最初のコミットの前に次を実行してください。
+
+```bash
+cd my-site
+npm install
+```
 
 生成されたワークフローは `npm ci` で依存パッケージをインストールします。その後、`npm exec riebeckite check` と `npm exec riebeckite build` を実行し、`cloudflare/wrangler-action@v3` でデプロイします。
 

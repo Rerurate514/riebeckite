@@ -96,10 +96,11 @@ include only positions supplied by Riebeckite. Build impact is a last-build
 result, not a dry-run prediction; `completeness` is `unknown` when a full
 regeneration was required.
 
-Publication responses include a `canonicalUrl` resolved from the configured
-`site.baseUrl` and the entry permalink, or `null` when no valid public origin is
-configured. Their optional `seo` block is derived only from the resolved content
-manifest entry:
+Publication responses include `publishAt` in both `entry` and `publication` as
+an ISO 8601 string or `null` when it is not set. They also include a
+`canonicalUrl` resolved from the configured `site.baseUrl` and the entry
+permalink, or `null` when no valid public origin is configured. Their optional
+`seo` block is derived only from the resolved content manifest entry:
 
 ```json
 {

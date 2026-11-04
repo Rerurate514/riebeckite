@@ -145,7 +145,7 @@ export function inspectBridgePublication(
       visibility: entry.publishing.visibility,
       routable: entry.publishing.routable,
       discoverable: entry.publishing.discoverable,
-      publishAt: entry.publishing.publishAt?.toISOString(),
+      publishAt: entry.publishing.publishAt?.toISOString() ?? null,
       publicLocation: entry.publicLocation,
       canonicalUrl: resolvePublicUrl(options.publicOrigin, entry.permalink),
       seo: publicationSeo(entry, options.publicOrigin),
@@ -326,6 +326,7 @@ function serializeEntry(
     visibility: entry.publishing.visibility,
     routable: entry.publishing.routable,
     discoverable: entry.publishing.discoverable,
+    publishAt: entry.publishing.publishAt?.toISOString() ?? null,
     redirects: entry.publicLocation.redirects ?? [],
   };
 }

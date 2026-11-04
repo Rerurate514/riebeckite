@@ -345,6 +345,7 @@ test("resolves a suffix and a content ID through the shared source resolution", 
         visibility: "public",
         routable: true,
         discoverable: true,
+        publishAt: null,
         redirects: [],
       },
       revision: 4,
@@ -408,6 +409,15 @@ test("does not offer a preview for non-routable pages", () => {
 test("reports publication state and SEO without treating drafts as routable", () => {
   const snapshot = fixtureSnapshot();
   const options = { contentRoot: "/vault", revision: 4 };
+  const published = inspectBridgePublication(
+    snapshot,
+    "notes/hello.md",
+    options,
+  ) as { entry: Record<string, unknown>; publication: Record<string, unknown> };
+  assert.ok(Object.hasOwn(published.entry, "publishAt"));
+  assert.equal(published.entry.publishAt, null);
+  assert.ok(Object.hasOwn(published.publication, "publishAt"));
+  assert.equal(published.publication.publishAt, null);
   const draft = inspectBridgePublication(snapshot, "notes/draft.md", options)
     .publication as Record<string, unknown>;
   assert.equal(draft.visibility, "draft");

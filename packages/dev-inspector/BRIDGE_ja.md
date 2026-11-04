@@ -65,7 +65,7 @@ Source の状態は `resolved`、`not-found`、不正または曖昧なパスの
 
 Preview は公開境界を越えません。公開可能な経路を持たない draft と scheduled は `NOT_PUBLICLY_ROUTABLE` を返します。Bridge が返すのはローカル開発 URL だけです。本番 URL は設定済みの `site.baseUrl` から解決する場合だけ返し、推測・生成はしません。Diagnostics の位置情報は Riebeckite が保持するものだけです。Build impact は dry-run の予測ではなく最後のビルド結果です。完全再生成が必要だった場合、`completeness` は `unknown` になります。
 
-Publication 応答には、設定済みの `site.baseUrl` とエントリの permalink から解決した `canonicalUrl` を含めます。有効な public origin がない場合は `null` です。任意の `seo` ブロックは、解決済みコンテンツ Manifest のエントリだけから導出します。
+Publication 応答では、`entry` と `publication` の両方に `publishAt` を含めます。未設定の場合は `null`、設定済みの場合は ISO 8601 文字列です。設定済みの `site.baseUrl` とエントリの permalink から解決した `canonicalUrl` も含めます。有効な public origin がない場合は `null` です。任意の `seo` ブロックは、解決済みコンテンツ Manifest のエントリだけから導出します。
 
 ```json
 {

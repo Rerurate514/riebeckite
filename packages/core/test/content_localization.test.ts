@@ -79,6 +79,24 @@ test("fallback uses the fallback locale only for missing translations", () => {
   );
 });
 
+test("fallback requires an explicit locale only when a translation is missing", () => {
+  const complete = [entry("a", "ja", "a"), entry("a.en", "en", "a")];
+  assert.deepEqual(
+    selectLocalizedEntries(complete, { mode: "fallback", locale: "ja" }).map(
+      (item) => item.slug,
+    ),
+    ["a"],
+  );
+  assert.throws(
+    () =>
+      selectLocalizedEntries([...complete, entry("b.en", "en", "b")], {
+        mode: "fallback",
+        locale: "ja",
+      }),
+    /requires fallbackLocale/,
+  );
+});
+
 test("fallback never merges entries without a translation identity", () => {
   const entries = [entry("a.en", "en"), entry("b.en", "en")];
   assert.deepEqual(
@@ -100,6 +118,22 @@ test("a locale-free site is returned unchanged", () => {
       fallbackLocale: "en",
     }),
     entries,
+  );
+});
+
+test("fallback preserves missing fallback and unknown translation identities", () => {
+  const entries = [
+    entry("a", "ja", "a"),
+    entry("b.fr", "fr", "b"),
+    entry("unknown.en", "en"),
+  ];
+  assert.deepEqual(
+    selectLocalizedEntries(entries, {
+      mode: "fallback",
+      locale: "ja",
+      fallbackLocale: "en",
+    }).map((item) => item.slug),
+    ["a", "unknown.en"],
   );
 });
 

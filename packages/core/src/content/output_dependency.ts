@@ -226,10 +226,11 @@ export function buildOutputInventory(
 }
 
 export function htmlOutputPath(pathname: string): string {
-  const normalized = normalizePublicPath(pathname);
+  const normalized = normalizePublicPath(pathname).replace(/\.html$/i, "");
   if (normalized === "/") return "index.html";
   const withoutSlash = normalized.replace(/^\//, "");
-  if (pathname.endsWith("/")) return `${withoutSlash}/index.html`;
+  if (pathname.replaceAll("\\", "/").endsWith("/"))
+    return `${withoutSlash}/index.html`;
   return `${withoutSlash}.html`;
 }
 
@@ -715,19 +716,22 @@ function assertNoGeneratedOutputCollision(
   existing: OutputDescriptor,
   incoming: OutputDescriptor,
 ): void {
-  if (existing.kind !== "generated" && incoming.kind !== "generated") return;
   if (
     existing.kind === incoming.kind &&
     existing.producer === incoming.producer
   )
     return;
   throw new Error(
-    `Generated output path "${incoming.path}" collides with ${existing.kind} output owned by "${existing.producer}" and ${incoming.kind} output owned by "${incoming.producer}".`,
+    `Output path "${incoming.path}" collides with ${existing.kind} output owned by "${existing.producer}" and ${incoming.kind} output owned by "${incoming.producer}".`,
   );
 }
 
 function normalizePublicPath(pathname: string): string {
-  const path = `/${pathname.split("/").filter(Boolean).join("/")}`;
+  const path = `/${pathname
+    .replaceAll("\\", "/")
+    .split("/")
+    .filter(Boolean)
+    .join("/")}`;
   return path === "/" ? path : path.replace(/\/$/, "");
 }
 

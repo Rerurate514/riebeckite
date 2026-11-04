@@ -102,7 +102,7 @@ Riebeckite answers this with one shared policy instead of per-plugin filters:
 | `fallback` | Keep the page language; use `fallbackLocale` only for translation groups that have no page-language entry. |
 | `all` | Keep every language. The mode never deduplicates entries implicitly. |
 
-`current` never removes content that has no language, and a site without l10n metadata behaves exactly as before. `fallback` compares translation groups, so two notes with the same title and date are still separate notes unless they share a translation identity.
+`current` never removes content that has no language, and a site without l10n metadata behaves exactly as before. `fallback` compares translation groups, so two notes with the same title and date are still separate notes unless they share a translation identity. If a page-language translation is missing, `fallback` requires an explicit `fallbackLocale`; it fails instead of silently omitting that group.
 
 The policy is available through Core helpers:
 

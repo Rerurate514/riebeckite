@@ -84,6 +84,19 @@ export function selectLocalizedEntries<Entry extends LocalizableEntry>(
     else groups.set(key, [entry]);
   }
 
+  if (
+    !policy.fallbackLocale &&
+    [...groups.values()].some(
+      (group) =>
+        group.some((entry) => getEntryLanguage(entry) !== undefined) &&
+        !group.some((entry) => getEntryLanguage(entry) === policy.locale),
+    )
+  ) {
+    throw new Error(
+      `Content locale policy requires fallbackLocale to select translations missing from ${policy.locale}.`,
+    );
+  }
+
   const selected = new Set<string>();
   for (const group of groups.values()) {
     const neutral = group.filter(

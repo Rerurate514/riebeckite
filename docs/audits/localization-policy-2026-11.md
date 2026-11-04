@@ -95,4 +95,3 @@ keep `{ type: "global" }`, which is conservative but correct for translation
 membership changes. Localization is part of `manifest.localization`, which is
 included in the existing manifest fingerprint. There is no cross-locale output
 reuse because each localized page has its own pathname and output descriptor.
-

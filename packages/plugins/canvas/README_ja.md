@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/canvas.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグインです。
+Obsidian の `.canvas`（JSON Canvas 1.0）を、パン・ズームできる読み取り専用 Viewer として表示するプラグインです。
 
 [English](./README.md)
 
@@ -49,6 +49,12 @@ export default defineConfig({
   ]
 }
 ~~~
+
+## Viewer の動作
+
+SSR と操作可能な表示は、同じ位置決め済み World を共有します。`"both"` ではクライアントが SSR の World を引き継ぐため、Canvas が二重に表示されたり、JavaScript の読み込みでページ高さが増えたりしません。Text カードは安全な見出し、強調、インラインコード、リスト、引用、公開された Wikilink を表示します。File カードはノートへリンクし、画像・音声・動画をプレビューします。Group、プリセット色と HEX 色、Group 背景、エッジラベル、JSON Canvas の既定矢印を表示します。初期表示は Frame にフィットします。Ctrl/Cmd/Shift + ホイールでポインター位置を中心に拡大縮小し、余白をドラッグして移動できます。クリック／Shift+クリックでカードを選択できます。
+
+Viewer は読み取り専用で、`.canvas` ファイルを書き換えません。外部 URL は `http` と `https` のリンクだけを許可し、iframe には埋め込みません。Mermaid、数式、Callout、表、ノート本文プレビューは、現在カード内で未対応です。
 
 ## 描画結果
 

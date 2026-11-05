@@ -21,6 +21,7 @@ const EDGE_SIDES: readonly CanvasEdgeSide[] = [
   "left",
 ];
 const EDGE_ENDS: readonly CanvasEdgeEnd[] = ["none", "arrow"];
+const BACKGROUND_STYLES = ["cover", "ratio", "repeat"] as const;
 const DEFAULT_NODE_WIDTH = 220;
 const DEFAULT_NODE_HEIGHT = 120;
 const FALLBACK_COLUMNS = 3;
@@ -44,6 +45,7 @@ export function parseCanvas(json: string): CanvasDocument | null {
   const nodes = parseNodes(value.nodes);
   const edges = parseEdges(value.edges);
   if (nodes === null || edges === null) return null;
+  if (new Set(nodes.map((node) => node.id)).size !== nodes.length) return null;
 
   return { nodes, edges };
 }
@@ -147,7 +149,8 @@ function parseNodes(value: unknown): CanvasNode[] | null {
   const nodes: CanvasNode[] = [];
   for (const entry of value) {
     const node = parseNode(entry);
-    if (node) nodes.push(node);
+    if (!node) return null;
+    nodes.push(node);
   }
   return nodes;
 }
@@ -156,23 +159,45 @@ function parseNode(value: unknown): CanvasNode | null {
   if (!isRecord(value)) return null;
   const id = asString(value.id);
   if (!id) return null;
-  const type = NODE_TYPES.includes(value.type as CanvasNodeType)
-    ? (value.type as CanvasNodeType)
-    : "text";
+  const type = value.type as CanvasNodeType;
+  if (!NODE_TYPES.includes(type)) return null;
+  const x = asNumber(value.x);
+  const y = asNumber(value.y);
+  const width = asNumber(value.width);
+  const height = asNumber(value.height);
+  if (
+    x === undefined ||
+    y === undefined ||
+    width === undefined ||
+    height === undefined ||
+    width <= 0 ||
+    height <= 0
+  ) {
+    return null;
+  }
+  if (
+    (type === "text" && asString(value.text) === undefined) ||
+    (type === "file" && asString(value.file) === undefined) ||
+    (type === "link" && asString(value.url) === undefined)
+  ) {
+    return null;
+  }
 
   return {
     id,
     type,
-    x: asNumber(value.x) ?? 0,
-    y: asNumber(value.y) ?? 0,
-    width: asNumber(value.width) ?? DEFAULT_NODE_WIDTH,
-    height: asNumber(value.height) ?? DEFAULT_NODE_HEIGHT,
+    x,
+    y,
+    width,
+    height,
     color: asString(value.color),
     text: asString(value.text),
     file: asString(value.file),
     subpath: asString(value.subpath),
     url: asString(value.url),
     label: asString(value.label),
+    background: asString(value.background),
+    backgroundStyle: asBackgroundStyle(value.backgroundStyle),
   };
 }
 
@@ -183,7 +208,8 @@ function parseEdges(value: unknown): CanvasEdge[] | null {
   const edges: CanvasEdge[] = [];
   for (const entry of value) {
     const edge = parseEdge(entry);
-    if (edge) edges.push(edge);
+    if (!edge) return null;
+    edges.push(edge);
   }
   return edges;
 }
@@ -198,10 +224,10 @@ function parseEdge(value: unknown): CanvasEdge | null {
     id: asString(value.id) ?? `${fromNode}->${toNode}`,
     fromNode,
     fromSide: asSide(value.fromSide),
-    fromEnd: asEnd(value.fromEnd),
+    fromEnd: asEnd(value.fromEnd) ?? "none",
     toNode,
     toSide: asSide(value.toSide),
-    toEnd: asEnd(value.toEnd),
+    toEnd: asEnd(value.toEnd) ?? "arrow",
     color: asString(value.color),
     label: asString(value.label),
   };
@@ -238,6 +264,14 @@ function asSide(value: unknown): CanvasEdgeSide | undefined {
 function asEnd(value: unknown): CanvasEdgeEnd | undefined {
   return EDGE_ENDS.includes(value as CanvasEdgeEnd)
     ? (value as CanvasEdgeEnd)
+    : undefined;
+}
+
+function asBackgroundStyle(
+  value: unknown,
+): CanvasNode["backgroundStyle"] | undefined {
+  return BACKGROUND_STYLES.includes(value as (typeof BACKGROUND_STYLES)[number])
+    ? (value as CanvasNode["backgroundStyle"])
     : undefined;
 }
 

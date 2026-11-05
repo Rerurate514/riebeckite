@@ -23,6 +23,7 @@ export {
 export type { RenderCanvasInput } from "./src/render.js";
 export { CANVAS_NOTE_HREF } from "./src/render.js";
 export type {
+  CanvasCamera,
   CanvasDocument,
   CanvasEdge,
   CanvasEdgeSide,

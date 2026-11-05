@@ -1,5 +1,6 @@
 export { initCanvas } from "./src/client_init.js";
 export type {
+  CanvasCamera,
   CanvasDocument,
   CanvasEdge,
   CanvasEdgeSide,

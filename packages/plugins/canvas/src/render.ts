@@ -44,10 +44,8 @@ export function renderCanvas(input: RenderCanvasInput): string {
   });
 
   const parts: string[] = [];
-  if (options.render === "static" || options.render === "both") {
-    const staticHtml = renderStatic(layout, resolver);
-    if (staticHtml) parts.push(staticHtml);
-  }
+  const staticHtml = renderStatic(layout, resolver);
+  if (staticHtml) parts.push(staticHtml);
   if (options.render === "client" || options.render === "both") {
     parts.push('<div class="rb-canvas__stage" data-canvas-stage></div>');
   }
@@ -59,16 +57,18 @@ export function renderCanvas(input: RenderCanvasInput): string {
     options.maxNodes === undefined
       ? ""
       : ` data-canvas-max-nodes="${options.maxNodes}"`;
-  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}>${parts.join("\n")}</div>`;
+  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}><div class="rb-canvas__frame">${parts.join("\n")}</div></div>`;
 }
 
 function renderStatic(layout: CanvasLayout, resolver: CanvasResolver): string {
-  if (layout.nodes.length === 0) return "";
+  if (layout.nodes.length === 0) {
+    return '<div class="rb-canvas__static rb-canvas__empty">This canvas has no nodes.</div>';
+  }
   const edges = renderEdges(layout);
   const cards = layout.nodes
     .map((node) => renderNodeCard(node, resolver))
     .join("\n");
-  return `<div class="rb-canvas__static" role="img" aria-label="Canvas" style="position:relative;width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div>`;
+  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="Canvas" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
 }
 
 function renderEdges(layout: CanvasLayout): string {
@@ -84,17 +84,23 @@ function renderEdgeLine(
     edge.fromEnd === "arrow" ? ' marker-start="url(#rb-canvas-arrow)"' : "";
   const toEnd =
     edge.toEnd === "arrow" ? ' marker-end="url(#rb-canvas-arrow)"' : "";
-  return `<line class="rb-canvas__edge" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"${fromEnd}${toEnd}></line>`;
+  const color = renderColorAttribute(edge.color, "data-canvas-edge-color");
+  const label = edge.label
+    ? `<text class="rb-canvas__edge-label" x="${(edge.x1 + edge.x2) / 2}" y="${(edge.y1 + edge.y2) / 2}">${escapeHtml(edge.label)}</text>`
+    : "";
+  return `<line class="rb-canvas__edge" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"${color}${fromEnd}${toEnd}></line>${label}`;
 }
 
 function renderNodeCard(
   node: CanvasLayoutNode,
   resolver: CanvasResolver,
 ): string {
-  const color = node.color
-    ? ` data-canvas-color="${escapeHtmlAttribute(node.color)}"`
-    : "";
-  return `<div class="rb-canvas__node rb-canvas__node--${node.type}" data-canvas-node-id="${escapeHtmlAttribute(node.id)}"${color} style="left:${node.x}px;top:${node.y}px;width:${node.width}px;height:${node.height}px">${renderNodeBody(node, resolver)}</div>`;
+  const color = renderColorAttribute(node.color, "data-canvas-color");
+  const background =
+    node.type === "group" && node.background
+      ? renderGroupBackground(node.background, node.backgroundStyle, resolver)
+      : "";
+  return `<div class="rb-canvas__node rb-canvas__node--${node.type}" data-canvas-node-id="${escapeHtmlAttribute(node.id)}"${color}${background} style="left:${node.x}px;top:${node.y}px;width:${node.width}px;height:${node.height}px">${renderNodeBody(node, resolver)}</div>`;
 }
 
 function renderNodeBody(node: CanvasNode, resolver: CanvasResolver): string {
@@ -107,7 +113,9 @@ function renderNodeBody(node: CanvasNode, resolver: CanvasResolver): string {
   if (node.type === "link") {
     const label = node.label ?? node.url ?? "Link";
     const href = escapeHtmlAttribute(node.url ?? "#");
-    return `<a class="rb-canvas__node-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+    return isSafeExternalUrl(node.url)
+      ? `<a class="rb-canvas__node-link" href="${href}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}<span class="rb-canvas__node-url">${escapeHtml(node.url ?? "")}</span></a>`
+      : `<span class="rb-canvas__node-label">${escapeHtml(label)}</span>`;
   }
   return renderFileBody(node, resolver);
 }
@@ -123,12 +131,34 @@ function renderFileBody(node: CanvasNode, resolver: CanvasResolver): string {
     return renderNoteAnchor(link.slug, label, "rb-canvas__node-link");
   }
   if (link.kind === "asset") {
-    return `<a class="rb-canvas__node-link" href="${escapeHtmlAttribute(link.url)}">${escapeHtml(label)}</a>`;
+    return renderAssetPreview(link.url, label);
   }
   return `<span class="rb-canvas__node-label">${escapeHtml(label)}</span>`;
 }
 
 function renderText(value: string, resolver: CanvasResolver): string {
+  const blocks = value
+    .split(/\n{2,}/)
+    .map((block) => renderTextBlock(block, resolver));
+  return blocks.join("");
+}
+
+function renderTextBlock(value: string, resolver: CanvasResolver): string {
+  const lines = value.split("\n");
+  if (lines.length === 1 && /^#{1,6}\s+/.test(value)) {
+    const level = value.match(/^#+/)?.[0].length ?? 1;
+    return `<h${level}>${renderInline(value.replace(/^#{1,6}\s+/, ""), resolver)}</h${level}>`;
+  }
+  if (lines.every((line) => /^[-*+]\s+/.test(line))) {
+    return `<ul>${lines.map((line) => `<li>${renderInline(line.replace(/^[-*+]\s+/, ""), resolver)}</li>`).join("")}</ul>`;
+  }
+  if (lines.every((line) => /^>\s?/.test(line))) {
+    return `<blockquote>${lines.map((line) => renderInline(line.replace(/^>\s?/, ""), resolver)).join("<br />")}</blockquote>`;
+  }
+  return `<p>${lines.map((line) => renderInline(line, resolver)).join("<br />")}</p>`;
+}
+
+function renderInline(value: string, resolver: CanvasResolver): string {
   const output: string[] = [];
   let lastIndex = 0;
 
@@ -151,7 +181,60 @@ function renderText(value: string, resolver: CanvasResolver): string {
   }
   if (lastIndex < value.length) output.push(escapeHtml(value.slice(lastIndex)));
 
-  return output.join("").replace(/\n/g, "<br />");
+  return output
+    .join("")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
+}
+
+function renderAssetPreview(url: string, label: string): string {
+  const safeUrl = escapeHtmlAttribute(url);
+  const extension = url.split("?")[0]?.split(".").at(-1)?.toLowerCase();
+  if (
+    ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif"].includes(
+      extension ?? "",
+    )
+  ) {
+    return `<a class="rb-canvas__asset" href="${safeUrl}"><img src="${safeUrl}" alt="${escapeHtmlAttribute(label)}" loading="lazy" /></a>`;
+  }
+  if (extension === "pdf")
+    return `<a class="rb-canvas__node-link" href="${safeUrl}">${escapeHtml(label)}</a>`;
+  if (["mp3", "wav", "ogg", "m4a"].includes(extension ?? ""))
+    return `<audio controls src="${safeUrl}"></audio>`;
+  if (["mp4", "webm", "mov"].includes(extension ?? ""))
+    return `<video controls preload="metadata" src="${safeUrl}"></video>`;
+  return `<a class="rb-canvas__node-link" href="${safeUrl}">${escapeHtml(label)}</a>`;
+}
+
+function renderGroupBackground(
+  background: string,
+  style: CanvasNode["backgroundStyle"],
+  resolver: CanvasResolver,
+): string {
+  const link = resolver.resolveFile(background);
+  if (link.kind !== "asset") return "";
+  const mode = style === "repeat" ? "repeat" : "no-repeat";
+  const size =
+    style === "cover" ? "cover" : style === "ratio" ? "contain" : "auto";
+  return ` data-canvas-background="${escapeHtmlAttribute(link.url)}" data-canvas-background-repeat="${mode}" data-canvas-background-size="${size}"`;
+}
+
+function renderColorAttribute(color: string | undefined, name: string): string {
+  if (!color) return "";
+  if (/^[1-6]$/.test(color) || /^#[0-9a-fA-F]{6}$/.test(color)) {
+    return ` ${name}="${escapeHtmlAttribute(color)}"`;
+  }
+  return "";
+}
+
+function isSafeExternalUrl(value: string | undefined): boolean {
+  if (!value) return false;
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
 }
 
 function renderNoteAnchor(

@@ -4,7 +4,7 @@ title: Canvas
 ---
 # Canvas
 
-Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.
+Render Obsidian `.canvas` files (JSON Canvas 1.0) as a read-only, pan-and-zoom viewer.
 
 [日本語](./canvas.ja.md)
 
@@ -53,6 +53,21 @@ message with `source: "@riebeckite/plugin-canvas"` is reported.
   ]
 }
 ~~~
+
+## Viewer behaviour
+
+Canvas uses one positioned world for SSR and the interactive viewer. In `"both"`
+mode, the client adopts that SSR world rather than drawing a second canvas, so
+JavaScript does not add page height or replace card content. Text cards render
+safe headings, emphasis, inline code, lists, quotes, and public wikilinks. File
+cards link to notes and preview image, audio, and video attachments. Groups,
+preset/hex colors, group backgrounds, edge labels, and JSON Canvas default arrow
+ends are rendered. The viewer opens fitted to its frame; Ctrl/Cmd/Shift + wheel
+zooms at the pointer, blank-space drag pans, and click/Shift+click selects cards.
+
+The viewer is read-only. External URL cards allow only `http` and `https`; they
+are links, never iframe embeds. Mermaid, math, callouts, tables, and note-body
+previews are currently unsupported inside cards.
 
 ## Output
 

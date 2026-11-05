@@ -1,18 +1,22 @@
 import { buildCanvasLayout, parseCanvas } from "./parse.js";
-import type {
-  CanvasLayout,
-  CanvasLayoutEdge,
-  CanvasLayoutNode,
-} from "./types.js";
+import type { CanvasCamera, CanvasLayout } from "./types.js";
 
-const SVG_NS = "http://www.w3.org/2000/svg";
+const MIN_SCALE = 0.05;
+const MAX_SCALE = 4;
+const PADDING = 32;
 
 export function initCanvas(root: ParentNode = document): void {
-  const containers = root.querySelectorAll<HTMLElement>(
+  for (const container of root.querySelectorAll<HTMLElement>(
     '[data-canvas-render="client"], [data-canvas-render="both"]',
-  );
-  for (const container of Array.from(containers)) {
-    initContainer(container);
+  )) {
+    if (container.dataset.canvasInitialized === "true") continue;
+    try {
+      initContainer(container);
+      container.dataset.canvasInitialized = "true";
+      container.dataset.canvasRender = "ready";
+    } catch {
+      container.dataset.canvasError = "true";
+    }
   }
 }
 
@@ -21,245 +25,227 @@ function initContainer(container: HTMLElement): void {
     "script[data-canvas-payload]",
   );
   const stage = container.querySelector<HTMLElement>(".rb-canvas__stage");
-  if (!payload?.textContent || !stage) return;
+  const world = container.querySelector<HTMLElement>("[data-canvas-world]");
+  if (!payload?.textContent || !stage || !world)
+    throw new Error("Canvas markup is incomplete.");
+  const document = parseCanvas(payload.textContent);
+  if (!document) throw new Error("Canvas payload is invalid.");
+  const nodes = limitNodes(document.nodes, container);
+  const layout = buildCanvasLayout({ nodes, edges: document.edges });
 
-  const parsed = parseCanvas(payload.textContent);
-  if (!parsed) return;
-
-  const maxNodes = readMaxNodes(container);
-  const nodes = maxNodes > 0 ? parsed.nodes.slice(0, maxNodes) : parsed.nodes;
-  const layout = buildCanvasLayout({ nodes, edges: parsed.edges });
-
-  stage.replaceChildren(buildViewport(container, layout), buildControls());
-  enablePanZoom(stage, layout);
-  container.dataset.canvasRender = "ready";
+  stage.replaceChildren(world, buildControls());
+  applyDynamicStyles(world);
+  enableViewer(stage, world, layout);
 }
 
-function buildViewport(
-  container: HTMLElement,
-  layout: CanvasLayout,
-): HTMLElement {
-  const viewport = create("div", "rb-canvas__viewport");
-  viewport.style.width = `${layout.width}px`;
-  viewport.style.height = `${layout.height}px`;
-
-  if (layout.edges.length > 0) viewport.append(buildEdges(layout));
-  for (const node of layout.nodes) viewport.append(buildNode(container, node));
-  return viewport;
-}
-
-function buildEdges(layout: CanvasLayout): SVGSVGElement {
-  const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("class", "rb-canvas__edges");
-  svg.setAttribute("width", String(layout.width));
-  svg.setAttribute("height", String(layout.height));
-  svg.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
-  svg.setAttribute("aria-hidden", "true");
-  svg.innerHTML =
-    '<defs><marker id="rb-canvas-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z" class="rb-canvas__arrow"></path></marker></defs>';
-  for (const edge of layout.edges) svg.append(buildEdge(edge));
-  return svg;
-}
-
-function buildEdge(edge: CanvasLayoutEdge): SVGLineElement {
-  const line = document.createElementNS(SVG_NS, "line");
-  line.setAttribute("class", "rb-canvas__edge");
-  line.setAttribute("x1", String(edge.x1));
-  line.setAttribute("y1", String(edge.y1));
-  line.setAttribute("x2", String(edge.x2));
-  line.setAttribute("y2", String(edge.y2));
-  if (edge.fromEnd === "arrow") {
-    line.setAttribute("marker-start", "url(#rb-canvas-arrow)");
-  }
-  if (edge.toEnd === "arrow") {
-    line.setAttribute("marker-end", "url(#rb-canvas-arrow)");
-  }
-  return line;
-}
-
-function buildNode(
-  container: HTMLElement,
-  node: CanvasLayoutNode,
-): HTMLElement {
-  const card = create("div", `rb-canvas__node rb-canvas__node--${node.type}`);
-  card.dataset.canvasNodeId = node.id;
-  card.style.left = `${node.x}px`;
-  card.style.top = `${node.y}px`;
-  card.style.width = `${node.width}px`;
-  card.style.height = `${node.height}px`;
-  if (node.color) card.dataset.canvasColor = node.color;
-  card.append(buildNodeBody(container, node));
-  return card;
-}
-
-function buildNodeBody(
-  container: HTMLElement,
-  node: CanvasLayoutNode,
-): HTMLElement {
-  if (node.type === "group") {
-    const label = create("div", "rb-canvas__node-label");
-    label.textContent = node.label ?? "Group";
-    return label;
-  }
-  if (node.type === "text") {
-    const body = create("div", "rb-canvas__node-text");
-    body.textContent = node.text ?? "";
-    return body;
-  }
-  if (node.type === "link") {
-    const link = create("a", "rb-canvas__node-link");
-    link.setAttribute("href", node.url ?? "#");
-    link.setAttribute("target", "_blank");
-    link.setAttribute("rel", "noopener noreferrer");
-    link.textContent = node.label ?? node.url ?? "Link";
-    return link;
-  }
-
-  const label = node.label ?? fileName(node.file ?? "");
-  const href = node.file ? findStaticHref(container, node.id) : null;
-  if (href) {
-    const link = create("a", "rb-canvas__node-link");
-    link.setAttribute("href", href);
-    link.textContent = label;
-    return link;
-  }
-  const fallback = create("span", "rb-canvas__node-label");
-  fallback.textContent = label || "File";
-  return fallback;
-}
-
-function findStaticHref(container: HTMLElement, id: string): string | null {
-  const cards = container.querySelectorAll<HTMLElement>(
-    ".rb-canvas__static [data-canvas-node-id]",
-  );
-  for (const card of Array.from(cards)) {
-    if (card.dataset.canvasNodeId === id) {
-      return card.querySelector("a")?.getAttribute("href") ?? null;
-    }
-  }
-  return null;
+function limitNodes<T>(nodes: readonly T[], container: HTMLElement): T[] {
+  const maximum = Number(container.dataset.canvasMaxNodes);
+  return Number.isInteger(maximum) && maximum > 0
+    ? nodes.slice(0, maximum)
+    : [...nodes];
 }
 
 function buildControls(): HTMLElement {
-  const controls = create("div", "rb-canvas__controls");
+  const controls = document.createElement("div");
+  controls.className = "rb-canvas__controls";
   controls.setAttribute("aria-label", "Canvas controls");
-  for (const [action, label] of [
-    ["zoom-in", "Zoom in"],
-    ["zoom-out", "Zoom out"],
-    ["reset", "Reset view"],
+  for (const [action, label, icon] of [
+    ["zoom-in", "Zoom in", "+"],
+    ["zoom-out", "Zoom out", "−"],
+    ["fit", "Zoom to fit", "⊡"],
+    ["reset", "Reset zoom", "1:1"],
   ]) {
-    const button = create("button", "rb-canvas__control");
+    const button = document.createElement("button");
     button.type = "button";
+    button.className = "rb-canvas__control";
     button.dataset.canvasAction = action;
     button.setAttribute("aria-label", label);
-    button.textContent =
-      action === "zoom-in" ? "+" : action === "zoom-out" ? "−" : "⌂";
+    button.textContent = icon;
     controls.append(button);
   }
   return controls;
 }
 
-function enablePanZoom(stage: HTMLElement, layout: CanvasLayout): void {
-  const viewport = stage.querySelector<HTMLElement>(".rb-canvas__viewport");
-  if (!viewport) return;
+function enableViewer(
+  stage: HTMLElement,
+  world: HTMLElement,
+  layout: CanvasLayout,
+): void {
+  let camera: CanvasCamera = { x: 0, y: 0, scale: 1 };
+  let drag: { pointerId: number; x: number; y: number; moved: boolean } | null =
+    null;
+  const selected = new Set<string>();
+  let animationFrame = 0;
 
-  let scale = 1;
-  let translateX = 0;
-  let translateY = 0;
-  let dragging = false;
-  let startX = 0;
-  let startY = 0;
-
-  const apply = () => {
-    viewport.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+  const render = () => {
+    animationFrame = 0;
+    world.style.transform = `translate(${camera.x}px, ${camera.y}px) scale(${camera.scale})`;
+    stage.style.backgroundPosition = `${camera.x}px ${camera.y}px`;
+    stage.style.backgroundSize = `${20 * camera.scale}px ${20 * camera.scale}px`;
   };
-
-  const reset = () => {
+  const scheduleRender = () => {
+    if (!animationFrame) animationFrame = requestAnimationFrame(render);
+  };
+  const fit = () => {
     const bounds = stage.getBoundingClientRect();
-    const padding = 32;
-    scale = Math.min(
-      1,
-      (bounds.width - padding * 2) / Math.max(layout.width, 1),
-      (bounds.height - padding * 2) / Math.max(layout.height, 1),
-    );
-    scale = Math.max(0.25, scale);
-    translateX = Math.max(padding, (bounds.width - layout.width * scale) / 2);
-    translateY = Math.max(padding, (bounds.height - layout.height * scale) / 2);
-    apply();
+    camera = fitCamera(layout, bounds.width, bounds.height);
+    scheduleRender();
   };
-
-  const zoom = (factor: number, clientX?: number, clientY?: number) => {
+  const zoomAt = (factor: number, clientX: number, clientY: number) => {
     const bounds = stage.getBoundingClientRect();
-    const x = clientX === undefined ? bounds.width / 2 : clientX - bounds.left;
-    const y = clientY === undefined ? bounds.height / 2 : clientY - bounds.top;
-    const nextScale = Math.min(4, Math.max(0.25, scale * factor));
-    const ratio = nextScale / scale;
-    translateX = x - (x - translateX) * ratio;
-    translateY = y - (y - translateY) * ratio;
-    scale = nextScale;
-    apply();
+    const x = clientX - bounds.left;
+    const y = clientY - bounds.top;
+    const scale = clamp(camera.scale * factor, MIN_SCALE, MAX_SCALE);
+    const ratio = scale / camera.scale;
+    camera = {
+      x: x - (x - camera.x) * ratio,
+      y: y - (y - camera.y) * ratio,
+      scale,
+    };
+    scheduleRender();
+  };
+  const updateSelection = () => {
+    for (const node of world.querySelectorAll<HTMLElement>(
+      "[data-canvas-node-id]",
+    )) {
+      node.toggleAttribute(
+        "data-canvas-selected",
+        selected.has(node.dataset.canvasNodeId ?? ""),
+      );
+    }
   };
 
-  reset();
-
+  fit();
+  const observer = new ResizeObserver(fit);
+  observer.observe(stage);
   stage.addEventListener(
     "wheel",
     (event) => {
-      event.preventDefault();
-      zoom(event.deltaY < 0 ? 1.1 : 0.9, event.clientX, event.clientY);
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+        event.preventDefault();
+        zoomAt(
+          event.deltaY < 0 ? 1.15 : 1 / 1.15,
+          event.clientX,
+          event.clientY,
+        );
+      }
     },
     { passive: false },
   );
-
   stage.addEventListener("pointerdown", (event) => {
-    if (event.target instanceof Element && event.target.closest("a, button")) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest("a, button, audio, video, input, textarea")) return;
+    const node = target?.closest<HTMLElement>("[data-canvas-node-id]");
+    if (node) {
+      const id = node.dataset.canvasNodeId ?? "";
+      if (event.shiftKey)
+        selected.has(id) ? selected.delete(id) : selected.add(id);
+      else {
+        selected.clear();
+        selected.add(id);
+      }
+      updateSelection();
       return;
     }
-    dragging = true;
-    startX = event.clientX - translateX;
-    startY = event.clientY - translateY;
+    if (!event.shiftKey) {
+      selected.clear();
+      updateSelection();
+    }
+    drag = {
+      pointerId: event.pointerId,
+      x: event.clientX - camera.x,
+      y: event.clientY - camera.y,
+      moved: false,
+    };
     stage.setPointerCapture(event.pointerId);
   });
-
   stage.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
-    translateX = event.clientX - startX;
-    translateY = event.clientY - startY;
-    apply();
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    drag.moved = true;
+    camera = {
+      ...camera,
+      x: event.clientX - drag.x,
+      y: event.clientY - drag.y,
+    };
+    scheduleRender();
   });
-
   const stop = (event: PointerEvent) => {
-    dragging = false;
-    if (stage.hasPointerCapture(event.pointerId)) {
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    drag = null;
+    if (stage.hasPointerCapture(event.pointerId))
       stage.releasePointerCapture(event.pointerId);
-    }
   };
   stage.addEventListener("pointerup", stop);
   stage.addEventListener("pointercancel", stop);
   stage.addEventListener("click", (event) => {
-    if (!(event.target instanceof Element)) return;
-    const action = event.target.closest<HTMLElement>("[data-canvas-action]")
-      ?.dataset.canvasAction;
-    if (action === "zoom-in") zoom(1.25);
-    if (action === "zoom-out") zoom(0.8);
-    if (action === "reset") reset();
+    const action = (
+      event.target instanceof Element
+        ? event.target.closest<HTMLElement>("[data-canvas-action]")
+        : null
+    )?.dataset.canvasAction;
+    if (action === "zoom-in")
+      zoomAt(
+        1.25,
+        stage.getBoundingClientRect().left + stage.clientWidth / 2,
+        stage.getBoundingClientRect().top + stage.clientHeight / 2,
+      );
+    if (action === "zoom-out")
+      zoomAt(
+        0.8,
+        stage.getBoundingClientRect().left + stage.clientWidth / 2,
+        stage.getBoundingClientRect().top + stage.clientHeight / 2,
+      );
+    if (action === "fit") fit();
+    if (action === "reset") {
+      camera = { x: PADDING, y: PADDING, scale: 1 };
+      scheduleRender();
+    }
   });
 }
 
-function readMaxNodes(container: HTMLElement): number {
-  const value = Number(container.dataset.canvasMaxNodes);
-  return Number.isInteger(value) && value > 0 ? value : 0;
+function fitCamera(
+  layout: CanvasLayout,
+  width: number,
+  height: number,
+): CanvasCamera {
+  const scale = clamp(
+    Math.min(
+      (width - PADDING * 2) / Math.max(layout.width, 1),
+      (height - PADDING * 2) / Math.max(layout.height, 1),
+    ),
+    MIN_SCALE,
+    1,
+  );
+  return {
+    x: Math.max(PADDING, (width - layout.width * scale) / 2),
+    y: Math.max(PADDING, (height - layout.height * scale) / 2),
+    scale,
+  };
 }
 
-function create<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className: string,
-): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag);
-  node.className = className;
-  return node;
+function applyDynamicStyles(world: HTMLElement): void {
+  for (const node of world.querySelectorAll<HTMLElement>(
+    "[data-canvas-color]",
+  )) {
+    const color = node.dataset.canvasColor;
+    if (color && /^#[0-9a-f]{6}$/i.test(color))
+      node.style.setProperty("--rb-canvas-node-color", color);
+    const background = node.dataset.canvasBackground;
+    if (background) {
+      node.style.backgroundImage = `url("${background.replaceAll('"', "%22")}")`;
+      node.style.backgroundRepeat =
+        node.dataset.canvasBackgroundRepeat ?? "no-repeat";
+      node.style.backgroundSize = node.dataset.canvasBackgroundSize ?? "cover";
+    }
+  }
+  for (const edge of world.querySelectorAll<SVGLineElement>(
+    "[data-canvas-edge-color]",
+  )) {
+    const color = edge.dataset.canvasEdgeColor;
+    if (color && /^#[0-9a-f]{6}$/i.test(color)) edge.style.stroke = color;
+  }
 }
 
-function fileName(contentPath: string): string {
-  return contentPath.split("/").at(-1) ?? contentPath;
+function clamp(value: number, minimum: number, maximum: number): number {
+  return Math.min(maximum, Math.max(minimum, value));
 }

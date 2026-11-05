@@ -49,6 +49,8 @@ export type CanvasNode = {
   subpath?: string;
   url?: string;
   label?: string;
+  background?: string;
+  backgroundStyle?: "cover" | "ratio" | "repeat";
 };
 
 export type CanvasEdgeSide = "top" | "right" | "bottom" | "left";
@@ -89,6 +91,12 @@ export type CanvasLayout = {
   height: number;
   nodes: CanvasLayoutNode[];
   edges: CanvasLayoutEdge[];
+};
+
+export type CanvasCamera = {
+  x: number;
+  y: number;
+  scale: number;
 };
 
 export type CanvasFileLink =

@@ -12,7 +12,7 @@ The task is not marked READY. Convergence required two consecutive independent r
 
 ## Scope inventory
 
-- 1151 Markdown files counted by `scripts/check_docs.mjs`.
+- 1152 Markdown files counted by `scripts/check_docs.mjs`.
 - Site docs under `docs/docs/**` with English and `.ja.md` pairs.
 - `docs/README*.md`, `docs/index*.md`, package READMEs, 84 plugin pages, 28 theme pages.
 - CLI, Core, plugin API, theme API, configuration, publication, deployment, migration, Obsidian, localization, content repository, writing, analytics, accessibility, security, release, glossary, and framework pages.
@@ -20,11 +20,11 @@ The task is not marked READY. Convergence required two consecutive independent r
 
 ## Verification performed
 
-- `node scripts/check_docs.mjs`: pass, 1151 files.
+- `node scripts/check_docs.mjs`: pass, 1152 files.
 - `node scripts/check_plugin_docs_parity.mjs`: pass, 84 plugins.
 - `node scripts/sync_theme_docs.mjs --check`: pass, 28 themes.
 - `git diff --check`: clean after each batch.
-- Docs site production build: passed after the final edits (`pnpm --filter @riebeckite/web build`, 1098 rendered, 13 reused, 3m19s). The Excalidraw sample `docs/assets/HW.md` was made non-routable to remove an output collision; the embedded drawing still renders. The only remaining quality warnings are two series plugin pages with headings but no `<h1>`; these are generated plugin output, not a documentation claim.
+- Docs site production build: passed after the final edits (`pnpm --filter @riebeckite/web build`, 1109 rendered, 7 reused, 4m15s). The Excalidraw sample `docs/assets/HW.md` was made non-routable to remove an output collision; the embedded drawing still renders. The only remaining quality warnings are two series plugin pages with headings but no `<h1>`; these are generated plugin output, not a documentation claim.
 - Full verification at the integration point: `pnpm check:docs`, `pnpm test:docs` (19/19), create-riebeckite (82/82), query plugin (22/22), CLI (225 passing, 1 pre-existing skip), `pnpm check:scaffold`, and quality plugin (20/20) all passed.
 - Scaffold integration fixes: the generated README prints `/` for the home page instead of `/index`, and the showcase preset no longer passes the ignored query `defaultLimit`. Golden scaffold files were regenerated and pass.
 - Anchor quality rule decodes percent-encoded fragments before matching ids; a regression test covers encoded Japanese fragments and malformed encoding. Heading-level fixes removed the remaining real skip warnings.
@@ -100,6 +100,8 @@ a8d2c238 Frameworkと用語集の残存記述を修正
 b2d84013 スキャフォールドと品質検査の不整合を修正
 65ab8d05 Merge branch 'main' into docs/autonomous-audit-2026-11-04
 b6da01a8 Merge branch 'main' into docs/autonomous-audit-2026-11-04
+1acbefb5 監査レポートを統合後の状態に更新
+86fa65ad 同期したプラグインREADMEを更新
 ```
 
 ## Recurrence prevention

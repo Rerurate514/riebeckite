@@ -207,8 +207,45 @@ function hashDirectory(hash, directory, relativeDirectory) {
   }
 }
 
-function hasBuildOutput(directory) {
-  return fs.existsSync(path.join(repositoryRoot, directory, "dist"));
+export function hasRequiredBuildOutput(packageDirectory, manifest) {
+  const requiredFiles = new Set();
+  const addDistTargets = (target) => {
+    if (typeof target === "string") {
+      if (target.startsWith("./dist/")) requiredFiles.add(target);
+      return;
+    }
+    if (target && typeof target === "object") {
+      for (const value of Object.values(target)) addDistTargets(value);
+    }
+  };
+
+  addDistTargets(manifest.main);
+  addDistTargets(manifest.module);
+  addDistTargets(manifest.types);
+  addDistTargets(manifest.exports);
+  addDistTargets(manifest.bin);
+
+  const dist = path.join(packageDirectory, "dist");
+  if (!fs.existsSync(dist)) return false;
+  const isFile = (file) => {
+    try {
+      return fs.statSync(file).isFile();
+    } catch {
+      return false;
+    }
+  };
+  if (requiredFiles.size === 0) {
+    return fs
+      .readdirSync(dist, { withFileTypes: true })
+      .some((entry) => entry.isFile());
+  }
+  return [...requiredFiles].every((file) =>
+    isFile(path.join(packageDirectory, file)),
+  );
+}
+
+function hasBuildOutput(directory, manifest) {
+  return hasRequiredBuildOutput(path.join(repositoryRoot, directory), manifest);
 }
 
 async function runLayer(
@@ -229,7 +266,8 @@ async function runLayer(
     );
     fingerprints.set(directory, fingerprint);
     return (
-      previousBuilds[directory] !== fingerprint || !hasBuildOutput(directory)
+      previousBuilds[directory] !== fingerprint ||
+      !hasBuildOutput(directory, manifests.get(directory))
     );
   });
   state.skipped += layer.length - pending.length;
@@ -285,13 +323,15 @@ async function main() {
   console.error(`[build] ${state.completed} built · ${state.skipped} reused`);
 }
 
-try {
-  await main();
-} catch (error) {
-  if (error instanceof BuildError) {
-    console.error(`\nbuild:packages failed: ${error.message}`);
-    process.exitCode = error.status;
-  } else {
-    throw error;
+if (process.argv[1] === import.meta.filename) {
+  try {
+    await main();
+  } catch (error) {
+    if (error instanceof BuildError) {
+      console.error(`\nbuild:packages failed: ${error.message}`);
+      process.exitCode = error.status;
+    } else {
+      throw error;
+    }
   }
 }

@@ -68,6 +68,7 @@ jobs:
       - run: pnpm check:ci-selection
       - run: pnpm check:ci-browsers
       - run: pnpm check:ci-build-artifact
+      - run: pnpm check:build-packages
 
   build:
     name: build

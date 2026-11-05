@@ -9,6 +9,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
+import { onDevServerReady } from "../src/commands/dev.ts";
 import {
   managedDevReporter,
   managedSiteId,
@@ -59,5 +60,29 @@ test("uses the Bridge site identity algorithm", () => {
   assert.notEqual(
     managedSiteId("C:/site/content"),
     managedSiteId("C:/site/other"),
+  );
+});
+
+test("an ordinary dev start does not require a managed Bridge", async () => {
+  await onDevServerReady([], {
+    managed: undefined,
+    bridgeToken: undefined,
+    siteId: "site-id",
+  });
+});
+
+test("a managed dev start without a Bridge token fails", async () => {
+  await assert.rejects(
+    onDevServerReady([], {
+      managed: {
+        sessionId: "3d4c15af-35dc-4a06-9c06-734101b5ba55",
+        starting: () => {},
+        ready: () => {},
+        failed: () => {},
+      },
+      bridgeToken: undefined,
+      siteId: "site-id",
+    }),
+    /Managed development requires a loopback Bridge/,
   );
 });

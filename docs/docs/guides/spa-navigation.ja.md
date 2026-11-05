@@ -28,6 +28,8 @@ export default defineConfig({
 });
 ```
 
+スキャフォールド済みのサイトは `@riebeckite/spa` を依存に含みます。この依存が追加される前に作成したサイトで `spa` を有効にする場合は、`npm install @riebeckite/spa` や `pnpm add @riebeckite/spa` で明示的に追加してください。厳格なパッケージマネージャーは推移的依存を解決しません。
+
 `spa: true` は既定値でランタイムを有効にします。設定を変える場合はオブジェクトを渡します。
 
 ```ts

@@ -31,6 +31,7 @@ const EXCLUDED_PREFIXES = [
   "tests/external-site/fixture",
   "website/content",
   "packages/create-riebeckite/test/__golden__",
+  "docs/audits/release-2026-11",
 ];
 
 function isExcluded(relativePath) {

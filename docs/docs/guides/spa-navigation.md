@@ -32,6 +32,8 @@ export default defineConfig({
 });
 ```
 
+Scaffolded sites already declare `@riebeckite/spa`. If you enable `spa` in a site created before that dependency was included, add it with your package manager (`npm install @riebeckite/spa`, `pnpm add @riebeckite/spa`); strict package managers do not expose transitive dependencies.
+
 `spa: true` enables the runtime with defaults. To configure it, pass an object:
 
 ```ts

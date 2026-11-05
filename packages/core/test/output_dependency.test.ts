@@ -842,6 +842,39 @@ test("a plugin page taking over a content route affects the output without remov
   });
 });
 
+test("a redirect that resolves to a content output leaves the content page", () => {
+  const collapsed = entry("folder/index", {
+    redirects: [{ path: "/folder/index", status: 301 }],
+  });
+  collapsed.permalink = "/folder/";
+  collapsed.publicLocation = {
+    ...collapsed.publicLocation,
+    permalink: "/folder/",
+  };
+
+  const outputs = buildOutputInventory(manifest([collapsed]));
+
+  assert.deepEqual(
+    outputs
+      .filter((output) => output.path === "folder/index.html")
+      .map((output) => output.kind),
+    ["content"],
+  );
+});
+
+test("a redirect owned by another entry still collides with a content page", () => {
+  assert.throws(
+    () =>
+      buildOutputInventory(
+        manifest([
+          entry("note"),
+          entry("alias", { redirects: [{ path: "/note", status: 301 }] }),
+        ]),
+      ),
+    /Output path "note\.html" collides with content output owned by "content:note" and redirect output owned by "content:alias:redirect"/,
+  );
+});
+
 test("redirects and plugin pages cannot overwrite each other", () => {
   assert.throws(
     () =>

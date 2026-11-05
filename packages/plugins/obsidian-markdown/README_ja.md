@@ -98,7 +98,7 @@ export default defineConfig({
 > [!quote] Quote
 > quote の callout です。
 
-**WikiLink とフラグメント。** [README](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/README.ja.md) へのリンク、[プラグインカタログ](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.ja.md) という別名付きリンク、[plugins/showcase#Inline](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase.ja.md#Inline) という見出しリンクです。
+**WikiLink とフラグメント。** [README](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/README.ja.md) へのリンク、[プラグインカタログ](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.ja.md) という別名付きリンク、[plugins/showcase/inline#Inline](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase/inline.ja.md#Inline) という見出しリンクです。
 
 **埋め込み。** ノートと画像を埋め込みます。
 

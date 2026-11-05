@@ -100,7 +100,7 @@ export default defineConfig({
 > [!quote] Quote
 > quote の callout です。
 
-**WikiLink とフラグメント。** [[README]] へのリンク、[[plugins/README|プラグインカタログ]] という別名付きリンク、[[plugins/showcase#Inline]] という見出しリンクです。
+**WikiLink とフラグメント。** [[README]] へのリンク、[[plugins/README|プラグインカタログ]] という別名付きリンク、[[plugins/showcase/inline#Inline]] という見出しリンクです。
 
 **埋め込み。** ノートと画像を埋め込みます。
 

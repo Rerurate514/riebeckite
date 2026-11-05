@@ -236,13 +236,21 @@ const nonImportedDependencies = new Map([
   ],
   ["@riebeckite/plugin-d2", new Set(["@d2lang/d2"])], // WASM engine loaded by module name
   ["@riebeckite/plugin-diff", new Set(["hono"])], // JSX runtime via jsxImportSource
-  ["@riebeckite/plugin-excalidraw", new Set(["lz-string"])], // browser module loaded by name
+  [
+    "@riebeckite/plugin-excalidraw",
+    new Set([
+      "@excalidraw/excalidraw", // browser renderer resolved by package name
+      "esbuild", // bundler loaded by name
+      "lz-string", // browser module loaded by name
+    ]),
+  ],
   ["@riebeckite/plugin-icons", new Set(["lucide-static"])], // icon files read from the package
   [
     "@riebeckite/plugin-markmap",
     new Set(["markmap-lib", "markmap-view"]), // client renderer loaded by name
   ],
   ["@riebeckite/plugin-mermaid", new Set(["mermaid"])], // client renderer loaded by name
+  ["@riebeckite/plugin-og-image", new Set(["hono"])], // JSX runtime via jsxImportSource
   ["@riebeckite/plugin-qr-code", new Set(["qrcode"])], // encoder loaded by name
   ["@riebeckite/plugin-search", new Set(["hono"])], // JSX runtime via jsxImportSource
   ["@riebeckite/web", new Set(["lz-string", "slugify"])], // Vite SSR externals resolved by package name

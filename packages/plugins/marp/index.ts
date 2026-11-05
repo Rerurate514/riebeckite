@@ -9,7 +9,8 @@ import {
   listMarpSlidesPaths,
   resolveMarpSlidesPage,
 } from "./src/page.js";
-import type { HastNode, MarpOptions } from "./src/types.js";
+import { rehypeMarp } from "./src/rehype.js";
+import type { MarpOptions } from "./src/types.js";
 
 export { isMarpDocument } from "./src/rehype.js";
 export type {
@@ -37,7 +38,7 @@ export function marp(options: MarpOptions = {}) {
     options,
     validateOptions: validateMarpOptions,
     extendHtmlPipeline: (pipeline) => {
-      pipeline.use(rehypeMarpLazy, options);
+      pipeline.use(rehypeMarp, options);
     },
     pageTypes: [
       {
@@ -101,15 +102,4 @@ function validateMarpOptions(
   }
 
   return issues;
-}
-
-function rehypeMarpLazy(options: MarpOptions = {}) {
-  return async (tree: HastNode, file: unknown) => {
-    const { rehypeMarp } = await import("./src/rehype.js");
-    const transformer = rehypeMarp(options) as (
-      tree: HastNode,
-      file: unknown,
-    ) => Promise<void> | void;
-    await transformer(tree, file);
-  };
 }

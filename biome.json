@@ -24,6 +24,18 @@
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["packages/core/src/cli/types.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConfusingVoidType": "off"
+          }
+        }
+      }
+    }
+  ],
   "css": {
     "parser": {
       "tailwindDirectives": true

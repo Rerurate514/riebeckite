@@ -11,10 +11,11 @@ import {
   cliString,
   defineCliCommand,
 } from "@riebeckite/core";
-import type {
-  ContentMigrationApplyResult,
-  ContentMigrationPlan,
-  ContentMigrationRollbackOutcome,
+import {
+  type ContentMigrationApplyResult,
+  type ContentMigrationPlan,
+  type ContentMigrationRollbackOutcome,
+  FileSystemContentMigration,
 } from "@riebeckite/node";
 import { FRONTMATTER_PRESETS, frontmatterPresetRegistry } from "./presets.js";
 
@@ -240,7 +241,6 @@ async function createMigration(
   project: Awaited<ReturnType<CliCommandContext["loadProject"]>>,
   presetIds?: readonly string[],
 ) {
-  const { FileSystemContentMigration } = await import("@riebeckite/node");
   return new FileSystemContentMigration({
     contentDirectory: project.contentRoot,
     registry: frontmatterPresetRegistry(presetIds),

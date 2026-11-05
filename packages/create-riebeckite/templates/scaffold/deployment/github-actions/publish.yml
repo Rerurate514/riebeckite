@@ -122,6 +122,7 @@ jobs:
         with:
           apiToken: ${{ secrets.{{cloudflareApiToken}} }}
           accountId: ${{ vars.{{cloudflareAccountId}} || secrets.{{cloudflareAccountId}} }}
+          wranglerVersion: "4"
           command: deploy
 
       - name: Record publication state

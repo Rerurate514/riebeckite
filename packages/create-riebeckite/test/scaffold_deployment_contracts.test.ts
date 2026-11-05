@@ -50,6 +50,10 @@ test("generated workflow includes required secret names", async () => {
     assert.ok(workflow.includes("secrets.CLOUDFLARE_API_TOKEN"));
     assert.ok(workflow.includes("vars.CLOUDFLARE_ACCOUNT_ID"));
     assert.ok(workflow.includes("secrets.CLOUDFLARE_ACCOUNT_ID"));
+    assert.ok(
+      workflow.includes('wranglerVersion: "4"'),
+      "wrangler-action must use Wrangler 4's assets-only config support",
+    );
   });
 });
 

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "f01ec136-5ad0-4e06-9b6c-12aac7c45976",
-    "publishedAt": "2026-11-03T17:01:54.382Z",
-    "publicationFingerprint": "42be827524853c5ba2c56226912374853719e5e6cdecbd288ae289a5dbac8bd7",
+    "runId": "6ab5884a-6f3c-4848-87ed-d09a1f9cd16b",
+    "publishedAt": "2026-11-05T10:26:28.905Z",
+    "publicationFingerprint": "ce43415611789f3c871576ac66007629a589bea1b4ab0a3b0174738b758a5445",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -36,14 +36,6 @@
         "visibility": "public",
         "fingerprint": "86957cd89397e45821447550acefdcdb286ab42c35940ef519ce17354596c90a",
         "contentFingerprint": "63053f0e50699dfa99bc83dca9fa2f0aae0da9d382ed45e46438344d81671256"
-      },
-      {
-        "slug": "assets/HW",
-        "permalink": "/assets/HW",
-        "title": "HW",
-        "visibility": "public",
-        "fingerprint": "db5edc684aec6a077d398f7dec145405c06df69cb15425136cdcb66132f328f3",
-        "contentFingerprint": "3f2723cb05ef89fd8c48512903ea70c4a1713489c81a5779ca84baff9727c7a1"
       },
       {
         "slug": "docs/accessibility",
@@ -82,16 +74,16 @@
         "permalink": "/docs/framework/architecture/boundaries",
         "title": "Boundaries",
         "visibility": "public",
-        "fingerprint": "56792a4002a6d96dbd336c0a3fac6c14c3250326d3072255a18700ca1f037260",
-        "contentFingerprint": "9c068194f4dbddb4b2266d920573c3e0b028d6abdf69bccf8318caf1ff83a19c"
+        "fingerprint": "c072e6b6b48f6bac73508d7920ecabd618804f8d11836d9b27ca1b0bb4c2de4f",
+        "contentFingerprint": "cc6b5bb6623172257c7bf84f0ce03f46a3b6c829feb6aed61a1d8c29989b6904"
       },
       {
         "slug": "docs/framework/architecture/boundaries.ja",
         "permalink": "/ja/docs/framework/architecture/boundaries",
         "title": "境界",
         "visibility": "public",
-        "fingerprint": "5ec9fcade83ee4c4a320c263ba9df22af02f2341778489bc3f8f0bb479b6f0fa",
-        "contentFingerprint": "54f9aecee70e1aa38c37c2acb154cdb0ca3665a55ca369484e2a3a28fd197b86"
+        "fingerprint": "97889b1c90a36f5274a0955b80a0ec83f3fe02975cc78e61ad89d80c1337ba15",
+        "contentFingerprint": "3dddaf320bfa0a3aa8b95bb7dc54a0c1eecaae269129ad5572fdfe2e67bcf03e"
       },
       {
         "slug": "docs/framework/architecture/flows",
@@ -130,16 +122,16 @@
         "permalink": "/docs/framework/build-dependency",
         "title": "Build Dependency Contract",
         "visibility": "public",
-        "fingerprint": "efda553d06fa75b2e0a6bc54afa3a4e5025092f2fa7effdbbe8c30083cf6d678",
-        "contentFingerprint": "ff8955b3106884810ed705bc0eacfd148b293e7c0855c08daa75e49188933cf1"
+        "fingerprint": "2e7c6aa32a6b2e4b24889b5dfa363e6a8693eea267cccc43497fcdb592918d09",
+        "contentFingerprint": "a2124375d1ccc0b9c1ee386de3576569b9effd9eb0357630bd6b1d9e11b4dea2"
       },
       {
         "slug": "docs/framework/build-dependency.ja",
         "permalink": "/ja/docs/framework/build-dependency",
         "title": "ビルド依存関係の取り決め",
         "visibility": "public",
-        "fingerprint": "5321b065fa8e63c1483ca26273a21d39ba5154db49907f210b0ea5a415776e66",
-        "contentFingerprint": "d1e8827542aa1dff8c29100de353a3cef8f0e1f904f92738f49addd60f3dbf9d"
+        "fingerprint": "9b5d827d34f23108d362652ee9d3b4cd92a909550a4feb7aeb0e134d8dac353b",
+        "contentFingerprint": "d074417c0b8a0f8646d1790abe4d8b9affef7430fe7f34346a9526f428d824b5"
       },
       {
         "slug": "docs/framework/build-system",
@@ -178,32 +170,32 @@
         "permalink": "/docs/framework/build-system/incremental",
         "title": "Incremental builds",
         "visibility": "public",
-        "fingerprint": "e43a3e8a3fe4d42752c5ca055e3e8b5bc859942f634a0265936e48afd5764c44",
-        "contentFingerprint": "32dbe5b43189f7828dbbff90f69eda48c5b4e15e0b07c988d08f23a037d3ed36"
+        "fingerprint": "f4e101c1eb9770f1e4164d8e3c91410dfd501a6f0335f0a6f2284b618fbe1d16",
+        "contentFingerprint": "1d6a1a9e65d4f3676fe16a99f09076081bc88099b8062d573785285c107adb1c"
       },
       {
         "slug": "docs/framework/build-system/incremental.ja",
         "permalink": "/ja/docs/framework/build-system/incremental",
         "title": "増分ビルド",
         "visibility": "public",
-        "fingerprint": "fefef75e3218405cd01011116c67455138a1c42dc7802d48f27b6baa0688e51a",
-        "contentFingerprint": "497d06ffce6e71f1d58817fabbf79a50ecdcd7bfe9063067ac71d740bf80cea4"
+        "fingerprint": "54054651e2a124c158dad900c38b92719241d4c53e6703d2be3e3ea2261900cf",
+        "contentFingerprint": "270a71838d546ed0d60a6342efb06f84e8dcdc2f95b3f18ec246a07973f253c9"
       },
       {
         "slug": "docs/framework/build-system/provenance",
         "permalink": "/docs/framework/build-system/provenance",
         "title": "Data Provenance",
         "visibility": "public",
-        "fingerprint": "3c6b1cde39a7e6f8096b0c8a3341c1091e3b9ee3c5cf1363c4a09f70170658b1",
-        "contentFingerprint": "a38c2a176dd291405b5da266de7def1e2d5c4b8a0ed3be593277814e5eafa1da"
+        "fingerprint": "15dfb73a0e390d22daa53796fd03982479a2640f3735c7e11bc7569e4e3e3bdb",
+        "contentFingerprint": "2fd302e3845873961be1b6a88195e4b4563e3d7f15df6d61aec0154f14c4a132"
       },
       {
         "slug": "docs/framework/build-system/provenance.ja",
         "permalink": "/ja/docs/framework/build-system/provenance",
         "title": "データ来歴",
         "visibility": "public",
-        "fingerprint": "f0bc4ef733148c22f5f0f23afb6fbe994873a1f7612de5089dfe15c7e30a3027",
-        "contentFingerprint": "24f8b1346770bcfc50fc1470ac4e652c3a4d62777d401c870ac5bdfa09e1f80f"
+        "fingerprint": "48ac8185c9a1a128652259150c77a6b9ea53fb759c73d1c37e92bf7c4f5a257e",
+        "contentFingerprint": "81d22f013433926c9f1797ca8b39a69f8491f4130100eb1aa138135a53430343"
       },
       {
         "slug": "docs/framework/content-migration",
@@ -306,32 +298,32 @@
         "permalink": "/docs/framework/content-system/sources",
         "title": "Sources and management",
         "visibility": "public",
-        "fingerprint": "0e9f0f0d564f274425046e03c7ba39b1c27d0f4f8993dff4f7d02de9c6d042c6",
-        "contentFingerprint": "c3c1ccddebb37b41195c0b795bd0eb98b56ce3df9dd203868a1c7b53b93aae4d"
+        "fingerprint": "d2b425e35874d5d31926dd8696f9f968c9b9978281885d8489e82fd94624684d",
+        "contentFingerprint": "0d0ece2a131e7452f57de53befd482fd5670cf8d999e4ebd9ec01e30413493cd"
       },
       {
         "slug": "docs/framework/content-system/sources.ja",
         "permalink": "/ja/docs/framework/content-system/sources",
         "title": "ソースと管理",
         "visibility": "public",
-        "fingerprint": "4c9a701297c0dc01e6b9bf77084d88472f145ca891fd55885a228fcf1d8068fd",
-        "contentFingerprint": "7b9d133c281cc00f787ef6ff6a1e83589b059418e45e8e8ad8fe406563b8040d"
+        "fingerprint": "dbf2a9639fb40f8aad7689342380e753002f372aaf17e64666286ccc78071cbb",
+        "contentFingerprint": "de2dc63f1d514ff066138b9a4895a0d7efec374588aa4c23a5e106fa4f6a306f"
       },
       {
         "slug": "docs/framework/derived-data",
         "permalink": "/docs/framework/derived-data",
         "title": "Derived Data",
         "visibility": "public",
-        "fingerprint": "4d5c29034873f7446426bccddac66e7de65a07f614432586731773bf447c564c",
-        "contentFingerprint": "22c3ea93f87fd15f6c8ce7930b99a05bdc390d01a37206ddadb848eba9f7a826"
+        "fingerprint": "d420bf6b6774505556be6e6c81dbcc42e92fe4ecb9d0a351defd463f5ac51eef",
+        "contentFingerprint": "c5d475883b01f3314b738e8051d07903bd223bc231bb0bdd4eae0a7a272c736d"
       },
       {
         "slug": "docs/framework/derived-data.ja",
         "permalink": "/ja/docs/framework/derived-data",
         "title": "派生データ",
         "visibility": "public",
-        "fingerprint": "1141ee676a18710553354990cdd162e11215401b2e4ce949db9890fd857af588",
-        "contentFingerprint": "fc6e0ea1c601f89c09b189b86be41027112f6a84bbce90587d1c800ca94acde2"
+        "fingerprint": "09c0b301f5b4824ed7fd4a47dfb084da012bd2b83218cf7e665d2f1e6bd30158",
+        "contentFingerprint": "8196aa465949b3a09caccbafd711ed0724158460b7c93c16a1a9a99fbdb1877e"
       },
       {
         "slug": "docs/framework/development",
@@ -370,16 +362,16 @@
         "permalink": "/docs/framework/development/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "3e58c5f0c2d19ae5c92a33d7b3b80aa20d14b40031eed5fa4d0cc63721eff6d3",
-        "contentFingerprint": "32fc5ac95419118af46ccd8f1ad34c9a474a0fed50fe7f16d6867ef14bd8587f"
+        "fingerprint": "36300a6946ae4d0c8000e6cec4da949b1e4b4f436fab70e1a300692385b39406",
+        "contentFingerprint": "db3929370874f4dc4861368ecc4d7a673a40291861ea0b3c60496dbe1041987c"
       },
       {
         "slug": "docs/framework/development/setup.ja",
         "permalink": "/ja/docs/framework/development/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "eb977c08fda725abcfcf696be67ded4656dd19152eb46070ce1bdff753082e6c",
-        "contentFingerprint": "c32d1408ac11cfd46276e7b17fac5aa678bb9498d5c0498b23d4d086375facc7"
+        "fingerprint": "b071ad323d6a50651885af6f487664f984100c693221ababd0c46c37288bea42",
+        "contentFingerprint": "70a0fcd60faeb789c329f993db9c8dad9f8b18f09049fbd79c356c7b1f68baa1"
       },
       {
         "slug": "docs/framework/development/workflow",
@@ -402,32 +394,32 @@
         "permalink": "/docs/framework/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "32cb18aad4241ad90bcf592ee413892efb89d3348a5d2a8b814252a242e840b3",
-        "contentFingerprint": "e1b22ef7832f11912c490f39dc0b9feefa446da7d666e0b7bca0e2a7d183181d"
+        "fingerprint": "74671a5e1bc391a2f66e3a799d6c378891af17fe573aa54b73f7a61ef01b0065",
+        "contentFingerprint": "75c0f1553d0b1dfd20c4a83fd0e4b84217d93e1c74f7399ef23b4c0180146b6c"
       },
       {
         "slug": "docs/framework/diagnostics.ja",
         "permalink": "/ja/docs/framework/diagnostics",
         "title": "診断",
         "visibility": "public",
-        "fingerprint": "c7fed83b5e36c65fcb8c38b83db15fad3c037bd556cc829fac6d5cd9cc8692a0",
-        "contentFingerprint": "21a2e14d562040410f7f247799f2ff05cbe1f0dbd4086efcedf5539ef157740d"
+        "fingerprint": "7f899b84cd79642cb16a5eb7be42829422ceb20eeed6a0de0b27ad5fc8ee8eac",
+        "contentFingerprint": "f004fb12476a6408bb58288b53afabfdeef736297f12a2f459a61c3b58f9a212"
       },
       {
         "slug": "docs/framework/diagram-infrastructure",
         "permalink": "/docs/framework/diagram-infrastructure",
         "title": "Diagram Plugin Infrastructure",
         "visibility": "public",
-        "fingerprint": "4948969f3d3e9aef1c90aed182ec334489fb1a9c1dc5b22371cd46aa717db5ca",
-        "contentFingerprint": "969788336ae09977a7a2673c95068d80b4ea06274e20b42a511d7622d910a6ff"
+        "fingerprint": "58bc7bf2ff697016c3d7a40ac5610324b9b0ef2b26923733499119fce4bf9f5a",
+        "contentFingerprint": "1a907e2f0c744ba22400b4474189862f2a644888dd0e3dfbebf8c181eeab52a0"
       },
       {
         "slug": "docs/framework/diagram-infrastructure.ja",
         "permalink": "/ja/docs/framework/diagram-infrastructure",
         "title": "ダイアグラムプラグイン基盤",
         "visibility": "public",
-        "fingerprint": "648c00d6df9a685db53d898a8326277ff185713433c30e930046b6ada3d5bf62",
-        "contentFingerprint": "e07baea90561ac9a4f5823b43f5f8687d42cfa968ab84c1b8ba013c3b72e003e"
+        "fingerprint": "d17884e7fcf7333d295832343434e6890089946d82f495ad0c34d58becfecaaa",
+        "contentFingerprint": "01d1fb417b1bee6e1fb2f7eee117807abaa2f41c5e0c997e76970abb5ff28862"
       },
       {
         "slug": "docs/framework/honox-integration",
@@ -458,24 +450,24 @@
         "permalink": "/ja/docs/framework/honox-integration/site",
         "title": "サイトアプリケーションの責務",
         "visibility": "public",
-        "fingerprint": "63866bbd32b595a0ab0b6fb7dcb6bd24b235685c3b98f92081eeb4b72528ad5e",
-        "contentFingerprint": "cc195443a2d14fbc042363b5c3f3406900dd839ef985427cfb5091ab8fef3f0c"
+        "fingerprint": "c127ecdc64530b4fe5c977f9f37440cc0b455290fb8a9933a54f7660361f46f8",
+        "contentFingerprint": "146f385025a456819635de0090d469550a8308ebb48b79a1f4c7ab7b1697ef44"
       },
       {
         "slug": "docs/framework/honox-integration/ui",
         "permalink": "/docs/framework/honox-integration/ui",
         "title": "UI primitives",
         "visibility": "public",
-        "fingerprint": "83db8c08610b3c0b8796b6182dc132651ae9cba3898032b0aa6c30e4131bd974",
-        "contentFingerprint": "104ce2b9d19560663b22573ee1f6690b581da6e86d4cf5be27d948ec0a35d614"
+        "fingerprint": "ad4747cd92bac34fdff3bdb8ed4095203e19613797498d29cc315f7750df07ac",
+        "contentFingerprint": "9a39a01f83b51d1bb378a69fa528676bd899a3bc6ab604f26c7471e0a5b3e7d8"
       },
       {
         "slug": "docs/framework/honox-integration/ui.ja",
         "permalink": "/ja/docs/framework/honox-integration/ui",
         "title": "UIプリミティブ",
         "visibility": "public",
-        "fingerprint": "83e312f6c05ba1970334519258d36dd1c5d4fb7282cf34eb97f4cc42621bb9be",
-        "contentFingerprint": "7f4600cde5bd46081755bca864e56e0dddb41c01e7310e8bedcbaf033af43a92"
+        "fingerprint": "05dd0ab6416b2ea7e22aecf4303f4d04f8696796837a727cc24dd6344f072da6",
+        "contentFingerprint": "d6dbe8c236eac16bc17e375876ef8f29dfdfdc54ed6d878fa786dd22bf42caa0"
       },
       {
         "slug": "docs/framework/inspector",
@@ -514,16 +506,16 @@
         "permalink": "/docs/framework/observability",
         "title": "Observability",
         "visibility": "public",
-        "fingerprint": "c34e492c6c4f74310065590f73bdf92b80d904438c4f53e8278d2e16ae4e4f35",
-        "contentFingerprint": "9336a458f4529660837c3bd3c390e2358ed8b650fec6e72a01974ea588fe2b4e"
+        "fingerprint": "aaa303df6a862ccb28bf2e6cf063315726a6e796f73ebf157f24a6bf17a5d551",
+        "contentFingerprint": "ebc2fc0a9460fab5c2c784fcd5171fba1d3d45a0888344676047db09f99af749"
       },
       {
         "slug": "docs/framework/observability.ja",
         "permalink": "/ja/docs/framework/observability",
         "title": "可観測性",
         "visibility": "public",
-        "fingerprint": "ee91f2b6ad3a71b463decc1fb66b2df7c18b805ab99627b771498abe7bf3844d",
-        "contentFingerprint": "b1216f1b2cb8dd235b60e981f7ab47d682c177604ef18796f0a68c7b49870309"
+        "fingerprint": "a531193db636644d77878f0ea8c5cd3eb8066299148944657d702f6acd46da66",
+        "contentFingerprint": "c73db6e17da47cd05b9f725b51819cb0d1096af5ae5d65c11cefd12ca4c594fc"
       },
       {
         "slug": "docs/framework/page-system",
@@ -602,8 +594,8 @@
         "permalink": "/ja/docs/framework/plugin-system",
         "title": "プラグイン作成の詳細",
         "visibility": "public",
-        "fingerprint": "d9e526bd623765672dba6a82401b58fae154c5876eb96b1a41321b95abb2c9cf",
-        "contentFingerprint": "bc9ae1bcd1f0bebf5bae0746010f9a58526c61bfa68fa01525079b7589f36df5"
+        "fingerprint": "feebde05d860ff0faf095aa8945d6db4bc89a49b0025f8f2e77bf7a098841309",
+        "contentFingerprint": "b1bf93bb8379f291973f169c1d28b70171ef95ce6f1aa8001a25c03ed4cbb939"
       },
       {
         "slug": "docs/framework/plugin-system/distribution",
@@ -818,8 +810,8 @@
         "permalink": "/docs/framework/testing/plugins",
         "title": "Plugins",
         "visibility": "public",
-        "fingerprint": "1f18fddc2ddfce033fd9b7931d3c9b2e53dfbd70193c8be33094b3c13015ab17",
-        "contentFingerprint": "814f6749b6e1ddb5e4ecb657e9b292a61f437111e1f0658faf4f59ce96fad22a"
+        "fingerprint": "12d725ac64c898579457dcd3b535235cf1102fb367822b420fa304c18de5641f",
+        "contentFingerprint": "4bb9daa474b1a929dc4934913d6f55e87ca7ea35ddf0067211ec516732f06053"
       },
       {
         "slug": "docs/framework/testing/plugins.ja",
@@ -850,16 +842,16 @@
         "permalink": "/docs/framework/testing/running",
         "title": "Running",
         "visibility": "public",
-        "fingerprint": "8e24246d153707955ad9e63df0f38d416e30cc32ec9b45728038d82cc728a1e2",
-        "contentFingerprint": "75b5656656c46cb3add0ac5c36f201c77e1cacba8a299e2cf0c99d1093b2f905"
+        "fingerprint": "146cfd03e5ebbb0dc647164083bc7cd852dec23958135f7c706b317c9c634c44",
+        "contentFingerprint": "28b0a6a4b2ca910dc401942da799b49ef986f23332970a9daff7507f20e5c6ca"
       },
       {
         "slug": "docs/framework/testing/running.ja",
         "permalink": "/ja/docs/framework/testing/running",
         "title": "実行",
         "visibility": "public",
-        "fingerprint": "c332399158770d4b8fd4fe388ab6d2912e5e86e4c4ccd47de5d23ce806ef6445",
-        "contentFingerprint": "fdcfcf411e9b9e1aa75f09edd03772a4f9406e26808c9acac992545441f9216d"
+        "fingerprint": "af5f15e781d73a1d168f1e3cec78a2955352b411367cb8ee60d5fdbb6b306988",
+        "contentFingerprint": "f7f93a3b7b12178319329d0d9eaf257e240246c5795c9e61b559fc0bd4df6e83"
       },
       {
         "slug": "docs/framework/theme-system",
@@ -898,16 +890,16 @@
         "permalink": "/docs/framework/theme-system/css",
         "title": "Stable CSS hooks and the cascade",
         "visibility": "public",
-        "fingerprint": "8eac493a24d02e914f953ccebe0f99deb842c3bc32728d2511684faa67000e4d",
-        "contentFingerprint": "92a5ec6f1025f2ac7b0632eec569f7d7e19ebc35e9ca869561b9bade6d742a8a"
+        "fingerprint": "f5a6fe7b4074386874e09db65d949baaa6cb585a766827d01fd5408d817f3e41",
+        "contentFingerprint": "31217a984d1e8bf07467e347feceb5cc16c63ab7976cd4fd585ed299561af0f8"
       },
       {
         "slug": "docs/framework/theme-system/css.ja",
         "permalink": "/ja/docs/framework/theme-system/css",
         "title": "安定した CSS フックとカスケード",
         "visibility": "public",
-        "fingerprint": "d0aeda811ed8057caa6011a78057ce265cd7fe1634c60a203133975ad30d5cbc",
-        "contentFingerprint": "141ba642155169ef0aa3c1f3e4d80af5d254fc7a325c9c5426756d0c653c352b"
+        "fingerprint": "6ce9e804a3fd6283af019df55757b9ffc4dbd7057c150914f91a2f0e3d77aef2",
+        "contentFingerprint": "152d789570bcd017aeb2d8c167112946479771a64537c7b9cd24eebe4dcb0215"
       },
       {
         "slug": "docs/framework/theme-system/distribution",
@@ -978,48 +970,64 @@
         "permalink": "/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "2127eda50ad9d1c6bc6430085535837978efaa98efb31e071dc76399ec371361",
-        "contentFingerprint": "edc30854653a445520e57820e2a4a897a4b58f9c03c46c839203cee5fc5ae137"
+        "fingerprint": "37fe49c42b80d99664a87a7fb1fda84498fa4eeb6eb3ba5a4ebf44a403088583",
+        "contentFingerprint": "6f95ff0a33dfa4e27144206ce5e28ac68985360aa1da95d0fd7c6faa44fb7496"
       },
       {
         "slug": "docs/framework/ui.ja",
         "permalink": "/ja/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "a1aeab5a5cc6ef7ee6f3368d916a6548200bd87e32d19d1515036abd27be7456",
-        "contentFingerprint": "caa48b8bf83790e8742014e536f97ef283fb7c6a6f598443b4b599fe31039cec"
+        "fingerprint": "6ad22b7cd194a825a9e7dfb058a176f4e8240ae661db5c6374996759c91999de",
+        "contentFingerprint": "a78adaeee0bfe516139ac6fec6f25ea4919f3fb5a44c5da73e0839881f7422c1"
+      },
+      {
+        "slug": "docs/getting-started/content-location",
+        "permalink": "/docs/getting-started/content-location",
+        "title": "Content Location",
+        "visibility": "public",
+        "fingerprint": "3b6e1853a70a80999fceb875f60e41d58fb35ab9d36d35a30845b0085a4b3e82",
+        "contentFingerprint": "b78fe02b02a5115dfb96a7417dacf9be051f91c29f6a34837f0ff82ffa46d257"
+      },
+      {
+        "slug": "docs/getting-started/content-location.ja",
+        "permalink": "/ja/docs/getting-started/content-location",
+        "title": "コンテンツの場所",
+        "visibility": "public",
+        "fingerprint": "4cd296a6f913acbc59bf88d93e883f2fa827edf04d138e70abe5309392e17223",
+        "contentFingerprint": "00bbcfc93cc93ac4125514da59cad2a19f325da801c5149e93376b597c46de22"
       },
       {
         "slug": "docs/getting-started/deployment",
         "permalink": "/docs/getting-started/deployment",
         "title": "Deployment",
         "visibility": "public",
-        "fingerprint": "b4f8acfd078ed2441c00e1a0ac495e1d87324d832d26783bbbbf655a09d11698",
-        "contentFingerprint": "428519fa0988000858bd2ab9b5f7e67aebb10fea00a420f5b2bcad8149a40e5f"
+        "fingerprint": "43e714c6280808bc01bd205dee9e6962a0eaa365bfef98fdda6dedc068e21233",
+        "contentFingerprint": "b76851c7453832f9c89d7b662884d19ff45ed12c9274947107ddf0e147d09408"
       },
       {
         "slug": "docs/getting-started/deployment.ja",
         "permalink": "/ja/docs/getting-started/deployment",
         "title": "デプロイ",
         "visibility": "public",
-        "fingerprint": "9fc08949818c0bb0b39a9a29ecd3f0709520e437b7de9310cb43670c44f17916",
-        "contentFingerprint": "5a5bd7182598bceb8401e1bcc9eeb2c3828752fb9f85598f158942d73a55f5eb"
+        "fingerprint": "7ffb26631853bfad07acb348b254993e520ba6fc9449eb242d82c2d9b2058136",
+        "contentFingerprint": "1e6c172f02af352e26cf1194565063c3ec7fd27ed96230916977e07adb2b7c81"
       },
       {
         "slug": "docs/getting-started/first-content",
         "permalink": "/docs/getting-started/first-content",
         "title": "First Content",
         "visibility": "public",
-        "fingerprint": "ba6b7c82567846c60c63d6af00be8f287e14348c8ec86c85cef4ab845dc1e817",
-        "contentFingerprint": "c38f18a900d6392ba58d422c549cc0a93c3ce700fbdde34978b154c97813a4f3"
+        "fingerprint": "b1e31f816b25d193bc921400d2c39e74f47f8a1f2dffa60f13138a680a3370fe",
+        "contentFingerprint": "9be98d283b0d6671af9b2e00ea14cc3412574c2ce31dc7d6f5f1b3fd8194cd05"
       },
       {
         "slug": "docs/getting-started/first-content.ja",
         "permalink": "/ja/docs/getting-started/first-content",
         "title": "最初のコンテンツ",
         "visibility": "public",
-        "fingerprint": "b06d79218362995ba84bb3b9fedf1a2179337431c9e54f505fe53ca8f2b338e4",
-        "contentFingerprint": "aebde3a428b992ba88b122ea1cadae18944f92410d063f2f9b64b9c003cd98e6"
+        "fingerprint": "8576cccb148779e671a5721c8c4bb579f9b75e76008b44c631de4d06d219f512",
+        "contentFingerprint": "b0e17dec280e484180c0b616a6dce7410a13ce25af467533388ca027f75aa171"
       },
       {
         "slug": "docs/getting-started/first-plugin",
@@ -1058,80 +1066,144 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "6c4459bf0bfa4a79636566db73cd0bb8df972c3e3e16232e965f6b1227670c1c",
-        "contentFingerprint": "7fb5aef444cf9a32091ae09f5fecbdaf63a2b2fde94411c8278927d5447ab2f4"
+        "fingerprint": "65e29d4298d2f0415e6c883dc5832527b5a27087982c1dc47f2d375613739e6b",
+        "contentFingerprint": "5f9b953b29349228c192574a4e7ca3e2b1285e7a9dba0e1f5fc73250126ed4c1"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "eb8c81fc05509ad27b40376f0f2fa8e621c32397b71059ed9959b5a1479ea091",
-        "contentFingerprint": "1db84ad34b5e3b845188a71473c7148d6ce236f0af436f121112189097a618cb"
+        "fingerprint": "2a3d605522a63a33b67a26abf76326629788652056a8905ff552e34f609cef8e",
+        "contentFingerprint": "8c9c2c699725968983aed7c152d4edba94f734cc804ddbc0c47fa809d8c40a47"
+      },
+      {
+        "slug": "docs/getting-started/integrated-setup",
+        "permalink": "/docs/getting-started/integrated-setup",
+        "title": "Integrated Setup",
+        "visibility": "public",
+        "fingerprint": "b69f17184074fe6684b4ba32b4c3230bd42d006992588d8079a594a1453cc97d",
+        "contentFingerprint": "8313caef92691bd2720a262c55ef4b0d23351403fdb322a406bdaf05815ec597"
+      },
+      {
+        "slug": "docs/getting-started/integrated-setup.ja",
+        "permalink": "/ja/docs/getting-started/integrated-setup",
+        "title": "一体型セットアップ",
+        "visibility": "public",
+        "fingerprint": "ce38edb77bc172a0932152be822d497fd040625ce74c572b427aabf81647a5db",
+        "contentFingerprint": "706e77d858fe9317fde771d531db1da37521d0a449a0c3a0e16b5ba3ae5048a3"
       },
       {
         "slug": "docs/getting-started/obsidian-vault",
         "permalink": "/docs/getting-started/obsidian-vault",
         "title": "Use Your Obsidian Vault",
         "visibility": "public",
-        "fingerprint": "073d413c745fc1174aa650ceb606deef9e79aaae137abe4d81a0b3b3e39d1b30",
-        "contentFingerprint": "657654c5c12140c01f54aad658ccc085b81158b26f22ecde16b33c70ee90caf8"
+        "fingerprint": "862d6b9a30a3476ecbd288f042c3e679753bfe5bc48a75acb67217f47fd8def5",
+        "contentFingerprint": "aa77f8974e4fe38edda1ec3e203ce7ad0222eddc224da22843111866d3cf5ec9"
       },
       {
         "slug": "docs/getting-started/obsidian-vault.ja",
         "permalink": "/ja/docs/getting-started/obsidian-vault",
         "title": "Obsidian Vault を使う",
         "visibility": "public",
-        "fingerprint": "2cb60ef49707b0f6180015f5329e44a8c104a2296b156c8f71939acad5aa97d2",
-        "contentFingerprint": "2c0ae8cc637f75a722045914293fe52ef87d9ab5a57281b1d5ff637b58745e73"
+        "fingerprint": "7e500e209d56b2ffc8a3cf43d76a8c6f33ecf3023b7eb659af186bbad78a2adb",
+        "contentFingerprint": "e5d983e9096c8b67d9af3db23fa12d9c449b55d4cd5bc4666870b6e0565d18eb"
       },
       {
         "slug": "docs/getting-started/presets",
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "5dc34d98c4dce5a49c159261e19c7dc1639e56150cdc404db0cbd4e27b496ebd",
-        "contentFingerprint": "4cb949341a8c127f811c5af8a873e16b37221db5dee7775a79dc18950da2e72d"
+        "fingerprint": "c3dd031b3b84a3bae3630a2808c0b7a4bfe2fa76afc01e7fba118990b896e1ae",
+        "contentFingerprint": "02ae7886d4c5d3c307529f2d379830ec519de1a3581fb415faa82d0a9b7017ac"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "9f449155956a57ccbc04f3ef8ba4a3ab5ddd1590b9d2670cbd490d56fa0499cd",
-        "contentFingerprint": "36237d05d342580d6be806e95591419c18359c918d592b2754515ea2ec091135"
+        "fingerprint": "9402749e7dce2f332e4b8ec07ae51fedf8e325b177fda5fb505b4f2a06ab6b35",
+        "contentFingerprint": "d753e6d31878b2d80e04ff0aaf8cd38a50e7e41b6e81ae8e3edd2abc2d86a3f3"
+      },
+      {
+        "slug": "docs/getting-started/project-structure",
+        "permalink": "/docs/getting-started/project-structure",
+        "title": "Project Structure",
+        "visibility": "public",
+        "fingerprint": "462a56aa042a99d4aff49068f7b75d2d00cf63f1eb2662da861fe4100794e892",
+        "contentFingerprint": "bbc9823970217a5e3f1a043c18875d4e852a31894c6ac767eb6f07e85f4f4eb7"
+      },
+      {
+        "slug": "docs/getting-started/project-structure.ja",
+        "permalink": "/ja/docs/getting-started/project-structure",
+        "title": "プロジェクト構成",
+        "visibility": "public",
+        "fingerprint": "de2920df65df7bb0ddc127c9d93a319a27896285317a08165b4be56375108a2e",
+        "contentFingerprint": "cede2f89a96fdc7a2c44f8d32f5dcf43d6f7e34e57a069ce3ce654d94daa93d5"
       },
       {
         "slug": "docs/getting-started/quick-start",
         "permalink": "/docs/getting-started/quick-start",
         "title": "Quick Start",
         "visibility": "public",
-        "fingerprint": "f5f47e25a3de5bc4cce7f2f6dcfe91f37032d814f097a2f913e326ce25489628",
-        "contentFingerprint": "3a7fee0ae8520ef41832c7581ac234d38011ba1fa1ea700693a8ecc0d24dd884"
+        "fingerprint": "4e80174f50c5abfa2c2ffd4d8661e249e742986b0fb4936328b734b17ca80af8",
+        "contentFingerprint": "085ce58d4423383732c0d8746ce8430be89e781cd27267352fbbee3a069f1322"
       },
       {
         "slug": "docs/getting-started/quick-start.ja",
         "permalink": "/ja/docs/getting-started/quick-start",
         "title": "クイックスタート",
         "visibility": "public",
-        "fingerprint": "498d7b171bc13b48b16b2ea68a713abf8a95f5deb5be11c2ff0cca7b3dd7ca9c",
-        "contentFingerprint": "df5a67c03412cae9a37e133b91e93dd8e2f1c4278da7dd01ebb79471d38329ed"
+        "fingerprint": "123f73709a33fff6bc9fbd7a04897ad6248b9835a2bb1680648c4647d08c8a74",
+        "contentFingerprint": "58021f12ac07add51fdc2332a5e32f4375da3e26321df0fea419e40caca03189"
       },
       {
         "slug": "docs/getting-started/README",
         "permalink": "/docs/getting-started/",
         "title": "Getting Started",
         "visibility": "public",
-        "fingerprint": "b0e4ee3a222c66a6fe694a33a0ac8c463fe34a599ad391ccb15f7ac83d9d58b5",
-        "contentFingerprint": "2c50c216a539a1dcb83a321f9e29ac5324b5c0dab5ce084cc4715db67b50d92d"
+        "fingerprint": "e435203a16e3027ef765a5653d4868b9f204332548682a73e014c9c8e9381499",
+        "contentFingerprint": "c37a498513c0ad357376615e4d020e7d46c683bc4e196f510091d9f3530cb289"
       },
       {
         "slug": "docs/getting-started/README.ja",
         "permalink": "/ja/docs/getting-started/",
         "title": "はじめに",
         "visibility": "public",
-        "fingerprint": "4c620deb5208e9b951ce77faf2517cdbea0103d0f33e6c289ded51dcd8f56e2a",
-        "contentFingerprint": "097f45b19529e34674b7d5f2bc6de14cc14febedfa5b10f1a50acc00b5b8950f"
+        "fingerprint": "c6602738a0fd89389422cbe2123f082b6fb31961284e8268e9680bfb1f607040",
+        "contentFingerprint": "b9824fb31dd223995b201d27fbdd0ded8b6856468c384be270c3f6b66722f9ab"
+      },
+      {
+        "slug": "docs/getting-started/separate-directories-setup",
+        "permalink": "/docs/getting-started/separate-directories-setup",
+        "title": "Separate Directories Setup",
+        "visibility": "public",
+        "fingerprint": "fc8475643a4417432ed27806c13ea8b0724d806548c690df1861b24580f8fc84",
+        "contentFingerprint": "d2a3b5d559fa55b0a6c24ecf611da2d8df93b99e3268d453503bcb4d8f082cc2"
+      },
+      {
+        "slug": "docs/getting-started/separate-directories-setup.ja",
+        "permalink": "/ja/docs/getting-started/separate-directories-setup",
+        "title": "ディレクトリ分離型セットアップ",
+        "visibility": "public",
+        "fingerprint": "3bbd61b9fb0e3b6dd8841146399a535135e51f525a6c487b922e345cdf2540e1",
+        "contentFingerprint": "a7d17b63d743d96e5d36e176fb678669ed7c94c6cc5118e49cb86ab505aecece"
+      },
+      {
+        "slug": "docs/getting-started/separate-repositories-setup",
+        "permalink": "/docs/getting-started/separate-repositories-setup",
+        "title": "Separate Repositories Setup",
+        "visibility": "public",
+        "fingerprint": "04966c06395676d208449d35190c2888617037d404823fdff747173222a3db79",
+        "contentFingerprint": "21be72e0e05509b81ec5f718b76574bf8a0a988dba7cc94022e81fa3d3e8bf62"
+      },
+      {
+        "slug": "docs/getting-started/separate-repositories-setup.ja",
+        "permalink": "/ja/docs/getting-started/separate-repositories-setup",
+        "title": "リポジトリ分離型セットアップ",
+        "visibility": "public",
+        "fingerprint": "105fe1e8fe4fef08ed82a47929b36c565a22f715142ee26ce7cf0e4b61f4e7b2",
+        "contentFingerprint": "be3c07b3afef458ac2a83e56455359e1c7d9b968d19b481da3c9fbbde88b66d0"
       },
       {
         "slug": "docs/glossary/alias",
@@ -1202,16 +1274,16 @@
         "permalink": "/docs/glossary/backlink",
         "title": "Backlink",
         "visibility": "public",
-        "fingerprint": "fde521b1ab3fc12888de0f3e81dd0b05a31174df8c086273c77676feab1848f2",
-        "contentFingerprint": "80e5dd6069fc19ddc0dd16dd26729e4d43912c7cebf848a38bb4bf25e3159ea7"
+        "fingerprint": "b8d1473430e84bd8e90411b627fcd94ab0635386c8d359f1f8a8694e4e19db40",
+        "contentFingerprint": "4d10b862de8bf2bf1e15529d23b88214032af9f350b9a7f099a2af03ae39ba3d"
       },
       {
         "slug": "docs/glossary/backlink.ja",
         "permalink": "/ja/docs/glossary/backlink",
         "title": "バックリンク（Backlink）",
         "visibility": "public",
-        "fingerprint": "bc280cd89c0d7ab677a17fb1a576bdb4f64fe28a897e9ce10ba49e1f4881e279",
-        "contentFingerprint": "43ea94fede9dca7651e812161e3a9370ccbabbae97feaaeaa104b020be8a541a"
+        "fingerprint": "6987057a633d246f0c3859f38dbf00ca17f56ed33d0c69287d94ccd770a4367d",
+        "contentFingerprint": "d100ec736bf3e2e243fcdf21a1bb8625b723d276c281bbd4d127e2c6492dee58"
       },
       {
         "slug": "docs/glossary/block-id",
@@ -1234,112 +1306,112 @@
         "permalink": "/docs/glossary/build",
         "title": "Build",
         "visibility": "public",
-        "fingerprint": "6645399e9285fe5bf6836718df10921383e6bd9f5c13f18d283e3a45900d76a1",
-        "contentFingerprint": "4b73cee08ba8de0162d48406a4798502dcf50421c7f79916ed766a2bc461c7c5"
+        "fingerprint": "23ddb4aaa2454d2913f73a76764177cf7aae0d30c081b561d83ebd5837c43b67",
+        "contentFingerprint": "8c0fd53864f4999e933b2a6cd971dc6724ab007f40dba2f721543ae66b230a56"
       },
       {
         "slug": "docs/glossary/build-dependency",
         "permalink": "/docs/glossary/build-dependency",
         "title": "Build Dependency",
         "visibility": "public",
-        "fingerprint": "5b8711e8268cfdf7cc25ec0280d2a2651cb5798aae3a21c222fc9e6484bf3a38",
-        "contentFingerprint": "4677e7858c24be3c1ea77d1f9ca917f4dc8c4f97592e70d6502b9f0b31eae85a"
+        "fingerprint": "58c0c4abf2b51f0211cfbe7db0db3ceef7a0e6eb4b5f2595a776be36c42b3f71",
+        "contentFingerprint": "72a0d9b62c4ccd5d5f80bdf2ed234640825d18f82379b76eaa6f13d9dd4ab5cc"
       },
       {
         "slug": "docs/glossary/build-dependency.ja",
         "permalink": "/ja/docs/glossary/build-dependency",
         "title": "ビルド依存関係（Build Dependency）",
         "visibility": "public",
-        "fingerprint": "2022ecbf3b6f9f344da60b71f018c0ca4637e9c88395728d13eb979392c65932",
-        "contentFingerprint": "760d62bda7106bdbb94ef68779c7246e6e914b414b1e0b4161c0a848c1e74d7e"
+        "fingerprint": "35b49c70afc71f948467492deffd1ff1248bde51c29533b6930cf18d1a7221e7",
+        "contentFingerprint": "41f99db42289c5ea00feb3e2a3c96d3d21fb120195936edb4d225134e3635f80"
       },
       {
         "slug": "docs/glossary/build-state",
         "permalink": "/docs/glossary/build-state",
         "title": "Build State",
         "visibility": "public",
-        "fingerprint": "77de76cb0aedfaa18572af33ac9d2002c00e9d948ff8dbdaa014953c9c0255de",
-        "contentFingerprint": "1e69e4be8dc50a242e67cefe603b24c988aef2cefc0c97a23b8ee27084827a88"
+        "fingerprint": "29000cfe4076fca8ea0f7e094e49701e63a8c61b67f488c98960ed50637d4448",
+        "contentFingerprint": "885aa9d243365a40e70e4e09426d1feebb96c94b54528780a877c84970100ce9"
       },
       {
         "slug": "docs/glossary/build-state.ja",
         "permalink": "/ja/docs/glossary/build-state",
         "title": "ビルド状態（Build State）",
         "visibility": "public",
-        "fingerprint": "4ba5439a617e8277c0cfd7410155e1d9ec0191522a0812d8ec5fa0467a8f08b8",
-        "contentFingerprint": "c28c1de1cd94382c17bd601aab7201ede510147928b2d873173d311aefd008d4"
+        "fingerprint": "b788925eb638a8176527a3998c4465aa4310e0e9ded81d54cd04023f68eb7cc7",
+        "contentFingerprint": "99bec7447e4bb90ba75888567fd0c344de250dd23e8e3afd8c4f90861caa0702"
       },
       {
         "slug": "docs/glossary/build.ja",
         "permalink": "/ja/docs/glossary/build",
         "title": "ビルド（Build）",
         "visibility": "public",
-        "fingerprint": "f2ca49f707df2acd588e83849217d559b2a69853af5b3fed67e94d75eed515ca",
-        "contentFingerprint": "3c98a20c81a51e5929c931291e6363f6129f8cfaaef38d92eb7f54def81ab497"
+        "fingerprint": "e835624d0e061beed62220fd54f8dcf4e4ee38a20cd87ac9a66288e08332a029",
+        "contentFingerprint": "e6ae1a1ed8b89fb0490672cbff1b1eb716e8981b77404f835cabfc327053fd34"
       },
       {
         "slug": "docs/glossary/cache",
         "permalink": "/docs/glossary/cache",
         "title": "Cache",
         "visibility": "public",
-        "fingerprint": "5dc302cb2a3b0de5cd29fb57e52f8da3ced67c5b89d132a298843cc67ee7e5b5",
-        "contentFingerprint": "cce4f332d1e3987f86995b45e6243144a5a56d84eceb1fd5b6043e01289f1185"
+        "fingerprint": "94864a4a3477fd8193ab5f5b4a9faa880fab27e1b930e132cd4a17db08ca0be9",
+        "contentFingerprint": "7252bebafc3c59e7f2de0e3bb89ebf7849365aa1e9e4fa2ad85e14c105362740"
       },
       {
         "slug": "docs/glossary/cache-invalidation",
         "permalink": "/docs/glossary/cache-invalidation",
         "title": "Cache Invalidation",
         "visibility": "public",
-        "fingerprint": "b661425bd5d5386d5532d3ae03ae5f81a2065975ff1dde8014878dca004b59f5",
-        "contentFingerprint": "f29e94ae97253348127987bbabc9611ed5859cd6cc856c548ea7e0c2870fc125"
+        "fingerprint": "9b10335261585203bc44cf28ed3459032f51503d62859046d687c8fe1f04255a",
+        "contentFingerprint": "1fcd6fef60a6edaf8a3a050fdfcfb6b634fb2553677ce8c6ca26bb933b8023f5"
       },
       {
         "slug": "docs/glossary/cache-invalidation.ja",
         "permalink": "/ja/docs/glossary/cache-invalidation",
         "title": "キャッシュの無効化（Cache Invalidation）",
         "visibility": "public",
-        "fingerprint": "492dc3e8983a511e5e85941fc9133f32b15f67e74dca4d2094ff94b1ef50031a",
-        "contentFingerprint": "5986c151b05a07906645cc905a02c5d9f2adc220bc52a3928d0808df9740b9d2"
+        "fingerprint": "30461bf2184ff3f40c8f471dcef2701ea6c499f7066942e9fd70fa9824ae1a02",
+        "contentFingerprint": "741c55d0eb243421ad7755f82dba3040d05ea1381952fba6a0ff4d5be189ddcb"
       },
       {
         "slug": "docs/glossary/cache-version",
         "permalink": "/docs/glossary/cache-version",
         "title": "Cache Version",
         "visibility": "public",
-        "fingerprint": "e2c4e61591271e753383ef482a2530657a90258147b538fb9b01fee4ec5526a8",
-        "contentFingerprint": "d5e7210effcc5a5f6d2e787032cf9a265b0443fbbdef23912b2aa9571aa9dc03"
+        "fingerprint": "e509626f214fb00ee50f5ef6215f84b410fde70953a876518babf95a84634c1e",
+        "contentFingerprint": "d8eaabe9b25d5a306fa5755e4c181896f82f3fc6d459c33998439972b216f556"
       },
       {
         "slug": "docs/glossary/cache-version.ja",
         "permalink": "/ja/docs/glossary/cache-version",
         "title": "キャッシュバージョン（Cache Version）",
         "visibility": "public",
-        "fingerprint": "bc163696aca03ad061f65307e0b34bae9adc261fe8df293bdff2f0c9d3ce6459",
-        "contentFingerprint": "1aa612ef32cdcee575737ae8da58a5b71f42644cf181387543904aa57ec08770"
+        "fingerprint": "368338fe388f0f408ef4372e47c16a8aa9311cfb7d75f2fef1323f54f07a8b28",
+        "contentFingerprint": "c0dd58fed445dc0ee26c286b1e642ef7c8de52cccfbca7f835c7efb831eefa25"
       },
       {
         "slug": "docs/glossary/cache.ja",
         "permalink": "/ja/docs/glossary/cache",
         "title": "キャッシュ（Cache）",
         "visibility": "public",
-        "fingerprint": "f84c48f239b91fdcb90d0f290f4b9c5d36112b4b16edb992253c9923efc01c2b",
-        "contentFingerprint": "f143e78dc79e1d9f851ab9cc4ec7bad8e1b648be599d04c06da68b85118864c3"
+        "fingerprint": "4e334820a6ba160403197fbd3087960f052bcedbab1fe24bc164c02fbe0dc789",
+        "contentFingerprint": "8d34e726bed1ab8084c80cb65d7d67cd5581038583c65b3a0f118d814f496cdb"
       },
       {
         "slug": "docs/glossary/callout",
         "permalink": "/docs/glossary/callout",
         "title": "Callout",
         "visibility": "public",
-        "fingerprint": "41d6a903d69036910c24e341f6dc6a705d705a201bf2493378a32d3bb6141e97",
-        "contentFingerprint": "698c2feab2eb5215c4ea085a1860323c09e479052a86e5b30076f024b0a54193"
+        "fingerprint": "8eccc124e8cf74981d2fdcb9225a3bc48ec73d67d141c8d111a61b2b2c5e60fb",
+        "contentFingerprint": "b039a21c8a8d951747176aa2533430c0549e6351aa0d322b0aa1278cb68ff217"
       },
       {
         "slug": "docs/glossary/callout.ja",
         "permalink": "/ja/docs/glossary/callout",
         "title": "コールアウト（Callout）",
         "visibility": "public",
-        "fingerprint": "95b95ba00645b8b82b6497f23e279f132c05ed07cc49fe8054ee922d68d849cf",
-        "contentFingerprint": "4ce73eb96648c229a533dabf9f201ac5c8b90d1b37c1a5049cdcc67778ee33bb"
+        "fingerprint": "8228adae270dfde47e39876835262cbc49d5a48b2d77bac36c7ab0d6f002ec63",
+        "contentFingerprint": "02fad48a3d7b418718e7d510b0dcb031dbbde012034d8e1d752ecafeecd789bb"
       },
       {
         "slug": "docs/glossary/capability",
@@ -1434,96 +1506,96 @@
         "permalink": "/docs/glossary/content-collection",
         "title": "Content Collection",
         "visibility": "public",
-        "fingerprint": "7a245a1a1d28baeec575626841b0f71b2499793c6e17e46cf5a6f4127e8e32b3",
-        "contentFingerprint": "62b22508f87a1767e07c86a7e55f4dd71f4a8fd54092d9177a1469ac662b72c2"
+        "fingerprint": "63f7246a1e12965d0985782bdcbf9392797de605240725e555438b4b1a9d87e8",
+        "contentFingerprint": "38b9027f2bc2a7f5ae8b2363ec7a3e9bac205f9c4f765c182ff5fa3ae24229f1"
       },
       {
         "slug": "docs/glossary/content-collection.ja",
         "permalink": "/ja/docs/glossary/content-collection",
         "title": "コンテンツコレクション（Content Collection）",
         "visibility": "public",
-        "fingerprint": "b4ae8c34eb95f212a28c896842d113f5928e6fdbbbb7f6cf96f770de21d91f26",
-        "contentFingerprint": "2ecb43dbf75d7f10af14c5832bf61ab40fd938de8ac613609dc7bb0e4fbc3089"
+        "fingerprint": "ae872d6f23ad9d04ac5e0bd238721170f0a60ffc78a9c03abd0023db9652e32a",
+        "contentFingerprint": "95d75c668f06b0e3bc6e01bc6faef3c85293bd128e220ce2001d2b53e65125d1"
       },
       {
         "slug": "docs/glossary/content-dependency",
         "permalink": "/docs/glossary/content-dependency",
         "title": "Content Dependency",
         "visibility": "public",
-        "fingerprint": "f9d9d24128c445c44058e8db67bf3c7c6f8bebebec9cf79de987c8f5122cac09",
-        "contentFingerprint": "35fd879dd0fc4001da78ab0d8680f49e1c699e52de48198e81d50ac398e43eab"
+        "fingerprint": "850d23e01e8c69bf2aa0296a666401b8c5cb52204605dd1a76638225b025357f",
+        "contentFingerprint": "705d21ae314280905cc45b05fc2afbb4e8924974ecd3b4a623c6cf768b88be2d"
       },
       {
         "slug": "docs/glossary/content-dependency.ja",
         "permalink": "/ja/docs/glossary/content-dependency",
         "title": "コンテンツ依存関係（Content Dependency）",
         "visibility": "public",
-        "fingerprint": "0fdfac24f6faed77bb2bb6f9d2c8675f18a2d1e949078a97ed95f60d04358680",
-        "contentFingerprint": "1459f738e31f41f7df0a329c0f69a6fa493c49150b0fe84a94db59687d4b954f"
+        "fingerprint": "98ae91f7ba17880582df2eb61aa63a684719b8c48125be3a592760c3add3703b",
+        "contentFingerprint": "d6964a42d5c97beb00ac71387744000d3d75b54c7624c0adcff7f7620156d28f"
       },
       {
         "slug": "docs/glossary/content-entry",
         "permalink": "/docs/glossary/content-entry",
         "title": "Content Entry",
         "visibility": "public",
-        "fingerprint": "873dc2391426df5cbb3bb616836cbf312c5e1b1f88f575b9f9855d6f1a7770a0",
-        "contentFingerprint": "84337054a8b46c37aa9e8000575ea13babc0dbcd315717f9d5f1cd70359f9e2e"
+        "fingerprint": "dd7717f191974a89475b48f73d621c6dbd8cdbb92be4b07b1fa7090e014d00c8",
+        "contentFingerprint": "67c05e78c2eb44ff5245bb9fb06cbdd79581dad3fbdf1ca7e6e906fac53cdebd"
       },
       {
         "slug": "docs/glossary/content-entry.ja",
         "permalink": "/ja/docs/glossary/content-entry",
         "title": "コンテンツエントリ（Content Entry）",
         "visibility": "public",
-        "fingerprint": "663aa694aa085e0048e3ec787daf9eed9559feabd7b8b6e767302c0a403a3340",
-        "contentFingerprint": "2683822033777acf0507b3222145036302a3a8517748b994711cbb5246d3fa71"
+        "fingerprint": "983274794a0605bb2e0468a4ee464fabb4dde8ef24447f02ab2f926b896b2f4a",
+        "contentFingerprint": "d632fd0a10381efb98b1544786d1e9db577f77bbc98965a94d87144793395654"
       },
       {
         "slug": "docs/glossary/content-graph",
         "permalink": "/docs/glossary/content-graph",
         "title": "Content Graph",
         "visibility": "public",
-        "fingerprint": "50030518bc4854ee48740ebaa445bb3fdbe4ce998011ceb708daced1ac5b173d",
-        "contentFingerprint": "d99d93032cb8352661005229057fdc28cf77d9787b3f55951282c0ad58995341"
+        "fingerprint": "6493f56d57122d225c8ec44a7df99f1f9b052e3b90629ed2a1931e71c7b659d5",
+        "contentFingerprint": "6e67f20662fef8416a36ac2179d133e7e011a8130ae14f2c9d91a5a052431f43"
       },
       {
         "slug": "docs/glossary/content-graph.ja",
         "permalink": "/ja/docs/glossary/content-graph",
         "title": "コンテンツグラフ（Content Graph）",
         "visibility": "public",
-        "fingerprint": "fe0cd4d08018992012233c01c21cbeaae2c62025dd06215138439b01ecb03017",
-        "contentFingerprint": "bc24e6f5ca9703b067799ed64a1753ce58cc11b5b64cb8108f835e90fbf84fe9"
+        "fingerprint": "bc809fd0ff7f90dd4bf2433aa5baeb2f7c923ed5b657a01d781a809708d34313",
+        "contentFingerprint": "c73f92fc6ed7b953edf82e016375baf367e6589c23461a2bb59ec0536f661762"
       },
       {
         "slug": "docs/glossary/content-hook",
         "permalink": "/docs/glossary/content-hook",
         "title": "Content hook",
         "visibility": "public",
-        "fingerprint": "d80a499c0081392c8e37a322c21a92f633ca51920627271bf22f9022fcda26cd",
-        "contentFingerprint": "a6abb0119f6ba1793d1f793b4f469a5c7a59105c83435e18642ce4a3407ee4ad"
+        "fingerprint": "4a0a65a85437bbe0035983cffa23ca9fa866c54b7a52c8d5cae4456bed7e0157",
+        "contentFingerprint": "9851a2b6aa04afd2d218b8b7ac96968fb2c88f7c1401c113262a4ee47be85d6a"
       },
       {
         "slug": "docs/glossary/content-hook.ja",
         "permalink": "/ja/docs/glossary/content-hook",
         "title": "コンテンツフック（Content Hook）",
         "visibility": "public",
-        "fingerprint": "ebe488bde1e5fb8fff516439a7173da57f36eb3255f4754237b9a81e4ac936fd",
-        "contentFingerprint": "e5b0f73940734f421c1d9d63f3087566c2beb4ddbacd54fa5c6cd85d3cd9d179"
+        "fingerprint": "9bd38e2766f68ca1f04c2bd0a2bc87a197de86c42154183cdee9eed27feb2f53",
+        "contentFingerprint": "9f7d6941d0890bee32bdcde2bfe690578ff3b32b75a1d1136518c53c2b2ea3c9"
       },
       {
         "slug": "docs/glossary/content-id",
         "permalink": "/docs/glossary/content-id",
         "title": "Content ID",
         "visibility": "public",
-        "fingerprint": "c097afaa15761f9e1ab0098925d181bdfa21740075b2444af32202267151736a",
-        "contentFingerprint": "a3f723bfa7c5c88dc8b86709b469e399ef6e7f5d4032b2d61c32c256aede0a4b"
+        "fingerprint": "9103459b6fdf53a7446e65dff612534aff20cb1653c04f7aae0f0b62dbc47a82",
+        "contentFingerprint": "e6a9b3b9bc000c5c98e71412fadaf41b20b5f69fcd5b67382e855eca67d08556"
       },
       {
         "slug": "docs/glossary/content-id.ja",
         "permalink": "/ja/docs/glossary/content-id",
         "title": "コンテンツID（Content ID）",
         "visibility": "public",
-        "fingerprint": "285fb6242631fa7f10335987fed3092725f45ccfe30430a59c177153cf1f3ccf",
-        "contentFingerprint": "d7f8e62643af3562eeeed99958a756cf97406dd0e5e37f3a869dfc3824247c98"
+        "fingerprint": "302a0a4393857a0418a9dc0383eb74e393fcfec0ce4b6a3d0e13cc8c98412dfc",
+        "contentFingerprint": "3bef1d677230fa620de9ada6076e22b3a82c801daa92c00670d4db2bfa4dc14d"
       },
       {
         "slug": "docs/glossary/content-index",
@@ -1546,16 +1618,16 @@
         "permalink": "/docs/glossary/content-manager",
         "title": "Content Manager",
         "visibility": "public",
-        "fingerprint": "42400e676f0aa08ac1b41c9840c596a3885b3ab45bdc9e6106adbff1b7ae305c",
-        "contentFingerprint": "1979ca9251bee944ee0015c480247fdadb3eb6637cc8393e0ae5094eedf6e01e"
+        "fingerprint": "8608ec9172e9eaf5963ea445a3540d0d072f2f54aab0e485e22c101cc95813ec",
+        "contentFingerprint": "251958cb1ccc08e03304f9ea81a0b09831c923148298cd377495493f83e2f8f9"
       },
       {
         "slug": "docs/glossary/content-manager.ja",
         "permalink": "/ja/docs/glossary/content-manager",
         "title": "ContentManager（コンテンツマネージャー）",
         "visibility": "public",
-        "fingerprint": "f51d27d9167d188a79cf44a0939ed8abdd88da679048eed4c95670513d0e4fb3",
-        "contentFingerprint": "b7b22902679a6f3722e199635cd6ab30e0d2133f02fbf04c6dd2e753523cbf8e"
+        "fingerprint": "dcfc490dce8e24a65f1f352557f10a27c14ef961c4e777c3b3b8aaa4ac57d94e",
+        "contentFingerprint": "d47356a13cc4d16e4537d4908aa93b0c4ed90b31033ef6555e17e8c901dd5a94"
       },
       {
         "slug": "docs/glossary/content-query",
@@ -1602,32 +1674,32 @@
         "permalink": "/docs/glossary/css-contract",
         "title": "CSS Contract",
         "visibility": "public",
-        "fingerprint": "9fe1389e7ef1547f66c4625b7ca8339b9a1dc484c112cce16757bcdeb3c153b7",
-        "contentFingerprint": "cb1c22869263c3f265943bf44088563f8001406b586aedbe8a0680368f90194b"
+        "fingerprint": "34e10012c48b9613616dc044716406a0db132c54d0310e13ad96ffd3b33e096f",
+        "contentFingerprint": "dc23a1598bb6335a6d2205fe1c39cbcd91d4b176e1210d331393cafe3e5beb52"
       },
       {
         "slug": "docs/glossary/css-contract.ja",
         "permalink": "/ja/docs/glossary/css-contract",
         "title": "CSS Contract",
         "visibility": "public",
-        "fingerprint": "86fb501d7d6816d30ecc516b72c7cc3ddbc921d2d003bfaf9177ab0ffd6a6b7b",
-        "contentFingerprint": "2e8c4e8c52a2316146d0ca58cc57efb0a343c7230af2bf166503efdf49fc9c98"
+        "fingerprint": "08ed78a32411ba26d03c8ce6b9ad90c32041731dfb9e34f90bb452da872094ad",
+        "contentFingerprint": "f4cfc06f2f2712415f9e5cdd57a73d8fe91c60199e058d4f7004250412ff4161"
       },
       {
         "slug": "docs/glossary/deployment",
         "permalink": "/docs/glossary/deployment",
         "title": "Deployment",
         "visibility": "public",
-        "fingerprint": "94d7b2e1aeb55f28b35b8e175fddcfce83062adfed583b810c06b55b25036b94",
-        "contentFingerprint": "fdc50bfa5ba72f6fcee048f99ab3e49fbe7dd6ad620d51e0f0f7f5641569c163"
+        "fingerprint": "93be9f559dc6bebdcbe03190fe086da1fe06731ac22bb31e22853bb29643349e",
+        "contentFingerprint": "1aa7c6ff722bde54b4f91f9807a9ca0892db3e8713f84fae11de24b393377b8a"
       },
       {
         "slug": "docs/glossary/deployment.ja",
         "permalink": "/ja/docs/glossary/deployment",
         "title": "デプロイ（Deployment）",
         "visibility": "public",
-        "fingerprint": "aafa044c63ab4ff893448eb1999b171ca33a8b7e86f39a4f2bb184c2cbb5f889",
-        "contentFingerprint": "0ddf8fc018888baf8d48e4d1d373ac1de1cd3cca64e6d4df69e917090969ce5b"
+        "fingerprint": "230b2dd7459de12dc979c6d950b276ee6de90acf9cf297a319acd13fcc81682e",
+        "contentFingerprint": "de1fb3ebe7a6cee6a76ab9c3824f62fd857b7e78139b24a82f6af968fddf3071"
       },
       {
         "slug": "docs/glossary/design-token",
@@ -1666,48 +1738,48 @@
         "permalink": "/docs/glossary/diagnostic-code",
         "title": "Diagnostic code",
         "visibility": "public",
-        "fingerprint": "fa1b819783b575d13deec0a8f48a9668cb8ff7112d4cc68a47c38530dcb24346",
-        "contentFingerprint": "ba2148233a6851b43319f3ee19203fc4be41300aae13e2d673297944f35259b0"
+        "fingerprint": "b5d59a25b5b03d9fac98edfa35089bd49245912fc4ce5dc4ba6ab63ab98b64c7",
+        "contentFingerprint": "8ab8b1c2d65506b0ba79769e923f8b50f1d75d71b6ff765b5bf2159b736a8f75"
       },
       {
         "slug": "docs/glossary/diagnostic-code.ja",
         "permalink": "/ja/docs/glossary/diagnostic-code",
         "title": "診断コード（Diagnostic Code）",
         "visibility": "public",
-        "fingerprint": "942bf2c2d6c9a1ad602932d7cf37bdb6b6becfb8820b03cd425c7ae2590fecdf",
-        "contentFingerprint": "cc4cf5f5df3550bb9ffaae82f6c89346a5fd78070b76d05ad3a8a098789009cc"
+        "fingerprint": "5bf3df46b72126cd7e56485618496b9d4e64df84a6194d29c23b17ced20c8bd6",
+        "contentFingerprint": "7d38b80514515aca89cec168f1ba85d344032475ca3f7207469717f20c015be4"
       },
       {
         "slug": "docs/glossary/diagnostic-severity",
         "permalink": "/docs/glossary/diagnostic-severity",
         "title": "Diagnostic severity",
         "visibility": "public",
-        "fingerprint": "1c61501abfe2d2ce185d3e3c37f1dddc0522b08c0a314aac2e5730120eb7c364",
-        "contentFingerprint": "97253a31833d597f711f19275805db7441af8a902ed2de6e1e45fc282ea0ca24"
+        "fingerprint": "f067f268b5a97294c79221081873a382e71a084b90f26da7385cc704ee1cf8a4",
+        "contentFingerprint": "70e5e538138d333c86c16a12a9745b16909565bc0e0cdfd7ea2c930600c511ec"
       },
       {
         "slug": "docs/glossary/diagnostic-severity.ja",
         "permalink": "/ja/docs/glossary/diagnostic-severity",
         "title": "診断の重大度（Diagnostic Severity）",
         "visibility": "public",
-        "fingerprint": "463a621f355747ae9a28b5c4aad37a2db7c16e222dd0fd47aae2e8949333a241",
-        "contentFingerprint": "c0562f0f6945c923b2234affdbf7ef903094e7d4f4e6cec05d6f1c992d1b3186"
+        "fingerprint": "8c88779e093706e32c52599e9aef1e95e93752b966f3f0b0bbf9798900d899b6",
+        "contentFingerprint": "ba52209e39cd3f087eea41087d272a8ecba4cb5db60507bdfcb53aeae9c50140"
       },
       {
         "slug": "docs/glossary/diagnostics",
         "permalink": "/docs/glossary/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "95c4f3927928f48ef789b036e3d1ac5845cb62dc83226bd9a25fe219ab7d21df",
-        "contentFingerprint": "c88dbc540cd4dabd9c135b4f1f5eccc0fc8f1246a002306751ff97fcfd47a594"
+        "fingerprint": "4f4bfa56d87e163f0094a5042fc46f1b9794f16cc4deaec157e488dc76ddfde1",
+        "contentFingerprint": "216cda0264202f973aceacf7c5f8a155dee13e218e5695d87ecbf45c8baa5272"
       },
       {
         "slug": "docs/glossary/diagnostics.ja",
         "permalink": "/ja/docs/glossary/diagnostics",
         "title": "診断（Diagnostics）",
         "visibility": "public",
-        "fingerprint": "52acac6bf9ffd5fd6a843ff1bd2e5b048ac41ebad39cb04b33c9121ea0916bae",
-        "contentFingerprint": "4e916d04b7554f05ebbfa9fd07ed13c88018d026758f6c3d114bcd7e4dff25d2"
+        "fingerprint": "159cd9108a6c34d562f739b59e1c487f4922194f1d22054741cc54de182d90f5",
+        "contentFingerprint": "eb9d508e777df84ee807ef552959612f31296477214c78af3b818d9844c8b77d"
       },
       {
         "slug": "docs/glossary/discoverable",
@@ -1746,16 +1818,16 @@
         "permalink": "/docs/glossary/draft",
         "title": "Draft",
         "visibility": "public",
-        "fingerprint": "c6b9e7fd77beed3de354e65891679f5c9275cbd0745577a5a6f2bd7895d38e2c",
-        "contentFingerprint": "95aab5cd78fe15a5a204aefe5a9f5eddc41df8a4be5b116379007699e912645e"
+        "fingerprint": "63a0983807b18e7a39f297a2a9e6c691283ce0d5bceae43de7f4eff23c276b0e",
+        "contentFingerprint": "473879ab0a2a008122250a089fbf5e5a8f5db419765bf98befe48703dc734eb8"
       },
       {
         "slug": "docs/glossary/draft.ja",
         "permalink": "/ja/docs/glossary/draft",
         "title": "下書き（Draft）",
         "visibility": "public",
-        "fingerprint": "594eb8018cd68c1aad8177126e6af5f9f4f0604675bdae5414fe30a38724fb3c",
-        "contentFingerprint": "e7baa47d78088f415925972eca47f2981478e74784e183633eaa8af8e45e01ef"
+        "fingerprint": "6fa823d2133d51549a151f74e197fa92acf5d815ccfcbad60d7e2d0833103ad3",
+        "contentFingerprint": "68fd4888ff6635d970b88320f602bc48129adc558c50fbe14cd176ffc54d5185"
       },
       {
         "slug": "docs/glossary/embed",
@@ -1842,16 +1914,16 @@
         "permalink": "/docs/glossary/frontmatter",
         "title": "Frontmatter",
         "visibility": "public",
-        "fingerprint": "94391fa47a197b931296c71fb78b381e3f8cc6a76dffc371fd596ec36d1785b5",
-        "contentFingerprint": "4a9cfd805acb28685b4cf219dd42b8ea58192059406a077d29e59c34a50d0870"
+        "fingerprint": "cd57499c052b3cb002e0edeb1ed881ca60dfbf20aca664c329757b42260c8d9a",
+        "contentFingerprint": "2aa082df4023d25d61f50e093698c65b03d0e558772c46769ecc2879a66ad8b0"
       },
       {
         "slug": "docs/glossary/frontmatter.ja",
         "permalink": "/ja/docs/glossary/frontmatter",
         "title": "フロントマター（frontmatter）",
         "visibility": "public",
-        "fingerprint": "234ecca657015bc04a67e710a5dbbcb86e4cba2c7d0711edbf14a931ea2a4b8b",
-        "contentFingerprint": "89f646641538b794e0a04db2bd630212ee1499431ff7927e6214f90758d6c326"
+        "fingerprint": "959ad4fb9a6b831cace3eae0a51f12526800a36a8dedfd0f174bcbddd9936fe8",
+        "contentFingerprint": "d81bb8db71cb4d3da265852e843f4221c54e5ccdf74af521e288c5f021b64093"
       },
       {
         "slug": "docs/glossary/full-build",
@@ -1906,16 +1978,16 @@
         "permalink": "/docs/glossary/hook-context",
         "title": "Hook context",
         "visibility": "public",
-        "fingerprint": "b28845aef7432ccdf253d6d3677416a73217e61600c38e865956689b81f301c4",
-        "contentFingerprint": "ffb1185b7ffd1b1bc3dd20b333b24a01afd402ad3f18b82c9d45efde3338d5b2"
+        "fingerprint": "227035d2b7da5faeb465bac76c83f684b711e69dc030e100469eccafbc1c0176",
+        "contentFingerprint": "4714d443f2563aaba420059272b7b585edc5d86ead4d0ca2c84635350897503b"
       },
       {
         "slug": "docs/glossary/hook-context.ja",
         "permalink": "/ja/docs/glossary/hook-context",
         "title": "フックコンテキスト（Hook Context）",
         "visibility": "public",
-        "fingerprint": "5c4fe00f825315d1d5df459757878e802dfe0bc60d0b01f256e8e4127de819d5",
-        "contentFingerprint": "5aa2491f64ef68d33517de84a81bb8d03fa58f2a14b14b4c1956cdd95f30c31a"
+        "fingerprint": "77b2cd783e436187c52eeda67e2a636945bb7555e268a92490a6893b43746481",
+        "contentFingerprint": "1f1e00d81ad8db094329181c0500ddf7e5284f55faeb43cf2fc8000114114a13"
       },
       {
         "slug": "docs/glossary/hreflang",
@@ -1938,16 +2010,16 @@
         "permalink": "/docs/glossary/incremental-build",
         "title": "Incremental Build",
         "visibility": "public",
-        "fingerprint": "4897c3b7846380f79f5004513477f64e6adcca60d5c5d1939d56c3d8a27feb18",
-        "contentFingerprint": "23b8dddb248ab27df5f05795523fa3cef621175a144b6a2f8141157aa1c6a5e1"
+        "fingerprint": "867a34ff0d43b15ba1cec47bb2f3a7f40ea8ec7e588f248db9108996cc645cc4",
+        "contentFingerprint": "b5f62084a25ce8f9047720362b59181ff8897efc9990366c3fcc2849d6da5583"
       },
       {
         "slug": "docs/glossary/incremental-build.ja",
         "permalink": "/ja/docs/glossary/incremental-build",
         "title": "増分ビルド（Incremental Build）",
         "visibility": "public",
-        "fingerprint": "2938e22844eefcbb19d9141833c42779f33bcbc6d56384631e068088886255f8",
-        "contentFingerprint": "877a666f5b921bf791fb63d6cecb82982ca91da9bf8ea8ce86f6605b5f9e876b"
+        "fingerprint": "12b3013e32b198044fab7c301da3528b7465c0a5838aed34ddaf32ebb72d31e6",
+        "contentFingerprint": "9db77784305dbff43d66d7cd79cc23580274484d1511022afe0e7d4e2f18f52b"
       },
       {
         "slug": "docs/glossary/inspector",
@@ -1970,16 +2042,16 @@
         "permalink": "/docs/glossary/integration",
         "title": "Integration",
         "visibility": "public",
-        "fingerprint": "71cdd22ea5f4cf00a46e169a6a130613470bd74b9766f2e6b42f591c99e2d3b7",
-        "contentFingerprint": "872cc8b206149bc590976a05f9791ed9684f5b3cac82843729bc65c61cbc8a38"
+        "fingerprint": "abbace44a5b9c66c955cabefe3c534521bbb2ed5125abfc7caf2714fa51e9160",
+        "contentFingerprint": "c72d5070f0fee4411db48bd00b5498da97e8c4e0ea8e04c8618a361da6413605"
       },
       {
         "slug": "docs/glossary/integration.ja",
         "permalink": "/ja/docs/glossary/integration",
         "title": "インテグレーション（Integration）",
         "visibility": "public",
-        "fingerprint": "bce7b577040daffbe3abdd0726ab7b9ab3ce49eafac160beac69aac045ead3f4",
-        "contentFingerprint": "28e61b61550246e57ca2fa364187a735c2b30981d2ccd317f4437071dc898723"
+        "fingerprint": "ad5d8e45955f07342c629830296da53cc3b379344f6a2e62fe9659fdf3915663",
+        "contentFingerprint": "717ea4af21814e6380be9f48b538af36b5039a6174c236551a13e88556975981"
       },
       {
         "slug": "docs/glossary/island",
@@ -2082,48 +2154,48 @@
         "permalink": "/docs/glossary/logical-path",
         "title": "Logical Path",
         "visibility": "public",
-        "fingerprint": "6f9a595f3d7e17a7dbd1897b1cc41d2b64e8b4eb4b57d2ce63fe74a80ac21203",
-        "contentFingerprint": "d6cea4300de354d86bfade851a88d1f73b1d5e7e1866dd7106fdf70e228051ce"
+        "fingerprint": "893f4e198614d4f7ce9130a8fa133d8340984a5b85cb878e511b4774b2c1bae4",
+        "contentFingerprint": "e7016404bf591be8b82345dd66d2c3691e109b6e6674b8129d8d25f434727ae4"
       },
       {
         "slug": "docs/glossary/logical-path.ja",
         "permalink": "/ja/docs/glossary/logical-path",
         "title": "論理パス（Logical Path）",
         "visibility": "public",
-        "fingerprint": "8f7c5321965a809b8c8366a5e4c8523e18f098bff24faebe54ba0621822270fa",
-        "contentFingerprint": "7fe991cb52e375093555a58b922504d7b53b6262a82e3c8ee1857409057c3793"
+        "fingerprint": "36e0686ad65a260d7874561221d50bc0e415db85b0b375a3b20e15bde87de384",
+        "contentFingerprint": "07e544714f8906a00bbf9eb6a3d20f47556bc414f51938cf80aa405f28ac0e70"
       },
       {
         "slug": "docs/glossary/manifest",
         "permalink": "/docs/glossary/manifest",
         "title": "Manifest",
         "visibility": "public",
-        "fingerprint": "582d23535bbad8bb74d3e6155a245743204e0abd8818005761899aacd5022cc4",
-        "contentFingerprint": "77dfaf434218a6f3248c6ca13de5f86f16d8f4ab5090e74968c91e0fcf79e156"
+        "fingerprint": "87477803ee01859331d0eed78d3f53c36824d14361af0b3f1a7f9a4ea4f21363",
+        "contentFingerprint": "b99f2e7b388225e4f8ba26bf1b96bfd296137c128ddf2ea1a042610890b7b8e8"
       },
       {
         "slug": "docs/glossary/manifest.ja",
         "permalink": "/ja/docs/glossary/manifest",
         "title": "マニフェスト（Manifest）",
         "visibility": "public",
-        "fingerprint": "75cb106464b03c3a92daeb67a328629f9f71bc27ff9052a27bb215d17abbf05b",
-        "contentFingerprint": "248f2910f70dec8db0b58e1b6aacb5bddea66aceef0226dfe5af2cb418ae7565"
+        "fingerprint": "8a042f76cc1e8b886774084f9bd0116f35bee6c4ca3ea9231f8c26918ca52222",
+        "contentFingerprint": "3866e64d1ab16667fac99a4d1edb2853f1a8698644c78e63c96cfc903ca2a9c2"
       },
       {
         "slug": "docs/glossary/navigation",
         "permalink": "/docs/glossary/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "6ead0b91376daa4db25426e20c92142f94339f24a52f52139bef70d3b3841d34",
-        "contentFingerprint": "78f089bbab859549e73d0a59a23bce1e406a025b2a9f8db915fb521ec2192993"
+        "fingerprint": "9ab8e9db78f4999b0e2fc2fbacd2f450f7ec2a3e6ae8b1f4bd5efe154a780c3d",
+        "contentFingerprint": "9472f58d94bc90bc48a380eb0abab62315402cc0e9131aaa2c0d98f158ac62d4"
       },
       {
         "slug": "docs/glossary/navigation.ja",
         "permalink": "/ja/docs/glossary/navigation",
         "title": "ナビゲーション（Navigation）",
         "visibility": "public",
-        "fingerprint": "9670cb404ef7e9b115fde09bb637d1fd076ff3d9a2b5c098c63c8f1dcafc4bbb",
-        "contentFingerprint": "df5fe71a484666a574682552ac9adb09c926a646e33df96344a1eafe798e3ae7"
+        "fingerprint": "629b328f7e9c2646a2d32007348e451f29d1e6e35891b10596b5eb22db26867d",
+        "contentFingerprint": "37968be0cf87ef72d34d1e6343c13150a4bc24e7ceb51d71e418f811cf457b1d"
       },
       {
         "slug": "docs/glossary/obsidian-vault",
@@ -2178,96 +2250,96 @@
         "permalink": "/docs/glossary/output-dependency",
         "title": "Output Dependency",
         "visibility": "public",
-        "fingerprint": "05d8d6d8c595666c0ba018bb87808d89bc99d7031e6266cfb230b9c52e00e132",
-        "contentFingerprint": "534d187964b66d9e4d588971fd0aba16ed070a163a1540c63d588d63d7ef1f36"
+        "fingerprint": "d95eba0d55d0005a4611466d72c7820ac875580c1d2a61455731fcb40667bd70",
+        "contentFingerprint": "2d4a77f831c309f3b84180fc5df352e9c69e2c6ab71e2a84045bfe58a1aec2db"
       },
       {
         "slug": "docs/glossary/output-dependency.ja",
         "permalink": "/ja/docs/glossary/output-dependency",
         "title": "出力依存関係（Output Dependency）",
         "visibility": "public",
-        "fingerprint": "74ffdc0d39b5e7cbb5c766d42b7caa609ce3feabc364a4d7482aae4e1138fd46",
-        "contentFingerprint": "cc76eda000dae00f720475d7b2a1d6979b87da17cffe182589c7d8347a9ccf14"
+        "fingerprint": "7556f508ac57bf0adf819af142b5e37c46bbfb3568abe7ade7772f5c3a09cb89",
+        "contentFingerprint": "da69055eaae5ba83ff661eef77ef472c7ce90496aefe8ae195d212bdef528e2c"
       },
       {
         "slug": "docs/glossary/output-inventory",
         "permalink": "/docs/glossary/output-inventory",
         "title": "Output Inventory",
         "visibility": "public",
-        "fingerprint": "e3e0607d6e675b8a45bc08d01f5b77bf3a359b4ae9787ce141ece62d7ae5a86e",
-        "contentFingerprint": "ce61207f458579c0d32aa0c48d5250f95413b919ddba4516c7779e827c3e50e4"
+        "fingerprint": "0d7f3f9489ec27fda9726d8b2be93e27716c8c9e2eeeaa49ab43f71aeab50bc5",
+        "contentFingerprint": "a6d0110fe59e305f4efc8660f04da37582e72378e3cfd56c6e8fe17bf4cdb5cb"
       },
       {
         "slug": "docs/glossary/output-inventory.ja",
         "permalink": "/ja/docs/glossary/output-inventory",
         "title": "出力一覧（Output Inventory）",
         "visibility": "public",
-        "fingerprint": "d608e52837f174cb7aaa170a43b8d4dd9ddad06c0ab64b0a3393df1c77f8185d",
-        "contentFingerprint": "d99d8e85103bf6f9d027d0fd949208faf3affd4d4cc32741d10197e631f62ec1"
+        "fingerprint": "5268bed7f27827048d665d4953c939af96d136cb728d1ea96065dcbe3e0a5ed1",
+        "contentFingerprint": "c69e851c9c2cdb7f655304c7d6b86cf3bbdcab10cb4725d8e592d71560ad71f4"
       },
       {
         "slug": "docs/glossary/page",
         "permalink": "/docs/glossary/page",
         "title": "Page",
         "visibility": "public",
-        "fingerprint": "6ab0f746b7d6315209917a2d589930d3f1cd14c204b5a8ac63a6f8ebb63735df",
-        "contentFingerprint": "273e2d195b8f4ea8cf530ca74a513453a06d6ebbc2599a11a75f0dd0ea24e77a"
+        "fingerprint": "79f40509225d87dfe2bbcdd3a533cbcd4312a518ad7e6be7310fffaafbd4f9ae",
+        "contentFingerprint": "20c13d6ff5250219e21afc560842d2a110f5589f4fdb39117c6a5ed0caee6e11"
       },
       {
         "slug": "docs/glossary/page-type",
         "permalink": "/docs/glossary/page-type",
         "title": "Page Type",
         "visibility": "public",
-        "fingerprint": "1ca4f8adbd8b8bf8edbc3ffade0144965fff74011e6532033a88e4d40f9cb9f4",
-        "contentFingerprint": "d0cf9f4e67e7965b0f5f06b60ce329c255ba1958969f20f0afeed197d4384c0a"
+        "fingerprint": "67889c2f6b0906a04e6b4fcd466cc51906de144e4be4a095ce1ae6e93e257884",
+        "contentFingerprint": "be5ac50d28e8df8e41182a5af41c4769c649ad489e9b48eb178c500918c247a9"
       },
       {
         "slug": "docs/glossary/page-type.ja",
         "permalink": "/ja/docs/glossary/page-type",
         "title": "ページ種別（Page Type）",
         "visibility": "public",
-        "fingerprint": "28c91bfcbd22c3a054f6cbf9800431418adc28a64e6f8c0ffd16e7b81f05c453",
-        "contentFingerprint": "4b2f55d8a626a7bc5fae87866bf5aea3488b303df9bac38c010d688fd89b0cbb"
+        "fingerprint": "3954a447fe6ddf0eb5bb536d80946ce10c24837a0d62a283d16a13bdfa91035c",
+        "contentFingerprint": "2fcb0eee91104c3d5e2eebe45dc6a420ad5446bfdf0fbf0caf4d14548ff209d1"
       },
       {
         "slug": "docs/glossary/page.ja",
         "permalink": "/ja/docs/glossary/page",
         "title": "ページ（Page）",
         "visibility": "public",
-        "fingerprint": "30bbe2bfc6c97bda5338605719b153e5bfd182ed9aee129705e63a058c112c02",
-        "contentFingerprint": "184527a3dfa6d8b25f09c4d3b7ecc69bc82cfeee06f5e09fd647ac853972efc2"
+        "fingerprint": "e516ee44f3e24979938751422281375e6818ea536ac2931df14ccd61ea5b3a05",
+        "contentFingerprint": "5c21825aa0eed43e7ebd86e42b37f848c200816497ad4f2844349027b5d1cdac"
       },
       {
         "slug": "docs/glossary/permalink",
         "permalink": "/docs/glossary/permalink",
         "title": "Permalink",
         "visibility": "public",
-        "fingerprint": "3acfd9e2175db71068055bde5f7ebd0336c92f6d90d4c00062a4765d3376389c",
-        "contentFingerprint": "529396a8475dcb32efca0173767f5c49c604193a224c4a1250145361db9b61a6"
+        "fingerprint": "e8580d5a6afab8654b1a0843f34879af699c15010d45e265a0ec2ef75f57b674",
+        "contentFingerprint": "8a8b7a932f209a509ca6eeed243c11248f1b4c2f7b0faaa54c8dcdab98ee4ae0"
       },
       {
         "slug": "docs/glossary/permalink.ja",
         "permalink": "/ja/docs/glossary/permalink",
         "title": "Permalink（正規の公開URL）",
         "visibility": "public",
-        "fingerprint": "16059c4d0186e5dc4880e8a701a2f8736cc76ad6d07f7dc2d2c929ec1e92769f",
-        "contentFingerprint": "e8c0ba3f692d69b25527323460b7d321e608d1f18809ca80d2cdd3f7ce0e3ae5"
+        "fingerprint": "b8be4be1ce6e7280a62b49602313cb53456886023ed4f32d3db1f03b3d1d8f1f",
+        "contentFingerprint": "312ee239c472612724b8771663d8754fef6034e085d96f53a79ee85cdd717065"
       },
       {
         "slug": "docs/glossary/persistent-cache",
         "permalink": "/docs/glossary/persistent-cache",
         "title": "Persistent Cache",
         "visibility": "public",
-        "fingerprint": "ef29abe50e90b6de89b2d09d0b2894bfc68df282dfcfeeaeddeb7748dcf7c0fb",
-        "contentFingerprint": "962cf8e488ff83bfc689b08d933e0adb9a15c02f19df621edb9cd2086103f576"
+        "fingerprint": "8eee875f70c334fc11e41b2847c362a330fa2e5fb21cdd0d6427144c1210b8ab",
+        "contentFingerprint": "6dee157f6bd87e12c1a385c4d5c17ab66b6dbdf464040aaab4b349e37d4ba32a"
       },
       {
         "slug": "docs/glossary/persistent-cache.ja",
         "permalink": "/ja/docs/glossary/persistent-cache",
         "title": "永続キャッシュ（Persistent Cache）",
         "visibility": "public",
-        "fingerprint": "3ada0552e63924c174463f9661ac994f9d3c24b0b42b9d422067bd2d7e09b17c",
-        "contentFingerprint": "ed6849fb1a864ecb4e723a2c8d0e2891c4fb83caa07497ab9266d9b8987d7114"
+        "fingerprint": "ec5a8ee7ff72bc1f7f052f46639ae4f47f1d38073b8a7f1318a0445c4c2d8bcb",
+        "contentFingerprint": "cee62e6db464fa46b09d1aee854c0f5e5c632550b63ffbb7ac987e1843b311f3"
       },
       {
         "slug": "docs/glossary/pipeline",
@@ -2290,24 +2362,24 @@
         "permalink": "/docs/glossary/plugin",
         "title": "Plugin",
         "visibility": "public",
-        "fingerprint": "8aadb4e0a5249c966719748aad832521de43ac3727f11b36bd3bf51ed57f7262",
-        "contentFingerprint": "5e7f4a95ad9c1c0daddfbac8b7b405358cba65dddca48f3a74aa19202e288ea5"
+        "fingerprint": "537116c0c6e832a03f29d371458088272d96a6455cb8c6fbcd00732a36b0eefe",
+        "contentFingerprint": "c7b4511c3971f8543e9928d5608d73d223e6017cea2560c4b579753f971e7a32"
       },
       {
         "slug": "docs/glossary/plugin-cache",
         "permalink": "/docs/glossary/plugin-cache",
         "title": "Plugin cache",
         "visibility": "public",
-        "fingerprint": "ba45c82528ae5f3b78bca83644404e4af6bf4d05b520304b86a9c05083c5fea6",
-        "contentFingerprint": "093ad54cd9195f4ebf1b1483102676b6e48c4a1c289d5cfdceb1b16502f1e0c0"
+        "fingerprint": "0b6cba51563e1c5224227125bd4396461df49091dba16dc7e48c0a791c471ceb",
+        "contentFingerprint": "6672477082f96309d26b29da555af8b5f0b97c1ee03f8750218d07e7ebced200"
       },
       {
         "slug": "docs/glossary/plugin-cache.ja",
         "permalink": "/ja/docs/glossary/plugin-cache",
         "title": "プラグインキャッシュ（Plugin Cache）",
         "visibility": "public",
-        "fingerprint": "8d142b1702051db89d617d829346d7281ac2ffb191bf460b01033af56d5b66d2",
-        "contentFingerprint": "6efb6895b3f3dcbbbe085d8863c8f1c07aadd2d9df237e80ac9d646877b5bce8"
+        "fingerprint": "d75707632b7ede28e14d22f057913d6cff5383b1050fd7351f4acb394f5bebab",
+        "contentFingerprint": "2af3f3603ece17788622436a86633ec2f015da67969f4403c457237120533dbe"
       },
       {
         "slug": "docs/glossary/plugin-component",
@@ -2362,8 +2434,8 @@
         "permalink": "/ja/docs/glossary/plugin",
         "title": "プラグイン（Plugin）",
         "visibility": "public",
-        "fingerprint": "293fcf33df432e4cba1c6570aaa7289c55e230b469df83ded4ebf009238dbb3a",
-        "contentFingerprint": "2390c52fd1fec050961332775756da1a7a285702e9afb17f04d74a14c6d9a2ba"
+        "fingerprint": "b124b85dec07b5619d054c19b49fc74addc9346dd4da05a67bc981bf8d66b988",
+        "contentFingerprint": "e4a6bb17c2dade4ee496f82b63f66695e133485e2439041140d99ea06b3abfa2"
       },
       {
         "slug": "docs/glossary/presentation-layer",
@@ -2418,32 +2490,32 @@
         "permalink": "/docs/glossary/public-location",
         "title": "Public Location",
         "visibility": "public",
-        "fingerprint": "465b38107dce03ade831cf3e12a5ac70a79bacc9b7e424efabe042ad26d884ba",
-        "contentFingerprint": "c16c4cd08b77f349df3f6dc992bf9ed6216569d8e339ca8a7184a86200a48b37"
+        "fingerprint": "ce1abb513e5ebf186aa4db419371dee98be39b12d1e013db5609ab70376f3b5c",
+        "contentFingerprint": "e3578e9ab5f8c1d93adbbf72784a9593f919edea84f2cdb77a7d597b5a1dae34"
       },
       {
         "slug": "docs/glossary/public-location.ja",
         "permalink": "/ja/docs/glossary/public-location",
         "title": "公開先（Public Location）",
         "visibility": "public",
-        "fingerprint": "d486c5d9264babdff251117c26e166dfb705eaa8bc0cbf561a7b20552ef8868f",
-        "contentFingerprint": "eb802fdbe399cd162dc91bfcb22803c1a960b3f029120f3bc035116688ae452d"
+        "fingerprint": "7274770dc7a80345f78ea599767a0f90bc942e7516df6b510c9e31c652f7eefb",
+        "contentFingerprint": "feba8350f8ccf45295e9724b0222f0d729156c093e374eab439ff75fdb1766d4"
       },
       {
         "slug": "docs/glossary/public-path",
         "permalink": "/docs/glossary/public-path",
         "title": "Public Path",
         "visibility": "public",
-        "fingerprint": "8c5eecf00e54be14adb2304e589608d000398e2e156bc854f845d1f65ada4bc1",
-        "contentFingerprint": "37ac9e2905a1793aefa1b4c4b2ff5ab311cc6f753c457de759fbcbb8dff1550f"
+        "fingerprint": "56baef04f3f4524c2efa4ff453e6e535d17eccffbf0950ef4a78afded3f5d1da",
+        "contentFingerprint": "525b4307111fb48d525ed53fda9685d589915f0fbc0df2fefee161f176f006fe"
       },
       {
         "slug": "docs/glossary/public-path.ja",
         "permalink": "/ja/docs/glossary/public-path",
         "title": "公開パス（Public Path）",
         "visibility": "public",
-        "fingerprint": "d8ae85ac48f30cd03202996c68dc252fe2d0e193f5f996f4f07e871dbcfd6776",
-        "contentFingerprint": "4eec17373d1675df7f56300ad1164743e5fc2b5c839564c7bdf47f8be88bf38a"
+        "fingerprint": "20a52e4657fd398d9db55dc2515936c60df6985c2e0c87ad00540fd615441208",
+        "contentFingerprint": "8eb53f62c3ca490037236330debdd318941dfb504dd17731a799c4355d253839"
       },
       {
         "slug": "docs/glossary/publication-boundary",
@@ -2466,64 +2538,64 @@
         "permalink": "/docs/glossary/publish",
         "title": "Publish",
         "visibility": "public",
-        "fingerprint": "5526cc234f6e358d6b25b21549f63fcf9a4268f4d658c53094ee596ec0cf0979",
-        "contentFingerprint": "603d2a8b784572c0cac94e9deca86de5d35e4f817e3dab4769da9bc981c129b2"
+        "fingerprint": "26d31fb96ec502c44d2782f1847a38dae53b5db7799206ffafc576ff74c84d70",
+        "contentFingerprint": "b5fbb8788d15232b912dd5c4406ced8a8ec6cb69f6208c6a09cdd44adf115116"
       },
       {
         "slug": "docs/glossary/publish-strategy",
         "permalink": "/docs/glossary/publish-strategy",
         "title": "Publish Strategy",
         "visibility": "public",
-        "fingerprint": "b307c150ee814f42cc714d45fcb59b5587ab934da15ea9ccc8063761b5306c67",
-        "contentFingerprint": "16c65c732046bdd6bef31bdbdd3693f0ed78388a3f27b4ca890875620b48ea5e"
+        "fingerprint": "4fc99a75dfb4f621dd21893c8fdca014c023d87ab16d376bb3da43b115af2d90",
+        "contentFingerprint": "fb889404539401ed5aa503b45aee7c1920d423bb2bd5e2595a5f4e1e3e26972b"
       },
       {
         "slug": "docs/glossary/publish-strategy.ja",
         "permalink": "/ja/docs/glossary/publish-strategy",
         "title": "公開戦略（Publish Strategy）",
         "visibility": "public",
-        "fingerprint": "f5b4d9276fcc18e77d8b0eda89cd561b292c3586cfa4a19dccff2c91b7fa761f",
-        "contentFingerprint": "ac17c1b6011fb8ccbf6f85618ae570d771a9e079d051acdcd9586dac647f4183"
+        "fingerprint": "d0e76e49081277c8e81a5b3e8c1b6ae9aa12aaedb1d078cbc36c1603399b1d67",
+        "contentFingerprint": "161514ef287ba49dd7c6e4e509445515ea278105a8fe22b04346b63105a760bf"
       },
       {
         "slug": "docs/glossary/publish.ja",
         "permalink": "/ja/docs/glossary/publish",
         "title": "公開（Publish）",
         "visibility": "public",
-        "fingerprint": "e189dd3e6cbcc7d62aa3f3c9de36ae280d4b151d1386c144b59d43edb7f12833",
-        "contentFingerprint": "2417b720069dc4f201a758246c92e68622582ae6d5c9bf471dd7467dcb99cf30"
+        "fingerprint": "5b9b19aeeb9fa7d6855e277c96a80e402e8f71da646faf5bb82e568a33c1a7eb",
+        "contentFingerprint": "d361787cc56d2a3567cec1b0b2932915bda8d18d5706dc3e86ec13801f8b5a0c"
       },
       {
         "slug": "docs/glossary/README",
         "permalink": "/docs/glossary/",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "f5a068041ea9e7518ddfdfcdee604ffd3f78d3947739d8baf09fbb7a903d088d",
-        "contentFingerprint": "f9b78390446b546fd855a60986fbe918726c65c82be811adf1bc1f32431b5c80"
+        "fingerprint": "6eb7787ae972fa25f28663b7201145bea7367c37af80fd67646be4a4f3f6dd82",
+        "contentFingerprint": "0b120a1196c79d80c2accf370af804aa2faf0fdb71de9613778ff95d4b1a1b9e"
       },
       {
         "slug": "docs/glossary/README.ja",
         "permalink": "/ja/docs/glossary/",
         "title": "用語集",
         "visibility": "public",
-        "fingerprint": "5337a84210312a577cd84d26b0d0d752285370fd1018cdc352c0802c74ada6f5",
-        "contentFingerprint": "2aaa4a5ee9da35200e9dd0cdd0e85be9b97151255172eb385ac6fe91b6520b9a"
+        "fingerprint": "6343b25d69b960ecf42c596014c9099144b1ce1a8894fe3bf85f31bb103d599e",
+        "contentFingerprint": "fbbcca5c6e6fcc1b6c442cb43779b59bb04340a3ecb56179185d1dca84469c54"
       },
       {
         "slug": "docs/glossary/redirect",
         "permalink": "/docs/glossary/redirect",
         "title": "Redirect",
         "visibility": "public",
-        "fingerprint": "dd706188ae2a61a51228af2283e43df5f0de0224e76b02a8846398308cc31bfd",
-        "contentFingerprint": "5c61e88f410557993e5c7f939c928461223072daf5f2e1e147b495a2a07ceaef"
+        "fingerprint": "4f959eb7c5d957590e843e4b15b863af15f53ca8bcdce2b6dc88563cf689cfda",
+        "contentFingerprint": "18803427fed9f2bda28f9f2b010ba9482fc7825c17a0f3d134807d6a868de149"
       },
       {
         "slug": "docs/glossary/redirect.ja",
         "permalink": "/ja/docs/glossary/redirect",
         "title": "リダイレクト（Redirect）",
         "visibility": "public",
-        "fingerprint": "bbe64d8f2c5f64e765459c29e1fad0f2e360fcdd6dc1a684260886d92303e09c",
-        "contentFingerprint": "f122cbc85432245fe83bc89c76aa4e979c4da98f232eb52fd6b3dcc58ea30bdc"
+        "fingerprint": "30a25bced3b4eca21239e3500344a5fc09c30366652d3db564517ce2c505202e",
+        "contentFingerprint": "dd17bff552248e4ac32428aed52c5310fe4c342e6df1f5a935e024736dae5cf3"
       },
       {
         "slug": "docs/glossary/renderer",
@@ -2578,16 +2650,16 @@
         "permalink": "/docs/glossary/route",
         "title": "Route",
         "visibility": "public",
-        "fingerprint": "c91fe8db444c9792c6e26f1829a743019a9905a4b5bc9df69ce3f18c9fdebe75",
-        "contentFingerprint": "904a152f473b6df4f222a756a1fd5bbf8a47c7d7cd3cc0cfd9fdcb1df25c3ec8"
+        "fingerprint": "72f8edc0470292006183059cfcc8a34904f7bbee5a8514dc1172684ce485bdaa",
+        "contentFingerprint": "731d66e7e3ff65084986a4a5d29e56594e1b85fcfcea7b0d66c4cc4ed50be1a6"
       },
       {
         "slug": "docs/glossary/route.ja",
         "permalink": "/ja/docs/glossary/route",
         "title": "ルート（Route）",
         "visibility": "public",
-        "fingerprint": "5ddd279a5a113cb502fbe47191d3e1c2eb0dc3fb130460abee222dfa91d89b75",
-        "contentFingerprint": "bcfa14a6c9ce73764807685ca40067d4917bfc30498e470c77f366095c6dbf67"
+        "fingerprint": "c5daacb83fd1942fa8bc55856ecae2e4a0b42dfc58aed294ebcb12d99ab8a1e2",
+        "contentFingerprint": "7b8e3d008fb40cd72459fa6dd0b57f12745ba9c6e947d2cf6efb030646651597"
       },
       {
         "slug": "docs/glossary/runtime",
@@ -2610,16 +2682,16 @@
         "permalink": "/docs/glossary/search",
         "title": "Search",
         "visibility": "public",
-        "fingerprint": "748907a35a84dd6ff6c0df519cf1d7e76af2ad49eb90c4ea9d0b09e4261a85e1",
-        "contentFingerprint": "6a952f31e67d96c3a2a13663dd2472c508b8f602e3d6dcde8ba22fda24d5df97"
+        "fingerprint": "a63f5b48d60230830c2ccf3d47863bd7a5f03b457475890a17e83f883a2b2185",
+        "contentFingerprint": "96b9efc468945161e4fe201e3f045b6770c73b3e816250decff98b1fd54a8aeb"
       },
       {
         "slug": "docs/glossary/search.ja",
         "permalink": "/ja/docs/glossary/search",
         "title": "検索（Search）",
         "visibility": "public",
-        "fingerprint": "65949fb43b1ea2c5b42f84dd07e80b46e5dc7cbe922edd71d97e8357f068b281",
-        "contentFingerprint": "d7bfac138d8e6ce53f4cc1384213f10b6963cc8eda8b651e78ebcc7880776083"
+        "fingerprint": "25e598cdd8a3e3761c8a7df0cc7f0e07506ba48d47cfab835a78b80715b832e1",
+        "contentFingerprint": "febe20c45a1ca57c1091d60354979b97efafa76fe74c595598ac2f8dd5b23976"
       },
       {
         "slug": "docs/glossary/semantic-token",
@@ -2690,8 +2762,8 @@
         "permalink": "/docs/glossary/site",
         "title": "Site",
         "visibility": "public",
-        "fingerprint": "3384e9700f933bd310c0aca08f95e21c03346cd5ffd32413318bee64b453410e",
-        "contentFingerprint": "757183ec6b56823c0150b34cc829a7901bac0b9359472b1ed7b0010fc3576644"
+        "fingerprint": "0679c1d714010506bab1febd288b1a4f8ed019f0705ef7bfbe468aa186e645f7",
+        "contentFingerprint": "71b9c61803d0e4052783b91c3d0df1e5441a9c17409eeb2c0b7bb99d0d458e07"
       },
       {
         "slug": "docs/glossary/site-config",
@@ -2722,32 +2794,32 @@
         "permalink": "/docs/glossary/sitemap",
         "title": "Sitemap",
         "visibility": "public",
-        "fingerprint": "01a98d5eb11f538246da340489155f7baba75c075066f3671bdfd734eca167fd",
-        "contentFingerprint": "b632e30da827626d1965ee566c02df9c97c24c1fdd7cef682cb80f24a00ca2d7"
+        "fingerprint": "3a10557294cf262d81457292a96801b0dc4b9af4ba994ba3dd0549df2ff2dae4",
+        "contentFingerprint": "c9bca701153ad7c25a4cc03546d459e29dad98f09abefe3410f29b5460ab166f"
       },
       {
         "slug": "docs/glossary/sitemap.ja",
         "permalink": "/ja/docs/glossary/sitemap",
         "title": "サイトマップ（Sitemap）",
         "visibility": "public",
-        "fingerprint": "abba4462cba6751d23a5fb264bffe5e821d3f462a2b51a8b914b2510a1226bac",
-        "contentFingerprint": "1c090e91a90e9ada886c640a6c8c7861c6d2fc24e94ab8411719588f71fff5ec"
+        "fingerprint": "4ab69f79ae972f1960ec35035a99394f8d7533ba3cc2762a3df33185fe764db9",
+        "contentFingerprint": "fb2460750de6d600e7fc447a62579ecf721ff764f29dd853f1e7abfe74cf336d"
       },
       {
         "slug": "docs/glossary/slug",
         "permalink": "/docs/glossary/slug",
         "title": "Slug",
         "visibility": "public",
-        "fingerprint": "f6d1e3bf76f724b15aa8e1904c104db840e09b5bfef86ef4052323a92c4cf34b",
-        "contentFingerprint": "562c5ec37f318093697e44e2060b4383740a09f1cb608864fc86c2685800d3f0"
+        "fingerprint": "b0db6854d7c003e8a4c529d748f7fead2003e54dca1fa67e52d58ee912980413",
+        "contentFingerprint": "2e4052971bce8e41c139353d66ebe860b9c8f6f930b49b0d33f319ff6a8f96e0"
       },
       {
         "slug": "docs/glossary/slug.ja",
         "permalink": "/ja/docs/glossary/slug",
         "title": "Slug（内部の検索キー）",
         "visibility": "public",
-        "fingerprint": "d81fa79ec3f8235e17214540bb47b437a1bb1eadec9dd7594cda8b3cf5b44f8a",
-        "contentFingerprint": "908129268e465f3185361fb602c359fa26afe3a6959ea00dc08179bacdd2914a"
+        "fingerprint": "b685326b950297e1df6c96a7aeb5776c944c86c31a61bc0a0690c28bf7fdd5e3",
+        "contentFingerprint": "d396ad68a7e5c54d1d25aba0a0c82902c5dde5c353f1acfe6ffde31d33f5b2e3"
       },
       {
         "slug": "docs/glossary/ssg",
@@ -2834,16 +2906,16 @@
         "permalink": "/docs/glossary/trace-span",
         "title": "Trace Span",
         "visibility": "public",
-        "fingerprint": "effbc6c4309e4e0a9c7cc188899ca0047d5c709601a4ad0362a2d68b80987b3f",
-        "contentFingerprint": "e1d4564cdbbf9dc406f016c6515652f371063b5b4d4120c29aba5331a93e56e4"
+        "fingerprint": "e95c26339ee7f0917cba37f2fcfdd0b92cbdb00e4006f9e5a1dd8788421ff7c9",
+        "contentFingerprint": "090bb8c077377eb926a63dbbbed8c4f10cc31add947b4495a992c9e0f96f2dda"
       },
       {
         "slug": "docs/glossary/trace-span.ja",
         "permalink": "/ja/docs/glossary/trace-span",
         "title": "トレーススパン（Trace Span）",
         "visibility": "public",
-        "fingerprint": "788d84925fa646bd667467b0c501d3f16c6ebe2c8e0cdcc7c897ad59c6611459",
-        "contentFingerprint": "8376e3652b741c48ca50fae6e6c4df3b91d176f2e6aedb8a548e5cb15f98cff0"
+        "fingerprint": "3bfc9f7e452c3c8f82c89aaacc6c05a923fd11fd805bb760c41b636913e79284",
+        "contentFingerprint": "285879934ad8996863c60d4b358ac065f013603e691ec8eb9436d098263dd4a5"
       },
       {
         "slug": "docs/glossary/translation",
@@ -2898,16 +2970,16 @@
         "permalink": "/docs/glossary/unlisted",
         "title": "Unlisted",
         "visibility": "public",
-        "fingerprint": "156d0626486629e334e6af978aac2316b3829fb7bd0fdac0576499ecde7a8204",
-        "contentFingerprint": "1597ab850186127446714f1d73e02770778769f1881077aa8a7bd5d3e850ae77"
+        "fingerprint": "684f5b34ee477f500907f5c14c3520ba65b06c90e3612fd75c796c37f918f00b",
+        "contentFingerprint": "fa995388d7056e39186a149016731b1f03c2d7b6762a2b33aa8be1f1dfd358f8"
       },
       {
         "slug": "docs/glossary/unlisted.ja",
         "permalink": "/ja/docs/glossary/unlisted",
         "title": "非公開（unlisted）",
         "visibility": "public",
-        "fingerprint": "46ec95c08c91456a3cc5afadbb446068bdd1f24b3223c84e0b6865b4fa9f85fe",
-        "contentFingerprint": "6d3a9646a054f615cb322cb87705227f1d7b17f2428ba8db3212ac2009708de1"
+        "fingerprint": "eb30c28ff3512059f52c9d25c34db2ee322dd5df73a6e0196e487c0651802cd4",
+        "contentFingerprint": "b7aef9c903d268821a7357f4765307bfd47f18342accbb5789c3bc6a197e2684"
       },
       {
         "slug": "docs/glossary/unused-asset",
@@ -2978,16 +3050,16 @@
         "permalink": "/docs/guides/analytics",
         "title": "Analytics",
         "visibility": "public",
-        "fingerprint": "fd1e9888862b8d7410bad6864b05f45054530eed9987e8cf49f8677c9549a85d",
-        "contentFingerprint": "686a81da1b10c037289957e74e15e60b2ef43a611a526a309ba673c64a8fc4c4"
+        "fingerprint": "32c8163ca3d8a8cfb601c40776abe873424e2522c69612b2b2dfdf9cce0e53b0",
+        "contentFingerprint": "8486a2cb3e132caccf42b85e55d79d67d316ef715ac8a6ca87f58b960591b042"
       },
       {
         "slug": "docs/guides/analytics.ja",
         "permalink": "/ja/docs/guides/analytics",
         "title": "アクセス解析",
         "visibility": "public",
-        "fingerprint": "335243e36540cc34c6315f9a54a7688a99499fb5cfd607628db4ef5febbe125f",
-        "contentFingerprint": "1f48bfdf63870ba2c52064f45c2d52cc9e07b874e1b7af21e4ab2c4bb643de44"
+        "fingerprint": "c2c5d94a12ff8d7efecee7f66a1b7b2c695ac9dad4c4c0fef074deb8132dcc46",
+        "contentFingerprint": "11cd50f41e8cbf5d99b0d66020409a71ba49a8e0ae0a7028c1712120fe303859"
       },
       {
         "slug": "docs/guides/analytics/setup",
@@ -3026,16 +3098,16 @@
         "permalink": "/docs/guides/branding",
         "title": "Branding your site",
         "visibility": "public",
-        "fingerprint": "8efcfcfcca56f5666ada198f47d34d707d2a8976d63d85ca23d076f3529d6b53",
-        "contentFingerprint": "b2417e0913b82b558f2b0007460e5a997434c42bed9a16e14f5ef49a1d3f9d0e"
+        "fingerprint": "03b17339e3af50d888fa9655de86d6bd13a623b253e39c2b8eaab245bdb5e87b",
+        "contentFingerprint": "f72478ea30b105badbe29beb65f3c2bfd965bfa8092b6829284a47e4c9e27a42"
       },
       {
         "slug": "docs/guides/branding.ja",
         "permalink": "/ja/docs/guides/branding",
         "title": "サイトのアイコンとロゴ",
         "visibility": "public",
-        "fingerprint": "b734319046441da50dbe5693f8500709fcc941eb80f21304fdc0311c97c682ba",
-        "contentFingerprint": "ddfa6859a57a5aeb9f4973a81f9df19b1355666077dbdd9637dbdac795acacd6"
+        "fingerprint": "29a71ea937df6c2d9ee1cd4abd2dbd80c7574f28ac4651a7fd52a423d40c37f8",
+        "contentFingerprint": "1f50082274ecd83b9c089a30360ecf8f0cfcdddeec95a6e3bf025e26e8942806"
       },
       {
         "slug": "docs/guides/content-repositories",
@@ -3058,48 +3130,48 @@
         "permalink": "/docs/guides/content-repositories/basics",
         "title": "Basics",
         "visibility": "public",
-        "fingerprint": "453ca1672aab7193107152421f8af7f79b3b7e1ffadb021378de4a0d6e980786",
-        "contentFingerprint": "ad098ddb59d91416831c94a6712fffebf33d0ccae79da2f05c15c558666dd208"
+        "fingerprint": "a6c3a7870784dc48dc7353f30d3fe3e8b0494fb13324a54aee2026c2d0a747e5",
+        "contentFingerprint": "7007e69eb48ef0cc538a0ae052c0e2be9d8ad626e661f95f070489e0beefe7af"
       },
       {
         "slug": "docs/guides/content-repositories/basics.ja",
         "permalink": "/ja/docs/guides/content-repositories/basics",
         "title": "基本",
         "visibility": "public",
-        "fingerprint": "0a6b56e2072634923d8fa5b4558ece870c3fd110ad42e4fa17da7503c951866d",
-        "contentFingerprint": "d403cd9c1142bbee2af10bdcbfba72fe1a777e704be99fffe0272bc0249ddd38"
+        "fingerprint": "6c64bb267c1f8ddc603b87946335c36bea758b84f76457381d049b427c046d64",
+        "contentFingerprint": "2823cd876fef2a26c65ff230ac7919f149d2499f9d00662d383ad3a114b1ea15"
       },
       {
         "slug": "docs/guides/content-repositories/publishing",
         "permalink": "/docs/guides/content-repositories/publishing",
         "title": "Publication and troubleshooting",
         "visibility": "public",
-        "fingerprint": "5315095ef0ef4e5eb9f90b3eef253038b407884f1ee8e05f2b7b44f0540d7b4d",
-        "contentFingerprint": "e46d0105eea42983aa5bc594ed0012bc7b557fca8a6cd2632240dd4e87b8cfd9"
+        "fingerprint": "cfdaf346ad5b91439b3e4c4919de7d40d8258efc2fafdf4377ea3f828bfff5b3",
+        "contentFingerprint": "5137ac86dad1b97463a0d45d6035c2b3f190edbeef68f899575642343bbedd25"
       },
       {
         "slug": "docs/guides/content-repositories/publishing.ja",
         "permalink": "/ja/docs/guides/content-repositories/publishing",
         "title": "公開とトラブルシューティング",
         "visibility": "public",
-        "fingerprint": "d6f0af8718587354891a629a885bf8a17c85e64ca8e5eb10b35687830d4ac43f",
-        "contentFingerprint": "82adafd677660a243e07b8465a939dfba46889ff20f23a78fc64aca1081f76d9"
+        "fingerprint": "2d7bd108d5732072880790a1db7625aa11e6be3f202b8f627606bb625031e7ce",
+        "contentFingerprint": "d3d01465cec0f45be1ddbe0e028e52c2d4e18eaa1520293d30275720c2c3083e"
       },
       {
         "slug": "docs/guides/content-repositories/setup",
         "permalink": "/docs/guides/content-repositories/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "1f3c43072ef715cb1adf2da66587735dce10f11ba3bfb8b81c1d7b7f831e57a2",
-        "contentFingerprint": "d5de89d68a96fa978ddc86b1affc81c5b2cc81486139308648e493ab56a1a8af"
+        "fingerprint": "34ace546087898412dc5be3751ae70f42ee4f80f3011d3228ab3968656f27809",
+        "contentFingerprint": "aa1ff30eb722833fce0e9aa1bdf28ff3b5a446dc8d34b8d422fa6146785dd785"
       },
       {
         "slug": "docs/guides/content-repositories/setup.ja",
         "permalink": "/ja/docs/guides/content-repositories/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "3836d1e7d09fb71b2daede4f38ff49922895b49d6caa99fc2d31243305910b6b",
-        "contentFingerprint": "39caf1e446a140ef8299a8594aae7be619f155130d54c0b1bde0b1cb1b9b634e"
+        "fingerprint": "e54cd1065b12eb9196d57f243ec930da4661f20f71180a927ca378426fa9e3cd",
+        "contentFingerprint": "a0a54c1aaadf562f12ec267b9753df87f2f28d4930df490f5627459d1ad03ffd"
       },
       {
         "slug": "docs/guides/customizing-your-site",
@@ -3138,208 +3210,208 @@
         "permalink": "/docs/guides/customizing-your-site/pages-and-navigation",
         "title": "Pages and navigation",
         "visibility": "public",
-        "fingerprint": "9112a829bc479ce0c26d0ed8efb771bb886a781bf24b9a24033d6d6413d38913",
-        "contentFingerprint": "25241398a52915486adeba97c43d66815f0194d628663288204c6a9024449154"
+        "fingerprint": "034acafb55cf849890cf7e09228d3201bd3f5d931382128ed2a14f7718ab9eb4",
+        "contentFingerprint": "273640591bd28baac4b16c836d20d5340ef7048d3143eff60ca687b556d5c95c"
       },
       {
         "slug": "docs/guides/customizing-your-site/pages-and-navigation.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/pages-and-navigation",
         "title": "ページとナビゲーション",
         "visibility": "public",
-        "fingerprint": "93b6e0b7ac4a8b0bf1d247f045732cb8179dc293ff01d3b4c6981cf4281cb4aa",
-        "contentFingerprint": "8267933383b86ae1bd200c610f313f1f1438217e34ba574abe8b768449a446e3"
+        "fingerprint": "441849ea8dfdad5a34dcfb3229152a7e3c968e5c81cb3b6af0d44076fd03ad30",
+        "contentFingerprint": "d8f2c8dc36016b4413c37dceabb2e374ba824780b94cbfa3d93788bce554aa67"
       },
       {
         "slug": "docs/guides/customizing-your-site/plugins-and-css",
         "permalink": "/docs/guides/customizing-your-site/plugins-and-css",
         "title": "Plugins and CSS",
         "visibility": "public",
-        "fingerprint": "c0f04825d5626245cc8f231db9f3ce3df3b21685b47eac385ab89839e6665939",
-        "contentFingerprint": "913f9eeeb7f078eadfaadb2575f6d40475b9ed3cbd8f165a3ad7301bb4483f77"
+        "fingerprint": "987baebbc6933b27d1b714a14871d345b118c85ea9b107dc366f6eeac0d42fea",
+        "contentFingerprint": "a51e5c0398dd1a5ce17b26820e185a026c24e347ff6a83a6409d5ecf77804cb1"
       },
       {
         "slug": "docs/guides/customizing-your-site/plugins-and-css.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/plugins-and-css",
         "title": "プラグインとCSS",
         "visibility": "public",
-        "fingerprint": "22b6bd69509bcd9c4168a671e7e7ea7ec1402ccf2d10de508d0ef5bccfaf9a37",
-        "contentFingerprint": "c77cd4dce2e0e752044c042a8bba47ebf58aeec59755829e0c4ee3055e394290"
+        "fingerprint": "f430483854dce49d3cc0a7aee724aa83bc2219e3844217a785641b8f63249691",
+        "contentFingerprint": "f4295707f634f96ba7b0bd4ccfe0126ad518479dfd728cf66e8d219136c72bbd"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers",
         "permalink": "/docs/guides/deployment/cloudflare-workers",
         "title": "Cloudflare Workers deployment",
         "visibility": "public",
-        "fingerprint": "08df08795b6399a0af3ca55f1e56482eae9a8bebbd55734e6c522a3f7e7e9d09",
-        "contentFingerprint": "17ba711871afea08824d753aec7290538f6cfd83af1ac8b64cc08aa8762e43ca"
+        "fingerprint": "f175360168b259722415b70d78bdf287a1171b6fb1b6e40d15c9a72a85851e6b",
+        "contentFingerprint": "5b50a8bb59f45a8accdf62beb6a48e963aeb34acf9747ed355b2dfebb92fe71e"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers.ja",
         "permalink": "/ja/docs/guides/deployment/cloudflare-workers",
         "title": "Cloudflare Workers へのデプロイ",
         "visibility": "public",
-        "fingerprint": "9cfe3fa7467af623c5d78e71f295532adadcedd4c8e833e62d2ad4db7296aa40",
-        "contentFingerprint": "0e6609aeb12f00da3af04f7a2210724e269852ae8c43d8dcd8edada4a92eaa16"
+        "fingerprint": "9f2a376f7396756e74895e59b3358a30351fe344662c05f6fb3389af517875be",
+        "contentFingerprint": "06f94a0ceb10cd3b9b51d76576375776c7b55f78b7fce4f46d7a30d25521d50f"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers/operations",
         "permalink": "/docs/guides/deployment/cloudflare-workers/operations",
         "title": "Operations",
         "visibility": "public",
-        "fingerprint": "7d7141b6b73f10b5ef82386862e456de496bdcbd3841de3c73a721d5182bc6b6",
-        "contentFingerprint": "9e5193ece26241203d26e6aa5b93d4b3a46ce4ed03ee7ebac30c221c8a031d71"
+        "fingerprint": "c053d0f2302e5399bdffc48d4fd93fbcf0e1203e7fec63f845da7cead5e2b948",
+        "contentFingerprint": "d4b88f37f7b79950fed3e6282f60b98a528b4b66edea0d06acc1d3c895e1c9b4"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers/operations.ja",
         "permalink": "/ja/docs/guides/deployment/cloudflare-workers/operations",
         "title": "運用",
         "visibility": "public",
-        "fingerprint": "73af73b31c2b82f83a0956bcad4b0e1b80732f0eeb41e99acd36286c0508dcea",
-        "contentFingerprint": "cad6aa855a753f80d01dd448f55a43a9e032afbee1139755d810beb872fc7a01"
+        "fingerprint": "392d710c4b1ce4c1f3181cdeb8c83146997b209692b68576deaf9729d8581f00",
+        "contentFingerprint": "08faf9cc2ca3eba4276b52cbdaee8f45ee3f6c942b5119e3dacbfcb8ea2d4199"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers/setup",
         "permalink": "/docs/guides/deployment/cloudflare-workers/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "90c058d752d45b752a3b890fa61720dc4f24be60a9051c46cc7216da0ef3ed50",
-        "contentFingerprint": "20b13ea14a4495f9b7e25af2f8741fc0064fbcf66f28ee9867d70911371f69a9"
+        "fingerprint": "d85f512f551818d18575f1d941c0b254b95840cc64a7b29757fc6bf67c6d3a97",
+        "contentFingerprint": "ab18857aa8fe8aaa33152d60f3e10a5703d0f8b711d2e01044103e8a224a1696"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers/setup.ja",
         "permalink": "/ja/docs/guides/deployment/cloudflare-workers/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "d069ae90759f68173e9839784af2921bbe44b594ef5ca9cbf4f77bb608d6f66f",
-        "contentFingerprint": "f36b56a8ab648a69b70bc2bc42ba1bd39ba8247814cba7fe20bc0ff41afeefc7"
+        "fingerprint": "496e96fb43c127d724a0e7ffadc377b537b6035aa4c74b62d1d55e47e4e1842a",
+        "contentFingerprint": "a2e4a7e1af70bd2f429aae3bb8c35f1f5748e9bd555350412ceb06c33dbe199a"
       },
       {
         "slug": "docs/guides/deployment/github-actions",
         "permalink": "/docs/guides/deployment/github-actions",
         "title": "GitHub Actions",
         "visibility": "public",
-        "fingerprint": "0cf1d82519d486045838edf3e1dbae57ca443d232958ff5dcfabfc2fbede50a6",
-        "contentFingerprint": "086012a5e6524723c1bc35fbc51800cdfba74f49852f40f4076512da07f80bde"
+        "fingerprint": "0787634207b862898ef528ccbfecb73f2b73be05420316e189bf31099140c2be",
+        "contentFingerprint": "7099f9a6ebe0d11d544d104eed0776da4c5fe0fcedaa50b6c4bd4ef88d29024c"
       },
       {
         "slug": "docs/guides/deployment/github-actions.ja",
         "permalink": "/ja/docs/guides/deployment/github-actions",
         "title": "GitHub Actions",
         "visibility": "public",
-        "fingerprint": "059fa1caa8041d19ddb60b560bd1d29bd2fdab1ca1c03814873227455653cd36",
-        "contentFingerprint": "5e688b653afbfc4c82170f8cf08d2ffcdbfe60f55bbaa3b47ae44de7e86e4b3f"
+        "fingerprint": "23c5015bfb60c5b9698b36a2a175eb20de30ca0321d688ebf0929bc27f3f6096",
+        "contentFingerprint": "da56e53a720d0bf1624ed07d7116b531e5ed4edf9c3b070b62e65a6ef707b1c6"
       },
       {
         "slug": "docs/guides/deployment/github-actions/setup",
         "permalink": "/docs/guides/deployment/github-actions/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "48994cf96fc95926140e87f537deac5f833d5834041912105ba4abaa0bc1e6cc",
-        "contentFingerprint": "5b4c49dc121fd992c72ae8d7fd2188061c6e76152d6397490b5a8ee0e9429963"
+        "fingerprint": "af2596d02c53d866a1fe42c0f241b087dfa2e0703bfb6292088d9dab5c21cd69",
+        "contentFingerprint": "df676958536d51e8b7cc2b2038346ce4cdf15ab799b19692a657727123d549a9"
       },
       {
         "slug": "docs/guides/deployment/github-actions/setup.ja",
         "permalink": "/ja/docs/guides/deployment/github-actions/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "548a44e106119aa7418679eec7e92c34bcaf15283a38166e9dbd01ab5c4cbc48",
-        "contentFingerprint": "1ada2bca11cf79772f8fb5257f1af745050f28866ee112405d9ac01f9e9d837b"
+        "fingerprint": "2455a60e31145c200569c53463f5eae0e95c486a95a81c70dd866920cef9f472",
+        "contentFingerprint": "e72023efab7b5b79a6724bf59bacaa07a13cd3262c717f580a4cc3b65e9161ff"
       },
       {
         "slug": "docs/guides/deployment/github-actions/triggers",
         "permalink": "/docs/guides/deployment/github-actions/triggers",
         "title": "Triggers",
         "visibility": "public",
-        "fingerprint": "c23cab7baef58a4977248e16a553600c5de88023d50aaea484d0f77c57c34c04",
-        "contentFingerprint": "15199c90aee6155b39afd5b85f99b9b349a861e39c4d440f6b1b63d204725f20"
+        "fingerprint": "39d0485535bf79d10bd334f2ec8ec45403883dea0caa8f1e9acfed66088b2c4e",
+        "contentFingerprint": "df60abab3f609e94a390347151a07d82e7f75fe9a8d54149e9d8f52b02771f9c"
       },
       {
         "slug": "docs/guides/deployment/github-actions/triggers.ja",
         "permalink": "/ja/docs/guides/deployment/github-actions/triggers",
         "title": "トリガー",
         "visibility": "public",
-        "fingerprint": "566d640e97c01d519ad4065d4a58cea83bcf5221a52e4e2e50b39f1e6b972db1",
-        "contentFingerprint": "aa340e301bb38de18e0bb93f170c8abbe663aca3da23ec42a81035edb1f0228e"
+        "fingerprint": "ccf53a53142b4176d9050768ede9cd84906e3e821f46e678b28cb3be569c0d32",
+        "contentFingerprint": "285bf795a90ebc6585faec84b67ffbb022066fddee9e506c78ea9eb38dd723f0"
       },
       {
         "slug": "docs/guides/deployment/github-actions/troubleshooting",
         "permalink": "/docs/guides/deployment/github-actions/troubleshooting",
         "title": "Troubleshooting",
         "visibility": "public",
-        "fingerprint": "d10575aa5cba280ced9d2045fc29af3927a2bbd0df0ae7f0e255de3d1a5589e2",
-        "contentFingerprint": "4196a4f7d023c0afbd6c6d0a8236faece891af10def03d8fc885d5e1184554da"
+        "fingerprint": "225776981da4058a7ee4563414e551d60dbf24987839d30a7504c65b6705278e",
+        "contentFingerprint": "6f2d585377bb90dd1af476b17f3ec8d92c56ae80aa8b3d3faa76f31591e05e89"
       },
       {
         "slug": "docs/guides/deployment/github-actions/troubleshooting.ja",
         "permalink": "/ja/docs/guides/deployment/github-actions/troubleshooting",
         "title": "トラブルシューティング",
         "visibility": "public",
-        "fingerprint": "76d4a165bd3ad88f34c635b36e578fcbd9e55f37defe6ba15872f247926f6cc1",
-        "contentFingerprint": "b5b3ab3d5f21539a5a6955a9a6589cec8b42783ee11ffda1963f35ba5b8ad0af"
+        "fingerprint": "c75cfe014b85fec577ce9c67082d4957301a5f4698447d07393838c2b0ec790d",
+        "contentFingerprint": "c0946fe881e0dfba3bea905e53224676c7ee9a0a75d459cb07f607b959b5b11c"
       },
       {
         "slug": "docs/guides/deployment/github-actions/workflow",
         "permalink": "/docs/guides/deployment/github-actions/workflow",
         "title": "Workflow",
         "visibility": "public",
-        "fingerprint": "356302ef7a9a1a4a52d21e43c620e2ddf2763943fe0bf54c2bbea53003a16814",
-        "contentFingerprint": "8378925931f1f0c3e23795f93c8be3b3d976f46c95b96f8da2742cca17f2d2fb"
+        "fingerprint": "0cb7dc7d1d072338c1c66cc613d5aeab5f3db6025455cb9692a4d00fb75dc6ae",
+        "contentFingerprint": "bf4c41fc05c7e12a35bdab8248c4be956b2df4a63a12b47627f164f2eacee146"
       },
       {
         "slug": "docs/guides/deployment/github-actions/workflow.ja",
         "permalink": "/ja/docs/guides/deployment/github-actions/workflow",
         "title": "ワークフロー",
         "visibility": "public",
-        "fingerprint": "0a7c5e0f2293e44221b684538e6fc2271b62edfd57908f3047e3b84dc663d0fe",
-        "contentFingerprint": "98b90c54805fac4730d37b5640b3e9d2b3329ac7bbca55de5b23dd2bcf157e6e"
+        "fingerprint": "26657697f20ba1f7090d12409ef561da664312c8edcf3682815a23fe072458ae",
+        "contentFingerprint": "cc932de2c3632f3ead77a16ee94a3b0b73078e9580ad90db8f8c0d9072bffce9"
       },
       {
         "slug": "docs/guides/deployment/other-hosts",
         "permalink": "/docs/guides/deployment/other-hosts",
         "title": "Deploy to other hosts",
         "visibility": "public",
-        "fingerprint": "221c695f710abf93f64ab171729b9b564848a9f5825af9544fab31c649f2513a",
-        "contentFingerprint": "a6f737ead2807780033f0f213a5cc2f3d3bf2a6303b51cc6952e06b2123d880e"
+        "fingerprint": "c327da9daa93e8b111b36591aa93f0280ca32a799d42712219abc7305f46d845",
+        "contentFingerprint": "20e87264e1efeb0590675320bfa354ea7abecad936cdf236143c66796fdb7ddb"
       },
       {
         "slug": "docs/guides/deployment/other-hosts.ja",
         "permalink": "/ja/docs/guides/deployment/other-hosts",
         "title": "Cloudflare 以外のホストに公開する",
         "visibility": "public",
-        "fingerprint": "1f65e7b91aa62c2ac570636129497f868c44c5c4ace3a65ac67723d551837988",
-        "contentFingerprint": "c714fc43ce4bfda9cf93fb045fdc9e62040d8cc7c5e4f70de52e83b78896a864"
+        "fingerprint": "8780ab26588e238a0d7bcfc355811dca889df3950abb0465d5a9ae3bf5da1a6a",
+        "contentFingerprint": "179f578119e060d0e1ada26baff114aee33947e3eb92e9089e0e752b6094890b"
       },
       {
         "slug": "docs/guides/deployment/publication-workflow",
         "permalink": "/docs/guides/deployment/publication-workflow",
         "title": "Publication Workflow",
         "visibility": "public",
-        "fingerprint": "416126fa6b19f7c3cdccb3c4ccee25c4b87295e0faf8e5543aeb6db902d5caf1",
-        "contentFingerprint": "11a739b945c951b0bfef7c147ccde781cbb916733d838818c28be95ddf774365"
+        "fingerprint": "add0f99e4fab4805840a467e82c8c53ee90a480a4a9b305c6631fbe252cf89c8",
+        "contentFingerprint": "40e41220be2851022bafabb678584368421bd635c10616b68ae0a002c264fbf5"
       },
       {
         "slug": "docs/guides/deployment/publication-workflow.ja",
         "permalink": "/ja/docs/guides/deployment/publication-workflow",
         "title": "公開ワークフロー",
         "visibility": "public",
-        "fingerprint": "92adfaa80fc7cd9d6274008613920ab203f377501a1b1c6c5a22e8649fb46a4c",
-        "contentFingerprint": "3a63db6733e032a473587da856c3bff701ee998f5e8be4f3fb4331d844b058d9"
+        "fingerprint": "4f781317dc9af497176412a16c97d725b2d1f2690e00d7b46a927504018763b2",
+        "contentFingerprint": "747d73a8f648cc78c78f89616b9bc0b246f84f0960ca3a86c8db0620d1dd6b89"
       },
       {
         "slug": "docs/guides/deployment/README",
         "permalink": "/docs/guides/deployment/",
         "title": "Deployment",
         "visibility": "public",
-        "fingerprint": "ba69116dd8ec18ef38c22adaf6eb07df51ba71745efb5f69a0d501939a417425",
-        "contentFingerprint": "548c6a771e19f50f15aa78d908da7fd34a727956669a4f77ea025df75f817779"
+        "fingerprint": "ada7576bd54e9c723f91e4ccc1c07d1c8c2f5a316a6d061fa5adbbaa1458bddb",
+        "contentFingerprint": "fc552fdcd378bae7b30402f379b239f1e89c202bc2666f5db89c7bab8dba4230"
       },
       {
         "slug": "docs/guides/deployment/README.ja",
         "permalink": "/ja/docs/guides/deployment/",
         "title": "デプロイガイド",
         "visibility": "public",
-        "fingerprint": "23eaf6c75edcf4b2a5afc0a17f1cdadde8954723b967ac046ec592c0c73cdf77",
-        "contentFingerprint": "743909833fdf79946bc162570a7237667a2c4b8634a328c4589f29130b1351bb"
+        "fingerprint": "cf3b9d3c99fc07a3ce77f4bcb6f97bc3a1e17c50fa38ca5b85d944c53c4bf67a",
+        "contentFingerprint": "b90c8a84d89a022426a135a6c66ac74a4430d938a29fc1fda6108a1c2cf9ed27"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository",
@@ -3378,48 +3450,48 @@
         "permalink": "/docs/guides/deployment/separate-content-repository/publishing",
         "title": "Publication and verification",
         "visibility": "public",
-        "fingerprint": "d10418dbd9632105d4083eebf28db256c77a3b8d632b77320619a8ead1d4f00f",
-        "contentFingerprint": "4ced00d32607fc6b0c4fbea59f1c9de26160752bdae97610ca68589273e5e258"
+        "fingerprint": "8a57a18b4093bd47f7e04da54eddc31d18f8c3314a795244146f33db063dabf9",
+        "contentFingerprint": "0b28fd5ff1389525329772e7c2023c3646b9e7cbd5dcdcef7c761d4704c0ca5b"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository/publishing.ja",
         "permalink": "/ja/docs/guides/deployment/separate-content-repository/publishing",
         "title": "公開ルールと検証",
         "visibility": "public",
-        "fingerprint": "627c698a5d54c2a85b62ebe07a5bd783963720e8c6130827eb2500c4bd736d5a",
-        "contentFingerprint": "3f25841aec1ba4471bbc419d3104966f4bf8c8c4a2e5857c26e53895fd83aac0"
+        "fingerprint": "19248a72b721c4bb1b6fcea0ae09913f6f0abcc93659ff24b09a51e6dd562397",
+        "contentFingerprint": "b63e9771385fdaf74ad5956cd1ae668ff883f11cce7173fe9e18ab656610f92a"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository/repository-split",
         "permalink": "/docs/guides/deployment/separate-content-repository/repository-split",
         "title": "Repository split",
         "visibility": "public",
-        "fingerprint": "1e7fd1213d022ee7debb97cbb3b58cb25be9f5516b39c75ab7f2b54972369e80",
-        "contentFingerprint": "91b911a7c5a18edc582a00502dc613e1e10bddd298d95c991d87c19007423ef4"
+        "fingerprint": "c1d8c2bb38f04fb9676b1ebf49b143980096402e15762c3b959b5b52f22eacb2",
+        "contentFingerprint": "ab12f247f1f2434f58a9d5429fe7a2a9cdaa806593d4ffedb5e2eedb05edcb79"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository/repository-split.ja",
         "permalink": "/ja/docs/guides/deployment/separate-content-repository/repository-split",
         "title": "リポジトリ分離",
         "visibility": "public",
-        "fingerprint": "84e3bd19095e3d382848e79a03c21fb11713dc46239349f19f6e85cc97e72d91",
-        "contentFingerprint": "d6da5456baeaae5fcf22833b058df0b936bebdddd136b59e15d334aa6d8c6b5e"
+        "fingerprint": "b41195316f86c3323f7598f6fe96f8aacc6d8b7fbf6fa6aec052948c35f789df",
+        "contentFingerprint": "b2f5870f39d80c2b4241d795f4d234c74fb370355158f35ec0f55d2bae364f61"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository/troubleshooting",
         "permalink": "/docs/guides/deployment/separate-content-repository/troubleshooting",
         "title": "Troubleshooting",
         "visibility": "public",
-        "fingerprint": "f8388737e9ba99006d590d8402f18758a63e4d1843f52721d7c1e135c7b4eaed",
-        "contentFingerprint": "e6a7c3bcf17ac4588c7cb82c5f92c61d27117616c01ab143820bab203a831117"
+        "fingerprint": "48645983857f9b9fe065a3f53cd040b295a790d2b2e4ae81467fe4e06f9b227b",
+        "contentFingerprint": "48ec6b07556d2be731356880551eb60b4484fe3b0a42919d372b71d2a084e5e8"
       },
       {
         "slug": "docs/guides/deployment/separate-content-repository/troubleshooting.ja",
         "permalink": "/ja/docs/guides/deployment/separate-content-repository/troubleshooting",
         "title": "トラブルシューティング",
         "visibility": "public",
-        "fingerprint": "d61c1cde2ae03481661dfe19e2b876a43a999f426f822f2723d85ccbc09104f9",
-        "contentFingerprint": "bddea6c0f999d35063ccd9d9395279df3c4d0b727e35cd0bf2b0416c58d4287e"
+        "fingerprint": "3ea148248bb8099b98a54514d18daa1c0866cc5b68ff5344e51bf430c1676d99",
+        "contentFingerprint": "b0c92e74cb84204587616ea192f6a0a7008c7d11b054b2c13762a9012a30b0c3"
       },
       {
         "slug": "docs/guides/discovery-recipes",
@@ -3436,6 +3508,22 @@
         "visibility": "public",
         "fingerprint": "eb9ddaa7096a71dcb5cbb380619be8be57e3f7981f1455d11fe39e943979c662",
         "contentFingerprint": "54b20da4e9d455a0f6368343797ff0a20073aa556b67980156b0a83480b478d5"
+      },
+      {
+        "slug": "docs/guides/editor-integration",
+        "permalink": "/docs/guides/editor-integration",
+        "title": "Editor integration",
+        "visibility": "public",
+        "fingerprint": "ec2ba6efc82c7e89e578c4af30dfeb5a81cba327db0bff433977a2d30d9ea800",
+        "contentFingerprint": "75e57cd49311f3d8feea55be157fbd5d8c20bb2c78e30c5cf9fdf2366ee567b5"
+      },
+      {
+        "slug": "docs/guides/editor-integration.ja",
+        "permalink": "/ja/docs/guides/editor-integration",
+        "title": "エディタ連携",
+        "visibility": "public",
+        "fingerprint": "b50fb68e93512d234ba965873f65b576e5e9ba9554964a1a6b3d3fff95cc30ea",
+        "contentFingerprint": "0e03aeb837ee1585ae485de4973104d58c96f9ccc31f0e21708af20a6348f951"
       },
       {
         "slug": "docs/guides/local-plugin-development",
@@ -3458,32 +3546,32 @@
         "permalink": "/docs/guides/localization",
         "title": "Localization",
         "visibility": "public",
-        "fingerprint": "551fbfe61fcc5011eddca4e9cefce6b95041ddab01bca0af4d76c313715a44d3",
-        "contentFingerprint": "3ec50cbec87c6e66d9d04fc28abd6e7efcb3b2f78fbc8bae23ab90d937807702"
+        "fingerprint": "2308e04d8aa1e0b17e96ad26dcb9b3265a3eba7bf4e2337952137bbdcf145275",
+        "contentFingerprint": "fcc3f701504c12cbfda06d03984e20fcf7836a65c8d47b44a4fef01b1acce464"
       },
       {
         "slug": "docs/guides/localization.ja",
         "permalink": "/ja/docs/guides/localization",
         "title": "多言語サイト",
         "visibility": "public",
-        "fingerprint": "e35c6163e353343a13b9aeeebd7d0cb7d21b7871c9cc728d12d765cf8b5eba89",
-        "contentFingerprint": "8b24d3b07312112113ac5cf548da9fc5d9d337fb843af66ecbdc2178be363e3b"
+        "fingerprint": "4cb602a16091e77959a5c585fa4fdc7bbc631467c532df5fdbe5e1fe8ddc1049",
+        "contentFingerprint": "8e84535fd62baf379d8de9d8d8808c9b5c1f8fa5cdc052e08532c36b4d2c6776"
       },
       {
         "slug": "docs/guides/localization/setup",
         "permalink": "/docs/guides/localization/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "3f241b4f00b7c63e9f6a55e78669666973d6c771e4f93b16a20bfbe5c1c7f5ef",
-        "contentFingerprint": "8a97236386079e136d2622cd1fe869bf011a16a691f4e92af5a0ca0a5fd13a1a"
+        "fingerprint": "86f934fd620e5d4530dc3f74d63841355ffdf52a409043a99c574af44a81f214",
+        "contentFingerprint": "fdbb3ae8e3df960322fd7c7bf3f759efb0ce56aa7e958999818645b4dba6ffea"
       },
       {
         "slug": "docs/guides/localization/setup.ja",
         "permalink": "/ja/docs/guides/localization/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "08ab6ad3f249df1d92190a1367c251ffcc53bb9cb66b0b9bc0fd95599c7381e3",
-        "contentFingerprint": "205246258c01d62fc71697ea5db9388784e7906cf5730ede946c74d3612d87c5"
+        "fingerprint": "8d25c386db5cf7407a31815aabb1e6fd27289e8ba606f6058fff191215a58fa5",
+        "contentFingerprint": "30ce320a45371a3c219323cd67d692271e613fbaa163c605182eff74b44e5e09"
       },
       {
         "slug": "docs/guides/localization/translations",
@@ -3506,16 +3594,16 @@
         "permalink": "/docs/guides/obsidian",
         "title": "Publishing Obsidian notes",
         "visibility": "public",
-        "fingerprint": "78282b99c71728d3909dfd79000ed7f922d304fed12c7e0f6b450368579c79fa",
-        "contentFingerprint": "6811698ff92bb8a44b4b1d552ef82b784b9b8740b25c0d81d886b78dfd18a11e"
+        "fingerprint": "9558e55aac901ee8f1bd342584bfcd15a60f309194f8740784fcc19056c914f1",
+        "contentFingerprint": "e2637c4d1a07e9aa3ba1518517d46e0f2bca0450f757734f934e85e485b53603"
       },
       {
         "slug": "docs/guides/obsidian.ja",
         "permalink": "/ja/docs/guides/obsidian",
         "title": "Obsidian のノートをサイトにする",
         "visibility": "public",
-        "fingerprint": "09ecc8356351593553e77185218294eed5720bf2165a8a34d6e7e03b13d0b038",
-        "contentFingerprint": "ff3bee709cd3d8b8e1551245bf6da4b419a653ed44710e62d461f8289119a784"
+        "fingerprint": "e6b8998462d20e70f7395fed9242cc2d6314d223bdebf64944bbf48cffcbbdb0",
+        "contentFingerprint": "f5c2521bdb85cce123175258e5753a3ea6491a3d0dd9fb217bcd8f86aa2f8dc1"
       },
       {
         "slug": "docs/guides/obsidian/placement",
@@ -3586,32 +3674,32 @@
         "permalink": "/docs/guides/",
         "title": "Guides",
         "visibility": "public",
-        "fingerprint": "5acdd20ce8d58483cfc5dacab7a465a8d959f209cd0c209175b8dad730ce97a7",
-        "contentFingerprint": "dd512c5421a02237ac5c80bf40e5cf56b56c24643a7eff3ed9b3ae339347a2e4"
+        "fingerprint": "a7dd12404a86992747cd541e96f92dee24de8a0d1dc02bcb7b1ad7f0f3caf0f6",
+        "contentFingerprint": "f49910d45974b646a24b00ffb0a0f933f416f789e9b708c916fde6ebbcd9fc52"
       },
       {
         "slug": "docs/guides/README.ja",
         "permalink": "/ja/docs/guides/",
         "title": "ガイド",
         "visibility": "public",
-        "fingerprint": "eead161d267972378c82aafc37fec40c1f7981287fc0f9c40e19f008ca51a785",
-        "contentFingerprint": "87ea7e2311f8b137279a3849c9ff2e786bfb3ca35ab5960cace52dcd1190ffdd"
+        "fingerprint": "a36661cfada424d8898b795331d6cd1ff4dfe759b85cd3e3cfacb3664c959100",
+        "contentFingerprint": "193f8267b3e05b98905dffefc165873d745ae6ea1751573da6f360102bd60664"
       },
       {
         "slug": "docs/guides/spa-navigation",
         "permalink": "/docs/guides/spa-navigation",
         "title": "SPA Navigation",
         "visibility": "public",
-        "fingerprint": "2d41d06d98ba5ddf3d9881c75f9be858e183acdb10c35878fc3f0cfb0b9b2dc3",
-        "contentFingerprint": "b818405e0f2a22838698bb71921eea86cbf66f5816294a6bdbed4eb1b35912c5"
+        "fingerprint": "873554adfbe4eb3b23a6c60813454f826398a54dc15dc18162d8ce52a9a0c59f",
+        "contentFingerprint": "3e1ecaeec0b8fdb6bcc3f45192d9974e783e3a9c6d6dc43135fae4c14741ade4"
       },
       {
         "slug": "docs/guides/spa-navigation.ja",
         "permalink": "/ja/docs/guides/spa-navigation",
         "title": "SPAナビゲーション",
         "visibility": "public",
-        "fingerprint": "f86b2318271b052b0b82e1b4fc4b0f31a44b4ea96b9471acfa98aca76d56166b",
-        "contentFingerprint": "1684346267d35000d0de8303129c0845ef4913e8e89dab2bb9c74492047c7f7e"
+        "fingerprint": "d29874939101f0aaf38b6e311a5c7ee335d2a23d5b872d34f0acb3f6a7ba79f2",
+        "contentFingerprint": "5d9b2c9969cc27718e85c12719fb7f949c7249d81495c08d428f6cc214b96850"
       },
       {
         "slug": "docs/guides/upgrading",
@@ -3694,68 +3782,100 @@
         "contentFingerprint": "934359f24330965a36e57afee9cdbf915747941d5534f872d73295843a25dc3f"
       },
       {
+        "slug": "docs/obsidian-plugin/architecture",
+        "permalink": "/docs/obsidian-plugin/architecture",
+        "title": "Plugin architecture",
+        "visibility": "public",
+        "fingerprint": "b6ebd0e74ada2334d7bab8461e59f98f2ece50431ac1bba818b5498ab4ee4470",
+        "contentFingerprint": "0ba25334973f256bdaf75f365ef2c462efc1f041615fef1f5aa3c3ebe7647370"
+      },
+      {
+        "slug": "docs/obsidian-plugin/architecture.ja",
+        "permalink": "/ja/docs/obsidian-plugin/architecture",
+        "title": "プラグインのアーキテクチャ",
+        "visibility": "public",
+        "fingerprint": "ebe56f7ae00cb5d5bdb08e54d53877b37d8105e2d089304540330d6660394f3f",
+        "contentFingerprint": "e67b591c5fe0d441cdaed96639b8a66016ac9966d90908f2ac09ecc6fa6e5a63"
+      },
+      {
+        "slug": "docs/obsidian-plugin/README",
+        "permalink": "/docs/obsidian-plugin/",
+        "title": "Riebeckite for Obsidian",
+        "visibility": "public",
+        "fingerprint": "5aba6daeeb8d34eb8b1d22c11339d5bd999cbf820530a1155242b65a7c993ab6",
+        "contentFingerprint": "88d0478189fef19a562569c9143c9c0427fade886867e0f113478930fcc687b3"
+      },
+      {
+        "slug": "docs/obsidian-plugin/README.ja",
+        "permalink": "/ja/docs/obsidian-plugin/",
+        "title": "Obsidian 向け Riebeckite",
+        "visibility": "public",
+        "fingerprint": "e7ee0af4a42024a509d7aa83af7bbf7497ee2a77658be2648a7a39cc19b5283e",
+        "contentFingerprint": "6902ea1bdc257200d85ddd74aa846d34ce915822b7bed72423f27d995a40c1fa"
+      },
+      {
         "slug": "docs/philosophy",
         "permalink": "/docs/philosophy",
         "title": "Design Philosophy",
         "visibility": "public",
-        "fingerprint": "0f6513037fcf88862fd23177d4814e453cc1b6725d937d4c90c79dcd98210007",
-        "contentFingerprint": "e5da4cf987eedaa4fe89dd3c8c8a28d2231229ed73302c65e348eb9415f3cf38"
+        "fingerprint": "65fd2e6bcd19355ea4f35ab1e63dcd3073cdcf74a904c95c6739edf5c69ec996",
+        "contentFingerprint": "9e19719aaeec864a6e41a1e01cc3ed26871e3cb2b8550b639cf77fc98f6e0040"
       },
       {
         "slug": "docs/philosophy.ja",
         "permalink": "/ja/docs/philosophy",
         "title": "設計思想",
         "visibility": "public",
-        "fingerprint": "d860ca3a7d83c1d6e219f7f97a1d93f6aafcf985c312d4450e8540770447dcff",
-        "contentFingerprint": "0b00786d7136b8fe457cb1c500bbb399e50dff213bdc6ab2640452f8c951075c"
+        "fingerprint": "0381973d1d6e83411b374fa8997929f268c036fe4af0a1cb16eaaa38d6f431b3",
+        "contentFingerprint": "07ae1cad63045eac1fa07d0314ad31ca9dee581f07b8ff7b222cbc7df6fef84b"
       },
       {
         "slug": "docs/plugins/alias",
         "permalink": "/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "8e2b516d50b987cdb93eb0fe6dfecd0e2b09db37506c069543889597b9aa1795",
-        "contentFingerprint": "b719c049f23276756af99903eee9c667f52a732920a5b899ed3ac9fbb5e23dd4"
+        "fingerprint": "5a8aa55628a549d8da3792bdf5dc61b292b2a051743d1993309f0f666b0cdec4",
+        "contentFingerprint": "f14b5d27d37b7aae27a5193438502931dcd4f0441fee59a99904d0b85c1f79be"
       },
       {
         "slug": "docs/plugins/alias.ja",
         "permalink": "/ja/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "7bc3d41a9d65113da8e600817b647df8ffcd9ea4477ecfe461317c5ae343db26",
-        "contentFingerprint": "ec547e95ab42d60746ca4d22ab990a0ebb5c38fc42ead15bc034b8b548473a7e"
+        "fingerprint": "99d25b72a5908a06e03bc9c22271f7e735668bb9a32568d870cad1de4e8b3ed9",
+        "contentFingerprint": "e591f0960e0c167d7319c35d604f9639e6f6e482eedada111e33d3395d684fe1"
       },
       {
         "slug": "docs/plugins/analytics",
         "permalink": "/docs/plugins/analytics",
         "title": "Analytics",
         "visibility": "public",
-        "fingerprint": "00bc14e28e13dede34fe097ace84da904f0c8be1cbb6a839944205ff67d53224",
-        "contentFingerprint": "ff9e06013c2eca1d15c961fa387bc90bda46ccab66700243f3a227e77384221c"
+        "fingerprint": "78b99ae74a049ee1ed63c20c90d6ead19d1f85cae104eb6a926ffd6290408f00",
+        "contentFingerprint": "244b5672fd5fa9ff9871e155ccaf40ab90993f9fbcd16799b32832dce4ed20cc"
       },
       {
         "slug": "docs/plugins/analytics.ja",
         "permalink": "/ja/docs/plugins/analytics",
         "title": "Analytics",
         "visibility": "public",
-        "fingerprint": "2cd52097521574aad072cd03b0c0c95565d81413a9956846deaa60e05db5322c",
-        "contentFingerprint": "da9ed1d9a06e826dc7ba99dc58903653ed3b28725d68a8ea772a1f3e9edc2d6e"
+        "fingerprint": "ba72645ed6426c8eb528a0eddb304012e49e09ab7211569ba9d9bd1491dc82ee",
+        "contentFingerprint": "f9ec97918e2080fb7e7af1eb2182d3f0ab316b9a8cf6fe981416833d20fa82de"
       },
       {
         "slug": "docs/plugins/archive",
         "permalink": "/docs/plugins/archive",
         "title": "Archive",
         "visibility": "public",
-        "fingerprint": "75487576ad0fd30223258562ac9bb068540adc694e02b82d91b871a5efe002bc",
-        "contentFingerprint": "4a4a9fada7fddcbc7de0dc195983eb257ce1ace928c4fccc7ae88244814a7b72"
+        "fingerprint": "b27108b49d4dc916c301a62109a4bc1c9c0cb9750a18f2b231ba25c8c06690ba",
+        "contentFingerprint": "bea3d09d603012402e8e4dd431417c1410208fbb63b22163ba191eeb1f3c2a7b"
       },
       {
         "slug": "docs/plugins/archive.ja",
         "permalink": "/ja/docs/plugins/archive",
         "title": "Archive",
         "visibility": "public",
-        "fingerprint": "ff77ec5717f9738c61373035adb5038e11820c3d791f1881041e3952fed34f3f",
-        "contentFingerprint": "81c15021145dd5df1eb1947453c2dcad8e73d0937d9434175b63c1cde22a9b30"
+        "fingerprint": "6f6f57ced4db5876bcd874dcbf0f336c63e29a5c1a63f5b28ea51f6841e74afb",
+        "contentFingerprint": "df6f20fb2373ef50ae2f12995d2521431f39d7ed7fb9320e5cbfc9e7891dfa35"
       },
       {
         "slug": "docs/plugins/article-metadata",
@@ -3778,16 +3898,16 @@
         "permalink": "/docs/plugins/attachment",
         "title": "Attachment",
         "visibility": "public",
-        "fingerprint": "2b1987a83d0e0288b163c893421f442d70eb7796110cde58e16100f87e57f6ab",
-        "contentFingerprint": "7c0d7ca3b0d40a8b55eebbc6ec72ed3a93b1cef668a3871d256d06f85ec959a5"
+        "fingerprint": "e67fa6d0c3cbc8d5d45ac62a9dd3405a4d4ba225d506803a146fb89b5a253dbb",
+        "contentFingerprint": "ee3b61790b2605782c2bcc128100a0fd6a2615786839b000e187ae36cde494c7"
       },
       {
         "slug": "docs/plugins/attachment.ja",
         "permalink": "/ja/docs/plugins/attachment",
         "title": "Attachment",
         "visibility": "public",
-        "fingerprint": "f2bc7f4fb4852f989b4cef6e91003b5eb6c4e2ecc7878a01c732d527de0e3456",
-        "contentFingerprint": "736e40ab497d94858802cbee850afc8e2d97b4e6a57e6b57a5db7f3299b75157"
+        "fingerprint": "6990324a242d808a79428d072937e5154b024a756be0c58926b6b4bd44f9fb6d",
+        "contentFingerprint": "a445f8204b4d54b7b1f570567b3a1b76d4dd9d72caa479ee8d95bd506c8a6c31"
       },
       {
         "slug": "docs/plugins/autocardlink",
@@ -3810,48 +3930,48 @@
         "permalink": "/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "2c2b197ad18c0172c71be28e523083253e5130d83f0b944aafa06a390e027a3a",
-        "contentFingerprint": "0f248819f6d4920a8df3311c3d814322edb75fa04d33971fbbeee22060ecf1e4"
+        "fingerprint": "14af624257471b4d7aa05d7941e7de2f7848dfb59921131e891c185e6ac38f1e",
+        "contentFingerprint": "77c4cfadf0ea5ea1218e059e1ad60cf0eb6515a348ae0b64755c69051c9b9d0a"
       },
       {
         "slug": "docs/plugins/backlinks.ja",
         "permalink": "/ja/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "7634f844dfd880b4e7568df0d12971d130519fe9cdb499a95601416f49c7cc73",
-        "contentFingerprint": "c545781c624df65b5803e5abd187817dfbf8bb4aada42084a53301eee2cb5b2d"
+        "fingerprint": "b581d2bac265e03d1aef7a326ede863144c5ea6c8b68118cdd5a8ed08a08705d",
+        "contentFingerprint": "ac0eee191cdfe5927eddd25b8b4280fbf44a00ef6fa61c75b5ceb4e453c1fcf0"
       },
       {
         "slug": "docs/plugins/bases",
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "ecbb58cdbfd030b6ad1e486e326562b6a5e6f5ce97dd62e106137174f51341b1",
-        "contentFingerprint": "3df31a44173f1bd67772471be0269fd815c3e1ad9a2a2c1b537dc0c775dca411"
+        "fingerprint": "6c0cc2066f6e66ac938edd3cf5b4756ad05ce7d08648928c46b63673ec488614",
+        "contentFingerprint": "f8ade2c97af446550da116210ccec80801c8f4703c3d62d3b7c50be4c537dc9f"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "9349203d53b41332fa5f96665b25216b35664c1a913bd1c77bef64eefdb7da84",
-        "contentFingerprint": "ddcc59093974bbd954ece15e0856136267614b5c245030d9a5f515049d35d9ec"
+        "fingerprint": "0aea681ba302f6e8ad0970416fd04a0405a901f9b7a47121875f296fd7ae2ab9",
+        "contentFingerprint": "8e0271f621206a0c8dbb192e68e7b045f9d0eda2c2902ebba62d7f59fb66e023"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
         "permalink": "/docs/plugins/breadcrumbs",
         "title": "Breadcrumbs",
         "visibility": "public",
-        "fingerprint": "be70eefda8916c9a3a9a1d3a7e9f99f24fa5e0fedc5c0c32316e5f2a26255649",
-        "contentFingerprint": "0e9271bfb0a107bc3dbcf1ea50ea3aeb1e8b8252ce4934b9502695e1f8630289"
+        "fingerprint": "bc85dd07c1774fea22c9dc3560293db0b3c288519621c7dae98e0fc77ebc6b56",
+        "contentFingerprint": "a3be9b57d0eae2b212b2a302a768a8b60f27f2de1e4e0ac0260baebc17c18f6f"
       },
       {
         "slug": "docs/plugins/breadcrumbs.ja",
         "permalink": "/ja/docs/plugins/breadcrumbs",
         "title": "Breadcrumbs",
         "visibility": "public",
-        "fingerprint": "5b680be99b6fc2bd181422343aa22ae10986940f2dbc024c3259f37f4c1ddd9d",
-        "contentFingerprint": "06f5732b488bd288cbef22e7839a52d5e894c778e0fba387b122bef0efdc421b"
+        "fingerprint": "f3742a01482602b744178277aa804165b7d1011f9c7b92d242f653d8cb456c81",
+        "contentFingerprint": "62ebe96e73ff23e65a45d9bcc997e23a36d410167b46153b63174530f4acea02"
       },
       {
         "slug": "docs/plugins/calculator",
@@ -3890,16 +4010,16 @@
         "permalink": "/docs/plugins/changelog",
         "title": "Changelog",
         "visibility": "public",
-        "fingerprint": "7dda00c2f919f0aeb7c7edadd1a73e2e5adf51aea833aa4c9758ff220b5541a9",
-        "contentFingerprint": "5acf0d280a4105fed780d3ac6aa01a3719f46b5d552bf77aea563843296334c9"
+        "fingerprint": "1ee939c96dd382b548bf48357254cfc23b0d7b8085c4d740959f02d0d07ca29f",
+        "contentFingerprint": "54173b77d0f4a52bb970cb42216b893e67e011656f37539cd3a0424182110e10"
       },
       {
         "slug": "docs/plugins/changelog.ja",
         "permalink": "/ja/docs/plugins/changelog",
         "title": "Changelog",
         "visibility": "public",
-        "fingerprint": "32e0df6b1f29538704c3c6fe8b1f047e48dd88ac781f669df46d18b33d636568",
-        "contentFingerprint": "6205fbe365bdad1962421ff61563f1da8301d59ba25af34feb867b090749d8bd"
+        "fingerprint": "4d39e711fd703ffd29a907f4b6d3bb25579ec40d61af79640c74daf81e1e0b4a",
+        "contentFingerprint": "4064e095cf8fd9f9c898a9f442de7a0dee022fba79a804b72d9fa641e4ef401c"
       },
       {
         "slug": "docs/plugins/chartjs",
@@ -4050,16 +4170,16 @@
         "permalink": "/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "ee64cfac29b322e29858309798ea3137ef06d6287bc0c08ab3463a2dcb165fac",
-        "contentFingerprint": "232907d6ac08c42925d338ae31630bf8789491cceaeb5bc4866c7445d3b0b80c"
+        "fingerprint": "36e2491134f845014de9505971a0291d6c97a7cbe217eb2e6084418285215e4e",
+        "contentFingerprint": "a4798643aab07291282cf037309af09a31c5b392e18b7de7f45efba00daf5047"
       },
       {
         "slug": "docs/plugins/dataview.ja",
         "permalink": "/ja/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "b39579f0f75e643354e7b4d30c9a2b348c2a56abaa63d88d966a5117466a7995",
-        "contentFingerprint": "29ff64c98abd966b7f84f182d122e6156d27ea3141b1d0fd852792e2f395783d"
+        "fingerprint": "8918cd19c1a436c3075c6f30c06fc1746c69fdbdb8619e5b3841a58f5663df87",
+        "contentFingerprint": "a1a9640e41a80d012ba64abf922c74bc2366c5b9366e3b2a557c8316672f7ded"
       },
       {
         "slug": "docs/plugins/deploy",
@@ -4082,16 +4202,16 @@
         "permalink": "/docs/plugins/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "cd13833d005c57fd9d2b47db558abeff88f4df6c11db1686b34fc292d90d1af1",
-        "contentFingerprint": "3e84e68fb31643872044e8032b3a7fba97f6806379a135447a61bb6b57d2de52"
+        "fingerprint": "39ee34ae996c02d8bb468643ac28ef208f2e42c6ac8240dfb10941b4f8174830",
+        "contentFingerprint": "bf75773bccc47797ca088505262c09a5d911942a9848013932c73d1365ff2b83"
       },
       {
         "slug": "docs/plugins/diagnostics.ja",
         "permalink": "/ja/docs/plugins/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "1e822c4d8d5f3e6f2980078ae1c67de962145d9661a9fc47c5fdd50ab08c5051",
-        "contentFingerprint": "6dd5074e43779c9329cef92b43f660a6db96ca5f9a71ae583627cb5c2baa0004"
+        "fingerprint": "18bbd195992acd73a5f39e3fab470528a2d3e7a61155f30626f4b81de8f9db45",
+        "contentFingerprint": "909685a31343f8b60e34fa39caa3978421766a8d99f8d7f6abeb5731cb5dc160"
       },
       {
         "slug": "docs/plugins/diff",
@@ -4162,16 +4282,16 @@
         "permalink": "/docs/plugins/excalidraw",
         "title": "Excalidraw",
         "visibility": "public",
-        "fingerprint": "97850ce2e2ec8dc9ad8dbe7b9006a8ae0593811fdab3673f4f5ef969b4206c81",
-        "contentFingerprint": "60be52fe9d6ba20dee794fd4d579d5512e57fe51809177d1dcbc1c15d8c86fd5"
+        "fingerprint": "69371693c4a2a5fb32740ec8b842efb993e639cb04f0868b1722b460ad8b7f78",
+        "contentFingerprint": "a50f2fec92a23eecf939a1889549df41c3dddd5e744fa796aea5491bf0b0bdf1"
       },
       {
         "slug": "docs/plugins/excalidraw.ja",
         "permalink": "/ja/docs/plugins/excalidraw",
         "title": "Excalidraw",
         "visibility": "public",
-        "fingerprint": "9ccda9f30cec51002aba270437d919c48225b2dc15660e350227136c1acc24d4",
-        "contentFingerprint": "03b05997f0f1cb6099bdeda51b129700353491eee7b43cbcaf34cda41bd39b4e"
+        "fingerprint": "714dc1cabbd921d750624761021121e9476b4c5d8421374b8b8c93f94cdaf8e0",
+        "contentFingerprint": "e956e0145b1c9806ccc25dd51b0347c4db8bf3c0bb71531e806121bc0b5e3021"
       },
       {
         "slug": "docs/plugins/flashcards",
@@ -4194,16 +4314,16 @@
         "permalink": "/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "104b363e93ffb11d948b863e24aa81f6781f9579d047f0e75ec6892f5c89c546",
-        "contentFingerprint": "3aafa6aedf2a991c0b1efa3a979ed82f0ce3cd8b724c5ea5ff5370b79c70788d"
+        "fingerprint": "9477186a81d1dec077c89b5a5e919ee45046660d7f26c5c5191fe27aa4c15ce9",
+        "contentFingerprint": "07b44e566fe4ea2b5f571f77b50f19568d39f51d7f6cedb603b08511c32c6281"
       },
       {
         "slug": "docs/plugins/folder-pages.ja",
         "permalink": "/ja/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "e6741147001b39fb2b58920cf9b4cb4cef0acd2aabc7df9032a9967c41b8f9ae",
-        "contentFingerprint": "4bb65fc2b407c95af86939d61645ee8966c3005476c0868dc7e3053edb91ca83"
+        "fingerprint": "d64bf35d39a72e734dc8ee1b42fe24c3f80edf60c99b619cbc1c4a4371344b61",
+        "contentFingerprint": "dd24b05706ea6c58e2bf39dde2d86c4f81f28ebfacb27f05961ff947e69b8a5b"
       },
       {
         "slug": "docs/plugins/frontmatter-transformer",
@@ -4242,16 +4362,16 @@
         "permalink": "/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "992aafe2bf51e482a596cc5da4200491380007203d8e45eb9be9ff1ec27f9e64",
-        "contentFingerprint": "a04d5c9fb69421a7d363f12db4a95e2e0e4c5081f95c51508d262601a9a0344a"
+        "fingerprint": "3dbdb976e43d97c35e3b1e8d160e67b29676b65942056165d5455474d1484496",
+        "contentFingerprint": "d00e58e1dd4bddbe0fe6bd488a430a9d1eb8e2d8693c4821106e7593c2e23939"
       },
       {
         "slug": "docs/plugins/garden-explorer.ja",
         "permalink": "/ja/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "85242f1c2896c520ca99b634eebc33bfcb4f0145a88b16abd7fa033a59935c8e",
-        "contentFingerprint": "3a33bbd8c591c975a8f0513aec21150529307e3ceba452c3c20a37cf344098d2"
+        "fingerprint": "234f5f107e4dbb7e201a123d9612a92b4d885146ca2fb5438591413f717ab80e",
+        "contentFingerprint": "0f20c8568ff57d848815d69df2c4173b40a3d49df233dbad9b459dfcf63650e1"
       },
       {
         "slug": "docs/plugins/generator",
@@ -4274,16 +4394,16 @@
         "permalink": "/docs/plugins/glossary",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "23a75507a219ee52349f1d316a8cd15a2152c15a0c75392d064a36c4543d33a0",
-        "contentFingerprint": "07a8ae149614a796b0e02909fcdfdd2af932b694ead16176bcf6f8252575163f"
+        "fingerprint": "3d32c7a58b5266bf2cc152988ceb93e6142a08ccc7a2107ba11107521b0cd8ef",
+        "contentFingerprint": "e52ede31aacc5f4178bff0d7c2ef035148af14d13bfb01f33017369e3c33f166"
       },
       {
         "slug": "docs/plugins/glossary.ja",
         "permalink": "/ja/docs/plugins/glossary",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "f8a36d2c67a7c86631cd31e05e12d853f65a12255a9a86bb8d27ab5f93ea899b",
-        "contentFingerprint": "53f0e143fb4e2672269d98f016618833037eae288e51162fcf647d4d06d62057"
+        "fingerprint": "89760b22eabc14411cc275cdd87a7b713edc48e8077f2b05a8a3dd13499058f3",
+        "contentFingerprint": "ada43009c2aa1ae86917e1724ef8c3db5e58d27f0f8db3ca17a01abd034c18c3"
       },
       {
         "slug": "docs/plugins/graphviz",
@@ -4338,16 +4458,16 @@
         "permalink": "/docs/plugins/hover-preview",
         "title": "Hover Preview",
         "visibility": "public",
-        "fingerprint": "9d3aab9458f846fdff683ba5ac72dce0838eda0d82b41f2a93fc69eb8b2dd8cb",
-        "contentFingerprint": "f792cb6855069b1104cd502a303bde34e1a8651963c509f5ab46a468b565c5fc"
+        "fingerprint": "b91f2e6cd4f0d0ed71d0438c4d88a09560720fbb7320e1399074fceff548c247",
+        "contentFingerprint": "8bdb502568b7392aaaa9fabdb6e8879f8cfe08d58584ad35b746e59ef7c3b981"
       },
       {
         "slug": "docs/plugins/hover-preview.ja",
         "permalink": "/ja/docs/plugins/hover-preview",
         "title": "Hover Preview",
         "visibility": "public",
-        "fingerprint": "4070e63f9ad8eee2b9e433a80ff15664d96f04d5ccef3e2beeb2462bcac2eba7",
-        "contentFingerprint": "c07e1181fb2b9b44fdbe88c846bd62a6ebe2bcaa1b4034a3b42d92e9dea58e10"
+        "fingerprint": "7c1265487dd4aa2adc5df62679c9f0914301215ff17b12bad8ce591a2bd992eb",
+        "contentFingerprint": "403f683b6a97ee269ddaf88d6b2df9e688abc210bf844bcc4f886fc645464fdb"
       },
       {
         "slug": "docs/plugins/icons",
@@ -4418,48 +4538,48 @@
         "permalink": "/docs/plugins/l10n",
         "title": "Localization",
         "visibility": "public",
-        "fingerprint": "9cd560c3d0afa4526400c480a7caa59db23a1eb1c8249aadf029388934baf127",
-        "contentFingerprint": "f7c39b096455dabd0a92bd93a81c8d340194a69de4eed0d2d46f41bbb697a8c6"
+        "fingerprint": "0beaed918c5a92e42ecf71399a5af0846234b3decd4bfedfc73cbf55267afab8",
+        "contentFingerprint": "1ce8ed8333827bbd7c9d008612cbb6a695043a381ae2636377dedca503f482a7"
       },
       {
         "slug": "docs/plugins/l10n.ja",
         "permalink": "/ja/docs/plugins/l10n",
         "title": "Localization",
         "visibility": "public",
-        "fingerprint": "1d8f89c5822fc8f27fd3f392764841d6c3eb81530d4dc1d9930cffb03b63c357",
-        "contentFingerprint": "7a2bd28b68e7d698ab30b0447373b92d2edf2acd589c8f57d95af4e13ae5a86f"
+        "fingerprint": "8b9caad0695d364f7da8bdaba703c1beef2e112b510f2f736d40cfe8a64befee",
+        "contentFingerprint": "92be09364948d4cfdf1f891933a5542b85b5ea1952d27d7d8c12b43e65baa84d"
       },
       {
         "slug": "docs/plugins/lightbox",
         "permalink": "/docs/plugins/lightbox",
         "title": "Lightbox",
         "visibility": "public",
-        "fingerprint": "3692cfa5caa819734d3eeb122ab2547f3ce19ed50ea2ec4ea6c1911eda71be4d",
-        "contentFingerprint": "4fc54ce72797191c75c9871354f476a281c758a1a06e7d2d927b6fb7aa1c60ac"
+        "fingerprint": "3e285dccc6531ec006037ecbae8480919eb1969d15995ec5684b43f8cf7172dd",
+        "contentFingerprint": "0b55935fd9053658982ec296fb1486aa2fb78c4bbbc8381e70763f3c9a2dd123"
       },
       {
         "slug": "docs/plugins/lightbox.ja",
         "permalink": "/ja/docs/plugins/lightbox",
         "title": "Lightbox",
         "visibility": "public",
-        "fingerprint": "d46e9e15c1f191f7e9a2f9ef5f0fcd142ddf96f0a8c464307fa4dc66995d91c0",
-        "contentFingerprint": "323def710e0d9fc58f4c259b0d73a3130c29c9955ad23d1b28767740bb0757a8"
+        "fingerprint": "e24c7ac3daabbe2b5ff4232a0dd39ea1e2d7acd8a2e220e345413ccde85d0b73",
+        "contentFingerprint": "60c4afd79d32468ca3da1c9c1e05ffbed28f9906f0e5a5e34e5231dc51c30218"
       },
       {
         "slug": "docs/plugins/local-graph",
         "permalink": "/docs/plugins/local-graph",
         "title": "Local Graph",
         "visibility": "public",
-        "fingerprint": "451fefd919351607b2ac13baf499e3d4d8c0ab0ea70010c0469cfc2cf32da732",
-        "contentFingerprint": "9c2f6abae44812c30845061ef80855d9dc815aad5cd8418ff90be03cf882a636"
+        "fingerprint": "46ce3ee12bdb323d5d834761699b1a7379bff5d275468dc23f3263443f840e20",
+        "contentFingerprint": "fdfe38f946b9b13847da3d13da495ed3c45e08827bc096d0b83285780afc3674"
       },
       {
         "slug": "docs/plugins/local-graph.ja",
         "permalink": "/ja/docs/plugins/local-graph",
         "title": "Local Graph",
         "visibility": "public",
-        "fingerprint": "919a18390532724f2fa76495fd9227983e4f28811f6cb58e4d4096ac9390b7ca",
-        "contentFingerprint": "758529bd99962ab9d43bd5d8c6a05722a1931e57026b65a6bf062c05d3a29145"
+        "fingerprint": "352ee848e85931a36c43aa01234f5844908a95e818303bacb6bddb592e91342f",
+        "contentFingerprint": "2c707c37e8c892b875797908ddf54f7b3652a870d127b127e97f8b1d991beaf3"
       },
       {
         "slug": "docs/plugins/map",
@@ -4578,32 +4698,32 @@
         "permalink": "/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "50c1ee925ff2e1729de7b1b8e832d608eaeb14a8f3d0531b29f65e748fc51740",
-        "contentFingerprint": "586e5b0e2d01206bf276d05a4bc4b615bb0fab1a7a085cc98eb1f04a8d4e3e88"
+        "fingerprint": "0601ddab1e703c0a5f9473b973a4f4bda107d2d95f035d83ad0010235dd33593",
+        "contentFingerprint": "8abe03429db00c6f07c17b91ad261d85af8e01241636c33eb2fc784e7a246fb5"
       },
       {
         "slug": "docs/plugins/navigation.ja",
         "permalink": "/ja/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "9d83a76196ce3540dbe52789edcf4deffa3f67629d047231b8f0b15ff2c968dd",
-        "contentFingerprint": "fb2d0fdb58a88cb8ee2c1286dc7be69ba73896629d6328a1566a95c9121db9f0"
+        "fingerprint": "572e7aee2dc5afdc4027ec38cca3215607565fd5985661cf11ebb1569c823f62",
+        "contentFingerprint": "ab17f6d53cc9a66062238d0ee1a819651c2c0b81dc4699481fa18ad0d2afa285"
       },
       {
         "slug": "docs/plugins/obsidian-markdown",
         "permalink": "/docs/plugins/obsidian-markdown",
         "title": "Obsidian Markdown",
         "visibility": "public",
-        "fingerprint": "cfd01ef8a87ac7cbdc377e02dadf71f2baac8e988d6f3c00f9f576591a0d760c",
-        "contentFingerprint": "bc192734c584d6c2e8341d0260169ce4994ff378c42eb1714e0881d191050f21"
+        "fingerprint": "2bf350e9d50098d105fffb8eb5bf52b6eeec3cdde5b500d74b91446a1fdb2708",
+        "contentFingerprint": "ff5d4dc58a27eec7012965909667a8e2013e1d4c3909e23904a06a9ff5f79958"
       },
       {
         "slug": "docs/plugins/obsidian-markdown.ja",
         "permalink": "/ja/docs/plugins/obsidian-markdown",
         "title": "Obsidian Markdown",
         "visibility": "public",
-        "fingerprint": "f09a59fdd7161c1b91f91058dff9e2bddc624a9d2534d500f1434334778ea250",
-        "contentFingerprint": "853c07279dee84f407c2df36edb9df1791c4593e7537101fcb415323305c26c2"
+        "fingerprint": "c799a6b9ed9897f40a9559b2b6f69b08d700c1f3bdea5bce2b71cfd68f4c1b80",
+        "contentFingerprint": "ded554b211e863e807eb33c4d146cfa0ebdd9cc14cee80bc4c53142e85e82210"
       },
       {
         "slug": "docs/plugins/og-image",
@@ -4642,48 +4762,48 @@
         "permalink": "/docs/plugins/pdf",
         "title": "PDF",
         "visibility": "public",
-        "fingerprint": "06cca254773447d30a568655e2a1981ce37c133b4c9ac50a2c3331578fbc2347",
-        "contentFingerprint": "3413b265974ceaf969d0f659e0087c7eda7668ea9cc0552536d94dc4043552a6"
+        "fingerprint": "a075320797a280620d2dc9d2ed0f7b71f254b2e14c80a8faf08508eddbaeb7b7",
+        "contentFingerprint": "4653e21513109d109db74b445c463e534ddedb104b612e89b3980b3c62ae65da"
       },
       {
         "slug": "docs/plugins/pdf.ja",
         "permalink": "/ja/docs/plugins/pdf",
         "title": "PDF",
         "visibility": "public",
-        "fingerprint": "36dd1468bbc1cbe0d7cb092682fa299fc0020fc32f047145478effa53c4c0a57",
-        "contentFingerprint": "4a655cefb5c94d0ac5c625ff49df76d94b313a371deb328c8e05e04e32849c25"
+        "fingerprint": "b80cc8118f6beb8dfbfd8c4935159c0961888d2fd21407c79596d6778017bcee",
+        "contentFingerprint": "6a9ef9a3a82e4c78bc442782b2561095c1be5899bddb1365740372b834137ca6"
       },
       {
         "slug": "docs/plugins/permalink",
         "permalink": "/docs/plugins/permalink",
         "title": "Permalink",
         "visibility": "public",
-        "fingerprint": "ca3ab6c0d1a17322d8eb9834ed822bce3c988bb00d9ef8c7545f28026f1af7ce",
-        "contentFingerprint": "2c99bfcbb4e798139cf7adc806359c3dca697f82064c61d6ddaf772d88507a6a"
+        "fingerprint": "64362055e6ba1a2ac9ec62ff002a9e8479216fd0b671557c2bb10b99350e2294",
+        "contentFingerprint": "2530a5f2bbdb37abf9ecb7e66b808cf7a79db9c875b3c93553cc6aced989501a"
       },
       {
         "slug": "docs/plugins/permalink.ja",
         "permalink": "/ja/docs/plugins/permalink",
         "title": "Permalink",
         "visibility": "public",
-        "fingerprint": "476b2c083e32d3ac7db2a79712f3345e9505ad480cab3cacd93f5b1cb023a958",
-        "contentFingerprint": "e53be5f1364b12687ff12b478ed54bb5b833df51248ac409b4427dd82bdfbdeb"
+        "fingerprint": "af715683bfe52b90fe023799a647608deacd33e58cddf864bb406e799750f4d4",
+        "contentFingerprint": "5012e027993bf54471690fd287bff573caefb5eb23625d1a0ca4bc009094c7d1"
       },
       {
         "slug": "docs/plugins/plantuml",
         "permalink": "/docs/plugins/plantuml",
         "title": "PlantUML",
         "visibility": "public",
-        "fingerprint": "0720cb06fd27b48b37b53a9ab802aa1d5b6178173c8d24a2a96bb14604b9595d",
-        "contentFingerprint": "c09d1da80b511b4388f2a1b46692ee954a70076babd39830b967f01f957ca2c1"
+        "fingerprint": "c108923fa02d39be28ceed3fe6031bb981497de57ee0d839eb2e36b04fe68de9",
+        "contentFingerprint": "c6d2d281121930b78d7c30e17452cbed667f01449a0aba803b9262eb27914556"
       },
       {
         "slug": "docs/plugins/plantuml.ja",
         "permalink": "/ja/docs/plugins/plantuml",
         "title": "PlantUML",
         "visibility": "public",
-        "fingerprint": "ed4f7b4337e6762d8fd1dd63adca88a5560373a70568d6a2a5617ce08fcc8b91",
-        "contentFingerprint": "a1790ba20e03b2e7c8facfedda452f73ebad106ab33a1b4023d7657a82d28533"
+        "fingerprint": "5c3fd5e89322a6673032c166a16d7eaf0343782f9ffa1fd1b31dbd15fba1efc7",
+        "contentFingerprint": "f9f85b827e4c27dcf59d5c5ca746aef2f68a9f87e96b0a4344eac9f244dc5124"
       },
       {
         "slug": "docs/plugins/properties",
@@ -4738,16 +4858,16 @@
         "permalink": "/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "ae064675736f64642062234224f628bdbb0580786cff26273d2173b40c3bc894",
-        "contentFingerprint": "365f669b407ccd2bf2dc84dcb12ec4cd11a2ff7d38005c51857d1d73de01073d"
+        "fingerprint": "0581f98eae941df6ac6558ece9f172dc10593e2b7c40854864a7780f7a84ee06",
+        "contentFingerprint": "c53e052da9deabeba1ac1bab16b896f6affeec347577cc50835ba5689767d65f"
       },
       {
         "slug": "docs/plugins/query.ja",
         "permalink": "/ja/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "41223a8cca35f3702a5dc9a033797da4656a842425805ad82629d7fdb90a76a3",
-        "contentFingerprint": "c3875e707614d7f2e59d2ff21a5f26b74263f4ebf248708d426e5b5ec11c288c"
+        "fingerprint": "2a8cdf2ce9dfc776864dc06e5cecb05fa1f5e1dbfbdef08cf7417b15e2a16467",
+        "contentFingerprint": "64cdee0a59eb15990f4c4ff1564f50b602ff4d73c3725fa99b3d9ee2ce1abd2d"
       },
       {
         "slug": "docs/plugins/README",
@@ -4770,16 +4890,16 @@
         "permalink": "/docs/plugins/recent-posts",
         "title": "Recent Posts",
         "visibility": "public",
-        "fingerprint": "bb32c5c3bd4c0ea565bca357c16e431234f644ae30f646145eb1ed03ba879001",
-        "contentFingerprint": "0678296e96b8d79d6d7c2e92ea0c6278c1ea0ca915d90e9b14adc4edd2fc2e13"
+        "fingerprint": "2fcb57ff599a23d0c0d0baa7cf3ba8c6d38cf42ab781cd3a80788e51bfe3737a",
+        "contentFingerprint": "531abeda295297d199fa9eb37229309baf2d3ca41259c0febfe1cb63aeb1a129"
       },
       {
         "slug": "docs/plugins/recent-posts.ja",
         "permalink": "/ja/docs/plugins/recent-posts",
         "title": "Recent Posts",
         "visibility": "public",
-        "fingerprint": "719a8ae074ab37e7d5a5177488a1fc8487c85fbfcfa6db79a354e3ab81da9ea6",
-        "contentFingerprint": "2fa92717ea0f43e3e7f0bd585793043e82ff67d178b2278f745059bdd0be5382"
+        "fingerprint": "01087adc50207bda531b9dfd8042bfe4e3159853b5a459ed59a898b058c52019",
+        "contentFingerprint": "0e05d512f3b042820507f4afe8afd92c52f31910119d6fad17ba1bfa68f8e1d4"
       },
       {
         "slug": "docs/plugins/recipes/assets-and-client-entries",
@@ -5042,16 +5162,16 @@
         "permalink": "/docs/plugins/related-posts",
         "title": "Related Posts",
         "visibility": "public",
-        "fingerprint": "03080a7cf217c092631e7fc34f8eb9eb9aa4fb03878d5e4ccd600c6da6fd4e06",
-        "contentFingerprint": "a98c9a83a703eb90da35a4d98de8ce47258e27c9579e7d753d88208e50b549cd"
+        "fingerprint": "5f230bd639b99ac0e96e86558c18e539dc624f41aeee80a1fc82a6708a66a9b4",
+        "contentFingerprint": "887cf87f5f5ee0f6a3946a58bff2103ed2e075cf0cac84129f324f417c84c645"
       },
       {
         "slug": "docs/plugins/related-posts.ja",
         "permalink": "/ja/docs/plugins/related-posts",
         "title": "Related Posts",
         "visibility": "public",
-        "fingerprint": "6ea41132ae93e43a2e8ef54379151d1853abe4a8103033f9a78e5a3bb4f7c949",
-        "contentFingerprint": "b1e0a5dc51cba64bd56a4f5e0ad31dc4005a0af899ef447228ce12ea4ba16c2a"
+        "fingerprint": "44f43fdbda35b3840c41a535ac8ee0c9873333819766c5fc875d5513168850a8",
+        "contentFingerprint": "1789a15c6e7b917058ec09e7f3dfb36c617abbd7719bd0e5b18be773f2bb83f7"
       },
       {
         "slug": "docs/plugins/rename",
@@ -5106,64 +5226,64 @@
         "permalink": "/docs/plugins/search",
         "title": "Search",
         "visibility": "public",
-        "fingerprint": "7757e288dba56ec22e4507188ab87fd072106c977e78cbd8fc380e1ffb811f2f",
-        "contentFingerprint": "1203cc3b00fd02e11dae45fca1a8266937a924c81f86c9201cd3bc978e1e4d67"
+        "fingerprint": "7f446eada2be531a59f0a7139777e1d5cb2ebccc3806fbf5fec3be0c7d3c27f0",
+        "contentFingerprint": "732c1c9a021ec6ae9a7960a111b261ed847b393fed896bbd45a710407e8ce375"
       },
       {
         "slug": "docs/plugins/search.ja",
         "permalink": "/ja/docs/plugins/search",
         "title": "Search",
         "visibility": "public",
-        "fingerprint": "88716f02e09a8eacd90f3bb827ce2b9f5b4e8590289660e100d3d29edbfbde1e",
-        "contentFingerprint": "349b0ba1806be7bb357d87d6e4fd47f44fda4174b9c7c30829330a1b8f54e953"
+        "fingerprint": "f497e50560283381343b198362aef4e57d1551fe4569273f298bd542b8a84a32",
+        "contentFingerprint": "3d83ff36e7c19b444904259c078619c8e6b0abe14a6bcfabf9b0e3aa192ae20d"
       },
       {
         "slug": "docs/plugins/seo",
         "permalink": "/docs/plugins/seo",
         "title": "SEO",
         "visibility": "public",
-        "fingerprint": "555f55febecdbcd0a38f3bbd9b680504f7a447bdef3f30dba476d2f72a63283f",
-        "contentFingerprint": "c828448f04c240c8202bf1ff9afaa12fce2b1f37e3e2d21a837c85259fba02c0"
+        "fingerprint": "ff12c6a52bf93110791059402f0f4b851724f080b8c205f9057b513fcf2b64c4",
+        "contentFingerprint": "89abd6dbf2b108b3fae364bdf04faed2dcef7fa97b0737571d87e7c90dc021c6"
       },
       {
         "slug": "docs/plugins/seo.ja",
         "permalink": "/ja/docs/plugins/seo",
         "title": "SEO",
         "visibility": "public",
-        "fingerprint": "12910c1d7cac64e1baaefb2715b7a77676bc8efee4ad085fb9e8c07dbea4bf2e",
-        "contentFingerprint": "b52704631cebbfbe4aa2b13efd6d31c1c1d86713945cef0b9da80c1199fc4d59"
+        "fingerprint": "ddee3adbc30541bf660d8c90e6efc25a10a81406705446691f9cf4fa3682a9f1",
+        "contentFingerprint": "07129a441d34fbb54a61fd9947593354c429d110220925a0f9d9d0e076665d2e"
       },
       {
         "slug": "docs/plugins/series",
         "permalink": "/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "1ab2e4686a83c36727503d1f68429b6c911d36cba7b4066675ce91765e19537c",
-        "contentFingerprint": "9a04cc7e51950cb87110e8546e76cc44e19fe3af54292db3838fe56752e780da"
+        "fingerprint": "7a74cc821a12b0e41f17d7d14c3766d70da7058312187d5be6439ed9dd4fc3c3",
+        "contentFingerprint": "35e2dfec5e10b5a5c7f1a5244bc9bec4c23a226236bec4ebad0078c5200888ff"
       },
       {
         "slug": "docs/plugins/series.ja",
         "permalink": "/ja/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "0eb4322333722c00e4e2df0e6eca2f2389780b4fe65bb285f7afc8b2e9b6b9fa",
-        "contentFingerprint": "cb17fcc0f6a3a1ba7e27994a50b8b3f93a4e9565e8a672c88be7067a6af5f275"
+        "fingerprint": "8df0c514b4e6a19f8fbe6807d7831b8fd566bded70f90e66a478d64e8e079518",
+        "contentFingerprint": "51664753085bb489d4c7c48cfcdfef6da43ef898f38b3798fc034a4a25bd412b"
       },
       {
         "slug": "docs/plugins/share",
         "permalink": "/docs/plugins/share",
         "title": "Share",
         "visibility": "public",
-        "fingerprint": "d6a80a87c0984a04491a9aebfd845f24a1a37e1654993deff8a4fb324816faa8",
-        "contentFingerprint": "d13a3cd38701801a8beff054bef29965a02141736e830d5307d8aad528e424f0"
+        "fingerprint": "f462e2ebd080275d08faef906163860c7a230187a2fd3f3560c67abf6f08115c",
+        "contentFingerprint": "84bb279c7e6ff4120ea62ba68d2132cce64f2f14a8dc41992b23843d76c4e2f1"
       },
       {
         "slug": "docs/plugins/share.ja",
         "permalink": "/ja/docs/plugins/share",
         "title": "Share",
         "visibility": "public",
-        "fingerprint": "e8da02c6e0cdd874dab68b38610fc7b553fd8998047e335b2beeb024ab583f65",
-        "contentFingerprint": "072794a14eca780ee3adff15d85dea6a69cf89e0bdda71eda5326ab88c934888"
+        "fingerprint": "4823cd1b59ad11cd2c3c572329bf8d713375f117ab403aaebe12de61de2e7bc1",
+        "contentFingerprint": "d96f94e85c9cb346a60469a0f068ae2ba98c291cc4aa3f264b0f7480814ed405"
       },
       {
         "slug": "docs/plugins/shortcodes",
@@ -5186,16 +5306,176 @@
         "permalink": "/docs/plugins/showcase",
         "title": "Plugin Showcase",
         "visibility": "public",
-        "fingerprint": "36fb211b604cbb7a4740695f2a4e4e04cc535bc61c8ef6c44c353984196e2cd4",
-        "contentFingerprint": "457b82b274cdecc0e8cb80dbbc122fbdeeb292b39e35aec99da57432ad2f67d4"
+        "fingerprint": "70673852d55f0640a4b19ad016dc6ce0dfd5746331eb6ca263415d1ffb537979",
+        "contentFingerprint": "a636783671b7ff3f8b5efeabbbda63f89829d8fb2bfdfa4887c05e6151e17ab7"
       },
       {
         "slug": "docs/plugins/showcase.ja",
         "permalink": "/ja/docs/plugins/showcase",
         "title": "プラグインの動作例",
         "visibility": "public",
-        "fingerprint": "2683c61e629f2cdcfdfd521d8f501ae8a4985397c5a29974c098a9cb69c8c28a",
-        "contentFingerprint": "3ea0205494c1039bb4572a2e4531b2c3f28a810605af7eeb13098c4a796abeee"
+        "fingerprint": "d7ae7193d5b4f5e522c5a863b61f10364d1ed915c51aa26d1009388fed913fe6",
+        "contentFingerprint": "446fd46612eca7b47b44738476262d8d0589b1be0e500ac0bac5be515dcf362c"
+      },
+      {
+        "slug": "docs/plugins/showcase/build-and-metadata",
+        "permalink": "/docs/plugins/showcase/build-and-metadata",
+        "title": "build-and-metadata",
+        "visibility": "public",
+        "fingerprint": "ce743ea69b3f5ca8db9855328abd01e9ce1b9f24c5668980f0938b4d91dbbdb5",
+        "contentFingerprint": "da4b7b2bb1bb03bbc66a73a0147382340116fc7dcd8284a518af2d82ab967a91"
+      },
+      {
+        "slug": "docs/plugins/showcase/build-and-metadata.ja",
+        "permalink": "/ja/docs/plugins/showcase/build-and-metadata",
+        "title": "build-and-metadata.ja",
+        "visibility": "public",
+        "fingerprint": "19a18d5c417ef996f22538e98ff518891333dbad6d18d606efd02b8337c8bee8",
+        "contentFingerprint": "7cae08035e50ec3cefc2272256dc6ba81dd8c71f59a9ac49b3a0608115c20370"
+      },
+      {
+        "slug": "docs/plugins/showcase/code",
+        "permalink": "/docs/plugins/showcase/code",
+        "title": "code",
+        "visibility": "public",
+        "fingerprint": "cf9c631893f97a04bd1aeed13822a32f49b0f12be0b2c3dd63091cb6112f80e3",
+        "contentFingerprint": "f56176b9b508474a2e84bc73e40c70dec497173ce9ca59e828ac0feb8b2130c9"
+      },
+      {
+        "slug": "docs/plugins/showcase/code.ja",
+        "permalink": "/ja/docs/plugins/showcase/code",
+        "title": "code.ja",
+        "visibility": "public",
+        "fingerprint": "5fae8287b4dd262cf9eb7a66a5819615ecb3245955dd42233ee5975877e3d576",
+        "contentFingerprint": "577db9d6ab430242cac8722e9fef3dde5ac5353091d5c3110d7b74803b49a829"
+      },
+      {
+        "slug": "docs/plugins/showcase/developer-tools",
+        "permalink": "/docs/plugins/showcase/developer-tools",
+        "title": "developer-tools",
+        "visibility": "public",
+        "fingerprint": "abb35ba4faa86967374f69c623e8a7a815f527438d9bdeaa2b2f9b2820879fd0",
+        "contentFingerprint": "03a4a430aa56374ab96b693e7fae8d90133948937decbcf68118573af8a6d068"
+      },
+      {
+        "slug": "docs/plugins/showcase/developer-tools.ja",
+        "permalink": "/ja/docs/plugins/showcase/developer-tools",
+        "title": "developer-tools.ja",
+        "visibility": "public",
+        "fingerprint": "00f2bc43a837112e7af3ac591efe33b8def2b7642d748177a696665ed19336e3",
+        "contentFingerprint": "271e78c96b20012fe58e8993e779950388a62fbd83edc382b9d3cfe0e6a63a02"
+      },
+      {
+        "slug": "docs/plugins/showcase/diagrams",
+        "permalink": "/docs/plugins/showcase/diagrams",
+        "title": "diagrams",
+        "visibility": "public",
+        "fingerprint": "cc113fb58a059a682292bb5b411f3093ddeca21a1d64403e49bf15ed17aab70f",
+        "contentFingerprint": "137c6ce5105ef8a55747b86c28b23d6089acc7fed67fa8816c720b096e07cddb"
+      },
+      {
+        "slug": "docs/plugins/showcase/diagrams.ja",
+        "permalink": "/ja/docs/plugins/showcase/diagrams",
+        "title": "diagrams.ja",
+        "visibility": "public",
+        "fingerprint": "8a6a051977f23851f96fefbda851c556124a03393e881f91ac2b32afcbbf5e41",
+        "contentFingerprint": "835c2fc49dd81b67836672e87020ee59c476ecd9e92867ebfd66b25d574d2a17"
+      },
+      {
+        "slug": "docs/plugins/showcase/generated-pages",
+        "permalink": "/docs/plugins/showcase/generated-pages",
+        "title": "generated-pages",
+        "visibility": "public",
+        "fingerprint": "9a773147bb5688b18845f6b324ba3d4e3c1e4342871243c4e0d58b4fa573485f",
+        "contentFingerprint": "3de6a8ec63fe639b6df4084784f5c969f55fb57d1074b4edcef866180a364cf4"
+      },
+      {
+        "slug": "docs/plugins/showcase/generated-pages.ja",
+        "permalink": "/ja/docs/plugins/showcase/generated-pages",
+        "title": "generated-pages.ja",
+        "visibility": "public",
+        "fingerprint": "ee9d90b8d11c91f096c10a95570970acff8f77e6c7a5aeb831a7096dfc47d580",
+        "contentFingerprint": "0ea2c7f9696fec6486679674667e154ead83076680d4efa9a772a919039a5b22"
+      },
+      {
+        "slug": "docs/plugins/showcase/inline",
+        "permalink": "/docs/plugins/showcase/inline",
+        "title": "inline",
+        "visibility": "public",
+        "fingerprint": "0a3e02cb0a86f90fa453799aeb045960ad7c1393132373b6aff6c8c33ba23bb9",
+        "contentFingerprint": "2c81c67c229a3b7031e52486d02780a01c363f566e8c97ef3bc6609109a13d19"
+      },
+      {
+        "slug": "docs/plugins/showcase/inline.ja",
+        "permalink": "/ja/docs/plugins/showcase/inline",
+        "title": "inline.ja",
+        "visibility": "public",
+        "fingerprint": "91a3eb2c1a8196e8f746709542437aa727a8898c2e153d54718683aabef5eea0",
+        "contentFingerprint": "0f3d36684d8a765b05f3cdd18f6e32bb06416732b3cea656e1e463909b900475"
+      },
+      {
+        "slug": "docs/plugins/showcase/knowledge-and-data",
+        "permalink": "/docs/plugins/showcase/knowledge-and-data",
+        "title": "knowledge-and-data",
+        "visibility": "public",
+        "fingerprint": "5ae16a30dc3cfa126b81ac4792f894c9d4bc0ace0d16faf2f7225dc49697e467",
+        "contentFingerprint": "46e04ee98387b71c6e8b454ab4a69153a3beb08c80674192d2309dc39a062b4a"
+      },
+      {
+        "slug": "docs/plugins/showcase/knowledge-and-data.ja",
+        "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
+        "title": "knowledge-and-data.ja",
+        "visibility": "public",
+        "fingerprint": "282a04329c44cebc120620e8fe72e173877d718a7e192eca8e1af743c294cedb",
+        "contentFingerprint": "f06e36cd4050c7f81c4c99a200b7e1fed62bc59f54a5e632b663d6afe2eb0eec"
+      },
+      {
+        "slug": "docs/plugins/showcase/media",
+        "permalink": "/docs/plugins/showcase/media",
+        "title": "media",
+        "visibility": "public",
+        "fingerprint": "9c5ef1a31e361b2404ba30865c03858a129b9106e38e38a7c53cdaca9ec5d622",
+        "contentFingerprint": "83b2a7c1bde8281b0bdd9c9ce2580e14d6118947992d258a421bb215536736e3"
+      },
+      {
+        "slug": "docs/plugins/showcase/media.ja",
+        "permalink": "/ja/docs/plugins/showcase/media",
+        "title": "media.ja",
+        "visibility": "public",
+        "fingerprint": "afa6a560c240c03e10d9d4cd1bb15517d6b54a3cd0a88d25d193348401ad6f04",
+        "contentFingerprint": "7a6ed181701a5329474a5d6a6cb1e07509d04b92265862755089abac25804dde"
+      },
+      {
+        "slug": "docs/plugins/showcase/obsidian-syntax",
+        "permalink": "/docs/plugins/showcase/obsidian-syntax",
+        "title": "obsidian-syntax",
+        "visibility": "public",
+        "fingerprint": "5e3c4cb7b242f8ed4463899f6834f2d1478ef2d52a63208f73cebe614f2db139",
+        "contentFingerprint": "08622fa1258c0d1fc9f0b6c0389de362b72618f2525a562efe5ce0e9c1aea317"
+      },
+      {
+        "slug": "docs/plugins/showcase/obsidian-syntax.ja",
+        "permalink": "/ja/docs/plugins/showcase/obsidian-syntax",
+        "title": "obsidian-syntax.ja",
+        "visibility": "public",
+        "fingerprint": "c1604695114f24ba0590d4e8dae86aeb8f9e8f6e5ab034af64d66ea24abbb2ab",
+        "contentFingerprint": "58f22b338071bf574bd5f22944833aade1bf78f73eed1839680b67b2b7f4c749"
+      },
+      {
+        "slug": "docs/plugins/showcase/page-and-site",
+        "permalink": "/docs/plugins/showcase/page-and-site",
+        "title": "page-and-site",
+        "visibility": "public",
+        "fingerprint": "cd85c9d0b39e9d1fb6dc265dcdc5b0639dccb7552da07ff04d38319c016ffdff",
+        "contentFingerprint": "28feb51a0527f961ae8c305a3dce4d0cdcd319814d4ebea71e5561544f24ac80"
+      },
+      {
+        "slug": "docs/plugins/showcase/page-and-site.ja",
+        "permalink": "/ja/docs/plugins/showcase/page-and-site",
+        "title": "page-and-site.ja",
+        "visibility": "public",
+        "fingerprint": "67bc3dd139d701c6693244d41fc1e1f7c253ab2938b50e5479bcf576c2fe5833",
+        "contentFingerprint": "a46f39beb9c449baa82bab80975a67830b9f3da246e312b18b9a15ba13d42f69"
       },
       {
         "slug": "docs/plugins/sidenotes",
@@ -5218,16 +5498,16 @@
         "permalink": "/docs/plugins/source-files",
         "title": "Source Files",
         "visibility": "public",
-        "fingerprint": "af630d91cb50aed24cfbde49133bb432e5c15d385c27197487adaede94e90e4b",
-        "contentFingerprint": "0f89a709024975006c6c8db4a3d87b7b16fd7e049bdaf068d1b351b4535357de"
+        "fingerprint": "1620b824dc123bdbc3bf32faefe9b9dae194d897cf6691924c6a5b2d35a64a27",
+        "contentFingerprint": "c3527fc96fd4fda54ef0f48709cd75d06e893721f4a7fd19411c6ac369802481"
       },
       {
         "slug": "docs/plugins/source-files.ja",
         "permalink": "/ja/docs/plugins/source-files",
         "title": "Source Files",
         "visibility": "public",
-        "fingerprint": "1395c24f7d7223da2bd2fe3fcc59ec225d15b20aff87b7e03dcaa59ab0a6f265",
-        "contentFingerprint": "56b66d9faf46034df1e64d6077ee6f9608d928148f3993d65c768c1af2e1ffad"
+        "fingerprint": "473dd2f5788f045c7d30b25020bdc9f203425b1e77e008466e8e10a8abe7d72e",
+        "contentFingerprint": "807ac25cc5f3e343b465486adf894444e1e823c7f9f1f69e608f29abbe843479"
       },
       {
         "slug": "docs/plugins/svg-optimizer",
@@ -5250,16 +5530,16 @@
         "permalink": "/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "a52c2fb712e2f64d47e2f0665ff3b1e9e14ab5d7032956566200108a9b83d177",
-        "contentFingerprint": "089c2ec4fd8261f35f95bc8e11f7d8fad53c94bf13ae0b8eedad758c3dac81a5"
+        "fingerprint": "837a5c14021e19f2e979e25dc908c11fd592773b1368f59b1df8e0555567fb56",
+        "contentFingerprint": "65ac902fa0edb40884616cfc7fec7ae27f7ac841a1b993b15f242e7f3a7a5ddf"
       },
       {
         "slug": "docs/plugins/taxonomy.ja",
         "permalink": "/ja/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "86f7d9729af2ed725e482f3988265a7bf8d05df23011d815b020df70f65942c4",
-        "contentFingerprint": "070d6c8a1ac2ec79659436631ef1549aefdc21b712e8b9d74c338671cfb73d83"
+        "fingerprint": "b258347f1ee52328d2a5414910ea29bd0165738b9648a41455e9c4fc8534b28f",
+        "contentFingerprint": "6c70084d2addaf2df9b40493aec299988fa0cb0d1fe230fc8103a502129edb7b"
       },
       {
         "slug": "docs/plugins/text-fragment",
@@ -5282,32 +5562,32 @@
         "permalink": "/docs/plugins/timeline",
         "title": "Timeline",
         "visibility": "public",
-        "fingerprint": "ba3120e99f3896c3834d1b205990d0b515a32c6d013969492df358de992154f5",
-        "contentFingerprint": "48714abf4b383268dcc922dbedabafade905d8999a9b31e4840979d13b377206"
+        "fingerprint": "41e93e248a785849bdcd774cf5b1f04ca129d6c72a83eb570df9e626437e6ccb",
+        "contentFingerprint": "718d6abe8060500a7db0e0ba3787d95ac922447004d5d4bb91bcc74ce6d21381"
       },
       {
         "slug": "docs/plugins/timeline.ja",
         "permalink": "/ja/docs/plugins/timeline",
         "title": "Timeline",
         "visibility": "public",
-        "fingerprint": "6c7f1bf5083571c1cfa55d1f660a480b7a3f0a4454a0395c070599d81f022b74",
-        "contentFingerprint": "1b12b4a3ea934f3cc7176f624dedd9b32952d25da62b7ccd9a55d4ac1848db77"
+        "fingerprint": "d1850cfc2288c89e0f9681e9a81a38fcded045cc964aa62362c27aea775a0a35",
+        "contentFingerprint": "aa475fed4615fdd6fa8f3a278da0fb7a950d4f8b1c66563d0d1cbe413bdb4e33"
       },
       {
         "slug": "docs/plugins/toc",
         "permalink": "/docs/plugins/toc",
         "title": "Table of Contents",
         "visibility": "public",
-        "fingerprint": "ee7b1f9e26c96b2e5791cfd5583fb3e18aec4582da401b23cad0d12c80e0138c",
-        "contentFingerprint": "fa32dd9760dff4897ce5846836b5723ae2024282bd517d9351fdc8c5c15393f2"
+        "fingerprint": "371c8dbfb72d5617fe597d1bf16f329cb5b3afe563961d967b2f7ba68b42ee3d",
+        "contentFingerprint": "a65d8a0ab8225b006e33f77f78ad7526788957c329718cf4b20e6ae7d8c9b2c1"
       },
       {
         "slug": "docs/plugins/toc.ja",
         "permalink": "/ja/docs/plugins/toc",
         "title": "Table of Contents",
         "visibility": "public",
-        "fingerprint": "e51bb655d18ca7ec49495643662b7826f4de8f10d7f6a7dcd769edd491d2c36b",
-        "contentFingerprint": "77be87fa0ea170ac0aff75a978490d1f5c3bfdc7b70aa56a93ae78d7a12cf9bb"
+        "fingerprint": "d55a3ee4bc5611ba917cde44244952e06d01182409946095a6004175312b34bd",
+        "contentFingerprint": "aefc9667f4c691965bbea24fbc495c9f5139fbdf32ed046a47a900ecc4fc68ab"
       },
       {
         "slug": "docs/plugins/ux",
@@ -5330,16 +5610,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "2ca14478e6e1d816e249ddebdcff4cdb66e0d64b02e4ee4ead3e69b7eeaebf21",
-        "contentFingerprint": "88d65b7d1ece2a9f43bd6ea59c52a18e10997b42f8c4df65a6aca21795c26edb"
+        "fingerprint": "4904eb9619207c5db6965ada4932e53f9aa2a2d6f2c5ebc8337c5942cece65a0",
+        "contentFingerprint": "ac8c0cf705422104797c2897eadb7c65077eddcfd50ac67ebf0ffb331875e701"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "1ba91546e2d0e3b0a598b481ae3e34be9e77cad4686dcb1eeeb350711c0c4b96",
-        "contentFingerprint": "d9f71802be33fd535cacda699214696950c6d3cf75930ef88a248b371124e9a7"
+        "fingerprint": "c16bcd09f259d278ccf6897b951aa6ebd0d4db17d929231f4039a16c858f4480",
+        "contentFingerprint": "9ead4a76b98cf3282d574714b64e0d879606c1a3f4a998f3fe4881f41aa06fa2"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -5402,24 +5682,24 @@
         "permalink": "/ja/docs/plugins/writing-a-plugin",
         "title": "はじめてのプラグイン作成",
         "visibility": "public",
-        "fingerprint": "21ec425875bed9498d68cee8cedb7914507b4680a996183e7b4debd1746ea91d",
-        "contentFingerprint": "90ae4ddb130ee6141b07d81f0f5b488661a4c8fad22a3f7e932ca1899c856778"
+        "fingerprint": "7e01fccb26fb3944a5b32826ecf554d732420190e9ccec2c588a88f3ae66ebc8",
+        "contentFingerprint": "265bbb0a89e5dd77f4272f590961aa95f496329d60b0f94adea9a926a6cf46a1"
       },
       {
         "slug": "docs/README",
         "permalink": "/docs/",
         "title": "Documentation",
         "visibility": "public",
-        "fingerprint": "cabc46f5e14a8ba39d5f137eced64a7a432e71dec99c752fdc07ddfef1dc041d",
-        "contentFingerprint": "6a8930749e7634233f47d4acda7198109fed2b3aa0d539166720a8f8fc6b88dd"
+        "fingerprint": "03c1e7d5779caaab2aba995d03ebf5118912f3dc908ae5f5c5c53666da82167b",
+        "contentFingerprint": "7ad2aa3a8d2647c5aebefa0f0d6b29cfde63c9bb7fa3acdc0736ec4de730cf72"
       },
       {
         "slug": "docs/README.ja",
         "permalink": "/ja/docs/",
         "title": "ドキュメント",
         "visibility": "public",
-        "fingerprint": "ed8313138801dd75b327f452b43598e90ab4213938fdefc1d3ae9e7dd97c19a4",
-        "contentFingerprint": "56ee315e3fcd5bb88f238cd6912f8f6809c03534e2ff29123a328aaa109d58b2"
+        "fingerprint": "8c553cfa6aa60723c7b499a053346442be6d423be0f9fa5a58b97123699b289c",
+        "contentFingerprint": "7840707dab46b2ae23e31a102570caf29ff01737e59f245fc168e37af3787d2f"
       },
       {
         "slug": "docs/reference/api-lifecycle",
@@ -5442,8 +5722,8 @@
         "permalink": "/docs/reference/cli",
         "title": "CLI Reference",
         "visibility": "public",
-        "fingerprint": "b966e270c96d9326d88dd9830b0420c562cfedaca0ceb61ff87d10e064ab7d1c",
-        "contentFingerprint": "4bc6123d0e59a0a644955770e4d7e5f001308f4e8042757f1b00adda9da13685"
+        "fingerprint": "94841c0e05209809485f9ef1f070726c7b0d81b2f97e3a475c6ac90c50b6dbc1",
+        "contentFingerprint": "501a853d45dd761cfa19a4a71d7239298ac807a44f7da6cd727099541aca7186"
       },
       {
         "slug": "docs/reference/cli-extension",
@@ -5466,24 +5746,24 @@
         "permalink": "/ja/docs/reference/cli",
         "title": "CLI リファレンス",
         "visibility": "public",
-        "fingerprint": "697eb291ac013eaf2de6f385cc1b073333e0c80ae7a7798e672c66e230fe7fff",
-        "contentFingerprint": "7d6f4e0966a1943b2e837c09368cb3dd2743bbd14e986d3ea71d1345003a5444"
+        "fingerprint": "504aeddefba819397eca62a4cbbd4c923f5d7f8558fdcead31e229ecf801bd31",
+        "contentFingerprint": "5d122771be8867302315bdddec2c18a3b1a74a85da3e8cf639d2a07c42ddc895"
       },
       {
         "slug": "docs/reference/cli/build-and-inspect",
         "permalink": "/docs/reference/cli/build-and-inspect",
         "title": "Build and inspection",
         "visibility": "public",
-        "fingerprint": "8951b6df17bd14a19e308b875ed1212092fe3a45a290e597f5af22945fed209b",
-        "contentFingerprint": "c3bc36d379d4f5f4d29ae4df4576b75370aba1dda67ee29df899d1d1d8b13e32"
+        "fingerprint": "b4708c0eaf05a7655819cafa058700550958db77b5aaed055820e27f1365d057",
+        "contentFingerprint": "e40abed8c847dfdce7290f30e9035dde8dd2a1006c7a7c6dd1e7fbefb4527449"
       },
       {
         "slug": "docs/reference/cli/build-and-inspect.ja",
         "permalink": "/ja/docs/reference/cli/build-and-inspect",
         "title": "ビルドと検査",
         "visibility": "public",
-        "fingerprint": "7d005d67431a747980df5531b4bdb2196f3ab129b47905c046cd37bf6f59057e",
-        "contentFingerprint": "e05de75e55bc7b7f1a33906fa23bf962495f7973f5996a05f2b3fd7fc32dffbd"
+        "fingerprint": "c2a32adb28ba6ed3599c501f395f2e4f481b8de9819d13ab3b41e68ab975ce2d",
+        "contentFingerprint": "5527644400662a370758476ac5b2a33c659347643f20edf121df2cbae40ac1c9"
       },
       {
         "slug": "docs/reference/cli/development",
@@ -5506,56 +5786,56 @@
         "permalink": "/docs/reference/cli/publish",
         "title": "Publishing",
         "visibility": "public",
-        "fingerprint": "52bda75fc8847b7b37f155928dae56bffc12dc6b2e4bece422056b68e2d4bd13",
-        "contentFingerprint": "c667fcdaacbfb6c876122e6986e64656c38bf0dff9afc698685ba8bbd58a130f"
+        "fingerprint": "26c194d8b822215bdc348b572d62f87fd33e360bbef21a0bea9cbcfa811b03f3",
+        "contentFingerprint": "d9fe891840ec4b962b9837ea4ae4fd27db3ce977abc60c7b41a2031ff0706a48"
       },
       {
         "slug": "docs/reference/cli/publish.ja",
         "permalink": "/ja/docs/reference/cli/publish",
         "title": "公開",
         "visibility": "public",
-        "fingerprint": "d8052465fe14e8d82786739c53ba23e448ef8d70e2ca25ca6bdbf47a2b248111",
-        "contentFingerprint": "c9c0ae607df3fff5c0a744d6b124e8208d40e15f9c52b4916e01b28512a3aa10"
+        "fingerprint": "20f6bcd4271c6ade5b87e8824dadac933d3f469bee31e29cabc830f725fecc90",
+        "contentFingerprint": "7cc7018365dcca90da6b70b9debd6459406ff89a5f606d84542d03334e9f3968"
       },
       {
         "slug": "docs/reference/cli/setup",
         "permalink": "/docs/reference/cli/setup",
         "title": "Setup and creation",
         "visibility": "public",
-        "fingerprint": "0ab2b2c53aec8ee5eef6fe1867ffdfa18b854dab9e5633c34fc5280c3582d27d",
-        "contentFingerprint": "36043cd21950cb96a4e898d198cf79b023bef553f95c9ecd7d3ff9cc92672c6f"
+        "fingerprint": "009d6c52433bd3d96ea4f8d30c7752a1d1e69b289ae2edfac5bb042c04a0c18a",
+        "contentFingerprint": "9204f75676e0c570c3070226a09e56a9bb8c63fa91ecc25adb81bcbed80629aa"
       },
       {
         "slug": "docs/reference/cli/setup.ja",
         "permalink": "/ja/docs/reference/cli/setup",
         "title": "セットアップと作成",
         "visibility": "public",
-        "fingerprint": "d6ac1fdd507b0a67d84279a2781799a6d8eae8ab8ed2d271a5983e5279fd08d6",
-        "contentFingerprint": "33d74f0c203288dda3eb482dba32002bbb7f60f474b25d343dd72a060935e9cb"
+        "fingerprint": "d880cac4842a3a655c7ba2f79dead0bf1d5f10f80d99250149c3ec07f7a38e5f",
+        "contentFingerprint": "c7c5f85a972f5e91534834fa3766c745bd7ecd59677481825f796da545360ce1"
       },
       {
         "slug": "docs/reference/configuration",
         "permalink": "/docs/reference/configuration",
         "title": "Configuration",
         "visibility": "public",
-        "fingerprint": "c4dad650588cdee4b776391fbc5c6ed2793fcb6d25e267787c82fe1b43ed5ade",
-        "contentFingerprint": "72534dc0f61c27c9f945057d5d0fd071b37990ac5fbebe60723d12c3a604ee3d"
+        "fingerprint": "91f6ae19f06501bbbfa7aecc5f6a7f275409559af09ee6a60012b349d7647ee5",
+        "contentFingerprint": "5ef52b2ff36b182a585bf88dfdd80db655cc417cfae303b64c0ed312a9ff5bae"
       },
       {
         "slug": "docs/reference/configuration-reference",
         "permalink": "/docs/reference/configuration-reference",
         "title": "Configuration reference",
         "visibility": "public",
-        "fingerprint": "0008d2594a8cf2257d41de152f6ae98ee62b5715c3569d5241a805aa8f4c9b05",
-        "contentFingerprint": "db31834b1a9740e54238e146f43c1415ab70034a85a0e9930af062221682d79d"
+        "fingerprint": "16cfa55426ee53a4a20f5d7f7b30d7469f9aacb7b039ca8d013adf7770a77c90",
+        "contentFingerprint": "41caac5955e5a34874f0ddcd79cea0124a06c63e9b2cc1a428759e9e63b741cc"
       },
       {
         "slug": "docs/reference/configuration-reference.ja",
         "permalink": "/ja/docs/reference/configuration-reference",
         "title": "Configuration リファレンス",
         "visibility": "public",
-        "fingerprint": "1e23d0c8ccbe3cd5564c5be83952d9a1f0a7b492bbdabf1b5bc244e2fc952799",
-        "contentFingerprint": "63db14f866f2127302761772659f0ecefab9fd1e26e7c0b561a43d898015f28a"
+        "fingerprint": "87956c8aba8cb0e2280a8b3a5203679b46ed6abd6a25fa54648a6b74c2f2cee7",
+        "contentFingerprint": "a28bbd01ce034ae26c2c8488c86e76380209499672ff916751520833dd59bbf5"
       },
       {
         "slug": "docs/reference/configuration-reference/publication-cache-spa",
@@ -5578,56 +5858,56 @@
         "permalink": "/docs/reference/configuration-reference/site-and-content",
         "title": "Site and content",
         "visibility": "public",
-        "fingerprint": "214abed0790316e8bb7c08316646b0fdaa90a0359c5327519f0c553d82764c94",
-        "contentFingerprint": "0f10ed5394462f2ed7c585732afe92efac1b60ace35941c80256f987ad4d85e0"
+        "fingerprint": "75c6b16a343e27bf6273fd788580255e5dafe7b7348632c4c85b2463199311be",
+        "contentFingerprint": "1dcb89d44492789a7a9961afdd68cef9ca7d4b6f05faf2440752f4358c89123e"
       },
       {
         "slug": "docs/reference/configuration-reference/site-and-content.ja",
         "permalink": "/ja/docs/reference/configuration-reference/site-and-content",
         "title": "サイトとコンテンツ",
         "visibility": "public",
-        "fingerprint": "11714d0674f39db9a807db119b654abf7a64e0f6979ceaf85cbeaadac75006a4",
-        "contentFingerprint": "4d1960c85467bd7db115d0f6074a87d7a7edc580725d6af2c7c13a5da928eb21"
+        "fingerprint": "3626d10e3711ec850f5201a967564e7335da55daa9f6e5bb31c9838920aa3dd5",
+        "contentFingerprint": "9b18bf66e09ee778abe416250a9fcaa900f532906259dfa1fa67d4af7d54f2b0"
       },
       {
         "slug": "docs/reference/configuration-reference/theme-and-plugins",
         "permalink": "/docs/reference/configuration-reference/theme-and-plugins",
         "title": "Theme and plugins",
         "visibility": "public",
-        "fingerprint": "3a5a6448ce9ba5e5e389864605cfa3ffced7289d2a5665155fba6f8c369ac72a",
-        "contentFingerprint": "2e8737828bd35df48165f65df151d97495f02aee566037ef6b7b86d514431615"
+        "fingerprint": "8c411770e03c2cb53393db09b0e949be0babfd37a255e5800a5c72517fdc0c92",
+        "contentFingerprint": "fc81d10b85cde5863771ae36cf3019906ad58ae60ad6dab25d51780f769c7f82"
       },
       {
         "slug": "docs/reference/configuration-reference/theme-and-plugins.ja",
         "permalink": "/ja/docs/reference/configuration-reference/theme-and-plugins",
         "title": "テーマとプラグイン",
         "visibility": "public",
-        "fingerprint": "9711fbf1ea76c79181b578d9f39ffe2ea993c9281af4ee3a9fb174fc50b1daff",
-        "contentFingerprint": "942db28e7dda98198eec78606389e7934c04dfe00bb27b8d3b0a1dcc60713ff6"
+        "fingerprint": "192f6f9d46b815c1ea0c985ff107364da209e99d7be99ae61bdbda63f0855f92",
+        "contentFingerprint": "f3e1f6fcc3ab61160ed71df5ff8d7387b6d914838dafe093672be2f8f310c8d6"
       },
       {
         "slug": "docs/reference/configuration.ja",
         "permalink": "/ja/docs/reference/configuration",
         "title": "設定",
         "visibility": "public",
-        "fingerprint": "154db718d55eb96b9a0282d1d58794242a94f1fa45e67011284bf04f5752360d",
-        "contentFingerprint": "fe7f22bdcdc3df62c472265af483e1c3ba8e73303b0665b9dda379fb31b26563"
+        "fingerprint": "df72ae520335fb51ea4769a0184f8c3d37160b1dd8d33339cf2ea53875dcce2b",
+        "contentFingerprint": "adfd3259c7e9495083cbddba6a564b84628754e1944f2268c808295036a36225"
       },
       {
         "slug": "docs/reference/configuration/assets",
         "permalink": "/docs/reference/configuration/assets",
         "title": "Attachments, media, and publishing",
         "visibility": "public",
-        "fingerprint": "888934d956b5794f2e404d80c0bfabf914390eee73389bfa0d4e407c8c1d0728",
-        "contentFingerprint": "c1b8bf4a1864fbb873327edee3daae5cf50e3b9368751d02306f2fda25e0d277"
+        "fingerprint": "c697d2138697d7187ffea71451d126b1abd9d24f4a0359bdee940a2c552ff713",
+        "contentFingerprint": "c40ea7d678f96d347709e4ce5b542dd6975986d43af9235674b2378645aa2e67"
       },
       {
         "slug": "docs/reference/configuration/assets.ja",
         "permalink": "/ja/docs/reference/configuration/assets",
         "title": "添付ファイルとメディアの公開",
         "visibility": "public",
-        "fingerprint": "8ff0cd82faa3ad875dbd591964d54f9913265ed681b08e75119fbf899e4bb32e",
-        "contentFingerprint": "9f1b6013df3a2c70f1248bc1d2487a2d060ff395146060964c22c6cd7b3c6e72"
+        "fingerprint": "78fbd4553ac4c6e1e9a48e50f71649a555b0da7c39fa24e1949de99200caca14",
+        "contentFingerprint": "96326af8f61af2bebdbd09fc5eb0771f018062c236f6cc0ec8c4a79cd9afc7f4"
       },
       {
         "slug": "docs/reference/configuration/cache",
@@ -5666,16 +5946,16 @@
         "permalink": "/docs/reference/configuration/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "3393863659dd1d8d70868a47f7607145543e76f8dfc72703b66d81c28ec9b304",
-        "contentFingerprint": "c952b69a7324777e099e783f869b960acd45783a2c2e10b0145cb4004ba9c7d7"
+        "fingerprint": "498aa122f5cb4c486a5ddc3123345e66e397af120e6e854eae7f6705931e9500",
+        "contentFingerprint": "e0b8798d33a543f063bcef17df19984161be40c5d098561f998e77129d924170"
       },
       {
         "slug": "docs/reference/configuration/navigation.ja",
         "permalink": "/ja/docs/reference/configuration/navigation",
         "title": "ナビゲーションの設定",
         "visibility": "public",
-        "fingerprint": "5ef0c0606a73ad385c8c5c4c9ee7c50eae8eda6fa73164fe5f2edc9fb69974f4",
-        "contentFingerprint": "6ad6c791e47bd97b00f6d56bc19bc870945ec6b0fa4686d50a9d0927cab7b4e1"
+        "fingerprint": "6b666509be88756e2654db8d8c4a0e928cf2bf239ad6a119094bb55c4d46c051",
+        "contentFingerprint": "88bd9ee59e297e0e543ec912ed478dfe2392f0499e571c9cdf83ccb3e7725fe8"
       },
       {
         "slug": "docs/reference/configuration/plugins",
@@ -5746,40 +6026,40 @@
         "permalink": "/docs/reference/core-api",
         "title": "Core API",
         "visibility": "public",
-        "fingerprint": "18d46add93dff40364169c8c495daa939a554503c442f2aeb3fce86dff96e2fb",
-        "contentFingerprint": "7e1e502df384ef19345f027b6ef8846fabd32db744860b8ce04f491cb3a23d23"
+        "fingerprint": "3fa9c5a04510fd901ee7b12de88820882e4aeb899c16a1782a795f0a45e19ec9",
+        "contentFingerprint": "0602f7b477a0c2a8c01153f526fb6bd6c9aa6c24b6e38072655a40b7a1326baa"
       },
       {
         "slug": "docs/reference/core-api.ja",
         "permalink": "/ja/docs/reference/core-api",
         "title": "Core API",
         "visibility": "public",
-        "fingerprint": "ed98bb0957f9ff4604bb83186fda6fa922da966d385d0d4f6b1eb247c1e1b636",
-        "contentFingerprint": "43f21ec9b2fa42034497fd41167008d8ed405d7122ede8be38cb0b2e1abc9e6b"
+        "fingerprint": "2e2bb15c44f154757060eb5355fb024989cff1fd6e5adb9ebcc060684ae7ad9f",
+        "contentFingerprint": "cbb9691a64b38d5056547ea53746df4ae75fa531101ff8fc44924a300bc20307"
       },
       {
         "slug": "docs/reference/packages",
         "permalink": "/docs/reference/packages",
         "title": "Packages",
         "visibility": "public",
-        "fingerprint": "eb5b861499d290f720fa7248bc336dde107989bf01c0cbc396345b34edb44849",
-        "contentFingerprint": "390f5a1e2beba5b36983879e7133dfa0c66e3a134aa71ed104791f83d7f0eeb8"
+        "fingerprint": "d347745ae33a8699cc555329eb4864e55e08359e36eb3ddf43a447015800fe84",
+        "contentFingerprint": "50d48bff14ea834031582d9d9776378edae09aa545c28a147d2464d498721756"
       },
       {
         "slug": "docs/reference/packages.ja",
         "permalink": "/ja/docs/reference/packages",
         "title": "公開パッケージ",
         "visibility": "public",
-        "fingerprint": "bafbf2c728e837c106c5d49476fd6a858ec5b5c529eed9cec717d30d5ff65673",
-        "contentFingerprint": "27c538405317666033b3940b5c6efd09e58456d89f8434b66d3fe7280a79d9ef"
+        "fingerprint": "5b88e6e4fc602837122d7ed2177084b602d716270c7de09d4f487da33d7d27d1",
+        "contentFingerprint": "344d4be0038c0e55da6009bf06b49e229b5afe80f9ea5391234606c897e73e07"
       },
       {
         "slug": "docs/reference/plugin-api",
         "permalink": "/docs/reference/plugin-api",
         "title": "Plugin System",
         "visibility": "public",
-        "fingerprint": "f92a0772421212bbc370983a10e5b0e3a653aa73db7f50396d377e0e497622ab",
-        "contentFingerprint": "ea1d074ad75d130c4038c8fc855eacb5981b844419dabfe2655f2681e73593ed"
+        "fingerprint": "6b9140b593993a57db5a8b3822cacdd702093619d64ec47f818d6b7060cabb38",
+        "contentFingerprint": "7ccf14c624ba35dd99263dd90993060dbbbb18718e1e1e4c45bf434833c6881f"
       },
       {
         "slug": "docs/reference/plugin-api.ja",
@@ -5802,120 +6082,120 @@
         "permalink": "/ja/docs/reference/plugin-api/basics",
         "title": "基本の契約",
         "visibility": "public",
-        "fingerprint": "a2e93d108da3602e57456078be26cb80f1e7a1c5ca6bb32576a51e6be03fbdbb",
-        "contentFingerprint": "7f09e0653ceee1834a154cbc18f282bb41f27f1c2811e047d0ac9873dec8bd3a"
+        "fingerprint": "becd46512cf170f5da00ffb7e0a5ddf6fabecda110580f595addcb4fc23c6995",
+        "contentFingerprint": "b13521279b3e9ab99393e084e7ca296b8f708375f468b601c0ad858854486668"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing",
         "permalink": "/docs/reference/plugin-api/content-processing",
         "title": "Content processing",
         "visibility": "public",
-        "fingerprint": "8c6c9483e34ef392722994e887a6e71d656cd2c7cda98530696668b3ae6ef503",
-        "contentFingerprint": "f52d9d2bd1b607273db660b9a74b747c637a94277245cf780a893b885b65de93"
+        "fingerprint": "53f99051841960f77762d0dc121e3e167a749b8a82b9bdf34f452cdb5dfadcbe",
+        "contentFingerprint": "f18a72b8fe25ea992e589f88d184cfc7d8ff3f5da547ebcf39b1c8ad0774a7ea"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing.ja",
         "permalink": "/ja/docs/reference/plugin-api/content-processing",
         "title": "コンテンツ処理",
         "visibility": "public",
-        "fingerprint": "006104f75e48e3ed59e07f6e978c21b3f12ba72289afbafd27d10cd7a1ac3e06",
-        "contentFingerprint": "d8999324610a4b459efb9263769de722db39da1c72cb84b5fa2d7dda2d7dc0f5"
+        "fingerprint": "b171f51e97eb59c2613304cc25d87b5a377157c7c51946776d73ac7d0682d155",
+        "contentFingerprint": "f9dc4839ddb7efbab1478d9779438ea644eb40181ee520fa83da069b27c383a2"
       },
       {
         "slug": "docs/reference/plugin-api/distribution",
         "permalink": "/docs/reference/plugin-api/distribution",
         "title": "Distribution and package layout",
         "visibility": "public",
-        "fingerprint": "8ae6614b7760f449733ba23a0a79b64cfdcc5025d532b6eeef030e7a87ef2605",
-        "contentFingerprint": "09c93bd2a1f02d431ab081f6e6646ec5f5e545cbc216225cbee6cef85fc71bbc"
+        "fingerprint": "cf12d7ebde1fe025daf4eff18790b3bf00b9e34b9fdff71950727e40761aefc1",
+        "contentFingerprint": "61d84b92da3a638933034dbba0935c755d04daa339776317c4ba513a678458d5"
       },
       {
         "slug": "docs/reference/plugin-api/distribution.ja",
         "permalink": "/ja/docs/reference/plugin-api/distribution",
         "title": "配布とパッケージ構成",
         "visibility": "public",
-        "fingerprint": "e3d63625ffaf8f657ac046d6b9c4417c0290b4818ec5c7705744aac41d6f6a3f",
-        "contentFingerprint": "217a83034fc30308e5b58b25480bbe8a890b50b6dc62e0b4ba205ec7daa203b1"
+        "fingerprint": "b9f2dd9305ff00a2747c5e9ded4331620d8dc4ba793f5a067938ef9df5412cad",
+        "contentFingerprint": "4822ef1f17f4c84eb7b1709f22ca7a820056e6853da545f4fb197010742dd104"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets",
         "permalink": "/docs/reference/plugin-api/ui-and-assets",
         "title": "UI, assets, and runtime",
         "visibility": "public",
-        "fingerprint": "714855bd6a29c7bbf18963461606019d30449bd72642abf1a459f959bdfc41e8",
-        "contentFingerprint": "f901901fef7d4a69a18e85018cf10aa452d6048e4f6fed9e2acc1ffbe87f44c3"
+        "fingerprint": "0924fb792a17ebad34be2f6885df53a3dbe6edc30a145737d36983b0cc344758",
+        "contentFingerprint": "8db2ba243fcc0fa4f06df162f11803ad3611ca6201159c83aa6933f9f085bb81"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets.ja",
         "permalink": "/ja/docs/reference/plugin-api/ui-and-assets",
         "title": "UI・アセット・実行時連携",
         "visibility": "public",
-        "fingerprint": "faf8555e61e1ff6110e8705733c599948ec37e80505ccf523580a0c44e85844c",
-        "contentFingerprint": "c929d802e6efa36b3b16d00054ad7e6c2962249d5d7c1d9e39a4a8db86298eba"
+        "fingerprint": "77ce4138a7f38c6e7e69f88783f32b7819b6a435a349583ebb8e1f26feef0ad3",
+        "contentFingerprint": "edfa11004afed8a02fa47b18644685255d03d7c9f891cd74483941bbf7b8945b"
       },
       {
         "slug": "docs/reference/preview",
         "permalink": "/docs/reference/preview",
         "title": "Preview API",
         "visibility": "public",
-        "fingerprint": "ec6328e70b558c58b6d6846772bcda97d28c26b9ebe2d986bb9d212acfa02eee",
-        "contentFingerprint": "b3cabf80fa664d27f507f8ae63bb298ae9114159facbe6cf974d6405f9020d83"
+        "fingerprint": "027285d08a67fb32b75c2d69b315514e07ab6bf37f5983e46f2e1a9e1d0d9207",
+        "contentFingerprint": "6b910bccd524bffb3705c1149fcd8dac95fb41ea6504927c62b1bb0fe453dbd1"
       },
       {
         "slug": "docs/reference/preview.ja",
         "permalink": "/ja/docs/reference/preview",
         "title": "プレビュー API",
         "visibility": "public",
-        "fingerprint": "0265ba40afbbedd5e6d1696c047bc85fccacfb1313929178619b4d8fc768372f",
-        "contentFingerprint": "28e8bb2d06f165b54fceb04f3e578d94f818fe7435b3f60dc5278b2107d9ab4d"
+        "fingerprint": "51517ee62d29b8f45a1c23426413f9261ce0c2b9f05bd1beb290a9849ef9e56d",
+        "contentFingerprint": "062a05e66e878f5c077a6277b109a6df44242f036035799db6cf55ddbeda3fea"
       },
       {
         "slug": "docs/reference/README",
         "permalink": "/docs/reference/",
         "title": "Reference",
         "visibility": "public",
-        "fingerprint": "13222fe0282033c928b57ed8850e3f5314f32fb2c6139f9a0cba8f3a5a930e77",
-        "contentFingerprint": "dcad1e4ce666e37bda67b331de5139c69c812a528c0db45cb70118c6d11043e1"
+        "fingerprint": "a083e2c1f66dbb50624ea5871b83ef99963ceda0500d14bc9d87d09bc1ee3292",
+        "contentFingerprint": "5ed25b84c2cb0d93f6457fb0f04a3d8afd365bd494043e1fa88ccbfa1d7302b1"
       },
       {
         "slug": "docs/reference/README.ja",
         "permalink": "/ja/docs/reference/",
         "title": "リファレンス",
         "visibility": "public",
-        "fingerprint": "9e5189520d8da67542df1fba46c23753dba4fc1a67f847820a2869a263ad28fd",
-        "contentFingerprint": "72f7db7c767239f9ca4b1a43cc44248624a77799c28f14b901b44b3fdd192abc"
+        "fingerprint": "2e737e7adef18c78b3e852a24e1ddb8347362cd1ad42bac1836f4c8ee466bab5",
+        "contentFingerprint": "e55d3d2f905454dfa550c0f66c0ed45cf93ea6aba038db77d69150a29c85b32f"
       },
       {
         "slug": "docs/reference/theme-api",
         "permalink": "/docs/reference/theme-api",
         "title": "Theme API",
         "visibility": "public",
-        "fingerprint": "53c025180a6ca72ef84745dc5e6f8494e48fab13f4196689e2fab0e7ea8001cd",
-        "contentFingerprint": "489a02dc84803b3e4698555085e7d093921c955c88a2272e235ac3dfa96ad503"
+        "fingerprint": "b21226c0bae87145c7e0b5a2e39854b5aad25109f0ca736bcc4da593b207b6ad",
+        "contentFingerprint": "a3377ff4896821ed2c5816289541a8695f1df5af13a6dcffcda6477b24f093d0"
       },
       {
         "slug": "docs/reference/theme-api.ja",
         "permalink": "/ja/docs/reference/theme-api",
         "title": "テーマ API",
         "visibility": "public",
-        "fingerprint": "61b8a71baf69f3f9512f7eb356abae14375bb53c226e5c2d853010a3164cd3cf",
-        "contentFingerprint": "0c2f810ad53d29ce5102d68a502ee8cddd025145a5f8269ceb162a7625095ceb"
+        "fingerprint": "f45c834c8aeac66735063acab079054612bc1cce617605ea1a73661573eedfc0",
+        "contentFingerprint": "648b43c8e0218cf1b4980b51dc03a247175b1a45c49456d9d487d4876358715a"
       },
       {
         "slug": "docs/releases",
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "8cf47808bd5e429b2651b527a2faf78dd21be07d7b63c5b0dd0003a2f12443dd",
-        "contentFingerprint": "6eeb760d992665742f990c535ce8967244bf5bb900d04d65bbcda29f2d07e5de"
+        "fingerprint": "dc510cc6593940882e754e11f5fdfc9b91b9189b660c044b4ae090323da4a94b",
+        "contentFingerprint": "ac7de14fddf9850fe9b14f879ef7755a76165bf84ce0a924018f65ea2b4020e8"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "413ebabadfce1309eaefd23cba227eb81428f3799a6a36564cf965bb23acb1af",
-        "contentFingerprint": "5bff98aa5ed2846e64c0f83d0a2308e52ea1d9a72ace61dbd63429e41dfe64a2"
+        "fingerprint": "792d5bb056528f083bcbf07c7ab8e375408d42fd3f165d8cbd03e5cdd4f6e489",
+        "contentFingerprint": "de721c6e77dad85aeeb97eca7cf34d4f08b27336f8c0475ba420ca018573d5c6"
       },
       {
         "slug": "docs/security",
@@ -5930,8 +6210,8 @@
         "permalink": "/ja/docs/security",
         "title": "セキュリティモデル",
         "visibility": "public",
-        "fingerprint": "32aa8fb62e23265f205d2ad4245820d1468293464b4ec7c70815b3fcb24a6608",
-        "contentFingerprint": "223a6b8541dcf1f6e167e905203ca999e38efc65b8df900794d434e740dd4402"
+        "fingerprint": "93ccb6e3772514c7577e98c1bc7d131455bc3f31c47877c2b62f5e81ae095da0",
+        "contentFingerprint": "aeb6ef2e2af4d0cb8f1758facaabdbc4c88779c18c9e100b7beb3fe748908f59"
       },
       {
         "slug": "docs/themes/default",
@@ -6210,8 +6490,8 @@
         "permalink": "/",
         "title": "Riebeckite",
         "visibility": "public",
-        "fingerprint": "af14103eeb66e596bde36748e9bcd220f6dbe278ae2beff9c8e41028d7607e7b",
-        "contentFingerprint": "b8f1d93a554c829ac12c163e328537c55b7180b1e9287a1ab14bb31a456a9b54"
+        "fingerprint": "6368e9fc8f6639086ba02fb28d72ee12ee34ffa1d1a12bdb41d801e8c7e45eb0",
+        "contentFingerprint": "1f0798134ecdc44de6843ef7e66aa73dd328f481c4fd42b16bf187647c4d4476"
       },
       {
         "slug": "index.ja",
@@ -6265,6 +6545,11 @@
         "status": 301
       },
       {
+        "from": "/docs/obsidian-plugin/README",
+        "to": "/docs/obsidian-plugin/",
+        "status": 301
+      },
+      {
         "from": "/docs/plugins/README",
         "to": "/docs/plugins/",
         "status": 301
@@ -6315,6 +6600,11 @@
         "status": 301
       },
       {
+        "from": "/ja/docs/obsidian-plugin/README",
+        "to": "/ja/docs/obsidian-plugin/",
+        "status": 301
+      },
+      {
         "from": "/ja/docs/plugins/README",
         "to": "/ja/docs/plugins/",
         "status": 301
@@ -6340,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "6c71cb4f40443209ec1a5e848a15ce44525874013ae0f4b3b46b1343c5187930",
+    "artifactFingerprint": "5dfa69c1f04b530cb6a579166020bc708806b7c7976160c6e8d1f3acc3128ab5",
     "provider": "cloudflare-workers"
   }
 }

@@ -4,5 +4,4 @@
   width: 100%;
   flex-direction: column;
   align-items: center;
-  padding-block: var(--rb-space-8, 4rem);
 }

@@ -24,10 +24,12 @@ export type CreateRiebeckiteOptions = {
   readonly utilities: readonly ScaffoldUtilityName[];
   readonly listPresets: boolean;
   readonly deployment: ScaffoldDeployment;
+  readonly contentDirectory?: string;
+  readonly customDomain?: string;
 };
 
 export const CREATE_RIEBECKITE_USAGE =
-  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force] [-h | --help]";
+  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force] [-h | --help]";
 
 export function parseArguments(
   arguments_: readonly string[],
@@ -42,6 +44,8 @@ export function parseArguments(
   let cloudflareWorkers = false;
   let contentRepository: string | undefined;
   let siteRepository: string | undefined;
+  let contentDirectory: string | undefined;
+  let customDomain: string | undefined;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -71,6 +75,31 @@ export function parseArguments(
       }
       if (argument === "--content-repository") contentRepository = value;
       else siteRepository = value;
+      index += 1;
+      continue;
+    }
+    if (argument === "--content-directory") {
+      const value = arguments_[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new Error("--content-directory requires a relative path.");
+      }
+      if (value.startsWith("/") || /^[A-Za-z]:[\\/]/.test(value)) {
+        throw new Error("--content-directory must be relative to the project.");
+      }
+      contentDirectory = value;
+      index += 1;
+      continue;
+    }
+    if (argument === "--domain") {
+      const value = arguments_[index + 1];
+      if (
+        value === undefined ||
+        !/^[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?$/.test(value) ||
+        !value.includes(".")
+      ) {
+        throw new Error("--domain requires a hostname such as example.com.");
+      }
+      customDomain = value;
       index += 1;
       continue;
     }
@@ -124,6 +153,8 @@ export function parseArguments(
     ...(features ? { features } : {}),
     utilities: utilities ?? SCAFFOLD_DEFAULT_UTILITIES,
     listPresets,
+    ...(contentDirectory === undefined ? {} : { contentDirectory }),
+    ...(customDomain === undefined ? {} : { customDomain }),
     deployment: scaffoldDeploymentFromFlags({
       githubActions,
       cloudflareWorkers,

@@ -27,7 +27,7 @@ npx create-riebeckite
 - **What would you like to build?**（[[glossary/preset|プリセット]]）：迷ったら `Starter site`（`starter` プリセット）のまま。記事、タグ、シリーズを公開するなら `Blog` を選びます。[Presets](./presets.ja.md) を参照
 - **Add optional feature packs?**：追加したい機能パックがなければ、`No` のまま Enter を押します
 - **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
-- **Where will you write content?**：`This project` を選んで Markdown をサイトのフォルダ内に残します
+- **Where will you write content?**：`This project` ならサイト内の `content/`、`Separate directory in this repository` ならサイトの隣の Vault（例：`../vault`）、`Separate GitHub repository` なら別リポジトリにコンテンツを置きます
 - **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。`main` への push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.ja.md) を参照
 - **Install dependencies now?**：既定値の `Yes` のまま Enter を押すと、生成されたサイトの package もインストールされます
 
@@ -123,6 +123,9 @@ npm exec -- riebeckite publish run --execute --force
 ## 次に読むページ
 
 - [Deployment](./deployment.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
+- [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較する
+- [コンテンツの場所](./content-location.ja.md) - Markdown の置き場所と `content.directory` を決める
+- [一体型](./integrated-setup.ja.md)・[ディレクトリ分離型](./separate-directories-setup.ja.md)・[リポジトリ分離型](./separate-repositories-setup.ja.md) - 公式サンプル付きの完全な手順
 - [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`minimal`、`showcase`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説

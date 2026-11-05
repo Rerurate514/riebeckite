@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "riebeckite-site",
+  "name": "deploy-github-actions",
   "compatibility_date": "2026-06-09",
   "compatibility_flags": [
     "nodejs_compat"

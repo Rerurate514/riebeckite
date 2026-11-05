@@ -50,7 +50,7 @@ The command:
 2. Checks that the GitHub CLI (`gh`) is installed and logged in.
 3. Creates `.github/workflows/publish.yml` from the same template when it does not exist. An existing non-Riebeckite workflow is reported and never overwritten; the command then stops before registering secrets.
 4. Reads the Cloudflare account from your Wrangler login, asking you to choose when there is more than one.
-5. Registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. The token is read from a hidden prompt, or from `CLOUDFLARE_API_TOKEN` in the environment for non-interactive use.
+5. Registers `CLOUDFLARE_API_TOKEN` as a repository secret and `CLOUDFLARE_ACCOUNT_ID` as a repository variable. The token is read from a hidden prompt, or from `CLOUDFLARE_API_TOKEN` in the environment for non-interactive use. Older GitHub CLI versions that cannot manage variables fall back to a secret.
 
 It does not create a GitHub repository and does not push. When it finishes, push to deploy:
 
@@ -65,8 +65,8 @@ Run it again any time. A matching workflow and existing secrets are detected and
 To deploy from GitHub Actions you need:
 
 - `package-lock.json`
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` (secret)
+- `CLOUDFLARE_ACCOUNT_ID` (variable)
 - For `deploy setup`: the GitHub CLI (`gh`) installed and logged in, plus Wrangler in the project (Local-first sites already have it)
 
 ### `package-lock.json`
@@ -74,10 +74,10 @@ To deploy from GitHub Actions you need:
 The generated workflow installs dependencies with:
 
 ```sh
-npm ci
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-So commit `package-lock.json` to the repository.
+Commit `package-lock.json` so CI uses the same dependency versions as local development.
 
 ```text
 package.json
@@ -88,7 +88,7 @@ npm ci
 the same dependencies installed in CI
 ```
 
-Without `package-lock.json`, the generated workflow's `npm ci` cannot be used as-is.
+Without `package-lock.json`, the workflow falls back to `npm install` and may resolve newer versions.
 
 ## Put the repository on GitHub
 
@@ -141,8 +141,8 @@ Both come from Cloudflare.
 
 1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com/) and open **My Profile** from the account menu in the top right. You can also open [API Tokens](https://dash.cloudflare.com/profile/api-tokens) directly.
 2. Choose **Create Token** → **Create Custom Token**.
-3. Under **Permissions**, add **Account** / **Workers Scripts** / **Edit**.
-4. Under **Account Resources**, include your account.
+3. Under **Permissions**, add **Account** / **Workers Scripts** / **Edit**, **Zone** / **Workers Routes** / **Edit**, and **Zone** / **Zone** / **Read**.
+4. Under **Account Resources**, include your account. Under **Zone Resources**, include the zone that owns the custom domain. A Workers custom domain creates its DNS record, so **DNS:Edit** is not required.
 5. Press **Continue to review** → **Create Token**.
 6. Copy the token value that is shown. Once you close this screen, the value is never shown again.
 
@@ -160,12 +160,14 @@ https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages
 
 ### Register them in GitHub
 
-On the GitHub site repository, open **Settings** → **Secrets and variables** → **Actions** → **New repository secret**, and register each name and value:
+On the GitHub site repository, open **Settings** → **Secrets and variables** → **Actions**. Add the token as a **secret** and the account ID as a **variable**:
 
 ```text
-Name: CLOUDFLARE_API_TOKEN   Value: the token you copied
-Name: CLOUDFLARE_ACCOUNT_ID  Value: the ACCOUNT_ID above
+Secret:   CLOUDFLARE_API_TOKEN   Value: the token you copied
+Variable: CLOUDFLARE_ACCOUNT_ID  Value: the ACCOUNT_ID above
 ```
+
+`CLOUDFLARE_ACCOUNT_ID` is not a credential. Keeping it as a variable makes the workflow easier to inspect and avoids treating public information as a secret.
 
 `riebeckite deploy setup` automates these two registrations for a site that is already a Git repository, using the account from your Wrangler login and a token you paste into a hidden prompt. Follow the manual steps above when you prefer to add the secrets by hand or when the CLI is unavailable.
 
@@ -173,15 +175,17 @@ The workflow reads them from the GitHub repository's Actions:
 
 ```mermaid
 flowchart LR
-    Secrets["GitHub Secrets<br/>CLOUDFLARE_API_TOKEN<br/>CLOUDFLARE_ACCOUNT_ID"]
+    Secrets["GitHub Secrets<br/>CLOUDFLARE_API_TOKEN"]
+    Variables["GitHub Variables<br/>CLOUDFLARE_ACCOUNT_ID"]
     Actions["GitHub Actions"]
     Cloudflare["Cloudflare Workers"]
 
     Secrets --> Actions
+    Variables --> Actions
     Actions --> Cloudflare
 ```
 
-Do not put these directly in source code or `riebeckite.config.ts`; manage them as repository secrets.
+Do not put these directly in source code or `riebeckite.config.ts`. Keep the token in repository secrets; the account ID can be a repository variable.
 
 ## When the workflow runs
 

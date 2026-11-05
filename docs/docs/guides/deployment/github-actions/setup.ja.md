@@ -50,7 +50,7 @@ npm exec riebeckite deploy setup
 2. GitHub CLI（`gh`）がインストール済みで、ログイン済みか確認する
 3. `.github/workflows/publish.yml` がなければ、同じテンプレートから作成する。Riebeckite 以外の既存ワークフローは上書きせず、検出した旨を報告して、シークレットの登録に進む前に停止する
 4. Wrangler のログイン状態から Cloudflare アカウントを取得する。複数ある場合は選択する
-5. `CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリシークレットとして登録する。トークンは入力内容が表示されないプロンプト、または非対話実行用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る
+5. `CLOUDFLARE_API_TOKEN` をリポジトリシークレット、`CLOUDFLARE_ACCOUNT_ID` をリポジトリ変数として登録する。トークンは入力内容が表示されないプロンプト、または非対話実行用の環境変数 `CLOUDFLARE_API_TOKEN` から読み取る。変数を管理できない古い GitHub CLI ではシークレットにフォールバックする
 
 GitHub リポジトリの作成やプッシュは行いません。処理が完了したら、次のコマンドでデプロイします。
 
@@ -65,21 +65,21 @@ git push
 GitHub Actions からデプロイするには、次のものが必要です。
 
 - `package-lock.json`
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` (secret)
+- `CLOUDFLARE_ACCOUNT_ID` (variable)
 - `deploy setup` を使う場合は、GitHub CLI（`gh`）のインストールとログイン、およびプロジェクト内の Wrangler（Local-first のサイトには含まれています）
 
 ### `package-lock.json`
 
 生成されるワークフローは、次のコマンドで依存パッケージをインストールします。
 
-```sh id="8ihzjv"
-npm ci
+```sh
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-そのため、`package-lock.json` をリポジトリにコミットしてください。
+ローカルと同じ依存バージョンで CI を動かすため、`package-lock.json` をリポジトリにコミットしてください。
 
-```text id="3oyv7c"
+```text
 package.json
 package-lock.json
       ↓
@@ -88,7 +88,7 @@ npm ci
 CI でも同じ依存関係がインストールされる
 ```
 
-`package-lock.json` がないと、生成されたワークフローの `npm ci` をそのまま使えません。
+`package-lock.json` がない場合、ワークフローは `npm install` にフォールバックし、新しいバージョンを解決することがあります。
 
 ## リポジトリを GitHub に置く
 
@@ -141,8 +141,8 @@ CLOUDFLARE_ACCOUNT_ID
 
 1. [Cloudflare ダッシュボード](https://dash.cloudflare.com/) にログインし、右上のアカウントメニューから **My Profile** を開きます。[API Tokens](https://dash.cloudflare.com/profile/api-tokens) を直接開いてもかまいません。
 2. **Create Token** → **Create Custom Token** を選びます。
-3. **Permissions** で **Account** / **Workers Scripts** / **Edit** を追加します。
-4. **Account Resources** に自分のアカウントを含めます。
+3. **Permissions** で **Account** / **Workers Scripts** / **Edit**、**Zone** / **Workers Routes** / **Edit**、**Zone** / **Zone** / **Read** を追加します。
+4. **Account Resources** に自分のアカウントを含めます。**Zone Resources** にはカスタムドメインのゾーンを含めます。Workers のカスタムドメインは DNS レコードを自動で作るため、**DNS:Edit** は不要です。
 5. **Continue to review** → **Create Token** を押します。
 6. 表示されたトークンの値をコピーします。この画面を閉じると、値は二度と表示されません。
 
@@ -160,28 +160,32 @@ https://dash.cloudflare.com/<ACCOUNT_ID>/workers-and-pages
 
 ### GitHub に登録する
 
-GitHub のサイトリポジトリで **Settings** → **Secrets and variables** → **Actions** → **New repository secret** を開き、名前と値をそれぞれ登録します。
+GitHub のサイトリポジトリで **Settings** → **Secrets and variables** → **Actions** を開きます。トークンは **secret**、アカウント ID は **variable** として登録します。
 
 ```text
-名前: CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
-名前: CLOUDFLARE_ACCOUNT_ID  値: 上の ACCOUNT_ID
+Secret:   CLOUDFLARE_API_TOKEN   値: 上でコピーしたトークン
+Variable: CLOUDFLARE_ACCOUNT_ID  値: 上の ACCOUNT_ID
 ```
+
+`CLOUDFLARE_ACCOUNT_ID` は認証情報ではありません。変数にしておくとワークフローを確認しやすく、公開情報をシークレットとして扱わずに済みます。
 
 `riebeckite deploy setup` を使うと、すでに Git リポジトリになっているサイトでこの2つの登録を自動化できます。Wrangler のログインからアカウントを取得し、トークンは入力内容が表示されないプロンプトに貼り付けます。シークレットを手動で登録したい場合や、CLI を使えない場合は、上記の手順をそのまま利用してください。
 
-ワークフローは、GitHub リポジトリの Actions に登録したこれらのシークレットを参照します。
+ワークフローは、GitHub リポジトリの Actions に登録した secret と variable を参照します。
 
-```mermaid id="ngbty6"
+```mermaid
 flowchart LR
-    Secrets["GitHub Secrets<br/>CLOUDFLARE_API_TOKEN<br/>CLOUDFLARE_ACCOUNT_ID"]
+    Secrets["GitHub Secrets<br/>CLOUDFLARE_API_TOKEN"]
+    Variables["GitHub Variables<br/>CLOUDFLARE_ACCOUNT_ID"]
     Actions["GitHub Actions"]
     Cloudflare["Cloudflare Workers"]
 
     Secrets --> Actions
+    Variables --> Actions
     Actions --> Cloudflare
 ```
 
-これらの値はソースコードや `riebeckite.config.ts` に直接書かず、リポジトリシークレットとして管理してください。
+これらの値はソースコードや `riebeckite.config.ts` に直接書かないでください。トークンはリポジトリシークレット、アカウント ID はリポジトリ変数で管理します。
 
 ## ワークフローが実行されるタイミング
 

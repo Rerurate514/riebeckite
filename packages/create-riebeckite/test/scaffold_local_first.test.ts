@@ -6,7 +6,6 @@ import { withTemporaryDirectory } from "@riebeckite/test/fixtures";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import {
   CLOUDFLARE_WORKERS_DEFAULTS,
-  DEFAULT_WORKER_NAME,
   WRANGLER_VERSION,
   workerNameFromDirectory,
 } from "../src/scaffold/wrangler-defaults.js";
@@ -69,6 +68,44 @@ test("local-first scaffold works without a custom domain", async () => {
   });
 });
 
+test("local-first scaffold adds the custom domain route", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "docs");
+    await scaffoldRiebeckiteSite({
+      targetDirectory,
+      deployment: { type: "cloudflare-workers" },
+      customDomain: "docs.example.com",
+    });
+
+    const config = await readJson<{
+      routes?: readonly { pattern: string; custom_domain?: boolean }[];
+    }>(targetDirectory, "wrangler.jsonc");
+
+    assert.deepEqual(config.routes, [
+      { pattern: "docs.example.com", custom_domain: true },
+    ]);
+  });
+});
+
+test("scaffold reads content from a separate directory without generating starter pages", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const targetDirectory = path.join(directory, "site");
+    await scaffoldRiebeckiteSite({
+      targetDirectory,
+      deployment: { type: "github-actions", content: { type: "local" } },
+      contentDirectory: "../vault",
+    });
+
+    const config = await fs.readFile(
+      path.join(targetDirectory, "riebeckite.config.ts"),
+      "utf8",
+    );
+    assert.ok(config.includes('directory: "../vault"'));
+    assert.equal(await fileExists(targetDirectory, "content/index.md"), false);
+    assert.equal(await fileExists(targetDirectory, "content"), false);
+  });
+});
+
 test("local-first scaffold adds wrangler and no GitHub Actions workflow", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "docs");
@@ -107,7 +144,7 @@ test("scaffold without deployment options omits wrangler entirely", async () => 
   });
 });
 
-test("GitHub Actions scaffold keeps the shared Worker name and no local wrangler", async () => {
+test("GitHub Actions scaffold names the Worker after the project and keeps no local wrangler", async () => {
   await withTemporaryDirectory(async (directory) => {
     const targetDirectory = path.join(directory, "docs");
     await scaffoldRiebeckiteSite({
@@ -123,7 +160,7 @@ test("GitHub Actions scaffold keeps the shared Worker name and no local wrangler
       devDependencies?: Record<string, string>;
     }>(targetDirectory, "package.json");
 
-    assert.equal(config.name, DEFAULT_WORKER_NAME);
+    assert.equal(config.name, workerNameFromDirectory("docs"));
     assert.equal(manifest.devDependencies?.wrangler, undefined);
   });
 });

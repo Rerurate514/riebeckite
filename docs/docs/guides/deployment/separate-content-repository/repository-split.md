@@ -118,10 +118,10 @@ If article updates dominate, Option 1 is the easier fit; if you want the history
 
 - `github.token` is scoped to the current repository. It can read another **public** GitHub repository, but cannot read a different private or internal repository.
 - For a private/internal vault, register `RIEBECKITE_CONTENT_READ_TOKEN` in the site repository. Use a fine-grained PAT restricted to the vault with **Contents: read**, or an equivalent read-only GitHub App installation token.
-- The content notification needs a separate `SITE_DISPATCH_TOKEN` stored only in the content repository. Restrict a fine-grained PAT to the site repository with **Contents: read and write**; classic PATs require `repo` scope and GitHub App tokens require **Contents: write**.
+- The content notification prefers a GitHub App installed only on the site repository with **Contents: read and write** and **Metadata: read-only**. Store `RIEBECKITE_APP_ID` and `RIEBECKITE_APP_PRIVATE_KEY` in the content repository; the workflow mints a short-lived token. If you cannot use an App, store `SITE_DISPATCH_TOKEN` there instead: a fine-grained PAT limited to the site repository with **Contents: read and write** (classic PATs need `repo` scope).
 - If the submodule was added with an SSH URL (`git@github.com:...`), CI needs an SSH key. Switching to an HTTPS URL and passing `token:` is simpler to configure.
 
-The read token and the dispatch token serve different directions:
+The read credential and the dispatch credential serve different directions:
 
 ```mermaid
 flowchart LR
@@ -136,7 +136,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     Content["Content repository"]
-    Token["SITE_DISPATCH_TOKEN"]
+    Token["GitHub App token<br/>or SITE_DISPATCH_TOKEN"]
     Site["Site repository"]
 
     Content --> Token
@@ -147,8 +147,11 @@ flowchart LR
 RIEBECKITE_CONTENT_READ_TOKEN
   → read private content from the site
 
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+  → start the site workflow with a short-lived token
+
 SITE_DISPATCH_TOKEN
-  → start the site workflow from the content repository
+  → fallback when a GitHub App is not available
 ```
 
 Create a PAT from [GitHub Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens), then register the value under each repository's **Settings → Secrets and variables → Actions**.

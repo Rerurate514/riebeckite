@@ -151,7 +151,7 @@ flowchart TD
 | 記事が表示されない | `publish: true`、`visibility`、`publishAt`、`exclude`、`inspect content --list` |
 | `Directory` が意図した Vault を指していない | `inspect config` と相対パスの `directory` |
 | CI で Vault が見つからない | 追加のチェックアウトかサブモジュール |
-| 記事を push してもデプロイされない | `notify-site.yml`、`SITE_DISPATCH_TOKEN`、`repository_dispatch` |
+| 記事を push してもデプロイされない | `notify-site.yml`、GitHub App の Secret（または `SITE_DISPATCH_TOKEN`）、`repository_dispatch` |
 | プライベートの記事をチェックアウトできない | `RIEBECKITE_CONTENT_READ_TOKEN` |
 | 画像が `404` になる | 公開ページからの参照とビルドの出力 |
 | 添付ファイルやメディアが `404` になる | `prebuild` のコピー処理と `public/assets/attachments/` |

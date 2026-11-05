@@ -444,8 +444,8 @@ test("Contract 3: generated site uses npm consistently across all touchpoints", 
     assert.ok(workflow?.includes("cache: npm"), "workflow must use npm cache");
     assert.ok(workflow?.includes("npm ci"), "workflow must use npm ci");
     assert.ok(
-      workflow?.includes("npm exec riebeckite"),
-      "workflow must use npm exec riebeckite",
+      workflow?.includes("npm exec -- riebeckite"),
+      "workflow must use npm exec -- riebeckite",
     );
     assert.ok(!workflow?.includes("pnpm"), "workflow must not reference pnpm");
 

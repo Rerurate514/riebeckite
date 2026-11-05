@@ -57,7 +57,7 @@ flowchart TD
 | Method | Deploy on article push | Needs secrets |
 | --- | ---: | --- |
 | Same repository + `push` | Yes | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
-| Separate repository + `repository_dispatch` | Yes | Above + `SITE_DISPATCH_TOKEN` (content repo) and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
+| Separate repository + `repository_dispatch` | Yes | Above + GitHub App secrets (or `SITE_DISPATCH_TOKEN`) in the content repo, and `RIEBECKITE_CONTENT_READ_TOKEN` in the site repo if private |
 | Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
 | Manual dispatch | No | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
 | Local, from your machine (`npm exec -- riebeckite publish run --execute`) | No | None for Cloudflare Workers (Wrangler OAuth); Netlify needs `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`, Vercel needs `VERCEL_TOKEN` |

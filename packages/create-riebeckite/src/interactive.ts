@@ -25,7 +25,7 @@ import {
 const DEFAULT_DIRECTORY = "my-riebeckite-site";
 const DEFAULT_INTERACTIVE_DEPLOYMENT: InteractiveDeployment = "none";
 
-type InteractiveContentSource = "local" | "external";
+type InteractiveContentSource = "local" | "directory" | "external";
 
 type InteractiveDeployment = "cloudflare" | "github-actions" | "none";
 
@@ -35,7 +35,8 @@ type InteractiveAnswers =
       readonly preset: ScaffoldPresetName;
       readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
-      readonly contentSource: "local";
+      readonly contentSource: "local" | "directory";
+      readonly contentDirectory?: string;
       readonly deployment: InteractiveDeployment;
     }
   | {
@@ -63,6 +64,10 @@ export function interactiveAnswersToOptions(
     ...(answers.features ? { features: answers.features } : {}),
     utilities: answers.utilities,
     listPresets: false,
+    ...(answers.contentSource === "directory" &&
+    answers.contentDirectory !== undefined
+      ? { contentDirectory: answers.contentDirectory }
+      : {}),
     deployment: deploymentFromAnswers(answers),
   };
 }
@@ -156,12 +161,27 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     initialValue: "local",
     options: [
       { value: "local", label: "This project" },
+      {
+        value: "directory",
+        label: "Separate directory in this repository",
+        hint: "For example, site/ + vault/",
+      },
       { value: "external", label: "Separate GitHub repository" },
     ],
   });
   if (isCancel(contentSource)) return null;
 
+  let contentDirectory: string | undefined;
   let answers: InteractiveAnswers;
+  if (contentSource === "directory") {
+    const directoryInput = await text({
+      message: "Content directory",
+      placeholder: "../vault",
+      defaultValue: "../vault",
+    });
+    if (isCancel(directoryInput)) return null;
+    contentDirectory = directoryInput.trim() || "../vault";
+  }
   if (contentSource === "external") {
     log.info(
       "Separate repositories use GitHub Actions so content updates can trigger site deployments.",
@@ -210,6 +230,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       features,
       utilities,
       contentSource,
+      ...(contentDirectory === undefined ? {} : { contentDirectory }),
       deployment,
     };
   }

@@ -131,16 +131,25 @@ function notifySiteWorkflow(siteRepository: string): string {
     .join(repository);
 }
 
-function wranglerJsoncFile(workerName: string): SiteTemplateFile {
+function wranglerJsoncFile(
+  workerName: string,
+  customDomain?: string,
+): SiteTemplateFile {
   return {
     path: "wrangler.jsonc",
-    content: buildWranglerConfig(workerName),
+    content: buildWranglerConfig(workerName, customDomain),
   };
 }
+
+export type ScaffoldDeploymentTemplateOptions = {
+  readonly workerName?: string;
+  readonly customDomain?: string;
+};
 
 export function deploymentTemplateFiles(
   content: ScaffoldContentSource,
   schedule?: ScaffoldPublicationSchedule,
+  options: ScaffoldDeploymentTemplateOptions = {},
 ): readonly SiteTemplateFile[] {
   if (content.type === "external") {
     assertGitHubRepository(content.contentRepository, "--content-repository");
@@ -148,7 +157,10 @@ export function deploymentTemplateFiles(
   }
 
   const files: SiteTemplateFile[] = [
-    wranglerJsoncFile(DEFAULT_WORKER_NAME),
+    wranglerJsoncFile(
+      options.workerName ?? DEFAULT_WORKER_NAME,
+      options.customDomain,
+    ),
     {
       path: ".github/workflows/publish.yml",
       content: deploymentWorkflow(content, schedule),

@@ -215,6 +215,15 @@ export async function runDeploySetup(
     );
   }
   const secretNames = parseSecretNames(secretListResult.stdout);
+  const variableListResult = await runner.run(
+    "gh",
+    ["variable", "list", "--repo", confirmedRepository, "--json", "name"],
+    { cwd: repoRoot },
+  );
+  const variableNames =
+    variableListResult.code === 0
+      ? parseSecretNames(variableListResult.stdout)
+      : undefined;
 
   const actionsEnabled = await detectActionsEnabled(
     runner,
@@ -256,15 +265,32 @@ export async function runDeploySetup(
   }
   const account = await selectCloudflareAccount(accounts, env, prompts);
 
-  await registerSecret(
-    runner,
-    repoRoot,
-    confirmedRepository,
-    secretNames,
-    GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
-    account.id,
-    writeLine,
-  );
+  if (variableNames?.has(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID)) {
+    writeLine(
+      `✓ ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID} already configured`,
+    );
+  } else if (variableNames === undefined) {
+    writeLine(
+      "GitHub CLI cannot manage Actions variables. Update gh, or register the account id as a secret.",
+    );
+    await registerSecret(
+      runner,
+      repoRoot,
+      confirmedRepository,
+      secretNames,
+      GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
+      account.id,
+      writeLine,
+    );
+  } else {
+    await registerVariable(
+      runner,
+      repoRoot,
+      confirmedRepository,
+      account.id,
+      writeLine,
+    );
+  }
 
   if (secretNames.has(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN)) {
     writeLine(
@@ -585,6 +611,25 @@ async function registerSecret(
   );
   if (result.code !== 0) {
     throw new GitHubSecretError(`Could not register the ${name} secret.`);
+  }
+  writeLine(`✓ ${name} configured`);
+}
+
+async function registerVariable(
+  runner: CommandRunner,
+  cwd: string,
+  repository: string,
+  value: string,
+  writeLine: (line: string) => void,
+): Promise<void> {
+  const name = GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID;
+  const result = await runner.run(
+    "gh",
+    ["variable", "set", name, "--repo", repository, "--body", value],
+    { cwd },
+  );
+  if (result.code !== 0) {
+    throw new GitHubSecretError(`Could not register the ${name} variable.`);
   }
   writeLine(`✓ ${name} configured`);
 }

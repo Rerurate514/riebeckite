@@ -6,7 +6,6 @@ import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
 import { SCAFFOLD_DEFAULT_PRESET } from "../src/scaffold/presets.js";
 import {
   CLOUDFLARE_WORKERS_DEFAULTS,
-  DEFAULT_WORKER_NAME,
   GITHUB_ACTIONS_SECRETS,
   GITIGNORE_FORBIDDEN,
   GITIGNORE_REQUIRED,
@@ -24,7 +23,7 @@ test("generated wrangler.jsonc matches canonical defaults", async () => {
     assert.ok(content, "wrangler.jsonc must be generated");
     const wrangler = JSON.parse(content);
     assert.equal(wrangler.$schema, CLOUDFLARE_WORKERS_DEFAULTS.$schema);
-    assert.equal(wrangler.name, DEFAULT_WORKER_NAME);
+    assert.equal(wrangler.name, "test-site");
     assert.equal(
       wrangler.compatibility_date,
       CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
@@ -49,7 +48,12 @@ test("generated workflow includes required secret names", async () => {
     assert.ok(workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN));
     assert.ok(workflow.includes(GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID));
     assert.ok(workflow.includes("secrets.CLOUDFLARE_API_TOKEN"));
+    assert.ok(workflow.includes("vars.CLOUDFLARE_ACCOUNT_ID"));
     assert.ok(workflow.includes("secrets.CLOUDFLARE_ACCOUNT_ID"));
+    assert.ok(
+      workflow.includes('wranglerVersion: "4"'),
+      "wrangler-action must use Wrangler 4's assets-only config support",
+    );
   });
 });
 

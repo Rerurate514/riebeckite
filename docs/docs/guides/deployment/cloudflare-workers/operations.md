@@ -102,7 +102,7 @@ If the site is already published from your machine, promote it from the site fol
 npm exec riebeckite deploy setup
 ```
 
-This creates `.github/workflows/publish.yml` and registers `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as repository secrets, then waits for you to push.
+This creates `.github/workflows/publish.yml`, stores `CLOUDFLARE_API_TOKEN` as a repository secret and `CLOUDFLARE_ACCOUNT_ID` as a repository variable, then waits for you to push.
 
 ### When the site and content are in the same repository
 

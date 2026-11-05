@@ -147,7 +147,7 @@ flowchart TD
 | Articles do not appear | Check `publish: true`, `exclude` patterns, and `inspect content --list` |
 | `Directory` does not point at the intended vault | Check `inspect config` and revisit the relative `directory` |
 | CI build cannot find the vault | Add the extra checkout or submodule support |
-| Content push does not deploy | Check `notify-site.yml`, `SITE_DISPATCH_TOKEN`, and `repository_dispatch` |
+| Content push does not deploy | Check `notify-site.yml`, the GitHub App secrets (or `SITE_DISPATCH_TOKEN`), and `repository_dispatch` |
 | Private content cannot be checked out | Check `RIEBECKITE_CONTENT_READ_TOKEN` |
 | Images 404 after deploy | Confirm a published page references the image and that it is in the build output |
 | Attachments or media 404 after deploy | Confirm the prebuild copy runs before the build and targets `public/assets/attachments/` |

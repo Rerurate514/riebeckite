@@ -15,7 +15,10 @@ import {
 import { resolveScaffoldPreset } from "./presets.js";
 import type { SiteTemplateFile } from "./template_types.js";
 import { siteTemplateFiles } from "./templates.js";
-import { wranglerConfigForDirectory } from "./wrangler-defaults.js";
+import {
+  workerNameFromDirectory,
+  wranglerConfigForDirectory,
+} from "./wrangler-defaults.js";
 
 export {
   deploymentWorkflow,
@@ -89,8 +92,11 @@ export async function scaffoldRiebeckiteSite(
     ...siteTemplateFiles(preset, templateVariables(options, targetDirectory), {
       cloudflareWorkers: deployment.type === "cloudflare-workers",
       utilities: options.utilities,
+      ...(options.contentDirectory === undefined
+        ? {}
+        : { contentDirectory: options.contentDirectory }),
     }),
-    ...deploymentTemplateOrConfig(deployment, targetDirectory),
+    ...deploymentTemplateOrConfig(deployment, targetDirectory, options),
   ];
   await assertTargetWritable(
     targetDirectory,
@@ -103,7 +109,11 @@ export async function scaffoldRiebeckiteSite(
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, file.content);
   }
-  await ensureContentDirectory(targetDirectory, files);
+  await ensureContentDirectory(
+    targetDirectory,
+    files,
+    options.contentDirectory,
+  );
 
   return { targetDirectory, files: files.map((file) => file.path) };
 }
@@ -111,6 +121,7 @@ export async function scaffoldRiebeckiteSite(
 async function ensureContentDirectory(
   targetDirectory: string,
   files: readonly SiteTemplateFile[],
+  contentDirectory?: string,
 ): Promise<void> {
   if (
     files.some(
@@ -119,7 +130,10 @@ async function ensureContentDirectory(
   ) {
     return;
   }
-  await fs.mkdir(path.join(targetDirectory, "content"), { recursive: true });
+  const resolved = path.resolve(targetDirectory, contentDirectory ?? "content");
+  const relative = path.relative(targetDirectory, resolved);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) return;
+  await fs.mkdir(resolved, { recursive: true });
 }
 
 function externalContentSource(
@@ -134,15 +148,25 @@ function externalContentSource(
 function deploymentTemplateOrConfig(
   deployment: ScaffoldDeployment,
   targetDirectory: string,
+  options: ScaffoldSiteOptions,
 ): readonly SiteTemplateFile[] {
+  const workerName = workerNameFromDirectory(path.basename(targetDirectory));
   switch (deployment.type) {
     case "github-actions":
-      return deploymentTemplateFiles(deployment.content);
+      return deploymentTemplateFiles(deployment.content, undefined, {
+        workerName,
+        ...(options.customDomain === undefined
+          ? {}
+          : { customDomain: options.customDomain }),
+      });
     case "cloudflare-workers":
       return [
         {
           path: "wrangler.jsonc",
-          content: wranglerConfigForDirectory(targetDirectory),
+          content: wranglerConfigForDirectory(
+            targetDirectory,
+            options.customDomain,
+          ),
         },
       ];
     default:

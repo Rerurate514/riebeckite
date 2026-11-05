@@ -56,7 +56,7 @@ flowchart TD
 
     Problem --> Running{"サイトのワークフローは<br/>起動したか？"}
 
-    Running -->|"いいえ"| Dispatch["repository_dispatch /<br/>SITE_DISPATCH_TOKEN"]
+    Running -->|"いいえ"| Dispatch["repository_dispatch /<br/>GitHub App の Secret<br/>または SITE_DISPATCH_TOKEN"]
     Running -->|"はい"| Content{"コンテンツを<br/>チェックアウトできたか？"}
 
     Content -->|"いいえ"| Token["RIEBECKITE_CONTENT_READ_TOKEN /<br/>チェックアウト設定"]

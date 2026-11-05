@@ -40,7 +40,7 @@ main へプッシュ
     ↓
 GitHub Actions
     ↓
-npm ci
+依存パッケージのインストール
     ↓
 riebeckite check
     ↓
@@ -70,14 +70,17 @@ repository_dispatch
 特に覚えておきたいのは、次の役割の違いです。
 
 ```text id="30lm4f"
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+  → 短期トークンでコンテンツからサイトへ通知する
+
 SITE_DISPATCH_TOKEN
-  → コンテンツからサイトへ通知する
+  → GitHub App を使わない場合の通知フォールバック
 
 RIEBECKITE_CONTENT_READ_TOKEN
   → サイトからコンテンツを読む
 
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN（Secret）
+CLOUDFLARE_ACCOUNT_ID（Variable）
   → Cloudflare へデプロイする
 ```
 

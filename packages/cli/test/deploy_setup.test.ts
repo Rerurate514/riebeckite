@@ -169,6 +169,16 @@ function baseHandlers(repoRoot: string): Handler[] {
     },
     {
       command: "gh",
+      match: (args) => args[0] === "variable" && args[1] === "list",
+      result: ok("[]"),
+    },
+    {
+      command: "gh",
+      match: (args) => args[0] === "variable" && args[1] === "set",
+      result: ok(""),
+    },
+    {
+      command: "gh",
       match: (args) => args[0] === "api",
       result: ok('{"enabled":true}'),
     },
@@ -236,6 +246,15 @@ function secretSetCalls(calls: readonly Call[]): Call[] {
     (call) =>
       call.command === "gh" &&
       call.args[0] === "secret" &&
+      call.args[1] === "set",
+  );
+}
+
+function variableSetCalls(calls: readonly Call[]): Call[] {
+  return calls.filter(
+    (call) =>
+      call.command === "gh" &&
+      call.args[0] === "variable" &&
       call.args[1] === "set",
   );
 }
@@ -486,10 +505,15 @@ test("setup writes the workflow and registers both secrets", async () => {
     const setCalls = secretSetCalls(calls);
     assert.deepEqual(
       setCalls.map((call) => call.args[2]),
-      ["CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"],
+      ["CLOUDFLARE_API_TOKEN"],
     );
-    assert.equal(setCalls[0]?.input, "acct-1");
-    assert.equal(setCalls[1]?.input, "env-token");
+    assert.equal(setCalls[0]?.input, "env-token");
+    const variableCalls = variableSetCalls(calls);
+    assert.deepEqual(
+      variableCalls.map((call) => call.args[2]),
+      ["CLOUDFLARE_ACCOUNT_ID"],
+    );
+    assert.equal(variableCalls[0]?.args[6], "acct-1");
   } finally {
     await removeRepo(repoRoot);
   }
@@ -526,12 +550,12 @@ test("setup leaves a matching workflow unchanged and skips existing secrets", as
       {
         command: "gh",
         match: (args) => args[0] === "secret" && args[1] === "list",
-        result: ok(
-          JSON.stringify([
-            { name: "CLOUDFLARE_ACCOUNT_ID" },
-            { name: "CLOUDFLARE_API_TOKEN" },
-          ]),
-        ),
+        result: ok(JSON.stringify([{ name: "CLOUDFLARE_API_TOKEN" }])),
+      },
+      {
+        command: "gh",
+        match: (args) => args[0] === "variable" && args[1] === "list",
+        result: ok(JSON.stringify([{ name: "CLOUDFLARE_ACCOUNT_ID" }])),
       },
       ...baseHandlers(repoRoot),
     ];
@@ -614,7 +638,7 @@ test("setup resumes after a partial failure", async () => {
     const accountConfigured: Handler[] = [
       {
         command: "gh",
-        match: (args) => args[0] === "secret" && args[1] === "list",
+        match: (args) => args[0] === "variable" && args[1] === "list",
         result: ok(JSON.stringify([{ name: "CLOUDFLARE_ACCOUNT_ID" }])),
       },
       ...baseHandlers(repoRoot),
@@ -702,9 +726,9 @@ test("setup asks which Cloudflare account to use when several exist", async () =
       CLOUDFLARE_API_TOKEN: "env-token",
     });
     assert.equal(selects.length, 1);
-    const accountSet = secretSetCalls(calls)[0];
+    const accountSet = variableSetCalls(calls)[0];
     assert.equal(accountSet?.args[2], "CLOUDFLARE_ACCOUNT_ID");
-    assert.equal(accountSet?.input, "acct-2");
+    assert.equal(accountSet?.args[6], "acct-2");
   } finally {
     await removeRepo(repoRoot);
   }
@@ -723,7 +747,7 @@ test("setup honors CLOUDFLARE_ACCOUNT_ID without prompting", async () => {
       CLOUDFLARE_API_TOKEN: "env-token",
     });
     assert.equal(selects.length, 0);
-    assert.equal(secretSetCalls(calls)[0]?.input, "acct-2");
+    assert.equal(variableSetCalls(calls)[0]?.args[6], "acct-2");
   } finally {
     await removeRepo(repoRoot);
   }

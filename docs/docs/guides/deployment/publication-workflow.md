@@ -166,7 +166,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 Provider detection checks `wrangler.jsonc|json|toml`, `.github/workflows` for Pages actions, `vercel.json`, and `netlify.toml`. `--provider` overrides detection. Required environment variable **names** are reported by `publish status --json`; values are never read, recorded, or written by Riebeckite.
 
-For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core and the CLI does not dispatch an unverified workflow. The publish workflow runs `publish gate --provider github-pages`, deploys with `actions/deploy-pages`, and then calls `publish record --provider github-pages`.
+For GitHub Pages, the build must include the [[plugins/deploy|deploy plugin]]'s `.nojekyll` and `404.html`; `publish validate` warns when they are missing. The adapter does not upload from Core and the CLI does not dispatch an unverified workflow. The publish workflow runs `publish gate`, deploys with `actions/deploy-pages`, and then calls `publish record`; the provider is detected from the workflow and hosting files.
 
 ## CI
 

@@ -39,26 +39,39 @@ flowchart TD
 
 ```text id="1xb7gc"
 notify-site.yml
-SITE_DISPATCH_TOKEN
+RIEBECKITE_APP_ID
+RIEBECKITE_APP_PRIVATE_KEY
 repository_dispatch
 content-updated
 ```
 
-コンテンツリポジトリへのプッシュだけでは、サイトのワークフローは起動しません。
+コンテンツリポジトリへのプッシュだけでは、サイトのワークフローは起動しません。GitHub App ではなく PAT を使う場合は `SITE_DISPATCH_TOKEN` と、サイトリポジトリへ dispatch できる権限を確認してください。
 
-## `npm ci` が失敗する
+## 依存パッケージのインストールが失敗する
 
-生成されるワークフローは `npm ci` を使います。`package-lock.json` がリポジトリにコミットされているか確認してください。
+生成されるワークフローは、`package-lock.json` があれば `npm ci`、なければ `npm install` を使います。
 
 ```sh id="dtah4e"
-npm ci
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-必要なファイルは次のとおりです。
+`package-lock.json` がなくてもインストールは続行されます。それでも失敗する場合は、ネットワークと `package.json` の依存バージョンを確認してください。
 
-```text id="afg8hg"
-package-lock.json
+## オプションが不明な引数として扱われる
+
+`npm exec` は `--` より前にあるオプションを自分で消費します。たとえば次のコマンドでは、
+
+```sh
+# 誤り: npm exec riebeckite publish record --trigger ci
 ```
+
+`ci` が位置引数として渡され、Riebeckite が `Unexpected argument: ci` と報告します。コマンドの前に `--` を置いてください。
+
+```sh
+npm exec -- riebeckite publish record --trigger ci
+```
+
+生成されるワークフローはこの形式を使います。
 
 ## コンテンツのチェックアウトが失敗する
 
@@ -95,9 +108,11 @@ npm exec riebeckite build
 ビルドまでは成功しているなら、次の点を確認します。
 
 ```text id="rxagkm"
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN   （Secret）
+CLOUDFLARE_ACCOUNT_ID  （Variable）
 wrangler.jsonc
 ```
 
 Riebeckite のビルドと Cloudflare へのデプロイは別の段階です。どちらで失敗したかを切り分けると、原因を特定しやすくなります。
+
+`Missing entry-point` と表示された場合は、Wrangler 3 が実行されています。Riebeckite のサイトは assets のみの `wrangler.jsonc` を使うため、Wrangler 4 が必要です。生成されるワークフローは `cloudflare/wrangler-action` に `wranglerVersion: "4"` を設定します。ワークフローを独自に変更した場合も同じ行を追加してください。

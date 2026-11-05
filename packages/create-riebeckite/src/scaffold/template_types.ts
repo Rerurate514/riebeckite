@@ -12,6 +12,7 @@ export type SiteTemplateVariables = {
 export type SiteTemplateOptions = {
   readonly cloudflareWorkers?: boolean;
   readonly utilities?: readonly ScaffoldUtilityName[];
+  readonly contentDirectory?: string;
 };
 
 export type SiteTemplateFile = {

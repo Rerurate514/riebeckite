@@ -14,7 +14,7 @@ sidebar:
 別々のリポジトリでは、CI が記事を読めることと、記事の更新でデプロイが起動することは別です。`--github-actions --content-repository <owner/repo> --site-repository <owner/repo>` で生成される構成は、次の順番でつながります。
 
 1. 記事リポジトリの `main` に push する
-2. 記事リポジトリの `notify-site.yml` が、サイトリポジトリへ `content-updated` を送る（`SITE_DISPATCH_TOKEN`）
+2. 記事リポジトリの `notify-site.yml` が、サイトリポジトリへ `content-updated` を送る（GitHub App のトークン、または任意の `SITE_DISPATCH_TOKEN`）
 3. サイトリポジトリのデプロイワークフローが `repository_dispatch` で起動する
 4. サイトをチェックアウトし、記事リポジトリを `content/` へチェックアウトする（プライベートの場合は `RIEBECKITE_CONTENT_READ_TOKEN`）
 5. `riebeckite check` → `riebeckite build` → Cloudflare Workers へデプロイ
@@ -180,16 +180,18 @@ npm exec -- riebeckite inspect content --list
 
 生成された `github/notify-site.yml` を、記事リポジトリの `.github/workflows/notify-site.yml` へコピーします。記事リポジトリの `main` に push すると、サイトリポジトリへ `content-updated` を送ります。
 
+推奨は GitHub App です。自分のアカウント所有の App を作成し、Webhook を無効にし、**Contents: read and write** と **Metadata: read-only** を付与して、サイトリポジトリだけにインストールします。**記事リポジトリ**に Secret `RIEBECKITE_APP_ID` と `RIEBECKITE_APP_PRIVATE_KEY`（PEM の秘密鍵）を登録します。ワークフローは `actions/create-github-app-token` で短期のインストールトークンを発行し、`createDispatchEvent` を呼びます。長期トークンは保存しません。
+
+GitHub App を作れない場合は、記事リポジトリに `SITE_DISPATCH_TOKEN` を設定します。サイトリポジトリだけに権限を絞った Fine-grained PAT なら **Contents: read and write**、Classic PAT なら `repo` スコープが必要です。
+
 ```yaml
 repository_dispatch:
   types: [content-updated]
 ```
 
-`SITE_DISPATCH_TOKEN` は記事リポジトリにだけ登録します。サイトリポジトリだけに権限を絞った Fine-grained PAT なら **Contents: read and write**、Classic PAT なら `repo` スコープ、GitHub App のインストールトークンなら **Contents: write** が必要です。
-
 プライベートまたは内部の記事リポジトリを使う場合は、サイトリポジトリに `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。Fine-grained PAT なら記事リポジトリだけに絞って **Contents: read** を付与します。公開の記事リポジトリなら、このシークレットは不要です。サイトリポジトリの `GITHUB_TOKEN` では、別のプライベート / 内部リポジトリを読めません。
 
-デプロイ先の Cloudflare Workers 用に、サイトリポジトリへ `CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` も登録します。
+デプロイ先の Cloudflare Workers 用に、サイトリポジトリへ Secret `CLOUDFLARE_API_TOKEN` と Variable `CLOUDFLARE_ACCOUNT_ID` も登録します。
 
 チェックアウトではコミットを固定しないため、dispatch のたびに記事リポジトリの既定ブランチの最新コミットを読みます。
 
@@ -207,9 +209,10 @@ repository_dispatch:
 
 名前は似ていますが、使う向きが逆です。
 
-| シークレット | 置く場所 | 目的 |
+| シークレット / 変数 | 置く場所 | 目的 |
 | --- | --- | --- |
-| `SITE_DISPATCH_TOKEN` | 記事リポジトリ | サイトのワークフローを起動する |
+| `RIEBECKITE_APP_ID` / `RIEBECKITE_APP_PRIVATE_KEY` | 記事リポジトリ | GitHub App の短期トークンでサイトのワークフローを起動する |
+| `SITE_DISPATCH_TOKEN` | 記事リポジトリ | GitHub App を使わない場合のフォールバック |
 | `RIEBECKITE_CONTENT_READ_TOKEN` | サイトリポジトリ | プライベートの記事をチェックアウトする |
 
 ```mermaid
@@ -217,7 +220,7 @@ flowchart LR
     Content["記事リポジトリ"]
     Site["サイトリポジトリ"]
 
-    Content -->|"SITE_DISPATCH_TOKEN<br/>デプロイを起動"| Site
+    Content -->|"GitHub App トークン<br/>デプロイを起動"| Site
     Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>記事を読む"| Content
 ```
 

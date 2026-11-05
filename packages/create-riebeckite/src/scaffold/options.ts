@@ -33,6 +33,8 @@ export type ScaffoldSiteOptions = {
   readonly features?: readonly ScaffoldFeatureName[];
   readonly utilities?: readonly ScaffoldUtilityName[];
   readonly deployment?: ScaffoldDeployment;
+  readonly contentDirectory?: string;
+  readonly customDomain?: string;
   readonly overwrite?: boolean;
 };
 

@@ -260,9 +260,9 @@ export function renderSeriesIndex(
     )} ${escapeHtmlAttribute(cls)}--index" data-series="${escapeHtmlAttribute(
       index.name,
     )}">`,
-    `<h2 class="${escapeHtmlAttribute(cls)}__title">${escapeHtml(
+    `<h1 class="${escapeHtmlAttribute(cls)}__title">${escapeHtml(
       index.title,
-    )}</h2>`,
+    )}</h1>`,
     `<ol class="${escapeHtmlAttribute(cls)}__list">`,
   ];
 

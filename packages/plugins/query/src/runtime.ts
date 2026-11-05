@@ -63,7 +63,13 @@ function replacePlaceholders(
       ? entries.filter((candidate) => candidate.slug !== entry.slug)
       : entries;
 
-    const selected = queryContentEntries(pool, parsed as ContentQuerySpec);
+    const querySpec = {
+      ...parsed,
+      sort: parsed.sort ?? options.defaultSort,
+      limit: parsed.limit ?? options.defaultLimit,
+    } as ContentQuerySpec;
+
+    const selected = queryContentEntries(pool, querySpec);
     return renderQueryResult(selected, query);
   });
 }

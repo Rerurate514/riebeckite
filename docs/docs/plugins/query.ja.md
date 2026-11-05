@@ -112,6 +112,8 @@ limit: 5
 | `language` | `string` | `"query"` | 対象のフェンス言語 |
 | `defaultFormat` | `"table"` \| `"list"` | `"table"` | ブロックが `format` を省略したときの形式 |
 | `defaultColumns` | `string[]` | `["title", "date"]` | ブロックが `columns` を省略したときの列 |
+| `defaultSort` | `ContentQuerySort` | なし | ブロックが `sort` を省略したときの並べ替え |
+| `defaultLimit` | `number` | なし | ブロックが `limit` を省略したときの上限 |
 | `emptyMessage` | `string` | `"No matching content."` | 空結果のメッセージ |
 | `excludeSelf` | `boolean` | `false` | 既定で自身を除外する |
 

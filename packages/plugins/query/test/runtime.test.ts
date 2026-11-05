@@ -133,6 +133,44 @@ test("unknown query fields warn but still run the query", () => {
   assert.match(one.html, /data-rr-query-result/);
 });
 
+test("the plugin-level sort and limit defaults apply when the spec omits them", () => {
+  const source = "format: list";
+  const one = entry("one", {}, createQueryPlaceholder(source));
+  const two = entry("two", {}, createQueryPlaceholder(source));
+  const three = entry("three", {}, createQueryPlaceholder(source));
+  const manifest = manifestOf([one, two, three]);
+
+  createQueryRuntime({
+    defaultFormat: "list",
+    defaultSort: { field: "title", order: "asc" },
+    defaultLimit: 1,
+  }).resolve(manifest, []);
+
+  const hrefs = [...one.html.matchAll(/href="\/([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(hrefs, ["one"]);
+});
+
+test("an explicit block sort and limit override the plugin defaults", () => {
+  const source = "format: list\nsort:\n  field: title\n  order: desc\nlimit: 2";
+  const one = entry("one", {}, createQueryPlaceholder(source));
+  const two = entry("two", {}, createQueryPlaceholder(source));
+  const three = entry("three", {}, createQueryPlaceholder(source));
+  const manifest = manifestOf([one, two, three]);
+
+  createQueryRuntime({
+    defaultFormat: "list",
+    defaultSort: { field: "title", order: "asc" },
+    defaultLimit: 3,
+  }).resolve(manifest, []);
+
+  const hrefs = [...one.html.matchAll(/href="\/([^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  assert.deepEqual(hrefs, ["two", "three"]);
+});
+
 test("an empty block renders every entry and leaves other html untouched", () => {
   const source = "";
   const one = entry("one", {}, createQueryPlaceholder(source));

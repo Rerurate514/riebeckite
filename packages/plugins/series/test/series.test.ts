@@ -286,7 +286,7 @@ test("renderSeriesIndex renders a standalone section or an empty string", () => 
   assert.equal(renderSeriesIndex(guide, "Missing"), "");
   const html = renderSeriesIndex(guide, "Guide");
   assert.match(html, /class="rb-series rb-series--index" data-series="Guide"/);
-  assert.match(html, /<h2 class="rb-series__title">Guide<\/h2>/);
+  assert.match(html, /<h1 class="rb-series__title">Guide<\/h1>/);
   assert.equal((html.match(/data-series-order=/g) ?? []).length, 2);
 
   assertGolden(

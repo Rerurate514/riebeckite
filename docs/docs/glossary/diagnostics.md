@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # Diagnostics
-Diagnostics are structured findings emitted by Core and plugins; they describe what the problem is, where it occurs, its severity, and how to fix it. Plugins report diagnostics through `addDiagnostics`; Core combines them for `check` and `doctor` commands.
+Diagnostics are structured findings emitted by Core and plugins; they describe what the problem is, where it occurs, its severity, and how to fix it. Plugins report diagnostics through `addDiagnostics`; `doctor` and the Development Inspector collect them. `check` reports configuration and API-lifecycle diagnostics.
 
 ## Diagnostic structure
 A diagnostic describes: `what` the problem is, `where` it occurs, `how important` it is (severity), and `how to fix` it. Use `check` for configuration/plugin validity and `doctor` for broader health.

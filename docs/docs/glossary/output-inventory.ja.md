@@ -26,7 +26,7 @@ sidebar:
 
 `manifest.publicRedirects` から生成されます。各リダイレクト出力は次のとおりです。
 - `kind`: `"redirect"`
-- `path`: リダイレクト先の HTML パス
+- `path`: リダイレクト元（旧 URL）の HTML 出力パス
 - `producer`: `content:${redirect.slug}:redirect`
 - `dependencies`: `[{ type: "content", slug: redirect.slug }]`
 

@@ -176,7 +176,7 @@ Check the results in this order:
 
 1. `check` validates the configuration and plugin contracts.
 2. `doctor` reports unreadable or invalid filesystem content sources.
-3. In `inspect config`, `Directory` is the resolved absolute path, `Publishing` is `publishStrategy`, and `Exclude` is the pattern count. Settle where the vault points here first.
+3. In `inspect config`, `Directory` is the resolved absolute path, `Publishing` is `publishStrategy`, and `Exclude` lists the configured exclude patterns (comma-separated, or `-`). Settle where the vault points here first.
 4. Before investigating WikiLinks or embeds, use `inspect content --list` to confirm the expected logical paths are loaded.
 5. Use `inspect graph` to confirm notes you excluded are not appearing as nodes.
 6. `build` validates the integration and route rendering.

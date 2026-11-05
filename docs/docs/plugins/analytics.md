@@ -133,8 +133,7 @@ event after each successful route transition.
 Content IDs are an authoring responsibility. Duplicate `id` declarations across
 published notes are reported by
 [`@riebeckite/plugin-diagnostics`](./diagnostics.md)
-(`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
-`validateAnalyticsOptions` at `check` time.
+(`duplicate-content-id` / `invalid-content-id`).
 
 ## Provider contract
 

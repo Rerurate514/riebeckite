@@ -16,7 +16,7 @@ Diagnostic codes are stable identifiers for categories of problems; core and plu
 | `content-integrity:broken-link` | `warning` | link target does not exist |
 
 ## Usage
-Report codes rather than ad-hoc messages so `check` and `doctor` can categorize and aggregate findings consistently. Codes are defined in `packages/core/src/diagnostic_code.ts` and can be extended by plugins.
+Report codes rather than ad-hoc messages so `doctor` and the Development Inspector can categorize and aggregate findings consistently. The core `DiagnosticCode` type is in `packages/core/src/types/diagnostic.ts`; plugins define their own codes, such as `content-integrity:*` in the diagnostics plugin.
 
 ## Related terms
 - [[glossary/diagnostics|Diagnostics]]

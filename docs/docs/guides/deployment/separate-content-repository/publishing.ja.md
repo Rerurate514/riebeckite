@@ -176,7 +176,7 @@ npm exec riebeckite build
 
 1. `check` は設定とプラグインの取り決めを検証します。
 2. `doctor` は読み取れない、または不正なファイルシステムの[[glossary/content-source|コンテンツソース]]を報告します。
-3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` がパターン数です。まずここで、Vault がどこを指しているかを確定させます。
+3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` が設定済みの除外パターンの一覧です（カンマ区切り、空なら `-`）。まずここで、Vault がどこを指しているかを確定させます。
 4. [[glossary/wikilink|WikiLink]] や埋め込みを調べる前に、`inspect content --list` で期待する論理パスが読み込まれているか確認します。
 5. `inspect graph` で、除外したノートがノードとして現れていないか確認します。
 6. `build` は統合とルートのレンダリングを検証します。

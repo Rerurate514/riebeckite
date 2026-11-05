@@ -26,7 +26,7 @@ Generated from `manifest.publicEntries`. Each content output has:
 
 Generated from `manifest.publicRedirects`. Each redirect output has:
 - `kind`: `"redirect"`
-- `path`: HTML path for the redirect target
+- `path`: HTML output path for the redirect's source (old) URL
 - `producer`: `content:${redirect.slug}:redirect`
 - `dependencies`: `[{ type: "content", slug: redirect.slug }]`
 

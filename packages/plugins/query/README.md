@@ -113,8 +113,6 @@ limit: 5
 | `language` | `string` | `"query"` | Fence language to target |
 | `defaultFormat` | `"table"` \| `"list"` | `"table"` | Format when a block omits `format` |
 | `defaultColumns` | `string[]` | `["title", "date"]` | Columns when a block omits `columns` |
-| `defaultSort` | object | none | Sort when a block omits `sort` |
-| `defaultLimit` | `number` | none | Row cap when a block omits `limit` |
 | `emptyMessage` | `string` | `"No matching content."` | Empty-state message |
 | `excludeSelf` | `boolean` | `false` | Exclude the host page by default |
 

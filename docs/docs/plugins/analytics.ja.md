@@ -104,7 +104,7 @@ Core の安定コンテンツ ID（frontmatter の `id`）を持つマニフェ�
 
 `path` と `lang` は補助的なメタデータであり、ID ではありません。安定 ID を持たないコンテンツは計測しません。ビルド時と SSR 時は何もせず、同じドキュメント内での初期化も冪等です。SPA ナビゲーションを有効にすると、ルート遷移が成功するたびに追加のイベントを送信します。
 
-コンテンツ ID は執筆側の責務です。公開ノート間で `id` が重複している場合は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
+コンテンツ ID は執筆側の責務です。公開ノート間で `id` が重複している場合は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告します（`duplicate-content-id` / `invalid-content-id`）。
 
 ## プロバイダの取り決め
 

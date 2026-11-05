@@ -16,7 +16,7 @@ sidebar:
 | `content-integrity:broken-link` | `warning` | リンク先が存在しない |
 
 ## 使い方
-その場限りのメッセージではなくコードを報告してください。`check` と `doctor` が検出結果を一貫して分類し、集計できます。コードは `packages/core/src/diagnostic_code.ts` で定義され、プラグインが拡張できます。
+その場限りのメッセージではなくコードを報告してください。`doctor` と Development Inspector が検出結果を一貫して分類し、集計できます。Core の `DiagnosticCode` 型は `packages/core/src/types/diagnostic.ts` にあり、プラグインは diagnostics プラグインの `content-integrity:*` のような独自コードを定義できます。
 
 ## 関連用語
 - [[glossary/diagnostics|Diagnostics]]

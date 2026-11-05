@@ -153,12 +153,16 @@ export function evaluatePublicationGate(
 export function durableStateIsNewer(
   inspection: PublicationInspection,
 ): boolean {
-  const published = inspection.durableState.lastSuccess?.publishedAt;
+  const lastSuccess = inspection.durableState.lastSuccess;
   const completed = inspection.artifact.markerCompletedAt;
+  if (lastSuccess === undefined || completed === undefined) return false;
+  if (Date.parse(lastSuccess.publishedAt) <= Date.parse(completed))
+    return false;
   return (
-    published !== undefined &&
-    completed !== undefined &&
-    Date.parse(published) > Date.parse(completed)
+    lastSuccess.artifactFingerprint === undefined ||
+    inspection.artifact.markerArtifactFingerprint === undefined ||
+    lastSuccess.artifactFingerprint !==
+      inspection.artifact.markerArtifactFingerprint
   );
 }
 

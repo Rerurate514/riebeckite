@@ -23,7 +23,10 @@ import {
   detectProjectHostingProvider,
   planHostingDeployment,
 } from "../src/publication/hosting.js";
-import { inspectPublication } from "../src/publication/inspection.js";
+import {
+  durableStateIsNewer,
+  inspectPublication,
+} from "../src/publication/inspection.js";
 import {
   acquirePublicationLock,
   publicationStateFile,
@@ -371,6 +374,41 @@ test("publish record closes the loop for an external CI deployment", async (t) =
     runPublish(project, options("record", { provider: "cloudflare-workers" })),
     /newer than the build output/,
   );
+});
+
+test("durable state that recorded the current artifact is not treated as newer", async (t) => {
+  const root = await makeRoot();
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const project = makeProject(
+    root,
+    memorySource({ "public.md": "---\npublish: true\n---\n\nPublic.\n" }),
+  );
+  await fs.mkdir(path.join(root, "dist"), { recursive: true });
+  await fs.writeFile(path.join(root, "dist", "index.html"), "<html></html>");
+  const artifact = await readPublicationArtifact(project);
+  assert.ok(artifact.artifactFingerprint);
+  await writeBuildOutputMarker(project, {
+    artifactFingerprint: artifact.artifactFingerprint,
+    completedAt: "2020-01-01T00:00:00.000Z",
+  });
+  const inspection = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "direct",
+  });
+  await writePublicationState(
+    project,
+    createPublicationSnapshot(inspection.plan, {
+      runId: "previous",
+      publishedAt: BUILD_TIME,
+      artifactFingerprint: artifact.artifactFingerprint,
+    }),
+  );
+
+  const next = await inspectPublication(project, {
+    provider: "cloudflare-workers",
+    workflow: "direct",
+  });
+  assert.equal(durableStateIsNewer(next), false);
 });
 
 test("an explicit state file is isolated and fails closed when malformed", async (t) => {

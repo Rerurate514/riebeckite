@@ -12,7 +12,7 @@ The task is not marked READY. Convergence required two consecutive independent r
 
 ## Scope inventory
 
-- 1152 Markdown files counted by `scripts/check_docs.mjs`.
+- 1162 Markdown files counted by `scripts/check_docs.mjs`.
 - Site docs under `docs/docs/**` with English and `.ja.md` pairs.
 - `docs/README*.md`, `docs/index*.md`, package READMEs, 84 plugin pages, 28 theme pages.
 - CLI, Core, plugin API, theme API, configuration, publication, deployment, migration, Obsidian, localization, content repository, writing, analytics, accessibility, security, release, glossary, and framework pages.
@@ -20,13 +20,13 @@ The task is not marked READY. Convergence required two consecutive independent r
 
 ## Verification performed
 
-- `node scripts/check_docs.mjs`: pass, 1152 files.
+- `node scripts/check_docs.mjs`: pass, 1162 files.
 - `node scripts/check_plugin_docs_parity.mjs`: pass, 84 plugins.
 - `node scripts/sync_theme_docs.mjs --check`: pass, 28 themes.
 - `git diff --check`: clean after each batch.
 - Docs site production build: passed before the merge (`pnpm --filter @riebeckite/web build`, 1109 rendered, 7 reused, 4m15s). The Excalidraw sample `docs/assets/HW.md` was made non-routable to remove an output collision; the embedded drawing still renders. The only remaining quality warnings are two series plugin pages with headings but no `<h1>`; these are generated plugin output, not a documentation claim.
-- After merging into `main`, the full required checks passed again (`pnpm check:docs`, `pnpm test:docs`, create-riebeckite, query, CLI, quality, `pnpm check:scaffold`) and the docs production build rendered 1121 outputs with 7 reused in 4m41s.
-- Full verification at the integration point: `pnpm check:docs`, `pnpm test:docs` (19/19), create-riebeckite (82/82), query plugin (22/22), CLI (228 tests, 227 passing, 1 pre-existing skip), `pnpm check:scaffold`, and quality plugin (20/20) all passed.
+- After merging into `main` at `cc058365`, the full required checks passed and the docs production build rendered 1121 outputs with 7 reused in 4m41s. `main` then received an independent merge (`deeb9de8`); `pnpm check:docs` (1162 files), `pnpm test:docs`, and create-riebeckite (88/88) were rerun on that tip and passed. The full docs build was not rerun after `deeb9de8`.
+- Full verification at the integration point: `pnpm check:docs`, `pnpm test:docs` (19/19), create-riebeckite (88/88), query plugin (22/22), CLI (228 tests, 227 passing, 1 pre-existing skip), `pnpm check:scaffold`, and quality plugin (20/20) all passed.
 - Scaffold integration fixes: the generated README prints `/` for the home page instead of `/index`, and the showcase preset no longer passes the ignored query `defaultLimit`. Golden scaffold files were regenerated and pass.
 - Anchor quality rule decodes percent-encoded fragments before matching ids; a regression test covers encoded Japanese fragments and malformed encoding. Heading-level fixes removed the remaining real skip warnings.
 - Scaffold smoke test: generated `starter`, ran `npm install`, `npm exec riebeckite check`, `npm exec riebeckite build`; all passed. Dev server returned HTTP 200 on `/`.
@@ -103,6 +103,10 @@ b2d84013 スキャフォールドと品質検査の不整合を修正
 b6da01a8 Merge branch 'main' into docs/autonomous-audit-2026-11-04
 1acbefb5 監査レポートを統合後の状態に更新
 86fa65ad 同期したプラグインREADMEを更新
+11b27666 監査レポートの検証結果を修正
+cc058365 ドキュメント監査ブランチを統合
+deeb9de8 サンプルE2Eのセットアップ改善を統合
+8e399f72 監査レポートを統合後の検証結果に更新
 ```
 
 This report is updated by the commit that contains this line; it follows `86fa65ad` on the branch.

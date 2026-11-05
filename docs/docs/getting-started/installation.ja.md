@@ -71,7 +71,7 @@ npm install
 
 `@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。npm が脆弱性を報告した場合は `npm audit` で内容を確認してください。ビルド用の推移的依存関係に由来するものも多く含まれます。`npm audit fix --force` は、変更されるバージョンを確認してからでないと実行しないでください。
 
-この手順では npm を使います。pnpm 10 以降を使う場合、`pnpm install` がビルドスクリプトの無視を報告することがあります。`pnpm approve-builds` を実行し、内容を確認して信頼できる package を承認してから `dev` を起動してください。
+この手順では npm を使います。pnpm 10 以降を使う場合、`pnpm install` がビルドスクリプトの無視を報告することがあります。`pnpm approve-builds` を実行し、内容を確認して信頼できる package を承認してから `dev` を起動してください。厳格なパッケージマネージャーは推移的依存を解決しないため、`@riebeckite/node`、`@riebeckite/runtime`、`@riebeckite/spa` がサイトのマニフェストに追加される前に作成したサイトでは、これらを明示的に追加する必要があります。
 
 最近の npm 11 では依存パッケージのインストールスクリプトが実行されないことがあります。`npm install` が `Ignored build scripts: esbuild` と表示した場合は、`npm approve-scripts esbuild` で承認してから `npm install` を再実行してください。
 

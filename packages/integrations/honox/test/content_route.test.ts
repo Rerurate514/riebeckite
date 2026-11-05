@@ -72,6 +72,65 @@ test("SSG enumerates affected public redirect routes", async () => {
   assert.deepEqual(params, [{ slug: "old/" }]);
 });
 
+test("SSG omits a self redirect that resolves to its own content output", async () => {
+  const manifest = manifestOf([entry("folder/index", "/folder/", true)]);
+  manifest.publicRedirects.set("/folder/index", {
+    path: "/folder/index",
+    status: 308,
+    slug: "folder/index",
+  });
+
+  const params = await riebeckiteSsgParams({
+    getManifest: async () => manifest,
+    getOutputChangeSet: async () => ({
+      fullRegenerationRequired: true,
+      affected: [],
+      removed: [],
+      unchanged: [],
+      candidateOutputCount: 1,
+      affectedOutputCount: 1,
+      removedOutputCount: 0,
+      unchangedOutputCount: 0,
+    }),
+    getPagePaths: async () => [],
+  });
+
+  assert.deepEqual(params, [{ slug: "folder/" }]);
+});
+
+test("SSG omits an affected self redirect without dropping its content", async () => {
+  const manifest = manifestOf([entry("folder/index", "/folder/", true)]);
+  manifest.publicRedirects.set("/folder/index", {
+    path: "/folder/index",
+    status: 308,
+    slug: "folder/index",
+  });
+
+  const params = await riebeckiteSsgParams({
+    getManifest: async () => manifest,
+    getOutputChangeSet: async () => ({
+      fullRegenerationRequired: false,
+      affected: [
+        {
+          kind: "content" as const,
+          path: "folder/index.html",
+          producer: "content:folder/index",
+          dependencies: [],
+        },
+      ],
+      removed: [],
+      unchanged: [],
+      candidateOutputCount: 1,
+      affectedOutputCount: 1,
+      removedOutputCount: 0,
+      unchangedOutputCount: 0,
+    }),
+    getPagePaths: async () => [],
+  });
+
+  assert.deepEqual(params, [{ slug: "folder/" }]);
+});
+
 test("SSG does not enumerate an affected root content route", async () => {
   const manifest = manifestOf([
     entry("home", "/", true),

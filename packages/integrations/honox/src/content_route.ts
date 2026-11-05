@@ -175,7 +175,7 @@ export async function riebeckiteSsgParams(
       ...manifest.publicEntries
         .filter((entry) => entry.permalink !== "/")
         .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") })),
-      ...[...manifest.publicRedirects.keys()]
+      ...redirectSsgPaths(manifest)
         .filter((path) => path !== "/")
         .map((path) => ({ [parameter]: path.replace(/^\/+/, "") })),
       ...(await pluginPageSsgParams(content, parameter)),
@@ -191,7 +191,7 @@ export async function riebeckiteSsgParams(
     .filter((entry) => affected.has(routeOutputPath(entry.permalink)))
     .filter((entry) => entry.permalink !== "/")
     .map((entry) => ({ [parameter]: entry.permalink.replace(/^\/+/, "") }));
-  const redirectParams = [...manifest.publicRedirects.keys()]
+  const redirectParams = redirectSsgPaths(manifest)
     .filter((path) => affected.has(routeOutputPath(path)))
     .filter((path) => path !== "/")
     .map((path) => ({ [parameter]: path.replace(/^\/+/, "") }));
@@ -277,6 +277,17 @@ function normalizeRequestPath(pathname: string): string {
   const segments = pathname.split("/").filter(Boolean).map(decodeSegment);
   const path = `/${segments.join("/")}`;
   return trailingSlash ? `${path}/` : path;
+}
+
+function redirectSsgPaths(manifest: ContentManifest): string[] {
+  const paths: string[] = [];
+  for (const [path, redirect] of manifest.publicRedirects) {
+    const permalink = manifest.bySlug.get(redirect.slug)?.permalink;
+    if (permalink && htmlOutputPath(permalink) === routeOutputPath(path))
+      continue;
+    paths.push(path);
+  }
+  return paths;
 }
 
 function routeOutputPath(pathname: string): string {

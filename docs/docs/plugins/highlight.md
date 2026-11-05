@@ -15,6 +15,12 @@ Inline `==highlight==` support. Text wrapped in double equals is rendered as a
 Markdown text nodes into raw HTML before the tree is converted to HTML. It
 complements `remark-gfm` (which only understands `~~strikethrough~~`).
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-highlight
+```
+
 ## Usage
 
 ```ts

@@ -94,3 +94,9 @@ const results = searchItems(items, "#obsidian");
 
 - [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
 - [`@riebeckite/plugin-garden-explorer`](../garden-explorer/README_ja.md)
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-search
+```

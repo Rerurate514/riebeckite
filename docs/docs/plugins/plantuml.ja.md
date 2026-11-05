@@ -8,6 +8,12 @@ title: PlantUML
 
 [English](./plantuml.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-plantuml
+```
+
 ## 使い方
 
 ```ts

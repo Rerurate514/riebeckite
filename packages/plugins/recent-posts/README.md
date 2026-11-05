@@ -24,6 +24,12 @@ and on content pages.
 
 With no posts, the component renders nothing.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-recent-posts
+```
+
 ## Usage
 
 ```ts

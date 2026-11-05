@@ -13,6 +13,12 @@ Renders ` ```qr ` fenced code blocks into inline SVG QR codes at build time.
 entirely at build time in Node; nothing is shipped to the browser. The plugin
 runs with `order: -10`, before `code-enhance` and `code-tabs`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-qr-code
+```
+
 ## Usage
 
 ```ts

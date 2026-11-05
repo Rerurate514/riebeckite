@@ -16,6 +16,12 @@ non-image file (`[[report.pdf]]`, `![[report.pdf]]`, ...).
 
 Without this plugin, those wikilinks fall back to a plain download link.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-attachment
+```
+
 ## Usage
 
 ```ts

@@ -28,6 +28,12 @@ never leak their location.
 `dailyNotes()` registers data and styles but does not render the widget.
 The Site owns placement; a homepage section is the recommended location.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-daily-notes
+```
+
 ## Quick Start
 
 ```ts

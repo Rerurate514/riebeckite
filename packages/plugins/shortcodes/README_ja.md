@@ -17,6 +17,12 @@
 インライン型は段落の中の `span` として、リーフ型とコンテナ型は `div` として
 描画されます。ラッパーには `rb-shortcode rb-shortcode--<name>` が付きます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-shortcodes
+```
+
 ## 使い方
 
 ```ts

@@ -36,6 +36,12 @@ export default defineConfig({
 
 テーマ側では、`rr-lightbox` のルート要素に `--rr-lightbox-image-border-radius` を指定すると、子要素を選択せずに表示中の画像を調整できます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-lightbox
+```
+
 ## オプション
 
 | オプション | 型 | 既定値 | 内容 |

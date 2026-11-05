@@ -9,6 +9,12 @@ public URL.
 
 [日本語](./svg-optimizer.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-svg-optimizer
+```
+
 ## Usage
 
 ```ts

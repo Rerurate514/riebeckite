@@ -13,6 +13,12 @@ collapse controls.
 (Shiki) and post-processes each figure into `.rr-code` with a header and
 action buttons. The client entry wires up the buttons.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-code-enhance
+```
+
 ## Usage
 
 ```ts

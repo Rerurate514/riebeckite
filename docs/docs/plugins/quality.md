@@ -18,6 +18,12 @@ At the manifest stage the plugin inspects each public entry's rendered article
 HTML. Integrations that finish HTML generation can additionally call the
 exported `inspectGeneratedHtml` hook for final pages.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-quality
+```
+
 ## Usage
 
 ```ts

@@ -11,6 +11,12 @@
 `richEmbed()` は ` ```embed ` フェンスをレスポンシブな
 `<figure class="rb-rich-embed">` に置き換えます。プロバイダーの判定は URL の文字列解析だけで行うため、ビルド時にネットワークへアクセスしません。クライアント側 JavaScript も不要です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-rich-embed
+```
+
 ## 使い方
 
 ```ts

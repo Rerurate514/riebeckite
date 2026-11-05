@@ -18,3 +18,11 @@ The optional stylesheet uses an `rr-<name>` namespace, public `--rb-*` semantic 
 Themes do not own components in the public Theme API. `--target theme` intentionally stops with guidance: create a site or Plugin component and style its stable `rr-*` hook from the Theme root. This preserves the Theme boundary and light/dark token behavior.
 
 After editing props or markup, typecheck the Site and run its tests. For Plugin components, keep all imports on public package APIs and export data helpers separately when content data is needed. See [Share a UI Component](./recipes/components.md) and [Your First Theme](../themes/writing-a-theme.md).
+
+## Installation
+
+The generator ships with the Riebeckite CLI. Add the CLI to the project if it is not installed yet:
+
+```sh
+npm install -D @riebeckite/cli
+```

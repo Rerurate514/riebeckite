@@ -25,6 +25,12 @@ language's backlinks.
 Without incoming links (or when none of them are published), the component
 renders nothing.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-backlinks
+```
+
 ## Quick Start
 
 ```ts

@@ -8,6 +8,10 @@ Renders a safe, browser-state-only compatibility subset of [Obsidian Meta Bind](
 
 ## Installation
 
+```sh
+npm install @riebeckite/plugin-meta-bind
+```
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { metaBind } from "@riebeckite/plugin-meta-bind";

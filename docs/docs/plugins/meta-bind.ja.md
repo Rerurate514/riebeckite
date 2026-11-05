@@ -8,6 +8,12 @@ title: Meta Bind
 
 [English](./meta-bind.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-meta-bind
+```
+
 ## 設定
 
 ```ts

@@ -12,6 +12,12 @@ Obsidian の音声・動画埋め込みを、ブラウザ標準の HTML5 プレ�
 
 `![[music.mp3]]` や `![[movie.mp4]]` をメディア要素へ変換します。対応しない形式では `null` を返すため、後続の添付レンダラーまたは既定の表示に処理を任せられます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-media
+```
+
 ## 設定
 
 `media()` は既定の添付カードより先に実行されるため、Obsidian Markdown と添付ファイルのプラグインとあわせて登録します。

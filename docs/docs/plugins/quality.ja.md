@@ -14,6 +14,12 @@ Riebeckite が生成する HTML を静的に検査し、品質とアクセシビ
 
 マニフェスト生成の段階では、公開エントリごとの記事 HTML を検査します。HTML 生成を完了する統合側は、最終ページに対して公開 API の `inspectGeneratedHtml` を追加で呼び出せます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-quality
+```
+
 ## 使い方
 
 ```ts

@@ -18,6 +18,12 @@
 
 サーバーは最大3ホップ・320ノードまでをページに埋め込みます。Local Graph の Depth スライダーは3までで、切り詰めが起きたときは案内を表示します。ネットワーク全体を見るには Explorer を使ってください。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-local-graph
+```
+
 ## クイックスタート
 
 ```ts

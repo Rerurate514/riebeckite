@@ -13,9 +13,12 @@ Riebeckite の Markdown コンテンツをローカライズするプラグイ�
 ## 基本設定
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { l10n } from "@riebeckite/plugin-l10n";
 
-l10n({ defaultLang: "ja", languages: ["ja", "en", "zh-CN"] });
+export default defineConfig({
+  plugins: [l10n({ defaultLang: "ja", languages: ["ja", "en", "zh-CN"] })],
+});
 ```
 
 ## ロケール検出と翻訳グループ
@@ -101,3 +104,9 @@ l10n({
 ## 関連リンク
 
 - [プラグイン API](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-l10n
+```

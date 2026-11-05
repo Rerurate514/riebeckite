@@ -8,6 +8,12 @@ title: Flashcards
 
 [English](./flashcards.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-flashcards
+```
+
 ## 設定
 
 ```ts

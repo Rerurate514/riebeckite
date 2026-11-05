@@ -6,6 +6,12 @@ Obsidian の Kanban ボードを、ビルド時に静的 HTML へ変換するプ
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-kanban
+```
+
 ## 使い方
 
 `kanban()` をプラグインに追加します。

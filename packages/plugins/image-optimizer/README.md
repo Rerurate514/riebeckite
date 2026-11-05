@@ -6,6 +6,12 @@ Encodes public Markdown image assets into responsive WebP and AVIF variants.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-image-optimizer
+```
+
 ## Usage
 
 ```ts

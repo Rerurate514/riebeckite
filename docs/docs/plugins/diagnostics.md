@@ -10,6 +10,12 @@ Usable as a build plugin, a programmatic API, and a CLI.
 
 [日本語](./diagnostics.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-diagnostics
+```
+
 ## Overview
 
 `diagnostics()` analyzes the content directory and reports problems as

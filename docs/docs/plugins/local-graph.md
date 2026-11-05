@@ -25,6 +25,12 @@ The server embeds at most three hops and 320 nodes into the page. The Depth
 slider is capped at three for Local Graph, and a notice appears when the
 neighborhood was truncated. Use the Explorer for the complete network.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-local-graph
+```
+
 ## Quick Start
 
 ```ts

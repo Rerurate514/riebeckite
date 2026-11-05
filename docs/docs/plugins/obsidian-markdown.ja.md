@@ -8,6 +8,12 @@ title: Obsidian Markdown
 
 [English](./obsidian-markdown.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-obsidian-markdown
+```
+
 ## 設定
 
 ```ts

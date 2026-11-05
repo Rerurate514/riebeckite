@@ -6,6 +6,12 @@ Render Marp slide decks at build time. A note whose YAML frontmatter contains `m
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-marp
+```
+
 ## Usage
 
 ```ts

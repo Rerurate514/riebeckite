@@ -64,3 +64,9 @@ export default defineConfig({
 ## 関連資料
 
 - [[plugin-api|プラグインシステム]]
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-text-fragment
+```

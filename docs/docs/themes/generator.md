@@ -6,6 +6,14 @@ title: Theme Generator
 
 `riebeckite create theme` creates an applicable local Theme in `themes/` using the public `defineTheme` API. It styles semantic `--rb-*` tokens and stable `rb-*` / `rr-*` hooks; it does not copy Plugin implementation CSS or add behavior. Read [Your First Theme](./writing-a-theme.md) for the complete Theme contract.
 
+## Installation
+
+The generator ships with the Riebeckite CLI. Add the CLI to the project if it is not installed yet:
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## Create a Theme
 
 ```sh

@@ -9,6 +9,12 @@ browser, and the Vega runtime is imported dynamically only when it is needed.
 
 [Japanese](./vega-lite.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-vega-lite
+```
+
 ## Configure
 
 ```ts

@@ -8,6 +8,12 @@ is shipped.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-bases
+```
+
 ## Setup
 
 ```ts

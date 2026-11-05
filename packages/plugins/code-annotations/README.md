@@ -9,6 +9,10 @@ block UI.
 
 ## Installation
 
+```sh
+npm install @riebeckite/plugin-code-annotations
+```
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";

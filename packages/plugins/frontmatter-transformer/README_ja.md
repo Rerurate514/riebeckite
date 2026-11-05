@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-frontmatter-transformer
+```
+
 ## 概要
 
 ```ts

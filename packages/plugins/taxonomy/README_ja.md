@@ -21,6 +21,12 @@ Riebeckite のビルド時タクソノミー（タグ・フォルダ）プラグ
 
 このプラグインはデータ・フィード・SEO に加え、`/tags/<tag>` と `/folders/<path>` のページ種別を提供します。タームごとのフィードはビルド時に generated-output sink 経由で静的ファイルとして出力します。サイトは共通の Riebeckite catch-all ルートでページ種別を描画するため、タクソノミー専用のアプリケーションルートは不要です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-taxonomy
+```
+
 ## 使い方
 
 ```ts

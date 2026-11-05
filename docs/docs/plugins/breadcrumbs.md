@@ -47,6 +47,12 @@ contributed and omits its own placeholder, so the page carries a single
 BreadcrumbList entity without any Site-side coupling. Set `jsonLd: false` to
 stop this plugin from emitting one instead.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-breadcrumbs
+```
+
 ## Usage
 
 ```ts

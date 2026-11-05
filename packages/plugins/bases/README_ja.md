@@ -8,6 +8,12 @@ Obsidian Bases の互換サブセットをビルド時に描画します。`base
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-bases
+```
+
 ## 設定
 
 ```ts

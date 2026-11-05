@@ -8,6 +8,14 @@ title: Plugin Generator
 
 TTY では `riebeckite create` を実行すると、サイトやテーマと並んでこのジェネレーターを選べます。`riebeckite create plugin` を直接使う方法もこれまでどおりです。
 
+## インストール
+
+ジェネレーターは Riebeckite CLI に含まれています。プロジェクトに CLI がない場合は追加してください。
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## プラグインを作成する
 
 ```sh

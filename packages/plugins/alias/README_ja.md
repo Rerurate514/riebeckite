@@ -26,6 +26,12 @@ aliases:
 
 リダイレクトはビルド時のマニフェストに登録され、リクエスト時に HonoX が解決します。クライアント側の JavaScript は不要です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-alias
+```
+
 ## 設定
 
 ```ts

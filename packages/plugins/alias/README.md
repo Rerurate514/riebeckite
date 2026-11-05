@@ -26,6 +26,12 @@ the plugin registers redirects such as:
 
 Redirects are written into the build-time manifest and resolved by HonoX at request time. No client-side JavaScript is required.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-alias
+```
+
 ## Setup
 
 ```ts

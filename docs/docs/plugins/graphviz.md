@@ -16,6 +16,12 @@ renders to SVG. Diagrams are rendered at build time by default using the
 which runs fully offline inside Node and lets the build process exit cleanly (no
 leaked workers or timers). It runs with `order: -10`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-graphviz
+```
+
 ## Usage
 
 ```ts

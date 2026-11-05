@@ -26,6 +26,12 @@ limit: 5
 
 を検出し、マニフェスト（全ノートの frontmatter・タグ・パーマリンク）を使って結果を描画します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-query
+```
+
 ## 設定
 
 ```ts

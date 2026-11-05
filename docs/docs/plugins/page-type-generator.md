@@ -16,6 +16,14 @@ Without `--plugin`, the command creates `extensions/<name>/` with the existing P
 
 The generated page lists `manifest.discoverableEntries`, so drafts, private entries, scheduled entries, and unlisted content do not become visible. Its path must be an absolute, normalized URL path ending in `/`; traversal and malformed paths are rejected.
 
+## Installation
+
+The generator ships with the Riebeckite CLI. Add the CLI to the project if it is not installed yet:
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## Edit and test
 
 Edit the generated `resolve` function and its `rr-<feature>` hooks. Keep untrusted text escaped and use `discoverableEntries` unless the public-content contract requires otherwise. Check the Plugin with its generated test, then run:

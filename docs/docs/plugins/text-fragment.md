@@ -23,6 +23,12 @@ actions:
   that highlights the selected text.
 - **Copy quote** — builds a Markdown block quote with a link back to the page.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-text-fragment
+```
+
 ## Usage
 
 ```ts

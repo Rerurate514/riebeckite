@@ -46,6 +46,12 @@
 
 一覧は UI 性能のため絞り込み後の先頭80件を表示します。Global Graph は絞り込み後の全ノートを使います。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-garden-explorer
+```
+
 ## 使い方
 
 ```ts

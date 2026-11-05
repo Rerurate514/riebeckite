@@ -8,6 +8,12 @@ Marp のスライドデッキをビルド時に描画するプラグインです
 
 [English](./marp.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-marp
+```
+
 ## 使い方
 
 ```ts

@@ -24,6 +24,12 @@ Every list item that follows becomes a card: `- [ ] text` (unchecked),
 Card text supports inline `[[wikilinks]]` (resolved to real hrefs from the
 content manifest), `#tags`, and simple `**bold**` emphasis.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-kanban
+```
+
 ## Usage
 
 ```ts

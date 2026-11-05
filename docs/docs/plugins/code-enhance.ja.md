@@ -8,6 +8,12 @@ Shiki のシンタックスハイライトに、ファイル名ヘッダーと�
 
 [English](./code-enhance.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-code-enhance
+```
+
 ## 設定
 
 ```ts

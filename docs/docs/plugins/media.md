@@ -14,6 +14,12 @@ Renders Obsidian audio / video attachment embeds with native HTML5 media players
 `![[music.mp3]]` and `![[movie.mp4]]`. Unsupported files return `null`, allowing
 later renderers or the default fallback to handle them.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-media
+```
+
 ## Usage
 
 ```ts

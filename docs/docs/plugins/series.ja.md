@@ -12,6 +12,12 @@ title: Series
 
 [Plugins in depth](/series/plugins-in-depth-en) のシリーズページでは、記事が順番に並び、各記事に前後のナビゲーションが表示されます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-series
+```
+
 ## 概要
 
 `series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えます。結果は `getSeriesNavigation()` と `<SeriesNavigation />` コンポーネントで提供し、エントリの HTML は変更しません。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。シリーズが無い場合はナビゲーションを描画しません。

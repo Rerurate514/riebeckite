@@ -14,6 +14,12 @@ that carries the Chart.js configuration as JSON. The charts themselves are
 drawn in the browser by `initChartJs`, which dynamically imports
 `chart.js/auto`; the build only emits the markup. It runs with `order: -10`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-chartjs
+```
+
 ## Usage
 
 ```ts

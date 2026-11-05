@@ -10,6 +10,12 @@ the CDN only when a figure is present.
 
 [Japanese](./markmap.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-markmap
+```
+
 ## Configure
 
 ```ts

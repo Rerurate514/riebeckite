@@ -15,6 +15,12 @@ Excalidraw drawing rendering for Obsidian wikilinks.
 (`![[drawing.excalidraw]]`) resolves to an Excalidraw file. The plugin renders
 the drawing to an inline SVG at build time.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-excalidraw
+```
+
 ## Usage
 
 ```ts

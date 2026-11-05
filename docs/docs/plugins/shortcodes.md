@@ -20,6 +20,12 @@ Inline shortcodes render as a `span` inside the surrounding paragraph; block and
 container shortcodes render as a `div`. Every wrapper carries
 `rb-shortcode rb-shortcode--<name>`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-shortcodes
+```
+
 ## Usage
 
 ```ts

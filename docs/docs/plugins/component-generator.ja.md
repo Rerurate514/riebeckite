@@ -18,3 +18,11 @@ riebeckite create component note-card --target plugin --plugin notes --with-styl
 公開 Theme API ではテーマがコンポーネントを所有しないため、`--target theme` は案内を表示して停止します。サイトまたはプラグインのコンポーネントを作成し、テーマのルートから安定した `rr-*` フックをスタイルしてください。これによりテーマの責務境界とライト／ダークのトークンの挙動を維持できます。
 
 props やマークアップを編集した後はサイトを型チェックし、テストを実行してください。プラグインのコンポーネントでは公開パッケージの API だけを import し、コンテンツデータが必要な場合はデータヘルパーを別にエクスポートします。[UI コンポーネントの共有](./recipes/components.ja.md) と [テーマの作成](../themes/writing-a-theme.ja.md) を参照してください。
+
+## インストール
+
+ジェネレーターは Riebeckite CLI に含まれています。プロジェクトに CLI がない場合は追加してください。
+
+```sh
+npm install -D @riebeckite/cli
+```

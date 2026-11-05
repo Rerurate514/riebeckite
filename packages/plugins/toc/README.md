@@ -20,6 +20,12 @@ is the client entry: it tracks scrolling and marks links as read plus sets
 
 The component renders nothing when fewer than 2 items are extracted.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-toc
+```
+
 ## Usage
 
 ```ts

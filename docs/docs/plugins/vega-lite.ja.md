@@ -82,6 +82,12 @@ export default defineConfig({
 
 JSON を解析できないコードブロックは置き換えず、通常のコードブロックのまま残し、`@riebeckite/plugin-vega-lite` を `source` に持つ診断を出します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-vega-lite
+```
+
 ## オプション
 
 | 項目 | 既定値 | 説明 |

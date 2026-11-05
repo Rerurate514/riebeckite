@@ -37,6 +37,12 @@ With `placement: "margin"`:
 
 The plugin ships no client entry; both placements work without JavaScript.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-sidenotes
+```
+
 ## Usage
 
 ```ts

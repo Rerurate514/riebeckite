@@ -10,6 +10,12 @@ and rollback; it does not implement a separate migration engine.
 
 [日本語](./frontmatter-transformer.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-frontmatter-transformer
+```
+
 ## Overview
 
 ```ts

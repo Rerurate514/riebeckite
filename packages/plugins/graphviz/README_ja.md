@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-graphviz
+```
+
 ## 設定
 
 ```ts

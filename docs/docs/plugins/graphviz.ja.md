@@ -8,6 +8,12 @@ title: Graphviz
 
 [English](./graphviz.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-graphviz
+```
+
 ## 設定
 
 ```ts

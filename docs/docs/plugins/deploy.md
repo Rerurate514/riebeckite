@@ -33,6 +33,12 @@ provider-specific files for Cloudflare Pages, Cloudflare Workers, Netlify,
 Vercel, or GitHub Pages. All planning is pure and deterministic: no timestamps,
 no randomness, and a stable path order.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-deploy
+```
+
 ## Usage
 
 ```ts

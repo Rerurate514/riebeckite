@@ -22,6 +22,12 @@
 
 関係は ExcaliBrain のオントロジーに従い、YAML frontmatter と本文中の Dataview インラインフィールドから取得します。明示されていない関係は、コンテンツグラフから推論します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-excalibrain
+```
+
 ## 設定
 
 ```ts

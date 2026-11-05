@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-wavedrom
+```
+
 ## 概要
 
 `wavedrom()` は ` ```wavedrom `（および ` ```wavejson `）のコードブロックを `<figure>` に置き換え、正規化した WaveJSON を `data-wavedrom-spec` 属性に埋め込みます。図そのものはブラウザ側の `initWaveDrom` が `wavedrom` を動的 import して描画します。ビルドはマークアップだけを出力します。実行順は `order: -10` です。

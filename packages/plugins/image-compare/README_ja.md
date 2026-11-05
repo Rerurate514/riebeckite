@@ -23,6 +23,12 @@ label: ホームページ
 
 ブロックは `<figure>` とネイティブの range input になります。マウス、タッチ、キーボードのすべてで操作でき、1 ページに複数のブロックを置けます。SPA でページが置き換わると、各スライダーのリスナーは破棄されます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-image-compare
+```
+
 ## 設定
 
 ```ts

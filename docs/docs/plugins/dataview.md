@@ -30,6 +30,12 @@ Unlisted, draft, and scheduled notes are excluded from queries and their inline
 fields and tasks are never read. DataviewJS (`dataviewjs`) is **not**
 supported: those blocks stay code blocks and produce a diagnostic.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-dataview
+```
+
 ## Usage
 
 ```ts

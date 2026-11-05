@@ -38,6 +38,12 @@ navigates to `permalink`.
 `searchItems()` is pure and exported, so it can be used server-side too — for
 example to generate a `search-data.json` index the modal fetches at runtime.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-search
+```
+
 ## Usage
 
 ```ts

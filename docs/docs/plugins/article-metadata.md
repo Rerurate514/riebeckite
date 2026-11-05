@@ -13,6 +13,23 @@ article context.
 
 The line under this page's title — publication date and reading time — is rendered here. The `<time>` element carries the machine-readable date. Tags appear as well when the note has any.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-article-metadata
+```
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { articleMetadata } from "@riebeckite/plugin-article-metadata";
+
+export default defineConfig({
+  plugins: [articleMetadata()],
+});
+```
+
 ## Overview
 
 `articleMetadata()` registers the component stylesheet. It does not add

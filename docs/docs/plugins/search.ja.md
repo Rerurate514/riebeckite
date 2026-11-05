@@ -96,3 +96,9 @@ const results = searchItems(items, "#obsidian");
 
 - [[plugin-api|プラグインシステム]]
 - [`@riebeckite/plugin-garden-explorer`](./garden-explorer.ja.md)
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-search
+```

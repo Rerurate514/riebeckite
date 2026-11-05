@@ -18,6 +18,12 @@
 
 いずれも対応する DOM が無いページでは何もしません。`initUx()` は何度呼んでも二重に初期化しません。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-ux
+```
+
 ## 使い方
 
 ```ts

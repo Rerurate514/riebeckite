@@ -11,6 +11,23 @@ turns raw values into structured data; the Site decides where the panel goes.
 
 The property panel above the article body shows this page's `status` value. It is built from frontmatter by the exported `Properties` component.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-properties
+```
+
+## Usage
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { properties } from "@riebeckite/plugin-properties";
+
+export default defineConfig({
+  plugins: [properties()],
+});
+```
+
 ## Overview
 
 `properties()` contributes a stylesheet, tracks wikilink dependencies, and

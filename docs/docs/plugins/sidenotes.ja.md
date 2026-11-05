@@ -33,6 +33,12 @@ Riebeckite 用の脚注スタイルプラグインです。執筆者は通常の
 
 クライアントエントリはありません。どちらの配置も JavaScript なしで動作します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-sidenotes
+```
+
 ## 使い方
 
 ```ts

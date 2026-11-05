@@ -32,6 +32,12 @@ because the model is built from `manifest.discoverableEntries`.
 Nothing in the vault has to change: no `navigation.md`, no navigation
 frontmatter, no re-declaring what the folder structure already says.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-navigation
+```
+
 ## Usage
 
 ```ts

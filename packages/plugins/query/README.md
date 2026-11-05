@@ -27,6 +27,12 @@ limit: 5
 and renders them using the content manifest (every note's frontmatter, tags, and
 permalink).
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-query
+```
+
 ## Usage
 
 ```ts

@@ -58,3 +58,9 @@ const current = await api.getCurrentDiff("notes/hello.md");
 ## 関連資料
 
 - [[plugin-api|プラグインシステム]]
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-diff
+```

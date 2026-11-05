@@ -76,6 +76,12 @@ public view and do not reveal that the target exists.
 The note list shows the first 80 filtered notes for UI performance. The Global
 Graph uses all filtered notes.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-garden-explorer
+```
+
 ## Usage
 
 ```ts

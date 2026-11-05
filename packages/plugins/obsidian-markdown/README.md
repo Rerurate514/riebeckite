@@ -13,6 +13,12 @@ block references.
 during the build. It runs with `order: -20` so it processes content before
 other Markdown plugins.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-obsidian-markdown
+```
+
 ## Usage
 
 ```ts

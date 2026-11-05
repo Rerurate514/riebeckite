@@ -8,6 +8,12 @@ title: Rename
 
 [English](./rename.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-rename
+```
+
 ## 基本的な使い方
 
 ```ts

@@ -15,6 +15,12 @@ Two parts:
 - **Build (rehype):** wraps each rendered `<img>` in a trigger anchor
 - **Client:** opens an accessible dialog on click
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-lightbox
+```
+
 ## Usage
 
 ```ts

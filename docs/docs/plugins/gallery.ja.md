@@ -32,6 +32,12 @@ items:
 なります。グリッドはビルド時に生成されるため、クライアント側 JavaScript は
 不要です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-gallery
+```
+
 ## 使い方
 
 ```ts

@@ -67,3 +67,9 @@ return (
 ## 関連資料
 
 - [プラグインシステム](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api.ja.md)
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-toc
+```

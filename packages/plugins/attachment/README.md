@@ -14,6 +14,12 @@ non-image file (`[report.pdf](https://github.com/Rerurate514/riebeckite/blob/mai
 
 Without this plugin, those wikilinks fall back to a plain download link.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-attachment
+```
+
 ## Usage
 
 ```ts

@@ -27,6 +27,12 @@ end: 2026-10-31
 
 既定の終了日は壁時計ではなく最新のアクティビティ日です。コンテンツが変わらなければ、同じ HTML が再現されます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-vault-heatmap
+```
+
 ## 設定
 
 ```ts

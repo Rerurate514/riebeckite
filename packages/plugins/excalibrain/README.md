@@ -25,6 +25,12 @@ Relationships come from ExcaliBrain's ontology: YAML frontmatter fields and
 dataview inline fields in the note body. When a relationship is not stated
 explicitly, it is inferred from the content graph.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-excalibrain
+```
+
 ## Usage
 
 ```ts

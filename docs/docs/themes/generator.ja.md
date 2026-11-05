@@ -6,6 +6,14 @@ title: テーマジェネレーター
 
 `riebeckite create theme` は、公開されている `defineTheme` API を使って、`themes/` にローカルテーマを生成します。セマンティックトークンの `--rb-*` と、安定した `rb-*` / `rr-*` フックだけをスタイル対象にし、プラグインの実装 CSS を複製したり、機能を追加したりしません。テーマの公開契約については、[はじめてのテーマ作成](./writing-a-theme.ja.md)を参照してください。
 
+## インストール
+
+ジェネレーターは Riebeckite CLI に含まれています。プロジェクトに CLI がない場合は追加してください。
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## テーマを作成する
 
 ```sh

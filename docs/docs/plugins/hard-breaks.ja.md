@@ -22,6 +22,10 @@ Markdown の通常の改行を `<br>` 要素として出力するプラグイン
 
 ## インストール
 
+```sh
+npm install @riebeckite/plugin-hard-breaks
+```
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { hardBreaks } from "@riebeckite/plugin-hard-breaks";

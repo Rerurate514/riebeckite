@@ -8,6 +8,12 @@ title: Map
 
 [English](./map.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-map
+```
+
 ## 使い方
 
 ```ts

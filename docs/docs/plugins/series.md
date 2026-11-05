@@ -31,6 +31,12 @@ discoverable manifest, so unlisted, draft, and scheduled notes never appear.
 The plugin is build-time only: it ships a stylesheet asset and no client
 runtime.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-series
+```
+
 ## Usage
 
 ```ts

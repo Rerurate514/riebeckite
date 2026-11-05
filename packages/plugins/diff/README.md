@@ -7,6 +7,12 @@ retrieve past revisions, and compute line-level diffs between them.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-diff
+```
+
 ## Overview
 
 `createPostDiffApi()` wraps a local Git repository and exposes revision

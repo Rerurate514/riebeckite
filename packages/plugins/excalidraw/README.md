@@ -13,6 +13,12 @@ Excalidraw drawing rendering for Obsidian wikilinks.
 (`![drawing.excalidraw](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/drawing.excalidraw.md)`) resolves to an Excalidraw file. The plugin renders
 the drawing to an inline SVG at build time.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-excalidraw
+```
+
 ## Usage
 
 ```ts

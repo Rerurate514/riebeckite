@@ -8,6 +8,12 @@ title: OG Image
 
 [English](./og-image.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-og-image
+```
+
 ## 使い方
 
 ```ts

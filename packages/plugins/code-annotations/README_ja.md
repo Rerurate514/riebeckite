@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-code-annotations
+```
+
 ## 設定
 
 ```ts

@@ -15,6 +15,12 @@ Build-time media embeds for ` ```embed ` code blocks.
 the plugin never performs a network request at build time, and it ships no
 client-side JavaScript.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-rich-embed
+```
+
 ## Usage
 
 ```ts

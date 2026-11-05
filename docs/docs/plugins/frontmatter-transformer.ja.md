@@ -8,6 +8,12 @@ title: Frontmatter Transformer
 
 [English](./frontmatter-transformer.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-frontmatter-transformer
+```
+
 ## 概要
 
 ```ts

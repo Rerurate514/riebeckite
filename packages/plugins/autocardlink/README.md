@@ -21,6 +21,12 @@ favicon: https://example.com/favicon.ico
 image: https://example.com/og.png
 ```
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-autocardlink
+```
+
 ## Usage
 
 ```ts

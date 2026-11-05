@@ -26,6 +26,12 @@ Cloudflare Pages / Cloudflare Workers / Netlify / Vercel / GitHub Pages 向け�
 ファイルを計画します。出力計画は純粋かつ決定的です。タイムスタンプや乱数は使わず、
 パスの順序も安定します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-deploy
+```
+
 ## 使い方
 
 ```ts

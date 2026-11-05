@@ -6,6 +6,14 @@
 
 Markdown / Obsidian ノートで BibTeX / BibLaTeX の文献情報を使って引用を表示する、Riebeckite 公式プラグインです。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-citations
+```
+
+## 使い方
+
 ```ts
 import { citations } from "@riebeckite/plugin-citations";
 

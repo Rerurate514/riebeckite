@@ -28,6 +28,12 @@ page types. Per-term feeds are written as static files through the build's
 generated-output sink. A site renders the page types through its generic
 Riebeckite catch-all route; no taxonomy-specific application route is needed.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-taxonomy
+```
+
 ## Usage
 
 ```ts

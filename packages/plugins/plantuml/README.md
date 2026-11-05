@@ -8,6 +8,12 @@ network and no client JavaScript is shipped.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-plantuml
+```
+
 ## Usage
 
 ```ts

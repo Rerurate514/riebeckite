@@ -18,6 +18,12 @@ title: Responsive Image
 
 URL を捏造することはありません。ファイルを書き出すこともありません。マニフェストが把握しているアセットだけを参照します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-responsive-image
+```
+
 ## 設定
 
 ```ts

@@ -8,6 +8,12 @@
 
 ヘッドレスブラウザを使わずに静的 SVG を生成したい場合は [Mermaid (Pele)](../mermaid-pele/README_ja.md) を使ってください。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-mermaid
+```
+
 ## 使い方
 
 ```ts

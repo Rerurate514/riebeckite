@@ -18,6 +18,12 @@ title: Hover Preview
 
 索引に含めるのは discoverable なページだけです。unlisted のノートは permalink から直接閲覧できますが、タイトルと抜粋は共有プレビュー索引に書き込みません。draft と予約公開のノートも除外されます。抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` は生成する索引に含める項目数の上限です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-hover-preview
+```
+
 ## 使い方
 
 ```ts

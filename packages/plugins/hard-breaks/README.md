@@ -21,6 +21,10 @@ The plugin adds no client JavaScript and no CSS.
 
 ## Installation
 
+```sh
+npm install @riebeckite/plugin-hard-breaks
+```
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { hardBreaks } from "@riebeckite/plugin-hard-breaks";

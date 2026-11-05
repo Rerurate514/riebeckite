@@ -16,6 +16,14 @@ riebeckite create page-type glossary --plugin reference-pages --path /glossary/
 
 生成されたページは `manifest.discoverableEntries` だけを列挙するため、Draft、Private、Scheduled、Unlisted のコンテンツは公開されません。パスは末尾が `/` の正規化された絶対 URL パスである必要があり、トラバーサルや不正なパスは拒否します。
 
+## インストール
+
+ジェネレーターは Riebeckite CLI に含まれています。プロジェクトに CLI がない場合は追加してください。
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## 編集とテスト
 
 生成された `resolve` 関数と `rr-<feature>` フックを編集します。信頼できない文字列はエスケープし、公開コンテンツの契約上必要な場合を除いて `discoverableEntries` を使ってください。生成されたテストを実行したうえで、次を実行します。

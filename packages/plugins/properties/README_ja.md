@@ -108,6 +108,23 @@ plugins[0].options.fields.status.type: Expected one of: text, link, tags, badge,
 
 不明なフィールドオプション、空のタグベース、未対応の日付トークン、文字列でないバッジバリアントも報告されます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-properties
+```
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { properties } from "@riebeckite/plugin-properties";
+
+export default defineConfig({
+  plugins: [properties()],
+});
+```
+
 ## オプション
 
 | オプション | 型 | 既定値 | 説明 |

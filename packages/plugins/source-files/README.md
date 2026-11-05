@@ -6,6 +6,12 @@ Publish selected text source files as first-class, syntax-highlighted pages.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-source-files
+```
+
 ## Usage
 
 `sourceFiles()` requires explicit include patterns. A file is published only when a routable note links or embeds it, so draft and scheduled notes cannot expose a source page.

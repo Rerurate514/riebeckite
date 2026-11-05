@@ -46,6 +46,12 @@ JavaScript は不要です。
 暫定版を省略するため、サイト側で調整しなくても BreadcrumbList は 1 つだけに
 なります。本プラグインからの出力自体を止めたい場合は `jsonLd: false` を使います。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-breadcrumbs
+```
+
 ## 使い方
 
 ```ts

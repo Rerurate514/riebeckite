@@ -22,6 +22,12 @@ changelog dataset is built and available for the app to render itself. The
 plugin contributes no markup to the manifest entry; the Site renders the
 changelog sections it wants. No client script is registered.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-changelog
+```
+
 ## Usage
 
 ```ts

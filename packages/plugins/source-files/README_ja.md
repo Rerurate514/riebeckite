@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-source-files
+```
+
 ## 設定
 
 `sourceFiles()` では公開対象の `include` パターンを必ず指定します。ルーティング可能なノートからリンクまたは埋め込みされたファイルだけが公開されるため、下書きや公開予定のノートからソースページが露出することはありません。

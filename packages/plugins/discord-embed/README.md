@@ -14,6 +14,12 @@ tags, so this plugin adds only the Discord-specific pieces that are missing:
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-discord-embed
+```
+
 ## Usage
 
 ```ts

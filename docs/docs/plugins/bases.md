@@ -10,6 +10,12 @@ is shipped.
 
 [日本語](./bases.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-bases
+```
+
 ## Setup
 
 ```ts

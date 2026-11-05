@@ -8,6 +8,14 @@ title: Citations
 
 Official Riebeckite plugin for BibTeX / BibLaTeX based citations in Markdown and Obsidian notes.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-citations
+```
+
+## Usage
+
 ```ts
 import { citations } from "@riebeckite/plugin-citations";
 

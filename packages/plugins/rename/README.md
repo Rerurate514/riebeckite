@@ -8,6 +8,12 @@ machinery.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-rename
+```
+
 ## Basic usage
 
 ```ts

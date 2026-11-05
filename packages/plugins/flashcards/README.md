@@ -23,6 +23,12 @@ What is 2 + 2? :: 4
 
 and replaces them with an interactive deck.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-flashcards
+```
+
 ## Usage
 
 ```ts

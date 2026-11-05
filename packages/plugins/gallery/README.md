@@ -28,6 +28,12 @@ Each item becomes one card. When `href` is present the card is an `<a>`;
 otherwise it is a plain `<div>`. When `image` is absent the card is text-only.
 The grid is rendered at build time, so no client-side JavaScript is required.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-gallery
+```
+
 ## Usage
 
 ```ts

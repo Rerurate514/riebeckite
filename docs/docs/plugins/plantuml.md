@@ -10,6 +10,12 @@ network and no client JavaScript is shipped.
 
 [日本語](./plantuml.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-plantuml
+```
+
 ## Usage
 
 ```ts

@@ -22,6 +22,12 @@ title: Related Posts
 
 サイトは `<RelatedPosts entries={...} options={...} />` コンポーネントを記事の後などに配置します。条件を満たす関連エントリがない場合、コンポーネントは何も描画しません。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-related-posts
+```
+
 ## クイックスタート
 
 ```ts

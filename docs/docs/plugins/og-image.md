@@ -8,6 +8,12 @@ Generates static 1200×630 PNG Open Graph images for public and unlisted content
 
 [日本語](./og-image.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-og-image
+```
+
 ## Usage
 
 ```ts

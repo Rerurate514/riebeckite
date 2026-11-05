@@ -12,6 +12,12 @@ SEO metadata, sitemap, robots.txt, and feed generation for Riebeckite.
 builds per-page SEO metadata and renders `/sitemap.xml`, `/robots.txt`, and
 RSS / Atom / JSON feeds.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-seo
+```
+
 ## Usage
 
 ```ts

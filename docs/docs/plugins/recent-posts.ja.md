@@ -53,3 +53,9 @@ return <RecentPosts posts={posts} />;
 ## 関連資料
 
 - [[plugin-api|プラグインシステム]]
+
+## インストール
+
+```sh
+npm install @riebeckite/plugin-recent-posts
+```

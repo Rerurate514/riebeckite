@@ -8,6 +8,14 @@ title: Plugin Generator
 
 Run `riebeckite create` in a TTY to choose this generator alongside Site and Theme creation. Direct `riebeckite create plugin` usage remains unchanged.
 
+## Installation
+
+The generator ships with the Riebeckite CLI. Add the CLI to the project if it is not installed yet:
+
+```sh
+npm install -D @riebeckite/cli
+```
+
 ## Create a Plugin
 
 ```sh

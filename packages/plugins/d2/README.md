@@ -12,6 +12,12 @@ D2 diagram rendering for ` ```d2 ` code blocks.
 SVG. Diagrams are rendered at build time by the D2 WebAssembly engine running in
 Node, with an automatic client-side fallback. It runs with `order: -10`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-d2
+```
+
 ## Usage
 
 ```ts

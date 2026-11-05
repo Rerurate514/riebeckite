@@ -12,6 +12,12 @@ Obsidian の Excalidraw 埋め込みを SVG として表示するプラグイン
 
 `![[drawing.excalidraw]]` のような埋め込みウィキリンクを検出し、ビルド時に SVG へ変換して出力します。通常のリンクや対象外のファイルは処理せず、添付ファイル用のレンダラーに任せます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-excalidraw
+```
+
 ## 設定
 
 ```ts

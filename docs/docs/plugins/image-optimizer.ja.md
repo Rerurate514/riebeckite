@@ -8,6 +8,12 @@ title: Image Optimizer
 
 [English](./image-optimizer.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-image-optimizer
+```
+
 ## 使い方
 
 ```ts

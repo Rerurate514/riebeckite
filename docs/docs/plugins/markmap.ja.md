@@ -8,6 +8,12 @@ title: Markmap
 
 [English](./markmap.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-markmap
+```
+
 ## 使い方
 
 ```ts

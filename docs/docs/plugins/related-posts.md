@@ -30,6 +30,12 @@ The Site places the `<RelatedPosts entries={...} options={...} />` component
 itself, normally once after article content. The component renders nothing when
 no related entries qualify.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-related-posts
+```
+
 ## Quick Start
 
 ```ts

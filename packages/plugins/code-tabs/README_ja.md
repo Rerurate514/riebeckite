@@ -6,6 +6,12 @@
 
 [English](./README.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-code-tabs
+```
+
 ## 設定
 
 ```ts

@@ -10,6 +10,12 @@ Renders ` ```wavedrom ` code blocks as [WaveDrom](https://wavedrom.com/) timing 
 
 `wavedrom()` replaces ` ```wavedrom ` (and ` ```wavejson `) code blocks with a `<figure>` that carries the normalized WaveJSON in a `data-wavedrom-spec` attribute. The diagram itself is drawn in the browser by `initWaveDrom`, which dynamically imports `wavedrom`. The build only emits markup. Execution order is `order: -10`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-wavedrom
+```
+
 ## Configuration
 
 ```ts

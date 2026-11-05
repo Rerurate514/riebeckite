@@ -38,6 +38,12 @@ Supported services:
 Mastodon is opt-in: add `"mastodon"` to `services` and set
 `mastodonInstance`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-share
+```
+
 ## Usage
 
 ```ts

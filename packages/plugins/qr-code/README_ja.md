@@ -10,6 +10,12 @@
 
 `qrCode()` は QR コードのコードブロックを `<figure class="rb-qr">` に置き換え、インラインの `<svg>` を埋め込みます。エンコードはビルド時の Node 上で完結し、ブラウザには何も配信しません。`order: -10` で実行されるため、`code-enhance` や `code-tabs` より先に処理されます。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-qr-code
+```
+
 ## 使い方
 
 ```ts

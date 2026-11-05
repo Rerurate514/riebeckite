@@ -10,6 +10,10 @@ Groups adjacent code blocks with `tab="..."` metadata into an accessible tab UI.
 
 ## Installation
 
+```sh
+npm install @riebeckite/plugin-code-tabs
+```
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { codeTabs } from "@riebeckite/plugin-code-tabs";

@@ -15,6 +15,12 @@ title: Highlight
 変換する前に生の HTML へ置き換える remark トランスフォーマーを登録します。
 `~~打ち消し線~~` しか扱わない `remark-gfm` を補います。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-highlight
+```
+
 ## 使い方
 
 ```ts

@@ -11,6 +11,12 @@ an interactive Leaflet map in the browser only when a map is present.
 
 [日本語](./map.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-map
+```
+
 ## Configure
 
 ```ts

@@ -8,6 +8,12 @@ title: SVG Optimizer
 
 [English](./svg-optimizer.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-svg-optimizer
+```
+
 ## 使い方
 
 ```ts

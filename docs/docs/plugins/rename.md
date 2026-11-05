@@ -10,6 +10,12 @@ machinery.
 
 [日本語](./rename.ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-rename
+```
+
 ## Basic usage
 
 ```ts

@@ -28,6 +28,12 @@
 
 Mastodon はオプトインです。`services` に `"mastodon"` を追加し、`mastodonInstance` を設定してください。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-share
+```
+
 ## 使い方
 
 ```ts

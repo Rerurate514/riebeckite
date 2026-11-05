@@ -22,6 +22,12 @@ The renderer runs before `@riebeckite/plugin-attachment` and
 captured by the generic attachment card. Register `attachment()` alongside to
 keep download links for non-PDF files.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-pdf
+```
+
 ## Usage
 
 ```ts

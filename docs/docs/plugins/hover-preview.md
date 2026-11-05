@@ -31,6 +31,12 @@ collapsed, and the result is truncated to `excerptLength` characters. Pages
 without internal links are left untouched, and `maxEntries` limits how many
 entries are written to the generated index.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-hover-preview
+```
+
 ## Usage
 
 ```ts

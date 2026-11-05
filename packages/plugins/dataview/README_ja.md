@@ -22,6 +22,12 @@ LIMIT 10
 
 描画には公開マニフェストと各ノートの Markdown 原文を使います。frontmatter、インラインフィールド、タスク、タグ、リンク、ファイルメタデータ、パーマリンクが対象です。`unlisted`・`draft`・`scheduled` のノートは照合から除外され、そのインラインフィールドやタスクも読み込まれません。DataviewJS（`dataviewjs`）には対応しません。そのブロックはコードブロックのまま残り、診断を 1 件出します。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-dataview
+```
+
 ## 設定
 
 ```ts

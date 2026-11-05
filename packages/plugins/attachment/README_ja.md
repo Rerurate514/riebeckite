@@ -10,6 +10,12 @@ Obsidian 形式の添付ファイルリンクを、ダウンロードリンク�
 
 `[report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` や `![report.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/report.pdf.ja.md)` のような画像以外のウィキリンクを扱います。`@riebeckite/plugin-obsidian-markdown` がリンク先を添付ファイルとして解決したとき、このプラグインが表示を引き受けます。プラグインを登録しない場合も通常のダウンロードリンクにはなりますが、埋め込み用のカードは作られません。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-attachment
+```
+
 ## 設定
 
 Obsidian Markdown プラグインとともに登録します。

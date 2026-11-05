@@ -34,6 +34,12 @@ The plugin is a thin runtime switch over that contract:
 everything else is delivered through the two components you render in your site
 shell.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-color-mode
+```
+
 ## Usage
 
 ```ts

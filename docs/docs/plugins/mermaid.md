@@ -16,6 +16,12 @@ For static SVG rendering without a headless browser, see [Mermaid (Pele)](./merm
 that renders to SVG. Diagrams are rendered at build time with a headless browser by
 default. It runs with `order: -10`.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-mermaid
+```
+
 ## Usage
 
 ```ts

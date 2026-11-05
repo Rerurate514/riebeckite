@@ -26,6 +26,23 @@ import ArticleMetadata from "@riebeckite/plugin-article-metadata/components";
 
 タグのリンクはタクソノミープラグインの解決済み設定を使うため、独自の `tagsBasePath` にも追随します。タグページが無効な場合はタグをテキストで表示します。サイトコンテキストがない場合もテキスト表示です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-article-metadata
+```
+
+## 使い方
+
+```ts
+import { defineConfig } from "@riebeckite/core";
+import { articleMetadata } from "@riebeckite/plugin-article-metadata";
+
+export default defineConfig({
+  plugins: [articleMetadata()],
+});
+```
+
 ## オプション
 
 | Prop | 既定値 | 説明 |

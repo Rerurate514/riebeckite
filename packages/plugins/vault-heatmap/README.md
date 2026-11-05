@@ -32,6 +32,12 @@ aggregate, so the heatmap cannot reveal unpublished activity.
 The default end date is the latest activity date, not the wall clock. Repeated
 builds without content changes therefore produce identical HTML.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-vault-heatmap
+```
+
 ## Usage
 
 ```ts

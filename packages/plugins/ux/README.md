@@ -25,6 +25,12 @@ A reading-progress bar runs along the top of this page, and a back-to-top button
 Every feature is a no-op when the relevant DOM is absent, and `initUx()` is
 idempotent.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-ux
+```
+
 ## Usage
 
 ```ts

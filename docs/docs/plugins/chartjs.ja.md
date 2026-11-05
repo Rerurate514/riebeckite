@@ -12,6 +12,12 @@ title: Chart.js
 
 `chartjs()` は ` ```chart ` のコードブロックを `<figure>` に置き換え、Chart.js の設定を JSON として埋め込みます。グラフそのものはブラウザ側の `initChartJs` が `chart.js/auto` を動的に import して描画します。ビルドはマークアップだけを出力します。実行順は `order: -10` です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-chartjs
+```
+
 ## 設定
 
 ```ts

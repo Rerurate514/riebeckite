@@ -34,6 +34,12 @@ index ノートを持たないフォルダは、子をまとめたラベルと�
 Vault 側の変更は不要です。`navigation.md` もナビゲーション用 frontmatter も
 要らず、フォルダ構造がすでに表していることを再入力する必要もありません。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-navigation
+```
+
 ## 使い方
 
 ```ts

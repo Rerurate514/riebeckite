@@ -24,6 +24,12 @@ content manifest, including variants from `imageOptimizer()`.
 The plugin never fabricates URLs and never writes files. It only references
 assets that the manifest already knows about.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-responsive-image
+```
+
 ## Usage
 
 ```ts

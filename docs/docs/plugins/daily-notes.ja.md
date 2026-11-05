@@ -22,6 +22,12 @@ title: Daily Notes
 
 `dailyNotes()` はデータとスタイルを登録しますが、ウィジェットを自動描画しません。配置はサイト側が管理し、ホームページのセクションが推奨位置です。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-daily-notes
+```
+
 ## クイックスタート
 
 ```ts

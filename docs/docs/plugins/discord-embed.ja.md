@@ -14,6 +14,12 @@ Discord の `Discordbot` は共有されたページの `<head>` メタデータ
 
 [English](./discord-embed.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-discord-embed
+```
+
 ## 設定
 
 ```ts

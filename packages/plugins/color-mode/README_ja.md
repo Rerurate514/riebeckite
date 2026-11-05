@@ -26,6 +26,12 @@ Riebeckite サイト向けのライト / ダーク / システム連動のカラ
 
 `colorMode()` はスタイルシートとクライアントエントリーの登録だけを行います。UI は、サイトシェルで描画する 2 つのコンポーネントが担います。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-color-mode
+```
+
 ## 使い方
 
 ```ts

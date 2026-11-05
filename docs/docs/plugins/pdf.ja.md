@@ -16,6 +16,12 @@ Obsidian 形式の PDF 添付ファイルをインライン表示するプラグ
 
 このレンダラーは `@riebeckite/plugin-attachment` と `@riebeckite/plugin-media` より先（`order: -20`）に実行されるため、PDF の埋め込みが汎用の添付カードに奪われることはありません。PDF 以外のダウンロードリンクを保つには `attachment()` を併用してください。
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-pdf
+```
+
 ## 設定
 
 ```ts

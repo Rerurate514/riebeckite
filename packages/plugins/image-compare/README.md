@@ -29,6 +29,12 @@ The block becomes a `<figure>` with a native range input. Mouse, touch, and
 keyboard all work through that input. Multiple blocks can appear on one page,
 and SPA navigation removes each slider's listener when its page is replaced.
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-image-compare
+```
+
 ## Usage
 
 ```ts

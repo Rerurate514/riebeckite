@@ -201,17 +201,22 @@ export function buildOutputInventory(
     );
   }
   for (const [path, redirect] of manifest.publicRedirects) {
+    const outputPath = htmlOutputPath(path);
+    if (outputs.get(outputPath)?.producer === `content:${redirect.slug}`)
+      continue;
     addOutput(outputs, {
       kind: "redirect",
-      path: htmlOutputPath(path),
+      path: outputPath,
       producer: `content:${redirect.slug}:redirect`,
       dependencies: [{ type: "content", slug: redirect.slug }],
     });
   }
   for (const output of pluginPageOutputs) {
+    const path = htmlOutputPath(output.path);
+    if (outputs.get(path)?.kind === "content") outputs.delete(path);
     addOutput(outputs, {
       ...output,
-      path: htmlOutputPath(output.path),
+      path,
     });
   }
   for (const output of manifest.generatedOutputs) {

@@ -143,7 +143,7 @@ jobs:
           pnpm-version: ${{ env.PNPM_VERSION }}
       - run: pnpm build:packages
       - run: pnpm --filter @riebeckite/core test
-      - run: pnpm --filter @riebeckite/honox exec node --import tsx --test --test-concurrency=1 "test/*.test.ts"
+      - run: pnpm --filter @riebeckite/honox exec node --max-old-space-size=4096 --import tsx --test --test-concurrency=1 "test/*.test.ts"
 
   integration-e2e:
     name: integration-e2e

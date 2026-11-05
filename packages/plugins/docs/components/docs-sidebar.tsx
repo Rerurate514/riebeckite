@@ -27,14 +27,22 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
     props.currentPermalink ?? article?.entry?.permalink ?? site?.path;
   const currentEntry =
     article?.entry ?? findEntryByPermalink(site?.view, requestedPermalink);
+  const navigationEntry =
+    currentEntry ??
+    site?.manifest.discoverableEntries.find(
+      (entry) =>
+        (entry.slug === options?.root ||
+          entry.slug.startsWith(`${options?.root}/`)) &&
+        entry.publicLocation.language === site.language,
+    );
   const currentPermalink = currentEntry?.permalink ?? requestedPermalink;
   const items =
     props.items ??
-    (site && currentEntry && options
+    (site && navigationEntry && options
       ? await getDocsNavigation({
           view: site.view,
           entries: site.manifest.discoverableEntries,
-          entrySlug: currentEntry.slug,
+          entrySlug: navigationEntry.slug,
           options,
         })
       : []);

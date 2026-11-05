@@ -25,7 +25,7 @@ The task is not marked READY. Convergence required two consecutive independent r
 - `node scripts/sync_theme_docs.mjs --check`: pass, 28 themes.
 - `git diff --check`: clean after each batch.
 - Docs site production build: passed after the final edits (`pnpm --filter @riebeckite/web build`, 1109 rendered, 7 reused, 4m15s). The Excalidraw sample `docs/assets/HW.md` was made non-routable to remove an output collision; the embedded drawing still renders. The only remaining quality warnings are two series plugin pages with headings but no `<h1>`; these are generated plugin output, not a documentation claim.
-- Full verification at the integration point: `pnpm check:docs`, `pnpm test:docs` (19/19), create-riebeckite (82/82), query plugin (22/22), CLI (225 passing, 1 pre-existing skip), `pnpm check:scaffold`, and quality plugin (20/20) all passed.
+- Full verification at the integration point: `pnpm check:docs`, `pnpm test:docs` (19/19), create-riebeckite (82/82), query plugin (22/22), CLI (228 tests, 227 passing, 1 pre-existing skip), `pnpm check:scaffold`, and quality plugin (20/20) all passed.
 - Scaffold integration fixes: the generated README prints `/` for the home page instead of `/index`, and the showcase preset no longer passes the ignored query `defaultLimit`. Golden scaffold files were regenerated and pass.
 - Anchor quality rule decodes percent-encoded fragments before matching ids; a regression test covers encoded Japanese fragments and malformed encoding. Heading-level fixes removed the remaining real skip warnings.
 - Scaffold smoke test: generated `starter`, ran `npm install`, `npm exec riebeckite check`, `npm exec riebeckite build`; all passed. Dev server returned HTTP 200 on `/`.
@@ -103,6 +103,8 @@ b6da01a8 Merge branch 'main' into docs/autonomous-audit-2026-11-04
 1acbefb5 監査レポートを統合後の状態に更新
 86fa65ad 同期したプラグインREADMEを更新
 ```
+
+This report is updated by the commit that contains this line; it follows `86fa65ad` on the branch.
 
 ## Recurrence prevention
 

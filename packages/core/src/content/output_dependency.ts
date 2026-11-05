@@ -202,7 +202,11 @@ export function buildOutputInventory(
   }
   for (const [path, redirect] of manifest.publicRedirects) {
     const outputPath = htmlOutputPath(path);
-    if (outputs.get(outputPath)?.producer === `content:${redirect.slug}`)
+    const existing = outputs.get(outputPath);
+    if (
+      existing?.kind === "content" &&
+      existing.producer === `content:${redirect.slug}`
+    )
       continue;
     addOutput(outputs, {
       kind: "redirect",

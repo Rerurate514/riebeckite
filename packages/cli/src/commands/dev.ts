@@ -6,28 +6,43 @@ import { managedDevReporter, managedSiteId } from "./managed_dev.js";
 export async function runDev(project: RiebeckiteProject): Promise<void> {
   const managed = managedDevReporter();
   managed?.starting();
+  const bridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
   try {
     await loadProjectConfig(project);
     await startHonoxDevServer({
       root: project.appRoot,
-      bridgeToken: process.env.RIEBECKITE_BRIDGE_TOKEN,
-      onServerReady: async (urls) => {
-        const previewOrigin = urls.find(isLoopbackOrigin);
-        const bridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
-        if (!previewOrigin || !bridgeToken)
-          throw new Error("Managed development requires a loopback Bridge.");
-        await verifyBridge(previewOrigin, bridgeToken);
-        managed?.ready({
+      bridgeToken,
+      onServerReady: (urls) =>
+        onDevServerReady(urls, {
+          managed,
+          bridgeToken,
           siteId: managedSiteId(project.contentRoot),
-          previewOrigin: previewOrigin.replace(/\/$/, ""),
-          capabilities: ["bridge-v1"],
-        });
-      },
+        }),
     });
   } catch (error) {
     managed?.failed();
     throw error;
   }
+}
+
+export async function onDevServerReady(
+  urls: readonly string[],
+  options: {
+    readonly managed: ReturnType<typeof managedDevReporter>;
+    readonly bridgeToken: string | undefined;
+    readonly siteId: string;
+  },
+): Promise<void> {
+  if (!options.managed) return;
+  const previewOrigin = urls.find(isLoopbackOrigin);
+  if (!previewOrigin || !options.bridgeToken)
+    throw new Error("Managed development requires a loopback Bridge.");
+  await verifyBridge(previewOrigin, options.bridgeToken);
+  options.managed.ready({
+    siteId: options.siteId,
+    previewOrigin: previewOrigin.replace(/\/$/, ""),
+    capabilities: ["bridge-v1"],
+  });
 }
 
 async function verifyBridge(

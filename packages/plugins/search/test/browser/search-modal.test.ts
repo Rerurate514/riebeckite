@@ -38,6 +38,18 @@ const SEARCH_ITEMS = [
     language: "en",
     date: null,
   },
+  {
+    slug: "gamma",
+    permalink: "/notes/gamma",
+    title: "Gamma Note",
+    aliases: [],
+    headings: ["Body"],
+    body: "Gamma body content about obsidian.",
+    excerpt: "Gamma excerpt about obsidian.",
+    tags: ["obsidian"],
+    language: "ja",
+    date: null,
+  },
 ];
 
 type AxNode = {
@@ -299,6 +311,35 @@ test("opening moves focus to the search input and names the dialog", async (t) =
 
   const snapshot = (await page.accessibility.snapshot()) as AxNode | null;
   assert.equal(findByRole(snapshot, "dialog")?.name, "Search notes");
+
+  await page.close();
+});
+
+test("results follow the document language until a lang filter is used", async (t) => {
+  if (!browser) return t.skip("puppeteer browser unavailable");
+  const page = await openPage();
+  await page.evaluate(() => {
+    document.documentElement.lang = "ja";
+  });
+
+  await page.click("[data-search-open]");
+  await waitOpen(page);
+  await typeQuery(page, "note");
+  await page.waitForFunction(
+    () => document.querySelectorAll("[data-search-result]").length === 1,
+  );
+
+  const local = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("[data-search-result]")).map((link) =>
+      link.getAttribute("href"),
+    ),
+  );
+  assert.deepEqual(local, ["/notes/gamma"]);
+
+  await typeQuery(page, "lang:en note");
+  await page.waitForFunction(
+    () => document.querySelectorAll("[data-search-result]").length === 2,
+  );
 
   await page.close();
 });

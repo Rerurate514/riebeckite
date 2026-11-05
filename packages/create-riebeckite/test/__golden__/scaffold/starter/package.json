@@ -13,6 +13,9 @@
   "dependencies": {
     "@riebeckite/core": "^0.0.38",
     "@riebeckite/honox": "^0.0.38",
+    "@riebeckite/node": "^0.0.38",
+    "@riebeckite/runtime": "^0.0.38",
+    "@riebeckite/spa": "^0.0.38",
     "@riebeckite/ui": "^0.0.38",
     "hono": "^4.12.25",
     "honox": "0.1.62",

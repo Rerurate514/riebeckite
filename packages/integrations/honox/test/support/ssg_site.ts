@@ -89,6 +89,16 @@ const alias = [
     replacement: path.join(repoRoot, "packages", "plugins", "d2", "index.ts"),
   },
   {
+    find: /^@riebeckite\/plugin-folder-pages$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "folder-pages",
+      "index.ts",
+    ),
+  },
+  {
     find: /^@riebeckite\/plugin-marp$/,
     replacement: path.join(repoRoot, "packages", "plugins", "marp", "index.ts"),
   },
@@ -147,6 +157,7 @@ export type SiteSources = {
   readonly visualRenderers?: boolean;
   readonly properties?: boolean;
   readonly svgOptimizer?: boolean;
+  readonly folderPages?: boolean;
   readonly derivedOutput?: boolean;
 };
 
@@ -350,6 +361,11 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
       'import { svgOptimizer } from "@riebeckite/plugin-svg-optimizer";',
     );
   }
+  if (sources.folderPages) {
+    lines.unshift(
+      'import { folderPages } from "@riebeckite/plugin-folder-pages";',
+    );
+  }
   if (asset) {
     lines.push(
       "    output.emit({",
@@ -443,7 +459,7 @@ export function configSource(siteRoot: string, sources: SiteSources): string {
     "    enabled: true,",
     `    directory: ${JSON.stringify(path.join(siteRoot, ".riebeckite", "cache"))},`,
     "  },",
-    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), search()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}${sources.derivedOutput ? ", derived" : ""}],`,
+    `  plugins: [demo${sources.bases ? ", bases({ showFallback: false })" : ""}${sources.visualRenderers ? ", d2(), marp(), search()" : ""}${sources.properties ? ", properties()" : ""}${sources.svgOptimizer ? ", svgOptimizer()" : ""}${sources.folderPages ? ", folderPages()" : ""}${asset && sources.duplicateGeneratedOutput ? ", duplicate" : ""}${sources.externalDependency ? ", external" : ""}${sources.derivedOutput ? ", derived" : ""}],`,
     "});",
     "",
   );

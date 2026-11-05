@@ -31,7 +31,7 @@ PNG や SVG を使う場合は、ファイルを `public/` に置き、そのパ
 
 ## ヘッダーのロゴ
 
-`starter` と `showcase` の[[glossary/preset|プリセット]]ではヘッダーが表示されます。`app/components/site-header.tsx` は、28×28 のロゴの隣にサイト名を表示します。
+`empty` と `minimal` を除くすべての[[glossary/preset|プリセット]]でヘッダーが表示されます。`app/components/site-header.tsx` は、28×28 のロゴの隣にサイト名を表示します。
 
 ```tsx
 <img src="/riebeckite-logo.png" alt="" class="site-header__logo" width="28" height="28" />

@@ -9,7 +9,7 @@ sidebar:
 
 This page takes you from an empty machine to a running site. It assumes nothing about Riebeckite, and it never asks you to clone the Riebeckite repository.
 
-> **Documentation version:** this site documents the `main` branch. The `latest` npm tag can be older. Run `npm view @riebeckite/cli version` to see which version `npx create-riebeckite` and `npm exec riebeckite` will install. If a feature described here is missing, the published package predates it; use the next release or build from source.
+> **Documentation version:** this site documents the `main` branch. The `latest` npm tag can be older. Run `npm view create-riebeckite version` and `npm view @riebeckite/cli version` to see which versions the scaffold and the CLI install. If a feature described here is missing, the published package predates it; use the next release or build from source.
 
 ## Requirements
 

@@ -123,7 +123,7 @@ npm exec -- riebeckite publish run --execute --force
 ## 次に読むページ
 
 - [Deployment](./deployment.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
-- [Presets](./presets.ja.md) - `starter`、`blog`、`docs`、`minimal`、`showcase`、`empty` を比較する
+- [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`minimal`、`showcase`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説
 - [サイトのアイコンとロゴ →](../guides/branding.ja.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える

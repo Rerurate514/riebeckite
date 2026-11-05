@@ -122,7 +122,7 @@ To deploy automatically on every push to `main`, continue with GitHub Actions in
 ## Next
 
 - [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
-- [Presets](./presets.md) — compare `starter`, `blog`, `docs`, `minimal`, `showcase`, and `empty`
+- [Presets](./presets.md) — compare `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, `minimal`, `showcase`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately
 - [Installation](./installation.md) — requirements and setup deep-dive
 - [Branding your site →](../guides/branding.md) — replace the icon, header logo, and link preview image

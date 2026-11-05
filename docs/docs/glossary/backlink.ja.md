@@ -50,7 +50,8 @@ plugins: [backlinks()];
 戻り値は `ArticleBacklink[]` で、各要素は `slug`、`permalink`、`title` を持ちます。リンクは公開されて検出可能なエントリだけに絞り込まれ、マニフェストの順序で並びます。
 
 ```ts
-import { getPublishedBacklinks, content } from "@riebeckite/plugin-backlinks";
+import { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();

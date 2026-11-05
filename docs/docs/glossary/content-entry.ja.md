@@ -49,7 +49,7 @@ slug はビルドの内部でエントリを識別し、permalink は公開 URL 
 
 ページやテンプレートは、マニフェストの検索用マップを通じてエントリのデータにアクセスします。よくある形は次のとおりです。
 
-- **パーマリンクの解決**：`entry.permalink` を直接読むか、slug から URL を引く `byPermalink` マップを使う。
+- **パーマリンクの解決**：`entry.permalink` を直接読むか、slug の検索には `bySlug`、permalink の検索には `byPermalink` を使う。
 - **frontmatter**：ページ単位のメタデータ（タイトル、日付、タグなど）に `entry.frontmatter` でアクセスする。
 - **head タグ**：プラグインが `entry.headTags` を提供し、サイトのシェルが `<head>` 内に描画する。
 - **アセット**：`entry.assets` にはこのエントリに関連するコンテンツの画像と添付ファイルが入る。サイトは出力時にコピーするか参照する。

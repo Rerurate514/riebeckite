@@ -31,7 +31,7 @@ The browser infers the type from the file extension. If you need an explicit `ty
 
 ## Header logo
 
-The `starter` and `showcase` presets render a header. `app/components/site-header.tsx` shows the site title next to a 28×28 logo:
+Every preset except `empty` and `minimal` renders a header. `app/components/site-header.tsx` shows the site title next to a 28×28 logo:
 
 ```tsx
 <img src="/riebeckite-logo.png" alt="" class="site-header__logo" width="28" height="28" />

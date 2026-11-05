@@ -77,7 +77,7 @@ riebeckite.config.ts の navigation
 
 `app/routes/` は通常の HonoX のルートディレクトリです。そのため、サイト独自のページも通常どおり追加できます。たとえば `/about` を作りたい場合は、HonoX のルートとして追加できます。
 
-一方、Markdown のコンテンツやプラグインが提供するページについては、基本的に自分でルートを追加する必要はありません。スターターの catch-all ルートが、`contentRouteSsgParams`、`riebeckiteSsgParams`、`resolveRiebeckiteContentRequest` を利用して、コンテンツとプラグインの[[glossary/page-type|ページ種別]]を自動的に解決します。
+一方、Markdown のコンテンツやプラグインが提供するページについては、基本的に自分でルートを追加する必要はありません。スターターの catch-all ルートが `createContentRoute` を呼び、コンテンツとプラグインの[[glossary/page-type|ページ種別]]を自動的に解決します。
 
 プラグインのページをヘッダーやフッターに表示したい場合も、新しいルートを作るのではなく、`navigation` にリンクを追加します。
 

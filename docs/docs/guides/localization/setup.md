@@ -41,7 +41,7 @@ The fallback is applied per translation group, never by matching titles or dates
 
 The plugin looks for four signals, in this precedence order:
 
-1. **[[glossary/frontmatter|Frontmatter]]** — `lang:` anywhere in the file.
+1. **[[glossary/frontmatter|Frontmatter]]** — `lang:` anywhere in the frontmatter block.
 2. **Custom detector** — if you provide `detect`.
 3. **Filename** — `note.ja.md` (recommended), and also `note-en.md` / `note_ja.md`, or BCP 47 tags such as `note.en-US.md`, `note.zh-CN.md`.
 4. **`defaultLang`** — used when nothing above matched.

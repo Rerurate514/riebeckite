@@ -49,7 +49,7 @@ Consumers typically access `permalink` for links, `frontmatter` for metadata, an
 
 Pages and templates access entry data through the manifest's lookup maps. The most common patterns are:
 
-- **Permalink resolution**: Read `entry.permalink` directly, or use `byPermalink` map for slug-to-URL lookups.
+- **Permalink resolution**: Read `entry.permalink` directly, use `bySlug` for slug lookups, or use `byPermalink` for permalink lookups.
 - **Frontmatter**: Access `entry.frontmatter` for page-level metadata (title, date, tags, etc.).
 - **Head tags**: Plugins provide `entry.headTags`; the site shell renders them in the `<head>`.
 - **Assets**: `entry.assets` contains the content images and attachments associated with the entry; the site copies or references them during output.

@@ -33,7 +33,7 @@ export default defineConfig({
 
 The following source is rendered on this page. A plain wikilink becomes a download link, and an embedded wikilink becomes an attachment card.
 
-#### Source
+### Source
 
 ````md
 [[attachment-example.txt]]
@@ -41,7 +41,7 @@ The following source is rendered on this page. A plain wikilink becomes a downlo
 ![[attachment-example.txt]]
 ````
 
-#### Rendered
+### Rendered
 
 [[attachment-example.txt]]
 

@@ -98,6 +98,24 @@ test("broken-internal-anchor matches ids in the same document", () => {
   assert.equal(inspectHtml('<a href="#">go</a>').length, 0);
 });
 
+test("broken-internal-anchor decodes percent-encoded fragments", () => {
+  const id = "コンテンツ依存関係";
+  const encoded = encodeURIComponent(id);
+  assert.equal(
+    hasCode(
+      inspectHtml(`<a href="#${encoded}">go</a><h2 id="${id}">x</h2>`),
+      RULE_CODES.brokenInternalAnchor,
+    ),
+    false,
+  );
+  assert.ok(
+    hasCode(
+      inspectHtml('<a href="#%E0%A4%A">go</a>'),
+      RULE_CODES.brokenInternalAnchor,
+    ),
+  );
+});
+
 test("heading-order reports skipped levels and missing h1", () => {
   assert.ok(
     hasCode(inspectHtml("<h1>a</h1><h3>b</h3>"), RULE_CODES.headingOrder),

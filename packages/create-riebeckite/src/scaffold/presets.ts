@@ -472,7 +472,6 @@ const kanban = np("@riebeckite/plugin-kanban", "kanban", {
 });
 const query = np("@riebeckite/plugin-query", "query", {
   defaultFormat: { depth: 2, value: '"list"' },
-  defaultLimit: { depth: 2, value: "50" },
   className: { depth: 3, value: '"rb-query"' },
   excludeSelf: { depth: 3, value: "true" },
 });

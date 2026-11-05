@@ -325,7 +325,9 @@ function languagesLabel(
 
 function pagesLabel(preset: ScaffoldPreset): string | null {
   if (preset.contentPages.length === 0) return null;
-  return preset.contentPages.map((page) => `/${page}`).join(", ");
+  return preset.contentPages
+    .map((page) => (page === "index" ? "/" : `/${page}`))
+    .join(", ");
 }
 
 function configurationReferenceLines(

@@ -130,15 +130,23 @@ function brokenInternalAnchor({ elements }: InspectionContext): Diagnostic[] {
     const href = attribute(element, "href");
     if (href === undefined || !href.startsWith("#")) continue;
     const target = href.slice(1);
-    if (target === "" || ids.has(target)) continue;
+    if (target === "") continue;
+    let decoded: string | undefined;
+    try {
+      decoded = decodeURIComponent(target);
+    } catch {
+      decoded = undefined;
+    }
+    if (ids.has(target) || (decoded !== undefined && ids.has(decoded))) continue;
+    const display = decoded ?? target;
     diagnostics.push(
       createDiagnostic(
         RULE_CODES.brokenInternalAnchor,
         "warning",
-        `Link target "#${target}" has no matching id in the same document.`,
+        `Link target "#${display}" has no matching id in the same document.`,
         {
           target: href,
-          suggestion: `Add an element with id="${target}" or fix the link.`,
+          suggestion: `Add an element with id="${display}" or fix the link.`,
         },
       ),
     );

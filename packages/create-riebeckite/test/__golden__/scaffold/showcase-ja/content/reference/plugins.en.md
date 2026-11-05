@@ -62,7 +62,7 @@ README.
 | [`@riebeckite/plugin-dataview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/dataview/README.md) | `dataview` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
 | [`@riebeckite/plugin-flashcards`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/flashcards/README.md) | `flashcards` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
 | [`@riebeckite/plugin-kanban`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/kanban/README.md) | `kanban` | `{ columnMarker: "##", autoDetect: true, className: "rb-kanban", fallback: true }` |
-| [`@riebeckite/plugin-query`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md) | `query` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
+| [`@riebeckite/plugin-query`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/query/README.md) | `query` | `{ defaultFormat: "list", className: "rb-query", excludeSelf: true }` |
 | [`@riebeckite/plugin-local-graph`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/local-graph/README.md) | `localGraph` | — |
 | [`@riebeckite/plugin-hover-preview`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/hover-preview/README.md) | `hoverPreview` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
 | [`@riebeckite/plugin-garden-explorer`](https://github.com/Rerurate514/riebeckite/blob/main/packages/plugins/garden-explorer/README.md) | `gardenExplorer` | — |

@@ -42,7 +42,7 @@ export default defineConfig({
 
 以下のソースは、このページ上でソースページへのリンク、ファイル全体の埋め込み、行範囲の埋め込みとして実際に描画されます。
 
-#### ソース
+### ソース
 
 ````md
 [[source-file-example.ts]]
@@ -52,7 +52,7 @@ export default defineConfig({
 ![[source-file-example.ts#L3-L5]]
 ````
 
-#### 実行例
+### 実行例
 
 [[source-file-example.ts]]
 

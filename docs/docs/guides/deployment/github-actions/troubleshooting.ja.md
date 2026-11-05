@@ -57,6 +57,22 @@ if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 `package-lock.json` がなくてもインストールは続行されます。それでも失敗する場合は、ネットワークと `package.json` の依存バージョンを確認してください。
 
+## オプションが不明な引数として扱われる
+
+`npm exec` は `--` より前にあるオプションを自分で消費します。たとえば次のコマンドでは、
+
+```sh
+# 誤り: npm exec riebeckite publish record --trigger ci
+```
+
+`ci` が位置引数として渡され、Riebeckite が `Unexpected argument: ci` と報告します。コマンドの前に `--` を置いてください。
+
+```sh
+npm exec -- riebeckite publish record --trigger ci
+```
+
+生成されるワークフローはこの形式を使います。
+
 ## コンテンツのチェックアウトが失敗する
 
 プライベートなコンテンツリポジトリの場合は、`RIEBECKITE_CONTENT_READ_TOKEN` を確認します。

@@ -61,6 +61,22 @@ if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 so a missing `package-lock.json` falls back to `npm install` instead of failing. If installation still fails, check network access and the dependency versions in `package.json`.
 
+## An option is reported as an unexpected argument
+
+`npm exec` consumes options that appear before `--`. A command such as:
+
+```sh
+# Incorrect: npm exec riebeckite publish record --trigger ci
+```
+
+passes `ci` as a positional argument, and Riebeckite reports `Unexpected argument: ci`. Put `--` before the command:
+
+```sh
+npm exec -- riebeckite publish record --trigger ci
+```
+
+The generated workflow already uses this form.
+
 ## Content checkout fails
 
 For a private content repository, check:

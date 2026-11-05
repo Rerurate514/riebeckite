@@ -169,7 +169,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 プロバイダーの検出では、`wrangler.jsonc|json|toml`、`.github/workflows` の Pages 用 action、`vercel.json`、`netlify.toml` を確認します。`--provider` で検出結果を上書きできます。必要な環境変数の**名前**は `publish status --json` が報告します。値は読み取りも記録も書き込みも行いません。
 
-GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。アダプターは Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate --provider github-pages` を実行し、`actions/deploy-pages` で配信した後、`publish record --provider github-pages` を呼びます。
+GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の `.nojekyll` と `404.html` が必要です。欠けていると `publish validate` が警告します。アダプターは Core からアップロードせず、CLI も検証できないワークフローを起動しません。publish ワークフローは `publish gate` を実行し、`actions/deploy-pages` で配信した後、`publish record` を呼びます。provider はワークフローとホスティング設定から検出されます。
 
 ## CI
 

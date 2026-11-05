@@ -27,7 +27,7 @@ Answer the prompts (recommended answers shown):
 - **What would you like to build?** ([[glossary/preset|preset]]) — keep `Starter site` (the `starter` preset) when unsure. Choose `Blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
 - **Add optional feature packs?** — press Enter for `No`
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
-- **Where will you write content?** — choose `This project` so Markdown stays inside the site
+- **Where will you write content?** — choose `This project` for `content/` inside the site, `Separate directory in this repository` for a vault next to the site (for example `../vault`), or `Separate GitHub repository` to keep content in another repository
 - **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages
 
@@ -122,6 +122,9 @@ To deploy automatically on every push, continue with GitHub Actions in [Deployme
 ## Next
 
 - [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
+- [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts
+- [Content Location](./content-location.md) — choose where Markdown lives and set `content.directory`
+- [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — follow a complete layout with an official sample
 - [Presets](./presets.md) — compare `starter`, `blog`, `docs`, `minimal`, `showcase`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately
 - [Installation](./installation.md) — requirements and setup deep-dive

@@ -85,17 +85,17 @@ GitHub ランナー
 Node.js 22
 ```
 
-以降の `npm ci` と Riebeckite CLI は、この環境で実行されます。
+以降の依存パッケージのインストールと Riebeckite CLI は、この環境で実行されます。
 
 ### 4. パッケージをインストールする
 
 次のコマンドを実行します。
 
 ```sh id="82x1ig"
-npm ci
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-`npm ci` は `package-lock.json` に従って依存パッケージをインストールします。そのため、生成されたワークフローを使う場合は `package-lock.json` をコミットしておく必要があります。
+`package-lock.json` がコミットされていれば、`npm ci` がそのロックファイルどおりにインストールします。ない場合は失敗せず `npm install` にフォールバックします。
 
 ### 5. Riebeckite のビルド状態を復元する
 
@@ -187,12 +187,14 @@ flowchart LR
     Workers --> Site
 ```
 
-ここでは次のシークレットが使われます。
+ここでは次の値が使われます。
 
 ```text id="7y1w2d"
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN   （Secret）
+CLOUDFLARE_ACCOUNT_ID  （Actions Variable）
 ```
+
+ワークフローは `vars.CLOUDFLARE_ACCOUNT_ID` を読み、すでに Secret として保存しているリポジトリのために `secrets.CLOUDFLARE_ACCOUNT_ID` へフォールバックします。
 
 ## 公開状態
 
@@ -222,12 +224,13 @@ flowchart LR
 
 ## 2つのトークンを使い分ける
 
-リポジトリを分離すると、名前の似た2つのトークンが登場します。用途が異なるので、混同しないよう注意してください。
+リポジトリを分離すると、名前の似た認証情報が登場します。用途が異なるので、混同しないよう注意してください。
 
-| シークレット | 保存する場所 | 役割 |
+| 認証情報 | 保存する場所 | 役割 |
 | --- | --- | --- |
 | `RIEBECKITE_CONTENT_READ_TOKEN` | サイトリポジトリ | プライベートなコンテンツリポジトリを読む |
-| `SITE_DISPATCH_TOKEN` | コンテンツリポジトリ | サイトリポジトリに更新を通知する |
+| `RIEBECKITE_APP_ID` + `RIEBECKITE_APP_PRIVATE_KEY` | コンテンツリポジトリ | 短期トークンを発行してサイトへ通知する |
+| `SITE_DISPATCH_TOKEN`（フォールバック） | コンテンツリポジトリ | GitHub App を使わずにサイトへ通知する |
 
 方向で整理すると区別しやすくなります。
 
@@ -238,7 +241,8 @@ RIEBECKITE_CONTENT_READ_TOKEN
 ```
 
 ```text id="50j8kg"
-SITE_DISPATCH_TOKEN
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+（または SITE_DISPATCH_TOKEN）
 
 コンテンツ ───notify───> サイト
 ```
@@ -250,7 +254,7 @@ flowchart LR
     Content["コンテンツリポジトリ"]
     Site["サイトリポジトリ"]
 
-    Content -->|"SITE_DISPATCH_TOKEN<br/>更新を通知"| Site
+    Content -->|"GitHub App トークン<br/>または SITE_DISPATCH_TOKEN"| Site
     Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>コンテンツを取得"| Content
 ```
 

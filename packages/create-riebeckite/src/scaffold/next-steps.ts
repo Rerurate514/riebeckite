@@ -13,6 +13,8 @@ export type ScaffoldNextStepsOptions = {
   readonly editFile?: string;
   /** The site keeps its content in a separate repository. */
   readonly externalContent?: boolean;
+  /** The site reads content from another directory. */
+  readonly contentDirectory?: string;
   readonly dependenciesInstalled?: boolean;
 };
 
@@ -40,6 +42,12 @@ export function formatScaffoldNextSteps(
       "  riebeckite.config.ts: site.title, site.baseUrl, content.directory",
     );
   }
+  if (options.contentDirectory !== undefined) {
+    lines.push("");
+    lines.push(
+      `Content is read from ${options.contentDirectory}. Add Markdown files there before building.`,
+    );
+  }
   if (options.externalContent === true) {
     lines.push("");
     lines.push(
@@ -49,15 +57,21 @@ export function formatScaffoldNextSteps(
       "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
     );
     lines.push("");
-    lines.push("Required GitHub Actions repository secrets:");
+    lines.push("Required GitHub Actions configuration:");
     lines.push(
-      `  ${GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN}: site repository; only when the content repository is private or internal (Contents: read)`,
+      `  ${GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN}: site repository secret; only when the content repository is private or internal (Contents: read)`,
     );
     lines.push(
-      `  ${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN}: content repository (fine-grained token for the site repository, Contents: read and write)`,
+      `  RIEBECKITE_APP_ID and RIEBECKITE_APP_PRIVATE_KEY: content repository secrets for a GitHub App (Contents: read and write on the site repository)`,
     );
     lines.push(
-      `  ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN} and ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID}: site repository`,
+      `  ${GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN}: content repository secret fallback when no GitHub App is configured`,
+    );
+    lines.push(
+      `  ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_API_TOKEN}: site repository secret`,
+    );
+    lines.push(
+      `  ${GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID}: site repository variable`,
     );
   }
   return lines.join("\n");

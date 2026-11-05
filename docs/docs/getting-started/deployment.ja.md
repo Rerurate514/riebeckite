@@ -107,12 +107,12 @@ npx create-riebeckite my-site --github-actions
 - `wrangler.jsonc`
 - `.github/workflows/publish.yml`
 
-生成されたワークフローは `npm ci` で依存パッケージをインストールします。その後、`npm exec riebeckite check` と `npm exec riebeckite build` を実行し、`cloudflare/wrangler-action@v3` でデプロイします。
+生成されたワークフローは `package-lock.json` がある場合は `npm ci`、ない場合は `npm install` で依存パッケージをインストールします。その後、`npm exec riebeckite check` と `npm exec riebeckite build` を実行し、`cloudflare/wrangler-action@v3` でデプロイします。
 
-GitHub の Settings → Secrets and variables → Actions で、次のシークレットを追加します。
+GitHub の Settings → Secrets and variables → Actions で次を登録します。
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+- Secret `CLOUDFLARE_API_TOKEN`：Account の **Workers Scripts:Edit**、Zone の **Workers Routes:Edit**、Zone の **Zone:Read**
+- Variable `CLOUDFLARE_ACCOUNT_ID`：Cloudflare のアカウント ID（秘密情報ではありません）
 
 `npm install` で作られた `package-lock.json` もコミットしてください。その後、`main` へ push するか、Actions タブからワークフローを手動で実行します。
 
@@ -124,7 +124,7 @@ GitHub の Settings → Secrets and variables → Actions で、次のシーク�
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_ACCOUNT_ID` と `CLOUDFLARE_API_TOKEN` をリポジトリのシークレットとして登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みのシークレットは検出され、そのまま維持されます。
+このコマンドは、Git リポジトリと GitHub のリモートを検出し、GitHub CLI と Wrangler のログインを確認します。同じテンプレートから `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_API_TOKEN` をリポジトリのシークレット、`CLOUDFLARE_ACCOUNT_ID` をリポジトリの変数として登録します。push の直前で止まるため、準備ができたら `git push` を実行してください。再実行しても安全で、作成済みのワークフローと登録済みの設定は検出され、そのまま維持されます。
 
 生成されたワークフローは `.github/workflows/publish.yml` で確認できます。GitHub CLI のログインとリポジトリのシークレットを変更せずに確認するには、次を実行します。
 

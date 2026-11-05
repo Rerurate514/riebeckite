@@ -77,14 +77,14 @@ test("external content keeps the workflow copy instruction and lists the secrets
       "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
     ),
   );
-  assert.ok(output.includes("Required GitHub Actions repository secrets:"));
+  assert.ok(output.includes("Required GitHub Actions configuration:"));
   assert.ok(output.includes("RIEBECKITE_CONTENT_READ_TOKEN: site repository"));
-  assert.ok(output.includes("SITE_DISPATCH_TOKEN: content repository"));
   assert.ok(
-    output.includes(
-      "CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID: site repository",
-    ),
+    output.includes("RIEBECKITE_APP_ID and RIEBECKITE_APP_PRIVATE_KEY"),
   );
+  assert.ok(output.includes("SITE_DISPATCH_TOKEN: content repository"));
+  assert.ok(output.includes("CLOUDFLARE_API_TOKEN: site repository secret"));
+  assert.ok(output.includes("CLOUDFLARE_ACCOUNT_ID: site repository variable"));
   assert.ok(
     !/github_pat_|ghp_[A-Za-z0-9]{20,}/.test(output),
     "next steps must name secrets without printing a value",

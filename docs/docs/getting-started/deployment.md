@@ -107,12 +107,12 @@ This adds:
 - `wrangler.jsonc`
 - `.github/workflows/publish.yml`
 
-The generated workflow installs dependencies with `npm ci`, runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
+The generated workflow runs `npm ci` when `package-lock.json` exists and falls back to `npm install` otherwise. It then runs `npm exec riebeckite check`, builds with `npm exec riebeckite build`, and deploys with `cloudflare/wrangler-action@v3`.
 
-Add these repository secrets in GitHub (Settings → Secrets and variables → Actions):
+Add these in GitHub under Settings → Secrets and variables → Actions:
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+- Secret `CLOUDFLARE_API_TOKEN` with Account **Workers Scripts:Edit**, Zone **Workers Routes:Edit**, and Zone **Zone:Read**.
+- Variable `CLOUDFLARE_ACCOUNT_ID` with the Cloudflare account ID. It is not secret.
 
 Commit the `package-lock.json` created by `npm install`, then push to `main` or run the workflow manually from the Actions tab.
 
@@ -124,7 +124,7 @@ If you already published from your machine, you do not need to recreate the site
 npm exec riebeckite deploy setup
 ```
 
-The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/publish.yml` from the same template, and registers `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` as repository secrets. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and secrets are detected and left unchanged.
+The command finds the Git repository and GitHub remote, checks the GitHub CLI and Wrangler logins, creates `.github/workflows/publish.yml` from the same template, and registers `CLOUDFLARE_API_TOKEN` as a repository secret and `CLOUDFLARE_ACCOUNT_ID` as a repository variable. It stops before pushing, so run `git push` when you are ready. Running it again is safe: an existing workflow and configuration are detected and left unchanged.
 
 Review the generated workflow in `.github/workflows/publish.yml`. To check the GitHub CLI login and repository secrets without changing them, run:
 

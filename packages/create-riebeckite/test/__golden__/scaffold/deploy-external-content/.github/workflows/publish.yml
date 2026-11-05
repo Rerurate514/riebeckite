@@ -46,7 +46,12 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Restore publication state
         id: publication-state
@@ -117,13 +122,13 @@ jobs:
         run: npm exec riebeckite publish validate
 
       - name: Publication gate
-        run: npm exec riebeckite publish gate --provider cloudflare-workers
+        run: npm exec riebeckite publish gate
 
       - name: Deploy the built assets
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID || secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
       - name: Record publication state

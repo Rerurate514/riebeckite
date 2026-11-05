@@ -56,7 +56,7 @@ flowchart TD
 
     Problem --> Running{"Did the site<br/>workflow start?"}
 
-    Running -->|"No"| Dispatch["repository_dispatch /<br/>SITE_DISPATCH_TOKEN"]
+    Running -->|"No"| Dispatch["repository_dispatch /<br/>GitHub App secrets<br/>or SITE_DISPATCH_TOKEN"]
     Running -->|"Yes"| Content{"Could the content<br/>be checked out?"}
 
     Content -->|"No"| Token["RIEBECKITE_CONTENT_READ_TOKEN /<br/>checkout settings"]

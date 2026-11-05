@@ -37,7 +37,7 @@ export function siteTemplateFiles(
     { path: "package.json", content: packageJson(preset, variables, options) },
     {
       path: "riebeckite.config.ts",
-      content: riebeckiteConfig(preset, variables),
+      content: riebeckiteConfig(preset, variables, options),
     },
     ...copyTemplateTree("base"),
     ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
@@ -46,9 +46,13 @@ export function siteTemplateFiles(
       { "{{reader-layout}}": sharedLayout },
       (filePath) => !filePath.startsWith("content/"),
     ),
-    ...presetContentFiles(preset, variables),
+    ...(options.contentDirectory === undefined
+      ? [
+          ...presetContentFiles(preset, variables),
+          ...contentPageFiles(variables, preset),
+        ]
+      : []),
     { path: "README.md", content: readme(preset, variables) },
-    ...contentPageFiles(variables, preset),
   ];
 }
 
@@ -168,6 +172,7 @@ function packageJson(
 function riebeckiteConfig(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
+  options: SiteTemplateOptions,
 ): string {
   const { title, description, baseUrl, locale } = variables;
   const lines: string[] = ['import { defineConfig } from "@riebeckite/core";'];
@@ -188,7 +193,9 @@ function riebeckiteConfig(
   lines.push(`    locale: ${JSON.stringify(locale)},`);
   lines.push("  },");
   lines.push("  content: {");
-  lines.push('    directory: "content",');
+  lines.push(
+    `    directory: ${JSON.stringify(options.contentDirectory ?? "content")},`,
+  );
   lines.push("  },");
   if (preset.theme) {
     const theme = preset.theme;

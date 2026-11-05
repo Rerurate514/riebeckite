@@ -57,6 +57,26 @@ test("interactive answers with Cloudflare Workers select local-first deployment"
   });
 });
 
+test("interactive separate-directory content keeps the directory and local deployment", () => {
+  const options = interactiveAnswersToOptions({
+    directory: "site",
+    preset: "starter",
+    utilities: ["editorconfig", "vscode"],
+    contentSource: "directory",
+    contentDirectory: "../vault",
+    deployment: "github-actions",
+  });
+  assert.deepEqual(options, {
+    directory: "site",
+    force: false,
+    preset: "starter",
+    utilities: ["editorconfig", "vscode"],
+    listPresets: false,
+    contentDirectory: "../vault",
+    deployment: { type: "github-actions", content: { type: "local" } },
+  });
+});
+
 test("external content forces GitHub Actions and keeps both repositories", () => {
   const options = interactiveAnswersToOptions({
     directory: "my-site",
@@ -93,6 +113,49 @@ test("non-interactive defaults are unchanged", () => {
     listPresets: false,
     deployment: { type: "none" },
   });
+});
+
+test("--content-directory and --domain configure a separate directory layout", () => {
+  const options = parseArguments([
+    "site",
+    "--github-actions",
+    "--content-directory",
+    "../vault",
+    "--domain",
+    "directories.example.com",
+  ]);
+  assert.deepEqual(options, {
+    directory: "site",
+    force: false,
+    preset: "starter",
+    utilities: ["gitignore", "editorconfig", "gitattributes", "biome"],
+    listPresets: false,
+    contentDirectory: "../vault",
+    customDomain: "directories.example.com",
+    deployment: { type: "github-actions", content: { type: "local" } },
+  });
+});
+
+test("--content-directory rejects absolute paths", () => {
+  assert.throws(
+    () => parseArguments(["site", "--content-directory", "/vault"]),
+    /must be relative to the project/,
+  );
+  assert.throws(
+    () => parseArguments(["site", "--content-directory", "C:\\vault"]),
+    /must be relative to the project/,
+  );
+});
+
+test("--domain rejects values that are not hostnames", () => {
+  assert.throws(
+    () => parseArguments(["site", "--domain", "localhost"]),
+    /requires a hostname/,
+  );
+  assert.throws(
+    () => parseArguments(["site", "--domain", "https://example.com"]),
+    /requires a hostname/,
+  );
 });
 
 test("existing flags keep parsing", () => {

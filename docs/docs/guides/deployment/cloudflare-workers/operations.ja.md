@@ -108,7 +108,7 @@ flowchart LR
 npm exec riebeckite deploy setup
 ```
 
-このコマンドは `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_API_TOKEN` と `CLOUDFLARE_ACCOUNT_ID` をリポジトリシークレットとして登録したうえで、プッシュを待ちます。
+このコマンドは `.github/workflows/publish.yml` を作成し、`CLOUDFLARE_API_TOKEN` をリポジトリシークレット、`CLOUDFLARE_ACCOUNT_ID` をリポジトリ変数として登録したうえで、プッシュを待ちます。
 
 ### サイトとコンテンツが同じリポジトリにある場合
 

@@ -112,14 +112,31 @@ flowchart LR
 
 通知を受け取ったサイトリポジトリの `publish.yml` が、ビルドとデプロイを実行します。
 
-## `SITE_DISPATCH_TOKEN`
+## GitHub App 認証
 
-コンテンツリポジトリからサイトリポジトリへ `repository_dispatch` を送るには、`SITE_DISPATCH_TOKEN` をコンテンツリポジトリ側のシークレットとして設定します。
+生成された `notify-site.yml` は GitHub App を優先します。自分のアカウント所有の App を作成し、Webhook を無効にし、**Contents: read and write** と **Metadata: read-only** を付与して、サイトリポジトリだけにインストールします。コンテンツリポジトリに次の Secret を設定します。
 
-```mermaid id="m04tnw"
+```text
+RIEBECKITE_APP_ID
+RIEBECKITE_APP_PRIVATE_KEY
+```
+
+ワークフローは `actions/create-github-app-token` で短期トークンを発行します。長期トークンは保存しません。
+
+### PAT フォールバック
+
+GitHub App を使えない場合は、コンテンツリポジトリに次の Secret を設定します。
+
+```text
+SITE_DISPATCH_TOKEN
+```
+
+サイトリポジトリだけに限定した Fine-grained PAT には **Contents: read and write** を付与します。
+
+```mermaid
 flowchart LR
     Content["コンテンツリポジトリ"]
-    Token["SITE_DISPATCH_TOKEN"]
+    Token["GitHub App トークン<br/>または SITE_DISPATCH_TOKEN"]
     Site["サイトリポジトリ"]
 
     Content --> Token

@@ -39,26 +39,23 @@ flowchart TD
 
 ```text id="1xb7gc"
 notify-site.yml
-SITE_DISPATCH_TOKEN
+RIEBECKITE_APP_ID
+RIEBECKITE_APP_PRIVATE_KEY
 repository_dispatch
 content-updated
 ```
 
-コンテンツリポジトリへのプッシュだけでは、サイトのワークフローは起動しません。
+コンテンツリポジトリへのプッシュだけでは、サイトのワークフローは起動しません。GitHub App ではなく PAT を使う場合は `SITE_DISPATCH_TOKEN` と、サイトリポジトリへ dispatch できる権限を確認してください。
 
-## `npm ci` が失敗する
+## 依存パッケージのインストールが失敗する
 
-生成されるワークフローは `npm ci` を使います。`package-lock.json` がリポジトリにコミットされているか確認してください。
+生成されるワークフローは、`package-lock.json` があれば `npm ci`、なければ `npm install` を使います。
 
 ```sh id="dtah4e"
-npm ci
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-必要なファイルは次のとおりです。
-
-```text id="afg8hg"
-package-lock.json
-```
+`package-lock.json` がなくてもインストールは続行されます。それでも失敗する場合は、ネットワークと `package.json` の依存バージョンを確認してください。
 
 ## コンテンツのチェックアウトが失敗する
 
@@ -95,8 +92,8 @@ npm exec riebeckite build
 ビルドまでは成功しているなら、次の点を確認します。
 
 ```text id="rxagkm"
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN   （Secret）
+CLOUDFLARE_ACCOUNT_ID  （Variable）
 wrangler.jsonc
 ```
 

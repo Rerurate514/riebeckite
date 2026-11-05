@@ -116,20 +116,31 @@ notify the site repository
 
 The site repository's `publish.yml`, on receiving that notification, runs the build and deploy.
 
-## `SITE_DISPATCH_TOKEN`
+## GitHub App authentication
 
-To send a `repository_dispatch` from the content repository to the site repository, set:
+The generated `notify-site.yml` prefers a GitHub App. Create an App owned by your account, disable its webhook, grant **Contents: read and write** and **Metadata: read-only**, and install it only on the site repository. Then set these secrets on the content repository:
+
+```text
+RIEBECKITE_APP_ID
+RIEBECKITE_APP_PRIVATE_KEY
+```
+
+The workflow mints a short-lived token with `actions/create-github-app-token`; no long-lived token is stored.
+
+### PAT fallback
+
+If you cannot use a GitHub App, set this secret on the content repository instead:
 
 ```text
 SITE_DISPATCH_TOKEN
 ```
 
-as a secret on the content repository side.
+A fine-grained PAT limited to the site repository needs **Contents: read and write**.
 
 ```mermaid
 flowchart LR
     Content["Content repository"]
-    Token["SITE_DISPATCH_TOKEN"]
+    Token["GitHub App token<br/>or SITE_DISPATCH_TOKEN"]
     Site["Site repository"]
 
     Content --> Token

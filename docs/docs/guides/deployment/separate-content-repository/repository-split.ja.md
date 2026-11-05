@@ -118,10 +118,10 @@ git commit -m "update articles"
 
 - `github.token` の権限は現在のリポジトリに限定されます。別の**公開** GitHub リポジトリは読めますが、別のプライベートまたは内部リポジトリは読めません。
 - Vault がプライベートまたは内部にある場合は、サイトリポジトリに `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。Vault だけに権限を絞った fine-grained PAT に **Contents: read** を付けるか、同等の読み取り専用 GitHub App インストールトークンを使います。
-- コンテンツ側の通知には、コンテンツリポジトリだけに保存する `SITE_DISPATCH_TOKEN` が別に必要です。fine-grained PAT はサイトリポジトリだけに絞って **Contents: read and write** を付けてください。クラシック PAT では `repo` スコープ、GitHub App トークンでは **Contents: write** が必要です。
+- コンテンツ側の通知には GitHub App を優先します。サイトリポジトリだけにインストールし、**Contents: read and write** と **Metadata: read-only** を付与します。コンテンツリポジトリに `RIEBECKITE_APP_ID` と `RIEBECKITE_APP_PRIVATE_KEY` を保存し、ワークフローが短期トークンを発行します。App を使えない場合は `SITE_DISPATCH_TOKEN` を保存します。サイトリポジトリだけに絞った fine-grained PAT に **Contents: read and write** を付けてください（クラシック PAT は `repo` スコープ）。
 - サブモジュールを SSH URL（`git@github.com:...`）で追加した場合、CI には SSH キーが必要です。HTTPS URL に切り替えて `token:` を渡すほうが設定は簡単です。
 
-読み取りトークンと dispatch トークンは、使う向きが逆です。
+読み取り用の認証情報と dispatch 用の認証情報は、使う向きが逆です。
 
 ```mermaid
 flowchart LR
@@ -136,7 +136,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     Content["コンテンツリポジトリ"]
-    Token["SITE_DISPATCH_TOKEN"]
+    Token["GitHub App トークン<br/>または SITE_DISPATCH_TOKEN"]
     Site["サイトリポジトリ"]
 
     Content --> Token
@@ -147,8 +147,11 @@ flowchart LR
 RIEBECKITE_CONTENT_READ_TOKEN
   → サイトからプライベートコンテンツを読む
 
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+  → 短期トークンでサイトのワークフローを起動する
+
 SITE_DISPATCH_TOKEN
-  → コンテンツリポジトリからサイトのワークフローを起動する
+  → GitHub App を使えない場合のフォールバック
 ```
 
 PAT は [GitHub の Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) で作成し、各リポジトリの **Settings → Secrets and variables → Actions** に値を登録します。

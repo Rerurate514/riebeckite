@@ -9,20 +9,33 @@ permissions: {}
 jobs:
   notify:
     runs-on: ubuntu-latest
+    env:
+      RIEBECKITE_APP_ID: ${{ secrets.RIEBECKITE_APP_ID }}
     steps:
+      - name: Create a GitHub App token
+        id: app-token
+        if: ${{ env.RIEBECKITE_APP_ID != '' }}
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RIEBECKITE_APP_ID }}
+          private-key: ${{ secrets.RIEBECKITE_APP_PRIVATE_KEY }}
+          owner: octo-org
+          repositories: site
+          permission-contents: write
+
       - name: Validate dispatch configuration
         env:
           SITE_DISPATCH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
         run: |
-          if [ -z "$SITE_DISPATCH_TOKEN" ]; then
-            echo "::error::SITE_DISPATCH_TOKEN is not configured. Add a token that can dispatch to octo-org/site."
+          if [ -z "$RIEBECKITE_APP_ID" ] && [ -z "$SITE_DISPATCH_TOKEN" ]; then
+            echo "::error::Configure RIEBECKITE_APP_ID and RIEBECKITE_APP_PRIVATE_KEY, or set SITE_DISPATCH_TOKEN."
             exit 1
           fi
 
       - name: Notify the site repository
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
-          github-token: ${{ secrets.SITE_DISPATCH_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token || secrets.SITE_DISPATCH_TOKEN }}
           script: |
             await github.rest.repos.createDispatchEvent({
               owner: "octo-org",

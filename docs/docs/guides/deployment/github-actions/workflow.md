@@ -83,17 +83,17 @@ GitHub runner
 Node.js 22
 ```
 
-The subsequent `npm ci` and Riebeckite CLI run in this environment.
+The subsequent dependency install and Riebeckite CLI run in this environment.
 
 ### 4. Install packages
 
 It runs:
 
 ```sh
-npm ci
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 ```
 
-`npm ci` installs dependencies according to `package-lock.json`, so when you use the generated workflow you must commit `package-lock.json`.
+When `package-lock.json` is committed, `npm ci` installs exactly that lockfile. Without one, the workflow falls back to `npm install` instead of failing.
 
 ### 5. Restore Riebeckite build state
 
@@ -186,11 +186,11 @@ flowchart LR
 Here:
 
 ```text
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN   (secret)
+CLOUDFLARE_ACCOUNT_ID  (Actions variable)
 ```
 
-are used.
+are used. The workflow reads the account ID from `vars.CLOUDFLARE_ACCOUNT_ID`, falling back to `secrets.CLOUDFLARE_ACCOUNT_ID` for repositories that already stored it as a secret.
 
 ## Publication state
 
@@ -220,12 +220,13 @@ This token's role is **to read the private content repository from the site's wo
 
 ## Do not confuse the two tokens
 
-In a split layout, two similarly named tokens appear.
+In a split layout, two similarly named credentials appear.
 
-| Secret | Where to store it | Role |
+| Credential | Where to store it | Role |
 | --- | --- | --- |
 | `RIEBECKITE_CONTENT_READ_TOKEN` | Site repository | Read the private content repository |
-| `SITE_DISPATCH_TOKEN` | Content repository | Notify the site repository of an update |
+| `RIEBECKITE_APP_ID` + `RIEBECKITE_APP_PRIVATE_KEY` | Content repository | Mint a short-lived token that dispatches to the site |
+| `SITE_DISPATCH_TOKEN` (fallback) | Content repository | Notify the site repository without a GitHub App |
 
 It helps to think in terms of direction.
 
@@ -236,7 +237,8 @@ Site ─────read─────> Content
 ```
 
 ```text
-SITE_DISPATCH_TOKEN
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+(or SITE_DISPATCH_TOKEN)
 
 Content ───notify───> Site
 ```
@@ -248,7 +250,7 @@ flowchart LR
     Content["Content repository"]
     Site["Site repository"]
 
-    Content -->|"SITE_DISPATCH_TOKEN<br/>notify update"| Site
+    Content -->|"GitHub App token<br/>or SITE_DISPATCH_TOKEN"| Site
     Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>fetch content"| Content
 ```
 

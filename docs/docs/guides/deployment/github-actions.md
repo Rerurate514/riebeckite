@@ -40,7 +40,7 @@ push to main
     ↓
 GitHub Actions
     ↓
-npm ci
+Install dependencies
     ↓
 riebeckite check
     ↓
@@ -70,14 +70,17 @@ Deploy
 The roles to remember in particular are:
 
 ```text
+RIEBECKITE_APP_ID + RIEBECKITE_APP_PRIVATE_KEY
+  → notify from content to site via a short-lived token
+
 SITE_DISPATCH_TOKEN
-  → notify from content to site
+  → fallback notification without a GitHub App
 
 RIEBECKITE_CONTENT_READ_TOKEN
   → read content from site
 
-CLOUDFLARE_API_TOKEN
-CLOUDFLARE_ACCOUNT_ID
+CLOUDFLARE_API_TOKEN (secret)
+CLOUDFLARE_ACCOUNT_ID (variable)
   → deploy to Cloudflare
 ```
 

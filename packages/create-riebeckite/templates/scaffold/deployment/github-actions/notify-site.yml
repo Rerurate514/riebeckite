@@ -9,20 +9,33 @@ permissions: {}
 jobs:
   notify:
     runs-on: ubuntu-latest
+    env:
+      RIEBECKITE_APP_ID: ${{ secrets.RIEBECKITE_APP_ID }}
     steps:
+      - name: Create a GitHub App token
+        id: app-token
+        if: ${{ env.RIEBECKITE_APP_ID != '' }}
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RIEBECKITE_APP_ID }}
+          private-key: ${{ secrets.RIEBECKITE_APP_PRIVATE_KEY }}
+          owner: {{owner}}
+          repositories: {{repository}}
+          permission-contents: write
+
       - name: Validate dispatch configuration
         env:
           SITE_DISPATCH_TOKEN: ${{ secrets.{{siteDispatchToken}} }}
         run: |
-          if [ -z "$SITE_DISPATCH_TOKEN" ]; then
-            echo "::error::{{siteDispatchToken}} is not configured. Add a token that can dispatch to {{owner}}/{{repository}}."
+          if [ -z "$RIEBECKITE_APP_ID" ] && [ -z "$SITE_DISPATCH_TOKEN" ]; then
+            echo "::error::Configure RIEBECKITE_APP_ID and RIEBECKITE_APP_PRIVATE_KEY, or set {{siteDispatchToken}}."
             exit 1
           fi
 
       - name: Notify the site repository
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
-          github-token: ${{ secrets.{{siteDispatchToken}} }}
+          github-token: ${{ steps.app-token.outputs.token || secrets.{{siteDispatchToken}} }}
           script: |
             await github.rest.repos.createDispatchEvent({
               owner: "{{owner}}",

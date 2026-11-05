@@ -32,19 +32,31 @@ export function workerNameFromDirectory(directoryName: string): string {
   return name.length > 0 ? name : DEFAULT_WORKER_NAME;
 }
 
-export function buildWranglerConfig(workerName: string): string {
+export function buildWranglerConfig(
+  workerName: string,
+  customDomain?: string,
+): string {
   const config = {
     $schema: CLOUDFLARE_WORKERS_DEFAULTS.$schema,
     name: workerName,
     compatibility_date: CLOUDFLARE_WORKERS_DEFAULTS.compatibility_date,
     compatibility_flags: CLOUDFLARE_WORKERS_DEFAULTS.compatibility_flags,
     assets: CLOUDFLARE_WORKERS_DEFAULTS.assets,
+    ...(customDomain === undefined
+      ? {}
+      : { routes: [{ pattern: customDomain, custom_domain: true }] }),
   };
   return `${JSON.stringify(config, null, 2)}\n`;
 }
 
-export function wranglerConfigForDirectory(directory: string): string {
-  return buildWranglerConfig(workerNameFromDirectory(path.basename(directory)));
+export function wranglerConfigForDirectory(
+  directory: string,
+  customDomain?: string,
+): string {
+  return buildWranglerConfig(
+    workerNameFromDirectory(path.basename(directory)),
+    customDomain,
+  );
 }
 
 /** Expected secret names in GitHub Actions workflow */

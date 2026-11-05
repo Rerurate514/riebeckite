@@ -60,6 +60,12 @@ export async function runCreateRiebeckite(
       features: options.features,
       utilities: options.utilities,
       deployment: options.deployment,
+      ...(options.contentDirectory === undefined
+        ? {}
+        : { contentDirectory: options.contentDirectory }),
+      ...(options.customDomain === undefined
+        ? {}
+        : { customDomain: options.customDomain }),
     });
   } catch (error) {
     if (error instanceof ScaffoldSiteError) {
@@ -153,7 +159,9 @@ function printScaffoldNextSteps(
 ): void {
   const externalContent = isExternalContent(options.deployment);
   const editFile =
-    !externalContent && result.files.includes("content/index.md")
+    !externalContent &&
+    options.contentDirectory === undefined &&
+    result.files.includes("content/index.md")
       ? "content/index.md"
       : undefined;
   console.log(
@@ -161,6 +169,9 @@ function printScaffoldNextSteps(
       editFile,
       externalContent,
       dependenciesInstalled,
+      ...(options.contentDirectory === undefined
+        ? {}
+        : { contentDirectory: options.contentDirectory }),
     }),
   );
 }

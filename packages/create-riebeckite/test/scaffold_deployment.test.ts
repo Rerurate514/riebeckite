@@ -91,10 +91,12 @@ test("every scaffold preset supports external content and content-push dispatch"
       assert.match(notify, /repo: "site"/);
       assert.match(notify, /SITE_DISPATCH_TOKEN/);
       assert.match(notify, /event_type: "content-updated"/);
-      assert.match(readme, /## Deployment secrets/);
+      assert.match(readme, /## Deployment configuration/);
       assert.match(readme, /RIEBECKITE_CONTENT_READ_TOKEN/);
+      assert.match(readme, /RIEBECKITE_APP_ID/);
       assert.match(readme, /SITE_DISPATCH_TOKEN/);
       assert.match(readme, /CLOUDFLARE_API_TOKEN/);
+      assert.match(readme, /CLOUDFLARE_ACCOUNT_ID. \(variable\)/);
     }
   });
 });
@@ -275,7 +277,7 @@ function assertWorkflowContract(workflow: string): void {
     "npm exec riebeckite check",
     "npm exec riebeckite build",
     "npm exec riebeckite publish validate",
-    "npm exec riebeckite publish gate --provider cloudflare-workers",
+    "npm exec riebeckite publish gate",
     "npm exec riebeckite publish record --provider cloudflare-workers",
     "Restore publication state",
     "Persist publication state",

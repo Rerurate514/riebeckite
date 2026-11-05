@@ -12,6 +12,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.39...HEAD
+
+## [0.0.39] - 2026-11-05
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Changed
@@ -34,7 +40,7 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Plugin pages replace content routes at the same public path, and a collapsed folder page is no longer overwritten by its own redirect. Scaffolded sites declare the runtime packages required by pnpm and Yarn PnP; existing sites must add `@riebeckite/node`, `@riebeckite/runtime`, and `@riebeckite/spa` explicitly. `riebeckite dev` no longer requires managed Bridge environment variables.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `create-riebeckite`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.38...HEAD
+[0.0.39]: https://github.com/Rerurate514/riebeckite/compare/v0.0.38...v0.0.39
 
 ## [0.0.38] - 2026-11-03
 

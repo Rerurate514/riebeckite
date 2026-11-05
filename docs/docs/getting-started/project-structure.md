@@ -23,7 +23,7 @@ my-site/
 │   ├── index.md
 │   ├── notes/
 │   └── assets/
-├── src/
+├── app/
 ├── public/
 ├── riebeckite.config.ts
 ├── package.json
@@ -32,7 +32,7 @@ my-site/
 ```
 
 - `content/` is the default content directory.
-- `src/` contains the generated HonoX app.
+- `app/` contains the generated HonoX app.
 - `public/` contains files served as-is, such as a favicon.
 - `riebeckite.config.ts` sets `site`, `content.directory`, the theme, and plugins.
 - `wrangler.jsonc` describes the Cloudflare Worker and its custom domain.
@@ -47,7 +47,7 @@ my-project/
 │   ├── notes/
 │   └── assets/
 ├── site/
-│   ├── src/
+│   ├── app/
 │   ├── riebeckite.config.ts
 │   ├── package.json
 │   └── wrangler.jsonc
@@ -69,7 +69,7 @@ Run commands from `site/`. The workflow must set `working-directory: site` and i
 
 ```text
 my-site/                 my-vault/
-├── src/                 ├── index.md
+├── app/                 ├── index.md
 ├── riebeckite.config.ts ├── notes/
 ├── package.json         └── assets/
 └── .github/workflows/

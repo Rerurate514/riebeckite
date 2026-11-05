@@ -79,7 +79,7 @@ npm exec -- riebeckite publish run --execute
 
 ```sh
 curl -I https://my-site.example.com/
-curl -I https://my-site.example.com/notes/welcome
+curl -I https://my-site.example.com/notes/writing
 ```
 
 HTML、CSS、画像、404 ページ、`sitemap.xml`、`robots.txt` を確認します。カスタムドメインが開かない場合は、ルートがデプロイされていないか、同じホスト名を別の Worker が使っています。

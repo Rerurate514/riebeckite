@@ -18,7 +18,7 @@ my-project/
 │   ├── notes/
 │   └── assets/
 ├── site/
-│   ├── src/
+│   ├── app/
 │   ├── riebeckite.config.ts
 │   ├── package.json
 │   └── wrangler.jsonc

@@ -79,7 +79,7 @@ The generated workflow deploys on every push to `main`. See [Cloudflare Workers]
 
 ```sh
 curl -I https://my-site.example.com/
-curl -I https://my-site.example.com/notes/welcome
+curl -I https://my-site.example.com/notes/writing
 ```
 
 Check the HTML, CSS, images, 404 page, `sitemap.xml`, and `robots.txt`. A missing custom domain usually means the route was not deployed or the hostname is already used by another Worker.

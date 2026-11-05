@@ -13,7 +13,7 @@ Official sample: [site](https://github.com/Rerurate514/riebeckite-e2e-site) and 
 
 ```text
 my-vault/                 my-site/
-├── index.md              ├── src/
+├── index.md              ├── app/
 ├── notes/                ├── riebeckite.config.ts
 └── assets/               ├── package.json
                           ├── wrangler.jsonc

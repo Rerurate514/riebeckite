@@ -23,7 +23,7 @@ my-site/
 │   ├── index.md
 │   ├── notes/
 │   └── assets/
-├── src/
+├── app/
 ├── public/
 ├── riebeckite.config.ts
 ├── package.json
@@ -32,7 +32,7 @@ my-site/
 ```
 
 - `content/` が既定のコンテンツディレクトリです。
-- `src/` には生成された HonoX アプリがあります。
+- `app/` には生成された HonoX アプリがあります。
 - `public/` には favicon など、そのまま配信するファイルを置きます。
 - `riebeckite.config.ts` で `site`、`content.directory`、テーマ、プラグインを設定します。
 - `wrangler.jsonc` は Cloudflare Worker とカスタムドメインを定義します。
@@ -47,7 +47,7 @@ my-project/
 │   ├── notes/
 │   └── assets/
 ├── site/
-│   ├── src/
+│   ├── app/
 │   ├── riebeckite.config.ts
 │   ├── package.json
 │   └── wrangler.jsonc
@@ -69,7 +69,7 @@ export default defineConfig({
 
 ```text
 my-site/                 my-vault/
-├── src/                 ├── index.md
+├── app/                 ├── index.md
 ├── riebeckite.config.ts ├── notes/
 ├── package.json         └── assets/
 └── .github/workflows/

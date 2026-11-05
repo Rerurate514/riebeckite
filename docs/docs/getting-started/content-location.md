@@ -37,7 +37,7 @@ Changing `content.directory` does not move files. Move the Markdown and `assets/
 - `assets/` for images and attachments referenced from content.
 - Any folder structure you want to keep. URLs follow the file paths without the `.md` extension.
 
-Do not put `package.json`, `src/`, or build output inside the vault. The content directory is only for content.
+Do not put `package.json`, `app/`, or build output inside the vault. The content directory is only for content.
 
 ## Verify the location
 

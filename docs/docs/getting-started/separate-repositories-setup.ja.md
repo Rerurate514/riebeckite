@@ -13,7 +13,7 @@ sidebar:
 
 ```text
 my-vault/                 my-site/
-├── index.md              ├── src/
+├── index.md              ├── app/
 ├── notes/                ├── riebeckite.config.ts
 └── assets/               ├── package.json
                           ├── wrangler.jsonc

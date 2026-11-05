@@ -47,19 +47,19 @@ duration. For example, a build might run like this:
 
 ```mermaid
 flowchart TD
-    B["build"]
-    B --> C["content.load"]
-    B --> P["plugins.run"]
+    B["build.total"]
+    B --> C["content.build"]
+    B --> P["persistentContentCache.lookup"]
     B --> D["diagnostics.run"]
-    B --> A["application.build"]
+    B --> A["content.discovery"]
 
     P --> P1["plugin A"]
     P --> P2["plugin B"]
 ```
 
-`build` is the parent span, and the work inside it becomes child spans. This
-lets you investigate not just "the whole build is slow" but "a specific plugin
-inside `plugins.run` is slow".
+`build.total` is the parent span, and the work inside it becomes child spans. This
+lets you investigate not just "the whole build is slow" but "a specific stage
+inside `content.build` is slow".
 
 ### Where to create spans
 
@@ -75,10 +75,11 @@ the duration is meaningful:
 Span names should be stable enough to compare between builds, such as:
 
 ```text
-content.load
-plugins.run
+build.total
+content.build
+content.process
 diagnostics.run
-application.build
+content.build-state.save
 ```
 
 Avoid designs where the span name itself changes every run because of an input
@@ -139,7 +140,7 @@ Wall-clock time = about 100ms
 ```
 
 The Profiler preserves this distinction. Simply adding child span durations and
-reporting `plugins.run = 200ms` would make parallel work look like a slow serial
+reporting `content.build = 200ms` would make parallel work look like a slow serial
 path.
 
 ## Profiler

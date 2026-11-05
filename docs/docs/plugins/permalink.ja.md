@@ -941,9 +941,8 @@ notes/about.md       about         frontmatter   /about
 ### 関数
 
 - `permalink(options?)`
-- `permalink(options?)`
 
-どちらも Permalink Plugin を生成します。
+Permalink Plugin を生成します。
 
 ### 型
 

@@ -946,9 +946,8 @@ The exact output format may vary between CLI versions.
 ### Functions
 
 - `permalink(options?)`
-- `permalink(options?)`
 
-Both create the Permalink Plugin.
+Creates the Permalink Plugin.
 
 ### Types
 

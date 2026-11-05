@@ -54,7 +54,7 @@ npx create-riebeckite
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
 ```bash
-npx create-riebeckite my-site --preset starter
+npx create-riebeckite my-riebeckite-site --preset starter
 ```
 
 - 生成されたトップレベルの名前が既存のエントリと衝突する場合、コマンドは停止します。上書きしたい場合は `--force` を追加してください。

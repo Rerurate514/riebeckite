@@ -53,7 +53,7 @@ npx create-riebeckite
 To script the same setup instead of answering prompts, pass arguments, for example:
 
 ```sh
-npx create-riebeckite my-site --preset starter
+npx create-riebeckite my-riebeckite-site --preset starter
 ```
 
 - If a generated top-level name conflicts with an existing entry, the command stops. Add `--force` only when you really want to overwrite.

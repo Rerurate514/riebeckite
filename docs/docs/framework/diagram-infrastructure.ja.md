@@ -40,7 +40,7 @@ export function exampleDiagram() {
       dependencyMode: "none",
     },
     rehype: () => rehypeExampleDiagram,
-    style: ".rb-example-diagram { display: block; }",
+    style: "@riebeckite/plugin-example-diagram/style.css",
     client: {
       moduleSpecifier: "@riebeckite/plugin-example-diagram/client",
       exportName: "initExampleDiagram",

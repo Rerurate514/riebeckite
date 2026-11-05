@@ -47,7 +47,7 @@ const source = {
     return `# ${entry.path}`;
   },
 };
-const config = resolveConfig({ content: { directory: "." } });
+const config = resolveConfig({ site: { title: "Test" }, content: { directory: "." } });
 const manager = new ContentManager(source, [], { config });
 const manifest = await manager.getManifest();
 ```

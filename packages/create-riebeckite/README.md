@@ -33,7 +33,7 @@ The prompts ask, in order:
 | What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Documentation`, `Portfolio`, `Minimal site`, `Plugin showcase`, `Empty application` | `Starter site` (`starter`) for most sites |
 | Add optional feature packs? | `Yes` or `No`; `Yes` then selects feature packs | `No` |
 | Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
-| Where will you write content? | `This project`, `Separate GitHub repository` | `This project` to start |
+| Where will you write content? | `This project`, `Separate directory in this repository`, `Separate GitHub repository` | `This project` to start |
 | Set up deployment? | `Cloudflare Workers`, `GitHub Actions`, `Not now` | `Not now` for local development |
 | Install dependencies now? | `Yes` or `No` | `Yes` |
 
@@ -51,11 +51,13 @@ Deployment can be added later, described in
 | `--help`, `-h` | Print usage and exit |
 | `--preset <name>` | Starter composition, e.g. `showcase` (default: `starter`) |
 | `--utilities <names>` | Comma-separated project files to generate: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `gitignore,editorconfig,gitattributes,biome`) |
-| `--force` | Scaffold even when the target directory is not empty |
+| `--force` | Overwrite generated top-level entries on conflict; unrelated files are allowed |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
 | `--cloudflare-workers` | Generate the Cloudflare Workers deployment configuration |
 | `--features <names>` | Comma-separated feature pack names to add extra plugins |
+| `--content-directory <path>` | Relative content directory to write into, such as `../vault`; absolute paths are rejected |
+| `--domain <hostname>` | Custom domain for the generated Cloudflare Worker routes, such as `docs.example.com` |
 | `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |
 | `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
 

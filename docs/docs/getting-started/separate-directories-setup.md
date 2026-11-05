@@ -66,10 +66,16 @@ Edit `site/wrangler.jsonc`:
 
 ```jsonc
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-project",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist" },
   "routes": [{ "pattern": "my-project.example.com", "custom_domain": true }]
 }
 ```
+
+Keep `compatibility_flags` and `assets` when you edit the file; an assets-only Worker needs them.
 
 Set `site.baseUrl` to `https://my-project.example.com` and adjust `site.title`.
 

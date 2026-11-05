@@ -46,7 +46,7 @@ npx create-riebeckite
 2. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
 3. **Add optional feature packs?** — choose `Yes` to select feature packs that add extra plugins. The default is `No`. Use `--features <names>` to add them non-interactively. See [Presets](./presets.md) for available packs
 4. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
-5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
+5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
 6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](./deployment.md)
 7. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
 

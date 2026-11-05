@@ -31,6 +31,8 @@ my-site/
 └── .github/workflows/publish.yml
 ```
 
+This tree assumes a deployment option such as `--github-actions` or `--cloudflare-workers`. With the default `Not now`, `wrangler.jsonc` and `.github/workflows/publish.yml` are not generated.
+
 - `content/` is the default content directory.
 - `app/` contains the generated HonoX app.
 - `public/` contains files served as-is, such as a favicon.

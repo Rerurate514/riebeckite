@@ -31,6 +31,8 @@ my-site/
 └── .github/workflows/publish.yml
 ```
 
+このツリーは `--github-actions` や `--cloudflare-workers` などのデプロイ指定を前提にしています。既定の `Not now` では `wrangler.jsonc` と `.github/workflows/publish.yml` は生成されません。
+
 - `content/` が既定のコンテンツディレクトリです。
 - `app/` には生成された HonoX アプリがあります。
 - `public/` には favicon など、そのまま配信するファイルを置きます。

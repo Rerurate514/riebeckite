@@ -47,7 +47,7 @@ npx create-riebeckite
 2. **What would you like to build?**（[[glossary/preset|プリセット]]）：サイトの構成。迷ったら `Starter site`（`starter` プリセット）のまま。比較は [プリセット](./presets.ja.md)
 3. **Add optional feature packs?**：追加のプラグインを入れる機能パックを選ぶ場合は `Yes`。既定は `No` です。非対話で追加する場合は `--features <names>` を使用します。[プリセット](./presets.ja.md) で利用可能な packs を参照してください
 4. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
-5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
+5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
 6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
 7. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
 

@@ -27,10 +27,16 @@ Edit `wrangler.jsonc`:
 
 ```jsonc
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-site",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist" },
   "routes": [{ "pattern": "my-site.example.com", "custom_domain": true }]
 }
 ```
+
+Keep `compatibility_flags` and `assets` when you edit the file; an assets-only Worker needs them.
 
 The Worker name must be unique in the Cloudflare account. A custom domain creates its DNS record automatically; do not add a separate DNS record for the same hostname.
 
@@ -62,9 +68,10 @@ The static site is written to `dist/`. Commit `package-lock.json`, but not `dist
 
 ## 5. Deploy
 
-For a first manual deploy:
+For a first manual deploy, install Wrangler first because `--github-actions` does not add it to the project:
 
 ```sh
+npm install -D wrangler
 npm exec -- riebeckite publish run --execute
 ```
 

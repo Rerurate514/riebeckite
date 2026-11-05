@@ -27,10 +27,16 @@ npm install
 
 ```jsonc
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-site",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist" },
   "routes": [{ "pattern": "my-site.example.com", "custom_domain": true }]
 }
 ```
+
+編集するときも `compatibility_flags` と `assets` は残してください。assets のみの Worker には必要です。
 
 Worker 名は Cloudflare アカウント内で一意にしてください。カスタムドメインの DNS レコードは自動で作られるため、同じホスト名の DNS レコードを別途追加しないでください。
 
@@ -62,9 +68,10 @@ npm exec riebeckite build
 
 ## 5. デプロイする
 
-最初の手動デプロイ:
+最初の手動デプロイでは、`--github-actions` は Wrangler をプロジェクトに追加しないため、先にインストールします。
 
 ```sh
+npm install -D wrangler
 npm exec -- riebeckite publish run --execute
 ```
 

@@ -66,10 +66,16 @@ export default defineConfig({
 
 ```jsonc
 {
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "my-project",
+  "compatibility_date": "2026-06-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist" },
   "routes": [{ "pattern": "my-project.example.com", "custom_domain": true }]
 }
 ```
+
+編集するときも `compatibility_flags` と `assets` は残してください。assets のみの Worker には必要です。
 
 `site.baseUrl` を `https://my-project.example.com` にし、`site.title` も設定します。
 

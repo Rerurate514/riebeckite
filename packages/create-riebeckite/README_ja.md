@@ -34,7 +34,7 @@ npm exec riebeckite build
 | What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Documentation`、`Portfolio`、`Minimal site`、`Plugin showcase`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
 | Add optional feature packs? | `Yes` または `No`。`Yes` なら機能パックを選択 | `No` |
 | Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
-| Where will you write content? | `This project`、`Separate GitHub repository` | 最初は `This project` |
+| Where will you write content? | `This project`、`Separate directory in this repository`、`Separate GitHub repository` | 最初は `This project` |
 | Set up deployment? | `Cloudflare Workers`、`GitHub Actions`、`Not now` | 手元で試すなら `Not now` |
 | Install dependencies now? | `Yes` または `No` | `Yes` |
 
@@ -48,11 +48,13 @@ npm exec riebeckite build
 | `--help`、`-h` | 使い方を表示して終了する |
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
 | `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `gitignore,editorconfig,gitattributes,biome`） |
-| `--force` | 空でないディレクトリにも展開する |
+| `--force` | 生成対象のトップレベル項目が既にある場合に上書きする。無関係なファイルは許可される |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
 | `--cloudflare-workers` | Cloudflare Workers デプロイ設定を生成する |
 | `--features <names>` | 追加のプラグインを追加するカンマ区切りの feature pack 名 |
+| `--content-directory <path>` | 書き込むコンテンツディレクトリの相対パス（例: `../vault`）。絶対パスは拒否される |
+| `--domain <hostname>` | 生成する Cloudflare Worker のルートに設定するカスタムドメイン（例: `docs.example.com`） |
 | `--content-repository <owner/repository>` | このリポジトリをデプロイ時の content source にする。`--github-actions` と `--site-repository` が必要で、`github/notify-site.yml` も生成する。 |
 | `--site-repository <owner/repository>` | 生成した記事通知 workflow の通知先 site リポジトリ。`--content-repository` と同時に必要。 |
 

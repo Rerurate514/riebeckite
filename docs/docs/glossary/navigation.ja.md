@@ -11,36 +11,38 @@ sidebar:
 
 ## ナビゲーション設定
 
-ナビゲーションは `navigation` プラグインを使って、解決済みマニフェストから構築されます。項目は `discoverable` なコンテンツから導出され、`navigation` 設定セクションでカスタマイズできます。
+ナビゲーションは `navigation` プラグインを使って、解決済みマニフェストから構築されます。`items` を渡さない場合は `discoverable` なコンテンツから項目を導出し、トップレベルの設定セクションではなくプラグインのオプションでカスタマイズします。
 
 ```ts
-import { buildNavigation } from "@riebeckite/plugin-navigation";
+import { navigation } from "@riebeckite/plugin-navigation";
 
-const nav = buildNavigation(manifest.discoverableEntries, {
-  items: [
-    { label: "Home", href: "/" },
-    { label: "Tags", href: "/tags" },
-  ],
-});
+plugins: [
+  navigation({
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Tags", href: "/tags" },
+    ],
+  }),
+],
 ```
 
 ## ナビゲーションプラグイン
-`navigation` プラグイン（`packages/plugins/navigation/src/index.ts`）は、解決済みマニフェストの検出可能エントリからヘッダー/フッターのリンクを描画します。ナビゲーション構造は次のように構築します。
+`navigation` プラグイン（`packages/plugins/navigation/src/navigation.ts`）は、解決済みマニフェストの検出可能エントリからヘッダー/フッターのリンクを描画します。ナビゲーション構造は次のように構築します。
 
 - `manifest.discoverableEntries` を読んで、検出可能なコンテンツをすべて取得する
-- `navigation` 設定セクションでカスタマイズできる。項目のラベル、href、並び順を指定できる
+- `items` と `secondary` のプラグインオプションで、ラベル、href、並び順を指定できる
 - 入れ子のメニュー構造と、アクティブなルートのハイライトに対応する
 
-プラグインは構築したナビゲーションを、インテグレーションのページ描画を通じてサイトのレイアウトに渡します。サイト側は独自のルート描画を用意するか、`navigation` 設定セクションを変更することで、ナビゲーション UI を完全にカスタマイズできます。
+プラグインは構築したナビゲーションを、インテグレーションのページ描画を通じてサイトのレイアウトに渡します。サイト側は独自のルート描画や独自の項目を用意することで、ナビゲーション UI を完全にカスタマイズできます。
 
 ```ts
-// Example: custom navigation config
-navigation: {
+// 例：ナビゲーションオプションのカスタマイズ
+navigation({
   items: [
     { label: "Home", href: "/" },
     { label: "Blog", href: "/blog" },
   ],
-},
+})
 ```
 
 ## 関連用語

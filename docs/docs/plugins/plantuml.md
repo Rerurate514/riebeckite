@@ -28,7 +28,7 @@ export default defineConfig({
 
 Each ` ```plantuml ` code block is rendered as a diagram on this page.
 
-#### Source
+### Source
 
 ````md
 ```plantuml
@@ -39,7 +39,7 @@ Bob --> Alice: Hi
 ```
 ````
 
-#### Rendered
+### Rendered
 
 ```plantuml
 @startuml

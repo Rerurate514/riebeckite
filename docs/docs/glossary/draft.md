@@ -13,9 +13,11 @@ Content that is kept out of the published site by the publish decision. Drafts c
 
 ```yaml
 ---
-published: false
+publish: false
 ---
 ```
+
+With the default `explicit` strategy, omit `publish: true` or set `publish: false`. With `selective`, set `private: true`, `draft: true`, or `visibility: draft`.
 
 ## What still happens
 
@@ -23,7 +25,7 @@ A draft can still be parsed and linked internally, so you can preview and cross-
 
 ## Publishing state
 
-Draft is one of the `PublishingVisibility` values (`packages/core/src/content/publishing.ts`). When a note has `published: false` or `visibility: draft`, `resolvePublishingState` returns `routable: false, discoverable: false`. This means:
+Draft is one of the `PublishingVisibility` values (`packages/core/src/content/publishing.ts`). Under `explicit`, omitting `publish: true` or setting `publish: false` makes a note a draft. Under `selective`, `private: true` or `draft: true` makes it a draft. `visibility: draft` always does. An explicit `visibility` or `publishAt` takes precedence over these strategy checks. When the note remains a draft, `resolvePublishingState` returns `routable: false, discoverable: false`. This means:
 
 - The note is excluded from `publicEntries` and `byRoutablePermalink`
 - It will not produce any public output

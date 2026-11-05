@@ -84,7 +84,7 @@ Each link is a `NavigationItem`.
 | `href` | `string` | Destination path or URL |
 | `children` | `NavigationItem[]` | Child items, shown as a submenu |
 | `external` | `boolean` | When `true`, opens in a new tab |
-| `icon` | `string` | Optional icon name or URL |
+| `icon` | `ContentIcon` | Optional resolved icon object |
 | `collapsed` | `boolean` | When `true`, the item is initially collapsed in the sidebar |
 
 `label` and `href` are required on authored items. A derived folder group that has no index note renders as a label only, so `href` is optional in the derived model.

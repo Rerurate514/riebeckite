@@ -8,13 +8,13 @@ sidebar:
 
 Riebeckite can expose a local, development-only Bridge for an editor extension or other local tool. It resolves a Markdown source file to the existing content manifest and reports the same preview, publication, diagnostics, and last-build impact data used by the development server.
 
-Start development with an explicit pairing token:
+Start development with an explicit pairing token in the environment:
 
 ```sh
-riebeckite dev --bridge-token <at-least-32-character-token>
+RIEBECKITE_BRIDGE_TOKEN=<at-least-32-character-token> riebeckite dev
 ```
 
-The Bridge is disabled without this token. First request `GET /__riebeckite/bridge/bootstrap` from the development server with `x-riebeckite-bridge-token`. Use the returned loopback origin for all Bridge requests, adding both that token and `x-riebeckite-bridge-protocol: 1`.
+On PowerShell, set `$env:RIEBECKITE_BRIDGE_TOKEN` before running `riebeckite dev`. The Bridge is disabled without this token. First request `GET /__riebeckite/bridge/bootstrap` from the development server with `x-riebeckite-bridge-token`. Use the returned loopback origin for all Bridge requests, adding both that token and `x-riebeckite-bridge-protocol: 1`.
 
 Use `GET /__riebeckite/bridge/v1` to detect supported capabilities. Editor tools can then resolve a source with `/source?path=notes/example.md`, fetch preview, publication, diagnostics, or last-build impact for that source, and subscribe to `/events` to refresh after content changes. The `/page?source=notes/example.md` endpoint is kept as a Protocol v1 compatibility alias for the Obsidian client, and shares its resolution code with `/source`. New integrations should use `/source`, `/publication`, and `/preview`.
 

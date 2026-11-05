@@ -3,8 +3,9 @@
 <!-- Generated from docs/docs/plugins/series.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Ordered multi-part posts ("series") for Riebeckite. At build time, notes that
-share a series name get the same generated navigation listing every part in
-order, with the current part marked and previous/next links.
+share a series name get the same generated navigation data listing every part in
+order, with the current part marked and previous/next links. The plugin ships a
+`<SeriesNavigation />` component that the Site renders on each note.
 
 [日本語](./README_ja.md)
 
@@ -15,10 +16,11 @@ The [Plugins in depth](/series/plugins-in-depth-en) series page lists its articl
 ## Overview
 
 `series()` reads series metadata from frontmatter, groups every matching
-manifest entry, sorts the group, and appends a `<nav class="rb-series">` block
-to each note in the series. Links use the permalinks resolved by Core, so
-plugins such as `permalink` are respected. A single-note series renders no
-navigation block.
+manifest entry, and sorts the group. It exposes the result through
+`getSeriesNavigation()` and the `<SeriesNavigation />` component; it does not
+modify entry HTML. Links use the permalinks resolved by Core, so plugins such as
+`permalink` are respected. The component renders no navigation when there is no
+series.
 
 The plugin also declares page types, so it exposes a list page at `/series`
 and one landing page per series at `/series/<name>`. Both are built from the
@@ -74,11 +76,9 @@ the numbered parts, using `date`/`created`/`published`, then `title`, then
 
 ## Display
 
-Each note in a series of two or more parts receives live series navigation after its article. The links and current position are calculated from the frontmatter shown above.
+When the Site renders `<SeriesNavigation />` after the article, each note in a series gets the navigation block. The links and current position are calculated from the frontmatter shown above.
 
-All text and attributes are escaped. The injected HTML is written back to both
-the manifest entry and the processed content object so the page route, feeds,
-and search see the same markup.
+All text and attributes are escaped. The navigation is rendered from manifest data on each request of the route; it is not written back to the manifest entry, processed content, feeds, or the search index.
 
 ## Page types
 
@@ -96,7 +96,9 @@ to percent-encoding. Set `basePath` to match a custom routing scheme, or pass
 
 ## Exports
 
-- `series(options?)` / `series(options?)` — plugin factory
+- `series(options?)` — plugin factory
+- `SeriesNavigation` — Site component for one note's series navigation
+- `getSeriesNavigation({ view, entry, index })` — navigation data for one entry
 - `buildSeriesIndex(manifest, name, options?)` — ordered members for one series
   (`SeriesIndex | null`); useful for landing pages
 - `renderSeriesIndex(manifest, name, options?)` — standalone `<section>` block
@@ -111,7 +113,8 @@ to percent-encoding. Set `basePath` to match a custom routing scheme, or pass
 - `collectSeriesIndexes(manifest, options?)` — every series in first-seen order
 - `resolveSeriesOptions(options?)` — options with defaults applied
 - `DEFAULT_SERIES_BASE_PATH` — default `basePath` (`"/series"`)
-- Types: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
+- `DEFAULT_CLASS_NAME` — default `className` (`"rb-series"`)
+- Types: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`, `SeriesNavigationProps`
 
 ### Series landing page
 
@@ -146,8 +149,8 @@ matched with `.rb-series__item a[aria-current="page"]`.
 ## Limitations
 
 - A note belongs to exactly one series.
-- A series of one note produces no navigation block on the note, but it still
-  gets a list entry and a landing page.
+- A series of one note still renders its navigation block with a single item and
+  no previous/next links, and it also gets a list entry and a landing page.
 - `series_order` must be a finite number; numeric strings are not coerced.
 - Series names that slugify to the same segment share the first landing page.
 - Generated pages use `/series` by default; change `basePath` to avoid clashes

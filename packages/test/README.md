@@ -7,13 +7,15 @@ end-to-end engine.
 
 ## Overview
 
-`@riebeckite/test` has two entry points:
+`@riebeckite/test` has three entry points:
 
 - `@riebeckite/test` — dependency-free helpers for package unit tests.
 - `@riebeckite/test/e2e` — a reusable engine for testing a built site end to
   end against published tarballs. It knows nothing about the Riebeckite
   monorepo: the repository root, the package list, the fixtures, and the
   content assertions are all supplied by the caller.
+- `@riebeckite/test/fixtures` — helpers for building Markdown fixtures and
+  temporary directories.
 
 ## Installation
 

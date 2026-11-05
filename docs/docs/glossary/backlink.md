@@ -50,7 +50,8 @@ The `getPublishedBacklinks()` function resolves incoming links from the content 
 It returns `ArticleBacklink[]` entries, each containing `slug`, `permalink`, and `title`. Links are filtered to publicly discoverable entries only, sorted in manifest order.
 
 ```ts
-import { getPublishedBacklinks, content } from "@riebeckite/plugin-backlinks";
+import { getPublishedBacklinks } from "@riebeckite/plugin-backlinks";
+import { content } from "virtual:riebeckite/content";
 import { getArticleTitle } from "../lib/article-title";
 
 const manifest = await content.getManifest();

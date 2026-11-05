@@ -15,19 +15,20 @@ The **Search** control in the header opens the site search dialog. Type `mermaid
 
 `search()` adds a `SearchBar` component and a browser entry point that opens a
 modal search dialog (`Ctrl+K`/`Cmd+K` or `/`). The engine `searchItems()`
-matches on title, slug, tags, headings, and body with weighted scoring:
+matches on title, slug, aliases, tags, headings, and body with weighted scoring:
 
 | Field | Weight |
 | ----- | ------ |
 | `slug` | 64 |
 | `title` | 56 |
+| `aliases` | 50 |
 | `tags` | 44 |
 | `headings` | 32 |
 | `body` | 10 |
 
 Exact matches score 3×, prefix matches 2×, and substrings 1×. When a query has
 2+ characters and no substring match, a fuzzy subsequence match is used. Query
-text is normalized (lowercase, NFKC, and katakana full-width → half-width)
+text is normalized (lowercase, NFKC, then katakana → hiragana folding)
 before searching.
 
 Each `SearchItem` also carries the resolved canonical `permalink`. It is not a

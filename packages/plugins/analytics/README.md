@@ -106,9 +106,10 @@ own private runtime configuration.
 
 ## Browser behavior
 
-For every published content entry with Core's source-authored stable `id`, the
-plugin places a small content-ID marker in rendered HTML and registers
-`initAnalytics` with the generic public-config client mechanism.
+For every manifest entry with Core's source-authored stable `id`, the plugin
+appends a small content-ID marker to the entry's rendered HTML when that HTML is
+rendered, and registers `initAnalytics` with the generic public-config client
+mechanism.
 
 In a browser, the initializer sends exactly one event per document:
 
@@ -130,8 +131,7 @@ event after each successful route transition.
 Content IDs are an authoring responsibility. Duplicate `id` declarations across
 published notes are reported by
 [`@riebeckite/plugin-diagnostics`](../diagnostics/README.md)
-(`duplicate-content-id` / `invalid-content-id`) and validated by the plugin's own
-`validateAnalyticsOptions` at `check` time.
+(`duplicate-content-id` / `invalid-content-id`).
 
 ## Provider contract
 
@@ -151,8 +151,8 @@ that may not support all queries.
 
 `@riebeckite/plugin-diagnostics` reports an `analytics-untracked` finding for
 published content without a stable content ID when the site enables this
-plugin, so tracking gaps are visible in `check`, `doctor`, and build
-diagnostics.
+plugin, so tracking gaps are visible in `doctor` and the Development
+Inspector.
 
 ## Exports
 

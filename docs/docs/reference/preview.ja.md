@@ -14,12 +14,12 @@ sidebar:
 ## 使い方
 
 ```ts
-import { codeTabs } from "@riebeckite/plugin-code-tabs";
+import { codeTabs, type CodeTabsOptions } from "@riebeckite/plugin-code-tabs";
 import { createPreview, definePluginPreview } from "@riebeckite/preview";
 
 const preview = createPreview({
   plugins: [
-    definePluginPreview({
+    definePluginPreview<CodeTabsOptions>({
       id: "code-tabs",
       title: "Code tabs",
       availability: "browser",

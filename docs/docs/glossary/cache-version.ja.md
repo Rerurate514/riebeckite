@@ -17,7 +17,7 @@ sidebar:
 ## 移行
 
 スキーマバージョンが一致しないときは `.riebeckite/cache` を削除し、コールド処理を強制します。
-ビルドログは、互換性のないスキーマバージョンを持つキャッシュエントリがあると `schema-miss` を報告します。
+ビルドログは、互換性のないスキーマバージョンを持つキャッシュエントリがあると `schema-mismatch` を報告します。
 
 ## スキーマバージョンの定数
 
@@ -28,7 +28,7 @@ sidebar:
 
 ## キャッシュ検索時の互換性チェック
 
-キャッシュ検索では、`createPersistentContentCache`（`packages/core/src/content/content_persistent_cache.ts`）の `lookup` メソッドが `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION` を確認します。バージョンが異なれば、エントリは `schema-miss` として扱われ、最初から再処理されます。これにより、キャッシュスキーマの構造変更は必ず次のビルドで反映されます。
+キャッシュ検索では、`createPersistentContentCache`（`packages/core/src/content/content_persistent_cache.ts`）の `lookup` メソッドが `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION` を確認します。バージョンが異なれば、エントリは `schema-mismatch` として扱われ、最初から再処理されます。これにより、キャッシュスキーマの構造変更は必ず次のビルドで反映されます。
 
 ## キャッシュエントリの構造
 
@@ -50,7 +50,7 @@ sidebar:
 }
 ```
 
-エントリは `schemaVersion`（現在は5）、`key`（slug、source、frontmatter、パイプラインのフィンガープリントから `computeContentCacheKey` で計算）、`dependencies`（`CachedContentDependency` レコードの配列）、`value`（frontmatter と HTML）を含みます。検索中に `entry.key !== key` であれば、エントリは `key-miss` として扱われます。
+エントリは `schemaVersion`（現在は5）、`key`（slug、source、frontmatter、パイプラインのフィンガープリントから `computeContentCacheKey` で計算）、`dependencies`（`CachedContentDependency` レコードの配列）、`value`（frontmatter と HTML）を含みます。検索中に `entry.key !== key` であれば、エントリは `key-mismatch` として扱われます。
 
 ## 関連用語
 

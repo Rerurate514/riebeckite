@@ -16,7 +16,7 @@ component framework. Its public component surface is:
   and metadata;
 - `Sidebar` for complementary content.
 
-The corresponding `*Props` types are public.
+The corresponding `*Props` types are internal; use `ComponentProps<typeof Article>` and similar helpers when you need a component's prop type.
 
 ## Stable styling hooks
 

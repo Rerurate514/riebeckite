@@ -23,7 +23,7 @@ import { recentPosts } from "@riebeckite/plugin-recent-posts";
 export default defineConfig({ plugins: [recentPosts()] });
 ```
 
-`recentPosts()` は UI を自動描画しません。生成された `starter` と `showcase` は推奨するホームページ配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
+`recentPosts()` は UI を自動描画しません。生成された `starter` と `showcase` は、共有する `app/components/article.tsx` に推奨の配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";
@@ -33,7 +33,7 @@ const posts = getRecentPosts({ manifest: await content.getManifest() });
 return <RecentPosts posts={posts} />;
 ```
 
-生成されたホームページの一覧を無効にするには、ホームページのルートから `RecentPosts` の import と要素を削除します。位置を変える場合は、同じ要素を別のルートまたはレイアウトへ移動します。
+生成された一覧を無効にするには、`app/components/article.tsx` から `RecentPosts` の import と要素を削除します。位置を変える場合は、同じ要素を別のコンポーネント、ルート、またはレイアウトへ移動します。
 
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |

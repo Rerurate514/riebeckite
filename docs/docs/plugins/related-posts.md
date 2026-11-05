@@ -23,8 +23,8 @@ published entry against the current one:
 | Co-citation | 1 per common target | Both entries link to the same note |
 
 Candidates are sorted by score (descending), then by title, then by slug, and
-clamped to `limit`. Entries that score below `minScore` are dropped. When no
-candidate qualifies, the entry's HTML is left untouched.
+clamped to `limit`. Entries that score below `minScore` are dropped. The plugin
+does not modify entry HTML.
 
 The Site places the `<RelatedPosts entries={...} options={...} />` component
 itself, normally once after article content. The component renders nothing when

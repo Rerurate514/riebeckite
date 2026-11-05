@@ -19,7 +19,7 @@ Standard shape:
 {
   slug: "notes/hello",
   permalink: "/docs/notes/hello/",
-  redirects: ["/docs/hello/"],
+  redirects: [{ path: "/docs/hello/", status: 301 }],
   metadata: { /* optional */ },
 }
 ```
@@ -36,7 +36,10 @@ Example manifest entry with redirects and metadata:
 {
   slug: "notes/hello",
   permalink: "/docs/notes/hello/",
-  redirects: ["/docs/hello/", "/hello/"],
+  redirects: [
+    { path: "/docs/hello/", status: 301 },
+    { path: "/hello/", status: 301 },
+  ],
   metadata: { author: "tanaka", lastModified: "2024-01-01" },
 }
 ```

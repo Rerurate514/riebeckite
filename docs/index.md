@@ -18,24 +18,24 @@ Getting a first site running goes: **Quick Start → Installation → First Cont
 
 | I want to… | Go to |
 | --- | --- |
-| Use Riebeckite for the first time | [Quick Start](./docs/getting-started/quick-start.ja.md) |
-| Create a site and deploy it today | [Quick Start](./docs/getting-started/quick-start.ja.md) → [Deployment](./docs/getting-started/deployment.ja.md) |
-| Choose which `create-riebeckite` preset to use | [Presets](./docs/getting-started/presets.ja.md) |
-| Write and organize articles | [Guides / Writing content](./docs/guides/writing-content.ja.md) |
-| Publish an Obsidian vault | [Guides / Obsidian](./docs/guides/obsidian.ja.md) |
-| Keep content and site in separate repositories | [Guides / Content repositories](./docs/guides/content-repositories.ja.md) |
-| Build a multilingual site | [Guides / Localization](./docs/guides/localization.ja.md) |
-| Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./docs/guides/deployment/README.ja.md) |
-| Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./docs/guides/upgrading.ja.md) |
-| Find and install a Plugin | [Plugins](./docs/plugins/README.ja.md) |
-| See Plugins in action | [Plugin Showcase](./docs/plugins/showcase.ja.md) |
-| Change the look of my site | [Themes](./docs/themes/README.ja.md) |
-| Keep the site usable for more people | [Accessibility](./docs/accessibility.ja.md) |
-| Understand the trust model | [Security model](./docs/security.ja.md) |
-| Read what changed in each release | [Release Notes](./docs/releases.ja.md) |
-| Look up configuration, CLI, or an API | [Reference](./docs/reference/README.ja.md) |
-| Understand how Riebeckite works inside | [Framework](./docs/framework/README.ja.md) |
-| Contribute to Riebeckite itself | [Framework / Development](./docs/framework/development.ja.md) |
+| Use Riebeckite for the first time | [Quick Start](./docs/getting-started/quick-start.md) |
+| Create a site and deploy it today | [Quick Start](./docs/getting-started/quick-start.md) → [Deployment](./docs/getting-started/deployment.md) |
+| Choose which `create-riebeckite` preset to use | [Presets](./docs/getting-started/presets.md) |
+| Write and organize articles | [Guides / Writing content](./docs/guides/writing-content.md) |
+| Publish an Obsidian vault | [Guides / Obsidian](./docs/guides/obsidian.md) |
+| Keep content and site in separate repositories | [Guides / Content repositories](./docs/guides/content-repositories.md) |
+| Build a multilingual site | [Guides / Localization](./docs/guides/localization.md) |
+| Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./docs/guides/deployment/README.md) |
+| Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./docs/guides/upgrading.md) |
+| Find and install a Plugin | [Plugins](./docs/plugins/README.md) |
+| See Plugins in action | [Plugin Showcase](./docs/plugins/showcase.md) |
+| Change the look of my site | [Themes](./docs/themes/README.md) |
+| Keep the site usable for more people | [Accessibility](./docs/accessibility.md) |
+| Understand the trust model | [Security model](./docs/security.md) |
+| Read what changed in each release | [Release Notes](./docs/releases.md) |
+| Look up configuration, CLI, or an API | [Reference](./docs/reference/README.md) |
+| Understand how Riebeckite works inside | [Framework](./docs/framework/README.md) |
+| Contribute to Riebeckite itself | [Framework / Development](./docs/framework/development.md) |
 
 ## Where to go next
 
@@ -58,7 +58,7 @@ my-site/
 └─ package.json          Local commands
 ```
 
-A site author mainly edits `content/` and `riebeckite.config.ts`. Internal architecture is documented in [Framework](./docs/framework/README.ja.md).
+A site author mainly edits `content/` and `riebeckite.config.ts`. Internal architecture is documented in [Framework](./docs/framework/README.md).
 
 For coding agents and automation, use the concise, rule-oriented [Agent documentation](./agents/README.md).
 

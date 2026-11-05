@@ -44,7 +44,7 @@ flowchart LR
 | `**/Templates/**` | 上記の両方 | — |
 | `private/**` | `private/secret.md` | `notes/private/secret.md` |
 
-`*` は1つのセグメント内にとどまり、`**` はセグメントをまたぎます。同名のフォルダがサブフォルダにも現れる可能性があるなら、`**/` を付けると安全です。スキャフォールドの既定値が `**/templates/**` と `**/private/**` になっているのはそのためです。
+`*` は1つのセグメント内にとどまり、`**` はセグメントをまたぎます。同名のフォルダがサブフォルダにも現れる可能性があるなら、`**/` を付けると安全です。スキャフォールドはこれらのパターンを設定しないため、必要なら `**/templates/**` と `**/private/**` を自分で追加してください。
 
 `exclude` は読み込み前に絞り込むため、除外されたノートはリンク解決やグラフに現れません。非公開にしたいノートは、`publish: true` を付けないことに加えて、可能ならフォルダごと除外してください。
 
@@ -58,7 +58,7 @@ Vault 内のファイルは3種類に分かれ、それぞれ公開する主体�
 | 添付ファイル / メディア | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対論理パス>` | サイト側の prebuild 手順 |
 | 静的アセット | サイトアプリケーションが管理するファイル | `/` 以下の任意の場所 | Vite の `public/` ディレクトリ |
 
-コンテンツ画像については、サイト側で何もする必要がありません。`obsidianMarkdown()` が公開ページから参照されている画像を、[[glossary/logical-path|論理パス]]を保ったままビルド出力に書き出します。開発サーバーも同じ論理パスでコンテンツから直接配信します。どこからも参照されていない画像や、非公開ページだけから参照されている画像は書き出されません。
+コンテンツ画像については、サイト側で何もする必要がありません。Core のビルドが公開ページから参照されている画像を、[[glossary/logical-path|論理パス]]を保ったままビルド出力に書き出し、`obsidianMarkdown()` が Obsidian の画像・埋め込み記法をその参照へ解決します。開発サーバーも同じ論理パスでコンテンツから直接配信します。どこからも参照されていない画像や、非公開ページだけから参照されている画像は書き出されません。
 
 ```mermaid
 flowchart LR
@@ -76,7 +76,7 @@ flowchart LR
 ![[attachments/report.pdf]]
 ```
 
-URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
+URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx --conditions=source scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。
 
 この実装の流れは次のとおりです。
 
@@ -176,7 +176,7 @@ npm exec riebeckite build
 
 1. `check` は設定とプラグインの取り決めを検証します。
 2. `doctor` は読み取れない、または不正なファイルシステムの[[glossary/content-source|コンテンツソース]]を報告します。
-3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` がパターン数です。まずここで、Vault がどこを指しているかを確定させます。
+3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` が設定済みの除外パターンの一覧です（カンマ区切り、空なら `-`）。まずここで、Vault がどこを指しているかを確定させます。
 4. [[glossary/wikilink|WikiLink]] や埋め込みを調べる前に、`inspect content --list` で期待する論理パスが読み込まれているか確認します。
 5. `inspect graph` で、除外したノートがノードとして現れていないか確認します。
 6. `build` は統合とルートのレンダリングを検証します。

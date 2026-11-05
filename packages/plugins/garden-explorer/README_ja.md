@@ -108,8 +108,8 @@ return <GardenExplorer data={data} />;
 - `GardenExplorer` — インタラクティブな探索コンポーネント
 - `getGardenExplorerData({ manifest, config, resolveTitle, options? })` — データ構築
 - 型: `GardenExplorerData`、`GardenExplorerEdge`、`GardenExplorerFolder`、
-  `GardenExplorerGraphLayout`、`GardenExplorerGraphMode`、`GardenExplorerNote`、
-  `GardenExplorerOptions`、`GardenExplorerPluginOptions`、`GardenExplorerTag`
+  `GardenExplorerNote`、`GardenExplorerOptions`、`GardenExplorerPluginOptions`、
+  `GardenExplorerTag`
 
 ## 関連資料
 

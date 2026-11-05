@@ -65,9 +65,9 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Plugin UI component](./plugin-component.ja.md)：プラグインが公開する Hono JSX コンポーネントと CSS。
 - [Asset](./asset.ja.md)：`assets` 配列で宣言する、スタイルシートなどの静的リソース。
 - [Head tag](./head-tag.ja.md)：ページの `<head>` とメタデータ。インテグレーションが組み立てる。
-- [Diagnostics](./diagnostics.ja.md)：Core とプラグインが出す構造化された指摘。
+- [Diagnostics](./diagnostics.ja.md)：Core とプラグインが出す構造化された指摘。`doctor` と Development Inspector が集約する。
 - [Diagnostic code](./diagnostic-code.ja.md)：問題の種類を表す安定した識別子。
-- [Diagnostic severity](./diagnostic-severity.ja.md)：error、warn、info の 3 段階の深刻度。
+- [Diagnostic severity](./diagnostic-severity.ja.md)：error、warning、info の 3 段階の深刻度。
 - [Plugin options](./plugin-options.ja.md)：プラグインファクトリに渡す設定値。`validateOptions` で検証する。
 
 ## テーマ

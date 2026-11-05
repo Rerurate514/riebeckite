@@ -13,12 +13,12 @@ sidebar:
 
 | 戦略 | 挙動 |
 | --- | --- |
-| all | frontmatter で除外しない限り公開 |
-| selective | 公開指定のあるコンテンツだけを公開 |
+| `explicit`（既定） | `publish: true` のコンテンツだけを公開 |
+| `selective` | `private: true` か `draft: true` でない限り公開 |
 
 ## frontmatterとの関係
 
-戦略が既定を決め、`published` などの frontmatter がそれを調整します。両者で[公開境界](./publication-boundary.md)を構成します。
+戦略が既定を決め、`publish`、`private`、`draft` などの frontmatter がそれを調整します。両者で[公開境界](./publication-boundary.md)を構成します。
 
 ## 戦略の解決
 戦略は[解決済みの Riebeckite 設定](../framework/honox-integration/site.md)の `config.content.filters.publishStrategy` から解決されます。値は `"explicit"` か `"selective"` で、`PublishStrategy` として保存されます。

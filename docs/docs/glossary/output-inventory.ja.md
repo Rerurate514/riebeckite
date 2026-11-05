@@ -26,7 +26,7 @@ sidebar:
 
 `manifest.publicRedirects` から生成されます。各リダイレクト出力は次のとおりです。
 - `kind`: `"redirect"`
-- `path`: リダイレクト先の HTML パス
+- `path`: リダイレクト元（旧 URL）の HTML 出力パス
 - `producer`: `content:${redirect.slug}:redirect`
 - `dependencies`: `[{ type: "content", slug: redirect.slug }]`
 
@@ -35,8 +35,8 @@ sidebar:
 プラグインページの定義（`pageTypes`）から生成されます。各プラグインページ出力は次のとおりです。
 - `kind`: `"plugin-page"`
 - `path`: HTML 出力パス
-- `producer`: `plugin:${plugin.name}`
-- `dependencies`: `pageTypes[].outputDependencies` または `context.output.emit(..., { dependencies })` で宣言
+- `producer`: `plugin:${plugin.name}:page:${pageType.id}`
+- `dependencies`: `pageTypes[].outputDependencies` で宣言
 
 ### 生成物
 

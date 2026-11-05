@@ -37,14 +37,20 @@ The `createContentGraph` function aggregates these link-derived edges into a que
 
 ## Plugin Extension via `extendContentGraph`
 
-Plugins can add custom relationships without modifying Core, by implementing `extendContentGraph`. The callback receives a `PluginGraphContext` and can push additional link references into the manifest's `outgoingLinks` or `incomingLinks` maps. These plugin-added edges are then included automatically when `createContentGraph` is called, enabling features such as "related posts", "cited-by" graphs, or table-of-contents cross-references.
+Plugins add relationships by implementing `extendContentGraph` on `definePlugin`. The callback receives a `PluginGraphContext` with the manifest `entries` and the `contentIndex`, and can add note links to each entry. Those links become graph edges when `createContentGraph` runs, enabling features such as "related posts", "cited-by" graphs, or table-of-contents cross-references.
 
 ```ts
-// Example plugin adding a "cites" relationship
-context.extendContentGraph?.({
-  pluginName: "my-plugin",
-  outgoing: {
-    "post-a": ["post-b", "post-c"], // post-a cites post-b and post-c
+import { definePlugin } from "@riebeckite/core";
+
+export const cites = definePlugin({
+  name: "my-plugin",
+  extendContentGraph({ entries, contentIndex }) {
+    for (const entry of entries) {
+      const target = contentIndex.get("post-b");
+      if (target && !entry.links.some((link) => link.slug === target)) {
+        entry.links.push({ raw: "post-b", slug: target, kind: "note", embed: false });
+      }
+    }
   },
 });
 ```
@@ -68,15 +74,22 @@ These are built by `createContentGraph` from the manifest's `outgoingLinks` and 
 - **Markdown links** `text` are resolved relative to the source slug; if the path matches a known content slug, an outgoing edge is created.
 - **Unresolved links** (external URLs, attachment references) are recorded with `kind: "unresolved"` and do not create graph edges, so they do not appear in `outgoing`, `incoming`, or `neighbors` queries.
 
-Plugins can add custom relationships via `extendContentGraph`. The callback receives a `PluginGraphContext` and can push additional link references into the manifest's `outgoingLinks` or `incomingLinks` maps. These plugin-added edges are then included automatically when `createContentGraph` is called, enabling features such as "related posts", "cited-by" graphs, or table-of-contents cross-references.
+Plugins add relationships via `extendContentGraph`. The callback receives a `PluginGraphContext` with the manifest `entries` and the `contentIndex`, and can add note links to each entry. Those links become graph edges when `createContentGraph` is called, enabling features such as "related posts", "cited-by" graphs, or table-of-contents cross-references.
 
 Example plugin adding a "cites" relationship:
 
 ```ts
-context.extendContentGraph?.({
-  pluginName: "my-plugin",
-  outgoing: {
-    "post-a": ["post-b", "post-c"], // post-a cites post-b and post-c
+import { definePlugin } from "@riebeckite/core";
+
+export const cites = definePlugin({
+  name: "my-plugin",
+  extendContentGraph({ entries, contentIndex }) {
+    for (const entry of entries) {
+      const target = contentIndex.get("post-b");
+      if (target && !entry.links.some((link) => link.slug === target)) {
+        entry.links.push({ raw: "post-b", slug: target, kind: "note", embed: false });
+      }
+    }
   },
 });
 ```

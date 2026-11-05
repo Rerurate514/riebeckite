@@ -26,7 +26,7 @@ export default defineConfig({
 
 ` ```plantuml ` のコードブロックは、このページ上で図として実際に描画されます。
 
-#### ソース
+### ソース
 
 ````md
 ```plantuml
@@ -37,7 +37,7 @@ Bob --> Alice: Hi
 ```
 ````
 
-#### 描画結果
+### 描画結果
 
 ```plantuml
 @startuml

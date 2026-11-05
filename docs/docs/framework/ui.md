@@ -78,7 +78,7 @@ const controller = createDialogController(dialog, {
 });
 ```
 
-The controller keeps `aria-expanded` in sync, closes on backdrop clicks, restores focus on close, and reference-counts scroll locking. Pass the page lifecycle's `AbortSignal` as `signal`; aborting it destroys the controller and releases the scroll lock, so SPA teardown does not depend on remembering a separate `destroy()` call. It does not replace the native dialog's own focus management or Escape handling.
+The controller keeps `aria-expanded` in sync, closes on backdrop clicks, restores focus on close, and reference-counts scroll locking. Pass the page lifecycle's `AbortSignal` as `signal`; aborting it destroys the controller and releases the scroll lock, so SPA teardown does not depend on remembering a separate `destroy()` call. It also handles Escape and traps focus while open, restoring focus on close.
 
 ## Tabs
 

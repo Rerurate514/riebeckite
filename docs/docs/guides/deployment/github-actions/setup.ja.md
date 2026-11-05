@@ -32,6 +32,8 @@ my-site/
 | `wrangler.jsonc` | Cloudflare Workers へのデプロイ設定 |
 | `.github/workflows/publish.yml` | GitHub Actions のビルド／デプロイワークフロー |
 
+コマンドライン形式では対話形式の質問をスキップするため、依存パッケージはインストールされません。続行する前に `cd my-site` と `npm install` を実行し、ワークフローの `npm ci` が使う `package-lock.json` を生成してください。
+
 通常は、生成されたワークフローを出発点として使います。
 
 ## 既存のサイトに継続デプロイを追加する

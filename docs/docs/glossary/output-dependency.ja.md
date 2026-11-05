@@ -19,13 +19,13 @@ sidebar:
 
 ## 宣言
 
-プラグインページでは `pageTypes[].outputDependencies`、ルートの `outputDependencies`、または `context.output.emit(..., { dependencies })` で宣言します。依存関係は可能な限り狭くし、`unknown` は範囲を特定できない場合にだけ使います。
+プラグインページでは `pageTypes[].outputDependencies`、ルートの `contentOutputDependencies`、または `context.output.emit(..., { dependencies })` で宣言します。依存関係は可能な限り狭くし、`unknown` は範囲を特定できない場合にだけ使います。
 
 ## 宣言の詳細
 
 ### コンテンツ依存関係（`content { slug }`）
 
-`slug` で識別されるコンテンツエントリが変わると、その slug への `content` 依存を持つすべての出力が影響を受けたものとして扱われます。slug はコンテンツの permalink から導かれる slug と一致します。最も一般的な依存関係の種類で、特定のページが変わったときに細かく無効化できます。
+`slug` で識別されるコンテンツエントリが変わると、その slug への `content` 依存を持つすべての出力が影響を受けたものとして扱われます。slug は論理パスから導かれる内部キーで、permalink とは別に解決されます。最も一般的な依存関係の種類で、特定のページが変わったときに細かく無効化できます。
 
 ### タグ依存関係（`tag { tag }`）
 

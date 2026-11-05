@@ -36,7 +36,7 @@ sidebar:
 
 | フィールド | 説明 |
 | --- | --- |
-| `version` | ビルド状態のスキーマバージョン（現在は `19`）。 |
+| `version` | ビルド状態のスキーマバージョン（現在は `24`）。 |
 | `entries` | `Record<string, ContentBuildEntry>` — エントリごとのフィンガープリントと依存情報。 |
 | `pipelineFingerprint` | コンテンツパイプライン（プラグイン、フィルターなど）のハッシュ。 |
 | `outputs` | `OutputDescriptor[]` — 最後に生成した出力の一覧。 |

@@ -39,11 +39,11 @@ Run `npm exec riebeckite build` first. Cloudflare Workers publishes the Static A
 
 ### The published content is stale after updating the site
 
-Run `npm exec riebeckite build` and `npm exec -- riebeckite publish run --execute` again after the change. `riebeckite publish run --execute` does not replace Riebeckite's build.
+Run `npm exec riebeckite build` and `npm exec -- riebeckite publish run --execute --force` again after the change. `publish run` builds when content changed; the plan tracks content, redirects, and generated outputs, so a config-only change may not be detected and `--force` deploys it anyway.
 
 ### The URL is wrong after publishing
 
-Check that `site.baseUrl` in `riebeckite.config.ts` matches the actual published URL. If you change it, build and deploy again.
+Check that `site.baseUrl` in `riebeckite.config.ts` matches the actual published URL. If you change it, build and deploy again with `--force`.
 
 ### Riebeckite's build fails
 
@@ -62,7 +62,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run it first.
+A site generated with `create-riebeckite`'s `Cloudflare Workers` choice already includes Wrangler, so `npm install -D wrangler` is not needed. For an existing site generated with `Not now`, run `npm install -D wrangler` first and add `--provider cloudflare-workers` to `publish run`, because there is no Wrangler configuration to detect yet.
 
 After the first deployment gives you the public URL:
 

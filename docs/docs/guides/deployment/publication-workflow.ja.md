@@ -155,7 +155,7 @@ npm exec -- riebeckite publish run --execute --trigger scheduled
 
 `gate` はデプロイ前の単一のチェックです。常に計画とビルド成果物を検証し、`requireApproval` が有効なときは現在のコンテンツが承認済みになるまで失敗します。`publish validate` も同じ規則に従います。
 
-`riebeckite deploy` はデプロイを実行しなくなりました。代わりに `riebeckite publish run --execute` を使ってください。`deploy setup` と `deploy domain` は Cloudflare の設定補助として残ります。
+`riebeckite deploy setup` と `deploy workflow` は Cloudflare の設定を準備するだけで、デプロイは行いません。`deploy domain` は Custom Domain を追加したあと、`wrangler deploy` を実行するか尋ねます。設定だけ行う場合は「いいえ」を選んでください。通常の公開フローには `riebeckite publish run --execute` を使います。
 
 ## ホスティングアダプター
 
@@ -178,8 +178,7 @@ GitHub Pages では、ビルドに [[plugins/deploy|deploy プラグイン]]の 
 - `push`（main）と `workflow_dispatch` が同じ経路に入ります。予約公開を使う場合は `publication.schedule` を設定します。
 - `riebeckite-production` concurrency group により、同時に実行できるデプロイは1つだけです。実行中のデプロイはキャンセルしません。
 - ワークフローはブランチの先頭を取得し、チェックアウトしたコミットが古い場合は停止します。待機していた実行が古い内容で新しいデプロイを上書きすることはありません。
-- `publish plan --json` が push 以外の実行で build/deploy が必要かを決めます。push はアプリケーションコードが変わり得るため常にビルドします。
-- 計画は成果物としてアップロードされ、`publish validate` と `publish gate` がビルド出力を検査します。
+- 生成されるワークフローは設定を検査し、ビルドしてから、ビルド出力に対して `publish validate` と `publish gate` を実行します。独立した `publish plan` ステップや計画成果物のアップロードは行いません。push ではアプリケーションコードが変わり得るため常にビルドし、予約実行や手動実行も同じワークフローを使います。
 - 実際のアップロードはホストの action（ここでは `cloudflare/wrangler-action`）が行います。その後 `publish record` が成功スナップショットをワークツリー外の `RIEBECKITE_PUBLICATION_STATE` に書き、ワークフローが Git plumbing で `publication-state` ブランチに保存します。ソースブランチへのコミットや push は行いません。
 - GitHub Pages では `actions/upload-pages-artifact` と `actions/deploy-pages` で同じ形になります。
 
@@ -221,11 +220,11 @@ publication: {
 - 変更概要と次回予約公開
 - 最後に成功したスナップショット
 
-履歴は50実行までに制限され、環境変数の値やトークンを含みません。ローカルの[[glossary/build-state|ビルド状態]]であり、コミットもされません。GitHub Actions の[[glossary/cache|キャッシュ]]は診断を継続するために復元しますが、唯一の真実の保存先にはしません。キャッシュが失われたり切り詰められたりしても、起きるのは全再デプロイだけで、誤った公開は起きません。壊れた履歴は警告を出して無視します。
+履歴は50実行までに制限され、環境変数の値やトークンを含みません。ローカルの[[glossary/build-state|ビルド状態]]であり、コミットもされません。生成されるワークフローの[[glossary/cache|キャッシュ]]には含まれないため、CI の診断履歴は空から始まります。公開の判断には `publication-state` ブランチの永続状態を使います。壊れた履歴は警告を出して無視します。
 
 ## Lock と clean
 
-`.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID とホスト名を記録します。このホストでプロセスが生存しているロックは、経過時間や `--force` では削除されません。プロセスが終了しているロックや、ローカル状態を所有しないホストのロックは回収します。`clean` と `clean --all` は、実行中の公開ロックがある間は拒否されます。clean が削除するのは `.riebeckite` だけで、永続状態と承認記録は残ります。公開履歴と信頼は、クリーンビルドを越えて保持されます。
+`.riebeckite/publication/lock.json` は排他的作成で作られるため、ローカルの2つの実行が同時に取得することはありません。ロックにはプロセス ID、ホスト名、ハートビートを記録します。同じホストのロックは、プロセスが存在しハートビートが新しい間だけ有効です。1時間を超えたロックは、プロセス ID が生きていても回収します。`--force` が有効なロックを削除することはありません。`clean` と `clean --all` は、実行中の公開ロックがある間は拒否されます。clean は診断履歴を含む `.riebeckite` を削除しますが、その外にある永続状態と承認記録は残ります。公開の信頼はクリーンビルド後も保持されます。
 
 ## ビルド出力マーカー
 
@@ -272,7 +271,7 @@ publication: {
 
 ## 検証状況
 
-ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、各プロバイダーで信頼できる環境から `publish run --execute` を一度実行してください。
+ローカルの計画、承認、成果物、adapter、履歴の検査は、パッケージのテストで実行されます。Cloudflare Workers、Cloudflare Pages、GitHub Pages、Netlify、Vercel への実際のアップロードには認証情報が必要で、このリポジトリのテストでは利用できません。そのため、自動テストでは **UNVERIFIED** です。ワークフローを信頼する前に、`publish run` がデプロイする各プロバイダーで `publish run --execute` を一度実行し、GitHub Pages は `publish run` でデプロイできないため専用ワークフローを別途実行してください。
 
 ## この仕組みがしないこと
 

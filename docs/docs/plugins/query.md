@@ -115,8 +115,6 @@ limit: 5
 | `language` | `string` | `"query"` | Fence language to target |
 | `defaultFormat` | `"table"` \| `"list"` | `"table"` | Format when a block omits `format` |
 | `defaultColumns` | `string[]` | `["title", "date"]` | Columns when a block omits `columns` |
-| `defaultSort` | object | none | Sort when a block omits `sort` |
-| `defaultLimit` | `number` | none | Row cap when a block omits `limit` |
 | `emptyMessage` | `string` | `"No matching content."` | Empty-state message |
 | `excludeSelf` | `boolean` | `false` | Exclude the host page by default |
 
@@ -130,8 +128,9 @@ emits a `content-query-invalid` error diagnostic. Unknown fields emit a
 
 - Links produced by a query are not added to the content graph (backlinks).
   Only links written in the source Markdown participate.
-- Results are fixed at build time. Rebuilding a host note when a queried note
-  changes is future work; a full build always recomputes correctly.
+- Results are fixed at build time. The host note output declares a `global`
+  dependency, so a change to any content regenerates it; this is coarse but
+  correct.
 
 ## Exports
 

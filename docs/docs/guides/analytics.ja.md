@@ -42,12 +42,10 @@ flowchart LR
 analytics-untracked
 ```
 
-計測漏れは、次のような診断コマンドやビルドで確認できます。
+計測漏れは、`riebeckite doctor` と開発用 Inspector で確認できます。
 
 ```sh id="vl1o09"
-pnpm exec riebeckite check
 pnpm exec riebeckite doctor
-pnpm exec riebeckite build
 ```
 
 診断はコンテンツを自動変更しません。詳しくは[診断](../framework/diagnostics.ja.md)を参照してください。

@@ -46,7 +46,7 @@ and options.
 
 ## Config validation
 
-Configuration errors are reported as `ConfigValidationError`; do not catch and hide them. Run `riebeckite check` after changes.
+Configuration errors in the regular sections are reported as `ConfigValidationError`; invalid theme presets or settings throw `ThemeSettingsValidationError`. Both are exported from `@riebeckite/core`. Do not catch and hide them. Run `riebeckite check` after changes.
 
 ```sh
 npm exec riebeckite check

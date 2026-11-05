@@ -9,7 +9,7 @@ sidebar:
 
 このページでは、何も入っていない状態から Riebeckite のサイトを起動するまでを説明します。Riebeckite の知識は前提にしません。Riebeckite のリポジトリを clone する必要もありません。
 
-> **ドキュメントのバージョン:** このサイトは `main` ブランチを説明しています。npm の `latest` タグは古い場合があります。`npx create-riebeckite` と `npm exec riebeckite` が導入するバージョンは `npm view @riebeckite/cli version` で確認してください。ここに書かれた機能が見つからない場合、公開済みパッケージがその機能より前のものです。次のリリースを待つか、ソースからビルドしてください。
+> **ドキュメントのバージョン:** このサイトは `main` ブランチを説明しています。npm の `latest` タグは古い場合があります。`npx create-riebeckite` と `npm exec riebeckite` が導入するバージョンは、`npm view create-riebeckite version` と `npm view @riebeckite/cli version` で確認してください。ここに書かれた機能が見つからない場合、公開済みパッケージがその機能より前のものです。次のリリースを待つか、ソースからビルドしてください。
 
 ## 必要なもの
 
@@ -48,13 +48,13 @@ npx create-riebeckite
 3. **Add optional feature packs?**：追加のプラグインを入れる機能パックを選ぶ場合は `Yes`。既定は `No` です。非対話で追加する場合は `--features <names>` を使用します。[プリセット](./presets.ja.md) で利用可能な packs を参照してください
 4. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
 5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
-6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
+6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
 7. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
 ```bash
-npx create-riebeckite my-site --preset starter
+npx create-riebeckite my-riebeckite-site --preset starter
 ```
 
 - 生成されたトップレベルの名前が既存のエントリと衝突する場合、コマンドは停止します。上書きしたい場合は `--force` を追加してください。
@@ -65,7 +65,7 @@ npx create-riebeckite my-site --preset starter
 プロンプトでインストールしなかった場合は、フォルダへ移動してパッケージを入れます。
 
 ```bash
-cd my-site
+cd my-riebeckite-site
 npm install
 ```
 
@@ -82,7 +82,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
-| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon はプレースホルダーなので、サイトのブランドに合わせて置き換えてください。ヘッダーのロゴやリンクプレビュー画像はデフォルトでは生成されません。[サイトのアイコンとロゴ](../guides/branding.ja.md) で追加してください |
+| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。`starter` プリセットはリンクプレビュー（OG）画像を生成しませんが、`blog` プリセットは生成します。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
 | `README.md` | 生成されたサイト向けの短い説明 |
@@ -129,8 +129,8 @@ site: {
 | フィールド | 意味 |
 | --- | --- |
 | `title` | サイト名 |
-| `description` | SEO とフィードで使う概要 |
-| `baseUrl` | サイトを公開する URL。[[glossary/sitemap|サイトマップ]]やフィードに反映されるため、デプロイ後に実際の URL を設定する |
+| `description` | SEO と、有効にした場合のフィードで使う概要 |
+| `baseUrl` | サイトを公開する URL。[[glossary/sitemap|サイトマップ]]と、有効にしたフィードに反映されるため、デプロイ後に実際の URL を設定する |
 | `locale` | サイトの言語（日本語なら `"ja"`、英語なら `"en"`） |
 
 生成された設定のうち `content`、`theme`、`plugins` は、すでにプリセットに合った値になっています。各フィールドの詳しい説明は [設定](../reference/configuration.ja.md) を参照してください。

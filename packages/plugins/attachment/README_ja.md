@@ -32,7 +32,7 @@ export default defineConfig({
 
 以下のソースは、このページ上で実際に描画されます。
 
-#### ソース
+### ソース
 
 ````md
 [[attachment-example.txt]]
@@ -40,7 +40,7 @@ export default defineConfig({
 ![[attachment-example.txt]]
 ````
 
-#### 実行例
+### 実行例
 
 [attachment-example.txt](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/attachment-example.txt)
 

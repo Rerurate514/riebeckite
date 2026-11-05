@@ -11,36 +11,38 @@ Site navigation configuration and the navigation plugin that renders header/foot
 
 ## Navigation configuration
 
-The navigation is built from the resolved manifest using the `navigation` plugin. Entries are derived from `discoverable` content and can be customized via the `navigation` config section.
+The navigation is built from the resolved manifest using the `navigation` plugin. Items are derived from `discoverable` content unless you pass `items`, and are customized through the plugin options rather than a top-level config section.
 
 ```ts
-import { buildNavigation } from "@riebeckite/plugin-navigation";
+import { navigation } from "@riebeckite/plugin-navigation";
 
-const nav = buildNavigation(manifest.discoverableEntries, {
-  items: [
-    { label: "Home", href: "/" },
-    { label: "Tags", href: "/tags" },
-  ],
-});
+plugins: [
+  navigation({
+    items: [
+      { label: "Home", href: "/" },
+      { label: "Tags", href: "/tags" },
+    ],
+  }),
+],
 ```
 
 ## Navigation plugin
-The `navigation` plugin (`packages/plugins/navigation/src/index.ts`) renders header/footer links from the resolved manifest's discoverable entries. It builds the navigation structure by:
+The `navigation` plugin (`packages/plugins/navigation/src/navigation.ts`) renders header/footer links from the resolved manifest's discoverable entries. It builds the navigation structure by:
 
 - Reading `manifest.discoverableEntries` to get all discoverable content
-- Allowing customization via the `navigation` config section, which can specify item labels, hrefs, and ordering
+- Accepting `items` and `secondary` plugin options for labels, hrefs, and ordering
 - Supporting nested menu structures and active route highlighting
 
-The plugin contributes the built navigation to the site's layout through the integration's page rendering. Sites can fully customize the navigation UI by providing their own route rendering or by modifying the `navigation` config section.
+The plugin contributes the built navigation to the site's layout through the integration's page rendering. Sites can fully customize the navigation UI by providing their own route rendering or their own items.
 
 ```ts
-// Example: custom navigation config
-navigation: {
+// Example: custom navigation options
+navigation({
   items: [
     { label: "Home", href: "/" },
     { label: "Blog", href: "/blog" },
   ],
-},
+})
 ```
 
 ## Related terms

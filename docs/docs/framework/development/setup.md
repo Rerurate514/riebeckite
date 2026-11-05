@@ -12,7 +12,7 @@ sidebar:
 To develop Riebeckite itself, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/rerurate/riebeckite.git
+git clone https://github.com/Rerurate514/riebeckite.git
 cd riebeckite
 pnpm install
 pnpm build
@@ -61,7 +61,7 @@ flowchart TD
 | --- | --- |
 | `packages/core` | public config, content, pipeline, plugin, theme, diagnostics, observability APIs |
 | `packages/cli` | `riebeckite` command |
-| `packages/integrations/honox` | HonoX integration and scaffold generator |
+| `packages/integrations/honox` | HonoX / Vite integration |
 | `packages/create-riebeckite` | public site scaffolding entrypoint |
 | `packages/plugins/*` | official plugins |
 | `packages/themes/*` | official themes |
@@ -89,12 +89,12 @@ The commands you use most often during framework development are:
 | `pnpm docs:sync` | Generate [[glossary/plugin|Plugin]] and [[glossary/theme|Theme]] package READMEs from canonical docs. |
 | `pnpm check:plugin-docs` | Verify Plugin docs and generated READMEs are synchronized. |
 | `pnpm check:theme-docs` | Verify Theme docs and generated READMEs are synchronized. |
-| `pnpm check:scaffold` | Check the generated `starter`, `minimal`, `showcase`, and `empty` presets. |
+| `pnpm check:scaffold` | Check generated preset structure and typecheck all eight generated configs. |
 
 Use targeted commands when possible:
 
 - `pnpm check:docs` validates Markdown links and docs structure.
-- `pnpm check:scaffold` validates the `starter`, `minimal`, `showcase`, and `empty` scaffold output.
+- `pnpm check:scaffold` validates generated preset structure and typechecks all eight generated configs.
 - `pnpm typecheck` checks packages.
 - `pnpm --filter <package> test` runs a package test when available.
 
@@ -138,7 +138,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-This validates that the generated `starter`, `minimal`, `showcase`, and `empty` presets have the correct structure. It checks the generated configuration and files without an install or a build, so it does not cover the other four presets (`digital-garden`, `blog`, `docs`, `portfolio`). It matters when you change things such as:
+This validates that the generated `starter`, `minimal`, `showcase`, and `empty` presets have the correct structure. It also generates the other four presets (`digital-garden`, `blog`, `docs`, `portfolio`) and typechecks all eight generated configurations without an install or a build. It matters when you change things such as:
 
 - the scaffold generator
 - a preset

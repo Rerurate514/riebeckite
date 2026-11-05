@@ -9,7 +9,7 @@ sidebar:
 
 `riebeckite build` writes static files to `dist/`. Any host can serve that folder.
 
-`deploy setup` is Cloudflare-specific. `riebeckite publish run` supports Netlify, Vercel, and GitHub Pages.
+`deploy setup` is Cloudflare-specific. `riebeckite publish run` can deploy to Netlify and Vercel. GitHub Pages must be deployed by its own workflow.
 
 ## Generate host-specific files
 
@@ -33,11 +33,11 @@ Set `provider` to one of the following.
 
 | Host | `provider` | Generated files |
 | --- | --- | --- |
-| Cloudflare Pages | `cloudflare-pages` | `_redirects`, `_headers` |
-| Cloudflare Workers | `cloudflare-workers` | `_redirects`, `_headers` |
-| Netlify | `netlify` | `_redirects`, `_headers` |
+| Cloudflare Pages | `cloudflare-pages` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| Cloudflare Workers | `cloudflare-workers` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
+| Netlify | `netlify` | `_redirects` (when redirects exist), `_headers` (when headers are configured) |
 | Vercel | `vercel` | `vercel.json` |
-| GitHub Pages | `github-pages` | `.nojekyll`, `404.html`, `CNAME`, HTML redirect stubs |
+| GitHub Pages | `github-pages` | `.nojekyll`, `404.html`, `CNAME` (when `cname` is set), HTML redirect stubs |
 
 You can target several hosts at once. If two providers plan different content for the same path, the build fails.
 

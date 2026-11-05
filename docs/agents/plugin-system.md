@@ -44,7 +44,8 @@ and SEO extensions.
 -   Keep plugin-specific CSS/client code in the plugin package and
     expose it through asset/client-entry contracts.
 -   Give a plugin's rendered feature a stable `rr-<feature>` root hook on its
-    outermost element. Emit only `rr-*` plugin class names. Do not emit plugin
+    outermost element. Emit only `rr-*` plugin class names for new plugins;
+    built-in plugins may keep documented `rb-*` roots. Do not emit plugin
     classes or `--*` tokens in the
     framework `rb-` namespace, and treat `rr-<feature>__*` / `--*` as internal.
 -   Do not copy plugin CSS into the app as the normal integration

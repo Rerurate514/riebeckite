@@ -141,9 +141,9 @@ flowchart TD
 
     Load --> H1
     H1 --> Parse
-    Parse --> H2
-    H2 --> Process
-    Process --> H3
+    Parse --> Process
+    Process --> H2
+    H2 --> H3
     H3 --> Manifest
     Manifest --> H4
 ```

@@ -196,9 +196,10 @@ root hook on its outermost element:
 - Name plugin/feature hooks `rr-<feature>` (`rr-search`, `rr-callout`,
   `rr-query`, `rr-code`, ...). Use BEM structure under the root:
   `rr-<feature>`, `rr-<feature>__element`, `rr-<feature>--modifier`.
-- Emit only `rr-*` hooks; plugin CSS and site themes should target the `rr-`
-  hook.
-- Do not put plugin output in the `rb-` namespace. `rb-*` classes and
+- New plugins emit only `rr-*` hooks; plugin CSS and site themes should target
+  the `rr-` hook. Some built-in plugins still expose documented `rb-*` roots
+  for compatibility, so target the root each plugin documents.
+- Do not put new plugin output in the `rb-` namespace. `rb-*` classes and
   `--rb-*` tokens belong to framework structural hooks and semantic design
   tokens. Plugin-local tokens use `--rr-*` and may fall back to `--rb-*`.
 - `rr-<feature>__*` and `rr-<feature>--*` are internal implementation
@@ -213,7 +214,7 @@ root hook on its outermost element:
 
 Themes target these root hooks. Plugin default CSS loads before theme CSS, so
 a theme restyles a feature without editing the plugin. See
-[Theme System](../theme-api.md#stable-css-hooks).
+[Stable CSS hooks](../../framework/theme-system/css.md#stable-css-hooks-and-the-cascade).
 
 For dark mode, consume the semantic `--rb-*` tokens: they resolve correctly in
 light, explicit dark, and system dark. Only when a plugin must branch on the

@@ -12,7 +12,7 @@ Content hooks join named phases of content processing: from config resolved thro
 The content processing pipeline orders hooks as: `setup → buildStart → config resolved → public locations resolved → content loaded → Markdown/HTML pipeline → post parsed → post processed → content graph → manifest created → diagnostics → build end`.
 
 ## Hook usage
-Only use hooks for phases you genuinely need. Avoid reconstructing later-stage information in earlier hooks; for example, do not rebuild manifest information inside `onContentLoaded`. Each hook receives progressively more data: `onConfigResolved` gets `config`, `onContentLoaded` gets raw content, `onPostParsed` gets parsed AST, `onPostProcessed` gets processed HTML, and `onManifestCreated` has access to the full manifest.
+Only use hooks for phases you genuinely need. Avoid reconstructing later-stage information in earlier hooks; for example, do not rebuild manifest information inside `onContentLoaded`. Each hook receives progressively more data: `onConfigResolved` gets `config`, `onContentLoaded` gets `slug` and raw `markdown`, `onPostParsed` and `onPostProcessed` get `slug`, `markdown`, and the processed `content`, and `onManifestCreated` gets the full manifest.
 
 ## Related terms
 - [[plugin|Plugin]]

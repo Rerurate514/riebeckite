@@ -37,7 +37,7 @@ generates the publishable site into `dist/`. For a normal static site, that `dis
 | Deploy to Netlify, Vercel, or GitHub Pages | [Other hosts](./other-hosts.md) |
 | Just get a site online today | [Getting Started / Deployment](../../getting-started/deployment.md) |
 
-Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm exec -- riebeckite publish run --execute`. It plans, builds when needed, creates `wrangler.jsonc` when missing, opens the Wrangler login on the first run, and uploads the validated `dist/`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares the publish workflow, including the two repository secrets.
+Publishing locally is the quickest first step: generate a site with `create-riebeckite`'s `Cloudflare Workers` choice, then run `npm exec -- riebeckite publish run --execute`. It plans, builds when needed, creates `wrangler.jsonc` when missing, opens the Wrangler login on the first run, and uploads the validated `dist/`. For a site without a Wrangler configuration, add `--provider cloudflare-workers`. GitHub Actions and repository separation are options you can add later. If you already published locally, `npm exec riebeckite deploy setup` prepares the publish workflow, including the two repository secrets.
 
 ```mermaid
 flowchart TD
@@ -58,13 +58,13 @@ flowchart TD
 | --- | ---: | --- |
 | Same repository + `push` | Yes | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
 | Separate repository + `repository_dispatch` | Yes | Above + `SITE_DISPATCH_TOKEN` (content repo) and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
-| Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
+| Separate repository + `schedule` | Delayed | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and, if private, `RIEBECKITE_CONTENT_READ_TOKEN` (site repo) |
 | Manual dispatch | No | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` |
-| Local, from your machine (`npm exec -- riebeckite publish run --execute`) | No | None (Wrangler OAuth) |
+| Local, from your machine (`npm exec -- riebeckite publish run --execute`) | No | None for Cloudflare Workers (Wrangler OAuth); Netlify needs `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`, Vercel needs `VERCEL_TOKEN` |
 
 ## What the build produces
 
-Riebeckite pre-renders content routes and plugin endpoints during the build. The generated `dist/` is therefore deployed as **static assets**, with no runtime `main` entry.
+Riebeckite pre-renders content routes and GET plugin endpoint responses during the build. The generated `dist/` is therefore deployed as **static assets**, with no runtime `main` entry. Endpoints that need `POST`, such as a Webmention receiver, are not served by a static-only Worker and need a runtime Worker or server with a `main` entry.
 
 Build state (`.riebeckite/`, plugin caches) stays at build time and never reaches the Worker runtime.
 
@@ -109,7 +109,7 @@ Once `build` succeeds, deploy the generated `dist/`.
 
 [Cloudflare Workers](./cloudflare-workers.md)
 
-Publishing `dist/` to Cloudflare Workers from your machine. `npm exec -- riebeckite publish run --execute` handles the login and generates `wrangler.jsonc`.
+Publishing `dist/` to Cloudflare Workers from your machine. `npm exec -- riebeckite publish run --execute` handles the login and generates `wrangler.jsonc`; add `--provider cloudflare-workers` when the site has no Wrangler configuration.
 
 ### GitHub Actions
 

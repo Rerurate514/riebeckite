@@ -215,4 +215,4 @@ publication-state transitions even when a note did not match the previous query.
 Use `content`, `tag`, or `folder` when the exact scope is known; use `global`
 for a manifest-wide collection transform. Use `unknown` only when the input
 cannot be represented: it regenerates safely and requests full output
-regeneration. Generated outputs without declared dependencies are `unknown`.
+regeneration. Outputs emitted through `context.output` without dependencies are treated as `unknown`; an output returned by `planGeneratedOutputs` must declare at least one dependency or the build fails.

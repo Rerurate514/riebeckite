@@ -4,7 +4,7 @@ title: Series
 ---
 # Series
 
-連載記事（シリーズ）を順番どおりに並べ、各記事へ共通のナビゲーションを差し込むプラグインです。ビルド時に、同じシリーズ名を持つノートをまとめて、目次・現在位置・前後の記事リンクを生成します。
+連載記事（シリーズ）を順番どおりに並べ、各記事へ共通のナビゲーションを表示するプラグインです。ビルド時に、同じシリーズ名を持つノートをまとめて、目次・現在位置・前後の記事リンクを生成します。ナビゲーションはサイトが `<SeriesNavigation />` コンポーネントで描画します。
 
 [English](./series.md)
 
@@ -14,7 +14,7 @@ title: Series
 
 ## 概要
 
-`series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えたうえで、各ノートの HTML に `<nav class="rb-series">` ブロックを追加します。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。1 件だけのシリーズにはナビゲーションを出力しません。
+`series()` は frontmatter からシリーズ情報を読み取り、該当するノートをグループ化して並べ替えます。結果は `getSeriesNavigation()` と `<SeriesNavigation />` コンポーネントで提供し、エントリの HTML は変更しません。リンクには Core が解決したパーマリンクを使うため、`permalink` プラグインなどとも併用できます。シリーズが無い場合はナビゲーションを描画しません。
 
 またページ種別を登録し、一覧ページを `/series`、シリーズごとのランディングページを `/series/<name>` に生成します。どちらも公開対象（discoverable）のマニフェストから組み立てるため、非公開・下書き・予約投稿のノートは現れません。
 
@@ -63,11 +63,11 @@ series_order: 2
 | `basePath` | `string` | `"/series"` | 生成するページの基準パス。空文字にすると生成しない。 |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | シリーズページに表示する言語の選択。 |
 
-## 記事に差し込まれるシリーズナビゲーション
+## 記事に表示するシリーズナビゲーション
 
-2 件以上あるシリーズの各ノートには、記事の下にシリーズナビゲーションが実際に描画されます。リンクと現在位置は、上の frontmatter から計算します。
+サイトが記事の下に `<SeriesNavigation />` を描画すると、シリーズの各ノートにナビゲーションが表示されます。リンクと現在位置は、上の frontmatter から計算します。
 
-テキストと属性はすべてエスケープします。生成した HTML はマニフェストのエントリと処理済みコンテンツの両方へ書き戻すため、ページのルート表示・フィード・検索でも同じマークアップになります。
+テキストと属性はすべてエスケープします。ナビゲーションはルート描画時にマニフェストのデータから組み立てるため、マニフェストエントリ、処理済みコンテンツ、フィード、検索インデックスへは書き戻しません。
 
 ## ページ種別
 
@@ -82,7 +82,9 @@ series_order: 2
 
 ## 公開 API
 
-- `series(options?)` / `series(options?)`：プラグインファクトリ
+- `series(options?)`：プラグインファクトリ
+- `SeriesNavigation`：1 つのノートのシリーズナビゲーションを描画するサイト用コンポーネント
+- `getSeriesNavigation({ view, entry, index })`：1 つのエントリ用のナビゲーションデータ
 - `buildSeriesIndex(manifest, name, options?)`：1 つのシリーズの並び順付きメンバー（`SeriesIndex | null`）。ランディングページ向け
 - `renderSeriesIndex(manifest, name, options?)`：シリーズ全体の `<section>` ブロック
 - `renderSeriesList(manifest, options?, label?)`：全シリーズを並べた `<section>` ブロック。無ければ `""`
@@ -92,7 +94,8 @@ series_order: 2
 - `collectSeriesIndexes(manifest, options?)`：全シリーズを出現順で取得
 - `resolveSeriesOptions(options?)`：既定値を適用したオプション
 - `DEFAULT_SERIES_BASE_PATH`：既定の `basePath`（`"/series"`）
-- 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`
+- `DEFAULT_CLASS_NAME`：既定の `className`（`"rb-series"`）
+- 型: `SeriesOptions`, `ResolvedSeriesOptions`, `SeriesMember`, `SeriesIndex`, `SeriesNavigationProps`
 
 ### シリーズのランディングページ
 
@@ -124,7 +127,7 @@ const html = renderSeriesIndex(manifest, "何かを作る");
 ## 制限
 
 - 1 つのノートが所属できるシリーズは 1 つだけです。
-- 1 件だけのシリーズにはナビゲーションを出力しませんが、一覧の項目とランディングページは生成します。
+- 1 件だけのシリーズでも、1 項目だけのナビゲーション（前後リンクなし）を出力し、一覧の項目とランディングページも生成します。
 - `series_order` は有限の数値である必要があります。数値文字列は変換しません。
 - スラッグが同じになるシリーズ名は、最初のランディングページを共有します。
 - 生成ページは既定で `/series` を使います。既存ルートと衝突する場合は `basePath` を変更してください。

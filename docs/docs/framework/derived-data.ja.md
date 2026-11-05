@@ -138,7 +138,7 @@ async planGeneratedOutputs({ derived }) {
 `resolveWithDependencies` は `{ value, dependencies, viewIds }` を返します。トレースはそのまま出力へ渡し、手で組み立て直さないでください。
 
 :::callout[注意]{type=warning}
-Derived View は公開状態で絞り込みません。`manifest.discoverableEntries` または `manifest.routableEntries` から自分で選別してください。明示的な非公開境界がない限り、[[glossary/draft|draft]]、scheduled、[[glossary/unlisted|unlisted]] をシリアライズしてはいけません。
+Derived View は公開状態で絞り込みません。`manifest.discoverableEntries` または `manifest.publicEntries` から自分で選別してください。明示的な非公開境界がない限り、[[glossary/draft|draft]]、scheduled、[[glossary/unlisted|unlisted]] をシリアライズしてはいけません。
 :::
 
 ### 出力依存関係

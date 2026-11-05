@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # 診断（Diagnostics）
-診断は Core とプラグインが出力する構造化された検出結果で、何が問題か、どこで起きるか、どれくらい重要か、どう直すかを示します。プラグインは `addDiagnostics` で診断を報告し、Core が `check` と `doctor` コマンド用にまとめます。
+診断は Core とプラグインが出力する構造化された検出結果で、何が問題か、どこで起きるか、どれくらい重要か、どう直すかを示します。プラグインは `addDiagnostics` で診断を報告し、`doctor` と Development Inspector がそれらを集めます。`check` は設定と API ライフサイクルの診断を報告します。
 
 ## 診断の構造
 診断は、何が問題か、どこで起きるか、どれくらい重要か、どう直すかを表します。設定とプラグインの妥当性には `check`、より広い健全性には `doctor` を使います。
@@ -16,7 +16,7 @@ sidebar:
 addDiagnostics(context) {
   return [
     {
-      id: "duplicate-content-id",
+      code: "duplicate-content-id",
       severity: "error",
       message: "Multiple articles share the same content ID",
     },
@@ -25,10 +25,10 @@ addDiagnostics(context) {
 ```
 
 ## 診断のフィールド
-- `id`：安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
-- `severity`：`error`、`warn`、`info` のいずれか
+- `code`：安定した診断コード（[[diagnostic-code|Diagnostic code]]参照）
+- `severity`：`error`、`warning`、`info` のいずれか
 - `message`：問題を人間が読める形で説明したもの
-- `cause`：診断の原因となった元のエラー（任意）
+- `pluginName`、`filePath`、`slug`、`line`、`column`、`target`、`suggestion`、`meta`：任意のコンテキストフィールド
 
 ## 関連用語
 - [[diagnostic-code|Diagnostic code]]

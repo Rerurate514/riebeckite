@@ -28,9 +28,9 @@ my-riebeckite-site/
 
 `starter` プリセットでは、最初からサンプルのコンテンツが生成されます。編集が機能することを確かめるだけなら、新しいページを作らず、まずこれらのファイルを編集してください。`starter` のような1言語のプリセットでは言語の接尾辞が付かないファイル名になり、`showcase` のような多言語のプリセットではデフォルト言語以外のファイルに `.en.md` や `.ja.md` のような接尾辞が残ります。
 
-プリセットによってフォルダが異なります。`blog` は `content/posts/`、`docs` は `content/docs/`、`portfolio` は `content/projects/` を読み込みます。以下のツリーと例は `starter` の構成です。一覧は[プリセット](./presets.ja.md)を参照してください。
+プリセットによってサンプル記事の置き場所が異なります。`blog` は `content/posts/`、`docs` は `content/docs/`、`portfolio` は `content/projects/` に記事を置きますが、`content.directory` を変更しない限り、サイトが読み込むのは `content/` です。以下のツリーと例は `starter` の構成です。一覧は[プリセット](./presets.ja.md)を参照してください。
 
-既定では公開は明示的です。frontmatter に `publish: true` がある Markdown だけがサイトに表示されます。
+既定では公開は明示的です。既定の `explicit` 戦略では、frontmatter に `publish: true` がない Markdown は下書きとして扱われ、サイトに表示されません。明示的な `visibility`（例: `visibility: public`）または過去の `publishAt` がある場合は、この判定より優先されます。
 
 ## サンプルを編集して表示を確認する
 

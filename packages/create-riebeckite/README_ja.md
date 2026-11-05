@@ -31,7 +31,7 @@ npm exec riebeckite build
 | 質問 | 選択肢 | 推奨 |
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
-| What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Docs`、`Portfolio`、`Minimal`、`Showcase`、`Empty` | 大半のサイトは `Starter site`（`starter`） |
+| What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Documentation`、`Portfolio`、`Minimal site`、`Plugin showcase`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
 | Add optional feature packs? | `Yes` または `No`。`Yes` なら機能パックを選択 | `No` |
 | Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
 | Where will you write content? | `This project`、`Separate GitHub repository` | 最初は `This project` |

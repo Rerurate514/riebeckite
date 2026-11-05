@@ -7,11 +7,11 @@ sidebar:
 
 # トレーススパン（Trace Span）
 
-ビルド作業の計測単位です。トレースはビルド作業をスパンに分けて所要時間を記録します。スパン名は安定している必要があります（例：`content.load`、`plugins.run`、`diagnostics.run`、`application.build`）。
+ビルド作業の計測単位です。トレースはビルド作業をスパンに分けて所要時間を記録します。スパン名は安定している必要があります（例：`build.total`、`content.build`、`content.process`、`diagnostics.run`、`content.build-state.save`）。
 
 ## 構造
 
-トレースには親スパン（例：`build`）と、作業単位ごとの子スパンがあります。成功時も失敗時も、必ずスパンを閉じてください。
+トレースには親スパン（例：`build.total`）と、作業単位ごとの子スパンがあります。成功時も失敗時も、必ずスパンを閉じてください。
 
 ## 命名規則
 
@@ -37,7 +37,7 @@ type TraceSpan = Readonly<{
 
 ```json
 {
-  "name": "content.load",
+  "name": "content.process",
   "startTime": 1700000000000,
   "durationMs": 450,
   "status": "ok",

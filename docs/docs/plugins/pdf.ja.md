@@ -34,13 +34,13 @@ export default defineConfig({
 
 以下のソースは、このページ上で実際にブラウザ標準の PDF ビューアとして描画されます。
 
-#### ソース
+### ソース
 
 ````md
 ![[pdf-example.pdf]]
 ````
 
-#### 描画結果
+### 描画結果
 
 ![[pdf-example.pdf]]
 

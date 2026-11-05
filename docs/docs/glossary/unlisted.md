@@ -42,4 +42,4 @@ export type ResolvedPublishingState = {
 
 ## Relation to draft
 
-Unlike `draft` visibility, an unlisted page is still considered published and routable. Drafts (`published: false` or `visibility: draft`) are excluded from routing entirely and produce no public output until they are published.
+Unlike `draft` visibility, an unlisted page is still considered published and routable. Drafts (`publish` absent or `false` under the explicit strategy, `private: true` or `draft: true` under the selective strategy, or `visibility: draft`) are excluded from routing entirely and produce no public output until they are published.

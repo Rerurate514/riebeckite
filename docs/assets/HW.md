@@ -1,5 +1,6 @@
 ---
 date: 2026-10-01
+private: true
 
 excalidraw-plugin: parsed
 tags: [excalidraw]

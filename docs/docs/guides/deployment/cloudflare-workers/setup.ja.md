@@ -53,7 +53,7 @@ Wrangler は Cloudflare Workers の開発とデプロイに使う公式 CLI で�
 
 Cloudflare Workers に何をデプロイするかは `wrangler.jsonc` で設定します。
 
-`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec -- riebeckite publish run --execute` も、ファイルがなければサイトのフォルダ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
+`--github-actions` を指定した場合や、デプロイ設定で `Cloudflare Workers` を選んだ場合は、このファイルが生成済みです。`npm exec -- riebeckite publish run --execute --provider cloudflare-workers` も、ファイルがなくプロバイダーがわかる場合はアプリのルートディレクトリ名から自動で作成します。そのため、自分で用意するのは内容を確認・編集したいときだけです。
 
 手動で作成する場合は、サイトのルートに `wrangler.jsonc` を置きます。サイトの構成は次のとおりです。
 
@@ -114,7 +114,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-`riebeckite publish run --execute` は Wrangler を呼び出して `dist/` を公開します。ログインが必要なら先にブラウザでログインし、`wrangler.jsonc` がなければ自動で作成します。`create-riebeckite` で `Cloudflare Workers` を選び、`Deploy now?` に `Yes` と答えた場合は、生成直後にこのビルドとデプロイが自動で実行されます。Wrangler を直接使うなら `npx wrangler deploy` でも同じです。
+`riebeckite publish run --execute` は Wrangler を呼び出して `dist/` を公開します。ログインが必要なら先にブラウザでログインし、`wrangler.jsonc` がなければ自動で作成します。設定を検出できない場合は `--provider cloudflare-workers` を付けます。`create-riebeckite` で `Cloudflare Workers` を選び、`Deploy now?` に `Yes` と答えた場合は、生成直後にこのビルドとデプロイが自動で実行されます。Wrangler を直接使うなら `npx wrangler deploy` でも同じです。
 
 ```mermaid
 flowchart TD
@@ -152,11 +152,11 @@ export default defineConfig({
 
 `baseUrl` はサイトの公開 URL を表すため、実際に公開する URL と一致させてください。これにより、[[glossary/sitemap|サイトマップ]]やフィードの URL も公開先と一致します。
 
-設定を変更したら、もう一度ビルドしてデプロイします。
+設定を変更したら、もう一度ビルドしてデプロイします。公開計画はコンテンツ、リダイレクト、生成出力を追跡します。設定だけの変更が検出されない場合は `--force` を付けます。
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 最初の公開は、次のような流れになります。

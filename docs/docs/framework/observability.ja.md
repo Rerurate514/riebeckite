@@ -45,17 +45,17 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    B["build"]
-    B --> C["content.load"]
-    B --> P["plugins.run"]
+    B["build.total"]
+    B --> C["content.build"]
+    B --> P["persistentContentCache.lookup"]
     B --> D["diagnostics.run"]
-    B --> A["application.build"]
+    B --> A["content.discovery"]
 
     P --> P1["プラグイン A"]
     P --> P2["プラグイン B"]
 ```
 
-`build` が親スパン、その中で実行される処理が子スパンになります。
+`build.total` が親スパン、その中で実行される処理が子スパンになります。
 
 これにより、
 
@@ -63,7 +63,7 @@ flowchart TD
 
 だけではなく、
 
-> `plugins.run` の中の特定プラグインに時間がかかっている
+> `content.build` の中の特定の処理に時間がかかっている
 
 といったところまで調べられます。
 
@@ -84,10 +84,11 @@ flowchart TD
 たとえば、
 
 ```text
-content.load
-plugins.run
+build.total
+content.build
+content.process
 diagnostics.run
-application.build
+content.build-state.save
 ```
 
 のような名前です。
@@ -156,7 +157,7 @@ Wall-clock time = 約100ms
 
 子スパンの時間を単純に足して、
 
-> plugins.run = 200ms
+> content.build = 200ms
 
 のように表示すると、並列処理を直列処理のように見せてしまうためです。
 

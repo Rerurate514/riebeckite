@@ -14,7 +14,7 @@ Riebeckite は静的サイトを生成します。`npm exec riebeckite build` �
 | 方法 | 向いているケース |
 | --- | --- |
 | Local-first（手元から公開） | 最短で初回公開したい |
-| GitHub Actions | push のたびに自動デプロイしたい |
+| GitHub Actions | `main` への push のたびに自動デプロイしたい |
 | Content Repository の分離 | Vault とサイトを別リポジトリで管理したい |
 
 Local-first は GitHub Actions の代わりではありません。自動化したくなったら GitHub Actions を追加します。
@@ -42,24 +42,28 @@ Content Repository の分離
 
    ```bash
    npx create-riebeckite --cloudflare-workers my-site
+   cd my-site
+   npm install
    ```
 
-   `--cloudflare-workers` フラグを渡すとデプロイ選択を Cloudflare Workers に非対話的に設定します。ディレクトリ引数なしでは CLI が対話的にデプロイについて尋ねます。`--cloudflare-workers` を指定すると既定でその選択になります。
+   `--cloudflare-workers` を渡すと、対話形式の残りの質問をスキップして Cloudflare Workers を選びます。ただし依存パッケージはインストールされません。生成されたディレクトリへ移動し、次の手順の前に `npm install` を実行してください。
+
+   その後、ビルドして公開します。
 
    ```bash
    npm exec riebeckite build
    npm exec -- riebeckite publish run --execute
    ```
 
-3. `riebeckite publish run --execute` は計画し、必要ならビルドし、`dist/` を検証してから Cloudflare Workers へ公開します。初回は Wrangler のログインをブラウザで開きます。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行してください。
+3. `riebeckite publish run --execute` は計画し、必要ならビルドし、`dist/` を検証してから Cloudflare Workers へ公開します。初回は Wrangler のログインをブラウザで開きます。Worker 名を変えたいときは、生成された `wrangler.jsonc` の `name` を編集します。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行し、検出できる Wrangler 設定がないため `npm exec -- riebeckite publish run --execute --provider cloudflare-workers` のようにプロバイダーを指定してください。
 
 4. Wrangler が表示した URL、たとえば `https://<name>.<account>.workers.dev` を開きます。Riebeckite のサイトが表示されれば、初回デプロイは成功です。
 
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。
+公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新します。その後、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。公開計画はコンテンツ、リダイレクト、生成出力を追跡します。設定だけの変更が検出されない場合は `--force` を付けます。
 
 ```bash
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
 ### 独自ドメインを割り当てる
@@ -80,7 +84,7 @@ npm exec riebeckite deploy domain
 }
 ```
 
-`Deploy now` を選ぶと、通常の `riebeckite publish run --execute` の流れで公開します。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行してください。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
+`Deploy now` を選ぶと `wrangler deploy` を直接実行します。公開ゲートを実行して設定を確認し、`dist/` をアップロードしますが、ビルドと公開状態の記録は行いません。公開の一連の流れが必要な場合は `npm exec -- riebeckite publish run --execute` を使ってください。後で公開する場合は `npm exec -- riebeckite publish run --execute` を実行します。Cloudflare Workers では、同じ Cloudflare アカウントで有効な zone にある Custom Domain を使います。DNS レコードと TLS 証明書は Cloudflare が作成します。Worker がサイトの配信元になるこの構成では、既存の配信元の前に置く Worker Route ではなく、Custom Domain を使ってください。
 
 このコマンドは `wrangler.toml` を変更しません。TOML を使っている場合は、次の設定を手動で追加してください。
 
@@ -92,11 +96,11 @@ custom_domain = true
 
 デプロイ前に、ドメインが同じアカウントの有効な Cloudflare zone にあることを確認してください。既存の CNAME レコードがある場合、zone が別アカウントにある場合、同じホスト名に Custom Domain 以外の Worker Route がある場合は、先に解消が必要です。ワイルドカードドメインと URL パスは Custom Domain に使えません。`workers.dev` の URL も残したい場合は、必要に応じて TOML では `workers_dev = true`、JSON では `"workers_dev": true` を明示します。
 
-Cloudflare でホスト名が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex ドメインの URL に変更します。その後、もう一度ビルドとデプロイを実行してください。ドメインの設定はバージョン管理に残るため、GitHub Actions でも push のたびに同じ Worker の設定をデプロイできます。
+Cloudflare でホスト名が有効になったら、`site.baseUrl` を `https://docs.example.com` または apex ドメインの URL に変更します。その後、もう一度ビルドとデプロイを実行してください。ドメインの設定はバージョン管理に残るため、GitHub Actions でも `main` への push のたびに同じ Worker の設定をデプロイできます。
 
 ## 2. GitHub Actions で自動デプロイする
 
-push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
+`main` への push のたびにデプロイしたい場合は、CLI がデプロイ設定を尋ねたところで `GitHub Actions` を選びます。コマンドラインから同じ選択をする場合は次のとおりです。
 
 ```bash
 npx create-riebeckite my-site --github-actions
@@ -106,6 +110,13 @@ npx create-riebeckite my-site --github-actions
 
 - `wrangler.jsonc`
 - `.github/workflows/publish.yml`
+
+コマンドライン形式では対話形式の質問をスキップするため、依存パッケージはインストールされません。最初のコミットの前に次を実行してください。
+
+```bash
+cd my-site
+npm install
+```
 
 生成されたワークフローは `npm ci` で依存パッケージをインストールします。その後、`npm exec riebeckite check` と `npm exec riebeckite build` を実行し、`cloudflare/wrangler-action@v3` でデプロイします。
 

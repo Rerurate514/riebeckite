@@ -26,25 +26,25 @@ export default defineConfig({
 
 `toc()` はスタイルと `initTableOfContents` を登録します。初期化処理はスクロール位置を追跡し、読んだ節と現在の節を目次に反映します。
 
-UI は自動配置されません。サイトが見出しを抽出してコンポーネントを描画し、通常は記事の `aside` に置きます。記事の横にレールを置ける幅では、サイトが安定した目次ルートをそのレールに配置し、sticky のオフセット・高さの上限・範囲内の縦スクロールを担当します。プラグインは目次のリスト、上下の罫線、リンク、スクロール連動の状態を担当します。
+UI は自動配置されません。`<TableOfContents />` はコンテキストの現在の記事から見出しを抽出するか、明示的な `items` を受け取ります。通常は記事の `aside` に置きます。記事の横にレールを置ける幅では、サイトが安定した目次ルートをそのレールに配置し、sticky のオフセット・高さの上限・範囲内の縦スクロールを担当します。プラグインは目次のリスト、上下の罫線、リンク、スクロール連動の状態を担当します。
 
 ## 目次を置く
 
-記事 HTML から項目を取り出し、`TableOfContents` に渡します。
+`TableOfContents` は現在の記事から項目を取り出して描画します。記事本文の外側の `aside` に置きます。
 
 ```tsx
-import TableOfContents, {
-  extractTableOfContents,
-} from "@riebeckite/plugin-toc";
-
-const items = extractTableOfContents(post.html ?? "");
+import { Article, ArticleBody, ArticleContent } from "@riebeckite/honox/ui";
+import { TableOfContents } from "@riebeckite/plugin-toc";
 
 return (
-  <Article
-    asideContent={
-      <TableOfContents className="rr-table-of-contents--desktop" items={items} />
-    }
-  />
+  <Article>
+    <ArticleContent>
+      <ArticleBody />
+    </ArticleContent>
+    <aside>
+      <TableOfContents className="rr-table-of-contents--desktop" />
+    </aside>
+  </Article>
 );
 ```
 

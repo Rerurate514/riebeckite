@@ -44,7 +44,7 @@ For a private vault, the default `explicit` is the easier model to reason about.
 | `**/Templates/**` | both of the above | — |
 | `private/**` | `private/secret.md` | `notes/private/secret.md` |
 
-`*` stays within one segment; `**` crosses segments. If a folder of the same name can appear in subfolders, prefix `**/` to be safe. That is why the scaffold defaults use `**/templates/**` and `**/private/**`.
+`*` stays within one segment; `**` crosses segments. If a folder of the same name can appear in subfolders, prefix `**/` to be safe. The scaffold does not set these patterns, so add `**/templates/**` and `**/private/**` explicitly when you need them.
 
 `exclude` filters before loading, so excluded notes never appear in link resolution or the graph. For notes you want private, in addition to leaving off `publish: true`, exclude the whole folder where possible.
 
@@ -58,7 +58,7 @@ Vault files fall into three kinds, and each one is published by a different owne
 |Attachment / Media|A file that is neither Markdown nor an image|`/assets/attachments/<relative logical path from the vault>`|A prebuild step on the site side|
 |Static asset|A file the site application owns|anywhere under `/`|Vite's `public/` directory|
 
-Content images need nothing from the site side: `obsidianMarkdown()` writes every image referenced from a published page into the build output, keeping its logical path, and the development server serves the same logical path straight from the content. Images that nothing references, or that only non-public pages reference, are not written.
+Content images need nothing from the site side: the core build writes every image referenced from a published page into the build output, keeping its logical path, and `obsidianMarkdown()` resolves Obsidian image and embed syntax into those references. The development server serves the same logical path straight from the content. Images that nothing references, or that only non-public pages reference, are not written.
 
 ```mermaid
 flowchart LR
@@ -76,7 +76,7 @@ Attachments and media are different. An embed such as:
 ![[attachments/report.pdf]]
 ```
 
-produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx scripts/build_images.ts`, copying into `public/assets/attachments/`).
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx --conditions=source scripts/build_images.ts`, copying into `public/assets/attachments/`).
 
 That implementation works like this:
 
@@ -176,7 +176,7 @@ Check the results in this order:
 
 1. `check` validates the configuration and plugin contracts.
 2. `doctor` reports unreadable or invalid filesystem content sources.
-3. In `inspect config`, `Directory` is the resolved absolute path, `Publishing` is `publishStrategy`, and `Exclude` is the pattern count. Settle where the vault points here first.
+3. In `inspect config`, `Directory` is the resolved absolute path, `Publishing` is `publishStrategy`, and `Exclude` lists the configured exclude patterns (comma-separated, or `-`). Settle where the vault points here first.
 4. Before investigating WikiLinks or embeds, use `inspect content --list` to confirm the expected logical paths are loaded.
 5. Use `inspect graph` to confirm notes you excluded are not appearing as nodes.
 6. `build` validates the integration and route rendering.

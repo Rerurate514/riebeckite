@@ -32,6 +32,7 @@ export default defineConfig({
 
 - `rehypeLightbox` は各 `<img>` を `.rr-lightbox-trigger` で囲みます。
 - `data-lightbox-ignore="true"` の画像、リンク・ボタン・既存トリガー・ダイアログ内の画像は変換しません。
+- `initLightboxFromOptions` はプラグインが登録するクライアントエントリで、オプションを読んで `initLightbox()` を呼び出します。
 - `initLightbox` は `Escape`、背景クリック、閉じるボタンでダイアログを閉じ、開く前のフォーカスを戻します。
 - 開いている間は `html[data-lightbox-open="true"]` を設定するため、CSS でスクロールを止められます。
 

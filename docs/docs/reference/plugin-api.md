@@ -59,4 +59,4 @@ document, and UI.
 - [Testing](../framework/testing.md)
 - [Observability](../framework/observability.md)
 - [Theme System](./theme-api.md)
-- [Framework Reference](./README.md]
+- [Framework Reference](./README.md)

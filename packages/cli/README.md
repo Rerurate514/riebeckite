@@ -10,9 +10,10 @@ the site.
 
 `@riebeckite/cli` provides the `riebeckite` binary. It resolves the application
 root from the current working directory and reports command failures safely with
-a non-zero exit code. `check`, `doctor`, `inspect`, and `profile` are read-only;
-`build` and `dev` write output or start a server, and `clean` removes
-Riebeckite-managed state and build output.
+a non-zero exit code. `check`, `doctor`, and `inspect` are read-only; `profile`
+runs the build path with tracing and writes build output. `build` writes output
+and `dev` starts a server, and `clean` removes Riebeckite-managed state and build
+output.
 
 ## Installation
 
@@ -32,11 +33,16 @@ In a pnpm project, use `pnpm exec riebeckite`.
 ## Usage
 
 ```text
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets]
-riebeckite create [site | plugin | theme | page-type | component]
+riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite create site [create-riebeckite options]
+riebeckite create plugin [name] [options]
+riebeckite create theme [name] [options]
+riebeckite create page-type [name] [options]
+riebeckite create component [name] [options]
 riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
+riebeckite bridge approve <plan>
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -44,7 +50,8 @@ riebeckite upgrade --to <version|latest> [--check] [--json]
 riebeckite build [--full]
 riebeckite clean [--output | --all]
 riebeckite deploy setup | deploy workflow [--check] | deploy domain
-riebeckite publish plan | status | validate | run [--execute] [--force] | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record --provider <name> | gate --provider <name>
+riebeckite publish plan | status | validate | approve <slug...> [--all] [--by <name>] | revoke <slug...> [--all] [--by <name>] | record [--provider <name>] [--trigger <manual|scheduled|ci|cli>] | gate [--provider <name>]
+riebeckite publish run [--execute] [--force] [--trigger <manual|scheduled|ci|cli>] [--provider <name>]
 riebeckite content create | edit | delete | move ... [--apply] [--json]
 riebeckite content plan create | edit | delete | move ... [--out <name>] [--json]
 riebeckite content apply <plan> --apply [--json]
@@ -69,9 +76,9 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `check` | Validate app configuration, plugins, and capability resolution | no |
 | `doctor` | Report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
 | `upgrade` | Compare isolated baseline and candidate builds before updating Riebeckite packages | no |
-| `build` | Run the build path; `--full` bypasses incremental reuse | yes, on success |
+| `build` | Run the build path; `--full` bypasses incremental reuse | yes; committed before output rendering, so a later failure can leave the new state |
 | `clean` | Remove managed state (`.riebeckite/`); `--output` removes only the build output, `--all` removes both | no |
-| `deploy` | Prepare Cloudflare workflow and domain configuration; it does not deploy | no |
+| `deploy` | Prepare Cloudflare workflow and domain configuration; `deploy domain` can upload after confirmation | no |
 | `publish` | Plan, inspect, validate, approve, and explicitly execute publication | yes, after an executed build |
 | `content` | Plan explicit content mutations and write them with a journal | no |
 | `migrate` | Plan and apply versioned content migrations, then inspect, roll back, or recover them | no |

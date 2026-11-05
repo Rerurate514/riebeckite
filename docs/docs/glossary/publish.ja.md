@@ -7,12 +7,12 @@ sidebar:
 
 # 公開（Publish）
 
-コンテンツを公開サイトに含めるかどうかの判定で、公開戦略と `published` や `visibility` などの frontmatter で制御します。公開されたコンテンツは公開境界のビューに入ります。
+コンテンツを公開サイトに含めるかどうかの判定で、公開戦略と `publish`、`private`、`draft`、`visibility` などの frontmatter で制御します。公開されたコンテンツは公開境界のビューに入ります。
 
 ## 判定の入力
 
 - 設定された公開戦略。
-- `published` frontmatter フィールド。
+- `publish`、`private`、`draft` の frontmatter フィールド。
 - `visibility` frontmatter フィールド。
 
 ## 結果
@@ -41,7 +41,7 @@ export function resolvePublishingState(
 
 ## 公開戦略の設定
 
-公開戦略はサイトごとに設定し、既定は `"selective"` です。`explicit` 戦略では、frontmatter に `publish: true` があるノートだけが公開されます。`selective` モード（既定）では、`private: true` か `draft: true` が設定されていない限り、ノートは公開されます。
+公開戦略はサイトごとに設定し、既定は `"explicit"` です。`explicit` 戦略では、frontmatter に `publish: true` があるノートだけが公開されます。`selective` モードでは、`private: true` か `draft: true` が設定されていない限り、ノートは公開されます。
 
 ```ts
 // From packages/core/src/types/publish_strategy.ts

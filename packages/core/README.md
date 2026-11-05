@@ -38,7 +38,7 @@ export default defineConfig({
 
 The content directory is resolved relative to the application root. See
 [Configuration](../../docs/docs/reference/configuration.md) for the full field list and the
-`projectRoot` / `appRoot` / `configRoot` / `contentRoot` resolution rules.
+`appRoot` / `configRoot` / `contentRoot` resolution rules.
 
 ## Markdown HTML safety
 

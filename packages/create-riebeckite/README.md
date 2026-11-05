@@ -30,7 +30,7 @@ The prompts ask, in order:
 | Prompt | Options | Recommendation |
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
-| What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Docs`, `Portfolio`, `Minimal`, `Showcase`, `Empty` | `Starter site` (`starter`) for most sites |
+| What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Documentation`, `Portfolio`, `Minimal site`, `Plugin showcase`, `Empty application` | `Starter site` (`starter`) for most sites |
 | Add optional feature packs? | `Yes` or `No`; `Yes` then selects feature packs | `No` |
 | Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
 | Where will you write content? | `This project`, `Separate GitHub repository` | `This project` to start |

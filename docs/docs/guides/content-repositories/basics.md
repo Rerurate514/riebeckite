@@ -66,7 +66,7 @@ Riebeckite build combines both to produce the final site.
 
 ## The idea: articles can live outside the site
 
-`content.directory` in `riebeckite.config.ts` is a **relative path from the site root (appRoot)** and can point at a folder outside it. Articles do not have to live inside the site.
+`content.directory` in `riebeckite.config.ts` is resolved against the site root (`appRoot`). It can be a relative path, including `../vault`, or an absolute path; relative paths are usually recommended because they behave the same on other machines and in CI. Articles do not have to live inside the site.
 
 ```ts
 // site/riebeckite.config.ts
@@ -104,7 +104,7 @@ First decide at what granularity to split articles from the site.
 
 How to decide:
 
-- **You do not want articles public** → C. With a private repository, a forgotten `publish: true` cannot expose the content itself.
+- **You do not want articles public** → C. A private repository keeps the source repository private, but a note with `publish: true` is still published to the public site. Keep `publish: true` off private notes, and exclude private folders with `content.exclude`.
 - **Articles and site are both fine to publish** → A or B. One repository to manage.
 - **You want article updates decoupled from the site deploy** → C. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started.
 - **You want one vault shared by several sites** → C, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.

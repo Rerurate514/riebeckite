@@ -50,11 +50,13 @@ export default defineConfig({
 | `analytics-untracked` | info | 安定した `id` を持たない公開ノートは analytics プラグインで計測されない（`reportAnalyticsCoverage` で有効化。設定で analytics プラグインが有効な場合は自動的に有効） |
 | `content-integrity:broken-link` | warning | 公開ページが、公開または登録されていないサイト内経路へリンクしている |
 | `content-integrity:unresolved-wikilink` | warning | 公開ページ内の Wiki リンクを、設定済みの WikiLink / コンテンツインデックスの解決規則で解決できない |
+| `content-integrity:ambiguous-wikilink` | warning | Wiki リンクの候補が複数ある |
 | `content-integrity:broken-asset` | warning | 公開ページが、解決済みアセット・プラグインアセット・生成出力・公開経路のいずれにもないローカルアセットを参照している |
 | `content-integrity:duplicate-public-location` | error | 複数の公開コンテンツまたは生成経路が、同じ最終公開パスを所有している |
 | `content-integrity:redirect-target-missing` | warning | 公開リダイレクトの転送先コンテンツが公開されない |
 | `content-integrity:redirect-cycle` | error | 公開リダイレクトが循環している |
 | `content-integrity:redirect-public-location-conflict` | error | リダイレクト元のパスが別の公開経路と衝突している |
+| `content-integrity:ambiguous-folder-page-owner` | warning | 同じフォルダに `README` と `index` の Folder Page 候補が両方ある |
 | `internal-error` | error | コンテンツ解析中に処理できないエラーが発生した |
 
 未使用アセットと孤立ノートは、明示的に有効化した場合だけ確認します。意図的に孤立させるトップページなどがあるなら、`reportOrphans` の結果を公開方針と照らして判断してください。
@@ -85,15 +87,17 @@ Riebeckite のプラグインとして使う場合、リンク関係の検査は
 設定を読み込んで実行する場合は、次のようにします。
 
 ```bash
-riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
+riebeckite-diagnostics --config riebeckite.config.ts
 ```
+
+`--config` は TypeScript の設定ファイルをネイティブの動的 import で読み込みます。そのため `.ts` を import できる実行環境（Node 22.18 以降、または TypeScript ローダー）が必要です。対応する古い Node では `--content` を使い、必要なオプションを明示してください。
 
 `--format json` は機械処理用、`--exit-on warning` は警告以上を CI の失敗条件にしたい場合に使います。終了コードは、問題なしが `0`、指定したしきい値以上の診断があれば `1`、引数の誤りは `2` です。`--config` 使用時は設定内のオプションを既定値にし、CLI で明示した値を優先します。`exclude` の一覧は統合されます。
 
 | オプション | 内容 |
 | --- | --- |
-| `--config <path>` | `riebeckite.config.ts` のパス（tsx で読み込む） |
+| `--config <path>` | `riebeckite.config.ts` のパス（Node 22.18 以降または TypeScript ローダーが必要） |
 | `--content <dir>` | 解析するコンテンツディレクトリ（既定: `.`） |
 | `--exclude <glob>` | 追加の除外 glob（複数指定可） |
 | `--publish-strategy <mode>` | `explicit` \| `selective`（既定: `selective`） |

@@ -43,7 +43,7 @@ const key = computeContentCacheKey({
 });
 ```
 
-このキーはさらに（スキーマバージョンとともに）ハッシュされ、`.riebeckite/cache/content/v5` 以下にファイルとして保存するための最終的なキャッシュキーになります。
+このキーがエントリの `key` になります。キャッシュスキーマのバージョンはすでにキーに含まれています。ファイル名は、このキーを別途 SHA-256 でハッシュしたもので、`.riebeckite/cache/content/v5` 以下に保存されます。
 
 ## コンテンツキャッシュのディレクトリ
 
@@ -71,7 +71,7 @@ const key = computeContentCacheKey({
 }
 ```
 
-`key` フィールドは、最終的なスキーマバージョンのハッシュを加える前の中間キャッシュキーを保存しており、参照時の診断とキー不一致の検出を可能にします。
+`key` フィールドは、エントリの計算済みキャッシュキーを保存しており、参照時の診断とキー不一致の検出を可能にします。ファイル名は、このキーを別途ハッシュしたものです。
 
 ## `createPluginCache` と `createUnavailablePluginCache`
 
@@ -91,7 +91,7 @@ const cache = createPluginCache({
 const unavailable = createUnavailablePluginCache();
 ```
 
-`createPluginCache` は `PluginCache` インスタンスを返し、プラグイン名と `cacheVersion` をキーにした `get`、`set`、`invalidate` 操作に対応します。`createUnavailablePluginCache` は常にミスを報告するスタブを返し、ビルドのたびに再計算を強制します。どちらを使うかは `packages/core/src/pipeline.ts` の `options.isBuildTime`（`cacheFor` メソッド、533〜543行）で決まります。
+`createPluginCache` は `PluginCache` インスタンスを返し、プラグイン名と `cacheVersion` をキーにした `get`、`set`、`delete`、`clear` 操作に対応します。`createUnavailablePluginCache` は、明示的なビルドコンテキスト外では操作が例外を投げるスタブを返します。どちらを使うかは `packages/core/src/pipeline.ts` の `options.isBuildTime`（`cacheFor` メソッド）で決まります。キャッシュの実装は `packages/core/src/plugin/plugin_cache.ts` にあります。
 
 ## 関連用語
 

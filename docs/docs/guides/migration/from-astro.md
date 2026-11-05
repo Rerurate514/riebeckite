@@ -75,7 +75,7 @@ export default defineConfig({
 
 Riebeckite maps `content/index.md` to `/` and other content paths to slugs by default. Enabling `@riebeckite/plugin-permalink` changes its canonical default to `/n/<id>`; do not enable it as a URL-preservation step without an explicit policy. Use `permalink` and `redirect_from` frontmatter for entry-specific legacy URLs, or configure `path` or `resolvePath` for a site-wide policy. Verify redirect output on the deployed host—do not assume the host adds redirects itself.
 
-Enable `@riebeckite/plugin-seo` for canonical metadata, sitemap, `robots.txt`, and RSS/Atom/JSON feeds. It honors a `canonical` field and resolved permalinks. Use `@riebeckite/plugin-l10n` only for actual translations; it emits `hreflang` for existing translations and does not create fallback pages. Local Markdown image references to files under `content/` are copied only when a public page references them; relative and root-relative image paths are normalized to site-root URLs. Keep referenced files within the content root and test every relative and root-relative path. Provide a host or app-level 404 page if the destination needs one; this guide does not assume automatic 404 parity.
+Enable `@riebeckite/plugin-seo`, then turn on its `sitemap`, `robots`, and `feed` options to generate canonical metadata, sitemap, `robots.txt`, and RSS/Atom/JSON feeds. It honors a `canonical` field and resolved permalinks. Use `@riebeckite/plugin-l10n` only for actual translations; it emits `hreflang` for existing translations and does not create fallback pages. Local Markdown image references to files under `content/` are copied only when a public page references them; relative and root-relative image paths are normalized to site-root URLs. Keep referenced files within the content root and test every relative and root-relative path. Provide a host or app-level 404 page if the destination needs one; this guide does not assume automatic 404 parity.
 
 ## Common Issues
 
@@ -91,7 +91,7 @@ Enable `@riebeckite/plugin-seo` for canonical metadata, sitemap, `robots.txt`, a
 - [ ] Every intended public page has `publish: true`.
 - [ ] `npm exec riebeckite check`, `doctor`, and `build` succeed.
 - [ ] Canonical URLs, redirects, navigation, links, images, feeds, sitemap, and robots output are checked locally and after deployment.
-- [ ] [[glossary/draft|Draft]]/private content is absent from the production manifest and output.
+- [ ] [[glossary/draft|Draft]]/private content is absent from `publicEntries`, `discoverableEntries`, and the build output; draft entries may remain in `manifest.entries` for preview and incremental builds.
 - [ ] Custom source features are either manually rebuilt, intentionally removed, or documented as unsupported.
 
 ## Related Documentation

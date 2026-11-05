@@ -27,7 +27,7 @@ slug はコンテンツインデックス、マニフェスト、コンテンツ
 
 主な性質：
 
-- **由来**：ファイルパス（コンテンツルートからの相対）から導かれ、小文字化して `.md` 接尾辞を除いたもの
+- **由来**：ファイルパス（コンテンツルートからの相対）から `.md` 接尾辞を除いたもの。パスの大文字小文字は保持される
 - **安定性**：ファイルが新しいパスへ移動すると変わる。URL 規則が変わっても変わらない
 - **解決**：コンテンツインデックスの `Map<string, string>` を引く。キーは小文字の slug 接尾辞、値は正規の slug
 - **曖昧さ**：複数のノートが同じ小文字 slug 接尾辞を共有すると、そのキーはインデックスから削除され、曖昧として報告される
@@ -35,8 +35,8 @@ slug はコンテンツインデックス、マニフェスト、コンテンツ
 slug 解決の例：
 
 ```ts
-// Content at "content/notes/HelloWorld.md" gets slug "notes/helloworld"
-// The content index maps "notes/helloworld" → "notes/helloworld"
+// Content at "content/notes/HelloWorld.md" gets slug "notes/HelloWorld"
+// The content index lowercases its keys, so "notes/helloworld" resolves to that slug
 // A wikilink `[[HelloWorld]]` resolves via the index to the canonical entry
 ```
 

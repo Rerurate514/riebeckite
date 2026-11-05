@@ -39,35 +39,41 @@ export default defineConfig({
 });
 ```
 
-`backlinks()` adds backlinks for every public entry with published
-incoming links and bundles `style.css` into the app stylesheet. Render
-`<Backlinks backlinks={getBacklinks({ view, slug })} />` once in the article
-layout to display it. The official Starter already renders this component.
+`backlinks()` provides the `getBacklinks({ view, slug })` helper and the
+`<Backlinks />` component, and bundles `style.css` into the app
+stylesheet. Render `<Backlinks />` once in the article layout; without a
+`backlinks` prop it resolves the list from the Site and Article context. The
+official Starter already renders this component.
 
 ## Advanced customization
 
-To place the component in a custom location, call `getBacklinks({ view, slug })`
-in the Site route and render the `<Backlinks backlinks={...} />` component exactly
-once. The data resolver does not change backlink data or its publication
-filtering.
+To place the component in a custom location, render `<Backlinks />` there, or
+await `getBacklinks({ view, slug })` in an async component and pass the result
+as the optional `backlinks` prop exactly once. The data resolver does not change
+backlink data or its publication filtering.
 
 ```tsx
-import Backlinks, { getBacklinks } from "@riebeckite/plugin-backlinks";
-import { content } from "virtual:riebeckite/content";
-import { getArticleTitle } from "../lib/article-title";
+import { Backlinks, getBacklinks } from "@riebeckite/plugin-backlinks";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 
-const manifest = await content.getManifest();
-const backlinks = getBacklinks({ view, slug, resolveTitle: getArticleTitle });
-
-return (
-  <aside><Backlinks backlinks={backlinks} /></aside>
-);
+async function ArticleFooter() {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  if (!site || !article?.entry) return null;
+  const backlinks = await getBacklinks({
+    view: site.view,
+    slug: article.entry.slug,
+  });
+  return (
+    <aside><Backlinks backlinks={backlinks} /></aside>
+  );
+}
 ```
 
 ## Configuration
 
-There are no plugin options for `backlinks`. The `Backlinks` component
-accepts `backlinks` as a required prop.
+There are no plugin options for `backlinks`. The `Backlinks` component accepts
+an optional `backlinks` prop; when omitted, it resolves the list from context.
 
 ## Component
 
@@ -77,9 +83,9 @@ an eyebrow label and a list of links to each backlink's resolved `permalink`.
 ## Exports
 
 - `backlinks()` — plugin factory
-- `Backlinks` — list component (default export of `components/backlinks.tsx`)
+- `Backlinks` — list component (named export)
 - `getBacklinks({ view, slug })` — resolves published backlinks for a slug
-  (`{ slug, permalink, title }` each)
+  (`{ slug, permalink, title }` each); may return a promise
 - Type: `ArticleBacklink` (`{ slug, permalink, title }`)
 
 ## See also

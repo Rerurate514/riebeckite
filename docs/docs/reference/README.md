@@ -48,12 +48,14 @@ In [Configuration](./configuration.md) you can check Riebeckite's settings and h
 
 - `site`
 - `content`
-- `markdown`
 - `theme`
 - `plugins`
-- `appRoot`
-- `configRoot`
-- `contentRoot`
+- `cache`
+- `provenance`
+- `publication`
+- `spa`
+
+`appRoot`, `configRoot`, and `contentRoot` are resolution concepts rather than configuration keys; see [Roots](./configuration/roots.md).
 
 ### CLI
 
@@ -68,7 +70,7 @@ plugin verify
 dev
 check
 doctor
-upgrade --check
+upgrade
 build
 clean
 deploy

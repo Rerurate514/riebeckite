@@ -111,10 +111,7 @@ content: {
 }
 ```
 
-Excluded files never enter the content pipeline, so they are unavailable for
-links, graph analysis, and diagnostics. This differs from `draft` and
-`unlisted`, which stay in the content system but are hidden from routes or
-discovery. See [Publishing state](../configuration/content.md#publishing-state).
+Excluded files never enter the built-in filesystem source, so they are unavailable for links, graph analysis, and diagnostics. When you configure `content.source`, that source must apply its own filtering. This differs from `draft` and `unlisted`, which stay in the content system but are hidden from routes or discovery. See [Publishing state](../configuration/content.md#publishing-state).
 
 ### content.filters.publishStrategy
 

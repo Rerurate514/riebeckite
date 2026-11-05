@@ -109,7 +109,7 @@ shared limit for RSS, Atom, and JSON Feed.
 - Helpers: `buildArticleSeo`, `buildWebsiteSeo`, `buildAbsoluteUrl`,
   `buildPostUrl`, `getDescription`, `filterFeedEntries`,
   `getEntryPublishedTime`, `getEntryUpdatedTime`, `getHtmlLanguage`,
-  `calculateReadingTime`, `renderSitemap`, `renderRobots`, `renderRssFeed`,
+  `renderSitemap`, `renderRobots`, `renderRssFeed`,
   `renderAtomFeed`, `renderJsonFeed`
 
 ## See also

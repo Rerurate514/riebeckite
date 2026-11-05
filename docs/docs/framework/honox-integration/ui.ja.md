@@ -26,7 +26,7 @@ sidebar:
 - `PluginHeadTags`
 - `RiebeckiteHead`
 
-対応する `*Props` 型も公開されています。
+対応する `*Props` 型は内部向けです。コンポーネントの props 型が必要な場合は、`ComponentProps<typeof Article>` などのヘルパーを使ってください。
 
 ## 安定したスタイル用フック
 

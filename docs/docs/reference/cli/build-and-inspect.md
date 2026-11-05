@@ -33,7 +33,7 @@ flowchart TD
     Success -->|No| Keep["Keep the previous valid state"]
 ```
 
-Build state is updated only when the build succeeds, so a failed build never corrupts the previous good state.
+A failed manifest build keeps the previous build state. A failure after the state commit, such as during page rendering or output writing, can leave the new state behind.
 
 ### Full build
 

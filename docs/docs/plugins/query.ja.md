@@ -112,8 +112,6 @@ limit: 5
 | `language` | `string` | `"query"` | 対象のフェンス言語 |
 | `defaultFormat` | `"table"` \| `"list"` | `"table"` | ブロックが `format` を省略したときの形式 |
 | `defaultColumns` | `string[]` | `["title", "date"]` | ブロックが `columns` を省略したときの列 |
-| `defaultSort` | object | なし | ブロックが `sort` を省略したときの並べ替え |
-| `defaultLimit` | `number` | なし | ブロックが `limit` を省略したときの上限 |
 | `emptyMessage` | `string` | `"No matching content."` | 空結果のメッセージ |
 | `excludeSelf` | `boolean` | `false` | 既定で自身を除外する |
 
@@ -124,7 +122,7 @@ limit: 5
 ## 制限事項
 
 - クエリ結果として生成したリンクは、コンテンツグラフ（バックリンク）には含まれません。元の Markdown に書かれたリンクだけが対象です。
-- 結果はビルド時に確定します。クエリ対象ノートの変更でホストノートを再生成する増分最適化は今後の課題です（フルビルドでは正しく再計算されます）。
+- 結果はビルド時に確定します。ホストノートの出力は `global` 依存を宣言しているため、どのコンテンツが変わっても再生成されます。粒度は粗いですが正しく動作します。
 
 ## エクスポート
 

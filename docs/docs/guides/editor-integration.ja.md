@@ -8,13 +8,13 @@ sidebar:
 
 Riebeckite は、エディタ拡張などのローカルツール向けに、開発時限定の Bridge を公開できます。Markdown のソースファイルを既存のコンテンツ Manifest に解決し、開発サーバーと同じ Preview、公開状態、Diagnostics、最後のビルドの影響範囲を返します。
 
-開発サーバーはペアリングトークンを明示して起動します。
+開発サーバーはペアリングトークンを環境変数で明示して起動します。
 
 ```sh
-riebeckite dev --bridge-token <at-least-32-character-token>
+RIEBECKITE_BRIDGE_TOKEN=<at-least-32-character-token> riebeckite dev
 ```
 
-このトークンがなければ Bridge は無効です。まず開発サーバーの `GET /__riebeckite/bridge/bootstrap` に `x-riebeckite-bridge-token` を付けて要求します。返された loopback origin に対して、同じトークンと `x-riebeckite-bridge-protocol: 1` を付けて Bridge を利用します。
+PowerShell では先に `$env:RIEBECKITE_BRIDGE_TOKEN` を設定してから `riebeckite dev` を実行します。このトークンがなければ Bridge は無効です。まず開発サーバーの `GET /__riebeckite/bridge/bootstrap` に `x-riebeckite-bridge-token` を付けて要求します。返された loopback origin に対して、同じトークンと `x-riebeckite-bridge-protocol: 1` を付けて Bridge を利用します。
 
 対応する Capability は `GET /__riebeckite/bridge/v1` で確認します。エディタツールは `/source?path=notes/example.md` でソースを解決し、そのソースの Preview、公開状態、Diagnostics、最後のビルドの影響範囲を取得できます。`/events` を購読すると、コンテンツ変更後に再取得できます。Obsidian クライアント向けの `/page?source=notes/example.md` は Protocol v1 の互換エイリアスとして残しており、内部の解決処理は `/source` と共通です。新規の連携では `/source`、`/publication`、`/preview` を使用してください。
 

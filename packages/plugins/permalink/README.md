@@ -479,9 +479,7 @@ path: {
 }
 ```
 
-The current implementation returns the same path as `preserve`.
-
-The mode exists separately so it can represent different composition semantics in the future. Do not rely on `append` having behavior distinct from `preserve` in the current version.
+`append` keeps the source file slug before the ID. For `notes/flutter/hello.md` with `id: hello-world` and `prefix: "/n"`, the result is `/n/notes/flutter/hello/hello-world`, while `preserve` would return `/n/notes/flutter/hello-world`.
 
 ---
 
@@ -946,9 +944,8 @@ The exact output format may vary between CLI versions.
 ### Functions
 
 - `permalink(options?)`
-- `permalink(options?)`
 
-Both create the Permalink Plugin.
+Creates the Permalink Plugin.
 
 ### Types
 

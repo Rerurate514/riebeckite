@@ -19,13 +19,14 @@ sidebar:
 | `settings` | スキーマから推論 | スキーマの既定値 |
 | `stylesheets` | `string[]` | `[]` |
 
-Core がテーマがインスタンスであることを検証します。不明な設定は既定値、プリセット、明示的な設定の順に解決され、 `data-rb-theme`、`data-rb-mode`、`data-rb-layout`、`data-rb-setting-*` として反映されます。
+Core がテーマがインスタンスであることを検証します。テーマオプションで省略した設定はプリセット、次にスキーマの既定値へフォールバックします。不明な設定キーや不正な値は解決時に `ThemeSettingsValidationError` を投げます。解決された値は `data-rb-theme`、`data-rb-mode`、`data-rb-layout`、`data-rb-setting-*` として反映されます。
 
 ### 宣言済みテーマ
 
 テーマパッケージはファクトリを公開します。そのオプションを渡し、結果を `theme` に指定します。
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({

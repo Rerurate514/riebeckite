@@ -37,8 +37,9 @@ export default defineConfig({
 `toc()` registers the plugin, bundles `style.css`, and declares
 `initTableOfContents` as a client entry.
 
-It does not place UI. The Site extracts headings and renders the component,
-normally in an article aside. When an article rail fits, the Site positions the
+It does not place UI. `<TableOfContents />` reads the current article from context and
+extracts its headings, or accepts explicit `items`. Place it in an article aside.
+When an article rail fits, the Site positions the
 stable ToC root there and owns its sticky offset, height limit, and bounded
 vertical scrolling. The plugin owns the ToC list, its optional block borders,
 links, and scroll-spy state.
@@ -46,19 +47,18 @@ links, and scroll-spy state.
 ### Render the component
 
 ```tsx
-import TableOfContents, {
-  extractTableOfContents,
-} from "@riebeckite/plugin-toc";
+import { Article, ArticleBody, ArticleContent } from "@riebeckite/honox/ui";
+import { TableOfContents } from "@riebeckite/plugin-toc";
 
-const items = extractTableOfContents(post.html ?? "");
-
-// ...in your route
 return (
-  <Article
-    asideContent={
-      <TableOfContents className="rr-table-of-contents--desktop" items={items} />
-    }
-  />
+  <Article>
+    <ArticleContent>
+      <ArticleBody />
+    </ArticleContent>
+    <aside>
+      <TableOfContents className="rr-table-of-contents--desktop" />
+    </aside>
+  </Article>
 );
 ```
 

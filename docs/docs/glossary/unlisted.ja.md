@@ -42,4 +42,4 @@ export type ResolvedPublishingState = {
 
 ## 下書きとの関係
 
-`draft` の visibility とは異なり、非公開（unlisted）のページは公開済みかつルーティング対象とみなされます。下書き（`published: false` または `visibility: draft`）はルーティングから完全に除外され、公開されるまで公開出力を作りません。
+`draft` の visibility とは異なり、非公開（unlisted）のページは公開済みかつルーティング対象とみなされます。下書き（explicit 戦略では `publish` がないか `false`、selective 戦略では `private: true` または `draft: true`、または `visibility: draft`）はルーティングから完全に除外され、公開されるまで公開出力を作りません。

@@ -8,7 +8,7 @@ A theme controls how every Riebeckite site looks — colors, typography, spacing
 
 ## Site icon
 
-Generated sites ship a placeholder `public/favicon.ico` and reference it from `app/routes/_renderer.tsx`:
+Generated sites ship a placeholder `public/favicon.ico`. `RiebeckiteHead` in `app/routes/_renderer.tsx` adds this link by default:
 
 ```tsx
 <link rel="icon" href="/favicon.ico" />
@@ -16,15 +16,22 @@ Generated sites ship a placeholder `public/favicon.ico` and reference it from `a
 
 To keep this setup, replace `public/favicon.ico` with an ICO file of the same name. No code change is needed.
 
-To use a PNG or SVG icon instead, put the file under `public/` and update the `href`. Add `type` when the URL does not make the format obvious:
+To use a PNG or SVG icon instead, put the file under `public/` and pass its path to `RiebeckiteHead`:
 
 ```tsx
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<RiebeckiteHead
+  faviconHref="/favicon.svg"
+  seo={c.get("seo")}
+  themeStyle={themeStyle}
+  themeStylesheets={getThemeStylesheets(config.theme.stylesheets)}
+/>
 ```
+
+The browser infers the type from the file extension. If you need an explicit `type` attribute, pass `faviconHref={null}` to disable the default link and add your own `<link>` in the same `<head>`.
 
 ## Header logo
 
-The `starter` and `showcase` presets render a header. `app/components/site-header.tsx` shows the site title next to a 28×28 logo:
+Every preset except `empty` and `minimal` renders a header. `app/components/site-header.tsx` shows the site title next to a 28×28 logo:
 
 ```tsx
 <img src="/riebeckite-logo.png" alt="" class="site-header__logo" width="28" height="28" />

@@ -33,9 +33,9 @@ pageTypes: [
   {
     id: "tag-archive",
     paths: ["tag/*"],
-    outputDependencies: ["dependencies:tag:archive"],
+    outputDependencies: [{ type: "tag", tag: "archive" }],
     resolve: async (context) => {
-      const tag = context.slug.split("/")[1];
+      const tag = context.pathname.split("/")[2] ?? "";
       return {
         type: "tag-archive",
         pathname: `/tags/${tag}/`,

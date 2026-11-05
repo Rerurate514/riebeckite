@@ -32,7 +32,7 @@ Core は Core のコンテンツ API を通じた読み取りを、安定した�
 出力依存関係は次の場所で宣言できます。
 
 - プラグインページの `pageTypes[].outputDependencies`。
-- `onManifestCreated` で既存のマニフェストエントリの HTML を更新するプラグインの、ルートの `outputDependencies`。Core はこれをすべてのコンテンツ出力に追加します。
+- `onManifestCreated` で既存のマニフェストエントリの HTML を更新するプラグインの、ルートの `contentOutputDependencies`。Core はこれをすべてのコンテンツ出力に追加します。
 - 生成物の `context.output.emit(..., { dependencies })`。依存関係を宣言していない生成物は `unknown` となり、出力全体の再生成を引き起こします。
 
 依存関係の種類とその効果は次のとおりです。

@@ -169,13 +169,10 @@ Riebeckite の公式 Plugin でも、外部データを扱うものには用途�
 
 Riebeckite は、すべての入力を自動的に安全な HTML へ変換する仕組みではありません。
 
-特に、
+Markdown の raw HTML は出力前にサニタイズされます。保護の対象外となる境界は2つあります。
 
-- Markdown 内の raw HTML
-- Plugin が生成した HTML
-- インストールした Plugin の JavaScript
-
-などは、自動的には無害化されません。
+- Plugin が生成した HTML は Markdown サニタイザーの後に実行され、アプリケーションコードとして信頼されます。Plugin 自身が入力をエスケープする必要があります。
+- インストールした Plugin と Theme の JavaScript は信頼されたコードであり、Core によってサンドボックス化されません。
 
 これは、自分で管理している Markdown や Obsidian Vault をできるだけそのまま公開できるようにするための設計です。
 

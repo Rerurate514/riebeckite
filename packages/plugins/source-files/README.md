@@ -40,7 +40,7 @@ Each source page includes its vault-relative path, detected language, size, and 
 
 The following source is rendered on this page as a source-page link, a full-file embed, and a line-range embed.
 
-#### Source
+### Source
 
 ````md
 [[source-file-example.ts]]
@@ -50,7 +50,7 @@ The following source is rendered on this page as a source-page link, a full-file
 ![[source-file-example.ts#L3-L5]]
 ````
 
-#### Rendered
+### Rendered
 
 [source-file-example.ts](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/source-file-example.ts)
 

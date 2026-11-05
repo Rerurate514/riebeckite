@@ -11,31 +11,32 @@ sidebar:
 
 ## 検索インデックス
 
-検索インデックスはビルド時にマニフェストから生成され、slug、permalink、title、body、tags、headings を持つエントリを含みます。読み手は検索プラグインでインデックスを照会でき、テキスト検索と、タグ、言語、パスによる絞り込みに対応します。
+検索インデックスはビルド時に `buildSearchItems` がマニフェストの検出可能エントリから生成します。各項目は slug、permalink、title、aliases、headings、body、excerpt、tags、language、date を持ちます。`searchItems` で照会でき、テキスト検索と `tag:`、`lang:`、`path:` フィルタに対応します。
 
 ```ts
-import { searchItems } from "@riebeckite/plugin-search";
+import { buildSearchItems, searchItems } from "@riebeckite/plugin-search";
 
-const results = searchItems(manifest.entries, "plugin");
+const items = buildSearchItems({ manifest, config });
+const results = searchItems(items, "plugin");
 ```
 
 ## 検索インデックスの生成
-検索インデックスはビルド時に検索プラグイン（`packages/plugins/search/`）が生成します。マニフェストから作られ、各エントリの `slug`、`permalink`、`title`、`body`、`tags`、`headings` を含みます。インデックスは `searchItems` 関数で生成され、次のことができます。
+検索インデックスはビルド時に検索プラグイン（`packages/plugins/search/`）が `manifest.discoverableEntries` から生成します。インデックスは `buildSearchItems` で構築し、`SearchItem[]` を返します。`searchItems` はその配列を照会し、次のことができます。
 
-- **テキスト検索**：エントリの body と headings に対する全文検索
-- **タグフィルタ**：frontmatter で指定されたタグによる結果の絞り込み
-- **言語フィルタ**：エントリのロケールによる結果の絞り込み
-- **パスフィルタ**：URL パスによる結果の絞り込み
+- **テキスト検索**：slug、title、aliases、tags、headings、body に対する照合
+- **タグフィルタ**：クエリ文字列の `tag:plugin`
+- **言語フィルタ**：クエリ文字列の `lang:ja`、または `language` オプション
+- **パスフィルタ**：クエリ文字列の `path:notes`
 
 ```ts
-import { searchItems } from "@riebeckite/plugin-search";
-// Example: search for entries with tag "plugin"
-const results = searchItems(manifest.entries, "plugin", { tags: ["plugin"] });
-// Example: search in Japanese
-const results = searchItems(manifest.entries, "plugin", { lang: "ja" });
+import { buildSearchItems, searchItems } from "@riebeckite/plugin-search";
+
+const items = buildSearchItems({ manifest, config });
+const tagged = searchItems(items, "plugin tag:plugin");
+const japanese = searchItems(items, "plugin", { language: "ja" });
 ```
 
-検索プラグインはサイトのセットアップ時に登録され、検索 UI との統合を提供します。結果は関連性で並べ替えられ、タグの一致、言語の優先度、パスの近さが考慮されます。
+検索プラグインはサイトのセットアップ時に登録され、検索 UI との統合を提供します。結果はインデックスされた各フィールドの関連性で並べ替えられます。
 
 ## 関連用語
 

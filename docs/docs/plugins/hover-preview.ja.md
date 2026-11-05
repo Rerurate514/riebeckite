@@ -14,9 +14,9 @@ title: Hover Preview
 
 ## 概要
 
-ビルド時に `hoverPreview()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、内部リンクを含むページへ一度だけ `<script type="application/json" data-rb-hover-preview>` として埋め込みます。クライアント側の `initHoverPreview` がこのデータを読み、対象リンクにホバー・フォーカス・タップの処理を付けます。
+ビルド時に `hoverPreview()` がコンテンツマニフェストからプレビュー索引（`permalink` → `{ title, excerpt, slug }`）を作り、生成 JSON ファイルとして出力します。内部リンクを含むページには、索引を指す小さな `<script type="application/json" data-rb-hover-preview>` を一度だけ埋め込みます。クライアント側の `initHoverPreview` がこのブロックを読み、索引を取得して対象リンクにホバー・フォーカス・タップの処理を付けます。
 
-索引に含めるのは discoverable なページだけです。unlisted のノートは permalink から直接閲覧できますが、タイトルと抜粋は共有プレビュー索引に書き込みません。draft と予約公開のノートも除外されます。抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` を指定するとページごとのデータ量を抑えられます。
+索引に含めるのは discoverable なページだけです。unlisted のノートは permalink から直接閲覧できますが、タイトルと抜粋は共有プレビュー索引に書き込みません。draft と予約公開のノートも除外されます。抜粋は描画済み HTML からタグを除いたプレーンテキストで、空白をまとめたうえで `excerptLength` 文字に切り詰めます。内部リンクのないページには何も挿入しません。`maxEntries` は生成する索引に含める項目数の上限です。
 
 ## 使い方
 
@@ -40,7 +40,7 @@ export default defineConfig({
 | --------------- | -------------- | ------------------------------------------ |
 | `delay`         | `120`          | ポップオーバーが出るまでの待ち時間（ミリ秒） |
 | `excerptLength` | `160`          | 抜粋の最大文字数                           |
-| `maxEntries`    | 未指定         | ページに埋め込む項目数の上限               |
+| `maxEntries`    | 未指定         | 生成する索引に含める項目数の上限           |
 | `selector`      | `a[href^="/"]` | プレビュー対象にする内部リンクのセレクタ   |
 | `className`     | `rb-hover-preview` | ポップオーバーの基準クラス名           |
 | `includeTitles` | `true`         | ポップオーバーにタイトルを表示するか       |

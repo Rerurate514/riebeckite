@@ -90,7 +90,7 @@ export default {
 
 ## ブラウザでの計測
 
-Core の安定コンテンツ ID（frontmatter の `id`）を持つ公開コンテンツにだけ、コンテンツ ID を示すマーカーを出力します。汎用の `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
+Core の安定コンテンツ ID（frontmatter の `id`）を持つマニフェストエントリには、その HTML が描画されるときにコンテンツ ID を示すマーカーを追加します。汎用の `publicConfig` 経由で登録された `initAnalytics` は、ブラウザでドキュメントごとに一度だけ次のようなイベントを送ります。
 
 ```json
 {
@@ -104,7 +104,7 @@ Core の安定コンテンツ ID（frontmatter の `id`）を持つ公開コン�
 
 `path` と `lang` は補助的なメタデータであり、ID ではありません。安定 ID を持たないコンテンツは計測しません。ビルド時と SSR 時は何もせず、同じドキュメント内での初期化も冪等です。SPA ナビゲーションを有効にすると、ルート遷移が成功するたびに追加のイベントを送信します。
 
-コンテンツ ID は執筆側の責務です。公開ノート間で `id` が重複している場合は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告し（`duplicate-content-id` / `invalid-content-id`）、プラグイン自身の `validateAnalyticsOptions` が `check` 時に検証します。
+コンテンツ ID は執筆側の責務です。公開ノート間で `id` が重複している場合は [`@riebeckite/plugin-diagnostics`](./diagnostics.ja.md) が報告します（`duplicate-content-id` / `invalid-content-id`）。
 
 ## プロバイダの取り決め
 
@@ -120,7 +120,7 @@ const result = await provider.query({
 
 ## 診断
 
-`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定コンテンツ ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けは `check` / `doctor` / ビルドの診断で確認できます。
+`@riebeckite/plugin-diagnostics` は、サイトで本プラグインが有効なとき、安定コンテンツ ID を持たない公開コンテンツを `analytics-untracked` として報告します。計測の抜けは `doctor` と Development Inspector で確認できます。
 
 ## 主なエクスポート
 

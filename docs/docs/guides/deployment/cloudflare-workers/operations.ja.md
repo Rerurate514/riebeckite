@@ -26,11 +26,7 @@ dist/ を更新
 デプロイ
 ```
 
-`riebeckite publish run --execute` は、計画、必要に応じたビルド、成果物検証、公開ゲート、Hosting adapter 経由のデプロイを行います。Riebeckite 側を変更した場合は、まず `npm exec riebeckite build` を実行してコンテンツが最新であることを確認してください。
-
-```sh
-npm exec riebeckite build
-```
+`riebeckite publish run --execute` は、計画、必要に応じたビルド、成果物検証、Hosting adapter 経由のデプロイを行います。`site.baseUrl` やテーマなど設定だけを変更した場合は、先にビルドし、計画が変更なしと報告したときに `--force` を付けます。計画はコンテンツ、リダイレクト、生成出力を追跡するため、設定変更が検出される場合とされない場合があります。
 
 ## デプロイ前のチェックリスト
 
@@ -82,7 +78,7 @@ Wrangler
   → 生成されたサイトを Cloudflare へ公開する
 ```
 
-つまり、`npm exec riebeckite build` が失敗する場合は Riebeckite 側を、`npm exec -- riebeckite publish run --execute` が失敗する場合は Cloudflare / Wrangler 側を確認します。この境界を意識すると、デプロイの問題を調査しやすくなります。
+つまり、`npm exec riebeckite build` が失敗する場合は Riebeckite のビルド側を確認します。`publish run --execute` は、計画や承認ゲート、成果物の検証、Wrangler によるアップロードのどこでも失敗し得るため、表示された段階を確認してから Cloudflare 側の問題と判断してください。この境界を意識すると、デプロイの問題を調査しやすくなります。
 
 ## GitHub Actions で自動デプロイする
 
@@ -116,9 +112,11 @@ GitHub Actions を有効にしてサイトを生成します。
 
 ```sh
 npx create-riebeckite my-site --github-actions
+cd my-site
+npm install
 ```
 
-これにより、Cloudflare Workers 用の `wrangler.jsonc` とデプロイワークフローが生成されます。以降は、サイトリポジトリの `main` へプッシュすると自動でビルドとデプロイが実行されます。
+これにより、Cloudflare Workers 用の `wrangler.jsonc` とデプロイワークフローが生成されます。コマンドライン形式ではプロンプトが表示されず、依存関係もインストールされません。ワークフローは `npm ci` を使い、コミット済みの `package-lock.json` を必要とするため、コミット前に `npm install` を実行してください。以降は、サイトリポジトリの `main` へプッシュすると自動でビルドとデプロイが実行されます。
 
 ### コンテンツを別リポジトリに置く場合
 
@@ -128,6 +126,8 @@ npx create-riebeckite my-site --github-actions
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
   --site-repository OWNER/my-site
+cd my-site
+npm install
 ```
 
 この構成では、次の2つのリポジトリに分かれます。

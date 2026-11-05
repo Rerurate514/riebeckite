@@ -34,7 +34,7 @@ sidebar:
   slug: "notes/hello",
   permalink: "/docs/notes/hello/",
   language: "ja",
-  redirects: ["/old-url/"],
+  redirects: [{ path: "/old-url/", status: 301 }],
   metadata: { author: "tanaka" },
 }
 ```

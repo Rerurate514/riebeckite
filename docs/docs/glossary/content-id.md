@@ -19,7 +19,7 @@ A stable identifier written in frontmatter that names a note independently of it
 
 ## Content ID resolution
 
-The `contentId` field in frontmatter (`packages/core/src/types/post_content.ts`) provides a stable identifier independent of slug and permalink. When an `id` is present in frontmatter, it is stored as `contentId` in the manifest entry (`packages/core/src/types/content_manifest.ts`) and exposed through `byContentId` map in the manifest (`packages/core/src/types/resolved_riebeckite_config.ts`).
+The frontmatter `id` field (`packages/core/src/types/post_content.ts`) provides a stable identifier independent of slug and permalink. When an `id` is present in frontmatter, it is stored as `contentId` in the manifest entry and exposed through the `byContentId` map on `ContentManifest` (`packages/core/src/types/content_manifest.ts`).
 
 Use cases for `contentId`:
 

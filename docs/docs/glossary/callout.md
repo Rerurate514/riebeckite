@@ -6,7 +6,7 @@ sidebar:
 ---
 
 # Callout
-A callout box using container shortcode syntax `:::callout[Title]{type=warning}` or `:::note[Title]{type=info}`, rendering as a `div` with CSS classes `rr-callout rr-callout--{type}` and built-in default titles.
+A callout box written with the shortcodes plugin's container syntax: `:::callout[Title]{type=warning}` or `:::note[Title]{type=info}`. The output is a `div.rb-shortcode.rb-shortcode--callout` wrapper around a `div.rb-shortcode__note.rb-shortcode__note--{type}` box.
 
 ## Callout syntax
 ```md
@@ -20,29 +20,25 @@ More content.
 This is a note callout.
 :::
 ```
-Output: `div.rr-callout.rr-callout--note` with `data-callout`.
-Titles fall back to built-in defaults (`note`, `tip`, `warning`, `danger`, `bug`, `quote`).
+The label (or a `title` attribute) becomes `rb-shortcode__note-title`. Without one, no title is rendered.
 
 ## Callout types
-Built-in callout types and their default titles:
-
-- `note` / `note` → default title "Note"
-- `tip` → default title "Tip"
-- `warning` → default title "Warning"
-- `danger` → default title "Danger"
-- `bug` → default title "Bug"
-- `quote` → default title "Quote"
+`type` is a free-form token used in the `rb-shortcode__note--{type}` class; the shortcodes plugin does not define a fixed list or per-type default titles. Common values are `note`, `tip`, `warning`, `danger`, `bug`, and `quote`.
 
 ## Custom titles and styles
 Provide an optional title in the shortcode: `:::callout[My Title]{type=warning}`.
 
-Override default titles via `callout.defaultTitles` option when registering the plugin:
+The Obsidian Markdown plugin can override its own callout titles:
 ```ts
-callout: {
-  defaultTitles: {
-    warning: "注意",
-  },
-}
+plugins: [
+  obsidianMarkdown({
+    callout: {
+      defaultTitles: {
+        warning: "注意",
+      },
+    },
+  }),
+],
 ```
 
 ## Obsidian Markdown callout integration

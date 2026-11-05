@@ -34,7 +34,7 @@ A content-affecting plugin that declares no contract is treated as `unsafe`.
 
 `version` names the contract. Core also includes the resolved plugin configuration in the cache key, so a change to the options, hooks, or version invalidates the cached entries.
 
-Use `global` only when a content transform depends on location metadata for the whole vault. Core fingerprints the resolved locations, including slugs, permalinks, redirects, languages, and metadata. Manifest-only hooks do not require this mode: they run on every build over the current manifest without invalidating processed content.
+Use `global` only when a content transform depends on location metadata for the whole vault. Core fingerprints the resolved locations, including slugs, permalinks, redirects, languages, and metadata. Manifest-only hooks do not require this mode: they operate on the current manifest without invalidating processed content, and Core may reuse their result when the persisted snapshot is valid.
 
 ### What Core records
 
@@ -52,12 +52,7 @@ Reads made through Core's content APIs become dependencies with stable identitie
 
 On a later build, Core looks up the cached processed content, then re-reads every recorded content, file, and link dependency and compares fingerprints. If any fingerprint changed, Core discards the entry and processes it again.
 
-The cache skips only Markdown and HTML processing. The post-processing hooks
-(`onPostParsed`, `onPostProcessed`) always run. Core may reuse an
-`onManifestCreated` hook only when its persisted entry snapshot is valid and
-the hook has no external dependencies or side effects outside manifest entries.
-Hooks that mutate other manifest state always run, so manifest-stage work
-belongs there.
+When Core reuses a manifest entry whose dependencies are unchanged, it skips processing entirely, so `onContentLoaded`, `onPostParsed`, and `onPostProcessed` do not run. If Core does process an entry again, a processed-content cache hit skips the Markdown/HTML pipeline but the content hooks still run. Core may reuse an `onManifestCreated` hook only when its persisted entry snapshot is valid and the hook has no external dependencies or side effects outside manifest entries. Hooks that mutate other manifest state always run, so manifest-stage work belongs there.
 
 ### Affected content
 

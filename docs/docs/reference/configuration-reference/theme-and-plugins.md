@@ -20,7 +20,7 @@ owns its styles, settings schema, and presets.
 | `settings` | inferred from the schema | schema defaults |
 | `stylesheets` | `string[]` | `[]` |
 
-Core validates that the theme is an instance. Unknown settings are resolved through defaults, preset, and explicit settings, and reflected through `data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and `data-rb-setting-*`.
+Core validates that the theme is an instance. Settings omitted from the theme options fall back to the preset and then to the schema defaults; unknown setting keys or invalid values throw `ThemeSettingsValidationError` during resolution. The resolved values are reflected through `data-rb-theme`, `data-rb-mode`, `data-rb-layout`, and `data-rb-setting-*`.
 
 ### Declared themes
 
@@ -28,6 +28,7 @@ A theme package exposes a factory. Pass its options and hand the result to
 `theme`.
 
 ```ts
+import { defineConfig } from "@riebeckite/core";
 import { rerurateTheme } from "@riebeckite/theme-rerurate";
 
 export default defineConfig({

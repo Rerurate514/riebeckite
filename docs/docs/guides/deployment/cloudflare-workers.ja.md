@@ -45,14 +45,12 @@ Cloudflare Workers に公開する Static Assets は `dist/` に生成されま�
 
 ### サイトを更新したのに公開内容が古い
 
-変更後に、もう一度次のコマンドを実行します。
+変更後に、もう一度次のコマンドを実行します。コンテンツが変わっていれば `publish run` がビルドします。計画はコンテンツ、リダイレクト、生成出力を追跡するため、設定だけの変更が検出されない場合があり、`--force` を付けるとデプロイされます。
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
-
-`riebeckite publish run --execute` は Riebeckite のビルドの代わりにはなりません。
 
 ### 公開後の URL が正しくない
 
@@ -64,7 +62,7 @@ site: {
 },
 ```
 
-変更した場合は、再度ビルドしてデプロイしてください。
+変更した場合は、再度ビルドし、`--force` を付けてデプロイしてください。
 
 ### Riebeckite のビルドが失敗する
 
@@ -101,7 +99,7 @@ npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
 
-`create-riebeckite` で `Cloudflare Workers` を選んだサイトには Wrangler が含まれているため、`npm install -D wrangler` は不要です。`Not now` で生成した既存のサイトでは、先に実行してください。
+`create-riebeckite` で `Cloudflare Workers` を選んだサイトには Wrangler が含まれているため、`npm install -D wrangler` は不要です。`Not now` で生成した既存のサイトでは、先に `npm install -D wrangler` を実行し、検出できる Wrangler 設定がないため `publish run` に `--provider cloudflare-workers` を追加してください。
 
 最初のデプロイで公開 URL がわかったら、次の流れで設定を反映します。
 

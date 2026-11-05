@@ -28,7 +28,7 @@ Answer the prompts (recommended answers shown):
 - **Add optional feature packs?** — press Enter for `No`
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
 - **Where will you write content?** — choose `This project` so Markdown stays inside the site
-- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push; see [Deployment](./deployment.md)
+- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](./deployment.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages
 
 When it succeeds, it prints `Created a starter Riebeckite site in my-riebeckite-site` and a short "Next steps" list. If you kept the default install answer, the packages are already installed; move into the folder:
@@ -108,21 +108,21 @@ Choosing `Yes` at `Deploy now?` runs the build and deploy immediately after scaf
 npm exec riebeckite build
 npm exec -- riebeckite publish run --execute
 ```
-The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`.
+The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`, then pass the provider because no `wrangler.jsonc` exists yet: `npm exec -- riebeckite publish run --execute --provider cloudflare-workers`.
 
-After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address.
+After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. The publication plan tracks content, redirects, and generated outputs; add `--force` when a config-only change is not detected.
 
 ```sh
 npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
+npm exec -- riebeckite publish run --execute --force
 ```
 
-To deploy automatically on every push, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
+To deploy automatically on every push to `main`, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
 
 ## Next
 
 - [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
-- [Presets](./presets.md) — compare `starter`, `blog`, `docs`, `minimal`, `showcase`, and `empty`
+- [Presets](./presets.md) — compare `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, `minimal`, `showcase`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately
 - [Installation](./installation.md) — requirements and setup deep-dive
 - [Branding your site →](../guides/branding.md) — replace the icon, header logo, and link preview image

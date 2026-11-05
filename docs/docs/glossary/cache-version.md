@@ -18,7 +18,7 @@ Entries with a mismatched schema version are treated as misses and reprocessed.
 ## Migration
 
 Delete `.riebeckite/cache` to force cold processing when the schema version does not match.
-The build log reports `schema-miss` when a cache entry has an incompatible schema version.
+The build log reports `schema-mismatch` when a cache entry has an incompatible schema version.
 
 ## Schema Version Constants
 The cache versioning is controlled by two constants defined in `packages/core/src/content/content_persistent_cache.ts`:
@@ -28,7 +28,7 @@ The cache versioning is controlled by two constants defined in `packages/core/sr
 
 ## Cache Lookup Compatibility Check
 
-During cache lookups, the `lookup` method in `createPersistentContentCache` (`packages/core/src/content/content_persistent_cache.ts`) checks `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`. If the versions differ, the entry is treated as a `schema-miss` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
+During cache lookups, the `lookup` method in `createPersistentContentCache` (`packages/core/src/content/content_persistent_cache.ts`) checks `entry.schemaVersion !== CONTENT_CACHE_SCHEMA_VERSION`. If the versions differ, the entry is treated as a `schema-mismatch` and reprocessed from scratch. This ensures that any structural changes to the cache schema are always picked up on the next build.
 
 ## Cache Entry Structure
 
@@ -50,7 +50,7 @@ The persistent content cache entry (`PersistentContentCacheEntry` type in `packa
 }
 ```
 
-The entry includes `schemaVersion` (currently 5), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-miss`.
+The entry includes `schemaVersion` (currently 5), `key` (computed via `computeContentCacheKey` from slug, source, frontmatter, and pipeline fingerprint), `dependencies` (array of `CachedContentDependency` records), and `value` (frontmatter and HTML). If `entry.key !== key` during lookup, the entry is treated as a `key-mismatch`.
 
 ## Related terms
 

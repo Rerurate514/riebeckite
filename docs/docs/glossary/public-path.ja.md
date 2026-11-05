@@ -11,7 +11,7 @@ sidebar:
 
 ## 公開パス
 
-permalink が `https://example.com/docs/hello/` のとき、公開パスは `/docs/hello/` です。[permalink](./permalink.md) は完全な値で、公開パスはそのパス部分です。
+permalink が `/docs/hello` のとき、公開パスは `/docs/hello` です。[permalink](./permalink.md) はサイト内パスとして保存され、サイトのオリジンはフィード、サイトマップ、canonical メタデータを出力するときにだけ付きます。
 
 ## 現れる場所
 
@@ -23,7 +23,7 @@ permalink が `https://example.com/docs/hello/` のとき、公開パスは `/do
 
 主な性質：
 
-- **由来**：解決済みの permalink からサイトのオリジンを除いて計算します（例：`https://example.com/docs/hello/` なら公開パスは `/docs/hello/`）
+- **由来**：解決済みの permalink はすでにサイト内パスです（例：`/docs/hello`）。オリジンはフィード、サイトマップ、canonical メタデータの絶対 URL にだけ付きます
 - **用途**：ルーティング規則、サイトマップ生成、内部リンク生成で使います。インテグレーションは permalink の解決後に公開パスを使ってリンクを描画します
 - **伝播**：URL 規則の変更（permalink プラグイン、設定変更）は、コンテンツファイルの編集なしにすべての公開パスへ反映されます
 

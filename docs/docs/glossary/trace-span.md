@@ -7,11 +7,11 @@ sidebar:
 
 # Trace Span
 
-A timed unit of build work. Traces divide build work into spans and record their duration. Span names should be stable (e.g., `content.load`, `plugins.run`, `diagnostics.run`, `application.build`).
+A timed unit of build work. Traces divide build work into spans and record their duration. Span names should be stable (for example `build.total`, `content.build`, `content.process`, `diagnostics.run`, and `content.build-state.save`).
 
 ## Structure
 
-A trace has a parent span (e.g., `build`) and child spans for each unit of work.
+A trace has a parent span (for example `build.total`) and child spans for each unit of work.
 Always close spans on both success and failure.
 
 ## Naming conventions
@@ -39,7 +39,7 @@ Spans are emitted through the `TraceSink` interface, which receives `onSpan` cal
 
 ```json
 {
-  "name": "content.load",
+  "name": "content.process",
   "startTime": 1700000000000,
   "durationMs": 450,
   "status": "ok",

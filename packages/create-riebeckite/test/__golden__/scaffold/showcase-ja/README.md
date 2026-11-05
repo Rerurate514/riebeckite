@@ -7,7 +7,7 @@ Riebeckite の Plugin エコシステムを実際に確認できる機能紹介�
 - **言語**: en, ja, zh-CN, es, de, fr, ko
 - **テーマ**: `@riebeckite/theme-default`
 - **プラグイン**（64 個）: `@riebeckite/plugin-obsidian-markdown`, `@riebeckite/plugin-color-mode`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-toc`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-alias`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-search`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-share`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-webmention`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-attachment`, `@riebeckite/plugin-pdf`, `@riebeckite/plugin-media`, `@riebeckite/plugin-responsive-image`, `@riebeckite/plugin-lightbox`, `@riebeckite/plugin-highlight`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-code-annotations`, `@riebeckite/plugin-shortcodes`, `@riebeckite/plugin-series`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-autocardlink`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-gallery`, `@riebeckite/plugin-glossary`, `@riebeckite/plugin-mermaid-pele`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-plantuml`, `@riebeckite/plugin-chartjs`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-map`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-qr-code`, `@riebeckite/plugin-discord-embed`, `@riebeckite/plugin-excalidraw`, `@riebeckite/plugin-excalibrain`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-kanban`, `@riebeckite/plugin-query`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-hover-preview`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-ux`, `@riebeckite/plugin-daily-notes`, `@riebeckite/plugin-rename`, `@riebeckite/plugin-text-fragment`, `@riebeckite/plugin-timeline`, `@riebeckite/plugin-quality`, `@riebeckite/plugin-deploy`, `@riebeckite/plugin-diagnostics`
-- **コンテンツページ**: /index, /framework/plugins, /framework/themes, /guide, /examples, /reference/plugins, /reference/themes
+- **コンテンツページ**: /, /framework/plugins, /framework/themes, /guide, /examples, /reference/plugins, /reference/themes
 
 ## 設定リファレンス
 
@@ -69,7 +69,7 @@ Riebeckite の Plugin エコシステムを実際に確認できる機能紹介�
 | `@riebeckite/plugin-dataview` | `dataview` | `{ limit: 50, className: "rb-dataview", hideFallback: false }` |
 | `@riebeckite/plugin-flashcards` | `flashcards` | `{ shuffle: true, fallback: true, className: "rb-flashcards" }` |
 | `@riebeckite/plugin-kanban` | `kanban` | `{ columnMarker: "##", autoDetect: true, className: "rb-kanban", fallback: true }` |
-| `@riebeckite/plugin-query` | `query` | `{ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }` |
+| `@riebeckite/plugin-query` | `query` | `{ defaultFormat: "list", className: "rb-query", excludeSelf: true }` |
 | `@riebeckite/plugin-local-graph` | `localGraph` | — |
 | `@riebeckite/plugin-hover-preview` | `hoverPreview` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
 | `@riebeckite/plugin-garden-explorer` | `gardenExplorer` | — |

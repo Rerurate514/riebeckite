@@ -77,7 +77,7 @@ A colliding alias is not registered; the existing path wins.
 ## Limitations
 
 - Redirects are decided at build time; add or change aliases and rebuild the site.
-- SSG does not emit dedicated redirect HTML files. Redirects are resolved by the server (`resolveContentRoute` in HonoX).
+- SSG emits a redirect HTML page (a meta refresh) for each public redirect, including aliases. The same redirects are also resolved by the server (`resolveContentRoute` in HonoX) during development and request handling.
 - Aliases are not part of the content graph (backlinks); only links written in the Markdown count.
 
 ## Exports

@@ -166,16 +166,16 @@ tab.
 ## Exports
 
 - `navigation(options?)` — plugin factory
-- `navigation` — alias of `navigation`
 - `NAVIGATION_PLUGIN_NAME` — the plugin name, `"navigation"`
 - `buildNavigation(entries, options?)` — build a model from manifest entries
 - `resolveSiteNavigation(config, manifest)` — find the enabled plugin and build
   the model, or `null`
-- `validateNavigationOptions(options)` — option validation
 - `SiteNav` — render a resolved tree with the standard `rb-nav` structure
 - `MobileSiteNav` — render the plugin-owned compact navigation menu
+- `SidebarNavigation` — render the sidebar navigation
+- `initSidebarNavigation` — client initializer for sidebar behavior
 - Types: `NavigationItem`, `NavigationOptions`, `NavigationSource`,
-  `SiteNavigation`, `SiteNavProps`, `MobileSiteNavProps`
+  `SiteNavigation`, `SiteNavProps`, `MobileSiteNavProps`, `SidebarNavigationProps`
 
 ## Limitations
 

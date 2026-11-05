@@ -57,11 +57,13 @@ export default defineConfig({
 | `analytics-untracked` | `info` | Published note has no stable `id` and the analytics plugin will not track it (enabled with `reportAnalyticsCoverage`, or automatically when the config enables the analytics plugin) |
 | `content-integrity:broken-link` | `warning` | A published page links to a site-local route that is not published or registered |
 | `content-integrity:unresolved-wikilink` | `warning` | A published entry contains a WikiLink that the configured WikiLink/content index resolution did not resolve |
+| `content-integrity:ambiguous-wikilink` | `warning` | A WikiLink matches more than one candidate |
 | `content-integrity:broken-asset` | `warning` | A published page references a local asset that is not in resolved content assets, plugin assets, generated outputs, or public routes |
 | `content-integrity:duplicate-public-location` | `error` | Two published entries or generated routes claim the same final public path |
 | `content-integrity:redirect-target-missing` | `warning` | A public redirect points at content whose public target is unavailable |
 | `content-integrity:redirect-cycle` | `error` | Public redirects form a cycle |
 | `content-integrity:redirect-public-location-conflict` | `error` | A redirect path conflicts with another public route |
+| `content-integrity:ambiguous-folder-page-owner` | `warning` | A folder has both `README` and `index` Folder Page candidates |
 | `internal-error` | `error` | Content analysis failed |
 
 ## Site-wide content integrity
@@ -103,13 +105,15 @@ from the manifest.
 ## CLI
 
 ```bash
-riebeckite-diagnostics --config riebeckite.config.ts
 riebeckite-diagnostics --content ./content --report-orphans
+riebeckite-diagnostics --config riebeckite.config.ts
 ```
+
+`--config` loads a TypeScript config with a native dynamic import. It therefore needs a runtime that can import `.ts` files (Node 22.18 or later, or a TypeScript loader); on older supported Node versions, use `--content` and pass the applicable options explicitly.
 
 | Option | Description |
 | ------ | ----------- |
-| `--config <path>` | Path to `riebeckite.config.ts` (loaded under tsx) |
+| `--config <path>` | Path to `riebeckite.config.ts` (requires Node 22.18+ or a TypeScript loader) |
 | `--content <dir>` | Content directory to analyze (default: `.`) |
 | `--exclude <glob>` | Extra exclude glob (repeatable) |
 | `--publish-strategy <mode>` | `explicit` \| `selective` (default: `selective`) |

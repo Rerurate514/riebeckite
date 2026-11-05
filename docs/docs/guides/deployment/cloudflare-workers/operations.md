@@ -26,7 +26,7 @@ Update dist/
 Deploy
 ```
 
-`riebeckite publish run --execute` plans, builds if needed, validates the artifact, runs the publication gate, and deploys through the hosting adapter. If you changed anything on the Riebeckite side, run `npm exec riebeckite build` first to ensure content is up to date.
+`riebeckite publish run --execute` plans, builds if needed, validates the artifact, and deploys through the hosting adapter. If you changed only configuration, such as `site.baseUrl` or the theme, build first and add `--force` when the plan reports no change; the plan tracks content, redirects, and generated outputs, so some configuration changes are detected while others are not.
 
 ## Pre-deploy checklist
 
@@ -78,7 +78,7 @@ Wrangler
   → publishes the generated site to Cloudflare
 ```
 
-So if `npm exec riebeckite build` fails, look at the Riebeckite side; if `npm exec -- riebeckite publish run --execute` fails, look at the Cloudflare / Wrangler side. Separating these boundaries makes deployment problems easier to investigate.
+So if `npm exec riebeckite build` fails, look at the Riebeckite build side. `publish run --execute` can then fail during its plan or approval gate, artifact validation, or the Wrangler upload, so read the reported stage before assuming the Cloudflare side is at fault. Separating these boundaries makes deployment problems easier to investigate.
 
 ## Automated deployment with GitHub Actions
 
@@ -110,9 +110,11 @@ For a same-repository site that is not published yet, generate the workflow with
 
 ```sh
 npx create-riebeckite my-site --github-actions
+cd my-site
+npm install
 ```
 
-This generates the Cloudflare Workers `wrangler.jsonc` and the deployment workflow. After that, a push to `main` in the site repository builds and deploys automatically.
+This generates the Cloudflare Workers `wrangler.jsonc` and the deployment workflow. The command-line form skips prompts and does not install dependencies, so `npm install` must run before you commit: the workflow uses `npm ci` and needs a committed `package-lock.json`. After that, a push to `main` in the site repository builds and deploys automatically.
 
 ### When content is in a separate repository
 
@@ -122,6 +124,8 @@ For a separate content repository, generate both workflow files with:
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
   --site-repository OWNER/my-site
+cd my-site
+npm install
 ```
 
 This separates:

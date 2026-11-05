@@ -129,7 +129,7 @@ export default defineConfig({
     dataview({ limit: 50, className: "rb-dataview", hideFallback: false }),
     flashcards({ shuffle: true, fallback: true, className: "rb-flashcards" }),
     kanban({ columnMarker: "##", autoDetect: true, className: "rb-kanban", fallback: true }),
-    query({ defaultFormat: "list", defaultLimit: 50, className: "rb-query", excludeSelf: true }),
+    query({ defaultFormat: "list", className: "rb-query", excludeSelf: true }),
     localGraph(),
     hoverPreview({ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }),
     gardenExplorer(),

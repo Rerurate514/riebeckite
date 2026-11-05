@@ -27,7 +27,7 @@ The slug is the internal lookup key for a note, used by the content index, the m
 
 Key properties:
 
-- **Source**: Derived from the file path (relative to content root), but normalized to lowercase and with `.md` suffix removed
+- **Source**: Derived from the file path (relative to content root) with the `.md` suffix removed; path case is preserved
 - **Stability**: Changes when the file moves to a new path; does not change when URL rules change
 - **Resolution**: Looked up in the content index `Map<string, string>` where keys are lowercase slug suffixes and values are canonical slugs
 - **Ambiguity**: If multiple notes share the same lowercase slug suffix, the key is removed from the index and reported as ambiguous
@@ -35,8 +35,8 @@ Key properties:
 Example slug resolution:
 
 ```ts
-// Content at "content/notes/HelloWorld.md" gets slug "notes/helloworld"
-// The content index maps "notes/helloworld" → "notes/helloworld"
+// Content at "content/notes/HelloWorld.md" gets slug "notes/HelloWorld"
+// The content index lowercases its keys, so "notes/helloworld" resolves to that slug
 // A wikilink `[[HelloWorld]]` resolves via the index to the canonical entry
 ```
 

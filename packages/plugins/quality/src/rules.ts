@@ -137,7 +137,8 @@ function brokenInternalAnchor({ elements }: InspectionContext): Diagnostic[] {
     } catch {
       decoded = undefined;
     }
-    if (ids.has(target) || (decoded !== undefined && ids.has(decoded))) continue;
+    if (ids.has(target) || (decoded !== undefined && ids.has(decoded)))
+      continue;
     const display = decoded ?? target;
     diagnostics.push(
       createDiagnostic(

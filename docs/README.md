@@ -95,7 +95,6 @@ Start from the page closest to your goal.
 | Develop Riebeckite itself | [Framework Development](./docs/framework/development.md) |
 | Review CI verification contracts | [CI verification contract](./architecture/ci.md) |
 | Review the development diagnostics design | [Development diagnostics](./architecture/development-diagnostics.md) |
-| Review the localization policy audit | [Localization policy audit](./audits/localization-policy-2026-11.md) |
 
 ## Documentation structure
 

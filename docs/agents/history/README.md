@@ -7,8 +7,6 @@ This directory preserves records that no longer describe current behavior but re
 
 |Directory|Contents|Original location|
 |---|---|---|
-|`benchmarks/`|Incremental build and CI investigation reports|`benchmarks/reports/`|
-|`slides/`|Project overview slide deck (HTML and PDF)|`slides/`|
 |`notes/`|Personal image notes and an empty backlog table|repository root|
 |`architecture/`|Asset pipeline phase 2-3 verification report|`docs/architecture/`|
 

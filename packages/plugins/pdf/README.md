@@ -40,13 +40,13 @@ export default defineConfig({
 
 The following source is rendered on this page with the browser-native PDF viewer.
 
-#### Source
+### Source
 
 ````md
 ![[pdf-example.pdf]]
 ````
 
-#### Rendered
+### Rendered
 
 ![pdf-example.pdf](https://github.com/Rerurate514/riebeckite/blob/main/docs/assets/pdf-example.pdf)
 

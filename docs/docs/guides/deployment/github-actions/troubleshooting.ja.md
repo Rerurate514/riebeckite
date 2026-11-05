@@ -98,3 +98,5 @@ wrangler.jsonc
 ```
 
 Riebeckite のビルドと Cloudflare へのデプロイは別の段階です。どちらで失敗したかを切り分けると、原因を特定しやすくなります。
+
+`Missing entry-point` と表示された場合は、Wrangler 3 が実行されています。Riebeckite のサイトは assets のみの `wrangler.jsonc` を使うため、Wrangler 4 が必要です。生成されるワークフローは `cloudflare/wrangler-action` に `wranglerVersion: "4"` を設定します。ワークフローを独自に変更した場合も同じ行を追加してください。

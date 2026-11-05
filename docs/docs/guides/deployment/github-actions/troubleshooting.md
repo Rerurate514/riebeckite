@@ -102,3 +102,5 @@ wrangler.jsonc
 ```
 
 Riebeckite's build and the Cloudflare deployment are separate stages, so determining which one failed makes the cause easier to find.
+
+If Wrangler reports `Missing entry-point`, the workflow is running Wrangler 3. Riebeckite's sites use an assets-only `wrangler.jsonc`, which needs Wrangler 4. The generated workflow sets `wranglerVersion: "4"` on `cloudflare/wrangler-action`; add the same line if you customised the workflow.

@@ -314,4 +314,30 @@ P3 (minor), UNVERIFIED, FALSE POSITIVE.
   content_route and folder-pages SSG, `create-riebeckite` golden,
   `cli` managed_dev, `plugin-folder-pages`, `plugin-archive`, and
   `plugin-excalidraw` suites; then a full build and test run.
-- **Status**: unresolved by design; must be resolved before publishing.
+- **Status**: unresolved on `main` by design; the integration branch
+  `integration/release-readiness-2026-11` resolves it and must be merged.
+
+## AUD-014 ? concurrent builds share one staging directory
+
+- **Severity**: P2 (unsupported concurrency, no data loss)
+- **Confidence**: High (reproduced)
+- **Files**: `packages/integrations/honox/src/ssg_plugin.ts:149`
+- **Observed**: two `riebeckite build` processes started in the same site.
+  One exited 0 in 13.2 s. The other exited 1 with
+  `ENOENT: no such file or directory, rename 'site\.riebeckite\build-output'
+  -> 'site\dist'`, surfaced as `PLUGIN_ERROR`. The final `dist` remained a
+  valid 19-entry build and served the site.
+- **Expected**: either serialize concurrent builds or fail with a clear
+  "another build is running" diagnostic.
+- **Root cause**: both builds use the fixed Vite output directory
+  `join(root, ".riebeckite", "build-output")`, so one build publishes while the
+  other is still using the same staging directory. There is no build lock.
+- **Impact**: parallel CI jobs or two terminal builds collide. The surviving
+  output is valid, so this is not data loss, but the error is internal and
+  confusing.
+- **Fix**: not applied in this audit. Proposal: take an exclusive lock around
+  the build, or use a per-build staging directory with atomic publication and
+  a clear busy diagnostic.
+- **Regression test**: reproduce with two processes; assert one of: clean
+  serialization, or a documented busy error, and a valid `dist`.
+- **Status**: open; documented in `release-gate.md`.

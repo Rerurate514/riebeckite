@@ -1,68 +1,114 @@
-# Autonomous documentation audit (2026-11-05)
+# Autonomous documentation audit (2026-11-04 to 2026-11-05)
 
 Branch: `docs/autonomous-audit-2026-11-04`
-Status: IN PROGRESS
+Base: `7a031cab` (`main` advanced independently during the audit)
+Status: **PARTIAL**
+
+## Result
+
+No known P0 or P1 documentation defects remain. The documentation now matches the implementation for the audited setup, development, build, configuration, plugin, theme, publication, deployment, and glossary paths.
+
+The task is not marked READY. Convergence required two consecutive independent re-audits with zero new findings. Every re-audit found additional P2-level drift, so that condition was never met. The remaining unresolved items require implementation changes, which were out of scope.
 
 ## Scope inventory
 
-- 1150 Markdown files counted by `scripts/check_docs.mjs`.
-- Site docs: `docs/docs/**` (English and `.ja.md` pairs), `docs/README*.md`, `docs/index*.md`.
-- Package docs: 84 plugin pages (`docs/docs/plugins/**`), 28 theme pages (`docs/docs/themes/**`), CLI/Core/plugin API reference, package READMEs.
-- Guides: getting started, deployment, content repositories, Obsidian, localization, migration, writing, analytics, customization.
-- Excluded from site checks but audited where relevant: `docs/agents/**`, `docs/audits/**`.
+- 1151 Markdown files counted by `scripts/check_docs.mjs`.
+- Site docs under `docs/docs/**` with English and `.ja.md` pairs.
+- `docs/README*.md`, `docs/index*.md`, package READMEs, 84 plugin pages, 28 theme pages.
+- CLI, Core, plugin API, theme API, configuration, publication, deployment, migration, Obsidian, localization, content repository, writing, analytics, accessibility, security, release, glossary, and framework pages.
+- Internal `docs/agents/**` and historical `docs/audits/**` were checked for stale current claims but not rewritten as history.
 
-## Loop 1
+## Verification performed
 
-### Verified scenarios
+- `node scripts/check_docs.mjs`: pass, 1151 files.
+- `node scripts/check_plugin_docs_parity.mjs`: pass, 84 plugins.
+- `node scripts/sync_theme_docs.mjs --check`: pass, 28 themes.
+- `git diff --check`: clean after each batch.
+- Docs site production build: passed (`pnpm --filter @riebeckite/web build`) after making the Excalidraw sample `docs/assets/HW.md` non-routable. The embedded drawing still renders.
+- Scaffold smoke test: generated `starter`, ran `npm install`, `npm exec riebeckite check`, `npm exec riebeckite build`; all passed. Dev server returned HTTP 200 on `/`.
+- Generated Cloudflare and GitHub Actions scaffolds inspected: `wrangler.jsonc`, `publish.yml`, `notify-site.yml`, lockfile and `npm ci` requirements.
+- CLI behavior checked against source and live `--help`: commands, subcommands, flags, publish actions, provider resolution, deploy domain, upgrade, diagnostics.
+- Anchor scan across 806 site files; three real broken anchors fixed. Wikilink scan found only intentional examples and assets.
+- Multiple independent DeepSeek audits were run across disjoint scopes after each fix batch.
 
-- `node scripts/check_docs.mjs` passes (1150 files).
-- `node scripts/check_plugin_docs_parity.mjs` passes (84 plugins).
-- `node scripts/sync_theme_docs.mjs --check` passes (28 themes).
-- Scaffold generation checked for `starter`, `minimal --cloudflare-workers`, `starter --github-actions`.
-- CLI commands and options checked against `packages/cli/src/command/builtins.ts` and live `--help`.
+## Fixed findings
 
-### Fixed findings
+P1 examples:
 
-P1:
+- Non-interactive scaffold instructions omitted `cd` and `npm install`, breaking build and CI.
+- GitHub Actions instructions created no `package-lock.json` before requiring `npm ci`.
+- `Not now` Cloudflare sites need `--provider cloudflare-workers`, because provider detection runs before `wrangler.jsonc` creation.
+- `publish run` run-only flags were shown as applying to every publish action.
+- `create` subcommands, `upgrade --to`, `bridge approve`, and `deploy domain` behavior corrected.
+- Wrong plugin claims: HTML injection by Breadcrumbs/Series, Local Graph helper signature, TOC invalid component usage, Permalink append behavior.
+- Editor Bridge token is an environment variable, not a `dev` flag.
+- Prefix/root and CSS cascade guidance corrected for shipped `rb-*` plugin roots.
+- Build state is committed during SSG after the manifest and before page output, so a failure after the commit can leave new state.
+- Draft/private content is absent from public output but remains in `manifest.entries`.
+- Default publish strategy is `explicit`; `published` is a date, not a publish switch.
+- `deploy domain` can upload after confirmation; `deploy setup` and `deploy workflow` do not.
 
-- Getting-started deployment: missing `cd`/`npm install` before `npm exec` and before `npm ci`; clarified non-interactive scaffold behavior (EN/JA).
-- GitHub Actions setup: package-lock prerequisite made actionable (EN/JA).
-- Publication workflow: corrected blanket "deploy no longer deploys"; `deploy domain` can deploy after confirmation (EN/JA).
-- Glossary deployment: `deploy domain` edits JSON only, leaves `wrangler.toml` unchanged (EN/JA).
-- CLI reference: separated `create` subcommands, moved run-only publish flags, made `--to` required for `upgrade` (EN/JA and related pages).
-- Plugin docs: breadcrumbs/series falsely claimed HTML injection; local-graph documented wrong helper signature (EN/JA).
+P2 examples:
 
-P2:
+- Config defaults, `describeConfig` errors, `exclude` behavior, theme validation, output dependencies, redirects, slugs, diagnostics, hooks, cache reasons, JSON output, and API export lists aligned with source.
+- Migration guides: SEO options must be enabled; draft content remains in the build-time manifest.
+- Search, recent posts, hover preview, analytics, diagnostics, folder pages, and changelog component behavior corrected.
+- EN/JA factual contradictions fixed, including security sanitization, post-link lists, localization options, and deployment secrets.
+- Broken anchors and package examples fixed; generated plugin READMEs resynced.
 
-- Quick-start JA missing Wrangler install note; Cloudflare Workers "run it first" ambiguity.
-- Other hosts: GitHub Pages is not deployed by `publish run`.
-- Theme config: unknown keys throw; error class distinction.
-- Plugin API: generated output dependency rules, version pin, broken JA examples.
-- Analytics: `analytics-untracked` appears in `doctor`, not `check`/`build`.
-- Branding: favicon comes from `RiebeckiteHead`, not `_renderer.tsx`.
-- Localization: Backlinks has no `localeMode`; only Timeline adds the language badge.
-- Content repositories: `content.directory` accepts absolute paths.
-- Starter preset: only home/examples are locale-selected; guide and notes remain English.
-- Build state: committed before SSG, so later failure can leave new state.
-- Manifest-entry reuse skips content hooks; a processed-content cache hit still runs them.
-- HonoX UI prop types are internal.
-- HonoX package is not the scaffold generator.
-- Source pipeline hook order corrected.
-- Plugin pages: search aliases/weight and normalization, navigation exports, lightbox client entry, related-posts HTML claim, recent-posts locale, hover-preview index bound, backlinks helper/example, folder-pages `/folders` ownership, changelog opening, diagnostics missing codes, analytics marker scope.
+## Unresolved
 
-## Verification after loop 1
+- Generated scaffold README prints `Content pages: /index` although the home page is `/`. Fix requires `packages/create-riebeckite/src/scaffold/readme.ts` and golden test updates, outside the docs-only constraint.
+- The showcase preset passes the ignored query option `defaultLimit`. This is an implementation/template issue, not a documentation claim.
+- Two consecutive zero-new-finding independent audits were not achieved. Findings were all P2 after the P1 batch, but they kept appearing in less-traveled pages.
 
-- `node scripts/check_docs.mjs`: pass.
-- `node scripts/check_plugin_docs_parity.mjs`: pass.
-- `node scripts/sync_theme_docs.mjs --check`: pass.
-- `git diff --check`: clean.
+## Unverified
 
-## Unverified / blocked
+These depend on external platforms or credentials and were not executed:
 
-- Docs site production build (`pnpm --filter @riebeckite/web build`) not yet run.
-- Full scaffold -> install -> `check` -> `dev` -> `build` smoke test not yet run; worktree has no dependencies.
-- Real Cloudflare/GitHub Pages/Netlify/Vercel uploads require credentials and are out of scope.
+- Real Cloudflare Workers login, deploy, Custom Domain DNS/TLS, and dashboard behavior.
+- GitHub Actions execution, repository secrets, PAT scopes, and `repository_dispatch`.
+- Netlify and Vercel CLI authentication and uploads.
+- npm/pnpm install-script approval flows.
+- Upstream Obsidian plugin behavior and compatibility matrices.
+- Browser codec, CSP, CSS cascade, and accessibility/WCAG claims.
+- Benchmark and bundle-size numbers.
+- The repository's own publication workflow was not run end to end.
 
-## Loop 2
+## Commits
 
-Pending independent re-audit.
+```text
+54c5275e ドキュメントと実装の不一致を修正
+bf799cfb デプロイ手順と用語集の記述を実装に合わせる
+b4688cca 壊れた見出しリンクを修正
+e137310b 再監査で見つかった記述のずれを修正
+5b7fa7d1 公開手順とプラグイン例の記述を修正
+e3107004 監査で残った記述のずれを修正
+588b840f ビルド状態とCSSフックの記述を修正
+1203ed38 監査で残ったコマンドとキャッシュの記述を修正
+16f83e9c 入門手順とプラグイン資料の記述を修正
+0cc91e74 最終監査で見つかった記述のずれを修正
+7bece58b 最終監査で見つかった記述のずれを修正
+3f853bca 監査で残ったプラグインと診断の記述を修正
+53a94f36 監査で残った入門と目次の記述を修正
+a8d2c238 Frameworkと用語集の残存記述を修正
+```
+
+## Recurrence prevention
+
+The current checks validate links, EN/JA pairing, plugin README parity, and theme README sync. They do not validate CLI flags, config examples, API signatures, or semantic claims. Useful additions, in order:
+
+1. Typecheck fenced TypeScript examples that are marked copyable.
+2. Compare documented CLI commands and options with `builtins.ts`.
+3. Check config examples against `RiebeckiteConfig` and `resolveConfig`.
+4. Add a small glossary contract test for enum values and defaults.
+5. Keep plugin docs generated from a single source where practical.
+
+These were not added because implementation changes were out of scope.
+
+## Readiness
+
+- Setup and first publish path: usable.
+- Development and build: verified locally.
+- Deployment docs: correct for the supported paths; real uploads unverified.
+- Final verdict: **PARTIAL**, not READY, because convergence was not reached.

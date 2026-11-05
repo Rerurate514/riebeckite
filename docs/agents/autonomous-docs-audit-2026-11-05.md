@@ -24,7 +24,7 @@ The task is not marked READY. Convergence required two consecutive independent r
 - `node scripts/check_plugin_docs_parity.mjs`: pass, 84 plugins.
 - `node scripts/sync_theme_docs.mjs --check`: pass, 28 themes.
 - `git diff --check`: clean after each batch.
-- Docs site production build: passed (`pnpm --filter @riebeckite/web build`) after making the Excalidraw sample `docs/assets/HW.md` non-routable. The embedded drawing still renders.
+- Docs site production build: passed after the final edits (`pnpm --filter @riebeckite/web build`, 1099 rendered, 13 reused). The Excalidraw sample `docs/assets/HW.md` was made non-routable to remove an output collision; the embedded drawing still renders. Pre-existing quality warnings remain for some Japanese anchors, heading levels, and headingless series pages.
 - Scaffold smoke test: generated `starter`, ran `npm install`, `npm exec riebeckite check`, `npm exec riebeckite build`; all passed. Dev server returned HTTP 200 on `/`.
 - Generated Cloudflare and GitHub Actions scaffolds inspected: `wrangler.jsonc`, `publish.yml`, `notify-site.yml`, lockfile and `npm ci` requirements.
 - CLI behavior checked against source and live `--help`: commands, subcommands, flags, publish actions, provider resolution, deploy domain, upgrade, diagnostics.

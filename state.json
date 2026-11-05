@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "6ab5884a-6f3c-4848-87ed-d09a1f9cd16b",
-    "publishedAt": "2026-11-05T10:26:28.905Z",
-    "publicationFingerprint": "ce43415611789f3c871576ac66007629a589bea1b4ab0a3b0174738b758a5445",
+    "runId": "e8c41d59-c29e-4895-a7c8-4bc52f57568f",
+    "publishedAt": "2026-11-05T15:20:36.529Z",
+    "publicationFingerprint": "884f4aed05bc1b260df0918eeb0795486cf000a46a3c3b087792ca1582cc59c3",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3834,16 +3834,16 @@
         "permalink": "/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "5a8aa55628a549d8da3792bdf5dc61b292b2a051743d1993309f0f666b0cdec4",
-        "contentFingerprint": "f14b5d27d37b7aae27a5193438502931dcd4f0441fee59a99904d0b85c1f79be"
+        "fingerprint": "fbbdd84663308566fc153a2397ceeb03e893aec5b4d6b12968ce80a78a9bd642",
+        "contentFingerprint": "1ae874cb5d77ceef8d3db8a7b6874d5d1c718fd63de6f5637f6947ac22f54b66"
       },
       {
         "slug": "docs/plugins/alias.ja",
         "permalink": "/ja/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "99d25b72a5908a06e03bc9c22271f7e735668bb9a32568d870cad1de4e8b3ed9",
-        "contentFingerprint": "e591f0960e0c167d7319c35d604f9639e6f6e482eedada111e33d3395d684fe1"
+        "fingerprint": "6be472424385a5b0c617d91032424d9c3191aa5995884c10d3183220f46163c0",
+        "contentFingerprint": "370fc3829b02669866e9040410f43ac67dccb671485cda8d3181ac20f7f25b35"
       },
       {
         "slug": "docs/plugins/analytics",
@@ -3882,96 +3882,96 @@
         "permalink": "/docs/plugins/article-metadata",
         "title": "Article Metadata",
         "visibility": "public",
-        "fingerprint": "5af194de6ff54d319af3495aed0f34ffa9e6fe2a041faf76e6d42f70e19ab9c0",
-        "contentFingerprint": "e327d3cd25474f48bdd5e14f31f196aae9411eea8e5a039921d0c687a40af1f9"
+        "fingerprint": "208d06a3ab9a845a82145d40c636a90756eeb2fc5ac5a14bc0b58374eff33427",
+        "contentFingerprint": "e79cfc0f2ca4e5107aafa72101832c8a99317d5ca43c547d1dcab89e2080d19e"
       },
       {
         "slug": "docs/plugins/article-metadata.ja",
         "permalink": "/ja/docs/plugins/article-metadata",
         "title": "Article Metadata",
         "visibility": "public",
-        "fingerprint": "8bec9f39cd180e33a3701e367d171ca737e58504c99ca515022ef620fa0fe1aa",
-        "contentFingerprint": "4ecc48b8cec277217dbb91dc8edbec79398fa4abd360ad83551c693ebc5cf74f"
+        "fingerprint": "f347eba7468afae531ef1246d6d408894801313c2966c6960ee0cd8a9ff1678e",
+        "contentFingerprint": "0f2816e1c39ad69a6fdaeffdd1f6ce3cc9cf9f7d9c24c0471444cf6599a08299"
       },
       {
         "slug": "docs/plugins/attachment",
         "permalink": "/docs/plugins/attachment",
         "title": "Attachment",
         "visibility": "public",
-        "fingerprint": "e67fa6d0c3cbc8d5d45ac62a9dd3405a4d4ba225d506803a146fb89b5a253dbb",
-        "contentFingerprint": "ee3b61790b2605782c2bcc128100a0fd6a2615786839b000e187ae36cde494c7"
+        "fingerprint": "5728dd9711bd548ae9890e0706854594baed7d58045593a779f1be23cd340e2c",
+        "contentFingerprint": "e2b03ca72e69718f2f14b09f11bef6112a1aaa9856da4b198b622b3d5b016bdb"
       },
       {
         "slug": "docs/plugins/attachment.ja",
         "permalink": "/ja/docs/plugins/attachment",
         "title": "Attachment",
         "visibility": "public",
-        "fingerprint": "6990324a242d808a79428d072937e5154b024a756be0c58926b6b4bd44f9fb6d",
-        "contentFingerprint": "a445f8204b4d54b7b1f570567b3a1b76d4dd9d72caa479ee8d95bd506c8a6c31"
+        "fingerprint": "801965dad82044e5dd6147418b73e855fd8eced52cc2784b1aaea7015558fb3d",
+        "contentFingerprint": "4b775f5f58bc5153e208e8163a43e6fc54f6e85130e2bf1e98b7ac5f00c83f23"
       },
       {
         "slug": "docs/plugins/autocardlink",
         "permalink": "/docs/plugins/autocardlink",
         "title": "AutoCardLink",
         "visibility": "public",
-        "fingerprint": "3c9f8e1f75a16999ccd955f311f3fec4b2208440e98b679c91fe3979b9207949",
-        "contentFingerprint": "8c2f1de8326cb0ab991f5b6b4f1027f48ac9790cf1b8f659f7615e5f94434341"
+        "fingerprint": "69eadb841fcb5ff463117ba4fb12ecda827a0a43a83baafeaaff2128c40b8cd0",
+        "contentFingerprint": "de07057b0fc50b82390c65613f5feaabb7486209585813cd649902aeef58c958"
       },
       {
         "slug": "docs/plugins/autocardlink.ja",
         "permalink": "/ja/docs/plugins/autocardlink",
         "title": "AutoCardLink",
         "visibility": "public",
-        "fingerprint": "b6b4c3085700a7072a1bda46759a7639edc29c77468a2abcf22a7d69097b3fbb",
-        "contentFingerprint": "eeaaa9b9eaadad5289e9b9985b3413835bebb94ed89b75b9951e6315363aadbf"
+        "fingerprint": "d81a329e0e59a3514bbf2b935955a727d2a1e0dcd36fc434e118719ba217f774",
+        "contentFingerprint": "0e65a282e4291f973cb2e19b3b763ffae80f0800378e5fb92549226f64f8a061"
       },
       {
         "slug": "docs/plugins/backlinks",
         "permalink": "/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "14af624257471b4d7aa05d7941e7de2f7848dfb59921131e891c185e6ac38f1e",
-        "contentFingerprint": "77c4cfadf0ea5ea1218e059e1ad60cf0eb6515a348ae0b64755c69051c9b9d0a"
+        "fingerprint": "190f39a26aaac30b8b55f8f2c0e4c52d85b576ff6720b2db943d1a0287882fe6",
+        "contentFingerprint": "bcd923d9618052168b50885982eadf7d55dba687390acbedec985cabc7637bad"
       },
       {
         "slug": "docs/plugins/backlinks.ja",
         "permalink": "/ja/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "b581d2bac265e03d1aef7a326ede863144c5ea6c8b68118cdd5a8ed08a08705d",
-        "contentFingerprint": "ac0eee191cdfe5927eddd25b8b4280fbf44a00ef6fa61c75b5ceb4e453c1fcf0"
+        "fingerprint": "30eb9dba26d6586af3c8cb23db6c40bbd8d8df3d04c6bd77b86f6f3d245e60c7",
+        "contentFingerprint": "443942f2df4e3d0d571f7792fbe6edef0e35ee53a11bdfdcb49fa240b1a138dc"
       },
       {
         "slug": "docs/plugins/bases",
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "6c0cc2066f6e66ac938edd3cf5b4756ad05ce7d08648928c46b63673ec488614",
-        "contentFingerprint": "f8ade2c97af446550da116210ccec80801c8f4703c3d62d3b7c50be4c537dc9f"
+        "fingerprint": "97e453f0bb27d5da00d7d2493c42fb66358fb5e6f3fe2c74daefa75f064dc593",
+        "contentFingerprint": "89fb5ad8357c3e526b75bda018db13b62c1dbbffba0092cfd5dcc02bffdf668d"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "0aea681ba302f6e8ad0970416fd04a0405a901f9b7a47121875f296fd7ae2ab9",
-        "contentFingerprint": "8e0271f621206a0c8dbb192e68e7b045f9d0eda2c2902ebba62d7f59fb66e023"
+        "fingerprint": "58c9f763d49b0cf2217e21cd6906d67b67a39f89ddb06082dfe781f3ed36015a",
+        "contentFingerprint": "51b5f83258c57b9aba69599c27852222c9f488a8521e2d25596d54a52190673b"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
         "permalink": "/docs/plugins/breadcrumbs",
         "title": "Breadcrumbs",
         "visibility": "public",
-        "fingerprint": "bc85dd07c1774fea22c9dc3560293db0b3c288519621c7dae98e0fc77ebc6b56",
-        "contentFingerprint": "a3be9b57d0eae2b212b2a302a768a8b60f27f2de1e4e0ac0260baebc17c18f6f"
+        "fingerprint": "540621373e731f717b4037452ac93d0a88b5f1d89c9dc2de32ce8eba40edd172",
+        "contentFingerprint": "2cc37e4642b37e4972a05a7f51f5c0dc1149b7cda42854927edca6bbbc7065d1"
       },
       {
         "slug": "docs/plugins/breadcrumbs.ja",
         "permalink": "/ja/docs/plugins/breadcrumbs",
         "title": "Breadcrumbs",
         "visibility": "public",
-        "fingerprint": "f3742a01482602b744178277aa804165b7d1011f9c7b92d242f653d8cb456c81",
-        "contentFingerprint": "62ebe96e73ff23e65a45d9bcc997e23a36d410167b46153b63174530f4acea02"
+        "fingerprint": "b506cb26f9802b3935987735774c4a46c3430affb0b4e345fcc2e9bfc77271a0",
+        "contentFingerprint": "84a3fb201b1d2d1c37eb04273e33e1e799799bda7fe378007db8065339f41981"
       },
       {
         "slug": "docs/plugins/calculator",
@@ -3994,256 +3994,256 @@
         "permalink": "/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "ad53e352fb5fec378ea65937709804b79e71bdcb372fc6397da4b57c5a0e590d",
-        "contentFingerprint": "f7a29ed85abe63d56a4e13aa62312db56cf74d18d0db96ae658e40c7e75a4830"
+        "fingerprint": "02a9a08fa9cd62fa470bc521a2b7206a2031a1db4f78de8fef232e72d15fccc3",
+        "contentFingerprint": "4c45f715b442e3562a8c7798dec8e91da1dca0991f6af654c24f04ef21bf0cbf"
       },
       {
         "slug": "docs/plugins/canvas.ja",
         "permalink": "/ja/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "794d45ba725cf44002c9a1a70e0ae2ea5ae6479fc572d24f75781b4aa92848b0",
-        "contentFingerprint": "ad181f3b73726cdeb04564d460ec26cc5b6f90836b641c8dca91c9b01eeffbb1"
+        "fingerprint": "2189fde806ff8619f91ea5537900a340a917f90265d39f941e6c404aefbd3dcc",
+        "contentFingerprint": "0f693b68bc8baf808d6dc2c79ac8e7bbc2f22355eb27cbc3d3f53036717d6d8c"
       },
       {
         "slug": "docs/plugins/changelog",
         "permalink": "/docs/plugins/changelog",
         "title": "Changelog",
         "visibility": "public",
-        "fingerprint": "1ee939c96dd382b548bf48357254cfc23b0d7b8085c4d740959f02d0d07ca29f",
-        "contentFingerprint": "54173b77d0f4a52bb970cb42216b893e67e011656f37539cd3a0424182110e10"
+        "fingerprint": "18261924629787ece1069dd573d4be6e8cdc5e2010917d581d190d6156839b1b",
+        "contentFingerprint": "00ba93367b12cc54a315290318bcc7183163ff1c9533aae5e888df2a083553cf"
       },
       {
         "slug": "docs/plugins/changelog.ja",
         "permalink": "/ja/docs/plugins/changelog",
         "title": "Changelog",
         "visibility": "public",
-        "fingerprint": "4d39e711fd703ffd29a907f4b6d3bb25579ec40d61af79640c74daf81e1e0b4a",
-        "contentFingerprint": "4064e095cf8fd9f9c898a9f442de7a0dee022fba79a804b72d9fa641e4ef401c"
+        "fingerprint": "be10899c7e53228b9351e5fceb1a5ec65b33f9f5158c374f8d8706c0a92cb657",
+        "contentFingerprint": "86d12b52d8c3e689ca58f38047f68c5377a1462b13924fbb9fe266dc2903e17c"
       },
       {
         "slug": "docs/plugins/chartjs",
         "permalink": "/docs/plugins/chartjs",
         "title": "Chart.js",
         "visibility": "public",
-        "fingerprint": "842c299d73de30b0c878a89e015cb27ab41b76225658d6c75d3cb31caf2bed7f",
-        "contentFingerprint": "cab151c9cc50b946d0301d64a7cdde727ad0cf6d7cbfc4f207105323ac208167"
+        "fingerprint": "3832be4e5aa0bc5eafe643d7c3e14079159cd139286ab8f11bb22d9d9bce7387",
+        "contentFingerprint": "af3e76ac6e87af8d82f1c37f45c34358ddfece5050ee905d75cb72f27ff8b72b"
       },
       {
         "slug": "docs/plugins/chartjs.ja",
         "permalink": "/ja/docs/plugins/chartjs",
         "title": "Chart.js",
         "visibility": "public",
-        "fingerprint": "71a6bb06f6f991ccc861dd0f8cdba99b707fb052be9b19b2a29b5fd6a710c426",
-        "contentFingerprint": "266ca16221823e8f431fbbf808db7d1bdb47836b515ef441ecddbc724bbdf642"
+        "fingerprint": "1ff5d106fd148f573c5c7519fbc2899f7624fa669b4339a91f77f368db5ec8e2",
+        "contentFingerprint": "39ec71f3d77baf7e92af7d42d3930d6b3827839d93872b9f71aeea90a423f4cf"
       },
       {
         "slug": "docs/plugins/citations",
         "permalink": "/docs/plugins/citations",
         "title": "Citations",
         "visibility": "public",
-        "fingerprint": "ddbe6b4e17517bdfcbc390e8c5ceff5ab9876ef232387d10ab3685345f33fc64",
-        "contentFingerprint": "894f65966d6f4de520033836925575c964f3d2dea1ccea0a074b58b59c838637"
+        "fingerprint": "f84610db48b1a114dd77a8ee5f493642eb3c582d4c64eb07724872a53ae41fcd",
+        "contentFingerprint": "86d2d2159d0b97b8ee82d637730609344ca00623709a9453effcff2c9e325339"
       },
       {
         "slug": "docs/plugins/citations.ja",
         "permalink": "/ja/docs/plugins/citations",
         "title": "Citations",
         "visibility": "public",
-        "fingerprint": "9655460916ea27852a684b59ff00da3c536df5f33512a6397aed09d2453ec611",
-        "contentFingerprint": "dcc7ca5c59a9c90dfad83f782d9cd87badaaf8bfe11d18373fb9d30e46daefe0"
+        "fingerprint": "f168185eafd8c1f8a17a011fd87a425ed3a51999a155ae0ba8fcead59ffff43b",
+        "contentFingerprint": "24b060a9093a995cc9af43e4ce0996f1e9fc03e8c982778a44151cbb068c38f8"
       },
       {
         "slug": "docs/plugins/code-annotations",
         "permalink": "/docs/plugins/code-annotations",
         "title": "Code Annotations",
         "visibility": "public",
-        "fingerprint": "290bc85e30c51fee619ed117e334010e8290f3c27f0c09c8797b7a00e05d4f74",
-        "contentFingerprint": "0e68324d58678ce3e197f22327c7a27b7fd62ac108b47d4a1f47769c489aeb62"
+        "fingerprint": "d476a9557dd3ae3e1bd1f8dc8d1e25a928ad8c22486494650ca5e30e4faca581",
+        "contentFingerprint": "e03207c2ba20084e79e7208b6550a88639972d4cc9d1c30eb383884ff488708f"
       },
       {
         "slug": "docs/plugins/code-annotations.ja",
         "permalink": "/ja/docs/plugins/code-annotations",
         "title": "Code Annotations",
         "visibility": "public",
-        "fingerprint": "2743cec409adbc357b00e6a78ccddf4aa69452016326d2cd6e7b90a84e6cf19a",
-        "contentFingerprint": "d9023396653576f4d771503978d22146f0c3c1b3cf118e48a4523a4eefdc86d7"
+        "fingerprint": "244a54e29c67fcc6e5dda02a302dde9c5359e1b246a2f1e02d6f6e08bdeafb2f",
+        "contentFingerprint": "39def2f5acd500f08dc54d47b787083689122961cc069c16d9287e4fc66c242f"
       },
       {
         "slug": "docs/plugins/code-enhance",
         "permalink": "/docs/plugins/code-enhance",
         "title": "Code Enhance",
         "visibility": "public",
-        "fingerprint": "50b79801d6d8b78af7c5ff37c8f2497da136b04dc7a90c6816164e63523bca3b",
-        "contentFingerprint": "b8289650066954d8bce4cfa5085c65013ffbf2c2589fb6f8c9009aced5f49150"
+        "fingerprint": "fd7e23ebbd17e91780e3149db5c41ef9f4b1f31af4aeab977d7ebd9f62e26767",
+        "contentFingerprint": "ec1a0eb516cb4741c9ebbe5b94700e9f14d3a6657d4ad82a1f7b78a1add955ac"
       },
       {
         "slug": "docs/plugins/code-enhance.ja",
         "permalink": "/ja/docs/plugins/code-enhance",
         "title": "Code Enhance",
         "visibility": "public",
-        "fingerprint": "f651ba553e5001596bfaa548f2fce389bf03dc36c16cfe152e5fd7f360bf6e8f",
-        "contentFingerprint": "4cf2bfe0e1d6082c43686f8bc56c9ca55528746a65ea45051390cd6fb6a0c92b"
+        "fingerprint": "8e4f72d1772e2a00f7396c4f21d30f6ae3588c21d5c5cd22a964855c696f8178",
+        "contentFingerprint": "d2d0d8a0dc1530543a2a460d9cb1dc78a02acd0423cb5c17f29e1f3a00b75453"
       },
       {
         "slug": "docs/plugins/code-tabs",
         "permalink": "/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "0ab720e601a5070f609ab7545accd4afd24b26fe678a42e805dca8a27f0b4e40",
-        "contentFingerprint": "1a12e6a2df67905988c2bdf591d012ecfc66d7d0f8d79d796069ec2210c74c76"
+        "fingerprint": "30c9e33d9c5e9e74e4415d1142315ce32c2c2c624d36d0882068f30532a0f43a",
+        "contentFingerprint": "73594e59bbca3e3cb258622fae7e84af681e388ebec402b1eaaf651e9050a5fa"
       },
       {
         "slug": "docs/plugins/code-tabs.ja",
         "permalink": "/ja/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "dfde3d09bfc97cdca635a6f1c1e4e11ab4a77b92378dee5e0ae0f3bda6e77d4a",
-        "contentFingerprint": "3b03519ebedd05f615c84da249d38cc32809931f949869f6bf0980dcb09a9612"
+        "fingerprint": "7b3cc1315092b1307b0769a577736327b4496a201c2b2fec4c420a1914a8597a",
+        "contentFingerprint": "ef03dece9c760875f0fc315757fd1a849764a19d0e7cb73eb8e7b7657006742e"
       },
       {
         "slug": "docs/plugins/color-mode",
         "permalink": "/docs/plugins/color-mode",
         "title": "color-mode",
         "visibility": "public",
-        "fingerprint": "d9b8df1e7c07f9f61248953bed1f00ce34ebd06bb8d02fe4ebc7869c77d4b7d8",
-        "contentFingerprint": "4bb0e2051db73c79267528aebd612cb7329e65a6289af11e2bc3a70c19fbdcf4"
+        "fingerprint": "fb8c2e77cc69a1733183e851ba1c8d794e7ca09d7199b712c4ace99e16f12214",
+        "contentFingerprint": "04b3a34122b65825aae5c773f031aad2ba67ea1896abf924ea53b11e8f194489"
       },
       {
         "slug": "docs/plugins/color-mode.ja",
         "permalink": "/ja/docs/plugins/color-mode",
         "title": "color-mode",
         "visibility": "public",
-        "fingerprint": "68f3b980daee26c3b08215923402c155cb747876b739f2ef44964c8fba957e59",
-        "contentFingerprint": "e88e896333bc4767b14652c928c9bab7ad459386f7c05428afad77334ae2e670"
+        "fingerprint": "96f79dd339495423989a8961103247a8e66e17bdfcb2c4705c2c84f6fb593f2e",
+        "contentFingerprint": "e085a4553cdd2c090377417e7a3dba725cd7e2753f1c18ac0ca0f59838f957c5"
       },
       {
         "slug": "docs/plugins/component-generator",
         "permalink": "/docs/plugins/component-generator",
         "title": "Component Generator",
         "visibility": "public",
-        "fingerprint": "ebb5ef431de19c3d40eec65a2d98c34737407f559fb66db326cc29264198d771",
-        "contentFingerprint": "4919afacf931e9447f2e963755502014640b3abf2f91c3cedb3ac69acb8dc12a"
+        "fingerprint": "008dcb2883ce7fefc482a8556a862e1912ad873f68612c222996ac33d2c92c3a",
+        "contentFingerprint": "653610920256a08e1b78d6307bb80bd7c199e95872cf1eaa77771720e0d6ea8f"
       },
       {
         "slug": "docs/plugins/component-generator.ja",
         "permalink": "/ja/docs/plugins/component-generator",
         "title": "Component Generator",
         "visibility": "public",
-        "fingerprint": "d64d8acc95536002a7356372307c65514ac3e0c3befadbecc686030bba76f5f7",
-        "contentFingerprint": "5c8aa9fb05c4bed07b99998814b34eb3b4ec5af29aef4afa26ea553f520fe408"
+        "fingerprint": "c53c98841db0f2fbb8b4930ac9272b82a0cc392e55c2b403c8fc22f7e64967cd",
+        "contentFingerprint": "08b69b49cc62270a90b56590fd47dfbf633394f878951151ceb6649fa5860aff"
       },
       {
         "slug": "docs/plugins/d2",
         "permalink": "/docs/plugins/d2",
         "title": "D2",
         "visibility": "public",
-        "fingerprint": "2511f339733b4142168e0a5f35d2e7c6d94820554a540cd79f8c65c7c65d8d1e",
-        "contentFingerprint": "954cc4d8fba5edc650887c6d87baba12e96b2990233d4ba35b469c3ecd0204fa"
+        "fingerprint": "292d2251a7ce84cea65875a2a804c0b66c9a543d41c581e8de84880dee89d634",
+        "contentFingerprint": "afb27681c15d9514ee4209868d40b17762fc87bd1be729da0f504a63f83a212e"
       },
       {
         "slug": "docs/plugins/d2.ja",
         "permalink": "/ja/docs/plugins/d2",
         "title": "D2",
         "visibility": "public",
-        "fingerprint": "dae0cdbec31cd9b5735aeb3b6798d0e2614f3eefb63ffff096b1343ecc0d3090",
-        "contentFingerprint": "46d82020b7205da9778892ca0f196739e60048d4d9e1a743a5588b7092fdd80b"
+        "fingerprint": "14c3ce0d1fc86583d04c1eb0e70e3bdae448c77e7c25f438ebed97179134e911",
+        "contentFingerprint": "c4d4359e1363a09e2aec9e443fd9560b64c42e6f0286b976bf625c8a53a3acfc"
       },
       {
         "slug": "docs/plugins/daily-notes",
         "permalink": "/docs/plugins/daily-notes",
         "title": "Daily Notes",
         "visibility": "public",
-        "fingerprint": "fcebe57ee6972fd640f385fc047381cc26ee36c32ce2a2c605779a4464ce0164",
-        "contentFingerprint": "a13c4eef02f43209fede8ce7ce259240b1104031d02d48f6ab9dbb7e3a9c4497"
+        "fingerprint": "3ceeb5d462a36d36e153d6d504b81e54f62fe73c1f70ad14da1909deb2b42aea",
+        "contentFingerprint": "d323d6558007b2cfee11ffb41eb85e7e9c4a93afe97929eccbac76300e3d8aa0"
       },
       {
         "slug": "docs/plugins/daily-notes.ja",
         "permalink": "/ja/docs/plugins/daily-notes",
         "title": "Daily Notes",
         "visibility": "public",
-        "fingerprint": "3dc009cf1384acfc06bf930387d43313201de8ae2d6e269e3207945b94ce5e2c",
-        "contentFingerprint": "5a951888846356113f29c2d590d743362424e67e9e4d6ecabbc804e6474284bb"
+        "fingerprint": "b3d0238b8a259867d378b5b728665064f389f426acee89223b1026ef5e1efd47",
+        "contentFingerprint": "ce88461f2c77da3446a2203ff716d5e47ad8724379743291db3b998b74f7f426"
       },
       {
         "slug": "docs/plugins/dataview",
         "permalink": "/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "36e2491134f845014de9505971a0291d6c97a7cbe217eb2e6084418285215e4e",
-        "contentFingerprint": "a4798643aab07291282cf037309af09a31c5b392e18b7de7f45efba00daf5047"
+        "fingerprint": "08b267631577e6d1d2c3f1218d50c9be5f28d3bf34182e65dc6786eee5006f21",
+        "contentFingerprint": "d48d7aa76f075a790349455ee5238b509d9c533bba8c850914105db1b28df189"
       },
       {
         "slug": "docs/plugins/dataview.ja",
         "permalink": "/ja/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "8918cd19c1a436c3075c6f30c06fc1746c69fdbdb8619e5b3841a58f5663df87",
-        "contentFingerprint": "a1a9640e41a80d012ba64abf922c74bc2366c5b9366e3b2a557c8316672f7ded"
+        "fingerprint": "7adb648bf97b97e3f7ceceaf58776ada1f3d0648e0976f01c91c6272ef4b994a",
+        "contentFingerprint": "869f7b9aaf9b8aeff1193e7aa2da23f626094ae2009f36c0b5f55e368d4bf68a"
       },
       {
         "slug": "docs/plugins/deploy",
         "permalink": "/docs/plugins/deploy",
         "title": "Deploy",
         "visibility": "public",
-        "fingerprint": "f67ca0016417baa79675e3921bac963231f8fe59b0425f3bb2b6c91e853125c7",
-        "contentFingerprint": "f21cf18a77757f95d33573e59b56ac05626da8cdb58f414c958a60da99cf5fbf"
+        "fingerprint": "83530449150ed41ede09604e90bc01aa889fc01d2720a2028969204c775888ce",
+        "contentFingerprint": "531f487bf17ed9a6ad4e19e517b547fa722ee190c261645a0ecaa48be105e63d"
       },
       {
         "slug": "docs/plugins/deploy.ja",
         "permalink": "/ja/docs/plugins/deploy",
         "title": "Deploy",
         "visibility": "public",
-        "fingerprint": "0d93ff63f2d6c6b4e9c556001975bc504ca2d6cdb923b01d389c0480eaac75e0",
-        "contentFingerprint": "9fb71254b48d1d40b7ca136a5f3a76688e7fa2afe6280c769fb8cedc5f9ba9dc"
+        "fingerprint": "5ac99ed579fb116c2cfb96b9478bc1a9937b04329e8d5230fff67a3fcc5022d9",
+        "contentFingerprint": "db2f29af7dfd410f9dccd863982d69aa18b84c40f7a124d2019541853935eb68"
       },
       {
         "slug": "docs/plugins/diagnostics",
         "permalink": "/docs/plugins/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "39ee34ae996c02d8bb468643ac28ef208f2e42c6ac8240dfb10941b4f8174830",
-        "contentFingerprint": "bf75773bccc47797ca088505262c09a5d911942a9848013932c73d1365ff2b83"
+        "fingerprint": "2d6383dc98def9ccd5ef3a1f07e055e5f31db8500d9026ef18c0aa6e2f9dc990",
+        "contentFingerprint": "7bb3be5cdf683e2554b52e075c105e8dc4cad87a1b3c44df8de4d870d5d63a8e"
       },
       {
         "slug": "docs/plugins/diagnostics.ja",
         "permalink": "/ja/docs/plugins/diagnostics",
         "title": "Diagnostics",
         "visibility": "public",
-        "fingerprint": "18bbd195992acd73a5f39e3fab470528a2d3e7a61155f30626f4b81de8f9db45",
-        "contentFingerprint": "909685a31343f8b60e34fa39caa3978421766a8d99f8d7f6abeb5731cb5dc160"
+        "fingerprint": "7546adffd02cbac0f359e1c6aace9725dc107d62845396e22d3dd3d62e70fd6a",
+        "contentFingerprint": "4a13e472a70a6e0dff73e38b8f04d631d273b79096c15d546c864cb7ce971972"
       },
       {
         "slug": "docs/plugins/diff",
         "permalink": "/docs/plugins/diff",
         "title": "Diff",
         "visibility": "public",
-        "fingerprint": "6fc1cccbe8d55a2c5e0bdbfeccd5c6c0890937ee2bf5427f26a1d77b083a484c",
-        "contentFingerprint": "44f1a660b7ae96e72da822219ce09a7eef61cad0ff78e8bb55f1b407d4fbfc24"
+        "fingerprint": "509eb176c267c2191aa4fbd08288f8323af982f39b98b66427f42ec79dec0819",
+        "contentFingerprint": "dc6ca9a7c0af408975684719a3830f0cd14d878cb7cc52cca4e445b8a63b166e"
       },
       {
         "slug": "docs/plugins/diff.ja",
         "permalink": "/ja/docs/plugins/diff",
         "title": "Diff",
         "visibility": "public",
-        "fingerprint": "1f2b27a1da5d725f235c3b1127cc67d0610dfa332fe41b3411bb161a3efb4d07",
-        "contentFingerprint": "2a3b491de3e21b7b1344c887132623e15f113eefb60b94047f3dcaa56534f991"
+        "fingerprint": "1197af83ddee8411e6eef126c6131193a8d4ae427c80a2f773090a1d50d96b8d",
+        "contentFingerprint": "d827b6598cc358b4c3e17ecfb96e104929bbb3d3f94790dc6cd52a4ed890c2aa"
       },
       {
         "slug": "docs/plugins/discord-embed",
         "permalink": "/docs/plugins/discord-embed",
         "title": "Discord Embed",
         "visibility": "public",
-        "fingerprint": "7af99b9b803830a47fa670f14d263712f6b799d0dc9598b8a89be32009d2d88a",
-        "contentFingerprint": "2b28278aa7f37ab710392b07250cfdc4f751b40164435845b280a50927cb2f87"
+        "fingerprint": "aa07f65de4ae82d2da3a1eea03ab8876a7242517f38dfb256b8bbccd14ce6594",
+        "contentFingerprint": "aeca8da89db8d899a74464731e44409d9535209381c5c917ed38eb994e91f64b"
       },
       {
         "slug": "docs/plugins/discord-embed.ja",
         "permalink": "/ja/docs/plugins/discord-embed",
         "title": "Discord Embed",
         "visibility": "public",
-        "fingerprint": "d9732c39b7068d2d22224815a9f6e4090de6ca2189cd3f21574bc1e0454bc320",
-        "contentFingerprint": "2b0305b2e25456ab00d23ef774a857c2696331411d35d47195b2c41c0c49f65d"
+        "fingerprint": "55a21217d6228b7d9f9b8080625e8d8f74e5fe5ba19378e608bb86a0b75d03aa",
+        "contentFingerprint": "e3f8fccdaf66a1284f7f96dc08a5b0bb0056d2a0733d0b0c5dcc57cf691badbd"
       },
       {
         "slug": "docs/plugins/docs",
@@ -4266,48 +4266,48 @@
         "permalink": "/docs/plugins/excalibrain",
         "title": "ExcaliBrain",
         "visibility": "public",
-        "fingerprint": "c0df000bd850eb975d59770fcad975b97e8f93e05b2957a93bff7c5202b7d596",
-        "contentFingerprint": "6db516e27979eb2a862b271674e2515dea7c93a692a929164308005b3a8b4c30"
+        "fingerprint": "4060203bd83f154e2499152d54268dc1d259389976e95d93c5ca2ad45c4b74f9",
+        "contentFingerprint": "eba69eb7cb65155e704b61b216b9907dfd58fad35d2f1f6440fb29fac0028d71"
       },
       {
         "slug": "docs/plugins/excalibrain.ja",
         "permalink": "/ja/docs/plugins/excalibrain",
         "title": "ExcaliBrain",
         "visibility": "public",
-        "fingerprint": "b21db873ca23a1efeddd5ad42fb91617f8195be1473a5e33cf11b2fd268ee1c6",
-        "contentFingerprint": "59b538892603c3ea99d45576c9fbe88e2adb7493aeab6e745a594baa174a1f35"
+        "fingerprint": "76611fa7a042301d631ac4025f646713e6016b01146d65bc54554c66f951e2d1",
+        "contentFingerprint": "193a93e5344c262b5836bf14c2f85968f94a3ee333e5500219a8e3f2f864021d"
       },
       {
         "slug": "docs/plugins/excalidraw",
         "permalink": "/docs/plugins/excalidraw",
         "title": "Excalidraw",
         "visibility": "public",
-        "fingerprint": "69371693c4a2a5fb32740ec8b842efb993e639cb04f0868b1722b460ad8b7f78",
-        "contentFingerprint": "a50f2fec92a23eecf939a1889549df41c3dddd5e744fa796aea5491bf0b0bdf1"
+        "fingerprint": "3f132d9673f877e004a032be5187204828407f7fc15cd055072030fc8413e833",
+        "contentFingerprint": "69b7bb6ebeaf4f0920300694f732567fa749679ec81b6d19c768a752fc470613"
       },
       {
         "slug": "docs/plugins/excalidraw.ja",
         "permalink": "/ja/docs/plugins/excalidraw",
         "title": "Excalidraw",
         "visibility": "public",
-        "fingerprint": "714dc1cabbd921d750624761021121e9476b4c5d8421374b8b8c93f94cdaf8e0",
-        "contentFingerprint": "e956e0145b1c9806ccc25dd51b0347c4db8bf3c0bb71531e806121bc0b5e3021"
+        "fingerprint": "46c58fb7a3a9c28a158e0397a63d4887c734e22371050f3415780dc963da9a5e",
+        "contentFingerprint": "81a6b7c0f11308a3df00c0e84576a43e73cb9e614a289a758907e5894f038d8c"
       },
       {
         "slug": "docs/plugins/flashcards",
         "permalink": "/docs/plugins/flashcards",
         "title": "Flashcards",
         "visibility": "public",
-        "fingerprint": "4f76140135f8045e0f9583206a97457dddca7060dfe4a27d32ab2ccb8dbd107b",
-        "contentFingerprint": "c4bc823cd3641cb2461075f20f9420fe5a560e304f07b72aa4f4eaa6cbeac492"
+        "fingerprint": "1f1f05cde84b82f3a802c3e4e888b30f0d345a02f7ea9b98017512523899e2d9",
+        "contentFingerprint": "1abdbf43c43b8dfd99f3fc962f43a3080326d00fdbb761e14d44052e95ba9609"
       },
       {
         "slug": "docs/plugins/flashcards.ja",
         "permalink": "/ja/docs/plugins/flashcards",
         "title": "Flashcards",
         "visibility": "public",
-        "fingerprint": "6bf9472411fb9fe0ef15dd4fa4b9cfa12b7cbace3717ae3702de125536c61db7",
-        "contentFingerprint": "3bc0cb1bfacfe40efba3a8b93cb58bf97120fb1105094f6e1d0924684add6749"
+        "fingerprint": "9b702c74ad27b08449bb102ce5081d710c6ec6dde3edd8d4685cfc5358099bb0",
+        "contentFingerprint": "c66cf043a9b0130b393a7dac67f04990f197a2679a61544105c6bc2a9a7f80d0"
       },
       {
         "slug": "docs/plugins/folder-pages",
@@ -4330,64 +4330,64 @@
         "permalink": "/docs/plugins/frontmatter-transformer",
         "title": "Frontmatter Transformer",
         "visibility": "public",
-        "fingerprint": "9cde1d384c768406f184009232435e8c73981273f656c69fdfd519494e591878",
-        "contentFingerprint": "67b35fd38f221c72d2863b5a83d30e7ed1e7e9bc986e52c4cc9a87add5f52d92"
+        "fingerprint": "cab39baebf2564f901bbd77a0006213502f314d4592b19bd25497f40181e73cd",
+        "contentFingerprint": "40b7d5f802b8100061b10c629d245c6031b0e5db4b9ec66d1b4378bc32477f17"
       },
       {
         "slug": "docs/plugins/frontmatter-transformer.ja",
         "permalink": "/ja/docs/plugins/frontmatter-transformer",
         "title": "Frontmatter Transformer",
         "visibility": "public",
-        "fingerprint": "f4513cc8c52c6cf7245b28e73a87523b08196d75d343209bb75bd98f9686e935",
-        "contentFingerprint": "ef7d2dd50efc4d5da957cbe99edf8bc45206bb56690f902c757565e469c9ec94"
+        "fingerprint": "4553c5d77a1cd285e7b055da5eb0104945e6b632e4540aee0a1bb108deaf48ef",
+        "contentFingerprint": "aed7a1b7ef66c66100fe4bc337b7cda0dfbbb5536ee94bcd3d901b5cea3885d0"
       },
       {
         "slug": "docs/plugins/gallery",
         "permalink": "/docs/plugins/gallery",
         "title": "Gallery",
         "visibility": "public",
-        "fingerprint": "b7e369839779ff16a0988985e35100e6fd34a67c13c92f9bce60396b9701a354",
-        "contentFingerprint": "feee120cb7b5fab9a831eb81fb274fe395ec1379b0a0c43f8e4de568b0df947d"
+        "fingerprint": "6048476559ad5c0dacd2d8a086ff06887ce7a122aed3c08828627b8e9a8e8084",
+        "contentFingerprint": "c3412cfbd30eae19159456626e4dac9d71a1351b475b67bd8447582eab941fd4"
       },
       {
         "slug": "docs/plugins/gallery.ja",
         "permalink": "/ja/docs/plugins/gallery",
         "title": "Gallery",
         "visibility": "public",
-        "fingerprint": "2eca7dbbb1e68a99ebb96b0c651de9cc225a14d4e8b6f7a6d612169d0ee35a85",
-        "contentFingerprint": "e0fd588dde132e05d8bb6715075e5272a2eef5b2ebe022749966753bca40baee"
+        "fingerprint": "6c232164ce5c3efe89321b4f5f7515b79ea3fbfcf750605cd721ccf85f215686",
+        "contentFingerprint": "e2236b57c81c00895328e4c201866c3ee6f6df2f6eba4b3ea7b69b41f3b4d693"
       },
       {
         "slug": "docs/plugins/garden-explorer",
         "permalink": "/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "3dbdb976e43d97c35e3b1e8d160e67b29676b65942056165d5455474d1484496",
-        "contentFingerprint": "d00e58e1dd4bddbe0fe6bd488a430a9d1eb8e2d8693c4821106e7593c2e23939"
+        "fingerprint": "aec820fa567e20a1640f90764136a27a63830adcb949dcfe1e31d8e9a11bbaab",
+        "contentFingerprint": "7852004830d0a5e2df9776b950d34fb6a1c4e43abb7b738491b3485bddb9f35f"
       },
       {
         "slug": "docs/plugins/garden-explorer.ja",
         "permalink": "/ja/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "234f5f107e4dbb7e201a123d9612a92b4d885146ca2fb5438591413f717ab80e",
-        "contentFingerprint": "0f20c8568ff57d848815d69df2c4173b40a3d49df233dbad9b459dfcf63650e1"
+        "fingerprint": "a6a3e91ebd9ff1a76ce687f400e09ea9fbd04a72579e0eaa0be18c6779594447",
+        "contentFingerprint": "801784ea54f943237a2684c64e378cecd46724a444b7f86e1143961c42e2275b"
       },
       {
         "slug": "docs/plugins/generator",
         "permalink": "/docs/plugins/generator",
         "title": "Plugin Generator",
         "visibility": "public",
-        "fingerprint": "23327717f7fe8718beaa0022b6330de0ded78340929b108c73a23b3dc54038ae",
-        "contentFingerprint": "4c1ee673c0f15bce641eb686f582a3d20011c015b73ec10d3856ed9d39e5abe7"
+        "fingerprint": "519d4196c8018ad28594c840add5341607c6013af067005b359beafea01f24ce",
+        "contentFingerprint": "f02a53216ddec40ca2d3a6116d36f8145cb7ed0d94f5f510d063277e5827f1f9"
       },
       {
         "slug": "docs/plugins/generator.ja",
         "permalink": "/ja/docs/plugins/generator",
         "title": "Plugin Generator",
         "visibility": "public",
-        "fingerprint": "d1696df7311aea8ed04879608f5bef138005b94f1e1b6772d791e6f1d50f9de6",
-        "contentFingerprint": "1c072374fe8dd6373714d4183991481ce3ea5a4b44695b0332b086f79b745f25"
+        "fingerprint": "c4b218a46da185219fcad39652f7601310e1d352831cd333acc0b83b00b2160e",
+        "contentFingerprint": "32798f934134f5fd8ad8bfb48149c6b56893b7f7180cf90c7c689eefebb22cda"
       },
       {
         "slug": "docs/plugins/glossary",
@@ -4410,64 +4410,64 @@
         "permalink": "/docs/plugins/graphviz",
         "title": "Graphviz",
         "visibility": "public",
-        "fingerprint": "e47b70eef55f4e66ad1a5f4236681139782ecc0836ebe5f4828436b5c9e2cfa0",
-        "contentFingerprint": "7ef368d9d581393b6fd88807edfa65dac5285f94d492a2cd8a72dc0354d8955e"
+        "fingerprint": "1cbdc9606fe062d7d725377498cacf510b7bc851e74766697cda128c2541f140",
+        "contentFingerprint": "d5a35f2d103d73c4b4cf43e7ea9fae8fb16624a12eae3ebeb5cd2102ba3c3ba0"
       },
       {
         "slug": "docs/plugins/graphviz.ja",
         "permalink": "/ja/docs/plugins/graphviz",
         "title": "Graphviz",
         "visibility": "public",
-        "fingerprint": "9c7e9e8a8fd714c036dbb35425343da2b47f4844691ae5fd6a16877fc3c2251f",
-        "contentFingerprint": "bf2f0a30f3e2fa8d7fb5d533078487ac4ceacb8a317ac6b3946a6f0202a4e758"
+        "fingerprint": "f744a47adb8d899b423864e3ae0121bb8fdffc5cbbee5d4aab12248e4c52a8c5",
+        "contentFingerprint": "c3aeb2f0f0edfa56ac694378dd29301304deb0f5271df23cfb3e2fd81e43f95a"
       },
       {
         "slug": "docs/plugins/hard-breaks",
         "permalink": "/docs/plugins/hard-breaks",
         "title": "Hard Breaks",
         "visibility": "public",
-        "fingerprint": "2e0f60477d8d567b7b1e71695ff0b4410dcd28b738c9dc9fc22363b9ce8cca91",
-        "contentFingerprint": "19b37a8895c8a8929a3de0fe7299c639e7da58c6107c94a4c456587cba351da9"
+        "fingerprint": "8efd6c159efe77705e83dec1433a1ac786fb8d3cfd6b25fcea4ad88ba81e32b6",
+        "contentFingerprint": "4feb7bd78980fcf08cefaa25fd3ded4c5c56bdcfa72d0bc2b60260b2256c960a"
       },
       {
         "slug": "docs/plugins/hard-breaks.ja",
         "permalink": "/ja/docs/plugins/hard-breaks",
         "title": "Hard Breaks",
         "visibility": "public",
-        "fingerprint": "680761721162d8ed9912c307eb6529f499bacb67ac742a6508184d32f500b134",
-        "contentFingerprint": "4acae47a097d7c384a7cf105bdf021fcc3a78fa132182df81ecabcfa03bc6293"
+        "fingerprint": "8f0739d98c8173997f4c7b4f6322073390b2bc6a7acb1393c22d309bd0d6d289",
+        "contentFingerprint": "6bc8dd2980ed6f6ab0420d0d6646dc4404675e6bff0c96db0ebb00063e21a9e5"
       },
       {
         "slug": "docs/plugins/highlight",
         "permalink": "/docs/plugins/highlight",
         "title": "Highlight",
         "visibility": "public",
-        "fingerprint": "f684e351424f0b09bc8510c2c24e526cea1a8ed537ddb51c90bcf26cc7f77460",
-        "contentFingerprint": "c9267abc28190d0810e98232858cd69db9955e3cf637578c6c5559ae6d1b9e00"
+        "fingerprint": "ce202ab618a55e3d6570088b09b1aa94de22f14cfd3034b9ce7cb4e47cdf5fa2",
+        "contentFingerprint": "3b8c8be2f7cad16ad3738ed4796f3a66b34e30056871e3e1b0ea3b4bf0f3e673"
       },
       {
         "slug": "docs/plugins/highlight.ja",
         "permalink": "/ja/docs/plugins/highlight",
         "title": "Highlight",
         "visibility": "public",
-        "fingerprint": "ed37f03e779a5bdf28bf08cfbcadf134571cabc5d14f3bb6bdb1af7a2c2a1fe3",
-        "contentFingerprint": "a1193ead7d9099734c550cb52edc9eb1a39f98f664027b35bee8f67e9555b080"
+        "fingerprint": "1fe25558a49c33d608cb019e703e44e9d7b2d860d7e84a4cbc8648694705466e",
+        "contentFingerprint": "662ddf480c914faff388789245eea0c316884f6a30df74b90462163fda51b7c0"
       },
       {
         "slug": "docs/plugins/hover-preview",
         "permalink": "/docs/plugins/hover-preview",
         "title": "Hover Preview",
         "visibility": "public",
-        "fingerprint": "b91f2e6cd4f0d0ed71d0438c4d88a09560720fbb7320e1399074fceff548c247",
-        "contentFingerprint": "8bdb502568b7392aaaa9fabdb6e8879f8cfe08d58584ad35b746e59ef7c3b981"
+        "fingerprint": "2a8815890985261e805dc9d2b2df3ac6c5263deb6ea6bd325eb7dbdbbc6b1f57",
+        "contentFingerprint": "6960a12068c0545ff07a4461a1224d871cf3cf670f7a105f776b7fa5d0547787"
       },
       {
         "slug": "docs/plugins/hover-preview.ja",
         "permalink": "/ja/docs/plugins/hover-preview",
         "title": "Hover Preview",
         "visibility": "public",
-        "fingerprint": "7c1265487dd4aa2adc5df62679c9f0914301215ff17b12bad8ce591a2bd992eb",
-        "contentFingerprint": "403f683b6a97ee269ddaf88d6b2df9e688abc210bf844bcc4f886fc645464fdb"
+        "fingerprint": "ce284ff8775eb73701dafa02fdb74270c903233845720b6fb92e9735dbc8adff",
+        "contentFingerprint": "01253709b7df8a0fa7183473c3252ac1e5e409ea53ac80f5f0d287fcd64c0908"
       },
       {
         "slug": "docs/plugins/icons",
@@ -4490,168 +4490,168 @@
         "permalink": "/docs/plugins/image-compare",
         "title": "Image Compare",
         "visibility": "public",
-        "fingerprint": "f8e759c084a4e00066ed6ecb0b100e65f651470b6a8d5bb7af75a4d7406e4558",
-        "contentFingerprint": "c6da0d47541a2e3ce53d492f21783cde5736175413c33ca580460a78d47c2eff"
+        "fingerprint": "b058ec9fd5584779b7d9fb531b21c8912b3c0589b285207c373ded02b7106441",
+        "contentFingerprint": "334232f5b9fdd878b2efa41fb91692a60aa58f6f918d1f3bd2d99a95bc021347"
       },
       {
         "slug": "docs/plugins/image-compare.ja",
         "permalink": "/ja/docs/plugins/image-compare",
         "title": "Image Compare",
         "visibility": "public",
-        "fingerprint": "904494e6120fd8b5890061c31e39fb4a6c88d313dc27323cfc26545202072919",
-        "contentFingerprint": "c6727aa03f0066f6685c976db8bf806faeef1998a5d5171dd9aeb7df698da9be"
+        "fingerprint": "1fb3e96c919f0469d3b9a9f73ff5a46b15ace957da472966b655cc2003106269",
+        "contentFingerprint": "f1943f796257c8bdbb927cd6d048423caf3f3b329b0db4d3a83bf4e5dc311e10"
       },
       {
         "slug": "docs/plugins/image-optimizer",
         "permalink": "/docs/plugins/image-optimizer",
         "title": "Image Optimizer",
         "visibility": "public",
-        "fingerprint": "6ea319246f66f950b959e0fc56ef1f3ea62bd059d23be88e636d1f61eb3e0fe6",
-        "contentFingerprint": "360f71df31c45640cf60d969c9c207c4b8099abee78347c42dfb945ecb218f40"
+        "fingerprint": "e27d27c2c85c01550cfbb7219ce2036bd0df1e16db53d250ed26205efad7d462",
+        "contentFingerprint": "61d42b8f184b4298a2f4388d3b5c5c7e704bcaf3965cd9154e3f805c94733fde"
       },
       {
         "slug": "docs/plugins/image-optimizer.ja",
         "permalink": "/ja/docs/plugins/image-optimizer",
         "title": "Image Optimizer",
         "visibility": "public",
-        "fingerprint": "07fac4a7edb1bf9cdb521e378736ebf58bc64a4eb2071db98c4d33a118cf8158",
-        "contentFingerprint": "09ec1be7f00b084daf39cf21a93c20733f6a8ea999e6b14b9c5fd3b6b178726f"
+        "fingerprint": "dfd7d2a85d5359c6ee247a0401cf2d3480e6e565ca3843772be5a8e909c4028d",
+        "contentFingerprint": "a6ba99bc49230e4ec5ac2bb3067ac806cc157e157bf70289f1c9c4e8baa1b70d"
       },
       {
         "slug": "docs/plugins/kanban",
         "permalink": "/docs/plugins/kanban",
         "title": "Kanban",
         "visibility": "public",
-        "fingerprint": "36f0c224caac653b40bbe2ea3b7510abacedc8b1c4cb26caf541ce8a11773ed4",
-        "contentFingerprint": "26b2d3a568dabc61cf4ee7bdb4601261c0b30bddbf87542191e4562e977d9c7d"
+        "fingerprint": "e35ccf732079d5ceb2c2307f8796e9fb9d2c2d8e7b5f84ca09d4f587f41070c7",
+        "contentFingerprint": "007e887ce5e3e95c67b76874a8cbc5f0a42064acdc07bdcd2b7ca67463658d6b"
       },
       {
         "slug": "docs/plugins/kanban.ja",
         "permalink": "/ja/docs/plugins/kanban",
         "title": "Kanban",
         "visibility": "public",
-        "fingerprint": "128125701b795b1d1a2383a9639c214686fbf5975edf9ab639e3c3b20ea7defb",
-        "contentFingerprint": "dc5050d4a527d108395c00d6c3e09260f929c96bb57577c1388fd8d4549176d8"
+        "fingerprint": "a862cd697e18f2f8076ffd615bffdba088f24fb7360999bda6946cd782a24cea",
+        "contentFingerprint": "a30e6973af7ed465208a3d49fe2a559d35acc068eca4a7e262f3ebb286644c71"
       },
       {
         "slug": "docs/plugins/l10n",
         "permalink": "/docs/plugins/l10n",
         "title": "Localization",
         "visibility": "public",
-        "fingerprint": "0beaed918c5a92e42ecf71399a5af0846234b3decd4bfedfc73cbf55267afab8",
-        "contentFingerprint": "1ce8ed8333827bbd7c9d008612cbb6a695043a381ae2636377dedca503f482a7"
+        "fingerprint": "6bcca3911c82bff6c01076fbf72ed558df9ab127417883bfceea34ab656bbe05",
+        "contentFingerprint": "e1d8921af76467993515d95c5193a801d66d316ce6ee94e8d7d15502e5881dd5"
       },
       {
         "slug": "docs/plugins/l10n.ja",
         "permalink": "/ja/docs/plugins/l10n",
         "title": "Localization",
         "visibility": "public",
-        "fingerprint": "8b9caad0695d364f7da8bdaba703c1beef2e112b510f2f736d40cfe8a64befee",
-        "contentFingerprint": "92be09364948d4cfdf1f891933a5542b85b5ea1952d27d7d8c12b43e65baa84d"
+        "fingerprint": "a0becaec71daee9689fbd717966e49533d3d5d9a8e4fce2ef9034a5d9292247d",
+        "contentFingerprint": "d6d08d013b4e39475526485f2a707795a4d71695dda9ffeaee413f96b48d6e2d"
       },
       {
         "slug": "docs/plugins/lightbox",
         "permalink": "/docs/plugins/lightbox",
         "title": "Lightbox",
         "visibility": "public",
-        "fingerprint": "3e285dccc6531ec006037ecbae8480919eb1969d15995ec5684b43f8cf7172dd",
-        "contentFingerprint": "0b55935fd9053658982ec296fb1486aa2fb78c4bbbc8381e70763f3c9a2dd123"
+        "fingerprint": "fac12de314d222e363bbd7892fe1231b6092187945d97d659ab0d68f98cc77ba",
+        "contentFingerprint": "c8a6454da088613be087977edf1aced671602e163085c1304d9a530c9af506c4"
       },
       {
         "slug": "docs/plugins/lightbox.ja",
         "permalink": "/ja/docs/plugins/lightbox",
         "title": "Lightbox",
         "visibility": "public",
-        "fingerprint": "e24c7ac3daabbe2b5ff4232a0dd39ea1e2d7acd8a2e220e345413ccde85d0b73",
-        "contentFingerprint": "60c4afd79d32468ca3da1c9c1e05ffbed28f9906f0e5a5e34e5231dc51c30218"
+        "fingerprint": "e89ff0fbec613702c689dde4084b6203946742a17759cc9fbaf74d4e0e972e11",
+        "contentFingerprint": "4f49bc582985a205135f0ca4afaf178725d53c67230a198fbdfb27374877a49e"
       },
       {
         "slug": "docs/plugins/local-graph",
         "permalink": "/docs/plugins/local-graph",
         "title": "Local Graph",
         "visibility": "public",
-        "fingerprint": "46ce3ee12bdb323d5d834761699b1a7379bff5d275468dc23f3263443f840e20",
-        "contentFingerprint": "fdfe38f946b9b13847da3d13da495ed3c45e08827bc096d0b83285780afc3674"
+        "fingerprint": "bbb206027baf05c3f3b465f4a8b3c8850575dff44197f74f118d8fedd37bdc71",
+        "contentFingerprint": "cf1abe327eec01f3e964d24a2ab096f3e0ddc6037cfb8dcc20ef1fb17084d1b5"
       },
       {
         "slug": "docs/plugins/local-graph.ja",
         "permalink": "/ja/docs/plugins/local-graph",
         "title": "Local Graph",
         "visibility": "public",
-        "fingerprint": "352ee848e85931a36c43aa01234f5844908a95e818303bacb6bddb592e91342f",
-        "contentFingerprint": "2c707c37e8c892b875797908ddf54f7b3652a870d127b127e97f8b1d991beaf3"
+        "fingerprint": "940a9ac813bc470a3eb02bfccf135606a4363e4b2b0e79894e7a40f02d6f904b",
+        "contentFingerprint": "b769d55732eb5e7f8612d500a5b3924e2df660e38ad38461d90b8383390ad7e9"
       },
       {
         "slug": "docs/plugins/map",
         "permalink": "/docs/plugins/map",
         "title": "Map",
         "visibility": "public",
-        "fingerprint": "65bc6d6f2174eee6c3939babe2ca7b77f0177ab35ce4825b518427bbefc6ccbe",
-        "contentFingerprint": "334de7cbbcd438302498c9ed16bd02e23540c7ba15ca6df0de2806dbd71c70f3"
+        "fingerprint": "c4deb1f70d893ef0ed3c0b14b5c99d32212ef9cc6d2209881833f235a3551ef7",
+        "contentFingerprint": "2ef809ce52543897a1170019016833d600b29328c129cc87838776b7e0f82669"
       },
       {
         "slug": "docs/plugins/map.ja",
         "permalink": "/ja/docs/plugins/map",
         "title": "Map",
         "visibility": "public",
-        "fingerprint": "41901f60b120eebe5d185471e83deded2c42934c31bc0257ac4a650b7a09964a",
-        "contentFingerprint": "9801a87d31b6ed65fee2e19251365c0b49387486e283d64ae0b285d78b2a46dd"
+        "fingerprint": "e2a95af7f0295c4c70614b95abe03770c221c0dc281176bae710472b3f950863",
+        "contentFingerprint": "29254f890b60957e16df27541700ae1a70ca34402c3a1d3da0fd816282643d24"
       },
       {
         "slug": "docs/plugins/markmap",
         "permalink": "/docs/plugins/markmap",
         "title": "Markmap",
         "visibility": "public",
-        "fingerprint": "25775e6e89d793219461723e2819c515a4fc9215d43b2e3a54a2d253bc9ff430",
-        "contentFingerprint": "c5b778d2a16b9c93d18798172ac713f32ceb9d31ba55b666815996d3f81cc893"
+        "fingerprint": "2a8587c401b2d901fc732160475736db8fd9a48e6ee10638f5046d3718b79d15",
+        "contentFingerprint": "e91b0a4dce73c869d9193180045a0330f920859173522d3c1cb83c72bd912498"
       },
       {
         "slug": "docs/plugins/markmap.ja",
         "permalink": "/ja/docs/plugins/markmap",
         "title": "Markmap",
         "visibility": "public",
-        "fingerprint": "bf6e4b04f2618e83b9c6d13331d790525707983bc7eef158dc80e7fcf9b68a4f",
-        "contentFingerprint": "9ccba0d8585338944659c7a0034ac43d771e68d75c0556887257ea67efdf3b3c"
+        "fingerprint": "8e103536d70c9e0223d4423b24ef1ee9f5da03bc5ec54b15d1ee88c2f3735b3e",
+        "contentFingerprint": "5f62f0a4a16b63d0bdd3abb3b5fb2268f37d327b06ad85ec295041bef6372fb8"
       },
       {
         "slug": "docs/plugins/marp",
         "permalink": "/docs/plugins/marp",
         "title": "Marp",
         "visibility": "public",
-        "fingerprint": "fbc53da01c091dcf36a165096fb2eb7b68b58890c6b3d6476def4882761b23a7",
-        "contentFingerprint": "5df12b44c7a765064db433a7d17aba414ad3d62fae7ca86a6f0008fdc72ccd7b"
+        "fingerprint": "dfe6c049bb8026787ec18c81aa687bca80fd406b0c52ad2dd66007dae9923362",
+        "contentFingerprint": "b55f71afac7df5be1085098ab76668f2ad8b60032233382506d10df97f82d089"
       },
       {
         "slug": "docs/plugins/marp.ja",
         "permalink": "/ja/docs/plugins/marp",
         "title": "Marp",
         "visibility": "public",
-        "fingerprint": "60489ac8ecde864b0eb58e571ef66d144837cda17b182cd1df202ea0f7833657",
-        "contentFingerprint": "cf1ec28e6c364aa8bae9d920d49d915fb1d7c9314d2b24451c89335143c9d86b"
+        "fingerprint": "55e6dfd853d6662da238eed68f966475fc040acb379f75b3b52d4366b098473c",
+        "contentFingerprint": "91b2f634dd08dc310bb076384a3dc75e995145ca9e8b5dc9953fae556bf7cb89"
       },
       {
         "slug": "docs/plugins/media",
         "permalink": "/docs/plugins/media",
         "title": "Media",
         "visibility": "public",
-        "fingerprint": "d11eba98cc8a9ac3a92bae25fe7a2db57e786c482c923844625b180a3b4f9f47",
-        "contentFingerprint": "c2d93b7c937b34c5b6e21c0b7a5a1599190de712caff41f01a01afd98ab9c052"
+        "fingerprint": "8eae894ef4786becf645ee4f9f64019b39f7d301d3abd68b419ef49603cb85ff",
+        "contentFingerprint": "920f650cc6a189865d2e4ee56d2b8ea813a6c27cb52a55e2497b086bc6a65811"
       },
       {
         "slug": "docs/plugins/media.ja",
         "permalink": "/ja/docs/plugins/media",
         "title": "Media",
         "visibility": "public",
-        "fingerprint": "b126c4f891005d90c5695d34d2da8beefebef88acadb8d5932494c803e8ac03d",
-        "contentFingerprint": "d7759ba747b2c3e6d769d33d697a103f8c55c41663eb4dcaaaa25487a7b00030"
+        "fingerprint": "01cee59ec0dc46a11032839c5106ba05762be19bd8bde170bc938a240ececd06",
+        "contentFingerprint": "eea9def2c567f11540fcc868f030bff715fedf78234310db8e5847748603cd3a"
       },
       {
         "slug": "docs/plugins/mermaid",
         "permalink": "/docs/plugins/mermaid",
         "title": "Mermaid",
         "visibility": "public",
-        "fingerprint": "405bee63fb5e9c74a855e8db3361236d6f8f673a70b3028e8e83792f4ae2c019",
-        "contentFingerprint": "ad4afae6bc0f6e72820e32861634ad1be84c2fbc9b8c9aea939eec8f3aafe607"
+        "fingerprint": "651ae6d0408dd076c928689e8ef0a9ebe2fd20d132f4d848af1be73c1df87818",
+        "contentFingerprint": "ad31a90dddc9df38fcac9c344c68612cb10624e53b578bdec2d185665714e628"
       },
       {
         "slug": "docs/plugins/mermaid-pele",
@@ -4674,104 +4674,104 @@
         "permalink": "/ja/docs/plugins/mermaid",
         "title": "Mermaid",
         "visibility": "public",
-        "fingerprint": "0266dd2e551fe65aa863ff11cea93978455977af9115e64b84eeedc30633c00d",
-        "contentFingerprint": "163b515724af6003b9d2ba10b8523e42eebba8cc147c5cab8938caff847b8990"
+        "fingerprint": "fc6d70e886cfd3931e8bd123bf5cb0a057b1b6c480d10f8ccb179872588c99f2",
+        "contentFingerprint": "8be0dccbc9f43e1c1ec21f34e3ec2bf7ff95e665b516dff0f151b4d05b468daa"
       },
       {
         "slug": "docs/plugins/meta-bind",
         "permalink": "/docs/plugins/meta-bind",
         "title": "Meta Bind",
         "visibility": "public",
-        "fingerprint": "92f28c22796568436f9b1e5a71c7a9fa9fd7faa7be6aa2a7eb99aa5a15bd4c10",
-        "contentFingerprint": "9c539e0b3e2bf4266371d727d60c812480ab60c55ac43c0dc865093df8c01003"
+        "fingerprint": "a276135dff28b48b64366bb691be04f33f0b8a0583e8367d3083eed87b3ce0c5",
+        "contentFingerprint": "1647b0883f3647a1f465628a425d519240b4706087de9d110b0fdb45b0ca01b6"
       },
       {
         "slug": "docs/plugins/meta-bind.ja",
         "permalink": "/ja/docs/plugins/meta-bind",
         "title": "Meta Bind",
         "visibility": "public",
-        "fingerprint": "8f769f80104f7ce2992564be76a949e043cb3abce1b29553ed73f33ab2982b54",
-        "contentFingerprint": "9a77fadeaca47aee71b49bbd25e77bb1485c6598e5b7be16ed4dfafc464ce025"
+        "fingerprint": "44e4556dce1829860c95629d8ffdeed9a3a003f2e98722bace7b3ba0fbc1533c",
+        "contentFingerprint": "225246b113b01ccd49423a7422aae0460fecc6389f1d3ee2d3e2bf085b0a47f8"
       },
       {
         "slug": "docs/plugins/navigation",
         "permalink": "/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "0601ddab1e703c0a5f9473b973a4f4bda107d2d95f035d83ad0010235dd33593",
-        "contentFingerprint": "8abe03429db00c6f07c17b91ad261d85af8e01241636c33eb2fc784e7a246fb5"
+        "fingerprint": "e48431e1599b06f348da8ffc00e8d9e3754d462434dcffd6fd67e8e313e8f45b",
+        "contentFingerprint": "5c3fc1d2e6ce00be9924bb1376426fac0aa902a719a424497bbb93fddca74de7"
       },
       {
         "slug": "docs/plugins/navigation.ja",
         "permalink": "/ja/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "572e7aee2dc5afdc4027ec38cca3215607565fd5985661cf11ebb1569c823f62",
-        "contentFingerprint": "ab17f6d53cc9a66062238d0ee1a819651c2c0b81dc4699481fa18ad0d2afa285"
+        "fingerprint": "dbb805f750319c71660fad0be58ee5a3d959a3f9dcb890ffeb380c595e2a03b2",
+        "contentFingerprint": "133c47d23e1d120259559e03f16908a4fb3b1f2570e7f25e1e6f5b5ca73e5107"
       },
       {
         "slug": "docs/plugins/obsidian-markdown",
         "permalink": "/docs/plugins/obsidian-markdown",
         "title": "Obsidian Markdown",
         "visibility": "public",
-        "fingerprint": "2bf350e9d50098d105fffb8eb5bf52b6eeec3cdde5b500d74b91446a1fdb2708",
-        "contentFingerprint": "ff5d4dc58a27eec7012965909667a8e2013e1d4c3909e23904a06a9ff5f79958"
+        "fingerprint": "c4754b73b2c0aab631820a6e588b158040eee08275441f56a51b28d4b117631f",
+        "contentFingerprint": "7618c7c84f1b8c0d1759a2f20bf8a4ef26fb836eb348bf74a8a5fd5ff95e3473"
       },
       {
         "slug": "docs/plugins/obsidian-markdown.ja",
         "permalink": "/ja/docs/plugins/obsidian-markdown",
         "title": "Obsidian Markdown",
         "visibility": "public",
-        "fingerprint": "c799a6b9ed9897f40a9559b2b6f69b08d700c1f3bdea5bce2b71cfd68f4c1b80",
-        "contentFingerprint": "ded554b211e863e807eb33c4d146cfa0ebdd9cc14cee80bc4c53142e85e82210"
+        "fingerprint": "7dff184fe4b94c622ba515747cd5d22949f6b1143c022e497cffcdbc0b02cf67",
+        "contentFingerprint": "cc6ca6c2fe735c17130d22435c0f473b80740224818ec708f7ae659b0edf874a"
       },
       {
         "slug": "docs/plugins/og-image",
         "permalink": "/docs/plugins/og-image",
         "title": "OG Image",
         "visibility": "public",
-        "fingerprint": "d4ace7fef950d672e59f097d31a8221133a37645157c4affddc017edf51dbeef",
-        "contentFingerprint": "2d697025102e3b961bd84878766f7506e10949ea4811c3a25eb5828df7233df1"
+        "fingerprint": "178d36e3c634db564ca7ebf1b648536608e84e4cba09941d44801edbf26592ed",
+        "contentFingerprint": "740e0a34fec5867c288f46590f5ee7059d96f47bd34315b82161244968623289"
       },
       {
         "slug": "docs/plugins/og-image.ja",
         "permalink": "/ja/docs/plugins/og-image",
         "title": "OG Image",
         "visibility": "public",
-        "fingerprint": "d38390de2ac4a596071523109ec157719ff55f19ce6b015b5819960826195c3b",
-        "contentFingerprint": "01aecdf679d3501dcc7f667610d98b9a1efc6a3ab6c56be9999bfd5c67144343"
+        "fingerprint": "3236899a092482cc6164061126f31fd2189105d7683582e2210310423b84fc6e",
+        "contentFingerprint": "8c24915f74cad716dcf179c511f7a8465c538e9fb9a8e9b5d75a713c4580b6df"
       },
       {
         "slug": "docs/plugins/page-type-generator",
         "permalink": "/docs/plugins/page-type-generator",
         "title": "PageType Generator",
         "visibility": "public",
-        "fingerprint": "7b46f7bcaf67fb1f2d3a1ae9d4371486c3611d277217c1ee58b48d883bd18ebf",
-        "contentFingerprint": "3489dda4bb2c30c78b559314517175e6c97b46db6633b83bdefb8400943a0f22"
+        "fingerprint": "86ed50f562cf6fa8153ce75dc8e04d7ab7713b50cb8f94c817859ffcec667b58",
+        "contentFingerprint": "3e089892f0605e17f4ed6f3f837502ace85e4a5f30f27fe1c1c392cbd6b87000"
       },
       {
         "slug": "docs/plugins/page-type-generator.ja",
         "permalink": "/ja/docs/plugins/page-type-generator",
         "title": "PageType Generator",
         "visibility": "public",
-        "fingerprint": "25a26bfb6399e8da33efb43d309563c9b8705f74c782e610b186360a3afffab9",
-        "contentFingerprint": "692ce0dd539ff35e69c0bba3422c0b558355ae44c8716c104fed884f68633f77"
+        "fingerprint": "bdfa2532231d0906b9ac0b303fbdde36dcd18e1b5cf519e7d2f9e6ddf5ecbd41",
+        "contentFingerprint": "54e54598ce430b23787c0c1da41b179dd72a291ada144cbbd5a72e21b44e380c"
       },
       {
         "slug": "docs/plugins/pdf",
         "permalink": "/docs/plugins/pdf",
         "title": "PDF",
         "visibility": "public",
-        "fingerprint": "a075320797a280620d2dc9d2ed0f7b71f254b2e14c80a8faf08508eddbaeb7b7",
-        "contentFingerprint": "4653e21513109d109db74b445c463e534ddedb104b612e89b3980b3c62ae65da"
+        "fingerprint": "63dd9b2f9b2539dd3c6631929ea3a7877dd9f11bfe860e0d5434ab4cc903ec60",
+        "contentFingerprint": "cf23c87a839f5baed253d49e94486eb950732842bc28978db7df58ffaae10509"
       },
       {
         "slug": "docs/plugins/pdf.ja",
         "permalink": "/ja/docs/plugins/pdf",
         "title": "PDF",
         "visibility": "public",
-        "fingerprint": "b80cc8118f6beb8dfbfd8c4935159c0961888d2fd21407c79596d6778017bcee",
-        "contentFingerprint": "6a9ef9a3a82e4c78bc442782b2561095c1be5899bddb1365740372b834137ca6"
+        "fingerprint": "e68e6a00e28d716a1b0075417fc08c0ffa89eadcc407c08ecafb23a4e6797e29",
+        "contentFingerprint": "195322a9814941d3d2f2cc09cb39fbdd205076a9c5dae0f6184013703bb8d5a2"
       },
       {
         "slug": "docs/plugins/permalink",
@@ -4794,80 +4794,80 @@
         "permalink": "/docs/plugins/plantuml",
         "title": "PlantUML",
         "visibility": "public",
-        "fingerprint": "c108923fa02d39be28ceed3fe6031bb981497de57ee0d839eb2e36b04fe68de9",
-        "contentFingerprint": "c6d2d281121930b78d7c30e17452cbed667f01449a0aba803b9262eb27914556"
+        "fingerprint": "0a182ec7e4730fe7aece94cbdcefbd633fad097f7e95d6ba28449000f1a6352a",
+        "contentFingerprint": "3018664370044b330b6d0f0eb9160fcbd38e1ec8788e7bef6a6920d51af80acb"
       },
       {
         "slug": "docs/plugins/plantuml.ja",
         "permalink": "/ja/docs/plugins/plantuml",
         "title": "PlantUML",
         "visibility": "public",
-        "fingerprint": "5c3fd5e89322a6673032c166a16d7eaf0343782f9ffa1fd1b31dbd15fba1efc7",
-        "contentFingerprint": "f9f85b827e4c27dcf59d5c5ca746aef2f68a9f87e96b0a4344eac9f244dc5124"
+        "fingerprint": "f00a3ec3cab6c3f719a7b3bb9628581fbf61a6812dfb31007b5d8189cdeae28b",
+        "contentFingerprint": "175e327c984a4565d02d1a7962da68599829a3f377e8ccd2d8b15a206cd0b1a3"
       },
       {
         "slug": "docs/plugins/properties",
         "permalink": "/docs/plugins/properties",
         "title": "Properties",
         "visibility": "public",
-        "fingerprint": "6038b12d8f21287ba6e5a22245f0b2fe8e8858e658bafad4ca9103315c965767",
-        "contentFingerprint": "02fdd4dad84b63c012ac7cb680c058945fb134aa9316b610548c77f18e00998b"
+        "fingerprint": "76aa0cdda3a066cd2f95ae9cd2273cd41e400df6de7ea62cf229a98493d23622",
+        "contentFingerprint": "2841def2e95f9583e9c95d0bb1a589976402c90a16dcaacadcb2294dc7124c3d"
       },
       {
         "slug": "docs/plugins/properties.ja",
         "permalink": "/ja/docs/plugins/properties",
         "title": "Properties",
         "visibility": "public",
-        "fingerprint": "3887eb1031098e9cdd0ee8b6d144dc2f73462bfc6d07ae991e5e26c4450cc821",
-        "contentFingerprint": "e52de16764614605f45d5fe308b38bf0a6c9d23e157c5ec5178965085ae8d86d"
+        "fingerprint": "d8c77ba91db78c4d52ae0006148483d731b3b800ea9b28faab78550eef886a9f",
+        "contentFingerprint": "8a99aa4256082a77e569f16b5e60775c32d92f957ba79c7b68b451f864fd67cf"
       },
       {
         "slug": "docs/plugins/qr-code",
         "permalink": "/docs/plugins/qr-code",
         "title": "QR Code",
         "visibility": "public",
-        "fingerprint": "7febe4ef9998e26590cb0ef7167c02cd3f007067ecfd759b9f33648f23b28c45",
-        "contentFingerprint": "9fb3eb0471c54625a7c433bc11004deb42a4d134c8dbe95a21b42d1d4997cd74"
+        "fingerprint": "5e0bbc8ed8f370a78ccf7a66b3fcc7411bf137ee928f31c18fa4d9702032a615",
+        "contentFingerprint": "16842f226f6d087e8b1586e88046b6886731be90e811d6beb954e128e1e8bb2b"
       },
       {
         "slug": "docs/plugins/qr-code.ja",
         "permalink": "/ja/docs/plugins/qr-code",
         "title": "QR Code",
         "visibility": "public",
-        "fingerprint": "b24c6d60c07c031edeaeb41b2085c7066e4c10ca05ef77429ea4abac97528f15",
-        "contentFingerprint": "7d0bea348189a673f50341f0d4384467fce6c93dae1aec96c44a3a97d1a66c4d"
+        "fingerprint": "8ac987c868f768c3bb26257636678f79b211586af4203d995ec6eb2a6759ad86",
+        "contentFingerprint": "13606573eb708edf5fb64cb6934592307b6d7a01c01bf823c6cf46562ebd0f8b"
       },
       {
         "slug": "docs/plugins/quality",
         "permalink": "/docs/plugins/quality",
         "title": "Quality",
         "visibility": "public",
-        "fingerprint": "3eda17a963e85d5c2894c7d461329dec7a7de94b7037cbf9d2496d1ba758ea80",
-        "contentFingerprint": "6ca55bc8f350825b3647b5aa00509404b5b254e9b50552de596477cccd8cf11b"
+        "fingerprint": "d34749147d28fdf07e881f1f02ee4888a6baa2485862a23d8c24fcfee697b6e9",
+        "contentFingerprint": "73073e1e8ad78e2639fb09c72f5bafe9d52e8d5d7cbf2bfc59b878857e64f0f1"
       },
       {
         "slug": "docs/plugins/quality.ja",
         "permalink": "/ja/docs/plugins/quality",
         "title": "Quality",
         "visibility": "public",
-        "fingerprint": "646da09b2fd2e610b4473bcd60e31444c30f0a8e581bea8b96e3218c2065e41c",
-        "contentFingerprint": "ff1b62eccb954d3fb5555ad630c9fb1e096973bc6e0e9a7b508e375f04da32f1"
+        "fingerprint": "475630b57e737b29d161236b6c09ee9367813311661a758d7aae9ece05a37b7f",
+        "contentFingerprint": "3b212f4127be4c3c8a1ac57c7bc383b1163d995c5445d5a665c44fd0aa998fce"
       },
       {
         "slug": "docs/plugins/query",
         "permalink": "/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "0581f98eae941df6ac6558ece9f172dc10593e2b7c40854864a7780f7a84ee06",
-        "contentFingerprint": "c53e052da9deabeba1ac1bab16b896f6affeec347577cc50835ba5689767d65f"
+        "fingerprint": "e51653c1150386a31076f4ae9cd30c8b850e3e1461dc1f199c2107f4288c0ce0",
+        "contentFingerprint": "0bdbb0fdf7fa7315edaee8307cd624470f29a764ee7312d34e55e82c1cd4b9aa"
       },
       {
         "slug": "docs/plugins/query.ja",
         "permalink": "/ja/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "2a8cdf2ce9dfc776864dc06e5cecb05fa1f5e1dbfbdef08cf7417b15e2a16467",
-        "contentFingerprint": "64cdee0a59eb15990f4c4ff1564f50b602ff4d73c3725fa99b3d9ee2ce1abd2d"
+        "fingerprint": "6edff4dfa94d419aa914944d864ea60d52490b5ade51967a6b2238d871c1bb9c",
+        "contentFingerprint": "93e4f5870f1217865daaf6bc597d78e22dd4d7db01efe5ea8b2a2c4b2e1962a7"
       },
       {
         "slug": "docs/plugins/README",
@@ -4890,16 +4890,16 @@
         "permalink": "/docs/plugins/recent-posts",
         "title": "Recent Posts",
         "visibility": "public",
-        "fingerprint": "2fcb57ff599a23d0c0d0baa7cf3ba8c6d38cf42ab781cd3a80788e51bfe3737a",
-        "contentFingerprint": "531abeda295297d199fa9eb37229309baf2d3ca41259c0febfe1cb63aeb1a129"
+        "fingerprint": "13bd298cb0e9a2ea2333d120440a2c98743de1ad70a62c5af127a2b9523c67c0",
+        "contentFingerprint": "3ca443e8752daf10352c294fdf0e8f1d0bc54dc53341b2d6a3706280c2987190"
       },
       {
         "slug": "docs/plugins/recent-posts.ja",
         "permalink": "/ja/docs/plugins/recent-posts",
         "title": "Recent Posts",
         "visibility": "public",
-        "fingerprint": "01087adc50207bda531b9dfd8042bfe4e3159853b5a459ed59a898b058c52019",
-        "contentFingerprint": "0e05d512f3b042820507f4afe8afd92c52f31910119d6fad17ba1bfa68f8e1d4"
+        "fingerprint": "afa6b4f4e7aff79b140407304a7285db0b5d0bacca21d363bcb1eb853fd65241",
+        "contentFingerprint": "3a7578186bfb739298e6363bae7d6372a0b92a512dccde325d136471a128b92f"
       },
       {
         "slug": "docs/plugins/recipes/assets-and-client-entries",
@@ -5162,144 +5162,144 @@
         "permalink": "/docs/plugins/related-posts",
         "title": "Related Posts",
         "visibility": "public",
-        "fingerprint": "5f230bd639b99ac0e96e86558c18e539dc624f41aeee80a1fc82a6708a66a9b4",
-        "contentFingerprint": "887cf87f5f5ee0f6a3946a58bff2103ed2e075cf0cac84129f324f417c84c645"
+        "fingerprint": "c8af3b11abe655263aacfc458bc592dd201e3086c30ce949a4d0837a018bd90b",
+        "contentFingerprint": "b133cae3d6f9e248d584a672514ded64ca34a7e15bd944cfe9ed018e879cd23e"
       },
       {
         "slug": "docs/plugins/related-posts.ja",
         "permalink": "/ja/docs/plugins/related-posts",
         "title": "Related Posts",
         "visibility": "public",
-        "fingerprint": "44f43fdbda35b3840c41a535ac8ee0c9873333819766c5fc875d5513168850a8",
-        "contentFingerprint": "1789a15c6e7b917058ec09e7f3dfb36c617abbd7719bd0e5b18be773f2bb83f7"
+        "fingerprint": "c893ec0b9734d0c18bf835941fccb86e5fe267184b49303f5de70b69422278b5",
+        "contentFingerprint": "6112daa7eec1870d1c78a45e38cfb446c7cecf19af6a05a29d8d47797e90d557"
       },
       {
         "slug": "docs/plugins/rename",
         "permalink": "/docs/plugins/rename",
         "title": "Rename",
         "visibility": "public",
-        "fingerprint": "1fd791692fc203035f9ec6b7986f13b62bbecad317285c936021dac0d7720c5d",
-        "contentFingerprint": "66d0f33cda5f2c42a7743073511e8a4c41ba9a22a21555cec2ed753c1edd9c14"
+        "fingerprint": "2023297d731bf2a326dcefa8b379a7a8fb09a1d979fe3cbc2144aa375787a2b5",
+        "contentFingerprint": "6c6c1c3b4646318147bd2c88a0c2c7aaf21d430db04f4c274278bc7465f89aac"
       },
       {
         "slug": "docs/plugins/rename.ja",
         "permalink": "/ja/docs/plugins/rename",
         "title": "Rename",
         "visibility": "public",
-        "fingerprint": "9425f5049215ecc0e3d528539f7b31610663ed027bd807eb6e612dd6f16a8225",
-        "contentFingerprint": "805797e51e4c50b3a523b2cddb715f94bc733d196537c7d3ae829756c6555bb3"
+        "fingerprint": "3155de4f096ed2ae088bc8dc3b389c8bc80c66fb31cea06a95d50b792ffc6c91",
+        "contentFingerprint": "6dd7feff14661a870ca0fe0b08eeced9620fbc417c714cf38c1d3ad23c42ba62"
       },
       {
         "slug": "docs/plugins/responsive-image",
         "permalink": "/docs/plugins/responsive-image",
         "title": "Responsive Image",
         "visibility": "public",
-        "fingerprint": "71a66d69c65fca8e1c25b66fdf83801743e82c041192d4a74c1f26b833df2a55",
-        "contentFingerprint": "46d27eff1054d5ecff5108a55a700a69c750bdc159f7602f7d120e02f025bce0"
+        "fingerprint": "93913330cb64e05398836bc42a3663f434e811a70e67dc58543caf7617f67b66",
+        "contentFingerprint": "89cd98e93b33183c89f92194c9b232710e6f7ee5c99fc4ea548c3b475e3807ab"
       },
       {
         "slug": "docs/plugins/responsive-image.ja",
         "permalink": "/ja/docs/plugins/responsive-image",
         "title": "Responsive Image",
         "visibility": "public",
-        "fingerprint": "c0d68410b10398879517c8e9f2c1080c6d83c7e91a33b51ce71d2b34dd06ff26",
-        "contentFingerprint": "32331dee0966cdeb57d0341e5150b84f3ca08fb0810565f6730c579c8588d0c6"
+        "fingerprint": "d0afca3cef2d913a6ba991e3b52d2f7e7f22999286b2a7ab9d360f3ebb929adb",
+        "contentFingerprint": "a768d5e7a7031ec4b8e9baffe262a3976c8aa9547320706b75f59d5ece0da943"
       },
       {
         "slug": "docs/plugins/rich-embed",
         "permalink": "/docs/plugins/rich-embed",
         "title": "Rich Embed",
         "visibility": "public",
-        "fingerprint": "eb64b053ea2d674fef1140b0155e774b75c1811c85b5081f42963a7b7f83f380",
-        "contentFingerprint": "6e70cc294fe13aeb3eed6188c4788621147fc86eae191c2f0e85bb15692444e1"
+        "fingerprint": "3895744b4d1dc968ace2eda78789edb2f3bb7db6ea4d59ad29adec5ba06295c8",
+        "contentFingerprint": "53c58855f4d9f6436af17f0cf7feb7ad9acdee55e10daec0fe4e3500f23a9770"
       },
       {
         "slug": "docs/plugins/rich-embed.ja",
         "permalink": "/ja/docs/plugins/rich-embed",
         "title": "Rich Embed",
         "visibility": "public",
-        "fingerprint": "f22cf0e6b5130b01d7c818770ae1a5de3080c3ade6f36c6ae5b3cad43a0fa76c",
-        "contentFingerprint": "7dca72ccba21cd1aab33687fbe8c3d07cdefd6f2fa05ca6b64d5eb35ca38a674"
+        "fingerprint": "2a2e2781c800a801a5b2a091907d4f0b071234dedeb6078c8356ed5ce3af8b54",
+        "contentFingerprint": "34bf8490a3a58344599483a0bd66a9e1388a3612038500444289e8c1c39d73cf"
       },
       {
         "slug": "docs/plugins/search",
         "permalink": "/docs/plugins/search",
         "title": "Search",
         "visibility": "public",
-        "fingerprint": "7f446eada2be531a59f0a7139777e1d5cb2ebccc3806fbf5fec3be0c7d3c27f0",
-        "contentFingerprint": "732c1c9a021ec6ae9a7960a111b261ed847b393fed896bbd45a710407e8ce375"
+        "fingerprint": "62f1d10524b84c340f0f077e98f914484b9285a9170fe744a5575c058527f94a",
+        "contentFingerprint": "56431f3b9a1f93bce7d614c395e4bb60c9cebf18fc3e61410c933178f3f4dcba"
       },
       {
         "slug": "docs/plugins/search.ja",
         "permalink": "/ja/docs/plugins/search",
         "title": "Search",
         "visibility": "public",
-        "fingerprint": "f497e50560283381343b198362aef4e57d1551fe4569273f298bd542b8a84a32",
-        "contentFingerprint": "3d83ff36e7c19b444904259c078619c8e6b0abe14a6bcfabf9b0e3aa192ae20d"
+        "fingerprint": "cf044cc731b5f9addeb42d84b76c6c10ca6e8703c05c6e4af79b12198f03f228",
+        "contentFingerprint": "b7f95a169272306588533482f782a0e54327df18373f68074b418a2020519a8f"
       },
       {
         "slug": "docs/plugins/seo",
         "permalink": "/docs/plugins/seo",
         "title": "SEO",
         "visibility": "public",
-        "fingerprint": "ff12c6a52bf93110791059402f0f4b851724f080b8c205f9057b513fcf2b64c4",
-        "contentFingerprint": "89abd6dbf2b108b3fae364bdf04faed2dcef7fa97b0737571d87e7c90dc021c6"
+        "fingerprint": "4ba35e0eabdbc0f368bc60420185d29995f10b237d97221cf24e5b7d94924f8d",
+        "contentFingerprint": "d2fd794f04c093beaf920fedd746b4e6ad531e7a4abce02a1d14e7caca70437d"
       },
       {
         "slug": "docs/plugins/seo.ja",
         "permalink": "/ja/docs/plugins/seo",
         "title": "SEO",
         "visibility": "public",
-        "fingerprint": "ddee3adbc30541bf660d8c90e6efc25a10a81406705446691f9cf4fa3682a9f1",
-        "contentFingerprint": "07129a441d34fbb54a61fd9947593354c429d110220925a0f9d9d0e076665d2e"
+        "fingerprint": "50970884810f41c861ad65789f5bd9e45a8baa81cccfdebf031233d18efecfc2",
+        "contentFingerprint": "e56a2406303b9a8310e3edc69d496bc891a14924c5726688cb355caa511f1c5c"
       },
       {
         "slug": "docs/plugins/series",
         "permalink": "/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "7a74cc821a12b0e41f17d7d14c3766d70da7058312187d5be6439ed9dd4fc3c3",
-        "contentFingerprint": "35e2dfec5e10b5a5c7f1a5244bc9bec4c23a226236bec4ebad0078c5200888ff"
+        "fingerprint": "ad22dce6ac14a498a7dd4a00337b1023843959958aa15c14f0957ae5daebe8e9",
+        "contentFingerprint": "4a6d3ac181c9c208f36c6a8b7b6fb04f7f1fdb02f233e3f7b10feaaa31a2e3aa"
       },
       {
         "slug": "docs/plugins/series.ja",
         "permalink": "/ja/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "8df0c514b4e6a19f8fbe6807d7831b8fd566bded70f90e66a478d64e8e079518",
-        "contentFingerprint": "51664753085bb489d4c7c48cfcdfef6da43ef898f38b3798fc034a4a25bd412b"
+        "fingerprint": "2f8326e62fd35e51d3c00c3febabc951d3839550d3922b32d5d3f24709ffac84",
+        "contentFingerprint": "a99231a307e77ca67f5c8236821dc14da9a72c9c74e153188e003ab14bcdf08d"
       },
       {
         "slug": "docs/plugins/share",
         "permalink": "/docs/plugins/share",
         "title": "Share",
         "visibility": "public",
-        "fingerprint": "f462e2ebd080275d08faef906163860c7a230187a2fd3f3560c67abf6f08115c",
-        "contentFingerprint": "84bb279c7e6ff4120ea62ba68d2132cce64f2f14a8dc41992b23843d76c4e2f1"
+        "fingerprint": "4250098eba56b6a1a8c7115db7ca88aac35219c607b0852affb422f53f9f126d",
+        "contentFingerprint": "26791270180cc4ce7367a9483143ba94c34d9e97f2022101a2e14346e8996807"
       },
       {
         "slug": "docs/plugins/share.ja",
         "permalink": "/ja/docs/plugins/share",
         "title": "Share",
         "visibility": "public",
-        "fingerprint": "4823cd1b59ad11cd2c3c572329bf8d713375f117ab403aaebe12de61de2e7bc1",
-        "contentFingerprint": "d96f94e85c9cb346a60469a0f068ae2ba98c291cc4aa3f264b0f7480814ed405"
+        "fingerprint": "f61236713697e9cf4b4f85da183c300e2c6b6f5c4496327c25635d22d73af702",
+        "contentFingerprint": "12c8570aa1458d30eacc83df1f211326a9e8c197ed7e48ac912b56db5cb8aac3"
       },
       {
         "slug": "docs/plugins/shortcodes",
         "permalink": "/docs/plugins/shortcodes",
         "title": "Shortcodes",
         "visibility": "public",
-        "fingerprint": "231f63dec5bc8462d8828b22f0c222447e5056bdb2c999f8c0071d65cb8b99f4",
-        "contentFingerprint": "adc2c58d00dc5d46916b1320288d6c107e345ad9b47db59d262cf32ca65b6cc0"
+        "fingerprint": "4fe08e9a64683c50a2b7b549fea81861f422d88affb2aa93ac71ca37db89b844",
+        "contentFingerprint": "f3b929d6f1800351aa2e35015753692ee28c717bc7ede545fabfc84002c49a03"
       },
       {
         "slug": "docs/plugins/shortcodes.ja",
         "permalink": "/ja/docs/plugins/shortcodes",
         "title": "Shortcodes",
         "visibility": "public",
-        "fingerprint": "c85c60dc90af3179364e2ccad03eb6ef52fefe7681062a872b55e866bfb87388",
-        "contentFingerprint": "5451db2bdfc1987e9bdf8c7b1395821792a1fca1da229c1186f15406cef55f78"
+        "fingerprint": "72c31bfb7f12edc45c6cb2535d15fd5960094af21602bc3097001ba1e77d8143",
+        "contentFingerprint": "5c72435a08fd25b98e23ee17d4add8307df7b060f85dcb88c1180edc0af6c86a"
       },
       {
         "slug": "docs/plugins/showcase",
@@ -5482,80 +5482,80 @@
         "permalink": "/docs/plugins/sidenotes",
         "title": "Sidenotes",
         "visibility": "public",
-        "fingerprint": "604738a9a3627994a70fe988c7e85fbf0255e97493d03c0f45166e28f406ce63",
-        "contentFingerprint": "52d6bf3b414ff405fc650692d70f5414194dc1392d7a6d41a83182ad485cf8fd"
+        "fingerprint": "ae7ad506f17cf0f57e808a720d9dc642610bb9952de1a47edebb5dd97f334f53",
+        "contentFingerprint": "1c95fcbb9016eb5df042c3d025c9c173d3fc3f28a446ae22eee83f5ce2f25715"
       },
       {
         "slug": "docs/plugins/sidenotes.ja",
         "permalink": "/ja/docs/plugins/sidenotes",
         "title": "Sidenotes",
         "visibility": "public",
-        "fingerprint": "eab21217f770756f7b60170e74dc99e344d0275ff92e4c793d0ac5e97136bf85",
-        "contentFingerprint": "66eb0df6d31ac4a9db80ac6d209786e118d2178b0a9e823e50316c2adab17351"
+        "fingerprint": "36b9f29a9c05c8cf9f2aae956fe04f50ac4b18fd3cd44a558aa50532db9daa4e",
+        "contentFingerprint": "cd58d269c6361a503cbf1c47c218e77991191f41c32bfc92d0667578d26353e4"
       },
       {
         "slug": "docs/plugins/source-files",
         "permalink": "/docs/plugins/source-files",
         "title": "Source Files",
         "visibility": "public",
-        "fingerprint": "1620b824dc123bdbc3bf32faefe9b9dae194d897cf6691924c6a5b2d35a64a27",
-        "contentFingerprint": "c3527fc96fd4fda54ef0f48709cd75d06e893721f4a7fd19411c6ac369802481"
+        "fingerprint": "3471836fd1023e23beb80e731f9c904a7fae9e5ce5a24a83f62849d656350b2b",
+        "contentFingerprint": "099ea47114058980de9f971531395798b774f1362d0290406b46ebc35b95b50a"
       },
       {
         "slug": "docs/plugins/source-files.ja",
         "permalink": "/ja/docs/plugins/source-files",
         "title": "Source Files",
         "visibility": "public",
-        "fingerprint": "473dd2f5788f045c7d30b25020bdc9f203425b1e77e008466e8e10a8abe7d72e",
-        "contentFingerprint": "807ac25cc5f3e343b465486adf894444e1e823c7f9f1f69e608f29abbe843479"
+        "fingerprint": "7ffd41136014477a88b1843ada05d07b28cba85210cf15b1965ca8348f009d17",
+        "contentFingerprint": "a2413237b0461f4219b365ca1c1524f1f6b6e9a0acaded470ddd24619e41130f"
       },
       {
         "slug": "docs/plugins/svg-optimizer",
         "permalink": "/docs/plugins/svg-optimizer",
         "title": "SVG Optimizer",
         "visibility": "public",
-        "fingerprint": "ce12373abc2649ee6897b85e6763e406bca42dbc46f4f979d281545c7e8c47cb",
-        "contentFingerprint": "3935eb74a7cd3614601b3fbd7ef82af362d3618c68919295e9e4bd4c9cdbc797"
+        "fingerprint": "655fda50260255246f93e8afa32369147da21157cb79832edb368ff905087a14",
+        "contentFingerprint": "5e2f9236eebc4eba4e410a5570ce0231f8d6264e88a87c9eac5be7bb54e0f78d"
       },
       {
         "slug": "docs/plugins/svg-optimizer.ja",
         "permalink": "/ja/docs/plugins/svg-optimizer",
         "title": "SVG Optimizer",
         "visibility": "public",
-        "fingerprint": "9e808cc4092107aae85478924d1aac0f56b87f67246b06e43e9a5b78315d6ceb",
-        "contentFingerprint": "b77c4517dce8057326430e252feb45da5b2f2fa83a2306407404e0054176c27c"
+        "fingerprint": "9c9516246bf64bf28e4ea8f66f2a826393856dd89f4646ad658e56dec8eb54d2",
+        "contentFingerprint": "4202f03a0387ca6d6e1475673b3e29fd4de53709eddb541bfa1a49287218c3be"
       },
       {
         "slug": "docs/plugins/taxonomy",
         "permalink": "/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "837a5c14021e19f2e979e25dc908c11fd592773b1368f59b1df8e0555567fb56",
-        "contentFingerprint": "65ac902fa0edb40884616cfc7fec7ae27f7ac841a1b993b15f242e7f3a7a5ddf"
+        "fingerprint": "dc02995c0eea079c329d51de8503e117a32329f33bda80fabeab305124f939e7",
+        "contentFingerprint": "7a7c85d523fa9efa1c74abe509a84986dca7d8d7197d8289de8d4b8da714c36a"
       },
       {
         "slug": "docs/plugins/taxonomy.ja",
         "permalink": "/ja/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "b258347f1ee52328d2a5414910ea29bd0165738b9648a41455e9c4fc8534b28f",
-        "contentFingerprint": "6c70084d2addaf2df9b40493aec299988fa0cb0d1fe230fc8103a502129edb7b"
+        "fingerprint": "4d72608ec93743584094d736bb992fb9d4ef5b9411960a12f64cbf06f5664db8",
+        "contentFingerprint": "43d81e3405757f60c21e54365df7c90275753d7d7e5371ddeb3fdedf73d9d499"
       },
       {
         "slug": "docs/plugins/text-fragment",
         "permalink": "/docs/plugins/text-fragment",
         "title": "Text Fragment",
         "visibility": "public",
-        "fingerprint": "66af0cf21499a9a09a4c89eb83544ddfec109c7e433146649b3df444ef546957",
-        "contentFingerprint": "94203f32228a877e8494bb306292678de403cc513bc345da64574b0dbd1daf5c"
+        "fingerprint": "1b5c31c37d752a6270505fe99f6eb97f88a33ebd78b907278d7b3f85dfb24e53",
+        "contentFingerprint": "1b8dd6dac565806e194e88c8f81fc44968ddff7b81c34280710b671211e053b9"
       },
       {
         "slug": "docs/plugins/text-fragment.ja",
         "permalink": "/ja/docs/plugins/text-fragment",
         "title": "Text Fragment",
         "visibility": "public",
-        "fingerprint": "48e7b26f320620fd8e8e33460f47f7b799ace6bd2009807270445a35a43e1731",
-        "contentFingerprint": "f39e3d33a280b2d41f2da3078aa04652ef0a6e7eaae2035279436d7c4b2968d8"
+        "fingerprint": "bb1000059ee903cee2877c9fd1bfe8006d6ab699eb67d29ea3c1e15730d6f24c",
+        "contentFingerprint": "b155b7e62aeab78e1e142c9a0b407844f82c4d63513d968c6e2101510e9b3736"
       },
       {
         "slug": "docs/plugins/timeline",
@@ -5578,80 +5578,80 @@
         "permalink": "/docs/plugins/toc",
         "title": "Table of Contents",
         "visibility": "public",
-        "fingerprint": "371c8dbfb72d5617fe597d1bf16f329cb5b3afe563961d967b2f7ba68b42ee3d",
-        "contentFingerprint": "a65d8a0ab8225b006e33f77f78ad7526788957c329718cf4b20e6ae7d8c9b2c1"
+        "fingerprint": "694702da02fd46bf4fab117a2f3338f915dfc77c4e81829e93f3692ff04d12b5",
+        "contentFingerprint": "a76e6406a7478d60d93a539cd07ab990ef62d2ffa04d7b099d4cf3cff951e674"
       },
       {
         "slug": "docs/plugins/toc.ja",
         "permalink": "/ja/docs/plugins/toc",
         "title": "Table of Contents",
         "visibility": "public",
-        "fingerprint": "d55a3ee4bc5611ba917cde44244952e06d01182409946095a6004175312b34bd",
-        "contentFingerprint": "aefc9667f4c691965bbea24fbc495c9f5139fbdf32ed046a47a900ecc4fc68ab"
+        "fingerprint": "6ec572d83a47fd89b15dfa513b6835e2a6972bb0bc7ac93035adaddda4ad887e",
+        "contentFingerprint": "5df1a297b64c2578835042150068312db55a359655d49b8ac889269fa36ff79b"
       },
       {
         "slug": "docs/plugins/ux",
         "permalink": "/docs/plugins/ux",
         "title": "UX",
         "visibility": "public",
-        "fingerprint": "f7319312f57b563446d9140c91ba3cf50e367402f962184346ee082f0b6e33b6",
-        "contentFingerprint": "7831b4520019b1d5787e17cab00de34fedcc3a3295a956254f75a8483007e87e"
+        "fingerprint": "d990fb4d37ab582bc7b313350d713f96fd7aa9e2898e314e837152aae5dad679",
+        "contentFingerprint": "8fe70d4f4c8e572890fe579c03d24783f21236f4594511d2a707ec7805400cde"
       },
       {
         "slug": "docs/plugins/ux.ja",
         "permalink": "/ja/docs/plugins/ux",
         "title": "UX",
         "visibility": "public",
-        "fingerprint": "e16dc70060336906b7e2b5137705ccf19b53cc3fbd14308e612a7e80ea10401a",
-        "contentFingerprint": "49625afb6f82b229696db21d5844a7664230da7275a44012498d29a841a86ef6"
+        "fingerprint": "40a710ab40a261cc38d36866d6299d741a3b983b2fc77d068ce7eea7c2d64ce3",
+        "contentFingerprint": "d7b3c701bf0a757cf36055e6dbdb2edbccba785b18bc2e6dadcf417b9022d67c"
       },
       {
         "slug": "docs/plugins/vault-heatmap",
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "4904eb9619207c5db6965ada4932e53f9aa2a2d6f2c5ebc8337c5942cece65a0",
-        "contentFingerprint": "ac8c0cf705422104797c2897eadb7c65077eddcfd50ac67ebf0ffb331875e701"
+        "fingerprint": "078863ca3b4de0d68f72e901e6a3a2c084a12d8da2c48b529588ac65679221af",
+        "contentFingerprint": "fc9dbb80feb80499150a86839c5b7f7cd2ae9db4e6bbefe05e8915804a9798e1"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "c16bcd09f259d278ccf6897b951aa6ebd0d4db17d929231f4039a16c858f4480",
-        "contentFingerprint": "9ead4a76b98cf3282d574714b64e0d879606c1a3f4a998f3fe4881f41aa06fa2"
+        "fingerprint": "9bcb19078124d44e6883b573a364a44efaace6f9db1df67a2e29ee30200eb8f7",
+        "contentFingerprint": "b3bce31343b262b4aeed8c41d9048d533ee623e6c0e9b29d2c89a5b7002c3fbc"
       },
       {
         "slug": "docs/plugins/vega-lite",
         "permalink": "/docs/plugins/vega-lite",
         "title": "Vega-Lite",
         "visibility": "public",
-        "fingerprint": "0002aa446a3f4e1e33d86a0431bd6b1adb61fb3fa1c9fd4a6e8546d0b7ac8167",
-        "contentFingerprint": "e96d052ee429e66cbc3809ede0936ad6ec05d2c9fb7673fb99bec24d3e3d1352"
+        "fingerprint": "3fbd1b53b495cc552ce77566364c33b925bc93372a9cc46c556f8c8ce60081ef",
+        "contentFingerprint": "619e9fd1b22a3589b922887c77d8096e25cf3c62d5efe40d536cb81bf0fd3249"
       },
       {
         "slug": "docs/plugins/vega-lite.ja",
         "permalink": "/ja/docs/plugins/vega-lite",
         "title": "Vega-Lite",
         "visibility": "public",
-        "fingerprint": "10430206086b11c75974c2ade1d2440d56c5c5d7632f97f77dd89326c2e80fdd",
-        "contentFingerprint": "28a74158719e25f024c4f43f684fbae58823c24b98d7bbabe78bce0181b9702a"
+        "fingerprint": "2bb67c3b05a1cb70385a2da533d9b2a4acf05205adb5c99759d6cf9c24624b20",
+        "contentFingerprint": "14b66a0f4f067ceb8cc3f47e7363932cc4fb934fce90c9d5ac865a7e4ee49580"
       },
       {
         "slug": "docs/plugins/wavedrom",
         "permalink": "/docs/plugins/wavedrom",
         "title": "WaveDrom",
         "visibility": "public",
-        "fingerprint": "66cf30c237027873e02aa589859ce941e2c16ff2c327e499728b7e622e1ee25a",
-        "contentFingerprint": "07486960dcb91f90952028f7db823d8c838817c73a86278d8e5b8ccfb7dcb1c3"
+        "fingerprint": "2c93c957ea1c914d5facb40b9769afd8e122a89281076a43835b055a522dc60a",
+        "contentFingerprint": "1537acff30c2308886a1fa412d67542ad26b1596cb652176a68f8704c4cfb703"
       },
       {
         "slug": "docs/plugins/wavedrom.ja",
         "permalink": "/ja/docs/plugins/wavedrom",
         "title": "WaveDrom",
         "visibility": "public",
-        "fingerprint": "781fb15fe5009927c173dc784b8f5cda8afa5c0e20d3fc97691a0f4b66351b37",
-        "contentFingerprint": "e70d4c2f71c7936be4eda2a3b10d8dbd3e05751e8d16cf39e4383f587ca061ab"
+        "fingerprint": "6b6d22019fb71a878f0ef0971ad84280532276ecd47ed12c8409baa63b6099bd",
+        "contentFingerprint": "e470532601e1005b657bd5336ac3749b6ce1b97d5f7c5e306538fd495d2507c8"
       },
       {
         "slug": "docs/plugins/webmention",
@@ -6186,16 +6186,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "dc510cc6593940882e754e11f5fdfc9b91b9189b660c044b4ae090323da4a94b",
-        "contentFingerprint": "ac7de14fddf9850fe9b14f879ef7755a76165bf84ce0a924018f65ea2b4020e8"
+        "fingerprint": "be92846c61c4bbfbbbdd0bfff3e5773676dc438caafb0b4b0deae44e62dac4f9",
+        "contentFingerprint": "335de3aa5d53f854af62405b704c418c83cad561c7586b7d8a886dd0b52a5cc2"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "792d5bb056528f083bcbf07c7ab8e375408d42fd3f165d8cbd03e5cdd4f6e489",
-        "contentFingerprint": "de721c6e77dad85aeeb97eca7cf34d4f08b27336f8c0475ba420ca018573d5c6"
+        "fingerprint": "100a6ef1f81882c0eb4d67f70137db0f2c2380233b209257c679173ab460c3a6",
+        "contentFingerprint": "e937c5d01bc034610dd4702ef0ee308a0b75af461161db2da2da071df4953fef"
       },
       {
         "slug": "docs/security",
@@ -6298,16 +6298,16 @@
         "permalink": "/docs/themes/generator",
         "title": "Theme Generator",
         "visibility": "public",
-        "fingerprint": "53e3bbddc1f813f168f501e9cba186b03c14d46a734aa608e7303d6a7bc2ecb7",
-        "contentFingerprint": "31a5aeae00bb289ef8ace71a40be992aba18218528edc085fff382aa3f150914"
+        "fingerprint": "cdd9fb335bca203eb849be02129daa11e97c61908b3c7f030a694dd47b3e666b",
+        "contentFingerprint": "decd9998c7a4523136076fa1de5142ace6df4770a447b83471257490f1ff6a0f"
       },
       {
         "slug": "docs/themes/generator.ja",
         "permalink": "/ja/docs/themes/generator",
         "title": "テーマジェネレーター",
         "visibility": "public",
-        "fingerprint": "7a3e70849e1131c7f698dcfac343a8faa4ce40f9d498c34f168da516f7df22df",
-        "contentFingerprint": "12a25055792119e379daab8679df145017e02da9eb06efc054a9f0056d1d43dc"
+        "fingerprint": "dff11abb5b7b03574feb20f223bbba4698ef23e20fccba429e5e67ad75e4cafe",
+        "contentFingerprint": "1374ad6e407b6b2a373b41772cf4efa0784c6a81dee2a225300f16a7a1a923cf"
       },
       {
         "slug": "docs/themes/gruvbox",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "5dfa69c1f04b530cb6a579166020bc708806b7c7976160c6e8d1f3acc3128ab5",
+    "artifactFingerprint": "ed26849e2b5872994350fd8ef461de5fdceee4193852775e2678baf7f6c9f402",
     "provider": "cloudflare-workers"
   }
 }

@@ -6,6 +6,7 @@ import { RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { LocalGraph } from "@riebeckite/plugin-local-graph";
 import { TableOfContents } from "@riebeckite/plugin-toc";
+import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
 export function SiteArticle() {
   return (
@@ -15,6 +16,7 @@ export function SiteArticle() {
           <Breadcrumbs />
           <Properties />
           <ArticleBody />
+          <PoweredByRiebeckite />
           <RecentPosts />
           <ArticleFooter class="site-article__footer">
             <Backlinks />

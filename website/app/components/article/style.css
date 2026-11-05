@@ -19,3 +19,9 @@
   padding-inline: var(--rb-space-2);
   padding-block-end: var(--rb-space-6);
 }
+
+.rb-article-powered-by {
+  margin-block: var(--rb-space-6) 0;
+  color: var(--rb-color-text-muted);
+  font-size: var(--rb-font-size-sm);
+}

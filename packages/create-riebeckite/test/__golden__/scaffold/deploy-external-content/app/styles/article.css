@@ -9,3 +9,9 @@
   min-width: 0;
   padding-inline: var(--rb-space-2, 1rem);
 }
+
+.site-powered-by {
+  margin-block: var(--rb-space-6, 3rem) 0;
+  color: var(--rb-color-text-muted, color-mix(in oklab, currentColor 65%, transparent));
+  font-size: var(--rb-font-size-sm, 0.875rem);
+}

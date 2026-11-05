@@ -5,6 +5,7 @@ import { DocsPrevNext, DocsSidebar } from "@riebeckite/plugin-docs";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { SiteHeader } from "./site-header";
+import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
 export function SiteArticle() {
   return (
@@ -20,6 +21,7 @@ export function SiteArticle() {
               <ArticleContent>
                 <Breadcrumbs />
                 <ArticleBody />
+                <PoweredByRiebeckite />
                 <ArticleFooter class="site-article__footer">
                   <DocsPrevNext />
                 </ArticleFooter>

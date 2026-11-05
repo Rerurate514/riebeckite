@@ -7,6 +7,7 @@ import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { ShareControls } from "@riebeckite/plugin-share";
 import { SeriesNavigation } from "@riebeckite/plugin-series";
 import { TableOfContents } from "@riebeckite/plugin-toc";
+import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
 export function SiteArticle() {
   return (
@@ -17,6 +18,7 @@ export function SiteArticle() {
           <Properties />
           <SeriesNavigation />
           <ArticleBody />
+          <PoweredByRiebeckite />
           <RecentPosts />
           <ArticleFooter class="site-article__footer">
             <ShareControls />

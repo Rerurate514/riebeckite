@@ -153,6 +153,29 @@ test("every generated Markdown sample opts into publishing", async () => {
   });
 });
 
+test("every preset includes the Powered by Riebeckite article footer", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    for (const preset of SCAFFOLD_PRESET_NAMES) {
+      const targetDirectory = path.join(directory, preset);
+      await scaffoldRiebeckiteSite({ targetDirectory, preset });
+      const component = await fs.readFile(
+        path.join(targetDirectory, "app/components/powered-by-riebeckite.tsx"),
+        "utf8",
+      );
+      assert.match(component, /Powered by/);
+      assert.match(component, /https:\/\/riebeckite\.dev/);
+
+      if (preset === "empty") continue;
+
+      const article = await fs.readFile(
+        path.join(targetDirectory, "app/components/article.tsx"),
+        "utf8",
+      );
+      assert.match(article, /<ArticleBody[\s\S]*<PoweredByRiebeckite \/>/);
+    }
+  });
+});
+
 test("preset declarations reject conflicting generated imports", () => {
   assert.throws(
     () =>

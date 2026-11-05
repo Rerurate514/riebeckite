@@ -11,6 +11,7 @@ import {
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
 import ArticleMetadata from "@riebeckite/plugin-article-metadata/components";
+import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
 type Props = {
   content: PostContent;
@@ -53,6 +54,7 @@ export default function Article(props: Props) {
           <ArticleMetadata locale="ja-JP" />
           {props.beforeContent}
           <ArticleBody html={articleHtml.rest} />
+          <PoweredByRiebeckite />
           {props.afterContent}
         </ArticleContent>
         {props.footerContent && (

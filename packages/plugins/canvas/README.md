@@ -6,6 +6,12 @@ Render Obsidian `.canvas` files (JSON Canvas 1.0) as diagrams.
 
 [日本語](./README_ja.md)
 
+## Installation
+
+```sh
+npm install @riebeckite/plugin-canvas
+```
+
 ## Usage
 
 ```ts
@@ -35,9 +41,14 @@ message with `source: "@riebeckite/plugin-canvas"` is reported.
 ~~~canvas
 {
   "nodes": [
-    { "id": "note", "type": "text", "x": 0, "y": 0, "width": 240, "height": 100, "text": "Note" }
+    { "id": "idea", "type": "text", "x": 0, "y": 100, "width": 220, "height": 100, "text": "Capture an idea", "color": "5" },
+    { "id": "plan", "type": "text", "x": 320, "y": 0, "width": 220, "height": 100, "text": "Turn it into a plan", "color": "3" },
+    { "id": "publish", "type": "text", "x": 320, "y": 220, "width": 220, "height": 100, "text": "Publish the note", "color": "4" }
   ],
-  "edges": []
+  "edges": [
+    { "id": "idea-plan", "fromNode": "idea", "fromSide": "right", "toNode": "plan", "toSide": "left", "toEnd": "arrow" },
+    { "id": "plan-publish", "fromNode": "plan", "fromSide": "bottom", "toNode": "publish", "toSide": "top", "toEnd": "arrow" }
+  ]
 }
 ~~~
 
@@ -66,7 +77,8 @@ minimal Markdown handling (wikilinks and escaping).
 `initCanvas()` finds elements whose `data-canvas-render` is `client` / `both`,
 builds positioned nodes and SVG edges from the payload, then sets
 `data-canvas-render="ready"`; CSS hides the static fallback once ready. It also
-supports wheel zoom and drag pan (pan/zoom-lite).
+opens at a fit-to-view scale, supports cursor-centred wheel zoom, blank-area drag
+pan, and zoom/reset controls. Links and controls stay clickable.
 
 ## Standalone pages
 

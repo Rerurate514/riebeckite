@@ -30,8 +30,8 @@ function initContainer(container: HTMLElement): void {
   const nodes = maxNodes > 0 ? parsed.nodes.slice(0, maxNodes) : parsed.nodes;
   const layout = buildCanvasLayout({ nodes, edges: parsed.edges });
 
-  stage.replaceChildren(buildViewport(container, layout));
-  enablePanZoom(stage);
+  stage.replaceChildren(buildViewport(container, layout), buildControls());
+  enablePanZoom(stage, layout);
   container.dataset.canvasRender = "ready";
 }
 
@@ -55,6 +55,8 @@ function buildEdges(layout: CanvasLayout): SVGSVGElement {
   svg.setAttribute("height", String(layout.height));
   svg.setAttribute("viewBox", `0 0 ${layout.width} ${layout.height}`);
   svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML =
+    '<defs><marker id="rb-canvas-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z" class="rb-canvas__arrow"></path></marker></defs>';
   for (const edge of layout.edges) svg.append(buildEdge(edge));
   return svg;
 }
@@ -66,6 +68,12 @@ function buildEdge(edge: CanvasLayoutEdge): SVGLineElement {
   line.setAttribute("y1", String(edge.y1));
   line.setAttribute("x2", String(edge.x2));
   line.setAttribute("y2", String(edge.y2));
+  if (edge.fromEnd === "arrow") {
+    line.setAttribute("marker-start", "url(#rb-canvas-arrow)");
+  }
+  if (edge.toEnd === "arrow") {
+    line.setAttribute("marker-end", "url(#rb-canvas-arrow)");
+  }
   return line;
 }
 
@@ -132,7 +140,26 @@ function findStaticHref(container: HTMLElement, id: string): string | null {
   return null;
 }
 
-function enablePanZoom(stage: HTMLElement): void {
+function buildControls(): HTMLElement {
+  const controls = create("div", "rb-canvas__controls");
+  controls.setAttribute("aria-label", "Canvas controls");
+  for (const [action, label] of [
+    ["zoom-in", "Zoom in"],
+    ["zoom-out", "Zoom out"],
+    ["reset", "Reset view"],
+  ]) {
+    const button = create("button", "rb-canvas__control");
+    button.type = "button";
+    button.dataset.canvasAction = action;
+    button.setAttribute("aria-label", label);
+    button.textContent =
+      action === "zoom-in" ? "+" : action === "zoom-out" ? "−" : "⌂";
+    controls.append(button);
+  }
+  return controls;
+}
+
+function enablePanZoom(stage: HTMLElement, layout: CanvasLayout): void {
   const viewport = stage.querySelector<HTMLElement>(".rb-canvas__viewport");
   if (!viewport) return;
 
@@ -147,18 +174,47 @@ function enablePanZoom(stage: HTMLElement): void {
     viewport.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
   };
 
+  const reset = () => {
+    const bounds = stage.getBoundingClientRect();
+    const padding = 32;
+    scale = Math.min(
+      1,
+      (bounds.width - padding * 2) / Math.max(layout.width, 1),
+      (bounds.height - padding * 2) / Math.max(layout.height, 1),
+    );
+    scale = Math.max(0.25, scale);
+    translateX = Math.max(padding, (bounds.width - layout.width * scale) / 2);
+    translateY = Math.max(padding, (bounds.height - layout.height * scale) / 2);
+    apply();
+  };
+
+  const zoom = (factor: number, clientX?: number, clientY?: number) => {
+    const bounds = stage.getBoundingClientRect();
+    const x = clientX === undefined ? bounds.width / 2 : clientX - bounds.left;
+    const y = clientY === undefined ? bounds.height / 2 : clientY - bounds.top;
+    const nextScale = Math.min(4, Math.max(0.25, scale * factor));
+    const ratio = nextScale / scale;
+    translateX = x - (x - translateX) * ratio;
+    translateY = y - (y - translateY) * ratio;
+    scale = nextScale;
+    apply();
+  };
+
+  reset();
+
   stage.addEventListener(
     "wheel",
     (event) => {
       event.preventDefault();
-      const factor = event.deltaY < 0 ? 1.1 : 0.9;
-      scale = Math.min(4, Math.max(0.25, scale * factor));
-      apply();
+      zoom(event.deltaY < 0 ? 1.1 : 0.9, event.clientX, event.clientY);
     },
     { passive: false },
   );
 
   stage.addEventListener("pointerdown", (event) => {
+    if (event.target instanceof Element && event.target.closest("a, button")) {
+      return;
+    }
     dragging = true;
     startX = event.clientX - translateX;
     startY = event.clientY - translateY;
@@ -180,6 +236,14 @@ function enablePanZoom(stage: HTMLElement): void {
   };
   stage.addEventListener("pointerup", stop);
   stage.addEventListener("pointercancel", stop);
+  stage.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const action = event.target.closest<HTMLElement>("[data-canvas-action]")
+      ?.dataset.canvasAction;
+    if (action === "zoom-in") zoom(1.25);
+    if (action === "zoom-out") zoom(0.8);
+    if (action === "reset") reset();
+  });
 }
 
 function readMaxNodes(container: HTMLElement): number {

@@ -74,13 +74,17 @@ function renderStatic(layout: CanvasLayout, resolver: CanvasResolver): string {
 function renderEdges(layout: CanvasLayout): string {
   if (layout.edges.length === 0) return "";
   const lines = layout.edges.map(renderEdgeLine).join("");
-  return `<svg class="rb-canvas__edges" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true">${lines}</svg>`;
+  return `<svg class="rb-canvas__edges" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true"><defs><marker id="rb-canvas-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z" class="rb-canvas__arrow"></path></marker></defs>${lines}</svg>`;
 }
 
 function renderEdgeLine(
   edge: CanvasEdge & { x1: number; y1: number; x2: number; y2: number },
 ): string {
-  return `<line class="rb-canvas__edge" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"></line>`;
+  const fromEnd =
+    edge.fromEnd === "arrow" ? ' marker-start="url(#rb-canvas-arrow)"' : "";
+  const toEnd =
+    edge.toEnd === "arrow" ? ' marker-end="url(#rb-canvas-arrow)"' : "";
+  return `<line class="rb-canvas__edge" x1="${edge.x1}" y1="${edge.y1}" x2="${edge.x2}" y2="${edge.y2}"${fromEnd}${toEnd}></line>`;
 }
 
 function renderNodeCard(

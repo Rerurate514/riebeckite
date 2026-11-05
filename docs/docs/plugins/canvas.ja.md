@@ -8,6 +8,12 @@ Obsidian の `.canvas`（JSON Canvas 1.0）を図として表示するプラグ�
 
 [English](./canvas.md)
 
+## インストール
+
+```sh
+npm install @riebeckite/plugin-canvas
+```
+
 ## 設定
 
 ```ts
@@ -35,9 +41,14 @@ export default defineConfig({
 ~~~canvas
 {
   "nodes": [
-    { "id": "note", "type": "text", "x": 0, "y": 0, "width": 240, "height": 100, "text": "Note" }
+    { "id": "idea", "type": "text", "x": 0, "y": 100, "width": 220, "height": 100, "text": "アイデアを残す", "color": "5" },
+    { "id": "plan", "type": "text", "x": 320, "y": 0, "width": 220, "height": 100, "text": "計画にする", "color": "3" },
+    { "id": "publish", "type": "text", "x": 320, "y": 220, "width": 220, "height": 100, "text": "ノートを公開する", "color": "4" }
   ],
-  "edges": []
+  "edges": [
+    { "id": "idea-plan", "fromNode": "idea", "fromSide": "right", "toNode": "plan", "toSide": "left", "toEnd": "arrow" },
+    { "id": "plan-publish", "fromNode": "plan", "fromSide": "bottom", "toNode": "publish", "toSide": "top", "toEnd": "arrow" }
+  ]
 }
 ~~~
 
@@ -54,7 +65,7 @@ export default defineConfig({
 
 ## クライアント側
 
-`initCanvas()` は `data-canvas-render` が `client` / `both` の要素を探し、ペイロードからノードとエッジを組み立て、`data-canvas-render="ready"` を設定します。ready になると静的フォールバックは CSS で隠れます。ホイールで拡大縮小、ドラッグで移動できます（pan/zoom-lite）。
+`initCanvas()` は `data-canvas-render` が `client` / `both` の要素を探し、ペイロードからノードとエッジを組み立て、`data-canvas-render="ready"` を設定します。ready になると静的フォールバックは CSS で隠れます。最初は全体が収まる倍率で表示し、ポインター位置を中心とするホイール拡大縮小、余白のドラッグ移動、拡大縮小・リセット操作を使えます。リンクと操作ボタンはそのままクリックできます。
 
 ## 独立ページ
 

@@ -1,6 +1,7 @@
 import type {
   CanvasDocument,
   CanvasEdge,
+  CanvasEdgeEnd,
   CanvasEdgeSide,
   CanvasLayout,
   CanvasLayoutEdge,
@@ -19,6 +20,7 @@ const EDGE_SIDES: readonly CanvasEdgeSide[] = [
   "bottom",
   "left",
 ];
+const EDGE_ENDS: readonly CanvasEdgeEnd[] = ["none", "arrow"];
 const DEFAULT_NODE_WIDTH = 220;
 const DEFAULT_NODE_HEIGHT = 120;
 const FALLBACK_COLUMNS = 3;
@@ -82,14 +84,44 @@ export function buildCanvasLayout(doc: CanvasDocument): CanvasLayout {
     if (!from || !to) continue;
     edges.push({
       ...edge,
-      x1: from.centerX,
-      y1: from.centerY,
-      x2: to.centerX,
-      y2: to.centerY,
+      ...edgeCoordinates(from, to, edge),
     });
   }
 
   return { width, height, nodes, edges };
+}
+
+function edgeCoordinates(
+  from: CanvasLayoutNode,
+  to: CanvasLayoutNode,
+  edge: CanvasEdge,
+): Pick<CanvasLayoutEdge, "x1" | "y1" | "x2" | "y2"> {
+  const fromSide = edge.fromSide ?? nearestSide(from, to.centerX, to.centerY);
+  const toSide = edge.toSide ?? nearestSide(to, from.centerX, from.centerY);
+  const start = pointOnSide(from, fromSide);
+  const end = pointOnSide(to, toSide);
+  return { x1: start.x, y1: start.y, x2: end.x, y2: end.y };
+}
+
+function nearestSide(
+  node: CanvasLayoutNode,
+  targetX: number,
+  targetY: number,
+): CanvasEdgeSide {
+  const horizontal = Math.abs(targetX - node.centerX);
+  const vertical = Math.abs(targetY - node.centerY);
+  if (horizontal >= vertical) return targetX >= node.centerX ? "right" : "left";
+  return targetY >= node.centerY ? "bottom" : "top";
+}
+
+function pointOnSide(
+  node: CanvasLayoutNode,
+  side: CanvasEdgeSide,
+): { x: number; y: number } {
+  if (side === "top") return { x: node.centerX, y: node.y };
+  if (side === "right") return { x: node.x + node.width, y: node.centerY };
+  if (side === "bottom") return { x: node.centerX, y: node.y + node.height };
+  return { x: node.x, y: node.centerY };
 }
 
 export function resolveCanvasOptions(
@@ -166,8 +198,10 @@ function parseEdge(value: unknown): CanvasEdge | null {
     id: asString(value.id) ?? `${fromNode}->${toNode}`,
     fromNode,
     fromSide: asSide(value.fromSide),
+    fromEnd: asEnd(value.fromEnd),
     toNode,
     toSide: asSide(value.toSide),
+    toEnd: asEnd(value.toEnd),
     color: asString(value.color),
     label: asString(value.label),
   };
@@ -198,6 +232,12 @@ function fallbackY(index: number): number {
 function asSide(value: unknown): CanvasEdgeSide | undefined {
   return EDGE_SIDES.includes(value as CanvasEdgeSide)
     ? (value as CanvasEdgeSide)
+    : undefined;
+}
+
+function asEnd(value: unknown): CanvasEdgeEnd | undefined {
+  return EDGE_ENDS.includes(value as CanvasEdgeEnd)
+    ? (value as CanvasEdgeEnd)
     : undefined;
 }
 

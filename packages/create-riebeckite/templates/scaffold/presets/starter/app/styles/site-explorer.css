@@ -1,3 +1,7 @@
+.riebeckite-page {
+  --site-explorer-width: 16rem;
+}
+
 .site-shell {
   display: grid;
   width: 100%;
@@ -15,8 +19,8 @@
 
 @media (min-width: 48rem) {
   .site-shell {
-    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
-    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+    width: min(100% - 2rem, calc(var(--rb-layout-page-max, 80rem) + var(--site-explorer-width)));
+    grid-template-columns: minmax(12rem, var(--site-explorer-width)) minmax(0, 1fr);
     align-items: start;
   }
 
@@ -30,5 +34,11 @@
     padding-block: var(--rb-space-4, 2rem);
     padding-inline-end: var(--rb-space-4, 2rem);
     border-inline-end: 1px solid var(--rb-color-border);
+  }
+}
+
+@media (max-width: 89.999rem) {
+  .site-article .site-article__aside {
+    display: none;
   }
 }

@@ -8,7 +8,7 @@
 
 .site-header,
 .site-footer {
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  width: min(100% - 2rem, calc(var(--rb-layout-page-max, 80rem) + var(--site-explorer-width, 16rem)));
 }
 
 .site-header__home {

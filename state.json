@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "8b8cbcab-a54e-46d7-a823-f241177af510",
-    "publishedAt": "2026-11-06T05:25:36.237Z",
-    "publicationFingerprint": "3760b3ad1dbeae4e08e52768d95358e635d42a96bc6115a4a0968c3076e1b45a",
+    "runId": "54f2f249-a641-415e-bc24-538f6ef8da41",
+    "publishedAt": "2026-11-06T08:34:40.640Z",
+    "publicationFingerprint": "642ca671febd844ea40f1a3d9ac53f9568cc06bf243abbb76f51936d1daf2b1c",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -378,16 +378,16 @@
         "permalink": "/docs/framework/development/workflow",
         "title": "Workflow",
         "visibility": "public",
-        "fingerprint": "05e4995c3cec94b008519374700948406115d4d878ed2aa60041bb14f80da453",
-        "contentFingerprint": "48169e9b73b6037253eb34292101a1e7526926a48e64fac45f66cfa19f70bf5c"
+        "fingerprint": "ef379767e259ee1cb0bc60a9c9188c788e4b861ae5042a4f456b7d26e97be438",
+        "contentFingerprint": "1006b5b5ccffd5a21a2750acda13d8cb8c70596ec733294a0ea67df97d0db7da"
       },
       {
         "slug": "docs/framework/development/workflow.ja",
         "permalink": "/ja/docs/framework/development/workflow",
         "title": "変更の流れ",
         "visibility": "public",
-        "fingerprint": "6348c7525dda1ba5e9812c1d7aee62af44998136b29a95b56e24b8bc9d5dccc1",
-        "contentFingerprint": "1e63d61334955d3baf2763dab42c599e30ce0bbac96fbadeb2c17b4074122359"
+        "fingerprint": "a9e3b52f6cea4074b08805793480d99152b81656bf5c40f39e3e765831fe4ddc",
+        "contentFingerprint": "060ec85e9a046fb6091e60be536db4fdecf9e9e0ae5df6b70e5756d7fa7229f1"
       },
       {
         "slug": "docs/framework/diagnostics",
@@ -666,16 +666,16 @@
         "permalink": "/docs/framework/release",
         "title": "Release Operations",
         "visibility": "public",
-        "fingerprint": "8ca2e15c8c9d235eea4ad39dfc2d0ec4c70825642bd262dba923c96c227de4bf",
-        "contentFingerprint": "02694c98ff02fa331a4dc4d4b376a256fc9fa2b5028073c5a8da500e74ef0344"
+        "fingerprint": "6df1ef96ed00b416f4f153d7b4ac618e24fd8200aa42a32d3ef90a3c4677e3f9",
+        "contentFingerprint": "137560b10b2df352f458f5e8ee8a4bc669e37d039ae1eff63392916b68636da5"
       },
       {
         "slug": "docs/framework/release.ja",
         "permalink": "/ja/docs/framework/release",
         "title": "リリース作業",
         "visibility": "public",
-        "fingerprint": "f2d693d6879dd9dccf9dd4acb72cafcf9a38bd7255bc847054a5ff8c2aa54049",
-        "contentFingerprint": "5bdd7229c0dc2b83a0d5e92e788974d64694c07e66ad4028afe757a61a9b1605"
+        "fingerprint": "25b976c32b049ab0810265da851ee5f37bdcd433984970b37b6b29e8e8a1ac44",
+        "contentFingerprint": "a3aac558588abc49d7e3cde00efca822c66b838fdc5f710b4ef9499e2b8be380"
       },
       {
         "slug": "docs/framework/spa-navigation",
@@ -1114,16 +1114,16 @@
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "c3dd031b3b84a3bae3630a2808c0b7a4bfe2fa76afc01e7fba118990b896e1ae",
-        "contentFingerprint": "02ae7886d4c5d3c307529f2d379830ec519de1a3581fb415faa82d0a9b7017ac"
+        "fingerprint": "bdae481a1105433090df8f66e0b99be79eb4429b4a9e0b5aa23cb5dccf8eaa9c",
+        "contentFingerprint": "50782e420c6c4f5c51b1c40f41ec04180330c2f809b741f4d69a2be14c9f0ee3"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "9402749e7dce2f332e4b8ec07ae51fedf8e325b177fda5fb505b4f2a06ab6b35",
-        "contentFingerprint": "d753e6d31878b2d80e04ff0aaf8cd38a50e7e41b6e81ae8e3edd2abc2d86a3f3"
+        "fingerprint": "6d4c3c9a8eaa85fd94ef601e4339487c5ebb7c669fee312905ee5e5a420f3142",
+        "contentFingerprint": "da07bf5ed6edb62a9e05ee1baff6e26d6bbf97c8f81e82cd22d9d0ab76ec2870"
       },
       {
         "slug": "docs/getting-started/project-structure",
@@ -1194,16 +1194,16 @@
         "permalink": "/docs/getting-started/separate-repositories-setup",
         "title": "Separate Repositories Setup",
         "visibility": "public",
-        "fingerprint": "04966c06395676d208449d35190c2888617037d404823fdff747173222a3db79",
-        "contentFingerprint": "21be72e0e05509b81ec5f718b76574bf8a0a988dba7cc94022e81fa3d3e8bf62"
+        "fingerprint": "faa8b39b21760e21dc1933cee8784a519c8604704e734338cc3b9317f4822cc8",
+        "contentFingerprint": "24fb1409ae16d3de953cd13ce327253d34029c34e1ab23d64c8ed995f4f80235"
       },
       {
         "slug": "docs/getting-started/separate-repositories-setup.ja",
         "permalink": "/ja/docs/getting-started/separate-repositories-setup",
         "title": "リポジトリ分離型セットアップ",
         "visibility": "public",
-        "fingerprint": "105fe1e8fe4fef08ed82a47929b36c565a22f715142ee26ce7cf0e4b61f4e7b2",
-        "contentFingerprint": "be3c07b3afef458ac2a83e56455359e1c7d9b968d19b481da3c9fbbde88b66d0"
+        "fingerprint": "017dcfcd60be9d397abcd7f4665f13c25d79fdb7d57a0581a93613cdc8202b9d",
+        "contentFingerprint": "09a6a3d6fe1112850c93b7a190436542f11cb7d09a5feedc568439aa3c7bb1b3"
       },
       {
         "slug": "docs/glossary/alias",
@@ -3162,16 +3162,16 @@
         "permalink": "/docs/guides/content-repositories/setup",
         "title": "Setup",
         "visibility": "public",
-        "fingerprint": "34ace546087898412dc5be3751ae70f42ee4f80f3011d3228ab3968656f27809",
-        "contentFingerprint": "aa1ff30eb722833fce0e9aa1bdf28ff3b5a446dc8d34b8d422fa6146785dd785"
+        "fingerprint": "b247314a61cadb70a05cfe3a62fa4701d0caa2569f9a5196d30a5e917e768966",
+        "contentFingerprint": "30ca2d730d7e7ae17676cf5c06b12d72355ca0b6c2b216706a3db03a34920943"
       },
       {
         "slug": "docs/guides/content-repositories/setup.ja",
         "permalink": "/ja/docs/guides/content-repositories/setup",
         "title": "セットアップ",
         "visibility": "public",
-        "fingerprint": "e54cd1065b12eb9196d57f243ec930da4661f20f71180a927ca378426fa9e3cd",
-        "contentFingerprint": "a0a54c1aaadf562f12ec267b9753df87f2f28d4930df490f5627459d1ad03ffd"
+        "fingerprint": "0d80adbaeef1ed8dbff8dd7a0ab5465fa54d1002253f40743bd50d721b5d049d",
+        "contentFingerprint": "2f00ce4c6593087fd090ca903fc6a48c3dc4ee0c26351bd8793c6265b45c8b82"
       },
       {
         "slug": "docs/guides/customizing-your-site",
@@ -3818,16 +3818,16 @@
         "permalink": "/docs/philosophy",
         "title": "Design Philosophy",
         "visibility": "public",
-        "fingerprint": "65fd2e6bcd19355ea4f35ab1e63dcd3073cdcf74a904c95c6739edf5c69ec996",
-        "contentFingerprint": "9e19719aaeec864a6e41a1e01cc3ed26871e3cb2b8550b639cf77fc98f6e0040"
+        "fingerprint": "5ac16f11d24a1309e78b3948bda604248749cdac4872d7b4b702a26c4df0b55a",
+        "contentFingerprint": "7447a87a03344b2953b6e53cfade336f61909a15b2dee94cc93703b0d2cef5ac"
       },
       {
         "slug": "docs/philosophy.ja",
         "permalink": "/ja/docs/philosophy",
         "title": "設計思想",
         "visibility": "public",
-        "fingerprint": "0381973d1d6e83411b374fa8997929f268c036fe4af0a1cb16eaaa38d6f431b3",
-        "contentFingerprint": "07ae1cad63045eac1fa07d0314ad31ca9dee581f07b8ff7b222cbc7df6fef84b"
+        "fingerprint": "19efaa2ed56d15821ac5709cdb5d80bbe3b23cb479cb075bd63c6156bee0e16f",
+        "contentFingerprint": "c709b3b179715fc5eb5a053403e85d4f1d74644e179e257d889975713d7504d5"
       },
       {
         "slug": "docs/plugins/alias",
@@ -4074,8 +4074,8 @@
         "permalink": "/docs/plugins/code-enhance",
         "title": "Code Enhance",
         "visibility": "public",
-        "fingerprint": "fd7e23ebbd17e91780e3149db5c41ef9f4b1f31af4aeab977d7ebd9f62e26767",
-        "contentFingerprint": "ec1a0eb516cb4741c9ebbe5b94700e9f14d3a6657d4ad82a1f7b78a1add955ac"
+        "fingerprint": "4f9dbea33f1bf17feb883f31701795ed0c22004be952260b6c8a7984e26a86f2",
+        "contentFingerprint": "f2aac5b7edc892e1203e127c8eaae3f144d297959b0c476ee1afb64c109c44fb"
       },
       {
         "slug": "docs/plugins/code-enhance.ja",
@@ -4722,8 +4722,8 @@
         "permalink": "/ja/docs/plugins/obsidian-markdown",
         "title": "Obsidian Markdown",
         "visibility": "public",
-        "fingerprint": "7dff184fe4b94c622ba515747cd5d22949f6b1143c022e497cffcdbc0b02cf67",
-        "contentFingerprint": "cc6ca6c2fe735c17130d22435c0f473b80740224818ec708f7ae659b0edf874a"
+        "fingerprint": "f39df8e69d366f498ab0121f81bc0af392aca1fdfecf9c40401a0c9ba65c79cf",
+        "contentFingerprint": "fc71227f90861e9039cb219b6905ae0856c97044affd93102d3072948ecc9ba7"
       },
       {
         "slug": "docs/plugins/og-image",
@@ -5330,8 +5330,8 @@
         "permalink": "/ja/docs/plugins/showcase/build-and-metadata",
         "title": "build-and-metadata.ja",
         "visibility": "public",
-        "fingerprint": "19a18d5c417ef996f22538e98ff518891333dbad6d18d606efd02b8337c8bee8",
-        "contentFingerprint": "7cae08035e50ec3cefc2272256dc6ba81dd8c71f59a9ac49b3a0608115c20370"
+        "fingerprint": "2eec3b521759419f3e96f82289c0b65b71b1557fadc84a606b1fec280d83330d",
+        "contentFingerprint": "8dc3e2db5345e446eb3049832af3ef1078e5f0d372e807c661d8a272b1ab86c8"
       },
       {
         "slug": "docs/plugins/showcase/code",
@@ -5418,16 +5418,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "5ae16a30dc3cfa126b81ac4792f894c9d4bc0ace0d16faf2f7225dc49697e467",
-        "contentFingerprint": "46e04ee98387b71c6e8b454ab4a69153a3beb08c80674192d2309dc39a062b4a"
+        "fingerprint": "1fd7cb6134c4bf7b8c6c2f28e08141703816c53e1f14ab1844fe60ce9d463c05",
+        "contentFingerprint": "5c5d7904e8cc64c1e71b091312e128fd8af8fd66c2166bc2bbf76fec31413641"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data.ja",
         "visibility": "public",
-        "fingerprint": "282a04329c44cebc120620e8fe72e173877d718a7e192eca8e1af743c294cedb",
-        "contentFingerprint": "f06e36cd4050c7f81c4c99a200b7e1fed62bc59f54a5e632b663d6afe2eb0eec"
+        "fingerprint": "f2949a79bec68c4e6c260db31cb6da444d4ea49a34025a1dcc88095bbb240d21",
+        "contentFingerprint": "48d4a432f79a271cf978453022b3a91a0b7ea7d41945867e02ddfad2e55b6a6f"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -5610,16 +5610,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "078863ca3b4de0d68f72e901e6a3a2c084a12d8da2c48b529588ac65679221af",
-        "contentFingerprint": "fc9dbb80feb80499150a86839c5b7f7cd2ae9db4e6bbefe05e8915804a9798e1"
+        "fingerprint": "48db4103400744eea377c0006148267728327b9cf13d5035cb59dcb4c7b5a8bc",
+        "contentFingerprint": "372004aa9a3053299725ac46302064b3f544c0a5c6dcff81cb6f19702b1dac62"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "9bcb19078124d44e6883b573a364a44efaace6f9db1df67a2e29ee30200eb8f7",
-        "contentFingerprint": "b3bce31343b262b4aeed8c41d9048d533ee623e6c0e9b29d2c89a5b7002c3fbc"
+        "fingerprint": "d322959555d4fbee314a10b56447f7b168d51ac9cfc6afb7c88e8c625f37e8b8",
+        "contentFingerprint": "ccc7f5f5060f878b708fb0551af59185dc0368f8c6672432980955f41cf5154a"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -6186,16 +6186,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "be92846c61c4bbfbbbdd0bfff3e5773676dc438caafb0b4b0deae44e62dac4f9",
-        "contentFingerprint": "335de3aa5d53f854af62405b704c418c83cad561c7586b7d8a886dd0b52a5cc2"
+        "fingerprint": "908a2fe2fe0964d94aa040a97d177ee9c361af10a59ea8d5f8df9dc0dc0fb87d",
+        "contentFingerprint": "05980646bdfd0f89bec3d5d823f28b64ca739cac9376377f9e6d6ae5cac4e079"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "100a6ef1f81882c0eb4d67f70137db0f2c2380233b209257c679173ab460c3a6",
-        "contentFingerprint": "e937c5d01bc034610dd4702ef0ee308a0b75af461161db2da2da071df4953fef"
+        "fingerprint": "3542ce6de41e88106d1c7e842f264db20b89aac6f571df4833cc51dd4e2852a5",
+        "contentFingerprint": "f2963f2ea8f54bbe50ef888469dee70d08fb3fa2a55b8542c71bff5c14535951"
       },
       {
         "slug": "docs/security",
@@ -6506,16 +6506,16 @@
         "permalink": "/README",
         "title": "Riebeckite documentation",
         "visibility": "public",
-        "fingerprint": "a31b07f1598377ac85e5aa2c5024dff918df252bb2c7fd5f33d91f20633c9de7",
-        "contentFingerprint": "bed0add7c9d0a435559d15819de562c76efd705bb31cf33c46b6605ca401719e"
+        "fingerprint": "9fba25a2b0545473cce05a9f0b9b50ae1e73a52b93fddaa046338b366fe2b7d8",
+        "contentFingerprint": "8db5b1d004aacbece2e5258e38530684afa7537d7d064269571d234764ab12d2"
       },
       {
         "slug": "README.ja",
         "permalink": "/ja/README",
         "title": "Riebeckite ドキュメント",
         "visibility": "public",
-        "fingerprint": "84cd105de932e03c9b060f4b33327ab0b703bf8a91c561a0d487df32d0e099e9",
-        "contentFingerprint": "b700d8248c0d478891e67c116b8a811c1cdfba0e412784ac01774d9f1f415d22"
+        "fingerprint": "025eae8a57f59f216817967317f15276cbbc943818be85e4c047813e43e3ea7a",
+        "contentFingerprint": "a005ea5d36eccac8c67131c51ea840b5fbc482dcffbebe5b275eb52bca34808f"
       }
     ],
     "redirects": [
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "affec33806bf4259dee512a49b17bd2f8077d009dc55147240c1f38e5187b7fb",
+    "artifactFingerprint": "00d56bc68082a68989980d187636cf1609648941393daf0b618cd8d0b4b29462",
     "provider": "cloudflare-workers"
   }
 }

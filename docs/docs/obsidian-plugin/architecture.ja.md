@@ -4,6 +4,7 @@ title: プラグインのアーキテクチャ
 sidebar:
   label: アーキテクチャ
   order: 10
+publish: false
 ---
 # プラグインのアーキテクチャ
 

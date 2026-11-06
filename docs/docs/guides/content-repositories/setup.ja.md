@@ -184,6 +184,8 @@ npm exec -- riebeckite inspect content --list
 
 GitHub App を作れない場合は、記事リポジトリに `SITE_DISPATCH_TOKEN` を設定します。サイトリポジトリだけに権限を絞った Fine-grained PAT なら **Contents: read and write**、Classic PAT なら `repo` スコープが必要です。
 
+GitHub の画面操作を1つずつ確認したい場合は、[リポジトリ分離型セットアップ](../../getting-started/separate-repositories-setup.ja.md)に画面名と入力値をまとめています。
+
 ```yaml
 repository_dispatch:
   types: [content-updated]

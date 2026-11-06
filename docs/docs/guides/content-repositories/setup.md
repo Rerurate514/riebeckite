@@ -177,6 +177,8 @@ The preferred authentication is a GitHub App. Create an App owned by your accoun
 
 If you cannot create a GitHub App, set `SITE_DISPATCH_TOKEN` in the content repository instead. A fine-grained PAT restricted to the site repository needs **Contents: read and write**; a classic PAT needs the `repo` scope.
 
+For a click-by-click walkthrough, see [Separate Repositories Setup](../../getting-started/separate-repositories-setup.md).
+
 ```yaml
 repository_dispatch:
   types: [content-updated]

@@ -32,9 +32,13 @@
   height: auto;
 }
 
-.rb-d2[data-d2="error"] .rb-d2__canvas::before,
-.rb-d2[data-d2="pending"] .rb-d2__canvas:empty::before {
+.rb-d2[data-d2="error"] .rb-d2__canvas::before {
   content: "Diagram could not be rendered.";
+  color: var(--rb-d2-muted);
+}
+
+.rb-d2[data-d2="pending"] .rb-d2__canvas:empty::before {
+  content: "Loading diagram…";
   color: var(--rb-d2-muted);
 }
 

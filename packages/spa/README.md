@@ -45,6 +45,11 @@ Links with a modifier key, another target, `download`, or `data-spa="false"`
 keep normal browser behavior. Failed transitions fall back to document
 navigation.
 
+During navigation, a fixed top progress bar appears after 150 ms and disappears
+when the page commits or the navigation fails. It needs no markup or site CSS,
+stays out of the tab order, and becomes a static bar when the visitor prefers
+reduced motion.
+
 ## Head ownership
 
 Page-specific head elements should set `data-riebeckite-head="page"`. The

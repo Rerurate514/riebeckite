@@ -28,7 +28,9 @@ Each primitive is a subpath so sites load only what they use.
 | `@riebeckite/ui/tabs` | WAI-ARIA tab selection and keyboard behavior |
 | `@riebeckite/ui/copy` | Clipboard text copy with a fallback |
 | `@riebeckite/ui/behaviors` | Focus, dismiss, and scroll-lock utilities |
+| `@riebeckite/ui/loading` | Loading, ready, and error state for a DOM region |
 | `@riebeckite/ui/styles/drawer.css` | Drawer structure and state styles |
+| `@riebeckite/ui/styles/loading.css` | Optional loading indicator and error styles |
 
 ```tsx
 import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
@@ -45,5 +47,27 @@ import "@riebeckite/ui/drawer/client";
 The Drawer keeps Escape and outside-click dismissal, focus trap and restore, initial focus, reference-counted scroll lock, trigger ARIA state, SPA cleanup, and duplicate-init protection. Without JavaScript, the trigger remains a fragment link and CSS `:target` reveals the panel. That fallback cannot provide dialog semantics, focus containment or restoration, Escape and outside-click dismissal, scroll lock, or a reliable close affordance.
 
 `createDialogController()` also accepts a `signal`. Aborting it destroys the controller, closes the dialog, releases the scroll lock, and restores focus, so page lifecycle teardown does not need a separate `destroy()` call.
+
+The loading controller keeps transient state out of feature code without owning layout or copy:
+
+```html
+<section data-loading-state="ready">
+  <p data-loading role="status" hidden>Loading…</p>
+  <p data-loading-error role="alert" hidden></p>
+  <div data-loading-content>Content</div>
+</section>
+```
+
+```ts
+import { createLoadingController } from "@riebeckite/ui/loading";
+import "@riebeckite/ui/styles/loading.css";
+
+const loading = createLoadingController(section, { signal });
+loading.start();
+loading.stop();
+loading.fail("Could not load this section.");
+```
+
+`start()` shows `[data-loading]` elements and sets `aria-busy` on `[data-loading-content]`, or on the root when no content element exists. `fail()` hides the indicator and fills `[data-loading-error]`. The controller does not inject markup and does not choose localized text.
 
 See the [UI guide](../../docs/docs/framework/ui.md) for the other primitives.

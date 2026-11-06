@@ -86,6 +86,8 @@ await session.dispose();
 
 `transport` は明示的な依存です。上記のローカル描画、静的 fixture、ホスト API を選べます。`transport` を渡さない既存の `endpoint` は引き続き `/api/playground` が既定です。Theme や Color Mode の変更では Markdown を再実行せず、iframe 文書だけを更新します。mode は `light`、`dark`、`system` に対応します。
 
+`mountPreview` はプレビュー iframe の読み込みが終わるまで、root を読み込み中として扱います。既定のインジケータを表示するには、プレビュー root 内に `[data-loading]`、`[data-loading-error]`、`[data-loading-content]` を置き、`@riebeckite/ui/styles/loading.css` を読み込みます。content 要素は iframe のラッパーで、コントローラが `aria-busy` を設定します。これらの要素がなくてもステータス文言は変わりますが、追加のマークアップは生成されません。
+
 ## API
 
 - `createPreview(options?)`：状態を分離したプレビューセッションを作成します。

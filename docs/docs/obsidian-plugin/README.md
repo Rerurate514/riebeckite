@@ -4,6 +4,7 @@ title: Riebeckite for Obsidian
 sidebar:
   label: Obsidian Plugin
   order: 25
+publish: false
 ---
 # Riebeckite for Obsidian
 

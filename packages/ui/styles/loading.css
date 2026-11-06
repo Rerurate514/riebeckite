@@ -1,0 +1,41 @@
+@layer components {
+  [data-loading] {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  [data-loading][hidden],
+  [data-loading-error][hidden] {
+    display: none;
+  }
+
+  [data-loading]::before {
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    content: "";
+    animation: rb-loading-spin 700ms linear infinite;
+  }
+
+  [data-loading-error] {
+    color: var(--rb-color-danger, #b42318);
+  }
+
+  @keyframes rb-loading-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-loading]::before {
+      border-inline-end-color: currentColor;
+      opacity: 0.55;
+      animation: none;
+    }
+  }
+}

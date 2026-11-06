@@ -55,6 +55,7 @@ Omit `spa` or set `spa: false` to keep normal browser navigation.
 When an eligible link is clicked, Riebeckite:
 
 - fetches the next HTML document without leaving the current page
+- shows a fixed top progress bar if loading takes longer than 150 ms
 - replaces `<main id="main-content">` and matching `data-spa-region` elements
   with the fetched page's output
 - updates the document title, language, direction, and page-specific metadata

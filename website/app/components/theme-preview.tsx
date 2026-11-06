@@ -45,6 +45,7 @@ export function ThemePreview({
       >
         {japanese ? "プレビューを準備中" : "Preparing preview"}
       </output>
+      <p class="theme-showcase__error" data-loading-error role="alert" hidden />
       <div class="theme-showcase__controls">
         <div class="theme-showcase__toolbar">
           <label class="theme-showcase__control" hidden={mode === "single"}>
@@ -144,7 +145,17 @@ export function ThemePreview({
       <textarea data-preview-markdown hidden>
         {fixtures[0].markdown}
       </textarea>
-      <div class="theme-showcase__frame-wrap" data-preview-viewport="desktop">
+      <div
+        class="theme-showcase__frame-wrap"
+        data-preview-viewport="desktop"
+        data-loading-content
+      >
+        <span
+          class="theme-showcase__loading"
+          data-loading
+          aria-hidden="true"
+          hidden
+        />
         <iframe
           data-preview-frame
           title={japanese ? "テーマプレビュー" : "Theme preview"}

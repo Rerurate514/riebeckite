@@ -4,6 +4,7 @@ title: Plugin architecture
 sidebar:
   label: Architecture
   order: 10
+publish: false
 ---
 # Plugin architecture
 

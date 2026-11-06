@@ -216,6 +216,52 @@
   font: inherit;
 }
 
+.rr-diff-history__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.rr-diff-history__status[hidden] {
+  display: none;
+}
+
+.rr-diff-history__status::before {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: rr-diff-spin 700ms linear infinite;
+}
+
+.rr-diff-history__error {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.rr-diff-history__error[hidden] {
+  display: none;
+}
+
+@keyframes rr-diff-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rr-diff-history__status::before {
+    border-right-color: currentColor;
+    opacity: 0.55;
+    animation: none;
+  }
+}
+
 .rr-diff-history__diff {
   border: 1px solid
     var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));

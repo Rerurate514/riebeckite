@@ -204,6 +204,37 @@ test("only the latest navigation commits, updates head, and owns history", async
   }
 });
 
+test("slow navigation shows and clears the progress bar", async () => {
+  const { page, errors } = await open();
+  try {
+    await page.click('a[href="/b-slow"]');
+    await page.waitForSelector("[data-spa-progress]:not([hidden])", {
+      timeout: 2000,
+    });
+    assert.deepEqual(
+      await page.evaluate(() => {
+        const bar = document.querySelector("[data-spa-progress]");
+        return {
+          role: bar?.getAttribute("role"),
+          label: bar?.getAttribute("aria-label"),
+          position: bar ? getComputedStyle(bar).position : "",
+        };
+      }),
+      { role: "progressbar", label: "Loading page", position: "fixed" },
+    );
+
+    await waitForMarker(page, "PAGE_B");
+    await page.waitForFunction(
+      () =>
+        document.querySelector<HTMLElement>("[data-spa-progress]")?.hidden ===
+        true,
+    );
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("same-page hash history does not refetch and focuses the target", async () => {
   fixture.resetRequests();
   const { page, errors } = await open("/c-fast");

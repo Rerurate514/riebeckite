@@ -51,6 +51,7 @@ export default defineConfig({
 対象のリンクをクリックすると、Riebeckite は次の処理を行います。
 
 - 現在のページを離れずに、次のページの HTML を取得する
+- 読み込みに 150ms 以上かかる場合は、画面上部に固定のプログレスバーを表示する
 - `<main id="main-content">` と一致する `data-spa-region` 要素を、取得したページの出力で置き換える
 - ページタイトル、言語、文字方向、ページ固有のメタデータを更新する
 - 新しいページの island を hydrate する

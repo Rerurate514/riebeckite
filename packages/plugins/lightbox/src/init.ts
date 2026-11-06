@@ -1,4 +1,5 @@
 import { createDialogController } from "@riebeckite/ui/dialog";
+import { createLoadingController } from "@riebeckite/ui/loading";
 import { createDialog } from "./dialog.js";
 import {
   DEFAULT_CLOSE_LABEL,
@@ -30,10 +31,12 @@ export function initLightbox(
   const dialog = createDialog({ expandLabel, closeLabel });
   document.body.appendChild(dialog.element);
 
+  const loading = createLoadingController(dialog.element);
   const controller = createDialogController(dialog.element, {
     closeButtons: [dialog.closeButton],
     initialFocus: () => dialog.closeButton,
     onClose: () => {
+      loading.stop();
       dialog.image.removeAttribute("src");
     },
   });
@@ -42,12 +45,18 @@ export function initLightbox(
     const src = trigger.dataset.lightboxSrc ?? trigger.href;
     const alt = trigger.dataset.lightboxAlt ?? "";
 
+    loading.start();
     dialog.image.src = src;
     dialog.image.alt = alt;
     dialog.caption.textContent = alt;
     dialog.caption.hidden = alt.length === 0;
     controller.open();
   };
+
+  const handleImageLoad = () => loading.stop();
+  const handleImageError = () => loading.fail("Failed to load image.");
+  dialog.image.addEventListener("load", handleImageLoad);
+  dialog.image.addEventListener("error", handleImageError);
 
   const handleTriggerClick = (event: MouseEvent) => {
     const trigger = event.currentTarget;
@@ -65,6 +74,9 @@ export function initLightbox(
     for (const trigger of triggers) {
       trigger.removeEventListener("click", handleTriggerClick);
     }
+    dialog.image.removeEventListener("load", handleImageLoad);
+    dialog.image.removeEventListener("error", handleImageError);
+    loading.destroy();
     controller.destroy();
     dialog.element.remove();
     for (const trigger of wrappedTriggers) unwrapImage(trigger);

@@ -47,6 +47,7 @@ export function buildDiagramFigure(input: DiagramFigureInput): DiagramNode {
       dataDiagram: input.kind,
       dataDiagramStatus: input.status,
       dataDiagramId: input.id,
+      ariaBusy: input.status === "pending" ? "true" : undefined,
       ...input.attributes,
     },
     children,

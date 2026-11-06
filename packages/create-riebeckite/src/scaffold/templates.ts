@@ -56,7 +56,8 @@ export function siteTemplateFiles(
   ];
 }
 
-const CONTENT_LANGUAGE_PATTERN = /^(.*)\.([a-z]{2}(?:-[A-Z]{2})?)\.md$/;
+const CONTENT_LANGUAGE_PATTERN =
+  /^(.*)\.([a-z]{2}(?:-[A-Z]{2})?)\.(md|canvas)$/;
 
 function presetContentFiles(
   preset: ScaffoldPreset,
@@ -81,35 +82,63 @@ function presetContentFiles(
         continue;
       }
 
-      const [, base, language] = match;
+      const [, base, language, extension] = match;
       const score =
         language === defaultLanguage ? 2 : language === "en" ? 1 : 0;
-      const current = selected.get(base);
+      const relativePath = `${base}.${extension}`;
+      const current = selected.get(relativePath);
       if (!current || score > current.score) {
-        selected.set(base, { file, score });
+        selected.set(relativePath, { file, score });
       }
     }
 
     return [...selected.entries()].map(([relativePath, { file }]) => ({
-      path: `content/${relativePath.endsWith(".md") ? relativePath : `${relativePath}.md`}`,
+      path: `content/${relativePath}`,
       content: replaceTitle(file.content, variables.title),
     }));
   }
 
-  return files.map((file) => {
+  const localizedAssets = new Map<
+    string,
+    { readonly file: SiteTemplateFile; readonly score: number }
+  >();
+  for (const file of files) {
+    const match = CONTENT_LANGUAGE_PATTERN.exec(file.path);
+    if (!match || match[3] === "md") continue;
+
+    const [, base, language, extension] = match;
+    const score = language === defaultLanguage ? 2 : language === "en" ? 1 : 0;
+    const relativePath = `${base}.${extension}`;
+    const current = localizedAssets.get(relativePath);
+    if (!current || score > current.score) {
+      localizedAssets.set(relativePath, { file, score });
+    }
+  }
+
+  return files.flatMap((file) => {
     const match = CONTENT_LANGUAGE_PATTERN.exec(file.path);
     let relativePath = file.path;
 
     if (match && SCAFFOLD_LANGUAGES.includes(match[2] as ScaffoldLanguage)) {
-      const [, base, language] = match;
-      relativePath =
-        language === defaultLanguage ? `${base}.md` : `${base}.${language}.md`;
+      const [, base, language, extension] = match;
+      if (extension !== "md") {
+        const selected = localizedAssets.get(`${base}.${extension}`);
+        if (selected?.file !== file) return [];
+        relativePath = `${base}.${extension}`;
+      } else {
+        relativePath =
+          language === defaultLanguage
+            ? `${base}.${extension}`
+            : `${base}.${language}.${extension}`;
+      }
     }
 
-    return {
-      path: `content/${relativePath}`,
-      content: replaceTitle(file.content, variables.title),
-    };
+    return [
+      {
+        path: `content/${relativePath}`,
+        content: replaceTitle(file.content, variables.title),
+      },
+    ];
   });
 }
 

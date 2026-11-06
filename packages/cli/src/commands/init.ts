@@ -37,5 +37,14 @@ export async function runInit(options: InitOptions): Promise<void> {
   const externalContent =
     options.deployment.type === "github-actions" &&
     options.deployment.content.type === "external";
-  console.log(formatScaffoldNextSteps(relative, { editFile, externalContent }));
+  console.log(
+    formatScaffoldNextSteps(relative, {
+      editFile,
+      externalContent,
+      ...(options.deployment.type === "github-actions" &&
+      options.deployment.content.type === "external"
+        ? { contentRepository: options.deployment.content.contentRepository }
+        : {}),
+    }),
+  );
 }

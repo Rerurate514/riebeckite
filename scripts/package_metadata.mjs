@@ -819,6 +819,7 @@ export function expectedPackageMetadata(directory) {
         "./src/drawer/client.ts",
         "./dist/drawer-client.js",
         "./styles/drawer.css",
+        "./styles/loading.css",
       ]),
       files: ["LICENSE", "README.md", "README_ja.md", "dist", "styles"],
       scripts: {

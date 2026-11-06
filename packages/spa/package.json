@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/spa",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

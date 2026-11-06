@@ -12,12 +12,18 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.40...HEAD
+
+## [0.0.40] - 2026-11-06
+
 ### Changed
 
 - Canvas now opens with the whole diagram in view, supports reliable pan and zoom controls, and renders Obsidian Canvas edge sides and arrow ends. The showcase fixture and documentation use a connected Canvas example.
   Packages: `@riebeckite/plugin-canvas`, `create-riebeckite`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.39...HEAD
+[0.0.40]: https://github.com/Rerurate514/riebeckite/compare/v0.0.39...v0.0.40
 
 ## [0.0.39] - 2026-11-05
 

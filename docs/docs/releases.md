@@ -14,10 +14,16 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.0.40 - 2026-11-06
+
 ### Changed
 
 - Canvas now opens with the whole diagram in view, supports reliable pan and zoom controls, and renders Obsidian Canvas edge sides and arrow ends. The showcase fixture and documentation use a connected Canvas example.
   Packages: `@riebeckite/plugin-canvas`, `create-riebeckite`
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.0.39...v0.0.40)
 
 ## 0.0.39 - 2026-11-05
 

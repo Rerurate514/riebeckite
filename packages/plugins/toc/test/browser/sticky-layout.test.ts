@@ -116,11 +116,14 @@ test("starter and showcase TOCs use their Site layout contract", async () => {
         inlineStickyTop: (toc as HTMLElement).style.getPropertyValue(
           "--rr-toc-sticky-top",
         ),
+        borderLeftWidth: getComputedStyle(toc).borderLeftWidth,
+        borderRightWidth: getComputedStyle(toc).borderRightWidth,
       }),
     );
     assert.equal(initial.position, "sticky");
     assert.equal(initial.stickyTop, "24px");
     assert.equal(initial.inlineStickyTop, "");
+    assert.equal(initial.borderLeftWidth, initial.borderRightWidth);
 
     await page.evaluate(() => window.scrollTo(0, 1200));
     const afterScroll = await page.$eval(

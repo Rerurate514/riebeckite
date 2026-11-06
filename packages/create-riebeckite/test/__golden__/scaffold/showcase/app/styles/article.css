@@ -53,7 +53,7 @@
     max-height: calc(100dvh - var(--site-toc-sticky-top) - var(--rb-space-4, 2rem));
     overflow-y: auto;
     overscroll-behavior: contain;
-    border-inline-start: 1px solid color-mix(in oklab, currentColor 18%, transparent);
-    padding-inline-start: 1rem;
+    border-inline: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+    padding-inline: 1rem;
   }
 }

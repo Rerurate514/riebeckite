@@ -144,6 +144,25 @@ test("buildVisibleGraph filters unresolved notes, orphans and non-matching nodes
   );
 });
 
+test("local graph keeps an isolated center note when orphan filtering is off", () => {
+  const document = buildGraphDocument(entries);
+  const visible = buildVisibleGraph({
+    document,
+    settings: settings({
+      showOrphans: false,
+      showTags: false,
+      showAttachments: false,
+    }),
+    mode: "local",
+    centerId: "lonely",
+  });
+  assert.deepEqual(
+    visible.nodes.map((node) => node.id),
+    ["lonely"],
+  );
+  assert.equal(visible.centerId, "lonely");
+});
+
 test("local depth expands outward and inward symmetrically", () => {
   const document = buildGraphDocument(entries);
   const depth0 = buildVisibleGraph({

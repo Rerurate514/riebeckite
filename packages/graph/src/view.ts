@@ -48,18 +48,20 @@ export function buildVisibleGraph(input: BuildVisibleGraphInput): VisibleGraph {
   for (const id of candidates) {
     const node = nodeById.get(id);
     if (!node) continue;
+    const isCenter = mode === "local" && id === centerId;
     if (node.kind === "tag" && !settings.showTags) continue;
     if (node.kind === "attachment" && !settings.showAttachments) continue;
     if (node.kind === "unresolved" && settings.existingOnly) continue;
     if (
       node.kind === "note" &&
       !settings.showOrphans &&
+      !isCenter &&
       (fullDegree.get(node.id) ?? 0) === 0
     ) {
       continue;
     }
     if (settings.search.trim().length > 0 && !matchesGraphQuery(node, search)) {
-      if (mode !== "local" || id !== centerId) continue;
+      if (!isCenter) continue;
     }
 
     visibleNodes.push({

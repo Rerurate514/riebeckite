@@ -18,7 +18,7 @@ The script is designed to be **idempotent and resumable**. Re-running the same v
 
 ## Change entries
 
-User-facing changes are recorded before release as Markdown entries under `changes/unreleased/`. An entry lists the affected packages, one Keep a Changelog type (`added`, `changed`, `deprecated`, `removed`, `fixed`, or `security`), whether it is breaking, the migration steps, and related PR, issue, or ADR links. See [`changes/README.md`](../../../changes/README.md) for the format.
+User-facing changes are recorded before release as Markdown entries under `changes/unreleased/`. An entry lists the affected packages, one Keep a Changelog type (`added`, `changed`, `deprecated`, `removed`, `fixed`, or `security`), whether it is breaking, the migration steps, and related PR, issue, or ADR links. See [`changes/README.md`](https://github.com/Rerurate514/riebeckite/blob/main/changes/README.md) for the format.
 
 ```bash
 pnpm changes:new my-change   # create an entry from the template

@@ -267,4 +267,4 @@ Riebeckite本体を変更する
 
 です。
 
-コーディングエージェント向けの短い開発ルールは [agents](./agents/README.md) に分けています。
+コーディングエージェント向けの短い開発ルールは [agents](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/README.md) に分けています。

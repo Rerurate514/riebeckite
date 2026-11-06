@@ -23,4 +23,4 @@
 | [`image-optimizer`](../image-optimizer.ja.md) | Responsive Image が使う WebP / AVIF 派生画像 |
 | [`svg-optimizer`](../svg-optimizer.ja.md) | 同じパスで置き換える最適化済み SVG |
 
-実際の例については[プラグイン作成の詳細](/series/plugins-in-depth-ja)を参照してください。
+実際の例については[プラグイン作成の詳細](/ja/series/plugins-in-depth-ja)を参照してください。

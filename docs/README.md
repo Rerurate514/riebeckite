@@ -256,4 +256,4 @@ Change Riebeckite itself
   → Framework Development
 ```
 
-Short development rules for coding agents live in [agents](./agents/README.md).
+Short development rules for coding agents live in [agents](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/README.md).

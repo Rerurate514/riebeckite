@@ -150,7 +150,7 @@ Riebeckite が担うつもりのないものです。実現できない、ある
 11. 公開 API は外部のプラグインやテーマに必要か。公式コードだけが使う特権 API になっていないか。
 12. 原則から逸脱する場合、その文脈と結果を記録しているか。
 
-原則から逸脱する重要な判断は、[`docs/agents/adr/`](../agents/adr/README.md)に Architecture Decision Record として記録します。公開契約の変更、アーキテクチャ境界の変更、原則からの意図的な逸脱、セキュリティまたは公開に関する例外、リリース方針の変更では作成してください。それ以外のほとんどの変更では、pull request または issue に、問題、判断、代替案、結果を書けば十分です。逸脱は失敗ではありません。記録されていない逸脱が失敗です。
+原則から逸脱する重要な判断は、[`docs/agents/adr/`](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/README.md)に Architecture Decision Record として記録します。公開契約の変更、アーキテクチャ境界の変更、原則からの意図的な逸脱、セキュリティまたは公開に関する例外、リリース方針の変更では作成してください。それ以外のほとんどの変更では、pull request または issue に、問題、判断、代替案、結果を書けば十分です。逸脱は失敗ではありません。記録されていない逸脱が失敗です。
 
 利用者に影響する変更は、別に `changes/unreleased/` の変更エントリとして記録します。エントリはリリース前に検証され、変更履歴、[リリースノート](./releases.ja.md)、GitHub Releases を一つの情報源から生成します。手順は[リリース作業](./framework/release.ja.md)を参照してください。
 

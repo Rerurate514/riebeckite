@@ -13,7 +13,9 @@ export function createCanvasResolver(
       if (isImagePath(resolved) || isAttachmentPath(resolved)) {
         return {
           kind: "asset",
-          url: attachmentUrl(resolved),
+          url: isImagePath(resolved)
+            ? `/${resolved.split("/").map(encodeURIComponent).join("/")}`
+            : attachmentUrl(resolved),
           label: getFileName(target),
         };
       }

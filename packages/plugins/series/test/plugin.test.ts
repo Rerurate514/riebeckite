@@ -8,6 +8,7 @@ import {
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
+import { l10n } from "../../l10n/index.ts";
 import {
   buildSeriesIndex,
   getSeriesNavigation,
@@ -133,6 +134,31 @@ test("series pages honor a custom base path", async () => {
   const landing = await content.resolvePage("/collections/guide");
   assert.equal(landing?.type, "series-index");
   assert.match(landing?.body ?? "", /data-series="Guide"/);
+});
+
+test("localized series lists link to localized landing pages", async () => {
+  const content = new ContentManager(
+    source({
+      "part-1.md":
+        "---\npublish: true\ntitle: Part 1\nseries: Guide\nseries_order: 1\n---\n# Part 1",
+      "part-1.ja.md":
+        "---\npublish: true\ntitle: 第1部\nseries: Guide\nseries_order: 1\n---\n# 第1部",
+      "part-2.md":
+        "---\npublish: true\ntitle: Part 2\nseries: Guide\nseries_order: 2\n---\n# Part 2",
+      "part-2.ja.md":
+        "---\npublish: true\ntitle: 第2部\nseries: Guide\nseries_order: 2\n---\n# 第2部",
+    }),
+    [],
+    {
+      config: pageConfig(),
+      plugins: [l10n({ defaultLang: "en", languages: ["en", "ja"] }), series()],
+    },
+  );
+
+  const list = await content.resolvePage("/ja/series");
+  assert.equal(list?.type, "series-list");
+  assert.match(list?.body ?? "", /href="\/ja\/series\/guide"/);
+  assert.doesNotMatch(list?.body ?? "", /href="\/series\/guide"/);
 });
 
 test("an empty base path disables the generated series pages", async () => {

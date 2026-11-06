@@ -58,7 +58,7 @@ flowchart TD
 
 pull request を開く前に、次を確認してください。
 
-1. **ADR が必要か。** 公開契約の変更、アーキテクチャ境界の変更、原則からの意図的な逸脱、セキュリティまたは公開に関する例外、リリース方針の変更では必要です。[Architecture Decision Record](../../../agents/adr/README.md) を参照してください。
+1. **ADR が必要か。** 公開契約の変更、アーキテクチャ境界の変更、原則からの意図的な逸脱、セキュリティまたは公開に関する例外、リリース方針の変更では必要です。[Architecture Decision Record](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/README.md) を参照してください。
 2. **変更エントリが必要か。** Riebeckite のパッケージをインストールした利用者が観測できる変更では必要です。`changes/unreleased/` に追加し、`pnpm changelog` を実行します。
 3. **破壊的変更か。** 利用者がコードや設定を変更する必要がある場合は `breaking: true` にし、移行手順を書きます。1.0 前はマイナーリリースに含められますが、1.0 以降はメジャーリリースが必要です。
 4. **移行ガイドが必要か。** 移行手順が数行を超える場合は必要です。エントリとリリースノートからリンクしてください。

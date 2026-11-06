@@ -44,6 +44,7 @@ type SeriesPageModel = {
   resolved: ResolvedSeriesOptions;
   views: Map<string, ContentManifest>;
   listPaths: Map<string, string>;
+  listOptions: (viewKey: string) => SeriesOptions;
   byPath: Map<
     string,
     { index: SeriesIndex; locale: string; view: ContentManifest }
@@ -118,6 +119,17 @@ export function series(options: SeriesOptions = {}) {
       resolved,
       views,
       listPaths,
+      listOptions: (viewKey) =>
+        localization && viewKey
+          ? {
+              ...options,
+              basePath: localizedPagePath(
+                localization,
+                resolved.basePath,
+                viewKey,
+              ),
+            }
+          : options,
       byPath,
     };
     models.set(manifest, model);
@@ -147,7 +159,7 @@ export function series(options: SeriesOptions = {}) {
           if (viewKey === undefined) return null;
           const view = model.views.get(viewKey);
           if (!view) return null;
-          const body = renderSeriesList(view, options);
+          const body = renderSeriesList(view, model.listOptions(viewKey));
           if (body === "") return null;
           return {
             type: "series-list",
@@ -163,7 +175,7 @@ export function series(options: SeriesOptions = {}) {
           if (viewKey === undefined) return null;
           const view = model.views.get(viewKey);
           if (!view) return null;
-          const body = renderSeriesList(view, options);
+          const body = renderSeriesList(view, model.listOptions(viewKey));
           if (body === "") return null;
           return {
             type: "series-list",

@@ -134,6 +134,34 @@ test("canvas page note links resolve public notes and neutralize private ones", 
   assert.doesNotMatch(body, /href="\/notes\/Hidden"/);
 });
 
+test("canvas image file cards link to the image asset path", async () => {
+  const manager = createManager(
+    {
+      "index.md": "---\npublish: true\n---\n\n![[drawings/Image.canvas]]\n",
+      "drawings/Image.canvas": JSON.stringify({
+        nodes: [
+          {
+            id: "logo",
+            type: "file",
+            x: 0,
+            y: 0,
+            width: 200,
+            height: 100,
+            file: "assets/logo.png",
+          },
+        ],
+        edges: [],
+      }),
+      "assets/logo.png": "",
+    },
+    { documentPages: true },
+  );
+
+  const body = (await manager.resolvePage("/drawings/Image"))?.body ?? "";
+  assert.match(body, /href="\/assets\/logo\.png"/);
+  assert.doesNotMatch(body, /\/assets\/attachments\/assets\/logo\.png/);
+});
+
 test("invalid canvas JSON declares no page and reports a diagnostic", async () => {
   const manager = createManager(
     { ...files, "drawings/Architecture.canvas": "{ not valid json" },

@@ -11,7 +11,7 @@ collapse controls.
 
 ## Overview
 
-`codeEnhance()` wraps [rehype-pretty-code](https://github.com/rehype-pretty-code/rehype-pretty-code)
+`codeEnhance()` wraps [rehype-pretty-code](https://github.com/rehype-pretty/rehype-pretty-code)
 (Shiki) and post-processes each figure into `.rr-code` with a header and
 action buttons. The client entry wires up the buttons.
 

@@ -150,7 +150,7 @@ Use these questions before adding a feature, a configuration field, a syntax ext
 11. Is the public API needed by external plugins or themes, and can official code use only that public API?
 12. If the change deviates from a principle, is the deviation recorded with its context and consequences?
 
-Important deviations are recorded as Architecture Decision Records under [`docs/agents/adr/`](../agents/adr/README.md). Write one for a public contract change, an architecture boundary change, an intentional exception to a principle, a security or publication exception, or a release policy change. For most other changes, the pull request or issue is enough: state the problem, the decision, the alternatives, and the consequence. A deviation is not a failure. An unrecorded deviation is.
+Important deviations are recorded as Architecture Decision Records under [`docs/agents/adr/`](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/README.md). Write one for a public contract change, an architecture boundary change, an intentional exception to a principle, a security or publication exception, or a release policy change. For most other changes, the pull request or issue is enough: state the problem, the decision, the alternatives, and the consequence. A deviation is not a failure. An unrecorded deviation is.
 
 User-facing changes are recorded separately as change entries under `changes/unreleased/`. The entries are validated before a release and generate the changelog, the [release notes](./releases.md), and GitHub Releases from one source. See [Release Operations](./framework/release.md) for the workflow.
 

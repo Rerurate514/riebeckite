@@ -18,7 +18,7 @@ pnpm release <version>
 
 ## 変更エントリ
 
-利用者に影響する変更は、リリース前に `changes/unreleased/` の Markdown エントリとして記録します。エントリには、対象パッケージ、Keep a Changelog の種別（`added`、`changed`、`deprecated`、`removed`、`fixed`、`security`）、破壊的変更かどうか、移行手順、関連する PR・issue・ADR を書きます。形式は [`changes/README.md`](../../../changes/README.md) を参照してください。
+利用者に影響する変更は、リリース前に `changes/unreleased/` の Markdown エントリとして記録します。エントリには、対象パッケージ、Keep a Changelog の種別（`added`、`changed`、`deprecated`、`removed`、`fixed`、`security`）、破壊的変更かどうか、移行手順、関連する PR・issue・ADR を書きます。形式は [`changes/README.md`](https://github.com/Rerurate514/riebeckite/blob/main/changes/README.md) を参照してください。
 
 ```bash id="changes1"
 pnpm changes:new my-change   # テンプレートからエントリを作成

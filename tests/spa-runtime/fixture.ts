@@ -15,7 +15,7 @@ type Route = {
 
 const routes = new Map<string, Route>([
   ["/a", { title: "Page A", marker: "PAGE_A" }],
-  ["/b-slow", { title: "Page B", marker: "PAGE_B", delay: 150 }],
+  ["/b-slow", { title: "Page B", marker: "PAGE_B", delay: 400 }],
   ["/c-fast", { title: "Page C", marker: "PAGE_C", delay: 20 }],
   [
     "/commit-error",

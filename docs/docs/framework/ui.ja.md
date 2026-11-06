@@ -110,6 +110,32 @@ if (await copyText(value)) {
 
 ラベル、ステータス通知、ボタンのマークアップはプラグイン側に残します。
 
+## Loading
+
+DOM 領域がデータを取得したり非同期処理を行ったりする場合は、loading コントローラを使います。状態とアクセシビリティ属性だけを管理し、レイアウトや文言は持ちません。
+
+```html
+<section data-loading-state="ready">
+  <p data-loading role="status" hidden>読み込み中…</p>
+  <p data-loading-error role="alert" hidden></p>
+  <div data-loading-content>コンテンツ</div>
+</section>
+```
+
+```ts
+import { createLoadingController } from "@riebeckite/ui/loading";
+import "@riebeckite/ui/styles/loading.css";
+
+const loading = createLoadingController(section, { signal });
+loading.start();
+loading.stop();
+loading.fail("この領域を読み込めませんでした。");
+```
+
+`start()` は `[data-loading]` を表示し、`[data-loading-content]` に `aria-busy` を設定します。content 要素がない場合はルートに設定します。`fail()` はインジケータを隠し、`[data-loading-error]` に文言を入れます。ページライフサイクルの `signal` を渡すと後始末も自動になります。既定のスピナーとエラー色が必要な場合だけ CSS を読み込みます。コントローラ自体は CSS なしでも動作します。
+
+コントローラはマークアップを注入せず、常設のステータス文言や翻訳済みのコピーも管理しません。プロンプトや件数の表示に status 要素を既に使っているコンポーネントは、その文言を置き換えず、別の `[data-loading]` 要素を追加してください。SPA ナビゲーションは専用の上部プログレスバーを使い、このコントローラを mount しません。
+
 ## Behaviors
 
 `@riebeckite/ui/behaviors` サブパスは、プリミティブが使う小さな部品を公開します。`getFocusable`、`focusFirst`、`trapFocus`、`createDismissable`、`lockScroll` です。SSR 中に import しても安全で、ブラウザで呼び出すまで document にアクセスしません。

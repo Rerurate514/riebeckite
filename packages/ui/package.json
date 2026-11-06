@@ -72,7 +72,14 @@
       "source": "./behaviors.ts",
       "default": "./dist/behaviors.js"
     },
-    "./styles/drawer.css": "./styles/drawer.css"
+    "./loading": {
+      "types": "./dist/loading.d.ts",
+      "import": "./dist/loading.js",
+      "source": "./loading.ts",
+      "default": "./dist/loading.js"
+    },
+    "./styles/drawer.css": "./styles/drawer.css",
+    "./styles/loading.css": "./styles/loading.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
@@ -97,6 +104,7 @@
     "./drawer-client.ts",
     "./src/drawer/client.ts",
     "./dist/drawer-client.js",
-    "./styles/drawer.css"
+    "./styles/drawer.css",
+    "./styles/loading.css"
   ]
 }

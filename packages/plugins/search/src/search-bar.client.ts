@@ -1,4 +1,5 @@
 import { createDialogController } from "@riebeckite/ui/dialog";
+import { createLoadingController } from "@riebeckite/ui/loading";
 import {
   normalizeSearchText,
   parseSearchQuery,
@@ -30,28 +31,44 @@ export function initSearch(context: SearchInitContext = {}): () => void {
 
   if (!root || !modal || !input || !status || !results) return () => {};
 
+  const loading = createLoadingController(modal);
   let searchItems: SearchItem[] | null = null;
+  let loadFailed = false;
   let selectedIndex = 0;
   let currentResults: SearchResult[] = [];
 
-  const loadSearchItems = async () => {
-    if (searchItems) return;
+  const loadSearchItems = async (): Promise<boolean> => {
+    if (searchItems && !loadFailed) return true;
 
+    loading.start();
     status.textContent = "Loading search index...";
-    const response = await fetch("/search-data.json");
-    if (!response.ok) {
-      status.textContent = "Failed to load search index.";
+    try {
+      const response = await fetch("/search-data.json");
+      if (!response.ok) throw new Error("Failed to load search index.");
+      searchItems = (await response.json()) as SearchItem[];
+      loadFailed = false;
+      loading.stop();
+      return true;
+    } catch {
       searchItems = [];
-      return;
+      loadFailed = true;
+      status.textContent = "";
+      loading.fail("Failed to load search index.");
+      return false;
     }
-
-    searchItems = (await response.json()) as SearchItem[];
   };
 
   const renderResults = (query: string) => {
     const parsedQuery = parseSearchQuery(query);
     const normalizedQuery = parsedQuery.text;
     selectedIndex = 0;
+
+    if (loadFailed) {
+      currentResults = [];
+      results.replaceChildren();
+      status.textContent = "";
+      return;
+    }
 
     if (normalizedQuery.length === 0 && parsedQuery.filters.length === 0) {
       currentResults = [];
@@ -60,7 +77,14 @@ export function initSearch(context: SearchInitContext = {}): () => void {
       return;
     }
 
-    currentResults = searchContentItems(searchItems ?? [], query, {
+    if (searchItems === null) {
+      currentResults = [];
+      results.replaceChildren();
+      status.textContent = "Loading search index...";
+      return;
+    }
+
+    currentResults = searchContentItems(searchItems, query, {
       language: document.documentElement.lang || undefined,
     }).slice(0, MAX_RESULTS);
 
@@ -101,8 +125,8 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     initialFocus: () => input,
     signal: context.signal,
     onOpen: () => {
-      void loadSearchItems().then(() => {
-        if (modal.open) renderResults(input.value);
+      void loadSearchItems().then((loaded) => {
+        if (loaded && modal.open) renderResults(input.value);
       });
     },
   });
@@ -175,6 +199,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
 
   return () => {
     document.removeEventListener("keydown", onKeyDown);
+    loading.destroy();
     controller.destroy();
   };
 }

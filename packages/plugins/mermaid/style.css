@@ -36,9 +36,13 @@
   height: auto;
 }
 
-.rr-mermaid[data-mermaid="error"] .rr-mermaid__canvas::before,
-.rr-mermaid[data-mermaid="pending"] .rr-mermaid__canvas:empty::before {
+.rr-mermaid[data-mermaid="error"] .rr-mermaid__canvas::before {
   content: "Diagram could not be rendered.";
+  color: var(--rr-mermaid-muted);
+}
+
+.rr-mermaid[data-mermaid="pending"] .rr-mermaid__canvas:empty::before {
+  content: "Loading diagram…";
   color: var(--rr-mermaid-muted);
 }
 

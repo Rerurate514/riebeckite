@@ -31,6 +31,11 @@
   padding: 1rem;
 }
 
+.rb-chartjs[data-diagram-status="pending"] .rb-chartjs__canvas:empty::before {
+  content: "Loading chart…";
+  color: var(--rb-chartjs-muted);
+}
+
 :is(:root, .rb-theme-root)[data-rb-mode="dark"] .rb-chartjs {
   --rb-chartjs-paper: var(--rb-color-ink, #000000);
   --rb-chartjs-ink: var(--rb-color-paper, #ffffff);

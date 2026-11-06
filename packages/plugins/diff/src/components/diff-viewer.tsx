@@ -16,7 +16,9 @@ export function renderDiffViewer({
       <label>From ${renderRevisionSelect("from", history, selected.from?.hash ?? "")}</label>
       <label>To ${renderRevisionSelect("to", history, selected.to.hash)}</label>
     </div>
-    <div data-rr-diff-panel>${renderDiffPanel(selected)}</div>
+    <p class="rr-diff-history__status" data-loading aria-live="polite" hidden>Loading revision…</p>
+    <p class="rr-diff-history__error" data-loading-error role="alert" hidden></p>
+    <div data-rr-diff-panel data-loading-content>${renderDiffPanel(selected)}</div>
   </div>`;
 }
 

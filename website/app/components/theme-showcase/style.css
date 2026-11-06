@@ -256,12 +256,56 @@ body:has(.theme-showcase) main {
   background: var(--rb-color-ink);
   color: var(--rb-color-paper);
 }
+.theme-showcase__error {
+  margin: 0;
+  padding: var(--rb-space-2) var(--rb-space-3);
+  color: var(--rb-color-ink);
+  font-size: 0.875rem;
+  border-block-end: 1px solid var(--rb-color-border);
+}
+.theme-showcase__error[hidden] {
+  display: none;
+}
 .theme-showcase__frame-wrap {
+  position: relative;
   width: 100%;
   height: 42rem;
   margin-inline: auto;
   overflow: auto;
   background: #161616;
+}
+.theme-showcase__loading {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  z-index: 1;
+  display: inline-flex;
+  color: var(--rb-color-accent, #f66620);
+  transform: translate(-50%, -50%);
+}
+.theme-showcase__loading[hidden] {
+  display: none;
+}
+.theme-showcase__loading::before {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  content: "";
+  animation: theme-showcase-spin 700ms linear infinite;
+}
+@keyframes theme-showcase-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-showcase__loading::before {
+    border-inline-end-color: currentColor;
+    opacity: 0.55;
+    animation: none;
+  }
 }
 .theme-showcase__frame-wrap[data-preview-viewport="tablet"] {
   width: min(100%, 48rem);

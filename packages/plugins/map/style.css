@@ -29,6 +29,11 @@
   display: none;
 }
 
+.rr-map[data-rr-map="pending"] .rr-map__static::before {
+  content: "Loading map…";
+  color: var(--rr-map-muted);
+}
+
 .rr-map__canvas .leaflet-container {
   background: transparent;
   font: inherit;

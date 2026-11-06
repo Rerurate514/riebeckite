@@ -85,6 +85,8 @@ await session.dispose();
 
 `createPreviewDocument` は、無害化済みのプレビュー HTML と、ホストが管理する信頼できる CSS だけに使います。CSP を絞った iframe のコンテンツを作るため、サンドボックス化した iframe に埋め込みます。スクリプト、フォーム、フレームの埋め込みは有効になりません。
 
+`mountPreview` はプレビュー iframe が `load` を発火するまで読み込み中として扱います。共有のインジケータを表示するには、プレビュー root 内に `[data-loading]`、`[data-loading-error]`、`[data-loading-content]` を置きます。`[data-loading-content]` は iframe のラッパーにし、`aria-busy` の対象にします。既定のスピナーには `@riebeckite/ui/styles/loading.css` を読み込みます。loading 用のマークアップがなくても、ステータス要素は描画中と完了を通知します。
+
 ## API
 
 - `createPreview(options?)` — 独立したプレビューセッションを作る

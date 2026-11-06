@@ -13,10 +13,20 @@ declare global {
   var RbDialog: typeof import("../dialog.ts");
   var RbTabs: typeof import("../tabs.ts");
   var RbCopy: typeof import("../copy.ts");
+  var RbLoading: typeof import("../loading.ts");
+
+  interface Window {
+    loadingAbort: AbortController;
+    loadingController: import("../loading.ts").LoadingController;
+  }
 }
 
 const style = await readFile(
   new URL("../styles/drawer.css", import.meta.url),
+  "utf8",
+);
+const loadingStyle = await readFile(
+  new URL("../styles/loading.css", import.meta.url),
   "utf8",
 );
 
@@ -37,6 +47,7 @@ const drawerJs = await bundle("../drawer-client.ts", "RbDrawer");
 const dialogJs = await bundle("../dialog.ts", "RbDialog");
 const tabsJs = await bundle("../tabs.ts", "RbTabs");
 const copyJs = await bundle("../copy.ts", "RbCopy");
+const loadingJs = await bundle("../loading.ts", "RbLoading");
 
 const pageMarkup = `<!doctype html>
 <style>
@@ -45,6 +56,7 @@ const pageMarkup = `<!doctype html>
   header { display:flex; justify-content:space-between; padding:1rem }
   main { padding:1rem }
   ${style}
+  ${loadingStyle}
 </style>
 <header>
   <a href="/">Site</a>
@@ -72,6 +84,11 @@ const pageMarkup = `<!doctype html>
   </div>
   <div id="vertical-panel-1" role="tabpanel">Vertical A</div>
   <div id="vertical-panel-2" role="tabpanel" hidden>Vertical B</div>
+  <section id="loading-root" data-loading-state="ready">
+    <p id="loading-indicator" data-loading hidden>Loading</p>
+    <p id="loading-error" data-loading-error role="alert" hidden></p>
+    <div id="loading-content" data-loading-content>Content</div>
+  </section>
 </main>
 <div class="rb-drawer" data-rb-drawer data-rb-drawer-open="false">
   <div class="rb-drawer__backdrop" data-rb-drawer-backdrop hidden></div>
@@ -112,15 +129,17 @@ before(async () => {
 after(async () => browser?.close());
 
 test("UI modules import without a document", async () => {
-  const [dialog, tabs, copy, behaviors] = await Promise.all([
+  const [dialog, tabs, copy, loading, behaviors] = await Promise.all([
     import("../dialog.ts"),
     import("../tabs.ts"),
     import("../copy.ts"),
+    import("../loading.ts"),
     import("../behaviors.ts"),
   ]);
   assert.equal(typeof dialog.createDialogController, "function");
   assert.equal(typeof tabs.createTabs, "function");
   assert.equal(typeof copy.copyText, "function");
+  assert.equal(typeof loading.createLoadingController, "function");
   assert.equal(typeof behaviors.lockScroll, "function");
 });
 
@@ -559,6 +578,95 @@ test("Copy text uses the fallback and preserves selection", async (t) => {
     selectedText: "selected text",
     textareas: 0,
   });
+  await page.close();
+});
+
+test("Loading controller exposes state and accessibility", async (t) => {
+  if (!browser) return t.skip("Puppeteer browser is unavailable");
+  const page = await openPage(768, [{ name: "loading", source: loadingJs }]);
+
+  const started = await page.evaluate(() => {
+    const root = document.querySelector("#loading-root");
+    if (!root) throw new Error("Missing loading root");
+    window.loadingController = RbLoading.createLoadingController(root);
+    window.loadingController.start();
+    return {
+      state: root.getAttribute("data-loading-state"),
+      indicatorHidden:
+        document.querySelector<HTMLElement>("#loading-indicator")?.hidden,
+      errorHidden:
+        document.querySelector<HTMLElement>("#loading-error")?.hidden,
+      busy: document
+        .querySelector("#loading-content")
+        ?.getAttribute("aria-busy"),
+    };
+  });
+  assert.deepEqual(started, {
+    state: "loading",
+    indicatorHidden: false,
+    errorHidden: true,
+    busy: "true",
+  });
+
+  await page.evaluate(() => window.loadingController.fail("Network failed"));
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      state: document
+        .querySelector("#loading-root")
+        ?.getAttribute("data-loading-state"),
+      indicatorHidden:
+        document.querySelector<HTMLElement>("#loading-indicator")?.hidden,
+      errorHidden:
+        document.querySelector<HTMLElement>("#loading-error")?.hidden,
+      message: document.querySelector("#loading-error")?.textContent,
+      busy: document
+        .querySelector("#loading-content")
+        ?.getAttribute("aria-busy"),
+    })),
+    {
+      state: "error",
+      indicatorHidden: true,
+      errorHidden: false,
+      message: "Network failed",
+      busy: null,
+    },
+  );
+
+  await page.evaluate(() => window.loadingController.start());
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      message: document.querySelector("#loading-error")?.textContent,
+      errorHidden:
+        document.querySelector<HTMLElement>("#loading-error")?.hidden,
+    })),
+    { message: "", errorHidden: true },
+  );
+
+  await page.evaluate(() => {
+    window.loadingAbort = new AbortController();
+    window.loadingController.destroy();
+    const root = document.querySelector("#loading-root");
+    if (!root) throw new Error("Missing loading root");
+    window.loadingController = RbLoading.createLoadingController(root, {
+      signal: window.loadingAbort.signal,
+    });
+    window.loadingController.start();
+    window.loadingAbort.abort();
+  });
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      state: document
+        .querySelector("#loading-root")
+        ?.getAttribute("data-loading-state"),
+      indicatorHidden:
+        document.querySelector<HTMLElement>("#loading-indicator")?.hidden,
+      busy: document
+        .querySelector("#loading-content")
+        ?.getAttribute("aria-busy"),
+    })),
+    { state: null, indicatorHidden: true, busy: null },
+  );
+
   await page.close();
 });
 

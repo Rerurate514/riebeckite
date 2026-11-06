@@ -18,6 +18,16 @@ package-level picture and design rationale.
 - [Metadata](./spa-runtime/metadata.md)
 - [Initializers](./spa-runtime/initializers.md)
 
+## Progress bar
+
+The runtime lazily creates one `[data-spa-progress]` element in the body and
+one injected stylesheet. A navigation starts a 150 ms timer so fast cache hits do
+not flash the bar. The bar stays hidden until that timer fires, then clears when
+the navigation commits, fails over to a document load, is superseded, or the
+runtime stops. The stylesheet uses `--rb-color-accent` when present and falls
+back to a built-in accent color. Reduced-motion preferences replace the moving
+segment with a static bar.
+
 ## Current constraints
 
 - Link handling is limited to same-origin anchors and `popstate`; forms and

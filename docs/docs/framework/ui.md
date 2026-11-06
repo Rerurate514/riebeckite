@@ -110,6 +110,32 @@ if (await copyText(value)) {
 
 Plugins keep their own labels, status announcements, and button markup.
 
+## Loading
+
+Use the loading controller when a DOM region fetches data or performs asynchronous work. It owns state and accessibility attributes, not layout or wording:
+
+```html
+<section data-loading-state="ready">
+  <p data-loading role="status" hidden>Loading…</p>
+  <p data-loading-error role="alert" hidden></p>
+  <div data-loading-content>Content</div>
+</section>
+```
+
+```ts
+import { createLoadingController } from "@riebeckite/ui/loading";
+import "@riebeckite/ui/styles/loading.css";
+
+const loading = createLoadingController(section, { signal });
+loading.start();
+loading.stop();
+loading.fail("Could not load this section.");
+```
+
+`start()` shows `[data-loading]` and sets `aria-busy` on `[data-loading-content]`, or on the root when it is absent. `fail()` hides the indicator and writes the message to `[data-loading-error]`. Pass a page lifecycle `signal` to clean up automatically. Import the CSS only when the site wants the default spinner and error color; the controller works without it.
+
+The controller does not inject markup, manage a persistent status message, or decide localized copy. A component that already uses a status element for prompts and counts should add a separate `[data-loading]` element instead of replacing that text. SPA navigation uses its own top progress bar and does not mount this controller.
+
 ## Behaviors
 
 The `@riebeckite/ui/behaviors` subpath exposes the small pieces used by the primitives: `getFocusable`, `focusFirst`, `trapFocus`, `createDismissable`, and `lockScroll`. They are safe to import during SSR and do not access the document until called in a browser.

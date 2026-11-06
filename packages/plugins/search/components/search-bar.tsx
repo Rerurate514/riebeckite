@@ -62,9 +62,22 @@ export default function SearchBar(props: SearchBarProps = {}) {
           <div class="rr-search-modal__status" data-search-status role="status">
             Filter with tag:, lang:, or path:.
           </div>
+          <span
+            class="rr-search-modal__loading"
+            data-loading
+            aria-hidden="true"
+            hidden
+          />
+          <p
+            class="rr-search-modal__error"
+            data-loading-error
+            role="alert"
+            hidden
+          />
           <div
             class="rr-search-modal__results"
             data-search-results
+            data-loading-content
             role="listbox"
             aria-label="Search results"
           />

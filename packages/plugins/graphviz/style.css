@@ -35,9 +35,13 @@
   height: auto;
 }
 
-.rb-graphviz[data-graphviz="error"] .rb-graphviz__canvas::before,
-.rb-graphviz[data-graphviz="pending"] .rb-graphviz__canvas:empty::before {
+.rb-graphviz[data-graphviz="error"] .rb-graphviz__canvas::before {
   content: "Diagram could not be rendered.";
+  color: var(--rb-graphviz-muted);
+}
+
+.rb-graphviz[data-graphviz="pending"] .rb-graphviz__canvas:empty::before {
+  content: "Loading diagram…";
   color: var(--rb-graphviz-muted);
 }
 

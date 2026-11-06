@@ -16,14 +16,18 @@ export async function renderPendingDiagrams(
     root.querySelectorAll<HTMLElement>(selector),
   )) {
     if (context.signal?.aborted || !figure.isConnected) break;
+    figure.setAttribute("aria-busy", "true");
     try {
       const cleanup = await renderer(figure, context);
       if (cleanup) cleanups.push(cleanup);
-      if (!context.signal?.aborted && figure.isConnected)
+      if (!context.signal?.aborted && figure.isConnected) {
         figure.dataset.diagramStatus = "rendered";
+        figure.removeAttribute("aria-busy");
+      }
     } catch {
       if (!context.signal?.aborted && figure.isConnected) {
         figure.dataset.diagramStatus = "error";
+        figure.removeAttribute("aria-busy");
         figure
           .querySelector<HTMLDetailsElement>("[data-diagram-fallback]")
           ?.setAttribute("open", "");

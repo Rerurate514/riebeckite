@@ -1,3 +1,4 @@
+import { createLoadingController } from "@riebeckite/ui/loading";
 import { escapeHtml } from "../src/components/diff-line.js";
 import { createLineDiff } from "../src/diff/line_diff.js";
 import type { MarkdownRevision, PostDiff } from "../src/types.js";
@@ -30,6 +31,14 @@ function initDiffHistoryRoot(root: HTMLElement) {
   const toSelect = root.querySelector<HTMLSelectElement>("[data-rr-diff-to]");
   const panel = root.querySelector<HTMLElement>("[data-rr-diff-panel]");
   if (!fromSelect || !toSelect || !panel) return;
+  const loading = createLoadingController(root);
+  const load = () => {
+    revisionsRequest ??= loadRevisions(payload.path).then((loaded) => {
+      if (!loaded) revisionsRequest = null;
+      return loaded;
+    });
+    return revisionsRequest;
+  };
 
   for (const button of root.querySelectorAll<HTMLButtonElement>(
     "[data-rr-diff-select]",
@@ -40,14 +49,12 @@ function initDiffHistoryRoot(root: HTMLElement) {
       void updateDiff({
         root,
         panel,
+        loading,
         getRevisions: () => revisions,
         setRevisions: (loaded) => {
           revisions = loaded;
         },
-        load: () => {
-          revisionsRequest ??= loadRevisions(payload.path);
-          return revisionsRequest;
-        },
+        load,
         fromHash: fromSelect.value,
         toHash,
         fromSelect,
@@ -60,14 +67,12 @@ function initDiffHistoryRoot(root: HTMLElement) {
     void updateDiff({
       root,
       panel,
+      loading,
       getRevisions: () => revisions,
       setRevisions: (loaded) => {
         revisions = loaded;
       },
-      load: () => {
-        revisionsRequest ??= loadRevisions(payload.path);
-        return revisionsRequest;
-      },
+      load,
       fromHash: fromSelect.value,
       toHash: toSelect.value,
       fromSelect,
@@ -82,6 +87,7 @@ function initDiffHistoryRoot(root: HTMLElement) {
 async function updateDiff(input: {
   root: HTMLElement;
   panel: HTMLElement;
+  loading: ReturnType<typeof createLoadingController>;
   getRevisions: () => ReadonlyMap<string, MarkdownRevision>;
   setRevisions: (revisions: ReadonlyMap<string, MarkdownRevision>) => void;
   load: () => Promise<ReadonlyMap<string, MarkdownRevision> | null>;
@@ -93,15 +99,24 @@ async function updateDiff(input: {
   const { root, panel, fromHash, toHash, fromSelect, toSelect } = input;
   const token = `${fromHash}\n${toHash}`;
   root.dataset.rrDiffPending = token;
+  input.loading.start();
   const loaded = await input.load();
-  if (loaded) input.setRevisions(loaded);
   if (root.dataset.rrDiffPending !== token) return;
+  if (!loaded) {
+    input.loading.fail("Failed to load revision.");
+    return;
+  }
+  input.setRevisions(loaded);
   const diff = createDiff(input.getRevisions(), fromHash, toHash);
-  if (!diff) return;
+  if (!diff) {
+    input.loading.stop();
+    return;
+  }
   fromSelect.value = diff.from?.hash ?? "";
   toSelect.value = diff.to.hash;
   updateSelectedCommit(root, diff.to.hash);
   renderPanel(panel, diff);
+  input.loading.stop();
 }
 
 async function loadRevisions(

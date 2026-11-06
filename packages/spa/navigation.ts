@@ -12,6 +12,7 @@ import {
   validateSpaOptions,
 } from "./options.js";
 import { PageCache } from "./prefetch.js";
+import { createSpaProgress } from "./progress.js";
 import { ScrollRestoration } from "./scroll.js";
 
 type Navigation = {
@@ -46,6 +47,7 @@ class SpaNavigation {
   private readonly options: Required<SpaOptions> &
     Pick<SpaNavigationOptions, "onBeforePageCommit" | "onPageCommit">;
   private readonly cache = new PageCache();
+  private readonly progress = createSpaProgress();
   private readonly scroll: ScrollRestoration;
   private navigationId = 0;
   private currentPath = window.location.pathname + window.location.search;
@@ -85,6 +87,7 @@ class SpaNavigation {
     this.navigationId += 1;
     this.cancelActive();
     this.cache.dispose();
+    this.progress.dispose();
     this.scroll.stop();
     document.removeEventListener("click", this.onClick);
     window.removeEventListener("popstate", this.onPopState);
@@ -138,6 +141,7 @@ class SpaNavigation {
     this.cancelActive();
     if (popstate) this.scroll.cancel();
     if (popstate && this.isSamePage(url)) {
+      this.progress.done();
       this.scroll.restore(url, true);
       if (url.hash) {
         focusHashTarget(url);
@@ -150,6 +154,7 @@ class SpaNavigation {
     const controller = new AbortController();
     const active: Navigation = { id, controller };
     this.active = active;
+    this.progress.start();
     let committed = false;
     let commitFailure: { error: unknown } | undefined;
     let destination = url;
@@ -218,7 +223,10 @@ class SpaNavigation {
       }
       window.location.assign(destination.href);
     } finally {
-      if (this.active === active) this.active = undefined;
+      if (this.active === active) {
+        this.active = undefined;
+        this.progress.done();
+      }
     }
   }
 

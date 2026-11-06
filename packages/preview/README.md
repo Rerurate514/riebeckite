@@ -103,6 +103,13 @@ results, or call a host API. The legacy `endpoint` option still defaults to
 updates the iframe document without rerunning Markdown rendering. `light`,
 `dark`, and `system` modes are supported.
 
+`mountPreview` marks the root as loading until the preview iframe finishes
+loading. To show the default indicator, place `[data-loading]`,
+`[data-loading-error]`, and `[data-loading-content]` elements inside the preview
+root and import `@riebeckite/ui/styles/loading.css`. The content element is the
+iframe wrapper; the controller sets its `aria-busy` attribute. Without these
+elements, the status text still changes and no extra markup is created.
+
 ## API
 
 - `createPreview(options?)` creates an isolated stateful preview session.

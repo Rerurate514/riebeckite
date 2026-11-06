@@ -34,9 +34,13 @@
   max-width: 100%;
 }
 
-.rb-markmap[data-markmap="error"] .rb-markmap__canvas:empty::before,
-.rb-markmap[data-markmap="pending"] .rb-markmap__canvas:empty::before {
+.rb-markmap[data-markmap="error"] .rb-markmap__canvas:empty::before {
   content: "Mind map could not be rendered.";
+  color: var(--rb-markmap-muted);
+}
+
+.rb-markmap[data-markmap="pending"] .rb-markmap__canvas:empty::before {
+  content: "Loading mind map…";
   color: var(--rb-markmap-muted);
 }
 

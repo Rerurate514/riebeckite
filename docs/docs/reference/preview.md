@@ -85,6 +85,8 @@ await session.dispose();
 
 Use `createPreviewDocument` only with sanitized preview HTML and trusted, host-owned CSS. It creates iframe content with a restrictive CSP, so embed it in a sandboxed iframe. Scripts, forms, and frame embedding are not enabled.
 
+`mountPreview` reports loading until the preview iframe emits `load`. Add `[data-loading]`, `[data-loading-error]`, and `[data-loading-content]` inside the preview root to display the shared indicator; `[data-loading-content]` should wrap the iframe so it receives `aria-busy`. Import `@riebeckite/ui/styles/loading.css` for the default spinner. The status element still announces rendering and completion when no loading markup is present.
+
 ## API
 
 - `createPreview(options?)` creates an isolated preview session.

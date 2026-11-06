@@ -1,3 +1,7 @@
+import {
+  createLoadingController,
+  type LoadingController,
+} from "@riebeckite/ui/loading";
 import { createPreviewDocument } from "./src/document.js";
 import { mountThemePreview as mountThemePreviewImplementation } from "./src/theme-preview.js";
 import {
@@ -102,6 +106,7 @@ export function mountPreview(
     ...options.messages,
   };
   const lifetime = new AbortController();
+  const loading = createLoadingController(root, { signal: lifetime.signal });
   const markdown = requireElement<HTMLTextAreaElement>(
     root,
     selectors.markdown,
@@ -123,6 +128,8 @@ export function mountPreview(
     mode,
     status,
     diagnostics,
+    loading,
+    frameRevision: 0,
     themeStyles: options.themeStyles,
     themeAttributes: options.themeAttributes ?? {},
     themeSettings: options.themeSettings,
@@ -181,6 +188,7 @@ export function mountPreview(
         if (value !== undefined) markdown.value = value;
       }
       if ((event.target === theme || event.target === mode) && lastResponse) {
+        renderState({ kind: "rendering" }, elements);
         renderState({ kind: "rendered", response: lastResponse }, elements);
       } else {
         render();
@@ -211,6 +219,8 @@ type PreviewElements = {
   readonly mode: HTMLSelectElement;
   readonly status: HTMLElement;
   readonly diagnostics: HTMLUListElement;
+  readonly loading: LoadingController;
+  frameRevision: number;
   readonly themeStyles: Readonly<Record<string, string>>;
   readonly themeAttributes: Readonly<
     Record<string, Readonly<Record<string, string>>>
@@ -223,10 +233,14 @@ type PreviewElements = {
 };
 
 function renderState(state: PreviewUiState, elements: PreviewElements): void {
+  elements.frameRevision += 1;
   if (state.kind === "rendering") {
+    elements.loading.start();
     elements.status.textContent = elements.messages.rendering;
     return;
   }
+  const revision = elements.frameRevision;
+  elements.loading.start();
   const themeStyle = elements.themeStyles[elements.theme.value];
   const themeSettings = elements.themeSettings?.(elements.theme.value);
   elements.frame.srcdoc = createPreviewDocument({
@@ -256,11 +270,20 @@ function renderState(state: PreviewUiState, elements: PreviewElements): void {
       return item;
     }),
   );
-  elements.status.textContent = state.response.diagnostics.some(
-    (item) => item.severity === "error",
-  )
-    ? elements.messages.checkDiagnostics
-    : elements.messages.rendered;
+  const settle = () => {
+    if (revision !== elements.frameRevision) return;
+    elements.loading.stop();
+    elements.status.textContent = state.response.diagnostics.some(
+      (item) => item.severity === "error",
+    )
+      ? elements.messages.checkDiagnostics
+      : elements.messages.rendered;
+  };
+  if (state.response.html.length === 0) {
+    settle();
+    return;
+  }
+  elements.frame.addEventListener("load", settle, { once: true });
 }
 
 function isThemeSettingEvent(event: Event): boolean {

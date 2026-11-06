@@ -71,6 +71,7 @@ function findByRole(node: AxNode | null, role: string): AxNode | undefined {
 let server: Server;
 let browser: Browser | null = null;
 let baseUrl = "";
+let searchFailure = false;
 
 before(async () => {
   const searchStyle = readFileSync(
@@ -149,6 +150,11 @@ ${componentHtml}
       return;
     }
     if (url === "/search-data.json") {
+      if (searchFailure) {
+        response.statusCode = 500;
+        response.end("search index unavailable");
+        return;
+      }
       response.setHeader("content-type", "application/json; charset=utf-8");
       response.end(JSON.stringify(SEARCH_ITEMS));
       return;
@@ -313,6 +319,42 @@ test("opening moves focus to the search input and names the dialog", async (t) =
   assert.equal(findByRole(snapshot, "dialog")?.name, "Search notes");
 
   await page.close();
+});
+
+test("a failed index load stays visible while the visitor types", async (t) => {
+  if (!browser) return t.skip("puppeteer browser unavailable");
+  searchFailure = true;
+  const page = await openPage();
+  try {
+    await page.click("[data-search-open]");
+    await waitOpen(page);
+    await page.waitForFunction(() => {
+      const error = document.querySelector<HTMLElement>("[data-loading-error]");
+      return (
+        error?.hidden === false &&
+        error.textContent === "Failed to load search index."
+      );
+    });
+
+    await typeQuery(page, "note");
+    const state = await page.evaluate(() => ({
+      error: document.querySelector("[data-loading-error]")?.textContent,
+      status: document.querySelector("[data-search-status]")?.textContent,
+      results: document.querySelectorAll("[data-search-result]").length,
+      busy: document
+        .querySelector("[data-search-results]")
+        ?.getAttribute("aria-busy"),
+    }));
+    assert.deepEqual(state, {
+      error: "Failed to load search index.",
+      status: "",
+      results: 0,
+      busy: null,
+    });
+  } finally {
+    searchFailure = false;
+    await page.close();
+  }
 });
 
 test("results follow the document language until a lang filter is used", async (t) => {

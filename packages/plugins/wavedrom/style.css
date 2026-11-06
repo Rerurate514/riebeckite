@@ -34,7 +34,11 @@
   height: auto;
 }
 
-.rb-wavedrom[data-wavedrom="pending"] .rb-wavedrom__canvas:empty::before,
+.rb-wavedrom[data-wavedrom="pending"] .rb-wavedrom__canvas:empty::before {
+  content: "Loading timing diagram…";
+  color: var(--rb-wavedrom-muted);
+}
+
 .rb-wavedrom[data-wavedrom="error"] .rb-wavedrom__canvas:empty::before {
   content: "Timing diagram could not be rendered.";
   color: var(--rb-wavedrom-muted);

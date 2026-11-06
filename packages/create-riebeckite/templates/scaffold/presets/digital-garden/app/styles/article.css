@@ -49,4 +49,9 @@
     border-block-start: 0;
     border-inline-start: 1px solid var(--rb-color-border);
   }
+
+  .site-article .site-article__aside :is(.rr-backlinks, .rr-local-graph) {
+    border-left: 0;
+    padding-left: 0;
+  }
 }

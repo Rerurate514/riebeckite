@@ -21,7 +21,6 @@ const config = resolveHonoxConfig(
 const CONTENT_DIR = config.content.directory;
 const ASSETS_ROOT = "public/";
 
-const IMAGE_SOURCE_PATTERN = /\b(?:src|href)=["']([^"']+)["']/g;
 const ATTACHMENTS_PUBLIC_ROOT = ATTACHMENTS_BASE_PATH.replace(/^\/+/, "");
 
 type ContentImage = {
@@ -33,9 +32,20 @@ type ContentImage = {
 type ContentAttachment = ContentImage;
 
 type ReferencedAssets = {
-  images: Set<string>;
-  attachments: Set<string>;
+  images: ReadonlySet<string>;
+  attachments: ReadonlySet<string>;
 };
+
+type AssetReferenceCache = {
+  version: 3;
+  key: string;
+  fingerprint: string;
+  expiresAt: number | null;
+  images: string[];
+  attachments: string[];
+};
+
+const ASSET_REFERENCE_CACHE_VERSION = 3;
 
 type CopyResult = "copied" | "skipped";
 
@@ -53,6 +63,7 @@ export async function buildImages(options: BuildImagesOptions = {}) {
   const attachments = await collectContentAttachments(contentDir, assetsRoot);
   const referencedAssets = await collectReferencedAssets(
     contentDir,
+    assetsRoot,
     exclude,
     config,
   );
@@ -272,11 +283,36 @@ async function removeOrphanedImages(
 
 async function collectReferencedAssets(
   contentDir: string,
+  assetsRoot: string,
   exclude: readonly string[],
   appConfig: typeof config,
 ): Promise<ReferencedAssets> {
-  const referencedImages = new Set<string>();
-  const referencedAttachments = new Set<string>();
+  const cachePath = path.join(
+    appRoot,
+    ".riebeckite",
+    "build-images-cache.json",
+  );
+  const cacheKey = JSON.stringify({
+    contentDir,
+    assetsRoot,
+    exclude,
+    filters: appConfig.content.filters,
+  });
+  const digest = await markdownFingerprint(contentDir);
+  const cached = await readAssetReferenceCache(cachePath);
+  if (
+    cached?.version === ASSET_REFERENCE_CACHE_VERSION &&
+    cached.key === cacheKey &&
+    cached.fingerprint === digest &&
+    (cached.expiresAt === null || Date.now() < cached.expiresAt)
+  ) {
+    console.log("Content asset references: cache hit");
+    return {
+      images: new Set(cached.images),
+      attachments: new Set(cached.attachments),
+    };
+  }
+
   const content = new ContentManager(
     createContentSource({
       ...appConfig.content,
@@ -286,67 +322,106 @@ async function collectReferencedAssets(
     [],
     { config: { ...appConfig, plugins: [] }, commitBuildState: false },
   );
-  const manifest = await content.build();
-
-  for (const entry of manifest.publicEntries) {
-    for (const link of entry.links) {
-      if (!link.slug) continue;
-      const normalizedPath = normalizeAssetPath(link.slug);
-      if (!isSafeContentPath(normalizedPath)) continue;
-
-      if (link.kind === "image") {
-        referencedImages.add(normalizedPath);
-      } else if (link.kind === "attachment") {
-        referencedAttachments.add(normalizedPath);
-      }
-    }
-
-    for (const assetPath of extractAssetPaths(entry.slug, entry.html)) {
-      referencedImages.add(assetPath);
-    }
+  try {
+    const references = await content.getPublicAssetReferences();
+    await writeAssetReferenceCache(cachePath, {
+      version: ASSET_REFERENCE_CACHE_VERSION,
+      key: cacheKey,
+      fingerprint: digest,
+      expiresAt: references.nextPublishAt,
+      images: [...references.images],
+      attachments: [...references.attachments],
+    });
+    return references;
+  } finally {
+    await content.dispose();
   }
-
-  return { images: referencedImages, attachments: referencedAttachments };
 }
 
-function extractAssetPaths(slug: string, html: string): string[] {
-  IMAGE_SOURCE_PATTERN.lastIndex = 0;
-
-  return Array.from(html.matchAll(IMAGE_SOURCE_PATTERN))
-    .map((match) => match[1])
-    .filter((source): source is string => source !== undefined)
-    .map((source) => resolveContentAssetPath(slug, source))
-    .filter((assetPath): assetPath is string => assetPath !== null);
+async function markdownFingerprint(contentDir: string): Promise<string> {
+  const entries = await fs.readdir(contentDir, {
+    recursive: true,
+    withFileTypes: true,
+  });
+  const files = entries
+    .filter(
+      (entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".md"),
+    )
+    .map((entry) => path.join(entry.parentPath, entry.name))
+    .sort();
+  const parts: string[] = [];
+  const batchSize = 64;
+  for (let index = 0; index < files.length; index += batchSize) {
+    const batch = files.slice(index, index + batchSize);
+    const stats = await Promise.all(
+      batch.map(async (file) => {
+        const stat = await fs.stat(file);
+        return `${path.relative(contentDir, file).replaceAll("\\", "/")}\0${stat.size}\0${stat.mtimeMs}`;
+      }),
+    );
+    parts.push(...stats);
+  }
+  return parts.join("\n");
 }
 
-function resolveContentAssetPath(slug: string, source: string): string | null {
-  const withoutQuery = source.split(/[?#]/, 1)[0];
-  if (!withoutQuery || /^[a-z][a-z0-9+.-]*:/i.test(withoutQuery)) return null;
-
-  const decodedSource = decodeUrlPath(withoutQuery);
-  if (!decodedSource) return null;
-
-  const assetPath = decodedSource.startsWith("/")
-    ? decodedSource.slice(1)
-    : path.posix.join(path.posix.dirname(slug), decodedSource);
-  const normalizedPath = normalizeAssetPath(assetPath);
-
-  if (
-    normalizedPath.startsWith("../") ||
-    !IMAGE_EXTENSIONS.includes(getExtension(normalizedPath))
-  ) {
+async function readAssetReferenceCache(
+  cachePath: string,
+): Promise<AssetReferenceCache | null> {
+  try {
+    const parsed = JSON.parse(await fs.readFile(cachePath, "utf8")) as {
+      version?: unknown;
+      key?: unknown;
+      fingerprint?: unknown;
+      expiresAt?: unknown;
+      images?: unknown;
+      attachments?: unknown;
+    };
+    if (
+      parsed.version !== ASSET_REFERENCE_CACHE_VERSION ||
+      typeof parsed.key !== "string" ||
+      typeof parsed.fingerprint !== "string" ||
+      !isStringArray(parsed.images) ||
+      !isStringArray(parsed.attachments)
+    ) {
+      return null;
+    }
+    if (parsed.expiresAt !== null && typeof parsed.expiresAt !== "number") {
+      return null;
+    }
+    return {
+      version: parsed.version,
+      key: parsed.key,
+      fingerprint: parsed.fingerprint,
+      expiresAt: parsed.expiresAt,
+      images: parsed.images,
+      attachments: parsed.attachments,
+    };
+  } catch {
     return null;
   }
+}
 
-  return normalizedPath;
+async function writeAssetReferenceCache(
+  cachePath: string,
+  cache: AssetReferenceCache,
+): Promise<void> {
+  try {
+    await mkdir(path.dirname(cachePath), { recursive: true });
+    await fs.writeFile(cachePath, JSON.stringify(cache));
+  } catch (error) {
+    console.error("Failed to write content asset reference cache:", error);
+  }
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item): item is string => typeof item === "string")
+  );
 }
 
 function normalizeAssetPath(assetPath: string): string {
   return normalizeContentPath(assetPath);
-}
-
-function isSafeContentPath(assetPath: string): boolean {
-  return !assetPath.startsWith("../") && !path.posix.isAbsolute(assetPath);
 }
 
 function isReservedPublicImage(assetPath: string): boolean {
@@ -359,14 +434,6 @@ function isReservedPublicImage(assetPath: string): boolean {
 
 function getExtension(filePath: string): string {
   return path.extname(filePath).replace(".", "").toLowerCase();
-}
-
-function decodeUrlPath(urlPath: string): string | null {
-  try {
-    return decodeURIComponent(urlPath);
-  } catch {
-    return null;
-  }
 }
 
 async function fileExists(filePath: string): Promise<boolean> {

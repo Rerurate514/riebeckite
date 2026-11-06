@@ -15,7 +15,6 @@ permissions:
 
 env:
   PNPM_VERSION: 11.5.3
-  RIEBECKITE_BUILD_CONCURRENCY: "1"
 
 jobs:
   changes:
@@ -79,6 +78,12 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/cache@v4
+        with:
+          path: |
+            packages/**/dist
+            .riebeckite/package-build-state.json
+          key: package-build-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'scripts/build_package.mjs', 'scripts/build_packages.mjs', 'scripts/package_metadata.mjs') }}
       - run: pnpm build:packages
       - run: pnpm ci:build-artifact write
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -142,6 +147,12 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
+      - uses: actions/cache@v4
+        with:
+          path: |
+            packages/**/dist
+            .riebeckite/package-build-state.json
+          key: package-build-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'scripts/build_package.mjs', 'scripts/build_packages.mjs', 'scripts/package_metadata.mjs') }}
       - run: pnpm build:packages
       - run: pnpm --filter @riebeckite/core test
       - run: pnpm --filter @riebeckite/honox exec node --max-old-space-size=4096 --import tsx --test --test-concurrency=1 "test/*.test.ts"
@@ -223,6 +234,12 @@ jobs:
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
           browsers: chrome,chrome-headless-shell
+      - uses: actions/cache@v4
+        with:
+          path: |
+            packages/**/dist
+            .riebeckite/package-build-state.json
+          key: package-build-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'scripts/build_package.mjs', 'scripts/build_packages.mjs', 'scripts/package_metadata.mjs') }}
       - run: pnpm build:packages
       - run: pnpm test:browser
       - run: pnpm test:plugin-dev:browser

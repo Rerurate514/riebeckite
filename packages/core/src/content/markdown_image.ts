@@ -12,8 +12,48 @@ export type MarkdownImage = {
 type MarkdownNode = Node & {
   url?: unknown;
   identifier?: unknown;
+  value?: unknown;
   children?: Node[];
 };
+
+export function extractMarkdownAssetUrls(markdown: string): readonly string[] {
+  const tree = unified().use(remarkParse).parse(markdown);
+  const definitions = new Map<string, string>();
+  const references: string[] = [];
+  const urls: string[] = [];
+  const htmlUrls: string[] = [];
+
+  visitMarkdownNodes(tree, (node) => {
+    if (node.type === "definition" && typeof node.url === "string") {
+      const identifier = normalizeIdentifier(node.identifier);
+      if (identifier) definitions.set(identifier, node.url);
+    }
+    if (
+      (node.type === "image" || node.type === "link") &&
+      typeof node.url === "string"
+    ) {
+      urls.push(node.url);
+    }
+    if (node.type === "imageReference" || node.type === "linkReference") {
+      const identifier = normalizeIdentifier(node.identifier);
+      if (identifier) references.push(identifier);
+    }
+    if (node.type === "html" && typeof node.value === "string") {
+      for (const match of node.value.matchAll(
+        /\b(?:src|href)=["']([^"']+)["']/gi,
+      )) {
+        if (match[1]) htmlUrls.push(match[1]);
+      }
+    }
+  });
+
+  for (const reference of references) {
+    const url = definitions.get(reference);
+    if (url) urls.push(url);
+  }
+
+  return [...new Set([...urls, ...htmlUrls])];
+}
 
 export function extractMarkdownImages(
   markdown: string,

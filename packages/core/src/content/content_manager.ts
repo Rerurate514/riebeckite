@@ -27,7 +27,11 @@ import type { PublishStrategy } from "../types/publish_strategy.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
 import { mapConcurrent } from "../utils/concurrency.js";
 import { attachErrorPath } from "../utils/error.js";
-import { isImagePath, normalizeContentPath } from "./attachment.js";
+import {
+  isAttachmentPath,
+  isImagePath,
+  normalizeContentPath,
+} from "./attachment.js";
 import { ContentBuildCoordinator } from "./content_build_coordinator.js";
 import {
   type ContentBuildPlan,
@@ -60,6 +64,10 @@ import {
   cacheContentSource,
 } from "./content_source.js";
 import { ManifestAssembler } from "./manifest_assembler.js";
+import {
+  extractMarkdownAssetUrls,
+  resolveContentAssetUrl,
+} from "./markdown_image.js";
 import type { OutputChangeSet } from "./output_dependency.js";
 import {
   resolvePublishingBuildTime,
@@ -76,6 +84,12 @@ type ContentPostReference = {
 
 export type ContentBuildOptions = {
   incremental?: boolean;
+};
+
+export type PublicAssetReferences = {
+  readonly images: ReadonlySet<string>;
+  readonly attachments: ReadonlySet<string>;
+  readonly nextPublishAt: number | null;
 };
 
 export type ContentInspection = {
@@ -239,6 +253,52 @@ export class ContentManager {
 
   async getPost(slug: string): Promise<string> {
     return await this.entryReader.readText(`${slug}.md`);
+  }
+
+  async getPublicAssetReferences(): Promise<PublicAssetReferences> {
+    const manifest = await this.getRouteManifest();
+    const images = new Set<string>();
+    const attachments = new Set<string>();
+    let nextPublishAt: number | null = null;
+    const now = Date.now();
+
+    for (const entry of manifest.entries) {
+      const publishAt = entry.publishing.publishAt?.getTime();
+      if (publishAt !== undefined && publishAt > now) {
+        nextPublishAt =
+          nextPublishAt === null
+            ? publishAt
+            : Math.min(nextPublishAt, publishAt);
+      }
+    }
+
+    for (const entry of manifest.publicEntries) {
+      for (const asset of entry.assets) {
+        const path = normalizeContentPath(asset.sourcePath ?? asset.path);
+        if (isImagePath(path)) images.add(path);
+        else if (isAttachmentPath(path)) attachments.add(path);
+      }
+    }
+
+    await mapConcurrent(
+      manifest.publicEntries,
+      CONTENT_PROCESSING_CONCURRENCY,
+      async (entry) => {
+        const markdown = await this.getPost(entry.slug);
+        if (
+          !/<img\b|<a\b[^>]*href=["'][^"']+\.(?:png|jpe?g|gif|svg|webp|avif|ico)(?:[?#"']|$)/i.test(
+            markdown,
+          )
+        )
+          return;
+        for (const url of extractMarkdownAssetUrls(markdown)) {
+          const image = resolveContentAssetUrl(url, entry.slug);
+          if (image) images.add(image.path);
+        }
+      },
+    );
+
+    return { images, attachments, nextPublishAt };
   }
 
   async getContentIndex(plan?: ContentBuildPlan): Promise<Map<string, string>> {

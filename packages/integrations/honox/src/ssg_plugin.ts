@@ -92,6 +92,7 @@ export type RiebeckiteSsgOptions = {
   entry?: string;
   plugins?: ToSsgOptions["plugins"];
   extensionMap?: Record<string, string>;
+  concurrency?: number;
 };
 
 const defaultEntry = "./src/index.tsx";
@@ -408,6 +409,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             incremental: canUseIncremental,
             plugins: options.plugins,
             extensionMap: options.extensionMap,
+            ...(options.concurrency === undefined
+              ? {}
+              : { concurrency: options.concurrency }),
             write: async (filePath, data) => {
               const fileName = relative(outDir, filePath).replaceAll("\\", "/");
               if (!inventoryPaths.has(fileName)) {

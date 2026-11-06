@@ -8,6 +8,7 @@ export type SsgRunnerOptions = {
   readonly write: (path: string, data: string | Uint8Array) => Promise<void>;
   readonly plugins?: ToSsgOptions["plugins"];
   readonly extensionMap?: Record<string, string>;
+  readonly concurrency?: number;
   readonly incremental: boolean;
 };
 
@@ -23,6 +24,9 @@ export async function runSsg(options: SsgRunnerOptions) {
         dir: options.outDir,
         plugins: [redirectPlugin(), ...(options.plugins ?? [])],
         extensionMap: options.extensionMap ?? defaultExtensionMap,
+        ...(options.concurrency === undefined
+          ? {}
+          : { concurrency: options.concurrency }),
       },
     ),
   );

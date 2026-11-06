@@ -24,6 +24,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Give the blog preset an explicit navigation with Posts, Tags, and Series links instead of deriving it from the content tree.
   Packages: `create-riebeckite`
 
+- Reduce the top spacing above the Local Graph by removing the padding that was only needed for the former top border.
+  Packages: `@riebeckite/plugin-local-graph`
+
 ## 0.0.41 - 2026-11-06
 
 ### Changed

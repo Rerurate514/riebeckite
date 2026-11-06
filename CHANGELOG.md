@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Added
+
+- Add a Quartz-style file explorer to the starter preset. The generated site now keeps the navigation tree in a collapsible left sidebar with a filter field and expands the active page's branch, while narrow screens keep using the existing header menu.
+  Packages: `create-riebeckite`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.41...HEAD
 

@@ -7,6 +7,7 @@ import {
 import { createPublicContentView } from "@riebeckite/core";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
+import { SiteExplorer } from "../components/site-explorer";
 import { SiteFooter, SiteHeader } from "../components/site-header";
 import { content } from "virtual:riebeckite/content";
 import { config } from "virtual:riebeckite/config";
@@ -39,9 +40,14 @@ export default jsxRenderer(async ({ children }, c) => {
         <body class="riebeckite-page rb-site">
           <a class="rb-skip-link" href="#main-content">Skip to main content</a>
           <SiteHeader />
-          <main id="main-content" tabindex={-1} class="riebeckite-main">
-            {children}
-          </main>
+          <div class="site-shell">
+            <aside class="site-sidebar">
+              <SiteExplorer />
+            </aside>
+            <main id="main-content" tabindex={-1} class="riebeckite-main">
+              {children}
+            </main>
+          </div>
           <SiteFooter />
         </body>
       </ThemeRoot>

@@ -14,7 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Added
+
+- Add a Quartz-style file explorer to the starter preset. The generated site now keeps the navigation tree in a collapsible left sidebar with a filter field and expands the active page's branch, while narrow screens keep using the existing header menu.
+  Packages: `create-riebeckite`
 
 ## 0.0.41 - 2026-11-06
 

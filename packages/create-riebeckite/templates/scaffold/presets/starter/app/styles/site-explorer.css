@@ -1,0 +1,34 @@
+.site-shell {
+  display: grid;
+  width: 100%;
+  flex: 1 0 auto;
+}
+
+.site-sidebar {
+  display: none;
+}
+
+.riebeckite-main {
+  align-self: stretch;
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .site-shell {
+    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .site-sidebar {
+    display: block;
+    position: sticky;
+    top: 0;
+    max-height: 100dvh;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    padding-block: var(--rb-space-4, 2rem);
+    padding-inline-end: var(--rb-space-4, 2rem);
+    border-inline-end: 1px solid var(--rb-color-border);
+  }
+}

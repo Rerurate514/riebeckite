@@ -62,6 +62,15 @@ test("inline text directives render inside the surrounding paragraph", async () 
   assert.doesNotMatch(html, /<div/);
 });
 
+test("ordinary colons are not treated as shortcodes", async () => {
+  const { html } = await createPipeline().execute(
+    "12:30に集合。比率は3:4です。",
+  );
+
+  assert.match(html, /12:30に集合。比率は3:4です。/);
+  assert.doesNotMatch(html, /rb-shortcode/);
+});
+
 test("multiple inline shortcodes share one paragraph", async () => {
   const { html } = await createPipeline().execute(":badge[A] and :badge[B]");
 

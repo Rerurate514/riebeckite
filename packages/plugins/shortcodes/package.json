@@ -17,6 +17,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
+    "remark-directive": "^4.0.0",
     "unist-util-visit": "catalog:"
   },
   "devDependencies": {

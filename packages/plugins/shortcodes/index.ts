@@ -1,4 +1,5 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import remarkDirective from "remark-directive";
 import {
   builtinInlineShortcodes,
   builtinShortcodeNames,
@@ -63,6 +64,7 @@ export function shortcodes(options: ShortcodeOptions = {}) {
     },
     options,
     extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(remarkDirective);
       pipeline.use(remarkShortcodes, {
         ...options,
         contentIndex: context.contentIndex,

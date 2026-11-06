@@ -4,7 +4,6 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
-import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -361,7 +360,6 @@ export class Pipeline {
       markDownContent,
     );
     this.use(processor, remarkParse);
-    this.use(processor, remarkDirective);
     this.use(processor, remarkFrontmatter, ["yaml", "toml"]);
     this.use(processor, function loadFrontmatter() {
       return (_tree: Node, file: VFile) => {

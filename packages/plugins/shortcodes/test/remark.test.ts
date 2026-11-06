@@ -79,6 +79,29 @@ test("inline text directives render an inline wrapper and keep their label", () 
   assert.equal(file.messages.length, 0);
 });
 
+test("inline directives that do not start with a letter remain text", () => {
+  const file = createFile();
+  const tree = {
+    type: "root",
+    children: [
+      {
+        type: "textDirective",
+        name: "30",
+        attributes: {},
+        children: [],
+      },
+    ],
+  };
+
+  const root = tree as unknown as {
+    children: { type: string; value: string }[];
+  };
+  remarkShortcodes()(tree as never, file);
+
+  assert.deepEqual(root.children[0], { type: "text", value: ":30" });
+  assert.equal(file.messages.length, 0);
+});
+
 test("inline use of a block-only shortcode falls back and is diagnosed", () => {
   const file = createFile();
   const tree = {

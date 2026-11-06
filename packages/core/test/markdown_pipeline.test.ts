@@ -57,6 +57,16 @@ test("renders frontmatter, slugs, GFM, math, and raw HTML", async () => {
   );
 });
 
+test("leaves colon text intact without directive syntax", async () => {
+  const { html } = await createPipeline().execute(
+    "12:30に集合。比率は3:4です。\n\n:badge[New]{variant=success}",
+  );
+
+  assert.match(html, /12:30に集合。比率は3:4です。/);
+  assert.match(html, /:badge\[New\]\{variant=success\}/);
+  assert.doesNotMatch(html, /<div><\/div>/);
+});
+
 test("wraps Markdown tables in a horizontal scroll container", async () => {
   const { html } = await createPipeline().execute(
     ["| Col A | Col B |", "| ----- | ----- |", "| 1     | 2     |"].join("\n"),

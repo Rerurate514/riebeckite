@@ -164,6 +164,14 @@ function transformDirective(
   const attributes = normalizeAttributes(node, file);
   const childrenHtml = container ? SHORTCODE_CHILDREN_MARKER : undefined;
 
+  if (inline && !isDirectiveNameStart(name)) {
+    parent.children.splice(index, 1, {
+      type: "text",
+      value: sourceText(name, label, attributes, false, true),
+    });
+    return;
+  }
+
   if (inline && !isInlineShortcode(name, resolved)) {
     const known = Object.hasOwn(resolved.shortcodes, name);
     report(

@@ -44,7 +44,7 @@ Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin AP
 
 Semantic Markdown transformation belongs to Plugins. Simple remark Plugins can be declared as an array. Use `extendMarkdownPipeline` / `extendHtmlPipeline` when you need finer control of the processing pipeline.
 
-`remarkPlugins`, `rehypePlugins`, and `extendMarkdownPipeline` all join the same pipeline. Riebeckite runs `remark-parse`, `remark-directive`, `remark-gfm`, and the other base plugins before your Plugin, so directive syntax such as `:::tip` and GFM already arrive as AST nodes. You do not install or register those yourself.
+`remarkPlugins`, `rehypePlugins`, and `extendMarkdownPipeline` all join the same pipeline. Riebeckite runs `remark-parse`, `remark-gfm`, and the other base plugins before your Plugin, so GFM already arrives as AST nodes. Directive syntax such as `:::tip` is not parsed by default; add `remark-directive` to your own dependencies and register it in `extendMarkdownPipeline` before you handle directive nodes.
 
 For dependencies, lifecycle hooks, renderers, endpoints, and other extension points, see [Plugin API](../reference/plugin-api.md).
 
@@ -84,12 +84,14 @@ First, let's look at the entry point of the plugin:
 
 ```ts id="szeg4x"
 import { definePlugin } from "@riebeckite/core";
+import remarkDirective from "remark-directive";
 
 export function tip() {
   return definePlugin({
     name: "tip",
 
     extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkDirective);
       pipeline.use(remarkTip);
     },
 
@@ -130,7 +132,7 @@ type ContainerDirective = {
 
 This example uses the `mdast` types for AST nodes and `unist-util-visit` to walk the tree. Add them to your own package's dependencies (they are not imported from `@riebeckite/core`).
 
-In Riebeckite's Markdown pipeline, syntax such as `:::tip` has already been parsed by `remark-directive` before your plugin runs.
+Riebeckite does not enable `remark-directive` by default. Once your plugin registers it with `pipeline.use(remarkDirective)` before `remarkTip`, syntax such as `:::tip` has already been parsed before your plugin runs.
 
 That means your plugin does not need to parse the Markdown text itself. It receives a `containerDirective` node instead.
 
@@ -212,7 +214,7 @@ Save often.
 :::
 ```
 
-`remark-directive` provides this label as the first child of the directive.
+Once registered, `remark-directive` provides this label as the first child of the directive.
 
 First, check whether the first child is a directive label:
 

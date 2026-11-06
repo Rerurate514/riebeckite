@@ -112,7 +112,7 @@ export function local() {
 
 処理の流れ自体を細かく組み立てたいときは、`extendMarkdownPipeline` / `extendHtmlPipeline` を使います。依存関係、ライフサイクルフック、レンダラー、エンドポイントなどの拡張ポイントは [Plugin API](../reference/plugin-api.ja.md) を参照してください。
 
-`remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-directive`、`remark-gfm` などの基本となるプラグインを、自分で作成するプラグインより先に実行します。そのため、`:::tip` のようなディレクティブ記法や GFM はすでに AST ノードとして渡されます。これらを自分でインストールしたり登録したりする必要はありません。
+`remarkPlugins`、`rehypePlugins`、`extendMarkdownPipeline` は同じパイプラインに加わります。Riebeckite は `remark-parse`、`remark-gfm` などの基本となるプラグインを、自分で作成するプラグインより先に実行します。そのため GFM はすでに AST ノードとして渡されます。`:::tip` のようなディレクティブ記法は既定では解析されません。`remark-directive` を自分の依存関係に追加し、ディレクティブノードを扱う前に `extendMarkdownPipeline` で登録してください。
 
 コンテンツの変換に参加するプラグインは、`processedContentCache` も宣言してください。宣言がなくても動作はしますが、そのサイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。単独の変換なら `{ version: "1", dependencyMode: "none" }`、Core のコンテンツ API を通じた依存なら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。
 
@@ -150,12 +150,14 @@ Save often.
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
+import remarkDirective from "remark-directive";
 
 export function tip() {
   return definePlugin({
     name: "tip",
 
     extendMarkdownPipeline: (pipeline) => {
+      pipeline.use(remarkDirective);
       pipeline.use(remarkTip);
     },
 
@@ -196,7 +198,7 @@ type ContainerDirective = {
 
 この例では、AST ノードの型には `mdast`、ツリーの走査には `unist-util-visit` を使います。どちらも通常の npm パッケージとして自分のパッケージに追加してください。`@riebeckite/core` からは import しません。
 
-Riebeckite の Markdown パイプラインでは、`:::tip` のような記法がプラグインの実行前に解析済みです。`remark-directive` によって `containerDirective` ノードになっています。
+Riebeckite は `remark-directive` を既定では有効にしません。プラグインが `remarkTip` より前に `pipeline.use(remarkDirective)` で登録すると、`:::tip` のような記法がプラグインの実行前に解析され、`containerDirective` ノードになります。
 
 そのため、プラグインが Markdown の文字列を自分で解析する必要はありません。
 
@@ -284,7 +286,7 @@ Save often.
 
 の `[Heads up]` をタイトルにします。
 
-`remark-directive` は、このラベルをディレクティブの最初の子ノードとして渡します。
+登録すると、`remark-directive` はこのラベルをディレクティブの最初の子ノードとして渡します。
 
 そこで、最初の子がラベルかどうかを確認します。
 

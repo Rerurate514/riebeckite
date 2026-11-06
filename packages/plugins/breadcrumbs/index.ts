@@ -65,6 +65,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
       breadcrumbOutputDependencies(entry, manifest),
     options,
     validateOptions: validateBreadcrumbsOptions,
+    manifestHookFastPathSafe: true,
     onManifestCreated: (context) => {
       const { config, manifest } = context;
       if (!config) return;

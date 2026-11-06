@@ -52,6 +52,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
     extendContentLocations: ({ locations }) => {
       collapseFolderEntryLocations(locations);
     },
+    manifestHookFastPathSafe: true,
     onManifestCreated: ({ manifest }) => {
       for (const page of modelFor(manifest).byPath.values()) {
         manifest.folderLocations.set(page.pathname, {

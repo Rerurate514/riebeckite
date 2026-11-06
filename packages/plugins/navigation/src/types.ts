@@ -12,6 +12,7 @@ export type NavigationItem = {
 export type NavigationOptions = {
   readonly items?: readonly NavigationItem[];
   readonly secondary?: readonly NavigationItem[];
+  readonly maxDepth?: number;
 };
 
 export type SiteNavigation = {

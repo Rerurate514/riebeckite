@@ -81,6 +81,7 @@ export function properties(options: PropertiesOptions = {}) {
     assets: [
       createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-properties/style.css"),
     ],
+    manifestHookFastPathSafe: true,
     onManifestCreated: (context) => {
       reportUnrenderableValues(context, resolved);
     },

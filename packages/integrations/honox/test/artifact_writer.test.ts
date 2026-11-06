@@ -85,6 +85,39 @@ test("build artifact writer preserves copied cache files when another output is 
   }
 });
 
+test("build artifact writer hardlinks cache files when the filesystem supports it", async (t) => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-artifacts-"),
+  );
+  const outputDirectory = path.join(root, "dist");
+  const cachedOutput = path.join(root, "cache.html");
+  const probe = path.join(root, "probe.html");
+  try {
+    await fs.writeFile(cachedOutput, "cached");
+    try {
+      await fs.link(cachedOutput, probe);
+    } catch {
+      t.skip("hardlinks are unavailable on this filesystem");
+      return;
+    }
+    await fs.rm(probe);
+
+    const writer = await createBuildArtifactWriter({ outputDirectory });
+    await writer.copyFileFrom(cachedOutput, "index.html");
+    await writer.publish();
+
+    const published = path.join(outputDirectory, "index.html");
+    const [sourceStat, publishedStat] = await Promise.all([
+      fs.stat(cachedOutput),
+      fs.stat(published),
+    ]);
+    assert.equal(publishedStat.ino, sourceStat.ino);
+    assert.equal(publishedStat.dev, sourceStat.dev);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test("build artifact writer rejects paths outside its staging directory", async () => {
   const root = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-artifacts-"),

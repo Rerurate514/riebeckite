@@ -93,10 +93,15 @@ export function fingerprintOutputInventory(
   return hash.digest("hex");
 }
 
+export function fingerprintOutputContent(content: string | Uint8Array): string {
+  return createHash("sha256").update(content).digest("hex");
+}
+
 export async function fingerprintOutputDirectory(
   directory: string,
   relativeDirectory = "",
   metrics?: NoChangeFastPathOutputMetrics,
+  knownChecksums?: ReadonlyMap<string, string>,
 ): Promise<Record<string, string>> {
   const entries = await readdir(directory, { withFileTypes: true }).catch(
     (error: unknown) => {
@@ -115,16 +120,24 @@ export async function fingerprintOutputDirectory(
     if (entry.isDirectory()) {
       Object.assign(
         inventory,
-        await fingerprintOutputDirectory(file, relativePath, metrics),
+        await fingerprintOutputDirectory(
+          file,
+          relativePath,
+          metrics,
+          knownChecksums,
+        ),
       );
       continue;
     }
     if (entry.isFile()) {
+      const knownChecksum = knownChecksums?.get(relativePath);
+      if (knownChecksum !== undefined) {
+        inventory[relativePath] = knownChecksum;
+        continue;
+      }
       const hashedAt = performance.now();
       const content = await readFile(file);
-      inventory[relativePath] = createHash("sha256")
-        .update(content)
-        .digest("hex");
+      inventory[relativePath] = fingerprintOutputContent(content);
       if (metrics) {
         metrics.outputHashValidationDurationMs += performance.now() - hashedAt;
         metrics.outputFilesHashed += 1;

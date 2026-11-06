@@ -58,6 +58,7 @@ export function quality(options: QualityOptions = {}): RiebeckitePlugin {
   return definePlugin({
     name: QUALITY_PLUGIN_NAME,
     options,
+    manifestHookFastPathSafe: true,
     onManifestCreated: ({ manifest, diagnostics }) => {
       if (!resolved.inspect.enabled) return;
       for (const entry of manifest.publicEntries) {
@@ -71,6 +72,7 @@ export function quality(options: QualityOptions = {}): RiebeckitePlugin {
       }
     },
     inspectGeneratedHtml: (page) => inspectGeneratedHtml(page, inspectOptions),
+    buildEndFastPathSafe: true,
     buildEnd: ({ manifest }) => {
       if (resolved.failOn !== "error") return;
       const errors = manifest.diagnostics.filter(

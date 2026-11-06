@@ -83,11 +83,15 @@ export class ManifestHookRunner {
     pipelineFingerprint: string | undefined,
   ): string | undefined {
     const plugins = this.options.plugins();
-    if (plugins.some((plugin) => plugin.buildEnd)) return "plugin-build-end";
+    if (
+      plugins.some((plugin) => plugin.buildEnd && !plugin.buildEndFastPathSafe)
+    )
+      return "plugin-build-end";
 
     let cacheIndex = 0;
     for (const plugin of plugins) {
       if (!plugin.onManifestCreated) continue;
+      if (plugin.manifestHookFastPathSafe) continue;
       if (!plugin.manifestHookCache) return "manifest-hook-cache-disabled";
 
       const cached = previousCache[cacheIndex];

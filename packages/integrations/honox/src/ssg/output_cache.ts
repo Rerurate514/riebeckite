@@ -50,11 +50,17 @@ export type OutputCacheState = {
   configFile?: string;
 };
 
+type OutputFileStats = {
+  size: number;
+  modifiedAtMs: number;
+};
+
 type FastPathCacheState = {
   version: 1;
   outputCacheChecksum: string;
   appFingerprint?: string;
   finalOutputInventory: Record<string, string>;
+  finalOutputStats?: Record<string, OutputFileStats>;
   publicDirectory?: string;
   publicFingerprint?: string;
   configFile: string;
@@ -126,17 +132,33 @@ export async function verifyNoChangeFastPath(input: {
   ) {
     return { used: false, blockReason: "output-cache-incomplete" };
   }
+  const knownChecksums = await matchingOutputChecksums(
+    input.outputDirectory,
+    cache.finalOutputInventory,
+    cache.finalOutputStats,
+  );
   const inventoryStartedAt = performance.now();
   const currentInventory = await fingerprintOutputDirectory(
     input.outputDirectory,
     "",
     input.metrics,
+    knownChecksums,
   );
   if (input.metrics)
     input.metrics.outputInventoryValidationDurationMs +=
       performance.now() - inventoryStartedAt;
   if (!inventoriesEqual(cache.finalOutputInventory, currentInventory)) {
     return { used: false, blockReason: "output-inventory-mismatch" };
+  }
+  const currentStats = await collectOutputFileStats(
+    input.outputDirectory,
+    cache.finalOutputInventory,
+  );
+  if (!outputStatsEqual(cache.finalOutputStats, currentStats)) {
+    await saveFastPathCache(fastPathCachePath(outputCachePath), {
+      ...cache,
+      finalOutputStats: currentStats,
+    }).catch(() => undefined);
   }
   return { used: true };
 }
@@ -259,7 +281,7 @@ export async function saveOutputCache(
     if (state.finalOutputInventory && state.configFile) {
       await saveFastPathCache(
         fastPathCachePath(path),
-        createFastPathCacheState(state, checksum),
+        await createFastPathCacheState(state, checksum, outputDirectory),
         timingsMs,
       );
     }
@@ -316,6 +338,26 @@ function isOutputInventory(value: unknown): value is Record<string, string> {
     Object.entries(value).every(
       ([outputPath, checksum]) =>
         isSafeLogicalOutputPath(outputPath) && isChecksum(checksum),
+    )
+  );
+}
+
+function isOutputFileStats(
+  value: unknown,
+): value is Record<string, OutputFileStats> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    Object.entries(value).every(
+      ([outputPath, stats]) =>
+        isSafeLogicalOutputPath(outputPath) &&
+        typeof stats === "object" &&
+        stats !== null &&
+        isOptionalNonNegativeNumber((stats as OutputFileStats).size) &&
+        (stats as OutputFileStats).size !== undefined &&
+        isOptionalNonNegativeNumber((stats as OutputFileStats).modifiedAtMs) &&
+        (stats as OutputFileStats).modifiedAtMs !== undefined,
     )
   );
 }
@@ -477,10 +519,11 @@ function fastPathCachePath(outputCachePath: string): string {
   return outputCachePath.replace(/\.json$/, ".fast-path.json");
 }
 
-function createFastPathCacheState(
+async function createFastPathCacheState(
   state: OutputCacheState,
   outputCacheChecksum: string,
-): FastPathCacheState {
+  outputDirectory: string,
+): Promise<FastPathCacheState> {
   if (!state.finalOutputInventory || !state.configFile) {
     throw new Error("SSG output cache is missing fast-path validation data.");
   }
@@ -489,11 +532,88 @@ function createFastPathCacheState(
     outputCacheChecksum,
     appFingerprint: state.appFingerprint,
     finalOutputInventory: state.finalOutputInventory,
+    finalOutputStats: await collectOutputFileStats(
+      outputDirectory,
+      state.finalOutputInventory,
+    ),
     publicDirectory: state.publicDirectory,
     publicFingerprint: state.publicFingerprint,
     configFile: state.configFile,
     outputPaths: Object.keys(state.outputs).sort(),
   };
+}
+
+async function matchingOutputChecksums(
+  outputDirectory: string,
+  inventory: Readonly<Record<string, string>>,
+  stats: Readonly<Record<string, OutputFileStats>> | undefined,
+): Promise<ReadonlyMap<string, string>> {
+  const checksums = new Map<string, string>();
+  if (!stats) return checksums;
+  for (const [outputPath, checksum] of Object.entries(inventory)) {
+    const expected = stats[outputPath];
+    if (!expected) continue;
+    const info = await lstat(
+      resolveWithinDirectory(
+        outputDirectory,
+        outputPath,
+        "SSG fast-path output path",
+      ),
+    ).catch(() => undefined);
+    if (
+      info?.isFile() &&
+      !info.isSymbolicLink() &&
+      outputFileStatMatches(info, expected)
+    ) {
+      checksums.set(outputPath, checksum);
+    }
+  }
+  return checksums;
+}
+
+async function collectOutputFileStats(
+  outputDirectory: string,
+  inventory: Readonly<Record<string, string>>,
+): Promise<Record<string, OutputFileStats>> {
+  const stats: Record<string, OutputFileStats> = {};
+  for (const outputPath of Object.keys(inventory)) {
+    const info = await lstat(
+      resolveWithinDirectory(
+        outputDirectory,
+        outputPath,
+        "SSG fast-path output path",
+      ),
+    ).catch(() => undefined);
+    if (info?.isFile() && !info.isSymbolicLink()) {
+      stats[outputPath] = {
+        size: info.size,
+        modifiedAtMs: info.mtimeMs,
+      };
+    }
+  }
+  return stats;
+}
+
+function outputFileStatMatches(
+  info: { readonly size: number; readonly mtimeMs: number },
+  expected: OutputFileStats,
+): boolean {
+  return info.size === expected.size && info.mtimeMs === expected.modifiedAtMs;
+}
+
+function outputStatsEqual(
+  left: Readonly<Record<string, OutputFileStats>> | undefined,
+  right: Readonly<Record<string, OutputFileStats>>,
+): boolean {
+  if (!left) return false;
+  const paths = Object.keys(left);
+  if (paths.length !== Object.keys(right).length) return false;
+  return paths.every(
+    (path) =>
+      right[path] !== undefined &&
+      left[path]?.size === right[path].size &&
+      left[path]?.modifiedAtMs === right[path].modifiedAtMs,
+  );
 }
 
 async function saveFastPathCache(
@@ -545,6 +665,8 @@ function isFastPathCacheState(value: unknown): value is FastPathCacheState {
     (candidate.appFingerprint === undefined ||
       typeof candidate.appFingerprint === "string") &&
     isOutputInventory(candidate.finalOutputInventory) &&
+    (candidate.finalOutputStats === undefined ||
+      isOutputFileStats(candidate.finalOutputStats)) &&
     (candidate.publicDirectory === undefined ||
       typeof candidate.publicDirectory === "string") &&
     (candidate.publicFingerprint === undefined ||

@@ -187,6 +187,11 @@ Framework lifecycle hooks run once per `ContentManager` in this order:
 `buildEnd` receives the completed manifest after diagnostics have been
 collected and is the only terminal build hook.
 
+`buildEndFastPathSafe` and `manifestHookFastPathSafe` declare that a hook only
+reproduces output derived from unchanged manifest inputs. The no-change fast
+path may then skip the hook after it verifies the published output inventory.
+Both default to `false`; leave them unset for hooks with external side effects.
+
 Named lifecycle and content hooks run in resolved plugin order. A hook failure
 is reported as `PluginHookError` (importable from `@riebeckite/core`); its
 `message` names the plugin and hook, `cause` holds the original error, and for

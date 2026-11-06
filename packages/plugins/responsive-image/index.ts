@@ -63,6 +63,7 @@ export function responsiveImage(options: ResponsiveImageOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeResponsiveImage, options);
     },
+    manifestHookFastPathSafe: true,
     onManifestCreated: (context: PluginManifestContext) => {
       const knownPaths = collectKnownAssetPaths(context.manifest);
 

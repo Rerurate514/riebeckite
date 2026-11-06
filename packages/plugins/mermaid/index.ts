@@ -38,6 +38,7 @@ export function mermaid(options: MermaidOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeMermaidLazy, { options, session });
     },
+    buildEndFastPathSafe: true,
     buildEnd: async () => {
       await session.dispose();
     },

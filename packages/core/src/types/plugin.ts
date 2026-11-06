@@ -111,6 +111,12 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   setup?(context: PluginLifecycleContext): void | Promise<void>;
   buildStart?(context: PluginLifecycleContext): void | Promise<void>;
   buildEnd?(context: PluginManifestContext): void | Promise<void>;
+  /**
+   * Declares that `buildEnd` only reproduces outputs derived from the current
+   * manifest, so the no-change fast path may skip it after verifying that the
+   * published output is unchanged. Defaults to false.
+   */
+  buildEndFastPathSafe?: boolean;
   transformAssets?(
     context: PluginAssetTransformContext,
   ): readonly AssetTransformOutput[] | Promise<readonly AssetTransformOutput[]>;
@@ -138,6 +144,12 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   onPostParsed?(context: PluginPostContext): void | Promise<void>;
   onPostProcessed?(context: PluginPostContext): void | Promise<void>;
   manifestHookCache?: { version: string };
+  /**
+   * Declares that `onManifestCreated` is deterministic for unchanged manifest
+   * inputs, so the no-change fast path may skip re-running it after verifying
+   * that the published output is unchanged. Defaults to false.
+   */
+  manifestHookFastPathSafe?: boolean;
   onManifestCreated?(context: PluginManifestContext): void | Promise<void>;
   extendMarkdownPipeline?(
     pipeline: MarkdownPipeline,

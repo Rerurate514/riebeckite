@@ -101,6 +101,43 @@ test("derives sections from the slug hierarchy", () => {
   ]);
 });
 
+test("maxDepth limits derived navigation without changing authored items", () => {
+  const guide = makeEntry({
+    slug: "guide",
+    title: "Guide",
+    permalink: "/guide/",
+  });
+  const intro = makeEntry({ slug: "guide/intro", title: "Intro" });
+  const deep = makeEntry({ slug: "guide/intro/deep", title: "Deep" });
+  const about = makeEntry({ slug: "about", title: "About" });
+
+  assert.deepEqual(
+    buildNavigation([guide, intro, deep, about], { maxDepth: 1 }).primary,
+    [
+      { label: "About", href: "/about" },
+      { label: "Guide", href: "/guide/" },
+    ],
+  );
+  assert.deepEqual(
+    buildNavigation([guide, intro, deep, about], { maxDepth: 2 }).primary,
+    [
+      { label: "About", href: "/about" },
+      {
+        label: "Guide",
+        href: "/guide/",
+        children: [{ label: "Intro", href: "/guide/intro" }],
+      },
+    ],
+  );
+  assert.deepEqual(
+    buildNavigation([guide, intro, deep, about], {
+      maxDepth: 1,
+      items: [{ label: "Home", href: "/" }],
+    }).primary,
+    [{ label: "Home", href: "/" }],
+  );
+});
+
 test("renders a folder without an index as a label with no href", () => {
   const alpha = makeEntry({ slug: "projects/alpha", title: "Alpha" });
   const beta = makeEntry({ slug: "projects/beta", title: "Beta" });
@@ -190,6 +227,9 @@ test("validateOptions reports invalid authored items", () => {
     { path: "items[0].label", message: "Expected a non-empty string." },
     { path: "items[0].href", message: "Expected a non-empty string." },
     { path: "items[0].external", message: "Expected a boolean." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ maxDepth: 0 } as never), [
+    { path: "maxDepth", message: "Expected a positive integer." },
   ]);
 });
 

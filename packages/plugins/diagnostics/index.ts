@@ -60,9 +60,11 @@ export function diagnostics(options: DiagnosticsOptions = {}) {
         return [createInternalError(error)];
       }
     },
+    manifestHookFastPathSafe: true,
     onManifestCreated: ({ manifest, diagnostics }) => {
       diagnostics.push(...checkSiteIntegrity(manifest, options));
     },
+    buildEndFastPathSafe: true,
     buildEnd: ({ manifest }) => {
       if (!options.failOnError) return undefined;
       const errors = manifest.diagnostics.filter(

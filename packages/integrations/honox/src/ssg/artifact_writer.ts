@@ -3,6 +3,7 @@ import { constants } from "node:fs";
 import {
   copyFile,
   cp,
+  link,
   lstat,
   mkdir,
   readFile,
@@ -65,14 +66,18 @@ export async function createBuildArtifactWriter(input: {
       ensureOpen(completed);
       const target = resolveArtifactPath(stagingDirectory, path);
       await mkdir(dirname(target), { recursive: true });
-      await writeFile(target, data);
+      await replaceArtifactFile(target, data);
     },
     async copyFileFrom(source, path) {
       ensureOpen(completed);
       const target = resolveArtifactPath(stagingDirectory, path);
       await mkdir(dirname(target), { recursive: true });
       await rm(target, { force: true });
-      await copyFile(source, target, constants.COPYFILE_FICLONE);
+      try {
+        await link(source, target);
+      } catch {
+        await copyFile(source, target, constants.COPYFILE_FICLONE);
+      }
     },
     async publish() {
       ensureOpen(completed);
@@ -89,6 +94,25 @@ export async function createBuildArtifactWriter(input: {
 
 function ensureOpen(completed: boolean): void {
   if (completed) throw new Error("Build artifact writer is already closed.");
+}
+
+async function replaceArtifactFile(
+  target: string,
+  data: string | Uint8Array,
+): Promise<void> {
+  const temporaryPath = `${target}.${randomUUID()}.tmp`;
+  try {
+    await writeFile(temporaryPath, data);
+    try {
+      await rename(temporaryPath, target);
+    } catch {
+      await rm(target, { force: true });
+      await rename(temporaryPath, target);
+    }
+  } catch (error) {
+    await rm(temporaryPath, { force: true }).catch(() => undefined);
+    throw error;
+  }
 }
 
 function resolveArtifactPath(directory: string, path: string): string {

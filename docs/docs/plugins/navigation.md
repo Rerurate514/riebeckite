@@ -163,6 +163,10 @@ It accepts the same `NavigationItem` tree. A parent with both `href` and childre
 | ------ | ---- | ------- | ----------- |
 | `items` | `NavigationItem[]` | derived | Authored primary navigation |
 | `secondary` | `NavigationItem[]` | `[]` | Supplementary links |
+| `maxDepth` | `number` | unlimited | Maximum depth of derived items; root items are depth 1 |
+
+On a large vault, limit the derived tree with `maxDepth`; rendered items are
+duplicated in the header and mobile navigation.
 
 `NavigationItem` is `{ label, href?, children?, external? }`. `href` is optional
 on the type because a derived folder group may not have an index note; authored

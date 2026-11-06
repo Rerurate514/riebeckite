@@ -227,4 +227,6 @@ type PluginContext = {
 
 `setup`、`buildStart`、`onConfigResolved`、コンテンツ処理、`buildEnd` は、1つの `ContentManager` につき一度だけ実行されます。`buildEnd` は、診断情報を集めたあとに完成したマニフェストを受け取る唯一の終了フックです。`dispose` は、解決済みプラグインの逆順で実行されます。
 
+`buildEndFastPathSafe` と `manifestHookFastPathSafe` は、そのフックが変化していないマニフェスト入力から出力を再現するだけだと宣言します。no-change fast path は、公開済み出力の inventory を検証したうえでそのフックを省略できます。どちらも既定値は `false` です。外部への副作用があるフックでは設定しないでください。
+
 名前付きの[[glossary/lifecycle-hook|ライフサイクルフック]]や[[glossary/content-hook|コンテンツフック]]でエラーが起きた場合は、そのまま上位へ伝えます。エラーは `PluginHookError`（`@riebeckite/core` からインポート可能）です。`message` は `Plugin "<name>" failed during "<hook>"` の形式になり、元のエラーは `cause` に保持されます。コンテンツフックで起きた場合は、対象ファイルが `path`（例: `note.md`）として設定されます。

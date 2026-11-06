@@ -35,7 +35,8 @@ export function buildNavigation(
   folderIcons: FolderIcons = {},
 ): SiteNavigation {
   return {
-    primary: options.items ?? deriveNavigation(entries, folderIcons),
+    primary:
+      options.items ?? deriveNavigation(entries, folderIcons, options.maxDepth),
     secondary: options.secondary ?? [],
   };
 }
@@ -62,6 +63,15 @@ export function validateNavigationOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options || typeof options !== "object") return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.maxDepth !== undefined &&
+    (!Number.isInteger(options.maxDepth) || options.maxDepth < 1)
+  ) {
+    issues.push({
+      path: "maxDepth",
+      message: "Expected a positive integer.",
+    });
+  }
   validateItems(options.items, "items", issues, new Set());
   validateItems(options.secondary, "secondary", issues, new Set());
   return issues;
@@ -70,13 +80,14 @@ export function validateNavigationOptions(
 function deriveNavigation(
   entries: readonly ContentManifestEntry[],
   folderIcons: FolderIcons,
+  maxDepth: number | undefined,
 ): readonly NavigationItem[] {
   const nodes = entries
     .map(toNavigationEntry)
     .filter((entry): entry is NavigationEntry => Boolean(entry));
   const root = createTreeNode(ROOT_SEGMENT, "");
   for (const node of nodes) addEntry(root, node);
-  return buildItems(root, folderIcons);
+  return buildItems(root, folderIcons, 1, maxDepth);
 }
 
 function toNavigationEntry(
@@ -120,13 +131,20 @@ function addEntry(root: TreeNode, entry: NavigationEntry): void {
 function buildItems(
   node: TreeNode,
   folderIcons: FolderIcons,
+  depth: number,
+  maxDepth: number | undefined,
 ): readonly NavigationItem[] {
   return [...node.children.values()]
     .toSorted(compareNodes)
-    .map((child) => nodeToItem(child, folderIcons));
+    .map((child) => nodeToItem(child, folderIcons, depth, maxDepth));
 }
 
-function nodeToItem(node: TreeNode, folderIcons: FolderIcons): NavigationItem {
+function nodeToItem(
+  node: TreeNode,
+  folderIcons: FolderIcons,
+  depth: number,
+  maxDepth: number | undefined,
+): NavigationItem {
   const singleIndex = node.indexes.length === 1 ? node.indexes[0] : undefined;
   const primary =
     singleIndex ?? (node.indexes.length === 0 ? node.page : undefined);
@@ -136,10 +154,13 @@ function nodeToItem(node: TreeNode, folderIcons: FolderIcons): NavigationItem {
         ? [node.page]
         : []
       : [...node.indexes, ...(node.page ? [node.page] : [])];
-  const children: NavigationItem[] = [
-    ...extra.map((entry) => toItem(entry)),
-    ...buildItems(node, folderIcons),
-  ];
+  const children: NavigationItem[] =
+    maxDepth !== undefined && depth >= maxDepth
+      ? []
+      : [
+          ...extra.map((entry) => toItem(entry)),
+          ...buildItems(node, folderIcons, depth + 1, maxDepth),
+        ];
   if (primary) return toItem(primary, children);
   return {
     label: titleFromSegment(node.segment),

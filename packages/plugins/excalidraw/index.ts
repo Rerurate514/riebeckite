@@ -70,6 +70,7 @@ export function excalidraw() {
         resolveRoute: (context) => resolveExcalidrawDocument(context, session),
       },
     ],
+    buildEndFastPathSafe: true,
     buildEnd: async () => {
       embeds.clear();
       await session.dispose();

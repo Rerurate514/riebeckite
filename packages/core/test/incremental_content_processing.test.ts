@@ -910,6 +910,70 @@ test("a build-end hook blocks the no-change fast path", async () => {
   await second.dispose();
 });
 
+test("a fast-path-safe build-end hook permits the no-change fast path", async () => {
+  const directory = await tempDirectory("incremental-fast-path-build-end-safe");
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "fast-path-build-end-safe",
+      buildEndFastPathSafe: true,
+      buildEnd: () => {},
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await second.dispose();
+});
+
+test("a fast-path-safe manifest hook permits the no-change fast path", async () => {
+  const directory = await tempDirectory(
+    "incremental-fast-path-manifest-hook-safe",
+  );
+  const files = { "a.md": "# A" };
+  const config = testConfig(directory);
+  const plugins = [
+    ...config.plugins,
+    definePlugin({
+      name: "fast-path-manifest-hook-safe",
+      manifestHookFastPathSafe: true,
+      onManifestCreated: () => {},
+    }),
+  ];
+  const first = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await first.build({ incremental: true });
+  await first.dispose();
+
+  const second = new ContentManager(memoryContentSource(files), [], {
+    config: { ...config, plugins },
+    plugins,
+  });
+  await second.getOutputChangeSet({ incremental: true });
+  assert.equal(
+    await second.getNoChangeFastPathBlockReason({ incremental: true }),
+    undefined,
+  );
+  await second.dispose();
+});
+
 test("a generated-output plan permits the no-change fast path", async () => {
   const directory = await tempDirectory(
     "incremental-fast-path-generated-output",

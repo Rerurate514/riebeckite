@@ -41,6 +41,7 @@ import {
   computeAppFingerprint,
   computeBundleFingerprint,
   fingerprintDirectory,
+  fingerprintOutputContent,
   fingerprintOutputDirectory,
   fingerprintOutputInventory,
 } from "./ssg/inventory.js";
@@ -130,6 +131,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       }
     | undefined;
   let clientBuildArtifacts: ClientBuildArtifacts | undefined;
+  const outputChecksums = new Map<string, string>();
 
   return {
     name: "riebeckite-ssg",
@@ -163,6 +165,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
     async buildStart() {
       const config = resolvedConfig;
       if (!config || config.mode === "client") return;
+      outputChecksums.clear();
       if (!publicationOutputDirectory) {
         throw new Error(
           "Riebeckite SSG could not resolve the publication output directory.",
@@ -434,6 +437,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               await measure(timingsMs, "outputWrite", () =>
                 writer.write(fileName, data),
               );
+              outputChecksums.set(fileName, fingerprintOutputContent(data));
               metrics.emittedOutputCount += 1;
               nextOutputCache.outputs[fileName] = {
                 cachePath: "",
@@ -477,6 +481,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 await measure(timingsMs, "outputWrite", () =>
                   writer.write(asset.fileName, asset.source),
                 );
+                outputChecksums.set(
+                  asset.fileName,
+                  fingerprintOutputContent(asset.source),
+                );
                 metrics.emittedOutputCount += 1;
                 nextOutputCache.outputs[asset.fileName] = {
                   cachePath: "",
@@ -519,6 +527,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                   path,
                 ),
               );
+              outputChecksums.set(path, cached.checksum);
               metrics.emittedOutputCount += 1;
               metrics.reusedOutputCount += 1;
               nextOutputCache.outputs[path] = cached;
@@ -644,7 +653,13 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outputCache.state.finalOutputInventory = await measure(
             outputCache.timingsMs,
             "outputInventory",
-            () => fingerprintOutputDirectory(outputCache.outDir),
+            () =>
+              fingerprintOutputDirectory(
+                outputCache.outDir,
+                "",
+                undefined,
+                outputChecksums,
+              ),
           );
           const finalOutputInventory = outputCache.state.finalOutputInventory;
           const artifactFingerprint =

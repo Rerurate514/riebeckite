@@ -45,7 +45,7 @@ test("D2 and Marp outputs stay equal across cold and incremental SSG builds", as
 
   await buildSite(site, "cold", leanBuildOptions);
   const cold = await snapshotTree(distPath(site));
-  const coldOutputCache = await readFile(cachePath(site), "utf8");
+  const coldOutputCache = await readComparableOutputCache(site);
 
   assert.ok(Object.hasOwn(cold, "notes/note-0.html"));
   assert.ok(Object.hasOwn(cold, "slides/notes/deck/index.html"));
@@ -75,7 +75,7 @@ test("D2 and Marp outputs stay equal across cold and incremental SSG builds", as
     [],
     "two clean cold builds with D2, Marp, and search must be byte-identical",
   );
-  assert.equal(await readFile(cachePath(site), "utf8"), coldOutputCache);
+  assert.equal(await readComparableOutputCache(site), coldOutputCache);
 
   await rm(distPath(site), { recursive: true, force: true });
   const noChange = await buildSite(site, "no-change", leanBuildOptions);
@@ -85,7 +85,7 @@ test("D2 and Marp outputs stay equal across cold and incremental SSG builds", as
     [],
     "a no-change incremental build must equal the cold build",
   );
-  assert.equal(await readFile(cachePath(site), "utf8"), coldOutputCache);
+  assert.equal(await readComparableOutputCache(site), coldOutputCache);
 
   await appendFile(notePath(site, 0), "\nIncremental renderer edit.\n", "utf8");
   await assertIncrementalMatchesCold(site, "body-edit");
@@ -150,7 +150,7 @@ async function assertIncrementalMatchesCold(
   const incremental = await incrementalBuild(site, label, leanBuildOptions);
   assert.equal(incremental.fullRegenerationRequired, false);
   const incrementalSnapshot = await snapshotTree(distPath(site));
-  const incrementalOutputCache = await readFile(cachePath(site), "utf8");
+  const incrementalOutputCache = await readComparableOutputCache(site);
 
   await removePersistentBuildState(site);
   await buildSite(site, `cold-after-${label}`, leanBuildOptions);
@@ -159,7 +159,7 @@ async function assertIncrementalMatchesCold(
     [],
     `${label}: incremental D2 and Marp output must equal a clean cold build`,
   );
-  assert.equal(await readFile(cachePath(site), "utf8"), incrementalOutputCache);
+  assert.equal(await readComparableOutputCache(site), incrementalOutputCache);
 }
 
 async function updateVisibility(
@@ -174,6 +174,16 @@ async function updateVisibility(
     (await readFile(file, "utf8")).replace(from, to),
     "utf8",
   );
+}
+
+async function readComparableOutputCache(site: string): Promise<string> {
+  const cache = JSON.parse(await readFile(cachePath(site), "utf8")) as {
+    outputs?: Record<string, { modifiedAtMs?: number }>;
+  };
+  for (const entry of Object.values(cache.outputs ?? {})) {
+    delete entry.modifiedAtMs;
+  }
+  return JSON.stringify(cache);
 }
 
 async function removePersistentBuildState(site: string): Promise<void> {

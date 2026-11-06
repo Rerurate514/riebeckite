@@ -7,6 +7,7 @@ import { test } from "node:test";
 import { Hono } from "hono";
 import {
   fingerprintDirectory,
+  fingerprintOutputContent,
   fingerprintOutputDirectory,
   fingerprintOutputInventory,
 } from "../src/ssg/inventory.js";
@@ -40,6 +41,25 @@ test("output inventory fingerprint matches directory fingerprint", async () => {
     fingerprintOutputInventory(inventory),
     await fingerprintDirectory(directory),
   );
+});
+
+test("output directory fingerprint trusts known checksums", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-inventory-known-"),
+  );
+  await fs.writeFile(path.join(directory, "known.bin"), "changed");
+  await fs.writeFile(path.join(directory, "unknown.bin"), "hashed");
+  const knownChecksum = "a".repeat(64);
+
+  const inventory = await fingerprintOutputDirectory(
+    directory,
+    "",
+    undefined,
+    new Map([["known.bin", knownChecksum]]),
+  );
+
+  assert.equal(inventory["known.bin"], knownChecksum);
+  assert.equal(inventory["unknown.bin"], fingerprintOutputContent("hashed"));
 });
 
 test("SSG runner renders without Vite lifecycle state", async () => {
@@ -704,8 +724,32 @@ test("no-change fast path metrics count hashed output files and bytes", async ()
   });
 
   assert.deepEqual(result, { used: true });
-  assert.equal(metrics.outputFilesHashed, 2);
-  assert.equal(metrics.outputBytesHashed, html.length + binary.length);
+  assert.equal(metrics.outputFilesHashed, 0);
+  assert.equal(metrics.outputBytesHashed, 0);
   assert.ok(metrics.outputInventoryValidationDurationMs >= 0);
   assert.ok(metrics.outputHashValidationDurationMs >= 0);
+
+  const fastPathPath = path.join(
+    root,
+    ".riebeckite",
+    "ssg-output-cache.fast-path.json",
+  );
+  const fastPath = JSON.parse(await fs.readFile(fastPathPath, "utf8")) as {
+    finalOutputStats?: unknown;
+  };
+  delete fastPath.finalOutputStats;
+  await fs.writeFile(fastPathPath, JSON.stringify(fastPath), "utf8");
+
+  const fallbackMetrics = createNoChangeFastPathOutputMetrics();
+  assert.deepEqual(
+    await verifyNoChangeFastPath({
+      root,
+      outputDirectory: output,
+      expectedOutputPaths: ["index.html", "assets/a.bin"],
+      metrics: fallbackMetrics,
+    }),
+    { used: true },
+  );
+  assert.equal(fallbackMetrics.outputFilesHashed, 2);
+  assert.equal(fallbackMetrics.outputBytesHashed, html.length + binary.length);
 });

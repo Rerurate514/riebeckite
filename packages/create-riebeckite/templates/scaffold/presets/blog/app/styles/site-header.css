@@ -1,44 +1,98 @@
 .site-header {
+  position: sticky;
+  top: 0;
   display: flex;
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
-  align-items: center;
-  gap: var(--rb-space-3, 1.5rem);
-  padding-block: var(--rb-space-3, 1.5rem);
-  border-bottom: 1px solid var(--rb-color-border);
+  flex-direction: column;
+  gap: 1.25rem;
+  align-self: start;
+  height: 100vh;
+  padding: 1.75rem 1.25rem;
+  overflow-y: auto;
+  border-inline-end: 1px solid var(--rb-color-border);
+  background: color-mix(in oklab, var(--rb-color-surface) 60%, var(--rb-color-paper));
 }
 
-.site-header__navigation {
-  display: none;
+.site-header__home {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.site-header__logo {
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.site-header__title {
+  text-wrap: balance;
+}
+
+.site-header__search {
+  width: 100%;
+}
+
+.site-header__explorer {
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--rb-color-border);
 }
 
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: var(--rb-space-2, 1rem);
+  gap: 0.5rem;
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--rb-color-border);
 }
 
-@media (min-width: 30rem) {
-  .site-header__navigation {
-    display: block;
+.site-header__menu {
+  display: none;
+}
+
+@media (max-width: 64rem) {
+  .site-header {
+    position: static;
+    display: grid;
+    grid-template-areas:
+      "home actions"
+      "search search";
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.9rem 1rem;
+    height: auto;
+    padding: 1rem;
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--rb-color-border);
+  }
+
+  .site-header__home {
+    grid-area: home;
+  }
+
+  .site-header__search {
+    grid-area: search;
+  }
+
+  .site-header__explorer {
+    display: none;
+  }
+
+  .site-header__actions {
+    grid-area: actions;
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 
   .site-header__menu {
-    display: none;
+    display: inline-flex;
   }
-}
-
-.site-header__home {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-right: auto;
-  color: var(--rb-color-ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.site-header__logo {
-  width: 1.75rem;
-  height: 1.75rem;
-  object-fit: contain;
 }

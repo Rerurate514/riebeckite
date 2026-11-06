@@ -1,8 +1,22 @@
 .site-footer {
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  width: min(100% - 2rem, 76rem);
+  margin-block-start: 1rem;
+  padding-block: 1.25rem 2.5rem;
+  border-block-start: 1px solid var(--rb-color-border-strong);
+  color: var(--rb-color-muted);
+  font-size: 0.85rem;
 }
 
-.site-footer {
-  margin-top: 1rem;
-  border-top: 1px solid var(--rb-color-border);
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-footer__note {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  color: var(--rb-color-ink);
 }

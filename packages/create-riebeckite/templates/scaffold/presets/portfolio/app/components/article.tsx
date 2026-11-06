@@ -11,9 +11,12 @@ export function SiteArticle() {
   return (
     <Article class="site-article">
       <div class="site-article__layout">
-        <ArticleContent>
+        <aside class="site-article__aside">
           <Breadcrumbs />
           <Properties />
+          <TableOfContents placement="desktop-rail" />
+        </aside>
+        <ArticleContent>
           <ArticleBody />
           <PoweredByRiebeckite />
           <RecentPosts />
@@ -22,9 +25,6 @@ export function SiteArticle() {
             <RelatedPosts />
           </ArticleFooter>
         </ArticleContent>
-        <aside class="site-article__aside">
-          <TableOfContents className="rr-table-of-contents--desktop" />
-        </aside>
       </div>
     </Article>
   );

@@ -1,10 +1,28 @@
 .not-found {
-  max-width: 48rem;
-  padding: 4rem 1rem;
-  margin: 0 auto;
+  width: min(100%, 40rem);
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 3.5rem);
+  border: 1px solid #1d1c1a;
+  background: #fffdf8;
 }
 
 .not-found__status {
-  margin: 0;
+  margin: 0 0 0.85rem;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.not-found h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 1.4rem + 3vw, 3.6rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.not-found p {
+  max-width: 34rem;
+  line-height: 1.7;
 }

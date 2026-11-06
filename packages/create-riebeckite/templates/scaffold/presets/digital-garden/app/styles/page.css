@@ -5,6 +5,12 @@
   width: 100%;
   flex-direction: column;
   align-items: center;
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--rb-color-accent) 8%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 1.5rem 1.5rem;
+  background-attachment: fixed;
 }
 
 .riebeckite-main {

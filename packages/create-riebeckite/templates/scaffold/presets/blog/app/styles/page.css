@@ -1,25 +1,38 @@
 .riebeckite-page {
-  --site-toc-sticky-top: var(--rb-space-3, 1.5rem);
-  display: flex;
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
   min-height: 100vh;
   width: 100%;
-  flex-direction: column;
-  align-items: center;
+  align-items: start;
 }
 
 .riebeckite-main {
-  display: flex;
+  grid-column: 2;
   width: 100%;
-  flex-direction: column;
-  align-items: center;
+  min-width: 0;
 }
 
-.riebeckite-main:has(> .not-found) {
-  flex: 1 1 auto;
+.site-header {
+  grid-row: 1 / span 2;
 }
 
-@media (max-width: 30rem) {
+.site-footer {
+  grid-column: 2;
+}
+
+@media (max-width: 64rem) {
   .riebeckite-page {
-    padding-block: var(--rb-space-3, 1.5rem);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .site-header {
+    grid-row: auto;
+  }
+
+  .riebeckite-main,
+  .site-footer {
+    grid-column: 1;
   }
 }

@@ -1,10 +1,7 @@
-import { SiteNav } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
+import { SiteNav } from "@riebeckite/plugin-navigation";
 import { SearchBar } from "@riebeckite/plugin-search";
-import {
-  Drawer,
-  DrawerTrigger,
-} from "@riebeckite/ui/drawer";
+import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { useSiteContext } from "@riebeckite/ui";
 
 export function SiteHeader() {
@@ -12,20 +9,16 @@ export function SiteHeader() {
 
   return (
     <>
-      <ColorModeToggle placement="floating" />
       <header class="site-header rb-site-header">
         <a href="/" class="site-header__home rb-site-header__home">
-            <img
-              src="/riebeckite-logo.png"
-              alt=""
-              class="site-header__logo"
-              width="28"
-              height="28"
-            />
-            {site?.config.site.title}
+          {site?.config.site.title}
         </a>
         <nav class="site-header__navigation" aria-label="Primary navigation">
-          <SiteNav placement="primary" omitHome />
+          <SiteNav
+            class="site-header__nav"
+            placement="primary"
+            omitHome
+          />
         </nav>
         <div class="site-header__actions">
           <SearchBar class="rr-search-bar--header" />
@@ -47,9 +40,15 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const site = useSiteContext();
+
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNav placement="secondary" />
+      <div class="site-footer__inner">
+        <span class="site-footer__mark" aria-hidden="true" />
+        <p class="site-footer__name">{site?.config.site.title}</p>
+        <SiteNav placement="secondary" />
+      </div>
     </footer>
   );
 }

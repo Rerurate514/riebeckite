@@ -1,8 +1,28 @@
 .site-footer {
-  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+  width: min(100% - 2rem, 72rem);
+  margin-block-start: 1rem;
 }
 
-.site-footer {
-  margin-top: 1rem;
-  border-top: 1px solid var(--rb-color-border);
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  padding-block: 1.25rem 2.5rem;
+  border-block-start: 1px solid var(--rb-color-border-strong);
+}
+
+.site-footer__mark {
+  width: 0.65rem;
+  height: 0.65rem;
+  background: var(--rb-color-accent);
+}
+
+.site-footer__name {
+  margin: 0;
+  margin-inline-end: auto;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

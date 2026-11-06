@@ -22,12 +22,12 @@ export function SiteArticle() {
           <RecentPosts />
           <ArticleFooter class="site-article__footer">
             <ShareControls />
-            <Backlinks />
             <RelatedPosts />
           </ArticleFooter>
         </ArticleContent>
         <aside class="site-article__aside">
-          <TableOfContents className="rr-table-of-contents--desktop" />
+          <TableOfContents placement="desktop-rail" />
+          <Backlinks />
         </aside>
       </div>
     </Article>

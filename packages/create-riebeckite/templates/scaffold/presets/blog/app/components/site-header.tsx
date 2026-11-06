@@ -1,34 +1,44 @@
-import { SiteNav } from "@riebeckite/plugin-navigation";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
-import { SearchBar } from "@riebeckite/plugin-search";
 import {
-  Drawer,
-  DrawerTrigger,
-} from "@riebeckite/ui/drawer";
+  resolveSiteNavigation,
+  SidebarNavigation,
+  SiteNav,
+} from "@riebeckite/plugin-navigation";
+import { SearchBar } from "@riebeckite/plugin-search";
+import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { useSiteContext } from "@riebeckite/ui";
 
 export function SiteHeader() {
   const site = useSiteContext();
+  const navigation = site
+    ? resolveSiteNavigation(site.config, site.manifest)
+    : null;
+  const explorerItems = (navigation?.primary ?? []).filter(
+    (item) => item.href !== "/",
+  );
 
   return (
     <>
-      <ColorModeToggle placement="floating" />
       <header class="site-header rb-site-header">
         <a href="/" class="site-header__home rb-site-header__home">
-            <img
-              src="/riebeckite-logo.png"
-              alt=""
-              class="site-header__logo"
-              width="28"
-              height="28"
-            />
-            {site?.config.site.title}
+          <img
+            src="/riebeckite-logo.png"
+            alt=""
+            class="site-header__logo"
+            width="32"
+            height="32"
+          />
+          <span class="site-header__title">{site?.config.site.title}</span>
         </a>
-        <nav class="site-header__navigation" aria-label="Primary navigation">
-          <SiteNav placement="primary" omitHome />
-        </nav>
+        <SearchBar class="rr-search-bar--header site-header__search" />
+        <SidebarNavigation
+          class="site-header__explorer"
+          items={explorerItems}
+          label="Site explorer"
+          collapsible
+          autoExpandActive
+        />
         <div class="site-header__actions">
-          <SearchBar class="rr-search-bar--header" />
           <ColorModeToggle />
           <DrawerTrigger
             controls="site-navigation"
@@ -47,9 +57,16 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const site = useSiteContext();
+
   return (
     <footer class="site-footer rb-site-footer">
-      <SiteNav placement="secondary" />
+      <div class="site-footer__inner">
+        <a href="/" class="site-footer__home">
+          {site?.config.site.title}
+        </a>
+        <SiteNav placement="secondary" />
+      </div>
     </footer>
   );
 }

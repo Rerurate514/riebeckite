@@ -3,5 +3,6 @@
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/page.css";
 @import "./styles/site-header.css";
+@import "./styles/site-footer.css";
 @import "./styles/article.css";
 @import "./styles/not-found.css";

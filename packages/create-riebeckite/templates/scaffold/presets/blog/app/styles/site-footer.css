@@ -15,9 +15,24 @@
   gap: 1rem;
 }
 
+.site-footer__identity {
+  min-width: min(100%, 18rem);
+  margin-inline-end: auto;
+}
+
 .site-footer__home {
   color: var(--rb-color-ink);
   font-family: var(--rb-font-heading);
   font-size: 0.95rem;
   text-decoration: none;
+}
+
+.site-footer__meta {
+  margin: 0.3rem 0 0;
+  font-size: 0.75rem;
+}
+
+.site-footer__meta a {
+  color: inherit;
+  text-underline-offset: 0.2em;
 }

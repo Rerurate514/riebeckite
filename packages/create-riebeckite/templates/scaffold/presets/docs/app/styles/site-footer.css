@@ -90,5 +90,6 @@
 
   .site-footer__meta {
     flex-direction: column;
+    padding-block-end: 4.5rem;
   }
 }

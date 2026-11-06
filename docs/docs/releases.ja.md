@@ -21,6 +21,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Add a Quartz-style file explorer to the starter preset. The generated site now keeps the navigation tree in a collapsible left sidebar with a filter field and expands the active page's branch, while narrow screens keep using the existing header menu.
   Packages: `create-riebeckite`
 
+- Give every preset a site footer that matches its layout. Starter and showcase pair the site identity with secondary navigation and a build credit, digital-garden, blog, and portfolio gain a build credit, and minimal and empty have lean footers of their own.
+  Packages: `create-riebeckite`
+
 ### Changed
 
 - Give the blog preset an explicit navigation with Posts, Tags, and Series links instead of deriving it from the content tree.

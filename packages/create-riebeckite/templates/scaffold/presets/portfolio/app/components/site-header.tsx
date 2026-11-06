@@ -47,6 +47,9 @@ export function SiteFooter() {
       <div class="site-footer__inner">
         <span class="site-footer__mark" aria-hidden="true" />
         <p class="site-footer__name">{site?.config.site.title}</p>
+        <p class="site-footer__meta">
+          Built with <a href="https://riebeckite.dev">Riebeckite</a>
+        </p>
         <SiteNav placement="secondary" />
       </div>
     </footer>

@@ -7,7 +7,7 @@ import {
 import { createPublicContentView } from "@riebeckite/core";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
-import { SiteHeader } from "../components/site-header";
+import { SiteFooter, SiteHeader } from "../components/site-header";
 import { content } from "virtual:riebeckite/content";
 import { config } from "virtual:riebeckite/config";
 
@@ -43,6 +43,7 @@ export default jsxRenderer(async ({ children }, c) => {
           <main id="main-content" tabindex={-1} class="riebeckite-main">
             {children}
           </main>
+          <SiteFooter />
         </body>
       </ThemeRoot>
     </SiteProvider>

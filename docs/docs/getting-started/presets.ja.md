@@ -140,7 +140,7 @@ Obsidian Markdown、`minimal` テーマ、英語の1ページだけを含む構�
 
 ### 生成された UI を編集するときの起点
 
-生成されるアプリケーションのファイルは通常の TypeScript、JSX、HonoX のルートです。ページや API ルートは `app/routes/`、記事 [[glossary/ui|UI]] の並べ替えは `app/components/article.tsx`、ヘッダーとフッターは `app/components/site-header.tsx`、サイトの CSS は `app/style.css` と `app/styles/` を編集します。`SiteNav` をはじめとするプラグインの UI コンポーネントは、設定済みのデータを自分で解決します。そのため、サイト側のコンポーネントで[[glossary/manifest|マニフェスト]]を解決せず、必要な場所に配置してください。
+生成されるアプリケーションのファイルは通常の TypeScript、JSX、HonoX のルートです。ページや API ルートは `app/routes/`、記事 [[glossary/ui|UI]] の並べ替えは `app/components/article.tsx`、ヘッダーとフッターは `app/components/site-header.tsx`、サイトの CSS は `app/style.css` と `app/styles/` を編集します。すべてのプリセットにサイトフッターがあり、`empty` は `app/routes/_renderer.tsx` に直接定義し、それ以外は `app/components/site-header.tsx` に定義します。`SiteNav` をはじめとするプラグインの UI コンポーネントは、設定済みのデータを自分で解決します。そのため、サイト側のコンポーネントで[[glossary/manifest|マニフェスト]]を解決せず、必要な場所に配置してください。
 
 ## プリセットが書き出す設定を確認する
 

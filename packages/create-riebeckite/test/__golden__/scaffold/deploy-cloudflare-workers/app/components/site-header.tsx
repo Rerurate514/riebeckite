@@ -12,3 +12,16 @@ export function SiteHeader() {
     </header>
   );
 }
+
+export function SiteFooter() {
+  const site = useSiteContext();
+
+  return (
+    <footer class="site-footer rb-site-footer">
+      <span>{site?.config.site.title}</span>
+      <span>
+        Built with <a href="https://riebeckite.dev">Riebeckite</a>
+      </span>
+    </footer>
+  );
+}

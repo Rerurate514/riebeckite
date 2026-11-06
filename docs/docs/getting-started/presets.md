@@ -140,7 +140,7 @@ A blank application shell with no plugins, theme, content, or components. Its fi
 
 ### Editing generated UI
 
-Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article [[glossary/ui|UI]], `app/components/site-header.tsx` to change the header and footer, and `app/style.css` and `app/styles/` for site CSS. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
+Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article [[glossary/ui|UI]], `app/components/site-header.tsx` to change the header and footer, and `app/style.css` and `app/styles/` for site CSS. Every preset includes a site footer; the `empty` preset defines it directly in `app/routes/_renderer.tsx`, and the other presets define it in `app/components/site-header.tsx`. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
 
 ## Generated configuration
 

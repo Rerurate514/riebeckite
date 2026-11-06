@@ -40,6 +40,12 @@ export default jsxRenderer(async ({ children }, c) => {
           <main id="main-content" tabindex={-1} class="riebeckite-main">
             {children}
           </main>
+          <footer class="riebeckite-empty-footer">
+            <span>{config.site.title}</span>
+            <span>
+              Built with <a href="https://riebeckite.dev">Riebeckite</a>
+            </span>
+          </footer>
         </body>
       </ThemeRoot>
     </SiteProvider>

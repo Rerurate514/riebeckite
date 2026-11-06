@@ -26,3 +26,14 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+.site-footer__meta {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.site-footer__meta a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}

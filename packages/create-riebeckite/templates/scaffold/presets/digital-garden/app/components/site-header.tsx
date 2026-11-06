@@ -50,7 +50,14 @@ export function SiteFooter() {
   return (
     <footer class="site-footer rb-site-footer">
       <div class="site-footer__inner">
-        <p class="site-footer__note">{site?.config.site.title}</p>
+        <div class="site-footer__identity">
+          <a href="/" class="site-footer__note">
+            {site?.config.site.title}
+          </a>
+          <p class="site-footer__meta">
+            Built with <a href="https://riebeckite.dev">Riebeckite</a>
+          </p>
+        </div>
         <SiteNav placement="secondary" />
       </div>
     </footer>

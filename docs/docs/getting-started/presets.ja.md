@@ -33,6 +33,8 @@ npx create-riebeckite --list-presets
 
 ## プリセットを比較する
 
+各プリセットの説明には、幅 1440 px のデスクトップ表示のスクリーンショットを掲載しています。
+
 | プリセット | テーマ | 言語 | コンテンツ | 主な機能 |
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | サイトの[[glossary/locale|ロケール]]に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、[[glossary/search|検索]]、コンテンツから生成するナビゲーション、パンくず、[[glossary/backlink|バックリンク]]、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
@@ -50,21 +52,31 @@ npx create-riebeckite --list-presets
 
 実用的な既定構成です。Obsidian Markdown、カラーモード、SEO、目次、properties と alias、コード表示の拡張、検索と発見の導線、パンくず、レスポンシブ画像と lightbox、taxonomy、フォルダのランディングページ、リンクプレビューを含みます。ナビゲーションはサンプル用の固定 URL ではなく、公開済みのコンテンツから組み立てます。相互リンクしたサンプルノートで、バックリンク、関連記事、検索、最新記事、タグを試せます。ニッチな統合は含みません。
 
+![[preset-starter.png|starter プリセットのデスクトップ表示]]
+
 ### `digital-garden`
 
 Obsidian を意識した、相互リンクするノートのための構成です。生成されるコンテンツで frontmatter、wiki link、embed、properties、バックリンク、ローカルグラフを確認できます。ナビゲーション、パンくず、taxonomy、検索、リンクプレビューも最初から含むため、追加設定なしでノートのつながりをたどれます。
+
+![[preset-digital-garden.png|digital-garden プリセットのデスクトップ表示]]
 
 ### `blog`
 
 記事の公開を中心にした構成です。記事、タグ、シリーズ、関連記事と最新記事、共有操作、検索、目次を含みます。生成される設定では RSS、Atom、JSON feed を明示的に有効にし、公開ページごとに Open Graph 画像を生成します。サンプル記事でシリーズナビゲーションと taxonomy を確認できます。
 
+![[preset-blog.png|blog プリセットのデスクトップ表示]]
+
 ### `docs`
 
 ドキュメント用のサイドバー、レスポンシブな目次、前後ページへのナビゲーションを備えた構成です。小さなドキュメントツリーとコード例から始められ、現在読んでいるページに集中できるレイアウトです。トップページ、ヘッダー、3カラムの閲覧シェル、フッターは Riebeckite のウェブサイトと同じ構成です。
 
+![[preset-docs.png|docs プリセットのデスクトップ表示]]
+
 ### `portfolio`
 
 選んだプロジェクト、自己紹介、連絡先を載せるための控えめな構成です。画像がなくてもプロジェクトページを読めるようにしつつ、必要になればレスポンシブ画像、lightbox、メディア埋め込み、Markdown の gallery を使えます。レスポンシブ画像は既存の画像バリアントを再利用するため、WebP や AVIF への変換が必要なら `imageOptimizer` プラグインを追加してください。経歴、顧客、成果について、テンプレートが事実でない主張をすることはありません。
+
+![[preset-portfolio.png|portfolio プリセットのデスクトップ表示]]
 
 ## コンテンツを置く場所
 
@@ -112,13 +124,19 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 
 Obsidian Markdown、`minimal` テーマ、英語の1ページだけを含む構成です。小さなサイトや、意図的に小さく始めたい場合に向いています。
 
+![[preset-minimal.png|minimal プリセットのデスクトップ表示]]
+
 ### `showcase`
 
 自己完結したリファレンスサイトです。公開されているプラグインの大部分を有効にし、図表・チャート・コードの描画例、プラグインとテーマのリファレンス、SVG ・ PDF ・ Excalidraw ・ Canvas のローカル fixture を含みます。追加のインフラ、専用の fixture、サイト全体の URL 変更を必要とするプラグインは有効にせず、テンプレートを自己完結に保っています。`content/Daily/` のサンプルノートは、ホームページの Daily Notes ウィジェットに表示されます。実運用の既定構成ではなく、機能の確認や設定の参照用です。
 
+![[preset-showcase.png|showcase プリセットのデスクトップ表示]]
+
 ### `empty`
 
 プラグイン、テーマ、コンテンツ、コンポーネントを含まない空のアプリケーションシェルです。最初のルートは通常の HonoX `createRoute` ページです。Riebeckite のコンテンツ機能を追加する前に、`app/` でページ、HTML、JSX コンポーネント、CSS をそのまま追加できます。
+
+![[preset-empty.png|empty プリセットのデスクトップ表示]]
 
 ### 生成された UI を編集するときの起点
 

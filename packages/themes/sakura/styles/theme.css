@@ -223,7 +223,6 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rb-article-footer {
   margin-top: 3rem;
-  border-top: 1px solid var(--rb-color-border);
   color: color-mix(in srgb, var(--rb-color-muted) 72%, var(--rb-color-ink));
   font-size: 0.95rem;
 }
@@ -549,7 +548,6 @@
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-backlinks {
   margin-top: 3.5rem;
   padding-top: 1.75rem;
-  border-top: 1px solid var(--rb-color-border);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-backlinks a {
@@ -559,13 +557,11 @@
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-local-graph {
   margin-top: 3.5rem;
   padding-top: 1.75rem;
-  border-top: 1px solid var(--rb-color-border);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-recent-posts {
   margin-top: 3.5rem;
   padding-top: 1.75rem;
-  border-top: 1px solid var(--rb-color-border);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="sakura"] .rr-recent-posts a {

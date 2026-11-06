@@ -2,7 +2,6 @@
   .rr-daily-notes {
     margin-top: 4rem;
     padding-top: 1.5rem;
-    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   }
 
   .rr-daily-notes__header {

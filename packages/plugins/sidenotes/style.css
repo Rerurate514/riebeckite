@@ -37,7 +37,6 @@
 
   margin-block-start: var(--rb-space-6, 3rem);
   padding-block-start: var(--rb-space-3, 1.5rem);
-  border-block-start: var(--rb-rule-width, 1px) solid var(--rr-sidenotes-rule);
   color: var(--rr-sidenotes-ink);
   font-size: 0.875rem;
   line-height: 1.6;

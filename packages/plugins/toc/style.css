@@ -4,7 +4,8 @@
     --rr-table-of-contents-eyebrow-margin-block-end: 0.25rem;
     --rr-table-of-contents-item-line-height: normal;
     margin-block: 1.5rem 2rem;
-    border-block: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+    border-block-end: 1px solid
+      color-mix(in oklab, currentColor 18%, transparent);
     padding-block: 1rem;
   }
 

@@ -453,7 +453,6 @@
 
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-article-footer {
   margin-top: 2.5rem;
-  border-top: var(--rb-rule-width) solid var(--rb-color-border);
 }
 
 :is(:root, .rb-theme-root)[data-rb-theme="gruvbox"] .rb-sidebar {

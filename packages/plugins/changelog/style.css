@@ -1,7 +1,5 @@
 .rr-changelog {
   margin-block: 3rem 2rem;
-  border-block-start: 1px solid
-    var(--rb-color-border, color-mix(in srgb, currentColor 18%, transparent));
   padding-block-start: 1.25rem;
   color: var(--rb-color-ink, currentColor);
 }

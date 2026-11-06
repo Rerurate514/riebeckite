@@ -232,8 +232,13 @@
   text-align: left;
 }
 :is(:root, .rb-theme-root)[data-rb-theme="folio"]
-  :is(.rr-media, .rr-lightbox, .rr-recent-posts, .rr-cardlink) {
+  :is(.rr-media, .rr-lightbox, .rr-cardlink) {
   border-top: 3px solid var(--rb-color-ink);
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+}
+
+:is(:root, .rb-theme-root)[data-rb-theme="folio"] .rr-recent-posts {
   margin-top: 2.5rem;
   padding-top: 1rem;
 }

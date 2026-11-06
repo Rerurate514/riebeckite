@@ -65,12 +65,19 @@ test("next steps skip npm install when dependencies are already installed", () =
 test("external content keeps the workflow copy instruction and lists the secrets", () => {
   const output = formatScaffoldNextSteps("my-site", {
     externalContent: true,
+    contentRepository: "OWNER/notes",
   });
   assert.ok(!output.includes("Then edit:"));
   assert.ok(
     output.includes(
-      "Operational content lives in the content repository. CI checks it out to content/.",
+      "Content lives in OWNER/notes. CI checks it out to content/.",
     ),
+  );
+  assert.ok(
+    output.includes("content/ is ignored by Git in this site repository."),
+  );
+  assert.ok(
+    output.includes("git clone https://github.com/OWNER/notes.git content"),
   );
   assert.ok(
     output.includes(
@@ -88,5 +95,35 @@ test("external content keeps the workflow copy instruction and lists the secrets
   assert.ok(
     !/github_pat_|ghp_[A-Za-z0-9]{20,}/.test(output),
     "next steps must name secrets without printing a value",
+  );
+});
+
+test("external content reports a completed or skipped clone", () => {
+  const cloned = formatScaffoldNextSteps("my-site", {
+    externalContent: true,
+    contentRepository: "OWNER/notes",
+    contentClone: "cloned",
+  });
+  assert.ok(
+    cloned.includes(
+      "A local clone is ready in content/ with .github/workflows/notify-site.yml.",
+    ),
+  );
+  assert.ok(
+    !cloned.includes("git clone https://github.com/OWNER/notes.git content"),
+  );
+
+  const skipped = formatScaffoldNextSteps("my-site", {
+    externalContent: true,
+    contentRepository: "OWNER/notes",
+    contentClone: "skipped",
+  });
+  assert.ok(
+    skipped.includes(
+      "content/ already exists and was left unchanged. Use it for local preview.",
+    ),
+  );
+  assert.ok(
+    !skipped.includes("git clone https://github.com/OWNER/notes.git content"),
   );
 });

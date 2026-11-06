@@ -98,12 +98,15 @@ Generate the site with the common GitHub Actions deployment assets. This works w
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository <you>/notes \
-  --site-repository <you>/my-site
+  --site-repository <you>/my-site \
+  --clone-content
 cd my-site
 npm install
 ```
 
-The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with. The site repository may still contain starter files under `content/`; use them only as local examples. In day-to-day work, edit and push the content repository.
+The generated deployment checks out the vault into the site's `content/` directory. Because `--content-repository` is present, it also generates the `content-updated` dispatch receiver and `github/notify-site.yml`. `create-riebeckite` accepts `--preset` to choose a starter; the default `starter` is fine to begin with. The generated site does not include starter files under `content/`, and its `.gitignore` excludes `content/`. In day-to-day work, edit and push the content repository.
+
+Interactive mode asks whether to clone the content repository into `content/` and defaults to `Yes`. Non-interactive runs clone only with `--clone-content`. A clone also receives `.github/workflows/notify-site.yml`. A non-empty `content/`, a symbolic link or junction, or a failed clone leaves the existing path untouched.
 
 ```text
 workspace/
@@ -111,7 +114,7 @@ workspace/
 └─ my-site/   ← the site from step 2
 ```
 
-This side-by-side layout is useful locally, but CI checks out the content repository into `content/` inside the site checkout. The generated config uses `content.directory: "content"`, so placing the vault at `my-site/content` lets you preview with the same setting. If you change `content.directory` to `../notes`, adjust the workflow checkout path too; changing only the config makes local preview work but leaves CI unable to find the vault.
+This side-by-side layout is useful locally, but CI checks out the content repository into `content/` inside the site checkout. The generated config uses `content.directory: "content"`, so cloning the vault to `my-site/content` lets you preview with the same setting. If you change `content.directory` to `../notes`, adjust the workflow checkout path too; changing only the config makes local preview work but leaves CI unable to find the vault.
 
 ### 3. Point content.directory at the vault
 
@@ -171,7 +174,7 @@ A wrong path is usually the relative `directory`. If articles do not appear, che
 
 The generated deploy workflow checks out the site and then the configured content repository into `content/`. It runs for a site push, manual dispatch, or `content-updated` repository dispatch. The generated notification workflow supplies the cross-repository trigger; the content checkout itself does **not** observe pushes in another repository.
 
-Copy the generated `github/notify-site.yml` into the content repository as `.github/workflows/notify-site.yml`. Its `main` push sends `content-updated` to the site.
+If you cloned the content repository, `content/.github/workflows/notify-site.yml` is already in place; commit and push it from the content repository. Otherwise, copy the generated `github/notify-site.yml` into the content repository as `.github/workflows/notify-site.yml`. Its `main` push sends `content-updated` to the site.
 
 The preferred authentication is a GitHub App. Create an App owned by your account, disable its webhook, grant **Contents: read and write** and **Metadata: read-only**, and install it only on the site repository. In the **content repository**, add the secrets `RIEBECKITE_APP_ID` and `RIEBECKITE_APP_PRIVATE_KEY` (the PEM private key). The workflow mints a short-lived installation token with `actions/create-github-app-token` and calls `createDispatchEvent`; no long-lived token is stored.
 

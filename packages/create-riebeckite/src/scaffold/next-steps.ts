@@ -13,6 +13,10 @@ export type ScaffoldNextStepsOptions = {
   readonly editFile?: string;
   /** The site keeps its content in a separate repository. */
   readonly externalContent?: boolean;
+  /** The external content repository in `owner/repository` form. */
+  readonly contentRepository?: string;
+  /** Result of trying to clone the content repository into `content/`. */
+  readonly contentClone?: "cloned" | "skipped" | "failed";
   /** The site reads content from another directory. */
   readonly contentDirectory?: string;
   readonly dependenciesInstalled?: boolean;
@@ -49,13 +53,33 @@ export function formatScaffoldNextSteps(
     );
   }
   if (options.externalContent === true) {
+    const repository = options.contentRepository;
     lines.push("");
     lines.push(
-      "Operational content lives in the content repository. CI checks it out to content/.",
+      repository === undefined
+        ? "Content lives in the content repository. CI checks it out to content/."
+        : `Content lives in ${repository}. CI checks it out to content/.`,
     );
-    lines.push(
-      "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
-    );
+    lines.push("content/ is ignored by Git in this site repository.");
+    if (options.contentClone === "cloned") {
+      lines.push(
+        "A local clone is ready in content/ with .github/workflows/notify-site.yml.",
+      );
+    } else if (options.contentClone === "skipped") {
+      lines.push(
+        "content/ already exists and was left unchanged. Use it for local preview.",
+      );
+    } else if (repository === undefined) {
+      lines.push(
+        "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
+      );
+    } else {
+      lines.push("Clone it for local preview:");
+      lines.push(`  git clone https://github.com/${repository}.git content`);
+      lines.push(
+        "Copy github/notify-site.yml to the content repository as .github/workflows/notify-site.yml.",
+      );
+    }
     lines.push("");
     lines.push("Required GitHub Actions configuration:");
     lines.push(

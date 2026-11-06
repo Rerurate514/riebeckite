@@ -33,7 +33,7 @@ export function siteTemplateFiles(
   const sharedLayout = readTemplate("shared/reader-layout.css")
     .toString()
     .trimEnd();
-  return [
+  const files: readonly SiteTemplateFile[] = [
     { path: "package.json", content: packageJson(preset, variables, options) },
     {
       path: "riebeckite.config.ts",
@@ -46,7 +46,8 @@ export function siteTemplateFiles(
       { "{{reader-layout}}": sharedLayout },
       (filePath) => !filePath.startsWith("content/"),
     ),
-    ...(options.contentDirectory === undefined
+    ...(options.contentDirectory === undefined &&
+    variables.externalContent !== true
       ? [
           ...presetContentFiles(preset, variables),
           ...contentPageFiles(variables, preset),
@@ -54,6 +55,30 @@ export function siteTemplateFiles(
       : []),
     { path: "README.md", content: readme(preset, variables) },
   ];
+  return variables.externalContent === true
+    ? ignoreContentDirectory(files)
+    : files;
+}
+
+function ignoreContentDirectory(
+  files: readonly SiteTemplateFile[],
+): readonly SiteTemplateFile[] {
+  const hasGitignore = files.some((file) => file.path === ".gitignore");
+  const updated = files.map((file) => {
+    if (file.path !== ".gitignore") return file;
+    const content =
+      typeof file.content === "string"
+        ? file.content
+        : new TextDecoder().decode(file.content);
+    const separator = content.endsWith("\n") ? "" : "\n";
+    return {
+      path: file.path,
+      content: `${content}${separator}content/\n`,
+    };
+  });
+  return hasGitignore
+    ? updated
+    : [{ path: ".gitignore", content: "content/\n" }, ...updated];
 }
 
 const CONTENT_LANGUAGE_PATTERN =

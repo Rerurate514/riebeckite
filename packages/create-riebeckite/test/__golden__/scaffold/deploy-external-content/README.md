@@ -13,7 +13,8 @@ npm exec riebeckite build
 
 ## First edits
 
-- `content/index.md`: the first published page.
+- `octo-org/notes`: the content repository that holds the articles.
+- `content/`: clone `https://github.com/octo-org/notes.git` here for local preview. This directory is ignored by Git.
 - `riebeckite.config.ts`: set `site.title`, `site.baseUrl`, and `content.directory`.
 - `public/favicon.ico`: replace the site icon when you are ready.
 

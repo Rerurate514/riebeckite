@@ -47,6 +47,7 @@ type InteractiveAnswers =
       readonly contentSource: "external";
       readonly contentRepository: string;
       readonly siteRepository: string;
+      readonly cloneContent?: boolean;
     };
 
 type InteractiveSetupAnswers = {
@@ -67,6 +68,9 @@ export function interactiveAnswersToOptions(
     ...(answers.contentSource === "directory" &&
     answers.contentDirectory !== undefined
       ? { contentDirectory: answers.contentDirectory }
+      : {}),
+    ...(answers.contentSource === "external" && answers.cloneContent === true
+      ? { cloneContent: true }
       : {}),
     deployment: deploymentFromAnswers(answers),
   };
@@ -196,6 +200,12 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       placeholder: "OWNER/site",
     });
     if (isCancel(siteRepository)) return null;
+    const cloneContent = await confirm({
+      message:
+        "Clone the content repository into ./content for local development?",
+      initialValue: true,
+    });
+    if (isCancel(cloneContent)) return null;
     answers = {
       directory,
       preset,
@@ -204,6 +214,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       contentSource,
       contentRepository: contentRepository.trim(),
       siteRepository: siteRepository.trim(),
+      cloneContent,
     };
   } else {
     const deployment = await select<InteractiveDeployment>({

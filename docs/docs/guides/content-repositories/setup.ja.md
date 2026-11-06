@@ -98,16 +98,17 @@ GitHub Actions のデプロイ設定込みでサイトを生成します。[[glo
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository <you>/notes \
-  --site-repository <you>/my-site
+  --site-repository <you>/my-site \
+  --clone-content
 cd my-site
 npm install
 ```
 
-対話式の CLI では、コンテンツの置き場所に `Separate GitHub repository` を選び、Content repository と Site repository を入力します。
+対話式の CLI では、コンテンツの置き場所に `Separate GitHub repository` を選び、Content repository と Site repository を入力します。続けて `content/` へ clone するか確認され、既定は `Yes` です。非対話で clone するには `--clone-content` を明示します。
 
 生成されるデプロイワークフローは、記事リポジトリをサイトの `content/` へチェックアウトします。`--content-repository` を指定した場合は、`content-updated` の dispatch を受け取る設定と `github/notify-site.yml` も生成されます。既定の `starter` で問題ありませんが、`--preset` でスターターを変更できます。
 
-サイト側の `content/` にスターターのファイルが残っている場合があります。これはローカル確認用のサンプルとして扱い、日常の記事は記事リポジトリで編集してください。
+生成されるサイトには `content/` のスターターファイルを含めず、`.gitignore` で `content/` を除外します。clone する場合、`.github/workflows/notify-site.yml` も clone 内に配置されます。`content/` が空でない場合、symlink / junction の場合、clone に失敗した場合は、既存のパスをそのまま残します。日常の記事は記事リポジトリで編集してください。
 
 ローカルでは、次のように隣接するディレクトリへ置くと扱いやすくなります。
 
@@ -117,7 +118,7 @@ workspace/
 └─ my-site/   ← 手順2で作ったサイト
 ```
 
-ただし CI は、サイトのチェックアウト内にある `content/` へ記事リポジトリをチェックアウトします。生成された設定は CI に合わせて `content.directory: "content"` なので、ローカルでも `my-site/content` に Vault を配置すれば同じ設定のまま確認できます。
+ただし CI は、サイトのチェックアウト内にある `content/` へ記事リポジトリをチェックアウトします。生成された設定は CI に合わせて `content.directory: "content"` なので、ローカルでも `my-site/content` に Vault を clone すれば同じ設定のまま確認できます。
 
 `content.directory` を `../notes` に変える場合は、CI のチェックアウト先も同じ相対位置になるようワークフローを調整してください。設定だけを変えると、ローカルでは読めても CI では Vault が見つからなくなります。
 
@@ -178,7 +179,7 @@ npm exec -- riebeckite inspect content --list
 
 生成されたデプロイワークフローは、サイトの push、手動実行（`workflow_dispatch`）、`content-updated` の repository dispatch で起動します。記事リポジトリのチェックアウトはワークフローに含まれていますが、別リポジトリの push を監視しているわけではありません。
 
-生成された `github/notify-site.yml` を、記事リポジトリの `.github/workflows/notify-site.yml` へコピーします。記事リポジトリの `main` に push すると、サイトリポジトリへ `content-updated` を送ります。
+記事リポジトリを clone した場合、`content/.github/workflows/notify-site.yml` は配置済みです。記事リポジトリでコミットして push してください。clone していない場合は、生成された `github/notify-site.yml` を記事リポジトリの `.github/workflows/notify-site.yml` へコピーします。記事リポジトリの `main` に push すると、サイトリポジトリへ `content-updated` を送ります。
 
 推奨は GitHub App です。自分のアカウント所有の App を作成し、Webhook を無効にし、**Contents: read and write** と **Metadata: read-only** を付与して、サイトリポジトリだけにインストールします。**記事リポジトリ**に Secret `RIEBECKITE_APP_ID` と `RIEBECKITE_APP_PRIVATE_KEY`（PEM の秘密鍵）を登録します。ワークフローは `actions/create-github-app-token` で短期のインストールトークンを発行し、`createDispatchEvent` を呼びます。長期トークンは保存しません。
 

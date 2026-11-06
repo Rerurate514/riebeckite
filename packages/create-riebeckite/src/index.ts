@@ -6,6 +6,10 @@ import {
   printUsage,
 } from "./arguments.js";
 import {
+  type ContentCloneOutcome,
+  cloneContentRepository,
+} from "./content-clone.js";
+import {
   interactiveAnswersToOptions,
   promptDeployNow,
   promptInteractiveAnswers,
@@ -80,12 +84,43 @@ export async function runCreateRiebeckite(
   console.log(`Created a ${options.preset} Riebeckite site in ${relative}`);
   console.log("");
 
+  const contentClone = await maybeCloneContent(targetDirectory, options);
   if (shouldInstallDependencies) {
-    await prepareInteractiveSite(targetDirectory, relative, options, result);
+    await prepareInteractiveSite(
+      targetDirectory,
+      relative,
+      options,
+      result,
+      contentClone,
+    );
     return;
   }
 
-  printScaffoldNextSteps(options, result, relative);
+  printScaffoldNextSteps(options, result, relative, false, contentClone);
+}
+
+async function maybeCloneContent(
+  targetDirectory: string,
+  options: CreateRiebeckiteOptions,
+): Promise<ContentCloneOutcome | undefined> {
+  if (options.cloneContent !== true) return undefined;
+  const contentRepository = externalContentRepository(options.deployment);
+  if (contentRepository === undefined) return undefined;
+
+  const outcome = await cloneContentRepository({
+    targetDirectory,
+    contentRepository,
+  });
+  if (outcome.status === "cloned") {
+    console.log(`Cloned ${contentRepository} into content/`);
+  } else if (outcome.status === "skipped") {
+    console.log(`Skipped cloning ${contentRepository}: ${outcome.reason}`);
+  } else {
+    console.error(`Could not clone ${contentRepository}: ${outcome.reason}`);
+    console.error("The content path was left unchanged.");
+    process.exitCode = 1;
+  }
+  return outcome;
 }
 
 async function resolveOptions(
@@ -133,6 +168,7 @@ async function prepareInteractiveSite(
   relative: string,
   options: CreateRiebeckiteOptions,
   result: ScaffoldSiteResult,
+  contentClone?: ContentCloneOutcome,
 ): Promise<void> {
   const commands = packageManagerCommands();
   console.log(`Installing dependencies with ${commands.name}...`);
@@ -148,7 +184,7 @@ async function prepareInteractiveSite(
     await publishCloudflareSite(targetDirectory, relative, false);
     return;
   }
-  printScaffoldNextSteps(options, result, relative, true);
+  printScaffoldNextSteps(options, result, relative, true, contentClone);
 }
 
 function printScaffoldNextSteps(
@@ -156,6 +192,7 @@ function printScaffoldNextSteps(
   result: ScaffoldSiteResult,
   relative: string,
   dependenciesInstalled = false,
+  contentClone?: ContentCloneOutcome,
 ): void {
   const externalContent = isExternalContent(options.deployment);
   const editFile =
@@ -164,11 +201,16 @@ function printScaffoldNextSteps(
     result.files.includes("content/index.md")
       ? "content/index.md"
       : undefined;
+  const contentRepository = externalContentRepository(options.deployment);
   console.log(
     formatScaffoldNextSteps(relative, {
       editFile,
       externalContent,
       dependenciesInstalled,
+      ...(contentRepository === undefined ? {} : { contentRepository }),
+      ...(contentClone === undefined
+        ? {}
+        : { contentClone: contentClone.status }),
       ...(options.contentDirectory === undefined
         ? {}
         : { contentDirectory: options.contentDirectory }),
@@ -179,10 +221,16 @@ function printScaffoldNextSteps(
 function isExternalContent(
   deployment: CreateRiebeckiteOptions["deployment"],
 ): boolean {
-  return (
-    deployment.type === "github-actions" &&
-    deployment.content.type === "external"
-  );
+  return externalContentRepository(deployment) !== undefined;
+}
+
+function externalContentRepository(
+  deployment: CreateRiebeckiteOptions["deployment"],
+): string | undefined {
+  if (deployment.type !== "github-actions") return undefined;
+  return deployment.content.type === "external"
+    ? deployment.content.contentRepository
+    : undefined;
 }
 
 async function publishCloudflareSite(

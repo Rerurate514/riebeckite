@@ -109,11 +109,13 @@ export async function scaffoldRiebeckiteSite(
     await fs.mkdir(path.dirname(filePath), { recursive: true });
     await fs.writeFile(filePath, file.content);
   }
-  await ensureContentDirectory(
-    targetDirectory,
-    files,
-    options.contentDirectory,
-  );
+  if (externalContent === undefined) {
+    await ensureContentDirectory(
+      targetDirectory,
+      files,
+      options.contentDirectory,
+    );
+  }
 
   return { targetDirectory, files: files.map((file) => file.path) };
 }
@@ -190,15 +192,20 @@ function templateVariables(
   );
   const site = options.site ?? {};
   const deployment = options.deployment ?? NO_DEPLOYMENT;
+  const externalContent =
+    deployment.type === "github-actions" &&
+    deployment.content.type === "external";
   return {
     name,
     title: site.title ?? name,
     description: site.description ?? "",
     baseUrl: site.baseUrl ?? "",
     locale: site.locale ?? "en",
-    externalContent:
-      deployment.type === "github-actions" &&
-      deployment.content.type === "external",
+    externalContent,
+    ...(deployment.type === "github-actions" &&
+    deployment.content.type === "external"
+      ? { contentRepository: deployment.content.contentRepository }
+      : {}),
   };
 }
 

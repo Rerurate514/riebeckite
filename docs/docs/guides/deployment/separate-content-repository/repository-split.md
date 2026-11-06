@@ -114,6 +114,8 @@ git commit -m "update articles"
 
 If article updates dominate, Option 1 is the easier fit; if you want the history pinned on the site side, use Option 2.
 
+`create-riebeckite --clone-content` creates the local `content/` clone used by Option 1. A non-empty `content/`, a symbolic link or junction, or a failed clone leaves the existing path untouched.
+
 ### Authentication for private repositories in CI
 
 - `github.token` is scoped to the current repository. It can read another **public** GitHub repository, but cannot read a different private or internal repository.

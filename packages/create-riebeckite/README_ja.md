@@ -57,6 +57,7 @@ npm exec riebeckite build
 | `--domain <hostname>` | 生成する Cloudflare Worker のルートに設定するカスタムドメイン（例: `docs.example.com`） |
 | `--content-repository <owner/repository>` | このリポジトリをデプロイ時の content source にする。`--github-actions` と `--site-repository` が必要で、`github/notify-site.yml` も生成する。 |
 | `--site-repository <owner/repository>` | 生成した記事通知 workflow の通知先 site リポジトリ。`--content-repository` と同時に必要。 |
+| `--clone-content` | `--content-repository` を `content/` へ clone し、通知 workflow を clone 内に配置する。`--content-repository` と `--site-repository` が必要。 |
 
 たとえば、機能を一通り確認できる `showcase` preset で生成する場合は次のとおりです。
 
@@ -95,16 +96,22 @@ workflow を一度だけ生成します。preset による違いはありませ�
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
-  --site-repository OWNER/my-site
+  --site-repository OWNER/my-site \
+  --clone-content
 ```
 
-`content.directory` は `"content"` にし、必要な repository Secret を登録した後、
-`github/notify-site.yml` を記事リポジトリの
-`.github/workflows/notify-site.yml` にコピーします。詳細は[別記事リポジトリの
-デプロイガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.md)を参照してください。
-
 `--content-repository` を指定すると、外部 content の checkout、
-`content-updated` の repository dispatch receiver、`github/notify-site.yml` がまとめて構成されます。以前の通知用オプションは廃止しました。
+`content-updated` の repository dispatch receiver、`github/notify-site.yml` がまとめて構成されます。
+生成されるサイトには `content/` のスターターファイルを含めず、`.gitignore` で `content/` を除外します。
+
+対話モードでは `content/` へ記事リポジトリを clone するか確認し、既定は `Yes` です。
+非対話で clone するには `--clone-content` を明示します。clone する場合、通知 workflow は
+`content/.github/workflows/notify-site.yml` に配置されます。`content/` が空でない場合、
+symlink / junction の場合、clone に失敗した場合は、既存のパスをそのまま残します。
+
+clone しない場合は、`github/notify-site.yml` を記事リポジトリの
+`.github/workflows/notify-site.yml` にコピーします。必要な repository Secret を登録し、詳細は
+[別記事リポジトリのデプロイガイド](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.md)を参照してください。
 
 ## Preset
 

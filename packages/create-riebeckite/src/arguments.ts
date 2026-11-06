@@ -26,10 +26,11 @@ export type CreateRiebeckiteOptions = {
   readonly deployment: ScaffoldDeployment;
   readonly contentDirectory?: string;
   readonly customDomain?: string;
+  readonly cloneContent?: boolean;
 };
 
 export const CREATE_RIEBECKITE_USAGE =
-  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--force] [-h | --help]";
+  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--clone-content] [--force] [-h | --help]";
 
 export function parseArguments(
   arguments_: readonly string[],
@@ -46,6 +47,7 @@ export function parseArguments(
   let siteRepository: string | undefined;
   let contentDirectory: string | undefined;
   let customDomain: string | undefined;
+  let cloneContent = false;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -63,6 +65,10 @@ export function parseArguments(
     }
     if (argument === "--cloudflare-workers") {
       cloudflareWorkers = true;
+      continue;
+    }
+    if (argument === "--clone-content") {
+      cloneContent = true;
       continue;
     }
     if (
@@ -146,6 +152,24 @@ export function parseArguments(
     directory = argument;
   }
 
+  const deployment = scaffoldDeploymentFromFlags({
+    githubActions,
+    cloudflareWorkers,
+    contentRepository,
+    siteRepository,
+  });
+  if (
+    cloneContent &&
+    !(
+      deployment.type === "github-actions" &&
+      deployment.content.type === "external"
+    )
+  ) {
+    throw new Error(
+      "--clone-content requires --content-repository and --site-repository.",
+    );
+  }
+
   return {
     directory: directory ?? ".",
     force,
@@ -155,12 +179,8 @@ export function parseArguments(
     listPresets,
     ...(contentDirectory === undefined ? {} : { contentDirectory }),
     ...(customDomain === undefined ? {} : { customDomain }),
-    deployment: scaffoldDeploymentFromFlags({
-      githubActions,
-      cloudflareWorkers,
-      contentRepository,
-      siteRepository,
-    }),
+    ...(cloneContent ? { cloneContent: true } : {}),
+    deployment,
   };
 }
 

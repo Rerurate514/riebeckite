@@ -77,12 +77,41 @@ test("external content workflow includes additional secrets", async () => {
       ".github/workflows/publish.yml",
     );
     const notify = await readScaffoldFile(targetDir, "github/notify-site.yml");
+    const gitignore = await readScaffoldFile(targetDir, ".gitignore");
     assert.ok(workflow, "publish.yml must exist");
     assert.ok(notify, "notify-site.yml must exist for external content");
     assert.ok(
       workflow.includes(GITHUB_ACTIONS_SECRETS.RIEBECKITE_CONTENT_READ_TOKEN),
     );
     assert.ok(notify.includes(GITHUB_ACTIONS_SECRETS.SITE_DISPATCH_TOKEN));
+    assert.equal(
+      await readScaffoldFile(targetDir, "content/index.md"),
+      null,
+      "external content must not generate starter content",
+    );
+    assert.ok(gitignore?.includes("content/"));
+  });
+});
+
+test("external content ignores content even without optional project files", async () => {
+  await withTemporaryDirectory("riebeckite-contract-", async (tmpDir) => {
+    const targetDir = path.join(tmpDir, "test-site");
+    await scaffoldRiebeckiteSite({
+      targetDirectory: targetDir,
+      preset: SCAFFOLD_DEFAULT_PRESET,
+      utilities: [],
+      deployment: {
+        type: "github-actions",
+        content: {
+          type: "external",
+          contentRepository: "octo-org/notes",
+          siteRepository: "octo-org/site",
+        },
+      },
+    });
+    const gitignore = await readScaffoldFile(targetDir, ".gitignore");
+    assert.equal(gitignore, "content/\n");
+    assert.equal(await readScaffoldFile(targetDir, "content/index.md"), null);
   });
 });
 

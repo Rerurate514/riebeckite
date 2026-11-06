@@ -103,6 +103,34 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
   });
 });
 
+test("interactive external content can clone the content repository", () => {
+  const options = interactiveAnswersToOptions({
+    directory: "my-site",
+    preset: "showcase",
+    utilities: ["editorconfig", "vscode"],
+    contentSource: "external",
+    contentRepository: "OWNER/notes",
+    siteRepository: "OWNER/site",
+    cloneContent: true,
+  });
+  assert.deepEqual(options, {
+    directory: "my-site",
+    force: false,
+    preset: "showcase",
+    utilities: ["editorconfig", "vscode"],
+    listPresets: false,
+    cloneContent: true,
+    deployment: {
+      type: "github-actions",
+      content: {
+        type: "external",
+        contentRepository: "OWNER/notes",
+        siteRepository: "OWNER/site",
+      },
+    },
+  });
+});
+
 test("non-interactive defaults are unchanged", () => {
   const options = parseArguments([]);
   assert.deepEqual(options, {
@@ -186,6 +214,34 @@ test("existing flags keep parsing", () => {
       },
     },
   });
+});
+
+test("--clone-content opts in to cloning an external content repository", () => {
+  const options = parseArguments([
+    "my-site",
+    "--github-actions",
+    "--content-repository",
+    "OWNER/notes",
+    "--site-repository",
+    "OWNER/site",
+    "--clone-content",
+  ]);
+  assert.equal(options.cloneContent, true);
+  assert.equal(
+    parseArguments([
+      "my-site",
+      "--github-actions",
+      "--content-repository",
+      "OWNER/notes",
+      "--site-repository",
+      "OWNER/site",
+    ]).cloneContent,
+    undefined,
+  );
+  assert.throws(
+    () => parseArguments(["my-site", "--clone-content"]),
+    /--clone-content requires --content-repository and --site-repository/,
+  );
 });
 
 test("Cloudflare Workers can be selected outside interactive mode", () => {

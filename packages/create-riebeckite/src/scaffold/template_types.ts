@@ -7,6 +7,7 @@ export type SiteTemplateVariables = {
   readonly baseUrl: string;
   readonly locale: string;
   readonly externalContent?: boolean;
+  readonly contentRepository?: string;
 };
 
 export type SiteTemplateOptions = {

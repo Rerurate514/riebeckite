@@ -114,6 +114,8 @@ git commit -m "update articles"
 
 記事の更新が多いなら方法1が扱いやすく、サイト側で履歴を固定したいなら方法2が向いています。
 
+`create-riebeckite --clone-content` は、方法1で使うローカルの `content/` clone を作ります。`content/` が空でない場合、symlink / junction の場合、clone に失敗した場合は、既存のパスをそのまま残します。
+
 ### CI からプライベートリポジトリを読むための認証
 
 - `github.token` の権限は現在のリポジトリに限定されます。別の**公開** GitHub リポジトリは読めますが、別のプライベートまたは内部リポジトリは読めません。

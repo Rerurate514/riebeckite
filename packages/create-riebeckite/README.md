@@ -60,6 +60,7 @@ Deployment can be added later, described in
 | `--domain <hostname>` | Custom domain for the generated Cloudflare Worker routes, such as `docs.example.com` |
 | `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |
 | `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
+| `--clone-content` | Clone `--content-repository` into `content/` and place the notify workflow in the clone. Requires `--content-repository` and `--site-repository`. |
 
 For example, scaffold the complete feature tour:
 
@@ -97,17 +98,25 @@ pushed, generate the common workflow once (the preset does not affect it):
 ```sh
 npx create-riebeckite my-site --github-actions \
   --content-repository OWNER/notes \
-  --site-repository OWNER/my-site
+  --site-repository OWNER/my-site \
+  --clone-content
 ```
 
-Set `content.directory` to `"content"`, add the documented repository secrets,
-then copy `github/notify-site.yml` into the content repository as
-`.github/workflows/notify-site.yml`. See the [separate-content deployment
-guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.md).
-
-`--content-repository` automatically configures the external checkout, the
+`--content-repository` configures the external checkout, the
 `content-updated` repository-dispatch receiver, and `github/notify-site.yml`.
-The previous notification option was removed; omit it when migrating an older command.
+The generated site does not include starter files under `content/`, and its
+`.gitignore` excludes `content/`.
+
+Interactive mode asks whether to clone the content repository into `content/`
+and defaults to `Yes`. Non-interactive runs clone only with `--clone-content`.
+When a clone is requested, the notify workflow is placed at
+`content/.github/workflows/notify-site.yml`. A non-empty `content/`, a symbolic
+link or junction, or a failed clone leaves the existing path untouched.
+
+Without a clone, copy `github/notify-site.yml` into the content repository as
+`.github/workflows/notify-site.yml`. Add the documented repository secrets and
+see the [separate-content deployment
+guide](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/deployment/separate-content-repository.md).
 
 ## Presets
 

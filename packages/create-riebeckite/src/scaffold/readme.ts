@@ -179,14 +179,30 @@ function readmeEn(
     "",
   );
   if (preset.name !== "empty") {
-    lines.push(
-      "## First edits",
-      "",
-      "- `content/index.md`: the first published page.",
-      "- `riebeckite.config.ts`: set `site.title`, `site.baseUrl`, and `content.directory`.",
-      "- `public/favicon.ico`: replace the site icon when you are ready.",
-      "",
-    );
+    if (variables.externalContent === true) {
+      lines.push(
+        "## First edits",
+        "",
+        variables.contentRepository === undefined
+          ? "- The content repository holds the articles."
+          : `- \`${variables.contentRepository}\`: the content repository that holds the articles.`,
+        variables.contentRepository === undefined
+          ? "- `content/`: clone the content repository here for local preview. This directory is ignored by Git."
+          : `- \`content/\`: clone \`https://github.com/${variables.contentRepository}.git\` here for local preview. This directory is ignored by Git.`,
+        "- `riebeckite.config.ts`: set `site.title`, `site.baseUrl`, and `content.directory`.",
+        "- `public/favicon.ico`: replace the site icon when you are ready.",
+        "",
+      );
+    } else {
+      lines.push(
+        "## First edits",
+        "",
+        "- `content/index.md`: the first published page.",
+        "- `riebeckite.config.ts`: set `site.title`, `site.baseUrl`, and `content.directory`.",
+        "- `public/favicon.ico`: replace the site icon when you are ready.",
+        "",
+      );
+    }
   }
   if (variables.externalContent === true) {
     lines.push(...deploymentSecretLines("en"));
@@ -250,14 +266,30 @@ function readmeJa(
     "",
   );
   if (preset.name !== "empty") {
-    lines.push(
-      "## 最初に編集する場所",
-      "",
-      "- `content/index.md`: 最初に公開されるページです。",
-      "- `riebeckite.config.ts`: `site.title`、`site.baseUrl`、`content.directory` を設定します。",
-      "- `public/favicon.ico`: 必要になったらサイトアイコンを置き換えます。",
-      "",
-    );
+    if (variables.externalContent === true) {
+      lines.push(
+        "## 最初に編集する場所",
+        "",
+        variables.contentRepository === undefined
+          ? "- Content repository: 記事はこのリポジトリで編集します。"
+          : `- \`${variables.contentRepository}\`: 記事を管理する content リポジトリです。`,
+        variables.contentRepository === undefined
+          ? "- `content/`: ローカル確認用に content リポジトリを clone する場所です。Git の管理対象外です。"
+          : `- \`content/\`: ローカル確認用に \`https://github.com/${variables.contentRepository}.git\` を clone する場所です。Git の管理対象外です。`,
+        "- `riebeckite.config.ts`: `site.title`、`site.baseUrl`、`content.directory` を設定します。",
+        "- `public/favicon.ico`: 必要になったらサイトアイコンを置き換えます。",
+        "",
+      );
+    } else {
+      lines.push(
+        "## 最初に編集する場所",
+        "",
+        "- `content/index.md`: 最初に公開されるページです。",
+        "- `riebeckite.config.ts`: `site.title`、`site.baseUrl`、`content.directory` を設定します。",
+        "- `public/favicon.ico`: 必要になったらサイトアイコンを置き換えます。",
+        "",
+      );
+    }
   }
   if (variables.externalContent === true) {
     lines.push(...deploymentSecretLines("ja"));

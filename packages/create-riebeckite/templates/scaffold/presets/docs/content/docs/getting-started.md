@@ -1,6 +1,7 @@
 ---
 title: Getting started
 publish: true
+date: 2026-01-02
 sidebar:
   order: 1
 ---

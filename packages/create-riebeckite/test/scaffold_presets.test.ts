@@ -87,7 +87,7 @@ test("purpose presets select their purpose-built theme", async () => {
   const expectedThemes = {
     "digital-garden": ["@riebeckite/theme-garden", "gardenTheme"],
     blog: ["@riebeckite/theme-editorial", "editorialTheme"],
-    docs: ["@riebeckite/theme-technical", "technicalTheme"],
+    docs: ["@riebeckite/theme-default", "defaultTheme"],
     portfolio: ["@riebeckite/theme-folio", "folioTheme"],
   } as const;
   await withTemporaryDirectory(async (directory) => {

@@ -1,6 +1,7 @@
 ---
 title: Configuration
 publish: true
+date: 2026-01-03
 sidebar:
   order: 2
 ---

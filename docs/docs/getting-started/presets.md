@@ -38,7 +38,7 @@ If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `digital-garden` | `garden` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
 | `blog` | `editorial` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, generated Open Graph images, search, table of contents |
-| `docs` | `technical` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples |
+| `docs` | `default` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples, shared site header and footer |
 | `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
 | `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Broad plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
@@ -60,7 +60,7 @@ A publication-focused starting point with posts, tags, series, related and recen
 
 ### `docs`
 
-A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page.
+A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The header, three-column reading shell, and footer match the Riebeckite website.
 
 ### `portfolio`
 

@@ -5,6 +5,7 @@ import {
   ThemeRoot,
 } from "@riebeckite/honox/ui";
 import { createPublicContentView } from "@riebeckite/core";
+import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { SiteProvider } from "@riebeckite/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { SiteFooter } from "../components/site-header";
@@ -38,6 +39,7 @@ export default jsxRenderer(async ({ children }, c) => {
         </head>
         <body class="riebeckite-page rb-site">
           <a class="rb-skip-link" href="#main-content">Skip to main content</a>
+          <ColorModeToggle placement="floating" />
           {children}
           <SiteFooter />
         </body>

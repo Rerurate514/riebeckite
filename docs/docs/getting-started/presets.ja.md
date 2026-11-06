@@ -38,7 +38,7 @@ npx create-riebeckite --list-presets
 | `starter` | `default` | サイトの[[glossary/locale|ロケール]]に応じた1言語 | index、guide、examples、相互リンクしたノート | Markdown の公開、[[glossary/search|検索]]、コンテンツから生成するナビゲーション、パンくず、[[glossary/backlink|バックリンク]]、関連記事と最新記事、taxonomy、フォルダのランディングページ、リンクプレビュー |
 | `digital-garden` | `garden` | 英語 | index と相互リンクしたノート | Obsidian Markdown、frontmatter、wiki link と embed、バックリンク、ローカルグラフ、properties、検索、パンくず、taxonomy |
 | `blog` | `editorial` | 英語 | index、記事、シリーズ | 記事、タグ、シリーズナビゲーション、関連記事と最新記事、共有操作、RSS/Atom/JSON feed、SEO、OG画像の自動生成、検索、目次 |
-| `docs` | `technical` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例 |
+| `docs` | `default` | 英語 | ドキュメントのセクション | ドキュメント用サイドバー、レスポンシブな目次、前後ページへのリンク、検索可能なコード例、共通のサイトヘッダーとフッター |
 | `portfolio` | `folio` | 英語 | ホーム、About、Projects、Contact | プロジェクトを中心にしたコンテンツ、レスポンシブ画像、lightbox、メディア埋め込み、gallery、SEO、ナビゲーション、properties、[[glossary/color-mode|カラーモード]] |
 | `minimal` | `minimal` | 英語 | index 1ページ | Obsidian Markdown のみ |
 | `showcase` | `default` | 7言語 | ツアー、guide、examples、プラグインとテーマのリファレンス、ローカルの fixture | 幅広いプラグイン、図表、チャート、デイリーノート、ナレッジ機能、診断、デプロイ |
@@ -60,7 +60,7 @@ Obsidian を意識した、相互リンクするノートのための構成で�
 
 ### `docs`
 
-ドキュメント用のサイドバー、レスポンシブな目次、前後ページへのナビゲーションを備えた構成です。小さなドキュメントツリーとコード例から始められ、現在読んでいるページに集中できるレイアウトです。
+ドキュメント用のサイドバー、レスポンシブな目次、前後ページへのナビゲーションを備えた構成です。小さなドキュメントツリーとコード例から始められ、現在読んでいるページに集中できるレイアウトです。ヘッダー、3カラムの閲覧シェル、フッターは Riebeckite のウェブサイトと同じ構成です。
 
 ### `portfolio`
 

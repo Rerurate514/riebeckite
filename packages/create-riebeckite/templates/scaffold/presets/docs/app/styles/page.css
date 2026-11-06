@@ -1,6 +1,31 @@
-.riebeckite-page {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  flex-direction: column;
+@layer components {
+  .riebeckite-page > #main-content {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  }
+
+  .riebeckite-page {
+    --rb-site-header-logo-size: 1.75rem;
+    --rb-site-header-padding-block: calc(var(--rb-space-3) - 0.25rem);
+    --rb-site-header-height: calc(
+      var(--rb-site-header-padding-block) *
+      2 +
+      var(--rb-site-header-logo-size) +
+      var(--rb-rule-width, 1px)
+    );
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .riebeckite-page:has(.site-shell) {
+    display: block;
+    padding: 0;
+  }
+
+  .rb-site-footer {
+    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+    margin-inline: auto;
+  }
 }

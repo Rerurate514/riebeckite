@@ -552,11 +552,6 @@ const editorialTheme = {
   factory: "editorialTheme",
 } satisfies ScaffoldThemeSpec;
 
-const technicalTheme = {
-  package: "@riebeckite/theme-technical",
-  factory: "technicalTheme",
-} satisfies ScaffoldThemeSpec;
-
 const folioTheme = {
   package: "@riebeckite/theme-folio",
   factory: "folioTheme",
@@ -680,8 +675,8 @@ const documentation: ScaffoldPreset = {
   description:
     "A documentation site with an automatic sidebar, table of contents, and previous/next navigation.",
   languages: ["en"],
-  theme: technicalTheme,
-  plugins: [seo, ...readingPlugins, docs],
+  theme: defaultTheme,
+  plugins: [seo, ...readingPlugins, recentPosts, docs],
   contentPages: [],
   readme: "standard",
 };

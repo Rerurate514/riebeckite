@@ -1,38 +1,81 @@
-.site-header {
-  position: sticky;
-  z-index: 20;
-  top: 0;
-  display: flex;
-  min-height: 4rem;
-  align-items: center;
-  gap: var(--rb-space-3, 1.5rem);
-  padding-inline: clamp(1rem, 4vw, var(--rb-space-3, 1.5rem));
-  border-bottom: 1px solid var(--rb-color-border);
-  background: var(--rb-color-surface);
-}
-
-.site-header__home {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-right: auto;
-  color: var(--rb-color-ink);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.site-header__navigation {
-  display: none;
-}
-
-@media (min-width: 48rem) {
-  .site-header__navigation {
-    display: block;
+@layer components {
+  .rb-site-header {
+    width: 100%;
+    padding-block: var(--rb-site-header-padding-block);
   }
-}
 
-.site-header__logo {
-  width: 1.75rem;
-  height: 1.75rem;
-  object-fit: contain;
+  .site-header {
+    display: flex;
+    min-height: var(--rb-site-header-height);
+    align-items: center;
+    gap: var(--rb-space-3);
+    padding-inline: max(
+      var(--rb-space-3),
+      calc((100% - var(--rb-layout-page-max, 80rem)) / 2)
+    );
+    border-bottom: 1px solid var(--rb-color-border);
+  }
+
+  .site-header__navigation {
+    display: none;
+  }
+
+  .site-header__actions {
+    display: flex;
+    margin-inline-start: auto;
+    align-items: center;
+    gap: var(--rb-space-2);
+  }
+
+  .rb-site-header__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--rb-color-ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .rb-site-header__home img {
+    width: var(--rb-site-header-logo-size);
+    height: var(--rb-site-header-logo-size);
+    flex: none;
+    object-fit: contain;
+  }
+
+  .site-header__region {
+    display: contents;
+  }
+
+  @media (max-width: 47.999rem) {
+    .riebeckite-page:not(:has(.site-shell)) {
+      padding-block: var(--rb-space-3);
+    }
+
+    .rb-site-header__home {
+      min-width: 0;
+    }
+
+    .rb-site-header__home span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @media (min-width: 88rem) {
+    .riebeckite-page:not(:has(.site-shell)) .rb-site-header {
+      height: var(--rb-site-header-height);
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .site-header__navigation {
+      display: block;
+    }
+
+    .site-header__actions .rb-drawer-trigger {
+      display: none;
+    }
+  }
 }

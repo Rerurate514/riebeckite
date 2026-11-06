@@ -342,7 +342,7 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       htmlFiles.map(async (file) => fs.readFile(file, "utf8")),
     );
     const html = pages.join("\n");
-    assert.match(html, /class="site-shell"/);
+    assert.match(html, /class="site-shell(?: site-shell--docs)?"/);
     assert.match(
       html,
       /<main id="main-content" tabindex="-1" class="site-main"/,

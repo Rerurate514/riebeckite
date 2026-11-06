@@ -113,6 +113,8 @@ async function assertNavigation(
         `${width}px: ${JSON.stringify(standardDom)}`,
       );
     }
+    await assertCanvasViewer(page, url);
+    await page.goto(url, { waitUntil: "networkidle0" });
     await page.evaluate(() => {
       (
         window as Window & { spaNavigationMarker?: string }
@@ -145,6 +147,90 @@ async function assertNavigation(
   } finally {
     await browser.close();
   }
+}
+
+async function assertCanvasViewer(
+  page: import("puppeteer").Page,
+  url: string,
+): Promise<void> {
+  await page.goto(`${url}/notes/canvas-demo`, { waitUntil: "networkidle0" });
+  await page.waitForFunction(
+    () =>
+      document.querySelector<HTMLElement>("[data-canvas]")?.dataset
+        .canvasRender === "ready" ||
+      document.querySelector<HTMLElement>("[data-canvas]")?.dataset
+        .canvasError === "true",
+  );
+  for (const width of [375, 1440]) {
+    await page.setViewport({ width, height: 900 });
+    const state = await page.evaluate(() => {
+      const canvas = document.querySelector<HTMLElement>("[data-canvas]");
+      const stage = canvas?.querySelector<HTMLElement>("[data-canvas-stage]");
+      const fallback = canvas?.querySelector<HTMLElement>(".rb-canvas__static");
+      const node = stage?.querySelector<HTMLElement>("[data-canvas-node-id]");
+      return {
+        canvases: document.querySelectorAll("[data-canvas]").length,
+        ready: canvas?.dataset.canvasRender === "ready",
+        error: canvas?.dataset.canvasError === "true",
+        stageVisible:
+          stage !== null && getComputedStyle(stage).display !== "none",
+        fallbackHidden:
+          fallback !== null && getComputedStyle(fallback).display === "none",
+        horizontalOverflow:
+          document.documentElement.scrollWidth >
+          document.documentElement.clientWidth,
+        node: node?.dataset.canvasNodeId ?? null,
+      };
+    });
+    const message = `${width}px: ${JSON.stringify(state)}`;
+    assert.equal(state.canvases, 3, message);
+    assert.equal(state.ready, true, message);
+    assert.equal(state.error, false, message);
+    assert.equal(state.stageVisible, true, message);
+    assert.equal(state.fallbackHidden, true, message);
+    assert.equal(state.horizontalOverflow, false, message);
+    assert.ok(state.node, message);
+  }
+
+  const interaction = await page.evaluate(() => {
+    const canvas = document.querySelector<HTMLElement>("[data-canvas]");
+    const stage = canvas?.querySelector<HTMLElement>("[data-canvas-stage]");
+    const world = stage?.querySelector<HTMLElement>("[data-canvas-world]");
+    const origin = stage?.querySelector<HTMLElement>(
+      '[data-canvas-node-id="origin"]',
+    );
+    if (!stage || !world || !origin) return null;
+    origin.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    const before = world.style.transform;
+    const bounds = stage.getBoundingClientRect();
+    stage.dispatchEvent(
+      new WheelEvent("wheel", {
+        bubbles: true,
+        cancelable: true,
+        ctrlKey: true,
+        deltaY: -120,
+        clientX: bounds.left + bounds.width / 2,
+        clientY: bounds.top + bounds.height / 2,
+      }),
+    );
+    return new Promise<{ selected: boolean; before: string; after: string }>(
+      (resolve) =>
+        requestAnimationFrame(() =>
+          resolve({
+            selected: origin.hasAttribute("data-canvas-selected"),
+            before,
+            after: world.style.transform,
+          }),
+        ),
+    );
+  });
+  assert.ok(interaction);
+  assert.equal(interaction.selected, true, JSON.stringify(interaction));
+  assert.notEqual(
+    interaction.after,
+    interaction.before,
+    JSON.stringify(interaction),
+  );
 }
 
 export async function assertSpaBrowserBehavior(siteDir: string): Promise<void> {

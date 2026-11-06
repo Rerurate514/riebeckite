@@ -1,8 +1,4 @@
-import {
-  escapeHtml,
-  escapeHtmlAttribute,
-  escapeScriptJson,
-} from "@riebeckite/core";
+import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { buildCanvasLayout } from "./parse.js";
 import type {
   CanvasDocument,
@@ -50,14 +46,13 @@ export function renderCanvas(input: RenderCanvasInput): string {
     parts.push('<div class="rb-canvas__stage" data-canvas-stage></div>');
   }
   parts.push(renderFallback(document));
-  parts.push(renderPayload(document));
-
   const style = renderHeightStyle(options.height);
+  const payload = escapeHtmlAttribute(JSON.stringify(document));
   const maxNodes =
     options.maxNodes === undefined
       ? ""
       : ` data-canvas-max-nodes="${options.maxNodes}"`;
-  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}><div class="rb-canvas__frame">${parts.join("\n")}</div></div>`;
+  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-payload="${payload}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}><div class="rb-canvas__frame">${parts.join("\n")}</div></div>`;
 }
 
 function renderStatic(layout: CanvasLayout, resolver: CanvasResolver): string {
@@ -271,10 +266,6 @@ function describeNode(node: CanvasNode): string {
   if (node.url) parts.push(escapeHtml(node.url));
   if (node.label) parts.push(escapeHtml(node.label));
   return parts.length > 0 ? ` \u2014 ${parts.join(" / ")}` : "";
-}
-
-function renderPayload(document: CanvasDocument): string {
-  return `<script type="application/json" data-canvas-payload>${escapeScriptJson(JSON.stringify(document))}</script>`;
 }
 
 function renderHeightStyle(height: number | string | undefined): string {

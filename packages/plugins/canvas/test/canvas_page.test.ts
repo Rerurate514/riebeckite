@@ -99,7 +99,7 @@ test("resolve renders the canvas with main, h1, stage, and payload", async () =>
   assert.match(body, /class="rb-canvas"/);
   assert.match(body, /data-canvas-render="both"/);
   assert.match(body, /data-canvas-stage/);
-  assert.match(body, /data-canvas-payload/);
+  assert.match(body, /data-canvas-payload="\{&quot;nodes&quot;/);
   assert.match(body, /data-canvas-node-id="a"/);
 });
 

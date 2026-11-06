@@ -21,14 +21,12 @@ export function initCanvas(root: ParentNode = document): void {
 }
 
 function initContainer(container: HTMLElement): void {
-  const payload = container.querySelector<HTMLScriptElement>(
-    "script[data-canvas-payload]",
-  );
+  const payload = container.dataset.canvasPayload;
   const stage = container.querySelector<HTMLElement>(".rb-canvas__stage");
   const world = container.querySelector<HTMLElement>("[data-canvas-world]");
-  if (!payload?.textContent || !stage || !world)
+  if (!payload || !stage || !world)
     throw new Error("Canvas markup is incomplete.");
-  const document = parseCanvas(payload.textContent);
+  const document = parseCanvas(payload);
   if (!document) throw new Error("Canvas payload is invalid.");
   const nodes = limitNodes(document.nodes, container);
   const layout = buildCanvasLayout({ nodes, edges: document.edges });

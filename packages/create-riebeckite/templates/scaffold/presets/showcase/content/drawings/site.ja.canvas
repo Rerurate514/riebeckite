@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    { "id": "idea", "type": "text", "text": "アイデアを残す", "x": 0, "y": 190, "width": 220, "height": 110, "color": "5" },
+    { "id": "research", "type": "text", "text": "資料を集める", "x": 300, "y": 0, "width": 220, "height": 110, "color": "6" },
+    { "id": "plan", "type": "text", "text": "計画にする", "x": 300, "y": 190, "width": 220, "height": 110, "color": "3" },
+    { "id": "outline", "type": "text", "text": "構成を作る", "x": 300, "y": 380, "width": 220, "height": 110, "color": "2" },
+    { "id": "write", "type": "text", "text": "ノートを書く", "x": 600, "y": 95, "width": 220, "height": 110, "color": "1" },
+    { "id": "review", "type": "text", "text": "見直して直す", "x": 600, "y": 285, "width": 220, "height": 110, "color": "3" },
+    { "id": "publish", "type": "text", "text": "ノートを公開する", "x": 900, "y": 190, "width": 220, "height": 110, "color": "4" },
+    { "id": "workspace", "type": "group", "label": "小さな Obsidian Canvas", "x": -40, "y": -60, "width": 1220, "height": 610 }
+  ],
+  "edges": [
+    { "id": "idea-research", "fromNode": "idea", "fromSide": "right", "toNode": "research", "toSide": "left", "toEnd": "arrow" },
+    { "id": "research-plan", "fromNode": "research", "fromSide": "bottom", "toNode": "plan", "toSide": "top", "toEnd": "arrow" },
+    { "id": "idea-plan", "fromNode": "idea", "fromSide": "right", "toNode": "plan", "toSide": "left", "toEnd": "arrow" },
+    { "id": "plan-outline", "fromNode": "plan", "fromSide": "bottom", "toNode": "outline", "toSide": "top", "toEnd": "arrow" },
+    { "id": "plan-write", "fromNode": "plan", "fromSide": "right", "toNode": "write", "toSide": "left", "toEnd": "arrow" },
+    { "id": "outline-review", "fromNode": "outline", "fromSide": "right", "toNode": "review", "toSide": "left", "toEnd": "arrow" },
+    { "id": "write-review", "fromNode": "write", "fromSide": "bottom", "toNode": "review", "toSide": "top", "toEnd": "arrow" },
+    { "id": "review-publish", "fromNode": "review", "fromSide": "right", "toNode": "publish", "toSide": "left", "toEnd": "arrow" }
+  ]
+}

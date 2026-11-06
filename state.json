@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "46f9cf5d-3f08-423b-8452-53bf476018de",
-    "publishedAt": "2026-11-06T16:40:10.388Z",
-    "publicationFingerprint": "5fa74744e800d9f445bf09a1d7fbeebe0b2b6a9f4595869bf14dc625d94ecbff",
+    "runId": "3daf6f8c-64f0-4f72-baac-f2544d4e3d74",
+    "publishedAt": "2026-11-06T17:11:29.694Z",
+    "publicationFingerprint": "1b67cde432487e0dc8eee26ee9e0d0de4efa40cccae233a5092bc57a8935c71b",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -4058,16 +4058,16 @@
         "permalink": "/docs/plugins/code-annotations",
         "title": "Code Annotations",
         "visibility": "public",
-        "fingerprint": "d476a9557dd3ae3e1bd1f8dc8d1e25a928ad8c22486494650ca5e30e4faca581",
-        "contentFingerprint": "e03207c2ba20084e79e7208b6550a88639972d4cc9d1c30eb383884ff488708f"
+        "fingerprint": "fbfaf03303b2c0871845183b4c65eb556b399b9199efee56678f99ad08ee6f52",
+        "contentFingerprint": "2290fdfcbd5372c0cdab8b953da59f69da2ea334b99f7111dec2fb92526b43f9"
       },
       {
         "slug": "docs/plugins/code-annotations.ja",
         "permalink": "/ja/docs/plugins/code-annotations",
         "title": "Code Annotations",
         "visibility": "public",
-        "fingerprint": "244a54e29c67fcc6e5dda02a302dde9c5359e1b246a2f1e02d6f6e08bdeafb2f",
-        "contentFingerprint": "39def2f5acd500f08dc54d47b787083689122961cc069c16d9287e4fc66c242f"
+        "fingerprint": "ca655f547efd67f4b01de065ca8677ae742ee8bd978783f78e3d94475d9ebebd",
+        "contentFingerprint": "2e2232d90f1ddbb852b4bf0002341f0af910e17d73f71c461fcdf1f62dfe988a"
       },
       {
         "slug": "docs/plugins/code-enhance",
@@ -4170,16 +4170,16 @@
         "permalink": "/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "08b267631577e6d1d2c3f1218d50c9be5f28d3bf34182e65dc6786eee5006f21",
-        "contentFingerprint": "d48d7aa76f075a790349455ee5238b509d9c533bba8c850914105db1b28df189"
+        "fingerprint": "776bef9b2f48611a681b6220d89cbaf06f1428386ffbc1bfefaf06e3d08444b6",
+        "contentFingerprint": "3ce187f3666a3d2707474b5992289ee387816a028a824e04e5f4e242583d495a"
       },
       {
         "slug": "docs/plugins/dataview.ja",
         "permalink": "/ja/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "7adb648bf97b97e3f7ceceaf58776ada1f3d0648e0976f01c91c6272ef4b994a",
-        "contentFingerprint": "869f7b9aaf9b8aeff1193e7aa2da23f626094ae2009f36c0b5f55e368d4bf68a"
+        "fingerprint": "ef4b9bed0b5c130039f1ce7851bd42365fee045d7806901232e8ed23cf7aee08",
+        "contentFingerprint": "54ddb90f6ed4231f2cc4741e7e0ee72e5ace7e4f3725e22d044a4e921b148afb"
       },
       {
         "slug": "docs/plugins/deploy",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "f332c4d99024567abd074364dce5150a4df6161ebc26fa11124c8b52d4b893ee",
+    "artifactFingerprint": "5a9551658158e2a2dfd242ce2ed2cf64e1b76de999c2c1e988c5307e69acfc72",
     "provider": "cloudflare-workers"
   }
 }

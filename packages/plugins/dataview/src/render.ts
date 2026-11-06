@@ -276,7 +276,8 @@ function renderCalendar(
     rows.push(`<tr>${cells.slice(index, index + 7).join("")}</tr>`);
   }
 
-  return `<table class="${escapeHtmlAttribute(`${className}__calendar`)}"><caption class="${escapeHtmlAttribute(`${className}__calendar-caption`)}">${escapeHtml(`${MONTH_NAMES[month]} ${year}`)}</caption><thead><tr>${header}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+  const label = `${MONTH_NAMES[month]} ${year}`;
+  return `<div class="${escapeHtmlAttribute(`${className}__calendar-scroll`)}" role="region" aria-label="${escapeHtmlAttribute(label)}" tabindex="0"><table class="${escapeHtmlAttribute(`${className}__calendar`)}"><caption class="${escapeHtmlAttribute(`${className}__calendar-caption`)}">${escapeHtml(label)}</caption><thead><tr>${header}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 }
 
 function groupedSections(

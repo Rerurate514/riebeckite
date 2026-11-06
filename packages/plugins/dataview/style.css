@@ -126,6 +126,15 @@
   text-underline-offset: 0.2em;
 }
 
+.rb-dataview__calendar-scroll {
+  overflow-x: auto;
+}
+
+.rb-dataview__calendar-scroll:focus-visible {
+  outline: 2px solid var(--rb-dataview-accent);
+  outline-offset: 2px;
+}
+
 .rb-dataview__calendar-caption {
   padding-bottom: 0.5rem;
   text-align: left;

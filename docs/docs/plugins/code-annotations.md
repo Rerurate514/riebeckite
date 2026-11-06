@@ -33,7 +33,7 @@ Use `diff` as the fence language and put the target language after it. Lines
 starting with `+` are additions, lines starting with `-` are removals, and all
 other lines are unchanged.
 
-````md
+````text
 ```diff js
 + const message = "Hello";
 - const message = "World";

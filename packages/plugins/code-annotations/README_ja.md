@@ -31,7 +31,7 @@ export default defineConfig({
 コードフェンスの言語に `diff` を指定し、その後に対象言語を書きます。`+` で始まる行は追加、
 `-` で始まる行は削除、それ以外は変更のない行として扱います。
 
-````md
+````text
 ```diff js
 + const message = "Hello";
 - const message = "World";

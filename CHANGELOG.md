@@ -17,6 +17,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Add a Quartz-style file explorer to the starter preset. The generated site now keeps the navigation tree in a collapsible left sidebar with a filter field and expands the active page's branch, while narrow screens keep using the existing header menu.
   Packages: `create-riebeckite`
 
+### Changed
+
+- Give the blog preset an explicit navigation with Posts, Tags, and Series links instead of deriving it from the content tree.
+  Packages: `create-riebeckite`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.41...HEAD
 
 ## [0.0.41] - 2026-11-06

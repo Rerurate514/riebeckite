@@ -231,6 +231,11 @@ const search = np("@riebeckite/plugin-search", "search");
 const backlinks = np("@riebeckite/plugin-backlinks", "backlinks");
 const breadcrumbs = np("@riebeckite/plugin-breadcrumbs", "breadcrumbs");
 const navigationStarter = np("@riebeckite/plugin-navigation", "navigation");
+const navigationBlog = np(
+  "@riebeckite/plugin-navigation",
+  "navigation",
+  `{ items: [{ label: "Posts", href: "/posts" }, { label: "Tags", href: "/tags" }, { label: "Series", href: "/series" }] }`,
+);
 const navigationShowcase = np(
   "@riebeckite/plugin-navigation",
   "navigation",
@@ -654,7 +659,8 @@ export const blog: ScaffoldPreset = {
   languages: ["en"],
   theme: editorialTheme,
   plugins: [
-    ...readingPlugins,
+    ...readingPlugins.filter((plugin) => plugin !== navigationStarter),
+    navigationBlog,
     blogSeo,
     blogOgImage,
     properties,

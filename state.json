@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "4192c207-afb0-47f9-ab3b-6dd9d4d4a1cf",
-    "publishedAt": "2026-11-06T01:41:52.096Z",
-    "publicationFingerprint": "c0559492c3155637fcbdbef8f6617ea496c2965c70cd629c11b0e276c22f6b39",
+    "runId": "8b8cbcab-a54e-46d7-a823-f241177af510",
+    "publishedAt": "2026-11-06T05:25:36.237Z",
+    "publicationFingerprint": "3760b3ad1dbeae4e08e52768d95358e635d42a96bc6115a4a0968c3076e1b45a",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3994,16 +3994,16 @@
         "permalink": "/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "c536d7d9bc6ba39b0968df514b07f4cd4fcaa5ef4a2cee4f81f3e338d50e8f29",
-        "contentFingerprint": "8902d0c2f0c60dade7d4ba07008a6574aafe89ee213ebfaaf1a9402841a6fc7a"
+        "fingerprint": "4f3256a84fc37b647f98567510d6724e311e0363315b273383c4e9826e2f7b76",
+        "contentFingerprint": "14599b09fa985f9ba41e446b1168dc575d0c73e5e8acf20332ddd714816dbbeb"
       },
       {
         "slug": "docs/plugins/canvas.ja",
         "permalink": "/ja/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "a1b8f787819f96d39c84b65abaec4ad58bd641b0f8d4ea97dd092affe3cc538a",
-        "contentFingerprint": "aa2164783fe77db411fedb80ab9a3528f50a930e4c0c55b791a8d2725fd84e18"
+        "fingerprint": "45e7fdd26ef7604f2c3b4502f5e0e977521d672aebb10c9bfa346f165fa1c713",
+        "contentFingerprint": "5cb69e8a17e5c20853e6296b9be684e347e611801d9531a7ad7a379c9e3cee4d"
       },
       {
         "slug": "docs/plugins/changelog",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "e267bc31bf62e67b5c93be2e3fa8652c5f00ad7fb8156bbc0b6835df97b0646d",
+    "artifactFingerprint": "affec33806bf4259dee512a49b17bd2f8077d009dc55147240c1f38e5187b7fb",
     "provider": "cloudflare-workers"
   }
 }

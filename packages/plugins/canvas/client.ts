@@ -1,3 +1,11 @@
+export {
+  centerOnBounds,
+  fitBounds,
+  panBy,
+  screenToWorld,
+  worldToScreen,
+  zoomAt,
+} from "./src/camera.js";
 export { initCanvas } from "./src/client_init.js";
 export type {
   CanvasCamera,

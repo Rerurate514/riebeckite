@@ -46,6 +46,7 @@ export function parseCanvas(json: string): CanvasDocument | null {
   const edges = parseEdges(value.edges);
   if (nodes === null || edges === null) return null;
   if (new Set(nodes.map((node) => node.id)).size !== nodes.length) return null;
+  if (new Set(edges.map((edge) => edge.id)).size !== edges.length) return null;
 
   return { nodes, edges };
 }
@@ -63,12 +64,13 @@ export function buildCanvasLayout(doc: CanvasDocument): CanvasLayout {
     ? Math.min(...positioned.map((node) => node.y))
     : 0;
 
-  const nodes: CanvasLayoutNode[] = positioned.map((node) => ({
+  const nodes: CanvasLayoutNode[] = positioned.map((node, zIndex) => ({
     ...node,
     x: node.x - minX,
     y: node.y - minY,
     centerX: node.x - minX + node.width / 2,
     centerY: node.y - minY + node.height / 2,
+    zIndex,
   }));
 
   const width = nodes.length
@@ -218,10 +220,11 @@ function parseEdge(value: unknown): CanvasEdge | null {
   if (!isRecord(value)) return null;
   const fromNode = asString(value.fromNode);
   const toNode = asString(value.toNode);
-  if (!fromNode || !toNode) return null;
+  const id = asString(value.id);
+  if (!id || !fromNode || !toNode) return null;
 
   return {
-    id: asString(value.id) ?? `${fromNode}->${toNode}`,
+    id,
     fromNode,
     fromSide: asSide(value.fromSide),
     fromEnd: asEnd(value.fromEnd) ?? "none",

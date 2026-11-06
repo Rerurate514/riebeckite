@@ -15,6 +15,14 @@ import { createCanvasRuntime } from "./src/runtime.js";
 import type { CanvasOptions, CanvasRenderMode } from "./src/types.js";
 
 export {
+  centerOnBounds,
+  fitBounds,
+  panBy,
+  screenToWorld,
+  worldToScreen,
+  zoomAt,
+} from "./src/camera.js";
+export {
   buildCanvasLayout,
   isRenderMode,
   parseCanvas,

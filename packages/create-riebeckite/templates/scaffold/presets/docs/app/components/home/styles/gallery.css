@@ -1,0 +1,35 @@
+.rb-home__gallery {
+  padding: clamp(2rem, 5vw, 4rem);
+  background: var(--rb-color-surface-hover);
+}
+.rb-home__gallery-links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: var(--rb-space-5);
+  background: var(--rb-color-border-strong);
+}
+.rb-home__gallery-links a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 5.5rem;
+  padding: 1.25rem;
+  background: var(--rb-color-surface);
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  text-decoration: none;
+}
+.rb-home__gallery-links b {
+  color: var(--rb-color-accent);
+  font-size: 1.2rem;
+}
+.rb-home__gallery-links a:hover,
+.rb-home__gallery-links a:focus-visible {
+  background: var(--rb-color-accent);
+  color: var(--rb-color-paper);
+}
+.rb-home__gallery-links a:hover b,
+.rb-home__gallery-links a:focus-visible b {
+  color: inherit;
+}

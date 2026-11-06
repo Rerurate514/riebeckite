@@ -1,0 +1,94 @@
+.rb-home__explore {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: start;
+}
+
+.rb-home__site-preview {
+  overflow: hidden;
+  border: 1px solid var(--rb-color-border-strong);
+  background: var(--rb-color-surface);
+  box-shadow: 0.75rem 0.75rem 0
+    color-mix(in oklab, var(--rb-color-accent) 16%, transparent);
+}
+.rb-home__preview-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface-hover);
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.rb-home__preview-bar span:last-child {
+  color: var(--rb-color-accent);
+}
+.rb-home__preview-layout {
+  display: grid;
+  grid-template-columns: minmax(8rem, 0.38fr) minmax(0, 1fr);
+  min-height: 17rem;
+}
+.rb-home__preview-layout nav {
+  display: grid;
+  align-content: start;
+  gap: 0.15rem;
+  padding: 1rem;
+  border-right: 1px solid var(--rb-color-border);
+  background: color-mix(
+    in oklab,
+    var(--rb-color-surface-hover) 55%,
+    transparent
+  );
+}
+.rb-home__preview-layout nav p {
+  margin: 0 0 0.45rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+.rb-home__preview-layout a,
+.rb-home__preview-links a {
+  color: var(--rb-color-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.rb-home__preview-layout a:hover,
+.rb-home__preview-layout a:focus-visible,
+.rb-home__preview-links a:hover,
+.rb-home__preview-links a:focus-visible {
+  color: var(--rb-color-link);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.rb-home__preview-page {
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+.rb-home__preview-page h3 {
+  max-width: 18ch;
+  margin: 0.6rem 0 0;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.25rem, 2.1vw, 1.7rem);
+  font-weight: 620;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+}
+.rb-home__preview-page > p:not(.rb-home__example-kicker) {
+  max-width: 35rem;
+  margin: 0.9rem 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.rb-home__preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1.3rem;
+}

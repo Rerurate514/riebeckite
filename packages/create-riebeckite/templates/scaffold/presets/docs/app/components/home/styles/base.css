@@ -1,0 +1,142 @@
+.rb-home {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+  padding-block: var(--rb-space-5) var(--rb-space-8);
+}
+
+body:has(.rb-home) main {
+  width: 100%;
+  min-width: 0;
+}
+.rb-home h1,
+.rb-home h2,
+.rb-home__cta {
+  font-family: var(--rb-font-heading);
+}
+.rb-home__hero,
+.rb-home__explore {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: center;
+}
+.rb-home__hero-copy,
+.rb-home__hero > *,
+.rb-home__application-example > *,
+.rb-home__explore > * {
+  min-width: 0;
+}
+.rb-home__wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--rb-color-ink);
+  font-family: var(--rb-font-heading);
+  font-size: 1.5rem;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  text-decoration: none;
+  line-height: 1;
+}
+.rb-home__wordmark img {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  object-fit: contain;
+}
+.rb-home__eyebrow,
+.rb-home__label,
+.rb-home__install > p,
+.rb-home__section-label,
+.rb-home__example-bar,
+.rb-home__example-kicker,
+.rb-home__language {
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.rb-home__eyebrow,
+.rb-home__section-label {
+  margin: var(--rb-space-3) 0;
+}
+.rb-home h1 {
+  max-width: 11ch;
+  margin: 0;
+  font-size: clamp(2.8rem, 5vw, 4.75rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  text-wrap: balance;
+}
+:lang(ja) .rb-home :is(h1, h2, h3) {
+  line-break: strict;
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+.rb-home__lead,
+.rb-home__section-intro > p,
+.rb-home__continue > p {
+  max-width: 41rem;
+  margin: var(--rb-space-4) 0 0;
+  color: var(--rb-color-muted);
+  font-size: clamp(1rem, 1.1vw, 1.1rem);
+  line-height: 1.75;
+}
+.rb-home__actions,
+.rb-home__resource-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  margin-top: var(--rb-space-4);
+}
+.rb-home__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rb-color-border-strong);
+  color: var(--rb-color-ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.rb-home__cta--primary,
+.rb-home__cta:hover,
+.rb-home__cta:focus-visible {
+  border-color: var(--rb-color-accent);
+  background: var(--rb-color-accent);
+  color: var(--rb-color-paper);
+}
+.rb-home__install {
+  max-width: 28rem;
+  margin-top: var(--rb-space-5);
+}
+.rb-home__install > p,
+.rb-home__label {
+  margin: 0 0 var(--rb-space-2);
+}
+
+.rb-home__explore,
+.rb-home__conversion,
+.rb-home__configuration,
+.rb-home__recipes,
+.rb-home__project,
+.rb-home__workflow,
+.rb-home__gallery,
+.rb-home__continue {
+  margin-top: clamp(4.5rem, 10vw, 8rem);
+}
+
+.rb-home__section-intro h2,
+.rb-home__continue h2 {
+  max-width: 22ch;
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 3rem);
+  font-weight: 620;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  text-wrap: balance;
+}

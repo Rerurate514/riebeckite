@@ -1,0 +1,32 @@
+.rb-home__resource-links {
+  align-items: center;
+}
+.rb-home__text-link,
+.rb-home__language {
+  color: var(--rb-color-link);
+  font-weight: 600;
+  text-decoration: none;
+  text-underline-offset: 0.25em;
+}
+.rb-home__text-link:hover,
+.rb-home__text-link:focus-visible,
+.rb-home__language:hover,
+.rb-home__language:focus-visible,
+.rb-home__example-page a:hover,
+.rb-home__example-page a:focus-visible {
+  color: var(--rb-color-accent);
+  text-decoration: underline;
+}
+
+.rb-home__continue {
+  max-width: 48rem;
+  margin-inline: auto;
+  text-align: center;
+}
+.rb-home__continue h2,
+.rb-home__continue > p {
+  margin-inline: auto;
+}
+.rb-home__continue .rb-home__resource-links {
+  justify-content: center;
+}

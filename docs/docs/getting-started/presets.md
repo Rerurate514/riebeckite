@@ -60,7 +60,7 @@ A publication-focused starting point with posts, tags, series, related and recen
 
 ### `docs`
 
-A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The header, three-column reading shell, and footer match the Riebeckite website.
+A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The homepage, header, three-column reading shell, and footer match the Riebeckite website.
 
 ### `portfolio`
 

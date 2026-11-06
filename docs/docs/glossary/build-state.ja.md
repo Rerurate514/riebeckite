@@ -37,6 +37,7 @@ sidebar:
 - `dependencies`：`readonly ContentBuildDependency[]` — 安定した識別子を持つコンテンツとファイルの依存関係
 - `linkTargets?`：`readonly string[]` — 解決済みのリンク先の slug
 - `processedContentCacheFingerprint?`：`string` — 処理済みコンテンツキャッシュの取り決めのフィンガープリント
+- `metadataFingerprint?`：`string` — 変更されていない Markdown 以外のコンテンツのフィンガープリントを再利用するためのファイルメタデータのフィンガープリント
 
 `ContentBuildDependency`（`packages/core/src/content/content_build_state.ts`）は次を記録します。
 - `kind`：`"content"` または `"file"`

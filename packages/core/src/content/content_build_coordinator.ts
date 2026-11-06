@@ -38,7 +38,10 @@ import {
   type CachedContentDependency,
   LINK_LOCATION_PREFIX,
 } from "./content_dependency_tracker.js";
-import { fingerprintContentEntries } from "./content_fingerprint.js";
+import {
+  fingerprintContentEntries,
+  fingerprintContentMetadata,
+} from "./content_fingerprint.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import { extractFrontmatterAliases } from "./content_metadata.js";
 import type { ContentSourceEntry } from "./content_source.js";
@@ -116,6 +119,7 @@ export class ContentBuildCoordinator {
             entry.path,
             {
               fingerprint,
+              metadataFingerprint: fingerprintContentMetadata(entry),
               aliases: plan.currentContentAliases.get(entry.path) ?? [],
               dependencies: collectDependencies(
                 manifestEntry,
@@ -226,6 +230,14 @@ export class ContentBuildCoordinator {
       {},
       () => this.dependencies.getEntries(),
     );
+    const previousState = await this.dependencies.observability.tracer.span(
+      "content.build-state.load",
+      { incremental },
+      async () =>
+        incremental
+          ? await loadContentBuildState(this.dependencies.buildStatePath)
+          : undefined,
+    );
     const currentEntries = await this.dependencies.observability.tracer.span(
       "content.fingerprint",
       {},
@@ -234,15 +246,8 @@ export class ContentBuildCoordinator {
           entries,
           (entry) => this.dependencies.readEntry(entry),
           this.dependencies.includeFileMetadata,
+          previousState?.entries,
         ),
-    );
-    const previousState = await this.dependencies.observability.tracer.span(
-      "content.build-state.load",
-      { incremental },
-      async () =>
-        incremental
-          ? await loadContentBuildState(this.dependencies.buildStatePath)
-          : undefined,
     );
     const changeSet = await this.dependencies.observability.tracer.span(
       "content.change-set",

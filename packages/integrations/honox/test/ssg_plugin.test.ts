@@ -6,6 +6,11 @@ import path from "node:path";
 import { test } from "node:test";
 import { Hono } from "hono";
 import {
+  fingerprintDirectory,
+  fingerprintOutputDirectory,
+  fingerprintOutputInventory,
+} from "../src/ssg/inventory.js";
+import {
   loadOutputCacheMetadata,
   validateOutputCache,
 } from "../src/ssg/output_cache.js";
@@ -21,6 +26,21 @@ import {
   shouldApplyRiebeckiteSsg,
   verifyNoChangeFastPath,
 } from "../src/ssg_plugin.js";
+
+test("output inventory fingerprint matches directory fingerprint", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-inventory-"),
+  );
+  await fs.mkdir(path.join(directory, "nested"));
+  await fs.writeFile(path.join(directory, "index.html"), "index");
+  await fs.writeFile(path.join(directory, "nested", "asset.bin"), "asset");
+
+  const inventory = await fingerprintOutputDirectory(directory);
+  assert.equal(
+    fingerprintOutputInventory(inventory),
+    await fingerprintDirectory(directory),
+  );
+});
 
 test("SSG runner renders without Vite lifecycle state", async () => {
   const output = new Map<string, string | Uint8Array>();
@@ -198,16 +218,55 @@ test("valid SSG output cache round-trips string and binary outputs", async () =>
   await saveOutputCache(cachePath, state, output);
 
   const loaded = await loadOutputCache(cachePath);
-  assert.deepEqual(loaded?.outputs, {
-    "index.html": {
-      cachePath: createHash("sha256").update("index.html").digest("hex"),
-      checksum: createHash("sha256").update(html).digest("hex"),
-    },
-    "assets/a.bin": {
-      cachePath: createHash("sha256").update("assets/a.bin").digest("hex"),
-      checksum: createHash("sha256").update(binary).digest("hex"),
-    },
-  });
+  const htmlEntry = loaded?.outputs["index.html"];
+  const binaryEntry = loaded?.outputs["assets/a.bin"];
+  assert.equal(
+    htmlEntry?.cachePath,
+    createHash("sha256").update("index.html").digest("hex"),
+  );
+  assert.equal(
+    htmlEntry?.checksum,
+    createHash("sha256").update(html).digest("hex"),
+  );
+  assert.equal(htmlEntry?.size, html.length);
+  assert.equal(typeof htmlEntry?.modifiedAtMs, "number");
+  assert.equal(
+    binaryEntry?.cachePath,
+    createHash("sha256").update("assets/a.bin").digest("hex"),
+  );
+  assert.equal(
+    binaryEntry?.checksum,
+    createHash("sha256").update(binary).digest("hex"),
+  );
+  assert.equal(binaryEntry?.size, binary.length);
+  assert.equal(typeof binaryEntry?.modifiedAtMs, "number");
+});
+
+test("SSG output cache upgrades entries without file statistics", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  await fs.mkdir(output, { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "original");
+
+  await saveOutputCache(
+    cachePath,
+    { version: 4, outputs: { "index.html": { cachePath: "", checksum: "" } } },
+    output,
+  );
+  const serialized: Record<string, unknown> = JSON.parse(
+    await fs.readFile(cachePath, "utf8"),
+  );
+  const outputs = serialized.outputs as Record<string, Record<string, unknown>>;
+  delete outputs["index.html"].size;
+  delete outputs["index.html"].modifiedAtMs;
+  await fs.writeFile(cachePath, JSON.stringify(serialized), "utf8");
+
+  const loaded = await loadOutputCache(cachePath);
+  assert.equal(loaded?.outputs["index.html"]?.size, "original".length);
+  assert.equal(typeof loaded?.outputs["index.html"]?.modifiedAtMs, "number");
 });
 
 test("SSG output cache rejects entries with an invalid checksum", async () => {

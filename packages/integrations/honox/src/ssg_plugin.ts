@@ -42,6 +42,7 @@ import {
   computeBundleFingerprint,
   fingerprintDirectory,
   fingerprintOutputDirectory,
+  fingerprintOutputInventory,
 } from "./ssg/inventory.js";
 import {
   decideOutputCacheRejection,
@@ -646,6 +647,8 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             () => fingerprintOutputDirectory(outputCache.outDir),
           );
           const finalOutputInventory = outputCache.state.finalOutputInventory;
+          const artifactFingerprint =
+            fingerprintOutputInventory(finalOutputInventory);
           if (outputCache.provenance && outputCache.content) {
             await outputCache.content.attachFinalOutputArtifacts(
               outputCache.provenance.buildId,
@@ -732,6 +735,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             root: resolvedConfig.root,
             outputDirectory,
             publicationFingerprint: outputCache.publicationFingerprint,
+            artifactFingerprint,
             warn: (message) => this.warn(message),
           });
         } finally {
@@ -837,6 +841,7 @@ async function writePublicationMarker(input: {
   readonly root: string;
   readonly outputDirectory: string;
   readonly publicationFingerprint?: string;
+  readonly artifactFingerprint?: string;
   readonly warn: (message: string) => void;
 }): Promise<void> {
   const path = join(input.root, ".riebeckite", BUILD_OUTPUT_MARKER_FILE);
@@ -850,6 +855,9 @@ async function writePublicationMarker(input: {
           ...(input.publicationFingerprint === undefined
             ? {}
             : { publicationFingerprint: input.publicationFingerprint }),
+          ...(input.artifactFingerprint === undefined
+            ? {}
+            : { artifactFingerprint: input.artifactFingerprint }),
           completedAt: new Date(),
         }),
       ),

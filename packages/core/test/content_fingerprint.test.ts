@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { fingerprintContentEntries } from "../src/content/content_fingerprint.js";
+import {
+  fingerprintContentEntries,
+  fingerprintContentMetadata,
+} from "../src/content/content_fingerprint.js";
 import type {
   ContentSourceContent,
   ContentSourceEntry,
@@ -43,6 +46,76 @@ test("fingerprinting detects equal-size content changes with unchanged metadata"
       ?.fingerprint;
 
   assert.notEqual(await fingerprint("# One"), await fingerprint("# Two"));
+});
+
+test("fingerprinting reuses unchanged non-markdown fingerprints without reading", async () => {
+  const entry: ContentSourceEntry = {
+    path: "image.png",
+    metadata: { createdAt: 1, modifiedAt: 2, size: 3 },
+  };
+  const [previous] = await fingerprintContentEntries([entry], async () => "a");
+  assert.ok(previous);
+
+  const [reused] = await fingerprintContentEntries(
+    [entry],
+    async () => {
+      throw new Error("unchanged asset should not be read");
+    },
+    true,
+    { [entry.path]: previous },
+  );
+
+  assert.equal(reused?.fingerprint, previous.fingerprint);
+});
+
+test("fingerprinting reuses unchanged non-markdown fingerprints without metadata in the hash", async () => {
+  const entry: ContentSourceEntry = {
+    path: "image.png",
+    metadata: { createdAt: 1, modifiedAt: 2, size: 3 },
+  };
+  const [previous] = await fingerprintContentEntries(
+    [entry],
+    async () => "a",
+    false,
+  );
+  assert.ok(previous);
+
+  const [reused] = await fingerprintContentEntries(
+    [entry],
+    async () => {
+      throw new Error("unchanged asset should not be read");
+    },
+    false,
+    {
+      [entry.path]: {
+        fingerprint: previous.fingerprint,
+        metadataFingerprint: fingerprintContentMetadata(entry),
+      },
+    },
+  );
+
+  assert.equal(reused?.fingerprint, previous.fingerprint);
+});
+
+test("fingerprinting re-reads markdown when metadata is unchanged", async () => {
+  const entry: ContentSourceEntry = {
+    path: "note.md",
+    metadata: { createdAt: 1, modifiedAt: 2, size: 5 },
+  };
+  const [previous] = await fingerprintContentEntries(
+    [entry],
+    async () => "# One",
+  );
+  assert.ok(previous);
+
+  const [changed] = await fingerprintContentEntries(
+    [entry],
+    async () => "# Two",
+    true,
+    { [entry.path]: previous },
+  );
+
+  assert.notEqual(changed?.fingerprint, previous.fingerprint);
 });
 
 test("fingerprinting detects source metadata changes without rereading etag content", async () => {

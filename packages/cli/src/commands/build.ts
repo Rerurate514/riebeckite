@@ -24,6 +24,7 @@ import {
 import type { RiebeckiteProject } from "../application_root.js";
 import {
   clearBuildOutputMarker,
+  readBuildOutputMarker,
   writeBuildOutputMarker,
 } from "../build_output.js";
 import { resolveProjectContentSource } from "../content_source.js";
@@ -197,11 +198,15 @@ export async function runBuild(
         outputDirectory:
           project.config.outputDirectory ?? path.join(project.appRoot, "dist"),
       });
+      const buildOutputMarker = await readBuildOutputMarker(project);
       await writeBuildOutputMarker(project, {
         completedAt: new Date(),
-        artifactFingerprint: await fingerprintDirectory(
-          project.config.outputDirectory ?? path.join(project.appRoot, "dist"),
-        ),
+        artifactFingerprint:
+          buildOutputMarker?.artifactFingerprint ??
+          (await fingerprintDirectory(
+            project.config.outputDirectory ??
+              path.join(project.appRoot, "dist"),
+          )),
         ...(manifest === null
           ? {}
           : {

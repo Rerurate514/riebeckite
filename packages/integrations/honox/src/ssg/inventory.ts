@@ -76,7 +76,14 @@ export async function computeBundleFingerprint(
 }
 
 export async function fingerprintDirectory(directory: string): Promise<string> {
-  const inventory = await fingerprintOutputDirectory(directory);
+  return fingerprintOutputInventory(
+    await fingerprintOutputDirectory(directory),
+  );
+}
+
+export function fingerprintOutputInventory(
+  inventory: Readonly<Record<string, string>>,
+): string {
   const hash = createHash("sha256");
   for (const [path, checksum] of Object.entries(inventory).sort(
     ([left], [right]) => left.localeCompare(right),

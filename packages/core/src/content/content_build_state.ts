@@ -16,6 +16,7 @@ export const CONTENT_BUILD_STATE_EXCLUDE = `${CONTENT_BUILD_STATE_DIRECTORY}/**`
 
 type ContentBuildEntry = {
   readonly fingerprint: string;
+  readonly metadataFingerprint?: string;
   readonly aliases: readonly string[];
   readonly dependencies: readonly ContentBuildDependency[];
   readonly linkTargets?: readonly string[];

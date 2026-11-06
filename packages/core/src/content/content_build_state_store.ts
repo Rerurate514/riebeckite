@@ -142,6 +142,8 @@ function isContentBuildStateShape(
         isRecord(entry) &&
         typeof entry.fingerprint === "string" &&
         entry.fingerprint.length > 0 &&
+        (entry.metadataFingerprint === undefined ||
+          typeof entry.metadataFingerprint === "string") &&
         Array.isArray(entry.aliases) &&
         entry.aliases.every((alias) => typeof alias === "string") &&
         Array.isArray(entry.dependencies) &&

@@ -34,6 +34,8 @@ import type {
 type OutputCacheEntry = {
   cachePath: string;
   checksum: string;
+  size?: number;
+  modifiedAtMs?: number;
 };
 
 export type OutputCacheState = {
@@ -332,7 +334,18 @@ function isOutputCacheEntries(
       typeof (entry as OutputCacheEntry).cachePath === "string" &&
       (entry as OutputCacheEntry).cachePath ===
         outputCacheEntryName(outputPath) &&
-      isChecksum((entry as OutputCacheEntry).checksum),
+      isChecksum((entry as OutputCacheEntry).checksum) &&
+      isOptionalNonNegativeNumber((entry as OutputCacheEntry).size) &&
+      isOptionalNonNegativeNumber((entry as OutputCacheEntry).modifiedAtMs),
+  );
+}
+
+function isOptionalNonNegativeNumber(
+  value: unknown,
+): value is number | undefined {
+  return (
+    value === undefined ||
+    (typeof value === "number" && Number.isFinite(value) && value >= 0)
   );
 }
 
@@ -359,7 +372,10 @@ async function saveOutputCacheEntries(
       ) {
         throw new Error(`Invalid SSG output cache entry: ${outputPath}`);
       }
-      entries[outputPath] = existing;
+      entries[outputPath] = await withOutputCacheEntryStat(
+        existing,
+        join(directory, existing.cachePath),
+      );
       continue;
     }
     const source = resolveOutputCacheFile(outputDirectory, outputPath);
@@ -372,12 +388,27 @@ async function saveOutputCacheEntries(
       if (!cachedChecksum) {
         throw new Error(`Could not checksum cached output: ${outputPath}`);
       }
-      entries[outputPath] = { cachePath, checksum: cachedChecksum };
+      entries[outputPath] = await withOutputCacheEntryStat(
+        { cachePath, checksum: cachedChecksum },
+        destination,
+      );
       continue;
     }
-    entries[outputPath] = { cachePath, checksum };
+    entries[outputPath] = await withOutputCacheEntryStat(
+      { cachePath, checksum },
+      destination,
+    );
   }
   return entries;
+}
+
+async function withOutputCacheEntryStat(
+  entry: OutputCacheEntry,
+  path: string,
+): Promise<OutputCacheEntry> {
+  const info = await lstat(path).catch(() => undefined);
+  if (!info?.isFile() || info.isSymbolicLink()) return entry;
+  return { ...entry, size: info.size, modifiedAtMs: info.mtimeMs };
 }
 
 async function validateOutputCacheEntries(
@@ -405,16 +436,24 @@ async function validateOutputCacheEntries(
           return;
         }
         const path = resolveOutputCacheFile(directory, entry.cachePath);
-        if (!(await isRegularFile(path))) {
+        const info = await lstat(path).catch(() => undefined);
+        if (!info?.isFile() || info.isSymbolicLink()) {
           valid = false;
           return;
+        }
+        if (entry.size === info.size && entry.modifiedAtMs === info.mtimeMs) {
+          continue;
         }
         if (
           (await measure(timingsMs, "outputCacheEntryChecksum", () =>
             checksumFile(path),
           )) !== entry.checksum
-        )
+        ) {
           valid = false;
+          return;
+        }
+        entry.size = info.size;
+        entry.modifiedAtMs = info.mtimeMs;
       }
     };
     await Promise.all(

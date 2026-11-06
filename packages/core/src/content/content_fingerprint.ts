@@ -10,13 +10,24 @@ export async function fingerprintContentEntries(
   entries: readonly ContentSourceEntry[],
   read: (entry: ContentSourceEntry) => Promise<ContentSourceContent>,
   includeMetadata = true,
+  previousEntries?: Readonly<
+    Record<
+      string,
+      { readonly fingerprint: string; readonly metadataFingerprint?: string }
+    >
+  >,
 ): Promise<readonly FingerprintedContentEntry[]> {
   const sortedEntries = [...entries].sort((left, right) =>
     left.path.localeCompare(right.path),
   );
   return await mapConcurrent(sortedEntries, 64, async (entry) => ({
     entry,
-    fingerprint: await fingerprintContentEntry(entry, read, includeMetadata),
+    fingerprint: await fingerprintContentEntry(
+      entry,
+      read,
+      includeMetadata,
+      previousEntries?.[entry.path],
+    ),
   }));
 }
 
@@ -24,14 +35,33 @@ async function fingerprintContentEntry(
   entry: ContentSourceEntry,
   read: (entry: ContentSourceEntry) => Promise<ContentSourceContent>,
   includeMetadata: boolean,
+  previousEntry?: {
+    readonly fingerprint: string;
+    readonly metadataFingerprint?: string;
+  },
 ): Promise<string> {
-  const contentFingerprint = entry.metadata?.hash
+  const metadataFingerprint = fingerprintContentMetadata(entry);
+  const contentIdentity = entry.metadata?.hash
     ? `hash:${entry.metadata.hash}`
     : entry.metadata?.etag
       ? `etag:${entry.metadata.etag}`
-      : await fingerprintContent(entry, read);
+      : undefined;
+  const previousMetadataMatches = includeMetadata
+    ? previousEntry?.fingerprint.endsWith(`:${metadataFingerprint}`)
+    : previousEntry?.metadataFingerprint === metadataFingerprint;
+  if (
+    contentIdentity === undefined &&
+    entry.metadata !== undefined &&
+    previousEntry !== undefined &&
+    previousMetadataMatches &&
+    !entry.path.toLowerCase().endsWith(".md")
+  ) {
+    return previousEntry.fingerprint;
+  }
+  const contentFingerprint =
+    contentIdentity ?? (await fingerprintContent(entry, read));
   return includeMetadata
-    ? `${contentFingerprint}:${fingerprintMetadata(entry)}`
+    ? `${contentFingerprint}:${metadataFingerprint}`
     : contentFingerprint;
 }
 
@@ -46,7 +76,7 @@ async function fingerprintContent(
     .digest("hex")}`;
 }
 
-function fingerprintMetadata(entry: ContentSourceEntry): string {
+export function fingerprintContentMetadata(entry: ContentSourceEntry): string {
   const metadata = entry.metadata;
   if (!metadata) return "metadata:none";
   return JSON.stringify({

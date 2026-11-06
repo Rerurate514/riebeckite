@@ -37,6 +37,7 @@ Version is `CONTENT_BUILD_STATE_VERSION` (currently 24). A missing, incompatible
 - `dependencies`: `readonly ContentBuildDependency[]` — content and file dependencies with stable identities
 - `linkTargets?: ` `readonly string[]` — resolved link target slugs
 - `processedContentCacheFingerprint?: ` `string` — fingerprint of the processed content cache contract
+- `metadataFingerprint?: ` `string` — file metadata fingerprint used to reuse unchanged non-Markdown content fingerprints
 
 `ContentBuildDependency` (`packages/core/src/content/content_build_state.ts`) records:
 - `kind`: `"content"` or `"file"`

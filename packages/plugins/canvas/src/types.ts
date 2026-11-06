@@ -77,6 +77,7 @@ export type CanvasDocument = {
 export type CanvasLayoutNode = CanvasNode & {
   centerX: number;
   centerY: number;
+  zIndex: number;
 };
 
 export type CanvasLayoutEdge = CanvasEdge & {

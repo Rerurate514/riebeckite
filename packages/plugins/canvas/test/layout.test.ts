@@ -106,4 +106,22 @@ test("canvas rejects malformed required nodes and duplicate IDs", () => {
     ),
     null,
   );
+  assert.equal(
+    parseCanvas(
+      '{"nodes":[],"edges":[{"id":"same","fromNode":"a","toNode":"b"},{"id":"same","fromNode":"b","toNode":"a"}]}',
+    ),
+    null,
+  );
+});
+
+test("canvas nodes retain JSON array z-order", () => {
+  const document = parseCanvas(
+    '{"nodes":[{"id":"bottom","type":"group","x":0,"y":0,"width":100,"height":100},{"id":"top","type":"text","x":0,"y":0,"width":100,"height":100,"text":"Top"}],"edges":[]}',
+  );
+
+  assert.ok(document);
+  assert.deepEqual(
+    buildCanvasLayout(document).nodes.map((node) => node.zIndex),
+    [0, 1],
+  );
 });

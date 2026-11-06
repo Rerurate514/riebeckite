@@ -43,27 +43,35 @@ message with `source: "@riebeckite/plugin-canvas"` is reported.
 ~~~canvas
 {
   "nodes": [
-    { "id": "idea", "type": "text", "x": 0, "y": 100, "width": 220, "height": 100, "text": "Capture an idea", "color": "5" },
-    { "id": "plan", "type": "text", "x": 320, "y": 0, "width": 220, "height": 100, "text": "Turn it into a plan", "color": "3" },
-    { "id": "publish", "type": "text", "x": 320, "y": 220, "width": 220, "height": 100, "text": "Publish the note", "color": "4" }
+    { "id": "flow", "type": "group", "x": 0, "y": 0, "width": 820, "height": 420, "label": "Publishing flow", "color": "6" },
+    { "id": "idea", "type": "text", "x": 40, "y": 130, "width": 200, "height": 110, "text": "# Capture\n\nAn **idea**", "color": "5" },
+    { "id": "plan", "type": "text", "x": 310, "y": 80, "width": 210, "height": 110, "text": "Turn it into a plan", "color": "3" },
+    { "id": "logo", "type": "file", "x": 310, "y": 240, "width": 210, "height": 120, "file": "assets/riebeckite-logo.png", "color": "4" },
+    { "id": "publish", "type": "link", "x": 590, "y": 150, "width": 180, "height": 100, "url": "https://jsoncanvas.org/spec/1.0/", "label": "JSON Canvas 1.0", "color": "2" }
   ],
   "edges": [
     { "id": "idea-plan", "fromNode": "idea", "fromSide": "right", "toNode": "plan", "toSide": "left", "toEnd": "arrow" },
-    { "id": "plan-publish", "fromNode": "plan", "fromSide": "bottom", "toNode": "publish", "toSide": "top", "toEnd": "arrow" }
+    { "id": "plan-logo", "fromNode": "plan", "fromSide": "bottom", "toNode": "logo", "toSide": "top", "label": "asset" },
+    { "id": "plan-publish", "fromNode": "plan", "fromSide": "right", "toNode": "publish", "toSide": "left", "toEnd": "arrow" }
   ]
 }
 ~~~
 
 ## Viewer behaviour
 
-Canvas uses one positioned world for SSR and the interactive viewer. In `"both"`
-mode, the client adopts that SSR world rather than drawing a second canvas, so
-JavaScript does not add page height or replace card content. Text cards render
-safe headings, emphasis, inline code, lists, quotes, and public wikilinks. File
-cards link to notes and preview image, audio, and video attachments. Groups,
-preset/hex colors, group backgrounds, edge labels, and JSON Canvas default arrow
-ends are rendered. The viewer opens fitted to its frame; Ctrl/Cmd/Shift + wheel
-zooms at the pointer, blank-space drag pans, and click/Shift+click selects cards.
+Canvas uses one positioned world for SSR and the interactive viewer. The client
+adopts the SSR world, rather than drawing a duplicate, and only hides it after
+initialisation succeeds. Text cards support headings, emphasis, inline code,
+lists, quotes, and wikilinks. File cards link to notes and preview image, audio,
+and video attachments. Groups, preset/hex colors, group backgrounds, edge labels,
+JSON Canvas default arrow ends, and JSON array z-order are rendered.
+
+The viewer opens fitted to its frame. Wheel pans; Shift+wheel pans horizontally;
+Ctrl/Cmd+wheel zooms at the pointer. Drag blank space with Space or the middle
+button to pan. Click and Shift+click select cards, and Shift+drag makes a
+selection rectangle. `Ctrl/Cmd+A`, `Shift+1`, and `Shift+2` select all, fit all,
+and fit the selection. Touch supports one-finger blank-space pan and two-finger
+pinch zoom. Buttons provide zoom, fit, selected-fit, and reset.
 
 The viewer is read-only. External URL cards allow only `http` and `https`; they
 are links, never iframe embeds. Mermaid, math, callouts, tables, and note-body
@@ -75,27 +83,29 @@ The plugin emits `div.rb-canvas` with `data-canvas` (the input), `data-canvas-no
 `data-canvas-edges`, and `data-canvas-render` (`static` / `client` / `both`, or
 `ready` after hydration). It contains:
 
-- `script[type="application/json"][data-canvas-payload]` — escaped JSON Canvas;
-  inert, never executed
-- `div.rb-canvas__static` — when `render` is `"static"` or `"both"`: a no-JS
-  layered fallback with absolutely positioned node cards and an SVG edge list
-- `div.rb-canvas__stage` — when `render` is `"client"` or `"both"`: an empty
-  stage filled by `initCanvas()`
+- `data-canvas-payload` — an escaped JSON Canvas attribute; it is data, never
+  executed
+- `div.rb-canvas__static` — a no-JS layered fallback with absolutely positioned
+  node cards and an SVG edge list, including when client enhancement is enabled
+- `div.rb-canvas__stage` — when `render` is `"client"` or `"both"`: it adopts
+  the server-rendered world in `initCanvas()`
 - `details.rb-canvas__fallback` — a node/edge list for accessibility and no-JS
 
 `file` nodes resolve through `contentIndex`: notes link to their permalink and
 other files link to their attachment URL. Note links are finalised in
 `onManifestCreated` from the manifest, rewriting the manifest entry's HTML. Core
 synchronizes that HTML with the content the route renders. `text` nodes get
-minimal Markdown handling (wikilinks and escaping).
+deliberately limited Markdown handling, not the full site Markdown pipeline.
+Note-body previews are not emitted: the renderer does not yet receive publication
+visibility for the target note, so emitting them could expose private content.
 
 ## Client
 
 `initCanvas()` finds elements whose `data-canvas-render` is `client` / `both`,
-builds positioned nodes and SVG edges from the payload, then sets
-`data-canvas-render="ready"`; CSS hides the static fallback once ready. It also
-opens at a fit-to-view scale, supports cursor-centred wheel zoom, blank-area drag
-pan, and zoom/reset controls. Links and controls stay clickable.
+adopts the server-rendered positioned nodes and SVG edges, then sets
+`data-canvas-render="ready"`; CSS hides the static layer only then. It batches
+camera transforms with `requestAnimationFrame`; links, text selection, media, and
+controls remain interactive.
 
 ## Standalone pages
 

@@ -101,6 +101,25 @@ test("resolve renders the canvas with main, h1, stage, and payload", async () =>
   assert.match(body, /data-canvas-stage/);
   assert.match(body, /data-canvas-payload="\{&quot;nodes&quot;/);
   assert.match(body, /data-canvas-node-id="a"/);
+  assert.match(body, /marker id="rb-canvas-arrow-/);
+  assert.match(body, /z-index:0/);
+  assert.ok(
+    body.indexOf('class="rb-canvas__frame"') <
+      body.indexOf('class="rb-canvas__fallback"'),
+  );
+});
+
+test("client rendering retains an SSR world for progressive enhancement", async () => {
+  const manager = createManager(files, {
+    documentPages: true,
+    render: "client",
+  });
+  const body =
+    (await manager.resolvePage("/drawings/Architecture"))?.body ?? "";
+
+  assert.match(body, /data-canvas-render="client"/);
+  assert.match(body, /data-canvas-world/);
+  assert.match(body, /data-canvas-stage/);
 });
 
 test("canvas page note links resolve public notes and neutralize private ones", async () => {

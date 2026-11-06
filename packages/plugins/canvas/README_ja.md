@@ -39,20 +39,25 @@ export default defineConfig({
 ~~~canvas
 {
   "nodes": [
-    { "id": "idea", "type": "text", "x": 0, "y": 100, "width": 220, "height": 100, "text": "アイデアを残す", "color": "5" },
-    { "id": "plan", "type": "text", "x": 320, "y": 0, "width": 220, "height": 100, "text": "計画にする", "color": "3" },
-    { "id": "publish", "type": "text", "x": 320, "y": 220, "width": 220, "height": 100, "text": "ノートを公開する", "color": "4" }
+    { "id": "flow", "type": "group", "x": 0, "y": 0, "width": 820, "height": 420, "label": "公開までの流れ", "color": "6" },
+    { "id": "idea", "type": "text", "x": 40, "y": 130, "width": 200, "height": 110, "text": "# 記録\n\n**アイデア** を残す", "color": "5" },
+    { "id": "plan", "type": "text", "x": 310, "y": 80, "width": 210, "height": 110, "text": "計画にする", "color": "3" },
+    { "id": "logo", "type": "file", "x": 310, "y": 240, "width": 210, "height": 120, "file": "assets/riebeckite-logo.png", "color": "4" },
+    { "id": "publish", "type": "link", "x": 590, "y": 150, "width": 180, "height": 100, "url": "https://jsoncanvas.org/spec/1.0/", "label": "JSON Canvas 1.0", "color": "2" }
   ],
   "edges": [
     { "id": "idea-plan", "fromNode": "idea", "fromSide": "right", "toNode": "plan", "toSide": "left", "toEnd": "arrow" },
-    { "id": "plan-publish", "fromNode": "plan", "fromSide": "bottom", "toNode": "publish", "toSide": "top", "toEnd": "arrow" }
+    { "id": "plan-logo", "fromNode": "plan", "fromSide": "bottom", "toNode": "logo", "toSide": "top", "label": "asset" },
+    { "id": "plan-publish", "fromNode": "plan", "fromSide": "right", "toNode": "publish", "toSide": "left", "toEnd": "arrow" }
   ]
 }
 ~~~
 
 ## Viewer の動作
 
-SSR と操作可能な表示は、同じ位置決め済み World を共有します。`"both"` ではクライアントが SSR の World を引き継ぐため、Canvas が二重に表示されたり、JavaScript の読み込みでページ高さが増えたりしません。Text カードは安全な見出し、強調、インラインコード、リスト、引用、公開された Wikilink を表示します。File カードはノートへリンクし、画像・音声・動画をプレビューします。Group、プリセット色と HEX 色、Group 背景、エッジラベル、JSON Canvas の既定矢印を表示します。初期表示は Frame にフィットします。Ctrl/Cmd/Shift + ホイールでポインター位置を中心に拡大縮小し、余白をドラッグして移動できます。クリック／Shift+クリックでカードを選択できます。
+SSR と操作可能な表示は、同じ位置決め済み World を共有します。クライアントは World を描き直さず引き継ぎ、初期化に成功してからだけ静的表示を隠します。Text カードは見出し、強調、インラインコード、リスト、引用、Wikilink を扱います。File カードはノートへリンクし、画像・音声・動画をプレビューします。Group、プリセット色と HEX 色、Group 背景、エッジラベル、JSON Canvas の既定矢印、JSON 配列の Z 順を表示します。
+
+初期表示は Frame にフィットします。ホイールで上下にパンし、Shift+ホイールで横にパンします。Ctrl/Cmd+ホイールはポインター位置を中心に拡大縮小します。Space または中ボタンを押しながら余白をドラッグするとパンできます。クリック／Shift+クリックで選択し、Shift+余白ドラッグで範囲選択します。`Ctrl/Cmd+A`、`Shift+1`、`Shift+2` は全選択、全体にフィット、選択範囲にフィットです。タッチでは余白の一本指パンと二本指ピンチズームを使えます。ボタンでも拡大縮小、全体表示、選択範囲表示、リセットを行えます。
 
 Viewer は読み取り専用で、`.canvas` ファイルを書き換えません。外部 URL は `http` と `https` のリンクだけを許可し、iframe には埋め込みません。Mermaid、数式、Callout、表、ノート本文プレビューは、現在カード内で未対応です。
 
@@ -60,16 +65,16 @@ Viewer は読み取り専用で、`.canvas` ファイルを書き換えません
 
 `div.rb-canvas` を出力します。属性は `data-canvas`（入力元）、`data-canvas-nodes`、`data-canvas-edges`、`data-canvas-render`（`static` / `client` / `both` / 描画後の `ready`）です。内部には次を置きます。
 
-- `script[type="application/json"][data-canvas-payload]`：エスケープ済みの JSON Canvas。実行されません
-- `div.rb-canvas__static`：`render` が `"static"` または `"both"` のときの静的フォールバック。絶対配置したノードカードと SVG のエッジ
-- `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のときの空の領域。`initCanvas()` が中身を埋めます
+- `data-canvas-payload`：エスケープ済み JSON Canvas の属性です。実行されません
+- `div.rb-canvas__static`：絶対配置したノードカードと SVG エッジによる JavaScript なしのフォールバック。クライアント拡張を有効にしても出力します
+- `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のとき、`initCanvas()` がサーバー側の World を引き継ぐ領域
 - `details.rb-canvas__fallback`：ノードとエッジの一覧（JavaScript なしでも内容を確認できます）
 
-`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードは最小限の Markdown（wikilink とエスケープ）だけを扱います。
+`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードの Markdown は意図的に限定しており、サイト全体の Markdown パイプラインではありません。ノート本文プレビューは出力しません。現状の Renderer には参照先ノートの公開可否が渡らないため、出力すると非公開コンテンツを露出させるおそれがあります。
 
 ## クライアント側
 
-`initCanvas()` は `data-canvas-render` が `client` / `both` の要素を探し、ペイロードからノードとエッジを組み立て、`data-canvas-render="ready"` を設定します。ready になると静的フォールバックは CSS で隠れます。最初は全体が収まる倍率で表示し、ポインター位置を中心とするホイール拡大縮小、余白のドラッグ移動、拡大縮小・リセット操作を使えます。リンクと操作ボタンはそのままクリックできます。
+`initCanvas()` は `data-canvas-render` が `client` / `both` の要素を探し、サーバー側で位置決めしたノードと SVG エッジを引き継いでから `data-canvas-render="ready"` を設定します。ready になるまで静的レイヤーは CSS で隠しません。カメラ変換は `requestAnimationFrame` でまとめ、リンク、テキスト選択、メディア、操作ボタンはそのまま使えます。
 
 ## 独立ページ
 

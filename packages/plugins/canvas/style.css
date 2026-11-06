@@ -50,10 +50,6 @@
   background: var(--rb-canvas-paper);
 }
 
-.rb-canvas__static:not(.rb-canvas__empty) {
-  overflow: auto;
-}
-
 .rb-canvas__empty {
   display: grid;
   place-items: center;
@@ -87,6 +83,7 @@
 .rb-canvas__world {
   position: relative;
   transform-origin: 0 0;
+  will-change: transform;
 }
 
 .rb-canvas__edges {
@@ -109,11 +106,14 @@
   fill: var(--rb-canvas-muted);
   font-size: 12px;
   text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--rb-canvas-paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
 }
 
 .rb-canvas__node {
   position: absolute;
-  z-index: 1;
   box-sizing: border-box;
   overflow: auto;
   padding: 0.625rem 0.75rem;
@@ -132,7 +132,6 @@
 }
 
 .rb-canvas__node--group {
-  z-index: 0;
   overflow: hidden;
   padding: 0.5rem 0.75rem;
   border-style: dashed;
@@ -272,6 +271,17 @@
   background: var(--rb-canvas-paper);
   box-shadow: 0 0.25rem 0.75rem
     color-mix(in srgb, var(--rb-canvas-ink) 16%, transparent);
+}
+.rb-canvas__selection {
+  position: absolute;
+  z-index: 2;
+  display: none;
+  border: 1px solid var(--rb-canvas-accent);
+  background: color-mix(in srgb, var(--rb-canvas-accent) 15%, transparent);
+  pointer-events: none;
+}
+.rb-canvas__stage[data-canvas-selecting] .rb-canvas__selection {
+  display: block;
 }
 .rb-canvas__control {
   width: 2rem;

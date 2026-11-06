@@ -40,45 +40,51 @@ export function renderCanvas(input: RenderCanvasInput): string {
   });
 
   const parts: string[] = [];
-  const staticHtml = renderStatic(layout, resolver);
+  const staticHtml = renderStatic(layout, resolver, source);
   if (staticHtml) parts.push(staticHtml);
   if (options.render === "client" || options.render === "both") {
     parts.push('<div class="rb-canvas__stage" data-canvas-stage></div>');
   }
-  parts.push(renderFallback(document));
   const style = renderHeightStyle(options.height);
   const payload = escapeHtmlAttribute(JSON.stringify(document));
   const maxNodes =
     options.maxNodes === undefined
       ? ""
       : ` data-canvas-max-nodes="${options.maxNodes}"`;
-  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-payload="${payload}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}><div class="rb-canvas__frame">${parts.join("\n")}</div></div>`;
+  return `<div class="${escapeHtmlAttribute(options.className)}" data-canvas="${escapeHtmlAttribute(source)}" data-canvas-payload="${payload}" data-canvas-nodes="${document.nodes.length}" data-canvas-edges="${document.edges.length}" data-canvas-render="${options.render}"${maxNodes}${style}><div class="rb-canvas__frame">${parts.join("\n")}</div>${renderFallback(document)}</div>`;
 }
 
-function renderStatic(layout: CanvasLayout, resolver: CanvasResolver): string {
+function renderStatic(
+  layout: CanvasLayout,
+  resolver: CanvasResolver,
+  source: string,
+): string {
   if (layout.nodes.length === 0) {
     return '<div class="rb-canvas__static rb-canvas__empty">This canvas has no nodes.</div>';
   }
-  const edges = renderEdges(layout);
+  const edges = renderEdges(layout, source);
   const cards = layout.nodes
     .map((node) => renderNodeCard(node, resolver))
     .join("\n");
   return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="Canvas" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
 }
 
-function renderEdges(layout: CanvasLayout): string {
+function renderEdges(layout: CanvasLayout, source: string): string {
   if (layout.edges.length === 0) return "";
-  const lines = layout.edges.map(renderEdgeLine).join("");
-  return `<svg class="rb-canvas__edges" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true"><defs><marker id="rb-canvas-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z" class="rb-canvas__arrow"></path></marker></defs>${lines}</svg>`;
+  const markerId = `rb-canvas-arrow-${hash(source)}`;
+  const lines = layout.edges
+    .map((edge) => renderEdgeLine(edge, markerId))
+    .join("");
+  return `<svg class="rb-canvas__edges" width="${layout.width}" height="${layout.height}" viewBox="0 0 ${layout.width} ${layout.height}" aria-hidden="true"><defs><marker id="${markerId}" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M 0 0 L 8 4 L 0 8 z" class="rb-canvas__arrow"></path></marker></defs>${lines}</svg>`;
 }
 
 function renderEdgeLine(
   edge: CanvasEdge & { x1: number; y1: number; x2: number; y2: number },
+  markerId: string,
 ): string {
   const fromEnd =
-    edge.fromEnd === "arrow" ? ' marker-start="url(#rb-canvas-arrow)"' : "";
-  const toEnd =
-    edge.toEnd === "arrow" ? ' marker-end="url(#rb-canvas-arrow)"' : "";
+    edge.fromEnd === "arrow" ? ` marker-start="url(#${markerId})"` : "";
+  const toEnd = edge.toEnd === "arrow" ? ` marker-end="url(#${markerId})"` : "";
   const color = renderColorAttribute(edge.color, "data-canvas-edge-color");
   const label = edge.label
     ? `<text class="rb-canvas__edge-label" x="${(edge.x1 + edge.x2) / 2}" y="${(edge.y1 + edge.y2) / 2}">${escapeHtml(edge.label)}</text>`
@@ -95,7 +101,8 @@ function renderNodeCard(
     node.type === "group" && node.background
       ? renderGroupBackground(node.background, node.backgroundStyle, resolver)
       : "";
-  return `<div class="rb-canvas__node rb-canvas__node--${node.type}" data-canvas-node-id="${escapeHtmlAttribute(node.id)}"${color}${background} style="left:${node.x}px;top:${node.y}px;width:${node.width}px;height:${node.height}px">${renderNodeBody(node, resolver)}</div>`;
+  const style = renderNodeStyle(node, background);
+  return `<div class="rb-canvas__node rb-canvas__node--${node.type}" data-canvas-node-id="${escapeHtmlAttribute(node.id)}"${color}${background} style="${style}">${renderNodeBody(node, resolver)}</div>`;
 }
 
 function renderNodeBody(node: CanvasNode, resolver: CanvasResolver): string {
@@ -215,6 +222,29 @@ function renderGroupBackground(
   return ` data-canvas-background="${escapeHtmlAttribute(link.url)}" data-canvas-background-repeat="${mode}" data-canvas-background-size="${size}"`;
 }
 
+function renderNodeStyle(node: CanvasLayoutNode, background: string): string {
+  const declarations = [
+    `left:${node.x}px`,
+    `top:${node.y}px`,
+    `width:${node.width}px`,
+    `height:${node.height}px`,
+    `z-index:${node.zIndex}`,
+  ];
+  if (node.color && /^#[0-9a-f]{6}$/i.test(node.color))
+    declarations.push(`--rb-canvas-node-color:${node.color}`);
+  if (background) {
+    const image = background.match(/data-canvas-background="([^"]*)"/)?.[1];
+    const repeat = background.match(
+      /data-canvas-background-repeat="([^"]*)"/,
+    )?.[1];
+    const size = background.match(/data-canvas-background-size="([^"]*)"/)?.[1];
+    if (image) declarations.push(`background-image:url(&quot;${image}&quot;)`);
+    if (repeat) declarations.push(`background-repeat:${repeat}`);
+    if (size) declarations.push(`background-size:${size}`);
+  }
+  return declarations.join(";");
+}
+
 function renderColorAttribute(color: string | undefined, name: string): string {
   if (!color) return "";
   if (/^[1-6]$/.test(color) || /^#[0-9a-fA-F]{6}$/.test(color)) {
@@ -300,4 +330,11 @@ function excerpt(value: string): string {
   return escapeHtml(
     singleLine.length > 80 ? `${singleLine.slice(0, 79)}\u2026` : singleLine,
   );
+}
+
+function hash(value: string): string {
+  let result = 0;
+  for (let index = 0; index < value.length; index += 1)
+    result = (result * 31 + value.charCodeAt(index)) | 0;
+  return (result >>> 0).toString(36);
 }

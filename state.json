@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "4f922222-c7aa-486f-ba61-901d077942ac",
-    "publishedAt": "2026-11-06T14:34:06.548Z",
-    "publicationFingerprint": "9e48e84dd30d505d0c2df800fc2882691c98260dd7b8b82aa16715e0f60d8e0d",
+    "runId": "dfed0ef8-7386-458b-b8c3-5595086d7793",
+    "publishedAt": "2026-11-06T14:57:03.437Z",
+    "publicationFingerprint": "e487663e4b03674b2786138f6e9a25f0881fc3943428dcd97f5a9c618b28819c",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -1114,16 +1114,16 @@
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "bdae481a1105433090df8f66e0b99be79eb4429b4a9e0b5aa23cb5dccf8eaa9c",
-        "contentFingerprint": "50782e420c6c4f5c51b1c40f41ec04180330c2f809b741f4d69a2be14c9f0ee3"
+        "fingerprint": "4a0b302aab8d282c8cd1dfc0d494aadb0623b5b25f570875e94c85cc396d2759",
+        "contentFingerprint": "be01b14c2150191a33e657bda9880d0976d47eef128be9d9afd1ad2d944ccf29"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "6d4c3c9a8eaa85fd94ef601e4339487c5ebb7c669fee312905ee5e5a420f3142",
-        "contentFingerprint": "da07bf5ed6edb62a9e05ee1baff6e26d6bbf97c8f81e82cd22d9d0ab76ec2870"
+        "fingerprint": "32f1df5ba0e16a9e187907b0b105fb35f33bdffcbac28decb88cdf5540d96288",
+        "contentFingerprint": "8259ba22f81ec8bad3a5aa412b2a75a3567856bb9fbd4e044cc601c2086de80b"
       },
       {
         "slug": "docs/getting-started/project-structure",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "3c1c4b7eaa6eea0e3eef691badf560ac0340da202060795e43d26a1927c28366",
+    "artifactFingerprint": "d62958f87485c07334e8064c9e93e9f4e61feddb8dac7dbc553eae9e03aa2664",
     "provider": "cloudflare-workers"
   }
 }

@@ -38,6 +38,7 @@ function initContainer(container: HTMLElement): void {
   stage.tabIndex = 0;
   stage.setAttribute("role", "application");
   stage.setAttribute("aria-label", "Interactive canvas");
+  applyLayoutStyles(world, layout);
   applyDynamicStyles(world);
   enableViewer(stage, world, layout);
 }
@@ -375,6 +376,23 @@ function updateSelectionBox(
   selection.style.width = `${Math.abs(end.x - start.x)}px`;
   selection.style.height = `${Math.abs(end.y - start.y)}px`;
   stage.setAttribute("data-canvas-selecting", "true");
+}
+
+function applyLayoutStyles(world: HTMLElement, layout: CanvasLayout): void {
+  world.style.width = `${layout.width}px`;
+  world.style.height = `${layout.height}px`;
+  const nodes = new Map(layout.nodes.map((node) => [node.id, node]));
+  for (const element of world.querySelectorAll<HTMLElement>(
+    "[data-canvas-node-id]",
+  )) {
+    const node = nodes.get(element.dataset.canvasNodeId ?? "");
+    if (!node) continue;
+    element.style.left = `${node.x}px`;
+    element.style.top = `${node.y}px`;
+    element.style.width = `${node.width}px`;
+    element.style.height = `${node.height}px`;
+    element.style.zIndex = String(node.zIndex);
+  }
 }
 
 function applyDynamicStyles(world: HTMLElement): void {

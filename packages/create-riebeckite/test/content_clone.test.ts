@@ -35,6 +35,11 @@ test("clones the content repository and places the notify workflow", async () =>
         command: "git",
         args: [
           "clone",
+          "--branch",
+          "main",
+          "--single-branch",
+          "--depth",
+          "1",
           "--",
           "https://github.com/octo-org/notes.git",
           "content",
@@ -78,7 +83,17 @@ test("clones into an existing empty directory", async () => {
     assert.deepEqual(outcome, { status: "cloned" });
     assert.deepEqual(calls, [
       {
-        args: ["clone", "--", "https://github.com/octo-org/notes.git", "."],
+        args: [
+          "clone",
+          "--branch",
+          "main",
+          "--single-branch",
+          "--depth",
+          "1",
+          "--",
+          "https://github.com/octo-org/notes.git",
+          ".",
+        ],
         cwd: path.join(target, "content"),
       },
     ]);

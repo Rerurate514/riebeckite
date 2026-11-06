@@ -38,6 +38,11 @@ export async function cloneContentRepository(
       "git",
       [
         "clone",
+        "--branch",
+        "main",
+        "--single-branch",
+        "--depth",
+        "1",
         "--",
         `https://github.com/${options.contentRepository}.git`,
         availability.status === "empty" ? "." : CONTENT_DIRECTORY,

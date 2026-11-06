@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "e8c41d59-c29e-4895-a7c8-4bc52f57568f",
-    "publishedAt": "2026-11-05T15:20:36.529Z",
-    "publicationFingerprint": "884f4aed05bc1b260df0918eeb0795486cf000a46a3c3b087792ca1582cc59c3",
+    "runId": "4192c207-afb0-47f9-ab3b-6dd9d4d4a1cf",
+    "publishedAt": "2026-11-06T01:41:52.096Z",
+    "publicationFingerprint": "c0559492c3155637fcbdbef8f6617ea496c2965c70cd629c11b0e276c22f6b39",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -698,16 +698,16 @@
         "permalink": "/docs/framework/spa-runtime",
         "title": "SPA Runtime Internals",
         "visibility": "public",
-        "fingerprint": "1e688eaddf94a5055dfd6e2e38e40c8f91a458abbd2bf52e889dfbb39e196039",
-        "contentFingerprint": "f9aa518f5a0f092c04fd275d68c21d660f7e7eacb87d77c7d88efe7d0c0f31a8"
+        "fingerprint": "a61e7a09abb7bb1407131546fd6da13f0cd7d0d75ea28dc0a07bcb735144aa75",
+        "contentFingerprint": "10f044e5a732a45d82bfe6c1ee7c75655c42ecf131078787b21c79ed62e7bb47"
       },
       {
         "slug": "docs/framework/spa-runtime.ja",
         "permalink": "/ja/docs/framework/spa-runtime",
         "title": "SPAランタイムの内部実装",
         "visibility": "public",
-        "fingerprint": "f76190e7c83bcdecfef34a1d1879d3f7223df27e0edafffbc794cf63eae33495",
-        "contentFingerprint": "3c36aa04bc1629b67a27040c911cc0c71ea5bdaf8d6f813ecbb519f226c7ef9e"
+        "fingerprint": "bfe8957f48e6c1a61931ca994ac4c5d50662cbb415fc1344936703f5a1224f88",
+        "contentFingerprint": "c32d6cf0a5d1cf9cef19ef62ceef2e683de58dd563882d27d5e31adfc570235b"
       },
       {
         "slug": "docs/framework/spa-runtime/flow",
@@ -970,16 +970,16 @@
         "permalink": "/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "37fe49c42b80d99664a87a7fb1fda84498fa4eeb6eb3ba5a4ebf44a403088583",
-        "contentFingerprint": "6f95ff0a33dfa4e27144206ce5e28ac68985360aa1da95d0fd7c6faa44fb7496"
+        "fingerprint": "5e8681c6fb5e2a436762141497bc31dc5e51f0b14a36aba989613cab9cdcda0b",
+        "contentFingerprint": "cfca5f98a67b25748aca64a411e9faf53eb4664ffef94b62e4c8a0e1b9564949"
       },
       {
         "slug": "docs/framework/ui.ja",
         "permalink": "/ja/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "6ad22b7cd194a825a9e7dfb058a176f4e8240ae661db5c6374996759c91999de",
-        "contentFingerprint": "a78adaeee0bfe516139ac6fec6f25ea4919f3fb5a44c5da73e0839881f7422c1"
+        "fingerprint": "916ed3fbed9a1e337f6effb595a2855da7d094ddb2bc42358ebfaa85479863b3",
+        "contentFingerprint": "a8da65175743e6516e2322cebf5418499faf5749dc2dca901f1c96873575363a"
       },
       {
         "slug": "docs/getting-started/content-location",
@@ -3690,16 +3690,16 @@
         "permalink": "/docs/guides/spa-navigation",
         "title": "SPA Navigation",
         "visibility": "public",
-        "fingerprint": "873554adfbe4eb3b23a6c60813454f826398a54dc15dc18162d8ce52a9a0c59f",
-        "contentFingerprint": "3e1ecaeec0b8fdb6bcc3f45192d9974e783e3a9c6d6dc43135fae4c14741ade4"
+        "fingerprint": "a906c442a5ae8cbdc982d9dd554be68a19c6df361de80aefcf767e5b6041cc45",
+        "contentFingerprint": "6be5ed3225fc4b97abda7a3599e5b2f695b50806c66c586733a94637bbe12703"
       },
       {
         "slug": "docs/guides/spa-navigation.ja",
         "permalink": "/ja/docs/guides/spa-navigation",
         "title": "SPAナビゲーション",
         "visibility": "public",
-        "fingerprint": "d29874939101f0aaf38b6e311a5c7ee335d2a23d5b872d34f0acb3f6a7ba79f2",
-        "contentFingerprint": "5d9b2c9969cc27718e85c12719fb7f949c7249d81495c08d428f6cc214b96850"
+        "fingerprint": "8231395029c18c5dff8859fabe95f87af63ee899a5aecaf578d305aa28c88b42",
+        "contentFingerprint": "8f580fa87a31507adff755910655ff5d8bc95d78d0a1150aa304a5d0bfc0cb88"
       },
       {
         "slug": "docs/guides/upgrading",
@@ -3994,16 +3994,16 @@
         "permalink": "/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "02a9a08fa9cd62fa470bc521a2b7206a2031a1db4f78de8fef232e72d15fccc3",
-        "contentFingerprint": "4c45f715b442e3562a8c7798dec8e91da1dca0991f6af654c24f04ef21bf0cbf"
+        "fingerprint": "c536d7d9bc6ba39b0968df514b07f4cd4fcaa5ef4a2cee4f81f3e338d50e8f29",
+        "contentFingerprint": "8902d0c2f0c60dade7d4ba07008a6574aafe89ee213ebfaaf1a9402841a6fc7a"
       },
       {
         "slug": "docs/plugins/canvas.ja",
         "permalink": "/ja/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "2189fde806ff8619f91ea5537900a340a917f90265d39f941e6c404aefbd3dcc",
-        "contentFingerprint": "0f693b68bc8baf808d6dc2c79ac8e7bbc2f22355eb27cbc3d3f53036717d6d8c"
+        "fingerprint": "a1b8f787819f96d39c84b65abaec4ad58bd641b0f8d4ea97dd092affe3cc538a",
+        "contentFingerprint": "aa2164783fe77db411fedb80ab9a3528f50a930e4c0c55b791a8d2725fd84e18"
       },
       {
         "slug": "docs/plugins/changelog",
@@ -4026,16 +4026,16 @@
         "permalink": "/docs/plugins/chartjs",
         "title": "Chart.js",
         "visibility": "public",
-        "fingerprint": "3832be4e5aa0bc5eafe643d7c3e14079159cd139286ab8f11bb22d9d9bce7387",
-        "contentFingerprint": "af3e76ac6e87af8d82f1c37f45c34358ddfece5050ee905d75cb72f27ff8b72b"
+        "fingerprint": "a296541f4f91d5fac18a766f6325b2eaecb335e86bcf41006a36236aff267936",
+        "contentFingerprint": "69a00890beb2e23d6958cfd3c07e8cddd855c13119c1a6ada9cddd6d1799781d"
       },
       {
         "slug": "docs/plugins/chartjs.ja",
         "permalink": "/ja/docs/plugins/chartjs",
         "title": "Chart.js",
         "visibility": "public",
-        "fingerprint": "1ff5d106fd148f573c5c7519fbc2899f7624fa669b4339a91f77f368db5ec8e2",
-        "contentFingerprint": "39ec71f3d77baf7e92af7d42d3930d6b3827839d93872b9f71aeea90a423f4cf"
+        "fingerprint": "6191cb376007618cb3e6db451fc53577c2536435548aac511b711d9afab69ea2",
+        "contentFingerprint": "866a01cae74b735d052bfa3fe3a59a7b2fd9d93b29e83fec785c6350be25ecec"
       },
       {
         "slug": "docs/plugins/citations",
@@ -5370,16 +5370,16 @@
         "permalink": "/docs/plugins/showcase/diagrams",
         "title": "diagrams",
         "visibility": "public",
-        "fingerprint": "cc113fb58a059a682292bb5b411f3093ddeca21a1d64403e49bf15ed17aab70f",
-        "contentFingerprint": "137c6ce5105ef8a55747b86c28b23d6089acc7fed67fa8816c720b096e07cddb"
+        "fingerprint": "add547a63f82b814f979ffdc6a0fbfb320ac60392f9afc702064a3143b3dcec0",
+        "contentFingerprint": "dd41f23ae14162c89fc26f504ba5d5f0276a2d9a4cd33fda52b5e76d856e4522"
       },
       {
         "slug": "docs/plugins/showcase/diagrams.ja",
         "permalink": "/ja/docs/plugins/showcase/diagrams",
         "title": "diagrams.ja",
         "visibility": "public",
-        "fingerprint": "8a6a051977f23851f96fefbda851c556124a03393e881f91ac2b32afcbbf5e41",
-        "contentFingerprint": "835c2fc49dd81b67836672e87020ee59c476ecd9e92867ebfd66b25d574d2a17"
+        "fingerprint": "1f570953320b0bc38c7001978a961bd78ab388fda4709fa169609d2376051b9a",
+        "contentFingerprint": "7f189eff4b00a0e60e0f7b395d7a1e7dcc84b3d092e1aa7d5a115d5e2062ac89"
       },
       {
         "slug": "docs/plugins/showcase/generated-pages",
@@ -6138,16 +6138,16 @@
         "permalink": "/docs/reference/preview",
         "title": "Preview API",
         "visibility": "public",
-        "fingerprint": "027285d08a67fb32b75c2d69b315514e07ab6bf37f5983e46f2e1a9e1d0d9207",
-        "contentFingerprint": "6b910bccd524bffb3705c1149fcd8dac95fb41ea6504927c62b1bb0fe453dbd1"
+        "fingerprint": "db04c3fce86b43f37d67805e6629e5cb22b8595043dd0dd8359715ca6d315225",
+        "contentFingerprint": "35233ea6497b64cc73c68382c0905ceba28c91f22318804bb8fd2e71337cb18e"
       },
       {
         "slug": "docs/reference/preview.ja",
         "permalink": "/ja/docs/reference/preview",
         "title": "プレビュー API",
         "visibility": "public",
-        "fingerprint": "51517ee62d29b8f45a1c23426413f9261ce0c2b9f05bd1beb290a9849ef9e56d",
-        "contentFingerprint": "062a05e66e878f5c077a6277b109a6df44242f036035799db6cf55ddbeda3fea"
+        "fingerprint": "121cc2a93d09188a6e084e834f5f8071e192dbe840475c372902ef4092f766b1",
+        "contentFingerprint": "ec9cec3d0cd33e0be8b5c7d46e3c497c6214f67a38010bca03fed63fb3139edc"
       },
       {
         "slug": "docs/reference/README",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "ed26849e2b5872994350fd8ef461de5fdceee4193852775e2678baf7f6c9f402",
+    "artifactFingerprint": "e267bc31bf62e67b5c93be2e3fa8652c5f00ad7fb8156bbc0b6835df97b0646d",
     "provider": "cloudflare-workers"
   }
 }

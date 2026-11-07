@@ -67,6 +67,7 @@ jobs:
       - run: pnpm check:ci-selection
       - run: pnpm check:ci-browsers
       - run: pnpm check:ci-build-artifact
+      - run: pnpm test:security
       - run: pnpm check:build-packages
 
   build:
@@ -78,7 +79,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             packages/**/dist
@@ -147,7 +148,7 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             packages/**/dist
@@ -234,7 +235,7 @@ jobs:
         with:
           pnpm-version: ${{ env.PNPM_VERSION }}
           browsers: chrome,chrome-headless-shell
-      - uses: actions/cache@v4
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: |
             packages/**/dist

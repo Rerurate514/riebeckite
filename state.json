@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "3daf6f8c-64f0-4f72-baac-f2544d4e3d74",
-    "publishedAt": "2026-11-06T17:11:29.694Z",
-    "publicationFingerprint": "1b67cde432487e0dc8eee26ee9e0d0de4efa40cccae233a5092bc57a8935c71b",
+    "runId": "dd0bc32c-f9de-4f5e-a6b1-1da4e8c61289",
+    "publishedAt": "2026-11-07T08:53:04.203Z",
+    "publicationFingerprint": "1488f70db914e5c53b34651150acbccf6de162e23b401dd2c3aaea2b269bfb7f",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -426,16 +426,16 @@
         "permalink": "/docs/framework/honox-integration",
         "title": "HonoX Integration",
         "visibility": "public",
-        "fingerprint": "4246156ffde5e734adfc17c14d916d382841b8ada5f3c575e12f615f8c9de231",
-        "contentFingerprint": "a08b5986b7c44047c96708f6c434bda6f27b6312808f5c064bea466c5cdf1359"
+        "fingerprint": "c6e544698f48d39326e992da4d587d05853bb850a9bb65ba80718cd770716b7a",
+        "contentFingerprint": "5802ec4f065dd23628e2c5b16746864cd0aac152010e20e6ed9c11248781b36c"
       },
       {
         "slug": "docs/framework/honox-integration.ja",
         "permalink": "/ja/docs/framework/honox-integration",
         "title": "HonoX との統合",
         "visibility": "public",
-        "fingerprint": "48e2c8ddcd58fd865394422f42eac00fd65d2760ccbde246a5a5e9042b390d36",
-        "contentFingerprint": "37633183c3a1e36a4953b23f2b9b4c3d3c30c23a72bfead21ad61d4cc9245015"
+        "fingerprint": "9da175384425c04a4076b0bd70e3ddcb069ca2c1699e1e2695039518129c37e2",
+        "contentFingerprint": "d11612960b6d54be159d5b2664115923195856c0daaed2289d74b2a0cfa416e5"
       },
       {
         "slug": "docs/framework/honox-integration/site",
@@ -1114,16 +1114,16 @@
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "4a0b302aab8d282c8cd1dfc0d494aadb0623b5b25f570875e94c85cc396d2759",
-        "contentFingerprint": "be01b14c2150191a33e657bda9880d0976d47eef128be9d9afd1ad2d944ccf29"
+        "fingerprint": "9842725eec715b8a713df7f0114b7853d61581a39d62be8e2e40ffd9b0b8239f",
+        "contentFingerprint": "df8fae9d10ee9281fcb634630c858836b48c543bbae79206361c450297241272"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "32f1df5ba0e16a9e187907b0b105fb35f33bdffcbac28decb88cdf5540d96288",
-        "contentFingerprint": "8259ba22f81ec8bad3a5aa412b2a75a3567856bb9fbd4e044cc601c2086de80b"
+        "fingerprint": "bf8072122964918f3615881dbe2493201ac085f7220b572f15e27a0fac417d1d",
+        "contentFingerprint": "d0eaa3662e92221ee74cb37db7a14abbb0f7dbf04881ac19dde803fa7af0b837"
       },
       {
         "slug": "docs/getting-started/project-structure",
@@ -5674,16 +5674,16 @@
         "permalink": "/docs/plugins/writing-a-plugin",
         "title": "Writing Your First Plugin",
         "visibility": "public",
-        "fingerprint": "e059b4d0e940c7ef63504f311cf4fcaa116ee966d2a697f41f0e937eff42bbb3",
-        "contentFingerprint": "5f973bc92c17c30534604ac29a3df05d37c6a38ae458a06ccf88a54d7173d105"
+        "fingerprint": "9aa67de156bd3f4c6372b21c18e1434a4c35053a5d6c27b55801a4702e382d28",
+        "contentFingerprint": "d3f7c71fd511514cace435b7834bde576a3bf13c71686976f3ba30e0d1aac7f4"
       },
       {
         "slug": "docs/plugins/writing-a-plugin.ja",
         "permalink": "/ja/docs/plugins/writing-a-plugin",
         "title": "はじめてのプラグイン作成",
         "visibility": "public",
-        "fingerprint": "7e01fccb26fb3944a5b32826ecf554d732420190e9ccec2c588a88f3ae66ebc8",
-        "contentFingerprint": "265bbb0a89e5dd77f4272f590961aa95f496329d60b0f94adea9a926a6cf46a1"
+        "fingerprint": "2a231cf0140ec739f60372bf7e04fb9ebbc0f1de09bbc02a5413f82a84aff3a2",
+        "contentFingerprint": "d052c0e36af897c142f249141e29e9c9a07fcab9e6ec5adf12253421029f74cb"
       },
       {
         "slug": "docs/README",
@@ -6186,16 +6186,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "5e30de3a0977775e8bfc064a9dc85ce6c93e72a3d08fad6e5640beee1ae1a7f5",
-        "contentFingerprint": "4ba45e845307a5d96e28b3e5a926da869b27b142bd5743072fbc5d85af2b1d19"
+        "fingerprint": "1496440329542e1b593e2ba1fc193e301565262265273f5095b4d3cefc43f6c3",
+        "contentFingerprint": "61243760a7db69f8aba677816a76f620abfb26d4d7be40f211f999bd6acba3d4"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "b29d3f63c3b9c2599e412f2ecab92710efa07a96b2a82682e3d957d546448b37",
-        "contentFingerprint": "5906ad690cf35884143dc38c59530fcd242511cd04710b7e0ed85cf15d138a18"
+        "fingerprint": "a7dce21e09d8ecb36ab1995e72e6f2720f4a8601bc265505a33874e8a4b55ad8",
+        "contentFingerprint": "266003a8af91e9ce39e4d5c8bc6b655754a573d957ce4141c07d100d678caf49"
       },
       {
         "slug": "docs/security",
@@ -6630,7 +6630,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "5a9551658158e2a2dfd242ce2ed2cf64e1b76de999c2c1e988c5307e69acfc72",
+    "artifactFingerprint": "e1c678b6746192d16f9840103de8618d6287454b69b965f1a1bb507650531300",
     "provider": "cloudflare-workers"
   }
 }

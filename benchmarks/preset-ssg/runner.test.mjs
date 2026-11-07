@@ -240,11 +240,11 @@ test("runner executes the clean output comparison", {
       "tsx",
       "benchmarks/preset-ssg/runner.mjs",
       "--presets",
-      "starter",
+      "showcase",
       "--sizes",
-      "1",
+      "10",
       "--scenarios",
-      "no-change",
+      "publication-change",
       "--workRoot",
       workRoot,
       "--out",
@@ -261,6 +261,7 @@ test("runner executes the clean output comparison", {
   );
   assert.equal(result.rows.length, 1);
   assert.equal(result.rows[0].equivalence.equivalent, true);
+  assert.equal(result.rows[0].rawMetrics.missingInDistCount, 0);
 });
 
 test("runner resumes without repeating completed scenarios", {

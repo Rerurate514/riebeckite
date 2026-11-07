@@ -137,10 +137,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   return {
     name: "riebeckite-ssg",
     apply: (_config, env) => env.command === "build",
-    enforce: "pre",
+    enforce: "post",
     config(config, env) {
       const root = resolve(config.root ?? process.cwd());
-      const serverOutputDirectory = join(root, ".riebeckite", "build-output");
       publicationOutputDirectory = resolve(
         root,
         config.build?.outDir ?? "dist",
@@ -151,7 +150,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outDir:
             env.mode === "client"
               ? clientOutputDirectory
-              : serverOutputDirectory,
+              : join(root, ".riebeckite", "build-output"),
           ...(env.mode === "client"
             ? {}
             : { rollupOptions: { input: [virtualId] } }),
@@ -164,8 +163,9 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         clientOutputDirectory = resolve(config.root, config.build.outDir);
         return;
       }
-      config.build.outDir = join(config.root, ".riebeckite", "build-output");
-      await emptyBuildOutputDirectory(config.build.outDir);
+      await emptyBuildOutputDirectory(
+        resolve(config.root, config.build.outDir),
+      );
     },
     async buildStart() {
       const config = resolvedConfig;
@@ -190,9 +190,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
       }
       if (!clientBuildArtifacts) {
-        if (await isDirectory(publicationOutputDirectory)) {
-          await artifactWriter.copyFrom(publicationOutputDirectory);
-        }
         return;
       }
       logSsgDiagnostics(
@@ -234,6 +231,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       try {
         await restoreClientBuildArtifacts(outDir, clientBuildArtifacts);
         viteClientAssetPaths = await collectBuildOutputPaths(outDir);
+        const previousOutputDirectory = publicationOutputDirectory;
+        if (
+          !clientBuildArtifacts &&
+          artifactWriter &&
+          previousOutputDirectory &&
+          (await isDirectory(previousOutputDirectory))
+        ) {
+          await artifactWriter.copyFrom(previousOutputDirectory);
+        }
         logSsgDiagnostics(
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,

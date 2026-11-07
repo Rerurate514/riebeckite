@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "dd0bc32c-f9de-4f5e-a6b1-1da4e8c61289",
-    "publishedAt": "2026-11-07T08:53:04.203Z",
-    "publicationFingerprint": "1488f70db914e5c53b34651150acbccf6de162e23b401dd2c3aaea2b269bfb7f",
+    "runId": "b3d6b38e-d73d-4b0c-8514-7d692eadae45",
+    "publishedAt": "2026-11-07T18:31:30.491Z",
+    "publicationFingerprint": "4d5e53e61d8d43c4183cc26ba52385a081ad0caf5b2fd75c7507055dfa108d99",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -36,6 +36,22 @@
         "visibility": "public",
         "fingerprint": "86957cd89397e45821447550acefdcdb286ab42c35940ef519ce17354596c90a",
         "contentFingerprint": "63053f0e50699dfa99bc83dca9fa2f0aae0da9d382ed45e46438344d81671256"
+      },
+      {
+        "slug": "audits/2026-11-07-ssg-determinism-performance",
+        "permalink": "/audits/2026-11-07-ssg-determinism-performance",
+        "title": "2026-11-07-ssg-determinism-performance",
+        "visibility": "public",
+        "fingerprint": "4eb8af2fd2741439e9b2c76ea3f199d2612ee8d0a219c3b7644b7031c4a3194f",
+        "contentFingerprint": "709db145f8562024ef693fdceb17039cd92d5c1ead5924daf4cbf183909adc4a"
+      },
+      {
+        "slug": "audits/2026-11-07-ssg-determinism-performance.ja",
+        "permalink": "/ja/audits/2026-11-07-ssg-determinism-performance",
+        "title": "2026-11-07-ssg-determinism-performance.ja",
+        "visibility": "public",
+        "fingerprint": "45b7732fcebeab35139acc2577cd44a14556903e1a4b2f6169280723f9ac8507",
+        "contentFingerprint": "00c6129395dd480962f069d1328347ef1018f4526ffe1f99d0680f01c7de8045"
       },
       {
         "slug": "docs/accessibility",
@@ -3946,16 +3962,16 @@
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "97e453f0bb27d5da00d7d2493c42fb66358fb5e6f3fe2c74daefa75f064dc593",
-        "contentFingerprint": "89fb5ad8357c3e526b75bda018db13b62c1dbbffba0092cfd5dcc02bffdf668d"
+        "fingerprint": "e039a675c1e5820031d7f7d4ac716f6f69076647ac5c672e26177c2ead52ee02",
+        "contentFingerprint": "62b56ee156b694ccb84ce0f0fa72d54715e98b0b3a67ebdcaa9e3ebf1b8cac2f"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "58c9f763d49b0cf2217e21cd6906d67b67a39f89ddb06082dfe781f3ed36015a",
-        "contentFingerprint": "51b5f83258c57b9aba69599c27852222c9f488a8521e2d25596d54a52190673b"
+        "fingerprint": "6571708043ea4353543be12f8eaf32bd32e46830d82c0d79d7568dfea8ab8771",
+        "contentFingerprint": "560480e392aa99fa61e67801a28b2dc785683bfd11fbcb081250671d21b2f4a0"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
@@ -3994,16 +4010,16 @@
         "permalink": "/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "c2107d433b69bfe064b772460d4ecaad531d330686de9ac81834a0d876ffa51c",
-        "contentFingerprint": "5ea4cdc1430b29427380304abe1a10dd40fdb71a9f0715e2488033a3008068aa"
+        "fingerprint": "1586cd56074b504edb5b17a730521600d5e73fffb2876abcf07bb0c22236cab2",
+        "contentFingerprint": "6aba7a1fa9a79e786a0f9fd727a0f12b1f803a82b4e0b8d8dd4d4c65b9d14df5"
       },
       {
         "slug": "docs/plugins/canvas.ja",
         "permalink": "/ja/docs/plugins/canvas",
         "title": "Canvas",
         "visibility": "public",
-        "fingerprint": "ac1990ec35c48c8de62a686480e44eabe7e5365b6475e85e6d0bb3b76052fc66",
-        "contentFingerprint": "47233efc1dc830312c0cbd43d69b8c8c5e01c059530f67d77a97519104fc4aa6"
+        "fingerprint": "44587f27733617b1a13dc0803ee2301c23a92d0f81a9489fd8d45a012b81ef15",
+        "contentFingerprint": "6de618e85419c147d2df271f7ac96e9abf40ab9cde02ee885dcae1cbf2ac7afa"
       },
       {
         "slug": "docs/plugins/changelog",
@@ -4858,16 +4874,16 @@
         "permalink": "/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "e51653c1150386a31076f4ae9cd30c8b850e3e1461dc1f199c2107f4288c0ce0",
-        "contentFingerprint": "0bdbb0fdf7fa7315edaee8307cd624470f29a764ee7312d34e55e82c1cd4b9aa"
+        "fingerprint": "89b9898c8abd0485a580cd336cb1a1fab84a560011623f3294040e368ef83fec",
+        "contentFingerprint": "8438f4104b1e41def72900b3ffc40241d9f1fd79863c22a47f5cec5cf12a9737"
       },
       {
         "slug": "docs/plugins/query.ja",
         "permalink": "/ja/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "6edff4dfa94d419aa914944d864ea60d52490b5ade51967a6b2238d871c1bb9c",
-        "contentFingerprint": "93e4f5870f1217865daaf6bc597d78e22dd4d7db01efe5ea8b2a2c4b2e1962a7"
+        "fingerprint": "d28dc5083f333ef0ffe28dc3cffec3efdfe94624e9388c38d0e9781659cd1f59",
+        "contentFingerprint": "359899a939c5880912e7b1102c7287a07b54ab4402bb9209802b791f9aefa856"
       },
       {
         "slug": "docs/plugins/README",
@@ -5418,16 +5434,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "1fd7cb6134c4bf7b8c6c2f28e08141703816c53e1f14ab1844fe60ce9d463c05",
-        "contentFingerprint": "5c5d7904e8cc64c1e71b091312e128fd8af8fd66c2166bc2bbf76fec31413641"
+        "fingerprint": "e574de254f119b0cb2e1ed0fabcf301178626ffeba6c536ec1be819e9d283881",
+        "contentFingerprint": "15275e3c8f406604c5d17798f1d63f3a6f6dbc4d9bf2ec893387aa40e8e5614b"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data.ja",
         "visibility": "public",
-        "fingerprint": "f2949a79bec68c4e6c260db31cb6da444d4ea49a34025a1dcc88095bbb240d21",
-        "contentFingerprint": "48d4a432f79a271cf978453022b3a91a0b7ea7d41945867e02ddfad2e55b6a6f"
+        "fingerprint": "cf2b6574009b17505b0c6ce56d119d7c228b1a3d5df42178122e74ce15255f2b",
+        "contentFingerprint": "719785e19aa8d5aa3d2eeb5ac35c35d6cf86dd6695131dec2565e2e7c25ef4a4"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -6630,7 +6646,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "e1c678b6746192d16f9840103de8618d6287454b69b965f1a1bb507650531300",
+    "artifactFingerprint": "4ea1f89b0039b4dbbad0e19ec621d24e012851581c7ab8aa229dd4f0cb460304",
     "provider": "cloudflare-workers"
   }
 }

@@ -61,3 +61,24 @@ test("concurrent content processing shares pipeline initialization", async () =>
 
   assert.equal(first, second);
 });
+
+test("pipeline initialization can retry after a source failure", async () => {
+  let scans = 0;
+  const manager = new ContentManager({
+    async scan() {
+      scans += 1;
+      if (scans === 1) throw new Error("source unavailable");
+      return [{ path: "note.md" }];
+    },
+    async read() {
+      return "# Note\n";
+    },
+  });
+  const pipelineManager = manager as unknown as {
+    getPipeline(): Promise<unknown>;
+  };
+
+  await assert.rejects(pipelineManager.getPipeline(), /source unavailable/);
+
+  assert.ok(await pipelineManager.getPipeline());
+});

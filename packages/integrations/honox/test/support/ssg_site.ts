@@ -8,9 +8,15 @@ const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../../..",
 );
-export const workParent = path.join(repoRoot, "website", ".riebeckite");
-const appRequire = createRequire(
-  path.join(repoRoot, "website", "package.json"),
+export const workParent = path.join(
+  repoRoot,
+  "packages",
+  "integrations",
+  "honox",
+  ".riebeckite",
+);
+const packageRequire = createRequire(
+  path.join(repoRoot, "packages", "integrations", "honox", "package.json"),
 );
 
 type ViteLogger = {
@@ -24,35 +30,31 @@ type ViteLogger = {
 };
 
 const { build, defineConfig, createLogger } = (await import(
-  pathToFileURL(appRequire.resolve("vite")).href
+  pathToFileURL(packageRequire.resolve("vite")).href
 )) as {
   build: (config: unknown) => Promise<unknown>;
   defineConfig: (config: unknown) => unknown;
   createLogger: (level?: string) => ViteLogger;
 };
 const { default: honox } = (await import(
-  pathToFileURL(appRequire.resolve("honox/vite")).href
+  pathToFileURL(packageRequire.resolve("honox/vite")).href
 )) as { default: (options?: unknown) => unknown };
-const { default: viteBuild } = (await import(
-  pathToFileURL(
-    path.join(
-      repoRoot,
-      "website",
-      "node_modules",
-      "@hono",
-      "vite-build",
-      "dist",
-      "adapter",
-      "node",
-      "index.mjs",
-    ),
-  ).href
-)) as { default: () => unknown };
+
+async function loadViteBuild(): Promise<() => unknown> {
+  const { default: viteBuild } = (await import("@hono/vite-build/node")) as {
+    default: () => unknown;
+  };
+  return viteBuild;
+}
 
 const alias = [
   {
     find: /^@riebeckite\/core$/,
     replacement: path.join(repoRoot, "packages", "core", "index.ts"),
+  },
+  {
+    find: /^@riebeckite\/node$/,
+    replacement: path.join(repoRoot, "packages", "node", "index.ts"),
   },
   {
     find: /^@riebeckite\/honox\/server$/,
@@ -81,6 +83,16 @@ const alias = [
       "packages",
       "plugins",
       "bases",
+      "index.ts",
+    ),
+  },
+  {
+    find: /^@riebeckite\/plugin-color-mode$/,
+    replacement: path.join(
+      repoRoot,
+      "packages",
+      "plugins",
+      "color-mode",
       "index.ts",
     ),
   },
@@ -131,6 +143,10 @@ const alias = [
       "svg-optimizer",
       "index.ts",
     ),
+  },
+  {
+    find: /^@riebeckite\/ui$/,
+    replacement: path.join(repoRoot, "packages", "ui", "index.tsx"),
   },
 ];
 
@@ -572,6 +588,8 @@ export async function buildSite(
   await mkdir(metricsDirectory, { recursive: true });
   const metricsFile = path.join(metricsDirectory, `${label}.json`);
   return withSsgMetricsFile(metricsFile, async () => {
+    const viteBuild =
+      options.adapter === false ? undefined : await loadViteBuild();
     const warnings = options.warnings;
     let customLogger: ViteLogger | undefined;
     if (warnings) {
@@ -603,7 +621,7 @@ export async function buildSite(
           islandComponents: { reactApiImportSource: "hono/jsx" },
         }),
         ...riebeckiteVite(),
-        ...(options.adapter === false ? [] : [viteBuild()]),
+        ...(viteBuild ? [viteBuild()] : []),
       ],
       logLevel: "silent",
       build: {

@@ -92,7 +92,7 @@ const SCENARIOS = {
     return () => moveNote(directory, depth, 0, "archive/note-00000.md");
   },
   "asset-edit": ({ directory }) => {
-    return () => editAsset(directory, 0, "png", `changed ${Date.now()}`);
+    return () => editAsset(directory, 0, "png", "changed");
   },
   "plugin-edit": () => () => {},
 };

@@ -12,6 +12,7 @@ import {
   localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
+  summarize,
 } from "./lib.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -86,6 +87,7 @@ test("scenarios mutate independent content copies", async (t) => {
   });
   assert.equal((await findMarkdown(directory)).length, 1);
   assert.ok(scenarioNames.includes("rename"));
+  assert.ok(scenarioNames.includes("full"));
   await applyScenario({
     contentDirectory: directory,
     count: 2,
@@ -183,11 +185,33 @@ test("draft-to-public publishes a draft note", async (t) => {
   );
 });
 
-test("snapshot comparison detects output differences", () => {
-  assert.deepEqual(compareSnapshots({ "a.html": "one" }, { "a.html": "two" }), {
-    equivalent: false,
-    differences: [{ file: "a.html", incremental: "one", clean: "two" }],
+test("summary statistics report median, p95, and spread", () => {
+  assert.deepEqual(summarize([10, 20, 30, 40, 50]), {
+    median: 30,
+    p95: 50,
+    min: 10,
+    max: 50,
+    stdev: Math.sqrt(200),
   });
+});
+
+test("snapshot comparison detects output differences", () => {
+  assert.deepEqual(
+    compareSnapshots(
+      { "a.html": { bytes: 1, sha256: "one" } },
+      { "a.html": { bytes: 1, sha256: "two" } },
+    ),
+    {
+      equivalent: false,
+      differences: [
+        {
+          file: "a.html",
+          incremental: { bytes: 1, sha256: "one" },
+          clean: { bytes: 1, sha256: "two" },
+        },
+      ],
+    },
+  );
 });
 
 test("temporary removal refuses a root directory and removes a child", async (t) => {
@@ -216,11 +240,11 @@ test("runner executes the clean output comparison", {
       "tsx",
       "benchmarks/preset-ssg/runner.mjs",
       "--presets",
-      "starter",
+      "showcase",
       "--sizes",
-      "1",
+      "10",
       "--scenarios",
-      "cold",
+      "publication-change",
       "--workRoot",
       workRoot,
       "--out",
@@ -236,7 +260,8 @@ test("runner executes the clean output comparison", {
     await fs.readFile(path.join(directory, resultFile), "utf8"),
   );
   assert.equal(result.rows.length, 1);
-  assert.equal(typeof result.rows[0].equivalence.equivalent, "boolean");
+  assert.equal(result.rows[0].equivalence.equivalent, true);
+  assert.equal(result.rows[0].rawMetrics.missingInDistCount, 0);
 });
 
 test("runner resumes without repeating completed scenarios", {

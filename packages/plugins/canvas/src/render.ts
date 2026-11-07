@@ -1,4 +1,5 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { slug } from "github-slugger";
 import { buildCanvasLayout } from "./parse.js";
 import type {
   CanvasDocument,
@@ -130,7 +131,12 @@ function renderFileBody(node: CanvasNode, resolver: CanvasResolver): string {
     : { kind: "unresolved", label };
 
   if (link.kind === "note") {
-    return renderNoteAnchor(link.slug, label, "rb-canvas__node-link");
+    return renderNoteAnchor(
+      link.slug,
+      label,
+      "rb-canvas__node-link",
+      node.subpath,
+    );
   }
   if (link.kind === "asset") {
     return renderAssetPreview(link.url, label);
@@ -266,11 +272,24 @@ function renderNoteAnchor(
   slug: string,
   label: string,
   extraClass?: string,
+  subpath?: string,
 ): string {
   const className = extraClass
     ? `rb-canvas__link ${extraClass}`
     : "rb-canvas__link";
-  return `<a class="${className}" href="${CANVAS_NOTE_HREF}" data-canvas-note="${escapeHtmlAttribute(encodeURIComponent(slug))}">${escapeHtml(label)}</a>`;
+  const fragment = formatNoteFragment(subpath);
+  const subpathAttribute = fragment
+    ? ` data-canvas-subpath="${escapeHtmlAttribute(encodeURIComponent(fragment))}"`
+    : "";
+  return `<a class="${className}" href="${CANVAS_NOTE_HREF}" data-canvas-note="${escapeHtmlAttribute(encodeURIComponent(slug))}"${subpathAttribute}>${escapeHtml(label)}</a>`;
+}
+
+function formatNoteFragment(subpath: string | undefined): string | undefined {
+  if (!subpath?.startsWith("#")) return undefined;
+  const target = subpath.slice(1).trim();
+  if (!target) return undefined;
+  if (target.startsWith("^")) return target.slice(1).trim() || undefined;
+  return slug(target);
 }
 
 function renderFallback(document: CanvasDocument): string {

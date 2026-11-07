@@ -70,7 +70,7 @@ Viewer は読み取り専用で、`.canvas` ファイルを書き換えません
 - `div.rb-canvas__stage`：`render` が `"client"` または `"both"` のとき、`initCanvas()` がサーバー側の World を引き継ぐ領域
 - `details.rb-canvas__fallback`：ノードとエッジの一覧（JavaScript なしでも内容を確認できます）
 
-`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードの Markdown は意図的に限定しており、サイト全体の Markdown パイプラインではありません。ノート本文プレビューは出力しません。現状の Renderer には参照先ノートの公開可否が渡らないため、出力すると非公開コンテンツを露出させるおそれがあります。
+`file` ノードは `contentIndex` から解決し、ノートはパーマリンクへ、それ以外は添付 URL へリンクします。`file` ノードの `subpath` は、対象ノートの見出しかブロックアンカーへ解決します。解決したノートリンクの `href` は `onManifestCreated` でマニフェストから確定し、マニフェストエントリの HTML を書き換えます。Core がその HTML をコンテンツルートの描画 HTML と同期します。`text` ノードの Markdown は意図的に限定しており、サイト全体の Markdown パイプラインではありません。ノート本文プレビューは出力しません。現状の Renderer には参照先ノートの公開可否が渡らないため、出力すると非公開コンテンツを露出させるおそれがあります。
 
 ## クライアント側
 

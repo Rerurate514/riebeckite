@@ -157,11 +157,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         },
       };
     },
-    configResolved(config) {
+    async configResolved(config) {
       resolvedConfig = config;
       if (config.mode === "client") {
         clientOutputDirectory = resolve(config.root, config.build.outDir);
+        return;
       }
+      await emptyBuildOutputDirectory(
+        resolve(config.root, config.build.outDir),
+      );
     },
     async buildStart() {
       const config = resolvedConfig;
@@ -186,9 +190,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
         );
       }
       if (!clientBuildArtifacts) {
-        if (await isDirectory(publicationOutputDirectory)) {
-          await artifactWriter.copyFrom(publicationOutputDirectory);
-        }
         return;
       }
       logSsgDiagnostics(
@@ -249,6 +250,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "outputDependencyResolution",
           async () => module.content?.getOutputChangeSet(),
         );
+        const previousOutputDirectory = publicationOutputDirectory;
+        if (
+          !clientBuildArtifacts &&
+          artifactWriter &&
+          previousOutputDirectory &&
+          (await isDirectory(previousOutputDirectory))
+        ) {
+          await artifactWriter.copyFrom(previousOutputDirectory);
+        }
         const appFingerprint = await measure(timingsMs, "appFingerprint", () =>
           computeAppFingerprint(config.root, config.configFile),
         );

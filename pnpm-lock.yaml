@@ -336,9 +336,18 @@ importers:
       '@d2lang/d2':
         specifier: ^0.1.34
         version: 0.1.34
+      '@hono/node-server':
+        specifier: 2.1.3
+        version: 2.1.3(hono@4.13.12)
+      '@hono/vite-build':
+        specifier: ^1.11.1
+        version: 1.11.1(hono@4.13.12)
       '@marp-team/marp-core':
         specifier: ^4.4.0
         version: 4.4.0
+      '@riebeckite/plugin-bases':
+        specifier: workspace:*
+        version: link:../../plugins/bases
       '@riebeckite/test':
         specifier: workspace:*
         version: link:../../test
@@ -538,6 +547,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       tsx:
         specifier: ^4.22.4

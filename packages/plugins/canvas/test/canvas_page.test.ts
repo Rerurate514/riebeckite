@@ -14,6 +14,7 @@ import { canvas } from "../index.js";
 
 function canvasJson(
   text = "Hello [[notes/Public]] and [[notes/Hidden]]",
+  subpath = "#Public heading",
 ): string {
   return JSON.stringify({
     nodes: [
@@ -26,6 +27,7 @@ function canvasJson(
         width: 200,
         height: 100,
         file: "notes/Public.md",
+        subpath,
       },
       {
         id: "c",
@@ -122,16 +124,32 @@ test("client rendering retains an SSR world for progressive enhancement", async 
   assert.match(body, /data-canvas-stage/);
 });
 
-test("canvas page note links resolve public notes and neutralize private ones", async () => {
+test("canvas page note links preserve public note subpaths and neutralize private ones", async () => {
   const manager = createManager(files, { documentPages: true });
   const body =
     (await manager.resolvePage("/drawings/Architecture"))?.body ?? "";
 
   assert.match(body, /data-canvas-note="notes%2FPublic"/);
-  assert.match(body, /href="\/notes\/Public"/);
+  assert.match(body, /data-canvas-subpath="public-heading"/);
+  assert.match(body, /href="\/notes\/Public#public-heading"/);
   assert.match(body, /data-canvas-note="notes%2FHidden"/);
   assert.match(body, /href="#"/);
   assert.doesNotMatch(body, /href="\/notes\/Hidden"/);
+});
+
+test("canvas page note links preserve block subpaths", async () => {
+  const manager = createManager(
+    {
+      ...files,
+      "drawings/Architecture.canvas": canvasJson(undefined, "#^public-block"),
+    },
+    { documentPages: true },
+  );
+  const body =
+    (await manager.resolvePage("/drawings/Architecture"))?.body ?? "";
+
+  assert.match(body, /data-canvas-subpath="public-block"/);
+  assert.match(body, /href="\/notes\/Public#public-block"/);
 });
 
 test("canvas image file cards link to the image asset path", async () => {

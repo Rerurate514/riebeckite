@@ -120,8 +120,7 @@ const SCENARIO_DEFINITIONS = {
   },
   "asset-edit": {
     name: "asset-edit",
-    prepare: ({ directory }) =>
-      editAsset(directory, 0, "png", `asset changed ${Date.now()}`),
+    prepare: ({ directory }) => editAsset(directory, 0, "png", "asset changed"),
   },
   "config-edit": {
     name: "config-edit",

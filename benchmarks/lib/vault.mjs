@@ -8,6 +8,7 @@ export const PROFILE_NAMES = [
   "medium",
   "dense",
   "asset",
+  "chaos",
 ];
 
 const PROFILES = {
@@ -75,6 +76,18 @@ const PROFILES = {
     assetsPerNote: 2,
     depth: 2,
     visibility: { public: 1 },
+  },
+  chaos: {
+    bodyParagraphs: 5,
+    linkRange: [5, 15],
+    embedRatio: 0.2,
+    tagRange: [2, 5],
+    aliasRatio: 0.6,
+    assetRatio: 0.25,
+    depth: 2,
+    visibility: { public: 0.8, unlisted: 0.1, draft: 0.05, scheduled: 0.05 },
+    l10nRatio: 0.1,
+    permalinkRatio: 0.2,
   },
 };
 
@@ -157,7 +170,50 @@ export async function generateVault(baseDir, options) {
           : undefined,
     });
   }
+  if (profile === "chaos") await addChaosFixtures(baseDir, size);
   return { slug: (index) => noteSlug(index, config.depth), size, states };
+}
+
+async function addChaosFixtures(baseDir, size) {
+  const last = Math.max(0, size - 1);
+  const first = path.join(baseDir, `${noteSlug(0, 2)}.md`);
+  await fs.appendFile(
+    first,
+    `\n[[note-${pad(last)}]]\n[[missing-target]]\n`,
+    "utf8",
+  );
+  const unicode = path.join(baseDir, "notes", "日本語", "長い名前のノート.md");
+  await fs.mkdir(path.dirname(unicode), { recursive: true });
+  await fs.writeFile(
+    unicode,
+    [
+      "---",
+      "id: unicode-note",
+      "title: 日本語の長い名前のノート",
+      "visibility: public",
+      'aliases: ["Unicode Alias"]',
+      "permalink: /custom/unicode-note",
+      'tags: ["unicode", "chaos"]',
+      "---",
+      "",
+      "# 日本語の長い名前のノート",
+      "",
+      "[[note-00000]]",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await fs.mkdir(path.join(baseDir, "views"), { recursive: true });
+  await fs.writeFile(
+    path.join(baseDir, "views", "Matrix.base"),
+    "views:\n  - type: table\n    name: Matrix\n",
+    "utf8",
+  );
+  await fs.writeFile(
+    path.join(baseDir, "series.md"),
+    "---\nid: series-index\ntitle: Series\nvisibility: public\n---\n\n```dataview\nLIST\n```\n",
+    "utf8",
+  );
 }
 
 async function generateAssets(baseDir, count, rng) {

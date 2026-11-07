@@ -56,10 +56,18 @@ pnpm benchmark:spa
 `benchmark:presets` scaffolds the official `starter` and `showcase` presets with
 `scaffoldRiebeckiteSite`; it does not define a benchmark-only preset or alter
 the generated configuration. It runs full HonoX/Vite SSG for `cold`,
-`no-change`, `single-body-edit`, `link-edit`, `add`, `delete`, `rename`, and
-`publication-change`. Every scenario begins from a newly scaffolded site and a
-successful baseline build (except cold), then compares its incremental output
+`no-change`, `full`, `single-body-edit`, `link-edit`, `add`, `delete`, `rename`,
+and `publication-change`. `full` deletes the output cache after the baseline to
+force full regeneration. Every scenario begins from a newly scaffolded site and
+a successful baseline build (except cold), then compares its incremental output
 with a clean SSG from the same changed source tree.
+
+`--runs <n>` repeats each scenario and reports median, p95, standard deviation,
+minimum, and maximum for every metric. `--retainOutputs true` copies the
+baseline, incremental, and clean output trees next to each run so differing
+bytes can be inspected. Results are written as
+`benchmarks/results/<timestamp>-preset-ssg.{json,md}`; without `--runs` they are
+single-sample measurements.
 
 The added content is deterministic and contains frontmatter, aliases, wiki and
 normal links, an asset reference, public/draft boundaries, Japanese and English
@@ -78,11 +86,8 @@ provider, route lock), not `unknown` ones. When that external state cannot be
 read - for example, when the generated site is not a Git repository - the
 plugin reports an external dependency failure, so `fullRegenerationRequired`
 becomes true and no-change builds keep the normal build instead of the fast
-path. This is reported rather than bypassed. Output files are written as
-`benchmarks/results/<timestamp>-preset-ssg.{json,md}` and are single-sample
-measurements unless the harness is run repeatedly.
-Its disposable generated sites live under
-`website/.riebeckite/preset-ssg-benchmark` by default so they resolve the
+path. This is reported rather than bypassed. Its disposable generated sites live
+under `website/.riebeckite/preset-ssg-benchmark` by default so they resolve the
 workspace's built packages without changing a generated site's configuration.
 
 ## Fast path CLI harness

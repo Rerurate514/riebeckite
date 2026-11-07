@@ -14,6 +14,7 @@ import {
   removeSafeTemporaryDirectory,
   scenarioNames,
   snapshotTree,
+  summarize,
 } from "./lib.mjs";
 
 const root = path.resolve(
@@ -28,8 +29,8 @@ const presets = listArg(args.presets) ?? ["starter", "showcase"];
 const sizes = (listArg(args.sizes) ?? ["100", "1000"]).map(Number);
 const scenarios = listArg(args.scenarios) ?? scenarioNames;
 const runs = positiveIntegerArg(args.runs, 1, "runs");
-const retainOutputs = args.retainOutputs === "true";
 const metricsEnabled = args.metrics !== "false";
+const retainOutputs = args.retainOutputs === "true";
 const workRoot = path.resolve(
   args.workRoot ?? path.join(appRoot, ".riebeckite", "preset-ssg-benchmark"),
 );
@@ -132,31 +133,66 @@ async function writeReport(rows) {
 }
 
 async function runScenario({ preset, size, scenario, runs }) {
+  const summarizedMetrics = [
+    "wallTimeMs",
+    "cleanWallTimeMs",
+    "processStartupElapsedMs",
+    "cpuUserTimeMs",
+    "cpuSystemTimeMs",
+    "cpuTotalTimeMs",
+    "filesystemReadCalls",
+    "filesystemWriteCalls",
+    "peakRssMb",
+    "outputWriteTimeMs",
+    "manifestHookDurationMs",
+  ];
   const samples = [];
   for (let run = 1; run <= runs; run += 1) {
     samples.push(await runScenarioSample({ preset, size, scenario, run }));
   }
   const medianSample = samples[Math.floor(samples.length / 2)];
+  const statistics = Object.fromEntries(
+    summarizedMetrics.map((name) => [
+      name,
+      summarize(
+        samples.map((sample) =>
+          name === "cpuTotalTimeMs"
+            ? sample.cpuUserTimeMs + sample.cpuSystemTimeMs
+            : sample[name],
+        ),
+      ),
+    ]),
+  );
+  const spanNames = [
+    ...new Set(samples.flatMap((sample) => Object.keys(sample.spansMs ?? {}))),
+  ].sort();
+  for (const name of spanNames) {
+    statistics[`spansMs.${name}`] = summarize(
+      samples
+        .map((sample) => sample.spansMs?.[name])
+        .filter((value) => value !== undefined),
+    );
+  }
   return {
     ...medianSample,
-    wallTimeMs: median(samples.map((sample) => sample.wallTimeMs)),
-    peakRssMb: median(samples.map((sample) => sample.peakRssMb)),
-    cleanWallTimeMs: median(samples.map((sample) => sample.cleanWallTimeMs)),
-    processStartupElapsedMs: median(
-      samples.map((sample) => sample.processStartupElapsedMs),
+    ...Object.fromEntries(
+      summarizedMetrics.map((name) => [name, statistics[name].median]),
     ),
-    cpuUserTimeMs: median(samples.map((sample) => sample.cpuUserTimeMs)),
-    cpuSystemTimeMs: median(samples.map((sample) => sample.cpuSystemTimeMs)),
-    filesystemReadCalls: median(
-      samples.map((sample) => sample.filesystemReadCalls),
+    wallTimeRangeMs: {
+      min: statistics.wallTimeMs.min,
+      max: statistics.wallTimeMs.max,
+    },
+    cleanWallTimeRangeMs: {
+      min: statistics.cleanWallTimeMs.min,
+      max: statistics.cleanWallTimeMs.max,
+    },
+    spansMs: Object.fromEntries(
+      spanNames.map((name) => [name, statistics[`spansMs.${name}`].median]),
     ),
-    filesystemWriteCalls: median(
-      samples.map((sample) => sample.filesystemWriteCalls),
+    equivalentAcrossRuns: samples.every(
+      (sample) => sample.equivalence.equivalent,
     ),
-    wallTimeRangeMs: range(samples.map((sample) => sample.wallTimeMs)),
-    cleanWallTimeRangeMs: range(
-      samples.map((sample) => sample.cleanWallTimeMs),
-    ),
+    statistics,
     samples,
   };
 }
@@ -185,6 +221,12 @@ async function runScenarioSample({ preset, size, scenario, run }) {
         { recursive: true },
       );
     }
+  }
+  if (scenario === "full") {
+    await fs.rm(
+      path.join(incrementalSite, ".riebeckite", "ssg-output-cache.json"),
+      { force: true },
+    );
   }
   await applyScenario({
     contentDirectory: path.join(incrementalSite, "content"),
@@ -593,16 +635,6 @@ function positiveIntegerArg(value, fallback, name) {
     throw new Error(`--${name} must be a positive integer`);
   return parsed;
 }
-function median(values) {
-  const sorted = [...values].sort((left, right) => left - right);
-  const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1
-    ? sorted[middle]
-    : (sorted[middle - 1] + sorted[middle]) / 2;
-}
-function range(values) {
-  return { min: Math.min(...values), max: Math.max(...values) };
-}
 function presetRecord(name, preset, generatedConfigPluginOrder) {
   return {
     name,
@@ -651,14 +683,14 @@ function markdownReport(report) {
     "",
     `Measured at: ${report.generatedAt}`,
     "",
-    `${report.measurement}. Wall and clean values are medians; ranges are retained in JSON samples.`,
+    `${report.measurement}. Values are medians; p95, standard deviation, and ranges are retained in JSON statistics.`,
     "",
-    "| Preset | Size | Scenario | Wall ms | RSS MB | Processed / Reused | Rendered / Reused | Manifest hooks executed / reused | Manifest cache hit / miss | Manifest hook ms | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
-    "| --- | ---: | --- | ---: | ---: | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | ---: | --- |",
+    "| Preset | Size | Scenario | Wall ms | Wall p95 | Wall σ | RSS MB | Processed / Reused | Rendered / Reused | Manifest hooks executed / reused | Manifest cache hit / miss | Manifest hook ms | SSR routes | Cache hit / miss | Fast path | Full regeneration | Global / unknown | Write ms | Equivalent |",
+    "| --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | ---: | ---: | --- | --- | --- | --- | ---: | --- |",
   ];
   for (const row of report.rows)
     lines.push(
-      `| ${row.preset} | ${row.size} | ${row.scenario} | ${row.wallTimeMs} | ${row.peakRssMb} | ${row.contentProcessed} / ${row.contentReused} | ${row.outputRendered} / ${row.outputReused} | ${row.manifestHooksExecuted} / ${row.manifestHooksReused} | ${row.manifestHookCacheHit} / ${row.manifestHookCacheMiss} | ${row.manifestHookDurationMs} | ${row.ssrRouteCount} | ${row.outputCacheHit} / ${row.outputCacheMiss} | ${row.fastPathApplied} | ${row.fullRegenerationRequired} | ${row.globalOrUnknownDependency} | ${row.outputWriteTimeMs} | ${row.equivalence.equivalent} |`,
+      `| ${row.preset} | ${row.size} | ${row.scenario} | ${row.wallTimeMs} | ${row.statistics.wallTimeMs.p95} | ${row.statistics.wallTimeMs.stdev.toFixed(1)} | ${row.peakRssMb} | ${row.contentProcessed} / ${row.contentReused} | ${row.outputRendered} / ${row.outputReused} | ${row.manifestHooksExecuted} / ${row.manifestHooksReused} | ${row.manifestHookCacheHit} / ${row.manifestHookCacheMiss} | ${row.manifestHookDurationMs} | ${row.ssrRouteCount} | ${row.outputCacheHit} / ${row.outputCacheMiss} | ${row.fastPathApplied} | ${row.fullRegenerationRequired} | ${row.globalOrUnknownDependency} | ${row.outputWriteTimeMs} | ${row.equivalence.equivalent} |`,
     );
   lines.push("", "## Plugin order");
   for (const [name, preset] of Object.entries(report.presets))

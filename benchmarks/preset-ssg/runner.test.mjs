@@ -12,6 +12,7 @@ import {
   localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
+  summarize,
 } from "./lib.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -86,6 +87,7 @@ test("scenarios mutate independent content copies", async (t) => {
   });
   assert.equal((await findMarkdown(directory)).length, 1);
   assert.ok(scenarioNames.includes("rename"));
+  assert.ok(scenarioNames.includes("full"));
   await applyScenario({
     contentDirectory: directory,
     count: 2,
@@ -181,6 +183,16 @@ test("draft-to-public publishes a draft note", async (t) => {
     ),
     /visibility: public/,
   );
+});
+
+test("summary statistics report median, p95, and spread", () => {
+  assert.deepEqual(summarize([10, 20, 30, 40, 50]), {
+    median: 30,
+    p95: 50,
+    min: 10,
+    max: 50,
+    stdev: Math.sqrt(200),
+  });
 });
 
 test("snapshot comparison detects output differences", () => {

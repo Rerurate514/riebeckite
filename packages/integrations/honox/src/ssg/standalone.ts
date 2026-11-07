@@ -1,10 +1,12 @@
 import { mkdir } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { build, type Plugin, type ResolvedConfig } from "vite";
 import type { SsgModule } from "./types.js";
 
 const standaloneSsgMode = "riebeckite-ssr";
+const frameworkRequire = createRequire(import.meta.url);
 
 export type StandaloneSsgBundle = {
   readonly app: NonNullable<SsgModule["default"]>;
@@ -39,6 +41,7 @@ export async function loadStandaloneSsgBundle(input: {
                 plugin.name !== "riebeckite-ssr-externals" &&
                 !plugin.name.startsWith("@hono/vite-build/"),
             ),
+            createFrameworkResolutionPlugin(),
             createRuntimeExternalPlugin(),
             ...(input.clientOutputDirectory
               ? [createClientManifestPlugin(root, input.clientOutputDirectory)]
@@ -68,6 +71,26 @@ export async function loadStandaloneSsgBundle(input: {
     throw new Error(`Failed to find a default export from ${input.entry}.`);
   }
   return { app: module.default, module };
+}
+
+export function createFrameworkResolutionPlugin(): Plugin {
+  return {
+    name: "riebeckite-ssg-framework-resolution",
+    enforce: "pre",
+    resolveId(source) {
+      if (
+        !(
+          source === "hono" ||
+          source.startsWith("hono/") ||
+          source === "honox" ||
+          source.startsWith("honox/")
+        )
+      ) {
+        return undefined;
+      }
+      return frameworkRequire.resolve(source);
+    },
+  };
 }
 
 const runtimeExternalPackages = new Set(["@d2lang/d2", "@marp-team/marp-core"]);

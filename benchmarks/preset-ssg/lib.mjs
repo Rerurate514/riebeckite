@@ -10,6 +10,7 @@ const pixelPng = Buffer.from(
 export const scenarioNames = [
   "cold",
   "no-change",
+  "full",
   "single-body-edit",
   "link-edit",
   "add",
@@ -83,7 +84,8 @@ export async function applyScenario({
   preset,
 }) {
   const last = notePath(contentDirectory, count - 1);
-  if (scenario === "cold" || scenario === "no-change") return;
+  if (scenario === "cold" || scenario === "no-change" || scenario === "full")
+    return;
   if (scenario === "single-body-edit") {
     await fs.appendFile(
       last,
@@ -189,12 +191,19 @@ export async function snapshotTree(directory) {
     const entries = await fs
       .readdir(current, { withFileTypes: true })
       .catch(() => []);
-    for (const entry of entries) {
+    for (const entry of entries.toSorted((left, right) =>
+      left.name.localeCompare(right.name),
+    )) {
       const childRelative = relative ? `${relative}/${entry.name}` : entry.name;
       const child = path.join(current, entry.name);
       if (entry.isDirectory()) await walk(child, childRelative);
-      else if (entry.isFile())
-        snapshot[childRelative] = hash(await fs.readFile(child));
+      else if (entry.isFile()) {
+        const content = await fs.readFile(child);
+        snapshot[childRelative] = {
+          bytes: content.byteLength,
+          sha256: hash(content),
+        };
+      }
     }
   }
   await walk(directory);
@@ -206,7 +215,11 @@ export function compareSnapshots(incremental, clean) {
     ...new Set([...Object.keys(incremental), ...Object.keys(clean)]),
   ].sort();
   const differences = paths
-    .filter((file) => incremental[file] !== clean[file])
+    .filter(
+      (file) =>
+        incremental[file]?.sha256 !== clean[file]?.sha256 ||
+        incremental[file]?.bytes !== clean[file]?.bytes,
+    )
     .map((file) => ({
       file,
       incremental: incremental[file] ?? null,
@@ -242,6 +255,37 @@ export function notePath(contentDirectory, index) {
     `section-${section}`,
     `note-${String(index).padStart(5, "0")}.md`,
   );
+}
+
+export function summarize(values) {
+  if (values.length === 0) throw new Error("Cannot summarize no values");
+  const sorted = [...values].sort((left, right) => left - right);
+  const mean = sorted.reduce((sum, value) => sum + value, 0) / sorted.length;
+  const variance =
+    sorted.reduce((sum, value) => sum + (value - mean) ** 2, 0) / sorted.length;
+  return {
+    median: medianOfSorted(sorted),
+    p95: percentileOfSorted(sorted, 0.95),
+    min: sorted[0],
+    max: sorted[sorted.length - 1],
+    stdev: Math.sqrt(variance),
+  };
+}
+
+function medianOfSorted(sorted) {
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function percentileOfSorted(sorted, probability) {
+  return sorted[
+    Math.max(
+      0,
+      Math.min(sorted.length - 1, Math.ceil(probability * sorted.length) - 1),
+    )
+  ];
 }
 
 function hash(value) {

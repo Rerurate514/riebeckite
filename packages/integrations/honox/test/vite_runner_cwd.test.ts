@@ -244,7 +244,7 @@ test("buildHonoxApplication runs Vite from the application root and restores the
     process.chdir(foreignRoot);
     try {
       await buildHonoxApplication({ root: appRoot });
-      assert.equal(process.cwd(), foreignRoot);
+      await samePath(process.cwd(), foreignRoot);
     } finally {
       process.chdir(originalDirectory);
     }

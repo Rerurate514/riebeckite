@@ -36,8 +36,8 @@ const FAST_PATH_EXPECTATIONS: Readonly<
 > = {
   empty: { capable: true },
   minimal: { capable: true },
-  starter: { capable: false, blockReason: "manifest-hook-cache-disabled" },
-  showcase: { capable: false, blockReason: "plugin-build-end" },
+  starter: { capable: true },
+  showcase: { capable: false, blockReason: "manifest-hook-cache-disabled" },
 };
 
 const RENDERS_ENTRY_TITLE: Readonly<Record<PresetName, boolean>> = {

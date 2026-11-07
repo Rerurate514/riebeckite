@@ -39,6 +39,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
   Packages: `@riebeckite/core`, `@riebeckite/plugin-shortcodes`
   Migration: If your plugin handles directive nodes, add `remark-directive` to its dependencies and call `pipeline.use(remarkDirective)` in `extendMarkdownPipeline` before your own transform.
 
+### Security
+
+- Update the Open Graph image renderer dependency to remove a reported SVG escaping vulnerability and its vulnerable archive dependency.
+  Packages: `@riebeckite/og-image`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.41...HEAD
 
 ## [0.0.41] - 2026-11-06

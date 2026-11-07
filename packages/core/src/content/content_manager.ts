@@ -131,6 +131,7 @@ export class ContentManager {
   private routeManifestPromise: Promise<ContentManifest> | null = null;
   private pipelineFingerprint: string | null = null;
   private pipeline: Pipeline | null = null;
+  private pipelinePromise: Promise<Pipeline> | null = null;
   private entryReader: ContentEntryReader;
   private locationResolver: ContentLocationResolver;
   private buildCoordinator: ContentBuildCoordinator;
@@ -170,22 +171,16 @@ export class ContentManager {
           plugins: pipelineOptions.plugins ?? pipelineOptions.config.plugins,
         }
       : undefined;
+    this.publishingBuildTime = resolvePublishingBuildTime(
+      pipelineOptions.publishingBuildTime,
+    );
+    this.source = cacheContentSource(content);
     this.pipelineOptions = {
       ...pipelineOptions,
       config,
       plugins: pipelineOptions.plugins ?? config?.plugins,
       isRoutable: (slug) => this.isRoutable(slug),
-    };
-    this.publishingBuildTime = resolvePublishingBuildTime(
-      pipelineOptions.publishingBuildTime,
-    );
-    this.pipelineOptions = {
-      ...this.pipelineOptions,
       publishingBuildTime: this.publishingBuildTime,
-    };
-    this.source = cacheContentSource(content);
-    this.pipelineOptions = {
-      ...this.pipelineOptions,
       contentSource: this.source,
       onContentDependencies: (slug, dependencies) => {
         this.trackedContentDependencies.set(slug, dependencies);
@@ -1075,6 +1070,17 @@ export class ContentManager {
 
   private async getPipeline(): Promise<Pipeline> {
     if (this.pipeline) return this.pipeline;
+    if (this.pipelinePromise) return await this.pipelinePromise;
+    this.pipelinePromise = this.createPipeline();
+    try {
+      this.pipeline = await this.pipelinePromise;
+      return this.pipeline;
+    } finally {
+      this.pipelinePromise = null;
+    }
+  }
+
+  private async createPipeline(): Promise<Pipeline> {
     const [contentIndex, locations] = await Promise.all([
       this.getContentIndex(),
       this.getContentLocations(),
@@ -1083,7 +1089,7 @@ export class ContentManager {
     if (this.pipelineOptions.config) {
       this.pipelineFingerprint = this.computePipelineFingerprint(locations);
     }
-    this.pipeline = new Pipeline(
+    return new Pipeline(
       contentIndex,
       new Map(
         [...locations.entries()].map(([slug, location]) => [
@@ -1098,7 +1104,6 @@ export class ContentManager {
       },
       this.isBuildTime,
     );
-    return this.pipeline;
   }
 
   private enableBuildTime(): void {

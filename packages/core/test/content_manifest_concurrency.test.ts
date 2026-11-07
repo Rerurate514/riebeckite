@@ -42,3 +42,22 @@ test("concurrent manifest requests share the in-flight build", async () => {
   assert.equal(first, second);
   assert.equal(loadedCount, 1);
 });
+
+test("concurrent content processing shares pipeline initialization", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "first.md": "# First\n",
+      "second.md": "# Second\n",
+    }),
+  );
+  const pipelineManager = manager as unknown as {
+    getPipeline(): Promise<unknown>;
+  };
+
+  const [first, second] = await Promise.all([
+    pipelineManager.getPipeline(),
+    pipelineManager.getPipeline(),
+  ]);
+
+  assert.equal(first, second);
+});

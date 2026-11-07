@@ -8,8 +8,9 @@ const frameworkRequire = createRequire(
 );
 
 test("standalone SSG resolves Hono and HonoX from the integration package", () => {
-  const resolveId = createFrameworkResolutionPlugin().resolveId;
-  assert.equal(typeof resolveId, "function");
+  const hook = createFrameworkResolutionPlugin().resolveId;
+  assert.equal(typeof hook, "function");
+  const resolveId = hook as (source: string) => string | undefined;
   assert.equal(resolveId("hono"), frameworkRequire.resolve("hono"));
   assert.equal(resolveId("hono/jsx"), frameworkRequire.resolve("hono/jsx"));
   assert.equal(

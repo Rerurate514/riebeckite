@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "b3d6b38e-d73d-4b0c-8514-7d692eadae45",
-    "publishedAt": "2026-11-07T18:31:30.491Z",
-    "publicationFingerprint": "4d5e53e61d8d43c4183cc26ba52385a081ad0caf5b2fd75c7507055dfa108d99",
+    "runId": "8b6a2e9e-bb30-4506-a251-9f8e818e41fd",
+    "publishedAt": "2026-11-07T18:41:05.297Z",
+    "publicationFingerprint": "b2cff14751156cedaba041e4d6165887ee25c95e8d937a566addaeab03855059",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -52,6 +52,22 @@
         "visibility": "public",
         "fingerprint": "45b7732fcebeab35139acc2577cd44a14556903e1a4b2f6169280723f9ac8507",
         "contentFingerprint": "00c6129395dd480962f069d1328347ef1018f4526ffe1f99d0680f01c7de8045"
+      },
+      {
+        "slug": "audits/security-hardening-2026-11",
+        "permalink": "/audits/security-hardening-2026-11",
+        "title": "security-hardening-2026-11",
+        "visibility": "public",
+        "fingerprint": "880bfa7ca9ae2287bcf28be5f4cb4342f4ce42925b6c3eca6424bffad6ef7180",
+        "contentFingerprint": "c042d3b83a9f5e94f90062210fc11ac83673d261202e0a8426b04746465e5d07"
+      },
+      {
+        "slug": "audits/security-hardening-2026-11.ja",
+        "permalink": "/ja/audits/security-hardening-2026-11",
+        "title": "security-hardening-2026-11.ja",
+        "visibility": "public",
+        "fingerprint": "5bf94dc23c6986d2a2f579eb6f02370d88068625cf342f77f35884395786f7b6",
+        "contentFingerprint": "cc510729c52a8b7f16f17f74e38e4cdbfab2f0b1c79f76a4774c38cec2fe52ca"
       },
       {
         "slug": "docs/accessibility",
@@ -3962,16 +3978,16 @@
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "e039a675c1e5820031d7f7d4ac716f6f69076647ac5c672e26177c2ead52ee02",
-        "contentFingerprint": "62b56ee156b694ccb84ce0f0fa72d54715e98b0b3a67ebdcaa9e3ebf1b8cac2f"
+        "fingerprint": "34a3974b4b695c136288181b88f7ce10d969ce8fab49e9c19d9b8d7e33af206d",
+        "contentFingerprint": "3f7e0d9cca22c361712247fd1402e46e5d7091199eb4b2b6dfc09c11b7fbfea0"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "6571708043ea4353543be12f8eaf32bd32e46830d82c0d79d7568dfea8ab8771",
-        "contentFingerprint": "560480e392aa99fa61e67801a28b2dc785683bfd11fbcb081250671d21b2f4a0"
+        "fingerprint": "adb9be1f3f367eba222c4c40b0f0f9b18519b85addbe0e66d5fe758d618c38af",
+        "contentFingerprint": "e26c17ea8314f88c1fba47cd73ee0008c6762ba5e1a80e4f9c54b30b254d5420"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
@@ -6202,16 +6218,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "1496440329542e1b593e2ba1fc193e301565262265273f5095b4d3cefc43f6c3",
-        "contentFingerprint": "61243760a7db69f8aba677816a76f620abfb26d4d7be40f211f999bd6acba3d4"
+        "fingerprint": "37e7e7a7c3645f8ca14d3894b68aab6c1165e308f2fbe004675132eb1e012760",
+        "contentFingerprint": "49e1ca4f18b81509c182a277cae0ed60fef5c91e6e7b4f628b76e25d4356571b"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "a7dce21e09d8ecb36ab1995e72e6f2720f4a8601bc265505a33874e8a4b55ad8",
-        "contentFingerprint": "266003a8af91e9ce39e4d5c8bc6b655754a573d957ce4141c07d100d678caf49"
+        "fingerprint": "dbd8c451bbb5274e511d8189bf876d6bf03a896c485b83a48942d0c8a35cc873",
+        "contentFingerprint": "e7b7e439639aa158261cf36bd36cfe7499c7145b0a8a31696bfca1f1734ca341"
       },
       {
         "slug": "docs/security",
@@ -6522,16 +6538,16 @@
         "permalink": "/README",
         "title": "Riebeckite documentation",
         "visibility": "public",
-        "fingerprint": "9fba25a2b0545473cce05a9f0b9b50ae1e73a52b93fddaa046338b366fe2b7d8",
-        "contentFingerprint": "8db5b1d004aacbece2e5258e38530684afa7537d7d064269571d234764ab12d2"
+        "fingerprint": "33e90a6a5900d292272947e4ef477a0c4e3d05bc4666588c86049f32431197e9",
+        "contentFingerprint": "5e61629783d2787e9a0f24060ea8b6ae1316f1131ce46be4b2ab0de29a62f63f"
       },
       {
         "slug": "README.ja",
         "permalink": "/ja/README",
         "title": "Riebeckite ドキュメント",
         "visibility": "public",
-        "fingerprint": "025eae8a57f59f216817967317f15276cbbc943818be85e4c047813e43e3ea7a",
-        "contentFingerprint": "a005ea5d36eccac8c67131c51ea840b5fbc482dcffbebe5b275eb52bca34808f"
+        "fingerprint": "c1197c4ef46c3ce926efa1f68d4fa78136e295c18b07cf98a02ce36cb5bdf888",
+        "contentFingerprint": "5c7cd2ec03fd9645be15c306990f33eb806a2b3c002da110e2a6eb65c62c95e7"
       }
     ],
     "redirects": [
@@ -6646,7 +6662,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "4ea1f89b0039b4dbbad0e19ec621d24e012851581c7ab8aa229dd4f0cb460304",
+    "artifactFingerprint": "6146c73f805f80a87ff7606175531e2078343e8065c62bd0635ab33653651254",
     "provider": "cloudflare-workers"
   }
 }

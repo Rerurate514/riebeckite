@@ -74,9 +74,9 @@ riebeckite の SSG プラグインは、サーバービルドの出力先を一�
 
 1. `configResolved` で、サーバービルドの staging（`.riebeckite/build-output`）をアダプターの `load()` より前に空にする。
 2. `buildStart` では前回の `dist` を staging にコピーしない。
-3. `generateBundle` でクライアント成果物を復元し、`collectBuildOutputPaths` を実行した後に、前回の `dist` を staging にコピーする。これにより、アダプターが見る時点では staging は空で、その後の SSG 出力処理では従来どおり前回出力を再利用できる。
+3. `generateBundle` でクライアント成果物を復元し、`collectBuildOutputPaths`、SSR モジュールの読み込み、出力変更セットの解決を終えた後に、前回の `dist` を staging にコピーする。これにより、アダプターが見る時点では staging は空で、その後の SSG 出力処理では従来どおり前回出力を再利用できる。
 
-前回出力のコピーを `collectBuildOutputPaths` の後ろに移したことで、前回出力がクライアント資産として出力計画に混入しないことも確認した（`ownerConflictCount` は 0）。
+前回出力のコピーを `collectBuildOutputPaths` と SSR モジュール読み込みの後ろに移したことで、前回出力がクライアント資産として出力計画に混入せず、SSR 読み込みが失敗した場合にも staging へ前回出力が残らないことを確認した（`ownerConflictCount` は 0）。
 
 過去に試した「`enforce: "pre"` にして `configResolved` で `build.outDir` 自体を staging に書き換える」案は、Vite のサーバー成果物が `dist` から消え、`missingInDistCount` が 3 になったため採用しなかった。
 
@@ -199,6 +199,8 @@ pnpm benchmark:presets -- --presets starter,showcase --sizes 100 \
 - `node --import tsx --test --test-name-pattern "snapshot comparison" benchmarks/preset-ssg/runner.test.mjs`（1 pass）
 - `node --import tsx --test --test-reporter=spec --test-name-pattern "runner executes the clean output comparison" benchmarks/preset-ssg/runner.test.mjs`（1 pass、158.8 秒）
 - Phase 1 全 20 シナリオ（Starter/Showcase、100 ノート）で `equivalent: true`、`missingInDistCount: 0`
+- `incremental_ssg.test.ts` 8 pass、`ssg_plugin.test.ts` と `standalone.test.ts` 26 pass
+- マージ後の Starter/100 no-change 1 回で `equivalent: true`、`missingInDistCount: 0`
 
 未実行または未完了:
 
@@ -209,7 +211,7 @@ pnpm benchmark:presets -- --presets starter,showcase --sizes 100 \
 ## リスク
 
 - 今回の修正は `@hono/vite-build` の virtual entry が `config.build.outDir` を走査するという依存先の実装に依存している。依存先の挙動が変わった場合は再発する可能性がある。
-- `generateBundle` での前回出力コピーは、クライアント成果物の復元と `collectBuildOutputPaths` の後に実行する順序が重要である。順序を戻すと出力計画への混入が再発する。
+- `generateBundle` での前回出力コピーは、クライアント成果物の復元、`collectBuildOutputPaths`、SSR モジュール読み込み、出力変更セットの解決の後に実行する順序が重要である。順序を戻すと出力計画への混入や、失敗時の staging 残留が再発する。
 - ベンチマークはクライアントビルドを含まないため、実サイトの wall-clock を過小評価する可能性がある。
 - 100 ノートの計測は並行プロセスの影響を受けた。数値は同一環境内の比較に留め、絶対値として一般化しない。
 - Showcase のメモリ使用量から、5,000 ノートの 5 回計測は非現実的である。

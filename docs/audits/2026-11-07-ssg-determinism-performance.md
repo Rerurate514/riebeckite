@@ -74,9 +74,9 @@ Only `packages/integrations/honox/src/ssg_plugin.ts` was changed.
 
 1. `configResolved` empties the server staging directory (`.riebeckite/build-output`) before the adapter's `load()` runs.
 2. `buildStart` no longer copies the previous `dist` into staging.
-3. `generateBundle` restores client artifacts, runs `collectBuildOutputPaths`, and only then copies the previous `dist` into staging. The adapter therefore sees an empty staging directory, while the later SSG output pipeline can still reuse previous outputs.
+3. `generateBundle` restores client artifacts, runs `collectBuildOutputPaths`, loads the SSR module, and resolves the output change set before copying the previous `dist` into staging. The adapter therefore sees an empty staging directory, while the later SSG output pipeline can still reuse previous outputs.
 
-Moving the copy after `collectBuildOutputPaths` also prevents previous outputs from being classified as client assets in the output plan (`ownerConflictCount` became 0).
+Moving the copy after `collectBuildOutputPaths` and the SSR module load also prevents previous outputs from being classified as client assets in the output plan, and keeps staging clean when the SSR load fails (`ownerConflictCount` became 0).
 
 An earlier attempt that used `enforce: "pre"` and rewrote `config.build.outDir` to staging in `configResolved` was rejected: it made three Vite server artifacts disappear from `dist` (`missingInDistCount: 3`).
 
@@ -199,6 +199,8 @@ Executed and PASS:
 - `node --import tsx --test --test-name-pattern "snapshot comparison" benchmarks/preset-ssg/runner.test.mjs` (1 pass)
 - `node --import tsx --test --test-reporter=spec --test-name-pattern "runner executes the clean output comparison" benchmarks/preset-ssg/runner.test.mjs` (1 pass, 158.8 s)
 - All 20 Phase 1 scenarios (Starter/Showcase, 100 notes) with `equivalent: true` and `missingInDistCount: 0`
+- `incremental_ssg.test.ts` 8 pass; `ssg_plugin.test.ts` and `standalone.test.ts` 26 pass
+- Post-merge Starter/100 no-change, one run: `equivalent: true`, `missingInDistCount: 0`
 
 Not executed or incomplete:
 
@@ -209,7 +211,7 @@ Not executed or incomplete:
 ## Risks
 
 - The fix depends on `@hono/vite-build` scanning `config.build.outDir` in its virtual entry. A change in that dependency could reintroduce the bug.
-- The copy in `generateBundle` must stay after client artifact restoration and `collectBuildOutputPaths`. Reordering it reintroduces output-plan contamination.
+- The copy in `generateBundle` must stay after client artifact restoration, `collectBuildOutputPaths`, the SSR module load, and output change-set resolution. Reordering it reintroduces output-plan contamination and staging residue on failure.
 - The benchmark omits the client build, so real-site wall-clock may be higher than reported.
 - The 100-note measurements were affected by concurrent processes. Use them for relative comparison in this environment, not as universal absolute values.
 - Showcase memory usage makes a five-run 5,000-note measurement impractical.

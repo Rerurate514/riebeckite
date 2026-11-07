@@ -231,15 +231,6 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
       try {
         await restoreClientBuildArtifacts(outDir, clientBuildArtifacts);
         viteClientAssetPaths = await collectBuildOutputPaths(outDir);
-        const previousOutputDirectory = publicationOutputDirectory;
-        if (
-          !clientBuildArtifacts &&
-          artifactWriter &&
-          previousOutputDirectory &&
-          (await isDirectory(previousOutputDirectory))
-        ) {
-          await artifactWriter.copyFrom(previousOutputDirectory);
-        }
         logSsgDiagnostics(
           this,
           `SSR noExternal=${formatSsrNoExternal()} · client manifest ${clientBuildArtifacts ? "restored" : "not found"}`,
@@ -259,6 +250,15 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           "outputDependencyResolution",
           async () => module.content?.getOutputChangeSet(),
         );
+        const previousOutputDirectory = publicationOutputDirectory;
+        if (
+          !clientBuildArtifacts &&
+          artifactWriter &&
+          previousOutputDirectory &&
+          (await isDirectory(previousOutputDirectory))
+        ) {
+          await artifactWriter.copyFrom(previousOutputDirectory);
+        }
         const appFingerprint = await measure(timingsMs, "appFingerprint", () =>
           computeAppFingerprint(config.root, config.configFile),
         );

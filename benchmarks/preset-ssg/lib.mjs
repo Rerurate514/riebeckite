@@ -189,12 +189,19 @@ export async function snapshotTree(directory) {
     const entries = await fs
       .readdir(current, { withFileTypes: true })
       .catch(() => []);
-    for (const entry of entries) {
+    for (const entry of entries.toSorted((left, right) =>
+      left.name.localeCompare(right.name),
+    )) {
       const childRelative = relative ? `${relative}/${entry.name}` : entry.name;
       const child = path.join(current, entry.name);
       if (entry.isDirectory()) await walk(child, childRelative);
-      else if (entry.isFile())
-        snapshot[childRelative] = hash(await fs.readFile(child));
+      else if (entry.isFile()) {
+        const content = await fs.readFile(child);
+        snapshot[childRelative] = {
+          bytes: content.byteLength,
+          sha256: hash(content),
+        };
+      }
     }
   }
   await walk(directory);
@@ -206,7 +213,11 @@ export function compareSnapshots(incremental, clean) {
     ...new Set([...Object.keys(incremental), ...Object.keys(clean)]),
   ].sort();
   const differences = paths
-    .filter((file) => incremental[file] !== clean[file])
+    .filter(
+      (file) =>
+        incremental[file]?.sha256 !== clean[file]?.sha256 ||
+        incremental[file]?.bytes !== clean[file]?.bytes,
+    )
     .map((file) => ({
       file,
       incremental: incremental[file] ?? null,

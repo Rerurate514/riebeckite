@@ -28,6 +28,7 @@ const presets = listArg(args.presets) ?? ["starter", "showcase"];
 const sizes = (listArg(args.sizes) ?? ["100", "1000"]).map(Number);
 const scenarios = listArg(args.scenarios) ?? scenarioNames;
 const runs = positiveIntegerArg(args.runs, 1, "runs");
+const retainOutputs = args.retainOutputs === "true";
 const metricsEnabled = args.metrics !== "false";
 const workRoot = path.resolve(
   args.workRoot ?? path.join(appRoot, ".riebeckite", "preset-ssg-benchmark"),
@@ -175,7 +176,16 @@ async function runScenarioSample({ preset, size, scenario, run }) {
     preset,
     size,
   );
-  if (scenario !== "cold") await invokeBuild(incrementalSite, "baseline");
+  if (scenario !== "cold") {
+    await invokeBuild(incrementalSite, "baseline");
+    if (retainOutputs) {
+      await fs.cp(
+        path.join(incrementalSite, "dist"),
+        path.join(runDirectory, "baseline-output"),
+        { recursive: true },
+      );
+    }
+  }
   await applyScenario({
     contentDirectory: path.join(incrementalSite, "content"),
     count: size,
@@ -186,6 +196,13 @@ async function runScenarioSample({ preset, size, scenario, run }) {
   const incrementalOutput = await snapshotTree(
     path.join(incrementalSite, "dist"),
   );
+  if (retainOutputs) {
+    await fs.cp(
+      path.join(incrementalSite, "dist"),
+      path.join(runDirectory, "incremental-output"),
+      { recursive: true },
+    );
+  }
   await fs.rm(path.join(incrementalSite, ".riebeckite"), {
     recursive: true,
     force: true,
@@ -195,10 +212,15 @@ async function runScenarioSample({ preset, size, scenario, run }) {
     force: true,
   });
   const clean = await invokeBuild(incrementalSite, "clean");
-  const comparison = compareSnapshots(
-    incrementalOutput,
-    await snapshotTree(path.join(incrementalSite, "dist")),
-  );
+  const cleanOutput = await snapshotTree(path.join(incrementalSite, "dist"));
+  if (retainOutputs) {
+    await fs.cp(
+      path.join(incrementalSite, "dist"),
+      path.join(runDirectory, "clean-output"),
+      { recursive: true },
+    );
+  }
+  const comparison = compareSnapshots(incrementalOutput, cleanOutput);
   return {
     preset,
     size,

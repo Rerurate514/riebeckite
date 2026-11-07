@@ -137,9 +137,10 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
   return {
     name: "riebeckite-ssg",
     apply: (_config, env) => env.command === "build",
-    enforce: "post",
+    enforce: "pre",
     config(config, env) {
       const root = resolve(config.root ?? process.cwd());
+      const serverOutputDirectory = join(root, ".riebeckite", "build-output");
       publicationOutputDirectory = resolve(
         root,
         config.build?.outDir ?? "dist",
@@ -150,18 +151,21 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
           outDir:
             env.mode === "client"
               ? clientOutputDirectory
-              : join(root, ".riebeckite", "build-output"),
+              : serverOutputDirectory,
           ...(env.mode === "client"
             ? {}
             : { rollupOptions: { input: [virtualId] } }),
         },
       };
     },
-    configResolved(config) {
+    async configResolved(config) {
       resolvedConfig = config;
       if (config.mode === "client") {
         clientOutputDirectory = resolve(config.root, config.build.outDir);
+        return;
       }
+      config.build.outDir = join(config.root, ".riebeckite", "build-output");
+      await emptyBuildOutputDirectory(config.build.outDir);
     },
     async buildStart() {
       const config = resolvedConfig;

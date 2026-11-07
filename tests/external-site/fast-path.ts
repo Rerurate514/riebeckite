@@ -703,15 +703,15 @@ async function main(): Promise<void> {
       diffSnapshots(incrementalSnapshot, fullSnapshot),
     );
 
-    // 17. No-change manifest hook fallback recovery.
-    logger.step("case 17: No-change manifest hook fallback recovery");
+    // 17. No-change fast path recovery after a full build.
+    logger.step("case 17: No-change fast path recovery");
     const recovered = await build("No-change recovery", {
-      expectFastPath: false,
+      expectFastPath: true,
     });
     assert.equal(
       recovered.blockReason,
-      "manifest-hook-cache-disabled",
-      "recovered no-change build must keep the cache-disabled manifest hook fallback",
+      undefined,
+      "recovered no-change build must take the fast path without a block reason",
     );
     assertNoDifference(
       "no-change recovery vs full",
@@ -743,7 +743,7 @@ async function main(): Promise<void> {
       );
     }
     logger.step(
-      "PASS: standard starter falls back safely for cache-disabled manifest hooks and every change invalidates it safely",
+      "PASS: standard starter uses the no-change fast path safely and every change invalidates it safely",
     );
   } finally {
     if (keep) {

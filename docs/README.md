@@ -213,6 +213,8 @@ In that case you work with:
 
 See [Framework Development](./docs/framework/development.md) for details.
 
+Audit reports are collected under `audits/`, for example [SSG determinism and performance](./audits/2026-11-07-ssg-determinism-performance.md).
+
 `website` is Riebeckite's documentation and reference app. It is not a template for users building sites.
 
 ## When in doubt

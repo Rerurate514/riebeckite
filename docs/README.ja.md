@@ -219,6 +219,8 @@ Riebeckite 自体へ変更を加える場合だけ、リポジトリをクロー
 
 詳しくは [フレームワーク開発](./docs/framework/development.ja.md) を参照してください。
 
+監査レポートは `audits/` にまとめています。例: [SSG の決定性と性能の監査](./audits/2026-11-07-ssg-determinism-performance.ja.md)。
+
 `website` は Riebeckite のドキュメント兼参照アプリです。一般ユーザーがサイトを作るためのテンプレートではありません。
 
 ## 迷ったら

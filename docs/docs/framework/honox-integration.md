@@ -193,6 +193,11 @@ HonoX runtime routing and static generation must treat the same URL as the same
 page. This is especially important for catch-all routes, where SSG route
 enumeration needs care. Riebeckite provides two helpers for this.
 
+Static generation fails the build when a route responds with a 5xx status, or
+when a planned content or plugin output is missing from the staged inventory.
+Redirects and routes excluded from SSG are not failures. The previous published
+output remains in place until the new build passes validation.
+
 ### `contentRouteSsgParams`
 
 ```ts

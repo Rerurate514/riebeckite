@@ -18,6 +18,7 @@ import {
 import { runSsg } from "../src/ssg/runner.js";
 import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
+  assertRequiredOutputsWereGenerated,
   createNoChangeFastPathOutputMetrics,
   decideOutputCacheRejection,
   emptyBuildOutputDirectory,
@@ -78,6 +79,25 @@ test("SSG runner renders without Vite lifecycle state", async () => {
 
   assert.equal(result.success, true);
   assert.equal(output.get("/virtual-output/index.html"), "<h1>ok</h1>");
+});
+
+test("SSG runner rejects a route that responds with a server error", async () => {
+  const output = new Map<string, string | Uint8Array>();
+  const app = new Hono();
+  app.get("/", (context) => context.text("render failed", 500));
+
+  const result = await runSsg({
+    app,
+    outDir: "/virtual-output",
+    incremental: false,
+    write: async (file, content) => {
+      output.set(file, content);
+    },
+  });
+
+  assert.equal(result.success, false);
+  assert.match(String(result.error), /500/u);
+  assert.equal(output.size, 0);
 });
 
 test("output cache reuse is rejected whenever a safety condition fails", () => {
@@ -176,6 +196,19 @@ test("build outputs without site public assets report no collision", () => {
       new Set(["favicon.ico", "assets/logo.png"]),
     ),
     [],
+  );
+});
+
+test("SSG rejects a staged artifact when a required output is missing", () => {
+  assert.throws(
+    () =>
+      assertRequiredOutputsWereGenerated({
+        missingInDist: ["index.html", "notes/missing.html"],
+      }),
+    /SSG did not generate required output: index\.html, notes\/missing\.html/,
+  );
+  assert.doesNotThrow(() =>
+    assertRequiredOutputsWereGenerated({ missingInDist: [] }),
   );
 });
 

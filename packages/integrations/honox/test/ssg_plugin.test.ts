@@ -81,6 +81,25 @@ test("SSG runner renders without Vite lifecycle state", async () => {
   assert.equal(output.get("/virtual-output/index.html"), "<h1>ok</h1>");
 });
 
+test("SSG runner rejects a route that responds with a server error", async () => {
+  const output = new Map<string, string | Uint8Array>();
+  const app = new Hono();
+  app.get("/", (context) => context.text("render failed", 500));
+
+  const result = await runSsg({
+    app,
+    outDir: "/virtual-output",
+    incremental: false,
+    write: async (file, content) => {
+      output.set(file, content);
+    },
+  });
+
+  assert.equal(result.success, false);
+  assert.match(String(result.error), /500/u);
+  assert.equal(output.size, 0);
+});
+
 test("output cache reuse is rejected whenever a safety condition fails", () => {
   const reusable: OutputCacheDecision = {
     changeSetPresent: true,

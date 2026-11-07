@@ -22,7 +22,11 @@ export async function runSsg(options: SsgRunnerOptions) {
       },
       {
         dir: options.outDir,
-        plugins: [redirectPlugin(), ...(options.plugins ?? [])],
+        plugins: [
+          redirectPlugin(),
+          failOnServerError(),
+          ...(options.plugins ?? []),
+        ],
         extensionMap: options.extensionMap ?? defaultExtensionMap,
         ...(options.concurrency === undefined
           ? {}
@@ -30,6 +34,19 @@ export async function runSsg(options: SsgRunnerOptions) {
       },
     ),
   );
+}
+
+function failOnServerError(): NonNullable<ToSsgOptions["plugins"]>[number] {
+  return {
+    afterResponseHook(response) {
+      if (response.status >= 500) {
+        throw new Error(
+          `SSG route responded with status ${response.status}: ${response.statusText}`,
+        );
+      }
+      return response;
+    },
+  };
 }
 
 async function withSsgRenderEnvironment<T>(

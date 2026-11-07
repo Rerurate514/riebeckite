@@ -725,6 +725,7 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
             0,
             process.memoryUsage().rss - outputPlanRssBefore,
           );
+          assertRequiredOutputsWereGenerated(outputPlanComparison);
           const publicDir = outputCache.publicDir;
           outputCache.state.publicDirectory = publicDir
             ? resolve(publicDir)
@@ -809,6 +810,15 @@ export function findBuildOutputSiteCollisions(
     if (siteOwnedOutputPaths.has(path)) collisions.add(path);
   }
   return [...collisions].sort();
+}
+
+export function assertRequiredOutputsWereGenerated(comparison: {
+  readonly missingInDist: readonly string[];
+}): void {
+  if (comparison.missingInDist.length === 0) return;
+  throw new Error(
+    `SSG did not generate required output: ${comparison.missingInDist.join(", ")}`,
+  );
 }
 
 async function emitGeneratedOutputs(

@@ -18,6 +18,7 @@ import {
 import { runSsg } from "../src/ssg/runner.js";
 import type { OutputCacheDecision } from "../src/ssg_plugin.js";
 import {
+  assertRequiredOutputsWereGenerated,
   createNoChangeFastPathOutputMetrics,
   decideOutputCacheRejection,
   emptyBuildOutputDirectory,
@@ -176,6 +177,19 @@ test("build outputs without site public assets report no collision", () => {
       new Set(["favicon.ico", "assets/logo.png"]),
     ),
     [],
+  );
+});
+
+test("SSG rejects a staged artifact when a required output is missing", () => {
+  assert.throws(
+    () =>
+      assertRequiredOutputsWereGenerated({
+        missingInDist: ["index.html", "notes/missing.html"],
+      }),
+    /SSG did not generate required output: index\.html, notes\/missing\.html/,
+  );
+  assert.doesNotThrow(() =>
+    assertRequiredOutputsWereGenerated({ missingInDist: [] }),
   );
 });
 

@@ -6,7 +6,7 @@ type CanvasRuntime = {
 };
 
 const NOTE_LINK_PATTERN = new RegExp(
-  `href="${CANVAS_NOTE_HREF}" data-canvas-note="([^"]*)"`,
+  `href="${CANVAS_NOTE_HREF}" data-canvas-note="([^"]*)"(?: data-canvas-subpath="([^"]*)")?`,
   "g",
 );
 
@@ -35,14 +35,21 @@ export function finalizeCanvasNoteLinks(
 }
 
 function resolveNoteLinks(html: string, manifest: ContentManifest): string {
-  return html.replace(NOTE_LINK_PATTERN, (_match, encoded: string) => {
-    const slug = decodeSlug(encoded);
-    const target = slug ? manifest.bySlug.get(slug) : undefined;
-    const permalink = target?.publishing.routable
-      ? target.permalink
-      : undefined;
-    return `href="${escapeHtmlAttribute(permalink ?? "#")}" data-canvas-note="${encoded}"`;
-  });
+  return html.replace(
+    NOTE_LINK_PATTERN,
+    (_match, encoded: string, encodedSubpath: string | undefined) => {
+      const slug = decodeSlug(encoded);
+      const subpath = encodedSubpath ? decodeSlug(encodedSubpath) : null;
+      const target = slug ? manifest.bySlug.get(slug) : undefined;
+      const permalink = target?.publishing.routable
+        ? `${target.permalink}${subpath ? `#${encodeURIComponent(subpath)}` : ""}`
+        : undefined;
+      const subpathAttribute = encodedSubpath
+        ? ` data-canvas-subpath="${encodedSubpath}"`
+        : "";
+      return `href="${escapeHtmlAttribute(permalink ?? "#")}" data-canvas-note="${encoded}"${subpathAttribute}`;
+    },
+  );
 }
 
 function decodeSlug(encoded: string): string | null {

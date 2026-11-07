@@ -90,7 +90,8 @@ The plugin emits `div.rb-canvas` with `data-canvas` (the input), `data-canvas-no
 - `details.rb-canvas__fallback` — a node/edge list for accessibility and no-JS
 
 `file` nodes resolve through `contentIndex`: notes link to their permalink and
-other files link to their attachment URL. Note links are finalised in
+other files link to their attachment URL. A file node `subpath` resolves to the
+target note's heading or block anchor. Note links are finalised in
 `onManifestCreated` from the manifest, rewriting the manifest entry's HTML. Core
 synchronizes that HTML with the content the route renders. `text` nodes get
 deliberately limited Markdown handling, not the full site Markdown pipeline.

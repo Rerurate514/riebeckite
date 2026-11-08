@@ -52,7 +52,7 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Comments for Riebeckite pages, backed by a pluggable provider.",
+  "description": "Comment threads for Riebeckite pages, backed by a pluggable provider.",
   "keywords": [
     "riebeckite",
     "plugin",

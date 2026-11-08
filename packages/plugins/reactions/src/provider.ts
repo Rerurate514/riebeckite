@@ -7,14 +7,8 @@ export type ReactionsCapability = (typeof REACTIONS_CAPABILITIES)[number];
 export interface ReactionsProvider {
   readonly capabilities: ReadonlySet<ReactionsCapability>;
   getReactions(contentId: string): Promise<PageReactions>;
-  addReaction(
-    contentId: string,
-    type: ReactionType,
-  ): Promise<PageReactions>;
-  removeReaction(
-    contentId: string,
-    type: ReactionType,
-  ): Promise<PageReactions>;
+  addReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
+  removeReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
 }
 
 export function supportsReactionsCapability(

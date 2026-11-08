@@ -15,11 +15,11 @@ export {
   resolveCommentsOptions,
   validateCommentsOptions,
 } from "./src/options.js";
-export { MemoryCommentsProvider } from "./src/provider.js";
 export type {
   CommentsCapability,
   CommentsProvider,
 } from "./src/provider.js";
+export { MemoryCommentsProvider } from "./src/provider.js";
 export {
   COMMENTS_ATTRIBUTE,
   COMMENTS_ROOT_CLASS,

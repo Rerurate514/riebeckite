@@ -8,7 +8,11 @@
 .rr-comments {
   --rr-comments-ink: var(--rb-color-ink, inherit);
   --rr-comments-muted: var(--rb-color-muted, #5a5a5a);
-  --rr-comments-rule: color-mix(in srgb, var(--rr-comments-ink) 18%, transparent);
+  --rr-comments-rule: color-mix(
+    in srgb,
+    var(--rr-comments-ink) 18%,
+    transparent
+  );
 
   margin-block: 2rem;
   color: var(--rr-comments-ink);

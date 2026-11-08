@@ -1,4 +1,4 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { escapeHtmlAttribute } from "@riebeckite/core";
 import type { PageReactions, ReactionEmoji } from "./types.js";
 
 export const REACTIONS_ATTRIBUTE = "data-rr-reactions";
@@ -10,11 +10,17 @@ export function renderReactions(
   className: string,
   ariaLabel: string,
 ): string {
-  const rootClass = className ? `${REACTIONS_ROOT_CLASS} ${className}` : REACTIONS_ROOT_CLASS;
+  const rootClass = className
+    ? `${REACTIONS_ROOT_CLASS} ${className}`
+    : REACTIONS_ROOT_CLASS;
   const items = reactions
     .map((reaction) => {
       const count = data.counts.find((c) => c.type === reaction.type);
-      return renderReactionButton(reaction, count?.count ?? 0, count?.reacted ?? false);
+      return renderReactionButton(
+        reaction,
+        count?.count ?? 0,
+        count?.reacted ?? false,
+      );
     })
     .join("");
 

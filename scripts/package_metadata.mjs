@@ -324,7 +324,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
   },
   "packages/plugins/comments": {
-    description: "Comment threads for Riebeckite pages, backed by a pluggable provider.",
+    description:
+      "Comment threads for Riebeckite pages, backed by a pluggable provider.",
     keywords: ["riebeckite", "plugin", "comments", "discussion"],
   },
   "packages/plugins/d2": {
@@ -512,7 +513,8 @@ const packagePublishingMetadata = {
     keywords: ["riebeckite", "plugin", "query", "markdown"],
   },
   "packages/plugins/reactions": {
-    description: "Emoji reactions for Riebeckite pages, backed by a pluggable provider.",
+    description:
+      "Emoji reactions for Riebeckite pages, backed by a pluggable provider.",
     keywords: ["riebeckite", "plugin", "reactions", "emoji"],
   },
   "packages/plugins/recent-posts": {

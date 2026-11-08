@@ -1,10 +1,6 @@
 import type { ConfigValidationIssue } from "@riebeckite/core";
-import { MemoryCommentsProvider } from "./provider.js";
-import type {
-  CommentsOptions,
-  CommentsProvider,
-  ResolvedCommentsOptions,
-} from "./types.js";
+import { type CommentsProvider, MemoryCommentsProvider } from "./provider.js";
+import type { CommentsOptions, ResolvedCommentsOptions } from "./types.js";
 
 export const DEFAULT_COMMENTS_HEADING_TEXT = "Comments";
 export const DEFAULT_COMMENTS_CLASS_NAME = "rr-comments";
@@ -20,7 +16,10 @@ export function resolveCommentsOptions(
       options.headingText,
       DEFAULT_COMMENTS_HEADING_TEXT,
     ),
-    className: normalizeNonEmpty(options.className, DEFAULT_COMMENTS_CLASS_NAME),
+    className: normalizeNonEmpty(
+      options.className,
+      DEFAULT_COMMENTS_CLASS_NAME,
+    ),
     limit: normalizeLimit(options.limit),
     emptyText: normalizeNonEmpty(
       options.emptyText,
@@ -38,13 +37,17 @@ export function validateCommentsOptions(
   if (options.provider !== undefined && !isCommentsProvider(options.provider)) {
     issues.push({
       path: "provider",
-      message: "Expected a comments provider with capabilities and getComments.",
+      message:
+        "Expected a comments provider with capabilities and getComments.",
     });
   }
 
   for (const key of ["headingText", "className", "emptyText"] as const) {
     const value = options[key];
-    if (value !== undefined && (typeof value !== "string" || value.trim() === "")) {
+    if (
+      value !== undefined &&
+      (typeof value !== "string" || value.trim() === "")
+    ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
     }
   }
@@ -79,7 +82,10 @@ function isNonNegativeInteger(value: number): boolean {
   return Number.isInteger(value) && value >= 0;
 }
 
-function normalizeNonEmpty(value: string | undefined, fallback: string): string {
+function normalizeNonEmpty(
+  value: string | undefined,
+  fallback: string,
+): string {
   if (typeof value !== "string") return fallback;
   const trimmed = value.trim();
   return trimmed === "" ? fallback : trimmed;

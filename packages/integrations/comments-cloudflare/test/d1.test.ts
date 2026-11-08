@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { D1CommentsStorage, d1Storage } from "../index.ts";
 import type { D1Database, D1PreparedStatement } from "../index.ts";
+import { D1CommentsStorage, d1Storage } from "../index.ts";
 
 function createFakeD1(): D1Database {
   const db: D1Database = {
@@ -10,8 +10,8 @@ function createFakeD1(): D1Database {
         bind() {
           return this;
         },
-        async first() {
-          return { total: 0 };
+        async first<T = unknown>(): Promise<T | null> {
+          return { total: 0 } as T;
         },
         async all() {
           return { results: [] };

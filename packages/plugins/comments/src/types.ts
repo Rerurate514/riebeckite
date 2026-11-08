@@ -1,3 +1,5 @@
+import type { CommentsProvider } from "./provider.js";
+
 export type CommentAuthor = {
   name: string;
   url?: string;

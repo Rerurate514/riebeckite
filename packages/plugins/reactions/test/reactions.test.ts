@@ -1,19 +1,19 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { REACTIONS_PLUGIN_NAME, reactions } from "../index.ts";
 import {
-  DEFAULT_REACTIONS,
-  REACTION_TYPES,
-  type PageReactions,
-} from "../src/types.js";
-import {
-  resolveReactionsOptions,
-  validateReactionsOptions,
   DEFAULT_REACTIONS_ARIA_LABEL,
   DEFAULT_REACTIONS_CLASS_NAME,
+  resolveReactionsOptions,
+  validateReactionsOptions,
 } from "../src/options.js";
 import { MemoryReactionsProvider } from "../src/provider.js";
-import { renderReactions, REACTIONS_ATTRIBUTE } from "../src/render.js";
-import { reactions, REACTIONS_PLUGIN_NAME } from "../index.ts";
+import { REACTIONS_ATTRIBUTE, renderReactions } from "../src/render.js";
+import {
+  DEFAULT_REACTIONS,
+  type PageReactions,
+  REACTION_TYPES,
+} from "../src/types.js";
 
 test("resolveReactionsOptions applies defaults", () => {
   const resolved = resolveReactionsOptions();
@@ -24,7 +24,9 @@ test("resolveReactionsOptions applies defaults", () => {
 });
 
 test("resolveReactionsOptions filters and dedupes reaction types", () => {
-  const resolved = resolveReactionsOptions({ reactions: ["like", "like", "heart"] });
+  const resolved = resolveReactionsOptions({
+    reactions: ["like", "like", "heart"],
+  });
   assert.deepEqual(
     resolved.reactions.map((r) => r.type),
     ["like", "heart"],
@@ -58,7 +60,10 @@ test("MemoryReactionsProvider counts add and remove", async () => {
   assert.equal(afterAddAgain.counts.find((c) => c.type === "like")?.count, 1);
 
   const afterRemove = await provider.removeReaction("page-1", "like");
-  assert.equal(afterRemove.counts.find((c) => c.type === "like"), undefined);
+  assert.equal(
+    afterRemove.counts.find((c) => c.type === "like"),
+    undefined,
+  );
 });
 
 test("renderReactions emits buttons with counts and aria state", () => {

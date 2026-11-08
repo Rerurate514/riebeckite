@@ -56,13 +56,19 @@ export class GitHubReactionsProvider implements ReactionsProvider {
     return { contentId, counts };
   }
 
-  async addReaction(): Promise<PageReactions> {
+  async addReaction(
+    _contentId: string,
+    _type: ReactionType,
+  ): Promise<PageReactions> {
     throw new Error(
       "GitHubReactionsProvider is read-only. Use Giscus client-side widgets to add reactions.",
     );
   }
 
-  async removeReaction(): Promise<PageReactions> {
+  async removeReaction(
+    _contentId: string,
+    _type: ReactionType,
+  ): Promise<PageReactions> {
     throw new Error(
       "GitHubReactionsProvider is read-only. Use Giscus client-side widgets to remove reactions.",
     );
@@ -106,7 +112,11 @@ export class GitHubReactionsProvider implements ReactionsProvider {
     if (json.errors?.length) {
       throw new Error(`GitHub API error: ${json.errors[0].message}`);
     }
-    const nodes = (json.data?.repository as unknown as { discussion?: { nodes?: GraphQLDiscussion[] } })?.discussion?.nodes;
+    const nodes = (
+      json.data?.repository as unknown as {
+        discussion?: { nodes?: GraphQLDiscussion[] };
+      }
+    )?.discussion?.nodes;
     return nodes?.[0] ?? null;
   }
 }

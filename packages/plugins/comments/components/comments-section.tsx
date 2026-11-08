@@ -46,7 +46,9 @@ export default function CommentsSection({
                     {comment.author.name}
                   </a>
                 ) : (
-                  <span class="rr-comments__author-name">{comment.author.name}</span>
+                  <span class="rr-comments__author-name">
+                    {comment.author.name}
+                  </span>
                 )}
                 <time class="rr-comments__time" datetime={comment.createdAt}>
                   {comment.createdAt}

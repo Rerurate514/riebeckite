@@ -14,10 +14,9 @@ export default function Reactions({
   ariaLabel = "Reactions",
 }: ReactionsProps) {
   return (
-    <div
+    <fieldset
       class={className}
       data-rr-reactions
-      role="group"
       aria-label={ariaLabel}
       data-content-id={data.contentId}
     >
@@ -43,6 +42,6 @@ export default function Reactions({
           );
         })}
       </ul>
-    </div>
+    </fieldset>
   );
 }

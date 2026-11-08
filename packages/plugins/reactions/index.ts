@@ -1,7 +1,4 @@
-import {
-  createStyleAsset,
-  definePlugin,
-} from "@riebeckite/core";
+import { createStyleAsset, definePlugin } from "@riebeckite/core";
 import {
   resolveReactionsOptions,
   validateReactionsOptions,
@@ -16,16 +13,20 @@ export {
   resolveReactionsOptions,
   validateReactionsOptions,
 } from "./src/options.js";
-export { MemoryReactionsProvider } from "./src/provider.js";
 export type {
   ReactionsCapability,
   ReactionsProvider,
 } from "./src/provider.js";
-export { REACTIONS_ATTRIBUTE, REACTIONS_ROOT_CLASS, renderReactions } from "./src/render.js";
+export { MemoryReactionsProvider } from "./src/provider.js";
+export {
+  REACTIONS_ATTRIBUTE,
+  REACTIONS_ROOT_CLASS,
+  renderReactions,
+} from "./src/render.js";
 export {
   DEFAULT_REACTIONS,
-  REACTION_TYPES,
   type PageReactions,
+  REACTION_TYPES,
   type ReactionCount,
   type ReactionEmoji,
   type ReactionsOptions,

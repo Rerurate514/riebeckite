@@ -1,11 +1,10 @@
 import type { ConfigValidationIssue } from "@riebeckite/core";
-import { MemoryReactionsProvider } from "./provider.js";
+import { MemoryReactionsProvider, type ReactionsProvider } from "./provider.js";
 import {
   DEFAULT_REACTIONS,
   REACTION_TYPES,
   type ReactionEmoji,
   type ReactionsOptions,
-  type ReactionsProvider,
   type ReactionType,
   type ResolvedReactionsOptions,
 } from "./types.js";
@@ -36,10 +35,14 @@ export function validateReactionsOptions(
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
 
-  if (options.provider !== undefined && !isReactionsProvider(options.provider)) {
+  if (
+    options.provider !== undefined &&
+    !isReactionsProvider(options.provider)
+  ) {
     issues.push({
       path: "provider",
-      message: "Expected a reactions provider with capabilities, getReactions, addReaction, and removeReaction.",
+      message:
+        "Expected a reactions provider with capabilities, getReactions, addReaction, and removeReaction.",
     });
   }
 
@@ -63,7 +66,10 @@ export function validateReactionsOptions(
 
   for (const key of ["className", "ariaLabel"] as const) {
     const value = options[key];
-    if (value !== undefined && (typeof value !== "string" || value.trim() === "")) {
+    if (
+      value !== undefined &&
+      (typeof value !== "string" || value.trim() === "")
+    ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
     }
   }
@@ -97,7 +103,10 @@ function isReactionsProvider(value: unknown): value is ReactionsProvider {
   );
 }
 
-function normalizeNonEmpty(value: string | undefined, fallback: string): string {
+function normalizeNonEmpty(
+  value: string | undefined,
+  fallback: string,
+): string {
   if (typeof value !== "string") return fallback;
   const trimmed = value.trim();
   return trimmed === "" ? fallback : trimmed;

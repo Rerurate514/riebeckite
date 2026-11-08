@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { CommentsPage } from "../src/types.js";
+import { COMMENTS_PLUGIN_NAME, comments } from "../index.ts";
 import {
   DEFAULT_COMMENTS_CLASS_NAME,
   DEFAULT_COMMENTS_EMPTY_TEXT,
@@ -10,8 +10,8 @@ import {
   validateCommentsOptions,
 } from "../src/options.js";
 import { MemoryCommentsProvider } from "../src/provider.js";
-import { renderCommentsSection, COMMENTS_ATTRIBUTE } from "../src/render.js";
-import { comments, COMMENTS_PLUGIN_NAME } from "../index.ts";
+import { COMMENTS_ATTRIBUTE, renderCommentsSection } from "../src/render.js";
+import type { CommentsPage } from "../src/types.js";
 
 const samplePage: CommentsPage = {
   contentId: "page-1",

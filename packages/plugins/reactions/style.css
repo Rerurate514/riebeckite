@@ -8,8 +8,16 @@
 .rr-reactions {
   --rr-reactions-ink: var(--rb-color-ink, inherit);
   --rr-reactions-muted: var(--rb-color-muted, #5a5a5a);
-  --rr-reactions-rule: color-mix(in srgb, var(--rr-reactions-ink) 18%, transparent);
-  --rr-reactions-active-bg: color-mix(in srgb, var(--rb-color-accent, currentColor) 12%, transparent);
+  --rr-reactions-rule: color-mix(
+    in srgb,
+    var(--rr-reactions-ink) 18%,
+    transparent
+  );
+  --rr-reactions-active-bg: color-mix(
+    in srgb,
+    var(--rb-color-accent, currentColor) 12%,
+    transparent
+  );
 
   margin-block: 1rem;
   color: var(--rr-reactions-ink);
@@ -40,7 +48,9 @@
   color: inherit;
   font: inherit;
   cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
 }
 
 .rr-reactions__button:hover,

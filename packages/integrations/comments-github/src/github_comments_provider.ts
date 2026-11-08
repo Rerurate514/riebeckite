@@ -78,7 +78,15 @@ export class GitHubCommentsProvider implements CommentsProvider {
       throw new Error(`GitHub API error: ${json.errors[0].message}`);
     }
 
-    const discussion = (json.data?.repository as unknown as { discussion?: { nodes?: { comments?: { nodes: GraphQLCommentNode[]; totalCount: number } }[] } })?.discussion?.nodes?.[0];
+    const discussion = (
+      json.data?.repository as unknown as {
+        discussion?: {
+          nodes?: {
+            comments?: { nodes: GraphQLCommentNode[]; totalCount: number };
+          }[];
+        };
+      }
+    )?.discussion?.nodes?.[0];
     const nodes = discussion?.comments?.nodes ?? [];
     const comments: Comment[] = nodes.map((node) => ({
       id: node.id,

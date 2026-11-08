@@ -1,3 +1,5 @@
+import type { ReactionsProvider } from "./provider.js";
+
 export const REACTION_TYPES = [
   "like",
   "heart",

@@ -147,7 +147,7 @@ workspace/
 └─ docs/            ← site 2 (directory: "../notes")
 ```
 
-Treat the vault as read-only source data and vary `exclude`, `publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Fetching content is separate from triggering a deployment](./repository-split.md#fetching-content-is-separate-from-triggering-a-deployment).
+Treat the vault as read-only source data and vary `exclude`, `content.filters.publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Fetching content is separate from triggering a deployment](./repository-split.md#fetching-content-is-separate-from-triggering-a-deployment).
 
 ```mermaid
 flowchart TD
@@ -160,7 +160,7 @@ flowchart TD
     Docs --> DocsRules["Docs settings<br/>exclude / plugins"]
 ```
 
-Each site can set `exclude`, `publishStrategy`, plugins, theme, and deployment independently, so the same note can have a different publication range and presentation per site.
+Each site can set `exclude`, `content.filters.publishStrategy`, plugins, theme, and deployment independently, so the same note can have a different publication range and presentation per site.
 
 ### Decision flow
 

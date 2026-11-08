@@ -93,7 +93,7 @@ content.directory
 checkout / repository_dispatch
   → CI がどう取得し、いつビルドするか
 
-publishStrategy / exclude / アセットコピー
+content.filters.publishStrategy / exclude / アセットコピー
   → 公開サイトに何を出すか
 ```
 
@@ -105,4 +105,4 @@ publishStrategy / exclude / アセットコピー
 公開境界が自動的に安全になる
 ```
 
-プライベート Vault でも、`publishStrategy`、`exclude`、アセットコピーの3つで公開境界を維持してください。
+プライベート Vault でも、`content.filters.publishStrategy`、`exclude`、アセットコピーの3つで公開境界を維持してください。

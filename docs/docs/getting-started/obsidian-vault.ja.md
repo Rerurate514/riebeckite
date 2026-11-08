@@ -62,7 +62,7 @@ aliases:
 
 - `publish: true` のノートは公開ページとして生成されます。
 - `publish: false` のノートはビルド結果に含まれません。
-- `publish` がないノートは既定の `publishStrategy: explicit` に従い、`starter` 構成では[[glossary/draft|下書き]]として扱われます（[公開ルール](../guides/content-repositories/publishing.ja.md)参照）。
+- `publish` がないノートは既定の `content.filters.publishStrategy: explicit` に従い、`starter` 構成では[[glossary/draft|下書き]]として扱われます（[公開ルール](../guides/content-repositories/publishing.ja.md)参照）。
 
 公開ノートから未公開のノートへリンクすると、リンク先のページは生成されず、そのリンクも公開サイトで有効なリンクとしては公開されません（壊れたリンクと同じ表示になります）。`npm install -D @riebeckite/plugin-diagnostics` を実行してから、`npx riebeckite-diagnostics --content ../my-vault --publish-strategy explicit` を実行すると、これらの参照が `publish-boundary` 警告として表示されます。
 

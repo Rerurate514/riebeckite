@@ -7,7 +7,7 @@ sidebar:
 ---
 # Repository split
 
-## Pattern C in detail
+## Separate repositories in detail
 
 The basic flow is in [separating content from the site](../../content-repositories.md). This section adds the details that walkthrough omits.
 

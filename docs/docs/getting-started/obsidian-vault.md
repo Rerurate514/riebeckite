@@ -62,7 +62,7 @@ What this means:
 
 - `publish: true` makes the note routable and buildable.
 - `publish: false` keeps the note out of the built site.
-- Missing `publish` is treated as a draft in the default `starter` setup.
+- Missing `publish` falls back to the default `publishStrategy: explicit`, so the note is treated as a draft in the default `starter` setup (see [Publication rules](../guides/content-repositories/publishing.md#publication-rules)).
 
 If a published note links to an unpublished note, the target page is not generated, and links to unpublished notes are not published as working site links — they render like broken links. Run `npm install -D @riebeckite/plugin-diagnostics` and then run `npx riebeckite-diagnostics --content ../my-vault --publish-strategy explicit` to see `publish-boundary` warnings for these references.
 

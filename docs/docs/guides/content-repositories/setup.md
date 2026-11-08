@@ -7,7 +7,7 @@ sidebar:
 ---
 # Setup
 
-## Steps: separate repositories (pattern C)
+## Steps: separate repositories
 
 ### How deployment is triggered (the whole flow)
 
@@ -203,8 +203,8 @@ The two tokens have similar names but opposite roles.
 
 | Secret | Where it lives | Purpose |
 | --- | --- | --- |
-| Content repository | Start the site workflow |
 | `RIEBECKITE_APP_ID` / `RIEBECKITE_APP_PRIVATE_KEY` | Content repository | Start the site workflow with a short-lived GitHub App token |
+| `SITE_DISPATCH_TOKEN` | Content repository | Fallback when no GitHub App is configured: start the site workflow with a PAT |
 | `RIEBECKITE_CONTENT_READ_TOKEN` | Site repository | Check out private content |
 
 ```mermaid

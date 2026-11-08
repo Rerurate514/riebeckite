@@ -222,15 +222,16 @@ For a `workers.dev` URL, you can leave the settings as they are. For a custom do
 
 ## 5. Push the site
 
-Check the site locally:
+Clone the content repository into `content/` for the local check (or generate with `--clone-content`). Until `content/` exists, `check` and `build` fail with "Could not find the content directory":
 
 ```sh
 cd my-site
+git clone https://github.com/OWNER/my-vault.git content
 npm exec riebeckite check
 npm exec riebeckite build
 ```
 
-A `dist/` folder means the build succeeded. Do not commit `dist/` or `node_modules/`.
+A `dist/` folder means the build succeeded. Do not commit `dist/`, `node_modules/`, or `content/`.
 
 Push the site repository:
 

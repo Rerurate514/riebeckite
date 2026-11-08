@@ -19,6 +19,7 @@ Riebeckite が主に担当するのは、次の部分です。
 - [レイアウト](./customizing-your-site/layout.ja.md)
 - [ページとナビゲーション](./customizing-your-site/pages-and-navigation.ja.md)
 - [プラグインと CSS](./customizing-your-site/plugins-and-css.ja.md)
+- [実例](./customizing-your-site/examples.ja.md)
 
 ## 迷ったときの目安
 

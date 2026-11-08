@@ -37,6 +37,8 @@ Getting a first site running goes: **Quick Start → Installation → First Cont
 | Understand how Riebeckite works inside | [Framework](./docs/framework/README.md) |
 | Contribute to Riebeckite itself | [Framework / Development](./docs/framework/development.md) |
 
+Looking for something else? The full map is in the [Documentation index](./docs/README.md).
+
 ## Where to go next
 
 - **Getting Started** — install, presets, first content, deployment. Nothing about the framework internals.

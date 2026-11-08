@@ -1,3 +1,4 @@
+import { setDiagramSvg } from "@riebeckite/diagram/client";
 import type { D2ClientOptions, D2InstanceApi, D2Theme } from "./types.js";
 
 const DEFAULT_THEME: NonNullable<D2Theme> = { light: 0, dark: 1 };
@@ -51,7 +52,7 @@ async function renderFigure(
       ...compiled.renderOptions,
       noXMLTag: true,
     });
-    canvas.innerHTML = svg;
+    if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     figure.dataset.d2 = "rendered";
   } catch {
     figure.dataset.d2 = "error";

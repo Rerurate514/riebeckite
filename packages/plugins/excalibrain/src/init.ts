@@ -1,3 +1,4 @@
+import { setDiagramSvg } from "@riebeckite/diagram/client";
 import { renderExcaliBrainSvg } from "./render.js";
 import type {
   ExcaliBrainClientOptions,
@@ -28,9 +29,16 @@ export function initExcaliBrain(options: ExcaliBrainClientOptions = {}): void {
 
     try {
       const parsed = JSON.parse(payload) as ExcaliBrainPayload;
-      canvas.innerHTML = renderExcaliBrainSvg(parsed.graph, parsed.layout, {
-        className: options.className ?? parsed.className,
-      });
+      if (
+        !setDiagramSvg(
+          canvas,
+          renderExcaliBrainSvg(parsed.graph, parsed.layout, {
+            className: options.className ?? parsed.className,
+          }),
+        )
+      ) {
+        throw new Error("Invalid SVG output.");
+      }
       canvas.removeAttribute("data-excalibrain-payload");
     } catch {
       canvas.dataset.excalibrainError = "true";

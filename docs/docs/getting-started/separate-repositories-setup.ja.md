@@ -222,7 +222,7 @@ App を作らずに Fine-grained PAT で通知する場合は、Vault リポジ�
 
 ## 5. サイトを push する
 
-ローカル確認の前に、記事リポジトリを `content/` へクローンします（または生成時に `--clone-content` を指定します）。`content/` がないうちは `check` と `build` が "Could not find the content directory" で失敗します。
+ローカルで確認する前に、記事リポジトリを `content/` にクローンしてください（生成時に `--clone-content` を指定しても同じです）。`content/` がない間は `check` と `build` が失敗します。
 
 ```sh
 cd my-site

@@ -164,6 +164,10 @@ navigation({
 | ---------- | -- | ------ | ---- |
 | `items` | `NavigationItem[]` | 導出値 | 手書きの主要ナビゲーション |
 | `secondary` | `NavigationItem[]` | `[]` | 補助リンク |
+| `maxDepth` | `number` | 無制限 | 導出項目の最大深さ。ルート項目が深さ1 |
+
+大きな Vault では `maxDepth` で導出ツリーを制限してください。描画された項目は
+ヘッダーとモバイルナビゲーションの両方に出力されます。
 
 `NavigationItem` は `{ label, href?, children?, external? }` です。導出された
 フォルダグループは index ノートを持たないことがあるため `href` は型上省略

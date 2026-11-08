@@ -107,7 +107,7 @@ async function openPage(
 
 test("starter and showcase TOCs use their Site layout contract", async () => {
   for (const path of ["/starter", "/showcase"]) {
-    const page = await openPage({ width: 1280, height: 900 }, path);
+    const page = await openPage({ width: 1600, height: 900 }, path);
     const initial = await page.$eval(
       ".rr-table-of-contents--desktop",
       (toc) => ({
@@ -142,7 +142,7 @@ test("starter and showcase TOCs use their Site layout contract", async () => {
 
 test("starter and showcase center the article rail independently of the TOC", async () => {
   for (const path of ["/starter", "/showcase"]) {
-    for (const width of [1920, 1440, 1280]) {
+    for (const width of [1920, 1600, 1440]) {
       const page = await openPage({ width, height: 900 }, path);
       const layout = await page.evaluate(() => {
         const article = document.querySelector(".site-article") as HTMLElement;

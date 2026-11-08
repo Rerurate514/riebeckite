@@ -1,4 +1,9 @@
 import { createHash } from "node:crypto";
+import type {
+  AssetTransformInput,
+  AssetTransformOutput,
+  PluginAssetTransformContext,
+} from "@riebeckite/core";
 import { definePlugin } from "@riebeckite/core";
 import type { PluginConfig, Config as SvgoConfig } from "svgo/browser";
 import { optimize, VERSION as SVGO_VERSION } from "svgo/browser";
@@ -55,90 +60,14 @@ export function svgOptimizer(options: SvgOptimizerOptions = {}) {
       svgo: SVGO_VERSION,
     }),
     options,
-    transformAssets: async ({ assets, readAsset, cache, logger, tracer }) => {
+    transformAssets: async (context) => {
       stats = emptyStats();
       if (resolved.keepOriginal) return [];
       const outputs = [];
-      for (const asset of assets) {
+      for (const asset of context.assets) {
         if (extensionOf(asset.path) !== "svg") continue;
-        stats.inputs += 1;
-        if (asset.size !== undefined && asset.size > DEFAULT_MAX_INPUT_BYTES) {
-          stats.skipped.push({ path: asset.path, reason: "oversized" });
-          logger.warn(`Skipped oversized SVG asset: ${asset.path}`);
-          continue;
-        }
-        const input = await readAsset(asset.path);
-        if (!input || input.byteLength > DEFAULT_MAX_INPUT_BYTES) {
-          stats.skipped.push({ path: asset.path, reason: "unreadable" });
-          logger.warn(
-            `Skipped oversized or unreadable SVG asset: ${asset.path}`,
-          );
-          continue;
-        }
-        const cacheKey = assetCacheKey(asset.path, input);
-        const cached = await cache.get<CachedSvgTransform>(cacheKey);
-        if (isCachedSvgTransform(cached)) {
-          stats.cacheHits += 1;
-          tracer.event("svg-transform.cache-hit", { path: asset.path });
-          if (cached.content !== null) {
-            const output = outputFor(asset.path, cached.content);
-            stats.optimized += 1;
-            stats.savedBytes += input.byteLength - output.content.byteLength;
-            outputs.push(output);
-          } else {
-            stats.noReduction += 1;
-          }
-          continue;
-        }
-        stats.cacheMisses += 1;
-        const source = decode(input);
-        if (source === null) {
-          stats.skipped.push({ path: asset.path, reason: "invalid UTF-8" });
-          logger.warn(
-            `Skipped SVG asset that is not valid UTF-8: ${asset.path}`,
-          );
-          await cache.set(cacheKey, { content: null });
-          continue;
-        }
-        const unsafe = unsafeReason(source);
-        if (unsafe) {
-          stats.skipped.push({ path: asset.path, reason: unsafe });
-          logger.warn(
-            `Skipped SVG asset containing ${unsafe}: ${asset.path}. Optimization is not sanitization.`,
-          );
-          await cache.set(cacheKey, { content: null });
-          continue;
-        }
-        let optimized: string;
-        try {
-          optimized = optimize(source, config).data;
-        } catch {
-          stats.skipped.push({ path: asset.path, reason: "optimize failed" });
-          logger.warn(
-            `Skipped SVG asset that could not be optimized: ${asset.path}`,
-          );
-          await cache.set(cacheKey, { content: null });
-          continue;
-        }
-        const content = Buffer.from(optimized, "utf8");
-        if (content.byteLength >= input.byteLength) {
-          stats.noReduction += 1;
-          tracer.event("svg-transform.no-reduction", { path: asset.path });
-          await cache.set(cacheKey, { content: null });
-          continue;
-        }
-        await cache.set(cacheKey, {
-          content: content.toString("base64"),
-        });
-        tracer.event("svg-transform.run", { path: asset.path });
-        stats.optimized += 1;
-        stats.savedBytes += input.byteLength - content.byteLength;
-        outputs.push({
-          sourcePath: asset.path,
-          path: asset.path,
-          content,
-          mimeType: MIME_TYPE,
-        });
+        const output = await optimizeSvgAsset(asset, context, config, stats);
+        if (output) outputs.push(output);
       }
       return outputs;
     },
@@ -153,68 +82,191 @@ export function svgOptimizer(options: SvgOptimizerOptions = {}) {
             ja: "最適化結果、キャッシュ利用、スキップしたアセットを表示します。",
           },
           order: 23,
-          collect: () =>
-            resolved.keepOriginal
-              ? {
-                  kind: "key-value",
-                  items: [
-                    {
-                      key: { en: "Status", ja: "状態" },
-                      value: "disabled (keepOriginal)",
-                    },
-                  ],
-                }
-              : {
-                  kind: "key-value",
-                  items: [
-                    { key: { en: "Inputs", ja: "入力" }, value: stats.inputs },
-                    {
-                      key: { en: "Optimized", ja: "最適化" },
-                      value: stats.optimized,
-                    },
-                    {
-                      key: { en: "No reduction", ja: "削減なし" },
-                      value: stats.noReduction,
-                    },
-                    {
-                      key: { en: "Cache hits", ja: "キャッシュヒット" },
-                      value: stats.cacheHits,
-                    },
-                    {
-                      key: { en: "Cache misses", ja: "キャッシュミス" },
-                      value: stats.cacheMisses,
-                    },
-                    {
-                      key: { en: "Saved", ja: "削減量" },
-                      value: formatBytes(stats.savedBytes),
-                    },
-                    {
-                      key: { en: "Skipped", ja: "スキップ" },
-                      value: stats.skipped.length,
-                    },
-                    ...(stats.skipped.length > 0
-                      ? [
-                          {
-                            key: {
-                              en: "Skipped assets",
-                              ja: "スキップしたアセット",
-                            },
-                            value: stats.skipped
-                              .slice(0, 20)
-                              .map(
-                                (skipped) =>
-                                  `${skipped.path} (${skipped.reason})`,
-                              )
-                              .join("; "),
-                          },
-                        ]
-                      : []),
-                  ],
-                },
+          collect: () => collectInspectorItems(resolved, stats),
         },
       ],
     },
   });
+}
+
+async function optimizeSvgAsset(
+  asset: AssetTransformInput,
+  context: PluginAssetTransformContext,
+  config: SvgoConfig,
+  stats: SvgOptimizerStats,
+): Promise<AssetTransformOutput | undefined> {
+  stats.inputs += 1;
+  const input = await readSvgInput(asset, context, stats);
+  if (!input) return undefined;
+  const cacheKey = assetCacheKey(asset.path, input);
+  const cached = await context.cache.get<CachedSvgTransform>(cacheKey);
+  if (isCachedSvgTransform(cached))
+    return applyCachedSvg(cached, asset, input, context, stats);
+  stats.cacheMisses += 1;
+  const source = decode(input);
+  if (source === null)
+    return skipSvgAsset(
+      stats,
+      context,
+      cacheKey,
+      asset.path,
+      "invalid UTF-8",
+      `Skipped SVG asset that is not valid UTF-8: ${asset.path}`,
+    );
+  const unsafe = unsafeReason(source);
+  if (unsafe)
+    return skipSvgAsset(
+      stats,
+      context,
+      cacheKey,
+      asset.path,
+      unsafe,
+      `Skipped SVG asset containing ${unsafe}: ${asset.path}. Optimization is not sanitization.`,
+    );
+  let optimized: string;
+  try {
+    optimized = optimize(source, config).data;
+  } catch {
+    return skipSvgAsset(
+      stats,
+      context,
+      cacheKey,
+      asset.path,
+      "optimize failed",
+      `Skipped SVG asset that could not be optimized: ${asset.path}`,
+    );
+  }
+  const content = Buffer.from(optimized, "utf8");
+  if (content.byteLength >= input.byteLength) {
+    stats.noReduction += 1;
+    context.tracer.event("svg-transform.no-reduction", { path: asset.path });
+    await context.cache.set(cacheKey, { content: null });
+    return undefined;
+  }
+  await context.cache.set(cacheKey, { content: content.toString("base64") });
+  context.tracer.event("svg-transform.run", { path: asset.path });
+  stats.optimized += 1;
+  stats.savedBytes += input.byteLength - content.byteLength;
+  return {
+    sourcePath: asset.path,
+    path: asset.path,
+    content,
+    mimeType: MIME_TYPE,
+  };
+}
+
+async function readSvgInput(
+  asset: AssetTransformInput,
+  context: PluginAssetTransformContext,
+  stats: SvgOptimizerStats,
+): Promise<Uint8Array | undefined> {
+  if (asset.size !== undefined && asset.size > DEFAULT_MAX_INPUT_BYTES) {
+    stats.skipped.push({ path: asset.path, reason: "oversized" });
+    context.logger.warn(`Skipped oversized SVG asset: ${asset.path}`);
+    return undefined;
+  }
+  const input = await context.readAsset(asset.path);
+  if (!input || input.byteLength > DEFAULT_MAX_INPUT_BYTES) {
+    stats.skipped.push({ path: asset.path, reason: "unreadable" });
+    context.logger.warn(
+      `Skipped oversized or unreadable SVG asset: ${asset.path}`,
+    );
+    return undefined;
+  }
+  return input;
+}
+
+function applyCachedSvg(
+  cached: CachedSvgTransform,
+  asset: AssetTransformInput,
+  input: Uint8Array,
+  context: PluginAssetTransformContext,
+  stats: SvgOptimizerStats,
+): AssetTransformOutput | undefined {
+  stats.cacheHits += 1;
+  context.tracer.event("svg-transform.cache-hit", { path: asset.path });
+  if (cached.content === null) {
+    stats.noReduction += 1;
+    return undefined;
+  }
+  const output = outputFor(asset.path, cached.content);
+  stats.optimized += 1;
+  stats.savedBytes += input.byteLength - output.content.byteLength;
+  return output;
+}
+
+async function skipSvgAsset(
+  stats: SvgOptimizerStats,
+  context: PluginAssetTransformContext,
+  cacheKey: string,
+  path: string,
+  reason: string,
+  message: string,
+): Promise<undefined> {
+  stats.skipped.push({ path, reason });
+  context.logger.warn(message);
+  await context.cache.set(cacheKey, { content: null });
+  return undefined;
+}
+
+function collectInspectorItems(
+  resolved: ResolvedSvgOptimizerOptions,
+  stats: SvgOptimizerStats,
+) {
+  if (resolved.keepOriginal)
+    return {
+      kind: "key-value" as const,
+      items: [
+        {
+          key: { en: "Status", ja: "状態" },
+          value: "disabled (keepOriginal)",
+        },
+      ],
+    };
+  return {
+    kind: "key-value" as const,
+    items: [
+      { key: { en: "Inputs", ja: "入力" }, value: stats.inputs },
+      {
+        key: { en: "Optimized", ja: "最適化" },
+        value: stats.optimized,
+      },
+      {
+        key: { en: "No reduction", ja: "削減なし" },
+        value: stats.noReduction,
+      },
+      {
+        key: { en: "Cache hits", ja: "キャッシュヒット" },
+        value: stats.cacheHits,
+      },
+      {
+        key: { en: "Cache misses", ja: "キャッシュミス" },
+        value: stats.cacheMisses,
+      },
+      {
+        key: { en: "Saved", ja: "削減量" },
+        value: formatBytes(stats.savedBytes),
+      },
+      {
+        key: { en: "Skipped", ja: "スキップ" },
+        value: stats.skipped.length,
+      },
+      ...(stats.skipped.length > 0
+        ? [
+            {
+              key: {
+                en: "Skipped assets",
+                ja: "スキップしたアセット",
+              },
+              value: stats.skipped
+                .slice(0, 20)
+                .map((skipped) => `${skipped.path} (${skipped.reason})`)
+                .join("; "),
+            },
+          ]
+        : []),
+    ],
+  };
 }
 
 function svgoConfig(options: ResolvedSvgOptimizerOptions): SvgoConfig {

@@ -14,6 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.0.42 - 2026-11-08
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -45,6 +49,8 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 - Update the Open Graph image renderer dependency to remove a reported SVG escaping vulnerability and its vulnerable archive dependency.
   Packages: `@riebeckite/og-image`
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.0.41...v0.0.42)
 
 ## 0.0.41 - 2026-11-06
 

@@ -12,7 +12,7 @@ reactions and full comments.
 
 ## What it does
 
-- Renders a comment list with author, timestamp, and body for each note.
+- Renders a flat comment list (newest first) with author, timestamp, and body for each note. Replies/threading are not modeled yet; comments are shown as a single-level list.
 - Ships a `MemoryCommentsProvider` for local previews and tests.
 - Exposes a `CommentsProvider` interface so you can back comments with
   GitHub Discussions (via Giscus), a database, or an edge function.

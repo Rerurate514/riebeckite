@@ -3,6 +3,7 @@ import {
   resolveReactionsOptions,
   validateReactionsOptions,
 } from "./src/options.js";
+import { renderReactions } from "./src/render.js";
 import type { ReactionsOptions } from "./src/types.js";
 
 export type { ReactionsProps } from "./components/reactions.js";
@@ -37,12 +38,12 @@ export {
 export const REACTIONS_PLUGIN_NAME = "reactions";
 
 export function reactions(options: ReactionsOptions = {}) {
-  const _resolved = resolveReactionsOptions(options);
+  const resolved = resolveReactionsOptions(options);
 
   return definePlugin({
     name: REACTIONS_PLUGIN_NAME,
     processedContentCache: {
-      version: "reactions-v1",
+      version: "reactions-v2",
       dependencyMode: "none",
     },
     options,
@@ -53,5 +54,18 @@ export function reactions(options: ReactionsOptions = {}) {
         "@riebeckite/plugin-reactions/style.css",
       ),
     ],
+    onManifestCreated: async ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        if (!entry.contentId) continue;
+        const data = await resolved.provider.getReactions(entry.contentId);
+        const html = renderReactions(
+          resolved.reactions,
+          data,
+          resolved.className,
+          resolved.ariaLabel,
+        );
+        entry.html = `${entry.html}\n${html}`;
+      }
+    },
   });
 }

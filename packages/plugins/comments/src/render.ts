@@ -1,5 +1,6 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import type { Comment, CommentsPage } from "./types.js";
+import { isSafeImageUrl, isSafeLinkUrl } from "./url.js";
 
 export const COMMENTS_ATTRIBUTE = "data-rr-comments";
 export const COMMENTS_ROOT_CLASS = "rr-comments";
@@ -32,15 +33,22 @@ export function renderCommentsSection(
 
 function renderComment(comment: Comment): string {
   const authorName = escapeHtml(comment.author.name);
-  const authorLink = comment.author.url
-    ? `<a class="${COMMENTS_ROOT_CLASS}__author-link" href="${escapeHtmlAttribute(comment.author.url)}" target="_blank" rel="noopener noreferrer">${authorName}</a>`
+  const authorUrl = isSafeLinkUrl(comment.author.url)
+    ? comment.author.url
+    : undefined;
+  const authorLink = authorUrl
+    ? `<a class="${COMMENTS_ROOT_CLASS}__author-link" href="${escapeHtmlAttribute(authorUrl)}" target="_blank" rel="noopener noreferrer">${authorName}</a>`
     : `<span class="${COMMENTS_ROOT_CLASS}__author-name">${authorName}</span>`;
-  const avatar = comment.author.avatarUrl
-    ? `<img class="${COMMENTS_ROOT_CLASS}__avatar" src="${escapeHtmlAttribute(comment.author.avatarUrl)}" alt="" loading="lazy" />`
+  const avatarUrl = isSafeImageUrl(comment.author.avatarUrl)
+    ? comment.author.avatarUrl
+    : undefined;
+  const avatar = avatarUrl
+    ? `<img class="${COMMENTS_ROOT_CLASS}__avatar" src="${escapeHtmlAttribute(avatarUrl)}" alt="" loading="lazy" />`
     : "";
   const time = `<time class="${COMMENTS_ROOT_CLASS}__time" datetime="${escapeHtmlAttribute(comment.createdAt)}">${escapeHtml(comment.createdAt)}</time>`;
-  const body = comment.url
-    ? `<a class="${COMMENTS_ROOT_CLASS}__body-link" href="${escapeHtmlAttribute(comment.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(comment.body)}</a>`
+  const commentUrl = isSafeLinkUrl(comment.url) ? comment.url : undefined;
+  const body = commentUrl
+    ? `<a class="${COMMENTS_ROOT_CLASS}__body-link" href="${escapeHtmlAttribute(commentUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(comment.body)}</a>`
     : `<p class="${COMMENTS_ROOT_CLASS}__body">${escapeHtml(comment.body)}</p>`;
 
   return (

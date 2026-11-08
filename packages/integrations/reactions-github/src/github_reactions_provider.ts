@@ -17,18 +17,28 @@ const GITHUB_REACTION_MAP: Record<ReactionType, string> = {
   heart: "HEART",
   celebrate: "HOORAY",
   insightful: "EYES",
-  curious: "THINKING_FACE",
+  curious: "CONFUSED",
 };
 
-type GraphQLDiscussion = {
-  id: string;
-  reactionGroups: { reaction: string; users: { totalCount: number } }[];
+type SearchDiscussionNode = {
+  number: number;
 };
 
-type GraphQLResponse = {
+type SearchResponse = {
+  data?: {
+    search?: {
+      nodes?: SearchDiscussionNode[];
+    };
+  };
+  errors?: { message: string }[];
+};
+
+type DiscussionResponse = {
   data?: {
     repository?: {
-      discussion?: GraphQLDiscussion | null;
+      discussion?: {
+        reactionGroups: { reaction: string; users: { totalCount: number } }[];
+      } | null;
     };
   };
   errors?: { message: string }[];
@@ -40,12 +50,39 @@ export class GitHubReactionsProvider implements ReactionsProvider {
   constructor(private readonly options: GitHubReactionsOptions) {}
 
   async getReactions(contentId: string): Promise<PageReactions> {
-    const discussion = await this.findDiscussion(contentId);
+    const discussionNumber = await this.findDiscussionNumber(contentId);
+    if (discussionNumber === null) {
+      return {
+        contentId,
+        counts: Object.keys(GITHUB_REACTION_MAP).map((type) => ({
+          type: type as ReactionType,
+          count: 0,
+          reacted: false,
+        })),
+      };
+    }
+
+    const query = `query($owner: String!, $repo: String!, $number: Int!) {
+      repository(owner: $owner, name: $repo) {
+        discussion(number: $number) {
+          reactionGroups {
+            reaction
+            users { totalCount }
+          }
+        }
+      }
+    }`;
+
+    const response = await this.graphql<DiscussionResponse>(query, {
+      owner: this.options.owner,
+      repo: this.options.repo,
+      number: discussionNumber,
+    });
+
+    const groups = response.data?.repository?.discussion?.reactionGroups ?? [];
     const counts: ReactionCount[] = Object.entries(GITHUB_REACTION_MAP).map(
       ([type, githubReaction]) => {
-        const group = discussion?.reactionGroups.find(
-          (g) => g.reaction === githubReaction,
-        );
+        const group = groups.find((g) => g.reaction === githubReaction);
         return {
           type: type as ReactionType,
           count: group?.users.totalCount ?? 0,
@@ -74,23 +111,29 @@ export class GitHubReactionsProvider implements ReactionsProvider {
     );
   }
 
-  private async findDiscussion(
+  private async findDiscussionNumber(
     contentId: string,
-  ): Promise<GraphQLDiscussion | null> {
-    const query = `query($owner: String!, $repo: String!, $term: String!) {
-      repository(owner: $owner, name: $repo) {
-        discussion: discussions(first: 1, query: $term) {
-          nodes {
-            id
-            reactionGroups {
-              reaction
-              users { totalCount }
-            }
-          }
+  ): Promise<number | null> {
+    const searchQuery = `repo:${this.options.owner}/${this.options.repo} type:discussion ${contentId}`;
+    const query = `query($searchQuery: String!) {
+      search(query: $searchQuery, type: DISCUSSION, first: 5) {
+        nodes {
+          ... on Discussion { number }
         }
       }
     }`;
 
+    const response = await this.graphql<SearchResponse>(query, {
+      searchQuery,
+    });
+    const nodes = response.data?.search?.nodes ?? [];
+    return nodes.length > 0 ? nodes[0].number : null;
+  }
+
+  private async graphql<T>(
+    query: string,
+    variables: Record<string, unknown>,
+  ): Promise<T> {
     const response = await fetch("https://api.github.com/graphql", {
       method: "POST",
       headers: {
@@ -98,26 +141,22 @@ export class GitHubReactionsProvider implements ReactionsProvider {
         "Content-Type": "application/json",
         "User-Agent": "riebeckite-reactions-github",
       },
-      body: JSON.stringify({
-        query,
-        variables: {
-          owner: this.options.owner,
-          repo: this.options.repo,
-          term: contentId,
-        },
-      }),
+      body: JSON.stringify({ query, variables }),
     });
 
-    const json = (await response.json()) as GraphQLResponse;
+    if (!response.ok) {
+      throw new Error(
+        `GitHub API HTTP ${response.status}: ${response.statusText}`,
+      );
+    }
+
+    const json = (await response.json()) as T & {
+      errors?: { message: string }[];
+    };
     if (json.errors?.length) {
       throw new Error(`GitHub API error: ${json.errors[0].message}`);
     }
-    const nodes = (
-      json.data?.repository as unknown as {
-        discussion?: { nodes?: GraphQLDiscussion[] };
-      }
-    )?.discussion?.nodes;
-    return nodes?.[0] ?? null;
+    return json;
   }
 }
 

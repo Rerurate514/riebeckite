@@ -3,6 +3,7 @@ import {
   resolveCommentsOptions,
   validateCommentsOptions,
 } from "./src/options.js";
+import { renderCommentsSection } from "./src/render.js";
 import type { CommentsOptions } from "./src/types.js";
 
 export type { CommentsSectionProps } from "./components/comments-section.js";
@@ -36,12 +37,12 @@ export type {
 export const COMMENTS_PLUGIN_NAME = "comments";
 
 export function comments(options: CommentsOptions = {}) {
-  const _resolved = resolveCommentsOptions(options);
+  const resolved = resolveCommentsOptions(options);
 
   return definePlugin({
     name: COMMENTS_PLUGIN_NAME,
     processedContentCache: {
-      version: "comments-v1",
+      version: "comments-v2",
       dependencyMode: "none",
     },
     options,
@@ -52,5 +53,21 @@ export function comments(options: CommentsOptions = {}) {
         "@riebeckite/plugin-comments/style.css",
       ),
     ],
+    onManifestCreated: async ({ manifest }) => {
+      for (const entry of manifest.entries) {
+        if (!entry.contentId) continue;
+        const page = await resolved.provider.getComments(
+          entry.contentId,
+          resolved.limit,
+        );
+        const html = renderCommentsSection(
+          page,
+          resolved.headingText,
+          resolved.className,
+          resolved.emptyText,
+        );
+        entry.html = `${entry.html}\n${html}`;
+      }
+    },
   });
 }

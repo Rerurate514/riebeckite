@@ -22,10 +22,20 @@ export class D1ReactionsStorage implements ReactionsProvider {
     "write",
   ]);
 
+  /**
+   * @param userKey Caller-supplied visitor identifier (for example a signed
+   *   session cookie value). Must be unique per visitor; do not let clients
+   *   choose arbitrary keys. Defaults to a shared "anonymous" key, which
+   *   collapses all visitors into one counter.
+   */
   constructor(
     private readonly database: D1Database,
     private readonly userKey: string = "anonymous",
-  ) {}
+  ) {
+    if (!userKey || userKey.trim() === "") {
+      throw new Error("userKey must be a non-empty string");
+    }
+  }
 
   async getReactions(contentId: string): Promise<PageReactions> {
     const countsResult = await this.database

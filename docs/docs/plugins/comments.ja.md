@@ -10,7 +10,7 @@ title: Comments（コメント）
 
 ## できること
 
-- ノートごとに著者・投稿日時・本文つきのコメント一覧を表示
+- ノートごとに著者・投稿日時・本文つきのコメント一覧をフラットに表示（新しい順）。返信・スレッド構造は未対応で、単一階層の一覧として表示されます
 - ローカルプレビュー用の `MemoryCommentsProvider` を同梱
 - `CommentsProvider` インターフェースで GitHub Discussions（Giscus経由）などに接続
 

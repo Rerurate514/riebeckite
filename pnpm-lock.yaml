@@ -65,9 +65,7 @@ overrides:
   undici@<7.30.1: 7.30.1
 
 patchedDependencies:
-  wavedrom@3.7.0:
-    hash: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
-    path: patches/wavedrom@3.7.0.patch
+  wavedrom@3.7.0: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
 
 importers:
 
@@ -696,9 +694,6 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@riebeckite/ui':
-        specifier: workspace:*
-        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -1394,9 +1389,6 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
-      '@riebeckite/ui':
-        specifier: workspace:*
-        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.12
@@ -4955,16 +4947,19 @@ packages:
 
   markmap-html-parser@0.18.11:
     resolution: {integrity: sha512-+kC5C4sCGntGUhGvTa5VIb5rtM75cSy/VCy3tzZoNAcn2qZGdgYvljN0WvjsOzrEzp+V6XKgwzO0u2TdzNAiOg==}
+    deprecated: Replaced by @markmap/* in 1.0.0. See https://markmap.js.org/docs/migration
     peerDependencies:
       markmap-common: '*'
 
   markmap-lib@0.18.12:
     resolution: {integrity: sha512-WCA4OT+b71jYg0e4PS/6NRKqihod5OpPsvw1jEGHQwCtqQrY/yXXCeRyuL3axOS5cMy5pV8BSl4CwKfJU1LxJg==}
+    deprecated: Replaced by @markmap/* in 1.0.0. See https://markmap.js.org/docs/migration
     peerDependencies:
       markmap-common: '*'
 
   markmap-view@0.18.12:
     resolution: {integrity: sha512-D8bzT1YwIC/8rkbwm6WzigVUrpOAGv7ioEGTi1Lj+Oo8gO5sAm6hhli27jvTgUcZ9TwBeIWZ+dSUP+AupYUGlQ==}
+    deprecated: Replaced by @markmap/* in 1.0.0. See https://markmap.js.org/docs/migration
     peerDependencies:
       markmap-common: '*'
 

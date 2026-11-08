@@ -25,7 +25,7 @@ sidebar:
 | 設定・CLI・API を調べる | [リファレンス](./reference/README.ja.md) |
 | 内部の仕組みを知る | [フレームワーク](./framework/README.ja.md) |
 
-ここがドキュメント全体の対応表です。[トップページ](../../index.ja.md) と [ガイド](./guides/README.ja.md) には、ここへ誘導する短い表があります。
+ここがドキュメント全体の対応表です。[トップページ](../index.ja.md) と [ガイド](./guides/README.ja.md) には、ここへ誘導する短い表があります。
 
 - [設計思想](./philosophy.ja.md)
 - [リリースノート](./releases.ja.md)

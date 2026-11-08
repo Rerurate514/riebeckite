@@ -1,3 +1,4 @@
+import { setDiagramSvg } from "@riebeckite/diagram/client";
 import type { MermaidClientOptions, MermaidTheme } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
@@ -20,7 +21,9 @@ export async function initMermaidDiagrams(context: ClientContext = {}) {
   mermaid.initialize({
     startOnLoad: false,
     securityLevel: "strict",
+    htmlLabels: false,
     theme: selectTheme(options.theme ?? DEFAULT_THEME),
+    flowchart: { htmlLabels: false },
   });
 
   const diagrams = root.querySelectorAll<HTMLElement>(
@@ -46,7 +49,7 @@ async function renderDiagram(
   try {
     const { svg } = await mermaid.render(`rr-mermaid-client-${index}`, source);
     if (signal?.aborted || !diagram.isConnected) return;
-    canvas.innerHTML = svg;
+    if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     diagram.removeAttribute("data-mermaid");
   } catch {
     diagram.dataset.mermaid = "error";

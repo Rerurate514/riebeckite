@@ -14,6 +14,8 @@
       "@riebeckite/graph": ["packages/graph/index.ts"],
       "@riebeckite/graph/client": ["packages/graph/client.ts"],
       "@riebeckite/graph/ui": ["packages/graph/ui.tsx"],
+      "@riebeckite/diagram": ["packages/diagram/index.ts"],
+      "@riebeckite/diagram/client": ["packages/diagram/client.ts"],
       "@riebeckite/node": ["packages/node/index.ts"],
       "@riebeckite/diagnostics": ["packages/diagnostics/index.ts"],
       "@riebeckite/preview": ["packages/preview/index.ts"],
@@ -31,6 +33,7 @@
       "@riebeckite/ui/tabs": ["packages/ui/tabs.ts"],
       "@riebeckite/ui/copy": ["packages/ui/copy.ts"],
       "@riebeckite/ui/behaviors": ["packages/ui/behaviors.ts"],
+      "@riebeckite/ui/loading": ["packages/ui/loading.ts"],
       "create-riebeckite": ["packages/create-riebeckite/src/index.ts"],
       "create-riebeckite/scaffold": [
         "packages/create-riebeckite/src/scaffold/index.ts"

@@ -21,6 +21,7 @@ The `app/` directory that actually shapes the site is site-owned code.
 - [Layout](./customizing-your-site/layout.md)
 - [Pages and navigation](./customizing-your-site/pages-and-navigation.md)
 - [Plugins and CSS](./customizing-your-site/plugins-and-css.md)
+- [Examples](./customizing-your-site/examples.md)
 
 ## Rules of thumb
 

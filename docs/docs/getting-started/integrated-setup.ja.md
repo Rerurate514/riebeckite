@@ -91,6 +91,14 @@ curl -I https://my-site.example.com/notes/writing
 
 HTML、CSS、画像、404 ページ、`sitemap.xml`、`robots.txt` を確認します。カスタムドメインが開かない場合は、ルートがデプロイされていないか、同じホスト名を別の Worker が使っています。
 
+## よくある間違い
+
+- サイトのフォルダの外から `npm exec riebeckite ...` を実行する。コマンドはサイトのルートから実行してください。
+- `publish: true` を付けずにページを追加する。新しいノートは下書きのままで、ビルドしたサイトに出ません。
+- `dist/` を直接編集する。`dist/` はビルドのたびに `content/` と `app/` から作り直されるので、元のファイルを編集してください。
+- `dist/` や `node_modules/` をコミットする。代わりに `package-lock.json` をコミットしてください。
+- デプロイ後に `site.baseUrl` だけ変えて再ビルドしない。サイトマップやフィードの URL は設定した `baseUrl` を使うので、変更後は再ビルドして再デプロイしてください。
+
 ## 次に読む
 
 - [コンテンツの場所](./content-location.ja.md)

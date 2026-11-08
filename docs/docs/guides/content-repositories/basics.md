@@ -14,7 +14,7 @@ sidebar:
 - You want one vault shared by several sites
 - You want article updates and site updates deployed independently
 
-If all you want is a small personal blog in a single repository, there is no need to split anything. Pattern A (one repository) is enough.
+If all you want is a small personal blog in a single repository, there is no need to split anything. The integrated layout is enough.
 
 ## Start with one repository
 
@@ -92,32 +92,32 @@ With this, you can split things like:
 | Deployment settings | The site repository |
 | Notes you never publish | `private/` and similar inside the vault (excluded) |
 
-## Choose a pattern
+## Choose a layout
 
 First decide at what granularity to split articles from the site.
 
-| Pattern | Layout | Article visibility | Choose it when |
+| Layout | Structure | Article visibility | Choose it when |
 | --- | --- | --- | --- |
-| A. One repository | Site and articles in one Git repository (use `content/`) | Same visibility as the repository | You want a single repository for a personal blog |
-| B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | Same visibility as the repository | You share history but want locations and settings apart |
-| C. Separate repositories | Articles private, site public | Independent for articles and site | You want articles private or updates decoupled |
+| Integrated | Site and articles in one Git repository (use `content/`) | Same visibility as the repository | You want a single repository for a personal blog |
+| Separate directories | `site/` and `vault/` side by side in one repository | Same visibility as the repository | You share history but want locations and settings apart |
+| Separate repositories | Site and articles in separate Git repositories | Independent for articles and site | You want articles private or updates decoupled |
 
 How to decide:
 
-- **You do not want articles public** → C. A private repository keeps the source repository private, but a note with `publish: true` is still published to the public site. Keep `publish: true` off private notes, and exclude private folders with `content.exclude`.
-- **Articles and site are both fine to publish** → A or B. One repository to manage.
-- **You want article updates decoupled from the site deploy** → C. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started.
-- **You want one vault shared by several sites** → C, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.
+- **You do not want articles public** → separate repositories. A private repository keeps the source repository private, but a note with `publish: true` is still published to the public site. Keep `publish: true` off private notes, and exclude private folders with `content.exclude`.
+- **Articles and site are both fine to publish** → integrated or separate directories. One repository to manage.
+- **You want article updates decoupled from the site deploy** → separate repositories. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started.
+- **You want one vault shared by several sites** → separate repositories, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only.
 
 ```mermaid
 flowchart TD
     Start{"Do you need to separate repositories?"}
 
-    Start -->|"Not really"| A["A. One repository"]
-    Start -->|"Just separate folders"| B["B. Separate folders, one repository"]
-    Start -->|"Keep articles private"| C["C. Separate repositories"]
-    Start -->|"Decouple updates"| C
-    Start -->|"Share a vault across sites"| C
+    Start -->|"Not really"| Integrated["Integrated"]
+    Start -->|"Just separate folders"| Directories["Separate directories"]
+    Start -->|"Keep articles private"| Repositories["Separate repositories"]
+    Start -->|"Decouple updates"| Repositories
+    Start -->|"Share a vault across sites"| Repositories
 ```
 
-The steps below are for C. For A and B the configuration is the same; only **step 5 (fetching the articles repository in deployment) is unnecessary**.
+The steps below are for separate repositories. For the integrated and separate-directories layouts the configuration is the same; only **step 5 (fetching the articles repository in deployment) is unnecessary**.

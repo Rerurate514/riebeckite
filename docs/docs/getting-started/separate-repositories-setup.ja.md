@@ -222,15 +222,16 @@ App を作らずに Fine-grained PAT で通知する場合は、Vault リポジ�
 
 ## 5. サイトを push する
 
-ローカルで確認します。
+ローカルで確認する前に、記事リポジトリを `content/` にクローンしてください（生成時に `--clone-content` を指定しても同じです）。`content/` がない間は `check` と `build` が失敗します。
 
 ```sh
 cd my-site
+git clone https://github.com/OWNER/my-vault.git content
 npm exec riebeckite check
 npm exec riebeckite build
 ```
 
-`dist/` が生成されればビルドは成功です。`dist/` と `node_modules/` はコミットしません。
+`dist/` が生成されればビルドは成功です。`dist/` と `node_modules/` と `content/` はコミットしません。
 
 次に、サイトリポジトリへ push します。
 

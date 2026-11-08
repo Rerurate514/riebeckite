@@ -48,7 +48,7 @@ export default defineConfig({
 });
 ```
 
-Plugin documentation is maintained here: `<slug>.md` for English and `<slug>.ja.md` for Japanese. Edit these canonical pages in Obsidian or your editor; do not manually edit package READMEs. After changing a Plugin page, run `pnpm docs:sync` to generate `packages/plugins/<slug>/README.md` and `README_ja.md`, then run `pnpm check:plugin-docs`. The checks verify file pairs, generated output, links, and documented identifiers, but human review is still required for translation quality and semantic accuracy.
+> **For plugin maintainers:** Plugin documentation is maintained here: `<slug>.md` for English and `<slug>.ja.md` for Japanese. Edit these canonical pages in Obsidian or your editor; do not manually edit package READMEs. After changing a Plugin page, run `pnpm docs:sync` to generate `packages/plugins/<slug>/README.md` and `README_ja.md`, then run `pnpm check:plugin-docs`. The checks verify file pairs, generated output, links, and documented identifiers, but human review is still required for translation quality and semantic accuracy.
 
 ## Official Plugins
 

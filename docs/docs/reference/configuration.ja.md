@@ -10,6 +10,8 @@ Riebeckite の設定は `riebeckite.config.ts` に記述します。`defineConfi
 
 基本的なサイトでは、次のように設定します。
 
+フィールドの一覧はまず [設定リファレンス](./configuration-reference.ja.md) で確認してください。このセクションの各ページでは、content・assets・roots・cache・navigation・plugins・theme・トラブルシューティングを詳しく扱います。
+
 ```ts id="vps2rj"
 import { defineConfig } from "@riebeckite/core";
 import { defaultTheme } from "@riebeckite/theme-default";

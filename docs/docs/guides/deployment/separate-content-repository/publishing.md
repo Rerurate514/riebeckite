@@ -76,7 +76,7 @@ Attachments and media are different. An embed such as:
 ![[attachments/report.pdf]]
 ```
 
-produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` (called from the `prebuild` script, `tsx --conditions=source scripts/build_images.ts`, copying into `public/assets/attachments/`).
+produces a URL, but **the file itself is not copied into the public directory**. Add a prebuild step on the site side that copies only the files you publish. Reference implementation: `website/scripts/build_images.ts` in the Riebeckite repository itself (called from its `prebuild` script, `tsx --conditions=source scripts/build_images.ts`, copying into `public/assets/attachments/`). A generated site does not include this file; add an equivalent `prebuild` script to your site.
 
 That implementation works like this:
 

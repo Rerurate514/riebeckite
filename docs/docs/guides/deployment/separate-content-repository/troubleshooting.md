@@ -93,7 +93,7 @@ content.directory
 checkout / repository_dispatch
   → how CI fetches it and when it builds
 
-publishStrategy / exclude / asset copy
+content.filters.publishStrategy / exclude / asset copy
   → what is exposed on the public site
 ```
 
@@ -105,4 +105,4 @@ Making the content repository private
 Automatically making the publication boundary safe
 ```
 
-Even with a private vault, keep the public boundary intact across `publishStrategy`, `exclude`, and the asset copy.
+Even with a private vault, keep the public boundary intact across `content.filters.publishStrategy`, `exclude`, and the asset copy.

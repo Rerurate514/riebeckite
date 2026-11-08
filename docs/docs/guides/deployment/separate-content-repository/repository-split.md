@@ -16,7 +16,7 @@ The basic flow is in [separating content from the site](../../content-repositori
 - After `git init`, create the **private** GitHub repository before the first push.
 - `.obsidian/` is generated when Obsidian opens the vault. Even if it is pushed, putting `.obsidian/**` in `content.exclude` keeps it out of the site build. If you do not want to track it, a middle ground is to gitignore only `.obsidian/workspace*.json`.
 - The baseline for private notes is: no `publish: true`. Add a second layer by excluding a private folder (for example `private/**`) in `content.exclude` so those notes are not even loaded.
-- Leave `publishStrategy` at the default `explicit`. `selective` is the "publish almost everything, hide exceptions" model, which is riskier for a private vault.
+- Leave `content.filters.publishStrategy` at the default `explicit`. `selective` is the "publish almost everything, hide exceptions" model, which is riskier for a private vault.
 
 ### Fetching content is separate from triggering a deployment
 

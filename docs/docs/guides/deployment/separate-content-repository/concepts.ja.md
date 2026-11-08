@@ -142,7 +142,7 @@ workspace/
 └─ docs/            ← site 2 (directory: "../notes")
 ```
 
-Vault は読み取り専用のソースデータとして扱い、`exclude`、`publishStrategy`、プラグインはサイトごとに変えます。どのサイトも Vault に書き戻さないため、同じノートを異なる形で公開できます。各サイトは個別にデプロイし、それぞれの CI に[コンテンツの取得とデプロイの起動は別に考える](./repository-split.ja.md#コンテンツの取得とデプロイの起動は別に考える)で説明する追加チェックアウトを設定してください。
+Vault は読み取り専用のソースデータとして扱い、`exclude`、`content.filters.publishStrategy`、プラグインはサイトごとに変えます。どのサイトも Vault に書き戻さないため、同じノートを異なる形で公開できます。各サイトは個別にデプロイし、それぞれの CI に[コンテンツの取得とデプロイの起動は別に考える](./repository-split.ja.md#コンテンツの取得とデプロイの起動は別に考える)で説明する追加チェックアウトを設定してください。
 
 ```mermaid
 flowchart TD
@@ -155,7 +155,7 @@ flowchart TD
     Docs --> DocsRules["ドキュメントの設定<br/>exclude / プラグイン"]
 ```
 
-各サイトは `exclude`、`publishStrategy`、プラグイン、[[glossary/theme|テーマ]]、デプロイを独立して設定できます。そのため、同じノートでもサイトごとに公開範囲や見せ方を変えられます。
+各サイトは `exclude`、`content.filters.publishStrategy`、プラグイン、[[glossary/theme|テーマ]]、デプロイを独立して設定できます。そのため、同じノートでもサイトごとに公開範囲や見せ方を変えられます。
 
 ### どの構成を選ぶか
 

@@ -258,7 +258,7 @@ git push
 
 ```sh
 cd my-site
-npm run dev      # local preview
-npm run check    # validate configuration
-npm run doctor   # diagnose loading problems
+npm exec riebeckite dev      # local preview
+npm exec riebeckite check    # validate configuration
+npm exec riebeckite doctor   # diagnose loading problems
 ```

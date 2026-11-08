@@ -9,6 +9,8 @@ sidebar:
 
 Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, `cache`, `publication`, `provenance`, and `spa`.
 
+For the complete field list, start with [Configuration reference](./configuration-reference.md). The topic pages in this section cover content, assets, roots, cache, navigation, plugins, theme, and troubleshooting in depth.
+
 ```ts
 import { defineConfig } from "@riebeckite/core";
 import { defaultTheme } from "@riebeckite/theme-default";

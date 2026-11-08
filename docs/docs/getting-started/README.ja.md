@@ -42,6 +42,8 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 | [最初のプラグインを追加する](./first-plugin.ja.md) | プラグインを入れて `==ハイライト==` 構文が効くことを確認する |
 | [最初のテーマを変える](./first-theme.ja.md) | テーマを変えてデザインが変わることを確認する |
 
+クイックスタートは動くサイトへの最短ルート、インストールは要件と生成ファイルの詳細です。3つのセットアップガイド（[一体型](./integrated-setup.ja.md)、[ディレクトリ分離型](./separate-directories-setup.ja.md)、[リポジトリ分離型](./separate-repositories-setup.ja.md)）は、構成ごとのデプロイまで含めた手順です。
+
 ## 最短でサイトを公開する
 
 ```bash

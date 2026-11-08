@@ -14,6 +14,7 @@
 //   5. README.md and README_ja.md link to each other where both exist.
 import fs from "node:fs";
 import path from "node:path";
+import GithubSlugger from "github-slugger";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 
@@ -102,9 +103,36 @@ function collectPaths() {
 
 const LINK_PATTERN = /\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
 
+function headingIds(file, cache) {
+  if (cache.has(file.absolute)) return cache.get(file.absolute);
+  const ids = new Set();
+  const slugger = new GithubSlugger();
+  let fence;
+  for (const line of fs.readFileSync(file.absolute, "utf8").split(/\r?\n/)) {
+    const fenceMatch = line.match(/^\s*(`{3,}|~{3,})/);
+    if (fenceMatch) {
+      fence = fence ? undefined : fenceMatch[1][0];
+      continue;
+    }
+    if (fence) continue;
+    const heading = line.match(/^ {0,3}#{1,6}(?:[ \t]+|$)(.*)$/);
+    if (!heading) continue;
+    const text = heading[1]
+      .replace(/[ \t]+#+[ \t]*$/, "")
+      .replace(/<[^>]*>/g, "")
+      .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/[`*_~]/g, "")
+      .replace(/\\(.)/g, "$1");
+    ids.add(slugger.slug(text));
+  }
+  cache.set(file.absolute, ids);
+  return ids;
+}
+
 // Rule 1: relative links must resolve to an existing file.
 function checkLinks(markdownFiles, allFiles) {
   const errors = [];
+  const headingCache = new Map();
   for (const file of markdownFiles) {
     const text = fs.readFileSync(file.absolute, "utf8");
     const lines = text.split(/\r?\n/);
@@ -120,7 +148,9 @@ function checkLinks(markdownFiles, allFiles) {
         const anchorIndex = rawTarget.indexOf("#");
         const targetWithoutAnchor =
           anchorIndex >= 0 ? rawTarget.slice(0, anchorIndex) : rawTarget;
-        if (targetWithoutAnchor === "") continue;
+        const rawAnchor =
+          anchorIndex >= 0 ? rawTarget.slice(anchorIndex + 1) : undefined;
+        if (targetWithoutAnchor === "" && rawAnchor === undefined) continue;
         let decoded;
         try {
           decoded = decodeURIComponent(targetWithoutAnchor);
@@ -128,11 +158,33 @@ function checkLinks(markdownFiles, allFiles) {
           decoded = targetWithoutAnchor;
         }
         if (decoded.startsWith("/")) continue; // site-root URLs are out of scope
-        const absolute = path.resolve(path.dirname(file.absolute), decoded);
-        if (!allFiles.has(absolute.toLowerCase())) {
+        const absolute =
+          targetWithoutAnchor === ""
+            ? file.absolute
+            : path.resolve(path.dirname(file.absolute), decoded);
+        const linkedFile = allFiles.get(absolute.toLowerCase());
+        if (!linkedFile) {
           errors.push(
             `${file.relative}:${index + 1}: broken link -> ${rawTarget}`,
           );
+          continue;
+        }
+        if (
+          rawAnchor &&
+          !rawAnchor.startsWith("^") &&
+          path.extname(absolute).toLowerCase() === ".md"
+        ) {
+          let anchor;
+          try {
+            anchor = decodeURIComponent(rawAnchor);
+          } catch {
+            anchor = rawAnchor;
+          }
+          if (!headingIds({ absolute }, headingCache).has(anchor)) {
+            errors.push(
+              `${file.relative}:${index + 1}: broken anchor -> ${rawTarget}`,
+            );
+          }
         }
       }
     });

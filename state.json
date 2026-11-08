@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "8b6a2e9e-bb30-4506-a251-9f8e818e41fd",
-    "publishedAt": "2026-11-07T18:41:05.297Z",
-    "publicationFingerprint": "b2cff14751156cedaba041e4d6165887ee25c95e8d937a566addaeab03855059",
+    "runId": "273fb32e-204b-4bde-89b6-68a8aa8cd1ea",
+    "publishedAt": "2026-11-08T04:02:35.217Z",
+    "publicationFingerprint": "bdc5392b5174330301d35cf205848bbe7770764e08a05995d3a3b6b98e0b49f2",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -6538,16 +6538,16 @@
         "permalink": "/README",
         "title": "Riebeckite documentation",
         "visibility": "public",
-        "fingerprint": "33e90a6a5900d292272947e4ef477a0c4e3d05bc4666588c86049f32431197e9",
-        "contentFingerprint": "5e61629783d2787e9a0f24060ea8b6ae1316f1131ce46be4b2ab0de29a62f63f"
+        "fingerprint": "f99c7d5299c44c225e7312c3455c63477b3a49b621730b375feb0c609a6eb077",
+        "contentFingerprint": "75beeb76cc83430c405b7c6a2851a97e8facfe558bc4e432845dbe7525ab071d"
       },
       {
         "slug": "README.ja",
         "permalink": "/ja/README",
         "title": "Riebeckite ドキュメント",
         "visibility": "public",
-        "fingerprint": "c1197c4ef46c3ce926efa1f68d4fa78136e295c18b07cf98a02ce36cb5bdf888",
-        "contentFingerprint": "5c7cd2ec03fd9645be15c306990f33eb806a2b3c002da110e2a6eb65c62c95e7"
+        "fingerprint": "a2553261bfd6d3a99df0bd7ad12374281ee8c56fe9927bc46ab0600f3caed5b0",
+        "contentFingerprint": "eed9009c6dddce4cb06517517757d369da5f1e72b891b5696a088ce9974eb183"
       }
     ],
     "redirects": [
@@ -6662,7 +6662,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "6146c73f805f80a87ff7606175531e2078343e8065c62bd0635ab33653651254",
+    "artifactFingerprint": "b7ca5cffb23d443b2bd33fa2844477bc5c0f648df6a97bc1eef9f9a0e00e905e",
     "provider": "cloudflare-workers"
   }
 }

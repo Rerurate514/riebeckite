@@ -36,6 +36,8 @@ Riebeckite は、Markdown や Obsidian 形式のノートを静的サイトと�
 | Riebeckite の内部構造を知る | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 自体の開発に参加する | [フレームワーク / 開発](./docs/framework/development.ja.md) |
 
+それ以外を探すなら、ドキュメント全体の対応表は [ドキュメント](./docs/README.ja.md) にあります。
+
 ## 次に読む章
 
 - **はじめに** — インストール、プリセット、最初のコンテンツ、デプロイ。フレームワークの内部には触れません。

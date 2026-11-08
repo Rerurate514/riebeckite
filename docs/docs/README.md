@@ -25,6 +25,8 @@ Start with [Design Philosophy](./philosophy.md) to understand why Riebeckite is 
 | Look up configuration, CLI, or an API | [Reference](./reference/README.md) |
 | Understand the internals | [Framework](./framework/README.md) |
 
+This is the full documentation map. The [homepage](../../index.md) and [Guides](./guides/README.md) carry shorter task tables that lead here.
+
 - [Design Philosophy](./philosophy.md)
 - [Release Notes](./releases.md)
 - [Getting Started](./getting-started/README.md)

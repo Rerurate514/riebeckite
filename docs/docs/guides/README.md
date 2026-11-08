@@ -22,6 +22,8 @@ If you are new to Riebeckite, start with [Getting Started](../getting-started/RE
 
 ## By task
 
+Guides only. For the full documentation map, see [Documentation](../README.md).
+
 | I want to… | Guide |
 | --- | --- |
 | Write and organize articles | [Writing content](./writing-content.md) |

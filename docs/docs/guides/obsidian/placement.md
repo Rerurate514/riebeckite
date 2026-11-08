@@ -7,11 +7,11 @@ sidebar:
 ---
 # Where to put the vault
 
-## Two layout patterns
+## Two layouts
 
 There are two broad ways to place the vault.
 
-### Pattern A: Make the site's `content/` the vault
+### Integrated: make the site's `content/` the vault
 
 This is the simplest setup. Open the generated site's `content/` folder as an Obsidian vault.
 
@@ -26,7 +26,7 @@ my-site/
 `- package.json
 ```
 
-The default configuration works for this pattern.
+The default configuration works for this layout.
 
 ```ts
 content: {
@@ -47,9 +47,9 @@ Riebeckite content
 
 The same folder plays both roles.
 
-Use this pattern first if you only want to try Riebeckite.
+Use this layout first if you only want to try Riebeckite.
 
-### Pattern B: Keep the vault and site in separate folders
+### Separate directories: keep the vault and site in separate folders
 
 If you already have an Obsidian vault, place the site next to it.
 
@@ -90,12 +90,12 @@ flowchart LR
 
 You do not need to copy the vault into the site directory.
 
-This pattern is safe for an existing vault as long as you understand the publish rule: only notes with `publish: true` become public by default. Riebeckite reads the vault during preview and build; it does not reorganize the vault or edit Markdown files for you.
+This layout is safe for an existing vault as long as you understand the publish rule: only notes with `publish: true` become public by default. Riebeckite reads the vault during preview and build; it does not reorganize the vault or edit Markdown files for you.
 
 If you also want to separate the repositories themselves, see
 [Separating content from the site](../content-repositories.md).
 
-## Which pattern to choose?
+## Which layout to choose?
 
 When unsure, use these criteria.
 

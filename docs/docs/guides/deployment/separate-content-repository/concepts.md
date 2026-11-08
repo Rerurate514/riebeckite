@@ -104,15 +104,15 @@ Base
   → appRoot
 ```
 
-## The three patterns
+## The three layouts
 
-| Pattern | Layout | Choose it when | Deployment consideration |
+| Layout | Structure | Choose it when | Deployment consideration |
 | --- | --- | --- | --- |
-| A. One repository | Site and articles in one Git repository (use `content/`) | You want a single repository for a personal blog | No extra setup |
-| B. Separate folders, one repository | `site/` and `vault/` side by side in one repository | You share history but want locations and visibility apart | Set `content.directory: "../vault"` on the site side |
-| C. Separate repositories (recommended) | Articles private, site public | You want articles private or updates decoupled | CI needs setup to fetch the articles repository |
+| Integrated | Site and articles in one Git repository (use `content/`) | You want a single repository for a personal blog | No extra setup |
+| Separate directories | `site/` and `vault/` side by side in one repository | You share history but want locations and visibility apart | Set `content.directory: "../vault"` on the site side |
+| Separate repositories (recommended) | Site and articles in separate repositories | You want articles private or updates decoupled | CI needs setup to fetch the articles repository |
 
-### Pattern A layout
+### Integrated layout
 
 ```text
 blog/
@@ -125,7 +125,7 @@ blog/
 
 The simplest option, and exactly what `create-riebeckite` generates. Article visibility matches the repository.
 
-### Pattern B layout
+### Separate directories layout
 
 ```text
 notes-repo/
@@ -134,11 +134,11 @@ notes-repo/
 └─ vault/               ← referenced by directory: "../vault"
 ```
 
-One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in A. The only change from A is `content.directory: "../vault"`.
+One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in the integrated layout. The only change from the integrated layout is `content.directory: "../vault"`.
 
 ### Sharing one vault across several sites
 
-An extension of C: keep the vault in its own place and have several sites reference it.
+An extension of the separate-repositories layout: keep the vault in its own place and have several sites reference it.
 
 ```text
 workspace/
@@ -164,7 +164,7 @@ Each site can set `exclude`, `publishStrategy`, plugins, theme, and deployment i
 
 ### Decision flow
 
-1. You want articles private, or updates decoupled → **C**.
+1. You want articles private, or updates decoupled → **separate repositories**.
 2. Articles and site can share visibility → next.
-3. You only want locations and settings apart → **B**. You want one repository → **A**.
-4. You want one vault for several sites → **C + shared vault**.
+3. You only want locations and settings apart → **separate directories**. You want one repository → **integrated**.
+4. You want one vault for several sites → **separate repositories + shared vault**.

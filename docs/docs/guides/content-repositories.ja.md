@@ -6,13 +6,26 @@ title: コンテンツとサイトを分ける
 
 記事（Markdown / [[glossary/obsidian-vault|Obsidian Vault]]）とサイト（コード、設定、[[glossary/theme|テーマ]]）を別の場所やリポジトリに置く方法を説明します。分けるべきかどうかの判断、構成の選び方、外部 Vault の読み込み、別リポジトリからの公開までを順に扱います。
 
-GitHub Actions の具体的な構成、ルート解決、認証、アセットの詳細は [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md) を参照してください。
+ステップごとのセットアップは [セットアップ](./content-repositories/setup.ja.md) にあります。仕組みの詳細（ルート解決、CI 認証、アセット、トラブルシューティング）は [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md) を参照してください。
 
 ## このページの構成
 
 - [基本](./content-repositories/basics.ja.md)
 - [セットアップ](./content-repositories/setup.ja.md)
 - [公開とトラブルシューティング](./content-repositories/publishing.ja.md)
+
+## どのページを読むか
+
+- 分けるかどうか・どう分けるかの判断 → [基本](./content-repositories/basics.ja.md)
+- 手順どおりに進めたい → [セットアップ](./content-repositories/setup.ja.md)
+- 公開されない・CI が失敗する → [公開とトラブルシューティング](./content-repositories/publishing.ja.md)
+- GitHub / Cloudflare の画面を一つずつ進めたい → [別々のリポジトリでのセットアップ](../getting-started/separate-repositories-setup.ja.md)
+- 仕組みを深く知りたい → [リポジトリ分離の詳細編](./deployment/separate-content-repository.ja.md)
+
+## 用語
+
+- **記事リポジトリ（Vault）**: Markdown 記事と添付ファイルを置くリポジトリまたはフォルダ。
+- **サイトリポジトリ**: Riebeckite アプリ、設定、テーマ、デプロイを置くリポジトリ。
 
 ## まとめ
 

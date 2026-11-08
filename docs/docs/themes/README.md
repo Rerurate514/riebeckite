@@ -32,6 +32,10 @@ export default defineConfig({
 });
 ```
 
+## Build your own
+
+To create a theme, start with [Writing a theme](./writing-a-theme.md) — a minimal `defineTheme` example — then check the [Theme API](../reference/theme-api.md) for the full contract.
+
 ## Options
 
 Every theme factory accepts `colorMode`, `layout`, `preset`, `settings`, and `stylesheets`. Settings are declared by the theme: values are inferred by TypeScript, checked at runtime, and reflected as `data-rb-setting-*`. Resolution order is defaults, then preset, then explicit settings.

@@ -32,6 +32,10 @@ export default defineConfig({
 });
 ```
 
+## 自分でテーマを作る
+
+テーマを自作するには、[テーマを書く](./writing-a-theme.ja.md) の最小構成の例から始めて、[Theme API](../reference/theme-api.md) で仕様全体を確認してください。
+
 ## オプション
 
 すべてのテーマファクトリーは `colorMode`、`layout`、`preset`、`settings`、`stylesheets` を受け取ります。設定はテーマ側で宣言され、TypeScript が推論し、実行時にも検証され、`data-rb-setting-*` 属性に反映されます。解決順は既定値、プリセット、明示した設定です。

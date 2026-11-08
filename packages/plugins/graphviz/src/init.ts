@@ -1,3 +1,4 @@
+import { setDiagramSvg } from "@riebeckite/diagram/client";
 import type {
   GraphvizClientOptions,
   GraphvizEngine,
@@ -42,7 +43,7 @@ function renderFigure(
 
   try {
     const svg = renderer.renderString(source, { format: "svg", engine });
-    canvas.innerHTML = svg;
+    if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     figure.dataset.graphviz = "rendered";
   } catch {
     figure.dataset.graphviz = "error";

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "273fb32e-204b-4bde-89b6-68a8aa8cd1ea",
-    "publishedAt": "2026-11-08T04:02:35.217Z",
-    "publicationFingerprint": "bdc5392b5174330301d35cf205848bbe7770764e08a05995d3a3b6b98e0b49f2",
+    "runId": "fcb99c20-341c-4d3c-8663-ef781c88a632",
+    "publishedAt": "2026-11-08T08:57:01.072Z",
+    "publicationFingerprint": "4907c234247d8214695d586392c0f06751e93bfe8fb16333c541fb55c1cf2310",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -52,6 +52,86 @@
         "visibility": "public",
         "fingerprint": "45b7732fcebeab35139acc2577cd44a14556903e1a4b2f6169280723f9ac8507",
         "contentFingerprint": "00c6129395dd480962f069d1328347ef1018f4526ffe1f99d0680f01c7de8045"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/e2e-results",
+        "permalink": "/audits/final-release-audit-2026-11-08/e2e-results",
+        "title": "e2e-results",
+        "visibility": "public",
+        "fingerprint": "14ff35715211a82cd863807cb941d20387a978f35137a1fe3cf34362181535ae",
+        "contentFingerprint": "79705551a75aa8607b7d00c7911db47cc3986da8586884f871885eef0e41dbb4"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/e2e-results.ja",
+        "permalink": "/ja/audits/final-release-audit-2026-11-08/e2e-results",
+        "title": "e2e-results.ja",
+        "visibility": "public",
+        "fingerprint": "8238c59c9caad40e11ecc96205bb428eba9b3079cc8b72f6952874d02b604c8a",
+        "contentFingerprint": "647bb5d029c9d8da47c372c904ffc0e8368093372838910ca527d331a0ce8c29"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/findings",
+        "permalink": "/audits/final-release-audit-2026-11-08/findings",
+        "title": "findings",
+        "visibility": "public",
+        "fingerprint": "d0a622cfd68cd9f422d578f88604dace81fb7420e570e57e1b75c67a0cf3dae8",
+        "contentFingerprint": "75a9aef4f143a8b366020453f42f9274da342db6894ef75a52a1179acf939d0f"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/findings.ja",
+        "permalink": "/ja/audits/final-release-audit-2026-11-08/findings",
+        "title": "findings.ja",
+        "visibility": "public",
+        "fingerprint": "75f2ae88258a1fe148165508f01284f0a9a88b56e3f246f871584989a73f0bf2",
+        "contentFingerprint": "00d3b0429589d2034d252be150d4e8ea1793d22a27cede076af3f980b4e5c92b"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/release-decision",
+        "permalink": "/audits/final-release-audit-2026-11-08/release-decision",
+        "title": "release-decision",
+        "visibility": "public",
+        "fingerprint": "249dcdf5982347388f32658f41e0136eeaa558f61b978880d76bdfefd376fbe1",
+        "contentFingerprint": "90b6a0c38e3b629aba4028a552767ad9e6c84847988d1de851663db68090c9ff"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/release-decision.ja",
+        "permalink": "/ja/audits/final-release-audit-2026-11-08/release-decision",
+        "title": "release-decision.ja",
+        "visibility": "public",
+        "fingerprint": "51f768246c5f525f93cc39fb1e38e968142469bac64650a10677ffad599f6efb",
+        "contentFingerprint": "0bc9efeeb579794345c513b2309de6fbe9f7bd76d9b201e1d8aac6111454ec9f"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/report",
+        "permalink": "/audits/final-release-audit-2026-11-08/report",
+        "title": "report",
+        "visibility": "public",
+        "fingerprint": "db268acd7ef4f9a7a0c93e786074eca569c990924bf39c8e86120fedb9008d76",
+        "contentFingerprint": "87582f40a5d7b019634e976554b4d178905dc501f97fb8b22e1b08d50347d86d"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/report.ja",
+        "permalink": "/ja/audits/final-release-audit-2026-11-08/report",
+        "title": "report.ja",
+        "visibility": "public",
+        "fingerprint": "9f92bf1eab64881a6d658390933848c1b2828dac89425c6bfb76d2670d4b8011",
+        "contentFingerprint": "a0b4a3910179ecc80a8a2192234be1bcba0b561d3ce3ae5caf48ba35355e90c6"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/verification-matrix",
+        "permalink": "/audits/final-release-audit-2026-11-08/verification-matrix",
+        "title": "verification-matrix",
+        "visibility": "public",
+        "fingerprint": "9b3343c12a6e5293b5630a35210b86475ce15eba3b5f5d522277953436a85c44",
+        "contentFingerprint": "6a7f82ff9f5027da3e4b0f6471c8a17763d2be5d60e10fb640122ca458bdcbd7"
+      },
+      {
+        "slug": "audits/final-release-audit-2026-11-08/verification-matrix.ja",
+        "permalink": "/ja/audits/final-release-audit-2026-11-08/verification-matrix",
+        "title": "verification-matrix.ja",
+        "visibility": "public",
+        "fingerprint": "294eddf52ce5c9da59cae1f3c0b5adc4756641ff6a996f84bc1827a3a1fd739b",
+        "contentFingerprint": "53aa332d2ec124960b24a9510f352450e125921a0fc5fa8e33678e6562eac2b8"
       },
       {
         "slug": "audits/security-hardening-2026-11",
@@ -1186,8 +1266,8 @@
         "permalink": "/ja/docs/getting-started/quick-start",
         "title": "クイックスタート",
         "visibility": "public",
-        "fingerprint": "123f73709a33fff6bc9fbd7a04897ad6248b9835a2bb1680648c4647d08c8a74",
-        "contentFingerprint": "58021f12ac07add51fdc2332a5e32f4375da3e26321df0fea419e40caca03189"
+        "fingerprint": "49bf7d63c6bf94570d4968c145bcf537c0f10883fc90312f6771cad3b6ce6195",
+        "contentFingerprint": "34c85330d7d90292daf96a041bf09afe597957cbbf5fa1a5917b1f1d3a5c4786"
       },
       {
         "slug": "docs/getting-started/README",
@@ -3978,16 +4058,16 @@
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "34a3974b4b695c136288181b88f7ce10d969ce8fab49e9c19d9b8d7e33af206d",
-        "contentFingerprint": "3f7e0d9cca22c361712247fd1402e46e5d7091199eb4b2b6dfc09c11b7fbfea0"
+        "fingerprint": "774266fd097e501142a156d76f6d4826426ae58a9d22b361c1a154caa114cff8",
+        "contentFingerprint": "e6cf11b9ac6bc59284026b4de10755d2125bc7ad8e6a8ac6f7f79eba3b82ba80"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "adb9be1f3f367eba222c4c40b0f0f9b18519b85addbe0e66d5fe758d618c38af",
-        "contentFingerprint": "e26c17ea8314f88c1fba47cd73ee0008c6762ba5e1a80e4f9c54b30b254d5420"
+        "fingerprint": "186fda83b68372167be09093c57d09b4c83d600daa8fe76722b3d64975cae3a3",
+        "contentFingerprint": "3d9c71732cf3cc45bb2ebbbc77dfe844071666346f02d9905011303c98e64287"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
@@ -6218,16 +6298,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "37e7e7a7c3645f8ca14d3894b68aab6c1165e308f2fbe004675132eb1e012760",
-        "contentFingerprint": "49e1ca4f18b81509c182a277cae0ed60fef5c91e6e7b4f628b76e25d4356571b"
+        "fingerprint": "8dfaf70833f33ff185087b38020e7813484ba3882998fe71973b4ef3c1ec5fba",
+        "contentFingerprint": "6d5a97b0af27f811086352d71bb3951a5f31bce93b3bb710c15ce3fc8d13f76a"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "dbd8c451bbb5274e511d8189bf876d6bf03a896c485b83a48942d0c8a35cc873",
-        "contentFingerprint": "e7b7e439639aa158261cf36bd36cfe7499c7145b0a8a31696bfca1f1734ca341"
+        "fingerprint": "4e2121d6e76ba27ca83f898c2d044defc25aafb48c3cd18e129ca97647fc6746",
+        "contentFingerprint": "ce7529ca561d0518678fb70e537350a70f9a670ec4240cf6d191436fa06afc70"
       },
       {
         "slug": "docs/security",
@@ -6538,16 +6618,16 @@
         "permalink": "/README",
         "title": "Riebeckite documentation",
         "visibility": "public",
-        "fingerprint": "f99c7d5299c44c225e7312c3455c63477b3a49b621730b375feb0c609a6eb077",
-        "contentFingerprint": "75beeb76cc83430c405b7c6a2851a97e8facfe558bc4e432845dbe7525ab071d"
+        "fingerprint": "91193bc173101f545b3235eee475ed4898f782b156ef46fb7d82eced0d5bd9b3",
+        "contentFingerprint": "a9341b4dabd2d7c3639628f61448450ca412bd88eae1a90094d2fe9013f35774"
       },
       {
         "slug": "README.ja",
         "permalink": "/ja/README",
         "title": "Riebeckite ドキュメント",
         "visibility": "public",
-        "fingerprint": "a2553261bfd6d3a99df0bd7ad12374281ee8c56fe9927bc46ab0600f3caed5b0",
-        "contentFingerprint": "eed9009c6dddce4cb06517517757d369da5f1e72b891b5696a088ce9974eb183"
+        "fingerprint": "6f8d969611b765149c8f02790309a1697b16e40fb732da91736eab7523df86a6",
+        "contentFingerprint": "f379613e3769421f9189e3860d93c4f38f52ff707b77db437639a95b00666abe"
       }
     ],
     "redirects": [
@@ -6662,7 +6742,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "b7ca5cffb23d443b2bd33fa2844477bc5c0f648df6a97bc1eef9f9a0e00e905e",
+    "artifactFingerprint": "18ca1671cbf2fe3b69f8b0d026f59febfb57660c5dc44f70260744325b2b4f38",
     "provider": "cloudflare-workers"
   }
 }

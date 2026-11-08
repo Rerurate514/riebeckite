@@ -37,6 +37,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
   "packages/plugins/color-mode",
+  "packages/plugins/comments",
   "packages/plugins/d2",
   "packages/plugins/daily-notes",
   "packages/plugins/dataview",
@@ -81,6 +82,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/qr-code",
   "packages/plugins/quality",
   "packages/plugins/query",
+  "packages/plugins/reactions",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
   "packages/plugins/rename",
@@ -301,6 +303,10 @@ const packagePublishingMetadata = {
     description: "Light / dark / system color-mode switching for Riebeckite.",
     keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
   },
+  "packages/plugins/comments": {
+    description: "Comment threads for Riebeckite pages, backed by a pluggable provider.",
+    keywords: ["riebeckite", "plugin", "comments", "discussion"],
+  },
   "packages/plugins/d2": {
     description: "D2 diagram rendering for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "d2", "diagrams"],
@@ -484,6 +490,10 @@ const packagePublishingMetadata = {
   "packages/plugins/query": {
     description: "Build-time content queries for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "query", "markdown"],
+  },
+  "packages/plugins/reactions": {
+    description: "Emoji reactions for Riebeckite pages, backed by a pluggable provider.",
+    keywords: ["riebeckite", "plugin", "reactions", "emoji"],
   },
   "packages/plugins/recent-posts": {
     description: "Recent posts lists for Riebeckite sites.",

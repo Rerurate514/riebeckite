@@ -1,0 +1,65 @@
+/*
+ * @riebeckite/plugin-reactions
+ *
+ * Emoji reaction buttons. Plugin CSS loads before theme CSS, so a theme can
+ * restyle the stable `rr-reactions` hooks without editing the plugin.
+ */
+
+.rr-reactions {
+  --rr-reactions-ink: var(--rb-color-ink, inherit);
+  --rr-reactions-muted: var(--rb-color-muted, #5a5a5a);
+  --rr-reactions-rule: color-mix(in srgb, var(--rr-reactions-ink) 18%, transparent);
+  --rr-reactions-active-bg: color-mix(in srgb, var(--rb-color-accent, currentColor) 12%, transparent);
+
+  margin-block: 1rem;
+  color: var(--rr-reactions-ink);
+}
+
+.rr-reactions__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rr-reactions__item {
+  margin: 0;
+  padding: 0;
+}
+
+.rr-reactions__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid var(--rr-reactions-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.rr-reactions__button:hover,
+.rr-reactions__button:focus-visible {
+  border-color: var(--rr-reactions-ink);
+  outline: none;
+}
+
+.rr-reactions__button[aria-pressed="true"] {
+  background: var(--rr-reactions-active-bg);
+  border-color: var(--rb-color-accent, currentColor);
+}
+
+.rr-reactions__emoji {
+  font-size: 1.125em;
+  line-height: 1;
+}
+
+.rr-reactions__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--rr-reactions-muted);
+}

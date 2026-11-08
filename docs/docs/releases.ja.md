@@ -24,6 +24,15 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Give every preset a site footer that matches its layout. Starter and showcase pair the site identity with secondary navigation and a build credit, digital-garden, blog, and portfolio gain a build credit, and minimal and empty have lean footers of their own.
   Packages: `create-riebeckite`
 
+- Add `@riebeckite/plugin-reactions` and `@riebeckite/plugin-comments`, two new
+  plugins that bring Zenn/Qiita-style engagement to published notes. Reactions
+  renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts, and Comments
+  renders comment threads. Both are backed by pluggable providers
+  (`ReactionsProvider` / `CommentsProvider`) with in-memory defaults, so a site
+  can start locally and later connect GitHub Discussions, a database, or an edge
+  function without changing site code.
+  Packages: `@riebeckite/plugin-reactions`, `@riebeckite/plugin-comments`
+
 ### Changed
 
 - Give the blog preset an explicit navigation with Posts, Tags, and Series links instead of deriving it from the content tree.

@@ -159,6 +159,8 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Changelog](./changelog.md) | Git-backed change history and changelogs |
 | [Webmention](./webmention.md) | Verified Webmention receiving and rendering |
 | [Share](./share.md) | Per-article share links and copy-to-clipboard |
+| [Reactions](./reactions.md) | Emoji reaction buttons with pluggable providers |
+| [Comments](./comments.md) | Comment threads with pluggable providers |
 
 ### Content and developer experience
 

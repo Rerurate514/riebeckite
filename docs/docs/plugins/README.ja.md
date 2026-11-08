@@ -158,6 +158,8 @@ Plugin のドキュメントはこのディレクトリで管理します。英�
 | [Changelog](./changelog.ja.md) | Git による変更履歴とチェンジログ |
 | [Webmention](./webmention.ja.md) | 検証済み Webmention の受信と表示 |
 | [Share](./share.ja.md) | 記事ごとの共有リンクとクリップボードコピー |
+| [Reactions](./reactions.ja.md) | プラグイン可能なプロバイダー付き絵文字リアクション |
+| [Comments](./comments.ja.md) | プラグイン可能なプロバイダー付きコメントスレッド |
 
 ### コンテンツと開発体験
 

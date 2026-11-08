@@ -65,7 +65,9 @@ overrides:
   undici@<7.30.1: 7.30.1
 
 patchedDependencies:
-  wavedrom@3.7.0: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
+  wavedrom@3.7.0:
+    hash: 66e5131a13f1d8cfeb84ec9d08940f4109a3451d08bd1ef2a3cff8664b1caf2a
+    path: patches/wavedrom@3.7.0.patch
 
 importers:
 
@@ -145,7 +147,7 @@ importers:
         version: 4.13.12
       honox:
         specifier: 0.1.62
-        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
+        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
       jsonc-parser:
         specifier: ^3.3.1
         version: 3.3.1
@@ -178,16 +180,16 @@ importers:
         version: 10.0.1
       remark-frontmatter:
         specifier: ^5.0.0
-        version: 5.0.0(supports-color@10.2.2)
+        version: 5.0.0
       remark-gfm:
         specifier: ^4.0.1
-        version: 4.0.1(supports-color@10.2.2)
+        version: 4.0.1
       remark-math:
         specifier: ^6.0.0
-        version: 6.0.0(supports-color@10.2.2)
+        version: 6.0.0
       remark-parse:
         specifier: 'catalog:'
-        version: 11.0.0(supports-color@10.2.2)
+        version: 11.0.0
       remark-rehype:
         specifier: ^11.1.2
         version: 11.1.2
@@ -329,7 +331,7 @@ importers:
         version: 4.13.12
       honox:
         specifier: 0.1.62
-        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
+        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
       vite:
         specifier: 'catalog:'
         version: 8.3.5(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -649,6 +651,22 @@ importers:
         specifier: 'catalog:'
         version: 4.13.12
 
+  packages/plugins/comments:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/d2:
     dependencies:
       '@d2lang/d2':
@@ -713,7 +731,7 @@ importers:
         version: link:../../node
       remark-parse:
         specifier: 'catalog:'
-        version: 11.0.0(supports-color@10.2.2)
+        version: 11.0.0
       unified:
         specifier: 'catalog:'
         version: 11.0.5
@@ -980,7 +998,7 @@ importers:
         version: 2.16.2
       remark-parse:
         specifier: 'catalog:'
-        version: 11.0.0(supports-color@10.2.2)
+        version: 11.0.0
       unified:
         specifier: 'catalog:'
         version: 11.0.5
@@ -1331,6 +1349,22 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/plugins/reactions:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.12
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/recent-posts:
     dependencies:
       '@riebeckite/core':
@@ -1478,7 +1512,7 @@ importers:
         version: 4.0.4
       remark-directive:
         specifier: ^4.0.0
-        version: 4.0.0(supports-color@10.2.2)
+        version: 4.0.0
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
@@ -1558,7 +1592,7 @@ importers:
         version: link:../../core
       remark-parse:
         specifier: 'catalog:'
-        version: 11.0.0(supports-color@10.2.2)
+        version: 11.0.0
       unified:
         specifier: 'catalog:'
         version: 11.0.5
@@ -2104,7 +2138,7 @@ importers:
         version: 4.13.12
       honox:
         specifier: 0.1.62
-        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
+        version: 0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
@@ -4877,6 +4911,7 @@ packages:
 
   markmap-common@0.18.9:
     resolution: {integrity: sha512-MV2HQO7IGIm3jWEJXSG8vmdpqf4WIDXcEyAEN52lrWR1qD53Zg5l81JwjXoZ2l0rY5mofKYqUFlmdM2fqTGMVg==}
+    deprecated: Replaced by @markmap/* in 1.0.0. See https://markmap.js.org/docs/migration
 
   markmap-html-parser@0.18.11:
     resolution: {integrity: sha512-+kC5C4sCGntGUhGvTa5VIb5rtM75cSy/VCy3tzZoNAcn2qZGdgYvljN0WvjsOzrEzp+V6XKgwzO0u2TdzNAiOg==}
@@ -6075,7 +6110,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.0(supports-color@10.2.2)':
+  '@babel/traverse@7.29.0':
     dependencies:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.1
@@ -6083,7 +6118,7 @@ snapshots:
       '@babel/parser': 7.29.3
       '@babel/template': 7.29.7
       '@babel/types': 7.29.0
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -7252,11 +7287,11 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
-  '@typescript-eslint/project-service@8.61.1(supports-color@10.2.2)(typescript@5.9.3)':
+  '@typescript-eslint/project-service@8.61.1(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.61.1
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -7267,13 +7302,13 @@ snapshots:
 
   '@typescript-eslint/types@8.61.1': {}
 
-  '@typescript-eslint/typescript-estree@8.61.1(supports-color@10.2.2)(typescript@5.9.3)':
+  '@typescript-eslint/typescript-estree@8.61.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/project-service': 8.61.1(supports-color@10.2.2)(typescript@5.9.3)
+      '@typescript-eslint/project-service': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@5.9.3)
       '@typescript-eslint/types': 8.61.1
       '@typescript-eslint/visitor-keys': 8.61.1
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
       minimatch: 11.0.1
       semver: 7.8.5
       tinyglobby: 0.2.17
@@ -7770,11 +7805,9 @@ snapshots:
 
   dayjs@1.11.23: {}
 
-  debug@4.4.3(supports-color@10.2.2):
+  debug@4.4.3:
     dependencies:
       ms: 2.1.3
-    optionalDependencies:
-      supports-color: 10.2.2
 
   decamelize@1.2.0: {}
 
@@ -7826,16 +7859,16 @@ snapshots:
 
   detective-stylus@5.0.1: {}
 
-  detective-typescript@14.1.2(supports-color@10.2.2)(typescript@5.9.3):
+  detective-typescript@14.1.2(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/typescript-estree': 8.61.1(supports-color@10.2.2)(typescript@5.9.3)
+      '@typescript-eslint/typescript-estree': 8.61.1(typescript@5.9.3)
       ast-module-types: 6.0.2
       node-source-walk: 7.0.2
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
 
-  detective-vue2@2.3.0(supports-color@10.2.2)(typescript@5.9.3):
+  detective-vue2@2.3.0(typescript@5.9.3):
     dependencies:
       '@dependents/detective-less': 5.0.3
       '@vue/compiler-sfc': 3.5.38
@@ -7843,7 +7876,7 @@ snapshots:
       detective-sass: 6.0.2
       detective-scss: 5.0.2
       detective-stylus: 5.0.1
-      detective-typescript: 14.1.2(supports-color@10.2.2)(typescript@5.9.3)
+      detective-typescript: 14.1.2(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - supports-color
@@ -8252,16 +8285,16 @@ snapshots:
 
   hono@4.13.12: {}
 
-  honox@0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(supports-color@10.2.2)(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6)):
+  honox@0.1.62(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6)):
     dependencies:
       '@babel/generator': 7.29.1
       '@babel/parser': 7.29.3
-      '@babel/traverse': 7.29.0(supports-color@10.2.2)
+      '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
       '@hono/vite-dev-server': 0.25.3(hono@4.13.12)(miniflare@4.20260617.1(@types/node@24.13.6))(wrangler@4.103.0(@cloudflare/workers-types@4.20260621.1)(@types/node@24.13.6))
       hono: 4.13.12
       jsonc-parser: 3.3.1
-      precinct: 12.2.0(supports-color@10.2.2)
+      precinct: 12.2.0
     optionalDependencies:
       '@rollup/rollup-linux-x64-gnu': 4.62.2
     transitivePeerDependencies:
@@ -8601,13 +8634,13 @@ snapshots:
       mj-context-menu: 0.6.1
       speech-rule-engine: 4.1.4
 
-  mdast-util-directive@3.1.0(supports-color@10.2.2):
+  mdast-util-directive@3.1.0:
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       ccount: 2.0.1
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
       parse-entities: 4.0.2
       stringify-entities: 4.0.4
@@ -8622,14 +8655,14 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  mdast-util-from-markdown@2.0.3(supports-color@10.2.2):
+  mdast-util-from-markdown@2.0.3:
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.3
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
-      micromark: 4.0.2(supports-color@10.2.2)
+      micromark: 4.0.2
       micromark-util-decode-numeric-character-reference: 2.0.2
       micromark-util-decode-string: 2.0.1
       micromark-util-normalize-identifier: 2.0.1
@@ -8639,12 +8672,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-frontmatter@2.0.1(supports-color@10.2.2):
+  mdast-util-frontmatter@2.0.1:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       escape-string-regexp: 5.0.0
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
       micromark-extension-frontmatter: 2.0.0
     transitivePeerDependencies:
@@ -8658,62 +8691,62 @@ snapshots:
       mdast-util-find-and-replace: 3.0.2
       micromark-util-character: 2.1.1
 
-  mdast-util-gfm-footnote@2.1.0(supports-color@10.2.2):
+  mdast-util-gfm-footnote@2.1.0:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
       micromark-util-normalize-identifier: 2.0.1
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-strikethrough@2.0.0(supports-color@10.2.2):
+  mdast-util-gfm-strikethrough@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-table@2.0.0(supports-color@10.2.2):
+  mdast-util-gfm-table@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       markdown-table: 3.0.4
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm-task-list-item@2.0.0(supports-color@10.2.2):
+  mdast-util-gfm-task-list-item@2.0.0:
     dependencies:
       '@types/mdast': 4.0.4
       devlop: 1.1.0
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-gfm@3.1.0(supports-color@10.2.2):
+  mdast-util-gfm@3.1.0:
     dependencies:
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-gfm-autolink-literal: 2.0.1
-      mdast-util-gfm-footnote: 2.1.0(supports-color@10.2.2)
-      mdast-util-gfm-strikethrough: 2.0.0(supports-color@10.2.2)
-      mdast-util-gfm-table: 2.0.0(supports-color@10.2.2)
-      mdast-util-gfm-task-list-item: 2.0.0(supports-color@10.2.2)
+      mdast-util-gfm-footnote: 2.1.0
+      mdast-util-gfm-strikethrough: 2.0.0
+      mdast-util-gfm-table: 2.0.0
+      mdast-util-gfm-task-list-item: 2.0.0
       mdast-util-to-markdown: 2.1.2
     transitivePeerDependencies:
       - supports-color
 
-  mdast-util-math@3.0.0(supports-color@10.2.2):
+  mdast-util-math@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
       devlop: 1.1.0
       longest-streak: 3.1.0
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       mdast-util-to-markdown: 2.1.2
       unist-util-remove-position: 5.0.0
     transitivePeerDependencies:
@@ -8986,10 +9019,10 @@ snapshots:
 
   micromark-util-types@2.0.2: {}
 
-  micromark@4.0.2(supports-color@10.2.2):
+  micromark@4.0.2:
     dependencies:
       '@types/debug': 4.1.13
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
       decode-named-character-reference: 1.3.0
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.3
@@ -9209,7 +9242,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.2
 
-  precinct@12.2.0(supports-color@10.2.2):
+  precinct@12.2.0:
     dependencies:
       '@dependents/detective-less': 5.0.3
       commander: 12.1.0
@@ -9220,8 +9253,8 @@ snapshots:
       detective-sass: 6.0.2
       detective-scss: 5.0.2
       detective-stylus: 5.0.1
-      detective-typescript: 14.1.2(supports-color@10.2.2)(typescript@5.9.3)
-      detective-vue2: 2.3.0(supports-color@10.2.2)(typescript@5.9.3)
+      detective-typescript: 14.1.2(typescript@5.9.3)
+      detective-vue2: 2.3.0(typescript@5.9.3)
       module-definition: 6.0.2
       node-source-walk: 7.0.2
       postcss: 8.5.28
@@ -9386,48 +9419,48 @@ snapshots:
       mdast-util-newline-to-break: 2.0.0
       unified: 11.0.5
 
-  remark-directive@4.0.0(supports-color@10.2.2):
+  remark-directive@4.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-directive: 3.1.0(supports-color@10.2.2)
+      mdast-util-directive: 3.1.0
       micromark-extension-directive: 4.0.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-frontmatter@5.0.0(supports-color@10.2.2):
+  remark-frontmatter@5.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-frontmatter: 2.0.1(supports-color@10.2.2)
+      mdast-util-frontmatter: 2.0.1
       micromark-extension-frontmatter: 2.0.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-gfm@4.0.1(supports-color@10.2.2):
+  remark-gfm@4.0.1:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-gfm: 3.1.0(supports-color@10.2.2)
+      mdast-util-gfm: 3.1.0
       micromark-extension-gfm: 3.0.0
-      remark-parse: 11.0.0(supports-color@10.2.2)
+      remark-parse: 11.0.0
       remark-stringify: 11.0.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-math@6.0.0(supports-color@10.2.2):
+  remark-math@6.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-math: 3.0.0(supports-color@10.2.2)
+      mdast-util-math: 3.0.0
       micromark-extension-math: 3.1.0
       unified: 11.0.5
     transitivePeerDependencies:
       - supports-color
 
-  remark-parse@11.0.0(supports-color@10.2.2):
+  remark-parse@11.0.0:
     dependencies:
       '@types/mdast': 4.0.4
-      mdast-util-from-markdown: 2.0.3(supports-color@10.2.2)
+      mdast-util-from-markdown: 2.0.3
       micromark-util-types: 2.0.2
       unified: 11.0.5
     transitivePeerDependencies:

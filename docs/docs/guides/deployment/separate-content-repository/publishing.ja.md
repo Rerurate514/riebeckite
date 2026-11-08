@@ -76,7 +76,7 @@ flowchart LR
 ![[attachments/report.pdf]]
 ```
 
-URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参照実装は Riebeckite リポジトリ自身の `website/scripts/build_images.ts` です（`prebuild` スクリプトから `tsx --conditions=source scripts/build_images.ts` として呼び出し、`public/assets/attachments/` へコピーします）。生成されるサイトにはこのファイルは含まれないため、サイト側に同等の `prebuild` スクリプトを追加してください。
+URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参考になる実装は Riebeckite リポジトリ自身の `website/scripts/build_images.ts` です（`prebuild` から `tsx --conditions=source scripts/build_images.ts` として呼び出し、`public/assets/attachments/` にコピーします）。生成されるサイトにはこのファイルは含まれないため、サイト側に同等の `prebuild` スクリプトを追加してください。
 
 この実装の流れは次のとおりです。
 

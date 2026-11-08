@@ -34,7 +34,7 @@ export default defineConfig({
 
 ## 自分でテーマを作る
 
-テーマを自作するには、[テーマを書く](./writing-a-theme.ja.md) の最小構成の例から始めて、[Theme API](../reference/theme-api.md) で仕様全体を確認してください。
+テーマを自作するときは、まず [テーマを書く](./writing-a-theme.ja.md) の最小構成の例を試し、[Theme API](../reference/theme-api.md) で仕様全体を確認してください。
 
 ## オプション
 

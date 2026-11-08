@@ -7,7 +7,7 @@ sidebar:
 ---
 # 実例
 
-生成された starter サイトから始める、よくある改造の before/after 例です。ファイル全体の対応表は [レイアウト](./layout.ja.md) を見てください。
+生成された starter サイトを起点にした、よくある改造の before/after 例です。ファイル全体の対応表は [レイアウト](./layout.ja.md) を見てください。
 
 ## ヘッダーにリンクを追加する（設定のみ）
 
@@ -27,7 +27,7 @@ plugins: [
 ],
 ```
 
-詳しくは [ページとナビゲーション](./pages-and-navigation.ja.md) を見てください。
+詳しくは [ページとナビゲーション](./pages-and-navigation.ja.md) を参照してください。
 
 ## 記事の横にプラグインのUIを置く
 
@@ -50,7 +50,7 @@ export function ArticleAside({ items, backlinks }: Props) {
 }
 ```
 
-詳しくは [プラグインとCSS](./plugins-and-css.ja.md) を見てください。
+詳しくは [プラグインとCSS](./plugins-and-css.ja.md) を参照してください。
 
 ## カスタムページを追加する
 
@@ -61,7 +61,7 @@ export default function About() {
   return (
     <main>
       <h1>About</h1>
-      <p>このページは自分のものです。</p>
+      <p>自分で作ったページです。</p>
     </main>
   );
 }

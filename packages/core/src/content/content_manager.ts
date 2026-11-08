@@ -535,190 +535,232 @@ export class ContentManager {
       "content.manifest",
       {},
       async () => {
-        const [posts, contentIndex] = await Promise.all([
-          this.getAllPosts(),
-          this.getContentIndex(plan),
-        ]);
-        const entriesByPath = new Map(
-          (await this.scan()).map((entry) => [entry.path, entry]),
+        const { contentIndex, entries } = await this.collectManifestEntries(
+          plan,
+          locations,
         );
-        const entries = await this.observability().tracer.span(
-          "content.manifest.entries",
-          {},
-          () =>
-            mapConcurrent(
-              posts,
-              CONTENT_PROCESSING_CONCURRENCY,
-              async (post) => {
-                const rawPost = await this.getPost(post.slug);
-                const reused = this.reuseManifestEntry(
-                  post.slug,
-                  rawPost,
-                  plan,
-                );
-                if (reused) return reused;
-
-                const processed = await this.getProcessedContent(post.slug);
-                const location = locations.get(post.slug);
-                if (!location) {
-                  throw new Error(
-                    `Content public location was not resolved: ${post.slug}`,
-                  );
-                }
-
-                return this.manifestAssembler.createEntry(
-                  post.slug,
-                  rawPost,
-                  processed,
-                  contentIndex,
-                  location,
-                  resolvePublishingState(processed.frontmatter, {
-                    strategy: this.publishStrategy(),
-                    buildTime: this.publishingBuildTime,
-                  }),
-                  entriesByPath.get(`${post.slug}.md`)?.metadata,
-                  this.contentIndexAmbiguities,
-                );
-              },
-            ),
+        const { manifest, cacheManifestEntries } = await this.assembleManifest(
+          entries,
+          contentIndex,
+          locations,
+          plan,
         );
-
-        await this.pluginRuntime.runGraphHook(entries, contentIndex);
-        const manifest = await this.observability().tracer.span(
-          "content.graph",
-          {},
-          () =>
-            this.manifestAssembler.build(
-              entries,
-              contentIndex,
-              this.contentIndexAmbiguities,
-            ),
-        );
-        const cacheManifestEntries = structuredClone(manifest.entries);
-        this.locationResolver.populateRedirects(manifest, locations);
-        this.manifestAssembler.applyPublicView(
-          manifest,
-          this.publishStrategy(),
-          this.publishingBuildTime,
-        );
-        manifest.localization =
-          (await this.pluginRuntime.resolveContentLocalization(
-            manifest,
-            contentIndex,
-          )) ?? manifest.localization;
-        manifest.pagePaths = [
-          ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
-        ];
-        await this.outputResolver.populatePageRoutes(manifest, contentIndex);
-        await this.pluginRuntime.runAssetTransforms(manifest);
-        await this.pluginRuntime.runManifestCreated(
+        const outputChangeSet = await this.finalizeManifestOutputs(
           manifest,
           contentIndex,
-          plan.previousState?.manifestHookCache,
-          this.getPipelineFingerprint(),
+          plan,
         );
-        this.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);
-        manifest.assets = this.pluginRuntime.collectAssets();
-        manifest.clientEntries = this.pluginRuntime.collectClientEntries();
-        manifest.diagnostics = [
-          ...this.pluginRuntime.getDiagnostics(),
-          ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
-        ];
-
-        await this.pluginRuntime.runGeneratedOutputPlans(manifest);
-        await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
-        await this.emitPublicImageAssets(manifest);
-        manifest.generatedOutputs =
-          this.pluginRuntime.collectGeneratedOutputs();
-        this.outputChangeSet = await this.outputResolver.resolve({
+        await this.recordCompletedBuild(
           manifest,
-          contentIndex,
-          previousState: plan.previousState,
-          changeSet: plan.changeSet,
-          affectedContent: plan.affectedContent,
-          externalDependencies: plan.externalDependencies,
-          externalDependencyFailures: plan.externalDependencyFailures,
-          contentFingerprints: this.processedContentCacheFingerprints,
-        });
-        if (this.outputChangeSet) {
-          this.observability().tracer.event("build.incremental.outputs", {
-            candidateOutputCount: this.outputChangeSet.candidateOutputCount,
-            affectedOutputCount: this.outputChangeSet.affectedOutputCount,
-            removedOutputCount: this.outputChangeSet.removedOutputCount,
-            unchangedOutputCount: this.outputChangeSet.unchangedOutputCount,
-            fullRegenerationRequired:
-              this.outputChangeSet.fullRegenerationRequired,
-          });
-        }
-        this.manifest = manifest;
-        this.cacheManifestEntries = cacheManifestEntries;
-        this.provenance = undefined;
-        if (this.pipelineOptions.config?.provenance?.enabled !== false) {
-          try {
-            this.provenance = createBuildProvenance({
-              plan,
-              manifest,
-              outputChanges: this.outputChangeSet,
-              pluginHooks: this.pluginRuntime.getPluginHookExecutions(),
-              derivedViews: this.pluginRuntime.getDerivedViewInspection(),
-              processed: this.processedContentDurations,
-            });
-          } catch {
-            this.provenance = undefined;
-            this.observability().logger.warn(
-              "Could not record build provenance.",
-            );
-          }
-        }
-        await this.commitBuildState();
-        this.finalHtmlDiagnostics = [];
-        const inspectorTabs = Object.freeze(
-          this.pipelineOptions.isDevelopment
-            ? (await this.pluginRuntime.collectInspectorTabs()).map((tab) =>
-                Object.freeze({ ...tab }),
-              )
-            : [],
-        );
-        this.completedBuildSnapshot = Object.freeze({
-          manifest,
-          outputChangeSet: freezeOutputChangeSet(this.outputChangeSet),
-          fullRegenerationReasons: Object.freeze([
-            ...plan.fullRegenerationReasons,
-          ]),
-          completedAt: Date.now(),
+          plan,
+          cacheManifestEntries,
           startedAt,
-          plugins: Object.freeze(
-            this.pluginRuntime.getPluginInventory().map((plugin) =>
-              Object.freeze({
-                ...plugin,
-                provides: Object.freeze([...plugin.provides]),
-                requires: Object.freeze([...plugin.requires]),
-                optional: Object.freeze([...plugin.optional]),
-              }),
-            ),
-          ),
-          manifestHookMetrics: freezeManifestHookMetrics(
-            this.pluginRuntime.getManifestHookMetrics(),
-          ),
-          derivedViews: Object.freeze(
-            this.pluginRuntime.getDerivedViewInspection().map((view) =>
-              Object.freeze({
-                ...view,
-                dependencies: Object.freeze([...view.dependencies]),
-                outputPaths: Object.freeze([...view.outputPaths]),
-              }),
-            ),
-          ),
-          inspectorTabs,
-          finalHtmlDiagnostics: this.finalHtmlDiagnostics,
-          ...(this.provenance === undefined
-            ? {}
-            : { provenance: this.provenance }),
-          trace: this.pipelineOptions.traceRecorder?.snapshot(),
-        });
+          outputChangeSet,
+        );
         return manifest;
       },
     );
+  }
+
+  private async collectManifestEntries(
+    plan: ContentBuildPlan,
+    locations: ReadonlyMap<string, ContentPublicLocation>,
+  ): Promise<{
+    contentIndex: Map<string, string>;
+    entries: ContentManifestEntry[];
+  }> {
+    const [posts, contentIndex] = await Promise.all([
+      this.getAllPosts(),
+      this.getContentIndex(plan),
+    ]);
+    const entriesByPath = new Map(
+      (await this.scan()).map((entry) => [entry.path, entry]),
+    );
+    const entries = await this.observability().tracer.span(
+      "content.manifest.entries",
+      {},
+      () =>
+        mapConcurrent(posts, CONTENT_PROCESSING_CONCURRENCY, async (post) => {
+          const rawPost = await this.getPost(post.slug);
+          const reused = this.reuseManifestEntry(post.slug, rawPost, plan);
+          if (reused) return reused;
+
+          const processed = await this.getProcessedContent(post.slug);
+          const location = locations.get(post.slug);
+          if (!location) {
+            throw new Error(
+              `Content public location was not resolved: ${post.slug}`,
+            );
+          }
+
+          return this.manifestAssembler.createEntry(
+            post.slug,
+            rawPost,
+            processed,
+            contentIndex,
+            location,
+            resolvePublishingState(processed.frontmatter, {
+              strategy: this.publishStrategy(),
+              buildTime: this.publishingBuildTime,
+            }),
+            entriesByPath.get(`${post.slug}.md`)?.metadata,
+            this.contentIndexAmbiguities,
+          );
+        }),
+    );
+    return { contentIndex, entries };
+  }
+
+  private async assembleManifest(
+    entries: ContentManifestEntry[],
+    contentIndex: Map<string, string>,
+    locations: ReadonlyMap<string, ContentPublicLocation>,
+    plan: ContentBuildPlan,
+  ): Promise<{
+    manifest: ContentManifest;
+    cacheManifestEntries: readonly ContentManifestEntry[];
+  }> {
+    await this.pluginRuntime.runGraphHook(entries, contentIndex);
+    const manifest = await this.observability().tracer.span(
+      "content.graph",
+      {},
+      () =>
+        this.manifestAssembler.build(
+          entries,
+          contentIndex,
+          this.contentIndexAmbiguities,
+        ),
+    );
+    const cacheManifestEntries = structuredClone(manifest.entries);
+    this.locationResolver.populateRedirects(manifest, locations);
+    this.manifestAssembler.applyPublicView(
+      manifest,
+      this.publishStrategy(),
+      this.publishingBuildTime,
+    );
+    manifest.localization =
+      (await this.pluginRuntime.resolveContentLocalization(
+        manifest,
+        contentIndex,
+      )) ?? manifest.localization;
+    manifest.pagePaths = [
+      ...(await this.pluginRuntime.getPagePaths(manifest, contentIndex)),
+    ];
+    await this.outputResolver.populatePageRoutes(manifest, contentIndex);
+    await this.pluginRuntime.runAssetTransforms(manifest);
+    await this.pluginRuntime.runManifestCreated(
+      manifest,
+      contentIndex,
+      plan.previousState?.manifestHookCache,
+      this.getPipelineFingerprint(),
+    );
+    this.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);
+    manifest.assets = this.pluginRuntime.collectAssets();
+    manifest.clientEntries = this.pluginRuntime.collectClientEntries();
+    manifest.diagnostics = [
+      ...this.pluginRuntime.getDiagnostics(),
+      ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
+    ];
+    return { manifest, cacheManifestEntries };
+  }
+
+  private async finalizeManifestOutputs(
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+    plan: ContentBuildPlan,
+  ): Promise<OutputChangeSet> {
+    await this.pluginRuntime.runGeneratedOutputPlans(manifest);
+    await this.pluginRuntime.runBuildEnd(manifest, contentIndex);
+    await this.emitPublicImageAssets(manifest);
+    manifest.generatedOutputs = this.pluginRuntime.collectGeneratedOutputs();
+    const outputChangeSet = await this.outputResolver.resolve({
+      manifest,
+      contentIndex,
+      previousState: plan.previousState,
+      changeSet: plan.changeSet,
+      affectedContent: plan.affectedContent,
+      externalDependencies: plan.externalDependencies,
+      externalDependencyFailures: plan.externalDependencyFailures,
+      contentFingerprints: this.processedContentCacheFingerprints,
+    });
+    this.outputChangeSet = outputChangeSet;
+    this.observability().tracer.event("build.incremental.outputs", {
+      candidateOutputCount: outputChangeSet.candidateOutputCount,
+      affectedOutputCount: outputChangeSet.affectedOutputCount,
+      removedOutputCount: outputChangeSet.removedOutputCount,
+      unchangedOutputCount: outputChangeSet.unchangedOutputCount,
+      fullRegenerationRequired: outputChangeSet.fullRegenerationRequired,
+    });
+    return outputChangeSet;
+  }
+
+  private async recordCompletedBuild(
+    manifest: ContentManifest,
+    plan: ContentBuildPlan,
+    cacheManifestEntries: readonly ContentManifestEntry[],
+    startedAt: number,
+    outputChangeSet: OutputChangeSet,
+  ): Promise<void> {
+    this.manifest = manifest;
+    this.cacheManifestEntries = cacheManifestEntries;
+    this.provenance = undefined;
+    if (this.pipelineOptions.config?.provenance?.enabled !== false) {
+      try {
+        this.provenance = createBuildProvenance({
+          plan,
+          manifest,
+          outputChanges: outputChangeSet,
+          pluginHooks: this.pluginRuntime.getPluginHookExecutions(),
+          derivedViews: this.pluginRuntime.getDerivedViewInspection(),
+          processed: this.processedContentDurations,
+        });
+      } catch {
+        this.provenance = undefined;
+        this.observability().logger.warn("Could not record build provenance.");
+      }
+    }
+    await this.commitBuildState();
+    this.finalHtmlDiagnostics = [];
+    const inspectorTabs = Object.freeze(
+      this.pipelineOptions.isDevelopment
+        ? (await this.pluginRuntime.collectInspectorTabs()).map((tab) =>
+            Object.freeze({ ...tab }),
+          )
+        : [],
+    );
+    this.completedBuildSnapshot = Object.freeze({
+      manifest,
+      outputChangeSet: freezeOutputChangeSet(outputChangeSet),
+      fullRegenerationReasons: Object.freeze([...plan.fullRegenerationReasons]),
+      completedAt: Date.now(),
+      startedAt,
+      plugins: Object.freeze(
+        this.pluginRuntime.getPluginInventory().map((plugin) =>
+          Object.freeze({
+            ...plugin,
+            provides: Object.freeze([...plugin.provides]),
+            requires: Object.freeze([...plugin.requires]),
+            optional: Object.freeze([...plugin.optional]),
+          }),
+        ),
+      ),
+      manifestHookMetrics: freezeManifestHookMetrics(
+        this.pluginRuntime.getManifestHookMetrics(),
+      ),
+      derivedViews: Object.freeze(
+        this.pluginRuntime.getDerivedViewInspection().map((view) =>
+          Object.freeze({
+            ...view,
+            dependencies: Object.freeze([...view.dependencies]),
+            outputPaths: Object.freeze([...view.outputPaths]),
+          }),
+        ),
+      ),
+      inspectorTabs,
+      finalHtmlDiagnostics: this.finalHtmlDiagnostics,
+      ...(this.provenance === undefined ? {} : { provenance: this.provenance }),
+      trace: this.pipelineOptions.traceRecorder?.snapshot(),
+    });
   }
 
   async build(options: ContentBuildOptions = {}): Promise<ContentManifest> {

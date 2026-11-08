@@ -407,15 +407,15 @@ async function main(): Promise<void> {
       `${JSON.stringify(Object.fromEntries(coldSnapshot), null, 2)}\n`,
     );
 
-    // 2. No-change fallback for cache-disabled manifest hooks.
-    logger.step("case 2: No-change manifest hook fallback");
+    // 2. No-change build takes the fast path.
+    logger.step("case 2: No-change fast path");
     const noChange = await build("No-change Fast Path", {
-      expectFastPath: false,
+      expectFastPath: true,
     });
     assert.equal(
       noChange.blockReason,
-      "manifest-hook-cache-disabled",
-      "cache-disabled manifest hooks must block the no-change fast path",
+      undefined,
+      "no-change fast path must not report a block reason",
     );
     assertNoDifference(
       "no-change vs cold",
@@ -635,8 +635,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       feedTampered.blockReason,
-      "manifest-hook-cache-disabled",
-      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${feedTampered.blockReason})`,
+      "output-inventory-mismatch",
+      `tampered output must block the fast path during output inventory validation (got ${feedTampered.blockReason})`,
     );
     assertNoDifference(
       "feed modification self-heal",
@@ -649,8 +649,8 @@ async function main(): Promise<void> {
     const feedDeleted = await build("Feed deletion", { expectFastPath: false });
     assert.equal(
       feedDeleted.blockReason,
-      "manifest-hook-cache-disabled",
-      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${feedDeleted.blockReason})`,
+      "output-inventory-mismatch",
+      `deleted output must block the fast path during output inventory validation (got ${feedDeleted.blockReason})`,
     );
     assertNoDifference(
       "feed deletion self-heal",
@@ -666,8 +666,8 @@ async function main(): Promise<void> {
     });
     assert.equal(
       extraFileResult.blockReason,
-      "manifest-hook-cache-disabled",
-      `cache-disabled manifest hooks must block the fast path before output inventory validation (got ${extraFileResult.blockReason})`,
+      "output-inventory-mismatch",
+      `extra output must block the fast path during output inventory validation (got ${extraFileResult.blockReason})`,
     );
     if (fs.existsSync(extraFile)) {
       fail("extra dist file was not removed by the recovered build");
@@ -703,15 +703,15 @@ async function main(): Promise<void> {
       diffSnapshots(incrementalSnapshot, fullSnapshot),
     );
 
-    // 17. No-change manifest hook fallback recovery.
-    logger.step("case 17: No-change manifest hook fallback recovery");
+    // 17. No-change fast path recovery after a full build.
+    logger.step("case 17: No-change fast path recovery");
     const recovered = await build("No-change recovery", {
-      expectFastPath: false,
+      expectFastPath: true,
     });
     assert.equal(
       recovered.blockReason,
-      "manifest-hook-cache-disabled",
-      "recovered no-change build must keep the cache-disabled manifest hook fallback",
+      undefined,
+      "recovered no-change build must take the fast path without a block reason",
     );
     assertNoDifference(
       "no-change recovery vs full",
@@ -743,7 +743,7 @@ async function main(): Promise<void> {
       );
     }
     logger.step(
-      "PASS: standard starter falls back safely for cache-disabled manifest hooks and every change invalidates it safely",
+      "PASS: standard starter uses the no-change fast path safely and every change invalidates it safely",
     );
   } finally {
     if (keep) {

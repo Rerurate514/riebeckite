@@ -300,6 +300,26 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/integrations/comments-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-comments':
+        specifier: workspace:*
+        version: link:../../plugins/comments
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/integrations/comments-github:
+    dependencies:
+      '@riebeckite/plugin-comments':
+        specifier: workspace:*
+        version: link:../../plugins/comments
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/integrations/honox:
     dependencies:
       '@babel/parser':
@@ -354,6 +374,26 @@ importers:
       '@riebeckite/test':
         specifier: workspace:*
         version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/integrations/reactions-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-reactions':
+        specifier: workspace:*
+        version: link:../../plugins/reactions
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/integrations/reactions-github:
+    dependencies:
+      '@riebeckite/plugin-reactions':
+        specifier: workspace:*
+        version: link:../../plugins/reactions
+    devDependencies:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4

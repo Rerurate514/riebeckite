@@ -16,8 +16,12 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
+  "packages/integrations/comments-cloudflare",
+  "packages/integrations/comments-github",
   "packages/integrations/honox",
   "packages/dev-inspector",
+  "packages/integrations/reactions-cloudflare",
+  "packages/integrations/reactions-github",
   "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
@@ -220,6 +224,22 @@ const packagePublishingMetadata = {
     description:
       "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
+  },
+  "packages/integrations/comments-cloudflare": {
+    description: "Cloudflare D1 runtime for Riebeckite comments.",
+    keywords: ["riebeckite", "comments", "cloudflare", "d1"],
+  },
+  "packages/integrations/comments-github": {
+    description: "GitHub Discussions runtime for Riebeckite comments.",
+    keywords: ["riebeckite", "comments", "github", "discussions", "giscus"],
+  },
+  "packages/integrations/reactions-cloudflare": {
+    description: "Cloudflare D1 runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "cloudflare", "d1"],
+  },
+  "packages/integrations/reactions-github": {
+    description: "GitHub Discussions runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "github", "discussions"],
   },
   "packages/integrations/webmention-cloudflare": {
     description:

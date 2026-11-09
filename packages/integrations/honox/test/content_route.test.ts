@@ -39,6 +39,37 @@ test("content redirects resolve only when their target is routable", () => {
   assert.equal(resolveContentRoute(manifest, "/old-private"), null);
 });
 
+test("encoded manifest keys resolve from decoded request paths", () => {
+  const permalink = "/%E6%97%A5%E6%9C%AC%E8%AA%9E";
+  const manifest = manifestOf([entry("unicode", permalink, true)]);
+  manifest.redirects.set(`${permalink}/old`, {
+    path: `${permalink}/old`,
+    status: 308,
+    slug: "unicode",
+  });
+  manifest.publicRedirects.set(`${permalink}/old`, {
+    path: `${permalink}/old`,
+    status: 308,
+    slug: "unicode",
+  });
+
+  assert.equal(resolveContentRoute(manifest, "/日本語")?.kind, "content");
+  assert.equal(resolveContentRoute(manifest, permalink)?.kind, "content");
+  assert.deepEqual(resolveContentRoute(manifest, "/日本語/old"), {
+    kind: "redirect",
+    location: permalink,
+    status: 308,
+  });
+});
+
+test("decoded literal percent signs resolve encoded manifest keys", () => {
+  const permalink = "/100%25";
+  const manifest = manifestOf([entry("percent", permalink, true)]);
+
+  assert.equal(resolveContentRoute(manifest, "/100%")?.kind, "content");
+  assert.equal(resolveContentRoute(manifest, permalink)?.kind, "content");
+});
+
 test("SSG enumerates affected public redirect routes", async () => {
   const manifest = manifestOf([entry("public", "/new", true)]);
   manifest.publicRedirects.set("/old/", {

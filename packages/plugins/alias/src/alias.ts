@@ -3,10 +3,16 @@ export type AliasRedirectStatus = 301 | 302 | 307 | 308;
 export type AliasOptions = {
   /** Redirect status recorded for every alias path. Defaults to `308`. */
   status?: AliasRedirectStatus;
+  /**
+   * Maximum length of each percent-encoded path segment. Aliases with a longer
+   * segment are skipped with an `alias-too-long` warning.
+   */
+  maxSegmentLength?: number;
 };
 
 export type ResolvedAliasOptions = {
   status: AliasRedirectStatus;
+  maxSegmentLength?: number;
 };
 
 export function resolveAliasOptions(
@@ -16,7 +22,21 @@ export function resolveAliasOptions(
   if (!([301, 302, 307, 308] as const).includes(status)) {
     throw new Error(`Invalid alias redirect status: ${status}`);
   }
-  return { status };
+  if (
+    options.maxSegmentLength !== undefined &&
+    (!Number.isInteger(options.maxSegmentLength) ||
+      options.maxSegmentLength < 1)
+  ) {
+    throw new Error(
+      `Invalid alias maxSegmentLength: ${options.maxSegmentLength}`,
+    );
+  }
+  return {
+    status,
+    ...(options.maxSegmentLength === undefined
+      ? {}
+      : { maxSegmentLength: options.maxSegmentLength }),
+  };
 }
 
 /**

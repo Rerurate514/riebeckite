@@ -76,6 +76,29 @@ function applyAliases(
         continue;
       }
 
+      const maxSegmentLength = options.maxSegmentLength;
+      if (
+        maxSegmentLength !== undefined &&
+        path.split("/").some((segment) => segment.length > maxSegmentLength)
+      ) {
+        context.diagnostics.push({
+          code: "alias-too-long",
+          severity: "warning",
+          pluginName: "alias",
+          filePath: entry.path,
+          slug: entry.slug,
+          target: path,
+          message: `Alias "${alias}" resolves to ${path}, which has a path segment longer than ${maxSegmentLength} characters; the alias was skipped.`,
+          suggestion: "Shorten the alias or raise maxSegmentLength.",
+          meta: {
+            alias,
+            path,
+            maxSegmentLength,
+          },
+        });
+        continue;
+      }
+
       const owner = owners.get(path);
       if (owner) {
         // An alias that already points at this same note (its canonical

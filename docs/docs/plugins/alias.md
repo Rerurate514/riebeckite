@@ -57,6 +57,7 @@ plugins: [permalink(), alias()],
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `status` | `301 \| 302 \| 307 \| 308` | `308` | HTTP status used for generated redirects |
+| `maxSegmentLength` | `number` | unset | Maximum length of each percent-encoded path segment; longer aliases are skipped |
 
 ## Alias normalization
 
@@ -71,12 +72,15 @@ An alias is treated as an alternate note name and mapped to a path under the sit
   - containing `//` (an empty segment)
   - containing malformed percent escapes
 
+- Aliases whose percent-encoded path segment exceeds `maxSegmentLength` are skipped with a warning.
+
 ## Diagnostics
 
 | Code | Severity | Meaning |
 | --- | --- | --- |
 | `alias-invalid` | warning | The alias cannot be converted into a URL path. |
 | `alias-collision` | warning | The alias path collides with another note's canonical permalink or an existing redirect. |
+| `alias-too-long` | warning | The alias has a path segment longer than `maxSegmentLength`. |
 
 A colliding alias is not registered; the existing path wins.
 

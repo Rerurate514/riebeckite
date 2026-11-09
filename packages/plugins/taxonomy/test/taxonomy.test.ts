@@ -197,6 +197,23 @@ test("provides tag and folder listings as plugin page types", async () => {
   assert.match(folders?.body ?? "", /href="\/folders\/guides"/);
 });
 
+test("ignores tags that only appear on non-public entries", async () => {
+  const content = new ContentManager(
+    source({
+      ...taggedNotes,
+      "draft.md": "---\ntitle: Draft\ntags: [draft-only]\n---\n\n# Draft\n",
+      "unlisted.md":
+        "---\ntitle: Unlisted\nvisibility: unlisted\ntags: [unlisted-only]\n---\n\n# Unlisted\n",
+    }),
+    [],
+    { config: config() },
+  );
+
+  const tags = await content.resolvePage("/tags");
+  assert.match(tags?.body ?? "", /href="\/tags\/featured"/);
+  assert.doesNotMatch(tags?.body ?? "", /draft-only|unlisted-only/);
+});
+
 test("renders taxonomy index pages under custom base paths", async () => {
   const content = new ContentManager(
     source({

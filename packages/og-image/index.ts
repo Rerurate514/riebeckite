@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { type Child, createElement } from "hono/jsx";
-import satori from "satori";
-import sharp from "sharp";
+import type satori from "satori";
 
 export const OG_IMAGE_HEIGHT = 630;
 export const OG_IMAGE_WIDTH = 1200;
@@ -132,11 +131,15 @@ export async function renderOgImage(
   const svg =
     typeof result === "string"
       ? `<svg xmlns="http://www.w3.org/2000/svg" width="${OG_IMAGE_WIDTH}" height="${OG_IMAGE_HEIGHT}"><style>${fontFaceCss}text{font-family:"Noto Sans JP",sans-serif}</style>${result}</svg>`
-      : await satori(toSatoriNode(result) as Parameters<typeof satori>[0], {
-          width: OG_IMAGE_WIDTH,
-          height: OG_IMAGE_HEIGHT,
-          fonts: notoSansJpFonts,
-        });
+      : await (await import("satori")).default(
+          toSatoriNode(result) as Parameters<typeof satori>[0],
+          {
+            width: OG_IMAGE_WIDTH,
+            height: OG_IMAGE_HEIGHT,
+            fonts: notoSansJpFonts,
+          },
+        );
+  const { default: sharp } = await import("sharp");
   const png = await sharp(Buffer.from(svg), { limitInputPixels: false })
     .png()
     .toBuffer();

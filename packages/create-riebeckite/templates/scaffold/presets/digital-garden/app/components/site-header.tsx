@@ -1,11 +1,26 @@
+import type { ContentManifest } from "@riebeckite/core";
 import { ColorModeToggle } from "@riebeckite/plugin-color-mode";
 import { SiteNav } from "@riebeckite/plugin-navigation";
 import { SearchBar } from "@riebeckite/plugin-search";
+import { slugifyTaxonomyValue } from "@riebeckite/plugin-taxonomy";
 import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
 import { useSiteContext } from "@riebeckite/ui";
 
+function folderNavigation(manifest: ContentManifest) {
+  const folders = new Set<string>();
+  for (const entry of manifest.discoverableEntries) {
+    const [folder] = entry.slug.split("/");
+    if (entry.slug.includes("/") && folder) folders.add(folder);
+  }
+  return [...folders].sort((a, b) => a.localeCompare(b, "en")).map((folder) => ({
+    label: folder.replace(/[-_]+/g, " ").replace(/^./, (char) => char.toUpperCase()),
+    href: `/folders/${slugifyTaxonomyValue(folder)}`,
+  }));
+}
+
 export function SiteHeader() {
   const site = useSiteContext();
+  const items = site ? folderNavigation(site.manifest) : [];
 
   return (
     <>
@@ -23,7 +38,7 @@ export function SiteHeader() {
           <span class="site-header__title">{site?.config.site.title}</span>
         </a>
         <nav class="site-header__navigation" aria-label="Primary navigation">
-          <SiteNav placement="primary" omitHome />
+          <SiteNav items={items} />
         </nav>
         <div class="site-header__actions">
           <SearchBar class="rr-search-bar--header" />
@@ -37,7 +52,7 @@ export function SiteHeader() {
         </div>
       </header>
       <Drawer id="site-navigation" label="Navigation">
-        <SiteNav placement="primary" omitHome />
+        <SiteNav items={items} />
         <SiteNav placement="secondary" label="Secondary navigation" />
       </Drawer>
     </>

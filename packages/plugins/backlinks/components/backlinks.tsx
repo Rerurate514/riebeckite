@@ -6,6 +6,7 @@ import { getBacklinks } from "../src/backlinks.server.js";
 
 export type BacklinksProps = {
   backlinks?: readonly ArticleBacklink[];
+  borders?: Readonly<{ items?: boolean }>;
 };
 
 const Backlinks = (async (props: Readonly<BacklinksProps>) => {
@@ -19,7 +20,13 @@ const Backlinks = (async (props: Readonly<BacklinksProps>) => {
   if (!backlinks || backlinks.length === 0) return html``;
 
   return (
-    <footer class="rr-backlinks">
+    <footer
+      class={
+        props.borders?.items === false
+          ? "rr-backlinks rr-backlinks--without-item-borders"
+          : "rr-backlinks"
+      }
+    >
       <p class="rr-backlinks__eyebrow">Backlinks</p>
       <ul class="rr-backlinks__list">
         {backlinks.map((backlink) => (

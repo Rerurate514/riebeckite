@@ -246,6 +246,15 @@ test("publishes backlinks to the article footer only when present", async () => 
   assert.ok(html.includes('href="/beta"'));
   assert.ok(html.includes(">Beta</a>"));
 
+  const htmlWithoutBorders = renderToString(
+    await Backlinks({ backlinks: published, borders: { items: false } }),
+  );
+  assert.ok(
+    htmlWithoutBorders.includes(
+      '<footer class="rr-backlinks rr-backlinks--without-item-borders">',
+    ),
+  );
+
   const betaBacklinks = getPublishedBacklinks({
     manifest,
     config: explicitConfig,

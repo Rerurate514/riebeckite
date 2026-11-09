@@ -80,11 +80,14 @@ async function ArticleFooter() {
 
 There are no plugin options for `backlinks`. The `Backlinks` component accepts
 an optional `backlinks` prop; when omitted, it resolves the list from context.
+Set `borders={{ items: false }}` to remove the rule between backlink items.
 
 ## Component
 
-`Backlinks({ backlinks })` renders a `<footer class="rr-backlinks">` with
-an eyebrow label and a list of links to each backlink's resolved `permalink`.
+`Backlinks({ backlinks, borders })` renders a `<footer class="rr-backlinks">`
+with an eyebrow label and a list of links to each backlink's resolved
+`permalink`. With `borders={{ items: false }}`, the footer also carries
+`rr-backlinks--without-item-borders`.
 
 ## Exports
 

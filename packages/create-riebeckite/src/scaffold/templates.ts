@@ -35,6 +35,7 @@ export function siteTemplateFiles(
     .trimEnd();
   const files: readonly SiteTemplateFile[] = [
     { path: "package.json", content: packageJson(preset, variables, options) },
+    { path: "pnpm-workspace.yaml", content: pnpmWorkspace() },
     {
       path: "riebeckite.config.ts",
       content: riebeckiteConfig(preset, variables, options),
@@ -174,6 +175,13 @@ function replaceTitle(
   return typeof content === "string"
     ? content.split("{{title}}").join(title)
     : content;
+}
+
+function pnpmWorkspace(): string {
+  const allowBuilds = ["esbuild", "puppeteer", "sharp"];
+  return `allowBuilds:\n${allowBuilds
+    .map((name) => `  ${name}: true`)
+    .join("\n")}\n`;
 }
 
 function packageJson(

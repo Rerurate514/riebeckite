@@ -414,11 +414,14 @@ async function saveOutputCacheEntries(
       ) {
         throw new Error(`Invalid SSG output cache entry: ${outputPath}`);
       }
-      entries[outputPath] = await withOutputCacheEntryStat(
+      const cached = await existingOutputCacheEntry(
         existing,
         join(directory, existing.cachePath),
       );
-      continue;
+      if (cached) {
+        entries[outputPath] = cached;
+        continue;
+      }
     }
     const source = resolveOutputCacheFile(outputDirectory, outputPath);
     const cachePath = outputCacheEntryName(outputPath);
@@ -450,6 +453,15 @@ async function withOutputCacheEntryStat(
 ): Promise<OutputCacheEntry> {
   const info = await lstat(path).catch(() => undefined);
   if (!info?.isFile() || info.isSymbolicLink()) return entry;
+  return { ...entry, size: info.size, modifiedAtMs: info.mtimeMs };
+}
+
+async function existingOutputCacheEntry(
+  entry: OutputCacheEntry,
+  path: string,
+): Promise<OutputCacheEntry | undefined> {
+  const info = await lstat(path).catch(() => undefined);
+  if (!info?.isFile() || info.isSymbolicLink()) return undefined;
   return { ...entry, size: info.size, modifiedAtMs: info.mtimeMs };
 }
 

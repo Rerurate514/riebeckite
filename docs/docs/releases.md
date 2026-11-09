@@ -14,7 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Fixed
+
+- Reuse existing SSG output cache entries when a full regeneration produces identical content, instead of copying every output back into the cache on each build.
+  Packages: `@riebeckite/honox`
 
 ## 0.0.42 - 2026-11-08
 

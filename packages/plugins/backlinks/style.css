@@ -45,3 +45,7 @@
   color: var(--rb-color-accent, currentColor);
   text-decoration-color: currentColor;
 }
+
+.rr-backlinks--without-item-borders .rr-backlinks__link {
+  border-bottom: 0;
+}

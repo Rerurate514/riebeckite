@@ -93,7 +93,11 @@ export function createFrameworkResolutionPlugin(): Plugin {
   };
 }
 
-const runtimeExternalPackages = new Set(["@d2lang/d2", "@marp-team/marp-core"]);
+const runtimeExternalPackages = new Set([
+  "@d2lang/d2",
+  "@marp-team/marp-core",
+  "@riebeckite/og-image",
+]);
 
 function createRuntimeExternalPlugin(): Plugin {
   return {

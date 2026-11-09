@@ -113,8 +113,11 @@ async function findWorkspaceRoot(
   configRoot: string,
 ): Promise<string | undefined> {
   try {
-    const workspaceConfig = path.join(configRoot, "pnpm-workspace.yaml");
-    return (await fs.stat(workspaceConfig)).isFile() ? configRoot : undefined;
+    const workspaceConfig = await fs.readFile(
+      path.join(configRoot, "pnpm-workspace.yaml"),
+      "utf8",
+    );
+    return /^packages\s*:/m.test(workspaceConfig) ? configRoot : undefined;
   } catch {
     return undefined;
   }

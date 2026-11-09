@@ -38,7 +38,7 @@ export async function loadRiebeckiteConfig(
       platform: "node",
       format: "esm",
       external: options.workspaceRoot
-        ? []
+        ? ["@riebeckite/og-image"]
         : ["@riebeckite/core", ...siteRiebeckiteExternals(options.configRoot)],
       banner: {
         js: 'import { createRequire as __riebeckiteCreateRequire } from "node:module"; const require = __riebeckiteCreateRequire(import.meta.url);',

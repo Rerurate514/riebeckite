@@ -78,9 +78,21 @@ test("resolveAliasPath rejects aliases that cannot be a URL path", () => {
 test("resolveAliasOptions defaults to 308 and validates the status", () => {
   assert.deepEqual(resolveAliasOptions({}), { status: 308 });
   assert.deepEqual(resolveAliasOptions({ status: 301 }), { status: 301 });
+  assert.deepEqual(resolveAliasOptions({ maxSegmentLength: 20 }), {
+    status: 308,
+    maxSegmentLength: 20,
+  });
   assert.throws(
     () => resolveAliasOptions({ status: 303 as never }),
     /Invalid alias redirect status: 303/,
+  );
+  assert.throws(
+    () => resolveAliasOptions({ maxSegmentLength: 0 }),
+    /Invalid alias maxSegmentLength: 0/,
+  );
+  assert.throws(
+    () => resolveAliasOptions({ maxSegmentLength: 1.5 }),
+    /Invalid alias maxSegmentLength: 1.5/,
   );
 });
 
@@ -194,6 +206,23 @@ test("warns and skips an alias that cannot be a URL path", async () => {
   assert.deepEqual(context.locations.get("note")?.redirects, [
     { path: "/good", status: 308 },
   ]);
+});
+
+test("warns and skips an alias with a segment longer than the limit", async () => {
+  const context = await apply(
+    [entry("note", "---\naliases: [short, this-segment-is-too-long]\n---\n")],
+    [location("note", "/n/note")],
+    { maxSegmentLength: 10 },
+  );
+
+  assert.deepEqual(context.locations.get("note")?.redirects, [
+    { path: "/short", status: 308 },
+  ]);
+  assert.equal(context.diagnostics.length, 1);
+  assert.equal(context.diagnostics[0]?.code, "alias-too-long");
+  assert.equal(context.diagnostics[0]?.severity, "warning");
+  assert.equal(context.diagnostics[0]?.target, "/this-segment-is-too-long");
+  assert.equal(context.diagnostics[0]?.meta?.maxSegmentLength, 10);
 });
 
 test("skips entries without a resolved location", async () => {

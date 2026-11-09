@@ -1,22 +1,50 @@
 import { uniqueStrings } from "../utils/collections.js";
+import { scanMarkdownFenceLines } from "../utils/markdown.js";
 import { normalizeTag } from "../utils/tags.js";
 
 const TAG_PATTERN = /(^|[\s([{"'])#([\p{L}\p{N}_\-/]+)/gu;
+const FRONTMATTER_PATTERN = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/;
+const WIKILINK_PATTERN = /!?\[\[[^\]]*\]\]/g;
+const HTML_COMMENT_PATTERN = /<!--[\s\S]*?-->/g;
+const HTML_CODE_PATTERN = /<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi;
+const HTML_TAG_PATTERN = /<[^>]*>/g;
+const INLINE_CODE_PATTERN = /(`+)[\s\S]*?\1/g;
+const LINK_DESTINATION_PATTERN = /\]\([^)]*\)/g;
+const REFERENCE_DEFINITION_PATTERN = /^ {0,3}\[[^\]]+\]:.*$/gm;
 
 export function extractContentTags(markdown: string): string[] {
-  TAG_PATTERN.lastIndex = 0;
+  const text = stripNonTextMarkdown(markdown);
   const tags: string[] = [];
+  TAG_PATTERN.lastIndex = 0;
 
   for (
-    let match = TAG_PATTERN.exec(markdown);
+    let match = TAG_PATTERN.exec(text);
     match !== null;
-    match = TAG_PATTERN.exec(markdown)
+    match = TAG_PATTERN.exec(text)
   ) {
     const tag = normalizeTag(match[2] ?? "");
     if (tag) tags.push(tag);
   }
 
   return uniqueStrings(tags);
+}
+
+function stripNonTextMarkdown(markdown: string): string {
+  const withoutFences = scanMarkdownFenceLines(
+    markdown.replace(FRONTMATTER_PATTERN, ""),
+  )
+    .filter((line) => !line.inFence)
+    .map((line) => line.value)
+    .join("\n");
+
+  return withoutFences
+    .replace(HTML_COMMENT_PATTERN, " ")
+    .replace(HTML_CODE_PATTERN, " ")
+    .replace(INLINE_CODE_PATTERN, " ")
+    .replace(WIKILINK_PATTERN, " ")
+    .replace(LINK_DESTINATION_PATTERN, "]")
+    .replace(REFERENCE_DEFINITION_PATTERN, " ")
+    .replace(HTML_TAG_PATTERN, " ");
 }
 
 export function normalizeFrontmatterTags(tags: unknown): string[] {

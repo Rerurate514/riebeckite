@@ -1,3 +1,5 @@
+@import "@riebeckite/graph/style.css";
+
 @layer components {
   .rr-garden-explorer-page {
     width: min(calc(100vw - 2 * var(--rb-space-2)), 96rem);

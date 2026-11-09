@@ -30,11 +30,6 @@ export function localGraph(options: LocalGraphOptions = {}) {
         kind: "style",
         moduleSpecifier: "@riebeckite/plugin-local-graph/style.css",
       },
-      {
-        pluginName: "local-graph",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/graph/style.css",
-      },
     ],
     clientEntries: [
       createClientEntry(

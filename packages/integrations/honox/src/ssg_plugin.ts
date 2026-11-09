@@ -451,12 +451,14 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
               await measure(timingsMs, "outputWrite", () =>
                 writer.write(fileName, data),
               );
-              outputChecksums.set(fileName, fingerprintOutputContent(data));
+              const checksum = fingerprintOutputContent(data);
+              outputChecksums.set(fileName, checksum);
               metrics.emittedOutputCount += 1;
-              nextOutputCache.outputs[fileName] = {
-                cachePath: "",
-                checksum: "",
-              };
+              nextOutputCache.outputs[fileName] = outputCacheEntryFor(
+                previousOutputCache,
+                fileName,
+                checksum,
+              );
             },
           }),
         );
@@ -495,15 +497,14 @@ export function riebeckiteSsg(options: RiebeckiteSsgOptions = {}): Plugin {
                 await measure(timingsMs, "outputWrite", () =>
                   writer.write(asset.fileName, asset.source),
                 );
-                outputChecksums.set(
-                  asset.fileName,
-                  fingerprintOutputContent(asset.source),
-                );
+                const checksum = fingerprintOutputContent(asset.source);
+                outputChecksums.set(asset.fileName, checksum);
                 metrics.emittedOutputCount += 1;
-                nextOutputCache.outputs[asset.fileName] = {
-                  cachePath: "",
-                  checksum: "",
-                };
+                nextOutputCache.outputs[asset.fileName] = outputCacheEntryFor(
+                  previousOutputCache,
+                  asset.fileName,
+                  checksum,
+                );
               },
               canUseIncremental
                 ? new Set(
@@ -829,6 +830,17 @@ export function assertRequiredOutputsWereGenerated(comparison: {
   throw new Error(
     `SSG did not generate required output: ${comparison.missingInDist.join(", ")}`,
   );
+}
+
+function outputCacheEntryFor(
+  previous: OutputCacheState | undefined,
+  path: string,
+  checksum: string,
+): OutputCacheState["outputs"][string] {
+  const cached = previous?.outputs[path];
+  return cached?.checksum === checksum
+    ? cached
+    : { cachePath: "", checksum: "" };
 }
 
 async function emitGeneratedOutputs(

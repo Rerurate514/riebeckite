@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-image-compare",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

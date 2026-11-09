@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "21c4abed-ee5e-4a7f-a534-60692588ed9a",
-    "publishedAt": "2026-11-08T14:23:12.254Z",
-    "publicationFingerprint": "dd83abcfb5f6eb2a6e4cfc731879132399ea1ff0615f4a36b01f5d56577fa9e9",
+    "runId": "3ffecb96-2842-477d-9376-d3df7a5035bd",
+    "publishedAt": "2026-11-09T15:27:29.504Z",
+    "publicationFingerprint": "8e698ec45b01cebdfc20cf8c74d8f1e45956fef342a6d737fc202776bfc60aca",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3962,16 +3962,16 @@
         "permalink": "/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "fbbdd84663308566fc153a2397ceeb03e893aec5b4d6b12968ce80a78a9bd642",
-        "contentFingerprint": "1ae874cb5d77ceef8d3db8a7b6874d5d1c718fd63de6f5637f6947ac22f54b66"
+        "fingerprint": "e579c6cd449c824457303785774f5409afe1b65456e48da7c9c8a6cbed1789e4",
+        "contentFingerprint": "e27a4bcae11319f4007c075ec5771b64639463718b43f063c5eaf7de94a5e65b"
       },
       {
         "slug": "docs/plugins/alias.ja",
         "permalink": "/ja/docs/plugins/alias",
         "title": "Alias",
         "visibility": "public",
-        "fingerprint": "6be472424385a5b0c617d91032424d9c3191aa5995884c10d3183220f46163c0",
-        "contentFingerprint": "370fc3829b02669866e9040410f43ac67dccb671485cda8d3181ac20f7f25b35"
+        "fingerprint": "f4a8db30097bec0306728485bf452d7710ddd6974fa5b5e20756204f900a9962",
+        "contentFingerprint": "2980be7d423644d08db7384acf447f52591ecc4a4d376885907ba47d4d1070c7"
       },
       {
         "slug": "docs/plugins/analytics",
@@ -4058,16 +4058,16 @@
         "permalink": "/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "190f39a26aaac30b8b55f8f2c0e4c52d85b576ff6720b2db943d1a0287882fe6",
-        "contentFingerprint": "bcd923d9618052168b50885982eadf7d55dba687390acbedec985cabc7637bad"
+        "fingerprint": "947f312d5552e045a982001ad09c89dda16cd77263722646252b1b6556bf7a71",
+        "contentFingerprint": "93afb15afed6680b93617be8ebe8bd81e907f9731cdf321520b31fed3f0c739f"
       },
       {
         "slug": "docs/plugins/backlinks.ja",
         "permalink": "/ja/docs/plugins/backlinks",
         "title": "Backlinks",
         "visibility": "public",
-        "fingerprint": "30eb9dba26d6586af3c8cb23db6c40bbd8d8df3d04c6bd77b86f6f3d245e60c7",
-        "contentFingerprint": "443942f2df4e3d0d571f7792fbe6edef0e35ee53a11bdfdcb49fa240b1a138dc"
+        "fingerprint": "4cd96da633af66ac9ae1d0ef4a18ee8477ac70e9afdeb4f047504ee20c77d3bd",
+        "contentFingerprint": "9d049a71817c72b26f549d17284d7767801f62a085d4127945f4cdd169b6047b"
       },
       {
         "slug": "docs/plugins/bases",
@@ -4298,16 +4298,16 @@
         "permalink": "/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "776bef9b2f48611a681b6220d89cbaf06f1428386ffbc1bfefaf06e3d08444b6",
-        "contentFingerprint": "3ce187f3666a3d2707474b5992289ee387816a028a824e04e5f4e242583d495a"
+        "fingerprint": "5b8c8260fcc4dc5a3992fcf3e38a021336a5bfb13e616bf501128102ce404a94",
+        "contentFingerprint": "015c436de22c2713134755ee12a8a8c3b12922f4198e350cffb74a372eaef4d3"
       },
       {
         "slug": "docs/plugins/dataview.ja",
         "permalink": "/ja/docs/plugins/dataview",
         "title": "Dataview",
         "visibility": "public",
-        "fingerprint": "ef4b9bed0b5c130039f1ce7851bd42365fee045d7806901232e8ed23cf7aee08",
-        "contentFingerprint": "54ddb90f6ed4231f2cc4741e7e0ee72e5ace7e4f3725e22d044a4e921b148afb"
+        "fingerprint": "23e84ea5f24260dd81cb6db50f28838078b0de7ed78e183b11e3e825989ee915",
+        "contentFingerprint": "669e04ae3857708348d807b35c506a6d43ea741180292d2fc556c40277b28cc8"
       },
       {
         "slug": "docs/plugins/deploy",
@@ -5546,16 +5546,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "02b8f43c423cb94bcb1427dcd46f776250dec6cf378c052037918f48b0e9f1c9",
-        "contentFingerprint": "e1fcad9401326accb0f9acc883b5977478c6ad70c6003f6c9e29caec2c218b57"
+        "fingerprint": "3ba7fe7d73d046d1f56dfbdf3a2182e9d7d0d62de5201e28f206296ec560fe95",
+        "contentFingerprint": "c1185bcce934a5a01ce103dc3923f0ab950aafb91343fcd5c577510613db3ada"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data.ja",
         "visibility": "public",
-        "fingerprint": "81aba6979684561e925edde3b125865e4872fcca6454fe20e57f408b64885020",
-        "contentFingerprint": "f80529ba76c23ee93a4577970126faa4884c593f69739018681b960635fbbc58"
+        "fingerprint": "5444b9e2db8b740bb6343b3fc609d54d715ce57ea5b84dd379891a3d6ead2f0e",
+        "contentFingerprint": "717806487b37ab4a3c9514ade76d3f8f06f6f9d4bb6389b62b46040f9b9a1f6e"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "8dfaf70833f33ff185087b38020e7813484ba3882998fe71973b4ef3c1ec5fba",
-        "contentFingerprint": "6d5a97b0af27f811086352d71bb3951a5f31bce93b3bb710c15ce3fc8d13f76a"
+        "fingerprint": "ff2b3be93fa2f01a2d16fdfe7bf17606197a913789dbf0a1feb4337c1a367e78",
+        "contentFingerprint": "c02107b08f35df87d0edb789fd256e8dca1fe663f9344405f715fa3d4e28ded1"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "4e2121d6e76ba27ca83f898c2d044defc25aafb48c3cd18e129ca97647fc6746",
-        "contentFingerprint": "ce7529ca561d0518678fb70e537350a70f9a670ec4240cf6d191436fa06afc70"
+        "fingerprint": "7e1539b275aea244e70357dd95ce2313bf5eb6293f5053ae27977e6a2ecf54aa",
+        "contentFingerprint": "c472d4d2aa47d2326ceb32c302fc7995b961baba35fd6e4f9c0fb108c3a78cb7"
       },
       {
         "slug": "docs/security",
@@ -6758,7 +6758,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "f97e43c761d58613a9c5be1e126fd62b64542586c2ef8684ed96a3cf96020079",
+    "artifactFingerprint": "83d4ab74ba0885105424de7016f17e1968d3e3461e1755100e17dbad90986722",
     "provider": "cloudflare-workers"
   }
 }

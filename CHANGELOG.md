@@ -30,6 +30,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Reuse existing SSG output cache entries when a full regeneration produces identical content, instead of copying every output back into the cache on each build.
   Packages: `@riebeckite/honox`
 
+- Ignore hashtags inside code blocks, inline code, links, wikilinks, and HTML attributes when extracting inline content tags so they no longer appear in taxonomy listings and search data.
+  Packages: `@riebeckite/core`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.42...HEAD
 
 ## [0.0.42] - 2026-11-08

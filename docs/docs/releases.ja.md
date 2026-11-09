@@ -32,6 +32,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Reuse existing SSG output cache entries when a full regeneration produces identical content, instead of copying every output back into the cache on each build.
   Packages: `@riebeckite/honox`
 
+- Ignore hashtags inside code blocks, inline code, links, wikilinks, and HTML attributes when extracting inline content tags so they no longer appear in taxonomy listings and search data.
+  Packages: `@riebeckite/core`
+
 ## 0.0.42 - 2026-11-08
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

@@ -69,9 +69,13 @@ Pages と Folders は解決済みパーマリンク、次にタイトルで並�
 
 | オプション | 型 | 既定値 | 説明 |
 | --- | --- | --- | --- |
+| `exclude` | `string[]` | `[]` | 一致する slug パスと子孫を自動生成一覧から除外する。 |
 | `className` | `string` | `"rr-folder-page"` | 生成するフラグメントのルート CSS クラス。 |
 | `pagesLabel` | `string` | `"Pages"` | ページ一覧の見出し。 |
 | `foldersLabel` | `string` | `"Folders"` | フォルダ一覧の見出し。 |
+
+`exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
+`exclude: ["Config"]` は `Config` と `Config/internal` を除外しますが、公開 URL はそのままです。
 
 ## プラグイン依存
 

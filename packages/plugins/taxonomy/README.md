@@ -56,6 +56,7 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
+| `exclude` | `string[]` | `[]` | Omit matching slug paths and descendants from terms, feeds, and data. |
 | `tags` | `boolean` | `true` | Generate tag terms |
 | `folders` | `boolean` | `true` | Generate folder terms |
 | `tagsBasePath` | `string` | `"/tags"` | Tag listing prefix |
@@ -70,6 +71,10 @@ export default defineConfig({
 | `className` | `string` | `"rr-taxonomy"` | Root CSS class of page fragments |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON data endpoint path |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for terms and generated pages |
+
+`exclude` uses logical content slugs, not display labels or glob patterns. For
+example, `exclude: ["Config"]` omits `Config` and `Config/internal` from every
+taxonomy projection while leaving their published URLs unchanged.
 
 ## Data endpoint
 

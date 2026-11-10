@@ -69,6 +69,7 @@ plugins: [
     depth: 1,
     showTags: true,
     showFolders: false,
+    exclude: ["Config"],
     nodeSize: 1,
     linkDistance: 100,
     repulsion: 600,
@@ -77,6 +78,8 @@ plugins: [
 ```
 
 旧オプションの `layout` と `showLabels` は互換性のため受け付けますが、グラフは常に継続的な強制シミュレーションを使い、ラベルは固定のオン／オフではなく Display のフェードしきい値で制御します。
+
+`exclude` は一致する論理コンテンツ slug パスと子孫をノート一覧、グラフ、タグ、フォルダから除外します。表示ラベルや glob ではなく、`exclude: ["Config"]` は `Config/internal` を除外しますが公開 URL は維持します。
 
 `gardenExplorer()` は `/explore` ページタイプを登録し、`style.css` とクライアントハイドレーターをバンドルします。`resolveRiebeckiteRoute()` と `pluginPageSsgParams()` を使う catch-all ルートが描画・生成するため、プラグイン専用のアプリルートは不要です。ページはサーバー描画後にハイドレートされます。
 

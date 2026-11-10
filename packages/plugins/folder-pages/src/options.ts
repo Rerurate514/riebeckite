@@ -11,6 +11,7 @@ export function resolveFolderPagesOptions(
   options: FolderPagesOptions = {},
 ): ResolvedFolderPagesOptions {
   return {
+    exclude: options.exclude ?? [],
     className: normalizeString(
       options.className,
       DEFAULT_FOLDER_PAGES_CLASS_NAME,

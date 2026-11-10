@@ -18,6 +18,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
   Packages: `@riebeckite/plugin-navigation`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-100000-navigation-exclude-73be42.md
 
+- Add `exclude` to taxonomy, folder pages, and garden explorer to omit slug paths and their descendants from their derived discovery data.
+  Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 
 ## [0.0.46] - 2026-11-10

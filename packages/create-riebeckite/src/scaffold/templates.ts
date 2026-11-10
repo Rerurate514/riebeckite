@@ -33,6 +33,11 @@ export function siteTemplateFiles(
   const sharedLayout = readTemplate("shared/reader-layout.css")
     .toString()
     .trimEnd();
+  const presetFiles = copyTemplateTree(
+    `presets/${preset.name}`,
+    { "{{reader-layout}}": sharedLayout },
+    (filePath) => !filePath.startsWith("content/"),
+  );
   const files: readonly SiteTemplateFile[] = [
     { path: "package.json", content: packageJson(preset, variables, options) },
     { path: "pnpm-workspace.yaml", content: pnpmWorkspace() },
@@ -42,11 +47,8 @@ export function siteTemplateFiles(
     },
     ...copyTemplateTree("base"),
     ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
-    ...copyTemplateTree(
-      `presets/${preset.name}`,
-      { "{{reader-layout}}": sharedLayout },
-      (filePath) => !filePath.startsWith("content/"),
-    ),
+    ...presetFiles,
+    ...notFoundPageFiles(presetFiles),
     ...(options.contentDirectory === undefined &&
     variables.externalContent !== true
       ? [
@@ -59,6 +61,18 @@ export function siteTemplateFiles(
   return variables.externalContent === true
     ? ignoreContentDirectory(files)
     : files;
+}
+
+function notFoundPageFiles(
+  files: readonly SiteTemplateFile[],
+): readonly SiteTemplateFile[] {
+  if (!files.some((file) => file.path === "app/routes/_404.tsx")) return [];
+  return [
+    {
+      path: "app/routes/404.tsx",
+      content: 'export { default } from "./_404";\n',
+    },
+  ];
 }
 
 function ignoreContentDirectory(

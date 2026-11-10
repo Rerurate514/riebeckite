@@ -12,7 +12,11 @@ export const CLOUDFLARE_WORKERS_DEFAULTS = {
   /** Required for Node.js APIs used by Riebeckite */
   compatibility_flags: ["nodejs_compat"] as const,
   /** Static assets directory - Riebeckite builds to ./dist */
-  assets: { directory: "./dist" },
+  assets: {
+    directory: "./dist",
+    /** Serve the generated 404.html for unknown paths */
+    not_found_handling: "404-page",
+  },
 } as const;
 
 export const WRANGLER_VERSION = "^4.83.0";

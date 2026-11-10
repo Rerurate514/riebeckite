@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "78045ecc-ee55-4177-ae93-b504e9874709",
-    "publishedAt": "2026-11-10T16:09:07.583Z",
-    "publicationFingerprint": "2c72e896cd3d62fc50bd84e687ab2306e27c05aad7242315b6372650096b7ce6",
+    "runId": "ac936721-249c-4c1a-8f83-97d73c068f1f",
+    "publishedAt": "2026-11-10T16:46:31.361Z",
+    "publicationFingerprint": "6618a5f174de5d88d114a0a5a8f62eb7fbc8c024d46b744a6274701107c165e7",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "59783d79138873de58ea13cde69ef5bac695e562ffa2d4f2dc14ffcc543e3891",
-        "contentFingerprint": "ca4bd82a0b7739086c3ca50083e0c55d8eef28e232942cb34df94c2744d8775a"
+        "fingerprint": "d875085c9acd86a289ff6e6ea9f57065101979bf9e0c40251b0edd47dc80eb91",
+        "contentFingerprint": "ea7bbc0eecc17f2fa0bb57e6ef71dd8cdd4ac9aab17566fe009411b5a82ca562"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "8415b15f192a35435f9dddff3d3c2b7ebc5569e52ccf7b2a7d2ffbdb2c1ee643",
-        "contentFingerprint": "c05ff0e2a557086d0b6e8f9022db8be2d1a34cf529c7e82f4cfc7ec801c9f4d3"
+        "fingerprint": "55f2ecbc8bda0534a24723a82ae04d89f6a8609b1f33a773fca8b58878a67899",
+        "contentFingerprint": "b4d2c4c5dd2d1ea07653271655525e9a2ce9e5893f3a0d168a18267703976653"
       },
       {
         "slug": "docs/security",
@@ -6758,7 +6758,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "2129fb272fd2f30749271a8e5c88c855c03bb3423807f6d53e91a8d5a5415ca5",
+    "artifactFingerprint": "1501e315c40555ccc4ee9ec0aa1489b173ed395567055e5cddbdd56c87121d32",
     "provider": "cloudflare-workers"
   }
 }

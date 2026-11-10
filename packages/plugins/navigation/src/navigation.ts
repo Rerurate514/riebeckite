@@ -36,7 +36,13 @@ export function buildNavigation(
 ): SiteNavigation {
   return {
     primary:
-      options.items ?? deriveNavigation(entries, folderIcons, options.maxDepth),
+      options.items ??
+      deriveNavigation(
+        entries,
+        folderIcons,
+        options.maxDepth,
+        options.exclude ?? [],
+      ),
     secondary: options.secondary ?? [],
   };
 }
@@ -72,6 +78,7 @@ export function validateNavigationOptions(
       message: "Expected a positive integer.",
     });
   }
+  validateExcludedSlugs(options.exclude, issues);
   validateItems(options.items, "items", issues, new Set());
   validateItems(options.secondary, "secondary", issues, new Set());
   return issues;
@@ -81,13 +88,27 @@ function deriveNavigation(
   entries: readonly ContentManifestEntry[],
   folderIcons: FolderIcons,
   maxDepth: number | undefined,
+  excludedSlugs: readonly string[],
 ): readonly NavigationItem[] {
   const nodes = entries
     .map(toNavigationEntry)
-    .filter((entry): entry is NavigationEntry => Boolean(entry));
+    .filter(
+      (entry): entry is NavigationEntry =>
+        entry !== null && !isExcluded(entry, excludedSlugs),
+    );
   const root = createTreeNode(ROOT_SEGMENT, "");
   for (const node of nodes) addEntry(root, node);
   return buildItems(root, folderIcons, 1, maxDepth);
+}
+
+function isExcluded(
+  entry: NavigationEntry,
+  excludedSlugs: readonly string[],
+): boolean {
+  const slug = entry.segments.join("/");
+  return excludedSlugs.some(
+    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
+  );
 }
 
 function toNavigationEntry(
@@ -256,6 +277,25 @@ function validateItems(
         issues,
         nextAncestors,
       );
+    }
+  }
+}
+
+function validateExcludedSlugs(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!Array.isArray(value)) {
+    issues.push({ path: "exclude", message: "Expected an array." });
+    return;
+  }
+  for (const [index, slug] of value.entries()) {
+    if (typeof slug !== "string" || slug.trim() === "") {
+      issues.push({
+        path: `exclude[${index}]`,
+        message: "Expected a non-empty string.",
+      });
     }
   }
 }

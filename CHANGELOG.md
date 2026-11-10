@@ -12,7 +12,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Added
+
+- Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
+  Packages: `@riebeckite/plugin-navigation`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-100000-navigation-exclude-73be42.md
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 

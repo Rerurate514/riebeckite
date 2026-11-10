@@ -12,12 +12,18 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
+
+## [0.0.46] - 2026-11-10
+
 ### Fixed
 
 - Generated sites now emit a `404.html` page and configure `assets.not_found_handling` as `404-page`, so Cloudflare Workers serves the styled not-found page for unknown paths instead of the default response.
   Packages: `create-riebeckite`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.45...HEAD
+[0.0.46]: https://github.com/Rerurate514/riebeckite/compare/v0.0.45...v0.0.46
 
 ## [0.0.45] - 2026-11-10
 

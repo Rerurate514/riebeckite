@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "0e8ffab8-cccf-41b3-a2a3-95baa9f33c47",
-    "publishedAt": "2026-11-10T17:57:44.968Z",
-    "publicationFingerprint": "bc2f8c38e81ccb6147f9f22ff4aa2dffe1f6094d44a241f9b483c5ca9f97200d",
+    "runId": "11e55cd7-6c29-49ee-bae8-0f6e617a5a98",
+    "publishedAt": "2026-11-10T18:24:56.584Z",
+    "publicationFingerprint": "19abf10ad67abd8920aeaed300e3bee34692b3969ef3cdcca91104fc8ebdeafe",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -4442,16 +4442,16 @@
         "permalink": "/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "9477186a81d1dec077c89b5a5e919ee45046660d7f26c5c5191fe27aa4c15ce9",
-        "contentFingerprint": "07b44e566fe4ea2b5f571f77b50f19568d39f51d7f6cedb603b08511c32c6281"
+        "fingerprint": "44a241ea1a7926457307ee4c6da8d968695728d53c2fa19c825132d744425132",
+        "contentFingerprint": "39b9655e06e3012e0abc240e04af6389fa1fbb57e8ca97e208c481c16cfbb9f5"
       },
       {
         "slug": "docs/plugins/folder-pages.ja",
         "permalink": "/ja/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "d64bf35d39a72e734dc8ee1b42fe24c3f80edf60c99b619cbc1c4a4371344b61",
-        "contentFingerprint": "dd24b05706ea6c58e2bf39dde2d86c4f81f28ebfacb27f05961ff947e69b8a5b"
+        "fingerprint": "e7c79fd8832257bb2f9794e79a745d18e189927ca2acba5c4165a7378e8c9084",
+        "contentFingerprint": "3ec2d48965a3d6fded731a9dcbb9dfa258e7e5147ffaaaf7c1d5f342ae430309"
       },
       {
         "slug": "docs/plugins/frontmatter-transformer",
@@ -4490,16 +4490,16 @@
         "permalink": "/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "aec820fa567e20a1640f90764136a27a63830adcb949dcfe1e31d8e9a11bbaab",
-        "contentFingerprint": "7852004830d0a5e2df9776b950d34fb6a1c4e43abb7b738491b3485bddb9f35f"
+        "fingerprint": "23838dd5d1690da93e7d50dd680b76830472d6f672f5ccd8e072b15ea377353e",
+        "contentFingerprint": "3382bd5a13764ae9226eb096d121cc61e8043c155079bdbbb51c81f886fed8db"
       },
       {
         "slug": "docs/plugins/garden-explorer.ja",
         "permalink": "/ja/docs/plugins/garden-explorer",
         "title": "Garden Explorer",
         "visibility": "public",
-        "fingerprint": "a6a3e91ebd9ff1a76ce687f400e09ea9fbd04a72579e0eaa0be18c6779594447",
-        "contentFingerprint": "801784ea54f943237a2684c64e378cecd46724a444b7f86e1143961c42e2275b"
+        "fingerprint": "ed571ce6e8be3fa685ee64a2cd080db300b150c7b30cc32120064683c2ba128b",
+        "contentFingerprint": "9fea34de2be2442d8d8a6ce030651167e79c0d0143385d7e3cc1dc48a908321e"
       },
       {
         "slug": "docs/plugins/generator",
@@ -5658,16 +5658,16 @@
         "permalink": "/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "dc02995c0eea079c329d51de8503e117a32329f33bda80fabeab305124f939e7",
-        "contentFingerprint": "7a7c85d523fa9efa1c74abe509a84986dca7d8d7197d8289de8d4b8da714c36a"
+        "fingerprint": "f806ecefba7526905bcbabc3d32c8d27ff6f5d599a0e08f1787933ed0787f332",
+        "contentFingerprint": "218bf688c4bd0a89b65b1b4f5bd935e6693b2cc27283507ac77ce55835adb5f0"
       },
       {
         "slug": "docs/plugins/taxonomy.ja",
         "permalink": "/ja/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "4d72608ec93743584094d736bb992fb9d4ef5b9411960a12f64cbf06f5664db8",
-        "contentFingerprint": "43d81e3405757f60c21e54365df7c90275753d7d7e5371ddeb3fdedf73d9d499"
+        "fingerprint": "709df4448f4b542d6dfa31d6f07c114d360f0d195ba1a04835202511bf8e834c",
+        "contentFingerprint": "6d42ef97074d3a5179337ca58c90540a8f23255dd536b7bdfced4514d36b83d2"
       },
       {
         "slug": "docs/plugins/text-fragment",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "51ba0887fd884c8c88f7255f507536910b4c89782b1c38e291ab2c65723f40fb",
-        "contentFingerprint": "e4db9b251dc2c1ccc49a624693775a73db38bf770d6ade0425c75bb2240c2c66"
+        "fingerprint": "62217f698e9f3d85939eee23f3f48155572198d32ad14387f7bda8ce63ef0eb5",
+        "contentFingerprint": "324b56e6d8eac62ff898cea4de1e19f8040721072d69fbc1f0f9833698e596e1"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "21fa50ccb634fc1181cba1bf2949b48a94583e8a2e6f449d500ed0f427378e2f",
-        "contentFingerprint": "ace0e461fcc528fc6ffdb9b802aa7df152e9eb066db1d10f674fcf1af84d0275"
+        "fingerprint": "3775b66d541626c8a3add807c217ed42b2633c45b327fbf67cf284d9ce50322b",
+        "contentFingerprint": "d06987f60f3d636b46f9741d6930da1a8f7755d494cea13f8c3c00d9509335a5"
       },
       {
         "slug": "docs/security",
@@ -6758,7 +6758,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "d89490139be9aa2ce745dd8c2637ff8595c607e10ae34df0eba1225b28853313",
+    "artifactFingerprint": "4872df82e4040158606d16ccce79e646fb0f18cc6d5fcc33e87820a41db6099b",
     "provider": "cloudflare-workers"
   }
 }

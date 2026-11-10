@@ -6,9 +6,17 @@ export type ReactionsCapability = (typeof REACTIONS_CAPABILITIES)[number];
 
 export interface ReactionsProvider {
   readonly capabilities: ReadonlySet<ReactionsCapability>;
-  getReactions(contentId: string): Promise<PageReactions>;
-  addReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
-  removeReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
+  getReactions(contentId: string, visitorKey?: string): Promise<PageReactions>;
+  addReaction(
+    contentId: string,
+    type: ReactionType,
+    visitorKey: string,
+  ): Promise<PageReactions>;
+  removeReaction(
+    contentId: string,
+    type: ReactionType,
+    visitorKey: string,
+  ): Promise<PageReactions>;
 }
 
 export function supportsReactionsCapability(
@@ -26,14 +34,19 @@ export class MemoryReactionsProvider implements ReactionsProvider {
   private store = new Map<string, Map<ReactionType, number>>();
   private session = new Set<string>();
 
-  async getReactions(contentId: string): Promise<PageReactions> {
+  async getReactions(
+    contentId: string,
+    visitorKey?: string,
+  ): Promise<PageReactions> {
     const counts = this.store.get(contentId) ?? new Map();
     return {
       contentId,
       counts: [...counts.entries()].map(([type, count]) => ({
         type,
         count,
-        reacted: this.session.has(this.key(contentId, type)),
+        reacted:
+          visitorKey !== undefined &&
+          this.session.has(this.key(contentId, type, visitorKey)),
       })),
     };
   }
@@ -41,22 +54,24 @@ export class MemoryReactionsProvider implements ReactionsProvider {
   async addReaction(
     contentId: string,
     type: ReactionType,
+    visitorKey: string,
   ): Promise<PageReactions> {
-    const key = this.key(contentId, type);
-    if (this.session.has(key)) return this.getReactions(contentId);
+    const key = this.key(contentId, type, visitorKey);
+    if (this.session.has(key)) return this.getReactions(contentId, visitorKey);
     this.session.add(key);
     const counts = this.store.get(contentId) ?? new Map();
     counts.set(type, (counts.get(type) ?? 0) + 1);
     this.store.set(contentId, counts);
-    return this.getReactions(contentId);
+    return this.getReactions(contentId, visitorKey);
   }
 
   async removeReaction(
     contentId: string,
     type: ReactionType,
+    visitorKey: string,
   ): Promise<PageReactions> {
-    const key = this.key(contentId, type);
-    if (!this.session.has(key)) return this.getReactions(contentId);
+    const key = this.key(contentId, type, visitorKey);
+    if (!this.session.has(key)) return this.getReactions(contentId, visitorKey);
     this.session.delete(key);
     const counts = this.store.get(contentId);
     if (counts) {
@@ -64,10 +79,14 @@ export class MemoryReactionsProvider implements ReactionsProvider {
       if (next <= 0) counts.delete(type);
       else counts.set(type, next);
     }
-    return this.getReactions(contentId);
+    return this.getReactions(contentId, visitorKey);
   }
 
-  private key(contentId: string, type: ReactionType): string {
-    return `${contentId}:${type}`;
+  private key(
+    contentId: string,
+    type: ReactionType,
+    visitorKey: string,
+  ): string {
+    return `${contentId}:${type}:${visitorKey}`;
   }
 }

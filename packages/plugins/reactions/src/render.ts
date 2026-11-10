@@ -9,6 +9,7 @@ export function renderReactions(
   data: PageReactions,
   className: string,
   ariaLabel: string,
+  interactive = false,
 ): string {
   const rootClass = className
     ? `${REACTIONS_ROOT_CLASS} ${className}`
@@ -20,6 +21,7 @@ export function renderReactions(
         reaction,
         count?.count ?? 0,
         count?.reacted ?? false,
+        interactive,
       );
     })
     .join("");
@@ -37,13 +39,15 @@ function renderReactionButton(
   reaction: ReactionEmoji,
   count: number,
   reacted: boolean,
+  interactive: boolean,
 ): string {
   const pressed = reacted ? "true" : "false";
   return (
     `<li class="${REACTIONS_ROOT_CLASS}__item">` +
     `<button type="button" class="${REACTIONS_ROOT_CLASS}__button" ` +
     `data-reaction-type="${escapeHtmlAttribute(reaction.type)}" ` +
-    `aria-pressed="${pressed}" aria-label="${escapeHtmlAttribute(reaction.label)}">` +
+    `aria-pressed="${pressed}" aria-label="${escapeHtmlAttribute(reaction.label)}"` +
+    `${interactive ? "" : " disabled"}>` +
     `<span class="${REACTIONS_ROOT_CLASS}__emoji" aria-hidden="true">${reaction.emoji}</span>` +
     `<span class="${REACTIONS_ROOT_CLASS}__count">${count}</span>` +
     `</button></li>`

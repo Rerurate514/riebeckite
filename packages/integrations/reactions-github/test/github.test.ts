@@ -19,5 +19,8 @@ test("addReaction throws read-only error", async () => {
     repo: "repo",
     token: "test-token",
   });
-  await assert.rejects(() => provider.addReaction("p", "like"), /read-only/);
+  await assert.rejects(
+    () => provider.addReaction("p", "like", "visitor-1"),
+    /read-only/,
+  );
 });

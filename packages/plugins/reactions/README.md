@@ -3,8 +3,8 @@
 <!-- Generated from docs/docs/plugins/reactions.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Emoji reaction buttons for published notes, backed by a pluggable provider.
-Visitors can react with 👍 ❤️ 🎉 💡 🤔; counts are rendered at build time or
-read live from a provider.
+Counts are rendered at build time. To let visitors react, configure an endpoint
+and a server-side visitor identity resolver.
 
 [日本語](./README_ja.md)
 
@@ -38,6 +38,14 @@ export default defineConfig({
 | `reactions` | `ReactionType[]` | all five | Reaction types to render, in order. |
 | `className` | `string` | `"rr-reactions"` | Extra CSS class on the root element. |
 | `ariaLabel` | `string` | `"Reactions"` | Accessible name for the group. |
+| `endpoint` | `string` | — | Absolute endpoint path for live reactions. Requires `resolveVisitorKey`. |
+| `resolveVisitorKey` | `(request) => string \| undefined` | — | Resolves a trusted visitor identity on the server. |
+
+## Live reactions
+
+`endpoint` enables the browser controls. Its resolver must return an identity
+from trusted server-side authentication or a signed cookie; never accept a
+visitor ID supplied by the browser.
 
 ## Providers
 
@@ -46,9 +54,9 @@ Implement `ReactionsProvider` to connect a real backend:
 ```ts
 interface ReactionsProvider {
   readonly capabilities: ReadonlySet<"read" | "write">;
-  getReactions(contentId: string): Promise<PageReactions>;
-  addReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
-  removeReaction(contentId: string, type: ReactionType): Promise<PageReactions>;
+  getReactions(contentId: string, visitorKey?: string): Promise<PageReactions>;
+  addReaction(contentId: string, type: ReactionType, visitorKey: string): Promise<PageReactions>;
+  removeReaction(contentId: string, type: ReactionType, visitorKey: string): Promise<PageReactions>;
 }
 ```
 

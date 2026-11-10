@@ -18,6 +18,12 @@
       "source": "./components/reactions.tsx",
       "default": "./dist/components/reactions.js"
     },
+    "./client": {
+      "types": "./dist/src/client.d.ts",
+      "import": "./dist/src/client.js",
+      "source": "./src/client.ts",
+      "default": "./dist/src/client.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {

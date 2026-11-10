@@ -4,7 +4,7 @@ title: Reactions（リアクション）
 ---
 # Reactions（リアクション）
 
-公開ノートに絵文字リアクションボタンを表示するプラグインです。プロバイダーを差し替えられるので、GitHub Discussions やデータベースなど任意のバックエンドに接続できます。
+公開ノートに絵文字リアクションボタンを表示するプラグインです。プロバイダーを差し替えられるので、GitHub Discussions やデータベースなど任意のバックエンドに接続できます。件数はビルド時に表示し、ユーザーからのリアクションを受け付けるにはエンドポイントとサーバー側の訪問者識別子解決関数を設定します。
 
 [English](./reactions.md)
 
@@ -37,6 +37,12 @@ export default defineConfig({
 | `reactions` | `ReactionType[]` | 全5種 | 表示するリアクションの種類。 |
 | `className` | `string` | `"rr-reactions"` | ルート要素に付く追加CSSクラス。 |
 | `ariaLabel` | `string` | `"Reactions"` | グループのアクセシブル名。 |
+| `endpoint` | `string` | — | リアルタイムのリアクションに使う絶対エンドポイントパス。`resolveVisitorKey` が必要です。 |
+| `resolveVisitorKey` | `(request) => string \| undefined` | — | 信頼できる訪問者識別子をサーバー側で解決します。 |
+
+## リアルタイムのリアクション
+
+`endpoint` を設定するとブラウザー上の操作を有効にします。解決関数は認証情報や署名付きCookieから識別子を取得してください。ブラウザーが送った任意の識別子を受け入れてはいけません。
 
 ## 関連
 

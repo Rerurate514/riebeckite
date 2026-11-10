@@ -22,22 +22,12 @@ export class D1ReactionsStorage implements ReactionsProvider {
     "write",
   ]);
 
-  /**
-   * @param userKey Caller-supplied visitor identifier (for example a signed
-   *   session cookie value). Must be unique per visitor; do not let clients
-   *   choose arbitrary keys. Defaults to a shared "anonymous" key, which
-   *   collapses all visitors into one counter.
-   */
-  constructor(
-    private readonly database: D1Database,
-    private readonly userKey: string = "anonymous",
-  ) {
-    if (!userKey || userKey.trim() === "") {
-      throw new Error("userKey must be a non-empty string");
-    }
-  }
+  constructor(private readonly database: D1Database) {}
 
-  async getReactions(contentId: string): Promise<PageReactions> {
+  async getReactions(
+    contentId: string,
+    visitorKey?: string,
+  ): Promise<PageReactions> {
     const countsResult = await this.database
       .prepare(
         `SELECT reaction_type, COUNT(*) AS count FROM reactions
@@ -46,13 +36,15 @@ export class D1ReactionsStorage implements ReactionsProvider {
       .bind(contentId)
       .all<CountRow>();
 
-    const userResult = await this.database
-      .prepare(
-        `SELECT reaction_type FROM reactions
-         WHERE content_id = ? AND user_key = ?`,
-      )
-      .bind(contentId, this.userKey)
-      .all<UserReactionRow>();
+    const userResult = visitorKey
+      ? await this.database
+          .prepare(
+            `SELECT reaction_type FROM reactions
+             WHERE content_id = ? AND user_key = ?`,
+          )
+          .bind(contentId, visitorKey)
+          .all<UserReactionRow>()
+      : { results: [] as UserReactionRow[] };
 
     const userTypes = new Set(
       userResult.results.map((row) => row.reaction_type),
@@ -73,35 +65,34 @@ export class D1ReactionsStorage implements ReactionsProvider {
   async addReaction(
     contentId: string,
     type: ReactionType,
+    visitorKey: string,
   ): Promise<PageReactions> {
     await this.database
       .prepare(
         `INSERT OR IGNORE INTO reactions (content_id, user_key, reaction_type)
          VALUES (?, ?, ?)`,
       )
-      .bind(contentId, this.userKey, type)
+      .bind(contentId, visitorKey, type)
       .run();
-    return this.getReactions(contentId);
+    return this.getReactions(contentId, visitorKey);
   }
 
   async removeReaction(
     contentId: string,
     type: ReactionType,
+    visitorKey: string,
   ): Promise<PageReactions> {
     await this.database
       .prepare(
         `DELETE FROM reactions
          WHERE content_id = ? AND user_key = ? AND reaction_type = ?`,
       )
-      .bind(contentId, this.userKey, type)
+      .bind(contentId, visitorKey, type)
       .run();
-    return this.getReactions(contentId);
+    return this.getReactions(contentId, visitorKey);
   }
 }
 
-export function d1Storage(
-  database: D1Database,
-  userKey = "anonymous",
-): D1ReactionsStorage {
-  return new D1ReactionsStorage(database, userKey);
+export function d1Storage(database: D1Database): D1ReactionsStorage {
+  return new D1ReactionsStorage(database);
 }

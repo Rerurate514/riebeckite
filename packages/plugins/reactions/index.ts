@@ -1,4 +1,9 @@
-import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
+import { createReactionsEndpoints } from "./src/endpoints.js";
 import {
   resolveReactionsOptions,
   validateReactionsOptions,
@@ -8,6 +13,8 @@ import type { ReactionsOptions } from "./src/types.js";
 
 export type { ReactionsProps } from "./components/reactions.js";
 export { default as Reactions } from "./components/reactions.js";
+export { initReactions } from "./src/client.js";
+export { createReactionsEndpoints } from "./src/endpoints.js";
 export {
   DEFAULT_REACTIONS_ARIA_LABEL,
   DEFAULT_REACTIONS_CLASS_NAME,
@@ -39,6 +46,9 @@ export const REACTIONS_PLUGIN_NAME = "reactions";
 
 export function reactions(options: ReactionsOptions = {}) {
   const resolved = resolveReactionsOptions(options);
+  const endpoint = resolved.endpoint;
+  const interactive =
+    endpoint !== undefined && resolved.resolveVisitorKey !== undefined;
 
   return definePlugin({
     name: REACTIONS_PLUGIN_NAME,
@@ -54,6 +64,18 @@ export function reactions(options: ReactionsOptions = {}) {
         "@riebeckite/plugin-reactions/style.css",
       ),
     ],
+    clientEntries:
+      endpoint && resolved.resolveVisitorKey
+        ? [
+            createClientEntry(
+              REACTIONS_PLUGIN_NAME,
+              "@riebeckite/plugin-reactions/client",
+              "initReactions",
+              { endpoint },
+            ),
+          ]
+        : [],
+    endpoints: createReactionsEndpoints(resolved),
     onManifestCreated: async ({ manifest }) => {
       for (const entry of manifest.entries) {
         if (!entry.contentId) continue;
@@ -63,6 +85,7 @@ export function reactions(options: ReactionsOptions = {}) {
           data,
           resolved.className,
           resolved.ariaLabel,
+          interactive,
         );
         entry.html = `${entry.html}\n${html}`;
       }

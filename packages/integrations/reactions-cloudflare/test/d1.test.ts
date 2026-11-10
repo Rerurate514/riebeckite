@@ -51,6 +51,6 @@ test("getReactions returns zero counts when no rows", async () => {
 test("addReaction runs an INSERT and re-reads", async () => {
   const db = createFakeD1();
   const storage = d1Storage(db);
-  await storage.addReaction("page-1", "like");
+  await storage.addReaction("page-1", "like", "visitor-1");
   assert.ok(db.calls.some((q) => q.includes("INSERT OR IGNORE")));
 });

@@ -8,8 +8,6 @@ export type GitHubCommentsOptions = {
   owner: string;
   repo: string;
   token: string;
-  categoryId?: string;
-  mapping?: "pathname" | "url" | "title";
 };
 
 type GraphQLCommentNode = {

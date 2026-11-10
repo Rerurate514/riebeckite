@@ -1,3 +1,4 @@
+import type { PluginEndpointRequest } from "@riebeckite/core";
 import type { ReactionsProvider } from "./provider.js";
 
 export const REACTION_TYPES = [
@@ -29,6 +30,10 @@ export type ReactionsOptions = {
   reactions?: readonly ReactionType[];
   className?: string;
   ariaLabel?: string;
+  endpoint?: string;
+  resolveVisitorKey?: (
+    request: PluginEndpointRequest,
+  ) => string | undefined | Promise<string | undefined>;
 };
 
 export type ResolvedReactionsOptions = {
@@ -36,6 +41,10 @@ export type ResolvedReactionsOptions = {
   reactions: readonly ReactionEmoji[];
   className: string;
   ariaLabel: string;
+  endpoint?: string;
+  resolveVisitorKey?: (
+    request: PluginEndpointRequest,
+  ) => string | undefined | Promise<string | undefined>;
 };
 
 export type ReactionCount = {

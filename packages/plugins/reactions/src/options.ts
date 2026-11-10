@@ -1,5 +1,9 @@
 import type { ConfigValidationIssue } from "@riebeckite/core";
-import { MemoryReactionsProvider, type ReactionsProvider } from "./provider.js";
+import {
+  MemoryReactionsProvider,
+  type ReactionsProvider,
+  supportsReactionsCapability,
+} from "./provider.js";
 import {
   DEFAULT_REACTIONS,
   REACTION_TYPES,
@@ -26,6 +30,8 @@ export function resolveReactionsOptions(
       options.ariaLabel,
       DEFAULT_REACTIONS_ARIA_LABEL,
     ),
+    endpoint: normalizeEndpoint(options.endpoint),
+    resolveVisitorKey: options.resolveVisitorKey,
   };
 }
 
@@ -74,6 +80,39 @@ export function validateReactionsOptions(
     }
   }
 
+  if (
+    options.endpoint !== undefined &&
+    normalizeEndpoint(options.endpoint) === undefined
+  ) {
+    issues.push({ path: "endpoint", message: "Expected an absolute path." });
+  }
+  if (
+    options.endpoint !== undefined &&
+    typeof options.resolveVisitorKey !== "function"
+  ) {
+    issues.push({
+      path: "resolveVisitorKey",
+      message: "Expected a visitor key resolver when endpoint is configured.",
+    });
+  }
+  if (
+    options.endpoint !== undefined &&
+    isReactionsProvider(options.provider) &&
+    !supportsReactionsCapability(options.provider, "write")
+  ) {
+    issues.push({
+      path: "provider",
+      message:
+        "Expected a writable reactions provider when endpoint is configured.",
+    });
+  }
+  if (
+    options.resolveVisitorKey !== undefined &&
+    typeof options.resolveVisitorKey !== "function"
+  ) {
+    issues.push({ path: "resolveVisitorKey", message: "Expected a function." });
+  }
+
   return issues;
 }
 
@@ -110,4 +149,21 @@ function normalizeNonEmpty(
   if (typeof value !== "string") return fallback;
   const trimmed = value.trim();
   return trimmed === "" ? fallback : trimmed;
+}
+
+function normalizeEndpoint(value: string | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  const trimmed = value.trim();
+  if (
+    trimmed === "" ||
+    !trimmed.startsWith("/") ||
+    trimmed.includes("?") ||
+    trimmed.includes("#") ||
+    trimmed.includes("//") ||
+    trimmed.includes(":") ||
+    /\s/.test(trimmed)
+  ) {
+    return undefined;
+  }
+  return trimmed;
 }

@@ -9,7 +9,6 @@ export type GitHubReactionsOptions = {
   owner: string;
   repo: string;
   token: string;
-  mapping?: "pathname" | "url" | "title";
 };
 
 const GITHUB_REACTION_MAP: Record<ReactionType, string> = {
@@ -49,7 +48,10 @@ export class GitHubReactionsProvider implements ReactionsProvider {
 
   constructor(private readonly options: GitHubReactionsOptions) {}
 
-  async getReactions(contentId: string): Promise<PageReactions> {
+  async getReactions(
+    contentId: string,
+    _visitorKey?: string,
+  ): Promise<PageReactions> {
     const discussionNumber = await this.findDiscussionNumber(contentId);
     if (discussionNumber === null) {
       return {
@@ -96,6 +98,7 @@ export class GitHubReactionsProvider implements ReactionsProvider {
   async addReaction(
     _contentId: string,
     _type: ReactionType,
+    _visitorKey: string,
   ): Promise<PageReactions> {
     throw new Error(
       "GitHubReactionsProvider is read-only. Use Giscus client-side widgets to add reactions.",
@@ -105,6 +108,7 @@ export class GitHubReactionsProvider implements ReactionsProvider {
   async removeReaction(
     _contentId: string,
     _type: ReactionType,
+    _visitorKey: string,
   ): Promise<PageReactions> {
     throw new Error(
       "GitHubReactionsProvider is read-only. Use Giscus client-side widgets to remove reactions.",

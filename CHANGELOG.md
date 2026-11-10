@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Added
+
+- Themes can declare an optional `palette` of `light` and `dark` background, foreground, and accent colors. The og-image plugin now uses the active theme's palette instead of a fixed navy default, so generated images match the site. `appearance` still overrides individual colors, and themes without a palette keep the previous default.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-og-image`, `@riebeckite/theme-rerurate`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.44...HEAD
 

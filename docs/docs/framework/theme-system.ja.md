@@ -115,6 +115,9 @@ export default defineConfig({
 | CSS | `styles[].moduleSpecifier` |
 | 設定 | 任意の `settings` スキーマ |
 | プリセット | 任意の名前付き設定プリセット |
+| 配色 | 任意の `light` / `dark` 画像色 |
+
+配色（`palette`）は任意です。生成する Open Graph 画像の背景色・前景色・アクセント色を指定するもので、CSS には影響しません。テーマの `--rb-color-paper`、`--rb-color-ink`、`--rb-color-accent` と揃えてください。
 
 たとえば、次のように定義できます。
 

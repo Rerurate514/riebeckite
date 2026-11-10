@@ -67,4 +67,16 @@ export const rerurateTheme = defineTheme({
     },
   }),
   presets: { reading: { label: "Reading", settings: { typography: "serif" } } },
+  palette: {
+    light: {
+      background: "#f6efe2",
+      foreground: "#171717",
+      accent: "#f66620",
+    },
+    dark: {
+      background: "#1c1a17",
+      foreground: "#f6efe2",
+      accent: "#f66620",
+    },
+  },
 });

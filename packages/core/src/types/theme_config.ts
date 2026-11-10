@@ -40,6 +40,17 @@ export type ThemeSetting =
   | ThemeSelectSetting
   | ThemeTextSetting;
 
+export type ThemePaletteColors = {
+  background: string;
+  foreground: string;
+  accent: string;
+};
+
+export type ThemePalette = {
+  light?: Partial<ThemePaletteColors>;
+  dark?: Partial<ThemePaletteColors>;
+};
+
 export type ThemeSettingsSchema = Record<string, ThemeSetting>;
 
 export type ThemeSettings<S extends ThemeSettingsSchema> = {
@@ -87,6 +98,7 @@ export type ThemeDefinition<
   styles: readonly ThemeStyle[];
   settings: S;
   presets: Record<string, ThemePreset<S>>;
+  palette?: ThemePalette;
 };
 
 export type ThemeInput<S extends ThemeSettingsSchema = ThemeSettingsSchema> =
@@ -99,6 +111,7 @@ export type ResolvedTheme = {
   styles: ThemeStyle[];
   stylesheets: string[];
   settings: ResolvedThemeSettings;
+  palette?: ThemePalette;
 };
 
 export class ThemeSettingsValidationError extends Error {
@@ -113,6 +126,7 @@ export function defineTheme<const S extends ThemeSettingsSchema>(definition: {
   styles: readonly ThemeStyle[];
   settings?: S;
   presets?: Record<string, ThemePreset<S>>;
+  palette?: ThemePalette;
 }): ThemeDefinition<S> {
   for (const key of Object.keys(definition.settings ?? {})) {
     if (!/^[a-z][a-zA-Z0-9]*$/.test(key))
@@ -128,6 +142,7 @@ export function defineTheme<const S extends ThemeSettingsSchema>(definition: {
   theme.styles = definition.styles;
   theme.settings = (definition.settings ?? {}) as S;
   theme.presets = definition.presets ?? {};
+  theme.palette = definition.palette;
   return theme;
 }
 
@@ -165,6 +180,7 @@ export function resolveTheme<S extends ThemeSettingsSchema>(
       values,
       new Set(Object.keys(configuredSettings)),
     ),
+    ...(definition.palette ? { palette: definition.palette } : {}),
   };
 }
 

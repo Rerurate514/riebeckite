@@ -28,6 +28,17 @@ export default defineConfig({
 Satori for layout and Sharp for PNG encoding. It bundles Noto Sans JP (OFL-1.1)
 for deterministic Japanese rendering on every supported operating system.
 
+## Palette
+
+The image uses the palette declared by the active theme: `palette.light` or
+`palette.dark` according to the theme color mode; `system` uses light. Themes
+without a palette fall back to a neutral default. Override individual colors
+with `appearance`:
+
+```ts
+ogImage({ appearance: { accent: "#f66620" } });
+```
+
 ## Precedence and output
 
 An explicit `ogImage` or `image` frontmatter value is never changed. Otherwise,

@@ -91,6 +91,49 @@ test("loads a TSX layout and renders it through the production renderer", async 
   }
 });
 
+test("resolves the palette from the configured theme", async () => {
+  const lightTheme = {
+    name: "rerurate",
+    colorMode: "light" as const,
+    palette: {
+      light: {
+        background: "#f6efe2",
+        foreground: "#171717",
+        accent: "#f66620",
+      },
+    },
+  };
+  const run = async (theme: {
+    name: string;
+    colorMode: "light" | "dark";
+    palette: Record<string, Partial<{ background: string }>>;
+  }) => {
+    const plugin = ogImage();
+    const generated = entry({});
+    plugin.onManifestCreated?.({
+      manifest: { publicEntries: [generated] },
+      config: { theme },
+    } as never);
+    await plugin.planDeferredOutputs?.({
+      manifest: { routableEntries: [generated] },
+      site: { title: "Riebeckite" },
+      theme,
+      derived: {},
+    } as never);
+    return generated.frontmatter.ogImage;
+  };
+
+  const light = await run(lightTheme);
+  const dark = await run({
+    ...lightTheme,
+    colorMode: "dark",
+    palette: { dark: { background: "#1c1a17" } },
+  });
+
+  assert.match(String(light), /^\/_og\/[a-f0-9]{16}\.png$/);
+  assert.notEqual(light, dark);
+});
+
 function entry(frontmatter: Record<string, unknown>) {
   return {
     slug: "note",

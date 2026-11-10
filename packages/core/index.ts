@@ -753,6 +753,8 @@ export type {
   ThemeInput,
   ThemeInstance,
   ThemeOptions,
+  ThemePalette,
+  ThemePaletteColors,
   ThemePreset,
   ThemeSetting,
   ThemeSettings,

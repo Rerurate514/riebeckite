@@ -70,6 +70,11 @@ Keep the boundary: do not write a plugin just to change appearance, and do not e
 | Styles | `styles[].moduleSpecifier` |
 | Settings | optional `settings` schema |
 | Presets | optional named setting presets |
+| Palette | optional `light` / `dark` image colors |
+
+`palette` is optional. It supplies the background, foreground, and accent used
+by generated Open Graph images; it does not affect CSS. Keep it aligned with the
+theme's `--rb-color-paper`, `--rb-color-ink`, and `--rb-color-accent` tokens.
 
 ```ts
 import { defineTheme, defineThemeSettings } from "@riebeckite/core";

@@ -14,7 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Added
+
+- Themes can declare an optional `palette` of `light` and `dark` background, foreground, and accent colors. The og-image plugin now uses the active theme's palette instead of a fixed navy default, so generated images match the site. `appearance` still overrides individual colors, and themes without a palette keep the previous default.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-og-image`, `@riebeckite/theme-rerurate`
 
 ## 0.0.44 - 2026-11-09
 

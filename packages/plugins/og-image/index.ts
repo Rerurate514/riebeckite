@@ -6,6 +6,7 @@ import {
   type ConfigValidationIssue,
   definePlugin,
   type OutputDependency,
+  type ResolvedTheme,
 } from "@riebeckite/core";
 import {
   type OgContent,
@@ -44,26 +45,32 @@ export function ogImage(options: OgImageOptions = {}) {
     typeof options.layout === "string"
       ? compileLayout(options.layout)
       : undefined;
-  const palette = { ...defaultPalette, ...options.appearance };
   const content = { ...defaultContent, ...options.content };
   const layout =
     typeof options.layout === "function"
       ? options.layout
       : (customLayout?.load ?? presetLayout(options.preset ?? "card"));
-  const configurationFingerprint = hash({
-    content,
-    layout:
-      customLayout?.fingerprint ??
-      options.layoutFingerprint ??
-      options.preset ??
-      "card",
-    palette,
-    renderer: RENDERER_VERSION,
+  const layoutFingerprint =
+    customLayout?.fingerprint ??
+    options.layoutFingerprint ??
+    options.preset ??
+    "card";
+  const paletteFor = (theme?: Readonly<ResolvedTheme>): OgPalette => ({
+    ...defaultPalette,
+    ...(theme?.palette?.[theme.colorMode === "dark" ? "dark" : "light"] ?? {}),
+    ...options.appearance,
   });
+  const fingerprintFor = (palette: OgPalette) =>
+    hash({
+      content,
+      layout: layoutFingerprint,
+      palette,
+      renderer: RENDERER_VERSION,
+    });
 
   return definePlugin({
     name: PLUGIN_NAME,
-    cacheVersion: configurationFingerprint,
+    cacheVersion: fingerprintFor(paletteFor()),
     options,
     validateOptions: validateOgImageOptions,
     inspector: {
@@ -76,7 +83,7 @@ export function ogImage(options: OgImageOptions = {}) {
             en: "Static Open Graph image configuration.",
             ja: "静的 Open Graph 画像の設定です。",
           },
-          collect: () => ({
+          collect: (context) => ({
             kind: "key-value",
             items: [
               {
@@ -98,14 +105,17 @@ export function ogImage(options: OgImageOptions = {}) {
               },
               {
                 key: { en: "Palette", ja: "配色" },
-                value: palette,
+                value: paletteFor(context.config?.theme),
               },
             ],
           }),
         },
       ],
     },
-    onManifestCreated: ({ manifest }) => {
+    onManifestCreated: ({ config, manifest }) => {
+      const configurationFingerprint = fingerprintFor(
+        paletteFor(config?.theme),
+      );
       for (const entry of manifest.publicEntries) {
         if (
           typeof entry.frontmatter.ogImage === "string" ||
@@ -120,8 +130,10 @@ export function ogImage(options: OgImageOptions = {}) {
         );
       }
     },
-    planDeferredOutputs: ({ manifest, site }) =>
-      manifest.routableEntries.flatMap((entry) => {
+    planDeferredOutputs: ({ manifest, site, theme }) => {
+      const palette = paletteFor(theme);
+      const configurationFingerprint = fingerprintFor(palette);
+      return manifest.routableEntries.flatMap((entry) => {
         const path = entry.frontmatter.ogImage;
         if (
           typeof entry.frontmatter.image === "string" ||
@@ -166,7 +178,8 @@ export function ogImage(options: OgImageOptions = {}) {
               }),
           },
         ];
-      }),
+      });
+    },
   });
 }
 

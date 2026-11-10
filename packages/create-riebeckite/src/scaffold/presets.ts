@@ -343,6 +343,14 @@ const blogTaxonomy = np(
   "taxonomy",
   `{ tags: true, folders: true, related: true, feeds: { rss: true, atom: true, json: true } }`,
 );
+const gardenTaxonomy = np("@riebeckite/plugin-taxonomy", "taxonomy", {
+  tags: { depth: 2, value: "true" },
+  folders: { depth: 2, value: "true" },
+  related: { depth: 2, value: "true" },
+  folderDepth: { depth: 2, value: "1" },
+  feeds: { depth: 3, value: "{ rss: true, atom: true, json: true }" },
+  relatedLimit: { depth: 3, value: "8" },
+});
 const folderPages = np("@riebeckite/plugin-folder-pages", "folderPages");
 const autoCardLink = np(
   "@riebeckite/plugin-autocardlink",
@@ -643,7 +651,7 @@ const digitalGarden: ScaffoldPreset = {
     backlinks,
     relatedPosts,
     recentPosts,
-    taxonomy,
+    gardenTaxonomy,
     folderPages,
     localGraph,
     hoverPreview,

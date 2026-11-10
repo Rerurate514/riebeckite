@@ -60,7 +60,7 @@ async function ArticleFooter() {
 
 ## 設定
 
-`backlinks()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントの `backlinks` プロップは省略可能で、省略時はコンテキストから一覧を解決します。
+`backlinks()` にはプラグイン用のオプションがありません。`Backlinks` コンポーネントの `backlinks` プロップは省略可能で、省略時はコンテキストから一覧を解決します。`borders={{ items: false }}` を渡すと、項目間の区切り線を消せます。
 
 ## 公開 API
 

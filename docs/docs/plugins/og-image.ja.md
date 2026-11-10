@@ -26,6 +26,14 @@ export default defineConfig({
 
 `card`、`minimal`、`editorial` のプリセットを使えます。レイアウトには Satori、PNG 化には Sharp を使います。Noto Sans JP（OFL-1.1）を同梱しているため、対応 OS ではシステムフォントの有無にかかわらず日本語を決定的に描画します。
 
+## 配色
+
+画像は有効なテーマが宣言した配色を使います。テーマのカラーモードが `light` なら `palette.light`、`dark` なら `palette.dark` を使い、`system` は light を使います。配色を宣言していないテーマでは中立の既定色にフォールバックします。個別の色は `appearance` で上書きできます。
+
+```ts
+ogImage({ appearance: { accent: "#f66620" } });
+```
+
 ## 優先順位と出力
 
 frontmatter で `ogImage` または `image` を明示した場合、その値は変更しません。指定がない場合は、プラグインがフィンガープリント付きの `/_og/*.png` パスを設定し、遅延生成出力として登録します。画像を生成できるのはルーティング可能な公開・限定公開コンテンツだけであり、下書きや公開時刻前のコンテンツがこのパスから公開されることはありません。

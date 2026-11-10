@@ -36,8 +36,11 @@ const taggedNotes = {
     "---\ntitle: Beta\npublish: true\ntags:\n  - featured\n---\n\n# Beta\n",
 };
 
-function manager(config: ResolvedRiebeckiteConfig): ContentManager {
-  return new ContentManager(source(taggedNotes), [], { config });
+function manager(
+  config: ResolvedRiebeckiteConfig,
+  files: Record<string, string> = taggedNotes,
+): ContentManager {
+  return new ContentManager(source(files), [], { config });
 }
 
 function config(): ResolvedRiebeckiteConfig {
@@ -136,6 +139,36 @@ test("emits one feed per term and format into the manifest", async () => {
   );
 });
 
+test("excludes configured slug paths and descendants from taxonomy", async () => {
+  const excludedConfig = resolveConfig({
+    site: { title: "Test", baseUrl: "https://example.com" },
+    plugins: [taxonomy({ exclude: ["Config"] })],
+  });
+  const manifest = await manager(excludedConfig, {
+    "Config/internal.md":
+      "---\ntitle: Internal\npublish: true\ntags: [internal]\n---\n",
+    "guide/page.md": "---\ntitle: Guide\npublish: true\ntags: [guide]\n---\n",
+  }).getManifest();
+
+  const paths = manifest.generatedOutputs.map((output) => output.path);
+  assert.ok(paths.includes("tags/guide/feed.xml"));
+  assert.ok(paths.includes("folders/guide/feed.xml"));
+  assert.equal(
+    paths.some((path) => path.includes("Config")),
+    false,
+  );
+});
+
+test("validates taxonomy exclusions", () => {
+  const plugin = taxonomy();
+  assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [
+    { path: "exclude", message: "Expected an array." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: [""] }), [
+    { path: "exclude[0]", message: "Expected a non-empty string." },
+  ]);
+});
+
 test("allows the no-change fast path after planning feeds", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-taxonomy-"),
@@ -195,6 +228,23 @@ test("provides tag and folder listings as plugin page types", async () => {
   assert.equal(folders?.type, "taxonomy-index");
   assert.match(folders?.body ?? "", /data-rr-taxonomy-index="folder"/);
   assert.match(folders?.body ?? "", /href="\/folders\/guides"/);
+});
+
+test("ignores tags that only appear on non-public entries", async () => {
+  const content = new ContentManager(
+    source({
+      ...taggedNotes,
+      "draft.md": "---\ntitle: Draft\ntags: [draft-only]\n---\n\n# Draft\n",
+      "unlisted.md":
+        "---\ntitle: Unlisted\nvisibility: unlisted\ntags: [unlisted-only]\n---\n\n# Unlisted\n",
+    }),
+    [],
+    { config: config() },
+  );
+
+  const tags = await content.resolvePage("/tags");
+  assert.match(tags?.body ?? "", /href="\/tags\/featured"/);
+  assert.doesNotMatch(tags?.body ?? "", /draft-only|unlisted-only/);
 });
 
 test("renders taxonomy index pages under custom base paths", async () => {

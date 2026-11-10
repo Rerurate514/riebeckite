@@ -83,6 +83,9 @@ importers:
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
       puppeteer:
         specifier: ^25.16.0
         version: 25.16.0
@@ -842,6 +845,9 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+      '@riebeckite/diagram':
+        specifier: workspace:*
+        version: link:../../diagram
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*

@@ -1,3 +1,5 @@
+@import "@riebeckite/graph/style.css";
+
 @layer components {
   .rr-local-graph {
     margin-block-start: var(--rb-space-6, 3rem);

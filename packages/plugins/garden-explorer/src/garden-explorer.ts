@@ -36,6 +36,7 @@ export type GardenExplorerOptions = {
 };
 
 export type GardenExplorerPluginOptions = Partial<GardenExplorerOptions> & {
+  exclude?: readonly string[];
   localeMode?: "current" | "fallback" | "all";
 };
 

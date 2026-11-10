@@ -1,12 +1,14 @@
 import type { ContentIcon, OutputDependency } from "@riebeckite/core";
 
 export type FolderPagesOptions = {
+  exclude?: readonly string[];
   className?: string;
   pagesLabel?: string;
   foldersLabel?: string;
 };
 
 export type ResolvedFolderPagesOptions = {
+  exclude: readonly string[];
   className: string;
   pagesLabel: string;
   foldersLabel: string;

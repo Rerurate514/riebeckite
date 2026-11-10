@@ -617,6 +617,7 @@ export class PluginRuntime {
               : {}),
           },
           site: this.pipelineOptions.config?.site,
+          theme: this.pipelineOptions.config?.theme,
           derived: this.derivedViews,
         });
         const outputs = plugin.planGeneratedOutputs
@@ -1118,11 +1119,16 @@ function freezeGeneratedOutputPlanContext(context: {
     routableEntries: readonly ContentManifestEntry[];
   };
   site: ResolvedRiebeckiteConfig["site"] | undefined;
+  theme: ResolvedRiebeckiteConfig["theme"] | undefined;
   derived: DerivedViewRegistry;
 }) {
   return {
     ...deepFreeze(
-      structuredClone({ manifest: context.manifest, site: context.site }),
+      structuredClone({
+        manifest: context.manifest,
+        site: context.site,
+        theme: context.theme,
+      }),
     ),
     derived: context.derived,
   };

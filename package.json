@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
+  "packageManager": "pnpm@11.5.3",
   "scripts": {
     "dev": "pnpm --filter @riebeckite/web dev",
     "build": "pnpm build:packages && pnpm --filter @riebeckite/web build",
@@ -66,10 +67,11 @@
     "format": "biome format --write ."
   },
   "devDependencies": {
-    "@riebeckite/cli": "workspace:*",
     "@biomejs/biome": "^2.4.16",
+    "@riebeckite/cli": "workspace:*",
     "@types/node": "^24.5.2",
     "esbuild": "^0.28.2",
+    "github-slugger": "^2.0.0",
     "puppeteer": "^25.16.0",
     "tsx": "^4.22.4",
     "typescript": "^5.0.0"

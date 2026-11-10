@@ -14,6 +14,76 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+### Added
+
+- Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
+  Packages: `@riebeckite/plugin-navigation`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-100000-navigation-exclude-73be42.md
+
+- Add `exclude` to taxonomy, folder pages, and garden explorer to omit slug paths and their descendants from their derived discovery data.
+  Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
+  ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md
+
+## 0.0.46 - 2026-11-10
+
+### Fixed
+
+- Generated sites now emit a `404.html` page and configure `assets.not_found_handling` as `404-page`, so Cloudflare Workers serves the styled not-found page for unknown paths instead of the default response.
+  Packages: `create-riebeckite`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.45...v0.0.46)
+
+## 0.0.45 - 2026-11-10
+
+### Added
+
+- Themes can declare an optional `palette` of `light` and `dark` background, foreground, and accent colors. The og-image plugin now uses the active theme's palette instead of a fixed navy default, so generated images match the site. `appearance` still overrides individual colors, and themes without a palette keep the previous default.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-og-image`, `@riebeckite/theme-rerurate`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.44...v0.0.45)
+
+## 0.0.44 - 2026-11-09
+
+### Fixed
+
+- Scaffolded sites now ship a `pnpm-workspace.yaml` that approves the packages pnpm 12 insists on building (esbuild, puppeteer, sharp), so the first `pnpm install` finishes instead of failing with `ERR_PNPM_IGNORED_BUILDS`.
+  Packages: `create-riebeckite`
+
+- The local graph and garden explorer stylesheets now import the graph styles from their own CSS. Builds no longer depend on `@riebeckite/graph` being hoisted into the site, so they resolve under pnpm's isolated `node_modules`.
+  Packages: `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-garden-explorer`
+
+- OG images load satori and sharp only when a page needs them, and the standalone SSG bundle keeps `@riebeckite/og-image` external. A site-level `pnpm-workspace.yaml` is no longer read as the monorepo root, so sites using the og-image plugin build under both npm and pnpm.
+  Packages: `@riebeckite/honox`, `@riebeckite/og-image`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.43...v0.0.44)
+
+## 0.0.43 - 2026-11-09
+
+### Added
+
+- Add `maxSegmentLength` to `alias()` so sites can skip aliases whose percent-encoded path segments exceed their host or filesystem limits.
+  Packages: `@riebeckite/plugin-alias`
+
+### Changed
+
+- Add border control to the Backlinks component, a three-column reader layout and folder navigation to the digital-garden preset, and remove marketing-site footer styles from the Rerurate theme.
+  Packages: `@riebeckite/plugin-backlinks`, `@riebeckite/theme-rerurate`, `create-riebeckite`
+
+### Fixed
+
+- Resolve percent-encoded content permalinks and aliases from the decoded request path, so non-ASCII URLs work without a custom manifest lookup.
+  Packages: `@riebeckite/honox`
+
+- Reuse existing SSG output cache entries when a full regeneration produces identical content, instead of copying every output back into the cache on each build.
+  Packages: `@riebeckite/honox`
+
+- Ignore hashtags inside code blocks, inline code, links, wikilinks, and HTML attributes when extracting inline content tags so they no longer appear in taxonomy listings and search data.
+  Packages: `@riebeckite/core`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.42...v0.0.43)
+
+## 0.0.42 - 2026-11-08
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -54,6 +124,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Update the Open Graph image renderer dependency to remove a reported SVG escaping vulnerability and its vulnerable archive dependency.
   Packages: `@riebeckite/og-image`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.0.41...v0.0.42)
 
 ## 0.0.41 - 2026-11-06
 

@@ -42,6 +42,8 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 | [Add Your First Plugin](./first-plugin.md) | Install a plugin and see `==highlight==` syntax work |
 | [Change Your Theme](./first-theme.md) | Swap the theme and see the design change |
 
+Quick Start is the shortest path to a running site; Installation covers requirements and generated files in detail. The three setup walkthroughs — [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — add deployment for each layout.
+
 ## The shortest path
 
 ```sh

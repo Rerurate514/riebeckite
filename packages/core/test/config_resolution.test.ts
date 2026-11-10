@@ -345,6 +345,35 @@ test("resolveConfigModule unwraps default export wrappers", () => {
   assert.equal(resolved.site.title, "Wrapped");
 });
 
+test("resolveConfig preserves the theme palette", () => {
+  const theme = defineTheme({
+    name: "palette",
+    styles: [],
+    palette: {
+      light: {
+        background: "#f6efe2",
+        foreground: "#171717",
+        accent: "#f66620",
+      },
+      dark: { background: "#1c1a17" },
+    },
+  });
+  const config = resolveConfig({
+    site: { title: "Site" },
+    theme: theme({ colorMode: "dark" }),
+  });
+
+  assert.equal(config.theme.colorMode, "dark");
+  assert.deepEqual(config.theme.palette, {
+    light: {
+      background: "#f6efe2",
+      foreground: "#171717",
+      accent: "#f66620",
+    },
+    dark: { background: "#1c1a17" },
+  });
+});
+
 test("isExcluded matches glob patterns against normalized paths", () => {
   assert.equal(isExcluded(["**/draft/**"], "notes/draft/idea.md"), true);
   assert.equal(isExcluded(["**/draft/**"], "notes/draft.md"), false);

@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-excalibrain",
-  "version": "0.0.41",
+  "version": "0.0.46",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,7 +21,8 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "@riebeckite/diagram": "workspace:*"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

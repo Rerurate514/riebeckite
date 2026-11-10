@@ -7,7 +7,7 @@ sidebar:
 ---
 # リポジトリ分離
 
-## C: リポジトリを分ける場合の詳細
+## リポジトリ分離型の場合の詳細
 
 基本的な流れは [コンテンツとサイトを分ける](../../content-repositories.ja.md) にあります。ここでは、その手順で触れていない点を補います。
 
@@ -16,7 +16,7 @@ sidebar:
 - `git init` の後、最初の push より前に GitHub に**プライベート**リポジトリを作ります。
 - `.obsidian/` は Obsidian が Vault を開いたときに生成されます。push してしまっても、`content.exclude` に `.obsidian/**` を入れればサイトのビルドには含まれません。Git で追跡したくない場合は、`.obsidian/workspace*.json` だけを gitignore する折衷案もあります。
 - 非公開ノートの基本は `publish: true` を付けないことです。さらに、`content.exclude` で非公開フォルダ（例: `private/**`）を除外し、読み込み自体を防ぐ二重の対策を取ります。
-- `publishStrategy` は既定の `explicit` のままにします。`selective` は「ほぼすべてを公開し、例外だけ隠す」モデルで、非公開の Vault ではリスクが高くなります。
+- `content.filters.publishStrategy` は既定の `explicit` のままにします。`selective` は「ほぼすべてを公開し、例外だけ隠す」モデルで、非公開の Vault ではリスクが高くなります。
 
 ### コンテンツの取得とデプロイの起動は別に考える
 

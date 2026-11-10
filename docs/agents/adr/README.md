@@ -52,4 +52,6 @@ They are historical evidence, not active decisions. New decisions belong here.
 
 | ADR | Status | Decision |
 | --- | ------ | -------- |
+| [20261111-110000-discovery-projection-exclude-a7c91e](./20261111-110000-discovery-projection-exclude-a7c91e.md) | Accepted | Exclude configured slug paths and their descendants from selected derived discovery projections. |
+| [20261111-100000-navigation-exclude-73be42](./20261111-100000-navigation-exclude-73be42.md) | Accepted | Exclude configured slug paths and their descendants from derived navigation. |
 | [20261102-143500-release-change-management-b2c3d4](./20261102-143500-release-change-management-b2c3d4.md) | Accepted | Record user-facing changes as entries and decisions as ADRs, then generate the changelog and release notes from one source. |

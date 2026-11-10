@@ -163,7 +163,12 @@ It accepts the same `NavigationItem` tree. A parent with both `href` and childre
 | ------ | ---- | ------- | ----------- |
 | `items` | `NavigationItem[]` | derived | Authored primary navigation |
 | `secondary` | `NavigationItem[]` | `[]` | Supplementary links |
+| `exclude` | `string[]` | `[]` | Derived slug paths to omit, including descendants |
 | `maxDepth` | `number` | unlimited | Maximum depth of derived items; root items are depth 1 |
+
+Use `exclude` to omit a folder or note from derived navigation. An excluded path
+also omits its descendants, so `exclude: ["Config"]` removes `Config` and every
+entry below it. It does not affect authored `items`.
 
 On a large vault, limit the derived tree with `maxDepth`; rendered items are
 duplicated in the header and mobile navigation.
@@ -193,8 +198,8 @@ tab.
   language metadata, so a localized vault's navigation never mixes languages.
   In a vault without localization metadata, every discoverable entry is used.
 - Ordering is alphabetical by title. Frontmatter ordering is not read.
-- There is no `exclude`/`include`/`order` option yet; add one only when a real
-  site needs it.
+- There is no `include`/`order` option yet; add one only when a real site needs
+  it.
 
 ## See also
 

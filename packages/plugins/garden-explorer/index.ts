@@ -1,4 +1,5 @@
 import {
+  type ConfigValidationIssue,
   createClientEntry,
   definePlugin,
   localizedPagePaths,
@@ -22,16 +23,13 @@ export { getGardenExplorerData } from "./src/garden-explorer.server.js";
 export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
   return definePlugin({
     name: "garden-explorer",
+    options,
+    validateOptions: validateGardenExplorerOptions,
     assets: [
       {
         pluginName: "garden-explorer",
         kind: "style",
         moduleSpecifier: "@riebeckite/plugin-garden-explorer/style.css",
-      },
-      {
-        pluginName: "garden-explorer",
-        kind: "style",
-        moduleSpecifier: "@riebeckite/graph/style.css",
       },
     ],
     clientEntries: [
@@ -107,4 +105,23 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
       },
     ],
   });
+}
+
+function validateGardenExplorerOptions(
+  options: GardenExplorerPluginOptions | undefined,
+): readonly ConfigValidationIssue[] {
+  if (!options || options.exclude === undefined) return [];
+  if (!Array.isArray(options.exclude)) {
+    return [{ path: "exclude", message: "Expected an array." }];
+  }
+  return options.exclude.flatMap((slug, index) =>
+    typeof slug === "string" && slug.trim() !== ""
+      ? []
+      : [
+          {
+            path: `exclude[${index}]`,
+            message: "Expected a non-empty string.",
+          },
+        ],
+  );
 }

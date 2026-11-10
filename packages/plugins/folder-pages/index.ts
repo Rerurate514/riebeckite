@@ -38,7 +38,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
   const modelFor = (manifest: ContentManifest): FolderPagesModel => {
     const cached = models.get(manifest);
     if (cached) return cached;
-    const model = buildFolderPages(manifest);
+    const model = buildFolderPages(manifest, resolved.exclude);
     models.set(manifest, model);
     return model;
   };
@@ -121,6 +121,20 @@ function validateFolderPagesOptions(
     ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
     }
+  }
+  if (!Array.isArray(options.exclude)) {
+    if (options.exclude !== undefined) {
+      issues.push({ path: "exclude", message: "Expected an array." });
+    }
+  } else {
+    options.exclude.forEach((slug, index) => {
+      if (typeof slug !== "string" || slug.trim() === "") {
+        issues.push({
+          path: `exclude[${index}]`,
+          message: "Expected a non-empty string.",
+        });
+      }
+    });
   }
   return issues;
 }

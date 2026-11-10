@@ -83,7 +83,7 @@ This is my second page.
 
 ## 5. ページをリンクする
 
-`content/index.md` に `[[hello]]`（Obsidian [[glossary/wikilink|WikiLink]]）を追加します。starter preset は `@riebeckite/plugin-obsidian-markdown` を有効にしています。生成されたコンテンツ自体が `[[guide]]`、`[[examples]]` を使しています。リンクをクリックして確認してください。
+`content/index.md` に `[[hello]]`（Obsidian [[glossary/wikilink|WikiLink]]）を追加します。starter preset は `@riebeckite/plugin-obsidian-markdown` を有効にしています。生成されたコンテンツ自体が `[[guide]]`、`[[examples]]` を使っています。リンクをクリックして確認してください。
 
 ## 6. サイトをビルドする
 

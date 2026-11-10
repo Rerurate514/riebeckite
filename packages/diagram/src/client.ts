@@ -4,6 +4,41 @@ export type DiagramClientRenderer = (
   context: DiagramClientContext,
 ) => Promise<undefined | (() => void)> | undefined | (() => void);
 
+const UNSAFE_SVG_ELEMENTS =
+  "script,iframe,object,embed,animate,animateMotion,animateTransform,set,form,button,input,select,textarea,video,audio,canvas,base,link,meta";
+const UNSAFE_STYLE =
+  /@import|expression\s*\(|behavior\s*:|url\(\s*['"]?\s*(?!#)/i;
+
+export function setDiagramSvg(canvas: HTMLElement, source: string): boolean {
+  const parsed = new DOMParser().parseFromString(source, "text/html");
+  const svg = parsed.body.firstElementChild;
+  if (svg?.localName !== "svg") return false;
+
+  for (const element of svg.querySelectorAll(UNSAFE_SVG_ELEMENTS)) {
+    element.remove();
+  }
+  for (const element of [svg, ...svg.querySelectorAll("*")]) {
+    for (const attribute of Array.from(element.attributes)) {
+      const name = attribute.name.toLowerCase();
+      if (
+        name.startsWith("on") ||
+        name === "src" ||
+        ((name === "href" || name === "xlink:href") &&
+          !attribute.value.trim().startsWith("#")) ||
+        (name === "style" && UNSAFE_STYLE.test(attribute.value))
+      ) {
+        element.removeAttribute(attribute.name);
+      }
+    }
+  }
+  for (const style of svg.querySelectorAll("style")) {
+    if (UNSAFE_STYLE.test(style.textContent ?? "")) style.remove();
+  }
+
+  canvas.replaceChildren(svg);
+  return true;
+}
+
 export async function renderPendingDiagrams(
   kind: string,
   renderer: DiagramClientRenderer,

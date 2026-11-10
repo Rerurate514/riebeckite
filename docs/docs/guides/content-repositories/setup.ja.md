@@ -269,7 +269,7 @@ git push
 
 ```sh
 cd my-site
-npm run dev      # ローカルプレビュー
-npm run check    # 設定の検証
-npm run doctor   # 読み込みの問題を診断
+npm exec riebeckite dev      # ローカルプレビュー
+npm exec riebeckite check    # 設定の検証
+npm exec riebeckite doctor   # 読み込みの問題を診断
 ```

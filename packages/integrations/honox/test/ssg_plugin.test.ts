@@ -344,6 +344,49 @@ test("SSG output cache rejects entries with an invalid checksum", async () => {
   assert.equal(await loadOutputCache(cachePath), undefined);
 });
 
+test("SSG output cache reuses carried entries and recopies missing ones", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ssg-cache-"),
+  );
+  const cachePath = path.join(directory, "ssg-output-cache.json");
+  const output = path.join(directory, "dist");
+  await fs.mkdir(output, { recursive: true });
+  await fs.writeFile(path.join(output, "index.html"), "<h1>original</h1>");
+  await saveOutputCache(
+    cachePath,
+    {
+      version: 4,
+      outputs: { "index.html": { cachePath: "", checksum: "" } },
+    },
+    output,
+  );
+  const cached = await loadOutputCache(cachePath);
+  const entry = cached?.outputs["index.html"];
+  assert.ok(entry);
+  const entryPath = path.join(
+    directory,
+    "ssg-output-cache.entries",
+    entry.cachePath,
+  );
+
+  await fs.writeFile(path.join(output, "index.html"), "<h1>changed</h1>");
+  await saveOutputCache(
+    cachePath,
+    { version: 4, outputs: { "index.html": entry } },
+    output,
+  );
+  assert.equal(await fs.readFile(entryPath, "utf8"), "<h1>original</h1>");
+
+  await fs.writeFile(path.join(output, "index.html"), "<h1>original</h1>");
+  await fs.rm(entryPath);
+  await saveOutputCache(
+    cachePath,
+    { version: 4, outputs: { "index.html": entry } },
+    output,
+  );
+  assert.equal(await fs.readFile(entryPath, "utf8"), "<h1>original</h1>");
+});
+
 test("SSG output cache falls back when a cached entry is corrupted", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-ssg-cache-"),

@@ -274,7 +274,7 @@ function isDynamicRoute(path: string): boolean {
 
 function normalizeRequestPath(pathname: string): string {
   const trailingSlash = pathname.length > 1 && pathname.endsWith("/");
-  const segments = pathname.split("/").filter(Boolean).map(decodeSegment);
+  const segments = pathname.split("/").filter(Boolean).map(encodeSegment);
   const path = `/${segments.join("/")}`;
   return trailingSlash ? `${path}/` : path;
 }
@@ -295,14 +295,16 @@ function routeOutputPath(pathname: string): string {
 }
 
 /**
- * Content permalinks are stored decoded, while request paths may arrive
- * percent-encoded. Decode each segment so both forms resolve to the same
- * manifest key; already-decoded input passes through unchanged.
+ * Content permalinks and aliases are stored percent-encoded, while Hono
+ * exposes a decoded request path. Encode each segment with the same rules as
+ * the permalink and alias plugins so both forms resolve to the same manifest
+ * key. Already-encoded segments are normalized by decoding them first, while
+ * decoded segments with a literal percent sign are encoded directly.
  */
-function decodeSegment(segment: string): string {
+function encodeSegment(segment: string): string {
   try {
-    return decodeURIComponent(segment);
+    return encodeURIComponent(decodeURIComponent(segment));
   } catch {
-    return segment;
+    return encodeURIComponent(segment);
   }
 }

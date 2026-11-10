@@ -204,6 +204,7 @@ export type PluginGeneratedOutputPlanContext = {
     readonly localization?: ContentManifest["localization"];
   }>;
   readonly site: Readonly<ResolvedRiebeckiteConfig["site"]> | undefined;
+  readonly theme?: Readonly<ResolvedRiebeckiteConfig["theme"]>;
   readonly derived: DerivedViewRegistry;
 };
 

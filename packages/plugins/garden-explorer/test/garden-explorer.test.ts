@@ -6,9 +6,13 @@ import {
   shouldGuardForceLayout,
 } from "@riebeckite/core/client";
 import { createElement, Fragment } from "hono/jsx";
+import { gardenExplorer } from "../index.js";
 import type { GardenExplorerNote } from "../src/garden-explorer.js";
 import { getGardenExplorerLocalGraphNotes } from "../src/garden-explorer.js";
-import { resolveGardenExplorerOptions } from "../src/garden-explorer.server.js";
+import {
+  getGardenExplorerData,
+  resolveGardenExplorerOptions,
+} from "../src/garden-explorer.server.js";
 import { renderGardenExplorerPage } from "../src/garden-explorer-page.js";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -60,6 +64,39 @@ test("garden explorer graph options fall back from invalid layout values", () =>
     resolveGardenExplorerOptions({ layout: "circle" as never }).layout,
     "force",
   );
+});
+
+test("excludes configured slug paths and descendants from explorer data", () => {
+  const data = getGardenExplorerData({
+    manifest: {
+      discoverableEntries: [
+        createEntry("Config/internal", ["internal"]),
+        createEntry("guide/page", ["guide"]),
+      ],
+      graph: {
+        filterNeighbors: () => ({ outgoingSlugs: [], incomingSlugs: [] }),
+      },
+    } as never,
+    config: {} as never,
+    resolveTitle: (slug) => slug,
+    options: { exclude: ["Config"] },
+  });
+
+  assert.deepEqual(
+    data.notes.map((note) => note.slug),
+    ["guide/page"],
+  );
+  assert.deepEqual(data.tags, [{ name: "guide", count: 1 }]);
+});
+
+test("validates garden explorer exclusions", () => {
+  const plugin = gardenExplorer();
+  assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [
+    { path: "exclude", message: "Expected an array." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: [""] }), [
+    { path: "exclude[0]", message: "Expected a non-empty string." },
+  ]);
 });
 
 test("garden explorer local graph traversal respects depth and prevents cycle duplicates", () => {
@@ -119,6 +156,19 @@ function createNote(
     folder: "Root",
     outgoing,
     backlinks,
+  };
+}
+
+function createEntry(slug: string, tags: string[]) {
+  return {
+    slug,
+    permalink: `/${slug}`,
+    publicLocation: { slug, permalink: `/${slug}` },
+    frontmatter: { title: slug },
+    html: "",
+    tags,
+    links: [],
+    assets: [],
   };
 }
 

@@ -91,6 +91,14 @@ curl -I https://my-site.example.com/notes/writing
 
 Check the HTML, CSS, images, 404 page, `sitemap.xml`, and `robots.txt`. A missing custom domain usually means the route was not deployed or the hostname is already used by another Worker.
 
+## Common mistakes
+
+- Running `npm exec riebeckite ...` from outside the site folder. Run commands from the site root.
+- Adding pages without `publish: true`. New notes stay drafts and do not appear in the built site.
+- Editing `dist/` directly. `dist/` is rebuilt from `content/` and `app/` on every build; edit the source files instead.
+- Committing `dist/` or `node_modules/`. Commit `package-lock.json` instead.
+- Changing `site.baseUrl` after deploying without rebuilding. Sitemap and feed URLs use the configured `baseUrl`, so rebuild and redeploy after changing it.
+
 ## Next
 
 - [Content Location](./content-location.md)

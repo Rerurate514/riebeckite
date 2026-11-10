@@ -49,6 +49,7 @@ export default defineConfig({
 
 | オプション | 型 | 既定値 | 説明 |
 | ---------- | -- | ------ | ---- |
+| `exclude` | `string[]` | `[]` | 一致する slug パスと子孫をターム、フィード、データから除外する |
 | `tags` | `boolean` | `true` | タグタームを生成する |
 | `folders` | `boolean` | `true` | フォルダタームを生成する |
 | `tagsBasePath` | `string` | `"/tags"` | タグ一覧のパス接頭辞 |
@@ -63,6 +64,9 @@ export default defineConfig({
 | `className` | `string` | `"rr-taxonomy"` | ページ断片のルート CSS クラス |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON データのエンドポイント |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | タームと言語別ページの選択 |
+
+`exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
+`exclude: ["Config"]` は `Config` と `Config/internal` をすべての taxonomy 投影から除外しますが、公開 URL はそのままです。
 
 ## データエンドポイント
 

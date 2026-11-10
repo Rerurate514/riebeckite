@@ -57,12 +57,16 @@ export function collapseFolderEntryLocations(
   }
 }
 
-export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
+export function buildFolderPages(
+  manifest: ContentManifest,
+  excludedSlugs: readonly string[] = [],
+): FolderPagesModel {
   const folderIcons = manifest.icons?.folders ?? {};
   const routableBySlug = new Map<string, ContentManifestEntry>();
   const routablePermalinks = new Set<string>();
 
   for (const entry of manifest.publicEntries) {
+    if (isExcludedEntry(entry, excludedSlugs)) continue;
     routableBySlug.set(entry.slug, entry);
     routablePermalinks.add(stripTrailingSlash(entry.permalink));
   }
@@ -112,6 +116,7 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
   };
 
   for (const entry of manifest.discoverableEntries) {
+    if (isExcludedEntry(entry, excludedSlugs)) continue;
     const language = entry.publicLocation.language;
     const folder = parentFolder(entry.slug);
     allFolders.add(folder);
@@ -128,6 +133,7 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
 
   const owners = new Map<string, ContentManifestEntry>();
   for (const entry of manifest.publicEntries) {
+    if (isExcludedEntry(entry, excludedSlugs)) continue;
     const language = entry.publicLocation.language;
     const basename = entryBaseSegment(entry.slug, language);
     if (!isEntryBasename(basename)) continue;
@@ -267,6 +273,17 @@ export function buildFolderPages(manifest: ContentManifest): FolderPagesModel {
 
 function languageKey(folder: string, language: Language): string {
   return `${folder}\u0000${language ?? ""}`;
+}
+
+function isExcludedEntry(
+  entry: ContentManifestEntry,
+  excludedSlugs: readonly string[],
+): boolean {
+  const slug =
+    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  return excludedSlugs.some(
+    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
+  );
 }
 
 function entryBaseSegment(slug: string, language: Language): string {

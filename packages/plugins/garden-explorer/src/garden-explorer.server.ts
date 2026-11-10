@@ -36,7 +36,7 @@ export function getGardenExplorerData(args: {
         ? { fallbackLocale: args.manifest.localization.fallbackLocale }
         : {}),
     },
-  );
+  ).filter((entry) => !isExcludedEntry(entry, args.options?.exclude ?? []));
   const publishedSlugs = new Set(publishedEntries.map((entry) => entry.slug));
 
   const notes = publishedEntries
@@ -137,6 +137,17 @@ function getFolder(slug: string): string {
   const segments = slug.split("/");
   if (segments.length <= 1) return "Root";
   return segments.slice(0, -1).join("/");
+}
+
+function isExcludedEntry(
+  entry: ContentManifestEntry,
+  excludedSlugs: readonly string[],
+): boolean {
+  const slug =
+    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  return excludedSlugs.some(
+    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
+  );
 }
 
 function createExcerpt(entry: ContentManifestEntry): string {

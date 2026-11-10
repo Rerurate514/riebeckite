@@ -16,6 +16,7 @@ export function resolveTaxonomyOptions(
   options: TaxonomyOptions = {},
 ): ResolvedTaxonomyOptions {
   return {
+    exclude: options.exclude ?? [],
     tags: options.tags ?? true,
     folders: options.folders ?? true,
     tagsBasePath: normalizeBasePath(

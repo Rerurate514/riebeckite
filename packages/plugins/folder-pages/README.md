@@ -67,9 +67,14 @@ output is deterministic regardless of plugin order.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
+| `exclude` | `string[]` | `[]` | Omit matching slug paths and their descendants from generated listings. |
 | `className` | `string` | `"rr-folder-page"` | Root CSS class for the rendered fragment. |
 | `pagesLabel` | `string` | `"Pages"` | Heading for the page list. |
 | `foldersLabel` | `string` | `"Folders"` | Heading for the folder list. |
+
+`exclude` uses logical content slugs, not display labels or glob patterns. For
+example, `exclude: ["Config"]` omits `Config` and `Config/internal` while
+leaving their published URLs unchanged.
 
 ## Plugin dependencies
 

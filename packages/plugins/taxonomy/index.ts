@@ -273,15 +273,17 @@ function taxonomyModels(
       : localization.locales
     : [config?.site.locale ?? "en"];
   return locales.map((locale) => {
-    const entries = localization
-      ? selectLocalizedEntries(source.discoverableEntries, {
-          mode: options.localeMode,
-          locale,
-          ...(localization.fallbackLocale
-            ? { fallbackLocale: localization.fallbackLocale }
-            : {}),
-        })
-      : source.discoverableEntries;
+    const entries = (
+      localization
+        ? selectLocalizedEntries(source.discoverableEntries, {
+            mode: options.localeMode,
+            locale,
+            ...(localization.fallbackLocale
+              ? { fallbackLocale: localization.fallbackLocale }
+              : {}),
+          })
+        : source.discoverableEntries
+    ).filter((entry) => !isExcludedEntry(entry, options.exclude));
     return {
       locale,
       index: buildTaxonomyIndex(
@@ -505,6 +507,21 @@ function validateTaxonomyOptions(
     }
   };
 
+  if (!Array.isArray(options.exclude)) {
+    if (options.exclude !== undefined) {
+      issues.push({ path: "exclude", message: "Expected an array." });
+    }
+  } else {
+    options.exclude.forEach((slug, index) => {
+      if (typeof slug !== "string" || slug.trim() === "") {
+        issues.push({
+          path: `exclude[${index}]`,
+          message: "Expected a non-empty string.",
+        });
+      }
+    });
+  }
+
   for (const key of ["tags", "folders", "related"] as const) {
     assertBoolean(key);
   }
@@ -558,6 +575,17 @@ function validateTaxonomyOptions(
   }
 
   return issues;
+}
+
+function isExcludedEntry(
+  entry: ContentManifestEntry,
+  excludedSlugs: readonly string[],
+): boolean {
+  const slug =
+    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  return excludedSlugs.some(
+    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
+  );
 }
 
 export type { SeoMetadata } from "@riebeckite/core";

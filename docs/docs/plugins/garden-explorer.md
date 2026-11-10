@@ -102,6 +102,7 @@ plugins: [
     depth: 1,
     showTags: true,
     showFolders: false,
+    exclude: ["Config"],
     nodeSize: 1,
     linkDistance: 100,
     repulsion: 600,
@@ -112,6 +113,11 @@ plugins: [
 The legacy `layout` and `showLabels` options are still accepted for
 compatibility. The graph always uses the continuous force engine, and labels
 fade with zoom via the Display setting instead of a fixed on/off layout.
+
+`exclude` omits matching logical content slug paths and their descendants from
+the note list, graph, tags, and folders. It is not a display-label or glob
+matcher; `exclude: ["Config"]` omits `Config/internal` while preserving its
+published URL.
 
 `gardenExplorer()` registers the `/explore` page type and bundles `style.css`
 and its client hydrator. A catch-all route using `resolveRiebeckiteRoute()` and

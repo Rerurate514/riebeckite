@@ -262,6 +262,28 @@ test("lists only discoverable content in generated folder pages", async () => {
   assert.doesNotMatch(body, /Scheduled/);
 });
 
+test("excludes configured slug paths and descendants from folder pages", async () => {
+  const content = manager(
+    {
+      "Config/page.md": "---\ntitle: Config\npublish: true\n---\n",
+      "guide/page.md": "---\ntitle: Guide\npublish: true\n---\n",
+    },
+    [folderPages({ exclude: ["Config"] })],
+  );
+
+  assert.deepEqual(await content.getPagePaths(), ["/guide/"]);
+});
+
+test("validates folder page exclusions", () => {
+  const plugin = folderPages();
+  assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [
+    { path: "exclude", message: "Expected an array." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: [""] }), [
+    { path: "exclude[0]", message: "Expected a non-empty string." },
+  ]);
+});
+
 test("renders icons attached after folder locations are resolved", async () => {
   const icon = (id: string) => ({
     id,

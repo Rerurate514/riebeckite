@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "ac936721-249c-4c1a-8f83-97d73c068f1f",
-    "publishedAt": "2026-11-10T16:46:31.361Z",
-    "publicationFingerprint": "6618a5f174de5d88d114a0a5a8f62eb7fbc8c024d46b744a6274701107c165e7",
+    "runId": "0e8ffab8-cccf-41b3-a2a3-95baa9f33c47",
+    "publishedAt": "2026-11-10T17:57:44.968Z",
+    "publicationFingerprint": "bc2f8c38e81ccb6147f9f22ff4aa2dffe1f6094d44a241f9b483c5ca9f97200d",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -4826,16 +4826,16 @@
         "permalink": "/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "69a70f0e4cedca0067340271c0ef7d6a7f5982a17dda09c9017b6d1b24d82a53",
-        "contentFingerprint": "938697e6df62ea7231a8a7f217089e1005ad10834a1e77e219d38bd1590f6177"
+        "fingerprint": "0c533e0f4cd70c3943e395ca67deb385c2450d857183b97b0d15737fdccef6c7",
+        "contentFingerprint": "6e7d3d712e6dfe24df77dfb02e9e8a9f4c5605ea8a0d27d3085f6d4ace34f555"
       },
       {
         "slug": "docs/plugins/navigation.ja",
         "permalink": "/ja/docs/plugins/navigation",
         "title": "Navigation",
         "visibility": "public",
-        "fingerprint": "897b84c8900d365a8e8a1d84412f791117bf7a6a7bdc6ed428d72f676d217cc2",
-        "contentFingerprint": "8320af0102e839a34f483dc835e363dd243267aa74e01a2fbc5df748693217ef"
+        "fingerprint": "5e0378bd5129fcb3c44d33e8de065444be3efd391993f05c434e861fe19819a4",
+        "contentFingerprint": "cb3ded52d3ae94d004569a61863b706a8bf3a248fc0fdc9165f4cffcdb85d70f"
       },
       {
         "slug": "docs/plugins/obsidian-markdown",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "d875085c9acd86a289ff6e6ea9f57065101979bf9e0c40251b0edd47dc80eb91",
-        "contentFingerprint": "ea7bbc0eecc17f2fa0bb57e6ef71dd8cdd4ac9aab17566fe009411b5a82ca562"
+        "fingerprint": "51ba0887fd884c8c88f7255f507536910b4c89782b1c38e291ab2c65723f40fb",
+        "contentFingerprint": "e4db9b251dc2c1ccc49a624693775a73db38bf770d6ade0425c75bb2240c2c66"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "55f2ecbc8bda0534a24723a82ae04d89f6a8609b1f33a773fca8b58878a67899",
-        "contentFingerprint": "b4d2c4c5dd2d1ea07653271655525e9a2ce9e5893f3a0d168a18267703976653"
+        "fingerprint": "21fa50ccb634fc1181cba1bf2949b48a94583e8a2e6f449d500ed0f427378e2f",
+        "contentFingerprint": "ace0e461fcc528fc6ffdb9b802aa7df152e9eb066db1d10f674fcf1af84d0275"
       },
       {
         "slug": "docs/security",
@@ -6758,7 +6758,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "1501e315c40555ccc4ee9ec0aa1489b173ed395567055e5cddbdd56c87121d32",
+    "artifactFingerprint": "d89490139be9aa2ce745dd8c2637ff8595c607e10ae34df0eba1225b28853313",
     "provider": "cloudflare-workers"
   }
 }

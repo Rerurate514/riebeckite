@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/honox",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",

@@ -138,6 +138,21 @@ test("maxDepth limits derived navigation without changing authored items", () =>
   );
 });
 
+test("excludes a configured slug and its descendants from derived navigation", () => {
+  const config = makeEntry({ slug: "Config/README", title: "Config" });
+  const internal = makeEntry({ slug: "Config/internal", title: "Internal" });
+  const guide = makeEntry({
+    slug: "guide/README",
+    title: "Guide",
+    permalink: "/guide/",
+  });
+
+  assert.deepEqual(
+    buildNavigation([config, internal, guide], { exclude: ["Config"] }).primary,
+    [{ label: "Guide", href: "/guide/" }],
+  );
+});
+
 test("renders a folder without an index as a label with no href", () => {
   const alpha = makeEntry({ slug: "projects/alpha", title: "Alpha" });
   const beta = makeEntry({ slug: "projects/beta", title: "Beta" });
@@ -230,6 +245,12 @@ test("validateOptions reports invalid authored items", () => {
   ]);
   assert.deepEqual(plugin.validateOptions?.({ maxDepth: 0 } as never), [
     { path: "maxDepth", message: "Expected a positive integer." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [
+    { path: "exclude", message: "Expected an array." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: [""] } as never), [
+    { path: "exclude[0]", message: "Expected a non-empty string." },
   ]);
 });
 

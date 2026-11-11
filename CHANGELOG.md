@@ -25,6 +25,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
   Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md
 
+- Add a generic Content Format contract so plugins can contribute extensions, content processing, and renderer modules, and add `@riebeckite/plugin-mdx` for trusted MDX pages whose JSX, expressions, ESM imports, and local components render through the Hono JSX runtime in development SSR and production SSG.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/ui`, `@riebeckite/plugin-mdx`
+
 ### Fixed
 
 - Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, include notes dated only by `published` in Recent Posts, and center article-layout page bodies again.

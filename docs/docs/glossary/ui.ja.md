@@ -58,7 +58,7 @@ const data = getProperties({ view, frontmatter: entry.frontmatter });
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-構造 CSS は `@riebeckite/honox/style.css` にあり、生成される `.riebeckite/framework-styles.css` を通じてサイトに届きます。プリミティブが提供するのは、セマンティック HTML、これらのフック、`class`/`className` の合成、フックを機能させる構造 CSS です。記事本文、メタデータの表示形式、ナビゲーションの配置、カード、ページレイアウトの構成、アイランド、サイトの視覚デザインと上書きは所有しません。それらはサイトアプリケーションに属します。`ArticleHeader` は children か HTML 入力用の prop を受け取り、`ArticleContent` は children を受け取ります。`ArticleBody` は描画済みの Markdown を `.rb-article-content` として描画し、Markdown のタイポグラフィはそのラッパーにスコープされるため、プラグインのコンポーネントはどこに置いても独自の見出しを保てます。
+構造 CSS は `@riebeckite/honox/style.css` にあり、生成される `.riebeckite/framework-styles.css` を通じてサイトに届きます。プリミティブが提供するのは、セマンティック HTML、これらのフック、`class`/`className` の合成、フックを機能させる構造 CSS です。記事本文、メタデータの表示形式、ナビゲーションの配置、カード、ページレイアウトの構成、アイランド、サイトの視覚デザインと上書きは所有しません。それらはサイトアプリケーションに属します。`ArticleHeader` は children か HTML 入力用の prop を受け取り、`ArticleContent` は children を受け取ります。`ArticleBody` は有効な Content Format が提供する本文、なければレンダリング済みの Markdown を `.rb-article-content` として描画し、Markdown のタイポグラフィはそのラッパーにスコープされるため、プラグインのコンポーネントはどこに置いても独自の見出しを保てます。
 
 ## サイトが持つもの
 

@@ -1,16 +1,21 @@
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 export const riebeckiteConfigModuleId = "virtual:riebeckite/config";
 export const riebeckiteContentModuleId = "virtual:riebeckite/content";
+export const riebeckiteContentRenderersModuleId =
+  "virtual:riebeckite/content-renderers";
 
 const runtimeModuleIds = [
   riebeckiteConfigModuleId,
   riebeckiteContentModuleId,
+  riebeckiteContentRenderersModuleId,
 ] as const;
 
 const resolvedConfigModuleId = `\0${riebeckiteConfigModuleId}`;
 const resolvedContentModuleId = `\0${riebeckiteContentModuleId}`;
+const resolvedContentRenderersModuleId = `\0${riebeckiteContentRenderersModuleId}`;
 
 /**
  * Provides the framework-owned bootstrap modules a generated site imports
@@ -29,6 +34,8 @@ export function riebeckiteRuntimeModules(
     resolveId(id) {
       if (id === riebeckiteConfigModuleId) return resolvedConfigModuleId;
       if (id === riebeckiteContentModuleId) return resolvedContentModuleId;
+      if (id === riebeckiteContentRenderersModuleId)
+        return resolvedContentRenderersModuleId;
       return null;
     },
     load(id) {
@@ -38,9 +45,42 @@ export function riebeckiteRuntimeModules(
       }
       if (id === resolvedContentModuleId)
         return createContentModule(development);
+      if (id === resolvedContentRenderersModuleId)
+        return createContentRenderersModule(getApplication().config);
       return null;
     },
   };
+}
+
+function createContentRenderersModule(
+  config: ResolvedRiebeckiteConfig,
+): string {
+  const formats = config.plugins.flatMap(
+    (plugin) => plugin.contentFormats ?? [],
+  );
+  const renderers = formats.filter((format) => format.rendererModule);
+  const imports = renderers
+    .map(
+      (format, index) =>
+        `import renderer${index} from ${JSON.stringify(format.rendererModule)};`,
+    )
+    .join("\n");
+  const entries = renderers
+    .map(
+      (format, index) =>
+        `{ extension: ${JSON.stringify(format.extension)}, renderer: renderer${index}, options: formats[${formats.indexOf(format)}]?.rendererOptions }`,
+    )
+    .join(",\n");
+  return `import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
+${imports}
+const formats = config.plugins.flatMap((plugin) => plugin.contentFormats ?? []);
+const renderers = [${entries}];
+
+export function renderContent(sourcePath) {
+  const entry = renderers.find((renderer) => sourcePath.toLowerCase().endsWith(renderer.extension));
+  return entry ? entry.renderer(sourcePath, entry.options) : undefined;
+}
+`;
 }
 
 export function isRiebeckiteRuntimeModuleId(

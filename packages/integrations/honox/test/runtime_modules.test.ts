@@ -7,6 +7,7 @@ import {
   isRiebeckiteRuntimeModuleId,
   riebeckiteConfigModuleId,
   riebeckiteContentModuleId,
+  riebeckiteContentRenderersModuleId,
   riebeckiteRuntimeModules,
 } from "../src/runtime_modules.js";
 
@@ -69,6 +70,35 @@ describe("riebeckiteRuntimeModules", () => {
     const code = load(`\0${riebeckiteContentModuleId}`);
     assert.ok(code);
     assert.match(code, /isDevelopment: true/);
+  });
+
+  it("builds static content renderer imports", () => {
+    const plugin = riebeckiteRuntimeModules(() => ({
+      ...application,
+      config: {
+        ...application.config,
+        plugins: [
+          {
+            name: "mdx",
+            contentFormats: [
+              {
+                extension: ".mdx",
+                rendererModule: "virtual:riebeckite/mdx-renderer",
+              },
+            ],
+          },
+        ],
+      },
+    }));
+    const load = asHook<string, string | null>(plugin.load);
+
+    const code = load(`\0${riebeckiteContentRenderersModuleId}`);
+    assert.ok(code);
+    assert.match(
+      code,
+      /import renderer0 from "virtual:riebeckite\/mdx-renderer"/,
+    );
+    assert.match(code, /renderContent/);
   });
 
   it("ignores unrelated ids", () => {

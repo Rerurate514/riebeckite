@@ -581,6 +581,21 @@
       "type": true
     },
     {
+      "name": "ContentFormat",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatProcessContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatRegistry",
+      "value": true,
+      "type": true
+    },
+    {
       "name": "ContentGraph",
       "value": false,
       "type": true
@@ -1302,6 +1317,11 @@
     },
     {
       "name": "extractContentLinks",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "extractFrontmatter",
       "value": true,
       "type": false
     },

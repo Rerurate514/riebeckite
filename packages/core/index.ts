@@ -149,6 +149,11 @@ export {
 } from "./src/content/content_date.js";
 export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
 export type {
+  ContentFormat,
+  ContentFormatProcessContext,
+} from "./src/content/content_format.js";
+export { ContentFormatRegistry } from "./src/content/content_format.js";
+export type {
   ContentGraph,
   ContentGraphNeighbors,
 } from "./src/content/content_graph.js";
@@ -201,6 +206,7 @@ export type {
 export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
   computePipelineFingerprint,
+  extractFrontmatter,
   isPersistentlyCacheable,
 } from "./src/content/content_persistent_cache.js";
 export type {

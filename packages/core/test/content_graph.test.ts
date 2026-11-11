@@ -265,3 +265,16 @@ test("reading an unknown slug fails instead of returning empty content", async (
     /Content entry was not found: missing\.md/,
   );
 });
+
+test("rejects content files with the same slug across formats", async () => {
+  const manager = new ContentManager(
+    memorySource({ "note.md": "# Markdown", "note.mdx": "# MDX" }),
+    [],
+    { plugins: [{ name: "mdx", contentFormats: [{ extension: ".mdx" }] }] },
+  );
+
+  await assert.rejects(
+    manager.getProcessedContent("note"),
+    /Content slug collision for "note": note\.md, note\.mdx/,
+  );
+});

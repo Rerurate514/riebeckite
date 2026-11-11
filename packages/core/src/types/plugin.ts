@@ -1,5 +1,6 @@
 import type { ApiLifecycleDefinition } from "../api_lifecycle.js";
 import type { PluginCliExtension } from "../cli/types.js";
+import type { ContentFormat } from "../content/content_format.js";
 import type { ContentLocalization } from "../content/content_language.js";
 import type {
   DerivedDependency,
@@ -70,6 +71,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   cacheVersion?: string;
   derivedViews?: readonly DerivedView<unknown, unknown>[];
   contentFileMetadata?: boolean;
+  contentFormats?: readonly ContentFormat[];
+  vitePlugins?: (context: { contentDirectory: string }) => readonly unknown[];
   developmentRouteManifest?: true;
   /**
    * Explicit contract for the persistent processed-content cache.

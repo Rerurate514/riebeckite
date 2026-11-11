@@ -139,12 +139,26 @@ export function HtmlFragment(props: HtmlFragmentProps) {
 }
 
 /**
- * Renders Markdown-produced HTML as the canonical article body.
+ * Renders the article body: a content-format renderer body when available,
+ * otherwise Markdown-produced HTML.
  *
  * Owns the `.rb-article-content` Stable Hook so Sites never hand-write it.
  */
 export function ArticleBody(props: ArticleBodyProps) {
   const article = useArticleContext();
+  if (article?.body !== undefined) {
+    return (
+      <div
+        class={joinClassNames(
+          "rb-article-content",
+          props.class,
+          props.className,
+        )}
+      >
+        {article.body}
+      </div>
+    );
+  }
   const html = props.html ?? article?.post.html;
   if (html === undefined) return null;
   return (

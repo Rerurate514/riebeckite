@@ -203,8 +203,7 @@
  * that turns into a geometric diagram. All SVG is embedded through CSS
  * only.
  *
- * Unlayered on purpose so it beats the layered app styles and the plugin
- * defaults by cascade order, without `!important`.
+ * The generated rb-theme layer places it above framework and plugin defaults.
  * ------------------------------------------------------------------ */
 
 :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] {

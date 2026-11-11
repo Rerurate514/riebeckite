@@ -212,9 +212,8 @@
 /* ------------------------------------------------------------------ *
  * Character layer — warm, retro, low-glare Gruvbox.
  *
- * The palette alone lives in @layer base above. These rules are
- * intentionally unlayered so they win over the app's structural CSS and
- * plugin CSS without `!important`, and they target only stable hooks.
+ * The palette alone lives in @layer base above. The generated rb-theme layer
+ * places these rules above framework and plugin CSS; they target stable hooks.
  * Corners stay small and shadow-free; color carries hierarchy + semantics.
  * ------------------------------------------------------------------ */
 

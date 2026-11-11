@@ -39,7 +39,7 @@
 
 | プラグイン | 状態 | 担当 | 宣言化する部分 | 命令的に残す部分 |
 | --- | --- | --- | --- | --- |
-| `search` | MIGRATION_REQUIRED | primary | 検索結果リストの描画 | ダイアログ制御、キーボード操作、フォーカス、fetch、`AbortSignal` |
+| `search` | VERIFIED | primary | 検索結果リストの描画を `SearchResults` へ移行 | ダイアログ制御、キーボード操作、フォーカス、fetch、`AbortSignal` |
 | `lightbox` | MIGRATION_REQUIRED | primary | ダイアログのマークアップと画像・キャプション・状態表示 | `<dialog>` 制御、フォーカストラップ、画像読み込みイベント |
 | `text-fragment` | MIGRATION_REQUIRED | primary | ポップオーバーのマークアップと表示・ステータス状態 | 選択範囲の取得、範囲の座標計算、コピーのフォールバック |
 | `code-enhance` | IMPLEMENTED | 既存作業 | `CodeCopy` は `useState` を使う宣言的Plugin Component | 折り返し・折りたたみはAST生成ブロック上に残る |
@@ -80,7 +80,7 @@
 | 順序 | プラグイン | 分類 | 作業 | 状態 | テスト |
 | --- | --- | --- | --- | --- | --- |
 | 1 | `flashcards` | A | デッキ描画を `useState` 付きHono JSXコンポーネントへ移す。payload解析とフォールバックは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-flashcards test` (2/2)、`tests/interactive-runtime/official.test.ts` のflashcards・SPAケースがPASS |
-| 2 | `search` | B | 結果をJSXコンポーネントで描画。ダイアログ・キーボード・fetchは維持 | MIGRATION_REQUIRED | searchブラウザテスト |
+| 2 | `search` | B | 結果をJSXコンポーネントで描画。ダイアログ・キーボード・fetchは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31)、`test:browser` (18/18) |
 | 3 | `lightbox` | B | ダイアログのマークアップをJSXで描画。ダイアログ制御は維持 | MIGRATION_REQUIRED | lightboxテスト |
 | 4 | `text-fragment` | B | ポップオーバーをJSXで描画。選択・配置ロジックは維持 | MIGRATION_REQUIRED | クライアントテスト |
 | 5 | 再監査 | — | 全プラグインと依存パッケージを再走査 | PENDING | 静的監査 |
@@ -92,6 +92,9 @@
 | `flashcards` パッケージのクライアント (`dist/client.js`、非minify) | 6,126 B | 6,440 B (+314 B) |
 | Webサイトのflashcardsクライアントチャンク | 全ページで読み込み (`client-Dbl1HkEF.js`、125,439 B) | 遅延チャンク (`client-DySzhhlf.js`、2,959 B) と、Plugin Componentが既に使う共有JSXクライアントruntime |
 | `flashcards` ソース内のDOM構築 | デッキを組み立てる `createElement` 7箇所 | 0。JSXがマークアップと状態を所有 |
+| `search` パッケージのクライアント (`dist/client.js`、非minify) | 13,284 B | 13,577 B (+293 B) |
+| Webサイトのsearchクライアントチャンク | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) に含まれ全ページで読み込み | 検索ページ用チャンク (`client-D9tNpf5I.js`、6,565 B)。presence selectorで制限 |
+| `search` クライアントのDOM構築 | `createElement` などの呼び出し27箇所 | 0。`SearchResults` が項目を描画 |
 | 対話的Plugin Componentのhydration | runtime entryがあるサイトで失敗 (`runtimeIds` 引数の欠落) | 修正済み。生成クライアントの回帰テストで保証 |
 
 `flashcards` のマークアップは `FlashcardsDeck` でサーバー描画できるが、既存の `flashcards` フェンスはpayloadを描画してクライアントでhydrateするため、コンテンツ移行は不要。
@@ -104,8 +107,10 @@
 - Hono JSXはbooleanの `true` を空属性として描画し、`false` を省略する。`aria-pressed` などのARIA状態属性は明示的な文字列にする。
 - 生成クライアントはPlugin Componentの `mountPluginClientInitializer` に `runtimeIds` 引数を渡していなかった。runtime entryを持つサイトでは、すべての対話的コンポーネントのhydrationが失敗していた。`packages/integrations/honox/src/client_module.ts` で修正し、回帰テストを追加した。
 - `the excalidraw figure renders to SVG in the browser` は、`docs/assets/HW.md` がprivateで `/assets/HW` ページが生成されないため失敗する。基点のチェックアウトでも同じ失敗を再現しており、この移行とは無関係。
+- `search` の選択状態はpropsで `aria-selected` を再描画し、選択項目の可視化は描画後の `scrollIntoView` に残した。フォーカスとキーボード処理は従来どおり命令的。
+- 検索結果のアイコンは従来もサニタイズ済みHTMLを `innerHTML` で挿入していた。`SearchResults` は同じ信頼境界を `dangerouslySetInnerHTML` で維持する。
 - docsは英語・日本語の対と `docs/README.md` からの到達性を要求する。この台帳には日本語版とREADMEリンクを用意する。
 
 ## 次の作業
 
-`search` を移行する。検索結果の項目をHono JSXコンポーネントで描画し、fetch・ダイアログ制御・キーボード操作・フォーカス管理は命令的に維持する。検索クライアントが全ページで読み込まれないよう、presence selectorを追加する。
+`lightbox` を移行する。ダイアログのfigure・画像・キャプション・状態表示・閉じるボタンをHono JSXコンポーネントで描画し、`<dialog>` の開閉、フォーカストラップ、画像のload/errorイベント、トリガーのラップは命令的に維持する。

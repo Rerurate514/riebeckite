@@ -93,6 +93,9 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | Website flashcards client chunk | Loaded on every page (`client-Dbl1HkEF.js`, 125,439 B) | Lazy chunk (`client-DySzhhlf.js`, 2,959 B) plus the shared JSX client runtime already used by Plugin Components |
 | `flashcards` DOM construction in source | 7 `createElement` calls building the deck | 0; JSX owns markup and state |
 | Interactive Plugin Component hydration | Broken when any runtime entry exists (missing `runtimeIds` argument) | Fixed and covered by a generated-client test |
+| `search` package client (`dist/client.js`, unminified) | 13,284 B | 13,577 B (+293 B) |
+| `search` result markup in source | 27 DOM construction/mutation calls (`createElement`, `appendChild`, `replaceChildren`, `setAttribute`, `innerHTML`, text nodes) | 0; `SearchResults` renders anchors, highlights, tags, and icons |
+| Search client loading | Shared client chunk on every page (`client-Dbl1HkEF.js`, 125,439 B) | `[data-search-root]` presence selector; `client-D9tNpf5I.js` (6,565 B) on pages with the search bar |
 
 `flashcards` markup is now server-renderable through `FlashcardsDeck`, but the existing `flashcards` fence still renders a payload and hydrates on the client, so no content migration is required.
 
@@ -104,9 +107,11 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - Hono JSX renders a boolean `true` as an empty attribute and omits `false`; ARIA state attributes such as `aria-pressed` must be explicit strings.
 - The generated client called `mountPluginClientInitializer` for Plugin Components without the `runtimeIds` argument. Any site with a runtime entry therefore failed to hydrate every interactive component. Fixed in `packages/integrations/honox/src/client_module.ts` and covered by a regression test.
 - `the excalidraw figure renders to SVG in the browser` fails because `docs/assets/HW.md` is private and no `/assets/HW` page is generated. The same failure reproduces on the base checkout and is unrelated to this migration.
+- Search result markup now renders through Hono JSX. Keyboard selection updates a prop and re-renders the same root instead of mutating `aria-selected` on existing anchors; `scrollIntoView` remains the only imperative read after render.
+- `dangerouslySetInnerHTML` is used only for `result.icon.html`, matching the previous `innerHTML` trust boundary for sanitized content icons.
 - Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
 
 ## Next action
 
-Migrate `search`: render result items with a Hono JSX component while keeping fetch, dialog control, keyboard navigation, and focus management imperative. Add a presence selector so the search client does not load on every page.
+Migrate `lightbox`: render the dialog markup and its image/caption/status states through Hono JSX while keeping the native `<dialog>` controller, focus trap, and image load events imperative.
 

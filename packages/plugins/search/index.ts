@@ -38,6 +38,7 @@ export function search() {
         undefined,
         "page",
         "context",
+        "[data-search-root]",
       ),
     ],
     endpoints: [

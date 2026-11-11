@@ -114,6 +114,8 @@ before(async () => {
     globalName: "RiebeckiteSearch",
     platform: "browser",
     target: "esnext",
+    jsx: "automatic",
+    jsxImportSource: "hono/jsx",
     write: false,
     logLevel: "silent",
   });

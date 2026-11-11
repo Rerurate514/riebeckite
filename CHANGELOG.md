@@ -54,6 +54,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Content mutations now retry when Windows reports that a content file is in use, so an apply no longer fails with EPERM while another process is reading the same file. Stale lock reclamation is serialized through a guard file and removes the stale lock directly, so two processes can no longer both believe they hold the lock.
   Packages: `@riebeckite/node`
 
+- Content mutations and migrations now verify lock ownership before journal and content writes, so a process that lost its lock cannot overwrite or delete state owned by another process. Stale-lock reclamation removes a lock or guard only when its content still matches the stale copy it inspected, and apply preserves files that are created, replaced, or deleted between verification and the write.
+  Packages: `@riebeckite/node`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 
 ## [0.0.46] - 2026-11-10

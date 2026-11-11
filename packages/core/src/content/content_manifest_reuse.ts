@@ -26,6 +26,7 @@ export function reuseManifestEntry(
   if (plan.affectedContent.dependent.has(slug)) return null;
   const contentCacheFingerprint = input.getContentCacheFingerprint();
   if (!contentCacheFingerprint) return null;
+  const previousEntry = plan.previousManifestEntriesBySlug.get(slug);
   if (
     plan.previousState.entries[input.sourcePath]
       ?.processedContentCacheFingerprint !== contentCacheFingerprint
@@ -33,10 +34,9 @@ export function reuseManifestEntry(
     return null;
   }
 
-  const entry = plan.previousManifestEntriesBySlug.get(slug);
-  if (!entry) return null;
+  if (!previousEntry) return null;
   return {
-    entry: cloneManifestEntry(entry),
+    entry: cloneManifestEntry(previousEntry),
     contentCacheFingerprint,
   };
 }

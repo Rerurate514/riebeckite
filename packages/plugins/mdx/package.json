@@ -15,7 +15,11 @@
   },
   "dependencies": {
     "@mdx-js/rollup": "^3.1.1",
-    "@riebeckite/core": "workspace:*"
+    "@riebeckite/core": "workspace:*",
+    "remark-mdx": "^3.1.1",
+    "remark-parse": "catalog:",
+    "remark-stringify": "^11.0.0",
+    "unified": "catalog:"
   },
   "publishConfig": {
     "access": "public"

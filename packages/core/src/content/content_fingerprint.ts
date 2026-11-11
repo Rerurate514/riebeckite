@@ -38,12 +38,13 @@ async function fingerprintContentEntry(
   entry: ContentSourceEntry,
   read: (entry: ContentSourceEntry) => Promise<ContentSourceContent>,
   includeMetadata: boolean,
-  previousEntry?: {
-    readonly fingerprint: string;
-    readonly metadataFingerprint?: string;
-  },
-  isContentPath: (path: string) => boolean = (path) =>
-    path.toLowerCase().endsWith(".md"),
+  previousEntry:
+    | {
+        readonly fingerprint: string;
+        readonly metadataFingerprint?: string;
+      }
+    | undefined,
+  isContentPath: (path: string) => boolean,
 ): Promise<string> {
   const metadataFingerprint = fingerprintContentMetadata(entry);
   const contentIdentity = entry.metadata?.hash

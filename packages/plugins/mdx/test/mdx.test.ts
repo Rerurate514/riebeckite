@@ -136,3 +136,82 @@ test("projects MDX text for HTML consumers", async () => {
   assert.doesNotMatch(content.html, /Widget|1 \+ 1/);
   assert.equal(content.plainText, "# Heading Text");
 });
+
+test("projects MDX through the MDX syntax tree", async () => {
+  const plugin = mdx({ trusted: true });
+  const format = plugin.contentFormats?.[0];
+  assert.ok(format?.process);
+
+  const source = [
+    "---",
+    "title: Example",
+    "---",
+    "",
+    'import { Card } from "./card";',
+    "export const answer = 40 + 2;",
+    "",
+    "## Keep {answer} text",
+    "",
+    "- item [link](./other)",
+    "- second",
+    "",
+    "<Card",
+    '  title="multi',
+    '  line"',
+    "  value={{ deep: { value: answer } }}",
+    ">",
+    "",
+    "Inner **markdown**.",
+    "",
+    "</Card>",
+    "",
+    "```ts",
+    'const value = { inner: "<div>" };',
+    "```",
+  ].join("\n");
+
+  const content = await format.process({
+    slug: "example",
+    sourcePath: "posts/example.mdx",
+    source,
+    processMarkdown: async (markdown) => ({ frontmatter: {}, html: markdown }),
+  });
+
+  assert.deepEqual(content.frontmatter, { title: "Example" });
+  assert.match(content.html, /## Keep\s+text/);
+  assert.match(content.html, /[-*] item \[link\]\(\.\/other\)/);
+  assert.match(content.html, /Inner \*\*markdown\*\*\./);
+  assert.match(content.html, /const value = \{ inner: "<div>" \};/);
+  assert.doesNotMatch(content.html, /import \{ Card \}|40 \+ 2|title=|deep:/);
+});
+
+test("ignores module declarations inside code fences", () => {
+  const plugin = mdx({ trusted: true });
+  const format = plugin.contentFormats?.[0];
+
+  assert.deepEqual(
+    format?.dependencies?.({
+      sourcePath: "posts/example.mdx",
+      source:
+        '```ts\nimport { Card } from "./fake";\n```\n\nimport { Real } from "./real";',
+      paths: ["posts/example.mdx", "posts/fake.tsx", "posts/real.tsx"],
+    }),
+    ["posts/real.tsx"],
+  );
+});
+
+test("fails loudly when MDX cannot be parsed", async () => {
+  const plugin = mdx({ trusted: true });
+  const format = plugin.contentFormats?.[0];
+  assert.ok(format?.process);
+
+  await assert.rejects(
+    format.process({
+      slug: "broken",
+      sourcePath: "broken.mdx",
+      source: "<div>{unclosed</div>",
+      processMarkdown: async () => ({ frontmatter: {}, html: "" }),
+    }),
+    /Failed to project MDX content for broken\.mdx/,
+  );
+});

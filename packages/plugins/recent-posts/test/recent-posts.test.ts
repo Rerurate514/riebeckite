@@ -96,6 +96,23 @@ test("getRecentPosts falls back to created and preserves Date instances", () => 
   assert.equal(result[1]?.postedAt.toISOString(), "2024-05-05T00:00:00.000Z");
 });
 
+test("getRecentPosts falls back to the next valid date field", () => {
+  const entries = [
+    entry("invalid-date", {
+      frontmatter: { date: "not-a-date", created: "2024-05-05" },
+    }),
+    entry("published", { frontmatter: { published: "2024-04-04" } }),
+    entry("boolean-published", { frontmatter: { published: true } }),
+  ];
+
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
+  assert.deepEqual(
+    result.map((post) => post.slug),
+    ["invalid-date", "published"],
+  );
+  assert.equal(result[0]?.postedAt.toISOString(), "2024-05-05T00:00:00.000Z");
+});
+
 test("getRecentPosts uses the manifest entry title", () => {
   const entries = [
     entry("post", { title: "Hello", frontmatter: { date: "2024-01-01" } }),

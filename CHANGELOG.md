@@ -27,8 +27,8 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ### Fixed
 
-- Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, and center article-layout page bodies again.
-  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
+- Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, include notes dated only by `published` in Recent Posts, and center article-layout page bodies again.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 

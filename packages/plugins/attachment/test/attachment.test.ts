@@ -1,12 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { PluginRenderContext } from "@riebeckite/core";
+import {
+  createPluginContext,
+  type PluginRenderContext,
+} from "@riebeckite/core";
 import { attachment } from "../index.ts";
 
 function makeContext(
   overrides: Partial<PluginRenderContext> = {},
 ): PluginRenderContext {
   return {
+    ...createPluginContext(),
     kind: "attachment",
     path: "attachments/report.pdf",
     raw: "report.pdf",
@@ -14,7 +18,7 @@ function makeContext(
     url: "/attachments/report.pdf",
     embed: true,
     ...overrides,
-  } as unknown as PluginRenderContext;
+  };
 }
 
 async function render(

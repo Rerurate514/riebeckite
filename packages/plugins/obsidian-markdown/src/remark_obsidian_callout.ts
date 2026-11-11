@@ -1,6 +1,30 @@
-import type { BlockContent, Blockquote, Paragraph, Root, Text } from "mdast";
+import type {
+  BlockContent,
+  Blockquote,
+  Data,
+  DefinitionContent,
+  Paragraph,
+  Root,
+  Text,
+} from "mdast";
 import type { Parent } from "unist";
 import { visit } from "unist-util-visit";
+
+type CalloutContainer = {
+  type: "calloutContainer";
+  children: Array<BlockContent | DefinitionContent>;
+  data?: Data;
+};
+
+declare module "mdast" {
+  interface RootContentMap {
+    calloutContainer: CalloutContainer;
+  }
+
+  interface BlockContentMap {
+    calloutContainer: CalloutContainer;
+  }
+}
 
 export interface CalloutOptions {
   defaultTitles?: Record<string, string>;
@@ -62,8 +86,8 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
         const titleTag = foldable ? "summary" : "div";
         const titleChildTag = foldable ? "span" : "div";
 
-        const titleNode = {
-          type: "paragraph",
+        const titleNode: CalloutContainer = {
+          type: "calloutContainer",
           data: {
             hName: titleTag,
             hProperties: {
@@ -88,16 +112,16 @@ export function remarkObsidianCallout(opt: CalloutOptions = {}) {
               children: [{ type: "text", value: resolvedTitle }],
             },
           ],
-        } as unknown as BlockContent;
+        };
 
-        const contentNode = {
-          type: "paragraph",
+        const contentNode: CalloutContainer = {
+          type: "calloutContainer",
           data: {
             hName: "div",
             hProperties: { className: ["rr-callout__content"] },
           },
           children: bodyChildren,
-        } as unknown as BlockContent;
+        };
 
         const className = ["rr-callout", `rr-callout--${type}`];
         if (fold) className.push("rr-callout--collapsible");

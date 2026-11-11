@@ -1,4 +1,4 @@
-import { matter } from "vfile-matter";
+import { parseYaml } from "@riebeckite/core";
 import type {
   ImageCompareOrientation,
   ImageCompareParseResult,
@@ -41,7 +41,7 @@ export function parseImageCompare(source: string): ImageCompareParseResult {
 function parseMapping(source: string): Record<string, unknown> {
   let parsed: unknown;
   try {
-    parsed = parseYamlMapping(source);
+    parsed = parseYaml(source);
   } catch (error) {
     throw new ImageCompareParseError(
       `is not valid YAML (${formatError(error)}).`,
@@ -68,17 +68,6 @@ function readString(value: unknown): string | undefined {
     return String(value);
   }
   return undefined;
-}
-
-function parseYamlMapping(source: string): unknown {
-  const document = `---\n${source}\n---\n`;
-  const file = {
-    value: document,
-    data: {} as Record<string, unknown>,
-    toString: () => document,
-  };
-  matter(file as unknown as Parameters<typeof matter>[0]);
-  return file.data.matter;
 }
 
 function formatError(error: unknown): string {

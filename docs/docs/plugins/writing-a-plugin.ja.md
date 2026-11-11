@@ -181,19 +181,34 @@ export function tip() {
 
 #### `:::tip` を見つける
 
-import 文と、ディレクティブを扱うための型を追加します。
+import 文と、ディレクティブを扱うための型を追加します。`mdast` はディレクティブのノードをまだ知らないので、モジュール宣言で型の側に知らせます。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
+
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
 ```
 
 この例では、AST ノードの型には `mdast`、ツリーの走査には `unist-util-visit` を使います。どちらも通常の npm パッケージとして自分のパッケージに追加してください。`@riebeckite/core` からは import しません。
@@ -207,9 +222,7 @@ Riebeckite は `remark-directive` を既定では有効にしません。プラ�
 ```ts
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       // ここで :::tip を変換する
@@ -365,21 +378,34 @@ Save often.
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
 
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
+
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       const [first, ...rest] = directive.children;

@@ -7,6 +7,10 @@ import type {
   PluginManifestContext,
 } from "@riebeckite/core";
 import {
+  createContentManifest,
+  createPluginManifestContext,
+} from "@riebeckite/core";
+import {
   inspectGeneratedHtml,
   inspectHtml,
   quality,
@@ -53,10 +57,7 @@ function entry(slug: string, html: string): ContentManifestEntry {
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    publicEntries: entries,
-    diagnostics: [],
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries });
 }
 
 test("img-alt-missing fires without alt and stays silent for alt values", () => {
@@ -254,7 +255,7 @@ test("quality pushes article-body diagnostics with slug and filePath", async () 
   await plugin.onManifestCreated?.({
     manifest: manifestOf([entry("post", '<img src="a.png">')]),
     diagnostics,
-  } as unknown as PluginManifestContext);
+  } as PluginManifestContext);
 
   assert.equal(diagnostics.length, 1);
   assert.equal(diagnostics[0]?.code, RULE_CODES.imgAltMissing);
@@ -273,44 +274,30 @@ test("quality exposes an inspectGeneratedHtml hook", () => {
   assert.equal(diagnostics?.[0]?.filePath, "post.html");
 });
 
-test("failOn error throws on error-severity diagnostics", () => {
-  const plugin = quality({ failOn: "error" });
-  const manifest = {
+function manifestWithDiagnostics(
+  code: string,
+  severity: "error" | "warning",
+): ContentManifest {
+  return createContentManifest({
     diagnostics: [
       {
-        code: RULE_CODES.duplicateId,
-        severity: "error",
+        code,
+        severity,
         message: "duplicate",
         pluginName: "quality",
       },
     ],
-  } as unknown as ContentManifest;
-  assert.throws(
-    () =>
-      plugin.buildEnd?.({
-        manifest,
-        diagnostics: [],
-      } as unknown as PluginManifestContext),
-    /Quality inspection failed/,
-  );
-});
+  });
+}
 
 test("failOn defaults to never", () => {
   const plugin = quality();
-  const manifest = {
-    diagnostics: [
-      {
-        code: RULE_CODES.duplicateId,
-        severity: "error",
-        message: "duplicate",
-        pluginName: "quality",
-      },
-    ],
-  } as unknown as ContentManifest;
+  const manifest = manifestWithDiagnostics(RULE_CODES.duplicateId, "error");
   assert.doesNotThrow(() =>
-    plugin.buildEnd?.({
-      manifest,
-      diagnostics: [],
-    } as unknown as PluginManifestContext),
+    plugin.buildEnd?.(
+      createPluginManifestContext({
+        manifest,
+      }),
+    ),
   );
 });

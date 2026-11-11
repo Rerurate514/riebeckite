@@ -3,8 +3,9 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
+  createPluginManifestContext,
   createPublicContentView,
-  type PluginManifestContext,
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
@@ -51,13 +52,7 @@ function makeEntry(
 }
 
 function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    entries,
-    publicEntries: entries,
-    discoverableEntries: entries,
-    bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
-    folderLocations: new Map(),
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries });
 }
 
 const config = resolveConfig({
@@ -258,11 +253,11 @@ test("onManifestCreated contributes the nav and a JSON-LD head tag", async () =>
     permalink: "/docs/intro",
   });
   const manifest = makeManifest([folder, entry]);
-  const context = {
+  const context = createPluginManifestContext({
     manifest,
     config,
     diagnostics: [],
-  } as unknown as PluginManifestContext;
+  });
 
   await plugin.onManifestCreated?.(context);
 
@@ -376,11 +371,11 @@ test("onManifestCreated retains JSON-LD", async () => {
     permalink: "/docs/intro",
   });
   const manifest = makeManifest([entry]);
-  const context = {
+  const context = createPluginManifestContext({
     manifest,
     config,
     diagnostics: [],
-  } as unknown as PluginManifestContext;
+  });
 
   await plugin.onManifestCreated?.(context);
 
@@ -400,11 +395,11 @@ test("onManifestCreated can skip the JSON-LD script", async () => {
     makeEntry({ slug: "docs/README", title: "Docs", permalink: "/docs/" }),
     entry,
   ]);
-  const context = {
+  const context = createPluginManifestContext({
     manifest,
     config,
     diagnostics: [],
-  } as unknown as PluginManifestContext;
+  });
 
   await plugin.onManifestCreated?.(context);
 
@@ -426,11 +421,11 @@ test("onManifestCreated leaves an entry with no trail untouched", async () => {
   const plugin = breadcrumbs();
   const entry = makeEntry({ slug: "", html: "<p>Body</p>" });
   const manifest = makeManifest([entry]);
-  const context = {
+  const context = createPluginManifestContext({
     manifest,
     config,
     diagnostics: [],
-  } as unknown as PluginManifestContext;
+  });
 
   await plugin.onManifestCreated?.(context);
 

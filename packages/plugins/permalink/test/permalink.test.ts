@@ -1,9 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type {
-  ContentLocationInput,
-  PluginContentLocationContext,
-} from "@riebeckite/core";
+import type { ContentLocationInput } from "@riebeckite/core";
+import { createPluginContentLocationContext } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
 import { type PermalinkOptions, permalink } from "../index.ts";
 
@@ -22,7 +20,9 @@ async function resolve(
   const plugin = permalink(options);
   const resolver = plugin.resolveContentLocations;
   assert.ok(resolver);
-  const context = { entries } as unknown as PluginContentLocationContext;
+  const context = createPluginContentLocationContext({
+    entries,
+  });
   return await resolver(context);
 }
 

@@ -1,6 +1,16 @@
+export const RUNTIME_CAPABILITIES = [
+  "dom",
+  "worker",
+  "wasm",
+  "network",
+  "message",
+] as const;
+
+export type RuntimeCapability = (typeof RUNTIME_CAPABILITIES)[number];
+
 export type ClientRuntimeInvokeOptions = {
   readonly signal?: AbortSignal;
-  readonly capability?: string;
+  readonly capability?: RuntimeCapability;
   readonly transfer?: readonly unknown[];
 };
 

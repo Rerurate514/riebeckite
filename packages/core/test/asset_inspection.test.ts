@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { createContentManifest } from "@riebeckite/core";
 import type {
-  ContentManifest,
   ContentManifestEntry,
   ContentSource,
   ContentSourceEntry,
@@ -30,12 +30,12 @@ test("inspects asset usage, formats, duplicates, and optimization candidates", a
   };
   const publicEntry = entry("post", true);
   const draftEntry = entry("draft", false);
-  const manifest = {
+  const manifest = createContentManifest({
     byAsset: new Map([
       ["a.png", [publicEntry]],
       ["c.jpg", [draftEntry]],
     ]),
-  } as unknown as ContentManifest;
+  });
 
   const report = await inspectContentAssets(manifest, source, {
     largeAssetBytes: 150 * 1024,

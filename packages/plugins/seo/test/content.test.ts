@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   type ContentManifestEntry,
+  createInvalid,
   type PostContent,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
@@ -83,11 +84,11 @@ test("filterFeedEntries drops noindex entries and sorts discoverable input by re
     entry("d", { frontmatter: { publish: true, noindex: true } }),
     entry("e", { frontmatter: { publish: true, published: "2024-01-04" } }),
     entry("f", {
-      frontmatter: {
+      frontmatter: createInvalid<PostContent["frontmatter"]>({
         publish: true,
-        published: true as unknown as string,
+        published: true,
         date: "2024-01-06",
-      },
+      }),
     }),
   ];
 
@@ -154,10 +155,10 @@ test("getEntryUpdatedTime falls back to the published time", () => {
   assert.equal(
     getEntryUpdatedTime(
       entry("c", {
-        frontmatter: {
-          published: true as unknown as string,
+        frontmatter: createInvalid<PostContent["frontmatter"]>({
+          published: true,
           date: "2024-01-02",
-        },
+        }),
       }),
     ),
     "2024-01-02T00:00:00.000Z",

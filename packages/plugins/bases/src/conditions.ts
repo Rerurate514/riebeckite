@@ -6,9 +6,15 @@ import type {
   BasesValueRef,
 } from "./types.js";
 
+/** Manifest fields the Bases expression evaluator reads. */
+export type BasesEntry = Pick<
+  ContentManifestEntry,
+  "slug" | "permalink" | "title" | "frontmatter" | "tags" | "links" | "file"
+>;
+
 export function resolveValueRef(
   reference: BasesValueRef,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
 ): unknown {
   if (reference.source === "frontmatter") {
     return readFrontmatter(entry.frontmatter, reference.key);
@@ -57,10 +63,7 @@ function readFrontmatter(
   }, frontmatter);
 }
 
-function resolveBuiltin(
-  name: BasesBuiltinValue,
-  entry: ContentManifestEntry,
-): unknown {
+function resolveBuiltin(name: BasesBuiltinValue, entry: BasesEntry): unknown {
   switch (name) {
     case "file.name":
       return `${entry.slug.split("/").at(-1) ?? entry.slug}.md`;

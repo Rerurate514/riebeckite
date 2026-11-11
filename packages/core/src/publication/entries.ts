@@ -142,22 +142,37 @@ export function hashJson(value: unknown): string {
 export function parsePublicationSnapshot(
   value: unknown,
 ): PublicationSnapshot | undefined {
-  if (
-    !isRecord(value) ||
-    typeof value.runId !== "string" ||
-    typeof value.publishedAt !== "string" ||
-    Number.isNaN(Date.parse(value.publishedAt)) ||
-    typeof value.publicationFingerprint !== "string" ||
-    !Array.isArray(value.entries) ||
-    !value.entries.every(isPublicationEntry) ||
-    !Array.isArray(value.redirects)
-  ) {
-    return undefined;
-  }
-  return value as unknown as PublicationSnapshot;
+  if (!isRecord(value)) return undefined;
+  const { runId, publishedAt, publicationFingerprint } = value;
+  if (typeof runId !== "string") return undefined;
+  if (typeof publishedAt !== "string") return undefined;
+  if (Number.isNaN(Date.parse(publishedAt))) return undefined;
+  if (typeof publicationFingerprint !== "string") return undefined;
+  if (!Array.isArray(value.entries)) return undefined;
+  if (!Array.isArray(value.redirects)) return undefined;
+  const entries = value.entries.filter(isPublicationEntry);
+  if (entries.length !== value.entries.length) return undefined;
+  const redirects = value.redirects.filter(isPublicationRedirect);
+  if (redirects.length !== value.redirects.length) return undefined;
+  const { artifactFingerprint, provider } = value;
+  if (!isOptionalString(artifactFingerprint)) return undefined;
+  if (!isOptionalString(provider)) return undefined;
+  return {
+    runId,
+    publishedAt,
+    publicationFingerprint,
+    entries,
+    redirects,
+    ...(artifactFingerprint === undefined ? {} : { artifactFingerprint }),
+    ...(provider === undefined ? {} : { provider }),
+  };
 }
 
-function isPublicationEntry(value: unknown): boolean {
+function isOptionalString(value: unknown): value is string | undefined {
+  return value === undefined || typeof value === "string";
+}
+
+function isPublicationEntry(value: unknown): value is PublicationEntry {
   return (
     isRecord(value) &&
     typeof value.slug === "string" &&
@@ -170,6 +185,18 @@ function isPublicationEntry(value: unknown): boolean {
     typeof value.fingerprint === "string" &&
     typeof value.contentFingerprint === "string" &&
     (value.publishAt === undefined || typeof value.publishAt === "string")
+  );
+}
+
+function isPublicationRedirect(value: unknown): value is PublicationRedirect {
+  return (
+    isRecord(value) &&
+    typeof value.from === "string" &&
+    typeof value.to === "string" &&
+    (value.status === 301 ||
+      value.status === 302 ||
+      value.status === 307 ||
+      value.status === 308)
   );
 }
 

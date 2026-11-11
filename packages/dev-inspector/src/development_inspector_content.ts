@@ -38,7 +38,7 @@ export type ContentInventory = {
 };
 
 export function inspectContentInventory(
-  snapshot: CompletedContentBuildSnapshot | undefined,
+  snapshot: Pick<CompletedContentBuildSnapshot, "manifest"> | undefined,
 ): ContentInventory {
   if (!snapshot) {
     return {

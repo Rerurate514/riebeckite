@@ -202,7 +202,7 @@ async function writeLock(
   logger: Logger,
 ): Promise<void> {
   try {
-    await cache.set(LOCK_KEY, lock as unknown as JsonValue);
+    await cache.set(LOCK_KEY, lock);
   } catch (error) {
     logger.warn("Rename plugin: route lock could not be persisted.", {
       key: LOCK_KEY,

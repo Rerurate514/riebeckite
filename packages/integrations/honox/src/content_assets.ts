@@ -121,11 +121,7 @@ export function riebeckiteContentAssets(
       };
 
       server.middlewares.use((request, response, next) => {
-        void middleware(
-          request as unknown as AssetRequest,
-          response as unknown as AssetResponse,
-          next,
-        );
+        void middleware(request, response, next);
       });
     },
   };

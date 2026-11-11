@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
-import type { Node } from "unist";
 import { ContentManager, type ContentSource } from "../index.js";
 import { Pipeline } from "../src/pipeline.js";
 import { definePlugin } from "../src/types/plugin.js";
@@ -109,10 +108,9 @@ test("trusts raw HTML added by plugins", async () => {
   const plugin = definePlugin({
     name: "trusted-hast",
     rehypePlugins: [
-      () => (tree: Node) => {
-        const root = tree as unknown as HtmlNode;
-        root.children ??= [];
-        root.children.push({
+      () => (tree: HtmlNode) => {
+        tree.children ??= [];
+        tree.children.push({
           type: "raw",
           value: "<svg><foreignObject><p>slide</p></foreignObject></svg>",
         });
@@ -134,10 +132,9 @@ test("keeps interactive and PDF elements added by Markdown plugins", async () =>
   const plugin = definePlugin({
     name: "markdown-plugin-elements",
     extendMarkdownPipeline: (pipeline) => {
-      pipeline.use(() => (tree: Node) => {
-        const root = tree as unknown as HtmlNode;
-        root.children ??= [];
-        root.children.push({
+      pipeline.use(() => (tree: HtmlNode) => {
+        tree.children ??= [];
+        tree.children.push({
           type: "html",
           value:
             '<span data-meta-bind="input"><input class="rb-meta-bind__control" type="range" value="2" min="0" max="10" step="1"></span><output data-meta-bind="view">2</output><figure class="rr-pdf"><object class="rr-pdf__viewer" data="/report.pdf" type="application/pdf"></object></figure>',
@@ -186,8 +183,8 @@ test("plugins can extend the HTML pipeline", async () => {
   const plugin = definePlugin({
     name: "tag-headings",
     rehypePlugins: [
-      () => (tree: Node) => {
-        markHeadings(tree as unknown as HtmlNode);
+      () => (tree: HtmlNode) => {
+        markHeadings(tree);
       },
     ],
   });

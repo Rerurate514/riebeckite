@@ -109,7 +109,7 @@ describe("resolveHonoxConfig via @riebeckite/honox/runtime", () => {
     const resolved = resolveHonoxConfig(
       {
         content: { directory: "content" },
-      } as unknown as ResolvedRiebeckiteConfig,
+      } as ResolvedRiebeckiteConfig,
       appRoot,
     );
 

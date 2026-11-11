@@ -5,6 +5,7 @@ import {
   createIframeRuntime,
   createRuntimeFallback,
   createWorkerRuntime,
+  type InteractiveRuntime,
   InteractiveRuntimeRegistry,
   RuntimeUnsupportedError,
 } from "../client.js";
@@ -29,12 +30,18 @@ test("runtime definitions stay inert without a browser", () => {
   );
 
   const host = createClientRuntimeHost({ registry });
-  const worker = host.create("ssr-worker");
-  const iframe = host.create("ssr-iframe");
+  const worker = host.create("ssr-worker") as InteractiveRuntime<
+    unknown,
+    unknown
+  >;
+  const iframe = host.create("ssr-iframe") as InteractiveRuntime<
+    unknown,
+    unknown
+  >;
 
   assert.equal(workers, 0);
-  assert.equal((worker as unknown as { state: string }).state, "created");
-  assert.equal((iframe as unknown as { state: string }).state, "created");
+  assert.equal(worker.state, "created");
+  assert.equal(iframe.state, "created");
   assert.deepEqual(host.ids(), ["ssr-worker", "ssr-iframe"]);
 });
 

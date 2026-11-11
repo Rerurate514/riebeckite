@@ -5,6 +5,7 @@ import type {
   ContentManifestEntry,
   PostFrontmatter,
 } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import { assertGolden } from "@riebeckite/test";
 import {
   buildSeriesIndex,
@@ -39,11 +40,11 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
-  } as unknown as ContentManifest;
+  });
 }
 
 const guide = manifestOf([

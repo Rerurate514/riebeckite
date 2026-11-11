@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
 } from "@riebeckite/core";
@@ -35,13 +36,13 @@ function makeEntry(
 }
 
 function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries,
     discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
     folderLocations: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 const config = resolveConfig({

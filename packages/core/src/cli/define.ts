@@ -30,9 +30,9 @@ type OptionBase<O extends CliOptionDefinition> = O extends {
         : string;
 
 type OptionValue<O extends CliOptionDefinition> = O extends {
-  readonly default: infer D;
+  readonly default: unknown;
 }
-  ? D
+  ? OptionSettledValue<O>
   : O extends { readonly type: "boolean" }
     ? boolean
     : O extends { readonly repeatable: true }
@@ -40,6 +40,14 @@ type OptionValue<O extends CliOptionDefinition> = O extends {
       : O extends { readonly required: true }
         ? OptionBase<O>
         : OptionBase<O> | undefined;
+
+type OptionSettledValue<O extends CliOptionDefinition> = O extends {
+  readonly type: "boolean";
+}
+  ? boolean
+  : O extends { readonly repeatable: true }
+    ? readonly string[]
+    : OptionBase<O>;
 
 type UnionToIntersection<U> = (
   U extends unknown
@@ -74,9 +82,9 @@ type ArgumentValue<A extends CliArgumentDefinition> = A extends {
   : string;
 
 type ArgumentField<A extends CliArgumentDefinition> = A extends {
-  readonly default: infer D;
+  readonly default: unknown;
 }
-  ? D
+  ? ArgumentValue<A>
   : A extends { readonly required: true }
     ? ArgumentValue<A>
     : A extends { readonly variadic: true }
@@ -109,8 +117,10 @@ export type CliTypedCommandInput<
   O extends readonly CliOptionDefinition[] | undefined,
 > = {
   readonly command: CliCommandDefinition;
-  readonly arguments: CliArgumentsOf<A>;
-  readonly options: CliOptionsOf<O>;
+  readonly arguments: CliArgumentsOf<A> &
+    Readonly<Record<string, CliArgumentValue | undefined>>;
+  readonly options: CliOptionsOf<O> &
+    Readonly<Record<string, CliOptionValue | undefined>>;
   readonly rawArguments: readonly string[];
 };
 
@@ -130,7 +140,7 @@ export function defineCliCommand<
   const A extends readonly CliArgumentDefinition[] = readonly [],
   const O extends readonly CliOptionDefinition[] = readonly [],
 >(command: CliTypedCommand<A, O>): CliCommandDefinition {
-  return command as unknown as CliCommandDefinition;
+  return command;
 }
 
 export type CliBooleanOptions = {

@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { Html, Root } from "mdast";
+import type { Html, Root, RootContent } from "mdast";
 import { remarkQuery } from "../index.ts";
 import { createQueryPlaceholder } from "../src/placeholder.ts";
 
-function root(children: unknown[]): Root {
-  return { type: "root", children } as unknown as Root;
+function root(children: RootContent[]): Root {
+  return { type: "root", children };
 }
 
 test("remarkQuery replaces matching code blocks with an encoded placeholder", () => {

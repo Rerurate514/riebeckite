@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type ContentManifestEntry, Pipeline } from "@riebeckite/core";
+import {
+  type ContentManifestEntry,
+  createInvalid,
+  Pipeline,
+} from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
   buildTimeline,
@@ -104,7 +108,7 @@ test("marked selection preserves the former marked-notes-only behavior and key",
 
 test("timeline option resolution tolerates invalid runtime selector values", () => {
   const options = resolveTimelineOptions({
-    include: { folders: "Events" as unknown as string[] },
+    include: { folders: createInvalid<string[]>("Events") },
     selection: "other" as "automatic",
   });
   assert.deepEqual(options.include, { folders: [], tags: [] });

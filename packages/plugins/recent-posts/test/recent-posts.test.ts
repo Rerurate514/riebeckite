@@ -4,6 +4,7 @@ import {
   buildOutputInventory,
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   determineOutputChanges,
   type OutputDependency,
   type OutputDescriptor,
@@ -271,13 +272,11 @@ function manifest(
   entries: ContentManifestEntry[],
   discoverable: ContentManifestEntry[] = entries,
 ): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries.filter((entry) => entry.publishing.routable),
     discoverableEntries: discoverable,
-    publicRedirects: new Map(),
-    generatedOutputs: [],
-  } as unknown as ContentManifest;
+  });
 }
 
 function previousOutputState(

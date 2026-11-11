@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { createInvalid } from "@riebeckite/core";
 import type { Browser } from "puppeteer";
 import { createExcalidrawRenderSession } from "../src/render-static.js";
 import type { ExcalidrawScene } from "../src/types.js";
@@ -62,7 +63,7 @@ function createFakeBrowser(): FakeBrowser {
   };
 
   return {
-    browser: browser as unknown as Browser,
+    browser: createInvalid<Browser>(browser),
     counts,
     evaluateCalls,
     setBehavior(next) {

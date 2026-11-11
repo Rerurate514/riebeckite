@@ -3,6 +3,12 @@
 type WavedromApi = typeof import("wavedrom")["default"];
 type SkinName = "default" | "narrow" | "lowkey";
 
+declare global {
+  interface Window {
+    WaveSkin?: unknown;
+  }
+}
+
 const PENDING_SELECTOR = '[data-wavedrom="pending"]';
 const CANVAS_ATTRIBUTE = "data-wavedrom-canvas";
 const CANVAS_ID_PREFIX = "rb-wavedrom-canvas-";
@@ -70,7 +76,7 @@ function renderFigure(
   const index = renderCounter++;
   canvas.id = `${CANVAS_ID_PREFIX}${index}`;
   // `renderWaveForm` reads the active skin from `window.WaveSkin`.
-  (window as unknown as { WaveSkin?: unknown }).WaveSkin = skin ?? api.waveSkin;
+  window.WaveSkin = skin ?? api.waveSkin;
   api.renderWaveForm(index, spec, CANVAS_ID_PREFIX, notFirstSignal);
 }
 

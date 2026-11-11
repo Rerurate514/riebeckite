@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
@@ -73,10 +74,7 @@ function makeConfig() {
 }
 
 function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    entries,
-    bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries });
 }
 
 function makeEntry(

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import {
   buildNavigation,
   navigation,
@@ -37,13 +38,13 @@ function makeManifest(
   entries: ContentManifestEntry[],
   discoverable: ContentManifestEntry[] = entries,
 ): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: discoverable,
     discoverableEntries: discoverable,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
     folderLocations: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 function makeLocalizedEntry(

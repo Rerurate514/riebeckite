@@ -17,8 +17,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
-    "unist-util-visit": "catalog:",
-    "vfile-matter": "catalog:"
+    "unist-util-visit": "catalog:"
   },
   "devDependencies": {
     "tsx": "^4.22.4"

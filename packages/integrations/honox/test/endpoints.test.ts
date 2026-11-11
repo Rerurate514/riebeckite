@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type {
-  ContentManager,
-  ResolvedRiebeckiteConfig,
+import {
+  type ContentManager,
+  createInvalid,
+  type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { mountRiebeckiteEndpoints } from "../src/endpoints.ts";
 
@@ -17,7 +18,7 @@ test("an endpoint without a manifest does not initialize content", async () => {
       post: () => {},
     },
     {
-      config: {
+      config: createInvalid<ResolvedRiebeckiteConfig>({
         plugins: [
           {
             name: "static-endpoint",
@@ -30,13 +31,13 @@ test("an endpoint without a manifest does not initialize content", async () => {
             ],
           },
         ],
-      } as unknown as ResolvedRiebeckiteConfig,
-      content: {
+      }),
+      content: createInvalid<ContentManager>({
         getManifest: async () => {
           manifestRequests += 1;
           throw new Error("The manifest must not be requested.");
         },
-      } as unknown as ContentManager,
+      }),
     },
   );
 
@@ -69,7 +70,7 @@ test("rejects endpoint request bodies above the size limit", async () => {
       },
     },
     {
-      config: {
+      config: createInvalid<ResolvedRiebeckiteConfig>({
         plugins: [
           {
             name: "upload-endpoint",
@@ -86,8 +87,8 @@ test("rejects endpoint request bodies above the size limit", async () => {
             ],
           },
         ],
-      } as unknown as ResolvedRiebeckiteConfig,
-      content: {} as ContentManager,
+      }),
+      content: createInvalid<ContentManager>({}),
     },
   );
 

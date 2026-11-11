@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   type ContentManifest,
+  createContentManifest,
+  createContentManifestEntry,
+  createPluginManifestContext,
   type Diagnostic,
   normalizeGeneratedOutputPath,
-  type PluginManifestContext,
 } from "@riebeckite/core";
 import {
   type DeployOutput,
@@ -268,13 +270,15 @@ test("an unresolved redirect target is skipped and diagnosed", async () => {
 });
 
 function sampleManifest(): ContentManifest {
-  return {
+  return createContentManifest({
     publicRedirects: new Map([
       ["/old", { path: "/old", status: 301 as const, slug: "new" }],
       ["/missing", { path: "/missing", status: 301 as const, slug: "gone" }],
     ]),
-    bySlug: new Map([["new", { slug: "new", permalink: "/new" }]]),
-  } as unknown as ContentManifest;
+    bySlug: new Map([
+      ["new", createContentManifestEntry({ slug: "new", permalink: "/new" })],
+    ]),
+  });
 }
 
 async function runPlugin(
@@ -284,10 +288,24 @@ async function runPlugin(
   const outputs: DeployOutput[] = [];
   const diagnostics: Diagnostic[] = [];
   const plugin = deploy(options);
-  await plugin.buildEnd?.({
-    manifest,
-    output: { emit: (output) => outputs.push(output) },
-    diagnostics,
-  } as unknown as PluginManifestContext);
+  await plugin.buildEnd?.(
+    createPluginManifestContext({
+      manifest,
+      diagnostics,
+      output: {
+        emit: (output) => {
+          outputs.push({
+            path: output.path,
+            content:
+              typeof output.content === "string"
+                ? output.content
+                : new TextDecoder().decode(output.content),
+          });
+        },
+        emitDeferred: () => {},
+        emitAsset: () => {},
+      },
+    }),
+  );
   return { outputs, diagnostics };
 }

@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   type PostFrontmatter,
   resolveConfig,
 } from "@riebeckite/core";
@@ -47,13 +48,12 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   const discoverableEntries = entries.filter(
     (item) => item.publishing.discoverable,
   );
-  return {
+  return createContentManifest({
     entries,
     publicEntries,
     discoverableEntries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 test("buildSearchItems filters unpublished notes and extracts every field", () => {

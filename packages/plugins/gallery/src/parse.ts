@@ -1,4 +1,4 @@
-import { matter } from "vfile-matter";
+import { parseYaml } from "@riebeckite/core";
 import type { ResolvedGalleryOptions } from "./options.js";
 import type {
   GalleryItem,
@@ -53,7 +53,7 @@ export function parseGallery(
 function parseMapping(source: string): Record<string, unknown> {
   let parsed: unknown;
   try {
-    parsed = parseYamlMapping(source);
+    parsed = parseYaml(source);
   } catch (error) {
     throw new GalleryParseError(`is not valid YAML (${formatError(error)}).`);
   }
@@ -126,17 +126,6 @@ function parseAspect(value: unknown, fallback: string): string {
     throw new GalleryParseError('`aspect` must look like "16/9" or "1".');
   }
   return value.trim();
-}
-
-function parseYamlMapping(source: string): unknown {
-  const document = `---\n${source}\n---\n`;
-  const file = {
-    value: document,
-    data: {} as Record<string, unknown>,
-    toString: () => document,
-  };
-  matter(file as unknown as Parameters<typeof matter>[0]);
-  return file.data.matter;
 }
 
 function formatError(error: unknown): string {

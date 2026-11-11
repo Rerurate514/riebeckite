@@ -8,6 +8,10 @@ import {
   type JsonValue,
   type PluginCache,
 } from "../index.js";
+import {
+  createContentManifestEntry,
+  createInvalid,
+} from "../src/testing/fixtures.js";
 
 function memoryCache(): PluginCache {
   const values = new Map<string, JsonValue>();
@@ -74,11 +78,11 @@ test("derived views accept omitted and date inputs and reject unsupported input"
     "2024-01-01T00:00:00.000Z",
   );
   await assert.rejects(
-    registry.resolve(noInput, new Map() as unknown as undefined),
+    registry.resolve(noInput, createInvalid<undefined>(new Map())),
     /must be JSON-serializable/,
   );
   await assert.rejects(
-    registry.resolve(noInput, { value: undefined } as unknown as undefined),
+    registry.resolve(noInput, createInvalid<undefined>({ value: undefined })),
     /must be JSON-serializable/,
   );
 });
@@ -396,23 +400,14 @@ function manifestEntry(
   title: string,
   tags: readonly string[],
 ): ContentManifestEntry {
-  return {
+  return createContentManifestEntry({
     slug,
     permalink: `/${slug}`,
-    publicLocation: { permalink: `/${slug}` },
     title,
     frontmatter: { title, tags: [...tags] },
-    publishing: {
-      status: "public",
-      routable: true,
-      discoverable: true,
-    },
     html: `<p>${title}</p>`,
     tags: [...tags],
-    links: [],
-    backlinks: [],
-    assets: [],
-  } as unknown as ContentManifestEntry;
+  });
 }
 
 test("derived views ignore corrupted cache values and do not persist non-JSON output", async () => {

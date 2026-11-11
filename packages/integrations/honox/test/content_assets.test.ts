@@ -4,6 +4,7 @@ import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { createInvalid } from "@riebeckite/core";
 import type { Plugin, ViteDevServer } from "vite";
 import {
   collectPublicImagePaths,
@@ -49,7 +50,7 @@ function createServer(options: {
     },
   };
   return {
-    server: server as unknown as ViteDevServer,
+    server: createInvalid<ViteDevServer>(server),
     manifestCalls: () => calls,
     setManifest: (next) => {
       manifest = next;
@@ -77,12 +78,12 @@ function createClient(
   let handler:
     | ((request: unknown, response: unknown, next: () => void) => void)
     | undefined;
-  const server = fake.server as unknown as {
-    middlewares: { use(fn: typeof handler): void };
-  };
-  server.middlewares.use = (fn) => {
-    handler = fn;
-  };
+  const server = fake.server;
+  server.middlewares.use = createInvalid<typeof server.middlewares.use>(
+    (fn: (request: unknown, response: unknown, next: () => void) => void) => {
+      handler = fn;
+    },
+  );
   const hook = plugin.configureServer as (server: ViteDevServer) => void;
   hook(fake.server);
 
@@ -348,13 +349,11 @@ describe("riebeckiteContentAssets", () => {
     let handler:
       | ((request: unknown, response: unknown, next: () => void) => void)
       | undefined;
-    (
-      fake.server as unknown as {
-        middlewares: { use(fn: typeof handler): void };
-      }
-    ).middlewares.use = (fn) => {
+    fake.server.middlewares.use = createInvalid<
+      typeof fake.server.middlewares.use
+    >((fn: (request: unknown, response: unknown, next: () => void) => void) => {
       handler = fn;
-    };
+    });
     (plugin.configureServer as (server: ViteDevServer) => void)(fake.server);
 
     const nexted = await new Promise<boolean>((resolve) => {

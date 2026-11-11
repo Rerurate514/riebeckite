@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import { inspectContentInventory } from "../src/development_inspector_content.js";
 
 test("reports content visibility, redirects, orphans, and unresolved links", () => {
@@ -18,7 +18,7 @@ test("reports content visibility, redirects, orphans, and unresolved links", () 
     idSource: "frontmatter",
   };
   const inventory = inspectContentInventory({
-    manifest: {
+    manifest: createContentManifest({
       entries: [note, draft],
       publicEntries: [note],
       incomingLinks: new Map(),
@@ -26,8 +26,8 @@ test("reports content visibility, redirects, orphans, and unresolved links", () 
         ["/old", { path: "/note", status: 308, slug: "note" }],
       ]),
       contentIndexAmbiguities: new Map([["duplicate", ["a", "b"]]]),
-    },
-  } as unknown as CompletedContentBuildSnapshot);
+    }),
+  });
 
   assert.equal(inventory.status, "available");
   assert.equal(inventory.counts.entries, 2);

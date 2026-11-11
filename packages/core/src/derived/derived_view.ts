@@ -401,7 +401,7 @@ export function createDerivedViewRegistry(
     entry: CacheEntry,
   ): Promise<void> => {
     try {
-      await cache?.set(key, entry as unknown as JsonValue);
+      await cache?.set(key, entry);
     } catch {
       return;
     }
@@ -798,6 +798,8 @@ function isJsonValue(value: unknown): value is JsonValue {
   return (
     typeof value === "object" &&
     Object.getPrototypeOf(value) === Object.prototype &&
-    Object.values(value as Record<string, unknown>).every(isJsonValue)
+    Object.values(value as Record<string, unknown>).every(
+      (item) => item === undefined || isJsonValue(item),
+    )
   );
 }

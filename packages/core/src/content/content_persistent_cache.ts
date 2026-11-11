@@ -337,7 +337,7 @@ export function computeContentScopeFingerprint(
               }
             : {}),
           ...(location.metadata ? { metadata: { ...location.metadata } } : {}),
-        })) as unknown as JsonValue,
+        })),
     ),
   );
 }

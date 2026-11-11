@@ -1,8 +1,6 @@
 import crypto from "node:crypto";
 import type rehypeSanitize from "rehype-sanitize";
 import { defaultSchema } from "rehype-sanitize";
-import { stableStringify } from "./plugin/plugin_memo.js";
-import type { JsonValue } from "./types/json_value.js";
 
 export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
   ...defaultSchema,
@@ -141,8 +139,8 @@ export function computeMarkdownSanitizeFingerprint(): string {
   return crypto
     .createHash("sha256")
     .update(
-      stableStringify({
-        schema: markdownSanitizeSchema as unknown as JsonValue,
+      JSON.stringify({
+        schema: markdownSanitizeSchema,
         style: safeMarkdownStyle.source,
         styleFlags: safeMarkdownStyle.flags,
       }),

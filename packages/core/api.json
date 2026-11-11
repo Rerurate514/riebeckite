@@ -1011,6 +1011,16 @@
       "type": false
     },
     {
+      "name": "createContentManifest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentManifestEntry",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createContentMigrationRegistry",
       "value": true,
       "type": false
@@ -1022,6 +1032,26 @@
     },
     {
       "name": "createDevelopmentTrace",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createInvalid",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginContentLocationContext",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginContext",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginManifestContext",
       "value": true,
       "type": false
     },
@@ -1047,6 +1077,16 @@
     },
     {
       "name": "createPublicContentView",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createResolvedRiebeckiteConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createRiebeckiteConfig",
       "value": true,
       "type": false
     },
@@ -1922,6 +1962,11 @@
     },
     {
       "name": "parsePublicationState",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "parseYaml",
       "value": true,
       "type": false
     },
@@ -3074,6 +3119,16 @@
     },
     {
       "name": "RadialGraphLayoutOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RUNTIME_CAPABILITIES",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "RuntimeCapability",
       "value": false,
       "type": true
     },

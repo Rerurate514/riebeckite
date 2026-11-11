@@ -6,6 +6,7 @@ import type {
   PluginHeadTag,
   ResolvedPluginPage,
 } from "@riebeckite/core";
+import { createInvalid } from "@riebeckite/core";
 import type { Context } from "hono";
 import {
   applyRiebeckiteRouteContext,
@@ -495,7 +496,7 @@ test("SSG enumerates affected plugin pages without decoding their paths", async 
 
 function requestContext(options: { slug?: string; path: string }) {
   const variables = new Map<string, unknown>();
-  const context = {
+  const context = createInvalid<Context>({
     req: {
       param: (_name: string) => options.slug,
       path: options.path,
@@ -506,23 +507,22 @@ function requestContext(options: { slug?: string; path: string }) {
     notFound: () => new Response("not found", { status: 404 }),
     redirect: (location: string, status: number) =>
       new Response(null, { status, headers: { location } }),
-  };
-  return { context: context as unknown as Context, variables };
+  });
+  return { context, variables };
 }
 
 function contentStub(options: {
   manifest: ContentManifest;
   page?: ResolvedPluginPage | null;
-}) {
+}): Parameters<typeof resolveRiebeckiteContentRequest>[1] {
   return {
     resolvePage: async () => options.page ?? null,
-    getManifest: async () => options.manifest,
     getRequestManifest: async () => options.manifest,
     getProcessedContent: async (slug: string) => ({
       html: `<p>${slug}</p>`,
       frontmatter: {},
     }),
-  } as unknown as Parameters<typeof resolveRiebeckiteContentRequest>[1];
+  };
 }
 
 function pluginPage(

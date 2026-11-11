@@ -46,6 +46,7 @@ import {
   isWithin,
   journalMatchesApplied,
   mutationIssue,
+  parseContentMigrationPlan,
   readJournalSnapshot,
   redirectFieldFromConfig,
   sameMigrationPlan,
@@ -249,7 +250,10 @@ export class FileSystemContentMigration {
     const parsed = JSON.parse(content) as unknown;
     if (!isRecord(parsed) || parsed.schemaVersion !== 1)
       throw new Error("The migration plan has an unsupported schema.");
-    return parsed as unknown as ContentMigrationPlan;
+    const plan = parseContentMigrationPlan(parsed);
+    if (plan === undefined)
+      throw new Error("The migration plan is missing or corrupt.");
+    return plan;
   }
 
   async history(

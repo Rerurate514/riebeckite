@@ -209,11 +209,12 @@ function renderThemeSettings(
     input.addEventListener("change", () => {
       const preset = theme.presets[input.value];
       values[themeId] = preset
-        ? (Object.fromEntries(
+        ? Object.fromEntries(
             Object.entries(preset.settings).filter(
-              ([, value]) => value !== undefined,
+              (entry): entry is [string, string | number | boolean] =>
+                entry[1] !== undefined,
             ),
-          ) as unknown as Record<string, string | number | boolean>)
+          )
         : {};
       renderThemeSettings(container, themes, themeId, values, onChange);
       onChange(themeId);

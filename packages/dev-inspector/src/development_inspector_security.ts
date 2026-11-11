@@ -7,16 +7,11 @@ export function prioritizeMiddleware(
   middleware: unknown,
   path: string,
 ): void {
-  const stack = (
-    server.middlewares as unknown as {
-      stack?: Array<{ handle: unknown; route?: string }>;
-    }
-  ).stack;
-  const index =
-    stack?.findIndex(
-      (layer) => layer.handle === middleware || layer.route === path,
-    ) ?? -1;
-  if (index > 0 && stack) stack.unshift(...stack.splice(index, 1));
+  const stack = server.middlewares.stack;
+  const index = stack.findIndex(
+    (layer) => layer.handle === middleware || layer.route === path,
+  );
+  if (index > 0) stack.unshift(...stack.splice(index, 1));
 }
 
 export type InspectorHandler = (

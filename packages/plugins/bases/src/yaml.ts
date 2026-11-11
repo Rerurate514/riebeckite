@@ -1,4 +1,4 @@
-import { matter } from "vfile-matter";
+import { parseYaml } from "@riebeckite/core";
 
 export function parseBasesYaml(
   source: string,
@@ -6,14 +6,7 @@ export function parseBasesYaml(
   | { readonly ok: true; readonly value: unknown }
   | { readonly ok: false; readonly message: string } {
   try {
-    const document = `---\n${source}\n---\n`;
-    const file = {
-      value: document,
-      data: {} as Record<string, unknown>,
-      toString: () => document,
-    };
-    matter(file as unknown as Parameters<typeof matter>[0]);
-    return { ok: true, value: file.data.matter };
+    return { ok: true, value: parseYaml(source) };
   } catch (error) {
     return {
       ok: false,

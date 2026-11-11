@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createInvalid } from "@riebeckite/core";
 import { inspectGeneratedHtmlPages } from "../src/ssg/diagnostics.js";
 import type { SsgModule } from "../src/ssg/types.js";
 
 test("inspectGeneratedHtmlPages returns plugin diagnostics", () => {
   const messages: string[] = [];
-  const module = {
+  const module = createInvalid<SsgModule>({
     default: async () => new Response(""),
     config: {
       plugins: [
@@ -22,7 +23,7 @@ test("inspectGeneratedHtmlPages returns plugin diagnostics", () => {
         },
       ],
     },
-  } as unknown as SsgModule;
+  });
 
   const diagnostics = inspectGeneratedHtmlPages(
     module,

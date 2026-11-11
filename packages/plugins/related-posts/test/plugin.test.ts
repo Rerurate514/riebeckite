@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   ContentManager,
   type ContentSource,
+  createInvalid,
   resolveConfig,
 } from "@riebeckite/core";
 import { createElement, Fragment } from "hono/jsx";
@@ -107,9 +108,10 @@ test("validates option shapes", () => {
     className: "",
     useTags: "no",
     useBacklinks: "no",
-  } as unknown as RelatedPostsOptions;
+  };
+  const invalidOptions = createInvalid<RelatedPostsOptions>(invalid);
 
-  const plugin = relatedPosts(invalid);
+  const plugin = relatedPosts(invalidOptions);
   const paths = (plugin.validateOptions?.(plugin.options) ?? [])
     .map((issue) => issue.path)
     .sort();

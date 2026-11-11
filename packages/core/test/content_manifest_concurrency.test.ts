@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
+import { createInvalid } from "../src/testing/fixtures.js";
 import { definePlugin } from "../src/types/plugin.js";
 
 function memorySource(files: Record<string, string>): ContentSource {
@@ -50,10 +51,9 @@ test("concurrent content processing shares pipeline initialization", async () =>
       "second.md": "# Second\n",
     }),
   );
-  const pipelineManager = manager as unknown as {
-    getPipeline(): Promise<unknown>;
-  };
-
+  const pipelineManager = createInvalid<{ getPipeline(): Promise<unknown> }>(
+    manager,
+  );
   const [first, second] = await Promise.all([
     pipelineManager.getPipeline(),
     pipelineManager.getPipeline(),
@@ -74,11 +74,10 @@ test("pipeline initialization can retry after a source failure", async () => {
       return "# Note\n";
     },
   });
-  const pipelineManager = manager as unknown as {
-    getPipeline(): Promise<unknown>;
-  };
+  const pipelineManager = createInvalid<{ getPipeline(): Promise<unknown> }>(
+    manager,
+  );
 
   await assert.rejects(pipelineManager.getPipeline(), /source unavailable/);
-
   assert.ok(await pipelineManager.getPipeline());
 });

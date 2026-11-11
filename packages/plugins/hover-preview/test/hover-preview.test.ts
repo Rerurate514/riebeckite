@@ -2,9 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   ContentManager,
-  type ContentManifestEntry,
   type ContentSource,
   type ContentSourceEntry,
+  createContentManifestEntry,
   createDerivedViewRegistry,
   definePlugin,
   resolveConfig,
@@ -138,12 +138,12 @@ test("resolves the preview index through its registered derived view", async () 
   const runtime = createHoverPreviewRuntime(resolveHoverPreviewOptions({}));
   const derived = createDerivedViewRegistry();
   derived.register(runtime.view);
-  const entry = {
+  const entry = createContentManifestEntry({
     permalink: "/alpha",
     slug: "alpha",
     title: "Alpha",
     html: "<p>Alpha body text.</p>",
-  } as unknown as ContentManifestEntry;
+  });
 
   const outputs = await runtime.plan([entry], derived);
 

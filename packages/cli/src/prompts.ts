@@ -89,9 +89,7 @@ async function readHidden(message: string): Promise<string> {
     output: process.stdout,
     terminal: true,
   });
-  const writable = rl as unknown as {
-    _writeToOutput?: (value: string) => void;
-  };
+  const writable = rl as { _writeToOutput?: (value: string) => void };
   if (typeof writable._writeToOutput !== "function") {
     rl.close();
     throw new NonInteractiveSetupError(

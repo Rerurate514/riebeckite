@@ -277,6 +277,23 @@ test("computeContentCacheKey changes when frontmatter changes", () => {
   assert.notEqual(key1, key2);
 });
 
+test("computeContentCacheKey distinguishes dates inside frontmatter arrays", () => {
+  const base = {
+    slug: "test-note",
+    source: "---\ntitle: Test\n---\n\n# Test",
+    frontmatter: { dates: [new Date("2024-01-01T00:00:00.000Z")] },
+    pipelineFingerprint: "abc123",
+  };
+
+  const key1 = computeContentCacheKey(base);
+  const key2 = computeContentCacheKey({
+    ...base,
+    frontmatter: { dates: [new Date("2025-06-06T00:00:00.000Z")] },
+  });
+
+  assert.notEqual(key1, key2);
+});
+
 test("computeContentCacheKey changes when pipeline fingerprint changes", () => {
   const base = {
     slug: "test-note",

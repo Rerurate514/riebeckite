@@ -137,10 +137,11 @@ export function rename(
         return;
       }
 
-      const previous = externalDependencies?.get("rename:routes-lock")?.value;
-      if (!isRouteLock(previous)) return;
+      const previous = parseRouteLock(
+        externalDependencies?.get("rename:routes-lock")?.value,
+      );
       const current = buildRouteLock(manifest.publicEntries);
-      const result = diffRoutes(previous, current, {
+      const result = diffRoutes(previous ?? emptyRouteLock(), current, {
         status,
         onUnexpectedRemoval,
       });
@@ -209,10 +210,6 @@ async function writeLock(
       error: messageOf(error),
     });
   }
-}
-
-function isRouteLock(value: unknown): value is RouteLock {
-  return parseRouteLock(value as JsonValue) !== null;
 }
 
 function renameDiagnostic(diagnostic: RenameDiagnostic) {

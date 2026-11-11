@@ -539,7 +539,7 @@ export function derivedDependenciesToOutputDependencies(
   }
   const seen = new Set<string>();
   return outputDependencies.filter((dependency) => {
-    const key = stableStringify(dependency as JsonValue);
+    const key = stableStringify(dependency);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;

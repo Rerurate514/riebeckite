@@ -393,6 +393,39 @@ test("hook persists the lock and replays redirects across builds", async () => {
   });
 });
 
+test("hook recovers from a corrupt persisted lock", async () => {
+  const cache = memoryCache();
+  const plugin = rename();
+  const manifest = fakeManifest([
+    { slug: "alpha", permalink: "/a", frontmatter: {}, html: "<p>a</p>" },
+  ]);
+  const diagnostics: Diagnostic[] = [];
+  const context = createPluginManifestContext({
+    manifest,
+    config: fakeConfig(),
+    cache,
+    diagnostics,
+    contentIndex: new Map(),
+    externalDependencies: new Map([
+      [
+        "rename:routes-lock",
+        {
+          id: "rename:routes-lock",
+          fingerprint: "corrupt",
+          scope: { type: "all" },
+          value: { routes: "broken" },
+        },
+      ],
+    ]),
+  });
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.deepEqual(diagnostics, []);
+  assert.equal(manifest.redirects.size, 0);
+  assert.notEqual(await cache.get("routes.lock"), undefined);
+});
+
 test("hook respects existing redirects and never locks private notes", async () => {
   const cache = memoryCache();
   const plugin = rename();

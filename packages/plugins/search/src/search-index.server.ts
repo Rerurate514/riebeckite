@@ -2,6 +2,7 @@ import {
   type ContentManifest,
   getEntryLanguage,
   type ResolvedRiebeckiteConfig,
+  resolveEntryDate,
 } from "@riebeckite/core";
 import type { SearchItem } from "./search.js";
 
@@ -28,7 +29,7 @@ export function buildSearchItems(args: {
       tags: entry.tags,
       ...(entry.icon ? { icon: entry.icon } : {}),
       ...(language === undefined ? {} : { language }),
-      date: getEntryDate(entry.frontmatter),
+      date: resolveEntryDate(entry.frontmatter),
     };
   });
 
@@ -70,22 +71,6 @@ function createExcerpt(entry: {
       : toPlainText(entry.html);
 
   return text.slice(0, 180);
-}
-
-function getEntryDate(frontmatter: {
-  published?: unknown;
-  date?: unknown;
-  created?: unknown;
-}): string | null {
-  const value =
-    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || !value.trim()) return null;
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 function toPlainText(html: string): string {

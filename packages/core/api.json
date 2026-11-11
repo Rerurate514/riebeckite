@@ -2191,6 +2191,11 @@
       "type": true
     },
     {
+      "name": "PluginPageLayout",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginPagePath",
       "value": false,
       "type": true
@@ -2636,6 +2641,11 @@
       "type": true
     },
     {
+      "name": "resolveEntryDate",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolveFolderEntry",
       "value": true,
       "type": false
@@ -2869,6 +2879,11 @@
       "name": "ThemeStyle",
       "value": false,
       "type": true
+    },
+    {
+      "name": "toIsoDate",
+      "value": true,
+      "type": false
     },
     {
       "name": "TraceAttributes",

@@ -9,6 +9,7 @@ import {
   type ContentQueryGroupBy,
   localizedPagePath,
   stripHtml,
+  toIsoDate,
 } from "@riebeckite/core";
 import { slugifyTaxonomyValue } from "./slug.js";
 import type {
@@ -263,17 +264,12 @@ function getEntrySummary(entry: ContentManifestEntry): string {
 }
 
 function getEntryUpdatedTime(entry: ContentManifestEntry): string | null {
-  const value =
+  return toIsoDate(
     entry.frontmatter.updated ??
-    entry.frontmatter.published ??
-    entry.frontmatter.date ??
-    entry.frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+      entry.frontmatter.published ??
+      entry.frontmatter.date ??
+      entry.frontmatter.created,
+  );
 }
 
 function findRegistryIcon(

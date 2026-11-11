@@ -3,7 +3,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { selectLocalizedEntries } from "@riebeckite/core";
+import { resolveEntryDate, selectLocalizedEntries } from "@riebeckite/core";
 import { buildGraphEdges } from "@riebeckite/core/client";
 import { buildGraphDocument } from "@riebeckite/graph";
 import type {
@@ -56,7 +56,7 @@ export function getGardenExplorerData(args: {
         tags: entry.tags,
         links: entry.links,
         assets: entry.assets,
-        date: getEntryDate(entry.frontmatter),
+        date: resolveEntryDate(entry.frontmatter),
       })),
     ),
     tags: buildTags(notes),
@@ -105,7 +105,7 @@ function toGardenNote(
     body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
     excerpt: createExcerpt(entry),
     tags: entry.tags,
-    date: getEntryDate(entry.frontmatter),
+    date: resolveEntryDate(entry.frontmatter),
     folder: getFolder(entry.slug),
     outgoing: outgoingSlugs,
     backlinks: incomingSlugs,
@@ -170,21 +170,6 @@ function extractHeadings(html: string): string[] {
   }
 
   return headings;
-}
-
-function getEntryDate(frontmatter: {
-  published?: unknown;
-  date?: unknown;
-  created?: unknown;
-}): string | null {
-  const value =
-    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime()))
-    return value.toISOString();
-  if (typeof value !== "string" || !value.trim()) return null;
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 function toPlainText(html: string): string {

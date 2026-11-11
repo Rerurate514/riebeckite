@@ -3,7 +3,7 @@ import type {
   PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { stripHtml } from "@riebeckite/core";
+import { resolveEntryDate, stripHtml, toIsoDate } from "@riebeckite/core";
 
 export function getDescription(
   post: Pick<PostContent, "frontmatter" | "html">,
@@ -33,19 +33,13 @@ export function filterFeedEntries(
 export function getEntryPublishedTime(
   entry: ContentManifestEntry,
 ): string | null {
-  return (
-    getIsoDate(
-      entry.frontmatter.published ??
-        entry.frontmatter.date ??
-        entry.frontmatter.created,
-    ) ?? null
-  );
+  return resolveEntryDate(entry.frontmatter);
 }
 
 export function getEntryUpdatedTime(
   entry: ContentManifestEntry,
 ): string | null {
-  return getIsoDate(entry.frontmatter.updated) ?? getEntryPublishedTime(entry);
+  return toIsoDate(entry.frontmatter.updated) ?? getEntryPublishedTime(entry);
 }
 
 export function getHtmlLanguage(config: ResolvedRiebeckiteConfig): string {
@@ -57,15 +51,6 @@ export function normalizeTags(tags: unknown): string[] {
   return tags.filter(
     (tag): tag is string => typeof tag === "string" && tag.trim().length > 0,
   );
-}
-
-function getIsoDate(value: unknown): string | undefined {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || !value.trim()) return undefined;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 function getSortableTime(entry: ContentManifestEntry): number {

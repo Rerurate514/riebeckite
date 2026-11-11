@@ -141,6 +141,10 @@ export type {
   ContentCollectionPage,
 } from "./src/content/content_collection.js";
 export { buildContentCollections } from "./src/content/content_collection.js";
+export {
+  resolveEntryDate,
+  toIsoDate,
+} from "./src/content/content_date.js";
 export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
 export type {
   ContentGraph,

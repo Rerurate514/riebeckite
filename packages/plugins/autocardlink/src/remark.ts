@@ -41,7 +41,8 @@ export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
 
 function resolveMaxLine(value: number | null | undefined): number | null {
   if (value === null) return null;
-  if (Number.isInteger(value) && value > 0) return value;
+  if (typeof value === "number" && Number.isInteger(value) && value > 0)
+    return value;
 
   return DEFAULT_MAX_LINE;
 }

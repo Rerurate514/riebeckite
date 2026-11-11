@@ -6,6 +6,7 @@ import type {
   PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { resolveEntryDate } from "@riebeckite/core";
 import {
   buildGraphDocument,
   type GraphSourceEntry,
@@ -211,7 +212,7 @@ function toManifestSource(
     tags: entry.tags,
     links: entry.links,
     assets: entry.assets,
-    date: resolveFrontmatterDate(entry.frontmatter),
+    date: resolveEntryDate(entry.frontmatter),
   };
 }
 
@@ -225,19 +226,4 @@ function toPublicSource(entry: PublicContentEntry): GraphSourceEntry {
     assets: entry.assets,
     date: entry.date ?? null,
   };
-}
-
-function resolveFrontmatterDate(frontmatter: {
-  published?: unknown;
-  date?: unknown;
-  created?: unknown;
-}): string | null {
-  const value =
-    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || value.trim().length === 0) return null;
-  const time = Date.parse(value);
-  return Number.isFinite(time) ? new Date(time).toISOString() : null;
 }

@@ -179,6 +179,29 @@ test("renders configured dates and tags alongside folder page links", async () =
   assert.match(body, /<span class="rr-folder-page__tag">#featured<\/span>/);
 });
 
+test("uses normalized manifest tags and dates on folder page links", async () => {
+  const content = manager(
+    {
+      "folder/page.md":
+        "---\ntitle: Page\npublish: true\ndate: 2026-11-11T09:30:00Z\ntags: ['#hash', 'x/y/', '2024']\n---\n\n#inline-tag\n",
+      "folder/bad.md":
+        "---\ntitle: Bad\npublish: true\ndate: 2026年1月2日\n---\n",
+    },
+    [folderPages({ showDate: true, showTags: true })],
+  );
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
+  assert.match(body, /#hash/);
+  assert.match(body, /#x\/y/);
+  assert.match(body, /#inline-tag/);
+  assert.doesNotMatch(body, /#2024/);
+  assert.equal((body.match(/rr-folder-page__date/g) ?? []).length, 1);
+});
+
 test("does not generate a folder page from conflicting custom public locations", async () => {
   const content = manager(
     {

@@ -5,7 +5,11 @@ import type {
   ContentPublicLocation,
   OutputDependency,
 } from "@riebeckite/core";
-import { escapeRegExp, resolveGeneratedFolderLocation } from "@riebeckite/core";
+import {
+  escapeRegExp,
+  resolveEntryDate,
+  resolveGeneratedFolderLocation,
+} from "@riebeckite/core";
 import type { FolderPage, FolderPageLink, FolderPagesModel } from "./types.js";
 
 const ENTRY_BASENAMES = ["README", "index"] as const;
@@ -314,12 +318,8 @@ function toLink(
   fallbackIcon?: ContentIcon,
 ): FolderPageLink {
   const icon = entry.icon ?? fallbackIcon;
-  const date = displayDate(
-    entry.frontmatter.published ??
-      entry.frontmatter.date ??
-      entry.frontmatter.created,
-  );
-  const tags = displayTags(entry.frontmatter.tags);
+  const date = resolveEntryDate(entry.frontmatter)?.slice(0, 10);
+  const tags = entry.tags;
   return {
     title: entry.title,
     permalink: entry.permalink,
@@ -327,23 +327,6 @@ function toLink(
     ...(date ? { date } : {}),
     ...(tags.length > 0 ? { tags } : {}),
   };
-}
-
-function displayDate(value: unknown): string | undefined {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString().slice(0, 10);
-  }
-  if (typeof value !== "string") return undefined;
-  const trimmed = value.trim();
-  return trimmed === "" ? undefined : trimmed;
-}
-
-function displayTags(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
-    .filter((tag): tag is string => typeof tag === "string")
-    .map((tag) => tag.trim())
-    .filter(Boolean);
 }
 
 function lastSegment(path: string): string {

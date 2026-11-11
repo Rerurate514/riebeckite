@@ -203,6 +203,7 @@ function packageJson(
   variables: SiteTemplateVariables,
   options: SiteTemplateOptions,
 ): string {
+  const utilities = options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES;
   const dependencies: Record<string, string> = {
     "@riebeckite/core": RIEBECKITE_VERSION,
     "@riebeckite/honox": RIEBECKITE_VERSION,
@@ -234,6 +235,7 @@ function packageJson(
       },
       dependencies,
       devDependencies: {
+        ...(utilities.includes("biome") ? { "@biomejs/biome": "^2.4.16" } : {}),
         "@hono/vite-build": "^1.11.1",
         "@hono/node-server": "^2.1.3",
         "@riebeckite/cli": RIEBECKITE_VERSION,

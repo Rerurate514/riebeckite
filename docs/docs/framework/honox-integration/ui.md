@@ -42,7 +42,8 @@ Primitives do not own article copy, metadata formatting, navigation placement,
 cards, page-layout composition, islands, or site visual design and overrides.
 Those belong to the site application. `ArticleHeader` accepts children or its
 HTML input prop, while `ArticleContent` accepts children. `ArticleBody` renders
-rendered Markdown as `.rb-article-content`, and Markdown typography is
+the body provided by the active content format, or rendered Markdown when the
+format supplies none, as `.rb-article-content`, and Markdown typography is
 scoped to that wrapper, so plugin components keep their own headings wherever
 they are placed.
 

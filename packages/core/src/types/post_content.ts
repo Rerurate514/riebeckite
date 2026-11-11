@@ -1,6 +1,7 @@
 export type PostContent = {
   frontmatter: PostFrontmatter;
   html: string;
+  sourcePath?: string;
 };
 
 export type PostFrontmatter = Record<string, unknown> & {

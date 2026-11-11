@@ -29,6 +29,9 @@ The Unreleased section lists changes that are merged but not yet published to np
   Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md
 
+- Add a generic Content Format contract so plugins can contribute extensions, content processing, and renderer modules, and add `@riebeckite/plugin-mdx` for trusted MDX pages whose JSX, expressions, ESM imports, and local components render through the Hono JSX runtime in development SSR and production SSG.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/ui`, `@riebeckite/plugin-mdx`
+
 ### Changed
 
 - **Breaking:** Remove the duplicate UX TOC scroll spy so `@riebeckite/plugin-toc` is the sole owner of TOC active state.

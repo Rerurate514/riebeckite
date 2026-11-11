@@ -43,7 +43,7 @@ sidebar:
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-`ArticleBody` はレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown の[[glossary/typography|タイポグラフィ]]はこのラッパーにのみ適用されます。[[glossary/plugin-component|プラグインコンポーネント]]の見出しはプラグイン自身が所有します。
+`ArticleBody` は有効な Content Format が提供する本文、なければレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown の[[glossary/typography|タイポグラフィ]]はこのラッパーにのみ適用されます。[[glossary/plugin-component|プラグインコンポーネント]]の見出しはプラグイン自身が所有します。
 
 プリミティブが担当するのは主に、
 

@@ -201,6 +201,25 @@ test("stale lock reclamation racing with another apply never applies twice", {
   assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "after");
 });
 
+test("apply retries when another process holds the content file open", {
+  timeout: 20_000,
+}, async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "note.md"), "before");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "after" },
+  ]);
+  const planPath = await mutation.savePlan(plan);
+  const holder = startWorker("hold-open", root, path.join(root, "note.md"));
+  const held = finished(holder);
+  await waitForReady(root);
+  const result = await mutation.apply(await mutation.loadPlan(planPath));
+  assert.equal(result.applied, true);
+  await held;
+  assert.equal(await fs.readFile(path.join(root, "note.md"), "utf8"), "after");
+});
+
 test("apply and recovery serialize without corrupting either file", {
   timeout: 40_000,
 }, async () => {

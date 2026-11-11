@@ -18,6 +18,10 @@ import {
 } from "@riebeckite/core";
 import { parseDocument } from "yaml";
 import {
+  reclaimStaleLock,
+  retryOnSharingViolation,
+} from "./file_system_content_migration_helpers.js";
+import {
   isRecord,
   type JournalChange,
   type MutationJournal,
@@ -289,7 +293,7 @@ export class FileSystemContentMutation {
           const target = await safeFilePath(root, change.path, false);
           if ((await fingerprintAt(target)) !== change.beforeFingerprint)
             throw new Error(`Content changed during apply: ${change.path}`);
-          await fs.rm(target);
+          await retryOnSharingViolation(() => fs.rm(target));
           markApplied(journal, change.path);
           await writeJsonAtomically(journalPath, journal);
           appliedPaths.push(change.path);
@@ -809,32 +813,8 @@ export class FileSystemContentMutation {
       handle = await fs.open(lockPath, "wx");
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "EEXIST") {
-        const stale = await staleLockContent(lockPath);
-        if (stale !== null) {
-          const quarantine = `${lockPath}.stale-${randomUUID()}`;
-          try {
-            await fs.rename(lockPath, quarantine);
-          } catch (renameError) {
-            if ((renameError as NodeJS.ErrnoException).code === "ENOENT")
-              return await this.acquireLock(root);
-            throw renameError;
-          }
-          const quarantined = await fs.readFile(quarantine, "utf8");
-          if (quarantined !== stale) {
-            const restored = await fs
-              .writeFile(lockPath, quarantined, { flag: "wx" })
-              .then(
-                () => true,
-                () => false,
-              );
-            if (restored) await fs.rm(quarantine, { force: true });
-            throw new Error(
-              "Another content mutation is already applying or requires recovery.",
-            );
-          }
-          await fs.rm(quarantine, { force: true });
+        if (await reclaimStaleLock(lockPath))
           return await this.acquireLock(root);
-        }
       }
       throw new Error(
         "Another content mutation is already applying or requires recovery.",
@@ -1112,7 +1092,7 @@ async function writeFileAtomically(
       (await fingerprintAt(filePath)) !== expectedFingerprint
     )
       throw new Error(`Content changed during apply: ${filePath}`);
-    await fs.rename(temporary, filePath);
+    await retryOnSharingViolation(() => fs.rename(temporary, filePath));
   } finally {
     await fs.rm(temporary, { force: true });
   }
@@ -1136,36 +1116,6 @@ async function writeJsonAtomically(
     filePath,
     Buffer.from(`${JSON.stringify(value, null, 2)}\n`),
   );
-}
-async function staleLockContent(lockPath: string): Promise<string | null> {
-  let content: string;
-  try {
-    content = await fs.readFile(lockPath, "utf8");
-  } catch {
-    return null;
-  }
-  let value: unknown;
-  try {
-    value = JSON.parse(content);
-  } catch {
-    return (await lockFileIsOld(lockPath)) ? content : null;
-  }
-  const pid = isRecord(value) ? value.pid : undefined;
-  if (typeof pid !== "number" || !Number.isInteger(pid) || pid <= 0)
-    return (await lockFileIsOld(lockPath)) ? content : null;
-  try {
-    process.kill(pid, 0);
-    return null;
-  } catch (error) {
-    return (error as NodeJS.ErrnoException).code === "ESRCH" ? content : null;
-  }
-}
-async function lockFileIsOld(lockPath: string): Promise<boolean> {
-  try {
-    return Date.now() - (await fs.stat(lockPath)).mtimeMs > 5_000;
-  } catch {
-    return false;
-  }
 }
 function updateFrontmatter(
   source: FileState,

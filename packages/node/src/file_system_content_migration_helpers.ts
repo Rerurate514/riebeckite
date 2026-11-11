@@ -431,6 +431,35 @@ async function lockFileIsOld(lockPath: string): Promise<boolean> {
   }
 }
 
+export async function reclaimStaleLock(lockPath: string): Promise<boolean> {
+  const guardPath = `${lockPath}.reclaim`;
+  let guard: Awaited<ReturnType<typeof fs.open>>;
+  try {
+    guard = await fs.open(guardPath, "wx");
+  } catch (error) {
+    if (
+      (error as NodeJS.ErrnoException).code === "EEXIST" &&
+      (await lockFileIsOld(guardPath))
+    ) {
+      await fs.rm(guardPath, { force: true });
+      return await reclaimStaleLock(lockPath);
+    }
+    return false;
+  }
+  try {
+    const stale = await staleLockContent(lockPath);
+    if (stale === null) return false;
+    const current = await fs.readFile(lockPath, "utf8").catch(() => null);
+    if (current === null) return true;
+    if (current !== stale) return false;
+    await retryOnSharingViolation(() => fs.rm(lockPath));
+    return true;
+  } finally {
+    await guard.close();
+    await fs.rm(guardPath, { force: true }).catch(() => undefined);
+  }
+}
+
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -450,4 +479,23 @@ export function errorPath(error: unknown): string | undefined {
   const value = error.path.replace(/\\/gu, "/");
   if (value.startsWith("/") || /^[A-Za-z]:\//u.test(value)) return undefined;
   return value;
+}
+
+export async function retryOnSharingViolation<T>(
+  operation: () => Promise<T>,
+): Promise<T> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (
+        attempt >= 5 ||
+        (code !== "EPERM" && code !== "EBUSY" && code !== "EACCES")
+      ) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10 * 2 ** attempt));
+    }
+  }
 }

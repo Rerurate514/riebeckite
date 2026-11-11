@@ -45,6 +45,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, include notes dated only by `published` in Recent Posts, and center article-layout page bodies again.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
 
+- Content mutations now retry when Windows reports that a content file is in use, so an apply no longer fails with EPERM while another process is reading the same file. Stale lock reclamation is serialized through a guard file and removes the stale lock directly, so two processes can no longer both believe they hold the lock.
+  Packages: `@riebeckite/node`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 
 ## [0.0.46] - 2026-11-10

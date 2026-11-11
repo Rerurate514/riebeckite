@@ -24,6 +24,8 @@ export function resolveFolderPagesOptions(
       options.foldersLabel,
       DEFAULT_FOLDER_PAGES_FOLDERS_LABEL,
     ),
+    showDate: options.showDate ?? false,
+    showTags: options.showTags ?? false,
   };
 }
 

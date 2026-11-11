@@ -151,12 +151,32 @@ test("generates a folder page that lists only direct children", async () => {
   assert.match(folder?.body ?? "", /href="\/folder\/page"/);
   assert.match(
     folder?.body ?? "",
-    /<a class="rr-folder-page__link" href="\/folder\/sub\/">sub<\/a>/,
+    /<a class="rr-folder-page__link" href="\/folder\/sub\/"><span class="rr-folder-page__link-title">sub<\/span><\/a>/,
   );
   assert.doesNotMatch(folder?.body ?? "", /\/folder\/sub\/deep/);
 
   const sub = await content.resolvePage("/folder/sub/");
   assert.match(sub?.body ?? "", /href="\/folder\/sub\/deep"/);
+});
+
+test("renders configured dates and tags alongside folder page links", async () => {
+  const files = {
+    "folder/page.md":
+      "---\ntitle: Page\npublish: true\ndate: 2026-11-11\ntags: [guide, featured]\n---\n",
+  };
+  const hidden = await manager(files).resolvePage("/folder/");
+  assert.doesNotMatch(hidden?.body ?? "", /rr-folder-page__meta/);
+
+  const content = manager(files, [
+    folderPages({ showDate: true, showTags: true }),
+  ]);
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
+  assert.match(body, /<span class="rr-folder-page__tag">#guide<\/span>/);
+  assert.match(body, /<span class="rr-folder-page__tag">#featured<\/span>/);
 });
 
 test("does not generate a folder page from conflicting custom public locations", async () => {
@@ -281,6 +301,9 @@ test("validates folder page exclusions", () => {
   ]);
   assert.deepEqual(plugin.validateOptions?.({ exclude: [""] }), [
     { path: "exclude[0]", message: "Expected a non-empty string." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ showDate: "yes" } as never), [
+    { path: "showDate", message: "Expected a boolean." },
   ]);
 });
 

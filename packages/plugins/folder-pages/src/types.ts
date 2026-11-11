@@ -5,6 +5,8 @@ export type FolderPagesOptions = {
   className?: string;
   pagesLabel?: string;
   foldersLabel?: string;
+  showDate?: boolean;
+  showTags?: boolean;
 };
 
 export type ResolvedFolderPagesOptions = {
@@ -12,12 +14,16 @@ export type ResolvedFolderPagesOptions = {
   className: string;
   pagesLabel: string;
   foldersLabel: string;
+  showDate: boolean;
+  showTags: boolean;
 };
 
 export type FolderPageLink = {
   title: string;
   permalink: string;
   icon?: ContentIcon;
+  date?: string;
+  tags?: string[];
 };
 
 export type FolderPage = {

@@ -314,11 +314,36 @@ function toLink(
   fallbackIcon?: ContentIcon,
 ): FolderPageLink {
   const icon = entry.icon ?? fallbackIcon;
+  const date = displayDate(
+    entry.frontmatter.published ??
+      entry.frontmatter.date ??
+      entry.frontmatter.created,
+  );
+  const tags = displayTags(entry.frontmatter.tags);
   return {
     title: entry.title,
     permalink: entry.permalink,
     ...(icon ? { icon } : {}),
+    ...(date ? { date } : {}),
+    ...(tags.length > 0 ? { tags } : {}),
   };
+}
+
+function displayDate(value: unknown): string | undefined {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed === "" ? undefined : trimmed;
+}
+
+function displayTags(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((tag): tag is string => typeof tag === "string")
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 }
 
 function lastSegment(path: string): string {

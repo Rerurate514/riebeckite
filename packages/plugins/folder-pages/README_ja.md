@@ -28,6 +28,12 @@ export default {
 };
 ```
 
+自動生成一覧に日付とタグを表示する場合は、次のように設定します。
+
+```ts
+folderPages({ showDate: true, showTags: true });
+```
+
 ## Markdown ベースの Folder Page
 
 `<folder>/README.md` または `<folder>/index.md` にあるノートは、そのフォルダの
@@ -71,9 +77,14 @@ Pages と Folders は解決済みパーマリンク、次にタイトルで並�
 | `className` | `string` | `"rr-folder-page"` | 生成するフラグメントのルート CSS クラス。 |
 | `pagesLabel` | `string` | `"Pages"` | ページ一覧の見出し。 |
 | `foldersLabel` | `string` | `"Folders"` | フォルダ一覧の見出し。 |
+| `showDate` | `boolean` | `false` | 各ノートの `published`・`date`・`created` プロパティを右側に表示する。 |
+| `showTags` | `boolean` | `false` | 各ノートの `tags` プロパティを右側に表示する。 |
 
 `exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
 `exclude: ["Config"]` は `Config` と `Config/internal` を除外しますが、公開 URL はそのままです。
+
+自動生成される Folder Page はテーマの article 幅で表示します。メタデータ表示を有効にすると、
+一覧行の左側にノートのタイトル、右側に日付・タグを表示します。
 
 ## プラグイン依存
 

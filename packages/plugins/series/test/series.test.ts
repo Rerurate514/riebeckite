@@ -55,6 +55,7 @@ const guide = manifestOf([
 
 test("resolveSeriesOptions applies and overrides defaults", () => {
   assert.deepEqual(resolveSeriesOptions(), {
+    layout: "article",
     key: "series",
     orderKey: "series_order",
     titleKey: "series_title",
@@ -66,6 +67,7 @@ test("resolveSeriesOptions applies and overrides defaults", () => {
   });
   assert.equal(DEFAULT_CLASS_NAME, "rb-series");
   assert.deepEqual(resolveSeriesOptions({ heading: false, className: "sl" }), {
+    layout: "article",
     key: "series",
     orderKey: "series_order",
     titleKey: "series_title",
@@ -76,6 +78,7 @@ test("resolveSeriesOptions applies and overrides defaults", () => {
     localeMode: "current",
   });
   assert.deepEqual(resolveSeriesOptions({ basePath: "collections/" }), {
+    layout: "article",
     key: "series",
     orderKey: "series_order",
     titleKey: "series_title",
@@ -85,6 +88,7 @@ test("resolveSeriesOptions applies and overrides defaults", () => {
     basePath: "/collections",
     localeMode: "current",
   });
+  assert.equal(resolveSeriesOptions({ layout: "wide" }).layout, "wide");
 });
 
 test("collectSeriesIndexes groups first-seen series and orders members by order", () => {

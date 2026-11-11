@@ -86,7 +86,13 @@ export async function resolveCanvasDocument(
     context.manifest,
   );
 
-  return { type: "canvas-document", pathname: context.pathname, title, body };
+  return {
+    type: "canvas-document",
+    layout: "wide",
+    pathname: context.pathname,
+    title,
+    body,
+  };
 }
 
 function collectCanvasSlugs(manifest: ContentManifest): string[] {

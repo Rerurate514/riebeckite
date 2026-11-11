@@ -71,6 +71,7 @@ export function archive(options: ArchiveOptions = {}) {
           );
           return {
             type: "archive",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             description: config
@@ -97,6 +98,7 @@ export function archive(options: ArchiveOptions = {}) {
           );
           return {
             type: "archive",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             description: config
@@ -164,6 +166,13 @@ function validateArchiveOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   if (options.basePath !== undefined && typeof options.basePath !== "string") {
     issues.push({ path: "basePath", message: "Expected a string." });
   }

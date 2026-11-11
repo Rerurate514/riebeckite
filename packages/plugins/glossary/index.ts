@@ -52,6 +52,7 @@ export function glossary(options: GlossaryOptions = {}) {
           const page = renderGlossaryPage(model.entries, resolved);
           return {
             type: "glossary",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             body: page.html,
@@ -66,6 +67,7 @@ export function glossary(options: GlossaryOptions = {}) {
           const page = renderGlossaryPage(model.entries, resolved);
           return {
             type: "glossary",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             body: page.html,
@@ -125,6 +127,13 @@ function validateGlossaryOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   for (const key of [
     "basePath",
     "className",

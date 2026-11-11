@@ -54,6 +54,7 @@ test("archive() declares its stylesheet", () => {
 
 test("resolveArchiveOptions applies defaults and overrides", () => {
   assert.deepEqual(resolveArchiveOptions(), {
+    layout: "article",
     basePath: "/archive",
     pageSize: 10,
     locale: null,
@@ -68,6 +69,7 @@ test("resolveArchiveOptions applies defaults and overrides", () => {
       className: " custom ",
     }),
     {
+      layout: "article",
       basePath: "/history",
       pageSize: 0,
       locale: "ja",
@@ -75,6 +77,7 @@ test("resolveArchiveOptions applies defaults and overrides", () => {
       localeMode: "current",
     },
   );
+  assert.equal(resolveArchiveOptions({ layout: "wide" }).layout, "wide");
 });
 
 test("formatArchivePeriod and archivePaginationLabels follow the locale", () => {

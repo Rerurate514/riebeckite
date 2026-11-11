@@ -1,6 +1,7 @@
 import type { ContentIcon, OutputDependency } from "@riebeckite/core";
 
 export type FolderPagesOptions = {
+  layout?: "article" | "wide";
   exclude?: readonly string[];
   className?: string;
   pagesLabel?: string;
@@ -10,6 +11,7 @@ export type FolderPagesOptions = {
 };
 
 export type ResolvedFolderPagesOptions = {
+  layout: "article" | "wide";
   exclude: readonly string[];
   className: string;
   pagesLabel: string;

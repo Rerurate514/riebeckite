@@ -1,9 +1,3 @@
-.rb-citations-page {
-  width: min(100%, 48rem);
-  margin-inline: auto;
-  padding-inline: var(--rb-space-2, 1rem);
-}
-
 .rb-citations-page__title {
   margin-block-end: var(--rb-space-2, 1rem);
 }

@@ -87,12 +87,25 @@ test("HtmlFragment renders trusted pipeline HTML without a wrapper", () => {
 
 test("PageBody owns the rb-page-body hook", () => {
   const html = renderToString(PageBody({ html: "<p>Page</p>" }));
-  assert.equal(html, '<div class="rb-page-body"><p>Page</p></div>');
+  assert.equal(
+    html,
+    '<div class="rb-page-body" data-rb-page-layout="wide"><p>Page</p></div>',
+  );
+});
+
+test("PageBody applies a Plugin Page layout", () => {
+  const html = renderToString(
+    PageBody({ html: "<p>Page</p>", layout: "article" }),
+  );
+  assert.match(html, /data-rb-page-layout="article"/);
 });
 
 test("PageBody composes a Site class", () => {
   const html = renderToString(
     PageBody({ html: "<p>Page</p>", class: "site-page" }),
   );
-  assert.equal(html, '<div class="rb-page-body site-page"><p>Page</p></div>');
+  assert.equal(
+    html,
+    '<div class="rb-page-body site-page" data-rb-page-layout="wide"><p>Page</p></div>',
+  );
 });

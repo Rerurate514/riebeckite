@@ -1,7 +1,5 @@
 @layer components {
-  .rb-page-body:has(> [data-rr-folder-page]) {
-    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
-    margin-inline: auto;
+  .rr-folder-page {
     padding-block: 2rem;
   }
 

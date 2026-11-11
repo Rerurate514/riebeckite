@@ -83,6 +83,7 @@ The supported Obsidian options are `line-2` through `line-5`, `body-2` through `
 | `title` | `string` | `"Timeline"` | Page heading and title. |
 | `className` | `string` | `"rb-timeline"` | Additional root CSS class for the generated page. |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for the timeline page. |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |
 
 ## Live example
 

@@ -49,6 +49,10 @@
     padding-inline: var(--rb-space-2, 1rem);
   }
 
+  .rb-page-body[data-rb-page-layout="article"] {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  }
+
   .rb-article-content :is(img, picture > img, figure img) {
     display: block;
     max-inline-size: 100%;

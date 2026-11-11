@@ -21,6 +21,7 @@ export function resolveTimelineOptions(
   options: TimelineOptions = {},
 ): ResolvedTimelineOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     basePath: normalizeBasePath(options.basePath ?? DEFAULT_TIMELINE_BASE_PATH),
     className: options.className?.trim() || DEFAULT_TIMELINE_CLASS_NAME,
     key: options.key?.trim() || DEFAULT_TIMELINE_KEY,

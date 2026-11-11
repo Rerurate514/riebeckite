@@ -64,6 +64,7 @@ recomputing the period.
 | `locale` | `string` | `site.locale` | Locale used for the period and pagination labels. |
 | `className` | `string` | `"rb-archive"` | Root CSS class for the rendered fragment. |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for archive entries and generated pages. |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |
 
 ## Exports
 

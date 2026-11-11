@@ -11,6 +11,7 @@ export function resolveFolderPagesOptions(
   options: FolderPagesOptions = {},
 ): ResolvedFolderPagesOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     exclude: options.exclude ?? [],
     className: normalizeString(
       options.className,

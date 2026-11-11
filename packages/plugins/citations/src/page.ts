@@ -63,6 +63,7 @@ export async function resolveBibliographyPage(
 
   return {
     type: "citations-bibliography",
+    layout: options.layout === "wide" ? "wide" : "article",
     pathname: context.pathname,
     title: PAGE_TITLE,
     body: renderBibliographyPage({ title: PAGE_TITLE, entries: sorted }),

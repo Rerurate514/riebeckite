@@ -79,12 +79,14 @@ Pages と Folders は解決済みパーマリンク、次にタイトルで並�
 | `foldersLabel` | `string` | `"Folders"` | フォルダ一覧の見出し。 |
 | `showDate` | `boolean` | `false` | 各ノートの `published`・`date`・`created` プロパティを右側に表示する。 |
 | `showTags` | `boolean` | `false` | 各ノートの `tags` プロパティを右側に表示する。 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
 
 `exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
 `exclude: ["Config"]` は `Config` と `Config/internal` を除外しますが、公開 URL はそのままです。
 
-自動生成される Folder Page はテーマの article 幅で表示します。メタデータ表示を有効にすると、
-一覧行の左側にノートのタイトル、右側に日付・タグを表示します。
+自動生成される Folder Page は既定でテーマの article 幅で表示します。`layout: "wide"` を
+設定するとページ幅を使います。メタデータ表示を有効にすると、一覧行の左側にノートのタイトル、
+右側に日付・タグを表示します。
 
 ## プラグイン依存
 

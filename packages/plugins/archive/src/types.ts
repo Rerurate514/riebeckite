@@ -1,4 +1,5 @@
 export type ArchiveOptions = {
+  layout?: "article" | "wide";
   basePath?: string;
   pageSize?: number;
   locale?: string;
@@ -7,6 +8,7 @@ export type ArchiveOptions = {
 };
 
 export type ResolvedArchiveOptions = {
+  layout: "article" | "wide";
   basePath: string;
   pageSize: number;
   locale: string | null;

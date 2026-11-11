@@ -714,6 +714,7 @@ export type {
 export type {
   PluginPage,
   PluginPageContext,
+  PluginPageLayout,
   PluginPagePath,
   PluginPageType,
   ResolvedPluginPage,

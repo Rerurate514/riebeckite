@@ -71,6 +71,7 @@ export default defineConfig({
 | `className` | `string` | `"rr-taxonomy"` | Root CSS class of page fragments |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON data endpoint path |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for terms and generated pages |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |
 
 `exclude` uses logical content slugs, not display labels or glob patterns. For
 example, `exclude: ["Config"]` omits `Config` and `Config/internal` from every

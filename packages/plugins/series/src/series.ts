@@ -25,6 +25,7 @@ export function resolveSeriesOptions(
   options: SeriesOptions = {},
 ): ResolvedSeriesOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     key: options.key ?? "series",
     orderKey: options.orderKey ?? "series_order",
     titleKey: options.titleKey ?? "series_title",

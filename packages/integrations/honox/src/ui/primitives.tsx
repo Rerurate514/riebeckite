@@ -1,5 +1,6 @@
 import type {
   PluginHeadTag,
+  PluginPageLayout,
   PostContent,
   PublicContentEntry,
   ResolvedRiebeckiteConfig,
@@ -156,6 +157,7 @@ export function ArticleBody(props: ArticleBodyProps) {
 
 type PageBodyProps = PrimitiveClassProps & {
   html: string;
+  layout?: PluginPageLayout;
 };
 
 /**
@@ -168,6 +170,7 @@ export function PageBody(props: PageBodyProps) {
   return (
     <div
       class={joinClassNames("rb-page-body", props.class, props.className)}
+      data-rb-page-layout={props.layout ?? "wide"}
       dangerouslySetInnerHTML={{ __html: props.html }}
     />
   );

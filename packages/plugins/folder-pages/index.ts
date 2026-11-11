@@ -92,6 +92,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
           const rendered = renderFolderPage(page, resolved);
           return {
             type: "folder-page",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -104,6 +105,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
           const rendered = renderFolderPage(page, resolved);
           return {
             type: "folder-page",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -120,6 +122,13 @@ function validateFolderPagesOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   for (const key of ["className", "pagesLabel", "foldersLabel"] as const) {
     const value = options[key];
     if (

@@ -123,6 +123,7 @@ export async function resolveBaseDocument(
   }
   return {
     type: "bases-document",
+    layout: "wide",
     pathname: input.pathname,
     title,
     body: `<main class="rb-bases-page"><h1 class="rb-bases-page__title">${escapeHtml(title)}</h1>${body}</main>`,

@@ -59,7 +59,9 @@ export function createContentRoute(options: ContentRouteOptions) {
       if (resolved.kind === "response") return resolved.response;
       applySeoContext(c, options.config, resolved);
       if (resolved.kind === "page")
-        return c.render(<PageBody html={resolved.page.body} />);
+        return c.render(
+          <PageBody html={resolved.page.body} layout={resolved.page.layout} />,
+        );
       return renderContent(c, options, resolved.entry, resolved.post);
     },
   );
@@ -71,7 +73,9 @@ export function createHomeRoute(options: HomeRouteOptions) {
     if (resolved.kind === "response") return resolved.response;
     applySeoContext(c, options.config, resolved);
     if (resolved.kind === "page")
-      return c.render(<PageBody html={resolved.page.body} />);
+      return c.render(
+        <PageBody html={resolved.page.body} layout={resolved.page.layout} />,
+      );
     return renderContent(c, options, resolved.entry, resolved.post);
   });
 }

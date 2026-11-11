@@ -1,4 +1,5 @@
 export type GlossaryOptions = {
+  layout?: "article" | "wide";
   basePath?: string;
   className?: string;
   key?: string;

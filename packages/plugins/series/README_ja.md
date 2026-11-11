@@ -66,6 +66,7 @@ series_order: 2
 | `positionLabel` | `boolean` | `false` | 現在の記事に「Part N of M」を付ける。 |
 | `basePath` | `string` | `"/series"` | 生成するページの基準パス。空文字にすると生成しない。 |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | シリーズページに表示する言語の選択。 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
 
 ## 記事に表示するシリーズナビゲーション
 

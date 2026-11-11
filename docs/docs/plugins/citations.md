@@ -129,6 +129,7 @@ invalidate the affected output.
 | `bibliography` | unset | Vault-relative BibTeX/BibLaTeX file path or paths |
 | `referencesHeading` | `"References"` | Heading inserted above generated references |
 | `pagePath` | unset | Path of the standalone bibliography page; disabled when omitted |
+| `layout` | `"article" \| "wide"` | Width of the bibliography page. `"article"` uses the theme article width; `"wide"` uses the page width. |
 
 ## Diagnostics
 

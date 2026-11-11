@@ -67,6 +67,7 @@ export default {
 | `locale` | `string` | `site.locale` | 期間・ページネーションのラベルに使うロケール。 |
 | `className` | `string` | `"rb-archive"` | 描画フラグメントのルート CSS クラス。 |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | アーカイブの記事と言語別ページの選択。 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
 
 ## エクスポート
 

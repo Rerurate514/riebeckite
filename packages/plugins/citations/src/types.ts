@@ -1,6 +1,7 @@
 import type { ContentSource, Diagnostic } from "@riebeckite/core";
 
 export type CitationsOptions = {
+  layout?: "article" | "wide";
   /** Vault-relative BibTeX/BibLaTeX file path or paths. */
   bibliography?: string | readonly string[];
   /** Heading inserted above generated references. Defaults to "References". */

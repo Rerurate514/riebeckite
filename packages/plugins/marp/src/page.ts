@@ -52,6 +52,7 @@ export function resolveMarpSlidesPage(
   if (!entry) return null;
   return {
     type: "marp-slides",
+    layout: "wide",
     pathname: context.pathname,
     title: entry.title,
     body: `<div class="rb-marp-slides">${entry.html}</div>`,

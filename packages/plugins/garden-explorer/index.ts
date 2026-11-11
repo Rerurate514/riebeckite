@@ -57,6 +57,7 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
+            layout: "wide",
             pathname,
             title: "Garden Explorer",
             description:
@@ -84,6 +85,7 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
+            layout: "wide",
             pathname,
             title: "Garden Explorer",
             description:

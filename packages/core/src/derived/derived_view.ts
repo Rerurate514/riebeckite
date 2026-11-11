@@ -798,8 +798,6 @@ function isJsonValue(value: unknown): value is JsonValue {
   return (
     typeof value === "object" &&
     Object.getPrototypeOf(value) === Object.prototype &&
-    Object.values(value as Record<string, unknown>).every(
-      (item) => item === undefined || isJsonValue(item),
-    )
+    Object.values(value as Record<string, unknown>).every(isJsonValue)
   );
 }

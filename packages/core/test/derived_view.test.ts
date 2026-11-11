@@ -111,6 +111,39 @@ test("unknown dependencies prevent persistent reuse", async () => {
   assert.equal(runs, 2);
 });
 
+test("derived views do not reuse values that cannot be serialized without loss", async () => {
+  const storage = memoryCache();
+  const serializingCache: PluginCache = {
+    ...storage,
+    async set<T extends JsonValue>(key: string, value: T): Promise<void> {
+      await storage.set(key, JSON.parse(JSON.stringify(value)) as T);
+    },
+  };
+  let calls = 0;
+  const view = defineDerivedView<null, { value: number; missing?: number }>({
+    id: "test.lossy-value",
+    version: "1",
+    compute: () => {
+      calls++;
+      return { value: calls, missing: undefined };
+    },
+  });
+  const first = createDerivedViewRegistry({ cache: () => serializingCache });
+  first.register(view);
+  assert.deepEqual(await first.resolve(view, null), {
+    value: 1,
+    missing: undefined,
+  });
+
+  const second = createDerivedViewRegistry({ cache: () => serializingCache });
+  second.register(view);
+  assert.deepEqual(await second.resolve(view, null), {
+    value: 2,
+    missing: undefined,
+  });
+  assert.equal(calls, 2);
+});
+
 test("derived view inspection records failures without requiring a cache", async () => {
   const registry = createDerivedViewRegistry({
     cache: () => {

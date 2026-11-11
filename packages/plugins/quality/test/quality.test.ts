@@ -290,6 +290,20 @@ function manifestWithDiagnostics(
   });
 }
 
+test("failOn error throws on error-severity diagnostics", () => {
+  const plugin = quality({ failOn: "error" });
+  const manifest = manifestWithDiagnostics(RULE_CODES.duplicateId, "error");
+  assert.throws(
+    () =>
+      plugin.buildEnd?.(
+        createPluginManifestContext({
+          manifest,
+        }),
+      ),
+    /Quality inspection failed/,
+  );
+});
+
 test("failOn defaults to never", () => {
   const plugin = quality();
   const manifest = manifestWithDiagnostics(RULE_CODES.duplicateId, "error");

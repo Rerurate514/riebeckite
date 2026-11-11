@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "11e55cd7-6c29-49ee-bae8-0f6e617a5a98",
-    "publishedAt": "2026-11-10T18:24:56.584Z",
-    "publicationFingerprint": "19abf10ad67abd8920aeaed300e3bee34692b3969ef3cdcca91104fc8ebdeafe",
+    "runId": "2da75121-a15f-4e7d-8cf6-21d68355777a",
+    "publishedAt": "2026-11-11T05:51:13.029Z",
+    "publicationFingerprint": "e1533a27e11297bcbb8b3cea444165cb2c093141903e977bc1caf9b85372f6ef",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -1002,16 +1002,16 @@
         "permalink": "/docs/framework/theme-system/css",
         "title": "Stable CSS hooks and the cascade",
         "visibility": "public",
-        "fingerprint": "f5a6fe7b4074386874e09db65d949baaa6cb585a766827d01fd5408d817f3e41",
-        "contentFingerprint": "31217a984d1e8bf07467e347feceb5cc16c63ab7976cd4fd585ed299561af0f8"
+        "fingerprint": "270e89d177f0634e59ea2d3020ff2c31e0f260d7e27a2cb94e2aac7d851e402f",
+        "contentFingerprint": "7fb4aadc936bcc79db75bc6361bbfe3be94a8238bc2c44c9a618d4934a8fd234"
       },
       {
         "slug": "docs/framework/theme-system/css.ja",
         "permalink": "/ja/docs/framework/theme-system/css",
         "title": "安定した CSS フックとカスケード",
         "visibility": "public",
-        "fingerprint": "6ce9e804a3fd6283af019df55757b9ffc4dbd7057c150914f91a2f0e3d77aef2",
-        "contentFingerprint": "152d789570bcd017aeb2d8c167112946479771a64537c7b9cd24eebe4dcb0215"
+        "fingerprint": "156e311c5e3ed5db20971f6d6eb03c0b5d1469a58bd713030d0cf1fe43da6956",
+        "contentFingerprint": "b15ca81c01b60d8021e492f5666e4838d58dc28a33ae94a3502697f54a584b06"
       },
       {
         "slug": "docs/framework/theme-system/distribution",
@@ -1786,16 +1786,16 @@
         "permalink": "/docs/glossary/css-contract",
         "title": "CSS Contract",
         "visibility": "public",
-        "fingerprint": "34e10012c48b9613616dc044716406a0db132c54d0310e13ad96ffd3b33e096f",
-        "contentFingerprint": "dc23a1598bb6335a6d2205fe1c39cbcd91d4b176e1210d331393cafe3e5beb52"
+        "fingerprint": "89e4a4d4930cbff65553d70ed9532e2f2b76cc7f8ee6d42997e50d1fbad32fb1",
+        "contentFingerprint": "371d343eede9d5cde3a1e4544e101e3fab8377d46236e4b950707133e284d6d3"
       },
       {
         "slug": "docs/glossary/css-contract.ja",
         "permalink": "/ja/docs/glossary/css-contract",
         "title": "CSS Contract",
         "visibility": "public",
-        "fingerprint": "08ed78a32411ba26d03c8ce6b9ad90c32041731dfb9e34f90bb452da872094ad",
-        "contentFingerprint": "f4cfc06f2f2712415f9e5cdd57a73d8fe91c60199e058d4f7004250412ff4161"
+        "fingerprint": "2eb9e5f1b301737feaff63222c74ab5c4503c207e0d5c6034a179b91effaf882",
+        "contentFingerprint": "6567e9640fabf069d8e4db0c3700f848b55aa8d2b6ddfffd62db7bb48f0ca549"
       },
       {
         "slug": "docs/glossary/deployment",
@@ -3114,16 +3114,16 @@
         "permalink": "/docs/glossary/user-css",
         "title": "stylesheets",
         "visibility": "public",
-        "fingerprint": "0dc202bdac665c48c726718d4b3632f8cb0c27ff25c1eff29d5114f9d459e292",
-        "contentFingerprint": "09f399ef9789a6a088afcba22b5dff3d369bb040221d7dcd5271d14c2691d859"
+        "fingerprint": "92fe97c99d98da613e6e9287403c59704574329afa9105b213b550351c8c46ed",
+        "contentFingerprint": "324d0a03759a18e8e70bfb1a926f792ce76acbc8f82c2b8c4cc728e0d17ef78b"
       },
       {
         "slug": "docs/glossary/user-css.ja",
         "permalink": "/ja/docs/glossary/user-css",
         "title": "stylesheets（追加スタイルシート）",
         "visibility": "public",
-        "fingerprint": "eedf1fff92ad9cd8658cb86df4bbf56a9ec522222e22bdbbd428522fb455d5df",
-        "contentFingerprint": "4726c2a7af7f5e5e8370e61e5aae183f2b41154d453d8ca4c52f2a4073059a1c"
+        "fingerprint": "3b39c4c086ee230eda4a6fcd8e52c88bd270034f1ef09fb7b3c5ab2e3816d5dc",
+        "contentFingerprint": "8af8089d1f71b870b8e5159750186aed5ac66276d21fb9e38bf4d3b3217eee1c"
       },
       {
         "slug": "docs/glossary/visibility",
@@ -3354,16 +3354,16 @@
         "permalink": "/docs/guides/customizing-your-site/plugins-and-css",
         "title": "Plugins and CSS",
         "visibility": "public",
-        "fingerprint": "987baebbc6933b27d1b714a14871d345b118c85ea9b107dc366f6eeac0d42fea",
-        "contentFingerprint": "a51e5c0398dd1a5ce17b26820e185a026c24e347ff6a83a6409d5ecf77804cb1"
+        "fingerprint": "8a6a6ce57bef9c49e91745fd0202213a293590e79738baae328e48ba2cd88740",
+        "contentFingerprint": "ad3756c2c4989f0dbafa7a77c6ef2245a84e8beffdf18a0e7c89635225a2d500"
       },
       {
         "slug": "docs/guides/customizing-your-site/plugins-and-css.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/plugins-and-css",
         "title": "プラグインとCSS",
         "visibility": "public",
-        "fingerprint": "f430483854dce49d3cc0a7aee724aa83bc2219e3844217a785641b8f63249691",
-        "contentFingerprint": "f4295707f634f96ba7b0bd4ccfe0126ad518479dfd728cf66e8d219136c72bbd"
+        "fingerprint": "4d4e84b413d146fd8aa9fd505ebc02aa123d154b3d3779843f7fd9326792df00",
+        "contentFingerprint": "99cebdd0fad8cb4dda192903c61644559239bb449511dd9e65b0e46afd4d4443"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers",
@@ -3994,16 +3994,16 @@
         "permalink": "/docs/plugins/archive",
         "title": "Archive",
         "visibility": "public",
-        "fingerprint": "b27108b49d4dc916c301a62109a4bc1c9c0cb9750a18f2b231ba25c8c06690ba",
-        "contentFingerprint": "bea3d09d603012402e8e4dd431417c1410208fbb63b22163ba191eeb1f3c2a7b"
+        "fingerprint": "0892bfe7976afa807285c5c3cc2fd74e0339cef96a834a3cb2c8a0bb6b51f9d8",
+        "contentFingerprint": "7a8850301b49ba36de94c311db0d043cc2711071749b913ca31727fe76f10fc7"
       },
       {
         "slug": "docs/plugins/archive.ja",
         "permalink": "/ja/docs/plugins/archive",
         "title": "Archive",
         "visibility": "public",
-        "fingerprint": "6f6f57ced4db5876bcd874dcbf0f336c63e29a5c1a63f5b28ea51f6841e74afb",
-        "contentFingerprint": "df6f20fb2373ef50ae2f12995d2521431f39d7ed7fb9320e5cbfc9e7891dfa35"
+        "fingerprint": "a3cf80df08232ac4ff4bc424e9040d79a23a558076af4015377b1659e28aebd7",
+        "contentFingerprint": "ed885d406bb6d2760bbef58a507ec9e0d048977a87382adce444b4edad34f9ea"
       },
       {
         "slug": "docs/plugins/article-metadata",
@@ -4042,16 +4042,16 @@
         "permalink": "/docs/plugins/autocardlink",
         "title": "AutoCardLink",
         "visibility": "public",
-        "fingerprint": "69eadb841fcb5ff463117ba4fb12ecda827a0a43a83baafeaaff2128c40b8cd0",
-        "contentFingerprint": "de07057b0fc50b82390c65613f5feaabb7486209585813cd649902aeef58c958"
+        "fingerprint": "b2475e3410112d307555b6a6e4ff292e76841d4894d45ddb1a41e2796c5b7dfd",
+        "contentFingerprint": "41b9156722fc54c6f4fca3f877ac1620ab6bb378057df74cee3e05acde1c7cb2"
       },
       {
         "slug": "docs/plugins/autocardlink.ja",
         "permalink": "/ja/docs/plugins/autocardlink",
         "title": "AutoCardLink",
         "visibility": "public",
-        "fingerprint": "d81a329e0e59a3514bbf2b935955a727d2a1e0dcd36fc434e118719ba217f774",
-        "contentFingerprint": "0e65a282e4291f973cb2e19b3b763ffae80f0800378e5fb92549226f64f8a061"
+        "fingerprint": "134882b25b46063d44de3d1c62f21c9e71a9d49a5eaa57596854157d2b646af5",
+        "contentFingerprint": "5f88dfffacd4ce0bfbdfc9dde29798e44f5377df63db709c5d09b4ed71f4d89a"
       },
       {
         "slug": "docs/plugins/backlinks",
@@ -4170,16 +4170,16 @@
         "permalink": "/docs/plugins/citations",
         "title": "Citations",
         "visibility": "public",
-        "fingerprint": "f84610db48b1a114dd77a8ee5f493642eb3c582d4c64eb07724872a53ae41fcd",
-        "contentFingerprint": "86d2d2159d0b97b8ee82d637730609344ca00623709a9453effcff2c9e325339"
+        "fingerprint": "7534f4167915a58f50297386de41dae1bcbcb718d2ec29f5e83991387affbea5",
+        "contentFingerprint": "109f1597a67bb97606b2d2ddebe4fd8020080012c915a42916defb9a1bc885d4"
       },
       {
         "slug": "docs/plugins/citations.ja",
         "permalink": "/ja/docs/plugins/citations",
         "title": "Citations",
         "visibility": "public",
-        "fingerprint": "f168185eafd8c1f8a17a011fd87a425ed3a51999a155ae0ba8fcead59ffff43b",
-        "contentFingerprint": "24b060a9093a995cc9af43e4ce0996f1e9fc03e8c982778a44151cbb068c38f8"
+        "fingerprint": "349f7e09fe8b4b6dc5e430ff8ca35d702c977ac9619b15b607ab9800eb293565",
+        "contentFingerprint": "f837f833b359f7527bad096bd5888a5ae765359fdfb8869ce8e970b237cedef2"
       },
       {
         "slug": "docs/plugins/code-annotations",
@@ -4442,16 +4442,16 @@
         "permalink": "/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "44a241ea1a7926457307ee4c6da8d968695728d53c2fa19c825132d744425132",
-        "contentFingerprint": "39b9655e06e3012e0abc240e04af6389fa1fbb57e8ca97e208c481c16cfbb9f5"
+        "fingerprint": "701915550d55223d8f10e35a81350ef2f0725be8209af75f2bcc4741faa28c43",
+        "contentFingerprint": "eb60d629a3112386948acd41436b143e1eb21f70ea6fcce7b4b43db90c4ae4bd"
       },
       {
         "slug": "docs/plugins/folder-pages.ja",
         "permalink": "/ja/docs/plugins/folder-pages",
         "title": "Folder Pages",
         "visibility": "public",
-        "fingerprint": "e7c79fd8832257bb2f9794e79a745d18e189927ca2acba5c4165a7378e8c9084",
-        "contentFingerprint": "3ec2d48965a3d6fded731a9dcbb9dfa258e7e5147ffaaaf7c1d5f342ae430309"
+        "fingerprint": "e6e31036569c2e165a881dbd3974de80961f16e102a74b2e2fa8c7c4cc382e81",
+        "contentFingerprint": "300725cfe570c9922ade9efb60c3df527bdef6240c22e0921c9ac214772de2c9"
       },
       {
         "slug": "docs/plugins/frontmatter-transformer",
@@ -4522,16 +4522,16 @@
         "permalink": "/docs/plugins/glossary",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "3d32c7a58b5266bf2cc152988ceb93e6142a08ccc7a2107ba11107521b0cd8ef",
-        "contentFingerprint": "e52ede31aacc5f4178bff0d7c2ef035148af14d13bfb01f33017369e3c33f166"
+        "fingerprint": "6cd43fbf6103262ad79b7d629862a684c995b233c7999ac98ebaee1485cd4967",
+        "contentFingerprint": "43886f2238f239ffc723a7714108ce4b045ac5903876b9bf4487adc20f799737"
       },
       {
         "slug": "docs/plugins/glossary.ja",
         "permalink": "/ja/docs/plugins/glossary",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "89760b22eabc14411cc275cdd87a7b713edc48e8077f2b05a8a3dd13499058f3",
-        "contentFingerprint": "ada43009c2aa1ae86917e1724ef8c3db5e58d27f0f8db3ca17a01abd034c18c3"
+        "fingerprint": "bfc4c5fb7490c6354fd0df8e0f3f1ab08a4e01ef0346a33d2ec83f120c1abb6f",
+        "contentFingerprint": "ddf829e8b61f40a9d653a638cc37616bf33fe65fde4df43a2c48a3bbad274840"
       },
       {
         "slug": "docs/plugins/graphviz",
@@ -5386,16 +5386,16 @@
         "permalink": "/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "ad22dce6ac14a498a7dd4a00337b1023843959958aa15c14f0957ae5daebe8e9",
-        "contentFingerprint": "4a6d3ac181c9c208f36c6a8b7b6fb04f7f1fdb02f233e3f7b10feaaa31a2e3aa"
+        "fingerprint": "eb349d45f5087086d4e456f411f3e402bf05028346e78fbaf75d5577c64874fb",
+        "contentFingerprint": "8c46b6f558b827b01e8fd31280dcb8b4b3a1682b48fb4bfa36097c49d89ba5fe"
       },
       {
         "slug": "docs/plugins/series.ja",
         "permalink": "/ja/docs/plugins/series",
         "title": "Series",
         "visibility": "public",
-        "fingerprint": "2f8326e62fd35e51d3c00c3febabc951d3839550d3922b32d5d3f24709ffac84",
-        "contentFingerprint": "a99231a307e77ca67f5c8236821dc14da9a72c9c74e153188e003ab14bcdf08d"
+        "fingerprint": "98fc888d4c782e30bac3f8642c32db502f0dfb7b27d597ba862540594d0fd91a",
+        "contentFingerprint": "db98085879b639fd3cd5933d19da1b903268ad292aff99fe41add23835592ae9"
       },
       {
         "slug": "docs/plugins/share",
@@ -5658,16 +5658,16 @@
         "permalink": "/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "f806ecefba7526905bcbabc3d32c8d27ff6f5d599a0e08f1787933ed0787f332",
-        "contentFingerprint": "218bf688c4bd0a89b65b1b4f5bd935e6693b2cc27283507ac77ce55835adb5f0"
+        "fingerprint": "d2b7fcb31e3269c2cbc2619d6ee79ea00ae62319d1826606f3feb9c113735d14",
+        "contentFingerprint": "ddebc3a50dd5102e841da22f15e15e9bcdbc1dbc019aaf210d85926acc50d944"
       },
       {
         "slug": "docs/plugins/taxonomy.ja",
         "permalink": "/ja/docs/plugins/taxonomy",
         "title": "Taxonomy",
         "visibility": "public",
-        "fingerprint": "709df4448f4b542d6dfa31d6f07c114d360f0d195ba1a04835202511bf8e834c",
-        "contentFingerprint": "6d42ef97074d3a5179337ca58c90540a8f23255dd536b7bdfced4514d36b83d2"
+        "fingerprint": "106daad566d906eb058498b5daa48d712ab94e93a1e5f03e913bbbebaf4bef26",
+        "contentFingerprint": "1c4138476f9aec1909ffc9e9511b86bbe474a9299691b69cc53eae0c3fffeadb"
       },
       {
         "slug": "docs/plugins/text-fragment",
@@ -5690,16 +5690,16 @@
         "permalink": "/docs/plugins/timeline",
         "title": "Timeline",
         "visibility": "public",
-        "fingerprint": "41e93e248a785849bdcd774cf5b1f04ca129d6c72a83eb570df9e626437e6ccb",
-        "contentFingerprint": "718d6abe8060500a7db0e0ba3787d95ac922447004d5d4bb91bcc74ce6d21381"
+        "fingerprint": "cf77d80917d1947e61818b9bf75a3fb7a9e5dfac75bd0bc7d9db874019e6da1f",
+        "contentFingerprint": "b247389aca00ef9b43f4740c8e314447f4408c20345369b89a611938fb6b0226"
       },
       {
         "slug": "docs/plugins/timeline.ja",
         "permalink": "/ja/docs/plugins/timeline",
         "title": "Timeline",
         "visibility": "public",
-        "fingerprint": "d1850cfc2288c89e0f9681e9a81a38fcded045cc964aa62362c27aea775a0a35",
-        "contentFingerprint": "aa475fed4615fdd6fa8f3a278da0fb7a950d4f8b1c66563d0d1cbe413bdb4e33"
+        "fingerprint": "436598559dde1d991a52b592155e20752e3776c8b8fcb36309327e265f532c61",
+        "contentFingerprint": "338b5c06d379f6fb34e8a90217ac1a8f6b63a4ff1e6259453431aabd98a89b94"
       },
       {
         "slug": "docs/plugins/toc",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "62217f698e9f3d85939eee23f3f48155572198d32ad14387f7bda8ce63ef0eb5",
-        "contentFingerprint": "324b56e6d8eac62ff898cea4de1e19f8040721072d69fbc1f0f9833698e596e1"
+        "fingerprint": "ea66a9926c8773b72c285f68ba6754a0c04854b052e8c354af2f288def6c6d1a",
+        "contentFingerprint": "7e0cf29a6ca4236e05d1cc47145040c22e7e02aa4216b0183ce3fd72a333f7bb"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "3775b66d541626c8a3add807c217ed42b2633c45b327fbf67cf284d9ce50322b",
-        "contentFingerprint": "d06987f60f3d636b46f9741d6930da1a8f7755d494cea13f8c3c00d9509335a5"
+        "fingerprint": "f4b98e7a122e79ee7b838402a773e4f23ce3f3552808de2155a09d2f906639f1",
+        "contentFingerprint": "f577832a8313b7cc7687591596f2e745296a75d3e2c777229ea69593a3ba7421"
       },
       {
         "slug": "docs/security",
@@ -6758,7 +6758,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "4872df82e4040158606d16ccce79e646fb0f18cc6d5fcc33e87820a41db6099b",
+    "artifactFingerprint": "5b4c52790829bf767b55993d48dbc67e40d4cde8fd648572f104908b580674fa",
     "provider": "cloudflare-workers"
   }
 }

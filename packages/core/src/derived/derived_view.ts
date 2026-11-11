@@ -790,14 +790,29 @@ function serializeInput(
   throw new TypeError(`${label} must be JSON-serializable.`);
 }
 
-function isJsonValue(value: unknown): value is JsonValue {
+function isJsonValue(
+  value: unknown,
+  ancestors: Set<object> = new Set(),
+): value is JsonValue {
   if (value === null || typeof value === "string" || typeof value === "boolean")
     return true;
-  if (typeof value === "number") return Number.isFinite(value);
-  if (Array.isArray(value)) return value.every(isJsonValue);
-  return (
-    typeof value === "object" &&
-    Object.getPrototypeOf(value) === Object.prototype &&
-    Object.values(value as Record<string, unknown>).every(isJsonValue)
-  );
+  if (typeof value === "number")
+    return Number.isFinite(value) && !Object.is(value, -0);
+  if (typeof value !== "object") return false;
+  if (ancestors.has(value)) return false;
+  ancestors.add(value);
+  try {
+    if (Array.isArray(value)) {
+      for (let index = 0; index < value.length; index += 1) {
+        if (!isJsonValue(value[index], ancestors)) return false;
+      }
+      return true;
+    }
+    if (Object.getPrototypeOf(value) !== Object.prototype) return false;
+    return Object.values(value as Record<string, unknown>).every((item) =>
+      isJsonValue(item, ancestors),
+    );
+  } finally {
+    ancestors.delete(value);
+  }
 }

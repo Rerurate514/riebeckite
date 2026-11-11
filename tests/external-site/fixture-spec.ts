@@ -39,6 +39,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-code-annotations",
   },
   {
+    directory: "packages/plugins/code-enhance",
+    name: "@riebeckite/plugin-code-enhance",
+  },
+  {
     directory: "packages/plugins/highlight",
     name: "@riebeckite/plugin-highlight",
   },

@@ -600,7 +600,7 @@ definePlugin({
 
 `extendMarkdownPipeline` は remark と mdast を直接扱う低レベルな API です。独自の Markdown 構文や複雑な変換が必要なときに使います。
 
-この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、Core のコンテンツ API を通じてコンテンツやファイルに依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換の意味が変わったときに上げてください。プラグインの `options` と変換関数の内容もパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
+この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、Core のコンテンツ API を通じてコンテンツやファイルに依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換のロジックや意味が変わったときに上げてください。プラグインの `options` はパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
 
 ## プラグインをテストする
 
@@ -719,6 +719,9 @@ UI や出力を追加したい
 ├─ 独立したページを追加する
 │    └─ pageTypes
 │
+├─ Markdown から対話 UI を描画する
+│    └─ components
+│
 ├─ 記事レイアウトに自動で表示する
 │    └─ データヘルパー + JSX コンポーネント
 │
@@ -745,7 +748,7 @@ return <Backlinks backlinks={backlinks} />;
 
 ### Hono JSX コンポーネントで手動配置する
 
-UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。コンポーネントレジストリやプラグイン固有のコンポーネント API はありません。ほかのコンポーネントと同じように import して組み合わせます。
+UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。ほかのコンポーネントと同じように import して組み合わせます。これは Markdown から描画する UI をプラグインに登録する `components` とは別の仕組みで、サイト側が自分のページやレイアウトにインスタンスを配置できます。
 
 パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を維持します。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
 
@@ -766,7 +769,7 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### ブラウザ側の強化と Island
 
-プラグインは `app/islands/` を所有しません。Riebeckite にもプラグイン用の Island レジストリはありません。ブラウザ側の動作が必要な場合は、サーバーで描画済みの DOM を強化する `clientEntries` の初期化関数を提供します。コンポーネントの状態が必要なら、サイト側がプラグインのコンポーネントを自分の HonoX Island で包みます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
+プラグインは `app/islands/` を所有しません。ブラウザ側の動作には、コンテンツ作者が Markdown フェンスで配置する自己完結した UI ならクライアントモジュール付きの `components` を宣言し、任意のサーバー描画 DOM を強化するなら `clientEntries` の初期化関数を提供します。サイト側がエクスポート済みのプラグインコンポーネントを自分の HonoX Island で包むこともできます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [Markdown コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#markdown-コンポーネント) と [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
 
 ## 関連資料
 

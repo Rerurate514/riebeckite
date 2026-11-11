@@ -49,9 +49,9 @@ definePlugin({
 
 `getResolvedPluginMetadata` ユーティリティは、各プラグインの解決済みの provides/requires/optional を `ResolvedPluginMetadata` として公開し、パイプラインが順序決定と診断に使います。
 
-## アセットとクライアントエントリ
+## アセット、コンポーネント、クライアントエントリ
 
-CSS は `assets`、ブラウザ向け JavaScript は `clientEntries` で宣言します。宣言するのは本当に必要な場合だけにしてください。
+CSS は `assets` で宣言します。Markdown から配置する自己完結した UI は `components` で宣言し、ブラウザ側の状態が必要なら `client` モジュールを指定します。任意のブラウザ初期化は `clientEntries` で宣言します。ブラウザ向け JavaScript は本当に必要な場合だけ宣言してください。
 
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],

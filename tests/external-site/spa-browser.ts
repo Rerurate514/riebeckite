@@ -20,23 +20,20 @@ async function serve(
 ): Promise<{ url: string; close(): Promise<void> }> {
   const server = http.createServer((request, response) => {
     const pathname = new URL(request.url ?? "/", "http://localhost").pathname;
-    const relative =
-      pathname === "/" ? "index.html" : `${pathname.slice(1)}.html`;
-    const requested = path.resolve(directory, relative);
-    if (
-      !requested.startsWith(`${path.resolve(directory)}${path.sep}`) &&
-      requested !== path.join(directory, "index.html")
-    ) {
-      response.writeHead(403).end();
-      return;
-    }
-    const file = fs.existsSync(requested)
-      ? requested
-      : path.resolve(directory, pathname.slice(1));
-    if (
-      !file.startsWith(`${path.resolve(directory)}${path.sep}`) ||
-      !fs.existsSync(file)
-    ) {
+    const root = path.resolve(directory);
+    const relative = pathname.slice(1);
+    const candidates =
+      pathname === "/"
+        ? ["index.html"]
+        : [`${relative}.html`, path.join(relative, "index.html"), relative];
+    const file = candidates
+      .map((candidate) => path.resolve(directory, candidate))
+      .find(
+        (candidate) =>
+          candidate.startsWith(`${root}${path.sep}`) &&
+          fs.existsSync(candidate),
+      );
+    if (!file) {
       response.writeHead(404).end();
       return;
     }
@@ -260,6 +257,175 @@ export async function assertSpaBrowserBehavior(siteDir: string): Promise<void> {
     }
     await assertNavigation(server.url, false);
   } finally {
+    await server.close();
+  }
+}
+
+function scaffoldComponentWrappers(html: string): string[] {
+  return [
+    ...html.matchAll(
+      /<div data-riebeckite-component="CodeCopy"[\s\S]*?<\/div>/g,
+    ),
+  ].map((match) => match[0]);
+}
+
+function scaffoldComponentChunk(paths: readonly string[]): boolean {
+  return paths.some((pathname) => /copy[-_]component[^/]*\.js$/.test(pathname));
+}
+
+export async function assertScaffoldComponentBrowserBehavior(
+  siteDir: string,
+): Promise<void> {
+  const server = await serve(path.join(siteDir, "dist"));
+  const selector = '[data-riebeckite-component="CodeCopy"]';
+  const buttonSelector = `${selector} button`;
+  const ssrWrappers = scaffoldComponentWrappers(
+    await (await fetch(`${server.url}/guide`)).text(),
+  );
+  assert.equal(ssrWrappers.length, 2);
+  assert.match(ssrWrappers[1] ?? "", /data-riebeckite-component-props=/);
+  const browser = await puppeteer.launch({
+    headless: "shell",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  try {
+    const page = await browser.newPage();
+    const errors: string[] = [];
+    const requests: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("request", (request) => {
+      const requested = new URL(request.url());
+      if (requested.origin === server.url) requests.push(requested.pathname);
+    });
+    const labels = () =>
+      page.evaluate((query) => {
+        return [...document.querySelectorAll(query)].map(
+          (button) => button.textContent,
+        );
+      }, buttonSelector);
+
+    await page.goto(`${server.url}/`, { waitUntil: "networkidle0" });
+    assert.equal(await page.$(selector), null);
+    assert.equal(scaffoldComponentChunk(requests), false);
+
+    const directPage = await browser.newPage();
+    try {
+      await directPage.goto(`${server.url}/guide`, {
+        waitUntil: "networkidle0",
+      });
+      await directPage.waitForSelector(selector);
+      await directPage.evaluate(() => {
+        document.execCommand = () => true;
+      });
+      const directButtons = await directPage.$$(buttonSelector);
+      assert.equal(directButtons.length, 2);
+      await directButtons[0]?.click();
+      await directPage.waitForFunction(
+        (query) => {
+          return (
+            document.querySelector(query)?.textContent === "Copied example"
+          );
+        },
+        {},
+        buttonSelector,
+      );
+      assert.deepEqual(
+        await directPage.$$eval(buttonSelector, (buttons) =>
+          buttons.map((button) => button.textContent),
+        ),
+        ["Copied example", "Copy script text"],
+      );
+    } finally {
+      await directPage.close();
+    }
+
+    await page.evaluate(() => {
+      (window as Window & { scaffoldSpaMarker?: string }).scaffoldSpaMarker =
+        "preserved";
+    });
+    await Promise.all([
+      page.waitForSelector(selector),
+      page.click('a[href="/guide"]'),
+    ]);
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (window as Window & { scaffoldSpaMarker?: string }).scaffoldSpaMarker,
+      ),
+      "preserved",
+    );
+    assert.equal(scaffoldComponentChunk(requests), true);
+    const hydratedWrappers = await page.$$eval(selector, (wrappers) =>
+      wrappers.map((wrapper) => wrapper.innerHTML),
+    );
+    assert.deepEqual(
+      hydratedWrappers,
+      ssrWrappers.map((wrapper) =>
+        wrapper.slice(wrapper.lastIndexOf("<button"), -"</div>".length),
+      ),
+    );
+    const serialization = await page.evaluate((componentSelector) => {
+      const second =
+        document.querySelectorAll<HTMLElement>(componentSelector)[1];
+      return {
+        scripts: second?.querySelectorAll("script").length,
+        text: JSON.parse(
+          second?.getAttribute("data-riebeckite-component-props") ?? "{}",
+        ).text,
+      };
+    }, selector);
+    assert.equal(serialization.scripts, 0);
+    assert.equal(
+      serialization.text,
+      "<script>RIEBECKITE_SCAFFOLD_COMPONENT_MARKER</script>",
+    );
+
+    await page.evaluate(() => {
+      document.execCommand = () => true;
+    });
+    assert.deepEqual(await labels(), ["Copy example", "Copy script text"]);
+    const buttons = await page.$$(buttonSelector);
+    assert.equal(buttons.length, 2);
+    await buttons[0]?.click();
+    await page.waitForFunction(
+      (query) => {
+        return document.querySelector(query)?.textContent === "Copied example";
+      },
+      {},
+      buttonSelector,
+    );
+    assert.deepEqual(await labels(), ["Copied example", "Copy script text"]);
+
+    await page.goBack();
+    await page.waitForFunction(
+      (query) => !document.querySelector(query),
+      {},
+      selector,
+    );
+    assert.equal(
+      await page.evaluate(
+        () =>
+          (window as Window & { scaffoldSpaMarker?: string }).scaffoldSpaMarker,
+      ),
+      "preserved",
+    );
+    await page.goForward();
+    await page.waitForSelector(selector);
+    assert.equal((await page.$$(buttonSelector)).length, 2);
+    assert.deepEqual(await labels(), ["Copy example", "Copy script text"]);
+    const remountedButtons = await page.$$(buttonSelector);
+    await remountedButtons[0]?.click();
+    await page.waitForFunction(
+      (query) => {
+        return document.querySelector(query)?.textContent === "Copied example";
+      },
+      {},
+      buttonSelector,
+    );
+    assert.deepEqual(await labels(), ["Copied example", "Copy script text"]);
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser.close();
     await server.close();
   }
 }

@@ -124,6 +124,7 @@ flowchart TD
 | Diagnostics | `addDiagnostics` |
 | Rendering inside content | `renderers` |
 | Standalone pages | `pageTypes` |
+| Markdown UI | `components` |
 | Browser integration | `assets`, `clientEntries` |
 | HTTP integration | `endpoints` |
 | SEO | `seo` |

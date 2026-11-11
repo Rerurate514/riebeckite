@@ -90,8 +90,9 @@ Use `components` when a plugin renders a self-contained UI from ordinary
 Markdown. A component renders during the Markdown AST pass. Its browser module
 is loaded only when the rendered page contains that interactive component.
 
-```ts
+```tsx
 import { definePluginComponent } from "@riebeckite/core";
+import { renderToString } from "hono/jsx/dom/server";
 
 components: [
   definePluginComponent({
@@ -117,6 +118,24 @@ resolution. Omit `client` for static components. Interactive components must
 export the default Hono JSX component (or set `exportName`) and hydrate through
 the generated client entry. `clientEntries` remain appropriate for delegated
 events, widgets that manage arbitrary DOM, and page-level behavior.
+
+The fence is an ordinary fenced code block handled before Markdown is converted
+to HTML, so it works with plain Markdown and does not require MDX. MDX remains a
+separate content format for pages that need full JSX. These components are not
+HonoX islands: HonoX scans only `app/islands`, while Riebeckite's generated
+client finds component markers and loads the declared module through Vite. Keep
+`__importing_islands = true` in the renderer so HonoX emits its client bundle,
+and export the client build from the plugin package manifest as you would for a
+`clientEntries` module. The fence stays deliberately small instead of turning
+every Markdown page into MDX.
+
+`parseProps` is the validation boundary for values that come from content. The
+component's server output passes through the normal Markdown sanitizer, and
+props are escaped and validated before they reach an attribute. Components
+change processed Markdown, so include them in the plugin's
+`processedContentCache` contract when persistent caching is enabled; otherwise
+caching is bypassed for that plugin instead of serving stale HTML. Bump the
+contract's `version` when component rendering changes.
 
 ## Assets and client entries
 

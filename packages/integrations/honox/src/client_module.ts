@@ -220,7 +220,7 @@ ${
     : `function mountPluginComponents(root) {
   mountPluginClientInitializer("page", "plugin-components", root, undefined, async (context) => {
     const roots = [...context.root.querySelectorAll("[data-riebeckite-component-interactive]")];
-    const cleanups = await Promise.all(roots.map(async (element) => {
+    const results = await Promise.allSettled(roots.map(async (element) => {
       const name = element.getAttribute("data-riebeckite-component");
       const props = element.getAttribute("data-riebeckite-component-props");
       if (!name || props === null) return undefined;
@@ -231,7 +231,12 @@ ${
       if (typeof Component !== "function" || context.signal.aborted || !element.isConnected) return undefined;
       return hydrateRoot(element, jsx(Component, JSON.parse(props)));
     }));
-    return () => cleanups.forEach((root) => root?.unmount());
+    const cleanups = results.flatMap((result) => {
+      if (result.status === "fulfilled") return result.value ? [result.value] : [];
+      console.error("[riebeckite] Plugin component failed", result.reason);
+      return [];
+    });
+    return () => cleanups.forEach((root) => root.unmount());
   });
 }
 

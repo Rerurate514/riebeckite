@@ -520,7 +520,7 @@ definePlugin({
 
 `extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
-This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on content or files read through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
+This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on content or files read through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's logic or meaning changes. The plugin's `options` are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
 
 ## Testing a plugin
 
@@ -611,6 +611,9 @@ Want to add UI or output?
 ├─ Add a standalone page
 │    └─ pageTypes
 │
+├─ Render interactive UI from Markdown
+│    └─ components
+│
 ├─ Appear in the article layout automatically
 │    └─ Data helper + JSX component
 │
@@ -637,7 +640,7 @@ The helper reads a filtered `PublicContentView`, so a plugin can only surface co
 
 ### Manual placement with a Hono JSX component
 
-Export an ordinary Hono JSX component when the Site author should choose where the UI goes. There is no component registry and no Plugin-specific component API: the component is imported and composed like any other.
+Export an ordinary Hono JSX component when the Site author should choose where the UI goes. The component is imported and composed like any other. This remains separate from `components`, which registers a Markdown-rendered UI with the Plugin; a component export lets the Site place its own instance in a page or layout.
 
 Declare a `./components` subpath in the package `exports` and keep the component module's default export, then optionally re-export it by name from the package root. Existing Plugins follow this shape:
 
@@ -658,7 +661,7 @@ The deciding question is **who places it**. A JSX component lets the Site choose
 
 ### Browser enhancement and Islands
 
-Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry. For browser behavior, either contribute a `clientEntries` initializer that enhances the server-rendered DOM, or let the Site wrap the Plugin's component in its own HonoX Island when component state is needed. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
+Plugins do not own `app/islands/`. For browser behavior, declare a `components` entry with a client module when the Plugin owns a self-contained UI that content authors place with a Markdown fence, or contribute a `clientEntries` initializer when the behavior enhances arbitrary server-rendered DOM. A Site can still wrap an exported Plugin component in its own HonoX Island. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Markdown components](../reference/plugin-api/ui-and-assets.md#markdown-components) and [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
 
 ## Related
 

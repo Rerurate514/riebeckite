@@ -80,8 +80,9 @@ const backlinks = await getBacklinks({ view, slug });
 
 通常の Markdown から自己完結した UI を描画するプラグインには `components` を使います。コンポーネントは Markdown AST の処理中に描画され、対話型コンポーネントのブラウザモジュールは、そのコンポーネントを含むページでだけ読み込まれます。
 
-```ts
+```tsx
 import { definePluginComponent } from "@riebeckite/core";
+import { renderToString } from "hono/jsx/dom/server";
 
 components: [
   definePluginComponent({
@@ -102,6 +103,10 @@ initial: 3
 ````
 
 props は YAML のマッピングでなければならず、JSON として安全にシリアライズできる公開データだけが使われます。コンポーネント名はプラグイン全体で一意にしてください。重複はプラグイン解決時に失敗します。静的コンポーネントでは `client` を省略します。対話型コンポーネントは既定 export の Hono JSX コンポーネント（または `exportName` で指定した export）を公開し、生成されたクライアントエントリが hydration します。イベント委譲、任意の DOM を管理するウィジェット、ページ全体の動作には引き続き `clientEntries` が適しています。
+
+フェンスは Markdown を HTML に変換する前の通常のコードブロックとして処理されるため、素の Markdown で動作し、MDX は不要です。MDX はページ全体で JSX が必要な場合の別のコンテンツ形式として残ります。このコンポーネントは HonoX の Island ではありません。HonoX は `app/islands` だけを走査し、Riebeckite の生成クライアントがコンポーネントのマーカーを見つけて、宣言されたモジュールを Vite 経由で読み込みます。HonoX がクライアントバンドルを出力できるようレンダラーで `__importing_islands = true` を維持し、`clientEntries` のモジュールと同じようにクライアントのビルド成果物をパッケージの manifest から公開してください。すべての Markdown を MDX にせず、フェンスの構文を小さく保つための選択です。
+
+`parseProps` はコンテンツ由来の値を検証する境界です。コンポーネントのサーバー出力は通常の Markdown サニタイザーを通り、props は属性に渡す前にエスケープと検証を行います。コンポーネントは処理済み Markdown を変えるため、永続キャッシュを有効にする場合はプラグインの `processedContentCache` 契約に含めてください。含めない場合、古い HTML を返さず、そのプラグインのキャッシュをバイパスします。コンポーネントの描画を変えたときは契約の `version` を更新してください。
 
 ## アセット
 

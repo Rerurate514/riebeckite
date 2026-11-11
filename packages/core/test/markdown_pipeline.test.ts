@@ -90,6 +90,30 @@ test("renders registered plugin components from Markdown fences", async () => {
   assert.match(html, /<strong>Safe<\/strong>/);
 });
 
+test("escapes component props without breaking the attribute boundary", async () => {
+  const component = definePluginComponent({
+    name: "notice",
+    render: () => "<p>Notice</p>",
+  });
+  const text = '"><img src=x onerror=alert(1)>';
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [definePlugin({ name: "notice", components: [component] })],
+  }).execute(
+    `\`\`\`riebeckite-component notice\ntext: ${JSON.stringify(text)}\n\`\`\``,
+  );
+  const serialized = html.match(
+    /data-riebeckite-component-props="([^"]*)"/,
+  )?.[1];
+  assert.ok(serialized);
+  const decoded = serialized
+    .replaceAll("&#x22;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&amp;", "&");
+  assert.equal(JSON.parse(decoded).text, text);
+});
+
 test("rejects duplicate plugin component names", () => {
   const component = definePluginComponent({ name: "notice", render: () => "" });
 

@@ -58,3 +58,23 @@ The static site is written to `dist/`.
 Plugins and themes are registered in `riebeckite.config.ts`.
 Install a package, import its factory, and add it to the `plugins`
 array, or point `theme` at a new theme factory.
+
+## Interactive Markdown components
+
+The starter enables `codeEnhance`, so the following fence renders a
+`CodeCopy` button during the build and becomes interactive in the browser:
+
+```riebeckite-component CodeCopy
+text: "RIEBECKITE_SCAFFOLD_COMPONENT_MARKER"
+label: "Copy example"
+copiedLabel: "Copied example"
+```
+
+Each button keeps its own state. The second button copies text that looks
+like markup, which is treated as data and never inserted as HTML:
+
+```riebeckite-component CodeCopy
+text: "<script>RIEBECKITE_SCAFFOLD_COMPONENT_MARKER</script>"
+label: "Copy script text"
+copiedLabel: "Copied script text"
+```

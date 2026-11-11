@@ -181,6 +181,7 @@ flowchart TD
 | 診断 | `addDiagnostics` |
 | 本文内の描画 | `renderers` |
 | 独立ページ | `pageTypes` |
+| Markdown UI | `components` |
 | ブラウザ | `assets`, `clientEntries` |
 | HTTP | `endpoints` |
 | SEO | `seo` |

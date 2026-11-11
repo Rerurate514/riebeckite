@@ -19,7 +19,10 @@ import {
 } from "@riebeckite/test/e2e";
 import * as fixture from "./fixture-spec.js";
 import { PACKAGES } from "./fixture-spec.js";
-import { assertSpaBrowserBehavior } from "./spa-browser.js";
+import {
+  assertScaffoldComponentBrowserBehavior,
+  assertSpaBrowserBehavior,
+} from "./spa-browser.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, "..", "..");
@@ -971,6 +974,12 @@ function assertStarterOutput(siteDir: string): void {
   if (!combined.includes("starter")) {
     fail("starter HTML is missing the generated site title");
   }
+  if (!combined.includes('data-riebeckite-component="CodeCopy"')) {
+    fail("starter guide did not render the CodeCopy Markdown component");
+  }
+  if (!combined.includes("RIEBECKITE_SCAFFOLD_COMPONENT_MARKER")) {
+    fail("starter guide is missing the component marker");
+  }
 
   for (const file of htmlFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
@@ -984,6 +993,16 @@ async function runStarterChecks(
   await assertSpaBrowserBehavior(workspace.siteDir);
   generateCreateStarterSite(workspace.tempRoot);
   const starterDir = generateStarterSite(workspace.tempRoot);
+  const starterConfigPath = path.join(starterDir, "riebeckite.config.ts");
+  const starterConfig = fs.readFileSync(starterConfigPath, "utf8");
+  const spaConfig = starterConfig.replace(
+    "  plugins: [",
+    "  spa: {},\n  plugins: [",
+  );
+  if (spaConfig === starterConfig) {
+    fail("generated starter config cannot enable SPA mode");
+  }
+  fs.writeFileSync(starterConfigPath, spaConfig);
   writeFileDependencies(starterDir, workspace.packed);
   assertNoMonorepoEscapeHatches(starterDir, {
     monorepoPackagesDirectory: "packages",
@@ -1020,6 +1039,8 @@ async function runStarterChecks(
     logger,
   });
   assertStarterOutput(starterDir);
+  logger.step("checking scaffold component hydration in a production browser");
+  await assertScaffoldComponentBrowserBehavior(starterDir);
 }
 
 const config: ExternalSiteE2EConfig = {

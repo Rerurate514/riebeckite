@@ -49,9 +49,9 @@ definePlugin({
 
 The `getResolvedPluginMetadata` utility exposes each plugin's resolved provides/requires/optional as `ResolvedPluginMetadata`, which the pipeline uses for ordering and diagnostics.
 
-## Assets and client entries
+## Assets, components, and client entries
 
-CSS is declared through `assets`; browser JavaScript through `clientEntries`. Only declare when genuinely needed.
+CSS is declared through `assets`. A self-contained Markdown UI is declared through `components`, with a `client` module when it needs browser state. Arbitrary browser initialization is declared through `clientEntries`. Only declare browser JavaScript when genuinely needed.
 
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],

@@ -120,6 +120,7 @@ test("client module lazily hydrates registered interactive components", async ()
 
   assert.match(module as string, /import\("counter-entry"\)/);
   assert.match(module as string, /hydrateRoot/);
+  assert.match(module as string, /Promise\.allSettled/);
   assert.match(module as string, /data-riebeckite-component-interactive/);
   assert.doesNotMatch(module as string, /^import .*counter-entry/m);
 });

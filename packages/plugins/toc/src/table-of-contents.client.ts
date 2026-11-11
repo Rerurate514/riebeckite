@@ -29,7 +29,9 @@ export function initTableOfContents(context: ClientContext = {}) {
   );
   const headings = Array.from(linksByHeadingId.keys())
     .map((id) => headingsById.get(id))
-    .filter((heading): heading is HTMLElement => heading !== null);
+    .filter((heading): heading is HTMLElement => heading !== undefined);
+
+  if (headings.length === 0) return;
 
   const updateViewedLinks = (activeHeadingId: string) => {
     const activeHeadingIndex = headings.findIndex(
@@ -63,9 +65,14 @@ export function initTableOfContents(context: ClientContext = {}) {
       }
     }
 
-    updateViewedLinks(currentHeading?.id ?? headings[0]?.id ?? "");
+    const activeHeadingId = currentHeading.id;
+    if (activeHeadingId === currentActiveHeadingId) return;
+
+    currentActiveHeadingId = activeHeadingId;
+    updateViewedLinks(activeHeadingId);
   };
 
+  let currentActiveHeadingId = "";
   let animationFrameId = 0;
 
   const scheduleUpdate = () => {

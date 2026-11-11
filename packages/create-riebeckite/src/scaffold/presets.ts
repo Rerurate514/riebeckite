@@ -518,7 +518,6 @@ const glossary = np("@riebeckite/plugin-glossary", "glossary");
 const ux = np("@riebeckite/plugin-ux", "ux", {
   progress: { depth: 2, value: "true" },
   backToTop: { depth: 2, value: "true" },
-  tocScrollSpy: { depth: 2, value: "true" },
 });
 
 /** Developer-experience and ops plugins for the top tier. */

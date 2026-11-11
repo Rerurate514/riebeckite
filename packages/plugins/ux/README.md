@@ -3,14 +3,14 @@
 <!-- Generated from docs/docs/plugins/ux.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
 Client-side progressive enhancements for reading. The plugin leaves the built
-article HTML untouched and adds a reading progress bar, a back-to-top button,
-and table-of-contents scroll-spy at runtime.
+article HTML untouched and adds a reading progress bar and a back-to-top button
+at runtime.
 
 [日本語](./README_ja.md)
 
 ## Live example
 
-A reading-progress bar runs along the top of this page, and a back-to-top button appears once you scroll. The **Contents** rail also follows the current section.
+A reading-progress bar runs along the top of this page, and a back-to-top button appears once you scroll.
 
 ## Features
 
@@ -18,10 +18,6 @@ A reading-progress bar runs along the top of this page, and a back-to-top button
   the scroll position through the article.
 - **Back-to-top button** — a real `button` (`.rb-ux__back-to-top`) with an
   `aria-label` that appears after scrolling and smooth-scrolls to the top.
-- **TOC scroll-spy** — observes `a[href^="#"]` links inside the article table of
-  contents with `IntersectionObserver` and marks the active link with
-  `.rb-ux__toc-active`.
-
 Every feature is a no-op when the relevant DOM is absent, and `initUx()` is
 idempotent.
 
@@ -43,7 +39,6 @@ export default defineConfig({
     ux({
       progress: true,
       backToTop: true,
-      tocScrollSpy: true,
       backToTopLabel: "Back to top",
     }),
   ],
@@ -58,7 +53,6 @@ The factory is also exported as `ux`.
 | --- | --- | --- | --- |
 | `progress` | `boolean` | `true` | Show the reading progress bar |
 | `backToTop` | `boolean` | `true` | Show the back-to-top button |
-| `tocScrollSpy` | `boolean` | `true` | Highlight the active table-of-contents link |
 | `backToTopLabel` | `string` | `"Back to top"` | `aria-label` for the back-to-top button |
 
 ## How configuration reaches the client
@@ -81,7 +75,6 @@ being inserted twice per page.
 | `rb-ux__progress-bar` | Bar scaled with `scaleX` |
 | `rb-ux__back-to-top` | Back-to-top button |
 | `rb-ux__back-to-top--visible` | Added while the button is visible |
-| `rb-ux__toc-active` | Active table-of-contents link |
 
 Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 `--rb-color-*` tokens so they do not fight the existing theme.
@@ -91,7 +84,6 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 - The back-to-top control is a `button` with an `aria-label`.
 - The progress bar exposes `role="progressbar"` with `aria-valuemin`,
   `aria-valuemax`, and `aria-valuenow`.
-- The active table-of-contents link receives `aria-current="true"`.
 - Under `prefers-reduced-motion: reduce`, progress and back-to-top transitions
   are disabled and the back-to-top jump becomes an immediate scroll.
 - The progress bar and buttons are hidden when printing.
@@ -101,8 +93,6 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 - Client-only: without JavaScript nothing is added.
 - With SPA navigation enabled, the enhancements are re-initialized after the
   page root is replaced.
-- The TOC scroll-spy looks for `.rr-table-of-contents` or `[data-rb-toc]` as
-  the table-of-contents container.
 
 ## Exports
 

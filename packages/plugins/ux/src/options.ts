@@ -10,8 +10,6 @@ export type UxOptions = {
   progress?: boolean;
   /** Show a back-to-top button after scrolling. Defaults to `true`. */
   backToTop?: boolean;
-  /** Highlight the active entry in the article table of contents. Defaults to `true`. */
-  tocScrollSpy?: boolean;
   /** Accessible label for the back-to-top button. */
   backToTopLabel?: string;
 };
@@ -20,7 +18,6 @@ export type UxOptions = {
 export type UxResolvedConfig = {
   progress: boolean;
   backToTop: boolean;
-  tocScrollSpy: boolean;
   backToTopLabel: string;
 };
 
@@ -34,7 +31,6 @@ export const UX_CONFIG_ATTRIBUTE = "data-rb-ux-config";
 export const DEFAULT_UX_CONFIG: UxResolvedConfig = {
   progress: true,
   backToTop: true,
-  tocScrollSpy: true,
   backToTopLabel: "Back to top",
 };
 
@@ -43,7 +39,6 @@ export function resolveUxConfig(options: UxOptions = {}): UxResolvedConfig {
   return {
     progress: options.progress ?? DEFAULT_UX_CONFIG.progress,
     backToTop: options.backToTop ?? DEFAULT_UX_CONFIG.backToTop,
-    tocScrollSpy: options.tocScrollSpy ?? DEFAULT_UX_CONFIG.tocScrollSpy,
     backToTopLabel: normalizeLabel(
       options.backToTopLabel,
       DEFAULT_UX_CONFIG.backToTopLabel,

@@ -4,20 +4,18 @@ title: UX
 ---
 # UX
 
-記事の読みやすさを高めるクライアント側のプログレッシブ・エンハンスメントをまとめたプラグインです。ビルド後の記事 HTML はそのままに、読み進捗バー・トップへ戻るボタン・目次のスクロール連動ハイライトを追加します。
+記事の読みやすさを高めるクライアント側のプログレッシブ・エンハンスメントをまとめたプラグインです。ビルド後の記事 HTML はそのままに、読み進捗バーとトップへ戻るボタンを追加します。
 
 [English](./ux.md)
 
 ## 実行例
 
-このページの上部には読書プログレスバーが表示され、スクロールするとトップへ戻るボタンが現れます。**Contents** の目次も現在のセクションに追従します。
+このページの上部には読書プログレスバーが表示され、スクロールするとトップへ戻るボタンが現れます。
 
 ## できること
 
 - **読み進捗バー**: 画面上部に固定した細いバー（`.rb-ux__progress`）が記事のスクロール量に追従します。
 - **トップへ戻るボタン**: 一定量スクロールすると表示される `button` 要素（`.rb-ux__back-to-top`）。`aria-label` を持ち、スムーズスクロールで先頭へ戻ります。
-- **目次のスクロール連動**: 記事の目次コンテナ内の `a[href^="#"]` を `IntersectionObserver` で監視し、現在位置の見出しリンクに `.rb-ux__toc-active` を付けます。
-
 いずれも対応する DOM が無いページでは何もしません。`initUx()` は何度呼んでも二重に初期化しません。
 
 ## インストール
@@ -38,7 +36,6 @@ export default defineConfig({
     ux({
       progress: true,
       backToTop: true,
-      tocScrollSpy: true,
       backToTopLabel: "トップへ戻る",
     }),
   ],
@@ -53,7 +50,6 @@ export default defineConfig({
 | --- | --- | --- | --- |
 | `progress` | `boolean` | `true` | 読み進捗バーを表示する |
 | `backToTop` | `boolean` | `true` | トップへ戻るボタンを表示する |
-| `tocScrollSpy` | `boolean` | `true` | 目次のスクロール連動ハイライトを有効にする |
 | `backToTopLabel` | `string` | `"Back to top"` | トップへ戻るボタンの `aria-label` |
 
 ## 設定がクライアントへ渡る仕組み
@@ -70,7 +66,6 @@ export default defineConfig({
 | `rb-ux__progress-bar` | 進捗に応じて `scaleX` されるバー |
 | `rb-ux__back-to-top` | トップへ戻るボタン |
 | `rb-ux__back-to-top--visible` | 表示状態のとき付与 |
-| `rb-ux__toc-active` | 現在位置の目次リンク |
 
 スタイルは `@riebeckite/plugin-ux/style.css` として配布し、テーマの `--rb-color-*` トークンを参照するため既存テーマと競合しません。
 
@@ -78,7 +73,6 @@ export default defineConfig({
 
 - トップへ戻るボタンは `button` 要素で、`aria-label` を持ちます。
 - 進捗バーは `role="progressbar"` と `aria-valuemin` / `aria-valuemax` / `aria-valuenow` を持ちます。
-- 目次の現在位置には `aria-current="true"` を付けます。
 - `prefers-reduced-motion: reduce` では進捗バーとトップへ戻るボタンのアニメーションを無効化し、トップへ戻る動作も即時スクロールへ切り替えます。
 - 印刷時は進捗バーとボタンを非表示にします。
 
@@ -86,7 +80,6 @@ export default defineConfig({
 
 - クライアント専用です。JavaScript が無効な環境では何も追加されません。
 - SPA ナビゲーションを有効にした場合は、ページルートの置換後に機能を再初期化します。
-- 目次のスクロール連動は `.rr-table-of-contents` または `[data-rb-toc]` を目次コンテナとして探します。
 
 ## 主なエクスポート
 

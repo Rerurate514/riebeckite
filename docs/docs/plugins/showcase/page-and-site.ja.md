@@ -12,7 +12,7 @@
 | [`article-metadata`](../article-metadata.ja.md) | 記事ヘッダーの公開日・読了時間・タグ |
 | [`icons`](../icons.ja.md) | Obsidian Iconize / Iconic のアイコンをナビ、検索、タグ、プロパティに表示（opt-in） |
 | [`navigation`](../navigation.ja.md) | 設定または Vault から組み立てるサイトナビ |
-| [`ux`](../ux.ja.md) | 読書プログレス、戻るボタン、目次の scroll-spy |
+| [`ux`](../ux.ja.md) | 読書プログレスと戻るボタン |
 | [`text-fragment`](../text-fragment.ja.md) | 選択テキストのリンク・引用コピー |
 | [`meta-bind`](../meta-bind.ja.md) | ページローカルの状態を使うインライン入力とビュー |
 | [`breadcrumbs`](../breadcrumbs.ja.md) | ページ階層のパンくず |

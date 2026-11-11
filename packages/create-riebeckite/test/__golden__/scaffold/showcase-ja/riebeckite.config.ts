@@ -133,7 +133,7 @@ export default defineConfig({
     localGraph(),
     hoverPreview({ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }),
     gardenExplorer(),
-    ux({ progress: true, backToTop: true, tocScrollSpy: true }),
+    ux({ progress: true, backToTop: true }),
     dailyNotes({ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }),
     rename({ enabled: true, status: 308, onUnexpectedRemoval: "warning" }),
     textFragment(),

@@ -14,6 +14,8 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
 ### Added
 
 - Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
@@ -26,6 +28,12 @@ The Unreleased section lists changes that are merged but not yet published to np
 - Add `exclude` to taxonomy, folder pages, and garden explorer to omit slug paths and their descendants from their derived discovery data.
   Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md
+
+### Changed
+
+- **Breaking:** Remove the duplicate UX TOC scroll spy so `@riebeckite/plugin-toc` is the sole owner of TOC active state.
+  Packages: `@riebeckite/plugin-ux`
+  Migration: Remove `tocScrollSpy` from `ux()`. Use `toc()` and `TableOfContents` for TOC scroll tracking.
 
 ### Fixed
 

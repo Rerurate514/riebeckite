@@ -168,6 +168,27 @@ test("SPA navigation unmounts and remounts the official runtime", async () => {
       ),
       0,
     );
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector("[data-flashcards]")
+          ?.getAttribute("data-flashcards") === "ready",
+    );
+    assert.deepEqual(
+      await page.evaluate(() => {
+        const deck = document.querySelector("[data-flashcards]");
+        return {
+          decks: document.querySelectorAll("[data-flashcards]").length,
+          decksWithControls: document.querySelectorAll(
+            "[data-flashcards] .rb-flashcards__deck",
+          ).length,
+          fallbackHidden: deck?.querySelector<HTMLElement>(
+            "[data-flashcards-fallback]",
+          )?.hidden,
+        };
+      }),
+      { decks: 1, decksWithControls: 1, fallbackHidden: true },
+    );
 
     await page.goBack();
     await page.waitForFunction(
@@ -253,6 +274,117 @@ test("the excalidraw figure renders to SVG in the browser", async () => {
     } finally {
       await page.close();
     }
+  }
+});
+
+test("the flashcards deck mounts through Hono JSX and responds to controls", async () => {
+  const { page, errors } = await open(
+    "/docs/plugins/showcase/knowledge-and-data",
+  );
+  try {
+    await page.waitForFunction(
+      () => document.querySelector("[data-flashcards-action='next']") !== null,
+    );
+    const initial = await page.evaluate(() => {
+      const deck = document.querySelector("[data-flashcards]");
+      const fallback = deck?.querySelector("[data-flashcards-fallback]");
+      const question = deck?.querySelector(".rb-flashcards__question");
+      const answer = deck?.querySelector(".rb-flashcards__answer");
+      const reveal = deck?.querySelector("[data-flashcards-action='reveal']");
+      return {
+        count: document.querySelectorAll("[data-flashcards]").length,
+        ready: deck?.getAttribute("data-flashcards"),
+        fallbackHidden: fallback?.hidden,
+        question: question?.textContent,
+        answerHidden: answer?.hidden,
+        pressed: reveal?.getAttribute("aria-pressed"),
+        counter: deck?.querySelector(".rb-flashcards__counter")?.textContent,
+      };
+    });
+    assert.equal(initial.count, 1);
+    assert.equal(initial.ready, "ready");
+    assert.equal(initial.fallbackHidden, true);
+    assert.match(initial.question ?? "", /Riebeckite/);
+    assert.equal(initial.answerHidden, true);
+    assert.equal(initial.pressed, "false");
+    assert.match(initial.counter ?? "", /^1 \/ \d+$/);
+
+    await page.evaluate(() => {
+      document
+        .querySelector("[data-flashcards]")
+        ?.querySelector("[data-flashcards-action='reveal']")
+        ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector("[data-flashcards] [data-flashcards-action='reveal']")
+          ?.getAttribute("aria-pressed") === "true",
+    );
+    const revealed = await page.evaluate(() => {
+      const deck = document.querySelector("[data-flashcards]");
+      const answer = deck?.querySelector(".rb-flashcards__answer");
+      const reveal = deck?.querySelector("[data-flashcards-action='reveal']");
+      return {
+        answerHidden: answer?.hidden,
+        answerText: answer?.textContent,
+        pressed: reveal?.getAttribute("aria-pressed"),
+        label: reveal?.textContent,
+      };
+    });
+    assert.equal(revealed.answerHidden, false);
+    assert.match(revealed.answerText ?? "", /Markdown/);
+    assert.equal(revealed.pressed, "true");
+    assert.equal(revealed.label, "Hide answer");
+
+    await page.evaluate(() => {
+      document
+        .querySelector("[data-flashcards]")
+        ?.querySelector("[data-flashcards-action='next']")
+        ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector("[data-flashcards] .rb-flashcards__counter")
+          ?.textContent?.startsWith("2 /") === true,
+    );
+    const moved = await page.evaluate(() => {
+      const deck = document.querySelector("[data-flashcards]");
+      const answer = deck?.querySelector(".rb-flashcards__answer");
+      return {
+        question: deck?.querySelector(".rb-flashcards__question")?.textContent,
+        answerHidden: answer?.hidden,
+        counter: deck?.querySelector(".rb-flashcards__counter")?.textContent,
+      };
+    });
+    assert.doesNotMatch(moved.question ?? "", /Riebeckite/);
+    assert.equal(moved.answerHidden, true);
+    assert.match(moved.counter ?? "", /^2 \/ \d+$/);
+
+    await page.evaluate(() => {
+      document.querySelector(".rb-flashcards__deck")?.focus();
+    });
+    await page.keyboard.press("ArrowLeft");
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector("[data-flashcards] .rb-flashcards__counter")
+          ?.textContent?.startsWith("1 /") === true,
+    );
+    const keyboard = await page.evaluate(() => ({
+      question: document
+        .querySelector("[data-flashcards]")
+        ?.querySelector(".rb-flashcards__question")?.textContent,
+      counter: document
+        .querySelector("[data-flashcards]")
+        ?.querySelector(".rb-flashcards__counter")?.textContent,
+    }));
+    assert.match(keyboard.question ?? "", /Riebeckite/);
+    assert.match(keyboard.counter ?? "", /^1 \/ \d+$/);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
   }
 });
 

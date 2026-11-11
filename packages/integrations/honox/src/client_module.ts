@@ -218,7 +218,7 @@ ${
   interactiveComponents.length === 0
     ? ""
     : `function mountPluginComponents(root) {
-  mountPluginClientInitializer("page", "plugin-components", root, undefined, async (context) => {
+  mountPluginClientInitializer("page", "plugin-components", root, undefined, ${hasRuntimes ? "[], " : ""}async (context) => {
     const roots = [...context.root.querySelectorAll("[data-riebeckite-component-interactive]")];
     const results = await Promise.allSettled(roots.map(async (element) => {
       const name = element.getAttribute("data-riebeckite-component");

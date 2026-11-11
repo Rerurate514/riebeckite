@@ -70,6 +70,7 @@ export function flashcards(options: FlashcardsOptions = {}) {
         undefined,
         undefined,
         "root",
+        "[data-flashcards]",
       ),
     ],
   });

@@ -1,0 +1,112 @@
+﻿# Declarative UI Migration Ledger
+
+- Started: 2026-11-12
+- Branch: `feat/declarative-ui-migration`
+- Base commit: `5c7d41fc` (merge of `feat/mdx-plugin`; includes `810acafd`)
+- Worktree: `C:/Users/rerur/.wk/program/riebeckite-declarative-ui`
+- Owner: orchestration agent
+- Scope: `packages/plugins/` (85 plugins), then `packages/ui`, `packages/runtime`, `packages/integrations/honox`, `packages/spa`, `packages/diagram`, Themes, and the official scaffold.
+
+This ledger is the source of truth for audit status, decisions, verification, and the next action. Update it after every audit, implementation, and verification step.
+
+## Status vocabulary
+
+`NOT_AUDITED`, `AUDITED`, `MIGRATION_REQUIRED`, `IN_PROGRESS`, `IMPLEMENTED`, `VERIFIED`, `KEEP_IMPERATIVE`, `NOT_APPLICABLE`, `BLOCKED`, `UNVERIFIED`.
+
+## Classification vocabulary
+
+- **A —Full declarative migration**: JSX and component state can own the UI naturally.
+- **B —Hybrid migration**: the UI can move to JSX, but browser APIs (positioning, pointer capture, size measurement, focus, fetch) stay imperative.
+- **C —Keep imperative**: JSX would add complexity, cost, or runtime weight, or the operation is inherently imperative.
+- **D —Not applicable**: build-time AST/data/server work, or already-declarative SSR with no client DOM ownership.
+
+## Audit method
+
+1. Inventory every plugin's plugin contract (`renderers`, `pageTypes`, `components`, `clientEntries`, `extendMarkdownPipeline`, `extendHtmlPipeline`).
+2. Count DOM API use in non-test, non-dist sources (`querySelector`, `createElement`, `replaceChildren`, `innerHTML`, `addEventListener`, `MutationObserver`, `classList`, `setAttribute`, `textContent`, `dataset`, canvas/SVG).
+3. Read each non-trivial client module and decide who owns rendering and state.
+4. Measure the baseline, migrate, then re-audit.
+
+## Classification summary
+
+### A —Full declarative migration
+
+| Plugin | Status | Owner | Reason |
+| --- | --- | --- | --- |
+| `flashcards` | VERIFIED | primary | The deck UI was created entirely in the client (`createDeckUi`, 7 `createElement`) with a small state machine (`position`, `revealed`, `order`). `FlashcardsDeck` now owns that state with Hono JSX `useState`; the client only mounts it and keeps payload parsing/fallback. |
+
+### B —Hybrid migration
+
+| Plugin | Status | Owner | Declarative part | Imperative part |
+| --- | --- | --- | --- | --- |
+| `search` | MIGRATION_REQUIRED | primary | Result list rendering | Dialog controller, keyboard navigation, focus, fetch, `AbortSignal` |
+| `lightbox` | MIGRATION_REQUIRED | primary | Dialog markup and image/caption/status state | `<dialog>` controller, focus trap, image load events |
+| `text-fragment` | MIGRATION_REQUIRED | primary | Popover markup and visible/status state | Selection reading, range geometry, copy fallback |
+| `code-enhance` | IMPLEMENTED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
+| `image-compare` | KEEP_IMPERATIVE | primary | —| Pointer capture, range input, CSS custom property; markup is resolved after the manifest, so a Plugin Component cannot receive resolved asset URLs without a new API |
+| `calculator` | KEEP_IMPERATIVE | primary | —| The isolated runtime already owns computation; UI is static SSR, so JSX state would add nothing |
+| `toc` | KEEP_IMPERATIVE | primary | SSR `TableOfContents` JSX | Scroll spy and active-heading mutation |
+| `color-mode` | KEEP_IMPERATIVE | primary | SSR toggle components | Attribute/localStorage/`matchMedia` synchronization |
+| `navigation` | KEEP_IMPERATIVE | primary | SSR `SiteNav`/`SidebarNavigation` JSX | Responsive drawer and focus behavior |
+| `docs` | KEEP_IMPERATIVE | primary | SSR `DocsSidebar` JSX | Scroll/active-section enhancement |
+| `source-files` | KEEP_IMPERATIVE | primary | SSR page + renderer | File-tree interaction |
+| `share` | KEEP_IMPERATIVE | primary | SSR `ShareControls` JSX | `navigator.share`/clipboard/focus |
+| `analytics` | KEEP_IMPERATIVE | primary | —| Page-view bookkeeping only; no UI to render |
+| `diff` | KEEP_IMPERATIVE | primary | Diff viewer is already Hono JSX | Fetching and history selection |
+| `garden-explorer` | KEEP_IMPERATIVE | primary | Page and client already hydrate Hono JSX | Search/filter state over hydrated page |
+| `local-graph` | KEEP_IMPERATIVE | primary | Client already uses `hydrateRoot` with Hono JSX | SVG layout/measurement |
+
+### C —Keep imperative
+
+| Plugins | Reason |
+| --- | --- |
+| `code-tabs` | Tabs are produced by the Markdown/HAST pipeline and are already accessible through `@riebeckite/ui/tabs`; JSX would duplicate SSR markup and risk hydration drift without simplifying state. |
+| `hover-preview` | The preview body is two text nodes; the expensive parts are fetch, hover/focus scheduling, and viewport positioning. Adding a JSX runtime to every page would be a net cost. |
+| `autocardlink` | Cards are server-rendered by the remark plugin; the client only handles image fallback and a copy label. |
+| `ux` | Reading progress and back-to-top update a CSS variable/class per animation frame; direct mutation is the efficient form and the elements are trivial. |
+| `canvas` | Canvas editor owns drawing, selection, and pointer state. |
+| `d2`, `graphviz`, `mermaid`, `wavedrom`, `vega-lite`, `markmap`, `chartjs` | External renderers own SVG/Canvas/DOM output and lifecycle. |
+| `map` | MapLibre owns the map canvas, interaction, and DOM. |
+| `marp` | Marp owns slide rendering and navigation state in a page type. |
+| `meta-bind` | Inputs and bindings are enhanced in place; the DOM contract is the feature. |
+| `excalibrain` | SVG graph layout and interaction. |
+
+### D —Not applicable (no client DOM ownership)
+
+`alias`, `archive`, `article-metadata`, `attachment`, `backlinks`, `bases`, `breadcrumbs`, `changelog`, `citations`, `code-annotations`, `daily-notes`, `dataview`, `deploy`, `diagnostics`, `discord-embed`, `excalidraw`, `folder-pages`, `frontmatter-transformer`, `gallery`, `glossary`, `hard-breaks`, `highlight`, `icons`, `image-optimizer`, `kanban`, `l10n`, `media`, `mermaid-pele`, `mdx`, `obsidian-markdown`, `og-image`, `pdf`, `permalink`, `plantuml`, `properties`, `qr-code`, `quality`, `query`, `recent-posts`, `related-posts`, `rename`, `responsive-image`, `rich-embed`, `seo`, `series`, `shortcodes`, `sidenotes`, `svg-optimizer`, `taxonomy`, `timeline`, `vault-heatmap`, `webmention`.
+
+## Migration queue
+
+| Order | Plugin | Class | Work | Status | Tests |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `flashcards` | A | Move deck rendering to a Hono JSX component with `useState`; keep payload parsing and fallback | VERIFIED | `pnpm --filter @riebeckite/plugin-flashcards test` (2/2); `tests/interactive-runtime/official.test.ts` flashcards + SPA cases pass |
+| 2 | `search` | B | Render results with a JSX component; keep dialog/keyboard/fetch imperative | MIGRATION_REQUIRED | search browser tests |
+| 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | MIGRATION_REQUIRED | lightbox tests |
+| 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | MIGRATION_REQUIRED | client tests |
+| 5 | Re-audit | —| Re-scan all plugins and dependent packages | PENDING | static audit |
+
+## Baseline
+
+| Item | Before | After |
+| --- | --- | --- |
+| `flashcards` package client (`dist/client.js`, unminified) | 6,126 B | 6,440 B (+314 B) |
+| Website flashcards client chunk | Loaded on every page (`client-Dbl1HkEF.js`, 125,439 B) | Lazy chunk (`client-DySzhhlf.js`, 2,959 B) plus the shared JSX client runtime already used by Plugin Components |
+| `flashcards` DOM construction in source | 7 `createElement` calls building the deck | 0; JSX owns markup and state |
+| Interactive Plugin Component hydration | Broken when any runtime entry exists (missing `runtimeIds` argument) | Fixed and covered by a generated-client test |
+
+`flashcards` markup is now server-renderable through `FlashcardsDeck`, but the existing `flashcards` fence still renders a payload and hydrates on the client, so no content migration is required.
+
+## Findings and risks
+
+- No prior declarative-UI audit exists; only `code-enhance` uses `definePluginComponent`.
+- Plugin Components are registered from `riebeckite-component` fences with YAML props. Existing Markdown syntaxes (for example the `flashcards` fence) cannot use that registry without a breaking content change, so client-side JSX rendering is the compatible path.
+- `clientEntries` without `presenceSelector` import their module on every page. New work should gate optional widgets with a selector.
+- Hono JSX renders a boolean `true` as an empty attribute and omits `false`; ARIA state attributes such as `aria-pressed` must be explicit strings.
+- The generated client called `mountPluginClientInitializer` for Plugin Components without the `runtimeIds` argument. Any site with a runtime entry therefore failed to hydrate every interactive component. Fixed in `packages/integrations/honox/src/client_module.ts` and covered by a regression test.
+- `the excalidraw figure renders to SVG in the browser` fails because `docs/assets/HW.md` is private and no `/assets/HW` page is generated. The same failure reproduces on the base checkout and is unrelated to this migration.
+- Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
+
+## Next action
+
+Migrate `search`: render result items with a Hono JSX component while keeping fetch, dialog control, keyboard navigation, and focus management imperative. Add a presence selector so the search client does not load on every page.
+

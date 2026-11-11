@@ -592,8 +592,7 @@ function isExcludedEntry(
   entry: ContentManifestEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug =
-    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  const slug = entry.slug;
   return excludedSlugs.some(
     (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
   );

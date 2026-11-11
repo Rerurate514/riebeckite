@@ -1,4 +1,4 @@
-import { calculateReadingTime } from "@riebeckite/core";
+import { calculateReadingTime, resolveEntryDate } from "@riebeckite/core";
 import {
   buildTaxonomyTagHref,
   resolveTaxonomyOptionsFromConfig,
@@ -25,9 +25,7 @@ export default function ArticleMetadata({
 
   const tags = normalizeTags(article.post.frontmatter.tags);
   const createdDate = formatDate(
-    article.post.frontmatter.published ??
-      article.post.frontmatter.date ??
-      article.post.frontmatter.created,
+    resolveEntryDate(article.post.frontmatter),
     locale,
   );
   const updatedDate = formatDate(article.post.frontmatter.updated, locale);

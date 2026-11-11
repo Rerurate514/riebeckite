@@ -49,6 +49,7 @@ test("timeline automatically selects dated notes and honors explicit markers", (
       entry("automatic", { date: "2024-01-01" }),
       entry("excluded", { timeline: false, created: "2023-01-01" }),
       entry("invalid", { published: "not-a-date" }),
+      entry("offset", { date: "2025-03-01T08:00:00+09:00" }),
     ],
     resolveTimelineOptions(),
   );
@@ -57,6 +58,7 @@ test("timeline automatically selects dated notes and honors explicit markers", (
     [
       { date: "2024-01-01", title: "automatic" },
       { date: "2025-02-01", title: "later" },
+      { date: "2025-03-01", title: "offset" },
     ],
   );
 });

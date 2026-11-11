@@ -54,13 +54,14 @@ export function normalizeTags(tags: unknown): string[] {
 }
 
 function getSortableTime(entry: ContentManifestEntry): number {
-  const value =
-    entry.frontmatter.updated ??
-    entry.frontmatter.published ??
-    entry.frontmatter.date ??
-    entry.frontmatter.created;
-  if (value instanceof Date) return value.getTime();
-  if (typeof value !== "string") return 0;
-  const time = new Date(value).getTime();
-  return Number.isNaN(time) ? 0 : time;
+  for (const value of [
+    entry.frontmatter.updated,
+    entry.frontmatter.published,
+    entry.frontmatter.date,
+    entry.frontmatter.created,
+  ]) {
+    const date = toIsoDate(value);
+    if (date !== null) return Date.parse(date);
+  }
+  return 0;
 }

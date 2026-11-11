@@ -202,6 +202,22 @@ test("uses normalized manifest tags and dates on folder page links", async () =>
   assert.equal((body.match(/rr-folder-page__date/g) ?? []).length, 1);
 });
 
+test("keeps the authored calendar date on folder page links", async () => {
+  const content = manager(
+    {
+      "folder/page.md":
+        "---\ntitle: Page\npublish: true\npublished: true\ndate: 2026-11-11T08:00:00+09:00\n---\n",
+    },
+    [folderPages({ showDate: true })],
+  );
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
+});
+
 test("does not generate a folder page from conflicting custom public locations", async () => {
   const content = manager(
     {
@@ -315,6 +331,28 @@ test("excludes configured slug paths and descendants from folder pages", async (
   );
 
   assert.deepEqual(await content.getPagePaths(), ["/guide/"]);
+});
+
+test("excludes localized folder pages by logical slug rather than translation id", async () => {
+  const files = {
+    "docs/guide/page.md":
+      "---\ntitle: 日本語ページ\npublish: true\n---\n# 日本語\n",
+    "docs/guide/page.en.md":
+      "---\ntitle: English page\npublish: true\n---\n# English\n",
+  };
+  const plugins = (exclude: string[]) => [
+    l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    folderPages({ exclude }),
+  ];
+
+  assert.deepEqual(
+    await manager(files, plugins(["docs/guide/page.en"])).getPagePaths(),
+    ["/docs/guide/"],
+  );
+  assert.deepEqual(
+    await manager(files, plugins(["docs/guide/page"])).getPagePaths(),
+    ["/en/docs/guide/"],
+  );
 });
 
 test("validates folder page exclusions", () => {

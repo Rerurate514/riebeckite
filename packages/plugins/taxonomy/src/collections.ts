@@ -264,12 +264,16 @@ function getEntrySummary(entry: ContentManifestEntry): string {
 }
 
 function getEntryUpdatedTime(entry: ContentManifestEntry): string | null {
-  return toIsoDate(
-    entry.frontmatter.updated ??
-      entry.frontmatter.published ??
-      entry.frontmatter.date ??
-      entry.frontmatter.created,
-  );
+  for (const value of [
+    entry.frontmatter.updated,
+    entry.frontmatter.published,
+    entry.frontmatter.date,
+    entry.frontmatter.created,
+  ]) {
+    const date = toIsoDate(value);
+    if (date !== null) return date;
+  }
+  return null;
 }
 
 function findRegistryIcon(

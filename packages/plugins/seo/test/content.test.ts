@@ -82,11 +82,18 @@ test("filterFeedEntries drops noindex entries and sorts discoverable input by re
     }),
     entry("d", { frontmatter: { publish: true, noindex: true } }),
     entry("e", { frontmatter: { publish: true, published: "2024-01-04" } }),
+    entry("f", {
+      frontmatter: {
+        publish: true,
+        published: true as unknown as string,
+        date: "2024-01-06",
+      },
+    }),
   ];
 
   assert.deepEqual(
     filterFeedEntries(config, entries).map((item) => item.slug),
-    ["b", "e", "a"],
+    ["f", "b", "e", "a"],
   );
 });
 
@@ -125,7 +132,7 @@ test("getEntryPublishedTime returns null for missing or invalid dates", () => {
         frontmatter: { published: "nope", date: "2024-01-01" },
       }),
     ),
-    null,
+    "2024-01-01T00:00:00.000Z",
   );
 });
 
@@ -144,7 +151,18 @@ test("getEntryUpdatedTime falls back to the published time", () => {
     ),
     "2024-01-01T00:00:00.000Z",
   );
-  assert.equal(getEntryUpdatedTime(entry("c")), null);
+  assert.equal(
+    getEntryUpdatedTime(
+      entry("c", {
+        frontmatter: {
+          published: true as unknown as string,
+          date: "2024-01-02",
+        },
+      }),
+    ),
+    "2024-01-02T00:00:00.000Z",
+  );
+  assert.equal(getEntryUpdatedTime(entry("d")), null);
 });
 
 test("getHtmlLanguage converts locale underscores to hyphens", () => {

@@ -2641,6 +2641,11 @@
       "type": true
     },
     {
+      "name": "resolveEntryCalendarDate",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolveEntryDate",
       "value": true,
       "type": false
@@ -2879,6 +2884,11 @@
       "name": "ThemeStyle",
       "value": false,
       "type": true
+    },
+    {
+      "name": "toCalendarDate",
+      "value": true,
+      "type": false
     },
     {
       "name": "toIsoDate",

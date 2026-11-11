@@ -7,7 +7,7 @@ import type {
 } from "@riebeckite/core";
 import {
   escapeRegExp,
-  resolveEntryDate,
+  resolveEntryCalendarDate,
   resolveGeneratedFolderLocation,
 } from "@riebeckite/core";
 import type { FolderPage, FolderPageLink, FolderPagesModel } from "./types.js";
@@ -283,8 +283,7 @@ function isExcludedEntry(
   entry: ContentManifestEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug =
-    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  const slug = entry.slug;
   return excludedSlugs.some(
     (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
   );
@@ -318,7 +317,7 @@ function toLink(
   fallbackIcon?: ContentIcon,
 ): FolderPageLink {
   const icon = entry.icon ?? fallbackIcon;
-  const date = resolveEntryDate(entry.frontmatter)?.slice(0, 10);
+  const date = resolveEntryCalendarDate(entry.frontmatter);
   const tags = entry.tags;
   return {
     title: entry.title,

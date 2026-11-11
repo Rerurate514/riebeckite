@@ -11,6 +11,7 @@ import {
   resolveConfig,
   selectLocalizedEntries,
 } from "@riebeckite/core";
+import { l10n } from "@riebeckite/plugin-l10n";
 import {
   buildTaxonomyIndex,
   resolveTaxonomyOptions,
@@ -155,6 +156,41 @@ test("excludes configured slug paths and descendants from taxonomy", async () =>
   assert.ok(paths.includes("folders/guide/feed.xml"));
   assert.equal(
     paths.some((path) => path.includes("Config")),
+    false,
+  );
+});
+
+test("excludes localized taxonomy entries by logical slug rather than translation id", async () => {
+  const files = {
+    "docs/guide/page.md":
+      "---\ntitle: 日本語ページ\npublish: true\ntags: [guide]\n---\n",
+    "docs/guide/page.en.md":
+      "---\ntitle: English page\npublish: true\ntags: [guide]\n---\n",
+  };
+  const localizedConfig = (exclude: string[]) =>
+    resolveConfig({
+      site: { title: "Test", baseUrl: "https://example.com" },
+      plugins: [
+        l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+        taxonomy({ exclude }),
+      ],
+    });
+  const paths = async (exclude: string[]) =>
+    (
+      await manager(localizedConfig(exclude), files).getManifest()
+    ).generatedOutputs.map((output) => output.path);
+
+  const withoutEnglish = await paths(["docs/guide/page.en"]);
+  assert.ok(withoutEnglish.includes("tags/guide/feed.xml"));
+  assert.equal(
+    withoutEnglish.some((path) => path.startsWith("en/")),
+    false,
+  );
+
+  const withoutJapanese = await paths(["docs/guide/page"]);
+  assert.ok(withoutJapanese.includes("en/tags/guide/feed.xml"));
+  assert.equal(
+    withoutJapanese.some((path) => path === "tags/guide/feed.xml"),
     false,
   );
 });

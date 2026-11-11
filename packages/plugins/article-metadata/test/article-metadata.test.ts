@@ -47,6 +47,19 @@ test("ArticleMetadata renders dates, reading time, and plain tags without a site
   assert.doesNotMatch(html, /href=/);
 });
 
+test("ArticleMetadata falls back to date when published is not a date", () => {
+  const html = render(
+    post({
+      frontmatter: {
+        published: true as unknown as string,
+        date: "2026-04-03",
+      },
+    }),
+  );
+
+  assert.match(html, /2026\/04\/03/);
+});
+
 test("ArticleMetadata renders nothing outside the article context", () => {
   assert.equal(renderToString(createElement(ArticleMetadata, {})), "");
 });

@@ -51,6 +51,7 @@
 
   .rb-page-body[data-rb-page-layout="article"] {
     width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+    margin-inline: auto;
   }
 
   .rb-article-content :is(img, picture > img, figure img) {

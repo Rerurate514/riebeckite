@@ -142,7 +142,9 @@ export type {
 } from "./src/content/content_collection.js";
 export { buildContentCollections } from "./src/content/content_collection.js";
 export {
+  resolveEntryCalendarDate,
   resolveEntryDate,
+  toCalendarDate,
   toIsoDate,
 } from "./src/content/content_date.js";
 export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";

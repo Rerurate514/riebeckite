@@ -41,6 +41,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ### Fixed
 
+- Derived View results and content cache entries are now reused only when they survive a JSON round trip, so sparse arrays, negative zero, cyclic values, and dates inside frontmatter arrays no longer change when a cache hit is served. The Markdown sanitize fingerprint now distinguishes regular expressions in the schema, and the rename plugin ignores a corrupt persisted route lock instead of diffing against it.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-rename`
+
 - Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, include notes dated only by `published` in Recent Posts, and center article-layout page bodies again.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
 

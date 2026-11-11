@@ -23,6 +23,7 @@
     "@riebeckite/plugin-color-mode": "^0.0.46",
     "@riebeckite/plugin-seo": "^0.0.46",
     "@riebeckite/plugin-toc": "^0.0.46",
+    "@riebeckite/plugin-mdx": "^0.0.46",
     "@riebeckite/plugin-properties": "^0.0.46",
     "@riebeckite/plugin-alias": "^0.0.46",
     "@riebeckite/plugin-code-enhance": "^0.0.46",

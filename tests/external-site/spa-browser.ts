@@ -4,7 +4,7 @@ import fs from "node:fs";
 import http from "node:http";
 import type { AddressInfo } from "node:net";
 import path from "node:path";
-import puppeteer from "puppeteer";
+import puppeteer, { type Page } from "puppeteer";
 
 function contentType(file: string): string {
   if (file.endsWith(".css")) return "text/css";
@@ -63,6 +63,31 @@ async function assertNavigation(
     const page = await browser.newPage();
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    const requests: string[] = [];
+    page.on("request", (request) => {
+      const requestUrl = new URL(request.url());
+      if (requestUrl.origin === new URL(url).origin) {
+        requests.push(requestUrl.pathname);
+      }
+    });
+    await page.goto(url, { waitUntil: "networkidle0" });
+    await assertMarkdownComponent(page);
+    const componentChunk = requests.find((pathname) =>
+      /copy[-_]component[^/]*\.js$/.test(pathname),
+    );
+    assert.ok(
+      componentChunk,
+      `home page did not load the component chunk: ${requests.join(", ")}`,
+    );
+    requests.length = 0;
+    await page.setCacheEnabled(false);
+    await page.goto(`${url}/notes/example`, { waitUntil: "networkidle0" });
+    assert.equal(
+      requests.some((pathname) => /copy[-_]component[^/]*\.js$/.test(pathname)),
+      false,
+      "a page without plugin components loaded the component chunk",
+    );
+    await page.setCacheEnabled(true);
     await page.goto(url, { waitUntil: "networkidle0" });
     for (const width of [375, 768, 1440]) {
       await page.setViewport({ width, height: 900 });
@@ -134,6 +159,16 @@ async function assertNavigation(
         {},
         island,
       );
+      assert.equal(
+        await page
+          .$$eval('[data-riebeckite-component="CodeCopy"] button', (buttons) =>
+            buttons.map((button) => button.textContent),
+          )
+          .then((labels) => labels.join("|")),
+        "Copy Markdown",
+        "the Markdown component did not remount with fresh state",
+      );
+      await assertMarkdownComponent(page);
     }
     const marker = await page.evaluate(
       () =>
@@ -145,6 +180,29 @@ async function assertNavigation(
   } finally {
     await browser.close();
   }
+}
+
+async function assertMarkdownComponent(
+  page: import("puppeteer").Page,
+): Promise<void> {
+  const selector = '[data-riebeckite-component="CodeCopy"]';
+  await page.waitForSelector(selector);
+  const wrapper = await page.$eval(selector, (element) => element.outerHTML);
+  assert.match(wrapper, /data-riebeckite-component-props=/);
+  assert.doesNotMatch(wrapper, /<script/i);
+  assert.match(wrapper, /RIEBECKITE_EXTERNAL_COMPONENT_MARKER/);
+  await page.evaluate(() => {
+    document.execCommand = () => true;
+  });
+  await page.click(`${selector} button`);
+  await page.waitForFunction(
+    (componentSelector) =>
+      document
+        .querySelector(componentSelector)
+        ?.textContent?.includes("Copied Markdown"),
+    {},
+    selector,
+  );
 }
 
 async function assertMdxIsland(
@@ -160,6 +218,37 @@ async function assertMdxIsland(
     {},
     island,
   );
+
+  const component = '[data-riebeckite-component="CodeCopy"]';
+  await page.waitForSelector(component);
+  const state = await page.$$eval(component, (wrappers) =>
+    wrappers.map((wrapper) => ({
+      html: wrapper.innerHTML,
+      scripts: wrapper.querySelectorAll("script").length,
+      text: wrapper.getAttribute("data-riebeckite-component-props") ?? "",
+      label: wrapper.querySelector("button")?.textContent ?? "",
+    })),
+  );
+  assert.equal(state.length, 2);
+  assert.equal(state[0]?.label, "Copy MDX");
+  assert.equal(state[1]?.label, "Copy MDX script");
+  assert.deepEqual([state[0]?.scripts, state[1]?.scripts], [0, 0]);
+  assert.match(state[1]?.text ?? "", /RIEBECKITE_MDX_COMPONENT_MARKER/);
+  await page.evaluate(() => {
+    document.execCommand = () => true;
+  });
+  const buttons = await page.$$(`${component} button`);
+  await buttons[0]?.click();
+  await page.waitForFunction(
+    (selector) =>
+      document.querySelector(selector)?.textContent?.includes("Copied MDX"),
+    {},
+    component,
+  );
+  const labels = await page.$$eval(`${component} button`, (nodes) =>
+    nodes.map((node) => node.textContent),
+  );
+  assert.deepEqual(labels, ["Copied MDX", "Copy MDX script"]);
 }
 
 async function assertCanvasViewer(
@@ -289,6 +378,36 @@ function scaffoldComponentChunk(paths: readonly string[]): boolean {
   return paths.some((pathname) => /copy[-_]component[^/]*\.js$/.test(pathname));
 }
 
+async function assertScaffoldMdxPage(page: Page, url: string): Promise<void> {
+  await page.goto(`${url}/mdx-demo`, { waitUntil: "networkidle0" });
+  await page.waitForFunction(
+    () =>
+      document.body.textContent?.includes(
+        "This paragraph comes from a site component imported by MDX.",
+      ) === true,
+  );
+  const selector = '[data-riebeckite-component="CodeCopy"]';
+  const buttons = await page.$$(`${selector} button`);
+  assert.equal(buttons.length, 1);
+  const props = await page.$eval(selector, (wrapper) =>
+    JSON.parse(wrapper.getAttribute("data-riebeckite-component-props") ?? "{}"),
+  );
+  assert.deepEqual(props, {
+    text: "RIEBECKITE_SCAFFOLD_MDX_COMPONENT_MARKER",
+    label: "Copy MDX",
+    copiedLabel: "Copied MDX",
+  });
+  await page.evaluate(() => {
+    document.execCommand = () => true;
+  });
+  await buttons[0]?.click();
+  await page.waitForFunction(
+    (query) => document.querySelector(query)?.textContent === "Copied MDX",
+    {},
+    `${selector} button`,
+  );
+}
+
 export async function assertScaffoldComponentBrowserBehavior(
   siteDir: string,
 ): Promise<void> {
@@ -300,6 +419,12 @@ export async function assertScaffoldComponentBrowserBehavior(
   );
   assert.equal(ssrWrappers.length, 2);
   assert.match(ssrWrappers[1] ?? "", /data-riebeckite-component-props=/);
+  const mdxHtml = await (await fetch(`${server.url}/mdx-demo`)).text();
+  assert.match(mdxHtml, /RIEBECKITE_SCAFFOLD_MDX_COMPONENT_MARKER/);
+  assert.match(
+    mdxHtml,
+    /This paragraph comes from a site component imported by MDX\./,
+  );
   const browser = await puppeteer.launch({
     headless: "shell",
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -351,6 +476,7 @@ export async function assertScaffoldComponentBrowserBehavior(
         ),
         ["Copied example", "Copy script text"],
       );
+      await assertScaffoldMdxPage(directPage, server.url);
     } finally {
       await directPage.close();
     }
@@ -439,6 +565,31 @@ export async function assertScaffoldComponentBrowserBehavior(
       buttonSelector,
     );
     assert.deepEqual(await labels(), ["Copied example", "Copy script text"]);
+    await page.click('a[href="/mdx-demo"]');
+    await page.waitForFunction(
+      () =>
+        document.body.textContent?.includes(
+          "This paragraph comes from a site component imported by MDX.",
+        ) === true,
+    );
+    assert.equal((await page.$$(buttonSelector)).length, 1);
+    await page.evaluate(() => {
+      document.execCommand = () => true;
+    });
+    const mdxButton = await page.$(buttonSelector);
+    assert.equal(
+      await mdxButton?.evaluate((button) => button.textContent),
+      "Copy MDX",
+    );
+    await mdxButton?.click();
+    await page.waitForFunction(
+      (query) => document.querySelector(query)?.textContent === "Copied MDX",
+      {},
+      buttonSelector,
+    );
+    await page.goBack();
+    await page.waitForSelector(selector);
+    assert.deepEqual(await labels(), ["Copy example", "Copy script text"]);
     assert.deepEqual(errors, []);
   } finally {
     await browser.close();

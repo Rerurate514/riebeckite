@@ -60,6 +60,9 @@ export class ManifestBuilder {
       frontmatter: processed.frontmatter,
       publishing,
       html: processed.html,
+      ...(processed.plainText === undefined
+        ? {}
+        : { plainText: processed.plainText }),
       ...(processed.sourcePath === undefined
         ? {}
         : { sourcePath: processed.sourcePath }),

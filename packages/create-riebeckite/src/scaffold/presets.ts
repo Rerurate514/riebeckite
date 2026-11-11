@@ -207,6 +207,7 @@ const blogOgImage = np(
   `{ preset: "editorial" }`,
 );
 const toc = np("@riebeckite/plugin-toc", "toc");
+const mdx = np("@riebeckite/plugin-mdx", "mdx", "{ trusted: true }");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
   fields: {
@@ -617,6 +618,7 @@ export const starter: ScaffoldPreset = {
     colorMode,
     seo,
     toc,
+    mdx,
     properties,
     alias,
     codeEnhance,

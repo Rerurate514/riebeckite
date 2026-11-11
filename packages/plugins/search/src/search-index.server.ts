@@ -18,14 +18,15 @@ export function buildSearchItems(args: {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
   const items = args.manifest.discoverableEntries.map((entry) => {
     const language = getEntryLanguage(entry);
+    const plainText = entry.plainText ?? toPlainText(entry.html);
     return {
       slug: entry.slug,
       permalink: entry.permalink,
       title: resolveTitle(entry.slug, entry.frontmatter.title),
       aliases: [...(entry.aliases ?? [])],
       headings: extractHeadings(entry.html),
-      body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-      excerpt: createExcerpt(entry),
+      body: plainText.slice(0, MAX_BODY_LENGTH),
+      excerpt: createExcerpt(entry, plainText),
       tags: entry.tags,
       ...(entry.icon ? { icon: entry.icon } : {}),
       ...(language === undefined ? {} : { language }),
@@ -60,15 +61,17 @@ function extractHeadings(html: string): string[] {
   return headings;
 }
 
-function createExcerpt(entry: {
-  frontmatter: { description?: unknown };
-  html: string;
-}): string {
+function createExcerpt(
+  entry: {
+    frontmatter: { description?: unknown };
+  },
+  plainText: string,
+): string {
   const description = entry.frontmatter.description;
   const text =
     typeof description === "string" && description.trim()
       ? description.trim()
-      : toPlainText(entry.html);
+      : plainText;
 
   return text.slice(0, 180);
 }

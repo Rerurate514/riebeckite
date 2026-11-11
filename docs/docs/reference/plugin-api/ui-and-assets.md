@@ -129,6 +129,22 @@ and export the client build from the plugin package manifest as you would for a
 `clientEntries` module. The fence stays deliberately small instead of turning
 every Markdown page into MDX.
 
+MDX pages use the same registry rather than a second component implementation.
+The registered components are passed into the MDX renderer as JSX components:
+
+```mdx
+<Counter initial={3} />
+```
+
+A `components` option passed to `mdx({ components })` overrides a Plugin
+component with the same name for those pages. Props cross the hydration
+boundary, so they must be JSON-safe; pass content through an explicit string
+prop instead of JSX children. `parseProps` still validates the values, and
+only interactive components hydrate. MDX renders the component directly, so
+its `render` output is trusted plugin code and does not pass through the
+Markdown sanitizer; keep untrusted content in props and escape it in the
+component.
+
 `parseProps` is the validation boundary for values that come from content. The
 component's server output passes through the normal Markdown sanitizer, and
 props are escaped and validated before they reach an attribute. Components

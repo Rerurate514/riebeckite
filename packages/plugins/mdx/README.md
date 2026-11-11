@@ -47,7 +47,7 @@ The MDX module and its relative imports are resolved through Vite. JSX is render
 
 Static relative imports are tracked by incremental builds. Changing an imported local file rebuilds its MDX page, and adding or removing an `.mdx` file reloads the development server.
 
-Search, excerpts, and headings are derived from a static text projection of the MDX source. Components are not executed for these derived outputs, so their rendered text is not included.
+Search, excerpts, and reading time use a static text projection of the MDX source. Headings come from its HTML projection. Components are not executed for these derived outputs, so their rendered text is not included.
 
 ## Components
 
@@ -63,6 +63,14 @@ plugins: [
 ```
 
 Use local relative imports when a component belongs to one page or a group of pages.
+
+Plugin components registered through the [Plugin API components registry](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/reference/plugin-api/ui-and-assets.md#markdown-components) are also available to every MDX page. Use them as JSX with the same props as the Markdown fence:
+
+```mdx
+<CodeCopy text="npm install" label="Copy command" copiedLabel="Copied" />
+```
+
+MDX receives one shared registry, not a separate component implementation. A component passed through `mdx({ components })` with the same name overrides the Plugin component for that MDX page. Interactive Plugin components load and hydrate only when a page renders them.
 
 ## Markdown coexistence
 

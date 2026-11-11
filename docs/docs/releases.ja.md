@@ -14,6 +14,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
 ### Added
 
 - Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
@@ -29,6 +31,15 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Add a generic Content Format contract so plugins can contribute extensions, content processing, renderer modules, and tracked file dependencies, and add `@riebeckite/plugin-mdx` for trusted MDX pages whose JSX, expressions, ESM imports, and local components render through the Hono JSX runtime in development SSR and production SSG. Bare imports from content outside the site directory resolve against the site, and MDX file additions and removals reload the development server. Asset inspection, the Content Graph, and content queries read the active content formats, and MDX pages expose a static text projection to search, excerpts, and headings.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/ui`, `@riebeckite/plugin-mdx`, `create-riebeckite`
+
+- Add declarative Plugin components that render from Markdown fences and MDX JSX through one registry, with server rendering, JSON-safe props, lazy client hydration, SPA-safe lifecycle cleanup, and automatic MDX integration. Code-enhance's copy button uses the new API, and the starter scaffold includes Markdown and MDX component examples.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-code-enhance`, `create-riebeckite`
+
+### Changed
+
+- **Breaking:** Remove the duplicate UX TOC scroll spy so `@riebeckite/plugin-toc` is the sole owner of TOC active state.
+  Packages: `@riebeckite/plugin-ux`
+  Migration: Remove `tocScrollSpy` from `ux()`. Use `toc()` and `TableOfContents` for TOC scroll tracking.
 
 ### Fixed
 

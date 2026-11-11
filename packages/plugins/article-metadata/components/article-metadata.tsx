@@ -29,7 +29,9 @@ export default function ArticleMetadata({
     locale,
   );
   const updatedDate = formatDate(article.post.frontmatter.updated, locale);
-  const readingTimeMinutes = calculateReadingTime(article.post.html ?? "");
+  const readingTimeMinutes = calculateReadingTime(
+    article.post.plainText ?? article.post.html ?? "",
+  );
   const taxonomy = site ? resolveTaxonomyOptionsFromConfig(site.config) : null;
 
   if (

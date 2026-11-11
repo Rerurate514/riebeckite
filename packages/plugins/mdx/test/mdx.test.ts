@@ -134,4 +134,5 @@ test("projects MDX text for HTML consumers", async () => {
   assert.match(content.html, /# Heading/);
   assert.match(content.html, /Text/);
   assert.doesNotMatch(content.html, /Widget|1 \+ 1/);
+  assert.equal(content.plainText, "# Heading Text");
 });

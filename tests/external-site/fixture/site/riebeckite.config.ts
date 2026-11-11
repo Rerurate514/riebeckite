@@ -12,6 +12,7 @@ import { canvas } from "@riebeckite/plugin-canvas";
 import { chartjs } from "@riebeckite/plugin-chartjs";
 import { citations } from "@riebeckite/plugin-citations";
 import { codeAnnotations } from "@riebeckite/plugin-code-annotations";
+import { codeEnhance } from "@riebeckite/plugin-code-enhance";
 import { colorMode } from "@riebeckite/plugin-color-mode";
 import { d2 } from "@riebeckite/plugin-d2";
 import { dataview } from "@riebeckite/plugin-dataview";
@@ -75,7 +76,15 @@ export default defineConfig({
     mdx({ trusted: true }),
     attachment(),
     marp(),
+    richEmbed(),
     codeAnnotations(),
+    codeEnhance({
+      lineNumbers: true,
+      diffHighlight: true,
+      filename: true,
+      lineHighlight: true,
+      copyButton: true,
+    }),
     colorMode(),
     canvas(),
     alias(),
@@ -100,7 +109,6 @@ export default defineConfig({
     imageOptimizer({ widths: [640, 1280] }),
     svgOptimizer(),
     responsiveImage(),
-    richEmbed(),
     search(),
     hoverPreview(),
     shortcodes(),

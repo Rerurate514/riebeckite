@@ -264,6 +264,8 @@ export class ContentBuildCoordinator {
           (entry) => this.dependencies.readEntry(entry),
           this.dependencies.includeFileMetadata,
           previousState?.entries,
+          this.dependencies.pathResolver?.isContentPath ??
+            ((path) => path.toLowerCase().endsWith(".md")),
         ),
     );
     const changeSet = await this.dependencies.observability.tracer.span(
@@ -290,8 +292,13 @@ export class ContentBuildCoordinator {
         ContentIndexBuilder.buildFromAliases(
           currentEntries.map(({ entry }) => entry),
           currentContentAliases,
-          this.dependencies.pathResolver?.isContentPath,
-          this.dependencies.pathResolver?.toSlug,
+          this.dependencies.pathResolver?.isContentPath
+            ? (path) =>
+                this.dependencies.pathResolver?.isContentPath(path) === true
+            : undefined,
+          this.dependencies.pathResolver
+            ? (path) => this.dependencies.pathResolver?.toSlug(path)
+            : undefined,
         ),
     );
     const publishingStateExpired = isPublishingStateExpired(

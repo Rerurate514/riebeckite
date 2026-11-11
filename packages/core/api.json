@@ -1141,6 +1141,11 @@
       "type": false
     },
     {
+      "name": "definePluginComponent",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "defineTheme",
       "value": true,
       "type": false
@@ -2041,6 +2046,11 @@
       "type": true
     },
     {
+      "name": "PluginComponentClient",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginContentContext",
       "value": false,
       "type": true
@@ -2201,6 +2211,11 @@
       "type": true
     },
     {
+      "name": "PluginMarkdownComponent",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginMemo",
       "value": false,
       "type": true
@@ -2284,6 +2299,11 @@
       "name": "PostFrontmatter",
       "value": false,
       "type": true
+    },
+    {
+      "name": "preparePluginComponent",
+      "value": true,
+      "type": false
     },
     {
       "name": "PROVENANCE_VERSION",

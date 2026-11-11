@@ -3,6 +3,7 @@ import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { colorMode } from "@riebeckite/plugin-color-mode";
 import { seo } from "@riebeckite/plugin-seo";
 import { toc } from "@riebeckite/plugin-toc";
+import { mdx } from "@riebeckite/plugin-mdx";
 import { properties } from "@riebeckite/plugin-properties";
 import { alias } from "@riebeckite/plugin-alias";
 import { codeEnhance } from "@riebeckite/plugin-code-enhance";
@@ -35,6 +36,7 @@ export default defineConfig({
     colorMode(),
     seo({ sitemap: true, robots: true }),
     toc(),
+    mdx({ trusted: true }),
     properties({ include: ["created", "modified", "tags", "status"], fields: { created: { type: "date", format: "yyyy-MM-dd" }, modified: { type: "date", format: "yyyy-MM-dd" }, tags: { type: "tags", variant: "chips" }, status: { type: "badge", variants: { active: "success", draft: "warning", archived: "danger" } } } }),
     alias({ status: 308 }),
     codeEnhance({ lineNumbers: true, copyButton: true, filename: true, lineHighlight: true, diffHighlight: true }),

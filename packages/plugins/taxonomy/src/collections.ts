@@ -260,7 +260,10 @@ function getEntrySummary(entry: ContentManifestEntry): string {
   if (typeof description === "string" && description.trim() !== "") {
     return description.trim();
   }
-  return stripHtml(entry.html).replace(/\s+/g, " ").trim().slice(0, 200);
+  return (entry.plainText ?? stripHtml(entry.html))
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
 }
 
 function getEntryUpdatedTime(entry: ContentManifestEntry): string | null {

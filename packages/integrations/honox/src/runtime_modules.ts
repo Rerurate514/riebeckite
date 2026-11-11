@@ -71,14 +71,41 @@ function createContentRenderersModule(
         `{ extension: ${JSON.stringify(format.extension)}, renderer: renderer${index}, options: formats[${formats.indexOf(format)}]?.rendererOptions }`,
     )
     .join(",\n");
-  return `import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
+  return `import { preparePluginComponent } from "@riebeckite/core";
+import { jsx } from "hono/jsx/jsx-runtime";
+import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 ${imports}
 const formats = config.plugins.flatMap((plugin) => plugin.contentFormats ?? []);
 const renderers = [${entries}];
+const pluginComponents = config.plugins.flatMap((plugin) => plugin.components ?? []);
+
+function createPluginComponent(component) {
+  return async (props) => {
+    const prepared = await preparePluginComponent(
+      component,
+      props && typeof props === "object" ? props : {},
+    );
+    return jsx("div", {
+      "data-riebeckite-component": prepared.name,
+      "data-riebeckite-component-props": prepared.props,
+      ...(prepared.interactive ? { "data-riebeckite-component-interactive": "true" } : {}),
+      dangerouslySetInnerHTML: { __html: prepared.content },
+    });
+  };
+}
+
+const registeredComponents = Object.fromEntries(
+  pluginComponents.map((component) => [component.name, createPluginComponent(component)]),
+);
 
 export function renderContent(sourcePath) {
   const entry = renderers.find((renderer) => sourcePath.toLowerCase().endsWith(renderer.extension));
-  return entry ? entry.renderer(sourcePath, entry.options) : undefined;
+  if (!entry) return undefined;
+  const options = entry.options && typeof entry.options === "object" ? entry.options : {};
+  return entry.renderer(sourcePath, {
+    ...options,
+    components: { ...registeredComponents, ...(options.components ?? {}) },
+  });
 }
 `;
 }

@@ -13,7 +13,7 @@ import {
   resolveRiebeckiteContentRequest,
   resolveRiebeckiteHomeRequest,
   riebeckiteSsgParams,
-} from "../server.ts";
+} from "../src/content_route.ts";
 
 test("content redirects resolve only when their target is routable", () => {
   const manifest = manifestOf([

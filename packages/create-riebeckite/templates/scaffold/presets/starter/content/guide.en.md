@@ -44,6 +44,12 @@ Write `[[hello]]` anywhere and it becomes a link to that page.
 Copy a file next to the original with the language suffix, for
 example `hello.ja.md`. The language switcher picks it up.
 
+## Write an MDX page
+
+Create a `.mdx` file when a page needs MDX syntax or a site component.
+The starter includes the MDX plugin, and [the MDX demo](/mdx-demo) shows
+a site component and a plugin component on one page.
+
 ## Build
 
 ```sh

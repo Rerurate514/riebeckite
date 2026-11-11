@@ -100,6 +100,33 @@ flowchart LR
     Renderer -->|"処理しない"| Next
 ```
 
+## コンテンツフォーマット
+
+プラグインは `.mdx` のような追加のソースフォーマットを登録できます。拡張子に加えて、HonoX がリクエスト時にページを描画するためのレンダラーモジュールを指定できます。レンダラーはソースパスと `rendererOptions` を受け取り、文書全体ではなく記事本文を返します。
+
+```ts
+definePlugin({
+  name: "example-format",
+  contentFormats: [{
+    extension: ".txt",
+    rendererModule: "@example/riebeckite-format/renderer",
+    rendererOptions: { strict: true },
+    async process({ source }) {
+      return { frontmatter: {}, html: renderText(source) };
+    },
+    dependencies({ source, paths }) {
+      return findLocalImports(source, paths);
+    },
+  }],
+});
+```
+
+`process` は `PostContent` を返します。`html` は検索、フィード、抜粋、目次の抽出に使う安全なビルド時の投影です。検索や読了時間のために、より読みやすいテキストを `plainText` に入れられます。投影処理で信頼できないページコードを実行しないでください。`dependencies` は、内容が変わったときにキャッシュを無効化すべきローカルのソースやモジュールのパスを返します。
+
+登録された拡張子は Content Format Registry が管理します。フレームワーク側で `.md` を直接判定せず、`isContentPath` と `toSlug` を使ってください。同じ拡張子の重複登録はプラグイン解決時のエラーになります。
+
+記事の出力を変えるコンテンツフォーマットは `processedContentCache` を宣言してください。投影結果や描画結果が変わる場合は `version` を更新します。
+
 ## マニフェストのコレクションと公開範囲
 
 マニフェストを受け取るフック（`onManifestCreated`、ページの解決処理）では、用途に応じて3つのコレクションを使い分けます。

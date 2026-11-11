@@ -12,4 +12,10 @@ outside the site root.
 
 RIEBECKITE_EXTERNAL_HOME_MARKER
 
-See the note at [[notes/example]].
+See the note at [[notes/example]] and the MDX page at [[notes/mdx-demo]].
+
+```riebeckite-component CodeCopy
+text: "RIEBECKITE_EXTERNAL_COMPONENT_MARKER"
+label: "Copy Markdown"
+copiedLabel: "Copied Markdown"
+```

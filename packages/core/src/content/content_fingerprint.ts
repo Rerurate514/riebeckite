@@ -16,6 +16,8 @@ export async function fingerprintContentEntries(
       { readonly fingerprint: string; readonly metadataFingerprint?: string }
     >
   >,
+  isContentPath: (path: string) => boolean = (path) =>
+    path.toLowerCase().endsWith(".md"),
 ): Promise<readonly FingerprintedContentEntry[]> {
   const sortedEntries = [...entries].sort((left, right) =>
     left.path.localeCompare(right.path),
@@ -27,6 +29,7 @@ export async function fingerprintContentEntries(
       read,
       includeMetadata,
       previousEntries?.[entry.path],
+      isContentPath,
     ),
   }));
 }
@@ -39,6 +42,8 @@ async function fingerprintContentEntry(
     readonly fingerprint: string;
     readonly metadataFingerprint?: string;
   },
+  isContentPath: (path: string) => boolean = (path) =>
+    path.toLowerCase().endsWith(".md"),
 ): Promise<string> {
   const metadataFingerprint = fingerprintContentMetadata(entry);
   const contentIdentity = entry.metadata?.hash
@@ -54,7 +59,7 @@ async function fingerprintContentEntry(
     entry.metadata !== undefined &&
     previousEntry !== undefined &&
     previousMetadataMatches &&
-    !entry.path.toLowerCase().endsWith(".md")
+    !isContentPath(entry.path)
   ) {
     return previousEntry.fingerprint;
   }

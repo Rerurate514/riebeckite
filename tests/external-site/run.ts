@@ -50,6 +50,8 @@ const {
   SITE_COMPONENT_MARKER,
   SITE_ISLAND_MARKER,
   MDX_MARKER,
+  EXTERNAL_COMPONENT_MARKER,
+  MDX_COMPONENT_MARKER,
   LOCAL_PLUGIN_MARKER,
   LOCAL_PLUGIN_PAGE_MARKER,
   QR_MARKER,
@@ -132,6 +134,19 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes(MDX_MARKER)) {
     fail(`generated HTML is missing the MDX marker (${MDX_MARKER})`);
   }
+  if (!combined.includes('data-riebeckite-component="CodeCopy"')) {
+    fail("generated HTML is missing the Markdown plugin component");
+  }
+  if (!combined.includes(EXTERNAL_COMPONENT_MARKER)) {
+    fail(
+      `generated HTML is missing the Markdown component marker (${EXTERNAL_COMPONENT_MARKER})`,
+    );
+  }
+  if (!combined.includes(MDX_COMPONENT_MARKER)) {
+    fail(
+      `generated HTML is missing the MDX plugin component marker (${MDX_COMPONENT_MARKER})`,
+    );
+  }
   if (!combined.includes('class="rb-article fixture-article"')) {
     fail("site component did not compose the public Article primitive");
   }
@@ -189,7 +204,10 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes(DATAVIEW_NOTE_TITLE)) {
     fail("dataview did not render a title from the external vault");
   }
-  if (!combined.includes("language-dataviewjs")) {
+  if (
+    !combined.includes("language-dataviewjs") &&
+    !combined.includes('data-language="dataviewjs"')
+  ) {
     fail("dataviewjs code blocks must stay code blocks");
   }
   if (!combined.includes("rb-properties")) {
@@ -381,6 +399,33 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   }
   if (!fs.readFileSync(folderFeed, "utf8").includes("/notes/example")) {
     fail("taxonomy folder feed did not link the fixture note");
+  }
+  if (!fs.readFileSync(folderFeed, "utf8").includes(MDX_MARKER)) {
+    fail("taxonomy folder feed did not include the MDX body");
+  }
+  if (!tagRssBody.includes("/notes/mdx-demo")) {
+    fail("taxonomy tag feed did not link the MDX fixture note");
+  }
+  if (!tagRssBody.includes(MDX_MARKER)) {
+    fail("taxonomy tag feed did not include the MDX body");
+  }
+  const searchDataPath = path.join(distDir, "search-data.json");
+  if (!fs.existsSync(searchDataPath)) {
+    fail("search plugin did not emit search-data.json");
+  }
+  const searchData = JSON.parse(
+    fs.readFileSync(searchDataPath, "utf8"),
+  ) as Array<{
+    slug?: string;
+    body?: string;
+    headings?: Array<{ text?: string }>;
+  }>;
+  const mdxSearch = searchData.find((item) => item.slug === "notes/mdx-demo");
+  if (!mdxSearch) {
+    fail("search-data.json is missing the MDX fixture note");
+  }
+  if (!mdxSearch.body?.includes(MDX_MARKER)) {
+    fail("search-data.json did not include the MDX body text");
   }
   if (
     !combined.includes(ANALYTICS_CONTENT_ID_ATTRIBUTE) ||
@@ -644,7 +689,10 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   if (!combined.includes("rr-code__line--remove")) {
     fail("code-annotations did not mark a removed diff line");
   }
-  if (!combined.includes('data-line="2"')) {
+  if (
+    !combined.includes('data-line="2"') &&
+    !combined.includes('data-line-number="2"')
+  ) {
     fail("code-enhance did not preserve the diff line wrappers");
   }
   if (!combined.includes(CODE_ANNOTATIONS_MARKER)) {
@@ -984,6 +1032,16 @@ function assertStarterOutput(siteDir: string): void {
   if (!combined.includes("RIEBECKITE_SCAFFOLD_COMPONENT_MARKER")) {
     fail("starter guide is missing the component marker");
   }
+  if (!combined.includes("RIEBECKITE_SCAFFOLD_MDX_COMPONENT_MARKER")) {
+    fail("starter MDX page is missing the plugin component marker");
+  }
+  if (
+    !combined.includes(
+      "This paragraph comes from a site component imported by MDX.",
+    )
+  ) {
+    fail("starter MDX page did not render the site component");
+  }
 
   for (const file of htmlFiles) {
     console.log(`  ${path.relative(siteDir, file)}`);
@@ -1045,6 +1103,59 @@ async function runStarterChecks(
   assertStarterOutput(starterDir);
   logger.step("checking scaffold component hydration in a production browser");
   await assertScaffoldComponentBrowserBehavior(starterDir);
+  assertStarterIncrementalMdxUpdate(starterDir);
+}
+
+function assertStarterIncrementalMdxUpdate(starterDir: string): void {
+  logger.step("checking incremental rebuild of an MDX component import");
+  const componentPath = path.join(
+    starterDir,
+    "app",
+    "components",
+    "mdx-note.tsx",
+  );
+  const original = fs.readFileSync(componentPath, "utf8");
+  const marker = "RIEBECKITE_SCAFFOLD_INCREMENTAL_MARKER";
+  fs.writeFileSync(
+    componentPath,
+    original.replace(
+      "This paragraph comes from a site component imported by MDX.",
+      marker,
+    ),
+  );
+  run(process.execPath, [cliEntryFor(starterDir), "build"], {
+    cwd: starterDir,
+  });
+  const htmlFiles = walkFiles(path.join(starterDir, "dist"), (full) =>
+    full.endsWith(".html"),
+  );
+  const combined = htmlFiles
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!combined.includes(marker)) {
+    fail("incremental build did not pick up the changed MDX component import");
+  }
+  const mdxPath = path.join(starterDir, "content", "mdx-demo.mdx");
+  const bodyMarker = "RIEBECKITE_SCAFFOLD_INCREMENTAL_BODY_MARKER";
+  fs.appendFileSync(mdxPath, `\n${bodyMarker}\n`);
+  run(process.execPath, [cliEntryFor(starterDir), "build"], {
+    cwd: starterDir,
+  });
+  const rebuilt = walkFiles(path.join(starterDir, "dist"), (full) =>
+    full.endsWith(".html"),
+  )
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
+  if (!rebuilt.includes(bodyMarker)) {
+    fail("incremental build did not update the MDX article body");
+  }
+  const searchData = fs.readFileSync(
+    path.join(starterDir, "dist", "search-data.json"),
+    "utf8",
+  );
+  if (!searchData.includes(bodyMarker)) {
+    fail("incremental build did not update the MDX search body");
+  }
 }
 
 const config: ExternalSiteE2EConfig = {
@@ -1079,6 +1190,14 @@ const config: ExternalSiteE2EConfig = {
           fail(
             "inspect plugins did not report the site-local plugin (fixture-local)",
           );
+        }
+      },
+    },
+    {
+      args: ["inspect", "graph"],
+      assertOutput: (output) => {
+        if (!output.includes("notes/mdx-demo.mdx")) {
+          fail("inspect graph did not report the MDX content path");
         }
       },
     },

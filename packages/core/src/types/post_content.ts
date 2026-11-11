@@ -1,6 +1,7 @@
 export type PostContent = {
   frontmatter: PostFrontmatter;
   html: string;
+  plainText?: string;
   sourcePath?: string;
 };
 

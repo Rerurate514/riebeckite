@@ -213,7 +213,11 @@ export class ContentManager {
       undefined,
     );
     const observability = this.observability();
-    this.entryReader = new ContentEntryReader(this.source, observability);
+    this.entryReader = new ContentEntryReader(
+      this.source,
+      observability,
+      (path) => this.formats.isContentPath(path),
+    );
     this.locationResolver = new ContentLocationResolver({
       getEntries: () => this.entryReader.getEntries(),
       readEntry: (entry) => this.entryReader.read(entry),
@@ -248,6 +252,7 @@ export class ContentManager {
     this.outputResolver = new ContentOutputResolver(
       this.pluginRuntime,
       observability,
+      (path) => this.formats.toSlug(path),
     );
     this.buildSession = new ContentBuildSession({
       config: () => this.pipelineOptions.config,
@@ -297,7 +302,7 @@ export class ContentManager {
   private async getContentPath(slug: string): Promise<string> {
     const entries = (await this.getContentPaths()).get(slug) ?? [];
     if (entries.length === 0)
-      throw new Error(`Content entry was not found: ${slug}.md`);
+      throw new Error(`Content entry was not found: ${slug}`);
     if (entries.length > 1) {
       throw new Error(
         `Content slug collision for "${slug}": ${entries.join(", ")}`,
@@ -657,7 +662,13 @@ export class ContentManager {
       () =>
         mapConcurrent(posts, CONTENT_PROCESSING_CONCURRENCY, async (post) => {
           const rawPost = await this.getPost(post.slug);
-          const reused = this.reuseManifestEntry(post.slug, rawPost, plan);
+          const sourcePath = await this.getContentPath(post.slug);
+          const reused = this.reuseManifestEntry(
+            post.slug,
+            sourcePath,
+            rawPost,
+            plan,
+          );
           if (reused) return reused;
 
           const processed = await this.getProcessedContent(post.slug);
@@ -678,7 +689,9 @@ export class ContentManager {
               strategy: this.publishStrategy(),
               buildTime: this.publishingBuildTime,
             }),
-            entriesByPath.get(`${post.slug}.md`)?.metadata,
+            processed.sourcePath
+              ? entriesByPath.get(processed.sourcePath)?.metadata
+              : undefined,
             this.contentIndexAmbiguities,
           );
         }),
@@ -940,7 +953,9 @@ export class ContentManager {
         contentIndex,
         previousState: undefined,
         changeSet: {
-          added: manifest.entries.map((entry) => `${entry.slug}.md`),
+          added: manifest.entries.map(
+            (entry) => entry.sourcePath ?? entry.slug,
+          ),
           changed: [],
           removed: [],
           unchanged: [],
@@ -1045,11 +1060,13 @@ export class ContentManager {
 
   private reuseManifestEntry(
     slug: string,
+    sourcePath: string,
     source: string,
     plan: ContentBuildPlan,
   ): ContentManifestEntry | null {
     const reused = reuseManifestEntry({
       slug,
+      sourcePath,
       plan,
       pipelineFingerprint: this.getPipelineFingerprint(),
       getContentCacheFingerprint: () =>
@@ -1169,12 +1186,13 @@ export class ContentManager {
     const posts = await this.getAllPosts();
     const routableSlugs = new Set<string>();
     await mapConcurrent(posts, CONTENT_PROCESSING_CONCURRENCY, async (post) => {
+      const sourcePath = await this.getContentPath(post.slug);
       const markdown = await this.getPost(post.slug);
       let frontmatter: PostFrontmatter;
       try {
         frontmatter = readFrontmatter(markdown);
       } catch (error) {
-        throw attachErrorPath(error, `${post.slug}.md`);
+        throw attachErrorPath(error, sourcePath);
       }
       const publishing = resolvePublishingState(frontmatter, {
         strategy,

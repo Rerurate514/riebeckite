@@ -22,8 +22,8 @@ export async function readOnlyContentGraph(
   const { index: contentIndex, ambiguities: contentIndexAmbiguities } =
     await new ContentIndexBuilder(
       source,
-      pathResolver.isContentPath,
-      pathResolver.toSlug,
+      (path) => pathResolver.isContentPath(path),
+      (path) => pathResolver.toSlug(path),
     ).build(entries);
   const contentEntries = entries
     .filter((entry) => pathResolver.isContentPath(entry.path))
@@ -35,12 +35,8 @@ export async function readOnlyContentGraph(
     })),
   );
   const graphEntries = contentSources.map(({ entry, markdown }) =>
-    createGraphEntry(
-      entry,
-      markdown,
-      contentIndex,
-      locations,
-      pathResolver.toSlug,
+    createGraphEntry(entry, markdown, contentIndex, locations, (path) =>
+      pathResolver.toSlug(path),
     ),
   );
 
@@ -81,6 +77,7 @@ function createGraphEntry(
       },
     ),
     html: "",
+    sourcePath: entry.path,
     tags: [],
     links: extractContentLinks(markdown, contentIndex),
     backlinks: [],

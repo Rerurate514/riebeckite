@@ -1,7 +1,7 @@
 import type { Node } from "unist";
 import { parse } from "yaml";
+import { preparePluginComponent } from "./plugin_component_render.js";
 import type { JsonValue } from "./types/json_value.js";
-import { serializePublicClientConfig } from "./types/plugin_asset.js";
 import type { PluginMarkdownComponent } from "./types/plugin_component.js";
 
 type MarkdownNode = Node & {
@@ -50,17 +50,16 @@ async function renderComponent(
   const component = registry.get(name);
   if (!component) throw new Error(`Unknown plugin component: ${name}`);
   const props = parseProps(node.value ?? "", name);
-  const resolvedProps = component.parseProps?.(props) ?? props;
-  const content = await component.render(resolvedProps);
+  const prepared = await preparePluginComponent(component, props);
   const attributes = [
-    `data-riebeckite-component="${escapeHtml(name)}"`,
-    `data-riebeckite-component-props="${escapeHtml(serializePublicClientConfig(resolvedProps))}"`,
+    `data-riebeckite-component="${escapeHtml(prepared.name)}"`,
+    `data-riebeckite-component-props="${escapeHtml(prepared.props)}"`,
   ];
-  if (component.client)
+  if (prepared.interactive)
     attributes.push('data-riebeckite-component-interactive="true"');
   return {
     type: "html",
-    value: `<div ${attributes.join(" ")}>${content}</div>`,
+    value: `<div ${attributes.join(" ")}>${prepared.content}</div>`,
   };
 }
 

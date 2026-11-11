@@ -186,9 +186,11 @@ async function inspectPaths(
     source,
     config,
   ).getContentLocations();
+  const registry = createContentFormatRegistry(config.plugins);
   return paths.map((path) => {
-    if (!path.endsWith(".md")) return { path };
-    const location = locations.get(path.replace(/\.md$/, ""));
+    const slug = registry.toSlug(path);
+    if (slug === undefined) return { path };
+    const location = locations.get(slug);
     return {
       path,
       id: location?.metadata?.id,
@@ -215,7 +217,7 @@ export async function collectGraphInspection(
   const nodes = graph.nodes();
   const mostLinked = nodes
     .map((node) => ({
-      path: `${node.slug}.md`,
+      path: node.sourcePath ?? node.slug,
       incomingCount: graph.incomingSlugs(node.slug).length,
     }))
     .toSorted(

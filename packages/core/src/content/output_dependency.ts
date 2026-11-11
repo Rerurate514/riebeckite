@@ -78,6 +78,7 @@ export function determineOutputChanges(input: {
   readonly externalDependencies?: readonly ExternalDependencySnapshot[];
   readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
   readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
+  readonly contentPathToSlug?: (path: string) => string | undefined;
 }): OutputChangeSet {
   const current = buildOutputInventory(
     input.manifest,
@@ -455,11 +456,9 @@ export function contentQueryValue(
 ): unknown {
   switch (property) {
     case "file.name":
-      return (
-        (entry.sourcePath ?? `${entry.slug}.md`).split("/").at(-1) ?? entry.slug
-      );
+      return (entry.sourcePath ?? entry.slug).split("/").at(-1) ?? entry.slug;
     case "file.path":
-      return entry.sourcePath ?? `${entry.slug}.md`;
+      return entry.sourcePath ?? entry.slug;
     case "file.slug":
       return entry.slug;
     case "file.folder":
@@ -610,8 +609,8 @@ function collectRefreshedContent(input: {
     const fingerprint = fingerprints.get(entry.slug);
     if (fingerprint === undefined) continue;
     if (
-      previousEntries[`${entry.slug}.md`]?.processedContentCacheFingerprint ===
-      fingerprint
+      previousEntries[entry.sourcePath ?? `${entry.slug}.md`]
+        ?.processedContentCacheFingerprint === fingerprint
     ) {
       continue;
     }
@@ -628,11 +627,17 @@ function collectChangedContent(input: {
     readonly direct: ReadonlySet<string>;
     readonly dependent: ReadonlySet<string>;
   };
+  readonly contentPathToSlug?: (path: string) => string | undefined;
 }): Set<string> {
   const changed = new Set([
     ...input.affectedContent.direct,
     ...input.affectedContent.dependent,
-    ...input.changeSet.removed.filter(isMarkdownPath).map(toSlug),
+    ...input.changeSet.removed.flatMap((path) => {
+      const slug =
+        input.contentPathToSlug?.(path) ??
+        (isMarkdownPath(path) ? toSlug(path) : undefined);
+      return slug === undefined ? [] : [slug];
+    }),
   ]);
   const previousEntries = input.previousState?.manifestEntries ?? [];
   const currentEntries = input.manifest.entries;

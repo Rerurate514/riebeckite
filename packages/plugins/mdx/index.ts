@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import mdxRollup from "@mdx-js/rollup";
-import { definePlugin, extractFrontmatter } from "@riebeckite/core";
+import { definePlugin, extractFrontmatter, stripHtml } from "@riebeckite/core";
 import type { MdxOptions } from "./src/types.js";
 
 export type { MdxOptions } from "./src/types.js";
 
-export default function mdx(options: MdxOptions) {
+export function mdx(options: MdxOptions) {
   if (options.trusted !== true) {
     throw new Error(
       "@riebeckite/plugin-mdx requires trusted: true because MDX executes authored code.",
@@ -30,6 +30,7 @@ export default function mdx(options: MdxOptions) {
           return {
             frontmatter: extractFrontmatter(source),
             html: rendered?.html ?? "",
+            ...(rendered ? { plainText: toPlainText(rendered.html) } : {}),
           };
         },
         dependencies: ({ sourcePath, source, paths }) =>
@@ -44,9 +45,11 @@ export default function mdx(options: MdxOptions) {
       }),
       mdxRendererPlugin(contentDirectory),
     ],
-    processedContentCache: { version: "mdx-v2", dependencyMode: "tracked" },
+    processedContentCache: { version: "mdx-v3", dependencyMode: "tracked" },
   });
 }
+
+export default mdx;
 
 function resolveMdxDependencies(
   sourcePath: string,
@@ -94,8 +97,12 @@ function stripMdxSyntax(source: string): string {
   return source
     .replace(frontmatterPattern, "")
     .replace(/^\s*(?:import|export)\b[^\n]*$/gm, "")
-    .replace(/\{[^{}]*\}/g, "")
+    .replace(/\{[^{}]*\}/g, " ")
     .replace(/<\/?[A-Za-z][^>]*>/g, "");
+}
+
+function toPlainText(html: string): string {
+  return stripHtml(html).replace(/\s+/g, " ").trim();
 }
 
 function mdxFrontmatterPlugin() {

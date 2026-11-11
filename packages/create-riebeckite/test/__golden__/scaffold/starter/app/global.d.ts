@@ -9,3 +9,9 @@ declare module "virtual:riebeckite/config" {
 declare module "virtual:riebeckite/content" {
   export const content: import("@riebeckite/core").ContentManager;
 }
+
+declare module "virtual:riebeckite/content-renderers" {
+  export function renderContent(
+    sourcePath: string,
+  ): import("hono/jsx").Child | undefined;
+}

@@ -42,7 +42,10 @@ import { ContentBuildSession } from "./content_build_session.js";
 import { resolveContentBuildStatePath } from "./content_build_state_store.js";
 import type { CachedContentDependency } from "./content_dependency_tracker.js";
 import { ContentEntryReader } from "./content_entry_reader.js";
-import { ContentFormatRegistry } from "./content_format.js";
+import {
+  type ContentFormatRegistry,
+  createContentFormatRegistry,
+} from "./content_format.js";
 import type { ContentGraph } from "./content_graph.js";
 import {
   type ContentIndexBuild,
@@ -194,11 +197,7 @@ export class ContentManager {
         this.trackedContentDependencies.set(slug, dependencies);
       },
     };
-    this.formats = new ContentFormatRegistry(
-      this.pipelineOptions.plugins?.flatMap(
-        (plugin) => plugin?.contentFormats ?? [],
-      ) ?? [],
-    );
+    this.formats = createContentFormatRegistry(this.pipelineOptions.plugins);
     this.contentIndexBuilder = new ContentIndexBuilder(
       this.source,
       (path) => this.formats.isContentPath(path),
@@ -228,6 +227,19 @@ export class ContentManager {
       getEntries: () => this.entryReader.getEntries(),
       readEntry: (entry) => this.entryReader.read(entry),
       observability,
+      pathResolver: {
+        isContentPath: (path) => this.formats.isContentPath(path),
+        toSlug: (path) => this.formats.toSlug(path),
+      },
+      getContentDependencies: async (entry, paths) => {
+        const format = this.formats.get(entry.path);
+        if (!format?.dependencies) return [];
+        return await format.dependencies({
+          sourcePath: entry.path,
+          source: await this.entryReader.read(entry),
+          paths,
+        });
+      },
       includeFileMetadata:
         this.pipelineOptions.plugins?.some(
           (plugin) => plugin && plugin.contentFileMetadata === true,

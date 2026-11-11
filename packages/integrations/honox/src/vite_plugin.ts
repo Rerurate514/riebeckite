@@ -129,6 +129,7 @@ export function riebeckite(
       },
     },
     contentVitePluginBridge(() => contentVitePlugins),
+    contentBareImportResolver(() => requireApplication(application)),
     riebeckiteClientModule(getConfig),
     riebeckiteRuntimeModules(() => requireApplication(application)),
     riebeckiteContentAssets({
@@ -167,6 +168,38 @@ export function riebeckite(
       },
     }),
   ];
+}
+
+function contentBareImportResolver(
+  getApplication: () => ResolvedHonoxApplication,
+): Plugin {
+  return {
+    name: "riebeckite-content-bare-imports",
+    async resolveId(source, importer) {
+      if (!importer || !isBareImport(source)) return null;
+      const { appRoot, contentRoot } = getApplication();
+      if (!isInDirectory(importer, contentRoot)) return null;
+      return await this.resolve(source, path.join(appRoot, "package.json"), {
+        skipSelf: true,
+      });
+    },
+  };
+}
+
+function isBareImport(source: string): boolean {
+  return (
+    !source.startsWith(".") &&
+    !path.isAbsolute(source) &&
+    !source.startsWith("\0") &&
+    !source.startsWith("node:")
+  );
+}
+
+function isInDirectory(filePath: string, directory: string): boolean {
+  const relative = path.relative(directory, filePath);
+  return (
+    relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative)
+  );
 }
 
 function contentVitePluginBridge(getPlugins: () => readonly Plugin[]): Plugin {
@@ -234,6 +267,16 @@ function contentVitePluginBridge(getPlugins: () => readonly Plugin[]): Plugin {
       }
       return transformed ? ({ code: current, map } as never) : null;
     },
+    configureServer(server) {
+      const postHooks = getPlugins()
+        .map((plugin) =>
+          callPluginHookSynchronously(plugin.configureServer, server),
+        )
+        .filter((hook): hook is () => void => typeof hook === "function");
+      return () => {
+        for (const hook of postHooks) hook();
+      };
+    },
   };
 }
 
@@ -250,6 +293,18 @@ async function callPluginHook(
         : undefined;
   return typeof handler === "function"
     ? handler.call(context, ...arguments_)
+    : undefined;
+}
+
+function callPluginHookSynchronously(hook: unknown, context: unknown): unknown {
+  const handler =
+    typeof hook === "function"
+      ? hook
+      : typeof hook === "object" && hook !== null && "handler" in hook
+        ? hook.handler
+        : undefined;
+  return typeof handler === "function"
+    ? handler.call(context, context)
     : undefined;
 }
 

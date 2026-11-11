@@ -25,6 +25,7 @@ import { imageOptimizer } from "@riebeckite/plugin-image-optimizer";
 import { kanban } from "@riebeckite/plugin-kanban";
 import { markmap } from "@riebeckite/plugin-markmap";
 import { marp } from "@riebeckite/plugin-marp";
+import mdx from "@riebeckite/plugin-mdx";
 import { media } from "@riebeckite/plugin-media";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import { plantuml } from "@riebeckite/plugin-plantuml";
@@ -71,6 +72,7 @@ export default defineConfig({
     plantuml(),
     qrCode(),
     media(),
+    mdx({ trusted: true }),
     attachment(),
     marp(),
     codeAnnotations(),

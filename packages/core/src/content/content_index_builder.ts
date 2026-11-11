@@ -11,7 +11,8 @@ export class ContentIndexBuilder {
     private source: ContentSource,
     private readonly isContentPath = (path: string) =>
       path.toLowerCase().endsWith(".md"),
-    private readonly toSlug = (path: string) => path.replace(/\.md$/i, ""),
+    private readonly toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
   ) {}
 
   async build(
@@ -30,6 +31,9 @@ export class ContentIndexBuilder {
   static buildFromAliases(
     contentEntries: readonly ContentSourceEntry[],
     aliasesByPath: ReadonlyMap<string, readonly string[]>,
+    isContentPath = (path: string) => path.toLowerCase().endsWith(".md"),
+    toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
   ): ContentIndexBuild {
     const candidates = new Map<string, Set<string>>();
 
@@ -38,6 +42,8 @@ export class ContentIndexBuilder {
         candidates,
         contentEntry,
         aliasesByPath.get(contentEntry.path) ?? [],
+        isContentPath,
+        toSlug,
       );
     }
 
@@ -66,11 +72,13 @@ export class ContentIndexBuilder {
     contentEntry: ContentSourceEntry,
     aliases: readonly string[],
     isContentPath = (path: string) => path.toLowerCase().endsWith(".md"),
-    toSlug = (path: string) => path.replace(/\.md$/i, ""),
+    toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
   ) {
     const contentPath = contentEntry.path;
     const isContent = isContentPath(contentPath);
     const value = isContent ? toSlug(contentPath) : contentPath;
+    if (!value) return;
     const parts = value.split("/");
 
     for (let i = parts.length - 1; i >= 0; i--) {

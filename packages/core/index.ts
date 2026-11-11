@@ -150,9 +150,13 @@ export {
 export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
 export type {
   ContentFormat,
+  ContentFormatDependencyContext,
   ContentFormatProcessContext,
 } from "./src/content/content_format.js";
-export { ContentFormatRegistry } from "./src/content/content_format.js";
+export {
+  ContentFormatRegistry,
+  createContentFormatRegistry,
+} from "./src/content/content_format.js";
 export type {
   ContentGraph,
   ContentGraphNeighbors,

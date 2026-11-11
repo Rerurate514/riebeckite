@@ -455,9 +455,11 @@ export function contentQueryValue(
 ): unknown {
   switch (property) {
     case "file.name":
-      return `${entry.slug.split("/").at(-1) ?? entry.slug}.md`;
+      return (
+        (entry.sourcePath ?? `${entry.slug}.md`).split("/").at(-1) ?? entry.slug
+      );
     case "file.path":
-      return `${entry.slug}.md`;
+      return entry.sourcePath ?? `${entry.slug}.md`;
     case "file.slug":
       return entry.slug;
     case "file.folder":

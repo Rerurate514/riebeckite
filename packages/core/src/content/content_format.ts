@@ -7,6 +7,12 @@ export type ContentFormatProcessContext = {
   readonly processMarkdown: (source: string) => Promise<PostContent>;
 };
 
+export type ContentFormatDependencyContext = {
+  readonly sourcePath: string;
+  readonly source: string;
+  readonly paths: readonly string[];
+};
+
 export type ContentFormat = {
   readonly extension: string;
   readonly rendererModule?: string;
@@ -14,6 +20,9 @@ export type ContentFormat = {
   readonly process?: (
     context: ContentFormatProcessContext,
   ) => Promise<PostContent>;
+  readonly dependencies?: (
+    context: ContentFormatDependencyContext,
+  ) => readonly string[] | Promise<readonly string[]>;
 };
 
 export class ContentFormatRegistry {
@@ -46,6 +55,17 @@ export class ContentFormatRegistry {
     const format = this.get(path);
     return format ? path.slice(0, -format.extension.length) : undefined;
   }
+}
+
+export function createContentFormatRegistry(
+  plugins: readonly (
+    | { readonly contentFormats?: readonly ContentFormat[] }
+    | undefined
+  )[] = [],
+): ContentFormatRegistry {
+  return new ContentFormatRegistry(
+    plugins.flatMap((plugin) => plugin?.contentFormats ?? []),
+  );
 }
 
 function normalizeExtension(extension: string): string {

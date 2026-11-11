@@ -47,6 +47,10 @@ import { Badge } from "./badge";
 
 The MDX module and its relative imports are resolved through Vite. JSX is rendered with the Hono JSX runtime for development SSR and production SSG.
 
+Static relative imports are tracked by incremental builds. Changing an imported local file rebuilds its MDX page, and adding or removing an `.mdx` file reloads the development server.
+
+Search, excerpts, and headings are derived from a static text projection of the MDX source. Components are not executed for these derived outputs, so their rendered text is not included.
+
 ## Components
 
 Pass components available to every MDX page with `components`.

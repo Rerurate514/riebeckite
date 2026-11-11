@@ -586,6 +586,11 @@
       "type": true
     },
     {
+      "name": "ContentFormatDependencyContext",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "ContentFormatProcessContext",
       "value": false,
       "type": true
@@ -1017,6 +1022,11 @@
     },
     {
       "name": "createClientEntry",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentFormatRegistry",
       "value": true,
       "type": false
     },

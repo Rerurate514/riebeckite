@@ -9,6 +9,7 @@ import type {
 import { escapeScriptJson, uniqueStrings } from "@riebeckite/core";
 import { ColorModeScript } from "@riebeckite/plugin-color-mode";
 import { raw } from "hono/html";
+import type { Child } from "hono/jsx";
 import { Link, Script } from "honox/server";
 import {
   ArticleProvider,
@@ -32,6 +33,7 @@ type PrimitiveClassProps = {
 type ArticleProps = PrimitiveProps & {
   post?: PostContent;
   entry?: PublicContentEntry;
+  body?: Child;
 };
 
 type ArticleLayoutProps = PrimitiveProps;
@@ -68,7 +70,7 @@ export function Article(props: ArticleProps) {
   );
   if (!props.post) return article;
   return (
-    <ArticleProvider entry={props.entry} post={props.post}>
+    <ArticleProvider entry={props.entry} post={props.post} body={props.body}>
       {article}
     </ArticleProvider>
   );

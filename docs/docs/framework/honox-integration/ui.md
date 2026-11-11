@@ -54,6 +54,11 @@ With `SiteProvider` and an `Article` supplied with its `post` and public
 `entry`, components resolve their own plugin data. The Site still owns
 placement, ordering, and conditional rendering.
 
+Routes that assemble a page themselves must forward the content format body to
+`Article` with `body={renderContent(post.sourcePath ?? "")}` from
+`virtual:riebeckite/content-renderers`. Routes built with `createContentRoute`
+forward it automatically.
+
 ```tsx
 import { Article, ArticleBody } from "@riebeckite/honox/ui";
 import { Properties } from "@riebeckite/plugin-properties";

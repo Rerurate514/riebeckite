@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import type { Root } from "mdast";
 import {
   containsShortcodeDirective,
   DIAGNOSTIC_INLINE_UNSUPPORTED,
@@ -26,7 +27,7 @@ function createFile(): {
 
 test("unknown shortcodes become an escaped fallback and are diagnosed", () => {
   const file = createFile();
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -38,13 +39,10 @@ test("unknown shortcodes become an escaped fallback and are diagnosed", () => {
     ],
   };
 
-  const root = tree as unknown as {
-    children: { type: string; value: string }[];
-  };
-  remarkShortcodes()(tree as never, file);
+  remarkShortcodes()(tree, file);
 
-  const node = root.children[0];
-  assert.equal(node.type, "html");
+  const node = tree.children[0];
+  assert.ok(node.type === "html");
   assert.ok(node.value.includes("rb-shortcode--unknown"));
   assert.ok(node.value.includes('data-shortcode-name="no&quot;pe"'));
   assert.ok(node.value.includes("::no&quot;pe[Foo]{a=&quot;&lt;b&gt;&quot;}"));
@@ -53,7 +51,7 @@ test("unknown shortcodes become an escaped fallback and are diagnosed", () => {
 
 test("inline text directives render an inline wrapper and keep their label", () => {
   const file = createFile();
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -65,13 +63,10 @@ test("inline text directives render an inline wrapper and keep their label", () 
     ],
   };
 
-  const root = tree as unknown as {
-    children: { type: string; value: string }[];
-  };
-  remarkShortcodes()(tree as never, file);
+  remarkShortcodes()(tree, file);
 
-  const node = root.children[0];
-  assert.equal(node.type, "html");
+  const node = tree.children[0];
+  assert.ok(node.type === "html");
   assert.ok(
     node.value.startsWith('<span class="rb-shortcode rb-shortcode--badge"'),
   );
@@ -81,7 +76,7 @@ test("inline text directives render an inline wrapper and keep their label", () 
 
 test("inline directives that do not start with a letter remain text", () => {
   const file = createFile();
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -93,18 +88,15 @@ test("inline directives that do not start with a letter remain text", () => {
     ],
   };
 
-  const root = tree as unknown as {
-    children: { type: string; value: string }[];
-  };
-  remarkShortcodes()(tree as never, file);
+  remarkShortcodes()(tree, file);
 
-  assert.deepEqual(root.children[0], { type: "text", value: ":30" });
+  assert.deepEqual(tree.children[0], { type: "text", value: ":30" });
   assert.equal(file.messages.length, 0);
 });
 
 test("inline use of a block-only shortcode falls back and is diagnosed", () => {
   const file = createFile();
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -116,13 +108,10 @@ test("inline use of a block-only shortcode falls back and is diagnosed", () => {
     ],
   };
 
-  const root = tree as unknown as {
-    children: { type: string; value: string }[];
-  };
-  remarkShortcodes()(tree as never, file);
+  remarkShortcodes()(tree, file);
 
-  const node = root.children[0];
-  assert.equal(node.type, "html");
+  const node = tree.children[0];
+  assert.ok(node.type === "html");
   assert.ok(node.value.includes("rb-shortcode--inline-unsupported"));
   assert.ok(node.value.includes(":figure[Fig]"));
   assert.ok(!node.value.includes("<figure"));
@@ -131,7 +120,7 @@ test("inline use of a block-only shortcode falls back and is diagnosed", () => {
 
 test("malformed attributes are dropped and diagnosed", () => {
   const file = createFile();
-  const tree = {
+  const tree: Root = {
     type: "root",
     children: [
       {
@@ -143,13 +132,10 @@ test("malformed attributes are dropped and diagnosed", () => {
     ],
   };
 
-  const root = tree as unknown as {
-    children: { type: string; value: string }[];
-  };
-  remarkShortcodes()(tree as never, file);
+  remarkShortcodes()(tree, file);
 
-  const node = root.children[0];
-  assert.equal(node.type, "html");
+  const node = tree.children[0];
+  assert.ok(node.type === "html");
   assert.ok(node.value.includes(">Hi<"));
   assert.ok(!node.value.includes("bad key"));
   assert.equal(file.messages[0]?.ruleId, DIAGNOSTIC_INVALID);

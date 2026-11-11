@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { PostContent } from "@riebeckite/core";
+import { createInvalid } from "@riebeckite/core";
 import { ArticleProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
@@ -30,11 +31,11 @@ function post(overrides: Partial<PostContent> = {}): PostContent {
 test("ArticleMetadata renders dates, reading time, and plain tags without a site", () => {
   const html = render(
     post({
-      frontmatter: {
+      frontmatter: createInvalid<PostContent["frontmatter"]>({
         published: "2026-04-03",
         updated: "2026-05-01",
-        tags: ["Release Notes", 42, "  "] as unknown as string[],
-      },
+        tags: ["Release Notes", 42, "  "],
+      }),
     }),
   );
 
@@ -50,10 +51,10 @@ test("ArticleMetadata renders dates, reading time, and plain tags without a site
 test("ArticleMetadata falls back to date when published is not a date", () => {
   const html = render(
     post({
-      frontmatter: {
-        published: true as unknown as string,
+      frontmatter: createInvalid<PostContent["frontmatter"]>({
+        published: true,
         date: "2026-04-03",
-      },
+      }),
     }),
   );
 

@@ -511,9 +511,6 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
-      vfile-matter:
-        specifier: 'catalog:'
-        version: 5.0.1
 
   packages/plugins/breadcrumbs:
     dependencies:
@@ -889,9 +886,6 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
-      vfile-matter:
-        specifier: 'catalog:'
-        version: 5.0.1
     devDependencies:
       tsx:
         specifier: ^4.22.4
@@ -1008,9 +1002,6 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
-      vfile-matter:
-        specifier: 'catalog:'
-        version: 5.0.1
     devDependencies:
       tsx:
         specifier: ^4.22.4
@@ -1341,9 +1332,6 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
-      vfile-matter:
-        specifier: 'catalog:'
-        version: 5.0.1
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -1633,9 +1621,6 @@ importers:
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
-      vfile-matter:
-        specifier: 'catalog:'
-        version: 5.0.1
     devDependencies:
       tsx:
         specifier: ^4.22.4

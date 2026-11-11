@@ -35,6 +35,13 @@ try {
     const plan = await mutation.loadPlan(argument);
     const result = await mutation.apply(plan);
     process.stdout.write(`${JSON.stringify(result)}\n`);
+  } else if (mode === "hold-open") {
+    const handle = await fs.open(argument, "r");
+    await fs.mkdir(path.join(root, ".riebeckite"), { recursive: true });
+    await fs.writeFile(path.join(root, ".riebeckite", "worker-ready"), "ready");
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    await handle.close();
+    process.stdout.write(`${JSON.stringify({ held: true })}\n`);
   } else if (mode === "recover" || mode === "recover-block") {
     const result = await mutation.recover(argument);
     process.stdout.write(`${JSON.stringify(result)}\n`);

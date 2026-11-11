@@ -3,7 +3,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test, { type TestContext } from "node:test";
-import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
+import type {
+  CompletedContentBuildSnapshot,
+  ContentManifestEntry,
+} from "@riebeckite/core";
+import { createContentManifest, createInvalid } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import { riebeckiteBridge } from "../src/bridge.js";
 import {
@@ -114,9 +118,11 @@ test("does not enable the Bridge with a short token", () => {
   const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
   const stack: unknown[] = [];
-  configure({
-    middlewares: { use: (...arguments_) => stack.push(arguments_) },
-  } as unknown as ViteDevServer);
+  configure(
+    createInvalid<ViteDevServer>({
+      middlewares: { use: (...arguments_) => stack.push(arguments_) },
+    }),
+  );
   assert.deepEqual(stack, []);
 });
 
@@ -922,7 +928,7 @@ test("does not expose self-approval, recovery, or rollback endpoints", async (t)
 });
 
 function fixtureSnapshot(): CompletedContentBuildSnapshot {
-  const entry = {
+  const entry: ContentManifestEntry = {
     slug: "notes/hello",
     contentId: "hello-id",
     permalink: "/ja/hello/",
@@ -945,7 +951,7 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
     backlinks: [],
     assets: [],
   };
-  const draft = {
+  const draft: ContentManifestEntry = {
     ...entry,
     slug: "notes/draft",
     contentId: "draft-id",
@@ -965,7 +971,8 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
   };
   return {
     completedAt: 42,
-    manifest: {
+    startedAt: 42,
+    manifest: createContentManifest({
       bySlug: new Map([
         [entry.slug, entry],
         [draft.slug, draft],
@@ -981,8 +988,20 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
       contentIndexAmbiguities: new Map([["shared", ["a/shared", "b/shared"]]]),
       redirects: new Map(),
       diagnostics: [],
-    },
+    }),
     finalHtmlDiagnostics: [],
+    fullRegenerationReasons: [],
+    plugins: [],
+    manifestHookMetrics: {
+      manifestHooksExecuted: 0,
+      manifestHooksReused: 0,
+      manifestHookCacheHit: 0,
+      manifestHookCacheMiss: 0,
+      manifestHookDurationMs: 0,
+      byPlugin: {},
+    },
+    derivedViews: [],
+    inspectorTabs: [],
     outputChangeSet: {
       affected: [
         {
@@ -995,9 +1014,13 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
       unchanged: [],
       removed: [],
       fullRegenerationRequired: false,
+      candidateOutputCount: 1,
+      affectedOutputCount: 1,
+      removedOutputCount: 0,
+      unchangedOutputCount: 0,
       reasons: new Map(),
     },
-  } as unknown as CompletedContentBuildSnapshot;
+  };
 }
 
 function bridge(input?: {
@@ -1022,16 +1045,18 @@ function bridge(input?: {
   });
   const configure = plugin.configureServer as (server: ViteDevServer) => void;
   assert.equal(typeof configure, "function");
-  configure({
-    middlewares: {
-      use: (route: string, handle: unknown) => stack.push({ route, handle }),
-    },
-    resolvedUrls: { local: ["http://127.0.0.1:5173/"] },
-    httpServer: {
-      address: () => ({ address: "127.0.0.1" }),
-      once: (_event: string, handler: () => void) => (close = handler),
-    },
-  } as unknown as ViteDevServer);
+  configure(
+    createInvalid<ViteDevServer>({
+      middlewares: {
+        use: (route: string, handle: unknown) => stack.push({ route, handle }),
+      },
+      resolvedUrls: { local: ["http://127.0.0.1:5173/"] },
+      httpServer: {
+        address: () => ({ address: "127.0.0.1" }),
+        once: (_event: string, handler: () => void) => (close = handler),
+      },
+    }),
+  );
   const bootstrap = stack.find(
     (layer) => layer.route === "/__riebeckite/bridge/bootstrap",
   )?.handle;

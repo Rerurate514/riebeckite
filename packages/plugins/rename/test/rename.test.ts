@@ -2,11 +2,17 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type {
   ContentManifest,
+  Diagnostic,
   JsonValue,
-  Logger,
   PluginCache,
-  PluginManifestContext,
+  ResolvedPublishingState,
   ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
+import {
+  createContentManifest,
+  createContentManifestEntry,
+  createPluginManifestContext,
+  createResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import {
   applyRouteRedirects,
@@ -279,20 +285,14 @@ function memoryCache(): PluginCache & { readonly size: number } {
   };
 }
 
-const noopLogger: Logger = {
-  debug() {},
-  info() {},
-  warn() {},
-  error() {},
-  child() {
-    return noopLogger;
-  },
-};
-
 function fakeConfig(): ResolvedRiebeckiteConfig {
-  return {
-    content: { filters: { publishStrategy: "selective" } },
-  } as unknown as ResolvedRiebeckiteConfig;
+  return createResolvedRiebeckiteConfig({
+    content: {
+      directory: "content",
+      exclude: [],
+      filters: { publishStrategy: "selective" },
+    },
+  });
 }
 
 function fakeManifest(
@@ -303,21 +303,21 @@ function fakeManifest(
     html: string;
   }>,
 ): ContentManifest {
-  const full = entries.map((item) => ({
-    ...item,
-    publicLocation: { slug: item.slug, permalink: item.permalink },
-    title: "",
-    publishing:
+  const full = entries.map((item) => {
+    const publishing: ResolvedPublishingState =
       item.frontmatter.private === true
         ? { visibility: "draft", routable: false, discoverable: false }
-        : { visibility: "public", routable: true, discoverable: true },
-    tags: [],
-    links: [],
-    backlinks: [],
-    assets: [],
-  }));
+        : { visibility: "public", routable: true, discoverable: true };
+    return createContentManifestEntry({
+      slug: item.slug,
+      permalink: item.permalink,
+      frontmatter: item.frontmatter,
+      html: item.html,
+      publishing,
+    });
+  });
   const publicEntries = full.filter((item) => item.publishing.routable);
-  return {
+  return createContentManifest({
     entries: full,
     publicEntries,
     discoverableEntries: publicEntries.filter(
@@ -328,15 +328,15 @@ function fakeManifest(
     byRoutablePermalink: new Map(
       publicEntries.map((item) => [item.permalink, item]),
     ),
-  } as unknown as ContentManifest;
+  });
 }
 
 async function runManifestHook(
   plugin: ReturnType<typeof rename>,
   manifest: ContentManifest,
   cache: PluginCache,
-  diagnostics: unknown[] = [],
-): Promise<unknown[]> {
+  diagnostics: Diagnostic[] = [],
+): Promise<Diagnostic[]> {
   const contentIndex = new Map<string, string>();
   const resolutions = await plugin.resolveExternalDependencies?.({
     config: fakeConfig(),
@@ -348,15 +348,14 @@ async function runManifestHook(
       .filter((resolution) => resolution.kind === "resolved")
       .map((resolution) => [resolution.snapshot.id, resolution.snapshot]),
   );
-  const context = {
+  const context = createPluginManifestContext({
     manifest,
     config: fakeConfig(),
     cache,
     diagnostics,
-    logger: noopLogger,
     contentIndex,
     externalDependencies,
-  } as unknown as PluginManifestContext;
+  });
   await plugin.onManifestCreated?.(context);
   return diagnostics;
 }
@@ -392,6 +391,39 @@ test("hook persists the lock and replays redirects across builds", async () => {
     status: 308,
     slug: "alpha",
   });
+});
+
+test("hook recovers from a corrupt persisted lock", async () => {
+  const cache = memoryCache();
+  const plugin = rename();
+  const manifest = fakeManifest([
+    { slug: "alpha", permalink: "/a", frontmatter: {}, html: "<p>a</p>" },
+  ]);
+  const diagnostics: Diagnostic[] = [];
+  const context = createPluginManifestContext({
+    manifest,
+    config: fakeConfig(),
+    cache,
+    diagnostics,
+    contentIndex: new Map(),
+    externalDependencies: new Map([
+      [
+        "rename:routes-lock",
+        {
+          id: "rename:routes-lock",
+          fingerprint: "corrupt",
+          scope: { type: "all" },
+          value: { routes: "broken" },
+        },
+      ],
+    ]),
+  });
+
+  await plugin.onManifestCreated?.(context);
+
+  assert.deepEqual(diagnostics, []);
+  assert.equal(manifest.redirects.size, 0);
+  assert.notEqual(await cache.get("routes.lock"), undefined);
 });
 
 test("hook respects existing redirects and never locks private notes", async () => {

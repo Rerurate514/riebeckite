@@ -1,4 +1,8 @@
-import type { ContentLink, ContentManifestEntry } from "@riebeckite/core";
+import {
+  type ContentLink,
+  type ContentManifestEntry,
+  createContentManifestEntry,
+} from "@riebeckite/core";
 import type { LoadedIconsSettings } from "../src/settings.js";
 import type {
   IconicData,
@@ -65,18 +69,12 @@ export function entry(
   frontmatter: Record<string, unknown> = {},
   tags: string[] = [],
 ): ContentManifestEntry {
-  return {
+  return createContentManifestEntry({
     slug,
-    permalink: `/${slug}`,
-    title: slug,
     frontmatter,
-    publishing: { publish: true },
     html: "",
     tags,
-    links: [],
-    backlinks: [],
-    assets: [],
-  } as unknown as ContentManifestEntry;
+  });
 }
 
 export function target(

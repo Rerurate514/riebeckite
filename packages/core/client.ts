@@ -14,7 +14,9 @@ export type {
   ClientRuntimeCreateOptions,
   ClientRuntimeHost,
   ClientRuntimeInvokeOptions,
+  RuntimeCapability,
 } from "./src/client_runtime.js";
+export { RUNTIME_CAPABILITIES } from "./src/client_runtime.js";
 export type {
   ForceGraphLayoutOptions,
   ForceLayoutGuardOptions,

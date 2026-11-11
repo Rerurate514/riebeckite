@@ -8,7 +8,7 @@ import { computeMarkdownSanitizeFingerprint } from "../markdown_sanitize_schema.
 import type { Logger, Tracer } from "../observability.js";
 import { stableStringify } from "../plugin/plugin_memo.js";
 import type { ContentPublicLocation } from "../types/content_manifest.js";
-import type { JsonValue } from "../types/json_value.js";
+import { type JsonValue, toJsonValue } from "../types/json_value.js";
 import type {
   ProcessedContentCacheApplicability,
   ProcessedContentCacheContext,
@@ -266,17 +266,17 @@ export function computeContentCacheKey(inputs: CacheKeyInputs): string {
     schemaVersion: CONTENT_CACHE_SCHEMA_VERSION,
     slug,
     source,
-    frontmatter: normalizedFrontmatter as JsonValue,
+    frontmatter: normalizedFrontmatter,
     pipelineFingerprint,
   };
 
-  return hash(stableStringify(keyData as JsonValue));
+  return hash(stableStringify(keyData));
 }
 
 function normalizeFrontmatterForCache(
   frontmatter: PostContent["frontmatter"],
-): Record<string, unknown> {
-  const normalized: Record<string, unknown> = {};
+): Record<string, JsonValue | undefined> {
+  const normalized: Record<string, JsonValue | undefined> = {};
 
   for (const [key, value] of Object.entries(frontmatter)) {
     if (value instanceof Date) {
@@ -291,7 +291,7 @@ function normalizeFrontmatterForCache(
         value as PostContent["frontmatter"],
       );
     } else {
-      normalized[key] = value;
+      normalized[key] = toJsonValue(value);
     }
   }
 
@@ -311,11 +311,11 @@ export function computePipelineFingerprint(
     plugins: plugins.map((p) => pluginFingerprint(p)),
     content: {
       filters: config.content.filters,
-    } as JsonValue,
+    },
     contentScopeFingerprint,
   };
 
-  return hash(stableStringify(fingerprintData as JsonValue));
+  return hash(stableStringify(fingerprintData));
 }
 
 export function computeContentScopeFingerprint(
@@ -337,7 +337,7 @@ export function computeContentScopeFingerprint(
               }
             : {}),
           ...(location.metadata ? { metadata: { ...location.metadata } } : {}),
-        })) as unknown as JsonValue,
+        })),
     ),
   );
 }
@@ -349,26 +349,48 @@ function pluginFingerprint(
 ): JsonValue {
   const cached = pluginFingerprints.get(plugin);
   if (cached !== undefined) return cached;
-  const fingerprint = sanitizeForFingerprint(plugin) as JsonValue;
+  const fingerprint = sanitizeForFingerprint(plugin);
+  if (fingerprint === undefined) {
+    throw new TypeError("Plugin fingerprint must be JSON serializable.");
+  }
   pluginFingerprints.set(plugin, fingerprint);
   return fingerprint;
 }
 
-function sanitizeForFingerprint(value: unknown): unknown {
-  if (value === null || value === undefined) return value;
+function sanitizeForFingerprint(value: unknown): JsonValue | undefined {
+  if (value === null) return null;
+  if (value === undefined) return undefined;
+  if (
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    typeof value === "number"
+  ) {
+    return value;
+  }
   if (typeof value === "function") return "[Function]";
   if (typeof value === "symbol") return "[Symbol]";
-  if (Array.isArray(value)) return value.map(sanitizeForFingerprint);
-  if (value instanceof Map || value instanceof Set)
+  if (typeof value === "bigint") {
+    throw new TypeError("BigInt values are not JSON serializable.");
+  }
+  if (Array.isArray(value)) {
+    const items: JsonValue[] = [];
+    for (const item of value) {
+      items.push(sanitizeForFingerprint(item) ?? null);
+    }
+    return items;
+  }
+  if (value instanceof Map || value instanceof Set) {
     return `[${value.constructor.name}]`;
+  }
   if (typeof value === "object") {
-    const result: Record<string, unknown> = {};
+    const result: { [key: string]: JsonValue | undefined } = {};
     for (const [key, val] of Object.entries(value)) {
-      result[key] = sanitizeForFingerprint(val);
+      const converted = sanitizeForFingerprint(val);
+      if (converted !== undefined) result[key] = converted;
     }
     return result;
   }
-  return value;
+  return undefined;
 }
 
 export function isPersistentlyCacheable(
@@ -433,7 +455,7 @@ export function computeContentCacheFingerprint(
             : undefined,
       };
     });
-  return hash(stableStringify(plugins as JsonValue));
+  return hash(stableStringify(plugins));
 }
 
 function getApplicability(

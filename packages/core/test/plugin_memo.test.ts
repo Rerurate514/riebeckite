@@ -42,7 +42,7 @@ test("memo hits the cache for identical dependencies", async () => {
   let calls = 0;
   const compute = async () => {
     calls++;
-    return { value: calls } as JsonValue;
+    return { value: calls };
   };
 
   assert.deepEqual(await memo.memo("key", { a: 1 }, compute), { value: 1 });
@@ -57,7 +57,7 @@ test("memo recomputes when dependencies change", async () => {
   let calls = 0;
   const compute = async () => {
     calls++;
-    return { value: calls } as JsonValue;
+    return { value: calls };
   };
 
   await memo.memo("key", { a: 1 }, compute);
@@ -90,7 +90,7 @@ test("memo recomputes after a corrupted cache entry is detected", async () => {
     let calls = 0;
     const compute = async () => {
       calls++;
-      return { value: calls } as JsonValue;
+      return { value: calls };
     };
 
     await memo.memo("key", { a: 1 }, compute);

@@ -88,15 +88,34 @@ async function resolveQrEncoder(): Promise<QrEncoder> {
 }
 
 function normalizeEncoder(module: unknown): QrEncoder {
-  if (isRecord(module)) {
-    const direct = module.toString;
-    if (typeof direct === "function") return module as unknown as QrEncoder;
-    const fallback = module.default;
-    if (isRecord(fallback) && typeof fallback.toString === "function") {
-      return fallback as unknown as QrEncoder;
-    }
-  }
+  const direct = toEncoder(module);
+  if (direct) return direct;
+  const fallback = toEncoder(
+    isObjectLike(module) ? Reflect.get(module, "default") : undefined,
+  );
+  if (fallback) return fallback;
   throw new Error(`The "${QR_LIBRARY}" module has no toString() export.`);
+}
+
+function toEncoder(value: unknown): QrEncoder | undefined {
+  if (!isObjectLike(value)) return undefined;
+  const encodeToString = Reflect.get(value, "toString");
+  if (
+    typeof encodeToString !== "function" ||
+    encodeToString === Object.prototype.toString
+  ) {
+    return undefined;
+  }
+  return {
+    toString: (text, options) =>
+      Reflect.apply(encodeToString, value, [text, options]),
+  };
+}
+
+function isObjectLike(value: unknown): value is object {
+  return (
+    (typeof value === "object" && value !== null) || typeof value === "function"
+  );
 }
 
 /**

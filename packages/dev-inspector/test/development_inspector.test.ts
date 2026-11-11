@@ -646,7 +646,7 @@ test("development inspector consumes failed snapshots and recovers", async () =>
           if (fail) throw new Error("SSR module failed");
           return undefined;
         },
-      } as unknown as ContentManager;
+      };
       const plugin = inspector(() => application, failingContent);
       const stack = inspectorStack(plugin);
 

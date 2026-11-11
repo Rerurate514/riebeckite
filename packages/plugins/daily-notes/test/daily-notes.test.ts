@@ -4,6 +4,7 @@ import {
   buildOutputInventory,
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   determineOutputChanges,
   type OutputDependency,
   type OutputDescriptor,
@@ -53,13 +54,11 @@ function makeManifest(entries: ContentManifestEntry[]): ContentManifest {
   const discoverableEntries = entries.filter(
     (entry) => entry.frontmatter.publish === true,
   );
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries,
     discoverableEntries,
-    publicRedirects: new Map(),
-    generatedOutputs: [],
-  } as unknown as ContentManifest;
+  });
 }
 
 const explicitConfig: ResolvedRiebeckiteConfig = resolveConfig({

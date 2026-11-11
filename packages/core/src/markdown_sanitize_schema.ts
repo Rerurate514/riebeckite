@@ -1,8 +1,6 @@
 import crypto from "node:crypto";
 import type rehypeSanitize from "rehype-sanitize";
 import { defaultSchema } from "rehype-sanitize";
-import { stableStringify } from "./plugin/plugin_memo.js";
-import type { JsonValue } from "./types/json_value.js";
 
 export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
   ...defaultSchema,
@@ -137,15 +135,35 @@ export const markdownSanitizeSchema: Parameters<typeof rehypeSanitize>[0] = {
 export const safeMarkdownStyle =
   /^(?:--shiki-(?:light|dark):#[\da-f]{3,8};?)+$|^height:\d+(?:\.\d+)?px$|^--rb-(?:qr-size:\d+(?:\.\d+)?px|rich-embed-aspect:\d+(?:\.\d+)?)$/i;
 
-export function computeMarkdownSanitizeFingerprint(): string {
+export function computeMarkdownSanitizeFingerprint(
+  schema: Parameters<typeof rehypeSanitize>[0] = markdownSanitizeSchema,
+  style: RegExp = safeMarkdownStyle,
+): string {
   return crypto
     .createHash("sha256")
     .update(
-      stableStringify({
-        schema: markdownSanitizeSchema as unknown as JsonValue,
-        style: safeMarkdownStyle.source,
-        styleFlags: safeMarkdownStyle.flags,
+      JSON.stringify({
+        schema: encodeSanitizeValue(schema),
+        style: style.source,
+        styleFlags: style.flags,
       }),
     )
     .digest("hex");
+}
+
+function encodeSanitizeValue(value: unknown): unknown {
+  if (value instanceof RegExp) {
+    return { $regex: value.source, $flags: value.flags };
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => encodeSanitizeValue(item));
+  }
+  if (value !== null && typeof value === "object") {
+    const encoded: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value)) {
+      encoded[key] = encodeSanitizeValue(item);
+    }
+    return encoded;
+  }
+  return value;
 }

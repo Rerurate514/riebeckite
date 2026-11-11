@@ -46,11 +46,12 @@ import {
   isWithin,
   journalMatchesApplied,
   mutationIssue,
+  parseContentMigrationPlan,
   readJournalSnapshot,
+  reclaimStaleLock,
   redirectFieldFromConfig,
   sameMigrationPlan,
   sanitizeErrorMessage,
-  staleLockContent,
 } from "./file_system_content_migration_helpers.js";
 import type {
   ContentMigrationApplyOptions,
@@ -249,7 +250,10 @@ export class FileSystemContentMigration {
     const parsed = JSON.parse(content) as unknown;
     if (!isRecord(parsed) || parsed.schemaVersion !== 1)
       throw new Error("The migration plan has an unsupported schema.");
-    return parsed as unknown as ContentMigrationPlan;
+    const plan = parseContentMigrationPlan(parsed);
+    if (plan === undefined)
+      throw new Error("The migration plan is missing or corrupt.");
+    return plan;
   }
 
   async history(
@@ -1273,31 +1277,10 @@ export class FileSystemContentMigration {
         handle = await fs.open(lockPath, "wx");
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-        const stale = await staleLockContent(lockPath);
-        if (stale === null)
-          throw new Error(
-            "Another migration is already applying or requires recovery.",
-          );
-        const quarantine = `${lockPath}.stale-${randomUUID()}`;
-        try {
-          await fs.rename(lockPath, quarantine);
-        } catch (renameError) {
-          if ((renameError as NodeJS.ErrnoException).code === "ENOENT")
-            continue;
-          throw renameError;
-        }
-        const quarantined = await fs.readFile(quarantine, "utf8");
-        if (quarantined !== stale) {
-          await fs.writeFile(lockPath, quarantined, { flag: "wx" }).then(
-            () => undefined,
-            () => undefined,
-          );
-          await fs.rm(quarantine, { force: true });
-          throw new Error(
-            "Another migration is already applying or requires recovery.",
-          );
-        }
-        await fs.rm(quarantine, { force: true });
+        if (await reclaimStaleLock(lockPath)) continue;
+        throw new Error(
+          "Another migration is already applying or requires recovery.",
+        );
       }
     }
     if (!handle)

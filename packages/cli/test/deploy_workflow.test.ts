@@ -19,7 +19,7 @@ function project(root: string, schedule: Schedule): RiebeckiteProject {
   return {
     projectRoot: root,
     config: { publication: { schedule } },
-  } as unknown as RiebeckiteProject;
+  } as RiebeckiteProject;
 }
 
 async function makeRepo(): Promise<string> {

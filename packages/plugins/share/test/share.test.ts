@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   createPublicContentView,
   resolveConfig,
 } from "@riebeckite/core";
@@ -28,12 +29,11 @@ const TITLE = "Hello World";
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 function manifestOf(entry: ContentManifestEntry): ContentManifest {
-  return {
+  return createContentManifest({
     entries: [entry],
     publicEntries: [entry],
     bySlug: new Map([[entry.slug, entry]]),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 async function render(

@@ -53,16 +53,18 @@ export type ThemePalette = {
 
 export type ThemeSettingsSchema = Record<string, ThemeSetting>;
 
+type ThemeSettingValue<T> = T extends ThemeColorSetting | ThemeTextSetting
+  ? string
+  : T extends ThemeBooleanSetting
+    ? boolean
+    : T extends ThemeNumberSetting
+      ? number
+      : T extends ThemeSelectSetting<infer U>
+        ? U
+        : never;
+
 export type ThemeSettings<S extends ThemeSettingsSchema> = {
-  [K in keyof S]: S[K] extends ThemeColorSetting | ThemeTextSetting
-    ? string
-    : S[K] extends ThemeBooleanSetting
-      ? boolean
-      : S[K] extends ThemeNumberSetting
-        ? number
-        : S[K] extends ThemeSelectSetting<infer T>
-          ? T
-          : never;
+  [K in keyof S]: ThemeSettingValue<S[K]>;
 };
 
 export type ThemePreset<S extends ThemeSettingsSchema> = {

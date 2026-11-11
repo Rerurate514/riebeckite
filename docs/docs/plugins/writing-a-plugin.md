@@ -115,19 +115,34 @@ This plugin does two things:
 
 #### Find `:::tip`
 
-Add the imports and a small type for the directive node:
+Add the imports and declare the directive node. `mdast` does not know the node yet, so the module declaration teaches its types about it:
 
 ```ts id="nv29am"
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
+
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
 ```
 
 This example uses the `mdast` types for AST nodes and `unist-util-visit` to walk the tree. Add them to your own package's dependencies (they are not imported from `@riebeckite/core`).
@@ -141,9 +156,7 @@ Use `unist-util-visit` to find those nodes:
 ```ts id="tvvs30"
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       // Transform :::tip here.
@@ -289,21 +302,34 @@ Putting everything together, `extensions/tip-plugin.ts` looks like this:
 
 ```ts id="7q1nxh"
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
 
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
+
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       const [first, ...rest] = directive.children;

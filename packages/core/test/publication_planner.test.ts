@@ -3,7 +3,6 @@ import { test } from "node:test";
 import type { PublicationPlan } from "../index.js";
 import {
   approveEntries,
-  type ContentManifestEntry,
   createBuildOutputMarker,
   createPublicationPlan,
   createPublicationSnapshot,
@@ -23,6 +22,7 @@ import {
   serializeBuildOutputMarker,
   validatePublicationArtifact,
 } from "../index.js";
+import { createContentManifestEntry } from "../src/testing/fixtures.js";
 
 const NOW = new Date("2026-01-10T00:00:00.000Z");
 
@@ -31,7 +31,7 @@ function note(
   visibility: "public" | "unlisted" | "draft" | "scheduled",
   options: { publishAt?: string; html?: string; permalink?: string } = {},
 ): PublicationEntry {
-  const manifestEntry = {
+  const manifestEntry = createContentManifestEntry({
     slug,
     permalink: options.permalink ?? `/${slug}`,
     title: slug,
@@ -45,7 +45,7 @@ function note(
         ? {}
         : { publishAt: new Date(options.publishAt) }),
     },
-  } as unknown as ContentManifestEntry;
+  });
   const entry = publicationEntriesFromManifest({ entries: [manifestEntry] })[0];
   if (!entry) throw new Error(`Could not build publication entry for ${slug}.`);
   return entry;

@@ -48,8 +48,8 @@ test("client rendering preserves Mermaid labels and removes unsafe SVG", async (
     await page.addScriptTag({ content: bundle.outputFiles?.[0]?.text });
     const result = await page.evaluate(async () => {
       const client = (
-        window as unknown as {
-          MermaidClient: {
+        window as {
+          MermaidClient?: {
             initMermaidDiagrams(context: {
               config: {
                 mermaid: {
@@ -61,6 +61,7 @@ test("client rendering preserves Mermaid labels and removes unsafe SVG", async (
           };
         }
       ).MermaidClient;
+      if (!client) throw new Error("missing MermaidClient");
       const mermaid = {
         initialize() {},
         async render() {

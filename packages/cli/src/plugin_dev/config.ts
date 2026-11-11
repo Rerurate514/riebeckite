@@ -16,23 +16,26 @@ export async function writePluginDevConfig(
       resolveModuleSpecifier("@riebeckite/plugin-toc"),
     ]);
   const factoryName = pluginFactoryName(plugin.name);
-  const source = `import { defineConfig } from ${JSON.stringify(core)};
+  const source = `import { defineConfig, type RiebeckitePlugin } from ${JSON.stringify(core)};
 import { colorMode } from ${JSON.stringify(colorMode)};
 import { obsidianMarkdown } from ${JSON.stringify(obsidianMarkdown)};
 import { toc } from ${JSON.stringify(toc)};
 import { defaultTheme } from ${JSON.stringify(themeDefault)};
 import * as pluginModule from ${JSON.stringify(plugin.entry)};
 
-const moduleRecord = pluginModule as unknown as Record<string, unknown>;
+const moduleRecord: Record<string, unknown> = { ...pluginModule };
 const preferredFactory = moduleRecord[${JSON.stringify(factoryName)}];
 const fallbackFactory = Object.values(moduleRecord).find(
   (value) => typeof value === "function",
 );
-const factory = (
-  typeof preferredFactory === "function" ? preferredFactory : fallbackFactory
-) as (() => unknown) | undefined;
+const factory =
+  typeof preferredFactory === "function"
+    ? (preferredFactory as () => RiebeckitePlugin)
+    : typeof fallbackFactory === "function"
+      ? (fallbackFactory as () => RiebeckitePlugin)
+      : undefined;
 
-if (typeof factory !== "function") {
+if (!factory) {
   throw new Error("Plugin entry must export a plugin factory.");
 }
 
@@ -40,7 +43,7 @@ const plugin = factory();
 if (
   !plugin ||
   typeof plugin !== "object" ||
-  typeof (plugin as { name?: unknown }).name !== "string"
+  typeof plugin.name !== "string"
 ) {
   throw new Error("Plugin factory must return a Riebeckite Plugin.");
 }

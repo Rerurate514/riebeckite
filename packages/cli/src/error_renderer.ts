@@ -30,6 +30,6 @@ function describe(error: Error): string {
 }
 
 function readStringProperty(error: Error, key: string): string | undefined {
-  const value = (error as unknown as Record<string, unknown>)[key];
+  const value: unknown = Reflect.get(error, key);
   return typeof value === "string" && value.length > 0 ? value : undefined;
 }

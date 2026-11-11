@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  createContentManifest,
+} from "@riebeckite/core";
 import { createKanbanLinkResolver } from "../index.ts";
 
 function entry(slug: string, routable: boolean): ContentManifestEntry {
@@ -25,15 +29,7 @@ function entry(slug: string, routable: boolean): ContentManifestEntry {
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    entries,
-    publicEntries: entries.filter((item) => item.publishing.routable),
-    discoverableEntries: entries.filter((item) => item.publishing.discoverable),
-    bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(
-      entries.map((item) => [item.slug.toLowerCase(), item.slug]),
-    ),
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries });
 }
 
 test("kanban link resolver ignores non-routable targets", () => {

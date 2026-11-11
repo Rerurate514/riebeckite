@@ -1,5 +1,4 @@
 import type {
-  ClientRuntime,
   ClientRuntimeCreateOptions,
   ClientRuntimeHost,
 } from "@riebeckite/core/client";
@@ -44,8 +43,8 @@ export function createClientRuntimeHost(
         signal: createOptions.signal ?? options.signal,
         onError: options.onError,
       });
-      instances.add(instance as InteractiveRuntime<unknown, unknown>);
-      return instance as unknown as ClientRuntime<TOutput>;
+      instances.add(instance);
+      return instance;
     },
     async dispose() {
       if (disposed) return;

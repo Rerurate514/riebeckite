@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { createInvalid } from "@riebeckite/core";
 import { isPathInsideDirectory, toLogicalPath } from "@riebeckite/node";
-import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
+import type { Plugin, ViteDevServer } from "vite";
 import {
   invalidateApplicationRuntime,
   isSiteAssetPath,
@@ -42,10 +43,10 @@ function createServer(modules: FakeModule[]): FakeServer {
           file: mod.file,
           id: mod.id ?? mod.file,
           ssrModule: {},
-        } as unknown as EnvironmentModuleNode,
+        },
       ]),
     ),
-    invalidateModule(mod: EnvironmentModuleNode): void {
+    invalidateModule(mod): void {
       invalidated.push(mod.file ?? "");
     },
   };
@@ -83,7 +84,7 @@ function createServer(modules: FakeModule[]): FakeServer {
       });
     },
     invalidated,
-    server: server as unknown as ViteDevServer,
+    server: createInvalid<ViteDevServer>(server),
   };
 }
 
@@ -161,7 +162,7 @@ describe("invalidateApplicationRuntime", () => {
     const fake = createServer([]);
     const withoutGraph = {
       environments: {},
-    } as unknown as ViteDevServer;
+    } as ViteDevServer;
     assert.equal(invalidateApplicationRuntime(withoutGraph, "/site"), 0);
     assert.equal(fake.invalidated.length, 0);
   });
@@ -357,12 +358,12 @@ describe("riebeckiteContentWatch", () => {
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
     const closed: Array<() => void> = [];
-    (fake.server as unknown as { httpServer: unknown }).httpServer = {
+    fake.server.httpServer = createInvalid<typeof fake.server.httpServer>({
       once(event: string, handler: () => void) {
         closed.push(handler);
         assert.equal(event, "close");
       },
-    };
+    });
     configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));

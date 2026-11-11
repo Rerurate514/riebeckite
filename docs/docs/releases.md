@@ -37,14 +37,24 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ### Changed
 
+- **Breaking:** Align the public API types with the values the runtime actually produces, and replace the places that hid errors behind a double type assertion with validation. `@riebeckite/core` gains `parseYaml` for YAML parsing and fixture builders for content manifests and plugin contexts. `ClientRuntimeInvokeOptions.capability` is now typed as `RuntimeCapability`, `JsonValue` accepts readonly arrays and `undefined` property values, and defaulted options and arguments of `defineCliCommand` are typed with the accepted values instead of the default literal. `@riebeckite/node` reports a corrupt migration plan as `The migration plan is missing or corrupt.` instead of failing with an internal error.
+  Packages: `@riebeckite/core`, `@riebeckite/runtime`, `@riebeckite/node`
+  Migration: `ClientRuntimeInvokeOptions.capability` only accepts the values listed in `RuntimeCapability`. Code that reads `JsonValue` must handle `undefined` property values. Defaulted options and arguments of `defineCliCommand` are typed with every accepted value, so check the annotations that assumed the default literal.
+
 - **Breaking:** Remove the duplicate UX TOC scroll spy so `@riebeckite/plugin-toc` is the sole owner of TOC active state.
   Packages: `@riebeckite/plugin-ux`
   Migration: Remove `tocScrollSpy` from `ux()`. Use `toc()` and `TableOfContents` for TOC scroll tracking.
 
 ### Fixed
 
+- Derived View results and content cache entries are now reused only when they survive a JSON round trip, so sparse arrays, negative zero, cyclic values, and dates inside frontmatter arrays no longer change when a cache hit is served. The Markdown sanitize fingerprint now distinguishes regular expressions in the schema, and the rename plugin ignores a corrupt persisted route lock instead of diffing against it.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-rename`
+
 - Match `exclude` against logical content slugs so localized pages are filtered independently, keep authored calendar dates instead of UTC dates, fall back to the next valid date field when `published` is not a date, include notes dated only by `published` in Recent Posts, and center article-layout page bodies again.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
+
+- Content mutations now retry when Windows reports that a content file is in use, so an apply no longer fails with EPERM while another process is reading the same file. Stale lock reclamation is serialized through a guard file and removes the stale lock directly, so two processes can no longer both believe they hold the lock.
+  Packages: `@riebeckite/node`
 
 ## 0.0.46 - 2026-11-10
 

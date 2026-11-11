@@ -62,6 +62,7 @@ jobs:
       - run: pnpm check:packages
       - run: pnpm check:dependencies
       - run: pnpm check:cycles
+      - run: pnpm check:double-cast
       - run: pnpm check:source-health
       - run: pnpm check:templates
       - run: pnpm check:ci-selection

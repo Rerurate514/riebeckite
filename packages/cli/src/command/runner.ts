@@ -243,7 +243,7 @@ function isUnknownCommand(error: CliUsageError): boolean {
 
 function readExitCode(error: unknown): number {
   if (error instanceof Error) {
-    const value = (error as unknown as { exitCode?: unknown }).exitCode;
+    const value: unknown = Reflect.get(error, "exitCode");
     if (typeof value === "number" && Number.isInteger(value) && value > 0) {
       return value;
     }
@@ -253,7 +253,7 @@ function readExitCode(error: unknown): number {
 
 function readCode(error: unknown): string {
   if (error instanceof Error) {
-    const value = (error as unknown as { code?: unknown }).code;
+    const value: unknown = Reflect.get(error, "code");
     if (typeof value === "string" && value.length > 0) return value;
   }
   return "CLI_INTERNAL_ERROR";

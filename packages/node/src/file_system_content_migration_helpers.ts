@@ -11,7 +11,10 @@ import type {
   ContentMutationOperation,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import type { ContentMigrationPlan } from "./file_system_content_migration_types.js";
+import type {
+  ContentMigrationPlan,
+  ContentMigrationVerification,
+} from "./file_system_content_migration_types.js";
 
 // shortcut: only the official permalink plugin declares the frontmatter redirect field; other redirect producers must pass redirectField explicitly.
 export function redirectFieldFromConfig(
@@ -176,6 +179,116 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+export function parseContentMigrationPlan(
+  value: unknown,
+): ContentMigrationPlan | undefined {
+  if (!isRecord(value)) return undefined;
+  const {
+    id,
+    createdAt,
+    migrations,
+    changes,
+    baseContentFingerprint,
+    mutationPlanId,
+    mutationPlanFingerprint,
+    planFingerprint,
+    operations,
+    diagnostics,
+    conflicts,
+    selections,
+    skipped,
+    impact,
+    verification,
+  } = value;
+  if (typeof id !== "string") return undefined;
+  if (typeof createdAt !== "string") return undefined;
+  if (typeof baseContentFingerprint !== "string") return undefined;
+  if (typeof mutationPlanId !== "string") return undefined;
+  if (typeof mutationPlanFingerprint !== "string") return undefined;
+  if (typeof planFingerprint !== "string") return undefined;
+  if (!Array.isArray(migrations)) return undefined;
+  if (!Array.isArray(changes)) return undefined;
+  if (!Array.isArray(operations)) return undefined;
+  if (!Array.isArray(diagnostics)) return undefined;
+  if (!Array.isArray(conflicts)) return undefined;
+  if (!Array.isArray(selections)) return undefined;
+  if (!Array.isArray(skipped)) return undefined;
+  if (!isMigrationImpact(impact)) return undefined;
+  if (!isMigrationVerification(verification)) return undefined;
+  const parsedMigrations = migrations.filter(isPlanMigration);
+  if (parsedMigrations.length !== migrations.length) return undefined;
+  const parsedChanges = changes.filter(isPlanFile);
+  if (parsedChanges.length !== changes.length) return undefined;
+  return {
+    schemaVersion: 1,
+    id,
+    createdAt,
+    migrations: parsedMigrations,
+    baseContentFingerprint,
+    mutationPlanId,
+    mutationPlanFingerprint,
+    planFingerprint,
+    operations: operations as ContentMigrationPlan["operations"],
+    changes: parsedChanges,
+    diagnostics: diagnostics as ContentMigrationPlan["diagnostics"],
+    conflicts: conflicts as ContentMigrationPlan["conflicts"],
+    selections: selections as ContentMigrationPlan["selections"],
+    skipped: skipped as ContentMigrationPlan["skipped"],
+    impact,
+    verification,
+  };
+}
+
+function isPlanMigration(
+  value: unknown,
+): value is ContentMigrationPlan["migrations"][number] {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.version === "number" &&
+    typeof value.fingerprint === "string"
+  );
+}
+
+function isPlanFile(
+  value: unknown,
+): value is ContentMigrationPlan["changes"][number] {
+  return (
+    isRecord(value) &&
+    typeof value.path === "string" &&
+    (value.beforeFingerprint === null ||
+      typeof value.beforeFingerprint === "string") &&
+    (value.afterFingerprint === null ||
+      typeof value.afterFingerprint === "string")
+  );
+}
+
+function isMigrationImpact(
+  value: unknown,
+): value is ContentMigrationBatch["impact"] {
+  return (
+    isRecord(value) &&
+    typeof value.files === "number" &&
+    typeof value.moved === "number" &&
+    typeof value.frontmatter === "number" &&
+    typeof value.created === "number" &&
+    typeof value.deleted === "number"
+  );
+}
+
+function isMigrationVerification(
+  value: unknown,
+): value is ContentMigrationVerification {
+  return (
+    isRecord(value) &&
+    typeof value.beforeFiles === "number" &&
+    typeof value.afterFiles === "number" &&
+    typeof value.beforePublicationFingerprint === "string" &&
+    typeof value.afterPublicationFingerprint === "string" &&
+    typeof value.derivedViews === "number"
+  );
+}
+
 export function sameMigrationPlan(
   left: ContentMigrationPlan,
   right: ContentMigrationPlan,
@@ -318,6 +431,35 @@ async function lockFileIsOld(lockPath: string): Promise<boolean> {
   }
 }
 
+export async function reclaimStaleLock(lockPath: string): Promise<boolean> {
+  const guardPath = `${lockPath}.reclaim`;
+  let guard: Awaited<ReturnType<typeof fs.open>>;
+  try {
+    guard = await fs.open(guardPath, "wx");
+  } catch (error) {
+    if (
+      (error as NodeJS.ErrnoException).code === "EEXIST" &&
+      (await lockFileIsOld(guardPath))
+    ) {
+      await fs.rm(guardPath, { force: true });
+      return await reclaimStaleLock(lockPath);
+    }
+    return false;
+  }
+  try {
+    const stale = await staleLockContent(lockPath);
+    if (stale === null) return false;
+    const current = await fs.readFile(lockPath, "utf8").catch(() => null);
+    if (current === null) return true;
+    if (current !== stale) return false;
+    await retryOnSharingViolation(() => fs.rm(lockPath));
+    return true;
+  } finally {
+    await guard.close();
+    await fs.rm(guardPath, { force: true }).catch(() => undefined);
+  }
+}
+
 export function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -337,4 +479,23 @@ export function errorPath(error: unknown): string | undefined {
   const value = error.path.replace(/\\/gu, "/");
   if (value.startsWith("/") || /^[A-Za-z]:\//u.test(value)) return undefined;
   return value;
+}
+
+export async function retryOnSharingViolation<T>(
+  operation: () => Promise<T>,
+): Promise<T> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (
+        attempt >= 5 ||
+        (code !== "EPERM" && code !== "EBUSY" && code !== "EACCES")
+      ) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10 * 2 ** attempt));
+    }
+  }
 }

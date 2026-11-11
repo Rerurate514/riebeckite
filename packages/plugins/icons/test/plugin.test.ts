@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import type { ContentManifest } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import { icons } from "../index.js";
 import { entry } from "./helpers.js";
 
@@ -57,12 +57,12 @@ test("the plugin resolves one model for entries, folders, tags, and properties",
   );
 
   const tagged = entry("notes/tagged", { Status: "done" }, ["guide"]);
-  const manifest = {
+  const manifest = createContentManifest({
     entries: [tagged],
     folderLocations: new Map([
       ["/notes", { folder: "notes", pathname: "/notes" }],
     ]),
-  } as unknown as ContentManifest;
+  });
   await plugin.onManifestCreated?.({
     manifest,
     contentIndex: new Map(),

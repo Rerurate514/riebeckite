@@ -607,6 +607,16 @@ export {
   resolveApprovalState,
   resolvePublicationWorkflowState,
 } from "./src/publication/workflow.js";
+export {
+  createContentManifest,
+  createContentManifestEntry,
+  createInvalid,
+  createPluginContentLocationContext,
+  createPluginContext,
+  createPluginManifestContext,
+  createResolvedRiebeckiteConfig,
+  createRiebeckiteConfig,
+} from "./src/testing/fixtures.js";
 export type {
   ConfigValidationIssue,
   PluginOptionsValidator,
@@ -805,3 +815,4 @@ export {
   escapeRegExp,
   stripHtml,
 } from "./src/utils/text.js";
+export { parseYaml } from "./src/utils/yaml.js";

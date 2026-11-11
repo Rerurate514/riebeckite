@@ -19,15 +19,10 @@ export const RUNTIME_STATES = [
 
 export type RuntimeState = (typeof RUNTIME_STATES)[number];
 
-export const RUNTIME_CAPABILITIES = [
-  "dom",
-  "worker",
-  "wasm",
-  "network",
-  "message",
-] as const;
+import type { RuntimeCapability } from "@riebeckite/core/client";
 
-export type RuntimeCapability = (typeof RUNTIME_CAPABILITIES)[number];
+export { RUNTIME_CAPABILITIES } from "@riebeckite/core/client";
+export type { RuntimeCapability };
 
 export type RuntimeLimits = {
   readonly maxInputBytes?: number;

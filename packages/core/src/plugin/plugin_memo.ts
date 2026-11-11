@@ -68,13 +68,22 @@ export function createPluginMemo(
  */
 export function stableStringify(value: JsonValue): string {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+  if (isJsonArray(value)) return `[${value.map(stableStringify).join(",")}]`;
 
-  const keys = Object.keys(value).sort();
-  const body = keys
-    .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`)
+  const body = Object.keys(value)
+    .sort()
+    .flatMap((key) => {
+      const item = value[key];
+      return item === undefined
+        ? []
+        : [`${JSON.stringify(key)}:${stableStringify(item)}`];
+    })
     .join(",");
   return `{${body}}`;
+}
+
+function isJsonArray(value: JsonValue): value is readonly JsonValue[] {
+  return Array.isArray(value);
 }
 
 function hash(value: string): string {

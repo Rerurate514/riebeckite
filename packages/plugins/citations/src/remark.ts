@@ -92,7 +92,7 @@ function readFrontmatter(
  * `remark-directive` split at a `:`, which happens before this plugin runs.
  */
 function prepareTree(root: Root, blocked: WeakSet<object>): void {
-  prepareNode(root as unknown as Tree, blocked, false);
+  prepareNode(root, blocked, false);
 }
 
 function prepareNode(

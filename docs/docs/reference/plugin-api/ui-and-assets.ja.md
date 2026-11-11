@@ -76,6 +76,33 @@ const backlinks = await getBacklinks({ view, slug });
 </article>
 ```
 
+## Markdown コンポーネント
+
+通常の Markdown から自己完結した UI を描画するプラグインには `components` を使います。コンポーネントは Markdown AST の処理中に描画され、対話型コンポーネントのブラウザモジュールは、そのコンポーネントを含むページでだけ読み込まれます。
+
+```ts
+import { definePluginComponent } from "@riebeckite/core";
+
+components: [
+  definePluginComponent({
+    name: "Counter",
+    parseProps: (props) => ({ initial: Number(props.initial ?? 0) }),
+    render: (props) => renderToString(<Counter {...props} />),
+    client: { moduleSpecifier: "@example/plugin/counter" },
+  }),
+];
+```
+
+MDX を有効にしなくても、Markdown では次のように書けます。
+
+````md
+```riebeckite-component Counter
+initial: 3
+```
+````
+
+props は YAML のマッピングでなければならず、JSON として安全にシリアライズできる公開データだけが使われます。コンポーネント名はプラグイン全体で一意にしてください。重複はプラグイン解決時に失敗します。静的コンポーネントでは `client` を省略します。対話型コンポーネントは既定 export の Hono JSX コンポーネント（または `exportName` で指定した export）を公開し、生成されたクライアントエントリが hydration します。イベント委譲、任意の DOM を管理するウィジェット、ページ全体の動作には引き続き `clientEntries` が適しています。
+
 ## アセット
 
 プラグイン固有の CSS はプラグインのパッケージ内に置き、`assets` で公開します。

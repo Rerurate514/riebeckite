@@ -84,6 +84,40 @@ const backlinks = await getBacklinks({ view, slug });
 </article>
 ```
 
+## Markdown components
+
+Use `components` when a plugin renders a self-contained UI from ordinary
+Markdown. A component renders during the Markdown AST pass. Its browser module
+is loaded only when the rendered page contains that interactive component.
+
+```ts
+import { definePluginComponent } from "@riebeckite/core";
+
+components: [
+  definePluginComponent({
+    name: "Counter",
+    parseProps: (props) => ({ initial: Number(props.initial ?? 0) }),
+    render: (props) => renderToString(<Counter {...props} />),
+    client: { moduleSpecifier: "@example/plugin/counter" },
+  }),
+];
+```
+
+Write it in Markdown without enabling MDX:
+
+````md
+```riebeckite-component Counter
+initial: 3
+```
+````
+
+Props must be a YAML mapping and are serialized as JSON-safe public data. Give
+each component a globally unique name; duplicate names fail during plugin
+resolution. Omit `client` for static components. Interactive components must
+export the default Hono JSX component (or set `exportName`) and hydrate through
+the generated client entry. `clientEntries` remain appropriate for delegated
+events, widgets that manage arbitrary DOM, and page-level behavior.
+
 ## Assets and client entries
 
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through

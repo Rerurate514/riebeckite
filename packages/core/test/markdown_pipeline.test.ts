@@ -4,7 +4,8 @@ import { assertGolden } from "@riebeckite/test";
 import type { Node } from "unist";
 import { ContentManager, type ContentSource } from "../index.js";
 import { Pipeline } from "../src/pipeline.js";
-import { definePlugin } from "../src/types/plugin.js";
+import { definePlugin, resolvePlugins } from "../src/types/plugin.js";
+import { definePluginComponent } from "../src/types/plugin_component.js";
 
 const markdown = [
   "---",
@@ -65,6 +66,41 @@ test("leaves colon text intact without directive syntax", async () => {
   assert.match(html, /12:30に集合。比率は3:4です。/);
   assert.match(html, /:badge\[New\]\{variant=success\}/);
   assert.doesNotMatch(html, /<div><\/div>/);
+});
+
+test("renders registered plugin components from Markdown fences", async () => {
+  const component = definePluginComponent({
+    name: "notice",
+    parseProps: (props) => {
+      if (typeof props.message !== "string")
+        throw new Error("message is required");
+      return { message: props.message };
+    },
+    render: ({ message }) => `<strong>${message}</strong>`,
+  });
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [definePlugin({ name: "notice", components: [component] })],
+  }).execute("```riebeckite-component notice\nmessage: Safe\n```");
+
+  assert.match(html, /data-riebeckite-component="notice"/);
+  assert.match(
+    html,
+    /data-riebeckite-component-props="{&#x22;message&#x22;:&#x22;Safe&#x22;}"/,
+  );
+  assert.match(html, /<strong>Safe<\/strong>/);
+});
+
+test("rejects duplicate plugin component names", () => {
+  const component = definePluginComponent({ name: "notice", render: () => "" });
+
+  assert.throws(
+    () =>
+      resolvePlugins([
+        definePlugin({ name: "one", components: [component] }),
+        definePlugin({ name: "two", components: [component] }),
+      ]),
+    /Plugin component "notice"/,
+  );
 });
 
 test("wraps Markdown tables in a horizontal scroll container", async () => {

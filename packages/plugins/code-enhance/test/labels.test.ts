@@ -13,3 +13,12 @@ test("codeEnhance forwards copy label overrides to the client entry", () => {
     copiedLabel: "コピーしました",
   });
 });
+
+test("codeEnhance registers an interactive JSX copy component", () => {
+  const component = codeEnhance().components?.[0];
+  assert.equal(component?.name, "CodeCopy");
+  assert.equal(
+    component?.client?.moduleSpecifier,
+    "@riebeckite/plugin-code-enhance/copy-component",
+  );
+});

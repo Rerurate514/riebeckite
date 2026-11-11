@@ -18,11 +18,18 @@
       "source": "./client.ts",
       "default": "./dist/client.js"
     },
+    "./copy-component": {
+      "types": "./dist/src/copy_component.d.ts",
+      "import": "./dist/src/copy_component.js",
+      "source": "./src/copy_component.tsx",
+      "default": "./dist/src/copy_component.js"
+    },
     "./style.css": "./style.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/ui": "workspace:*",
+    "hono": "^4.11.3",
     "rehype-pretty-code": "^0.14.1",
     "shiki": "^3.13.0"
   },

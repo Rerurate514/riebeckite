@@ -203,6 +203,9 @@ importers:
       vfile-matter:
         specifier: 'catalog:'
         version: 5.0.1
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -623,6 +626,9 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.11.3
+        version: 4.13.12
       rehype-pretty-code:
         specifier: ^0.14.1
         version: 0.14.5(shiki@3.23.0)

@@ -683,8 +683,11 @@ export {
 } from "./src/types/plugin_asset.js";
 export type {
   PluginComponent,
+  PluginComponentClient,
   PluginDataHelper,
+  PluginMarkdownComponent,
 } from "./src/types/plugin_component.js";
+export { definePluginComponent } from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,
   PluginContentLocationAugmentContext,

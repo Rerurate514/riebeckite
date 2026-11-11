@@ -99,6 +99,31 @@ test("client module splits entries gated by a page marker", async () => {
   );
 });
 
+test("client module lazily hydrates registered interactive components", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        components: [
+          {
+            name: "counter",
+            render: () => "",
+            client: { moduleSpecifier: "counter-entry", exportName: "Counter" },
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /import\("counter-entry"\)/);
+  assert.match(module as string, /hydrateRoot/);
+  assert.match(module as string, /data-riebeckite-component-interactive/);
+  assert.doesNotMatch(module as string, /^import .*counter-entry/m);
+});
+
 test("client module loads declared plugin runtimes lazily", async () => {
   const plugin = riebeckiteClientModule(() => ({
     plugins: [

@@ -2,12 +2,16 @@ import {
   createClientEntry,
   createStyleAsset,
   definePlugin,
+  definePluginComponent,
 } from "@riebeckite/core";
+import type { CodeCopyProps } from "./src/copy_component.js";
+import { renderCodeCopy } from "./src/copy_component.js";
 import { DEFAULT_COPIED_LABEL, DEFAULT_COPY_LABEL } from "./src/init.js";
 import { rehypeCodeEnhance } from "./src/rehype.js";
 import { remarkCodeMeta } from "./src/remark.js";
 import type { CodeEnhanceOptions } from "./src/types.js";
 
+export type { CodeCopyProps } from "./src/copy_component.js";
 export {
   DEFAULT_COPIED_LABEL,
   DEFAULT_COPY_LABEL,
@@ -33,6 +37,30 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeEnhance, options);
     },
+    components: [
+      definePluginComponent({
+        name: "CodeCopy",
+        parseProps(props) {
+          if (typeof props.text !== "string") {
+            throw new Error('CodeCopy requires a string "text" prop.');
+          }
+          if (props.label !== undefined && typeof props.label !== "string") {
+            throw new Error('CodeCopy "label" must be a string.');
+          }
+          if (
+            props.copiedLabel !== undefined &&
+            typeof props.copiedLabel !== "string"
+          ) {
+            throw new Error('CodeCopy "copiedLabel" must be a string.');
+          }
+          return props as CodeCopyProps;
+        },
+        render: renderCodeCopy,
+        client: {
+          moduleSpecifier: "@riebeckite/plugin-code-enhance/copy-component",
+        },
+      }),
+    ],
     assets: [
       createStyleAsset(
         "code-enhance",

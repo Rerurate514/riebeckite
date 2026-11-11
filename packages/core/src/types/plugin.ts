@@ -24,6 +24,7 @@ import type {
 } from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
+import type { PluginMarkdownComponent } from "./plugin_component.js";
 import type {
   PluginContentContext,
   PluginContentLocationAugmentContext,
@@ -168,6 +169,7 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   inspectGeneratedHtml?: PluginGeneratedHtmlInspector;
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
+  components?: readonly PluginMarkdownComponent[];
   endpoints?: PluginEndpoint[];
   inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
@@ -269,8 +271,26 @@ export function resolvePlugins(
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   assertUniquePluginNames(orderedPlugins);
+  assertUniquePluginComponentNames(orderedPlugins);
 
   return resolvePluginDependencies(orderedPlugins);
+}
+
+function assertUniquePluginComponentNames(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  const owners = new Map<string, string>();
+  for (const plugin of plugins) {
+    for (const component of plugin.components ?? []) {
+      const previous = owners.get(component.name);
+      if (previous !== undefined) {
+        throw new Error(
+          `Plugin component "${component.name}" is provided by both "${previous}" and "${plugin.name}".`,
+        );
+      }
+      owners.set(component.name, plugin.name);
+    }
+  }
 }
 
 /**

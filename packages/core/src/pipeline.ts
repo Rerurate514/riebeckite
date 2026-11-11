@@ -53,6 +53,7 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
+import { renderPluginComponents } from "./plugin_component_markdown.js";
 import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
 import { resolvePlugins } from "./types/plugin.js";
@@ -396,6 +397,11 @@ export class Pipeline {
         },
         markdownPipelineContext,
       );
+    }
+
+    const components = plugins.flatMap((plugin) => plugin.components ?? []);
+    if (components.length > 0) {
+      this.use(processor, () => renderPluginComponents(components));
     }
 
     this.use(processor, normalizeMarkdownLinks, {

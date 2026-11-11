@@ -35,6 +35,12 @@ function createClientModule(
   const clientEntries = config.plugins.flatMap(
     (plugin) => plugin.clientEntries ?? [],
   );
+  const components = config.plugins.flatMap(
+    (plugin) => plugin.components ?? [],
+  );
+  const interactiveComponents = components.filter(
+    (component) => component.client !== undefined,
+  );
   const runtimeEntries = new Map<
     string,
     {
@@ -58,6 +64,10 @@ function createClientModule(
   const hasRuntimes = runtimeEntries.size > 0;
 
   imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
+  if (interactiveComponents.length > 0) {
+    imports.push('import { hydrateRoot } from "hono/jsx/dom/client";');
+    imports.push('import { jsx } from "hono/jsx/jsx-runtime";');
+  }
   if (hasRuntimes) {
     imports.push(
       'import { createClientRuntimeHost, InteractiveRuntimeRegistry } from "@riebeckite/runtime/client";',
@@ -134,6 +144,10 @@ function createClientModule(
     );
   }
 
+  if (interactiveComponents.length > 0) {
+    pageInitializers.push("mountPluginComponents(root)");
+  }
+
   const runtimeSupport = hasRuntimes
     ? `const pluginRuntimeRegistry = new InteractiveRuntimeRegistry();
 const pluginRuntimeLoads = new Map();
@@ -198,6 +212,37 @@ ${appInitializers.map((initializer) => `  ${initializer};`).join("\n")}
 
 function mountPageClientInitializers(root) {
 ${pageInitializers.map((initializer) => `  ${initializer};`).join("\n")}
+}
+
+${
+  interactiveComponents.length === 0
+    ? ""
+    : `function mountPluginComponents(root) {
+  mountPluginClientInitializer("page", "plugin-components", root, undefined, async (context) => {
+    const roots = [...context.root.querySelectorAll("[data-riebeckite-component-interactive]")];
+    const cleanups = await Promise.all(roots.map(async (element) => {
+      const name = element.getAttribute("data-riebeckite-component");
+      const props = element.getAttribute("data-riebeckite-component-props");
+      if (!name || props === null) return undefined;
+      const entry = pluginComponentEntries[name];
+      if (!entry) return undefined;
+      const module = await entry.load();
+      const Component = module[entry.exportName];
+      if (typeof Component !== "function" || context.signal.aborted || !element.isConnected) return undefined;
+      return hydrateRoot(element, jsx(Component, JSON.parse(props)));
+    }));
+    return () => cleanups.forEach((root) => root?.unmount());
+  });
+}
+
+const pluginComponentEntries = {
+${interactiveComponents
+  .map(
+    (component) =>
+      `  ${JSON.stringify(component.name)}: { exportName: ${JSON.stringify(component.client?.exportName ?? "default")}, load: () => import(${JSON.stringify(component.client?.moduleSpecifier)}) }`,
+  )
+  .join(",\n")}
+};`
 }
 
 export function initRiebeckiteClient() {

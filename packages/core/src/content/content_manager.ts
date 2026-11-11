@@ -678,7 +678,8 @@ export class ContentManager {
               strategy: this.publishStrategy(),
               buildTime: this.publishingBuildTime,
             }),
-            entriesByPath.get(`${post.slug}.md`)?.metadata,
+            entriesByPath.get(processed.sourcePath ?? `${post.slug}.md`)
+              ?.metadata,
             this.contentIndexAmbiguities,
           );
         }),

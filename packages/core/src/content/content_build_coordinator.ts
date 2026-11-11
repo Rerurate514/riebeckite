@@ -264,6 +264,7 @@ export class ContentBuildCoordinator {
           (entry) => this.dependencies.readEntry(entry),
           this.dependencies.includeFileMetadata,
           previousState?.entries,
+          this.dependencies.pathResolver?.isContentPath,
         ),
     );
     const changeSet = await this.dependencies.observability.tracer.span(

@@ -1,5 +1,4 @@
 /// <reference path="./virtual_modules.ts" />
-import { renderContent as renderContentBody } from "virtual:riebeckite/content-renderers";
 import type {
   ContentManager,
   ContentManifestEntry,
@@ -19,6 +18,24 @@ import {
 } from "./content_route.js";
 import { ArticleProvider } from "./ui/context.js";
 import { PageBody } from "./ui/primitives.js";
+
+async function renderContentBody(
+  sourcePath: string,
+): Promise<Child | undefined> {
+  try {
+    const { renderContent } = await import(
+      "virtual:riebeckite/content-renderers"
+    );
+    return renderContent(sourcePath);
+  } catch (error) {
+    if (
+      (error as { code?: unknown }).code === "ERR_UNSUPPORTED_ESM_URL_SCHEME"
+    ) {
+      return undefined;
+    }
+    throw error;
+  }
+}
 
 type RouteContent = Pick<
   ContentManager,
@@ -131,7 +148,7 @@ async function renderContent(
     <ArticleProvider
       entry={publicEntry}
       post={post}
-      body={renderContentBody(post.sourcePath ?? "")}
+      body={await renderContentBody(post.sourcePath ?? "")}
     >
       {options.render({ entry, post })}
     </ArticleProvider>,

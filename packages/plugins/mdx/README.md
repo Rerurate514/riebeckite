@@ -47,7 +47,7 @@ The MDX module and its relative imports are resolved through Vite. JSX is render
 
 Static relative imports are tracked by incremental builds. Changing an imported local file rebuilds its MDX page, and adding or removing an `.mdx` file reloads the development server.
 
-Search, excerpts, and headings are derived from a static text projection of the MDX source. Components are not executed for these derived outputs, so their rendered text is not included.
+Search, excerpts, and headings are derived from a static text projection of the MDX source. The projection parses MDX into its syntax tree, keeps Markdown structure such as headings, paragraphs, lists, and links, and drops frontmatter, import/export declarations, JavaScript expressions, and JSX attributes. Static Markdown inside JSX children is kept. Components are not executed for these derived outputs, so text a component generates at render time is not included. Invalid MDX fails the build instead of producing a partial projection.
 
 ## Components
 
@@ -67,3 +67,7 @@ Use local relative imports when a component belongs to one page or a group of pa
 ## Markdown coexistence
 
 Markdown remains unchanged. Do not create `.md` and `.mdx` files with the same slug: Riebeckite reports the collision instead of choosing one arbitrarily.
+
+## Preview
+
+The package preview renders Markdown only. Preview MDX pages through the site development server, which resolves MDX and its imports with Vite.

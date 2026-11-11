@@ -2,6 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import mdxRollup from "@mdx-js/rollup";
 import { definePlugin, extractFrontmatter } from "@riebeckite/core";
+import remarkMdx from "remark-mdx";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import { unified } from "unified";
 import type { MdxOptions } from "./src/types.js";
 
 export type { MdxOptions } from "./src/types.js";
@@ -21,8 +25,8 @@ export default function mdx(options: MdxOptions) {
         extension: ".mdx",
         rendererModule: "virtual:riebeckite/mdx-renderer",
         rendererOptions: options,
-        process: async ({ source, processMarkdown }) => {
-          const projected = stripMdxSyntax(source);
+        process: async ({ sourcePath, source, processMarkdown }) => {
+          const projected = projectMdxSource(source, sourcePath);
           const rendered =
             projected.trim() === ""
               ? undefined
@@ -44,7 +48,7 @@ export default function mdx(options: MdxOptions) {
       }),
       mdxRendererPlugin(contentDirectory),
     ],
-    processedContentCache: { version: "mdx-v2", dependencyMode: "tracked" },
+    processedContentCache: { version: "mdx-v3", dependencyMode: "tracked" },
   });
 }
 
@@ -57,7 +61,7 @@ function resolveMdxDependencies(
     paths.map((candidate) => candidate.replace(/\\/g, "/")),
   );
   const dependencies = new Set<string>();
-  for (const specifier of staticModuleSpecifiers(source)) {
+  for (const specifier of staticModuleSpecifiers(source, sourcePath)) {
     if (!specifier.startsWith(".")) continue;
     const basePath = path.posix.normalize(
       path.posix.join(path.posix.dirname(sourcePath), specifier),
@@ -75,14 +79,33 @@ function resolveMdxDependencies(
   return [...dependencies].sort();
 }
 
-function staticModuleSpecifiers(source: string): string[] {
-  return [
-    ...source.matchAll(
-      /\b(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']/g,
-    ),
-  ]
-    .map((match) => match[1])
-    .filter((specifier): specifier is string => Boolean(specifier));
+function staticModuleSpecifiers(source: string, sourcePath: string): string[] {
+  const declarations: string[] = [];
+  collectMdxModuleDeclarations(
+    parseMdxSource(source, sourcePath),
+    declarations,
+  );
+  return declarations.flatMap((declaration) =>
+    [
+      ...declaration.matchAll(
+        /\b(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?["']([^"']+)["']/g,
+      ),
+    ]
+      .map((match) => match[1])
+      .filter((specifier): specifier is string => Boolean(specifier)),
+  );
+}
+
+function collectMdxModuleDeclarations(
+  node: ProjectionNode,
+  declarations: string[],
+): void {
+  if (node.type === "mdxjsEsm" && typeof node.value === "string") {
+    declarations.push(node.value);
+  }
+  node.children?.forEach((child) => {
+    collectMdxModuleDeclarations(child, declarations);
+  });
 }
 
 const rendererModuleId = "virtual:riebeckite/mdx-renderer";
@@ -90,12 +113,60 @@ const resolvedRendererModuleId = `\0${rendererModuleId}.tsx`;
 
 const frontmatterPattern = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/;
 
-function stripMdxSyntax(source: string): string {
-  return source
-    .replace(frontmatterPattern, "")
-    .replace(/^\s*(?:import|export)\b[^\n]*$/gm, "")
-    .replace(/\{[^{}]*\}/g, "")
-    .replace(/<\/?[A-Za-z][^>]*>/g, "");
+const projectionParser = unified().use(remarkParse).use(remarkMdx);
+const projectionStringifier = unified().use(remarkStringify);
+
+type ProjectionNode = {
+  type: string;
+  value?: unknown;
+  children?: ProjectionNode[];
+};
+
+const projectedMdxRemovedNodes = new Set([
+  "mdxjsEsm",
+  "mdxFlowExpression",
+  "mdxTextExpression",
+]);
+const projectedMdxWrapperNodes = new Set([
+  "mdxJsxFlowElement",
+  "mdxJsxTextElement",
+]);
+
+function projectMdxSource(source: string, sourcePath: string): string {
+  const tree = parseMdxSource(source, sourcePath);
+  const projected = projectProjectionNodes([tree])[0];
+  return projected
+    ? projectionStringifier.stringify(
+        projected as unknown as Parameters<
+          typeof projectionStringifier.stringify
+        >[0],
+      )
+    : "";
+}
+
+function parseMdxSource(source: string, sourcePath: string): ProjectionNode {
+  try {
+    return projectionParser.parse(
+      source.replace(frontmatterPattern, ""),
+    ) as unknown as ProjectionNode;
+  } catch (error) {
+    throw new Error(
+      `Failed to project MDX content for ${sourcePath}: ${error instanceof Error ? error.message : String(error)}`,
+      { cause: error },
+    );
+  }
+}
+
+function projectProjectionNodes(nodes: ProjectionNode[]): ProjectionNode[] {
+  return nodes.flatMap((node) => {
+    if (projectedMdxRemovedNodes.has(node.type)) return [];
+    const children =
+      node.children === undefined
+        ? undefined
+        : projectProjectionNodes(node.children);
+    if (projectedMdxWrapperNodes.has(node.type)) return children ?? [];
+    return [children === undefined ? node : { ...node, children }];
+  });
 }
 
 function mdxFrontmatterPlugin() {

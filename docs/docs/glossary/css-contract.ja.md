@@ -15,26 +15,26 @@ sidebar:
 
 ## Cascade order
 
-推奨されるカスケード順序は：framework structural CSS → Plugin default CSS → Theme CSS → app/site CSS → config token inline style → stylesheetsです。これは `@riebeckite/honox` が使用する典型的な順序ですが、絶対的な保証ではありません - アプリケーションでの実際のインポート順序が実効的なカスケードを決定します。`stylesheets` は小さなサイト固有の調整のための最終的な上書きとして意図されています。
+同一オリジンの通常宣言では、契約は `base` → `components` → `utilities` → `rb-plugins` → `rb-theme` → レイヤー外のサイト CSS です。フレームワーク CSS が最初のレイヤーを提供し、生成されたプラグインとテーマのエントリは `rb-plugins` と `rb-theme` を使い、通常のサイト CSS はレイヤー外です。そのため、レイヤー外のサイトルールは詳細度にかかわらずテーマルールを上書きします。
 
 ```mermaid
 flowchart TD
-  Framework[フレームワーク構造 CSS]
-  Plugin[プラグインの既定 CSS]
-  Theme[テーマ CSS]
-  App[アプリ / サイト CSS]
-  Token[設定トークン インラインスタイル]
-  User[stylesheets]
-  Framework --> Plugin
-  Plugin --> Theme
-  Theme --> App
-  App --> Token
-  Token --> User
+  Base[base]
+  Components[components]
+  Utilities[utilities]
+  Plugins[rb-plugins]
+  Theme[rb-theme]
+  Site[レイヤー外のサイト CSS]
+  Base --> Components
+  Components --> Utilities
+  Utilities --> Plugins
+  Plugins --> Theme
+  Theme --> Site
 ```
 
 ## カスケード順序確認
 
-典型的なカスケード順序は：framework structural CSS → Plugin default CSS → Theme CSS → app/site CSS → config token inline style → stylesheetsです。この順序は、各レイヤーでヘッダーコメントでカスケード位置を記す `@riebeckite/honox` がデフォルトで使用する順序です。`stylesheets` は小さなサイト固有の調整のための最終的な上書きとして意図されています。
+フレームワークのスタイルシートがレイヤー順を固定します。プラグイン内部のレイヤーは `rb-plugins`、テーマ内部のレイヤーは `rb-theme` の下にネストされます。`!important`、インラインスタイル、アニメーション、トランジションなどのカスケード起点は、この通常宣言の契約の対象外です。CSS custom properties も同じカスケードに従って継承されます。
 
 ## テーマ CSS 作成ガイドライン
 

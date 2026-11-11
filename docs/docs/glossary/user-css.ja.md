@@ -6,10 +6,10 @@ sidebar:
 ---
 # stylesheets（追加スタイルシート）
 
-CSS カスケードで最後に読み込まれる追加スタイルシートで、テーマをフォークせずに、サイト作者がテーマの外観を最終調整できます。stylesheets はテーマ CSS、プラグイン CSS、設定のトークンスタイルに優先します。
+アプリケーションのスタイルシートの後に読み込まれる追加スタイルシートです。テーマをフォークせずに最終調整できます。レイヤー外の通常宣言はフレームワーク・プラグイン・テーマの通常宣言に勝ちますが、インライン設定トークン、`!important`、アニメーション、トランジションには勝ちません。
 
 ## カスケードの位置
-読み込み順は、フレームワーク CSS → プラグイン CSS → テーマ CSS → 設定のトークンインラインスタイル → stylesheets です。stylesheets は最後の上書きで、サイト固有の小さな調整に向きます。
+通常宣言のレイヤー順は `base` → `components` → `utilities` → `rb-plugins` → `rb-theme` → レイヤー外のサイト CSS です。`stylesheets` はレイヤー外のサイト CSS であり、サイト固有の小さな最終調整に向きます。
 
 ```ts
 export default defineConfig({
@@ -20,7 +20,7 @@ export default defineConfig({
 ```
 
 ## stylesheetsファイルの設定
-`stylesheets` は `defineConfig` でスタイルシートのパスの配列として設定します（例：`stylesheets: ["/extensions/custom.css"]`）。読み込まれたスタイルシートは指定順にページのヘッダーへ追加され、最後のスタイルシートが最も高い優先度を持ちます。
+`stylesheets` は `defineConfig` でスタイルシートのパスの配列として設定します（例：`stylesheets: ["/extensions/custom.css"]`）。読み込まれたスタイルシートは指定順にページのヘッダーへ追加され、他の条件が同じなら後のスタイルシートがソース順で勝ちます。
 
 ## 使用例
 - 記事の余白を少し調整する

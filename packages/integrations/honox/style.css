@@ -1,4 +1,4 @@
-@layer base, components;
+@layer base, components, utilities, rb-plugins, rb-theme;
 
 @layer base {
   *,

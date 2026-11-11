@@ -178,9 +178,9 @@
 }
 
 /* -------------------------------------------------------------------------
-   Character layer — unlayered on purpose.
-   The app's structural CSS and the plugin defaults all live inside @layer,
-   so these unlayered rules win without `!important`. Every selector is
+   Character layer.
+   The generated rb-theme layer places these rules above framework and plugin
+   defaults. Every selector is
    scoped to the theme root, so the same styles apply to an embedded preview
    container (`.rb-theme-root`) as to the document root.
    ------------------------------------------------------------------------- */

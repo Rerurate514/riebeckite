@@ -79,6 +79,8 @@ host: example.com
 | オプション | 型 | 既定値 | 内容 |
 | --- | --- | --- | --- |
 | `className` | `string` | `(なし)` | カードのルート要素に追加する CSS クラス。`rr-cardlink` フックは常に付与します |
+| `maxLine` | `number \| null` | `3` | 説明文の最大表示行数。`null` を指定すると説明文を省略せずすべて表示します |
+| `showCopyButton` | `boolean` | `true` | URL をコピーするボタンを表示するかどうか |
 
 - `autoCardLink(options?)`：プラグインファクトリ
 - `remarkAutoCardLink(options?)`：Remark 変換だけを利用する場合の API

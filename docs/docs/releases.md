@@ -20,6 +20,9 @@ The Unreleased section lists changes that are merged but not yet published to np
   Packages: `@riebeckite/plugin-navigation`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-100000-navigation-exclude-73be42.md
 
+- Add the `maxLine` option to control the number of visible description lines in link preview cards. Set it to `null` to show the full description. Add `showCopyButton` to hide the URL copy button when it is not needed.
+  Packages: `@riebeckite/plugin-autocardlink`
+
 - Add `exclude` to taxonomy, folder pages, and garden explorer to omit slug paths and their descendants from their derived discovery data.
   Packages: `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-folder-pages`, `@riebeckite/plugin-garden-explorer`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-110000-discovery-projection-exclude-a7c91e.md

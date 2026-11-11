@@ -46,13 +46,13 @@
 
 .rr-cardlink__body {
   display: flex;
-  height: var(--rr-autocardlink-card-height, 152px);
+  min-height: var(--rr-autocardlink-card-height, 152px);
 }
 
 .rr-cardlink__image-frame {
   box-sizing: border-box;
   flex: none;
-  height: 100%;
+  align-self: stretch;
   overflow: clip;
   border-right: 1px solid var(--rr-autocardlink-border);
   background: var(--rr-autocardlink-surface);
@@ -90,8 +90,14 @@
   font-size: 0.875em;
   line-height: 1.7;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: var(--rr-autocardlink-description-max-line, 3);
+  line-clamp: var(--rr-autocardlink-description-max-line, 3);
+}
+
+.rr-cardlink--description-unlimited .rr-cardlink__description {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
 }
 
 .rr-cardlink__meta {

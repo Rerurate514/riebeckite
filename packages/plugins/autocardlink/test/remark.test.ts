@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Root } from "mdast";
 import { remarkAutoCardLink } from "../index.ts";
+import type { AutoCardLinkOptions } from "../src/types.ts";
 
 type Child = Root["children"][number];
 
-function transform(value: string, className?: string): Child[] {
+function transform(value: string, options?: AutoCardLinkOptions): Child[] {
   const tree: Root = {
     type: "root",
     children: [
@@ -17,12 +18,12 @@ function transform(value: string, className?: string): Child[] {
       },
     ],
   };
-  remarkAutoCardLink(className ? { className } : {})(tree);
+  remarkAutoCardLink(options)(tree);
   return tree.children;
 }
 
-function render(value: string, className?: string): string {
-  const children = transform(value, className);
+function render(value: string, options?: AutoCardLinkOptions): string {
+  const children = transform(value, options);
   assert.equal(children.length, 1);
   const node = children[0] as { type?: string; value?: string };
   assert.equal(node.type, "html");
@@ -180,8 +181,48 @@ test("applies the configured className to the container", () => {
       "url: https://example.com/article",
       "image: https://example.com/og.png",
     ].join("\n"),
-    "media-card",
+    { className: "media-card" },
   );
 
   assert.ok(html.startsWith('<div class="rr-cardlink media-card">'));
+});
+
+test("does not render the copy button when configured", () => {
+  const html = render("url: https://example.com/article", {
+    showCopyButton: false,
+  });
+
+  assert.ok(!html.includes("rr-cardlink__copy"));
+});
+
+test("limits descriptions to the configured number of lines", () => {
+  const html = render(
+    [
+      "url: https://example.com/article",
+      'description: "A long description"',
+    ].join("\n"),
+    { maxLine: 2 },
+  );
+
+  assert.ok(
+    html.startsWith(
+      '<div class="rr-cardlink rr-cardlink--no-image" style="--rr-autocardlink-description-max-line: 2">',
+    ),
+  );
+});
+
+test("renders unlimited descriptions when maxLine is null", () => {
+  const html = render(
+    [
+      "url: https://example.com/article",
+      'description: "A long description"',
+    ].join("\n"),
+    { maxLine: null },
+  );
+
+  assert.ok(
+    html.startsWith(
+      '<div class="rr-cardlink rr-cardlink--no-image rr-cardlink--description-unlimited">',
+    ),
+  );
 });

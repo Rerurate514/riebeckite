@@ -114,6 +114,7 @@ async function assertNavigation(
       );
     }
     await assertCanvasViewer(page, url);
+    await assertMdxIsland(page, url);
     await page.goto(url, { waitUntil: "networkidle0" });
     await page.evaluate(() => {
       (
@@ -147,6 +148,21 @@ async function assertNavigation(
   } finally {
     await browser.close();
   }
+}
+
+async function assertMdxIsland(
+  page: import("puppeteer").Page,
+  url: string,
+): Promise<void> {
+  const island = '[data-site-island-marker="RIEBECKITE_SITE_ISLAND_MARKER"]';
+  await page.goto(`${url}/notes/mdx-demo`, { waitUntil: "networkidle0" });
+  await page.waitForSelector(island);
+  await page.click(island);
+  await page.waitForFunction(
+    (selector) => document.querySelector(selector)?.textContent?.includes("1"),
+    {},
+    island,
+  );
 }
 
 async function assertCanvasViewer(

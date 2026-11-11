@@ -53,6 +53,21 @@ test("ArticleBody owns the rb-article-content markdown hook", () => {
   assert.match(html, /<p>Body<\/p>/);
 });
 
+test("Article provides a content format body to ArticleBody", () => {
+  const html = renderToString(
+    createElement(
+      Article,
+      {
+        body: createElement("strong", {}, "Content format body"),
+        post: { frontmatter: {}, html: "" },
+      },
+      createElement(ArticleBody, {}),
+    ),
+  );
+
+  assert.match(html, /<strong>Content format body<\/strong>/);
+});
+
 test("Article provides its post to contextual plugin components", async () => {
   const Empty = async () => rawHtml``;
   const element = createElement(

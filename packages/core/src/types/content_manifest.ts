@@ -55,6 +55,7 @@ export type ContentManifestEntry = {
   frontmatter: PostFrontmatter;
   publishing: ResolvedPublishingState;
   html: string;
+  sourcePath?: string;
   /**
    * Head tags a plugin wants the Site shell to render for this entry.
    * The Site owns the shell, so it decides whether to render them.

@@ -1,4 +1,5 @@
 import { content } from "virtual:riebeckite/content";
+import { renderContent } from "virtual:riebeckite/content-renderers";
 import { createPublicContentView } from "@riebeckite/core";
 import {
   contentRouteSsgParams,
@@ -58,6 +59,7 @@ export default createRoute(
     return c.render(
       <FixtureArticle
         post={resolved.post}
+        body={renderContent(resolved.post.sourcePath ?? "")}
         metadata={<Properties data={properties} />}
         footer={
           <>

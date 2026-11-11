@@ -46,6 +46,7 @@ const {
   KANBAN_BLOCK_MARKER,
   SITE_COMPONENT_MARKER,
   SITE_ISLAND_MARKER,
+  MDX_MARKER,
   LOCAL_PLUGIN_MARKER,
   LOCAL_PLUGIN_PAGE_MARKER,
   QR_MARKER,
@@ -124,6 +125,9 @@ function assertBuildOutput(siteDir: string, vaultDir: string): void {
   }
   if (!combined.includes(SITE_ISLAND_MARKER)) {
     fail(`generated HTML is missing the site island (${SITE_ISLAND_MARKER})`);
+  }
+  if (!combined.includes(MDX_MARKER)) {
+    fail(`generated HTML is missing the MDX marker (${MDX_MARKER})`);
   }
   if (!combined.includes('class="rb-article fixture-article"')) {
     fail("site component did not compose the public Article primitive");

@@ -65,6 +65,7 @@ export type ContentAssetInspection = {
 
 export type ContentAssetInspectionOptions = {
   readonly largeAssetBytes?: number;
+  readonly isContentPath?: (path: string) => boolean;
 };
 
 export async function inspectContentAssets(
@@ -75,10 +76,11 @@ export async function inspectContentAssets(
   const largeThresholdBytes =
     options.largeAssetBytes ?? DEFAULT_LARGE_ASSET_BYTES;
   const entries = await source.scan();
+  const isContentPath =
+    options.isContentPath ??
+    ((path: string) => path.toLowerCase().endsWith(".md"));
   const assets = entries.filter(
-    (entry) =>
-      entry.path.toLowerCase() !== "" &&
-      !entry.path.toLowerCase().endsWith(".md"),
+    (entry) => entry.path.toLowerCase() !== "" && !isContentPath(entry.path),
   );
   const references = new Map(
     assets.map((entry) => [
@@ -86,7 +88,7 @@ export async function inspectContentAssets(
       referencedBy(manifest.byAsset.get(normalizeContentPath(entry.path))),
     ]),
   );
-  const markdown = await readMarkdown(entries, source);
+  const markdown = await readMarkdown(entries, source, isContentPath);
   const inspected: ContentAssetInspectionEntry[] = [];
   for (const entry of assets) {
     const content = await source.read(entry);
@@ -145,11 +147,12 @@ function resolveUsage(
 async function readMarkdown(
   entries: readonly ContentSourceEntry[],
   source: ContentSource,
+  isContentPath: (path: string) => boolean,
 ): Promise<readonly string[]> {
   const decoder = new TextDecoder("utf-8", { ignoreBOM: true });
   const texts: string[] = [];
   for (const entry of entries) {
-    if (!entry.path.toLowerCase().endsWith(".md")) continue;
+    if (!isContentPath(entry.path)) continue;
     const content = await source.read(entry);
     texts.push(typeof content === "string" ? content : decoder.decode(content));
   }

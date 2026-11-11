@@ -8,18 +8,20 @@ import {
   ArticleLayout,
   ArticleMeta,
 } from "@riebeckite/honox/ui";
+import type { Child } from "hono/jsx";
 
 type Props = {
   post: PostContent;
+  body?: Child;
   metadata?: unknown;
   footer?: unknown;
 };
 
-export function FixtureArticle({ post, metadata, footer }: Props) {
+export function FixtureArticle({ post, body, metadata, footer }: Props) {
   const { lead, rest } = splitAfterFirstHeading(post.html ?? "");
 
   return (
-    <Article class="fixture-article">
+    <Article class="fixture-article" post={post} body={body}>
       <ArticleLayout>
         <ArticleContent>
           <ArticleHeader dangerouslySetInnerHTML={{ __html: lead }} />

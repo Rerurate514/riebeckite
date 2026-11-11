@@ -527,6 +527,63 @@ test("direct and transitive dependencies are processed when a dependency changes
   assert.equal(second.reused, 0);
 });
 
+test("a content format reprocesses content when a declared local dependency changes", async () => {
+  const directory = await tempDirectory("incremental-content-format");
+  const files = {
+    "article.mdx": 'import { Card } from "./card";\n\n<Card />',
+    "card.tsx": "export const Card = () => null;",
+    "other.md": "# Other",
+  };
+  const events: { name: string; attributes?: Record<string, unknown> }[] = [];
+  const spans: { name: string }[] = [];
+  const tracer = new SinkTracer({
+    onEvent: (event) => events.push(event),
+    onSpan: (span) => spans.push(span),
+  });
+  const config = contentTestConfig(directory, [
+    definePlugin({
+      name: "test-content-format",
+      contentFormats: [
+        {
+          extension: ".mdx",
+          process: async () => ({ frontmatter: {}, html: "" }),
+          dependencies: ({ sourcePath, source, paths }) =>
+            source.includes('from "./card"') && sourcePath === "article.mdx"
+              ? paths.filter((path) => path === "card.tsx")
+              : [],
+        },
+      ],
+      processedContentCache: { version: "v1", dependencyMode: "tracked" },
+    }),
+  ]);
+
+  const buildOnce = async () => {
+    const manager = new ContentManager(memoryContentSource(files), [], {
+      config,
+      plugins: config.plugins,
+      observability: { logger: new NoopLogger(), tracer },
+    });
+    await manager.build({ incremental: true });
+    await manager.dispose();
+  };
+
+  await buildOnce();
+  events.length = 0;
+  spans.length = 0;
+  files["card.tsx"] = "export const Card = () => <article />;";
+  await buildOnce();
+
+  assert.equal(
+    events.find((event) => event.name === "build.incremental")?.attributes
+      ?.affected,
+    1,
+  );
+  assert.equal(
+    spans.filter((span) => span.name === "content.process").length,
+    1,
+  );
+});
+
 test("embed dependency changes reprocess the embed source", async () => {
   const directory = await tempDirectory("incremental-embed");
   const files = {

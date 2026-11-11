@@ -4,6 +4,7 @@ import {
   ContentManager,
   compareBuildProvenance,
   computePipelineFingerprint,
+  createContentFormatRegistry,
   getResolvedPluginMetadata,
   inspectContentAssets,
   isPersistentlyCacheable,
@@ -157,9 +158,12 @@ export async function collectAssetInspection(
   const config = await loadProjectConfig(project);
   const source = resolveProjectContentSource(config, project);
   const manifest = await readOnlyContentManager(source, config).getManifest();
+  const registry = createContentFormatRegistry(config.plugins);
   return {
     source: contentSourceName(config),
-    report: await inspectContentAssets(manifest, source),
+    report: await inspectContentAssets(manifest, source, {
+      isContentPath: (entryPath) => registry.isContentPath(entryPath),
+    }),
   };
 }
 
@@ -203,7 +207,11 @@ export async function collectGraphInspection(
     source,
     config,
   ).getContentLocations();
-  const graph = await readOnlyContentGraph(source, locations);
+  const graph = await readOnlyContentGraph(
+    source,
+    locations,
+    createContentFormatRegistry(config.plugins),
+  );
   const nodes = graph.nodes();
   const mostLinked = nodes
     .map((node) => ({

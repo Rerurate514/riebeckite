@@ -6,7 +6,7 @@ import {
   riebeckiteBridge,
   riebeckiteDevelopmentInspector,
 } from "@riebeckite/dev-inspector";
-import type { Plugin } from "vite";
+import { mergeConfig, type Plugin, type UserConfig } from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteConfigTemporaryDirectory } from "./config_loader.js";
@@ -64,6 +64,7 @@ export function riebeckite(
 ): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
   let application: ResolvedHonoxApplication | undefined;
+  let contentVitePlugins: Plugin[] = [];
   const getConfig = () => {
     if (!resolvedConfig) {
       throw new Error("Riebeckite config has not been loaded yet.");
@@ -86,6 +87,13 @@ export function riebeckite(
           workspaceRoot: options.workspaceRoot,
         });
         resolvedConfig = resolvedApplication.config;
+        const resolved = resolvedConfig;
+        contentVitePlugins = resolved.plugins.flatMap(
+          (plugin) =>
+            plugin.vitePlugins?.({
+              contentDirectory: resolved.content.directory,
+            }) ?? [],
+        ) as Plugin[];
         application = resolvedApplication;
         onApplicationResolved?.(resolvedApplication);
         writeRiebeckiteAssetEntries(resolvedConfig, {
@@ -120,6 +128,8 @@ export function riebeckite(
         };
       },
     },
+    contentVitePluginBridge(() => contentVitePlugins),
+    contentBareImportResolver(() => requireApplication(application)),
     riebeckiteClientModule(getConfig),
     riebeckiteRuntimeModules(() => requireApplication(application)),
     riebeckiteContentAssets({
@@ -158,6 +168,144 @@ export function riebeckite(
       },
     }),
   ];
+}
+
+function contentBareImportResolver(
+  getApplication: () => ResolvedHonoxApplication,
+): Plugin {
+  return {
+    name: "riebeckite-content-bare-imports",
+    async resolveId(source, importer) {
+      if (!importer || !isBareImport(source)) return null;
+      const { appRoot, contentRoot } = getApplication();
+      if (!isInDirectory(importer, contentRoot)) return null;
+      return await this.resolve(source, path.join(appRoot, "package.json"), {
+        skipSelf: true,
+      });
+    },
+  };
+}
+
+function isBareImport(source: string): boolean {
+  return (
+    !source.startsWith(".") &&
+    !path.isAbsolute(source) &&
+    !source.startsWith("\0") &&
+    !source.startsWith("node:")
+  );
+}
+
+function isInDirectory(filePath: string, directory: string): boolean {
+  const relative = path.relative(directory, filePath);
+  return (
+    relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative)
+  );
+}
+
+function contentVitePluginBridge(getPlugins: () => readonly Plugin[]): Plugin {
+  return {
+    name: "riebeckite-content-vite-plugins",
+    async config(config, environment) {
+      let result: UserConfig | undefined;
+      for (const plugin of getPlugins()) {
+        const next = await callPluginHook(
+          plugin.config,
+          this,
+          config,
+          environment,
+        );
+        if (next !== undefined) {
+          result = mergeConfig(result ?? {}, next as UserConfig);
+        }
+      }
+      return result;
+    },
+    async resolveId(source, importer, options) {
+      for (const plugin of getPlugins()) {
+        const result = await callPluginHook(
+          plugin.resolveId,
+          this,
+          source,
+          importer,
+          options,
+        );
+        if (result != null) return result as never;
+      }
+      return null;
+    },
+    async load(id, options) {
+      for (const plugin of getPlugins()) {
+        const result = await callPluginHook(plugin.load, this, id, options);
+        if (result != null) return result as never;
+      }
+      return null;
+    },
+    async transform(code, id, options) {
+      let current = code;
+      let map: unknown;
+      let transformed = false;
+      for (const plugin of getPlugins()) {
+        const result = await callPluginHook(
+          plugin.transform,
+          this,
+          current,
+          id,
+          options,
+        );
+        if (result == null) continue;
+        if (typeof result === "string") {
+          current = result;
+          map = null;
+          transformed = true;
+          continue;
+        }
+        const next = result as { code?: string; map?: unknown };
+        if (typeof next.code !== "string") continue;
+        current = next.code;
+        map = next.map;
+        transformed = true;
+      }
+      return transformed ? ({ code: current, map } as never) : null;
+    },
+    configureServer(server) {
+      const postHooks = getPlugins()
+        .map((plugin) =>
+          callPluginHookSynchronously(plugin.configureServer, server),
+        )
+        .filter((hook): hook is () => void => typeof hook === "function");
+      return () => {
+        for (const hook of postHooks) hook();
+      };
+    },
+  };
+}
+
+async function callPluginHook(
+  hook: unknown,
+  context: unknown,
+  ...arguments_: unknown[]
+): Promise<unknown> {
+  const handler =
+    typeof hook === "function"
+      ? hook
+      : typeof hook === "object" && hook !== null && "handler" in hook
+        ? hook.handler
+        : undefined;
+  return typeof handler === "function"
+    ? handler.call(context, ...arguments_)
+    : undefined;
+}
+
+function callPluginHookSynchronously(hook: unknown, context: unknown): unknown {
+  const handler =
+    typeof hook === "function"
+      ? hook
+      : typeof hook === "object" && hook !== null && "handler" in hook
+        ? hook.handler
+        : undefined;
+  return typeof handler === "function"
+    ? handler.call(context, context)
+    : undefined;
 }
 
 function requireApplication(

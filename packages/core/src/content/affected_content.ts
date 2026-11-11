@@ -9,11 +9,22 @@ type AffectedContent = {
   readonly dependent: ReadonlySet<string>;
 };
 
+export type ContentPathResolver = {
+  readonly isContentPath: (path: string) => boolean;
+  readonly toSlug: (path: string) => string | undefined;
+};
+
+export const markdownPathResolver: ContentPathResolver = {
+  isContentPath: (path) => path.toLowerCase().endsWith(".md"),
+  toSlug: (path) => path.replace(/\.md$/i, ""),
+};
+
 export function determineAffectedContent(
   changeSet: ContentChangeSet,
   previousState: ContentBuildState | undefined,
   currentPaths: readonly string[],
   currentContentIndex: ReadonlyMap<string, string>,
+  pathResolver: ContentPathResolver = markdownPathResolver,
 ): AffectedContent {
   const changedPaths = [
     ...changeSet.added,
@@ -21,12 +32,17 @@ export function determineAffectedContent(
     ...changeSet.removed,
   ];
   const direct = new Set(
-    changedPaths.filter(isMarkdownPath).map(toDependencyId),
+    changedPaths.flatMap((path) => {
+      const slug = pathResolver.toSlug(path);
+      return pathResolver.isContentPath(path) && slug !== undefined
+        ? [slug]
+        : [];
+    }),
   );
   const dependent = new Set<string>();
 
   if (!previousState) {
-    addAllNotes(direct, currentPaths);
+    addAllNotes(direct, currentPaths, undefined, pathResolver);
     return { direct, dependent };
   }
 
@@ -36,8 +52,8 @@ export function determineAffectedContent(
       currentContentIndex,
     );
     for (const [path, entry] of Object.entries(previousState.entries)) {
-      if (!isMarkdownPath(path)) continue;
-      const slug = toDependencyId(path);
+      const slug = pathResolver.toSlug(path);
+      if (!pathResolver.isContentPath(path) || slug === undefined) continue;
       if (direct.has(slug) || dependent.has(slug)) continue;
       if (!entry.linkTargets?.some((target) => changedIndexKeys.has(target))) {
         continue;
@@ -46,8 +62,11 @@ export function determineAffectedContent(
     }
   }
 
-  const dependentsByDependency = buildDependentsByDependency(previousState);
-  const pending = changedPaths.map(toDependency);
+  const dependentsByDependency = buildDependentsByDependency(
+    previousState,
+    pathResolver,
+  );
+  const pending = changedPaths.map((path) => toDependency(path, pathResolver));
   const seen = new Set(pending.map(dependencyKey));
   while (pending.length > 0) {
     const changed = pending.pop();
@@ -86,40 +105,34 @@ function addAllNotes(
   target: Set<string>,
   currentPaths: readonly string[],
   exclude?: ReadonlySet<string>,
+  pathResolver: ContentPathResolver = markdownPathResolver,
 ): void {
   for (const path of currentPaths) {
-    if (!isMarkdownPath(path)) continue;
-    const slug = toDependencyId(path);
+    const slug = pathResolver.toSlug(path);
+    if (!pathResolver.isContentPath(path) || slug === undefined) continue;
     if (exclude?.has(slug)) continue;
     target.add(slug);
   }
 }
 
-function isMarkdownPath(path: string): boolean {
-  return path.endsWith(".md");
-}
-
-/**
- * Dependency keys are note slugs (path without the `.md` extension) and asset
- * paths. Change set entries are source paths, so normalize both to compare.
- */
-function toDependencyId(path: string): string {
-  return path.replace(/\.md$/, "");
-}
-
-function toDependency(path: string): ContentBuildDependency {
-  return isMarkdownPath(path)
-    ? { kind: "content", id: toDependencyId(path) }
+function toDependency(
+  path: string,
+  pathResolver: ContentPathResolver,
+): ContentBuildDependency {
+  const slug = pathResolver.toSlug(path);
+  return pathResolver.isContentPath(path) && slug !== undefined
+    ? { kind: "content", id: slug }
     : { kind: "file", id: path.replace(/\\/g, "/") };
 }
 
 function buildDependentsByDependency(
   state: ContentBuildState,
+  pathResolver: ContentPathResolver,
 ): Map<string, Set<string>> {
   const dependents = new Map<string, Set<string>>();
   for (const [path, entry] of Object.entries(state.entries)) {
-    if (!isMarkdownPath(path)) continue;
-    const slug = toDependencyId(path);
+    const slug = pathResolver.toSlug(path);
+    if (!pathResolver.isContentPath(path) || slug === undefined) continue;
     for (const dependency of entry.dependencies) {
       const key = dependencyKey(dependency);
       const values = dependents.get(key) ?? new Set<string>();

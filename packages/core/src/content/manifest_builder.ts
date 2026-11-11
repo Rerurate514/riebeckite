@@ -60,6 +60,9 @@ export class ManifestBuilder {
       frontmatter: processed.frontmatter,
       publishing,
       html: processed.html,
+      ...(processed.sourcePath === undefined
+        ? {}
+        : { sourcePath: processed.sourcePath }),
       tags: uniqueStrings([
         ...normalizeFrontmatterTags(processed.frontmatter.tags),
         ...extractContentTags(markdown),

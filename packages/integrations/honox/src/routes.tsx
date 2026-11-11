@@ -1,3 +1,5 @@
+/// <reference path="./virtual_modules.ts" />
+import { renderContent as renderContentBody } from "virtual:riebeckite/content-renderers";
 import type {
   ContentManager,
   ContentManifestEntry,
@@ -126,7 +128,11 @@ async function renderContent(
   const publicEntry = view.findRoutableBySlug(entry.slug);
   if (!publicEntry) return c.notFound();
   return c.render(
-    <ArticleProvider entry={publicEntry} post={post}>
+    <ArticleProvider
+      entry={publicEntry}
+      post={post}
+      body={renderContentBody(post.sourcePath ?? "")}
+    >
       {options.render({ entry, post })}
     </ArticleProvider>,
   );

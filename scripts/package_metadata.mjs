@@ -68,6 +68,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/markmap",
   "packages/plugins/meta-bind",
   "packages/plugins/marp",
+  "packages/plugins/mdx",
   "packages/plugins/media",
   "packages/plugins/mermaid",
   "packages/plugins/mermaid-pele",
@@ -432,6 +433,10 @@ const packagePublishingMetadata = {
   "packages/plugins/marp": {
     description: "Build-time Marp slide deck rendering for Riebeckite.",
     keywords: ["riebeckite", "plugin", "marp", "slides"],
+  },
+  "packages/plugins/mdx": {
+    description: "Trusted MDX content support for Riebeckite.",
+    keywords: ["riebeckite", "plugin", "mdx", "jsx"],
   },
   "packages/plugins/media": {
     description: "Audio and video attachment embeds for Obsidian wikilinks.",
@@ -931,6 +936,7 @@ export function expectedPackageMetadata(directory) {
       "image-optimizer",
       "l10n",
       "local-graph",
+      "mdx",
       "meta-bind",
       "navigation",
       "permalink",

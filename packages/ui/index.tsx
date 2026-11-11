@@ -21,6 +21,7 @@ export type SiteContextValue = {
 export type ArticleContextValue = {
   entry?: PublicContentEntry;
   post: PostContent;
+  body?: Child;
 };
 
 const SiteContext = createContext<SiteContextValue | undefined>(undefined);

@@ -42,7 +42,8 @@ Primitives do not own article copy, metadata formatting, navigation placement,
 cards, page-layout composition, islands, or site visual design and overrides.
 Those belong to the site application. `ArticleHeader` accepts children or its
 HTML input prop, while `ArticleContent` accepts children. `ArticleBody` renders
-rendered Markdown as `.rb-article-content`, and Markdown typography is
+the body provided by the active content format, or rendered Markdown when the
+format supplies none, as `.rb-article-content`, and Markdown typography is
 scoped to that wrapper, so plugin components keep their own headings wherever
 they are placed.
 
@@ -52,6 +53,11 @@ Import each component from its plugin and render it where the Site wants it.
 With `SiteProvider` and an `Article` supplied with its `post` and public
 `entry`, components resolve their own plugin data. The Site still owns
 placement, ordering, and conditional rendering.
+
+Routes that assemble a page themselves must forward the content format body to
+`Article` with `body={renderContent(post.sourcePath ?? "")}` from
+`virtual:riebeckite/content-renderers`. Routes built with `createContentRoute`
+forward it automatically.
 
 ```tsx
 import { Article, ArticleBody } from "@riebeckite/honox/ui";

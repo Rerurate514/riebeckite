@@ -1,6 +1,7 @@
 import {
   buildOutputPlan,
   type CompletedContentBuildSnapshot,
+  createContentFormatRegistry,
   inspectContentAssets,
   inspectRegeneration,
   type OutputChangeSet,
@@ -100,9 +101,12 @@ export async function inspectAssets(
       application.config.content,
       application.contentRoot,
     );
+    const registry = createContentFormatRegistry(application.config.plugins);
     return {
       status: "available",
-      inspection: await inspectContentAssets(snapshot.manifest, source),
+      inspection: await inspectContentAssets(snapshot.manifest, source, {
+        isContentPath: (entryPath) => registry.isContentPath(entryPath),
+      }),
     };
   } catch {
     return { status: "unavailable", reason: "asset inspection failed" };

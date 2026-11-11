@@ -581,6 +581,26 @@
       "type": true
     },
     {
+      "name": "ContentFormat",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatDependencyContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatProcessContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatRegistry",
+      "value": true,
+      "type": true
+    },
+    {
       "name": "ContentGraph",
       "value": false,
       "type": true
@@ -1006,6 +1026,11 @@
       "type": false
     },
     {
+      "name": "createContentFormatRegistry",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createContentGraph",
       "value": true,
       "type": false
@@ -1302,6 +1327,11 @@
     },
     {
       "name": "extractContentLinks",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "extractFrontmatter",
       "value": true,
       "type": false
     },

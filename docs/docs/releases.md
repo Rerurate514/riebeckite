@@ -59,6 +59,9 @@ The Unreleased section lists changes that are merged but not yet published to np
 - Content mutations and migrations now verify lock ownership before journal and content writes, so a process that lost its lock cannot overwrite or delete state owned by another process. Stale-lock reclamation removes a lock or guard only when its content still matches the stale copy it inspected, and apply preserves files that are created, replaced, or deleted between verification and the write.
   Packages: `@riebeckite/node`
 
+- Content mutations now fail with a clear error when the filesystem does not support hard links, instead of falling back to a rename that could overwrite a file another process created between verification and the write. Filesystems without hard-link support, such as FAT volumes, can no longer apply mutations that create or replace files.
+  Packages: `@riebeckite/node`
+
 ## 0.0.46 - 2026-11-10
 
 ### Fixed

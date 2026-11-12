@@ -1067,6 +1067,14 @@ async function restoreCapturedFile(
     if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
   }
 }
+function isHardLinkUnsupported(code: string | undefined): boolean {
+  return code === "ENOSYS" || code === "ENOTSUP" || code === "EOPNOTSUPP";
+}
+function hardLinkRequired(filePath: string): Error {
+  return new Error(
+    `The filesystem does not support hard links; refusing to create or replace ${filePath} without overwrite protection.`,
+  );
+}
 async function writeFileAtomically(
   filePath: string,
   content: Uint8Array,
@@ -1098,11 +1106,9 @@ async function writeFileAtomically(
         const code = (error as NodeJS.ErrnoException).code;
         if (code === "EEXIST")
           throw new Error(`Content changed during apply: ${filePath}`);
-        if (code !== "ENOSYS" && code !== "ENOTSUP" && code !== "EOPNOTSUPP")
-          throw error;
+        if (isHardLinkUnsupported(code)) throw hardLinkRequired(filePath);
+        throw error;
       }
-      await retryOnSharingViolation(() => fs.rename(temporary, filePath));
-      return;
     }
     const captureRoot = captureDirectory ?? path.dirname(filePath);
     await fs.mkdir(captureRoot, { recursive: true });
@@ -1133,11 +1139,9 @@ async function writeFileAtomically(
         await restoreCapturedFile(filePath, captured);
         throw new Error(`Content changed during apply: ${filePath}`);
       }
-      if (code !== "ENOSYS" && code !== "ENOTSUP" && code !== "EOPNOTSUPP") {
-        await restoreCapturedFile(filePath, captured).catch(() => undefined);
-        throw error;
-      }
-      await retryOnSharingViolation(() => fs.rename(temporary, filePath));
+      await restoreCapturedFile(filePath, captured).catch(() => undefined);
+      if (isHardLinkUnsupported(code)) throw hardLinkRequired(filePath);
+      throw error;
     }
     await retryOnSharingViolation(() => fs.rm(captured, { force: true })).catch(
       () => undefined,

@@ -18,11 +18,11 @@ import {
 } from "@riebeckite/core";
 import { parseDocument } from "yaml";
 import {
-  reclaimStaleLock,
+  acquireContentLock,
+  type ContentLock,
   retryOnSharingViolation,
 } from "./file_system_content_migration_helpers.js";
 import {
-  isRecord,
   type JournalChange,
   type MutationJournal,
   markApplied,
@@ -241,7 +241,7 @@ export class FileSystemContentMutation {
         appliedPaths: [],
         conflicts: plan.conflicts,
       };
-    const release = await this.acquireLock(root);
+    const lock = await this.acquireLock(root);
     try {
       const conflicts = await this.verifyPreconditions(root, plan.changes);
       if (conflicts.length > 0)
@@ -252,6 +252,7 @@ export class FileSystemContentMutation {
         "mutations",
         plan.id,
       );
+      await lock.assertOwned();
       await fs.mkdir(path.join(journalDirectory, "backups"), {
         recursive: true,
       });
@@ -266,6 +267,7 @@ export class FileSystemContentMutation {
           ),
         ),
       };
+      await lock.assertOwned();
       await writeJsonAtomically(journalPath, journal);
       journal.state = "applying";
       await writeJsonAtomically(journalPath, journal);
@@ -275,13 +277,16 @@ export class FileSystemContentMutation {
           (change) => change.content !== null,
         )) {
           await this.options.beforeWrite?.(change.path);
+          await lock.assertOwned();
           if (change.content === null)
             throw new Error("Mutation content is missing.");
           await writeFileAtomically(
             await safeFilePath(root, change.path, true),
             change.content,
             change.beforeFingerprint,
+            path.join(journalDirectory, "quarantine"),
           );
+          await lock.assertOwned();
           markApplied(journal, change.path);
           await writeJsonAtomically(journalPath, journal);
           appliedPaths.push(change.path);
@@ -290,19 +295,30 @@ export class FileSystemContentMutation {
           (change) => change.content === null,
         )) {
           await this.options.beforeWrite?.(change.path);
+          await lock.assertOwned();
           const target = await safeFilePath(root, change.path, false);
-          if ((await fingerprintAt(target)) !== change.beforeFingerprint)
-            throw new Error(`Content changed during apply: ${change.path}`);
-          await retryOnSharingViolation(() => fs.rm(target));
+          await removeFileIfUnchanged(
+            target,
+            change.beforeFingerprint,
+            journalDirectory,
+            change.path,
+          );
+          await lock.assertOwned();
           markApplied(journal, change.path);
           await writeJsonAtomically(journalPath, journal);
           appliedPaths.push(change.path);
         }
       } catch (error) {
+        try {
+          await lock.assertOwned();
+        } catch {
+          throw error;
+        }
         journal.state = "failed";
         await writeJsonAtomically(journalPath, journal);
         throw error;
       }
+      await lock.assertOwned();
       journal.state = "complete";
       await writeJsonAtomically(journalPath, journal);
       return {
@@ -313,7 +329,7 @@ export class FileSystemContentMutation {
         conflicts: [],
       };
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
@@ -324,7 +340,7 @@ export class FileSystemContentMutation {
     if (!isWithin(mutationRoot, absoluteJournal))
       throw new Error("Journal path is outside the mutation directory.");
     const journalDirectory = path.dirname(absoluteJournal);
-    const release = await this.acquireLock(root);
+    const lock = await this.acquireLock(root);
     try {
       const journal = parseJournal(await fs.readFile(absoluteJournal, "utf8"));
       if (
@@ -419,11 +435,13 @@ export class FileSystemContentMutation {
         };
       const restoredPaths: string[] = [];
       for (const change of rollback) {
+        await lock.assertOwned();
         const conflict = await this.restoreChange(
           root,
           journalDirectory,
           change,
           backups.get(change.path),
+          lock.assertOwned,
         );
         if (conflict) {
           conflicts.push(conflict);
@@ -438,6 +456,7 @@ export class FileSystemContentMutation {
           restoredPaths,
           conflicts,
         };
+      await lock.assertOwned();
       journal.state = "recovered";
       await writeJsonAtomically(absoluteJournal, journal);
       return {
@@ -447,7 +466,7 @@ export class FileSystemContentMutation {
         conflicts: [],
       };
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
@@ -456,7 +475,7 @@ export class FileSystemContentMutation {
     const absoluteJournal = path.resolve(journalPath);
     const mutationRoot = path.join(root, ".riebeckite", "mutations");
     const journalDirectory = path.dirname(absoluteJournal);
-    const release = await this.acquireLock(root);
+    const lock = await this.acquireLock(root);
     try {
       if (!isWithin(mutationRoot, absoluteJournal))
         throw new Error("Journal path is outside the mutation directory.");
@@ -557,11 +576,13 @@ export class FileSystemContentMutation {
         };
       const restoredPaths: string[] = [];
       for (const change of journal.changes) {
+        await lock.assertOwned();
         const conflict = await this.restoreChange(
           root,
           journalDirectory,
           change,
           backups.get(change.path),
+          lock.assertOwned,
         );
         if (conflict) {
           conflicts.push(conflict);
@@ -577,6 +598,7 @@ export class FileSystemContentMutation {
           restoredPaths,
           conflicts,
         };
+      await lock.assertOwned();
       journal.state = "rolled-back";
       await writeJsonAtomically(absoluteJournal, journal);
       return {
@@ -587,7 +609,7 @@ export class FileSystemContentMutation {
         conflicts: [],
       };
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
@@ -596,6 +618,7 @@ export class FileSystemContentMutation {
     journalDirectory: string,
     change: JournalChange,
     backup: Uint8Array | undefined,
+    assertOwned: () => Promise<void>,
   ): Promise<ContentMutationIssue | null> {
     if (change.afterFingerprint === null) {
       if (change.beforeFingerprint === null || !backup)
@@ -617,6 +640,7 @@ export class FileSystemContentMutation {
       }
     }
     await this.options.beforeRecoveryRestore?.(change.path);
+    await assertOwned();
     const target = await safeFilePath(root, change.path, false);
     const captureDirectory = path.join(journalDirectory, "quarantine");
     await fs.mkdir(captureDirectory, { recursive: true });
@@ -805,37 +829,11 @@ export class FileSystemContentMutation {
     };
   }
 
-  private async acquireLock(root: string): Promise<() => Promise<void>> {
-    const lockPath = path.join(root, ".riebeckite", "mutations", "lock");
-    await fs.mkdir(path.dirname(lockPath), { recursive: true });
-    let handle: fs.FileHandle;
-    try {
-      handle = await fs.open(lockPath, "wx");
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code === "EEXIST") {
-        if (await reclaimStaleLock(lockPath))
-          return await this.acquireLock(root);
-      }
-      throw new Error(
-        "Another content mutation is already applying or requires recovery.",
-      );
-    }
-    const token = randomUUID();
-    await handle.writeFile(
-      JSON.stringify({
-        pid: process.pid,
-        token,
-        startedAt: new Date().toISOString(),
-      }),
+  private async acquireLock(root: string): Promise<ContentLock> {
+    return await acquireContentLock(
+      path.join(root, ".riebeckite", "mutations", "lock"),
+      "Another content mutation is already applying or requires recovery.",
     );
-    return async () => {
-      await handle.close();
-      try {
-        const current = JSON.parse(await fs.readFile(lockPath, "utf8"));
-        if (isRecord(current) && current.token === token)
-          await fs.rm(lockPath, { force: true });
-      } catch {}
-    };
   }
 }
 
@@ -1069,10 +1067,19 @@ async function restoreCapturedFile(
     if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
   }
 }
+function isHardLinkUnsupported(code: string | undefined): boolean {
+  return code === "ENOSYS" || code === "ENOTSUP" || code === "EOPNOTSUPP";
+}
+function hardLinkRequired(filePath: string): Error {
+  return new Error(
+    `The filesystem does not support hard links; refusing to create or replace ${filePath} without overwrite protection.`,
+  );
+}
 async function writeFileAtomically(
   filePath: string,
   content: Uint8Array,
   expectedFingerprint?: string | null,
+  captureDirectory?: string,
 ): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
   const temporary = path.join(
@@ -1087,26 +1094,86 @@ async function writeFileAtomically(
     } finally {
       await handle.close();
     }
-    if (
-      expectedFingerprint !== undefined &&
-      (await fingerprintAt(filePath)) !== expectedFingerprint
-    )
+    if (expectedFingerprint === undefined) {
+      await retryOnSharingViolation(() => fs.rename(temporary, filePath));
+      return;
+    }
+    if (expectedFingerprint === null) {
+      try {
+        await retryOnSharingViolation(() => fs.link(temporary, filePath));
+        return;
+      } catch (error) {
+        const code = (error as NodeJS.ErrnoException).code;
+        if (code === "EEXIST")
+          throw new Error(`Content changed during apply: ${filePath}`);
+        if (isHardLinkUnsupported(code)) throw hardLinkRequired(filePath);
+        throw error;
+      }
+    }
+    const captureRoot = captureDirectory ?? path.dirname(filePath);
+    await fs.mkdir(captureRoot, { recursive: true });
+    const captured = path.join(captureRoot, `${randomUUID()}.capture`);
+    try {
+      await retryOnSharingViolation(() => fs.rename(filePath, captured));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT")
+        throw new Error(`Content changed during apply: ${filePath}`);
+      throw error;
+    }
+    let actual: string;
+    try {
+      actual = fingerprint(await fs.readFile(captured));
+    } catch (error) {
+      await restoreCapturedFile(filePath, captured).catch(() => undefined);
+      throw error;
+    }
+    if (actual !== expectedFingerprint) {
+      await restoreCapturedFile(filePath, captured);
       throw new Error(`Content changed during apply: ${filePath}`);
-    await retryOnSharingViolation(() => fs.rename(temporary, filePath));
+    }
+    try {
+      await retryOnSharingViolation(() => fs.link(temporary, filePath));
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === "EEXIST") {
+        await restoreCapturedFile(filePath, captured);
+        throw new Error(`Content changed during apply: ${filePath}`);
+      }
+      await restoreCapturedFile(filePath, captured).catch(() => undefined);
+      if (isHardLinkUnsupported(code)) throw hardLinkRequired(filePath);
+      throw error;
+    }
+    await retryOnSharingViolation(() => fs.rm(captured, { force: true })).catch(
+      () => undefined,
+    );
   } finally {
     await fs.rm(temporary, { force: true });
   }
 }
-async function fingerprintAt(filePath: string): Promise<string | null> {
+
+async function removeFileIfUnchanged(
+  target: string,
+  expected: string | null,
+  journalDirectory: string,
+  logicalPath: string,
+): Promise<void> {
+  if (expected === null)
+    throw new Error(`Content changed during apply: ${logicalPath}`);
+  const captureDirectory = path.join(journalDirectory, "quarantine");
+  await fs.mkdir(captureDirectory, { recursive: true });
+  const captured = path.join(captureDirectory, `${randomUUID()}.capture`);
   try {
-    const stats = await fs.lstat(filePath);
-    if (!stats.isFile() || stats.isSymbolicLink())
-      throw new Error("Content path is not a regular file.");
-    return fingerprint(await fs.readFile(filePath));
+    await retryOnSharingViolation(() => fs.rename(target, captured));
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    if ((error as NodeJS.ErrnoException).code === "ENOENT")
+      throw new Error(`Content changed during apply: ${logicalPath}`);
     throw error;
   }
+  if (fingerprint(await fs.readFile(captured)) !== expected) {
+    await restoreCapturedFile(target, captured);
+    throw new Error(`Content changed during apply: ${logicalPath}`);
+  }
+  await retryOnSharingViolation(() => fs.rm(captured, { force: true }));
 }
 async function writeJsonAtomically(
   filePath: string,

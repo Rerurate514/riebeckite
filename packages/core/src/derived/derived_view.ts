@@ -803,16 +803,43 @@ function isJsonValue(
   ancestors.add(value);
   try {
     if (Array.isArray(value)) {
+      if (hasNonJsonProperties(value)) return false;
       for (let index = 0; index < value.length; index += 1) {
         if (!isJsonValue(value[index], ancestors)) return false;
       }
       return true;
     }
-    if (Object.getPrototypeOf(value) !== Object.prototype) return false;
+    if (
+      Object.getPrototypeOf(value) !== Object.prototype ||
+      Object.hasOwn(value, "toJSON") ||
+      hasEnumerableSymbols(value)
+    )
+      return false;
     return Object.values(value as Record<string, unknown>).every((item) =>
       isJsonValue(item, ancestors),
     );
   } finally {
     ancestors.delete(value);
   }
+}
+
+function hasNonJsonProperties(value: readonly unknown[]): boolean {
+  if (Object.hasOwn(value, "toJSON") || hasEnumerableSymbols(value))
+    return true;
+  return Object.keys(value).some((key) => {
+    const index = Number(key);
+    return (
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= value.length ||
+      String(index) !== key
+    );
+  });
+}
+
+function hasEnumerableSymbols(value: object): boolean {
+  return Object.getOwnPropertySymbols(value).some(
+    (symbol) =>
+      Object.getOwnPropertyDescriptor(value, symbol)?.enumerable === true,
+  );
 }

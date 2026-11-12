@@ -159,6 +159,66 @@ test("refuses to overwrite a file created after backup", async () => {
   );
 });
 
+async function withoutHardLinks(
+  beforeFailure: () => Promise<void>,
+): Promise<() => void> {
+  const link = fs.link;
+  fs.link = async () => {
+    await beforeFailure();
+    const error = new Error(
+      "Hard links are not supported.",
+    ) as NodeJS.ErrnoException;
+    error.code = "ENOTSUP";
+    throw error;
+  };
+  return () => {
+    fs.link = link;
+  };
+}
+
+test("fails instead of overwriting when hard links are unsupported for a create", async () => {
+  const root = await directory();
+  const target = path.join(root, "note.md");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "create", path: "note.md", content: "planned" },
+  ]);
+  const restore = await withoutHardLinks(async () => {
+    await fs.writeFile(target, "external");
+  });
+  try {
+    await assert.rejects(
+      () => mutation.apply(plan),
+      /does not support hard links/,
+    );
+  } finally {
+    restore();
+  }
+  assert.equal(await fs.readFile(target, "utf8"), "external");
+});
+
+test("fails instead of overwriting when hard links are unsupported for an update", async () => {
+  const root = await directory();
+  const target = path.join(root, "note.md");
+  await fs.writeFile(target, "before");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "note.md", content: "planned" },
+  ]);
+  const restore = await withoutHardLinks(async () => {
+    await fs.writeFile(target, "external");
+  });
+  try {
+    await assert.rejects(
+      () => mutation.apply(plan),
+      /does not support hard links/,
+    );
+  } finally {
+    restore();
+  }
+  assert.equal(await fs.readFile(target, "utf8"), "external");
+});
+
 test("refuses to delete a file changed after its backup", async () => {
   const root = await directory();
   await fs.writeFile(path.join(root, "note.md"), "first");

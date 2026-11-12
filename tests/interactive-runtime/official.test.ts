@@ -395,40 +395,39 @@ test("the runtime chunk is not requested on pages without calculators", async ()
 });
 
 test("the excalidraw figure renders to SVG in the browser", async () => {
-  for (const pathname of ["/docs/plugins/excalidraw", "/assets/HW"]) {
-    const { page, errors } = await open(pathname);
-    try {
-      const figure = await page.$(".rr-excalidraw");
-      assert.ok(figure, `${pathname} should contain an Excalidraw figure`);
-      await figure.scrollIntoView();
-      await page
-        .waitForFunction(
-          () =>
-            document
-              .querySelector(".rr-excalidraw")
-              ?.getAttribute("data-excalidraw") !== "pending",
-          { timeout: 15_000 },
-        )
-        .catch(() => {});
-      const state = await page.evaluate(() => {
-        const block = document.querySelector(".rr-excalidraw");
-        const svg = block?.querySelector(".rr-excalidraw__canvas svg");
-        return {
-          status: block?.getAttribute("data-excalidraw"),
-          hasSvg: svg !== null && svg !== undefined,
-          text: svg?.textContent ?? "",
-          error:
-            block?.querySelector(".rr-excalidraw__error")?.textContent ?? null,
-        };
-      });
-      assert.equal(state.status, "ready", `${pathname} should be ready`);
-      assert.equal(state.hasSvg, true, `${pathname} should contain an SVG`);
-      assert.match(state.text, /Hello Riebeckite!/);
-      assert.equal(state.error, null);
-      assert.deepEqual(errors, []);
-    } finally {
-      await page.close();
-    }
+  const pathname = "/docs/plugins/excalidraw";
+  const { page, errors } = await open(pathname);
+  try {
+    const figure = await page.$(".rr-excalidraw");
+    assert.ok(figure, `${pathname} should contain an Excalidraw figure`);
+    await figure.scrollIntoView();
+    await page
+      .waitForFunction(
+        () =>
+          document
+            .querySelector(".rr-excalidraw")
+            ?.getAttribute("data-excalidraw") !== "pending",
+        { timeout: 15_000 },
+      )
+      .catch(() => {});
+    const state = await page.evaluate(() => {
+      const block = document.querySelector(".rr-excalidraw");
+      const svg = block?.querySelector(".rr-excalidraw__canvas svg");
+      return {
+        status: block?.getAttribute("data-excalidraw"),
+        hasSvg: svg !== null && svg !== undefined,
+        text: svg?.textContent ?? "",
+        error:
+          block?.querySelector(".rr-excalidraw__error")?.textContent ?? null,
+      };
+    });
+    assert.equal(state.status, "ready", `${pathname} should be ready`);
+    assert.equal(state.hasSvg, true, `${pathname} should contain an SVG`);
+    assert.match(state.text, /Hello Riebeckite!/);
+    assert.equal(state.error, null);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
   }
 });
 

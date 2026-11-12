@@ -2,7 +2,7 @@
 
 - Date: 2026-11-13
 - Branch: `feat/declarative-ui-architecture-phase0-4`
-- Base: `3e3a9b5a` (migration branch plus main `4977e308`), latest main merged as `64603375` (`1567071a`)
+- Base: `3e3a9b5a` (migration branch plus main `4977e308`), latest main merged as `d92a2f93` (`1b1ffbba`)
 - Scope: all 85 plugins, plus `packages/core`, `packages/integrations/honox`, `packages/ui`, `packages/diagram`, `packages/runtime`, `packages/spa`, themes, and the scaffold
 - Reference: [Declarative UI migration ledger](../declarative-ui-migration-2026-11/plan.md)
 
@@ -99,4 +99,4 @@ The Graphviz package has no test files of its own; the shared lifecycle is cover
 
 ## Merge readiness
 
-All verification gates pass on `64603375`, including the external scaffold E2E. The branch is reviewable and safe to integrate from a gate perspective. It is not architecturally complete: Phases 1, 3, and 4 remain partial, and Phase 2 has no production consumer. Do not merge, push, or deploy without accepting that scope.
+All verification gates pass on `d92a2f93`, including the external scaffold E2E. The branch is reviewable and safe to integrate from a gate perspective. It is not architecturally complete: Phases 1, 3, and 4 remain partial, and Phase 2 has no production consumer. Do not merge, push, or deploy without accepting that scope.

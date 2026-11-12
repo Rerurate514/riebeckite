@@ -2,7 +2,7 @@
 
 - 日付: 2026-11-13
 - ブランチ: `feat/declarative-ui-architecture-phase0-4`
-- 基点: `3e3a9b5a`（移行ブランチ + main `4977e308`）。最新mainは `64603375`（`1567071a`）として統合済み
+- 基点: `3e3a9b5a`（移行ブランチ + main `4977e308`）。最新mainは `d92a2f93`（`1b1ffbba`）として統合済み
 - 対象: 全85プラグイン、`packages/core`、`packages/integrations/honox`、`packages/ui`、`packages/diagram`、`packages/runtime`、`packages/spa`、テーマ、Scaffold
 - 参照: [宣言的UI移行台帳](../declarative-ui-migration-2026-11/plan.ja.md)
 
@@ -99,4 +99,4 @@ Graphvizパッケージ自体にテストファイルはなく、共通ライフ
 
 ## merge可否
 
-`64603375` では外部Scaffold E2Eを含む全検証ゲートがPASSしている。ゲート上はレビュー・統合可能。ただしPhase 1、3、4は部分実装で、Phase 2には実利用者がいないため、アーキテクチャとしては未完成。この範囲を許容しない限りmerge・push・deployはしない。
+`d92a2f93` では外部Scaffold E2Eを含む全検証ゲートがPASSしている。ゲート上はレビュー・統合可能。ただしPhase 1、3、4は部分実装で、Phase 2には実利用者がいないため、アーキテクチャとしては未完成。この範囲を許容しない限りmerge・push・deployはしない。

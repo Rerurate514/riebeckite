@@ -1,5 +1,8 @@
 import path from "node:path";
-import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import {
+  createContentFormatRegistry,
+  type ResolvedRiebeckiteConfig,
+} from "@riebeckite/core";
 import {
   invalidateDevelopmentInspector,
   invalidateRiebeckiteBridge,
@@ -159,6 +162,7 @@ export function riebeckite(
       mutationApprovalToken:
         process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN,
       contentRoot: () => requireApplication(application).contentRoot,
+      contentFormats: () => createContentFormatRegistry(getConfig().plugins),
       publicOrigin: () => getConfig().site.baseUrl || undefined,
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);

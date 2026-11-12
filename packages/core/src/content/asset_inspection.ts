@@ -66,6 +66,7 @@ export type ContentAssetInspection = {
 export type ContentAssetInspectionOptions = {
   readonly largeAssetBytes?: number;
   readonly isContentPath?: (path: string) => boolean;
+  readonly contentDependencies?: ReadonlyMap<string, readonly string[]>;
 };
 
 export async function inspectContentAssets(
@@ -88,6 +89,10 @@ export async function inspectContentAssets(
       referencedBy(manifest.byAsset.get(normalizeContentPath(entry.path))),
     ]),
   );
+  const dependencyReferences = collectDependencyReferences(
+    manifest,
+    options.contentDependencies,
+  );
   const markdown = await readMarkdown(entries, source, isContentPath);
   const inspected: ContentAssetInspectionEntry[] = [];
   for (const entry of assets) {
@@ -95,7 +100,16 @@ export async function inspectContentAssets(
     const bytes = toBytes(content);
     const path = normalizeContentPath(entry.path);
     const extension = extensionOf(path);
-    const referencing = references.get(path) ?? [];
+    const manifestReferences = references.get(path) ?? [];
+    const dependencyEntries = dependencyReferences.get(path) ?? [];
+    const referencing = [
+      ...new Map(
+        [...manifestReferences, ...dependencyEntries].map((entry) => [
+          entry.slug,
+          entry,
+        ]),
+      ).values(),
+    ];
     const usage = resolveUsage(referencing, path, markdown);
     inspected.push({
       path,
@@ -116,6 +130,32 @@ function referencedBy(
   entries: readonly ContentManifestEntry[] | undefined,
 ): readonly ContentManifestEntry[] {
   return entries ?? [];
+}
+
+function collectDependencyReferences(
+  manifest: ContentManifest,
+  dependencies: ReadonlyMap<string, readonly string[]> | undefined,
+): ReadonlyMap<string, readonly ContentManifestEntry[]> {
+  const references = new Map<string, ContentManifestEntry[]>();
+  if (!dependencies) return references;
+  const entriesByPath = new Map(
+    manifest.entries.flatMap((entry) =>
+      entry.sourcePath
+        ? [[normalizeContentPath(entry.sourcePath), entry] as const]
+        : [],
+    ),
+  );
+  for (const [sourcePath, paths] of dependencies) {
+    const source = entriesByPath.get(normalizeContentPath(sourcePath));
+    if (!source) continue;
+    for (const dependencyPath of paths) {
+      const key = normalizeContentPath(dependencyPath);
+      const values = references.get(key) ?? [];
+      values.push(source);
+      references.set(key, values);
+    }
+  }
+  return references;
 }
 
 function resolveUsage(

@@ -203,8 +203,8 @@ export function matchContentExcludePattern(
 ): string | undefined {
   const direct = exclude.find((pattern) => isExcluded([pattern], logicalPath));
   if (direct !== undefined) return direct;
-  if (!logicalPath.endsWith(".md")) return undefined;
-  const withoutExtension = logicalPath.slice(0, -3);
+  const withoutExtension = logicalPath.replace(/\.[^./]+$/, "");
+  if (withoutExtension === logicalPath) return undefined;
   return exclude.find((pattern) => isExcluded([pattern], withoutExtension));
 }
 

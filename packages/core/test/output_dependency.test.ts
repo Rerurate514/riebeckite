@@ -362,6 +362,46 @@ test("content output is affected when its dependency fingerprint changed", () =>
   assert.equal(result.fullRegenerationRequired, false);
 });
 
+test("content fingerprint lookup uses a non-Markdown source path", () => {
+  const mdx = { ...entry("a"), sourcePath: "a.mdx" };
+  const previous = manifest([mdx, entry("b")]);
+  const current = manifest([mdx, entry("b")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {
+        "a.mdx": {
+          fingerprint: "a",
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+          processedContentCacheFingerprint: "stable",
+        },
+        "b.md": {
+          fingerprint: "b",
+          aliases: [],
+          dependencies: [],
+          linkTargets: [],
+          processedContentCacheFingerprint: "stable",
+        },
+      },
+      contentIndex: {},
+      manifestEntries: previous.entries,
+      outputs: buildOutputInventory(previous),
+    },
+    changeSet: { added: [], changed: [], removed: [], unchanged: [] },
+    affectedContent: { direct: new Set(), dependent: new Set() },
+    contentFingerprints: new Map([
+      ["a", "stable"],
+      ["b", "stable"],
+    ]),
+  });
+
+  assert.deepEqual(paths(result.affected), []);
+  assert.deepEqual(paths(result.unchanged), ["a.html", "b.html"]);
+});
+
 test("manifest plugin unknown dependencies require safe full regeneration", () => {
   const current = manifest([entry("a"), entry("b")]);
   const result = determineOutputChanges({
@@ -615,6 +655,102 @@ test("tag projection affects the taxonomy tag index", () => {
     "folders.html",
     "tags.html",
   ]);
+});
+
+test("body-only edits leave navigation and recent-posts projections unchanged", () => {
+  const previous = manifest([entry("a"), entry("b")]);
+  const current = manifest([entry("a"), entry("b")]);
+  const result = changes(previous, current, { changed: ["a.md"] }, [
+    pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+    pluginPage("feed", [{ type: "projection", projection: "recent-posts" }]),
+  ]);
+
+  assert.deepEqual(paths(result.affected), ["a.html"]);
+  assert.deepEqual(paths(result.unchanged), [
+    "b.html",
+    "feed.html",
+    "nav.html",
+  ]);
+});
+
+test("navigation and recent-posts react to their projected fields", () => {
+  const previous = manifest([
+    { ...entry("a"), frontmatter: { title: "a", date: "2024-01-01" } },
+    { ...entry("b"), frontmatter: { title: "b", date: "2024-01-02" } },
+  ]);
+  const current = manifest([
+    {
+      ...entry("a", { title: "A2" }),
+      frontmatter: { title: "A2", date: "2024-01-01" },
+    },
+    { ...entry("b"), frontmatter: { title: "b", date: "2024-01-03" } },
+  ]);
+  const result = changes(previous, current, { changed: ["a.md", "b.md"] }, [
+    pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+    pluginPage("feed", [{ type: "projection", projection: "recent-posts" }]),
+  ]);
+
+  assert.deepEqual(paths(result.affected), [
+    "a.html",
+    "b.html",
+    "feed.html",
+    "nav.html",
+  ]);
+});
+
+test("adding and removing entries invalidates navigation and recent-posts", () => {
+  const previous = manifest([
+    { ...entry("a"), frontmatter: { title: "a", date: "2024-01-01" } },
+  ]);
+  const added = manifest([
+    { ...entry("a"), frontmatter: { title: "a", date: "2024-01-01" } },
+    { ...entry("b"), frontmatter: { title: "b", date: "2024-01-02" } },
+  ]);
+  const addResult = changes(previous, added, { added: ["b.md"] }, [
+    pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+    pluginPage("feed", [{ type: "projection", projection: "recent-posts" }]),
+  ]);
+  assert.deepEqual(paths(addResult.affected), [
+    "b.html",
+    "feed.html",
+    "nav.html",
+  ]);
+
+  const removeResult = changes(added, previous, { removed: ["b.md"] }, [
+    pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+    pluginPage("feed", [{ type: "projection", projection: "recent-posts" }]),
+  ]);
+  assert.deepEqual(paths(removeResult.affected), ["feed.html", "nav.html"]);
+  assert.deepEqual(paths(removeResult.removed), ["b.html"]);
+});
+
+test("full content regeneration still invalidates projections", () => {
+  const previous = manifest([entry("a"), entry("b")]);
+  const current = manifest([entry("a"), entry("b")]);
+  const result = determineOutputChanges({
+    manifest: current,
+    previousState: {
+      version: CONTENT_BUILD_STATE_VERSION,
+      entries: {},
+      contentIndex: {},
+      manifestEntries: previous.entries,
+      outputs: buildOutputInventory(previous, [
+        pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+      ]),
+    },
+    changeSet: {
+      added: ["a.md", "b.md"],
+      changed: [],
+      removed: [],
+      unchanged: [],
+    },
+    affectedContent: { direct: new Set(["a", "b"]), dependent: new Set() },
+    pluginPageOutputs: [
+      pluginPage("nav", [{ type: "projection", projection: "navigation" }]),
+    ],
+  });
+
+  assert.ok(result.affected.some((output) => output.path === "nav.html"));
 });
 
 test("folder dependency affects outputs for nested descendants", () => {

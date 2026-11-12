@@ -137,6 +137,24 @@ test("projects MDX text for HTML consumers", async () => {
   assert.equal(content.plainText, "# Heading Text");
 });
 
+test("decodes HTML entities in projected plain text exactly once", async () => {
+  const plugin = mdx({ trusted: true });
+  const format = plugin.contentFormats?.[0];
+  assert.ok(format?.process);
+
+  const content = await format.process({
+    slug: "entities",
+    sourcePath: "entities.mdx",
+    source: "# A &amp; B\n\n```\n<div>&amp;</div>\n```\n",
+    processMarkdown: async () => ({
+      frontmatter: {},
+      html: "<h1>A &amp; &#x1F600; &hellip;</h1><pre><code>&amp;lt; &amp;amp;</code></pre>",
+    }),
+  });
+
+  assert.equal(content.plainText, "A & 😀 … &lt; &amp;");
+});
+
 test("projects MDX through the MDX syntax tree", async () => {
   const plugin = mdx({ trusted: true });
   const format = plugin.contentFormats?.[0];

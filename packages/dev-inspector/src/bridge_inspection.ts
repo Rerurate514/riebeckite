@@ -42,6 +42,9 @@ export function resolveBridgeSource(
   const slug = logicalPath?.replace(/\.md$/i, "");
   const entries = [
     ...(slug ? [snapshot.manifest.bySlug.get(slug)] : []),
+    ...snapshot.manifest.entries.filter(
+      (entry) => entry.sourcePath === logicalPath,
+    ),
     ...indexEntries,
     snapshot.manifest.byContentId?.get(lookup ?? ""),
     snapshot.manifest.byPermalink?.get(lookup ?? ""),
@@ -79,7 +82,10 @@ export function resolveBridgeSource(
     };
   return {
     status: "resolved",
-    entry: serializeEntry(entry, logicalPath ?? `${entry.slug}.md`),
+    entry: serializeEntry(
+      entry,
+      entry.sourcePath ?? logicalPath ?? `${entry.slug}.md`,
+    ),
     revision: options.revision,
   };
 }

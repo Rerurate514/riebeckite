@@ -60,6 +60,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Content mutations now fail with a clear error when the filesystem does not support hard links, instead of falling back to a rename that could overwrite a file another process created between verification and the write. Filesystems without hard-link support, such as FAT volumes, can no longer apply mutations that create or replace files.
   Packages: `@riebeckite/node`
 
+- MDX content now produces correctly decoded plain text for search, excerpts, and headings, and the doctor no longer reports components imported by MDX as unused assets. Incremental SSG keeps navigation and recent-post projections reusable when only an MDX body changes, while still regenerating them when projected entries change. Link updates, provenance, source lookups, and the development inspector resolve non-Markdown content formats through the shared content format registry, and standalone SSG no longer loads its bundle twice when renderer chunks import it.
+  Packages: `@riebeckite/core`, `@riebeckite/cli`, `@riebeckite/node`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/plugin-mdx`, `@riebeckite/plugin-search`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 
 ## [0.0.46] - 2026-11-10

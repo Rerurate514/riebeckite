@@ -819,6 +819,7 @@ export { normalizeTag } from "./src/utils/tags.js";
 export {
   calculateReadingTime,
   escapeRegExp,
+  htmlToPlainText,
   stripHtml,
 } from "./src/utils/text.js";
 export { parseYaml } from "./src/utils/yaml.js";

@@ -380,6 +380,19 @@ test("resolves a suffix and a content ID through the shared source resolution", 
   });
 });
 
+test("resolves a content format source by its source path", () => {
+  const snapshot = fixtureSnapshot();
+  const resolved = resolveBridgeSource(snapshot, "notes/mdx.mdx", {
+    contentRoot: "/vault",
+    revision: 4,
+  });
+  assert.equal(resolved.status, "resolved");
+  assert.deepEqual(
+    (resolved.entry as { source: { path: string } }).source.path,
+    "notes/mdx.mdx",
+  );
+});
+
 test("does not offer a preview for non-routable pages", () => {
   const snapshot = fixtureSnapshot();
   const options = {
@@ -951,6 +964,19 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
     backlinks: [],
     assets: [],
   };
+  const mdx: ContentManifestEntry = {
+    ...entry,
+    slug: "notes/mdx",
+    contentId: "mdx-id",
+    permalink: "/ja/mdx/",
+    sourcePath: "notes/mdx.mdx",
+    publicLocation: {
+      slug: "notes/mdx",
+      permalink: "/ja/mdx/",
+      language: "ja",
+      redirects: [],
+    },
+  };
   const draft: ContentManifestEntry = {
     ...entry,
     slug: "notes/draft",
@@ -973,16 +999,25 @@ function fixtureSnapshot(): CompletedContentBuildSnapshot {
     completedAt: 42,
     startedAt: 42,
     manifest: createContentManifest({
+      entries: [entry, mdx, draft],
       bySlug: new Map([
         [entry.slug, entry],
+        [mdx.slug, mdx],
         [draft.slug, draft],
       ]),
-      byContentId: new Map([[entry.contentId, entry]]),
+      byContentId: new Map([
+        [entry.contentId, entry],
+        [mdx.contentId, mdx],
+      ]),
       byAlias: new Map(),
-      byPermalink: new Map([[entry.permalink, entry]]),
+      byPermalink: new Map([
+        [entry.permalink, entry],
+        [mdx.permalink, mdx],
+      ]),
       contentIndex: new Map([
         ["notes/hello", "notes/hello"],
         ["hello", "notes/hello"],
+        ["notes/mdx", "notes/mdx"],
         ["notes/draft", "notes/draft"],
       ]),
       contentIndexAmbiguities: new Map([["shared", ["a/shared", "b/shared"]]]),

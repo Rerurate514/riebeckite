@@ -49,6 +49,10 @@ export type RiebeckiteBridgeOptions = {
     | "separate-git"
     | "custom-mapping";
   publicOrigin?: string | (() => string | undefined);
+  contentFormats?: () => {
+    readonly isContentPath: (path: string) => boolean;
+    readonly toSlug: (path: string) => string | undefined;
+  };
   getSnapshot: (
     server: ViteDevServer,
   ) =>
@@ -228,6 +232,7 @@ async function handleMutationPost(
   state.mutations ??= createBridgeMutationStore(
     contentRoot,
     options.mutationApprovalToken,
+    options.contentFormats?.(),
   );
   await bridgeMutationResponse(
     request,

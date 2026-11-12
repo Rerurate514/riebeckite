@@ -4,7 +4,6 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { after, test } from "node:test";
-import { markdown } from "@riebeckite/test/fixtures";
 import { ContentManager } from "../src/content/content_manager.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,

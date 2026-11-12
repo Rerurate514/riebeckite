@@ -12,7 +12,6 @@ import {
   finalizeRelease,
   parseChangeEntry,
   renderChangelog,
-  renderReleaseNotes,
   UNRELEASED_DIRECTORY,
   validateEntry,
 } from "./changelog.mjs";

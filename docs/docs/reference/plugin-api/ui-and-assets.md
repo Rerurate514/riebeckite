@@ -159,12 +159,6 @@ content-relative assets; the resolved props still cross the hydration boundary
 and must remain JSON-safe. `resolveAssetUrl` returns `null` for unsupported or
 external paths, so validate the result before rendering.
 
-HAST-phase components use `hastComponents` with `defineHastComponent`. They run
-after raw HTML and Markdown sanitization, so `match` only sees trusted nodes and
-`render` receives the serialized node and its children as already-sanitized
-HTML. Use them to wrap or group existing document structure; do not use them to
-bypass the sanitizer.
-
 ## Overlay hosts
 
 A theme can provide an SSR-owned host for client overlays with

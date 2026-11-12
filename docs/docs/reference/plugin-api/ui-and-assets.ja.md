@@ -110,8 +110,6 @@ props は YAML のマッピングでなければならず、JSON として安全
 
 `resolveProps` は `parseProps` の後に `{ sourceSlug, resolveAssetUrl }` を受け取って実行されます。コンテンツからの相対パスに依存する props に使ってください。解決後の props もハイドレーション境界を越えるため、JSON 安全でなければなりません。`resolveAssetUrl` は未対応のパスや外部 URL では `null` を返すので、描画前に結果を検証してください。
 
-HAST 段階のコンポーネントは `defineHastComponent` と `hastComponents` を使います。生 HTML と Markdown のサニタイズ後に実行されるため、`match` が見るのは信頼済みのノードだけです。`render` はシリアライズ済みのノードと、すでにサニタイズされた子 HTML を受け取ります。既存の文書構造を包む、グループ化する用途に使い、サニタイザーを迂回する目的では使わないでください。
-
 ## オーバーレイホスト
 
 テーマは `@riebeckite/ui/overlay` の `<OverlayHost name="…" />` で、クライアント用オーバーレイの SSR ホストを用意できます。クライアントの初期化処理は `findOverlayHost(name)` でホストを探し、テーマが用意していない場合は自前でホストを作ってかまいません。オーバーレイ名ごとにホストを1つにし、クライアントエントリの終了時はコンポーネントだけをアンマウントして、アプリが持つホストは残してください。

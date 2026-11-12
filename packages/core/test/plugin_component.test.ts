@@ -5,7 +5,6 @@ import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { definePlugin } from "../src/types/plugin.js";
 import {
-  defineHastComponent,
   definePluginComponent,
   type PluginMarkdownComponent,
 } from "../src/types/plugin_component.js";
@@ -90,51 +89,4 @@ test("plugin component resolveProps failures surface as pipeline errors", async 
     manager.getManifest(),
     /Unresolved asset: \.\/image\.txt/,
   );
-});
-
-test("HAST components wrap sanitized nodes and receive serialized children", async () => {
-  const section = defineHastComponent({
-    name: "SectionWrap",
-    match: (node) => node.tagName === "h2",
-    render: ({ children }) =>
-      `<section data-hast-component="SectionWrap">${children}</section>`,
-  });
-  const plugin = definePlugin({
-    name: "hast-probe",
-    hastComponents: [section],
-  });
-  const manager = new ContentManager(
-    memorySource({
-      "posts/demo.md": `---
-publish: true
-title: Demo
----
-
-## Hello
-
-<h2 onclick="alert(1)">Unsafe<script>alert(1)</script></h2>
-`,
-    }),
-    [],
-    {
-      config: resolveConfig({
-        site: { title: "Test" },
-        plugins: [plugin],
-      }),
-    },
-  );
-
-  const html =
-    (await manager.getManifest()).bySlug.get("posts/demo")?.html ?? "";
-
-  assert.match(
-    html,
-    /<section data-hast-component="SectionWrap">Hello<\/section>/,
-  );
-  assert.match(
-    html,
-    /<section data-hast-component="SectionWrap">Unsafe<\/section>/,
-  );
-  assert.doesNotMatch(html, /<script>/);
-  assert.doesNotMatch(html, /onclick/);
 });

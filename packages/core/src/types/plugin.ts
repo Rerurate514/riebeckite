@@ -24,10 +24,7 @@ import type {
 } from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
-import type {
-  PluginHastComponent,
-  PluginMarkdownComponent,
-} from "./plugin_component.js";
+import type { PluginMarkdownComponent } from "./plugin_component.js";
 import type {
   PluginContentContext,
   PluginContentLocationAugmentContext,
@@ -173,7 +170,6 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
   components?: readonly PluginMarkdownComponent[];
-  hastComponents?: readonly PluginHastComponent[];
   endpoints?: PluginEndpoint[];
   inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
@@ -285,10 +281,7 @@ function assertUniquePluginComponentNames(
 ): void {
   const owners = new Map<string, string>();
   for (const plugin of plugins) {
-    for (const component of [
-      ...(plugin.components ?? []),
-      ...(plugin.hastComponents ?? []),
-    ]) {
+    for (const component of plugin.components ?? []) {
       const previous = owners.get(component.name);
       if (previous !== undefined) {
         throw new Error(

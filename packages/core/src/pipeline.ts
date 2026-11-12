@@ -56,7 +56,6 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
-import { renderHastComponents } from "./plugin_component_hast.js";
 import { renderPluginComponents } from "./plugin_component_markdown.js";
 import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
@@ -434,15 +433,6 @@ export class Pipeline {
     this.use(processor, rehypeSanitize, markdownSanitizeSchema);
     this.use(processor, sanitizeMarkdownStyles);
     this.use(processor, sanitizeMarkdownObjects);
-
-    const hastComponents = plugins.flatMap(
-      (plugin) => plugin.hastComponents ?? [],
-    );
-    if (hastComponents.length > 0) {
-      this.use(processor, () =>
-        renderHastComponents(hastComponents, componentContext),
-      );
-    }
 
     for (const plugin of plugins) {
       for (const rehypePlugin of plugin.rehypePlugins ?? []) {

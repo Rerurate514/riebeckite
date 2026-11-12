@@ -362,6 +362,73 @@ test("the text fragment popover mounts through Hono JSX for a selection", async 
   }
 });
 
+test("code tabs render through the HAST component and switch panels", async () => {
+  const { page, errors } = await open("/docs/plugins/code-tabs");
+  try {
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll("[data-code-tabs='true'] [role='tab']")
+          .length === 2,
+    );
+    const initial = await page.evaluate(() => {
+      const group = document.querySelector<HTMLElement>(
+        "[data-code-tabs='true']",
+      );
+      const tabs = Array.from(
+        group?.querySelectorAll<HTMLButtonElement>("[role='tab']") ?? [],
+      );
+      const panels = Array.from(
+        group?.querySelectorAll<HTMLElement>("[role='tabpanel']") ?? [],
+      );
+      return {
+        groups: document.querySelectorAll("[data-code-tabs='true']").length,
+        labels: tabs.map((tab) => tab.textContent),
+        selected: tabs.map((tab) => tab.getAttribute("aria-selected")),
+        visible: panels.map((panel) => !panel.hidden),
+        content: panels.map((panel) => panel.textContent),
+      };
+    });
+    assert.equal(initial.groups, 1);
+    assert.deepEqual(initial.labels, ["TypeScript", "JavaScript"]);
+    assert.deepEqual(initial.selected, ["true", "false"]);
+    assert.deepEqual(initial.visible, [true, false]);
+    assert.match(initial.content[0] ?? "", /const greeting: string/);
+
+    await page.evaluate(() => {
+      const second = document.querySelectorAll<HTMLButtonElement>(
+        "[data-code-tabs='true'] [role='tab']",
+      )[1];
+      second?.click();
+    });
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelectorAll("[data-code-tabs='true'] [role='tab']")[1]
+          ?.getAttribute("aria-selected") === "true",
+    );
+    const switched = await page.evaluate(() => {
+      const panels = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          "[data-code-tabs='true'] [role='tabpanel']",
+        ),
+      );
+      return {
+        selected: Array.from(
+          document.querySelectorAll("[data-code-tabs='true'] [role='tab']"),
+        ).map((tab) => tab.getAttribute("aria-selected")),
+        visible: panels.map((panel) => !panel.hidden),
+        content: panels[1]?.textContent,
+      };
+    });
+    assert.deepEqual(switched.selected, ["false", "true"]);
+    assert.deepEqual(switched.visible, [false, true]);
+    assert.match(switched.content ?? "", /const greeting = "Hello"/);
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("the runtime chunk is not requested on pages without calculators", async () => {
   const page = await browser.newPage();
   const requests: string[] = [];

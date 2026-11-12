@@ -208,6 +208,14 @@ export class PluginRuntime {
     return getResolvedPluginMetadata(this.plugins());
   }
 
+  getComponents() {
+    return this.plugins().flatMap((plugin) => plugin.components ?? []);
+  }
+
+  getHastComponents() {
+    return this.plugins().flatMap((plugin) => plugin.hastComponents ?? []);
+  }
+
   getPluginInventory(): readonly ResolvedPluginMetadata[] {
     const resolved = this.plugins();
     const resolvedNames = new Set(resolved.map((plugin) => plugin.name));

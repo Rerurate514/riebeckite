@@ -83,6 +83,7 @@ test("client rendering preserves Mermaid labels and removes unsafe SVG", async (
     });
     assert.deepEqual(result, {
       pwned: false,
+      status: "rendered",
       label: "Hello world",
       script: false,
       onload: false,

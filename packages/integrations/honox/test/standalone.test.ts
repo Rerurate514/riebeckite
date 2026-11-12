@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import fs, { mkdtemp, rm, writeFile } from "node:fs/promises";
+import fs from "node:fs/promises";
 import { createRequire } from "node:module";
-import os, { tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { pathToFileURL } from "node:url";
@@ -17,7 +17,7 @@ const frameworkRequire = createRequire(
 
 test("standalone SSG loads dynamic chunks from the same bundle instance", async (t) => {
   const root = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-standalone-bundle-"),
+    path.join(tmpdir(), "riebeckite-standalone-bundle-"),
   );
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   await fs.writeFile(
@@ -70,14 +70,14 @@ test("standalone SSG imports its bundle from a stable module URL", () => {
 });
 
 test("standalone SSG keeps one JSX runtime across dynamic chunks", async () => {
-  const root = await mkdtemp(
+  const root = await fs.mkdtemp(
     path.join(tmpdir(), "riebeckite-standalone-runtime-"),
   );
   const jsxRuntime = pathToFileURL(
     frameworkRequire.resolve("hono/jsx/jsx-runtime"),
   ).href;
   try {
-    await writeFile(
+    await fs.writeFile(
       path.join(root, "entry.js"),
       `import { jsx } from ${JSON.stringify(jsxRuntime)};
 export const entryJsx = jsx;
@@ -89,7 +89,7 @@ export default {
 };
 `,
     );
-    await writeFile(
+    await fs.writeFile(
       path.join(root, "chunk.js"),
       `import { entryJsx } from "./entry.js";
 export function renderChunk() {
@@ -108,6 +108,6 @@ export function renderChunk() {
     assert.equal(response.status, 200);
     assert.match(await response.text(), /<p>chunk content<\/p>/);
   } finally {
-    await rm(root, { recursive: true, force: true });
+    await fs.rm(root, { recursive: true, force: true });
   }
 });

@@ -84,12 +84,12 @@
 | 実装対象 | `PluginComponentResolveContext` と `resolveProps`（起点ブランチで追加済み）、`image-compare` の参照実装 |
 | 解決する制約 | Componentの `render` がアセットURL確定前に実行され、非同期のprops解決ができない |
 | 影響パッケージ | `packages/core`、`packages/plugins/image-compare` |
-| API変更 | `resolveProps(props, context)`（`context.sourceSlug`、`context.resolveAssetUrl`）。解決後のpropsをSSRとHydrationで共有し、JSON-safeにシリアライズする |
+| API変更 | `resolveProps(props, context)`（`context.sourceSlug`、`context.resolveAssetUrl`、`manifest`、`diagnostics`）、`deferUntilManifest`、`renderError`。解決後のpropsをSSRとHydrationで共有し、JSON-safeにシリアライズする |
 | テスト | `packages/core/test/plugin_component.test.ts`（2）、`packages/plugins/image-compare/test/*`（14）、`tests/interactive-runtime/official.test.ts` のHydration・SPA検証 |
 | 性能への影響 | サーバー描画専用モジュールとクライアントモジュールを分離し、client chunkからサーバー用render chunkを除外 |
-| コミット | `5a08dd5e` |
-| 完了状況 | image-compareをPlugin Componentへ移行。SSR HTML、ポインター/range/キーボード/ARIA、縦横、SPA unmount/remountを維持。実ブラウザでrange操作と戻る/進む後の再初期化を確認 |
-| 残存する問題 | なし。`client.exportName` の指定漏れでHydrationが無言でスキップされる問題は移行時に修正した |
+| コミット | `5a08dd5e`、mainの統合コミット`8698fcd4` |
+| 完了状況 | main側の実装（manifest後の`deferUntilManifest`と`diagnostics`、`renderError`、SSR+軽量Behavior）を採用。image-compareはPlugin Componentとして描画され、資産URLはmanifest確定後に解決される。実ブラウザでrange操作と戻る/進む後の再初期化を確認 |
+| 残存する問題 | なし |
 
 ### 設計
 
@@ -117,11 +117,11 @@
 | 実装対象 | `@riebeckite/diagram/client` の `renderPendingDiagrams`、`mermaid`、`graphviz`、`chartjs` |
 | 解決する制約 | 外部レンダラーごとに初期化・中断・破棄・エラー処理が重複し、SPA遷移時の後始末が不統一 |
 | 影響パッケージ | `packages/diagram`、`packages/plugins/mermaid`、`packages/plugins/graphviz`、`packages/plugins/chartjs` |
-| API変更 | `DiagramClientContext.selector`、`DiagramClientRenderer` の戻り値に `void` を許容、`DiagramPluginDefinition.client.presenceSelector` を必須化 |
+| API変更 | `DiagramClientContext.selector` と `fallbackSelector`、`DiagramPluginDefinition.client.presenceSelector` を必須化 |
 | テスト | `packages/plugins/mermaid`（17）、`packages/diagram`（8）。`chartjs` と `graphviz` はパッケージテストなし |
 | 性能への影響 | ライブラリ単位のチャンクを維持。非存在ページでは読み込まない（presenceSelector） |
-| コミット | `44342725` |
-| 完了状況 | mermaidを共通ラッパーへ移行。graphvizのroot/signal伝播を修正。chartjsのpresenceSelectorを追加。実ブラウザでchartjsのチャンクが対象ページのみ読み込まれることを確認 |
+| コミット | `44342725`、mainの統合コミット`8698fcd4` |
+| 完了状況 | main側の`fallbackSelector`対応を統合し、mermaid・graphviz・chartjsが共通ラッパーを使用。d2にもpresenceSelectorが入った。実ブラウザでchartjsのチャンクが対象ページのみ読み込まれることを確認 |
 | 残存する問題 | `chartjs` と `graphviz` はパッケージテストを持たない。websiteはmermaid-peleを使うため、実ページでのmermaidクライアント差し替えはパッケージテストと共通ラッパーの単体テストで担保している |
 
 ### 共通化の範囲
@@ -142,25 +142,22 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | SKIPPED_WITH_REASON |
-| 実装対象 | なし（PoCを削除） |
+| ステータス | COMPLETE |
+| 実装対象 | `hastComponents` / `defineHastComponent`、`PluginHastNode`、`code-tabs` のHASTコンポーネント |
 | 解決する制約 | Markdown ASTの任意ノードをComponentとして扱い、childrenを渡す |
-| 影響パッケージ | `packages/core`（公開APIを追加しない） |
-| API変更 | なし |
-| テスト | なし |
-| 性能への影響 | なし |
-| コミット | `77d76999` |
-| 完了状況 | 監査とPoCを実施し、公開APIを追加しない判断をした |
+| 影響パッケージ | `packages/core`、`packages/plugins/code-tabs` |
+| API変更 | `hastComponents`、`defineHastComponent`、`PluginHastComponent`（`match` と `render({ node, html, children })`） |
+| テスト | `packages/core/test/plugin_component.test.ts`、`packages/plugins/code-tabs/test/*` |
+| 性能への影響 | サニタイズ済みHTMLの置換のみ。Code Tabsの軽量Behaviorは維持 |
+| コミット | `77d76999`（削除）、mainの統合コミット`8698fcd4`で実装を取り込み |
+| 完了状況 | main側の実装を統合。rehypeがグループ化した `.rr-code-tabs` をHASTコンポーネントが受け取り、サニタイズ済みのchildrenをJSXで描画する |
 | 残存する問題 | なし |
 
 ### 判断理由
 
-- 代表例のCode Tabsは「連続する兄弟コードブロックのグループ化」であり、単一ノードを置換するHAST Component APIでは表現できない
-- PoCの実装では `client` フィールドがHydration属性として出力されず、propsのシリアライズもなかった。公開APIとして未完成
-- 実際のプラグインで利用者が存在せず、汎用APIの価値を証明できなかった
-- 現行のCode TabsはSSR HTML + 軽量Behaviorで性能・保守性ともに優位であり、JSX化する理由がない
-
-そのため、未証明の `hastComponents` 公開面を削除し、設計案とPoCの結果のみを記録する。サニタイズ境界（rehypeSanitize以降）とDOM後処理を避ける方針は維持する。
+- 起点ブランチでは単一ノードの `match` だけではCode Tabsの兄弟グループ化を表現できず、`client` も出力されないPoCだったため公開APIを取り下げた
+- main側では、rehypeが生成したグループ要素をHASTコンポーネントで置換し、サニタイズ済みの `html` と `children` を受け取る形で実装された。サニタイザー境界を越えずに文書構造をコンポーネント化でき、Code Tabsが実際の利用例になっている
+- そのためPhase 3はSKIPPEDではなくCOMPLETEとし、公開APIとして文書化する（HASTはサニタイズ後の信頼済みノードのみを扱う）
 
 ---
 
@@ -172,10 +169,10 @@
 | 実装対象 | `@riebeckite/ui/overlay` の `OverlayHost` / `findOverlayHost`、lightbox、text-fragment |
 | 解決する制約 | オーバーレイが `document.body` へ直接追加され、所有権・フォーカス・後始末が不明確 |
 | 影響パッケージ | `packages/ui`、`packages/plugins/lightbox`、`packages/plugins/text-fragment`、`website/app/routes/_renderer.tsx` |
-| API変更 | `OVERLAY_HOST_ATTRIBUTE`、`OverlayHost`、`findOverlayHost` |
+| API変更 | `OVERLAY_HOST_ATTRIBUTE`、`OverlayHost`、`findOverlayHost`、`APP_SLOT_ATTRIBUTE`、`AppSlot`、`findAppSlot` |
 | テスト | `packages/ui/test/overlay.test.tsx`（12）、`packages/plugins/lightbox`（6） |
 | 性能への影響 | Overlay HostはSSRで空コンテナを出力するのみ |
-| コミット | `82aaa694` |
+| コミット | `82aaa694`、AppSlot契約はmainの`8698fcd4`で追加 |
 | 完了状況 | 2プラグインがアプリ側のHostを利用。Hostがない場合は従来どおり自前Hostへフォールバック。lightboxのフォーカス復元とEscでのcloseを実ブラウザで確認 |
 | 残存する問題 | 複数プラグインが同時にオーバーレイを開く状況は現在のユースケースにないため、同時表示時のフォーカス復元・スクロールロックは未検証 |
 

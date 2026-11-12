@@ -1,3 +1,4 @@
+import { renderPendingDiagrams } from "@riebeckite/diagram/client";
 import type { MapClientOptions, MapPayload, MapRuntime } from "./types.js";
 
 const DEFAULT_LEAFLET_SCRIPT_URL =
@@ -42,15 +43,18 @@ export async function initMap(
     return;
   }
 
-  const maps: Array<ReturnType<MapRuntime["map"]>> = [];
-  for (const figure of figures) {
-    if (context.signal?.aborted || !figure.isConnected) break;
-    const map = renderMap(runtime, figure, options);
-    if (map) maps.push(map);
-  }
-  return () => {
-    for (const map of maps) map.remove();
-  };
+  return await renderPendingDiagrams(
+    "map",
+    (figure) => {
+      const map = renderMap(runtime, figure, options);
+      return map ? () => map.remove() : undefined;
+    },
+    {
+      ...context,
+      selector: '[data-rr-map="pending"]',
+      fallbackSelector: "details",
+    },
+  );
 }
 
 function renderMap(
@@ -62,7 +66,7 @@ function renderMap(
   const payload = readPayload(figure);
   if (!canvas || !payload) {
     setError(figure);
-    return;
+    throw new Error("Missing map figure data.");
   }
 
   try {
@@ -107,8 +111,9 @@ function renderMap(
 
     figure.dataset.rrMap = "rendered";
     return map;
-  } catch {
+  } catch (error) {
     setError(figure);
+    throw error;
   }
 }
 

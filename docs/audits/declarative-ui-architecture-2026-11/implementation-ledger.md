@@ -84,12 +84,12 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | Targets | `PluginComponentResolveContext` and `resolveProps` (added on the base branch), `image-compare` reference implementation |
 | Constraint | Component `render` ran before asset URLs were known, so props could not be resolved asynchronously |
 | Packages | `packages/core`, `packages/plugins/image-compare` |
-| API changes | `resolveProps(props, context)` (`context.sourceSlug`, `context.resolveAssetUrl`); resolved props are shared by SSR and hydration and serialized as JSON-safe data |
+| API changes | `resolveProps(props, context)` (`context.sourceSlug`, `context.resolveAssetUrl`, `manifest`, `diagnostics`), `deferUntilManifest`, `renderError`; resolved props are shared by SSR and hydration and serialized as JSON-safe data |
 | Tests | `packages/core/test/plugin_component.test.ts` (2), `packages/plugins/image-compare/test/*` (14), hydration and SPA checks in `tests/interactive-runtime/official.test.ts` |
 | Performance | Server-only rendering modules are separated from the client module, so the client chunk no longer pulls the server render chunk |
-| Commit | `5a08dd5e` |
-| State | image-compare migrated to a Plugin Component; SSR HTML, pointer/range/keyboard/ARIA, both orientations and SPA unmount/remount are preserved. Real-browser range interaction and re-initialization after back/forward were verified |
-| Residual issues | None. A missing `client.exportName` silently skipped hydration; it was fixed during the migration |
+| Commit | `5a08dd5e`, main integration `8698fcd4` |
+| State | Adopted the main implementation (`deferUntilManifest` and `diagnostics` after the manifest, `renderError`, SSR plus a small behavior controller). image-compare renders as a Plugin Component and asset URLs resolve after the manifest. Real-browser range interaction and re-initialization after back/forward were verified |
+| Residual issues | None |
 
 ### Design
 
@@ -117,11 +117,11 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | Targets | `@riebeckite/diagram/client` `renderPendingDiagrams`, `mermaid`, `graphviz`, `chartjs` |
 | Constraint | Each renderer duplicated initialization, abort, disposal and error handling, and SPA cleanup was inconsistent |
 | Packages | `packages/diagram`, `packages/plugins/mermaid`, `packages/plugins/graphviz`, `packages/plugins/chartjs` |
-| API changes | `DiagramClientContext.selector`; `DiagramClientRenderer` may return `void`; `DiagramPluginDefinition.client.presenceSelector` is required |
+| API changes | `DiagramClientContext.selector` and `fallbackSelector`; `DiagramPluginDefinition.client.presenceSelector` is required |
 | Tests | `packages/plugins/mermaid` (17), `packages/diagram` (8); `chartjs` and `graphviz` have no package tests |
 | Performance | Library-level chunks are preserved and are not loaded on pages without the UI (presenceSelector) |
-| Commit | `44342725` |
-| State | mermaid moved to the shared wrapper; graphviz root/signal propagation fixed; chartjs presenceSelector added. A real browser confirmed the chartjs chunk is requested only on pages that use it |
+| Commit | `44342725`, main integration `8698fcd4` |
+| State | Adopted the main `fallbackSelector` support; mermaid, graphviz and chartjs use the shared wrapper, and d2 gained a presenceSelector. A real browser confirmed the chartjs chunk is requested only on pages that use it |
 | Residual issues | `chartjs` and `graphviz` have no package tests. The website uses mermaid-pele, so the mermaid client replacement is covered by package tests and the shared wrapper unit tests rather than a production page |
 
 ### Scope of the shared wrapper
@@ -142,25 +142,22 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 | Item | Detail |
 | --- | --- |
-| Status | SKIPPED_WITH_REASON |
-| Targets | None (PoC removed) |
+| Status | COMPLETE |
+| Targets | `hastComponents` / `defineHastComponent`, `PluginHastNode`, and the Code Tabs HAST component |
 | Constraint | Treat arbitrary Markdown AST nodes as components and pass children |
-| Packages | `packages/core` (no public API added) |
-| API changes | None |
-| Tests | None |
-| Performance | None |
-| Commit | `77d76999` |
-| State | Audited and prototyped; decided not to add a public API |
+| Packages | `packages/core`, `packages/plugins/code-tabs` |
+| API changes | `hastComponents`, `defineHastComponent`, `PluginHastComponent` (`match` plus `render({ node, html, children })`) |
+| Tests | `packages/core/test/plugin_component.test.ts`, `packages/plugins/code-tabs/test/*` |
+| Performance | Sanitized HTML is passed through; the Code Tabs behavior controller is kept |
+| Commit | `77d76999` (removal), superseded by main commit `8698fcd4` |
+| State | Adopted from main: the rehype-produced `.rr-code-tabs` group is received by a HAST component, and the sanitized children are rendered with JSX |
 | Residual issues | None |
 
 ### Rationale
 
-- The representative case, Code Tabs, groups consecutive sibling code blocks, which a single-node HAST component API cannot express
-- The proof of concept never emitted `client` hydration attributes and never serialized props, so it was incomplete as a public API
-- No real plugin consumed it, so the value of a generic API was not proven
-- The current Code Tabs implementation (SSR HTML plus a small behavior controller) is better in both performance and maintainability, so there is no reason to move it to JSX
-
-The unproven `hastComponents` surface was therefore removed, and only the design analysis and PoC result are recorded. The policy of keeping the sanitizer boundary (after rehypeSanitize) and avoiding DOM post-processing remains.
+- On this branch, matching a single node could not express the Code Tabs sibling grouping, and the proof of concept never emitted `client` output, so the public API was withdrawn
+- Main instead placed a HAST component on the group element produced by rehype and passed the sanitized `html` and `children`; the component works inside the existing sanitizer boundary and Code Tabs is a real consumer
+- Phase 3 is therefore COMPLETE rather than SKIPPED, and the API is documented publicly (HAST is only consumed after sanitization)
 
 ---
 
@@ -172,10 +169,10 @@ The unproven `hastComponents` surface was therefore removed, and only the design
 | Targets | `@riebeckite/ui/overlay` `OverlayHost` / `findOverlayHost`, lightbox, text-fragment |
 | Constraint | Overlays appended directly to `document.body`, leaving ownership, focus and cleanup unclear |
 | Packages | `packages/ui`, `packages/plugins/lightbox`, `packages/plugins/text-fragment`, `website/app/routes/_renderer.tsx` |
-| API changes | `OVERLAY_HOST_ATTRIBUTE`, `OverlayHost`, `findOverlayHost` |
+| API changes | `OVERLAY_HOST_ATTRIBUTE`, `OverlayHost`, `findOverlayHost`, `APP_SLOT_ATTRIBUTE`, `AppSlot`, `findAppSlot` |
 | Tests | `packages/ui/test/overlay.test.tsx` (12), `packages/plugins/lightbox` (6) |
 | Performance | The overlay host only renders an empty SSR container |
-| Commit | `82aaa694` |
+| Commit | `82aaa694`, plus the AppSlot contract from main `8698fcd4` |
 | State | Two plugins use the app-provided host and fall back to their own host when it is absent. A real browser confirmed lightbox focus restoration and closing with Escape |
 | Residual issues | Multiple plugins opening overlays at the same time is not a current use case, so focus restoration and scroll locking in that situation remain unverified |
 

@@ -648,6 +648,15 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.13.12
+        version: 4.13.12
+      rehype-stringify:
+        specifier: ^10.0.1
+        version: 10.0.1
+      unified:
+        specifier: 'catalog:'
+        version: 11.0.5
 
   packages/plugins/color-mode:
     dependencies:

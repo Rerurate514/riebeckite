@@ -40,10 +40,11 @@
 | プラグイン | 状態 | 担当 | 宣言化する部分 | 命令的に残す部分 |
 | --- | --- | --- | --- | --- |
 | `search` | VERIFIED | primary | 検索結果リストの描画を `SearchResults` へ移行 | ダイアログ制御、キーボード操作、フォーカス、fetch、`AbortSignal` |
-| `lightbox` | MIGRATION_REQUIRED | primary | ダイアログのマークアップと画像・キャプション・状態表示 | `<dialog>` 制御、フォーカストラップ、画像読み込みイベント |
+| `lightbox` | VERIFIED | primary | ダイアログのマークアップと画像・キャプション・状態表示を `LightboxDialog` へ移行 | `<dialog>` 制御、フォーカストラップ、画像読み込みイベント |
 | `text-fragment` | VERIFIED | primary | ポップオーバーのマークアップと操作・ステータス状態を `TextFragmentPopover` へ移行 | 選択範囲の取得、範囲の座標計算、コピーのタイマー、対象外要素の判定、イベント解除 |
 | `code-enhance` | VERIFIED | 既存作業 | `CodeCopy` は `useState` を使う宣言的Plugin Component | 折り返し・折りたたみはAST生成ブロック上に残る |
-| `image-compare` | KEEP_IMPERATIVE | primary | — | ポインターキャプチャ、range入力、CSSカスタムプロパティ。マークアップはmanifest解決後に生成されるため、Plugin Componentが解決済みURLを受け取れない |
+| `code-tabs` | VERIFIED | primary | タブグループを `CodeTabsGroup` HASTコンポーネントで描画 | 選択とキーボード状態は `@riebeckite/ui/tabs` が担当 |
+| `image-compare` | VERIFIED | primary | `ImageCompare` はmanifest確定後にfinalizeされるdeferred Plugin Component | ポインターキャプチャ、range入力、CSSカスタムプロパティ |
 | `calculator` | KEEP_IMPERATIVE | primary | — | 分離されたruntimeが計算を所有済み。UIは静的SSRで、JSX状態に利点がない |
 | `toc` | KEEP_IMPERATIVE | primary | SSRの `TableOfContents` JSX | スクロール追従と現在見出しの更新 |
 | `color-mode` | KEEP_IMPERATIVE | primary | SSRのトグルコンポーネント | 属性・localStorage・`matchMedia` の同期 |
@@ -60,7 +61,6 @@
 
 | プラグイン | 理由 |
 | --- | --- |
-| `code-tabs` | タブはMarkdown・HASTパイプラインが生成し、`@riebeckite/ui/tabs` で既にアクセシブル。JSX化はSSRマークアップを二重化し、状態を単純化せずhydrationずれの危険だけを増やす。 |
 | `hover-preview` | プレビュー本体はテキスト2要素。コストの中心はfetch、hover・focusのスケジューリング、ビューポート配置。全ページにJSX runtimeを足すのは純増。 |
 | `autocardlink` | カードはremarkプラグインがSSRし、クライアントは画像フォールバックとコピー表示だけを扱う。 |
 | `ux` | 読書進捗と先頭へ戻るボタンはアニメーションフレームごとにCSS変数・クラスを更新する。直接更新が効率的で、要素自体も小さい。 |
@@ -133,7 +133,8 @@
 - 未分類の `createClientEntry` 利用者はなく、再監査で新たなA/B候補は見つからなかった。
 - 外部ScaffoldのE2EはPASSする。`pnpm test:e2e:external` は公開tarballから外部サイトを構築し、`[external-site] PASS: external site built from published artifacts` で完了する。以前の `TypeError: Cannot convert object to primitive value` は `packages/integrations/honox/src/ssg/standalone.ts` の製品コードの不具合だった。キャッシュ破棄用クエリがSSGエントリのモジュールインスタンスを二重にし、Hono JSX runtimeも二重にしていた。`RIEBECKITE_SSG_FULL_REGENERATION=1` でMDX content rendererが動的importされる経路により、main `16baeffe` でも再現した。安定したモジュールURLへの修正で外部E2Eは通り、Scaffold上の対話的Plugin Component hydrationも確認できた。
 - `the excalidraw figure renders to SVG in the browser` は、テスト側の不正な `/assets/HW` 期待を修正したことでPASSする。非公開コンテンツが単独ルートから除外されるのは正しい挙動で、ドキュメント埋め込みとプラグイン自身の単独ページテストが描画を保証する。
+- main `4977e308` と後続のcontent mutation変更を統合した後の最終再監査でも、85プラグイン、32クライアントエントリ、1 A / 17 B / 15 C / 52 D。Phase 1〜4の実装で `image-compare` はVERIFIED、`code-tabs` はBへ移動した。新たなA/B候補は残っていない。完了内容は[実装監査](../declarative-ui-architecture-2026-11/implementation.ja.md)に記録した。
 
 ## 次の作業
 
-移行候補は残っておらず、外部Scaffold E2Eと公式ブラウザ操作テストを含む全検証ゲートがPASSしている。ブランチはレビュー可能な状態であり、merge・push・deployは行っていない。
+移行候補は残っておらず、外部Scaffold E2Eと公式ブラウザ操作テストを含む全検証ゲートがPASSしている。Phase 1〜4も完了し、deferred component props、HAST利用者、app slots、外部レンダラーの共通ライフサイクルが実装済み。ブランチはレビュー可能な状態であり、merge・push・deployは行っていない。

@@ -154,48 +154,42 @@ caching is bypassed for that plugin instead of serving stale HTML. Bump the
 contract's `version` when component rendering changes.
 
 `resolveProps` runs after `parseProps` and receives
-`{ sourceSlug, resolveAssetUrl }`. Use it when props depend on
-content-relative assets; the resolved props still cross the hydration boundary
-and must remain JSON-safe. `resolveAssetUrl` returns `null` for unsupported or
-external paths, so validate the result before rendering.
+`{ sourceSlug, resolveAssetUrl, manifest, diagnostics }`. Use it when props
+depend on content-relative assets; the resolved props still cross the hydration
+boundary and must remain JSON-safe. `resolveAssetUrl` returns `null` for
+unsupported or external paths, so validate the result before rendering. When
+resolution needs the final manifest, set `deferUntilManifest: true`; the
+component renders after manifest hooks and can use `diagnostics` and
+`renderError` to keep an accessible error state.
 
-Resolution failures are authored content errors, not thrown build failures:
-return an `error` state that renders a visible message. Component resolution has
-no direct diagnostics sink, so derive a diagnostic from a marker in that error
-output during the manifest hook (the image comparison plugin does this with
-`data-image-compare-error`) instead of trusting a separate list of strings.
-Resolved output is part of the processed Markdown, so the content fingerprint
-invalidates the cache when the source, slug, or referenced path changes.
+HAST-phase components use `hastComponents` with `defineHastComponent`. They run
+after raw HTML and Markdown sanitization and after plugin Rehype transforms, so
+`match` only sees trusted nodes and `render` receives the serialized node and
+its children as already-sanitized HTML. Use them to wrap or group existing
+document structure; do not use them to bypass the sanitizer.
 
 ### Choosing JSX or SSR output
 
-Prefer the smallest mechanism that keeps the UI readable. Render with Hono JSX
-when state drives the markup (decks, sliders, dialogs) and the component can
-hydrate from JSON-safe props. Keep SSR HTML plus a small behavior initializer
-when the markup is static and the script only adds events or measurement, as
-with code tabs and the table of contents. Do not convert sanitized content HTML
-to JSX for consistency; both paths share the same sanitizer.
-
-An interactive component ships the JSX runtime only to pages that contain it,
-and a page without interactive components loads none of it. A behavior client
-entry costs less than the runtime, so a simple widget does not need hydration.
-
-The component contract ends at serialized props. Children, slots, and arbitrary
-HAST nodes are not part of the public API: keep the content in Markdown and pass
-strings or identifiers. That preserves the sanitizer boundary and the HTML
-fingerprint used by the cache.
+Pick the smallest mechanism that produces the markup. Use Hono JSX when
+component state changes the rendered markup, or when an external renderer needs
+a loading/ready/error lifecycle; keep SSR HTML plus a small behavior controller
+when the markup is static and only event wiring is interactive (code tabs,
+table of contents, navigation). The JSX runtime is loaded only on pages that
+contain a hydrated component, so a behavior controller is still the cheaper
+choice for simple UI. Do not convert already-sanitized HTML into JSX to "make it
+declarative": the component contract ends at serialized props.
 
 ### External renderers
 
-Wrap a third-party renderer in the `@riebeckite/diagram/client` helpers instead
-of writing a bespoke loop. `renderPendingDiagrams` processes each pending
-figure, sets `aria-busy` while working, marks `data-diagram-status` as
-`rendered` or `error`, opens the SSR fallback on failure, and returns the cleanup
-that disposes created charts. Import the library lazily so it keeps its own
-chunk, check `signal.aborted` and `isConnected` after every `await`, and leave
-the library's canvas, SVG, or DOM output as it is. `mermaid`, `graphviz`, and
-`chartjs` follow this pattern; a plugin with a genuinely different lifecycle may
-keep its own initializer.
+Route external renderer lifecycles through `renderPendingDiagrams` from
+`@riebeckite/diagram/client`. The shared wrapper finds pending figures, sets
+`aria-busy` and `data-diagram-status` to `rendered` or `error`, opens the SSR
+fallback element, cancels work through `signal`, ignores detached figures with
+`isConnected`, and returns the cleanup that disposes instances on unmount.
+Import the library lazily so it keeps its own chunk, check `signal.aborted`
+after each `await`, and leave the Canvas/SVG/DOM output to the library. Mermaid,
+Graphviz, and Chart.js follow this contract; a renderer with a genuinely
+different lifecycle may keep its own initializer.
 
 ## Overlay hosts
 
@@ -204,6 +198,12 @@ A theme can provide an SSR-owned host for client overlays with
 may look it up with `findOverlayHost(name)` and fall back to creating its own
 host when the theme does not render one. Keep one host per overlay name and let
 the client entry unmount its component without removing the app-owned host.
+
+Use `<AppSlot name="bodyStart" />` from the same module for application-level
+placement. The names are `head`, `bodyStart`, `articleAfter`, and `app`; choose
+a semantic element with `as` when needed. `findAppSlot(name)` resolves the
+placement from client code. Keep slot markup in the theme or site renderer
+rather than adding page-specific wrappers inside plugin content.
 
 ## Assets and client entries
 
@@ -287,19 +287,13 @@ entry is needed only on pages that contain a marker, pass a presence selector as
 the seventh argument to `createClientEntry()` so the chunk is not loaded on
 other pages.
 
-The selector is checked against the DOM after the page has rendered, so the
-marker must exist in the SSR HTML or be added before the SPA page commits. Give
-the entry its own attribute or class; do not target content a plugin creates
-later on the client. Features that must run everywhere (`analytics`,
-`color-mode`, `text-fragment`, `ux`) omit the selector and keep loading
-unconditionally. A selector gates loading only; still check that the elements
-exist inside the initializer.
-
-Client behavior follows the lifecycle scope. A `page` entry mounts after a page
-commit and unmounts on the next navigation; an `app` entry lives for the document
-and must use delegation or re-initialize by itself. Return a cleanup from the
-initializer for listeners, observers, timers, and library instances, and release
-anything created during an aborted load as well.
+The selector is evaluated against the current DOM, so the marker must be in the
+SSR HTML or added before the SPA commit; client-created content cannot trigger
+the load. Entries that must always run because they implement site-wide
+behavior (analytics, color mode, text fragment, UX) omit the selector. The
+selector only gates loading: the initializer must still look for its own
+elements, and page-scoped work must return cleanup so an aborted load does not
+leave listeners behind.
 
 A client entry can also be declared explicitly:
 

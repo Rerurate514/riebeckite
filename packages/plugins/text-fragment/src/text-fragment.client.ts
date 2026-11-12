@@ -1,4 +1,5 @@
 import { copyText } from "@riebeckite/ui/copy";
+import { findOverlayHost } from "@riebeckite/ui/overlay";
 import { mountTextFragmentPopover } from "./popover.js";
 import { buildQuoteMarkdown, buildTextFragmentUrl } from "./text-fragment.js";
 
@@ -51,8 +52,9 @@ export function initTextFragmentShare(
 
   const resolved = { ...DEFAULT_TEXT_FRAGMENT_LABELS, ...labels };
 
-  const host = document.createElement("div");
-  document.body.appendChild(host);
+  const overlayHost = findOverlayHost("text-fragment");
+  const host = overlayHost ?? document.createElement("div");
+  if (!overlayHost) document.body.appendChild(host);
   const view = mountTextFragmentPopover(host, {
     labels: resolved,
     onCopyLink: () => {
@@ -186,7 +188,7 @@ export function initTextFragmentShare(
     document.removeEventListener("mousedown", onMouseDown);
     window.removeEventListener("scroll", hide);
     view.unmount();
-    host.remove();
+    if (!overlayHost) host.remove();
   };
 }
 

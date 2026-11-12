@@ -78,6 +78,12 @@
       "source": "./loading.ts",
       "default": "./dist/loading.js"
     },
+    "./overlay": {
+      "types": "./dist/overlay.d.ts",
+      "import": "./dist/overlay.js",
+      "source": "./overlay.tsx",
+      "default": "./dist/overlay.js"
+    },
     "./styles/drawer.css": "./styles/drawer.css",
     "./styles/loading.css": "./styles/loading.css"
   },

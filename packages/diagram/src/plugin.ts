@@ -28,6 +28,7 @@ export function defineDiagramPlugin<TOptions>(
             undefined,
             "page",
             "context",
+            definition.client.presenceSelector,
           ),
         ]
       : undefined,

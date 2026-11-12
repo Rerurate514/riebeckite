@@ -1,4 +1,7 @@
-import { setDiagramSvg } from "@riebeckite/diagram/client";
+import {
+  renderPendingDiagrams,
+  setDiagramSvg,
+} from "@riebeckite/diagram/client";
 import type { MermaidClientOptions, MermaidTheme } from "./types.js";
 
 const DEFAULT_THEME = { light: "default", dark: "dark" };
@@ -11,12 +14,12 @@ type ClientContext = {
   config?: MermaidClientOptions;
 };
 
+let renderIndex = 0;
+
 export async function initMermaidDiagrams(context: ClientContext = {}) {
   const options = context.config ?? {};
-  const root = context.root ?? document;
   const mermaid = options.mermaid ?? (await loadMermaid(options.scriptUrl));
-  if (!mermaid) return;
-  if (context.signal?.aborted) return;
+  if (!mermaid || context.signal?.aborted) return;
 
   mermaid.initialize({
     startOnLoad: false,
@@ -26,34 +29,33 @@ export async function initMermaidDiagrams(context: ClientContext = {}) {
     flowchart: { htmlLabels: false },
   });
 
-  const diagrams = root.querySelectorAll<HTMLElement>(
-    '.rr-mermaid[data-mermaid="pending"]',
+  return await renderPendingDiagrams(
+    "mermaid",
+    async (diagram): Promise<undefined | (() => void)> => {
+      const source = diagram.dataset.mermaidSource;
+      const canvas = diagram.querySelector<HTMLElement>(".rr-mermaid__canvas");
+      if (!source || !canvas) return;
+
+      try {
+        renderIndex += 1;
+        const { svg } = await mermaid.render(
+          `rr-mermaid-client-${renderIndex}`,
+          source,
+        );
+        if (context.signal?.aborted || !diagram.isConnected) return;
+        if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
+        delete diagram.dataset.mermaid;
+      } catch (error) {
+        diagram.dataset.mermaid = "error";
+        throw error;
+      }
+    },
+    {
+      root: context.root,
+      signal: context.signal,
+      selector: '.rr-mermaid[data-mermaid="pending"]',
+    },
   );
-
-  for (const [index, diagram] of Array.from(diagrams).entries()) {
-    if (context.signal?.aborted || !diagram.isConnected) return;
-    await renderDiagram(mermaid, diagram, index, context.signal);
-  }
-}
-
-async function renderDiagram(
-  mermaid: NonNullable<MermaidClientOptions["mermaid"]>,
-  diagram: HTMLElement,
-  index: number,
-  signal?: AbortSignal,
-) {
-  const source = diagram.dataset.mermaidSource;
-  const canvas = diagram.querySelector<HTMLElement>(".rr-mermaid__canvas");
-  if (!source || !canvas) return;
-
-  try {
-    const { svg } = await mermaid.render(`rr-mermaid-client-${index}`, source);
-    if (signal?.aborted || !diagram.isConnected) return;
-    if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
-    diagram.removeAttribute("data-mermaid");
-  } catch {
-    diagram.dataset.mermaid = "error";
-  }
 }
 
 async function loadMermaid(scriptUrl = DEFAULT_SCRIPT_URL) {

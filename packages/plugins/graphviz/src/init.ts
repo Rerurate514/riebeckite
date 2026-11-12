@@ -16,18 +16,27 @@ const DEFAULT_SCRIPT_URL = "https://cdn.jsdelivr.net/npm/@viz-js/viz@3/+esm";
  * modes. It fills every `[data-graphviz="pending"]` figure with an SVG produced
  * in the browser and flips the state attribute to `"rendered"`.
  */
-export async function initGraphvizDiagrams(
-  options: GraphvizClientOptions = {},
-) {
+type GraphvizInitInput = GraphvizClientOptions & {
+  root?: ParentNode;
+  signal?: AbortSignal;
+  config?: GraphvizClientOptions;
+};
+
+export async function initGraphvizDiagrams(input: GraphvizInitInput = {}) {
+  const options = input.config ?? input;
   const renderer = options.renderer ?? (await loadRenderer(options.scriptUrl));
-  if (!renderer) return;
+  if (!renderer || input.signal?.aborted) return;
 
   return await renderPendingDiagrams(
     "graphviz",
     (figure) => {
       renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
     },
-    { selector: '[data-graphviz="pending"]' },
+    {
+      root: input.root,
+      signal: input.signal,
+      selector: '[data-graphviz="pending"]',
+    },
   );
 }
 

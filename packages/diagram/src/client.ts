@@ -6,7 +6,7 @@ export type DiagramClientContext = {
 export type DiagramClientRenderer = (
   figure: HTMLElement,
   context: DiagramClientContext,
-) => Promise<undefined | (() => void)> | undefined | (() => void) | void;
+) => Promise<undefined | (() => void)> | undefined | (() => void);
 
 const UNSAFE_SVG_ELEMENTS =
   "script,iframe,object,embed,animate,animateMotion,animateTransform,set,form,button,input,select,textarea,video,audio,canvas,base,link,meta";

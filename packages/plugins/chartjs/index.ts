@@ -30,6 +30,8 @@ export function chartjs(options: ChartJsOptions = {}) {
     client: {
       moduleSpecifier: "@riebeckite/plugin-chartjs/client",
       exportName: "initChartJs",
+      presenceSelector:
+        '[data-diagram="chartjs"][data-diagram-status="pending"]',
     },
   });
 }

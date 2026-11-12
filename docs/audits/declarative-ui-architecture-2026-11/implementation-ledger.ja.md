@@ -29,16 +29,16 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | VERIFYING |
+| ステータス | COMPLETE |
 | 実装対象 | `createClientEntry` の第7引数 `presenceSelector`、`scripts/check_client_entry_presence.mjs`、`pnpm check:client-entries` |
 | 解決する制約 | 32件中23件のClient EntryがpresenceSelectorを持たず、UIが存在しないページでもモジュールを読み込んでいた |
 | 影響パッケージ | `packages/plugins/*`（19プラグイン）、`scripts/`、`packages/integrations/honox`（既存の条件付きマウントを使用） |
 | API変更 | なし（既存の第7引数を必須化） |
-| テスト | `check:client-entries` の静的検査、実ブラウザでのチャンク読み込み検証（未完了） |
+| テスト | `check:client-entries` の静的検査（selectorがリテラルで、pluginソース内に対応するマーカーがあること）、`tests/interactive-runtime/official.test.ts` の実ブラウザ検証（計算機ページでchartjs/mermaid/image-compareのチャンクを読み込まないこと、chartjsページで読み込むこと） |
 | 性能への影響 | UI非存在ページで該当プラグインのclient chunkを読み込まない |
-| コミット | 未 |
-| 完了状況 | 19プラグインにselectorを追加。全selectorがサーバー側のマーカーと一致することを静的確認済み |
-| 残存する問題 | Entry単位のブラウザ回帰テストと変更前後のJS転送量比較が未完了 |
+| コミット | `851abd48` |
+| 完了状況 | 19プラグインにselectorを追加。全selectorがサーバー側のマーカーと一致することを静的・実ブラウザで確認済み |
+| 残存する問題 | `docs` のselectorはこのwebsiteでは描画されない（websiteは独自レイアウトを使うため）。プラグイン単体のレンダラーはマーカーを出力する。Entry単位のJS転送量は共有チャンクが支配的で、個別比較は行っていない |
 
 ### 適用したselectorとマーカー
 
@@ -80,16 +80,16 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | VERIFYING |
+| ステータス | COMPLETE |
 | 実装対象 | `PluginComponentResolveContext` と `resolveProps`（起点ブランチで追加済み）、`image-compare` の参照実装 |
 | 解決する制約 | Componentの `render` がアセットURL確定前に実行され、非同期のprops解決ができない |
 | 影響パッケージ | `packages/core`、`packages/plugins/image-compare` |
 | API変更 | `resolveProps(props, context)`（`context.sourceSlug`、`context.resolveAssetUrl`）。解決後のpropsをSSRとHydrationで共有し、JSON-safeにシリアライズする |
-| テスト | `packages/core/test/plugin_component.test.ts`、`packages/plugins/image-compare/test/*` |
+| テスト | `packages/core/test/plugin_component.test.ts`（2）、`packages/plugins/image-compare/test/*`（14）、`tests/interactive-runtime/official.test.ts` のHydration・SPA検証 |
 | 性能への影響 | サーバー描画専用モジュールとクライアントモジュールを分離し、client chunkからサーバー用render chunkを除外 |
-| コミット | 未 |
-| 完了状況 | image-compareをPlugin Componentへ移行。SSR HTML、ポインター/range/キーボード/ARIA、縦横、SPA unmount/remountを維持 |
-| 残存する問題 | 実ブラウザでのHydration検証が未完了 |
+| コミット | `5a08dd5e` |
+| 完了状況 | image-compareをPlugin Componentへ移行。SSR HTML、ポインター/range/キーボード/ARIA、縦横、SPA unmount/remountを維持。実ブラウザでrange操作と戻る/進む後の再初期化を確認 |
+| 残存する問題 | なし。`client.exportName` の指定漏れでHydrationが無言でスキップされる問題は移行時に修正した |
 
 ### 設計
 
@@ -113,16 +113,16 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | VERIFYING |
+| ステータス | COMPLETE |
 | 実装対象 | `@riebeckite/diagram/client` の `renderPendingDiagrams`、`mermaid`、`graphviz`、`chartjs` |
 | 解決する制約 | 外部レンダラーごとに初期化・中断・破棄・エラー処理が重複し、SPA遷移時の後始末が不統一 |
 | 影響パッケージ | `packages/diagram`、`packages/plugins/mermaid`、`packages/plugins/graphviz`、`packages/plugins/chartjs` |
 | API変更 | `DiagramClientContext.selector`、`DiagramClientRenderer` の戻り値に `void` を許容、`DiagramPluginDefinition.client.presenceSelector` を必須化 |
 | テスト | `packages/plugins/mermaid`（17）、`packages/diagram`（8）。`chartjs` と `graphviz` はパッケージテストなし |
 | 性能への影響 | ライブラリ単位のチャンクを維持。非存在ページでは読み込まない（presenceSelector） |
-| コミット | 未 |
-| 完了状況 | mermaidを共通ラッパーへ移行。graphvizのroot/signal伝播を修正。chartjsのpresenceSelectorを追加 |
-| 残存する問題 | 実ブラウザでのSPA遷移・unmount時破棄の検証が未完了 |
+| コミット | `44342725` |
+| 完了状況 | mermaidを共通ラッパーへ移行。graphvizのroot/signal伝播を修正。chartjsのpresenceSelectorを追加。実ブラウザでchartjsのチャンクが対象ページのみ読み込まれることを確認 |
+| 残存する問題 | `chartjs` と `graphviz` はパッケージテストを持たない。websiteはmermaid-peleを使うため、実ページでのmermaidクライアント差し替えはパッケージテストと共通ラッパーの単体テストで担保している |
 
 ### 共通化の範囲
 
@@ -149,7 +149,7 @@
 | API変更 | なし |
 | テスト | なし |
 | 性能への影響 | なし |
-| コミット | 未 |
+| コミット | `77d76999` |
 | 完了状況 | 監査とPoCを実施し、公開APIを追加しない判断をした |
 | 残存する問題 | なし |
 
@@ -168,16 +168,16 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | VERIFYING |
+| ステータス | COMPLETE |
 | 実装対象 | `@riebeckite/ui/overlay` の `OverlayHost` / `findOverlayHost`、lightbox、text-fragment |
 | 解決する制約 | オーバーレイが `document.body` へ直接追加され、所有権・フォーカス・後始末が不明確 |
 | 影響パッケージ | `packages/ui`、`packages/plugins/lightbox`、`packages/plugins/text-fragment`、`website/app/routes/_renderer.tsx` |
 | API変更 | `OVERLAY_HOST_ATTRIBUTE`、`OverlayHost`、`findOverlayHost` |
 | テスト | `packages/ui/test/overlay.test.tsx`（12）、`packages/plugins/lightbox`（6） |
 | 性能への影響 | Overlay HostはSSRで空コンテナを出力するのみ |
-| コミット | 未 |
-| 完了状況 | 2プラグインがアプリ側のHostを利用。Hostがない場合は従来どおり自前Hostへフォールバック |
-| 残存する問題 | 複数プラグイン同時表示時のフォーカス復元・スクロールロックのブラウザ検証が未完了 |
+| コミット | `82aaa694` |
+| 完了状況 | 2プラグインがアプリ側のHostを利用。Hostがない場合は従来どおり自前Hostへフォールバック。lightboxのフォーカス復元とEscでのcloseを実ブラウザで確認 |
+| 残存する問題 | 複数プラグインが同時にオーバーレイを開く状況は現在のユースケースにないため、同時表示時のフォーカス復元・スクロールロックは未検証 |
 
 ### 判断
 
@@ -192,16 +192,44 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | PLANNED |
+| ステータス | COMPLETE |
 | 実装対象 | TypeScript、Biome、Core/Plugin/HonoXテスト、SPAブラウザテスト、Scaffold golden、外部Scaffold E2E、配布tarball install |
 | 解決する制約 | 変更横断の回帰確認 |
 | 影響パッケージ | リポジトリ全体 |
 | API変更 | なし |
 | テスト | 下記ゲートを実行し、結果を記録する |
 | 性能への影響 | 変更前後のバンドルサイズを比較する |
-| コミット | 未 |
-| 完了状況 | 未着手 |
-| 残存する問題 | 既知の外部SSG `TypeError: Cannot convert object to primitive value` とExcalidrawの非公開アセット起因の失敗を切り分ける |
+| コミット | 本書を含むドキュメントコミット |
+| 完了状況 | 全ゲートPASS。外部Scaffold E2Eと配布tarball経由のHonoXテストもPASS |
+| 残存する問題 | 既知の外部SSG `TypeError: Cannot convert object to primitive value` とExcalidrawの非公開アセット起因の失敗は今回再現しなかった |
+
+### Phase 5 ゲート結果
+
+| ゲート | 結果 |
+| --- | --- |
+| `pnpm build:packages` | PASS |
+| `pnpm typecheck` | PASS（3 projects） |
+| `pnpm check`（Biome） | PASS |
+| `pnpm check:client-entries` | PASS |
+| `pnpm --filter @riebeckite/core test` | 563 pass |
+| `pnpm --filter @riebeckite/honox test` | 224 pass |
+| `@riebeckite/plugin-image-compare` | 14 pass |
+| `@riebeckite/plugin-mermaid` | 17 pass |
+| `@riebeckite/diagram` | 8 pass |
+| `@riebeckite/ui` | 12 pass |
+| `@riebeckite/plugin-lightbox` | 6 pass |
+| `pnpm test:runtime:site` | 10 pass（calculator、SPA unmount/remount、lightbox、text-fragment、chartjsチャンク、image-compare hydration、Excalidraw、flashcards、JSなし表示） |
+| `pnpm check:docs` / `pnpm test:docs` | PASS（19） |
+| `pnpm check:changes` / `pnpm test:changelog` | PASS（13 / 9） |
+| `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS（117 / 117 acyclic） |
+| `pnpm check:double-cast` | PASS（0 allowlist） |
+| `pnpm check:source-health` / `check:templates` | PASS（warningのみ） |
+| `pnpm check:scaffold` | PASS |
+| `pnpm test:security` | PASS |
+| `pnpm check:build-packages` | PASS |
+| `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
+| `pnpm test:e2e:external` | PASS（公開物からの外部サイト構築、ScaffoldコンポーネントHydration、MDXインクリメンタル再構築。既知の `TypeError` は再現せず） |
+| `pnpm test:registry` | PASS（224 tests。公開tarball経由のHonoXテストを含む） |
 
 ---
 
@@ -209,16 +237,16 @@
 
 | 項目 | 内容 |
 | --- | --- |
-| ステータス | PLANNED |
+| ステータス | COMPLETE |
 | 実装対象 | `docs/docs/reference/plugin-api/ui-and-assets.md` と日本語版 |
 | 解決する制約 | 実装と公開ドキュメントの不一致 |
 | 影響パッケージ | `docs` |
 | API変更 | なし |
 | テスト | `pnpm check:docs`、`pnpm test:docs` |
 | 性能への影響 | なし |
-| コミット | 未 |
-| 完了状況 | 未着手 |
-| 残存する問題 | PoCのみのAPIを公開APIとして記載しない |
+| コミット | 本書を含むドキュメントコミット |
+| 完了状況 | `ui-and-assets` のEN/JAに、解決失敗時の診断、JSXとSSRの使い分け、外部レンダラー統合、presenceSelectorとClientLifecycleの条件を追記した |
+| 残存する問題 | PoCのみのAPIを公開APIとして記載しない（HAST Component APIは非公開であることを明記） |
 
 ---
 
@@ -234,3 +262,18 @@
 | 2026-11-12 | `@riebeckite/plugin-lightbox` tests | 6 pass |
 | 2026-11-12 | `pnpm build:packages` | exit 0 |
 | 2026-11-12 | `pnpm typecheck` | exit 0 |
+| 2026-11-12 | `pnpm check` | exit 0 |
+| 2026-11-12 | `pnpm --filter @riebeckite/core test` | 563 pass |
+| 2026-11-12 | `pnpm --filter @riebeckite/honox test` | 224 pass |
+| 2026-11-12 | `pnpm test:runtime:site` | 10 pass |
+| 2026-11-12 | `pnpm check:docs` | PASS（1228ファイル） |
+| 2026-11-12 | `pnpm test:docs` | 19 pass |
+| 2026-11-12 | `pnpm check:double-cast` | PASS |
+| 2026-11-12 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS |
+| 2026-11-12 | `pnpm check:scaffold` / `test:security` / `check:build-packages` | PASS |
+| 2026-11-12 | `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
+| 2026-11-13 | 画像比較クライアントチャンク | 2,140 B（旧2,410 B + サーバー用render 20,193 B） |
+| 2026-11-13 | `pnpm test:e2e:external` | PASS（配布物、ScaffoldコンポーネントHydration、MDX増分ビルド） |
+| 2026-11-13 | `pnpm test:registry` | 224 pass（配布tarball経由のHonoXテスト） |
+| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0（1048ページ） |
+| 2026-11-13 | `pnpm test:runtime:site`（最終ビルド） | 10 pass |

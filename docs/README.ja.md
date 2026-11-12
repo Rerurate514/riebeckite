@@ -95,6 +95,7 @@ deploy
 | セキュリティ強化監査を確認する | [セキュリティ強化監査](./audits/security-hardening-2026-11.ja.md) |
 | 最終リリース監査を確認する | [最終リリース監査](./audits/final-release-audit-2026-11-08/report.ja.md) |
 | 宣言的UI移行の進捗を確認する | [宣言的UI移行台帳](./audits/declarative-ui-migration-2026-11/plan.ja.md) |
+| 宣言的UIアーキテクチャの実装台帳を確認する | [宣言的UIアーキテクチャ台帳](./audits/declarative-ui-architecture-2026-11/implementation-ledger.ja.md) |
 | 設定や CLI、Public API を調べる | [リファレンス](./docs/reference/README.ja.md) |
 | Riebeckite の内部構造を理解する | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 本体を開発する | [フレームワーク開発](./docs/framework/development.ja.md) |

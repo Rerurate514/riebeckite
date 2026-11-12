@@ -80,16 +80,16 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 | Item | Detail |
 | --- | --- |
-| Status | VERIFYING |
+| Status | COMPLETE |
 | Targets | `PluginComponentResolveContext` and `resolveProps` (added on the base branch), `image-compare` reference implementation |
 | Constraint | Component `render` ran before asset URLs were known, so props could not be resolved asynchronously |
 | Packages | `packages/core`, `packages/plugins/image-compare` |
 | API changes | `resolveProps(props, context)` (`context.sourceSlug`, `context.resolveAssetUrl`); resolved props are shared by SSR and hydration and serialized as JSON-safe data |
-| Tests | `packages/core/test/plugin_component.test.ts`, `packages/plugins/image-compare/test/*` |
+| Tests | `packages/core/test/plugin_component.test.ts` (2), `packages/plugins/image-compare/test/*` (14), hydration and SPA checks in `tests/interactive-runtime/official.test.ts` |
 | Performance | Server-only rendering modules are separated from the client module, so the client chunk no longer pulls the server render chunk |
-| Commit | Not yet |
-| State | image-compare migrated to a Plugin Component; SSR HTML, pointer/range/keyboard/ARIA, both orientations and SPA unmount/remount are preserved |
-| Residual issues | Real-browser hydration verification is not complete |
+| Commit | `5a08dd5e` |
+| State | image-compare migrated to a Plugin Component; SSR HTML, pointer/range/keyboard/ARIA, both orientations and SPA unmount/remount are preserved. Real-browser range interaction and re-initialization after back/forward were verified |
+| Residual issues | None. A missing `client.exportName` silently skipped hydration; it was fixed during the migration |
 
 ### Design
 
@@ -113,16 +113,16 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 | Item | Detail |
 | --- | --- |
-| Status | VERIFYING |
+| Status | COMPLETE |
 | Targets | `@riebeckite/diagram/client` `renderPendingDiagrams`, `mermaid`, `graphviz`, `chartjs` |
 | Constraint | Each renderer duplicated initialization, abort, disposal and error handling, and SPA cleanup was inconsistent |
 | Packages | `packages/diagram`, `packages/plugins/mermaid`, `packages/plugins/graphviz`, `packages/plugins/chartjs` |
 | API changes | `DiagramClientContext.selector`; `DiagramClientRenderer` may return `void`; `DiagramPluginDefinition.client.presenceSelector` is required |
 | Tests | `packages/plugins/mermaid` (17), `packages/diagram` (8); `chartjs` and `graphviz` have no package tests |
 | Performance | Library-level chunks are preserved and are not loaded on pages without the UI (presenceSelector) |
-| Commit | Not yet |
-| State | mermaid moved to the shared wrapper; graphviz root/signal propagation fixed; chartjs presenceSelector added |
-| Residual issues | Real-browser SPA navigation and unmount disposal verification is not complete |
+| Commit | `44342725` |
+| State | mermaid moved to the shared wrapper; graphviz root/signal propagation fixed; chartjs presenceSelector added. A real browser confirmed the chartjs chunk is requested only on pages that use it |
+| Residual issues | `chartjs` and `graphviz` have no package tests. The website uses mermaid-pele, so the mermaid client replacement is covered by package tests and the shared wrapper unit tests rather than a production page |
 
 ### Scope of the shared wrapper
 
@@ -149,7 +149,7 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | API changes | None |
 | Tests | None |
 | Performance | None |
-| Commit | Not yet |
+| Commit | `77d76999` |
 | State | Audited and prototyped; decided not to add a public API |
 | Residual issues | None |
 
@@ -168,16 +168,16 @@ The unproven `hastComponents` surface was therefore removed, and only the design
 
 | Item | Detail |
 | --- | --- |
-| Status | VERIFYING |
+| Status | COMPLETE |
 | Targets | `@riebeckite/ui/overlay` `OverlayHost` / `findOverlayHost`, lightbox, text-fragment |
 | Constraint | Overlays appended directly to `document.body`, leaving ownership, focus and cleanup unclear |
 | Packages | `packages/ui`, `packages/plugins/lightbox`, `packages/plugins/text-fragment`, `website/app/routes/_renderer.tsx` |
 | API changes | `OVERLAY_HOST_ATTRIBUTE`, `OverlayHost`, `findOverlayHost` |
 | Tests | `packages/ui/test/overlay.test.tsx` (12), `packages/plugins/lightbox` (6) |
 | Performance | The overlay host only renders an empty SSR container |
-| Commit | Not yet |
-| State | Two plugins use the app-provided host and fall back to their own host when it is absent |
-| Residual issues | Browser verification of focus restoration and scroll locking with multiple overlays is not complete |
+| Commit | `82aaa694` |
+| State | Two plugins use the app-provided host and fall back to their own host when it is absent. A real browser confirmed lightbox focus restoration and closing with Escape |
+| Residual issues | Multiple plugins opening overlays at the same time is not a current use case, so focus restoration and scroll locking in that situation remain unverified |
 
 ### Decisions
 
@@ -192,16 +192,44 @@ The unproven `hastComponents` surface was therefore removed, and only the design
 
 | Item | Detail |
 | --- | --- |
-| Status | PLANNED |
+| Status | COMPLETE |
 | Targets | TypeScript, Biome, core/plugin/HonoX tests, SPA browser tests, scaffold golden tests, external scaffold E2E, distribution tarball install |
 | Constraint | Cross-cutting regression coverage |
 | Packages | Whole repository |
 | API changes | None |
-| Tests | Run the gates below and record the results |
+| Tests | Repository gates below are done; external scaffold E2E and the distribution tarball remain |
 | Performance | Compare bundle sizes before and after |
-| Commit | Not yet |
-| State | Not started |
-| Residual issues | Isolate the known external SSG `TypeError: Cannot convert object to primitive value` and the Excalidraw private-asset browser failure |
+| Commit | The documentation commit that includes this file |
+| State | All gates pass, including the external scaffold E2E and the registry/tarball HonoX run (see "Phase 5 gate results") |
+| Residual issues | The known external SSG `TypeError: Cannot convert object to primitive value` and the Excalidraw private-asset failure did not reproduce |
+
+### Phase 5 gate results
+
+| Gate | Result |
+| --- | --- |
+| `pnpm build:packages` | PASS |
+| `pnpm typecheck` | PASS (3 projects) |
+| `pnpm check` (Biome) | PASS |
+| `pnpm check:client-entries` | PASS |
+| `pnpm --filter @riebeckite/core test` | 563 pass |
+| `pnpm --filter @riebeckite/honox test` | 224 pass |
+| `@riebeckite/plugin-image-compare` | 14 pass |
+| `@riebeckite/plugin-mermaid` | 17 pass |
+| `@riebeckite/diagram` | 8 pass |
+| `@riebeckite/ui` | 12 pass |
+| `@riebeckite/plugin-lightbox` | 6 pass |
+| `pnpm test:runtime:site` | 10 pass (calculator, SPA unmount/remount, lightbox, text-fragment, chartjs chunk, image-compare hydration, Excalidraw, flashcards, no-JS) |
+| `pnpm check:docs` / `pnpm test:docs` | PASS (19) |
+| `pnpm check:changes` / `pnpm test:changelog` | PASS (13 / 9) |
+| `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS (117 / 117 acyclic) |
+| `pnpm check:double-cast` | PASS (0 allowlisted) |
+| `pnpm check:source-health` / `check:templates` | PASS (warnings only) |
+| `pnpm check:scaffold` | PASS |
+| `pnpm test:security` | PASS |
+| `pnpm check:build-packages` | PASS |
+| `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
+| `pnpm test:e2e:external` | PASS (external site from published artifacts, scaffold component hydration, MDX incremental rebuild; the known `TypeError` did not reproduce) |
+| `pnpm test:registry` | PASS (224 tests, including the HonoX tests through published tarballs) |
 
 ---
 
@@ -209,16 +237,16 @@ The unproven `hastComponents` surface was therefore removed, and only the design
 
 | Item | Detail |
 | --- | --- |
-| Status | PLANNED |
+| Status | COMPLETE |
 | Targets | `docs/docs/reference/plugin-api/ui-and-assets.md` and the Japanese counterpart |
 | Constraint | Keep public documentation consistent with the implementation |
 | Packages | `docs` |
 | API changes | None |
 | Tests | `pnpm check:docs`, `pnpm test:docs` |
 | Performance | None |
-| Commit | Not yet |
-| State | Not started |
-| Residual issues | Do not document PoC-only APIs as public APIs |
+| Commit | The documentation commit that includes this file |
+| State | EN/JA `ui-and-assets` now cover resolution-failure diagnostics, choosing JSX versus SSR, external renderer integration, and the presenceSelector and client lifecycle rules |
+| Residual issues | Do not document PoC-only APIs as public APIs (the HAST component API is documented as not public) |
 
 ---
 
@@ -234,3 +262,18 @@ The unproven `hastComponents` surface was therefore removed, and only the design
 | 2026-11-12 | `@riebeckite/plugin-lightbox` tests | 6 pass |
 | 2026-11-12 | `pnpm build:packages` | exit 0 |
 | 2026-11-12 | `pnpm typecheck` | exit 0 |
+| 2026-11-12 | `pnpm check` | exit 0 |
+| 2026-11-12 | `pnpm --filter @riebeckite/core test` | 563 pass |
+| 2026-11-12 | `pnpm --filter @riebeckite/honox test` | 224 pass |
+| 2026-11-12 | `pnpm test:runtime:site` | 10 pass |
+| 2026-11-12 | `pnpm check:docs` | PASS (1228 files) |
+| 2026-11-12 | `pnpm test:docs` | 19 pass |
+| 2026-11-12 | `pnpm check:double-cast` | PASS |
+| 2026-11-12 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS |
+| 2026-11-12 | `pnpm check:scaffold` / `test:security` / `check:build-packages` | PASS |
+| 2026-11-12 | `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
+| 2026-11-13 | image-compare client chunk | 2,140 B (previously 2,410 B plus 20,193 B of server render code) |
+| 2026-11-13 | `pnpm test:e2e:external` | PASS (published artifacts, scaffold component hydration, MDX incremental rebuild) |
+| 2026-11-13 | `pnpm test:registry` | 224 pass (HonoX tests through published tarballs) |
+| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0 (1048 pages) |
+| 2026-11-13 | `pnpm test:runtime:site`（最終ビルド） | 10 pass |

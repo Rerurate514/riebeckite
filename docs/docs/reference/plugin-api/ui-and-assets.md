@@ -159,6 +159,44 @@ content-relative assets; the resolved props still cross the hydration boundary
 and must remain JSON-safe. `resolveAssetUrl` returns `null` for unsupported or
 external paths, so validate the result before rendering.
 
+Resolution failures are authored content errors, not thrown build failures:
+return an `error` state that renders a visible message. Component resolution has
+no direct diagnostics sink, so derive a diagnostic from a marker in that error
+output during the manifest hook (the image comparison plugin does this with
+`data-image-compare-error`) instead of trusting a separate list of strings.
+Resolved output is part of the processed Markdown, so the content fingerprint
+invalidates the cache when the source, slug, or referenced path changes.
+
+### Choosing JSX or SSR output
+
+Prefer the smallest mechanism that keeps the UI readable. Render with Hono JSX
+when state drives the markup (decks, sliders, dialogs) and the component can
+hydrate from JSON-safe props. Keep SSR HTML plus a small behavior initializer
+when the markup is static and the script only adds events or measurement, as
+with code tabs and the table of contents. Do not convert sanitized content HTML
+to JSX for consistency; both paths share the same sanitizer.
+
+An interactive component ships the JSX runtime only to pages that contain it,
+and a page without interactive components loads none of it. A behavior client
+entry costs less than the runtime, so a simple widget does not need hydration.
+
+The component contract ends at serialized props. Children, slots, and arbitrary
+HAST nodes are not part of the public API: keep the content in Markdown and pass
+strings or identifiers. That preserves the sanitizer boundary and the HTML
+fingerprint used by the cache.
+
+### External renderers
+
+Wrap a third-party renderer in the `@riebeckite/diagram/client` helpers instead
+of writing a bespoke loop. `renderPendingDiagrams` processes each pending
+figure, sets `aria-busy` while working, marks `data-diagram-status` as
+`rendered` or `error`, opens the SSR fallback on failure, and returns the cleanup
+that disposes created charts. Import the library lazily so it keeps its own
+chunk, check `signal.aborted` and `isConnected` after every `await`, and leave
+the library's canvas, SVG, or DOM output as it is. `mermaid`, `graphviz`, and
+`chartjs` follow this pattern; a plugin with a genuinely different lifecycle may
+keep its own initializer.
+
 ## Overlay hosts
 
 A theme can provide an SSR-owned host for client overlays with
@@ -248,6 +286,20 @@ measurement, pointer capture, and media playback in the initializer. When an
 entry is needed only on pages that contain a marker, pass a presence selector as
 the seventh argument to `createClientEntry()` so the chunk is not loaded on
 other pages.
+
+The selector is checked against the DOM after the page has rendered, so the
+marker must exist in the SSR HTML or be added before the SPA page commits. Give
+the entry its own attribute or class; do not target content a plugin creates
+later on the client. Features that must run everywhere (`analytics`,
+`color-mode`, `text-fragment`, `ux`) omit the selector and keep loading
+unconditionally. A selector gates loading only; still check that the elements
+exist inside the initializer.
+
+Client behavior follows the lifecycle scope. A `page` entry mounts after a page
+commit and unmounts on the next navigation; an `app` entry lives for the document
+and must use delegation or re-initialize by itself. Return a cleanup from the
+initializer for listeners, observers, timers, and library instances, and release
+anything created during an aborted load as well.
 
 A client entry can also be declared explicitly:
 

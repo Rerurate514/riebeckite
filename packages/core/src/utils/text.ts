@@ -1,3 +1,5 @@
+import { decodeHTMLStrict } from "entities";
+
 export function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -7,6 +9,10 @@ export function stripHtml(html: string): string {
     .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
     .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ");
+}
+
+export function htmlToPlainText(html: string): string {
+  return decodeHTMLStrict(stripHtml(html)).replace(/\s+/g, " ").trim();
 }
 
 export function calculateReadingTime(html: string): number {

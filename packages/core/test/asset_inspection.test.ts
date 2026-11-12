@@ -82,6 +82,59 @@ test("inspects asset usage, formats, duplicates, and optimization candidates", a
   );
 });
 
+test("uses content format dependencies for asset usage", async () => {
+  const files = new Map<string, Uint8Array>([
+    ["page.mdx", new TextEncoder().encode('import { Card } from "./Card"\n')],
+    [
+      "draft.mdx",
+      new TextEncoder().encode('import { Draft } from "./Draft"\n'),
+    ],
+    ["Card.tsx", new TextEncoder().encode("export const Card = () => null;\n")],
+    [
+      "Draft.tsx",
+      new TextEncoder().encode("export const Draft = () => null;\n"),
+    ],
+    [
+      "Unused.tsx",
+      new TextEncoder().encode("export const Unused = () => null;\n"),
+    ],
+  ]);
+  const source: ContentSource = {
+    async scan() {
+      return [...files.keys()].map((path) => ({ path }));
+    },
+    async read(entry: ContentSourceEntry) {
+      const value = files.get(entry.path);
+      if (!value) throw new Error(`Missing ${entry.path}`);
+      return value;
+    },
+  };
+  const manifest = createContentManifest({
+    entries: [
+      { ...entry("page", true), sourcePath: "page.mdx" },
+      { ...entry("draft", false), sourcePath: "draft.mdx" },
+    ],
+  });
+
+  const report = await inspectContentAssets(manifest, source, {
+    isContentPath: (path) => !path.endsWith(".tsx"),
+    contentDependencies: new Map([
+      ["page.mdx", ["Card.tsx"]],
+      ["draft.mdx", ["Draft.tsx"]],
+    ]),
+  });
+
+  assert.deepEqual(
+    report.assets.map((asset) => [asset.path, asset.usage]),
+    [
+      ["Card.tsx", "used"],
+      ["Draft.tsx", "possibly-unused"],
+      ["Unused.tsx", "unused"],
+    ],
+  );
+  assert.deepEqual(report.assets[0]?.references, ["page"]);
+});
+
 function entry(slug: string, routable: boolean): ContentManifestEntry {
   return {
     slug,

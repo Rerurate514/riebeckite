@@ -38,13 +38,20 @@ export type FileSystemContentMutationOptions = {
   readonly beforeWrite?: (path: string) => void | Promise<void>;
   readonly beforeRecoveryRestore?: (path: string) => void | Promise<void>;
   readonly afterRecoveryCapture?: (path: string) => void | Promise<void>;
+  readonly isContentPath?: (path: string) => boolean;
+  readonly toSlug?: (path: string) => string | undefined;
 };
 
 export class FileSystemContentMutation {
+  private readonly isContentPath: (path: string) => boolean;
+
   constructor(
     private readonly contentDirectory: string,
     private readonly options: FileSystemContentMutationOptions = {},
-  ) {}
+  ) {
+    this.isContentPath = (path) =>
+      this.options.isContentPath?.(path) ?? path.toLowerCase().endsWith(".md");
+  }
 
   async plan(
     operations: readonly ContentMutationOperation[],
@@ -107,8 +114,8 @@ export class FileSystemContentMutation {
         touched.add(target);
         const source = files.get(target);
         if (!source) throw new Error("The file does not exist.");
-        if (!target.toLowerCase().endsWith(".md"))
-          throw new Error("Frontmatter can only be updated in Markdown files.");
+        if (!this.isContentPath(target))
+          throw new Error("Frontmatter can only be updated in content files.");
         files.set(
           target,
           updateFrontmatter(source, operation.set, operation.remove),
@@ -144,14 +151,22 @@ export class FileSystemContentMutation {
     }
 
     addCaseConflicts(files, conflicts);
-    const beforeBuild = buildContentIndex(initial);
-    const afterBuild = buildContentIndex(files);
+    const beforeBuild = buildContentIndex(
+      initial,
+      this.isContentPath,
+      this.options.toSlug,
+    );
+    const afterBuild = buildContentIndex(
+      files,
+      this.isContentPath,
+      this.options.toSlug,
+    );
     const beforeIndex = beforeBuild.index;
     const afterIndex = afterBuild.index;
     if (retargets.length > 0 || !sameContentIndex(beforeIndex, afterIndex)) {
       const markdownFiles = new Map<string, string>();
       for (const [filePath, state] of files) {
-        if (!filePath.toLowerCase().endsWith(".md")) continue;
+        if (!this.isContentPath(filePath)) continue;
         try {
           markdownFiles.set(
             filePath,
@@ -176,6 +191,8 @@ export class FileSystemContentMutation {
         afterIndex,
         beforeAmbiguities: beforeBuild.ambiguities,
         afterAmbiguities: afterBuild.ambiguities,
+        isContentPath: this.isContentPath,
+        toSlug: this.options.toSlug,
       });
       for (const [filePath, content] of linkPlan.updates) {
         const existing = files.get(filePath);
@@ -979,19 +996,26 @@ function normalizedPath(value: string): string {
 
 function buildContentIndex(
   files: ReadonlyMap<string, FileState>,
+  isContentPath: (path: string) => boolean,
+  toSlug?: (path: string) => string | undefined,
 ): ReturnType<typeof ContentIndexBuilder.buildFromAliases> {
   const decoder = new TextDecoder();
   const entries: ContentSourceEntry[] = [];
   const aliasesByPath = new Map<string, readonly string[]>();
   for (const [filePath, state] of files) {
     entries.push({ path: filePath });
-    if (filePath.toLowerCase().endsWith(".md"))
+    if (isContentPath(filePath))
       aliasesByPath.set(
         filePath,
         extractFrontmatterAliases(decoder.decode(state.content)),
       );
   }
-  return ContentIndexBuilder.buildFromAliases(entries, aliasesByPath);
+  return ContentIndexBuilder.buildFromAliases(
+    entries,
+    aliasesByPath,
+    isContentPath,
+    toSlug,
+  );
 }
 function sameContentIndex(
   left: ReadonlyMap<string, string>,

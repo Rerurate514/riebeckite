@@ -21,6 +21,8 @@ export type ContentLinkMutationOptions = {
   readonly afterIndex?: ReadonlyMap<string, string>;
   readonly beforeAmbiguities?: ReadonlyMap<string, readonly string[]>;
   readonly afterAmbiguities?: ReadonlyMap<string, readonly string[]>;
+  readonly isContentPath?: (path: string) => boolean;
+  readonly toSlug?: (path: string) => string | undefined;
 };
 
 export function planContentLinkUpdates(
@@ -30,26 +32,32 @@ export function planContentLinkUpdates(
   const warnings: ContentMutationIssue[] = [];
   const conflicts: ContentMutationIssue[] = [];
   if (options.files.size === 0) return { updates, warnings, conflicts };
-  const index = options.afterIndex ?? buildIndex([...options.files.keys()]);
+  const isContentPath =
+    options.isContentPath ??
+    ((filePath: string) => filePath.toLowerCase().endsWith(".md"));
+  const keyOf = (filePath: string) => contentKey(filePath, options.toSlug);
+  const index =
+    options.afterIndex ?? buildIndex([...options.files.keys()], keyOf);
   const beforeIndex =
-    options.beforeIndex ?? buildBeforeIndex(options.files, options.retargets);
+    options.beforeIndex ??
+    buildBeforeIndex(options.files, options.retargets, keyOf);
   const movedFrom = new Map<string, string>();
   const retargetsByFrom = new Map<string, ContentLinkRetarget>();
   const actualPaths = new Map<string, string>();
   for (const filePath of options.files.keys())
-    actualPaths.set(normalizePath(filePath), filePath);
+    actualPaths.set(keyOf(filePath), filePath);
   for (const filePath of index.values()) {
-    const key = normalizePath(filePath);
+    const key = keyOf(filePath);
     if (!actualPaths.has(key)) actualPaths.set(key, filePath);
   }
   for (const retarget of options.retargets) {
-    if (retarget.to) movedFrom.set(normalizePath(retarget.to), retarget.from);
-    retargetsByFrom.set(normalizePath(retarget.from), retarget);
+    if (retarget.to) movedFrom.set(keyOf(retarget.to), retarget.from);
+    retargetsByFrom.set(keyOf(retarget.from), retarget);
   }
 
   for (const [filePath, source] of options.files) {
-    if (!filePath.toLowerCase().endsWith(".md")) continue;
-    const previousPath = movedFrom.get(normalizePath(filePath));
+    if (!isContentPath(filePath)) continue;
+    const previousPath = movedFrom.get(keyOf(filePath));
     const occurrenceSource = previousPath ?? filePath;
     const occurrences = extractLinkOccurrences(source, {
       sourcePath: filePath,
@@ -57,11 +65,19 @@ export function planContentLinkUpdates(
     const rewrites = [];
     for (const occurrence of occurrences) {
       if (!occurrence.destinationRange) continue;
-      const key = linkResolutionKey(occurrence, occurrenceSource);
+      const key = linkResolutionKey(
+        occurrence,
+        occurrenceSource,
+        options.toSlug,
+      );
       const before = key ? beforeIndex.get(key) : undefined;
       if (!before) {
         if (!key || !options.beforeAmbiguities?.has(key)) continue;
-        const afterKey = linkResolutionKey(occurrence, filePath);
+        const afterKey = linkResolutionKey(
+          occurrence,
+          filePath,
+          options.toSlug,
+        );
         const stillAmbiguous =
           afterKey !== undefined &&
           options.afterAmbiguities?.has(afterKey) === true;
@@ -78,7 +94,7 @@ export function planContentLinkUpdates(
         });
         continue;
       }
-      const retarget = retargetsByFrom.get(normalizePath(before));
+      const retarget = retargetsByFrom.get(keyOf(before));
       if (retarget && !retarget.to) {
         warnings.push({
           severity: "warning",
@@ -88,15 +104,16 @@ export function planContentLinkUpdates(
         });
         continue;
       }
-      const target =
-        retarget?.to ?? actualPaths.get(normalizePath(before)) ?? before;
+      const target = retarget?.to ?? actualPaths.get(keyOf(before)) ?? before;
       const relocation =
         previousPath !== undefined &&
         occurrence.syntax !== "wikilink" &&
         occurrence.syntax !== "wiki-embed";
       if (!retarget && !relocation) {
         const after = key
-          ? index.get(linkResolutionKey(occurrence, filePath) ?? "")
+          ? index.get(
+              linkResolutionKey(occurrence, filePath, options.toSlug) ?? "",
+            )
           : undefined;
         if (!after) {
           conflicts.push({
@@ -107,7 +124,7 @@ export function planContentLinkUpdates(
           });
           continue;
         }
-        if (normalizePath(after) !== normalizePath(before)) {
+        if (keyOf(after) !== keyOf(before)) {
           conflicts.push({
             severity: "error",
             code: "link-target-changed",
@@ -122,10 +139,11 @@ export function planContentLinkUpdates(
         target,
         filePath,
         occurrence.fragment,
+        options.toSlug,
       );
       if (replacement === null || replacement === occurrence.rawDestination)
         continue;
-      if (!actualPaths.has(normalizePath(target))) {
+      if (!actualPaths.has(keyOf(target))) {
         conflicts.push({
           severity: "error",
           code: "link-target-missing",
@@ -164,9 +182,10 @@ function replacementDestination(
   to: string,
   sourcePath: string,
   fragment: string | undefined,
+  toSlug?: (path: string) => string | undefined,
 ): string | null {
   if (syntax === "wikilink" || syntax === "wiki-embed")
-    return to.replace(/\.md$/i, "");
+    return toSlug?.(to) ?? to.replace(/\.md$/i, "");
   const directory = sourcePath.split("/").slice(0, -1);
   const targetParts = to.split("/");
   let common = 0;
@@ -186,10 +205,13 @@ function replacementDestination(
     .join("/")}${fragment ?? ""}`;
 }
 
-function buildIndex(paths: readonly string[]): ReadonlyMap<string, string> {
+function buildIndex(
+  paths: readonly string[],
+  keyOf: (path: string) => string,
+): ReadonlyMap<string, string> {
   const candidates = new Map<string, Set<string>>();
   for (const filePath of paths) {
-    for (const key of keysOf(filePath)) {
+    for (const key of keysOf(filePath, keyOf)) {
       const values = candidates.get(key) ?? new Set<string>();
       values.add(filePath);
       candidates.set(key, values);
@@ -205,25 +227,31 @@ function buildIndex(paths: readonly string[]): ReadonlyMap<string, string> {
 function buildBeforeIndex(
   files: ReadonlyMap<string, string>,
   retargets: readonly ContentLinkRetarget[],
+  keyOf: (path: string) => string,
 ): ReadonlyMap<string, string> {
   const movedTo = new Map<string, string>();
   for (const retarget of retargets) {
-    if (retarget.to) movedTo.set(normalizePath(retarget.to), retarget.from);
+    if (retarget.to) movedTo.set(keyOf(retarget.to), retarget.from);
   }
   const paths = new Set<string>();
   for (const filePath of files.keys())
-    paths.add(movedTo.get(normalizePath(filePath)) ?? filePath);
+    paths.add(movedTo.get(keyOf(filePath)) ?? filePath);
   for (const retarget of retargets) paths.add(retarget.from);
-  return buildIndex([...paths]);
+  return buildIndex([...paths], keyOf);
 }
 
-function normalizePath(filePath: string): string {
-  return filePath.replaceAll("\\", "/").replace(/\.md$/i, "").toLowerCase();
-}
-
-function keysOf(filePath: string): string[] {
+function contentKey(
+  filePath: string,
+  toSlug?: (path: string) => string | undefined,
+): string {
   const normalized = filePath.replaceAll("\\", "/");
-  const withoutExtension = normalized.replace(/\.md$/i, "");
+  return (
+    toSlug?.(normalized) ?? normalized.replace(/\.md$/i, "")
+  ).toLowerCase();
+}
+
+function keysOf(filePath: string, keyOf: (path: string) => string): string[] {
+  const withoutExtension = keyOf(filePath);
   const parts = withoutExtension.split("/");
   const keys: string[] = [];
   for (let index = 0; index < parts.length; index += 1)

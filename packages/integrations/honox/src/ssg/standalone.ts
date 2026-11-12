@@ -65,7 +65,7 @@ export async function loadStandaloneSsgBundle(input: {
     environments: { ssr: { resolve: { noExternal: true } } },
   });
   const module = (await import(
-    `${pathToFileURL(resolve(outputDirectory, "ssg-server.mjs")).href}?v=${Date.now()}`
+    pathToFileURL(resolve(outputDirectory, "ssg-server.mjs")).href
   )) as SsgModule;
   if (!module.default) {
     throw new Error(`Failed to find a default export from ${input.entry}.`);

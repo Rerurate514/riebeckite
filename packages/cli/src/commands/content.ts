@@ -1,4 +1,8 @@
-import { CliUsageError, type ContentMutationOperation } from "@riebeckite/core";
+import {
+  CliUsageError,
+  type ContentMutationOperation,
+  createContentFormatRegistry,
+} from "@riebeckite/core";
 import { FileSystemContentMutation } from "@riebeckite/node";
 import type { RiebeckiteProject } from "../application_root.js";
 
@@ -21,7 +25,11 @@ export async function runContentMutation(
   arguments_: readonly string[],
 ): Promise<boolean> {
   const command = parse(arguments_);
-  const mutation = new FileSystemContentMutation(project.contentRoot);
+  const formats = createContentFormatRegistry(project.config?.plugins ?? []);
+  const mutation = new FileSystemContentMutation(project.contentRoot, {
+    isContentPath: (path) => formats.isContentPath(path),
+    toSlug: (path) => formats.toSlug(path),
+  });
   if (command.action === "apply") {
     if (!command.apply)
       throw new CliUsageError("content apply requires --apply.");

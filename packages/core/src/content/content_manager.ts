@@ -279,6 +279,30 @@ export class ContentManager {
     return await this.entryReader.getEntries();
   }
 
+  async getContentDependencies(): Promise<
+    ReadonlyMap<string, readonly string[]>
+  > {
+    const entries = await this.entryReader.getEntries();
+    const paths = entries.map((entry) => entry.path);
+    const dependencies = new Map<string, readonly string[]>();
+    for (const entry of entries) {
+      const format = this.formats.get(entry.path);
+      if (!format?.dependencies) continue;
+      const resolved = await format.dependencies({
+        sourcePath: entry.path,
+        source: await this.entryReader.read(entry),
+        paths,
+      });
+      if (resolved.length > 0) {
+        dependencies.set(
+          entry.path,
+          resolved.map((path) => path.replaceAll("\\", "/")),
+        );
+      }
+    }
+    return dependencies;
+  }
+
   async getPost(slug: string): Promise<string> {
     return await this.entryReader.readText(await this.getContentPath(slug));
   }
@@ -801,6 +825,8 @@ export class ContentManager {
           pluginHooks: this.pluginRuntime.getPluginHookExecutions(),
           derivedViews: this.pluginRuntime.getDerivedViewInspection(),
           processed: this.processedContentDurations,
+          isContentPath: (path) => this.formats.isContentPath(path),
+          toSlug: (path) => this.formats.toSlug(path),
         });
       } catch {
         this.provenance = undefined;

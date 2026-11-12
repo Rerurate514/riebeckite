@@ -2,6 +2,7 @@ import type { Node } from "unist";
 import { parse } from "yaml";
 import { preparePluginComponent } from "./plugin_component_render.js";
 import type { JsonValue } from "./types/json_value.js";
+import { serializePublicClientConfig } from "./types/plugin_asset.js";
 import type {
   PluginComponentResolveContext,
   PluginMarkdownComponent,
@@ -34,6 +35,8 @@ async function replaceComponents(
 ): Promise<void> {
   if (!node.children) return;
   for (const [index, child] of node.children.entries()) {
+    if (child.type === "code") {
+    }
     if (child.type === "code" && child.lang === "riebeckite-component") {
       node.children[index] = await renderComponent(child, registry, context);
       continue;
@@ -56,6 +59,24 @@ async function renderComponent(
   const component = registry.get(name);
   if (!component) throw new Error(`Unknown plugin component: ${name}`);
   const props = parseProps(node.value ?? "", name);
+  if (component.deferUntilManifest) {
+    const parsed = component.parseProps?.(props) ?? props;
+    const encoded = Buffer.from(
+      serializePublicClientConfig(parsed),
+      "utf8",
+    ).toString("base64");
+    const attributes = [
+      `data-riebeckite-component="${escapeHtml(component.name)}"`,
+      `data-riebeckite-component-props="${encoded}"`,
+      'data-riebeckite-component-deferred="true"',
+    ];
+    if (component.client)
+      attributes.push('data-riebeckite-component-interactive="true"');
+    return {
+      type: "html",
+      value: `<div ${attributes.join(" ")}></div>`,
+    };
+  }
   const prepared = await preparePluginComponent(component, props, context);
   const attributes = [
     `data-riebeckite-component="${escapeHtml(prepared.name)}"`,

@@ -1,3 +1,5 @@
+import type { ContentManifest } from "./content_manifest.js";
+import type { Diagnostic } from "./diagnostic.js";
 import type { JsonValue } from "./json_value.js";
 
 export type PluginDataHelper<Input, Model> = (
@@ -13,6 +15,8 @@ export type PluginComponentClient = {
 
 export type PluginComponentResolveContext = {
   readonly sourceSlug?: string;
+  readonly manifest?: ContentManifest;
+  readonly diagnostics?: Diagnostic[];
   resolveAssetUrl(
     input: string,
   ): { readonly path: string; readonly url: string } | null;
@@ -28,6 +32,11 @@ export type PluginMarkdownComponent<
     props: Readonly<Props>,
     context: PluginComponentResolveContext,
   ): Props | Promise<Props>;
+  deferUntilManifest?: boolean;
+  renderError?(
+    error: unknown,
+    props: Readonly<Props>,
+  ): string | Promise<string>;
   client?: PluginComponentClient;
 };
 

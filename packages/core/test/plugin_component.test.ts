@@ -138,3 +138,55 @@ title: Demo
   assert.doesNotMatch(html, /<script>/);
   assert.doesNotMatch(html, /onclick/);
 });
+
+const deferredProbe = definePluginComponent<{ src: string; slug?: string }>({
+  name: "DeferredProbe",
+  deferUntilManifest: true,
+  parseProps: (props) => ({ src: String(props.src ?? "") }),
+  resolveProps: (props, context) => {
+    context.diagnostics?.push({
+      code: "deferred-probe",
+      severity: "info",
+      pluginName: "deferred-probe",
+      slug: context.sourceSlug ?? "",
+      message: "resolved after manifest",
+    });
+    const asset = context.resolveAssetUrl(props.src);
+    if (!asset) throw new Error(`Unresolved asset: ${props.src}`);
+    return { src: asset.url, slug: context.sourceSlug ?? "" };
+  },
+  render: (props) =>
+    `<span data-deferred-src="${props.src}" data-deferred-slug="${props.slug ?? ""}">ok</span>`,
+  renderError: (error) => `<span data-deferred-error>${String(error)}</span>`,
+});
+
+test("deferred plugin components resolve after the manifest is available", async () => {
+  const plugin = definePlugin({
+    name: "deferred-probe",
+    components: [deferredProbe] as readonly PluginMarkdownComponent[],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "posts/demo.md": fixture.replace("AssetProbe", "DeferredProbe"),
+    }),
+    [],
+    {
+      config: resolveConfig({
+        site: { title: "Test" },
+        plugins: [plugin],
+      }),
+    },
+  );
+
+  const manifest = await manager.getManifest();
+  const html = manifest.bySlug.get("posts/demo")?.html ?? "";
+
+  assert.match(html, /data-deferred-src="\/posts\/image\.png"/);
+  assert.match(html, /data-deferred-slug="posts\/demo"/);
+  assert.doesNotMatch(html, /data-riebeckite-component-deferred/);
+  assert.ok(
+    manifest.diagnostics.some(
+      (diagnostic) => diagnostic.code === "deferred-probe",
+    ),
+  );
+});

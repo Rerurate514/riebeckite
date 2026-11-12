@@ -435,15 +435,6 @@ export class Pipeline {
     this.use(processor, sanitizeMarkdownStyles);
     this.use(processor, sanitizeMarkdownObjects);
 
-    const hastComponents = plugins.flatMap(
-      (plugin) => plugin.hastComponents ?? [],
-    );
-    if (hastComponents.length > 0) {
-      this.use(processor, () =>
-        renderHastComponents(hastComponents, componentContext),
-      );
-    }
-
     for (const plugin of plugins) {
       for (const rehypePlugin of plugin.rehypePlugins ?? []) {
         this.use(processor, rehypePlugin);
@@ -453,6 +444,15 @@ export class Pipeline {
           this.use(processor, pipelinePlugin, options);
         },
       });
+    }
+
+    const hastComponents = plugins.flatMap(
+      (plugin) => plugin.hastComponents ?? [],
+    );
+    if (hastComponents.length > 0) {
+      this.use(processor, () =>
+        renderHastComponents(hastComponents, componentContext),
+      );
     }
 
     this.use(processor, wrapMarkdownTables);

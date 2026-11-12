@@ -77,6 +77,7 @@ function buildTabGroup(
     {
       className: "rr-code-tabs",
       dataCodeTabs: "true",
+      dataCodeTabsId: groupId,
       dataCodeTabsSync: options.syncTabs ? "true" : undefined,
     },
     [

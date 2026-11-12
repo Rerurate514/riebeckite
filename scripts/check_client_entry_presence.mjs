@@ -2,7 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
 
-const pluginRoot = path.resolve(import.meta.dirname, "..", "packages", "plugins");
+const pluginRoot = path.resolve(
+  import.meta.dirname,
+  "..",
+  "packages",
+  "plugins",
+);
 const globalEntries = new Set([
   "analytics",
   "color-mode",

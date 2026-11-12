@@ -93,7 +93,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `flashcards` package client (`dist/client.js`, unminified) | 6,126 B | 6,440 B (+314 B) |
 | Website flashcards client chunk | Loaded on every page (`client-Dbl1HkEF.js`, 125,439 B) | Lazy chunk (`client-DySzhhlf.js`, 2,959 B) plus the shared JSX client runtime already used by Plugin Components |
 | `flashcards` DOM construction in source | 7 `createElement` calls building the deck | 0; JSX owns markup and state |
-| Interactive Plugin Component hydration | Broken when any runtime entry exists (missing `runtimeIds` argument) | Fixed and covered by a generated-client test |
+| Interactive Plugin Component hydration | Broken when any runtime entry exists (missing `runtimeIds` argument) | Fixed, covered by a generated-client test, and confirmed by the external scaffold E2E |
 | `search` package client (`dist/client.js`, unminified) | 13,284 B | 13,577 B (+293 B) |
 | `search` result markup in source | 27 DOM construction/mutation calls (`createElement`, `appendChild`, `replaceChildren`, `setAttribute`, `innerHTML`, text nodes) | 0; `SearchResults` renders anchors, highlights, tags, and icons |
 | Search client loading | Shared client chunk on every page (`client-Dbl1HkEF.js`, 125,439 B) | `[data-search-root]` presence selector; `client-D9tNpf5I.js` (6,565 B) on pages with the search bar |
@@ -118,7 +118,8 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - `clientEntries` without `presenceSelector` import their module on every page. New work should gate optional widgets with a selector.
 - Hono JSX renders a boolean `true` as an empty attribute and omits `false`; ARIA state attributes such as `aria-pressed` must be explicit strings.
 - The generated client called `mountPluginClientInitializer` for Plugin Components without the `runtimeIds` argument. Any site with a runtime entry therefore failed to hydrate every interactive component. Fixed in `packages/integrations/honox/src/client_module.ts` and covered by a regression test.
-- `the excalidraw figure renders to SVG in the browser` fails because `docs/assets/HW.md` is private and no `/assets/HW` page is generated. The same failure reproduces on the base checkout and is unrelated to this migration.
+- `the excalidraw figure renders to SVG in the browser` incorrectly expected `/assets/HW`, but `docs/assets/HW.md` is intentionally `private: true`, so no standalone page is generated. The browser test now checks the public docs embed, and `packages/plugins/excalidraw/test/excalidraw_page.test.ts` covers standalone page rendering.
+- `loadStandaloneSsgBundle` imported the built entry with a `?v=<timestamp>` query, while dynamically loaded content-renderer chunks imported the same entry without the query. Node loaded two module instances with separate Hono JSX runtimes, so MDX nodes failed `instanceof` checks during full regeneration. The loader now uses the stable file URL; a regression test covers the URL contract.
 - Search result markup now renders through Hono JSX. Keyboard selection updates a prop and re-renders the same root instead of mutating `aria-selected` on existing anchors; `scrollIntoView` remains the only imperative read after render.
 - `dangerouslySetInnerHTML` is used only for `result.icon.html`, matching the previous `innerHTML` trust boundary for sanitized content icons.
 - The lightbox dialog is rendered by `createRoot` into a host element that is appended to `document.body`; the native `<dialog>` controller, focus trap, and image load events stay imperative. The browser test needs a cancelable click so the trigger anchor does not navigate.
@@ -131,10 +132,10 @@ This ledger is the source of truth for audit status, decisions, verification, an
 
 - Migration scope is complete: every plugin is classified, all A work is verified, the B parts worth moving are verified, and the remaining C/D decisions are recorded above.
 - No unclassified `createClientEntry` user remains, and the re-audit found no new A/B candidate.
-- External scaffold E2E is BLOCKED, not complete. `pnpm test:e2e:external` fails with `TypeError: Cannot convert object to primitive value` during SSG on both this branch and main `16baeffe`; the failure is pre-existing MDX/incremental-cache work outside the UI migration. The UI migration's own gates are unaffected, but criterion 8 is not met.
-- `the excalidraw figure renders to SVG in the browser` is a pre-existing failure at `/assets/HW` (private source, no generated page) and also fails on main.
+- External scaffold E2E passes. `pnpm test:e2e:external` builds the official external site from published tarballs and ends with `[external-site] PASS: external site built from published artifacts`. The previous `TypeError: Cannot convert object to primitive value` was a product bug in `packages/integrations/honox/src/ssg/standalone.ts`: the cache-busting query created a second module instance of the SSG entry and therefore a second Hono JSX runtime. It reproduced on main `16baeffe` with `RIEBECKITE_SSG_FULL_REGENERATION=1`, where MDX content renderers are loaded dynamically. The stable module URL fix makes the external E2E pass and also confirms interactive Plugin Component hydration on the scaffold.
+- `the excalidraw figure renders to SVG in the browser` passes after correcting the test's invalid `/assets/HW` expectation. Private content is correctly excluded from standalone routes; the docs embed and the plugin's own standalone-page tests cover the behavior.
 
 ## Next action
 
-No migration candidate remains. Keep the external scaffold E2E and Excalidraw browser failures recorded as pre-existing blockers; do not merge this branch until the external E2E gate is resolved or explicitly waived.
+No migration candidate remains, and all verification gates pass, including the external scaffold E2E and the official browser interaction suite. The branch is ready for review; it has not been merged, pushed, or deployed.
 

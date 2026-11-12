@@ -96,7 +96,7 @@
 | `search` パッケージのクライアント (`dist/client.js`、非minify) | 13,284 B | 13,577 B (+293 B) |
 | Webサイトのsearchクライアントチャンク | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) に含まれ全ページで読み込み | 検索ページ用チャンク (`client-D9tNpf5I.js`、6,565 B)。presence selectorで制限 |
 | `search` クライアントのDOM構築 | `createElement` などの呼び出し27箇所 | 0。`SearchResults` が項目を描画 |
-| 対話的Plugin Componentのhydration | runtime entryがあるサイトで失敗 (`runtimeIds` 引数の欠落) | 修正済み。生成クライアントの回帰テストで保証 |
+| 対話的Plugin Componentのhydration | runtime entryがあるサイトで失敗 (`runtimeIds` 引数の欠落) | 修正済み。生成クライアントの回帰テストと外部Scaffold E2Eで保証 |
 | `lightbox` パッケージのクライアント (`dist/client.js`、非minify) | 5,326 B | 5,600 B (+274 B) |
 | `lightbox` のダイアログ構築 | `dialog.ts` の `createElement` 7箇所 | ホスト要素の `createElement` 1箇所。残りは `LightboxDialog` がHono JSXで描画 |
 | Webサイトのlightboxクライアントチャンク | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) に含まれ全ページで読み込み | `[data-lightbox-src]` のpresence selectorで制限。`client-sw_U6mX4.js` (2,921 B) |
@@ -117,7 +117,8 @@
 - `presenceSelector` のない `clientEntries` は全ページでモジュールをimportする。新しい任意ウィジェットはセレクタで読み込みを制限する。
 - Hono JSXはbooleanの `true` を空属性として描画し、`false` を省略する。`aria-pressed` などのARIA状態属性は明示的な文字列にする。
 - 生成クライアントはPlugin Componentの `mountPluginClientInitializer` に `runtimeIds` 引数を渡していなかった。runtime entryを持つサイトでは、すべての対話的コンポーネントのhydrationが失敗していた。`packages/integrations/honox/src/client_module.ts` で修正し、回帰テストを追加した。
-- `the excalidraw figure renders to SVG in the browser` は、`docs/assets/HW.md` がprivateで `/assets/HW` ページが生成されないため失敗する。基点のチェックアウトでも同じ失敗を再現しており、この移行とは無関係。
+- `the excalidraw figure renders to SVG in the browser` は `/assets/HW` を期待していたが、`docs/assets/HW.md` は意図的に `private: true` のため単独ページは生成されない。ブラウザテストは公開ドキュメント内の埋め込みを検証するよう修正し、単独ページの描画は `packages/plugins/excalidraw/test/excalidraw_page.test.ts` で保証する。
+- `loadStandaloneSsgBundle` はビルド済みエントリを `?v=<timestamp>` 付きでimportしていたが、動的読み込みされるcontent-renderersチャンクは同じエントリをクエリなしでimportしていた。Nodeは別モジュールとして扱うためHono JSX runtimeが二重に読み込まれ、完全再生成時にMDXのノードが `instanceof` 判定に失敗した。安定したfile URLを使うよう修正し、URL契約の回帰テストを追加した。
 - `search` の選択状態はpropsで `aria-selected` を再描画し、選択項目の可視化は描画後の `scrollIntoView` に残した。フォーカスとキーボード処理は従来どおり命令的。
 - 検索結果のアイコンは従来もサニタイズ済みHTMLを `innerHTML` で挿入していた。`SearchResults` は同じ信頼境界を `dangerouslySetInnerHTML` で維持する。
 - lightboxのダイアログは `createRoot` でホスト要素へ描画し、そのホストを `document.body` へ追加する。ネイティブ `<dialog>` の制御、フォーカストラップ、画像のload/errorイベントは命令的に残す。ブラウザテストのクリックは、トリガーのリンク遷移を防ぐためcancelableにする必要がある。
@@ -130,9 +131,9 @@
 
 - 移行スコープは完了している。全プラグインを分類し、Aはすべて検証済み、Bの移行価値がある部分も検証済みで、残るC・Dの判断根拠は上記に記録した。
 - 未分類の `createClientEntry` 利用者はなく、再監査で新たなA/B候補は見つからなかった。
-- 外部ScaffoldのE2EはBLOCKEDであり、完了ではない。`pnpm test:e2e:external` はこのブランチとmain `16baeffe` の両方でSSG中に `TypeError: Cannot convert object to primitive value` で失敗する。UI移行とは無関係な既存のMDX・増分キャッシュ問題である。UI移行自体のゲートには影響しないが、完了条件8は満たしていない。
-- `the excalidraw figure renders to SVG in the browser` は `/assets/HW` が非公開でページが生成されない既存の失敗であり、mainでも同様に失敗する。
+- 外部ScaffoldのE2EはPASSする。`pnpm test:e2e:external` は公開tarballから外部サイトを構築し、`[external-site] PASS: external site built from published artifacts` で完了する。以前の `TypeError: Cannot convert object to primitive value` は `packages/integrations/honox/src/ssg/standalone.ts` の製品コードの不具合だった。キャッシュ破棄用クエリがSSGエントリのモジュールインスタンスを二重にし、Hono JSX runtimeも二重にしていた。`RIEBECKITE_SSG_FULL_REGENERATION=1` でMDX content rendererが動的importされる経路により、main `16baeffe` でも再現した。安定したモジュールURLへの修正で外部E2Eは通り、Scaffold上の対話的Plugin Component hydrationも確認できた。
+- `the excalidraw figure renders to SVG in the browser` は、テスト側の不正な `/assets/HW` 期待を修正したことでPASSする。非公開コンテンツが単独ルートから除外されるのは正しい挙動で、ドキュメント埋め込みとプラグイン自身の単独ページテストが描画を保証する。
 
 ## 次の作業
 
-移行候補は残っていない。外部Scaffold E2EとExcalidrawブラウザテストの既存失敗を記録したままにし、外部E2Eが解決されるか明示的に免除されるまで、このブランチをmergeしない。
+移行候補は残っておらず、外部Scaffold E2Eと公式ブラウザ操作テストを含む全検証ゲートがPASSしている。ブランチはレビュー可能な状態であり、merge・push・deployは行っていない。

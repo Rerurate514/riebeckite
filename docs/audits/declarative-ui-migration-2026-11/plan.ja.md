@@ -52,7 +52,7 @@
 | `source-files` | KEEP_IMPERATIVE | primary | SSRページとrenderer | ファイルツリー操作 |
 | `share` | KEEP_IMPERATIVE | primary | SSRの `ShareControls` JSX | `navigator.share`・クリップボード・フォーカス |
 | `analytics` | KEEP_IMPERATIVE | primary | — | ページビュー記録のみでUIがない |
-| `diff` | KEEP_IMPERATIVE | primary | Diff表示は既にHono JSX | 取得と履歴選択 |
+| `diff` | VERIFIED | primary | Diffパネルと行を `DiffPanel`・`DiffLine` で描画。サーバーHTMLも同じコンポーネントを使う | 取得、select・コミット選択、ローディング制御 |
 | `garden-explorer` | KEEP_IMPERATIVE | primary | ページとクライアントが既にHono JSXをhydrate | hydrate済みページ上の検索・絞り込み |
 | `local-graph` | KEEP_IMPERATIVE | primary | クライアントが既に `hydrateRoot` でHono JSXを使用 | SVGレイアウトと測定 |
 
@@ -83,7 +83,8 @@
 | 2 | `search` | B | 結果をJSXコンポーネントで描画。ダイアログ・キーボード・fetchは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31)、`test:browser` (18/18) |
 | 3 | `lightbox` | B | ダイアログのマークアップをJSXで描画。ダイアログ制御は維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6)、`tests/interactive-runtime/official.test.ts` のlightboxケースがPASS |
 | 4 | `text-fragment` | B | ポップオーバーをJSXで描画。選択・配置ロジックは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21)、`tests/interactive-runtime/official.test.ts` のtext-fragmentケースがPASS |
-| 5 | 再監査 | — | 全プラグインと依存パッケージを再走査 | PENDING | 静的監査 |
+| 5 | `diff` | B | 履歴のdiffパネルと行をHono JSXで描画。取得とリビジョン選択は維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-diff test` (18/18)、`test:browser` (1/1) |
+| 6 | 再監査 | — | 全プラグインと依存パッケージを再走査 | IN_PROGRESS | 静的監査 |
 
 ## ベースライン
 
@@ -102,6 +103,10 @@
 | `text-fragment` パッケージのクライアント (`dist/client.js`、非minify) | 8,391 B | 9,292 B (+901 B) |
 | `text-fragment` のポップオーバー構築 | `text-fragment.client.ts` の `createElement` 呼び出し4箇所 | ホスト要素の `createElement` 1箇所。残りは `TextFragmentPopover` がHono JSXで描画 |
 | text-fragmentクライアントの読み込み | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) | 全記事で選択共有が必要なため全ページ対象。共有 `client-Bh6h2XFk.js` (91,733 B) に含まれる |
+| `diff` パッケージのクライアント (`dist/client.js`、非minify) | 7,116 B | 8,010 B (+894 B) |
+| `diff` のパネル描画 | リビジョン変更ごとに `innerHTML` と `escapeHtml` で文字列を生成 | `createRoot` と `DiffPanel` がテーブルを描画。サーバーHTMLも同じコンポーネントから生成 |
+| `diff` クライアントの後始末 | 後始末なし。再マウント後もリスナーが残る | `AbortController` と `panelView.unmount()` を `initDiffHistory` から返す |
+| diffクライアントの読み込み | 全ページの共有チャンク | `[data-rr-diff-history]` のpresence selector |
 
 `flashcards` のマークアップは `FlashcardsDeck` でサーバー描画できるが、既存の `flashcards` フェンスはpayloadを描画してクライアントでhydrateするため、コンテンツ移行は不要。
 
@@ -117,8 +122,10 @@
 - 検索結果のアイコンは従来もサニタイズ済みHTMLを `innerHTML` で挿入していた。`SearchResults` は同じ信頼境界を `dangerouslySetInnerHTML` で維持する。
 - lightboxのダイアログは `createRoot` でホスト要素へ描画し、そのホストを `document.body` へ追加する。ネイティブ `<dialog>` の制御、フォーカストラップ、画像のload/errorイベントは命令的に残す。ブラウザテストのクリックは、トリガーのリンク遷移を防ぐためcancelableにする必要がある。
 - text-fragmentのポップオーバーも `createRoot` でホスト要素へ描画し、`document.body` へ追加する。`render()` は非同期のため、表示状態の反映後に `requestAnimationFrame` で配置する。選択範囲の取得、コピーのタイマー、イベント解除は命令的に残す。
+- 最初の監査では、`diff` の描画ファイルが `.tsx` であることから「既にHono JSX」と判断していた。しかし `renderDiffPanel`・`renderDiffLine` はテンプレート文字列を返し、クライアントは `innerHTML` でパネルを書き換えていた。再監査でこれを訂正し、`DiffPanel`・`DiffLine` を実際のJSXコンポーネントにしてクライアントは `createRoot` を使う。
+- `diff` にはSPA向けの後始末がなかった。マウント時にリスナーを中断しパネルrootをunmountする後始末を返すようにし、パッケージのブラウザテストで描画と後始末の両方を確認する。
 - docsは英語・日本語の対と `docs/README.md` からの到達性を要求する。この台帳には日本語版とREADMEリンクを用意する。
 
 ## 次の作業
 
-全体を再監査する。全プラグインとUI生成パッケージを再走査して残存する命令的DOM所有を確認し、A・Bの移行候補が残っていないこと、Cの判断根拠が現在のコードと一致することを検証する。新しい候補が見つかった場合はキューへ戻してサイクルを繰り返す。この再監査なしに完了とはしない。
+全体の再監査を続ける。全プラグインとUI生成パッケージを再走査して残存する命令的DOM所有を確認し、A・Bの移行候補が残っていないこと、Cの判断根拠が現在のコードと一致することを検証する。新しい候補が見つかった場合はキューへ戻してサイクルを繰り返す。この再監査なしに完了とはしない。

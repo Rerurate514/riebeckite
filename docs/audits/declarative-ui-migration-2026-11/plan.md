@@ -52,7 +52,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `source-files` | KEEP_IMPERATIVE | primary | SSR page + renderer | File-tree interaction |
 | `share` | KEEP_IMPERATIVE | primary | SSR `ShareControls` JSX | `navigator.share`/clipboard/focus |
 | `analytics` | KEEP_IMPERATIVE | primary | —| Page-view bookkeeping only; no UI to render |
-| `diff` | KEEP_IMPERATIVE | primary | Diff viewer is already Hono JSX | Fetching and history selection |
+| `diff` | VERIFIED | primary | Diff panel and lines through `DiffPanel`/`DiffLine`; server output uses the same component | Fetching, select/commit state, loading controller |
 | `garden-explorer` | KEEP_IMPERATIVE | primary | Page and client already hydrate Hono JSX | Search/filter state over hydrated page |
 | `local-graph` | KEEP_IMPERATIVE | primary | Client already uses `hydrateRoot` with Hono JSX | SVG layout/measurement |
 
@@ -83,7 +83,8 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | 2 | `search` | B | Render results with a JSX component; keep dialog/keyboard/fetch imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31); `test:browser` (18/18) |
 | 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6); `tests/interactive-runtime/official.test.ts` lightbox case passes |
 | 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21); `tests/interactive-runtime/official.test.ts` text-fragment case passes |
-| 5 | Re-audit | —| Re-scan all plugins and dependent packages | PENDING | static audit |
+| 5 | `diff` | B | Render history diff panel/lines through Hono JSX; keep fetch and revision selection imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-diff test` (18/18); `test:browser` (1/1) |
+| 6 | Re-audit | —| Re-scan all plugins and dependent packages | IN_PROGRESS | static audit |
 
 ## Baseline
 
@@ -102,6 +103,11 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `text-fragment` package client (`dist/client.js`, unminified) | 8,391 B | 9,292 B (+901 B) |
 | `text-fragment` popover construction in source | 4 `createElement` call sites in `text-fragment.client.ts` | 1 host `createElement`; `TextFragmentPopover` renders the rest through Hono JSX |
 | Text-fragment client loading | Shared client chunk (`client-Dbl1HkEF.js`, 125,439 B) | Global by design; the component lives in the shared `client-Bh6h2XFk.js` (91,733 B) because selection sharing must work on every article |
+| `diff` package client (`dist/client.js`, unminified) | 7,116 B | 8,010 B (+894 B) |
+| `diff` panel rendering | `innerHTML` with a string builder and `escapeHtml` on every revision change | `createRoot`/`DiffPanel` renders the table; the same component also produces the server HTML |
+| `diff` client cleanup | No cleanup; listeners survived remounts | `AbortController` and `panelView.unmount()` returned through `initDiffHistory` |
+| Diff client loading | Shared client chunk on every page | `[data-rr-diff-history]` presence selector |
+
 
 `flashcards` markup is now server-renderable through `FlashcardsDeck`, but the existing `flashcards` fence still renders a payload and hydrates on the client, so no content migration is required.
 
@@ -117,9 +123,11 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - `dangerouslySetInnerHTML` is used only for `result.icon.html`, matching the previous `innerHTML` trust boundary for sanitized content icons.
 - The lightbox dialog is rendered by `createRoot` into a host element that is appended to `document.body`; the native `<dialog>` controller, focus trap, and image load events stay imperative. The browser test needs a cancelable click so the trigger anchor does not navigate.
 - The text-fragment popover is also rendered by `createRoot` into a host element appended to `document.body`. `render()` is asynchronous, so positioning runs in `requestAnimationFrame` after the visible state has been applied; selection reading, copy timers, and event cleanup stay imperative.
+- The first audit treated `diff` as "already Hono JSX" because its renderer files use `.tsx`, but `renderDiffPanel`/`renderDiffLine` returned template strings and the client wrote the panel with `innerHTML`. The re-audit corrected this: `DiffPanel`/`DiffLine` are real JSX components, and the client uses `createRoot`.
+- `diff` had no SPA cleanup. The mount now returns a cleanup that aborts its listeners and unmounts the panel root; the package browser test covers both rendering and cleanup.
 - Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
 
 ## Next action
 
-Run the full re-audit: re-scan every plugin and the UI-generating packages for remaining imperative DOM ownership, confirm that no A/B migration candidates are left, and validate the C decisions against the current code. Add newly discovered candidates to the queue and repeat the cycle; do not claim completion without this pass.
+Continue the full re-audit: re-scan every plugin and the UI-generating packages for remaining imperative DOM ownership, confirm that no A/B migration candidates are left, and validate the C decisions against the current code. Add newly discovered candidates to the queue and repeat the cycle; do not claim completion without this pass.
 

@@ -6,6 +6,7 @@
 
 | ID | 作業 | 状態 | 規模 | 優先理由 | 完了条件 |
 |---|---|---|---|---|---|
+| DUI-RENDERER-01 | d2 と wavedrom のクライアント初期化を `@riebeckite/diagram/client` の `renderPendingDiagrams` へ移行する | 未着手 | Small | 独自ループに abort と cleanup がなく、SPA遷移時の挙動が mermaid/graphviz と揃っていない | 両パッケージのテスト（成功・サニタイズ・abort・error・cleanup）がPASSし、`pnpm typecheck` と `pnpm check` が通り、宣言的UI台帳のPhase 2に移行結果を追記済み |
 
 規模の目安: Small = 半日以内 / Medium = 1〜2 日 / Large = 複数日・複数パッケージ。
 

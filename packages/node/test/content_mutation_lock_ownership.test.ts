@@ -194,6 +194,132 @@ test("release preserves a lock replaced by another owner", async () => {
   assert.equal((await readLock(lockPath(root))).token, "new-owner");
 });
 
+test("release restores a lock replaced at its removal claim", async () => {
+  const root = await directory();
+  const target = lockPath(root);
+  const lock = await acquireContentLock(target, "The content lock is busy.");
+  const rename = fs.rename;
+  let injected = false;
+  fs.rename = async (from, to) => {
+    if (!injected && String(from) === target) {
+      injected = true;
+      await fs.writeFile(
+        target,
+        JSON.stringify({ pid: process.pid, token: "new-owner" }),
+      );
+    }
+    return await rename(from, to);
+  };
+  try {
+    await lock.release();
+  } finally {
+    fs.rename = rename;
+  }
+  assert.equal(injected, true);
+  assert.equal((await readLock(target)).token, "new-owner");
+  assert.deepEqual(
+    (await fs.readdir(path.dirname(target))).filter((name) =>
+      name.includes(".stale"),
+    ),
+    [],
+  );
+});
+
+test("release does not overwrite a lock that appears during its restore", async () => {
+  const root = await directory();
+  const target = lockPath(root);
+  const lock = await acquireContentLock(target, "The content lock is busy.");
+  const rename = fs.rename;
+  let injected = false;
+  fs.rename = async (from, to) => {
+    if (!injected && String(from) === target) {
+      injected = true;
+      await fs.writeFile(
+        target,
+        JSON.stringify({ pid: process.pid, token: "new-owner" }),
+      );
+      await rename(from, to);
+      await fs.writeFile(
+        target,
+        JSON.stringify({ pid: process.pid, token: "third-owner" }),
+      );
+      return;
+    }
+    return await rename(from, to);
+  };
+  try {
+    await lock.release();
+  } finally {
+    fs.rename = rename;
+  }
+  assert.equal(injected, true);
+  assert.equal((await readLock(target)).token, "third-owner");
+  const claims = (await fs.readdir(path.dirname(target))).filter((name) =>
+    name.includes(".stale"),
+  );
+  assert.equal(claims.length, 1);
+  assert.equal(
+    (await readLock(path.join(path.dirname(target), claims[0] as string)))
+      .token,
+    "new-owner",
+  );
+});
+
+test("a reclaimer does not remove a lock after losing its guard", async () => {
+  const root = await directory();
+  await writeDeadLock(root);
+  const reclaimed = await reclaimStaleLock(lockPath(root), {
+    beforeLockRemoval: async () => {
+      await fs.writeFile(
+        guardPath(root),
+        JSON.stringify({ pid: process.pid, token: "new-guard" }),
+      );
+    },
+  });
+  assert.equal(reclaimed, false);
+  assert.equal((await readLock(lockPath(root))).token, "dead-owner");
+  assert.equal((await readLock(guardPath(root))).token, "new-guard");
+});
+
+test("apply stops later writes after its lock is lost during a write", async () => {
+  const root = await directory();
+  await fs.writeFile(path.join(root, "a.md"), "a");
+  await fs.writeFile(path.join(root, "b.md"), "b");
+  const mutation = new FileSystemContentMutation(root);
+  const plan = await mutation.plan([
+    { kind: "update", path: "a.md", content: "A" },
+    { kind: "update", path: "b.md", content: "B" },
+  ]);
+  const link = fs.link;
+  let replaced = false;
+  fs.link = async (existing, target) => {
+    if (!replaced) {
+      replaced = true;
+      await fs.writeFile(
+        lockPath(root),
+        JSON.stringify({ pid: process.pid, token: "new-owner" }),
+      );
+    }
+    return await link(existing, target);
+  };
+  try {
+    await assert.rejects(() => mutation.apply(plan), /no longer owned/);
+  } finally {
+    fs.link = link;
+  }
+  assert.equal(replaced, true);
+  assert.equal(await fs.readFile(path.join(root, "a.md"), "utf8"), "A");
+  assert.equal(await fs.readFile(path.join(root, "b.md"), "utf8"), "b");
+  assert.equal((await readLock(lockPath(root))).token, "new-owner");
+  const journal = JSON.parse(
+    await fs.readFile(
+      path.join(root, ".riebeckite", "mutations", plan.id, "journal.json"),
+      "utf8",
+    ),
+  ) as { state: string };
+  assert.equal(journal.state, "applying");
+});
+
 test("a guard left by a killed reclaimer is reclaimed", {
   timeout: 30_000,
 }, async () => {

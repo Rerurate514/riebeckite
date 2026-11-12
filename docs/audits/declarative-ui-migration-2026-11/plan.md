@@ -43,7 +43,8 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `lightbox` | VERIFIED | primary | Dialog markup and image/caption/status state through `LightboxDialog` | `<dialog>` controller, focus trap, image load events |
 | `text-fragment` | VERIFIED | primary | Popover markup and action/status state through `TextFragmentPopover` | Selection reading, range geometry, copy timers, containment checks, event cleanup |
 | `code-enhance` | VERIFIED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
-| `image-compare` | KEEP_IMPERATIVE | primary | —| Pointer capture, range input, CSS custom property. `resolveProps` now exists, but it runs during the Markdown pass before manifest assets are final, so this plugin still uses its placeholder and `onManifestCreated` hook |
+| `code-tabs` | VERIFIED | primary | Tab groups render through the `CodeTabsGroup` HAST component | `@riebeckite/ui/tabs` still owns selection and keyboard state |
+| `image-compare` | VERIFIED | primary | `ImageCompare` is a deferred Plugin Component finalized after the manifest | Pointer capture, range input, and the CSS custom property |
 | `calculator` | KEEP_IMPERATIVE | primary | —| The isolated runtime already owns computation; UI is static SSR, so JSX state would add nothing |
 | `toc` | KEEP_IMPERATIVE | primary | SSR `TableOfContents` JSX | Scroll spy and active-heading mutation |
 | `color-mode` | KEEP_IMPERATIVE | primary | SSR toggle components | Attribute/localStorage/`matchMedia` synchronization |
@@ -60,7 +61,6 @@ This ledger is the source of truth for audit status, decisions, verification, an
 
 | Plugins | Reason |
 | --- | --- |
-| `code-tabs` | Tabs are produced by the Markdown/HAST pipeline and are already accessible through `@riebeckite/ui/tabs`; JSX would duplicate SSR markup and risk hydration drift without simplifying state. |
 | `hover-preview` | The preview body is two text nodes; the expensive parts are fetch, hover/focus scheduling, and viewport positioning. Adding a JSX runtime to every page would be a net cost. |
 | `autocardlink` | Cards are server-rendered by the remark plugin; the client only handles image fallback and a copy label. |
 | `ux` | Reading progress and back-to-top update a CSS variable/class per animation frame; direct mutation is the efficient form and the elements are trivial. |
@@ -84,7 +84,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6); `tests/interactive-runtime/official.test.ts` lightbox case passes |
 | 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21); `tests/interactive-runtime/official.test.ts` text-fragment case passes |
 | 5 | `diff` | B | Render history diff panel/lines through Hono JSX; keep fetch and revision selection imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-diff test` (18/18); `test:browser` (1/1) |
-| 6 | Re-audit | — | Re-scan all plugins and dependent packages | VERIFIED | 85 plugins classified: 1 A, 16 B, 16 C, 52 D; no remaining A/B candidate |
+| 6 | Re-audit | — | Re-scan all plugins and dependent packages | VERIFIED | 85 plugins classified: 1 A, 17 B, 15 C, 52 D; no remaining A/B candidate |
 
 ## Baseline
 
@@ -134,9 +134,9 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - No unclassified `createClientEntry` user remains, and the re-audit found no new A/B candidate.
 - External scaffold E2E passes. `pnpm test:e2e:external` builds the official external site from published tarballs and ends with `[external-site] PASS: external site built from published artifacts`. The previous `TypeError: Cannot convert object to primitive value` was a product bug in `packages/integrations/honox/src/ssg/standalone.ts`: the cache-busting query created a second module instance of the SSG entry and therefore a second Hono JSX runtime. It reproduced on main `16baeffe` with `RIEBECKITE_SSG_FULL_REGENERATION=1`, where MDX content renderers are loaded dynamically. The stable module URL fix makes the external E2E pass and also confirms interactive Plugin Component hydration on the scaffold.
 - `the excalidraw figure renders to SVG in the browser` passes after correcting the test's invalid `/assets/HW` expectation. Private content is correctly excluded from standalone routes; the docs embed and the plugin's own standalone-page tests cover the behavior.
-- Final re-audit after merging main `4977e308` and the later content-mutation commits: 85 plugins, 32 client entries, and the same 1 A / 16 B / 16 C / 52 D classification. No new A/B candidate was found. The Phase 0-4 architecture status and remaining gaps are recorded in the [implementation audit](../declarative-ui-architecture-2026-11/implementation.md).
+- Final re-audit after merging main `4977e308` and the later content-mutation commits: 85 plugins, 32 client entries, and 1 A / 17 B / 15 C / 52 D. `image-compare` moved to VERIFIED and `code-tabs` moved to B after the Phase 1-4 work. No new A/B candidate remains. The [implementation audit](../declarative-ui-architecture-2026-11/implementation.md) records the completed phases.
 
 ## Next action
 
-No migration candidate remains, and all verification gates pass, including the external scaffold E2E and the official browser interaction suite. The architecture phases are not all complete: Phase 1 needs manifest-finalized props, Phase 2 has no production consumer, Phase 3 needs app slots and the one-mount/SPA contract, and Phase 4 still has eight renderers on private loops. The branch is ready for review; it has not been merged, pushed, or deployed.
+No migration candidate remains, and all verification gates pass, including the external scaffold E2E and the official browser interaction suite. Phase 1-4 are complete: deferred component props, a HAST consumer, app slots, and the shared external-renderer lifecycle are implemented. The branch is ready for review; it has not been merged, pushed, or deployed.
 

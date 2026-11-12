@@ -154,16 +154,19 @@ caching is bypassed for that plugin instead of serving stale HTML. Bump the
 contract's `version` when component rendering changes.
 
 `resolveProps` runs after `parseProps` and receives
-`{ sourceSlug, resolveAssetUrl }`. Use it when props depend on
-content-relative assets; the resolved props still cross the hydration boundary
-and must remain JSON-safe. `resolveAssetUrl` returns `null` for unsupported or
-external paths, so validate the result before rendering.
+`{ sourceSlug, resolveAssetUrl, manifest, diagnostics }`. Use it when props
+depend on content-relative assets; the resolved props still cross the hydration
+boundary and must remain JSON-safe. `resolveAssetUrl` returns `null` for
+unsupported or external paths, so validate the result before rendering. When
+resolution needs the final manifest, set `deferUntilManifest: true`; the
+component renders after manifest hooks and can use `diagnostics` and
+`renderError` to keep an accessible error state.
 
 HAST-phase components use `hastComponents` with `defineHastComponent`. They run
-after raw HTML and Markdown sanitization, so `match` only sees trusted nodes and
-`render` receives the serialized node and its children as already-sanitized
-HTML. Use them to wrap or group existing document structure; do not use them to
-bypass the sanitizer.
+after raw HTML and Markdown sanitization and after plugin Rehype transforms, so
+`match` only sees trusted nodes and `render` receives the serialized node and
+its children as already-sanitized HTML. Use them to wrap or group existing
+document structure; do not use them to bypass the sanitizer.
 
 ## Overlay hosts
 
@@ -172,6 +175,12 @@ A theme can provide an SSR-owned host for client overlays with
 may look it up with `findOverlayHost(name)` and fall back to creating its own
 host when the theme does not render one. Keep one host per overlay name and let
 the client entry unmount its component without removing the app-owned host.
+
+Use `<AppSlot name="bodyStart" />` from the same module for application-level
+placement. The names are `head`, `bodyStart`, `articleAfter`, and `app`; choose
+a semantic element with `as` when needed. `findAppSlot(name)` resolves the
+placement from client code. Keep slot markup in the theme or site renderer
+rather than adding page-specific wrappers inside plugin content.
 
 ## Assets and client entries
 

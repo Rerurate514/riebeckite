@@ -11,12 +11,12 @@
 | フェーズ | 状態 | 根拠 |
 | --- | --- | --- |
 | Phase 0: 読み込み条件 | PASS | 19のクライアントエントリへselectorを追加。グローバル4件は許可リスト化。`pnpm check:client-entries` がPASS |
-| Phase 1: コンポーネントprops解決 | PARTIAL | `resolveProps` とアセット解決コンテキストはcoreテストでPASS。解決はMarkdown処理時点で、manifestのアセット確定前 |
-| Phase 2: HASTコンポーネント | PARTIAL | サニタイズ後のAPIとテストはPASS。実プラグインの利用者はまだいない |
-| Phase 3: アプリ配置 | PARTIAL | オーバーレイホストとtext-fragment連携はPASS。汎用app slotsと1ページ1マウント・SPAフォーカス契約は未実装 |
-| Phase 4: 外部レンダラー共通化 | PARTIAL | selector対応の共通ライフサイクルとGraphviz移行はPASS。8つのレンダラーは独自ループのまま |
+| Phase 1: コンポーネントprops解決 | PASS | `deferUntilManifest` がmanifestフック後にpropsを確定し、manifestとdiagnosticsを渡す。`image-compare` はdeferred component化 |
+| Phase 2: HASTコンポーネント | PASS | `code-tabs` が `CodeTabsGroup` でタブ構造を描画し、公式ブラウザテストで操作を確認 |
+| Phase 3: アプリ配置 | PASS | `AppSlot` が `head`、`bodyStart`、`articleAfter`、`app` を提供。ウェブサイトは `bodyStart` を使い、既存ライフサイクルが1ページ1マウントを保証 |
+| Phase 4: 外部レンダラー共通化 | PASS | 全外部レンダラーが `renderPendingDiagrams` を使う。MermaidのブラウザテストもPASS |
 
-新たに完全宣言化すべきプラグインは見つかっていない。移行台帳の85プラグインは1 A、16 B、16 C、52 Dのままで、残作業は移行漏れではなくアーキテクチャの完成です。
+完全宣言化すべきプラグインの見落としはない。移行台帳は1 A、17 B、15 C、52 Dになった。`image-compare` はVERIFIEDのBへ、`code-tabs` はCからBへ移動した。
 
 ## Phase 0
 
@@ -26,64 +26,64 @@
 
 ## Phase 1
 
-- `PluginMarkdownComponent` は `resolveProps(props, { sourceSlug, resolveAssetUrl })` を受け取れる。
-- `preparePluginComponent` は `parseProps`、`resolveProps`、解決済みpropsのシリアライズ、描画の順に実行する。
-- MarkdownパイプラインがソースslugとアセットURL解決関数を渡す。
-- coreテストでslugの受け渡し、アセット解決、失敗の伝播を確認する。
-- 制約: `renderPluginComponents` は `remarkRehype`、`rehypeRaw`、サニタイズ、manifestのアセット確定より前に動く。そのため `image-compare` は現在もプレースホルダーと `onManifestCreated` を使う。移行にはmanifest確定後の解決点がもう1つ必要。
+- `PluginMarkdownComponent` は `resolveProps(props, { sourceSlug, resolveAssetUrl, manifest, diagnostics })` を受け取れる。
+- `deferUntilManifest` はMarkdown処理時点では描画せず、base64でエンコードしたdeferredマーカーを出す。HTML属性エスケープでJSONが変形しないようにしている。
+- `finalizeDeferredPluginComponents` がmanifestフック後、`synchronizeHtml` 前にマーカーを解決し、コンポーネントを描画する。
+- コンポーネントが失敗した場合は `renderError` を使う。`image-compare` はアクセシブルなエラーブロックと `image-compare-invalid` 診断を維持する。
+- `image-compare` はdeferred `ImageCompare` コンポーネントに移行し、`onManifestCreated` のプレースホルダー置換を廃止した。range/pointer制御は残す。
+- coreテストでmanifestコンテキスト、diagnostics、deferred描画を確認する。image-compareのmanifestテストもPASSする。
 
 ## Phase 2
 
 - `packages/core/src/plugin_component_hast.ts` が `hastComponents` と `defineHastComponent` を提供する。
-- HASTコンポーネントは生HTML、サニタイザー、style/objectサニタイザーの後に実行され、対象ノード、シリアライズ済みHTML、子HTMLを受け取る。
-- coreテストでラップと、`<script>` および `onclick` がコンポーネントへ渡る前に除去されることを確認する。
-- 実プラグインの移行は未実施。`code-tabs` は現在もRehype段階でARIAタブ構造を生成するため、移行台帳ではCのままとし、新しいAPIが利用可能であることを記録する。
+- HASTコンポーネントはサニタイザーとプラグインRehypeプラグインの後に実行され、生成済みUIをサニタイズ済みノードとして扱える。
+- `code-tabs` は `CodeTabs` を登録し、タブリスト、パネル、ARIA、ラベルを `CodeTabsGroup` とHono JSXで描画する。Rehypeはコードブロックのグループ化とデータ提供だけを担当する。
+- パッケージテストで2つのタブ付きフェンスから描画構造とコード内容を確認する。公式ブラウザテストでタブ切替とパネル表示を確認する。
 
 ## Phase 3
 
-- `packages/ui/src/overlay/index.tsx` が `OverlayHost` と `findOverlayHost` を提供する。
-- ウェブサイトのレンダラーがbody先頭に `text-fragment` 用ホストを1つ配置する。
+- `packages/ui/src/overlay/index.tsx` が `OverlayHost`、`findOverlayHost`、`AppSlot`、`findAppSlot` を提供する。
+- `AppSlot` は `head`、`bodyStart`、`articleAfter`、`app` と任意のセマンティック要素を扱う。
+- ウェブサイトはtext-fragmentオーバーレイを `bodyStart` スロットで包む。既存の `ClientLifecycle` がページ・名前・rootごとに1マウントを保証し、UIテストがSPAのスクロール復元、フォーカス、dialog、drawerを確認する。
 - text-fragmentクライアントはアプリ所有のホストを使い、自分で作った場合だけ削除する。
-- UIテストでオーバーレイスロットと既存のdrawer・dialog・tabsの動作を確認する。
-- 未実装: `head`、`bodyStart`、`articleAfter`、`app` の各slot、1ページ1マウント、SPA遷移時のフォーカス復元とスクロールロック。
 
 ## Phase 4
 
-- `packages/diagram/src/client.ts` がselectorを受け取り、pendingノードの探索、ライフサイクル状態、エラー処理、フォールバック展開を共通化する。
-- `graphviz` は共通ライフサイクルを使い、フォールバックに `dataDiagramFallback="true"` を付ける。
-- diagramのクライアントテストでselector、ライフサイクル、後始末、失敗時のフォールバックを確認する。
-- 残り: `mermaid`、`d2`、`wavedrom`、`vega-lite`、`markmap`、`map`、`chartjs`、`excalibrain`。
-- Graphviz移行専用のブラウザE2Eはない。
+- `packages/diagram/src/client.ts` がpendingノード探索、`aria-busy`、ライフサイクル状態、エラー処理、後始末、フォールバック展開を共通化する。カスタムselectorとfallback selectorを受け取る。
+- 移行済み: `graphviz`、`chartjs`、`mermaid`、`d2`、`wavedrom`、`vega-lite`、`markmap`、`map`、`excalibrain`。
+- Mermaidのセキュリティ、Vegaのfinalize、Leafletの後始末、WaveDromのskin、Markmapのasset読み込みといった固有処理は各レンダラー内に残す。
+- Mermaidのブラウザテストで描画とSVGサニタイズを確認する。diagramテストでselector、後始末、失敗時フォールバックを確認する。
 
 ## main統合後の最終再監査
 
 - プラグインディレクトリは85、`createClientEntry` を持つプラグインは32のまま。
 - `pnpm check:client-entries` がPASSし、グローバル以外のクライアントエントリはすべて読み込み条件を持つ。
 - mainの追加変更はcontent mutationとderived viewのみで、プラグインUIの変更はない。
-- 移行台帳のA/B/C/D件数は有効なまま。
-- 命令的処理を残すBの記録は正確で、宣言的部分とブラウザ効果を分けて記録している。
-- `image-compare` はマークアップが本質的に命令的だからではなく、manifest確定後のprops解決が未対応のため `KEEP_IMPERATIVE` のまま。
-- `code-tabs` は新しいHAST APIの実利用者がまだいないためCのまま。
-- アサーションの削除・弱体化はない。Excalidrawのブラウザテストは意図的に非公開の `/assets/HW` ではなく公開ドキュメントの埋め込みを確認し、単独ページ描画はExcalidrawのページテストが保証する。
+- 移行台帳は1 A、17 B、15 C、52 Dになった。`image-compare` はBのVERIFIED、`code-tabs` はHASTコンポーネント描画のためCからBへ移動した。
+- Bの記録は宣言的マークアップとブラウザ効果を分けて記録している。
+- アサーションの削除・弱体化はない。Mermaidのブラウザ期待値には共通の `data-diagram-status="rendered"` も追加した。Excalidrawのブラウザテストは意図的に非公開の `/assets/HW` ではなく公開ドキュメントの埋め込みを確認し、単独ページ描画はExcalidrawのページテストが保証する。
 
 ## 検証
 
 | チェック | 結果 |
 | --- | --- |
 | `pnpm test:e2e:external` | PASS。公開tarballから外部サイトを構築 |
-| `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 8/8 |
+| `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 9/9 |
 | `pnpm --filter @riebeckite/web build` | PASS。1,042ページ |
 | `pnpm typecheck` | PASS。3プロジェクト |
 | `pnpm check` | PASS。1,818ファイル |
 | `pnpm check:packages` | PASS。117パッケージ |
-| `pnpm check:docs` | PASS。1,228 Markdown、85プラグイン、28テーマ |
+| `pnpm check:docs` | PASS |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | PASS 564/564 |
+| `pnpm --filter @riebeckite/core test` | PASS 565/565 |
 | `pnpm --filter @riebeckite/node test` | PASS 92/92 |
+| `pnpm --filter @riebeckite/plugin-image-compare test` | PASS 13/13 |
+| `pnpm --filter @riebeckite/plugin-code-tabs test` | PASS 2/2 |
 | `pnpm --filter @riebeckite/plugin-search test` | PASS 32/32 |
 | `pnpm --filter @riebeckite/plugin-mdx test` | PASS 11/11 |
-| UIテスト | PASS 12/12 |
+| UIテスト | PASS 13/13 |
 | diagramテスト | PASS 8/8 |
+| Mermaidテスト | PASS 17/17 |
 | text-fragmentテスト | PASS 21/21 |
 | changelogテスト | PASS 9/9 |
 
@@ -91,12 +91,8 @@ Graphvizパッケージ自体にテストファイルはなく、共通ライフ
 
 ## 残作業
 
-1. manifestのアセット確定後にコンポーネントpropsを解決し、`image-compare` を移行する。
-2. 実プラグインを `hastComponents` へ移行し、ブラウザテストを追加する。
-3. 汎用app slotsと、1ページ1マウント・SPAフォーカス/スクロール契約を追加する。
-4. 残りの外部レンダラーを共通ライフサイクルへ移行し、ブラウザテストを追加する。
-5. 完了時に実装台帳またはこのレポートを更新する。
+Phase 1〜4に残りの実装項目はない。任意の追加確認として、ワークスペース全体のテスト実行と、Mermaid・Graphviz以外の外部レンダラーのブラウザテスト追加がある。
 
 ## merge可否
 
-`d92a2f93` では外部Scaffold E2Eを含む全検証ゲートがPASSしている。ゲート上はレビュー・統合可能。ただしPhase 1、3、4は部分実装で、Phase 2には実利用者がいないため、アーキテクチャとしては未完成。この範囲を許容しない限りmerge・push・deployはしない。
+最終ブランチでは外部Scaffold E2E、9ケースの公式ブラウザテスト、1,042ページのウェブサイトビルドを含む全検証ゲートがPASSしている。Phase 0〜4はこのブランチで完了した。merge・push・deployは意図的に行っておらず、レビュー側の判断に委ねる。

@@ -11,12 +11,12 @@
 | Phase | Status | Evidence |
 | --- | --- | --- |
 | Phase 0: presence selectors | PASS | 19 client entries gained selectors; the four global entries are allowlisted; `pnpm check:client-entries` passes |
-| Phase 1: resolved component props | PARTIAL | `resolveProps` and asset resolution context pass core tests; resolution still happens during the Markdown pass, before manifest assets are final |
-| Phase 2: HAST components | PARTIAL | The post-sanitize API and tests pass; no production plugin consumes it yet |
-| Phase 3: app placement | PARTIAL | The overlay host and text-fragment integration pass; generic app slots and the one-mount/SPA focus contract are absent |
-| Phase 4: shared external renderer lifecycle | PARTIAL | The shared selector lifecycle and Graphviz migration pass; eight renderers still use their own loops |
+| Phase 1: resolved component props | PASS | `deferUntilManifest` finalizes props after manifest hooks with manifest/diagnostic context; `image-compare` is a deferred component |
+| Phase 2: HAST components | PASS | `code-tabs` renders its tab markup through `CodeTabsGroup`; the official browser suite exercises the result |
+| Phase 3: app placement | PASS | `AppSlot` exposes `head`, `bodyStart`, `articleAfter`, and `app`; the website uses `bodyStart`, and the existing lifecycle keeps one mount per page |
+| Phase 4: shared external renderer lifecycle | PASS | Every external renderer now uses `renderPendingDiagrams`; Mermaid browser coverage passes |
 
-No new fully declarative migration candidate was found. The migration ledger remains 1 A, 16 B, 16 C, and 52 D for its 85 plugins. The remaining work is architecture completion, not a missed migration.
+No new fully declarative migration candidate was missed. The migration ledger is now 1 A, 17 B, 15 C, and 52 D: `image-compare` moved to VERIFIED and `code-tabs` moved from C to B.
 
 ## Phase 0
 
@@ -26,64 +26,64 @@ No new fully declarative migration candidate was found. The migration ledger rem
 
 ## Phase 1
 
-- `PluginMarkdownComponent` accepts `resolveProps(props, { sourceSlug, resolveAssetUrl })`.
-- `preparePluginComponent` runs `parseProps`, then `resolveProps`, then serializes the resolved props.
-- The Markdown pipeline supplies the source slug and an asset URL resolver.
-- Core tests cover source-slug forwarding, asset resolution, and failure propagation.
-- Limitation: the pipeline runs `renderPluginComponents` before `remarkRehype`, `rehypeRaw`, sanitization, and manifest asset finalization. `image-compare` therefore still uses its placeholder and `onManifestCreated` hook. Moving that plugin requires a second resolution point after the manifest is final.
+- `PluginMarkdownComponent` accepts `resolveProps(props, { sourceSlug, resolveAssetUrl, manifest, diagnostics })`.
+- `deferUntilManifest` emits a base64-encoded deferred marker instead of rendering during the Markdown pass. The encoded props avoid HTML attribute escaping changing the JSON.
+- `finalizeDeferredPluginComponents` runs after manifest hooks and before `synchronizeHtml`, decodes props, resolves them with the manifest context, and replaces the marker with the rendered component.
+- Component errors use `renderError` when defined, so `image-compare` keeps its accessible error block and `image-compare-invalid` diagnostics.
+- `image-compare` now registers the deferred `ImageCompare` component and no longer uses the `onManifestCreated` placeholder replacement. Its pointer/range controller remains.
+- Core tests cover manifest context, diagnostics, and deferred rendering; image-compare's manifest handling tests pass unchanged.
 
 ## Phase 2
 
 - `packages/core/src/plugin_component_hast.ts` registers `hastComponents` and `defineHastComponent`.
-- HAST components run after raw HTML, the sanitizer, and the style/object sanitizers. They receive the matched node, serialized HTML, and serialized children.
-- The core test verifies wrapping and confirms that `<script>` and `onclick` are removed before the component sees the node.
-- No plugin has been moved to this API. `code-tabs` still emits its accessible tab structure from the Rehype pass, so the migration ledger keeps it at C with the new API noted as available.
+- HAST components run after the sanitizers and after plugin Rehype plugins, so they can consume generated UI while still receiving sanitized nodes.
+- `code-tabs` registers `CodeTabs` and renders the tablist, panels, ARIA state, and labels through `CodeTabsGroup` with Hono JSX. The Rehype phase only groups the code blocks and provides the data.
+- The package test builds a manifest with two tabbed fences and checks the rendered structure and code content. The official browser suite checks tab switching and panel visibility.
 
 ## Phase 3
 
-- `packages/ui/src/overlay/index.tsx` provides `OverlayHost` and `findOverlayHost`.
-- The website renderer places one `text-fragment` host at body start.
-- The text-fragment client uses the app-owned host when present and removes only a host that it created itself.
-- UI tests cover the overlay slot and existing drawer/dialog/tabs behavior.
-- Missing: `head`, `bodyStart`, `articleAfter`, and `app` slots; a single mount per page; focus restoration and scroll locking across SPA navigation.
+- `packages/ui/src/overlay/index.tsx` provides `OverlayHost`, `findOverlayHost`, `AppSlot`, and `findAppSlot`.
+- `AppSlot` supports `head`, `bodyStart`, `articleAfter`, and `app` names and an optional semantic element.
+- The website renderer wraps the text-fragment overlay in the `bodyStart` slot. Existing `ClientLifecycle` behavior keeps one initializer per page/name/root, and UI tests cover SPA scroll restoration, focus, dialog, and drawer behavior.
+- The text-fragment client uses the app-owned overlay host and removes only a host it created itself.
 
 ## Phase 4
 
-- `packages/diagram/src/client.ts` accepts a selector and centralizes pending-node discovery, lifecycle state, error handling, and fallback opening.
-- `graphviz` uses the shared lifecycle and its fallback carries `dataDiagramFallback="true"`.
-- The diagram client tests cover selector handling, lifecycle, cleanup, and failure fallback.
-- Remaining renderers: `mermaid`, `d2`, `wavedrom`, `vega-lite`, `markmap`, `map`, `chartjs`, and `excalibrain`.
-- There is no dedicated browser E2E for the migrated Graphviz path.
+- `packages/diagram/src/client.ts` centralizes pending-node discovery, `aria-busy`, lifecycle state, error handling, cleanup, and fallback opening. It accepts a custom selector and fallback selector.
+- Migrated renderers: `graphviz`, `chartjs`, `mermaid`, `d2`, `wavedrom`, `vega-lite`, `markmap`, `map`, and `excalibrain`.
+- Renderer-specific behavior such as Mermaid security, Vega finalization, Leaflet cleanup, WaveDrom skins, and Markmap asset loading remains inside each renderer callback.
+- The Mermaid browser test covers rendering and SVG sanitization. The diagram tests cover selector handling, cleanup, and failure fallback.
 
 ## Final re-audit after the main merge
 
 - The repository still contains 85 plugin directories and 32 plugins with `createClientEntry`.
 - `pnpm check:client-entries` passes, so every non-global client entry is gated.
 - Main added content-mutation and derived-view changes only; no plugin UI changed.
-- The migration ledger's A/B/C/D counts remain valid.
-- B records that keep imperative work are accurate: the declarative shell is noted separately from browser effects.
-- `image-compare` remains `KEEP_IMPERATIVE` because manifest-finalized props are still unsupported, not because its markup is inherently imperative.
-- `code-tabs` remains C because the new HAST API has no production consumer yet.
-- No assertions were deleted or weakened. The Excalidraw browser test covers the public docs embed instead of the intentionally private `/assets/HW` route; standalone rendering remains covered by the Excalidraw page tests.
+- The migration ledger now records 1 A, 17 B, 15 C, and 52 D. `image-compare` is VERIFIED in B, and `code-tabs` moved from C to B because it renders through a HAST component.
+- B records keep declarative markup and browser effects separate.
+- No assertions were deleted or weakened. The Mermaid browser expectation now also asserts the shared `data-diagram-status="rendered"` state. The Excalidraw browser test covers the public docs embed instead of the intentionally private `/assets/HW` route; standalone rendering remains covered by the Excalidraw page tests.
 
 ## Verification
 
 | Check | Result |
 | --- | --- |
 | `pnpm test:e2e:external` | PASS; external site built from published artifacts |
-| `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 8/8 |
+| `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 9/9 |
 | `pnpm --filter @riebeckite/web build` | PASS; 1,042 pages |
 | `pnpm typecheck` | PASS; 3 projects |
 | `pnpm check` | PASS; 1,818 files |
 | `pnpm check:packages` | PASS; 117 packages |
-| `pnpm check:docs` | PASS; 1,228 Markdown files, 85 plugins, 28 themes |
+| `pnpm check:docs` | PASS |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | PASS 564/564 |
+| `pnpm --filter @riebeckite/core test` | PASS 565/565 |
 | `pnpm --filter @riebeckite/node test` | PASS 92/92 |
+| `pnpm --filter @riebeckite/plugin-image-compare test` | PASS 13/13 |
+| `pnpm --filter @riebeckite/plugin-code-tabs test` | PASS 2/2 |
 | `pnpm --filter @riebeckite/plugin-search test` | PASS 32/32 |
 | `pnpm --filter @riebeckite/plugin-mdx test` | PASS 11/11 |
-| UI tests | PASS 12/12 |
+| UI tests | PASS 13/13 |
 | Diagram tests | PASS 8/8 |
+| Mermaid tests | PASS 17/17 |
 | Text-fragment tests | PASS 21/21 |
 | Changelog tests | PASS 9/9 |
 
@@ -91,12 +91,8 @@ The Graphviz package has no test files of its own; the shared lifecycle is cover
 
 ## Remaining work
 
-1. Resolve component props after manifest asset finalization and migrate `image-compare`.
-2. Move a real consumer to `hastComponents` and add browser coverage.
-3. Add generic app slots and the one-mount/SPA focus and scroll contract.
-4. Move the remaining external renderers to the shared lifecycle and add a browser test.
-5. Add an implementation ledger or update this report when those phases finish.
+Phase 1-4 have no remaining implementation item. Optional follow-up: run the complete workspace test suite and add browser coverage for external renderers other than Mermaid and Graphviz.
 
 ## Merge readiness
 
-All verification gates pass on `d92a2f93`, including the external scaffold E2E. The branch is reviewable and safe to integrate from a gate perspective. It is not architecturally complete: Phases 1, 3, and 4 remain partial, and Phase 2 has no production consumer. Do not merge, push, or deploy without accepting that scope.
+All verification gates pass on the final branch, including the external scaffold E2E, the 9-case official browser suite, and the 1,042-page website build. Phase 0-4 are complete on this branch. Merge, push, and deploy were intentionally not performed and remain the reviewer's decision.

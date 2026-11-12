@@ -65,6 +65,10 @@ export function sourceFiles(options: SourceFilesOptions) {
         PLUGIN_NAME,
         "@riebeckite/plugin-source-files/client",
         "initSourceFiles",
+        undefined,
+        undefined,
+        undefined,
+        "[data-source-file]",
       ),
     ],
   });

@@ -68,6 +68,7 @@ export function map(options: MapOptions = {}) {
         },
         undefined,
         "context",
+        "[data-rr-map='pending']",
       ),
     ],
   });

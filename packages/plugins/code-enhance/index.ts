@@ -76,6 +76,9 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
           copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL,
           copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL,
         },
+        undefined,
+        undefined,
+        ".rr-code, [data-code-copy]",
       ),
     ],
   });

@@ -38,6 +38,10 @@ export function wavedrom(options: WavedromOptions = {}) {
         "wavedrom",
         "@riebeckite/plugin-wavedrom/client",
         "initWaveDrom",
+        undefined,
+        undefined,
+        undefined,
+        "[data-wavedrom='pending']",
       ),
     ],
   });

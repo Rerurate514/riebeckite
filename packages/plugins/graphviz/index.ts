@@ -35,6 +35,10 @@ export function graphviz(options: GraphvizOptions = {}) {
         "graphviz",
         "@riebeckite/plugin-graphviz/client",
         "initGraphvizDiagrams",
+        undefined,
+        undefined,
+        undefined,
+        "[data-graphviz='pending']",
       ),
     ],
   });

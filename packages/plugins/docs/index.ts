@@ -48,6 +48,7 @@ export function docs(options: DocsOptions) {
         undefined,
         "app",
         "context",
+        "[data-docs-sidebar]",
       ),
     ],
   });

@@ -22,6 +22,7 @@ export function toc() {
         undefined,
         undefined,
         "context",
+        "[data-toc-target]",
       ),
     ],
   });

@@ -56,6 +56,7 @@ export function mermaid(options: MermaidOptions = {}) {
         undefined,
         undefined,
         "context",
+        "[data-mermaid='pending']",
       ),
     ],
   });

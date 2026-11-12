@@ -32,6 +32,10 @@ export function codeTabs(options: CodeTabsOptions = {}) {
         "code-tabs",
         "@riebeckite/plugin-code-tabs/client",
         "initCodeTabs",
+        undefined,
+        undefined,
+        undefined,
+        "[data-code-tabs='true']",
       ),
     ],
   });

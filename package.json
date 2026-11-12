@@ -16,6 +16,7 @@
     "check:cycles": "node scripts/check_package_cycles.mjs",
     "check:double-cast": "node scripts/check_double_cast.mjs",
     "check:source-health": "node scripts/check_source_health.mjs",
+    "check:client-entries": "node scripts/check_client_entry_presence.mjs",
     "check:core-api": "node scripts/check_core_api.mjs",
     "check:templates": "node scripts/check_deploy_template.mjs",
     "test:checks": "node --test scripts/check_dependencies.test.mjs scripts/check_source_health.test.mjs",

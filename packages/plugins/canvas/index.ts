@@ -145,6 +145,7 @@ export function canvas(options: CanvasOptions = {}) {
         undefined,
         undefined,
         "root",
+        "[data-canvas]",
       ),
     ],
   });

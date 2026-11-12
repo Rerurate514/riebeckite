@@ -61,6 +61,10 @@ export function marp(options: MarpOptions = {}) {
         "marp",
         "@riebeckite/plugin-marp/client",
         "initMarpDecks",
+        undefined,
+        undefined,
+        undefined,
+        "figure[data-marp]",
       ),
     ],
   });

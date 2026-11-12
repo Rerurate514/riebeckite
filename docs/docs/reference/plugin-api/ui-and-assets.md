@@ -153,6 +153,26 @@ change processed Markdown, so include them in the plugin's
 caching is bypassed for that plugin instead of serving stale HTML. Bump the
 contract's `version` when component rendering changes.
 
+`resolveProps` runs after `parseProps` and receives
+`{ sourceSlug, resolveAssetUrl }`. Use it when props depend on
+content-relative assets; the resolved props still cross the hydration boundary
+and must remain JSON-safe. `resolveAssetUrl` returns `null` for unsupported or
+external paths, so validate the result before rendering.
+
+HAST-phase components use `hastComponents` with `defineHastComponent`. They run
+after raw HTML and Markdown sanitization, so `match` only sees trusted nodes and
+`render` receives the serialized node and its children as already-sanitized
+HTML. Use them to wrap or group existing document structure; do not use them to
+bypass the sanitizer.
+
+## Overlay hosts
+
+A theme can provide an SSR-owned host for client overlays with
+`<OverlayHost name="…" />` from `@riebeckite/ui/overlay`. A client initializer
+may look it up with `findOverlayHost(name)` and fall back to creating its own
+host when the theme does not render one. Keep one host per overlay name and let
+the client entry unmount its component without removing the app-owned host.
+
 ## Assets and client entries
 
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through

@@ -37,12 +37,12 @@ test("standalone SSG loads dynamic chunks from the same bundle instance", async 
     outputDirectory: path.join(root, "out"),
   });
 
-  assert.equal(
-    await (
-      bundle.module.default as unknown as { check: () => Promise<boolean> }
-    ).check(),
-    true,
-  );
+  const entry: unknown = bundle.module.default;
+  if (typeof entry !== "object" || entry === null || !("check" in entry))
+    throw new Error("The standalone bundle does not export a check function.");
+  assert.equal(typeof entry.check, "function");
+  const check = entry.check as () => Promise<boolean>;
+  assert.equal(await check(), true);
 });
 
 test("standalone SSG resolves Hono and HonoX from the integration package", () => {

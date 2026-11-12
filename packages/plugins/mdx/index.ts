@@ -145,9 +145,7 @@ function projectMdxSource(source: string, sourcePath: string): string {
   if (!projected) return "";
   return projectionStringifier
     .stringify(
-      projected as unknown as Parameters<
-        typeof projectionStringifier.stringify
-      >[0],
+      projected as Parameters<typeof projectionStringifier.stringify>[0],
     )
     .replace(/&#x20;/g, " ")
     .replace(/[ \t]+$/gm, "")
@@ -158,7 +156,7 @@ function parseMdxSource(source: string, sourcePath: string): ProjectionNode {
   try {
     return projectionParser.parse(
       source.replace(frontmatterPattern, ""),
-    ) as unknown as ProjectionNode;
+    ) as ProjectionNode;
   } catch (error) {
     throw new Error(
       `Failed to project MDX content for ${sourcePath}: ${error instanceof Error ? error.message : String(error)}`,

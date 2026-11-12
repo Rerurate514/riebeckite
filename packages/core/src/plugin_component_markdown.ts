@@ -2,7 +2,10 @@ import type { Node } from "unist";
 import { parse } from "yaml";
 import { preparePluginComponent } from "./plugin_component_render.js";
 import type { JsonValue } from "./types/json_value.js";
-import type { PluginMarkdownComponent } from "./types/plugin_component.js";
+import type {
+  PluginComponentResolveContext,
+  PluginMarkdownComponent,
+} from "./types/plugin_component.js";
 
 type MarkdownNode = Node & {
   type: string;
@@ -14,32 +17,35 @@ type MarkdownNode = Node & {
 
 export function renderPluginComponents(
   components: readonly PluginMarkdownComponent[],
+  context?: PluginComponentResolveContext,
 ) {
   const registry = new Map(
     components.map((component) => [component.name, component]),
   );
   return async (tree: Node) => {
-    await replaceComponents(tree as MarkdownNode, registry);
+    await replaceComponents(tree as MarkdownNode, registry, context);
   };
 }
 
 async function replaceComponents(
   node: MarkdownNode,
   registry: ReadonlyMap<string, PluginMarkdownComponent>,
+  context?: PluginComponentResolveContext,
 ): Promise<void> {
   if (!node.children) return;
   for (const [index, child] of node.children.entries()) {
     if (child.type === "code" && child.lang === "riebeckite-component") {
-      node.children[index] = await renderComponent(child, registry);
+      node.children[index] = await renderComponent(child, registry, context);
       continue;
     }
-    await replaceComponents(child, registry);
+    await replaceComponents(child, registry, context);
   }
 }
 
 async function renderComponent(
   node: MarkdownNode,
   registry: ReadonlyMap<string, PluginMarkdownComponent>,
+  context?: PluginComponentResolveContext,
 ): Promise<MarkdownNode> {
   const name = node.meta?.trim();
   if (!name || /\s/.test(name)) {
@@ -50,7 +56,7 @@ async function renderComponent(
   const component = registry.get(name);
   if (!component) throw new Error(`Unknown plugin component: ${name}`);
   const props = parseProps(node.value ?? "", name);
-  const prepared = await preparePluginComponent(component, props);
+  const prepared = await preparePluginComponent(component, props, context);
   const attributes = [
     `data-riebeckite-component="${escapeHtml(prepared.name)}"`,
     `data-riebeckite-component-props="${escapeHtml(prepared.props)}"`,

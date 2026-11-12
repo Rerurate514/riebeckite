@@ -11,14 +11,54 @@ export type PluginComponentClient = {
   exportName?: string;
 };
 
+export type PluginComponentResolveContext = {
+  readonly sourceSlug?: string;
+  resolveAssetUrl(
+    input: string,
+  ): { readonly path: string; readonly url: string } | null;
+};
+
 export type PluginMarkdownComponent<
   Props extends Record<string, JsonValue> = Record<string, JsonValue>,
 > = {
   name: string;
   render(props: Readonly<Props>): string | Promise<string>;
   parseProps?(props: Record<string, JsonValue>): Props;
+  resolveProps?(
+    props: Readonly<Props>,
+    context: PluginComponentResolveContext,
+  ): Props | Promise<Props>;
   client?: PluginComponentClient;
 };
+
+export type PluginHastNode = {
+  type: string;
+  tagName?: string;
+  properties?: Record<string, unknown>;
+  children?: PluginHastNode[];
+  value?: string;
+  [key: string]: unknown;
+};
+
+export type PluginHastComponent = {
+  name: string;
+  match(node: PluginHastNode): boolean;
+  render(
+    input: {
+      readonly node: PluginHastNode;
+      readonly html: string;
+      readonly children: string;
+    },
+    context: PluginComponentResolveContext,
+  ): string | Promise<string>;
+  client?: PluginComponentClient;
+};
+
+export function defineHastComponent(
+  component: PluginHastComponent,
+): PluginHastComponent {
+  return component;
+}
 
 export function definePluginComponent<Props extends Record<string, JsonValue>>(
   component: PluginMarkdownComponent<Props>,

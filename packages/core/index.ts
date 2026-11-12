@@ -699,10 +699,16 @@ export {
 export type {
   PluginComponent,
   PluginComponentClient,
+  PluginComponentResolveContext,
   PluginDataHelper,
+  PluginHastComponent,
+  PluginHastNode,
   PluginMarkdownComponent,
 } from "./src/types/plugin_component.js";
-export { definePluginComponent } from "./src/types/plugin_component.js";
+export {
+  defineHastComponent,
+  definePluginComponent,
+} from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,
   PluginContentLocationAugmentContext,

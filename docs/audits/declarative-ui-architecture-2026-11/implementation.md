@@ -2,7 +2,7 @@
 
 - Date: 2026-11-13
 - Branch: `feat/declarative-ui-architecture-phase0-4`
-- Base: `3e3a9b5a` (migration branch plus main `4977e308`), latest main merged as `c5f2d644`
+- Base: `3e3a9b5a` (migration branch plus main `4977e308`), latest main merged as `64603375` (`1567071a`)
 - Scope: all 85 plugins, plus `packages/core`, `packages/integrations/honox`, `packages/ui`, `packages/diagram`, `packages/runtime`, `packages/spa`, themes, and the scaffold
 - Reference: [Declarative UI migration ledger](../declarative-ui-migration-2026-11/plan.md)
 
@@ -74,12 +74,14 @@ No new fully declarative migration candidate was found. The migration ledger rem
 | `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 8/8 |
 | `pnpm --filter @riebeckite/web build` | PASS; 1,042 pages |
 | `pnpm typecheck` | PASS; 3 projects |
-| `pnpm check` | PASS; 1,817 files |
+| `pnpm check` | PASS; 1,818 files |
 | `pnpm check:packages` | PASS; 117 packages |
-| `pnpm check:docs` | PASS; 1,225 Markdown files, 85 plugins, 28 themes |
+| `pnpm check:docs` | PASS; 1,228 Markdown files, 85 plugins, 28 themes |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | PASS 552/552 |
+| `pnpm --filter @riebeckite/core test` | PASS 564/564 |
 | `pnpm --filter @riebeckite/node test` | PASS 92/92 |
+| `pnpm --filter @riebeckite/plugin-search test` | PASS 32/32 |
+| `pnpm --filter @riebeckite/plugin-mdx test` | PASS 11/11 |
 | UI tests | PASS 12/12 |
 | Diagram tests | PASS 8/8 |
 | Text-fragment tests | PASS 21/21 |
@@ -97,4 +99,4 @@ The Graphviz package has no test files of its own; the shared lifecycle is cover
 
 ## Merge readiness
 
-All verification gates pass on `c5f2d644`, including the external scaffold E2E. The branch is reviewable and safe to integrate from a gate perspective. It is not architecturally complete: Phases 1, 3, and 4 remain partial, and Phase 2 has no production consumer. Do not merge, push, or deploy without accepting that scope.
+All verification gates pass on `64603375`, including the external scaffold E2E. The branch is reviewable and safe to integrate from a gate perspective. It is not architecturally complete: Phases 1, 3, and 4 remain partial, and Phase 2 has no production consumer. Do not merge, push, or deploy without accepting that scope.

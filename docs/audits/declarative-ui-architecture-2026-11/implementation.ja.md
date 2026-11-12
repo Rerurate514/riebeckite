@@ -2,7 +2,7 @@
 
 - 日付: 2026-11-13
 - ブランチ: `feat/declarative-ui-architecture-phase0-4`
-- 基点: `3e3a9b5a`（移行ブランチ + main `4977e308`）。最新mainは `c5f2d644` として統合済み
+- 基点: `3e3a9b5a`（移行ブランチ + main `4977e308`）。最新mainは `64603375`（`1567071a`）として統合済み
 - 対象: 全85プラグイン、`packages/core`、`packages/integrations/honox`、`packages/ui`、`packages/diagram`、`packages/runtime`、`packages/spa`、テーマ、Scaffold
 - 参照: [宣言的UI移行台帳](../declarative-ui-migration-2026-11/plan.ja.md)
 
@@ -74,12 +74,14 @@
 | `node --import tsx --test tests/interactive-runtime/official.test.ts` | PASS 8/8 |
 | `pnpm --filter @riebeckite/web build` | PASS。1,042ページ |
 | `pnpm typecheck` | PASS。3プロジェクト |
-| `pnpm check` | PASS。1,817ファイル |
+| `pnpm check` | PASS。1,818ファイル |
 | `pnpm check:packages` | PASS。117パッケージ |
-| `pnpm check:docs` | PASS。1,225 Markdown、85プラグイン、28テーマ |
+| `pnpm check:docs` | PASS。1,228 Markdown、85プラグイン、28テーマ |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | PASS 552/552 |
+| `pnpm --filter @riebeckite/core test` | PASS 564/564 |
 | `pnpm --filter @riebeckite/node test` | PASS 92/92 |
+| `pnpm --filter @riebeckite/plugin-search test` | PASS 32/32 |
+| `pnpm --filter @riebeckite/plugin-mdx test` | PASS 11/11 |
 | UIテスト | PASS 12/12 |
 | diagramテスト | PASS 8/8 |
 | text-fragmentテスト | PASS 21/21 |
@@ -97,4 +99,4 @@ Graphvizパッケージ自体にテストファイルはなく、共通ライフ
 
 ## merge可否
 
-`c5f2d644` では外部Scaffold E2Eを含む全検証ゲートがPASSしている。ゲート上はレビュー・統合可能。ただしPhase 1、3、4は部分実装で、Phase 2には実利用者がいないため、アーキテクチャとしては未完成。この範囲を許容しない限りmerge・push・deployはしない。
+`64603375` では外部Scaffold E2Eを含む全検証ゲートがPASSしている。ゲート上はレビュー・統合可能。ただしPhase 1、3、4は部分実装で、Phase 2には実利用者がいないため、アーキテクチャとしては未完成。この範囲を許容しない限りmerge・push・deployはしない。

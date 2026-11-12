@@ -106,6 +106,22 @@ test("buildSearchItems filters unpublished notes and extracts every field", () =
   assert.equal(items[1]?.excerpt, "C");
 });
 
+test("buildSearchItems decodes named, numeric, and hex entities once", () => {
+  const items = buildSearchItems({
+    config: explicit,
+    manifest: manifestOf([
+      entry(
+        "entities",
+        { publish: true, title: "Entities" },
+        "<h2>Fish &amp; Chips &#x1F600; &hellip;</h2><p>&amp;lt; kept &amp;amp;</p>",
+      ),
+    ]),
+  });
+
+  assert.deepEqual(items[0]?.headings, ["Fish & Chips 😀 …"]);
+  assert.equal(items[0]?.body, "Fish & Chips 😀 … &lt; kept &amp;");
+});
+
 test("buildSearchItems prefers projected plain text for bodies and excerpts", () => {
   const items = buildSearchItems({
     config: explicit,

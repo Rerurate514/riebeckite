@@ -183,6 +183,7 @@ async function collectDoctorReport(
       const registry = createContentFormatRegistry(project.config.plugins);
       assets = await inspectContentAssets(manifest, source, {
         isContentPath: (entryPath) => registry.isContentPath(entryPath),
+        contentDependencies: await content.getContentDependencies(),
       });
     } catch (error) {
       const diagnostic = createDiagnosticFromError(

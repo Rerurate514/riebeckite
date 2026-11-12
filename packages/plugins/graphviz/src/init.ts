@@ -29,7 +29,7 @@ export async function initGraphvizDiagrams(input: GraphvizInitInput = {}) {
 
   return await renderPendingDiagrams(
     "graphviz",
-    (figure) => {
+    (figure): undefined => {
       renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
     },
     {

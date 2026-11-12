@@ -3,7 +3,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { resolveConfig } from "@riebeckite/core";
+import {
+  definePlugin,
+  extractFrontmatter,
+  resolveConfig,
+} from "@riebeckite/core";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import { runDoctorCommand } from "../src/commands/doctor.js";
 
@@ -62,6 +66,79 @@ test("doctor reports unused and duplicate assets without deleting them", async (
     assert.equal(
       await fs.readFile(path.join(root, "b.png"), "utf8"),
       "same-bytes",
+    );
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
+test("doctor treats imports from a content format as asset usage", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-doctor-"));
+  try {
+    await fs.writeFile(
+      path.join(root, "page.mdx"),
+      '---\npublish: true\n---\nimport { Card } from "./Card";\n',
+    );
+    await fs.writeFile(
+      path.join(root, "Card.tsx"),
+      "export function Card() {}",
+    );
+    await fs.writeFile(path.join(root, "Unused.tsx"), "export const x = 1;");
+    const config = resolveConfig({
+      site: { title: "Doctor" },
+      content: { directory: root },
+      plugins: [
+        definePlugin({
+          name: "test-mdx",
+          contentFormats: [
+            {
+              extension: ".mdx",
+              process: async ({ source }) => ({
+                frontmatter: extractFrontmatter(source),
+                html: "<p>Page</p>",
+              }),
+              dependencies: ({ paths }) =>
+                paths.includes("Card.tsx") ? ["Card.tsx"] : [],
+            },
+          ],
+        }),
+      ],
+    });
+    const project: RiebeckiteProject = {
+      invocationCwd: root,
+      projectRoot: root,
+      configRoot: root,
+      configPath: path.join(root, "riebeckite.config.ts"),
+      appRoot: root,
+      contentRoot: root,
+      config,
+    };
+    const output: string[] = [];
+    const original = console.log;
+    console.log = (value: unknown) => {
+      output.push(String(value));
+    };
+    try {
+      await runDoctorCommand(project, { json: true });
+    } finally {
+      console.log = original;
+    }
+    const report = JSON.parse(output.join("\n")) as {
+      diagnostics: { code: string; subject: { value?: string } }[];
+    };
+    assert.ok(
+      !report.diagnostics.some(
+        (diagnostic) =>
+          diagnostic.code === "ASSET_UNUSED" &&
+          diagnostic.subject.value === "Card.tsx",
+      ),
+    );
+    assert.ok(
+      report.diagnostics.some(
+        (diagnostic) =>
+          diagnostic.code === "ASSET_UNUSED" &&
+          diagnostic.subject.value === "Unused.tsx",
+      ),
     );
   } finally {
     await fs.rm(root, { recursive: true, force: true });

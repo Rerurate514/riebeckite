@@ -542,6 +542,7 @@ function canAffectProcessedContent(
       plugin.extendHtmlPipeline ||
       plugin.renderers?.length ||
       plugin.components?.length ||
+      plugin.contentFormats?.length ||
       plugin.onContentLoaded ||
       plugin.onPostParsed ||
       plugin.onPostProcessed,

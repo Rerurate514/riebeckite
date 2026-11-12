@@ -25,6 +25,9 @@ const TEMP_NOTE_MARKER = "FASTPATH_TEMP_NOTE_MARKER";
 const MOVE_MARKER = "FASTPATH_MOVE_MARKER";
 const FOLDER_INDEX_MARKER = "FASTPATH_FOLDER_INDEX_MARKER";
 const SCHEDULED_MARKER = "FASTPATH_SCHEDULED_MARKER";
+const MDX_BODY_MARKER = "FASTPATH_MDX_BODY_MARKER";
+const MDX_IMPORTED_MARKER = "FASTPATH_MDX_IMPORTED_MARKER";
+const MDX_TEMP_MARKER = "FASTPATH_MDX_TEMP_MARKER";
 
 interface DistDifference {
   readonly onlyBefore: readonly string[];
@@ -189,6 +192,8 @@ interface SsgMetrics {
   readonly reusedContentCount?: number;
   readonly renderedOutputCount?: number;
   readonly reusedOutputCount?: number;
+  readonly affectedOutputCount?: number;
+  readonly unchangedOutputCount?: number;
   readonly removedOutputCount?: number;
   readonly deletedOutputCount?: number;
   readonly manifestHookCacheHit?: number;
@@ -219,6 +224,8 @@ interface CaseRecord {
   readonly ssgRendered?: number;
   readonly ssgReused?: number;
   readonly ssgRemoved?: number;
+  readonly ssgAffected?: number;
+  readonly ssgUnchanged?: number;
   readonly ssgSkipped?: boolean;
   readonly viteStartupSkipped?: boolean;
   readonly manifestHookCacheHit?: number;
@@ -237,6 +244,15 @@ async function main(): Promise<void> {
   const contentDir = path.join(siteDir, "content");
   const configPath = path.join(siteDir, "riebeckite.config.ts");
   const writingPath = path.join(contentDir, "notes", "writing.md");
+  const mdxPath = path.join(contentDir, "mdx-demo.mdx");
+  const mdxComponentPath = path.join(
+    siteDir,
+    "app",
+    "components",
+    "mdx-note.tsx",
+  );
+  const mdxTempPath = path.join(contentDir, "notes", "mdx-temp.mdx");
+  const mdxMovedPath = path.join(contentDir, "guides", "mdx-temp.mdx");
   const results: CaseRecord[] = [];
   logger.step(`workspace ${workspaceRoot}`);
   await fsp.mkdir(tarballDir, { recursive: true });
@@ -324,6 +340,8 @@ async function main(): Promise<void> {
         ssgRendered: ssg?.rendered,
         ssgReused: ssg?.reused,
         ssgRemoved: ssg?.removed,
+        ssgAffected: metrics?.affectedOutputCount,
+        ssgUnchanged: metrics?.unchangedOutputCount,
         ssgSkipped: metrics === undefined,
         viteStartupSkipped: /No-change fast path: Vite and SSG skipped\./.test(
           output,
@@ -377,6 +395,58 @@ async function main(): Promise<void> {
         fail(`${label}: ${marker} leaked into dist: ${files.join(", ")}`);
       }
     };
+    const fileHash = (relative: string): string | undefined => {
+      const file = path.join(distDir, relative);
+      if (!fs.existsSync(file)) return undefined;
+      return crypto
+        .createHash("sha256")
+        .update(fs.readFileSync(file))
+        .digest("hex");
+    };
+    const assertStableFile = (
+      relative: string,
+      before: string | undefined,
+      label: string,
+    ): void => {
+      const after = fileHash(relative);
+      if (before === undefined || after === undefined) {
+        fail(`${label}: ${relative} is missing before or after the build`);
+      }
+      if (before !== after) {
+        fail(`${label}: ${relative} was rewritten by an unrelated change`);
+      }
+    };
+    const assertScopedRebuild = (record: CaseRecord, label: string): void => {
+      assert.equal(
+        record.metrics?.fullRegenerationRequired,
+        false,
+        `${label}: expected an incremental rebuild`,
+      );
+      assert.ok(
+        (record.contentProcessed ?? 0) > 0 || (record.ssgRemoved ?? 0) > 0,
+        `${label}: expected processed content or a removed output`,
+      );
+      assert.ok(
+        (record.contentReused ?? 0) > 0,
+        `${label}: expected reused content`,
+      );
+      assert.ok(
+        (record.ssgAffected ?? 0) > 0,
+        `${label}: expected affected outputs`,
+      );
+      assert.ok(
+        (record.ssgUnchanged ?? 0) > 0,
+        `${label}: expected unchanged outputs`,
+      );
+      assert.ok(
+        (record.ssgRendered ?? 0) > 0 || (record.ssgRemoved ?? 0) > 0,
+        `${label}: expected rendered or removed outputs`,
+      );
+      assert.ok(
+        (record.ssgReused ?? 0) > 0,
+        `${label}: expected reused outputs`,
+      );
+    };
     const replaceOnce = (
       text: string,
       pattern: RegExp,
@@ -392,6 +462,9 @@ async function main(): Promise<void> {
       fsp.readFile(writingPath, "utf8");
     const writeWriting = (text: string): Promise<void> =>
       fsp.writeFile(writingPath, text);
+    const readMdx = (): Promise<string> => fsp.readFile(mdxPath, "utf8");
+    const writeMdx = (text: string): Promise<void> =>
+      fsp.writeFile(mdxPath, text);
 
     // 1. Cold build.
     logger.step("case 1: Cold Build");
@@ -422,11 +495,114 @@ async function main(): Promise<void> {
       diffSnapshots(coldSnapshot, snapshot()),
     );
 
-    // 3. Content body change.
-    logger.step("case 3: Content body change");
+    // 2b. MDX body change only re-renders the MDX page.
+    logger.step("case 2b: MDX body change");
+    const writingAfterCold = fileHash("notes/writing.html");
+    await writeMdx(`${await readMdx()}\n${MDX_BODY_MARKER}\n`);
+    const mdxBody = await build("MDX body change", { expectFastPath: false });
+    assertContains(MDX_BODY_MARKER, "MDX body change");
+    assertStableFile("notes/writing.html", writingAfterCold, "MDX body change");
+    assertScopedRebuild(mdxBody, "MDX body change");
+
+    // 2c. Changing an app component conservatively regenerates every output.
+    logger.step("case 2c: MDX component change");
+    await fsp.writeFile(
+      mdxComponentPath,
+      replaceOnce(
+        await fsp.readFile(mdxComponentPath, "utf8"),
+        /This paragraph comes from a site component imported by MDX\./,
+        `This paragraph comes from a site component imported by MDX. ${MDX_IMPORTED_MARKER}`,
+        "MDX component change",
+      ),
+    );
+    const mdxComponent = await build("MDX component change", {
+      expectFastPath: false,
+    });
+    assertContains(MDX_IMPORTED_MARKER, "MDX component change");
+    assertStableFile(
+      "notes/writing.html",
+      writingAfterCold,
+      "MDX component change",
+    );
+    assert.equal(
+      mdxComponent.metrics?.fullRegenerationRequired,
+      true,
+      "MDX component change: app component changes must invalidate the output cache",
+    );
+    assert.ok(
+      (mdxComponent.contentReused ?? 0) > 0,
+      "MDX component change: expected reused content",
+    );
+    assert.ok(
+      (mdxComponent.ssgRendered ?? 0) > 0,
+      "MDX component change: expected rendered outputs",
+    );
+
+    // 2d. Adding, moving, and deleting MDX removes stale outputs.
+    logger.step("case 2d: MDX add, move, and delete");
+    const mdxDemoBeforeTemp = fileHash("mdx-demo.html");
+    await fsp.writeFile(
+      mdxTempPath,
+      [
+        "---",
+        'title: "Fast path MDX temp"',
+        "visibility: unlisted",
+        "---",
+        "",
+        MDX_TEMP_MARKER,
+        "",
+      ].join("\n"),
+    );
+    const mdxAdded = await build("MDX addition", { expectFastPath: false });
+    assertContains(MDX_TEMP_MARKER, "MDX addition");
+    assertStableFile("mdx-demo.html", mdxDemoBeforeTemp, "MDX addition");
+    assertScopedRebuild(mdxAdded, "MDX addition");
+
+    await fsp.mkdir(path.dirname(mdxMovedPath), { recursive: true });
+    await fsp.rename(mdxTempPath, mdxMovedPath);
+    const mdxMoved = await build("MDX move", { expectFastPath: false });
+    if (!fs.existsSync(path.join(distDir, "guides", "mdx-temp.html"))) {
+      fail("MDX move: guides/mdx-temp.html was not emitted");
+    }
+    if (fs.existsSync(path.join(distDir, "notes", "mdx-temp.html"))) {
+      fail("MDX move: notes/mdx-temp.html was not removed");
+    }
+    assertScopedRebuild(mdxMoved, "MDX move");
+
+    await fsp.rm(mdxMovedPath, { force: true });
+    const mdxDeleted = await build("MDX deletion", { expectFastPath: false });
+    assertAbsent(MDX_TEMP_MARKER, "MDX deletion");
+    if (fs.existsSync(path.join(distDir, "guides", "mdx-temp.html"))) {
+      fail("MDX deletion: guides/mdx-temp.html was not removed");
+    }
+    assertScopedRebuild(mdxDeleted, "MDX deletion");
+
+    // 3. Unrelated Markdown body change leaves the MDX page untouched.
+    logger.step("case 3: Markdown body change");
+    const mdxDemoBeforeWriting = fileHash("mdx-demo.html");
     await writeWriting(`${await readWriting()}\n${BODY_MARKER}\n`);
-    await build("Content body change", { expectFastPath: false });
-    assertContains(BODY_MARKER, "content body change");
+    const markdownBody = await build("Markdown body change", {
+      expectFastPath: false,
+    });
+    assertContains(BODY_MARKER, "Markdown body change");
+    assertStableFile(
+      "mdx-demo.html",
+      mdxDemoBeforeWriting,
+      "Markdown body change",
+    );
+    assert.equal(
+      markdownBody.metrics?.fullRegenerationRequired,
+      false,
+      "Markdown body change: the output cache must stay usable",
+    );
+    assert.ok(
+      (markdownBody.contentReused ?? 0) > 0,
+      "Markdown body change: expected reused content",
+    );
+    assert.ok(
+      (markdownBody.ssgRendered ?? 0) > 0,
+      "Markdown body change: expected rendered outputs",
+    );
 
     // 4. Frontmatter change.
     logger.step("case 4: Frontmatter change");
@@ -527,7 +703,14 @@ async function main(): Promise<void> {
         "options change",
       ),
     );
-    await build("Plugin options change", { expectFastPath: false });
+    const pluginsChanged = await build("Plugin options change", {
+      expectFastPath: false,
+    });
+    assert.equal(
+      pluginsChanged.metrics?.fullRegenerationRequired,
+      true,
+      "plugin options change must require a full regeneration",
+    );
 
     // 9. public -> draft.
     logger.step("case 9: public -> draft");
@@ -727,7 +910,7 @@ async function main(): Promise<void> {
 
     console.log("\nF4-4 fast path summary");
     console.log(
-      "case | fastPath | block | processed/reused | ssg rendered/reused | hookHit/hookMiss | filesHashed",
+      "case | fastPath | block | processed/reused | affected/unchanged | rendered/reused/removed | hookHit/hookMiss | filesHashed",
     );
     for (const record of results) {
       console.log(
@@ -736,7 +919,8 @@ async function main(): Promise<void> {
           record.fastPathUsed ? "yes" : "no",
           record.blockReason ?? "-",
           `${record.contentProcessed ?? "-"}/${record.contentReused ?? "-"}`,
-          `${record.ssgRendered ?? "-"}/${record.ssgReused ?? "-"}`,
+          `${record.ssgAffected ?? "-"}/${record.ssgUnchanged ?? "-"}`,
+          `${record.ssgRendered ?? "-"}/${record.ssgReused ?? "-"}/${record.ssgRemoved ?? "-"}`,
           `${record.manifestHookCacheHit ?? "-"}/${record.manifestHookCacheMiss ?? "-"}`,
           record.outputFilesHashed ?? "-",
         ].join(" | "),

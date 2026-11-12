@@ -1611,6 +1611,11 @@
       "type": true
     },
     {
+      "name": "htmlToPlainText",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "IMAGE_EXTENSIONS",
       "value": true,
       "type": false

@@ -47,6 +47,29 @@ test("retargeting rewrites WikiLinks and relative Markdown links", () => {
   assert.deepEqual(result.conflicts, []);
 });
 
+test("retargeting rewrites MDX links with a content format resolver", () => {
+  const options = {
+    isContentPath: (path: string) => path.toLowerCase().endsWith(".mdx"),
+    toSlug: (path: string) =>
+      path.toLowerCase().endsWith(".mdx")
+        ? path.replace(/\.mdx$/i, "")
+        : undefined,
+  };
+  const result = planContentLinkUpdates({
+    files: new Map([
+      ["notes/a.mdx", "[[b#part]] and [x](b.mdx#part)"],
+      ["notes/new.mdx", "moved"],
+    ]),
+    retargets: [{ from: "notes/b.mdx", to: "notes/new.mdx" }],
+    ...options,
+  });
+  assert.deepEqual(
+    [...result.updates],
+    [["notes/a.mdx", "[[notes/new#part]] and [x](new.mdx#part)"]],
+  );
+  assert.deepEqual(result.conflicts, []);
+});
+
 test("replacement destinations encode reserved path characters", () => {
   const result = planContentLinkUpdates({
     files: new Map([

@@ -1,6 +1,7 @@
 import {
   type ContentManifest,
   getEntryLanguage,
+  htmlToPlainText,
   type ResolvedRiebeckiteConfig,
   resolveEntryDate,
 } from "@riebeckite/core";
@@ -18,7 +19,7 @@ export function buildSearchItems(args: {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
   const items = args.manifest.discoverableEntries.map((entry) => {
     const language = getEntryLanguage(entry);
-    const plainText = entry.plainText ?? toPlainText(entry.html);
+    const plainText = entry.plainText ?? htmlToPlainText(entry.html);
     return {
       slug: entry.slug,
       permalink: entry.permalink,
@@ -54,7 +55,7 @@ function extractHeadings(html: string): string[] {
   const headingPattern = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/g;
 
   for (const match of html.matchAll(headingPattern)) {
-    const heading = toPlainText(match[2] ?? "");
+    const heading = htmlToPlainText(match[2] ?? "");
     if (heading) headings.push(heading);
   }
 
@@ -74,25 +75,4 @@ function createExcerpt(
       : plainText;
 
   return text.slice(0, 180);
-}
-
-function toPlainText(html: string): string {
-  return decodeHtmlEntities(
-    html
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
-      .replace(/<[^>]+>/g, " "),
-  )
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
 }

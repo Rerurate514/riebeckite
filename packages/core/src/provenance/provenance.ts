@@ -94,6 +94,8 @@ export function createBuildProvenance(input: {
   readonly pluginHooks: readonly PluginHookExecution[];
   readonly derivedViews: readonly DerivedViewInspection[];
   readonly processed: ReadonlyMap<string, number>;
+  readonly isContentPath?: (path: string) => boolean;
+  readonly toSlug?: (path: string) => string | undefined;
 }): BuildProvenance {
   const visibilityBySlug = new Map(
     input.manifest.entries.map(
@@ -102,13 +104,17 @@ export function createBuildProvenance(input: {
   );
   const sources = input.plan.currentEntries
     .map(({ entry, fingerprint }) => {
-      const slug = entry.path.replace(/\.md$/, "");
+      const isContent =
+        input.isContentPath?.(entry.path) ?? entry.path.endsWith(".md");
+      const slug = isContent
+        ? (input.toSlug?.(entry.path) ?? entry.path.replace(/\.md$/, ""))
+        : entry.path;
       return {
         id: `source:${entry.path}`,
         contentId: slug,
         path: entry.path,
         fingerprint,
-        type: entry.path.endsWith(".md") ? "markdown" : "file",
+        type: isContent ? "markdown" : "file",
         visibility: visibilityBySlug.get(slug) ?? "unknown",
         evidence: "deterministic",
       } satisfies ProvenanceSource;

@@ -143,6 +143,10 @@ test("matchContentExcludePattern reports the matching pattern", () => {
     "private",
   );
   assert.equal(
+    matchContentExcludePattern("private.mdx", ["private"]),
+    "private",
+  );
+  assert.equal(
     matchContentExcludePattern("notes/keep.md", ["private"]),
     undefined,
   );

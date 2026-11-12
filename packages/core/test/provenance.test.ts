@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { definePlugin } from "../index.js";
 import { loadContentBuildState } from "../src/content/content_build_state_store.js";
 import { ContentManager } from "../src/content/content_manager.js";
 import {
@@ -48,6 +49,66 @@ test("build provenance is deterministic and excludes source contents", async (t)
   assert.equal(provenance.sources[0]?.visibility, "draft");
   assert.match(provenance.buildId, /^[a-f0-9]{64}$/);
   assert.doesNotMatch(JSON.stringify(provenance), new RegExp(secret));
+});
+
+test("build provenance resolves content format sources by their slug", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-provenance-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  const config = contentTestConfig(directory);
+  const manager = new ContentManager(
+    memoryContentSource({
+      "page.mdx": "# Page",
+    }),
+    [],
+    {
+      config,
+      plugins: [
+        definePlugin({
+          name: "mdx-format",
+          contentFormats: [
+            {
+              extension: ".mdx",
+              process: async ({ source }) => ({
+                frontmatter: { publish: true, title: "Page" },
+                html: `<p>${source.trim()}</p>`,
+              }),
+            },
+          ],
+          processedContentCache: {
+            version: "v1",
+            dependencyMode: "tracked",
+          },
+        }),
+      ],
+      commitBuildState: false,
+    },
+  );
+
+  await manager.build();
+  const provenance = manager.getProvenance();
+  await manager.dispose();
+
+  assert.deepEqual(provenance?.sources, [
+    {
+      id: "source:page.mdx",
+      contentId: "page",
+      path: "page.mdx",
+      fingerprint: provenance?.sources[0]?.fingerprint,
+      type: "markdown",
+      visibility: "public",
+      evidence: "deterministic",
+    },
+  ]);
+  assert.equal(
+    provenance?.transforms.some(
+      (transform) =>
+        transform.type === "content-processing" &&
+        transform.producer === "core:markdown-pipeline",
+    ),
+    true,
+  );
 });
 
 test("build provenance can be disabled", async (t) => {

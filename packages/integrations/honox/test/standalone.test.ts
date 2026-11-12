@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import fs, { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { tmpdir } from "node:os";
+import os, { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { pathToFileURL } from "node:url";
@@ -14,6 +14,38 @@ import {
 const frameworkRequire = createRequire(
   new URL("../src/ssg/standalone.ts", import.meta.url),
 );
+
+test("standalone SSG loads dynamic chunks from the same bundle instance", async (t) => {
+  const root = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-standalone-bundle-"),
+  );
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  await fs.writeFile(
+    path.join(root, "marker.ts"),
+    "export const marker = { value: 1 };\n",
+  );
+  await fs.writeFile(
+    path.join(root, "chunk.ts"),
+    'import { marker } from "./entry.js";\nexport function isSame(value: unknown) {\n  return marker === value;\n}\n',
+  );
+  await fs.writeFile(
+    path.join(root, "entry.ts"),
+    'import { marker } from "./marker.js";\nexport { marker };\nexport async function check() {\n  const { isSame } = await import("./chunk.js");\n  return isSame(marker);\n}\nexport default { check };\n',
+  );
+
+  const bundle = await loadStandaloneSsgBundle({
+    root,
+    entry: path.join(root, "entry.ts"),
+    outputDirectory: path.join(root, "out"),
+  });
+
+  const entry: unknown = bundle.module.default;
+  if (typeof entry !== "object" || entry === null || !("check" in entry))
+    throw new Error("The standalone bundle does not export a check function.");
+  assert.equal(typeof entry.check, "function");
+  const check = entry.check as () => Promise<boolean>;
+  assert.equal(await check(), true);
+});
 
 test("standalone SSG resolves Hono and HonoX from the integration package", () => {
   const hook = createFrameworkResolutionPlugin().resolveId;

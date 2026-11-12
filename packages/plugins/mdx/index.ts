@@ -1,7 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import mdxRollup from "@mdx-js/rollup";
-import { definePlugin, extractFrontmatter, stripHtml } from "@riebeckite/core";
+import {
+  definePlugin,
+  extractFrontmatter,
+  htmlToPlainText,
+} from "@riebeckite/core";
 import remarkMdx from "remark-mdx";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
@@ -34,7 +38,7 @@ export function mdx(options: MdxOptions) {
           return {
             frontmatter: extractFrontmatter(source),
             html: rendered?.html ?? "",
-            ...(rendered ? { plainText: toPlainText(rendered.html) } : {}),
+            ...(rendered ? { plainText: htmlToPlainText(rendered.html) } : {}),
           };
         },
         dependencies: ({ sourcePath, source, paths }) =>
@@ -141,9 +145,7 @@ function projectMdxSource(source: string, sourcePath: string): string {
   if (!projected) return "";
   return projectionStringifier
     .stringify(
-      projected as unknown as Parameters<
-        typeof projectionStringifier.stringify
-      >[0],
+      projected as Parameters<typeof projectionStringifier.stringify>[0],
     )
     .replace(/&#x20;/g, " ")
     .replace(/[ \t]+$/gm, "")
@@ -154,7 +156,7 @@ function parseMdxSource(source: string, sourcePath: string): ProjectionNode {
   try {
     return projectionParser.parse(
       source.replace(frontmatterPattern, ""),
-    ) as unknown as ProjectionNode;
+    ) as ProjectionNode;
   } catch (error) {
     throw new Error(
       `Failed to project MDX content for ${sourcePath}: ${error instanceof Error ? error.message : String(error)}`,
@@ -173,10 +175,6 @@ function projectProjectionNodes(nodes: ProjectionNode[]): ProjectionNode[] {
     if (projectedMdxWrapperNodes.has(node.type)) return children ?? [];
     return [children === undefined ? node : { ...node, children }];
   });
-}
-
-function toPlainText(html: string): string {
-  return stripHtml(html).replace(/\s+/g, " ").trim();
 }
 
 function mdxFrontmatterPlugin() {

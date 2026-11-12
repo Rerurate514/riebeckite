@@ -614,6 +614,49 @@ test("isPersistentlyCacheable treats Markdown components as processed content tr
   assert.match(result.reason ?? "", /processedContentCache contract/);
 });
 
+test("isPersistentlyCacheable treats content formats as processed content transformers", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "format-transformer",
+      contentFormats: [
+        {
+          extension: ".mdx",
+          process: async () => ({ frontmatter: {}, html: "" }),
+        },
+      ],
+    },
+  ]);
+  const result = isPersistentlyCacheable("test", config);
+
+  assert.equal(result.cacheable, false);
+  assert.match(result.reason ?? "", /processedContentCache contract/);
+});
+
+test("content cache fingerprints include content format inputs", () => {
+  const config = contentTestConfig(TEST_CACHE_DIR, [
+    {
+      name: "format-transformer",
+      contentFormats: [
+        {
+          extension: ".mdx",
+          process: async () => ({ frontmatter: {}, html: "" }),
+        },
+      ],
+      processedContentCache: {
+        version: "v1",
+        dependencyMode: "tracked",
+        contentDependencyFingerprint: ({ source }) => source,
+      },
+    },
+  ]);
+
+  assert.equal(isPersistentlyCacheable("test", config).cacheable, true);
+  assert.notEqual(
+    computeContentCacheFingerprint("test", "# a", config),
+    computeContentCacheFingerprint("test", "# b", config),
+  );
+});
+
 test("isPersistentlyCacheable allows renderer plugins with none processed content cache contract", () => {
   const config = contentTestConfig(TEST_CACHE_DIR, [
     {

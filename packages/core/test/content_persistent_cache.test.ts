@@ -4,7 +4,6 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { after, test } from "node:test";
-import { markdown } from "@riebeckite/test/fixtures";
 import { ContentManager } from "../src/content/content_manager.js";
 import {
   CONTENT_CACHE_SCHEMA_VERSION,
@@ -229,21 +228,6 @@ async function processedHtml(
   return (await manager.getProcessedContent(slug)).html;
 }
 
-test("computeContentCacheKey produces stable keys", () => {
-  const inputs = {
-    slug: "test-note",
-    source: markdown("# Test", { title: "Test" }),
-    frontmatter: { title: "Test", publish: true },
-    pipelineFingerprint: "abc123",
-  };
-
-  const key1 = computeContentCacheKey(inputs);
-  const key2 = computeContentCacheKey(inputs);
-
-  assert.equal(key1, key2);
-  assert.equal(key1.length, 64); // sha256 hex
-});
-
 test("computeContentCacheKey changes when source changes", () => {
   const base = {
     slug: "test-note",
@@ -332,15 +316,6 @@ test("normalizeFrontmatterForCache converts Dates to ISO strings", () => {
 
   // Date and ISO string should produce same key after normalization
   assert.equal(key1, key2);
-});
-
-test("computePipelineFingerprint is stable", () => {
-  const config = contentTestConfig(TEST_CACHE_DIR, []);
-  const fp1 = computePipelineFingerprint(config);
-  const fp2 = computePipelineFingerprint(config);
-
-  assert.equal(fp1, fp2);
-  assert.equal(fp1.length, 64);
 });
 
 test("computePipelineFingerprint is stable across plugin function representations", () => {

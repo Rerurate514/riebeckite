@@ -68,6 +68,11 @@ test("derived views do not cache values that a JSON round trip changes", async (
     delete sparse[1];
     const circular: Record<string, unknown> = {};
     circular.self = circular;
+    const arrayWithProperty = [1] as unknown[] & { extra?: number };
+    arrayWithProperty.extra = 2;
+    const symbolKeyed = { value: 1, [Symbol("extra")]: 2 };
+    const ownToJson = {};
+    Object.defineProperty(ownToJson, "toJSON", { value: () => ({}) });
     const cases = [
       { id: "undefined-property", value: { value: undefined } },
       { id: "undefined-element", value: [1, undefined, 2] },
@@ -82,6 +87,9 @@ test("derived views do not cache values that a JSON round trip changes", async (
       { id: "function", value: () => "value" },
       { id: "nested-nan", value: { value: { value: Number.NaN } } },
       { id: "circular", value: circular },
+      { id: "array-with-property", value: arrayWithProperty },
+      { id: "symbol-key", value: symbolKeyed },
+      { id: "own-to-json", value: ownToJson },
     ];
     for (const item of cases) {
       const result = await resolveTwice(

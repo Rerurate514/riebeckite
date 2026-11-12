@@ -66,6 +66,10 @@ export function hoverPreview(options: HoverPreviewOptions = {}) {
         "hover-preview",
         "@riebeckite/plugin-hover-preview/client",
         "initHoverPreview",
+        undefined,
+        undefined,
+        undefined,
+        "script[data-rb-hover-preview]",
       ),
     ],
   });

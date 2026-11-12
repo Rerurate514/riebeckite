@@ -42,6 +42,10 @@ export function markmap(options: MarkmapOptions = {}) {
         "markmap",
         "@riebeckite/plugin-markmap/client",
         "initMarkmap",
+        undefined,
+        undefined,
+        undefined,
+        "[data-markmap='pending']",
       ),
     ],
   });

@@ -133,7 +133,10 @@ function buildFigure(input: {
     children.push(
       element(
         "details",
-        { className: `${input.className}__fallback rb-source-fallback` },
+        {
+          className: `${input.className}__fallback rb-source-fallback`,
+          dataDiagramFallback: "true",
+        },
         [
           element("summary", {}, [text("Diagram source")]),
           element("pre", {}, [element("code", {}, [text(input.source)])]),

@@ -125,6 +125,40 @@ test("client module lazily hydrates registered interactive components", async ()
   assert.doesNotMatch(module as string, /^import .*counter-entry/m);
 });
 
+test("client module passes an empty runtime list to interactive component hydration", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        components: [
+          {
+            name: "counter",
+            render: () => "",
+            client: { moduleSpecifier: "counter-entry", exportName: "Counter" },
+          },
+        ],
+        clientEntries: [
+          {
+            pluginName: "calculator",
+            moduleSpecifier: "calculator-entry",
+            runtimeEntries: [
+              { id: "calculator", moduleSpecifier: "calculator-runtime" },
+            ],
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(
+    module as string,
+    /mountPluginClientInitializer\("page", "plugin-components", root, undefined, \[\], async \(context\) => \{/,
+  );
+});
+
 test("client module loads declared plugin runtimes lazily", async () => {
   const plugin = riebeckiteClientModule(() => ({
     plugins: [

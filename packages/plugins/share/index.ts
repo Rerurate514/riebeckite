@@ -72,6 +72,10 @@ export function share(options: ShareOptions = {}) {
         SHARE_PLUGIN_NAME,
         "@riebeckite/plugin-share/client",
         "initShare",
+        undefined,
+        undefined,
+        undefined,
+        "[data-rr-share]",
       ),
     ],
   });

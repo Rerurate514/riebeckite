@@ -648,6 +648,15 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.13.12
+        version: 4.13.12
+      rehype-stringify:
+        specifier: ^10.0.1
+        version: 10.0.1
+      unified:
+        specifier: 'catalog:'
+        version: 11.0.5
 
   packages/plugins/color-mode:
     dependencies:
@@ -845,6 +854,9 @@ importers:
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
+      hono:
+        specifier: ^4.11.3
+        version: 4.13.12
       unist-util-visit:
         specifier: 'catalog:'
         version: 5.1.0
@@ -1078,6 +1090,9 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.11.3
+        version: 4.13.12
 
   packages/plugins/local-graph:
     dependencies:
@@ -1573,6 +1588,9 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.11.3
+        version: 4.13.12
     devDependencies:
       tsx:
         specifier: ^4.22.4

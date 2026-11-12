@@ -110,6 +110,10 @@ export function diff(options: DiffPluginOptions = {}) {
               "diff",
               "@riebeckite/plugin-diff/client",
               "initDiffHistory",
+              undefined,
+              undefined,
+              "root",
+              "[data-rr-diff-history]",
             ),
           ],
     onManifestCreated: async (context) => {

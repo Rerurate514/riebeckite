@@ -147,6 +147,10 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
         "excalibrain",
         "@riebeckite/plugin-excalibrain/client",
         "initExcaliBrain",
+        undefined,
+        undefined,
+        undefined,
+        "[data-excalibrain]",
       ),
     ],
   });

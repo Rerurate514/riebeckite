@@ -1,12 +1,12 @@
 import { createDialogController } from "@riebeckite/ui/dialog";
 import { createLoadingController } from "@riebeckite/ui/loading";
 import {
-  normalizeSearchText,
   parseSearchQuery,
   type SearchItem,
   type SearchResult,
   searchItems as searchContentItems,
 } from "./search.js";
+import { mountSearchResults } from "./search-results.js";
 
 const MAX_RESULTS = 8;
 
@@ -32,10 +32,25 @@ export function initSearch(context: SearchInitContext = {}): () => void {
   if (!root || !modal || !input || !status || !results) return () => {};
 
   const loading = createLoadingController(modal);
+  const resultsView = mountSearchResults(results);
   let searchItems: SearchItem[] | null = null;
   let loadFailed = false;
   let selectedIndex = 0;
   let currentResults: SearchResult[] = [];
+  let currentQuery = "";
+
+  const renderCurrentResults = () => {
+    resultsView.render({
+      results: currentResults,
+      selectedIndex,
+      query: currentQuery,
+    });
+    results
+      .querySelector<HTMLAnchorElement>(
+        '[data-search-result][aria-selected="true"]',
+      )
+      ?.scrollIntoView({ block: "nearest" });
+  };
 
   const loadSearchItems = async (): Promise<boolean> => {
     if (searchItems && !loadFailed) return true;
@@ -62,24 +77,25 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     const parsedQuery = parseSearchQuery(query);
     const normalizedQuery = parsedQuery.text;
     selectedIndex = 0;
+    currentQuery = normalizedQuery;
 
     if (loadFailed) {
       currentResults = [];
-      results.replaceChildren();
+      renderCurrentResults();
       status.textContent = "";
       return;
     }
 
     if (normalizedQuery.length === 0 && parsedQuery.filters.length === 0) {
       currentResults = [];
-      results.replaceChildren();
+      renderCurrentResults();
       status.textContent = "Type a keyword or use tag:, lang:, or path:.";
       return;
     }
 
     if (searchItems === null) {
       currentResults = [];
-      results.replaceChildren();
+      renderCurrentResults();
       status.textContent = "Loading search index...";
       return;
     }
@@ -88,35 +104,18 @@ export function initSearch(context: SearchInitContext = {}): () => void {
       language: document.documentElement.lang || undefined,
     }).slice(0, MAX_RESULTS);
 
-    results.replaceChildren(
-      ...currentResults.map((result) =>
-        createResultElement(result, normalizedQuery),
-      ),
-    );
-    updateSelectedResult();
+    renderCurrentResults();
     status.textContent =
       currentResults.length === 0
         ? "No results found. Try a shorter keyword or filter."
         : `${currentResults.length} result${currentResults.length === 1 ? "" : "s"}`;
   };
 
-  const updateSelectedResult = () => {
-    const links = Array.from(
-      results.querySelectorAll<HTMLAnchorElement>("[data-search-result]"),
-    );
-
-    for (const [index, link] of links.entries()) {
-      link.setAttribute("aria-selected", String(index === selectedIndex));
-    }
-
-    links[selectedIndex]?.scrollIntoView({ block: "nearest" });
-  };
-
   const moveSelection = (step: number) => {
     if (currentResults.length === 0) return;
     selectedIndex =
       (selectedIndex + step + currentResults.length) % currentResults.length;
-    updateSelectedResult();
+    renderCurrentResults();
   };
 
   const controller = createDialogController(modal, {
@@ -171,14 +170,14 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     if (event.key === "Home") {
       event.preventDefault();
       selectedIndex = 0;
-      updateSelectedResult();
+      renderCurrentResults();
       return;
     }
 
     if (event.key === "End") {
       event.preventDefault();
       selectedIndex = Math.max(currentResults.length - 1, 0);
-      updateSelectedResult();
+      renderCurrentResults();
       return;
     }
 
@@ -201,6 +200,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     document.removeEventListener("keydown", onKeyDown);
     loading.destroy();
     controller.destroy();
+    resultsView.unmount();
   };
 }
 
@@ -216,106 +216,4 @@ function isSearchShortcut(event: KeyboardEvent): boolean {
   }
 
   return !isEditable && event.key === "/";
-}
-
-function createResultElement(
-  result: SearchResult,
-  normalizedQuery: string,
-): HTMLAnchorElement {
-  const link = document.createElement("a");
-  link.className = "rr-search-result";
-  link.href = result.permalink;
-  link.dataset.searchResult = "true";
-  link.setAttribute("role", "option");
-
-  const title = document.createElement("p");
-  title.className = "rr-search-result__title";
-  if (result.icon) {
-    const icon = document.createElement("span");
-    icon.className = "rr-search-result__icon";
-    icon.setAttribute("aria-hidden", "true");
-    icon.innerHTML = result.icon.html;
-    title.appendChild(icon);
-  }
-  appendHighlightedText(title, result.title, normalizedQuery);
-
-  const meta = document.createElement("p");
-  meta.className = "rr-search-result__meta";
-  meta.textContent = [formatDate(result.date), result.slug]
-    .filter(Boolean)
-    .join(" · ");
-
-  const excerpt = document.createElement("p");
-  excerpt.className = "rr-search-result__excerpt";
-  appendHighlightedText(excerpt, createDisplayExcerpt(result), normalizedQuery);
-
-  const tags = document.createElement("p");
-  tags.className = "rr-search-result__tags";
-  for (const tag of result.tags.slice(0, 4)) {
-    const badge = document.createElement("span");
-    badge.className = "rr-search-result__tag";
-    appendHighlightedText(badge, `#${tag}`, normalizedQuery);
-    tags.appendChild(badge);
-  }
-
-  link.appendChild(title);
-  link.appendChild(meta);
-  link.appendChild(excerpt);
-  if (result.tags.length > 0) link.appendChild(tags);
-  return link;
-}
-
-function createDisplayExcerpt(result: SearchResult): string {
-  if (result.match.field !== "body") return result.excerpt;
-
-  const content = result.match.value;
-  const start =
-    result.match.index === -1 ? 0 : Math.max(result.match.index - 48, 0);
-  const end = Math.min(start + 160, content.length);
-  const prefix = start > 0 ? "..." : "";
-  const suffix = end < content.length ? "..." : "";
-
-  return `${prefix}${content.slice(start, end).trim()}${suffix}`;
-}
-
-function appendHighlightedText(
-  element: HTMLElement,
-  value: string,
-  normalizedQuery: string,
-) {
-  const normalizedValue = normalizeSearchText(value);
-  const index = normalizedValue.indexOf(normalizedQuery);
-
-  if (index === -1 || normalizedQuery.length === 0) {
-    element.textContent = value;
-    return;
-  }
-
-  element.appendChild(document.createTextNode(value.slice(0, index)));
-  element.appendChild(
-    createMark(value.slice(index, index + normalizedQuery.length)),
-  );
-  element.appendChild(
-    document.createTextNode(value.slice(index + normalizedQuery.length)),
-  );
-}
-
-function createMark(value: string): HTMLElement {
-  const mark = document.createElement("mark");
-  mark.className = "rr-search-result__mark";
-  mark.textContent = value;
-  return mark;
-}
-
-function formatDate(value: string | null): string {
-  if (!value) return "";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-
-  return new Intl.DateTimeFormat("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
 }

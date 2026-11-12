@@ -1,4 +1,7 @@
-import { setDiagramSvg } from "@riebeckite/diagram/client";
+import {
+  renderPendingDiagrams,
+  setDiagramSvg,
+} from "@riebeckite/diagram/client";
 import { renderExcaliBrainSvg } from "./render.js";
 import type {
   ExcaliBrainClientOptions,
@@ -16,32 +19,43 @@ type ExcaliBrainPayload = {
  * Build the SVG for every client-rendered ExcaliBrain canvas. Canvases that
  * already contain a build-time SVG (the `both` mode) are left untouched.
  */
-export function initExcaliBrain(options: ExcaliBrainClientOptions = {}): void {
-  const canvases = document.querySelectorAll<HTMLElement>(
-    "[data-excalibrain-payload]",
-  );
+export async function initExcaliBrain(
+  context: ExcaliBrainClientOptions & {
+    root?: ParentNode;
+    signal?: AbortSignal;
+  } = {},
+): Promise<undefined | (() => void)> {
+  const options = context;
+  return await renderPendingDiagrams(
+    "excalibrain",
+    (canvas) => {
+      if (canvas.querySelector(".rb-excalibrain__svg")) return;
 
-  for (const canvas of canvases) {
-    if (canvas.querySelector(".rb-excalibrain__svg")) continue;
+      const payload = canvas.dataset.excalibrainPayload;
+      if (!payload) throw new Error("Missing ExcaliBrain payload.");
 
-    const payload = canvas.dataset.excalibrainPayload;
-    if (!payload) continue;
-
-    try {
-      const parsed = JSON.parse(payload) as ExcaliBrainPayload;
-      if (
-        !setDiagramSvg(
-          canvas,
-          renderExcaliBrainSvg(parsed.graph, parsed.layout, {
-            className: options.className ?? parsed.className,
-          }),
-        )
-      ) {
-        throw new Error("Invalid SVG output.");
+      try {
+        const parsed = JSON.parse(payload) as ExcaliBrainPayload;
+        if (
+          !setDiagramSvg(
+            canvas,
+            renderExcaliBrainSvg(parsed.graph, parsed.layout, {
+              className: options.className ?? parsed.className,
+            }),
+          )
+        ) {
+          throw new Error("Invalid SVG output.");
+        }
+        canvas.removeAttribute("data-excalibrain-payload");
+      } catch (error) {
+        canvas.dataset.excalibrainError = "true";
+        throw error;
       }
-      canvas.removeAttribute("data-excalibrain-payload");
-    } catch {
-      canvas.dataset.excalibrainError = "true";
-    }
-  }
+    },
+    {
+      ...context,
+      selector: "[data-excalibrain-payload]",
+      fallbackSelector: "details",
+    },
+  );
 }

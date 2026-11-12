@@ -1,4 +1,7 @@
-import { setDiagramSvg } from "@riebeckite/diagram/client";
+import {
+  renderPendingDiagrams,
+  setDiagramSvg,
+} from "@riebeckite/diagram/client";
 import type { D2ClientOptions, D2InstanceApi, D2Theme } from "./types.js";
 
 const DEFAULT_THEME: NonNullable<D2Theme> = { light: 0, dark: 1 };
@@ -13,9 +16,14 @@ const DEFAULT_MODULE_URL =
  * time never ships the WASM renderer to visitors unless it opts into the
  * `"client"` render mode.
  */
-export async function initD2Diagrams(options: D2ClientOptions = {}) {
+export async function initD2Diagrams(
+  context: D2ClientOptions & { root?: ParentNode; signal?: AbortSignal } = {},
+) {
+  const options = context;
   const figures = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-d2="pending"]'),
+    (context.root ?? document).querySelectorAll<HTMLElement>(
+      '[data-d2="pending"]',
+    ),
   );
   if (figures.length === 0) return;
 
@@ -23,13 +31,20 @@ export async function initD2Diagrams(options: D2ClientOptions = {}) {
   if (!api) return;
 
   const renderer = new api.D2();
-  try {
-    for (const [index, figure] of figures.entries()) {
-      await renderFigure(renderer, figure, index, options);
-    }
-  } finally {
+  let index = 0;
+  const cleanup = await renderPendingDiagrams(
+    "d2",
+    (figure) => renderFigure(renderer, figure, index++, options),
+    {
+      ...context,
+      selector: '[data-d2="pending"]',
+      fallbackSelector: "details",
+    },
+  );
+  return async () => {
+    cleanup();
     await renderer.dispose?.();
-  }
+  };
 }
 
 async function renderFigure(
@@ -54,8 +69,9 @@ async function renderFigure(
     });
     if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     figure.dataset.d2 = "rendered";
-  } catch {
+  } catch (error) {
     figure.dataset.d2 = "error";
+    throw error;
   }
 }
 

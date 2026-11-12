@@ -65,12 +65,16 @@ export async function loadStandaloneSsgBundle(input: {
     environments: { ssr: { resolve: { noExternal: true } } },
   });
   const module = (await import(
-    pathToFileURL(resolve(outputDirectory, "ssg-server.mjs")).href
+    standaloneSsgModuleUrl(outputDirectory)
   )) as SsgModule;
   if (!module.default) {
     throw new Error(`Failed to find a default export from ${input.entry}.`);
   }
   return { app: module.default, module };
+}
+
+export function standaloneSsgModuleUrl(outputDirectory: string): string {
+  return pathToFileURL(resolve(outputDirectory, "ssg-server.mjs")).href;
 }
 
 export function createFrameworkResolutionPlugin(): Plugin {

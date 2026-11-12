@@ -47,6 +47,7 @@ export function vegaLite(options: VegaLiteOptions = {}) {
         undefined,
         undefined,
         "context",
+        "[data-vega-lite]",
       ),
     ],
   });

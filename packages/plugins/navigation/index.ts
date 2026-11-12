@@ -44,6 +44,7 @@ export function navigation(options: NavigationOptions = {}) {
         undefined,
         "app",
         "context",
+        "[data-sidebar-navigation]",
       ),
     ],
     validateOptions: validateNavigationOptions,

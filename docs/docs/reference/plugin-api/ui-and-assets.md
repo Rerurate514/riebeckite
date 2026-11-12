@@ -153,6 +153,35 @@ change processed Markdown, so include them in the plugin's
 caching is bypassed for that plugin instead of serving stale HTML. Bump the
 contract's `version` when component rendering changes.
 
+`resolveProps` runs after `parseProps` and receives
+`{ sourceSlug, resolveAssetUrl, manifest, diagnostics }`. Use it when props
+depend on content-relative assets; the resolved props still cross the hydration
+boundary and must remain JSON-safe. `resolveAssetUrl` returns `null` for
+unsupported or external paths, so validate the result before rendering. When
+resolution needs the final manifest, set `deferUntilManifest: true`; the
+component renders after manifest hooks and can use `diagnostics` and
+`renderError` to keep an accessible error state.
+
+HAST-phase components use `hastComponents` with `defineHastComponent`. They run
+after raw HTML and Markdown sanitization and after plugin Rehype transforms, so
+`match` only sees trusted nodes and `render` receives the serialized node and
+its children as already-sanitized HTML. Use them to wrap or group existing
+document structure; do not use them to bypass the sanitizer.
+
+## Overlay hosts
+
+A theme can provide an SSR-owned host for client overlays with
+`<OverlayHost name="…" />` from `@riebeckite/ui/overlay`. A client initializer
+may look it up with `findOverlayHost(name)` and fall back to creating its own
+host when the theme does not render one. Keep one host per overlay name and let
+the client entry unmount its component without removing the app-owned host.
+
+Use `<AppSlot name="bodyStart" />` from the same module for application-level
+placement. The names are `head`, `bodyStart`, `articleAfter`, and `app`; choose
+a semantic element with `as` when needed. `findAppSlot(name)` resolves the
+placement from client code. Keep slot markup in the theme or site renderer
+rather than adding page-specific wrappers inside plugin content.
+
 ## Assets and client entries
 
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through
@@ -227,6 +256,13 @@ only plugin configuration exposed to browser code (and recorded in the
 manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service
 URLs. An initializer without public config continues to receive no arguments.
+
+Client-owned UI should be written in Hono JSX and mounted into its host with
+`createRoot()` from `hono/jsx/dom/client`. Keep browser-only work such as focus,
+measurement, pointer capture, and media playback in the initializer. When an
+entry is needed only on pages that contain a marker, pass a presence selector as
+the seventh argument to `createClientEntry()` so the chunk is not loaded on
+other pages.
 
 A client entry can also be declared explicitly:
 

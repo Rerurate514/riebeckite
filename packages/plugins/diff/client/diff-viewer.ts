@@ -1,5 +1,6 @@
 import { createLoadingController } from "@riebeckite/ui/loading";
-import { escapeHtml } from "../src/components/diff-line.js";
+import { createRoot } from "hono/jsx/dom/client";
+import { DiffPanel } from "../src/components/diff-panel.js";
 import { createLineDiff } from "../src/diff/line_diff.js";
 import type { MarkdownRevision, PostDiff } from "../src/types.js";
 
@@ -9,16 +10,18 @@ type DiffHistoryPayload = {
 };
 
 export function initDiffHistory() {
-  for (const root of document.querySelectorAll<HTMLElement>(
-    "[data-rr-diff-history]",
-  )) {
-    initDiffHistoryRoot(root);
-  }
+  const cleanups = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-rr-diff-history]"),
+    (root) => initDiffHistoryRoot(root),
+  );
+  return () => {
+    for (const cleanup of cleanups) cleanup();
+  };
 }
 
 function initDiffHistoryRoot(root: HTMLElement) {
   const payload = readPayload(root);
-  if (!payload) return;
+  if (!payload) return () => {};
   let revisions = revisionsMap(payload.revisions ?? []);
   let revisionsRequest: Promise<ReadonlyMap<
     string,
@@ -30,8 +33,15 @@ function initDiffHistoryRoot(root: HTMLElement) {
   );
   const toSelect = root.querySelector<HTMLSelectElement>("[data-rr-diff-to]");
   const panel = root.querySelector<HTMLElement>("[data-rr-diff-panel]");
-  if (!fromSelect || !toSelect || !panel) return;
-  const loading = createLoadingController(root);
+  if (!fromSelect || !toSelect || !panel) return () => {};
+  const controller = new AbortController();
+  const panelView = createRoot(panel);
+  const renderPanel = (diff: PostDiff) => {
+    panelView.render(DiffPanel({ diff }));
+  };
+  const loading = createLoadingController(root, {
+    signal: controller.signal,
+  });
   const load = () => {
     revisionsRequest ??= loadRevisions(payload.path).then((loaded) => {
       if (!loaded) revisionsRequest = null;
@@ -43,30 +53,34 @@ function initDiffHistoryRoot(root: HTMLElement) {
   for (const button of root.querySelectorAll<HTMLButtonElement>(
     "[data-rr-diff-select]",
   )) {
-    button.addEventListener("click", () => {
-      const toHash = button.dataset.rrDiffSelect;
-      if (!toHash) return;
-      void updateDiff({
-        root,
-        panel,
-        loading,
-        getRevisions: () => revisions,
-        setRevisions: (loaded) => {
-          revisions = loaded;
-        },
-        load,
-        fromHash: fromSelect.value,
-        toHash,
-        fromSelect,
-        toSelect,
-      });
-    });
+    button.addEventListener(
+      "click",
+      () => {
+        const toHash = button.dataset.rrDiffSelect;
+        if (!toHash) return;
+        void updateDiff({
+          root,
+          renderPanel,
+          loading,
+          getRevisions: () => revisions,
+          setRevisions: (loaded) => {
+            revisions = loaded;
+          },
+          load,
+          fromHash: fromSelect.value,
+          toHash,
+          fromSelect,
+          toSelect,
+        });
+      },
+      { signal: controller.signal },
+    );
   }
 
   const updateFromSelects = () => {
     void updateDiff({
       root,
-      panel,
+      renderPanel,
       loading,
       getRevisions: () => revisions,
       setRevisions: (loaded) => {
@@ -80,13 +94,22 @@ function initDiffHistoryRoot(root: HTMLElement) {
     });
   };
 
-  fromSelect.addEventListener("change", updateFromSelects);
-  toSelect.addEventListener("change", updateFromSelects);
+  fromSelect.addEventListener("change", updateFromSelects, {
+    signal: controller.signal,
+  });
+  toSelect.addEventListener("change", updateFromSelects, {
+    signal: controller.signal,
+  });
+
+  return () => {
+    controller.abort();
+    panelView.unmount();
+  };
 }
 
 async function updateDiff(input: {
   root: HTMLElement;
-  panel: HTMLElement;
+  renderPanel: (diff: PostDiff) => void;
   loading: ReturnType<typeof createLoadingController>;
   getRevisions: () => ReadonlyMap<string, MarkdownRevision>;
   setRevisions: (revisions: ReadonlyMap<string, MarkdownRevision>) => void;
@@ -96,7 +119,7 @@ async function updateDiff(input: {
   fromSelect: HTMLSelectElement;
   toSelect: HTMLSelectElement;
 }) {
-  const { root, panel, fromHash, toHash, fromSelect, toSelect } = input;
+  const { root, renderPanel, fromHash, toHash, fromSelect, toSelect } = input;
   const token = `${fromHash}\n${toHash}`;
   root.dataset.rrDiffPending = token;
   input.loading.start();
@@ -115,7 +138,7 @@ async function updateDiff(input: {
   fromSelect.value = diff.from?.hash ?? "";
   toSelect.value = diff.to.hash;
   updateSelectedCommit(root, diff.to.hash);
-  renderPanel(panel, diff);
+  renderPanel(diff);
   input.loading.stop();
 }
 
@@ -179,24 +202,4 @@ function updateSelectedCommit(root: HTMLElement, hash: string) {
       String(button.dataset.rrDiffSelect === hash),
     );
   }
-}
-
-function renderPanel(panel: HTMLElement, diff: PostDiff) {
-  panel.innerHTML = `<div class="rr-diff-history__diff" data-rr-diff-rendered>
-    <div class="rr-diff-history__table-wrap">
-      <table class="rr-diff-history__table">
-        <tbody>${diff.lines.map(renderLine).join("")}</tbody>
-      </table>
-    </div>
-  </div>`;
-}
-
-function renderLine(line: PostDiff["lines"][number]): string {
-  const prefix =
-    line.type === "added" ? "+" : line.type === "removed" ? "-" : " ";
-  return `<tr class="rr-diff-history__line rr-diff-history__line--${line.type}">
-    <td class="rr-diff-history__num">${line.oldLineNumber ?? ""}</td>
-    <td class="rr-diff-history__num">${line.newLineNumber ?? ""}</td>
-    <td class="rr-diff-history__code"><code>${prefix} ${escapeHtml(line.content)}</code></td>
-  </tr>`;
 }

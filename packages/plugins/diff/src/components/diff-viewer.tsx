@@ -1,5 +1,9 @@
+/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+
+import { renderToString } from "hono/jsx/dom/server";
 import type { DiffRevision, PostDiff } from "../types.js";
-import { escapeHtml, renderDiffLine } from "./diff-line.js";
+import { escapeHtml } from "./diff-line.js";
+import { DiffPanel } from "./diff-panel.js";
 import { formatDiffDate } from "./format-date.js";
 
 type DiffViewerProps = {
@@ -23,13 +27,7 @@ export function renderDiffViewer({
 }
 
 export function renderDiffPanel(diff: PostDiff): string {
-  return `<div class="rr-diff-history__diff" data-rr-diff-rendered>
-    <div class="rr-diff-history__table-wrap">
-      <table class="rr-diff-history__table">
-        <tbody>${diff.lines.map((line) => renderDiffLine({ line })).join("")}</tbody>
-      </table>
-    </div>
-  </div>`;
+  return renderToString(<DiffPanel diff={diff} />);
 }
 
 function renderRevisionSelect(

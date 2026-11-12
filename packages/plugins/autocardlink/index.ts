@@ -33,6 +33,10 @@ export function autoCardLink(options: AutoCardLinkOptions = {}) {
         "autocardlink",
         "@riebeckite/plugin-autocardlink/client",
         "initAutoCardLink",
+        undefined,
+        undefined,
+        undefined,
+        ".rr-cardlink",
       ),
     ],
   });

@@ -34,7 +34,10 @@ import {
 } from "./content/content_persistent_cache.js";
 import type { ContentSource } from "./content/content_source.js";
 import { fingerprintExternalValue } from "./content/external_fingerprint.js";
-import { normalizeMarkdownImages } from "./content/markdown_image.js";
+import {
+  normalizeMarkdownImages,
+  resolveContentAssetUrl,
+} from "./content/markdown_image.js";
 import { createDerivedViewRegistry } from "./derived/derived_view.js";
 import { selectEmbedMarkdownFragment } from "./markdown_fragments.js";
 import {
@@ -53,6 +56,7 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
+import { renderHastComponents } from "./plugin_component_hast.js";
 import { renderPluginComponents } from "./plugin_component_markdown.js";
 import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
@@ -399,9 +403,18 @@ export class Pipeline {
       );
     }
 
+    const componentContext = {
+      sourceSlug: context.sourceSlug,
+      resolveAssetUrl: (input: string) =>
+        context.sourceSlug
+          ? resolveContentAssetUrl(input, context.sourceSlug)
+          : null,
+    };
     const components = plugins.flatMap((plugin) => plugin.components ?? []);
     if (components.length > 0) {
-      this.use(processor, () => renderPluginComponents(components));
+      this.use(processor, () =>
+        renderPluginComponents(components, componentContext),
+      );
     }
 
     this.use(processor, normalizeMarkdownLinks, {
@@ -431,6 +444,15 @@ export class Pipeline {
           this.use(processor, pipelinePlugin, options);
         },
       });
+    }
+
+    const hastComponents = plugins.flatMap(
+      (plugin) => plugin.hastComponents ?? [],
+    );
+    if (hastComponents.length > 0) {
+      this.use(processor, () =>
+        renderHastComponents(hastComponents, componentContext),
+      );
     }
 
     this.use(processor, wrapMarkdownTables);

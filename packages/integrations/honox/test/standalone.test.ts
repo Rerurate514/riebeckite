@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
-import os from "node:os";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { pathToFileURL } from "node:url";
 import {
   createFrameworkResolutionPlugin,
   loadStandaloneSsgBundle,
+  standaloneSsgModuleUrl,
 } from "../src/ssg/standalone.js";
 
 const frameworkRequire = createRequire(
@@ -15,7 +17,7 @@ const frameworkRequire = createRequire(
 
 test("standalone SSG loads dynamic chunks from the same bundle instance", async (t) => {
   const root = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-standalone-bundle-"),
+    path.join(tmpdir(), "riebeckite-standalone-bundle-"),
   );
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   await fs.writeFile(
@@ -56,4 +58,56 @@ test("standalone SSG resolves Hono and HonoX from the integration package", () =
     frameworkRequire.resolve("honox/server"),
   );
   assert.equal(resolveId("@riebeckite/ui"), undefined);
+});
+
+test("standalone SSG imports its bundle from a stable module URL", () => {
+  const url = standaloneSsgModuleUrl(path.join(tmpdir(), "ssg-bundle"));
+  assert.equal(
+    url,
+    pathToFileURL(path.join(tmpdir(), "ssg-bundle", "ssg-server.mjs")).href,
+  );
+  assert.equal(url.includes("?"), false);
+});
+
+test("standalone SSG keeps one JSX runtime across dynamic chunks", async () => {
+  const root = await fs.mkdtemp(
+    path.join(tmpdir(), "riebeckite-standalone-runtime-"),
+  );
+  const jsxRuntime = pathToFileURL(
+    frameworkRequire.resolve("hono/jsx/jsx-runtime"),
+  ).href;
+  try {
+    await fs.writeFile(
+      path.join(root, "entry.js"),
+      `import { jsx } from ${JSON.stringify(jsxRuntime)};
+export const entryJsx = jsx;
+export default {
+  async request() {
+    const { renderChunk } = await import("./chunk.js");
+    return new Response(jsx("section", { children: renderChunk() }).toString());
+  },
+};
+`,
+    );
+    await fs.writeFile(
+      path.join(root, "chunk.js"),
+      `import { entryJsx } from "./entry.js";
+export function renderChunk() {
+  return entryJsx("p", { children: "chunk content" });
+}
+`,
+    );
+
+    const { app } = await loadStandaloneSsgBundle({
+      root,
+      entry: path.join(root, "entry.js"),
+      outputDirectory: path.join(root, "ssg-bundle"),
+    });
+    const response = await app.request("http://localhost/");
+
+    assert.equal(response.status, 200);
+    assert.match(await response.text(), /<p>chunk content<\/p>/);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
 });

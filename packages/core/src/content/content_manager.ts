@@ -9,6 +9,7 @@ import {
   type DerivedViewInspection,
   PluginRuntime,
 } from "../plugin/plugin_runtime.js";
+import { finalizeDeferredPluginComponents } from "../plugin_component_deferred.js";
 import {
   type BuildProvenance,
   createBuildProvenance,
@@ -766,10 +767,17 @@ export class ContentManager {
       plan.previousState?.manifestHookCache,
       this.getPipelineFingerprint(),
     );
+    const deferredDiagnostics: Diagnostic[] = [];
+    await finalizeDeferredPluginComponents(
+      manifest,
+      this.pluginRuntime.getComponents(),
+      deferredDiagnostics,
+    );
     this.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);
     manifest.assets = this.pluginRuntime.collectAssets();
     manifest.clientEntries = this.pluginRuntime.collectClientEntries();
     manifest.diagnostics = [
+      ...deferredDiagnostics,
       ...this.pluginRuntime.getDiagnostics(),
       ...(await this.pluginRuntime.collectDiagnostics(contentIndex)),
     ];

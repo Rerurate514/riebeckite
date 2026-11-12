@@ -99,6 +99,7 @@ export default jsxRenderer(async ({ children }, c) => {
         </head>
         <body class="riebeckite-page rb-site">
           <OverlayHost name="text-fragment" />
+          <OverlayHost name="lightbox" />
           <ColorModeToggle placement="floating" />
           {shell === "docs" ? (
             <>

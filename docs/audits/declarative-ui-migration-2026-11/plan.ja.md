@@ -41,7 +41,7 @@
 | --- | --- | --- | --- | --- |
 | `search` | VERIFIED | primary | 検索結果リストの描画を `SearchResults` へ移行 | ダイアログ制御、キーボード操作、フォーカス、fetch、`AbortSignal` |
 | `lightbox` | MIGRATION_REQUIRED | primary | ダイアログのマークアップと画像・キャプション・状態表示 | `<dialog>` 制御、フォーカストラップ、画像読み込みイベント |
-| `text-fragment` | MIGRATION_REQUIRED | primary | ポップオーバーのマークアップと表示・ステータス状態 | 選択範囲の取得、範囲の座標計算、コピーのフォールバック |
+| `text-fragment` | VERIFIED | primary | ポップオーバーのマークアップと操作・ステータス状態を `TextFragmentPopover` へ移行 | 選択範囲の取得、範囲の座標計算、コピーのタイマー、対象外要素の判定、イベント解除 |
 | `code-enhance` | IMPLEMENTED | 既存作業 | `CodeCopy` は `useState` を使う宣言的Plugin Component | 折り返し・折りたたみはAST生成ブロック上に残る |
 | `image-compare` | KEEP_IMPERATIVE | primary | — | ポインターキャプチャ、range入力、CSSカスタムプロパティ。マークアップはmanifest解決後に生成されるため、Plugin Componentが解決済みURLを受け取れない |
 | `calculator` | KEEP_IMPERATIVE | primary | — | 分離されたruntimeが計算を所有済み。UIは静的SSRで、JSX状態に利点がない |
@@ -82,7 +82,7 @@
 | 1 | `flashcards` | A | デッキ描画を `useState` 付きHono JSXコンポーネントへ移す。payload解析とフォールバックは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-flashcards test` (2/2)、`tests/interactive-runtime/official.test.ts` のflashcards・SPAケースがPASS |
 | 2 | `search` | B | 結果をJSXコンポーネントで描画。ダイアログ・キーボード・fetchは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31)、`test:browser` (18/18) |
 | 3 | `lightbox` | B | ダイアログのマークアップをJSXで描画。ダイアログ制御は維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6)、`tests/interactive-runtime/official.test.ts` のlightboxケースがPASS |
-| 4 | `text-fragment` | B | ポップオーバーをJSXで描画。選択・配置ロジックは維持 | MIGRATION_REQUIRED | クライアントテスト |
+| 4 | `text-fragment` | B | ポップオーバーをJSXで描画。選択・配置ロジックは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21)、`tests/interactive-runtime/official.test.ts` のtext-fragmentケースがPASS |
 | 5 | 再監査 | — | 全プラグインと依存パッケージを再走査 | PENDING | 静的監査 |
 
 ## ベースライン
@@ -99,6 +99,9 @@
 | `lightbox` パッケージのクライアント (`dist/client.js`、非minify) | 5,326 B | 5,600 B (+274 B) |
 | `lightbox` のダイアログ構築 | `dialog.ts` の `createElement` 7箇所 | ホスト要素の `createElement` 1箇所。残りは `LightboxDialog` がHono JSXで描画 |
 | Webサイトのlightboxクライアントチャンク | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) に含まれ全ページで読み込み | `[data-lightbox-src]` のpresence selectorで制限。`client-sw_U6mX4.js` (2,921 B) |
+| `text-fragment` パッケージのクライアント (`dist/client.js`、非minify) | 8,391 B | 9,292 B (+901 B) |
+| `text-fragment` のポップオーバー構築 | `text-fragment.client.ts` の `createElement` 呼び出し4箇所 | ホスト要素の `createElement` 1箇所。残りは `TextFragmentPopover` がHono JSXで描画 |
+| text-fragmentクライアントの読み込み | 共有チャンク (`client-Dbl1HkEF.js`、125,439 B) | 全記事で選択共有が必要なため全ページ対象。共有 `client-Bh6h2XFk.js` (91,733 B) に含まれる |
 
 `flashcards` のマークアップは `FlashcardsDeck` でサーバー描画できるが、既存の `flashcards` フェンスはpayloadを描画してクライアントでhydrateするため、コンテンツ移行は不要。
 
@@ -113,8 +116,9 @@
 - `search` の選択状態はpropsで `aria-selected` を再描画し、選択項目の可視化は描画後の `scrollIntoView` に残した。フォーカスとキーボード処理は従来どおり命令的。
 - 検索結果のアイコンは従来もサニタイズ済みHTMLを `innerHTML` で挿入していた。`SearchResults` は同じ信頼境界を `dangerouslySetInnerHTML` で維持する。
 - lightboxのダイアログは `createRoot` でホスト要素へ描画し、そのホストを `document.body` へ追加する。ネイティブ `<dialog>` の制御、フォーカストラップ、画像のload/errorイベントは命令的に残す。ブラウザテストのクリックは、トリガーのリンク遷移を防ぐためcancelableにする必要がある。
+- text-fragmentのポップオーバーも `createRoot` でホスト要素へ描画し、`document.body` へ追加する。`render()` は非同期のため、表示状態の反映後に `requestAnimationFrame` で配置する。選択範囲の取得、コピーのタイマー、イベント解除は命令的に残す。
 - docsは英語・日本語の対と `docs/README.md` からの到達性を要求する。この台帳には日本語版とREADMEリンクを用意する。
 
 ## 次の作業
 
-`text-fragment` を移行する。ポップオーバーのマークアップと操作・ステータス表示をHono JSXコンポーネントで描画し、選択範囲の取得、範囲の座標計算、コピーのタイマー、対象外要素の判定、イベントの解除は命令的に維持する。
+全体を再監査する。全プラグインとUI生成パッケージを再走査して残存する命令的DOM所有を確認し、A・Bの移行候補が残っていないこと、Cの判断根拠が現在のコードと一致することを検証する。新しい候補が見つかった場合はキューへ戻してサイクルを繰り返す。この再監査なしに完了とはしない。

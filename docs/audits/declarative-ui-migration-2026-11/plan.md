@@ -41,7 +41,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | --- | --- | --- | --- | --- |
 | `search` | VERIFIED | primary | Result list rendering through `SearchResults` | Dialog controller, keyboard navigation, focus, fetch, `AbortSignal` |
 | `lightbox` | VERIFIED | primary | Dialog markup and image/caption/status state through `LightboxDialog` | `<dialog>` controller, focus trap, image load events |
-| `text-fragment` | MIGRATION_REQUIRED | primary | Popover markup and visible/status state | Selection reading, range geometry, copy fallback |
+| `text-fragment` | VERIFIED | primary | Popover markup and action/status state through `TextFragmentPopover` | Selection reading, range geometry, copy timers, containment checks, event cleanup |
 | `code-enhance` | IMPLEMENTED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
 | `image-compare` | KEEP_IMPERATIVE | primary | —| Pointer capture, range input, CSS custom property; markup is resolved after the manifest, so a Plugin Component cannot receive resolved asset URLs without a new API |
 | `calculator` | KEEP_IMPERATIVE | primary | —| The isolated runtime already owns computation; UI is static SSR, so JSX state would add nothing |
@@ -82,7 +82,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | 1 | `flashcards` | A | Move deck rendering to a Hono JSX component with `useState`; keep payload parsing and fallback | VERIFIED | `pnpm --filter @riebeckite/plugin-flashcards test` (2/2); `tests/interactive-runtime/official.test.ts` flashcards + SPA cases pass |
 | 2 | `search` | B | Render results with a JSX component; keep dialog/keyboard/fetch imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31); `test:browser` (18/18) |
 | 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6); `tests/interactive-runtime/official.test.ts` lightbox case passes |
-| 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | MIGRATION_REQUIRED | client tests |
+| 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21); `tests/interactive-runtime/official.test.ts` text-fragment case passes |
 | 5 | Re-audit | —| Re-scan all plugins and dependent packages | PENDING | static audit |
 
 ## Baseline
@@ -99,6 +99,9 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `lightbox` package client (`dist/client.js`, unminified) | 5,326 B | 5,600 B (+274 B) |
 | `lightbox` dialog construction in source | 7 `createElement` calls in `dialog.ts` | 1 host `createElement`; `LightboxDialog` renders the rest through Hono JSX |
 | Lightbox client loading | Shared client chunk on every page (`client-Dbl1HkEF.js`, 125,439 B) | `[data-lightbox-src]` presence selector; `client-sw_U6mX4.js` (2,921 B) on pages with image triggers |
+| `text-fragment` package client (`dist/client.js`, unminified) | 8,391 B | 9,292 B (+901 B) |
+| `text-fragment` popover construction in source | 4 `createElement` call sites in `text-fragment.client.ts` | 1 host `createElement`; `TextFragmentPopover` renders the rest through Hono JSX |
+| Text-fragment client loading | Shared client chunk (`client-Dbl1HkEF.js`, 125,439 B) | Global by design; the component lives in the shared `client-Bh6h2XFk.js` (91,733 B) because selection sharing must work on every article |
 
 `flashcards` markup is now server-renderable through `FlashcardsDeck`, but the existing `flashcards` fence still renders a payload and hydrates on the client, so no content migration is required.
 
@@ -113,9 +116,10 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - Search result markup now renders through Hono JSX. Keyboard selection updates a prop and re-renders the same root instead of mutating `aria-selected` on existing anchors; `scrollIntoView` remains the only imperative read after render.
 - `dangerouslySetInnerHTML` is used only for `result.icon.html`, matching the previous `innerHTML` trust boundary for sanitized content icons.
 - The lightbox dialog is rendered by `createRoot` into a host element that is appended to `document.body`; the native `<dialog>` controller, focus trap, and image load events stay imperative. The browser test needs a cancelable click so the trigger anchor does not navigate.
+- The text-fragment popover is also rendered by `createRoot` into a host element appended to `document.body`. `render()` is asynchronous, so positioning runs in `requestAnimationFrame` after the visible state has been applied; selection reading, copy timers, and event cleanup stay imperative.
 - Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
 
 ## Next action
 
-Migrate `text-fragment`: render the popover markup and its action/status states through Hono JSX while keeping selection reading, range geometry, copy timers, containment checks, and event cleanup imperative.
+Run the full re-audit: re-scan every plugin and the UI-generating packages for remaining imperative DOM ownership, confirm that no A/B migration candidates are left, and validate the C decisions against the current code. Add newly discovered candidates to the queue and repeat the cycle; do not claim completion without this pass.
 

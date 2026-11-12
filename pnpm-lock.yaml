@@ -1576,6 +1576,9 @@ importers:
       '@riebeckite/ui':
         specifier: workspace:*
         version: link:../../ui
+      hono:
+        specifier: ^4.11.3
+        version: 4.13.12
     devDependencies:
       tsx:
         specifier: ^4.22.4

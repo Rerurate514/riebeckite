@@ -278,6 +278,90 @@ test("the lightbox dialog mounts through Hono JSX and opens images", async () =>
   }
 });
 
+test("the text fragment popover mounts through Hono JSX for a selection", async () => {
+  const { page, errors } = await open("/docs/plugins/text-fragment");
+  try {
+    await page.waitForFunction(
+      () => document.querySelector(".rb-article-body p") !== null,
+    );
+    await page.evaluate(() => {
+      const paragraph = document.querySelector(".rb-article-body p");
+      const text = paragraph?.firstChild;
+      if (!text) throw new Error("No article text to select.");
+      const range = document.createRange();
+      range.setStart(text, 0);
+      range.setEnd(text, Math.min(24, text.textContent?.length ?? 0));
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      document.dispatchEvent(new Event("selectionchange"));
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelector<HTMLElement>(".rr-text-fragment")?.hidden ===
+        false,
+    );
+    const shown = await page.evaluate(() => {
+      const popover = document.querySelector<HTMLElement>(".rr-text-fragment");
+      const buttons = Array.from(
+        popover?.querySelectorAll<HTMLButtonElement>(
+          ".rr-text-fragment__button",
+        ) ?? [],
+      );
+      return {
+        count: document.querySelectorAll(".rr-text-fragment").length,
+        role: popover?.getAttribute("role"),
+        label: popover?.getAttribute("aria-label"),
+        buttons: buttons.map((button) => button.textContent),
+        buttonTypes: buttons.map((button) => button.type),
+        status: popover?.querySelector(".rr-text-fragment__status")
+          ?.textContent,
+        statusRole: popover
+          ?.querySelector(".rr-text-fragment__status")
+          ?.getAttribute("role"),
+      };
+    });
+    assert.equal(shown.count, 1);
+    assert.equal(shown.role, "group");
+    assert.equal(shown.label, "Share selected text");
+    assert.deepEqual(shown.buttons, ["Copy link", "Copy quote"]);
+    assert.deepEqual(shown.buttonTypes, ["button", "button"]);
+    assert.equal(shown.status, "");
+    assert.equal(shown.statusRole, "status");
+
+    await page.evaluate(() => {
+      document
+        .querySelector<HTMLButtonElement>(
+          ".rr-text-fragment__button:first-child",
+        )
+        ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    await page.waitForFunction(
+      () =>
+        (document.querySelector(".rr-text-fragment__status")?.textContent
+          ?.length ?? 0) > 0,
+    );
+    const status = await page.evaluate(
+      () => document.querySelector(".rr-text-fragment__status")?.textContent,
+    );
+    assert.match(status ?? "", /^(Link copied|Could not copy)/);
+
+    await page.evaluate(() => {
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+      );
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelector<HTMLElement>(".rr-text-fragment")?.hidden ===
+        true,
+    );
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("the runtime chunk is not requested on pages without calculators", async () => {
   const page = await browser.newPage();
   const requests: string[] = [];

@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/ui": "workspace:*"
+    "@riebeckite/ui": "workspace:*",
+    "hono": "^4.11.3"
   },
   "devDependencies": {
     "tsx": "^4.22.4"

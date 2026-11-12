@@ -1,4 +1,7 @@
-import { setDiagramSvg } from "@riebeckite/diagram/client";
+import {
+  renderPendingDiagrams,
+  setDiagramSvg,
+} from "@riebeckite/diagram/client";
 import type {
   GraphvizClientOptions,
   GraphvizEngine,
@@ -19,13 +22,13 @@ export async function initGraphvizDiagrams(
   const renderer = options.renderer ?? (await loadRenderer(options.scriptUrl));
   if (!renderer) return;
 
-  const figures = document.querySelectorAll<HTMLElement>(
-    '[data-graphviz="pending"]',
+  return await renderPendingDiagrams(
+    "graphviz",
+    (figure) => {
+      renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
+    },
+    { selector: '[data-graphviz="pending"]' },
   );
-
-  for (const figure of Array.from(figures)) {
-    renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
-  }
 }
 
 function renderFigure(
@@ -45,9 +48,10 @@ function renderFigure(
     const svg = renderer.renderString(source, { format: "svg", engine });
     if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     figure.dataset.graphviz = "rendered";
-  } catch {
+  } catch (error) {
     figure.dataset.graphviz = "error";
     canvas.dataset.graphvizError = "true";
+    throw error;
   }
 }
 

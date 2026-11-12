@@ -15,14 +15,21 @@
     "./client": {
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js",
-      "source": "./client.ts",
+      "source": "./client.tsx",
       "default": "./dist/client.js"
+    },
+    "./compare": {
+      "types": "./dist/src/compare.d.ts",
+      "import": "./dist/src/compare.js",
+      "source": "./src/compare.tsx",
+      "default": "./dist/src/compare.js"
     },
     "./style.css": "./style.css"
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
+    "hono": "^4.11.3",
     "unist-util-visit": "catalog:"
   },
   "devDependencies": {

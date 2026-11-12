@@ -5,7 +5,7 @@ import {
   type ContentSource,
   resolveConfig,
 } from "@riebeckite/core";
-import { IMAGE_COMPARE_ATTRIBUTE, imageCompare } from "../index.ts";
+import { imageCompare } from "../index.ts";
 
 function source(files: Record<string, string>): ContentSource {
   return {
@@ -42,6 +42,12 @@ const files = {
     "Multiple",
     `${fence("before: ./a.png\nafter: ./b.png\norientation: vertical\n")}\n${fence("before: ./c.png\nafter: ./d.png\n")}`,
   ),
+  "posts/delimited.md": document(
+    "Delimited",
+    fence(
+      "---\nbefore: ./a.png\nafter: ./b.png\nlabel: Delimited props\n---\n",
+    ),
+  ),
   "posts/broken.md": document(
     "Broken",
     fence("before: https://example.com/a.png\nafter: ./b.png\n"),
@@ -56,11 +62,30 @@ function manager(plugins = [imageCompare()]) {
   });
 }
 
+function componentProps(html: string): Record<string, unknown> {
+  const match = /data-riebeckite-component-props="([^"]*)"/.exec(html);
+  assert.ok(match, "component props are serialized");
+  return JSON.parse(
+    match[1]
+      .replace(/&#x22;/g, '"')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&amp;/g, "&"),
+  ) as Record<string, unknown>;
+}
+
 test("renders a comparison and resolves images relative to the note", async () => {
   const manifest = await manager().getManifest();
   const html = manifest.bySlug.get("posts/demo")?.html ?? "";
 
-  assert.ok(html.includes(IMAGE_COMPARE_ATTRIBUTE) === false);
+  assert.ok(html.includes('data-riebeckite-component="ImageCompare"'));
+  assert.ok(html.includes("data-riebeckite-component-interactive"));
+  const props = componentProps(html);
+  assert.equal(props.before, "/posts/before.png");
+  assert.equal(props.after, "/assets/after.png");
+  assert.equal(props.status, "ready");
   assert.ok(
     html.includes(
       'class="rr-image-compare__image rr-image-compare__image--before"',
@@ -70,6 +95,15 @@ test("renders a comparison and resolves images relative to the note", async () =
   assert.ok(html.includes('src="/assets/after.png"'));
   assert.ok(html.includes('alt="Draft"'));
   assert.ok(html.includes('alt="Published"'));
+});
+
+test("accepts the documented frontmatter-delimited props", async () => {
+  const html =
+    (await manager().getManifest()).bySlug.get("posts/delimited")?.html ?? "";
+
+  assert.ok(html.includes('src="/posts/a.png"'));
+  assert.ok(html.includes("Delimited props"));
+  assert.ok(!html.includes("multiple documents"));
 });
 
 test("renders every comparison block in one note", async () => {

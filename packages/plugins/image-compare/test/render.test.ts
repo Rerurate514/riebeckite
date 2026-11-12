@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   IMAGE_COMPARE_CLASS,
+  IMAGE_COMPARE_ERROR_ATTRIBUTE,
   renderImageCompare,
   renderImageCompareError,
 } from "../index.ts";
 
 const spec = {
+  status: "ready" as const,
   before: "/before.png",
   after: "/after.png",
   beforeAlt: "Before <state>",
@@ -32,7 +34,8 @@ test("renders a static fallback and the comparison stage", () => {
     ),
   );
   assert.ok(html.includes('type="range"'));
-  assert.ok(html.includes('min="0" max="100" value="50"'));
+  assert.ok(html.includes('min="0" max="100"'));
+  assert.ok(html.includes('value="50"'));
   assert.ok(html.includes("data-image-compare-range"));
   assert.ok(html.includes("--rr-image-compare-position:50%"));
 });
@@ -54,10 +57,16 @@ test("renders a vertical orientation", () => {
   assert.ok(html.includes('data-orientation="vertical"'));
 });
 
-test("renders a readable error", () => {
+test("renders a readable error with a machine-readable marker", () => {
   const html = renderImageCompareError("Unsupported image <x>.");
-  assert.equal(
-    html,
-    `<div class="${IMAGE_COMPARE_CLASS} ${IMAGE_COMPARE_CLASS}--error" role="status">Unsupported image &lt;x&gt;.</div>`,
+
+  assert.ok(html.includes("rr-image-compare--error"));
+  assert.ok(html.includes('role="status"'));
+  assert.ok(html.includes("Unsupported image &lt;x&gt;."));
+  assert.ok(
+    html.includes(
+      `${IMAGE_COMPARE_ERROR_ATTRIBUTE}="Unsupported%20image%20%3Cx%3E."`,
+    ),
   );
+  assert.equal(IMAGE_COMPARE_CLASS, "rr-image-compare");
 });

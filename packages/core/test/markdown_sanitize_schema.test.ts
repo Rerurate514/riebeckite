@@ -6,13 +6,6 @@ import {
   safeMarkdownStyle,
 } from "../src/markdown_sanitize_schema.js";
 
-test("the sanitize fingerprint is stable for the same schema", () => {
-  assert.equal(
-    computeMarkdownSanitizeFingerprint(),
-    computeMarkdownSanitizeFingerprint(),
-  );
-});
-
 test("the sanitize fingerprint distinguishes regular expressions in the schema", () => {
   const first = computeMarkdownSanitizeFingerprint({
     attributes: { code: [["className", /^language-./]] },

@@ -17,7 +17,7 @@ import { SearchBar } from "@riebeckite/plugin-search";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import { SiteProvider } from "@riebeckite/ui";
 import { Drawer, DrawerTrigger } from "@riebeckite/ui/drawer";
-import { OverlayHost } from "@riebeckite/ui/overlay";
+import { AppSlot, OverlayHost } from "@riebeckite/ui/overlay";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import {
@@ -98,7 +98,9 @@ export default jsxRenderer(async ({ children }, c) => {
           <Script src="/app/client.ts" async />
         </head>
         <body class="riebeckite-page rb-site">
-          <OverlayHost name="text-fragment" />
+          <AppSlot name="bodyStart">
+            <OverlayHost name="text-fragment" />
+          </AppSlot>
           <ColorModeToggle placement="floating" />
           {shell === "docs" ? (
             <>

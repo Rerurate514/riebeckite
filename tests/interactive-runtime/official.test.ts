@@ -576,3 +576,148 @@ test("the official page keeps its static result without JavaScript", async () =>
     await page.close();
   }
 });
+
+async function loadedScriptUrls(page: Page): Promise<string[]> {
+  return await page.evaluate(() =>
+    performance
+      .getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .filter((name) => name.endsWith(".js")),
+  );
+}
+
+async function loadedScriptText(page: Page): Promise<string> {
+  return await page.evaluate(async () => {
+    const urls = performance
+      .getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .filter((name) => name.endsWith(".js"));
+    const texts = await Promise.all(
+      urls.map((url) => fetch(url).then((response) => response.text())),
+    );
+    return texts.join("\n");
+  });
+}
+
+test("plugin client chunks load only on pages that use the UI", async () => {
+  const plain = await open("/docs/plugins/calculator");
+  try {
+    const scripts = await loadedScriptText(plain.page);
+    assert.doesNotMatch(scripts, /cdn\.jsdelivr\.net\/npm\/mermaid/);
+    assert.doesNotMatch(scripts, /cdn\.jsdelivr\.net\/npm\/@viz-js\/viz/);
+    assert.doesNotMatch(scripts, /Comparison position/);
+    assert.ok(
+      !(await loadedScriptUrls(plain.page)).some((url) =>
+        /\/auto-[\w-]+\.js$/.test(url),
+      ),
+    );
+    assert.deepEqual(plain.errors, []);
+  } finally {
+    await plain.page.close();
+  }
+
+  const charts = await open("/docs/plugins/chartjs");
+  try {
+    assert.ok(
+      (await loadedScriptUrls(charts.page)).some((url) =>
+        /\/auto-[\w-]+\.js$/.test(url),
+      ),
+    );
+    assert.deepEqual(charts.errors, []);
+  } finally {
+    await charts.page.close();
+  }
+
+  const compare = await open("/docs/plugins/image-compare");
+  try {
+    assert.match(await loadedScriptText(compare.page), /Comparison position/);
+    assert.deepEqual(compare.errors, []);
+  } finally {
+    await compare.page.close();
+  }
+});
+
+test("the image comparison hydrates and keeps its position in sync", async () => {
+  const { page, errors } = await open("/docs/plugins/image-compare");
+  try {
+    await page.waitForFunction(
+      () =>
+        document.querySelectorAll("[data-rr-image-compare]").length > 0 &&
+        document
+          .querySelector("[data-rr-image-compare]")
+          ?.getAttribute("data-orientation") !== null,
+    );
+    const initial = await page.evaluate(() => {
+      const figures = [...document.querySelectorAll("[data-rr-image-compare]")];
+      const vertical = figures.find(
+        (figure) => figure.getAttribute("data-orientation") === "vertical",
+      );
+      return {
+        count: figures.length,
+        vertical: vertical !== undefined,
+        value: figures[0]
+          ?.querySelector<HTMLInputElement>("[data-image-compare-range]")
+          ?.getAttribute("value"),
+        label: figures[0]
+          ?.querySelector<HTMLInputElement>("[data-image-compare-range]")
+          ?.getAttribute("aria-label"),
+        staticImages: figures[0]?.querySelectorAll(
+          ".rr-image-compare__static img",
+        ).length,
+      };
+    });
+    assert.ok(initial.count > 0);
+    assert.equal(initial.vertical, true);
+    assert.equal(initial.value, "50");
+    assert.equal(initial.label, "Comparison position");
+    assert.equal(initial.staticImages, 2);
+
+    await page.evaluate(() => {
+      const range = document.querySelector<HTMLInputElement>(
+        "[data-image-compare-range]",
+      );
+      if (!range) throw new Error("Missing range input.");
+      range.value = "80";
+      range.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.waitForFunction(() => {
+      const figure = document.querySelector<HTMLElement>(
+        "[data-rr-image-compare]",
+      );
+      const range = figure?.querySelector<HTMLInputElement>(
+        "[data-image-compare-range]",
+      );
+      return (
+        figure?.style.getPropertyValue("--rr-image-compare-position") ===
+          "80%" && range?.getAttribute("aria-valuetext") === "80%"
+      );
+    });
+
+    await page.evaluate(() => {
+      const link = document.querySelector<HTMLAnchorElement>(
+        'a[href="/docs/plugins/code-tabs"]',
+      );
+      link?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true, cancelable: true }),
+      );
+    });
+    await page.waitForFunction(
+      () => location.pathname === "/docs/plugins/code-tabs",
+    );
+    await page.goBack();
+    await page.waitForFunction(
+      () =>
+        location.pathname === "/docs/plugins/image-compare" &&
+        document.querySelectorAll("[data-rr-image-compare]").length > 0,
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.querySelectorAll("[data-rr-image-compare]").length,
+      ),
+      initial.count,
+    );
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});

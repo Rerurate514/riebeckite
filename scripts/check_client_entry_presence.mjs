@@ -14,6 +14,20 @@ const globalEntries = new Set([
   "text-fragment",
   "ux",
 ]);
+const selectorNoise = new Set([
+  "a",
+  "button",
+  "details",
+  "div",
+  "false",
+  "figure",
+  "input",
+  "nav",
+  "pending",
+  "script",
+  "span",
+  "true",
+]);
 const errors = [];
 
 for (const name of fs.readdirSync(pluginRoot)) {
@@ -39,6 +53,34 @@ for (const name of fs.readdirSync(pluginRoot)) {
         errors.push(
           `${name}: createClientEntry must pass a presenceSelector as its seventh argument`,
         );
+      } else if (ts.isStringLiteral(selector)) {
+        const tokens = selector.text
+          .replace(/[["'\]=\s]/g, " ")
+          .split(/\s+/)
+          .filter(
+            (token) =>
+              token.length > 0 &&
+              /^[a-z0-9-]+$/.test(token) &&
+              !selectorNoise.has(token),
+          );
+        const pluginSource = readPluginSource(path.join(pluginRoot, name));
+        for (const token of tokens) {
+          const camelCase = token.replace(/-([a-z])/g, (_, letter) =>
+            letter.toUpperCase(),
+          );
+          if (
+            !pluginSource.includes(token) &&
+            !pluginSource.includes(camelCase)
+          ) {
+            errors.push(
+              `${name}: presenceSelector "${selector.text}" references "${token}", which the plugin does not render`,
+            );
+          }
+        }
+      } else {
+        errors.push(
+          `${name}: the presenceSelector must be a string literal so it can be validated`,
+        );
       }
     }
     ts.forEachChild(node, visit);
@@ -52,4 +94,28 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log("Client entry presence selectors validated.");
+}
+
+function readPluginSource(directory) {
+  const files = [];
+  const walk = (current) => {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const target = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === "node_modules" || entry.name === "dist") continue;
+        walk(target);
+      } else if (
+        entry.name.endsWith(".ts") ||
+        entry.name.endsWith(".tsx") ||
+        entry.name.endsWith(".css")
+      ) {
+        files.push(target);
+      }
+    }
+  };
+  walk(directory);
+  return files
+    .filter((file) => path.basename(file) !== "index.ts")
+    .map((file) => fs.readFileSync(file, "utf8"))
+    .join("\n");
 }

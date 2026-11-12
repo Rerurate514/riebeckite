@@ -38,6 +38,9 @@ export function lightbox(options: LightboxOptions = {}) {
           expandLabel: options.expandLabel ?? DEFAULT_EXPAND_LABEL,
           closeLabel: options.closeLabel ?? DEFAULT_CLOSE_LABEL,
         },
+        undefined,
+        undefined,
+        "[data-lightbox-src]",
       ),
     ],
   });

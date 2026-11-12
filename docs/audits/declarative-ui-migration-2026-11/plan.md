@@ -39,8 +39,8 @@ This ledger is the source of truth for audit status, decisions, verification, an
 
 | Plugin | Status | Owner | Declarative part | Imperative part |
 | --- | --- | --- | --- | --- |
-| `search` | MIGRATION_REQUIRED | primary | Result list rendering | Dialog controller, keyboard navigation, focus, fetch, `AbortSignal` |
-| `lightbox` | MIGRATION_REQUIRED | primary | Dialog markup and image/caption/status state | `<dialog>` controller, focus trap, image load events |
+| `search` | VERIFIED | primary | Result list rendering through `SearchResults` | Dialog controller, keyboard navigation, focus, fetch, `AbortSignal` |
+| `lightbox` | VERIFIED | primary | Dialog markup and image/caption/status state through `LightboxDialog` | `<dialog>` controller, focus trap, image load events |
 | `text-fragment` | MIGRATION_REQUIRED | primary | Popover markup and visible/status state | Selection reading, range geometry, copy fallback |
 | `code-enhance` | IMPLEMENTED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
 | `image-compare` | KEEP_IMPERATIVE | primary | —| Pointer capture, range input, CSS custom property; markup is resolved after the manifest, so a Plugin Component cannot receive resolved asset URLs without a new API |
@@ -80,8 +80,8 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | Order | Plugin | Class | Work | Status | Tests |
 | --- | --- | --- | --- | --- | --- |
 | 1 | `flashcards` | A | Move deck rendering to a Hono JSX component with `useState`; keep payload parsing and fallback | VERIFIED | `pnpm --filter @riebeckite/plugin-flashcards test` (2/2); `tests/interactive-runtime/official.test.ts` flashcards + SPA cases pass |
-| 2 | `search` | B | Render results with a JSX component; keep dialog/keyboard/fetch imperative | MIGRATION_REQUIRED | search browser tests |
-| 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | MIGRATION_REQUIRED | lightbox tests |
+| 2 | `search` | B | Render results with a JSX component; keep dialog/keyboard/fetch imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-search test` (31/31); `test:browser` (18/18) |
+| 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6); `tests/interactive-runtime/official.test.ts` lightbox case passes |
 | 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | MIGRATION_REQUIRED | client tests |
 | 5 | Re-audit | —| Re-scan all plugins and dependent packages | PENDING | static audit |
 
@@ -96,6 +96,9 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `search` package client (`dist/client.js`, unminified) | 13,284 B | 13,577 B (+293 B) |
 | `search` result markup in source | 27 DOM construction/mutation calls (`createElement`, `appendChild`, `replaceChildren`, `setAttribute`, `innerHTML`, text nodes) | 0; `SearchResults` renders anchors, highlights, tags, and icons |
 | Search client loading | Shared client chunk on every page (`client-Dbl1HkEF.js`, 125,439 B) | `[data-search-root]` presence selector; `client-D9tNpf5I.js` (6,565 B) on pages with the search bar |
+| `lightbox` package client (`dist/client.js`, unminified) | 5,326 B | 5,600 B (+274 B) |
+| `lightbox` dialog construction in source | 7 `createElement` calls in `dialog.ts` | 1 host `createElement`; `LightboxDialog` renders the rest through Hono JSX |
+| Lightbox client loading | Shared client chunk on every page (`client-Dbl1HkEF.js`, 125,439 B) | `[data-lightbox-src]` presence selector; `client-sw_U6mX4.js` (2,921 B) on pages with image triggers |
 
 `flashcards` markup is now server-renderable through `FlashcardsDeck`, but the existing `flashcards` fence still renders a payload and hydrates on the client, so no content migration is required.
 
@@ -109,9 +112,10 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - `the excalidraw figure renders to SVG in the browser` fails because `docs/assets/HW.md` is private and no `/assets/HW` page is generated. The same failure reproduces on the base checkout and is unrelated to this migration.
 - Search result markup now renders through Hono JSX. Keyboard selection updates a prop and re-renders the same root instead of mutating `aria-selected` on existing anchors; `scrollIntoView` remains the only imperative read after render.
 - `dangerouslySetInnerHTML` is used only for `result.icon.html`, matching the previous `innerHTML` trust boundary for sanitized content icons.
+- The lightbox dialog is rendered by `createRoot` into a host element that is appended to `document.body`; the native `<dialog>` controller, focus trap, and image load events stay imperative. The browser test needs a cancelable click so the trigger anchor does not navigate.
 - Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
 
 ## Next action
 
-Migrate `lightbox`: render the dialog markup and its image/caption/status states through Hono JSX while keeping the native `<dialog>` controller, focus trap, and image load events imperative.
+Migrate `text-fragment`: render the popover markup and its action/status states through Hono JSX while keeping selection reading, range geometry, copy timers, containment checks, and event cleanup imperative.
 

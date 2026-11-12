@@ -207,6 +207,77 @@ test("SPA navigation unmounts and remounts the official runtime", async () => {
   }
 });
 
+test("the lightbox dialog mounts through Hono JSX and opens images", async () => {
+  const { page, errors } = await open("/docs/plugins/lightbox");
+  try {
+    await page.waitForFunction(
+      () => document.querySelector(".rr-lightbox-trigger") !== null,
+    );
+    const trigger = await page.evaluate(() => {
+      const anchor = document.querySelector<HTMLAnchorElement>(
+        ".rr-lightbox-trigger",
+      );
+      return {
+        href: anchor?.getAttribute("href"),
+        label: anchor?.getAttribute("aria-label"),
+        imageSrc: anchor?.querySelector("img")?.getAttribute("src"),
+      };
+    });
+    assert.equal(trigger.href, "/assets/riebeckite-logo.png");
+    assert.equal(trigger.label, "Expand image: riebeckite-logo.png");
+    assert.equal(trigger.imageSrc, "/assets/riebeckite-logo.png");
+
+    await page.evaluate(() => {
+      document
+        .querySelector<HTMLAnchorElement>(".rr-lightbox-trigger")
+        ?.dispatchEvent(
+          new MouseEvent("click", { bubbles: true, cancelable: true }),
+        );
+    });
+    await page.waitForFunction(() =>
+      document.querySelector("dialog.rr-lightbox")?.hasAttribute("open"),
+    );
+    const opened = await page.evaluate(() => {
+      const dialog = document.querySelector("dialog.rr-lightbox");
+      const image = dialog?.querySelector<HTMLImageElement>(
+        ".rr-lightbox__image",
+      );
+      const caption = dialog?.querySelector<HTMLElement>(
+        ".rr-lightbox__caption",
+      );
+      const close = dialog?.querySelector<HTMLButtonElement>(
+        ".rr-lightbox__close",
+      );
+      return {
+        count: document.querySelectorAll("dialog.rr-lightbox").length,
+        label: dialog?.getAttribute("aria-label"),
+        src: image?.getAttribute("src"),
+        alt: image?.alt,
+        caption: caption?.textContent,
+        captionHidden: caption?.hidden,
+        closeLabel: close?.getAttribute("aria-label"),
+        focused: document.activeElement === close,
+      };
+    });
+    assert.equal(opened.count, 1);
+    assert.equal(opened.label, "Expand image");
+    assert.equal(opened.src, "/assets/riebeckite-logo.png");
+    assert.equal(opened.alt, "riebeckite-logo.png");
+    assert.equal(opened.caption, "riebeckite-logo.png");
+    assert.equal(opened.captionHidden, false);
+    assert.equal(opened.closeLabel, "Close");
+    assert.equal(opened.focused, true);
+
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(
+      () => !document.querySelector("dialog.rr-lightbox")?.hasAttribute("open"),
+    );
+    assert.deepEqual(errors, []);
+  } finally {
+    await page.close();
+  }
+});
+
 test("the runtime chunk is not requested on pages without calculators", async () => {
   const page = await browser.newPage();
   const requests: string[] = [];

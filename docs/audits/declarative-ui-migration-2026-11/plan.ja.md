@@ -42,7 +42,7 @@
 | `search` | VERIFIED | primary | 検索結果リストの描画を `SearchResults` へ移行 | ダイアログ制御、キーボード操作、フォーカス、fetch、`AbortSignal` |
 | `lightbox` | MIGRATION_REQUIRED | primary | ダイアログのマークアップと画像・キャプション・状態表示 | `<dialog>` 制御、フォーカストラップ、画像読み込みイベント |
 | `text-fragment` | VERIFIED | primary | ポップオーバーのマークアップと操作・ステータス状態を `TextFragmentPopover` へ移行 | 選択範囲の取得、範囲の座標計算、コピーのタイマー、対象外要素の判定、イベント解除 |
-| `code-enhance` | IMPLEMENTED | 既存作業 | `CodeCopy` は `useState` を使う宣言的Plugin Component | 折り返し・折りたたみはAST生成ブロック上に残る |
+| `code-enhance` | VERIFIED | 既存作業 | `CodeCopy` は `useState` を使う宣言的Plugin Component | 折り返し・折りたたみはAST生成ブロック上に残る |
 | `image-compare` | KEEP_IMPERATIVE | primary | — | ポインターキャプチャ、range入力、CSSカスタムプロパティ。マークアップはmanifest解決後に生成されるため、Plugin Componentが解決済みURLを受け取れない |
 | `calculator` | KEEP_IMPERATIVE | primary | — | 分離されたruntimeが計算を所有済み。UIは静的SSRで、JSX状態に利点がない |
 | `toc` | KEEP_IMPERATIVE | primary | SSRの `TableOfContents` JSX | スクロール追従と現在見出しの更新 |
@@ -67,7 +67,7 @@
 | `canvas` | Canvasエディタが描画・選択・ポインター状態を所有する。 |
 | `d2`、`graphviz`、`mermaid`、`wavedrom`、`vega-lite`、`markmap`、`chartjs` | 外部レンダラーがSVG・Canvas・DOMの出力とライフサイクルを所有する。 |
 | `map` | MapLibreが地図Canvas、操作、DOMを所有する。 |
-| `marp` | Marpがページタイプ内でスライド描画とナビゲーション状態を所有する。 |
+| `marp` | Marpがスライド描画を所有し、クライアントは4つのコントロールを生成してスライドの表示を命令的に切り替える必要がある。JSX化は実行時コストを増やすだけで状態を単純化しない。 |
 | `meta-bind` | 入力とバインディングをその場で拡張する。DOM契約そのものが機能。 |
 | `excalibrain` | SVGグラフのレイアウトと操作。 |
 
@@ -84,7 +84,7 @@
 | 3 | `lightbox` | B | ダイアログのマークアップをJSXで描画。ダイアログ制御は維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6)、`tests/interactive-runtime/official.test.ts` のlightboxケースがPASS |
 | 4 | `text-fragment` | B | ポップオーバーをJSXで描画。選択・配置ロジックは維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21)、`tests/interactive-runtime/official.test.ts` のtext-fragmentケースがPASS |
 | 5 | `diff` | B | 履歴のdiffパネルと行をHono JSXで描画。取得とリビジョン選択は維持 | VERIFIED | `pnpm --filter @riebeckite/plugin-diff test` (18/18)、`test:browser` (1/1) |
-| 6 | 再監査 | — | 全プラグインと依存パッケージを再走査 | IN_PROGRESS | 静的監査 |
+| 6 | 再監査 | — | 全プラグインと依存パッケージを再走査 | VERIFIED | 85プラグインを分類（A 1、B 16、C 16、D 52）。未処理のA/B候補なし |
 
 ## ベースライン
 
@@ -126,6 +126,13 @@
 - `diff` にはSPA向けの後始末がなかった。マウント時にリスナーを中断しパネルrootをunmountする後始末を返すようにし、パッケージのブラウザテストで描画と後始末の両方を確認する。
 - docsは英語・日本語の対と `docs/README.md` からの到達性を要求する。この台帳には日本語版とREADMEリンクを用意する。
 
+## 完了監査
+
+- 移行スコープは完了している。全プラグインを分類し、Aはすべて検証済み、Bの移行価値がある部分も検証済みで、残るC・Dの判断根拠は上記に記録した。
+- 未分類の `createClientEntry` 利用者はなく、再監査で新たなA/B候補は見つからなかった。
+- 外部ScaffoldのE2EはBLOCKEDであり、完了ではない。`pnpm test:e2e:external` はこのブランチとmain `16baeffe` の両方でSSG中に `TypeError: Cannot convert object to primitive value` で失敗する。UI移行とは無関係な既存のMDX・増分キャッシュ問題である。UI移行自体のゲートには影響しないが、完了条件8は満たしていない。
+- `the excalidraw figure renders to SVG in the browser` は `/assets/HW` が非公開でページが生成されない既存の失敗であり、mainでも同様に失敗する。
+
 ## 次の作業
 
-全体の再監査を続ける。全プラグインとUI生成パッケージを再走査して残存する命令的DOM所有を確認し、A・Bの移行候補が残っていないこと、Cの判断根拠が現在のコードと一致することを検証する。新しい候補が見つかった場合はキューへ戻してサイクルを繰り返す。この再監査なしに完了とはしない。
+移行候補は残っていない。外部Scaffold E2EとExcalidrawブラウザテストの既存失敗を記録したままにし、外部E2Eが解決されるか明示的に免除されるまで、このブランチをmergeしない。

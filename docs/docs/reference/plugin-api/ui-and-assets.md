@@ -228,6 +228,13 @@ manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service
 URLs. An initializer without public config continues to receive no arguments.
 
+Client-owned UI should be written in Hono JSX and mounted into its host with
+`createRoot()` from `hono/jsx/dom/client`. Keep browser-only work such as focus,
+measurement, pointer capture, and media playback in the initializer. When an
+entry is needed only on pages that contain a marker, pass a presence selector as
+the seventh argument to `createClientEntry()` so the chunk is not loaded on
+other pages.
+
 A client entry can also be declared explicitly:
 
 ``` ts

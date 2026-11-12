@@ -42,7 +42,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `search` | VERIFIED | primary | Result list rendering through `SearchResults` | Dialog controller, keyboard navigation, focus, fetch, `AbortSignal` |
 | `lightbox` | VERIFIED | primary | Dialog markup and image/caption/status state through `LightboxDialog` | `<dialog>` controller, focus trap, image load events |
 | `text-fragment` | VERIFIED | primary | Popover markup and action/status state through `TextFragmentPopover` | Selection reading, range geometry, copy timers, containment checks, event cleanup |
-| `code-enhance` | IMPLEMENTED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
+| `code-enhance` | VERIFIED | previous work | `CodeCopy` is a declarative Plugin Component with `useState` | Wrap/collapse toggles remain on AST-generated blocks |
 | `image-compare` | KEEP_IMPERATIVE | primary | —| Pointer capture, range input, CSS custom property; markup is resolved after the manifest, so a Plugin Component cannot receive resolved asset URLs without a new API |
 | `calculator` | KEEP_IMPERATIVE | primary | —| The isolated runtime already owns computation; UI is static SSR, so JSX state would add nothing |
 | `toc` | KEEP_IMPERATIVE | primary | SSR `TableOfContents` JSX | Scroll spy and active-heading mutation |
@@ -67,7 +67,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | `canvas` | Canvas editor owns drawing, selection, and pointer state. |
 | `d2`, `graphviz`, `mermaid`, `wavedrom`, `vega-lite`, `markmap`, `chartjs` | External renderers own SVG/Canvas/DOM output and lifecycle. |
 | `map` | MapLibre owns the map canvas, interaction, and DOM. |
-| `marp` | Marp owns slide rendering and navigation state in a page type. |
+| `marp` | Marp owns slide rendering; the client creates four controls and must toggle slide visibility imperatively. JSX would add runtime cost without simplifying that state. |
 | `meta-bind` | Inputs and bindings are enhanced in place; the DOM contract is the feature. |
 | `excalibrain` | SVG graph layout and interaction. |
 
@@ -84,7 +84,7 @@ This ledger is the source of truth for audit status, decisions, verification, an
 | 3 | `lightbox` | B | Render dialog markup from JSX; keep dialog controller | VERIFIED | `pnpm --filter @riebeckite/plugin-lightbox test` (6/6); `tests/interactive-runtime/official.test.ts` lightbox case passes |
 | 4 | `text-fragment` | B | Render popover from JSX; keep selection/position logic | VERIFIED | `pnpm --filter @riebeckite/plugin-text-fragment test` (21/21); `tests/interactive-runtime/official.test.ts` text-fragment case passes |
 | 5 | `diff` | B | Render history diff panel/lines through Hono JSX; keep fetch and revision selection imperative | VERIFIED | `pnpm --filter @riebeckite/plugin-diff test` (18/18); `test:browser` (1/1) |
-| 6 | Re-audit | —| Re-scan all plugins and dependent packages | IN_PROGRESS | static audit |
+| 6 | Re-audit | — | Re-scan all plugins and dependent packages | VERIFIED | 85 plugins classified: 1 A, 16 B, 16 C, 52 D; no remaining A/B candidate |
 
 ## Baseline
 
@@ -127,7 +127,14 @@ This ledger is the source of truth for audit status, decisions, verification, an
 - `diff` had no SPA cleanup. The mount now returns a cleanup that aborts its listeners and unmounts the panel root; the package browser test covers both rendering and cleanup.
 - Docs require paired English/Japanese files and reachability from `docs/README.md`; this ledger has a Japanese companion and a README link.
 
+## Completion audit
+
+- Migration scope is complete: every plugin is classified, all A work is verified, the B parts worth moving are verified, and the remaining C/D decisions are recorded above.
+- No unclassified `createClientEntry` user remains, and the re-audit found no new A/B candidate.
+- External scaffold E2E is BLOCKED, not complete. `pnpm test:e2e:external` fails with `TypeError: Cannot convert object to primitive value` during SSG on both this branch and main `16baeffe`; the failure is pre-existing MDX/incremental-cache work outside the UI migration. The UI migration's own gates are unaffected, but criterion 8 is not met.
+- `the excalidraw figure renders to SVG in the browser` is a pre-existing failure at `/assets/HW` (private source, no generated page) and also fails on main.
+
 ## Next action
 
-Continue the full re-audit: re-scan every plugin and the UI-generating packages for remaining imperative DOM ownership, confirm that no A/B migration candidates are left, and validate the C decisions against the current code. Add newly discovered candidates to the queue and repeat the cycle; do not claim completion without this pass.
+No migration candidate remains. Keep the external scaffold E2E and Excalidraw browser failures recorded as pre-existing blockers; do not merge this branch until the external E2E gate is resolved or explicitly waived.
 

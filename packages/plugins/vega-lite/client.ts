@@ -1,3 +1,4 @@
+import { renderPendingDiagrams } from "@riebeckite/diagram/client";
 import type { EmbedOptions } from "vega-embed";
 
 const FIGURE_SELECTOR = "[data-vega-lite]";
@@ -39,15 +40,18 @@ export async function initVegaLite(
   }
   if (context.signal?.aborted) return;
 
-  const views: Array<{ finalize: () => void }> = [];
-  for (const figure of figures) {
-    if (context.signal?.aborted || !figure.isConnected) return;
-    const view = await renderFigure(embed, figure, context.signal);
-    if (view) views.push(view);
-  }
-  return () => {
-    for (const view of views) view.finalize();
-  };
+  return await renderPendingDiagrams(
+    "vega-lite",
+    async (figure) => {
+      const view = await renderFigure(embed, figure, context.signal);
+      return view ? () => view.finalize() : undefined;
+    },
+    {
+      ...context,
+      selector: FIGURE_SELECTOR,
+      fallbackSelector: "details",
+    },
+  );
 }
 
 async function renderFigure(
@@ -59,15 +63,15 @@ async function renderFigure(
   const serialized = figure.dataset.vegaLiteSpec;
   if (!canvas || !serialized) {
     revealFallback(figure);
-    return undefined;
+    throw new Error("Missing Vega-Lite figure data.");
   }
 
   let spec: unknown;
   try {
     spec = JSON.parse(serialized);
-  } catch {
+  } catch (error) {
     revealFallback(figure);
-    return undefined;
+    throw error;
   }
 
   try {
@@ -82,9 +86,9 @@ async function renderFigure(
     }
     figure.dataset.vegaLite = "rendered";
     return result.view;
-  } catch {
+  } catch (error) {
     revealFallback(figure);
-    return undefined;
+    throw error;
   }
 }
 

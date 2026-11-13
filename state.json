@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "8eb98502-a39d-46d6-87f7-4bfd4f19b068",
-    "publishedAt": "2026-11-13T03:51:32.021Z",
-    "publicationFingerprint": "09fc42b7b927732e7f74d0a7184064a588f048eeaf133fd41e149128772ed9e9",
+    "runId": "62427b1a-a002-4f60-9f62-c6abdb18dc3f",
+    "publishedAt": "2026-11-13T06:47:32.430Z",
+    "publicationFingerprint": "1cbdb4bed5b3d0c323b7d711bb70745a41af95b64efbb45416273993523770fe",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -58,48 +58,48 @@
         "permalink": "/audits/declarative-ui-architecture-2026-11/implementation",
         "title": "implementation",
         "visibility": "public",
-        "fingerprint": "385836653848cc74a2a9b59ccff10d0719e7bab6fba9f061ecdd04013f65b3f7",
-        "contentFingerprint": "e2b756dc7fbb4e3cd2c63f63c544a96c8d5c3896f7e71ecf5aa24a34a101849f"
+        "fingerprint": "d4fa94b22d98a06f15cbb85894cbbd4e555a882dd53afef05405fe9485ebc953",
+        "contentFingerprint": "a6eebe71472cafe43d6ad908c2042dc941dc7935eab26fa19ee9f30773cd946e"
       },
       {
         "slug": "audits/declarative-ui-architecture-2026-11/implementation-ledger",
         "permalink": "/audits/declarative-ui-architecture-2026-11/implementation-ledger",
         "title": "implementation-ledger",
         "visibility": "public",
-        "fingerprint": "219da5e19cf735cf8d0fbe876ea94c0434d20573998a24f20335a4b1a2b8d65e",
-        "contentFingerprint": "d57fa2cf23d0e14148838d5b825bd2ba3c1937b028a6836586b937433b9fe51c"
+        "fingerprint": "a3bfcbf5d4298764a57a5fdaa451923575bc0ab93ca3e9b7474faa5f78bf2e3e",
+        "contentFingerprint": "8e97d36a1d2ba72c01944a2c1f59e061cabb803465680d1f4862d2fe401e5eb4"
       },
       {
         "slug": "audits/declarative-ui-architecture-2026-11/implementation-ledger.ja",
         "permalink": "/ja/audits/declarative-ui-architecture-2026-11/implementation-ledger",
         "title": "implementation-ledger.ja",
         "visibility": "public",
-        "fingerprint": "ca3d99207638f1d2f061c9631d15b7ac7b341c371203ccc7f5a1cc0eed4f46cf",
-        "contentFingerprint": "2808bbf46bd58bea7d8a763b010c2b9ca63319a24bf818b72f060d22a98779d6"
+        "fingerprint": "b5f4d429ac239569c8d2226fb84ef9e10e1861409853c6fae3748cc2299f59c9",
+        "contentFingerprint": "cea00409e4fa25a5b01cad69189204e89e08144a30984d165d081605ef2b37cc"
       },
       {
         "slug": "audits/declarative-ui-architecture-2026-11/implementation.ja",
         "permalink": "/ja/audits/declarative-ui-architecture-2026-11/implementation",
         "title": "implementation.ja",
         "visibility": "public",
-        "fingerprint": "8f57bfad01e18db0f7122a3a108184faee96a0cd3d62017f98b6f57bc0cacc17",
-        "contentFingerprint": "e21ca0dd477f6367105f8799a78aa7bfa91339e6ed875669d48b152cb12e518a"
+        "fingerprint": "a71a26ec818e57d0c1e13f3a049a0ab924910acf2b3d502df41ddd870a93d737",
+        "contentFingerprint": "f2173538d6107bf2ca95faf4c8b6cc6783a2c72ae7bee259f60dff6a9a7cef77"
       },
       {
         "slug": "audits/declarative-ui-migration-2026-11/plan",
         "permalink": "/audits/declarative-ui-migration-2026-11/plan",
         "title": "plan",
         "visibility": "public",
-        "fingerprint": "dfcf9ecff395d72025e2d61a3ee30cca589d51995136312b0986d409e4584be8",
-        "contentFingerprint": "0c627c1f6e4c83c6e47373888cb4f2aaa111689b2eed8c20cb7e330a43643f91"
+        "fingerprint": "5d2d969aa0380104ac6ad4854ff062c00473f268ec19ba2e2b711fb8bd0361bc",
+        "contentFingerprint": "39485003e14e10ca8df146ed0079255fef3f5ffa6ed76015ddb68db09b27d8ae"
       },
       {
         "slug": "audits/declarative-ui-migration-2026-11/plan.ja",
         "permalink": "/ja/audits/declarative-ui-migration-2026-11/plan",
         "title": "plan.ja",
         "visibility": "public",
-        "fingerprint": "767e5cff7cf3f6609a4cfd12d3df4df4ca8105917ff1f30587255a4804800734",
-        "contentFingerprint": "db7e4060c5fdd3feba44edabd90472c406c596ee976c8a990b9bb404c39284d4"
+        "fingerprint": "53ba465c002d074e2405f68b3102cfe80fb360e744a7b27b9af89e0ee2926ccd",
+        "contentFingerprint": "31ccd89c374346ca964c929f3185c2cb5dadfe5694b742ad46e755b768869735"
       },
       {
         "slug": "audits/final-release-audit-2026-11-08/e2e-results",
@@ -586,16 +586,16 @@
         "permalink": "/docs/framework/honox-integration",
         "title": "HonoX Integration",
         "visibility": "public",
-        "fingerprint": "155ca0177f6a89335c63e3f0352a7314beec6289383daf6fe5826926ba89880e",
-        "contentFingerprint": "3b0515e3befea3d1aae8120873e3d3c265efac6801cb6af57b154d432db990aa"
+        "fingerprint": "6bb1c4a8100c4b115fa7412d2a632e0ef1823dc1d3ea3eea194a940a073501ff",
+        "contentFingerprint": "df15c4a9644324b4a885d3b1b245505fcffd91593957b276a8a3012770ab7818"
       },
       {
         "slug": "docs/framework/honox-integration.ja",
         "permalink": "/ja/docs/framework/honox-integration",
         "title": "HonoX との統合",
         "visibility": "public",
-        "fingerprint": "db83e5de9621edd8932ea4a95879fdf68ccb1eaf7342bf7ccb7b44daf8da01fc",
-        "contentFingerprint": "345514f9d73276dd0cd31938104d4eb297fc7876447ccbbdad73d718c7ffc1a2"
+        "fingerprint": "80f5414bea6de07ebc852a67fef337fe8a149e44395a5edcd01bfd285f2f085f",
+        "contentFingerprint": "82d06f864a062fa1bb00f5a219d03a0ed3827f7fd200175f5019b094d33bc3a0"
       },
       {
         "slug": "docs/framework/honox-integration/site",
@@ -746,16 +746,16 @@
         "permalink": "/docs/framework/plugin-system",
         "title": "Plugins in Depth",
         "visibility": "public",
-        "fingerprint": "97515d5e703a0192079bcf9a29b20760b4da49d64afe82c60fc8aa5cd8566b5e",
-        "contentFingerprint": "02ed9364028955ae05f26fdd4736ea3fd4f1de89f6a15bf518f177fb8ec0c9c1"
+        "fingerprint": "088feb19469a1073bbc85721b1fab0cb0d75464cfd6d331a1b8bda4e47317503",
+        "contentFingerprint": "5a6ab92d714ed6a67b7c4495dd6f2532eabd6b47b31779fee5dd8e8d3fd654da"
       },
       {
         "slug": "docs/framework/plugin-system.ja",
         "permalink": "/ja/docs/framework/plugin-system",
         "title": "プラグイン作成の詳細",
         "visibility": "public",
-        "fingerprint": "a2ccbe86246060a0fb966a06bbe4afaa57945f41d3f12ada877c448e35e96cd9",
-        "contentFingerprint": "6839b0333f6682e4be34fc74cc61dbbfa871a614e28af5364f83f0fb2887b25b"
+        "fingerprint": "5e8485c45c53ad7cea3d384a66a2692950df5e602f543940f8d3e359fce9b3de",
+        "contentFingerprint": "aa5b65532354a4635411f01daab2836cfc78aa8039daaa1af5ae192814d19087"
       },
       {
         "slug": "docs/framework/plugin-system/distribution",
@@ -2522,8 +2522,8 @@
         "permalink": "/docs/glossary/plugin",
         "title": "Plugin",
         "visibility": "public",
-        "fingerprint": "b257c309f330e50f8e79e5cb70b8f1d23af9054982a3cbe5168b7508092fa7d8",
-        "contentFingerprint": "cbd4e380aea99ef28a4e76af1ad80aa34b35a58b84359a5843ab786e897d4d9a"
+        "fingerprint": "9ccd48fae8d3ec30b69ad3848b799afb8a291d914167914983d075b7024052f6",
+        "contentFingerprint": "476fe103990e8005af3529ece0f529fd253830f3890daea5de04c164cc02dccc"
       },
       {
         "slug": "docs/glossary/plugin-cache",
@@ -2544,18 +2544,18 @@
       {
         "slug": "docs/glossary/plugin-component",
         "permalink": "/docs/glossary/plugin-component",
-        "title": "Plugin UI component",
+        "title": "Plugin site component",
         "visibility": "public",
-        "fingerprint": "ffc01272ee1250cbd66d79b2d80d5b5eac1a4c81e05e8d9e070aa48af04d6f53",
-        "contentFingerprint": "375392f48c8a265fd48b8cc4ac6f7bc464b2564706642ac5632335927b939814"
+        "fingerprint": "0599028914768eb95712480a64e00d2e5b06d6951d5c5b54ae8105f367678766",
+        "contentFingerprint": "359200c26281cc56c6781c08d7ae6e376107469b1bf279ad911381de79133725"
       },
       {
         "slug": "docs/glossary/plugin-component.ja",
         "permalink": "/ja/docs/glossary/plugin-component",
-        "title": "プラグインコンポーネント（Plugin UI component）",
+        "title": "プラグインの Site コンポーネント（Plugin site component）",
         "visibility": "public",
-        "fingerprint": "544583df632d5508c1a8ee2b558f0e0d20e3456a2928a315607de540efd24290",
-        "contentFingerprint": "e5a8272c3b2abfc31196db9131f73d62c34dbbf6192811233a96d2d41553f8ba"
+        "fingerprint": "a513af20e63e173e69b81e0c49ee7587d68bf737b0fa6193ceee825d9f464600",
+        "contentFingerprint": "c7533b6b80ee603408bdca2785c921422955304070fff6e0537fd190909f9f27"
       },
       {
         "slug": "docs/glossary/plugin-dependency",
@@ -2594,8 +2594,8 @@
         "permalink": "/ja/docs/glossary/plugin",
         "title": "プラグイン（Plugin）",
         "visibility": "public",
-        "fingerprint": "dc563795ff39d0025f999342e0f76eabab513915f8388ebcbd4625c177b6cec1",
-        "contentFingerprint": "65685e66d8f6983d1150059bbf074d0256def464f21c59434f2ca7407d2b4f05"
+        "fingerprint": "8af110ff4b5db4e27c98dea26c684463e18de2faf69614039d93fcd6e77babd3",
+        "contentFingerprint": "0574666605cb4d5d3fab0294d5eac4fb95fe1b79cbdaf209d2773d0e5dfb52a5"
       },
       {
         "slug": "docs/glossary/presentation-layer",
@@ -2730,16 +2730,16 @@
         "permalink": "/docs/glossary/",
         "title": "Glossary",
         "visibility": "public",
-        "fingerprint": "bd3f647fe0ce44cff9104fda7bd5b586c30fd05219ee63a1e97d6e8868ed4e2e",
-        "contentFingerprint": "547a222cd4bb04dee2c2b97215d7e3301d2a9ec1456373f5f831af15e59c9af2"
+        "fingerprint": "5b194aa9f39431127d2f45d3dd1468a5c45dea0bdd7ab1ce084ed41c734500e3",
+        "contentFingerprint": "9aa9b87d21a8cc0673f66e18523746d71b955051179b82232bede0e89b913ea3"
       },
       {
         "slug": "docs/glossary/README.ja",
         "permalink": "/ja/docs/glossary/",
         "title": "用語集",
         "visibility": "public",
-        "fingerprint": "852c9f25713dc51efb73b59e266c1a3e59fada0a3925e27da84142b7f469d7ac",
-        "contentFingerprint": "a36dd05d585197033bc0c40a635901f77362a97d467caca14fcf5b6cca59f025"
+        "fingerprint": "a44fef10cdd0c3592a1e94edd462fd82ff99ff1a1e26ea424ee4e49e67fc953b",
+        "contentFingerprint": "8a7d2352bb9d6198cff3149c5f6224755e20d86f0165c23cbdbffe761b2f5536"
       },
       {
         "slug": "docs/glossary/redirect",
@@ -3402,16 +3402,16 @@
         "permalink": "/docs/guides/customizing-your-site/plugins-and-css",
         "title": "Plugins and CSS",
         "visibility": "public",
-        "fingerprint": "ec8b00c30f4864b6cc8262115d6ed47d8e7a6bf2a6a9656cd83729a8b97783d9",
-        "contentFingerprint": "0065ab47547fae64f5d966ae1b0b5ee2b0839eea54e316fed415323bad821677"
+        "fingerprint": "17c4be93878faf4ff23bac4b39b96a51916e70fd6831f848420f01175e4424d6",
+        "contentFingerprint": "c412163d020c0562d1ef7d94f384fd25633f06ed241721995dbff9979d726d89"
       },
       {
         "slug": "docs/guides/customizing-your-site/plugins-and-css.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/plugins-and-css",
         "title": "プラグインとCSS",
         "visibility": "public",
-        "fingerprint": "c41810dcd29bb2358407ad001eb07a3ce898c90960b870100c76d60a86cefe4e",
-        "contentFingerprint": "df6b0ad57de301b877af04edf1e11cb2a8db6d14ebae02f1f7952de4196b20d7"
+        "fingerprint": "c9d6969798209dad4925b6d8a4b2d8b176abb8009e76441a677631c8c5a720be",
+        "contentFingerprint": "6eb10d41278bd6a30849b08dc380130bd2863f5a2b2d4ca2210e559a6e1af984"
       },
       {
         "slug": "docs/guides/deployment/cloudflare-workers",
@@ -3994,16 +3994,16 @@
         "permalink": "/docs/philosophy",
         "title": "Design Philosophy",
         "visibility": "public",
-        "fingerprint": "c7fbe74f2c778512943410ed49e7ba727b363f9539d0e8d6d5f147bead897dbc",
-        "contentFingerprint": "db77915cb016364f06fe5131a7531bd8d7b1571436ea45268a0c9e7a8c4b9f27"
+        "fingerprint": "78a83e857f4d199a9a6ea99a30a7c14a2a9f8aa56d0c28fb7d1f79a8fe7c1026",
+        "contentFingerprint": "5e36672b4e6024ad2aca65c0d1f961ac183de4b397b7bd4d1ba026cbbb03a8e5"
       },
       {
         "slug": "docs/philosophy.ja",
         "permalink": "/ja/docs/philosophy",
         "title": "設計思想",
         "visibility": "public",
-        "fingerprint": "e652cf8acef6e1ab478fb77919dfe423046f897174ca0ce85b98cc5e1ef2ffd0",
-        "contentFingerprint": "76a69a215185a7af007de5a80fe863de97551a848187302b278389c9abee17f6"
+        "fingerprint": "7e02a59a701b27d19641dc0b73045e0ffe74dfb4e781d53b191cf8474c6b7e7a",
+        "contentFingerprint": "8fd4296fe419bba0d033f2f418725149d41ff07a455ce738355a5b8ce0cf9c34"
       },
       {
         "slug": "docs/plugins/alias",
@@ -4298,8 +4298,8 @@
         "permalink": "/docs/plugins/component-generator",
         "title": "Component Generator",
         "visibility": "public",
-        "fingerprint": "161702149c6471a7f16a341e360343effa479c1d17d3f280446a16d5a7e092b9",
-        "contentFingerprint": "0fefd8163d0d5c2ce51558da21ea9b05d962bd45a54c347154b829a44a5fba8e"
+        "fingerprint": "c56460c4040eb94530fc0a0d1eaafd0ed2d674844e197776efb02afed85ec0f8",
+        "contentFingerprint": "2957cad30b5b8e7fd0018d344a9a7578bceeb51fd7363019cd16ed985337353d"
       },
       {
         "slug": "docs/plugins/component-generator.ja",
@@ -5128,18 +5128,18 @@
       {
         "slug": "docs/plugins/recipes/components",
         "permalink": "/docs/plugins/recipes/components",
-        "title": "Share a UI Component",
+        "title": "Share a Site Component",
         "visibility": "public",
-        "fingerprint": "34a6fc63e7bf3296911d1ad896dd55be3f7ecf0d1a6f040bbd105f2acec5bb7f",
-        "contentFingerprint": "80f28f43d2ed2f3809b30c246042ec61d884654742afa07ea81d42307e04b4a9"
+        "fingerprint": "499e7475b54e6511bcb9adaf0e993048449d73e01c17ab0d0379da4d293186c6",
+        "contentFingerprint": "12252e459cf4eb16898a399294489ae30e2589979638436a579c4caf3e253cfb"
       },
       {
         "slug": "docs/plugins/recipes/components.ja",
         "permalink": "/ja/docs/plugins/recipes/components",
-        "title": "UI コンポーネントを配布する",
+        "title": "Site コンポーネントを配布する",
         "visibility": "public",
-        "fingerprint": "b385c04e3a95ed1cbf36c65777af9b9604e590d643cd807092d07b8f1e82e713",
-        "contentFingerprint": "da7e41a0cbb541cf8b1677128ef05ffa5529861714f78dcce6d7da0dd0da0ac0"
+        "fingerprint": "4d5c7f4069188501fc04b39be210d24d1ffb83dda3d07371a606a7cd1b065a4d",
+        "contentFingerprint": "769c3e5da2141e99004d2c90e7adb7876a2ae4aef4bfe7e7341ed332b19b62a0"
       },
       {
         "slug": "docs/plugins/recipes/content-graph",
@@ -5274,16 +5274,16 @@
         "permalink": "/docs/plugins/recipes/",
         "title": "Plugin Recipes",
         "visibility": "public",
-        "fingerprint": "d5161ca57ee66a8178c1dfefabe9e450ca42f7a6d2eb70efa2d6a063978c2d88",
-        "contentFingerprint": "b9d6bd742503f204158cb557bddce269a9a2d93ce00ab6f4d35111862d08d73c"
+        "fingerprint": "cb406e0e1369004e416ab48ff37728fc4bd0f5465681d51158826b55cbcb0cca",
+        "contentFingerprint": "f455c41a12b472804eda871fc130a260700d66ae072ee58e564df2d1777a62b7"
       },
       {
         "slug": "docs/plugins/recipes/README.ja",
         "permalink": "/ja/docs/plugins/recipes/",
         "title": "プラグイン機能別レシピ",
         "visibility": "public",
-        "fingerprint": "348802eb51341df2624e53fc865f98951c35ce42dff39687ed6f2b4812b7795e",
-        "contentFingerprint": "30f0b9e6999f4930cdffc50977d3108009fe5b62d4cdc58f2ce7dea078c710b0"
+        "fingerprint": "9ad5b7e73e2f3ea18726604e5ad324079cde96729955bfddc615b8b6632549ad",
+        "contentFingerprint": "85745ef8662b7ac84383b4c1888a042eed08482ec45a7c8849a0098ba88156e4"
       },
       {
         "slug": "docs/plugins/recipes/renderers",
@@ -5866,16 +5866,16 @@
         "permalink": "/docs/plugins/writing-a-plugin",
         "title": "Writing Your First Plugin",
         "visibility": "public",
-        "fingerprint": "842702cd554d876a4d45b504882bb41f79bdfc7506cc58a674bebb631ac6a44d",
-        "contentFingerprint": "345529b582526c866ecb6dd081bbeb523c37d7814258fa0f17c30ec8de1983fa"
+        "fingerprint": "a43e74af60f1c5014691e20f864dcef89455cab7de2c92bc2e5085949d2ca1b9",
+        "contentFingerprint": "d75f1880f1e052af6488035ffcca3bd4a23452cf6c2349a0a8ec06bb3de3f0e5"
       },
       {
         "slug": "docs/plugins/writing-a-plugin.ja",
         "permalink": "/ja/docs/plugins/writing-a-plugin",
         "title": "はじめてのプラグイン作成",
         "visibility": "public",
-        "fingerprint": "2c1c7f6bbd5acb04ae6b85aa775045e2239e29b95f5fd7dd1a14c1d7fc32115b",
-        "contentFingerprint": "10d161a33fee5b18351e6e176e3c710591064f9ad45654dda81f5c49a4924af3"
+        "fingerprint": "627c2d4662c6ce1529dccaa29ef302906db660d15edb12c4658652d7f70651ed",
+        "contentFingerprint": "139c40565694190d64d1806ca902bdd9d3e2f6c802e8aa7b9d65f2c3dc3d5240"
       },
       {
         "slug": "docs/README",
@@ -6266,16 +6266,16 @@
         "permalink": "/docs/reference/plugin-api/basics",
         "title": "The basic contract",
         "visibility": "public",
-        "fingerprint": "94aebe953655a6c6b6fbdca5a5efc1d74d230bbc5e0fe9735697c9db217bc0b7",
-        "contentFingerprint": "2ce1e43ba3f07b11168196b034a67ce490707966984bd040129e92277de52e2a"
+        "fingerprint": "a66d2a0d13ad538a562f5f0a5f36657edb9a66f3e25635dbb67113409a6c08ea",
+        "contentFingerprint": "fede51dcbcb06d32ac5e96f1d8a31324d97b72540b7e0e88a4d8e0bc224b6b21"
       },
       {
         "slug": "docs/reference/plugin-api/basics.ja",
         "permalink": "/ja/docs/reference/plugin-api/basics",
         "title": "基本の契約",
         "visibility": "public",
-        "fingerprint": "265cfb140cc28fc6f494140263826d538bbbd85c34435a9967dabd3ec7de3227",
-        "contentFingerprint": "2a641dc9186f1a5ba73b298a48c84a44113ee70b05bd0769b18efba4f37c75d1"
+        "fingerprint": "e5d22ef61037ed9d7882bcdc4e1d9b7a6d521f0e3ce1f669f3131fe51fbdae63",
+        "contentFingerprint": "bc83265a964c40249a418d333dec7e6d9e9a1fc65329e8c80fc1cb48d892f319"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/reference/plugin-api/ui-and-assets",
         "title": "UI, assets, and runtime",
         "visibility": "public",
-        "fingerprint": "c4ba6a21fa5a5100bcb41ee293990ac1b58aeeb7a6a92f13b94a829a69d17542",
-        "contentFingerprint": "d65ba1a4da5dad24ad28f9c1817cf45b9ff2f3bfe9b3918b76399015081b019b"
+        "fingerprint": "44e488fd4ccb2fe17c8ae5122335d679d48d1553d26c6dfce340f0b6fdaa647c",
+        "contentFingerprint": "412ed073a79aabbc40df6715c68a6a68af59cf00966b8d3f840c9c57b86681a7"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets.ja",
         "permalink": "/ja/docs/reference/plugin-api/ui-and-assets",
         "title": "UI・アセット・実行時連携",
         "visibility": "public",
-        "fingerprint": "0d9c2a704ef31191e87c83da85220ce9f4f138b91a1a8fdb16340b034125bc80",
-        "contentFingerprint": "347fec7aeb5bf800c38c0f54d2ac6ec5b6db0818770402dcc8bead99c6af017d"
+        "fingerprint": "c440fd6fd71ec008ce80d1497c28928e059b6d864733738d39614713a5bcd416",
+        "contentFingerprint": "9ad3d9b5a288036864e2b35c2a44d65158de5fdeb6ba68224d8fb87e1459b41a"
       },
       {
         "slug": "docs/reference/preview",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "88f4fc982bf8aa3afda0a89c3e01b6d672a4597c37ce907984002538adbc89a6",
-        "contentFingerprint": "c1085bb30152463c0c7ff42154504d86e2a523ec2ffa303539a802097c6709f7"
+        "fingerprint": "7d396efa818ec4d6ea7bd93605801c1b8c340aedf65524f4c29f5adf7cb8f420",
+        "contentFingerprint": "ead4d4c504286683dc25a842be165de806ce142aa834a0a84496a075f25fe9ca"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "05d764a8eebd6f37f280f750eb2f67d9075006f40e467c01c2ee5e0cf7d707b2",
-        "contentFingerprint": "a39a23f78e85fc38057ebc746883e7df97f5471ec9fa54e383bbebe47a1877ec"
+        "fingerprint": "747e55307ab8ff437ddeeed6c7d856db3eb1e5c33e4d96dfb2aea6a84bd0365c",
+        "contentFingerprint": "f830451fc93e0eaf75e82e3eef8aca371b0b8d01134bfcf69a41c1a1a6b33152"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "228761527d528dd6807314f1ccbfc904540b76db1ebeae0d1e57ab4fde633eb1",
+    "artifactFingerprint": "7160dc56cf260d2fd859f11a4d23d7abb64dbd0a0f85cebda8694f8ca5082010",
     "provider": "cloudflare-workers"
   }
 }

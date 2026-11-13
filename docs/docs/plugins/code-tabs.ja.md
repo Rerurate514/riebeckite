@@ -68,7 +68,9 @@ const greeting = "Hello";
 
 - `codeTabs(options?)`：プラグインファクトリ
 - `rehypeCodeTabs(options?)`：rehype 変換
+- `codeTabsTransform`：HAST 変換
 - `initCodeTabs(options?)`：ブラウザ初期化関数
+- `remarkCodeMeta`：remark プラグイン
 - `CodeTabsOptions`、`CodeTabsClientOptions`：型
 
 ## 関連資料

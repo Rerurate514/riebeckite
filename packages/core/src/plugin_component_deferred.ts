@@ -1,22 +1,24 @@
 import { resolveContentAssetUrl } from "./content/markdown_image.js";
-import { preparePluginComponent } from "./plugin_component_render.js";
+import { prepareMarkdownComponent } from "./plugin_component_render.js";
 import type { ContentManifest } from "./types/content_manifest.js";
 import type { JsonValue } from "./types/json_value.js";
 import type {
-  PluginComponentResolveContext,
   PluginMarkdownComponent,
+  PluginMarkdownComponentResolveContext,
 } from "./types/plugin_component.js";
 
 const DEFERRED_PATTERN =
   /<div data-riebeckite-component="([^"]+)" data-riebeckite-component-props="([^"]+)" data-riebeckite-component-deferred="true"><\/div>/g;
 
-export async function finalizeDeferredPluginComponents(
+export async function finalizeDeferredMarkdownComponents(
   manifest: ContentManifest,
-  components: readonly PluginMarkdownComponent[],
-  diagnostics: NonNullable<PluginComponentResolveContext["diagnostics"]> = [],
+  markdownComponents: readonly PluginMarkdownComponent[],
+  diagnostics: NonNullable<
+    PluginMarkdownComponentResolveContext["diagnostics"]
+  > = [],
 ): Promise<void> {
   const registry = new Map(
-    components
+    markdownComponents
       .filter((component) => component.deferUntilManifest)
       .map((component) => [component.name, component]),
   );
@@ -49,7 +51,9 @@ async function renderDeferred(
   slug: string,
   manifest: ContentManifest,
   registry: ReadonlyMap<string, PluginMarkdownComponent>,
-  diagnostics: NonNullable<PluginComponentResolveContext["diagnostics"]>,
+  diagnostics: NonNullable<
+    PluginMarkdownComponentResolveContext["diagnostics"]
+  >,
 ): Promise<string> {
   const component = registry.get(name);
   if (!component) return "";
@@ -57,7 +61,7 @@ async function renderDeferred(
   const rawProps = JSON.parse(
     Buffer.from(encodedProps, "base64").toString("utf8"),
   ) as Record<string, JsonValue>;
-  const context: PluginComponentResolveContext = {
+  const context: PluginMarkdownComponentResolveContext = {
     sourceSlug: slug,
     manifest,
     diagnostics,
@@ -65,7 +69,11 @@ async function renderDeferred(
   };
 
   try {
-    const prepared = await preparePluginComponent(component, rawProps, context);
+    const prepared = await prepareMarkdownComponent(
+      component,
+      rawProps,
+      context,
+    );
     const attributes = [
       `data-riebeckite-component="${escapeHtml(prepared.name)}"`,
       `data-riebeckite-component-props="${escapeHtml(prepared.props)}"`,

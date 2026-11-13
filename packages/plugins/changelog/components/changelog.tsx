@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import type { NoteChangeHistory } from "../src/types.js";
 
 export type ChangelogProps = {
@@ -23,5 +23,5 @@ const Changelog = (({
       </ol>
     </section>
   );
-}) satisfies PluginComponent<ChangelogProps>;
+}) satisfies PluginSiteComponent<ChangelogProps>;
 export default Changelog;

@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { escapeScriptJson } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
@@ -38,6 +38,6 @@ const LocalGraph = (async (props: Readonly<LocalGraphProps>) => {
       />
     </>
   );
-}) satisfies PluginComponent<LocalGraphProps>;
+}) satisfies PluginSiteComponent<LocalGraphProps>;
 
 export default LocalGraph;

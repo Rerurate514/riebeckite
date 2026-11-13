@@ -101,7 +101,7 @@ describe("riebeckiteRuntimeModules", () => {
     assert.match(code, /renderContent/);
   });
 
-  it("registers plugin components with MDX content renderers", () => {
+  it("registers Markdown components with MDX content renderers", () => {
     const plugin = riebeckiteRuntimeModules(() => ({
       ...application,
       config: {
@@ -109,7 +109,7 @@ describe("riebeckiteRuntimeModules", () => {
         plugins: [
           {
             name: "components",
-            components: [
+            markdownComponents: [
               {
                 name: "Notice",
                 render: () => "<p>Notice</p>",
@@ -130,8 +130,8 @@ describe("riebeckiteRuntimeModules", () => {
 
     const code = load(`\0${riebeckiteContentRenderersModuleId}`);
     assert.ok(code);
-    assert.match(code, /preparePluginComponent/);
-    assert.match(code, /plugin\.components/);
+    assert.match(code, /prepareMarkdownComponent/);
+    assert.match(code, /plugin\.markdownComponents/);
     assert.match(code, /registeredComponents/);
     assert.match(code, /components: \{ \.\.\.registeredComponents/);
   });

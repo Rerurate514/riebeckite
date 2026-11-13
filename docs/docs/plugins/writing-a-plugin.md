@@ -637,14 +637,17 @@ Want to add UI or output?
 ├─ Add a standalone page
 │    └─ pageTypes
 │
-├─ Render interactive UI from Markdown
-│    └─ components
+├─ Render UI that content authors place in Markdown or MDX
+│    └─ markdownComponents
+│
+├─ Transform the sanitized document tree
+│    └─ hastTransforms
 │
 ├─ Appear in the article layout automatically
-│    └─ Data helper + JSX component
+│    └─ Data helper + PluginSiteComponent
 │
 ├─ Let the site author place it
-│    └─ Hono JSX component export
+│    └─ PluginSiteComponent export
 │
 └─ Enhance the page in the browser
      └─ clientEntries (plus a site-owned Island when needed)
@@ -662,11 +665,11 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [UI components](../reference/plugin-api/ui-and-assets.md#ui-components) for the helper and component contract.
+The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [Site components](../reference/plugin-api/ui-and-assets.md#site-components) for the helper and component contract.
 
-### Manual placement with a Hono JSX component
+### Manual placement with a PluginSiteComponent
 
-Export an ordinary Hono JSX component when the Site author should choose where the UI goes. The component is imported and composed like any other. This remains separate from `components`, which registers a Markdown-rendered UI with the Plugin; a component export lets the Site place its own instance in a page or layout.
+Export an ordinary Hono JSX component and type it as `PluginSiteComponent<Props>` when the Site author should choose where the UI goes. The component is imported and composed like any other. This remains separate from `markdownComponents`, which registers a Markdown-rendered UI with the Plugin; a site component export lets the Site place its own instance in a page or layout.
 
 Declare a `./components` subpath in the package `exports` and keep the component module's default export, then optionally re-export it by name from the package root. Existing Plugins follow this shape:
 
@@ -681,13 +684,15 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### A component or plain HTML?
 
-The deciding question is **who places it**. A JSX component lets the Site choose props, order, and position in its component tree. When a plugin already produces HTML (for example from a HAST transform), it can instead export a small string renderer for the Site to call. Either way, the plugin never injects markup into the manifest entry; the Site decides what to render and where.
+The deciding question is **who places it**. A `PluginSiteComponent` lets the Site choose props, order, and position in its JSX tree. When a plugin already produces HTML, it can instead export a small string renderer for the Site to call. HAST transforms are not a placement mechanism: they change sanitized document nodes, and their output is inserted into the article HTML rather than chosen by the Site. Either way, the plugin never injects markup into the manifest entry; the Site decides what to render and where.
 
 `backlinks` and `local-graph` export both a component and a data helper, and the reference site composes them in its article layout. That is a common pattern, not a requirement.
 
+A Plugin can combine a Markdown component with a HAST transform. The Markdown component produces sanitized HTML from a fence or MDX, and the HAST transform later groups that HTML by matching the resulting nodes. Keep the two contracts separate: the Markdown component owns content and props, while the HAST transform owns a post-sanitize document shape and has no client entry.
+
 ### Browser enhancement and Islands
 
-Plugins do not own `app/islands/`. For browser behavior, declare a `components` entry with a client module when the Plugin owns a self-contained UI that content authors place with a Markdown fence, or contribute a `clientEntries` initializer when the behavior enhances arbitrary server-rendered DOM. A Site can still wrap an exported Plugin component in its own HonoX Island. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Markdown components](../reference/plugin-api/ui-and-assets.md#markdown-components) and [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
+Plugins do not own `app/islands/`. For browser behavior, declare a `markdownComponents` entry with a client module when the Plugin owns a self-contained UI that content authors place with a Markdown fence, or contribute a `clientEntries` initializer when the behavior enhances arbitrary server-rendered DOM. A Site can still wrap an exported Plugin component in its own HonoX Island. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Markdown components](../reference/plugin-api/ui-and-assets.md#markdown-components) and [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
 
 ## Related
 

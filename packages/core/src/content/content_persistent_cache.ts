@@ -541,7 +541,8 @@ function canAffectProcessedContent(
       plugin.extendMarkdownPipeline ||
       plugin.extendHtmlPipeline ||
       plugin.renderers?.length ||
-      plugin.components?.length ||
+      plugin.markdownComponents?.length ||
+      plugin.hastTransforms?.length ||
       plugin.contentFormats?.length ||
       plugin.onContentLoaded ||
       plugin.onPostParsed ||

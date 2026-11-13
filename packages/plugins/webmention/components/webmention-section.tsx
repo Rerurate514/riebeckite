@@ -1,4 +1,4 @@
-import { type PluginComponent, resolvePlugins } from "@riebeckite/core";
+import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import type { WebmentionMention } from "../src/mention.js";
 import type { WebmentionProvider } from "../src/provider.js";
@@ -50,7 +50,7 @@ const WebmentionSection = (({
       </ul>
     </section>
   );
-}) satisfies PluginComponent<WebmentionSectionProps>;
+}) satisfies PluginSiteComponent<WebmentionSectionProps>;
 
 export default WebmentionSection;
 

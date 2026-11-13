@@ -4,7 +4,10 @@ import { assertGolden } from "@riebeckite/test";
 import { ContentManager, type ContentSource } from "../index.js";
 import { Pipeline } from "../src/pipeline.js";
 import { definePlugin, resolvePlugins } from "../src/types/plugin.js";
-import { definePluginComponent } from "../src/types/plugin_component.js";
+import {
+  defineHastTransform,
+  defineMarkdownComponent,
+} from "../src/types/plugin_component.js";
 
 const markdown = [
   "---",
@@ -68,7 +71,7 @@ test("leaves colon text intact without directive syntax", async () => {
 });
 
 test("renders registered plugin components from Markdown fences", async () => {
-  const component = definePluginComponent({
+  const component = defineMarkdownComponent({
     name: "notice",
     parseProps: (props) => {
       if (typeof props.message !== "string")
@@ -78,7 +81,9 @@ test("renders registered plugin components from Markdown fences", async () => {
     render: ({ message }) => `<strong>${message}</strong>`,
   });
   const { html } = await new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [definePlugin({ name: "notice", components: [component] })],
+    plugins: [
+      definePlugin({ name: "notice", markdownComponents: [component] }),
+    ],
   }).execute("```riebeckite-component notice\nmessage: Safe\n```");
 
   assert.match(html, /data-riebeckite-component="notice"/);
@@ -90,13 +95,15 @@ test("renders registered plugin components from Markdown fences", async () => {
 });
 
 test("escapes component props without breaking the attribute boundary", async () => {
-  const component = definePluginComponent({
+  const component = defineMarkdownComponent({
     name: "notice",
     render: () => "<p>Notice</p>",
   });
   const text = '"><img src=x onerror=alert(1)>';
   const { html } = await new Pipeline(new Map(), new Map(), undefined, {
-    plugins: [definePlugin({ name: "notice", components: [component] })],
+    plugins: [
+      definePlugin({ name: "notice", markdownComponents: [component] }),
+    ],
   }).execute(
     `\`\`\`riebeckite-component notice\ntext: ${JSON.stringify(text)}\n\`\`\``,
   );
@@ -113,16 +120,58 @@ test("escapes component props without breaking the attribute boundary", async ()
   assert.equal(JSON.parse(decoded).text, text);
 });
 
-test("rejects duplicate plugin component names", () => {
-  const component = definePluginComponent({ name: "notice", render: () => "" });
+test("rejects duplicate Markdown component names", () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    render: () => "",
+  });
 
   assert.throws(
     () =>
       resolvePlugins([
-        definePlugin({ name: "one", components: [component] }),
-        definePlugin({ name: "two", components: [component] }),
+        definePlugin({ name: "one", markdownComponents: [component] }),
+        definePlugin({ name: "two", markdownComponents: [component] }),
       ]),
-    /Plugin component "notice"/,
+    /Markdown component "notice"/,
+  );
+});
+
+test("rejects duplicate HAST transform names", () => {
+  const transform = defineHastTransform({
+    name: "notice",
+    match: () => false,
+    render: () => "",
+  });
+
+  assert.throws(
+    () =>
+      resolvePlugins([
+        definePlugin({ name: "one", hastTransforms: [transform] }),
+        definePlugin({ name: "two", hastTransforms: [transform] }),
+      ]),
+    /HAST transform "notice"/,
+  );
+});
+
+test("allows a Markdown component and a HAST transform to share a name", () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    render: () => "",
+  });
+  const transform = defineHastTransform({
+    name: "notice",
+    match: () => false,
+    render: () => "",
+  });
+
+  assert.doesNotThrow(() =>
+    resolvePlugins([
+      definePlugin({
+        name: "one",
+        markdownComponents: [component],
+        hastTransforms: [transform],
+      }),
+    ]),
   );
 });
 

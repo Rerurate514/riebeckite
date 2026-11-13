@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | Phase 0: presence selectors | PASS | 19 client entries gained selectors; the four global entries are allowlisted; `pnpm check:client-entries` passes |
 | Phase 1: resolved component props | PASS | `deferUntilManifest` finalizes props after manifest hooks with manifest/diagnostic context; `image-compare` is a deferred component |
-| Phase 2: HAST components | PASS | `code-tabs` renders its tab markup through `CodeTabsGroup`; the official browser suite exercises the result |
+| Phase 2: HAST transforms | PASS | `code-tabs` renders its tab markup through `CodeTabsGroup`; the official browser suite exercises the result |
 | Phase 3: app placement | PASS | `AppSlot` exposes `head`, `bodyStart`, `articleAfter`, and `app`; the website uses `bodyStart`, and the existing lifecycle keeps one mount per page |
 | Phase 4: shared external renderer lifecycle | PASS | Every external renderer now uses `renderPendingDiagrams`; Mermaid browser coverage passes |
 
@@ -28,15 +28,15 @@ No new fully declarative migration candidate was missed. The migration ledger is
 
 - `PluginMarkdownComponent` accepts `resolveProps(props, { sourceSlug, resolveAssetUrl, manifest, diagnostics })`.
 - `deferUntilManifest` emits a base64-encoded deferred marker instead of rendering during the Markdown pass. The encoded props avoid HTML attribute escaping changing the JSON.
-- `finalizeDeferredPluginComponents` runs after manifest hooks and before `synchronizeHtml`, decodes props, resolves them with the manifest context, and replaces the marker with the rendered component.
-- Component errors use `renderError` when defined, so `image-compare` keeps its accessible error block and `image-compare-invalid` diagnostics.
+- `finalizeDeferredMarkdownComponents` runs after manifest hooks and before `synchronizeHtml`, decodes props, resolves them with the manifest context, and replaces the marker with the rendered component.
+- Markdown component errors use `renderError` when defined, so `image-compare` keeps its accessible error block and `image-compare-invalid` diagnostics.
 - `image-compare` now registers the deferred `ImageCompare` component and no longer uses the `onManifestCreated` placeholder replacement. Its pointer/range controller remains.
 - Core tests cover manifest context, diagnostics, and deferred rendering; image-compare's manifest handling tests pass unchanged.
 
 ## Phase 2
 
-- `packages/core/src/plugin_component_hast.ts` registers `hastComponents` and `defineHastComponent`.
-- HAST components run after the sanitizers and after plugin Rehype plugins, so they can consume generated UI while still receiving sanitized nodes.
+- `packages/core/src/plugin_hast_transform.ts` registers `hastTransforms` and `defineHastTransform`.
+- HAST transforms run after the sanitizers and after plugin Rehype plugins, so they can consume generated UI while still receiving sanitized nodes. They have no client entry or hydration.
 - `code-tabs` registers `CodeTabs` and renders the tablist, panels, ARIA state, and labels through `CodeTabsGroup` with Hono JSX. The Rehype phase only groups the code blocks and provides the data.
 - The package test builds a manifest with two tabbed fences and checks the rendered structure and code content. The official browser suite checks tab switching and panel visibility.
 
@@ -59,7 +59,7 @@ No new fully declarative migration candidate was missed. The migration ledger is
 - The repository still contains 85 plugin directories and 32 plugins with `createClientEntry`.
 - `pnpm check:client-entries` passes, so every non-global client entry is gated.
 - Main added content-mutation and derived-view changes only; no plugin UI changed.
-- The migration ledger now records 1 A, 17 B, 15 C, and 52 D. `image-compare` is VERIFIED in B, and `code-tabs` moved from C to B because it renders through a HAST component.
+- The migration ledger now records 1 A, 17 B, 15 C, and 52 D. `image-compare` is VERIFIED in B, and `code-tabs` moved from C to B because it renders through a HAST transform.
 - B records keep declarative markup and browser effects separate.
 - No assertions were deleted or weakened. The Mermaid browser expectation now also asserts the shared `data-diagram-status="rendered"` state. The Excalidraw browser test covers the public docs embed instead of the intentionally private `/assets/HW` route; standalone rendering remains covered by the Excalidraw page tests.
 

@@ -26,7 +26,7 @@ import {
 } from "../src/observability.js";
 import type { RiebeckitePlugin } from "../src/types/plugin.js";
 import { definePlugin } from "../src/types/plugin.js";
-import { definePluginComponent } from "../src/types/plugin_component.js";
+import { defineMarkdownComponent } from "../src/types/plugin_component.js";
 import {
   contentTestConfig,
   memoryContentSource,
@@ -600,8 +600,8 @@ test("isPersistentlyCacheable treats Markdown components as processed content tr
   const config = contentTestConfig(TEST_CACHE_DIR, [
     {
       name: "component-transformer",
-      components: [
-        definePluginComponent({
+      markdownComponents: [
+        defineMarkdownComponent({
           name: "notice",
           render: () => "<p>Notice</p>",
         }),

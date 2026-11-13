@@ -1,5 +1,5 @@
 import type {
-  PluginComponent,
+  PluginSiteComponent,
   PublicContentEntry,
   PublicContentView,
 } from "@riebeckite/core";
@@ -67,7 +67,7 @@ const DocsSidebar = (async (props: Readonly<DocsSidebarProps>) => {
   ) : (
     sidebar
   );
-}) satisfies PluginComponent<DocsSidebarProps>;
+}) satisfies PluginSiteComponent<DocsSidebarProps>;
 
 function toNavigationItems(
   items: readonly DocsNavigationItem[],

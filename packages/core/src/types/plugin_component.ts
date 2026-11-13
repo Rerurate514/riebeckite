@@ -6,14 +6,14 @@ export type PluginDataHelper<Input, Model> = (
   input: Readonly<Input>,
 ) => Model | Promise<Model>;
 
-export type PluginComponent<Props> = (props: Readonly<Props>) => unknown;
+export type PluginSiteComponent<Props> = (props: Readonly<Props>) => unknown;
 
-export type PluginComponentClient = {
+export type PluginMarkdownComponentClient = {
   moduleSpecifier: string;
   exportName?: string;
 };
 
-export type PluginComponentResolveContext = {
+export type PluginMarkdownComponentResolveContext = {
   readonly sourceSlug?: string;
   readonly manifest?: ContentManifest;
   readonly diagnostics?: Diagnostic[];
@@ -30,14 +30,14 @@ export type PluginMarkdownComponent<
   parseProps?(props: Record<string, JsonValue>): Props;
   resolveProps?(
     props: Readonly<Props>,
-    context: PluginComponentResolveContext,
+    context: PluginMarkdownComponentResolveContext,
   ): Props | Promise<Props>;
   deferUntilManifest?: boolean;
   renderError?(
     error: unknown,
     props: Readonly<Props>,
   ): string | Promise<string>;
-  client?: PluginComponentClient;
+  client?: PluginMarkdownComponentClient;
 };
 
 export type PluginHastNode = {
@@ -49,7 +49,7 @@ export type PluginHastNode = {
   [key: string]: unknown;
 };
 
-export type PluginHastComponent = {
+export type PluginHastTransform = {
   name: string;
   match(node: PluginHastNode): boolean;
   render(
@@ -58,19 +58,18 @@ export type PluginHastComponent = {
       readonly html: string;
       readonly children: string;
     },
-    context: PluginComponentResolveContext,
+    context: PluginMarkdownComponentResolveContext,
   ): string | Promise<string>;
-  client?: PluginComponentClient;
 };
 
-export function defineHastComponent(
-  component: PluginHastComponent,
-): PluginHastComponent {
-  return component;
+export function defineHastTransform(
+  transform: PluginHastTransform,
+): PluginHastTransform {
+  return transform;
 }
 
-export function definePluginComponent<Props extends Record<string, JsonValue>>(
-  component: PluginMarkdownComponent<Props>,
-): PluginMarkdownComponent<Props> {
+export function defineMarkdownComponent<
+  Props extends Record<string, JsonValue>,
+>(component: PluginMarkdownComponent<Props>): PluginMarkdownComponent<Props> {
   return component;
 }

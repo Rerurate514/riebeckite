@@ -79,7 +79,7 @@ export function example(options: ExampleOptions = {}) {
   API lifecycle         `apiLifecycle`
    Rendering             `renderers`
    Pages                 `pageTypes`
-  Markdown UI           `components`
+  Markdown UI           `markdownComponents`
   Browser integration   `assets`, `clientEntries`
   HTTP integration      `endpoints`
   SEO                   `seo`

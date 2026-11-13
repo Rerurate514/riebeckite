@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import type { LocalizedContent } from "../src/l10n.js";
 import { getLocalization } from "../src/l10n.js";
@@ -40,6 +40,6 @@ const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
       </ul>
     </nav>
   );
-}) satisfies PluginComponent<LanguageSwitcherProps>;
+}) satisfies PluginSiteComponent<LanguageSwitcherProps>;
 
 export default LanguageSwitcher;

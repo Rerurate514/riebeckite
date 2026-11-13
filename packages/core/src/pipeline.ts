@@ -56,8 +56,8 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
-import { renderHastComponents } from "./plugin_component_hast.js";
-import { renderPluginComponents } from "./plugin_component_markdown.js";
+import { renderMarkdownComponents } from "./plugin_component_markdown.js";
+import { renderHastTransforms } from "./plugin_hast_transform.js";
 import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
 import { resolvePlugins } from "./types/plugin.js";
@@ -410,10 +410,12 @@ export class Pipeline {
           ? resolveContentAssetUrl(input, context.sourceSlug)
           : null,
     };
-    const components = plugins.flatMap((plugin) => plugin.components ?? []);
-    if (components.length > 0) {
+    const markdownComponents = plugins.flatMap(
+      (plugin) => plugin.markdownComponents ?? [],
+    );
+    if (markdownComponents.length > 0) {
       this.use(processor, () =>
-        renderPluginComponents(components, componentContext),
+        renderMarkdownComponents(markdownComponents, componentContext),
       );
     }
 
@@ -446,12 +448,12 @@ export class Pipeline {
       });
     }
 
-    const hastComponents = plugins.flatMap(
-      (plugin) => plugin.hastComponents ?? [],
+    const hastTransforms = plugins.flatMap(
+      (plugin) => plugin.hastTransforms ?? [],
     );
-    if (hastComponents.length > 0) {
+    if (hastTransforms.length > 0) {
       this.use(processor, () =>
-        renderHastComponents(hastComponents, componentContext),
+        renderHastTransforms(hastTransforms, componentContext),
       );
     }
 

@@ -45,7 +45,7 @@ export function imageCompare(options: ImageCompareOptions = {}) {
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkImageCompare, { language: resolved.language });
     },
-    components: [imageCompareComponent],
+    markdownComponents: [imageCompareComponent],
     assets: [
       createStyleAsset(
         IMAGE_COMPARE_PLUGIN_NAME,

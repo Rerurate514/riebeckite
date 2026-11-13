@@ -30,8 +30,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Add a generic Content Format contract so plugins can contribute extensions, content processing, renderer modules, and tracked file dependencies, and add `@riebeckite/plugin-mdx` for trusted MDX pages whose JSX, expressions, ESM imports, and local components render through the Hono JSX runtime in development SSR and production SSG. Bare imports from content outside the site directory resolve against the site, and MDX file additions and removals reload the development server. Asset inspection, the Content Graph, and content queries read the active content formats, and MDX pages expose a static syntax-tree projection to search, excerpts, and headings that keeps Markdown structure while excluding frontmatter, ESM declarations, expressions, and JSX attributes.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/ui`, `@riebeckite/plugin-mdx`, `create-riebeckite`
 
-- Add declarative Plugin components that render from Markdown fences and MDX JSX through one registry, with server rendering, JSON-safe props, lazy client hydration, SPA-safe lifecycle cleanup, and automatic MDX integration. Code-enhance's copy button uses the new API, and the starter scaffold includes Markdown and MDX component examples.
+- Add declarative Markdown components (`markdownComponents`) that render from Markdown fences and MDX JSX through one registry, with server rendering, JSON-safe props, lazy client hydration, SPA-safe lifecycle cleanup, and automatic MDX integration. Code-enhance's copy button uses the new API, and the starter scaffold includes Markdown and MDX component examples.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-code-enhance`, `create-riebeckite`
+
+- Text attachments such as `.txt`, `.log`, and `.json` are embedded as an escaped code block preview with the file name, format, size, and download link below it. The new `preview` option selects which extensions preview, and files over 256 KiB, binary files, and invalid UTF-8 keep the existing attachment card.
+  Packages: `@riebeckite/plugin-attachment`
 
 ### Changed
 
@@ -42,6 +45,28 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - **Breaking:** Remove the duplicate UX TOC scroll spy so `@riebeckite/plugin-toc` is the sole owner of TOC active state.
   Packages: `@riebeckite/plugin-ux`
   Migration: Remove `tocScrollSpy` from `ux()`. Use `toc()` and `TableOfContents` for TOC scroll tracking.
+
+- **Breaking:** Separate the three plugin extension mechanisms by responsibility. `PluginSiteComponent` is a JSX component the site places, `markdownComponents` renders HTML from Markdown fences and MDX with optional client hydration, and `hastTransforms` transforms sanitized document nodes without a client entry. Duplicate names are checked separately for Markdown components and HAST transforms, so both may use the same name. The diff plugin renders its history, viewer, panel, and lines with Hono JSX while keeping the existing string-returning public functions as boundaries.
+
+  | Old | New |
+  | --- | --- |
+  | `PluginComponent` | `PluginSiteComponent` |
+  | `definePluginComponent` | `defineMarkdownComponent` |
+  | `PluginComponentClient` | `PluginMarkdownComponentClient` |
+  | `PluginComponentResolveContext` | `PluginMarkdownComponentResolveContext` |
+  | `components` | `markdownComponents` |
+  | `PluginHastComponent` | `PluginHastTransform` |
+  | `defineHastComponent` | `defineHastTransform` |
+  | `hastComponents` | `hastTransforms` |
+  | `preparePluginComponent` | `prepareMarkdownComponent` |
+  | `PreparedPluginComponent` | `PreparedMarkdownComponent` |
+  | `renderPluginComponents` | `renderMarkdownComponents` |
+  | `renderHastComponents` | `renderHastTransforms` |
+  | `replaceHastComponents` | `replaceHastTransforms` |
+  | `finalizeDeferredPluginComponents` | `finalizeDeferredMarkdownComponents` |
+  | `codeTabsHastComponent` | `codeTabsTransform` |
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-diff`, `@riebeckite/plugin-docs`, `@riebeckite/plugin-image-compare`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-series`, `@riebeckite/plugin-share`, `@riebeckite/plugin-webmention`
+  Migration: Replace PluginComponent with PluginSiteComponent and definePluginComponent with defineMarkdownComponent. Rename the plugin manifest field components to markdownComponents, and hastComponents to hastTransforms. Replace PluginHastComponent with PluginHastTransform and defineHastComponent with defineHastTransform. HAST transforms no longer accept a client entry. The public names preparePluginComponent, PreparedPluginComponent, renderPluginComponents, renderHastComponents, replaceHastComponents, and finalizeDeferredPluginComponents are renamed to their Markdown/HAST-specific equivalents. The code-tabs export codeTabsHastComponent is now codeTabsTransform.
 
 ### Fixed
 
@@ -62,6 +87,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - MDX content now produces correctly decoded plain text for search, excerpts, and headings, and the doctor no longer reports components imported by MDX as unused assets. Incremental SSG keeps navigation and recent-post projections reusable when only an MDX body changes, while still regenerating them when projected entries change. Link updates, provenance, source lookups, and the development inspector resolve non-Markdown content formats through the shared content format registry, and standalone SSG no longer loads its bundle twice when renderer chunks import it.
   Packages: `@riebeckite/core`, `@riebeckite/cli`, `@riebeckite/node`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/plugin-mdx`, `@riebeckite/plugin-search`
+
+- Initialize the table of contents from the document so the docs rail outside `#main-content` tracks scrolling again. The active state also rebinds after SPA navigation replaces the TOC region.
+  Packages: `@riebeckite/plugin-toc`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.46...HEAD
 

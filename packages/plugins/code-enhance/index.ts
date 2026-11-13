@@ -1,8 +1,8 @@
 import {
   createClientEntry,
   createStyleAsset,
+  defineMarkdownComponent,
   definePlugin,
-  definePluginComponent,
 } from "@riebeckite/core";
 import type { CodeCopyProps } from "./src/copy_component.js";
 import { renderCodeCopy } from "./src/copy_component.js";
@@ -37,8 +37,8 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     extendHtmlPipeline: (pipeline) => {
       pipeline.use(rehypeCodeEnhance, options);
     },
-    components: [
-      definePluginComponent({
+    markdownComponents: [
+      defineMarkdownComponent({
         name: "CodeCopy",
         parseProps(props) {
           if (typeof props.text !== "string") {

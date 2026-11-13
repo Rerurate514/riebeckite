@@ -1176,12 +1176,17 @@
       "type": false
     },
     {
-      "name": "definePlugin",
+      "name": "defineHastTransform",
       "value": true,
       "type": false
     },
     {
-      "name": "definePluginComponent",
+      "name": "defineMarkdownComponent",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "definePlugin",
       "value": true,
       "type": false
     },
@@ -1392,6 +1397,11 @@
     },
     {
       "name": "extractMarkdownLinkUrls",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "finalizeDeferredMarkdownComponents",
       "value": true,
       "type": false
     },
@@ -2091,16 +2101,6 @@
       "type": true
     },
     {
-      "name": "PluginComponent",
-      "value": false,
-      "type": true
-    },
-    {
-      "name": "PluginComponentClient",
-      "value": false,
-      "type": true
-    },
-    {
       "name": "PluginContentContext",
       "value": false,
       "type": true
@@ -2221,6 +2221,16 @@
       "type": true
     },
     {
+      "name": "PluginHastNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHastTransform",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginHeadTag",
       "value": false,
       "type": true
@@ -2262,6 +2272,16 @@
     },
     {
       "name": "PluginMarkdownComponent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginMarkdownComponentClient",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginMarkdownComponentResolveContext",
       "value": false,
       "type": true
     },
@@ -2341,6 +2361,11 @@
       "type": true
     },
     {
+      "name": "PluginSiteComponent",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PostContent",
       "value": false,
       "type": true
@@ -2351,7 +2376,7 @@
       "type": true
     },
     {
-      "name": "preparePluginComponent",
+      "name": "prepareMarkdownComponent",
       "value": true,
       "type": false
     },

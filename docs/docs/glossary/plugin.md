@@ -51,7 +51,7 @@ The `getResolvedPluginMetadata` utility exposes each plugin's resolved provides/
 
 ## Assets, components, and client entries
 
-CSS is declared through `assets`. A self-contained Markdown UI is declared through `components`, with a `client` module when it needs browser state. Arbitrary browser initialization is declared through `clientEntries`. Only declare browser JavaScript when genuinely needed.
+CSS is declared through `assets`. A self-contained Markdown UI is declared through `markdownComponents`, with a `client` module when it needs browser state. Arbitrary browser initialization is declared through `clientEntries`. Only declare browser JavaScript when genuinely needed.
 
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],

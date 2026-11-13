@@ -1,13 +1,13 @@
 ---
 date: 2026-10-16
-title: Plugin UI component
+title: Plugin site component
 sidebar:
   hidden: true
 ---
 
-# Plugin UI component
+# Plugin site component
 
-Plugins expose server-rendered Hono JSX components and data helpers, plus CSS and optional client runtime. The Site decides where to render them. A data helper is a narrow, server-safe query returning an immutable model; a component accepts typed props and returns rendered JSX. The Site composes components in its own TSX, choosing whether, where, and how often to render each one.
+Plugins expose server-rendered Hono JSX components typed as `PluginSiteComponent<Props>` and data helpers, plus CSS and optional client runtime. The Site decides where to render them. A data helper is a narrow, server-safe query returning an immutable model; a component accepts typed props and returns rendered JSX. The Site composes components in its own TSX, choosing whether, where, and how often to render each one.
 
 Each data helper receives a `PublicContentView` (or similar filtered facade) and returns a typed model. The component is rendered directly by the Site's article layout or page template, giving the Site control over placement, ordering, and conditional rendering while plugins own their model, internals, assets, and client-entry registration.
 

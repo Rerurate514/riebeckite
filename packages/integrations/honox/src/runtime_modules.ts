@@ -71,17 +71,17 @@ function createContentRenderersModule(
         `{ extension: ${JSON.stringify(format.extension)}, renderer: renderer${index}, options: formats[${formats.indexOf(format)}]?.rendererOptions }`,
     )
     .join(",\n");
-  return `import { preparePluginComponent } from "@riebeckite/core";
+  return `import { prepareMarkdownComponent } from "@riebeckite/core";
 import { jsx } from "hono/jsx/jsx-runtime";
 import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
 ${imports}
 const formats = config.plugins.flatMap((plugin) => plugin.contentFormats ?? []);
 const renderers = [${entries}];
-const pluginComponents = config.plugins.flatMap((plugin) => plugin.components ?? []);
+const markdownComponents = config.plugins.flatMap((plugin) => plugin.markdownComponents ?? []);
 
-function createPluginComponent(component) {
+function createMarkdownComponent(component) {
   return async (props) => {
-    const prepared = await preparePluginComponent(
+    const prepared = await prepareMarkdownComponent(
       component,
       props && typeof props === "object" ? props : {},
     );
@@ -95,7 +95,7 @@ function createPluginComponent(component) {
 }
 
 const registeredComponents = Object.fromEntries(
-  pluginComponents.map((component) => [component.name, createPluginComponent(component)]),
+  markdownComponents.map((component) => [component.name, createMarkdownComponent(component)]),
 );
 
 export function renderContent(sourcePath) {

@@ -146,7 +146,7 @@ export function renderPluginFiles(
   if (features.includes("components")) {
     files.set(
       "component.tsx",
-      `import type { PluginComponent } from "@riebeckite/core";\n\nexport type ${toIdentifier(pluginName)}Props = { readonly label: string };\n\nexport const ${toIdentifier(pluginName)}Component: PluginComponent<${toIdentifier(pluginName)}Props> = ({ label }) => label;\n`,
+      `import type { PluginSiteComponent } from "@riebeckite/core";\n\nexport type ${toIdentifier(pluginName)}Props = { readonly label: string };\n\nexport const ${toIdentifier(pluginName)}Component: PluginSiteComponent<${toIdentifier(pluginName)}Props> = ({ label }) => label;\n`,
     );
   }
   if (tests)

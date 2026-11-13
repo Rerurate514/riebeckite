@@ -5,8 +5,8 @@ import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
 import { definePlugin } from "../src/types/plugin.js";
 import {
-  defineHastComponent,
-  definePluginComponent,
+  defineHastTransform,
+  defineMarkdownComponent,
   type PluginMarkdownComponent,
 } from "../src/types/plugin_component.js";
 
@@ -21,7 +21,7 @@ function memorySource(files: Record<string, string>): ContentSource {
   };
 }
 
-const assetProbe = definePluginComponent<{ src: string; slug?: string }>({
+const assetProbe = defineMarkdownComponent<{ src: string; slug?: string }>({
   name: "AssetProbe",
   parseProps: (props) => ({ src: String(props.src ?? "") }),
   resolveProps: (props, context) => {
@@ -46,7 +46,7 @@ src: ./image.png
 test("plugin component resolveProps receives the source slug and asset resolver", async () => {
   const plugin = definePlugin({
     name: "asset-probe",
-    components: [assetProbe] as readonly PluginMarkdownComponent[],
+    markdownComponents: [assetProbe] as readonly PluginMarkdownComponent[],
   });
   const manager = new ContentManager(
     memorySource({ "posts/demo.md": fixture }),
@@ -71,7 +71,7 @@ test("plugin component resolveProps receives the source slug and asset resolver"
 test("plugin component resolveProps failures surface as pipeline errors", async () => {
   const plugin = definePlugin({
     name: "asset-probe",
-    components: [assetProbe] as readonly PluginMarkdownComponent[],
+    markdownComponents: [assetProbe] as readonly PluginMarkdownComponent[],
   });
   const manager = new ContentManager(
     memorySource({
@@ -92,8 +92,8 @@ test("plugin component resolveProps failures surface as pipeline errors", async 
   );
 });
 
-test("HAST components wrap sanitized nodes and receive serialized children", async () => {
-  const section = defineHastComponent({
+test("HAST transforms wrap sanitized nodes and receive serialized children", async () => {
+  const section = defineHastTransform({
     name: "SectionWrap",
     match: (node) => node.tagName === "h2",
     render: ({ children }) =>
@@ -101,7 +101,7 @@ test("HAST components wrap sanitized nodes and receive serialized children", asy
   });
   const plugin = definePlugin({
     name: "hast-probe",
-    hastComponents: [section],
+    hastTransforms: [section],
   });
   const manager = new ContentManager(
     memorySource({
@@ -139,7 +139,7 @@ title: Demo
   assert.doesNotMatch(html, /onclick/);
 });
 
-const deferredProbe = definePluginComponent<{ src: string; slug?: string }>({
+const deferredProbe = defineMarkdownComponent<{ src: string; slug?: string }>({
   name: "DeferredProbe",
   deferUntilManifest: true,
   parseProps: (props) => ({ src: String(props.src ?? "") }),
@@ -160,10 +160,10 @@ const deferredProbe = definePluginComponent<{ src: string; slug?: string }>({
   renderError: (error) => `<span data-deferred-error>${String(error)}</span>`,
 });
 
-test("deferred plugin components resolve after the manifest is available", async () => {
+test("deferred Markdown components resolve after the manifest is available", async () => {
   const plugin = definePlugin({
     name: "deferred-probe",
-    components: [deferredProbe] as readonly PluginMarkdownComponent[],
+    markdownComponents: [deferredProbe] as readonly PluginMarkdownComponent[],
   });
   const manager = new ContentManager(
     memorySource({

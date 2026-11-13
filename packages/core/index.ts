@@ -484,8 +484,8 @@ export {
   stableStringify,
 } from "./src/plugin/plugin_memo.js";
 export { PluginRuntime } from "./src/plugin/plugin_runtime.js";
-export { finalizeDeferredPluginComponents } from "./src/plugin_component_deferred.js";
-export { preparePluginComponent } from "./src/plugin_component_render.js";
+export { finalizeDeferredMarkdownComponents } from "./src/plugin_component_deferred.js";
+export { prepareMarkdownComponent } from "./src/plugin_component_render.js";
 export {
   resolveBuildOutputDirectory,
   resolveManagedStateRoot,
@@ -698,17 +698,17 @@ export {
   serializePublicClientConfig,
 } from "./src/types/plugin_asset.js";
 export type {
-  PluginComponent,
-  PluginComponentClient,
-  PluginComponentResolveContext,
   PluginDataHelper,
-  PluginHastComponent,
   PluginHastNode,
+  PluginHastTransform,
   PluginMarkdownComponent,
+  PluginMarkdownComponentClient,
+  PluginMarkdownComponentResolveContext,
+  PluginSiteComponent,
 } from "./src/types/plugin_component.js";
 export {
-  defineHastComponent,
-  definePluginComponent,
+  defineHastTransform,
+  defineMarkdownComponent,
 } from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,

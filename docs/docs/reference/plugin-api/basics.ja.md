@@ -80,7 +80,7 @@ export function example(
 | API ライフサイクル | `apiLifecycle` |
 | 埋め込み表示 | `renderers` |
 | 独立ページ | `pageTypes` |
-| Markdown UI | `components` |
+| Markdown UI | `markdownComponents` |
 | ブラウザ | `assets`, `clientEntries` |
 | HTTP | `endpoints` |
 | SEO | `seo` |

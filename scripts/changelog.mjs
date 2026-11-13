@@ -353,7 +353,7 @@ function renderEntry(entry) {
 
   lines.push(`- ${breakingPrefix}${bodyLines[0]}`);
   for (const line of bodyLines.slice(1)) {
-    lines.push(`  ${line}`);
+    lines.push(line === "" ? "" : `  ${line.trimEnd()}`);
   }
 
   if (entry.packages.length > 0) {

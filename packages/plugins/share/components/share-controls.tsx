@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { getShareLinks } from "../src/data.js";
@@ -71,7 +71,7 @@ const ShareControls = (async (props: Readonly<ShareControlsProps>) => {
       <p class="rr-share__status" role="status" aria-live="polite" />
     </nav>
   );
-}) satisfies PluginComponent<ShareControlsProps>;
+}) satisfies PluginSiteComponent<ShareControlsProps>;
 
 export default ShareControls;
 

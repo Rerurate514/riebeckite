@@ -1,11 +1,11 @@
 import type { Node } from "unist";
 import { parse } from "yaml";
-import { preparePluginComponent } from "./plugin_component_render.js";
+import { prepareMarkdownComponent } from "./plugin_component_render.js";
 import type { JsonValue } from "./types/json_value.js";
 import { serializePublicClientConfig } from "./types/plugin_asset.js";
 import type {
-  PluginComponentResolveContext,
   PluginMarkdownComponent,
+  PluginMarkdownComponentResolveContext,
 } from "./types/plugin_component.js";
 
 type MarkdownNode = Node & {
@@ -16,39 +16,41 @@ type MarkdownNode = Node & {
   children?: MarkdownNode[];
 };
 
-export function renderPluginComponents(
-  components: readonly PluginMarkdownComponent[],
-  context?: PluginComponentResolveContext,
+export function renderMarkdownComponents(
+  markdownComponents: readonly PluginMarkdownComponent[],
+  context?: PluginMarkdownComponentResolveContext,
 ) {
   const registry = new Map(
-    components.map((component) => [component.name, component]),
+    markdownComponents.map((component) => [component.name, component]),
   );
   return async (tree: Node) => {
-    await replaceComponents(tree as MarkdownNode, registry, context);
+    await replaceMarkdownComponents(tree as MarkdownNode, registry, context);
   };
 }
 
-async function replaceComponents(
+async function replaceMarkdownComponents(
   node: MarkdownNode,
   registry: ReadonlyMap<string, PluginMarkdownComponent>,
-  context?: PluginComponentResolveContext,
+  context?: PluginMarkdownComponentResolveContext,
 ): Promise<void> {
   if (!node.children) return;
   for (const [index, child] of node.children.entries()) {
-    if (child.type === "code") {
-    }
     if (child.type === "code" && child.lang === "riebeckite-component") {
-      node.children[index] = await renderComponent(child, registry, context);
+      node.children[index] = await renderMarkdownComponent(
+        child,
+        registry,
+        context,
+      );
       continue;
     }
-    await replaceComponents(child, registry, context);
+    await replaceMarkdownComponents(child, registry, context);
   }
 }
 
-async function renderComponent(
+async function renderMarkdownComponent(
   node: MarkdownNode,
   registry: ReadonlyMap<string, PluginMarkdownComponent>,
-  context?: PluginComponentResolveContext,
+  context?: PluginMarkdownComponentResolveContext,
 ): Promise<MarkdownNode> {
   const name = node.meta?.trim();
   if (!name || /\s/.test(name)) {
@@ -77,7 +79,7 @@ async function renderComponent(
       value: `<div ${attributes.join(" ")}></div>`,
     };
   }
-  const prepared = await preparePluginComponent(component, props, context);
+  const prepared = await prepareMarkdownComponent(component, props, context);
   const attributes = [
     `data-riebeckite-component="${escapeHtml(prepared.name)}"`,
     `data-riebeckite-component-props="${escapeHtml(prepared.props)}"`,

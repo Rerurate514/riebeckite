@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html, raw } from "hono/html";
 import { getProperties } from "../src/component-data.js";
@@ -44,7 +44,7 @@ const Properties = (({
         : data.className,
     }),
   );
-}) satisfies PluginComponent<PropertiesProps>;
+}) satisfies PluginSiteComponent<PropertiesProps>;
 
 export default Properties;
 

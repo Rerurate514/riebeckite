@@ -43,7 +43,7 @@ Some plugin components resolve the current page data themselves. Inside
 context, so the Site can render them without passing data explicitly. Explicit
 props always override the context.
 
-See [UI components](../../reference/plugin-api/ui-and-assets.md#ui-components) and
+See [Site components](../../reference/plugin-api/ui-and-assets.md#site-components) and
 [Providing UI or output](../../plugins/writing-a-plugin.md#providing-ui-or-output).
 
 ## Building interactive UI

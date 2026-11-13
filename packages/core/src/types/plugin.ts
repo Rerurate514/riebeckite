@@ -25,7 +25,7 @@ import type {
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
-  PluginHastComponent,
+  PluginHastTransform,
   PluginMarkdownComponent,
 } from "./plugin_component.js";
 import type {
@@ -172,8 +172,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   inspectGeneratedHtml?: PluginGeneratedHtmlInspector;
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
-  components?: readonly PluginMarkdownComponent[];
-  hastComponents?: readonly PluginHastComponent[];
+  markdownComponents?: readonly PluginMarkdownComponent[];
+  hastTransforms?: readonly PluginHastTransform[];
   endpoints?: PluginEndpoint[];
   inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
@@ -275,27 +275,47 @@ export function resolvePlugins(
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   assertUniquePluginNames(orderedPlugins);
-  assertUniquePluginComponentNames(orderedPlugins);
+  assertUniqueMarkdownComponentNames(orderedPlugins);
+  assertUniqueHastTransformNames(orderedPlugins);
 
   return resolvePluginDependencies(orderedPlugins);
 }
 
-function assertUniquePluginComponentNames(
+function assertUniqueMarkdownComponentNames(
   plugins: readonly RiebeckitePlugin[],
+): void {
+  assertUniqueNames(
+    plugins,
+    (plugin) => plugin.markdownComponents ?? [],
+    "Markdown component",
+  );
+}
+
+function assertUniqueHastTransformNames(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  assertUniqueNames(
+    plugins,
+    (plugin) => plugin.hastTransforms ?? [],
+    "HAST transform",
+  );
+}
+
+function assertUniqueNames(
+  plugins: readonly RiebeckitePlugin[],
+  select: (plugin: RiebeckitePlugin) => readonly { name: string }[],
+  label: string,
 ): void {
   const owners = new Map<string, string>();
   for (const plugin of plugins) {
-    for (const component of [
-      ...(plugin.components ?? []),
-      ...(plugin.hastComponents ?? []),
-    ]) {
-      const previous = owners.get(component.name);
+    for (const item of select(plugin)) {
+      const previous = owners.get(item.name);
       if (previous !== undefined) {
         throw new Error(
-          `Plugin component "${component.name}" is provided by both "${previous}" and "${plugin.name}".`,
+          `${label} "${item.name}" is provided by both "${previous}" and "${plugin.name}".`,
         );
       }
-      owners.set(component.name, plugin.name);
+      owners.set(item.name, plugin.name);
     }
   }
 }

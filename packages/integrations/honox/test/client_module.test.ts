@@ -104,7 +104,7 @@ test("client module lazily hydrates registered interactive components", async ()
     plugins: [
       {
         name: "fixture",
-        components: [
+        markdownComponents: [
           {
             name: "counter",
             render: () => "",
@@ -130,7 +130,7 @@ test("client module passes an empty runtime list to interactive component hydrat
     plugins: [
       {
         name: "fixture",
-        components: [
+        markdownComponents: [
           {
             name: "counter",
             render: () => "",
@@ -155,7 +155,7 @@ test("client module passes an empty runtime list to interactive component hydrat
 
   assert.match(
     module as string,
-    /mountPluginClientInitializer\("page", "plugin-components", root, undefined, \[\], async \(context\) => \{/,
+    /mountPluginClientInitializer\("page", "plugin-markdown-components", root, undefined, \[\], async \(context\) => \{/,
   );
 });
 

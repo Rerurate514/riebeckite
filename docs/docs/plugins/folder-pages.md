@@ -92,6 +92,10 @@ Generated Folder Pages use the theme's article width by default. Set
 the note title stays on the left and its date and/or tags are placed on the
 right of the listing row.
 
+`exclude` uses logical content slugs, not display labels or glob patterns. For
+example, `exclude: ["Config"]` omits `Config` and `Config/internal` while
+leaving their published URLs unchanged.
+
 ## Plugin dependencies
 
 The plugin declares an optional dependency on the `content.localization`

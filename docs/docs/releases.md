@@ -18,6 +18,15 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ### Added
 
+- Add `@riebeckite/plugin-reactions` and `@riebeckite/plugin-comments`, two new
+  plugins that bring Zenn/Qiita-style engagement to published notes. Reactions
+  renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts, and Comments
+  renders comment threads. Both are backed by pluggable providers with in-memory
+  defaults, plus production adapters: Cloudflare D1
+  (`@riebeckite/reactions-cloudflare`, `@riebeckite/comments-cloudflare`) and
+  GitHub Discussions (`@riebeckite/reactions-github`, `@riebeckite/comments-github`).
+  Packages: `@riebeckite/plugin-reactions`, `@riebeckite/plugin-comments`, `@riebeckite/reactions-cloudflare`, `@riebeckite/comments-cloudflare`, `@riebeckite/reactions-github`, `@riebeckite/comments-github`
+
 - Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
   Packages: `@riebeckite/plugin-navigation`
   ADR: https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261111-100000-navigation-exclude-73be42.md

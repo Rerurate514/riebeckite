@@ -1,0 +1,82 @@
+/*
+ * @riebeckite/plugin-comments
+ *
+ * Comment list. Plugin CSS loads before theme CSS, so a theme can restyle the
+ * stable `rr-comments` hooks without editing the plugin.
+ */
+
+.rr-comments {
+  --rr-comments-ink: var(--rb-color-ink, inherit);
+  --rr-comments-muted: var(--rb-color-muted, #5a5a5a);
+  --rr-comments-rule: color-mix(
+    in srgb,
+    var(--rr-comments-ink) 18%,
+    transparent
+  );
+
+  margin-block: 2rem;
+  color: var(--rr-comments-ink);
+}
+
+.rr-comments__heading {
+  margin-block: 0 1rem;
+  font-size: 1.25rem;
+}
+
+.rr-comments__list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rr-comments__item {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rr-comments-rule);
+  border-radius: 0.5rem;
+}
+
+.rr-comments__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-end: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--rr-comments-muted);
+}
+
+.rr-comments__avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+}
+
+.rr-comments__author-link,
+.rr-comments__author-name {
+  font-weight: 600;
+  color: var(--rr-comments-ink);
+  text-decoration: none;
+}
+
+.rr-comments__author-link:hover {
+  text-decoration: underline;
+}
+
+.rr-comments__time {
+  margin-inline-start: auto;
+}
+
+.rr-comments__body {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.rr-comments__body-link {
+  color: inherit;
+}
+
+.rr-comments__empty {
+  color: var(--rr-comments-muted);
+  font-style: italic;
+}

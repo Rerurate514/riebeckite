@@ -16,8 +16,12 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
+  "packages/integrations/comments-cloudflare",
+  "packages/integrations/comments-github",
   "packages/integrations/honox",
   "packages/dev-inspector",
+  "packages/integrations/reactions-cloudflare",
+  "packages/integrations/reactions-github",
   "packages/integrations/webmention-cloudflare",
   "packages/plugins/alias",
   "packages/plugins/analytics",
@@ -37,6 +41,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/code-enhance",
   "packages/plugins/code-tabs",
   "packages/plugins/color-mode",
+  "packages/plugins/comments",
   "packages/plugins/d2",
   "packages/plugins/daily-notes",
   "packages/plugins/dataview",
@@ -82,6 +87,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/qr-code",
   "packages/plugins/quality",
   "packages/plugins/query",
+  "packages/plugins/reactions",
   "packages/plugins/recent-posts",
   "packages/plugins/related-posts",
   "packages/plugins/rename",
@@ -220,6 +226,22 @@ const packagePublishingMetadata = {
       "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
   },
+  "packages/integrations/comments-cloudflare": {
+    description: "Cloudflare D1 runtime for Riebeckite comments.",
+    keywords: ["riebeckite", "comments", "cloudflare", "d1"],
+  },
+  "packages/integrations/comments-github": {
+    description: "GitHub Discussions runtime for Riebeckite comments.",
+    keywords: ["riebeckite", "comments", "github", "discussions", "giscus"],
+  },
+  "packages/integrations/reactions-cloudflare": {
+    description: "Cloudflare D1 runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "cloudflare", "d1"],
+  },
+  "packages/integrations/reactions-github": {
+    description: "GitHub Discussions runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "github", "discussions"],
+  },
   "packages/integrations/webmention-cloudflare": {
     description:
       "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
@@ -301,6 +323,11 @@ const packagePublishingMetadata = {
   "packages/plugins/color-mode": {
     description: "Light / dark / system color-mode switching for Riebeckite.",
     keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
+  },
+  "packages/plugins/comments": {
+    description:
+      "Comment threads for Riebeckite pages, backed by a pluggable provider.",
+    keywords: ["riebeckite", "plugin", "comments", "discussion"],
   },
   "packages/plugins/d2": {
     description: "D2 diagram rendering for Riebeckite code blocks.",
@@ -489,6 +516,11 @@ const packagePublishingMetadata = {
   "packages/plugins/query": {
     description: "Build-time content queries for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "query", "markdown"],
+  },
+  "packages/plugins/reactions": {
+    description:
+      "Emoji reactions for Riebeckite pages, backed by a pluggable provider.",
+    keywords: ["riebeckite", "plugin", "reactions", "emoji"],
   },
   "packages/plugins/recent-posts": {
     description: "Recent posts lists for Riebeckite sites.",
@@ -851,6 +883,36 @@ export function expectedPackageMetadata(directory) {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (
+    directory === "packages/integrations/reactions-cloudflare" ||
+    directory === "packages/integrations/comments-cloudflare"
+  ) {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
+  if (
+    directory === "packages/integrations/reactions-github" ||
+    directory === "packages/integrations/comments-github"
+  ) {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "dist"],
       scripts: {
         build: "node ../../../scripts/build_package.mjs",
         test: 'node --import tsx --test "test/*.test.ts"',

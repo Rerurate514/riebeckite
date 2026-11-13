@@ -69,6 +69,9 @@ export default defineConfig({
 `exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
 `exclude: ["Config"]` は `Config` と `Config/internal` をすべての taxonomy 投影から除外しますが、公開 URL はそのままです。
 
+`exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
+`exclude: ["Config"]` は `Config` と `Config/internal` をすべての taxonomy 投影から除外しますが、公開 URL はそのままです。
+
 ## データエンドポイント
 
 プラグインは JSON エンドポイントを 1 つ登録します（エンドポイントの取り決めは HonoX 連携が接続するため、プラグイン自身はフレームワークのルーティングを持ちません）。

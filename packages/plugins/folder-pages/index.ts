@@ -1,6 +1,7 @@
 import {
   type ConfigValidationIssue,
   type ContentManifest,
+  createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
 import {
@@ -48,6 +49,12 @@ export function folderPages(options: FolderPagesOptions = {}) {
     provides: ["content.folder-pages"],
     options,
     optional: ["content.localization"],
+    assets: [
+      createStyleAsset(
+        FOLDER_PAGES_PLUGIN_NAME,
+        "@riebeckite/plugin-folder-pages/style.css",
+      ),
+    ],
     validateOptions: validateFolderPagesOptions,
     extendContentLocations: ({ locations }) => {
       collapseFolderEntryLocations(locations);
@@ -85,6 +92,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
           const rendered = renderFolderPage(page, resolved);
           return {
             type: "folder-page",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -97,6 +105,7 @@ export function folderPages(options: FolderPagesOptions = {}) {
           const rendered = renderFolderPage(page, resolved);
           return {
             type: "folder-page",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -113,6 +122,13 @@ function validateFolderPagesOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   for (const key of ["className", "pagesLabel", "foldersLabel"] as const) {
     const value = options[key];
     if (
@@ -120,6 +136,11 @@ function validateFolderPagesOptions(
       (typeof value !== "string" || value.trim() === "")
     ) {
       issues.push({ path: key, message: "Expected a non-empty string." });
+    }
+  }
+  for (const key of ["showDate", "showTags"] as const) {
+    if (options[key] !== undefined && typeof options[key] !== "boolean") {
+      issues.push({ path: key, message: "Expected a boolean." });
     }
   }
   if (!Array.isArray(options.exclude)) {

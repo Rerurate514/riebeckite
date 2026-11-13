@@ -14,6 +14,7 @@ type ContentLocationResolverDependencies = {
   readonly getContentIndex: () => Promise<Map<string, string>>;
   readonly pluginRuntime: PluginRuntime;
   readonly observability: Observability;
+  readonly toSlug: (path: string) => string | undefined;
 };
 
 export class ContentLocationResolver {
@@ -52,15 +53,15 @@ export class ContentLocationResolver {
       this.dependencies.getContentIndex(),
     ]);
     await this.dependencies.pluginRuntime.startBuild(contentIndex);
-    const inputs = await mapConcurrent(
-      entries.filter((entry) => entry.path.endsWith(".md")),
-      64,
-      async (entry) => ({
-        slug: toSlug(entry.path),
-        path: entry.path,
-        markdown: await this.dependencies.readEntry(entry),
-      }),
-    );
+    const contentEntries = entries.flatMap((entry) => {
+      const slug = this.dependencies.toSlug(entry.path);
+      return slug === undefined ? [] : [{ entry, slug }];
+    });
+    const inputs = await mapConcurrent(contentEntries, 64, async (item) => ({
+      slug: item.slug,
+      path: item.entry.path,
+      markdown: await this.dependencies.readEntry(item.entry),
+    }));
     const locations = new Map(
       inputs.map((input) => [input.slug, resolveDefaultContentLocation(input)]),
     );
@@ -116,8 +117,4 @@ export class ContentLocationResolver {
       }
     }
   }
-}
-
-function toSlug(path: string): string {
-  return path.replace(/\.md$/, "");
 }

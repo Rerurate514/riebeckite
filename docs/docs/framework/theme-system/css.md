@@ -12,7 +12,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers stable CSS
 
 ## 3-5. stylesheets
 
-`stylesheets` loads last (top of the cascade) and is the final override. It is for sites that want to tweak one thing without forking the theme. [[glossary/theme|Theme]] stylesheets load before `stylesheets`, so `stylesheets` wins. A theme package should not rely on stronger selectors or heavy use of `!important` to beat `stylesheets`.
+`stylesheets` loads after the application stylesheet and is intended for small final adjustments without forking a [[glossary/theme|Theme]]. Its unlayered normal declarations beat framework, plugin, and theme normal declarations, regardless of selector specificity. It does not override inline configuration tokens, `!important`, animations, or transitions.
 
 ```ts
 theme: defaultTheme({
@@ -45,12 +45,12 @@ Framework CSS owns the reset and base contracts. Site CSS owns page structure an
 A theme is not limited to tokens. Within the theme boundary it may style the
 stable hooks directly to give a site a visual character.
 
-- Put token definitions inside `@layer base`; put visual character rules
-  **unlayered**. Some built-in plugin CSS is layered (`@layer components` or
-  `@layer utilities`) and some is unlayered; unlayered theme rules win over both
-  without `!important`. Generated app styles load after theme CSS, so a site rule
-  of equal specificity can override a theme rule; keep theme selectors specific
-  enough or make site overrides intentional. Never use `!important`.
+- Put token definitions inside `@layer base`; keep visual character rules as
+  normal theme rules. The generated theme entry places the complete theme in
+  `rb-theme`, so internal layers become nested (for example,
+  `rb-theme.base`) and do not collide with Tailwind's `base` layer. Theme normal
+  declarations beat plugin normal declarations, while unlayered site normal
+  declarations beat both regardless of specificity. Never use `!important`.
 - Target only stable hooks: `.rb-site`, `.rb-article`, `.rb-article-layout`,
   `.rb-article-header`, `.rb-article-body`, `.rb-article-content`,
   `.rb-article-meta`, `.rb-article-footer`, `.rb-sidebar`, and the `rr-*` plugin
@@ -62,7 +62,7 @@ stable hooks directly to give a site a visual character.
   figures, definitions, inline code, and preformatted blocks). A theme styles
   the appearance of that baseline through `--rb-*` tokens and character rules;
   it does not need to re-declare the structure. The baseline is layered, so a
-  theme's unlayered character rules and utility classes both win over it.
+  theme character rules and utility classes both win over it.
 - `.rb-article-body` is the article body shell that hosts the header, metadata,
   rendered Markdown, and plugin components. It carries no Markdown typography itself,
   so plugin components keep their own headings wherever they are placed.
@@ -86,7 +86,7 @@ styles/
   }
 }
 
-/* Character rules are unlayered, so they beat plugin CSS. */
+/* Character rules are in rb-theme, so they beat plugin CSS. */
 :is(:root, .rb-theme-root)[data-rb-theme="example"] .rb-article-header {
   border-bottom: var(--rb-rule-width) solid var(--rb-color-border);
 }
@@ -104,20 +104,37 @@ structure, or behavior.
 
 ## 6. CSS cascade
 
-Load order is a key convention for presentation extensions.
+For same-origin normal declarations, Riebeckite establishes this cascade-layer
+contract:
 
 ```text
-framework structural CSS
-→ Plugin default CSS
-→ Theme CSS
-→ app / site structural CSS
+base
+→ components
+→ utilities
+→ rb-plugins
+→ rb-theme
+→ unlayered site CSS
 ```
 
-Config token inline styles and `stylesheets` come later as overrides.
+Framework structural CSS uses `base` and `components`; plugins are imported into
+`rb-plugins`; themes are imported into `rb-theme`; ordinary site CSS is
+unlayered. A plugin's own `@layer utilities` therefore becomes
+`rb-plugins.utilities`, and a theme's `@layer base` becomes `rb-theme.base`.
+Theme CSS can customize plugin appearance without entering Tailwind's global
+layers. Site CSS can override framework, plugin, and theme normal declarations
+without matching their selector specificity.
 
-This order matches the imports in generated `app/style.css`, and is a convention used by `@riebeckite/honox`, not an absolute guarantee. The generated stylesheets note their cascade position in header comments, but the actual import order in the application determines the effective cascade. `stylesheets` is intended as the final override — ideal for small site-specific tweaks.
+Keep the generated imports in their documented order. The framework stylesheet
+declares the layer order, so reordering the generated imports cannot change the
+normal-declaration contract. A site rule intentionally put in a named layer gets
+that layer's priority, not the unlayered-site guarantee.
 
-Do not reorder these imports or edit the generated files. Each generated file notes its cascade position in a header comment. The cascade usually does not depend on `!important`.
+This contract only covers same-origin normal declarations. `!important` reverses
+layer order; inline styles have their own author-origin precedence; animations
+beat normal declarations; transitions beat important declarations. Custom
+properties follow the same cascade and inherit, so inline configuration tokens
+override stylesheet token definitions. Do not edit generated files or use
+`!important` to bypass the contract.
 
 ## Troubleshooting: the theme is not applied
 
@@ -134,7 +151,7 @@ flowchart TD
     Hook -->|No| FixHook["Check rb-* / rr-*"]
     Hook -->|Yes| Cascade{"Is the cascade correct?"}
 
-    Cascade -->|No| FixCascade["Check Plugin → Theme → stylesheets"]
+    Cascade -->|No| FixCascade["Check layer placement and site CSS"]
     Cascade -->|Yes| Mode{"Is the color mode condition correct?"}
 
     Mode -->|No| FixMode["Check data-rb-mode / system"]
@@ -145,6 +162,6 @@ In particular, verify:
 
 1. `data-rb-theme` matches the theme's `name`.
 2. You target the correct `.rb-*` / `.rr-*` stable hook.
-3. The order is Plugin CSS → Theme CSS → `stylesheets`.
+3. The generated plugin and theme imports retain `layer(rb-plugins)` and `layer(rb-theme)`.
 4. `data-rb-mode=""` is not left behind when using `system`.
 5. The selector does not leak outside the theme root.

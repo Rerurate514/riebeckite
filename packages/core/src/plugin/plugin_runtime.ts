@@ -129,7 +129,10 @@ export class PluginRuntime {
           const target = this.contentIndex.get(dependency.id.toLowerCase());
           if (target === undefined) return undefined;
           const fingerprint = this.derivedFiles.get(
-            normalizeDerivedPath(`${target}.md`),
+            normalizeDerivedPath(
+              this.derivedManifest?.bySlug.get(target)?.sourcePath ??
+                `${target}.md`,
+            ),
           );
           return fingerprint === undefined
             ? undefined
@@ -203,6 +206,14 @@ export class PluginRuntime {
 
   getPluginMetadata(): readonly ResolvedPluginMetadata[] {
     return getResolvedPluginMetadata(this.plugins());
+  }
+
+  getMarkdownComponents() {
+    return this.plugins().flatMap((plugin) => plugin.markdownComponents ?? []);
+  }
+
+  getHastTransforms() {
+    return this.plugins().flatMap((plugin) => plugin.hastTransforms ?? []);
   }
 
   getPluginInventory(): readonly ResolvedPluginMetadata[] {

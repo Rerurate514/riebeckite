@@ -8,6 +8,7 @@ export function resolveArchiveOptions(
   options: ArchiveOptions = {},
 ): ResolvedArchiveOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     basePath: normalizeBasePath(options.basePath ?? DEFAULT_ARCHIVE_BASE_PATH),
     pageSize: normalizePageSize(options.pageSize ?? DEFAULT_ARCHIVE_PAGE_SIZE),
     locale: options.locale?.trim() ? options.locale.trim() : null,

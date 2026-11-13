@@ -12,6 +12,8 @@ export class ContentEntryReader {
   constructor(
     private readonly source: ContentSource,
     private readonly observability: Observability,
+    private readonly isContentPath: (path: string) => boolean = (path) =>
+      path.toLowerCase().endsWith(".md"),
   ) {}
 
   async getEntries(): Promise<readonly ContentSourceEntry[]> {
@@ -48,19 +50,19 @@ export class ContentEntryReader {
 
     const content = this.observability.tracer.span(
       "content.read",
-      { extension: entry.path.endsWith(".md") ? "markdown" : "asset" },
+      { extension: this.isContentPath(entry.path) ? "content" : "asset" },
       async () => {
         const value = await this.source.read(entry);
         const text =
           typeof value === "string" ? value : textDecoder.decode(value);
         this.observability.tracer.event("content.read.bytes", {
           bytes: Buffer.byteLength(text, "utf8"),
-          extension: entry.path.endsWith(".md") ? "markdown" : "asset",
+          extension: this.isContentPath(entry.path) ? "content" : "asset",
         });
         return text;
       },
     );
-    const retain = entry.path.endsWith(".md");
+    const retain = this.isContentPath(entry.path);
     const tracked = retain
       ? content
       : content.finally(() => this.texts.delete(entry.path));

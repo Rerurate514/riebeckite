@@ -62,11 +62,11 @@ export function hoverPreview(options: HoverPreviewOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "hover-preview",
-        "@riebeckite/plugin-hover-preview/client",
-        "initHoverPreview",
-      ),
+      createClientEntry("hover-preview", {
+        moduleSpecifier: "@riebeckite/plugin-hover-preview/client",
+        exportName: "initHoverPreview",
+        presenceSelector: "script[data-rb-hover-preview]",
+      }),
     ],
   });
 }

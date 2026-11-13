@@ -92,6 +92,9 @@ Start from the page closest to your goal.
 | Review the security and trust model | [Security](./docs/security.md) |
 | Review the security hardening audit | [Security hardening audit](./audits/security-hardening-2026-11.md) |
 | Review the final release audit | [Final release audit](./audits/final-release-audit-2026-11-08/report.md) |
+| Track the declarative UI migration | [Declarative UI migration ledger](./audits/declarative-ui-migration-2026-11/plan.md) |
+| Track the declarative UI architecture work | [Declarative UI architecture ledger](./audits/declarative-ui-architecture-2026-11/implementation-ledger.md) |
+| Review the declarative UI architecture work | [Declarative UI architecture implementation audit](./audits/declarative-ui-architecture-2026-11/implementation.md) |
 | Look up configuration, CLI, or public APIs | [Reference](./docs/reference/README.md) |
 | Understand Riebeckite's internals | [Framework](./docs/framework/README.md) |
 | Develop Riebeckite itself | [Framework Development](./docs/framework/development.md) |

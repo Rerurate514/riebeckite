@@ -16,6 +16,7 @@ export function resolveTaxonomyOptions(
   options: TaxonomyOptions = {},
 ): ResolvedTaxonomyOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     exclude: options.exclude ?? [],
     tags: options.tags ?? true,
     folders: options.folders ?? true,

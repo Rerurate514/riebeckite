@@ -22,6 +22,8 @@ RIEBECKITE_EXTERNAL_NOTE_MARKER
 
 Some body text to give the table of contents something to find.
 
+See the [[mdx-demo]] page for MDX content.
+
 ## A cardlink
 
 ```cardlink

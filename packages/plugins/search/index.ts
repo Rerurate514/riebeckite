@@ -31,14 +31,14 @@ export function search() {
     name: "search",
     assets: [createStyleAsset("search", "@riebeckite/plugin-search/style.css")],
     clientEntries: [
-      createClientEntry(
-        "search",
-        "@riebeckite/plugin-search/client",
-        "initSearch",
-        undefined,
-        "page",
-        "context",
-      ),
+      createClientEntry("search", {
+        moduleSpecifier: "@riebeckite/plugin-search/client",
+        exportName: "initSearch",
+        scope: "page",
+        initializerArguments: "context",
+        presenceSelector: "[data-search-root]",
+        root: "document",
+      }),
     ],
     endpoints: [
       defineEndpoint(

@@ -1,16 +1,21 @@
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin } from "vite";
 import type { ResolvedHonoxApplication } from "./vite_runner.js";
 
 export const riebeckiteConfigModuleId = "virtual:riebeckite/config";
 export const riebeckiteContentModuleId = "virtual:riebeckite/content";
+export const riebeckiteContentRenderersModuleId =
+  "virtual:riebeckite/content-renderers";
 
 const runtimeModuleIds = [
   riebeckiteConfigModuleId,
   riebeckiteContentModuleId,
+  riebeckiteContentRenderersModuleId,
 ] as const;
 
 const resolvedConfigModuleId = `\0${riebeckiteConfigModuleId}`;
 const resolvedContentModuleId = `\0${riebeckiteContentModuleId}`;
+const resolvedContentRenderersModuleId = `\0${riebeckiteContentRenderersModuleId}`;
 
 /**
  * Provides the framework-owned bootstrap modules a generated site imports
@@ -29,6 +34,8 @@ export function riebeckiteRuntimeModules(
     resolveId(id) {
       if (id === riebeckiteConfigModuleId) return resolvedConfigModuleId;
       if (id === riebeckiteContentModuleId) return resolvedContentModuleId;
+      if (id === riebeckiteContentRenderersModuleId)
+        return resolvedContentRenderersModuleId;
       return null;
     },
     load(id) {
@@ -38,9 +45,69 @@ export function riebeckiteRuntimeModules(
       }
       if (id === resolvedContentModuleId)
         return createContentModule(development);
+      if (id === resolvedContentRenderersModuleId)
+        return createContentRenderersModule(getApplication().config);
       return null;
     },
   };
+}
+
+function createContentRenderersModule(
+  config: ResolvedRiebeckiteConfig,
+): string {
+  const formats = config.plugins.flatMap(
+    (plugin) => plugin.contentFormats ?? [],
+  );
+  const renderers = formats.filter((format) => format.rendererModule);
+  const imports = renderers
+    .map(
+      (format, index) =>
+        `import renderer${index} from ${JSON.stringify(format.rendererModule)};`,
+    )
+    .join("\n");
+  const entries = renderers
+    .map(
+      (format, index) =>
+        `{ extension: ${JSON.stringify(format.extension)}, renderer: renderer${index}, options: formats[${formats.indexOf(format)}]?.rendererOptions }`,
+    )
+    .join(",\n");
+  return `import { prepareMarkdownComponent } from "@riebeckite/core";
+import { jsx } from "hono/jsx/jsx-runtime";
+import { config } from ${JSON.stringify(riebeckiteConfigModuleId)};
+${imports}
+const formats = config.plugins.flatMap((plugin) => plugin.contentFormats ?? []);
+const renderers = [${entries}];
+const markdownComponents = config.plugins.flatMap((plugin) => plugin.markdownComponents ?? []);
+
+function createMarkdownComponent(component) {
+  return async (props) => {
+    const prepared = await prepareMarkdownComponent(
+      component,
+      props && typeof props === "object" ? props : {},
+    );
+    return jsx("div", {
+      "data-riebeckite-component": prepared.name,
+      "data-riebeckite-component-props": prepared.props,
+      ...(prepared.interactive ? { "data-riebeckite-component-interactive": "true" } : {}),
+      dangerouslySetInnerHTML: { __html: prepared.content },
+    });
+  };
+}
+
+const registeredComponents = Object.fromEntries(
+  markdownComponents.map((component) => [component.name, createMarkdownComponent(component)]),
+);
+
+export function renderContent(sourcePath) {
+  const entry = renderers.find((renderer) => sourcePath.toLowerCase().endsWith(renderer.extension));
+  if (!entry) return undefined;
+  const options = entry.options && typeof entry.options === "object" ? entry.options : {};
+  return entry.renderer(sourcePath, {
+    ...options,
+    components: { ...registeredComponents, ...(options.components ?? {}) },
+  });
+}
+`;
 }
 
 export function isRiebeckiteRuntimeModuleId(

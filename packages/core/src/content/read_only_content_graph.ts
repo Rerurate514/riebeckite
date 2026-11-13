@@ -2,6 +2,10 @@ import type {
   ContentManifestEntry,
   ContentPublicLocation,
 } from "../types/content_manifest.js";
+import {
+  type ContentPathResolver,
+  markdownPathResolver,
+} from "./affected_content.js";
 import type { ContentGraph } from "./content_graph.js";
 import { ContentIndexBuilder } from "./content_index_builder.js";
 import { extractContentLinks } from "./content_links.js";
@@ -12,21 +16,28 @@ import { resolvePublishingState } from "./publishing.js";
 export async function readOnlyContentGraph(
   source: ContentSource,
   locations: ReadonlyMap<string, ContentPublicLocation>,
+  pathResolver: ContentPathResolver = markdownPathResolver,
 ): Promise<ContentGraph> {
   const entries = await source.scan();
   const { index: contentIndex, ambiguities: contentIndexAmbiguities } =
-    await new ContentIndexBuilder(source).build(entries);
-  const markdownEntries = entries
-    .filter((entry) => entry.path.endsWith(".md"))
+    await new ContentIndexBuilder(
+      source,
+      (path) => pathResolver.isContentPath(path),
+      (path) => pathResolver.toSlug(path),
+    ).build(entries);
+  const contentEntries = entries
+    .filter((entry) => pathResolver.isContentPath(entry.path))
     .toSorted((left, right) => left.path.localeCompare(right.path));
-  const markdownContents = await Promise.all(
-    markdownEntries.map(async (entry) => ({
+  const contentSources = await Promise.all(
+    contentEntries.map(async (entry) => ({
       entry,
       markdown: await readText(source, entry),
     })),
   );
-  const graphEntries = markdownContents.map(({ entry, markdown }) =>
-    createGraphEntry(entry, markdown, contentIndex, locations),
+  const graphEntries = contentSources.map(({ entry, markdown }) =>
+    createGraphEntry(entry, markdown, contentIndex, locations, (path) =>
+      pathResolver.toSlug(path),
+    ),
   );
 
   return new ManifestBuilder().build(
@@ -41,8 +52,12 @@ function createGraphEntry(
   markdown: string,
   contentIndex: Map<string, string>,
   locations: ReadonlyMap<string, ContentPublicLocation>,
+  toSlug: (path: string) => string | undefined,
 ): ContentManifestEntry {
-  const slug = entry.path.replace(/\.md$/, "");
+  const slug = toSlug(entry.path);
+  if (slug === undefined) {
+    throw new Error(`Content path does not resolve to a slug: ${entry.path}`);
+  }
   const location = locations.get(slug);
   if (!location) {
     throw new Error(`Content public location was not resolved: ${slug}`);
@@ -62,8 +77,9 @@ function createGraphEntry(
       },
     ),
     html: "",
+    sourcePath: entry.path,
     tags: [],
-    links: extractContentLinks(markdown, contentIndex),
+    links: extractContentLinks(markdown, contentIndex, undefined, entry.path),
     backlinks: [],
     assets: [],
   };

@@ -1,3 +1,6 @@
+---
+title: Media
+---
 # Media
 
 ## 音声と動画：[`media`](../media.ja.md)

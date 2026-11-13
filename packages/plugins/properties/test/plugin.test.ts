@@ -5,7 +5,10 @@ import type {
   ContentManifestEntry,
   Diagnostic,
 } from "@riebeckite/core";
-import { createPublicContentView } from "@riebeckite/core";
+import {
+  createContentManifest,
+  createPublicContentView,
+} from "@riebeckite/core";
 import { ArticleProvider, SiteProvider } from "@riebeckite/ui";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
@@ -37,12 +40,7 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    entries,
-    publicEntries: entries,
-    bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries, publicEntries: entries });
 }
 
 async function runHook(

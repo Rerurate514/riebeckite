@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { getDocsNavigation, getDocsPrevNext } from "../src/data.js";
@@ -66,7 +66,7 @@ const DocsPrevNext = (async (props: Readonly<DocsPrevNextProps>) => {
       ) : null}
     </nav>
   );
-}) satisfies PluginComponent<DocsPrevNextProps>;
+}) satisfies PluginSiteComponent<DocsPrevNextProps>;
 
 export default DocsPrevNext;
 

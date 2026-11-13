@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   type ContentManifestEntry,
+  createInvalid,
   type PostContent,
   type ResolvedRiebeckiteConfig,
   resolveConfig,
@@ -64,7 +65,11 @@ test("getDescription strips markup, collapses whitespace, and truncates", () => 
     getDescription(
       post({}, "<p>Hello <strong>world</strong> &amp; friends</p>"),
     ),
-    "Hello world &amp; friends",
+    "Hello world & friends",
+  );
+  assert.equal(
+    getDescription(post({}, "<p>A &#x3C;b> &amp; c</p>")),
+    "A <b> & c",
   );
 
   const long = getDescription(post({}, `<p>${"a".repeat(200)}</p>`));
@@ -82,11 +87,18 @@ test("filterFeedEntries drops noindex entries and sorts discoverable input by re
     }),
     entry("d", { frontmatter: { publish: true, noindex: true } }),
     entry("e", { frontmatter: { publish: true, published: "2024-01-04" } }),
+    entry("f", {
+      frontmatter: createInvalid<PostContent["frontmatter"]>({
+        publish: true,
+        published: true,
+        date: "2024-01-06",
+      }),
+    }),
   ];
 
   assert.deepEqual(
     filterFeedEntries(config, entries).map((item) => item.slug),
-    ["b", "e", "a"],
+    ["f", "b", "e", "a"],
   );
 });
 
@@ -125,7 +137,7 @@ test("getEntryPublishedTime returns null for missing or invalid dates", () => {
         frontmatter: { published: "nope", date: "2024-01-01" },
       }),
     ),
-    null,
+    "2024-01-01T00:00:00.000Z",
   );
 });
 
@@ -144,7 +156,18 @@ test("getEntryUpdatedTime falls back to the published time", () => {
     ),
     "2024-01-01T00:00:00.000Z",
   );
-  assert.equal(getEntryUpdatedTime(entry("c")), null);
+  assert.equal(
+    getEntryUpdatedTime(
+      entry("c", {
+        frontmatter: createInvalid<PostContent["frontmatter"]>({
+          published: true,
+          date: "2024-01-02",
+        }),
+      }),
+    ),
+    "2024-01-02T00:00:00.000Z",
+  );
+  assert.equal(getEntryUpdatedTime(entry("d")), null);
 });
 
 test("getHtmlLanguage converts locale underscores to hyphens", () => {

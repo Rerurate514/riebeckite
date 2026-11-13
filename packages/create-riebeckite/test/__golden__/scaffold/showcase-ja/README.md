@@ -73,7 +73,7 @@ Riebeckite の Plugin エコシステムを実際に確認できる機能紹介�
 | `@riebeckite/plugin-local-graph` | `localGraph` | — |
 | `@riebeckite/plugin-hover-preview` | `hoverPreview` | `{ delay: 120, excerptLength: 160, selector: 'a[href^="/"]', includeTitles: true }` |
 | `@riebeckite/plugin-garden-explorer` | `gardenExplorer` | — |
-| `@riebeckite/plugin-ux` | `ux` | `{ progress: true, backToTop: true, tocScrollSpy: true }` |
+| `@riebeckite/plugin-ux` | `ux` | `{ progress: true, backToTop: true }` |
 | `@riebeckite/plugin-daily-notes` | `dailyNotes` | `{ source: { directory: "Daily", pathPattern: "Daily/{YYYY}-{MM}-{DD}" }, extract: { frontmatter: "daily-summary", codeBlock: "daily-snippet" }, widget: { limit: 5 } }` |
 | `@riebeckite/plugin-rename` | `rename` | `{ enabled: true, status: 308, onUnexpectedRemoval: "warning" }` |
 | `@riebeckite/plugin-text-fragment` | `textFragment` | — |

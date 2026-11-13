@@ -141,7 +141,22 @@ export type {
   ContentCollectionPage,
 } from "./src/content/content_collection.js";
 export { buildContentCollections } from "./src/content/content_collection.js";
+export {
+  resolveEntryCalendarDate,
+  resolveEntryDate,
+  toCalendarDate,
+  toIsoDate,
+} from "./src/content/content_date.js";
 export { fingerprintContentEntries } from "./src/content/content_fingerprint.js";
+export type {
+  ContentFormat,
+  ContentFormatDependencyContext,
+  ContentFormatProcessContext,
+} from "./src/content/content_format.js";
+export {
+  ContentFormatRegistry,
+  createContentFormatRegistry,
+} from "./src/content/content_format.js";
 export type {
   ContentGraph,
   ContentGraphNeighbors,
@@ -195,6 +210,7 @@ export type {
 export { flattenContentMutationOperations } from "./src/content/content_mutation.js";
 export {
   computePipelineFingerprint,
+  extractFrontmatter,
   isPersistentlyCacheable,
 } from "./src/content/content_persistent_cache.js";
 export type {
@@ -468,6 +484,8 @@ export {
   stableStringify,
 } from "./src/plugin/plugin_memo.js";
 export { PluginRuntime } from "./src/plugin/plugin_runtime.js";
+export { finalizeDeferredMarkdownComponents } from "./src/plugin_component_deferred.js";
+export { prepareMarkdownComponent } from "./src/plugin_component_render.js";
 export {
   resolveBuildOutputDirectory,
   resolveManagedStateRoot,
@@ -590,6 +608,16 @@ export {
   resolveApprovalState,
   resolvePublicationWorkflowState,
 } from "./src/publication/workflow.js";
+export {
+  createContentManifest,
+  createContentManifestEntry,
+  createInvalid,
+  createPluginContentLocationContext,
+  createPluginContext,
+  createPluginManifestContext,
+  createResolvedRiebeckiteConfig,
+  createRiebeckiteConfig,
+} from "./src/testing/fixtures.js";
 export type {
   ConfigValidationIssue,
   PluginOptionsValidator,
@@ -658,6 +686,8 @@ export {
   resolvePlugins,
 } from "./src/types/plugin.js";
 export type {
+  ClientInitializerRoot,
+  CreateClientEntryOptions,
   PluginAsset,
   PluginAssetKind,
   PluginClientEntry,
@@ -670,8 +700,17 @@ export {
   serializePublicClientConfig,
 } from "./src/types/plugin_asset.js";
 export type {
-  PluginComponent,
   PluginDataHelper,
+  PluginHastNode,
+  PluginHastTransform,
+  PluginMarkdownComponent,
+  PluginMarkdownComponentClient,
+  PluginMarkdownComponentResolveContext,
+  PluginSiteComponent,
+} from "./src/types/plugin_component.js";
+export {
+  defineHastTransform,
+  defineMarkdownComponent,
 } from "./src/types/plugin_component.js";
 export type {
   PluginContentContext,
@@ -714,6 +753,7 @@ export type {
 export type {
   PluginPage,
   PluginPageContext,
+  PluginPageLayout,
   PluginPagePath,
   PluginPageType,
   ResolvedPluginPage,
@@ -782,5 +822,7 @@ export { normalizeTag } from "./src/utils/tags.js";
 export {
   calculateReadingTime,
   escapeRegExp,
+  htmlToPlainText,
   stripHtml,
 } from "./src/utils/text.js";
+export { parseYaml } from "./src/utils/yaml.js";

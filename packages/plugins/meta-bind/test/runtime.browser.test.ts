@@ -58,10 +58,11 @@ test("browser runtime updates views and duplicate controls, then cleans up", asy
       const root = document.querySelector("main");
       if (!root) throw new Error("missing root");
       const runtime = (
-        window as unknown as {
-          MetaBind: { initMetaBind(context: never): void };
+        window as {
+          MetaBind?: { initMetaBind(context: never): void };
         }
       ).MetaBind;
+      if (!runtime) throw new Error("missing MetaBind");
       runtime.initMetaBind({
         root,
         signal: controller.signal,

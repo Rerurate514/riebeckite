@@ -4,8 +4,7 @@ import type {
   ContentQuerySpec,
   Diagnostic,
 } from "@riebeckite/core";
-import { queryContentEntries } from "@riebeckite/core";
-import { matter } from "vfile-matter";
+import { parseYaml, queryContentEntries } from "@riebeckite/core";
 import {
   createQueryPlaceholderPattern,
   decodeQuerySpec,
@@ -94,7 +93,7 @@ function parseBlock(
 
   let parsed: unknown;
   try {
-    parsed = parseYamlMapping(source);
+    parsed = parseYaml(source);
   } catch (error) {
     return reportInvalid(
       entry,
@@ -139,17 +138,6 @@ function reportInvalid(
     message,
   });
   return renderQueryError(message, options);
-}
-
-function parseYamlMapping(source: string): unknown {
-  const document = `---\n${source}\n---\n`;
-  const file = {
-    value: document,
-    data: {} as Record<string, unknown>,
-    toString: () => document,
-  };
-  matter(file as unknown as Parameters<typeof matter>[0]);
-  return file.data.matter;
 }
 
 function formatError(error: unknown): string {

@@ -12,7 +12,7 @@ These Plugins cannot be expressed by a single Markdown fragment. Most are visibl
 | [`article-metadata`](../article-metadata.md) | Publication date, reading time, and tags in the article header |
 | [`icons`](../icons.md) | Icons from Obsidian Iconize and Iconic in navigation, search, tags, and property panels (opt-in) |
 | [`navigation`](../navigation.md) | Site navigation built from config or the vault |
-| [`ux`](../ux.md) | Reading progress, back-to-top, and TOC scroll-spy |
+| [`ux`](../ux.md) | Reading progress and back-to-top |
 | [`text-fragment`](../text-fragment.md) | Copy link and copy quote actions for selected text |
 | [`meta-bind`](../meta-bind.md) | Inline inputs and views backed by page-local state |
 | [`breadcrumbs`](../breadcrumbs.md) | Page hierarchy breadcrumbs |

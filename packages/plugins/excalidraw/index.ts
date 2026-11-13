@@ -210,6 +210,7 @@ async function resolveExcalidrawDocument(
   if (!context.contentSource) {
     return {
       type: "excalidraw-document",
+      layout: "wide",
       pathname: context.pathname,
       title,
       description,
@@ -235,6 +236,7 @@ async function resolveExcalidrawDocument(
 
     return {
       type: "excalidraw-document",
+      layout: "wide",
       pathname: context.pathname,
       title,
       description,
@@ -250,6 +252,7 @@ async function resolveExcalidrawDocument(
     });
     return {
       type: "excalidraw-document",
+      layout: "wide",
       pathname: context.pathname,
       title,
       description,

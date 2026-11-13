@@ -83,9 +83,7 @@ const recipes: Readonly<Record<PluginFeatureId, string>> = {
   "logging-and-tracing": "docs/docs/plugins/writing-a-plugin.md",
 };
 
-export const pluginFeatureRegistry: Readonly<
-  Record<PluginFeatureId, PluginFeature>
-> = Object.fromEntries(
+const pluginFeatureEntries: [PluginFeatureId, PluginFeature][] =
   PLUGIN_FEATURE_IDS.map((id) => [
     id,
     {
@@ -112,8 +110,14 @@ export const pluginFeatureRegistry: Readonly<
               ]
             : [],
     },
-  ]),
-) as unknown as Record<PluginFeatureId, PluginFeature>;
+  ]);
+
+export const pluginFeatureRegistry: Readonly<
+  Record<PluginFeatureId, PluginFeature>
+> = Object.fromEntries(pluginFeatureEntries) as Record<
+  PluginFeatureId,
+  PluginFeature
+>;
 
 function isPluginFeatureId(value: string): value is PluginFeatureId {
   return PLUGIN_FEATURE_IDS.includes(value as PluginFeatureId);

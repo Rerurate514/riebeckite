@@ -167,6 +167,7 @@ export default defineConfig({
 | --- | --- |
 | [Localization](./l10n.ja.md) | コンテンツの多言語化、ローカライズ URL、翻訳メタデータ |
 | [Quality](./quality.ja.md) | HTML の品質とアクセシビリティの静的検査 |
+| [MDX](./mdx.ja.md) | JSXとESM importを使える信頼済みMDXページ |
 | [Diagnostics](./diagnostics.ja.md) | Riebeckite と Obsidian vault のコンテンツ診断 |
 | [Frontmatter Transformer](./frontmatter-transformer.ja.md) | マイグレーション基盤を使う安全なフロントマター一括変換 |
 | [Vault Heatmap](./vault-heatmap.ja.md) | 日付付き Vault アクティビティのカレンダーヒートマップ |

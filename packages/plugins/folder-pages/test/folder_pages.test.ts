@@ -151,12 +151,71 @@ test("generates a folder page that lists only direct children", async () => {
   assert.match(folder?.body ?? "", /href="\/folder\/page"/);
   assert.match(
     folder?.body ?? "",
-    /<a class="rr-folder-page__link" href="\/folder\/sub\/">sub<\/a>/,
+    /<a class="rr-folder-page__link" href="\/folder\/sub\/"><span class="rr-folder-page__link-title">sub<\/span><\/a>/,
   );
   assert.doesNotMatch(folder?.body ?? "", /\/folder\/sub\/deep/);
 
   const sub = await content.resolvePage("/folder/sub/");
   assert.match(sub?.body ?? "", /href="\/folder\/sub\/deep"/);
+});
+
+test("renders configured dates and tags alongside folder page links", async () => {
+  const files = {
+    "folder/page.md":
+      "---\ntitle: Page\npublish: true\ndate: 2026-11-11\ntags: [guide, featured]\n---\n",
+  };
+  const hidden = await manager(files).resolvePage("/folder/");
+  assert.doesNotMatch(hidden?.body ?? "", /rr-folder-page__meta/);
+
+  const content = manager(files, [
+    folderPages({ showDate: true, showTags: true }),
+  ]);
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
+  assert.match(body, /<span class="rr-folder-page__tag">#guide<\/span>/);
+  assert.match(body, /<span class="rr-folder-page__tag">#featured<\/span>/);
+});
+
+test("uses normalized manifest tags and dates on folder page links", async () => {
+  const content = manager(
+    {
+      "folder/page.md":
+        "---\ntitle: Page\npublish: true\ndate: 2026-11-11T09:30:00Z\ntags: ['#hash', 'x/y/', '2024']\n---\n\n#inline-tag\n",
+      "folder/bad.md":
+        "---\ntitle: Bad\npublish: true\ndate: 2026年1月2日\n---\n",
+    },
+    [folderPages({ showDate: true, showTags: true })],
+  );
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
+  assert.match(body, /#hash/);
+  assert.match(body, /#x\/y/);
+  assert.match(body, /#inline-tag/);
+  assert.doesNotMatch(body, /#2024/);
+  assert.equal((body.match(/rr-folder-page__date/g) ?? []).length, 1);
+});
+
+test("keeps the authored calendar date on folder page links", async () => {
+  const content = manager(
+    {
+      "folder/page.md":
+        "---\ntitle: Page\npublish: true\npublished: true\ndate: 2026-11-11T08:00:00+09:00\n---\n",
+    },
+    [folderPages({ showDate: true })],
+  );
+  const body = (await content.resolvePage("/folder/"))?.body ?? "";
+
+  assert.match(
+    body,
+    /<time class="rr-folder-page__date" datetime="2026-11-11">2026-11-11<\/time>/,
+  );
 });
 
 test("does not generate a folder page from conflicting custom public locations", async () => {
@@ -274,6 +333,28 @@ test("excludes configured slug paths and descendants from folder pages", async (
   assert.deepEqual(await content.getPagePaths(), ["/guide/"]);
 });
 
+test("excludes localized folder pages by logical slug rather than translation id", async () => {
+  const files = {
+    "docs/guide/page.md":
+      "---\ntitle: 日本語ページ\npublish: true\n---\n# 日本語\n",
+    "docs/guide/page.en.md":
+      "---\ntitle: English page\npublish: true\n---\n# English\n",
+  };
+  const plugins = (exclude: string[]) => [
+    l10n({ defaultLang: "ja", languages: ["ja", "en"] }),
+    folderPages({ exclude }),
+  ];
+
+  assert.deepEqual(
+    await manager(files, plugins(["docs/guide/page.en"])).getPagePaths(),
+    ["/docs/guide/"],
+  );
+  assert.deepEqual(
+    await manager(files, plugins(["docs/guide/page"])).getPagePaths(),
+    ["/en/docs/guide/"],
+  );
+});
+
 test("validates folder page exclusions", () => {
   const plugin = folderPages();
   assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [
@@ -281,6 +362,9 @@ test("validates folder page exclusions", () => {
   ]);
   assert.deepEqual(plugin.validateOptions?.({ exclude: [""] }), [
     { path: "exclude[0]", message: "Expected a non-empty string." },
+  ]);
+  assert.deepEqual(plugin.validateOptions?.({ showDate: "yes" } as never), [
+    { path: "showDate", message: "Expected a boolean." },
   ]);
 });
 

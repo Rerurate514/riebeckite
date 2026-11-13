@@ -1,18 +1,18 @@
 ---
 date: 2026-10-20
-title: "UI コンポーネントを配布する"
+title: "Site コンポーネントを配布する"
 sidebar:
-  label: "7. UI コンポーネントを配布する"
+  label: "7. Site コンポーネントを配布する"
   order: 7
 ---
-# UI コンポーネントを配布する
+# Site コンポーネントを配布する
 
-プラグインから Hono JSX コンポーネントを export できますが、Riebeckite にコンポーネントレジストリはありません。サイトがコンポーネントを import し、どこに描画するかを決めます。レイアウトの所有権はサイト側に残ります。
+プラグインから Hono JSX コンポーネントを `PluginSiteComponent` として export して、サイトに配置を任せられます。また、`markdownComponents` を通じて Markdown コンポーネントを登録できます。サイトがレイアウトを所有して置き場所を決める場合は export を使い、コンテンツ作者が Markdown から配置する場合は登録したコンポーネントを使います。このレシピでは手動配置の export を扱います。
 
 プラグインのパッケージにコンポーネントを作ります。
 
 ```tsx
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 
 export type SeriesListProps = {
   series: readonly {
@@ -37,7 +37,7 @@ const SeriesList = (({ series }: Readonly<SeriesListProps>) => {
       </ol>
     </nav>
   );
-}) satisfies PluginComponent<SeriesListProps>;
+}) satisfies PluginSiteComponent<SeriesListProps>;
 
 export default SeriesList;
 ```
@@ -65,6 +65,8 @@ return (
 ```
 
 表示するものがないときは `null` を返すため、サイトは条件分岐なしで描画できます。マニフェストのデータが必要な場合は、公開範囲で絞り込んだビューだけを受け取るヘルパーを export してください。ブラウザ側で下書きを読まないようにします。
+
+コンテンツ作者が Markdown から UI を配置する場合は、プラグインの `markdownComponents` で宣言し、対話型ならクライアントモジュールを指定します。[Markdown コンポーネント](../../reference/plugin-api/ui-and-assets.ja.md#markdown-コンポーネント) を参照してください。
 
 ---
 

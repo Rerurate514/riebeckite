@@ -6,7 +6,10 @@ import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runCreateTheme } from "../src/commands/create_theme.js";
-import { renderThemeIndex } from "../src/theme_generator/templates.js";
+import {
+  renderThemeFiles,
+  renderThemeIndex,
+} from "../src/theme_generator/templates.js";
 import { resolveInput } from "./command_fixture.js";
 
 test("parses create theme options and lists templates", () => {
@@ -73,6 +76,18 @@ test("typechecks a generated theme", async () => {
   } finally {
     await fs.rm(directory, { recursive: true, force: true });
   }
+});
+
+test("documents the generated theme cascade layer", () => {
+  const readme = renderThemeFiles(
+    "example",
+    "blank",
+    [],
+    false,
+    false,
+    true,
+  ).get("README.md");
+  assert.match(readme ?? "", /imports theme CSS into `rb-theme`/);
 });
 
 test("creates a local theme atomically and registers a recognized theme field", async () => {

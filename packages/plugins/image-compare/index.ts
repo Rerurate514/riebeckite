@@ -3,8 +3,8 @@ import {
   createStyleAsset,
   definePlugin,
 } from "@riebeckite/core";
+import { imageCompareComponent } from "./src/component.js";
 import { remarkImageCompare } from "./src/remark.js";
-import { createImageCompareRuntime } from "./src/runtime.js";
 import type { ImageCompareOptions } from "./src/types.js";
 
 export { initImageCompare } from "./src/init.js";
@@ -34,21 +34,18 @@ export const IMAGE_COMPARE_PLUGIN_NAME = "image-compare";
 
 export function imageCompare(options: ImageCompareOptions = {}) {
   const resolved = { language: options.language ?? "image-compare" };
-  const runtime = createImageCompareRuntime();
 
   return definePlugin({
     name: IMAGE_COMPARE_PLUGIN_NAME,
     processedContentCache: {
-      version: "image-compare-v1",
+      version: "image-compare-v3",
       dependencyMode: "none",
     },
     options,
     extendMarkdownPipeline: (pipeline) => {
       pipeline.use(remarkImageCompare, { language: resolved.language });
     },
-    onManifestCreated: (context) => {
-      runtime.resolve(context.manifest, context.diagnostics);
-    },
+    markdownComponents: [imageCompareComponent],
     assets: [
       createStyleAsset(
         IMAGE_COMPARE_PLUGIN_NAME,
@@ -56,15 +53,13 @@ export function imageCompare(options: ImageCompareOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        IMAGE_COMPARE_PLUGIN_NAME,
-        "@riebeckite/plugin-image-compare/client",
-        "initImageCompare",
-        undefined,
-        "page",
-        "context",
-        "[data-rr-image-compare]",
-      ),
+      createClientEntry(IMAGE_COMPARE_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-image-compare/client",
+        exportName: "initImageCompare",
+        scope: "page",
+        initializerArguments: "context",
+        presenceSelector: "[data-rr-image-compare]",
+      }),
     ],
   });
 }

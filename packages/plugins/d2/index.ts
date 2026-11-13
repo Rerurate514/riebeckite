@@ -32,7 +32,11 @@ export function d2(options: D2Options = {}) {
     },
     assets: [createStyleAsset("d2", "@riebeckite/plugin-d2/style.css")],
     clientEntries: [
-      createClientEntry("d2", "@riebeckite/plugin-d2/client", "initD2Diagrams"),
+      createClientEntry("d2", {
+        moduleSpecifier: "@riebeckite/plugin-d2/client",
+        exportName: "initD2Diagrams",
+        presenceSelector: "[data-d2='pending']",
+      }),
     ],
   });
 }

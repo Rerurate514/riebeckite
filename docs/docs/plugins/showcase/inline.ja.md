@@ -1,3 +1,6 @@
+---
+title: インライン表現
+---
 # インライン表現
 
 ## Highlight：[`highlight`](../highlight.ja.md)

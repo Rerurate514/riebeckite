@@ -12,6 +12,7 @@ import type {
   ExternalDependencyFailure,
   ExternalDependencySnapshot,
 } from "../types/external_dependency.js";
+import type { ContentPathResolver } from "./affected_content.js";
 import { determineAffectedContent } from "./affected_content.js";
 import type {
   ContentBuildPlan,
@@ -53,6 +54,11 @@ type ContentBuildCoordinatorDependencies = {
   readonly readEntry: (entry: ContentSourceEntry) => Promise<string>;
   readonly observability: Observability;
   readonly includeFileMetadata: boolean;
+  readonly pathResolver?: ContentPathResolver;
+  readonly getContentDependencies?: (
+    entry: ContentSourceEntry,
+    paths: readonly string[],
+  ) => Promise<readonly string[]>;
 };
 
 export class ContentBuildCoordinator {
@@ -110,34 +116,45 @@ export class ContentBuildCoordinator {
       manifest.entries.map((entry) => [entry.slug, entry]),
     );
     const nextChangeAt = nextPublishingChangeAt(manifest, publishingBuildTime);
+    const currentPaths = plan.currentEntries.map(({ entry }) => entry.path);
+    const stateEntries = await Promise.all(
+      plan.currentEntries.map(async ({ entry, fingerprint }) => {
+        const slug =
+          this.dependencies.pathResolver?.toSlug(entry.path) ??
+          toSlug(entry.path);
+        const manifestEntry = entriesBySlug.get(slug);
+        const contentDependencies =
+          (await this.dependencies.getContentDependencies?.(
+            entry,
+            currentPaths,
+          )) ?? [];
+        return [
+          entry.path,
+          {
+            fingerprint,
+            metadataFingerprint: fingerprintContentMetadata(entry),
+            aliases: plan.currentContentAliases.get(entry.path) ?? [],
+            dependencies: collectDependencies(
+              manifestEntry,
+              trackedDependencies.get(slug) ??
+                plan.previousState?.entries[entry.path]?.dependencies ??
+                [],
+              contentDependencies,
+            ),
+            linkTargets: collectLinkTargets(manifestEntry),
+            ...(processedContentCacheFingerprints.get(slug)
+              ? {
+                  processedContentCacheFingerprint:
+                    processedContentCacheFingerprints.get(slug),
+                }
+              : {}),
+          },
+        ] as const;
+      }),
+    );
     const state: ContentBuildState = {
       version: CONTENT_BUILD_STATE_VERSION,
-      entries: Object.fromEntries(
-        plan.currentEntries.map(({ entry, fingerprint }) => {
-          const manifestEntry = entriesBySlug.get(toSlug(entry.path));
-          return [
-            entry.path,
-            {
-              fingerprint,
-              metadataFingerprint: fingerprintContentMetadata(entry),
-              aliases: plan.currentContentAliases.get(entry.path) ?? [],
-              dependencies: collectDependencies(
-                manifestEntry,
-                trackedDependencies.get(toSlug(entry.path)) ??
-                  plan.previousState?.entries[entry.path]?.dependencies ??
-                  [],
-              ),
-              linkTargets: collectLinkTargets(manifestEntry),
-              ...(processedContentCacheFingerprints.get(toSlug(entry.path))
-                ? {
-                    processedContentCacheFingerprint:
-                      processedContentCacheFingerprints.get(toSlug(entry.path)),
-                  }
-                : {}),
-            },
-          ];
-        }),
-      ),
+      entries: Object.fromEntries(stateEntries),
       contentIndex: Object.fromEntries(
         [...manifest.contentIndex.entries()].sort(([left], [right]) =>
           left.localeCompare(right),
@@ -247,6 +264,8 @@ export class ContentBuildCoordinator {
           (entry) => this.dependencies.readEntry(entry),
           this.dependencies.includeFileMetadata,
           previousState?.entries,
+          this.dependencies.pathResolver?.isContentPath ??
+            ((path) => path.toLowerCase().endsWith(".md")),
         ),
     );
     const changeSet = await this.dependencies.observability.tracer.span(
@@ -273,6 +292,13 @@ export class ContentBuildCoordinator {
         ContentIndexBuilder.buildFromAliases(
           currentEntries.map(({ entry }) => entry),
           currentContentAliases,
+          this.dependencies.pathResolver?.isContentPath
+            ? (path) =>
+                this.dependencies.pathResolver?.isContentPath(path) === true
+            : undefined,
+          this.dependencies.pathResolver
+            ? (path) => this.dependencies.pathResolver?.toSlug(path)
+            : undefined,
         ),
     );
     const publishingStateExpired = isPublishingStateExpired(
@@ -291,12 +317,14 @@ export class ContentBuildCoordinator {
               previousState,
               currentEntries.map(({ entry }) => entry.path),
               currentContentIndex,
+              this.dependencies.pathResolver,
             )
           : determineAffectedContent(
               allContentChanged(currentEntries),
               undefined,
               currentEntries.map(({ entry }) => entry.path),
               currentContentIndex,
+              this.dependencies.pathResolver,
             ),
     );
     const fullRegenerationReasons: FullRegenerationReason[] = [];
@@ -371,7 +399,7 @@ export class ContentBuildCoordinator {
     const aliases = new Map<string, readonly string[]>();
 
     for (const { entry } of currentEntries) {
-      if (!entry.path.toLowerCase().endsWith(".md")) continue;
+      if (!this.dependencies.pathResolver?.isContentPath(entry.path)) continue;
       const previousAliases = previousState?.entries[entry.path]?.aliases;
       if (!changedPaths.has(entry.path) && previousAliases) {
         aliases.set(entry.path, previousAliases);
@@ -462,6 +490,7 @@ function collectDependencies(
   trackedDependencies:
     | readonly CachedContentDependency[]
     | readonly ContentBuildDependency[],
+  contentDependencies: readonly string[],
 ): ContentBuildDependency[] {
   if (!manifestEntry) return [];
   return [
@@ -487,6 +516,10 @@ function collectDependencies(
             kind: dependency.kind,
             id: dependency.id.replace(/\\/g, "/"),
           })),
+        ...contentDependencies.map((id) => ({
+          kind: "file" as const,
+          id: id.replace(/\\/g, "/"),
+        })),
       ].map((dependency) => [
         `${dependency.kind}:${dependency.id}`,
         dependency,

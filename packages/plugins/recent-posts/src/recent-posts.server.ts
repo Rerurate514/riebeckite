@@ -31,9 +31,10 @@ export function getRecentPosts(args: {
   return entries
     .filter((entry) => entry.slug !== "index")
     .flatMap((entry) => {
-      const postedAt = parseFrontmatterDate(
-        entry.frontmatter.date ?? entry.frontmatter.created,
-      );
+      const postedAt =
+        parseFrontmatterDate(entry.frontmatter.date) ??
+        parseFrontmatterDate(entry.frontmatter.created) ??
+        parseFrontmatterDate(entry.frontmatter.published);
       if (!postedAt) return [];
 
       return [

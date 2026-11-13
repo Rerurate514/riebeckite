@@ -6,6 +6,7 @@ import {
   resolveConfigModule,
 } from "../src/config.js";
 import { ConfigValidationError } from "../src/config_validation.js";
+import { createInvalid } from "../src/testing/fixtures.js";
 import { definePlugin } from "../src/types/plugin.js";
 import type { RiebeckiteConfig } from "../src/types/riebeckite_config.js";
 import {
@@ -54,10 +55,12 @@ test("resolveConfig normalizes the SPA switch", () => {
 test("resolveConfig rejects an invalid SPA value", () => {
   assert.throws(
     () =>
-      resolveConfig({
-        site: { title: "Site" },
-        spa: "yes",
-      } as unknown as RiebeckiteConfig),
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site" },
+          spa: "yes",
+        }),
+      ),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(
@@ -118,10 +121,12 @@ test("resolveConfig resolves theme settings and presets", () => {
 test("resolveConfig rejects invalid theme instances", () => {
   assert.throws(
     () =>
-      resolveConfig({
-        site: { title: "Site" },
-        theme: { name: "invalid" },
-      } as unknown as RiebeckiteConfig),
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site" },
+          theme: { name: "invalid" },
+        }),
+      ),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(
@@ -255,10 +260,12 @@ test("resolveConfig reflects bounded color and slider settings", () => {
 test("resolveConfig rejects a bad publish strategy and non-HTTP base URL", () => {
   assert.throws(
     () =>
-      resolveConfig({
-        site: { title: "Site", baseUrl: "ftp://example.com" },
-        content: { filters: { publishStrategy: "sometimes" } },
-      } as unknown as RiebeckiteConfig),
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site", baseUrl: "ftp://example.com" },
+          content: { filters: { publishStrategy: "sometimes" } },
+        }),
+      ),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(
@@ -286,16 +293,18 @@ test("resolveConfig reports plugin name, duplicate, and option issues", () => {
 
   assert.throws(
     () =>
-      resolveConfig({
-        site: { title: "Site" },
-        plugins: [
-          { name: "dup" },
-          { name: "dup" },
-          optionPlugin,
-          throwingPlugin,
-          { name: "" },
-        ],
-      } as unknown as RiebeckiteConfig),
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site" },
+          plugins: [
+            { name: "dup" },
+            { name: "dup" },
+            optionPlugin,
+            throwingPlugin,
+            { name: "" },
+          ],
+        }),
+      ),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(
@@ -321,10 +330,12 @@ test("resolveConfig reports plugin name, duplicate, and option issues", () => {
 test("resolveConfig rejects an invalid cache section", () => {
   assert.throws(
     () =>
-      resolveConfig({
-        site: { title: "Site" },
-        cache: { enabled: "yes", directory: 42 },
-      } as unknown as RiebeckiteConfig),
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site" },
+          cache: { enabled: "yes", directory: 42 },
+        }),
+      ),
     (error: unknown) => {
       assert.ok(error instanceof ConfigValidationError);
       assert.deepEqual(

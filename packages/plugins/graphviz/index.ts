@@ -31,11 +31,12 @@ export function graphviz(options: GraphvizOptions = {}) {
       createStyleAsset("graphviz", "@riebeckite/plugin-graphviz/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "graphviz",
-        "@riebeckite/plugin-graphviz/client",
-        "initGraphvizDiagrams",
-      ),
+      createClientEntry("graphviz", {
+        moduleSpecifier: "@riebeckite/plugin-graphviz/client",
+        exportName: "initGraphvizDiagrams",
+        initializerArguments: "context",
+        presenceSelector: "[data-graphviz='pending']",
+      }),
     ],
   });
 }

@@ -61,16 +61,26 @@ export class ManifestAssembler {
     const preHookHtml = new Map(
       preHookEntries.map((entry) => [entry.slug, entry.html]),
     );
+    const preHookPlainText = new Map(
+      preHookEntries.map((entry) => [entry.slug, entry.plainText]),
+    );
     for (const entry of manifest.entries) {
       const changed = preHookHtml.get(entry.slug) !== entry.html;
+      const textChanged = preHookPlainText.get(entry.slug) !== entry.plainText;
       const cached = this.contentCache.get(entry.slug);
       if (cached) {
         if (changed) cached.html = entry.html;
+        if (textChanged) cached.plainText = entry.plainText;
+        cached.sourcePath = entry.sourcePath;
         continue;
       }
       this.contentCache.set(entry.slug, {
         frontmatter: entry.frontmatter,
         html: entry.html,
+        ...(entry.plainText === undefined
+          ? {}
+          : { plainText: entry.plainText }),
+        sourcePath: entry.sourcePath,
       });
     }
   }

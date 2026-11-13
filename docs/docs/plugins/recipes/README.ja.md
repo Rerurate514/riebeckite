@@ -52,7 +52,7 @@ export default defineConfig({
 | 公開 URL を変える | `resolveContentLocations`、`extendContentLocations` | [4](./urls.ja.md) |
 | グラフとバックリンクにリンクを追加する | `extendContentGraph` | [5](./content-graph.ja.md) |
 | 独立したページを追加する | `pageTypes` | [6](./pages.ja.md) |
-| UI コンポーネントを配布する | パッケージの export | [7](./components.ja.md) |
+| Site コンポーネントを配布する | パッケージの export | [7](./components.ja.md) |
 | CSS とブラウザ動作を追加する | `assets`、`clientEntries` | [8](./assets-and-client-entries.ja.md) |
 | JSON などの HTTP 応答を返す | `endpoints` | [9](./endpoints.ja.md) |
 | タイトル、フィード、構造化データを変える | `seo` | [10](./seo.ja.md) |

@@ -15,26 +15,26 @@ Two class namepaces are provided:
 
 ## Cascade order
 
-The recommended cascade order is: framework structural CSS → Plugin default CSS → Theme CSS → app/site CSS → config token inline style → stylesheets. This is the typical order used by `@riebeckite/honox`, but is not an absolute guarantee — the actual import order in the application determines the effective cascade. `stylesheets` is the final override — ideal for small site-specific tweaks.
+For same-origin normal declarations, the contract is: `base` → `components` → `utilities` → `rb-plugins` → `rb-theme` → unlayered site CSS. Framework CSS supplies the first layers, generated plugin and theme entries use `rb-plugins` and `rb-theme`, and ordinary site CSS is unlayered. Consequently, unlayered site rules override theme rules regardless of specificity.
 
 ```mermaid
 flowchart TD
-  Framework[Framework structural CSS]
-  Plugin[Plugin Default CSS]
-  Theme[Theme CSS]
-  App[App / Site CSS]
-  Token[Config Token Inline Style]
-  User[stylesheets]
-  Framework --> Plugin
-  Plugin --> Theme
-  Theme --> App
-  App --> Token
-  Token --> User
+  Base[base]
+  Components[components]
+  Utilities[utilities]
+  Plugins[rb-plugins]
+  Theme[rb-theme]
+  Site[Unlayered site CSS]
+  Base --> Components
+  Components --> Utilities
+  Utilities --> Plugins
+  Plugins --> Theme
+  Theme --> Site
 ```
 
 ## Cascade Order Verification
 
-The typical cascade order is: framework structural CSS → Plugin default CSS → Theme CSS → app/site CSS → config token inline style → stylesheets. This order is the default used by `@riebeckite/honox` which generates separate stylesheets for each layer with header comments noting their cascade position. `stylesheets` is the final override — ideal for small site-specific tweaks.
+The framework stylesheet fixes the layer order. A plugin's internal layers nest under `rb-plugins`; a theme's internal layers nest under `rb-theme`. `!important`, inline styles, animations, transitions, and other cascade origins are outside this normal-declaration contract. Custom properties use the same cascade and inherit.
 
 ## Theme CSS Writing Guidelines
 

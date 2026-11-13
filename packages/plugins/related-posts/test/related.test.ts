@@ -5,6 +5,7 @@ import {
   type ContentManifest,
   type ContentManifestEntry,
   type ContentSource,
+  createContentManifest,
   resolveConfig,
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
@@ -221,7 +222,7 @@ test("excludes ineligible candidates through the Core discovery view", async () 
 
 test("isEligibleRelatedEntry rejects redirect-shadowed permalinks", () => {
   const entry = makeEntry({ slug: "old" });
-  const manifest = {
+  const manifest = createContentManifest({
     discoverableEntries: [entry],
     redirects: new Map([
       [
@@ -229,7 +230,7 @@ test("isEligibleRelatedEntry rejects redirect-shadowed permalinks", () => {
         { path: entry.permalink, status: 301, slug: entry.slug },
       ],
     ]),
-  } as unknown as ContentManifest;
+  });
 
   assert.equal(isEligibleRelatedEntry(entry, manifest, explicitConfig), false);
 });
@@ -240,10 +241,10 @@ test("isEligibleRelatedEntry uses the Core discovery view", () => {
     slug: "hidden",
     publishing: { visibility: "unlisted", routable: true, discoverable: false },
   });
-  const manifest = {
+  const manifest = createContentManifest({
     discoverableEntries: [discoverable],
     redirects: new Map(),
-  } as unknown as ContentManifest;
+  });
 
   assert.equal(
     isEligibleRelatedEntry(discoverable, manifest, explicitConfig),

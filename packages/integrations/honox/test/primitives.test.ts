@@ -53,6 +53,21 @@ test("ArticleBody owns the rb-article-content markdown hook", () => {
   assert.match(html, /<p>Body<\/p>/);
 });
 
+test("Article provides a content format body to ArticleBody", () => {
+  const html = renderToString(
+    createElement(
+      Article,
+      {
+        body: createElement("strong", {}, "Content format body"),
+        post: { frontmatter: {}, html: "" },
+      },
+      createElement(ArticleBody, {}),
+    ),
+  );
+
+  assert.match(html, /<strong>Content format body<\/strong>/);
+});
+
 test("Article provides its post to contextual plugin components", async () => {
   const Empty = async () => rawHtml``;
   const element = createElement(
@@ -87,12 +102,25 @@ test("HtmlFragment renders trusted pipeline HTML without a wrapper", () => {
 
 test("PageBody owns the rb-page-body hook", () => {
   const html = renderToString(PageBody({ html: "<p>Page</p>" }));
-  assert.equal(html, '<div class="rb-page-body"><p>Page</p></div>');
+  assert.equal(
+    html,
+    '<div class="rb-page-body" data-rb-page-layout="wide"><p>Page</p></div>',
+  );
+});
+
+test("PageBody applies a Plugin Page layout", () => {
+  const html = renderToString(
+    PageBody({ html: "<p>Page</p>", layout: "article" }),
+  );
+  assert.match(html, /data-rb-page-layout="article"/);
 });
 
 test("PageBody composes a Site class", () => {
   const html = renderToString(
     PageBody({ html: "<p>Page</p>", class: "site-page" }),
   );
-  assert.equal(html, '<div class="rb-page-body site-page"><p>Page</p></div>');
+  assert.equal(
+    html,
+    '<div class="rb-page-body site-page" data-rb-page-layout="wide"><p>Page</p></div>',
+  );
 });

@@ -76,6 +76,7 @@ export function timeline(options: TimelineOptions = {}) {
           );
           return {
             type: "timeline",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -96,6 +97,7 @@ export function timeline(options: TimelineOptions = {}) {
           );
           return {
             type: "timeline",
+            layout: resolved.layout,
             pathname: page.pathname,
             title: rendered.title,
             body: rendered.html,
@@ -112,6 +114,13 @@ function validateTimelineOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   for (const key of ["basePath", "className", "key", "title"] as const) {
     const value = options[key];
     if (

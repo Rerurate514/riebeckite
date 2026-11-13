@@ -19,10 +19,10 @@ The Recent posts list on the [home page](/) is rendered by this plugin from the 
 `getRecentPosts()` reads
 `manifest.discoverableEntries`, so `unlisted`, `draft`, and scheduled notes are
 excluded. It derives a date from the frontmatter (`date` falling back to
-`created`), sorts newest first, and truncates to `limit` items. Notes without a
-parseable date are dropped. Official `starter` and `showcase` sites place the
-list in the shared `app/components/article.tsx`, so it appears on the home page
-and on content pages.
+`created`, then `published`), sorts newest first, and truncates to `limit`
+items. Notes without a parseable date are dropped. Official `starter` and
+`showcase` sites place the list in the shared `app/components/article.tsx`, so
+it appears on the home page and on content pages.
 
 With no posts, the component renders nothing.
 

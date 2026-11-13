@@ -333,8 +333,7 @@ function sortRoutes(
 ): Record<string, RouteLockRoute> {
   const sorted: Record<string, RouteLockRoute> = {};
   for (const slug of sortedKeys(routes)) {
-    const route = routes[slug];
-    if (route) sorted[slug] = route;
+    sorted[slug] = routes[slug];
   }
   return sorted;
 }

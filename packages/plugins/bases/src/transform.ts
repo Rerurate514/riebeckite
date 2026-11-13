@@ -1,5 +1,9 @@
 import type { ContentManifestEntry } from "@riebeckite/core";
-import { evaluateBasesExpression, resolveValueRef } from "./evaluate.js";
+import {
+  type BasesEntry,
+  evaluateBasesExpression,
+  resolveValueRef,
+} from "./evaluate.js";
 import { parseValueRef } from "./parse.js";
 import type { BasesGroupKey, BasesSpec, BasesView } from "./types.js";
 
@@ -216,11 +220,11 @@ function groupIdentity(value: BasesGroupKey): string {
   return `${typeof value}:${String(value)}`;
 }
 
-const emptyEntry = {
+const emptyEntry: BasesEntry = {
   slug: "",
   permalink: "",
   title: "",
   tags: [],
   links: [],
   frontmatter: {},
-} as unknown as ContentManifestEntry;
+};

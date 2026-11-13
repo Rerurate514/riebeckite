@@ -95,28 +95,27 @@ await instance.dispose();
 ```ts
 import { createClientEntry, createRuntimeEntry } from "@riebeckite/core";
 
-createClientEntry(
-  "example",
-  "@riebeckite/plugin-example/client",
-  "initExample",
-  undefined,
-  "page",
-  "context",
-  "[data-example]",
-  [
+createClientEntry("example", {
+  moduleSpecifier: "@riebeckite/plugin-example/client",
+  exportName: "initExample",
+  scope: "page",
+  initializerArguments: "context",
+  presenceSelector: "[data-example]",
+  runtimeEntries: [
     createRuntimeEntry(
       "example",
       "@riebeckite/plugin-example/client-runtime",
       "createExampleRuntime",
     ),
   ],
-);
+});
 ```
 
 HonoX のクライアントモジュールは静的な `import()` 式で Runtime モジュールを
 遅延読み込みし、定義を登録して、`context.runtimes` にホストを渡します。
-クライアントエントリ自体も、ページが `presenceSelector` に一致する場合だけ
-読み込まれます。無効な Plugin はクライアントコードを出力しません。
+クライアントエントリ自体も、document 内に `presenceSelector` に一致する
+マーカーがある場合だけ読み込まれます。無効な Plugin はクライアントコードを
+出力しません。
 
 パッケージ全体の雛形は [[plugin-system|プラグインシステム]]と
 [プラグインを書く](../plugins/writing-a-plugin.ja.md)を参照してください。
@@ -420,10 +419,10 @@ Windows の Chrome headless shell 155 で、リポジトリのブラウザーフ
 
 ## トラブルシューティング
 
-- **何もマウントされない**: プラグインのクライアントエントリは、ページが
-  `presenceSelector` に一致した場合だけ読み込まれ、`mount()` はクライアント
-  イニシャライザーからしか呼ばれません。マーカーとイニシャライザーを確認して
-  ください。
+- **何もマウントされない**: プラグインのクライアントエントリは、document 内に
+  `presenceSelector` に一致するマーカーがある場合だけ読み込まれ、`mount()` は
+  クライアントイニシャライザーからしか呼ばれません。マーカーと
+  イニシャライザーを確認してください。
 - **Worker が最初の結果を返す前に失敗する**: モジュール Worker が必要です。
   Worker の URL が同一 Origin で、JavaScript の MIME タイプで配信されていることを
   確認してください。

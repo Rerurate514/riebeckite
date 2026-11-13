@@ -1,8 +1,3 @@
-.rr-source-file {
-  width: min(100%, var(--rb-layout-article-max, 48rem));
-  margin-inline: auto;
-}
-
 .rr-source-file__header {
   display: grid;
   gap: 0.5rem;

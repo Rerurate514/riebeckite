@@ -10,6 +10,7 @@ import type {
 } from "@riebeckite/core";
 import {
   ContentManager,
+  createContentManifestEntry,
   NoopLogger,
   resolveConfig,
   SinkTracer,
@@ -951,23 +952,26 @@ function parseExpression(source: string) {
   return expression.value;
 }
 
-function entry(title: string, value: unknown, tie: number) {
-  return {
+function entry(
+  title: string,
+  value: unknown,
+  tie: number,
+): ContentManifestEntry {
+  return createContentManifestEntry({
     slug: `notes/${title}`,
     permalink: `/notes/${title}`,
     title,
     tags: [],
     links: [],
     frontmatter: { value, tie },
-  } as unknown as ContentManifestEntry;
+  });
 }
-
 function metadataEntry(
   title: string,
   size: number,
   time: string,
 ): ContentManifestEntry {
-  return {
+  return createContentManifestEntry({
     slug: `notes/${title}`,
     permalink: `/notes/${title}`,
     title,
@@ -979,7 +983,7 @@ function metadataEntry(
       ctime: new Date("2023-12-31T00:00:00.000Z"),
       mtime: new Date(time),
     },
-  } as ContentManifestEntry;
+  });
 }
 
 async function buildCached(

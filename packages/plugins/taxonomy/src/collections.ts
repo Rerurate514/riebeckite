@@ -7,8 +7,9 @@ import {
   type ContentLocalization,
   type ContentManifestEntry,
   type ContentQueryGroupBy,
+  htmlToPlainText,
   localizedPagePath,
-  stripHtml,
+  toIsoDate,
 } from "@riebeckite/core";
 import { slugifyTaxonomyValue } from "./slug.js";
 import type {
@@ -259,21 +260,23 @@ function getEntrySummary(entry: ContentManifestEntry): string {
   if (typeof description === "string" && description.trim() !== "") {
     return description.trim();
   }
-  return stripHtml(entry.html).replace(/\s+/g, " ").trim().slice(0, 200);
+  return (entry.plainText ?? htmlToPlainText(entry.html))
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
 }
 
 function getEntryUpdatedTime(entry: ContentManifestEntry): string | null {
-  const value =
-    entry.frontmatter.updated ??
-    entry.frontmatter.published ??
-    entry.frontmatter.date ??
-    entry.frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
+  for (const value of [
+    entry.frontmatter.updated,
+    entry.frontmatter.published,
+    entry.frontmatter.date,
+    entry.frontmatter.created,
+  ]) {
+    const date = toIsoDate(value);
+    if (date !== null) return date;
   }
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  return null;
 }
 
 function findRegistryIcon(

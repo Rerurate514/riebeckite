@@ -53,8 +53,8 @@ function runProcess(
 
     const stdoutChunks: Buffer[] = [];
     const stderrChunks: Buffer[] = [];
-    child.stdout?.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
-    child.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+    child.stdout.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
+    child.stderr.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
 
     child.on("error", (error) => {
       finish({ code: 127, stdout: "", stderr: String(error) });
@@ -84,13 +84,11 @@ function runProcess(
     if (options.signal?.aborted) abort();
     else options.signal?.addEventListener("abort", abort, { once: true });
 
-    if (child.stdin) {
-      child.stdin.on("error", () => {});
-      if (options.input === undefined) {
-        child.stdin.end();
-      } else {
-        child.stdin.end(options.input, "utf8");
-      }
+    child.stdin.on("error", () => {});
+    if (options.input === undefined) {
+      child.stdin.end();
+    } else {
+      child.stdin.end(options.input, "utf8");
     }
   });
 }

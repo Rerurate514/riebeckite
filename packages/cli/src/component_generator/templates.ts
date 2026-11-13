@@ -5,10 +5,12 @@ export function renderComponent(
   const identifier = toIdentifier(name);
   const componentType =
     target === "plugin"
-      ? 'import type { PluginComponent } from "@riebeckite/core";\n\n'
+      ? 'import type { PluginSiteComponent } from "@riebeckite/core";\n\n'
       : "";
   const assertion =
-    target === "plugin" ? ` satisfies PluginComponent<${identifier}Props>` : "";
+    target === "plugin"
+      ? ` satisfies PluginSiteComponent<${identifier}Props>`
+      : "";
   return `${componentType}export type ${identifier}Props = {
   readonly title: string;
   readonly href?: string;

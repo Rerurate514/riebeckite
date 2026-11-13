@@ -52,3 +52,4 @@ definition: デプロイ前に HTML を生成する方式です。
 | `title` | `string` | `"Glossary"` | ページ見出しと title。 |
 | `className` | `string` | `"rb-glossary"` | ルート CSS クラス。 |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | 用語集ページに表示する言語の選択。 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |

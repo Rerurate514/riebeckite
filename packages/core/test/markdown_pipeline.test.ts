@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
-import type { Node } from "unist";
 import { ContentManager, type ContentSource } from "../index.js";
 import { Pipeline } from "../src/pipeline.js";
-import { definePlugin } from "../src/types/plugin.js";
+import { definePlugin, resolvePlugins } from "../src/types/plugin.js";
+import {
+  defineHastTransform,
+  defineMarkdownComponent,
+} from "../src/types/plugin_component.js";
 
 const markdown = [
   "---",
@@ -67,6 +70,111 @@ test("leaves colon text intact without directive syntax", async () => {
   assert.doesNotMatch(html, /<div><\/div>/);
 });
 
+test("renders registered plugin components from Markdown fences", async () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    parseProps: (props) => {
+      if (typeof props.message !== "string")
+        throw new Error("message is required");
+      return { message: props.message };
+    },
+    render: ({ message }) => `<strong>${message}</strong>`,
+  });
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [
+      definePlugin({ name: "notice", markdownComponents: [component] }),
+    ],
+  }).execute("```riebeckite-component notice\nmessage: Safe\n```");
+
+  assert.match(html, /data-riebeckite-component="notice"/);
+  assert.match(
+    html,
+    /data-riebeckite-component-props="{&#x22;message&#x22;:&#x22;Safe&#x22;}"/,
+  );
+  assert.match(html, /<strong>Safe<\/strong>/);
+});
+
+test("escapes component props without breaking the attribute boundary", async () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    render: () => "<p>Notice</p>",
+  });
+  const text = '"><img src=x onerror=alert(1)>';
+  const { html } = await new Pipeline(new Map(), new Map(), undefined, {
+    plugins: [
+      definePlugin({ name: "notice", markdownComponents: [component] }),
+    ],
+  }).execute(
+    `\`\`\`riebeckite-component notice\ntext: ${JSON.stringify(text)}\n\`\`\``,
+  );
+  const serialized = html.match(
+    /data-riebeckite-component-props="([^"]*)"/,
+  )?.[1];
+  assert.ok(serialized);
+  const decoded = serialized
+    .replaceAll("&#x22;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&amp;", "&");
+  assert.equal(JSON.parse(decoded).text, text);
+});
+
+test("rejects duplicate Markdown component names", () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    render: () => "",
+  });
+
+  assert.throws(
+    () =>
+      resolvePlugins([
+        definePlugin({ name: "one", markdownComponents: [component] }),
+        definePlugin({ name: "two", markdownComponents: [component] }),
+      ]),
+    /Markdown component "notice"/,
+  );
+});
+
+test("rejects duplicate HAST transform names", () => {
+  const transform = defineHastTransform({
+    name: "notice",
+    match: () => false,
+    render: () => "",
+  });
+
+  assert.throws(
+    () =>
+      resolvePlugins([
+        definePlugin({ name: "one", hastTransforms: [transform] }),
+        definePlugin({ name: "two", hastTransforms: [transform] }),
+      ]),
+    /HAST transform "notice"/,
+  );
+});
+
+test("allows a Markdown component and a HAST transform to share a name", () => {
+  const component = defineMarkdownComponent({
+    name: "notice",
+    render: () => "",
+  });
+  const transform = defineHastTransform({
+    name: "notice",
+    match: () => false,
+    render: () => "",
+  });
+
+  assert.doesNotThrow(() =>
+    resolvePlugins([
+      definePlugin({
+        name: "one",
+        markdownComponents: [component],
+        hastTransforms: [transform],
+      }),
+    ]),
+  );
+});
+
 test("wraps Markdown tables in a horizontal scroll container", async () => {
   const { html } = await createPipeline().execute(
     ["| Col A | Col B |", "| ----- | ----- |", "| 1     | 2     |"].join("\n"),
@@ -109,10 +217,9 @@ test("trusts raw HTML added by plugins", async () => {
   const plugin = definePlugin({
     name: "trusted-hast",
     rehypePlugins: [
-      () => (tree: Node) => {
-        const root = tree as unknown as HtmlNode;
-        root.children ??= [];
-        root.children.push({
+      () => (tree: HtmlNode) => {
+        tree.children ??= [];
+        tree.children.push({
           type: "raw",
           value: "<svg><foreignObject><p>slide</p></foreignObject></svg>",
         });
@@ -134,10 +241,9 @@ test("keeps interactive and PDF elements added by Markdown plugins", async () =>
   const plugin = definePlugin({
     name: "markdown-plugin-elements",
     extendMarkdownPipeline: (pipeline) => {
-      pipeline.use(() => (tree: Node) => {
-        const root = tree as unknown as HtmlNode;
-        root.children ??= [];
-        root.children.push({
+      pipeline.use(() => (tree: HtmlNode) => {
+        tree.children ??= [];
+        tree.children.push({
           type: "html",
           value:
             '<span data-meta-bind="input"><input class="rb-meta-bind__control" type="range" value="2" min="0" max="10" step="1"></span><output data-meta-bind="view">2</output><figure class="rr-pdf"><object class="rr-pdf__viewer" data="/report.pdf" type="application/pdf"></object></figure>',
@@ -186,8 +292,8 @@ test("plugins can extend the HTML pipeline", async () => {
   const plugin = definePlugin({
     name: "tag-headings",
     rehypePlugins: [
-      () => (tree: Node) => {
-        markHeadings(tree as unknown as HtmlNode);
+      () => (tree: HtmlNode) => {
+        markHeadings(tree);
       },
     ],
   });

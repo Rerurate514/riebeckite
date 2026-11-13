@@ -114,6 +114,13 @@ function validateCitationsOptions(
 ): readonly ConfigValidationIssue[] {
   if (!options) return [];
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   if (options.bibliography !== undefined) {
     const value = options.bibliography;
     const valid =

@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type {
-  ContentLocationInput,
-  ContentPublicLocation,
-  PluginContentLocationAugmentContext,
+import {
+  type ContentLocationInput,
+  type ContentPublicLocation,
+  createPluginContext,
+  type PluginContentLocationAugmentContext,
 } from "@riebeckite/core";
 import { assertGoldenJson } from "@riebeckite/test";
 import { type AliasOptions, alias, resolveAliasPath } from "../index.ts";
@@ -30,10 +31,10 @@ async function apply(
   const hook = plugin.extendContentLocations;
   assert.ok(hook);
   const context = {
+    ...createPluginContext(),
     entries,
     locations: new Map(locations.map((item) => [item.slug, item])),
-    diagnostics: [],
-  } as unknown as PluginContentLocationAugmentContext;
+  };
   await hook(context);
   return context;
 }

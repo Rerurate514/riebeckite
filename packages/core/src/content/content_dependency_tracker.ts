@@ -67,10 +67,7 @@ export function createContentDependencyTracker(
 }
 
 export function fingerprintContent(content: ContentSourceContent): string {
-  return `sha256:${crypto
-    .createHash("sha256")
-    .update(typeof content === "string" ? content : content)
-    .digest("hex")}`;
+  return `sha256:${crypto.createHash("sha256").update(content).digest("hex")}`;
 }
 
 function normalizeDependencyIdentity<T extends DependencyIdentity>(

@@ -1,4 +1,4 @@
-@layer base, components;
+@layer base, components, utilities, rb-plugins, rb-theme;
 
 @layer base {
   *,
@@ -47,6 +47,11 @@
     min-width: 0;
     margin-block: var(--rb-space-4, 2rem);
     padding-inline: var(--rb-space-2, 1rem);
+  }
+
+  .rb-page-body[data-rb-page-layout="article"] {
+    width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+    margin-inline: auto;
   }
 
   .rb-article-content :is(img, picture > img, figure img) {

@@ -1,4 +1,7 @@
-import { setDiagramSvg } from "@riebeckite/diagram/client";
+import {
+  renderPendingDiagrams,
+  setDiagramSvg,
+} from "@riebeckite/diagram/client";
 import type {
   GraphvizClientOptions,
   GraphvizEngine,
@@ -13,19 +16,28 @@ const DEFAULT_SCRIPT_URL = "https://cdn.jsdelivr.net/npm/@viz-js/viz@3/+esm";
  * modes. It fills every `[data-graphviz="pending"]` figure with an SVG produced
  * in the browser and flips the state attribute to `"rendered"`.
  */
-export async function initGraphvizDiagrams(
-  options: GraphvizClientOptions = {},
-) {
+type GraphvizInitInput = GraphvizClientOptions & {
+  root?: ParentNode;
+  signal?: AbortSignal;
+  config?: GraphvizClientOptions;
+};
+
+export async function initGraphvizDiagrams(input: GraphvizInitInput = {}) {
+  const options = input.config ?? input;
   const renderer = options.renderer ?? (await loadRenderer(options.scriptUrl));
-  if (!renderer) return;
+  if (!renderer || input.signal?.aborted) return;
 
-  const figures = document.querySelectorAll<HTMLElement>(
-    '[data-graphviz="pending"]',
+  return await renderPendingDiagrams(
+    "graphviz",
+    (figure): undefined => {
+      renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
+    },
+    {
+      root: input.root,
+      signal: input.signal,
+      selector: '[data-graphviz="pending"]',
+    },
   );
-
-  for (const figure of Array.from(figures)) {
-    renderFigure(renderer, figure, options.engine ?? DEFAULT_ENGINE);
-  }
 }
 
 function renderFigure(
@@ -45,9 +57,10 @@ function renderFigure(
     const svg = renderer.renderString(source, { format: "svg", engine });
     if (!setDiagramSvg(canvas, svg)) throw new Error("Invalid SVG output.");
     figure.dataset.graphviz = "rendered";
-  } catch {
+  } catch (error) {
     figure.dataset.graphviz = "error";
     canvas.dataset.graphvizError = "true";
+    throw error;
   }
 }
 

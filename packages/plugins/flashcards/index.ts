@@ -63,14 +63,12 @@ export function flashcards(options: FlashcardsOptions = {}) {
       createStyleAsset("flashcards", "@riebeckite/plugin-flashcards/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "flashcards",
-        "@riebeckite/plugin-flashcards/client",
-        "initFlashcards",
-        undefined,
-        undefined,
-        "root",
-      ),
+      createClientEntry("flashcards", {
+        moduleSpecifier: "@riebeckite/plugin-flashcards/client",
+        exportName: "initFlashcards",
+        initializerArguments: "root",
+        presenceSelector: "[data-flashcards]",
+      }),
     ],
   });
 }

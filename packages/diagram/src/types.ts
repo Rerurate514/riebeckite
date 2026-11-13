@@ -77,5 +77,9 @@ export type DiagramPluginDefinition<TOptions> = {
   ) => readonly ConfigValidationIssue[];
   rehype: (options: TOptions | undefined) => unknown;
   style?: string;
-  client?: { moduleSpecifier: string; exportName: string };
+  client?: {
+    moduleSpecifier: string;
+    exportName: string;
+    presenceSelector: string;
+  };
 };

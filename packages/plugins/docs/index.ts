@@ -41,14 +41,13 @@ export function docs(options: DocsOptions) {
       createStyleAsset(DOCS_PLUGIN_NAME, "@riebeckite/plugin-docs/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        DOCS_PLUGIN_NAME,
-        "@riebeckite/plugin-docs/client",
-        "initDocsSidebar",
-        undefined,
-        "app",
-        "context",
-      ),
+      createClientEntry(DOCS_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-docs/client",
+        exportName: "initDocsSidebar",
+        scope: "app",
+        initializerArguments: "context",
+        presenceSelector: "[data-docs-sidebar]",
+      }),
     ],
   });
 }

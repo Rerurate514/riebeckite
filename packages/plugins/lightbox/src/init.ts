@@ -29,7 +29,6 @@ export function initLightbox(
   }
 
   const dialog = createDialog({ expandLabel, closeLabel });
-  document.body.appendChild(dialog.element);
 
   const loading = createLoadingController(dialog.element);
   const controller = createDialogController(dialog.element, {
@@ -78,7 +77,7 @@ export function initLightbox(
     dialog.image.removeEventListener("error", handleImageError);
     loading.destroy();
     controller.destroy();
-    dialog.element.remove();
+    dialog.destroy();
     for (const trigger of wrappedTriggers) unwrapImage(trigger);
   };
 }

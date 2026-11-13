@@ -38,11 +38,11 @@ export function markmap(options: MarkmapOptions = {}) {
       createStyleAsset("markmap", "@riebeckite/plugin-markmap/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "markmap",
-        "@riebeckite/plugin-markmap/client",
-        "initMarkmap",
-      ),
+      createClientEntry("markmap", {
+        moduleSpecifier: "@riebeckite/plugin-markmap/client",
+        exportName: "initMarkmap",
+        presenceSelector: "[data-markmap='pending']",
+      }),
     ],
   });
 }

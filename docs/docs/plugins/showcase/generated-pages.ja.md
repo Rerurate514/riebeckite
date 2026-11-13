@@ -1,3 +1,6 @@
+---
+title: 生成ページ
+---
 # 生成ページ
 
 ## Timeline：[`timeline`](../timeline.ja.md)

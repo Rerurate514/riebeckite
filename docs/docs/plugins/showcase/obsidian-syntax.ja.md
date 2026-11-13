@@ -1,3 +1,6 @@
+---
+title: Obsidian Markdown
+---
 # Obsidian Markdown
 
 ## Callouts：[`obsidian-markdown`](../obsidian-markdown.ja.md)

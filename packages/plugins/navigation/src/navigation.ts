@@ -105,7 +105,7 @@ function isExcluded(
   entry: NavigationEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug = entry.segments.join("/");
+  const slug = entry.entry.slug;
   return excludedSlugs.some(
     (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
   );

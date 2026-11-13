@@ -1,3 +1,4 @@
+import { renderPendingDiagrams } from "@riebeckite/diagram/client";
 import type {
   MarkmapAssets,
   MarkmapClientOptions,
@@ -26,7 +27,7 @@ const DEFAULT_VIEW_URL =
  */
 export async function initMarkmap(
   options: MarkmapClientOptions = {},
-): Promise<void> {
+): Promise<undefined | (() => void)> {
   const baseClass = options.className?.trim() || DEFAULT_CLASS_NAME;
   const figures = Array.from(
     document.querySelectorAll<HTMLElement>('[data-markmap="pending"]'),
@@ -39,9 +40,15 @@ export async function initMarkmap(
     return;
   }
 
-  for (const figure of figures) {
-    await renderFigure(runtime, figure, baseClass);
-  }
+  return await renderPendingDiagrams(
+    "markmap",
+    (figure) => renderFigure(runtime, figure, baseClass),
+    {
+      ...options,
+      selector: '[data-markmap="pending"]',
+      fallbackSelector: "details",
+    },
+  );
 }
 
 async function renderFigure(
@@ -55,7 +62,7 @@ async function renderFigure(
   const source = figure.dataset.markmapSource;
   if (!canvas || !source) {
     setError(figure);
-    return;
+    throw new Error("Missing Markmap figure data.");
   }
 
   try {
@@ -71,8 +78,9 @@ async function renderFigure(
     );
     runtime.Markmap.create(svg, markmapOptions, result.root);
     figure.dataset.markmap = "rendered";
-  } catch {
+  } catch (error) {
     setError(figure);
+    throw error;
   }
 }
 

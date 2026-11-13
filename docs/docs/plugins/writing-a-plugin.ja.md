@@ -181,19 +181,34 @@ export function tip() {
 
 #### `:::tip` を見つける
 
-import 文と、ディレクティブを扱うための型を追加します。
+import 文と、ディレクティブを扱うための型を追加します。`mdast` はディレクティブのノードをまだ知らないので、モジュール宣言で型の側に知らせます。
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
+
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
 ```
 
 この例では、AST ノードの型には `mdast`、ツリーの走査には `unist-util-visit` を使います。どちらも通常の npm パッケージとして自分のパッケージに追加してください。`@riebeckite/core` からは import しません。
@@ -207,9 +222,7 @@ Riebeckite は `remark-directive` を既定では有効にしません。プラ�
 ```ts
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       // ここで :::tip を変換する
@@ -365,21 +378,34 @@ Save often.
 
 ```ts
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
 
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
+
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       const [first, ...rest] = directive.children;
@@ -600,7 +626,7 @@ definePlugin({
 
 `extendMarkdownPipeline` は remark と mdast を直接扱う低レベルな API です。独自の Markdown 構文や複雑な変換が必要なときに使います。
 
-この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、Core のコンテンツ API を通じてコンテンツやファイルに依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換の意味が変わったときに上げてください。プラグインの `options` と変換関数の内容もパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
+この例では、`processedContentCache` も宣言しています。宣言がなくても動作はしますが、サイトの処理済みコンテンツのキャッシュが無効になり、ビルドのたびに Markdown が再処理されます。現在のコンテンツだけに依存する単独の変換なら `dependencyMode: "none"`、Core のコンテンツ API を通じてコンテンツやファイルに依存するなら `tracked` を指定します。正確に追跡できない場合に限り `unsafe` を使います。`version` は変換のロジックや意味が変わったときに上げてください。プラグインの `options` はパイプラインのフィンガープリントに含まれるため、オプションの変更だけで `version` を上げる必要はありません。
 
 ## プラグインをテストする
 
@@ -719,11 +745,17 @@ UI や出力を追加したい
 ├─ 独立したページを追加する
 │    └─ pageTypes
 │
+├─ コンテンツ作者が Markdown / MDX に置く UI を描画する
+│    └─ markdownComponents
+│
+├─ サニタイズ済みの文書ツリーを変換する
+│    └─ hastTransforms
+│
 ├─ 記事レイアウトに自動で表示する
-│    └─ データヘルパー + JSX コンポーネント
+│    └─ データヘルパー + PluginSiteComponent
 │
 ├─ サイト作者に配置を任せる
-│    └─ Hono JSX コンポーネントをエクスポート
+│    └─ PluginSiteComponent をエクスポート
 │
 └─ ブラウザ側で強化する
      └─ clientEntries（必要ならサイト所有の Island）
@@ -741,11 +773,11 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [UI コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#uiコンポーネント) を参照してください。
+ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [Site コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#site-コンポーネント) を参照してください。
 
-### Hono JSX コンポーネントで手動配置する
+### PluginSiteComponent で手動配置する
 
-UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。コンポーネントレジストリやプラグイン固有のコンポーネント API はありません。ほかのコンポーネントと同じように import して組み合わせます。
+UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートし、`PluginSiteComponent<Props>` として型を付けます。ほかのコンポーネントと同じように import して組み合わせます。これは Markdown から描画する UI をプラグインに登録する `markdownComponents` とは別の仕組みで、サイト側が自分のページやレイアウトにインスタンスを配置できます。
 
 パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を維持します。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
 
@@ -760,13 +792,15 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### コンポーネントと素の HTML のどちらにするか
 
-判断の分かれ目は**誰が配置するか**です。JSX コンポーネントなら、サイト側が props、順序、位置を自分のコンポーネントツリーの中で選べます。プラグインがすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーをエクスポートし、サイト側から呼んでもらうこともできます。どちらの場合も、プラグインが manifest のエントリへマークアップを注入することはありません。何をどこに描画するかはサイト側が決めます。
+判断の分かれ目は**誰が配置するか**です。`PluginSiteComponent` なら、サイト側が props、順序、位置を自分の JSX ツリーの中で選べます。プラグインがすでに HTML を生成している場合は、代わりに小さな文字列レンダラーをエクスポートし、サイト側から呼んでもらうこともできます。HAST 変換は配置の仕組みではありません。サニタイズ済みの文書ノードを変換し、その出力はサイト側が選ぶのではなく記事 HTML に挿入されます。どちらの場合も、プラグインが manifest のエントリへマークアップを注入することはありません。何をどこに描画するかはサイト側が決めます。
 
 `backlinks` と `local-graph` はコンポーネントとデータヘルパーの両方をエクスポートします。リファレンスサイトは記事レイアウトでこれらを組み合わせています。よくあるパターンであり、必須ではありません。
 
+Markdown コンポーネントと HAST 変換は併用できます。Markdown コンポーネントがフェンスや MDX からサニタイズ済みの HTML を生成し、HAST 変換が後から結果のノードをまとめます。両者の契約は分けたままにしてください。Markdown コンポーネントはコンテンツと props を所有し、HAST 変換はサニタイズ後の文書構造だけを所有して、クライアントエントリを持ちません。
+
 ### ブラウザ側の強化と Island
 
-プラグインは `app/islands/` を所有しません。Riebeckite にもプラグイン用の Island レジストリはありません。ブラウザ側の動作が必要な場合は、サーバーで描画済みの DOM を強化する `clientEntries` の初期化関数を提供します。コンポーネントの状態が必要なら、サイト側がプラグインのコンポーネントを自分の HonoX Island で包みます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
+プラグインは `app/islands/` を所有しません。ブラウザ側の動作には、コンテンツ作者が Markdown フェンスで配置する自己完結した UI ならクライアントモジュール付きの `markdownComponents` を宣言し、任意のサーバー描画 DOM を強化するなら `clientEntries` の初期化関数を提供します。サイト側がエクスポート済みのプラグインコンポーネントを自分の HonoX Island で包むこともできます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [Markdown コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#markdown-コンポーネント) と [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
 
 ## 関連資料
 

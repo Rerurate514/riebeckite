@@ -5,6 +5,7 @@ import type {
   ContentManifestEntry,
   Diagnostic,
 } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import { query, remarkQuery } from "../index.ts";
 import { createQueryPlaceholder } from "../src/placeholder.ts";
 
@@ -30,13 +31,12 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries,
     discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 test("query validates its options", () => {

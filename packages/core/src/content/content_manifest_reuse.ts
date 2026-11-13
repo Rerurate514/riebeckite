@@ -3,6 +3,7 @@ import type { ContentBuildPlan } from "./content_build_plan.js";
 
 type ReuseManifestEntryInput = {
   readonly slug: string;
+  readonly sourcePath: string;
   readonly plan: ContentBuildPlan;
   readonly pipelineFingerprint: string | undefined;
   readonly getContentCacheFingerprint: () => string | undefined;
@@ -25,17 +26,17 @@ export function reuseManifestEntry(
   if (plan.affectedContent.dependent.has(slug)) return null;
   const contentCacheFingerprint = input.getContentCacheFingerprint();
   if (!contentCacheFingerprint) return null;
+  const previousEntry = plan.previousManifestEntriesBySlug.get(slug);
   if (
-    plan.previousState.entries[`${slug}.md`]
+    plan.previousState.entries[input.sourcePath]
       ?.processedContentCacheFingerprint !== contentCacheFingerprint
   ) {
     return null;
   }
 
-  const entry = plan.previousManifestEntriesBySlug.get(slug);
-  if (!entry) return null;
+  if (!previousEntry) return null;
   return {
-    entry: cloneManifestEntry(entry),
+    entry: cloneManifestEntry(previousEntry),
     contentCacheFingerprint,
   };
 }

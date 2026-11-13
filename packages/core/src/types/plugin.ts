@@ -1,5 +1,6 @@
 import type { ApiLifecycleDefinition } from "../api_lifecycle.js";
 import type { PluginCliExtension } from "../cli/types.js";
+import type { ContentFormat } from "../content/content_format.js";
 import type { ContentLocalization } from "../content/content_language.js";
 import type {
   DerivedDependency,
@@ -23,6 +24,10 @@ import type {
 } from "./generated_output.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
+import type {
+  PluginHastTransform,
+  PluginMarkdownComponent,
+} from "./plugin_component.js";
 import type {
   PluginContentContext,
   PluginContentLocationAugmentContext,
@@ -70,6 +75,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   cacheVersion?: string;
   derivedViews?: readonly DerivedView<unknown, unknown>[];
   contentFileMetadata?: boolean;
+  contentFormats?: readonly ContentFormat[];
+  vitePlugins?: (context: { contentDirectory: string }) => readonly unknown[];
   developmentRouteManifest?: true;
   /**
    * Explicit contract for the persistent processed-content cache.
@@ -165,6 +172,8 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   inspectGeneratedHtml?: PluginGeneratedHtmlInspector;
   assets?: PluginAsset[];
   clientEntries?: PluginClientEntry[];
+  markdownComponents?: readonly PluginMarkdownComponent[];
+  hastTransforms?: readonly PluginHastTransform[];
   endpoints?: PluginEndpoint[];
   inspector?: PluginInspectorExtension;
   seo?: PluginSeoExtension;
@@ -266,8 +275,49 @@ export function resolvePlugins(
     .toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   assertUniquePluginNames(orderedPlugins);
+  assertUniqueMarkdownComponentNames(orderedPlugins);
+  assertUniqueHastTransformNames(orderedPlugins);
 
   return resolvePluginDependencies(orderedPlugins);
+}
+
+function assertUniqueMarkdownComponentNames(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  assertUniqueNames(
+    plugins,
+    (plugin) => plugin.markdownComponents ?? [],
+    "Markdown component",
+  );
+}
+
+function assertUniqueHastTransformNames(
+  plugins: readonly RiebeckitePlugin[],
+): void {
+  assertUniqueNames(
+    plugins,
+    (plugin) => plugin.hastTransforms ?? [],
+    "HAST transform",
+  );
+}
+
+function assertUniqueNames(
+  plugins: readonly RiebeckitePlugin[],
+  select: (plugin: RiebeckitePlugin) => readonly { name: string }[],
+  label: string,
+): void {
+  const owners = new Map<string, string>();
+  for (const plugin of plugins) {
+    for (const item of select(plugin)) {
+      const previous = owners.get(item.name);
+      if (previous !== undefined) {
+        throw new Error(
+          `${label} "${item.name}" is provided by both "${previous}" and "${plugin.name}".`,
+        );
+      }
+      owners.set(item.name, plugin.name);
+    }
+  }
 }
 
 /**

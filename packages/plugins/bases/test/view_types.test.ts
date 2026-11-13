@@ -1,20 +1,22 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ContentManifestEntry } from "@riebeckite/core";
+import {
+  type ContentManifestEntry,
+  createContentManifestEntry,
+} from "@riebeckite/core";
 import { parseBases } from "../index.js";
 import { renderBases } from "../src/render.js";
 
 function entry(slug: string, title: string): ContentManifestEntry {
-  return {
+  return createContentManifestEntry({
     slug,
     permalink: `/${slug}`,
     title,
     tags: [],
     links: [],
     frontmatter: {},
-  } as unknown as ContentManifestEntry;
+  });
 }
-
 const entries = [entry("a", "Alpha"), entry("b", "Beta")];
 
 test("parses and renders the read-only list view", () => {

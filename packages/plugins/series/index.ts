@@ -163,6 +163,7 @@ export function series(options: SeriesOptions = {}) {
           if (body === "") return null;
           return {
             type: "series-list",
+            layout: model.resolved.layout,
             pathname,
             title: "Series",
             body,
@@ -179,6 +180,7 @@ export function series(options: SeriesOptions = {}) {
           if (body === "") return null;
           return {
             type: "series-list",
+            layout: model.resolved.layout,
             pathname,
             title: "Series",
             body,
@@ -198,6 +200,7 @@ export function series(options: SeriesOptions = {}) {
           if (body === "") return null;
           return {
             type: "series-index",
+            layout: model.resolved.layout,
             pathname,
             title: entry.index.title,
             body,
@@ -212,6 +215,7 @@ export function series(options: SeriesOptions = {}) {
           if (body === "") return null;
           return {
             type: "series-index",
+            layout: model.resolved.layout,
             pathname,
             title: entry.index.title,
             body,
@@ -230,6 +234,13 @@ function validateSeriesOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   for (const key of [
     "key",
     "orderKey",

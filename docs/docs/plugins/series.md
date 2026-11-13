@@ -81,6 +81,7 @@ the numbered parts, using `date`/`created`/`published`, then `title`, then
 | `positionLabel` | `boolean` | `false` | Add a `Part N of M` label for the current note. |
 | `basePath` | `string` | `"/series"` | Base path for the generated pages. An empty string disables them. |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for series pages. |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |
 
 ## Display
 

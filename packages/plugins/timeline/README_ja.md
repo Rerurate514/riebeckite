@@ -83,6 +83,7 @@ content:
 | `title` | `string` | `"Timeline"` | ページ見出しと title。 |
 | `className` | `string` | `"rb-timeline"` | 生成ページのルートに追加する CSS class。 |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | タイムラインに表示する言語の選択。 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
 
 ## 実行例
 

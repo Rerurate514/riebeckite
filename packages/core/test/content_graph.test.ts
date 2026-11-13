@@ -262,6 +262,104 @@ test("reading an unknown slug fails instead of returning empty content", async (
 
   await assert.rejects(
     manager.getPost("missing"),
-    /Content entry was not found: missing\.md/,
+    /Content entry was not found: missing/,
+  );
+});
+
+test("builds links and graph entries for non-Markdown content formats", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "index.md": "---\npublish: true\n---\n\nSee [[note]].",
+      "note.mdx": "# Note",
+    }),
+    [],
+    {
+      plugins: [
+        {
+          name: "mdx",
+          contentFormats: [
+            {
+              extension: ".mdx",
+              process: async () => ({
+                frontmatter: { title: "Note", publish: true },
+                html: "<h1>Note</h1>",
+                plainText: "Note",
+              }),
+            },
+          ],
+        },
+      ],
+    },
+  );
+
+  const manifest = await manager.build();
+  const note = manifest.bySlug.get("note");
+
+  assert.equal(note?.sourcePath, "note.mdx");
+  assert.equal(note?.plainText, "Note");
+  assert.deepEqual(note?.backlinks, ["index"]);
+  assert.deepEqual(manifest.bySlug.get("index")?.links, [
+    { raw: "note", slug: "note", kind: "note", embed: false },
+  ]);
+  assert.equal(
+    (await manager.getProcessedContent("note")).sourcePath,
+    "note.mdx",
+  );
+});
+
+test("manifest resolves Markdown links relative to the source path", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "guides/source.md": [
+        "---",
+        "publish: true",
+        "---",
+        "",
+        "Read [Target](target.md) and [Deep](../notes/deep.md).",
+        "Also [Localized](target.ja.md).",
+        "",
+      ].join("\n"),
+      "guides/target.md": "---\npublish: true\n---\n\n# Target\n",
+      "notes/deep.md": "---\npublish: true\n---\n\n# Deep\n",
+      "guides/target.ja.md": "---\npublish: true\n---\n\nローカライズ\n",
+    }),
+  );
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(manifest.bySlug.get("guides/source")?.links, [
+    { raw: "target.md", slug: "guides/target", kind: "note", embed: false },
+    {
+      raw: "../notes/deep.md",
+      slug: "notes/deep",
+      kind: "note",
+      embed: false,
+    },
+    {
+      raw: "target.ja.md",
+      slug: "guides/target.ja",
+      kind: "note",
+      embed: false,
+    },
+  ]);
+  assert.deepEqual(manifest.graph.outgoingSlugs("guides/source"), [
+    "guides/target",
+    "notes/deep",
+    "guides/target.ja",
+  ]);
+  assert.deepEqual(manifest.bySlug.get("notes/deep")?.backlinks, [
+    "guides/source",
+  ]);
+});
+
+test("rejects content files with the same slug across formats", async () => {
+  const manager = new ContentManager(
+    memorySource({ "note.md": "# Markdown", "note.mdx": "# MDX" }),
+    [],
+    { plugins: [{ name: "mdx", contentFormats: [{ extension: ".mdx" }] }] },
+  );
+
+  await assert.rejects(
+    manager.getProcessedContent("note"),
+    /Content slug collision for "note": note\.md, note\.mdx/,
   );
 });

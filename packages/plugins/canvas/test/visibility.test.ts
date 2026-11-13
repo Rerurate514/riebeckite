@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  createContentManifest,
+} from "@riebeckite/core";
 import { CANVAS_NOTE_HREF } from "../index.ts";
 import { createCanvasRuntime } from "../src/runtime.ts";
 
@@ -35,12 +39,7 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
-    entries,
-    publicEntries: entries.filter((item) => item.publishing.routable),
-    discoverableEntries: entries.filter((item) => item.publishing.discoverable),
-    bySlug: new Map(entries.map((item) => [item.slug, item])),
-  } as unknown as ContentManifest;
+  return createContentManifest({ entries });
 }
 
 test("canvas note links ignore non-routable targets", () => {

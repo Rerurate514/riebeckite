@@ -3,6 +3,8 @@ import type { OutputDependency } from "./output_dependency.js";
 import type { PluginContext } from "./plugin_context.js";
 import type { PluginHeadTag } from "./plugin_head.js";
 
+export type PluginPageLayout = "article" | "wide";
+
 /** A framework-independent page supplied by a Riebeckite plugin. */
 export type PluginPage = {
   /** Stable identifier of the page type that produced this page. */
@@ -11,6 +13,8 @@ export type PluginPage = {
   pathname: string;
   /** HTML for the page body. The site owns the surrounding document frame. */
   body: string;
+  /** Requested width for the site-owned page body. Defaults to `"wide"`. */
+  layout?: PluginPageLayout;
   title?: string;
   description?: string;
   /** Optional document metadata rendered by the site's document frame. */

@@ -8,8 +8,6 @@ const PROGRESS_CLASS = "rb-ux__progress";
 const PROGRESS_BAR_CLASS = "rb-ux__progress-bar";
 const BACK_TO_TOP_CLASS = "rb-ux__back-to-top";
 const BACK_TO_TOP_VISIBLE_CLASS = "rb-ux__back-to-top--visible";
-const TOC_ACTIVE_CLASS = "rb-ux__toc-active";
-
 const BACK_TO_TOP_THRESHOLD = 320;
 
 /**
@@ -23,7 +21,6 @@ export function initUx(): () => void {
     const cleanups = [
       config.progress ? setupProgress() : undefined,
       config.backToTop ? setupBackToTop(config) : undefined,
-      config.tocScrollSpy ? setupTocScrollSpy() : undefined,
     ].filter((value): value is () => void => value !== undefined);
     cleanup = () => {
       for (const dispose of cleanups) dispose();
@@ -48,10 +45,6 @@ function readUxConfig(): UxResolvedConfig {
   return {
     progress: readBoolean(parsed.progress, DEFAULT_UX_CONFIG.progress),
     backToTop: readBoolean(parsed.backToTop, DEFAULT_UX_CONFIG.backToTop),
-    tocScrollSpy: readBoolean(
-      parsed.tocScrollSpy,
-      DEFAULT_UX_CONFIG.tocScrollSpy,
-    ),
     backToTopLabel: readString(
       parsed.backToTopLabel,
       DEFAULT_UX_CONFIG.backToTopLabel,
@@ -152,116 +145,12 @@ function setupBackToTop(config: UxResolvedConfig): (() => void) | undefined {
   };
 }
 
-/** Highlights the table-of-contents link for the heading in view. */
-function setupTocScrollSpy(): (() => void) | undefined {
-  const container = document.querySelector<HTMLElement>(
-    ".rr-table-of-contents, [data-rb-toc]",
-  );
-  if (!container || container.dataset.rbUxToc === "true") return undefined;
-
-  const links = Array.from(
-    container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'),
-  );
-  if (links.length === 0) return undefined;
-
-  const linksById = new Map<string, HTMLAnchorElement[]>();
-  for (const link of links) {
-    const id = hashToId(link.getAttribute("href"));
-    if (!id) continue;
-    const existing = linksById.get(id) ?? [];
-    existing.push(link);
-    linksById.set(id, existing);
-  }
-
-  const headings = Array.from(linksById.keys())
-    .map((id) => document.getElementById(id))
-    .filter((heading): heading is HTMLElement => heading !== null);
-  if (headings.length === 0) return undefined;
-
-  container.dataset.rbUxToc = "true";
-
-  const activate = (id: string) => {
-    for (const link of links) {
-      link.classList.remove(TOC_ACTIVE_CLASS);
-      link.removeAttribute("aria-current");
-    }
-    for (const link of linksById.get(id) ?? []) {
-      link.classList.add(TOC_ACTIVE_CLASS);
-      link.setAttribute("aria-current", "true");
-    }
-  };
-
-  const visible = new Map<string, number>();
-  let activeId: string | null = null;
-
-  const updateActive = () => {
-    let nextId: string | null = null;
-    if (visible.size > 0) {
-      let bestTop = Number.POSITIVE_INFINITY;
-      for (const [id, top] of visible) {
-        if (top < bestTop) {
-          bestTop = top;
-          nextId = id;
-        }
-      }
-    } else {
-      for (const heading of headings) {
-        if (heading.getBoundingClientRect().top <= 0) nextId = heading.id;
-      }
-    }
-
-    nextId ??= headings[0]?.id ?? null;
-    if (nextId && nextId !== activeId) {
-      activeId = nextId;
-      activate(nextId);
-    }
-  };
-
-  let observer: IntersectionObserver | undefined;
-  if (typeof IntersectionObserver === "function") {
-    observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          const id = entry.target.id;
-          if (!id) continue;
-          if (entry.isIntersecting) {
-            visible.set(id, entry.boundingClientRect.top);
-          } else {
-            visible.delete(id);
-          }
-        }
-        updateActive();
-      },
-      { rootMargin: "-10% 0px -60% 0px", threshold: [0, 1] },
-    );
-    for (const heading of headings) observer.observe(heading);
-  }
-
-  const stop = scheduleOnScroll(updateActive);
-  return () => {
-    stop();
-    observer?.disconnect();
-    delete container.dataset.rbUxToc;
-  };
-}
-
 function findArticle(): HTMLElement | null {
   return document.querySelector<HTMLElement>(".rb-article-body");
 }
 
 function hasElement(className: string): boolean {
   return document.querySelector(`.${className}`) !== null;
-}
-
-function hashToId(href: string | null): string | null {
-  if (typeof href !== "string" || href.length < 2) return null;
-  if (!href.startsWith("#")) return null;
-  const raw = href.slice(1);
-  try {
-    return decodeURIComponent(raw);
-  } catch {
-    return raw;
-  }
 }
 
 function prefersReducedMotion(): boolean {

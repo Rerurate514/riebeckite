@@ -3,7 +3,7 @@ import type {
   PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { stripHtml } from "@riebeckite/core";
+import { htmlToPlainText, resolveEntryDate, toIsoDate } from "@riebeckite/core";
 
 export function getDescription(
   post: Pick<PostContent, "frontmatter" | "html">,
@@ -16,7 +16,7 @@ export function getDescription(
     return frontmatterDescription.trim();
   }
 
-  return stripHtml(post.html).replace(/\s+/g, " ").trim().slice(0, 160);
+  return htmlToPlainText(post.html).slice(0, 160);
 }
 
 export function filterFeedEntries(
@@ -33,19 +33,13 @@ export function filterFeedEntries(
 export function getEntryPublishedTime(
   entry: ContentManifestEntry,
 ): string | null {
-  return (
-    getIsoDate(
-      entry.frontmatter.published ??
-        entry.frontmatter.date ??
-        entry.frontmatter.created,
-    ) ?? null
-  );
+  return resolveEntryDate(entry.frontmatter);
 }
 
 export function getEntryUpdatedTime(
   entry: ContentManifestEntry,
 ): string | null {
-  return getIsoDate(entry.frontmatter.updated) ?? getEntryPublishedTime(entry);
+  return toIsoDate(entry.frontmatter.updated) ?? getEntryPublishedTime(entry);
 }
 
 export function getHtmlLanguage(config: ResolvedRiebeckiteConfig): string {
@@ -59,23 +53,15 @@ export function normalizeTags(tags: unknown): string[] {
   );
 }
 
-function getIsoDate(value: unknown): string | undefined {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || !value.trim()) return undefined;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
-}
-
 function getSortableTime(entry: ContentManifestEntry): number {
-  const value =
-    entry.frontmatter.updated ??
-    entry.frontmatter.published ??
-    entry.frontmatter.date ??
-    entry.frontmatter.created;
-  if (value instanceof Date) return value.getTime();
-  if (typeof value !== "string") return 0;
-  const time = new Date(value).getTime();
-  return Number.isNaN(time) ? 0 : time;
+  for (const value of [
+    entry.frontmatter.updated,
+    entry.frontmatter.published,
+    entry.frontmatter.date,
+    entry.frontmatter.created,
+  ]) {
+    const date = toIsoDate(value);
+    if (date !== null) return Date.parse(date);
+  }
+  return 0;
 }

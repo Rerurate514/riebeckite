@@ -6,6 +6,13 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@riebeckite/core": ["packages/core/index.ts"],
@@ -46,5 +53,15 @@
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]
     }
   },
-  "include": []
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
+  "exclude": [
+    "**/node_modules",
+    "**/dist",
+    "**/templates",
+    "**/__golden__",
+    "**/.riebeckite/**",
+    "packages/*/test/**",
+    "packages/*/*/test/**",
+    "packages/test/e2e/**"
+  ]
 }

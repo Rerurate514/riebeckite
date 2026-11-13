@@ -1,18 +1,18 @@
 ---
 date: 2026-10-20
-title: "Share a UI Component"
+title: "Share a Site Component"
 sidebar:
-  label: "7. Share a UI Component"
+  label: "7. Share a Site Component"
   order: 7
 ---
-# Share a UI Component
+# Share a Site Component
 
-A plugin can export a Hono JSX component, but Riebeckite has no component registry. The site imports the component and decides where to render it. This keeps layout ownership in the site.
+A plugin can export a Hono JSX component as a `PluginSiteComponent` for the Site to place, or register a Markdown component through `markdownComponents`. Use an export when the Site owns layout and decides where the UI goes; use a registered component when a content author should place it from Markdown. This recipe shows the manual export.
 
 Create the component in the plugin package:
 
 ```tsx
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 
 export type SeriesListProps = {
   series: readonly {
@@ -37,7 +37,7 @@ const SeriesList = (({ series }: Readonly<SeriesListProps>) => {
       </ol>
     </nav>
   );
-}) satisfies PluginComponent<SeriesListProps>;
+}) satisfies PluginSiteComponent<SeriesListProps>;
 
 export default SeriesList;
 ```
@@ -65,6 +65,8 @@ return (
 ```
 
 The component returns `null` when there is nothing to show, so the site can render it unconditionally. If the component needs manifest data, export a helper that accepts a filtered public view; do not read draft content in the browser.
+
+If content authors should place the UI from Markdown instead, declare it through the plugin's `markdownComponents` field and give interactive components a client module. See [Markdown components](../../reference/plugin-api/ui-and-assets.md#markdown-components).
 
 ---
 

@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { resolveRelatedPostsOptions } from "../src/options.js";
@@ -30,7 +30,7 @@ const RelatedPosts = (async (props: Readonly<RelatedPostsProps>) => {
         })
       : undefined);
   return renderRelatedPostsContent(entries ?? [], options);
-}) satisfies PluginComponent<RelatedPostsProps>;
+}) satisfies PluginSiteComponent<RelatedPostsProps>;
 
 export function renderRelatedPostsContent(
   entries: readonly RelatedPostsEntry[],

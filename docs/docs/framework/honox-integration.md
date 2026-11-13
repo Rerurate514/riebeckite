@@ -69,7 +69,7 @@ the Riebeckite Vite plugin, it also:
 It works alongside any Vite plugins the site needs, such as the HonoX plugin, a
 deployment build plugin, or Tailwind.
 
-## Declarative plugin components
+## Plugin site components
 
 [[glossary/plugin|Plugin]] [[glossary/ui|UI]] components import from their own package and resolve their default data
 from `@riebeckite/ui` context. The site still chooses placement; it does not need

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@types/unist": "catalog:",
+    "entities": "^6.0.1",
     "rehype-format": "^5.0.1",
     "rehype-katex": "^7.0.1",
     "rehype-raw": "^7.0.0",
@@ -50,7 +51,8 @@
     "remark-rehype": "^11.1.2",
     "unified": "catalog:",
     "vfile": "^6.0.3",
-    "vfile-matter": "catalog:"
+    "vfile-matter": "catalog:",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@riebeckite/test": "workspace:*",

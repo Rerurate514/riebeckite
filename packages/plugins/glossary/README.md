@@ -52,3 +52,4 @@ active theme's color and typography tokens.
 | `title` | `string` | `"Glossary"` | Page heading and title. |
 | `className` | `string` | `"rb-glossary"` | Root CSS class. |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | Locale selection for the glossary page. |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |

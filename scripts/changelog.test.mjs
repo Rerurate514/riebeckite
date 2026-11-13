@@ -12,7 +12,6 @@ import {
   finalizeRelease,
   parseChangeEntry,
   renderChangelog,
-  renderReleaseNotes,
   UNRELEASED_DIRECTORY,
   validateEntry,
 } from "./changelog.mjs";
@@ -296,24 +295,6 @@ test("finalizeRelease recovers when an entry was copied but not removed", () => 
       0,
     );
   });
-});
-
-test("release notes are deterministic", () => {
-  const entries = [
-    parseChangeEntry(
-      entryText({ type: "added", body: "Add one." }),
-      "changes/unreleased/20261102-120000-one-abcdef.md",
-    ),
-  ];
-  const options = {
-    version: "0.0.36",
-    date: "2026-11-02",
-    entries,
-    changelogUrl:
-      "https://github.com/Rerurate514/riebeckite/blob/v0.0.36/CHANGELOG.md",
-  };
-
-  assert.equal(renderReleaseNotes(options), renderReleaseNotes(options));
 });
 
 test("checkChangelogFiles detects generated files that were edited by hand", () => {

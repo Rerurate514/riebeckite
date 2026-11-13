@@ -33,15 +33,10 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
       },
     ],
     clientEntries: [
-      createClientEntry(
-        "garden-explorer",
-        "@riebeckite/plugin-garden-explorer/client",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "[data-riebeckite-garden-explorer]",
-      ),
+      createClientEntry("garden-explorer", {
+        moduleSpecifier: "@riebeckite/plugin-garden-explorer/client",
+        presenceSelector: "[data-riebeckite-garden-explorer]",
+      }),
     ],
     pageTypes: [
       {
@@ -57,6 +52,7 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
+            layout: "wide",
             pathname,
             title: "Garden Explorer",
             description:
@@ -84,6 +80,7 @@ export function gardenExplorer(options: GardenExplorerPluginOptions = {}) {
           const siteTitle = config.site.title;
           return {
             type: "garden-explorer",
+            layout: "wide",
             pathname,
             title: "Garden Explorer",
             description:

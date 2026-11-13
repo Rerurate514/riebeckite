@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type {
-  ContentManifest,
-  ResolvedRiebeckiteConfig,
-} from "@riebeckite/core";
-import { resolveConfig } from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { createContentManifest, resolveConfig } from "@riebeckite/core";
 import { seo } from "../index.ts";
 
 const config: ResolvedRiebeckiteConfig = resolveConfig({
@@ -16,11 +13,11 @@ const config: ResolvedRiebeckiteConfig = resolveConfig({
   content: { filters: { publishStrategy: "explicit" } },
 });
 
-const manifest = {
+const manifest = createContentManifest({
   entries: [],
   publicEntries: [],
   discoverableEntries: [],
-} as unknown as ContentManifest;
+});
 
 test("seo() registers only the requested feed and site-file endpoints", () => {
   const plugin = seo({

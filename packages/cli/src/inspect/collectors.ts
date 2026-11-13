@@ -4,6 +4,7 @@ import {
   ContentManager,
   compareBuildProvenance,
   computePipelineFingerprint,
+  createContentFormatRegistry,
   getResolvedPluginMetadata,
   inspectContentAssets,
   isPersistentlyCacheable,
@@ -157,9 +158,12 @@ export async function collectAssetInspection(
   const config = await loadProjectConfig(project);
   const source = resolveProjectContentSource(config, project);
   const manifest = await readOnlyContentManager(source, config).getManifest();
+  const registry = createContentFormatRegistry(config.plugins);
   return {
     source: contentSourceName(config),
-    report: await inspectContentAssets(manifest, source),
+    report: await inspectContentAssets(manifest, source, {
+      isContentPath: (entryPath) => registry.isContentPath(entryPath),
+    }),
   };
 }
 
@@ -182,9 +186,11 @@ async function inspectPaths(
     source,
     config,
   ).getContentLocations();
+  const registry = createContentFormatRegistry(config.plugins);
   return paths.map((path) => {
-    if (!path.endsWith(".md")) return { path };
-    const location = locations.get(path.replace(/\.md$/, ""));
+    const slug = registry.toSlug(path);
+    if (slug === undefined) return { path };
+    const location = locations.get(slug);
     return {
       path,
       id: location?.metadata?.id,
@@ -203,11 +209,15 @@ export async function collectGraphInspection(
     source,
     config,
   ).getContentLocations();
-  const graph = await readOnlyContentGraph(source, locations);
+  const graph = await readOnlyContentGraph(
+    source,
+    locations,
+    createContentFormatRegistry(config.plugins),
+  );
   const nodes = graph.nodes();
   const mostLinked = nodes
     .map((node) => ({
-      path: `${node.slug}.md`,
+      path: node.sourcePath ?? node.slug,
       incomingCount: graph.incomingSlugs(node.slug).length,
     }))
     .toSorted(

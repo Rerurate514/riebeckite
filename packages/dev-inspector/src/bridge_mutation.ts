@@ -43,8 +43,12 @@ export type BridgeMutationStore = {
 export function createBridgeMutationStore(
   contentRoot: string,
   approvalSecret: string,
+  formats?: {
+    readonly isContentPath: (path: string) => boolean;
+    readonly toSlug: (path: string) => string | undefined;
+  },
 ): BridgeMutationStore {
-  const mutation = new FileSystemContentMutation(contentRoot);
+  const mutation = new FileSystemContentMutation(contentRoot, formats);
   return {
     async plan(operations) {
       const plan = await mutation.plan(operations);

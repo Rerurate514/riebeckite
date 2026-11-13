@@ -38,6 +38,11 @@ test("client module assigns client entries to their lifecycle scope", async () =
             moduleSpecifier: "context-entry",
             initializerArguments: "context",
           },
+          {
+            pluginName: "document",
+            moduleSpecifier: "document-entry",
+            root: "document",
+          },
         ],
       },
     ],
@@ -53,6 +58,10 @@ test("client module assigns client entries to their lifecycle scope", async () =
   assert.match(module as string, /pluginClientInitializer0\(context.config\)/);
   assert.match(module as string, /pluginClientInitializer1\(context.root\)/);
   assert.match(module as string, /pluginClientInitializer2\(context\)/);
+  assert.match(
+    module as string,
+    /resolveClientEntryRoot\("page", root, "document"\)/,
+  );
 });
 
 test("client module imports the SPA runtime only when configured", async () => {
@@ -92,10 +101,114 @@ test("client module splits entries gated by a page marker", async () => {
   ]);
 
   assert.match(module as string, /import\("conditional-entry"\)/);
-  assert.match(module as string, /root\.querySelector\(presenceSelector\)/);
+  assert.match(module as string, /document\.querySelector\(presenceSelector\)/);
+  assert.match(module as string, /function resolveClientEntryRoot/);
+  assert.match(module as string, /const marker = document\.querySelector/);
+  assert.match(module as string, /marker,/);
+  assert.match(
+    module as string,
+    /loadConditionalPluginClientInitializer\(name, load\)/,
+  );
   assert.doesNotMatch(
     module as string,
     /import \{ initConditional as pluginClientInitializer0 \}/,
+  );
+});
+
+test("client module re-evaluates app conditional entries after navigation", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        clientEntries: [
+          {
+            pluginName: "shell",
+            moduleSpecifier: "shell-entry",
+            scope: "app",
+            presenceSelector: "[data-shell]",
+          },
+        ],
+      },
+    ],
+    spa: {},
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(
+    module as string,
+    /function mountAppConditionalClientInitializers\(root\) \{\n\s+mountConditionalPluginClientInitializer\("app", "shell-entry"/,
+  );
+  assert.equal(
+    (module as string).match(
+      /mountAppConditionalClientInitializers\((?:document|root)\);/g,
+    )?.length,
+    3,
+  );
+  assert.match(
+    module as string,
+    /onPageCommit: async \(\{ root, signal \}\) => \{[\s\S]*mountAppConditionalClientInitializers\(root\);/,
+  );
+});
+
+test("client module lazily hydrates registered interactive components", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        markdownComponents: [
+          {
+            name: "counter",
+            render: () => "",
+            client: { moduleSpecifier: "counter-entry", exportName: "Counter" },
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(module as string, /import\("counter-entry"\)/);
+  assert.match(module as string, /hydrateRoot/);
+  assert.match(module as string, /Promise\.allSettled/);
+  assert.match(module as string, /data-riebeckite-component-interactive/);
+  assert.doesNotMatch(module as string, /^import .*counter-entry/m);
+});
+
+test("client module passes an empty runtime list to interactive component hydration", async () => {
+  const plugin = riebeckiteClientModule(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        markdownComponents: [
+          {
+            name: "counter",
+            render: () => "",
+            client: { moduleSpecifier: "counter-entry", exportName: "Counter" },
+          },
+        ],
+        clientEntries: [
+          {
+            pluginName: "calculator",
+            moduleSpecifier: "calculator-entry",
+            runtimeEntries: [
+              { id: "calculator", moduleSpecifier: "calculator-runtime" },
+            ],
+          },
+        ],
+      },
+    ],
+  }));
+  const module = await Reflect.apply(hookHandler(plugin.load), undefined, [
+    "\0virtual:riebeckite/client",
+  ]);
+
+  assert.match(
+    module as string,
+    /mountPluginClientInitializer\("page", "plugin-markdown-components", root, undefined, \[\], async \(context\) => \{/,
   );
 });
 

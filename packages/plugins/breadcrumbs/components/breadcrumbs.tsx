@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { buildBreadcrumbItems } from "../src/breadcrumbs.js";
@@ -56,5 +56,5 @@ const Breadcrumbs = (async ({
       </ol>
     </nav>
   );
-}) satisfies PluginComponent<BreadcrumbsProps>;
+}) satisfies PluginSiteComponent<BreadcrumbsProps>;
 export default Breadcrumbs;

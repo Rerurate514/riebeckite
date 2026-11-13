@@ -117,9 +117,8 @@
  * reading measure (~43rem), generous leading and paragraph rhythm,
  * headings differentiated by size/weight/tracking instead of colour or
  * boxes, and hairlines only where structure genuinely needs a boundary.
- * Near-chromeless: the only accent is ink itself. Unlayered on purpose
- * so it wins over the layered app and plugin stylesheets without
- * `!important`.
+ * Near-chromeless: the only accent is ink itself. The generated rb-theme layer
+ * places it above framework and plugin defaults.
  * ------------------------------------------------------------------ */
 
 :is(:root, .rb-theme-root)[data-rb-theme="minimal"] ::selection {

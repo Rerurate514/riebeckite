@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { reclaimStaleLock } from "../../src/file_system_content_migration_helpers.js";
 import { FileSystemContentMutation } from "../../src/file_system_content_mutation.js";
 
 const [mode, root, argument = ""] = process.argv.slice(2);
@@ -35,9 +36,22 @@ try {
     const plan = await mutation.loadPlan(argument);
     const result = await mutation.apply(plan);
     process.stdout.write(`${JSON.stringify(result)}\n`);
+  } else if (mode === "hold-open") {
+    const handle = await fs.open(argument, "r");
+    await fs.mkdir(path.join(root, ".riebeckite"), { recursive: true });
+    await fs.writeFile(path.join(root, ".riebeckite", "worker-ready"), "ready");
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    await handle.close();
+    process.stdout.write(`${JSON.stringify({ held: true })}\n`);
   } else if (mode === "recover" || mode === "recover-block") {
     const result = await mutation.recover(argument);
     process.stdout.write(`${JSON.stringify(result)}\n`);
+  } else if (mode === "reclaim-block") {
+    const reclaimed = await reclaimStaleLock(
+      path.join(root, ".riebeckite", "mutations", "lock"),
+      { afterGuardAcquired: async () => await signalReady() },
+    );
+    process.stdout.write(`${JSON.stringify({ reclaimed })}\n`);
   } else {
     throw new Error(`Unknown worker mode: ${mode}`);
   }

@@ -1,7 +1,9 @@
 import {
   type ContentManifest,
   getEntryLanguage,
+  htmlToPlainText,
   type ResolvedRiebeckiteConfig,
+  resolveEntryDate,
 } from "@riebeckite/core";
 import type { SearchItem } from "./search.js";
 
@@ -17,18 +19,19 @@ export function buildSearchItems(args: {
   const resolveTitle = args.resolveTitle ?? getDefaultArticleTitle;
   const items = args.manifest.discoverableEntries.map((entry) => {
     const language = getEntryLanguage(entry);
+    const plainText = entry.plainText ?? htmlToPlainText(entry.html);
     return {
       slug: entry.slug,
       permalink: entry.permalink,
       title: resolveTitle(entry.slug, entry.frontmatter.title),
       aliases: [...(entry.aliases ?? [])],
       headings: extractHeadings(entry.html),
-      body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-      excerpt: createExcerpt(entry),
+      body: plainText.slice(0, MAX_BODY_LENGTH),
+      excerpt: createExcerpt(entry, plainText),
       tags: entry.tags,
       ...(entry.icon ? { icon: entry.icon } : {}),
       ...(language === undefined ? {} : { language }),
-      date: getEntryDate(entry.frontmatter),
+      date: resolveEntryDate(entry.frontmatter),
     };
   });
 
@@ -52,59 +55,24 @@ function extractHeadings(html: string): string[] {
   const headingPattern = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/g;
 
   for (const match of html.matchAll(headingPattern)) {
-    const heading = toPlainText(match[2] ?? "");
+    const heading = htmlToPlainText(match[2] ?? "");
     if (heading) headings.push(heading);
   }
 
   return headings;
 }
 
-function createExcerpt(entry: {
-  frontmatter: { description?: unknown };
-  html: string;
-}): string {
+function createExcerpt(
+  entry: {
+    frontmatter: { description?: unknown };
+  },
+  plainText: string,
+): string {
   const description = entry.frontmatter.description;
   const text =
     typeof description === "string" && description.trim()
       ? description.trim()
-      : toPlainText(entry.html);
+      : plainText;
 
   return text.slice(0, 180);
-}
-
-function getEntryDate(frontmatter: {
-  published?: unknown;
-  date?: unknown;
-  created?: unknown;
-}): string | null {
-  const value =
-    frontmatter.published ?? frontmatter.date ?? frontmatter.created;
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || !value.trim()) return null;
-
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function toPlainText(html: string): string {
-  return decodeHtmlEntities(
-    html
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
-      .replace(/<[^>]+>/g, " "),
-  )
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
 }

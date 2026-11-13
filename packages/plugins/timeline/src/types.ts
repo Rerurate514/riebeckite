@@ -1,4 +1,5 @@
 export type TimelineOptions = {
+  layout?: "article" | "wide";
   basePath?: string;
   className?: string;
   key?: string;
@@ -15,6 +16,7 @@ export type TimelineSelector = {
 };
 
 export type ResolvedTimelineOptions = {
+  layout: "article" | "wide";
   basePath: string;
   className: string;
   key: string;

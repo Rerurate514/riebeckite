@@ -93,6 +93,7 @@ function resolutionKey(occurrence: LinkOccurrence): string | undefined {
 export function linkResolutionKey(
   occurrence: LinkOccurrence,
   sourcePath = occurrence.sourcePath,
+  toSlug?: (path: string) => string | undefined,
 ): string | undefined {
   const destination = occurrence.normalizedDestination.split("#", 1)[0] ?? "";
   if (!destination) return undefined;
@@ -110,7 +111,7 @@ export function linkResolutionKey(
     else segments.push(segment);
   }
   const path = decodeDestination(segments.join("/"));
-  return path.replace(/\.md$/i, "").toLowerCase();
+  return (toSlug?.(path) ?? path.replace(/\.md$/i, "")).toLowerCase();
 }
 
 function decodeDestination(value: string): string {

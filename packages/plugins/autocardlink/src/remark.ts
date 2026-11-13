@@ -5,6 +5,7 @@ import type { AutoCardLink, AutoCardLinkOptions } from "./types.js";
 
 const CARD_CLASS = "rr-cardlink";
 const CARDLINK_LANGUAGE = "cardlink";
+const DEFAULT_MAX_LINE = 3;
 const SAFE_LINK_SCHEMES = new Set(["http", "https"]);
 
 const fieldPrefixes = {
@@ -18,6 +19,8 @@ const fieldPrefixes = {
 
 export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
   const extraClassName = options.className?.trim() ?? "";
+  const maxLine = resolveMaxLine(options.maxLine);
+  const showCopyButton = options.showCopyButton !== false;
 
   return (tree: Root) => {
     visit(tree, "code", (node, index, parent) => {
@@ -30,10 +33,18 @@ export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
       parent.children.splice(
         index,
         1,
-        renderAutoCardLink(cardLink, extraClassName),
+        renderAutoCardLink(cardLink, extraClassName, maxLine, showCopyButton),
       );
     });
   };
+}
+
+function resolveMaxLine(value: number | null | undefined): number | null {
+  if (value === null) return null;
+  if (typeof value === "number" && Number.isInteger(value) && value > 0)
+    return value;
+
+  return DEFAULT_MAX_LINE;
 }
 
 function parseAutoCardLink(node: Code): AutoCardLink {
@@ -91,16 +102,26 @@ function hasSafeLinkScheme(url: string): boolean {
 function renderAutoCardLink(
   cardLink: AutoCardLink,
   extraClassName: string,
+  maxLine: number | null,
+  showCopyButton: boolean,
 ): Html {
   const title = cardLink.title || cardLink.url;
   const label = resolveHostLabel(cardLink);
   const imageUrl = pickSafeUrl(cardLink.image);
   const faviconUrl = pickSafeUrl(cardLink.favicon);
-  const rootClassName = buildRootClassName(imageUrl !== "", extraClassName);
+  const rootClassName = buildRootClassName(
+    imageUrl !== "",
+    extraClassName,
+    maxLine,
+  );
+  const rootStyle =
+    typeof maxLine === "number" && maxLine !== DEFAULT_MAX_LINE
+      ? ` style="--rr-autocardlink-description-max-line: ${maxLine}"`
+      : "";
 
   return {
     type: "html",
-    value: `<div class="${escapeHtmlAttribute(rootClassName)}">
+    value: `<div class="${escapeHtmlAttribute(rootClassName)}"${rootStyle}>
   <a class="${CARD_CLASS}__card" href="${escapeHtmlAttribute(cardLink.url)}" target="_blank" rel="noopener noreferrer">
     <span class="${CARD_CLASS}__body">
       ${renderImage(imageUrl, cardLink)}
@@ -114,7 +135,7 @@ function renderAutoCardLink(
       </span>
     </span>
   </a>
-  ${renderCopyButton(cardLink.url)}
+  ${showCopyButton ? renderCopyButton(cardLink.url) : ""}
 </div>`,
   };
 }
@@ -129,9 +150,14 @@ function renderCopyButton(url: string): string {
 </button>`;
 }
 
-function buildRootClassName(hasImage: boolean, extraClassName: string): string {
+function buildRootClassName(
+  hasImage: boolean,
+  extraClassName: string,
+  maxLine: number | null,
+): string {
   const classNames = [CARD_CLASS];
   if (!hasImage) classNames.push(`${CARD_CLASS}--no-image`);
+  if (maxLine === null) classNames.push(`${CARD_CLASS}--description-unlimited`);
   if (extraClassName) classNames.push(extraClassName);
 
   return classNames.join(" ");

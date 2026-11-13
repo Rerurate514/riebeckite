@@ -92,6 +92,8 @@ host: example.com
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `className` | `string` | `(none)` | Extra CSS class added to the card root. The `rr-cardlink` hook is always applied |
+| `maxLine` | `number \| null` | `3` | Maximum number of visible description lines. Use `null` to show the complete description |
+| `showCopyButton` | `boolean` | `true` | Whether to show the URL copy button |
 
 ## Exports
 

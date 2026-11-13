@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import {
   buildNavigation,
   navigation,
@@ -37,13 +38,13 @@ function makeManifest(
   entries: ContentManifestEntry[],
   discoverable: ContentManifestEntry[] = entries,
 ): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: discoverable,
     discoverableEntries: discoverable,
     bySlug: new Map(entries.map((entry) => [entry.slug, entry])),
     folderLocations: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 function makeLocalizedEntry(
@@ -52,7 +53,7 @@ function makeLocalizedEntry(
   title: string,
   permalink: string,
 ): ContentManifestEntry {
-  const slug = lang === "en" ? translationId : `${lang}/${translationId}`;
+  const slug = lang === "en" ? `${translationId}.en` : translationId;
   return makeEntry({
     slug,
     title,
@@ -151,6 +152,34 @@ test("excludes a configured slug and its descendants from derived navigation", (
     buildNavigation([config, internal, guide], { exclude: ["Config"] }).primary,
     [{ label: "Guide", href: "/guide/" }],
   );
+});
+
+test("excludes localized entries by logical slug rather than translation id", () => {
+  const japanese = makeLocalizedEntry(
+    "ja",
+    "guide/page",
+    "Guide",
+    "/guide/page",
+  );
+  const english = makeLocalizedEntry(
+    "en",
+    "guide/page",
+    "Guide EN",
+    "/guide/page.en",
+  );
+
+  const withoutEnglish = JSON.stringify(
+    buildNavigation([japanese, english], { exclude: ["guide/page.en"] })
+      .primary,
+  );
+  assert.ok(withoutEnglish.includes('"/guide/page"'));
+  assert.equal(withoutEnglish.includes("page.en"), false);
+
+  const withoutJapanese = JSON.stringify(
+    buildNavigation([japanese, english], { exclude: ["guide/page"] }).primary,
+  );
+  assert.ok(withoutJapanese.includes('"/guide/page.en"'));
+  assert.equal(withoutJapanese.includes('"/guide/page"'), false);
 });
 
 test("renders a folder without an index as a label with no href", () => {

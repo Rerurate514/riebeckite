@@ -29,13 +29,11 @@ export function colorMode() {
       createStyleAsset("color-mode", "@riebeckite/plugin-color-mode/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "color-mode",
-        "@riebeckite/plugin-color-mode/client",
-        "initColorMode",
-        undefined,
-        "app",
-      ),
+      createClientEntry("color-mode", {
+        moduleSpecifier: "@riebeckite/plugin-color-mode/client",
+        exportName: "initColorMode",
+        scope: "app",
+      }),
     ],
   });
 }

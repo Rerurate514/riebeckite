@@ -7,7 +7,13 @@ export type ContentIndexBuild = {
 };
 
 export class ContentIndexBuilder {
-  constructor(private source: ContentSource) {}
+  constructor(
+    private source: ContentSource,
+    private readonly isContentPath = (path: string) =>
+      path.toLowerCase().endsWith(".md"),
+    private readonly toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
+  ) {}
 
   async build(
     contentEntries: readonly ContentSourceEntry[],
@@ -25,6 +31,9 @@ export class ContentIndexBuilder {
   static buildFromAliases(
     contentEntries: readonly ContentSourceEntry[],
     aliasesByPath: ReadonlyMap<string, readonly string[]>,
+    isContentPath = (path: string) => path.toLowerCase().endsWith(".md"),
+    toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
   ): ContentIndexBuild {
     const candidates = new Map<string, Set<string>>();
 
@@ -33,6 +42,8 @@ export class ContentIndexBuilder {
         candidates,
         contentEntry,
         aliasesByPath.get(contentEntry.path) ?? [],
+        isContentPath,
+        toSlug,
       );
     }
 
@@ -44,13 +55,15 @@ export class ContentIndexBuilder {
     contentEntry: ContentSourceEntry,
     read: (entry: ContentSourceEntry) => Promise<string | Uint8Array>,
   ) {
-    const aliases = contentEntry.path.toLowerCase().endsWith(".md")
+    const aliases = this.isContentPath(contentEntry.path)
       ? extractFrontmatterAliases(readText(await read(contentEntry)))
       : [];
     ContentIndexBuilder.indexContentEntryFromAliases(
       candidates,
       contentEntry,
       aliases,
+      this.isContentPath,
+      this.toSlug,
     );
   }
 
@@ -58,23 +71,26 @@ export class ContentIndexBuilder {
     candidates: Map<string, Set<string>>,
     contentEntry: ContentSourceEntry,
     aliases: readonly string[],
+    isContentPath = (path: string) => path.toLowerCase().endsWith(".md"),
+    toSlug: (path: string) => string | undefined = (path) =>
+      path.replace(/\.md$/i, ""),
   ) {
     const contentPath = contentEntry.path;
-    const ext = contentPath.split(".").pop()?.toLowerCase() ?? "";
-    const value =
-      ext === "md" ? contentPath.replace(/\.md$/i, "") : contentPath;
+    const isContent = isContentPath(contentPath);
+    const value = isContent ? toSlug(contentPath) : contentPath;
+    if (!value) return;
     const parts = value.split("/");
 
     for (let i = parts.length - 1; i >= 0; i--) {
       const rawSuffix = parts.slice(i).join("/");
       addCandidate(candidates, rawSuffix, value);
 
-      if (ext !== "md") {
+      if (!isContent) {
         addCandidate(candidates, rawSuffix.replace(/\.[^/.]+$/, ""), value);
       }
     }
 
-    if (ext === "md") {
+    if (isContent) {
       for (const alias of aliases) addCandidate(candidates, alias, value);
     }
   }

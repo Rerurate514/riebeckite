@@ -101,6 +101,43 @@ flowchart LR
     Renderer -->|"does not handle it"| Next["Next renderer"]
 ```
 
+## Content formats
+
+A plugin can register an additional source format, such as `.mdx`. Register the
+extension and, when HonoX should render the page at request time, a renderer
+module. The renderer receives the source path and `rendererOptions`; it returns
+the article body, not the document frame.
+
+```ts
+definePlugin({
+  name: "example-format",
+  contentFormats: [{
+    extension: ".txt",
+    rendererModule: "@example/riebeckite-format/renderer",
+    rendererOptions: { strict: true },
+    async process({ source }) {
+      return { frontmatter: {}, html: renderText(source) };
+    },
+    dependencies({ source, paths }) {
+      return findLocalImports(source, paths);
+    },
+  }],
+});
+```
+
+`process` returns `PostContent`. `html` is a safe build-time projection used by
+search, feeds, excerpts, and table-of-contents extraction; `plainText` can carry
+cleaner text for search and reading time. The projection must not execute
+untrusted page code. `dependencies` returns local source or module paths whose
+content should invalidate the cached result. Extensions are registered in the
+Content Format Registry, so framework code must use `isContentPath` and
+`toSlug` instead of checking `.md` directly. A duplicate extension fails plugin
+resolution.
+
+Content formats that change article output must declare
+`processedContentCache`. Bump its `version` whenever the projection or rendered
+output changes.
+
 ## Manifest collections and publication safety
 
 Hooks that receive the manifest (`onManifestCreated`, page resolvers)

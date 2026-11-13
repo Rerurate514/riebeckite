@@ -4,6 +4,7 @@ import {
   buildOutputInventory,
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   determineOutputChanges,
   type OutputDependency,
   type OutputDescriptor,
@@ -94,6 +95,23 @@ test("getRecentPosts falls back to created and preserves Date instances", () => 
   assert.equal(result[0]?.slug, "date-object");
   assert.equal(result[0]?.postedAt, explicit);
   assert.equal(result[1]?.postedAt.toISOString(), "2024-05-05T00:00:00.000Z");
+});
+
+test("getRecentPosts falls back to the next valid date field", () => {
+  const entries = [
+    entry("invalid-date", {
+      frontmatter: { date: "not-a-date", created: "2024-05-05" },
+    }),
+    entry("published", { frontmatter: { published: "2024-04-04" } }),
+    entry("boolean-published", { frontmatter: { published: true } }),
+  ];
+
+  const result = getRecentPosts({ manifest: manifest(entries, entries) });
+  assert.deepEqual(
+    result.map((post) => post.slug),
+    ["invalid-date", "published"],
+  );
+  assert.equal(result[0]?.postedAt.toISOString(), "2024-05-05T00:00:00.000Z");
 });
 
 test("getRecentPosts uses the manifest entry title", () => {
@@ -254,13 +272,11 @@ function manifest(
   entries: ContentManifestEntry[],
   discoverable: ContentManifestEntry[] = entries,
 ): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries.filter((entry) => entry.publishing.routable),
     discoverableEntries: discoverable,
-    publicRedirects: new Map(),
-    generatedOutputs: [],
-  } as unknown as ContentManifest;
+  });
 }
 
 function previousOutputState(

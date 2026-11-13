@@ -22,7 +22,10 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/ui": "workspace:*"
+    "@riebeckite/ui": "workspace:*",
+    "hono": "catalog:",
+    "rehype-stringify": "^10.0.1",
+    "unified": "catalog:"
   },
   "publishConfig": {
     "access": "public"

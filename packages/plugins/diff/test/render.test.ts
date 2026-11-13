@@ -89,6 +89,9 @@ test("renderDiffHistory references the external payload and escapes revision tex
   assert.equal(html.includes('"markdown"'), false);
   assert.ok(!html.includes("</script></span>"));
   assert.ok(!html.includes('"selected"'));
+  assert.ok(html.includes('aria-pressed="true"'));
+  assert.ok(html.includes('for="rr-diff-aaaaaaaaaaaa-from"'));
+  assert.ok(html.includes('id="rr-diff-aaaaaaaaaaaa-from"'));
 });
 
 test("renderDiffHistory renders locale-independent revision dates", () => {

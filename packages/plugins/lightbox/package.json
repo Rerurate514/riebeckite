@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
-    "@riebeckite/ui": "workspace:*"
+    "@riebeckite/ui": "workspace:*",
+    "hono": "catalog:"
   },
   "publishConfig": {
     "access": "public"

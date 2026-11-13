@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { type TestContext, test } from "node:test";
+import { createInvalid } from "@riebeckite/core";
 import {
   createWebmentionSourceFetcher,
   isDisallowedHostname,
@@ -190,7 +191,7 @@ test("rejects an oversized declared Content-Length without reading", async (t) =
       return "";
     },
   };
-  installFetch(t, async () => response as unknown as Response);
+  installFetch(t, async () => createInvalid<Response>(response));
   const fetcher = createWebmentionSourceFetcher({
     maxBytes: 1000,
     resolveHostname: publicResolver,

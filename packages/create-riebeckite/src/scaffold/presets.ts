@@ -207,6 +207,7 @@ const blogOgImage = np(
   `{ preset: "editorial" }`,
 );
 const toc = np("@riebeckite/plugin-toc", "toc");
+const mdx = np("@riebeckite/plugin-mdx", "mdx", "{ trusted: true }");
 const properties = np("@riebeckite/plugin-properties", "properties", {
   include: { depth: 2, value: '["created", "modified", "tags", "status"]' },
   fields: {
@@ -518,7 +519,6 @@ const glossary = np("@riebeckite/plugin-glossary", "glossary");
 const ux = np("@riebeckite/plugin-ux", "ux", {
   progress: { depth: 2, value: "true" },
   backToTop: { depth: 2, value: "true" },
-  tocScrollSpy: { depth: 2, value: "true" },
 });
 
 /** Developer-experience and ops plugins for the top tier. */
@@ -618,6 +618,7 @@ export const starter: ScaffoldPreset = {
     colorMode,
     seo,
     toc,
+    mdx,
     properties,
     alias,
     codeEnhance,

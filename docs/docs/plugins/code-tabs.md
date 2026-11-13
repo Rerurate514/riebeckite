@@ -113,7 +113,9 @@ all panels remain visible so every code block can still be read.
 
 - `codeTabs(options?)` — plugin factory
 - `rehypeCodeTabs(options?)` — rehype transform
+- `codeTabsTransform` — HAST transform
 - `initCodeTabs(options?)` — client initializer
+- `remarkCodeMeta` — remark plugin
 - Types: `CodeTabsOptions`, `CodeTabsClientOptions`
 
 ## See also

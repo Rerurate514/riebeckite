@@ -5,6 +5,7 @@ import {
   localizedPagePath,
   normalizeTag,
   selectLocalizedEntries,
+  toCalendarDate,
 } from "@riebeckite/core";
 import type {
   ResolvedTimelineOptions,
@@ -21,6 +22,7 @@ export function resolveTimelineOptions(
   options: TimelineOptions = {},
 ): ResolvedTimelineOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     basePath: normalizeBasePath(options.basePath ?? DEFAULT_TIMELINE_BASE_PATH),
     className: options.className?.trim() || DEFAULT_TIMELINE_CLASS_NAME,
     key: options.key?.trim() || DEFAULT_TIMELINE_KEY,
@@ -150,15 +152,8 @@ export function renderTimelinePage(
 
 function timelineDate(entry: ContentManifestEntry): string | null {
   for (const key of ["date", "published", "created"] as const) {
-    const value = entry.frontmatter[key];
-    const date =
-      value instanceof Date
-        ? value
-        : typeof value === "string"
-          ? new Date(value)
-          : null;
-    if (date && !Number.isNaN(date.getTime()))
-      return date.toISOString().slice(0, 10);
+    const date = toCalendarDate(entry.frontmatter[key]);
+    if (date !== null) return date;
   }
   return null;
 }

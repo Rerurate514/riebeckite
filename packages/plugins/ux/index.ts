@@ -11,7 +11,7 @@ export type { UxOptions, UxResolvedConfig } from "./src/options.js";
 
 /**
  * Client-only progressive enhancements: a reading progress bar, a
- * back-to-top button, and table-of-contents scroll-spy.
+ * back-to-top button.
  *
  * None of the features change the rendered article markup, so the plugin
  * only injects a JSON config element and registers a browser initializer.
@@ -29,7 +29,10 @@ export function ux(options: UxOptions = {}) {
     validateOptions: validateUxOptions,
     assets: [createStyleAsset("ux", "@riebeckite/plugin-ux/style.css")],
     clientEntries: [
-      createClientEntry("ux", "@riebeckite/plugin-ux/client", "initUx"),
+      createClientEntry("ux", {
+        moduleSpecifier: "@riebeckite/plugin-ux/client",
+        exportName: "initUx",
+      }),
     ],
     onPostProcessed: (context) => {
       context.content.html = injectUxConfig(context.content.html, config);
@@ -51,7 +54,7 @@ function validateUxOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
-  for (const key of ["progress", "backToTop", "tocScrollSpy"] as const) {
+  for (const key of ["progress", "backToTop"] as const) {
     if (options[key] !== undefined && typeof options[key] !== "boolean") {
       issues.push({ path: key, message: "Expected a boolean." });
     }

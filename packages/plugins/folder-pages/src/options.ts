@@ -11,6 +11,7 @@ export function resolveFolderPagesOptions(
   options: FolderPagesOptions = {},
 ): ResolvedFolderPagesOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     exclude: options.exclude ?? [],
     className: normalizeString(
       options.className,
@@ -24,6 +25,8 @@ export function resolveFolderPagesOptions(
       options.foldersLabel,
       DEFAULT_FOLDER_PAGES_FOLDERS_LABEL,
     ),
+    showDate: options.showDate ?? false,
+    showTags: options.showTags ?? false,
   };
 }
 

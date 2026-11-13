@@ -113,6 +113,7 @@ frontmatter の `bibliography` を取り込むのは `manifest.discoverableEntri
 | `bibliography` | 未設定 | コンテンツルートからの相対パスで指定する BibTeX / BibLaTeX ファイル |
 | `referencesHeading` | `"References"` | 生成する参考文献の見出し |
 | `pagePath` | 未設定 | 参考文献一覧ページのパス。指定しないときは生成しない |
+| `layout` | `"article" \| "wide"` | 参考文献ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
 
 ## 診断
 

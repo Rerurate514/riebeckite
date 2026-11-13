@@ -34,7 +34,10 @@ import {
 } from "./content/content_persistent_cache.js";
 import type { ContentSource } from "./content/content_source.js";
 import { fingerprintExternalValue } from "./content/external_fingerprint.js";
-import { normalizeMarkdownImages } from "./content/markdown_image.js";
+import {
+  normalizeMarkdownImages,
+  resolveContentAssetUrl,
+} from "./content/markdown_image.js";
 import { createDerivedViewRegistry } from "./derived/derived_view.js";
 import { selectEmbedMarkdownFragment } from "./markdown_fragments.js";
 import {
@@ -53,6 +56,8 @@ import {
   createUnavailablePluginCache,
   resolvePluginCacheDirectory,
 } from "./plugin/plugin_cache.js";
+import { renderMarkdownComponents } from "./plugin_component_markdown.js";
+import { renderHastTransforms } from "./plugin_hast_transform.js";
 import { createUnavailableGeneratedOutputSink } from "./types/generated_output.js";
 import type { RiebeckitePlugin } from "./types/plugin.js";
 import { resolvePlugins } from "./types/plugin.js";
@@ -398,6 +403,22 @@ export class Pipeline {
       );
     }
 
+    const componentContext = {
+      sourceSlug: context.sourceSlug,
+      resolveAssetUrl: (input: string) =>
+        context.sourceSlug
+          ? resolveContentAssetUrl(input, context.sourceSlug)
+          : null,
+    };
+    const markdownComponents = plugins.flatMap(
+      (plugin) => plugin.markdownComponents ?? [],
+    );
+    if (markdownComponents.length > 0) {
+      this.use(processor, () =>
+        renderMarkdownComponents(markdownComponents, componentContext),
+      );
+    }
+
     this.use(processor, normalizeMarkdownLinks, {
       ...markdownPipelineContext,
       recordLinkResolution: dependencyTracker
@@ -427,6 +448,15 @@ export class Pipeline {
       });
     }
 
+    const hastTransforms = plugins.flatMap(
+      (plugin) => plugin.hastTransforms ?? [],
+    );
+    if (hastTransforms.length > 0) {
+      this.use(processor, () =>
+        renderHastTransforms(hastTransforms, componentContext),
+      );
+    }
+
     this.use(processor, wrapMarkdownTables);
     this.use(processor, rehypeKatex, { output: "mathml", strict: false });
     this.use(processor, rehypeFormat);
@@ -448,7 +478,11 @@ export class Pipeline {
     };
 
     if (embedDepth === 0 && sourceSlug && dependencyTracker) {
-      this.recordNoteLinkDependencies(markDownContent, dependencyTracker);
+      this.recordNoteLinkDependencies(
+        markDownContent,
+        dependencyTracker,
+        sourceSlug,
+      );
     }
 
     if (sourceSlug && dependencyTracker) {
@@ -560,8 +594,14 @@ export class Pipeline {
   private recordNoteLinkDependencies(
     markdown: string,
     dependencyTracker: ContentDependencyTracker,
+    sourcePath: string,
   ): void {
-    for (const link of extractContentLinks(markdown, this.contentIndex)) {
+    for (const link of extractContentLinks(
+      markdown,
+      this.contentIndex,
+      undefined,
+      sourcePath,
+    )) {
       if (link.slug !== null && link.kind === "note") {
         const id = `${LINK_LOCATION_PREFIX}${link.slug}`;
         dependencyTracker.recordLinkResolution(

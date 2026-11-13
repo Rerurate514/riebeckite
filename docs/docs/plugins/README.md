@@ -167,6 +167,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | Plugin | What it does |
 | --- | --- |
 | [Localization](./l10n.md) | Content localization, localized URLs, and translation metadata |
+| [MDX](./mdx.md) | Trusted MDX pages with JSX and ESM imports |
 | [Quality](./quality.md) | Static quality and accessibility inspection |
 | [Diagnostics](./diagnostics.md) | Content diagnostics for Riebeckite and Obsidian vaults |
 | [Frontmatter Transformer](./frontmatter-transformer.md) | Safe bulk frontmatter transforms through the migration engine |

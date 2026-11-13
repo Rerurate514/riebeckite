@@ -100,14 +100,16 @@ the only place that connects the runtime to `createClient()` and
 is replaced, then mount again on the new root.
 
 An initializer may return a cleanup function. With
-`initializerArguments: "context"`, it also receives `{ root, config, signal,
-scope }`. `scope` can register event listeners, timeouts, intervals, and custom
-cleanup. Unmount aborts the shared scope signal first, disposes registered
-resources, then awaits returned cleanup. Initialization and cleanup errors are
-isolated and logged; one failing initializer does not stop the others.
+`initializerArguments: "context"`, it also receives `{ root, marker, config,
+signal, scope }`. `marker` is the element matched by `presenceSelector`.
+`scope` can register event listeners, timeouts, intervals, and custom cleanup.
+Unmount aborts the shared scope signal first, disposes registered resources,
+then awaits returned cleanup. Initialization and cleanup errors are isolated
+and logged; one failing initializer does not stop the others.
 
-Page behavior should query the supplied root. Any resource attached outside the
-replaced DOM must use the resource scope or be released by returned cleanup.
+Page behavior should query the supplied root. A page entry whose marker is in
+the shell can set `root: "document"`. Any resource attached outside the replaced
+DOM must use the resource scope or be released by returned cleanup.
 
 ## Islands and hydration
 

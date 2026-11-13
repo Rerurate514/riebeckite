@@ -344,6 +344,13 @@ function createHarness({
       today: () => "2026-11-02",
       validateChanges,
       finalizeChanges,
+      checkArtifactCoverage: () => ({
+        baseline: false,
+        changed: [],
+        uncovered: [],
+        current: new Map(),
+      }),
+      writeArtifactLedger: () => {},
     },
   };
 }
@@ -360,6 +367,8 @@ async function withHarness(harness, run) {
     today: runtime.today,
     validateChanges: runtime.validateChanges,
     finalizeChanges: runtime.finalizeChanges,
+    checkArtifactCoverage: runtime.checkArtifactCoverage,
+    writeArtifactLedger: runtime.writeArtifactLedger,
   };
 
   Object.assign(runtime, harness.runtime);

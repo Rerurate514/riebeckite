@@ -15,7 +15,7 @@ export function autoCardLink(options: AutoCardLinkOptions = {}) {
   return definePlugin({
     name: "autocardlink",
     processedContentCache: {
-      version: "autocardlink-v1",
+      version: "autocardlink-v3",
       dependencyMode: "none",
     },
     options,
@@ -29,11 +29,11 @@ export function autoCardLink(options: AutoCardLinkOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "autocardlink",
-        "@riebeckite/plugin-autocardlink/client",
-        "initAutoCardLink",
-      ),
+      createClientEntry("autocardlink", {
+        moduleSpecifier: "@riebeckite/plugin-autocardlink/client",
+        exportName: "initAutoCardLink",
+        presenceSelector: ".rr-cardlink",
+      }),
     ],
   });
 }

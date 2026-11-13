@@ -1,8 +1,18 @@
-export type DiagramClientContext = { root?: ParentNode; signal?: AbortSignal };
+export type DiagramClientContext = {
+  root?: ParentNode;
+  signal?: AbortSignal;
+  selector?: string;
+  fallbackSelector?: string;
+};
 export type DiagramClientRenderer = (
   figure: HTMLElement,
   context: DiagramClientContext,
-) => Promise<undefined | (() => void)> | undefined | (() => void);
+) =>
+  | Promise<undefined | (() => void)>
+  | Promise<void>
+  | undefined
+  | (() => void)
+  | void;
 
 const UNSAFE_SVG_ELEMENTS =
   "script,iframe,object,embed,animate,animateMotion,animateTransform,set,form,button,input,select,textarea,video,audio,canvas,base,link,meta";
@@ -45,7 +55,9 @@ export async function renderPendingDiagrams(
   context: DiagramClientContext = {},
 ): Promise<() => void> {
   const root = context.root ?? document;
-  const selector = `[data-diagram="${CSS.escape(kind)}"][data-diagram-status="pending"]`;
+  const selector =
+    context.selector ??
+    `[data-diagram="${CSS.escape(kind)}"][data-diagram-status="pending"]`;
   const cleanups: (() => void)[] = [];
   for (const figure of Array.from(
     root.querySelectorAll<HTMLElement>(selector),
@@ -64,7 +76,9 @@ export async function renderPendingDiagrams(
         figure.dataset.diagramStatus = "error";
         figure.removeAttribute("aria-busy");
         figure
-          .querySelector<HTMLDetailsElement>("[data-diagram-fallback]")
+          .querySelector<HTMLDetailsElement>(
+            context.fallbackSelector ?? "[data-diagram-fallback]",
+          )
           ?.setAttribute("open", "");
       }
     }

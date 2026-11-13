@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type ContentManifestEntry, Pipeline } from "@riebeckite/core";
+import {
+  type ContentManifestEntry,
+  createInvalid,
+  Pipeline,
+} from "@riebeckite/core";
 import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";
 import {
   buildTimeline,
@@ -49,6 +53,7 @@ test("timeline automatically selects dated notes and honors explicit markers", (
       entry("automatic", { date: "2024-01-01" }),
       entry("excluded", { timeline: false, created: "2023-01-01" }),
       entry("invalid", { published: "not-a-date" }),
+      entry("offset", { date: "2025-03-01T08:00:00+09:00" }),
     ],
     resolveTimelineOptions(),
   );
@@ -57,6 +62,7 @@ test("timeline automatically selects dated notes and honors explicit markers", (
     [
       { date: "2024-01-01", title: "automatic" },
       { date: "2025-02-01", title: "later" },
+      { date: "2025-03-01", title: "offset" },
     ],
   );
 });
@@ -102,7 +108,7 @@ test("marked selection preserves the former marked-notes-only behavior and key",
 
 test("timeline option resolution tolerates invalid runtime selector values", () => {
   const options = resolveTimelineOptions({
-    include: { folders: "Events" as unknown as string[] },
+    include: { folders: createInvalid<string[]>("Events") },
     selection: "other" as "automatic",
   });
   assert.deepEqual(options.include, { folders: [], tags: [] });

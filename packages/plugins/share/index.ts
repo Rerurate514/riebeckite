@@ -68,11 +68,11 @@ export function share(options: ShareOptions = {}) {
       createStyleAsset(SHARE_PLUGIN_NAME, "@riebeckite/plugin-share/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        SHARE_PLUGIN_NAME,
-        "@riebeckite/plugin-share/client",
-        "initShare",
-      ),
+      createClientEntry(SHARE_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-share/client",
+        exportName: "initShare",
+        presenceSelector: "[data-rr-share]",
+      }),
     ],
   });
 }

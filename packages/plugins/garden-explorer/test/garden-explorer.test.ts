@@ -89,6 +89,61 @@ test("excludes configured slug paths and descendants from explorer data", () => 
   assert.deepEqual(data.tags, [{ name: "guide", count: 1 }]);
 });
 
+test("explorer text decodes character references from rendered HTML", () => {
+  const entry = {
+    ...createEntry("guide/entities", []),
+    html: "<h2>&#x3C;aside></h2><p>A &#x3C;b> &amp; c</p>",
+  };
+  const data = getGardenExplorerData({
+    manifest: {
+      discoverableEntries: [entry],
+      graph: {
+        filterNeighbors: () => ({ outgoingSlugs: [], incomingSlugs: [] }),
+      },
+    } as never,
+    config: {} as never,
+    resolveTitle: (slug) => slug,
+    options: {},
+  });
+
+  assert.deepEqual(data.notes[0].headings, ["<aside>"]);
+  assert.equal(data.notes[0].body, "<aside> A <b> & c");
+  assert.equal(data.notes[0].excerpt, "<aside> A <b> & c");
+});
+
+test("excludes localized notes by logical slug rather than translation id", () => {
+  const localized = (slug: string) => ({
+    ...createEntry(slug, ["guide"]),
+    publicLocation: {
+      slug,
+      permalink: `/${slug}`,
+      metadata: { "l10n.translationId": "guide/page" },
+    },
+  });
+  const entries = [localized("guide/page"), localized("guide/page.en")];
+  const build = (exclude: string[]) =>
+    getGardenExplorerData({
+      manifest: {
+        discoverableEntries: entries,
+        graph: {
+          filterNeighbors: () => ({ outgoingSlugs: [], incomingSlugs: [] }),
+        },
+      } as never,
+      config: {} as never,
+      resolveTitle: (slug) => slug,
+      options: { exclude },
+    });
+
+  assert.deepEqual(
+    build(["guide/page.en"]).notes.map((note) => note.slug),
+    ["guide/page"],
+  );
+  assert.deepEqual(
+    build(["guide/page"]).notes.map((note) => note.slug),
+    ["guide/page.en"],
+  );
+});
+
 test("validates garden explorer exclusions", () => {
   const plugin = gardenExplorer();
   assert.deepEqual(plugin.validateOptions?.({ exclude: "Config" } as never), [

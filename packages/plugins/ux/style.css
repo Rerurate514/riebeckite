@@ -60,11 +60,6 @@
   outline-offset: 2px;
 }
 
-.rb-ux__toc-active {
-  color: var(--rb-color-accent, #686868);
-  font-weight: 600;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .rb-ux__progress-bar,
   .rb-ux__back-to-top {

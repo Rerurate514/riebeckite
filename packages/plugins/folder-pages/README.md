@@ -28,6 +28,12 @@ export default {
 };
 ```
 
+Show dates and tags in generated listings:
+
+```ts
+folderPages({ showDate: true, showTags: true });
+```
+
 ## Markdown-backed Folder Pages
 
 A note at `<folder>/README.md` or `<folder>/index.md` becomes the folder's
@@ -71,6 +77,18 @@ output is deterministic regardless of plugin order.
 | `className` | `string` | `"rr-folder-page"` | Root CSS class for the rendered fragment. |
 | `pagesLabel` | `string` | `"Pages"` | Heading for the page list. |
 | `foldersLabel` | `string` | `"Folders"` | Heading for the folder list. |
+| `showDate` | `boolean` | `false` | Show each listed note's `published`, `date`, or `created` property on the right. |
+| `showTags` | `boolean` | `false` | Show each listed note's `tags` property on the right. |
+| `layout` | `"article" \| "wide"` | `"article"` | Width of generated pages. `"article"` uses the theme article width; `"wide"` uses the page width. |
+
+`exclude` uses logical content slugs, not display labels or glob patterns. For
+example, `exclude: ["Config"]` omits `Config` and `Config/internal` while
+leaving their published URLs unchanged.
+
+Generated Folder Pages use the theme's article width by default. Set
+`layout: "wide"` to use the page width. When either metadata option is enabled,
+the note title stays on the left and its date and/or tags are placed on the
+right of the listing row.
 
 `exclude` uses logical content slugs, not display labels or glob patterns. For
 example, `exclude: ["Config"]` omits `Config` and `Config/internal` while

@@ -1,9 +1,6 @@
+import { type ContentLink, escapeHtml } from "@riebeckite/core";
 import {
-  type ContentLink,
-  type ContentManifestEntry,
-  escapeHtml,
-} from "@riebeckite/core";
-import {
+  type BasesEntry,
   compare,
   folderOf,
   hasLink,
@@ -19,6 +16,7 @@ import type {
   BasesOperator,
 } from "./types.js";
 
+export type { BasesEntry } from "./conditions.js";
 export { resolveValueRef } from "./conditions.js";
 
 const MAX_EVALUATION_STEPS = 10_000;
@@ -26,6 +24,11 @@ const MAX_EVALUATION_DEPTH = 128;
 const EVALUATION_BUDGET = Symbol("bases-evaluation-budget");
 
 type EvaluationBudget = { remaining: number; depth: number };
+
+type EvaluationScope = {
+  readonly [key: string]: unknown;
+  [EVALUATION_BUDGET]?: EvaluationBudget;
+};
 
 export class BasesEvaluationError extends Error {
   constructor(message: string) {
@@ -37,7 +40,7 @@ export class BasesEvaluationError extends Error {
 /** Evaluates a compiled condition against one manifest entry. */
 export function matchesCondition(
   condition: BasesCondition,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
 ): boolean {
   switch (condition.kind) {
     case "and":
@@ -71,9 +74,9 @@ export function matchesCondition(
 
 export function evaluateBasesExpression(
   expression: BasesExpression,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>> = {},
-  scope: Readonly<Record<string, unknown>> = {},
+  scope: EvaluationScope = {},
   active: ReadonlySet<string> = new Set(),
 ): unknown {
   const budget = evaluationBudget(scope);
@@ -153,27 +156,22 @@ export function evaluateBasesExpression(
   }
 }
 
-function evaluationBudget(
-  scope: Readonly<Record<string, unknown>>,
-): EvaluationBudget {
-  const values = scope as unknown as Record<PropertyKey, unknown>;
-  const existing = values[EVALUATION_BUDGET];
-  if (existing && typeof existing === "object") {
-    return existing as EvaluationBudget;
-  }
+function evaluationBudget(scope: EvaluationScope): EvaluationBudget {
+  const existing = scope[EVALUATION_BUDGET];
+  if (existing) return existing;
   const budget: EvaluationBudget = {
     remaining: MAX_EVALUATION_STEPS,
     depth: 0,
   };
-  values[EVALUATION_BUDGET] = budget;
+  scope[EVALUATION_BUDGET] = budget;
   return budget;
 }
 
 function resolvePath(
   path: readonly string[],
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>>,
-  scope: Readonly<Record<string, unknown>>,
+  scope: EvaluationScope,
   active: ReadonlySet<string>,
 ): unknown {
   const [first] = path;
@@ -207,9 +205,9 @@ function resolvePath(
 
 function resolveFormula(
   name: string,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>>,
-  scope: Readonly<Record<string, unknown>>,
+  scope: EvaluationScope,
   active: ReadonlySet<string>,
 ): unknown {
   const expression = formulas[name];
@@ -223,7 +221,7 @@ function resolveFormula(
   );
 }
 
-function fileValue(entry: ContentManifestEntry): Record<string, unknown> {
+function fileValue(entry: BasesEntry): Record<string, unknown> {
   const path = `${entry.slug}.md`;
   const name = path.split("/").at(-1) ?? path;
   return {
@@ -263,9 +261,9 @@ function readMember(value: unknown, property: string): unknown {
 
 function evaluateBinary(
   expression: Extract<BasesExpression, { kind: "binary" }>,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>>,
-  scope: Readonly<Record<string, unknown>>,
+  scope: EvaluationScope,
   active: ReadonlySet<string>,
 ): unknown {
   const left = evaluateBasesExpression(
@@ -391,9 +389,9 @@ function offsetDate(
 
 function evaluateCall(
   expression: Extract<BasesExpression, { kind: "call" }>,
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>>,
-  scope: Readonly<Record<string, unknown>>,
+  scope: EvaluationScope,
   active: ReadonlySet<string>,
 ): unknown {
   if (expression.callee.kind === "member") {
@@ -735,9 +733,9 @@ function evaluateHigherOrderCall(
   target: unknown,
   name: string,
   arguments_: readonly BasesExpression[],
-  entry: ContentManifestEntry,
+  entry: BasesEntry,
   formulas: Readonly<Record<string, BasesExpression>>,
-  scope: Readonly<Record<string, unknown>>,
+  scope: EvaluationScope,
   active: ReadonlySet<string>,
 ): { readonly handled: boolean; readonly value: unknown } {
   if (!Array.isArray(target) || !["map", "filter", "reduce"].includes(name)) {

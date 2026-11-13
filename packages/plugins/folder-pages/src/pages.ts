@@ -16,7 +16,8 @@ export function renderFolderPage(
       `<h2 class="${className}__heading">${escapeHtml(options.pagesLabel)}</h2>`,
       `<ul class="${className}__pages">`,
     );
-    for (const link of page.pages) parts.push(renderLink(className, link));
+    for (const link of page.pages)
+      parts.push(renderLink(className, link, options));
     parts.push("</ul>");
   }
   if (page.folders.length > 0) {
@@ -24,7 +25,8 @@ export function renderFolderPage(
       `<h2 class="${className}__heading">${escapeHtml(options.foldersLabel)}</h2>`,
       `<ul class="${className}__folders">`,
     );
-    for (const link of page.folders) parts.push(renderLink(className, link));
+    for (const link of page.folders)
+      parts.push(renderLink(className, link, options));
     parts.push("</ul>");
   }
   parts.push("</section>");
@@ -33,9 +35,37 @@ export function renderFolderPage(
 
 function renderLink(
   className: string,
-  link: { title: string; permalink: string; icon?: ContentIcon },
+  link: {
+    title: string;
+    permalink: string;
+    icon?: ContentIcon;
+    date?: string;
+    tags?: readonly string[];
+  },
+  options: Pick<ResolvedFolderPagesOptions, "showDate" | "showTags">,
 ): string {
-  return `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(link.permalink)}">${renderIcon(link.icon)}${escapeHtml(link.title)}</a></li>`;
+  return `<li class="${className}__item"><a class="${className}__link" href="${escapeHtmlAttribute(link.permalink)}"><span class="${className}__link-title">${renderIcon(link.icon)}${escapeHtml(link.title)}</span>${renderMetadata(className, link, options)}</a></li>`;
+}
+
+function renderMetadata(
+  className: string,
+  link: { date?: string; tags?: readonly string[] },
+  options: Pick<ResolvedFolderPagesOptions, "showDate" | "showTags">,
+): string {
+  const parts: string[] = [];
+  if (options.showDate && link.date) {
+    parts.push(
+      `<time class="${className}__date" datetime="${escapeHtmlAttribute(link.date)}">${escapeHtml(link.date)}</time>`,
+    );
+  }
+  if (options.showTags && link.tags && link.tags.length > 0) {
+    parts.push(
+      `<span class="${className}__tags">${link.tags.map((tag) => `<span class="${className}__tag">#${escapeHtml(tag)}</span>`).join("")}</span>`,
+    );
+  }
+  return parts.length > 0
+    ? `<span class="${className}__meta">${parts.join("")}</span>`
+    : "";
 }
 
 function renderIcon(icon: ContentIcon | undefined): string {

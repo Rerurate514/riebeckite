@@ -1,5 +1,6 @@
 /** Public options accepted by the `series()` plugin factory. */
 export type SeriesOptions = {
+  layout?: "article" | "wide";
   /** Frontmatter key that names the series. Defaults to `"series"`. */
   key?: string;
   /** Frontmatter key that holds the numeric order. Defaults to `"series_order"`. */
@@ -19,6 +20,7 @@ export type SeriesOptions = {
 
 /** Options after defaults have been applied. */
 export type ResolvedSeriesOptions = {
+  layout: "article" | "wide";
   key: string;
   orderKey: string;
   titleKey: string;

@@ -1,4 +1,6 @@
 import { copyText } from "@riebeckite/ui/copy";
+import { findOverlayHost } from "@riebeckite/ui/overlay";
+import { mountTextFragmentPopover } from "./popover.js";
 import { buildQuoteMarkdown, buildTextFragmentUrl } from "./text-fragment.js";
 
 /** Article body container emitted by the Honox article primitives. */
@@ -50,46 +52,53 @@ export function initTextFragmentShare(
 
   const resolved = { ...DEFAULT_TEXT_FRAGMENT_LABELS, ...labels };
 
-  const popover = document.createElement("div");
-  popover.className = "rr-text-fragment";
-  popover.hidden = true;
-  popover.setAttribute("role", "group");
-  popover.setAttribute("aria-label", resolved.regionLabel);
-
-  const actions = document.createElement("div");
-  actions.className = "rr-text-fragment__actions";
-
-  const linkButton = createButton(resolved.copyLinkLabel);
-  const quoteButton = createButton(resolved.copyQuoteLabel);
-
-  const status = document.createElement("p");
-  status.className = "rr-text-fragment__status";
-  status.setAttribute("role", "status");
-  status.setAttribute("aria-live", "polite");
-
-  actions.appendChild(linkButton);
-  actions.appendChild(quoteButton);
-  popover.appendChild(actions);
-  popover.appendChild(status);
-  document.body.appendChild(popover);
+  const overlayHost = findOverlayHost("text-fragment");
+  const host = overlayHost ?? document.createElement("div");
+  if (!overlayHost) document.body.appendChild(host);
+  const view = mountTextFragmentPopover(host, {
+    labels: resolved,
+    onCopyLink: () => {
+      onLinkButtonClick();
+    },
+    onCopyQuote: () => {
+      onQuoteButtonClick();
+    },
+  });
+  const popover = host.querySelector<HTMLElement>(".rr-text-fragment");
+  if (!popover) throw new Error("Failed to create the text fragment popover.");
 
   let active: ActiveSelection | null = null;
+  let visible = false;
+  let statusText = "";
   const copyingTimers = new Set<number>();
   // The `execCommand` fallback moves the DOM selection, which fires
   // `selectionchange`. Ignore those events until the copy has settled.
   let isCopying = false;
 
+  const render = () => {
+    view.render({ visible, status: statusText });
+  };
+
+  const position = () => {
+    requestAnimationFrame(() => {
+      if (!visible || !active) return;
+      positionPopover(popover, active.rect);
+    });
+  };
+
   const hide = () => {
     active = null;
-    popover.hidden = true;
-    status.textContent = "";
+    visible = false;
+    statusText = "";
+    render();
   };
 
   const show = (selection: ActiveSelection, resetStatus: boolean) => {
     active = selection;
-    if (resetStatus) status.textContent = "";
-    popover.hidden = false;
-    positionPopover(popover, selection.rect);
+    if (resetStatus) statusText = "";
+    visible = true;
+    render();
+    position();
   };
 
   const refresh = () => {
@@ -114,11 +123,12 @@ export function initTextFragmentShare(
     isCopying = true;
     try {
       const copied = await copyText(buildValue(selection.text));
-      status.textContent = copied ? successMessage : resolved.copyFailedLabel;
+      statusText = copied ? successMessage : resolved.copyFailedLabel;
       // The fallback path may have hidden the popover; keep it visible.
       active = selection;
-      popover.hidden = false;
-      positionPopover(popover, selection.rect);
+      visible = true;
+      render();
+      position();
     } finally {
       // Runs after the queued `selectionchange` events of the fallback path.
       const timer = window.setTimeout(() => {
@@ -149,22 +159,18 @@ export function initTextFragmentShare(
   };
 
   // Keep the selection alive while the user presses a popover button.
-  const onPopoverMouseDown = (event: MouseEvent) => event.preventDefault();
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Escape" && !popover.hidden) {
+    if (event.key === "Escape" && visible) {
       event.preventDefault();
       hide();
     }
   };
   const onMouseDown = (event: MouseEvent) => {
-    if (popover.hidden) return;
+    if (!visible) return;
     if (event.target instanceof Node && popover.contains(event.target)) return;
     hide();
   };
 
-  linkButton.addEventListener("click", onLinkButtonClick);
-  quoteButton.addEventListener("click", onQuoteButtonClick);
-  popover.addEventListener("mousedown", onPopoverMouseDown);
   document.addEventListener("selectionchange", refresh);
   document.addEventListener("mouseup", refresh);
   document.addEventListener("keyup", refresh);
@@ -175,25 +181,15 @@ export function initTextFragmentShare(
     initialized = false;
     for (const timer of copyingTimers) window.clearTimeout(timer);
     copyingTimers.clear();
-    linkButton.removeEventListener("click", onLinkButtonClick);
-    quoteButton.removeEventListener("click", onQuoteButtonClick);
-    popover.removeEventListener("mousedown", onPopoverMouseDown);
     document.removeEventListener("selectionchange", refresh);
     document.removeEventListener("mouseup", refresh);
     document.removeEventListener("keyup", refresh);
     document.removeEventListener("keydown", onKeyDown);
     document.removeEventListener("mousedown", onMouseDown);
     window.removeEventListener("scroll", hide);
-    popover.remove();
+    view.unmount();
+    if (!overlayHost) host.remove();
   };
-}
-
-function createButton(label: string): HTMLButtonElement {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "rr-text-fragment__button";
-  button.textContent = label;
-  return button;
 }
 
 function readShareableSelection(): ActiveSelection | null {

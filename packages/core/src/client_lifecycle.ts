@@ -19,6 +19,7 @@ export type ClientResourceScope = {
 
 export type ClientInitializerContext<TRoot, TConfig> = {
   root: TRoot;
+  marker?: Element;
   signal: AbortSignal;
   scope: ClientResourceScope;
   config: TConfig;
@@ -43,6 +44,7 @@ export type ClientLifecycleMount<TRoot, TConfig> = {
   scope: ClientLifecycleScope;
   name: string;
   root: TRoot;
+  marker?: Element;
   config: TConfig;
   initialize: ClientInitializer<TRoot, TConfig>;
   runtimes?: ClientRuntimeHost;
@@ -146,6 +148,7 @@ export class ClientLifecycle<TRoot> {
     try {
       const result = await mount.initialize({
         root: mount.root,
+        marker: mount.marker,
         signal: resources.signal,
         scope: resources,
         config: mount.config,

@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   type ContentManifest,
   type ContentManifestEntry,
+  createContentManifest,
   type PostFrontmatter,
   resolveConfig,
 } from "@riebeckite/core";
@@ -19,6 +20,7 @@ function entry(
   html: string,
   tags: string[] = [],
   aliases: string[] = [],
+  plainText?: string,
 ): ContentManifestEntry {
   const permalink = `/${slug}`;
   return {
@@ -34,6 +36,7 @@ function entry(
         ? { visibility: "draft", routable: false, discoverable: false }
         : { visibility: "public", routable: true, discoverable: true },
     html,
+    ...(plainText === undefined ? {} : { plainText }),
     tags,
     aliases,
     links: [],
@@ -47,13 +50,12 @@ function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
   const discoverableEntries = entries.filter(
     (item) => item.publishing.discoverable,
   );
-  return {
+  return createContentManifest({
     entries,
     publicEntries,
     discoverableEntries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 test("buildSearchItems filters unpublished notes and extracts every field", () => {
@@ -102,6 +104,48 @@ test("buildSearchItems filters unpublished notes and extracts every field", () =
   });
   assert.equal(items[1]?.date, "2024-02-03T00:00:00.000Z");
   assert.equal(items[1]?.excerpt, "C");
+});
+
+test("buildSearchItems decodes named, numeric, and hex entities once", () => {
+  const items = buildSearchItems({
+    config: explicit,
+    manifest: manifestOf([
+      entry(
+        "entities",
+        { publish: true, title: "Entities" },
+        "<h2>Fish &amp; Chips &#x1F600; &hellip;</h2><p>&amp;lt; kept &amp;amp;</p>",
+      ),
+    ]),
+  });
+
+  assert.deepEqual(items[0]?.headings, ["Fish & Chips 😀 …"]);
+  assert.equal(items[0]?.body, "Fish & Chips 😀 … &lt; kept &amp;");
+});
+
+test("buildSearchItems prefers projected plain text for bodies and excerpts", () => {
+  const items = buildSearchItems({
+    config: explicit,
+    manifest: manifestOf([
+      entry(
+        "mdx",
+        { publish: true, title: "MDX" },
+        "<h1>Heading</h1><p>Projected markup</p>",
+        [],
+        [],
+        "Heading Projected text from the content format",
+      ),
+    ]),
+  });
+
+  assert.equal(items[0]?.headings[0], "Heading");
+  assert.equal(
+    items[0]?.body,
+    "Heading Projected text from the content format",
+  );
+  assert.equal(
+    items[0]?.excerpt,
+    "Heading Projected text from the content format",
+  );
 });
 
 test("buildSearchItems includes aliases only for discoverable targets", () => {

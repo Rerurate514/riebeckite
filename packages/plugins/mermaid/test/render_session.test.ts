@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { test } from "node:test";
 import { promisify } from "node:util";
+import { createInvalid } from "@riebeckite/core";
 import type { Browser } from "puppeteer";
 import { createMermaidRenderSession } from "../src/render-static.js";
 
@@ -73,7 +74,7 @@ function createFakeBrowser(): FakeBrowser {
   };
 
   return {
-    browser: browser as unknown as Browser,
+    browser: createInvalid<Browser>(browser),
     counts,
     evaluateCalls,
     setBehavior(next) {

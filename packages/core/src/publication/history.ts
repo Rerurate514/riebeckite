@@ -96,38 +96,78 @@ export function parsePublicationHistory(
     const parsed = parseRunRecord(run);
     if (parsed !== undefined) runs.push(parsed);
   }
-  if (value.lastSuccess !== undefined) {
-    const snapshot = parsePublicationSnapshot(value.lastSuccess);
-    if (snapshot === undefined) {
-      return { version: PUBLICATION_HISTORY_VERSION, runs };
-    }
+  const lastSuccess =
+    value.lastSuccess === undefined
+      ? undefined
+      : parsePublicationSnapshot(value.lastSuccess);
+  if (value.lastSuccess !== undefined && lastSuccess === undefined) {
+    return { version: PUBLICATION_HISTORY_VERSION, runs };
   }
   return {
     version: PUBLICATION_HISTORY_VERSION,
     runs,
-    ...(value.lastSuccess === undefined
-      ? {}
-      : { lastSuccess: value.lastSuccess as PublicationSnapshot }),
+    ...(lastSuccess === undefined ? {} : { lastSuccess }),
   };
 }
 
 function parseRunRecord(value: unknown): PublicationRunRecord | undefined {
   if (!isRecord(value)) return undefined;
-  if (
-    typeof value.id !== "string" ||
-    typeof value.startedAt !== "string" ||
-    (value.finishedAt !== undefined && typeof value.finishedAt !== "string") ||
-    !isRunStatus(value.status) ||
-    !isTrigger(value.trigger) ||
-    typeof value.dryRun !== "boolean" ||
-    typeof value.planFingerprint !== "string" ||
-    !isWorkflowState(value.workflow) ||
-    !isAction(value.action) ||
-    !isChanges(value.changes)
-  ) {
-    return undefined;
-  }
-  return value as unknown as PublicationRunRecord;
+  const {
+    id,
+    startedAt,
+    finishedAt,
+    status,
+    trigger,
+    dryRun,
+    planFingerprint,
+    artifactFingerprint,
+    provider,
+    workflow,
+    action,
+    build,
+    deploy,
+    changes,
+    nextPublicationAt,
+    error,
+  } = value;
+  if (typeof id !== "string") return undefined;
+  if (typeof startedAt !== "string") return undefined;
+  if (!isOptionalString(finishedAt)) return undefined;
+  if (!isRunStatus(status)) return undefined;
+  if (!isTrigger(trigger)) return undefined;
+  if (typeof dryRun !== "boolean") return undefined;
+  if (typeof planFingerprint !== "string") return undefined;
+  if (!isOptionalString(artifactFingerprint)) return undefined;
+  if (!isOptionalHostingProvider(provider)) return undefined;
+  if (!isWorkflowState(workflow)) return undefined;
+  if (!isAction(action)) return undefined;
+  if (!isOptionalRunStep(build)) return undefined;
+  if (!isOptionalRunStep(deploy)) return undefined;
+  if (!isChanges(changes)) return undefined;
+  if (!isOptionalString(nextPublicationAt)) return undefined;
+  if (!isOptionalString(error)) return undefined;
+  return {
+    id,
+    startedAt,
+    ...(finishedAt === undefined ? {} : { finishedAt }),
+    status,
+    trigger,
+    dryRun,
+    planFingerprint,
+    ...(artifactFingerprint === undefined ? {} : { artifactFingerprint }),
+    ...(provider === undefined ? {} : { provider }),
+    workflow,
+    action,
+    ...(build === undefined ? {} : { build }),
+    ...(deploy === undefined ? {} : { deploy }),
+    changes,
+    ...(nextPublicationAt === undefined ? {} : { nextPublicationAt }),
+    ...(error === undefined ? {} : { error }),
+  };
+}
+
+function isOptionalString(value: unknown): value is string | undefined {
+  return value === undefined || typeof value === "string";
 }
 
 function isRunStatus(value: unknown): value is PublicationRunStatus {
@@ -151,7 +191,40 @@ function isTrigger(value: unknown): value is PublicationRunTrigger {
   );
 }
 
-function isWorkflowState(value: unknown): boolean {
+function isHostingProvider(value: unknown): value is HostingProvider {
+  return (
+    value === "github-pages" ||
+    value === "cloudflare-workers" ||
+    value === "cloudflare-pages" ||
+    value === "netlify" ||
+    value === "vercel"
+  );
+}
+
+function isOptionalHostingProvider(
+  value: unknown,
+): value is HostingProvider | undefined {
+  return value === undefined || isHostingProvider(value);
+}
+
+function isRunStep(value: unknown): value is PublicationRunStep {
+  return (
+    isRecord(value) &&
+    (value.status === "skipped" ||
+      value.status === "succeeded" ||
+      value.status === "failed") &&
+    (value.durationMs === undefined || typeof value.durationMs === "number") &&
+    (value.failure === undefined || typeof value.failure === "string")
+  );
+}
+
+function isOptionalRunStep(
+  value: unknown,
+): value is PublicationRunStep | undefined {
+  return value === undefined || isRunStep(value);
+}
+
+function isWorkflowState(value: unknown): value is PublicationPlan["workflow"] {
   return (
     value === "draft" ||
     value === "review" ||
@@ -161,18 +234,22 @@ function isWorkflowState(value: unknown): boolean {
   );
 }
 
-function isAction(value: unknown): boolean {
+function isAction(value: unknown): value is PublicationPlan["action"] {
   return (
     value === "none" || value === "build-and-deploy" || value === "blocked"
   );
 }
 
-function isChanges(value: unknown): boolean {
+function isChanges(value: unknown): value is PublicationChanges {
   if (!isRecord(value) || typeof value.detected !== "boolean") return false;
-  return ["added", "changed", "removed", "unchanged"].every(
-    (key) =>
-      Array.isArray(value[key]) &&
-      (value[key] as unknown[]).every((item) => typeof item === "string"),
+  return (["added", "changed", "removed", "unchanged"] as const).every((key) =>
+    isStringArray(value[key]),
+  );
+}
+
+function isStringArray(value: unknown): value is readonly string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
   );
 }
 

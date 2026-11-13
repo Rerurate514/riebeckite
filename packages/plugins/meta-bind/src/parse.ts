@@ -274,9 +274,7 @@ function tokenize(source: string): readonly Token[] {
           ? "string"
           : number
             ? "number"
-            : operator
-              ? "operator"
-              : "operator",
+            : "operator",
       value: string
         ? string[1].replaceAll("\\'", "'")
         : reference

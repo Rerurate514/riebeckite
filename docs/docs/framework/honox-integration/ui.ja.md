@@ -43,7 +43,7 @@ sidebar:
 | `ArticleFooter` | `rb-article-footer` |
 | `Sidebar` | `rb-sidebar` |
 
-`ArticleBody` はレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown の[[glossary/typography|タイポグラフィ]]はこのラッパーにのみ適用されます。[[glossary/plugin-component|プラグインコンポーネント]]の見出しはプラグイン自身が所有します。
+`ArticleBody` は有効な Content Format が提供する本文、なければレンダリング済みの Markdown 本文を `.rb-article-content` として描画し、Markdown の[[glossary/typography|タイポグラフィ]]はこのラッパーにのみ適用されます。[[glossary/plugin-component|プラグインコンポーネント]]の見出しはプラグイン自身が所有します。
 
 プリミティブが担当するのは主に、
 
@@ -69,6 +69,8 @@ sidebar:
 ## プラグイン UI の構成
 
 各コンポーネントは[[glossary/plugin|プラグイン]]から直接インポートし、サイトが置きたい場所で描画します。`SiteProvider` と、公開 `entry` を渡した `Article` を使うと、コンポーネントは必要なプラグインデータを自動で解決します。配置、順序、表示条件は引き続きサイトが管理します。
+
+ページを自前で組み立てるルートでは、Content Format が描画する本文を `virtual:riebeckite/content-renderers` の `renderContent(post.sourcePath ?? "")` で取得し、`Article` の `body` に渡します。`createContentRoute` を使うルートでは自動的に渡されます。
 
 ```tsx
 import { Article, ArticleBody } from "@riebeckite/honox/ui";

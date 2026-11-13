@@ -2,6 +2,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { htmlToPlainText, resolveEntryDate, toIsoDate } from "@riebeckite/core";
 import type {
   TaxonomyFeedFormat,
   TaxonomyHeadTag,
@@ -164,26 +165,16 @@ function getDescription(entry: ContentManifestEntry): string {
   if (typeof description === "string" && description.trim() !== "") {
     return description.trim();
   }
-  return entry.title;
+  return (entry.plainText ?? htmlToPlainText(entry.html))
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
 }
 
 function getPublishedTime(entry: ContentManifestEntry): string | null {
-  return toIso(
-    entry.frontmatter.published ??
-      entry.frontmatter.date ??
-      entry.frontmatter.created,
-  );
+  return resolveEntryDate(entry.frontmatter);
 }
 
 function getUpdatedTime(entry: ContentManifestEntry): string | null {
-  return toIso(entry.frontmatter.updated) ?? getPublishedTime(entry);
-}
-
-function toIso(value: unknown): string | null {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+  return toIsoDate(entry.frontmatter.updated) ?? getPublishedTime(entry);
 }

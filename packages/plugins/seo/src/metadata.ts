@@ -5,7 +5,11 @@ import type {
   SeoMetadata,
   WebsiteSeoInput,
 } from "@riebeckite/core";
-import { calculateReadingTime } from "@riebeckite/core";
+import {
+  calculateReadingTime,
+  resolveEntryDate,
+  toIsoDate,
+} from "@riebeckite/core";
 import { getDescription, getHtmlLanguage, normalizeTags } from "./content.js";
 import { buildBreadcrumbSchema, removeUndefined } from "./schema.js";
 import { buildAbsoluteUrl, buildPostUrl } from "./url.js";
@@ -29,12 +33,8 @@ export function buildArticleSeo(
     config,
     post.frontmatter.ogImage ?? post.frontmatter.image,
   );
-  const publishedTime = getIsoDate(
-    post.frontmatter.published ??
-      post.frontmatter.date ??
-      post.frontmatter.created,
-  );
-  const modifiedTime = getIsoDate(post.frontmatter.updated) ?? publishedTime;
+  const publishedTime = resolveEntryDate(post.frontmatter) ?? undefined;
+  const modifiedTime = toIsoDate(post.frontmatter.updated) ?? publishedTime;
   const tags = normalizeTags(post.frontmatter.tags);
   const readingTimeMinutes = calculateReadingTime(post.html);
   const jsonLd: Record<string, unknown>[] = [
@@ -165,15 +165,6 @@ function getArticleTitle(
 function buildPageTitle(siteName: string, title: string): string {
   if (!title || title === siteName) return siteName;
   return `${title} | ${siteName}`;
-}
-
-function getIsoDate(value: unknown): string | undefined {
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value.toISOString();
-  }
-  if (typeof value !== "string" || !value.trim()) return undefined;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 function hasBreadcrumbListHeadTag(

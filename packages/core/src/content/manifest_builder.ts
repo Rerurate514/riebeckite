@@ -29,11 +29,13 @@ export class ManifestBuilder {
     publishing: ResolvedPublishingState,
     sourceMetadata?: ContentSourceMetadata,
     contentIndexAmbiguities?: ReadonlyMap<string, readonly string[]>,
+    sourcePath?: string,
   ): ContentManifestEntry {
     const links = extractContentLinks(
       markdown,
       contentIndex,
       contentIndexAmbiguities,
+      sourcePath,
     );
     const assets = [
       ...links
@@ -60,6 +62,12 @@ export class ManifestBuilder {
       frontmatter: processed.frontmatter,
       publishing,
       html: processed.html,
+      ...(processed.plainText === undefined
+        ? {}
+        : { plainText: processed.plainText }),
+      ...(processed.sourcePath === undefined
+        ? {}
+        : { sourcePath: processed.sourcePath }),
       tags: uniqueStrings([
         ...normalizeFrontmatterTags(processed.frontmatter.tags),
         ...extractContentTags(markdown),

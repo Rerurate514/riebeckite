@@ -32,6 +32,8 @@ import {
   upsertContentMigrationRecord,
 } from "@riebeckite/core";
 import {
+  acquireContentLock,
+  type ContentLock,
   changedFrontmatterKeys,
   diagnosticKey,
   errorMessage,
@@ -46,11 +48,11 @@ import {
   isWithin,
   journalMatchesApplied,
   mutationIssue,
+  parseContentMigrationPlan,
   readJournalSnapshot,
   redirectFieldFromConfig,
   sameMigrationPlan,
   sanitizeErrorMessage,
-  staleLockContent,
 } from "./file_system_content_migration_helpers.js";
 import type {
   ContentMigrationApplyOptions,
@@ -249,7 +251,10 @@ export class FileSystemContentMigration {
     const parsed = JSON.parse(content) as unknown;
     if (!isRecord(parsed) || parsed.schemaVersion !== 1)
       throw new Error("The migration plan has an unsupported schema.");
-    return parsed as unknown as ContentMigrationPlan;
+    const plan = parseContentMigrationPlan(parsed);
+    if (plan === undefined)
+      throw new Error("The migration plan is missing or corrupt.");
+    return plan;
   }
 
   async history(
@@ -306,9 +311,9 @@ export class FileSystemContentMigration {
         conflicts: fresh.conflicts,
       };
 
-    let release: () => Promise<void>;
+    let lock: ContentLock;
     try {
-      release = await this.acquireLock();
+      lock = await this.acquireLock();
     } catch (error) {
       return {
         applied: false,
@@ -383,6 +388,7 @@ export class FileSystemContentMigration {
 
       const now = new Date();
       let nextState = this.stateWith(fresh, actionable, state, "applying", now);
+      await lock.assertOwned();
       await this.writeState(nextState);
       try {
         const result = await this.mutation.apply({
@@ -390,6 +396,7 @@ export class FileSystemContentMigration {
           id: fresh.mutationPlanId,
         });
         if (!result.applied) {
+          await lock.assertOwned();
           nextState = this.stateWith(
             fresh,
             actionable,
@@ -433,6 +440,7 @@ export class FileSystemContentMigration {
           { journalPath, rolledBackAt: undefined },
         );
         nextState = this.supersede(actionable, appliedState, new Date());
+        await lock.assertOwned();
         await this.writeState(nextState);
         await this.appendHistory(
           fresh,
@@ -450,6 +458,7 @@ export class FileSystemContentMigration {
           conflicts: [],
         };
       } catch (error) {
+        await lock.assertOwned();
         const journal = await this.failedJournal(fresh);
         const message = sanitizeErrorMessage(error, this.contentDirectory);
         nextState = this.stateWith(
@@ -483,7 +492,7 @@ export class FileSystemContentMigration {
         };
       }
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
@@ -499,7 +508,7 @@ export class FileSystemContentMigration {
     let nextState = state;
     if (reconciled.size > 0) {
       try {
-        const release = await this.acquireLock();
+        const lock = await this.acquireLock();
         try {
           const current = await this.readState();
           let merged = current;
@@ -517,10 +526,13 @@ export class FileSystemContentMigration {
             )
               merged = upsertContentMigrationRecord(merged, resolved);
           }
-          if (merged !== current) await this.writeState(merged);
+          if (merged !== current) {
+            await lock.assertOwned();
+            await this.writeState(merged);
+          }
           nextState = merged;
         } finally {
-          await release();
+          await lock.release();
         }
       } catch {}
     }
@@ -564,7 +576,7 @@ export class FileSystemContentMigration {
   async recover(
     options: ContentMigrationRecoverOptions = {},
   ): Promise<ContentMigrationRecoveryResult> {
-    const release = await this.acquireLock();
+    const lock = await this.acquireLock();
     try {
       const state = await this.readState();
       const journalPath =
@@ -760,6 +772,7 @@ export class FileSystemContentMigration {
           );
         }
       }
+      await lock.assertOwned();
       await this.writeState(nextState);
       return {
         recovered,
@@ -769,14 +782,14 @@ export class FileSystemContentMigration {
         conflicts,
       };
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
   async rollback(
     options: ContentMigrationRollbackOptions,
   ): Promise<ContentMigrationRollbackOutcome> {
-    const release = await this.acquireLock();
+    const lock = await this.acquireLock();
     try {
       const state = await this.readState();
       const candidates = state.migrations.filter((record) =>
@@ -848,6 +861,7 @@ export class FileSystemContentMigration {
         };
       }
       if (result.conflicts.length > 0) {
+        await lock.assertOwned();
         const nextState = this.setStatuses(
           state,
           batch,
@@ -884,6 +898,7 @@ export class FileSystemContentMigration {
         undefined,
         new Date(),
       );
+      await lock.assertOwned();
       await this.writeState(nextState);
       await this.appendHistoryForRecords(
         batch,
@@ -898,7 +913,7 @@ export class FileSystemContentMigration {
         conflicts: [],
       };
     } finally {
-      await release();
+      await lock.release();
     }
   }
 
@@ -1264,62 +1279,11 @@ export class FileSystemContentMigration {
       : path.join(this.contentDirectory, target);
   }
 
-  private async acquireLock(): Promise<() => Promise<void>> {
-    const lockPath = migrationLockPath(this.contentDirectory);
-    await fs.mkdir(path.dirname(lockPath), { recursive: true });
-    let handle: fs.FileHandle | undefined;
-    for (let attempt = 0; attempt < 3 && !handle; attempt += 1) {
-      try {
-        handle = await fs.open(lockPath, "wx");
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-        const stale = await staleLockContent(lockPath);
-        if (stale === null)
-          throw new Error(
-            "Another migration is already applying or requires recovery.",
-          );
-        const quarantine = `${lockPath}.stale-${randomUUID()}`;
-        try {
-          await fs.rename(lockPath, quarantine);
-        } catch (renameError) {
-          if ((renameError as NodeJS.ErrnoException).code === "ENOENT")
-            continue;
-          throw renameError;
-        }
-        const quarantined = await fs.readFile(quarantine, "utf8");
-        if (quarantined !== stale) {
-          await fs.writeFile(lockPath, quarantined, { flag: "wx" }).then(
-            () => undefined,
-            () => undefined,
-          );
-          await fs.rm(quarantine, { force: true });
-          throw new Error(
-            "Another migration is already applying or requires recovery.",
-          );
-        }
-        await fs.rm(quarantine, { force: true });
-      }
-    }
-    if (!handle)
-      throw new Error(
-        "Another migration is already applying or requires recovery.",
-      );
-    const token = randomUUID();
-    await handle.writeFile(
-      JSON.stringify({
-        pid: process.pid,
-        token,
-        startedAt: new Date().toISOString(),
-      }),
+  private async acquireLock(): Promise<ContentLock> {
+    return await acquireContentLock(
+      migrationLockPath(this.contentDirectory),
+      "Another migration is already applying or requires recovery.",
     );
-    return async () => {
-      await handle.close();
-      try {
-        const current = JSON.parse(await fs.readFile(lockPath, "utf8"));
-        if (isRecord(current) && current.token === token)
-          await fs.rm(lockPath, { force: true });
-      } catch {}
-    };
   }
 
   private async tryAnalyze(source: ContentSource): Promise<{

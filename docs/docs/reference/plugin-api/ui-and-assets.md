@@ -7,9 +7,32 @@ sidebar:
 ---
 # UI, assets, and runtime
 
-## UI components
+## Extension mechanisms
 
-Plugins may export a `PluginComponent<Props>` and a `PluginDataHelper<Input, Model>` in addition to their factory. Data helpers receive narrow inputs such as `PublicContentView` and return typed models; components accept readonly typed props and return rendered output. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one.
+Riebeckite separates three ways a Plugin can add UI or change rendered output:
+
+| Feature | Site | Markdown | HAST |
+| --- | --- | --- | --- |
+| Placed from site TSX | Yes | No | No |
+| Usable from a Markdown fence or MDX | No | Yes | No |
+| Transforms the document AST | No | No | Yes |
+| SSR | JSX rendering | HTML generation | AST transformation |
+| Client entry | Depends on implementation | Optional | None |
+| Hydration | Depends on implementation | Optional | None |
+
+The pipeline order is:
+
+1. Markdown components render during the Markdown AST pass, before `remark-rehype`.
+2. The generated HTML passes through raw HTML parsing and Markdown sanitizers.
+3. Plugin Rehype transforms run.
+4. HAST transforms run on the sanitized tree.
+5. Table wrapping, math rendering, formatting, slugs, and HTML serialization finish the document.
+
+Site components are rendered by the site's own TSX outside this pipeline. Markdown component output is sanitized as part of Markdown, while HAST transform output is inserted after sanitization and is therefore trusted plugin output. HAST transforms must not inject untrusted strings or bypass the sanitizer.
+
+## Site components
+
+Plugins may export a `PluginSiteComponent<Props>` and a `PluginDataHelper<Input, Model>` in addition to their factory. Data helpers receive narrow inputs such as `PublicContentView` and return typed models; components accept readonly typed props and return rendered output. The Site composes these components in its own TSX, choosing whether, where, and how often to render each one.
 
 Typical plugin export shape:
 
@@ -84,6 +107,157 @@ const backlinks = await getBacklinks({ view, slug });
 </article>
 ```
 
+## Markdown components
+
+Use `markdownComponents` when a Plugin renders a self-contained UI from ordinary
+Markdown. A Markdown component is a string renderer: `render` returns HTML, and
+`parseProps`/`resolveProps` validate and resolve the values from content. It
+renders during the Markdown AST pass, and its browser module is loaded only when
+the rendered page contains that interactive component.
+
+```tsx
+import { defineMarkdownComponent } from "@riebeckite/core";
+import { renderToString } from "hono/jsx/dom/server";
+
+markdownComponents: [
+  defineMarkdownComponent({
+    name: "Counter",
+    parseProps: (props) => ({ initial: Number(props.initial ?? 0) }),
+    render: (props) => renderToString(<Counter {...props} />),
+    client: { moduleSpecifier: "@example/plugin/counter" },
+  }),
+];
+```
+
+Write it in Markdown without enabling MDX:
+
+````md
+```riebeckite-component Counter
+initial: 3
+```
+````
+
+Props must be a YAML mapping and are serialized as JSON-safe public data. Give
+each Markdown component a unique name within that namespace; duplicate Markdown
+component names fail during plugin resolution. A HAST transform may reuse the
+same name because the two namespaces are separate. Omit `client` for static
+components. Interactive components must
+export the default Hono JSX component (or set `exportName`) and hydrate through
+the generated client entry. `clientEntries` remain appropriate for delegated
+events, widgets that manage arbitrary DOM, and page-level behavior.
+
+The fence is an ordinary fenced code block handled before Markdown is converted
+to HTML, so it works with plain Markdown and does not require MDX. MDX remains a
+separate content format for pages that need full JSX. These components are not
+HonoX islands: HonoX scans only `app/islands`, while Riebeckite's generated
+client finds component markers and loads the declared module through Vite. Keep
+`__importing_islands = true` in the renderer so HonoX emits its client bundle,
+and export the client build from the plugin package manifest as you would for a
+`clientEntries` module. The fence stays deliberately small instead of turning
+every Markdown page into MDX.
+
+MDX pages use the same registry rather than a second component implementation.
+The registered components are passed into the MDX renderer as JSX components:
+
+```mdx
+<Counter initial={3} />
+```
+
+A `components` option passed to `mdx({ components })` overrides a Plugin
+component with the same name for those pages. Props cross the hydration
+boundary, so they must be JSON-safe; pass content through an explicit string
+prop instead of JSX children. `parseProps` still validates the values, and
+only interactive components hydrate. MDX renders the component directly, so
+its `render` output is trusted plugin code and does not pass through the
+Markdown sanitizer; keep untrusted content in props and escape it in the
+component.
+
+`parseProps` is the validation boundary for values that come from content. The
+component's server output passes through the normal Markdown sanitizer, and
+props are escaped and validated before they reach an attribute. Components
+change processed Markdown, so include them in the plugin's
+`processedContentCache` contract when persistent caching is enabled; otherwise
+caching is bypassed for that plugin instead of serving stale HTML. Bump the
+contract's `version` when component rendering changes.
+
+`resolveProps` runs after `parseProps` and receives
+`{ sourceSlug, resolveAssetUrl, manifest, diagnostics }`. Use it when props
+depend on content-relative assets; the resolved props still cross the hydration
+boundary and must remain JSON-safe. `resolveAssetUrl` returns `null` for
+unsupported or external paths, so validate the result before rendering. When
+resolution needs the final manifest, set `deferUntilManifest: true`; the
+component renders after manifest hooks and can use `diagnostics` and
+`renderError` to keep an accessible error state.
+
+### Choosing JSX or SSR output
+
+Pick the smallest mechanism that produces the markup. Use Hono JSX when
+component state changes the rendered markup, or when an external renderer needs
+a loading/ready/error lifecycle; keep SSR HTML plus a small behavior controller
+when the markup is static and only event wiring is interactive (code tabs,
+table of contents, navigation). The JSX runtime is loaded only on pages that
+contain a hydrated component, so a behavior controller is still the cheaper
+choice for simple UI. Do not convert already-sanitized HTML into JSX to "make it
+declarative": the component contract ends at serialized props.
+
+### External renderers
+
+Route external renderer lifecycles through `renderPendingDiagrams` from
+`@riebeckite/diagram/client`. The shared wrapper finds pending figures, sets
+`aria-busy` and `data-diagram-status` to `rendered` or `error`, opens the SSR
+fallback element, cancels work through `signal`, ignores detached figures with
+`isConnected`, and returns the cleanup that disposes instances on unmount.
+Import the library lazily so it keeps its own chunk, check `signal.aborted`
+after each `await`, and leave the Canvas/SVG/DOM output to the library. Mermaid,
+Graphviz, and Chart.js follow this contract; a renderer with a genuinely
+different lifecycle may keep its own initializer.
+
+## HAST transforms
+
+Use `hastTransforms` with `defineHastTransform` to transform sanitized HTML
+nodes. A HAST transform is not a UI component: it has no `client` entry, does
+not hydrate, and cannot own browser state.
+
+```ts
+import { defineHastTransform } from "@riebeckite/core";
+
+hastTransforms: [
+  defineHastTransform({
+    name: "WrapSection",
+    match: (node) => node.tagName === "section",
+    render: ({ children }) => `<div class="rr-section">${children}</div>`,
+  }),
+];
+```
+
+Transforms run after raw HTML and Markdown sanitization and after Plugin Rehype
+transforms, so `match` only sees trusted nodes and `render` receives the
+serialized node and its already-sanitized children. The returned HTML is
+inserted without another sanitizer pass: escape any value that did not come
+from the sanitized tree, and never use a transform to inject content from
+frontmatter, props, or another untrusted source.
+
+Markdown components and HAST transforms can be combined. A Markdown component
+runs first and produces HTML; the document is parsed and sanitized; then a HAST
+transform can group or wrap the resulting nodes. A Markdown component cannot run
+inside a HAST transform, and a HAST transform cannot register a client entry.
+See [Writing a Plugin](../../plugins/writing-a-plugin.md#providing-ui-or-output)
+for choosing between the three mechanisms.
+
+## Overlay hosts
+
+A theme can provide an SSR-owned host for client overlays with
+`<OverlayHost name="…" />` from `@riebeckite/ui/overlay`. A client initializer
+may look it up with `findOverlayHost(name)` and fall back to creating its own
+host when the theme does not render one. Keep one host per overlay name and let
+the client entry unmount its component without removing the app-owned host.
+
+Use `<AppSlot name="bodyStart" />` from the same module for application-level
+placement. The names are `head`, `bodyStart`, `articleAfter`, and `app`; choose
+a semantic element with `as` when needed. `findAppSlot(name)` resolves the
+placement from client code. Keep slot markup in the theme or site renderer
+rather than adding page-specific wrappers inside plugin content.
+
 ## Assets and client entries
 
 [[glossary/plugin|Plugin]] CSS remains in the plugin package and is declared through
@@ -107,12 +281,11 @@ export function example() {
     name: "example",
     assets: [createStyleAsset("example", "@riebeckite/plugin-example/style.css")],
     clientEntries: [
-      createClientEntry(
-        "example",
-        "@riebeckite/plugin-example/client",
-        "initExample",
-        { selector: ".example" },
-      ),
+      createClientEntry("example", {
+        moduleSpecifier: "@riebeckite/plugin-example/client",
+        exportName: "initExample",
+        publicConfig: { selector: ".example" },
+      }),
     ],
   });
 }
@@ -148,16 +321,35 @@ The module specifier is resolved by the host bundler. It can be a subpath expose
 by the plugin package's `exports` map, a site-local absolute path (e.g.
 `/extensions/plugin.css`), or a path the bundler can resolve. For example, a
 third-party package can use `createStyleAsset("example", "@example/plugin/style.css")`
-and `createClientEntry("example", "@example/plugin/client", ...)`.
+and `createClientEntry("example", { moduleSpecifier: "@example/plugin/client" })`.
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
-entry's export name is optional and defaults to the module default export. Its
-third argument is an optional export name passed to that initializer. Its
-fourth argument is an optional JSON value passed to that initializer. It is the
+entry's export name is optional and defaults to the module default export.
+`exportName`, `publicConfig`, `scope`, `initializerArguments`,
+`presenceSelector`, and `root` configure the generated initializer.
+`publicConfig` is an optional JSON value passed to that initializer. It is the
 only plugin configuration exposed to browser code (and recorded in the
 manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service
 URLs. An initializer without public config continues to receive no arguments.
+
+Client-owned UI should be written in Hono JSX and mounted into its host with
+`createRoot()` from `hono/jsx/dom/client`. Keep browser-only work such as focus,
+measurement, pointer capture, and media playback in the initializer. When an
+entry is needed only on pages that contain a marker, set `presenceSelector` so
+the chunk is not loaded on other pages.
+
+The selector is evaluated against the whole current DOM, so the marker must be
+in the SSR HTML or added before the SPA commit; client-created content cannot
+trigger the load. The page-scoped root remains `main#main-content` by default.
+When the marker lives in a shell region outside that root, set
+`root: "document"`; the matched element is also available as `context.marker`.
+Entries that must always run because they implement site-wide behavior
+(analytics, color mode, text fragment, UX) omit the selector. The selector only
+gates loading: the initializer must still look for its own elements, and
+page-scoped work must return cleanup so an aborted load does not leave
+listeners behind. App-scoped entries with a selector are re-evaluated on each
+page commit, so a marker introduced by SPA navigation can still load them.
 
 A client entry can also be declared explicitly:
 

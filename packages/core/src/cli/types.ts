@@ -125,7 +125,10 @@ export type CliCommandSpec = {
   readonly hidden?: boolean;
   readonly supportsJson?: boolean;
   readonly validate?: (input: CliCommandInput) => string | undefined;
-  readonly handler: CliCommandHandler;
+  handler(
+    context: CliCommandContext,
+    input: CliCommandInput,
+  ): Promise<CliCommandResult> | CliCommandResult;
 };
 
 export type CliCommandDefinition = CliCommandSpec;

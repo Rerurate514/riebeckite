@@ -62,12 +62,13 @@ test("keeps details state when a SPA page replaces the navigation", async (t) =>
     await page.addScriptTag({ content: bundle.outputFiles?.[0]?.text });
     const open = await page.evaluate((nextPage) => {
       const client = (
-        window as unknown as {
-          SidebarNavigationClient: {
+        window as {
+          SidebarNavigationClient?: {
             initSidebarNavigation(context: { root: ParentNode }): () => void;
           };
         }
       ).SidebarNavigationClient;
+      if (!client) throw new Error("missing SidebarNavigationClient");
       const cleanup = client.initSidebarNavigation({ root: document });
       const details = document.querySelector<HTMLDetailsElement>(
         ".rb-sidebar-navigation__details",

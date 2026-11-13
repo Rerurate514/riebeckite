@@ -106,11 +106,12 @@ export function diff(options: DiffPluginOptions = {}) {
       ui.enabled === false
         ? []
         : [
-            createClientEntry(
-              "diff",
-              "@riebeckite/plugin-diff/client",
-              "initDiffHistory",
-            ),
+            createClientEntry("diff", {
+              moduleSpecifier: "@riebeckite/plugin-diff/client",
+              exportName: "initDiffHistory",
+              initializerArguments: "root",
+              presenceSelector: "[data-rr-diff-history]",
+            }),
           ],
     onManifestCreated: async (context) => {
       if (context.isDevelopment || ui.enabled === false) return;

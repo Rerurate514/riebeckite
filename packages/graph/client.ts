@@ -791,12 +791,10 @@ export function createGraphRenderer(
           visible.nodes[
             (index + direction + visible.nodes.length) % visible.nodes.length
           ];
-        if (next) {
-          selectedId = next.id;
-          callbacks.onSelect?.(next);
-          focusNode(next.id);
-          requestFrame();
-        }
+        selectedId = next.id;
+        callbacks.onSelect?.(next);
+        focusNode(next.id);
+        requestFrame();
         return;
       }
       default:

@@ -34,11 +34,11 @@ export function wavedrom(options: WavedromOptions = {}) {
       createStyleAsset("wavedrom", "@riebeckite/plugin-wavedrom/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "wavedrom",
-        "@riebeckite/plugin-wavedrom/client",
-        "initWaveDrom",
-      ),
+      createClientEntry("wavedrom", {
+        moduleSpecifier: "@riebeckite/plugin-wavedrom/client",
+        exportName: "initWaveDrom",
+        presenceSelector: "[data-wavedrom='pending']",
+      }),
     ],
   });
 }

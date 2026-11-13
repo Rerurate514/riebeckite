@@ -19,6 +19,7 @@ export type TaxonomyFeedOptions = {
 
 /** Options accepted by `taxonomy()`. */
 export type TaxonomyOptions = {
+  layout?: "article" | "wide";
   exclude?: readonly string[];
   /** Generate tag terms. Defaults to `true`. */
   tags?: boolean;
@@ -52,6 +53,7 @@ export type TaxonomyOptions = {
 
 /** `TaxonomyOptions` with every default resolved. */
 export type ResolvedTaxonomyOptions = {
+  layout: "article" | "wide";
   exclude: readonly string[];
   tags: boolean;
   folders: boolean;

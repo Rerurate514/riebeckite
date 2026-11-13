@@ -17,6 +17,7 @@ export function resolveGlossaryOptions(
   options: GlossaryOptions = {},
 ): ResolvedGlossaryOptions {
   return {
+    layout: options.layout === "wide" ? "wide" : "article",
     basePath: normalizeBasePath(options.basePath ?? DEFAULT_GLOSSARY_BASE_PATH),
     className: options.className?.trim() || DEFAULT_GLOSSARY_CLASS_NAME,
     key: options.key?.trim() || DEFAULT_GLOSSARY_KEY,

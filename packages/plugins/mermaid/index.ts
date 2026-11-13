@@ -49,14 +49,12 @@ export function mermaid(options: MermaidOptions = {}) {
       createStyleAsset("mermaid", "@riebeckite/plugin-mermaid/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "mermaid",
-        "@riebeckite/plugin-mermaid/client",
-        "initMermaidDiagrams",
-        undefined,
-        undefined,
-        "context",
-      ),
+      createClientEntry("mermaid", {
+        moduleSpecifier: "@riebeckite/plugin-mermaid/client",
+        exportName: "initMermaidDiagrams",
+        initializerArguments: "context",
+        presenceSelector: "[data-mermaid='pending']",
+      }),
     ],
   });
 }

@@ -7,6 +7,7 @@ import {
   isRiebeckiteRuntimeModuleId,
   riebeckiteConfigModuleId,
   riebeckiteContentModuleId,
+  riebeckiteContentRenderersModuleId,
   riebeckiteRuntimeModules,
 } from "../src/runtime_modules.js";
 
@@ -71,6 +72,70 @@ describe("riebeckiteRuntimeModules", () => {
     assert.match(code, /isDevelopment: true/);
   });
 
+  it("builds static content renderer imports", () => {
+    const plugin = riebeckiteRuntimeModules(() => ({
+      ...application,
+      config: {
+        ...application.config,
+        plugins: [
+          {
+            name: "mdx",
+            contentFormats: [
+              {
+                extension: ".mdx",
+                rendererModule: "virtual:riebeckite/mdx-renderer",
+              },
+            ],
+          },
+        ],
+      },
+    }));
+    const load = asHook<string, string | null>(plugin.load);
+
+    const code = load(`\0${riebeckiteContentRenderersModuleId}`);
+    assert.ok(code);
+    assert.match(
+      code,
+      /import renderer0 from "virtual:riebeckite\/mdx-renderer"/,
+    );
+    assert.match(code, /renderContent/);
+  });
+
+  it("registers Markdown components with MDX content renderers", () => {
+    const plugin = riebeckiteRuntimeModules(() => ({
+      ...application,
+      config: {
+        ...application.config,
+        plugins: [
+          {
+            name: "components",
+            markdownComponents: [
+              {
+                name: "Notice",
+                render: () => "<p>Notice</p>",
+                client: { moduleSpecifier: "notice-client" },
+              },
+            ],
+            contentFormats: [
+              {
+                extension: ".mdx",
+                rendererModule: "virtual:riebeckite/mdx-renderer",
+              },
+            ],
+          },
+        ],
+      },
+    }));
+    const load = asHook<string, string | null>(plugin.load);
+
+    const code = load(`\0${riebeckiteContentRenderersModuleId}`);
+    assert.ok(code);
+    assert.match(code, /prepareMarkdownComponent/);
+    assert.match(code, /plugin\.markdownComponents/);
+    assert.match(code, /registeredComponents/);
+    assert.match(code, /components: \{ \.\.\.registeredComponents/);
+  });
+
   it("ignores unrelated ids", () => {
     const plugin = riebeckiteRuntimeModules(() => application);
     const resolveId = asHook<string, string | null>(plugin.resolveId);
@@ -109,7 +174,7 @@ describe("resolveHonoxConfig via @riebeckite/honox/runtime", () => {
     const resolved = resolveHonoxConfig(
       {
         content: { directory: "content" },
-      } as unknown as ResolvedRiebeckiteConfig,
+      } as ResolvedRiebeckiteConfig,
       appRoot,
     );
 

@@ -581,6 +581,26 @@
       "type": true
     },
     {
+      "name": "ContentFormat",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatDependencyContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatProcessContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "ContentFormatRegistry",
+      "value": true,
+      "type": true
+    },
+    {
       "name": "ContentGraph",
       "value": false,
       "type": true
@@ -1006,7 +1026,22 @@
       "type": false
     },
     {
+      "name": "createContentFormatRegistry",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createContentGraph",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentManifest",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createContentManifestEntry",
       "value": true,
       "type": false
     },
@@ -1022,6 +1057,26 @@
     },
     {
       "name": "createDevelopmentTrace",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createInvalid",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginContentLocationContext",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginContext",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createPluginManifestContext",
       "value": true,
       "type": false
     },
@@ -1047,6 +1102,16 @@
     },
     {
       "name": "createPublicContentView",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createResolvedRiebeckiteConfig",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "createRiebeckiteConfig",
       "value": true,
       "type": false
     },
@@ -1107,6 +1172,16 @@
     },
     {
       "name": "defineEndpoint",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineHastTransform",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "defineMarkdownComponent",
       "value": true,
       "type": false
     },
@@ -1306,6 +1381,11 @@
       "type": false
     },
     {
+      "name": "extractFrontmatter",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "extractFrontmatterAliases",
       "value": true,
       "type": false
@@ -1317,6 +1397,11 @@
     },
     {
       "name": "extractMarkdownLinkUrls",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "finalizeDeferredMarkdownComponents",
       "value": true,
       "type": false
     },
@@ -1534,6 +1619,11 @@
       "name": "HtmlPipeline",
       "value": false,
       "type": true
+    },
+    {
+      "name": "htmlToPlainText",
+      "value": true,
+      "type": false
     },
     {
       "name": "IMAGE_EXTENSIONS",
@@ -1926,6 +2016,11 @@
       "type": false
     },
     {
+      "name": "parseYaml",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "PathRenameRule",
       "value": false,
       "type": true
@@ -2002,11 +2097,6 @@
     },
     {
       "name": "PluginCliExtension",
-      "value": false,
-      "type": true
-    },
-    {
-      "name": "PluginComponent",
       "value": false,
       "type": true
     },
@@ -2131,6 +2221,16 @@
       "type": true
     },
     {
+      "name": "PluginHastNode",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHastTransform",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginHeadTag",
       "value": false,
       "type": true
@@ -2171,6 +2271,21 @@
       "type": true
     },
     {
+      "name": "PluginMarkdownComponent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginMarkdownComponentClient",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginMarkdownComponentResolveContext",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginMemo",
       "value": false,
       "type": true
@@ -2187,6 +2302,11 @@
     },
     {
       "name": "PluginPageContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginPageLayout",
       "value": false,
       "type": true
     },
@@ -2241,6 +2361,11 @@
       "type": true
     },
     {
+      "name": "PluginSiteComponent",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PostContent",
       "value": false,
       "type": true
@@ -2249,6 +2374,11 @@
       "name": "PostFrontmatter",
       "value": false,
       "type": true
+    },
+    {
+      "name": "prepareMarkdownComponent",
+      "value": true,
+      "type": false
     },
     {
       "name": "PROVENANCE_VERSION",
@@ -2636,6 +2766,16 @@
       "type": true
     },
     {
+      "name": "resolveEntryCalendarDate",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "resolveEntryDate",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolveFolderEntry",
       "value": true,
       "type": false
@@ -2871,6 +3011,16 @@
       "type": true
     },
     {
+      "name": "toCalendarDate",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "toIsoDate",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "TraceAttributes",
       "value": false,
       "type": true
@@ -3049,6 +3199,16 @@
     },
     {
       "name": "RadialGraphLayoutOptions",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RUNTIME_CAPABILITIES",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "RuntimeCapability",
       "value": false,
       "type": true
     },

@@ -7,6 +7,7 @@ import path from "node:path";
 import { after, before, test } from "node:test";
 import puppeteer, { type Browser, type Page } from "puppeteer";
 import { scaffoldRiebeckiteSite } from "../../../../create-riebeckite/src/scaffold/index.js";
+import { initTableOfContents } from "../../src/table-of-contents.client.js";
 
 let server: Server;
 let browser: Browser;
@@ -212,4 +213,115 @@ test("starter uses a single centered article column below the TOC breakpoint", a
     assert.ok(layout.scrollWidth <= layout.viewportWidth);
     await page.close();
   }
+});
+
+test("TOC outside #main-content updates and rebinds after SPA navigation", async () => {
+  const page = await openPage({ width: 1200, height: 900 });
+  await page.setContent(
+    `<!doctype html><body style="margin:0"><div data-spa-region="toc"><ol><li><a data-toc-target="first" data-toc-viewed="false">First</a></li><li><a data-toc-target="second" data-toc-viewed="false">Second</a></li></ol></div><main id="main-content"><h2 id="first" style="margin-top:100px">First</h2><div style="height:900px"></div><h2 id="second">Second</h2><div style="height:900px"></div></main></body>`,
+  );
+  await page.evaluate(() => {
+    (globalThis as typeof globalThis & { __name: <T>(value: T) => T }).__name =
+      (value) => value;
+  });
+  await page.evaluate(initTableOfContents);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  assert.equal(
+    await page.$eval('[data-toc-target="first"]', (link) =>
+      link.getAttribute("aria-current"),
+    ),
+    "true",
+  );
+
+  await page.evaluate(() => {
+    (
+      document.querySelector('[data-spa-region="toc"]') as HTMLElement
+    ).innerHTML =
+      '<a data-toc-target="replaced" data-toc-viewed="false">Replaced</a>';
+    (document.querySelector("#main-content") as HTMLElement).innerHTML =
+      '<h2 id="replaced">Replaced</h2><div style="height:900px"></div>';
+    document.dispatchEvent(new CustomEvent("spa:navigation"));
+  });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  assert.equal(
+    await page.$eval('[data-toc-target="replaced"]', (link) =>
+      link.getAttribute("aria-current"),
+    ),
+    "true",
+  );
+  await page.close();
+});
+
+test("TOC updates only when the active heading changes", async () => {
+  const page = await openPage({ width: 1200, height: 900 });
+  await page.setContent(
+    `<!doctype html><body style="margin:0"><ol><li><a data-toc-target="first" data-toc-viewed="false">First</a></li><li><a data-toc-target="second" data-toc-viewed="false">Second</a></li></ol><main><h2 id="first" style="margin-top:100px">First</h2><div style="height:900px"></div><h2 id="second">Second</h2><div style="height:900px"></div></main></body>`,
+  );
+  await page.evaluate(() => {
+    (globalThis as typeof globalThis & { __name: <T>(value: T) => T }).__name =
+      (value) => value;
+  });
+  await page.evaluate(initTableOfContents);
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  assert.equal(
+    await page.$eval('[data-toc-target="first"]', (link) =>
+      link.getAttribute("aria-current"),
+    ),
+    "true",
+  );
+
+  await page.evaluate(() => {
+    let mutations = 0;
+    new MutationObserver((records) => {
+      mutations += records.length;
+    }).observe(document.body, { attributes: true, subtree: true });
+    (
+      window as typeof window & { tocMutationCount: () => number }
+    ).tocMutationCount = () => mutations;
+    window.scrollTo(0, 10);
+  });
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  assert.equal(
+    await page.evaluate(() =>
+      (
+        window as typeof window & { tocMutationCount: () => number }
+      ).tocMutationCount(),
+    ),
+    0,
+  );
+
+  await page.evaluate(() => window.scrollTo(0, 820));
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+  );
+  assert.equal(
+    await page.$eval('[data-toc-target="second"]', (link) =>
+      link.getAttribute("aria-current"),
+    ),
+    "true",
+  );
+  await page.close();
 });

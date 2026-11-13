@@ -32,15 +32,10 @@ export function localGraph(options: LocalGraphOptions = {}) {
       },
     ],
     clientEntries: [
-      createClientEntry(
-        "local-graph",
-        "@riebeckite/plugin-local-graph/client",
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        "[data-riebeckite-local-graph]",
-      ),
+      createClientEntry("local-graph", {
+        moduleSpecifier: "@riebeckite/plugin-local-graph/client",
+        presenceSelector: "[data-riebeckite-local-graph]",
+      }),
     ],
   });
 }

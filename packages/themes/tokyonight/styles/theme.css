@@ -181,8 +181,8 @@
  *
  * Tokyo Night identity: technical / neon. Mono display headings,
  * a tight rhythm, square 1px-bordered surfaces, electric accents and
- * an optional neon glow. Unlayered on purpose so it wins over the
- * layered app and plugin stylesheets without `!important`.
+ * an optional neon glow. The generated rb-theme layer places it above
+ * framework and plugin defaults.
  * ------------------------------------------------------------------ */
 
 @font-face {

@@ -16,6 +16,7 @@ export class ContentOutputResolver {
   constructor(
     private readonly pluginRuntime: PluginRuntime,
     private readonly observability: Observability,
+    private readonly contentPathToSlug?: (path: string) => string | undefined,
   ) {}
 
   async populatePageRoutes(
@@ -61,6 +62,7 @@ export class ContentOutputResolver {
           externalDependencies: input.externalDependencies,
           externalDependencyFailures: input.externalDependencyFailures,
           contentFingerprints: input.contentFingerprints,
+          contentPathToSlug: this.contentPathToSlug,
         }),
     );
   }

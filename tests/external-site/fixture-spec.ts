@@ -39,6 +39,10 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-code-annotations",
   },
   {
+    directory: "packages/plugins/code-enhance",
+    name: "@riebeckite/plugin-code-enhance",
+  },
+  {
     directory: "packages/plugins/highlight",
     name: "@riebeckite/plugin-highlight",
   },
@@ -122,6 +126,7 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-analytics",
   },
   { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
+  { directory: "packages/plugins/mdx", name: "@riebeckite/plugin-mdx" },
   {
     directory: "packages/plugins/graphviz",
     name: "@riebeckite/plugin-graphviz",
@@ -188,6 +193,9 @@ export const KANBAN_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_MARKER";
 export const KANBAN_BLOCK_MARKER = "RIEBECKITE_EXTERNAL_KANBAN_BLOCK_MARKER";
 export const SITE_COMPONENT_MARKER = "RIEBECKITE_SITE_COMPONENT_MARKER";
 export const SITE_ISLAND_MARKER = "RIEBECKITE_SITE_ISLAND_MARKER";
+export const MDX_MARKER = "RIEBECKITE_MDX_MARKER";
+export const EXTERNAL_COMPONENT_MARKER = "RIEBECKITE_EXTERNAL_COMPONENT_MARKER";
+export const MDX_COMPONENT_MARKER = "RIEBECKITE_MDX_COMPONENT_MARKER";
 export const LOCAL_PLUGIN_MARKER = "RIEBECKITE_EXTERNAL_LOCAL_PLUGIN_MARKER";
 export const LOCAL_PLUGIN_PAGE_MARKER =
   "RIEBECKITE_EXTERNAL_PLUGIN_PAGE_MARKER";

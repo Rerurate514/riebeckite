@@ -1,7 +1,14 @@
 /// <reference path="./wavedrom.d.ts" />
+import { renderPendingDiagrams } from "@riebeckite/diagram/client";
 
 type WavedromApi = typeof import("wavedrom")["default"];
 type SkinName = "default" | "narrow" | "lowkey";
+
+declare global {
+  interface Window {
+    WaveSkin?: unknown;
+  }
+}
 
 const PENDING_SELECTOR = '[data-wavedrom="pending"]';
 const CANVAS_ATTRIBUTE = "data-wavedrom-canvas";
@@ -18,9 +25,11 @@ let renderCounter = 0;
  * `data-wavedrom-spec`; the requested skin (a build-time option) travels in
  * `data-wavedrom-skin` because client entry code cannot see plugin options.
  */
-export async function initWaveDrom(): Promise<void> {
+export async function initWaveDrom(
+  context: { root?: ParentNode; signal?: AbortSignal } = {},
+): Promise<undefined | (() => void)> {
   const figures = Array.from(
-    document.querySelectorAll<HTMLElement>(PENDING_SELECTOR),
+    (context.root ?? document).querySelectorAll<HTMLElement>(PENDING_SELECTOR),
   );
   if (figures.length === 0) return;
 
@@ -33,31 +42,23 @@ export async function initWaveDrom(): Promise<void> {
   }
 
   let notFirstSignal = false;
-  for (const figure of figures) {
-    const canvas = figure.querySelector<HTMLElement>(`[${CANVAS_ATTRIBUTE}]`);
-    const serialized = figure.dataset.wavedromSpec;
-    if (!canvas || !serialized) {
-      setError(figure);
-      continue;
-    }
+  return await renderPendingDiagrams(
+    "wavedrom",
+    async (figure) => {
+      const canvas = figure.querySelector<HTMLElement>(`[${CANVAS_ATTRIBUTE}]`);
+      const serialized = figure.dataset.wavedromSpec;
+      if (!canvas || !serialized) {
+        throw new Error("Missing WaveDrom figure data.");
+      }
 
-    let spec: Record<string, unknown>;
-    try {
-      spec = JSON.parse(serialized) as Record<string, unknown>;
-    } catch {
-      setError(figure);
-      continue;
-    }
-
-    try {
+      const spec = JSON.parse(serialized) as Record<string, unknown>;
       const skin = await loadSkin(figure.dataset.wavedromSkin, api);
       renderFigure(api, spec, canvas, skin, notFirstSignal);
       figure.dataset.wavedrom = "rendered";
       if (spec.signal) notFirstSignal = true;
-    } catch {
-      setError(figure);
-    }
-  }
+    },
+    { ...context, selector: PENDING_SELECTOR, fallbackSelector: "details" },
+  );
 }
 
 function renderFigure(
@@ -70,7 +71,7 @@ function renderFigure(
   const index = renderCounter++;
   canvas.id = `${CANVAS_ID_PREFIX}${index}`;
   // `renderWaveForm` reads the active skin from `window.WaveSkin`.
-  (window as unknown as { WaveSkin?: unknown }).WaveSkin = skin ?? api.waveSkin;
+  window.WaveSkin = skin ?? api.waveSkin;
   api.renderWaveForm(index, spec, CANVAS_ID_PREFIX, notFirstSignal);
 }
 

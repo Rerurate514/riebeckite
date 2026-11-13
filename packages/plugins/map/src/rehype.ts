@@ -1,3 +1,4 @@
+import { htmlToPlainText } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -217,7 +218,7 @@ function buildStatic(
     ),
   );
 
-  const attribution = stripHtml(payload.attribution);
+  const attribution = htmlToPlainText(payload.attribution);
   if (attribution) {
     children.push(
       element("p", { className: `${base}__attribution` }, [text(attribution)]),
@@ -331,18 +332,4 @@ function reportDiagnostic(file: unknown, message: string) {
       ruleId: "invalid-source",
     });
   }
-}
-
-function stripHtml(value: string): string {
-  return value
-    .replace(/<[^>]*>/g, "")
-    .replace(/&copy;/gi, "\u00a9")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/gi, "&")
-    .replace(/\s+/g, " ")
-    .trim();
 }

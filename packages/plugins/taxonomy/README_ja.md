@@ -64,6 +64,10 @@ export default defineConfig({
 | `className` | `string` | `"rr-taxonomy"` | ページ断片のルート CSS クラス |
 | `dataEndpoint` | `string` | `"/taxonomy/index.json"` | JSON データのエンドポイント |
 | `localeMode` | `"current" \| "fallback" \| "all"` | `"current"` | タームと言語別ページの選択 |
+| `layout` | `"article" \| "wide"` | `"article"` | 生成ページの幅。`"article"` はテーマの記事幅、`"wide"` はページ幅を使います。 |
+
+`exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
+`exclude: ["Config"]` は `Config` と `Config/internal` をすべての taxonomy 投影から除外しますが、公開 URL はそのままです。
 
 `exclude` は表示ラベルや glob ではなく論理コンテンツ slug を使います。たとえば
 `exclude: ["Config"]` は `Config` と `Config/internal` をすべての taxonomy 投影から除外しますが、公開 URL はそのままです。

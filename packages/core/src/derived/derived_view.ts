@@ -401,7 +401,7 @@ export function createDerivedViewRegistry(
     entry: CacheEntry,
   ): Promise<void> => {
     try {
-      await cache?.set(key, entry as unknown as JsonValue);
+      await cache?.set(key, entry);
     } catch {
       return;
     }
@@ -539,7 +539,7 @@ export function derivedDependenciesToOutputDependencies(
   }
   const seen = new Set<string>();
   return outputDependencies.filter((dependency) => {
-    const key = stableStringify(dependency as JsonValue);
+    const key = stableStringify(dependency);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -790,14 +790,56 @@ function serializeInput(
   throw new TypeError(`${label} must be JSON-serializable.`);
 }
 
-function isJsonValue(value: unknown): value is JsonValue {
+function isJsonValue(
+  value: unknown,
+  ancestors: Set<object> = new Set(),
+): value is JsonValue {
   if (value === null || typeof value === "string" || typeof value === "boolean")
     return true;
-  if (typeof value === "number") return Number.isFinite(value);
-  if (Array.isArray(value)) return value.every(isJsonValue);
-  return (
-    typeof value === "object" &&
-    Object.getPrototypeOf(value) === Object.prototype &&
-    Object.values(value as Record<string, unknown>).every(isJsonValue)
+  if (typeof value === "number")
+    return Number.isFinite(value) && !Object.is(value, -0);
+  if (typeof value !== "object") return false;
+  if (ancestors.has(value)) return false;
+  ancestors.add(value);
+  try {
+    if (Array.isArray(value)) {
+      if (hasNonJsonProperties(value)) return false;
+      for (let index = 0; index < value.length; index += 1) {
+        if (!isJsonValue(value[index], ancestors)) return false;
+      }
+      return true;
+    }
+    if (
+      Object.getPrototypeOf(value) !== Object.prototype ||
+      Object.hasOwn(value, "toJSON") ||
+      hasEnumerableSymbols(value)
+    )
+      return false;
+    return Object.values(value as Record<string, unknown>).every((item) =>
+      isJsonValue(item, ancestors),
+    );
+  } finally {
+    ancestors.delete(value);
+  }
+}
+
+function hasNonJsonProperties(value: readonly unknown[]): boolean {
+  if (Object.hasOwn(value, "toJSON") || hasEnumerableSymbols(value))
+    return true;
+  return Object.keys(value).some((key) => {
+    const index = Number(key);
+    return (
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= value.length ||
+      String(index) !== key
+    );
+  });
+}
+
+function hasEnumerableSymbols(value: object): boolean {
+  return Object.getOwnPropertySymbols(value).some(
+    (symbol) =>
+      Object.getOwnPropertyDescriptor(value, symbol)?.enumerable === true,
   );
 }

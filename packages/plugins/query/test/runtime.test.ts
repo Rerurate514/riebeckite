@@ -5,6 +5,7 @@ import type {
   ContentManifestEntry,
   Diagnostic,
 } from "@riebeckite/core";
+import { createContentManifest } from "@riebeckite/core";
 import { createQueryPlaceholder } from "../src/placeholder.ts";
 import { createQueryRuntime } from "../src/runtime.ts";
 
@@ -31,13 +32,12 @@ function entry(
 }
 
 function manifestOf(entries: ContentManifestEntry[]): ContentManifest {
-  return {
+  return createContentManifest({
     entries,
     publicEntries: entries,
     discoverableEntries: entries,
     bySlug: new Map(entries.map((item) => [item.slug, item])),
-    contentIndex: new Map(),
-  } as unknown as ContentManifest;
+  });
 }
 
 test("resolve replaces placeholders and selects entries", () => {

@@ -65,6 +65,8 @@ export type ContentAssetInspection = {
 
 export type ContentAssetInspectionOptions = {
   readonly largeAssetBytes?: number;
+  readonly isContentPath?: (path: string) => boolean;
+  readonly contentDependencies?: ReadonlyMap<string, readonly string[]>;
 };
 
 export async function inspectContentAssets(
@@ -75,10 +77,11 @@ export async function inspectContentAssets(
   const largeThresholdBytes =
     options.largeAssetBytes ?? DEFAULT_LARGE_ASSET_BYTES;
   const entries = await source.scan();
+  const isContentPath =
+    options.isContentPath ??
+    ((path: string) => path.toLowerCase().endsWith(".md"));
   const assets = entries.filter(
-    (entry) =>
-      entry.path.toLowerCase() !== "" &&
-      !entry.path.toLowerCase().endsWith(".md"),
+    (entry) => entry.path.toLowerCase() !== "" && !isContentPath(entry.path),
   );
   const references = new Map(
     assets.map((entry) => [
@@ -86,14 +89,27 @@ export async function inspectContentAssets(
       referencedBy(manifest.byAsset.get(normalizeContentPath(entry.path))),
     ]),
   );
-  const markdown = await readMarkdown(entries, source);
+  const dependencyReferences = collectDependencyReferences(
+    manifest,
+    options.contentDependencies,
+  );
+  const markdown = await readMarkdown(entries, source, isContentPath);
   const inspected: ContentAssetInspectionEntry[] = [];
   for (const entry of assets) {
     const content = await source.read(entry);
     const bytes = toBytes(content);
     const path = normalizeContentPath(entry.path);
     const extension = extensionOf(path);
-    const referencing = references.get(path) ?? [];
+    const manifestReferences = references.get(path) ?? [];
+    const dependencyEntries = dependencyReferences.get(path) ?? [];
+    const referencing = [
+      ...new Map(
+        [...manifestReferences, ...dependencyEntries].map((entry) => [
+          entry.slug,
+          entry,
+        ]),
+      ).values(),
+    ];
     const usage = resolveUsage(referencing, path, markdown);
     inspected.push({
       path,
@@ -114,6 +130,32 @@ function referencedBy(
   entries: readonly ContentManifestEntry[] | undefined,
 ): readonly ContentManifestEntry[] {
   return entries ?? [];
+}
+
+function collectDependencyReferences(
+  manifest: ContentManifest,
+  dependencies: ReadonlyMap<string, readonly string[]> | undefined,
+): ReadonlyMap<string, readonly ContentManifestEntry[]> {
+  const references = new Map<string, ContentManifestEntry[]>();
+  if (!dependencies) return references;
+  const entriesByPath = new Map(
+    manifest.entries.flatMap((entry) =>
+      entry.sourcePath
+        ? [[normalizeContentPath(entry.sourcePath), entry] as const]
+        : [],
+    ),
+  );
+  for (const [sourcePath, paths] of dependencies) {
+    const source = entriesByPath.get(normalizeContentPath(sourcePath));
+    if (!source) continue;
+    for (const dependencyPath of paths) {
+      const key = normalizeContentPath(dependencyPath);
+      const values = references.get(key) ?? [];
+      values.push(source);
+      references.set(key, values);
+    }
+  }
+  return references;
 }
 
 function resolveUsage(
@@ -145,11 +187,12 @@ function resolveUsage(
 async function readMarkdown(
   entries: readonly ContentSourceEntry[],
   source: ContentSource,
+  isContentPath: (path: string) => boolean,
 ): Promise<readonly string[]> {
   const decoder = new TextDecoder("utf-8", { ignoreBOM: true });
   const texts: string[] = [];
   for (const entry of entries) {
-    if (!entry.path.toLowerCase().endsWith(".md")) continue;
+    if (!isContentPath(entry.path)) continue;
     const content = await source.read(entry);
     texts.push(typeof content === "string" ? content : decoder.decode(content));
   }

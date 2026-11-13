@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import puppeteer from "puppeteer";
 import { writeRiebeckiteAssetEntries } from "../src/asset_entries.js";
 
 test("asset entries are not rewritten when their contents are unchanged", async () => {
@@ -92,13 +93,64 @@ test("generated entries import the framework, plugin, and theme stylesheets", as
     );
     assert.match(
       await readFile(pluginStyles, "utf8"),
-      /@import "@riebeckite\/plugin-navigation\/style\.css";/,
+      /@import "@riebeckite\/plugin-navigation\/style\.css" layer\(rb-plugins\);/,
     );
     assert.match(
       await readFile(themeStyles, "utf8"),
-      /@import "@riebeckite\/theme-default\/style\.css";/,
+      /@import "@riebeckite\/theme-default\/style\.css" layer\(rb-theme\);/,
     );
   } finally {
     await rm(directory, { force: true, recursive: true });
+  }
+});
+
+test("cascade layers keep theme above plugins and unlayered site CSS above both", async () => {
+  const browser = await puppeteer.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <style>
+        @layer base, components, utilities, rb-plugins, rb-theme;
+        @layer rb-plugins {
+          @layer utilities {
+            .plugin-target, .site-target { color: red; --cascade-token: plugin; }
+          }
+        }
+        @layer rb-theme {
+          @layer base {
+            .plugin-target.plugin-target, .site-target.site-target { color: green; --cascade-token: theme; }
+          }
+        }
+        .site-target { color: blue; --cascade-token: site; }
+      </style>
+      <div class="plugin-target">plugin</div>
+      <div class="site-target">site</div>
+    `);
+
+    const styles = await page.evaluate(() => {
+      const plugin = document.querySelector<HTMLElement>(".plugin-target");
+      const site = document.querySelector<HTMLElement>(".site-target");
+      if (!plugin || !site)
+        throw new Error("Cascade test elements are missing.");
+      return {
+        pluginColor: getComputedStyle(plugin).color,
+        pluginToken: getComputedStyle(plugin)
+          .getPropertyValue("--cascade-token")
+          .trim(),
+        siteColor: getComputedStyle(site).color,
+        siteToken: getComputedStyle(site)
+          .getPropertyValue("--cascade-token")
+          .trim(),
+      };
+    });
+
+    assert.deepEqual(styles, {
+      pluginColor: "rgb(0, 128, 0)",
+      pluginToken: "theme",
+      siteColor: "rgb(0, 0, 255)",
+      siteToken: "site",
+    });
+  } finally {
+    await browser.close();
   }
 });

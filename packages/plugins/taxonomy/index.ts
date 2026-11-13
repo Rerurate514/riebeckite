@@ -117,6 +117,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           const page = renderTaxonomyPage(model.term, resolved);
           return {
             type: "taxonomy-term",
+            layout: resolved.layout,
             pathname: model.term.path,
             title: page.title,
             body: page.html,
@@ -133,6 +134,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           const page = renderTaxonomyPage(model.term, resolved);
           return {
             type: "taxonomy-term",
+            layout: resolved.layout,
             pathname: model.term.path,
             title: page.title,
             body: page.html,
@@ -183,6 +185,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           );
           return {
             type: "taxonomy-index",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             body: page.html,
@@ -206,6 +209,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
           );
           return {
             type: "taxonomy-index",
+            layout: resolved.layout,
             pathname,
             title: page.title,
             body: page.html,
@@ -479,6 +483,13 @@ function validateTaxonomyOptions(
   if (!options) return [];
 
   const issues: ConfigValidationIssue[] = [];
+  if (
+    options.layout !== undefined &&
+    options.layout !== "article" &&
+    options.layout !== "wide"
+  ) {
+    issues.push({ path: "layout", message: 'Expected "article" or "wide".' });
+  }
   const assertBoolean = (key: keyof TaxonomyOptions): void => {
     const value = options[key];
     if (value !== undefined && typeof value !== "boolean") {
@@ -581,8 +592,7 @@ function isExcludedEntry(
   entry: ContentManifestEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug =
-    entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug;
+  const slug = entry.slug;
   return excludedSlugs.some(
     (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
   );

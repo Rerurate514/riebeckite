@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { resolveConfig } from "../src/config.js";
 import { ContentManager } from "../src/content/content_manager.js";
 import type { ContentSource } from "../src/content/content_source.js";
+import { createInvalid } from "../src/testing/fixtures.js";
 import { definePlugin, resolvePlugins } from "../src/types/plugin.js";
 
 function source(): ContentSource {
@@ -424,10 +425,10 @@ test("the resolved plugin set is reused across hook invocations", async () => {
 });
 
 test("page types validate their runtime contract", async () => {
-  const plugin = {
+  const plugin = createInvalid<ReturnType<typeof definePlugin>>({
     name: "invalid-pages",
     pageTypes: [{ id: "", resolve: null }],
-  } as unknown as ReturnType<typeof definePlugin>;
+  });
   const manager = new ContentManager(source(), [], {
     config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
   });
@@ -596,10 +597,10 @@ test("a normal and a directory-index page type on the same route conflict", asyn
 });
 
 test("directory-index page types validate the directoryIndex flag", async () => {
-  const plugin = {
+  const plugin = createInvalid<ReturnType<typeof definePlugin>>({
     name: "invalid-pages",
     pageTypes: [{ id: "invalid", directoryIndex: "yes", resolve: () => null }],
-  } as unknown as ReturnType<typeof definePlugin>;
+  });
   const manager = new ContentManager(source(), [], {
     config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
   });

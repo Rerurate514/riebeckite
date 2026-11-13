@@ -78,6 +78,7 @@ export function determineOutputChanges(input: {
   readonly externalDependencies?: readonly ExternalDependencySnapshot[];
   readonly externalDependencyFailures?: readonly ExternalDependencyFailure[];
   readonly contentFingerprints?: ReadonlyMap<string, string | undefined>;
+  readonly contentPathToSlug?: (path: string) => string | undefined;
 }): OutputChangeSet {
   const current = buildOutputInventory(
     input.manifest,
@@ -114,6 +115,7 @@ export function determineOutputChanges(input: {
   );
   const changedExternal = changedExternalDependencies(input);
   const changedExternalScopes = changedExternalDependencyScopes(input);
+  const changedProjections = collectChangedProjections(input, changedContent);
   const affected = new Map<string, OutputDescriptor>();
   const unchanged: OutputDescriptor[] = [];
   const reasons = new Map<string, OutputChangeReason>();
@@ -136,6 +138,7 @@ export function determineOutputChanges(input: {
         previousPublicLocations,
         input.previousState?.manifestEntries ?? [],
         input.manifest.entries,
+        changedProjections,
       );
     if (reason) {
       affected.set(output.path, output);
@@ -336,6 +339,9 @@ function findOutputChangeReason(
   previousPublicLocations: ReadonlyMap<string, ContentManifestEntry>,
   previousEntries: readonly ContentManifestEntry[],
   currentEntries: readonly ContentManifestEntry[],
+  changedProjections: ReadonlySet<
+    Extract<OutputDependency, { type: "projection" }>["projection"]
+  >,
 ): OutputChangeReason | undefined {
   const externalScope = findChangedExternalScope(output, changedExternalScopes);
   if (externalScope) return externalScope;
@@ -358,7 +364,7 @@ function findOutputChangeReason(
       if (
         (dependency.projection === "navigation" ||
           dependency.projection === "recent-posts") &&
-        changedContent.size > 0
+        changedProjections.has(dependency.projection)
       )
         return { type: "projection", projection: dependency.projection };
       if (dependency.projection === "taxonomy-tags" && changedTags.size > 0)
@@ -455,9 +461,9 @@ export function contentQueryValue(
 ): unknown {
   switch (property) {
     case "file.name":
-      return `${entry.slug.split("/").at(-1) ?? entry.slug}.md`;
+      return (entry.sourcePath ?? entry.slug).split("/").at(-1) ?? entry.slug;
     case "file.path":
-      return `${entry.slug}.md`;
+      return entry.sourcePath ?? entry.slug;
     case "file.slug":
       return entry.slug;
     case "file.folder":
@@ -604,11 +610,21 @@ function collectRefreshedContent(input: {
   const fingerprints = input.contentFingerprints;
   const previousEntries = input.previousState?.entries;
   if (!fingerprints || !previousEntries) return refreshed;
+  const previousBySlug = new Map(
+    (input.previousState?.manifestEntries ?? []).map((entry) => [
+      entry.slug,
+      entry,
+    ]),
+  );
   for (const entry of input.manifest.entries) {
     const fingerprint = fingerprints.get(entry.slug);
     if (fingerprint === undefined) continue;
+    const sourcePath =
+      entry.sourcePath ??
+      previousBySlug.get(entry.slug)?.sourcePath ??
+      `${entry.slug}.md`;
     if (
-      previousEntries[`${entry.slug}.md`]?.processedContentCacheFingerprint ===
+      previousEntries[sourcePath]?.processedContentCacheFingerprint ===
       fingerprint
     ) {
       continue;
@@ -626,11 +642,17 @@ function collectChangedContent(input: {
     readonly direct: ReadonlySet<string>;
     readonly dependent: ReadonlySet<string>;
   };
+  readonly contentPathToSlug?: (path: string) => string | undefined;
 }): Set<string> {
   const changed = new Set([
     ...input.affectedContent.direct,
     ...input.affectedContent.dependent,
-    ...input.changeSet.removed.filter(isMarkdownPath).map(toSlug),
+    ...input.changeSet.removed.flatMap((path) => {
+      const slug =
+        input.contentPathToSlug?.(path) ??
+        (isMarkdownPath(path) ? toSlug(path) : undefined);
+      return slug === undefined ? [] : [slug];
+    }),
   ]);
   const previousEntries = input.previousState?.manifestEntries ?? [];
   const currentEntries = input.manifest.entries;
@@ -651,6 +673,85 @@ function collectChangedContent(input: {
 
 function isExpired(expiresAt: string | undefined): boolean {
   return expiresAt !== undefined && Date.parse(expiresAt) <= Date.now();
+}
+
+type ProjectionName = Extract<
+  OutputDependency,
+  { type: "projection" }
+>["projection"];
+
+function collectChangedProjections(
+  input: {
+    readonly manifest: ContentManifest;
+    readonly previousState: ContentBuildState | undefined;
+  },
+  changedContent: ReadonlySet<string>,
+): ReadonlySet<ProjectionName> {
+  const changed = new Set<ProjectionName>();
+  if (
+    input.manifest.entries.length > 0 &&
+    input.manifest.entries.every((entry) => changedContent.has(entry.slug))
+  ) {
+    changed.add("navigation");
+    changed.add("recent-posts");
+    return changed;
+  }
+
+  const previousEntries = (input.previousState?.manifestEntries ?? []).filter(
+    (entry) => entry.publishing.discoverable,
+  );
+  const currentEntries = input.manifest.discoverableEntries;
+  if (
+    navigationFingerprint(previousEntries) !==
+    navigationFingerprint(currentEntries)
+  )
+    changed.add("navigation");
+  if (
+    recentPostsFingerprint(previousEntries) !==
+    recentPostsFingerprint(currentEntries)
+  )
+    changed.add("recent-posts");
+  return changed;
+}
+
+function navigationFingerprint(
+  entries: readonly ContentManifestEntry[],
+): string {
+  return entries
+    .map((entry) =>
+      JSON.stringify([
+        entry.publicLocation.metadata?.["l10n.translationId"] ?? entry.slug,
+        entry.permalink,
+        entry.title,
+        entry.icon ?? null,
+      ]),
+    )
+    .sort()
+    .join("\n");
+}
+
+function recentPostsFingerprint(
+  entries: readonly ContentManifestEntry[],
+): string {
+  return JSON.stringify(
+    entries.flatMap((entry) => {
+      if (entry.slug === "index") return [];
+      const postedAt =
+        frontmatterDate(entry.frontmatter.date) ??
+        frontmatterDate(entry.frontmatter.created) ??
+        frontmatterDate(entry.frontmatter.published);
+      return postedAt
+        ? [[entry.slug, entry.permalink, entry.title, postedAt.toISOString()]]
+        : [];
+    }),
+  );
+}
+
+function frontmatterDate(value: unknown): Date | null {
+  if (value instanceof Date) return value;
+  if (typeof value !== "string") return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function collectChangedTags(

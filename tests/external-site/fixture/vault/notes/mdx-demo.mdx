@@ -1,0 +1,29 @@
+---
+title: MDX Demo
+publish: true
+tags: [featured]
+---
+
+export const answer = 40 + 2;
+import { MdxLocal } from "./mdx-local";
+import BuildMarker from "../../site/app/islands/build-marker";
+
+# RIEBECKITE_MDX_MARKER
+
+The answer is {answer}.
+
+<CodeCopy
+  text="RIEBECKITE_MDX_COMPONENT_MARKER"
+  label="Copy MDX"
+  copiedLabel="Copied MDX"
+/>
+
+<CodeCopy
+  text={"<script>RIEBECKITE_MDX_COMPONENT_MARKER</script>"}
+  label="Copy MDX script"
+  copiedLabel="Copied MDX script"
+/>
+
+<MdxLocal />
+
+<BuildMarker />

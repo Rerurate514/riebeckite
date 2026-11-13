@@ -115,19 +115,34 @@ This plugin does two things:
 
 #### Find `:::tip`
 
-Add the imports and a small type for the directive node:
+Add the imports and declare the directive node. `mdast` does not know the node yet, so the module declaration teaches its types about it:
 
 ```ts id="nv29am"
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
+
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
 ```
 
 This example uses the `mdast` types for AST nodes and `unist-util-visit` to walk the tree. Add them to your own package's dependencies (they are not imported from `@riebeckite/core`).
@@ -141,9 +156,7 @@ Use `unist-util-visit` to find those nodes:
 ```ts id="tvvs30"
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       // Transform :::tip here.
@@ -289,21 +302,34 @@ Putting everything together, `extensions/tip-plugin.ts` looks like this:
 
 ```ts id="7q1nxh"
 import { definePlugin } from "@riebeckite/core";
-import type { Parent, Root } from "mdast";
+import type {
+  BlockContent,
+  DefinitionContent,
+  Parent,
+  Root,
+} from "mdast";
 import { visit } from "unist-util-visit";
 
 type ContainerDirective = {
   type: "containerDirective";
   name: string;
-  children: Parent["children"];
+  children: Array<BlockContent | DefinitionContent>;
   data?: Record<string, unknown>;
 };
 
+declare module "mdast" {
+  interface RootContentMap {
+    containerDirective: ContainerDirective;
+  }
+
+  interface BlockContentMap {
+    containerDirective: ContainerDirective;
+  }
+}
+
 function remarkTip() {
   return (tree: Root) => {
-    visit(tree, "containerDirective", (node) => {
-      const directive = node as unknown as ContainerDirective;
-
+    visit(tree, "containerDirective", (directive) => {
       if (directive.name !== "tip") return;
 
       const [first, ...rest] = directive.children;
@@ -520,7 +546,7 @@ definePlugin({
 
 `extendMarkdownPipeline` is a low-level API for working directly with remark and mdast. Use it when you need custom Markdown syntax or more advanced transformations.
 
-This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on content or files read through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's meaning changes; the plugin's `options` and transform function are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
+This example also declares `processedContentCache`. Without it the plugin still works, but it disables the site's processed-content cache so Markdown is reprocessed on every build. Use `dependencyMode: "none"` for a standalone transform that depends only on the current content, and `tracked` when the output depends on content or files read through Core's content APIs (reserve `unsafe` for what cannot be tracked accurately). Bump `version` when the transform's logic or meaning changes. The plugin's `options` are part of the pipeline fingerprint, so option changes alone do not require a `version` bump.
 
 ## Testing a plugin
 
@@ -611,11 +637,17 @@ Want to add UI or output?
 ├─ Add a standalone page
 │    └─ pageTypes
 │
+├─ Render UI that content authors place in Markdown or MDX
+│    └─ markdownComponents
+│
+├─ Transform the sanitized document tree
+│    └─ hastTransforms
+│
 ├─ Appear in the article layout automatically
-│    └─ Data helper + JSX component
+│    └─ Data helper + PluginSiteComponent
 │
 ├─ Let the site author place it
-│    └─ Hono JSX component export
+│    └─ PluginSiteComponent export
 │
 └─ Enhance the page in the browser
      └─ clientEntries (plus a site-owned Island when needed)
@@ -633,11 +665,11 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [UI components](../reference/plugin-api/ui-and-assets.md#ui-components) for the helper and component contract.
+The helper reads a filtered `PublicContentView`, so a plugin can only surface content the publication boundary allows. The component returns `null` when there is nothing to show, so the Site can render it unconditionally. See [Site components](../reference/plugin-api/ui-and-assets.md#site-components) for the helper and component contract.
 
-### Manual placement with a Hono JSX component
+### Manual placement with a PluginSiteComponent
 
-Export an ordinary Hono JSX component when the Site author should choose where the UI goes. There is no component registry and no Plugin-specific component API: the component is imported and composed like any other.
+Export an ordinary Hono JSX component and type it as `PluginSiteComponent<Props>` when the Site author should choose where the UI goes. The component is imported and composed like any other. This remains separate from `markdownComponents`, which registers a Markdown-rendered UI with the Plugin; a site component export lets the Site place its own instance in a page or layout.
 
 Declare a `./components` subpath in the package `exports` and keep the component module's default export, then optionally re-export it by name from the package root. Existing Plugins follow this shape:
 
@@ -652,13 +684,15 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### A component or plain HTML?
 
-The deciding question is **who places it**. A JSX component lets the Site choose props, order, and position in its component tree. When a plugin already produces HTML (for example from a HAST transform), it can instead export a small string renderer for the Site to call. Either way, the plugin never injects markup into the manifest entry; the Site decides what to render and where.
+The deciding question is **who places it**. A `PluginSiteComponent` lets the Site choose props, order, and position in its JSX tree. When a plugin already produces HTML, it can instead export a small string renderer for the Site to call. HAST transforms are not a placement mechanism: they change sanitized document nodes, and their output is inserted into the article HTML rather than chosen by the Site. Either way, the plugin never injects markup into the manifest entry; the Site decides what to render and where.
 
 `backlinks` and `local-graph` export both a component and a data helper, and the reference site composes them in its article layout. That is a common pattern, not a requirement.
 
+A Plugin can combine a Markdown component with a HAST transform. The Markdown component produces sanitized HTML from a fence or MDX, and the HAST transform later groups that HTML by matching the resulting nodes. Keep the two contracts separate: the Markdown component owns content and props, while the HAST transform owns a post-sanitize document shape and has no client entry.
+
 ### Browser enhancement and Islands
 
-Plugins do not own `app/islands/`, and Riebeckite has no Plugin Island registry. For browser behavior, either contribute a `clientEntries` initializer that enhances the server-rendered DOM, or let the Site wrap the Plugin's component in its own HonoX Island when component state is needed. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
+Plugins do not own `app/islands/`. For browser behavior, declare a `markdownComponents` entry with a client module when the Plugin owns a self-contained UI that content authors place with a Markdown fence, or contribute a `clientEntries` initializer when the behavior enhances arbitrary server-rendered DOM. A Site can still wrap an exported Plugin component in its own HonoX Island. `garden-explorer` is a specific case that combines a Page Type with a client entry; do not treat it as a required pattern. See [Markdown components](../reference/plugin-api/ui-and-assets.md#markdown-components) and [Client entries](../reference/plugin-api/ui-and-assets.md#assets-and-client-entries).
 
 ## Related
 

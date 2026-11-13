@@ -215,7 +215,7 @@ async function setup(
     ...(schedule === undefined
       ? {}
       : { config: { publication: { schedule } } }),
-  } as unknown as RiebeckiteProject;
+  } as RiebeckiteProject;
   await runDeploySetup(project, {
     runner,
     prompts,
@@ -865,7 +865,7 @@ test("setup refuses to run from a subdirectory of the Git repository", async () 
     await fs.mkdir(siteRoot, { recursive: true });
     const { runner } = createRunner(baseHandlers(repoRoot));
     const { prompts } = createPrompts();
-    const project = { projectRoot: siteRoot } as unknown as RiebeckiteProject;
+    const project = { projectRoot: siteRoot } as RiebeckiteProject;
     await assert.rejects(
       runDeploySetup(project, {
         runner,

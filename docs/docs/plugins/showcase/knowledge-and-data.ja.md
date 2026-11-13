@@ -1,4 +1,5 @@
 ---
+title: ナレッジとデータ
 showcase_progress: 4
 showcase_priority: low
 ---

@@ -1,3 +1,6 @@
+---
+title: Code
+---
 # Code
 
 ## Toolbar 付きコード：[`code-enhance`](../code-enhance.ja.md)

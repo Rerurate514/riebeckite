@@ -1,3 +1,6 @@
+---
+title: 図表
+---
 # 図表
 
 ## Mermaid (Pele)：[`mermaid-pele`](../mermaid-pele.ja.md)

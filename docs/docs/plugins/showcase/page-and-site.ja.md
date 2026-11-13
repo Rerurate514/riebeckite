@@ -1,3 +1,6 @@
+---
+title: ページやサイト全体に作用する Plugin
+---
 # ページやサイト全体に作用する Plugin
 
 次の Plugin は 1 つの Markdown 断片では表現できません。多くはこのページ上でも検索 box、目次、color mode toggle などとして確認できます。opt-in の項目は設定するまで表示されません。

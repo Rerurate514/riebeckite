@@ -37,7 +37,7 @@ export function graphviz(options: GraphvizOptions = {}) {
         "initGraphvizDiagrams",
         undefined,
         undefined,
-        undefined,
+        "context",
         "[data-graphviz='pending']",
       ),
     ],

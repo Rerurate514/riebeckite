@@ -168,6 +168,29 @@ after raw HTML and Markdown sanitization and after plugin Rehype transforms, so
 its children as already-sanitized HTML. Use them to wrap or group existing
 document structure; do not use them to bypass the sanitizer.
 
+### Choosing JSX or SSR output
+
+Pick the smallest mechanism that produces the markup. Use Hono JSX when
+component state changes the rendered markup, or when an external renderer needs
+a loading/ready/error lifecycle; keep SSR HTML plus a small behavior controller
+when the markup is static and only event wiring is interactive (code tabs,
+table of contents, navigation). The JSX runtime is loaded only on pages that
+contain a hydrated component, so a behavior controller is still the cheaper
+choice for simple UI. Do not convert already-sanitized HTML into JSX to "make it
+declarative": the component contract ends at serialized props.
+
+### External renderers
+
+Route external renderer lifecycles through `renderPendingDiagrams` from
+`@riebeckite/diagram/client`. The shared wrapper finds pending figures, sets
+`aria-busy` and `data-diagram-status` to `rendered` or `error`, opens the SSR
+fallback element, cancels work through `signal`, ignores detached figures with
+`isConnected`, and returns the cleanup that disposes instances on unmount.
+Import the library lazily so it keeps its own chunk, check `signal.aborted`
+after each `await`, and leave the Canvas/SVG/DOM output to the library. Mermaid,
+Graphviz, and Chart.js follow this contract; a renderer with a genuinely
+different lifecycle may keep its own initializer.
+
 ## Overlay hosts
 
 A theme can provide an SSR-owned host for client overlays with
@@ -263,6 +286,14 @@ measurement, pointer capture, and media playback in the initializer. When an
 entry is needed only on pages that contain a marker, pass a presence selector as
 the seventh argument to `createClientEntry()` so the chunk is not loaded on
 other pages.
+
+The selector is evaluated against the current DOM, so the marker must be in the
+SSR HTML or added before the SPA commit; client-created content cannot trigger
+the load. Entries that must always run because they implement site-wide
+behavior (analytics, color mode, text fragment, UX) omit the selector. The
+selector only gates loading: the initializer must still look for its own
+elements, and page-scoped work must return cleanup so an aborted load does not
+leave listeners behind.
 
 A client entry can also be declared explicitly:
 

@@ -1,4 +1,5 @@
 /** @jsxRuntime automatic @jsxImportSource hono/jsx */
+import { findOverlayHost } from "@riebeckite/ui/overlay";
 import { createRoot } from "hono/jsx/dom/client";
 
 export function LightboxDialog({
@@ -35,7 +36,9 @@ export function createDialog(options: {
   expandLabel: string;
   closeLabel: string;
 }) {
-  const host = document.createElement("div");
+  const appHost = findOverlayHost("lightbox");
+  const host = appHost ?? document.createElement("div");
+  if (!appHost) document.body.appendChild(host);
   const root = createRoot(host);
   root.render(<LightboxDialog {...options} />);
 
@@ -47,10 +50,9 @@ export function createDialog(options: {
   );
   if (!element || !image || !caption || !closeButton) {
     root.unmount();
+    if (!appHost) host.remove();
     throw new Error("Failed to create the lightbox dialog.");
   }
-
-  document.body.appendChild(host);
 
   return {
     element,
@@ -59,7 +61,7 @@ export function createDialog(options: {
     closeButton,
     destroy: () => {
       root.unmount();
-      host.remove();
+      if (!appHost) host.remove();
     },
   };
 }

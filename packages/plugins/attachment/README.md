@@ -35,7 +35,7 @@ export default defineConfig({
 
 ## Live example
 
-The following source is rendered on this page. A plain wikilink becomes a download link, and an embedded wikilink becomes an attachment card.
+The following source is rendered on this page. A plain wikilink becomes a download link, and an embedded text file becomes a code block preview with a download footer.
 
 ### Source
 
@@ -54,7 +54,11 @@ The following source is rendered on this page. A plain wikilink becomes a downlo
 - Format is the uppercased file extension.
 - Size is read from disk under `config.content.directory` (path-traversal safe)
   and omitted when the file cannot be read.
-- The embed card carries the stable `rr-attachment` root hook, and inline
+- Text attachments in the preview extensions render as an escaped code block
+  followed by the file name, format, size, and download link. Files over
+  256 KiB, binary files, and files that are not valid UTF-8 fall back to the
+  attachment card.
+- The embed carries the stable `rr-attachment` root hook, and inline
   attachment links use `rr-attachment-link`.
 
 Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
@@ -64,6 +68,7 @@ Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `showSize` | `boolean` | `true` | Read the file size and show it in the embed card |
+| `preview` | `readonly string[] \| false` | `["txt", "log", "csv", "tsv", "json", "yaml", "yml", "toml", "ini", "xml"]` | Extensions rendered as inline code block previews; pass `false` to disable previews |
 
 ## Exports
 

@@ -27,6 +27,38 @@
   width: fit-content;
 }
 
+.rr-attachment--text {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.rr-attachment__preview {
+  max-height: 24rem;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.rr-attachment__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.rr-attachment__footer .rr-attachment__name {
+  font-size: 1rem;
+  letter-spacing: normal;
+}
+
+.rr-attachment__footer .rr-attachment__download {
+  margin-left: auto;
+}
+
 .rr-attachment-link::after {
   content: " ↓";
 }

@@ -216,6 +216,8 @@ function finalizeChangeEntries(version, date) {
 function runChecks() {
   runtime.runStep("check:packages", "pnpm", ["run", "check:packages"]);
 
+  runtime.runStep("check:core-api", "pnpm", ["run", "check:core-api"]);
+
   runtime.runStep("check:dependencies", "pnpm", ["run", "check:dependencies"]);
 
   runtime.runStep("check:docs", "pnpm", ["run", "check:docs"]);

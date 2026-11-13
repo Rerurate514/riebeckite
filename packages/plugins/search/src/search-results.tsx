@@ -1,7 +1,5 @@
-/**
- * @jsxRuntime automatic
- * @jsxImportSource hono/jsx
- */
+/** @jsxRuntime automatic */
+/** @jsxImportSource hono/jsx */
 import { createRoot } from "hono/jsx/dom/client";
 import { normalizeSearchText, type SearchResult } from "./search.js";
 

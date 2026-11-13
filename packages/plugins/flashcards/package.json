@@ -23,7 +23,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
-    "hono": "^4.11.3",
+    "hono": "catalog:",
     "unist-util-visit": "catalog:"
   },
   "publishConfig": {

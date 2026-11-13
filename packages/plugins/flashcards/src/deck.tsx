@@ -1,7 +1,5 @@
-/**
- * @jsxRuntime automatic
- * @jsxImportSource hono/jsx
- */
+/** @jsxRuntime automatic */
+/** @jsxImportSource hono/jsx */
 import { useState } from "hono/jsx";
 import { createRoot } from "hono/jsx/dom/client";
 import type { FlashcardsCard } from "./types.js";

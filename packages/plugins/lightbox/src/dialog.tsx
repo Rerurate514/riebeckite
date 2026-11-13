@@ -1,7 +1,5 @@
-/**
- * @jsxRuntime automatic
- * @jsxImportSource hono/jsx
- */
+/** @jsxRuntime automatic */
+/** @jsxImportSource hono/jsx */
 import { findOverlayHost } from "@riebeckite/ui/overlay";
 import { createRoot } from "hono/jsx/dom/client";
 

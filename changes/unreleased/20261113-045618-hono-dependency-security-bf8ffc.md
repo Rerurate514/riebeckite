@@ -1,0 +1,42 @@
+---
+packages:
+  - "@riebeckite/cli"
+  - "@riebeckite/graph"
+  - "@riebeckite/honox"
+  - "@riebeckite/og-image"
+  - "@riebeckite/plugin-article-metadata"
+  - "@riebeckite/plugin-backlinks"
+  - "@riebeckite/plugin-breadcrumbs"
+  - "@riebeckite/plugin-changelog"
+  - "@riebeckite/plugin-code-enhance"
+  - "@riebeckite/plugin-code-tabs"
+  - "@riebeckite/plugin-color-mode"
+  - "@riebeckite/plugin-daily-notes"
+  - "@riebeckite/plugin-diff"
+  - "@riebeckite/plugin-docs"
+  - "@riebeckite/plugin-flashcards"
+  - "@riebeckite/plugin-garden-explorer"
+  - "@riebeckite/plugin-l10n"
+  - "@riebeckite/plugin-lightbox"
+  - "@riebeckite/plugin-local-graph"
+  - "@riebeckite/plugin-navigation"
+  - "@riebeckite/plugin-og-image"
+  - "@riebeckite/plugin-properties"
+  - "@riebeckite/plugin-recent-posts"
+  - "@riebeckite/plugin-related-posts"
+  - "@riebeckite/plugin-search"
+  - "@riebeckite/plugin-series"
+  - "@riebeckite/plugin-share"
+  - "@riebeckite/plugin-text-fragment"
+  - "@riebeckite/plugin-toc"
+  - "@riebeckite/plugin-webmention"
+  - "@riebeckite/ui"
+type: security
+breaking: false
+migration: ""
+pr: ""
+issue: ""
+adr: ""
+---
+
+Update Hono to 4.13.18 and `@hono/node-server` to 2.1.8 to remove advisories for mount and wildcard middleware bypasses, CSRF and validator bypasses, unescaped `css` helper output, unsafe WebSocket upgrade handling, and backslash path parsing.

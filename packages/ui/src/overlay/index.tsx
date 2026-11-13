@@ -1,7 +1,5 @@
-/**
- * @jsxRuntime automatic
- * @jsxImportSource hono/jsx
- */
+/** @jsxRuntime automatic */
+/** @jsxImportSource hono/jsx */
 import type { Child } from "hono/jsx";
 
 export const OVERLAY_HOST_ATTRIBUTE = "data-rb-overlay-host";

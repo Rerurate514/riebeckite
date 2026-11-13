@@ -13,7 +13,6 @@ const repoRoot = path.resolve(
   "../..",
 );
 const codeTabsRoot = path.join(repoRoot, "packages/plugins/code-tabs");
-const coreRoot = path.join(repoRoot, "packages/core");
 
 type RunningCli = {
   readonly child: ChildProcessWithoutNullStreams;
@@ -232,10 +231,34 @@ async function copyPlugin(): Promise<string> {
     recursive: true,
     filter: (source) => !source.split(path.sep).includes("node_modules"),
   });
-  const coreTarget = path.join(root, "node_modules", "@riebeckite", "core");
-  await fs.mkdir(path.dirname(coreTarget), { recursive: true });
-  await fs.symlink(coreRoot, coreTarget, "junction");
+  await linkNodeModules(
+    path.join(codeTabsRoot, "node_modules"),
+    path.join(root, "node_modules"),
+  );
   return root;
+}
+
+async function linkNodeModules(from: string, to: string): Promise<void> {
+  await fs.mkdir(to, { recursive: true });
+  for (const entry of await fs.readdir(from)) {
+    if (entry.startsWith("@")) {
+      const scope = path.join(to, entry);
+      await fs.mkdir(scope, { recursive: true });
+      for (const child of await fs.readdir(path.join(from, entry))) {
+        await fs.symlink(
+          await fs.realpath(path.join(from, entry, child)),
+          path.join(scope, child),
+          "junction",
+        );
+      }
+      continue;
+    }
+    await fs.symlink(
+      await fs.realpath(path.join(from, entry)),
+      path.join(to, entry),
+      "junction",
+    );
+  }
 }
 
 function spawnCli(pluginPath: string, port: number): RunningCli {

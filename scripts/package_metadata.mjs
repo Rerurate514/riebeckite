@@ -674,7 +674,7 @@ export const catalogDependencies = {
   "@types/sanitize-html": "^2.16.2",
   "@types/unist": "^3.0.3",
   esbuild: "^0.28.2",
-  hono: "^4.12.25",
+  hono: "^4.13.18",
   "lucide-static": "^1.61.0",
   "remark-parse": "^11.0.0",
   "sanitize-html": "^2.18.1",

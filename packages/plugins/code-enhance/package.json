@@ -29,7 +29,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/ui": "workspace:*",
-    "hono": "^4.11.3",
+    "hono": "catalog:",
     "rehype-pretty-code": "^0.14.1",
     "shiki": "^3.13.0"
   },

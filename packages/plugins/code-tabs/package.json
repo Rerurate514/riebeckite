@@ -23,7 +23,7 @@
   "dependencies": {
     "@riebeckite/core": "workspace:*",
     "@riebeckite/ui": "workspace:*",
-    "hono": "^4.13.12",
+    "hono": "catalog:",
     "rehype-stringify": "^10.0.1",
     "unified": "catalog:"
   },

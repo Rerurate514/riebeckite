@@ -1176,6 +1176,11 @@
       "type": false
     },
     {
+      "name": "defineHastComponent",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "definePlugin",
       "value": true,
       "type": false
@@ -1392,6 +1397,11 @@
     },
     {
       "name": "extractMarkdownLinkUrls",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "finalizeDeferredPluginComponents",
       "value": true,
       "type": false
     },
@@ -2101,6 +2111,11 @@
       "type": true
     },
     {
+      "name": "PluginComponentResolveContext",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "PluginContentContext",
       "value": false,
       "type": true
@@ -2217,6 +2232,16 @@
     },
     {
       "name": "PluginGraphContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHastComponent",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "PluginHastNode",
       "value": false,
       "type": true
     },

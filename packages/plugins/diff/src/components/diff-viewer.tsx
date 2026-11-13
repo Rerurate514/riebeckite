@@ -1,7 +1,5 @@
-/**
- * @jsxRuntime automatic
- * @jsxImportSource hono/jsx
- */
+/** @jsxRuntime automatic */
+/** @jsxImportSource hono/jsx */
 
 import { renderToString } from "hono/jsx/dom/server";
 import type { DiffRevision, PostDiff } from "../types.js";

@@ -60,6 +60,7 @@ jobs:
       - run: pnpm check:changes
       - run: pnpm test:changelog
       - run: pnpm check:packages
+      - run: pnpm check:core-api
       - run: pnpm check:dependencies
       - run: pnpm check:cycles
       - run: pnpm check:double-cast

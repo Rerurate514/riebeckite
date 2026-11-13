@@ -35,6 +35,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Add declarative Plugin components that render from Markdown fences and MDX JSX through one registry, with server rendering, JSON-safe props, lazy client hydration, SPA-safe lifecycle cleanup, and automatic MDX integration. Code-enhance's copy button uses the new API, and the starter scaffold includes Markdown and MDX component examples.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/plugin-code-enhance`, `create-riebeckite`
 
+- Text attachments such as `.txt`, `.log`, and `.json` are embedded as an escaped code block preview with the file name, format, size, and download link below it. The new `preview` option selects which extensions preview, and files over 256 KiB, binary files, and invalid UTF-8 keep the existing attachment card.
+  Packages: `@riebeckite/plugin-attachment`
+
 ### Changed
 
 - **Breaking:** Align the public API types with the values the runtime actually produces, and replace the places that hid errors behind a double type assertion with validation. `@riebeckite/core` gains `parseYaml` for YAML parsing and fixture builders for content manifests and plugin contexts. `ClientRuntimeInvokeOptions.capability` is now typed as `RuntimeCapability`, `JsonValue` accepts readonly arrays and `undefined` property values, and defaulted options and arguments of `defineCliCommand` are typed with the accepted values instead of the default literal. `@riebeckite/node` reports a corrupt migration plan as `The migration plan is missing or corrupt.` instead of failing with an internal error.
@@ -64,6 +67,14 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - MDX content now produces correctly decoded plain text for search, excerpts, and headings, and the doctor no longer reports components imported by MDX as unused assets. Incremental SSG keeps navigation and recent-post projections reusable when only an MDX body changes, while still regenerating them when projected entries change. Link updates, provenance, source lookups, and the development inspector resolve non-Markdown content formats through the shared content format registry, and standalone SSG no longer loads its bundle twice when renderer chunks import it.
   Packages: `@riebeckite/core`, `@riebeckite/cli`, `@riebeckite/node`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/plugin-mdx`, `@riebeckite/plugin-search`
+
+- Initialize the table of contents from the document so the docs rail outside `#main-content` tracks scrolling again. The active state also rebinds after SPA navigation replaces the TOC region.
+  Packages: `@riebeckite/plugin-toc`
+
+### Security
+
+- Update Hono to 4.13.18 and `@hono/node-server` to 2.1.8 to remove advisories for mount and wildcard middleware bypasses, CSRF and validator bypasses, unescaped `css` helper output, unsafe WebSocket upgrade handling, and backslash path parsing.
+  Packages: `@riebeckite/cli`, `@riebeckite/graph`, `@riebeckite/honox`, `@riebeckite/og-image`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-color-mode`, `@riebeckite/plugin-daily-notes`, `@riebeckite/plugin-diff`, `@riebeckite/plugin-docs`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-lightbox`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-og-image`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-recent-posts`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-search`, `@riebeckite/plugin-series`, `@riebeckite/plugin-share`, `@riebeckite/plugin-text-fragment`, `@riebeckite/plugin-toc`, `@riebeckite/plugin-webmention`, `@riebeckite/ui`
 
 ## 0.0.46 - 2026-11-10
 

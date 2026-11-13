@@ -34,9 +34,25 @@ A release validates every pending entry before it builds or publishes anything. 
 
 Re-running a release after the entries were archived regenerates the same files instead of appending the version twice.
 
+## Published artifact coverage
+
+`release-artifacts.json` records a hash of the files each package publishes. It covers the `files` entries and the manifest without its `version` field, so a version bump alone is not a change, and README or LICENSE edits are not either.
+
+Before publishing, the release script rebuilds the packages and compares every hash with the ledger. A package whose published files changed must be listed in a pending change entry; otherwise the release stops and prints the packages to add. `create-riebeckite` is exempt because its shipped output embeds the release version.
+
+CI runs the same check after the package build:
+
+```bash
+pnpm check:artifacts
+```
+
+When a release completes, the script writes the new hashes to `release-artifacts.json` and commits the file with the release. Run `node scripts/release_artifacts.mjs baseline` only when the file has to be recreated.
+
 ## Versioning before 1.0
 
 Riebeckite is below 1.0. Patch releases should contain compatible fixes. Minor releases may contain breaking changes, and every breaking change must be marked in its entry with migration steps. From 1.0 onward, breaking changes follow semantic versioning and require a major release.
+
+Before choosing the version, check `changes/unreleased/` for an entry with `breaking: true`. A release that contains one is a minor release below 1.0.
 
 The changelog starts when change entries were introduced. Earlier releases remain available as Git tags and GitHub Releases; their notes are not reconstructed from commit messages.
 
@@ -52,12 +68,37 @@ The documentation site is built from `main`, while the npm `latest` tag changes 
 ## Prerequisites
 
 - Write access to every `@riebeckite/*` package.
+- `main` checked out and up to date.
+- A clean working tree (`git status --short` prints nothing). The release builds and publishes the working tree but commits only the release files, so an uncommitted change would be published without appearing in the release commit.
 
 The release script never implements its own authentication or one-time-password prompt. It delegates to the npm and pnpm CLI, so your existing npm login, security key, passkey, or OTP configuration is used as-is.
 
 ## Transactional site output
 
 Production HonoX builds stage client assets and generated SSG output under `.riebeckite/`. The final `build.outDir` is replaced only after the complete staged output and its cache inventory have been written. A failed build discards the staged directory and leaves the last published output in place. Do not deploy `.riebeckite/build-output` directly; deploy only the configured `build.outDir` after the build succeeds.
+
+## Release checklist
+
+Run this from `main` after the change entries are merged:
+
+```bash
+git switch main
+git pull
+git status --short                       # must print nothing
+
+pnpm release <version> --dry-run         # rehearse; nothing is published
+pnpm release <version>                   # bump, build, check, publish, verify, commit, tag
+
+git push
+git push origin v<version>
+```
+
+The tag push triggers the `Release` workflow, which creates the GitHub Release. Afterwards, confirm the registry and the install path:
+
+```bash
+npm view @riebeckite/cli version
+npx create-riebeckite                    # outside the repository
+```
 
 ## Normal release
 
@@ -68,7 +109,8 @@ flowchart TD
     Bump --> Build["Build packages"]
     Build --> Golden["Regenerate scaffold golden snapshots"]
     Golden --> Checks["Run repository checks"]
-    Checks --> Inspect["Inspect the registry for published versions"]
+    Checks --> Artifacts["Verify published artifact coverage"]
+    Artifacts --> Inspect["Inspect the registry for published versions"]
     Inspect --> Layers["Compute dependency layers"]
     Layers --> First["Publish the first pending package interactively"]
     First --> Parallel["Publish remaining packages in dependency order"]
@@ -85,11 +127,12 @@ A normal run does the following:
 2. Bumps every public package with `scripts/bump_version.mjs`.
 3. Builds the packages with `pnpm build:packages`.
 4. Regenerates the scaffold golden snapshots and runs the repository checks.
-5. Queries npm for the packages already published at that version.
-6. Publishes one pending package interactively so that npm/pnpm can authenticate, then publishes the rest in dependency-layer order with bounded concurrency.
-7. Verifies that every package version is live on the registry.
-8. Archives the change entries and regenerates the changelog and release notes.
-9. Creates the local `release vX.Y.Z` commit and tag, and prints the push commands.
+5. Compares every package's published files with `release-artifacts.json` and stops when a changed package is missing from the pending change entries.
+6. Queries npm for the packages already published at that version.
+7. Publishes one pending package interactively so that npm/pnpm can authenticate, then publishes the rest in dependency-layer order with bounded concurrency.
+8. Verifies that every package version is live on the registry.
+9. Archives the change entries and regenerates the changelog and release notes.
+10. Creates the local `release vX.Y.Z` commit and tag, and prints the push commands.
 
 Pushing the tag lets the `Release` GitHub Actions workflow create the GitHub Release from `changes/released/<version>/release-notes.md`. The release script still does not push anything.
 

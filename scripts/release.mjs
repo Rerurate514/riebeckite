@@ -6,6 +6,11 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { collectChanges, finalizeRelease } from "./changelog.mjs";
 import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
+import {
+  ARTIFACT_LEDGER_PATH,
+  checkArtifactCoverage,
+  writeArtifactLedger,
+} from "./release_artifacts.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 
@@ -69,6 +74,7 @@ Release flow:
   -> build:packages
   -> scaffold golden update
   -> checks
+  -> published artifact coverage
   -> inspect published versions
   -> compute dependency layers
   -> interactive first publish
@@ -195,6 +201,8 @@ export const runtime = {
   validateChanges: () => collectChanges(repositoryRoot),
   finalizeChanges: (version, date) =>
     finalizeRelease({ root: repositoryRoot, version, date }),
+  checkArtifactCoverage: (...args) => checkArtifactCoverage(...args),
+  writeArtifactLedger: (...args) => writeArtifactLedger(...args),
 };
 
 function validateChangeEntries() {
@@ -1398,6 +1406,7 @@ function commitAndTag(version) {
     scaffoldGoldenDirectory,
     "CHANGELOG.md",
     "changes",
+    ARTIFACT_LEDGER_PATH,
     "docs/docs/releases.md",
     "docs/docs/releases.ja.md",
   ];
@@ -1541,6 +1550,42 @@ export async function runRelease(rawArguments) {
 
   runChecks();
 
+  const artifactCoverage = runtime.checkArtifactCoverage({
+    root: repositoryRoot,
+    directories: PACKAGE_DIRECTORIES,
+    entryPackages: changes.unreleased.flatMap((entry) => entry.packages),
+  });
+
+  console.log("\n[step] published artifact coverage");
+
+  if (artifactCoverage.baseline) {
+    console.log(
+      `No ${ARTIFACT_LEDGER_PATH} yet; this release records the first baseline.`,
+    );
+  } else {
+    for (const { name } of artifactCoverage.changed) {
+      console.log(`  changed  ${name}`);
+    }
+
+    if (artifactCoverage.uncovered.length > 0) {
+      const lines = artifactCoverage.uncovered.map(({ name }) => `  - ${name}`);
+
+      if (dryRun) {
+        console.log(
+          `  [dry-run] changed packages with no change entry:\n${lines.join(
+            "\n",
+          )}`,
+        );
+      } else {
+        throw new ReleaseError(
+          "These packages publish different files but no pending change entry lists them:\n" +
+            `${lines.join("\n")}\n` +
+            "Add each package to a change entry before releasing.",
+        );
+      }
+    }
+  }
+
   const manifests = readPackageManifests();
 
   const published = await inspectPublishedPackages(
@@ -1572,6 +1617,12 @@ export async function runRelease(rawArguments) {
   const verified = await verifyPublishedPackages(manifests, version);
 
   assertReleaseComplete(verified, version);
+
+  runtime.writeArtifactLedger(repositoryRoot, artifactCoverage.current);
+
+  console.log(
+    `[artifacts] recorded ${artifactCoverage.current.size} package hash(es) in ${ARTIFACT_LEDGER_PATH}.`,
+  );
 
   const finalized = finalizeChangeEntries(version, runtime.today());
 

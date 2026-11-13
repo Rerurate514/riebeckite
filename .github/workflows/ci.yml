@@ -59,6 +59,7 @@ jobs:
       - run: pnpm test:docs
       - run: pnpm check:changes
       - run: pnpm test:changelog
+      - run: pnpm test:artifacts
       - run: pnpm check:packages
       - run: pnpm check:core-api
       - run: pnpm check:dependencies
@@ -88,6 +89,7 @@ jobs:
             .riebeckite/package-build-state.json
           key: package-build-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'scripts/build_package.mjs', 'scripts/build_packages.mjs', 'scripts/package_metadata.mjs') }}
       - run: pnpm build:packages
+      - run: pnpm check:artifacts
       - run: pnpm ci:build-artifact write
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

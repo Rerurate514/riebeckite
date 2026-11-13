@@ -12,6 +12,7 @@ const globalEntries = new Set([
   "analytics",
   "color-mode",
   "text-fragment",
+  "toc",
   "ux",
 ]);
 const selectorNoise = new Set([

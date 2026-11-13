@@ -20,9 +20,8 @@ export function toc() {
         "@riebeckite/plugin-toc/client",
         "initTableOfContents",
         undefined,
-        undefined,
+        "app",
         "context",
-        "[data-toc-target]",
       ),
     ],
   });

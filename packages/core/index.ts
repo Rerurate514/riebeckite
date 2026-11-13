@@ -686,6 +686,8 @@ export {
   resolvePlugins,
 } from "./src/types/plugin.js";
 export type {
+  ClientInitializerRoot,
+  CreateClientEntryOptions,
   PluginAsset,
   PluginAssetKind,
   PluginClientEntry,

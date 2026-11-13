@@ -52,7 +52,7 @@ const featureCode: Readonly<Record<PluginFeatureId, string>> = {
     }],`,
   components: ``,
   "assets-and-client-entries": `assets: [createStyleAsset("PLUGIN", "/extensions/PLUGIN/style.css")],
-    clientEntries: [createClientEntry("PLUGIN", "/extensions/PLUGIN/client.ts", "initPlugin", { label: "Plugin" })],`,
+    clientEntries: [createClientEntry("PLUGIN", { moduleSpecifier: "/extensions/PLUGIN/client.ts", exportName: "initPlugin", publicConfig: { label: "Plugin" } })],`,
   endpoints: `endpoints: [defineEndpoint("/PLUGIN.json", ({ manifest }) => ({
       json: manifest.discoverableEntries.map(({ title, permalink, tags }) => ({ title, permalink, tags })),
     }), { cacheControl: "public, max-age=300" })],`,

@@ -53,11 +53,10 @@ export function pluginDemoPlugin(
     options,
     assets: [createStyleAsset("plugin-dx-demo", "@plugin-dx/demo/style.css")],
     clientEntries: [
-      createClientEntry(
-        "plugin-dx-demo",
-        "@plugin-dx/demo/client",
-        "initPluginDemo",
-      ),
+      createClientEntry("plugin-dx-demo", {
+        moduleSpecifier: "@plugin-dx/demo/client",
+        exportName: "initPluginDemo",
+      }),
     ],
     pageTypes: [
       {

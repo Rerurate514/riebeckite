@@ -15,14 +15,12 @@ export function toc() {
     name: "toc",
     assets: [createStyleAsset("toc", "@riebeckite/plugin-toc/style.css")],
     clientEntries: [
-      createClientEntry(
-        "toc",
-        "@riebeckite/plugin-toc/client",
-        "initTableOfContents",
-        undefined,
-        "app",
-        "context",
-      ),
+      createClientEntry("toc", {
+        moduleSpecifier: "@riebeckite/plugin-toc/client",
+        exportName: "initTableOfContents",
+        scope: "app",
+        initializerArguments: "context",
+      }),
     ],
   });
 }

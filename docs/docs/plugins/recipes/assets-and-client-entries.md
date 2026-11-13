@@ -33,12 +33,11 @@ export function copyCode(options: CopyCodeOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "copy-code",
-        "@example/riebeckite-plugin-copy-code/client",
-        "initCopyCode",
-        { label: options.label ?? "Copy" },
-      ),
+      createClientEntry("copy-code", {
+        moduleSpecifier: "@example/riebeckite-plugin-copy-code/client",
+        exportName: "initCopyCode",
+        publicConfig: { label: options.label ?? "Copy" },
+      }),
     ],
   });
 }

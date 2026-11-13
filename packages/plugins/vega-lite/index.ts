@@ -40,15 +40,12 @@ export function vegaLite(options: VegaLiteOptions = {}) {
       createStyleAsset("vega-lite", "@riebeckite/plugin-vega-lite/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "vega-lite",
-        "@riebeckite/plugin-vega-lite/client",
-        "initVegaLite",
-        undefined,
-        undefined,
-        "context",
-        "[data-vega-lite]",
-      ),
+      createClientEntry("vega-lite", {
+        moduleSpecifier: "@riebeckite/plugin-vega-lite/client",
+        exportName: "initVegaLite",
+        initializerArguments: "context",
+        presenceSelector: "[data-vega-lite]",
+      }),
     ],
   });
 }

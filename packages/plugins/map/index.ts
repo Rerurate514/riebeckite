@@ -56,20 +56,18 @@ export function map(options: MapOptions = {}) {
       createStyleAsset(MAP_PLUGIN_NAME, "@riebeckite/plugin-map/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        MAP_PLUGIN_NAME,
-        "@riebeckite/plugin-map/client",
-        "initMap",
-        {
+      createClientEntry(MAP_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-map/client",
+        exportName: "initMap",
+        publicConfig: {
           tileUrl: resolved.tileUrl,
           attribution: resolved.attribution,
           minZoom: resolved.minZoom,
           maxZoom: resolved.maxZoom,
         },
-        undefined,
-        "context",
-        "[data-rr-map='pending']",
-      ),
+        initializerArguments: "context",
+        presenceSelector: "[data-rr-map='pending']",
+      }),
     ],
   });
 }

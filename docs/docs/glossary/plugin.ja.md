@@ -56,7 +56,11 @@ CSS は `assets` で宣言します。Markdown から配置する自己完結し
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],
 clientEntries: [
-  createClientEntry("example", "@example/plugin/client", "init", { selector: ".example" }),
+  createClientEntry("example", {
+    moduleSpecifier: "@example/plugin/client",
+    exportName: "init",
+    publicConfig: { selector: ".example" },
+  }),
 ],
 ```
 

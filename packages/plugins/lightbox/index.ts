@@ -30,18 +30,15 @@ export function lightbox(options: LightboxOptions = {}) {
       createStyleAsset("lightbox", "@riebeckite/plugin-lightbox/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "lightbox",
-        "@riebeckite/plugin-lightbox/client",
-        "initLightboxFromOptions",
-        {
+      createClientEntry("lightbox", {
+        moduleSpecifier: "@riebeckite/plugin-lightbox/client",
+        exportName: "initLightboxFromOptions",
+        publicConfig: {
           expandLabel: options.expandLabel ?? DEFAULT_EXPAND_LABEL,
           closeLabel: options.closeLabel ?? DEFAULT_CLOSE_LABEL,
         },
-        undefined,
-        undefined,
-        "[data-lightbox-src]",
-      ),
+        presenceSelector: "[data-lightbox-src]",
+      }),
     ],
   });
 }

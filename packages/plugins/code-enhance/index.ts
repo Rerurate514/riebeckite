@@ -68,18 +68,15 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "code-enhance",
-        "@riebeckite/plugin-code-enhance/client",
-        "initCodeEnhance",
-        {
+      createClientEntry("code-enhance", {
+        moduleSpecifier: "@riebeckite/plugin-code-enhance/client",
+        exportName: "initCodeEnhance",
+        publicConfig: {
           copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL,
           copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL,
         },
-        undefined,
-        undefined,
-        ".rr-code, [data-code-copy]",
-      ),
+        presenceSelector: ".rr-code, [data-code-copy]",
+      }),
     ],
   });
 }

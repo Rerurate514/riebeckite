@@ -42,8 +42,9 @@ stopSpaNavigation ??= startSpaNavigation({
 
 生成されたモジュールは、Plugin の[[glossary/client-entry|クライアントエントリ]]が持つメタデータに従って初期化処理を実行します。
 
-- `scope: "app"` は `document` に一度だけ mount する
-- `scope: "page"`（既定）は `main#main-content` に mount し、ページを置き換える前に unmount する
+- `scope: "app"` は `document` に一度だけ mount する。selector を指定した app スコープのエントリは、ページコミットのたびに再評価されるため、SPA ナビゲーションで後から追加されたマーカーでも読み込まれる
+- `scope: "page"`（既定）は `main#main-content` に mount し、ページを置き換える前に unmount する。マーカーがページルートの外にあるシェル領域にある場合は、`root: "document"` を指定する
+- `presenceSelector` は現在の document 全体に対して評価する。読み込み条件だけを決め、初期化処理は対象要素を自分で探す
 - `initializerArguments` は引数の種類を選ぶ。`config`（既定）、`root`、`context` のいずれか
 
 生成されたコードでは、`ClientLifecycle.mount` を待たずに呼び出します（`void lifecycle.mount(...)`）。そのため、非同期の初期化処理が次のページ移動の開始時点でも実行中の場合があります。初期化処理は `signal` を受け取り、中断されたら停止する必要があります。
@@ -54,7 +55,7 @@ stopSpaNavigation ??= startSpaNavigation({
 
 生成された `onPageCommit` は、`createClient()` の完了後に、ページ移動が中断されていないことと、対象のページがまだ document に接続されていることを再確認してから、ページの初期化処理を実行します。これにより、hydration に時間がかかった場合でも、古いページの初期化処理を現在のページに対して実行してしまうことを防ぎます。
 
-`initializerArguments: "context"` を指定したクライアントエントリは、`{ root, config, signal, scope }` を受け取ります。`scope` は、イベントリスナー、タイムアウト、インターバル、独自のクリーンアップを管理します。グローバル環境を書き換えたり、初期化処理の外で作られたリソースを推測したりはしません。必要なリソースを明示的に登録する仕組みです。
+`initializerArguments: "context"` を指定したクライアントエントリは、`{ root, marker, config, signal, scope }` を受け取ります。`marker` は `presenceSelector` に一致した要素です。ページスコープのルートは既定で現在のページコンテナです。マーカーがシェル領域にある場合は `root: "document"` を指定してください。開発時は、ページスコープのマーカーがページルートの外にある場合に一度だけ警告します。`scope` は、イベントリスナー、タイムアウト、インターバル、独自のクリーンアップを管理します。グローバル環境を書き換えたり、初期化処理の外で作られたリソースを推測したりはしません。必要なリソースを明示的に登録する仕組みです。
 
 ## ビルド結果への影響
 

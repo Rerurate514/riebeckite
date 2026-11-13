@@ -21,15 +21,13 @@ export function defineDiagramPlugin<TOptions>(
       : undefined,
     clientEntries: definition.client
       ? [
-          createClientEntry(
-            definition.name,
-            definition.client.moduleSpecifier,
-            definition.client.exportName,
-            undefined,
-            "page",
-            "context",
-            definition.client.presenceSelector,
-          ),
+          createClientEntry(definition.name, {
+            moduleSpecifier: definition.client.moduleSpecifier,
+            exportName: definition.client.exportName,
+            scope: "page",
+            initializerArguments: "context",
+            presenceSelector: definition.client.presenceSelector,
+          }),
         ]
       : undefined,
   });

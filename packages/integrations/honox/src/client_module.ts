@@ -31,6 +31,7 @@ function createClientModule(
 ): string {
   const imports: string[] = [];
   const appInitializers: string[] = [];
+  const appConditionalInitializers: string[] = [];
   const pageInitializers: string[] = [];
   const clientEntries = config.plugins.flatMap(
     (plugin) => plugin.clientEntries ?? [],
@@ -121,11 +122,12 @@ function createClientModule(
     const runtimeArguments = hasRuntimes
       ? `${serializedRuntimeIds}, ${initializerWrapper}`
       : initializerWrapper;
-    const initializers =
-      entry.scope === "app" ? appInitializers : pageInitializers;
+    const scope = entry.scope ?? "page";
+    const rootMode = entry.root ?? "page";
     if (entry.presenceSelector === undefined) {
+      const initializers = scope === "app" ? appInitializers : pageInitializers;
       initializers.push(
-        `mountPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${runtimeArguments})`,
+        `mountPluginClientInitializer(${JSON.stringify(scope)}, ${JSON.stringify(entry.moduleSpecifier)}, resolveClientEntryRoot(${JSON.stringify(scope)}, root, ${JSON.stringify(rootMode)}), ${serializedConfig}, ${runtimeArguments})`,
       );
       continue;
     }
@@ -139,8 +141,10 @@ function createClientModule(
       runtimeIds.length > 0
         ? `async (context) => { ${ensureRuntimes}return ${dynamicInitializer}; }`
         : `(context) => ${dynamicInitializer}`;
-    initializers.push(
-      `mountConditionalPluginClientInitializer(${JSON.stringify(entry.scope ?? "page")}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${JSON.stringify(entry.presenceSelector)}, ${hasRuntimes ? `${serializedRuntimeIds}, ` : ""}async () => { const { ${entry.exportName ?? "default"}: initializer } = await import(${JSON.stringify(entry.moduleSpecifier)}); return ${dynamicWrapper}; })`,
+    const conditionalInitializers =
+      scope === "app" ? appConditionalInitializers : pageInitializers;
+    conditionalInitializers.push(
+      `mountConditionalPluginClientInitializer(${JSON.stringify(scope)}, ${JSON.stringify(entry.moduleSpecifier)}, root, ${serializedConfig}, ${JSON.stringify(entry.presenceSelector)}, ${JSON.stringify(rootMode)}, ${hasRuntimes ? `${serializedRuntimeIds}, ` : ""}async () => { const { ${entry.exportName ?? "default"}: initializer } = await import(${JSON.stringify(entry.moduleSpecifier)}); return ${dynamicWrapper}; })`,
     );
   }
 
@@ -192,22 +196,52 @@ function createPluginRuntimeHost(root, ids) {
   return `${imports.join("\n")}
 
 const lifecycle = new ClientLifecycle();
-${runtimeSupport}let stopSpaNavigation;
+${runtimeSupport}const clientModuleDevelopment = ${development ? "true" : "false"};
+const conditionalInitializerLoads = new Map();
+const warnedConditionalMarkers = new Set();
+let stopSpaNavigation;
+
+function resolveClientEntryRoot(scope, pageRoot, rootMode) {
+  return scope === "app" || rootMode === "document" ? document : pageRoot;
+}
 
 function mountPluginClientInitializer(scope, name, root, config, ${hasRuntimes ? "runtimeIds, " : ""}initialize) {
   void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
 }
 
-function mountConditionalPluginClientInitializer(scope, name, root, config, presenceSelector, ${hasRuntimes ? "runtimeIds, " : ""}load) {
-  if (!root.querySelector(presenceSelector)) return;
-  void load().then((initialize) => {
+function loadConditionalPluginClientInitializer(name, load) {
+  let pending = conditionalInitializerLoads.get(name);
+  if (!pending) {
+    pending = load().catch((error) => {
+      conditionalInitializerLoads.delete(name);
+      throw error;
+    });
+    conditionalInitializerLoads.set(name, pending);
+  }
+  return pending;
+}
+
+function mountConditionalPluginClientInitializer(scope, name, pageRoot, config, presenceSelector, rootMode, ${hasRuntimes ? "runtimeIds, " : ""}load) {
+  const marker = document.querySelector(presenceSelector);
+  if (!marker) return;
+  const root = resolveClientEntryRoot(scope, pageRoot, rootMode);
+  if (clientModuleDevelopment && scope === "page" && "contains" in root && !root.contains(marker) && !warnedConditionalMarkers.has(name)) {
+    warnedConditionalMarkers.add(name);
+    console.warn('[riebeckite] Client initializer "' + name + '" has a presence marker outside its page root; set root: "document" or use context.marker.');
+  }
+  void loadConditionalPluginClientInitializer(name, load).then((initialize) => {
+    if (!marker.isConnected) return;
     if ("isConnected" in root && !root.isConnected) return;
-    void lifecycle.mount({ scope, name, root, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
+    void lifecycle.mount({ scope, name, root, marker, config, ${hasRuntimes ? "runtimes: createPluginRuntimeHost(root, runtimeIds), " : ""}initialize }).catch((error) => console.error("[riebeckite] Client initializer failed: " + name, error));
   }, (error) => console.error("[riebeckite] Client initializer module failed: " + name, error));
 }
 
 function mountAppClientInitializers(root) {
 ${appInitializers.map((initializer) => `  ${initializer};`).join("\n")}
+}
+
+function mountAppConditionalClientInitializers(root) {
+${appConditionalInitializers.map((initializer) => `  ${initializer};`).join("\n")}
 }
 
 function mountPageClientInitializers(root) {
@@ -253,6 +287,7 @@ ${interactiveMarkdownComponents
 export function initRiebeckiteClient() {
   mountAppClientInitializers(document);
   mountPageClientInitializers(document.querySelector("#main-content") ?? document);
+  mountAppConditionalClientInitializers(document);
 ${
   config.spa === undefined
     ? ""
@@ -264,6 +299,7 @@ ${
       await createClient();
       if (signal.aborted || !root.isConnected) return;
       mountPageClientInitializers(root);
+      mountAppConditionalClientInitializers(root);
     },
   });`
 }
@@ -272,6 +308,7 @@ ${
 export async function remountRiebeckitePage(root) {
   await lifecycle.unmount("page");
   mountPageClientInitializers(root);
+  mountAppConditionalClientInitializers(root);
 }
 
 export async function disposeRiebeckiteClient() {

@@ -50,9 +50,14 @@ support custom integrations and disposal.
 
 The generated module mounts plugin client entries according to their metadata:
 
-- `scope: "app"` mounts on `document` once.
+- `scope: "app"` mounts on `document` once. An app-scoped entry with a
+  `presenceSelector` is re-checked on each page commit, so a marker introduced
+  by SPA navigation can still load it.
 - `scope: "page"` (the default) mounts on `main#main-content` and is unmounted
-  before each replacement.
+  before each replacement. Set `root: "document"` when its marker is in a shell
+  region outside the page root.
+- `presenceSelector` is evaluated against the whole current document. It only
+  gates loading; the initializer still finds its own elements.
 - `initializerArguments` selects the argument: `config` (the default), `root`,
   or `context`.
 
@@ -73,10 +78,14 @@ navigation signal and whether the page root is still connected before mounting
 page initializers. This prevents slow hydration from mounting initializers for a
 page that is no longer current.
 
-For `initializerArguments: "context"`, a client entry receives `{ root, config,
-signal, scope }`. Resource scope tracks listeners, timeouts, intervals, and
-custom cleanup. It is deliberately opt-in: it does not monkey-patch globals or
-infer resources created outside the initializer.
+For `initializerArguments: "context"`, a client entry receives `{ root, marker,
+config, signal, scope }`. `marker` is the element matched by
+`presenceSelector`. The default page root is still the current page container;
+use `root: "document"` when the marker belongs to the shell. In development the
+generated module warns once when a page-scoped marker is outside its page root.
+Resource scope tracks listeners, timeouts, intervals, and custom cleanup. It is
+deliberately opt-in: it does not monkey-patch globals or infer resources created
+outside the initializer.
 
 ## Build and SSG impact
 

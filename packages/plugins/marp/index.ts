@@ -57,15 +57,11 @@ export function marp(options: MarpOptions = {}) {
     ],
     assets: [createStyleAsset("marp", "@riebeckite/plugin-marp/style.css")],
     clientEntries: [
-      createClientEntry(
-        "marp",
-        "@riebeckite/plugin-marp/client",
-        "initMarpDecks",
-        undefined,
-        undefined,
-        undefined,
-        "figure[data-marp]",
-      ),
+      createClientEntry("marp", {
+        moduleSpecifier: "@riebeckite/plugin-marp/client",
+        exportName: "initMarpDecks",
+        presenceSelector: "figure[data-marp]",
+      }),
     ],
   });
 }

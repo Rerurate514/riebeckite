@@ -61,15 +61,11 @@ export function sourceFiles(options: SourceFilesOptions) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        PLUGIN_NAME,
-        "@riebeckite/plugin-source-files/client",
-        "initSourceFiles",
-        undefined,
-        undefined,
-        undefined,
-        "[data-source-file]",
-      ),
+      createClientEntry(PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-source-files/client",
+        exportName: "initSourceFiles",
+        presenceSelector: "[data-source-file]",
+      }),
     ],
   });
 }

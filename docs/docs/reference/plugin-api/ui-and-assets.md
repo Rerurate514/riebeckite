@@ -281,12 +281,11 @@ export function example() {
     name: "example",
     assets: [createStyleAsset("example", "@riebeckite/plugin-example/style.css")],
     clientEntries: [
-      createClientEntry(
-        "example",
-        "@riebeckite/plugin-example/client",
-        "initExample",
-        { selector: ".example" },
-      ),
+      createClientEntry("example", {
+        moduleSpecifier: "@riebeckite/plugin-example/client",
+        exportName: "initExample",
+        publicConfig: { selector: ".example" },
+      }),
     ],
   });
 }
@@ -322,12 +321,13 @@ The module specifier is resolved by the host bundler. It can be a subpath expose
 by the plugin package's `exports` map, a site-local absolute path (e.g.
 `/extensions/plugin.css`), or a path the bundler can resolve. For example, a
 third-party package can use `createStyleAsset("example", "@example/plugin/style.css")`
-and `createClientEntry("example", "@example/plugin/client", ...)`.
+and `createClientEntry("example", { moduleSpecifier: "@example/plugin/client" })`.
 
 Omit `assets` or `clientEntries` when the plugin does not need them. The client
-entry's export name is optional and defaults to the module default export. Its
-third argument is an optional export name passed to that initializer. Its
-fourth argument is an optional JSON value passed to that initializer. It is the
+entry's export name is optional and defaults to the module default export.
+`exportName`, `publicConfig`, `scope`, `initializerArguments`,
+`presenceSelector`, and `root` configure the generated initializer.
+`publicConfig` is an optional JSON value passed to that initializer. It is the
 only plugin configuration exposed to browser code (and recorded in the
 manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service
@@ -336,17 +336,20 @@ URLs. An initializer without public config continues to receive no arguments.
 Client-owned UI should be written in Hono JSX and mounted into its host with
 `createRoot()` from `hono/jsx/dom/client`. Keep browser-only work such as focus,
 measurement, pointer capture, and media playback in the initializer. When an
-entry is needed only on pages that contain a marker, pass a presence selector as
-the seventh argument to `createClientEntry()` so the chunk is not loaded on
-other pages.
+entry is needed only on pages that contain a marker, set `presenceSelector` so
+the chunk is not loaded on other pages.
 
-The selector is evaluated against the current DOM, so the marker must be in the
-SSR HTML or added before the SPA commit; client-created content cannot trigger
-the load. Entries that must always run because they implement site-wide
-behavior (analytics, color mode, text fragment, UX) omit the selector. The
-selector only gates loading: the initializer must still look for its own
-elements, and page-scoped work must return cleanup so an aborted load does not
-leave listeners behind.
+The selector is evaluated against the whole current DOM, so the marker must be
+in the SSR HTML or added before the SPA commit; client-created content cannot
+trigger the load. The page-scoped root remains `main#main-content` by default.
+When the marker lives in a shell region outside that root, set
+`root: "document"`; the matched element is also available as `context.marker`.
+Entries that must always run because they implement site-wide behavior
+(analytics, color mode, text fragment, UX) omit the selector. The selector only
+gates loading: the initializer must still look for its own elements, and
+page-scoped work must return cleanup so an aborted load does not leave
+listeners behind. App-scoped entries with a selector are re-evaluated on each
+page commit, so a marker introduced by SPA navigation can still load them.
 
 A client entry can also be declared explicitly:
 

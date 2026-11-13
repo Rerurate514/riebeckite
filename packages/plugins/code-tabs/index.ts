@@ -31,15 +31,11 @@ export function codeTabs(options: CodeTabsOptions = {}) {
       createStyleAsset("code-tabs", "@riebeckite/plugin-code-tabs/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "code-tabs",
-        "@riebeckite/plugin-code-tabs/client",
-        "initCodeTabs",
-        undefined,
-        undefined,
-        undefined,
-        "[data-code-tabs='true']",
-      ),
+      createClientEntry("code-tabs", {
+        moduleSpecifier: "@riebeckite/plugin-code-tabs/client",
+        exportName: "initCodeTabs",
+        presenceSelector: "[data-code-tabs='true']",
+      }),
     ],
   });
 }

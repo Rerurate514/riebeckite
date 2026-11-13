@@ -138,15 +138,12 @@ export function canvas(options: CanvasOptions = {}) {
       createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-canvas/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        PLUGIN_NAME,
-        "@riebeckite/plugin-canvas/client",
-        "initCanvas",
-        undefined,
-        undefined,
-        "root",
-        "[data-canvas]",
-      ),
+      createClientEntry(PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-canvas/client",
+        exportName: "initCanvas",
+        initializerArguments: "root",
+        presenceSelector: "[data-canvas]",
+      }),
     ],
   });
 }

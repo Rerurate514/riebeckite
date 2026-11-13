@@ -218,6 +218,55 @@ test("runs an initializer cleanup once when unmounted twice", async () => {
   assert.equal(cleanups, 1);
 });
 
+test("forwards the presence marker to initializers", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  const marker = { isConnected: true } as unknown as Element;
+  let received: Element | undefined;
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "marker",
+    root: {},
+    marker,
+    config: undefined,
+    initialize: (context) => {
+      received = context.marker;
+      return undefined;
+    },
+  });
+
+  assert.equal(received, marker);
+});
+
+test("reinitializes page scope with the next page root", async () => {
+  const lifecycle = new ClientLifecycle<object>();
+  const firstRoot = { page: "first" };
+  const secondRoot = { page: "second" };
+  const roots: object[] = [];
+  const initialize = ({ root }: { root: object }) => {
+    roots.push(root);
+    return undefined;
+  };
+
+  await lifecycle.mount({
+    scope: "page",
+    name: "page",
+    root: firstRoot,
+    config: undefined,
+    initialize,
+  });
+  await lifecycle.unmount("page");
+  await lifecycle.mount({
+    scope: "page",
+    name: "page",
+    root: secondRoot,
+    config: undefined,
+    initialize,
+  });
+
+  assert.deepEqual(roots, [firstRoot, secondRoot]);
+});
+
 test("provides a runtime host to initializers and disposes it with the scope", async () => {
   const lifecycle = new ClientLifecycle<object>();
   let disposed = 0;

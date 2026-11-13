@@ -49,10 +49,19 @@ for (const name of fs.readdirSync(pluginRoot)) {
       node.expression.text === "createClientEntry" &&
       !globalEntries.has(name)
     ) {
-      const selector = node.arguments[6];
+      const options = node.arguments[1];
+      const property =
+        options && ts.isObjectLiteralExpression(options)
+          ? options.properties.find(
+              (candidate) =>
+                ts.isPropertyAssignment(candidate) &&
+                propertyName(candidate.name) === "presenceSelector",
+            )
+          : undefined;
+      const selector = property?.initializer;
       if (!selector || selector.kind === ts.SyntaxKind.UndefinedKeyword) {
         errors.push(
-          `${name}: createClientEntry must pass a presenceSelector as its seventh argument`,
+          `${name}: createClientEntry options must set a presenceSelector`,
         );
       } else if (ts.isStringLiteral(selector)) {
         const tokens = selector.text
@@ -95,6 +104,12 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log("Client entry presence selectors validated.");
+}
+
+function propertyName(name) {
+  return ts.isIdentifier(name) || ts.isStringLiteral(name)
+    ? name.text
+    : undefined;
 }
 
 function readPluginSource(directory) {

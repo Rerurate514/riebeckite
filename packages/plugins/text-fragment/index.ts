@@ -41,15 +41,14 @@ export function textFragment(
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "text-fragment",
-        "@riebeckite/plugin-text-fragment/client",
-        "initTextFragmentShare",
-        {
+      createClientEntry("text-fragment", {
+        moduleSpecifier: "@riebeckite/plugin-text-fragment/client",
+        exportName: "initTextFragmentShare",
+        publicConfig: {
           ...DEFAULT_TEXT_FRAGMENT_LABELS,
           ...options.labels,
         },
-      ),
+      }),
     ],
   });
 }

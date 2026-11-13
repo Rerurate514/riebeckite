@@ -32,22 +32,20 @@ export function calculator() {
       createStyleAsset("calculator", "@riebeckite/plugin-calculator/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "calculator",
-        "@riebeckite/plugin-calculator/client",
-        "initCalculator",
-        undefined,
-        "page",
-        "context",
-        "[data-calculator]",
-        [
+      createClientEntry("calculator", {
+        moduleSpecifier: "@riebeckite/plugin-calculator/client",
+        exportName: "initCalculator",
+        scope: "page",
+        initializerArguments: "context",
+        presenceSelector: "[data-calculator]",
+        runtimeEntries: [
           createRuntimeEntry(
             "calculator",
             "@riebeckite/plugin-calculator/client-runtime",
             "createCalculatorRuntime",
           ),
         ],
-      ),
+      }),
     ],
   });
 }

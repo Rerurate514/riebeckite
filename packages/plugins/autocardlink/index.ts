@@ -29,15 +29,11 @@ export function autoCardLink(options: AutoCardLinkOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "autocardlink",
-        "@riebeckite/plugin-autocardlink/client",
-        "initAutoCardLink",
-        undefined,
-        undefined,
-        undefined,
-        ".rr-cardlink",
-      ),
+      createClientEntry("autocardlink", {
+        moduleSpecifier: "@riebeckite/plugin-autocardlink/client",
+        exportName: "initAutoCardLink",
+        presenceSelector: ".rr-cardlink",
+      }),
     ],
   });
 }

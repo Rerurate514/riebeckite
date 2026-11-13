@@ -53,15 +53,13 @@ export function imageCompare(options: ImageCompareOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        IMAGE_COMPARE_PLUGIN_NAME,
-        "@riebeckite/plugin-image-compare/client",
-        "initImageCompare",
-        undefined,
-        "page",
-        "context",
-        "[data-rr-image-compare]",
-      ),
+      createClientEntry(IMAGE_COMPARE_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-image-compare/client",
+        exportName: "initImageCompare",
+        scope: "page",
+        initializerArguments: "context",
+        presenceSelector: "[data-rr-image-compare]",
+      }),
     ],
   });
 }

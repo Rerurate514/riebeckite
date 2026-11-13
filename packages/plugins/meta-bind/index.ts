@@ -19,15 +19,13 @@ export function metaBind() {
       createStyleAsset("meta-bind", "@riebeckite/plugin-meta-bind/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "meta-bind",
-        "@riebeckite/plugin-meta-bind/client",
-        "initMetaBind",
-        undefined,
-        "page",
-        "context",
-        "[data-meta-bind]",
-      ),
+      createClientEntry("meta-bind", {
+        moduleSpecifier: "@riebeckite/plugin-meta-bind/client",
+        exportName: "initMetaBind",
+        scope: "page",
+        initializerArguments: "context",
+        presenceSelector: "[data-meta-bind]",
+      }),
     ],
   });
 }

@@ -56,7 +56,11 @@ CSS is declared through `assets`. A self-contained Markdown UI is declared throu
 ```ts
 assets: [createStyleAsset("example", "@example/plugin/style.css")],
 clientEntries: [
-  createClientEntry("example", "@example/plugin/client", "init", { selector: ".example" }),
+  createClientEntry("example", {
+    moduleSpecifier: "@example/plugin/client",
+    exportName: "init",
+    publicConfig: { selector: ".example" },
+  }),
 ],
 ```
 

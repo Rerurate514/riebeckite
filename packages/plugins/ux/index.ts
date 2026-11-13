@@ -29,7 +29,10 @@ export function ux(options: UxOptions = {}) {
     validateOptions: validateUxOptions,
     assets: [createStyleAsset("ux", "@riebeckite/plugin-ux/style.css")],
     clientEntries: [
-      createClientEntry("ux", "@riebeckite/plugin-ux/client", "initUx"),
+      createClientEntry("ux", {
+        moduleSpecifier: "@riebeckite/plugin-ux/client",
+        exportName: "initUx",
+      }),
     ],
     onPostProcessed: (context) => {
       context.content.html = injectUxConfig(context.content.html, config);

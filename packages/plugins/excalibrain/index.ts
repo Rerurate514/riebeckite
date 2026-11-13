@@ -143,15 +143,11 @@ export function excaliBrain(options: ExcaliBrainOptions = {}) {
       ),
     ],
     clientEntries: [
-      createClientEntry(
-        "excalibrain",
-        "@riebeckite/plugin-excalibrain/client",
-        "initExcaliBrain",
-        undefined,
-        undefined,
-        undefined,
-        "[data-excalibrain]",
-      ),
+      createClientEntry("excalibrain", {
+        moduleSpecifier: "@riebeckite/plugin-excalibrain/client",
+        exportName: "initExcaliBrain",
+        presenceSelector: "[data-excalibrain]",
+      }),
     ],
   });
 }

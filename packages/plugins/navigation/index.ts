@@ -37,15 +37,13 @@ export function navigation(options: NavigationOptions = {}) {
       createStyleAsset("navigation", "@riebeckite/plugin-navigation/style.css"),
     ],
     clientEntries: [
-      createClientEntry(
-        "navigation",
-        "@riebeckite/plugin-navigation/client",
-        "initSidebarNavigation",
-        undefined,
-        "app",
-        "context",
-        "[data-sidebar-navigation]",
-      ),
+      createClientEntry("navigation", {
+        moduleSpecifier: "@riebeckite/plugin-navigation/client",
+        exportName: "initSidebarNavigation",
+        scope: "app",
+        initializerArguments: "context",
+        presenceSelector: "[data-sidebar-navigation]",
+      }),
     ],
     validateOptions: validateNavigationOptions,
     contentOutputDependencies: [

@@ -49,14 +49,13 @@ export function analytics(options: AnalyticsOptions) {
     options,
     validateOptions: validateAnalyticsOptions,
     clientEntries: [
-      createClientEntry(
-        "analytics",
-        "@riebeckite/plugin-analytics/client",
-        "initAnalytics",
-        options.publicConfig,
-        "app",
-        "context",
-      ),
+      createClientEntry("analytics", {
+        moduleSpecifier: "@riebeckite/plugin-analytics/client",
+        exportName: "initAnalytics",
+        publicConfig: options.publicConfig,
+        scope: "app",
+        initializerArguments: "context",
+      }),
     ],
     onManifestCreated: ({ manifest }) => {
       for (const entry of manifest.entries) {

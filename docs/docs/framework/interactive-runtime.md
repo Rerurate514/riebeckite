@@ -100,28 +100,27 @@ A real plugin declares the runtime module on its client entry:
 ```ts
 import { createClientEntry, createRuntimeEntry } from "@riebeckite/core";
 
-createClientEntry(
-  "example",
-  "@riebeckite/plugin-example/client",
-  "initExample",
-  undefined,
-  "page",
-  "context",
-  "[data-example]",
-  [
+createClientEntry("example", {
+  moduleSpecifier: "@riebeckite/plugin-example/client",
+  exportName: "initExample",
+  scope: "page",
+  initializerArguments: "context",
+  presenceSelector: "[data-example]",
+  runtimeEntries: [
     createRuntimeEntry(
       "example",
       "@riebeckite/plugin-example/client-runtime",
       "createExampleRuntime",
     ),
   ],
-);
+});
 ```
 
 The HonoX client module imports the runtime module lazily through a static
 `import()` expression, registers the definition, and passes a host in
-`context.runtimes`. The client entry itself is loaded only when the page matches
-`presenceSelector`. Disabled plugins emit no client code.
+`context.runtimes`. The client entry itself is loaded only when the document
+contains a marker matching `presenceSelector`. Disabled plugins emit no client
+code.
 
 For the full package scaffold, see [[plugin-system|Plugin System]] and
 [Writing a Plugin](../plugins/writing-a-plugin.md).
@@ -420,9 +419,9 @@ and browser tests.
 
 ## Troubleshooting
 
-- **Nothing mounts**: the plugin client entry is loaded only when the page
-  matches `presenceSelector`, and `mount()` is only called from a client
-  initializer. Check the marker and the initializer.
+- **Nothing mounts**: the plugin client entry is loaded only when the document
+  contains a marker matching `presenceSelector`, and `mount()` is only called
+  from a client initializer. Check the marker and the initializer.
 - **Worker fails before the first result**: module workers are required. Confirm
   the worker URL is same-origin and served with a JavaScript MIME type.
 - **`RuntimeUnsupportedError`**: the browser lacks module workers, WebAssembly,

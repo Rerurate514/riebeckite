@@ -30,6 +30,8 @@ export function createRuntimeEntry<TOptions extends JsonValue = JsonValue>(
   };
 }
 
+export type ClientInitializerRoot = "page" | "document";
+
 export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   pluginName: string;
   moduleSpecifier: string;
@@ -37,6 +39,7 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
   scope?: ClientLifecycleScope;
   initializerArguments?: ClientInitializerArguments;
   presenceSelector?: string;
+  root?: ClientInitializerRoot;
   runtimeEntries?: readonly PluginRuntimeEntry[];
   /**
    * Configuration intentionally made available to this browser entry.
@@ -46,6 +49,19 @@ export type PluginClientEntry<TPublicConfig extends JsonValue = JsonValue> = {
    * private build-time options.
    */
   publicConfig?: TPublicConfig;
+};
+
+export type CreateClientEntryOptions<
+  TPublicConfig extends JsonValue = JsonValue,
+> = {
+  moduleSpecifier: string;
+  exportName?: string;
+  publicConfig?: TPublicConfig;
+  scope?: ClientLifecycleScope;
+  initializerArguments?: ClientInitializerArguments;
+  presenceSelector?: string;
+  root?: ClientInitializerRoot;
+  runtimeEntries?: readonly PluginRuntimeEntry[];
 };
 
 type ClientInitializerArguments = "config" | "root" | "context";
@@ -61,25 +77,30 @@ export function createStyleAsset(
   };
 }
 
-export function createClientEntry<TPublicConfig extends JsonValue>(
+export function createClientEntry<TPublicConfig extends JsonValue = JsonValue>(
   pluginName: string,
-  moduleSpecifier: string,
-  exportName?: string,
-  publicConfig?: TPublicConfig,
-  scope?: ClientLifecycleScope,
-  initializerArguments?: ClientInitializerArguments,
-  presenceSelector?: string,
-  runtimeEntries?: readonly PluginRuntimeEntry[],
+  options: CreateClientEntryOptions<TPublicConfig>,
 ): PluginClientEntry<TPublicConfig> {
   return {
     pluginName,
-    moduleSpecifier,
-    ...(exportName === undefined ? {} : { exportName }),
-    ...(publicConfig === undefined ? {} : { publicConfig }),
-    ...(scope === undefined ? {} : { scope }),
-    ...(initializerArguments === undefined ? {} : { initializerArguments }),
-    ...(presenceSelector === undefined ? {} : { presenceSelector }),
-    ...(runtimeEntries === undefined ? {} : { runtimeEntries }),
+    moduleSpecifier: options.moduleSpecifier,
+    ...(options.exportName === undefined
+      ? {}
+      : { exportName: options.exportName }),
+    ...(options.publicConfig === undefined
+      ? {}
+      : { publicConfig: options.publicConfig }),
+    ...(options.scope === undefined ? {} : { scope: options.scope }),
+    ...(options.initializerArguments === undefined
+      ? {}
+      : { initializerArguments: options.initializerArguments }),
+    ...(options.presenceSelector === undefined
+      ? {}
+      : { presenceSelector: options.presenceSelector }),
+    ...(options.root === undefined ? {} : { root: options.root }),
+    ...(options.runtimeEntries === undefined
+      ? {}
+      : { runtimeEntries: options.runtimeEntries }),
   };
 }
 

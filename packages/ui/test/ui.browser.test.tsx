@@ -1,4 +1,7 @@
-/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+/**
+ * @jsxRuntime automatic
+ * @jsxImportSource hono/jsx
+ */
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { after, before, test } from "node:test";

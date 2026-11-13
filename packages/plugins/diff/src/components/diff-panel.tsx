@@ -1,4 +1,7 @@
-/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+/**
+ * @jsxRuntime automatic
+ * @jsxImportSource hono/jsx
+ */
 
 import type { PostDiff } from "../types.js";
 

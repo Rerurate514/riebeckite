@@ -1,4 +1,7 @@
-/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+/**
+ * @jsxRuntime automatic
+ * @jsxImportSource hono/jsx
+ */
 import assert from "node:assert/strict";
 import test from "node:test";
 import { renderToString } from "hono/jsx/dom/server";

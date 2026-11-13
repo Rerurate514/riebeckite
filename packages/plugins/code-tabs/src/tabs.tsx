@@ -1,4 +1,7 @@
-/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+/**
+ * @jsxRuntime automatic
+ * @jsxImportSource hono/jsx
+ */
 type CodeTab = {
   readonly label: string;
   readonly html: string;

@@ -1,4 +1,7 @@
-/** @jsxRuntime automatic @jsxImportSource hono/jsx */
+/**
+ * @jsxRuntime automatic
+ * @jsxImportSource hono/jsx
+ */
 import { defineHastComponent, type PluginHastNode } from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 import rehypeStringify from "rehype-stringify";

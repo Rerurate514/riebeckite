@@ -76,10 +76,7 @@ async function fingerprintContent(
   read: (entry: ContentSourceEntry) => Promise<ContentSourceContent>,
 ): Promise<string> {
   const content = await read(entry);
-  return `sha256:${crypto
-    .createHash("sha256")
-    .update(typeof content === "string" ? content : content)
-    .digest("hex")}`;
+  return `sha256:${crypto.createHash("sha256").update(content).digest("hex")}`;
 }
 
 export function fingerprintContentMetadata(entry: ContentSourceEntry): string {

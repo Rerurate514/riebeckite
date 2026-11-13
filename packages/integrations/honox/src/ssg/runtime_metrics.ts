@@ -12,8 +12,7 @@ export async function measure<T>(
   try {
     return await fn();
   } finally {
-    if (timingsMs)
-      timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
+    timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
   }
 }
 
@@ -27,8 +26,7 @@ export function measureSync<T>(
   try {
     return fn();
   } finally {
-    if (timingsMs)
-      timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
+    timingsMs[name] = (timingsMs[name] ?? 0) + performance.now() - start;
   }
 }
 

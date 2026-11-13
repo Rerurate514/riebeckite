@@ -71,8 +71,7 @@ export function resolveFolderLocation(
         ? [{ kind: resolution.kind, entry: resolution.entry }]
         : [];
   if (candidates.length === 1) {
-    const candidate = candidates[0];
-    if (candidate) return { type: "content", entry: candidate.entry };
+    return { type: "content", entry: candidates[0].entry };
   }
   if (candidates.length > 1) return { type: "ambiguous", candidates };
 

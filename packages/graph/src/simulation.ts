@@ -234,10 +234,8 @@ function applyExactRepulsion(
 ): void {
   for (let left = 0; left < nodes.length; left += 1) {
     const a = nodes[left];
-    if (!a) continue;
     for (let right = left + 1; right < nodes.length; right += 1) {
       const b = nodes[right];
-      if (!b) continue;
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const distanceSquared = dx * dx + dy * dy + 1;
@@ -291,7 +289,7 @@ function applyQuadtreeRepulsion(
   }
   for (let index = 0; index < nodes.length; index += 1) {
     const node = nodes[index];
-    if (node) applyQuadForce(root, nodes, node, index, strength);
+    applyQuadForce(root, nodes, node, index, strength);
   }
 }
 
@@ -302,7 +300,6 @@ function insertQuad(
   depth: number,
 ): void {
   const node = nodes[index];
-  if (!node) return;
   quad.centerX = (quad.centerX * quad.mass + node.x) / (quad.mass + 1);
   quad.centerY = (quad.centerY * quad.mass + node.y) / (quad.mass + 1);
   quad.mass += 1;
@@ -342,7 +339,6 @@ function insertIntoChild(
   const children = quad.children;
   if (!children) return;
   const node = nodes[index];
-  if (!node) return;
   const half = quad.size / 2;
   const right = node.x >= quad.x + half ? 1 : 0;
   const bottom = node.y >= quad.y + half ? 2 : 0;
@@ -379,7 +375,7 @@ function applyQuadForce(
     for (const index of quad.members ?? []) {
       if (index === targetIndex) continue;
       const other = nodes[index];
-      if (other) applyPairRepulsion(target, other, strength);
+      applyPairRepulsion(target, other, strength);
     }
     return;
   }

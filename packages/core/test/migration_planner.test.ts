@@ -215,8 +215,7 @@ test("reports duplicate destinations instead of guessing", () => {
     id: "collide",
     version: 1,
     description: "Collide two files.",
-    transform: (content) =>
-      content.path === "a.md" ? { path: "same.md" } : { path: "same.md" },
+    transform: () => ({ path: "same.md" }),
   });
   const batch = planContentMigrationBatch({
     migrations: [collide],

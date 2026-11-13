@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "361709df-faa1-473c-bbab-c7229dde7a00",
-    "publishedAt": "2026-11-13T10:34:27.326Z",
-    "publicationFingerprint": "0edd53b0ac861cd0dc49772c7c1878d6808d3fcf84b7ed62dc89be7a00a766cb",
+    "runId": "5e309bb1-4cd1-4b7f-b5e8-c265aa58af3a",
+    "publishedAt": "2026-11-13T10:55:06.288Z",
+    "publicationFingerprint": "3257930e3b754e144ccb6ca1791c44eca2f518c0939ed3544fd42989c1f05db5",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3354,16 +3354,16 @@
         "permalink": "/docs/guides/customizing-your-site/examples",
         "title": "Examples",
         "visibility": "public",
-        "fingerprint": "5a147b5ef63b68c1fe0fc44fe4196ffaea0e7bce0c05ba33ba003d3e35ba216a",
-        "contentFingerprint": "42bf7e80790c5d7a9047519b03f6ecf4e27614017cbb56fb7293838bd140526f"
+        "fingerprint": "79958f1102aadcf553bb169b0faef5fdb5ea8b2fe831d99ea6b3df9295f745b8",
+        "contentFingerprint": "116ffe09374d9da19b04bd96941a6e240b977954ccd08e4be23cf1e469ce8ac4"
       },
       {
         "slug": "docs/guides/customizing-your-site/examples.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/examples",
         "title": "実例",
         "visibility": "public",
-        "fingerprint": "f70f248a2d8150de029a6cad304e889884077bf7a25defefe132d6bfaccc56e3",
-        "contentFingerprint": "394434164fea186fd0a42b086f957ed337e618a2274fd5a4e1271fd2f1ec714a"
+        "fingerprint": "cca2bdc6521f104dd8f2ed337158db6adb6aa3be258fa5a4cafd1b68f04131e0",
+        "contentFingerprint": "821150f16a7dfaf07cfc692a5c621b8d7270660558314a1b0cac0e9a5fc9d8d5"
       },
       {
         "slug": "docs/guides/customizing-your-site/layout",
@@ -5610,16 +5610,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "9dff4062ce67efc0d50dbb63c3c90d8bd5d73bdc245e6ff54d6af78b08996fca",
-        "contentFingerprint": "60d72017edc12adc7955687aae0c6946bcf4b1b214bc5345006bb233fe181288"
+        "fingerprint": "dbd69e99b1ad0f32d441b0e8bd2d6362cc6844c2589bc584ce5a0b7d61559f88",
+        "contentFingerprint": "3b776457625b4857805f54c016fbaa2cc0861ebbfd6c86defae1a1e0c3e35ca9"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "ナレッジとデータ",
         "visibility": "public",
-        "fingerprint": "da675ec5cb86117b880ba57a5f37c155173ceee363af02265459b8312347beac",
-        "contentFingerprint": "b87020eff9683818a21d3f34fde9fc83ff6125bbf6fda290a9b5c7d2f77d9133"
+        "fingerprint": "bf7c272ee66e5bcade1c5df19d4a9760baa04279e279e3e7c027c00589a23a3a",
+        "contentFingerprint": "49bf2848276a6278a145ac44debbfe2e1b283e7a6e8820beba16a382a9642457"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -5802,16 +5802,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "a3796a4171c931c172016b2d70f8baa1f0a977c7f9d10b083c997563f18c6a33",
-        "contentFingerprint": "d6279a0c339b02af606de920ad147eefa0fc10a4232f15ea89c80cc04b8f3046"
+        "fingerprint": "74f46f7d80e2fcb841ca621dd7e4d0b80f7f4efc7512e2ba28f2144c1697475e",
+        "contentFingerprint": "8fe9aa1ec75ee24fafdb822b5bf7fd090f630790895a0c0d84caf120d181dd42"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "870aa97eb6194637bac5439090010a603b358837d3d268a216a847255b8c4ba2",
-        "contentFingerprint": "b38f6ea47ab9d934725aadbc9042a1bf7a5724f68e2b9d30764d5c51cff043c0"
+        "fingerprint": "57be13c015eb34d6487369c254248d66c1e230518172f4cae2255edc4acd445c",
+        "contentFingerprint": "ea241448f60bfe6a43558bdd649cabf1cb7798094e84b54a6483c0893e4ddd6b"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "4c054ca496a943f1e4627bf776cafa8dbab5d22c5d7550dca1965e468b9adee0",
+    "artifactFingerprint": "882954547188b5a602d6ff2cb3d608ced5e36e7ed82b1a1cd6307432cf7a9884",
     "provider": "cloudflare-workers"
   }
 }

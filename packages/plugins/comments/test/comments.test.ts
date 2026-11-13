@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { COMMENTS_PLUGIN_NAME, comments } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import { COMMENTS_PLUGIN_NAME, CommentsSection, comments } from "../index.ts";
 import {
   DEFAULT_COMMENTS_CLASS_NAME,
   DEFAULT_COMMENTS_EMPTY_TEXT,
@@ -10,8 +12,10 @@ import {
   validateCommentsOptions,
 } from "../src/options.js";
 import { MemoryCommentsProvider } from "../src/provider.js";
-import { COMMENTS_ATTRIBUTE, renderCommentsSection } from "../src/render.js";
+import { COMMENTS_ATTRIBUTE } from "../src/render.js";
 import type { CommentsPage } from "../src/types.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 const samplePage: CommentsPage = {
   contentId: "page-1",
@@ -62,12 +66,9 @@ test("MemoryCommentsProvider respects limit", async () => {
   assert.equal(page.comments.length, 0);
 });
 
-test("renderCommentsSection renders heading and comments", () => {
-  const html = renderCommentsSection(
-    samplePage,
-    DEFAULT_COMMENTS_HEADING_TEXT,
-    DEFAULT_COMMENTS_CLASS_NAME,
-    DEFAULT_COMMENTS_EMPTY_TEXT,
+test("CommentsSection renders heading and comments", () => {
+  const html = renderToString(
+    createElement(CommentsSection, { page: samplePage }),
   );
   assert.ok(html.includes(COMMENTS_ATTRIBUTE));
   assert.ok(html.includes("Great post!"));
@@ -75,14 +76,9 @@ test("renderCommentsSection renders heading and comments", () => {
   assert.ok(html.includes('data-comment-id="c1"'));
 });
 
-test("renderCommentsSection renders empty state", () => {
+test("CommentsSection renders empty state", () => {
   const empty: CommentsPage = { contentId: "p", comments: [], total: 0 };
-  const html = renderCommentsSection(
-    empty,
-    DEFAULT_COMMENTS_HEADING_TEXT,
-    DEFAULT_COMMENTS_CLASS_NAME,
-    DEFAULT_COMMENTS_EMPTY_TEXT,
-  );
+  const html = renderToString(createElement(CommentsSection, { page: empty }));
   assert.ok(html.includes(DEFAULT_COMMENTS_EMPTY_TEXT));
 });
 

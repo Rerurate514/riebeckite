@@ -1,19 +1,22 @@
-import type { CommentsPage } from "../src/types.js";
+import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
+import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { resolveCommentsOptions } from "../src/options.js";
+import type { CommentsOptions, CommentsPage } from "../src/types.js";
 import { isSafeImageUrl, isSafeLinkUrl } from "../src/url.js";
 
 export type CommentsSectionProps = {
-  page: CommentsPage;
-  headingText?: string;
-  className?: string;
-  emptyText?: string;
+  readonly page: CommentsPage;
+  readonly headingText?: string;
+  readonly className?: string;
+  readonly emptyText?: string;
 };
 
-export default function CommentsSection({
+const CommentsSection = (({
   page,
   headingText = "Comments",
   className = "rr-comments",
   emptyText = "No comments yet.",
-}: CommentsSectionProps) {
+}: Readonly<CommentsSectionProps>) => {
   return (
     <section
       class={className}
@@ -84,4 +87,37 @@ export default function CommentsSection({
       )}
     </section>
   );
+}) satisfies PluginSiteComponent<CommentsSectionProps>;
+
+export default CommentsSection;
+
+export type ArticleCommentsSectionProps = Omit<CommentsSectionProps, "page">;
+
+export async function ArticleCommentsSection(
+  props: Readonly<ArticleCommentsSectionProps>,
+) {
+  const site = useSiteContext();
+  const article = useArticleContext();
+  const contentId = article?.entry?.contentId;
+  if (!site || !contentId) return [];
+  const options = findCommentsOptions(site.config.plugins);
+  if (!options?.provider) return [];
+  const resolved = resolveCommentsOptions(options);
+  const page = await resolved.provider.getComments(contentId, resolved.limit);
+  return (
+    <CommentsSection
+      page={page}
+      headingText={props.headingText ?? resolved.headingText}
+      className={props.className ?? resolved.className}
+      emptyText={props.emptyText ?? resolved.emptyText}
+    />
+  );
+}
+
+function findCommentsOptions(
+  plugins: readonly { name: string; options?: unknown }[],
+): CommentsOptions | undefined {
+  return resolvePlugins([...plugins]).find(
+    (plugin) => plugin.name === "comments",
+  )?.options as CommentsOptions | undefined;
 }

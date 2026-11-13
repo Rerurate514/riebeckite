@@ -1,13 +1,15 @@
 import { createStyleAsset, definePlugin } from "@riebeckite/core";
-import {
-  resolveCommentsOptions,
-  validateCommentsOptions,
-} from "./src/options.js";
-import { renderCommentsSection } from "./src/render.js";
+import { validateCommentsOptions } from "./src/options.js";
 import type { CommentsOptions } from "./src/types.js";
 
-export type { CommentsSectionProps } from "./components/comments-section.js";
-export { default as CommentsSection } from "./components/comments-section.js";
+export type {
+  ArticleCommentsSectionProps,
+  CommentsSectionProps,
+} from "./components/comments-section.js";
+export {
+  ArticleCommentsSection,
+  default as CommentsSection,
+} from "./components/comments-section.js";
 export {
   DEFAULT_COMMENTS_CLASS_NAME,
   DEFAULT_COMMENTS_EMPTY_TEXT,
@@ -21,11 +23,7 @@ export type {
   CommentsProvider,
 } from "./src/provider.js";
 export { MemoryCommentsProvider } from "./src/provider.js";
-export {
-  COMMENTS_ATTRIBUTE,
-  COMMENTS_ROOT_CLASS,
-  renderCommentsSection,
-} from "./src/render.js";
+export { COMMENTS_ATTRIBUTE, COMMENTS_ROOT_CLASS } from "./src/render.js";
 export type {
   Comment,
   CommentAuthor,
@@ -37,8 +35,6 @@ export type {
 export const COMMENTS_PLUGIN_NAME = "comments";
 
 export function comments(options: CommentsOptions = {}) {
-  const resolved = resolveCommentsOptions(options);
-
   return definePlugin({
     name: COMMENTS_PLUGIN_NAME,
     processedContentCache: {
@@ -53,21 +49,5 @@ export function comments(options: CommentsOptions = {}) {
         "@riebeckite/plugin-comments/style.css",
       ),
     ],
-    onManifestCreated: async ({ manifest }) => {
-      for (const entry of manifest.entries) {
-        if (!entry.contentId) continue;
-        const page = await resolved.provider.getComments(
-          entry.contentId,
-          resolved.limit,
-        );
-        const html = renderCommentsSection(
-          page,
-          resolved.headingText,
-          resolved.className,
-          resolved.emptyText,
-        );
-        entry.html = `${entry.html}\n${html}`;
-      }
-    },
   });
 }

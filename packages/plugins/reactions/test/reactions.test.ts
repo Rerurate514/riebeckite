@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { REACTIONS_PLUGIN_NAME, reactions } from "../index.ts";
+import { createElement, Fragment } from "hono/jsx";
+import { renderToString } from "hono/jsx/dom/server";
+import { REACTIONS_PLUGIN_NAME, Reactions, reactions } from "../index.ts";
 import { createReactionsEndpoints } from "../src/endpoints.js";
 import {
   DEFAULT_REACTIONS_ARIA_LABEL,
@@ -9,12 +11,14 @@ import {
   validateReactionsOptions,
 } from "../src/options.js";
 import { MemoryReactionsProvider } from "../src/provider.js";
-import { REACTIONS_ATTRIBUTE, renderReactions } from "../src/render.js";
+import { REACTIONS_ATTRIBUTE } from "../src/render.js";
 import {
   DEFAULT_REACTIONS,
   type PageReactions,
   REACTION_TYPES,
 } from "../src/types.js";
+
+(globalThis as { React?: unknown }).React = { createElement, Fragment };
 
 test("resolveReactionsOptions applies defaults", () => {
   const resolved = resolveReactionsOptions();
@@ -75,16 +79,16 @@ test("MemoryReactionsProvider counts add and remove", async () => {
   );
 });
 
-test("renderReactions emits buttons with counts and aria state", () => {
+test("Reactions renders buttons with counts and aria state", () => {
   const data: PageReactions = {
     contentId: "page-1",
     counts: [{ type: "like", count: 3, reacted: true }],
   };
-  const html = renderReactions(
-    DEFAULT_REACTIONS,
-    data,
-    DEFAULT_REACTIONS_CLASS_NAME,
-    DEFAULT_REACTIONS_ARIA_LABEL,
+  const html = renderToString(
+    createElement(Reactions, {
+      reactions: DEFAULT_REACTIONS,
+      data,
+    }),
   );
   assert.ok(html.includes(REACTIONS_ATTRIBUTE));
   assert.ok(html.includes('data-reaction-type="like"'));
@@ -94,13 +98,13 @@ test("renderReactions emits buttons with counts and aria state", () => {
   assert.ok(html.includes(" disabled"));
 });
 
-test("renderReactions enables buttons for configured endpoints", () => {
-  const html = renderReactions(
-    DEFAULT_REACTIONS,
-    { contentId: "page-1", counts: [] },
-    DEFAULT_REACTIONS_CLASS_NAME,
-    DEFAULT_REACTIONS_ARIA_LABEL,
-    true,
+test("Reactions enables buttons when interactive", () => {
+  const html = renderToString(
+    createElement(Reactions, {
+      reactions: DEFAULT_REACTIONS,
+      data: { contentId: "page-1", counts: [] },
+      interactive: true,
+    }),
   );
   assert.ok(!html.includes(" disabled"));
 });
@@ -108,6 +112,18 @@ test("renderReactions enables buttons for configured endpoints", () => {
 test("reactions() returns a plugin with the expected name", () => {
   const plugin = reactions();
   assert.equal(plugin.name, REACTIONS_PLUGIN_NAME);
+});
+
+test("reactions() gates the client entry on an endpoint", () => {
+  assert.equal(reactions().clientEntries?.length ?? 0, 0);
+
+  const plugin = reactions({
+    endpoint: "/reactions",
+    resolveVisitorKey: () => "visitor-1",
+  });
+  const entry = plugin.clientEntries?.[0];
+  assert.equal(entry?.presenceSelector, "[data-rr-reactions]");
+  assert.deepEqual(entry?.publicConfig, { endpoint: "/reactions" });
 });
 
 test("validateReactionsOptions requires a resolver for endpoints", () => {

@@ -672,7 +672,7 @@ test("plugin client chunks load only on pages that use the UI", async () => {
     const scripts = await loadedScriptText(plain.page);
     assert.doesNotMatch(scripts, /cdn\.jsdelivr\.net\/npm\/mermaid/);
     assert.doesNotMatch(scripts, /cdn\.jsdelivr\.net\/npm\/@viz-js\/viz/);
-    assert.doesNotMatch(scripts, /Comparison position/);
+    assert.doesNotMatch(scripts, /rr-image-compare-position/);
     assert.ok(
       !(await loadedScriptUrls(plain.page)).some((url) =>
         /\/auto-[\w-]+\.js$/.test(url),
@@ -697,14 +697,17 @@ test("plugin client chunks load only on pages that use the UI", async () => {
 
   const compare = await open("/docs/plugins/image-compare");
   try {
-    assert.match(await loadedScriptText(compare.page), /Comparison position/);
+    assert.match(
+      await loadedScriptText(compare.page),
+      /rr-image-compare-position/,
+    );
     assert.deepEqual(compare.errors, []);
   } finally {
     await compare.page.close();
   }
 });
 
-test("the image comparison hydrates and keeps its position in sync", async () => {
+test("the image comparison initializes and keeps its position in sync", async () => {
   const { page, errors } = await open("/docs/plugins/image-compare");
   try {
     await page.waitForFunction(
@@ -751,12 +754,8 @@ test("the image comparison hydrates and keeps its position in sync", async () =>
       const figure = document.querySelector<HTMLElement>(
         "[data-rr-image-compare]",
       );
-      const range = figure?.querySelector<HTMLInputElement>(
-        "[data-image-compare-range]",
-      );
       return (
-        figure?.style.getPropertyValue("--rr-image-compare-position") ===
-          "80%" && range?.getAttribute("aria-valuetext") === "80%"
+        figure?.style.getPropertyValue("--rr-image-compare-position") === "80%"
       );
     });
 

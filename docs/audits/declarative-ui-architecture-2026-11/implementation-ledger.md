@@ -208,14 +208,16 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | `pnpm typecheck` | PASS (3 projects) |
 | `pnpm check` (Biome) | PASS |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | 563 pass |
+| `pnpm --filter @riebeckite/core test` | 565 pass (after the main merge) |
 | `pnpm --filter @riebeckite/honox test` | 224 pass |
-| `@riebeckite/plugin-image-compare` | 14 pass |
+| `@riebeckite/plugin-image-compare` | 13 pass |
 | `@riebeckite/plugin-mermaid` | 17 pass |
 | `@riebeckite/diagram` | 8 pass |
-| `@riebeckite/ui` | 12 pass |
+| `@riebeckite/ui` | 13 pass |
 | `@riebeckite/plugin-lightbox` | 6 pass |
-| `pnpm test:runtime:site` | 10 pass (calculator, SPA unmount/remount, lightbox, text-fragment, chartjs chunk, image-compare hydration, Excalidraw, flashcards, no-JS) |
+| `@riebeckite/plugin-code-tabs` | 2 pass |
+| `@riebeckite/plugin-d2` | 4 pass |
+| `pnpm test:runtime:site` | 11 pass (calculator, SPA unmount/remount, lightbox, text-fragment, code-tabs HAST, chartjs chunk, image-compare initialization, Excalidraw, flashcards, no-JS) |
 | `pnpm check:docs` / `pnpm test:docs` | PASS (19) |
 | `pnpm check:changes` / `pnpm test:changelog` | PASS (13 / 9) |
 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS (117 / 117 acyclic) |
@@ -243,7 +245,7 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | Performance | None |
 | Commit | The documentation commit that includes this file |
 | State | EN/JA `ui-and-assets` now cover resolution-failure diagnostics, choosing JSX versus SSR, external renderer integration, and the presenceSelector and client lifecycle rules |
-| Residual issues | Do not document PoC-only APIs as public APIs (the HAST component API is documented as not public) |
+| Residual issues | None (HAST only receives nodes after rehypeSanitize) |
 
 ---
 
@@ -269,8 +271,9 @@ This ledger lets a compressed or interrupted session resume from the file and th
 | 2026-11-12 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS |
 | 2026-11-12 | `pnpm check:scaffold` / `test:security` / `check:build-packages` | PASS |
 | 2026-11-12 | `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
-| 2026-11-13 | image-compare client chunk | 2,140 B (previously 2,410 B plus 20,193 B of server render code) |
+| 2026-11-13 | image-compare client chunk | 1,137 B (main implementation; no server render chunk) |
 | 2026-11-13 | `pnpm test:e2e:external` | PASS (published artifacts, scaffold component hydration, MDX incremental rebuild) |
 | 2026-11-13 | `pnpm test:registry` | 224 pass (HonoX tests through published tarballs) |
-| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0 (1048 pages) |
-| 2026-11-13 | `pnpm test:runtime:site`（最終ビルド） | 10 pass |
+| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0 (1050 pages) |
+| 2026-11-13 | `pnpm test:runtime:site` (final build) | 11 pass |
+| 2026-11-13 | `pnpm --filter @riebeckite/core test` (after the main merge) | 565 pass |

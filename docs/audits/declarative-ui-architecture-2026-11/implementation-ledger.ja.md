@@ -208,14 +208,16 @@
 | `pnpm typecheck` | PASS（3 projects） |
 | `pnpm check`（Biome） | PASS |
 | `pnpm check:client-entries` | PASS |
-| `pnpm --filter @riebeckite/core test` | 563 pass |
+| `pnpm --filter @riebeckite/core test` | 565 pass（main統合後） |
 | `pnpm --filter @riebeckite/honox test` | 224 pass |
-| `@riebeckite/plugin-image-compare` | 14 pass |
+| `@riebeckite/plugin-image-compare` | 13 pass |
 | `@riebeckite/plugin-mermaid` | 17 pass |
 | `@riebeckite/diagram` | 8 pass |
-| `@riebeckite/ui` | 12 pass |
+| `@riebeckite/ui` | 13 pass |
 | `@riebeckite/plugin-lightbox` | 6 pass |
-| `pnpm test:runtime:site` | 10 pass（calculator、SPA unmount/remount、lightbox、text-fragment、chartjsチャンク、image-compare hydration、Excalidraw、flashcards、JSなし表示） |
+| `@riebeckite/plugin-code-tabs` | 2 pass |
+| `@riebeckite/plugin-d2` | 4 pass |
+| `pnpm test:runtime:site` | 11 pass（calculator、SPA unmount/remount、lightbox、text-fragment、code-tabs HAST、chartjsチャンク、image-compare初期化、Excalidraw、flashcards、JSなし表示） |
 | `pnpm check:docs` / `pnpm test:docs` | PASS（19） |
 | `pnpm check:changes` / `pnpm test:changelog` | PASS（13 / 9） |
 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS（117 / 117 acyclic） |
@@ -243,7 +245,7 @@
 | 性能への影響 | なし |
 | コミット | 本書を含むドキュメントコミット |
 | 完了状況 | `ui-and-assets` のEN/JAに、解決失敗時の診断、JSXとSSRの使い分け、外部レンダラー統合、presenceSelectorとClientLifecycleの条件を追記した |
-| 残存する問題 | PoCのみのAPIを公開APIとして記載しない（HAST Component APIは非公開であることを明記） |
+| 残存する問題 | なし（HASTはrehypeSanitize後のノードのみを対象とする） |
 
 ---
 
@@ -269,8 +271,9 @@
 | 2026-11-12 | `pnpm check:packages` / `check:dependencies` / `check:cycles` | PASS |
 | 2026-11-12 | `pnpm check:scaffold` / `test:security` / `check:build-packages` | PASS |
 | 2026-11-12 | `pnpm check:ci-selection` / `check:ci-browsers` / `check:ci-build-artifact` | PASS |
-| 2026-11-13 | 画像比較クライアントチャンク | 2,140 B（旧2,410 B + サーバー用render 20,193 B） |
+| 2026-11-13 | 画像比較クライアントチャンク | 1,137 B（main実装。サーバー用renderチャンクなし） |
 | 2026-11-13 | `pnpm test:e2e:external` | PASS（配布物、ScaffoldコンポーネントHydration、MDX増分ビルド） |
 | 2026-11-13 | `pnpm test:registry` | 224 pass（配布tarball経由のHonoXテスト） |
-| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0（1048ページ） |
-| 2026-11-13 | `pnpm test:runtime:site`（最終ビルド） | 10 pass |
+| 2026-11-13 | `pnpm --filter @riebeckite/web build` | exit 0（1050ページ） |
+| 2026-11-13 | `pnpm test:runtime:site`（最終ビルド） | 11 pass |
+| 2026-11-13 | `pnpm --filter @riebeckite/core test`（main統合後） | 565 pass |

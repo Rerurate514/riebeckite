@@ -3,7 +3,7 @@ import type {
   PostContent,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { resolveEntryDate, stripHtml, toIsoDate } from "@riebeckite/core";
+import { htmlToPlainText, resolveEntryDate, toIsoDate } from "@riebeckite/core";
 
 export function getDescription(
   post: Pick<PostContent, "frontmatter" | "html">,
@@ -16,7 +16,7 @@ export function getDescription(
     return frontmatterDescription.trim();
   }
 
-  return stripHtml(post.html).replace(/\s+/g, " ").trim().slice(0, 160);
+  return htmlToPlainText(post.html).slice(0, 160);
 }
 
 export function filterFeedEntries(

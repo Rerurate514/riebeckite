@@ -1,4 +1,4 @@
-import type { ContentManifestEntry } from "@riebeckite/core";
+import { type ContentManifestEntry, htmlToPlainText } from "@riebeckite/core";
 import type { HoverPreviewIndex } from "./types.js";
 
 type PreviewIndexSource = {
@@ -36,23 +36,4 @@ export function createExcerpt(html: string, length: number): string {
   return `${truncated}…`;
 }
 
-export function htmlToPlainText(html: string): string {
-  return decodeHtmlEntities(
-    html
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
-      .replace(/<[^>]+>/g, " "),
-  )
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function decodeHtmlEntities(value: string): string {
-  return value
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
+export { htmlToPlainText } from "@riebeckite/core";

@@ -7,8 +7,8 @@ import {
   type ContentLocalization,
   type ContentManifestEntry,
   type ContentQueryGroupBy,
+  htmlToPlainText,
   localizedPagePath,
-  stripHtml,
   toIsoDate,
 } from "@riebeckite/core";
 import { slugifyTaxonomyValue } from "./slug.js";
@@ -260,7 +260,7 @@ function getEntrySummary(entry: ContentManifestEntry): string {
   if (typeof description === "string" && description.trim() !== "") {
     return description.trim();
   }
-  return (entry.plainText ?? stripHtml(entry.html))
+  return (entry.plainText ?? htmlToPlainText(entry.html))
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 200);

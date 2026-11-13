@@ -89,6 +89,28 @@ test("excludes configured slug paths and descendants from explorer data", () => 
   assert.deepEqual(data.tags, [{ name: "guide", count: 1 }]);
 });
 
+test("explorer text decodes character references from rendered HTML", () => {
+  const entry = {
+    ...createEntry("guide/entities", []),
+    html: "<h2>&#x3C;aside></h2><p>A &#x3C;b> &amp; c</p>",
+  };
+  const data = getGardenExplorerData({
+    manifest: {
+      discoverableEntries: [entry],
+      graph: {
+        filterNeighbors: () => ({ outgoingSlugs: [], incomingSlugs: [] }),
+      },
+    } as never,
+    config: {} as never,
+    resolveTitle: (slug) => slug,
+    options: {},
+  });
+
+  assert.deepEqual(data.notes[0].headings, ["<aside>"]);
+  assert.equal(data.notes[0].body, "<aside> A <b> & c");
+  assert.equal(data.notes[0].excerpt, "<aside> A <b> & c");
+});
+
 test("excludes localized notes by logical slug rather than translation id", () => {
   const localized = (slug: string) => ({
     ...createEntry(slug, ["guide"]),

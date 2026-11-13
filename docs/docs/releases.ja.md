@@ -93,6 +93,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Initialize the table of contents from the document so the docs rail outside `#main-content` tracks scrolling again. The active state also rebinds after SPA navigation replaces the TOC region.
   Packages: `@riebeckite/plugin-toc`
 
+- Decode HTML character references consistently through the shared `htmlToPlainText` helper. Numeric references such as `&#x3C;` no longer appear as raw entity text in table of contents titles, hover preview excerpts, garden explorer headings and bodies, SEO descriptions, taxonomy summaries, or map attribution.
+  Packages: `@riebeckite/plugin-toc`, `@riebeckite/plugin-hover-preview`, `@riebeckite/plugin-garden-explorer`, `@riebeckite/plugin-seo`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-map`
+
 ### Security
 
 - Update Hono to 4.13.18 and `@hono/node-server` to 2.1.8 to remove advisories for mount and wildcard middleware bypasses, CSRF and validator bypasses, unescaped `css` helper output, unsafe WebSocket upgrade handling, and backslash path parsing.

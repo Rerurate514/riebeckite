@@ -53,11 +53,13 @@ test("strips inline markup and decodes HTML entities in titles", () => {
   const html = [
     '<h2 id="a">A <code>code</code> &amp; <em>emphasis</em></h2>',
     '<h3 id="b">&lt;tag&gt; &quot;quoted&quot; &#39;apostrophe&#39;</h3>',
+    '<h4 id="c">&#x3C;aside> &#60;div&#62;</h4>',
   ].join("");
 
   assert.deepEqual(extractTableOfContents(html), [
     { id: "a", level: 2, title: "A code & emphasis" },
     { id: "b", level: 3, title: "<tag> \"quoted\" 'apostrophe'" },
+    { id: "c", level: 4, title: "<aside> <div>" },
   ]);
 });
 

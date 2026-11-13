@@ -65,7 +65,11 @@ test("getDescription strips markup, collapses whitespace, and truncates", () => 
     getDescription(
       post({}, "<p>Hello <strong>world</strong> &amp; friends</p>"),
     ),
-    "Hello world &amp; friends",
+    "Hello world & friends",
+  );
+  assert.equal(
+    getDescription(post({}, "<p>A &#x3C;b> &amp; c</p>")),
+    "A <b> & c",
   );
 
   const long = getDescription(post({}, `<p>${"a".repeat(200)}</p>`));

@@ -3,7 +3,11 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { resolveEntryDate, selectLocalizedEntries } from "@riebeckite/core";
+import {
+  htmlToPlainText,
+  resolveEntryDate,
+  selectLocalizedEntries,
+} from "@riebeckite/core";
 import { buildGraphEdges } from "@riebeckite/core/client";
 import { buildGraphDocument } from "@riebeckite/graph";
 import type {
@@ -102,7 +106,7 @@ function toGardenNote(
     permalink: entry.permalink,
     title: resolveTitle(entry.slug, entry.frontmatter.title),
     headings: extractHeadings(entry.html),
-    body: toPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
+    body: htmlToPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
     excerpt: createExcerpt(entry),
     tags: entry.tags,
     date: resolveEntryDate(entry.frontmatter),
@@ -154,7 +158,7 @@ function createExcerpt(entry: ContentManifestEntry): string {
   const text =
     typeof description === "string" && description.trim()
       ? description.trim()
-      : toPlainText(entry.html);
+      : htmlToPlainText(entry.html);
 
   return text.slice(0, 180);
 }
@@ -164,26 +168,11 @@ function extractHeadings(html: string): string[] {
   const headingPattern = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/g;
 
   for (const match of html.matchAll(headingPattern)) {
-    const heading = toPlainText(match[2] ?? "");
+    const heading = htmlToPlainText(match[2] ?? "");
     if (heading) headings.push(heading);
   }
 
   return headings;
-}
-
-function toPlainText(html: string): string {
-  return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function clampInteger(value: number, min: number, max: number): number {

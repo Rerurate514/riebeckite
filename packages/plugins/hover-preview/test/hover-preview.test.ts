@@ -9,7 +9,7 @@ import {
   definePlugin,
   resolveConfig,
 } from "@riebeckite/core";
-import { hoverPreview } from "../index.ts";
+import { createExcerpt, hoverPreview } from "../index.ts";
 import { resolveHoverPreviewOptions } from "../src/options.ts";
 import { HOVER_PREVIEW_INDEX_PATH } from "../src/render.ts";
 import { createHoverPreviewRuntime } from "../src/runtime.ts";
@@ -76,6 +76,10 @@ function previewOutput(content: Awaited<ReturnType<typeof manifest>>) {
   ]);
   return output;
 }
+
+test("createExcerpt decodes character references from rendered HTML", () => {
+  assert.equal(createExcerpt("<p>A &#x3C;b> &amp; c</p>", 100), "A <b> & c");
+});
 
 test("emits one shared preview index and keeps only metadata in linked pages", async () => {
   const content = await manifest({

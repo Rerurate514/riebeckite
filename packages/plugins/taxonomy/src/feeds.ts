@@ -2,7 +2,7 @@ import type {
   ContentManifestEntry,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { resolveEntryDate, stripHtml, toIsoDate } from "@riebeckite/core";
+import { htmlToPlainText, resolveEntryDate, toIsoDate } from "@riebeckite/core";
 import type {
   TaxonomyFeedFormat,
   TaxonomyHeadTag,
@@ -165,7 +165,7 @@ function getDescription(entry: ContentManifestEntry): string {
   if (typeof description === "string" && description.trim() !== "") {
     return description.trim();
   }
-  return (entry.plainText ?? stripHtml(entry.html))
+  return (entry.plainText ?? htmlToPlainText(entry.html))
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 200);

@@ -68,6 +68,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `@riebeckite/plugin-backlinks`, `@riebeckite/plugin-breadcrumbs`, `@riebeckite/plugin-changelog`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-diff`, `@riebeckite/plugin-docs`, `@riebeckite/plugin-image-compare`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-related-posts`, `@riebeckite/plugin-series`, `@riebeckite/plugin-share`, `@riebeckite/plugin-webmention`
   Migration: Replace PluginComponent with PluginSiteComponent and definePluginComponent with defineMarkdownComponent. Rename the plugin manifest field components to markdownComponents, and hastComponents to hastTransforms. Replace PluginHastComponent with PluginHastTransform and defineHastComponent with defineHastTransform. HAST transforms no longer accept a client entry. The public names preparePluginComponent, PreparedPluginComponent, renderPluginComponents, renderHastComponents, replaceHastComponents, and finalizeDeferredPluginComponents are renamed to their Markdown/HAST-specific equivalents. The code-tabs export codeTabsHastComponent is now codeTabsTransform.
 
+- **Breaking:** Replace the positional `createClientEntry` signature with a single options object. Client entries can set `root: "document"` when their presence marker lives in the site shell, receive the matched marker as `context.marker`, and app-scoped conditional entries are re-evaluated after SPA navigation.
+  Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `@riebeckite/plugin-search`
+  Migration: Replace the positional createClientEntry arguments with an options object: createClientEntry(\"name\", { moduleSpecifier, exportName, publicConfig, scope, initializerArguments, presenceSelector, root, runtimeEntries }). Set root: \"document\" for a page entry whose presence marker is outside main#main-content.
+
 ### Fixed
 
 - Derived View results and content cache entries are now reused only when they survive a JSON round trip, so sparse arrays, negative zero, cyclic values, and dates inside frontmatter arrays no longer change when a cache hit is served. The Markdown sanitize fingerprint now distinguishes regular expressions in the schema, and the rename plugin ignores a corrupt persisted route lock instead of diffing against it.
@@ -87,6 +91,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - MDX content now produces correctly decoded plain text for search, excerpts, and headings, and the doctor no longer reports components imported by MDX as unused assets. Incremental SSG keeps navigation and recent-post projections reusable when only an MDX body changes, while still regenerating them when projected entries change. Link updates, provenance, source lookups, and the development inspector resolve non-Markdown content formats through the shared content format registry, and standalone SSG no longer loads its bundle twice when renderer chunks import it.
   Packages: `@riebeckite/core`, `@riebeckite/cli`, `@riebeckite/node`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/plugin-mdx`, `@riebeckite/plugin-search`
+
+- Load page-scoped client initializers when their presence marker exists anywhere in the document, so a search bar rendered in the site header outside `#main-content` mounts and opens its dialog again.
+  Packages: `@riebeckite/honox`
 
 - Initialize the table of contents from the document so the docs rail outside `#main-content` tracks scrolling again. The active state also rebinds after SPA navigation replaces the TOC region.
   Packages: `@riebeckite/plugin-toc`

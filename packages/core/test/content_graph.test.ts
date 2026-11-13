@@ -307,6 +307,50 @@ test("builds links and graph entries for non-Markdown content formats", async ()
   );
 });
 
+test("manifest resolves Markdown links relative to the source path", async () => {
+  const manager = new ContentManager(
+    memorySource({
+      "guides/source.md": [
+        "---",
+        "publish: true",
+        "---",
+        "",
+        "Read [Target](target.md) and [Deep](../notes/deep.md).",
+        "Also [Localized](target.ja.md).",
+        "",
+      ].join("\n"),
+      "guides/target.md": "---\npublish: true\n---\n\n# Target\n",
+      "notes/deep.md": "---\npublish: true\n---\n\n# Deep\n",
+      "guides/target.ja.md": "---\npublish: true\n---\n\nローカライズ\n",
+    }),
+  );
+  const manifest = await manager.getManifest();
+
+  assert.deepEqual(manifest.bySlug.get("guides/source")?.links, [
+    { raw: "target.md", slug: "guides/target", kind: "note", embed: false },
+    {
+      raw: "../notes/deep.md",
+      slug: "notes/deep",
+      kind: "note",
+      embed: false,
+    },
+    {
+      raw: "target.ja.md",
+      slug: "guides/target.ja",
+      kind: "note",
+      embed: false,
+    },
+  ]);
+  assert.deepEqual(manifest.graph.outgoingSlugs("guides/source"), [
+    "guides/target",
+    "notes/deep",
+    "guides/target.ja",
+  ]);
+  assert.deepEqual(manifest.bySlug.get("notes/deep")?.backlinks, [
+    "guides/source",
+  ]);
+});
+
 test("rejects content files with the same slug across formats", async () => {
   const manager = new ContentManager(
     memorySource({ "note.md": "# Markdown", "note.mdx": "# MDX" }),

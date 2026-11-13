@@ -79,7 +79,7 @@ function createGraphEntry(
     html: "",
     sourcePath: entry.path,
     tags: [],
-    links: extractContentLinks(markdown, contentIndex),
+    links: extractContentLinks(markdown, contentIndex, undefined, entry.path),
     backlinks: [],
     assets: [],
   };

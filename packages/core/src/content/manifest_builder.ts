@@ -29,11 +29,13 @@ export class ManifestBuilder {
     publishing: ResolvedPublishingState,
     sourceMetadata?: ContentSourceMetadata,
     contentIndexAmbiguities?: ReadonlyMap<string, readonly string[]>,
+    sourcePath?: string,
   ): ContentManifestEntry {
     const links = extractContentLinks(
       markdown,
       contentIndex,
       contentIndexAmbiguities,
+      sourcePath,
     );
     const assets = [
       ...links

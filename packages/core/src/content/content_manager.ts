@@ -592,6 +592,7 @@ export class ContentManager {
               publishing,
               entriesByPath.get(post.path)?.metadata,
               this.contentIndexAmbiguities,
+              post.path,
             );
           },
         );
@@ -718,6 +719,7 @@ export class ContentManager {
               ? entriesByPath.get(processed.sourcePath)?.metadata
               : undefined,
             this.contentIndexAmbiguities,
+            processed.sourcePath,
           );
         }),
     );

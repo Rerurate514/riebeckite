@@ -476,7 +476,11 @@ export class Pipeline {
     };
 
     if (embedDepth === 0 && sourceSlug && dependencyTracker) {
-      this.recordNoteLinkDependencies(markDownContent, dependencyTracker);
+      this.recordNoteLinkDependencies(
+        markDownContent,
+        dependencyTracker,
+        sourceSlug,
+      );
     }
 
     if (sourceSlug && dependencyTracker) {
@@ -588,8 +592,14 @@ export class Pipeline {
   private recordNoteLinkDependencies(
     markdown: string,
     dependencyTracker: ContentDependencyTracker,
+    sourcePath: string,
   ): void {
-    for (const link of extractContentLinks(markdown, this.contentIndex)) {
+    for (const link of extractContentLinks(
+      markdown,
+      this.contentIndex,
+      undefined,
+      sourcePath,
+    )) {
       if (link.slug !== null && link.kind === "note") {
         const id = `${LINK_LOCATION_PREFIX}${link.slug}`;
         dependencyTracker.recordLinkResolution(

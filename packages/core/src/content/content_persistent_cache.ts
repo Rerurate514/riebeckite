@@ -35,7 +35,7 @@ type PersistentContentCacheOptions = {
 
 const CONTENT_CACHE_NAMESPACE = "content";
 export const CONTENT_CACHE_SCHEMA_VERSION = 5;
-const CONTENT_CACHE_COMPATIBILITY_VERSION = 4;
+const CONTENT_CACHE_COMPATIBILITY_VERSION = 5;
 
 function hash(value: string): string {
   return crypto.createHash("sha256").update(value).digest("hex");

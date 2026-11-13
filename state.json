@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "b378f5c7-415a-4e04-b5b6-fc7b901ad4c7",
-    "publishedAt": "2026-11-13T07:34:09.248Z",
-    "publicationFingerprint": "fd46ea0d0ea6157605b697fdf2ce12bff3e41d489ba2b56b30840603af8135a2",
+    "runId": "361709df-faa1-473c-bbab-c7229dde7a00",
+    "publishedAt": "2026-11-13T10:34:27.326Z",
+    "publicationFingerprint": "0edd53b0ac861cd0dc49772c7c1878d6808d3fcf84b7ed62dc89be7a00a766cb",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3866,16 +3866,16 @@
         "permalink": "/docs/guides/spa-navigation",
         "title": "SPA Navigation",
         "visibility": "public",
-        "fingerprint": "690485bf54985f81b6e7dc1669367f43a7c70affda278b3c1d326b82a9be6e97",
-        "contentFingerprint": "e108af6633fc0041c0a057f8e25c9fcf990144cd2f3e3f6c9fdbe1aaa9dd260b"
+        "fingerprint": "fe76dcde42104eefc192eb8f53bac56ca9ff78d0c99e16b36c492905fbccc506",
+        "contentFingerprint": "ca8376f959647ef85facf4a8ee581905f8e76ac75200295c27bd21dfbdb61440"
       },
       {
         "slug": "docs/guides/spa-navigation.ja",
         "permalink": "/ja/docs/guides/spa-navigation",
         "title": "SPAナビゲーション",
         "visibility": "public",
-        "fingerprint": "09b59016379a9cbb1b96ca0ea875a2a1652e6896a859c729782c999b6a9e098e",
-        "contentFingerprint": "9fb079a78fa1736a1f14fda329586464e6c0dcb21c7ce2f7219fe36dc41cd190"
+        "fingerprint": "8909c87f76945b8685c26b865bf04ecafbcbd075961201bda2bb72a64f4a6220",
+        "contentFingerprint": "130a7dbecbc9ae990b9742599c80ff684d40169e92ac3c2acec75762448b5408"
       },
       {
         "slug": "docs/guides/upgrading",
@@ -4426,16 +4426,16 @@
         "permalink": "/docs/plugins/docs",
         "title": "Docs",
         "visibility": "public",
-        "fingerprint": "25e8fb2c431c3652b9fbe2782daa3b6e1d85dd5deb4c14c9c7925406faef7381",
-        "contentFingerprint": "a37ed04f059711ee5626b049e6cd7596fb5833eb25bcc3165cc6342869b79eed"
+        "fingerprint": "4effe3bb60ac7ce2919f9385c183732c1ef58874e23d8c0ce81f22cc433f76e6",
+        "contentFingerprint": "c75bc1eacce290b424965cb5f922f5e0de5354b86cfda35dd5ad24f0c3a70440"
       },
       {
         "slug": "docs/plugins/docs.ja",
         "permalink": "/ja/docs/plugins/docs",
         "title": "Docs",
         "visibility": "public",
-        "fingerprint": "2224f652b3d7d641cfeaf359b930629170ea0d061f64a3600b515e9cc305c230",
-        "contentFingerprint": "81fe68a1856e1c9f5adf7f45c090945d277e327a8350e9869c81024f4b568170"
+        "fingerprint": "aad7cba468766b566824d068bbee079a7987fc17d62b4cd01085d97fb2745b3d",
+        "contentFingerprint": "14e2d281a754b9f09ab6a669d9882f5d7f82416cb6cf201100f30b58afa27f06"
       },
       {
         "slug": "docs/plugins/excalibrain",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "f530456a7bb87d0c7e0c8cd416baf6067ef3d01d9b3c26e013258b92428e0a5d",
-        "contentFingerprint": "73d4534ccf34bb59a7ed882a8e9f3b6ee085943e9e503436cf5ff90f266e875c"
+        "fingerprint": "878b9da85cb3842dc65b9f22ad27b8da2c2d78578544e56d9c0e9f32675700ba",
+        "contentFingerprint": "412af7a1e46d27a343a058fa3524d66676cda3a30bb933b171483e325d81dfea"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "843695b0b0353c6fe254eaa12c3e9f82f21ab29a21e05e91ef0c5d110a582b16",
-        "contentFingerprint": "5fe6e45ed789d4745158dc593d948bdce431405148edfe711f8a32185396fe4e"
+        "fingerprint": "78f84b929e709acd2e42c21ef89f037d0eeeb27a52d04b7bfff173a2c7c3df8d",
+        "contentFingerprint": "61d6f875ea2aca5c82cd94a6e525ff1e7117f1600685fb7a3039b4de6e46a92e"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "f9d0b5f54a89c4ce627db3b7fbb7a682952ec3b930b4069f2702d58e14753ee9",
+    "artifactFingerprint": "4c054ca496a943f1e4627bf776cafa8dbab5d22c5d7550dca1965e468b9adee0",
     "provider": "cloudflare-workers"
   }
 }

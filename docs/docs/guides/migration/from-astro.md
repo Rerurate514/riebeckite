@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Astro
 private: true
-sidebar:
-  label: From Astro
+sidebar.label: From Astro
 ---
 # Migrate from Astro
 

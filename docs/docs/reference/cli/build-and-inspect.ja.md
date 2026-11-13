@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ビルドと検査
-sidebar:
-  label: ビルドと検査
-  order: 30
+sidebar.label: ビルドと検査
+sidebar.order: 30
 ---
 # ビルドと検査
 

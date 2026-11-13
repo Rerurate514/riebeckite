@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ビルド依存関係（Build Dependency）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ビルド依存関係（Build Dependency）

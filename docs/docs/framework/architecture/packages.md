@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Packages
-sidebar:
-  label: Packages
-  order: 10
+sidebar.label: Packages
+sidebar.order: 10
 ---
 # Packages
 

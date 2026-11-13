@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 基本の契約
-sidebar:
-  label: 基本の契約
-  order: 10
+sidebar.label: 基本の契約
+sidebar.order: 10
 ---
 # 基本の契約
 

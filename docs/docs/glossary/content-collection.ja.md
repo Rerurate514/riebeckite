@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツコレクション（Content Collection）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツコレクション（Content Collection）

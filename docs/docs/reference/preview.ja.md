@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: プレビュー API
-sidebar:
-  label: プレビュー API
-  order: 35
+sidebar.label: プレビュー API
+sidebar.order: 35
 ---
 # プレビュー API
 

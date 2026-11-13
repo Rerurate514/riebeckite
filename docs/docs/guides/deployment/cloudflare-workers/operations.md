@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Operations
-sidebar:
-  label: Operations
-  order: 20
+sidebar.label: Operations
+sidebar.order: 20
 ---
 # Operations
 

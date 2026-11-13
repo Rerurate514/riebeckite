@@ -1,8 +1,7 @@
 ---
 date: 2026-10-08
 title: 公開パッケージ
-sidebar:
-  label: 公開パッケージ
+sidebar.label: 公開パッケージ
 ---
 # 公開パッケージ
 

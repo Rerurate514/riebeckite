@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ガイド
-sidebar:
-  label: ガイド
-  order: 20
+sidebar.label: ガイド
+sidebar.order: 20
 ---
 # ガイド
 

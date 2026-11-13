@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Add an HTTP Endpoint"
-sidebar:
-  label: "9. Add an HTTP Endpoint"
-  order: 9
+sidebar.label: "9. Add an HTTP Endpoint"
+sidebar.order: 9
 ---
 # Add an HTTP Endpoint
 

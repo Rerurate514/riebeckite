@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: クイックスタート
-sidebar:
-  label: クイックスタート
-  order: 10
+sidebar.label: クイックスタート
+sidebar.order: 10
 ---
 # クイックスタート
 

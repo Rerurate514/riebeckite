@@ -44,28 +44,29 @@ subtree are left unchanged.
 ```yaml
 ---
 title: Installation
-sidebar:
-  label: Install
-  order: 2
-  hidden: false
-  collapsed: false
+sidebar.label: Install
+sidebar.order: 2
+sidebar.hidden: false
+sidebar.collapsed: false
 ---
 ```
 
-Supported sidebar metadata:
+Supported sidebar metadata (flat `sidebar.*` keys, so Obsidian shows each one as
+its own property instead of a JSON blob):
 
-- `label` — label shown in navigation. Falls back to `title`, then filename.
-- `order` — explicit deterministic order. Missing values sort after ordered
+- `sidebar.label` — label shown in navigation. Falls back to `title`, then filename.
+- `sidebar.order` — explicit deterministic order. Missing values sort after ordered
   items by title and path.
-- `hidden` — removes the page from sidebar and previous/next navigation.
-- `collapsed` — exposes collapsed state through `data-docs-collapsed` for theme
+- `sidebar.hidden` — removes the page from sidebar and previous/next navigation.
+- `sidebar.collapsed` — exposes collapsed state through `data-docs-collapsed` for theme
   or client enhancement.
 
-All fields are optional. A page without `sidebar` frontmatter still appears in
+All fields are optional. A page without `sidebar.*` keys still appears in
 the navigation: the hierarchy follows the folder structure, the label falls back
 to `title`, and the order is title-based. `sidebar` is a Riebeckite extension, so
 it lives with the content rather than in the site configuration. Add only the
-fields you want to override and leave the rest of the vault untouched.
+fields you want to override and leave the rest of the vault untouched. The
+nested `sidebar:` object form is also accepted for backward compatibility.
 
 ## Output and theme integration
 

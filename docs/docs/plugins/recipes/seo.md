@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Customize SEO"
-sidebar:
-  label: "10. Customize SEO"
-  order: 10
+sidebar.label: "10. Customize SEO"
+sidebar.order: 10
 ---
 # Customize SEO
 

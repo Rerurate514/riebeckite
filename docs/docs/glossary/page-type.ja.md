@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ページ種別（Page Type）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ページ種別（Page Type）

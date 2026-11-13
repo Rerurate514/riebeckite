@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: キャッシュとコマンド
-sidebar:
-  label: キャッシュとコマンド
-  order: 30
+sidebar.label: キャッシュとコマンド
+sidebar.order: 30
 ---
 # キャッシュとコマンド
 

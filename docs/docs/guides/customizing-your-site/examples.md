@@ -1,9 +1,8 @@
 ---
 date: 2026-11-08
 title: Examples
-sidebar:
-  label: Examples
-  order: 40
+sidebar.label: Examples
+sidebar.order: 40
 ---
 # Examples
 

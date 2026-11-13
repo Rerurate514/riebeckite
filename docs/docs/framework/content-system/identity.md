@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: IDs and URLs
-sidebar:
-  label: IDs and URLs
-  order: 20
+sidebar.label: IDs and URLs
+sidebar.order: 20
 ---
 # IDs and URLs
 

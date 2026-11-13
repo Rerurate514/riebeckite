@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: stylesheets（追加スタイルシート）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 # stylesheets（追加スタイルシート）
 

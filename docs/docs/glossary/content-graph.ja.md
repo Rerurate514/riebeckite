@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツグラフ（Content Graph）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツグラフ（Content Graph）

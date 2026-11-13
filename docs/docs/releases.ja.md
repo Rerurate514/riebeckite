@@ -1,8 +1,7 @@
 ---
 title: リリースノート
-sidebar:
-  label: リリースノート
-  order: 7
+sidebar.label: リリースノート
+sidebar.order: 7
 ---
 # リリースノート
 

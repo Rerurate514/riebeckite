@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 検出可能（Discoverable）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 検出可能（Discoverable）

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Site コンポーネントを配布する"
-sidebar:
-  label: "7. Site コンポーネントを配布する"
-  order: 7
+sidebar.label: "7. Site コンポーネントを配布する"
+sidebar.order: 7
 ---
 # Site コンポーネントを配布する
 

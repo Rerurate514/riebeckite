@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: データ来歴
-sidebar:
-  label: データ来歴
-  order: 10
+sidebar.label: データ来歴
+sidebar.order: 10
 ---
 # データ来歴
 

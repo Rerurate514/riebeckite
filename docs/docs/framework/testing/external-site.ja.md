@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: 外部サイトの E2E
-sidebar:
-  label: 外部サイトの E2E
-  order: 40
+sidebar.label: 外部サイトの E2E
+sidebar.order: 40
 ---
 # 外部サイトの E2E
 

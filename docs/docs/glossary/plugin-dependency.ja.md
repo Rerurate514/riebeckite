@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: プラグイン依存関係（Plugin Dependency）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # プラグイン依存関係（Plugin Dependency）

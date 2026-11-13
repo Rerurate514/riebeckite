@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Jekyll
 private: true
-sidebar:
-  label: From Jekyll
+sidebar.label: From Jekyll
 ---
 # Migrate from Jekyll
 

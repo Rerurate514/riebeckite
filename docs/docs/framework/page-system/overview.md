@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Overview
-sidebar:
-  label: Overview
-  order: 10
+sidebar.label: Overview
+sidebar.order: 10
 ---
 # Overview
 

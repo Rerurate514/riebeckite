@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Documentation
-sidebar:
-  label: Documentation
-  order: 0
+sidebar.label: Documentation
+sidebar.order: 0
 ---
 # Documentation
 

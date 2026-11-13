@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 公開
-sidebar:
-  label: 公開
-  order: 40
+sidebar.label: 公開
+sidebar.order: 40
 ---
 # 公開
 

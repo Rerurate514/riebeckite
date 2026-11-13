@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Pages and navigation
-sidebar:
-  label: Pages and navigation
-  order: 20
+sidebar.label: Pages and navigation
+sidebar.order: 20
 ---
 # Pages and navigation
 

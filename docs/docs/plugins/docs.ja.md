@@ -45,26 +45,26 @@ export default defineConfig({
 ```yaml
 ---
 title: Installation
-sidebar:
-  label: Install
-  order: 2
-  hidden: false
-  collapsed: false
+sidebar.label: Install
+sidebar.order: 2
+sidebar.hidden: false
+sidebar.collapsed: false
 ---
 ```
 
-対応するメタデータは次のとおりです。
+対応するメタデータは次のとおりです（`sidebar.*` のフラットなキーにすることで、
+Obsidian のプロパティパネルでもそれぞれ個別のプロパティとして表示されます）。
 
-- `label`: ナビゲーションに表示する名前。未指定なら `title`、さらに未指定ならファイル名。
-- `order`: 明示的な並び順。指定のない項目は、`order` を持つ項目の後に、タイトル、パスの順で並びます。
-- `hidden`: サイドバーと前後ページリンクから除外します。
-- `collapsed`: Theme やクライアント側の拡張で使えるよう、`data-docs-collapsed` として出力します。
+- `sidebar.label`: ナビゲーションに表示する名前。未指定なら `title`、さらに未指定ならファイル名。
+- `sidebar.order`: 明示的な並び順。指定のない項目は、`order` を持つ項目の後に、タイトル、パスの順で並びます。
+- `sidebar.hidden`: サイドバーと前後ページリンクから除外します。
+- `sidebar.collapsed`: Theme やクライアント側の拡張で使えるよう、`data-docs-collapsed` として出力します。
 
-これらのフィールドはすべて任意です。`sidebar` frontmatter のないページも
+これらのフィールドはすべて任意です。`sidebar.*` キーのないページも
 ナビゲーションに表示されます。階層はフォルダ構造に従い、ラベルは `title`、
 並び順はタイトル順になります。`sidebar` は Riebeckite 独自の拡張であり、サイト
 設定ではなくコンテンツ側に置きます。上書きしたいフィールドだけを指定し、それ
-以外は Vault に手を入れないでください。
+以外は Vault に手を入れないでください。後方互換のため、ネストした `sidebar:` オブジェクト形式も引き続き読み取ります。
 
 ## 出力と Theme の統合
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: First Content
-sidebar:
-  label: First Content
-  order: 30
+sidebar.label: First Content
+sidebar.order: 30
 ---
 # First Content
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: Initializers
-sidebar:
-  label: Initializers
-  order: 30
+sidebar.label: Initializers
+sidebar.order: 30
 ---
 # Initializers
 

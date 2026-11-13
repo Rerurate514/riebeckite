@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 安定した CSS フックとカスケード
-sidebar:
-  label: CSS フックとカスケード
-  order: 50
+sidebar.label: CSS フックとカスケード
+sidebar.order: 50
 ---
 # 安定した CSS フックとカスケード
 

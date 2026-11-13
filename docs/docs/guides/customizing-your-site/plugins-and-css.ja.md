@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: プラグインとCSS
-sidebar:
-  label: プラグインとCSS
-  order: 30
+sidebar.label: プラグインとCSS
+sidebar.order: 30
 ---
 # プラグインとCSS
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-08
 title: テーマ作成の詳細
-sidebar:
-  label: テーマ作成の詳細
+sidebar.label: テーマ作成の詳細
 ---
 # テーマ作成の詳細
 

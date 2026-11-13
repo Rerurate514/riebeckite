@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 埋め込み（Embed）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 埋め込み（Embed）

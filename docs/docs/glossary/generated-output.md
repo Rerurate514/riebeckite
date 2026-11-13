@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Generated Output
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Generated Output

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Add a Standalone Page"
-sidebar:
-  label: "6. Add a Standalone Page"
-  order: 6
+sidebar.label: "6. Add a Standalone Page"
+sidebar.order: 6
 ---
 # Add a Standalone Page
 

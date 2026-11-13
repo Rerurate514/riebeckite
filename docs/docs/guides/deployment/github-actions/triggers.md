@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Triggers
-sidebar:
-  label: Triggers
-  order: 20
+sidebar.label: Triggers
+sidebar.order: 20
 ---
 # Triggers
 

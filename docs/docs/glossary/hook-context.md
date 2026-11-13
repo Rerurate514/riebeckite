@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Hook context
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Hook context

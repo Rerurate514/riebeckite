@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 孤立ページ（Orphan）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 孤立ページ（Orphan）

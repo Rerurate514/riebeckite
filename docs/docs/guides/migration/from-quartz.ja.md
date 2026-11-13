@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Quartz から移行する
 private: true
-sidebar:
-  label: Quartz から
+sidebar.label: Quartz から
 ---
 # Quartz から移行する
 

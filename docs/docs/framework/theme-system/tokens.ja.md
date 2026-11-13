@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: デザイントークン
-sidebar:
-  label: デザイントークン
-  order: 30
+sidebar.label: デザイントークン
+sidebar.order: 30
 ---
 # デザイントークン
 

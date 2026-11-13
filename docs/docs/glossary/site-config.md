@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Site Config
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Site Config

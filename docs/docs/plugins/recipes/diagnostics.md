@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Report Diagnostics"
-sidebar:
-  label: "11. Report Diagnostics"
-  order: 11
+sidebar.label: "11. Report Diagnostics"
+sidebar.order: 11
 ---
 # Report Diagnostics
 

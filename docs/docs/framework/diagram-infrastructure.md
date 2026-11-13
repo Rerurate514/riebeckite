@@ -1,8 +1,7 @@
 ---
 date: 2026-10-23
 title: Diagram Plugin Infrastructure
-sidebar:
-  label: Diagram infrastructure
+sidebar.label: Diagram infrastructure
 ---
 
 # Diagram Plugin Infrastructure

@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: プロジェクト構成
-sidebar:
-  label: プロジェクト構成
-  order: 20
+sidebar.label: プロジェクト構成
+sidebar.order: 20
 ---
 # プロジェクト構成
 

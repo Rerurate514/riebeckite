@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: マニフェスト
-sidebar:
-  label: マニフェスト
-  order: 30
+sidebar.label: マニフェスト
+sidebar.order: 30
 ---
 # マニフェスト
 

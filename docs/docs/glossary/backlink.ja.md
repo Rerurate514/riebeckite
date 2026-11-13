@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: バックリンク（Backlink）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # バックリンク（Backlink）

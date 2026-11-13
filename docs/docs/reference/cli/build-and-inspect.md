@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Build and inspection
-sidebar:
-  label: Build and inspection
-  order: 30
+sidebar.label: Build and inspection
+sidebar.order: 30
 ---
 # Build and inspection
 

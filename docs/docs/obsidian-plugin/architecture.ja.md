@@ -1,9 +1,8 @@
 ---
 date: 2026-11-04
 title: プラグインのアーキテクチャ
-sidebar:
-  label: アーキテクチャ
-  order: 10
+sidebar.label: アーキテクチャ
+sidebar.order: 10
 publish: false
 ---
 # プラグインのアーキテクチャ

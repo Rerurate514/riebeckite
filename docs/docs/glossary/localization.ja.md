@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 多言語化（Localization）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 多言語化（Localization）

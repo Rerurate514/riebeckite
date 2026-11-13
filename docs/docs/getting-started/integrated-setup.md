@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: Integrated Setup
-sidebar:
-  label: Integrated Setup
-  order: 22
+sidebar.label: Integrated Setup
+sidebar.order: 22
 ---
 # Integrated Setup
 

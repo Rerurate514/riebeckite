@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Publication, cache, and SPA
-sidebar:
-  label: Publication, cache, and SPA
-  order: 30
+sidebar.label: Publication, cache, and SPA
+sidebar.order: 30
 ---
 # Publication, cache, and SPA
 

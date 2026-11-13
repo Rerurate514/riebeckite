@@ -1,10 +1,9 @@
 ---
 date: 2026-09-30
 title: Themes
-sidebar:
-  label: Themes
-  order: 50
-  collapsed: true
+sidebar.label: Themes
+sidebar.order: 50
+sidebar.collapsed: true
 ---
 
 # Themes

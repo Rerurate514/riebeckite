@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Add CSS and Browser Behavior"
-sidebar:
-  label: "8. Add CSS and Browser Behavior"
-  order: 8
+sidebar.label: "8. Add CSS and Browser Behavior"
+sidebar.order: 8
 ---
 # Add CSS and Browser Behavior
 

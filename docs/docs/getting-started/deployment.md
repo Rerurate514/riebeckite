@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Deployment
-sidebar:
-  label: Deployment
-  order: 50
+sidebar.label: Deployment
+sidebar.order: 50
 ---
 # Deployment
 

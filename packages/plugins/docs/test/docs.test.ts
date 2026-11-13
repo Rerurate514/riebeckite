@@ -206,6 +206,33 @@ test("reads sidebar metadata through the public content view", async () => {
   assert.doesNotMatch(sidebarHtml, /Hidden/);
 });
 
+test("reads flat sidebar.* frontmatter keys", async () => {
+  const manager = createManager({
+    "docs/index.md":
+      "---\ntitle: Home\npublish: true\nsidebar.order: 0\n---\n# Home\n",
+    "docs/second.md":
+      "---\ntitle: Second\npublish: true\nsidebar.label: Custom second\nsidebar.order: 2\n---\n# Second\n",
+    "docs/first.md":
+      "---\ntitle: First\npublish: true\nsidebar.order: 1\n---\n# First\n",
+    "docs/hidden.md":
+      "---\ntitle: Hidden\npublish: true\nsidebar.hidden: true\n---\n# Hidden\n",
+  });
+
+  const manifest = await manager.getManifest();
+  const view = createPublicContentView(manifest);
+  const navigation = await getDocsNavigation({
+    view,
+    entries: manifest.discoverableEntries,
+    entrySlug: "docs/index",
+    options: resolveDocsOptions({ root: "docs" }),
+  });
+
+  assert.deepEqual(
+    navigation.map((item) => item.title),
+    ["Home", "First", "Custom second"],
+  );
+});
+
 test("uses resolved public URLs for sidebar and previous-next", async () => {
   const manager = createManager({
     "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",

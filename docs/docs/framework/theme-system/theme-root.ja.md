@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: テーマルートと属性
-sidebar:
-  label: テーマルートと属性
-  order: 40
+sidebar.label: テーマルートと属性
+sidebar.order: 40
 ---
 # テーマルートと属性
 

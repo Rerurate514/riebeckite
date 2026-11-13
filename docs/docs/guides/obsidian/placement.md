@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Where to put the vault
-sidebar:
-  label: Where to put the vault
-  order: 20
+sidebar.label: Where to put the vault
+sidebar.order: 20
 ---
 # Where to put the vault
 

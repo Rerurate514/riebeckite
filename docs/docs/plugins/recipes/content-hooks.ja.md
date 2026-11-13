@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "コンテンツの各段階に処理を挟む"
-sidebar:
-  label: "3. コンテンツの各段階に処理を挟む"
-  order: 3
+sidebar.label: "3. コンテンツの各段階に処理を挟む"
+sidebar.order: 3
 ---
 # コンテンツの各段階に処理を挟む
 

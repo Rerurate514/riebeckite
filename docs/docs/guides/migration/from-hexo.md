@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Hexo
 private: true
-sidebar:
-  label: From Hexo
+sidebar.label: From Hexo
 ---
 # Migrate from Hexo
 

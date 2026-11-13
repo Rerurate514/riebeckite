@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: IDとURL
-sidebar:
-  label: IDとURL
-  order: 20
+sidebar.label: IDとURL
+sidebar.order: 20
 ---
 # IDとURL
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: タイポグラフィと記事レイアウト
-sidebar:
-  label: タイポグラフィと記事レイアウト
-  order: 20
+sidebar.label: タイポグラフィと記事レイアウト
+sidebar.order: 20
 ---
 # タイポグラフィと記事レイアウト
 

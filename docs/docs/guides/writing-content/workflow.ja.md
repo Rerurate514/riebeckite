@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ワークフロー
-sidebar:
-  label: ワークフロー
-  order: 30
+sidebar.label: ワークフロー
+sidebar.order: 30
 ---
 # ワークフロー
 

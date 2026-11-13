@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: マニフェスト（Manifest）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # マニフェスト（Manifest）

@@ -1,9 +1,8 @@
 ---
 date: 2026-11-06
 title: リポジトリ分離型セットアップ
-sidebar:
-  label: リポジトリ分離型セットアップ
-  order: 24
+sidebar.label: リポジトリ分離型セットアップ
+sidebar.order: 24
 ---
 # リポジトリ分離型セットアップ
 

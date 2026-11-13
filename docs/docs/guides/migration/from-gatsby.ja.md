@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Gatsby から移行する
 private: true
-sidebar:
-  label: Gatsby から
+sidebar.label: Gatsby から
 ---
 # Gatsby から移行する
 

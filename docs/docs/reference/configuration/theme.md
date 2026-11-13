@@ -1,9 +1,8 @@
 ---
 date: 2026-10-27
 title: Theme configuration
-sidebar:
-  label: Theme configuration
-  order: 70
+sidebar.label: Theme configuration
+sidebar.order: 70
 ---
 # Theme configuration
 

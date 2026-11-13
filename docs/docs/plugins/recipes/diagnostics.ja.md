@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "診断を返す"
-sidebar:
-  label: "11. 診断を返す"
-  order: 11
+sidebar.label: "11. 診断を返す"
+sidebar.order: 11
 ---
 # 診断を返す
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: セキュリティモデル
-sidebar:
-  label: Security
-  order: 80
+sidebar.label: Security
+sidebar.order: 80
 ---
 # セキュリティモデル
 

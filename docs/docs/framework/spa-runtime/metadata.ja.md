@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: ページ情報
-sidebar:
-  label: ページ情報
-  order: 20
+sidebar.label: ページ情報
+sidebar.order: 20
 ---
 # ページ情報
 

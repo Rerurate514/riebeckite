@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Layout
-sidebar:
-  label: Layout
-  order: 10
+sidebar.label: Layout
+sidebar.order: 10
 ---
 # Layout
 

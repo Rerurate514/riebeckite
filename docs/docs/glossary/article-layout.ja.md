@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 記事レイアウト（Article Layout）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 # 記事レイアウト（Article Layout）
 

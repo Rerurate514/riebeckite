@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Gatsby
 private: true
-sidebar:
-  label: From Gatsby
+sidebar.label: From Gatsby
 ---
 # Migrate from Gatsby
 

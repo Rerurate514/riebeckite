@@ -1,8 +1,7 @@
 ---
 date: 2026-10-08
 title: 設定
-sidebar:
-  label: 設定
+sidebar.label: 設定
 ---
 # 設定
 

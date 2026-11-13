@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Golden files
-sidebar:
-  label: Golden files
-  order: 30
+sidebar.label: Golden files
+sidebar.order: 30
 ---
 # Golden files
 

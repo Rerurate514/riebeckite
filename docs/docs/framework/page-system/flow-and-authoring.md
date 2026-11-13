@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Flow and authoring
-sidebar:
-  label: Flow and authoring
-  order: 20
+sidebar.label: Flow and authoring
+sidebar.order: 20
 ---
 # Flow and authoring
 

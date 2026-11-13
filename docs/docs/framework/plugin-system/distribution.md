@@ -4,9 +4,8 @@ title: Packaging and verification
 series: plugins-in-depth-en
 series_order: 3
 series_title: Plugins in Depth
-sidebar:
-  label: Packaging and verification
-  order: 30
+sidebar.label: Packaging and verification
+sidebar.order: 30
 ---
 
 This page is part of [Plugins in Depth](../plugin-system.md) and covers packaging and verification.

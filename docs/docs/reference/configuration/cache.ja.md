@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ビルドキャッシュ
-sidebar:
-  label: ビルドキャッシュ
-  order: 50
+sidebar.label: ビルドキャッシュ
+sidebar.order: 50
 ---
 # ビルドキャッシュ
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: トリガー
-sidebar:
-  label: トリガー
-  order: 20
+sidebar.label: トリガー
+sidebar.order: 20
 ---
 # トリガー
 

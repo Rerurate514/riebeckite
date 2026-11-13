@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: VitePress から移行する
 private: true
-sidebar:
-  label: VitePress から
+sidebar.label: VitePress から
 ---
 # VitePress から移行する
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 論理パス（Logical Path）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 論理パス（Logical Path）

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 出力依存関係（Output Dependency）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 出力依存関係（Output Dependency）

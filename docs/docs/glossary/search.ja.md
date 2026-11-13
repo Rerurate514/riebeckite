@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 検索（Search）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 検索（Search）

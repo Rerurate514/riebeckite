@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Repository split
-sidebar:
-  label: Repository split
-  order: 20
+sidebar.label: Repository split
+sidebar.order: 20
 ---
 # Repository split
 

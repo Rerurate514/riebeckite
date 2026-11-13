@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ナビゲーション（Navigation）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ナビゲーション（Navigation）

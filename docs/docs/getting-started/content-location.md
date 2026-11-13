@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: Content Location
-sidebar:
-  label: Content Location
-  order: 21
+sidebar.label: Content Location
+sidebar.order: 21
 ---
 # Content Location
 

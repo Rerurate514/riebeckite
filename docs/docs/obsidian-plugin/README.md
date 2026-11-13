@@ -1,9 +1,8 @@
 ---
 date: 2026-11-04
 title: Riebeckite for Obsidian
-sidebar:
-  label: Obsidian Plugin
-  order: 25
+sidebar.label: Obsidian Plugin
+sidebar.order: 25
 publish: false
 ---
 # Riebeckite for Obsidian

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-27
 title: テーマ設定
-sidebar:
-  label: テーマ設定
-  order: 70
+sidebar.label: テーマ設定
+sidebar.order: 70
 ---
 # テーマ設定
 

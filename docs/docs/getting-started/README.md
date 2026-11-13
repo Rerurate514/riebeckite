@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Getting Started
-sidebar:
-  label: Getting Started
-  order: 10
+sidebar.label: Getting Started
+sidebar.order: 10
 ---
 # Getting Started
 

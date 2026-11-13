@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: インストール
-sidebar:
-  label: インストール
-  order: 20
+sidebar.label: インストール
+sidebar.order: 20
 ---
 # インストール
 

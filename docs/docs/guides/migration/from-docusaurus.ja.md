@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Docusaurus から移行する
 private: true
-sidebar:
-  label: Docusaurus から
+sidebar.label: Docusaurus から
 ---
 # Docusaurus から移行する
 

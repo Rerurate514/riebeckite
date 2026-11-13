@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: カラーモード
-sidebar:
-  label: カラーモード
-  order: 10
+sidebar.label: カラーモード
+sidebar.order: 10
 ---
 # カラーモード
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-06
 title: Themes in Depth
-sidebar:
-  label: Themes in Depth
+sidebar.label: Themes in Depth
 ---
 
 # Themes in Depth

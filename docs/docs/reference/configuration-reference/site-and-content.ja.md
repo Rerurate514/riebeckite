@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: サイトとコンテンツ
-sidebar:
-  label: サイトとコンテンツ
-  order: 10
+sidebar.label: サイトとコンテンツ
+sidebar.order: 10
 ---
 # サイトとコンテンツ
 

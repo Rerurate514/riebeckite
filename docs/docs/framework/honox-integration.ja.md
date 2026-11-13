@@ -1,8 +1,7 @@
 ---
 date: 2026-10-08
 title: HonoX との統合
-sidebar:
-  label: HonoX との統合
+sidebar.label: HonoX との統合
 ---
 # HonoX との統合
 

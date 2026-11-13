@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Security model
-sidebar:
-  label: Security
-  order: 80
+sidebar.label: Security
+sidebar.order: 80
 ---
 # Security model
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: フルビルド（Full Build）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # フルビルド（Full Build）

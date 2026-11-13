@@ -1,9 +1,8 @@
 ---
 date: 2026-11-08
 title: 実例
-sidebar:
-  label: 実例
-  order: 40
+sidebar.label: 実例
+sidebar.order: 40
 ---
 # 実例
 

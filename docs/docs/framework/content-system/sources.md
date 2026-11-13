@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Sources and management
-sidebar:
-  label: Sources and management
-  order: 10
+sidebar.label: Sources and management
+sidebar.order: 10
 ---
 # Sources and management
 

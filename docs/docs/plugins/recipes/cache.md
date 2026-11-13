@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Cache Derived Data"
-sidebar:
-  label: "12. Cache Derived Data"
-  order: 12
+sidebar.label: "12. Cache Derived Data"
+sidebar.order: 12
 ---
 # Cache Derived Data
 

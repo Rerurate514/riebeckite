@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ページとナビゲーション
-sidebar:
-  label: ページとナビゲーション
-  order: 20
+sidebar.label: ページとナビゲーション
+sidebar.order: 20
 ---
 # ページとナビゲーション
 

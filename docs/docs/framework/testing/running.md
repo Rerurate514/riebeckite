@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Running
-sidebar:
-  label: Running
-  order: 10
+sidebar.label: Running
+sidebar.order: 10
 ---
 # Running
 

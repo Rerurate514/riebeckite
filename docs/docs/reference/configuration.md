@@ -1,8 +1,7 @@
 ---
 date: 2026-10-06
 title: Configuration
-sidebar:
-  label: Configuration
+sidebar.label: Configuration
 ---
 
 # Configuration

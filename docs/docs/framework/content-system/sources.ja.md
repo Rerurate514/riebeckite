@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ソースと管理
-sidebar:
-  label: ソースと管理
-  order: 10
+sidebar.label: ソースと管理
+sidebar.order: 10
 ---
 # ソースと管理
 

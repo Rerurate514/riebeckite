@@ -1,9 +1,8 @@
 ---
 date: 2026-11-04
 title: Plugin architecture
-sidebar:
-  label: Architecture
-  order: 10
+sidebar.label: Architecture
+sidebar.order: 10
 publish: false
 ---
 # Plugin architecture

@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Hugo
 private: true
-sidebar:
-  label: From Hugo
+sidebar.label: From Hugo
 ---
 # Migrate from Hugo
 

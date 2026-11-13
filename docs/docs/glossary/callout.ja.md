@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コールアウト（Callout）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コールアウト（Callout）

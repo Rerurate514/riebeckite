@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Permalink（正規の公開URL）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Permalink（正規の公開URL）

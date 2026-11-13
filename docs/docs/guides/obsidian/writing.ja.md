@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 記事の書き方
-sidebar:
-  label: 記事の書き方
-  order: 30
+sidebar.label: 記事の書き方
+sidebar.order: 30
 ---
 # 記事の書き方
 

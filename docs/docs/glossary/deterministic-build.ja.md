@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 決定論的ビルド（Deterministic Build）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 決定論的ビルド（Deterministic Build）

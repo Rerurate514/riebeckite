@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: サイトマップ（Sitemap）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # サイトマップ（Sitemap）

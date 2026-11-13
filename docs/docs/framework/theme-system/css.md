@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Stable CSS hooks and the cascade
-sidebar:
-  label: Stable CSS hooks and the cascade
-  order: 50
+sidebar.label: Stable CSS hooks and the cascade
+sidebar.order: 50
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers stable CSS hooks and the cascade.

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: サイトアプリケーションの責務
-sidebar:
-  label: サイトアプリケーションの責務
-  order: 20
+sidebar.label: サイトアプリケーションの責務
+sidebar.order: 20
 ---
 # サイトアプリケーションの責務
 

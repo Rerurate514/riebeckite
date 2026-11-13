@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Eleventy (11ty)
 private: true
-sidebar:
-  label: From Eleventy (11ty)
+sidebar.label: From Eleventy (11ty)
 ---
 # Migrate from Eleventy (11ty)
 

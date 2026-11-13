@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "ログとトレースを出す"
-sidebar:
-  label: "15. ログとトレースを出す"
-  order: 15
+sidebar.label: "15. ログとトレースを出す"
+sidebar.order: 15
 ---
 # ログとトレースを出す
 

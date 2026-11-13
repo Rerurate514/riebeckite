@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Cloudflare Worker
-sidebar:
-  label: Cloudflare Worker
-  order: 20
+sidebar.label: Cloudflare Worker
+sidebar.order: 20
 ---
 # Cloudflare Worker
 

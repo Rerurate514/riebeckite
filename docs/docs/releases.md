@@ -1,8 +1,7 @@
 ---
 title: Release Notes
-sidebar:
-  label: Release Notes
-  order: 7
+sidebar.label: Release Notes
+sidebar.order: 7
 ---
 # Release Notes
 

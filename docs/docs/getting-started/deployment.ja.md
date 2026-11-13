@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: デプロイ
-sidebar:
-  label: デプロイ
-  order: 50
+sidebar.label: デプロイ
+sidebar.order: 50
 ---
 # デプロイ
 

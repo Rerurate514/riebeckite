@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Theme root and attributes
-sidebar:
-  label: Theme root and attributes
-  order: 40
+sidebar.label: Theme root and attributes
+sidebar.order: 40
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers the theme root and theme attributes.

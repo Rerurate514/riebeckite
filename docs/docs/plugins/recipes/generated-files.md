@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Generate Files"
-sidebar:
-  label: "13. Generate Files"
-  order: 13
+sidebar.label: "13. Generate Files"
+sidebar.order: 13
 ---
 # Generate Files
 

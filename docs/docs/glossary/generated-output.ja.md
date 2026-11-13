@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 生成物（Generated Output）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 生成物（Generated Output）

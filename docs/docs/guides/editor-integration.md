@@ -1,8 +1,7 @@
 ---
 date: 2026-11-04
 title: Editor integration
-sidebar:
-  label: Editor integration
+sidebar.label: Editor integration
 ---
 # Editor integration
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 配布とパッケージ構成
-sidebar:
-  label: 配布とパッケージ構成
-  order: 40
+sidebar.label: 配布とパッケージ構成
+sidebar.order: 40
 ---
 # 配布とパッケージ構成
 

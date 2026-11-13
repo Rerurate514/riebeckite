@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Incremental builds
-sidebar:
-  label: Incremental builds
-  order: 20
+sidebar.label: Incremental builds
+sidebar.order: 20
 ---
 # Incremental builds
 

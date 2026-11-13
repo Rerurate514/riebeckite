@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: はじめに
-sidebar:
-  label: はじめに
-  order: 10
+sidebar.label: はじめに
+sidebar.order: 10
 ---
 # はじめに
 

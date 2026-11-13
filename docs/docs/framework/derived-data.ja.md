@@ -1,8 +1,7 @@
 ---
 date: 2026-10-31
 title: 派生データ
-sidebar:
-  label: 派生データ
+sidebar.label: 派生データ
 ---
 
 # 派生データ

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ドキュメント
-sidebar:
-  label: ドキュメント
-  order: 0
+sidebar.label: ドキュメント
+sidebar.order: 0
 ---
 # ドキュメント
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: クライアントエントリ（Client Entry）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # クライアントエントリ（Client Entry）

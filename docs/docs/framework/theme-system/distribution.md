@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Packaging and verification
-sidebar:
-  label: Packaging and verification
-  order: 60
+sidebar.label: Packaging and verification
+sidebar.order: 60
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers packaging and verification.

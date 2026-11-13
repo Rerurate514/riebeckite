@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Guides
-sidebar:
-  label: Guides
-  order: 20
+sidebar.label: Guides
+sidebar.order: 20
 ---
 # Guides
 

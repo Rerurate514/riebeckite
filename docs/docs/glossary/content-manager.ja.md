@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ContentManager（コンテンツマネージャー）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ContentManager（コンテンツマネージャー）

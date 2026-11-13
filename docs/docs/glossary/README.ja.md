@@ -1,9 +1,8 @@
 ---
 date: 2026-10-14
 title: 用語集
-sidebar:
-  label: 用語集
-  order: 70
+sidebar.label: 用語集
+sidebar.order: 70
 ---
 
 # 用語集

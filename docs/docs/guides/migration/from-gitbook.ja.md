@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: GitBook から移行する
 private: true
-sidebar:
-  label: GitBook から
+sidebar.label: GitBook から
 ---
 # GitBook から移行する
 

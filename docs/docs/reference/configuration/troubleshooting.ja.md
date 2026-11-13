@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 外部 Vault のトラブルシュート
-sidebar:
-  label: トラブルシュート
-  order: 80
+sidebar.label: トラブルシュート
+sidebar.order: 80
 ---
 # 外部 Vault のトラブルシュート
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: UIプリミティブ
-sidebar:
-  label: UIプリミティブ
-  order: 10
+sidebar.label: UIプリミティブ
+sidebar.order: 10
 ---
 # UIプリミティブ
 

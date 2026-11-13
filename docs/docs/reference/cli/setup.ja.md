@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: セットアップと作成
-sidebar:
-  label: セットアップと作成
-  order: 10
+sidebar.label: セットアップと作成
+sidebar.order: 10
 ---
 # セットアップと作成
 

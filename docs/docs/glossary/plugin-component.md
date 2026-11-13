@@ -1,8 +1,7 @@
 ---
 date: 2026-10-16
 title: Plugin site component
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Plugin site component

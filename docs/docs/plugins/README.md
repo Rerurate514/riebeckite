@@ -1,10 +1,9 @@
 ---
 date: 2026-10-06
 title: Plugins
-sidebar:
-  label: Plugins
-  order: 30
-  collapsed: true
+sidebar.label: Plugins
+sidebar.order: 30
+sidebar.collapsed: true
 ---
 # Plugins
 

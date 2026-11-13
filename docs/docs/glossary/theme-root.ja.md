@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: テーマルート（Theme Root）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # テーマルート（Theme Root）

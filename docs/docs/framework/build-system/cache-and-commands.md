@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Cache and commands
-sidebar:
-  label: Cache and commands
-  order: 30
+sidebar.label: Cache and commands
+sidebar.order: 30
 ---
 # Cache and commands
 

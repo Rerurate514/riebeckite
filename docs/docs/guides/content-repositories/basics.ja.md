@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 基本
-sidebar:
-  label: 基本
-  order: 10
+sidebar.label: 基本
+sidebar.order: 10
 ---
 # 基本
 

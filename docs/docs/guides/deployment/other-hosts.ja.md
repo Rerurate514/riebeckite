@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: Cloudflare 以外のホストに公開する
-sidebar:
-  label: Cloudflare 以外のホスト
-  order: 50
+sidebar.label: Cloudflare 以外のホスト
+sidebar.order: 50
 ---
 # Cloudflare 以外のホストに公開する
 

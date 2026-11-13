@@ -62,7 +62,7 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Endpoint](./endpoint.ja.md)：プラグインが宣言する、再利用可能な HTTP の振る舞い。
 - [Client entry](./client-entry.ja.md)：ブラウザで実行する初期化コードの宣言。
 - [Island](./island.ja.md)：サーバー描画の中に置く、ハイドレーション可能なコンポーネント。
-- [Plugin UI component](./plugin-component.ja.md)：プラグインが公開する Hono JSX コンポーネントと CSS。
+- [Plugin site component](./plugin-component.ja.md)：プラグインが公開する `PluginSiteComponent<Props>` の Hono JSX コンポーネントと CSS。
 - [Asset](./asset.ja.md)：`assets` 配列で宣言する、スタイルシートなどの静的リソース。
 - [Head tag](./head-tag.ja.md)：ページの `<head>` とメタデータ。インテグレーションが組み立てる。
 - [Diagnostics](./diagnostics.ja.md)：Core とプラグインが出す構造化された指摘。`doctor` と Development Inspector が集約する。

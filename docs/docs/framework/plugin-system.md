@@ -108,7 +108,7 @@ flowchart TD
     Q -->|"Diagnostics"| Diagnostics["addDiagnostics"]
 ```
 
-[[glossary/ui|UI]] and output have several extension points, and they are alternatives rather than a progression: Markdown/HTML transformation, renderers, Page Types, exported Hono JSX components, and client entries. To choose between them, see [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
+[[glossary/ui|UI]] and output have several extension points, and they are alternatives rather than a progression: Markdown/HTML transformation, renderers, Page Types, `PluginSiteComponent` exports, Markdown components, HAST transforms, and client entries. To choose between them, see [Providing UI or output](../plugins/writing-a-plugin.md#providing-ui-or-output).
 
 | Area | API |
 | --- | --- |
@@ -124,7 +124,8 @@ flowchart TD
 | Diagnostics | `addDiagnostics` |
 | Rendering inside content | `renderers` |
 | Standalone pages | `pageTypes` |
-| Markdown UI | `components` |
+| Markdown UI | `markdownComponents` |
+| Post-sanitize document transform | `hastTransforms` |
 | Browser integration | `assets`, `clientEntries` |
 | HTTP integration | `endpoints` |
 | SEO | `seo` |

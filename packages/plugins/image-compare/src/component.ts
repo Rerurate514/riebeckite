@@ -1,9 +1,9 @@
 import type {
   JsonValue,
-  PluginComponentResolveContext,
   PluginMarkdownComponent,
+  PluginMarkdownComponentResolveContext,
 } from "@riebeckite/core";
-import { definePluginComponent } from "@riebeckite/core";
+import { defineMarkdownComponent } from "@riebeckite/core";
 import { parseImageCompare } from "./parse.js";
 import { renderImageCompare, renderImageCompareError } from "./render.js";
 import type { ImageCompareOrientation } from "./types.js";
@@ -20,7 +20,7 @@ type ImageCompareProps = {
 };
 
 export const imageCompareComponent: PluginMarkdownComponent<ImageCompareProps> =
-  definePluginComponent<ImageCompareProps>({
+  defineMarkdownComponent<ImageCompareProps>({
     name: "ImageCompare",
     deferUntilManifest: true,
     parseProps(props: Record<string, JsonValue>): ImageCompareProps {
@@ -50,7 +50,7 @@ export const imageCompareComponent: PluginMarkdownComponent<ImageCompareProps> =
 
 function resolveImageCompare(
   props: ImageCompareProps,
-  context: PluginComponentResolveContext,
+  context: PluginMarkdownComponentResolveContext,
 ): ImageCompareProps {
   const parsed = parseImageCompare(props.source);
   if (parsed.ok === false) {
@@ -79,7 +79,7 @@ function resolveImageCompare(
 function fail(
   props: ImageCompareProps,
   reason: string,
-  context: PluginComponentResolveContext,
+  context: PluginMarkdownComponentResolveContext,
 ): ImageCompareProps {
   const slug = context.sourceSlug ?? "";
   const message = `Image comparison block in \`${slug}\` ${reason}`;

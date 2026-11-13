@@ -11,8 +11,8 @@
 | フェーズ | 状態 | 根拠 |
 | --- | --- | --- |
 | Phase 0: 読み込み条件 | PASS | 19のクライアントエントリへselectorを追加。グローバル4件は許可リスト化。`pnpm check:client-entries` がPASS |
-| Phase 1: コンポーネントprops解決 | PASS | `deferUntilManifest` がmanifestフック後にpropsを確定し、manifestとdiagnosticsを渡す。`image-compare` はdeferred component化 |
-| Phase 2: HASTコンポーネント | PASS | `code-tabs` が `CodeTabsGroup` でタブ構造を描画し、公式ブラウザテストで操作を確認 |
+| Phase 1: コンポーネントprops解決 | PASS | `deferUntilManifest` がmanifestフック後にpropsを確定し、manifestとdiagnosticsを渡す。`image-compare` はdeferred Markdownコンポーネント化 |
+| Phase 2: HAST変換 | PASS | `code-tabs` が `CodeTabsGroup` でタブ構造を描画し、公式ブラウザテストで操作を確認 |
 | Phase 3: アプリ配置 | PASS | `AppSlot` が `head`、`bodyStart`、`articleAfter`、`app` を提供。ウェブサイトは `bodyStart` を使い、既存ライフサイクルが1ページ1マウントを保証 |
 | Phase 4: 外部レンダラー共通化 | PASS | 全外部レンダラーが `renderPendingDiagrams` を使う。MermaidのブラウザテストもPASS |
 
@@ -28,15 +28,15 @@
 
 - `PluginMarkdownComponent` は `resolveProps(props, { sourceSlug, resolveAssetUrl, manifest, diagnostics })` を受け取れる。
 - `deferUntilManifest` はMarkdown処理時点では描画せず、base64でエンコードしたdeferredマーカーを出す。HTML属性エスケープでJSONが変形しないようにしている。
-- `finalizeDeferredPluginComponents` がmanifestフック後、`synchronizeHtml` 前にマーカーを解決し、コンポーネントを描画する。
-- コンポーネントが失敗した場合は `renderError` を使う。`image-compare` はアクセシブルなエラーブロックと `image-compare-invalid` 診断を維持する。
+- `finalizeDeferredMarkdownComponents` がmanifestフック後、`synchronizeHtml` 前にマーカーを解決し、コンポーネントを描画する。
+- Markdownコンポーネントが失敗した場合は `renderError` を使う。`image-compare` はアクセシブルなエラーブロックと `image-compare-invalid` 診断を維持する。
 - `image-compare` はdeferred `ImageCompare` コンポーネントに移行し、`onManifestCreated` のプレースホルダー置換を廃止した。range/pointer制御は残す。
 - coreテストでmanifestコンテキスト、diagnostics、deferred描画を確認する。image-compareのmanifestテストもPASSする。
 
 ## Phase 2
 
-- `packages/core/src/plugin_component_hast.ts` が `hastComponents` と `defineHastComponent` を提供する。
-- HASTコンポーネントはサニタイザーとプラグインRehypeプラグインの後に実行され、生成済みUIをサニタイズ済みノードとして扱える。
+- `packages/core/src/plugin_hast_transform.ts` が `hastTransforms` と `defineHastTransform` を提供する。
+- HAST変換はサニタイザーとプラグインRehypeプラグインの後に実行され、生成済みUIをサニタイズ済みノードとして扱える。クライアントエントリもハイドレーションも持たない。
 - `code-tabs` は `CodeTabs` を登録し、タブリスト、パネル、ARIA、ラベルを `CodeTabsGroup` とHono JSXで描画する。Rehypeはコードブロックのグループ化とデータ提供だけを担当する。
 - パッケージテストで2つのタブ付きフェンスから描画構造とコード内容を確認する。公式ブラウザテストでタブ切替とパネル表示を確認する。
 
@@ -59,7 +59,7 @@
 - プラグインディレクトリは85、`createClientEntry` を持つプラグインは32のまま。
 - `pnpm check:client-entries` がPASSし、グローバル以外のクライアントエントリはすべて読み込み条件を持つ。
 - mainの追加変更はcontent mutationとderived viewのみで、プラグインUIの変更はない。
-- 移行台帳は1 A、17 B、15 C、52 Dになった。`image-compare` はBのVERIFIED、`code-tabs` はHASTコンポーネント描画のためCからBへ移動した。
+- 移行台帳は1 A、17 B、15 C、52 Dになった。`image-compare` はBのVERIFIED、`code-tabs` はHAST変換による描画のためCからBへ移動した。
 - Bの記録は宣言的マークアップとブラウザ効果を分けて記録している。
 - アサーションの削除・弱体化はない。Mermaidのブラウザ期待値には共通の `data-diagram-status="rendered"` も追加した。Excalidrawのブラウザテストは意図的に非公開の `/assets/HW` ではなく公開ドキュメントの埋め込みを確認し、単独ページ描画はExcalidrawのページテストが保証する。
 

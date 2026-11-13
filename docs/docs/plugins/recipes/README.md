@@ -52,7 +52,7 @@ Each recipe defines its own factory. Put it in `extensions/` and register it ins
 | Change public URLs | `resolveContentLocations`, `extendContentLocations` | [4](./urls.md) |
 | Add links for the graph and backlinks | `extendContentGraph` | [5](./content-graph.md) |
 | Add a standalone page | `pageTypes` | [6](./pages.md) |
-| Share a UI component | package export | [7](./components.md) |
+| Share a Site Component | package export | [7](./components.md) |
 | Add CSS and browser behavior | `assets`, `clientEntries` | [8](./assets-and-client-entries.md) |
 | Expose JSON or another HTTP response | `endpoints` | [9](./endpoints.md) |
 | Change titles, feeds, or structured data | `seo` | [10](./seo.md) |

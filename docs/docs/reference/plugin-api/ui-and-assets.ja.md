@@ -7,9 +7,32 @@ sidebar:
 ---
 # UI・アセット・実行時連携
 
-## UIコンポーネント
+## 拡張機構
 
-プラグインは、ファクトリから `PluginComponent<Props>` と `PluginDataHelper<Input, Model>` をエクスポートできます。データヘルパーは `PublicContentView` のような狭い入力を受け取り、型付きのモデルを返します。コンポーネントは読み取り専用の型付き props を受け取り、描画結果を返します。サイトは自身の TSX でこれらのコンポーネントを組み合わせ、表示するかどうか、位置、頻度を決めます。
+Riebeckite は、Plugin が UI を追加したり描画結果を変えたりする方法を3つに分けています。
+
+| 特性 | Site | Markdown | HAST |
+| --- | --- | --- | --- |
+| サイトの TSX から配置 | はい | いいえ | いいえ |
+| Markdown フェンスまたは MDX から利用 | いいえ | はい | いいえ |
+| 文書 AST の変換 | いいえ | いいえ | はい |
+| SSR | JSX 描画 | HTML 生成 | AST 変換 |
+| クライアントエントリ | 実装次第 | 任意 | なし |
+| ハイドレーション | 実装次第 | 任意 | なし |
+
+処理順は次のとおりです。
+
+1. Markdown コンポーネントは Markdown AST の処理中、`remark-rehype` より前に描画されます。
+2. 生成された HTML は生 HTML の解析と Markdown サニタイザーを通ります。
+3. Plugin の Rehype 変換が実行されます。
+4. HAST 変換がサニタイズ済みのツリーに対して実行されます。
+5. テーブルのラップ、数式の描画、フォーマット、slug、HTML のシリアライズで文書が完成します。
+
+Site コンポーネントは、このパイプラインの外側でサイト自身の TSX が描画します。Markdown コンポーネントの出力は Markdown の一部としてサニタイズされ、HAST 変換の出力はサニタイズ後に挿入されるため、信頼済みの Plugin 出力として扱われます。HAST 変換で信頼できない文字列を挿入したり、サニタイザーを迂回したりしないでください。
+
+## Site コンポーネント
+
+プラグインは、ファクトリから `PluginSiteComponent<Props>` と `PluginDataHelper<Input, Model>` をエクスポートできます。データヘルパーは `PublicContentView` のような狭い入力を受け取り、型付きのモデルを返します。コンポーネントは読み取り専用の型付き props を受け取り、描画結果を返します。サイトは自身の TSX でこれらのコンポーネントを組み合わせ、表示するかどうか、位置、頻度を決めます。
 
 典型的なエクスポートの形は次のとおりです。
 
@@ -78,14 +101,14 @@ const backlinks = await getBacklinks({ view, slug });
 
 ## Markdown コンポーネント
 
-通常の Markdown から自己完結した UI を描画するプラグインには `components` を使います。コンポーネントは Markdown AST の処理中に描画され、対話型コンポーネントのブラウザモジュールは、そのコンポーネントを含むページでだけ読み込まれます。
+通常の Markdown から自己完結した UI を描画する Plugin には `markdownComponents` を使います。Markdown コンポーネントは文字列レンダラーです。`render` は HTML を返し、`parseProps` と `resolveProps` がコンテンツ由来の値を検証・解決します。Markdown AST の処理中に描画され、対話型コンポーネントのブラウザモジュールは、そのコンポーネントを含むページでだけ読み込まれます。
 
 ```tsx
-import { definePluginComponent } from "@riebeckite/core";
+import { defineMarkdownComponent } from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 
-components: [
-  definePluginComponent({
+markdownComponents: [
+  defineMarkdownComponent({
     name: "Counter",
     parseProps: (props) => ({ initial: Number(props.initial ?? 0) }),
     render: (props) => renderToString(<Counter {...props} />),
@@ -102,7 +125,7 @@ initial: 3
 ```
 ````
 
-props は YAML のマッピングでなければならず、JSON として安全にシリアライズできる公開データだけが使われます。コンポーネント名はプラグイン全体で一意にしてください。重複はプラグイン解決時に失敗します。静的コンポーネントでは `client` を省略します。対話型コンポーネントは既定 export の Hono JSX コンポーネント（または `exportName` で指定した export）を公開し、生成されたクライアントエントリが hydration します。イベント委譲、任意の DOM を管理するウィジェット、ページ全体の動作には引き続き `clientEntries` が適しています。
+props は YAML のマッピングでなければならず、JSON として安全にシリアライズできる公開データだけが使われます。Markdown コンポーネント名はその名前空間の中で一意にしてください。Markdown コンポーネント名の重複はプラグイン解決時に失敗します。HAST 変換は別の名前空間なので、同じ名前を使えます。静的コンポーネントでは `client` を省略します。対話型コンポーネントは既定 export の Hono JSX コンポーネント（または `exportName` で指定した export）を公開し、生成されたクライアントエントリが hydration します。イベント委譲、任意の DOM を管理するウィジェット、ページ全体の動作には引き続き `clientEntries` が適しています。
 
 フェンスは Markdown を HTML に変換する前の通常のコードブロックとして処理されるため、素の Markdown で動作し、MDX は不要です。MDX はページ全体で JSX が必要な場合の別のコンテンツ形式として残ります。このコンポーネントは HonoX の Island ではありません。HonoX は `app/islands` だけを走査し、Riebeckite の生成クライアントがコンポーネントのマーカーを見つけて、宣言されたモジュールを Vite 経由で読み込みます。HonoX がクライアントバンドルを出力できるようレンダラーで `__importing_islands = true` を維持し、`clientEntries` のモジュールと同じようにクライアントのビルド成果物をパッケージの manifest から公開してください。すべての Markdown を MDX にせず、フェンスの構文を小さく保つための選択です。
 
@@ -110,7 +133,13 @@ props は YAML のマッピングでなければならず、JSON として安全
 
 `resolveProps` は `parseProps` の後に `{ sourceSlug, resolveAssetUrl, manifest, diagnostics }` を受け取って実行されます。コンテンツからの相対パスに依存する props に使ってください。解決後の props もハイドレーション境界を越えるため、JSON 安全でなければなりません。`resolveAssetUrl` は未対応のパスや外部 URL では `null` を返すので、描画前に結果を検証してください。manifest の確定後に解決が必要な場合は `deferUntilManifest: true` を指定します。コンポーネントは manifest フック後に描画され、`diagnostics` と `renderError` を使ってアクセシブルなエラー状態を保てます。
 
-HAST 段階のコンポーネントは `defineHastComponent` と `hastComponents` を使います。生 HTML と Markdown のサニタイズ後、さらにプラグインの Rehype 変換後に実行されるため、`match` が見るのは信頼済みのノードだけです。`render` はシリアライズ済みのノードと、すでにサニタイズされた子 HTML を受け取ります。既存の文書構造を包む、グループ化する用途に使い、サニタイザーを迂回する目的では使わないでください。
+MDX ページは別のコンポーネント実装ではなく、同じ `markdownComponents` レジストリを使います。登録したコンポーネントは MDX レンダラーへ JSX コンポーネントとして渡されます。
+
+```mdx
+<Counter initial={3} />
+```
+
+`mdx({ components })` で同じ名前のコンポーネントを渡した場合、そのページでは Plugin の Markdown コンポーネントより優先されます。props はハイドレーション境界を越えるため JSON 安全でなければなりません。内容は JSX の children ではなく、明示的な文字列 prop で渡してください。`parseProps` による検証は同じように働き、ハイドレートされるのは対話型コンポーネントだけです。MDX はコンポーネントを直接描画するため、`render` の出力は信頼済みの Plugin コードとして扱われ、Markdown サニタイザーを通りません。信頼できない内容は props に置き、コンポーネント側でエスケープしてください。
 
 ### JSX と SSR の使い分け
 
@@ -120,19 +149,31 @@ HAST 段階のコンポーネントは `defineHastComponent` と `hastComponents
 
 外部レンダラーのライフサイクルは `@riebeckite/diagram/client` の `renderPendingDiagrams` に集約します。共通ラッパーは pending の figure を探し、`aria-busy` と `data-diagram-status` を `rendered` / `error` に更新し、SSR フォールバックを開き、`signal` で中断し、`isConnected` で切り離された DOM を無視し、unmount 時にインスタンスを破棄する cleanup を返します。ライブラリは遅延 import して独自チャンクを維持し、各 `await` の後に `signal.aborted` を確認し、Canvas / SVG / DOM の描画はライブラリに任せてください。Mermaid、Graphviz、Chart.js はこの契約に従っています。ライフサイクルが実質的に異なるレンダラーは独自の初期化を維持してかまいません。
 
+## HAST 変換
+
+`defineHastTransform` と `hastTransforms` を使うと、サニタイズ済みの HTML ノードを変換できます。HAST 変換は UI コンポーネントではありません。`client` エントリを持たず、ハイドレーションもせず、ブラウザ側の状態も所有しません。
+
+```ts
+import { defineHastTransform } from "@riebeckite/core";
+
+hastTransforms: [
+  defineHastTransform({
+    name: "WrapSection",
+    match: (node) => node.tagName === "section",
+    render: ({ children }) => `<div class="rr-section">${children}</div>`,
+  }),
+];
+```
+
+生 HTML と Markdown のサニタイズ後、さらに Plugin の Rehype 変換後に実行されるため、`match` が見るのは信頼済みのノードだけです。`render` はシリアライズ済みのノードと、すでにサニタイズされた子 HTML を受け取ります。返した HTML は再度サニタイザーを通さずに挿入されます。サニタイズ済みツリー由来でない値は必ずエスケープし、frontmatter、props、その他の信頼できない入力を変換で注入しないでください。
+
+Markdown コンポーネントと HAST 変換は併用できます。Markdown コンポーネントが先に HTML を生成し、文書が解析・サニタイズされた後、HAST 変換が結果のノードを包んだりグループ化したりします。Markdown コンポーネントを HAST 変換の中で実行することはできず、HAST 変換からクライアントエントリを登録することもできません。3つの機構の選び方は[プラグインを書く](../../plugins/writing-a-plugin.ja.md#ui-や出力を追加する方法)を参照してください。
+
 ## オーバーレイホスト
 
 テーマは `@riebeckite/ui/overlay` の `<OverlayHost name="…" />` で、クライアント用オーバーレイの SSR ホストを用意できます。クライアントの初期化処理は `findOverlayHost(name)` でホストを探し、テーマが用意していない場合は自前でホストを作ってかまいません。オーバーレイ名ごとにホストを1つにし、クライアントエントリの終了時はコンポーネントだけをアンマウントして、アプリが持つホストは残してください。
 
 アプリ全体の配置には同じモジュールの `<AppSlot name="bodyStart" />` を使います。名前は `head`、`bodyStart`、`articleAfter`、`app` で、必要なら `as` でセマンティック要素を選べます。クライアントからは `findAppSlot(name)` で配置を解決できます。スロットのマークアップはテーマやサイトのレンダラーに置き、プラグインコンテンツ内へページ固有のラッパーを増やさないでください。
-
-MDX ページは別のコンポーネント実装ではなく、同じレジストリを使います。登録したコンポーネントは MDX レンダラーへ JSX コンポーネントとして渡されます。
-
-```mdx
-<Counter initial={3} />
-```
-
-`mdx({ components })` で同じ名前のコンポーネントを渡した場合、そのページではプラグインコンポーネントより優先されます。props はハイドレーション境界を越えるため JSON 安全でなければなりません。内容は JSX の children ではなく、明示的な文字列 prop で渡してください。`parseProps` による検証は同じように働き、ハイドレートされるのは対話型コンポーネントだけです。MDX はコンポーネントを直接描画するため、`render` の出力は信頼済みのプラグインコードとして扱われ、Markdown サニタイザーを通りません。信頼できない内容は props に置き、コンポーネント側でエスケープしてください。
 
 ## アセット
 

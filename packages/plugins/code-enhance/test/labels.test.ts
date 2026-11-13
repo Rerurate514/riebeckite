@@ -15,7 +15,7 @@ test("codeEnhance forwards copy label overrides to the client entry", () => {
 });
 
 test("codeEnhance registers an interactive JSX copy component", () => {
-  const component = codeEnhance().components?.[0];
+  const component = codeEnhance().markdownComponents?.[0];
   assert.equal(component?.name, "CodeCopy");
   assert.equal(
     component?.client?.moduleSpecifier,

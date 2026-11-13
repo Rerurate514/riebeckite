@@ -9,7 +9,7 @@ import {
   type DerivedViewInspection,
   PluginRuntime,
 } from "../plugin/plugin_runtime.js";
-import { finalizeDeferredPluginComponents } from "../plugin_component_deferred.js";
+import { finalizeDeferredMarkdownComponents } from "../plugin_component_deferred.js";
 import {
   type BuildProvenance,
   createBuildProvenance,
@@ -770,9 +770,9 @@ export class ContentManager {
       this.getPipelineFingerprint(),
     );
     const deferredDiagnostics: Diagnostic[] = [];
-    await finalizeDeferredPluginComponents(
+    await finalizeDeferredMarkdownComponents(
       manifest,
-      this.pluginRuntime.getComponents(),
+      this.pluginRuntime.getMarkdownComponents(),
       deferredDiagnostics,
     );
     this.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);

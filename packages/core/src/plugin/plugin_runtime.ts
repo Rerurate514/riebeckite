@@ -208,12 +208,12 @@ export class PluginRuntime {
     return getResolvedPluginMetadata(this.plugins());
   }
 
-  getComponents() {
-    return this.plugins().flatMap((plugin) => plugin.components ?? []);
+  getMarkdownComponents() {
+    return this.plugins().flatMap((plugin) => plugin.markdownComponents ?? []);
   }
 
-  getHastComponents() {
-    return this.plugins().flatMap((plugin) => plugin.hastComponents ?? []);
+  getHastTransforms() {
+    return this.plugins().flatMap((plugin) => plugin.hastTransforms ?? []);
   }
 
   getPluginInventory(): readonly ResolvedPluginMetadata[] {

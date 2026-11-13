@@ -745,14 +745,17 @@ UI や出力を追加したい
 ├─ 独立したページを追加する
 │    └─ pageTypes
 │
-├─ Markdown から対話 UI を描画する
-│    └─ components
+├─ コンテンツ作者が Markdown / MDX に置く UI を描画する
+│    └─ markdownComponents
+│
+├─ サニタイズ済みの文書ツリーを変換する
+│    └─ hastTransforms
 │
 ├─ 記事レイアウトに自動で表示する
-│    └─ データヘルパー + JSX コンポーネント
+│    └─ データヘルパー + PluginSiteComponent
 │
 ├─ サイト作者に配置を任せる
-│    └─ Hono JSX コンポーネントをエクスポート
+│    └─ PluginSiteComponent をエクスポート
 │
 └─ ブラウザ側で強化する
      └─ clientEntries（必要ならサイト所有の Island）
@@ -770,11 +773,11 @@ const backlinks = await getBacklinks({ view, slug: entry.slug });
 return <Backlinks backlinks={backlinks} />;
 ```
 
-ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [UI コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#uiコンポーネント) を参照してください。
+ヘルパーは絞り込まれた `PublicContentView` を読むため、公開境界が許すコンテンツだけを表示できます。コンポーネントは表示するものがないとき `null` を返すので、サイト側は無条件に描画できます。ヘルパーとコンポーネントの取り決めは [Site コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#site-コンポーネント) を参照してください。
 
-### Hono JSX コンポーネントで手動配置する
+### PluginSiteComponent で手動配置する
 
-UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートします。ほかのコンポーネントと同じように import して組み合わせます。これは Markdown から描画する UI をプラグインに登録する `components` とは別の仕組みで、サイト側が自分のページやレイアウトにインスタンスを配置できます。
+UI の置き場所をサイト作者に任せたい場合は、通常の Hono JSX コンポーネントをエクスポートし、`PluginSiteComponent<Props>` として型を付けます。ほかのコンポーネントと同じように import して組み合わせます。これは Markdown から描画する UI をプラグインに登録する `markdownComponents` とは別の仕組みで、サイト側が自分のページやレイアウトにインスタンスを配置できます。
 
 パッケージの `exports` に `./components` サブパスを宣言し、コンポーネントモジュールの default export を維持します。必要なら同じコンポーネントをパッケージのルートから名前付きでも再エクスポートします。既存のプラグインはこの形に従っています。
 
@@ -789,13 +792,15 @@ import BacklinksDefault from "@riebeckite/plugin-backlinks/components";
 
 ### コンポーネントと素の HTML のどちらにするか
 
-判断の分かれ目は**誰が配置するか**です。JSX コンポーネントなら、サイト側が props、順序、位置を自分のコンポーネントツリーの中で選べます。プラグインがすでに HTML を生成している場合（HAST 変換など）は、代わりに小さな文字列レンダラーをエクスポートし、サイト側から呼んでもらうこともできます。どちらの場合も、プラグインが manifest のエントリへマークアップを注入することはありません。何をどこに描画するかはサイト側が決めます。
+判断の分かれ目は**誰が配置するか**です。`PluginSiteComponent` なら、サイト側が props、順序、位置を自分の JSX ツリーの中で選べます。プラグインがすでに HTML を生成している場合は、代わりに小さな文字列レンダラーをエクスポートし、サイト側から呼んでもらうこともできます。HAST 変換は配置の仕組みではありません。サニタイズ済みの文書ノードを変換し、その出力はサイト側が選ぶのではなく記事 HTML に挿入されます。どちらの場合も、プラグインが manifest のエントリへマークアップを注入することはありません。何をどこに描画するかはサイト側が決めます。
 
 `backlinks` と `local-graph` はコンポーネントとデータヘルパーの両方をエクスポートします。リファレンスサイトは記事レイアウトでこれらを組み合わせています。よくあるパターンであり、必須ではありません。
 
+Markdown コンポーネントと HAST 変換は併用できます。Markdown コンポーネントがフェンスや MDX からサニタイズ済みの HTML を生成し、HAST 変換が後から結果のノードをまとめます。両者の契約は分けたままにしてください。Markdown コンポーネントはコンテンツと props を所有し、HAST 変換はサニタイズ後の文書構造だけを所有して、クライアントエントリを持ちません。
+
 ### ブラウザ側の強化と Island
 
-プラグインは `app/islands/` を所有しません。ブラウザ側の動作には、コンテンツ作者が Markdown フェンスで配置する自己完結した UI ならクライアントモジュール付きの `components` を宣言し、任意のサーバー描画 DOM を強化するなら `clientEntries` の初期化関数を提供します。サイト側がエクスポート済みのプラグインコンポーネントを自分の HonoX Island で包むこともできます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [Markdown コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#markdown-コンポーネント) と [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
+プラグインは `app/islands/` を所有しません。ブラウザ側の動作には、コンテンツ作者が Markdown フェンスで配置する自己完結した UI ならクライアントモジュール付きの `markdownComponents` を宣言し、任意のサーバー描画 DOM を強化するなら `clientEntries` の初期化関数を提供します。サイト側がエクスポート済みのプラグインコンポーネントを自分の HonoX Island で包むこともできます。`garden-explorer` は Page Type とクライアントエントリを組み合わせた特殊な例であり、必須のパターンとして一般化しないでください。詳しくは [Markdown コンポーネント](../reference/plugin-api/ui-and-assets.ja.md#markdown-コンポーネント) と [クライアントエントリ](../reference/plugin-api/ui-and-assets.ja.md#クライアントエントリ) を参照してください。
 
 ## 関連資料
 

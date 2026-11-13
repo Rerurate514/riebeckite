@@ -76,19 +76,19 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 ---
 
-## Phase 1 — Resolved Plugin Component Props
+## Phase 1 — Resolved Markdown Component Props
 
 | Item | Detail |
 | --- | --- |
 | Status | COMPLETE |
-| Targets | `PluginComponentResolveContext` and `resolveProps` (added on the base branch), `image-compare` reference implementation |
+| Targets | `PluginMarkdownComponentResolveContext` and `resolveProps` (added on the base branch), `image-compare` reference implementation |
 | Constraint | Component `render` ran before asset URLs were known, so props could not be resolved asynchronously |
 | Packages | `packages/core`, `packages/plugins/image-compare` |
 | API changes | `resolveProps(props, context)` (`context.sourceSlug`, `context.resolveAssetUrl`, `manifest`, `diagnostics`), `deferUntilManifest`, `renderError`; resolved props are shared by SSR and hydration and serialized as JSON-safe data |
 | Tests | `packages/core/test/plugin_component.test.ts` (2), `packages/plugins/image-compare/test/*` (14), hydration and SPA checks in `tests/interactive-runtime/official.test.ts` |
 | Performance | Server-only rendering modules are separated from the client module, so the client chunk no longer pulls the server render chunk |
 | Commit | `5a08dd5e`, main integration `8698fcd4` |
-| State | Adopted the main implementation (`deferUntilManifest` and `diagnostics` after the manifest, `renderError`, SSR plus a small behavior controller). image-compare renders as a Plugin Component and asset URLs resolve after the manifest. Real-browser range interaction and re-initialization after back/forward were verified |
+| State | Adopted the main implementation (`deferUntilManifest` and `diagnostics` after the manifest, `renderError`, SSR plus a small behavior controller). image-compare renders as a Markdown component from `component.ts`, while `init.ts` owns pointer capture, range synchronization, and the CSS custom property. Asset URLs resolve after the manifest. Real-browser range interaction and re-initialization after back/forward were verified |
 | Residual issues | None |
 
 ### Design
@@ -103,7 +103,7 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 - Authoring syntax stays ```` ```image-compare ````; remark normalizes it to `riebeckite-component` with `ImageCompare`
 - SSR: `figure.rr-image-compare`, static fallback, Before/After layers, range input, divider
-- Declarative state: the comparison position lives in `useState` and is reflected through a CSS custom property
+- Declarative state: `component.ts` renders the static SSR markup; `init.ts` keeps the comparison position in the `--rr-image-compare-position` CSS custom property
 - Imperative code kept: pointer capture, `getBoundingClientRect` measurement, range synchronization, focus
 - Errors: `rr-image-compare--error`, `role=status`, and the `data-image-compare-error` marker
 
@@ -138,25 +138,25 @@ This ledger lets a compressed or interrupted session resume from the file and th
 
 ---
 
-## Phase 3 — HAST Component / Children API
+## Phase 3 — HAST Transform / Children API
 
 | Item | Detail |
 | --- | --- |
 | Status | COMPLETE |
-| Targets | `hastComponents` / `defineHastComponent`, `PluginHastNode`, and the Code Tabs HAST component |
+| Targets | `hastTransforms` / `defineHastTransform`, `PluginHastNode`, and the Code Tabs HAST transform |
 | Constraint | Treat arbitrary Markdown AST nodes as components and pass children |
 | Packages | `packages/core`, `packages/plugins/code-tabs` |
-| API changes | `hastComponents`, `defineHastComponent`, `PluginHastComponent` (`match` plus `render({ node, html, children })`) |
+| API changes | `hastTransforms`, `defineHastTransform`, `PluginHastTransform` (`match` plus `render({ node, html, children })`) |
 | Tests | `packages/core/test/plugin_component.test.ts`, `packages/plugins/code-tabs/test/*` |
 | Performance | Sanitized HTML is passed through; the Code Tabs behavior controller is kept |
 | Commit | `77d76999` (removal), superseded by main commit `8698fcd4` |
-| State | Adopted from main: the rehype-produced `.rr-code-tabs` group is received by a HAST component, and the sanitized children are rendered with JSX |
+| State | Adopted from main: the rehype-produced `.rr-code-tabs` group is received by a HAST transform, and the sanitized children are rendered with JSX |
 | Residual issues | None |
 
 ### Rationale
 
 - On this branch, matching a single node could not express the Code Tabs sibling grouping, and the proof of concept never emitted `client` output, so the public API was withdrawn
-- Main instead placed a HAST component on the group element produced by rehype and passed the sanitized `html` and `children`; the component works inside the existing sanitizer boundary and Code Tabs is a real consumer
+- Main instead placed a HAST transform on the group element produced by rehype and passed the sanitized `html` and `children`; the transform works inside the existing sanitizer boundary and Code Tabs is a real consumer
 - Phase 3 is therefore COMPLETE rather than SKIPPED, and the API is documented publicly (HAST is only consumed after sanitization)
 
 ---

@@ -1,4 +1,4 @@
-import { type PluginComponent, resolvePlugins } from "@riebeckite/core";
+import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { createPostDiffApi } from "../src/api.js";
 import type {
@@ -40,7 +40,7 @@ const PostDiff = (({ diff, title = "History" }: Readonly<PostDiffProps>) => {
       </pre>
     </section>
   );
-}) satisfies PluginComponent<PostDiffProps>;
+}) satisfies PluginSiteComponent<PostDiffProps>;
 
 export default PostDiff;
 

@@ -76,19 +76,19 @@
 
 ---
 
-## Phase 1 — Resolved Plugin Component Props
+## Phase 1 — Resolved Markdown Component Props
 
 | 項目 | 内容 |
 | --- | --- |
 | ステータス | COMPLETE |
-| 実装対象 | `PluginComponentResolveContext` と `resolveProps`（起点ブランチで追加済み）、`image-compare` の参照実装 |
+| 実装対象 | `PluginMarkdownComponentResolveContext` と `resolveProps`（起点ブランチで追加済み）、`image-compare` の参照実装 |
 | 解決する制約 | Componentの `render` がアセットURL確定前に実行され、非同期のprops解決ができない |
 | 影響パッケージ | `packages/core`、`packages/plugins/image-compare` |
 | API変更 | `resolveProps(props, context)`（`context.sourceSlug`、`context.resolveAssetUrl`、`manifest`、`diagnostics`）、`deferUntilManifest`、`renderError`。解決後のpropsをSSRとHydrationで共有し、JSON-safeにシリアライズする |
 | テスト | `packages/core/test/plugin_component.test.ts`（2）、`packages/plugins/image-compare/test/*`（14）、`tests/interactive-runtime/official.test.ts` のHydration・SPA検証 |
 | 性能への影響 | サーバー描画専用モジュールとクライアントモジュールを分離し、client chunkからサーバー用render chunkを除外 |
 | コミット | `5a08dd5e`、mainの統合コミット`8698fcd4` |
-| 完了状況 | main側の実装（manifest後の`deferUntilManifest`と`diagnostics`、`renderError`、SSR+軽量Behavior）を採用。image-compareはPlugin Componentとして描画され、資産URLはmanifest確定後に解決される。実ブラウザでrange操作と戻る/進む後の再初期化を確認 |
+| 完了状況 | main側の実装（manifest後の`deferUntilManifest`と`diagnostics`、`renderError`、SSR+軽量Behavior）を採用。image-compareは`component.ts`のMarkdownコンポーネントとして描画され、`init.ts`がポインター操作、range同期、CSSカスタムプロパティを担当する。資産URLはmanifest確定後に解決される。実ブラウザでrange操作と戻る/進む後の再初期化を確認 |
 | 残存する問題 | なし |
 
 ### 設計
@@ -103,7 +103,7 @@
 
 - 入力構文は従来どおり ```` ```image-compare ````。remarkが `riebeckite-component` + `ImageCompare` に正規化する
 - SSR: `figure.rr-image-compare`、静的フォールバック、Before/Afterレイヤー、range input、divider
-- 宣言的状態: 比較位置は `useState` で保持し、CSSカスタムプロパティへ反映する
+- 宣言的状態: `component.ts` が静的なSSRマークアップを描画し、`init.ts` が比較位置を `--rr-image-compare-position` CSSカスタムプロパティで保持する
 - 命令的に残した処理: ポインターキャプチャ、`getBoundingClientRect` による座標計測、range inputとの同期、フォーカス
 - エラー: `rr-image-compare--error` と `role=status`、`data-image-compare-error` マーカー
 
@@ -138,25 +138,25 @@
 
 ---
 
-## Phase 3 — HAST Component / Children API
+## Phase 3 — HAST Transform / Children API
 
 | 項目 | 内容 |
 | --- | --- |
 | ステータス | COMPLETE |
-| 実装対象 | `hastComponents` / `defineHastComponent`、`PluginHastNode`、`code-tabs` のHASTコンポーネント |
-| 解決する制約 | Markdown ASTの任意ノードをComponentとして扱い、childrenを渡す |
+| 実装対象 | `hastTransforms` / `defineHastTransform`、`PluginHastNode`、`code-tabs` のHAST変換 |
+| 解決する制約 | サニタイズ後のHTMLノードを変換し、childrenを渡す |
 | 影響パッケージ | `packages/core`、`packages/plugins/code-tabs` |
-| API変更 | `hastComponents`、`defineHastComponent`、`PluginHastComponent`（`match` と `render({ node, html, children })`） |
+| API変更 | `hastTransforms`、`defineHastTransform`、`PluginHastTransform`（`match` と `render({ node, html, children })`） |
 | テスト | `packages/core/test/plugin_component.test.ts`、`packages/plugins/code-tabs/test/*` |
 | 性能への影響 | サニタイズ済みHTMLの置換のみ。Code Tabsの軽量Behaviorは維持 |
 | コミット | `77d76999`（削除）、mainの統合コミット`8698fcd4`で実装を取り込み |
-| 完了状況 | main側の実装を統合。rehypeがグループ化した `.rr-code-tabs` をHASTコンポーネントが受け取り、サニタイズ済みのchildrenをJSXで描画する |
+| 完了状況 | main側の実装を統合。rehypeがグループ化した `.rr-code-tabs` をHAST変換が受け取り、サニタイズ済みのchildrenをJSXで描画する |
 | 残存する問題 | なし |
 
 ### 判断理由
 
 - 起点ブランチでは単一ノードの `match` だけではCode Tabsの兄弟グループ化を表現できず、`client` も出力されないPoCだったため公開APIを取り下げた
-- main側では、rehypeが生成したグループ要素をHASTコンポーネントで置換し、サニタイズ済みの `html` と `children` を受け取る形で実装された。サニタイザー境界を越えずに文書構造をコンポーネント化でき、Code Tabsが実際の利用例になっている
+- main側では、rehypeが生成したグループ要素をHAST変換で置換し、サニタイズ済みの `html` と `children` を受け取る形で実装された。サニタイザー境界を越えずに文書構造を変換でき、Code Tabsが実際の利用例になっている
 - そのためPhase 3はSKIPPEDではなくCOMPLETEとし、公開APIとして文書化する（HASTはサニタイズ後の信頼済みノードのみを扱う）
 
 ---

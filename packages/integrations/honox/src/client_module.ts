@@ -35,10 +35,10 @@ function createClientModule(
   const clientEntries = config.plugins.flatMap(
     (plugin) => plugin.clientEntries ?? [],
   );
-  const components = config.plugins.flatMap(
-    (plugin) => plugin.components ?? [],
+  const markdownComponents = config.plugins.flatMap(
+    (plugin) => plugin.markdownComponents ?? [],
   );
-  const interactiveComponents = components.filter(
+  const interactiveMarkdownComponents = markdownComponents.filter(
     (component) => component.client !== undefined,
   );
   const runtimeEntries = new Map<
@@ -64,7 +64,7 @@ function createClientModule(
   const hasRuntimes = runtimeEntries.size > 0;
 
   imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
-  if (interactiveComponents.length > 0) {
+  if (interactiveMarkdownComponents.length > 0) {
     imports.push('import { hydrateRoot } from "hono/jsx/dom/client";');
     imports.push('import { jsx } from "hono/jsx/jsx-runtime";');
   }
@@ -144,8 +144,8 @@ function createClientModule(
     );
   }
 
-  if (interactiveComponents.length > 0) {
-    pageInitializers.push("mountPluginComponents(root)");
+  if (interactiveMarkdownComponents.length > 0) {
+    pageInitializers.push("mountMarkdownComponents(root)");
   }
 
   const runtimeSupport = hasRuntimes
@@ -215,16 +215,16 @@ ${pageInitializers.map((initializer) => `  ${initializer};`).join("\n")}
 }
 
 ${
-  interactiveComponents.length === 0
+  interactiveMarkdownComponents.length === 0
     ? ""
-    : `function mountPluginComponents(root) {
-  mountPluginClientInitializer("page", "plugin-components", root, undefined, ${hasRuntimes ? "[], " : ""}async (context) => {
+    : `function mountMarkdownComponents(root) {
+  mountPluginClientInitializer("page", "plugin-markdown-components", root, undefined, ${hasRuntimes ? "[], " : ""}async (context) => {
     const roots = [...context.root.querySelectorAll("[data-riebeckite-component-interactive]")];
     const results = await Promise.allSettled(roots.map(async (element) => {
       const name = element.getAttribute("data-riebeckite-component");
       const props = element.getAttribute("data-riebeckite-component-props");
       if (!name || props === null) return undefined;
-      const entry = pluginComponentEntries[name];
+      const entry = markdownComponentEntries[name];
       if (!entry) return undefined;
       const module = await entry.load();
       const Component = module[entry.exportName];
@@ -233,15 +233,15 @@ ${
     }));
     const cleanups = results.flatMap((result) => {
       if (result.status === "fulfilled") return result.value ? [result.value] : [];
-      console.error("[riebeckite] Plugin component failed", result.reason);
+      console.error("[riebeckite] Markdown component failed", result.reason);
       return [];
     });
     return () => cleanups.forEach((root) => root.unmount());
   });
 }
 
-const pluginComponentEntries = {
-${interactiveComponents
+const markdownComponentEntries = {
+${interactiveMarkdownComponents
   .map(
     (component) =>
       `  ${JSON.stringify(component.name)}: { exportName: ${JSON.stringify(component.client?.exportName ?? "default")}, load: () => import(${JSON.stringify(component.client?.moduleSpecifier)}) }`,

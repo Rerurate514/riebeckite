@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { selectLocalizedEntries } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
@@ -117,7 +117,7 @@ const SeriesNavigation = (async ({
       </div>
     </nav>
   );
-}) satisfies PluginComponent<SeriesNavigationProps>;
+}) satisfies PluginSiteComponent<SeriesNavigationProps>;
 export default SeriesNavigation;
 
 function findSeriesOptions(

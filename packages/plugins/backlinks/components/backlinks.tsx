@@ -1,4 +1,4 @@
-import type { PluginComponent } from "@riebeckite/core";
+import type { PluginSiteComponent } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html } from "hono/html";
 import type { ArticleBacklink } from "../src/backlinks.js";
@@ -39,6 +39,6 @@ const Backlinks = (async (props: Readonly<BacklinksProps>) => {
       </ul>
     </footer>
   );
-}) satisfies PluginComponent<BacklinksProps>;
+}) satisfies PluginSiteComponent<BacklinksProps>;
 
 export default Backlinks;

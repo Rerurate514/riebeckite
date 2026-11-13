@@ -2,53 +2,53 @@ import rehypeStringify from "rehype-stringify";
 import { unified } from "unified";
 import type { Node } from "unist";
 import type {
-  PluginComponentResolveContext,
-  PluginHastComponent,
   PluginHastNode,
+  PluginHastTransform,
+  PluginMarkdownComponentResolveContext,
 } from "./types/plugin_component.js";
 
 const serializer = unified().use(rehypeStringify);
 
-const EMPTY_CONTEXT: PluginComponentResolveContext = {
+const EMPTY_CONTEXT: PluginMarkdownComponentResolveContext = {
   resolveAssetUrl: () => null,
 };
 
-export function renderHastComponents(
-  components: readonly PluginHastComponent[],
-  context: PluginComponentResolveContext = EMPTY_CONTEXT,
+export function renderHastTransforms(
+  transforms: readonly PluginHastTransform[],
+  context: PluginMarkdownComponentResolveContext = EMPTY_CONTEXT,
 ) {
   return async (tree: Node) => {
-    await replaceHastComponents(tree, components, context);
+    await replaceHastTransforms(tree, transforms, context);
   };
 }
 
-async function replaceHastComponents(
+async function replaceHastTransforms(
   node: Node,
-  components: readonly PluginHastComponent[],
-  context: PluginComponentResolveContext,
+  transforms: readonly PluginHastTransform[],
+  context: PluginMarkdownComponentResolveContext,
 ): Promise<void> {
   const parent = node as PluginHastNode;
   if (!parent.children) return;
 
   for (const [index, child] of parent.children.entries()) {
     const hastChild = child as PluginHastNode;
-    const component = components.find((candidate) =>
+    const transform = transforms.find((candidate) =>
       candidate.match(hastChild),
     );
-    if (component) {
+    if (transform) {
       const html = serialize(hastChild);
       const children = serialize({
         type: "root",
         children: hastChild.children ?? [],
       });
-      const rendered = await component.render(
+      const rendered = await transform.render(
         { node: hastChild, html, children },
         context,
       );
       parent.children[index] = { type: "raw", value: rendered };
       continue;
     }
-    await replaceHastComponents(child, components, context);
+    await replaceHastTransforms(child, transforms, context);
   }
 }
 

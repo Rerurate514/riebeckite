@@ -1,6 +1,6 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
-import { defineHastComponent, type PluginHastNode } from "@riebeckite/core";
+import { defineHastTransform, type PluginHastNode } from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 import rehypeStringify from "rehype-stringify";
 import { unified } from "unified";
@@ -8,7 +8,7 @@ import { CodeTabsGroup } from "./tabs.js";
 
 const serializer = unified().use(rehypeStringify);
 
-export const codeTabsHastComponent = defineHastComponent({
+export const codeTabsTransform = defineHastTransform({
   name: "CodeTabs",
   match(node) {
     return (

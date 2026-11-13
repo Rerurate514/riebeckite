@@ -37,7 +37,7 @@ test("copies non-empty code fence metadata onto the rendered properties", () => 
   assert.equal(withoutMeta.data, undefined);
 });
 
-test("renders grouped code tabs through the HAST component", async () => {
+test("renders grouped code tabs through the HAST transform", async () => {
   const manager = new ContentManager(
     {
       async scan() {

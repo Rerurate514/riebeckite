@@ -9,21 +9,9 @@ class ImageCompareParseError extends Error {}
 
 export function parseImageCompare(source: string): ImageCompareParseResult {
   try {
-    return parseImageCompareSpec(parseMapping(source));
-  } catch (error) {
-    if (error instanceof ImageCompareParseError) {
-      return { ok: false, reason: error.message };
-    }
-    throw error;
-  }
-}
-
-export function parseImageCompareSpec(
-  value: Record<string, unknown>,
-): ImageCompareParseResult {
-  try {
-    const before = readString(value.before);
-    const after = readString(value.after);
+    const root = parseMapping(source);
+    const before = readString(root.before);
+    const after = readString(root.after);
     if (!before) {
       throw new ImageCompareParseError("must define a `before` image.");
     }
@@ -31,13 +19,13 @@ export function parseImageCompareSpec(
       throw new ImageCompareParseError("must define an `after` image.");
     }
 
-    const orientation = parseOrientation(value.orientation);
-    const label = readString(value.label);
+    const orientation = parseOrientation(root.orientation);
+    const label = readString(root.label);
     const spec: ImageCompareSpec = {
       before,
       after,
-      beforeAlt: readString(value.beforeAlt) ?? "Before",
-      afterAlt: readString(value.afterAlt) ?? "After",
+      beforeAlt: readString(root.beforeAlt) ?? "Before",
+      afterAlt: readString(root.afterAlt) ?? "After",
       orientation,
       ...(label ? { label } : {}),
     };
